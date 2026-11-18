@@ -50,6 +50,7 @@ import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
+import * as Preferencias from "../src/persistencia/Preferencias.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
 const PROVIDERS = process.env.SIMPLIFICA_PROVIDER
@@ -99,7 +100,7 @@ const driversRegistrados = (aberturas: Array<Abertura>) =>
             Effect.tap(() => Effect.sync(() => aberturas.push({ retomar: config.retomar, resultado: "ok" }))),
             Effect.tapError((falha) =>
               Effect.sync(() =>
-                aberturas.push({ retomar: config.retomar, resultado: "falhou", detalhe: falha.detalhe }),
+                aberturas.push({ retomar: config.retomar, resultado: "falhou", detalhe: falha.message }),
               ),
             ),
           ),
@@ -116,6 +117,7 @@ const camada = (arquivo: string, aberturas: Array<Abertura>) =>
   Conversas.layer().pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer),
+    Layer.provide(Preferencias.layerPrimeiroUsoFeito),
     Layer.provide(CatalogoSkills.layerVazio),
     Layer.provide(PastasTrabalho.layerSemPastas),
     Layer.provide(Banco.layerArquivo(arquivo)),

@@ -18,6 +18,8 @@
  *   pedido e a conferência do `conversa.ts` do `packages/ppc`. Quem decide é o código (ver lá).
  * - O uso de cada ação com IA fica em `acoes_ia` e soma ao uso da revisão com IA de onde a lista veio.
  *   Uma ação com IA por vez; a estimativa vem antes (`estimar`).
+ * - As ações que mandam o PPC à IA (`contestar`, `sugerir`, `revisarDeNovo`) esperam o aviso de uso
+ *   aceito (M1.8): sem ele, recusam com `AvisoNaoAceito`.
  */
 import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
@@ -29,6 +31,7 @@ import * as Layer from "effect/Layer";
 import * as Semaphore from "effect/Semaphore";
 import type * as SqlClient from "effect/sql/SqlClient";
 import {
+  type AvisoNaoAceito,
   type EstimativaAcao,
   FalhaRevisaoPpc,
   type ListaPendencias,
@@ -62,6 +65,7 @@ import {
 } from "@simplifica-if/ppc/revisao-previa";
 import { TEMAS } from "@simplifica-if/ppc/temas";
 import * as Listas from "../persistencia/Listas.ts";
+import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
@@ -97,18 +101,18 @@ export class ListaViva extends Context.Service<
       chave: string,
       motivo: string,
       provider?: Provider,
-    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
+    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly sugerir: (
       id: string,
       chave: string,
       provider?: Provider,
-    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
+    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly revisarDeNovo: (
       id: string,
       chave: string,
       arquivo: string,
       provider?: Provider,
-    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
+    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly gerarCopia: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
   }
 >()("@simplifica-if/server/revisao-ppc/ListaViva") {}
@@ -235,6 +239,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const listas = yield* Listas.Listas;
   const revisoes = yield* Revisoes.Revisoes;
   const revisor = yield* RevisorPpc.RevisorPpc;
+  const { exigirAviso } = yield* Preferencias.Preferencias;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const contextoListas = yield* Effect.context<Listas.Listas>();
@@ -329,7 +334,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     );
 
   /** Uma ação com IA por vez; a pausa do provider (limite, cota, queda) vira a frase para a pessoa. */
-  const comIa = <A, R>(arquivo: string, efeito: Effect.Effect<A, FalhaRevisaoPpc | PausaRevisao, R>) =>
+  const comIa = <A, R>(arquivo: string, efeito: Effect.Effect<A, FalhaRevisaoPpc | PausaRevisao | AvisoNaoAceito, R>) =>
     efeito.pipe(
       Effect.catchTags({ PausaRevisao: (pausa: PausaRevisao) => Effect.fail(falha(arquivo, pausa.motivo)) }),
       vez.withPermitsIfAvailable(1),
@@ -449,6 +454,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const contestar = Effect.fn("ListaViva.contestar")(
     function* (id: string, chave: string, motivo: string, pedido?: Provider) {
+      yield* exigirAviso;
       const registro = yield* buscar(id);
       const p = yield* pendenciaDe(registro, chave);
       if (!p.pendencia.ficha || p.pendencia.ficha === "TRIAGEM")
@@ -524,6 +530,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const sugerir = Effect.fn("ListaViva.sugerir")(
     function* (id: string, chave: string, pedido?: Provider) {
+      yield* exigirAviso;
       const registro = yield* buscar(id);
       const p = yield* pendenciaDe(registro, chave);
       if (p.pendencia.ficha === "TRIAGEM")
@@ -588,6 +595,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const revisarDeNovo = Effect.fn("ListaViva.revisarDeNovo")(
     function* (id: string, chave: string, arquivo: string, pedido?: Provider) {
+      yield* exigirAviso;
       const registro = yield* buscar(id);
       const p = yield* pendenciaDe(registro, chave);
       const novo = yield* revisor.revisarArquivo({
@@ -799,5 +807,8 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   });
 });
 
-/** Pede as `Listas`, as `Revisoes`, o `RevisorPpc`, o `Motor`, o `FileSystem`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/**
+ * Pede as `Listas`, as `Revisoes`, o `RevisorPpc`, as `Preferencias`, o `Motor`, o `FileSystem`, as
+ * `FontesNormativas` e o `SqlClient` do `kb.sqlite`.
+ */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

@@ -38,6 +38,7 @@ import * as Skills from "./skills.ts";
 
 export * from "./Driver.ts";
 export * from "./eventos.ts";
+export * from "./falhas.ts";
 export * from "./politica.ts";
 
 export class Motor extends Context.Service<
@@ -107,18 +108,12 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
 
   const iniciarSessao = Effect.fn("Motor.iniciarSessao")(function* (pedida: ConfigSessao) {
     if (!politica.providers.includes(pedida.provider)) {
-      return yield* new FalhaProvider({
-        provider: pedida.provider,
-        operacao: "iniciar",
-        detalhe: "a política do app não permite este provider",
-      });
+      // A política do app não permite este provider.
+      return yield* new FalhaProvider({ provider: pedida.provider, operacao: "iniciar", tipo: "desconhecido" });
     }
     if (pedida.semFerramentas === true && (pedida.servidoresMcp.length > 0 || (pedida.skills?.length ?? 0) > 0)) {
-      return yield* new FalhaProvider({
-        provider: pedida.provider,
-        operacao: "iniciar",
-        detalhe: "uma sessão sem ferramentas não recebe MCP nem skills",
-      });
+      // Uma sessão sem ferramentas não recebe MCP nem skills.
+      return yield* new FalhaProvider({ provider: pedida.provider, operacao: "iniciar", tipo: "mcp" });
     }
     let pastaSkills = "";
     if (pedida.skills !== undefined && pedida.skills.length > 0) {

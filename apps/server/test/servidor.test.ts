@@ -290,7 +290,9 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       const falha = yield* Effect.flip(c["conversa.iniciar"]({ provider: "codex", pastaTrabalho: pasta }));
       assert.strictEqual(falha._tag, "FalhaProvider");
       if (falha._tag !== "FalhaProvider") return;
-      assert.strictEqual(falha.detalhe, "falha de teste");
+      assert.strictEqual(falha.tipo, "desconhecido");
+      // O texto técnico sai do `cause`, saneado: sem a pasta do usuário nem o e-mail.
+      assert.strictEqual(falha.tecnico, "falha de teste em ~/segredo para <e-mail>");
       assert.isUndefined(falha.cause);
     }).pipe(Effect.scoped),
   );

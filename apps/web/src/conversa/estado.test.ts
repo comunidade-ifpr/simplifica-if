@@ -103,7 +103,7 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
     const estado = aplicar(
       respondendo(),
       evento({ _tag: "UsoTokens", entrada: 10, saida: 2, custoUsd: 0.01 }),
-      evento({ _tag: "Erro", mensagem: "limite de uso" }),
+      evento({ _tag: "Erro", tipo: "cota", mensagem: "limite de uso" }),
       { tipo: "interrompendo" },
     );
     assert.strictEqual(estado.fase, "interrompendo");
@@ -123,7 +123,10 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
   });
 
   it("o erro do provider no turno sai em português, com o original nos detalhes técnicos", () => {
-    const estado = aplicar(respondendo(), evento({ _tag: "Erro", mensagem: "Not logged in · Please run /login" }));
+    const estado = aplicar(
+      respondendo(),
+      evento({ _tag: "Erro", tipo: "semLogin", mensagem: "Not logged in · Please run /login" }),
+    );
     assert.deepInclude(estado.itens.at(-1), {
       tipo: "aviso",
       texto: "O ChatGPT (Codex) está sem login. Entre na conta em Configurações › Sua IA e tente de novo.",

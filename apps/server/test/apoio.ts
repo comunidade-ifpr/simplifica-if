@@ -41,8 +41,8 @@ export interface Registro {
   encerradas: number;
   /** Chamado a cada sessão encerrada, para o teste esperar pelo encerramento sem relógio. */
   aoEncerrar?: (() => void) | undefined;
-  /** Derruba o "processo" da sessão aberta mais recente (a queda). */
-  derrubar?: (() => Effect.Effect<void>) | undefined;
+  /** Derruba o "processo" da sessão aberta mais recente (a queda), com `causa` no `cause` da falha. */
+  derrubar?: ((causa?: Error) => Effect.Effect<void>) | undefined;
   /** O provider não retoma (como o `agy` sem `session/load`). */
   recusarRetomada?: boolean;
   /** O provider ignora o pedido de interrupção (o turno só acaba quando a sessão fecha). */
@@ -68,20 +68,25 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
         return yield* new Motor.FalhaProvider({
           provider,
           operacao: "iniciar sessão",
-          detalhe: "falha de teste",
-          cause: new Error("/Users/alguem/segredo"),
+          tipo: "desconhecido",
+          cause: new Error("falha de teste em /Users/alguem/segredo para alguem@exemplo.com"),
         });
       }
       if (config.retomar !== undefined && registro.recusarRetomada === true) {
-        return yield* new Motor.FalhaProvider({ provider, operacao: "retomar", detalhe: "não retoma (teste)" });
+        return yield* new Motor.FalhaProvider({ provider, operacao: "retomar", tipo: "versao" });
       }
       registro.configs.push(config);
       const idNativo = config.retomar ?? `nativo-${registro.configs.length}`;
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
       const queda = yield* Deferred.make<Motor.FalhaProvider>();
-      registro.derrubar = () => {
-        const falha = new Motor.FalhaProvider({ provider, operacao: "sessão", detalhe: "o processo encerrou (teste)" });
+      registro.derrubar = (causa) => {
+        const falha = new Motor.FalhaProvider({
+          provider,
+          operacao: "sessão",
+          tipo: "queda",
+          ...(causa ? { cause: causa } : {}),
+        });
         return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       };
       yield* Effect.addFinalizer(() =>

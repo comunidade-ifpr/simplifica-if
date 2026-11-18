@@ -32,6 +32,7 @@ import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
+import * as Preferencias from "../src/persistencia/Preferencias.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
 const PROVIDERS = process.env.SIMPLIFICA_PROVIDER
@@ -53,6 +54,7 @@ const PONTE_MCP = {
 const camada = Conversas.layer().pipe(
   Layer.provideMerge(Motor.layer),
   Layer.provide(Historico.layer),
+  Layer.provide(Preferencias.layerPrimeiroUsoFeito),
   Layer.provide(CatalogoSkills.layer(NodePath.join(RAIZ, ".agents", "skills"))),
   Layer.provide(PastasTrabalho.layerSemPastas),
   Layer.provide(Banco.layerMemoria),

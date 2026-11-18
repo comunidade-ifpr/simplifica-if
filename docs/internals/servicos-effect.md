@@ -42,7 +42,7 @@ export const layerHandlers = FerramentasIfpr.toLayer(
 );
 ```
 
-Nos handlers RPC, `registrarEMapear` é a tradução do transporte: registra a falha no log do servidor e manda o `FalhaProvider` à interface sem o `cause`. Envelope, paginação e orçamento de resposta ficam no serviço `Leitura`, não no handler.
+Nos handlers RPC, `traduzir` (e `traduzirStream`, para os métodos em stream) é a tradução do transporte, a mesma para todos os métodos de todos os grupos: registra a falha no log do servidor e manda o `FalhaProvider` e a `FalhaPasta` à interface sem o `cause` (do `cause` do `FalhaProvider` sai só o texto técnico, curto e saneado). Regra de produto não fica no handler: o aviso de uso antes de mandar algo à IA é exigido dentro de `Conversas`, `RevisaoIa` e `ListaViva`. Envelope, paginação e orçamento de resposta ficam no serviço `Leitura`, não no handler.
 
 Funções puras para trabalho puro (formatar, montar nome, analisar texto) podem ficar ao lado do serviço; a capacidade em si é o método. Os handlers não criam span próprio: o `Effect.fn` do método já cria. Um handler com contexto da chamada, como o id da conversa, o acrescenta com `Effect.annotateCurrentSpan`.
 
@@ -138,6 +138,14 @@ O repositório inteiro está na stack do Effect, mas nem todo código precisa se
 
 Uma conversão troca o código inteiro do caminho: o serviço novo, os chamadores e os testes no mesmo PR, sem manter as duas versões.
 
+Armadilhas que as conversões deste repositório já encontraram:
+
+- **`throw` vira defeito.** O `Effect.tryPromise` de um código `async` pegava qualquer `throw`; dentro de `Effect.gen`, um `throw` síncrono (`new URL`, `JSON.parse`, `toISOString`, função pura que recusa) vira defeito, que `Effect.catch` e `Effect.result` não pegam. Cada chamada que pode lançar ganha um `Effect.try` com erro tipado, ou uma conferência antes.
+- **"Nunca falha" precisa de `catchCause`.** Um finalizador ou um passo que só registra no log trata a causa inteira (falha e defeito) e deixa a interrupção passar; dois finalizadores independentes são dois `Effect.ensuring`, para o segundo rodar se o primeiro morrer.
+- **Diagnóstico sem `cause` na mensagem.** Quem traduz a falha põe na mensagem o que é seguro e útil: o código do sistema (`EACCES`, `ENOSPC`), o recurso relativo (arquivo dentro da base, ref, host), a categoria. A saída bruta (stderr, `cause.message`) fica em `cause` ou num log ao lado.
+- **`Schema.Struct` descarta chave desconhecida em silêncio.** Onde perder dado importa (resposta de IA, registro), decodifique com `onExcessProperty: "error"`. E texto gerado por IA escreve `null` em campo opcional: aceite-o como ausente (`Schema.NullOr` normalizado), em vez de recusar a resposta inteira.
+- **Garantia do sistema operacional não vira checagem prévia.** `rmdir` (falha se a pasta não está vazia), `unlink` e `open` com `O_EXCL|O_NOFOLLOW` protegem contra corrida; trocá-los por "conferir e depois `remove`" abre uma janela. Onde o `FileSystem` do Effect não oferece a primitiva, ela fica num adaptador Node pequeno, com o motivo ao lado.
+
 ## Testes
 
 - **`@effect/vitest`.** Teste de código Effect usa `it.effect` ou `layer(...)((it) => ...)`, não `Effect.runPromise` dentro de `it` (regra `no-manual-effect-runtime-in-tests`).
@@ -171,7 +179,6 @@ O resto desta página é revisão: posição da lógica, forma do módulo, atrib
 
 Código anterior a esta página que não segue alguma regra. Não é achado num PR que não o toca; entra na revisão de arquitetura:
 
-- `FalhaProvider.detalhe` (`packages/motor/src/erros.ts`) recebe um trecho de `cause.message` em `packages/motor/src/Canal.ts`;
 - `Effect.runPromise` fora de ponto de entrada em `scripts/fabrica_atualizacao.ts`;
 - a leitura da base com `node:fs` síncrono nos `carregar*` e em `scripts/base/validacao/`, chamada de dentro dos programas Effect do pipeline da base;
 - `packages/atualizacao`, `packages/ppc` e `packages/docx` são quase todos funções comuns; parte é pura e fica assim, parte faz I/O e é candidata a serviço;

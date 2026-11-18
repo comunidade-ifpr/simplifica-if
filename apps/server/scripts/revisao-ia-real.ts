@@ -25,6 +25,7 @@ import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import * as Banco from "../src/persistencia/Banco.ts";
+import * as Preferencias from "../src/persistencia/Preferencias.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
@@ -205,8 +206,10 @@ const pastaEstado =
     ? NodePath.join(NodeOS.homedir(), "Library", "Application Support", "simplifica-if-poc")
     : NodePath.join(NodeOS.homedir(), ".simplifica-if-poc"));
 const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado });
+// Quem roda o script de medição já aceitou o aviso de uso: as preferências saem com ele aceito.
 const nucleo = RevisaoIa.layer({ paralelismo }).pipe(
   Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(Banco.layerMemoria))),
+  Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(Banco.layerMemoria))),
   Layer.provideMerge(RevisorPpc.layer()),
   Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
   Layer.provideMerge(Motor.layer.pipe(Layer.provide(drivers))),

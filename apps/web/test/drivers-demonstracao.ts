@@ -153,13 +153,14 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
               texto: decisao === "permitir" ? "Escrevi o resumo.md." : "Tudo bem, não escrevi o arquivo.",
             });
           }
-          // A conta no limite de uso (M1.14): o texto do app-server do Codex, que a tela traduz por tipo.
+          // A conta no limite de uso (M1.14): o texto do app-server do Codex, que o motor classifica e a
+          // tela traduz pelo tipo.
           if (/limite de uso/i.test(texto)) {
-            yield* canal.emitir({
-              _tag: "Erro",
-              mensagem:
+            yield* canal.emitir(
+              Motor.erroDoTurno(
                 "You've hit your usage limit. Upgrade to Pro (https://openai.com/chatgpt/pricing) or try again later.",
-            });
+              ),
+            );
             yield* canal.emitir({ _tag: "FimTurno", motivo: "failed" });
             return;
           }
