@@ -19,12 +19,13 @@ ferramentas/oxlint-plugin/rules/prefer-catch-tags.test.ts	6	0
 ferramentas/oxlint-plugin/rules/prefer-effect-fn.test.ts	23	0
 ferramentas/oxlint-plugin/rules/require-suppression-reason.test.ts	13	0
 packages/kb/src/avaliacao/resolvedor.test.ts	3	0
+packages/kb/src/busca/fts.test.ts	4	0
 packages/kb/src/busca/stemmer.test.ts	52	0
 packages/kb/src/busca/tokens.test.ts	19	0
 packages/kb/src/db/base.test.ts	34	0
 packages/kb/src/db/fontes.test.ts	8	0
 packages/kb/src/db/grupos-topico.test.ts	4	0
-packages/kb/src/db/unidades.test.ts	4	0
+packages/kb/src/db/unidades.test.ts	1	0
 packages/kb/src/fatos/fatos.test.ts	20	0
 packages/kb/src/normas/dispositivos.test.ts	17	0
 packages/kb/src/normas/estrutura.test.ts	47	0
@@ -47,8 +48,8 @@ packages/mcp/test/atualizacao.test.ts	1	0
 packages/mcp/test/consumidor/consumidor.test.ts	3	0
 packages/mcp/test/envelope.test.ts	8	0
 packages/mcp/test/equivalencia-schemas.test.ts	1	0
-packages/mcp/test/explorar.test.ts	8	0
-packages/mcp/test/ferramentas.test.ts	16	0
+packages/mcp/test/explorar.test.ts	7	0
+packages/mcp/test/ferramentas.test.ts	17	0
 packages/mcp/test/http.test.ts	11	0
 packages/mcp/test/instrucoes.test.ts	4	0
 packages/mcp/test/links.test.ts	7	0
@@ -115,4 +116,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1571	35
+TOTAL	1572	35
