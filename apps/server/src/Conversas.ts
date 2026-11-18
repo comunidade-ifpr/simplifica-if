@@ -506,7 +506,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           // Depois do `FimTurno`, o turno já está fechado e a conversa pode ter outro: nada mais é dele.
           if (turno.fechado) return Effect.void;
           if (evento._tag !== "FimTurno") return registrarEvento(viva, evento);
-          return retratarPasta(viva, turno).pipe(Effect.andThen(concluirTurno(viva, turno, evento)));
+          return retratarPasta(viva, turno).pipe(Effect.ensuring(concluirTurno(viva, turno, evento)));
         }),
       ),
       Effect.catch((erro) =>
@@ -524,16 +524,15 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           const caiu = yield* sessao.queda.pipe(Effect.timeoutOption(Duration.seconds(1)));
           if (Option.isSome(caiu)) yield* derrubar(viva, sessao);
           yield* registrarEvento(viva, { _tag: "Erro", mensagem: erro.message });
-          yield* retratarPasta(viva, turno);
-          yield* concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "falha" });
+          yield* retratarPasta(viva, turno).pipe(
+            Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "falha" })),
+          );
         }),
       ),
-      // Interrompido antes do `FimTurno`: o retrato que faltar e o turno fechado como interrompido.
-      Effect.ensuring(
-        retratarPasta(viva, turno).pipe(
-          Effect.andThen(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "interrompido" })),
-        ),
-      ),
+      // Interrompido antes do `FimTurno`: o retrato que faltar e o turno fechado como interrompido. Dois
+      // finalizadores: o turno fecha mesmo que o retrato morra.
+      Effect.ensuring(retratarPasta(viva, turno)),
+      Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "interrompido" })),
     );
 
   /** Começa o turno e devolve a inscrição nos itens dele (no escopo de quem chama). */

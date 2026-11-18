@@ -26,6 +26,7 @@
  *   Depois, as cópias desse turno em diante saem, e o próximo Desfazer volta mais um turno. Arquivos e pastas que
  *   começam com `.` (o `.simplifica/` das skills) e links simbólicos ficam de fora de tudo.
  */
+import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -165,9 +166,30 @@ interface Varredura {
   readonly pastas: ReadonlyArray<string>;
 }
 
-/** A data de modificação em ISO 8601 (o Node sempre a informa; a época, se faltar). */
+const EPOCA = "1970-01-01T00:00:00.000Z";
+
+/**
+ * A data de modificação em ISO 8601; a época se faltar ou estiver fora do intervalo do `Date` (um
+ * `mtime` absurdo faria o `toISOString` lançar `RangeError`).
+ */
 const alteradoEm = (info: FileSystem.File.Info): string =>
-  Option.match(info.mtime, { onNone: () => "1970-01-01T00:00:00.000Z", onSome: (data) => data.toISOString() });
+  Option.match(info.mtime, {
+    onNone: () => EPOCA,
+    onSome: (data) => (Number.isNaN(data.getTime()) ? EPOCA : data.toISOString()),
+  });
+
+/**
+ * A cópia e o retrato do turno não podem impedir a conversa de seguir: a falha e o defeito ficam no
+ * log; a interrupção passa.
+ */
+const soNoLog =
+  (mensagem: string) =>
+  <A, E, R>(efeito: Effect.Effect<A, E, R>): Effect.Effect<A | void, never, R> =>
+    efeito.pipe(
+      Effect.catchCause((causa) =>
+        Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.logWarning(mensagem, Cause.squash(causa)),
+      ),
+    );
 
 /** A pasta sem os nomes que começam com `.`, sem seguir links. */
 const varrer = Effect.fn("PastasTrabalho.varrer")(function* (pasta: string, maximo: number) {
@@ -652,10 +674,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     yield* Effect.gen(function* () {
       const real = yield* gerida(pasta);
       if (real !== undefined) yield* copiarTurno(real, yield* pastaCopias(conversa), turno, criadaEm, limites);
-    }).pipe(
-      comArquivos,
-      Effect.catch((erro) => Effect.logWarning(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`, erro)),
-    );
+    }).pipe(comArquivos, soNoLog(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`));
   });
 
   const fecharTurno = Effect.fn("PastasTrabalho.fecharTurno")(function* (
@@ -666,10 +685,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     yield* Effect.gen(function* () {
       const real = yield* gerida(pasta);
       if (real !== undefined) yield* retratarFim(real, yield* pastaCopias(conversa), turno, limites);
-    }).pipe(
-      comArquivos,
-      Effect.catch((erro) => Effect.logWarning(`conversa ${conversa}: sem retrato do fim do turno ${turno}`, erro)),
-    );
+    }).pipe(comArquivos, soNoLog(`conversa ${conversa}: sem retrato do fim do turno ${turno}`));
   });
 
   /** Volta a pasta ao que era antes do turno que `prever` aponta, e apaga as cópias dele em diante. */
