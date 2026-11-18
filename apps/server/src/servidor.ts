@@ -23,14 +23,13 @@
  * provider morre) e fecha o servidor MCP.
  */
 import * as NodeHttp from "node:http";
-import * as NodeFSP from "node:fs/promises";
-import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import * as Context from "effect/Context";
 import type * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import type * as Redacted from "effect/Redacted";
@@ -175,11 +174,9 @@ const layerAtualizador = (opcoes: Opcoes) =>
 const layerPastas = (opcoes: Opcoes) =>
   Layer.unwrap(
     Effect.gen(function* () {
-      const temporaria = (prefixo: string) =>
-        Effect.acquireRelease(
-          Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), prefixo))),
-          (pasta) => Effect.promise(() => NodeFSP.rm(pasta, { recursive: true, force: true })),
-        );
+      const fs = yield* FileSystem.FileSystem;
+      // Sem a pasta temporária o servidor não sobe: a falha é defeito.
+      const temporaria = (prefixo: string) => fs.makeTempDirectoryScoped({ prefix: prefixo }).pipe(Effect.orDie);
       const raiz = opcoes.pastaTrabalhos ?? (yield* temporaria("simplifica-trabalhos-"));
       const copias =
         opcoes.pastaCopias ??

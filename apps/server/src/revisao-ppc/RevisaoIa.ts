@@ -21,6 +21,7 @@ import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as FiberMap from "effect/FiberMap";
 import * as Layer from "effect/Layer";
 import * as PubSub from "effect/PubSub";
@@ -96,7 +97,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const revisoes = yield* Revisoes.Revisoes;
   const revisor = yield* RevisorPpc.RevisorPpc;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
-  const contextoMotor = yield* Effect.context<Motor.Motor>();
+  const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const contextoListas = yield* Effect.context<Listas.Listas>();
   const execucoes = yield* FiberMap.make<string>();
   const expirar = DateTime.now.pipe(
@@ -388,5 +389,5 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   });
 });
 
-/** Pede o `Motor`, o `RevisorPpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/** Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

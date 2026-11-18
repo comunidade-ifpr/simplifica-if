@@ -15,12 +15,10 @@
  * Limite de taxa, cota esgotada, provider caído ou turno longo demais viram `PausaRevisao` (a revisão
  * pausa e retoma depois), nunca um resultado: o bloco só se grava inteiro e conferido.
  */
-import * as NodeFSP from "node:fs/promises";
-import * as NodeOS from "node:os";
-import * as NodePath from "node:path";
 import * as Clock from "effect/Clock";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import type { UsoRevisaoIa } from "@simplifica-if/contratos-app";
@@ -177,12 +175,11 @@ const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(function* (
   entrada: Pick<EntradaTurno, "provider" | "modelo" | "instrucoes">,
 ) {
   const motor = yield* Motor.Motor;
-  const pasta = yield* Effect.acquireRelease(
-    Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
-      Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
-    ),
-    (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
-  );
+  const fs = yield* FileSystem.FileSystem;
+  // Uma falha ao criar a pasta temporária é defeito: não há o que a revisão possa fazer com ela.
+  const pasta = yield* fs
+    .makeTempDirectoryScoped({ prefix: "simplifica-julgamento-" })
+    .pipe(Effect.flatMap(fs.realPath), Effect.orDie);
   return yield* Effect.acquireRelease(
     motor
       .iniciarSessao({
