@@ -244,7 +244,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
         },
       };
     case "Erro":
-      return comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento.mensagem)));
+      return comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento)));
     case "FimTurno": {
       const fechado: EstadoConversa = {
         ...estado,

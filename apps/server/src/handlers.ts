@@ -7,7 +7,8 @@
  * interface que recarrega volta à mesma conversa por `conversa.carregar` e `conversa.acompanhar`.
  *
  * O `FalhaProvider` e a `FalhaPasta` chegam à interface sem o `cause`, que pode trazer a pilha e caminhos do computador;
- * o erro inteiro vai para o log do servidor (stderr).
+ * o erro inteiro vai para o log do servidor (stderr). Do `cause` do `FalhaProvider` sai só o texto técnico de
+ * "Detalhes técnicos" (`tecnico`), curto e saneado.
  */
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -38,10 +39,24 @@ import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
 
-/** O erro como vai à interface: o `FalhaProvider` e a `FalhaPasta` sem o `cause`. */
+/** O texto técnico do `cause`, curto e saneado, ou nada se ele não tem texto. */
+const tecnicoDe = (cause: unknown): { readonly tecnico?: string } => {
+  const texto = Motor.textoDaCausa(cause);
+  return texto === "" ? {} : { tecnico: Motor.textoTecnico(texto) };
+};
+
+/**
+ * O erro como vai à interface: o `FalhaProvider` e a `FalhaPasta` sem o `cause`; o `FalhaProvider`
+ * com o texto técnico dele.
+ */
 const paraInterface = <E>(erro: E): E =>
   ehFalhaProvider(erro)
-    ? (new Motor.FalhaProvider({ provider: erro.provider, operacao: erro.operacao, detalhe: erro.detalhe }) as E)
+    ? (new Motor.FalhaProvider({
+        provider: erro.provider,
+        operacao: erro.operacao,
+        tipo: erro.tipo,
+        ...tecnicoDe(erro.cause),
+      }) as E)
     : ehFalhaPasta(erro)
       ? (new FalhaPasta({ motivo: erro.motivo }) as E)
       : erro;

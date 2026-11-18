@@ -99,7 +99,7 @@ const driversRegistrados = (aberturas: Array<Abertura>) =>
             Effect.tap(() => Effect.sync(() => aberturas.push({ retomar: config.retomar, resultado: "ok" }))),
             Effect.tapError((falha) =>
               Effect.sync(() =>
-                aberturas.push({ retomar: config.retomar, resultado: "falhou", detalhe: falha.detalhe }),
+                aberturas.push({ retomar: config.retomar, resultado: "falhou", detalhe: falha.message }),
               ),
             ),
           ),

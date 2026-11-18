@@ -383,7 +383,8 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         // No meio de um turno, o próprio turno termina com o erro (`bombear`); fora dele, ninguém viu a
         // queda, e o `Erro` fica no histórico.
         if (viva.turno !== undefined) return;
-        if (!viva.ultimoTurnoFalhou) yield* registrarEvento(viva, { _tag: "Erro", mensagem: falha.message });
+        if (!viva.ultimoTurnoFalhou)
+          yield* registrarEvento(viva, { _tag: "Erro", tipo: falha.tipo, mensagem: falha.message });
         yield* alterar(viva, { estado: "caiu" });
       }),
     );
@@ -393,13 +394,10 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     if (viva.sessao !== undefined) return viva.sessao;
     const registro = viva.registro;
     const pasta = yield* conferirPasta(registro.pastaTrabalho).pipe(
+      // A pasta de trabalho não existe mais.
       Effect.mapError(
-        () =>
-          new Motor.FalhaProvider({
-            provider: registro.provider,
-            operacao: "retomar",
-            detalhe: `a pasta de trabalho não existe mais: ${registro.pastaTrabalho}`,
-          }),
+        (cause) =>
+          new Motor.FalhaProvider({ provider: registro.provider, operacao: "retomar", tipo: "desconhecido", cause }),
       ),
     );
     const escopo = yield* Scope.make();
@@ -523,7 +521,11 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           // turno fecha com a conversa `caiu`.
           const caiu = yield* sessao.queda.pipe(Effect.timeoutOption(Duration.seconds(1)));
           if (Option.isSome(caiu)) yield* derrubar(viva, sessao);
-          yield* registrarEvento(viva, { _tag: "Erro", mensagem: erro.message });
+          yield* registrarEvento(viva, {
+            _tag: "Erro",
+            tipo: erro._tag === "FalhaProvider" ? erro.tipo : "desconhecido",
+            mensagem: erro.message,
+          });
           yield* retratarPasta(viva, turno).pipe(
             Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "falha" })),
           );

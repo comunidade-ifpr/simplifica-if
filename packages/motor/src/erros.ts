@@ -4,18 +4,29 @@
  * `Driver.ts` e o ponto de entrada do pacote os reexportam.
  */
 import * as Schema from "effect/Schema";
+import { TipoFalha } from "./falhas.ts";
 
 export const Decisao = Schema.Literals(["permitir", "negar"]);
 export type Decisao = typeof Decisao.Type;
 
+/**
+ * Uma falha do provider. O `tipo` sai do classificador do motor (`falhas.ts`) no ponto em que o
+ * driver produz a falha; o texto cru dela fica só em `cause`.
+ */
 export class FalhaProvider extends Schema.TaggedError<FalhaProvider>()("FalhaProvider", {
   provider: Schema.String,
   operacao: Schema.String,
-  detalhe: Schema.String,
+  tipo: TipoFalha,
+  /**
+   * O texto técnico para "Detalhes técnicos", curto e saneado (`textoTecnico`). Só o transporte o
+   * preenche, a partir do `cause`, ao tirar o `cause` do erro que vai à interface; o motor nunca.
+   */
+  tecnico: Schema.optionalKey(Schema.String),
   cause: Schema.optional(Schema.Defect()),
 }) {
   override get message(): string {
-    return `${this.provider}: falha em ${this.operacao}: ${this.detalhe}`;
+    const tipo = this.tipo === "desconhecido" ? "" : ` (${this.tipo})`;
+    return `${this.provider}: falha em ${this.operacao}${tipo}`;
   }
 }
 

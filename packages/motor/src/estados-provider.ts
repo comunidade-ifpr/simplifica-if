@@ -5,6 +5,7 @@
  */
 import * as Schema from "effect/Schema";
 import { Provider } from "./eventos.ts";
+import { TipoFalhaEstado } from "./falhas.ts";
 
 /** `gerenciada`: a cópia que o app instalou; `local`: a CLI que o usuário já tinha. */
 const Origem = Schema.Literals(["gerenciada", "local"]);
@@ -51,6 +52,8 @@ export const EstadoInstalacao = Schema.Struct({
   executavel: Schema.optionalKey(Schema.String),
   origem: Schema.optionalKey(Origem),
   mensagem: Schema.optionalKey(Schema.String),
+  /** O tipo da falha que a `mensagem` descreve, quando o classificador do motor o reconhece. */
+  tipoFalha: Schema.optionalKey(TipoFalhaEstado),
 });
 export type EstadoInstalacao = typeof EstadoInstalacao.Type;
 
@@ -61,6 +64,8 @@ export const EstadoLogin = Schema.Struct({
   url: Schema.optionalKey(Schema.String),
   /** A frase para a pessoa. */
   mensagem: Schema.optionalKey(Schema.String),
+  /** O tipo da falha que a `mensagem` descreve, quando o classificador do motor o reconhece. */
+  tipoFalha: Schema.optionalKey(TipoFalhaEstado),
   /** O texto técnico da CLI; a interface o mostra recolhido, em "Detalhes técnicos". */
   detalhe: Schema.optionalKey(Schema.String),
 });

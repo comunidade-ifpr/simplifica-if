@@ -6,14 +6,15 @@
  *
  * Onde estão: `packages/motor/src/t3` (instalação e login do Codex e do Antigravity, o ambiente do
  * Claude), `packages/effect-acp` e `packages/effect-codex-app-server` (os protocolos). As do motor
- * chegam à tela pelo `mensagem` dos estados de instalação e de login, e pelo `detalhe` das falhas;
- * passam por `explicarMensagemMotor`. As dos protocolos chegam como `detalhe` de `FalhaProvider` ou
- * como mensagem de `Erro` do turno; passam por `tipoFalha`. (`apps/server/src/t3` só tem o vigia do
+ * chegam à tela pelo `mensagem` dos estados de instalação e de login, com o `tipoFalha` que o motor
+ * dá (`classificarFalhaEstado`), e passam por `explicarMensagemMotor`. As dos protocolos chegam como
+ * causa de `FalhaProvider` ou como mensagem de `Erro` do turno; o motor as classifica
+ * (`classificarFalha`). (`apps/server/src/t3` só tem o vigia do
  * lançador, sem texto para a pessoa.)
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import type { TipoFalha } from "../src/conexao/erros.ts";
+import type { TipoFalha } from "@simplifica-if/contratos-app";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
 
@@ -120,15 +121,15 @@ export function frasesCopiadas(): ReadonlyMap<string, string> {
 /**
  * O destino de cada frase:
  *
- * - `"motor"`: chega à tela pelo estado de instalação ou de login, ou pelo `detalhe` de uma falha do
+ * - `"motor"`: chega à tela pelo estado de instalação ou de login, ou pela causa de uma falha do
  *   motor; `explicarMensagemMotor` tem de dar uma frase em português, não a genérica;
- * - um `TipoFalha`: chega como `detalhe` de `FalhaProvider` ou `Erro` do turno; `tipoFalha` tem de dar
+ * - um `TipoFalha`: chega como causa de `FalhaProvider` ou `Erro` do turno; `classificarFalha` tem de dar
  *   esse tipo;
- * - `"generica"`: chega como `detalhe` de falha, mas é erro interno do protocolo, sem o que a pessoa
+ * - `"generica"`: chega como causa de falha, mas é erro interno do protocolo, sem o que a pessoa
  *   possa fazer além de tentar de novo: a frase genérica serve, com o original em "Detalhes técnicos";
  * - `{ fora: motivo }`: não chega à tela (log, ferramenta de teste, caminho que o app não usa).
  */
-export type Destino = "motor" | "generica" | TipoFalha | { readonly fora: string };
+export type Destino = "motor" | "generica" | Exclude<TipoFalha, "desconhecido"> | { readonly fora: string };
 
 const LOG_PATH = { fora: "log do fixPath (os-jank.ts), não vai para a tela" };
 const PONTE_MCP = { fora: "erro da ponte MCP stdio, que vai para a IA como resposta da ferramenta" };

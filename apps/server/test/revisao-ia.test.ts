@@ -137,7 +137,7 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
           if ("ferramenta" in r && r.ferramenta)
             yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: r.ferramenta, entrada: {} });
           if ("erro" in r) {
-            yield* canal.emitir({ _tag: "Erro", mensagem: r.erro });
+            yield* canal.emitir(Motor.erroDoTurno(r.erro));
             return yield* canal.emitir({ _tag: "FimTurno", motivo: "falha" });
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: r.texto });

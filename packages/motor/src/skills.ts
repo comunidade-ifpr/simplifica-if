@@ -55,8 +55,9 @@ export function instrucoesSessao(config: ConfigSessao, pastaSkills: string, sepa
   return partes.length === 0 ? undefined : partes.join("\n\n");
 }
 
-const falha = (provider: string, detalhe: string, cause?: unknown) =>
-  new FalhaProvider({ provider, operacao: "skills", detalhe, ...(cause === undefined ? {} : { cause }) });
+/** A skill que não se grava: sem tipo conhecido; o motivo (e a falha do disco, quando há) fica em `cause`. */
+const falha = (provider: string, cause: unknown) =>
+  new FalhaProvider({ provider, operacao: "skills", tipo: "desconhecido", cause });
 
 /**
  * Grava as skills da sessão em `<pasta>/.simplifica/skills` e devolve essa pasta. Recusa nome
@@ -68,7 +69,7 @@ export const gravarSkills = Effect.fn("skills.gravar")(function* (config: Config
   const raiz = path.join(config.pastaTrabalho, ...PASTA_SKILLS.split("/"));
   for (const skill of config.skills ?? []) {
     if (!NOME_VALIDO.test(skill.nome)) {
-      return yield* falha(config.provider, `nome de skill inválido: "${skill.nome}"`);
+      return yield* falha(config.provider, new Error(`nome de skill inválido: "${skill.nome}"`));
     }
     const pastaSkill = path.join(raiz, skill.nome);
     const arquivos = [{ caminho: "SKILL.md", conteudo: skillMd(skill) }, ...(skill.arquivos ?? [])];
@@ -76,11 +77,11 @@ export const gravarSkills = Effect.fn("skills.gravar")(function* (config: Config
       const destino = path.resolve(pastaSkill, arquivo.caminho);
       const relativo = path.relative(pastaSkill, destino);
       if (path.isAbsolute(arquivo.caminho) || relativo === "" || relativo.startsWith("..")) {
-        return yield* falha(config.provider, `arquivo fora da skill ${skill.nome}: ${arquivo.caminho}`);
+        return yield* falha(config.provider, new Error(`arquivo fora da skill ${skill.nome}: ${arquivo.caminho}`));
       }
       yield* fs.makeDirectory(path.dirname(destino), { recursive: true }).pipe(
         Effect.andThen(fs.writeFileString(destino, arquivo.conteudo)),
-        Effect.mapError((erro) => falha(config.provider, `não foi possível gravar ${arquivo.caminho}`, erro)),
+        Effect.mapError((erro) => falha(config.provider, erro)),
       );
     }
   }

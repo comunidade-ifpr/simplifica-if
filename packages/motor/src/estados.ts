@@ -7,6 +7,7 @@ import * as Stream from "effect/Stream";
 import * as Canal from "./Canal.ts";
 import type { EstadoInstalacao, EstadoLogin, FalhaProvider } from "./Driver.ts";
 import type { Provider } from "./eventos.ts";
+import { classificarFalhaEstado, type TipoFalhaEstado } from "./falhas.ts";
 import type { ProviderAuthState } from "./t3/contracts-antigravity.ts";
 import type { ProviderInstallState } from "./t3/contracts.ts";
 
@@ -30,6 +31,16 @@ const FASES_LOGIN = {
   cancelled: "cancelado",
 } as const satisfies Record<ProviderAuthState["phase"], EstadoLogin["fase"]>;
 
+/** A mensagem do T3 e, quando o classificador a reconhece, o tipo da falha que ela descreve. */
+function mensagemComTipo(mensagem: string | null): {
+  readonly mensagem?: string;
+  readonly tipoFalha?: TipoFalhaEstado;
+} {
+  if (mensagem === null) return {};
+  const tipoFalha = classificarFalhaEstado(mensagem);
+  return tipoFalha === undefined ? { mensagem } : { mensagem, tipoFalha };
+}
+
 export function estadoInstalacao(provider: Provider, estado: ProviderInstallState): EstadoInstalacao {
   return {
     provider,
@@ -40,7 +51,7 @@ export function estadoInstalacao(provider: Provider, estado: ProviderInstallStat
     ...(estado.installedVersion === null ? {} : { versaoInstalada: estado.installedVersion }),
     ...(estado.executablePath ? { executavel: estado.executablePath } : {}),
     ...(estado.source ? { origem: estado.source === "managed" ? "gerenciada" : "local" } : {}),
-    ...(estado.message === null ? {} : { mensagem: estado.message }),
+    ...mensagemComTipo(estado.message),
   };
 }
 
@@ -50,7 +61,7 @@ export function estadoLogin(provider: Provider, estado: ProviderAuthState): Esta
     provider,
     fase: FASES_LOGIN[estado.phase],
     ...(url ? { url } : {}),
-    ...(estado.message === null ? {} : { mensagem: estado.message }),
+    ...mensagemComTipo(estado.message),
   };
 }
 

@@ -73,10 +73,14 @@ function BarraProgresso({ estado }: { readonly estado: EstadoInstalacao }) {
         {textoFaseInstalacao(estado.fase)}
         {estado.fase === "baixando" ? ` · ${tamanhoBaixado(estado)}` : ""}
         {estado.versao === undefined ? "" : ` · versão ${estado.versao}`}
-        {estado.mensagem === undefined ? "" : ` · ${explicarMensagemMotor(estado.mensagem).texto}`}
+        {estado.mensagem === undefined
+          ? ""
+          : ` · ${explicarMensagemMotor({ mensagem: estado.mensagem, tipoFalha: estado.tipoFalha }).texto}`}
       </p>
       {estado.mensagem === undefined ? null : (
-        <DetalhesTecnicos detalhe={explicarMensagemMotor(estado.mensagem).detalhe} />
+        <DetalhesTecnicos
+          detalhe={explicarMensagemMotor({ mensagem: estado.mensagem, tipoFalha: estado.tipoFalha }).detalhe}
+        />
       )}
     </div>
   );
@@ -104,11 +108,18 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
         </a>
       ) : null}
       {estado.mensagem === undefined ? null : (
-        <p className="text-muted-foreground text-xs">{explicarMensagemMotor(estado.mensagem).texto}</p>
+        <p className="text-muted-foreground text-xs">
+          {explicarMensagemMotor({ mensagem: estado.mensagem, tipoFalha: estado.tipoFalha }).texto}
+        </p>
       )}
       <DetalhesTecnicos
         detalhe={
-          [estado.mensagem === undefined ? undefined : explicarMensagemMotor(estado.mensagem).detalhe, estado.detalhe]
+          [
+            estado.mensagem === undefined
+              ? undefined
+              : explicarMensagemMotor({ mensagem: estado.mensagem, tipoFalha: estado.tipoFalha }).detalhe,
+            estado.detalhe,
+          ]
             .filter((parte) => parte !== undefined)
             .join("\n") || undefined
         }
@@ -291,7 +302,7 @@ export function CartaoProvider({
 
       {/* A mensagem do motor é técnica; quando falta algo, os botões e o passo guiado explicam. */}
       {estado?.mensagem === undefined || !estado.instalado || !estado.autenticado ? null : (
-        <p className="text-muted-foreground text-sm">{explicarMensagemMotor(estado.mensagem).texto}</p>
+        <p className="text-muted-foreground text-sm">{explicarMensagemMotor({ mensagem: estado.mensagem }).texto}</p>
       )}
       {estado?.aviso === undefined ? null : (
         <Alert variant="warning">

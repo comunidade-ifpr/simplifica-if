@@ -5,6 +5,7 @@
  * normalizadores são funções puras, testadas com gravações reais em `test/fixtures/`.
  */
 import * as Schema from "effect/Schema";
+import { classificarFalha, TipoFalha, textoTecnico } from "./falhas.ts";
 
 export const Provider = Schema.Literals(["claude", "codex", "antigravity"]);
 export type Provider = typeof Provider.Type;
@@ -52,9 +53,20 @@ export const UsoTokens = Schema.TaggedStruct("UsoTokens", {
   custoUsd: Schema.optionalKey(Schema.Number),
 });
 
+/**
+ * O turno falhou. `tipo` é o do classificador do motor (`falhas.ts`); `mensagem`, o texto técnico,
+ * curto e saneado, que a interface mostra só em "Detalhes técnicos".
+ */
 export const Erro = Schema.TaggedStruct("Erro", {
+  tipo: TipoFalha,
   mensagem: Schema.String,
 });
+export type Erro = typeof Erro.Type;
+
+/** O `Erro` de um turno a partir do texto do provider: classificado, saneado e curto. */
+export function erroDoTurno(texto: string): Erro {
+  return { _tag: "Erro", tipo: classificarFalha("", texto), mensagem: textoTecnico(texto) };
+}
 
 /** Fim do turno. `motivo` é o do provider (`end_turn`, `completed`, `interrupted`…). */
 export const FimTurno = Schema.TaggedStruct("FimTurno", {

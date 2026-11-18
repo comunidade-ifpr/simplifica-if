@@ -313,16 +313,19 @@ describe("normalização", () => {
 });
 
 describe("queda do codex app-server", () => {
-  it("SIGKILL (sem código de saída): mensagem em português, erro do transporte em cause", () => {
+  it("SIGKILL (sem código de saída): queda, com o erro do transporte em cause", () => {
     const erro = new CodexAppServerTransportError({ operation: "read-process-exit-status", pid: 1, cause: "morto" });
     const falha = falhaQuedaCodex(erro);
-    assert.strictEqual(falha.message, "codex: falha em sessão: o processo do codex encerrou");
+    assert.strictEqual(falha.tipo, "queda");
+    assert.strictEqual(falha.message, "codex: falha em sessão (queda)");
     assert.strictEqual(falha.cause, erro);
   });
 
-  it("saída com código: o código vai na mensagem", () => {
-    const falha = falhaQuedaCodex(new CodexAppServerProcessExitedError({ code: 1, pid: 1 }));
-    assert.strictEqual(falha.detalhe, "o processo do codex encerrou (código 1)");
+  it("saída com código: queda, com o código no erro em cause", () => {
+    const erro = new CodexAppServerProcessExitedError({ code: 1, pid: 1 });
+    const falha = falhaQuedaCodex(erro);
+    assert.strictEqual(falha.tipo, "queda");
+    assert.strictEqual(falha.cause, erro);
   });
 });
 

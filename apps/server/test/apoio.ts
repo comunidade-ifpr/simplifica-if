@@ -68,12 +68,12 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
         return yield* new Motor.FalhaProvider({
           provider,
           operacao: "iniciar sessão",
-          detalhe: "falha de teste",
-          cause: new Error("/Users/alguem/segredo"),
+          tipo: "desconhecido",
+          cause: new Error("falha de teste em /Users/alguem/segredo para alguem@exemplo.com"),
         });
       }
       if (config.retomar !== undefined && registro.recusarRetomada === true) {
-        return yield* new Motor.FalhaProvider({ provider, operacao: "retomar", detalhe: "não retoma (teste)" });
+        return yield* new Motor.FalhaProvider({ provider, operacao: "retomar", tipo: "versao" });
       }
       registro.configs.push(config);
       const idNativo = config.retomar ?? `nativo-${registro.configs.length}`;
@@ -81,7 +81,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       const escopo = yield* Effect.scope;
       const queda = yield* Deferred.make<Motor.FalhaProvider>();
       registro.derrubar = () => {
-        const falha = new Motor.FalhaProvider({ provider, operacao: "sessão", detalhe: "o processo encerrou (teste)" });
+        const falha = new Motor.FalhaProvider({ provider, operacao: "sessão", tipo: "queda" });
         return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       };
       yield* Effect.addFinalizer(() =>

@@ -349,7 +349,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const eventos = [...(yield* Fiber.join(turno))];
       yield* rodar;
       assert.deepStrictEqual(tags(eventos), ["TextoParcial", "Erro", "FimTurno"]);
-      assert.match(eventos[1]?._tag === "Erro" ? eventos[1].mensagem : "", /o processo encerrou/);
+      assert.deepStrictEqual(eventos[1], { _tag: "Erro", tipo: "queda", mensagem: "claude: falha em sessão (queda)" });
       assert.deepStrictEqual(eventos[2], { _tag: "FimTurno", motivo: "falha" });
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "caiu");
       assert.strictEqual(registro.encerradas, 1);

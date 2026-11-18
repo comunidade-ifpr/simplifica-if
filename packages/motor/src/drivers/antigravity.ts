@@ -29,7 +29,7 @@ import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
-import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import {
   ambienteSemTelemetria,
   buscaWebLigada,
@@ -109,7 +109,7 @@ export function criarNormalizadorAntigravity(
           ...(typeof uso.cachedReadTokens === "number" ? { cacheLeitura: uso.cachedReadTokens } : {}),
         });
       }
-      if (resposta.error) eventos.push({ _tag: "Erro", mensagem: resumir(texto(registro(resposta.error).message)) });
+      if (resposta.error) eventos.push(erroDoTurno(texto(registro(resposta.error).message)));
       eventos.push({ _tag: "FimTurno", motivo: texto(resposta.stopReason) || "end_turn" });
       return eventos;
     }
@@ -400,7 +400,8 @@ const retomarSessao = (
     new FalhaProvider({
       provider: PROVIDER,
       operacao: "retomar",
-      detalhe: `o agy${versao} não anuncia session/load nem session/resume`,
+      tipo: "versao",
+      cause: new Error(`o agy${versao} não anuncia session/load nem session/resume`),
     }),
   );
 };
@@ -593,16 +594,17 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       );
     const aberto = yield* abrir(config.pastaTrabalho);
     if (!aberto.login) {
-      return yield* new FalhaProvider({
-        provider: PROVIDER,
-        operacao: "login",
-        detalhe: "Antigravity sem login no app: use entrar",
-      });
+      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "login", tipo: "semLogin" });
     }
     const cliente = aberto.cliente;
     const recusa = recusaMcpAcp(aberto.inicio, config, opcoes.ponteMcp);
     if (recusa !== undefined) {
-      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
+      return yield* new FalhaProvider({
+        provider: PROVIDER,
+        operacao: "session/new",
+        tipo: "mcp",
+        cause: new Error(recusa),
+      });
     }
     const normalizar = criarNormalizadorAntigravity(
       config.servidoresMcp.map((servidor) => servidor.nome),
@@ -677,10 +679,10 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
         const falha = new FalhaProvider({
           provider: PROVIDER,
           operacao: "sessão",
-          detalhe:
-            saida._tag === "Success"
-              ? `o processo do agy encerrou (código ${saida.value})`
-              : "o processo do agy encerrou",
+          tipo: "queda",
+          ...(saida._tag === "Success"
+            ? { cause: new Error(`o processo do agy encerrou (código ${saida.value})`) }
+            : {}),
         });
         return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       }),

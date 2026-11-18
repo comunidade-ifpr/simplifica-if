@@ -67,22 +67,23 @@ export const NOME_PROVIDER: Record<Motor.Provider, string> = {
   antigravity: "Gemini (Antigravity)",
 };
 
-/** Mensagens de limite de taxa e de cota dos três providers (em inglês, como chegam). */
-const LIMITE =
-  /rate.?limit|429|too many requests|usage limit|limit reached|hit your limit|quota|resource.?exhausted|overloaded|529|exceeded your|try again (at|in)/i;
+/**
+ * Os tipos de falha (do classificador do motor) em que a pessoa espera e retoma: a cota ou o limite de
+ * taxa do plano e o serviço sobrecarregado.
+ */
+const ehLimite = (tipo: Motor.TipoFalha) => tipo === "cota" || tipo === "indisponivel";
 
-export const ehLimite = (mensagem: string) => LIMITE.test(mensagem);
-
-export function pausaDoErro(provider: Motor.Provider, mensagem: string): PausaRevisao {
+/** A pausa por uma falha do turno: o tipo decide se é limite; `descricao` é o texto técnico, já curto e saneado. */
+export function pausaDoErro(provider: Motor.Provider, tipo: Motor.TipoFalha, descricao: string): PausaRevisao {
   const nome = NOME_PROVIDER[provider];
-  return ehLimite(mensagem)
+  return ehLimite(tipo)
     ? new PausaRevisao({
         limite: true,
         motivo: `O ${nome} avisou que o limite de uso do seu plano foi atingido por agora. O que já foi revisado está guardado; retome quando a janela do plano renovar.`,
       })
     : new PausaRevisao({
         limite: false,
-        motivo: `O ${nome} parou de responder (${mensagem.slice(0, 160)}). O que já foi revisado está guardado; retome quando quiser.`,
+        motivo: `O ${nome} parou de responder (${descricao.slice(0, 160)}). O que já foi revisado está guardado; retome quando quiser.`,
       });
 }
 
@@ -190,7 +191,7 @@ const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(function* (
         semFerramentas: true,
         ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
       })
-      .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
+      .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.tipo, erro.message))),
     (id) => motor.encerrar(id).pipe(Effect.ignore),
   );
 });
@@ -232,7 +233,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
   const turno = Effect.gen(function* () {
     const sessao = yield* abrirSessaoSemFerramentas(entrada);
     const textos: string[] = [];
-    const erros: string[] = [];
+    const erros: Motor.Erro[] = [];
     yield* motor.enviarMensagem(sessao, entrada.texto).pipe(
       Stream.runForEach((evento) =>
         Effect.gen(function* () {
@@ -251,7 +252,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
               ferramentas.push(evento.nome.slice(0, 80));
               break;
             case "Erro":
-              erros.push(evento.mensagem);
+              erros.push(evento);
               break;
             case "PedidoAprovacao":
               // A política de julgamento já nega sem perguntar; se algo chegar, nega também.
@@ -262,7 +263,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
         }),
       ),
       Effect.mapError((erro) =>
-        pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.detalhe : erro.message),
+        pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.tipo : "desconhecido", erro.message),
       ),
       Effect.timeoutOrElse({
         duration: entrada.tempoTurno,
@@ -275,7 +276,14 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
           ),
       }),
     );
-    if (erros.length && !ferramentas.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
+    if (erros.length && !ferramentas.length) {
+      const limite = erros.find((erro) => ehLimite(erro.tipo));
+      return yield* pausaDoErro(
+        entrada.provider,
+        (limite ?? erros[0]!).tipo,
+        erros.map((erro) => erro.mensagem).join("; "),
+      );
+    }
     if (entrada.registrarTexto) yield* entrada.registrarTexto(entrada.numero, textos.join("\n"));
     return textos.join("\n");
   }).pipe(Effect.scoped);
