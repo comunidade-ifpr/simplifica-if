@@ -48,6 +48,7 @@ import {
   SessaoDesconhecida,
   TurnoEmAndamento,
 } from "@simplifica-if/motor/erros";
+import { CANAIS_DISTRIBUICAO } from "@simplifica-if/kb/canal";
 import { EstadoInstalacao, EstadoLogin, EstadoProvider } from "@simplifica-if/motor/estados-provider";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
@@ -912,7 +913,7 @@ export class GrupoPasta extends RpcGroup.make(
 /* ================================================================== atualização (M1.10) */
 
 /** Canal de atualização da base e das skills (o do app segue o mesmo). */
-export const CanalAtualizacao = Schema.Literals(["beta", "estavel"]);
+export const CanalAtualizacao = Schema.Literals(CANAIS_DISTRIBUICAO);
 export type CanalAtualizacao = typeof CanalAtualizacao.Type;
 
 /** Uma entrada de `base-conhecimento/novidades.yaml`, como chega ao aviso "Base atualizada". */

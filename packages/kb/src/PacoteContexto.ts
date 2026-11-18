@@ -12,7 +12,6 @@ import type * as NodeSqlite from "node:sqlite";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import {
@@ -29,33 +28,10 @@ import {
   pacoteDoMarkdown,
 } from "./db/pacote-contexto.ts";
 import type * as Sql from "./db/sql.ts";
+import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "./pacote-contexto-erros.ts";
 
-export class PpcNaoEncontrado extends Schema.TaggedError<PpcNaoEncontrado>()("PpcNaoEncontrado", {
-  ppc: Schema.String,
-}) {
-  override get message(): string {
-    return `PPC não encontrado: ${this.ppc}`;
-  }
-}
+export { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida };
 
-export class GrupoInexistente extends Schema.TaggedError<GrupoInexistente>()("GrupoInexistente", {
-  grupo: Schema.String,
-  /** Quantos grupos a rodada tem. */
-  total: Schema.Number,
-}) {
-  override get message(): string {
-    return `grupo inexistente: ${this.grupo} (há ${this.total})`;
-  }
-}
-
-export class TarefaNaoReconhecida extends Schema.TaggedError<TarefaNaoReconhecida>()("TarefaNaoReconhecida", {
-  /** Fichas pedidas que não estão no banco. */
-  fichas: Schema.Array(Schema.String),
-}) {
-  override get message(): string {
-    return `tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): ${this.fichas.join(", ")}`;
-  }
-}
 export class PacoteContexto extends Context.Service<
   PacoteContexto,
   {

@@ -32,7 +32,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
-import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../PacoteContexto.ts";
+import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import type { TopicoFichas, TopicosSecoes } from "../ppcs/topicos.ts";

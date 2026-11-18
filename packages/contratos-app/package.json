@@ -12,6 +12,7 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
+    "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*"
   },

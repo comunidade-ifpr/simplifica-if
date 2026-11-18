@@ -302,8 +302,8 @@ export const layerBanco = Layer.effect(FontesNormativas, makeBanco);
 
 /* ================================================================== arquivos */
 
-/** Diretórios de `.agents/skills` que não são conteúdo (código, testes, schemas, referências). */
-const IGNORAR_SKILLS = new Set(["scripts", "tests", "schemas", "node_modules", "__pycache__", "referencias"]);
+/** Diretórios de `.agents/skills` que não são conteúdo (código, testes, schemas, referências, `output/` das rodadas, fora do git). */
+const IGNORAR_SKILLS = new Set(["scripts", "tests", "schemas", "node_modules", "__pycache__", "referencias", "output"]);
 /** Arquivos gerados a partir das fichas (o impacto vê as fichas, não o índice). */
 const GERADOS_SKILLS = new Set(["indice.json", "mapa-fichas.md"]);
 

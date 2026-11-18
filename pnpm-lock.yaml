@@ -487,6 +487,9 @@ importers:
 
   packages/contratos-app:
     dependencies:
+      '@simplifica-if/kb':
+        specifier: workspace:*
+        version: link:../kb
       '@simplifica-if/mcp':
         specifier: workspace:*
         version: link:../mcp

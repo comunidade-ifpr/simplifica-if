@@ -8,7 +8,7 @@
  * - **App** (desktop, `electron-updater`): versão, situação e "Reiniciar para atualizar". Fora do
  *   desktop, ou com o app sem assinatura de código, a seção diz por que está desligada.
  */
-import type { CanalAtualizacao, EstadoAtualizacao, ResultadoTroca } from "@simplifica-if/contratos-app";
+import { CanalAtualizacao, type EstadoAtualizacao, type ResultadoTroca } from "@simplifica-if/contratos-app";
 import { DownloadIcon, RefreshCwIcon, RotateCcwIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { AvisoErro, DetalhesTecnicos } from "../components/AvisoErro.tsx";
@@ -127,7 +127,7 @@ export function Atualizacoes() {
             ) : null}
             <fieldset className="flex flex-wrap items-center gap-2" disabled={ocupado !== null}>
               <legend className="mb-1 text-sm">Canal</legend>
-              {(["beta", "estavel"] as const).map((canal) => (
+              {CanalAtualizacao.literals.map((canal) => (
                 <Button
                   key={canal}
                   size="sm"

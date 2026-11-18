@@ -2,9 +2,8 @@
 /**
  * A interface do app (`apps/web`) importa `@simplifica-if/contratos-app`; nada do servidor pode vir
  * junto. Num Node limpo, o teste carrega o pacote e confere cada módulo que o carregamento resolveu:
- * nenhum módulo do Node (`node:sqlite`, `node:fs`, `node:crypto`…), nada do `@simplifica-if/kb` (salvo
- * `canal.ts`, abaixo), do
- * serviço `Leitura` ou do servidor MCP, nem a implementação do motor (o serviço `Motor`, os drivers; só
+ * nenhum módulo do Node (`node:sqlite`, `node:fs`, `node:crypto`…), nada do `@simplifica-if/kb` (salvo `canal.ts`,
+ * abaixo), do serviço `Leitura` ou do servidor MCP, nem a implementação do motor (o serviço `Motor`, os drivers; só
  * os schemas de `erros.ts`, `eventos.ts` e `estados-provider.ts`) nem os SDKs dos providers.
  */
 import * as NodeChildProcess from "node:child_process";
@@ -19,7 +18,7 @@ const CONTRATOS = NodeURL.pathToFileURL(NodePath.resolve(import.meta.dirname, ".
 /**
  * A única exceção do kb: `@simplifica-if/kb/canal`, a lista de canais que o schema `Base.canal` do
  * `mcp/contratos.ts` usa. É um módulo folha, só com constantes e sem import, como os schemas de
- * `motor/src/erros.ts` e `eventos.ts` que este teste já aceita do motor. O segundo teste confere que
+ * `motor/src/erros.ts`, `eventos.ts` e `estados-provider.ts` que este teste já aceita do motor. O segundo teste confere que
  * ele continua sem import, para a exceção não crescer.
  */
 const CANAL_KB = NodePath.resolve(import.meta.dirname, "../../kb/src/canal.ts");

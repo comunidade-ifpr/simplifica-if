@@ -36,6 +36,7 @@ import * as Flag from "effect/cli/Flag";
 import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
 import { lerChavePublica } from "@simplifica-if/atualizacao/minisign";
 import { LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
+import { CANAIS } from "@simplifica-if/kb/canal";
 import { POLITICA_FABRICA } from "@simplifica-if/motor/politica";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as HostProcess from "@simplifica-if/motor/t3/HostProcess";
@@ -103,7 +104,7 @@ const servidor = Command.make(
       Flag.withDescription("origem de navegador aceita no WebSocket (repetível)"),
       Flag.atLeast(0),
     ),
-    canal: Flag.Literals("canal", ["dev", "beta", "estavel"]).pipe(
+    canal: Flag.Literals("canal", CANAIS).pipe(
       Flag.withDescription("canal da base quando o banco não registra um"),
       Flag.withDefault("dev"),
     ),
