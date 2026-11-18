@@ -10,8 +10,10 @@
  * não exprime, para que o documento gerado diga tudo o que se exige. As checagens que dependem da
  * base (ID existente, norma revogada, marco) ficam em `validacao-base.ts`.
  *
- * A ficha e os marcos são estritos (chave a mais é erro, `additionalProperties: false`); a validação
- * cruzada, o resultado de lote e os alertas aceitam chaves a mais, como sempre aceitaram.
+ * A ficha e os marcos são estritos (chave a mais é erro, `additionalProperties: false`), e a
+ * validação cruzada aceita chaves a mais. No resultado de lote e nos alertas, o topo, o resultado
+ * da ficha e o alerta aceitam chaves a mais (`aberto`), e a evidência, a âncora e o achado
+ * normativo as recusam.
  *
  * As descrições são lidas pelos sub-agentes da revisão: mudar o texto muda a revisão.
  */
@@ -201,6 +203,16 @@ function opcional<S extends Schema.Top>(esquema: S) {
   );
 }
 
+/**
+ * Objeto dos sub-agentes que aceita chaves a mais. Os resultados são decodificados com
+ * `onExcessProperty: "error"`: o topo, o bloco, o resultado da ficha e o alerta ficam abertos por
+ * este resto; a evidência, a âncora e o achado normativo recusam chave a mais, para que um
+ * sinônimo (`"seção"` por `secao`) não suma sem aviso.
+ */
+export function aberto<const Campos extends Schema.Struct.Fields>(campos: Campos) {
+  return Schema.StructWithRest(Schema.Struct(campos), [Schema.Record(Schema.String, Schema.Unknown)]);
+}
+
 /** Âncora de uma evidência no relatório: o bloco do PPC e o trecho a destacar. */
 const ancoraEvidencia = Schema.Struct({
   block_id: opcional(Schema.String),
@@ -248,7 +260,7 @@ export const esquemaFundamentacaoNormativa = Schema.Struct({
 /** Confiança do sub-agente no estado, de 0 a 1. */
 const confianca = Schema.Finite.check(Schema.isGreaterThanOrEqualTo(0), Schema.isLessThanOrEqualTo(1));
 
-export const esquemaResultadoFicha = Schema.Struct({
+export const esquemaResultadoFicha = aberto({
   ficha_id: Schema.String,
   estado: Schema.Literals(ESTADOS),
   confianca,
@@ -260,7 +272,7 @@ export const esquemaResultadoFicha = Schema.Struct({
   feedback_autores: opcional(Schema.String),
 });
 
-export const esquemaResultadoLote = Schema.Struct({
+export const esquemaResultadoLote = aberto({
   grupo_id: Schema.optionalKey(Schema.String),
   batch_id: Schema.optionalKey(Schema.String),
   resultados: Schema.Array(esquemaResultadoFicha),
@@ -280,7 +292,7 @@ const evidenciaAlerta = Schema.Union([
 ]);
 
 /** Alerta da síntese transversal; sem `id`, ele é `ALERTA-<posição>`, e sem `criticidade`, `OBRIG`. */
-export const esquemaAlertaTransversal = Schema.Struct({
+export const esquemaAlertaTransversal = aberto({
   id: opcional(Schema.String),
   validacao_id: Schema.String,
   titulo: Schema.String,
@@ -291,19 +303,19 @@ export const esquemaAlertaTransversal = Schema.Struct({
   revisao_humana_obrigatoria: Schema.Boolean,
 });
 
-export const esquemaAlertasTransversais = Schema.Struct({
+export const esquemaAlertasTransversais = aberto({
   alertas_transversais: Schema.Array(esquemaAlertaTransversal),
 });
 
 /**
  * Esquemas gerados, pelo nome do arquivo em `schemas/`; `estrito` recusa chaves a mais na
- * decodificação e no JSON Schema.
+ * decodificação e no JSON Schema, salvo nos objetos `aberto`.
  */
 const GERADOS = {
   "alertas-transversais.schema.json": {
     esquema: esquemaAlertasTransversais,
     titulo: "Alertas transversais PPC",
-    estrito: false,
+    estrito: true,
   },
   "ficha.schema.json": { esquema: esquemaFicha, titulo: "Ficha de análise PPC", estrito: true },
   "marcos-normativos.schema.json": {
@@ -314,7 +326,7 @@ const GERADOS = {
   "resultado-lote.schema.json": {
     esquema: esquemaResultadoLote,
     titulo: "Resultado de lote de fichas PPC",
-    estrito: false,
+    estrito: true,
   },
   "validacao-cruzada.schema.json": {
     esquema: esquemaValidacaoCruzada,

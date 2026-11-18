@@ -122,7 +122,7 @@
                               ]
                             }
                           },
-                          "additionalProperties": true
+                          "additionalProperties": false
                         },
                         {
                           "type": "null"
@@ -130,7 +130,7 @@
                       ]
                     }
                   },
-                  "additionalProperties": true
+                  "additionalProperties": false
                 }
               ]
             }
@@ -237,7 +237,7 @@
                   "required": [
                     "status"
                   ],
-                  "additionalProperties": true
+                  "additionalProperties": false
                 }
               },
               {
@@ -265,12 +265,22 @@
           "lacunas",
           "revisao_humana_obrigatoria"
         ],
-        "additionalProperties": true
+        "allOf": [
+          {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        ]
       }
     }
   },
   "required": [
     "resultados"
   ],
-  "additionalProperties": true
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  ]
 }

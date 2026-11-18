@@ -8,6 +8,7 @@ import * as NodeChildProcess from "node:child_process";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
+import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
@@ -28,6 +29,7 @@ import {
   resolverAncoraEvidencia,
 } from "../scripts/relatorio-html.ts";
 import {
+  decodificarResultados,
   ErroResultadosSubagents,
   type ResultadoNormalizado,
   SITUACOES_REVISAO,
@@ -770,6 +772,38 @@ describe("campos opcionais com null", () => {
       expect(comNulos).toContain("Resultado sintético com null nos campos opcionais.");
     }),
   );
+});
+
+describe("chaves a mais nos resultados", () => {
+  /** Problemas do esquema para um resultado com estas evidências e estes campos a mais. */
+  const problemasDe = (evidencias: unknown[], extras: Dicionario = {}, topo: Dicionario = {}) => {
+    const decodificado = decodificarResultados(
+      { ...topo, grupos: [{ grupo_id: "g", resultados: [{ ...resultado("CT-IDENT-01"), evidencias, ...extras }] }] },
+      "O JSON de resultados",
+    );
+    return Result.isFailure(decodificado) ? decodificado.failure.problemas : [];
+  };
+
+  test("sinônimo de chave na evidência é recusado com o caminho do campo", () => {
+    expect(problemasDe([{ trecho: "a", seção: "1.2" }])).toEqual([
+      "$.grupos[0].resultados[0].evidencias[0].seção: campo não permitido",
+    ]);
+  });
+
+  test("chave a mais na âncora e no achado normativo é recusada", () => {
+    expect(
+      problemasDe([{ trecho: "a", anchor: { block_id: "ppc-b00001", id: "x" } }], {
+        fundamentacao_normativa: [{ status: "CONFIRMADA", norma: "Lei", análise: "x" }],
+      }),
+    ).toEqual([
+      "$.grupos[0].resultados[0].evidencias[0].anchor.id: campo não permitido",
+      "$.grupos[0].resultados[0].fundamentacao_normativa[0].análise: campo não permitido",
+    ]);
+  });
+
+  test("chave a mais no topo, no bloco e no resultado da ficha continua aceita", () => {
+    expect(problemasDe(["a"], { observacao: "livre" }, { versao: 2 })).toEqual([]);
+  });
 });
 
 layer(NodeServices.layer)("publicação no Surge", (it) => {

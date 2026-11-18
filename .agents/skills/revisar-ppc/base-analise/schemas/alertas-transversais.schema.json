@@ -145,7 +145,7 @@
                                   ]
                                 }
                               },
-                              "additionalProperties": true
+                              "additionalProperties": false
                             },
                             {
                               "type": "null"
@@ -153,7 +153,7 @@
                           ]
                         }
                       },
-                      "additionalProperties": true
+                      "additionalProperties": false
                     }
                   ]
                 }
@@ -173,12 +173,22 @@
           "descricao",
           "revisao_humana_obrigatoria"
         ],
-        "additionalProperties": true
+        "allOf": [
+          {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        ]
       }
     }
   },
   "required": [
     "alertas_transversais"
   ],
-  "additionalProperties": true
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  ]
 }

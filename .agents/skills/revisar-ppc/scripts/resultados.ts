@@ -21,6 +21,7 @@ import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import {
+  aberto,
   type Criticidade,
   esquemaAlertaTransversal,
   esquemaFicha,
@@ -137,7 +138,7 @@ const ORIGEM = {
 // ---------------------------------------------------------------- contrato
 
 /** Bloco de resultados de um sub-agente, como está em `grupos[]`. */
-const esquemaBloco = Schema.Struct({
+const esquemaBloco = aberto({
   grupo_id: Schema.String,
   resultados: Schema.Array(esquemaResultadoFicha),
 });
@@ -147,14 +148,15 @@ const alertas = Schema.optionalKey(Schema.NullOr(Schema.Array(esquemaAlertaTrans
 /**
  * O JSON coletado dos sub-agentes: `grupos[]`, ou `resultados[]` (com `grupo_id` opcional) como um
  * bloco só, mais os alertas da síntese transversal, no topo ou em `sintese_transversal`, e a
- * `metadata` da mescla. Chaves a mais ficam.
+ * `metadata` da mescla. Chaves a mais ficam no topo, no bloco, no resultado e no alerta; na evidência,
+ * na âncora e no achado normativo são recusadas (`aberto`, em `esquemas.ts`).
  */
-export const esquemaResultadosSubagents = Schema.Struct({
+export const esquemaResultadosSubagents = aberto({
   grupos: Schema.optionalKey(Schema.Array(esquemaBloco)),
   grupo_id: Schema.optionalKey(Schema.String),
   resultados: Schema.optionalKey(Schema.Array(esquemaResultadoFicha)),
   alertas_transversais: alertas,
-  sintese_transversal: Schema.optionalKey(Schema.Struct({ alertas_transversais: alertas })),
+  sintese_transversal: Schema.optionalKey(aberto({ alertas_transversais: alertas })),
   metadata: Schema.optionalKey(Schema.Record(Schema.String, Schema.Unknown)),
 });
 export type ResultadosSubagents = typeof esquemaResultadosSubagents.Type;
@@ -178,7 +180,10 @@ export function decodificarResultados(
   valor: unknown,
   origem: string,
 ): Result.Result<ResultadosSubagents, ErroResultadosSubagents> {
-  const decodificado = Schema.decodeUnknownResult(esquemaResultadosSubagents)(jsonSimples(valor), { errors: "all" });
+  const decodificado = Schema.decodeUnknownResult(esquemaResultadosSubagents)(jsonSimples(valor), {
+    errors: "all",
+    onExcessProperty: "error",
+  });
   if (Result.isSuccess(decodificado)) return Result.succeed(decodificado.success);
   return falha("fora-do-contrato", origem, {
     problemas: problemas(decodificado.failure.issue).map(
