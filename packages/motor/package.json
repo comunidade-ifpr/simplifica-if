@@ -8,6 +8,7 @@
     ".": "./src/Motor.ts",
     "./eventos": "./src/eventos.ts",
     "./erros": "./src/erros.ts",
+    "./estados-provider": "./src/estados-provider.ts",
     "./Canal": "./src/Canal.ts",
     "./politica": "./src/politica.ts",
     "./politica-atualizacao": "./src/politica-atualizacao.ts",

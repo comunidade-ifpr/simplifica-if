@@ -4,7 +4,7 @@
  * junto. Num Node limpo, o teste carrega o pacote e confere cada módulo que o carregamento resolveu:
  * nenhum módulo do Node (`node:sqlite`, `node:fs`, `node:crypto`…), nada do `@simplifica-if/kb`, do
  * serviço `Leitura` ou do servidor MCP, nem a implementação do motor (o serviço `Motor`, os drivers; só
- * os schemas de `erros.ts` e `eventos.ts`) nem os SDKs dos providers.
+ * os schemas de `erros.ts`, `eventos.ts` e `estados-provider.ts`) nem os SDKs dos providers.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodePath from "node:path";

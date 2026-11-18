@@ -9,9 +9,11 @@ import type * as Scope from "effect/Scope";
 import type * as Stream from "effect/Stream";
 import type { AprovacaoDesconhecida, Decisao, FalhaProvider, TurnoEmAndamento } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
+import type { DeteccaoProvider, EstadoInstalacao, EstadoLogin } from "./estados-provider.ts";
 import type { Politica } from "./politica.ts";
 
 export * from "./erros.ts";
+export * from "./estados-provider.ts";
 
 /** Servidor MCP por stdio: o provider abre o processo, só nesta sessão. */
 export interface ServidorMcpStdio {
@@ -109,34 +111,6 @@ export interface ConfigSessao {
   readonly semFerramentas?: boolean;
 }
 
-/** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */
-export interface DeteccaoProvider {
-  readonly provider: Provider;
-  readonly instalado: boolean;
-  /** `gerenciada`: a cópia que o app instalou; `local`: a CLI que o usuário já tinha. */
-  readonly origem?: "gerenciada" | "local";
-  readonly versao?: string;
-  readonly autenticado: boolean;
-  /** Como está logado: `claude.ai`, `chatgpt`, `apiKey`, `oauth-personal`… */
-  readonly metodo?: string;
-  /** Plano da assinatura, quando o provider informa (`max`, `plus`, `pro`…). */
-  readonly plano?: string;
-  readonly mensagem?: string;
-  /** Algo que impede o app de funcionar direito mesmo com login (ex.: MCP bloqueado pela organização). */
-  readonly aviso?: string;
-}
-
-/**
- * Resultado de `Motor.detectar`: a detecção do driver e o que o app oferece para o provider, derivado
- * de o driver ter `instalar` e `entrar`. A interface só mostra "Instalar" e "Entrar" quando há.
- */
-export interface EstadoProvider extends DeteccaoProvider {
-  /** O app instala (ou atualiza) a CLI gerenciada do provider. */
-  readonly podeInstalar: boolean;
-  /** O app faz o login do provider. */
-  readonly podeEntrar: boolean;
-}
-
 export interface SessaoDriver {
   /**
    * O id da conversa no próprio provider, que `ConfigSessao.retomar` aceita depois: o `session_id` do
@@ -153,32 +127,6 @@ export interface SessaoDriver {
   readonly enviar: (texto: string) => Stream.Stream<Evento, FalhaProvider | TurnoEmAndamento>;
   readonly responder: (idAprovacao: string, decisao: Decisao) => Effect.Effect<void, AprovacaoDesconhecida>;
   readonly interromper: Effect.Effect<void, FalhaProvider>;
-}
-
-/** Progresso da instalação gerenciada de uma CLI (a do T3: download, sha256, staging, versão ativa). */
-export interface EstadoInstalacao {
-  readonly provider: Provider;
-  readonly fase: "parada" | "baixando" | "extraindo" | "verificando" | "concluida" | "falhou" | "cancelada";
-  readonly baixados: number;
-  readonly total?: number;
-  /** A versão que a instalação oferece (a fixada pelo T3 ou uma mais nova). */
-  readonly versao?: string;
-  readonly versaoInstalada?: string;
-  readonly executavel?: string;
-  /** `local`: uma CLI suportada que o usuário já tinha; `gerenciada`: a cópia do app. */
-  readonly origem?: "gerenciada" | "local";
-  readonly mensagem?: string;
-}
-
-/** Progresso do login dentro do app. Em `aguardando`, `url` é a página que o app abre no navegador. */
-export interface EstadoLogin {
-  readonly provider: Provider;
-  readonly fase: "parado" | "iniciando" | "aguardando" | "verificando" | "concluido" | "falhou" | "cancelado";
-  readonly url?: string;
-  /** A frase para a pessoa. */
-  readonly mensagem?: string;
-  /** O texto técnico da CLI, que a interface mostra recolhido. */
-  readonly detalhe?: string;
 }
 
 export interface Driver {
