@@ -1,0 +1,60 @@
+import type { ModeloProvider } from "@simplifica-if/contratos-app";
+import { assert, describe, it } from "@effect/vitest";
+import { comModelo, comRaciocinio, dicaDoModelo, modeloEfetivo, rotuloDaEscolha } from "./modelos.ts";
+
+const MODELOS: ReadonlyArray<ModeloProvider> = [
+  { id: "opus", nome: "Opus", esforcoAprofundado: "xhigh" },
+  { id: "sonnet", nome: "Sonnet", padrao: true, esforcoAprofundado: "high" },
+  { id: "haiku", nome: "Haiku" },
+];
+
+describe("escolha do modelo", () => {
+  it("em Automático vale o padrão da conta", () => {
+    assert.strictEqual(modeloEfetivo(MODELOS, undefined)?.id, "sonnet");
+    assert.strictEqual(modeloEfetivo(MODELOS, "opus")?.id, "opus");
+    assert.strictEqual(modeloEfetivo([{ id: "a", nome: "A" }], undefined), undefined);
+  });
+
+  it("o raciocínio aprofundado usa o nível do modelo que vale", () => {
+    assert.deepStrictEqual(comRaciocinio({ provider: "claude" }, MODELOS, true), {
+      provider: "claude",
+      esforco: "high",
+    });
+    assert.deepStrictEqual(comRaciocinio({ provider: "claude", modelo: "opus" }, MODELOS, true), {
+      provider: "claude",
+      modelo: "opus",
+      esforco: "xhigh",
+    });
+    assert.deepStrictEqual(comRaciocinio({ provider: "claude", modelo: "opus", esforco: "xhigh" }, MODELOS, false), {
+      provider: "claude",
+      modelo: "opus",
+    });
+  });
+
+  it("trocar o modelo acompanha o nível ou volta ao normal", () => {
+    const aprofundado = { provider: "claude", modelo: "opus", esforco: "xhigh" } as const;
+    assert.deepStrictEqual(comModelo(aprofundado, MODELOS, "sonnet"), {
+      provider: "claude",
+      modelo: "sonnet",
+      esforco: "high",
+    });
+    assert.deepStrictEqual(comModelo(aprofundado, MODELOS, "haiku"), { provider: "claude", modelo: "haiku" });
+    assert.deepStrictEqual(comModelo(aprofundado, MODELOS, undefined), { provider: "claude", esforco: "high" });
+    assert.deepStrictEqual(comModelo({ provider: "claude" }, MODELOS, "opus"), { provider: "claude", modelo: "opus" });
+  });
+
+  it("o botão mostra o modelo e o raciocínio escolhidos", () => {
+    assert.strictEqual(rotuloDaEscolha({ provider: "claude" }, MODELOS), "Automático");
+    assert.strictEqual(rotuloDaEscolha({ provider: "claude", modelo: "opus" }, MODELOS), "Opus");
+    assert.strictEqual(
+      rotuloDaEscolha({ provider: "claude", modelo: "opus", esforco: "xhigh" }, MODELOS),
+      "Opus · Aprofundado",
+    );
+  });
+
+  it("só os nomes conhecidos ganham observação", () => {
+    assert.strictEqual(dicaDoModelo("Opus"), "tarefas longas e difíceis");
+    assert.strictEqual(dicaDoModelo("GPT-5 mini"), "mais rápido");
+    assert.strictEqual(dicaDoModelo("GPT-5"), undefined);
+  });
+});

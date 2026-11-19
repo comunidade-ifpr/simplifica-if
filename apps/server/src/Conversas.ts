@@ -434,6 +434,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       pastaTrabalho: pasta,
       servidoresMcp: [servidor],
       ...(registro.modelo === undefined ? {} : { modelo: registro.modelo }),
+      ...(registro.esforco === undefined ? {} : { esforco: registro.esforco }),
       ...(registro.buscaWeb === undefined ? {} : { buscaWeb: registro.buscaWeb }),
       ...(catalogo.skills.length === 0 ? {} : { skills: catalogo.skills }),
     };
@@ -658,6 +659,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       provider: entrada.provider,
       pastaTrabalho: pasta,
       ...(entrada.modelo === undefined ? {} : { modelo: entrada.modelo }),
+      ...(entrada.esforco === undefined ? {} : { esforco: entrada.esforco }),
       ...(entrada.buscaWeb === undefined ? {} : { buscaWeb: entrada.buscaWeb }),
       ...(entrada.tarefa === undefined ? {} : { tarefa: entrada.tarefa }),
       estado: "liberada",

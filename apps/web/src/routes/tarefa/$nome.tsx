@@ -4,7 +4,7 @@
  * pessoa pode editar antes de enviar; "Começar" cria a pasta da tarefa em Documentos/Simplifica IF,
  * copia os anexos para ela e abre a conversa com a skill.
  */
-import type { EntradaTarefa, Provider, ResumoSkill } from "@simplifica-if/contratos-app";
+import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeftIcon, ClockIcon, FolderIcon, PlayIcon } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
@@ -17,6 +17,7 @@ import { explicarErro, type MensagemErro } from "../../conexao/erros.ts";
 import { useApi, useConversa } from "../../contexto.tsx";
 import { useCatalogo } from "../../tarefas/catalogo.ts";
 import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../../tarefas/comecar.tsx";
+import type { EscolhaDaIa } from "../../tarefas/modelos.ts";
 import { duracaoPorExtenso, faltando, montarPedido, type Valores } from "../../tarefas/textos.ts";
 
 export const Route = createFileRoute("/tarefa/$nome")({ component: TelaTarefa });
@@ -91,7 +92,7 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
   const [anexos, setAnexos] = useState<Readonly<Record<string, ReadonlyArray<string>>>>({});
   // O pedido editado pela pessoa; sem edição, o montado a partir do formulário.
   const [editado, setEditado] = useState<string>();
-  const [provider, setProvider] = useState<Provider>(estado.provider);
+  const [ia, setIa] = useState<EscolhaDaIa>({ provider: estado.provider });
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
@@ -108,7 +109,7 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
       const sessao = await comecarTarefa(api, conversa, {
         titulo: skill.titulo,
         tarefa: skill.nome,
-        provider,
+        ia,
         anexos: Object.values(anexos).flat(),
         texto: pedido,
       });
@@ -167,7 +168,7 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
           {enviando ? <Spinner /> : <PlayIcon />}
           {enviando ? "Abrindo…" : "Começar"}
         </Button>
-        <EscolhaIa valor={provider} aoMudar={setProvider} />
+        <EscolhaIa valor={ia} aoMudar={setIa} />
       </div>
     </form>
   );

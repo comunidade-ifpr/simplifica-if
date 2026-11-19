@@ -9,7 +9,7 @@ import type * as Scope from "effect/Scope";
 import type * as Stream from "effect/Stream";
 import type { AprovacaoDesconhecida, Decisao, FalhaProvider, TurnoEmAndamento } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
-import type { DeteccaoProvider, EstadoInstalacao, EstadoLogin } from "./estados-provider.ts";
+import type { DeteccaoProvider, EstadoInstalacao, EstadoLogin, NivelEsforco } from "./estados-provider.ts";
 import type { Politica } from "./politica.ts";
 
 export * from "./erros.ts";
@@ -87,6 +87,11 @@ export interface ConfigSessao {
   readonly servidoresMcp: ReadonlyArray<ServidorMcp>;
   /** Modelo do provider; sem ele, o padrão da conta. */
   readonly modelo?: string;
+  /**
+   * Nível de esforço de raciocínio, na palavra do provider (o `esforcoAprofundado` do modelo
+   * escolhido); sem ele, o padrão do modelo. O Antigravity ignora.
+   */
+  readonly esforco?: NivelEsforco;
   /**
    * Busca na web (padrão: desligada). Desligada, a resposta sai da base e do que o usuário anexa.
    * Só vale se a política permitir (`isolamento.buscaWeb: "a-pedido"`); a de fábrica desliga.

@@ -10,7 +10,27 @@ import { TipoFalhaEstado } from "./falhas.ts";
 /** `gerenciada`: a cópia que o app instalou; `local`: a CLI que o usuário já tinha. */
 const Origem = Schema.Literals(["gerenciada", "local"]);
 
-/** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */
+/** Os níveis de esforço de raciocínio que os providers conhecem, do menor ao maior. */
+export const NIVEIS_ESFORCO = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
+export const NivelEsforco = Schema.Literals(NIVEIS_ESFORCO);
+export type NivelEsforco = typeof NivelEsforco.Type;
+
+/** Um modelo que a conta oferece, com o nome que o provider dá a ele. */
+export const ModeloProvider = Schema.Struct({
+  /** O que vai em `ConfigSessao.modelo`. */
+  id: Schema.String,
+  nome: Schema.String,
+  /** O modelo que a conta usa quando a sessão não escolhe um. */
+  padrao: Schema.optionalKey(Schema.Boolean),
+  /**
+   * O nível de `ConfigSessao.esforco` que a interface oferece como "Aprofundado" (`modelos.ts`); sem
+   * ele, o modelo não deixa escolher o esforço.
+   */
+  esforcoAprofundado: Schema.optionalKey(NivelEsforco),
+});
+export type ModeloProvider = typeof ModeloProvider.Type;
+
+/** O que o driver detecta: instalado, versão, login e modelos. Nunca traz e-mail nem credencial. */
 export const DeteccaoProvider = Schema.Struct({
   provider: Provider,
   instalado: Schema.Boolean,
@@ -24,6 +44,11 @@ export const DeteccaoProvider = Schema.Struct({
   mensagem: Schema.optionalKey(Schema.String),
   /** Algo que impede o app de funcionar direito mesmo com login (ex.: MCP bloqueado pela organização). */
   aviso: Schema.optionalKey(Schema.String),
+  /**
+   * Os modelos que a pessoa pode escolher, quando o provider os lista e aceita a escolha na sessão
+   * (Claude e Codex; o `agy` não aceita). Só com login.
+   */
+  modelos: Schema.optionalKey(Schema.Array(ModeloProvider)),
 });
 export type DeteccaoProvider = typeof DeteccaoProvider.Type;
 

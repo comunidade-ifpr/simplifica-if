@@ -34,6 +34,8 @@ export const VersoesRelato = Schema.Struct({
   /** A versão da CLI do provider, se a detecção respondeu a tempo. */
   versaoProvider: Schema.NullOr(Schema.String),
   modelo: Schema.NullOr(Schema.String),
+  /** O esforço de raciocínio escolhido para a conversa; `null` no padrão do modelo. */
+  esforco: Schema.NullOr(Schema.String),
 });
 export type VersoesRelato = typeof VersoesRelato.Type;
 
@@ -206,6 +208,7 @@ function linhasVersoes(versoes: VersoesRelato): ReadonlyArray<string> {
     NOMES_PROVIDER[versoes.provider],
     versoes.versaoProvider === null ? null : `versão ${versoes.versaoProvider}`,
     versoes.modelo === null ? null : `modelo ${versoes.modelo}`,
+    versoes.esforco === null ? null : `esforço ${versoes.esforco}`,
   ].filter((parte) => parte !== null);
   return [
     `- App: ${versoes.app}`,

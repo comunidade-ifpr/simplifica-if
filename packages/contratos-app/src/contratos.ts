@@ -46,7 +46,13 @@ import {
   SessaoDesconhecida,
   TurnoEmAndamento,
 } from "@simplifica-if/motor/erros";
-import { EstadoInstalacao, EstadoLogin, EstadoProvider } from "@simplifica-if/motor/estados-provider";
+import {
+  EstadoInstalacao,
+  EstadoLogin,
+  EstadoProvider,
+  ModeloProvider,
+  NivelEsforco,
+} from "@simplifica-if/motor/estados-provider";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import { TipoFalha, TipoFalhaEstado } from "@simplifica-if/motor/falhas";
 import { GrupoAtualizacao } from "./atualizacao.ts";
@@ -59,7 +65,7 @@ import { GrupoRevisaoPpc } from "./revisao-ppc.ts";
 import { GrupoSkills } from "./skills.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
-export { EstadoInstalacao, EstadoLogin, EstadoProvider };
+export { EstadoInstalacao, EstadoLogin, EstadoProvider, ModeloProvider, NivelEsforco };
 export { TipoFalha, TipoFalhaEstado };
 export { Evento, Provider };
 export { GrupoLeitura, ROTULOS_INDICADOR };

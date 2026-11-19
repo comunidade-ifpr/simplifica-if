@@ -48,6 +48,7 @@ import {
   TELEMETRIA_CODEX_ARGS,
 } from "../politica.ts";
 import { acompanharInstalacao } from "../estados.ts";
+import { esforcoCodex, type ModeloCodex, modelosCodex } from "../modelos.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
 import type * as CodexInstallation from "../t3/CodexInstallation.ts";
 import { type Registro, registro, texto } from "./json.ts";
@@ -79,6 +80,9 @@ export function ferramentaDoItem(item: Registro): { readonly nome: string; reado
 }
 
 /** Os itens do Codex que não são ferramenta. */
+/** Teto de páginas do `model/list`: o catálogo de uma conta cabe em uma. */
+const MAXIMO_PAGINAS_MODELOS = 10;
+
 const ITENS_SEM_FERRAMENTA = new Set(["agentMessage", "reasoning", "userMessage"]);
 
 function resultadoDoItem(item: Registro): { readonly resumo: string; readonly falhou: boolean } {
@@ -358,6 +362,26 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     return { cliente, inicio };
   });
 
+  /**
+   * Todas as páginas do `model/list`. A falha vira lista vazia, com aviso no log: a sessão segue com o
+   * padrão do Codex e a interface fica sem o botão do modelo.
+   */
+  const catalogoDeModelos = Effect.fn("DriverCodex.catalogoDeModelos")(
+    function* (cliente: Effect.Success<ReturnType<typeof abrir>>["cliente"]) {
+      const modelos: Array<Effect.Success<ReturnType<typeof cliente.request<"model/list">>>["data"][number]> = [];
+      let cursor: string | undefined;
+      for (let pagina = 0; pagina < MAXIMO_PAGINAS_MODELOS; pagina++) {
+        const lista = yield* cliente.request("model/list", cursor === undefined ? {} : { cursor });
+        modelos.push(...lista.data);
+        if (!lista.nextCursor) break;
+        cursor = lista.nextCursor;
+      }
+      return modelos;
+    },
+    Effect.tapError((erro) => Effect.logWarning("Codex: o model/list falhou", erro)),
+    Effect.orElseSucceed((): ReadonlyArray<ModeloCodex> => []),
+  );
+
   const detectar: Driver["detectar"] = Effect.gen(function* () {
     const resolvido = yield* opcoes.instalacao.resolve().pipe(Effect.option);
     if (Option.isNone(resolvido)) {
@@ -380,6 +404,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         const versao = /\/([^\s]+)/.exec(inicio.userAgent)?.[1];
         const info = registro(conta.account);
         const autenticado = conta.account !== null && conta.account !== undefined;
+        const modelos = autenticado ? modelosCodex(yield* catalogoDeModelos(cliente)) : [];
         return {
           provider: PROVIDER,
           instalado: true,
@@ -389,6 +414,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
           ...(typeof info.type === "string" ? { metodo: info.type } : {}),
           ...(typeof info.planType === "string" ? { plano: info.planType } : {}),
           ...(autenticado ? {} : { mensagem: "Codex sem login: use entrar" }),
+          ...(modelos.length > 0 ? { modelos } : {}),
         } satisfies DeteccaoProvider;
       }),
     ).pipe(Effect.timeout("30 seconds"), Effect.option);
@@ -470,14 +496,16 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
       }).pipe(Effect.map((decisao) => ({ action: decisao === "permitir" ? "accept" : "decline" }) as const)),
     );
 
-    // O `model` do `config.toml` do usuário pode não valer para a conta (ex.: modelo de API numa conta
-    // ChatGPT); sem modelo na sessão, vai o padrão que o `model/list` dá para a conta.
-    const modelo =
-      config.modelo ??
-      (yield* cliente.request("model/list", {}).pipe(
-        Effect.map((lista) => lista.data.find((candidato) => candidato.isDefault)?.model),
-        Effect.orElseSucceed(() => undefined),
-      ));
+    // O `model` e o `model_reasoning_effort` do `config.toml` do usuário podem não valer para a conta
+    // (ex.: modelo de API numa conta ChatGPT) nem para o modelo: sem modelo na sessão, vai o padrão que
+    // o `model/list` dá para a conta, e o esforço é o pedido ou o padrão do modelo (`esforcoCodex`).
+    const catalogo = yield* catalogoDeModelos(cliente);
+    const efetivo =
+      config.modelo === undefined
+        ? catalogo.find((candidato) => candidato.isDefault)
+        : catalogo.find((candidato) => candidato.model === config.modelo);
+    const modelo = config.modelo ?? efetivo?.model;
+    const esforco = esforcoCodex(efetivo, config.esforco);
     // Isolamento sem tocar no `config.toml`: os MCP, os conectores (apps) e os plugins do usuário
     // ficam desligados nesta thread. Sem isso, a resposta pode vir de outra ferramenta (busca web dos
     // conectores, MCP pessoais), e não da base.
@@ -501,6 +529,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         ...configMcpCodex(config, politica),
         ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { web_search: "disabled" }),
         ...(config.semFerramentas === true ? SEM_FERRAMENTAS_CODEX : {}),
+        ...(esforco ? { model_reasoning_effort: esforco } : {}),
       },
       // A thread de julgamento não é retomada (a retomada é por bloco, no servidor): não fica no
       // histórico do Codex do usuário.

@@ -307,7 +307,7 @@ function PassoExemplo({
     const sessao = await comecarTarefa(api, conversa, {
       titulo: "Exemplo - fundamentação normativa",
       tarefa: exemplo.skill,
-      provider,
+      ia: { provider },
       anexos: [],
       texto: exemplo.pedido,
     });

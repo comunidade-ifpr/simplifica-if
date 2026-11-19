@@ -36,6 +36,7 @@ const RASCUNHO: RascunhoRelato = {
     provider: "claude",
     versaoProvider: "2.1.30",
     modelo: null,
+    esforco: null,
   },
   repositorio: "exemplo/simplifica-if",
   rotulos: ["relato-do-app"],

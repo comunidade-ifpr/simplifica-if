@@ -763,7 +763,7 @@ O T3 tem uma política gerenciada (`ManagedPolicy`) com dezenas de travas. No ap
 - **Latência**, na pergunta de referência, mediana de 5 execuções:
   - **interface:** a mensagem aparece na conversa e o estado "enviado ao Claude/ChatGPT/Gemini" com o tempo decorrido em até 1 s;
   - **sinal de progresso** (etapa, ferramenta em uso ou texto) em até 10 s nos três;
-  - **primeiro texto:** até 20 s no Claude e no Codex; até 60 s no Antigravity, que aparece na escolha da IA como "mais lento";
+  - **primeiro texto:** até 20 s no Claude e no Codex; até 60 s no Antigravity;
   - **enquanto espera:** o estado do turno ("consultando a base: buscar_norma", "escrevendo a resposta") a partir dos eventos do motor; depois de 30 s sem texto, a frase "o Gemini costuma levar cerca de um minuto" e o botão "Interromper".
 - **Atualização:** uma nova versão da base chega a 90% dos computadores ativos do piloto em até 48 horas.
 - **Fontes:** em pelo menos 60% das conversas com resposta normativa, o servidor abre ao menos uma citação. É a medida de que a fonte está a um clique.
@@ -851,7 +851,7 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 | Deriva das CLIs dos providers | uma versão nova do `claude`, do `codex` ou do `agy` muda o protocolo ou a forma de receber o MCP, e o app para de responder | só interfaces oficiais e versionadas (Agent SDK, `app-server`, ACP); detecção da versão e faixa testada por provider; normalizadores testados com gravações reais; teste real nos três antes de cada versão do app; `pnpm upstream:t3 status` como alarme, porque o T3 se adapta antes |
 | Manutenção do motor e do app | equipe pequena mantém um app inteiro | motor fino (cerca de 1.420 linhas na PoC); copiar do T3 em vez de escrever; nenhum recurso de desenvolvedor; knip contra código morto |
 | Isolamento incompleto | MCP, conectores ou busca web do usuário respondem no lugar da base | desligar por sessão o que a PoC achou; teste de aceite que lista as ferramentas visíveis; pasta própria do Codex e do Antigravity se não bastar (decisão em aberto 8) |
-| Latência do Antigravity | o servidor desiste antes da resposta (cerca de 60 s até o primeiro texto) | estado do turno e aviso de espera na tela; "mais lento" na escolha da IA; meta medida no piloto |
+| Latência do Antigravity | o servidor desiste antes da resposta (cerca de 60 s até o primeiro texto) | estado do turno e aviso de espera na tela; meta medida no piloto |
 | Instalar a CLI do provider | servidor não técnico trava no primeiro passo | instalação gerenciada copiada do T3 no Codex e no Antigravity; passo guiado para o Claude, o único que o servidor instala sozinho; piloto mede o atrito |
 | Binário sem assinatura | Windows Defender e Gatekeeper bloqueiam | certificados de assinatura (decisão em aberto) |
 | Computador institucional sem permissão de instalação | piloto não instala | instalador por usuário (NSIS per-user), conversa prévia com a DTI |

@@ -655,6 +655,35 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   await ia.click();
   await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
   await expect.element(ia).toHaveTextContent("Claude");
+  // O modelo, ao lado da IA: "Automático" até a pessoa escolher; o raciocínio só no modelo que aceita.
+  const modelo = formulario.getByRole("button", { name: /^Modelo:/ });
+  await expect.element(modelo).toHaveTextContent("Automático");
+  await modelo.click();
+  const menu = page.getByRole("menu");
+  await expect.element(menu.getByRole("menuitemradio", { name: /Automático/ })).toHaveAttribute("aria-checked", "true");
+  // Em "Automático" vale o padrão da conta, que aceita o raciocínio aprofundado.
+  await expect.element(menu.getByRole("menuitemradio", { name: /Aprofundado/ })).toBeVisible();
+  // O menu continua aberto depois da escolha: o raciocínio aparece para o modelo que o aceita.
+  await menu.getByRole("menuitemradio", { name: /Opus/ }).click();
+  await menu.getByRole("menuitemradio", { name: /Aprofundado/ }).click();
+  await expect
+    .element(menu.getByRole("menuitemradio", { name: /Aprofundado/ }))
+    .toHaveAttribute("aria-checked", "true");
+  await nosDoisTemas("escolha-modelo");
+  await userEvent.keyboard("{Escape}");
+  await expect.element(modelo).toHaveTextContent("Opus · Aprofundado");
+  await modelo.click();
+  await menu.getByRole("menuitemradio", { name: /Haiku/ }).click();
+  await expect.element(menu.getByRole("menuitemradio", { name: /Aprofundado/ })).not.toBeInTheDocument();
+  await userEvent.keyboard("{Escape}");
+  await expect.element(modelo).toHaveTextContent("Haiku");
+  // Trocar de IA volta a "Automático"; a IA sem lista de modelos não mostra o botão.
+  await ia.click();
+  await page.getByRole("listbox").getByRole("option", { name: "ChatGPT" }).click();
+  await expect.element(modelo).not.toBeInTheDocument();
+  await ia.click();
+  await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
+  await expect.element(modelo).toHaveTextContent("Automático");
   // Shift+Enter quebra a linha, sem enviar; o botão acende.
   await caixa.click();
   await userEvent.keyboard("Quais normas tratam{Shift>}{Enter}{/Shift}do estágio?");

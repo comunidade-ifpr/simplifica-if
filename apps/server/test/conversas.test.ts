@@ -241,6 +241,7 @@ describe("conversas gravadas", () => {
                 [5, "ModoServidor"],
                 [6, "Preferencias"],
                 [7, "Relatos"],
+                [8, "EsforcoConversa"],
               ],
             );
             // A layer já migrou: rodar de novo não executa nada.
@@ -439,7 +440,13 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({
+        provider: "claude",
+        pastaTrabalho: pasta,
+        modelo: "opus",
+        esforco: "xhigh",
+      });
+      assert.deepInclude(registro.configs.at(-1), { modelo: "opus", esforco: "xhigh" });
       yield* Stream.runCollect(conversas.enviar(id, "olá"));
       yield* avancar(Duration.subtract(Conversas.OCIOSIDADE, Duration.seconds(1)));
       assert.strictEqual(registro.encerradas, 0);
@@ -451,6 +458,8 @@ describe("ciclo de vida da sessão do provider", () => {
       yield* Stream.runCollect(conversas.enviar(id, "voltei"));
       assert.strictEqual(registro.configs.length, 2);
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
+      // A retomada reabre com o modelo e o esforço escolhidos no começo.
+      assert.deepInclude(registro.configs.at(-1), { modelo: "opus", esforco: "xhigh" });
       // `retomar` com a sessão aberta não abre outra.
       yield* conversas.retomar(id);
       assert.strictEqual(registro.configs.length, 2);

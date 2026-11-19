@@ -11,6 +11,7 @@ import { useEffect, useEffectEvent, useState } from "react";
 import type { Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
+import { detectarIa } from "../deteccao.ts";
 import { abrirExterno } from "../ponte-desktop.ts";
 import {
   DESCRICOES,
@@ -39,12 +40,10 @@ type Deteccao =
 
 /** A detecção do provider, com o erro já em texto. */
 function detectar(api: Api, provider: Provider): Promise<Deteccao> {
-  return api
-    .chamar((cliente) => cliente["providers.detectar"]({ provider }))
-    .then(
-      (estado): Deteccao => ({ fase: "detectado", estado }),
-      (falha: unknown): Deteccao => ({ fase: "falhou", erro: explicarErro(falha) }),
-    );
+  return detectarIa(api, provider).then(
+    (estado): Deteccao => ({ fase: "detectado", estado }),
+    (falha: unknown): Deteccao => ({ fase: "falhou", erro: explicarErro(falha) }),
+  );
 }
 
 function BarraProgresso({ estado }: { readonly estado: EstadoInstalacao }) {

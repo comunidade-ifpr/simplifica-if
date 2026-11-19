@@ -49,6 +49,16 @@ const respostaLeitor = `O PPC precisa prever o acompanhamento de egressos ([Res.
 
 const respostaFinal = `A Resolução CNE/CP nº 1/2021 define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica. Veja a [Res. CNE/CP nº 1/2021](${LINK_DEMONSTRACAO}).`;
 
+/**
+ * Os modelos que o Claude de demonstração lista: o padrão da conta e outro, com raciocínio
+ * aprofundado, e um sem.
+ */
+export const MODELOS_CLAUDE: ReadonlyArray<Motor.ModeloProvider> = [
+  { id: "sonnet", nome: "Sonnet", padrao: true, esforcoAprofundado: "high" },
+  { id: "opus", nome: "Opus", esforcoAprofundado: "xhigh" },
+  { id: "haiku", nome: "Haiku" },
+];
+
 export const layer = (opcoes: OpcoesDemonstracao = {}) => {
   const atrasoLogin = Duration.fromInputUnsafe(opcoes.atrasoLogin ?? "2 seconds");
   const passo = Duration.fromInputUnsafe(opcoes.passo ?? "60 millis");
@@ -69,7 +79,9 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
         instalado: estado[provider].instalado,
         autenticado: estado[provider].autenticado,
         ...(estado[provider].instalado ? { versao: provider === "claude" ? "2.1.30" : "1.5.9" } : {}),
-        ...(estado[provider].autenticado && provider === "claude" ? { plano: "max", metodo: "claude.ai" } : {}),
+        ...(estado[provider].autenticado && provider === "claude"
+          ? { plano: "max", metodo: "claude.ai", modelos: MODELOS_CLAUDE }
+          : {}),
         ...(estado[provider].instalado ? {} : { mensagem: "O app instala a própria cópia." }),
       };
     });

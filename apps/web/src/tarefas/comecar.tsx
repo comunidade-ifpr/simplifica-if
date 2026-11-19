@@ -1,18 +1,38 @@
 /**
  * O começo de uma tarefa (M1.9), comum à caixa do Início e ao formulário da tarefa: a pasta em
  * `Documentos/Simplifica IF/<título>` (`pasta.criar`), os anexos copiados para ela (`pasta.anexar`), a
- * conversa com a tarefa e o pedido enviado. E os dois controles do começo: a escolha da IA e os anexos.
+ * conversa com a tarefa e o pedido enviado. E os controles do começo: a escolha da IA, com o modelo e
+ * o raciocínio, e os anexos.
  */
-import type { Provider } from "@simplifica-if/contratos-app";
-import { PaperclipIcon, XIcon } from "lucide-react";
+import type { ModeloProvider, Provider } from "@simplifica-if/contratos-app";
+import { ChevronDownIcon, PaperclipIcon, XIcon } from "lucide-react";
 import { useId } from "react";
 import { MarcaIa } from "../components/MarcaIa.tsx";
 import { Button } from "../components/ui/button.tsx";
+import {
+  Menu,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuPopup,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuTrigger,
+} from "../components/ui/menu.tsx";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../components/ui/select.tsx";
 import type { Api } from "../conexao/api.ts";
 import type { ControleConversa } from "../conversa/ControleConversa.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
+import {
+  comModelo,
+  comRaciocinio,
+  dicaDoModelo,
+  type EscolhaDaIa,
+  modeloEfetivo,
+  rotuloDaEscolha,
+  useModelos,
+} from "./modelos.ts";
 import { usePreferencias } from "./perfil.ts";
 
 export async function comecarTarefa(
@@ -21,7 +41,7 @@ export async function comecarTarefa(
   pedido: {
     readonly titulo: string;
     readonly tarefa: string;
-    readonly provider: Provider;
+    readonly ia: EscolhaDaIa;
     readonly anexos: ReadonlyArray<string>;
     readonly texto: string;
   },
@@ -30,7 +50,7 @@ export async function comecarTarefa(
   for (const arquivo of pedido.anexos) {
     await api.chamar((cliente) => cliente["pasta.anexar"]({ pasta, arquivo }));
   }
-  return conversa.comecarTarefa({ provider: pedido.provider, pasta, tarefa: pedido.tarefa, pedido: pedido.texto });
+  return conversa.comecarTarefa({ ia: pedido.ia, pasta, tarefa: pedido.tarefa, pedido: pedido.texto });
 }
 
 /** O nome do arquivo de um caminho (macOS ou Windows). */
@@ -39,25 +59,114 @@ export const nomeArquivo = (caminho: string): string => caminho.split(/[\\/]/).a
 const NOMES_IA: Readonly<Record<Provider, string>> = {
   claude: "Claude",
   codex: "ChatGPT",
-  antigravity: "Gemini (mais lento)",
+  antigravity: "Gemini",
 };
 
+/** O valor da opção "Automático" no grupo dos modelos (nenhum `id` de modelo é vazio). */
+const AUTOMATICO = "";
+
 /**
- * A escolha da IA, com a marca de cada uma ao lado do nome (no botão e na lista). É o `Select` do Base
- * UI (combobox com teclado e leitor de tela), não o `<select>` nativo, cujas opções não aceitam ícone.
+ * O botão do modelo, ao lado da IA: "Automático" (o padrão da conta) ou um dos modelos que a conta
+ * oferece e, para o modelo que aceita, o raciocínio "Normal" ou "Aprofundado". Não aparece para a IA
+ * que não lista modelos (o Gemini) nem antes de a lista chegar.
+ */
+function EscolhaModelo({
+  valor,
+  aoMudar,
+  modelos,
+  compacta,
+}: {
+  readonly valor: EscolhaDaIa;
+  readonly aoMudar: (escolha: EscolhaDaIa) => void;
+  readonly modelos: ReadonlyArray<ModeloProvider>;
+  readonly compacta: boolean;
+}) {
+  const rotulo = rotuloDaEscolha(valor, modelos);
+  const aceitaRaciocinio = modeloEfetivo(modelos, valor.modelo)?.esforcoAprofundado !== undefined;
+  return (
+    <Menu>
+      <MenuTrigger
+        render={
+          <Button
+            type="button"
+            size="sm"
+            variant={compacta ? "ghost" : "outline"}
+            className={compacta ? "rounded-full font-medium text-muted-foreground" : undefined}
+          />
+        }
+        aria-label={`Modelo: ${rotulo}`}
+        title={`Modelo: ${rotulo}`}
+      >
+        {rotulo}
+        <ChevronDownIcon aria-hidden className="-me-1 size-3.5 opacity-70" />
+      </MenuTrigger>
+      <MenuPopup>
+        <MenuGroup>
+          <MenuGroupLabel>Modelo</MenuGroupLabel>
+          <MenuRadioGroup
+            value={valor.modelo ?? AUTOMATICO}
+            onValueChange={(modelo: string) =>
+              aoMudar(comModelo(valor, modelos, modelo === AUTOMATICO ? undefined : modelo))
+            }
+          >
+            <MenuRadioItem value={AUTOMATICO} dica="recomendado">
+              Automático
+            </MenuRadioItem>
+            {modelos.map((modelo) => (
+              <MenuRadioItem key={modelo.id} value={modelo.id} dica={dicaDoModelo(modelo.nome)}>
+                {modelo.nome}
+              </MenuRadioItem>
+            ))}
+          </MenuRadioGroup>
+        </MenuGroup>
+        {aceitaRaciocinio ? (
+          <>
+            <MenuSeparator />
+            <MenuGroup>
+              <MenuGroupLabel>Raciocínio</MenuGroupLabel>
+              <MenuRadioGroup
+                value={valor.esforco === undefined ? "normal" : "aprofundado"}
+                onValueChange={(raciocinio: string) =>
+                  aoMudar(comRaciocinio(valor, modelos, raciocinio === "aprofundado"))
+                }
+              >
+                <MenuRadioItem value="normal">Normal</MenuRadioItem>
+                <MenuRadioItem value="aprofundado" dica="demora mais">
+                  Aprofundado
+                </MenuRadioItem>
+              </MenuRadioGroup>
+            </MenuGroup>
+          </>
+        ) : null}
+      </MenuPopup>
+    </Menu>
+  );
+}
+
+/**
+ * A escolha da IA, com a marca de cada uma ao lado do nome (no botão e na lista), e, ao lado, a do
+ * modelo (`EscolhaModelo`). A da IA é o `Select` do Base UI (combobox com teclado e leitor de tela),
+ * não o `<select>` nativo, cujas opções não aceitam ícone. Trocar de IA volta o modelo a "Automático".
  * `compacta` (na caixa de pedido): só a marca, o nome e um chevron, discretos, e o rótulo "IA" só para o
  * leitor de tela.
  */
 export function EscolhaIa({
-  valor,
-  aoMudar,
+  valor: escolhida,
+  aoMudar: aoEscolher,
   compacta = false,
 }: {
-  readonly valor: Provider;
-  readonly aoMudar: (provider: Provider) => void;
+  readonly valor: EscolhaDaIa;
+  readonly aoMudar: (escolha: EscolhaDaIa) => void;
   readonly compacta?: boolean;
 }) {
   const id = useId();
+  const valor = escolhida.provider;
+  const aoMudar = (provider: Provider) => provider !== valor && aoEscolher({ provider });
+  const modelos = useModelos(valor);
+  const modelo =
+    modelos.length === 0 ? null : (
+      <EscolhaModelo valor={escolhida} aoMudar={aoEscolher} modelos={modelos} compacta={compacta} />
+    );
   // As IAs que a pessoa deixou de usar no app (Configurações › Sua IA) saem da lista, menos a escolhida.
   const desligadas = usePreferencias().preferencias?.iasDesligadas ?? [];
   const opcoes = PROVIDERS.filter((provider) => provider === valor || !desligadas.includes(provider));
@@ -96,13 +205,20 @@ export function EscolhaIa({
       </SelectPopup>
     </Select>
   );
-  if (compacta) return escolha;
+  if (compacta)
+    return (
+      <span className="flex items-center">
+        {escolha}
+        {modelo}
+      </span>
+    );
   return (
-    <span className="flex items-center gap-1.5 text-sm">
+    <span className="flex flex-wrap items-center gap-1.5 text-sm">
       <label htmlFor={id} className="text-muted-foreground">
         IA
       </label>
       {escolha}
+      {modelo}
     </span>
   );
 }

@@ -10,6 +10,7 @@
  * reaberta por retomada na próxima mensagem, sem nada a fazer aqui.
  */
 import type { Decisao, ItemConversa, NotaResposta, Provider } from "@simplifica-if/contratos-app";
+import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import type { Acompanhamento, Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { type Acao, type EstadoConversa, estadoInicial, type FaseConversa, reduzir } from "./estado.ts";
@@ -77,7 +78,7 @@ export class ControleConversa {
    * Devolve o id da conversa; a falha vira `erroInicio` e a promessa rejeita.
    */
   async comecarTarefa(tarefa: {
-    readonly provider: Provider;
+    readonly ia: EscolhaDaIa;
     readonly pasta: string;
     readonly tarefa: string;
     readonly pedido: string;
@@ -85,11 +86,11 @@ export class ControleConversa {
     this.turno?.cancelar();
     this.turno = undefined;
     this.despachar({ tipo: "nova" });
-    this.despachar({ tipo: "escolher", provider: tarefa.provider, pastaTrabalho: tarefa.pasta });
+    this.despachar({ tipo: "escolher", provider: tarefa.ia.provider, pastaTrabalho: tarefa.pasta });
     this.despachar({ tipo: "iniciando" });
     try {
       const { sessao } = await this.api.chamar((cliente) =>
-        cliente["conversa.iniciar"]({ provider: tarefa.provider, pastaTrabalho: tarefa.pasta, tarefa: tarefa.tarefa }),
+        cliente["conversa.iniciar"]({ ...tarefa.ia, pastaTrabalho: tarefa.pasta, tarefa: tarefa.tarefa }),
       );
       if (this.fase() !== "iniciando") {
         void this.encerrarNoServidor(sessao);

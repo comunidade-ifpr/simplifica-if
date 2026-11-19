@@ -6,6 +6,7 @@ import {
   SessaoDesconhecida,
   TurnoEmAndamento,
 } from "@simplifica-if/motor/erros";
+import { NivelEsforco } from "@simplifica-if/motor/estados-provider";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
@@ -26,7 +27,10 @@ export const EntradaIniciar = Schema.Struct({
   provider: Provider,
   /** Caminho absoluto da pasta de trabalho da sessão; é também a única pasta que o MCP `ifpr` lê. */
   pastaTrabalho: Schema.String,
+  /** O `id` de um dos `modelos` de `providers.detectar`; sem ele, o padrão da conta. */
   modelo: Schema.optionalKey(Schema.String),
+  /** O `esforcoAprofundado` do modelo escolhido; sem ele, o esforço padrão do modelo. */
+  esforco: Schema.optionalKey(NivelEsforco),
   buscaWeb: Schema.optionalKey(Schema.Boolean),
   /**
    * A tarefa da conversa (M1.9): o nome da skill do catálogo, ou `conversa` para a caixa livre do

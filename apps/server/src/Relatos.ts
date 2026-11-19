@@ -121,6 +121,7 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
         provider: registro.provider,
         versaoProvider: Option.getOrUndefined(deteccao)?.versao ?? null,
         modelo: registro.modelo ?? null,
+        esforco: registro.esforco ?? null,
       },
       repositorio: curadoria.repositorio,
       rotulos: [...curadoria.rotulos],

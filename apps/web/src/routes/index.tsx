@@ -14,7 +14,7 @@
  * "Perguntar à IA sobre isto", nas páginas do Explorar, chega aqui com o pedido escrito (`?pedido=`): a
  * caixa já vem com ele e com o foco, e nada é enviado sozinho.
  */
-import type { ListaPendencias, Provider } from "@simplifica-if/contratos-app";
+import type { ListaPendencias } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRightIcon, CircleCheckIcon, FileSearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -27,10 +27,12 @@ import { buttonVariants } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
+import { detectarIa } from "../deteccao.ts";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
 import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../tarefas/comecar.tsx";
+import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
@@ -85,12 +87,10 @@ function AvisoSemIa() {
     let vale = true;
     Promise.all(
       PROVIDERS.map((provider) =>
-        api
-          .chamar((cliente) => cliente["providers.detectar"]({ provider }))
-          .then(
-            (estado) => estado.instalado && estado.autenticado,
-            () => false,
-          ),
+        detectarIa(api, provider).then(
+          (estado) => estado.instalado && estado.autenticado,
+          () => false,
+        ),
       ),
     ).then((prontas) => vale && setSemIa(!prontas.some(Boolean)));
     return () => {
@@ -117,7 +117,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
   const navegar = useNavigate();
   const [texto, setTexto] = useState(pedido ?? "");
   const [anexos, setAnexos] = useState<ReadonlyArray<string>>([]);
-  const [provider, setProvider] = useState<Provider>(estado.provider);
+  const [ia, setIa] = useState<EscolhaDaIa>({ provider: estado.provider });
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
@@ -129,7 +129,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
       const sessao = await comecarTarefa(api, conversa, {
         titulo: tituloDoPedido(texto),
         tarefa: "conversa",
-        provider,
+        ia,
         anexos,
         texto: anexos.length === 0 ? texto : `${texto}\n\nArquivos na pasta: ${anexos.map(nomeArquivo).join(", ")}.`,
       });
@@ -151,7 +151,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
       aoEnviar={() => void enviar()}
       enviando={enviando}
       esquerda={<Anexos anexos={anexos} aoMudar={setAnexos} />}
-      direita={<EscolhaIa compacta valor={provider} aoMudar={setProvider} />}
+      direita={<EscolhaIa compacta valor={ia} aoMudar={setIa} />}
       abaixo={erro === undefined ? undefined : <AvisoErro erro={erro} />}
     />
   );

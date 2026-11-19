@@ -43,6 +43,7 @@ import * as Schema from "effect/Schema";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { ehNivelClaude, modelosClaude } from "../modelos.ts";
 import {
   ambienteSemTelemetria,
   buscaWebLigada,
@@ -305,11 +306,13 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
           prompt: nuncaEntrega(abortar.signal),
           options: { ...opcoesBase(opcoes.ambiente, executavel), abortController: abortar },
         });
-        return (await consulta.initializationResult()).account;
+        const inicio = await consulta.initializationResult();
+        return { conta: inicio.account, modelos: inicio.models };
       },
       catch: Canal.falhaDe(PROVIDER, "detectar"),
     }).pipe(Effect.timeout("30 seconds"), Effect.ensuring(Effect.sync(() => abortar.abort())), Effect.option);
-    const info = Option.getOrUndefined(conta);
+    const info = Option.getOrUndefined(conta)?.conta;
+    const modelos = modelosClaude(Option.getOrUndefined(conta)?.modelos ?? []);
     // Mesmo critério do T3 (`ClaudeProvider.ts`): chave de API, e-mail ou assinatura contam como login.
     const autenticado =
       info !== undefined && (info.apiKeySource !== undefined || info.email !== undefined || !!info.subscriptionType);
@@ -323,6 +326,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       ...(info?.tokenSource ? { metodo: info.tokenSource } : info?.apiKeySource ? { metodo: "apiKey" } : {}),
       ...(info?.subscriptionType ? { plano: info.subscriptionType } : {}),
       ...(autenticado ? {} : { mensagem: "Claude sem login: rode `claude` no Terminal e entre na conta" }),
+      ...(autenticado && modelos.length > 0 ? { modelos } : {}),
       ...(mcpGerenciado
         ? {
             aviso:
@@ -409,6 +413,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
             ? { systemPrompt: config.instrucoes }
             : { systemPrompt: { type: "preset" as const, preset: "claude_code" as const, append: config.instrucoes } }),
         ...(config.modelo ? { model: config.modelo } : {}),
+        ...(ehNivelClaude(config.esforco) ? { effort: config.esforco } : {}),
       },
     });
     yield* Effect.addFinalizer(() =>

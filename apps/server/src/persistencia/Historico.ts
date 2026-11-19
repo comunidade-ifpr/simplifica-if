@@ -17,6 +17,7 @@ import {
   type EstadoConversa,
   Evento,
   type ItemConversa,
+  type NivelEsforco,
   type NotaResposta,
   type Provider,
   type ResumoConversa,
@@ -24,6 +25,7 @@ import {
 
 /** Uma conversa gravada: o resumo da interface e o que o servidor precisa para reabrir a sessão. */
 export interface RegistroConversa extends ResumoConversa {
+  readonly esforco?: NivelEsforco;
   readonly buscaWeb?: boolean;
   /** O id da conversa no provider, para a retomada. */
   readonly idNativo?: string;
@@ -36,6 +38,7 @@ export interface NovaConversa {
   readonly provider: Provider;
   readonly pastaTrabalho: string;
   readonly modelo?: string;
+  readonly esforco?: NivelEsforco;
   readonly buscaWeb?: boolean;
   readonly idNativo?: string;
   readonly estado: EstadoConversa;
@@ -92,6 +95,7 @@ interface LinhaConversa {
   readonly provider: string;
   readonly pasta_trabalho: string;
   readonly modelo: string | null;
+  readonly esforco: string | null;
   readonly busca_web: number | null;
   readonly titulo: string;
   readonly id_nativo: string | null;
@@ -125,6 +129,7 @@ const paraRegistro = (linha: LinhaConversa): RegistroConversa => ({
   provider: linha.provider as Provider,
   pastaTrabalho: linha.pasta_trabalho,
   ...(linha.modelo === null ? {} : { modelo: linha.modelo }),
+  ...(linha.esforco === null ? {} : { esforco: linha.esforco as NivelEsforco }),
   ...(linha.busca_web === null ? {} : { buscaWeb: linha.busca_web === 1 }),
   titulo: linha.titulo,
   ...(linha.id_nativo === null ? {} : { idNativo: linha.id_nativo }),
@@ -153,9 +158,9 @@ const make = Effect.gen(function* () {
   const criar = Effect.fn("Historico.criar")(function* (conversa: NovaConversa) {
     const data = yield* agora;
     yield* sql`
-      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, busca_web, id_nativo, estado, tarefa, criada_em, atualizada_em)
+      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, esforco, busca_web, id_nativo, estado, tarefa, criada_em, atualizada_em)
       VALUES (${conversa.id}, ${conversa.provider}, ${conversa.pastaTrabalho}, ${conversa.modelo ?? null},
-        ${conversa.buscaWeb === undefined ? null : conversa.buscaWeb ? 1 : 0}, ${conversa.idNativo ?? null},
+        ${conversa.esforco ?? null}, ${conversa.buscaWeb === undefined ? null : conversa.buscaWeb ? 1 : 0}, ${conversa.idNativo ?? null},
         ${conversa.estado}, ${conversa.tarefa ?? null}, ${data}, ${data})
     `;
   }, Effect.orDie);
