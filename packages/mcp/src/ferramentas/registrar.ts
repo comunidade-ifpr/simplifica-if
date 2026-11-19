@@ -20,7 +20,7 @@ import * as Option from "effect/Option";
 import * as Sink from "effect/Sink";
 import * as Stream from "effect/Stream";
 import { McpSchema, McpServer } from "effect/ai";
-import { ehEntradaInvalida, ehFalhaNaBase, type Resposta } from "../contratos.ts";
+import { EntradaInvalida, ehEntradaInvalida, ehFalhaNaBase, type Resposta } from "../contratos.ts";
 import { jsonSchema } from "../esquema.ts";
 import { observarChamada, resumoDoResultado } from "../SessaoAtual.ts";
 import { decodificadorDeEntrada, OPCOES_ENTRADA } from "../validacao.ts";
@@ -52,12 +52,48 @@ function textoDaFalha(causa: Cause.Cause<unknown>): string {
   return "erro interno do simplifica-mcp ao montar a resposta; tente de novo ou avise a curadoria";
 }
 
+/** O decodificador da entrada de cada ferramenta, pelo nome. */
+const DECODIFICADORES: ReadonlyMap<string, (argumentos: unknown) => Effect.Effect<unknown, EntradaInvalida>> = new Map(
+  FERRAMENTAS.map((ferramenta) => [ferramenta.nome, decodificadorDeEntrada(ferramenta.nome, ferramenta.entrada)]),
+);
+
+/**
+ * Uma chamada de ferramenta, como o servidor a faz: a entrada conferida com a mensagem de `validacao.ts`
+ * e o `handle` do Toolkit, que a confere de novo e codifica a resposta pelo `outputSchema`. A
+ * `Resposta` é o `structuredContent` do servidor; o `simplifica-mcp consultar` a imprime.
+ *
+ * Falha com `EntradaInvalida` (nome desconhecido, entrada inválida, ID que não está na base) ou
+ * `FalhaNaBase`; uma resposta que não confere com o `outputSchema` é defeito.
+ */
+export const chamarFerramenta = Effect.fn("simplifica-mcp.chamarFerramenta")(
+  function* (nome: string, argumentos: unknown) {
+    const decodificar = DECODIFICADORES.get(nome);
+    if (decodificar === undefined) {
+      return yield* new EntradaInvalida({
+        mensagem: `ferramenta desconhecida: ${nome}. As ferramentas são: ${FERRAMENTAS.map((f) => f.nome).join(", ")}`,
+      });
+    }
+    const kit = yield* FerramentasIfpr;
+    yield* decodificar(argumentos);
+    const saida = yield* kit.handle(
+      nome as keyof typeof FerramentasIfpr.tools,
+      (argumentos ?? {}) as never,
+      undefined,
+      OPCOES_ENTRADA,
+    );
+    const ultimo = yield* Stream.run(saida, Sink.last());
+    if (Option.isNone(ultimo)) return yield* Effect.die(`a ferramenta ${nome} terminou sem resposta`);
+    return ultimo.value.result as Resposta<unknown>;
+  },
+  Effect.catchTags({ AiError: (erro) => Effect.die(erro) }),
+);
+
 /** Registra as ferramentas de `FERRAMENTAS` no `McpServer` do ambiente. */
 export const registrarFerramentas = Effect.gen(function* () {
   const servidor = yield* McpServer.McpServer;
-  const kit = yield* FerramentasIfpr;
+  // o Toolkit e os handlers do ambiente, para as chamadas, que rodam no contexto do servidor
+  const contexto = yield* Effect.context<Effect.Services<ReturnType<typeof chamarFerramenta>>>();
   for (const ferramenta of FERRAMENTAS) {
-    const decodificar = decodificadorDeEntrada(ferramenta.nome, ferramenta.entrada);
     const textoCompleto = ferramenta.textoCompleto as (resposta: Resposta<unknown>) => string;
     yield* servidor.addTool({
       tool: new McpSchema.Tool({
@@ -72,17 +108,15 @@ export const registrarFerramentas = Effect.gen(function* () {
       handle: (argumentos: unknown) =>
         observarChamada(
           { ferramenta: ferramenta.nome },
-          decodificar(argumentos).pipe(
-            Effect.andThen(kit.handle(ferramenta.nome, (argumentos ?? {}) as never, undefined, OPCOES_ENTRADA)),
-            Effect.flatMap((saida) => Stream.run(saida, Sink.last())),
-            Effect.flatMap(Effect.fromOption),
-            Effect.map(({ result }) => {
-              const resposta = result as Resposta<unknown>;
-              return new McpSchema.CallToolResult({
-                content: [{ type: "text", text: textoCompleto(resposta) }],
-                structuredContent: resposta,
-              });
-            }),
+          chamarFerramenta(ferramenta.nome, argumentos).pipe(
+            Effect.provideContext(contexto),
+            Effect.map(
+              (resposta) =>
+                new McpSchema.CallToolResult({
+                  content: [{ type: "text", text: textoCompleto(resposta) }],
+                  structuredContent: resposta,
+                }),
+            ),
             Effect.catchCause((causa) =>
               Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.succeed(resultadoDeErro(textoDaFalha(causa))),
             ),

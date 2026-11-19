@@ -37,6 +37,8 @@ const LinhaCurso = Schema.Struct({
   cnct_denominacao: TextoNulo,
   eixo_tecnologico: TextoNulo,
   carga_horaria_minima_h: InteiroNulo,
+  suap_id: InteiroNulo,
+  suap_codigo: TextoNulo,
   ppc_id: TextoNulo,
   ppc_markdown_path: TextoNulo,
   ppc_ano_documento: InteiroNulo,
@@ -76,6 +78,8 @@ export interface ResultadoCurso {
     carga_horaria_minima_h: number | null;
   } | null;
   ppc: { id: string; path: string | null; ano_documento: number | null } | null;
+  /** O curso no SUAP; `null` quando o registro não tem SUAP. */
+  suap: { id: number; codigo: string | null } | null;
   ofertas: {
     id: string;
     processos: string[];
@@ -110,7 +114,7 @@ export const listarCursos = Effect.fn("consultasCursos.listarCursos")(function* 
   const cursos = yield* linhasCurso(
     `SELECT c.id, c.nome, c.campus_id, ca.nome AS campus_nome, c.nivel, c.forma_oferta, c.modalidade, c.situacao,
                 c.cnct_id, k.denominacao AS cnct_denominacao, k.eixo_tecnologico, k.carga_horaria_minima_h,
-                c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
+                c.suap_id, c.suap_codigo, c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
          FROM cursos c LEFT JOIN cnct k ON k.id = c.cnct_id LEFT JOIN campi ca ON ca.campus_id = c.campus_id
          ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""}
          ORDER BY c.id`,
@@ -155,6 +159,7 @@ export const listarCursos = Effect.fn("consultasCursos.listarCursos")(function* 
             ano_documento: c.ppc_ano_documento,
           }
         : null,
+      suap: c.suap_id === null ? null : { id: c.suap_id, codigo: c.suap_codigo },
       ofertas: lista.map((o) => ({
         id: o.id,
         processos: o.processos ? o.processos.split(",") : [],

@@ -3725,7 +3725,27 @@
                       "type": "string"
                     },
                     "campus": {
-                      "type": "string"
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "nome": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "nome"
+                      ],
+                      "additionalProperties": false
                     },
                     "nivel": {
                       "anyOf": [
@@ -3833,6 +3853,38 @@
                         }
                       ]
                     },
+                    "suap": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "codigo": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "codigo"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
                     "turnos": {
                       "type": "array",
                       "items": {
@@ -3854,6 +3906,7 @@
                     "situacao",
                     "cnct",
                     "ppc",
+                    "suap",
                     "turnos",
                     "link"
                   ],
@@ -3946,9 +3999,9 @@
         "properties": {
           "curso": {
             "type": "string",
+            "description": "o curso: \"campus/curso\" ou \"curso:campus/curso\" (\"curitiba/tecnico-em-enfermagem\"), vindo de listar_cursos",
             "minLength": 3,
-            "maxLength": 300,
-            "description": "o curso: \"campus/curso\" ou \"curso:campus/curso\" (\"curitiba/tecnico-em-enfermagem\"), vindo de listar_cursos"
+            "maxLength": 300
           }
         },
         "required": [
@@ -3967,9 +4020,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -4005,27 +4062,43 @@
                     "type": "string"
                   },
                   "nivel": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "forma_oferta": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "modalidade": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "situacao": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "link": {
@@ -4077,15 +4150,23 @@
                         "type": "string"
                       },
                       "eixo": {
-                        "type": [
-                          "string",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "carga_horaria_minima": {
-                        "type": [
-                          "number",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "link": {
@@ -4168,6 +4249,38 @@
                   }
                 ]
               },
+              "suap": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "codigo": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "codigo"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "ofertas": {
                 "type": "array",
                 "items": {
@@ -4177,15 +4290,23 @@
                       "type": "string"
                     },
                     "turno": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "vagas": {
-                      "type": [
-                        "number",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     }
                   },
@@ -4206,9 +4327,13 @@
                         "type": "string"
                       },
                       "curso": {
-                        "type": [
-                          "string",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "nome": {
@@ -4239,15 +4364,23 @@
                               "type": "string"
                             },
                             "valor_num": {
-                              "type": [
-                                "number",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             },
                             "unidade": {
-                              "type": [
-                                "string",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             },
                             "status_curadoria": {
@@ -4303,15 +4436,23 @@
                             "type": "object",
                             "properties": {
                               "situacao": {
-                                "type": [
-                                  "string",
-                                  "null"
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
                                 ]
                               },
                               "carga_horaria_comum_h": {
-                                "type": [
-                                  "number",
-                                  "null"
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
                                 ]
                               },
                               "matrizes": {
@@ -4337,15 +4478,23 @@
                                       ]
                                     },
                                     "ch_exibida_h": {
-                                      "type": [
-                                        "number",
-                                        "null"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
                                       ]
                                     },
                                     "ch_estagio_h": {
-                                      "type": [
-                                        "number",
-                                        "null"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
                                       ]
                                     },
                                     "trecho": {
@@ -4387,15 +4536,23 @@
                               "type": "string"
                             },
                             "valor_ppc": {
-                              "type": [
-                                "string",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             },
                             "valor_suap": {
-                              "type": [
-                                "string",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             },
                             "explicacao": {
@@ -4444,9 +4601,13 @@
                       "type": "string"
                     },
                     "status_vigencia": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "ocorrencias": {
@@ -4522,6 +4683,7 @@
               "campus",
               "cnct",
               "ppc",
+              "suap",
               "ofertas",
               "fatos",
               "normas_citadas",
@@ -4596,6 +4758,7 @@
       "annotations": {
         "title": "Ficha do curso",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -11779,12 +11942,12 @@
         "content": [
           {
             "type": "text",
-            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n\nMostrando 5 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiZThhYzRiNWEyODYzIn0\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n\nMostrando 5 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiYTkyNTZkYzE2OGU5In0\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-266c42b4",
+            "versao": "dev-9bbfc618",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11794,7 +11957,10 @@
               {
                 "id": "curso:arapongas/especializacao-em-docencia-e-praticas-educativas",
                 "nome": "Especialização em Docência e Práticas Educativas",
-                "campus": "arapongas",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
                 "nivel": "pós-graduação",
                 "forma_oferta": "especialização",
                 "modalidade": null,
@@ -11804,39 +11970,51 @@
                   "id": "ppc:arapongas/especializacao-em-docencia-e-praticas-educativas",
                   "ano": 2023
                 },
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas"
               },
               {
                 "id": "curso:arapongas/gestao-de-competencias-para-exames-de-larga-escala",
                 "nome": "Gestão de Competências para Exames de Larga Escala (Cursinho)",
-                "campus": "arapongas",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
                 "nivel": "formação inicial e continuada",
                 "forma_oferta": "FIC",
                 "modalidade": null,
                 "situacao": null,
                 "cnct": null,
                 "ppc": null,
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala"
               },
               {
                 "id": "curso:arapongas/portugues-como-lingua-de-acolhimento-plac",
                 "nome": "Português como Língua de Acolhimento - PLAc",
-                "campus": "arapongas",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
                 "nivel": "formação inicial e continuada",
                 "forma_oferta": "FIC",
                 "modalidade": null,
                 "situacao": null,
                 "cnct": null,
                 "ppc": null,
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac"
               },
               {
                 "id": "curso:arapongas/programacao-com-enfase-em-analise-de-dados",
                 "nome": "Programação com ênfase em Análise de Dados",
-                "campus": "arapongas",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
                 "nivel": "formação inicial e continuada",
                 "forma_oferta": "FIC",
                 "modalidade": null,
@@ -11846,13 +12024,17 @@
                   "id": "ppc:arapongas/programacao-com-enfase-em-analise-de-dados",
                   "ano": 2024
                 },
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados"
               },
               {
                 "id": "curso:arapongas/programacao-web",
                 "nome": "Programação Web",
-                "campus": "arapongas",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
                 "nivel": "formação inicial e continuada",
                 "forma_oferta": "FIC",
                 "modalidade": null,
@@ -11862,6 +12044,7 @@
                   "id": "ppc:arapongas/programacao-web",
                   "ano": 2025
                 },
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/arapongas/programacao-web"
               }
@@ -11871,7 +12054,7 @@
           "pagina": {
             "total": 225,
             "devolvidos": 5,
-            "cursor": "eyJkIjo1LCJjIjoiZThhYzRiNWEyODYzIn0"
+            "cursor": "eyJkIjo1LCJjIjoiYTkyNTZkYzE2OGU5In0"
           }
         }
       }
@@ -11886,12 +12069,12 @@
         "content": [
           {
             "type": "text",
-            "text": "25 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curitiba/tecnico-em-administracao-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Administração (Gestão e Negócios); PPC 2014; turnos: matutino, matutino-com-contraturno\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curitiba/tecnico-em-condominio` — médio, subsequente, presencial, ativo; CNCT Técnico em Condomínio (Gestão e Negócios); PPC 2020; turnos: noturno\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Contabilidade (Gestão e Negócios); PPC 2015; turnos: matutino, matutino-com-contraturno\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curitiba/tecnico-em-defesa-civil-ead` — médio, subsequente, ead, em_oferta; CNCT Técnico em Defesa Civil (Segurança); sem PPC na base\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curitiba/tecnico-em-edificacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Edificações (Infraestrutura); PPC 2014; turnos: noturno\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curitiba/tecnico-em-eletromecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2017; turnos: noturno\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletrônica (Controle e Processos Industriais); PPC 2014; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curitiba/tecnico-em-eletrotecnica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC 2015; turnos: noturno\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curitiba/tecnico-em-enfermagem` — médio, subsequente, presencial, ativo; CNCT Técnico em Enfermagem (Ambiente e Saúde); PPC 2023; turnos: matutino\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curitiba/tecnico-em-eventos` — médio, subsequente, presencial, ativo; CNCT Técnico em Eventos (Turismo, Hospitalidade e Lazer); PPC 2020; turnos: noturno\n- [Técnico em Informática](ifpr://curso/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio) `curitiba/tecnico-em-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2019; turnos: vespertino, matutino\n- [Técnico em Massoterapia](ifpr://curso/curitiba/tecnico-em-massoterapia) `curitiba/tecnico-em-massoterapia` — médio, subsequente, presencial, ativo; CNCT Técnico em Massoterapia (Ambiente e Saúde); PPC 2021\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica) `curitiba/tecnico-em-mecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2025; turnos: noturno\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) `curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2016; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Petróleo e Gás](ifpr://curso/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) `curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Petróleo e Gás (Produção Industrial); PPC 2017; turnos: matutino, matutino-com-contraturno\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos) `curitiba/tecnico-em-processos-fotograficos` — médio, subsequente, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2018; turnos: matutino\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio) `curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2015; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Produção de Áudio e Vídeo](ifpr://curso/curitiba/tecnico-em-producao-de-audio-e-video) `curitiba/tecnico-em-producao-de-audio-e-video` — médio, subsequente, presencial, ativo; CNCT Técnico em Produção de Áudio e Vídeo (Produção Cultural e Design); PPC 2022; turnos: noturno, vespertino\n- [Técnico em Programação de Jogos Digitais](ifpr://curso/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio) `curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Programação de Jogos Digitais (Informação e Comunicação); PPC 2019; turnos: matutino, vespertino\n- [Técnico em Prótese Dentária](ifpr://curso/curitiba/tecnico-em-protese-dentaria) `curitiba/tecnico-em-protese-dentaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Prótese Dentária (Ambiente e Saúde); sem PPC na base; turnos: noturno, vespertino\n- [Técnico em Radiologia](ifpr://curso/curitiba/tecnico-em-radiologia) `curitiba/tecnico-em-radiologia` — médio, subsequente, presencial, ativo; CNCT Técnico em Radiologia (Ambiente e Saúde); PPC 2013; turnos: matutino\n- [Técnico em Saúde Bucal](ifpr://curso/curitiba/tecnico-em-saude-bucal) `curitiba/tecnico-em-saude-bucal` — médio, subsequente, presencial, ativo; CNCT Técnico em Saúde Bucal (Ambiente e Saúde); PPC 2025; turnos: noturno\n- [Técnico em Soldagem](ifpr://curso/curitiba/tecnico-em-soldagem-subsequente) `curitiba/tecnico-em-soldagem-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Soldagem (Controle e Processos Industriais); PPC 2025\n- [Técnico em Telecomunicações](ifpr://curso/curitiba/tecnico-em-telecomunicacoes) `curitiba/tecnico-em-telecomunicacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Telecomunicações (Informação e Comunicação); sem PPC na base; turnos: noturno\n\nMostrando 24 de 25. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNCwiYyI6ImM3NjhhODdkNTBmMyJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "25 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curitiba/tecnico-em-administracao-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Administração (Gestão e Negócios); PPC 2014; turnos: matutino, matutino-com-contraturno\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curitiba/tecnico-em-condominio` — médio, subsequente, presencial, ativo; CNCT Técnico em Condomínio (Gestão e Negócios); PPC 2020; turnos: noturno\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Contabilidade (Gestão e Negócios); PPC 2015; turnos: matutino, matutino-com-contraturno\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curitiba/tecnico-em-defesa-civil-ead` — médio, subsequente, ead, em_oferta; CNCT Técnico em Defesa Civil (Segurança); sem PPC na base\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curitiba/tecnico-em-edificacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Edificações (Infraestrutura); PPC 2014; turnos: noturno\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curitiba/tecnico-em-eletromecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2017; turnos: noturno\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletrônica (Controle e Processos Industriais); PPC 2014; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curitiba/tecnico-em-eletrotecnica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC 2015; turnos: noturno\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curitiba/tecnico-em-enfermagem` — médio, subsequente, presencial, ativo; CNCT Técnico em Enfermagem (Ambiente e Saúde); PPC 2023; turnos: matutino\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curitiba/tecnico-em-eventos` — médio, subsequente, presencial, ativo; CNCT Técnico em Eventos (Turismo, Hospitalidade e Lazer); PPC 2020; turnos: noturno\n- [Técnico em Informática](ifpr://curso/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio) `curitiba/tecnico-em-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2019; turnos: vespertino, matutino\n- [Técnico em Massoterapia](ifpr://curso/curitiba/tecnico-em-massoterapia) `curitiba/tecnico-em-massoterapia` — médio, subsequente, presencial, ativo; CNCT Técnico em Massoterapia (Ambiente e Saúde); PPC 2021\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica) `curitiba/tecnico-em-mecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2025; turnos: noturno\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) `curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2016; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Petróleo e Gás](ifpr://curso/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) `curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Petróleo e Gás (Produção Industrial); PPC 2017; turnos: matutino, matutino-com-contraturno\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos) `curitiba/tecnico-em-processos-fotograficos` — médio, subsequente, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2018; turnos: matutino\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio) `curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2015; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Produção de Áudio e Vídeo](ifpr://curso/curitiba/tecnico-em-producao-de-audio-e-video) `curitiba/tecnico-em-producao-de-audio-e-video` — médio, subsequente, presencial, ativo; CNCT Técnico em Produção de Áudio e Vídeo (Produção Cultural e Design); PPC 2022; turnos: noturno, vespertino\n- [Técnico em Programação de Jogos Digitais](ifpr://curso/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio) `curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Programação de Jogos Digitais (Informação e Comunicação); PPC 2019; turnos: matutino, vespertino\n- [Técnico em Prótese Dentária](ifpr://curso/curitiba/tecnico-em-protese-dentaria) `curitiba/tecnico-em-protese-dentaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Prótese Dentária (Ambiente e Saúde); sem PPC na base; turnos: noturno, vespertino\n- [Técnico em Radiologia](ifpr://curso/curitiba/tecnico-em-radiologia) `curitiba/tecnico-em-radiologia` — médio, subsequente, presencial, ativo; CNCT Técnico em Radiologia (Ambiente e Saúde); PPC 2013; turnos: matutino\n- [Técnico em Saúde Bucal](ifpr://curso/curitiba/tecnico-em-saude-bucal) `curitiba/tecnico-em-saude-bucal` — médio, subsequente, presencial, ativo; CNCT Técnico em Saúde Bucal (Ambiente e Saúde); PPC 2025; turnos: noturno\n- [Técnico em Soldagem](ifpr://curso/curitiba/tecnico-em-soldagem-subsequente) `curitiba/tecnico-em-soldagem-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Soldagem (Controle e Processos Industriais); PPC 2025\n- [Técnico em Telecomunicações](ifpr://curso/curitiba/tecnico-em-telecomunicacoes) `curitiba/tecnico-em-telecomunicacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Telecomunicações (Informação e Comunicação); sem PPC na base; turnos: noturno\n\nMostrando 24 de 25. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNCwiYyI6Ijk4NjFhMDA1MTI4MyJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-266c42b4",
+            "versao": "dev-9bbfc618",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11901,7 +12084,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio",
                 "nome": "Técnico em Administração",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -11915,6 +12101,10 @@
                   "id": "ppc:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio",
                   "ano": 2014
                 },
+                "suap": {
+                  "id": 211,
+                  "codigo": "CTB001"
+                },
                 "turnos": [
                   "matutino",
                   "matutino-com-contraturno"
@@ -11924,7 +12114,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-condominio",
                 "nome": "Técnico em Condomínio",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -11938,6 +12131,10 @@
                   "id": "ppc:curitiba/tecnico-em-condominio",
                   "ano": 2020
                 },
+                "suap": {
+                  "id": 15,
+                  "codigo": "CTB002"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -11946,7 +12143,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio",
                 "nome": "Técnico em Contabilidade",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -11960,6 +12160,10 @@
                   "id": "ppc:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio",
                   "ano": 2015
                 },
+                "suap": {
+                  "id": 140,
+                  "codigo": "CTB003"
+                },
                 "turnos": [
                   "matutino",
                   "matutino-com-contraturno"
@@ -11969,7 +12173,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-defesa-civil-ead",
                 "nome": "Técnico em Defesa Civil",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "ead",
@@ -11980,13 +12187,17 @@
                   "eixo": "Segurança"
                 },
                 "ppc": null,
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/curitiba/tecnico-em-defesa-civil-ead"
               },
               {
                 "id": "curso:curitiba/tecnico-em-edificacoes",
                 "nome": "Técnico em Edificações",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12000,6 +12211,10 @@
                   "id": "ppc:curitiba/tecnico-em-edificacoes",
                   "ano": 2014
                 },
+                "suap": {
+                  "id": 43,
+                  "codigo": "CTB004"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12008,7 +12223,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-eletromecanica",
                 "nome": "Técnico em Eletromecânica",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12022,6 +12240,10 @@
                   "id": "ppc:curitiba/tecnico-em-eletromecanica",
                   "ano": 2017
                 },
+                "suap": {
+                  "id": 74,
+                  "codigo": "CTB005"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12030,7 +12252,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio",
                 "nome": "Técnico em Eletrônica",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -12044,6 +12269,10 @@
                   "id": "ppc:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio",
                   "ano": 2014
                 },
+                "suap": {
+                  "id": 55,
+                  "codigo": "CTB006"
+                },
                 "turnos": [
                   "vespertino",
                   "vespertino-com-contraturno"
@@ -12053,7 +12282,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-eletrotecnica",
                 "nome": "Técnico em Eletrotécnica",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12067,6 +12299,10 @@
                   "id": "ppc:curitiba/tecnico-em-eletrotecnica",
                   "ano": 2015
                 },
+                "suap": {
+                  "id": 112,
+                  "codigo": "CTB007"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12075,7 +12311,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-enfermagem",
                 "nome": "Técnico em Enfermagem",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12089,6 +12328,10 @@
                   "id": "ppc:curitiba/tecnico-em-enfermagem",
                   "ano": 2023
                 },
+                "suap": {
+                  "id": 151,
+                  "codigo": "CTB008"
+                },
                 "turnos": [
                   "matutino"
                 ],
@@ -12097,7 +12340,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-eventos",
                 "nome": "Técnico em Eventos",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12111,6 +12357,10 @@
                   "id": "ppc:curitiba/tecnico-em-eventos",
                   "ano": 2020
                 },
+                "suap": {
+                  "id": 69,
+                  "codigo": "CTB009"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12119,7 +12369,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
                 "nome": "Técnico em Informática",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -12133,6 +12386,10 @@
                   "id": "ppc:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
                   "ano": 2019
                 },
+                "suap": {
+                  "id": 176,
+                  "codigo": "CTB010"
+                },
                 "turnos": [
                   "vespertino",
                   "matutino"
@@ -12142,7 +12399,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-massoterapia",
                 "nome": "Técnico em Massoterapia",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12156,13 +12416,20 @@
                   "id": "ppc:curitiba/tecnico-em-massoterapia",
                   "ano": 2021
                 },
+                "suap": {
+                  "id": 177,
+                  "codigo": "CTB011"
+                },
                 "turnos": [],
                 "link": "ifpr://curso/curitiba/tecnico-em-massoterapia"
               },
               {
                 "id": "curso:curitiba/tecnico-em-mecanica",
                 "nome": "Técnico em Mecânica",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12176,6 +12443,10 @@
                   "id": "ppc:curitiba/tecnico-em-mecanica",
                   "ano": 2025
                 },
+                "suap": {
+                  "id": 84,
+                  "codigo": "CTB013"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12184,7 +12455,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio",
                 "nome": "Técnico em Mecânica",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -12198,6 +12472,10 @@
                   "id": "ppc:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio",
                   "ano": 2016
                 },
+                "suap": {
+                  "id": 53,
+                  "codigo": "CTB012"
+                },
                 "turnos": [
                   "vespertino",
                   "vespertino-com-contraturno"
@@ -12207,7 +12485,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
                 "nome": "Técnico em Petróleo e Gás",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -12221,6 +12502,10 @@
                   "id": "ppc:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
                   "ano": 2017
                 },
+                "suap": {
+                  "id": 179,
+                  "codigo": "CTB014"
+                },
                 "turnos": [
                   "matutino",
                   "matutino-com-contraturno"
@@ -12230,7 +12515,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-processos-fotograficos",
                 "nome": "Técnico em Processos Fotográficos",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12244,6 +12532,10 @@
                   "id": "ppc:curitiba/tecnico-em-processos-fotograficos",
                   "ano": 2018
                 },
+                "suap": {
+                  "id": 14,
+                  "codigo": "CTB016"
+                },
                 "turnos": [
                   "matutino"
                 ],
@@ -12252,7 +12544,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
                 "nome": "Técnico em Processos Fotográficos",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -12266,6 +12561,10 @@
                   "id": "ppc:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
                   "ano": 2015
                 },
+                "suap": {
+                  "id": 180,
+                  "codigo": "CTB015"
+                },
                 "turnos": [
                   "vespertino",
                   "vespertino-com-contraturno"
@@ -12275,7 +12574,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-producao-de-audio-e-video",
                 "nome": "Técnico em Produção de Áudio e Vídeo",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12289,6 +12591,10 @@
                   "id": "ppc:curitiba/tecnico-em-producao-de-audio-e-video",
                   "ano": 2022
                 },
+                "suap": {
+                  "id": 146,
+                  "codigo": "CTB017"
+                },
                 "turnos": [
                   "noturno",
                   "vespertino"
@@ -12298,7 +12604,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
                 "nome": "Técnico em Programação de Jogos Digitais",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "integrado",
                 "modalidade": "presencial",
@@ -12312,6 +12621,10 @@
                   "id": "ppc:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
                   "ano": 2019
                 },
+                "suap": {
+                  "id": 95,
+                  "codigo": "CTB018"
+                },
                 "turnos": [
                   "matutino",
                   "vespertino"
@@ -12321,7 +12634,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-protese-dentaria",
                 "nome": "Técnico em Prótese Dentária",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12332,6 +12648,10 @@
                   "eixo": "Ambiente e Saúde"
                 },
                 "ppc": null,
+                "suap": {
+                  "id": 121,
+                  "codigo": "CTB019"
+                },
                 "turnos": [
                   "noturno",
                   "vespertino"
@@ -12341,7 +12661,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-radiologia",
                 "nome": "Técnico em Radiologia",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12355,6 +12678,10 @@
                   "id": "ppc:curitiba/tecnico-em-radiologia",
                   "ano": 2013
                 },
+                "suap": {
+                  "id": 44,
+                  "codigo": "CTB020"
+                },
                 "turnos": [
                   "matutino"
                 ],
@@ -12363,7 +12690,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-saude-bucal",
                 "nome": "Técnico em Saúde Bucal",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12377,6 +12707,10 @@
                   "id": "ppc:curitiba/tecnico-em-saude-bucal",
                   "ano": 2025
                 },
+                "suap": {
+                  "id": 210,
+                  "codigo": "CTB021"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12385,7 +12719,10 @@
               {
                 "id": "curso:curitiba/tecnico-em-soldagem-subsequente",
                 "nome": "Técnico em Soldagem",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12399,13 +12736,17 @@
                   "id": "ppc:curitiba/tecnico-em-soldagem-subsequente",
                   "ano": 2025
                 },
+                "suap": null,
                 "turnos": [],
                 "link": "ifpr://curso/curitiba/tecnico-em-soldagem-subsequente"
               },
               {
                 "id": "curso:curitiba/tecnico-em-telecomunicacoes",
                 "nome": "Técnico em Telecomunicações",
-                "campus": "curitiba",
+                "campus": {
+                  "id": "curitiba",
+                  "nome": "Curitiba"
+                },
                 "nivel": "médio",
                 "forma_oferta": "subsequente",
                 "modalidade": "presencial",
@@ -12416,6 +12757,10 @@
                   "eixo": "Informação e Comunicação"
                 },
                 "ppc": null,
+                "suap": {
+                  "id": 39,
+                  "codigo": "CTB022"
+                },
                 "turnos": [
                   "noturno"
                 ],
@@ -12427,7 +12772,645 @@
           "pagina": {
             "total": 25,
             "devolvidos": 24,
-            "cursor": "eyJkIjoyNCwiYyI6ImM3NjhhODdkNTBmMyJ9"
+            "cursor": "eyJkIjoyNCwiYyI6Ijk4NjFhMDA1MTI4MyJ9"
+          }
+        }
+      }
+    },
+    {
+      "name": "listar_cursos",
+      "arguments": {},
+      "resultado": {
+        "content": [
+          {
+            "type": "text",
+            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n- [Técnico em Agente Comunitário de Saúde](ifpr://curso/arapongas/tecnico-em-agente-comunitario-de-saude) `arapongas/tecnico-em-agente-comunitario-de-saude` — médio, subsequente, ead, incerto; CNCT Técnico em Agente Comunitário de Saúde (Ambiente e Saúde); sem PPC na base\n- [Técnico em Logística](ifpr://curso/arapongas/tecnico-em-logistica) `arapongas/tecnico-em-logistica` — médio, subsequente, ead, incerto; CNCT Técnico em Logística (Gestão e Negócios); sem PPC na base\n- [Técnico em Meio Ambiente](ifpr://curso/arapongas/tecnico-em-meio-ambiente) `arapongas/tecnico-em-meio-ambiente` — médio, subsequente, ead, incerto; CNCT Técnico em Meio Ambiente (Ambiente e Saúde); sem PPC na base\n- [Técnico em Melhoria de Processos](ifpr://curso/arapongas/tecnico-em-melhoria-de-processos) `arapongas/tecnico-em-melhoria-de-processos` — médio, subsequente, ead, suspenso; PPC 2021; turnos: noturno\n- [Técnico em Sistemas de Energia Renovável](ifpr://curso/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio) `arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Sistemas de Energia Renovável (Controle e Processos Industriais); PPC 2025\n- [Tecnologia em Processos Gerenciais](ifpr://curso/arapongas/tecnologia-em-processos-gerenciais) `arapongas/tecnologia-em-processos-gerenciais` — superior, graduação tecnológica; PPC 2025\n- [Técnico em Agropecuária](ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria) `assis-chateaubriand/tecnico-em-agropecuaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Agropecuária (Recursos Naturais); PPC 2021; turnos: noturno\n- [Técnico em Agropecuária](ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Agropecuária (Recursos Naturais); PPC 2017; turnos: matutino-com-contraturno\n- [Técnico em Alimentos](ifpr://curso/assis-chateaubriand/tecnico-em-alimentos) `assis-chateaubriand/tecnico-em-alimentos` — médio, subsequente, presencial, ativo; CNCT Técnico em Alimentos (Produção Alimentícia); PPC 2022; turnos: noturno\n- [Técnico em Comércio](ifpr://curso/assis-chateaubriand/tecnico-em-comercio) `assis-chateaubriand/tecnico-em-comercio` — médio, integrado, presencial, ativo; CNCT Técnico em Comércio (Gestão e Negócios); PPC 2019; turnos: matutino-com-contraturno\n- [Técnico em Eletromecânica](ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2013; turnos: matutino\n- [Técnico em Eletromecânica](ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-subsequente) `assis-chateaubriand/tecnico-em-eletromecanica-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC sem ano; turnos: noturno\n- [Técnico em Eletrotécnica](ifpr://curso/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente) `assis-chateaubriand/tecnico-em-eletrotecnica-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC sem ano; turnos: noturno\n- [Técnico em Informática para Internet](ifpr://curso/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática para Internet (Informação e Comunicação); PPC 2019; turnos: matutino-com-contraturno\n- [Técnico em Mecatrônica](ifpr://curso/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecatrônica (Controle e Processos Industriais); PPC 2025; turnos: matutino-com-contraturno\n- [Tecnologia em Automação Industrial](ifpr://curso/assis-chateaubriand/tecnologia-em-automacao-industrial) `assis-chateaubriand/tecnologia-em-automacao-industrial` — superior, graduação tecnológica, presencial, ativo; PPC 2025\n- [Tecnologia em Gestão Comercial](ifpr://curso/assis-chateaubriand/tecnologia-em-gestao-comercial) `assis-chateaubriand/tecnologia-em-gestao-comercial` — superior, graduação tecnológica, presencial, ativo; PPC 2023\n- [Técnico em Informática](ifpr://curso/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio) `astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2010; turnos: matutino\n- [Licenciatura em Pedagogia](ifpr://curso/astorga/licenciatura-em-pedagogia) `astorga/licenciatura-em-pedagogia` — superior, licenciatura, presencial, ativo; PPC 2025\n- [Técnico em Desenvolvimento de Sistemas](ifpr://curso/astorga/tecnico-em-desenvolvimento-de-sistemas) `astorga/tecnico-em-desenvolvimento-de-sistemas` — médio, subsequente, presencial, suspenso; CNCT Técnico em Desenvolvimento de Sistemas (Informação e Comunicação); PPC 2022; turnos: noturno\n\nMostrando 25 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNSwiYyI6ImE5MjU2ZGMxNjhlOSJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
+          }
+        ],
+        "structuredContent": {
+          "base": {
+            "versao": "dev-9bbfc618",
+            "commit": null,
+            "data_referencia": "2026-11-13",
+            "canal": "dev"
+          },
+          "dados": {
+            "cursos": [
+              {
+                "id": "curso:arapongas/especializacao-em-docencia-e-praticas-educativas",
+                "nome": "Especialização em Docência e Práticas Educativas",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "pós-graduação",
+                "forma_oferta": "especialização",
+                "modalidade": null,
+                "situacao": null,
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:arapongas/especializacao-em-docencia-e-praticas-educativas",
+                  "ano": 2023
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas"
+              },
+              {
+                "id": "curso:arapongas/gestao-de-competencias-para-exames-de-larga-escala",
+                "nome": "Gestão de Competências para Exames de Larga Escala (Cursinho)",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "formação inicial e continuada",
+                "forma_oferta": "FIC",
+                "modalidade": null,
+                "situacao": null,
+                "cnct": null,
+                "ppc": null,
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala"
+              },
+              {
+                "id": "curso:arapongas/portugues-como-lingua-de-acolhimento-plac",
+                "nome": "Português como Língua de Acolhimento - PLAc",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "formação inicial e continuada",
+                "forma_oferta": "FIC",
+                "modalidade": null,
+                "situacao": null,
+                "cnct": null,
+                "ppc": null,
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac"
+              },
+              {
+                "id": "curso:arapongas/programacao-com-enfase-em-analise-de-dados",
+                "nome": "Programação com ênfase em Análise de Dados",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "formação inicial e continuada",
+                "forma_oferta": "FIC",
+                "modalidade": null,
+                "situacao": null,
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:arapongas/programacao-com-enfase-em-analise-de-dados",
+                  "ano": 2024
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados"
+              },
+              {
+                "id": "curso:arapongas/programacao-web",
+                "nome": "Programação Web",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "formação inicial e continuada",
+                "forma_oferta": "FIC",
+                "modalidade": null,
+                "situacao": null,
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:arapongas/programacao-web",
+                  "ano": 2025
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/programacao-web"
+              },
+              {
+                "id": "curso:arapongas/tecnico-em-agente-comunitario-de-saude",
+                "nome": "Técnico em Agente Comunitário de Saúde",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "ead",
+                "situacao": "incerto",
+                "cnct": {
+                  "id": "cnct:tecnico-em-agente-comunitario-de-saude",
+                  "nome": "Técnico em Agente Comunitário de Saúde",
+                  "eixo": "Ambiente e Saúde"
+                },
+                "ppc": null,
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/tecnico-em-agente-comunitario-de-saude"
+              },
+              {
+                "id": "curso:arapongas/tecnico-em-logistica",
+                "nome": "Técnico em Logística",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "ead",
+                "situacao": "incerto",
+                "cnct": {
+                  "id": "cnct:tecnico-em-logistica",
+                  "nome": "Técnico em Logística",
+                  "eixo": "Gestão e Negócios"
+                },
+                "ppc": null,
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/tecnico-em-logistica"
+              },
+              {
+                "id": "curso:arapongas/tecnico-em-meio-ambiente",
+                "nome": "Técnico em Meio Ambiente",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "ead",
+                "situacao": "incerto",
+                "cnct": {
+                  "id": "cnct:tecnico-em-meio-ambiente",
+                  "nome": "Técnico em Meio Ambiente",
+                  "eixo": "Ambiente e Saúde"
+                },
+                "ppc": null,
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/tecnico-em-meio-ambiente"
+              },
+              {
+                "id": "curso:arapongas/tecnico-em-melhoria-de-processos",
+                "nome": "Técnico em Melhoria de Processos",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "ead",
+                "situacao": "suspenso",
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:arapongas/tecnico-em-melhoria-de-processos",
+                  "ano": 2021
+                },
+                "suap": {
+                  "id": 1,
+                  "codigo": "AR001"
+                },
+                "turnos": [
+                  "noturno"
+                ],
+                "link": "ifpr://curso/arapongas/tecnico-em-melhoria-de-processos"
+              },
+              {
+                "id": "curso:arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+                "nome": "Técnico em Sistemas de Energia Renovável",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-sistemas-de-energia-renovavel",
+                  "nome": "Técnico em Sistemas de Energia Renovável",
+                  "eixo": "Controle e Processos Industriais"
+                },
+                "ppc": {
+                  "id": "ppc:arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+                  "ano": 2025
+                },
+                "suap": {
+                  "id": 615,
+                  "codigo": "AR002"
+                },
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio"
+              },
+              {
+                "id": "curso:arapongas/tecnologia-em-processos-gerenciais",
+                "nome": "Tecnologia em Processos Gerenciais",
+                "campus": {
+                  "id": "arapongas",
+                  "nome": "Arapongas"
+                },
+                "nivel": "superior",
+                "forma_oferta": "graduação tecnológica",
+                "modalidade": null,
+                "situacao": null,
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:arapongas/tecnologia-em-processos-gerenciais",
+                  "ano": 2025
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/arapongas/tecnologia-em-processos-gerenciais"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-agropecuaria",
+                "nome": "Técnico em Agropecuária",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-agropecuaria",
+                  "nome": "Técnico em Agropecuária",
+                  "eixo": "Recursos Naturais"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-agropecuaria",
+                  "ano": 2021
+                },
+                "suap": {
+                  "id": 172,
+                  "codigo": "AC002"
+                },
+                "turnos": [
+                  "noturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+                "nome": "Técnico em Agropecuária",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-agropecuaria",
+                  "nome": "Técnico em Agropecuária",
+                  "eixo": "Recursos Naturais"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+                  "ano": 2017
+                },
+                "suap": {
+                  "id": 77,
+                  "codigo": "AC001"
+                },
+                "turnos": [
+                  "matutino-com-contraturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-alimentos",
+                "nome": "Técnico em Alimentos",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-alimentos",
+                  "nome": "Técnico em Alimentos",
+                  "eixo": "Produção Alimentícia"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-alimentos",
+                  "ano": 2022
+                },
+                "suap": {
+                  "id": 212,
+                  "codigo": "AC003"
+                },
+                "turnos": [
+                  "noturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-alimentos"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-comercio",
+                "nome": "Técnico em Comércio",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-comercio",
+                  "nome": "Técnico em Comércio",
+                  "eixo": "Gestão e Negócios"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-comercio",
+                  "ano": 2019
+                },
+                "suap": {
+                  "id": 119,
+                  "codigo": "AC004"
+                },
+                "turnos": [
+                  "matutino-com-contraturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-comercio"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio",
+                "nome": "Técnico em Eletromecânica",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-eletromecanica",
+                  "nome": "Técnico em Eletromecânica",
+                  "eixo": "Controle e Processos Industriais"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio",
+                  "ano": 2013
+                },
+                "suap": {
+                  "id": 2,
+                  "codigo": "AC005"
+                },
+                "turnos": [
+                  "matutino"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-eletromecanica-subsequente",
+                "nome": "Técnico em Eletromecânica",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-eletromecanica",
+                  "nome": "Técnico em Eletromecânica",
+                  "eixo": "Controle e Processos Industriais"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-eletromecanica-subsequente",
+                  "ano": null
+                },
+                "suap": {
+                  "id": 174,
+                  "codigo": "AC006"
+                },
+                "turnos": [
+                  "noturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-subsequente"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-eletrotecnica-subsequente",
+                "nome": "Técnico em Eletrotécnica",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-eletrotecnica",
+                  "nome": "Técnico em Eletrotécnica",
+                  "eixo": "Controle e Processos Industriais"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-eletrotecnica-subsequente",
+                  "ano": null
+                },
+                "suap": {
+                  "id": 175,
+                  "codigo": "AC007"
+                },
+                "turnos": [
+                  "noturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+                "nome": "Técnico em Informática para Internet",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-informatica-para-internet",
+                  "nome": "Técnico em Informática para Internet",
+                  "eixo": "Informação e Comunicação"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+                  "ano": 2019
+                },
+                "suap": {
+                  "id": 162,
+                  "codigo": "AC008"
+                },
+                "turnos": [
+                  "matutino-com-contraturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio",
+                "nome": "Técnico em Mecatrônica",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-mecatronica",
+                  "nome": "Técnico em Mecatrônica",
+                  "eixo": "Controle e Processos Industriais"
+                },
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio",
+                  "ano": 2025
+                },
+                "suap": {
+                  "id": 636,
+                  "codigo": "AC013"
+                },
+                "turnos": [
+                  "matutino-com-contraturno"
+                ],
+                "link": "ifpr://curso/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnologia-em-automacao-industrial",
+                "nome": "Tecnologia em Automação Industrial",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "superior",
+                "forma_oferta": "graduação tecnológica",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnologia-em-automacao-industrial",
+                  "ano": 2025
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/assis-chateaubriand/tecnologia-em-automacao-industrial"
+              },
+              {
+                "id": "curso:assis-chateaubriand/tecnologia-em-gestao-comercial",
+                "nome": "Tecnologia em Gestão Comercial",
+                "campus": {
+                  "id": "assis-chateaubriand",
+                  "nome": "Assis Chateaubriand"
+                },
+                "nivel": "superior",
+                "forma_oferta": "graduação tecnológica",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:assis-chateaubriand/tecnologia-em-gestao-comercial",
+                  "ano": 2023
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/assis-chateaubriand/tecnologia-em-gestao-comercial"
+              },
+              {
+                "id": "curso:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio",
+                "nome": "Técnico em Informática",
+                "campus": {
+                  "id": "astorga",
+                  "nome": "Astorga"
+                },
+                "nivel": "médio",
+                "forma_oferta": "integrado",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": {
+                  "id": "cnct:tecnico-em-informatica",
+                  "nome": "Técnico em Informática",
+                  "eixo": "Informação e Comunicação"
+                },
+                "ppc": {
+                  "id": "ppc:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio",
+                  "ano": 2010
+                },
+                "suap": {
+                  "id": 56,
+                  "codigo": "AST002"
+                },
+                "turnos": [
+                  "matutino"
+                ],
+                "link": "ifpr://curso/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio"
+              },
+              {
+                "id": "curso:astorga/licenciatura-em-pedagogia",
+                "nome": "Licenciatura em Pedagogia",
+                "campus": {
+                  "id": "astorga",
+                  "nome": "Astorga"
+                },
+                "nivel": "superior",
+                "forma_oferta": "licenciatura",
+                "modalidade": "presencial",
+                "situacao": "ativo",
+                "cnct": null,
+                "ppc": {
+                  "id": "ppc:astorga/licenciatura-em-pedagogia",
+                  "ano": 2025
+                },
+                "suap": null,
+                "turnos": [],
+                "link": "ifpr://curso/astorga/licenciatura-em-pedagogia"
+              },
+              {
+                "id": "curso:astorga/tecnico-em-desenvolvimento-de-sistemas",
+                "nome": "Técnico em Desenvolvimento de Sistemas",
+                "campus": {
+                  "id": "astorga",
+                  "nome": "Astorga"
+                },
+                "nivel": "médio",
+                "forma_oferta": "subsequente",
+                "modalidade": "presencial",
+                "situacao": "suspenso",
+                "cnct": {
+                  "id": "cnct:tecnico-em-desenvolvimento-de-sistemas",
+                  "nome": "Técnico em Desenvolvimento de Sistemas",
+                  "eixo": "Informação e Comunicação"
+                },
+                "ppc": {
+                  "id": "ppc:astorga/tecnico-em-desenvolvimento-de-sistemas",
+                  "ano": 2022
+                },
+                "suap": {
+                  "id": 48,
+                  "codigo": "AST001"
+                },
+                "turnos": [
+                  "noturno"
+                ],
+                "link": "ifpr://curso/astorga/tecnico-em-desenvolvimento-de-sistemas"
+              }
+            ]
+          },
+          "avisos": [],
+          "pagina": {
+            "total": 225,
+            "devolvidos": 25,
+            "cursor": "eyJkIjoyNSwiYyI6ImE5MjU2ZGMxNjhlOSJ9"
           }
         }
       }
@@ -12441,12 +13424,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Atenção: os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana: confira o trecho de origem antes de afirmar um valor ou uma divergência\nAtenção: há citações identificadas por regra de baixa confiança (orgao-ausente-registro, orgao-no-documento): confira o trecho no PPC antes de afirmar que ele cita a norma\n\n## [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) — [Curitiba](ifpr://campus/curitiba)\n\nmédio, subsequente, presencial, ativo\n\nCNCT: [Técnico em Enfermagem](ifpr://cnct/tecnico-em-enfermagem), eixo Ambiente e Saúde, carga horária mínima 1200 h.\n\nOfertas:\n- processo-seletivo-2025: matutino, 30 vagas\n- processo-seletivo-2026: matutino, 30 vagas\n\nAdequação ao [art. 71 da Res. CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2#art71) (prazo de adequação): **cita a Res. CNE/CP nº 1/2021**.\n\nRegras de transição das normas citadas:\n- [dcnept-2026-art70](ifpr://norma/br/cne-cp/res/2026/2#art70) (a confirmar): Podem ser adequados à Res. CNE/CP nº 2/2026 por solicitação da instituição ou do órgão regulador; a adequação é facultativa e não prejudica a continuidade do processo.\n- [dcnept-2026-art71](ifpr://norma/br/cne-cp/res/2026/2#art71) (a confirmar): Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.\n- [dcnept-2026-art71-parunico](ifpr://norma/br/cne-cp/res/2026/2#art71-parunico) (a confirmar): Têm assegurado o direito de concluir o curso com base na Res. CNE/CP nº 1/2021.\n- [dcnept-2021-art63](ifpr://norma/br/cne-cp/res/2021/1#art63) (a confirmar): Podem ser adequados à Res. CNE/CP nº 1/2021 por solicitação da instituição.\n- [dcnept-2021-art62](ifpr://norma/br/cne-cp/res/2021/1#art62) (a confirmar): Têm assegurado o direito de concluir o curso com base na Res. CNE/CEB nº 6/2012 (técnicos) e na Res. CNE/CP nº 3/2002 (tecnologia).\n\nPPC: [ppc:curitiba/tecnico-em-enfermagem](ifpr://ppc/curitiba/tecnico-em-enfermagem) (2023).\n\n**ano_documento = 2023** — status `Pendente`, regra `dados-institucionais`\n> \"ano_documento\": 2023,\nfonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json:30-30`\n\n**carga_horaria_total_h = 1600 h** — status `extraido`, regra `rotulo-quadro-relogio`\n> Carga horária total em hora relógio: 1.600 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:122-122`\n\n**estagio_carga_h = 400 h** — status `extraido`, regra `rotulo-corpo-sem-marca`\n> Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126-126`\n\n**estagio_obrigatorio = sim** — status `extraido`, regra `rotulo-corpo`\n> Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126-126`\n\nSUAP (Múltiplas — CH divergentes):\n- 71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -\n- 538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- ano: **confere** — anos das matrizes: 2020, 2024\n- carga_horaria: **confere-com-uma-matriz** — igual a matriz 538 (2024): 1600 h; o SUAP tem matrizes com CH diferentes (matriz 71 (2020): 1820 h; matriz 538 (2024): 1600 h)\n- estagio: **diverge** — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 538 (2024))\n\nNormas que o PPC cita (ocorrências; detalhes em `citacoes_da_norma` com `ppc`):\n- [Resolução CONSUP/IFPR nº 36/2019](ifpr://norma/ifpr/consup/res/2019/36) `ifpr/consup/res/2019/36` (revogada): 15\n- [Lei nº 11.892/2008](ifpr://norma/br/lei/2008/11892) `br/lei/2008/11892` (vigente): 13\n- [br/lei/1986/7498](ifpr://norma/br/lei/1986/7498) (sem status): 10\n- [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) `br/lei/1996/9394` (parcialmente revogada): 10\n- [Resolução CONSUP/IFPR nº 50/2017](ifpr://norma/ifpr/consup/res/2017/50) `ifpr/consup/res/2017/50` (vigente): 9\n- [Resolução CONSUP/IFPR nº 54/2011](ifpr://norma/ifpr/consup/res/2011/54) `ifpr/consup/res/2011/54` (revogada): 8\n- [Lei nº 10.098/2000](ifpr://norma/br/lei/2000/10098) `br/lei/2000/10098` (a confirmar): 5\n- [Lei nº 12.711/2012](ifpr://norma/br/lei/2012/12711) `br/lei/2012/12711` (alterada): 5\n- [ifpr/consup/res/2010/39](ifpr://norma/ifpr/consup/res/2010/39) (sem status): 5\n- [Decreto nº 5.296/2004](ifpr://norma/br/decreto/2004/5296) `br/decreto/2004/5296` (a confirmar): 4\n- [br/lei/2000/10048](ifpr://norma/br/lei/2000/10048) (sem status): 4\n- [Lei nº 13.146/2015](ifpr://norma/br/lei/2015/13146) `br/lei/2015/13146` (vigente): 4\n- [br/decreto/2012/7824](ifpr://norma/br/decreto/2012/7824) (sem status): 3\n- [Lei nº 12.764/2012](ifpr://norma/br/lei/2012/12764) `br/lei/2012/12764` (a confirmar): 3\n- [ifpr/consup/res/2019/58](ifpr://norma/ifpr/consup/res/2019/58) (sem status): 3\n- [Resolução CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1) `br/cne-cp/res/2021/1` (revogada): 2\n- [br/decreto/1987/94406](ifpr://norma/br/decreto/1987/94406) (sem status): 2\n- [br/lei/2001/10216](ifpr://norma/br/lei/2001/10216) (sem status): 2\n- [Lei nº 11.788/2008](ifpr://norma/br/lei/2008/11788) `br/lei/2008/11788` (vigente): 2\n- [br/mec/portaria/2012/18](ifpr://norma/br/mec/portaria/2012/18) (sem status): 2\n- [externo:cofen/res/2010/371](ifpr://norma/externo:cofen/res/2010/371) (sem status): 2\n- [externo:cofen/res/2019/609](ifpr://norma/externo:cofen/res/2019/609) (sem status): 2\n- [ifpr/consup/res/2017/1](ifpr://norma/ifpr/consup/res/2017/1) (sem status): 2\n- [Resolução CONSUP/IFPR nº 82/2022](ifpr://norma/ifpr/consup/res/2022/82) `ifpr/consup/res/2022/82` (vigente): 2\n- [Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021](ifpr://norma/ifpr/proens/in/2021/1) `ifpr/proens/in/2021/1` (a confirmar): 2\n- [Parecer CNE/CEB nº 16/1999](ifpr://norma/br/cne-ceb/parecer/1999/16) `br/cne-ceb/parecer/1999/16` (a confirmar): 1\n- [br/cne-ceb/res/2004/1](ifpr://norma/br/cne-ceb/res/2004/1) (sem status): 1\n… e mais 20 normas (lista completa no JSON)\n\nSeções do PPC (para `ler_secao`, o ID é `curitiba/tecnico-em-enfermagem#<seção>`):\n- `#identificacao-1` 1.1.1 Processo [identificacao]\n- `#identificacao-2` 1.1.2 Informações do Campus [identificacao]\n- `#identificacao-3` 1.1.7 Turno do curso [identificacao]\n- `#identificacao-4` 1.1.8 Horário de oferta do curso [identificacao]\n- `#carga_horaria-1` 1.1.10 Carga-Horária Total do Curso [carga_horaria]\n- `#estagio_praticas-1` 1.1.11 Carga Horária de Estágio Obrigatório [estagio_praticas]\n- `#formato_oferta-1` 1.1.12 Tipo de matrícula [formato_oferta]\n- `#formato_oferta-2` 1.1.13 Regime acadêmico [formato_oferta]\n- `#identificacao-5` 1.1.14 Vagas totais (anual) [identificacao]\n- `#requisitos_acesso-1` 1.1.15 Escolaridade mínima exigida/requisito de acesso ao curso [requisitos_acesso]\n- `#identificacao-6` 1.1.16 Ano de criação do curso [identificacao]\n- `#identificacao-7` 1.1.17 Ano de início da primeira turma [identificacao]\n- `#identificacao-8` 1.1.18 Ano de ajuste curricular [identificacao]\n- `#identificacao-9` 1.1.20 Endereço de realização do curso [identificacao]\n- `#identificacao-10` 1.1.23 Comissão de Estruturação de Curso (CEC) ou Comissão de Ajuste Curricular (CAJ): [identificacao]\n- `#legislacao-1` 1.2 FUNDAMENTOS LEGAIS E NORMATIVOS [legislacao]\n- `#justificativa-1` 1.3.1 Contexto histórico do IFPR [justificativa]\n- `#justificativa-2` 1.3.3 A criação do Curso Técnico em Enfermagem no campus [justificativa]\n- `#objetivos-1` 2.1 OBJETIVO GERAL [objetivos]\n- `#objetivos-2` 2.2 OBJETIVOS ESPECÍFICOS [objetivos]\n- `#concepcao_pedagogica-1` 3.1 PRESSUPOSTOS PEDAGÓGICOS [concepcao_pedagogica]\n- `#concepcao_pedagogica-2` 3.2 PRESSUPOSTOS METODOLÓGICOS [concepcao_pedagogica]\n- `#perfil_egresso-1` 4 PERFIL DO EGRESSO [perfil_egresso]\n- `#certificados_diplomas-1` 4.1 EXPEDIÇÃO DE DIPLOMAS E CERTIFICADOS [certificados_diplomas]\n- `#perfil_egresso-2` 4.2 ÁREA DE ATUAÇÃO DO EGRESSO [perfil_egresso]\n- `#acompanhamento_egresso-1` 4.3 ACOMPANHAMENTO DO EGRESSO [acompanhamento_egresso]\n- `#organizacao_curricular-1` 5.1 ESTRUTURA CURRICULAR [organizacao_curricular]\n- `#concepcao_pedagogica-3` 5.2 METODOLOGIA E ESTRATÉGIAS PEDAGÓGICAS [concepcao_pedagogica]\n- `#ensino_pesquisa_extensao-1` 5.3 RELAÇÃO ENTRE ENSINO, PESQUISA, EXTENSÃO E INOVAÇÃO [ensino_pesquisa_extensao]\n- `#organizacao_curricular-2` 5.4 ARTE E CULTURA [organizacao_curricular]\n- `#avaliacao-1` 6.1 AVALIAÇÃO DA APRENDIZAGEM [avaliacao]\n- `#avaliacao-2` 6.1.1 Recuperação Paralela [avaliacao]\n- `#avaliacao-3` 6.1.2 Forma de Emissão de Resultados [avaliacao]\n- `#avaliacao-4` 6.1.3 Condições de Aprovação [avaliacao]\n- `#avaliacao-5` 6.1.4 Progressão Parcial [avaliacao]\n- `#aproveitamento_estudos-1` 6.2 APROVEITAMENTO DE ESTUDOS ANTERIORES [aproveitamento_estudos]\n- `#aproveitamento_estudos-2` 6.3 CERTIFICAÇÃO DE CONHECIMENTOS ANTERIORES [aproveitamento_estudos]\n- `#itinerario_formativo-1` 6.4 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO [itinerario_formativo]\n- `#matriz_curricular-1` 6.5 MATRIZ CURRICULAR [matriz_curricular]\n… e mais 88 seções (lista completa no JSON; ou use `buscar_secoes` com `ppc`)\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana: confira o trecho de origem antes de afirmar um valor ou uma divergência\nAtenção: há citações identificadas por regra de baixa confiança (orgao-ausente-registro, orgao-no-documento): confira o trecho no PPC antes de afirmar que ele cita a norma\n\n## [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) — [Curitiba](ifpr://campus/curitiba)\n\nmédio, subsequente, presencial, ativo\n\nCNCT: [Técnico em Enfermagem](ifpr://cnct/tecnico-em-enfermagem), eixo Ambiente e Saúde, carga horária mínima 1200 h.\n\nSUAP: 151, código CTB008.\n\nOfertas:\n- processo-seletivo-2025: matutino, 30 vagas\n- processo-seletivo-2026: matutino, 30 vagas\n\nAdequação ao [art. 71 da Res. CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2#art71) (prazo de adequação): **cita a Res. CNE/CP nº 1/2021**.\n\nRegras de transição das normas citadas:\n- [dcnept-2026-art70](ifpr://norma/br/cne-cp/res/2026/2#art70) (a confirmar): Podem ser adequados à Res. CNE/CP nº 2/2026 por solicitação da instituição ou do órgão regulador; a adequação é facultativa e não prejudica a continuidade do processo.\n- [dcnept-2026-art71](ifpr://norma/br/cne-cp/res/2026/2#art71) (a confirmar): Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.\n- [dcnept-2026-art71-parunico](ifpr://norma/br/cne-cp/res/2026/2#art71-parunico) (a confirmar): Têm assegurado o direito de concluir o curso com base na Res. CNE/CP nº 1/2021.\n- [dcnept-2021-art63](ifpr://norma/br/cne-cp/res/2021/1#art63) (a confirmar): Podem ser adequados à Res. CNE/CP nº 1/2021 por solicitação da instituição.\n- [dcnept-2021-art62](ifpr://norma/br/cne-cp/res/2021/1#art62) (a confirmar): Têm assegurado o direito de concluir o curso com base na Res. CNE/CEB nº 6/2012 (técnicos) e na Res. CNE/CP nº 3/2002 (tecnologia).\n\nPPC: [ppc:curitiba/tecnico-em-enfermagem](ifpr://ppc/curitiba/tecnico-em-enfermagem) (2023).\n\n**ano_documento = 2023** — status `Pendente`, regra `dados-institucionais`\n> \"ano_documento\": 2023,\nfonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json:30-30`\n\n**carga_horaria_total_h = 1600 h** — status `extraido`, regra `rotulo-quadro-relogio`\n> Carga horária total em hora relógio: 1.600 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:122-122`\n\n**estagio_carga_h = 400 h** — status `extraido`, regra `rotulo-corpo-sem-marca`\n> Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126-126`\n\n**estagio_obrigatorio = sim** — status `extraido`, regra `rotulo-corpo`\n> Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126-126`\n\nSUAP (Múltiplas — CH divergentes):\n- 71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -\n- 538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- ano: **confere** — anos das matrizes: 2020, 2024\n- carga_horaria: **confere-com-uma-matriz** — igual a matriz 538 (2024): 1600 h; o SUAP tem matrizes com CH diferentes (matriz 71 (2020): 1820 h; matriz 538 (2024): 1600 h)\n- estagio: **diverge** — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 538 (2024))\n\nNormas que o PPC cita (ocorrências; detalhes em `citacoes_da_norma` com `ppc`):\n- [Resolução CONSUP/IFPR nº 36/2019](ifpr://norma/ifpr/consup/res/2019/36) `ifpr/consup/res/2019/36` (revogada): 15\n- [Lei nº 11.892/2008](ifpr://norma/br/lei/2008/11892) `br/lei/2008/11892` (vigente): 13\n- [br/lei/1986/7498](ifpr://norma/br/lei/1986/7498) (sem status): 10\n- [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) `br/lei/1996/9394` (parcialmente revogada): 10\n- [Resolução CONSUP/IFPR nº 50/2017](ifpr://norma/ifpr/consup/res/2017/50) `ifpr/consup/res/2017/50` (vigente): 9\n- [Resolução CONSUP/IFPR nº 54/2011](ifpr://norma/ifpr/consup/res/2011/54) `ifpr/consup/res/2011/54` (revogada): 8\n- [Lei nº 10.098/2000](ifpr://norma/br/lei/2000/10098) `br/lei/2000/10098` (a confirmar): 5\n- [Lei nº 12.711/2012](ifpr://norma/br/lei/2012/12711) `br/lei/2012/12711` (alterada): 5\n- [ifpr/consup/res/2010/39](ifpr://norma/ifpr/consup/res/2010/39) (sem status): 5\n- [Decreto nº 5.296/2004](ifpr://norma/br/decreto/2004/5296) `br/decreto/2004/5296` (a confirmar): 4\n- [br/lei/2000/10048](ifpr://norma/br/lei/2000/10048) (sem status): 4\n- [Lei nº 13.146/2015](ifpr://norma/br/lei/2015/13146) `br/lei/2015/13146` (vigente): 4\n- [br/decreto/2012/7824](ifpr://norma/br/decreto/2012/7824) (sem status): 3\n- [Lei nº 12.764/2012](ifpr://norma/br/lei/2012/12764) `br/lei/2012/12764` (a confirmar): 3\n- [ifpr/consup/res/2019/58](ifpr://norma/ifpr/consup/res/2019/58) (sem status): 3\n- [Resolução CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1) `br/cne-cp/res/2021/1` (revogada): 2\n- [br/decreto/1987/94406](ifpr://norma/br/decreto/1987/94406) (sem status): 2\n- [br/lei/2001/10216](ifpr://norma/br/lei/2001/10216) (sem status): 2\n- [Lei nº 11.788/2008](ifpr://norma/br/lei/2008/11788) `br/lei/2008/11788` (vigente): 2\n- [br/mec/portaria/2012/18](ifpr://norma/br/mec/portaria/2012/18) (sem status): 2\n- [externo:cofen/res/2010/371](ifpr://norma/externo:cofen/res/2010/371) (sem status): 2\n- [externo:cofen/res/2019/609](ifpr://norma/externo:cofen/res/2019/609) (sem status): 2\n- [ifpr/consup/res/2017/1](ifpr://norma/ifpr/consup/res/2017/1) (sem status): 2\n- [Resolução CONSUP/IFPR nº 82/2022](ifpr://norma/ifpr/consup/res/2022/82) `ifpr/consup/res/2022/82` (vigente): 2\n- [Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021](ifpr://norma/ifpr/proens/in/2021/1) `ifpr/proens/in/2021/1` (a confirmar): 2\n- [Parecer CNE/CEB nº 16/1999](ifpr://norma/br/cne-ceb/parecer/1999/16) `br/cne-ceb/parecer/1999/16` (a confirmar): 1\n- [br/cne-ceb/res/2004/1](ifpr://norma/br/cne-ceb/res/2004/1) (sem status): 1\n… e mais 20 normas (lista completa no JSON)\n\nSeções do PPC (para `ler_secao`, o ID é `curitiba/tecnico-em-enfermagem#<seção>`):\n- `#identificacao-1` 1.1.1 Processo [identificacao]\n- `#identificacao-2` 1.1.2 Informações do Campus [identificacao]\n- `#identificacao-3` 1.1.7 Turno do curso [identificacao]\n- `#identificacao-4` 1.1.8 Horário de oferta do curso [identificacao]\n- `#carga_horaria-1` 1.1.10 Carga-Horária Total do Curso [carga_horaria]\n- `#estagio_praticas-1` 1.1.11 Carga Horária de Estágio Obrigatório [estagio_praticas]\n- `#formato_oferta-1` 1.1.12 Tipo de matrícula [formato_oferta]\n- `#formato_oferta-2` 1.1.13 Regime acadêmico [formato_oferta]\n- `#identificacao-5` 1.1.14 Vagas totais (anual) [identificacao]\n- `#requisitos_acesso-1` 1.1.15 Escolaridade mínima exigida/requisito de acesso ao curso [requisitos_acesso]\n- `#identificacao-6` 1.1.16 Ano de criação do curso [identificacao]\n- `#identificacao-7` 1.1.17 Ano de início da primeira turma [identificacao]\n- `#identificacao-8` 1.1.18 Ano de ajuste curricular [identificacao]\n- `#identificacao-9` 1.1.20 Endereço de realização do curso [identificacao]\n- `#identificacao-10` 1.1.23 Comissão de Estruturação de Curso (CEC) ou Comissão de Ajuste Curricular (CAJ): [identificacao]\n- `#legislacao-1` 1.2 FUNDAMENTOS LEGAIS E NORMATIVOS [legislacao]\n- `#justificativa-1` 1.3.1 Contexto histórico do IFPR [justificativa]\n- `#justificativa-2` 1.3.3 A criação do Curso Técnico em Enfermagem no campus [justificativa]\n- `#objetivos-1` 2.1 OBJETIVO GERAL [objetivos]\n- `#objetivos-2` 2.2 OBJETIVOS ESPECÍFICOS [objetivos]\n- `#concepcao_pedagogica-1` 3.1 PRESSUPOSTOS PEDAGÓGICOS [concepcao_pedagogica]\n- `#concepcao_pedagogica-2` 3.2 PRESSUPOSTOS METODOLÓGICOS [concepcao_pedagogica]\n- `#perfil_egresso-1` 4 PERFIL DO EGRESSO [perfil_egresso]\n- `#certificados_diplomas-1` 4.1 EXPEDIÇÃO DE DIPLOMAS E CERTIFICADOS [certificados_diplomas]\n- `#perfil_egresso-2` 4.2 ÁREA DE ATUAÇÃO DO EGRESSO [perfil_egresso]\n- `#acompanhamento_egresso-1` 4.3 ACOMPANHAMENTO DO EGRESSO [acompanhamento_egresso]\n- `#organizacao_curricular-1` 5.1 ESTRUTURA CURRICULAR [organizacao_curricular]\n- `#concepcao_pedagogica-3` 5.2 METODOLOGIA E ESTRATÉGIAS PEDAGÓGICAS [concepcao_pedagogica]\n- `#ensino_pesquisa_extensao-1` 5.3 RELAÇÃO ENTRE ENSINO, PESQUISA, EXTENSÃO E INOVAÇÃO [ensino_pesquisa_extensao]\n- `#organizacao_curricular-2` 5.4 ARTE E CULTURA [organizacao_curricular]\n- `#avaliacao-1` 6.1 AVALIAÇÃO DA APRENDIZAGEM [avaliacao]\n- `#avaliacao-2` 6.1.1 Recuperação Paralela [avaliacao]\n- `#avaliacao-3` 6.1.2 Forma de Emissão de Resultados [avaliacao]\n- `#avaliacao-4` 6.1.3 Condições de Aprovação [avaliacao]\n- `#avaliacao-5` 6.1.4 Progressão Parcial [avaliacao]\n- `#aproveitamento_estudos-1` 6.2 APROVEITAMENTO DE ESTUDOS ANTERIORES [aproveitamento_estudos]\n- `#aproveitamento_estudos-2` 6.3 CERTIFICAÇÃO DE CONHECIMENTOS ANTERIORES [aproveitamento_estudos]\n- `#itinerario_formativo-1` 6.4 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO [itinerario_formativo]\n- `#matriz_curricular-1` 6.5 MATRIZ CURRICULAR [matriz_curricular]\n… e mais 88 seções (lista completa no JSON; ou use `buscar_secoes` com `ppc`)\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-ecc671ca",
+            "versao": "dev-9bbfc618",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -13114,6 +14097,10 @@
                   "titulo": "DISPOSIÇÕES TRANSITÓRIAS"
                 }
               ]
+            },
+            "suap": {
+              "id": 151,
+              "codigo": "CTB008"
             },
             "ofertas": [
               {

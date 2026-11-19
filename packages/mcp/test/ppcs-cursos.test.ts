@@ -592,26 +592,28 @@ describe("listar_cursos", () => {
         {
           id: `curso:${PPC_ENFERMAGEM}`,
           nome: "Técnico em Enfermagem",
-          campus: "curitiba",
+          campus: { id: "curitiba", nome: "Curitiba" },
           nivel: "médio",
           forma_oferta: "subsequente",
           modalidade: "presencial",
           situacao: "ativo",
           cnct: { id: "cnct:tecnico-em-enfermagem", nome: "Técnico em Enfermagem", eixo: "Ambiente e Saúde" },
           ppc: { id: `ppc:${PPC_ENFERMAGEM}`, ano: 2023 },
+          suap: { id: 151, codigo: "CTB008" },
           turnos: ["matutino"],
           link: `ifpr://curso/${PPC_ENFERMAGEM}`,
         },
         {
           id: `curso:${PPC_INFORMATICA}`,
           nome: "Técnico em Informática",
-          campus: "curitiba",
+          campus: { id: "curitiba", nome: "Curitiba" },
           nivel: "médio",
           forma_oferta: "integrado",
           modalidade: "presencial",
           situacao: "ativo",
           cnct: { id: "cnct:tecnico-em-informatica", nome: "Técnico em Informática", eixo: "Informação e Comunicação" },
           ppc: { id: `ppc:${PPC_INFORMATICA}`, ano: 2022 },
+          suap: null,
           turnos: ["noturno"],
           link: `ifpr://curso/${PPC_INFORMATICA}`,
         },
@@ -746,6 +748,7 @@ describe("ficha_curso", () => {
         carga_horaria_minima: 1200,
         link: "ifpr://cnct/tecnico-em-enfermagem",
       });
+      expect(d.suap).toEqual({ id: 151, codigo: "CTB008" });
       expect(d.ppc?.secoes.map((s) => s.id)).toEqual([
         `${PPC_ENFERMAGEM}#avaliacao-1`,
         `${PPC_ENFERMAGEM}#estagio-1`,
@@ -776,6 +779,7 @@ describe("ficha_curso", () => {
       expect(resposta.avisos.map((a) => a.tipo)).toEqual(["fato-extraido", "citacao-baixa-confianca"]);
       expect(texto).toContain("## [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem)");
       expect(texto).toContain("`#estagio-1` estagio-1 [estagio_praticas]");
+      expect(texto).toContain("\n\nSUAP: 151, código CTB008.\n\n");
     }),
   );
 
@@ -794,6 +798,7 @@ describe("ficha_curso", () => {
       const fisica = (yield* resp(fichaCurso, { curso: PPC_FISICA }, ctx)).resposta.dados;
       expect(fisica.adequacao_art71).toBeNull();
       expect(fisica.cnct).toBeNull();
+      expect(fisica.suap).toBeNull();
       expect(fisica.fatos?.suap).toEqual({ situacao: null, carga_horaria_comum_h: null, matrizes: [] });
     }),
   );

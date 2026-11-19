@@ -444,9 +444,6 @@ export function FichaCampus({ id, aoAbrirLink }: { readonly id: string; readonly
 export function FichaCnct({ slug, aoAbrirLink }: { readonly slug: string; readonly aoAbrirLink: AoAbrirLink }) {
   const api = useApi();
   const lido = useCarga(`cnct:${slug}`, () => api.chamar((c) => c.lerCnct({ cnct: slug })));
-  const indice = useIndiceExplorar();
-  const nomeCampus = (campus: string) =>
-    (indice.fase === "lido" ? indice.valor.campi.find((c) => c.id === campus)?.nome : undefined) ?? campus;
   return (
     <ComCarga carga={lido} titulo="Não foi possível ler este curso do catálogo">
       {({ dados: d }) => (
@@ -472,7 +469,7 @@ export function FichaCnct({ slug, aoAbrirLink }: { readonly slug: string; readon
                     </BotaoLink>
                     <span className="text-muted-foreground">
                       {" "}
-                      · Campus {nomeCampus(c.campus)}
+                      · Campus {c.campus.nome ?? c.campus.id}
                       {c.forma_oferta ? `, ${c.forma_oferta}` : ""}
                     </span>
                   </li>

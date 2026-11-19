@@ -139,7 +139,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     `UPDATE cursos SET forma_oferta = 'subsequente', modalidade = 'presencial', situacao = 'ativo',
        cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${PPC_ENFERMAGEM}',
        ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_ENFERMAGEM}.md', ppc_ano_documento = 2023,
-       suap_matrizes_situacao = 'Única ativa'
+       suap_id = 151, suap_codigo = 'CTB008', suap_matrizes_situacao = 'Única ativa'
      WHERE id = 'curso:${PPC_ENFERMAGEM}'`,
   );
   db.exec(

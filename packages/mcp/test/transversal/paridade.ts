@@ -590,9 +590,8 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
           Effect.gen(function* () {
             const cli = yield* kbE("cursos", "--campus", "curitiba");
             const cursos = yield* paginas(listarCursos, { campus: "curitiba", limite: 100 }, (d) => d.cursos);
-            expect(cursos.map((c: Json) => [c.id, c.nome, c.cnct?.id ?? null, c.ppc?.id ?? null])).toEqual(
-              cli.cursos.map((c: Json) => [c.id, c.nome, c.cnct?.id ?? null, c.ppc?.id ?? null]),
-            );
+            const resumo = (c: Json) => [c.id, c.nome, c.campus, c.cnct?.id ?? null, c.ppc?.id ?? null, c.suap];
+            expect(cursos.map(resumo)).toEqual(cli.cursos.map(resumo));
             expect(cursos).toHaveLength(cli.total);
           }),
       },
@@ -628,6 +627,7 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
             const curso = cursos.cursos.find((c: Json) => c.id === `curso:${PPC}`);
             expect(d.ofertas.map((o) => o.turno)).toEqual(curso.ofertas.map((o: Json) => o.turno));
             expect(d.cnct?.id).toBe(curso.cnct.id);
+            expect(d.suap).toEqual(curso.suap);
           }),
       },
     ],

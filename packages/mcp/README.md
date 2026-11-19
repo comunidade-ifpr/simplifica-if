@@ -62,6 +62,21 @@ O servidor fala MCP pelo stdin/stdout; as mensagens de diagnóstico vão para o 
 
 Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packages/kb/src/db/esquema.ts`) é recusado com "base incompatível com esta versão do simplifica-mcp; atualize".
 
+## Uso por scripts
+
+Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout ([plano da DENTEC](../../docs/plans/dentec-ferramentas.md), decisão 6). Ele roda a ferramenta como o servidor (`chamarFerramenta`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
+
+```bash
+simplifica-mcp consultar ficha_curso --args '{"curso":"curitiba/tecnico-em-enfermagem"}' --banco ~/SimplificaIF/kb.sqlite
+SIMPLIFICA_KB=kb.sqlite simplifica-mcp consultar listar_cursos --todas-as-paginas > cursos.jsonl
+```
+
+- **Entrada:** `--args` é a entrada da ferramenta, um objeto JSON (padrão `{}`); o banco vem de `--banco` ou `SIMPLIFICA_KB`, e `--pasta-trabalho` (padrão: o diretório atual) vale para o `arquivo` do `pacote_contexto`. Não há atualização da base (`--pasta-atualizacao`) nem download.
+- **Páginas:** as listas são paginadas pelo teto de texto da IA, não só pelo `limite` (o `listar_cursos` dá 9 páginas para os 225 cursos). Com `--todas-as-paginas`, o `consultar` segue o `pagina.cursor` no mesmo processo e imprime uma resposta por linha (JSONL), cada uma válida no `outputSchema`; quem lê junta os itens.
+- **Erros, como no servidor:** lista sem resultado sai com 0 e o aviso `nao-encontrado`; entrada inválida, ID que não está na base, falha da ferramenta, `--args` que não é JSON e banco ausente saem com 1 e a mensagem no stderr. A `etapa` é recusada: só faz sentido numa conversa.
+
+O teste é `test/transversal/consultar.test.ts`: na fixture, cada amostra contra o resultado do `tools/call`; na base real (`pnpm mcp:smoke`), as chamadas gravadas em `testes-gabarito/mcp.json`, com a máscara do `gabarito.ts`.
+
 ## Configuração no piloto zero
 
 Para quem vai instalar, o passo a passo está no [guia do piloto zero](../../docs/guia-piloto-zero.md).
@@ -97,7 +112,7 @@ O pacote é Effect 4 (`effect/ai`, `effect/rpc`, `effect/cli`), sem o SDK oficia
 packages/mcp/
 ├── instrucoes.md            # campo `instructions` do servidor, embutido em src/instrucoes.gerado.ts
 ├── src/
-│   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio
+│   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio; `consultar`
 │   ├── servidor.ts          # McpServer.layerStdio, layerLeitura, layerRegistro, mensagens de abertura
 │   ├── http.ts              # export @simplifica-if/mcp/http: o servidor HTTP local do app, com token por sessão
 │   ├── SessaoAtual.ts       # a sessão da chamada (só no HTTP): rótulo e registro das chamadas
@@ -116,7 +131,7 @@ packages/mcp/
 │   │   └── conteudos.ts     # dados e texto do PPC sem seção, do CNCT, do campus e da ficha
 │   ├── ferramentas/         # um arquivo por ferramenta (Tool.make, descrição, texto)
 │   │   ├── toolkit.ts       # FerramentasIfpr (Toolkit) e layerHandlers
-│   │   └── registrar.ts     # registrarFerramentas, sobre McpServer.addTool
+│   │   └── registrar.ts     # chamarFerramenta e registrarFerramentas, sobre McpServer.addTool
 │   ├── toolkit.ts           # export @simplifica-if/mcp/toolkit
 │   └── rpc.ts               # export @simplifica-if/mcp/rpc: GrupoLeitura (ferramentas e links ifpr://) e layerHandlersRpc
 └── test/                    # fixtures com o DDL do kb; testes por ferramenta, equivalência, RPC, stdio
@@ -173,6 +188,7 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
 | `orcamento.test.ts` | Nenhum texto acima do teto da ferramenta. A paginação percorrida com o cursor tem mais de uma página e soma o total, sem repetir item | sim | sim |
 | `determinismo.test.ts` | Dois processos em stdio, com as mesmas chamadas, dão as linhas de resposta iguais byte a byte | sim | sim |
 | `pasta-de-trabalho.test.ts` | O `pacote_contexto` com `arquivo`, pelo servidor isolado: lê o `.md` de dentro da pasta (relativo, em subpasta e absoluto) e recusa `..`, caminho absoluto de fora e link simbólico para fora, antes de ler. A pasta fica como estava | sim | — |
+| `consultar.test.ts` | O `simplifica-mcp consultar` como processo: cada amostra (menos a `etapa`) sai como o `structuredContent`, ou com código 1 e a mensagem no stderr; `--todas-as-paginas` soma o total; na base real, as chamadas de `testes-gabarito/mcp.json` | sim | sim |
 | `descricoes.test.ts` | Pelo `tools/list`: título, descrição (até 600 caracteres) com a frase "Use quando…", parâmetros descritos e o tamanho do que vai ao modelo | sim | — |
 
 - **Fixture e base real:** o `pnpm test` roda a parte da fixture, que não depende do `tmp/kb.sqlite`. O `pnpm mcp:smoke` roda as suítes inteiras com `SIMPLIFICA_SMOKE=1`; a CLI `kb` compila o banco se ele faltar ou estiver velho.

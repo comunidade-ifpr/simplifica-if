@@ -31,6 +31,7 @@ import * as NodePath from "node:path";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { Client } from "@modelcontextprotocol/client";
 import { type ChamadaDoGabarito, compararDefinicoes, type DefinicaoListada } from "./equivalencia.ts";
+import { mascarar } from "./mascara.ts";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
 const CLI = NodePath.join(RAIZ, "packages/mcp/src/cli.ts");
@@ -68,6 +69,9 @@ const CHAMADAS: ReadonlyArray<{ readonly name: string; readonly arguments: Recor
   { name: "ler_secao", arguments: { id: "ppc:inexistente/inexistente#1" } },
   { name: "listar_cursos", arguments: { limite: 5 } },
   { name: "listar_cursos", arguments: { campus: "curitiba", nivel: "médio" } },
+  // a primeira página do `simplifica-mcp consultar listar_cursos --todas-as-paginas` dos scripts de fora
+  // do repositório (plano da DENTEC, S0): a resposta vai copiada para lá como fixture
+  { name: "listar_cursos", arguments: {} },
   { name: "ficha_curso", arguments: { curso: PPC } },
   { name: "ficha_curso", arguments: { curso: "campus-inexistente/curso" } },
   { name: "fatos_ppc", arguments: { ppc: PPC } },
@@ -135,21 +139,6 @@ await cliente.close();
 
 const texto = `${JSON.stringify(gabarito, null, 2)}\n`;
 
-/**
- * Máscara do que depende da impressão digital das fontes: a versão de desenvolvimento da base
- * (`dev-` e 8 hex) e a impressão da consulta nos cursores de paginação (que inclui a versão); o
- * deslocamento do cursor continua conferido.
- */
-function mascarar(json: string): string {
-  return json.replace(/\bdev-[0-9a-f]{8}\b/g, "dev-<fontes>").replace(/\beyJkIjo[A-Za-z0-9_-]+/g, (cursor) => {
-    try {
-      const { d } = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")) as { d: number };
-      return `<cursor d=${d}>`;
-    } catch {
-      return cursor;
-    }
-  });
-}
 if (modo === "--atualizar") {
   const antigo = JSON.parse(NodeFS.readFileSync(ARQUIVO, "utf8")) as {
     readonly instrucoes: unknown;

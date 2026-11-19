@@ -371,16 +371,19 @@ entrada: {
 }
 dados: {
   cursos: {
-    id: string; nome: string; campus: string; nivel: string; forma_oferta: string | null;
+    id: string; nome: string; campus: { id: string; nome: string | null }; nivel: string; forma_oferta: string | null;
     modalidade: string | null; situacao: string | null;
     cnct: { id: string; nome: string; eixo: string } | null;
     ppc: { id: string; ano: number | null } | null;
+    suap: { id: number; codigo: string | null } | null;
     turnos: string[]; link: Link;
   }[];
 }
 ```
 
 Cada curso vem numa linha compacta, sem o detalhe das ofertas. Assim, Curitiba cabe em poucos KB em vez de 71 KB.
+
+O `campus` com o nome e o `suap` (ID e código do curso no SUAP) entraram em 19/11/2026, para os scripts que leem a base pelo `simplifica-mcp consultar` ([plano da DENTEC](dentec-ferramentas.md), S0); a linha do texto não mudou.
 
 #### 12. `ficha_curso`
 
@@ -393,6 +396,7 @@ dados: {
   campus: { id: string; nome: string; link: Link };
   cnct: { id: string; nome: string; eixo: string; carga_horaria_minima: number | null; link: Link } | null;
   ppc: { id: string; ano: number | null; link: Link; secoes: { id: string; tipo: string; titulo: string }[] } | null;
+  suap: { id: number; codigo: string | null } | null;   // desde 19/11/2026; no texto, a linha "SUAP: <id>, código <codigo>"
   ofertas: { processo: string; turno: string | null; vagas: number | null }[];
   fatos: FatosPpc | null;
   normas_citadas: { id: string; titulo: string; status_vigencia: string | null; ocorrencias: number; link: Link }[];

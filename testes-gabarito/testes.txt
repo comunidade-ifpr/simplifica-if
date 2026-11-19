@@ -61,6 +61,7 @@ packages/mcp/test/rpc.test.ts	17	0
 packages/mcp/test/skills.test.ts	10	0
 packages/mcp/test/stdio.test.ts	11	0
 packages/mcp/test/texto.test.ts	6	0
+packages/mcp/test/transversal/consultar.test.ts	6	2
 packages/mcp/test/transversal/contrato.test.ts	18	0
 packages/mcp/test/transversal/descricoes.test.ts	1	0
 packages/mcp/test/transversal/determinismo.test.ts	4	1
@@ -115,4 +116,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1557	35
+TOTAL	1563	37

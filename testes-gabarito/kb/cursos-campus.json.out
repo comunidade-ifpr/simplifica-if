@@ -21,6 +21,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.md",
         "ano_documento": 2023
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json"
     },
@@ -41,6 +42,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/bacharelado-em-ciencias-contabeis.md",
         "ano_documento": 2025
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/bacharelado-em-ciencias-contabeis.json"
     },
@@ -61,6 +63,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.md",
         "ano_documento": 2025
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json"
     },
@@ -77,6 +80,7 @@
       "situacao": "ativo",
       "cnct": null,
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-design-educacional.json"
     },
@@ -93,6 +97,7 @@
       "situacao": "ativo",
       "cnct": null,
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-educacao-musical-para-educacao-basica.json"
     },
@@ -113,6 +118,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/especializacao-em-educacao-profissional.md",
         "ano_documento": 2023
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-educacao-profissional.json"
     },
@@ -129,6 +135,7 @@
       "situacao": "ativo",
       "cnct": null,
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-e-negocios.json"
     },
@@ -145,6 +152,7 @@
       "situacao": "ativo",
       "cnct": null,
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-empresarial-contabil-e-tributaria.json"
     },
@@ -165,6 +173,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/especializacao-em-gestao-publica.md",
         "ano_documento": 2017
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-publica.json"
     },
@@ -185,6 +194,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/especializacao-em-gestao-social-de-politicas-publicas.md",
         "ano_documento": 2021
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json"
     },
@@ -205,6 +215,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/licenciatura-em-educacao-do-campo.md",
         "ano_documento": 2023
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-educacao-do-campo.json"
     },
@@ -225,6 +236,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/licenciatura-em-pedagogia.md",
         "ano_documento": 2023
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-pedagogia.json"
     },
@@ -241,6 +253,7 @@
       "situacao": "ativo",
       "cnct": null,
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/mestrado-profissional-em-educacao-profissional-e-tecnologica-profept.json"
     },
@@ -257,6 +270,7 @@
       "situacao": "ativo",
       "cnct": null,
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/mestrado-profissional-em-propriedade-intelectual-e-transferencia-de-tecnologia-para-inovacao-profnit.json"
     },
@@ -281,6 +295,10 @@
         "id": "ppc:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.md",
         "ano_documento": 2014
+      },
+      "suap": {
+        "id": 211,
+        "codigo": "CTB001"
       },
       "ofertas": [
         {
@@ -340,6 +358,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-condominio.md",
         "ano_documento": 2020
       },
+      "suap": {
+        "id": 15,
+        "codigo": "CTB002"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-condominio-noturno",
@@ -398,6 +420,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.md",
         "ano_documento": 2015
       },
+      "suap": {
+        "id": 140,
+        "codigo": "CTB003"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-contabilidade-matutino",
@@ -452,6 +478,7 @@
         "carga_horaria_minima_h": 800
       },
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-defesa-civil-ead.json"
     },
@@ -476,6 +503,10 @@
         "id": "ppc:curitiba/tecnico-em-edificacoes",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-edificacoes.md",
         "ano_documento": 2014
+      },
+      "suap": {
+        "id": 43,
+        "codigo": "CTB004"
       },
       "ofertas": [
         {
@@ -535,6 +566,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletromecanica.md",
         "ano_documento": 2017
       },
+      "suap": {
+        "id": 74,
+        "codigo": "CTB005"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-eletromecanica-noturno",
@@ -592,6 +627,10 @@
         "id": "ppc:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.md",
         "ano_documento": 2014
+      },
+      "suap": {
+        "id": 55,
+        "codigo": "CTB006"
       },
       "ofertas": [
         {
@@ -651,6 +690,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md",
         "ano_documento": 2015
       },
+      "suap": {
+        "id": 112,
+        "codigo": "CTB007"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-eletrotecnica-noturno",
@@ -708,6 +751,10 @@
         "id": "ppc:curitiba/tecnico-em-enfermagem",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
         "ano_documento": 2023
+      },
+      "suap": {
+        "id": 151,
+        "codigo": "CTB008"
       },
       "ofertas": [
         {
@@ -767,6 +814,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eventos.md",
         "ano_documento": 2020
       },
+      "suap": {
+        "id": 69,
+        "codigo": "CTB009"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-eventos-noturno",
@@ -824,6 +875,10 @@
         "id": "ppc:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2019
+      },
+      "suap": {
+        "id": 176,
+        "codigo": "CTB010"
       },
       "ofertas": [
         {
@@ -883,6 +938,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md",
         "ano_documento": 2021
       },
+      "suap": {
+        "id": 177,
+        "codigo": "CTB011"
+      },
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json"
     },
@@ -907,6 +966,10 @@
         "id": "ppc:curitiba/tecnico-em-mecanica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica.md",
         "ano_documento": 2025
+      },
+      "suap": {
+        "id": 84,
+        "codigo": "CTB013"
       },
       "ofertas": [
         {
@@ -966,6 +1029,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.md",
         "ano_documento": 2016
       },
+      "suap": {
+        "id": 53,
+        "codigo": "CTB012"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-mecanica-vespertino",
@@ -1023,6 +1090,10 @@
         "id": "ppc:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.md",
         "ano_documento": 2017
+      },
+      "suap": {
+        "id": 179,
+        "codigo": "CTB014"
       },
       "ofertas": [
         {
@@ -1082,6 +1153,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos.md",
         "ano_documento": 2018
       },
+      "suap": {
+        "id": 14,
+        "codigo": "CTB016"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-processos-fotograficos-matutino",
@@ -1139,6 +1214,10 @@
         "id": "ppc:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.md",
         "ano_documento": 2015
+      },
+      "suap": {
+        "id": 180,
+        "codigo": "CTB015"
       },
       "ofertas": [
         {
@@ -1198,6 +1277,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md",
         "ano_documento": 2022
       },
+      "suap": {
+        "id": 146,
+        "codigo": "CTB017"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-producao-de-audio-e-video-noturno",
@@ -1256,6 +1339,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.md",
         "ano_documento": 2019
       },
+      "suap": {
+        "id": 95,
+        "codigo": "CTB018"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-programacao-de-jogos-digitais-matutino",
@@ -1310,6 +1397,10 @@
         "carga_horaria_minima_h": 1200
       },
       "ppc": null,
+      "suap": {
+        "id": 121,
+        "codigo": "CTB019"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-protese-dentaria-noturno",
@@ -1384,6 +1475,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md",
         "ano_documento": 2013
       },
+      "suap": {
+        "id": 44,
+        "codigo": "CTB020"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-radiologia-matutino",
@@ -1442,6 +1537,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-saude-bucal.md",
         "ano_documento": 2025
       },
+      "suap": {
+        "id": 210,
+        "codigo": "CTB021"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/curitiba-tecnico-em-saude-bucal-noturno",
@@ -1484,6 +1583,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-soldagem-subsequente.md",
         "ano_documento": 2025
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-soldagem-subsequente.json"
     },
@@ -1505,6 +1605,10 @@
         "carga_horaria_minima_h": 1200
       },
       "ppc": null,
+      "suap": {
+        "id": 39,
+        "codigo": "CTB022"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-telecomunicacoes-noturno",
@@ -1559,6 +1663,7 @@
         "carga_horaria_minima_h": 800
       },
       "ppc": null,
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-transacoes-imobiliarias.json"
     },
@@ -1579,6 +1684,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-gestao-publica.md",
         "ano_documento": 2015
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-gestao-publica.json"
     },
@@ -1599,6 +1705,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-massoterapia.md",
         "ano_documento": 2022
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-massoterapia.json"
     },
@@ -1619,6 +1726,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-processos-escolares.md",
         "ano_documento": 2023
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-escolares.json"
     },
@@ -1639,6 +1747,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-processos-gerenciais.md",
         "ano_documento": 2018
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-gerenciais.json"
     },
@@ -1659,6 +1768,7 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-secretariado.md",
         "ano_documento": 2024
       },
+      "suap": null,
       "ofertas": [],
       "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-secretariado.json"
     }

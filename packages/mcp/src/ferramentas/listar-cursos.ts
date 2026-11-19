@@ -25,18 +25,22 @@ export const Entrada = Schema.Struct({
   cursor: opcional(texto({ minimo: 1 }, "cursor da página seguinte, devolvido pela chamada anterior")),
 });
 
+/** O curso no SUAP (`suap_id` e código do curso); `null` quando o registro não tem SUAP. */
+export const SuapCurso = Schema.NullOr(Schema.Struct({ id: Schema.Int, codigo: Schema.NullOr(Schema.String) }));
+
 export const Curso = Schema.Struct({
   /** `curso:campus/curso`, para a `ficha_curso`. */
   id: Schema.String,
   nome: Schema.String,
-  /** ID do campus (o valor do filtro `campus`). */
-  campus: Schema.String,
+  /** O `id` é o valor do filtro `campus`. */
+  campus: Schema.Struct({ id: Schema.String, nome: Schema.NullOr(Schema.String) }),
   nivel: Schema.NullOr(Schema.String),
   forma_oferta: Schema.NullOr(Schema.String),
   modalidade: Schema.NullOr(Schema.String),
   situacao: Schema.NullOr(Schema.String),
   cnct: Schema.NullOr(Schema.Struct({ id: Schema.String, nome: Schema.String, eixo: Schema.NullOr(Schema.String) })),
   ppc: Schema.NullOr(Schema.Struct({ id: Schema.String, ano: Schema.NullOr(Schema.Int) })),
+  suap: SuapCurso,
   /** Turnos das ofertas (no recorte dos filtros `turno` e `processo`). */
   turnos: Schema.Array(Schema.String),
   link: EsquemaLink,

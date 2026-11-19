@@ -27,6 +27,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
         "ano_documento": 2019
       },
+      "suap": {
+        "id": 162,
+        "codigo": "AC008"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/assis-chateaubriand-tecnico-em-informatica-para-internet-diurno-manha-2-tardes-por-semana-1",
@@ -68,6 +72,10 @@
         "id": "ppc:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2010
+      },
+      "suap": {
+        "id": 56,
+        "codigo": "AST002"
       },
       "ofertas": [
         {
@@ -111,6 +119,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md",
         "ano_documento": 2023
       },
+      "suap": {
+        "id": 62,
+        "codigo": "BA002"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/barracao-tecnico-em-informatica-matutino",
@@ -152,6 +164,10 @@
         "id": "ppc:capanema/tecnico-em-informatica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-informatica.md",
         "ano_documento": 2020
+      },
+      "suap": {
+        "id": 67,
+        "codigo": "CAP002"
       },
       "ofertas": [
         {
@@ -195,6 +211,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-informatica.md",
         "ano_documento": 2017
       },
+      "suap": {
+        "id": 30,
+        "codigo": "CAS002"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/cascavel-tecnico-em-informatica-diurno-manha-duas-tardes-1",
@@ -236,6 +256,10 @@
         "id": "ppc:colombo/tecnico-em-informatica-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2023
+      },
+      "suap": {
+        "id": 122,
+        "codigo": "COL003"
       },
       "ofertas": [
         {
@@ -279,6 +303,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2019
       },
+      "suap": {
+        "id": 176,
+        "codigo": "CTB010"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/curitiba-tecnico-em-informatica-matutino",
@@ -321,6 +349,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.md",
         "ano_documento": 2019
       },
+      "suap": {
+        "id": 95,
+        "codigo": "CTB018"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/curitiba-tecnico-em-programacao-de-jogos-digitais-vespertino",
@@ -359,6 +391,10 @@
         "carga_horaria_minima_h": 1200
       },
       "ppc": null,
+      "suap": {
+        "id": 39,
+        "codigo": "CTB022"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno",
@@ -400,6 +436,10 @@
         "id": "ppc:foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas",
         "path": "base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.md",
         "ano_documento": 2019
+      },
+      "suap": {
+        "id": 113,
+        "codigo": "FOZ002"
       },
       "ofertas": [
         {
@@ -443,6 +483,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-informatica.md",
         "ano_documento": 2016
       },
+      "suap": {
+        "id": 214,
+        "codigo": "GOI001"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/goioere-tecnico-em-informatica-matutino",
@@ -484,6 +528,10 @@
         "id": "ppc:irati/tecnico-em-informatica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/irati/tecnico-em-informatica.md",
         "ano_documento": 2025
+      },
+      "suap": {
+        "id": 111,
+        "codigo": "IRA002"
       },
       "ofertas": [
         {
@@ -543,6 +591,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2023
       },
+      "suap": {
+        "id": 45,
+        "codigo": "IVA003"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/ivaipora-tecnico-em-informatica-diurno-manha-e-tarde-2",
@@ -584,6 +636,10 @@
         "id": "ppc:jacarezinho/tecnico-em-informatica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-informatica.md",
         "ano_documento": 2013
+      },
+      "suap": {
+        "id": 80,
+        "codigo": "JAC003"
       },
       "ofertas": [
         {
@@ -627,6 +683,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2017
       },
+      "suap": {
+        "id": 205,
+        "codigo": "LON003"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/londrina-tecnico-em-informatica-vespertino",
@@ -668,6 +728,10 @@
         "id": "ppc:paranagua/tecnico-em-informatica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-informatica.md",
         "ano_documento": 2024
+      },
+      "suap": {
+        "id": 63,
+        "codigo": "PGUA001"
       },
       "ofertas": [
         {
@@ -711,6 +775,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-informatica.md",
         "ano_documento": 2015
       },
+      "suap": {
+        "id": 81,
+        "codigo": "PVAI003"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/paranavai-tecnico-em-informatica-matutino",
@@ -752,6 +820,10 @@
         "id": "ppc:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2018
+      },
+      "suap": {
+        "id": 574,
+        "codigo": "PIN003"
       },
       "ofertas": [
         {
@@ -811,6 +883,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-desenvolvimento-de-sistemas.md",
         "ano_documento": 2025
       },
+      "suap": {
+        "id": 621,
+        "codigo": "PIT003"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/pitanga-tecnico-em-desenvolvimento-de-sistemas-matutino",
@@ -852,6 +928,10 @@
         "id": "ppc:quedas-do-iguacu/tecnico-em-informatica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-informatica.md",
         "ano_documento": 2018
+      },
+      "suap": {
+        "id": 170,
+        "codigo": "QUED001"
       },
       "ofertas": [
         {
@@ -895,6 +975,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
         "ano_documento": 2025
       },
+      "suap": {
+        "id": 34,
+        "codigo": "TBOR002"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/telemaco-borba-tecnico-em-informatica-para-internet-matutino-vespertino1",
@@ -936,6 +1020,10 @@
         "id": "ppc:telemaco-borba/tecnico-em-programacao-de-jogos-digitais",
         "path": "base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.md",
         "ano_documento": 2025
+      },
+      "suap": {
+        "id": 50,
+        "codigo": "TBOR004"
       },
       "ofertas": [
         {
@@ -979,6 +1067,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2014
       },
+      "suap": {
+        "id": 58,
+        "codigo": "UMU002"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/umuarama-tecnico-em-informatica-matutino-vespertino1",
@@ -1020,6 +1112,10 @@
         "id": "ppc:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio",
         "path": "base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.md",
         "ano_documento": 2025
+      },
+      "suap": {
+        "id": 41,
+        "codigo": "UVIT001"
       },
       "ofertas": [
         {

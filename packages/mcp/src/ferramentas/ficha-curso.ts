@@ -14,6 +14,7 @@ import { linhasNoOrcamento } from "../orcamento.ts";
 import { comLink } from "../texto.ts";
 import { linhaTransicao, textoFatosPpc } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
+import { SuapCurso } from "./listar-cursos.ts";
 
 export const TETO_FICHA_CURSO = 12000;
 
@@ -68,6 +69,7 @@ export const Dados = Schema.Struct({
       secoes: Schema.Array(Schema.Struct({ id: Schema.String, tipo: Schema.String, titulo: Schema.String })),
     }),
   ),
+  suap: SuapCurso,
   ofertas: Schema.Array(
     Schema.Struct({
       processo: Schema.String,
@@ -109,6 +111,7 @@ export const fichaCurso = definirFerramenta({
         ? `CNCT: ${comLink(d.cnct.nome, d.cnct.link)}${d.cnct.eixo ? `, eixo ${d.cnct.eixo}` : ""}${d.cnct.carga_horaria_minima ? `, carga horária mínima ${d.cnct.carga_horaria_minima} h` : ""}.`
         : "CNCT: sem habilitação do CNCT registrada.",
     );
+    if (d.suap) partes.push(`SUAP: ${d.suap.id}${d.suap.codigo ? `, código ${d.suap.codigo}` : ""}.`);
     partes.push(
       d.ofertas.length
         ? [

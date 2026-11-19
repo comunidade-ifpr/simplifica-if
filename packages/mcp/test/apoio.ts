@@ -11,18 +11,16 @@
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
-import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
-import * as Sink from "effect/Sink";
-import * as Stream from "effect/Stream";
 import { McpServer } from "effect/ai";
 import { HttpRouter } from "effect/http";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import type { Canal } from "@simplifica-if/kb/canal";
 import type { Resposta } from "../src/contratos.ts";
-import { FerramentasIfpr, layerHandlers } from "../src/ferramentas/toolkit.ts";
+import { chamarFerramenta } from "../src/ferramentas/registrar.ts";
+import { layerHandlers } from "../src/ferramentas/toolkit.ts";
 import { INSTRUCOES, layerLeitura, layerRegistro, NOME_SERVIDOR, PROTOCOLOS, VERSAO_PACOTE } from "../src/servidor.ts";
-import { decodificadorDeEntrada, OPCOES_ENTRADA } from "../src/validacao.ts";
+import { OPCOES_ENTRADA } from "../src/validacao.ts";
 
 /** O que os testes usam de uma ferramenta (qualquer uma de `FERRAMENTAS`). */
 export interface FerramentaTestada<D extends Schema.Top = Schema.Top> {
@@ -39,16 +37,14 @@ export interface FerramentaTestada<D extends Schema.Top = Schema.Top> {
 export const camadaFerramentas = (banco: string, canal: Canal = "dev") =>
   layerHandlers.pipe(Layer.provideMerge(layerLeitura({ banco, canal })));
 
-/** Uma chamada como o transporte a faz, sem o protocolo: a `Resposta` e o texto para a IA. */
+/** Uma chamada como o transporte a faz (`chamarFerramenta`), sem o protocolo: a `Resposta` e o texto para a IA. */
 export const responder = <D extends Schema.Top>(ferramenta: FerramentaTestada<D>, args: unknown) =>
-  Effect.gen(function* () {
-    yield* decodificadorDeEntrada(ferramenta.nome, ferramenta.entrada)(args);
-    const kit = yield* FerramentasIfpr;
-    const saida = yield* kit.handle(ferramenta.nome as never, (args ?? {}) as never, undefined, OPCOES_ENTRADA);
-    const ultimo = yield* Stream.run(saida, Sink.last());
-    const resposta = Option.getOrThrow(ultimo).result as Resposta<D["Type"]>;
-    return { resposta, texto: ferramenta.textoCompleto(resposta) };
-  });
+  chamarFerramenta(ferramenta.nome, args).pipe(
+    Effect.map((resultado) => {
+      const resposta = resultado as Resposta<D["Type"]>;
+      return { resposta, texto: ferramenta.textoCompleto(resposta) };
+    }),
+  );
 
 /** A mensagem do erro de uma chamada que falha (entrada inválida, ID desconhecido, cursor). */
 export const mensagemDeErro = (ferramenta: FerramentaTestada, args: unknown) =>

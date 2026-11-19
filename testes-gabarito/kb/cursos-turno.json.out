@@ -22,6 +22,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md",
         "ano_documento": 2021
       },
+      "suap": {
+        "id": 1,
+        "codigo": "AR001"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/arapongas-tecnico-em-melhoria-de-processos-noturno",
@@ -63,6 +67,10 @@
         "id": "ppc:assis-chateaubriand/tecnico-em-agropecuaria",
         "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md",
         "ano_documento": 2021
+      },
+      "suap": {
+        "id": 172,
+        "codigo": "AC002"
       },
       "ofertas": [
         {
@@ -106,6 +114,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-alimentos.md",
         "ano_documento": 2022
       },
+      "suap": {
+        "id": 212,
+        "codigo": "AC003"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/assis-chateaubriand-tecnico-em-alimentos-noturno",
@@ -147,6 +159,10 @@
         "id": "ppc:assis-chateaubriand/tecnico-em-eletromecanica-subsequente",
         "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-subsequente.md",
         "ano_documento": null
+      },
+      "suap": {
+        "id": 174,
+        "codigo": "AC006"
       },
       "ofertas": [
         {
@@ -206,6 +222,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.md",
         "ano_documento": null
       },
+      "suap": {
+        "id": 175,
+        "codigo": "AC007"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/assis-chateaubriand-tecnico-em-eletrotecnica-noturno",
@@ -248,6 +268,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/astorga/tecnico-em-desenvolvimento-de-sistemas.md",
         "ano_documento": 2022
       },
+      "suap": {
+        "id": 48,
+        "codigo": "AST001"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/astorga-tecnico-em-desenvolvimento-de-sistemas-noturno",
@@ -289,6 +313,10 @@
         "id": "ppc:campo-largo/tecnico-em-mecanica-subsequente",
         "path": "base-conhecimento/institucional/ifpr/ppcs/campo-largo/tecnico-em-mecanica-subsequente.md",
         "ano_documento": 2015
+      },
+      "suap": {
+        "id": 83,
+        "codigo": "CL005"
       },
       "ofertas": [
         {
@@ -348,6 +376,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-condominio.md",
         "ano_documento": 2020
       },
+      "suap": {
+        "id": 15,
+        "codigo": "CTB002"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-condominio-noturno",
@@ -405,6 +437,10 @@
         "id": "ppc:curitiba/tecnico-em-edificacoes",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-edificacoes.md",
         "ano_documento": 2014
+      },
+      "suap": {
+        "id": 43,
+        "codigo": "CTB004"
       },
       "ofertas": [
         {
@@ -464,6 +500,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletromecanica.md",
         "ano_documento": 2017
       },
+      "suap": {
+        "id": 74,
+        "codigo": "CTB005"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-eletromecanica-noturno",
@@ -521,6 +561,10 @@
         "id": "ppc:curitiba/tecnico-em-eletrotecnica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md",
         "ano_documento": 2015
+      },
+      "suap": {
+        "id": 112,
+        "codigo": "CTB007"
       },
       "ofertas": [
         {
@@ -580,6 +624,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eventos.md",
         "ano_documento": 2020
       },
+      "suap": {
+        "id": 69,
+        "codigo": "CTB009"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-eventos-noturno",
@@ -637,6 +685,10 @@
         "id": "ppc:curitiba/tecnico-em-mecanica",
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica.md",
         "ano_documento": 2025
+      },
+      "suap": {
+        "id": 84,
+        "codigo": "CTB013"
       },
       "ofertas": [
         {
@@ -696,6 +748,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md",
         "ano_documento": 2022
       },
+      "suap": {
+        "id": 146,
+        "codigo": "CTB017"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-producao-de-audio-e-video-noturno",
@@ -734,6 +790,10 @@
         "carga_horaria_minima_h": 1200
       },
       "ppc": null,
+      "suap": {
+        "id": 121,
+        "codigo": "CTB019"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-protese-dentaria-noturno",
@@ -792,6 +852,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-saude-bucal.md",
         "ano_documento": 2025
       },
+      "suap": {
+        "id": 210,
+        "codigo": "CTB021"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/curitiba-tecnico-em-saude-bucal-noturno",
@@ -830,6 +894,10 @@
         "carga_horaria_minima_h": 1200
       },
       "ppc": null,
+      "suap": {
+        "id": 39,
+        "codigo": "CTB022"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/curitiba-tecnico-em-telecomunicacoes-noturno",
@@ -884,6 +952,10 @@
         "carga_horaria_minima_h": 1200
       },
       "ppc": null,
+      "suap": {
+        "id": 341,
+        "codigo": "ELES1"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2026/ivaipora-tecnico-em-eletrotecnica-noturno",
@@ -925,6 +997,10 @@
         "id": "ppc:jacarezinho/tecnico-em-teatro",
         "path": "base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-teatro.md",
         "ano_documento": 2019
+      },
+      "suap": {
+        "id": 37,
+        "codigo": "JAC005"
       },
       "ofertas": [
         {
@@ -984,6 +1060,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-protese-dentaria-2.md",
         "ano_documento": 2013
       },
+      "suap": {
+        "id": 202,
+        "codigo": "LON005"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/londrina-tecnico-em-protese-dentaria-noturno",
@@ -1042,6 +1122,10 @@
         "path": "base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md",
         "ano_documento": 2017
       },
+      "suap": {
+        "id": 200,
+        "codigo": "LON006"
+      },
       "ofertas": [
         {
           "id": "processo-seletivo-2025/londrina-tecnico-em-saude-bucal-noturno",
@@ -1083,6 +1167,10 @@
         "id": "ppc:paranavai/tecnico-em-eletromecanica-subsequente",
         "path": "base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-eletromecanica-subsequente.md",
         "ano_documento": 2020
+      },
+      "suap": {
+        "id": 82,
+        "codigo": "PVAI002"
       },
       "ofertas": [
         {
