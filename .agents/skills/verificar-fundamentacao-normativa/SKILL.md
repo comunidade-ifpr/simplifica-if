@@ -2,7 +2,7 @@
 name: verificar-fundamentacao-normativa
 description: Verificar fundamentação normativa de documentos, PPCs, pareceres, minutas, relatórios e respostas que citam ou afirmam obrigações baseadas em leis, resoluções, portarias, notas técnicas, CNCT ou regulamentos institucionais. Use quando o usuário pedir checagem de citações normativas, validação de afirmações sobre normas, conferência de base legal, identificação de norma ausente, correção de fundamentação ou análise de risco de uma redação normativa.
 simplifica:
-  versao: 0.1.0
+  versao: 0.1.1
   titulo: Conferir a fundamentação normativa
   resumo: Confere cada citação e afirmação normativa de um documento contra o texto das normas e do CNCT na base e aponta o que está confirmado, impreciso ou sem suporte.
   area: ensino
@@ -14,6 +14,8 @@ simplifica:
     - buscar_norma
     - ler_dispositivos
     - ficha_norma
+    - correspondencia
+    - listar_cursos
     - ficha_curso
     - etapa
   etapas:
@@ -30,7 +32,9 @@ simplifica:
 
 Confira se cada afirmação normativa do documento está apoiada por fonte existente, vigente e pertinente. Nenhuma alegação sobre lei, resolução, portaria, regulamento ou CNCT se aceita sem ler a própria fonte.
 
-**Fontes.** Use as ferramentas `ifpr` conforme as instruções do servidor; neste método, `resolver_citacoes` para as citações explícitas, `buscar_norma` para as alegações sem norma citada, `ler_dispositivos` para ler o trecho, `ficha_norma` para a vigência e `ficha_curso` para o CNCT. Dentro do repositório `simplifica-if`, sem elas, use a CLI `pnpm kb` (`resolver`, `buscar-norma`, `dispositivo`, `vigencia`, `cursos`). Leia o documento na pasta de trabalho; se o formato não puder ser lido (`.docx`), peça PDF, Markdown ou texto colado.
+**Fontes.** Use as ferramentas `ifpr` conforme as instruções do servidor. Neste método: `resolver_citacoes` para as citações explícitas, `buscar_norma` para as alegações sem norma citada, `ler_dispositivos` para ler o trecho, `ficha_norma` para a vigência, `correspondencia` quando o documento cita dispositivo de norma revogada, e `listar_cursos` e `ficha_curso` para o CNCT. Dentro do repositório `simplifica-if`, sem elas, use a CLI `pnpm kb` (`resolver`, `buscar-norma`, `dispositivo`, `vigencia`, `correspondencia`, `cursos`).
+
+**Documento.** Leia o documento na pasta de trabalho. Se não conseguir ler o arquivo (formato que suas ferramentas não abrem, PDF digitalizado sem texto), diga isso e peça outro formato ou o texto colado; não confira pelo nome do arquivo nem de memória.
 
 **Etapas.** No app, marque o avanço com a ferramenta `etapa` ao começar cada etapa: `alegacoes` (passos 1 e 2), `fontes` (passos 3 e 4, com `progresso` de alegações lidas sobre o total), `classificar` (passo 5) e `relatorio`. Fora do app, a ferramenta só confirma e você segue.
 
@@ -47,7 +51,7 @@ Confira se cada afirmação normativa do documento está apoiada por fonte exist
    - o dispositivo citado sustenta exatamente a afirmação (artigo certo, não só a norma certa);
    - o grau de obrigação é o da fonte (`deve` onde a fonte diz `pode` é erro);
    - o sujeito obrigado, as condicionantes, as exceções e o escopo (nível, forma, modalidade, estágio obrigatório ou não obrigatório) não foram ampliados nem omitidos;
-   - a norma está vigente na data, e não há conflito com outra norma ou com o CNCT;
+   - a norma está vigente na data (revogada: regras de transição e o dispositivo correspondente na sucessora), e não há conflito com outra norma ou com o CNCT;
    - PPC, processo anterior ou prática de campus não está sendo tratado como obrigação normativa.
 5. **Classifique** e proponha redação corrigida quando houver problema objetivo.
 
@@ -65,4 +69,4 @@ Um status por alegação:
 
 ## Relatório
 
-Em revisão substantiva, leia antes `references/relatorio.md` (formato, critérios por tema e sinais de risco). Entregue em Markdown: síntese, escopo e limitações, fontes consultadas, achados por alegação (status, trecho, fonte com dispositivo, evidência, análise, redação sugerida), lacunas da base e recomendações. Cada achado cita a fonte (link `ifpr://` ou, no repositório, o caminho local) e o dispositivo lido.
+Em revisão substantiva, leia antes `references/relatorio.md` (formato, critérios por tema e sinais de risco). Entregue em Markdown: síntese, escopo e limitações, fontes consultadas, achados por alegação (status, trecho, fonte com dispositivo, evidência, análise, redação sugerida), lacunas da base e recomendações. Cada achado cita a fonte e o dispositivo lido, como link Markdown: `[Lei nº 11.788/2008, art. 2º, § 3º](ifpr://norma/br/lei/2008/11788#art2)` ou, no repositório, o caminho local.
