@@ -113,6 +113,7 @@ const navegador = {
       "@tanstack/react-router",
       "@base-ui/react/field",
       "@base-ui/react/input",
+      "@base-ui/react/menu",
       "@base-ui/react/merge-props",
       "@base-ui/react/use-render",
       "class-variance-authority",

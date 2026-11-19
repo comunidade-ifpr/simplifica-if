@@ -140,8 +140,9 @@ export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
   const semilado = plataforma === "mac" ? 412 : 482;
   const centro: Ponto = [meio, meio];
   const relevo = estilo === "relevo";
-  // Corpo da fonte proporcional à placa: 512 na placa de 824 (o mockup aprovado), maior no plano.
-  const corpo = (relevo ? 512 : 590) * (semilado / 412);
+  // Corpo da fonte proporcional à placa: 600 na placa de 824 (o IF com cerca de 52% da altura da placa, como os
+  // glifos dos ícones vizinhos no Dock), maior no plano.
+  const corpo = (relevo ? 600 : 630) * (semilado / 412);
   const e = corpo / 100;
   const esquerda = IF.caixa[0];
   const direita = PONTO_ICONE.centro + PONTO_ICONE.raio;

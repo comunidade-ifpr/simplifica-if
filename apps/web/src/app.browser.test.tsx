@@ -716,6 +716,20 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   await expect.element(page.getByRole("button", { name: "Enviar" })).toBeVisible();
 });
 
+it("Tema: o menu do cabeçalho mostra as três escolhas pelo nome e guarda a escolhida", async () => {
+  window.localStorage.removeItem("simplifica-if:tema");
+  await using _app = await montarApp(servidor);
+  const botao = page.getByRole("button", { name: "Tema: automático (como o sistema)" });
+  await botao.click();
+  await expect.element(page.getByRole("menuitemradio", { name: "Automático (como o sistema)" })).toBeChecked();
+  await page.getByRole("menuitemradio", { name: "Escuro" }).click();
+  expect(document.documentElement.classList.contains("dark")).toBe(true);
+  expect(window.localStorage.getItem("simplifica-if:tema")).toBe("escuro");
+  await page.getByRole("button", { name: "Tema: escuro" }).click();
+  await page.getByRole("menuitemradio", { name: "Automático (como o sistema)" }).click();
+  expect(window.localStorage.getItem("simplifica-if:tema")).toBeNull();
+});
+
 /* O cabeçalho como barra de título do desktop (sem a barra do sistema; `barra-titulo.ts`). */
 
 function cabecalho(): HTMLElement {
