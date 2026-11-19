@@ -20,6 +20,7 @@
     "@simplifica-if/atualizacao": "workspace:*",
     "@simplifica-if/contratos-app": "workspace:*",
     "@simplifica-if/docx": "workspace:*",
+    "@simplifica-if/pdf": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",

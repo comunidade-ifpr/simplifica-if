@@ -195,6 +195,7 @@ overrides:
   '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64-musl': '-'
   '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-arm64': '-'
   '@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-x64': '-'
+  pdfjs-dist>@napi-rs/canvas: '-'
   '@effect/platform-node': 4.1.2
   '@effect/vitest': 4.1.2
   '@effect/vitest>vitest': '-'
@@ -331,6 +332,9 @@ importers:
       '@simplifica-if/motor':
         specifier: workspace:*
         version: link:../../packages/motor
+      '@simplifica-if/pdf':
+        specifier: workspace:*
+        version: link:../../packages/pdf
       '@simplifica-if/ppc':
         specifier: workspace:*
         version: link:../../packages/ppc
@@ -671,6 +675,19 @@ importers:
       effect:
         specifier: 4.1.3
         version: 4.1.3
+      vite-plus:
+        specifier: 1.4.0
+        version: 1.4.0(@opentelemetry/api@1.10.0)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.65.0)(yaml@2.9.1)
+
+  packages/pdf:
+    dependencies:
+      pdfjs-dist:
+        specifier: 6.5.438
+        version: 6.5.438
+    devDependencies:
+      '@types/node':
+        specifier: 24.12.4
+        version: 24.12.4
       vite-plus:
         specifier: 1.4.0
         version: 1.4.0(@opentelemetry/api@1.10.0)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.65.0)(yaml@2.9.1)
@@ -3601,6 +3618,10 @@ packages:
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
+
+  pdfjs-dist@6.5.438:
+    resolution: {integrity: sha512-vg8Pw1x+AFKy4AMDvhuWl5cOYV8d698UoEANoFFhc79hqXDnZQqnOXoxw3HG907WHOg1JYOvLhP756boddFxpA==}
+    engines: {node: '>=22.13.0 || >=24'}
 
   pe-library@0.4.1:
     resolution: {integrity: sha512-eRWB5LBz7PpDu4PUlwT0PhnQfTQJlDDdPa35urV4Osrm0t0AqQFGn+UIkU3klZvwJ8KPO3VbBFsXquA6p6kqZw==}
@@ -7759,6 +7780,8 @@ snapshots:
   path-to-regexp@8.4.2: {}
 
   pathe@2.0.3: {}
+
+  pdfjs-dist@6.5.438: {}
 
   pe-library@0.4.1: {}
 
