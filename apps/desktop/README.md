@@ -18,6 +18,7 @@ pnpm app:dev          # abre o app; o mesmo que pnpm --filter @simplifica-if/des
 O `app:dev` faz tudo num terminal só:
 
 1. constrói o processo principal e o preload em `dist/app` e baixa o Electron, se faltar;
+   no macOS, roda o Electron de uma cópia do `Electron.app` em `dist/electron-dev`, com o nome e o ícone do app, porque o nome no menu e o ícone no Dock vêm do `Info.plist`, não de `app.setName`;
 2. garante a interface: se `http://localhost:5190` já responde (por exemplo, `pnpm --filter @simplifica-if/web dev` noutro terminal), usa essa; senão, inicia o `apps/web` e espera ficar pronto;
 3. abre o Electron, que inicia o servidor com o Node do repositório (`node apps/server/src/bin.ts`) e carrega a interface.
 

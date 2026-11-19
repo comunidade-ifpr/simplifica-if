@@ -756,7 +756,7 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
   const estilo = getComputedStyle(header);
   expect(estilo.getPropertyValue("-webkit-app-region")).toBe("drag");
   expect(header.getBoundingClientRect().height).toBe(ALTURA_BARRA_TITULO);
-  expect(estilo.paddingLeft).toBe("78px");
+  expect(estilo.paddingLeft).toBe("88px");
   // Os links recebem o clique e o foco.
   expect(getComputedStyle(configuracoes.element()).getPropertyValue("-webkit-app-region")).toBe("no-drag");
   await userEvent.tab();
@@ -765,7 +765,7 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
   avisar(true);
   await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("16px");
   avisar(false);
-  await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("78px");
+  await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("88px");
 });
 
 it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita para os botões do sistema", async () => {

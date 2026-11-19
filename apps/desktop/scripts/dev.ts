@@ -15,13 +15,15 @@
  * Os argumentos seguintes vão ao Electron (por exemplo, `--remote-debugging-port=9333`).
  */
 import * as NodeChildProcess from "node:child_process";
+import * as NodeCrypto from "node:crypto";
+import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { construir, DIST_APP, PACOTE, RAIZ } from "./construir.ts";
 
 /** A URL padrão do dev server do `apps/web`. */
 export const URL_WEB_PADRAO = "http://localhost:5190";
 
-function garantirElectron(): string {
+export function garantirElectron(): string {
   const resultado = NodeChildProcess.spawnSync(
     process.execPath,
     [NodePath.join(PACOTE, "scripts", "t3", "ensure-electron-runtime.mjs")],
@@ -29,6 +31,51 @@ function garantirElectron(): string {
   );
   if (resultado.status !== 0) throw new Error("não foi possível preparar o Electron");
   return resultado.stdout.trim().split("\n").at(-1)!;
+}
+
+/**
+ * No macOS, o nome no menu e o ícone no Dock vêm do `Info.plist` do pacote, não de `app.setName`: sem
+ * isto, o desenvolvimento aparece como "Electron", com o ícone do Electron. Por isso o Electron roda de
+ * uma cópia do `Electron.app` (clonada no APFS, sem ocupar espaço) com o nome, o identificador e o ícone
+ * do app, refeita quando muda o Electron ou o ícone. Mudar o `Info.plist` invalida a assinatura do
+ * pacote, que o macOS exige no arm64: a cópia é reassinada ad hoc.
+ */
+export function pacoteDev(electron: string): string {
+  if (process.platform !== "darwin") return electron;
+  const origem = NodePath.resolve(electron, "..", "..", "..");
+  const icone = NodePath.join(PACOTE, "recursos", "icone.icns");
+  const pasta = NodePath.join(PACOTE, "dist", "electron-dev");
+  const destino = NodePath.join(pasta, "Simplifica IF (dev).app");
+  const carimbo = NodePath.join(pasta, "carimbo");
+  const hash = NodeCrypto.createHash("sha256")
+    .update(NodeFS.readFileSync(NodePath.join(origem, "Contents", "Info.plist")))
+    .update(NodeFS.readFileSync(icone))
+    .digest("hex");
+  const executavel = NodePath.join(destino, "Contents", "MacOS", NodePath.basename(electron));
+  if (NodeFS.existsSync(executavel) && NodeFS.existsSync(carimbo) && NodeFS.readFileSync(carimbo, "utf8") === hash) {
+    return executavel;
+  }
+  const rodar = (comando: string, args: ReadonlyArray<string>): string => {
+    const r = NodeChildProcess.spawnSync(comando, args, { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] });
+    if (r.status !== 0) throw new Error(`${comando} ${args.join(" ")} falhou`);
+    return r.stdout.trim();
+  };
+  NodeFS.rmSync(pasta, { recursive: true, force: true });
+  NodeFS.mkdirSync(pasta, { recursive: true });
+  rodar("cp", ["-cR", origem, destino]);
+  const plist = NodePath.join(destino, "Contents", "Info.plist");
+  for (const [chave, valor] of [
+    ["CFBundleName", "Simplifica IF"],
+    ["CFBundleDisplayName", "Simplifica IF"],
+    ["CFBundleIdentifier", "br.edu.ifpr.simplifica.dev"],
+  ] as const) {
+    rodar("plutil", ["-replace", chave, "-string", valor, plist]);
+  }
+  const arquivoIcone = rodar("plutil", ["-extract", "CFBundleIconFile", "raw", plist]);
+  NodeFS.copyFileSync(icone, NodePath.join(destino, "Contents", "Resources", arquivoIcone));
+  rodar("codesign", ["--force", "--deep", "--sign", "-", destino]);
+  NodeFS.writeFileSync(carimbo, hash);
+  return executavel;
 }
 
 /** Prazo para o dev server da interface responder depois de iniciado. */
@@ -49,8 +96,11 @@ async function responde(url: string): Promise<boolean> {
  */
 async function iniciarWeb(url: string): Promise<NodeChildProcess.ChildProcess> {
   console.error(`[dev] a interface não responde em ${url}; iniciando o apps/web (vp dev)…`);
-  const web = NodeChildProcess.spawn("pnpm", ["--filter", "@simplifica-if/web", "dev"], {
-    cwd: RAIZ,
+  // O `vp` direto, sem o `pnpm --filter … dev` na frente: ao encerrar, o pnpm acusaria o sinal como
+  // falha (`ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL`) depois de o app fechar normalmente.
+  const pastaWeb = NodePath.join(RAIZ, "apps", "web");
+  const web = NodeChildProcess.spawn(NodePath.join(pastaWeb, "node_modules", ".bin", "vp"), ["dev"], {
+    cwd: pastaWeb,
     stdio: "inherit",
     detached: process.platform !== "win32",
     shell: process.platform === "win32",
@@ -87,7 +137,7 @@ if (import.meta.main) {
   let web: NodeChildProcess.ChildProcess | undefined;
   try {
     await construir({ soProcessoPrincipal: true, web: false });
-    const electron = garantirElectron();
+    const electron = pacoteDev(garantirElectron());
     if (urlWeb !== "" && !(await responde(urlWeb))) {
       // Só o dev server padrão é iniciado aqui; outra URL é responsabilidade de quem a passou.
       if (urlWeb === URL_WEB_PADRAO) web = await iniciarWeb(urlWeb);

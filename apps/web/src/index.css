@@ -190,9 +190,12 @@
   -webkit-app-region: no-drag;
 }
 
-/* O lugar dos botões do sistema: os semáforos à esquerda no macOS (fora da tela cheia, em que somem)… */
+/*
+ * O lugar dos botões do sistema: os semáforos à esquerda no macOS (fora da tela cheia, em que somem),
+ * que terminam em cerca de 68 px, mais um respiro de uns 20 px até o logo…
+ */
 .barra-titulo[data-botoes="semaforos"]:not([data-tela-cheia]) {
-  padding-left: 78px;
+  padding-left: 88px;
 }
 
 /* …e o overlay à direita no Windows e no Linux, pela área livre que o Electron informa. */
