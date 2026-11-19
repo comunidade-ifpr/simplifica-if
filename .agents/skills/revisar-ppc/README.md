@@ -2,7 +2,7 @@
 
 Esta skill revisa Projetos Pedagógicos de Curso técnico do IFPR antes da submissão à PROENS, a partir de um arquivo Word (`.docx`) ou Markdown (`.md`). É uma revisão prévia: o produto é um relatório de revisão (o PPC HTML anotado), não um parecer, e não substitui a análise oficial da PROENS. A IA roda por sub-agentes na conversa atual; os scripts preparam o `PPC.md`, organizam as fichas e geram o relatório.
 
-A skill se chamava `analise-ppc` até 13/11/2026; o nome mudou para deixar claro que ela não é o ato oficial (veja o `PLANO-ARQUITETURA.md`, seção Andamento). Ela faz par com a `revisar-processo-ppc`, que revisa o processo SEI.
+A skill se chamava `analise-ppc` até 13/11/2026; o nome mudou para deixar claro que ela não é o ato oficial (veja o `PLANO-ARQUITETURA.md`, seção Andamento).
 
 A skill, com sub-agentes e o relatório HTML, roda só no repositório: não tem bloco `simplifica:` e não vai para o app. No app Simplifica IF, a revisão é a tarefa nativa "Revisar um PPC", conduzida pelo servidor, que usa as fichas desta skill e a conversão de `packages/ppc` e devolve o `.docx` com comentários (veja [Execução no app](#execução-no-app-d-s-j)).
 

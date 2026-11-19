@@ -8,7 +8,7 @@ O servidor local do app desktop (M1.1): um processo Node, sem interface, que o d
 - a **API RPC** por WebSocket em `127.0.0.1`, com os contratos em [`packages/contratos-app`](../../packages/contratos-app/src/contratos.ts);
 - a **revisão de PPC** (`src/revisao-ppc/`), as **pastas de trabalho** com "Desfazer", os **relatos de erro** e a **atualização** da base e das skills, descritos abaixo.
 
-O servidor foi desenhado para dado público (o `kb.sqlite` e os arquivos que a pessoa escolhe, que ele não confere). Não fala com SUAP, SEI nem Notion: essas ferramentas ficam no repositório, fora do app (lista no [`AGENTS.md`](../../AGENTS.md#ferramentas-do-repositório-fora-do-app)).
+O servidor foi desenhado para dado público (o `kb.sqlite` e os arquivos que a pessoa escolhe, que ele não confere). Não acessa sistemas com login (lista das ferramentas fora do app no [`AGENTS.md`](../../AGENTS.md#ferramentas-do-repositório-fora-do-app)).
 
 ## Como rodar
 

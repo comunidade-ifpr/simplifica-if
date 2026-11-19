@@ -18,7 +18,7 @@ Quem usa: coordenação de curso, pedagogia, PROENS/DENS. A pessoa conhece o PPC
 
 ### O que a PROENS de fato devolve
 
-Os 83 pareceres de curso arquivados (base Pareceres de Curso, hoje só no arquivo do Notion; saíram do repositório em 17/11/2026) incluem 21 pareceres de revisão de PPC "não conclusivos", isto é, PPCs devolvidos com pedidos de ajuste. O parecer da DENTEC segue o roteiro "Elementos para análise de PPC", seção a seção, com "Atende / Atende parcialmente / Não atende". Contagem aproximada (heurística por título de seção com pedido de ajuste, uma vez por parecer):
+Os 83 pareceres de curso arquivados (base Pareceres de Curso, hoje só no arquivo da base de gestão anterior; saíram do repositório em 17/11/2026) incluem 21 pareceres de revisão de PPC "não conclusivos", isto é, PPCs devolvidos com pedidos de ajuste. O parecer da DENTEC segue o roteiro "Elementos para análise de PPC", seção a seção, com "Atende / Atende parcialmente / Não atende". Contagem aproximada (heurística por título de seção com pedido de ajuste, uma vez por parecer):
 
 | Seção do parecer | Pareceres que pediram ajuste (de 21) |
 |---|---|

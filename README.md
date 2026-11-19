@@ -11,7 +11,7 @@ O que ele entrega hoje:
 - leitor `ifpr://` e Explorar, para navegar por normas, PPCs, cursos, campi, CNCT, Consepe e fichas sem IA;
 - pasta de trabalho com "Desfazer", primeiro uso com perfil, relato de erro e atualização da base e das skills.
 
-O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). SUAP, SEI e Notion ficam fora dele (veja [Fora do app](#fora-do-app)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
+O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). Sistemas com login, como SUAP e SEI, ficam fora dele (veja [Fora do app](#fora-do-app)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
 
 ```bash
 pnpm install
@@ -34,21 +34,19 @@ pnpm app:dev        # o app em desenvolvimento (veja apps/desktop/README.md)
 
 ## Fora do app
 
-Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base. A integração ao app está nos planos (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md) e [`PLANO-ARQUITETURA.md`](PLANO-ARQUITETURA.md#ferramentas-do-repositório-fora-do-app)):
+Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base:
 
-- `packages/sei-cli` (SEI) e a skill `revisar-processo-ppc`;
-- a skill `suap-ifpr` (SUAP) e os scripts `suap_*.ts`;
-- a sincronização SEI → Notion de `Movimentações de Cursos` (`pnpm sei:sync`);
 - a skill `revisar-ppc` com sub-agentes (no app, a revisão é a tarefa "Revisar um PPC");
 - a skill `ifpr-design`.
+
+As ferramentas com login em sistemas internos (SEI, SUAP) ficam no repositório privado `dentec-ferramentas`, da equipe da DENTEC. Elas leem a base pelo `simplifica-mcp` e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (veja "Dado coletado fora do repositório" em [`base-conhecimento/docs/curadoria-metadados-institucionais.md`](base-conhecimento/docs/curadoria-metadados-institucionais.md)). A integração de sistemas com login ao app está nos planos (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)).
 
 ## Base, skills e scripts
 
 - `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `manifest.json` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
 - `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
-- `scripts/`: geração, validação e exportação da base e integração com Notion (só `Movimentações de Cursos`), SEI e SUAP, em TypeScript (Node e pnpm). Um PPC novo, ou a versão nova do PPC de um curso, entra na base a partir do DOCX da coordenação, com `node scripts/importar_ppc_docx.ts` (passo a passo em `base-conhecimento/docs/curadoria-metadados-institucionais.md`); PDF não é convertido.
+- `scripts/`: geração e validação da base, aplicação de dado coletado fora do repositório (`aplicar_matrizes_suap.ts`), fábrica da atualização e avaliação, em TypeScript (Node e pnpm). Um PPC novo, ou a versão nova do PPC de um curso, entra na base a partir do DOCX da coordenação, com `node scripts/importar_ppc_docx.ts` (passo a passo em `base-conhecimento/docs/curadoria-metadados-institucionais.md`); PDF não é convertido.
 - `base-conhecimento/docs/`: documentação de apoio à curadoria da base e ao desenvolvimento das skills.
-- `packages/sei-cli/`: CLI que extrai e inspeciona processos do SEI com Playwright, mantido como workspace pnpm (veja o `README.md` do pacote).
 
 ## Base de Conhecimento
 
@@ -66,8 +64,6 @@ Skills disponíveis (só a `verificar-fundamentacao-normativa` vai para o app; a
 
 - `revisar-ppc/`: revisão prévia IA-first de Projetos Pedagógicos de Curso técnico do IFPR, antes da submissão à PROENS (não substitui a análise oficial da PROENS). No app, a revisão é a tarefa nativa "Revisar um PPC", que reaproveita as fichas desta skill.
 - `ifpr-design/`: identidade visual do IFPR para materiais e interfaces.
-- `revisar-processo-ppc/`: revisão de processos SEI de PPC.
-- `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas. Os comandos são TypeScript (Node) na raiz: `scripts/suap_consultar.ts` e `scripts/suap_tutoriais.ts`, testados por `pnpm exec vp test run scripts`.
 - `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos. Tem bloco `simplifica:` e é tarefa do app.
 
 Ao desenvolver uma skill, consulte os dados da base pela CLI `kb` ou pelas ferramentas `ifpr` do MCP. Só empacote cópias de normas, catálogos ou metadados quando houver motivo claro de portabilidade.
@@ -83,21 +79,11 @@ pnpm exec vp test run .agents/skills/revisar-ppc
 pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # todo o código: app, pacotes, scripts e skills
 ```
 
-Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho, reunião e processos SEI) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
+Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho e reunião) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
 
-## SEI e sincronização com o Notion
+## Desenvolvimento
 
-O `sei-cli` é um workspace pnpm em `packages/sei-cli/`. Um `pnpm install` na raiz instala as dependências de todo o repositório. As credenciais do SEI ficam em `packages/sei-cli/.env.local` e os snapshots em `packages/sei-cli/dados/sei/`, ambos ignorados pelo Git.
-
-```bash
-pnpm sei --help              # o CLI, executado dentro de packages/sei-cli
-pnpm sei:sync                # simula a atualização das Movimentações de Cursos no Notion
-pnpm sei:sync --apply        # grava no Notion
-```
-
-Credenciais, escopo, avisos de chegada na DENTEC e diagnóstico estão em [`base-conhecimento/docs/sincronizacao-sei-notion.md`](base-conhecimento/docs/sincronizacao-sei-notion.md).
-
-`pnpm typecheck`, `pnpm test` e `pnpm fmt` na raiz cobrem todo o repositório: `apps/`, `packages/` (inclusive o `sei-cli`), `scripts/` e as skills. Os scripts importam tipos e schemas do CLI como `@simplifica-if/sei-cli/<módulo>`, por exemplo `@simplifica-if/sei-cli/esquemas`.
+`pnpm typecheck`, `pnpm test` e `pnpm fmt` na raiz cobrem todo o repositório: `apps/`, `packages/`, `scripts/` e as skills.
 
 Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenvolvimento-skills.md`.
 

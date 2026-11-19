@@ -2,7 +2,7 @@
 
 > **Suspenso em 13/11/2026.** O app não acessa SUAP nem SEI até o Marco 2 e só trabalha com dados públicos ([decisão 6 do plano do app](app-simplifica-if.md#decisões-13112026)). Este documento guarda o desenho para quando os sistemas voltarem ao escopo. Nada aqui é entrega dos Marcos 0 a 2. As menções a marcos abaixo são do encaixe original e precisam ser refeitas na retomada.
 
-Situação em 13/11/2026. Complementa o [plano do app](app-simplifica-if.md).
+Situação em 13/11/2026. Complementa o [plano do app](app-simplifica-if.md). Desde 19/11/2026, as ferramentas de SUAP e SEI citadas abaixo ficam no repositório privado `dentec-ferramentas` ([plano](dentec-ferramentas.md)); o texto descreve o estado de 13/11/2026.
 
 **Escopo:**
 
@@ -199,7 +199,7 @@ O arquivo é `config/garantias-providers.yaml`, versionado e publicado assinado 
 
 ## Credenciais do SUAP e do SEI
 
-### Hoje
+### Em 13/11/2026
 
 - **SUAP:** a skill `suap-ifpr`:
   - lê `SUAP_USUARIO` e `SUAP_SENHA` do ambiente ou do `.env.local` da raiz;

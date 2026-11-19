@@ -19,7 +19,7 @@ A pesquisa externa encontrou dois PPCPs específicos, aprovados e publicados pel
 A pesquisa combinou quatro frentes:
 
 1. consulta aos manifestos e arquivos locais da base de conhecimento, com busca por "Rede Certifica", "PPCP", "Projeto Pedagógico de Certificação Profissional", "Portaria MEC nº 902/2024", documentos orientadores e atos do IFPR;
-2. leitura do processo SEI nº 23411.019945/2025-25 por meio do repositório operacional `sei-cli`, conforme o guia institucional para agentes, e conferência dos documentos públicos do IFPR;
+2. leitura do processo SEI nº 23411.019945/2025-25 por meio da CLI interna do SEI, conforme o guia institucional para agentes, e conferência dos documentos públicos do IFPR;
 3. busca em páginas e arquivos oficiais do MEC, do IFPR, do IFC, do IFCE e do IFSC;
 4. comparação do conteúdo normativo com a estrutura e as soluções pedagógicas observadas nos exemplos.
 

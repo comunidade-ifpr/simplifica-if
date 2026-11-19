@@ -695,7 +695,7 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
     - determinismo, 4 casos: dois processos em stdio dão as linhas de resposta iguais byte a byte;
     - descrições, 1 caso: tamanhos, a frase de quando usar, os parâmetros descritos e o `tools/list` sem `outputSchema` abaixo de 24 mil caracteres;
     - pasta de trabalho, 1 caso: o `pacote_contexto` com `arquivo` pelo servidor isolado. Lê dentro da pasta (relativo, subpasta, absoluto) e recusa `..`, absoluto de fora e link simbólico para fora, de arquivo e de pasta, sem acesso negado no stderr.
-  - **CI** (`.github/workflows/ci.yml`, com o preparo em `.github/actions/preparar`): em todo push e PR, sem segredos e sem Notion, SEI ou SUAP. O preparo usa o Node de `.node-version`, o corepack 0.36.0 instalado à parte (o Node 25 deixou de distribuí-lo), o pnpm de `packageManager`, o cache do store e `pnpm install --frozen-lockfile`.
+  - **CI** (`.github/workflows/ci.yml`, com o preparo em `.github/actions/preparar`): em todo push e PR, sem segredos e sem sistemas com login. O preparo usa o Node de `.node-version`, o corepack 0.36.0 instalado à parte (o Node 25 deixou de distribuí-lo), o pnpm de `packageManager`, o cache do store e `pnpm install --frozen-lockfile`.
     - `verificacao` (`ubuntu-24.04`): `fmt:check`, `lint`, `typecheck`, `test`, `kb compilar`, `mcp:smoke`, `validar_base.ts`, `kb.sh --comparar`, `base.sh --comparar` e o gabarito do MCP. Estimativa de 6 a 8 min;
     - `executavel` (`macos-15`, `ubuntu-24.04`, `windows-2025`): `pnpm mcp:executavel`, as suítes sem repositório, determinismo e pasta de trabalho contra o executável, e o executável como artefato `simplifica-mcp-<alvo>` (14 dias). Estimativa de 3 a 6 min cada.
   - **Validação e reprodução local:**

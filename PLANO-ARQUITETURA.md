@@ -6,7 +6,7 @@ A versão 2 incorpora duas revisões independentes, uma da migração para TypeS
 
 Desde a etapa C0 da [consolidação na stack do T3](docs/plans/consolidacao-stack-t3.md) (14/11/2026), o repositório roda em Node e pnpm. Os comandos deste plano foram atualizados; onde o texto registra como era antes, ele fala do Bun.
 
-**Escopo:** a `revisar-ppc` (antes `analise-ppc`; veja a renomeação em [Andamento](#andamento)) e a base de conhecimento. `Movimentações de Cursos` (Notion) está fora do escopo por ora.
+**Escopo:** a `revisar-ppc` (antes `analise-ppc`; veja a renomeação em [Andamento](#andamento)) e a base de conhecimento.
 
 **O repositório hoje (17/11/2026).** O produto central é o app desktop Simplifica IF (`apps/`), com plano próprio em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md). A base de conhecimento, o `packages/kb` e o `simplifica-mcp`, de que este plano trata, são o núcleo que o alimenta: o app lê o `kb.sqlite` compilado da base. Ferramentas que continuam só no repositório, fora do app, estão em [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app).
 
@@ -122,7 +122,6 @@ A fase 1 começa junto com a 0. A trilha T corre em paralelo às fases de retrie
 
 Ficam fora do plano por ora:
 - **Embeddings:** reavaliar só se a fase 6 medir recall temático abaixo de 0,8.
-- **Movimentações de Cursos fora do Notion:** veja [Fora do escopo](#fora-do-escopo).
 
 ---
 
@@ -428,15 +427,12 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 
 Item de roadmap (17/11/2026). Estas ferramentas são usadas por agentes e por quem cura a base, no repositório, e ainda não estão integradas ao app:
 
-| Ferramenta | Sistema | Uso hoje | No app |
-|---|---|---|---|
-| `packages/sei-cli` | SEI | extração e leitura de processos (`pnpm sei`) | não |
-| skill `revisar-processo-ppc` | SEI, pelo `sei-cli` | revisão do fluxo de processos SEI de PPC | não |
-| skill `suap-ifpr` e `scripts/suap_*.ts` | SUAP | consulta, tutoriais e coleta de matrizes para a curadoria | não; o app mostra os dados do SUAP já publicados na base |
-| sincronização SEI → Notion (`pnpm sei:sync`) e scripts do Notion | SEI e Notion | `Movimentações de Cursos` | não |
-| skill `revisar-ppc` (sub-agentes, relatório HTML) | — | revisão de PPC por agente no repositório | em parte: o app tem a tarefa nativa "Revisar um PPC", que reaproveita as fichas e `packages/ppc` |
+| Ferramenta | Uso hoje | No app |
+|---|---|---|
+| skill `revisar-ppc` (sub-agentes, relatório HTML) | revisão de PPC por agente no repositório | em parte: o app tem a tarefa nativa "Revisar um PPC", que reaproveita as fichas e `packages/ppc` |
+| skill `ifpr-design` | identidade visual da interface e de materiais | não é tarefa do app |
 
-A integração das ferramentas de SEI e SUAP depende de o app voltar a acessar sistemas com login, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso. A sincronização SEI → Notion segue a mesma condição e a direção de tirar `Movimentações de Cursos` do Notion ([Fora do escopo](#fora-do-escopo)). Até lá, essas ferramentas ficam no repositório, e o `AGENTS.md` as lista.
+As ferramentas com login em sistemas internos (SEI e SUAP) saíram deste repositório em 19/11/2026 para o repositório privado `dentec-ferramentas`, da equipe da DENTEC ([plano](docs/plans/dentec-ferramentas.md)). Elas leem a base pelo `simplifica-mcp` (`simplifica-mcp consultar`) e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (as matrizes do SUAP por `scripts/aplicar_matrizes_suap.ts`). O app mostra os dados do SUAP já publicados na base. Levar sistemas com login ao app depende de o app voltar a acessá-los, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso.
 
 ---
 
@@ -492,17 +488,7 @@ Por isso, só fazer com casos negativos e com diff dos schemas publicados.
 
 ## Fora do escopo
 
-**Movimentações de Cursos fora do Notion.** Decisão de 13/11/2026: fica registrada só como direção futura. Quando voltar à pauta:
-
-- separar o registro da movimentação (editado por pessoas, raro) do estado SEI (derivado pela sincronização);
-- levar o registro para `base-conhecimento/institucional/ifpr/movimentacoes/`;
-- tratar o estado SEI como cache reconstruível.
-
-A interface depende de quem edita:
-- se forem só agentes e CLI, basta um painel somente leitura;
-- se a equipe editar sem git, a opção é um SQLite hospedado (Cloudflare D1) com login.
-
-O `kb.sqlite` nunca é o lugar de edição.
+Nada por ora. A direção de tirar `Movimentações de Cursos` da base de gestão anterior, registrada aqui em 13/11/2026, passou em 19/11/2026 ao repositório `dentec-ferramentas` ([plano](docs/plans/dentec-ferramentas.md), decisão 12).
 
 ## Decisões em aberto
 
@@ -589,7 +575,7 @@ Em aberto:
 - **Pendências:**
   - 8 ofertas de 2026 divergem do Anexo I do Edital 130/2025 no turno (Coronel Vivida ×2, Foz do Iguaçu ×3, Ivaiporã, União da Vitória ×2), e a de Toledo não consta dele. A divergência está em `turno_nota`. Uma delas, Foz do Iguaçu, Desenvolvimento de Sistemas, é âncora da Q08: matutino na página e integral no edital;
   - convenção do ano do PPC (capa ou ato posterior);
-  - o `trecho_fonte` público do ano do PPC ainda diz "registrado no Notion".
+  - o `trecho_fonte` público do ano do PPC ainda citava a base de gestão anterior.
 
 **Trilha T, passo T1 concluído em 13/11/2026** (branch `worktree-agent-ac5acad58383e32fc`).
 
@@ -876,13 +862,13 @@ Em aberto:
 - o script não regenera índices nem o site: imprime os quatro comandos do pipeline, que vêm depois da leitura do Markdown (e-mail particular sai à mão);
 - o passo a passo está em "Entrada de PPC novo na base", na doc de curadoria.
 
-**Documentação realinhada ao app em 17/11/2026** (branch `t3/realinhar-documentacao-app`). O `AGENTS.md`, o `README.md` e os READMEs dos apps, dos pacotes e das skills passam a descrever o repositório como o do app Simplifica IF e da base que o alimenta, com um mapa de `apps/` e `packages/` e o que o app entrega hoje, conferido no código (rotas de `apps/web`, as 16 ferramentas de `packages/mcp`, o motor e as skills com bloco `simplifica:`). Entrou neste plano a visão geral do repositório e o item de roadmap [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app): `sei-cli`, `revisar-processo-ppc`, `suap-ifpr`, a sincronização SEI → Notion e a `revisar-ppc` por sub-agentes ainda não estão no app.
+**Documentação realinhada ao app em 17/11/2026** (branch `t3/realinhar-documentacao-app`). O `AGENTS.md`, o `README.md` e os READMEs dos apps, dos pacotes e das skills passam a descrever o repositório como o do app Simplifica IF e da base que o alimenta, com um mapa de `apps/` e `packages/` e o que o app entrega hoje, conferido no código (rotas de `apps/web`, as 16 ferramentas de `packages/mcp`, o motor e as skills com bloco `simplifica:`). Entrou neste plano a visão geral do repositório e o item de roadmap [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app): `sei-cli`, `revisar-processo-ppc`, `suap-ifpr`, a sincronização do SEI com a base de gestão anterior e a `revisar-ppc` por sub-agentes ainda não estão no app.
 
 **Gerador do `site/` removido em 18/11/2026** (branch `t3/remover-gerador-site-legado`). O `scripts/gerar_site.ts` (com `scripts/base/site.ts`), herdado do `gerar_site.py` da época em que a base era publicada como site estático, só copiava `base-conhecimento/` para `site/`, que nada consumia; o repositório público já publica `base-conhecimento/`. Saíram o gerador, o caso de teste, o `base:site` do `package.json`, o hash do `site/` no gabarito da base (`testes-gabarito/base.txt`; o `base.sh` confere só os geradores sem diferença no git e o `validar_base`) e as menções na documentação.
 
 **Fim do leitor do repositório público em 18/11/2026** (mesmo branch). A base passa a ser lida só pelo app, pelo `simplifica-mcp` e pela CLI `kb`. Saem os artefatos que nenhum deles, script ou skill lê: o `index.json` de cursos, processos seletivos, editais, ofertas e conselhos (fica o de campi, que a `revisar-ppc` lê), os JSON Schemas públicos de `schemas/registros/`, a tabela de normas do `base-conhecimento/README.md`, `llms.txt`, `.nojekyll`, `index.html` e `paineis/`. O `processos-sei/index.json` e o `exportar_base_publica.ts` ficam até se confirmar se algo os consome; no repositório, só o `validar_base` os lê.
 
-**Processos SEI fora da base em 18/11/2026** (mesmo branch). Saem o `institucional/ifpr/processos-sei/index.json`, que só o `validar_base` lia, e o `scripts/exportar_base_publica.ts`, que o gerava a partir de `Movimentações de Cursos` no Notion, com o código que só ele usava (`scripts/dados/processos-sei.ts`, `carregarMovimentacoes` e a auditoria das movimentações). As movimentações ficam só no Notion; o `sei:sync` (SEI → Notion) continua e não dependia do índice.
+**Processos SEI fora da base em 18/11/2026** (mesmo branch). Saem o `institucional/ifpr/processos-sei/index.json`, que só o `validar_base` lia, e o `scripts/exportar_base_publica.ts`, que o gerava a partir de `Movimentações de Cursos` na base de gestão anterior, com o código que só ele usava (`scripts/dados/processos-sei.ts`, `carregarMovimentacoes` e a auditoria das movimentações). As movimentações ficam só na base de gestão anterior; o `sei:sync` continua e não dependia do índice.
 
 ## Histórico de revisões
 

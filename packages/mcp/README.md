@@ -208,7 +208,7 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
 
 ## CI
 
-O workflow `.github/workflows/ci.yml` roda em todo push e PR, sem segredos e sem acesso a Notion, SEI ou SUAP. O preparo é o mesmo nos dois jobs (`.github/actions/preparar`): o Node de `.node-version`, o pnpm de `packageManager` pelo corepack (o corepack 0.36.0, instalado à parte), o cache do store do pnpm e `pnpm install --frozen-lockfile`.
+O workflow `.github/workflows/ci.yml` roda em todo push e PR, sem segredos e sem acesso a sistemas com login. O preparo é o mesmo nos dois jobs (`.github/actions/preparar`): o Node de `.node-version`, o pnpm de `packageManager` pelo corepack (o corepack 0.36.0, instalado à parte), o cache do store do pnpm e `pnpm install --frozen-lockfile`.
 
 | Job | Runner | Passos | Tempo estimado |
 |---|---|---|---|

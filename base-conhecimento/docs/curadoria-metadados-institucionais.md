@@ -14,13 +14,13 @@ Campi, cursos (com metadados de PPC e SUAP e horários dos campi), processos sel
 | Edital | `editais/<edital_id>.json` | `edital_id` |
 | Oferta | `ofertas/<processo_seletivo_id>/<oferta_id>.json` | `processo_seletivo_id/oferta_id` |
 
-Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema, estrito: campo a mais é erro).
+Relações usam essas chaves: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema, estrito: campo a mais é erro).
 
 O que continua gerado, e por quê:
 
 - `campi/index.json`: lista os campi com o nome e o `path`, para a identificação do PPC na `revisar-ppc`. Gerado por `gerar_base.ts` (`scripts/dados/indices.ts`), sem data, e conferido pelo `validar_base.ts`. Não edite. As demais coleções não têm índice: o kb lê os registros direto.
 
-`Movimentações de Cursos` é a única base institucional que continua no Notion, e não é exportada para a base (veja [Operação do Notion por agentes](notion-operacao-agentes.md)). As bases do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)); Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion e não fazem parte do repositório.
+As reuniões do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)). Pareceres de Curso, Servidores e Conselheiros não fazem parte do repositório.
 
 ## Como alterar e publicar
 
@@ -71,15 +71,14 @@ Para relatórios brutos do SUAP com coluna `DIRETORIA`, use `institucional/ifpr/
 
 ### Matrizes e cargas horárias
 
-As matrizes chegam à base por um relatório de coleta (veja [Dado coletado fora do repositório](#dado-coletado-fora-do-repositório)). A coleta consulta todos os cursos com `suap.id`, usando três sessões simultâneas e cookies somente em memória, é somente leitura no SUAP e não grava nos registros; a aplicação do relatório é uma etapa explícita separada.
+As matrizes chegam à base por um relatório de coleta (veja [Dado coletado fora do repositório](#dado-coletado-fora-do-repositório)). A coleta, somente leitura no SUAP, roda fora deste repositório e não grava nos registros; a aplicação do relatório é uma etapa explícita separada.
 
 ```bash
-node scripts/suap_coletar_matrizes.ts                                   # grava tmp/suap-matrizes/resultado.json
-node scripts/aplicar_matrizes_suap.ts tmp/suap-matrizes/resultado.json  # lista as mudanças
-node scripts/aplicar_matrizes_suap.ts tmp/suap-matrizes/resultado.json --apply
+node scripts/aplicar_matrizes_suap.ts <relatório.json>           # lista as mudanças
+node scripts/aplicar_matrizes_suap.ts <relatório.json> --apply
 ```
 
-Para restringir a coleta, use `--suap-id 211` (repetível). O relatório identifica cada curso por `curso_id` (`campus_id/curso_slug`), `suap_id` e `codigo`, e a aplicação confere `suap.id` e `suap.codigo` de todos antes de gravar. Depois de gravar, siga o pipeline da seção abaixo.
+O relatório identifica cada curso por `curso_id` (`campus_id/curso_slug`), `suap_id` e `codigo`, e a aplicação confere `suap.id` e `suap.codigo` de todos antes de gravar. Depois de gravar, siga o pipeline da seção abaixo.
 
 Campos gravados em `suap.matrizes`:
 
@@ -218,11 +217,9 @@ Um PPC importado pelo `importar_ppc_docx.ts` tem proveniência `registrada`, com
 
 Quem lê o Markdown por código deve ignorar o front matter: `corpoPpc` e `mascararFrontMatter` (que mantém os números de linha) estão no mesmo módulo.
 
-## Movimentações e SEI
+## Situação do curso
 
-`Movimentações de Cursos` continua no Notion e registra processos administrativos do histórico do curso, como abertura, ajuste, atualização, suspensão, reversão de suspensão ou extinção. As regras de preenchimento e a sincronização com o SEI estão em [Operação do Notion por agentes](notion-operacao-agentes.md) e [Sincronização SEI → Notion](sincronizacao-sei-notion.md).
-
-Quando uma movimentação mudar a situação do curso, atualize `situacao` no arquivo do curso em `institucional/ifpr/cursos/` e publique.
+Quando um processo administrativo (abertura, ajuste, atualização, suspensão, reversão de suspensão ou extinção) mudar a situação do curso, atualize `situacao` no arquivo do curso em `institucional/ifpr/cursos/` e publique.
 
 ## Processos seletivos
 
@@ -265,7 +262,7 @@ Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (
 
 ## Conselhos
 
-`institucional/ifpr/conselhos/<conselho_id>/` guarda o registro do conselho (`conselho.json`) e um arquivo por reunião (`reunioes/<AAAA-MM-DD>.json`), com os documentos publicados (`documentos[]`: pareceres e pautas, com número, data, resumo e URL oficial) e os itens de pauta deliberados (`itens_pauta[]`: tipo de demanda, resultado, processo SEI, `documento_id` do documento de origem na mesma reunião). Hoje há só o Consepe, migrado do Notion em 17/11/2026; os IDs são os externos que a base já usava (`consepe:reuniao:<data>`, `consepe:parecer:<ano>:<número>`, `consepe:item:<ano>:parecer:<número>`).
+`institucional/ifpr/conselhos/<conselho_id>/` guarda o registro do conselho (`conselho.json`) e um arquivo por reunião (`reunioes/<AAAA-MM-DD>.json`), com os documentos publicados (`documentos[]`: pareceres e pautas, com número, data, resumo e URL oficial) e os itens de pauta deliberados (`itens_pauta[]`: tipo de demanda, resultado, processo SEI, `documento_id` do documento de origem na mesma reunião). Hoje há só o Consepe, registrado em 17/11/2026; os IDs são os externos que a base já usava (`consepe:reuniao:<data>`, `consepe:parecer:<ano>:<número>`, `consepe:item:<ano>:parecer:<número>`).
 
 Não há entidade de pessoa: relator(a), conselheiros e servidores não entram. Um nome só aparece quando faz parte do texto do ato oficial. Os itens apontam para o campus e o curso pelas chaves canônicas (`campus_id`, `curso_id`) quando o curso está cadastrado; `campus_texto` e `curso_texto` guardam a redação do ato. Curso que o ato não identifica sem ambiguidade, ou que não está cadastrado (abertura ainda não registrada, por exemplo), fica só com o texto.
 
