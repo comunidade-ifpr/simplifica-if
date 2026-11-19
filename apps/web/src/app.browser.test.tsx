@@ -725,8 +725,10 @@ function cabecalho(): HTMLElement {
 it("Barra de título: no navegador, o cabeçalho não é barra de título", async () => {
   await using _app = await montarApp(servidor);
   await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
-  // Só o nome, sem o rótulo "IFPR" ao lado.
-  expect(cabecalho().querySelector("a")?.textContent).toBe("Simplifica IF");
+  // Só o logo, sem o rótulo "IFPR" ao lado; o nome vai no texto alternativo.
+  const inicio = cabecalho().querySelector("a")!;
+  expect(inicio.textContent).toBe("");
+  expect(inicio.querySelector("img")?.alt).toBe("Simplifica IF");
   expect(cabecalho().classList.contains("drag-region")).toBe(false);
   expect(getComputedStyle(cabecalho()).getPropertyValue("-webkit-app-region")).not.toBe("drag");
 });
@@ -758,7 +760,7 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
   // Os links recebem o clique e o foco.
   expect(getComputedStyle(configuracoes.element()).getPropertyValue("-webkit-app-region")).toBe("no-drag");
   await userEvent.tab();
-  expect(document.activeElement?.textContent).toContain("Simplifica IF");
+  expect(document.activeElement?.querySelector("img")?.alt).toBe("Simplifica IF");
 
   avisar(true);
   await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("16px");

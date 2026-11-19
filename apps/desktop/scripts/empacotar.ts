@@ -98,7 +98,7 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
     publish: [{ provider: "generic", url: FEED_EMPACOTADO }],
     mac: {
       target: opcoes.dir ? ["dir"] : ["dmg", "zip"],
-      icon: "icone.png",
+      icon: "icone.icns",
       category: "public.app-category.education",
       // Sem assinatura nem notarização por enquanto (pendência).
       identity: null,
@@ -117,7 +117,7 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
     win: {
       // x64, a máquina comum dos servidores (o arm64 do Windows fica para depois).
       target: [{ target: opcoes.dir ? "dir" : "nsis", arch: ["x64"] }],
-      icon: "icone.png",
+      icon: "icone.ico",
     },
     nsis: {
       // Por usuário, sem pedir administrador.

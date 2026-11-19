@@ -1,5 +1,5 @@
 /**
- * A moldura das telas: o cabeçalho com o nome do app, a navegação (Início, Explorar, Configurações), a
+ * A moldura das telas: o cabeçalho com o logo do app, a navegação (Início, Explorar, Configurações), a
  * busca na base (Ctrl/Cmd+K, a paleta do Explorar), o estado da conexão e o tema; o aviso de conexão; e
  * a tela da rota. No desktop, o cabeçalho é a barra de título da janela (`barra-titulo.ts`).
  */
@@ -14,6 +14,7 @@ import { Button } from "../components/ui/button.tsx";
 import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { explicarErro } from "../conexao/erros.ts";
 import { atalhoPaleta, ProvedorPaleta, usePaleta } from "../explorar/Paleta.tsx";
+import logo from "../marca/logo-sobre-verde.svg";
 
 export const Route = createRootRoute({
   component: Moldura,
@@ -106,8 +107,9 @@ function MolduraComPaleta() {
             : "drag-region barra-titulo flex h-12 shrink-0 select-none items-center gap-x-4 bg-marca px-4 text-white lg:gap-x-6"
         }
       >
-        <Link to="/" className="shrink-0 whitespace-nowrap font-bold text-lg tracking-tight">
-          Simplifica IF
+        <Link to="/" className="shrink-0 rounded-sm">
+          {/* O logo branco sobre o verde do cabeçalho (`apps/desktop/scripts/gerar-marca.ts`). */}
+          <img src={logo} alt="Simplifica IF" draggable={false} className="block h-6 w-auto" />
         </Link>
         <nav aria-label="Telas" className="flex gap-1">
           <Link to="/" className={classeAba} activeOptions={{ exact: true }}>

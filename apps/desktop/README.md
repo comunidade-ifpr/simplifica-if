@@ -58,7 +58,7 @@ O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` o
 
 - macOS: dmg e zip; Windows: NSIS por usuário (`oneClick`, sem pedir administrador);
 - o processo principal, o preload e a interface vão no `app.asar`; o servidor, a base e as skills vão fora dele, em `Resources/servidor`, `Resources/base` e `Resources/skills`: o servidor roda no Node do Electron como módulos ES, e o SQLite precisa de um arquivo de verdade;
-- o ícone é `recursos/icone.png` (`node scripts/gerar-icone.ts`), provisório.
+- o ícone é `recursos/icone.icns` (macOS) e `recursos/icone.ico` (Windows), gerados com o resto da marca por `node scripts/gerar-marca.ts` (veja [`docs/marca/`](../../docs/marca/README.md)).
 
 ## Partida e encerramento
 
@@ -137,7 +137,7 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 - `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.
 - `src/registro.ts`: o arquivo de log, com o giro em 5 MB; sem Electron.
 - `src/preload.ts`: a ponte (o contrato está em `@simplifica-if/contratos-app/ponte`).
-- `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` (as skills do app no pacote), `scripts/dev.ts`, `scripts/gerar-icone.ts`.
+- `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` (as skills do app no pacote), `scripts/dev.ts`, `scripts/gerar-marca.ts` (com `scripts/marca/`).
 - `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
 
 O processo principal não usa Effect: as APIs do Electron são de callback, e o `main.cjs` fica pequeno, sem runtime. O servidor, que é Effect, roda noutro processo.
@@ -160,7 +160,6 @@ Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-de
 ## Pendências
 
 - **Assinatura de código e notarização** (macOS: Developer ID e notarização; Windows: certificado). Sem elas, o macOS pede "Abrir mesmo assim" e o Windows mostra o SmartScreen.
-- **Ícone final** pela identidade visual do IFPR (skill `ifpr-design`); o de `recursos/icone.png` é provisório.
 - **Instaladores no CI** (macOS e Windows), com o `kb.sqlite` da fábrica e um smoke do app empacotado, como o `smoke-desktop-app.ts` do T3.
 - **Windows:** o `dist --win` e o app no Windows ainda não foram testados; ali o cordão do servidor é só o stdin (o `awaitLauncherLoss` do T3 não age no Windows).
 - **Atualização do app ligada:** depende da assinatura de código (acima) e do feed na política (repositório público); ver `packages/atualizacao/README.md`, "O que falta para ligar em produção".
