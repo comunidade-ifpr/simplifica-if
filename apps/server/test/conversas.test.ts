@@ -8,6 +8,7 @@
  * andamento e as skills do catálogo em toda sessão aberta (nova, retomada, recomeçada).
  */
 import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it } from "@effect/vitest";
@@ -16,18 +17,22 @@ import * as Deferred from "effect/Deferred";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
+import type * as FileSystem from "effect/FileSystem";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
+import type * as Path from "effect/Path";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as TestClock from "effect/testing/TestClock";
-import type { EventoConversa, ItemConversa } from "@simplifica-if/contratos-app";
+import { type EventoConversa, type ItemConversa, MOTIVO_PARADO_ANTES_DO_ENVIO } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import type { SkillDoApp } from "@simplifica-if/mcp/skills";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
+import * as TextosAnexos from "../src/textos-anexos/TextosAnexos.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
@@ -79,10 +84,17 @@ const layerRetratoComDefeito = Layer.effect(
   }),
 ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
 
+/** As pastas do turno; as de verdade pedem o histórico e o sistema de arquivos, que a camada dá. */
+type CamadaPastas = Layer.Layer<
+  PastasTrabalho.PastasTrabalho,
+  never,
+  Historico.Historico | FileSystem.FileSystem | Path.Path
+>;
+
 const camada = (
   arquivo: string,
   registro: Registro,
-  pastas: Layer.Layer<PastasTrabalho.PastasTrabalho> = PastasTrabalho.layerSemPastas,
+  pastas: CamadaPastas = PastasTrabalho.layerSemPastas,
   preferencias: typeof Preferencias.layer = Preferencias.layerPrimeiroUsoFeito,
 ) =>
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
@@ -101,12 +113,7 @@ const camada = (
  * Abre o servidor de conversas (como o app que abre) num escopo próprio; `fechar` o encerra como o
  * app que fecha.
  */
-const abrir = (
-  arquivo: string,
-  registro: Registro,
-  pastas?: Layer.Layer<PastasTrabalho.PastasTrabalho>,
-  preferencias?: typeof Preferencias.layer,
-) =>
+const abrir = (arquivo: string, registro: Registro, pastas?: CamadaPastas, preferencias?: typeof Preferencias.layer) =>
   Effect.gen(function* () {
     const escopo = yield* Scope.make();
     const contexto = yield* Layer.buildWithScope(camada(arquivo, registro, pastas, preferencias), escopo);
@@ -561,6 +568,260 @@ describe("ciclo de vida da sessão do provider", () => {
       const depois = yield* Stream.runCollect(conversas.enviar(id, "olá"));
       assert.strictEqual(tags(depois).at(-1), "FimTurno");
       assert.strictEqual(registro.configs.length, 1);
+      yield* fechar;
+    }),
+  );
+
+  it.effect("interromper no preparo: a mensagem não vai à IA, a cópia do turno sai e a conversa segue", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      // O preparo do turno 2 avisa que começou e fica parado na cópia da pasta (como numa conversão longa).
+      const comecou = yield* Deferred.make<void>();
+      const descartadas: Array<number> = [];
+      const pastasLentas = Layer.effect(
+        PastasTrabalho.PastasTrabalho,
+        Effect.gen(function* () {
+          const pastas = yield* PastasTrabalho.PastasTrabalho;
+          return PastasTrabalho.PastasTrabalho.of({
+            ...pastas,
+            guardarCopia: (_conversa, turno) =>
+              turno === 2 ? Deferred.succeed(comecou, undefined).pipe(Effect.andThen(Effect.never)) : Effect.undefined,
+            descartarCopia: (_conversa, turno) => Effect.sync(() => void descartadas.push(turno)),
+          });
+        }),
+      ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasLentas);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      const enviados = registro.textos.length;
+
+      const turno = yield* Stream.runCollect(conversas.enviar(id, "confira a pasta")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      // No preparo, o turno já existe: outra mensagem espera, e o "Parar" tem o que interromper.
+      const emAndamento = yield* Effect.flip(Stream.runCollect(conversas.enviar(id, "outra")));
+      assert.strictEqual(emAndamento._tag, "TurnoEmAndamento");
+      yield* conversas.interromper(id);
+      const eventos = yield* Fiber.join(turno);
+      assert.deepStrictEqual([...eventos], [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }]);
+      // A IA não recebeu a mensagem; o histórico a guarda, e a cópia do turno parado sai.
+      assert.strictEqual(registro.textos.length, enviados);
+      assert.deepStrictEqual(descartadas, [2]);
+      const gravada = yield* conversas.carregar(id);
+      assert.strictEqual(gravada.conversa.estado, "pronta");
+      assert.deepInclude(
+        gravada.itens.find((item) => item.turno === 2 && item._tag === "Mensagem"),
+        { texto: "confira a pasta" },
+      );
+      // A conversa aceita a próxima mensagem, e ela vai à IA.
+      const depois = yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      assert.strictEqual(tags(depois).at(-1), "FimTurno");
+      assert.strictEqual(registro.textos.at(-1), "de novo");
+      yield* fechar;
+    }),
+  );
+
+  it.effect("parar no meio das conversões: o próximo turno avisa do que a pessoa mexeu antes do Parar", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const raiz = NodeFS.realpathSync(diretorioTemporario("simplifica-raiz-"));
+      const tarefa = NodePath.join(raiz, "Tarefa");
+      NodeFS.mkdirSync(tarefa);
+      NodeFS.writeFileSync(NodePath.join(tarefa, "entrada.md"), "original\n");
+      // A primeira conversão avisa que começou e fica presa (como um Worker lento); as outras respondem.
+      const comecou = yield* Deferred.make<void>();
+      let conversoes = 0;
+      const textosLentos = Layer.succeed(TextosAnexos.TextosAnexos, {
+        bytesDoArquivo: TextosAnexos.LIMITES.bytesDoArquivo,
+        converter: (_bytes, nome) =>
+          ++conversoes === 1
+            ? Deferred.succeed(comecou, undefined).pipe(Effect.andThen(Effect.never))
+            : Effect.succeed({ tipo: "texto", markdown: `texto de ${nome}` } as const),
+      });
+      const pastas = PastasTrabalho.layer({ raiz, copias: diretorioTemporario("simplifica-copias-") }).pipe(
+        Layer.provide(textosLentos),
+        Layer.provide(ArquivosLiberados.layer({ exigirLiberacao: false })),
+      );
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastas);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+
+      // Entre os turnos, a pessoa põe um .docx e uma nota; a conversão do .docx trava, e ela para.
+      NodeFS.writeFileSync(NodePath.join(tarefa, "Minuta.docx"), "conteúdo da minuta");
+      NodeFS.writeFileSync(NodePath.join(tarefa, "nota.md"), "nota\n");
+      const parado = yield* Stream.runCollect(conversas.enviar(id, "confira")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      yield* conversas.interromper(id);
+      assert.deepStrictEqual(
+        [...(yield* Fiber.join(parado))],
+        [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }],
+      );
+
+      // No turno seguinte, o aviso traz as duas mudanças (a comparação é com o turno 1, o último que
+      // chegou à IA), e a minuta ganha o texto.
+      const seguinte = yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      assert.deepStrictEqual(
+        [...seguinte].find((evento) => evento._tag === "MudancasPasta"),
+        {
+          _tag: "MudancasPasta",
+          novos: [{ nome: "Minuta.docx", texto: ".simplifica/textos/Minuta.docx.md" }, { nome: "nota.md" }],
+          mudados: [],
+          removidos: [],
+        },
+      );
+      assert.match(registro.textos.at(-1) ?? "", /^de novo\n\nDesde a sua última resposta/);
+      yield* fechar;
+    }),
+  );
+
+  /** As pastas com o preparo do turno `n` preso: avisa em `comecou` e espera `solta` (ou para sempre). */
+  const pastasPresas = (n: number, comecou: Deferred.Deferred<void>, solta?: Deferred.Deferred<void>) =>
+    Layer.effect(
+      PastasTrabalho.PastasTrabalho,
+      Effect.gen(function* () {
+        const pastas = yield* PastasTrabalho.PastasTrabalho;
+        return PastasTrabalho.PastasTrabalho.of({
+          ...pastas,
+          guardarCopia: (_conversa, turno) =>
+            turno === n
+              ? Deferred.succeed(comecou, undefined).pipe(
+                  Effect.andThen(solta === undefined ? Effect.never : Deferred.await(solta)),
+                  Effect.as(undefined),
+                )
+              : Effect.undefined,
+        });
+      }),
+    ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
+
+  it.effect("o turno 1 de uma tarefa parado no preparo: a skill é indicada no primeiro que chega à IA", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const comecou = yield* Deferred.make<void>();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(1, comecou));
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta, tarefa: "skill-de-teste" });
+      const parado = yield* Stream.runCollect(conversas.enviar(id, "primeiro")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      yield* conversas.interromper(id);
+      yield* Fiber.join(parado);
+      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      assert.match(registro.textos.at(-1) ?? "", /^Siga a skill `skill-de-teste`[\s\S]*\n\nde novo$/);
+      yield* fechar;
+    }),
+  );
+
+  it.effect("a sessão que cai no preparo: o Parar ainda para, e sem Parar o turno fecha com a queda", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const comecou = yield* Deferred.make<void>();
+      const solta = yield* Deferred.make<void>();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(2, comecou, solta));
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      const enviados = registro.textos.length;
+      const parado = yield* Stream.runCollect(conversas.enviar(id, "segundo")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      yield* registro.derrubar!(new Error("o processo morreu"));
+      yield* rodar;
+      yield* conversas.interromper(id);
+      assert.deepStrictEqual(
+        [...(yield* Fiber.join(parado))],
+        [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }],
+      );
+      assert.strictEqual(registro.textos.length, enviados);
+      yield* fechar;
+    }),
+  );
+
+  it.effect("a sessão que cai no preparo, sem Parar: a mensagem não vai a uma sessão encerrada", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const comecou = yield* Deferred.make<void>();
+      const solta = yield* Deferred.make<void>();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(2, comecou, solta));
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      const enviados = registro.textos.length;
+      const turno = yield* Stream.runCollect(conversas.enviar(id, "segundo")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      yield* registro.derrubar!(new Error("o processo morreu"));
+      yield* rodar;
+      yield* Deferred.succeed(solta, undefined);
+      const eventos = [...(yield* Fiber.join(turno))];
+      assert.deepStrictEqual(tags(eventos), ["Erro", "FimTurno"]);
+      assert.deepInclude(eventos[0], { tipo: "queda" });
+      assert.deepStrictEqual(eventos[1], { _tag: "FimTurno", motivo: "falha" });
+      assert.strictEqual(registro.textos.length, enviados);
+      // A próxima mensagem reabre a sessão e vai à IA.
+      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      assert.strictEqual(registro.textos.at(-1), "de novo");
+      yield* fechar;
+    }),
+  );
+
+  it.effect("encerrar a conversa no preparo fecha o turno como parado, não como resposta interrompida", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const comecou = yield* Deferred.make<void>();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(1, comecou));
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const turno = yield* Stream.runCollect(conversas.enviar(id, "olá")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      yield* conversas.encerrar(id);
+      assert.deepStrictEqual(
+        [...(yield* Fiber.join(turno))],
+        [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }],
+      );
+      yield* fechar;
+    }),
+  );
+
+  it.effect("o .docx convertido antes do Parar vai no aviso seguinte com o caminho do texto", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const raiz = NodeFS.realpathSync(diretorioTemporario("simplifica-raiz-"));
+      const tarefa = NodePath.join(raiz, "Tarefa");
+      NodeFS.mkdirSync(tarefa);
+      const comecou = yield* Deferred.make<void>();
+      let travou = false;
+      const textosLentos = Layer.succeed(TextosAnexos.TextosAnexos, {
+        bytesDoArquivo: TextosAnexos.LIMITES.bytesDoArquivo,
+        // O A.docx converte; o B.docx trava na primeira vez (a pessoa para), e converte na seguinte.
+        converter: (_bytes, nome) =>
+          nome === "B.docx" && !travou
+            ? Effect.sync(() => (travou = true)).pipe(
+                Effect.andThen(Deferred.succeed(comecou, undefined)),
+                Effect.andThen(Effect.never),
+              )
+            : Effect.succeed({ tipo: "texto", markdown: `texto de ${nome}` } as const),
+      });
+      const pastas = PastasTrabalho.layer({ raiz, copias: diretorioTemporario("simplifica-copias-") }).pipe(
+        Layer.provide(textosLentos),
+        Layer.provide(ArquivosLiberados.layer({ exigirLiberacao: false })),
+      );
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastas);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      NodeFS.writeFileSync(NodePath.join(tarefa, "A.docx"), "a");
+      NodeFS.writeFileSync(NodePath.join(tarefa, "B.docx"), "b");
+      const parado = yield* Stream.runCollect(conversas.enviar(id, "confira")).pipe(Effect.forkChild);
+      yield* Deferred.await(comecou);
+      yield* conversas.interromper(id);
+      yield* Fiber.join(parado);
+      const seguinte = yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      assert.deepStrictEqual(
+        [...seguinte].find((evento) => evento._tag === "MudancasPasta"),
+        {
+          _tag: "MudancasPasta",
+          novos: [
+            { nome: "A.docx", texto: ".simplifica/textos/A.docx.md" },
+            { nome: "B.docx", texto: ".simplifica/textos/B.docx.md" },
+          ],
+          mudados: [],
+          removidos: [],
+        },
+      );
+      // Avisado, o A.docx não volta no turno seguinte.
+      const depois = yield* Stream.runCollect(conversas.enviar(id, "e agora?"));
+      assert.isUndefined([...depois].find((evento) => evento._tag === "MudancasPasta"));
       yield* fechar;
     }),
   );

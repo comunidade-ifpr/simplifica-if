@@ -1,29 +1,19 @@
-// @effect-diagnostics nodeBuiltinImport:off -- teste: arquivos de verdade na pasta temporária
 /**
- * A versão em texto dos anexos (`TextosAnexos`), direto no serviço, com o Worker de verdade: a extensão
+ * A versão em texto dos anexos (`TextosAnexos`), direto no serviço, com o Worker de verdade: os bytes
+ * entram (a leitura conferida é do `PastasTrabalho`, `test/pastas-node.test.ts`), a extensão
  * decide (inclusive em maiúsculas), o tempo máximo vira motivo para a pessoa, e o nome do `.md` e o
  * cabeçalho saem seguros de nomes que o macOS aceita (barra invertida, quebra de linha, nome longo).
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterAll, assert, describe, it, layer } from "@effect/vitest";
+import { assert, describe, it, layer } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { montarPdf } from "@simplifica-if/pdf/testes/sintetico";
 import { montarOdt } from "@simplifica-if/docx/testes/sintetico-odt";
 import * as TextosAnexos from "../src/textos-anexos/TextosAnexos.ts";
-import { diretorioTemporario, limparTemporarios } from "./apoio.ts";
 
-afterAll(limparTemporarios);
-
-const pasta = diretorioTemporario("simplifica-textos-");
-const docx = (nome: string) => {
-  const caminho = NodePath.join(pasta, nome);
-  NodeFS.writeFileSync(caminho, montarDocx({ corpo: par("Art. 1º O estágio é obrigatório.") }));
-  return caminho;
-};
+const docx = () => montarDocx({ corpo: par("Art. 1º O estágio é obrigatório.") });
 
 describe("caminhoDoTexto e cabecalhoTexto", () => {
   it("o nome do .md é o do anexo, sem barra invertida nem controle, e o longo é cortado com um resumo", () => {
@@ -53,23 +43,25 @@ layer(TextosAnexos.layer().pipe(Layer.provide(NodeServices.layer)), {
   it.effect("o .docx (também em maiúsculas) vira texto; o que a IA já lê não se converte", () =>
     Effect.gen(function* () {
       const textos = yield* TextosAnexos.TextosAnexos;
-      const minuscula = yield* textos.converter(docx("Minuta.docx"), "Minuta.docx");
+      // O limite que quem lê confere antes de passar os bytes.
+      assert.strictEqual(textos.bytesDoArquivo, TextosAnexos.LIMITES.bytesDoArquivo);
+      const bytes = docx();
+      const minuscula = yield* textos.converter(bytes, "Minuta.docx");
       assert.strictEqual(minuscula.tipo, "texto");
-      const maiuscula = yield* textos.converter(docx("MINUTA.DOCX"), "MINUTA.DOCX");
+      // Os bytes de quem chama continuam dele (o Worker recebe uma cópia transferida).
+      assert.isAbove(bytes.length, 0);
+      const maiuscula = yield* textos.converter(docx(), "MINUTA.DOCX");
       assert.strictEqual(maiuscula.tipo, "texto");
       if (maiuscula.tipo === "texto") assert.include(maiuscula.markdown, "Art. 1º O estágio é obrigatório.");
-      const md = NodePath.join(pasta, "nota.md");
-      NodeFS.writeFileSync(md, "# Nota\n");
+      const md = new TextEncoder().encode("# Nota\n");
       assert.deepStrictEqual(yield* textos.converter(md, "nota.md"), { tipo: "nao-converte" });
       // O .odt (LibreOffice) também.
-      const odt = NodePath.join(pasta, "Minuta.odt");
-      NodeFS.writeFileSync(odt, montarOdt({ corpo: "<text:p>Art. 4º A minuta vale.</text:p>" }));
+      const odt = montarOdt({ corpo: "<text:p>Art. 4º A minuta vale.</text:p>" });
       const doOdt = yield* textos.converter(odt, "Minuta.odt");
       assert.strictEqual(doOdt.tipo, "texto");
       if (doOdt.tipo === "texto") assert.include(doOdt.markdown, "Art. 4º A minuta vale.");
       // O PDF com texto vira texto, com o marcador de página e o cabeçalho próprio do PDF.
-      const pdf = NodePath.join(pasta, "Parecer.PDF");
-      NodeFS.writeFileSync(pdf, montarPdf({ paginas: [["Art. 3º O parecer vale."]] }));
+      const pdf = montarPdf({ paginas: [["Art. 3º O parecer vale."]] });
       const doPdf = yield* textos.converter(pdf, "Parecer.PDF");
       assert.strictEqual(doPdf.tipo, "texto");
       if (doPdf.tipo === "texto") {
@@ -78,14 +70,10 @@ layer(TextosAnexos.layer().pipe(Layer.provide(NodeServices.layer)), {
         assert.include(doPdf.markdown, "o PDF não guarda títulos nem tabelas como texto");
       }
       // O PDF digitalizado (só imagem, aqui uma página vazia) entra sem texto, com a frase do motivo.
-      const vazio = NodePath.join(pasta, "Digitalizado.pdf");
-      NodeFS.writeFileSync(vazio, montarPdf({ paginas: [[]] }));
+      const vazio = montarPdf({ paginas: [[]] });
       const semTextoPdf = yield* textos.converter(vazio, "Digitalizado.pdf");
       assert.strictEqual(semTextoPdf.tipo, "sem-texto");
       if (semTextoPdf.tipo === "sem-texto") assert.match(semTextoPdf.motivo, /^O PDF não tem texto/);
-      // O arquivo que sumiu: sem texto, sem falhar.
-      const sumiu = yield* textos.converter(NodePath.join(pasta, "nao-existe.docx"), "nao-existe.docx");
-      assert.deepStrictEqual(sumiu, { tipo: "sem-texto", motivo: "O arquivo não pôde ser lido." });
     }),
   );
 });
@@ -96,7 +84,7 @@ layer(TextosAnexos.layer({ limites: { tempoMs: 1 } }).pipe(Layer.provide(NodeSer
   it.effect("o Worker que passa do tempo vira o motivo para a pessoa", () =>
     Effect.gen(function* () {
       const textos = yield* TextosAnexos.TextosAnexos;
-      const resultado = yield* textos.converter(docx("Lento.docx"), "Lento.docx");
+      const resultado = yield* textos.converter(docx(), "Lento.docx");
       assert.deepStrictEqual(resultado, { tipo: "sem-texto", motivo: "A conversão passou do tempo máximo." });
     }),
   );

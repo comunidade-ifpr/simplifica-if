@@ -359,6 +359,42 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
     }).pipe(Effect.scoped),
   );
 
+  it.effect("a subpasta trocada entre os turnos por um link para fora: nada de fora vira texto", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Subpasta com link" });
+      const textos = NodePath.join(pasta, ".simplifica", "textos");
+      NodeFS.mkdirSync(NodePath.join(pasta, "atas"));
+      NodeFS.writeFileSync(NodePath.join(pasta, "atas", "Ata.docx"), montarDocx({ corpo: par("Ata da pasta.") }));
+      const alvoFora = NodeFS.realpathSync(diretorioTemporario("simplifica-alvo-docx-"));
+      NodeFS.writeFileSync(NodePath.join(alvoFora, "Ata.docx"), montarDocx({ corpo: par("CONTEÚDO DE FORA.") }));
+      NodeFS.writeFileSync(NodePath.join(alvoFora, "Segredo.docx"), montarDocx({ corpo: par("CONTEÚDO DE FORA.") }));
+      const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      const turno = (texto: string) =>
+        rpc["conversa.enviar"]({ sessao, texto }).pipe(
+          Stream.runCollect,
+          Effect.map((eventos) => [...eventos].find((evento) => evento._tag === "MudancasPasta")),
+        );
+      yield* turno("oi");
+      assert.include(NodeFS.readFileSync(NodePath.join(textos, "atas", "Ata.docx.md"), "utf8"), "Ata da pasta.");
+
+      // Entre os turnos (um processo deixado pela IA, por exemplo), `atas` vira link para uma pasta de fora.
+      NodeFS.rmSync(NodePath.join(pasta, "atas"), { recursive: true });
+      NodeFS.symlinkSync(alvoFora, NodePath.join(pasta, "atas"));
+      const segundo = yield* turno("e agora?");
+      assert.deepStrictEqual(segundo?.removidos, ["atas/Ata.docx"]);
+      assert.deepStrictEqual(segundo?.novos, []);
+      // O texto da ata da pasta sai, e nenhum documento de fora ganha texto.
+      const gravados = (NodeFS.readdirSync(textos, { recursive: true }) as Array<string>).filter((nome) =>
+        NodeFS.lstatSync(NodePath.join(textos, nome)).isFile(),
+      );
+      assert.deepStrictEqual(gravados, ["indice.json"]);
+      assert.notInclude(NodeFS.readFileSync(NodePath.join(textos, "indice.json"), "utf8"), "Segredo");
+      assert.deepStrictEqual(NodeFS.readdirSync(alvoFora).sort(), ["Ata.docx", "Segredo.docx"]);
+    }).pipe(Effect.scoped),
+  );
+
   it.effect("cópia antes de cada turno; Desfazer restaura o turno que mudou a pasta, e de novo o anterior", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;

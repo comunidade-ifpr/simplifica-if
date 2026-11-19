@@ -11,14 +11,15 @@
  * Uma conversa gravada (`conversa.carregar`) se remonta com os mesmos passos (`aplicarItem`): a
  * mensagem da pessoa, os eventos e as decisões de aprovação, na ordem.
  */
-import type {
-  ConversaGravada,
-  Decisao,
-  EstadoConversa as EstadoGravado,
-  EventoConversa,
-  ItemConversa,
-  NotaResposta,
-  Provider,
+import {
+  type ConversaGravada,
+  type Decisao,
+  type EstadoConversa as EstadoGravado,
+  type EventoConversa,
+  type ItemConversa,
+  type NotaResposta,
+  type Provider,
+  MOTIVO_PARADO_ANTES_DO_ENVIO,
 } from "@simplifica-if/contratos-app";
 import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
 import { ehFerramentaEtapa, type MarcaEtapa, marcaDaEntrada } from "./etapas.ts";
@@ -275,6 +276,13 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
           ? { estadoServidor: evento.motivo === "falha" ? "caiu" : "pronta" }
           : {}),
       };
+      if (evento.motivo === MOTIVO_PARADO_ANTES_DO_ENVIO)
+        return comItem(fechado, (chave) => ({
+          tipo: "aviso",
+          chave,
+          texto: "Parado antes de a IA receber a mensagem. Envie de novo quando quiser.",
+          gravidade: "info",
+        }));
       return foiInterrompido(evento.motivo)
         ? comItem(fechado, (chave) => ({ tipo: "aviso", chave, texto: "Resposta interrompida.", gravidade: "info" }))
         : fechado;

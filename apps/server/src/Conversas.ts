@@ -19,8 +19,11 @@
  * - **Queda do processo do provider:** o motor avisa (`infoSessao().queda`). No meio de um turno, o
  *   turno termina com `Erro` e `FimTurno` (motivo `falha`); fora dele, grava-se o `Erro`. A conversa
  *   fica `caiu`, e a próxima mensagem a reabre pela retomada.
- * - **Interromper:** pede ao provider que pare; se o turno não terminar em `PRAZO_INTERRUPCAO`, a
- *   sessão se libera e o turno termina como interrompido. Em todo caso a conversa aceita novo turno.
+ * - **Turno e interromper:** o turno abre antes do preparo (a cópia da pasta e os textos), na fase
+ *   `preparando`, como o `starting` do T3 Code. Nessa fase, interromper para o preparo e fecha o turno com
+ *   `MOTIVO_PARADO_ANTES_DO_ENVIO`, sem a mensagem ter ido à IA; depois (`respondendo`), pede ao provider
+ *   que pare, e se o turno não terminar em `PRAZO_INTERRUPCAO`, a sessão se libera e o turno termina como
+ *   interrompido. Em todo caso a conversa aceita novo turno.
  * - Ao fim da layer (o app fechou), as sessões se liberam, e um turno em andamento termina como
  *   interrompido. Na abertura, as conversas que o banco dá como abertas (o servidor morreu sem
  *   fechar) passam a `liberada`, com o turno pela metade fechado do mesmo jeito.
@@ -62,6 +65,7 @@ import {
   type EventoConversa,
   type FalhaPasta,
   type ItemConversa,
+  MOTIVO_PARADO_ANTES_DO_ENVIO,
   type NotaResposta,
   type PastaConversa,
   PastaTrabalhoInvalida,
@@ -148,6 +152,16 @@ interface SessaoAberta {
 
 interface TurnoAberto {
   readonly numero: number;
+  /**
+   * `preparando`: a cópia da pasta e os textos, antes de a mensagem ir à IA; `respondendo`: a IA já a
+   * recebeu. O `interromper` e a fibra do turno conferem e trocam a fase num passo só, sem `yield` no
+   * meio: um "Parar" no preparo nunca deixa a mensagem chegar à IA.
+   */
+  fase: "preparando" | "respondendo";
+  /** O "Parar" chegou no preparo (o `interromper` o marca junto com a fase). */
+  parado: boolean;
+  /** O sinal do "Parar" no preparo: interrompe a cópia e as conversões em andamento. */
+  readonly parar: Deferred.Deferred<void>;
   fibra: Fiber.Fiber<void> | undefined;
   /** O texto parcial desde o último `TextoFinal`. */
   acumulado: string;
@@ -171,6 +185,8 @@ interface Viva {
   ociosidade: Fiber.Fiber<void> | undefined;
   /** O histórico a levar na próxima mensagem, quando a retomada não foi possível. */
   contexto: string | undefined;
+  /** Algum turno já levou a mensagem à IA (`undefined`: ainda não lido do histórico). */
+  chegouAIA: boolean | undefined;
   /** O processo do provider caiu e a sessão ainda não se reabriu. */
   caiu: boolean;
   /** O último turno terminou com falha do provider (o `Erro` dele já está gravado). */
@@ -549,11 +565,106 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           );
         }),
       ),
-      // Interrompido antes do `FimTurno`: o retrato que faltar e o turno fechado como interrompido. Dois
-      // finalizadores: o turno fecha mesmo que o retrato morra.
-      Effect.ensuring(retratarPasta(viva, turno)),
-      Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "interrompido" })),
     );
+
+  /**
+   * O turno inteiro, na fibra dele: o preparo (a cópia da pasta para o Desfazer, os textos e o que a
+   * pessoa mexeu na pasta), a troca para `respondendo` e o envio à IA (`bombear`). O preparo corre contra
+   * o sinal `parar`: o "Parar" o interrompe (o Worker de uma conversão em andamento se encerra), e o
+   * turno fecha sem a mensagem ter ido à IA.
+   */
+  /**
+   * Algum turno já levou a mensagem à IA? O primeiro que leva é o que indica a skill da tarefa; um turno
+   * parado no preparo não conta. Lido do histórico uma vez por conversa viva.
+   */
+  const jaChegouAIA = Effect.fnUntraced(function* (viva: Viva) {
+    if (viva.chegouAIA === undefined) {
+      const itens = yield* historico.itens(viva.id);
+      viva.chegouAIA = itens.some(
+        (item) =>
+          item._tag === "EventoTurno" &&
+          item.evento._tag === "FimTurno" &&
+          item.evento.motivo !== MOTIVO_PARADO_ANTES_DO_ENVIO,
+      );
+    }
+    return viva.chegouAIA;
+  });
+
+  /**
+   * O turno que acaba sem `FimTurno` (o "Parar" no preparo, a sessão liberada ou encerrada, o app que
+   * fecha): no preparo, a mensagem não foi à IA, a cópia dele sai (o próximo compara a pasta com o último
+   * turno que chegou à IA) e ele fecha como parado; depois, o retrato que faltar e o turno interrompido.
+   * Dois finalizadores em cada caso: o turno fecha mesmo que o descarte ou o retrato morra.
+   */
+  const fecharSemFim = (viva: Viva, turno: TurnoAberto) =>
+    Effect.suspend(() => {
+      if (turno.fechado) return Effect.void;
+      if (turno.fase === "preparando") {
+        turno.retratado = true;
+        return pastas
+          .descartarCopia(viva.id, turno.numero)
+          .pipe(
+            Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO })),
+          );
+      }
+      return retratarPasta(viva, turno).pipe(
+        Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "interrompido" })),
+      );
+    });
+
+  /**
+   * O turno inteiro, na fibra dele: o preparo (a cópia da pasta para o Desfazer, os textos e o que a
+   * pessoa mexeu na pasta), a troca para `respondendo` e o envio à IA (`bombear`). O preparo corre contra
+   * o sinal `parar`: o "Parar" o interrompe (o Worker de uma conversão em andamento se encerra), e o
+   * turno fecha sem a mensagem ter ido à IA (`fecharSemFim`).
+   */
+  const executarTurno = Effect.fn("Conversas.executarTurno")(
+    function* (viva: Viva, turno: TurnoAberto, sessao: SessaoAberta, texto: string) {
+      const mudancas = yield* pastas
+        .guardarCopia(viva.id, turno.numero, viva.registro.pastaTrabalho)
+        .pipe(Effect.raceFirst(Deferred.await(turno.parar).pipe(Effect.as(undefined))));
+      // A troca de fase num passo só, sem `yield`: o `interromper` confere e marca do mesmo jeito.
+      const segue = yield* Effect.sync(() => {
+        if (turno.parado) return false;
+        turno.fase = "respondendo";
+        return true;
+      });
+      if (!segue) return;
+      // A sessão caiu durante o preparo (o vigia a derrubou): a mensagem não vai a uma sessão encerrada, e o
+      // turno fecha com o erro da queda, como no meio da resposta.
+      if (viva.sessao !== sessao) {
+        const queda = yield* sessao.queda.pipe(Effect.timeoutOption(Duration.seconds(1)));
+        yield* registrarEvento(
+          viva,
+          Option.isSome(queda)
+            ? { _tag: "Erro", tipo: queda.value.tipo, mensagem: Motor.diagnosticoDaFalha(queda.value) }
+            : { _tag: "Erro", tipo: "queda", mensagem: "a sessão da IA terminou antes de a mensagem sair" },
+        );
+        turno.falhou = true;
+        yield* retratarPasta(viva, turno).pipe(
+          Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "falha" })),
+        );
+        return;
+      }
+      // A mensagem vai à IA: o aviso das mudanças fica dado (os textos do índice deixam de estar pendentes).
+      if (mudancas !== undefined) yield* registrarEvento(viva, mudancas);
+      yield* pastas.confirmarAviso(viva.registro.pastaTrabalho);
+      const primeiro = !(yield* jaChegouAIA(viva));
+      viva.chegouAIA = true;
+      const contexto = viva.contexto;
+      viva.contexto = undefined;
+      // A tarefa de uma skill (M1.9): o primeiro turno que chega à IA diz qual skill seguir. Só vai ao
+      // provider; o histórico guarda a mensagem como a pessoa a escreveu.
+      const tarefa = viva.registro.tarefa;
+      const comMudancas = mudancas === undefined ? texto : `${texto}\n\n${avisoDasMudancas(mudancas)}`;
+      const pedido =
+        primeiro && tarefa !== undefined && tarefa !== TAREFA_CONVERSA
+          ? `Siga a skill \`${tarefa}\` (SKILL.md em .simplifica/skills/${tarefa}/) para este pedido.\n\n${comMudancas}`
+          : comMudancas;
+      yield* bombear(viva, turno, sessao, contexto === undefined ? pedido : `${contexto}\n\n${pedido}`);
+    },
+    (efeito, viva, turno) => efeito.pipe(Effect.ensuring(fecharSemFim(viva, turno))),
+  );
 
   /** Começa o turno e devolve a inscrição nos itens dele (no escopo de quem chama). */
   const comecarTurno = (viva: Viva, texto: string) =>
@@ -564,11 +675,13 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         yield* cancelarOciosidade(viva);
         const inscricao = yield* PubSub.subscribe(viva.aoVivo);
         const numero = viva.registro.turnos + 1;
-        // Antes de a IA poder escrever na pasta: a cópia que o "Desfazer" restaura (só pastas de tarefa) e
-        // o que a pessoa mexeu na pasta desde o turno anterior, fora da conversa.
-        const mudancas = yield* pastas.guardarCopia(viva.id, numero, viva.registro.pastaTrabalho);
+        // O turno abre antes do preparo (a cópia da pasta e os textos, em `executarTurno`), para o "Parar"
+        // ter o que interromper desde a mensagem.
         const turno: TurnoAberto = {
           numero,
+          fase: "preparando",
+          parado: false,
+          parar: yield* Deferred.make<void>(),
           fibra: undefined,
           acumulado: "",
           terminou: false,
@@ -579,31 +692,13 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         };
         viva.turno = turno;
         yield* viva.travaItens.withPermits(1)(
-          Effect.gen(function* () {
-            yield* registrar(viva, (ordem) => ({ _tag: "Mensagem", turno: numero, ordem, texto }), { publicar: true });
-            if (mudancas !== undefined) yield* gravarEvento(viva, turno, mudancas);
-          }),
+          registrar(viva, (ordem) => ({ _tag: "Mensagem", turno: numero, ordem, texto }), { publicar: true }),
         );
         yield* alterar(viva, {
           estado: "respondendo",
           ...(viva.registro.titulo === "" ? { titulo: derivarTitulo(texto) } : {}),
         });
-        const contexto = viva.contexto;
-        viva.contexto = undefined;
-        // A tarefa de uma skill (M1.9): o primeiro turno diz à IA qual skill seguir. Só vai ao provider;
-        // o histórico guarda a mensagem como a pessoa a escreveu.
-        const tarefa = viva.registro.tarefa;
-        const comMudancas = mudancas === undefined ? texto : `${texto}\n\n${avisoDasMudancas(mudancas)}`;
-        const pedido =
-          numero === 1 && tarefa !== undefined && tarefa !== TAREFA_CONVERSA
-            ? `Siga a skill \`${tarefa}\` (SKILL.md em .simplifica/skills/${tarefa}/) para este pedido.\n\n${comMudancas}`
-            : comMudancas;
-        turno.fibra = yield* bombear(
-          viva,
-          turno,
-          sessao,
-          contexto === undefined ? pedido : `${contexto}\n\n${pedido}`,
-        ).pipe(Effect.forkIn(escopoDaLayer));
+        turno.fibra = yield* executarTurno(viva, turno, sessao, texto).pipe(Effect.forkIn(escopoDaLayer));
         return { inscricao, turno };
       }),
     );
@@ -621,6 +716,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       turno: undefined,
       ociosidade: undefined,
       contexto: undefined,
+      chegouAIA: undefined,
       caiu: registro.estado === "caiu",
       ultimoTurnoFalhou: false,
       aoVivo: yield* PubSub.unbounded<ItemConversa>(),
@@ -738,8 +834,17 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const interromper = Effect.fn("Conversas.interromper")(function* (id: string) {
     const viva = yield* obter(id);
     const turno = viva.turno;
+    if (turno === undefined) return;
+    // No preparo, a mensagem ainda não foi à IA: o turno para sem ela (a fibra confere `parado` antes de
+    // enviar, no mesmo passo em que troca a fase). Vale também com a sessão já caída.
+    const noPreparo = yield* Effect.sync(() => {
+      if (turno.fase !== "preparando") return false;
+      turno.parado = true;
+      return true;
+    });
+    if (noPreparo) return yield* Deferred.succeed(turno.parar, undefined);
     const sessao = viva.sessao;
-    if (turno === undefined || sessao === undefined) return;
+    if (sessao === undefined) return;
     yield* motor.interromper(sessao.id).pipe(Effect.catchTags({ SessaoDesconhecida: () => Effect.void }));
     // Se o provider não fechar o turno no prazo, a sessão se libera e o turno termina como interrompido.
     yield* Deferred.await(turno.fim).pipe(

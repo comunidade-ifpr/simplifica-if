@@ -101,6 +101,13 @@ export const ItemMensagem = Schema.TaggedStruct("Mensagem", {
 export const EventoConversa = Schema.Union([Evento, MudancasPasta]);
 export type EventoConversa = typeof EventoConversa.Type;
 
+/**
+ * O `motivo` do `FimTurno` quando o turno acaba durante o preparo (a cópia da pasta e os textos), antes
+ * de a IA receber a mensagem: o "Parar", ou a conversa encerrada. A mensagem fica no histórico, e a IA
+ * não a viu.
+ */
+export const MOTIVO_PARADO_ANTES_DO_ENVIO = "parado_antes_do_envio";
+
 export const ItemEvento = Schema.TaggedStruct("EventoTurno", {
   turno: Schema.Number,
   ordem: Schema.Number,

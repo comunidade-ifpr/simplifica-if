@@ -4,13 +4,14 @@
  * para a IA", `docs/plans/propostas/anexos-em-texto.md`).
  *
  * O `.docx`, o `.odt` e o PDF: o Claude não lê o `.docx` nem o `.odt`, e o Codex não lê nenhum deles sem um conversor
- * instalado e um comando, que pede aprovação. Ao anexar, `PastasTrabalho.anexar` chama `converter`,
- * que roda o conversor do formato (`docxParaMarkdown`, `odtParaMarkdown`, `pdfParaMarkdown`) num Worker com teto de
- * memória e de tempo (`WorkerLimitado.ts`) e devolve o
- * Markdown com o cabeçalho; o `PastasTrabalho` o grava em `<pasta>/.simplifica/textos/<nome>.md`
- * (`PASTA_TEXTOS`). A pasta é oculta: fica fora da lista do painel e do Desfazer (o texto é derivado),
- * e a IA o acha pelo caminho que a nota do pedido dá.
+ * instalado e um comando, que pede aprovação. O `PastasTrabalho` lê o documento da pasta sem seguir link
+ * (`lerSemSeguirLinks` de `pastas-node.ts`, até `bytesDoArquivo`) e passa os bytes a `converter`, que roda o
+ * conversor do formato (`docxParaMarkdown`, `odtParaMarkdown`, `pdfParaMarkdown`) num Worker com teto de
+ * memória e de tempo (`WorkerLimitado.ts`) e devolve o Markdown com o cabeçalho; o `PastasTrabalho` o grava
+ * em `<pasta>/.simplifica/textos/<nome>.md` (`PASTA_TEXTOS`). A pasta é oculta: fica fora da lista do painel
+ * e do Desfazer (o texto é derivado), e a IA o acha pelo caminho que a nota do pedido dá.
  *
+ * Este serviço não lê arquivo: quem lê confere o caminho e o tamanho, e só os bytes conferidos chegam aqui.
  * `converter` nunca falha: o anexo vale mesmo sem texto, e o motivo vai para a nota (`semTexto`).
  *
  * No app empacotado, o Worker é o `trabalhador-textos.mjs` do bundle, ao lado do `bin.mjs`
@@ -20,7 +21,6 @@ import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
-import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Semaphore from "effect/Semaphore";
@@ -36,7 +36,7 @@ const FORMATOS: Readonly<Record<string, FormatoTexto>> = { ".docx": "docx", ".od
 export const EXTENSOES_CONVERTIDAS: ReadonlyArray<string> = Object.keys(FORMATOS);
 
 export interface Limites extends LimitesWorker {
-  /** Tamanho máximo do arquivo, conferido antes de ler (o de `LIMITES_PADRAO.bytesDoArquivo`). */
+  /** Tamanho máximo do arquivo, conferido por quem o lê (o de `LIMITES_PADRAO.bytesDoArquivo` do `docx`). */
   readonly bytesDoArquivo: number;
 }
 
@@ -72,10 +72,12 @@ export class TextosAnexos extends Context.Service<
   TextosAnexos,
   {
     /**
-     * A versão em texto de `arquivo` (caminho absoluto), com `nome` no cabeçalho. A extensão de `nome`
-     * decide se há conversão. Nunca falha.
+     * A versão em texto de `bytes`, com `nome` no cabeçalho. A extensão de `nome` decide se há
+     * conversão. Nunca falha.
      */
-    readonly converter: (arquivo: string, nome: string) => Effect.Effect<ResultadoTexto>;
+    readonly converter: (bytes: Uint8Array, nome: string) => Effect.Effect<ResultadoTexto>;
+    /** O tamanho máximo do arquivo, que quem lê confere antes de passar os bytes. */
+    readonly bytesDoArquivo: number;
   }
 >()("@simplifica-if/server/textos-anexos/TextosAnexos") {}
 
@@ -115,18 +117,14 @@ export interface OpcoesTextos {
 export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesTextos = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const url = opcoes.trabalhador ?? URL_TRABALHADOR;
-  const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   // Uma conversão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
-  /** O Markdown do arquivo, sem o cabeçalho, ou por que não há. */
-  const markdownDe = Effect.fn("TextosAnexos.markdownDe")(function* (arquivo: string, formato: FormatoTexto) {
-    const info = yield* fs.stat(arquivo);
-    if (Number(info.size) > limites.bytesDoArquivo)
-      return semTexto(`O arquivo passa de ${Math.round(limites.bytesDoArquivo / 1024 / 1024)} MB.`);
-    const bytes = yield* fs.readFile(arquivo);
-    // Cópia própria: o buffer é transferido ao Worker, e o lido pode ser fatia de um pool.
+  /** O Markdown dos bytes, sem o cabeçalho, ou por que não há. */
+  const markdownDe = Effect.fn("TextosAnexos.markdownDe")(function* (bytes: Uint8Array, formato: FormatoTexto) {
+    // Cópia própria: o buffer é transferido ao Worker (e fica inutilizável aqui), e os bytes de quem chama
+    // continuam dele.
     const pedido: PedidoTexto = { bytes: new Uint8Array(bytes), formato };
     const resposta = yield* vez.withPermits(1)(
       rodarNoWorker<RespostaTexto>(url, pedido, [pedido.bytes.buffer as ArrayBuffer], limites),
@@ -150,25 +148,19 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
     }
   };
 
-  const converter = Effect.fn("TextosAnexos.converter")(function* (arquivo: string, nome: string) {
+  const converter = Effect.fn("TextosAnexos.converter")(function* (bytes: Uint8Array, nome: string) {
     const formato = FORMATOS[path.extname(nome).toLowerCase()];
     if (formato === undefined) return { tipo: "nao-converte" } satisfies ResultadoTexto;
-    const saida: ResultadoTexto = yield* markdownDe(arquivo, formato).pipe(
+    const saida: ResultadoTexto = yield* markdownDe(bytes, formato).pipe(
       Effect.catchTags({ FalhaWorker: motivoDoWorker }),
-      // Arquivo que sumiu ou não abre: o anexo vale sem o texto.
-      Effect.catch((erro) =>
-        Effect.logError("texto do anexo: não foi possível ler o arquivo", erro).pipe(
-          Effect.as(semTexto("O arquivo não pôde ser lido.")),
-        ),
-      ),
     );
     if (saida.tipo !== "texto") return saida;
     const data = DATA.format(DateTime.toDateUtc(yield* DateTime.now));
     return { tipo: "texto", markdown: cabecalhoTexto(nome, data, formato) + saida.markdown } satisfies ResultadoTexto;
   });
 
-  return TextosAnexos.of({ converter });
+  return TextosAnexos.of({ converter, bytesDoArquivo: limites.bytesDoArquivo });
 });
 
-/** Pede o `FileSystem` e o `Path`. */
+/** Pede o `Path`. */
 export const layer = (opcoes: OpcoesTextos = {}) => Layer.effect(TextosAnexos, make(opcoes));
