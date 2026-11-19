@@ -29,7 +29,7 @@ aliases:
   - "Resolução IFPR 292/2026"
   - "Calendário de referência 2027"
   - "SEI 4422750"
-fonte_url: "https://sei.ifpr.edu.br/sei/controlador_externo.php?acao=documento_conferir&id_orgao_acesso_externo=0"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4606058&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
 ---
 
