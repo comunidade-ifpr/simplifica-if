@@ -70,7 +70,7 @@ const CHAMADAS: ReadonlyArray<{ readonly name: string; readonly arguments: Recor
   { name: "listar_cursos", arguments: { limite: 5 } },
   { name: "listar_cursos", arguments: { campus: "curitiba", nivel: "médio" } },
   // a primeira página do `simplifica-mcp consultar listar_cursos --todas-as-paginas` dos scripts de fora
-  // do repositório (plano da DENTEC, S0): a resposta vai copiada para lá como fixture
+  // do repositório: a resposta vai copiada para lá como fixture
   { name: "listar_cursos", arguments: {} },
   { name: "ficha_curso", arguments: { curso: PPC } },
   { name: "ficha_curso", arguments: { curso: "campus-inexistente/curso" } },

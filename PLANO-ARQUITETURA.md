@@ -395,7 +395,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - **Fallback "rendered"** de figuras vetoriais, que hoje depende de MS Word e poppler. Decidir entre:
   - `soffice --convert-to pdf` seguido de rasterização;
   - remover o fallback e emitir um alerta no `PPC.md` (decidido em 16/11/2026: o app não pode depender de programa externo).
-- **Corpus** em `~/Library/CloudStorage/OneDrive-Pessoal/PPCs Dentec/`:
+- **Corpus** numa pasta local do OneDrive:
   - cerca de 12 DOCX, com versões sucessivas do mesmo PPC;
   - fica fora do git, porque são minutas com nomes de revisores;
   - o diferencial lê o caminho de `KB_CORPUS_DOCX` e grava em `tmp/`;
@@ -432,7 +432,7 @@ Item de roadmap (17/11/2026). Estas ferramentas são usadas por agentes e por qu
 | skill `revisar-ppc` (sub-agentes, relatório HTML) | revisão de PPC por agente no repositório | em parte: o app tem a tarefa nativa "Revisar um PPC", que reaproveita as fichas e `packages/ppc` |
 | skill `ifpr-design` | identidade visual da interface e de materiais | não é tarefa do app |
 
-As ferramentas com login em sistemas internos (SEI e SUAP) saíram deste repositório em 19/11/2026 para o repositório privado `dentec-ferramentas`, da equipe da DENTEC ([plano](docs/plans/dentec-ferramentas.md)). Elas leem a base pelo `simplifica-mcp` (`simplifica-mcp consultar`) e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (as matrizes do SUAP por `scripts/aplicar_matrizes_suap.ts`). O app mostra os dados do SUAP já publicados na base. Levar sistemas com login ao app depende de o app voltar a acessá-los, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso.
+As ferramentas com login em sistemas internos (SEI e SUAP) saíram deste repositório em 19/11/2026 para um repositório privado à parte. Elas leem a base pelo `simplifica-mcp` (`simplifica-mcp consultar`) e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (as matrizes do SUAP por `scripts/aplicar_matrizes_suap.ts`). O app mostra os dados do SUAP já publicados na base. Levar sistemas com login ao app depende de o app voltar a acessá-los, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso.
 
 ---
 
@@ -488,13 +488,13 @@ Por isso, só fazer com casos negativos e com diff dos schemas publicados.
 
 ## Fora do escopo
 
-Nada por ora. A direção de tirar `Movimentações de Cursos` da base de gestão anterior, registrada aqui em 13/11/2026, passou em 19/11/2026 ao repositório `dentec-ferramentas` ([plano](docs/plans/dentec-ferramentas.md), decisão 12).
+Nada por ora.
 
 ## Decisões em aberto
 
 Decididas:
 - núcleo em `packages/kb`;
-- corpus DOCX na pasta `PPCs Dentec` do OneDrive;
+- corpus DOCX numa pasta local do OneDrive;
 - Movimentações fora do escopo;
 - política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4);
 - fallback "rendered" de figuras na conversão DOCX: removido, com aviso no `PPC.md` (16/11/2026, T3). Nos 12 PPCs do corpus, a figura vetorial é o fluxograma da representação gráfica, desenhado com formas do Word;

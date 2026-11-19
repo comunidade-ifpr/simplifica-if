@@ -172,7 +172,7 @@ Por provider: o custo em tokens é o mesmo. Muda o tempo e a forma da cota.
 - Comentários com resposta (`commentsExtended`, `w15:paraIdParent`), para a discordância da pessoa voltar ao app pelo próprio DOCX.
 - Trecho que atravessa parágrafos (âncora do primeiro ao último) e documento em UTF-16 ou com prefixo incomum.
 - Verificadores das 38 fichas S em código (a PoC fez 7 D), começando pelas que leem a matriz: CT-CURR-01, 03, 18, 23 e 27, sobre o `matriz` que a conversão já produz.
-- Exportar a lista no formato "Elementos para análise de PPC" da DENTEC, com "Atende / Atende parcialmente / Não atende".
+- Exportar a lista no formato "Elementos para análise de PPC" da pró-reitoria, com "Atende / Atende parcialmente / Não atende".
 - Ancorar no DOCX o que vem do PDF: hoje só o DOCX recebe comentários, e o PDF recebe a lista.
 
 ## 9. Comparação com A e B, e a recomendação de síntese

@@ -383,7 +383,7 @@ dados: {
 
 Cada curso vem numa linha compacta, sem o detalhe das ofertas. Assim, Curitiba cabe em poucos KB em vez de 71 KB.
 
-O `campus` com o nome e o `suap` (ID e código do curso no SUAP) entraram em 19/11/2026, para os scripts que leem a base pelo `simplifica-mcp consultar` ([plano da DENTEC](dentec-ferramentas.md), S0); a linha do texto não mudou.
+O `campus` com o nome e o `suap` (ID e código do curso no SUAP) entraram em 19/11/2026, para os scripts de fora do repositório que leem a base pelo `simplifica-mcp consultar`; a linha do texto não mudou.
 
 #### 12. `ficha_curso`
 

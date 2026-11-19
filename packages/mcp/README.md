@@ -64,7 +64,7 @@ Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packag
 
 ## Uso por scripts
 
-Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout ([plano da DENTEC](../../docs/plans/dentec-ferramentas.md), decisão 6). Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
+Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout. Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
 
 ```bash
 simplifica-mcp consultar ficha_curso --args '{"curso":"curitiba/tecnico-em-enfermagem"}' --banco ~/SimplificaIF/kb.sqlite

@@ -39,7 +39,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 - a skill `revisar-ppc` com sub-agentes (no app, a revisão é a tarefa "Revisar um PPC");
 - a skill `ifpr-design`.
 
-As ferramentas com login em sistemas internos (SEI, SUAP) ficam no repositório privado `dentec-ferramentas`, da equipe da DENTEC. Elas leem a base pelo `simplifica-mcp` e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (veja "Dado coletado fora do repositório" em [`base-conhecimento/docs/curadoria-metadados-institucionais.md`](base-conhecimento/docs/curadoria-metadados-institucionais.md)). A integração de sistemas com login ao app está nos planos (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)).
+As ferramentas com login em sistemas internos (SEI, SUAP) ficam num repositório privado à parte. Elas leem a base pelo `simplifica-mcp` e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (veja "Dado coletado fora do repositório" em [`base-conhecimento/docs/curadoria-metadados-institucionais.md`](base-conhecimento/docs/curadoria-metadados-institucionais.md)). A integração de sistemas com login ao app está nos planos (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)).
 
 ## Base, skills e scripts
 

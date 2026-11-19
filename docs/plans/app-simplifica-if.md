@@ -875,7 +875,7 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 
 ## Fora do escopo até o Marco 2
 
-- Acesso a SUAP, SEI e outros sistemas com login, e qualquer dado não público. O desenho para quando voltarem está em [app-seguranca-dados.md](app-seguranca-dados.md). As ferramentas com login (SEI e SUAP) ficam, desde 19/11/2026, no repositório privado `dentec-ferramentas`, para a equipe da DENTEC ([plano](dentec-ferramentas.md)); a lista do que fica fora do app está no `AGENTS.md` e em "Ferramentas do repositório fora do app" do [PLANO-ARQUITETURA.md](../../PLANO-ARQUITETURA.md#ferramentas-do-repositório-fora-do-app).
+- Acesso a SUAP, SEI e outros sistemas com login, e qualquer dado não público. O desenho para quando voltarem está em [app-seguranca-dados.md](app-seguranca-dados.md). As ferramentas com login (SEI e SUAP) ficam, desde 19/11/2026, num repositório privado à parte; a lista do que fica fora do app está no `AGENTS.md` e em "Ferramentas do repositório fora do app" do [PLANO-ARQUITETURA.md](../../PLANO-ARQUITETURA.md#ferramentas-do-repositório-fora-do-app).
 - Modelo local.
 - Tarefas agendadas executadas pela IA. O "Para você" não precisa delas.
 - App mobile.

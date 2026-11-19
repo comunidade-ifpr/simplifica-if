@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: o `simplifica-mcp consultar` como processo filho, sobre bancos em disco
 /**
- * O subcomando `simplifica-mcp consultar` (plano da DENTEC, S0), como processo: a saída é o
+ * O subcomando `simplifica-mcp consultar`, como processo: a saída é o
  * `structuredContent` do servidor, numa linha; a entrada inválida e o ID que não está na base saem
  * com código 1 e a mensagem do servidor no stderr; com `--todas-as-paginas`, uma resposta por linha.
  *
