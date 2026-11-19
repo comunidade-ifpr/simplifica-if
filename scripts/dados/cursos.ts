@@ -1,11 +1,10 @@
-/** Leitura dos cursos locais para a coleta de matrizes do SUAP e aplicação do relatório nos registros. */
+/** Aplicação do relatório de coleta das matrizes do SUAP nos registros de curso. */
 import * as Schema from "effect/Schema";
 import { chaveCurso } from "../dominio/curso.ts";
 import {
   consolidarMatrizes,
   resumoMatrizesAtivas,
   urlsMatrizesAtivas,
-  type CursoParaColeta,
   type MatrizSuap,
   type RelatorioMatrizes,
 } from "../dominio/matriz-suap.ts";
@@ -95,26 +94,6 @@ export class RepositorioCursosLocal {
 
   private cursosPorChave(): Map<string, CursoLocal> {
     return new Map(this.carregar().cursos.map((curso) => [chaveCurso(curso.campus_id, curso.curso_slug), curso]));
-  }
-
-  listarParaColeta(): CursoParaColeta[] {
-    const dados = this.carregar();
-    const nomesCampus = new Map(dados.campi.map((campus) => [campus.campus_id, campus.nome]));
-    return dados.cursos.flatMap((curso) => {
-      if (curso.suap?.id === undefined) return [];
-      const campus = nomesCampus.get(curso.campus_id);
-      if (campus === undefined) throw new Error(`Curso ${curso.suap.id} sem campus local: ${curso.nome}`);
-      return [
-        {
-          curso_id: chaveCurso(curso.campus_id, curso.curso_slug),
-          nome: curso.nome,
-          campus,
-          forma: curso.forma_oferta ?? "",
-          codigo: curso.suap.codigo ?? "",
-          suap_id: curso.suap.id,
-        },
-      ];
-    });
   }
 
   /**

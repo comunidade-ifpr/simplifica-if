@@ -36,15 +36,16 @@ afterAll(() => NodeFS.rmSync(diretorio, { recursive: true, force: true }));
 const arquivos = Layer.mergeAll(NodeFileSystem.layer, NodePath_.layer);
 
 /** Ambiente de um runtime que carrega o `.env.local` sozinho: shell do usuário + o que veio do arquivo. */
-const ENV_LOCAL = "NOTION_TOKEN=secret_x\nSUAP_USUARIO=fulano\nSUAP_SENHA=senha\nANTHROPIC_API_KEY=da-env-local\n";
+const ENV_LOCAL =
+  "TOKEN_EXEMPLO=secret_x\nUSUARIO_EXEMPLO=fulano\nSENHA_EXEMPLO=senha\nANTHROPIC_API_KEY=da-env-local\n";
 const PROCESSO = {
   PATH: "/usr/bin:/bin",
   HOME: "/Users/alguem",
   USER: "alguem",
   LANG: "pt_BR.UTF-8",
-  NOTION_TOKEN: "secret_x",
-  SUAP_USUARIO: "fulano",
-  SUAP_SENHA: "senha",
+  TOKEN_EXEMPLO: "secret_x",
+  USUARIO_EXEMPLO: "fulano",
+  SENHA_EXEMPLO: "senha",
   ANTHROPIC_API_KEY: "da-env-local",
   GITHUB_TOKEN: "ghp_x",
   AWS_SECRET_ACCESS_KEY: "aws",
@@ -60,10 +61,10 @@ describe("ambiente do claude -p", () => {
     Effect.gen(function* () {
       expect([...(yield* chavesArquivosEnv(diretorio))].sort()).toEqual([
         "ANTHROPIC_API_KEY",
-        "NOTION_TOKEN",
         "OUTRA",
-        "SUAP_SENHA",
-        "SUAP_USUARIO",
+        "SENHA_EXEMPLO",
+        "TOKEN_EXEMPLO",
+        "USUARIO_EXEMPLO",
       ]);
       expect((yield* chavesArquivosEnv(NodePath.join(diretorio, "inexistente"))).size).toBe(0);
     }).pipe(Effect.provide(arquivos)),
@@ -87,7 +88,7 @@ describe("ambiente do claude -p", () => {
   test("a lista não inclui segredos do projeto nem de outros serviços", () => {
     for (const nome of VARIAVEIS_AMBIENTE_CLAUDE) {
       if (nome === "ANTHROPIC_API_KEY" || nome === "CLAUDE_CODE_OAUTH_TOKEN") continue;
-      expect(nome).not.toMatch(/TOKEN|SENHA|SECRET|PASSWORD|KEY|USUARIO|SSH|AWS|GITHUB|NOTION|SUAP|SEI/u);
+      expect(nome).not.toMatch(/TOKEN|SENHA|SECRET|PASSWORD|KEY|USUARIO|SSH|AWS|GITHUB/u);
     }
   });
 });

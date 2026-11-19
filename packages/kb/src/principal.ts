@@ -40,7 +40,7 @@ export class EncerrarComCodigo extends Schema.TaggedError<EncerrarComCodigo>()("
   }
 }
 
-export const ehEncerrarComCodigo = Schema.is(EncerrarComCodigo);
+const ehEncerrarComCodigo = Schema.is(EncerrarComCodigo);
 
 /** Encerra com `codigo` quando ele não é zero; com zero, termina normalmente. */
 export const sairCom = (codigo: number): Effect.Effect<void, EncerrarComCodigo> =>

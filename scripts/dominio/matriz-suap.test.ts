@@ -6,7 +6,6 @@ import {
   consolidarMatrizes,
   ESQUEMA_RELATORIO_MATRIZES,
   esquemaRelatorioMatrizes,
-  interpretarCargaHorariaCabecalho,
   resumoMatrizesAtivas,
 } from "./matriz-suap.ts";
 
@@ -42,13 +41,6 @@ describe("domínio das matrizes", () => {
       situacao: "Múltiplas — CH divergentes",
       carga_horaria_comum_h: null,
     });
-  });
-
-  it("lê o cabeçalho de carga horária", () => {
-    expect(interpretarCargaHorariaCabecalho("Carga horária (1200h)")).toBe(1200);
-    expect(interpretarCargaHorariaCabecalho("Carga horária(1066,67h)")).toBe(1066.67);
-    expect(interpretarCargaHorariaCabecalho("Carga horária (1.2.3h)")).toBeUndefined();
-    expect(interpretarCargaHorariaCabecalho("Carga horária total (1200h)")).toBeUndefined();
   });
 
   it("resume as matrizes ativas no formato gravado no cadastro do curso", () => {

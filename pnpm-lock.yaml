@@ -216,9 +216,6 @@ importers:
       '@effect/platform-node':
         specifier: 4.1.2
         version: 4.1.2(effect@4.1.3)(redis@6.3.1(@opentelemetry/api@1.10.0))
-      '@notionhq/client':
-        specifier: 5.31.1
-        version: 5.31.1
       '@simplifica-if/atualizacao':
         specifier: workspace:*
         version: link:packages/atualizacao
@@ -237,15 +234,6 @@ importers:
       '@simplifica-if/ppc':
         specifier: workspace:*
         version: link:packages/ppc
-      '@simplifica-if/sei-cli':
-        specifier: workspace:*
-        version: link:packages/sei-cli
-      domhandler:
-        specifier: 6.0.1
-        version: 6.0.1
-      domutils:
-        specifier: 4.0.2
-        version: 4.0.2
       dotenv:
         specifier: 18.0.10
         version: 18.0.10
@@ -715,40 +703,6 @@ importers:
         specifier: 1.4.0
         version: 1.4.0(@opentelemetry/api@1.10.0)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.65.0)(yaml@2.9.1)
 
-  packages/sei-cli:
-    dependencies:
-      '@effect/platform-node':
-        specifier: 4.1.2
-        version: 4.1.2(effect@4.1.3)(redis@6.3.1(@opentelemetry/api@1.10.0))
-      '@simplifica-if/kb':
-        specifier: workspace:*
-        version: link:../kb
-      effect:
-        specifier: 4.1.3
-        version: 4.1.3
-      fflate:
-        specifier: 0.8.3
-        version: 0.8.3
-      mime-types:
-        specifier: 2.1.35
-        version: 2.1.35
-      playwright:
-        specifier: 1.65.0
-        version: 1.65.0
-    devDependencies:
-      '@effect/vitest':
-        specifier: 4.1.2
-        version: 4.1.2(patch_hash=299510b71c36537a832a67e9d160a5f112a5f326a29e95c41cb45fc8234e47c7)(@opentelemetry/api@1.10.0)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(effect@4.1.3)(jiti@2.7.0)(playwright@1.65.0)(yaml@2.9.1)
-      '@types/mime-types':
-        specifier: 2.1.4
-        version: 2.1.4
-      '@types/node':
-        specifier: 24.12.4
-        version: 24.12.4
-      vite-plus:
-        specifier: 1.4.0
-        version: 1.4.0(@opentelemetry/api@1.10.0)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.65.0)(yaml@2.9.1)
-
 packages:
 
   '@anthropic-ai/claude-agent-sdk@0.3.321':
@@ -1082,10 +1036,6 @@ packages:
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
-
-  '@notionhq/client@5.31.1':
-    resolution: {integrity: sha512-LuVlgHTkHPZf0LOILKVaDboYOyIXNHP9x2DSMhrJzUJjB7GzWjves1OA+8iqJxn1QPW6OqXdp0sS/z0Vh+JACA==}
-    engines: {node: '>=22'}
 
   '@opentelemetry/api@1.10.0':
     resolution: {integrity: sha512-lMkyes8iHrG+mk6WH7X70MdCLI2RS0FwNBY1PyQ8UemaijE2m5mv5A0Niy3HtbYTFrgkUEQjFMXmSAk2hQDuPQ==}
@@ -1646,9 +1596,6 @@ packages:
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
-
-  '@types/mime-types@2.1.4':
-    resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -4997,8 +4944,6 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
-  '@notionhq/client@5.31.1': {}
-
   '@opentelemetry/api@1.10.0': {}
 
   '@oxc-project/runtime@0.155.0': {}
@@ -5407,8 +5352,6 @@ snapshots:
   '@types/mdast@4.0.4':
     dependencies:
       '@types/unist': 3.0.3
-
-  '@types/mime-types@2.1.4': {}
 
   '@types/ms@2.1.0': {}
 

@@ -19,7 +19,7 @@ const TEST_EXCLUDE = [
 ];
 
 /** Código migrado no C3, sob as regras do plugin próprio (ver `lint.overrides`). */
-const ARQUIVOS_C3 = ["scripts/**", "packages/sei-cli/**", ".agents/skills/**", "testes-gabarito/**"];
+const ARQUIVOS_C3 = ["scripts/**", ".agents/skills/**", "testes-gabarito/**"];
 
 /** `vp test run` na raiz do repositório: os pacotes e os apps têm a própria execução (`pnpm -r test`). */
 const execucaoNaRaiz = process.cwd() === import.meta.dirname;
@@ -158,8 +158,7 @@ export default defineConfig({
     },
     // As regras do plugin próprio valem onde o código já é Effect: `packages/kb` (C1), `packages/mcp`
     // (C2), o motor, o servidor local (`apps/server`) e os contratos do app e, desde o C3, `scripts/`,
-    // as skills, o `sei-cli` e o gabarito. As exceções reproduzem as
-    // do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
+    // as skills e o gabarito. As exceções reproduzem as do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
         files: [

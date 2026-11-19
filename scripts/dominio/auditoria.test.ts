@@ -61,7 +61,7 @@ describe("auditarBase", () => {
   test("aponta curso sem campus e slug duplicado no mesmo campus", () => {
     const erros = auditarBase(base({ cursos: [curso(), curso({ id: "pg-2", campusIds: [] }), curso({ id: "pg-3" })] }));
     expect(erros).toEqual([
-      "Curso 'Técnico em Exemplo' (pg-2): relação Campus deve conter exatamente 1 página",
+      "Curso 'Técnico em Exemplo' (pg-2): relação Campus deve conter exatamente 1 registro",
       "Curso 'Técnico em Exemplo' (pg-3): curso_slug duplicado no campus exemplo com Curso 'Técnico em Exemplo' (pg-curso): tecnico-exemplo",
     ]);
   });

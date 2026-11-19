@@ -7,7 +7,7 @@ describe("conselhos", () => {
     expect(erros).toEqual([]);
     expect(dados.conselhos.map((c) => c.dados.conselho_id)).toEqual(["consepe"]);
     const texto = JSON.stringify(dados);
-    expect(texto).not.toMatch(/relator|conselheir|notion:/i);
+    expect(texto).not.toMatch(/relator|conselheir/i);
   });
 
   test("acusa documento fora da reunião e curso inexistente ou de outro campus", () => {

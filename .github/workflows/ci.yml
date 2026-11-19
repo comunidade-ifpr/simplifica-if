@@ -7,7 +7,7 @@
 #   as suítes "sem repositório", "determinismo" e "pasta de trabalho" contra ele, e o executável como
 #   artefato.
 #
-# Nenhum segredo e nenhum acesso a Notion, SEI ou SUAP: os testes que precisam deles se pulam sozinhos.
+# Sem segredos.
 # Os checkouts pulam .repos/ (código de referência do Effect, versionado), como no T3 Code.
 name: CI
 

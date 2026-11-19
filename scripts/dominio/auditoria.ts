@@ -69,7 +69,7 @@ function auditarCuradoriaPpc(curso: Curso, nome: string): string[] {
   return erros;
 }
 
-function auditarCursos(cursos: Curso[], campusIdPorPagina: Map<string, string>): string[] {
+function auditarCursos(cursos: Curso[], campusIdPorRegistro: Map<string, string>): string[] {
   const erros: string[] = [];
   const vistos = new Map<string, string>();
   for (const curso of cursos) {
@@ -81,14 +81,14 @@ function auditarCursos(cursos: Curso[], campusIdPorPagina: Map<string, string>):
     if (!curso.tipoOferta) erros.push(`${nome}: Forma de oferta ausente`);
     erros.push(...auditarCnct(curso, nome), ...auditarCuradoriaPpc(curso, nome));
 
-    const [campusPagina] = curso.campusIds;
-    if (curso.campusIds.length !== 1 || !campusPagina) {
-      erros.push(`${nome}: relação Campus deve conter exatamente 1 página`);
+    const [campusRegistro] = curso.campusIds;
+    if (curso.campusIds.length !== 1 || !campusRegistro) {
+      erros.push(`${nome}: relação Campus deve conter exatamente 1 registro`);
       continue;
     }
-    const campusId = campusIdPorPagina.get(campusPagina);
+    const campusId = campusIdPorRegistro.get(campusRegistro);
     if (!campusId) {
-      erros.push(`${nome}: relação Campus aponta para página desconhecida ou sem campus_id: ${campusPagina}`);
+      erros.push(`${nome}: relação Campus aponta para registro desconhecido ou sem campus_id: ${campusRegistro}`);
       continue;
     }
     if (slugValido) {
@@ -142,7 +142,7 @@ function auditarProcessos(processos: ProcessoSeletivo[]): string[] {
   return erros;
 }
 
-function auditarEditais(editais: EditalIngresso[], processoIdPorPagina: Map<string, string>): string[] {
+function auditarEditais(editais: EditalIngresso[], processoIdPorRegistro: Map<string, string>): string[] {
   const erros: string[] = [];
   const vistos = new Map<string, string>();
   for (const edital of editais) {
@@ -158,15 +158,15 @@ function auditarEditais(editais: EditalIngresso[], processoIdPorPagina: Map<stri
     if (!ehHttps(edital.url)) erros.push(`${nome}: URL ausente ou não HTTPS`);
     if (!edital.processoIds.length) erros.push(`${nome}: relação Processo Seletivo ausente`);
     for (const processoId of edital.processoIds) {
-      if (!processoIdPorPagina.has(processoId)) {
-        erros.push(`${nome}: relação Processo Seletivo aponta para página desconhecida: ${processoId}`);
+      if (!processoIdPorRegistro.has(processoId)) {
+        erros.push(`${nome}: relação Processo Seletivo aponta para registro desconhecido: ${processoId}`);
       }
     }
   }
   return erros;
 }
 
-function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string, string>): string[] {
+function auditarOfertas(base: BaseInstitucional, processoIdPorRegistro: Map<string, string>): string[] {
   const erros: string[] = [];
   const campi = new Set(base.campi.map((item) => item.id));
   const cursos = new Set(base.cursos.map((item) => item.id));
@@ -191,10 +191,10 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
       erros.push(`${nome}: turno com marca de rodapé sem turno_nota`);
     }
     if (!oferta.processoIds.length) erros.push(`${nome}: relação Processo Seletivo ausente`);
-    for (const processoPagina of oferta.processoIds) {
-      const processoId = processoIdPorPagina.get(processoPagina);
+    for (const processoRegistro of oferta.processoIds) {
+      const processoId = processoIdPorRegistro.get(processoRegistro);
       if (!processoId) {
-        erros.push(`${nome}: relação Processo Seletivo aponta para página desconhecida: ${processoPagina}`);
+        erros.push(`${nome}: relação Processo Seletivo aponta para registro desconhecido: ${processoRegistro}`);
       } else if (idValido) {
         const chave = `${processoId}\u001f${oferta.ofertaId}`;
         if (vistos.has(chave)) {
@@ -210,13 +210,13 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
       erros.push(`${nome}: informe relação Campus ou campus_id_original válido`);
     }
     for (const id of oferta.campusIds) {
-      if (!campi.has(id)) erros.push(`${nome}: relação Campus aponta para página desconhecida: ${id}`);
+      if (!campi.has(id)) erros.push(`${nome}: relação Campus aponta para registro desconhecido: ${id}`);
     }
     for (const id of oferta.cursoIds) {
-      if (!cursos.has(id)) erros.push(`${nome}: relação Curso aponta para página desconhecida: ${id}`);
+      if (!cursos.has(id)) erros.push(`${nome}: relação Curso aponta para registro desconhecido: ${id}`);
     }
     for (const id of oferta.editalIds) {
-      if (!editais.has(id)) erros.push(`${nome}: relação Edital aponta para página desconhecida: ${id}`);
+      if (!editais.has(id)) erros.push(`${nome}: relação Edital aponta para registro desconhecido: ${id}`);
     }
   }
   return erros;
@@ -224,13 +224,13 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
 
 /** Problemas dos registros institucionais e de suas relações, conferidos pelo `validar_base`. */
 export function auditarBase(base: BaseInstitucional): string[] {
-  const campusIdPorPagina = new Map(base.campi.map((item) => [item.id, item.campusId]));
-  const processoIdPorPagina = new Map(base.processos.map((item) => [item.id, item.processoSeletivoId]));
+  const campusIdPorRegistro = new Map(base.campi.map((item) => [item.id, item.campusId]));
+  const processoIdPorRegistro = new Map(base.processos.map((item) => [item.id, item.processoSeletivoId]));
   return [
     ...auditarCampi(base.campi),
-    ...auditarCursos(base.cursos, campusIdPorPagina),
+    ...auditarCursos(base.cursos, campusIdPorRegistro),
     ...auditarProcessos(base.processos),
-    ...auditarEditais(base.editais, processoIdPorPagina),
-    ...auditarOfertas(base, processoIdPorPagina),
+    ...auditarEditais(base.editais, processoIdPorRegistro),
+    ...auditarOfertas(base, processoIdPorRegistro),
   ];
 }

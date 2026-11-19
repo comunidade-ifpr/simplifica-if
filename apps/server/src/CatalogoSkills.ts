@@ -4,7 +4,7 @@
  *
  * - **Quais entram:** só as com bloco válido (`@simplifica-if/mcp/skills`, o mesmo Effect Schema do
  *   `validar_base.ts`). Skill sem o bloco fica no repositório, sem log de aviso (é o caso normal de
- *   `revisar-processo-ppc`, `suap-ifpr`…); skill com bloco inválido, `name` diferente da pasta ou
+ *   `revisar-ppc`, `ifpr-design`…); skill com bloco inválido, `name` diferente da pasta ou
  *   arquivo listado que falta fica de fora com o erro no log. Uma skill quebrada não derruba o servidor
  *   nem as outras.
  * - **O que vai ao motor:** o nome, a descrição do front matter, o corpo do `SKILL.md` como instruções

@@ -4,7 +4,6 @@ import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { auditarBase } from "../dominio/auditoria.ts";
-import { RepositorioCursosLocal } from "./cursos.ts";
 import {
   carregarDadosInstitucionais,
   type DadosInstitucionais,
@@ -214,23 +213,6 @@ describe("registros institucionais", () => {
     dados.cursos[0] = { ...dados.cursos[0]!, campus_id: "fantasma", ppc: {} };
     gravarDadosInstitucionais(dados, raiz);
     const { erros } = validarDadosInstitucionais(raiz, undefined, { arquivosDaBase: false });
-    expect(erros.some((erro) => erro.includes("página desconhecida ou sem campus_id: fantasma"))).toBe(true);
-  });
-});
-
-describe("RepositorioCursosLocal", () => {
-  test("lista para a coleta os cursos com SUAP ID, com o nome do campus", () => {
-    const raiz = raizTemporaria();
-    gravarDadosInstitucionais(dadosExemplo(), raiz);
-    expect(new RepositorioCursosLocal(raiz).listarParaColeta()).toEqual([
-      {
-        curso_id: "exemplo/tecnico-em-exemplo",
-        nome: "Técnico em Exemplo",
-        campus: "Campus Exemplo",
-        forma: "Integrado",
-        codigo: "EX001",
-        suap_id: 7,
-      },
-    ]);
+    expect(erros.some((erro) => erro.includes("registro desconhecido ou sem campus_id: fantasma"))).toBe(true);
   });
 });

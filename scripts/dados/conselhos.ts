@@ -2,8 +2,8 @@
 /**
  * Conselhos superiores do IFPR (`institucional/ifpr/conselhos/<conselho_id>/`): o registro do conselho
  * (`conselho.json`) e um arquivo por reunião (`reunioes/<data>.json`) com os documentos publicados
- * (pareceres, pautas) e os itens de pauta deliberados. Hoje só o Consepe, migrado do Notion em
- * 17/11/2026 a partir dos atos públicos do conselho.
+ * (pareceres, pautas) e os itens de pauta deliberados. Hoje só o Consepe, registrado em 17/11/2026 a
+ * partir dos atos públicos do conselho.
  *
  * Não há entidade de pessoa: relator e conselheiros ficaram de fora; um nome só aparece quando faz
  * parte do texto do ato. Os itens apontam para campus e curso pelas chaves canônicas, quando o curso

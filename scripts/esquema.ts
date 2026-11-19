@@ -37,7 +37,7 @@ export type EsquemaSincrono<T> = Schema.Decoder<T, never>;
  * Decodifica `valor` ou lança um `Error` com `cabecalho` e a lista de problemas, um por linha. Por
  * padrão, decodifica com `ESTRITO`.
  */
-export function validarOuFalhar<T>(
+function validarOuFalhar<T>(
   esquema: EsquemaSincrono<T>,
   valor: unknown,
   cabecalho: string,

@@ -13,10 +13,6 @@ const SITUACOES_MATRIZES = [
 ] as const;
 type SituacaoMatrizes = (typeof SITUACOES_MATRIZES)[number];
 
-export const CRITERIO_COLETA =
-  "Ativa=Sim; CH do cabeçalho da matriz, consolidada somente se todas as ativas concordam; " +
-  "não presume matriz de ingresso vigente nem soma novamente estágio/extensão.";
-
 const SEM_MATRIZ_ATIVA = "Nenhuma matriz marcada Ativa=Sim.";
 
 /** Matriz marcada `Ativa = Não`: só a linha da aba do curso, sem a página da matriz. */
@@ -48,7 +44,7 @@ export type MatrizSuap = typeof esquemaMatrizSuap.Type;
 
 const ehMatrizAtiva = (matriz: MatrizSuap): matriz is MatrizAtiva => matriz.ativa;
 
-/** Data e hora com segundos e fuso, como a coleta grava (`agoraEmSaoPaulo`): `2026-11-19T10:00:00-03:00`. */
+/** Data e hora com segundos e fuso, como a coleta grava: `2026-11-19T10:00:00-03:00`. */
 const DATA_HORA_COM_FUSO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/;
 
 /** Versão do formato do relatório; a aplicação recusa outra. */
@@ -62,21 +58,11 @@ const esquemaIdentidadeCursoSuap = Schema.Struct({
   codigo: Schema.String,
 });
 
-/** Curso a coletar: a identidade e o que a coleta confere na página do SUAP (nome do campus). */
-const esquemaCursoParaColeta = Schema.Struct({
-  ...esquemaIdentidadeCursoSuap.fields,
-  nome: Schema.String,
-  campus: Schema.String,
-  forma: Schema.String,
-});
-export type CursoParaColeta = typeof esquemaCursoParaColeta.Type;
-
 /** Um curso do relatório: a identidade e as matrizes como o SUAP as mostrou, sem derivação. */
 const esquemaCursoColetado = Schema.Struct({
   ...esquemaIdentidadeCursoSuap.fields,
   matrizes: Schema.Array(esquemaMatrizSuap),
 });
-export type CursoColetado = typeof esquemaCursoColetado.Type;
 
 /** Relatório de coleta das matrizes (`matrizes-suap/1`), o contrato com a coleta de fora. */
 export const esquemaRelatorioMatrizes = Schema.Struct({
@@ -109,17 +95,6 @@ export function consolidarMatrizes(matrizes: ReadonlyArray<MatrizSuap>): Consoli
         : "Múltiplas — CH divergentes";
   const [unica] = cargas;
   return { situacao, carga_horaria_comum_h: cargas.size === 1 && unica !== undefined ? unica : null };
-}
-
-/**
- * O cabeçalho mostra a carga total como "Carga horária (1200h)". O SUAP não usa separador de
- * milhar ali, então a vírgula é sempre decimal.
- */
-export function interpretarCargaHorariaCabecalho(texto: string): number | undefined {
-  const valor = texto.match(/^Carga horária\s*\(([\d.,]+)h\)$/)?.[1];
-  if (!valor) return undefined;
-  const horas = Number(valor.replaceAll(",", "."));
-  return Number.isFinite(horas) ? horas : undefined;
 }
 
 /** Número com até 6 algarismos significativos, sem zeros à direita: 1200.0 vira "1200". */

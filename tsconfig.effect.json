@@ -1,6 +1,6 @@
 // Regras do language service do Effect, copiadas do tsconfig.effect.json do T3 Code (a6d9140972).
-// Valem no packages/kb (C1), em scripts/, nas skills, no sei-cli e no gabarito (C3, pelo
-// tsconfig.json da raiz e o do sei-cli); o mcp passa a estendê-lo no C2.
+// Valem no packages/kb (C1), em scripts/, nas skills e no gabarito (C3, pelo tsconfig.json da
+// raiz); o mcp passa a estendê-lo no C2.
 {
   "compilerOptions": {
     "plugins": [

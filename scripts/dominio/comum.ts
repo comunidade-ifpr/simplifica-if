@@ -25,19 +25,6 @@ export function compararTexto(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-/** Linhas do texto; a quebra final não gera uma linha vazia. */
-export function dividirLinhas(texto: string): string[] {
-  const linhas = texto.split(/\r\n|\r|\n/);
-  if (linhas.at(-1) === "") linhas.pop();
-  return linhas;
-}
-
-export function linhasPreenchidas(texto: string): string[] {
-  return dividirLinhas(texto)
-    .map((linha) => linha.trim())
-    .filter(Boolean);
-}
-
 /** Rótulo de curadoria conhecido (como "Revisado" ou "Precisa de revisão"), sem caixa nem espaços nas pontas. */
 export function ehRotuloCuradoria(rotulo: string): boolean {
   return Object.hasOwn(ALIASES_CURADORIA, rotulo.trim().toLowerCase());
