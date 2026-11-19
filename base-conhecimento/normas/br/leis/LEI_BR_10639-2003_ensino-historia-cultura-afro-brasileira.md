@@ -23,7 +23,7 @@ keywords:
 aliases:
   - "Lei nº 10.639/2003"
   - "Lei 10.639/2003"
-fonte: https://www.planalto.gov.br/ccivil_03/leis/2003/l10.639.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/leis/2003/l10.639.htm"
 vigencia_calculada_em: "2026-11-13"
 altera:
   - "Lei nº 9.394/1996 (acrescenta os arts. 26-A, 79-A e 79-B)"

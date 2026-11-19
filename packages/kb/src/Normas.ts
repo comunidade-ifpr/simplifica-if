@@ -13,6 +13,7 @@ import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
+import { UrlOficial } from "./normas/fonte.ts";
 import {
   buscarNormaDetalhada,
   carregarFonteCorrespondencia,
@@ -69,8 +70,10 @@ export interface FichaNorma {
   /** Status publicado, calculado na `data_referencia`. */
   readonly status_vigencia: string | null;
   readonly ementa: string | null;
-  /** Fonte oficial (URL ou descrição) registrada no front matter ou no stub. */
-  readonly fonte: string | null;
+  /** URL https do texto oficial, do front matter ou do stub; `null` quando a fonte oficial está pendente. */
+  readonly fonte_url: UrlOficial | null;
+  /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
+  readonly fonte_referencia: string | null;
   /** Markdown, relativo à raiz do repositório; `null` em stub e externo. */
   readonly path: string | null;
   /** Explicação gerada (`vigencia_a_confirmar` do front matter) quando o status depende de data a confirmar. */
@@ -91,12 +94,13 @@ const LinhaFicha = Schema.Struct({
   data_publicacao: Schema.NullOr(Schema.String),
   status_vigencia: Schema.NullOr(Schema.String),
   ementa: Schema.NullOr(Schema.String),
-  fonte: Schema.NullOr(Schema.String),
+  fonte_url: Schema.NullOr(UrlOficial),
+  fonte_referencia: Schema.NullOr(Schema.String),
   path: Schema.NullOr(Schema.String),
   front_matter_json: Schema.NullOr(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown))),
 });
 const primeiraFicha = Sql.primeira(LinhaFicha);
-const linhasFontes = Sql.todas(Schema.Struct({ id: Schema.String, fonte: Schema.String }));
+const linhasFontes = Sql.todas(Schema.Struct({ id: Schema.String, fonte_url: UrlOficial }));
 
 const ato = (id: string) => idDoAto(id.split("#")[0]!);
 
@@ -147,8 +151,8 @@ export class Normas extends Context.Service<
     readonly documento: (id: string) => Effect.Effect<DocumentoNorma | null, Sql.FalhaNaConsulta>;
     /** A `data_referencia` da base. */
     readonly dataReferencia: Effect.Effect<string>;
-    /** O endereço oficial (`fonte` http) de cada norma, stub ou referência externa que o registra, por ID. */
-    readonly enderecosOficiais: Effect.Effect<Record<string, string>, Sql.FalhaNaConsulta>;
+    /** O endereço oficial (`fonte_url`) de cada norma, stub ou referência externa que o registra, por ID. */
+    readonly enderecosOficiais: Effect.Effect<Record<string, UrlOficial>, Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/Normas") {}
 
@@ -163,7 +167,7 @@ const make = Effect.gen(function* () {
     const consultar = (chave: string) =>
       primeiraFicha(
         `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
-                ementa, fonte, path, front_matter_json FROM normas WHERE id = ?`,
+                ementa, fonte_url, fonte_referencia, path, front_matter_json FROM normas WHERE id = ?`,
         [chave],
       );
     const norma = id.split("#")[0]!;
@@ -231,9 +235,9 @@ const make = Effect.gen(function* () {
     }, prover),
     dataReferencia: Effect.succeed(fontes.dataReferencia),
     enderecosOficiais: Effect.gen(function* () {
-      const urls: Record<string, string> = {};
-      for (const linha of yield* linhasFontes("SELECT id, fonte FROM normas WHERE fonte LIKE 'http%'"))
-        urls[linha.id] = linha.fonte;
+      const urls: Record<string, UrlOficial> = {};
+      for (const linha of yield* linhasFontes("SELECT id, fonte_url FROM normas WHERE fonte_url IS NOT NULL"))
+        urls[linha.id] = linha.fonte_url;
       return urls;
     }).pipe(Effect.withSpan("Normas.enderecosOficiais"), prover),
   });

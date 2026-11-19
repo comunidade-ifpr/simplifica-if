@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 5;
+export const VERSAO_ESQUEMA = 6;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -39,7 +39,10 @@ CREATE TABLE normas (
   status_vigencia TEXT,
   status_fonte TEXT,
   ementa TEXT,
-  fonte TEXT,
+  -- URL https do texto oficial (null: fonte oficial pendente)
+  fonte_url TEXT,
+  -- referência da fonte sem link (número do SEI, Boletim de Serviço)
+  fonte_referencia TEXT,
   curadoria TEXT,
   -- Markdown, relativo à raiz do repositório (null em stub e externo)
   path TEXT,

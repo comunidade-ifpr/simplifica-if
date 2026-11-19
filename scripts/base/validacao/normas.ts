@@ -15,6 +15,7 @@ import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos
 import {
   analisarFrontMatter,
   CAMPOS_MANIFEST,
+  CAMPOS_MANIFEST_OPCIONAIS,
   CAMPOS_OBRIGATORIOS,
   DIRETORIOS_POR_TIPO,
   ehErroFrontMatter,
@@ -189,25 +190,33 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
     if (aliasPareceNomeAntigo(alias)) erros.push(`${r}: alias parece nome antigo de arquivo: ${textoDe(alias)}`);
   }
 
-  erros.push(...validarIdNorma(r, meta));
+  erros.push(...validarContratoNorma(r, meta));
   erros.push(...ctx.validarLinks(caminho, texto));
   return erros;
 }
 
 /**
- * `id` canônico da norma: formato e coerência com `variante` (Effect Schema) e igualdade com o ID derivado de
- * tipo, órgão, jurisdição, ano e número (regras em `@simplifica-if/kb/normas/ids`).
+ * Contrato do front matter da norma (Effect Schema `esquemaNorma`): `id` e `variante`, datas e fonte oficial;
+ * e o `id` igual ao derivado de tipo, órgão, jurisdição, ano e número (regras em `@simplifica-if/kb/normas/ids`).
  */
-export function validarIdNorma(r: string, meta: FrontMatter): string[] {
+export function validarContratoNorma(r: string, meta: FrontMatter): string[] {
   if (!("id" in meta)) return [];
   const erros: string[] = [];
   const resultado = decodificarNorma(meta);
   if (Result.isFailure(resultado)) {
     for (const problema of problemas(resultado.failure.issue)) {
       if (
-        ["id", "variante", "assinada_em", "publicada_em", "vigente_de", "datas_fonte"].includes(
-          String(problema.caminho[0]),
-        )
+        [
+          "id",
+          "variante",
+          "assinada_em",
+          "publicada_em",
+          "vigente_de",
+          "datas_fonte",
+          "fonte",
+          "fonte_url",
+          "fonte_referencia",
+        ].includes(String(problema.caminho[0]))
       ) {
         erros.push(`${r}: ${caminhoTexto(problema.caminho)}: ${problema.mensagem}`);
       }
@@ -308,9 +317,9 @@ export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
     return erros;
   }
 
-  for (const campo of CAMPOS_MANIFEST) {
+  for (const campo of [...CAMPOS_MANIFEST, ...CAMPOS_MANIFEST_OPCIONAIS]) {
     const valorMeta = campo in meta ? meta[campo] : null;
-    if (!valoresIguais(comparavel(campo, item[campo]), comparavel(campo, valorMeta))) {
+    if (!valoresIguais(comparavel(campo, item[campo] ?? null), comparavel(campo, valorMeta))) {
       erros.push(`${valorPath}: manifest.json diverge do front matter no campo ${campo}`);
     }
   }

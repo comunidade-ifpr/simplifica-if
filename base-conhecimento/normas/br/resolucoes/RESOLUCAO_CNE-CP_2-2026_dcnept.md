@@ -41,7 +41,7 @@ aliases:
   - "DCNEPT 2026"
   - "Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica"
   - "Novas DCN da EPT"
-fonte: "PDF da Resolução CNE/CP nº 2, de 11 de novembro de 2026, assinado pelo Presidente do CNE (URL oficial no portal do CNE ou no DOU a registrar)"
+fonte_referencia: "PDF da Resolução CNE/CP nº 2, de 11 de novembro de 2026, assinado pelo Presidente do CNE"
 vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CNE/CP nº 2/2026 a confirmar (ato de 2026-11-11; publicação não registrada): presumida vigente"
 revoga:

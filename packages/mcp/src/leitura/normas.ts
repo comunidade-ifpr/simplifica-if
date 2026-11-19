@@ -128,7 +128,8 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
           tipo_documento: norma.tipo_documento,
           numero: norma.numero,
           ano: norma.ano,
-          fonte_oficial: norma.fonte,
+          fonte_url: norma.fonte_url,
+          fonte_referencia: norma.fonte_referencia,
         },
         vigencia: {
           data: vigencia.data,

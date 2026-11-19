@@ -130,10 +130,11 @@ layer(layerBases, { timeout: "300 seconds", excludeTestServices: true })("base d
           // O banco tem também os endereços dos stubs; os da base publicada são os mesmos.
           const manifesto = lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as {
             id: string;
-            fonte?: string;
+            fonte_url?: string;
           }[];
-          for (const { id, fonte } of manifesto)
-            if (fonte?.startsWith("http")) expect(doBanco.urls[id], id).toBe(fonte);
+          const comUrl = manifesto.filter((norma) => norma.fonte_url !== undefined);
+          expect(comUrl.length).toBeGreaterThan(0);
+          for (const { id, fonte_url } of comUrl) expect(doBanco.urls[id], id).toBe(fonte_url);
           expect(doBanco.normas.length).toBeGreaterThan(100);
           expect(doBanco.transicoes.length).toBeGreaterThan(0);
         }),

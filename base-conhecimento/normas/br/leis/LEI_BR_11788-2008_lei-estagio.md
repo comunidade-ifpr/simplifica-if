@@ -24,7 +24,7 @@ aliases:
   - "Lei nº 11.788/2008"
   - "Lei 11.788/2008"
   - "Lei do Estágio"
-fonte: https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11788.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11788.htm"
 vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Lei nº 9.394/1996 (art. 82, parágrafo único)"

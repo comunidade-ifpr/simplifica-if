@@ -26,7 +26,7 @@ aliases:
   - "Resolução nº 11/2019"
   - "Resolução IFPR 11/2019"
   - "Política Linguística do IFPR"
-fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=349406&id_orgao_publicacao=0"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=349406&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 11/2019 a confirmar (ato de 2019-06-13; publicação não registrada): presumida vigente"
 ---

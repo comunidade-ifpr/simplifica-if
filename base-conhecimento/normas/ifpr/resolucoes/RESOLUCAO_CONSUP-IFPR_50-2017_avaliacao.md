@@ -23,7 +23,7 @@ keywords:
 aliases:
   - "Resolução nº 50/2017"
   - "Resolução CONSUP/IFPR 50/2017"
-fonte: https://ifpr.edu.br/resolucao-no-50-de-14-de-julho-de-2017/
+fonte_url: "https://ifpr.edu.br/resolucao-no-50-de-14-de-julho-de-2017/"
 vigencia_calculada_em: "2026-11-13"
 ---
 

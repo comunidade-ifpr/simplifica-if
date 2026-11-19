@@ -48,8 +48,10 @@ export const CAMPOS_MANIFEST = [
   "status_vigencia",
   "keywords",
   "aliases",
-  "fonte",
 ] as const;
+
+/** Campos do front matter que vão para o `manifest.json` quando existem (a fonte oficial). */
+export const CAMPOS_MANIFEST_OPCIONAIS = ["fonte_url", "fonte_referencia"] as const;
 
 /** Diretório esperado por `jurisdicao|tipo_documento`. */
 export const DIRETORIOS_POR_TIPO: Record<string, string> = {
@@ -83,6 +85,7 @@ export function itemManifest(caminhos: CaminhosBase, caminho: string): ItemManif
   }
   const item: ItemManifest = {};
   for (const campo of CAMPOS_MANIFEST) item[campo] = meta[campo]!;
+  for (const campo of CAMPOS_MANIFEST_OPCIONAIS) if (campo in meta) item[campo] = meta[campo]!;
   item.path = relativo(caminhos, caminho);
   if (typeof meta.vigencia_a_confirmar === "string") item.vigencia_a_confirmar = meta.vigencia_a_confirmar;
   const relacoes = relacoesManifest(textoDe(meta.id), caminhos.raizProjeto);

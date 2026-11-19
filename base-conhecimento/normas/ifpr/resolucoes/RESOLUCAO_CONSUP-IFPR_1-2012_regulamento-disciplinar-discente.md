@@ -25,7 +25,7 @@ aliases:
   - "Resolução CONSUP/IFPR 01/2012"
   - "Resolução nº 01/2012"
   - "Regulamento Disciplinar do Corpo Discente do IFPR"
-fonte: https://ifpr.edu.br/resolucao-012012/
+fonte_url: "https://ifpr.edu.br/resolucao-012012/"
 vigencia_calculada_em: "2026-11-13"
 ---
 

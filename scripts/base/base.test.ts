@@ -66,7 +66,7 @@ status_vigencia: vigente
 keywords:
   - "teste"
 aliases: ["Lei 1/2020", "L1"]
-fonte: "https://exemplo.gov.br/lei"
+fonte_url: "https://exemplo.gov.br/lei"
 ---
 
 ## Resumo
@@ -365,5 +365,34 @@ describe("validação da base", () => {
     expect(errosManifest).toContain("manifest.json: item com jurisdição/tipo sem diretório configurado: ('XX', 'Lei')");
     expect(errosManifest).toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo title");
     expect(errosManifest).not.toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo ano");
+  });
+
+  test("fonte oficial: fonte_url só https e o campo antigo fonte recusado", () => {
+    const errosDeFonte = (troca: string, norma = NORMA) => {
+      const raiz = projetoTemporario();
+      escrever(
+        raiz,
+        "base-conhecimento/normas/br/leis/lei.md",
+        norma.replace('fonte_url: "https://exemplo.gov.br/lei"', troca),
+      );
+      escrever(raiz, "base-conhecimento/README.md", README);
+      const caminhos = criarCaminhos(raiz);
+      NodeFS.writeFileSync(
+        caminhos.manifest,
+        manifestJson([itemManifest(caminhos, NodePath.join(caminhos.normas, "br/leis/lei.md"))]),
+      );
+      return validarBase(caminhos).erros.filter((erro) => /fonte|assinada_em/.test(erro));
+    };
+    expect(errosDeFonte('fonte_url: "http://exemplo.gov.br/lei"')).toEqual([
+      "normas/br/leis/lei.md: fonte_url: fonte_url deve ser URL https, sem espaços",
+    ]);
+    // recusado na struct: sai junto com os outros erros, sem esperar a correção deles
+    expect(
+      errosDeFonte('fonte: "Fonte oficial pendente"', NORMA.replace('assinada_em: "2020-01-02"', 'assinada_em: "x"')),
+    ).toEqual([
+      "normas/br/leis/lei.md: fonte: campo substituído por fonte_url (URL https) e fonte_referencia (texto)",
+      "normas/br/leis/lei.md: assinada_em: assinada_em deve ser AAAA-MM-DD",
+    ]);
+    expect(errosDeFonte('fonte_referencia: "SEI/IFPR nº 1"')).toEqual([]);
   });
 });

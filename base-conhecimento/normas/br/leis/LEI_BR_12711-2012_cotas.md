@@ -23,7 +23,7 @@ aliases:
   - "Lei nº 12.711/2012"
   - "Lei 12.711/2012"
   - "Lei de Cotas"
-fonte: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm"
 vigencia_calculada_em: "2026-11-13"
 alterada_por:
   - "Lei nº 14.945/2024 (art. 8º) — art. 1º"

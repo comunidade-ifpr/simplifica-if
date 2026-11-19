@@ -24,7 +24,7 @@ aliases:
   - "Lei 13.146/2015"
   - "Estatuto da Pessoa com Deficiência"
   - LBI
-fonte: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm"
 vigencia_calculada_em: "2026-11-13"
 ---
 

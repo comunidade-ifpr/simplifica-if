@@ -2,8 +2,8 @@
 /**
  * A interface do app (`apps/web`) importa `@simplifica-if/contratos-app`; nada do servidor pode vir
  * junto. Num Node limpo, o teste carrega o pacote e confere cada módulo que o carregamento resolveu:
- * nenhum módulo do Node (`node:sqlite`, `node:fs`, `node:crypto`…), nada do `@simplifica-if/kb` (salvo `canal.ts`,
- * abaixo), do serviço `Leitura` ou do servidor MCP, nem a implementação do motor (o serviço `Motor`, os drivers; só
+ * nenhum módulo do Node (`node:sqlite`, `node:fs`, `node:crypto`…), nada do `@simplifica-if/kb` (salvo `canal.ts` e
+ * `normas/fonte.ts`, abaixo), do serviço `Leitura` ou do servidor MCP, nem a implementação do motor (o serviço `Motor`, os drivers; só
  * os schemas de `erros.ts`, `eventos.ts`, `estados-provider.ts` e `falhas.ts`) nem os SDKs dos providers.
  */
 import * as NodeChildProcess from "node:child_process";
@@ -18,13 +18,15 @@ const CONTRATOS = NodeURL.pathToFileURL(NodePath.resolve(import.meta.dirname, ".
 const PONTE = NodeURL.pathToFileURL(NodePath.resolve(import.meta.dirname, "../src/ponte.ts")).href;
 
 /**
- * A única exceção do kb: `@simplifica-if/kb/canal`, a lista de canais que o schema `Base.canal` do
- * `mcp/contratos.ts` usa. É um módulo folha, só com constantes e sem import, como os schemas de
- * `motor/src/erros.ts`, `eventos.ts` e `estados-provider.ts` que este teste já aceita do motor. O último teste confere que
- * ele continua sem import, para a exceção não crescer.
+ * As exceções do kb, módulos folha que o `mcp/contratos.ts` e as ferramentas usam nos schemas:
+ * `@simplifica-if/kb/canal` (a lista de canais de `Base.canal`, sem import) e `@simplifica-if/kb/normas/fonte`
+ * (o schema `UrlOficial` da `ficha_norma`, que só importa o Effect). O último teste confere que elas não importam
+ * nada além de `effect/*`, para a exceção não crescer.
  */
-const CANAL_KB = NodePath.resolve(import.meta.dirname, "../../kb/src/canal.ts");
-const PERMITIDOS: ReadonlyArray<string> = [NodeURL.pathToFileURL(CANAL_KB).href];
+const EXCECOES_KB = ["canal.ts", "normas/fonte.ts"].map((arquivo) =>
+  NodePath.resolve(import.meta.dirname, "../../kb/src", arquivo),
+);
+const PERMITIDOS: ReadonlyArray<string> = EXCECOES_KB.map((caminho) => NodeURL.pathToFileURL(caminho).href);
 
 /** O que não pode aparecer no grafo, com o motivo. */
 const PROIBIDOS: ReadonlyArray<readonly [RegExp, string]> = [
@@ -53,8 +55,16 @@ describe("contratos do app sem código de servidor", () => {
     assert.deepStrictEqual(JSON.parse(saida), [PONTE]);
   });
 
-  it("a exceção do kb, canal.ts, é um módulo folha: não importa nada", () => {
-    const fonte = NodeFS.readFileSync(CANAL_KB, "utf8");
-    assert.notMatch(fonte, /^\s*(import|export\s.*\bfrom\b)/m);
+  it("as exceções do kb são módulos folha: não importam nada além de effect/*", () => {
+    for (const caminho of EXCECOES_KB) {
+      const imports = [
+        ...NodeFS.readFileSync(caminho, "utf8").matchAll(/^\s*(?:import|export)\s[^;]*?\bfrom\s+"([^"]+)"/gm),
+      ];
+      assert.deepStrictEqual(
+        imports.map(([, origem]) => origem).filter((origem) => !origem!.startsWith("effect/")),
+        [],
+        caminho,
+      );
+    }
   });
 });

@@ -22,7 +22,7 @@ keywords:
 aliases:
   - "Resolução IFPR nº 242/2025"
   - "Resolução CONSUP/IFPR 242/2025"
-fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3797141&id_orgao_publicacao=0"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3797141&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CONSUP/IFPR nº 8/2014 (incisos II e III do art. 6º do Regimento Interno Comum aos Câmpus (anexo))"

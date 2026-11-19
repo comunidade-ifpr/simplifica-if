@@ -50,6 +50,7 @@ import {
   esquemaLinhaVigencia,
   type LinhasNormativas,
 } from "./fontes-normativas.ts";
+import { UrlOficial } from "../normas/fonte.ts";
 import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
 import { lerTopicosSecoes, type TopicosSecoes } from "../ppcs/topicos.ts";
 import { emTransacao } from "./transacao.ts";
@@ -107,7 +108,8 @@ const esquemaManifest = Schema.Array(
     status_vigencia: texto,
     keywords: Schema.optionalKey(Schema.Array(Schema.String)),
     aliases: Schema.optionalKey(Schema.Array(Schema.String)),
-    fonte: texto,
+    fonte_url: Schema.optionalKey(UrlOficial),
+    fonte_referencia: Schema.optionalKey(texto),
     path: Schema.String,
   }),
 );
@@ -481,7 +483,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         status_vigencia: item.status_vigencia,
         status_fonte: null,
         ementa: item.ementa,
-        fonte: item.fonte,
+        fonte_url: item.fonte_url ?? null,
+        fonte_referencia: item.fonte_referencia ?? null,
         curadoria: null,
         path: caminhoMd,
         aliases_json: json(item.aliases ?? []),
@@ -515,7 +518,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           status_vigencia: "status_vigencia" in stub ? stub.status_vigencia : null,
           status_fonte: "status_fonte" in stub ? stub.status_fonte : null,
           ementa: stub.ementa,
-          fonte: stub.fonte,
+          fonte_url: stub.fonte_url ?? null,
+          fonte_referencia: stub.fonte_referencia ?? null,
           curadoria: stub.curadoria,
           path: null,
           aliases_json: json(stub.aliases ?? []),

@@ -18,7 +18,7 @@
       "metadados": {
         "texto": "Altera a LDB para redimensionar, institucionalizar e integrar as ações da educação profissional técnica de nível médio, da educação de jovens e adultos e da educação profissional e tecnológica.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 157
+        "linha": 160
       },
       "pontuacao": -3.057,
       "origem": "busca-textual"
@@ -38,7 +38,7 @@
       "metadados": {
         "texto": "Diretrizes Curriculares Nacionais para a Educação Profissional de Nível Técnico.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 28
+        "linha": 31
       },
       "pontuacao": -2.7,
       "origem": "busca-textual"
@@ -58,7 +58,7 @@
       "metadados": {
         "texto": "Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 40
+        "linha": 43
       },
       "pontuacao": -2.648,
       "origem": "busca-textual"
@@ -78,7 +78,7 @@
       "metadados": {
         "texto": "Institui as Diretrizes Curriculares Nacionais para a Educação Profissional de Nível Técnico.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 22
+        "linha": 25
       },
       "pontuacao": -2.622,
       "origem": "busca-textual"
@@ -98,7 +98,7 @@
       "metadados": {
         "texto": "Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 33
+        "linha": 36
       },
       "pontuacao": -2.598,
       "origem": "busca-textual"
@@ -118,7 +118,7 @@
       "metadados": {
         "texto": "Altera a Resolução CNE/CP nº 1/2021 (DCN Gerais para a Educação Profissional e Tecnológica).",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 64
+        "linha": 67
       },
       "pontuacao": -2.458,
       "origem": "busca-textual"
@@ -138,7 +138,7 @@
       "metadados": {
         "texto": "Altera a Resolução CNE/CP nº 1/2021 (DCN Gerais para a Educação Profissional e Tecnológica).",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 71
+        "linha": 74
       },
       "pontuacao": -2.458,
       "origem": "busca-textual"
@@ -158,7 +158,7 @@
       "metadados": {
         "texto": "Organização didático-pedagógica da educação profissional técnica de nível médio do IFPR anterior à Resolução CONSUP/IFPR nº 190/2024.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 361
+        "linha": 364
       },
       "pontuacao": -2.294,
       "origem": "busca-textual"
@@ -178,7 +178,7 @@
       "metadados": {
         "texto": "Dispunha sobre a Rede Nacional de Certificação Profissional, substituída pela Portaria MEC nº 902/2024.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 347
+        "linha": 350
       },
       "pontuacao": -2,
       "origem": "busca-textual"
@@ -198,7 +198,7 @@
       "metadados": {
         "texto": "Dispõe sobre a educação ambiental e institui a Política Nacional de Educação Ambiental.",
         "path": "base-conhecimento/normas/stubs.yaml",
-        "linha": 217
+        "linha": 220
       },
       "pontuacao": -0.737,
       "origem": "busca-textual"

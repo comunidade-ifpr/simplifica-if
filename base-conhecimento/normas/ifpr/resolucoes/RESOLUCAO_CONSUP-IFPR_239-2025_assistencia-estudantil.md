@@ -22,7 +22,6 @@ keywords:
 aliases:
   - "Resolução CONSUP/IFPR nº 239/2025"
   - "Resolução IFPR 239/2025"
-fonte: "Fonte oficial pendente de confirmação pública"
 vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CONSUP/IFPR nº 11/2009"

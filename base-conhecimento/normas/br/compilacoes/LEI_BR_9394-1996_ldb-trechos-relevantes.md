@@ -23,7 +23,7 @@ keywords:
 aliases:
   - "LDB - trechos relevantes"
   - "Lei nº 9.394/1996 - trechos relevantes"
-fonte: https://www.planalto.gov.br/ccivil_03/leis/L9394compilado.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/leis/L9394compilado.htm"
 relaciona_se_a:
   - "Lei nº 9.394/1996"
   - "Lei nº 14.945/2024"

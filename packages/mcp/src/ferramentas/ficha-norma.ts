@@ -4,6 +4,7 @@
  * (`Normas.relacoes`) e das sucessoras de `kb impacto` (`Normas.sucessoras`).
  */
 import * as Schema from "effect/Schema";
+import { UrlOficial } from "@simplifica-if/kb/normas/fonte";
 import { EsquemaLink, NormaResumo, Relacao } from "../contratos.ts";
 import { opcional } from "../esquema.ts";
 import { linkNorma } from "../links.ts";
@@ -34,7 +35,10 @@ export const Dados = Schema.Struct({
     tipo_documento: Schema.NullOr(Schema.String),
     numero: Schema.NullOr(Schema.String),
     ano: Schema.NullOr(Schema.Int),
-    fonte_oficial: Schema.NullOr(Schema.String),
+    /** URL https do texto oficial; `null` quando a fonte oficial está pendente. */
+    fonte_url: Schema.NullOr(UrlOficial),
+    /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
+    fonte_referencia: Schema.NullOr(Schema.String),
   }),
   vigencia: Schema.Struct({
     data: Schema.String,
@@ -98,7 +102,8 @@ export const fichaNorma = definirFerramenta({
       norma.orgao,
       norma.tipo_documento && norma.numero ? `${norma.tipo_documento} nº ${norma.numero}` : null,
       norma.data_publicacao ? `de ${dataBr(norma.data_publicacao)}` : null,
-      norma.fonte_oficial ? `fonte oficial: ${norma.fonte_oficial}` : null,
+      norma.fonte_url !== null ? `fonte oficial: ${norma.fonte_url}` : "fonte oficial: sem URL registrada",
+      norma.fonte_referencia !== null ? `referência da fonte: ${norma.fonte_referencia}` : null,
     ].filter(Boolean);
     partes.push(
       [

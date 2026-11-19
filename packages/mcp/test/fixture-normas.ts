@@ -41,7 +41,8 @@ interface Norma {
   data_publicacao?: string;
   status_vigencia?: string;
   ementa: string;
-  fonte?: string;
+  fonte_url?: string;
+  fonte_referencia?: string;
   path?: string;
   aliases: string[];
   front_matter?: Record<string, unknown>;
@@ -61,7 +62,7 @@ const NORMAS: Norma[] = [
     data_publicacao: "2021-01-05",
     status_vigencia: "revogada",
     ementa: "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
-    fonte: "https://www.in.gov.br/dcnept-2021",
+    fonte_url: "https://www.in.gov.br/dcnept-2021",
     path: MD_2021,
     aliases: ["Resolução CNE/CP nº 1/2021", "DCNEPT 2021"],
     front_matter: {
@@ -84,7 +85,7 @@ const NORMAS: Norma[] = [
     data_publicacao: "2026-11-11",
     status_vigencia: "vigente",
     ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
-    fonte: "https://www.in.gov.br/dcnept-2026",
+    fonte_url: "https://www.in.gov.br/dcnept-2026",
     path: MD_2026,
     aliases: ["Resolução CNE/CP nº 2/2026", "DCNEPT 2026"],
     front_matter: { id: DCN_2026, assinada_em: "2026-11-11", publicada_em: "2026-11-12", vigente_de: "2026-11-12" },
@@ -289,8 +290,8 @@ export function inserirNormas(caminho: string): void {
   emTransacao(db, () => {
     const insNorma = db.prepare(
       `INSERT INTO normas (id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
-         status_fonte, ementa, fonte, curadoria, path, aliases_json, keywords_json, front_matter_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         status_fonte, ementa, fonte_url, fonte_referencia, curadoria, path, aliases_json, keywords_json, front_matter_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const insMeta = db.prepare("INSERT INTO normas_metadados (norma_id, texto, path, linha) VALUES (?, ?, ?, ?)");
     const insFtsNorma = db.prepare("INSERT INTO normas_fts (rowid, titulo, texto, radicais) VALUES (?, ?, ?, ?)");
@@ -308,7 +309,8 @@ export function inserirNormas(caminho: string): void {
         n.status_vigencia ?? null,
         n.situacao === "stub" ? DCN_2021 : null,
         n.ementa,
-        n.fonte ?? null,
+        n.fonte_url ?? null,
+        n.fonte_referencia ?? null,
         n.situacao === "base" ? null : "conferido",
         n.path ?? null,
         JSON.stringify(n.aliases),
@@ -371,7 +373,7 @@ export function inserirNormas(caminho: string): void {
       const linhas = linhasDoDocumento.get(n.id) ?? new Map<number, string>();
       linhas.set(5, `# ${n.titulo}`);
       linhas.set(7, n.ementa);
-      linhas.set(9, `Fonte oficial: [Diário Oficial](${n.fonte ?? "https://www.in.gov.br"}).`);
+      linhas.set(9, `Fonte oficial: [Diário Oficial](${n.fonte_url ?? "https://www.in.gov.br"}).`);
       insDocumento.run(n.path, markdownSintetico(n.id, linhas));
     }
 

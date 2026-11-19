@@ -164,7 +164,7 @@ function autoria(id: string): string | null {
 
 const comPonto = (texto: string) => (/[.!?]$/.test(texto.trim()) ? texto.trim() : `${texto.trim()}.`);
 
-/** A referência formal da norma: "BRASIL. Resolução CNE/CP nº 2/2026, de 11 de novembro de 2026. Ementa. Disponível em: …". */
+/** A referência formal da norma: "BRASIL. Resolução CNE/CP nº 2/2026, de 11 de novembro de 2026. Ementa. Referência da fonte. Disponível em: …". */
 export function referenciaDaNorma(norma: FichaNorma["norma"]): string {
   const partes: string[] = [];
   const autor = autoria(norma.id);
@@ -175,7 +175,8 @@ export function referenciaDaNorma(norma: FichaNorma["norma"]): string {
       : norma.titulo;
   partes.push(comPonto(titulo));
   if (norma.ementa !== null && norma.ementa.trim() !== "") partes.push(comPonto(norma.ementa));
-  if (norma.fonte_oficial !== null) partes.push(`Disponível em: ${norma.fonte_oficial}.`);
+  if (norma.fonte_referencia !== null) partes.push(comPonto(norma.fonte_referencia));
+  if (norma.fonte_url !== null) partes.push(`Disponível em: ${norma.fonte_url}.`);
   return partes.join(" ");
 }
 

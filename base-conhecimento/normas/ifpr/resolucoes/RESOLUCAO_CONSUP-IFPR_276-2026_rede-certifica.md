@@ -25,7 +25,7 @@ aliases:
   - "Resolução IFPR 276/2026"
   - "Regulamento Rede Certifica IFPR"
   - "SEI 4333864"
-fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4513717&id_orgao_publicacao=0"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4513717&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "revogação por Resolução CONSUP/IFPR nº 282/2026 produz efeito na vigência da origem, a confirmar (não antes de 2026-08-13): presumida em vigor em 2026-11-13"
 revogada_por:

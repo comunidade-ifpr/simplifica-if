@@ -2,7 +2,7 @@
 
 A base reúne normas, legislação, resoluções, portarias, metadados institucionais, PPCs, catálogos e outros documentos de referência usados em análises relacionadas ao IFPR. Ela alimenta o Simplifica IF, app desktop que a entrega, com tarefas prontas, à IA de cada servidor; o app e a base ficam no mesmo repositório.
 
-> Aviso: esta base é uma curadoria operacional. Para decisões administrativas, jurídicas ou acadêmicas, confira sempre a publicação oficial indicada no campo `fonte` de cada documento.
+> Aviso: esta base é uma curadoria operacional. Para decisões administrativas, jurídicas ou acadêmicas, confira sempre a publicação oficial indicada no campo `fonte_url` (ou, sem link, em `fonte_referencia`) de cada documento.
 
 ## Como consultar
 

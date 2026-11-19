@@ -360,7 +360,8 @@ describe("ficha_norma", () => {
         tipo_documento: "Resolução",
         numero: "1",
         ano: 2021,
-        fonte_oficial: "https://www.in.gov.br/dcnept-2021",
+        fonte_url: "https://www.in.gov.br/dcnept-2021",
+        fonte_referencia: null,
       });
       expect(vigencia).toMatchObject({ data: "2026-11-13", status: "revogada", certo: false });
       expect(vigencia.inicio).toEqual({ data: null, minimo: "2021-01-05", certo: false });
@@ -430,6 +431,9 @@ describe("ficha_norma", () => {
       const stub = yield* chamar(fichaNorma, { id: STUB }, ctx, TETO_FICHA_NORMA);
       expect(stub.resposta.dados.norma.situacao).toBe("stub");
       expect(tipos(stub.resposta.avisos)).toContain(`stub-sem-texto ${STUB}`);
+      // sem fonte_url, o texto diz que não há URL, para a IA não inventar uma
+      expect(stub.resposta.dados.norma).toMatchObject({ fonte_url: null, fonte_referencia: null });
+      expect(stub.texto).toContain("fonte oficial: sem URL registrada");
       const externo = yield* chamar(fichaNorma, { id: EXTERNO }, ctx, TETO_FICHA_NORMA);
       expect(tipos(externo.resposta.avisos)).toContain(`stub-sem-texto ${EXTERNO}`);
     }),

@@ -22,7 +22,7 @@ keywords:
 aliases:
   - "Resolução nº 55/2011"
   - "Resolução CONSUP/IFPR 55/2011"
-fonte: https://ifpr.edu.br/resolucao-no-552011/
+fonte_url: "https://ifpr.edu.br/resolucao-no-552011/"
 vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 55/2011 a confirmar (ato de 2011-12-21; publicação não registrada): presumida vigente; alteração por Resolução CONSUP/IFPR nº 14/2014 produz efeito na vigência da origem, a confirmar: presumida em vigor em 2026-11-13; alteração por Resolução CONSUP/IFPR nº 2/2017 produz efeito na vigência da origem, a confirmar: presumida em vigor em 2026-11-13; revogação por Resolução CONSUP/IFPR nº 2/2017 produz efeito na vigência da origem, a confirmar: presumida em vigor em 2026-11-13"
 revogada_por:

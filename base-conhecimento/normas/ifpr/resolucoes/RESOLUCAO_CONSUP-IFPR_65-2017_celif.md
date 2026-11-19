@@ -25,7 +25,7 @@ aliases:
   - "Resolução nº 65/2017"
   - "Resolução IFPR 65/2017"
   - "Regulamento do CELIF"
-fonte: "https://ifpr.edu.br/resolucao-no-65-2017/"
+fonte_url: "https://ifpr.edu.br/resolucao-no-65-2017/"
 vigencia_calculada_em: "2026-11-13"
 ---
 

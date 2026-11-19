@@ -24,11 +24,10 @@ aliases:
   - "Resolução CONSUP/IFPR nº 159/2023"
   - "Resolução CONSUP/IFPR 159/2023"
   - "Resolução IFPR 159/2023"
-fonte: "Fonte oficial pendente de confirmação pública"
-vigencia_calculada_em: "2026-11-13"
 relaciona_se_a:
   - "Resolução CONSUP/IFPR nº 148/2023"
   - "Nota Técnica PROENS/IFPR nº 1/2025"
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

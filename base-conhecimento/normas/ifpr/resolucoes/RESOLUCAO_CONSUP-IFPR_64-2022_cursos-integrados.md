@@ -22,7 +22,7 @@ keywords:
 aliases:
   - "Resolução CONSUP/IFPR nº 64/2022"
   - "Resolução IFPR 64/2022"
-fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=1736791&id_orgao_publicacao=0"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=1736791&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
 ---
 

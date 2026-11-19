@@ -24,7 +24,8 @@ const NORMA: FichaNorma["norma"] = {
   tipo_documento: "Resolução",
   numero: "2",
   ano: 2026,
-  fonte_oficial: "https://www.in.gov.br/dcnept-2026",
+  fonte_url: "https://www.in.gov.br/dcnept-2026" as FichaNorma["norma"]["fonte_url"],
+  fonte_referencia: null,
 };
 
 const DISPOSITIVO: DispositivoLido = {
@@ -163,6 +164,13 @@ describe("citação", () => {
     expect(referenciaDaNorma(NORMA)).toBe(
       "BRASIL. Resolução CNE/CP nº 2/2026, de 11 de novembro de 2026. Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica. Disponível em: https://www.in.gov.br/dcnept-2026.",
     );
+  });
+
+  it('referência formal sem URL: a referência da fonte, sem "Disponível em"', () => {
+    expect(referenciaDaNorma({ ...NORMA, fonte_url: null, fonte_referencia: "SEI/IFPR nº 3881287" })).toBe(
+      "BRASIL. Resolução CNE/CP nº 2/2026, de 11 de novembro de 2026. Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica. SEI/IFPR nº 3881287.",
+    );
+    expect(referenciaDaNorma({ ...NORMA, fonte_url: null })).not.toContain("Disponível em");
   });
 
   it("dispositivo: caput herdado, [...] e subordinados, com o nome curto e a referência", () => {

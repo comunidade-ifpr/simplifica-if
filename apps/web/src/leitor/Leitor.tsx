@@ -165,6 +165,7 @@ function LeitorNorma({
     <ComCarga carga={ficha} titulo="Não foi possível ler esta norma">
       {({ dados }) => {
         const { norma, relacoes, sucessoras, transicoes } = dados;
+        const fonteOficial = norma.fonte_url;
         const selos = selosDaNorma(dados);
         const lido = dispositivo.fase === "lido" ? dispositivo.valor.dados.dispositivos[0] : undefined;
         const citacao =
@@ -199,15 +200,16 @@ function LeitorNorma({
                 {datasDoCabecalho(norma, documento.fase === "lido" ? documento.valor.dados.datas : null).map((d) => (
                   <span key={d}>{d}</span>
                 ))}
-                {norma.fonte_oficial ? (
+                {norma.fonte_referencia !== null ? <span>Fonte: {norma.fonte_referencia}</span> : null}
+                {fonteOficial !== null ? (
                   <a
-                    href={norma.fonte_oficial}
+                    href={fonteOficial}
                     rel="noopener noreferrer"
                     target="_blank"
                     className="nao-imprimir inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2"
                     onClick={(evento) => {
                       evento.preventDefault();
-                      abrirFora(norma.fonte_oficial!);
+                      abrirFora(fonteOficial);
                     }}
                   >
                     Ver na fonte oficial <ExternalLinkIcon aria-hidden className="size-3.5" />

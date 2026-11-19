@@ -23,7 +23,7 @@ aliases:
   - "Portaria MEC nº 902/2024"
   - "Portaria 902/2024"
   - "Rede Nacional de Certificação Profissional"
-fonte: "https://www.in.gov.br/en/web/dou/-/portaria-n-902-de-9-de-setembro-de-2024-583426362"
+fonte_url: "https://www.in.gov.br/en/web/dou/-/portaria-n-902-de-9-de-setembro-de-2024-583426362"
 vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Portaria MEC nº 24/2021"

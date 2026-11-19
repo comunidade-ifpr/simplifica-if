@@ -200,7 +200,7 @@ dados: {
 ```ts
 entrada: { id: string; em?: string /* AAAA-MM-DD */ }
 dados: {
-  norma: NormaResumo & { orgao: string | null; tipo_documento: string | null; numero: string | null; ano: number | null; fonte_oficial: string | null };
+  norma: NormaResumo & { orgao: string | null; tipo_documento: string | null; numero: string | null; ano: number | null; fonte_url: string | null; fonte_referencia: string | null };
   vigencia: {
     data: string; status: string; certo: boolean;
     inicio: { data: string | null; minimo: string | null; certo: boolean };

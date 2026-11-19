@@ -59,7 +59,7 @@ function linhasCampo(campo: string, valor: ValorGerado): string[] {
 
 /**
  * Reescreve os campos gerados no front matter: remove os blocos existentes desses campos e insere
- * os novos. `status_vigencia` fica onde estava; os demais vão logo depois de `fonte` (ou no fim do
+ * os novos. `status_vigencia` fica onde estava; os demais vão logo depois de `fonte_url` ou `fonte_referencia` (ou no fim do
  * front matter). O restante do arquivo não muda.
  */
 export function reescreverFrontMatter(texto: string, campos: Map<string, ValorGerado>): string {
@@ -79,7 +79,7 @@ export function reescreverFrontMatter(texto: string, campos: Map<string, ValorGe
       if (chave === "status_vigencia") posStatus = saida.length;
       if (pulando) continue;
       saida.push(linha);
-      if (chave === "fonte") posFonte = saida.length;
+      if (chave === "fonte_url" || chave === "fonte_referencia") posFonte = saida.length;
       continue;
     }
     if (pulando && (linha.startsWith(" ") || linha.startsWith("-") || linha === "")) continue;

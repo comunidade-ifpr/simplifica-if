@@ -28,7 +28,7 @@ aliases:
   - "Resolução CNE/CEB nº 3, de 8 de abril de 2025"
   - "Diretrizes Operacionais Nacionais para a EJA"
   - "Diretrizes Operacionais da EJA"
-fonte: https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf
+fonte_url: "https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf"
 vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "revogação por Resolução CNE/CP nº 2/2026 (#art74-v) produz efeito na vigência da origem, a confirmar (não antes de 2026-11-11): presumida em vigor em 2026-11-13; alteração por Resolução CNE/CEB nº 6/2025 produz efeito na vigência da origem, a confirmar (não antes de 2025-07-17): presumida em vigor em 2026-11-13"
 revoga:

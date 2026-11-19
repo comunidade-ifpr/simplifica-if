@@ -661,12 +661,12 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[a-z0-9][a-z0-9/:~.-]*(?:#[A-Za-z0-9-]+)?$",
-            "description": "ID canônico da norma, como \"br/cne-cp/res/2021/1\""
+            "description": "ID canônico da norma, como \"br/cne-cp/res/2021/1\"",
+            "pattern": "^[a-z0-9][a-z0-9/:~.-]*(?:#[A-Za-z0-9-]+)?$"
           },
           "em": {
-            "description": "data da situação, AAAA-MM-DD (padrão: data de referência da base)",
             "type": "string",
+            "description": "data da situação, AAAA-MM-DD (padrão: data de referência da base)",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           }
         },
@@ -686,9 +686,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -732,24 +736,36 @@
                     ]
                   },
                   "status_vigencia": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "vigencia_a_confirmar": {
                     "type": "boolean"
                   },
                   "data_publicacao": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "ementa": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "link": {
@@ -757,21 +773,33 @@
                     "pattern": "^ifpr:\\/\\/[\\s\\S]{1,}$"
                   },
                   "orgao": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "tipo_documento": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "numero": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "ano": {
@@ -786,10 +814,24 @@
                       }
                     ]
                   },
-                  "fonte_oficial": {
-                    "type": [
-                      "string",
-                      "null"
+                  "fonte_url": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "fonte_referencia": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   }
                 },
@@ -806,7 +848,8 @@
                   "tipo_documento",
                   "numero",
                   "ano",
-                  "fonte_oficial"
+                  "fonte_url",
+                  "fonte_referencia"
                 ],
                 "additionalProperties": false
               },
@@ -826,15 +869,23 @@
                     "type": "object",
                     "properties": {
                       "data": {
-                        "type": [
-                          "string",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "minimo": {
-                        "type": [
-                          "string",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "certo": {
@@ -860,33 +911,53 @@
                           "type": "string"
                         },
                         "operador": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "alvo_dispositivo": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "alcance": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "efeito_de": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "efeito_minimo": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "ocorreu": {
@@ -938,24 +1009,36 @@
                           "type": "string"
                         },
                         "operador": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "alvo": {
                           "type": "string"
                         },
                         "alvo_dispositivo": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "alcance": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "evidencia": {
@@ -975,15 +1058,23 @@
                           "additionalProperties": false
                         },
                         "confirmado_em": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "nota": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         }
                       },
@@ -1013,24 +1104,36 @@
                           "type": "string"
                         },
                         "operador": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "alvo": {
                           "type": "string"
                         },
                         "alvo_dispositivo": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "alcance": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "evidencia": {
@@ -1050,15 +1153,23 @@
                           "additionalProperties": false
                         },
                         "confirmado_em": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "nota": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         }
                       },
@@ -1104,9 +1215,13 @@
                       "type": "string"
                     },
                     "norma_anterior": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "aplica_a": {
@@ -1119,15 +1234,23 @@
                       "type": "string"
                     },
                     "inicio_em": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "fim_em": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "evidencia": {
@@ -1230,6 +1353,7 @@
       "annotations": {
         "title": "Ficha da norma",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -7380,7 +7504,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-a5b7dd60",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7399,7 +7523,8 @@
               "tipo_documento": "Resolução",
               "numero": "1",
               "ano": 2021,
-              "fonte_oficial": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578"
+              "fonte_url": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
+              "fonte_referencia": null
             },
             "vigencia": {
               "data": "2026-11-13",
@@ -7589,7 +7714,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-a5b7dd60",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7608,7 +7733,8 @@
               "tipo_documento": "Lei",
               "numero": "9394",
               "ano": 1996,
-              "fonte_oficial": "https://www.planalto.gov.br/ccivil_03/leis/l9394.htm"
+              "fonte_url": "https://www.planalto.gov.br/ccivil_03/leis/l9394.htm",
+              "fonte_referencia": null
             },
             "vigencia": {
               "data": "2026-11-13",

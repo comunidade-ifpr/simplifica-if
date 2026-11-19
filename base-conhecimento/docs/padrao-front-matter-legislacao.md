@@ -43,7 +43,8 @@ O `front matter` existe para:
 | `orgao` | string | Ex.: `CONSUP/IFPR`, `CNE/CP`, `Presidência da República` |
 | `jurisdicao` | string | Ex.: `BR`, `IFPR`, `MEC`, `CNE` |
 | `aliases` | lista | Formas alternativas úteis de citação |
-| `fonte` | string | URL ou referência da fonte oficial ou base confiável |
+| `fonte_url` | URL `https` | Endereço público do texto oficial (DOU, Planalto, portal do IFPR). Sem ele, a fonte oficial está pendente: não escreva a pendência em texto. O leitor do app mostra o link "Ver na fonte oficial" e a referência formal termina em "Disponível em:" só com este campo |
+| `fonte_referencia` | string | Referência da fonte sem link: número do SEI, Boletim de Serviço, PDF assinado. Pode acompanhar `fonte_url` |
 | `variante` | string | Só em arquivo que não é o texto integral do ato; hoje só `compilacao` (ver [ID canônico](#id-canônico)) |
 
 ### Campos gerados (não edite à mão)
@@ -90,7 +91,7 @@ keywords: [educação especial, AEE, AICE, inclusão, PPC, IFPR]
 aliases:
   - Resolução IFPR nº 159/2023
   - Resolução CONSUP/IFPR 159/2023
-fonte: "URL ou referência oficial"
+fonte_url: "https://ifpr.edu.br/..."
 relaciona_se_a:
   - Resolução CONSUP/IFPR nº 148/2023
 ---
@@ -141,7 +142,7 @@ O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é t
 
 ## Normas sem texto na base (stubs) e referências externas
 
-Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, data, ementa, `status_vigencia` e, quando houver, aliases. Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
+Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, data, ementa, `status_vigencia` e, quando houver, aliases, `fonte_url` e `fonte_referencia` (os mesmos campos do front matter). Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
 
 Referências fora do escopo normativo da base (conselhos profissionais, ABNT, documentos institucionais não normativos, regulamentos de campus) ficam na seção `externos` do mesmo arquivo, com IDs `externo:`.
 

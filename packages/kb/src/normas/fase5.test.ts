@@ -172,14 +172,14 @@ describe("front matter gerado", () => {
 
   test("reescreve só os campos controlados", () => {
     const texto =
-      '---\nid: x\nstatus_vigencia: vigente\nfonte: "u"\nrevoga:\n  - "A"\nrelaciona_se_a:\n  - "B"\n---\n\n## Resumo\n';
+      '---\nid: x\nstatus_vigencia: vigente\nfonte_url: "https://u"\nfonte_referencia: "r"\nrevoga:\n  - "A"\nrelaciona_se_a:\n  - "B"\n---\n\n## Resumo\n';
     const campos = new Map<string, string | string[]>([
       ["status_vigencia", "alterada"],
       ["vigencia_calculada_em", "2026-11-13"],
       ["alterada_por", ["C (art. 1º)"]],
     ]);
     expect(reescreverFrontMatter(texto, campos)).toBe(
-      '---\nid: x\nstatus_vigencia: "alterada"\nfonte: "u"\nvigencia_calculada_em: "2026-11-13"\nalterada_por:\n  - "C (art. 1º)"\nrelaciona_se_a:\n  - "B"\n---\n\n## Resumo\n',
+      '---\nid: x\nstatus_vigencia: "alterada"\nfonte_url: "https://u"\nfonte_referencia: "r"\nvigencia_calculada_em: "2026-11-13"\nalterada_por:\n  - "C (art. 1º)"\nrelaciona_se_a:\n  - "B"\n---\n\n## Resumo\n',
     );
   });
 });

@@ -8,6 +8,7 @@ import * as NodeFS from "node:fs";
 import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
+import { UrlOficial } from "./fonte.ts";
 import { ehIdDispositivo, ehIdExterno, ehIdNorma, idDoAto, partesIdNorma } from "./ids.ts";
 
 export type Situacao = "base" | "stub" | "externo";
@@ -51,7 +52,8 @@ const esquemaStub = Schema.Struct({
     }, "status_fonte deve ser ID de norma com dispositivo opcional"),
   ),
   aliases: Schema.optionalKey(Schema.Array(textoNaoVazio)),
-  fonte: Schema.optionalKey(Schema.String),
+  fonte_url: Schema.optionalKey(UrlOficial),
+  fonte_referencia: Schema.optionalKey(textoNaoVazio),
   observacoes: Schema.optionalKey(Schema.String),
   curadoria: CURADORIA,
 });
@@ -61,7 +63,8 @@ const esquemaExterno = Schema.Struct({
   title: textoNaoVazio,
   descricao: textoNaoVazio,
   aliases: Schema.optionalKey(Schema.Array(textoNaoVazio)),
-  fonte: Schema.optionalKey(Schema.String),
+  fonte_url: Schema.optionalKey(UrlOficial),
+  fonte_referencia: Schema.optionalKey(textoNaoVazio),
   curadoria: CURADORIA,
 });
 

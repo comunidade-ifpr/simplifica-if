@@ -26,6 +26,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { parse } from "yaml";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
+import { RE_URL_HTTPS } from "../normas/fonte.ts";
 import { analisarFrontMatter, ErroFrontMatter } from "../normas/front-matter.ts";
 
 export { ErroFrontMatter };
@@ -57,7 +58,7 @@ const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
 /** Contrato do front matter de proveniência (decodificado sem chaves extras). */
 export const esquemaProvenienciaPpc = Schema.Struct({
   id: padrao(RE_ID_PPC, "id deve ser ppc:<campus_id>/<curso_slug>"),
-  fonte_url: padrao(/^https:\/\/\S+$/, "fonte_url deve ser URL https"),
+  fonte_url: padrao(RE_URL_HTTPS, "fonte_url deve ser URL https"),
   fonte_sha256: Schema.Union([
     padrao(RE_SHA256, "fonte_sha256 deve ter 64 hexadecimais"),
     Schema.Literal(DESCONHECIDO),

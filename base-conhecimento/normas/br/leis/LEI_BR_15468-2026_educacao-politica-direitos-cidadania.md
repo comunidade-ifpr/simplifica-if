@@ -23,7 +23,7 @@ keywords:
 aliases:
   - "Lei nº 15.468/2026"
   - "Lei 15.468/2026"
-fonte: https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15468.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15468.htm"
 vigencia_calculada_em: "2026-11-13"
 altera:
   - "Lei nº 9.394/1996 (art. 26, § 9º-B)"

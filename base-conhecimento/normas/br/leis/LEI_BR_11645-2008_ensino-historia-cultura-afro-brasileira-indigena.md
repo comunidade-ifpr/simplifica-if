@@ -23,7 +23,7 @@ keywords:
 aliases:
   - "Lei nº 11.645/2008"
   - "Lei 11.645/2008"
-fonte: https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11645.htm
+fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11645.htm"
 vigencia_calculada_em: "2026-11-13"
 altera:
   - "Lei nº 9.394/1996 (art. 26-A)"
