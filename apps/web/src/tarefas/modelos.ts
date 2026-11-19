@@ -1,26 +1,29 @@
 /**
  * A escolha do modelo e do raciocínio ao lado da IA: os modelos que a conta oferece (os `modelos` de
- * `providers.detectar`), a opção "Automático" (o padrão da conta) e o raciocínio "Aprofundado", quando
- * o modelo aceita. O que a pessoa não escolhe não vai ao servidor.
+ * `providers.detectar`), com o padrão da conta já escolhido pelo nome, e o raciocínio "Aprofundado",
+ * quando o modelo aceita. O padrão da conta não vai ao servidor como modelo: a sessão abre sem modelo,
+ * e a conta decide (inclusive a troca de modelo que ela faz por conta própria). Só quando o provider
+ * não diz qual é o padrão a interface mostra "Automático". E as IAs que entram na escolha: só as prontas.
  */
 import type { ModeloProvider, NivelEsforco, Provider } from "@simplifica-if/contratos-app";
 import { useEffect, useState } from "react";
 import type { Api } from "../conexao/api.ts";
 import { useApi } from "../contexto.tsx";
 import { detectarIa } from "../deteccao.ts";
+import { PROVIDERS } from "../providers.ts";
 
 /** A IA da tarefa e, quando a pessoa escolhe, o modelo e o esforço (`EntradaIniciar`). */
 export interface EscolhaDaIa {
   readonly provider: Provider;
-  /** Sem ele, "Automático". */
+  /** Sem ele, o padrão da conta. */
   readonly modelo?: string;
   /** Sem ele, raciocínio "Normal". */
   readonly esforco?: NivelEsforco;
 }
 
 /**
- * O modelo que vale para a escolha: o escolhido ou, em "Automático", o padrão da conta, quando o
- * provider diz qual é.
+ * O modelo que vale para a escolha: o escolhido ou, sem escolha, o padrão da conta, quando o provider
+ * diz qual é.
  */
 export function modeloEfetivo(
   modelos: ReadonlyArray<ModeloProvider>,
@@ -32,7 +35,7 @@ export function modeloEfetivo(
 }
 
 /**
- * A escolha depois de trocar o modelo (`undefined`: "Automático"). O raciocínio "Aprofundado" continua
+ * A escolha depois de trocar o modelo (`undefined`: o padrão da conta). O raciocínio "Aprofundado" continua
  * se o modelo novo o aceita, com o nível dele; senão, volta a "Normal".
  */
 export function comModelo(
@@ -62,20 +65,23 @@ export function comRaciocinio(
   };
 }
 
-/** O texto do botão: "Automático", "Opus", "Opus · Aprofundado". */
+/** O texto do botão: "Opus", "Opus · Aprofundado"; "Automático" sem padrão conhecido. */
 export function rotuloDaEscolha(escolha: EscolhaDaIa, modelos: ReadonlyArray<ModeloProvider>): string {
-  const nome =
-    escolha.modelo === undefined
-      ? "Automático"
-      : (modelos.find((modelo) => modelo.id === escolha.modelo)?.nome ?? escolha.modelo);
+  const nome = modeloEfetivo(modelos, escolha.modelo)?.nome ?? escolha.modelo ?? "Automático";
   return escolha.esforco === undefined ? nome : `${nome} · Aprofundado`;
 }
 
-/** Uma observação curta para os modelos de nome conhecido; os demais ficam só com o nome. */
-export function dicaDoModelo(nome: string): string | undefined {
+/**
+ * A observação ao lado do modelo no menu: "recomendado" no padrão da conta; nos demais, uma frase
+ * curta para os de nome conhecido, e nada para os outros.
+ */
+export function dicaDoModelo(modelo: ModeloProvider): string | undefined {
+  if (modelo.padrao === true) return "recomendado";
+  const nome = modelo.nome;
+  if (/fable/i.test(nome)) return "o mais capaz, gasta mais do plano";
   if (/opus/i.test(nome)) return "tarefas longas e difíceis";
   if (/sonnet/i.test(nome)) return "equilíbrio para o dia a dia";
-  if (/haiku|mini|nano/i.test(nome)) return "mais rápido";
+  if (/haiku|flash|mini|nano/i.test(nome)) return "mais rápido";
   return undefined;
 }
 
@@ -88,6 +94,30 @@ export function modelosDaIa(api: Api, provider: Provider): Promise<ReadonlyArray
     (estado) => estado.modelos ?? [],
     () => [],
   );
+}
+
+/**
+ * As IAs prontas para uma conversa (instaladas e com login), por uma detecção nova de cada uma;
+ * `undefined` enquanto ela não termina. A IA cuja detecção falha conta como não pronta.
+ */
+export function useIasProntas(): ReadonlyArray<Provider> | undefined {
+  const api = useApi();
+  const [prontas, setProntas] = useState<ReadonlyArray<Provider>>();
+  useEffect(() => {
+    let vale = true;
+    void Promise.all(
+      PROVIDERS.map((provider) =>
+        detectarIa(api, provider).then(
+          (estado) => estado.instalado && estado.autenticado,
+          () => false,
+        ),
+      ),
+    ).then((estados) => vale && setProntas(PROVIDERS.filter((_, indice) => estados[indice] === true)));
+    return () => {
+      vale = false;
+    };
+  }, [api]);
+  return prontas;
 }
 
 /** Os modelos da IA escolhida; vazio enquanto carrega e quando a IA não deixa escolher. */

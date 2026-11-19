@@ -27,6 +27,11 @@ export const ModeloProvider = Schema.Struct({
    * ele, o modelo não deixa escolher o esforço.
    */
   esforcoAprofundado: Schema.optionalKey(NivelEsforco),
+  /**
+   * O nível próprio do modelo, quando o provider daria outro a uma sessão sem esforço (o `agy` herda o
+   * do modelo padrão). Uso do driver: a interface não o manda, e "Normal" segue sendo sessão sem esforço.
+   */
+  esforcoNormal: Schema.optionalKey(NivelEsforco),
 });
 export type ModeloProvider = typeof ModeloProvider.Type;
 
@@ -45,8 +50,7 @@ export const DeteccaoProvider = Schema.Struct({
   /** Algo que impede o app de funcionar direito mesmo com login (ex.: MCP bloqueado pela organização). */
   aviso: Schema.optionalKey(Schema.String),
   /**
-   * Os modelos que a pessoa pode escolher, quando o provider os lista e aceita a escolha na sessão
-   * (Claude e Codex; o `agy` não aceita). Só com login.
+   * Os modelos que a pessoa pode escolher, como o provider os lista para a conta. Só com login.
    */
   modelos: Schema.optionalKey(Schema.Array(ModeloProvider)),
 });

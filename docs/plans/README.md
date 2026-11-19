@@ -9,6 +9,7 @@ Planos de trabalho do projeto. Cada plano registra decisões, entregas e critér
 | [m0-simplifica-mcp.md](m0-simplifica-mcp.md) | M0.1: servidor MCP `simplifica-mcp`, 16 ferramentas, banco autossuficiente | T0 a T7 prontos (16 ferramentas, instruções, [guia do piloto zero](../guia-piloto-zero.md), suítes transversais e CI no GitHub Actions); falta o critério de uso real (10 perguntas no Claude Code e no Codex) |
 | [consolidacao-stack-t3.md](consolidacao-stack-t3.md) | Migração do repositório para a stack do T3 Code: Node, pnpm, Effect 4, Effect Schema (etapas C0 a C3) | C0 a C3 em `main`; consolidação concluída |
 | [app-seguranca-dados.md](app-seguranca-dados.md) | Credenciais SUAP e SEI, níveis de sensibilidade, garantias de retenção dos providers (ZDR), LGPD | Suspenso: SUAP e SEI fora do app até o Marco 2 |
+| [opencode-openrouter.md](opencode-openrouter.md) | Caminho para modelos do OpenRouter com retenção zero (ZDR) e modelos locais: OpenCode por ACP, o que trazer do T3 | Pesquisa inicial de 19/11/2026; nada implementado |
 
 Documentos de apoio:
 

@@ -586,6 +586,21 @@ it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async
   await expect.element(aviso.getByRole("button", { name: "Entendi" })).not.toBeInTheDocument();
 });
 
+it("Escolha da IA: só entram as IAs instaladas e com login", async () => {
+  // Servidor novo: o Claude pronto, o ChatGPT sem instalar e o Gemini sem login.
+  const novo = await iniciarServidorTeste({ atrasoLogin: 100 });
+  await using _app = await montarApp(novo);
+  const ia = page.getByRole("form", { name: "O que você precisa hoje?" }).getByRole("combobox", { name: "IA" });
+  await expect.element(ia).toHaveTextContent("Claude");
+  // O botão do modelo aparece quando a detecção termina: a lista das IAs já está filtrada.
+  await expect.element(page.getByRole("button", { name: /^Modelo:/ })).toBeVisible();
+  await ia.click();
+  const opcoes = page.getByRole("listbox");
+  await expect.element(opcoes.getByRole("option", { name: "Claude" })).toBeVisible();
+  await expect.element(opcoes.getByRole("option", { name: "ChatGPT" })).not.toBeInTheDocument();
+  await expect.element(opcoes.getByRole("option", { name: "Gemini" })).not.toBeInTheDocument();
+});
+
 it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+Enter e o botão redondo", async () => {
   const escolherAnexo = vi.fn(async (_extensoes?: ReadonlyArray<string>) => servidor.parecer);
   window.simplifica = {
@@ -655,13 +670,16 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   await ia.click();
   await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
   await expect.element(ia).toHaveTextContent("Claude");
-  // O modelo, ao lado da IA: "Automático" até a pessoa escolher; o raciocínio só no modelo que aceita.
+  // O modelo, ao lado da IA: o padrão da conta pelo nome, sem "Automático"; o raciocínio só no modelo
+  // que aceita.
   const modelo = formulario.getByRole("button", { name: /^Modelo:/ });
-  await expect.element(modelo).toHaveTextContent("Automático");
+  await expect.element(modelo).toHaveTextContent("Sonnet");
   await modelo.click();
   const menu = page.getByRole("menu");
-  await expect.element(menu.getByRole("menuitemradio", { name: /Automático/ })).toHaveAttribute("aria-checked", "true");
-  // Em "Automático" vale o padrão da conta, que aceita o raciocínio aprofundado.
+  await expect
+    .element(menu.getByRole("menuitemradio", { name: /Sonnet.*recomendado/ }))
+    .toHaveAttribute("aria-checked", "true");
+  await expect.element(menu.getByRole("menuitemradio", { name: /Automático/ })).not.toBeInTheDocument();
   await expect.element(menu.getByRole("menuitemradio", { name: /Aprofundado/ })).toBeVisible();
   // O menu continua aberto depois da escolha: o raciocínio aparece para o modelo que o aceita.
   await menu.getByRole("menuitemradio", { name: /Opus/ }).click();
@@ -677,13 +695,13 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   await expect.element(menu.getByRole("menuitemradio", { name: /Aprofundado/ })).not.toBeInTheDocument();
   await userEvent.keyboard("{Escape}");
   await expect.element(modelo).toHaveTextContent("Haiku");
-  // Trocar de IA volta a "Automático"; a IA sem lista de modelos não mostra o botão.
+  // Trocar de IA volta ao padrão da conta; a IA sem lista de modelos não mostra o botão.
   await ia.click();
   await page.getByRole("listbox").getByRole("option", { name: "ChatGPT" }).click();
   await expect.element(modelo).not.toBeInTheDocument();
   await ia.click();
   await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
-  await expect.element(modelo).toHaveTextContent("Automático");
+  await expect.element(modelo).toHaveTextContent("Sonnet");
   // Shift+Enter quebra a linha, sem enviar; o botão acende.
   await caixa.click();
   await userEvent.keyboard("Quais normas tratam{Shift>}{Enter}{/Shift}do estágio?");

@@ -6,7 +6,7 @@
  */
 import type { ModeloProvider, Provider } from "@simplifica-if/contratos-app";
 import { ChevronDownIcon, PaperclipIcon, XIcon } from "lucide-react";
-import { useId } from "react";
+import { useEffect, useId } from "react";
 import { MarcaIa } from "../components/MarcaIa.tsx";
 import { Button } from "../components/ui/button.tsx";
 import {
@@ -31,6 +31,7 @@ import {
   type EscolhaDaIa,
   modeloEfetivo,
   rotuloDaEscolha,
+  useIasProntas,
   useModelos,
 } from "./modelos.ts";
 import { usePreferencias } from "./perfil.ts";
@@ -62,13 +63,16 @@ const NOMES_IA: Readonly<Record<Provider, string>> = {
   antigravity: "Gemini",
 };
 
-/** O valor da opção "Automático" no grupo dos modelos (nenhum `id` de modelo é vazio). */
+/**
+ * O valor da opção "Automático" no grupo dos modelos (nenhum `id` de modelo é vazio); ela só existe
+ * quando o provider não diz qual é o padrão da conta.
+ */
 const AUTOMATICO = "";
 
 /**
- * O botão do modelo, ao lado da IA: "Automático" (o padrão da conta) ou um dos modelos que a conta
- * oferece e, para o modelo que aceita, o raciocínio "Normal" ou "Aprofundado". Não aparece para a IA
- * que não lista modelos (o Gemini) nem antes de a lista chegar.
+ * O botão do modelo, ao lado da IA: o padrão da conta, já escolhido e marcado "recomendado", ou outro
+ * dos modelos que a conta oferece e, para o modelo que aceita, o raciocínio "Normal" ou "Aprofundado".
+ * Não aparece para a IA que não lista modelos nem antes de a lista chegar.
  */
 function EscolhaModelo({
   valor,
@@ -82,6 +86,7 @@ function EscolhaModelo({
   readonly compacta: boolean;
 }) {
   const rotulo = rotuloDaEscolha(valor, modelos);
+  const padrao = modeloEfetivo(modelos, undefined);
   const aceitaRaciocinio = modeloEfetivo(modelos, valor.modelo)?.esforcoAprofundado !== undefined;
   return (
     <Menu>
@@ -104,16 +109,19 @@ function EscolhaModelo({
         <MenuGroup>
           <MenuGroupLabel>Modelo</MenuGroupLabel>
           <MenuRadioGroup
-            value={valor.modelo ?? AUTOMATICO}
+            value={valor.modelo ?? padrao?.id ?? AUTOMATICO}
             onValueChange={(modelo: string) =>
-              aoMudar(comModelo(valor, modelos, modelo === AUTOMATICO ? undefined : modelo))
+              // O padrão da conta não vira modelo da sessão: fica sem escolha, como em "Automático".
+              aoMudar(comModelo(valor, modelos, modelo === AUTOMATICO || modelo === padrao?.id ? undefined : modelo))
             }
           >
-            <MenuRadioItem value={AUTOMATICO} dica="recomendado">
-              Automático
-            </MenuRadioItem>
+            {padrao === undefined ? (
+              <MenuRadioItem value={AUTOMATICO} dica="recomendado">
+                Automático
+              </MenuRadioItem>
+            ) : null}
             {modelos.map((modelo) => (
-              <MenuRadioItem key={modelo.id} value={modelo.id} dica={dicaDoModelo(modelo.nome)}>
+              <MenuRadioItem key={modelo.id} value={modelo.id} dica={dicaDoModelo(modelo)}>
                 {modelo.nome}
               </MenuRadioItem>
             ))}
@@ -146,7 +154,8 @@ function EscolhaModelo({
 /**
  * A escolha da IA, com a marca de cada uma ao lado do nome (no botão e na lista), e, ao lado, a do
  * modelo (`EscolhaModelo`). A da IA é o `Select` do Base UI (combobox com teclado e leitor de tela),
- * não o `<select>` nativo, cujas opções não aceitam ícone. Trocar de IA volta o modelo a "Automático".
+ * não o `<select>` nativo, cujas opções não aceitam ícone. Trocar de IA volta o modelo ao padrão da conta.
+ * A lista só traz as IAs prontas (`useIasProntas`).
  * `compacta` (na caixa de pedido): só a marca, o nome e um chevron, discretos, e o rótulo "IA" só para o
  * leitor de tela.
  */
@@ -162,14 +171,23 @@ export function EscolhaIa({
   const id = useId();
   const valor = escolhida.provider;
   const aoMudar = (provider: Provider) => provider !== valor && aoEscolher({ provider });
+  // Antes dos modelos: a detecção nova já está em andamento quando `useModelos` pede a dele.
+  const prontas = useIasProntas();
   const modelos = useModelos(valor);
   const modelo =
     modelos.length === 0 ? null : (
       <EscolhaModelo valor={escolhida} aoMudar={aoEscolher} modelos={modelos} compacta={compacta} />
     );
-  // As IAs que a pessoa deixou de usar no app (Configurações › Sua IA) saem da lista, menos a escolhida.
+  // Só entra na lista a IA pronta (instalada e com login) que a pessoa não deixou de usar no app
+  // (Configurações › Sua IA), além da escolhida. Antes de a detecção terminar, só a escolhida.
   const desligadas = usePreferencias().preferencias?.iasDesligadas ?? [];
-  const opcoes = PROVIDERS.filter((provider) => provider === valor || !desligadas.includes(provider));
+  const usaveis = (prontas ?? []).filter((provider) => !desligadas.includes(provider));
+  const opcoes = PROVIDERS.filter((provider) => provider === valor || usaveis.includes(provider));
+  // A escolhida que não está pronta dá lugar à primeira que está; sem nenhuma, fica (o Início avisa).
+  const troca = prontas === undefined || prontas.includes(valor) ? undefined : usaveis[0];
+  useEffect(() => {
+    if (troca !== undefined) aoEscolher({ provider: troca });
+  }, [troca, aoEscolher]);
   const escolha = (
     <Select
       value={valor}

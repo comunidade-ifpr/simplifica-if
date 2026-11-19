@@ -19,6 +19,7 @@
  */
 import * as AcpClient from "@simplifica-if/effect-acp/client";
 import type * as AcpSchema from "@simplifica-if/effect-acp/compat";
+import * as Clock from "effect/Clock";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -27,6 +28,7 @@ import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
+import * as OpcoesAcp from "../acp/opcoes-sessao.ts";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
@@ -39,6 +41,7 @@ import {
   TELEMETRIA_ANTIGRAVITY_ARGS,
 } from "../politica.ts";
 import { acompanharInstalacao, acompanharLogin } from "../estados.ts";
+import type { ModeloProvider } from "../estados-provider.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
 import { makeAntigravityAcpRuntime } from "../t3/antigravityAcpRuntime.ts";
 import { makeAntigravityAuth } from "../t3/AntigravityAuth.ts";
@@ -290,6 +293,10 @@ const PROVIDER = "antigravity" as const;
 /** Código JSON-RPC que o `agy` devolve no `authenticate` quando falta login (`antigravityAuthSupport.ts` do T3). */
 const CODIGO_SEM_LOGIN = -32000;
 const METODO_LOGIN = "oauth-personal";
+/** Quanto a detecção espera pelo `session/new` da sessão descartável em que sonda os modelos. */
+const PRAZO_SESSAO_DE_SONDA = "10 seconds";
+/** Por quanto tempo a lista de modelos sondada vale; a conta muda de modelos raramente. */
+const VALIDADE_MODELOS_MS = 10 * 60 * 1000;
 
 /**
  * Servidores MCP no formato do ACP: stdio (`command` com caminho absoluto) ou HTTP
@@ -383,17 +390,27 @@ const retomarSessao = (
     readonly mcpServers: ReadonlyArray<AcpSchema.McpServer>;
     readonly _meta?: Exclude<AcpSchema.NewSessionRequest["_meta"], undefined>;
   },
-): Effect.Effect<{ readonly sessionId: string }, FalhaProvider> => {
+): Effect.Effect<OpcoesAcp.OpcoesDaSessao, FalhaProvider> => {
   const capacidades = inicio.agentCapabilities;
   if (capacidades?.loadSession === true) {
-    return cliente.agent
-      .loadSession(pedido)
-      .pipe(Effect.as({ sessionId: pedido.sessionId }), Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")));
+    return cliente.agent.loadSession(pedido).pipe(
+      Effect.map((resposta) => ({
+        sessionId: pedido.sessionId,
+        configOptions: resposta.configOptions,
+        models: resposta.models,
+      })),
+      Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")),
+    );
   }
   if (capacidades?.sessionCapabilities?.resume != null) {
-    return cliente.agent
-      .resumeSession(pedido)
-      .pipe(Effect.as({ sessionId: pedido.sessionId }), Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")));
+    return cliente.agent.resumeSession(pedido).pipe(
+      Effect.map((resposta) => ({
+        sessionId: pedido.sessionId,
+        configOptions: resposta.configOptions,
+        models: resposta.models,
+      })),
+      Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")),
+    );
   }
   const versao = inicio.agentInfo?.version ? ` ${inicio.agentInfo.version}` : "";
   return Effect.fail(
@@ -538,6 +555,11 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     usesBrowser: true,
   });
 
+  /** Os modelos da última sondagem, da versão do `agy` em que foi feita e até quando valem. */
+  let modelosGuardados:
+    | { readonly versao: string | undefined; readonly ate: number; readonly modelos: ReadonlyArray<ModeloProvider> }
+    | undefined;
+
   const detectar: Driver["detectar"] = Effect.gen(function* () {
     // O T3 não abre processo na detecção (o runtime antigo descompactava ~1 GB a cada execução). O
     // `agy` 1.5.x é um binário só, e no macOS guarda o login no Keychain, não no `acp_token.json` do
@@ -552,24 +574,63 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       } satisfies DeteccaoProvider;
     }
     const comToken = yield* fs.exists(arquivoToken).pipe(Effect.orElseSucceed(() => false));
-    const autenticado =
-      comToken ||
-      (yield* Effect.scoped(
-        Effect.gen(function* () {
-          const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-antigravity-detectar-" });
-          return (yield* abrir(pasta)).login;
-        }),
-      ).pipe(
-        Effect.timeout("30 seconds"),
-        Effect.orElseSucceed(() => false),
-      ));
+    const versao = resolvido.value.version ?? undefined;
+    const agora = yield* Clock.currentTimeMillis;
+    const guardados =
+      modelosGuardados !== undefined && modelosGuardados.versao === versao && agora < modelosGuardados.ate
+        ? modelosGuardados.modelos
+        : undefined;
+    // Os modelos só existem dentro de uma sessão: com login, a detecção abre uma descartável e a sonda
+    // (`OpcoesAcp.sondarModelos`), e guarda a lista por `VALIDADE_MODELOS`. Com a lista guardada, a
+    // detecção custa o de antes: nenhum processo com o `acp_token.json`, ou só o `agy acp` do login.
+    const sondagem =
+      comToken && guardados !== undefined
+        ? { login: true, modelos: guardados }
+        : yield* Effect.scoped(
+            Effect.gen(function* () {
+              const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-antigravity-detectar-" });
+              let idDaSonda: string | undefined;
+              // Antes de abrir o processo, para rodar depois que ele termina (como na sessão de julgamento).
+              yield* Effect.addFinalizer(() =>
+                idDaSonda === undefined
+                  ? Effect.void
+                  : Effect.forEach(
+                      arquivosDaSessaoAntigravity(path.join, pastas.profile, idDaSonda),
+                      (alvo) => fs.remove(alvo, { recursive: true, force: true }).pipe(Effect.ignore),
+                      { discard: true },
+                    ),
+              );
+              // Cada passo tem o seu prazo: a demora da sondagem não tira o login já conferido.
+              const aberto = yield* abrir(pasta).pipe(Effect.timeout("30 seconds"), Effect.option);
+              if (Option.isNone(aberto) || !aberto.value.login) return { login: false, modelos: [] };
+              if (guardados !== undefined) return { login: true, modelos: guardados };
+              const agente = aberto.value.cliente.agent;
+              const modelos = yield* agente.createSession({ cwd: pasta, mcpServers: [] }).pipe(
+                Effect.timeout(PRAZO_SESSAO_DE_SONDA),
+                Effect.tap((sessao) => Effect.sync(() => (idDaSonda = sessao.sessionId))),
+                Effect.flatMap((sessao) => OpcoesAcp.sondarModelos(agente, sessao)),
+                Effect.tapError((erro) => Effect.logWarning("Antigravity: a sondagem dos modelos falhou", erro)),
+                Effect.orElseSucceed((): ReadonlyArray<ModeloProvider> => []),
+              );
+              return { login: true, modelos };
+            }),
+          ).pipe(Effect.orElseSucceed(() => ({ login: false, modelos: [] as ReadonlyArray<ModeloProvider> })));
+    // A lista vazia e a de quem saiu da conta não ficam guardadas.
+    modelosGuardados =
+      sondagem.login && sondagem.modelos.length > 0
+        ? guardados === undefined
+          ? { versao, ate: agora + VALIDADE_MODELOS_MS, modelos: sondagem.modelos }
+          : modelosGuardados
+        : undefined;
+    const autenticado = comToken || sondagem.login;
     return {
       provider: PROVIDER,
       instalado: true,
       origem: resolvido.value.source === "managed" ? "gerenciada" : "local",
       autenticado,
-      ...(resolvido.value.version ? { versao: resolvido.value.version } : {}),
+      ...(versao ? { versao } : {}),
       ...(autenticado ? { metodo: METODO_LOGIN } : { mensagem: "Antigravity sem login no app: use entrar" }),
+      ...(sondagem.modelos.length > 0 ? { modelos: sondagem.modelos } : {}),
     } satisfies DeteccaoProvider;
   });
 
@@ -669,6 +730,21 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
         : yield* retomarSessao(aberto.inicio, cliente, { ...pedidoSessao, sessionId: config.retomar });
     const sessionId = sessao.sessionId;
     idDaSessao = sessionId;
+    // O modelo e o raciocínio valem por sessão: aplicados na nova e de novo na retomada. Na retomada,
+    // o modelo que saiu da conta não impede a conversa de voltar: fica o que o `agy` carregou.
+    // Sem esforço ("Normal"), vai o nível próprio do modelo, da última sondagem; sem sondagem neste
+    // processo, fica o que o `agy` dá ao trocar de modelo (o herdado do padrão).
+    const esforco =
+      config.esforco ?? modelosGuardados?.modelos.find((modelo) => modelo.id === config.modelo)?.esforcoNormal;
+    yield* OpcoesAcp.aplicarEscolha(cliente.agent, sessao, { modelo: config.modelo, esforco }).pipe(
+      Effect.catchTags({
+        ModeloAcpIndisponivel: (erro) =>
+          config.retomar === undefined
+            ? Effect.fail(new FalhaProvider({ provider: PROVIDER, operacao: "modelo", tipo: "modelo", cause: erro }))
+            : Effect.logWarning("Antigravity: a retomada segue sem o modelo escolhido", erro),
+      }),
+      Effect.mapError((erro) => (erro._tag === "FalhaProvider" ? erro : Canal.falhaDe(PROVIDER, "modelo")(erro))),
+    );
 
     // Quando o processo do `agy` acaba sozinho (queda), o turno corrente falha e a sessão recusa os
     // próximos. No encerramento da sessão, o fiber é interrompido antes de o processo morrer.

@@ -37,6 +37,7 @@ import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import * as Drivers from "../src/drivers/index.ts";
+import { NIVEIS_ESFORCO } from "../src/estados-provider.ts";
 import * as Motor from "../src/Motor.ts";
 import * as HostProcess from "../src/t3/HostProcess.ts";
 import { fixPath } from "../src/t3/os-jank.ts";
@@ -139,6 +140,7 @@ const poc = Command.make(
       Flag.optional,
     ),
     modelo: Flag.String("modelo").pipe(Flag.optional),
+    esforco: Flag.Literals("esforco", NIVEIS_ESFORCO).pipe(Flag.optional),
     mcp: Flag.Literals("mcp", ["stdio", "http"]).pipe(
       Flag.withDescription(
         "transporte do servidor ifpr: stdio (um processo por sessão) ou http (local, neste processo)",
@@ -212,6 +214,7 @@ const poc = Command.make(
         pastaTrabalho: pastaReal,
         servidoresMcp: [servidorIfpr],
         ...(Option.isSome(opcoes.modelo) ? { modelo: opcoes.modelo.value } : {}),
+        ...(Option.isSome(opcoes.esforco) ? { esforco: opcoes.esforco.value } : {}),
       });
       yield* Console.log(`sessão ${sessao} em ${pastaReal}`);
       const resumo: Resumo = {

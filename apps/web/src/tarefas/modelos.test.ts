@@ -9,7 +9,7 @@ const MODELOS: ReadonlyArray<ModeloProvider> = [
 ];
 
 describe("escolha do modelo", () => {
-  it("em Automático vale o padrão da conta", () => {
+  it("sem escolha vale o padrão da conta", () => {
     assert.strictEqual(modeloEfetivo(MODELOS, undefined)?.id, "sonnet");
     assert.strictEqual(modeloEfetivo(MODELOS, "opus")?.id, "opus");
     assert.strictEqual(modeloEfetivo([{ id: "a", nome: "A" }], undefined), undefined);
@@ -44,7 +44,9 @@ describe("escolha do modelo", () => {
   });
 
   it("o botão mostra o modelo e o raciocínio escolhidos", () => {
-    assert.strictEqual(rotuloDaEscolha({ provider: "claude" }, MODELOS), "Automático");
+    assert.strictEqual(rotuloDaEscolha({ provider: "claude" }, MODELOS), "Sonnet");
+    assert.strictEqual(rotuloDaEscolha({ provider: "claude", esforco: "high" }, MODELOS), "Sonnet · Aprofundado");
+    assert.strictEqual(rotuloDaEscolha({ provider: "claude" }, [{ id: "a", nome: "A" }]), "Automático");
     assert.strictEqual(rotuloDaEscolha({ provider: "claude", modelo: "opus" }, MODELOS), "Opus");
     assert.strictEqual(
       rotuloDaEscolha({ provider: "claude", modelo: "opus", esforco: "xhigh" }, MODELOS),
@@ -52,9 +54,12 @@ describe("escolha do modelo", () => {
     );
   });
 
-  it("só os nomes conhecidos ganham observação", () => {
-    assert.strictEqual(dicaDoModelo("Opus"), "tarefas longas e difíceis");
-    assert.strictEqual(dicaDoModelo("GPT-5 mini"), "mais rápido");
-    assert.strictEqual(dicaDoModelo("GPT-5"), undefined);
+  it("o padrão da conta é o recomendado; os outros nomes conhecidos ganham observação", () => {
+    assert.strictEqual(dicaDoModelo({ id: "sonnet", nome: "Sonnet", padrao: true }), "recomendado");
+    assert.strictEqual(dicaDoModelo({ id: "fable", nome: "Fable" }), "o mais capaz, gasta mais do plano");
+    assert.strictEqual(dicaDoModelo({ id: "opus", nome: "Opus" }), "tarefas longas e difíceis");
+    assert.strictEqual(dicaDoModelo({ id: "mini", nome: "GPT-5 mini" }), "mais rápido");
+    assert.strictEqual(dicaDoModelo({ id: "flash", nome: "Gemini 3.8 Flash" }), "mais rápido");
+    assert.strictEqual(dicaDoModelo({ id: "gpt", nome: "GPT-5" }), undefined);
   });
 });

@@ -89,7 +89,7 @@ export interface ConfigSessao {
   readonly modelo?: string;
   /**
    * Nível de esforço de raciocínio, na palavra do provider (o `esforcoAprofundado` do modelo
-   * escolhido); sem ele, o padrão do modelo. O Antigravity ignora.
+   * escolhido); sem ele, o padrão do modelo.
    */
   readonly esforco?: NivelEsforco;
   /**
