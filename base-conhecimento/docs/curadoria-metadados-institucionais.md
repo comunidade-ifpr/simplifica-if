@@ -109,9 +109,9 @@ O esquema do relatório e um relatório de exemplo ficam aqui, junto da aplicaç
 O comando `aplicar_*`:
 
 1. valida o relatório contra o esquema daqui e recusa `esquema` desconhecido e relatório com `erros`;
-2. confere **todos** os itens contra os registros antes de gravar qualquer um: um item ausente da base, repetido ou cuja identidade mudou desde a coleta recusa o relatório inteiro, sem aplicação pela metade;
+2. confere **todos** os itens contra os registros antes de gravar qualquer um: um item ausente da base, repetido, cuja identidade mudou desde a coleta ou cujo registro resultante não passaria no esquema recusa o relatório inteiro, sem gravar nada;
 3. sem `--apply`, lista as mudanças substantivas e conta à parte os itens sem mudança, sem gravar nada;
-4. com `--apply`, grava só as mudanças substantivas e relê os registros para confirmar. Uma coleta que não mudou nada não mexe em arquivo nenhum, nem no `coletado_em`.
+4. com `--apply`, grava só as mudanças substantivas e relê os registros para confirmar. Uma coleta que não mudou nada não mexe em arquivo nenhum, nem no `coletado_em`. Se a gravação parar no meio (disco cheio, arquivo sem permissão), o comando diz o que já gravou e onde parou; corrija a causa e rode de novo: o que já foi gravado conta como sem mudança.
 
 A revisão é o diff no PR: o PR da aplicação deve mostrar só os campos que o relatório alimenta. Depois de aplicar, rode o pipeline da base e confira os gabaritos que o dado alimenta:
 

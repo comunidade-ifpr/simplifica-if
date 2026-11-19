@@ -161,6 +161,42 @@ describe("aplicar_matrizes_suap", () => {
     }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   );
 
+  it.effect("carga horária que o registro não aceita (decimal) recusa o relatório antes de gravar", () =>
+    Effect.gen(function* () {
+      const relatorio = fixture();
+      const [primeira, ...resto] = relatorio.cursos[0]!.matrizes as Array<Record<string, unknown>>;
+      relatorio.cursos[0] = { ...relatorio.cursos[0], matrizes: [{ ...primeira, carga_horaria_h: 1233.5 }, ...resto] };
+      const { raiz, arquivo } = yield* cenario(relatorio);
+      const antes = textos(raiz);
+      const erro = yield* Effect.flip(aplicar(arquivo, raiz, true));
+      assert.strictEqual(erro._tag, "CursosNaoConferem");
+      expect(erro.message).toContain("exemplo/tecnico-em-exemplo: o registro gravado seria inválido");
+      expect(erro.message).toContain("carga_horaria_comum_h");
+      expect(textos(raiz)).toEqual(antes);
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+  );
+
+  it.effect("falha de disco no meio diz o que já foi gravado, e a nova aplicação completa o resto", () =>
+    Effect.gen(function* () {
+      const { raiz, arquivo } = yield* cenario(fixture());
+      const somenteLeitura = caminhoCurso(raiz, "tecnico-em-outro");
+      NodeFS.chmodSync(somenteLeitura, 0o444);
+      const erro = yield* Effect.flip(aplicar(arquivo, raiz, true));
+      NodeFS.chmodSync(somenteLeitura, 0o644);
+      assert.strictEqual(erro._tag, "GravacaoInterrompida");
+      if (erro._tag !== "GravacaoInterrompida") return;
+      expect(erro.gravados).toEqual(["exemplo/tecnico-em-exemplo"]);
+      expect(erro.falhou).toBe("exemplo/tecnico-em-outro");
+      expect(erro.detalhe).toBe("EACCES");
+      expect(registro(raiz, "tecnico-em-outro").suap.matrizes).toBeUndefined();
+
+      const { plano, gravado } = yield* aplicar(arquivo, raiz, true);
+      assert.isTrue(gravado);
+      expect(plano.mudancas.map((mudanca) => mudanca.curso_id)).toEqual(["exemplo/tecnico-em-outro"]);
+      expect(plano.semMudanca).toBe(2);
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
+  );
+
   it.effect.each([
     [
       "com falhas de coleta",

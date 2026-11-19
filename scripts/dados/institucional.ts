@@ -271,6 +271,15 @@ export function textoRegistro(registro: unknown): string {
   return `${JSON.stringify(limparUrlsAssinadas(semVazios(registro)), null, 2)}\n`;
 }
 
+/** Os problemas que o registro de curso teria ao ser relido do arquivo (vazio se nenhum). */
+export function problemasCursoGravado(curso: CursoLocal): string[] {
+  const resultado = decodificar.curso(JSON.parse(textoRegistro(curso)));
+  if (Result.isSuccess(resultado)) return [];
+  return problemas(resultado.failure.issue).map(
+    (problema) => `${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`,
+  );
+}
+
 export function gravarRegistro(relativo: string, registro: unknown, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): void {
   const destino = NodePath.join(raiz, relativo);
   NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });

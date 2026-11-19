@@ -11,7 +11,7 @@ const SITUACOES_MATRIZES = [
   "Múltiplas — CH divergentes",
   "Sem matriz ativa",
 ] as const;
-export type SituacaoMatrizes = (typeof SITUACOES_MATRIZES)[number];
+type SituacaoMatrizes = (typeof SITUACOES_MATRIZES)[number];
 
 export const CRITERIO_COLETA =
   "Ativa=Sim; CH do cabeçalho da matriz, consolidada somente se todas as ativas concordam; " +
@@ -19,26 +19,42 @@ export const CRITERIO_COLETA =
 
 const SEM_MATRIZ_ATIVA = "Nenhuma matriz marcada Ativa=Sim.";
 
+/** Matriz marcada `Ativa = Não`: só a linha da aba do curso, sem a página da matriz. */
+const esquemaMatrizInativa = Schema.Struct({
+  id: Schema.Int,
+  ativa: Schema.Literal(false),
+  descricao: Schema.String,
+});
+
+/** Matriz marcada `Ativa = Sim`, com o que a página dela mostra. */
+const esquemaMatrizAtiva = Schema.Struct({
+  id: Schema.Int,
+  ativa: Schema.Literal(true),
+  descricao: Schema.String,
+  url: Schema.String.check(Schema.isPattern(/^https:\/\/suap\.ifpr\.edu\.br\//, { message: "deve ser URL do SUAP" })),
+  carga_horaria_h: Schema.Finite.check(Schema.isGreaterThan(0)),
+  campos: Schema.Record(Schema.String, Schema.String),
+});
+type MatrizAtiva = typeof esquemaMatrizAtiva.Type;
+
 /**
  * Matriz curricular como aparece no SUAP. Usa a mesma forma do relatório de coleta, que
- * `aplicar_matrizes_suap.ts` lê, por isso os nomes seguem o JSON. Só as matrizes ativas
- * trazem `url`, `carga_horaria_h` e `campos`.
+ * `aplicar_matrizes_suap.ts` lê, por isso os nomes seguem o JSON. Só as ativas trazem `url`,
+ * `carga_horaria_h` e `campos`, e sempre os três.
  */
-export const esquemaMatrizSuap = Schema.Struct({
-  id: Schema.Int,
-  ativa: Schema.Boolean,
-  descricao: Schema.String,
-  url: Schema.optionalKey(Schema.String),
-  carga_horaria_h: Schema.optionalKey(Schema.Number),
-  campos: Schema.optionalKey(Schema.Record(Schema.String, Schema.String)),
-});
+const esquemaMatrizSuap = Schema.Union([esquemaMatrizAtiva, esquemaMatrizInativa]);
 export type MatrizSuap = typeof esquemaMatrizSuap.Type;
+
+const ehMatrizAtiva = (matriz: MatrizSuap): matriz is MatrizAtiva => matriz.ativa;
+
+/** Data e hora com segundos e fuso, como a coleta grava (`agoraEmSaoPaulo`): `2026-11-19T10:00:00-03:00`. */
+const DATA_HORA_COM_FUSO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/;
 
 /** Versão do formato do relatório; a aplicação recusa outra. */
 export const ESQUEMA_RELATORIO_MATRIZES = "matrizes-suap/1";
 
 /** Identidade do curso no relatório, conferida contra o registro antes de gravar. */
-export const esquemaIdentidadeCursoSuap = Schema.Struct({
+const esquemaIdentidadeCursoSuap = Schema.Struct({
   /** Chave canônica `campus_id/curso_slug`. */
   curso_id: Schema.String,
   suap_id: Schema.Int,
@@ -46,7 +62,7 @@ export const esquemaIdentidadeCursoSuap = Schema.Struct({
 });
 
 /** Curso a coletar: a identidade e o que a coleta confere na página do SUAP (nome do campus). */
-export const esquemaCursoParaColeta = Schema.Struct({
+const esquemaCursoParaColeta = Schema.Struct({
   ...esquemaIdentidadeCursoSuap.fields,
   nome: Schema.String,
   campus: Schema.String,
@@ -55,7 +71,7 @@ export const esquemaCursoParaColeta = Schema.Struct({
 export type CursoParaColeta = typeof esquemaCursoParaColeta.Type;
 
 /** Um curso do relatório: a identidade e as matrizes como o SUAP as mostrou, sem derivação. */
-export const esquemaCursoColetado = Schema.Struct({
+const esquemaCursoColetado = Schema.Struct({
   ...esquemaIdentidadeCursoSuap.fields,
   matrizes: Schema.Array(esquemaMatrizSuap),
 });
@@ -64,7 +80,9 @@ export type CursoColetado = typeof esquemaCursoColetado.Type;
 /** Relatório de coleta das matrizes (`matrizes-suap/1`), o contrato com a coleta de fora. */
 export const esquemaRelatorioMatrizes = Schema.Struct({
   esquema: Schema.Literal(ESQUEMA_RELATORIO_MATRIZES),
-  coletado_em: Schema.String,
+  coletado_em: Schema.String.check(
+    Schema.isPattern(DATA_HORA_COM_FUSO, { message: "deve ser data e hora com fuso, como 2026-11-19T10:00:00-03:00" }),
+  ),
   /** Cursos que falharam na coleta; a aplicação recusa relatório com algum. */
   erros: Schema.Array(Schema.Struct({ ...esquemaIdentidadeCursoSuap.fields, erro: Schema.String })),
   cursos: Schema.Array(esquemaCursoColetado),
@@ -72,14 +90,14 @@ export const esquemaRelatorioMatrizes = Schema.Struct({
 export type RelatorioMatrizes = typeof esquemaRelatorioMatrizes.Type;
 
 /** Derivação das matrizes ativas, calculada na aplicação e gravada no registro do curso. */
-export interface ConsolidacaoMatrizes {
+interface ConsolidacaoMatrizes {
   readonly situacao: SituacaoMatrizes;
   /** Só existe quando todas as matrizes ativas têm a mesma carga horária. */
   readonly carga_horaria_comum_h: number | null;
 }
 
 export function consolidarMatrizes(matrizes: ReadonlyArray<MatrizSuap>): ConsolidacaoMatrizes {
-  const ativas = matrizes.filter((matriz) => matriz.ativa);
+  const ativas = matrizes.filter(ehMatrizAtiva);
   const cargas = new Set(ativas.map((matriz) => matriz.carga_horaria_h));
   const situacao: SituacaoMatrizes = !ativas.length
     ? "Sem matriz ativa"
@@ -109,20 +127,18 @@ function formatarHoras(valor: number): string {
 }
 
 export function resumoMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string {
-  const linhas = matrizes
-    .filter((matriz) => matriz.ativa)
-    .map((matriz) => {
-      const campos = matriz.campos ?? {};
-      const estagio = campos["Exige estágio e afins"] ?? "não informado";
-      const cargaEstagio = campos["Carga horária mínima"] ?? "não informada";
-      return (
-        `${matriz.id} — ${matriz.descricao} — CH exibida: ${formatarHoras(matriz.carga_horaria_h ?? 0)} h; ` +
-        `estágio exigido: ${estagio}; CH mínima de estágio (separada): ${cargaEstagio}`
-      );
-    });
+  const linhas = matrizes.filter(ehMatrizAtiva).map((matriz) => {
+    const campos = matriz.campos;
+    const estagio = campos["Exige estágio e afins"] ?? "não informado";
+    const cargaEstagio = campos["Carga horária mínima"] ?? "não informada";
+    return (
+      `${matriz.id} — ${matriz.descricao} — CH exibida: ${formatarHoras(matriz.carga_horaria_h)} h; ` +
+      `estágio exigido: ${estagio}; CH mínima de estágio (separada): ${cargaEstagio}`
+    );
+  });
   return linhas.join("\n") || SEM_MATRIZ_ATIVA;
 }
 
 export function urlsMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string[] {
-  return matrizes.filter((matriz) => matriz.ativa).map((matriz) => matriz.url ?? "");
+  return matrizes.filter(ehMatrizAtiva).map((matriz) => matriz.url);
 }

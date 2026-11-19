@@ -1,4 +1,5 @@
 /** Leitura dos cursos locais para a coleta de matrizes do SUAP e aplicação do relatório nos registros. */
+import * as Schema from "effect/Schema";
 import { chaveCurso } from "../dominio/curso.ts";
 import {
   consolidarMatrizes,
@@ -12,15 +13,16 @@ import {
   caminhosRegistro,
   carregarDadosInstitucionais,
   gravarRegistro,
+  problemasCursoGravado,
   RAIZ_DADOS_INSTITUCIONAIS,
   type CursoLocal,
 } from "./institucional.ts";
 
 /** O bloco `suap.matrizes` do registro do curso. */
-export type MatrizesRegistro = NonNullable<NonNullable<CursoLocal["suap"]>["matrizes"]>;
+type MatrizesRegistro = NonNullable<NonNullable<CursoLocal["suap"]>["matrizes"]>;
 
 /** Os campos de `suap.matrizes` que fazem uma mudança substantiva; `coletado_em` sozinho não faz. */
-export const CAMPOS_SUBSTANTIVOS = ["situacao", "carga_horaria_comum_h", "urls", "resumo"] as const;
+const CAMPOS_SUBSTANTIVOS = ["situacao", "carga_horaria_comum_h", "urls", "resumo"] as const;
 
 /** Um curso cujo registro muda com o relatório. */
 export interface MudancaMatrizes {
@@ -42,7 +44,7 @@ export interface PlanoMatrizes {
 }
 
 /** O bloco `suap.matrizes` gravado a partir das matrizes brutas: a consolidação é calculada aqui. */
-export function matrizesDoRegistro(matrizes: ReadonlyArray<MatrizSuap>, coletadoEm: string): MatrizesRegistro {
+function matrizesDoRegistro(matrizes: ReadonlyArray<MatrizSuap>, coletadoEm: string): MatrizesRegistro {
   const { situacao, carga_horaria_comum_h } = consolidarMatrizes(matrizes);
   return {
     resumo: resumoMatrizesAtivas(matrizes),
@@ -52,6 +54,28 @@ export function matrizesDoRegistro(matrizes: ReadonlyArray<MatrizSuap>, coletado
     coletado_em: coletadoEm,
   };
 }
+
+/** Registros de `institucional/ifpr/` que não passam no esquema; leva a lista de problemas. */
+class RegistrosInvalidos extends Schema.TaggedError<RegistrosInvalidos>()("RegistrosInvalidos", {
+  problemas: Schema.Array(Schema.String),
+}) {
+  override get message(): string {
+    return `institucional/ifpr/ inválido:\n- ${this.problemas.join("\n- ")}`;
+  }
+}
+
+export const ehRegistrosInvalidos = Schema.is(RegistrosInvalidos);
+
+/** O resultado da gravação das mudanças, conferido na releitura. */
+type ResultadoGravacao =
+  | { readonly _tag: "Gravada"; readonly naoConfirmados: ReadonlyArray<string> }
+  | {
+      readonly _tag: "Interrompida";
+      readonly gravados: ReadonlyArray<string>;
+      readonly falhou: string;
+      readonly cause: unknown;
+    }
+  | { readonly _tag: "ReleituraInvalida"; readonly problemas: ReadonlyArray<string> };
 
 /** O valor como o arquivo do registro o guarda (sem as chaves `undefined`). */
 const comoNoArquivo = (valor: unknown) => JSON.stringify(valor ?? null);
@@ -65,7 +89,7 @@ export class RepositorioCursosLocal {
 
   private carregar() {
     const { dados, erros } = carregarDadosInstitucionais(this.raiz);
-    if (erros.length) throw new Error(`institucional/ifpr/ inválido:\n- ${erros.join("\n- ")}`);
+    if (erros.length) throw new RegistrosInvalidos({ problemas: erros });
     return dados;
   }
 
@@ -133,21 +157,41 @@ export class RepositorioCursosLocal {
         continue;
       }
       const registro: CursoLocal = { ...curso, suap: { ...suap, matrizes: depois } };
+      const invalidos = problemasCursoGravado(registro);
+      if (invalidos.length) {
+        divergencias.push(`${chave}: o registro gravado seria inválido (${invalidos.join("; ")})`);
+        continue;
+      }
       mudancas.push({ curso_id: chave, suap_id: suapId, antes, depois, campos, registro });
     }
     return { mudancas, semMudanca, divergencias };
   }
 
   /**
-   * Grava os registros das mudanças e relê a base para confirmar. Devolve os cursos cuja releitura não
-   * confere com o que foi gravado.
+   * Grava os registros das mudanças, na ordem, e relê a base para confirmar. Uma falha de gravação para
+   * no curso em que aconteceu e diz quais já foram gravados.
    */
-  gravarMatrizes(mudancas: ReadonlyArray<MudancaMatrizes>): string[] {
-    for (const { registro } of mudancas) gravarRegistro(caminhosRegistro.curso(registro), registro, this.raiz);
-    if (!mudancas.length) return [];
-    const cursos = this.cursosPorChave();
-    return mudancas
+  gravarMatrizes(mudancas: ReadonlyArray<MudancaMatrizes>): ResultadoGravacao {
+    const gravados: string[] = [];
+    for (const { curso_id, registro } of mudancas) {
+      try {
+        gravarRegistro(caminhosRegistro.curso(registro), registro, this.raiz);
+      } catch (cause) {
+        return { _tag: "Interrompida", gravados, falhou: curso_id, cause };
+      }
+      gravados.push(curso_id);
+    }
+    if (!mudancas.length) return { _tag: "Gravada", naoConfirmados: [] };
+    let cursos: Map<string, CursoLocal>;
+    try {
+      cursos = this.cursosPorChave();
+    } catch (erro) {
+      if (ehRegistrosInvalidos(erro)) return { _tag: "ReleituraInvalida", problemas: erro.problemas };
+      throw erro;
+    }
+    const naoConfirmados = mudancas
       .filter(({ curso_id, depois }) => comoNoArquivo(cursos.get(curso_id)?.suap?.matrizes) !== comoNoArquivo(depois))
       .map(({ curso_id }) => curso_id);
+    return { _tag: "Gravada", naoConfirmados };
   }
 }

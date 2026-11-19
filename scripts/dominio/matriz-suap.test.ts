@@ -19,7 +19,14 @@ const lerRelatorio = (valor: unknown) => validarJson(esquemaRelatorioMatrizes, v
 const relatorioValido = (valor: unknown) => decodificarOuNada(esquemaRelatorioMatrizes, valor) !== undefined;
 
 describe("domínio das matrizes", () => {
-  const ativa = (id: number, carga: number) => ({ id, ativa: true, descricao: `M${id}`, carga_horaria_h: carga });
+  const ativa = (id: number, carga: number) => ({
+    id,
+    ativa: true as const,
+    descricao: `M${id}`,
+    url: `https://suap.ifpr.edu.br/edu/matriz/${id}/`,
+    carga_horaria_h: carga,
+    campos: {},
+  });
 
   it("classifica a situação das matrizes ativas", () => {
     expect(consolidarMatrizes([])).toEqual({ situacao: "Sem matriz ativa", carga_horaria_comum_h: null });
@@ -76,6 +83,51 @@ describe(`relatório de coleta (${ESQUEMA_RELATORIO_MATRIZES})`, () => {
     ["campo só do coletor", { segundos_suap: 1.5 }],
     ["SUAP ID como texto", { cursos: [{ ...fixture().cursos[0], suap_id: "7" }] }],
     ["ativa como texto", { cursos: [{ ...fixture().cursos[0], matrizes: [{ id: 1, ativa: "Sim", descricao: "" }] }] }],
+    [
+      "matriz ativa sem url nem carga",
+      { cursos: [{ ...fixture().cursos[0], matrizes: [{ id: 1, ativa: true, descricao: "" }] }] },
+    ],
+    [
+      "matriz ativa sem campos",
+      {
+        cursos: [
+          {
+            ...fixture().cursos[0],
+            matrizes: [
+              {
+                id: 1,
+                ativa: true,
+                descricao: "",
+                url: "https://suap.ifpr.edu.br/edu/matriz/1/",
+                carga_horaria_h: 800,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    [
+      "matriz inativa com carga",
+      {
+        cursos: [{ ...fixture().cursos[0], matrizes: [{ id: 1, ativa: false, descricao: "", carga_horaria_h: 800 }] }],
+      },
+    ],
+    [
+      "url de fora do SUAP",
+      {
+        cursos: [
+          {
+            ...fixture().cursos[0],
+            matrizes: [
+              { id: 1, ativa: true, descricao: "", url: "https://exemplo.com/1/", carga_horaria_h: 800, campos: {} },
+            ],
+          },
+        ],
+      },
+    ],
+    ["coletado_em vazio", { coletado_em: "" }],
+    ["coletado_em sem hora", { coletado_em: "2026-11-19" }],
+    ["coletado_em sem fuso", { coletado_em: "2026-11-19T10:00:00" }],
   ])("rejeita %s", (_, alteracao) => {
     expect(relatorioValido({ ...fixture(), ...alteracao })).toBe(false);
   });

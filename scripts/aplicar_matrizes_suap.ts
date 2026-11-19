@@ -15,7 +15,12 @@ import * as Schema from "effect/Schema";
 import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import { RepositorioCursosLocal, type MudancaMatrizes, type PlanoMatrizes } from "./dados/cursos.ts";
+import {
+  ehRegistrosInvalidos,
+  RepositorioCursosLocal,
+  type MudancaMatrizes,
+  type PlanoMatrizes,
+} from "./dados/cursos.ts";
 import { RAIZ_DADOS_INSTITUCIONAIS } from "./dados/institucional.ts";
 import { ESQUEMA_RELATORIO_MATRIZES, esquemaRelatorioMatrizes } from "./dominio/matriz-suap.ts";
 import { validarJson } from "./esquema.ts";
@@ -30,7 +35,7 @@ const PASSOS_SEGUINTES = [
   "sh testes-gabarito/kb.sh --comparar",
 ];
 
-export class RelatorioNaoLido extends Schema.TaggedError<RelatorioNaoLido>()("RelatorioNaoLido", {
+class RelatorioNaoLido extends Schema.TaggedError<RelatorioNaoLido>()("RelatorioNaoLido", {
   caminho: Schema.String,
   cause: Schema.Defect(),
 }) {
@@ -39,7 +44,7 @@ export class RelatorioNaoLido extends Schema.TaggedError<RelatorioNaoLido>()("Re
   }
 }
 
-export class EsquemaDesconhecido extends Schema.TaggedError<EsquemaDesconhecido>()("EsquemaDesconhecido", {
+class EsquemaDesconhecido extends Schema.TaggedError<EsquemaDesconhecido>()("EsquemaDesconhecido", {
   caminho: Schema.String,
   esquema: Schema.String,
 }) {
@@ -48,7 +53,7 @@ export class EsquemaDesconhecido extends Schema.TaggedError<EsquemaDesconhecido>
   }
 }
 
-export class RelatorioForaDoFormato extends Schema.TaggedError<RelatorioForaDoFormato>()("RelatorioForaDoFormato", {
+class RelatorioForaDoFormato extends Schema.TaggedError<RelatorioForaDoFormato>()("RelatorioForaDoFormato", {
   caminho: Schema.String,
   problemas: Schema.String,
 }) {
@@ -57,7 +62,7 @@ export class RelatorioForaDoFormato extends Schema.TaggedError<RelatorioForaDoFo
   }
 }
 
-export class RelatorioComFalhas extends Schema.TaggedError<RelatorioComFalhas>()("RelatorioComFalhas", {
+class RelatorioComFalhas extends Schema.TaggedError<RelatorioComFalhas>()("RelatorioComFalhas", {
   caminho: Schema.String,
   falhas: Schema.Int,
 }) {
@@ -69,7 +74,7 @@ export class RelatorioComFalhas extends Schema.TaggedError<RelatorioComFalhas>()
   }
 }
 
-export class CursosNaoConferem extends Schema.TaggedError<CursosNaoConferem>()("CursosNaoConferem", {
+class CursosNaoConferem extends Schema.TaggedError<CursosNaoConferem>()("CursosNaoConferem", {
   divergencias: Schema.Array(Schema.String),
 }) {
   override get message(): string {
@@ -77,21 +82,44 @@ export class CursosNaoConferem extends Schema.TaggedError<CursosNaoConferem>()("
   }
 }
 
-export class BaseInstitucionalInvalida extends Schema.TaggedError<BaseInstitucionalInvalida>()(
-  "BaseInstitucionalInvalida",
-  { cause: Schema.Defect() },
-) {
+class BaseInstitucionalInvalida extends Schema.TaggedError<BaseInstitucionalInvalida>()("BaseInstitucionalInvalida", {
+  problemas: Schema.Array(Schema.String),
+  depoisDeGravar: Schema.Boolean,
+}) {
   override get message(): string {
-    return "Os registros de institucional/ifpr/ não carregam; rode node scripts/validar_base.ts.";
+    const quando = this.depoisDeGravar ? "Depois da gravação, os registros" : "Os registros";
+    return `${quando} de institucional/ifpr/ não passam no esquema:\n- ${this.problemas.join("\n- ")}`;
   }
 }
 
-export class GravacaoNaoConfirmada extends Schema.TaggedError<GravacaoNaoConfirmada>()("GravacaoNaoConfirmada", {
+class GravacaoInterrompida extends Schema.TaggedError<GravacaoInterrompida>()("GravacaoInterrompida", {
+  gravados: Schema.Array(Schema.String),
+  falhou: Schema.String,
+  /** O código do sistema (`EACCES`, `ENOSPC`), sem a mensagem crua com o caminho. */
+  detalhe: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    const gravados = this.gravados.length ? this.gravados.join(", ") : "nenhum";
+    return (
+      `A gravação parou em ${this.falhou} (${this.detalhe}). Já gravados: ${gravados}. Corrija e rode de novo: ` +
+      "o que já foi gravado conta como sem mudança."
+    );
+  }
+}
+
+class GravacaoNaoConfirmada extends Schema.TaggedError<GravacaoNaoConfirmada>()("GravacaoNaoConfirmada", {
   cursos: Schema.Array(Schema.String),
 }) {
   override get message(): string {
     return `A releitura não confirma a gravação de: ${this.cursos.join(", ")}`;
   }
+}
+
+/** O código de erro do sistema (`EACCES`), ou uma categoria quando a falha não tem um. */
+function codigoDoSistema(erro: unknown): string {
+  const codigo = typeof erro === "object" && erro !== null && "code" in erro ? erro.code : undefined;
+  return typeof codigo === "string" ? codigo : "falha sem código do sistema";
 }
 
 const decodificarJson = Schema.decodeUnknownEffect(Schema.fromJsonString(Schema.Unknown));
@@ -103,7 +131,7 @@ function esquemaDeclarado(valor: unknown): string {
 }
 
 /** Lê e valida o relatório: JSON, `esquema` conhecido, formato e nenhuma falha de coleta. */
-export const lerRelatorio = Effect.fn("aplicar_matrizes_suap.lerRelatorio")(function* (caminho: string) {
+const lerRelatorio = Effect.fn("aplicar_matrizes_suap.lerRelatorio")(function* (caminho: string) {
   const fs = yield* FileSystem.FileSystem;
   const texto = yield* fs.readFileString(caminho);
   const valor = yield* decodificarJson(texto).pipe(
@@ -137,7 +165,7 @@ function linhasMudanca({ curso_id, suap_id, antes, depois, campos }: MudancaMatr
 }
 
 /** O resultado da aplicação: o plano e se ele foi gravado. */
-export interface ResultadoAplicacao {
+interface ResultadoAplicacao {
   readonly plano: PlanoMatrizes;
   readonly gravado: boolean;
 }
@@ -152,9 +180,13 @@ export const aplicarRelatorio = Effect.fn("aplicar_matrizes_suap.aplicar")(funct
 ) {
   const relatorio = yield* lerRelatorio(caminho);
   const repositorio = new RepositorioCursosLocal(opcoes.raiz ?? RAIZ_DADOS_INSTITUCIONAIS);
-  const plano = yield* Effect.try({
-    try: () => repositorio.planejarMatrizes(relatorio),
-    catch: (cause) => new BaseInstitucionalInvalida({ cause }),
+  const plano = yield* Effect.suspend(() => {
+    try {
+      return Effect.succeed(repositorio.planejarMatrizes(relatorio));
+    } catch (erro) {
+      if (!ehRegistrosInvalidos(erro)) return Effect.die(erro);
+      return Effect.fail(new BaseInstitucionalInvalida({ problemas: erro.problemas, depoisDeGravar: false }));
+    }
   });
   if (plano.divergencias.length) return yield* new CursosNaoConferem({ divergencias: plano.divergencias });
 
@@ -173,11 +205,15 @@ export const aplicarRelatorio = Effect.fn("aplicar_matrizes_suap.aplicar")(funct
     yield* Console.log("Nenhum registro mudou; nada foi gravado.");
     return { plano, gravado: false } satisfies ResultadoAplicacao;
   }
-  const naoConfirmados = yield* Effect.try({
-    try: () => repositorio.gravarMatrizes(plano.mudancas),
-    catch: (cause) => new BaseInstitucionalInvalida({ cause }),
-  });
-  if (naoConfirmados.length) return yield* new GravacaoNaoConfirmada({ cursos: naoConfirmados });
+  const gravacao = repositorio.gravarMatrizes(plano.mudancas);
+  if (gravacao._tag === "Interrompida") {
+    const { gravados, falhou, cause } = gravacao;
+    return yield* new GravacaoInterrompida({ gravados, falhou, detalhe: codigoDoSistema(cause), cause });
+  }
+  if (gravacao._tag === "ReleituraInvalida") {
+    return yield* new BaseInstitucionalInvalida({ problemas: gravacao.problemas, depoisDeGravar: true });
+  }
+  if (gravacao.naoConfirmados.length) return yield* new GravacaoNaoConfirmada({ cursos: gravacao.naoConfirmados });
   yield* Console.log(`Gravados ${plano.mudancas.length} registros em institucional/ifpr/cursos/. Depois, rode:`);
   for (const passo of PASSOS_SEGUINTES) yield* Console.log(`  ${passo}`);
   return { plano, gravado: true } satisfies ResultadoAplicacao;
