@@ -1,6 +1,6 @@
 # Anexos em texto para a IA: proposta
 
-Proposta de desenho, 19/11/2026. v1 (`.docx`) em implementação.
+Proposta de desenho, 19/11/2026. v1 (`.docx`) em `main`; v2 (PDF, `.odt` e a conversão no começo do turno) pronta, sem commit.
 
 > **Decisões (19/11/2026).** O texto vai para a pasta oculta `.simplifica/textos/` (3.1). O PDF entra na v2, com `pdfjs-dist` (3.3). O `.odt` só entra se não exigir dependência nova; o ZIP e o XML que o `@simplifica-if/docx` já usa bastam, então ele fica na v2 (3.3). Na v2, a IA é avisada do que a pessoa mexeu na pasta desde o último turno (3.2).
 
@@ -55,7 +55,7 @@ Por isso a skill `verificar-fundamentacao-normativa` aceita só `.md`, `.txt` e 
 - **removidos:** só o nome, para a IA não citar o que saiu;
 - **muitos de uma vez:** até 10 nomes e "e mais N".
 
-Fica de fora o que a IA mesma escreveu (ela sabe) e o que não mudou (seria ruído a cada turno). O servidor acrescenta o aviso ao pedido que vai para a IA, e a conversa o mostra numa linha discreta na mensagem da pessoa ("📎 1 documento mudou na pasta: Minuta.docx"), como a nota dos anexos já aparece hoje: nada vai para a IA sem a pessoa ver.
+Fica de fora o que a IA mesma escreveu (ela sabe) e o que não mudou (seria ruído a cada turno). **Na implementação:** o aviso é o evento `MudancasPasta` do turno (no contrato, `EventoConversa` = os eventos do motor mais este), gravado logo depois da mensagem; só compara com o turno imediatamente anterior, e só quando ele fechou (se o app caiu no meio, o que a IA fez pareceria da pessoa); converte até 10 documentos por turno (e por até 60 s; o resto sai no turno seguinte). A decisão de converter não vem da janela entre os turnos, mas de um índice em `.simplifica/textos/indice.json` com a impressão do conteúdo de onde cada texto saiu: assim o texto se põe em dia também quando a pessoa muda um arquivo durante o turno, antes do primeiro ou quando um Desfazer volta o conteúdo, e um documento que deixa de converter perde o texto velho (revisão de 19/11/2026). Durante as conversões do começo do turno, o "Parar" ainda não age: o turno só abre depois delas. O servidor acrescenta o aviso ao pedido que vai para a IA, e a conversa o mostra numa linha discreta na mensagem da pessoa ("📎 1 documento mudou na pasta: Minuta.docx"), como a nota dos anexos já aparece hoje: nada vai para a IA sem a pessoa ver.
 
 ### 3.3 Formatos, em ordem
 

@@ -10,7 +10,8 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 - `packages/kb`: núcleo da base (resolvedor de citações, vigência, banco `kb.sqlite`, CLI `kb`).
 - `packages/mcp`: o `simplifica-mcp`, 16 ferramentas: 15 de consulta só de leitura ao `kb.sqlite` e a `etapa`, que informa ao app o andamento da tarefa; roda dentro do app e como executável à parte.
 - `packages/motor`: motor de conversa com um driver por IA (Agent SDK do Claude, `codex app-server`, `agy acp`).
-- `packages/ppc` e `packages/docx`: conversão de PPC em `.docx`, pré-conferência, revisão com IA e comentários no Word.
+- `packages/ppc` e `packages/docx`: conversão de PPC em `.docx`, pré-conferência, revisão com IA e comentários no Word; o `docx` também converte `.docx` e `.odt` quaisquer em Markdown, para a IA ler os anexos.
+- `packages/pdf`: o texto de um PDF em Markdown (`pdfjs-dist`), para a IA ler os anexos.
 - `packages/contratos-app`: contratos RPC entre a interface e o servidor.
 - `packages/atualizacao`: manifesto do canal, assinatura minisign e pacotes da base e das skills.
 - `packages/effect-acp` e `packages/effect-codex-app-server`: copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)).
