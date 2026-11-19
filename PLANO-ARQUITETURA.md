@@ -433,7 +433,7 @@ Item de roadmap (17/11/2026). Estas ferramentas são usadas por agentes e por qu
 | `packages/sei-cli` | SEI | extração e leitura de processos (`pnpm sei`) | não |
 | skill `revisar-processo-ppc` | SEI, pelo `sei-cli` | revisão do fluxo de processos SEI de PPC | não |
 | skill `suap-ifpr` e `scripts/suap_*.ts` | SUAP | consulta, tutoriais e coleta de matrizes para a curadoria | não; o app mostra os dados do SUAP já publicados na base |
-| sincronização SEI → Notion (`pnpm sei:sync`, `agendar_sincronizacao_sei.ts`) e scripts do Notion | SEI e Notion | `Movimentações de Cursos` e `processos-sei/index.json` | não |
+| sincronização SEI → Notion (`pnpm sei:sync`) e scripts do Notion | SEI e Notion | `Movimentações de Cursos` e `processos-sei/index.json` | não |
 | skill `revisar-ppc` (sub-agentes, relatório HTML) | — | revisão de PPC por agente no repositório | em parte: o app tem a tarefa nativa "Revisar um PPC", que reaproveita as fichas e `packages/ppc` |
 
 A integração das ferramentas de SEI e SUAP depende de o app voltar a acessar sistemas com login, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso. A sincronização SEI → Notion segue a mesma condição e a direção de tirar `Movimentações de Cursos` do Notion ([Fora do escopo](#fora-do-escopo)). Até lá, essas ferramentas ficam no repositório, e o `AGENTS.md` as lista.
@@ -494,7 +494,7 @@ Por isso, só fazer com casos negativos e com diff dos schemas publicados.
 
 **Movimentações de Cursos fora do Notion.** Decisão de 13/11/2026: fica registrada só como direção futura. Quando voltar à pauta:
 
-- separar o registro da movimentação (editado por pessoas, raro) do estado SEI (derivado pela sincronização, de hora em hora);
+- separar o registro da movimentação (editado por pessoas, raro) do estado SEI (derivado pela sincronização);
 - levar o registro para `base-conhecimento/institucional/ifpr/movimentacoes/`;
 - tratar o estado SEI como cache reconstruível.
 
@@ -870,7 +870,7 @@ Em aberto:
 
 - `node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]`, com a lógica em `scripts/base/importar-ppc.ts` e 16 testes sobre os DOCX sintéticos de `packages/ppc` numa base temporária;
 - `fonte_url` e `ppc.url` recebem o mesmo `--fonte-url`, e o `validar_base.ts` passa sem exceção nova. O `fonte_sha256` continua sendo o hash dos bytes de `fonte_url` e fica `desconhecido` (o script não baixa a URL); o hash do DOCX vai no campo novo `arquivo_convertido_sha256`, com `arquivo_convertido: docx`, que o índice publica como `arquivo_convertido: { tipo, sha256 }`. O `conversor` é `simplifica-if/packages/ppc@<commit>`, com `-modificado` se o checkout tem alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `site/`, `tmp/` e `outputs/` (a saída depende também de `packages/kb`, `scripts/base/importar-ppc.ts`, `scripts/dados/urls.ts` e do próprio script);
-- o Markdown e o registro são calculados antes de qualquer escrita e gravados por temporário + `renameSync`; se o segundo falha, o primeiro volta ao anterior. `ppc` entra antes de `notion_page_id` e `markdown_path` logo depois de `url`, sem mexer na ordem dos registros já completos; `ppc.observacoes` fica e a saída a aponta como "a reconferir";
+- o Markdown e o registro são calculados antes de qualquer escrita e gravados por temporário + `renameSync`; se o segundo falha, o primeiro volta ao anterior. `ppc` entra na posição do schema e `markdown_path` logo depois de `url`, sem mexer na ordem dos registros já completos; `ppc.observacoes` fica e a saída a aponta como "a reconferir";
 - `limparUrlsInternas` (`scripts/dados/urls.ts`) é a limpeza de URLs internas do importador e da exportação dos processos SEI; um link Markdown para planilha vira `texto (planilha interna, link omitido)`;
 - a figura da representação gráfica vira aviso, porque a base não publica `imagens/`; ano e vagas já registrados voltam a "Precisa de revisão";
 - o script não regenera índices nem o site: imprime os quatro comandos do pipeline, que vêm depois da leitura do Markdown (e-mail particular sai à mão);

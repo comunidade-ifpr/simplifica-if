@@ -14,7 +14,7 @@ Campi, cursos (com metadados de PPC e SUAP e horários dos campi), processos sel
 | Edital | `editais/<edital_id>.json` | `edital_id` |
 | Oferta | `ofertas/<processo_seletivo_id>/<oferta_id>.json` | `processo_seletivo_id/oferta_id` |
 
-Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. O campo `notion_page_id` é só referência histórica da migração. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema, estrito: campo a mais é erro).
+Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema, estrito: campo a mais é erro).
 
 O que continua gerado, e por quê:
 
@@ -36,7 +36,7 @@ node scripts/validar_base.ts
 
 `validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), e o índice dos campi.
 
-Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no campus, e não preencha `notion_page_id`.
+Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no campus.
 
 ## Organização da base
 
@@ -145,7 +145,7 @@ node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --font
    - o Markdown em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md`, com o front matter de proveniência `registrada` (abaixo): o hash do DOCX vai em `arquivo_convertido_sha256`, e o `fonte_sha256` fica `desconhecido`, porque ele é o hash dos bytes de `fonte_url` (em geral o PDF), que o script não baixa;
    - sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita no AGENTS.md, que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google (um link Markdown `[texto](planilha)` vira `texto (planilha interna, link omitido)`), sem parâmetros de sessão do SEI e sem query de URL pré-assinada. A saída informa só as contagens do que omitiu;
    - no lugar da representação gráfica, um aviso: a figura não é publicada na base;
-   - no registro do curso, `ppc.url` e `ppc.markdown_path`, nas posições dos outros registros (`ppc` antes de `notion_page_id`, `markdown_path` logo depois de `url`). Se o registro já tem `ano_documento` ou vagas, o status de curadoria do campo volta a `Precisa de revisão`, com a data do dia, porque o valor veio do texto anterior. `ppc.observacoes` fica como está, e a saída a aponta como "a reconferir".
+   - no registro do curso, `ppc.url` e `ppc.markdown_path`, nas posições dos outros registros (`ppc` na posição do schema, `markdown_path` logo depois de `url`). Se o registro já tem `ano_documento` ou vagas, o status de curadoria do campo volta a `Precisa de revisão`, com a data do dia, porque o valor veio do texto anterior. `ppc.observacoes` fica como está, e a saída a aponta como "a reconferir".
 
    O Markdown e o registro são gravados juntos: se a gravação do segundo falha, o primeiro volta ao que era.
 5. Leia o Markdown gerado. E-mail particular não tem regra automática: tire à mão. Confira ano e vagas contra o texto novo e atualize a curadoria (acima). Se a saída apontou `ppc.observacoes`, releia a observação contra o texto novo: corrija, ou apague se ela não vale mais.

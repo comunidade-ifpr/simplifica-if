@@ -92,7 +92,7 @@ scripts/base/validacao/privacidade.test.ts	2	0
 scripts/config.test.ts	4	0
 scripts/configuracao.test.ts	2	0
 scripts/dados/conselhos.test.ts	2	0
-scripts/dados/institucional.test.ts	9	0
+scripts/dados/institucional.test.ts	8	0
 scripts/dados/urls.test.ts	8	0
 scripts/dominio/auditoria.test.ts	7	0
 scripts/dominio/aviso-dentec.test.ts	8	0
@@ -103,7 +103,7 @@ scripts/gerar_tipos_schemas.test.ts	1	0
 scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
 scripts/lock.test.ts	9	0
-scripts/notificacao/notificacao.test.ts	16	0
+scripts/notificacao/notificacao.test.ts	10	0
 scripts/notion/cliente.test.ts	8	0
 scripts/notion/cursos-movimentacoes.test.ts	3	0
 scripts/notion/movimentacoes.test.ts	11	0
@@ -115,4 +115,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1563	35
+TOTAL	1556	35

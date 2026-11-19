@@ -47,8 +47,6 @@ export interface PpcCurso {
 export interface Curso {
   /** Chave canônica do curso na base local: `campus_id/curso_slug`. */
   id: string;
-  /** Página do curso no Notion antigo; publicada como `notion_page_id` enquanto o schema público a exigir. */
-  notionPageId: string;
   titulo: string;
   slug: string;
   nome: string;

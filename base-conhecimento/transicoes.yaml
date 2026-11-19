@@ -1,8 +1,8 @@
 # Regras de transição como dado (fase 5 do plano de arquitetura): "revogada" não é "inaplicável".
 #
 # Contrato: esquemaTransicao em packages/kb/src/normas/vigencia.ts (zod), conferido por
-# bun run scripts/validar_base.ts (dispositivo existente e evidência literal no texto).
-# A situação de cada regra numa data sai de `bun run kb vigencia <id> --em <data>`.
+# node scripts/validar_base.ts (dispositivo existente e evidência literal no texto).
+# A situação de cada regra numa data sai de `pnpm kb vigencia <id> --em <data>`.
 #
 # Campos:
 #   id: identificador estável da regra

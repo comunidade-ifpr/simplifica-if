@@ -3,9 +3,8 @@
  * Fonte de verdade dos dados institucionais: campi, cursos, processos seletivos, editais e ofertas
  * de ingresso. Cada registro é um arquivo JSON em `base-conhecimento/institucional/ifpr/<coleção>/`,
  * versionado no git e publicado como está. As relações usam chaves canônicas (`campus_id`,
- * `campus_id/curso_slug`, `processo_seletivo_id`, `edital_id`), nunca IDs de página do Notion;
- * `notion_page_id` fica só como referência histórica. O `index.json` de cada coleção é gerado
- * (`indices.ts`) e não é registro.
+ * `campus_id/curso_slug`, `processo_seletivo_id`, `edital_id`). O `index.json` de cada coleção é
+ * gerado (`indices.ts`) e não é registro.
  *
  * Este módulo lê, valida e grava esses arquivos e os converte nas entidades do domínio que a
  * auditoria usa.
@@ -21,13 +20,7 @@ import { limparUrlsAssinadas } from "./urls.ts";
 import { compararTexto } from "../dominio/comum.ts";
 import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { chaveCurso, type Campus, type Curso } from "../dominio/curso.ts";
-import {
-  ehTurno,
-  TURNOS,
-  type EditalIngresso,
-  type OfertaIngresso,
-  type ProcessoSeletivo,
-} from "../dominio/ingresso.ts";
+import { TURNOS, type EditalIngresso, type OfertaIngresso, type ProcessoSeletivo } from "../dominio/ingresso.ts";
 
 export const RAIZ_DADOS_INSTITUCIONAIS = NodePath.join(RAIZ_PROJETO, "base-conhecimento", "institucional", "ifpr");
 /** Prefixo dos caminhos nas mensagens: relativo a `base-conhecimento/`, como os `path` dos manifestos. */
@@ -47,7 +40,6 @@ export const esquemaCampusLocal = Schema.Struct({
   calendario_academico: texto,
   horarios_url: texto,
   horarios_coletado_em: texto,
-  notion_page_id: texto,
 });
 export type CampusLocal = typeof esquemaCampusLocal.Type;
 
@@ -110,7 +102,6 @@ export const esquemaCursoLocal = Schema.Struct({
     }),
   ),
   ppc: Schema.optional(esquemaPpcCurso),
-  notion_page_id: texto,
 });
 export type CursoLocal = typeof esquemaCursoLocal.Type;
 
@@ -123,7 +114,6 @@ export const esquemaProcessoLocal = Schema.Struct({
   status_curadoria: texto,
   verificado_em: texto,
   observacoes: texto,
-  notion_page_id: texto,
 });
 export type ProcessoLocal = typeof esquemaProcessoLocal.Type;
 
@@ -135,7 +125,6 @@ export const esquemaEditalLocal = Schema.Struct({
   ano: inteiro,
   tipo: texto,
   processos: Schema.Array(Schema.String),
-  notion_page_id: texto,
 });
 export type EditalLocal = typeof esquemaEditalLocal.Type;
 
@@ -163,7 +152,6 @@ export const esquemaOfertaLocal = Schema.Struct({
   editais: listaTexto,
   campus_id_original: texto,
   curso_slug_original: texto,
-  notion_page_id: texto,
 });
 export type OfertaLocal = typeof esquemaOfertaLocal.Type;
 
@@ -327,7 +315,6 @@ export function paraDominio(dados: DadosInstitucionais): {
     })),
     cursos: dados.cursos.map((c): Curso => ({
       id: chaveCurso(c.campus_id, c.curso_slug),
-      notionPageId: c.notion_page_id ?? "",
       titulo: c.nome,
       slug: c.curso_slug,
       nome: c.nome,
@@ -413,132 +400,4 @@ export function paraDominio(dados: DadosInstitucionais): {
       editalIds: [...(o.editais ?? [])],
     })),
   };
-}
-
-/**
- * Converte entidades do domínio com relações por ID de página do Notion em registros locais, trocando
- * os IDs por chaves canônicas. Foi o núcleo da migração de 13/11/2026 e hoje serve aos testes; falha se
- * alguma relação não puder ser resolvida.
- */
-export function deDominio(base: {
-  campi: Campus[];
-  cursos: Curso[];
-  processos: ProcessoSeletivo[];
-  editais: EditalIngresso[];
-  ofertas: OfertaIngresso[];
-}): DadosInstitucionais {
-  const erros: string[] = [];
-  const campusPorPagina = new Map(base.campi.map((c) => [c.id, c.campusId]));
-  const processoPorPagina = new Map(base.processos.map((p) => [p.id, p.processoSeletivoId]));
-  const editalPorPagina = new Map(base.editais.map((e) => [e.id, e.editalId]));
-  const cursoPorPagina = new Map<string, string>();
-  const resolver = (mapa: Map<string, string>, ids: string[], contexto: string) =>
-    ids.map((id) => {
-      const chave = mapa.get(id);
-      if (!chave) erros.push(`${contexto}: relação para página desconhecida ${id}`);
-      return chave ?? "";
-    });
-
-  const cursos = base.cursos.map((c): CursoLocal => {
-    const [campusId = ""] = resolver(campusPorPagina, c.campusIds, `Curso ${c.nome} (${c.id})`);
-    cursoPorPagina.set(c.id, chaveCurso(campusId, c.slug));
-    return {
-      campus_id: campusId,
-      curso_slug: c.slug,
-      nome: c.nome,
-      nivel: c.nivel,
-      forma_oferta: c.tipoOferta,
-      modalidade: c.modalidade,
-      situacao: c.situacao,
-      pagina_oficial: c.paginaOficial,
-      cnct_id: c.cnctId,
-      cnct_ausencia: c.cnctAusencia,
-      suap: {
-        id: c.suap.id,
-        codigo: c.suap.codigo,
-        vagas: c.suap.vagas,
-        coletado_em: c.suap.coletadoEm,
-        atualizado_em: c.suap.atualizadoEm,
-        matrizes: {
-          resumo: c.suap.matrizes.resumo,
-          urls: c.suap.matrizes.urls.split("\n").filter((linha) => linha.trim()),
-          carga_horaria_comum_h: c.suap.matrizes.cargaHorariaComumH,
-          situacao: c.suap.matrizes.situacao,
-          coletado_em: c.suap.matrizes.coletadoEm,
-        },
-      },
-      ppc: {
-        url: c.ppc.url,
-        markdown_path: c.ppc.markdownPath,
-        ano_documento: c.ppc.anoDocumento,
-        vagas: c.ppc.vagas,
-        trecho_vagas: c.ppc.trechoVagas,
-        periodicidade_vagas: c.ppc.periodicidadeVagas,
-        curadoria_ano: c.ppc.curadoriaAno,
-        data_curadoria_ano: c.ppc.dataCuradoriaAno,
-        curadoria_vagas: c.ppc.curadoriaVagas,
-        data_curadoria_vagas: c.ppc.dataCuradoriaVagas,
-      },
-      notion_page_id: c.notionPageId,
-    };
-  });
-
-  const dados: DadosInstitucionais = {
-    campi: base.campi.map((c): CampusLocal => ({
-      campus_id: c.campusId,
-      nome: c.nome,
-      site: c.site,
-      calendario_academico: c.calendarioAcademico,
-      horarios_url: c.horariosUrl,
-      horarios_coletado_em: c.horariosColetadoEm,
-      notion_page_id: c.id,
-    })),
-    cursos,
-    processos: base.processos.map((p): ProcessoLocal => ({
-      processo_seletivo_id: p.processoSeletivoId,
-      nome: p.nome,
-      ano_ingresso: p.anoIngresso,
-      instituicao: p.instituicao,
-      fontes: [...p.fontes],
-      status_curadoria: p.statusCuradoria,
-      verificado_em: p.verificadoEm,
-      observacoes: p.observacoes,
-      notion_page_id: p.id,
-    })),
-    editais: base.editais.map((e): EditalLocal => ({
-      edital_id: e.editalId,
-      titulo: e.titulo,
-      url: e.url,
-      numero: e.numero,
-      ano: e.ano,
-      tipo: e.tipo,
-      processos: resolver(processoPorPagina, e.processoIds, `Edital ${e.editalId}`),
-      notion_page_id: e.id,
-    })),
-    ofertas: base.ofertas.map((o): OfertaLocal => ({
-      oferta_id: o.ofertaId,
-      processos: resolver(processoPorPagina, o.processoIds, `Oferta ${o.ofertaId}`),
-      curso_nome: o.cursoNome,
-      tipo_oferta: o.tipoOferta,
-      vagas: o.vagas,
-      url_fonte: o.urlFonte,
-      pagina_fonte: o.paginaFonte,
-      trecho_fonte: o.trechoFonte,
-      forma_oferta: o.formaOferta,
-      status_curadoria: o.statusCuradoria,
-      revisado_em: o.revisadoEm,
-      modalidade: o.modalidade,
-      turno: o.turno,
-      turno_padronizado: ehTurno(o.turnoPadronizado) ? o.turnoPadronizado : undefined,
-      turno_nota: o.turnoNota,
-      campi: resolver(campusPorPagina, o.campusIds, `Oferta ${o.ofertaId}`),
-      cursos: resolver(cursoPorPagina, o.cursoIds, `Oferta ${o.ofertaId}`),
-      editais: resolver(editalPorPagina, o.editalIds, `Oferta ${o.ofertaId}`),
-      campus_id_original: o.campusIdOriginal,
-      curso_slug_original: o.cursoSlugOriginal,
-      notion_page_id: o.id,
-    })),
-  };
-  if (erros.length) throw new Error(`Relações não resolvidas na migração:\n- ${erros.join("\n- ")}`);
-  return dados;
 }

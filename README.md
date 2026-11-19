@@ -95,7 +95,7 @@ pnpm sei:sync                # simula a atualização das Movimentações de Cur
 pnpm sei:sync --apply        # grava no Notion
 ```
 
-Credenciais, escopo, avisos de chegada na DENTEC, agendamento pelo launchd e diagnóstico estão em [`base-conhecimento/docs/sincronizacao-sei-notion.md`](base-conhecimento/docs/sincronizacao-sei-notion.md).
+Credenciais, escopo, avisos de chegada na DENTEC e diagnóstico estão em [`base-conhecimento/docs/sincronizacao-sei-notion.md`](base-conhecimento/docs/sincronizacao-sei-notion.md).
 
 `pnpm typecheck`, `pnpm test` e `pnpm fmt` na raiz cobrem todo o repositório: `apps/`, `packages/` (inclusive o `sei-cli`), `scripts/` e as skills. Os scripts importam tipos e schemas do CLI como `@simplifica-if/sei-cli/<módulo>`, por exemplo `@simplifica-if/sei-cli/esquemas`.
 

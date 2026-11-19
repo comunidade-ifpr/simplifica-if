@@ -66,7 +66,6 @@ function baseTemporaria(ppc?: Record<string, unknown>): string {
         forma_oferta: "Integrado",
         pagina_oficial: "https://ifpr.edu.br/x",
         ...(ppc ? { ppc } : {}),
-        notion_page_id: "abc",
       },
       null,
       2,
@@ -133,7 +132,7 @@ describe("importarPpcDocx", () => {
 
       const registro = lerRegistro(raiz);
       expect(registro.ppc).toEqual({ url: URL_PDF, markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md" });
-      // O ppc entra na posição do schema (antes de notion_page_id), como nos outros registros.
+      // O ppc entra na posição do schema, como nos outros registros.
       expect(Object.keys(registro)).toEqual([
         "campus_id",
         "curso_slug",
@@ -142,7 +141,6 @@ describe("importarPpcDocx", () => {
         "forma_oferta",
         "pagina_oficial",
         "ppc",
-        "notion_page_id",
       ]);
 
       // O pipeline da base aceita o resultado: o índice e a proveniência conferem com o registro.

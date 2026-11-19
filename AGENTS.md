@@ -35,7 +35,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 - `packages/sei-cli` (SEI) e a skill `revisar-processo-ppc`, que depende dele;
 - a skill `suap-ifpr` (SUAP), com `scripts/suap_consultar.ts`, `scripts/suap_tutoriais.ts` e a coleta de matrizes `scripts/suap_coletar_matrizes.ts`;
-- a sincronização SEI → Notion (`pnpm sei:sync`, agendada por `scripts/agendar_sincronizacao_sei.ts`), e `scripts/notion_atualizar_cursos_movimentacoes.ts`;
+- a sincronização SEI → Notion (`pnpm sei:sync`, rodada à mão), e `scripts/notion_atualizar_cursos_movimentacoes.ts`;
 - a skill `revisar-ppc` com sub-agentes e relatório HTML (no app, a revisão é a tarefa nativa acima);
 - a skill `ifpr-design`, usada para desenhar a interface e materiais, não como tarefa do app.
 
@@ -127,7 +127,7 @@ Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use an
 pnpm sei:sync --apply
 ```
 
-Funcionamento, credenciais, agendamento e diagnóstico da sincronização estão em [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md).
+Funcionamento, credenciais e diagnóstico da sincronização estão em [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md).
 
 Depois de alterar um JSON Schema em `base-conhecimento/schemas/`, regenere os tipos TypeScript derivados dele (`scripts/base/tipos-schemas.ts`) e confira o código que os usa:
 

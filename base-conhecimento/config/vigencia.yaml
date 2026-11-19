@@ -1,9 +1,9 @@
 # Data de referência da vigência publicada (fase 5 do plano de arquitetura).
 #
 # O status_vigencia do front matter das normas, do manifest.json e dos stubs é calculado NESTA data
-# por bun run scripts/gerar_base.ts (packages/kb/src/normas/vigencia.ts), a partir das datas das
+# por node scripts/gerar_base.ts (packages/kb/src/normas/vigencia.ts), a partir das datas das
 # normas (assinada_em, publicada_em, vigente_de) e de base-conhecimento/relacoes.yaml. Nunca se usa
 # o relógio do build: atualize esta data de propósito, rode o gerador e revise o diff.
 #
-# Para outra data, sem mudar a base: bun run kb vigencia <id> --em AAAA-MM-DD
+# Para outra data, sem mudar a base: pnpm kb vigencia <id> --em AAAA-MM-DD
 data_referencia: "2026-11-13"

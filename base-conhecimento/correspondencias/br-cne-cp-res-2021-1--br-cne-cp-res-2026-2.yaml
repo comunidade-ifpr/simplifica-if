@@ -5,8 +5,8 @@
 # plano de arquitetura). Ao revisar, troque `status` por `revisado` e registre quem revisou.
 #
 # Contrato: esquemaCorrespondencia em packages/kb/src/normas/correspondencia.ts (zod), conferido por
-# bun run scripts/validar_base.ts (dispositivos existentes nos dois textos e todos os artigos da
-# origem cobertos). Consulta: bun run kb correspondencia br/cne-cp/res/2021/1#art20
+# node scripts/validar_base.ts (dispositivos existentes nos dois textos e todos os artigos da
+# origem cobertos). Consulta: pnpm kb correspondencia br/cne-cp/res/2021/1#art20
 #
 # Cada item: origem (dispositivo da 1/2021), tipo, destino (dispositivos da 2/2026; vazio em
 # sem-equivalente) e nota.
