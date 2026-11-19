@@ -433,7 +433,7 @@ Item de roadmap (17/11/2026). Estas ferramentas são usadas por agentes e por qu
 | `packages/sei-cli` | SEI | extração e leitura de processos (`pnpm sei`) | não |
 | skill `revisar-processo-ppc` | SEI, pelo `sei-cli` | revisão do fluxo de processos SEI de PPC | não |
 | skill `suap-ifpr` e `scripts/suap_*.ts` | SUAP | consulta, tutoriais e coleta de matrizes para a curadoria | não; o app mostra os dados do SUAP já publicados na base |
-| sincronização SEI → Notion (`pnpm sei:sync`) e scripts do Notion | SEI e Notion | `Movimentações de Cursos` e `processos-sei/index.json` | não |
+| sincronização SEI → Notion (`pnpm sei:sync`) e scripts do Notion | SEI e Notion | `Movimentações de Cursos` | não |
 | skill `revisar-ppc` (sub-agentes, relatório HTML) | — | revisão de PPC por agente no repositório | em parte: o app tem a tarefa nativa "Revisar um PPC", que reaproveita as fichas e `packages/ppc` |
 
 A integração das ferramentas de SEI e SUAP depende de o app voltar a acessar sistemas com login, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso. A sincronização SEI → Notion segue a mesma condição e a direção de tirar `Movimentações de Cursos` do Notion ([Fora do escopo](#fora-do-escopo)). Até lá, essas ferramentas ficam no repositório, e o `AGENTS.md` as lista.

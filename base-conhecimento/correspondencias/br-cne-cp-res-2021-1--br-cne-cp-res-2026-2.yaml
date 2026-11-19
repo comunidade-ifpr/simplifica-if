@@ -4,7 +4,7 @@
 # revisão humana é obrigatória antes de usar a tabela como fundamento de parecer (princípio 4 do
 # plano de arquitetura). Ao revisar, troque `status` por `revisado` e registre quem revisou.
 #
-# Contrato: esquemaCorrespondencia em packages/kb/src/normas/correspondencia.ts (zod), conferido por
+# Contrato: esquemaCorrespondencia em packages/kb/src/normas/correspondencia.ts (Effect Schema), conferido por
 # node scripts/validar_base.ts (dispositivos existentes nos dois textos e todos os artigos da
 # origem cobertos). Consulta: pnpm kb correspondencia br/cne-cp/res/2021/1#art20
 #

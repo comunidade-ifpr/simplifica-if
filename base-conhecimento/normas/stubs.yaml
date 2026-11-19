@@ -1,6 +1,6 @@
 # Normas citadas sem texto na base (stubs) e referências fora da base (externo:).
 #
-# Contrato: esquemaRegistroStubs em packages/kb/src/normas/registro.ts (zod), conferido por
+# Contrato: esquemaRegistroStubs em packages/kb/src/normas/registro.ts (Effect Schema), conferido por
 # node scripts/validar_base.ts. Regras de ID em base-conhecimento/docs/padrao-front-matter-legislacao.md.
 #
 # - normas: atos do domínio (CNE, MEC, Presidência, IFPR) citados por PPCs ou fichas, sem texto na

@@ -107,7 +107,7 @@ scripts/notificacao/notificacao.test.ts	10	0
 scripts/notion/cliente.test.ts	8	0
 scripts/notion/cursos-movimentacoes.test.ts	3	0
 scripts/notion/movimentacoes.test.ts	11	0
-scripts/notion/sincronizacao-sei.test.ts	7	0
+scripts/notion/sincronizacao-sei.test.ts	8	0
 scripts/sei/lote.test.ts	18	0
 scripts/sincronizar_repos.test.ts	2	0
 scripts/suap/cliente.test.ts	12	0
@@ -115,4 +115,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1556	35
+TOTAL	1557	35

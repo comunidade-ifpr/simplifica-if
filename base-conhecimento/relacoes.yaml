@@ -1,6 +1,6 @@
 # Relações entre normas: fonte única (fase 5 do plano de arquitetura).
 #
-# Contrato: esquemaRelacoes em packages/kb/src/normas/relacoes.ts (zod), conferido por
+# Contrato: esquemaRelacoes em packages/kb/src/normas/relacoes.ts (Effect Schema), conferido por
 # node scripts/validar_base.ts. O front matter das normas (revoga, revogada_por, altera,
 # alterada_por, regulamenta, regulamentada_por, fundamenta_se_em, fundamenta) e o status_vigencia
 # publicado são GERADOS daqui por node scripts/gerar_base.ts; não os edite à mão.
