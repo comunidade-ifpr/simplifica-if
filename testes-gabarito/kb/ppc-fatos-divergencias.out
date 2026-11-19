@@ -1,5 +1,5 @@
 ano: confere 88, ppc-mais-recente-que-matrizes 13, sem-ano 2, sem-suap 7
-carga_horaria: confere 45, confere-com-uma-matriz 13, diverge 32, explicada-pelo-estagio 2, sem-fato-ppc 13, sem-suap 5
+carga_horaria: confere 45, confere-com-uma-matriz 14, diverge 31, explicada-pelo-estagio 2, sem-fato-ppc 13, sem-suap 5
 estagio: confere 67, diverge 7, sem-fato-ppc 31, sem-suap 5
 
 ppc:assis-chateaubriand/tecnico-em-agropecuaria — Técnico em Agropecuária (Assis Chateaubriand)
@@ -126,10 +126,6 @@ ppc:jacarezinho/tecnico-em-alimentos — Técnico em Alimentos (Jacarezinho)
   estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 29 (2020))
     estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92: **Carga horária de estágio:** 120 horas
     estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92: **Carga horária de estágio:** 120 horas
-
-ppc:jacarezinho/tecnico-em-eletromecanica — Técnico em Eletromecânica (Jacarezinho)
-  carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 517 (2018): 1200 h (diferença +2190 h)
-    carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletromecanica.md:93: **Carga horária Total:** 3.390 horas
 
 ppc:jacarezinho/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Jacarezinho)
   carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 35 (2018): 5460 h (diferença -2070 h)

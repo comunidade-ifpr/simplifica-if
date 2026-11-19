@@ -34,6 +34,10 @@ describe("domínio das matrizes", () => {
       situacao: "Múltiplas — mesma CH",
       carga_horaria_comum_h: 1200,
     });
+    expect(consolidarMatrizes([ativa(1, 0), ativa(2, 3390)])).toEqual({
+      situacao: "Múltiplas — CH divergentes",
+      carga_horaria_comum_h: null,
+    });
     expect(consolidarMatrizes([ativa(1, 1200), ativa(2, 800)])).toEqual({
       situacao: "Múltiplas — CH divergentes",
       carga_horaria_comum_h: null,
@@ -53,7 +57,17 @@ describe("domínio das matrizes", () => {
       "10 — M10 — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): não informada",
     );
     expect(resumoMatrizesAtivas([])).toBe("Nenhuma matriz marcada Ativa=Sim.");
+    expect(resumoMatrizesAtivas([ativa(11, 0)])).toContain("CH exibida: 0 h;");
   });
+});
+
+const ativaRelatorio = (id: number) => ({
+  id,
+  ativa: true,
+  descricao: "",
+  url: `https://suap.ifpr.edu.br/edu/matriz/${id}/`,
+  carga_horaria_h: 800,
+  campos: {},
 });
 
 describe(`relatório de coleta (${ESQUEMA_RELATORIO_MATRIZES})`, () => {
@@ -70,6 +84,14 @@ describe(`relatório de coleta (${ESQUEMA_RELATORIO_MATRIZES})`, () => {
   it("aceita falhas de coleta com a identidade do curso", () => {
     const erro = { curso_id: "exemplo/tecnico-em-exemplo", suap_id: 7, codigo: "EX001", erro: "Campus divergente" };
     expect(lerRelatorio({ ...fixture(), erros: [erro] }).erros[0]?.erro).toBe("Campus divergente");
+  });
+
+  it("aceita matriz ativa com carga 0, como o SUAP mostra a matriz sem componentes", () => {
+    const valor = {
+      ...fixture(),
+      cursos: [{ ...fixture().cursos[0], matrizes: [{ ...ativaRelatorio(1), carga_horaria_h: 0 }] }],
+    };
+    expect(lerRelatorio(valor)).toEqual(valor);
   });
 
   it("rejeita relatório sem a lista de erros, para não gravar às cegas", () => {
@@ -124,6 +146,10 @@ describe(`relatório de coleta (${ESQUEMA_RELATORIO_MATRIZES})`, () => {
           },
         ],
       },
+    ],
+    [
+      "matriz ativa com carga negativa",
+      { cursos: [{ ...fixture().cursos[0], matrizes: [{ ...ativaRelatorio(1), carga_horaria_h: -1 }] }] },
     ],
     ["coletado_em vazio", { coletado_em: "" }],
     ["coletado_em sem hora", { coletado_em: "2026-11-19" }],

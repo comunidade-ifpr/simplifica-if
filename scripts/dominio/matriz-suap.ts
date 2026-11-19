@@ -32,7 +32,8 @@ const esquemaMatrizAtiva = Schema.Struct({
   ativa: Schema.Literal(true),
   descricao: Schema.String,
   url: Schema.String.check(Schema.isPattern(/^https:\/\/suap\.ifpr\.edu\.br\//, { message: "deve ser URL do SUAP" })),
-  carga_horaria_h: Schema.Finite.check(Schema.isGreaterThan(0)),
+  // O SUAP mostra 0 h em matriz ativa sem componentes; o registro guarda assim.
+  carga_horaria_h: Schema.Finite.check(Schema.isGreaterThanOrEqualTo(0)),
   campos: Schema.Record(Schema.String, Schema.String),
 });
 type MatrizAtiva = typeof esquemaMatrizAtiva.Type;

@@ -11,8 +11,8 @@
     },
     "carga_horaria": {
       "confere": 45,
-      "confere-com-uma-matriz": 13,
-      "diverge": 32,
+      "confere-com-uma-matriz": 14,
+      "diverge": 31,
       "explicada-pelo-estagio": 2,
       "sem-fato-ppc": 13,
       "sem-suap": 5
@@ -2174,9 +2174,9 @@
           {
             "matriz_id": 393,
             "ano": 2013,
-            "ch_exibida_h": 4402,
+            "ch_exibida_h": 4123,
             "ch_estagio_h": null,
-            "trecho": "393 — TÉCNICO EM ALIMENTOS INTEGRADO - 2013 JACAREZINHO — CH exibida: 4402 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+            "trecho": "393 — TÉCNICO EM ALIMENTOS INTEGRADO - 2013 JACAREZINHO — CH exibida: 4123 h; estágio exigido: Não; CH mínima de estágio (separada): -",
             "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": false
@@ -2200,76 +2200,6 @@
           "valor_ppc": "sim (120 h)",
           "valor_suap": "nao",
           "explicacao": "PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 29 (2020))"
-        }
-      ]
-    },
-    {
-      "ppc": "ppc:jacarezinho/tecnico-em-eletromecanica",
-      "curso": "curso:jacarezinho/tecnico-em-eletromecanica",
-      "nome": "Técnico em Eletromecânica",
-      "campus": "Jacarezinho",
-      "nivel": "médio",
-      "forma": "integrado",
-      "path": "base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletromecanica.md",
-      "fatos": [
-        {
-          "fato": "ano_documento",
-          "valor": "2017",
-          "valor_num": 2017,
-          "unidade": null,
-          "status_curadoria": "Precisa de revisão",
-          "regra": "dados-institucionais",
-          "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json",
-          "linha": 30,
-          "alternativas": []
-        },
-        {
-          "fato": "carga_horaria_total_h",
-          "valor": "3390",
-          "valor_num": 3390,
-          "unidade": "h",
-          "status_curadoria": "extraido",
-          "regra": "rotulo-quadro-sem-marca",
-          "trecho_fonte": "**Carga horária Total:** 3.390 horas",
-          "path": "base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletromecanica.md",
-          "linha": 93,
-          "alternativas": []
-        }
-      ],
-      "suap": {
-        "situacao": "Múltiplas — CH divergentes",
-        "carga_horaria_comum_h": null,
-        "matrizes": [
-          {
-            "matriz_id": 629,
-            "ano": 2013,
-            "ch_exibida_h": 0,
-            "ch_estagio_h": null,
-            "trecho": "629 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2013 JACAREZINHO — CH exibida: 0 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json",
-            "linha": 18,
-            "estagio_exigido": false
-          },
-          {
-            "matriz_id": 517,
-            "ano": 2018,
-            "ch_exibida_h": 1200,
-            "ch_estagio_h": 120,
-            "trecho": "517 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 1200 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json",
-            "linha": 18,
-            "estagio_exigido": true
-          }
-        ]
-      },
-      "cruzamento": [
-        {
-          "aspecto": "carga_horaria",
-          "resultado": "diverge",
-          "valor_ppc": "3390",
-          "valor_suap": "0 | 1200",
-          "explicacao": "PPC 3390 h; mais próxima: matriz 517 (2018): 1200 h (diferença +2190 h)"
         }
       ]
     },
@@ -3698,5 +3628,5 @@
       ]
     }
   ],
-  "total_ppcs": 46
+  "total_ppcs": 45
 }

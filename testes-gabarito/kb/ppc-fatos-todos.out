@@ -786,13 +786,13 @@ ppc:jacarezinho/tecnico-em-alimentos — Técnico em Alimentos (Jacarezinho)
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92
   SUAP ano: confere — anos das matrizes: 2013, 2020
-  SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 29 (2020): 3390 h; o SUAP tem matrizes com CH diferentes (matriz 393 (2013): 4402 h; matriz 29 (2020): 3390 h)
+  SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 29 (2020): 3390 h; o SUAP tem matrizes com CH diferentes (matriz 393 (2013): 4123 h; matriz 29 (2020): 3390 h)
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 29 (2020))
 ppc:jacarezinho/tecnico-em-eletromecanica — Técnico em Eletromecânica (Jacarezinho)
   ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json:30
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletromecanica.md:93
   SUAP ano: confere — anos das matrizes: 2013, 2018
-  SUAP carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 517 (2018): 1200 h (diferença +2190 h)
+  SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 517 (2018): 3390 h; o SUAP tem matrizes com CH diferentes (matriz 629 (2013): 0 h; matriz 517 (2018): 3390 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 517 (2018)
 ppc:jacarezinho/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Jacarezinho)
   ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletrotecnica.json:30
