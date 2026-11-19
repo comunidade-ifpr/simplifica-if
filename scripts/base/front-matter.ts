@@ -60,6 +60,7 @@ export const DIRETORIOS_POR_TIPO: Record<string, string> = {
   "BR|Portaria": "normas/br/portarias",
   "BR|Resolução": "normas/br/resolucoes",
   "BR|Compilação": "normas/br/compilacoes",
+  "BR|Parecer": "normas/br/pareceres",
   "IFPR|Resolução": "normas/ifpr/resolucoes",
   "IFPR|Portaria": "normas/ifpr/portarias",
   "IFPR|Nota Técnica": "normas/ifpr/notas-tecnicas",

@@ -17,4 +17,8 @@ export const INCLUIDAS_DEPOIS: ReadonlyMap<string, string> = new Map([
     "incluída em 18/11/2026 do texto oficial (Planalto)",
   ],
   ["normas/br/leis/LEI_BR_6202-1975_estudante-gestante.md", "incluída em 18/11/2026 do texto oficial (Planalto)"],
+  [
+    "normas/br/pareceres/PARECER_CNE-CEB_31-2002_atendimento-domiciliar.md",
+    "incluída em 19/11/2026 do texto oficial (PDF do CNE)",
+  ],
 ]);

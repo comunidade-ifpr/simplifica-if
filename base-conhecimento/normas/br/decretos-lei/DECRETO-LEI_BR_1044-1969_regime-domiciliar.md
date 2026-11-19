@@ -34,6 +34,7 @@ vigencia_calculada_em: "2026-11-13"
 relaciona_se_a:
   - "Lei nº 6.202/1975"
   - "Lei nº 9.394/1996"
+  - "Parecer CNE/CEB nº 31/2002"
   - "Resolução CONSUP/IFPR nº 190/2024"
   - "Resolução CONSUP/IFPR nº 55/2011"
 ---

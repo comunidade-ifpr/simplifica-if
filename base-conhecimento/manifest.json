@@ -104,6 +104,14 @@
       },
       {
         "tipo": "fundamenta-se-em",
+        "origem": "br/cne-ceb/parecer/2002/31",
+        "operador": "#secao3",
+        "alvo": "br/lei/1996/9394",
+        "alvo_dispositivo": "#art90",
+        "efeito_de": "vigencia-da-origem"
+      },
+      {
+        "tipo": "fundamenta-se-em",
         "origem": "br/cne-ceb/res/2024/2",
         "alvo": "br/lei/1996/9394",
         "efeito_de": "vigencia-da-origem"
@@ -229,6 +237,49 @@
     ],
     "fonte_url": "https://www.planalto.gov.br/ccivil_03/leis/L9394compilado.htm",
     "path": "normas/br/compilacoes/LEI_BR_9394-1996_ldb-trechos-relevantes.md"
+  },
+  {
+    "id": "br/cne-ceb/parecer/2002/31",
+    "title": "Parecer CNE/CEB nº 31/2002",
+    "tipo_documento": "Parecer",
+    "numero": "31",
+    "ano": 2002,
+    "data_publicacao": "2002-07-03",
+    "assinada_em": "2002-07-03",
+    "publicada_em": "2002-10-04",
+    "vigente_de": "2002-10-04",
+    "orgao": "CNE/CEB",
+    "jurisdicao": "BR",
+    "ementa": "Responde a consulta sobre o atendimento domiciliar a alunos temporária ou permanentemente impedidos de frequentar as aulas (Decreto-Lei nº 1.044/1969 e Lei nº 6.202/1975) diante dos arts. 24, VI, e 47, § 3º, da LDB: a LDB não o proíbe, e ele deve ser oferecido conforme as normas do sistema de ensino e o projeto político-pedagógico da escola.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "regime domiciliar",
+      "atendimento domiciliar",
+      "exercícios domiciliares",
+      "tratamento excepcional",
+      "frequência",
+      "educação especial",
+      "impedimento temporário",
+      "projeto político-pedagógico"
+    ],
+    "aliases": [
+      "Parecer CNE/CEB nº 31/2002",
+      "Parecer CNE/CEB 31/2002",
+      "Parecer CEB nº 31/2002"
+    ],
+    "fonte_url": "https://www.gov.br/mec/pt-br/cne/pdf/normas-classificadas-por-assunto/educacao-especial/ceb031_2002.pdf",
+    "fonte_referencia": "Processo nº 23001000059/2002-63; homologado por despacho do Ministro de 3/10/2002, DOU de 4/10/2002, Seção 1, p. 39",
+    "path": "normas/br/pareceres/PARECER_CNE-CEB_31-2002_atendimento-domiciliar.md",
+    "relacoes": [
+      {
+        "tipo": "fundamenta-se-em",
+        "origem": "br/cne-ceb/parecer/2002/31",
+        "operador": "#secao3",
+        "alvo": "br/lei/1996/9394",
+        "alvo_dispositivo": "#art90",
+        "efeito_de": "vigencia-da-origem"
+      }
+    ]
   },
   {
     "id": "br/lei/2003/10639",

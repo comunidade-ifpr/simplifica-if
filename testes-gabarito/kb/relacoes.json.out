@@ -72,6 +72,21 @@
     },
     {
       "tipo": "fundamenta-se-em",
+      "origem": "br/cne-ceb/parecer/2002/31",
+      "operador": "#secao3",
+      "alvo": "br/lei/1996/9394",
+      "alvo_dispositivo": "#art90",
+      "efeito_de": "vigencia-da-origem",
+      "evidencia": {
+        "em": "br/cne-ceb/parecer/2002/31#secao3",
+        "trecho": "com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado"
+      },
+      "confirmado_em": "2026-11-19",
+      "proposta": "manual",
+      "nota": "Competência do CNE para resolver as questões de transição entre o regime anterior e a LDB."
+    },
+    {
+      "tipo": "fundamenta-se-em",
       "origem": "br/cne-ceb/res/2024/2",
       "alvo": "br/lei/1996/9394",
       "efeito_de": "vigencia-da-origem",

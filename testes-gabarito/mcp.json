@@ -6813,7 +6813,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7008,12 +7008,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CP nº 2/2026, § 1º](ifpr://norma/br/cne-cp/res/2026/2#art37-par1)** — `br/cne-cp/res/2026/2#art37-par1`; vigente (a confirmar) (busca-textual, pontuação -15.456)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 1º O estágio profissional supervisionado pode ser obrigatório ou não obrigatório.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:592-592`\n\n**[Resolução CNE/CP nº 2/2026, § 3º](ifpr://norma/br/cne-cp/res/2026/2#art37-par3)** — `br/cne-cp/res/2026/2#art37-par3`; vigente (a confirmar) (busca-textual, pontuação -13.564)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 3º A carga horária do estágio, obrigatório ou não obrigatório, deve ser acrescida à carga horária mínima do curso estabelecida no CNCT ou no CNCST.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:596-596`\n\n**[Resolução CNE/CP nº 2/2026, § 2º](ifpr://norma/br/cne-cp/res/2026/2#art37-par2)** — `br/cne-cp/res/2026/2#art37-par2`; vigente (a confirmar) (busca-textual, pontuação -12.81)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 2º O estágio profissional supervisionado será obrigatório quando assim determinado por lei, exigido pela natureza da ocupação ou definido pela instituição educacional em razão do perfil profissional de conclusão do curso.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:594-594`\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CP nº 2/2026, § 1º](ifpr://norma/br/cne-cp/res/2026/2#art37-par1)** — `br/cne-cp/res/2026/2#art37-par1`; vigente (a confirmar) (busca-textual, pontuação -15.476)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 1º O estágio profissional supervisionado pode ser obrigatório ou não obrigatório.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:592-592`\n\n**[Resolução CNE/CP nº 2/2026, § 3º](ifpr://norma/br/cne-cp/res/2026/2#art37-par3)** — `br/cne-cp/res/2026/2#art37-par3`; vigente (a confirmar) (busca-textual, pontuação -13.585)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 3º A carga horária do estágio, obrigatório ou não obrigatório, deve ser acrescida à carga horária mínima do curso estabelecida no CNCT ou no CNCST.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:596-596`\n\n**[Resolução CNE/CP nº 2/2026, § 2º](ifpr://norma/br/cne-cp/res/2026/2#art37-par2)** — `br/cne-cp/res/2026/2#art37-par2`; vigente (a confirmar) (busca-textual, pontuação -12.832)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 2º O estágio profissional supervisionado será obrigatório quando assim determinado por lei, exigido pela natureza da ocupação ou definido pela instituição educacional em razão do perfil profissional de conclusão do curso.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:594-594`\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-72b3364b",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7032,7 +7032,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -15.456,
+                "pontuacao": -15.476,
                 "dispositivo": {
                   "id": "br/cne-cp/res/2026/2#art37-par1",
                   "rotulo": "§ 1º",
@@ -7064,7 +7064,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -13.564,
+                "pontuacao": -13.585,
                 "dispositivo": {
                   "id": "br/cne-cp/res/2026/2#art37-par3",
                   "rotulo": "§ 3º",
@@ -7096,7 +7096,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -12.81,
+                "pontuacao": -12.832,
                 "dispositivo": {
                   "id": "br/cne-cp/res/2026/2#art37-par2",
                   "rotulo": "§ 2º",
@@ -7138,12 +7138,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CEB nº 2/2024](ifpr://norma/br/cne-ceb/res/2024/2)** — `br/cne-ceb/res/2024/2`; vigente (metadados da norma; busca-textual, pontuação -6.62)\n> Resolução CNE/CEB nº 2/2024\n> DCNEM 2024\n> DCNEM\n> ensino médio\n> diretrizes curriculares\n> itinerários formativos\n> CNE\n> Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:1-1`\n\n**[Lei nº 14.945/2024](ifpr://norma/br/lei/2024/14945)** — `br/lei/2024/14945`; vigente (metadados da norma; busca-textual, pontuação -3.766)\n> Lei nº 14.945/2024\n> Lei 14.945/2024\n> Novo Ensino Médio 2024\n> ensino médio\n> formação geral básica\n> itinerários formativos\n> EPT\n> LDB\n> Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.\nfonte: `base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md:1-1`\n\n**[Resolução CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2)** — `br/cne-cp/res/2026/2`; vigente (a confirmar) (metadados da norma; busca-textual, pontuação -3.594)\n> Resolução CNE/CP nº 2/2026\n> Resolução CNE/CP nº 2, de 11 de novembro de 2026\n> DCN EPT 2026\n> DCNEPT 2026\n> Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\n> Novas DCN da EPT\n> DCNEPT\n> educação profissional\n> EPT\n> EPTNM\n> diretrizes curriculares\n> cursos técnicos\n> cursos superiores de tecnologia\n> itinerário formativo profissional\n> carga horária\n> prática profissional supervisionada\n> estágio supervisionado\n> educação a distância\n> semipresencial\n> acompanhamento de egressos\n> certificação profissional\n> cursos experimentais\n> formação docente\n> inteligência artificial\n> CNCT\n> CNE\n> Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:1-1`\n\n**[Resolução CNE/CEB nº 2/2024, § 4º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par4)** — `br/cne-ceb/res/2024/2#art21-par4`; vigente (busca-textual, pontuação -8.438)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 4º Os Itinerários Formativos devem seguir os padrões mínimos de qualidade previstos nos Parâmetros Nacionais para a Oferta dos Itinerários Formativos que serão elaborados pelo Ministério da Educação.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:333-333`\n\n**[Resolução CNE/CEB nº 2/2024, § 1º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par1)** — `br/cne-ceb/res/2024/2#art20-par1`; vigente (busca-textual, pontuação -7.795)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 1º O CNE editará Parâmetros Nacionais para a Oferta dos Itinerários Formativos de Aprofundamento até o dia 31 de março de 2025.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:316-316`\n\n**[Resolução CNE/CEB nº 2/2024, XVIII](ifpr://norma/br/cne-ceb/res/2024/2#art5-xviii)** — `br/cne-ceb/res/2024/2#art5-xviii`; vigente (busca-textual, pontuação -7.653)\n> Art. 5º Considera-se, para fins desta Resolução:\n> XVIII – Itinerários Formativos de Aprofundamento:\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:119-119`\n\n**[Resolução CNE/CEB nº 2/2024, § 2º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par2)** — `br/cne-ceb/res/2024/2#art20-par2`; vigente (busca-textual, pontuação -7.604)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 2º Os Sistemas de Ensino deverão utilizar as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica em vigência para a organização do Itinerário de Formação Técnica e Profissional. Subseção I Dos Itinerários Formativos de Aprofundamento por Área de Conhecimento\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:318-318`\n\n**[Resolução CNE/CEB nº 2/2024, § 5º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par5)** — `br/cne-ceb/res/2024/2#art21-par5`; vigente (busca-textual, pontuação -7.602)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 5º O Ministério da Educação operacionalizará assistência técnica e financeira aos sistemas de ensino, mediante adesão voluntária, para a disponibilização de material didático específico para os Itinerários Formativos de Aprofundamento, inclusive material didático no âmbito do Programa Nacional do Livro Didático – PNLD. Subseção II Do Itinerário Formativo de Educação Técnica e Profissional\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:335-335`\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CEB nº 2/2024](ifpr://norma/br/cne-ceb/res/2024/2)** — `br/cne-ceb/res/2024/2`; vigente (metadados da norma; busca-textual, pontuação -6.698)\n> Resolução CNE/CEB nº 2/2024\n> DCNEM 2024\n> DCNEM\n> ensino médio\n> diretrizes curriculares\n> itinerários formativos\n> CNE\n> Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:1-1`\n\n**[Lei nº 14.945/2024](ifpr://norma/br/lei/2024/14945)** — `br/lei/2024/14945`; vigente (metadados da norma; busca-textual, pontuação -3.83)\n> Lei nº 14.945/2024\n> Lei 14.945/2024\n> Novo Ensino Médio 2024\n> ensino médio\n> formação geral básica\n> itinerários formativos\n> EPT\n> LDB\n> Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.\nfonte: `base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md:1-1`\n\n**[Resolução CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2)** — `br/cne-cp/res/2026/2`; vigente (a confirmar) (metadados da norma; busca-textual, pontuação -3.656)\n> Resolução CNE/CP nº 2/2026\n> Resolução CNE/CP nº 2, de 11 de novembro de 2026\n> DCN EPT 2026\n> DCNEPT 2026\n> Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\n> Novas DCN da EPT\n> DCNEPT\n> educação profissional\n> EPT\n> EPTNM\n> diretrizes curriculares\n> cursos técnicos\n> cursos superiores de tecnologia\n> itinerário formativo profissional\n> carga horária\n> prática profissional supervisionada\n> estágio supervisionado\n> educação a distância\n> semipresencial\n> acompanhamento de egressos\n> certificação profissional\n> cursos experimentais\n> formação docente\n> inteligência artificial\n> CNCT\n> CNE\n> Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:1-1`\n\n**[Resolução CNE/CEB nº 2/2024, § 4º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par4)** — `br/cne-ceb/res/2024/2#art21-par4`; vigente (busca-textual, pontuação -8.449)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 4º Os Itinerários Formativos devem seguir os padrões mínimos de qualidade previstos nos Parâmetros Nacionais para a Oferta dos Itinerários Formativos que serão elaborados pelo Ministério da Educação.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:333-333`\n\n**[Resolução CNE/CEB nº 2/2024, § 1º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par1)** — `br/cne-ceb/res/2024/2#art20-par1`; vigente (busca-textual, pontuação -7.805)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 1º O CNE editará Parâmetros Nacionais para a Oferta dos Itinerários Formativos de Aprofundamento até o dia 31 de março de 2025.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:316-316`\n\n**[Resolução CNE/CEB nº 2/2024, XVIII](ifpr://norma/br/cne-ceb/res/2024/2#art5-xviii)** — `br/cne-ceb/res/2024/2#art5-xviii`; vigente (busca-textual, pontuação -7.662)\n> Art. 5º Considera-se, para fins desta Resolução:\n> XVIII – Itinerários Formativos de Aprofundamento:\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:119-119`\n\n**[Resolução CNE/CEB nº 2/2024, § 2º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par2)** — `br/cne-ceb/res/2024/2#art20-par2`; vigente (busca-textual, pontuação -7.616)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 2º Os Sistemas de Ensino deverão utilizar as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica em vigência para a organização do Itinerário de Formação Técnica e Profissional. Subseção I Dos Itinerários Formativos de Aprofundamento por Área de Conhecimento\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:318-318`\n\n**[Resolução CNE/CEB nº 2/2024, § 5º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par5)** — `br/cne-ceb/res/2024/2#art21-par5`; vigente (busca-textual, pontuação -7.614)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 5º O Ministério da Educação operacionalizará assistência técnica e financeira aos sistemas de ensino, mediante adesão voluntária, para a disponibilização de material didático específico para os Itinerários Formativos de Aprofundamento, inclusive material didático no âmbito do Programa Nacional do Livro Didático – PNLD. Subseção II Do Itinerário Formativo de Educação Técnica e Profissional\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:335-335`\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-72b3364b",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7162,7 +7162,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -6.62,
+                "pontuacao": -6.698,
                 "metadados": {
                   "texto": "Resolução CNE/CEB nº 2/2024\nDCNEM 2024\nDCNEM\nensino médio\ndiretrizes curriculares\nitinerários formativos\nCNE\nInstitui as Diretrizes Curriculares Nacionais para o Ensino Médio.",
                   "fonte": {
@@ -7184,7 +7184,7 @@
                   "link": "ifpr://norma/br/lei/2024/14945"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -3.766,
+                "pontuacao": -3.83,
                 "metadados": {
                   "texto": "Lei nº 14.945/2024\nLei 14.945/2024\nNovo Ensino Médio 2024\nensino médio\nformação geral básica\nitinerários formativos\nEPT\nLDB\nAltera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.",
                   "fonte": {
@@ -7206,7 +7206,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -3.594,
+                "pontuacao": -3.656,
                 "metadados": {
                   "texto": "Resolução CNE/CP nº 2/2026\nResolução CNE/CP nº 2, de 11 de novembro de 2026\nDCN EPT 2026\nDCNEPT 2026\nDiretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\nNovas DCN da EPT\nDCNEPT\neducação profissional\nEPT\nEPTNM\ndiretrizes curriculares\ncursos técnicos\ncursos superiores de tecnologia\nitinerário formativo profissional\ncarga horária\nprática profissional supervisionada\nestágio supervisionado\neducação a distância\nsemipresencial\nacompanhamento de egressos\ncertificação profissional\ncursos experimentais\nformação docente\ninteligência artificial\nCNCT\nCNE\nDefine as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
                   "fonte": {
@@ -7228,7 +7228,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -8.438,
+                "pontuacao": -8.449,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art21-par4",
                   "rotulo": "§ 4º",
@@ -7260,7 +7260,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.795,
+                "pontuacao": -7.805,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art20-par1",
                   "rotulo": "§ 1º",
@@ -7292,7 +7292,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.653,
+                "pontuacao": -7.662,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art5-xviii",
                   "rotulo": "XVIII",
@@ -7324,7 +7324,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.604,
+                "pontuacao": -7.616,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art20-par2",
                   "rotulo": "§ 2º",
@@ -7356,7 +7356,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.602,
+                "pontuacao": -7.614,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art21-par5",
                   "rotulo": "§ 5º",
@@ -7667,7 +7667,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-a5b7dd60",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7872,12 +7872,12 @@
         "content": [
           {
             "type": "text",
-            "text": "**[Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394)** — `br/lei/1996/9394`; parcialmente revogada\n> Estabelece as diretrizes e bases da educação nacional.\nPresidência da República; Lei nº 9394; de 20/12/1996; fonte oficial: https://www.planalto.gov.br/ccivil_03/leis/l9394.htm\n\n**Vigência em 13/11/2026:** parcialmente revogada; início: 23/12/1996.\n- alteração por [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) (acrescenta os arts. 26-A, 79-A e 79-B): efeito em 10/01/2003; ocorreu na data: sim\n- alteração por [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) (#art26A): efeito em 11/03/2008; ocorreu na data: sim\n- alteração por [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) (#art82): efeito em 26/09/2008; ocorreu na data: sim\n- revogação por [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) (#art82-parunico): efeito em 26/09/2008; ocorreu na data: sim\n- alteração por [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): efeito em 01/08/2024; ocorreu na data: sim\n- revogação por [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): efeito em 01/08/2024; ocorreu na data: sim\n- alteração por [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) (#art26-par9B): efeito em 14/07/2026; ocorreu na data: sim\n\n**Relações (esta norma é a origem):**\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1961/4024](ifpr://norma/br/lei/1961/4024) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"Revogam-se as disposições das Leis nºs 4.024, de 20 de dezembro de 1961, e 5.540, de 28 de novembro de 1968, não alteradas\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1968/5540](ifpr://norma/br/lei/1968/5540) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"5.540, de 28 de novembro de 1968, não alteradas pelas Leis nºs 9.131\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1971/5692](ifpr://norma/br/lei/1971/5692): \"as Leis nºs 5.692, de 11 de agosto de 1971\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1982/7044](ifpr://norma/br/lei/1982/7044): \"7.044, de 18 de outubro de 1982\"\n\n**Relações (esta norma é o alvo):**\n- [br/cne-cp/res/2026/2](ifpr://norma/br/cne-cp/res/2026/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"e nos termos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/cne-ceb/res/2024/2](ifpr://norma/br/cne-ceb/res/2024/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (acrescenta os arts. 26-A, 79-A e 79-B): \"passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B\"\n- [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) altera [Lei nº 9.394/1996, #art26A](ifpr://norma/br/lei/1996/9394#art26A): \"O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) altera [Lei nº 9.394/1996, #art82](ifpr://norma/br/lei/1996/9394#art82): \"O art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) revoga [Lei nº 9.394/1996, #art82-parunico](ifpr://norma/br/lei/1996/9394#art82-parunico): \"o parágrafo único do art. 82 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): \"A Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), passa a vigorar com as seguintes alterações\"\n- [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) revoga [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): \"Ficam revogados os seguintes dispositivos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) altera [Lei nº 9.394/1996, #art26-par9B](ifpr://norma/br/lei/1996/9394#art26-par9B): \"passa a vigorar acrescido do seguinte § 9º-B\"\n- [br/mec/portaria/2024/902](ifpr://norma/br/mec/portaria/2024/902) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"no art. 41 da Lei nº 9.394, de 20 de dezembro de 1996\"\n\nBase de 13/11/2026 (versão dev)."
+            "text": "**[Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394)** — `br/lei/1996/9394`; parcialmente revogada\n> Estabelece as diretrizes e bases da educação nacional.\nPresidência da República; Lei nº 9394; de 20/12/1996; fonte oficial: https://www.planalto.gov.br/ccivil_03/leis/l9394.htm\n\n**Vigência em 13/11/2026:** parcialmente revogada; início: 23/12/1996.\n- alteração por [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) (acrescenta os arts. 26-A, 79-A e 79-B): efeito em 10/01/2003; ocorreu na data: sim\n- alteração por [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) (#art26A): efeito em 11/03/2008; ocorreu na data: sim\n- alteração por [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) (#art82): efeito em 26/09/2008; ocorreu na data: sim\n- revogação por [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) (#art82-parunico): efeito em 26/09/2008; ocorreu na data: sim\n- alteração por [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): efeito em 01/08/2024; ocorreu na data: sim\n- revogação por [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): efeito em 01/08/2024; ocorreu na data: sim\n- alteração por [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) (#art26-par9B): efeito em 14/07/2026; ocorreu na data: sim\n\n**Relações (esta norma é a origem):**\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1961/4024](ifpr://norma/br/lei/1961/4024) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"Revogam-se as disposições das Leis nºs 4.024, de 20 de dezembro de 1961, e 5.540, de 28 de novembro de 1968, não alteradas\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1968/5540](ifpr://norma/br/lei/1968/5540) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"5.540, de 28 de novembro de 1968, não alteradas pelas Leis nºs 9.131\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1971/5692](ifpr://norma/br/lei/1971/5692): \"as Leis nºs 5.692, de 11 de agosto de 1971\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1982/7044](ifpr://norma/br/lei/1982/7044): \"7.044, de 18 de outubro de 1982\"\n\n**Relações (esta norma é o alvo):**\n- [br/cne-cp/res/2026/2](ifpr://norma/br/cne-cp/res/2026/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"e nos termos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/cne-ceb/parecer/2002/31#secao3](ifpr://norma/br/cne-ceb/parecer/2002/31#secao3) fundamenta-se-em [Lei nº 9.394/1996, #art90](ifpr://norma/br/lei/1996/9394#art90): \"com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado\"\n- [br/cne-ceb/res/2024/2](ifpr://norma/br/cne-ceb/res/2024/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (acrescenta os arts. 26-A, 79-A e 79-B): \"passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B\"\n- [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) altera [Lei nº 9.394/1996, #art26A](ifpr://norma/br/lei/1996/9394#art26A): \"O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) altera [Lei nº 9.394/1996, #art82](ifpr://norma/br/lei/1996/9394#art82): \"O art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) revoga [Lei nº 9.394/1996, #art82-parunico](ifpr://norma/br/lei/1996/9394#art82-parunico): \"o parágrafo único do art. 82 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): \"A Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), passa a vigorar com as seguintes alterações\"\n- [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) revoga [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): \"Ficam revogados os seguintes dispositivos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) altera [Lei nº 9.394/1996, #art26-par9B](ifpr://norma/br/lei/1996/9394#art26-par9B): \"passa a vigorar acrescido do seguinte § 9º-B\"\n- [br/mec/portaria/2024/902](ifpr://norma/br/mec/portaria/2024/902) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"no art. 41 da Lei nº 9.394, de 20 de dezembro de 1996\"\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-a5b7dd60",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7997,6 +7997,20 @@
                   },
                   "confirmado_em": "2026-11-13",
                   "nota": "Preâmbulo."
+                },
+                {
+                  "tipo": "fundamenta-se-em",
+                  "origem": "br/cne-ceb/parecer/2002/31",
+                  "operador": "#secao3",
+                  "alvo": "br/lei/1996/9394",
+                  "alvo_dispositivo": "#art90",
+                  "alcance": null,
+                  "evidencia": {
+                    "em": "br/cne-ceb/parecer/2002/31#secao3",
+                    "trecho": "com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado"
+                  },
+                  "confirmado_em": "2026-11-19",
+                  "nota": "Competência do CNE para resolver as questões de transição entre o regime anterior e a LDB."
                 },
                 {
                   "tipo": "fundamenta-se-em",
@@ -9252,7 +9266,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-57fc6828",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -10146,12 +10160,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Impacto de [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): parcialmente revogada em 13/11/2026.\n\nSucessoras: nenhuma.\n\nRegras de transição (norma revogada não é inaplicável): nenhuma.\n\nRelações:\n- br/cne-cp/res/2026/2 **fundamenta-se-em** br/lei/1996/9394 — evidência em br/cne-cp/res/2026/2: \"e nos termos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- br/cne-ceb/res/2024/2 **fundamenta-se-em** br/lei/1996/9394 — evidência em br/cne-ceb/res/2024/2: \"36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1961/4024 — evidência em br/lei/1996/9394#art92: \"Revogam-se as disposições das Leis nºs 4.024, de 20 de dezembro de 1961, e 5.540, de 28 de novembro de 1968, não alteradas\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1968/5540 — evidência em br/lei/1996/9394#art92: \"5.540, de 28 de novembro de 1968, não alteradas pelas Leis nºs 9.131\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1971/5692 — evidência em br/lei/1996/9394#art92: \"as Leis nºs 5.692, de 11 de agosto de 1971\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1982/7044 — evidência em br/lei/1996/9394#art92: \"7.044, de 18 de outubro de 1982\"\n- br/lei/2003/10639#art1 **altera** br/lei/1996/9394 — evidência em br/lei/2003/10639#art1: \"passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B\"\n- br/lei/2008/11645#art1 **altera** br/lei/1996/9394#art26A — evidência em br/lei/2008/11645#art1: \"O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n… e mais 6 relações\n\nNormas que a citam:\n- [Lei nº 10.639/2003](ifpr://norma/br/lei/2003/10639) (preâmbulo, #art1)\n- [Lei nº 11.645/2008](ifpr://norma/br/lei/2008/11645) (preâmbulo, #art1)\n- [Lei nº 11.788/2008](ifpr://norma/br/lei/2008/11788) (preâmbulo, #art20, #art22)\n- [Lei nº 11.892/2008](ifpr://norma/br/lei/2008/11892) (#art3)\n- [Lei nº 14.945/2024](ifpr://norma/br/lei/2024/14945) (preâmbulo, #art1, #art5-i, #art5-ii, #art11)\n- [Lei nº 15.468/2026](ifpr://norma/br/lei/2026/15468) (preâmbulo, #art1)\n- [Portaria MEC nº 902/2024](ifpr://norma/br/mec/portaria/2024/902) (preâmbulo, #art5-iii, #art7-parunico, #art24-par3)\n- [Resolução CNE/CEB nº 2/2024](ifpr://norma/br/cne-ceb/res/2024/2) (preâmbulo, #art1-parunico, #art4, #art5-xvi, #art19, #art25, #art25-par3)\n… e mais 12 normas\n\nPPCs que a citam: 201 (amostra de 10; lista completa em `citacoes_da_norma`): [Especialização em Docência e Práticas Educativas (Arapongas)](ifpr://ppc/arapongas/especializacao-em-docencia-e-praticas-educativas); [Programação com ênfase em Análise de Dados (Arapongas)](ifpr://ppc/arapongas/programacao-com-enfase-em-analise-de-dados); [Programação Web (Arapongas)](ifpr://ppc/arapongas/programacao-web); [Técnico em Melhoria de Processos (Arapongas)](ifpr://ppc/arapongas/tecnico-em-melhoria-de-processos); [Técnico em Sistemas de Energia Renovável (Arapongas)](ifpr://ppc/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio); [Tecnologia em Processos Gerenciais (Arapongas)](ifpr://ppc/arapongas/tecnologia-em-processos-gerenciais); [Técnico em Agropecuária (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-agropecuaria); [Técnico em Agropecuária (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio); [Técnico em Alimentos (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-alimentos); [Técnico em Comércio (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-comercio).\n\nFichas da revisar-ppc atingidas:\n- [CT-CURR-01](ifpr://ficha/CT-CURR-01) Matriz curricular estruturada e legível — tema\n- [CT-CURR-02](ifpr://ficha/CT-CURR-02) Carga horária total apresentada com consistência — tema\n- [CT-CURR-03](ifpr://ficha/CT-CURR-03) Distribuição entre formação geral e formação técnica — tema\n- [CT-CURR-04](ifpr://ficha/CT-CURR-04) Componentes curriculares alinhados ao perfil profissional — tema\n- [CT-CURR-05](ifpr://ficha/CT-CURR-05) Ementas completas e auditáveis — tema\n- [CT-CURR-06](ifpr://ficha/CT-CURR-06) Bibliografia básica e complementar minimamente suficiente — tema\n- [CT-CURR-07](ifpr://ficha/CT-CURR-07) Progressão formativa e organização por períodos — tema\n- [CT-CURR-08](ifpr://ficha/CT-CURR-08) Metodologias e integração curricular compatíveis com a proposta — tema\n- [CT-CURR-09](ifpr://ficha/CT-CURR-09) Inclusão, AEE e flexibilização curricular articulados ao currículo — tema\n- [CT-CURR-10](ifpr://ficha/CT-CURR-10) Representação gráfica coerente com a organização curricular — tema\n- [CT-CURR-11](ifpr://ficha/CT-CURR-11) Temas transversais e formação cidadã no currículo — referencia, tema\n- [CT-CURR-12](ifpr://ficha/CT-CURR-12) Progressão formativa explicitada na organização curricular — tema\n- [CT-CURR-13](ifpr://ficha/CT-CURR-13) Aproveitamento de estudos com critérios e procedimento definidos — tema\n- [CT-CURR-14](ifpr://ficha/CT-CURR-14) Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto — tema\n- [CT-CURR-15](ifpr://ficha/CT-CURR-15) Certificação de conhecimentos anteriores tratada, quando aplicável — tema\n- [CT-CURR-16](ifpr://ficha/CT-CURR-16) Pré-requisitos de ingresso compatíveis com o CNCT — tema\n- [CT-CURR-17](ifpr://ficha/CT-CURR-17) Itinerários formativos coerentes com o CNCT — tema\n- [CT-CURR-18](ifpr://ficha/CT-CURR-18) Componentes obrigatórios e conteúdos legais da FGB contemplados — referencia, citacao, tema (br/lei/1996/9394#art35D)\n- [CT-CURR-19](ifpr://ficha/CT-CURR-19) Integração curricular e práticas profissionais articuladas — tema\n- [CT-CURR-20](ifpr://ficha/CT-CURR-20) Decisão sobre estágio e carga horária compatíveis com o CNCT — tema\n- [CT-CURR-21](ifpr://ficha/CT-CURR-21) Convênios e trâmites de estágio descritos quando houver estágio — tema\n- [CT-CURR-22](ifpr://ficha/CT-CURR-22) AEE não incorporado como componente curricular da matriz ou do histórico — tema\n- [CT-CURR-23](ifpr://ficha/CT-CURR-23) Distribuição semanal das aulas e contraturnos explicitada — tema\n- [CT-CURR-24](ifpr://ficha/CT-CURR-24) Organização pedagógica e orientação do estágio obrigatório — tema\n- [CT-CURR-25](ifpr://ficha/CT-CURR-25) Campos de estágio e equivalência coerentes com o perfil profissional — tema\n- [CT-CURR-26](ifpr://ficha/CT-CURR-26) Educação política e direitos da cidadania no currículo — referencia, citacao, tema (br/lei/1996/9394#art26-par1, br/lei/1996/9394#art26-par9B)\n- [CT-CURR-27](ifpr://ficha/CT-CURR-27) Formato de oferta e carga horária não presencial compatíveis com as DCN da EPT — tema\n- [CT-IDENT-01](ifpr://ficha/CT-IDENT-01) Denominação do curso alinhada ao CNCT — tema\n- [CT-IDENT-02](ifpr://ficha/CT-IDENT-02) Coerência da apresentação institucional do curso — tema\n- [CT-IDENT-03](ifpr://ficha/CT-IDENT-03) Justificativa baseada em demanda territorial e formativa — tema\n- [CT-IDENT-04](ifpr://ficha/CT-IDENT-04) Objetivos formativos claros e operacionais — tema\n- [CT-IDENT-05](ifpr://ficha/CT-IDENT-05) Concepção de EPT explicitada — tema\n… e mais 46 fichas (lista completa no JSON)\n\nTópicos atingidos: `identificacao_oferta`, `justificativa_objetivos`, `concepcao_metodologias`, `perfil_egresso_mundo_trabalho`, `matriz_curricular`, `ementario_bibliografias`, `estagio`, `aproveitamento_certificacao_tfc`, `avaliacao_aprendizagem`, `assistencia_estudantil_permanencia`, `aee_acessibilidade_inclusao`, `corpo_docente_gestao`, `infraestrutura`, `avaliacao_ppc_egressos`, `temas_transversais_cidadania`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Impacto de [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): parcialmente revogada em 13/11/2026.\n\nSucessoras: nenhuma.\n\nRegras de transição (norma revogada não é inaplicável): nenhuma.\n\nRelações:\n- br/cne-cp/res/2026/2 **fundamenta-se-em** br/lei/1996/9394 — evidência em br/cne-cp/res/2026/2: \"e nos termos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- br/cne-ceb/parecer/2002/31#secao3 **fundamenta-se-em** br/lei/1996/9394#art90 — evidência em br/cne-ceb/parecer/2002/31#secao3: \"com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado\"\n- br/cne-ceb/res/2024/2 **fundamenta-se-em** br/lei/1996/9394 — evidência em br/cne-ceb/res/2024/2: \"36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1961/4024 — evidência em br/lei/1996/9394#art92: \"Revogam-se as disposições das Leis nºs 4.024, de 20 de dezembro de 1961, e 5.540, de 28 de novembro de 1968, não alteradas\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1968/5540 — evidência em br/lei/1996/9394#art92: \"5.540, de 28 de novembro de 1968, não alteradas pelas Leis nºs 9.131\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1971/5692 — evidência em br/lei/1996/9394#art92: \"as Leis nºs 5.692, de 11 de agosto de 1971\"\n- br/lei/1996/9394#art92 **revoga** br/lei/1982/7044 — evidência em br/lei/1996/9394#art92: \"7.044, de 18 de outubro de 1982\"\n- br/lei/2003/10639#art1 **altera** br/lei/1996/9394 — evidência em br/lei/2003/10639#art1: \"passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B\"\n… e mais 7 relações\n\nNormas que a citam:\n- [Lei nº 10.639/2003](ifpr://norma/br/lei/2003/10639) (preâmbulo, #art1)\n- [Lei nº 11.645/2008](ifpr://norma/br/lei/2008/11645) (preâmbulo, #art1)\n- [Lei nº 11.788/2008](ifpr://norma/br/lei/2008/11788) (preâmbulo, #art20, #art22)\n- [Lei nº 11.892/2008](ifpr://norma/br/lei/2008/11892) (#art3)\n- [Lei nº 14.945/2024](ifpr://norma/br/lei/2024/14945) (preâmbulo, #art1, #art5-i, #art5-ii, #art11)\n- [Lei nº 15.468/2026](ifpr://norma/br/lei/2026/15468) (preâmbulo, #art1)\n- [Parecer CNE/CEB nº 31/2002](ifpr://norma/br/cne-ceb/parecer/2002/31) (#secao1, #secao2, #secao3, #secao4)\n- [Portaria MEC nº 902/2024](ifpr://norma/br/mec/portaria/2024/902) (preâmbulo, #art5-iii, #art7-parunico, #art24-par3)\n… e mais 13 normas\n\nPPCs que a citam: 201 (amostra de 10; lista completa em `citacoes_da_norma`): [Especialização em Docência e Práticas Educativas (Arapongas)](ifpr://ppc/arapongas/especializacao-em-docencia-e-praticas-educativas); [Programação com ênfase em Análise de Dados (Arapongas)](ifpr://ppc/arapongas/programacao-com-enfase-em-analise-de-dados); [Programação Web (Arapongas)](ifpr://ppc/arapongas/programacao-web); [Técnico em Melhoria de Processos (Arapongas)](ifpr://ppc/arapongas/tecnico-em-melhoria-de-processos); [Técnico em Sistemas de Energia Renovável (Arapongas)](ifpr://ppc/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio); [Tecnologia em Processos Gerenciais (Arapongas)](ifpr://ppc/arapongas/tecnologia-em-processos-gerenciais); [Técnico em Agropecuária (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-agropecuaria); [Técnico em Agropecuária (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio); [Técnico em Alimentos (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-alimentos); [Técnico em Comércio (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-comercio).\n\nFichas da revisar-ppc atingidas:\n- [CT-CURR-01](ifpr://ficha/CT-CURR-01) Matriz curricular estruturada e legível — tema\n- [CT-CURR-02](ifpr://ficha/CT-CURR-02) Carga horária total apresentada com consistência — tema\n- [CT-CURR-03](ifpr://ficha/CT-CURR-03) Distribuição entre formação geral e formação técnica — tema\n- [CT-CURR-04](ifpr://ficha/CT-CURR-04) Componentes curriculares alinhados ao perfil profissional — tema\n- [CT-CURR-05](ifpr://ficha/CT-CURR-05) Ementas completas e auditáveis — tema\n- [CT-CURR-06](ifpr://ficha/CT-CURR-06) Bibliografia básica e complementar minimamente suficiente — tema\n- [CT-CURR-07](ifpr://ficha/CT-CURR-07) Progressão formativa e organização por períodos — tema\n- [CT-CURR-08](ifpr://ficha/CT-CURR-08) Metodologias e integração curricular compatíveis com a proposta — tema\n- [CT-CURR-09](ifpr://ficha/CT-CURR-09) Inclusão, AEE e flexibilização curricular articulados ao currículo — tema\n- [CT-CURR-10](ifpr://ficha/CT-CURR-10) Representação gráfica coerente com a organização curricular — tema\n- [CT-CURR-11](ifpr://ficha/CT-CURR-11) Temas transversais e formação cidadã no currículo — referencia, tema\n- [CT-CURR-12](ifpr://ficha/CT-CURR-12) Progressão formativa explicitada na organização curricular — tema\n- [CT-CURR-13](ifpr://ficha/CT-CURR-13) Aproveitamento de estudos com critérios e procedimento definidos — tema\n- [CT-CURR-14](ifpr://ficha/CT-CURR-14) Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto — tema\n- [CT-CURR-15](ifpr://ficha/CT-CURR-15) Certificação de conhecimentos anteriores tratada, quando aplicável — tema\n- [CT-CURR-16](ifpr://ficha/CT-CURR-16) Pré-requisitos de ingresso compatíveis com o CNCT — tema\n- [CT-CURR-17](ifpr://ficha/CT-CURR-17) Itinerários formativos coerentes com o CNCT — tema\n- [CT-CURR-18](ifpr://ficha/CT-CURR-18) Componentes obrigatórios e conteúdos legais da FGB contemplados — referencia, citacao, tema (br/lei/1996/9394#art35D)\n- [CT-CURR-19](ifpr://ficha/CT-CURR-19) Integração curricular e práticas profissionais articuladas — tema\n- [CT-CURR-20](ifpr://ficha/CT-CURR-20) Decisão sobre estágio e carga horária compatíveis com o CNCT — tema\n- [CT-CURR-21](ifpr://ficha/CT-CURR-21) Convênios e trâmites de estágio descritos quando houver estágio — tema\n- [CT-CURR-22](ifpr://ficha/CT-CURR-22) AEE não incorporado como componente curricular da matriz ou do histórico — tema\n- [CT-CURR-23](ifpr://ficha/CT-CURR-23) Distribuição semanal das aulas e contraturnos explicitada — tema\n- [CT-CURR-24](ifpr://ficha/CT-CURR-24) Organização pedagógica e orientação do estágio obrigatório — tema\n- [CT-CURR-25](ifpr://ficha/CT-CURR-25) Campos de estágio e equivalência coerentes com o perfil profissional — tema\n- [CT-CURR-26](ifpr://ficha/CT-CURR-26) Educação política e direitos da cidadania no currículo — referencia, citacao, tema (br/lei/1996/9394#art26-par1, br/lei/1996/9394#art26-par9B)\n- [CT-CURR-27](ifpr://ficha/CT-CURR-27) Formato de oferta e carga horária não presencial compatíveis com as DCN da EPT — tema\n- [CT-IDENT-01](ifpr://ficha/CT-IDENT-01) Denominação do curso alinhada ao CNCT — tema\n- [CT-IDENT-02](ifpr://ficha/CT-IDENT-02) Coerência da apresentação institucional do curso — tema\n- [CT-IDENT-03](ifpr://ficha/CT-IDENT-03) Justificativa baseada em demanda territorial e formativa — tema\n- [CT-IDENT-04](ifpr://ficha/CT-IDENT-04) Objetivos formativos claros e operacionais — tema\n- [CT-IDENT-05](ifpr://ficha/CT-IDENT-05) Concepção de EPT explicitada — tema\n… e mais 46 fichas (lista completa no JSON)\n\nTópicos atingidos: `identificacao_oferta`, `justificativa_objetivos`, `concepcao_metodologias`, `perfil_egresso_mundo_trabalho`, `matriz_curricular`, `ementario_bibliografias`, `estagio`, `aproveitamento_certificacao_tfc`, `avaliacao_aprendizagem`, `assistencia_estudantil_permanencia`, `aee_acessibilidade_inclusao`, `corpo_docente_gestao`, `infraestrutura`, `avaliacao_ppc_egressos`, `temas_transversais_cidadania`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-57fc6828",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -10185,6 +10199,20 @@
                 },
                 "confirmado_em": "2026-11-13",
                 "nota": "Preâmbulo."
+              },
+              {
+                "tipo": "fundamenta-se-em",
+                "origem": "br/cne-ceb/parecer/2002/31",
+                "operador": "#secao3",
+                "alvo": "br/lei/1996/9394",
+                "alvo_dispositivo": "#art90",
+                "alcance": null,
+                "evidencia": {
+                  "em": "br/cne-ceb/parecer/2002/31#secao3",
+                  "trecho": "com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado"
+                },
+                "confirmado_em": "2026-11-19",
+                "nota": "Competência do CNE para resolver as questões de transição entre o regime anterior e a LDB."
               },
               {
                 "tipo": "fundamenta-se-em",
@@ -10426,6 +10454,17 @@
                   "#art1"
                 ],
                 "link": "ifpr://norma/br/lei/2026/15468"
+              },
+              {
+                "id": "br/cne-ceb/parecer/2002/31",
+                "titulo": "Parecer CNE/CEB nº 31/2002",
+                "dispositivos": [
+                  "#secao1",
+                  "#secao2",
+                  "#secao3",
+                  "#secao4"
+                ],
+                "link": "ifpr://norma/br/cne-ceb/parecer/2002/31"
               },
               {
                 "id": "br/mec/portaria/2024/902",
@@ -16232,12 +16271,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Base de conhecimento do IFPR, versão `dev-72b3364b` (canal dev), com vigência calculada em 13/11/2026.\n\nConteúdo: 115 normas (base, stubs e externas), 4925 dispositivos de normas, 59 relações entre normas, 8 regras de transição, 202 PPCs, 20059 seções de PPC, 28990 citações normativas em PPCs, 225 cursos, 206 ofertas de ingresso, 218 cursos do CNCT, 28 campi, 80 fichas da revisar-ppc.\n\nNíveis: formação inicial e continuada, médio, pós-graduação, superior.\n\nTipos de seção de PPC (filtro `tipo`): `acessibilidade_inclusao`, `acompanhamento_egresso`, `anexos`, `aproveitamento_estudos`, `atendimento_estudante`, `atividades_complementares`, `avaliacao`, `avaliacao_curso`, `carga_horaria`, `certificados_diplomas`, `concepcao_pedagogica`, `contexto_institucional`, `corpo_docente`, `ementas`, `ensino_pesquisa_extensao`, `estagio_praticas`, `formato_oferta`, `gestao_curso`, `identificacao`, `infraestrutura`, `itinerario_formativo`, `justificativa`, `legislacao`, `matriz_curricular`, `mundo_trabalho`, `objetivos`, `organizacao_curricular`, `perfil_egresso`, `prazo_integralizacao`, `referencias`, `requisitos_acesso`, `trabalho_conclusao`.\n\nCampi (o ID entre crases é o valor do filtro `campus`): [Arapongas](ifpr://campus/arapongas) `arapongas`, [Assis Chateaubriand](ifpr://campus/assis-chateaubriand) `assis-chateaubriand`, [Astorga](ifpr://campus/astorga) `astorga`, [Barracão](ifpr://campus/barracao) `barracao`, [Campo Largo](ifpr://campus/campo-largo) `campo-largo`, [Capanema](ifpr://campus/capanema) `capanema`, [Cascavel](ifpr://campus/cascavel) `cascavel`, [Colombo](ifpr://campus/colombo) `colombo`, [Coronel Vivida](ifpr://campus/coronel-vivida) `coronel-vivida`, [Curitiba](ifpr://campus/curitiba) `curitiba`, [Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`, [Goioerê](ifpr://campus/goioere) `goioere`, [Irati](ifpr://campus/irati) `irati`, [Ivaiporã](ifpr://campus/ivaipora) `ivaipora`, [Jacarezinho](ifpr://campus/jacarezinho) `jacarezinho`, [Jaguariaíva](ifpr://campus/jaguariaiva) `jaguariaiva`, [Londrina](ifpr://campus/londrina) `londrina`, [Palmas](ifpr://campus/palmas) `palmas`, [Paranaguá](ifpr://campus/paranagua) `paranagua`, [Paranavaí](ifpr://campus/paranavai) `paranavai`, [Pinhais](ifpr://campus/pinhais) `pinhais`, [Pitanga](ifpr://campus/pitanga) `pitanga`, [Ponta Grossa](ifpr://campus/ponta-grossa) `ponta-grossa`, [Quedas do Iguaçu](ifpr://campus/quedas-do-iguacu) `quedas-do-iguacu`, [Reitoria](ifpr://campus/reitoria) `reitoria`, [Telêmaco Borba](ifpr://campus/telemaco-borba) `telemaco-borba`, [Umuarama](ifpr://campus/umuarama) `umuarama`, [União da Vitória](ifpr://campus/uniao-da-vitoria) `uniao-da-vitoria`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Base de conhecimento do IFPR, versão `dev-8af865b3` (canal dev), com vigência calculada em 13/11/2026.\n\nConteúdo: 116 normas (base, stubs e externas), 4930 dispositivos de normas, 60 relações entre normas, 8 regras de transição, 202 PPCs, 20059 seções de PPC, 28990 citações normativas em PPCs, 225 cursos, 206 ofertas de ingresso, 218 cursos do CNCT, 28 campi, 80 fichas da revisar-ppc.\n\nNíveis: formação inicial e continuada, médio, pós-graduação, superior.\n\nTipos de seção de PPC (filtro `tipo`): `acessibilidade_inclusao`, `acompanhamento_egresso`, `anexos`, `aproveitamento_estudos`, `atendimento_estudante`, `atividades_complementares`, `avaliacao`, `avaliacao_curso`, `carga_horaria`, `certificados_diplomas`, `concepcao_pedagogica`, `contexto_institucional`, `corpo_docente`, `ementas`, `ensino_pesquisa_extensao`, `estagio_praticas`, `formato_oferta`, `gestao_curso`, `identificacao`, `infraestrutura`, `itinerario_formativo`, `justificativa`, `legislacao`, `matriz_curricular`, `mundo_trabalho`, `objetivos`, `organizacao_curricular`, `perfil_egresso`, `prazo_integralizacao`, `referencias`, `requisitos_acesso`, `trabalho_conclusao`.\n\nCampi (o ID entre crases é o valor do filtro `campus`): [Arapongas](ifpr://campus/arapongas) `arapongas`, [Assis Chateaubriand](ifpr://campus/assis-chateaubriand) `assis-chateaubriand`, [Astorga](ifpr://campus/astorga) `astorga`, [Barracão](ifpr://campus/barracao) `barracao`, [Campo Largo](ifpr://campus/campo-largo) `campo-largo`, [Capanema](ifpr://campus/capanema) `capanema`, [Cascavel](ifpr://campus/cascavel) `cascavel`, [Colombo](ifpr://campus/colombo) `colombo`, [Coronel Vivida](ifpr://campus/coronel-vivida) `coronel-vivida`, [Curitiba](ifpr://campus/curitiba) `curitiba`, [Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`, [Goioerê](ifpr://campus/goioere) `goioere`, [Irati](ifpr://campus/irati) `irati`, [Ivaiporã](ifpr://campus/ivaipora) `ivaipora`, [Jacarezinho](ifpr://campus/jacarezinho) `jacarezinho`, [Jaguariaíva](ifpr://campus/jaguariaiva) `jaguariaiva`, [Londrina](ifpr://campus/londrina) `londrina`, [Palmas](ifpr://campus/palmas) `palmas`, [Paranaguá](ifpr://campus/paranagua) `paranagua`, [Paranavaí](ifpr://campus/paranavai) `paranavai`, [Pinhais](ifpr://campus/pinhais) `pinhais`, [Pitanga](ifpr://campus/pitanga) `pitanga`, [Ponta Grossa](ifpr://campus/ponta-grossa) `ponta-grossa`, [Quedas do Iguaçu](ifpr://campus/quedas-do-iguacu) `quedas-do-iguacu`, [Reitoria](ifpr://campus/reitoria) `reitoria`, [Telêmaco Borba](ifpr://campus/telemaco-borba) `telemaco-borba`, [Umuarama](ifpr://campus/umuarama) `umuarama`, [União da Vitória](ifpr://campus/uniao-da-vitoria) `uniao-da-vitoria`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-72b3364b",
+            "versao": "dev-8af865b3",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -16254,16 +16293,16 @@
               "correspondencias": 168,
               "correspondencias_tabelas": 1,
               "cursos": 225,
-              "dispositivos": 4925,
-              "documentos": 240,
+              "dispositivos": 4930,
+              "documentos": 241,
               "editais": 5,
               "fichas": 80,
               "fichas_referencias": 206,
               "fichas_topicos": 111,
               "marcos": 4,
-              "normas": 115,
-              "normas_citacoes": 722,
-              "normas_metadados": 115,
+              "normas": 116,
+              "normas_citacoes": 748,
+              "normas_metadados": 116,
               "ofertas": 206,
               "ofertas_cursos": 190,
               "ofertas_processos": 206,
@@ -16271,7 +16310,7 @@
               "ppc_suap": 606,
               "ppcs": 202,
               "processos": 2,
-              "relacoes": 59,
+              "relacoes": 60,
               "secoes": 20059,
               "sinonimos_grupos": 9,
               "sinonimos_tipos": 32,
@@ -16279,7 +16318,7 @@
               "topicos": 17,
               "topicos_secoes": 17,
               "transicoes": 8,
-              "vigencias": 244
+              "vigencias": 246
             },
             "tipos_de_secao": [
               "acessibilidade_inclusao",

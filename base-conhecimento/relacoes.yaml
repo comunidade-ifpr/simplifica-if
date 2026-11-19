@@ -84,6 +84,21 @@ relacoes:
     proposta: manual
     nota: Preâmbulo.
 
+  # --- Parecer CNE/CEB nº 31/2002 (atendimento domiciliar) ---
+  - tipo: fundamenta-se-em
+    origem: br/cne-ceb/parecer/2002/31
+    operador: "#secao3"
+    alvo: br/lei/1996/9394
+    alvo_dispositivo: "#art90"
+    evidencia:
+      {
+        em: "br/cne-ceb/parecer/2002/31#secao3",
+        trecho: "com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado",
+      }
+    confirmado_em: "2026-11-19"
+    proposta: manual
+    nota: Competência do CNE para resolver as questões de transição entre o regime anterior e a LDB.
+
   # --- Res. CNE/CP nº 1/2021 (DCN da EPT anterior) ---
   - tipo: revoga
     origem: br/cne-cp/res/2021/1

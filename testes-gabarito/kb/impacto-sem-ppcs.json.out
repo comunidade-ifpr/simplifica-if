@@ -15,6 +15,13 @@
     },
     {
       "tipo": "fundamenta-se-em",
+      "origem": "br/cne-ceb/parecer/2002/31",
+      "operador": "#secao3",
+      "alvo": "br/lei/1996/9394",
+      "alvo_dispositivo": "#art90"
+    },
+    {
+      "tipo": "fundamenta-se-em",
       "origem": "br/cne-ceb/res/2024/2",
       "operador": null,
       "alvo": "br/lei/1996/9394",
@@ -149,6 +156,15 @@
       "dispositivos": [
         "preâmbulo",
         "#art1"
+      ]
+    },
+    {
+      "id": "br/cne-ceb/parecer/2002/31",
+      "dispositivos": [
+        "#secao1",
+        "#secao2",
+        "#secao3",
+        "#secao4"
       ]
     },
     {

@@ -2468,6 +2468,14 @@
   ],
   "norma": [
     {
+      "id": "br/cne-ceb/parecer/2002/31",
+      "rotulo": "Parecer CNE/CEB nº 31/2002",
+      "path": "base-conhecimento/normas/br/pareceres/PARECER_CNE-CEB_31-2002_atendimento-domiciliar.md",
+      "padroes": [
+        "cne\\s*/\\s*ceb\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*31(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2002(?!\\d)"
+      ]
+    },
+    {
       "id": "br/cne-ceb/res/2024/2",
       "rotulo": "Resolução CNE/CEB nº 2/2024",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
