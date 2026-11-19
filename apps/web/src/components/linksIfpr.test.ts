@@ -59,8 +59,13 @@ describe("Markdown", () => {
     assert.include(sintaxe, 'data-link="ifpr://norma/br/cne-cp/res/2021/1"');
   });
 
-  it("no código, o link fica texto", () => {
-    assert.notInclude(html("`ifpr://campus/curitiba`"), "<button");
+  it("a citação entre crases, só com o link, vira o botão; no meio de outro código ou num bloco, fica texto", () => {
+    const citacao = html("O que a lei diz: Lei 11.788/2008, art. 2º (`ifpr://norma/br/lei/2008/11788#art2`).");
+    assert.include(citacao, 'data-link="ifpr://norma/br/lei/2008/11788#art2"');
+    assert.notInclude(citacao, "<code>");
+    assert.include(citacao, ").");
+    assert.notInclude(html("`kb ler ifpr://campus/curitiba`"), "<button");
     assert.notInclude(html("```\nifpr://campus/curitiba\n```"), "<button");
+    assert.notInclude(html("`ifpr://`"), "<button");
   });
 });
