@@ -4,8 +4,10 @@
  * `structuredContent` do servidor, numa linha; a entrada inválida e o ID que não está na base saem
  * com código 1 e a mensagem do servidor no stderr; com `--todas-as-paginas`, uma resposta por linha.
  *
- * Na fixture, cada amostra de `AMOSTRAS` (menos a `etapa`, que o `consultar` recusa) contra a resposta
- * calculada neste processo. Na base real (`SIMPLIFICA_SMOKE=1`), as chamadas gravadas em
+ * Na fixture, o invólucro da CLI: cada amostra de `AMOSTRAS` (menos a `etapa`, que o `consultar`
+ * recusa) contra a resposta calculada neste processo pelo mesmo `chamador`, isto é, a leitura dos
+ * argumentos, a serialização no stdout, o código de saída e a mensagem no stderr. A comparação com o
+ * servidor de verdade é a da base real (`SIMPLIFICA_SMOKE=1`): as chamadas gravadas pelo protocolo em
  * `testes-gabarito/mcp.json`, com a máscara do `gabarito.ts --comparar`, e o `listar_cursos` inteiro.
  * Com `SIMPLIFICA_MCP_EXE`, o filho é o executável.
  */
@@ -72,7 +74,7 @@ async function emLotes<T>(lista: ReadonlyArray<T>, rodar: (item: T) => Promise<E
   return saida;
 }
 
-/** A execução é o resultado do `tools/call`: o `structuredContent` numa linha, ou o erro no stderr. */
+/** A execução corresponde ao resultado esperado: o `structuredContent` numa linha, ou o erro no stderr. */
 function conferir(execucao: Execucao, esperado: Resultado, descricao: string): void {
   if (esperado.isError === true) {
     expect(execucao.codigo, descricao).toBe(1);
@@ -96,14 +98,17 @@ function paginas(execucao: Execucao, nome: string) {
 }
 
 describe("simplifica-mcp consultar", () => {
-  test.each(["normas", "ppcs"] as const)("fixture %s: cada amostra, como o tools/call", async (fixture) => {
-    const lista = chamadas(fixture).filter((c) => c.nome !== "etapa");
-    const esperados = await emProcesso(bancos[fixture], lista);
-    const execucoes = await emLotes(lista, (c: Chamada) =>
-      consultar(bancos[fixture], [c.nome, "--args", JSON.stringify(c.args ?? {})]),
-    );
-    lista.forEach((c, i) => conferir(execucoes[i]!, esperados[i]!, rotulo(c)));
-  });
+  test.each(["normas", "ppcs"] as const)(
+    "fixture %s: o invólucro da CLI imprime a resposta do chamador, ou o erro com código 1",
+    async (fixture) => {
+      const lista = chamadas(fixture).filter((c) => c.nome !== "etapa");
+      const esperados = await emProcesso(bancos[fixture], lista);
+      const execucoes = await emLotes(lista, (c: Chamada) =>
+        consultar(bancos[fixture], [c.nome, "--args", JSON.stringify(c.args ?? {})]),
+      );
+      lista.forEach((c, i) => conferir(execucoes[i]!, esperados[i]!, rotulo(c)));
+    },
+  );
 
   test("--todas-as-paginas segue o cursor e imprime uma resposta por linha", async () => {
     const execucao = await consultar(bancos.ppcs, ["listar_cursos", "--args", '{"limite":1}', "--todas-as-paginas"]);
@@ -134,7 +139,7 @@ describe("simplifica-mcp consultar", () => {
     expect(quebrado.stderr).toContain("--args <json>: esperava a entrada da ferramenta em JSON");
   });
 
-  test.skipIf(!SMOKE)("base real: as chamadas de testes-gabarito/mcp.json", async () => {
+  test.skipIf(!SMOKE)("base real: as chamadas de testes-gabarito/mcp.json, iguais às do servidor", async () => {
     const gravado = JSON.parse(NodeFS.readFileSync(NodePath.join(RAIZ, "testes-gabarito/mcp.json"), "utf8")) as {
       readonly chamadas: ReadonlyArray<{ readonly name: string; readonly arguments: unknown; resultado: Resultado }>;
     };

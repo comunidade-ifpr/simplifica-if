@@ -13,6 +13,7 @@ import * as NodePath from "node:path";
 import { afterAll, describe, expect, layer } from "@effect/vitest";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
+import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
@@ -22,6 +23,7 @@ import * as Stream from "effect/Stream";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
 import * as Http from "../src/http.ts";
 import { Leitura } from "../src/leitura/Leitura.ts";
+import * as PastaTrabalho from "../src/leitura/PastaTrabalho.ts";
 import { INSTRUCOES, layerLeitura } from "../src/servidor.ts";
 import { diretorioTemporario, limparTemporarios } from "./fixture.ts";
 import { criarBancoFixturePpcs, PPC_ENFERMAGEM } from "./fixture-ppcs.ts";
@@ -319,6 +321,29 @@ describe("sobre o Leitura do ambiente", () => {
         // O canal é o do Leitura do ambiente, não o padrão `dev` do `layer({ banco })`.
         expect(sobre.structuredContent).toMatchObject({ base: leitura.base });
         expect(leitura.base.canal).toBe("beta");
+        const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
+        const lido = yield* Effect.promise(() => cliente.callTool(pacote));
+        expect(lido.isError).toBeFalsy();
+        expect(lido.structuredContent).toMatchObject({ dados: { path: "PPC.md" } });
+      }),
+    );
+  });
+});
+
+describe("precedência do contexto da chamada", () => {
+  // Uma `PastaTrabalho` também no contexto do registro (aqui, uma pasta vazia): a da sessão, que vem no
+  // contexto da chamada, vale mais. Trava a chamada no contexto de quem chama (o `chamador`).
+  const vazia = diretorioTemporario("simplifica-mcp-http-registro-");
+  const camada = Http.layerSobreLeitura().pipe(
+    Layer.provideMerge(layerLeitura({ banco, canal: "dev" })),
+    Layer.provideMerge(PastaTrabalho.layer({ pasta: vazia })),
+    Layer.provide(NodeServices.layer),
+  );
+  layer(camada, { excludeTestServices: true })("serviço da chamada e do registro", (it) => {
+    it.effect("a pasta da sessão ganha da pasta do registro", () =>
+      Effect.gen(function* () {
+        const servidor = yield* Http.ServidorMcpHttp;
+        const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "sessao", pastaTrabalho: pasta }));
         const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
         const lido = yield* Effect.promise(() => cliente.callTool(pacote));
         expect(lido.isError).toBeFalsy();

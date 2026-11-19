@@ -41,7 +41,7 @@ import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { prepararAtualizacao } from "./atualizacao.ts";
-import { chamarFerramenta } from "./ferramentas/registrar.ts";
+import { chamador, NOMES_FERRAMENTAS } from "./ferramentas/registrar.ts";
 import { layerHandlers } from "./ferramentas/toolkit.ts";
 import { CANAIS, CANAIS_DISTRIBUICAO, type Canal } from "@simplifica-if/kb/canal";
 import * as Leitura from "./leitura/Leitura.ts";
@@ -55,10 +55,10 @@ import {
 
 /**
  * Uso que os parsers de flag não pegam: banco ausente, canal fora da lista, pasta inexistente e, no
- * `consultar`, `--args` que não é JSON e a ferramenta `etapa`.
+ * `consultar`, a ferramenta desconhecida, `--args` que não é JSON e a ferramenta `etapa`.
  */
 export class UsoInvalido extends Schema.TaggedError<UsoInvalido>()("UsoInvalido", {
-  motivo: Schema.Literals(["sem-banco", "canal", "pasta-trabalho", "args", "etapa"]),
+  motivo: Schema.Literals(["sem-banco", "canal", "pasta-trabalho", "ferramenta", "args", "etapa"]),
   valor: Schema.optionalKey(Schema.String),
 }) {
   override get message(): string {
@@ -69,6 +69,8 @@ export class UsoInvalido extends Schema.TaggedError<UsoInvalido>()("UsoInvalido"
         return `--canal <canal>: esperava um destes valores: ${CANAIS.join(", ")} (veio "${this.valor ?? ""}")`;
       case "pasta-trabalho":
         return `pasta de trabalho não encontrada: ${this.valor ?? ""}`;
+      case "ferramenta":
+        return `ferramenta desconhecida: ${this.valor ?? ""}. As ferramentas são: ${NOMES_FERRAMENTAS.filter((n) => n !== "etapa").join(", ")}`;
       case "args":
         return `--args <json>: esperava a entrada da ferramenta em JSON (veio ${this.valor ?? ""})`;
       case "etapa":
@@ -132,6 +134,9 @@ const consultar = Command.make(
   Effect.fn("simplifica-mcp.consultar")(function* (opcoes) {
     const path = yield* Path.Path;
     if (opcoes.ferramenta === "etapa") return yield* new UsoInvalido({ motivo: "etapa" });
+    if (!NOMES_FERRAMENTAS.includes(opcoes.ferramenta)) {
+      return yield* new UsoInvalido({ motivo: "ferramenta", valor: opcoes.ferramenta });
+    }
     if (Option.isNone(opcoes.banco)) return yield* new UsoInvalido({ motivo: "sem-banco" });
     const argumentos = yield* decodificarArgs(opcoes.args).pipe(
       Effect.catchTags({ SchemaError: () => Effect.fail(new UsoInvalido({ motivo: "args", valor: opcoes.args })) }),
@@ -149,6 +154,7 @@ const consultar = Command.make(
     });
     // um banco aberto para todas as páginas
     return yield* Effect.gen(function* () {
+      const chamarFerramenta = yield* chamador;
       let entrada = argumentos;
       for (;;) {
         const resposta = yield* chamarFerramenta(opcoes.ferramenta, entrada);

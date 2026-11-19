@@ -57,42 +57,51 @@ const DECODIFICADORES: ReadonlyMap<string, (argumentos: unknown) => Effect.Effec
   FERRAMENTAS.map((ferramenta) => [ferramenta.nome, decodificadorDeEntrada(ferramenta.nome, ferramenta.entrada)]),
 );
 
+/** Os nomes das ferramentas que o `chamador` aceita. */
+export const NOMES_FERRAMENTAS: ReadonlyArray<string> = FERRAMENTAS.map((f) => f.nome);
+
 /**
- * Uma chamada de ferramenta, como o servidor a faz: a entrada conferida com a mensagem de `validacao.ts`
- * e o `handle` do Toolkit, que a confere de novo e codifica a resposta pelo `outputSchema`. A
- * `Resposta` é o `structuredContent` do servidor; o `simplifica-mcp consultar` a imprime.
+ * O chamador das ferramentas, com o Toolkit do ambiente (`FerramentasIfpr`, os handlers sobre o
+ * `Leitura`) resolvido uma vez. Cada chamada, como o servidor a faz: a entrada conferida com a mensagem
+ * de `validacao.ts` e o `handle` do Toolkit, que a confere de novo e codifica a resposta pelo
+ * `outputSchema`. A `Resposta` é o `structuredContent` do servidor; o `simplifica-mcp consultar` a
+ * imprime.
+ *
+ * A chamada roda no contexto de quem chama: um serviço da chamada (a `PastaTrabalho` da sessão HTTP, o
+ * span, as anotações de log) vale mais que o do registro.
  *
  * Falha com `EntradaInvalida` (nome desconhecido, entrada inválida, ID que não está na base) ou
  * `FalhaNaBase`; uma resposta que não confere com o `outputSchema` é defeito.
  */
-export const chamarFerramenta = Effect.fn("simplifica-mcp.chamarFerramenta")(
-  function* (nome: string, argumentos: unknown) {
-    const decodificar = DECODIFICADORES.get(nome);
-    if (decodificar === undefined) {
-      return yield* new EntradaInvalida({
-        mensagem: `ferramenta desconhecida: ${nome}. As ferramentas são: ${FERRAMENTAS.map((f) => f.nome).join(", ")}`,
-      });
-    }
-    const kit = yield* FerramentasIfpr;
-    yield* decodificar(argumentos);
-    const saida = yield* kit.handle(
-      nome as keyof typeof FerramentasIfpr.tools,
-      (argumentos ?? {}) as never,
-      undefined,
-      OPCOES_ENTRADA,
-    );
-    const ultimo = yield* Stream.run(saida, Sink.last());
-    if (Option.isNone(ultimo)) return yield* Effect.die(`a ferramenta ${nome} terminou sem resposta`);
-    return ultimo.value.result as Resposta<unknown>;
-  },
-  Effect.catchTags({ AiError: (erro) => Effect.die(erro) }),
-);
+export const chamador = Effect.gen(function* () {
+  const kit = yield* FerramentasIfpr;
+  return Effect.fn("simplifica-mcp.chamarFerramenta")(
+    function* (nome: string, argumentos: unknown) {
+      const decodificar = DECODIFICADORES.get(nome);
+      if (decodificar === undefined) {
+        return yield* new EntradaInvalida({
+          mensagem: `ferramenta desconhecida: ${nome}. As ferramentas são: ${NOMES_FERRAMENTAS.join(", ")}`,
+        });
+      }
+      yield* decodificar(argumentos);
+      const saida = yield* kit.handle(
+        nome as keyof typeof FerramentasIfpr.tools,
+        (argumentos ?? {}) as never,
+        undefined,
+        OPCOES_ENTRADA,
+      );
+      const ultimo = yield* Stream.run(saida, Sink.last());
+      if (Option.isNone(ultimo)) return yield* Effect.die(`a ferramenta ${nome} terminou sem resposta`);
+      return ultimo.value.result as Resposta<unknown>;
+    },
+    Effect.catchTags({ AiError: (erro) => Effect.die(erro) }),
+  );
+});
 
 /** Registra as ferramentas de `FERRAMENTAS` no `McpServer` do ambiente. */
 export const registrarFerramentas = Effect.gen(function* () {
   const servidor = yield* McpServer.McpServer;
-  // o Toolkit e os handlers do ambiente, para as chamadas, que rodam no contexto do servidor
-  const contexto = yield* Effect.context<Effect.Services<ReturnType<typeof chamarFerramenta>>>();
+  const chamarFerramenta = yield* chamador;
   for (const ferramenta of FERRAMENTAS) {
     const textoCompleto = ferramenta.textoCompleto as (resposta: Resposta<unknown>) => string;
     yield* servidor.addTool({
@@ -109,7 +118,6 @@ export const registrarFerramentas = Effect.gen(function* () {
         observarChamada(
           { ferramenta: ferramenta.nome },
           chamarFerramenta(ferramenta.nome, argumentos).pipe(
-            Effect.provideContext(contexto),
             Effect.map(
               (resposta) =>
                 new McpSchema.CallToolResult({

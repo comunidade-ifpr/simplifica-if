@@ -64,7 +64,7 @@ Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packag
 
 ## Uso por scripts
 
-Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout ([plano da DENTEC](../../docs/plans/dentec-ferramentas.md), decisão 6). Ele roda a ferramenta como o servidor (`chamarFerramenta`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
+Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout ([plano da DENTEC](../../docs/plans/dentec-ferramentas.md), decisão 6). Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
 
 ```bash
 simplifica-mcp consultar ficha_curso --args '{"curso":"curitiba/tecnico-em-enfermagem"}' --banco ~/SimplificaIF/kb.sqlite
@@ -73,7 +73,8 @@ SIMPLIFICA_KB=kb.sqlite simplifica-mcp consultar listar_cursos --todas-as-pagina
 
 - **Entrada:** `--args` é a entrada da ferramenta, um objeto JSON (padrão `{}`); o banco vem de `--banco` ou `SIMPLIFICA_KB`, e `--pasta-trabalho` (padrão: o diretório atual) vale para o `arquivo` do `pacote_contexto`. Não há atualização da base (`--pasta-atualizacao`) nem download.
 - **Páginas:** as listas são paginadas pelo teto de texto da IA, não só pelo `limite` (o `listar_cursos` dá 9 páginas para os 225 cursos). Com `--todas-as-paginas`, o `consultar` segue o `pagina.cursor` no mesmo processo e imprime uma resposta por linha (JSONL), cada uma válida no `outputSchema`; quem lê junta os itens.
-- **Erros, como no servidor:** lista sem resultado sai com 0 e o aviso `nao-encontrado`; entrada inválida, ID que não está na base, falha da ferramenta, `--args` que não é JSON e banco ausente saem com 1 e a mensagem no stderr. A `etapa` é recusada: só faz sentido numa conversa.
+- **Ordem dos argumentos:** as flags vêm depois de `consultar <ferramenta>`. Antes de `consultar`, são as do servidor e o `consultar` as recusa.
+- **Erros, como no servidor:** lista sem resultado sai com 0 e o aviso `nao-encontrado`; entrada inválida, ID que não está na base, falha da ferramenta, `--args` que não é JSON e banco ausente saem com 1 e a mensagem no stderr. A `etapa` é recusada: só faz sentido numa conversa. Um erro de uso (flag desconhecida, fora de lugar ou sem valor) imprime a ajuda no stdout, com código 1: o stdout só é a resposta quando o código é 0.
 
 O teste é `test/transversal/consultar.test.ts`: na fixture, cada amostra contra o resultado do `tools/call`; na base real (`pnpm mcp:smoke`), as chamadas gravadas em `testes-gabarito/mcp.json`, com a máscara do `gabarito.ts`.
 
@@ -131,7 +132,7 @@ packages/mcp/
 │   │   └── conteudos.ts     # dados e texto do PPC sem seção, do CNCT, do campus e da ficha
 │   ├── ferramentas/         # um arquivo por ferramenta (Tool.make, descrição, texto)
 │   │   ├── toolkit.ts       # FerramentasIfpr (Toolkit) e layerHandlers
-│   │   └── registrar.ts     # chamarFerramenta e registrarFerramentas, sobre McpServer.addTool
+│   │   └── registrar.ts     # chamador (uma chamada de ferramenta) e registrarFerramentas, sobre McpServer.addTool
 │   ├── toolkit.ts           # export @simplifica-if/mcp/toolkit
 │   └── rpc.ts               # export @simplifica-if/mcp/rpc: GrupoLeitura (ferramentas e links ifpr://) e layerHandlersRpc
 └── test/                    # fixtures com o DDL do kb; testes por ferramenta, equivalência, RPC, stdio

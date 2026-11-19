@@ -50,7 +50,7 @@ packages/mcp/test/envelope.test.ts	8	0
 packages/mcp/test/equivalencia-schemas.test.ts	1	0
 packages/mcp/test/explorar.test.ts	7	0
 packages/mcp/test/ferramentas.test.ts	17	0
-packages/mcp/test/http.test.ts	11	0
+packages/mcp/test/http.test.ts	12	0
 packages/mcp/test/instrucoes.test.ts	4	0
 packages/mcp/test/links.test.ts	7	0
 packages/mcp/test/normas.test.ts	33	0
@@ -116,4 +116,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1563	37
+TOTAL	1564	37

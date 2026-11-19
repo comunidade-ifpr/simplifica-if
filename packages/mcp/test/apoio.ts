@@ -17,7 +17,7 @@ import { HttpRouter } from "effect/http";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import type { Canal } from "@simplifica-if/kb/canal";
 import type { Resposta } from "../src/contratos.ts";
-import { chamarFerramenta } from "../src/ferramentas/registrar.ts";
+import { chamador } from "../src/ferramentas/registrar.ts";
 import { layerHandlers } from "../src/ferramentas/toolkit.ts";
 import { INSTRUCOES, layerLeitura, layerRegistro, NOME_SERVIDOR, PROTOCOLOS, VERSAO_PACOTE } from "../src/servidor.ts";
 import { OPCOES_ENTRADA } from "../src/validacao.ts";
@@ -37,9 +37,9 @@ export interface FerramentaTestada<D extends Schema.Top = Schema.Top> {
 export const camadaFerramentas = (banco: string, canal: Canal = "dev") =>
   layerHandlers.pipe(Layer.provideMerge(layerLeitura({ banco, canal })));
 
-/** Uma chamada como o transporte a faz (`chamarFerramenta`), sem o protocolo: a `Resposta` e o texto para a IA. */
+/** Uma chamada como o transporte a faz (o `chamador`), sem o protocolo: a `Resposta` e o texto para a IA. */
 export const responder = <D extends Schema.Top>(ferramenta: FerramentaTestada<D>, args: unknown) =>
-  chamarFerramenta(ferramenta.nome, args).pipe(
+  Effect.flatMap(chamador, (chamarFerramenta) => chamarFerramenta(ferramenta.nome, args)).pipe(
     Effect.map((resultado) => {
       const resposta = resultado as Resposta<D["Type"]>;
       return { resposta, texto: ferramenta.textoCompleto(resposta) };
