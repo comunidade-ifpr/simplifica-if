@@ -2,6 +2,8 @@ import { assert, describe, it } from "@effect/vitest";
 import type { Evento } from "@simplifica-if/contratos-app";
 import {
   type Acao,
+  aplicarEvento,
+  aplicarItem,
   type EstadoConversa,
   estadoInicial,
   foiInterrompido,
@@ -36,7 +38,7 @@ describe("reduzir: texto", () => {
     );
     assert.strictEqual(estado.fase, "pronta");
     assert.deepStrictEqual(
-      estado.itens.map((item) => [item.tipo, "texto" in item ? item.texto : item.id]),
+      estado.itens.map((item) => [item.tipo, "texto" in item ? item.texto : "id" in item ? item.id : item.chave]),
       [
         ["pessoa", "Olá"],
         ["resposta", "Carga horária: 1.200 h."],
@@ -182,5 +184,32 @@ describe("rotuloFerramenta", () => {
     assert.strictEqual(rotuloAprovacao("xyz_q"), "uma ação no computador");
     assert.strictEqual(rotuloAprovacao("mcp__ifpr__buscar_norma"), "Buscar norma");
     assert.strictEqual(rotuloFerramenta("Ferramenta"), "Ferramenta");
+  });
+});
+
+describe("MudancasPasta", () => {
+  it("vira a linha da pasta logo depois da mensagem da pessoa, só com os nomes", () => {
+    let estado = aplicarItem(estadoInicial("claude"), {
+      _tag: "Mensagem",
+      turno: 1,
+      ordem: 1,
+      texto: "Confira de novo",
+    });
+    estado = aplicarEvento(estado, {
+      _tag: "MudancasPasta",
+      novos: [{ nome: "Ata.docx", texto: ".simplifica/textos/Ata.docx.md" }],
+      mudados: [{ nome: "Minuta.docx", semTexto: "O arquivo está protegido." }],
+      removidos: ["velho.md"],
+    });
+    assert.deepStrictEqual(
+      estado.itens.map((item) => item.tipo),
+      ["pessoa", "pasta"],
+    );
+    assert.deepInclude(estado.itens[1], {
+      novos: ["Ata.docx"],
+      mudados: ["Minuta.docx"],
+      removidos: ["velho.md"],
+      semTexto: ["Minuta.docx"],
+    });
   });
 });

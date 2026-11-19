@@ -5,7 +5,8 @@
  * Texto: o `TextoParcial` se junta à resposta aberta mais recente (ou abre uma); o `TextoFinal` a
  * fecha com o texto completo, que vale mais que a soma dos parciais (no Claude, os parciais chegam
  * todos no fim; no Codex, cada bloco tem os parciais e depois o final). Sem resposta aberta, o
- * `TextoFinal` vira uma resposta nova. O `FimTurno` fecha o que ficou aberto.
+ * `TextoFinal` vira uma resposta nova. O `FimTurno` fecha o que ficou aberto. O `MudancasPasta` (o que
+ * a pessoa mexeu na pasta fora da conversa) vira uma linha logo depois da mensagem dela.
  *
  * Uma conversa gravada (`conversa.carregar`) se remonta com os mesmos passos (`aplicarItem`): a
  * mensagem da pessoa, os eventos e as decisões de aprovação, na ordem.
@@ -14,7 +15,7 @@ import type {
   ConversaGravada,
   Decisao,
   EstadoConversa as EstadoGravado,
-  Evento,
+  EventoConversa,
   ItemConversa,
   NotaResposta,
   Provider,
@@ -28,6 +29,15 @@ import { ehFerramentaEtapa, type MarcaEtapa, marcaDaEntrada } from "./etapas.ts"
  */
 export type Item =
   | { readonly tipo: "pessoa"; readonly chave: string; readonly texto: string }
+  | {
+      readonly tipo: "pasta";
+      readonly chave: string;
+      readonly novos: ReadonlyArray<string>;
+      readonly mudados: ReadonlyArray<string>;
+      readonly removidos: ReadonlyArray<string>;
+      /** Os documentos novos ou mudados que ficaram sem versão em texto (a IA recebeu o motivo). */
+      readonly semTexto: ReadonlyArray<string>;
+    }
   | { readonly tipo: "resposta"; readonly chave: string; readonly texto: string; readonly final: boolean }
   | {
       readonly tipo: "ferramenta";
@@ -117,7 +127,7 @@ export type Acao =
   | { readonly tipo: "avaliada"; readonly turno: number; readonly nota: NotaResposta | null }
   | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
   | { readonly tipo: "enviada"; readonly texto: string }
-  | { readonly tipo: "evento"; readonly evento: Evento }
+  | { readonly tipo: "evento"; readonly evento: EventoConversa }
   /** Abrindo uma conversa gravada, pelo id. */
   | { readonly tipo: "abrindo"; readonly sessao: string }
   | { readonly tipo: "carregada"; readonly gravada: ConversaGravada }
@@ -181,8 +191,19 @@ export function foiInterrompido(motivo: string): boolean {
   return /interrupt|cancel|abort/i.test(motivo);
 }
 
-export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoConversa {
+export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): EstadoConversa {
   switch (evento._tag) {
+    case "MudancasPasta":
+      return comItem(estado, (chave) => ({
+        tipo: "pasta",
+        chave,
+        novos: evento.novos.map((arquivo) => arquivo.nome),
+        mudados: evento.mudados.map((arquivo) => arquivo.nome),
+        removidos: evento.removidos,
+        semTexto: [...evento.novos, ...evento.mudados]
+          .filter((arquivo) => arquivo.semTexto !== undefined)
+          .map((arquivo) => arquivo.nome),
+      }));
     case "TextoParcial": {
       const aberta = respostaAberta(estado.itens);
       if (aberta < 0) {

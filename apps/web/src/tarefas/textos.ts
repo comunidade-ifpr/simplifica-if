@@ -267,3 +267,38 @@ function linhaDoAnexo(anexo: AnexoNaNota): string {
 export function comArquivos(texto: string, anexos: ReadonlyArray<AnexoNaNota>): string {
   return anexos.length === 0 ? texto : `${texto}\n\nArquivos na pasta:\n${anexos.map(linhaDoAnexo).join("\n")}`;
 }
+
+/* ================================================================== mudanças na pasta */
+
+const nomes = (lista: ReadonlyArray<string>) =>
+  lista.length <= 3 ? lista.join(", ") : `${lista.slice(0, 3).join(", ")} e mais ${lista.length - 3}`;
+
+/**
+ * A linha da conversa com o que a pessoa mexeu na pasta fora dela (`MudancasPasta`), que foi à IA
+ * junto com a mensagem: "Na pasta, desde a última resposta: 1 novo (Ata.docx); 2 mudados (…)".
+ */
+export function resumoMudancasPasta(mudancas: {
+  readonly novos: ReadonlyArray<string>;
+  readonly mudados: ReadonlyArray<string>;
+  readonly removidos: ReadonlyArray<string>;
+  readonly semTexto?: ReadonlyArray<string>;
+}): string {
+  const partes = [
+    [mudancas.novos, "novo", "novos"],
+    [mudancas.mudados, "mudado", "mudados"],
+    [mudancas.removidos, "removido", "removidos"],
+  ] as const;
+  const texto = partes
+    .filter(([lista]) => lista.length > 0)
+    .map(
+      ([lista, um, varios]) =>
+        `${lista.length} ${lista.length === 1 ? um : varios} (${nomes(lista.map((nome) => nome.replace(/[\r\n]+/g, " ")))})`,
+    )
+    .join("; ");
+  const semTexto = mudancas.semTexto ?? [];
+  const aviso =
+    semTexto.length === 0
+      ? ""
+      : ` Sem versão em texto para a IA: ${nomes(semTexto.map((nome) => nome.replace(/[\r\n]+/g, " ")))}; a resposta pode não considerá-${semTexto.length === 1 ? "lo" : "los"}.`;
+  return `Na pasta, desde a última resposta: ${texto}. A IA foi avisada.${aviso}`;
+}

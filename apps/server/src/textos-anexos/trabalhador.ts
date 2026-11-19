@@ -1,35 +1,54 @@
 // @effect-diagnostics nodeBuiltinImport:off -- ponto de entrada do Worker: `worker_threads`
 /**
- * O Worker da versão em texto dos anexos (`TextosAnexos.ts`): recebe os bytes de um `.docx`, roda
- * `docxParaMarkdown` (síncrono, com a árvore do XML na memória) e devolve o Markdown.
+ * O Worker da versão em texto dos anexos (`TextosAnexos.ts`): recebe os bytes e o formato, roda o
+ * conversor (`docxParaMarkdown` e `odtParaMarkdown`, síncronos, com a árvore do XML na memória; `pdfParaMarkdown`, com o
+ * pdfjs na mesma thread) e devolve o Markdown.
  *
  * Roda com `resourceLimits` e tempo máximo impostos por quem o cria (`WorkerLimitado.ts`); aqui só se
- * distingue o erro esperado (`ErroDocx`: arquivo protegido, corrompido, grande demais, sem texto), que
- * volta como os atributos (`DadosErroDocx`; quem criou o Worker monta a frase), do defeito.
+ * distingue o erro esperado (`ErroDocx`, `ErroPdf`: arquivo protegido, corrompido, grande demais, sem
+ * texto), que volta como a frase para a pessoa (as funções de mensagem são puras), do defeito.
  */
 import * as NodeWorkerThreads from "node:worker_threads";
-import { type DadosErroDocx, ErroDocx } from "@simplifica-if/docx/erro";
+import { ErroDocx, mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { docxParaMarkdown } from "@simplifica-if/docx/markdown";
+import { odtParaMarkdown } from "@simplifica-if/docx/odt";
+import { ErroPdf, mensagemErroPdf } from "@simplifica-if/pdf/erro";
+import { pdfParaMarkdown } from "@simplifica-if/pdf/markdown";
 
-export type PedidoTexto = { bytes: Uint8Array };
+/** Os formatos que o Worker converte (a extensão sem o ponto). */
+export type FormatoTexto = "docx" | "odt" | "pdf";
+
+export type PedidoTexto = { bytes: Uint8Array; formato: FormatoTexto };
 
 export type RespostaTexto =
   | { ok: true; markdown: string }
-  | { ok: false; arquivoInvalido: DadosErroDocx }
+  | { ok: false; arquivoInvalido: string }
   | { ok: false; defeito: string };
+
+const converter = (pedido: PedidoTexto): string | Promise<string> => {
+  switch (pedido.formato) {
+    case "docx":
+      return docxParaMarkdown(pedido.bytes);
+    case "odt":
+      return odtParaMarkdown(pedido.bytes);
+    case "pdf":
+      return pdfParaMarkdown(pedido.bytes);
+  }
+};
+
+const responder = async (pedido: PedidoTexto): Promise<RespostaTexto> => {
+  try {
+    return { ok: true, markdown: await converter(pedido) };
+  } catch (erro) {
+    if (erro instanceof ErroDocx) return { ok: false, arquivoInvalido: mensagemErroDocx(erro.dados) };
+    if (erro instanceof ErroPdf) return { ok: false, arquivoInvalido: mensagemErroPdf(erro.dados) };
+    return { ok: false, defeito: erro instanceof Error ? erro.message : String(erro) };
+  }
+};
 
 const porta = NodeWorkerThreads.parentPort;
 if (porta !== null)
   porta.once("message", (pedido: PedidoTexto) => {
-    let resposta: RespostaTexto;
-    try {
-      resposta = { ok: true, markdown: docxParaMarkdown(pedido.bytes) };
-    } catch (erro) {
-      resposta =
-        erro instanceof ErroDocx
-          ? { ok: false, arquivoInvalido: erro.dados }
-          : { ok: false, defeito: erro instanceof Error ? erro.message : String(erro) };
-    }
     // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
-    porta.postMessage(resposta);
+    void responder(pedido).then((resposta) => porta.postMessage(resposta));
   });

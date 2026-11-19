@@ -10,6 +10,7 @@ import { NivelEsforco } from "@simplifica-if/motor/estados-provider";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
+import { MudancasPasta } from "./pasta.ts";
 import { AvisoNaoAceito } from "./preferencias.ts";
 
 /** A pasta de trabalho pedida não é um caminho absoluto de uma pasta que existe. */
@@ -93,10 +94,17 @@ export const ItemMensagem = Schema.TaggedStruct("Mensagem", {
   ordem: Schema.Number,
   texto: Schema.String,
 });
+/**
+ * Um evento do turno: os do motor (o provider) e os do app, hoje só `MudancasPasta` (o que a pessoa
+ * mexeu na pasta fora da conversa), que abre o turno logo depois da mensagem.
+ */
+export const EventoConversa = Schema.Union([Evento, MudancasPasta]);
+export type EventoConversa = typeof EventoConversa.Type;
+
 export const ItemEvento = Schema.TaggedStruct("EventoTurno", {
   turno: Schema.Number,
   ordem: Schema.Number,
-  evento: Evento,
+  evento: EventoConversa,
 });
 /** A resposta da pessoa a um `PedidoAprovacao` do turno. */
 export const ItemDecisao = Schema.TaggedStruct("DecisaoAprovacao", {
@@ -144,7 +152,7 @@ export class GrupoConversa extends RpcGroup.make(
    */
   Rpc.make("conversa.enviar", {
     payload: Schema.Struct({ sessao: Schema.String, texto: Schema.String }),
-    success: Evento,
+    success: EventoConversa,
     error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida, AvisoNaoAceito]),
     stream: true,
   }),

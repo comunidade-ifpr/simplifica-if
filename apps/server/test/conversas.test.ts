@@ -22,7 +22,7 @@ import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as TestClock from "effect/testing/TestClock";
-import type { ItemConversa } from "@simplifica-if/contratos-app";
+import type { EventoConversa, ItemConversa } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import type { SkillDoApp } from "@simplifica-if/mcp/skills";
@@ -127,7 +127,7 @@ const rodar = Effect.gen(function* () {
 /** Avança o relógio e deixa rodar o que acordou. */
 const avancar = (duracao: Duration.Input) => Effect.andThen(TestClock.adjust(duracao), rodar);
 
-const tags = (eventos: Iterable<Motor.Evento>) => [...eventos].map((evento) => evento._tag);
+const tags = (eventos: Iterable<EventoConversa>) => [...eventos].map((evento) => evento._tag);
 
 const eventosDe = (itens: ReadonlyArray<ItemConversa>) =>
   itens.flatMap((item) => (item._tag === "EventoTurno" ? [item.evento] : []));

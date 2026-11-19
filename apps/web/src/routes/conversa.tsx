@@ -398,7 +398,7 @@ function Conversa({
               </div>
             ),
           )}
-          {estado.fase === "respondendo" && ultimo?.tipo === "pessoa" ? (
+          {estado.fase === "respondendo" && (ultimo?.tipo === "pessoa" || ultimo?.tipo === "pasta") ? (
             <p className="flex items-center gap-2 text-muted-foreground text-sm">
               <Spinner size="sm" /> Pensando…
             </p>

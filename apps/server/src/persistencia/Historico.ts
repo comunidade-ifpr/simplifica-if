@@ -15,7 +15,7 @@ import {
   type AvaliacaoResposta,
   Decisao,
   type EstadoConversa,
-  Evento,
+  EventoConversa,
   type ItemConversa,
   type NivelEsforco,
   type NotaResposta,
@@ -114,7 +114,7 @@ interface LinhaEvento {
   readonly dados: string;
 }
 
-const EventoJson = Schema.fromJsonString(Evento);
+const EventoJson = Schema.fromJsonString(EventoConversa);
 const MensagemJson = Schema.fromJsonString(Schema.Struct({ texto: Schema.String }));
 const DecisaoJson = Schema.fromJsonString(Schema.Struct({ aprovacao: Schema.String, decisao: Decisao }));
 const codificarEvento = Schema.encodeEffect(EventoJson);

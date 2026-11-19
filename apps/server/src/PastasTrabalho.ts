@@ -27,6 +27,7 @@
  *   começam com `.` (o `.simplifica/` das skills) e links simbólicos ficam de fora de tudo.
  */
 import * as Cause from "effect/Cause";
+import * as Clock from "effect/Clock";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -37,12 +38,15 @@ import * as Path from "effect/Path";
 import type * as PlatformError from "effect/PlatformError";
 import * as Ref from "effect/Ref";
 import * as Schema from "effect/Schema";
+import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import {
   type ArquivoAnexado,
+  type ArquivoMudado,
   type ArquivoPasta,
   ehExtensaoDocumento,
   FalhaPasta,
+  type MudancasPasta,
   type PastaConversa,
   type PrevisaoDesfazer,
 } from "@simplifica-if/contratos-app";
@@ -69,6 +73,17 @@ export const LIMITES: Limites = {
   copias: 10,
   anexoBytes: 50 * 1024 * 1024,
 };
+
+/** Quantos documentos ganham a versão em texto no começo de um turno, e por quanto tempo (cada um pode levar até 30 s). */
+const TEXTOS_POR_TURNO = 10;
+const TEMPO_DE_TEXTOS_MS = 60_000;
+
+/** O índice dos textos da pasta: de cada documento, a impressão do conteúdo convertido e se o texto saiu. */
+const INDICE_TEXTOS = `${TextosAnexos.PASTA_TEXTOS}/indice.json`;
+const IndiceTextos = Schema.Record(Schema.String, Schema.Struct({ origem: Schema.String, texto: Schema.Boolean }));
+type IndiceTextos = { [nome: string]: (typeof IndiceTextos.Type)[string] };
+const lerIndiceJson = Schema.decodeUnknownEffect(Schema.fromJsonString(IndiceTextos));
+const codificarIndiceJson = Schema.encodeEffect(Schema.fromJsonString(IndiceTextos));
 
 /** Onde "Salvar o relato" grava, dentro da raiz e fora da pasta de qualquer tarefa (M1.12). */
 export const PASTA_RELATOS = "Relatos de erro";
@@ -120,8 +135,12 @@ export class PastasTrabalho extends Context.Service<
     readonly gravarRelato: (nome: string, conteudo: string) => Effect.Effect<string, FalhaPasta>;
     /** Os arquivos da pasta da conversa e a previsão do Desfazer. */
     readonly ver: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
-    /** A cópia de antes do turno; nunca falha (o erro vai para o log, e o turno segue sem cópia). */
-    readonly guardarCopia: (conversa: string, turno: number, pasta: string) => Effect.Effect<void>;
+    /**
+     * A cópia de antes do turno e o que a pessoa mexeu na pasta desde o fim do turno anterior, fora da
+     * conversa (com a versão em texto dos documentos novos ou mudados, como no anexo); `undefined` sem
+     * mudança ou sem retrato para comparar. Nunca falha: o erro vai para o log, e o turno segue sem cópia.
+     */
+    readonly guardarCopia: (conversa: string, turno: number, pasta: string) => Effect.Effect<MudancasPasta | undefined>;
     /** O retrato do fim do turno, ao lado da cópia; nunca falha. */
     readonly fecharTurno: (conversa: string, turno: number, pasta: string) => Effect.Effect<void>;
     readonly desfazer: (
@@ -194,7 +213,10 @@ const soNoLog =
       ),
     );
 
-/** A pasta sem os nomes que começam com `.`, sem seguir links. */
+/** A trava do Word com o documento aberto (`~$Minuta.docx`) e o temporário dele ao salvar (`~WRL0001.tmp`). */
+const ehTemporarioDoWord = (nome: string) => nome.startsWith("~$") || /^~WRL\d+\.tmp$/i.test(nome);
+
+/** A pasta sem os nomes que começam com `.` nem os temporários do Word, sem seguir links. */
 const varrer = Effect.fn("PastasTrabalho.varrer")(function* (pasta: string, maximo: number) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -210,7 +232,7 @@ const varrer = Effect.fn("PastasTrabalho.varrer")(function* (pasta: string, maxi
     );
     for (const entrada of entradas) {
       if (arquivos.length > maximo) return;
-      if (entrada.name.startsWith(".")) continue;
+      if (entrada.name.startsWith(".") || ehTemporarioDoWord(entrada.name)) continue;
       const rel = relativo === "" ? entrada.name : `${relativo}/${entrada.name}`;
       if (entrada.type === "SymbolicLink") links.push(rel);
       else if (entrada.type === "Directory") {
@@ -467,6 +489,7 @@ const copiarTurno = Effect.fn("PastasTrabalho.copiarTurno")(function* (
   for (const antigo of turnos.slice(limites.copias)) {
     yield* fs.remove(path.join(copias, String(antigo)), { recursive: true, force: true });
   }
+  return manifesto;
 });
 
 /** Grava o retrato do fim do turno ao lado da cópia de antes dele (se houver cópia completa). */
@@ -565,33 +588,66 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     );
   }, comMotivo("Não foi possível criar a pasta da tarefa em Documentos/Simplifica IF."));
 
+  /* ---------------------------------------------------------------- versão em texto */
+
+  /** Os índices de texto (`indice.json`) são lidos e regravados um de cada vez. */
+  const travaTextos = yield* Semaphore.make(1);
+
+  /** O índice dos textos da pasta; vazio se não existe, se é link ou se não se lê. */
+  const lerIndice = Effect.fn("PastasTrabalho.lerIndice")(function* (real: string) {
+    const caminho = path.join(real, ...INDICE_TEXTOS.split("/"));
+    const lido = yield* Effect.option(
+      Effect.gen(function* () {
+        yield* realDentro(real, path.dirname(caminho));
+        if ((yield* fs.lstat(caminho)).type !== "File") return {};
+        return yield* lerIndiceJson(yield* fs.readFileString(caminho));
+      }).pipe(comArquivos),
+    );
+    // Uma cópia que se pode mudar: o turno e o anexo a atualizam e a regravam.
+    const indice: IndiceTextos = { ...Option.getOrElse(lido, () => ({})) };
+    return indice;
+  });
+
+  const gravarIndice = (real: string, indice: IndiceTextos) =>
+    codificarIndiceJson(indice).pipe(
+      Effect.flatMap((json) => gravarSemSeguirLinks(real, INDICE_TEXTOS, new TextEncoder().encode(json))),
+      comArquivos,
+      soNoLog("texto do anexo: não foi possível gravar o índice"),
+    );
+
   /**
-   * A versão em texto do anexo `nome` em `.simplifica/textos/` (`TextosAnexos`), convertida de
-   * `origem`, o arquivo liberado e já conferido (a cópia na pasta poderia virar link entre a cópia e a
-   * leitura: a IA escreve na pasta). A gravação não segue link, porque a IA também poderia ter posto
-   * um no lugar de `.simplifica`. Nunca falha.
+   * A versão em texto de `nome` em `.simplifica/textos/` (`TextosAnexos`), convertida de `origem`. A
+   * gravação não segue link (a IA escreve na pasta e poderia pôr um no lugar de `.simplifica`); se a
+   * conversão não dá certo, o texto de uma versão anterior sai, para a IA não o ler como atual. Nunca
+   * falha. Quem chama registra o resultado no índice.
    */
   const gravarTexto = Effect.fn("PastasTrabalho.gravarTexto")(function* (real: string, nome: string, origem: string) {
     const resultado = yield* textos.converter(origem, nome);
+    const texto = TextosAnexos.caminhoDoTexto(nome);
+    const semTexto = (motivo: string) =>
+      Effect.ignore(removerSemSeguirLinks(real, texto).pipe(comArquivos)).pipe(Effect.as({ semTexto: motivo }));
     switch (resultado.tipo) {
       case "nao-converte":
         return {};
       case "sem-texto":
-        return { semTexto: resultado.motivo };
-      case "texto": {
-        const texto = TextosAnexos.caminhoDoTexto(nome);
+        return yield* semTexto(resultado.motivo);
+      case "texto":
         return yield* gravarSemSeguirLinks(real, texto, new TextEncoder().encode(resultado.markdown)).pipe(
           comArquivos,
           Effect.as({ texto }),
           Effect.catch((erro) =>
             Effect.logError("texto do anexo: não foi possível gravar", erro).pipe(
-              Effect.as({ semTexto: "Não foi possível gravar a versão em texto na pasta." }),
+              Effect.andThen(semTexto("Não foi possível gravar a versão em texto na pasta.")),
             ),
           ),
         );
-      }
     }
   });
+
+  /** O resultado de `gravarTexto` no índice, com a impressão (`tamanho:sha256`) do arquivo convertido. */
+  const noIndice = (indice: IndiceTextos, nome: string, impressao: string, resultado: { texto?: string }) => {
+    indice[nome] = { origem: impressao, texto: resultado.texto !== undefined };
+  };
 
   const anexar = Effect.fn("PastasTrabalho.anexar")(function* (pasta: string, arquivo: string) {
     const real = yield* gerida(pasta);
@@ -611,13 +667,29 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     ).pipe(comMotivo("Não foi possível copiar o arquivo para a pasta da tarefa."));
     yield* historico.registrarAnexo(real, nome);
     const copiado = yield* fs.stat(path.join(real, nome)).pipe(comMotivo("O arquivo copiado sumiu."));
+    // Convertido da origem liberada e já conferida (a cópia na pasta poderia virar link entre a cópia e a
+    // leitura); a impressão é a da cópia, a que o retrato do começo do turno vai ver.
+    const texto = yield* travaTextos.withPermits(1)(
+      Effect.gen(function* () {
+        if (!TextosAnexos.EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase())) return {};
+        const impressao = `${Number(copiado.size)}:${yield* sha256(path.join(real, nome)).pipe(
+          comArquivos,
+          Effect.orElseSucceed(() => ""),
+        )}`;
+        const indice = yield* lerIndice(real);
+        const resultado = yield* gravarTexto(real, nome, arquivo);
+        noIndice(indice, nome, impressao, resultado);
+        yield* gravarIndice(real, indice);
+        return resultado;
+      }),
+    );
     return {
       nome,
       caminho: path.join(real, nome),
       tamanho: Number(copiado.size),
       alteradoEm: alteradoEm(copiado),
       origem: "anexado",
-      ...(yield* gravarTexto(real, nome, arquivo)),
+      ...texto,
     } satisfies ArquivoAnexado;
   });
 
@@ -698,16 +770,117 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return { pasta: real, gerida: true, arquivos, desfazer: previsao } satisfies PastaConversa;
   });
 
+  /**
+   * Põe em dia os textos da pasta pelo índice, no começo do turno: o texto de quem saiu da pasta sai
+   * primeiro (assim um arquivo renomeado só na caixa das letras não perde o texto novo), e os documentos
+   * cujo texto não é do conteúdo de `agora` (novos, mudados na pasta durante o turno, antes do primeiro,
+   * ou voltados por um Desfazer) são convertidos: os de `primeiro` antes, até `TEXTOS_POR_TURNO` e
+   * `TEMPO_DE_TEXTOS_MS`; os que sobram ficam para o próximo turno.
+   */
+  const atualizarTextos = Effect.fn("PastasTrabalho.atualizarTextos")(function* (
+    real: string,
+    agora: Retrato,
+    primeiro: ReadonlyArray<string>,
+  ) {
+    const indice = yield* lerIndice(real);
+    const conhecidos = new Set(Object.keys(indice));
+    const removidos: Array<string> = [];
+    for (const nome of Object.keys(indice)) {
+      if (agora[nome] !== undefined && agora[nome] !== LINK) continue;
+      yield* Effect.ignore(removerSemSeguirLinks(real, TextosAnexos.caminhoDoTexto(nome)).pipe(comArquivos));
+      delete indice[nome];
+      removidos.push(nome);
+    }
+    const converte = (nome: string) =>
+      agora[nome] !== LINK && TextosAnexos.EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase());
+    const pendentes = Object.keys(agora)
+      .filter((nome) => converte(nome) && indice[nome]?.origem !== agora[nome])
+      .sort((a, b) => Number(!primeiro.includes(a)) - Number(!primeiro.includes(b)) || a.localeCompare(b, "pt-BR"));
+    const resultados = new Map<string, Omit<ArquivoMudado, "nome">>();
+    const inicio = yield* Clock.currentTimeMillis;
+    for (const [posicao, nome] of pendentes.entries()) {
+      if (posicao >= TEXTOS_POR_TURNO || (yield* Clock.currentTimeMillis) - inicio > TEMPO_DE_TEXTOS_MS) {
+        resultados.set(nome, {
+          semTexto: "O app converte poucos documentos por mensagem; a versão em texto deste sai na próxima.",
+        });
+        continue;
+      }
+      const origem = path.join(real, nome);
+      // O retrato viu um arquivo comum dentro da pasta; o que virou link (ou foi para fora) não é lido.
+      const conferido = yield* Effect.option(
+        Effect.gen(function* () {
+          if ((yield* fs.lstat(origem)).type !== "File") return false;
+          yield* realDentro(real, origem);
+          return true;
+        }),
+      );
+      if (!Option.getOrElse(conferido, () => false)) {
+        resultados.set(nome, { semTexto: "O arquivo mudou de novo e não pôde ser lido." });
+        continue;
+      }
+      const resultado = yield* gravarTexto(real, nome, origem);
+      noIndice(indice, nome, agora[nome]!, resultado);
+      resultados.set(nome, resultado);
+    }
+    yield* gravarIndice(real, indice);
+    return { resultados, removidos, conhecidos };
+  });
+
+  /**
+   * O que a pessoa mexeu na pasta desde o fim do turno anterior (`antes`, quando há) até `agora`, com os
+   * textos postos em dia. Os anexos do app ficam de fora dos novos (a nota do pedido já os trouxe), e os
+   * links, de tudo; os nomes de trava do Word já ficaram fora do retrato. O que o índice achou fora dessa
+   * janela (mudado durante o turno, antes do primeiro, depois de um Desfazer) entra também, porque o
+   * texto dele mudou.
+   */
+  const mudancasForaDaConversa = Effect.fn("PastasTrabalho.mudancasForaDaConversa")(function* (
+    real: string,
+    antes: Retrato | undefined,
+    agora: Retrato,
+  ) {
+    const anexos = yield* historico.anexos(real);
+    const { criados, alterados, apagados } =
+      antes === undefined ? { criados: [], alterados: [], apagados: [] } : diferenca(antes, agora);
+    const arquivo = (nome: string) => agora[nome] !== LINK;
+    const novosNomes = new Set(criados.filter((nome) => arquivo(nome) && !anexos.has(nome)));
+    const mudadosNomes = new Set(alterados.filter(arquivo));
+    const removidosNomes = new Set(apagados.filter((nome) => antes?.[nome] !== LINK));
+    const { resultados, removidos, conhecidos } = yield* atualizarTextos(real, agora, [...mudadosNomes]);
+    for (const nome of resultados.keys()) {
+      if (novosNomes.has(nome) || mudadosNomes.has(nome)) continue;
+      (conhecidos.has(nome) ? mudadosNomes : novosNomes).add(nome);
+    }
+    for (const nome of removidos) removidosNomes.add(nome);
+    const comTexto = (nome: string): ArquivoMudado => ({ nome, ...resultados.get(nome) });
+    const ordem = (nomes: Set<string>) => [...nomes].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const mudancas: MudancasPasta = {
+      _tag: "MudancasPasta",
+      novos: ordem(novosNomes).map(comTexto),
+      mudados: ordem(mudadosNomes).map(comTexto),
+      removidos: ordem(removidosNomes),
+    };
+    return mudancas.novos.length + mudancas.mudados.length + mudancas.removidos.length === 0 ? undefined : mudancas;
+  });
+
   const guardarCopia = Effect.fn("PastasTrabalho.guardarCopia")(function* (
     conversa: string,
     turno: number,
     pasta: string,
   ) {
     const criadaEm = DateTime.formatIso(yield* DateTime.now);
-    yield* Effect.gen(function* () {
+    const mudancas = yield* Effect.gen(function* () {
       const real = yield* gerida(pasta);
-      if (real !== undefined) yield* copiarTurno(real, yield* pastaCopias(conversa), turno, criadaEm, limites);
+      if (real === undefined) return undefined;
+      const copias = yield* pastaCopias(conversa);
+      // Só o turno logo antes: se ele não fechou (o app caiu), o que a IA fez nele pareceria da pessoa.
+      const anterior = (yield* lerManifestos(copias)).find((manifesto) => manifesto.turno === turno - 1);
+      const manifesto = yield* copiarTurno(real, copias, turno, criadaEm, limites);
+      // Pasta grande demais para a cópia: sem retrato, sem textos nem aviso.
+      if (manifesto.arquivos === undefined) return undefined;
+      const agora = manifesto.arquivos;
+      return yield* travaTextos.withPermits(1)(mudancasForaDaConversa(real, anterior?.fim?.arquivos, agora));
     }).pipe(comArquivos, soNoLog(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`));
+    return mudancas ?? undefined;
   });
 
   const fecharTurno = Effect.fn("PastasTrabalho.fecharTurno")(function* (
@@ -823,7 +996,7 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     ver: Effect.fn("PastasTrabalho.ver")((_conversa: string, pasta: string) =>
       Effect.succeed({ pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa),
     ),
-    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(() => Effect.void),
+    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(() => Effect.undefined),
     fecharTurno: Effect.fn("PastasTrabalho.fecharTurno")(() => Effect.void),
     desfazer: recusa,
     emAndamento: Effect.succeed(false),

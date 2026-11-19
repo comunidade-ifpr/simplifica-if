@@ -150,7 +150,9 @@ Ao anexar (`pasta.anexar`), o `.docx` ganha uma versão em Markdown para a IA le
 - **Gravação** (`PastasTrabalho.anexar`): em `<pasta>/.simplifica/textos/<nome do anexo>.md`, sem seguir link (`gravarSemSeguirLinks`). A pasta oculta fica fora da lista do painel e do Desfazer.
 - **Resposta** (`ArquivoAnexado` do contrato): `texto`, o caminho relativo, ou `semTexto`, o motivo (arquivo protegido, sem texto, grande demais, estouro). O anexo nunca falha por causa do texto. A interface põe o caminho ou o motivo na nota do pedido.
 
-No bundle, o Worker é o `trabalhador-textos.mjs` ao lado do `bin.mjs`. Teste: `test/pasta-trabalho.test.ts`.
+- **Mudanças fora da conversa** (v2, `PastasTrabalho.guardarCopia`): no começo de cada turno, o retrato da pasta (o da cópia do Desfazer) se compara com o do fim do turno logo antes (`fim.json`). O que mudou entre os dois foi a pessoa, fora da conversa: arquivos novos (menos os anexos do app, que a nota já trouxe), mudados e removidos, sem links nem a pasta oculta. Os textos se põem em dia por um índice (`.simplifica/textos/indice.json`: de cada documento, a impressão `tamanho:sha256` do conteúdo convertido), não pela janela entre os turnos: o texto de quem saiu da pasta sai primeiro, e todo documento cujo texto não é do conteúdo atual é convertido (os mudados primeiro), até 10 por turno e 60 s; o que sobra sai no turno seguinte. Assim entram também o mudado durante o turno, o posto antes do primeiro e o que um Desfazer voltou, e um documento que deixou de converter perde o texto velho. Os temporários do Word (`~$…`, `~WRL….tmp`) ficam fora do retrato. O `Conversas` grava o evento `MudancasPasta` logo depois da mensagem (a interface mostra uma linha abaixo dela) e manda à IA a mensagem seguida do aviso (`textos-anexos/aviso.ts`); o histórico guarda a mensagem como a pessoa a escreveu. Sem o turno anterior fechado (o primeiro, ou o app caiu no meio), não há aviso.
+
+No bundle, o Worker é o `trabalhador-textos.mjs` ao lado do `bin.mjs`. Testes: `test/pasta-trabalho.test.ts` e `test/textos-anexos.test.ts`.
 
 ## Revisão com IA (M1.11, etapa 4)
 

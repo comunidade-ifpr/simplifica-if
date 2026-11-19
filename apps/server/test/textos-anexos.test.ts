@@ -11,6 +11,8 @@ import { afterAll, assert, describe, it, layer } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
+import { montarPdf } from "@simplifica-if/pdf/testes/sintetico";
+import { montarOdt } from "@simplifica-if/docx/testes/sintetico-odt";
 import * as TextosAnexos from "../src/textos-anexos/TextosAnexos.ts";
 import { diretorioTemporario, limparTemporarios } from "./apoio.ts";
 
@@ -59,6 +61,28 @@ layer(TextosAnexos.layer().pipe(Layer.provide(NodeServices.layer)), {
       const md = NodePath.join(pasta, "nota.md");
       NodeFS.writeFileSync(md, "# Nota\n");
       assert.deepStrictEqual(yield* textos.converter(md, "nota.md"), { tipo: "nao-converte" });
+      // O .odt (LibreOffice) também.
+      const odt = NodePath.join(pasta, "Minuta.odt");
+      NodeFS.writeFileSync(odt, montarOdt({ corpo: "<text:p>Art. 4º A minuta vale.</text:p>" }));
+      const doOdt = yield* textos.converter(odt, "Minuta.odt");
+      assert.strictEqual(doOdt.tipo, "texto");
+      if (doOdt.tipo === "texto") assert.include(doOdt.markdown, "Art. 4º A minuta vale.");
+      // O PDF com texto vira texto, com o marcador de página e o cabeçalho próprio do PDF.
+      const pdf = NodePath.join(pasta, "Parecer.PDF");
+      NodeFS.writeFileSync(pdf, montarPdf({ paginas: [["Art. 3º O parecer vale."]] }));
+      const doPdf = yield* textos.converter(pdf, "Parecer.PDF");
+      assert.strictEqual(doPdf.tipo, "texto");
+      if (doPdf.tipo === "texto") {
+        assert.include(doPdf.markdown, "<!-- página 1 -->");
+        assert.include(doPdf.markdown, "Art. 3º O parecer vale.");
+        assert.include(doPdf.markdown, "o PDF não guarda títulos nem tabelas como texto");
+      }
+      // O PDF digitalizado (só imagem, aqui uma página vazia) entra sem texto, com a frase do motivo.
+      const vazio = NodePath.join(pasta, "Digitalizado.pdf");
+      NodeFS.writeFileSync(vazio, montarPdf({ paginas: [[]] }));
+      const semTextoPdf = yield* textos.converter(vazio, "Digitalizado.pdf");
+      assert.strictEqual(semTextoPdf.tipo, "sem-texto");
+      if (semTextoPdf.tipo === "sem-texto") assert.match(semTextoPdf.motivo, /^O PDF não tem texto/);
       // O arquivo que sumiu: sem texto, sem falhar.
       const sumiu = yield* textos.converter(NodePath.join(pasta, "nao-existe.docx"), "nao-existe.docx");
       assert.deepStrictEqual(sumiu, { tipo: "sem-texto", motivo: "O arquivo não pôde ser lido." });

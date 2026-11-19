@@ -3,9 +3,10 @@
  * `TextosAnexos`: a versão em texto dos anexos que a IA não lê sozinha (proposta "Anexos em texto
  * para a IA", `docs/plans/propostas/anexos-em-texto.md`).
  *
- * Hoje só o `.docx`: o Claude não o lê, e o Codex e o Gemini só com um conversor instalado e um
- * comando, que pede aprovação. Ao anexar, `PastasTrabalho.anexar` chama `converter`, que roda
- * `docxParaMarkdown` num Worker com teto de memória e de tempo (`WorkerLimitado.ts`) e devolve o
+ * O `.docx`, o `.odt` e o PDF: o Claude não lê o `.docx` nem o `.odt`, e o Codex não lê nenhum deles sem um conversor
+ * instalado e um comando, que pede aprovação. Ao anexar, `PastasTrabalho.anexar` chama `converter`,
+ * que roda o conversor do formato (`docxParaMarkdown`, `odtParaMarkdown`, `pdfParaMarkdown`) num Worker com teto de
+ * memória e de tempo (`WorkerLimitado.ts`) e devolve o
  * Markdown com o cabeçalho; o `PastasTrabalho` o grava em `<pasta>/.simplifica/textos/<nome>.md`
  * (`PASTA_TEXTOS`). A pasta é oculta: fica fora da lista do painel e do Desfazer (o texto é derivado),
  * e a IA o acha pelo caminho que a nota do pedido dá.
@@ -23,15 +24,16 @@ import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Semaphore from "effect/Semaphore";
-import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { type FalhaWorker, type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
-import type { PedidoTexto, RespostaTexto } from "./trabalhador.ts";
+import type { FormatoTexto, PedidoTexto, RespostaTexto } from "./trabalhador.ts";
 
 /** Onde fica o texto, relativo à pasta da tarefa (com `/`). */
 export const PASTA_TEXTOS = ".simplifica/textos";
 
-/** As extensões que ganham versão em texto. */
-export const EXTENSOES_CONVERTIDAS: ReadonlyArray<string> = [".docx"];
+/** As extensões que ganham versão em texto, e o formato de cada uma no Worker. */
+const FORMATOS: Readonly<Record<string, FormatoTexto>> = { ".docx": "docx", ".odt": "odt", ".pdf": "pdf" };
+
+export const EXTENSOES_CONVERTIDAS: ReadonlyArray<string> = Object.keys(FORMATOS);
 
 export interface Limites extends LimitesWorker {
   /** Tamanho máximo do arquivo, conferido antes de ler (o de `LIMITES_PADRAO.bytesDoArquivo`). */
@@ -55,7 +57,6 @@ const BYTES_DO_NOME = 200;
  * demais, é cortado e ganha um resumo do nome inteiro, para não colidir com outro de mesmo começo.
  */
 export function caminhoDoTexto(nome: string): string {
-  // oxlint-disable-next-line no-control-regex -- os caracteres de controle são justamente o que sai
   let seguro = nome.replace(/[\\\u0000-\u001f\u007f]/g, "_");
   const codificador = new TextEncoder();
   if (codificador.encode(seguro).length > BYTES_DO_NOME) {
@@ -90,13 +91,19 @@ const semTexto = (motivo: string): ResultadoTexto => ({ tipo: "sem-texto", motiv
 const DATA = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 
 /** A linha do começo do texto: de onde veio e o que pode faltar, para a IA saber o limite do que leu. */
-export function cabecalhoTexto(nome: string, data: string): string {
+export function cabecalhoTexto(nome: string, data: string, formato: FormatoTexto = "docx"): string {
   // Um nome com quebra de linha (o macOS aceita) não abre linhas próprias no cabeçalho.
   const umaLinha = nome.replace(/[\r\n]+/g, " ");
+  const oQueEntra =
+    formato === "pdf"
+      ? "Cada página começa com <!-- página N -->, a posição dela no arquivo; o PDF não guarda títulos nem " +
+        "tabelas como texto, e a ordem e as quebras das linhas podem diferir do que se vê. "
+      : "Títulos, listas, tabelas e notas de rodapé entram; imagens, comentários e o texto excluído " +
+        "com alterações controladas, não. ";
   return (
     `> Texto extraído automaticamente de "${umaLinha}" pelo Simplifica IF em ${data}, para leitura pela IA. ` +
-    "Títulos, listas, tabelas e notas de rodapé entram; imagens, comentários do Word e o texto excluído " +
-    "com alterações controladas, não. Na dúvida sobre um trecho, peça à pessoa que confira no original.\n\n"
+    oQueEntra +
+    "Na dúvida sobre um trecho, peça à pessoa que confira no original.\n\n"
   );
 }
 
@@ -114,18 +121,18 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
   const vez = yield* Semaphore.make(1);
 
   /** O Markdown do arquivo, sem o cabeçalho, ou por que não há. */
-  const markdownDe = Effect.fn("TextosAnexos.markdownDe")(function* (arquivo: string) {
+  const markdownDe = Effect.fn("TextosAnexos.markdownDe")(function* (arquivo: string, formato: FormatoTexto) {
     const info = yield* fs.stat(arquivo);
     if (Number(info.size) > limites.bytesDoArquivo)
       return semTexto(`O arquivo passa de ${Math.round(limites.bytesDoArquivo / 1024 / 1024)} MB.`);
     const bytes = yield* fs.readFile(arquivo);
     // Cópia própria: o buffer é transferido ao Worker, e o lido pode ser fatia de um pool.
-    const pedido: PedidoTexto = { bytes: new Uint8Array(bytes) };
+    const pedido: PedidoTexto = { bytes: new Uint8Array(bytes), formato };
     const resposta = yield* vez.withPermits(1)(
       rodarNoWorker<RespostaTexto>(url, pedido, [pedido.bytes.buffer as ArrayBuffer], limites),
     );
     if (resposta.ok) return { tipo: "texto", markdown: resposta.markdown } satisfies ResultadoTexto;
-    if ("arquivoInvalido" in resposta) return semTexto(mensagemErroDocx(resposta.arquivoInvalido));
+    if ("arquivoInvalido" in resposta) return semTexto(resposta.arquivoInvalido);
     yield* Effect.logError("texto do anexo: defeito no Worker", resposta.defeito);
     return semTexto(ERRO_INTERNO);
   });
@@ -144,9 +151,9 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
   };
 
   const converter = Effect.fn("TextosAnexos.converter")(function* (arquivo: string, nome: string) {
-    if (!EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase()))
-      return { tipo: "nao-converte" } satisfies ResultadoTexto;
-    const saida: ResultadoTexto = yield* markdownDe(arquivo).pipe(
+    const formato = FORMATOS[path.extname(nome).toLowerCase()];
+    if (formato === undefined) return { tipo: "nao-converte" } satisfies ResultadoTexto;
+    const saida: ResultadoTexto = yield* markdownDe(arquivo, formato).pipe(
       Effect.catchTags({ FalhaWorker: motivoDoWorker }),
       // Arquivo que sumiu ou não abre: o anexo vale sem o texto.
       Effect.catch((erro) =>
@@ -157,7 +164,7 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
     );
     if (saida.tipo !== "texto") return saida;
     const data = DATA.format(DateTime.toDateUtc(yield* DateTime.now));
-    return { tipo: "texto", markdown: cabecalhoTexto(nome, data) + saida.markdown } satisfies ResultadoTexto;
+    return { tipo: "texto", markdown: cabecalhoTexto(nome, data, formato) + saida.markdown } satisfies ResultadoTexto;
   });
 
   return TextosAnexos.of({ converter });

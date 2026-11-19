@@ -223,6 +223,142 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
     }).pipe(Effect.scoped),
   );
 
+  it.effect("o que a pessoa mexe na pasta entre os turnos vai à IA, com a versão em texto do .docx", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Mudancas fora" });
+      NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "original\n");
+      NodeFS.writeFileSync(NodePath.join(pasta, "velho.docx"), montarDocx({ corpo: par("Velho.") }));
+      const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      const turno = (texto: string) =>
+        rpc["conversa.enviar"]({ sessao, texto }).pipe(
+          Stream.runCollect,
+          Effect.map((eventos) => [...eventos]),
+        );
+
+      // Primeiro turno: sem turno anterior para comparar, mas o .docx posto antes ganha o texto e é avisado.
+      const primeiro = yield* turno("oi");
+      assert.deepStrictEqual(
+        primeiro.find((evento) => evento._tag === "MudancasPasta"),
+        {
+          _tag: "MudancasPasta",
+          novos: [{ nome: "velho.docx", texto: ".simplifica/textos/velho.docx.md" }],
+          mudados: [],
+          removidos: [],
+        },
+      );
+      // Sem mudança entre os turnos, nada a avisar.
+      const segundo = yield* turno("e agora?");
+      assert.isFalse(segundo.some((evento) => evento._tag === "MudancasPasta"));
+      assert.strictEqual(registro.textos.at(-1), "e agora?");
+
+      // Fora da conversa: um .docx novo numa subpasta, entrada.md mudado, velho.docx removido.
+      NodeFS.mkdirSync(NodePath.join(pasta, "atas"));
+      NodeFS.writeFileSync(NodePath.join(pasta, "atas", "Ata.docx"), montarDocx({ corpo: par("Art. 2º A ata vale.") }));
+      NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "mudado pela pessoa\n");
+      NodeFS.rmSync(NodePath.join(pasta, "velho.docx"));
+      // A trava do Word com o documento aberto não é documento da pessoa.
+      NodeFS.writeFileSync(NodePath.join(pasta, "~$entrada.docx"), "trava");
+      // O anexo do app não se repete como novo: a nota do pedido já o trouxe.
+      const anexo = NodePath.join(fora, "anexo.md");
+      NodeFS.writeFileSync(anexo, "# Anexo\n");
+      yield* pedirHttp(urlRpc.replace(/\/rpc$/, CAMINHO_LIBERAR_ARQUIVO), {
+        metodo: "POST",
+        cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}`, "content-type": "application/json" },
+        corpo: JSON.stringify({ arquivo: anexo }),
+      });
+      yield* rpc["pasta.anexar"]({ pasta, arquivo: anexo });
+
+      const terceiro = yield* turno("confira de novo");
+      const mudancas = terceiro.find((evento) => evento._tag === "MudancasPasta");
+      assert.deepStrictEqual(mudancas, {
+        _tag: "MudancasPasta",
+        novos: [{ nome: "atas/Ata.docx", texto: ".simplifica/textos/atas/Ata.docx.md" }],
+        mudados: [{ nome: "entrada.md" }],
+        removidos: ["velho.docx"],
+      });
+      assert.include(
+        NodeFS.readFileSync(NodePath.join(pasta, ".simplifica", "textos", "atas", "Ata.docx.md"), "utf8"),
+        "Art. 2º A ata vale.",
+      );
+      // O texto do removido sai.
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "velho.docx.md")));
+      // A IA recebe a mensagem e o aviso; o histórico guarda a mensagem e o evento à parte.
+      const pedido = registro.textos.at(-1) ?? "";
+      assert.match(pedido, /^confira de novo\n\nDesde a sua última resposta, a pessoa mexeu na pasta da tarefa/);
+      assert.include(pedido, "- `atas/Ata.docx`: leia a versão em texto, `.simplifica/textos/atas/Ata.docx.md`");
+      assert.include(pedido, "Arquivos mudados (releia antes de responder sobre eles):\n- `entrada.md`");
+      assert.include(pedido, "Arquivos removidos:\n- `velho.docx`");
+      assert.notInclude(pedido, "anexo.md");
+      const gravada = yield* rpc["conversa.carregar"]({ sessao });
+      const doTurno = gravada.itens.filter((item) => item.turno === 3);
+      assert.deepStrictEqual(
+        doTurno.slice(0, 2).map((item) => (item._tag === "EventoTurno" ? item.evento._tag : item._tag)),
+        ["Mensagem", "MudancasPasta"],
+      );
+      assert.deepInclude(doTurno[0], { texto: "confira de novo" });
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("textos pelo índice: o mudado primeiro, o limite por turno, o texto velho que sai e a renomeação", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Indice dos textos" });
+      const docx = (nome: string, texto: string) =>
+        NodeFS.writeFileSync(NodePath.join(pasta, nome), montarDocx({ corpo: par(texto) }));
+      const textoDe = (nome: string) => NodePath.join(pasta, ".simplifica", "textos", `${nome}.md`);
+      docx("Minuta.docx", "Versão 1.");
+      const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      const turno = (texto: string) =>
+        rpc["conversa.enviar"]({ sessao, texto }).pipe(
+          Stream.runCollect,
+          Effect.map((eventos) => [...eventos].find((evento) => evento._tag === "MudancasPasta")),
+        );
+      yield* turno("oi");
+      assert.include(NodeFS.readFileSync(textoDe("Minuta.docx"), "utf8"), "Versão 1.");
+
+      // Doze documentos novos e a minuta corrigida: a minuta vai primeiro; com o limite de 10, três atas ficam para depois.
+      for (let i = 1; i <= 12; i++) docx(`Ata ${String(i).padStart(2, "0")}.docx`, `Ata ${i}.`);
+      docx("Minuta.docx", "Versão 2.");
+      const segundo = yield* turno("confira");
+      assert.deepStrictEqual(segundo?.mudados, [{ nome: "Minuta.docx", texto: ".simplifica/textos/Minuta.docx.md" }]);
+      assert.include(NodeFS.readFileSync(textoDe("Minuta.docx"), "utf8"), "Versão 2.");
+      const adiados = (segundo?.novos ?? []).filter((arquivo) => arquivo.semTexto !== undefined);
+      assert.deepStrictEqual(
+        adiados.map((arquivo) => arquivo.nome),
+        ["Ata 10.docx", "Ata 11.docx", "Ata 12.docx"],
+      );
+      assert.match(adiados[0]?.semTexto ?? "", /sai na próxima/);
+      // No turno seguinte, sem mudança da pessoa, os adiados ganham o texto.
+      const terceiro = yield* turno("e agora?");
+      assert.deepStrictEqual(
+        terceiro?.novos.map((arquivo) => [arquivo.nome, arquivo.texto]),
+        [
+          ["Ata 10.docx", ".simplifica/textos/Ata 10.docx.md"],
+          ["Ata 11.docx", ".simplifica/textos/Ata 11.docx.md"],
+          ["Ata 12.docx", ".simplifica/textos/Ata 12.docx.md"],
+        ],
+      );
+
+      // A minuta salva com defeito: sem texto, e o texto da versão anterior sai (a IA não o lê como atual).
+      NodeFS.writeFileSync(NodePath.join(pasta, "Minuta.docx"), "não é mais um docx");
+      const quarto = yield* turno("e agora?");
+      assert.match(quarto?.mudados[0]?.semTexto ?? "", /não é um DOCX/);
+      assert.isFalse(NodeFS.existsSync(textoDe("Minuta.docx")));
+      // O mesmo arquivo com defeito não é tentado de novo a cada turno.
+      assert.isUndefined(yield* turno("de novo"));
+
+      // Renomear só a caixa das letras não apaga o texto recém-gravado (APFS e NTFS não distinguem).
+      NodeFS.renameSync(NodePath.join(pasta, "Ata 01.docx"), NodePath.join(pasta, "ata 01.docx"));
+      const renomeado = yield* turno("renomeei");
+      assert.deepStrictEqual(renomeado?.novos, [{ nome: "ata 01.docx", texto: ".simplifica/textos/ata 01.docx.md" }]);
+      assert.deepStrictEqual(renomeado?.removidos, ["Ata 01.docx"]);
+      assert.include(NodeFS.readFileSync(textoDe("ata 01.docx"), "utf8"), "Ata 1.");
+    }).pipe(Effect.scoped),
+  );
+
   it.effect("cópia antes de cada turno; Desfazer restaura o turno que mudou a pasta, e de novo o anterior", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;

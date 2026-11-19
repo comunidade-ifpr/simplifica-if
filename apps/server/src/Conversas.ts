@@ -59,6 +59,7 @@ import {
   type ConversaGravada,
   type EntradaIniciar,
   type EstadoConversa,
+  type EventoConversa,
   type FalhaPasta,
   type ItemConversa,
   type NotaResposta,
@@ -70,6 +71,7 @@ import {
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
+import { avisoDasMudancas } from "./textos-anexos/aviso.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
@@ -99,7 +101,7 @@ export class Conversas extends Context.Service<
       sessao: string,
       texto: string,
     ) => Stream.Stream<
-      Motor.Evento,
+      EventoConversa,
       Motor.FalhaProvider | Motor.TurnoEmAndamento | Motor.SessaoDesconhecida | AvisoNaoAceito
     >;
     readonly responderAprovacao: (
@@ -274,7 +276,11 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
    * Um evento do `turno` (o aberto, ou nenhum): o parcial se acumula e se publica; o resto se grava e
    * se publica. Chame com a `travaItens`.
    */
-  const gravarEvento = Effect.fnUntraced(function* (viva: Viva, turno: TurnoAberto | undefined, evento: Motor.Evento) {
+  const gravarEvento = Effect.fnUntraced(function* (
+    viva: Viva,
+    turno: TurnoAberto | undefined,
+    evento: EventoConversa,
+  ) {
     const numero = turno?.numero ?? viva.registro.turnos;
     if (evento._tag === "TextoParcial") {
       if (turno !== undefined) turno.acumulado += evento.texto;
@@ -306,7 +312,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   });
 
   /** Um evento do turno aberto (ou de fora de turno), com a `travaItens`. */
-  const registrarEvento = (viva: Viva, evento: Motor.Evento) =>
+  const registrarEvento = (viva: Viva, evento: EventoConversa) =>
     viva.travaItens
       .withPermits(1)(Effect.suspend(() => gravarEvento(viva, viva.turno, evento)))
       .pipe(Effect.uninterruptible);
@@ -558,8 +564,9 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         yield* cancelarOciosidade(viva);
         const inscricao = yield* PubSub.subscribe(viva.aoVivo);
         const numero = viva.registro.turnos + 1;
-        // Antes de a IA poder escrever na pasta: a cópia que o "Desfazer" restaura (só pastas de tarefa).
-        yield* pastas.guardarCopia(viva.id, numero, viva.registro.pastaTrabalho);
+        // Antes de a IA poder escrever na pasta: a cópia que o "Desfazer" restaura (só pastas de tarefa) e
+        // o que a pessoa mexeu na pasta desde o turno anterior, fora da conversa.
+        const mudancas = yield* pastas.guardarCopia(viva.id, numero, viva.registro.pastaTrabalho);
         const turno: TurnoAberto = {
           numero,
           fibra: undefined,
@@ -572,7 +579,10 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         };
         viva.turno = turno;
         yield* viva.travaItens.withPermits(1)(
-          registrar(viva, (ordem) => ({ _tag: "Mensagem", turno: numero, ordem, texto }), { publicar: true }),
+          Effect.gen(function* () {
+            yield* registrar(viva, (ordem) => ({ _tag: "Mensagem", turno: numero, ordem, texto }), { publicar: true });
+            if (mudancas !== undefined) yield* gravarEvento(viva, turno, mudancas);
+          }),
         );
         yield* alterar(viva, {
           estado: "respondendo",
@@ -583,10 +593,11 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         // A tarefa de uma skill (M1.9): o primeiro turno diz à IA qual skill seguir. Só vai ao provider;
         // o histórico guarda a mensagem como a pessoa a escreveu.
         const tarefa = viva.registro.tarefa;
+        const comMudancas = mudancas === undefined ? texto : `${texto}\n\n${avisoDasMudancas(mudancas)}`;
         const pedido =
           numero === 1 && tarefa !== undefined && tarefa !== TAREFA_CONVERSA
-            ? `Siga a skill \`${tarefa}\` (SKILL.md em .simplifica/skills/${tarefa}/) para este pedido.\n\n${texto}`
-            : texto;
+            ? `Siga a skill \`${tarefa}\` (SKILL.md em .simplifica/skills/${tarefa}/) para este pedido.\n\n${comMudancas}`
+            : comMudancas;
         turno.fibra = yield* bombear(
           viva,
           turno,

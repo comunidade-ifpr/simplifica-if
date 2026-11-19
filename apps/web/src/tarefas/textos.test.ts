@@ -3,6 +3,7 @@ import { etapasVistas, marcaDaEntrada } from "../conversa/etapas.ts";
 import type { Item } from "../conversa/estado.ts";
 import {
   comArquivos,
+  resumoMudancasPasta,
   dataDaBase,
   dispositivoPorExtenso,
   duracaoPorExtenso,
@@ -152,6 +153,25 @@ describe("comArquivos", () => {
     ]);
     expect(nota).toBe(
       "Pedido.\n\nArquivos na pasta:\n- Parecer `final` v2.docx: leia a versão em texto, ``.simplifica/textos/Parecer `final`_v2.docx.md``",
+    );
+  });
+});
+
+describe("resumoMudancasPasta", () => {
+  it("conta cada grupo, com até três nomes e o resto como número", () => {
+    expect(resumoMudancasPasta({ novos: ["Ata.docx"], mudados: [], removidos: [] })).toBe(
+      "Na pasta, desde a última resposta: 1 novo (Ata.docx). A IA foi avisada.",
+    );
+    expect(
+      resumoMudancasPasta({ novos: [], mudados: ["a.md", "b.md", "c.md", "d.md", "e.md"], removidos: ["x\ny.md"] }),
+    ).toBe(
+      "Na pasta, desde a última resposta: 5 mudados (a.md, b.md, c.md e mais 2); 1 removido (x y.md). A IA foi avisada.",
+    );
+  });
+
+  it("diz à pessoa quais documentos ficaram sem versão em texto", () => {
+    expect(resumoMudancasPasta({ novos: [], mudados: ["Minuta.docx"], removidos: [], semTexto: ["Minuta.docx"] })).toBe(
+      "Na pasta, desde a última resposta: 1 mudado (Minuta.docx). A IA foi avisada. Sem versão em texto para a IA: Minuta.docx; a resposta pode não considerá-lo.",
     );
   });
 });

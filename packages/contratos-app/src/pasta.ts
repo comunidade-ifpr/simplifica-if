@@ -47,6 +47,28 @@ export const ArquivoAnexado = Schema.Struct({
 });
 export type ArquivoAnexado = typeof ArquivoAnexado.Type;
 
+/** Um arquivo que a pessoa pôs ou mudou na pasta fora da conversa, com a versão em texto, quando há. */
+export const ArquivoMudado = Schema.Struct({
+  /** O caminho relativo à pasta, com `/`. */
+  nome: Schema.String,
+  texto: Schema.optionalKey(Schema.String),
+  semTexto: Schema.optionalKey(Schema.String),
+});
+export type ArquivoMudado = typeof ArquivoMudado.Type;
+
+/**
+ * O que a pessoa mexeu na pasta da tarefa desde o fim do turno anterior, fora da conversa (pelo
+ * Finder, pelo Word): o retrato do fim do turno anterior contra o de antes deste. Não entram o que a
+ * IA fez (ela sabe), os anexos do app (a nota do pedido já os traz) nem a pasta oculta. Vai à IA junto
+ * com a mensagem, e a conversa o mostra numa linha abaixo dela.
+ */
+export const MudancasPasta = Schema.TaggedStruct("MudancasPasta", {
+  novos: Schema.Array(ArquivoMudado),
+  mudados: Schema.Array(ArquivoMudado),
+  removidos: Schema.Array(Schema.String),
+});
+export type MudancasPasta = typeof MudancasPasta.Type;
+
 /**
  * O que "Desfazer o que a IA fez nesta pasta" faria agora: só o que mudou **dentro** do turno mais
  * recente que mudou a pasta (o retrato de antes e o de depois do turno), não as mudanças feitas fora da

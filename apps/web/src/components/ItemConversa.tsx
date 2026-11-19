@@ -2,9 +2,10 @@
  * Um item da conversa: a mensagem da pessoa, a resposta (Markdown, com o texto parcial enquanto chega),
  * uma ferramenta como etapa (nome e resumo), um pedido de aprovação com "Permitir" e "Negar", ou um aviso.
  */
-import { CheckIcon, CircleAlertIcon, InfoIcon, ShieldQuestionIcon, XIcon } from "lucide-react";
+import { CheckIcon, CircleAlertIcon, FolderSyncIcon, InfoIcon, ShieldQuestionIcon, XIcon } from "lucide-react";
 import { useConversa } from "../contexto.tsx";
 import { type Item, rotuloAprovacao, rotuloFerramenta } from "../conversa/estado.ts";
+import { resumoMudancasPasta } from "../tarefas/textos.ts";
 import { AvisoErro } from "./AvisoErro.tsx";
 import { Markdown } from "./Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
@@ -59,6 +60,16 @@ export function ItemConversa({
         >
           {item.texto}
         </div>
+      );
+    case "pasta":
+      return (
+        <p
+          className="-mt-2 ml-auto flex max-w-[85%] items-start gap-1.5 text-right text-muted-foreground text-xs"
+          data-mudancas-pasta
+        >
+          <FolderSyncIcon aria-hidden className="mt-px size-3.5 shrink-0" />
+          <span className="wrap-anywhere">{resumoMudancasPasta(item)}</span>
+        </p>
       );
     case "resposta":
       return (

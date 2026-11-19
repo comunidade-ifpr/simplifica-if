@@ -30,7 +30,7 @@ import * as Clock from "effect/Clock";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { type Evento, LinhaPartida, Provider, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
+import { type EventoConversa, LinhaPartida, Provider, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
 import { cliente } from "./apoio.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
@@ -54,7 +54,7 @@ const PERGUNTA_LEITURA = `Leia o recurso ${LINK_LEITURA} do servidor MCP ifpr (r
  * O registro de um turno: as ferramentas, com a entrada e o resumo, o tempo e os links `ifpr://`. Vai
  * direto ao stderr, como o log do servidor: o vitest esconde o `console` dos testes que passam.
  */
-const registrarTurno = (rotulo: string, eventos: ReadonlyArray<Evento>, ms: number) =>
+const registrarTurno = (rotulo: string, eventos: ReadonlyArray<EventoConversa>, ms: number) =>
   Effect.sync(() => {
     const texto = eventos.flatMap((e) => (e._tag === "TextoFinal" ? [e.texto] : [])).join("\n");
     const linhas = [`[${PROVIDER}] ${rotulo}: ${(ms / 1000).toFixed(1)} s, ${eventos.length} eventos`];

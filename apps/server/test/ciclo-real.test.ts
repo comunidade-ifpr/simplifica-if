@@ -41,7 +41,7 @@ import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
-import { Provider } from "@simplifica-if/contratos-app";
+import { type EventoConversa, Provider } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
@@ -139,10 +139,10 @@ const abrir = (arquivo: string, aberturas: Array<Abertura>) =>
 
 const log = (provider: string, linha: string) => Effect.sync(() => process.stderr.write(`[${provider}] ${linha}\n`));
 
-const textoFinal = (eventos: ReadonlyArray<Motor.Evento>) =>
+const textoFinal = (eventos: ReadonlyArray<EventoConversa>) =>
   eventos.flatMap((evento) => (evento._tag === "TextoFinal" ? [evento.texto] : [])).join("\n");
 
-const erros = (eventos: ReadonlyArray<Motor.Evento>) =>
+const erros = (eventos: ReadonlyArray<EventoConversa>) =>
   eventos.flatMap((evento) => (evento._tag === "Erro" ? [evento.mensagem] : []));
 
 /** Os processos descendentes deste, pelo `ps`: `[pid, ppid, comando]`. */
