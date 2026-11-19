@@ -236,7 +236,7 @@ describe("limites contra arquivos montados para esgotar recursos", () => {
   test("arquivo acima do limite de tamanho, com a orientação de compactar as imagens", () => {
     esperarErroDocx(
       () => lerDocx(new Uint8Array(LIMITES_PADRAO.bytesDoArquivo + 1)),
-      /tem 20 MB, e o limite é de 20 MB\. Um PPC raramente passa disso: em geral são as imagens\. No Word, use Arquivo › Compactar imagens/,
+      /tem 20 MB, e o limite é de 20 MB\. Um documento de texto raramente passa disso: em geral são as imagens\. No Word, use Arquivo › Compactar imagens/,
     );
     const zip = pacoteCru({ "word/document.xml": documento(p("a")) });
     esperarErroDocx(() => lerDocx(zip, { limites: { bytesDoArquivo: 100 } }), /o limite é de 0 MB/);

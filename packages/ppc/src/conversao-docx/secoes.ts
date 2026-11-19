@@ -4,7 +4,7 @@
  */
 import { match, search } from "@simplifica-if/kb/primitivas/regex";
 import { aparar } from "@simplifica-if/kb/texto";
-import { type Elemento, type Tabela, textoDosTrechos, type Titulo } from "./elementos.ts";
+import { type Elemento, type Tabela, textoDosTrechos, type Titulo } from "@simplifica-if/docx/elementos";
 
 const r = String.raw;
 

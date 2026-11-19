@@ -21,6 +21,8 @@ const BASES_DE_RELACAO = [
 export const RELACAO_DOCUMENTO = BASES_DE_RELACAO.map((base) => `${base}/officeDocument`);
 export const RELACAO_ESTILOS = BASES_DE_RELACAO.map((base) => `${base}/styles`);
 export const RELACAO_NUMERACAO = BASES_DE_RELACAO.map((base) => `${base}/numbering`);
+export const RELACAO_NOTAS_DE_RODAPE = BASES_DE_RELACAO.map((base) => `${base}/footnotes`);
+export const RELACAO_NOTAS_DE_FIM = BASES_DE_RELACAO.map((base) => `${base}/endnotes`);
 export const RELACAO_PROPRIEDADES = [
   "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
 ];

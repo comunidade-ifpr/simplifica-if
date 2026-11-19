@@ -12,7 +12,7 @@ import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/rege
 import { semMarcas } from "@simplifica-if/kb/primitivas/texto";
 import { digitosAscii } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, dividirLinhas } from "@simplifica-if/kb/texto";
-import { type TabelaNormalizada, todasAsLinhas } from "./tabelas.ts";
+import { type TabelaNormalizada, todasAsLinhas } from "@simplifica-if/docx/tabelas";
 
 const r = String.raw;
 

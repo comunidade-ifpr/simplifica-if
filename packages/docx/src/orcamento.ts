@@ -1,5 +1,6 @@
 /**
- * Orçamento de texto de uma conversão: tetos que valem para o documento inteiro.
+ * Orçamento de texto de uma conversão em Markdown (a do PPC e `docxParaMarkdown`): tetos que valem
+ * para o documento inteiro.
  *
  * Os limites por item (uma tabela, uma parte do ZIP) não fecham a conta: sessenta tabelas logo
  * abaixo do teto, ou um parágrafo com 80 mil tabulações num arquivo de 3 KB, custavam minutos. O
@@ -10,7 +11,7 @@
  * caracteres; o maior parágrafo, 2,3 mil; a maior célula, 3,3 mil; a maior sequência de
  * caracteres sem letra nem dígito, 27.
  */
-import { ErroDocx } from "@simplifica-if/docx/erro";
+import { ErroDocx } from "./erro.ts";
 import type { Elemento } from "./elementos.ts";
 
 export type LimitesDeTexto = {

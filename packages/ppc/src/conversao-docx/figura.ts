@@ -7,7 +7,7 @@
  */
 import { escape, search } from "@simplifica-if/kb/primitivas/regex";
 import { aparar } from "@simplifica-if/kb/texto";
-import type { Figura } from "./elementos.ts";
+import type { Figura } from "@simplifica-if/docx/elementos";
 import type { PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { type Secao, tituloCompleto } from "./secoes.ts";
 

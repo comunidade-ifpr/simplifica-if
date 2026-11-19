@@ -12,7 +12,7 @@ const { arquivos, nomes } = artefatosDaConversao(conversao, "PPC.docx"); // { ca
 
 O pacote não lê nem grava arquivo: a skill grava os artefatos na rodada (`preparar-documento.ts`), e o servidor e `scripts/base/importar-ppc.ts` leem o DOCX.
 
-A leitura do DOCX é do pacote [`@simplifica-if/docx`](../docx/README.md). A arquitetura e as regras da conversão estão no [README da skill](../../.agents/skills/revisar-ppc/README.md#conversão-docx).
+A leitura do DOCX e a camada genérica de texto (elementos, tabelas em grade, o `Escritor` de Markdown e o orçamento de texto) são do pacote [`@simplifica-if/docx`](../docx/README.md); aqui ficam as seções (`secoes.ts`), a matriz, o ementário, a identificação, a figura da representação gráfica, a escrita por seções (`markdown.ts`) e o normalizador. A arquitetura e as regras da conversão estão no [README da skill](../../.agents/skills/revisar-ppc/README.md#conversão-docx).
 
 ```bash
 pnpm --filter @simplifica-if/ppc test

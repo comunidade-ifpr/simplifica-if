@@ -238,6 +238,28 @@ const PROPRIEDADES_PADRAO =
   `<dcterms:modified xsi:type="dcterms:W3CDTF">2026-04-22T00:06:00-03:00</dcterms:modified>` +
   `</cp:coreProperties>`;
 
+/** Referência a nota de rodapé ou de fim num run sobrescrito, como o Word grava. */
+export const referenciaDeNota = (id: number, tipo: "rodape" | "fim" = "rodape") =>
+  `<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:${tipo === "rodape" ? "footnote" : "endnote"}Reference w:id="${id}"/></w:r>`;
+
+/**
+ * Nota de rodapé (`w:footnote`) ou de fim (`w:endnote`), um parágrafo por texto; o primeiro começa
+ * com o número da nota (`w:footnoteRef`), como o Word grava. Vai em `PartesDocx.notas`.
+ */
+export function nota(id: number, textos: string[], tipo: "rodape" | "fim" = "rodape"): string {
+  const nome = tipo === "rodape" ? "footnote" : "endnote";
+  const numero = `<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:${nome}Ref/></w:r>`;
+  const paragrafos = textos.map((texto, indice) =>
+    par((indice === 0 ? numero : "") + run(indice === 0 ? ` ${texto}` : texto)),
+  );
+  return `<w:${nome} w:id="${id}">${paragrafos.join("") || "<w:p/>"}</w:${nome}>`;
+}
+
+/** As notas de separador e de continuação, que o Word grava antes das notas (ids -1 e 0). */
+const separadoresDeNotas = (nome: string) =>
+  `<w:${nome} w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:${nome}>` +
+  `<w:${nome} w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:${nome}>`;
+
 export type Relacao = { id: string; tipo: "image" | "hyperlink"; alvo: string; externa?: boolean };
 
 export type PartesDocx = {
@@ -250,6 +272,11 @@ export type PartesDocx = {
   propriedades?: boolean;
   /** Conteúdo de `word/numbering.xml` (por exemplo `NUMERACAO_PADRAO`); sem ele, a parte não existe. */
   numeracao?: string;
+  /**
+   * Notas de `word/footnotes.xml` e `word/endnotes.xml` (`nota(...)`), depois dos separadores; sem
+   * elas, a parte não existe.
+   */
+  notas?: { rodape?: string[]; fim?: string[] };
   /**
    * `false` deixa de conferir o pacote com `problemasOoxml` (as regras que, violadas, fazem o Word
    * recusar o arquivo). Só para os testes que montam de propósito um documento que o Word não abriria.
@@ -273,6 +300,8 @@ export const linkExterno = (id: string, alvo = "https://www.gov.br/mec/"): Relac
  */
 export function montarDocx(partes: PartesDocx): Uint8Array {
   const comPropriedades = partes.propriedades !== false;
+  const rodape = partes.notas?.rodape;
+  const fim = partes.notas?.fim;
   const xml = (conteudo: string) => strToU8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n${conteudo}`);
   const relacoes = (itens: string[]) =>
     xml(
@@ -293,6 +322,12 @@ export function montarDocx(partes: PartesDocx): Uint8Array {
         (partes.numeracao
           ? `<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>`
           : "") +
+        (rodape
+          ? `<Override PartName="/word/footnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"/>`
+          : "") +
+        (fim
+          ? `<Override PartName="/word/endnotes.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"/>`
+          : "") +
         `</Types>`,
     ),
     "_rels/.rels": relacoes([
@@ -308,6 +343,8 @@ export function montarDocx(partes: PartesDocx): Uint8Array {
     "word/_rels/document.xml.rels": relacoes([
       `<Relationship Id="rIdEstilos" Type="${REL}/styles" Target="styles.xml"/>`,
       partes.numeracao ? `<Relationship Id="rIdNumeracao" Type="${REL}/numbering" Target="numbering.xml"/>` : "",
+      rodape ? `<Relationship Id="rIdNotasDeRodape" Type="${REL}/footnotes" Target="footnotes.xml"/>` : "",
+      fim ? `<Relationship Id="rIdNotasDeFim" Type="${REL}/endnotes" Target="endnotes.xml"/>` : "",
       ...(partes.relacoes ?? []).map(
         (item) =>
           `<Relationship Id="${item.id}" Type="${REL}/${item.tipo}" Target="${escaparXml(item.alvo)}"${item.externa ? ' TargetMode="External"' : ""}/>`,
@@ -316,6 +353,14 @@ export function montarDocx(partes: PartesDocx): Uint8Array {
   };
   if (comPropriedades) arquivos["docProps/core.xml"] = xml(PROPRIEDADES_PADRAO);
   if (partes.numeracao) arquivos["word/numbering.xml"] = xml(`<w:numbering ${NS}>${partes.numeracao}</w:numbering>`);
+  if (rodape)
+    arquivos["word/footnotes.xml"] = xml(
+      `<w:footnotes ${NS}>${separadoresDeNotas("footnote")}${rodape.join("")}</w:footnotes>`,
+    );
+  if (fim)
+    arquivos["word/endnotes.xml"] = xml(
+      `<w:endnotes ${NS}>${separadoresDeNotas("endnote")}${fim.join("")}</w:endnotes>`,
+    );
   for (const [nome, bytes] of Object.entries(partes.midia ?? {})) arquivos[`word/media/${nome}`] = bytes;
   // Data fixa nas entradas do ZIP, para o mesmo documento dar sempre os mesmos bytes.
   const docx = zipSync(arquivos, { mtime: "2026-01-01T12:00:00Z" });

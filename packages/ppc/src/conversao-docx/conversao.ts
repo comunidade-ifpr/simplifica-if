@@ -6,8 +6,10 @@
  *
  * Camadas, de baixo para cima:
  * - `@simplifica-if/docx`: o DOCX como modelo intermediário (pacote ZIP, XML, parágrafos, tabelas,
- *   figuras), com os limites contra arquivo hostil;
- * - `elementos.ts`, `secoes.ts`, `tabelas.ts`: os elementos e as seções do PPC;
+ *   figuras), com os limites contra arquivo hostil, e a camada genérica de texto: elementos
+ *   (`elementos.ts`), tabelas em grade (`tabelas.ts`), escrita do Markdown (`markdown.ts`) e
+ *   orçamento de texto (`orcamento.ts`);
+ * - `secoes.ts`: as seções do PPC;
  * - `matriz.ts`, `ementario.ts`, `identificacao-tabelas.ts`, `figura.ts`: os dados extraídos;
  * - `markdown.ts` e este módulo: o Markdown e os artefatos.
  *
@@ -18,12 +20,13 @@
 import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import { ORDEM_CHAVES, type Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { normalizarMarkdown } from "../normalizador-markdown.ts";
-import { type Elemento, elementosDoDocumento, type Tabela } from "./elementos.ts";
+import { type Elemento, elementosDoDocumento, type Tabela, temTexto } from "@simplifica-if/docx/elementos";
 import { type ComponenteDoEmentario, extrairComponenteDoEmentario } from "./ementario.ts";
 import { inserirBlocoNaSecao, type RepresentacaoGrafica, resolverRepresentacaoGrafica } from "./figura.ts";
 import { extrairDadosDeIdentificacao } from "./identificacao-tabelas.ts";
-import { escreverMarkdown, type NormalizarTabela } from "./markdown.ts";
-import { type LimitesDeTexto, Orcamento } from "./orcamento.ts";
+import type { NormalizarTabela } from "@simplifica-if/docx/markdown";
+import { type LimitesDeTexto, Orcamento } from "@simplifica-if/docx/orcamento";
+import { escreverMarkdown } from "./markdown.ts";
 import {
   extrairMatrizGenerica,
   extrairMatrizPpc,
@@ -38,14 +41,14 @@ import { lerPacote } from "@simplifica-if/docx/leitor";
 import type { PropriedadesOoxml } from "@simplifica-if/docx/modelo";
 import { LIMITES_PADRAO, type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes, type Secao } from "./secoes.ts";
-import { colunasDaTabela, normalizarTabela, type TabelaNormalizada } from "./tabelas.ts";
+import { colunasDaTabela, normalizarTabela, type TabelaNormalizada } from "@simplifica-if/docx/tabelas";
 
 export type OpcoesConversao = {
   /** Instante da conversão (`data_conversao`); quem chama passa o relógio da rodada. */
   agora: Date;
   /** Limites de leitura do pacote; padrão: `LIMITES_PADRAO` de `@simplifica-if/docx/pacote`. */
   limites?: Partial<LimitesDoPacote>;
-  /** Orçamento de texto do documento; padrão: `LIMITES_DE_TEXTO` de `orcamento.ts`. */
+  /** Orçamento de texto do documento; padrão: `LIMITES_DE_TEXTO` de `@simplifica-if/docx/orcamento`. */
   limitesDeTexto?: Partial<LimitesDeTexto>;
 };
 
@@ -216,11 +219,6 @@ function resumoDoEmentario(ementario: Dicionario): Dicionario {
 }
 
 // ---------------------------------------------------------------- conversão
-
-function temTexto(elemento: Elemento): boolean {
-  if (elemento.tipo === "titulo" || elemento.tipo === "paragrafo") return true;
-  return elemento.tipo === "tabela" && elemento.linhas.some((linha) => linha.some((celula) => celula.texto));
-}
 
 /**
  * Converte os bytes de um `.docx`, em memória; `nomeDoArquivo` vai para `arquivo_origem`. Lança

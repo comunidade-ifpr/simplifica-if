@@ -1,11 +1,11 @@
 /**
  * Tabela em grade regular de textos (sem mesclas) e sua forma em Markdown.
  *
- * A primeira linha é sempre o cabeçalho; as extrações de matriz, ementário e identificação
- * trabalham sobre esta forma.
+ * A primeira linha é sempre o cabeçalho; as extrações de matriz, ementário e identificação do
+ * `@simplifica-if/ppc` trabalham sobre esta forma.
  */
 import { match, sub } from "@simplifica-if/kb/primitivas/regex";
-import { ErroDocx } from "@simplifica-if/docx/erro";
+import { ErroDocx } from "./erro.ts";
 import { aparar } from "@simplifica-if/kb/texto";
 import type { CelulaTabela, Tabela } from "./elementos.ts";
 

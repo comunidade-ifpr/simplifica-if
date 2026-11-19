@@ -19,21 +19,27 @@
  *   compatibilidade (`mc:Fallback`) das caixas de texto.
  * - A numeração automática do parágrafo (`w:numPr`) é lida.
  * - Uma imagem legada (`v:imagedata` em `w:pict` ou `w:object`) é imagem, não forma.
+ * - As notas de rodapé e de fim só são lidas quando pedidas (`OpcoesLeitura.notas`): sem elas, a
+ *   referência à nota some do texto, como a conversão do PPC sempre leu.
  */
 import { aparar } from "@simplifica-if/kb/texto";
 import { Element as ElementoDom, type Element } from "domhandler";
 import * as DateTime from "effect/DateTime";
-import type {
-  BlocoOoxml,
-  CelulaOoxml,
-  DocumentoOoxml,
-  FiguraOoxml,
-  ItemParagrafo,
-  LinhaOoxml,
-  ParagrafoOoxml,
-  PropriedadesOoxml,
-  RunOoxml,
-  TabelaOoxml,
+import {
+  type BlocoOoxml,
+  type CelulaOoxml,
+  type DocumentoOoxml,
+  type FiguraOoxml,
+  type ItemParagrafo,
+  type LinhaOoxml,
+  marcaDeNota,
+  NAO_CARACTERES_DA_MARCA,
+  type NotaOoxml,
+  type ParagrafoOoxml,
+  type PropriedadesOoxml,
+  type RunOoxml,
+  type TabelaOoxml,
+  type TipoNota,
 } from "./modelo.ts";
 import {
   ErroDocx,
@@ -41,13 +47,24 @@ import {
   PacoteOoxml,
   RELACAO_DOCUMENTO,
   RELACAO_ESTILOS,
+  RELACAO_NOTAS_DE_FIM,
+  RELACAO_NOTAS_DE_RODAPE,
   RELACAO_NUMERACAO,
   RELACAO_PROPRIEDADES,
   type Relacao,
 } from "./pacote.ts";
 import { atributo, descendente, descendentes, filho, filhos, filhosElementos, textoInicial } from "./xml.ts";
 
-export type OpcoesLeitura = {
+/** O que a leitura pede além do corpo. */
+export type OpcoesDoDocumento = {
+  /**
+   * Lê as notas de rodapé e de fim (`DocumentoOoxml.notas`) e marca cada referência no texto
+   * (`marcaDeNota`). Desligada por padrão: a conversão do PPC lê sem elas.
+   */
+  notas?: boolean;
+};
+
+export type OpcoesLeitura = OpcoesDoDocumento & {
   /** Limites de leitura; padrão: `LIMITES_PADRAO` de `limites.ts`. */
   limites?: Partial<LimitesDoPacote>;
 };
@@ -133,6 +150,8 @@ type Contexto = {
   limites: LimitesDoPacote;
   /** Formato do marcador (`w:numFmt`) de cada nível de cada numeração (`w:num`), por id. */
   numeracoes: Map<string, Map<number, string>>;
+  /** Marca as referências a notas no texto (`OpcoesLeitura.notas`). */
+  notas: boolean;
 };
 
 /** Alterações controladas que removem conteúdo: ficam fora do texto que o Word mostra. */
@@ -225,11 +244,22 @@ function lerEstilos(raiz: Element | null): Pick<Contexto, "estilos" | "estiloPad
 
 // ---------------------------------------------------------------- parágrafos
 
-function textoDoRun(run: Element): string {
+/** Referências a notas, com o tipo da nota. */
+const REFERENCIAS_A_NOTAS = new Map<string, TipoNota>([
+  ["w:footnoteReference", "rodape"],
+  ["w:endnoteReference", "fim"],
+]);
+
+function textoDoRun(run: Element, contexto: Contexto): string {
   let texto = "";
   for (const item of filhosElementos(run)) {
-    if (item.name === "w:t") texto += textoInicial(item);
-    else if (item.name === "w:tab" || item.name === "w:ptab") texto += "\t";
+    if (item.name === "w:t") {
+      const lido = textoInicial(item);
+      // Os não caracteres da marca de nota, se o documento os trouxer, não podem fingir uma marca.
+      texto += contexto.notas ? lido.replace(NAO_CARACTERES_DA_MARCA, "") : lido;
+    } else if (contexto.notas && REFERENCIAS_A_NOTAS.has(item.name)) {
+      texto += marcaDeNota(REFERENCIAS_A_NOTAS.get(item.name)!, atributo(item, "w:id") ?? "");
+    } else if (item.name === "w:tab" || item.name === "w:ptab") texto += "\t";
     else if (item.name === "w:cr") texto += "\n";
     else if (item.name === "w:noBreakHyphen") texto += "-";
     // Quebra de página ou de coluna não é texto.
@@ -238,12 +268,12 @@ function textoDoRun(run: Element): string {
   return texto;
 }
 
-function lerRun(run: Element): RunOoxml {
+function lerRun(run: Element, contexto: Contexto): RunOoxml {
   const propriedades = filho(run, "w:rPr");
   const tamanho = propriedades ? filho(propriedades, "w:sz") : null;
   const valorTamanho = tamanho ? atributo(tamanho, "w:val") : null;
   return {
-    texto: textoDoRun(run),
+    texto: textoDoRun(run, contexto),
     negrito: ligaDesliga(propriedades && filho(propriedades, "w:b")),
     italico: ligaDesliga(propriedades && filho(propriedades, "w:i")),
     tachado: ligaDesliga(propriedades && filho(propriedades, "w:strike")),
@@ -274,10 +304,14 @@ function urlDoHyperlink(hyperlink: Element, contexto: Contexto): string | null {
 function lerItens(paragrafo: Element, contexto: Contexto): ItemParagrafo[] {
   const itens: ItemParagrafo[] = [];
   for (const item of conteudoEmLinha(paragrafo)) {
-    if (item.name === "w:r") itens.push({ tipo: "run", ...lerRun(item) });
+    if (item.name === "w:r") itens.push({ tipo: "run", ...lerRun(item, contexto) });
     else if (item.name === "w:hyperlink") {
       const runs = conteudoEmLinha(item).filter((no) => no.name === "w:r");
-      itens.push({ tipo: "hyperlink", url: urlDoHyperlink(item, contexto), runs: runs.map(lerRun) });
+      itens.push({
+        tipo: "hyperlink",
+        url: urlDoHyperlink(item, contexto),
+        runs: runs.map((elemento) => lerRun(elemento, contexto)),
+      });
     }
   }
   return itens;
@@ -508,7 +542,10 @@ function lerPropriedades(raiz: Element | null): PropriedadesOoxml {
 // ---------------------------------------------------------------- documento
 
 /** O corpo do documento principal e o contexto da leitura (relações, estilos, numerações). */
-function abrirDocumento(pacote: PacoteOoxml): { corpo: Element; contexto: Contexto } {
+function abrirDocumento(
+  pacote: PacoteOoxml,
+  opcoes: OpcoesDoDocumento = {},
+): { principal: string; corpo: Element; contexto: Contexto } {
   const principal = pacote.partePorTipo("", RELACAO_DOCUMENTO);
   const raiz = principal ? pacote.xml(principal) : null;
   const corpo = raiz ? filho(raiz, "w:body") : null;
@@ -522,17 +559,51 @@ function abrirDocumento(pacote: PacoteOoxml): { corpo: Element; contexto: Contex
     limites: pacote.limites,
     ...lerEstilos(parteEstilos ? pacote.xml(parteEstilos) : null),
     numeracoes: lerNumeracoes(parteNumeracao ? pacote.xml(parteNumeracao) : null),
+    notas: opcoes.notas === true,
   };
-  return { corpo, contexto };
+  return { principal, corpo, contexto };
+}
+
+// ---------------------------------------------------------------- notas
+
+const PARTES_DE_NOTAS: ReadonlyArray<{ tipo: TipoNota; relacao: readonly string[]; elemento: string }> = [
+  { tipo: "rodape", relacao: RELACAO_NOTAS_DE_RODAPE, elemento: "w:footnote" },
+  { tipo: "fim", relacao: RELACAO_NOTAS_DE_FIM, elemento: "w:endnote" },
+];
+
+/**
+ * As notas de rodapé e de fim. As partes passam pelos mesmos limites do pacote que o corpo; as
+ * notas de separador e de continuação (`w:type` diferente de `normal`) são a linha que o Word
+ * desenha acima das notas, não texto. Os links de uma nota resolvem pelas relações da parte dela.
+ */
+function lerNotas(pacote: PacoteOoxml, principal: string, contexto: Contexto): NotaOoxml[] {
+  const notas: NotaOoxml[] = [];
+  for (const { tipo, relacao, elemento } of PARTES_DE_NOTAS) {
+    const parte = pacote.partePorTipo(principal, relacao);
+    const raiz = parte ? pacote.xml(parte) : null;
+    if (!parte || !raiz) continue;
+    const daParte: Contexto = { ...contexto, relacoes: pacote.relacoes(parte) };
+    for (const nota of filhos(raiz, elemento)) {
+      if ((atributo(nota, "w:type") ?? "normal") !== "normal") continue;
+      const blocos: BlocoOoxml[] = [];
+      lerBlocos(nota, daParte, false, blocos);
+      notas.push({ tipo, id: atributo(nota, "w:id") ?? "", blocos });
+    }
+  }
+  return notas;
 }
 
 /** Lê o pacote já aberto; exposto para quem também precisa dos binários (a figura). */
-export function lerPacote(pacote: PacoteOoxml): DocumentoOoxml {
-  const { corpo, contexto } = abrirDocumento(pacote);
+export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesDoDocumento = {}): DocumentoOoxml {
+  const { principal, corpo, contexto } = abrirDocumento(pacote, opcoes);
   const partePropriedades = pacote.partePorTipo("", RELACAO_PROPRIEDADES);
   const blocos: BlocoOoxml[] = [];
   lerBlocos(corpo, contexto, false, blocos);
-  return { blocos, propriedades: lerPropriedades(partePropriedades ? pacote.xml(partePropriedades) : null) };
+  return {
+    blocos,
+    propriedades: lerPropriedades(partePropriedades ? pacote.xml(partePropriedades) : null),
+    notas: contexto.notas ? lerNotas(pacote, principal, contexto) : [],
+  };
 }
 
 /**
@@ -551,5 +622,5 @@ export function textosDeCaixas(pacote: PacoteOoxml): string[] {
 
 /** Lê os bytes de um `.docx`. */
 export function lerDocx(bytes: Uint8Array, opcoes: OpcoesLeitura = {}): DocumentoOoxml {
-  return lerPacote(new PacoteOoxml(bytes, opcoes.limites));
+  return lerPacote(new PacoteOoxml(bytes, opcoes.limites), opcoes);
 }

@@ -108,7 +108,7 @@ A conversão não mora na skill: está em dois pacotes do workspace, que o servi
 | Pacote | Papel |
 |---|---|
 | `packages/docx` (`@simplifica-if/docx`) | Leitor OOXML genérico, que não sabe o que é um PPC: `pacote.ts` (o ZIP, lido sob limites), `xml.ts` (árvore com nomes resolvidos pela URI do namespace), `leitor.ts` e `modelo.ts` (modelo intermediário: parágrafos com estilo, recuo, numeração, runs com formatação direta, hyperlinks e figura; tabelas com `gridSpan`, `vMerge` e os dois textos de cada célula; propriedades). |
-| `packages/ppc` (`@simplifica-if/ppc`) | Conversão do PPC, em `src/conversao-docx/`: `elementos.ts` (título, parágrafo, item de lista, grade de tabela, figura), `secoes.ts`, `tabelas.ts`, `matriz.ts`, `ementario.ts` e `similaridade.ts` (o `partial_ratio` do `rapidfuzz`), `identificacao-tabelas.ts`, `figura.ts`, `markdown.ts` e `conversao.ts`; e o `normalizador-markdown.ts`, usado também na entrada `.md`. |
+| `packages/ppc` (`@simplifica-if/ppc`) | Conversão do PPC, em `src/conversao-docx/`, sobre a camada genérica do `docx` (`elementos.ts`: título, parágrafo, item de lista, grade de tabela, figura; `tabelas.ts`; `orcamento.ts`; a escrita em `markdown.ts`): `secoes.ts`, `matriz.ts`, `ementario.ts` e `similaridade.ts` (o `partial_ratio` do `rapidfuzz`), `identificacao-tabelas.ts`, `figura.ts`, `markdown.ts` (as seções) e `conversao.ts`; e o `normalizador-markdown.ts`, usado também na entrada `.md`. |
 
 A conversão lê o texto que o Word mostra (inclusive as alterações controladas ainda não aceitas) e aplica as regras descritas em [Regras da conversão](#regras-da-conversão).
 
@@ -136,7 +136,7 @@ Os limites ficam em dois lugares, um por pacote, e quem chama pode trocar qualqu
 | Células por linha de tabela (`celulasPorLinha`) | 1.024 | 63 (o máximo do Word) |
 | Posições da grade de uma tabela (`posicoesPorTabela`) | 2 milhões | milhares |
 
-| Orçamento de texto do documento (`packages/ppc/src/conversao-docx/orcamento.ts`) | Padrão | Maior valor nos PPCs reais |
+| Orçamento de texto do documento (`packages/docx/src/orcamento.ts`) | Padrão | Maior valor nos PPCs reais |
 |---|---:|---:|
 | Caracteres no documento: texto das tabelas expandidas e Markdown gerado (`caracteresNoDocumento`) | 8 milhões | 398 mil |
 | Caracteres num parágrafo, título ou célula (`caracteresPorBloco`) | 50 mil | 3,3 mil |

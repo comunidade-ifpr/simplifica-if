@@ -11,7 +11,7 @@ import { finditer, match, search, split, sub } from "@simplifica-if/kb/primitiva
 import { inteiroDeTexto } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, contarCaracteres } from "@simplifica-if/kb/texto";
 import { mascarasDoPalheiro, partialRatio, partialRatioNoTrecho, prepararAgulha } from "./similaridade.ts";
-import { colunasDaTabela, type TabelaNormalizada, todasAsLinhas } from "./tabelas.ts";
+import { colunasDaTabela, type TabelaNormalizada, todasAsLinhas } from "@simplifica-if/docx/tabelas";
 
 const r = String.raw;
 

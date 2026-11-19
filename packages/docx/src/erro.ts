@@ -36,7 +36,7 @@ const MOTIVOS = [
   "comentarios-corrompidos",
   "relacoes-corrompidas",
   "sem-tipos-de-conteudo",
-  // conversão do PPC
+  // conversão em Markdown (a do PPC e `docxParaMarkdown`)
   "sem-texto",
   "texto-demais",
   "bloco-longo",
@@ -72,7 +72,7 @@ export function mensagemErroDocx(dados: DadosErroDocx): string {
   switch (dados.motivo) {
     case "arquivo-grande-demais":
       return (
-        `O arquivo DOCX tem ${megabytes(tamanho)}, e o limite é de ${megabytes(limite)}. Um PPC raramente passa disso: ` +
+        `O arquivo DOCX tem ${megabytes(tamanho)}, e o limite é de ${megabytes(limite)}. Um documento de texto raramente passa disso: ` +
         "em geral são as imagens. No Word, use Arquivo › Compactar imagens e salve de novo."
       );
     case "doc-ou-protegido":
@@ -124,8 +124,8 @@ export function mensagemErroDocx(dados: DadosErroDocx): string {
       return "O arquivo não declara os tipos de conteúdo.";
     case "sem-texto":
       return (
-        "O documento não tem texto: o arquivo está vazio ou traz o PPC só como imagem (digitalizado). " +
-        "A revisão precisa do documento de texto original."
+        "O documento não tem texto: o arquivo está vazio ou traz o conteúdo só como imagem (digitalizado). " +
+        "Use o documento de texto original."
       );
     case "texto-demais":
       return (

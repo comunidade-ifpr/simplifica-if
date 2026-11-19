@@ -1,18 +1,27 @@
 # @simplifica-if/docx
 
-Leitor de arquivos `.docx` (OOXML) em TypeScript, sem Word nem binário nativo: `fflate` para o ZIP e `htmlparser2` para o XML. Não sabe o que é um PPC; a conversão do PPC fica em [`@simplifica-if/ppc`](../ppc/README.md).
+Leitor de arquivos `.docx` (OOXML) em TypeScript, sem Word nem binário nativo: `fflate` para o ZIP e `htmlparser2` para o XML, e a conversão de um `.docx` qualquer em Markdown. Não sabe o que é um PPC; a conversão do PPC (seções, matriz, ementário, normalizador) fica em [`@simplifica-if/ppc`](../ppc/README.md), sobre a camada de texto daqui.
 
 ```ts
 import { lerDocx } from "@simplifica-if/docx/leitor";
+import { docxParaMarkdown } from "@simplifica-if/docx/markdown";
 
 const documento = lerDocx(bytes); // blocos (parágrafos e tabelas) e propriedades
+const comNotas = lerDocx(bytes, { notas: true }); // + notas de rodapé e de fim, e a referência marcada no texto
+const markdown = docxParaMarkdown(bytes); // o texto em Markdown, para a IA ler; lança ErroDocx
 ```
+
+`docxParaMarkdown` escreve todos os elementos em sequência, sem detectar seções (o que vem antes do primeiro título, como a ementa e o "RESOLVE:" de uma minuta, fica): títulos do Word viram `##` em diante, tabelas viram tabelas Markdown, listas e links como na conversão do PPC, e cada parágrafo do Word é um parágrafo do Markdown. As notas de rodapé saem como `[^1]`, `[^2]`… e as de fim como `[^fim-1]`, `[^fim-2]`…, cada série numerada na ordem em que a referência aparece no texto, com as definições no fim (as de rodapé antes das de fim); referência a nota inexistente sai do texto. O texto das caixas de texto vai para uma seção "Caixas de texto" no fim; as figuras ficam de fora. Os limites do pacote e o orçamento de texto valem como na conversão do PPC (`limites`, `limitesDeTexto`), e o documento sem texto sai com o motivo `sem-texto`.
 
 | Módulo | Papel |
 |---|---|
 | `pacote.ts` | O ZIP do DOCX: diretório central, partes descompactadas sob demanda e sob limites (`LIMITES_PADRAO`), relações. |
 | `xml.ts` | XML em árvore, com nomes canônicos pela URI do namespace; recusa XML malformado e aninhamento de mais de 256 níveis. |
-| `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e a leitura do texto que o Word mostra; `textosDeCaixas`, o texto das caixas de texto e formas, onde o comentário do Word não ancora. |
+| `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e a leitura do texto que o Word mostra; `textosDeCaixas`, o texto das caixas de texto e formas, onde o comentário do Word não ancora. Com `notas: true`, as notas de rodapé e de fim (sem as de separador) e a referência marcada no texto com dois não caracteres do Unicode (`marcaDeNota`), que valem também dentro da célula de tabela. |
+| `elementos.ts` | Do modelo aos elementos do texto: título (pelo estilo do Word ou pela formatação, como num documento digitado sem estilos), parágrafo com trechos formatados, item de lista, tabela em grade (com as mesclas) e figura. |
+| `tabelas.ts` | Tabela em grade regular (mesclas expandidas, com teto de células e de texto) e a tabela pipe do Markdown. |
+| `orcamento.ts` | Orçamento de texto do documento (`LIMITES_DE_TEXTO`): caracteres no documento, por bloco e sequência sem letra nem dígito. |
+| `markdown.ts` | O `Escritor` (trechos, links só `http`, `https` e `mailto`, listas, títulos e tabelas), que a conversão do PPC usa por seções, e `docxParaMarkdown`. |
 | `erro.ts` | `ErroDocx`: todo arquivo recusado sai com ele, com um `motivo` tipado e os atributos (`dados`: parte, limite, tamanho); a mensagem em português é montada deles (`mensagemErroDocx`), e o Worker da revisão transporta os `dados`, não a frase. |
 | `testes/sintetico.ts` | Construtor de DOCX sintéticos para testes (não é usado em produção): tabelas com `w:tblGrid` e parágrafo final, caixa de texto como o Word grava (`caixaDeTexto`), relações de hiperlink (`linkExterno`). `montarDocx` confere cada pacote com o validador abaixo e lança se o Word o recusaria (`validar: false` para o documento quebrado de propósito). |
 | `testes/validar-ooxml.ts` | Validador estrutural para testes (`problemasOoxml`): as regras que, violadas, fazem o Word recusar o arquivo e que os leitores tolerantes deixam passar (referência a relação inexistente, corpo ou célula que termina em tabela, grade da tabela, namespaces e `mc:Ignorable`, tipos de conteúdo, ids de comentário e de desenho). Roda em todo sintético e em toda saída de `comentarDocx` e `revisarDocx` nos testes. |
@@ -41,7 +50,13 @@ A leitura é síncrona e mantém a árvore do XML na memória. Num servidor, rod
 - tempo máximo de 30 s, com `worker.terminate()` no estouro: vinte vezes o pior caso honesto, e a defesa contra a entrada patológica que os limites não preveem;
 - conferência do tamanho do arquivo antes de lê-lo (`bytesDoArquivo`).
 
-Os casos hostis estão em `test/leitor.test.ts`; os limites de texto do PPC (orçamento por documento), no pacote `@simplifica-if/ppc`.
+Os casos hostis estão em `test/leitor.test.ts` (e repetidos para `docxParaMarkdown` em `test/markdown.test.ts`). O orçamento de texto por documento fica em `src/orcamento.ts` e vale para a conversão em Markdown (a do PPC e `docxParaMarkdown`):
+
+| Campo | Padrão | O que limita |
+|---|---:|---|
+| `caracteresNoDocumento` | 8.000.000 | o texto das tabelas expandidas (a mescla repete a célula) e o Markdown gerado |
+| `caracteresPorBloco` | 50.000 | um parágrafo, título ou célula |
+| `sequenciaSemTexto` | 1.000 | caracteres seguidos sem letra nem dígito |
 
 ```bash
 pnpm --filter @simplifica-if/docx test

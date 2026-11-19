@@ -1,9 +1,10 @@
 /**
- * Do modelo do DOCX aos elementos do PPC: o que é título, parágrafo, item de lista, tabela e figura.
+ * Do modelo do DOCX aos elementos do texto: o que é título, parágrafo, item de lista, tabela e figura.
  *
- * Aqui começam as regras de domínio. O leitor (`ooxml/`) diz o que o arquivo contém; este módulo
- * decide o que isso significa num PPC, que costuma ser digitado sem os estilos de título do Word:
- * um parágrafo numerado e todo em negrito é título, mesmo no estilo Normal.
+ * O leitor (`leitor.ts`) diz o que o arquivo contém; este módulo decide o que isso significa num
+ * documento digitado sem os estilos de título do Word, como os PPCs e as minutas costumam ser: um
+ * parágrafo numerado e todo em negrito é título, mesmo no estilo Normal. Quem dá sentido de PPC
+ * aos elementos (seções, matriz, ementário) é o `@simplifica-if/ppc`.
  */
 import { match } from "@simplifica-if/kb/primitivas/regex";
 import { aparar, contarCaracteres } from "@simplifica-if/kb/texto";
@@ -14,7 +15,7 @@ import {
   runsDoParagrafo,
   type TabelaOoxml,
   textoDoParagrafo,
-} from "@simplifica-if/docx/modelo";
+} from "./modelo.ts";
 
 const r = String.raw;
 
@@ -51,7 +52,7 @@ export type Figura = { tipo: "figura"; figura: FiguraOoxml };
 
 export type Elemento = Titulo | Paragrafo | Tabela | Figura;
 
-/** Texto de um parágrafo do PPC. */
+/** Texto de um parágrafo. */
 export function textoDosTrechos(paragrafo: Paragrafo): string {
   return paragrafo.trechos.map((trecho) => trecho.texto).join("");
 }
@@ -274,7 +275,7 @@ function elementoDaTabela(tabela: TabelaOoxml): Tabela {
 
 // ---------------------------------------------------------------- documento
 
-/** Elementos do PPC na ordem do documento; a figura de um parágrafo vem antes do texto dele. */
+/** Elementos na ordem do documento; a figura de um parágrafo vem antes do texto dele. */
 export function elementosDoDocumento(documento: DocumentoOoxml): Elemento[] {
   const elementos: Elemento[] = [];
   for (const bloco of documento.blocos) {
@@ -287,4 +288,10 @@ export function elementosDoDocumento(documento: DocumentoOoxml): Elemento[] {
     if (elemento) elementos.push(elemento);
   }
   return elementos;
+}
+
+/** Elemento com texto: título, parágrafo ou tabela com alguma célula preenchida. */
+export function temTexto(elemento: Elemento): boolean {
+  if (elemento.tipo === "titulo" || elemento.tipo === "paragrafo") return true;
+  return elemento.tipo === "tabela" && elemento.linhas.some((linha) => linha.some((celula) => celula.texto));
 }

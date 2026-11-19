@@ -111,7 +111,7 @@ layer(CAMADA_RODADA)("preparar-documento com .docx", (it) => {
       );
       expect(erro).toMatchObject({ _tag: "DocxInvalido", motivo: "arquivo-grande-demais", tamanho: 21 * 1024 * 1024 });
       expect(erro.message).toMatch(
-        /tem 21 MB, e o limite é de 20 MB\. Um PPC raramente passa disso.*Arquivo › Compactar imagens/,
+        /tem 21 MB, e o limite é de 20 MB\. Um documento de texto raramente passa disso.*Arquivo › Compactar imagens/,
       );
       expect(NodeFS.existsSync(NodePath.join(dir, "rodadas"))).toBe(false);
     }),

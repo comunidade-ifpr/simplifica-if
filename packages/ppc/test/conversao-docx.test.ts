@@ -19,7 +19,7 @@ import {
   type Paragrafo,
   type Tabela,
   textoDosTrechos,
-} from "../src/conversao-docx/elementos.ts";
+} from "@simplifica-if/docx/elementos";
 import { extrairComponenteDoEmentario, separarReferencias } from "../src/conversao-docx/ementario.ts";
 import { extrairDadosDeIdentificacao } from "../src/conversao-docx/identificacao-tabelas.ts";
 import {
@@ -35,7 +35,7 @@ import { dataW3cEmUtc, lerDocx } from "@simplifica-if/docx/leitor";
 import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
-import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
+import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "@simplifica-if/docx/tabelas";
 import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 

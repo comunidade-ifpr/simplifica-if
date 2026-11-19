@@ -1,7 +1,7 @@
 /**
  * Modelo intermediário de um DOCX: o que o arquivo diz, sem nada de PPC.
  *
- * É a fronteira entre a leitura do OOXML (`leitor.ts`) e as regras de domínio (`../elementos.ts`
+ * É a fronteira entre a leitura do OOXML (`leitor.ts`) e as regras de domínio (`elementos.ts`
  * em diante): quem decide o que é título, item de lista ou matriz curricular trabalha só com estes
  * tipos, nunca com XML.
  *
@@ -113,10 +113,44 @@ export type PropriedadesOoxml = {
   modificadoPor: string;
 };
 
+/** Nota de rodapé (`word/footnotes.xml`) ou de fim (`word/endnotes.xml`). */
+export type TipoNota = "rodape" | "fim";
+
+export type NotaOoxml = {
+  tipo: TipoNota;
+  /** `w:id` da nota, como está no arquivo. */
+  id: string;
+  /** Conteúdo da nota, lido como o corpo. */
+  blocos: BlocoOoxml[];
+};
+
 export type DocumentoOoxml = {
   blocos: BlocoOoxml[];
   propriedades: PropriedadesOoxml;
+  /**
+   * Notas de rodapé e de fim, na ordem dos arquivos, sem as de separador; vazio quando a leitura
+   * não as pede (`OpcoesLeitura.notas`).
+   */
+  notas: NotaOoxml[];
 };
+
+/**
+ * Marca de referência a nota, no texto do run onde a referência está (`w:footnoteReference`,
+ * `w:endnoteReference`), quando a leitura pede as notas. Usa dois não caracteres do Unicode
+ * (U+FDD0 e U+FDD1, reservados para uso interno) para não colidir com texto do documento; o leitor
+ * tira os dois do texto lido quando as notas estão ligadas. É texto e não item do parágrafo porque
+ * a célula de tabela é lida como texto e a referência também aparece nela.
+ */
+const INICIO_DA_MARCA = "\uFDD0";
+const FIM_DA_MARCA = "\uFDD1";
+export const NAO_CARACTERES_DA_MARCA = /[\uFDD0\uFDD1]/g;
+
+export function marcaDeNota(tipo: TipoNota, id: string): string {
+  return `${INICIO_DA_MARCA}${tipo === "rodape" ? "r" : "f"}${id.replace(NAO_CARACTERES_DA_MARCA, "")}${FIM_DA_MARCA}`;
+}
+
+/** As marcas de nota num texto: grupo 1 é `r` (rodapé) ou `f` (fim), grupo 2 é o id. */
+export const RE_MARCA_DE_NOTA = /\uFDD0([rf])([^\uFDD1]*)\uFDD1/g;
 
 /** Texto de um run ou hyperlink do parágrafo. */
 export function textoDoItem(item: ItemParagrafo): string {
