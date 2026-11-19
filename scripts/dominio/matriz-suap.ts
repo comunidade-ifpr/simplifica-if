@@ -1,6 +1,11 @@
+/**
+ * Domínio das matrizes curriculares do SUAP: o formato do relatório de coleta (`matrizes-suap/1`),
+ * que a coleta grava fora do repositório e `scripts/aplicar_matrizes_suap.ts` aplica aqui, e a
+ * consolidação das matrizes ativas, calculada só na aplicação.
+ */
 import * as Schema from "effect/Schema";
 
-export const SITUACOES_MATRIZES = [
+const SITUACOES_MATRIZES = [
   "Única ativa",
   "Múltiplas — mesma CH",
   "Múltiplas — CH divergentes",
@@ -14,11 +19,9 @@ export const CRITERIO_COLETA =
 
 const SEM_MATRIZ_ATIVA = "Nenhuma matriz marcada Ativa=Sim.";
 
-export const esquemaSituacaoMatrizes = Schema.Literals(SITUACOES_MATRIZES);
-
 /**
- * Matriz curricular como aparece no SUAP. Usa a mesma forma do relatório gravado em disco,
- * que `--apply-report` lê de volta, por isso os nomes seguem o JSON. Só as matrizes ativas
+ * Matriz curricular como aparece no SUAP. Usa a mesma forma do relatório de coleta, que
+ * `aplicar_matrizes_suap.ts` lê, por isso os nomes seguem o JSON. Só as matrizes ativas
  * trazem `url`, `carga_horaria_h` e `campos`.
  */
 export const esquemaMatrizSuap = Schema.Struct({
@@ -31,12 +34,49 @@ export const esquemaMatrizSuap = Schema.Struct({
 });
 export type MatrizSuap = typeof esquemaMatrizSuap.Type;
 
-export const esquemaConsolidacaoMatrizes = Schema.Struct({
-  situacao: esquemaSituacaoMatrizes,
-  /** Só existe quando todas as matrizes ativas têm a mesma carga horária. */
-  carga_horaria_comum_h: Schema.NullOr(Schema.Number),
+/** Versão do formato do relatório; a aplicação recusa outra. */
+export const ESQUEMA_RELATORIO_MATRIZES = "matrizes-suap/1";
+
+/** Identidade do curso no relatório, conferida contra o registro antes de gravar. */
+export const esquemaIdentidadeCursoSuap = Schema.Struct({
+  /** Chave canônica `campus_id/curso_slug`. */
+  curso_id: Schema.String,
+  suap_id: Schema.Int,
+  codigo: Schema.String,
 });
-export type ConsolidacaoMatrizes = typeof esquemaConsolidacaoMatrizes.Type;
+
+/** Curso a coletar: a identidade e o que a coleta confere na página do SUAP (nome do campus). */
+export const esquemaCursoParaColeta = Schema.Struct({
+  ...esquemaIdentidadeCursoSuap.fields,
+  nome: Schema.String,
+  campus: Schema.String,
+  forma: Schema.String,
+});
+export type CursoParaColeta = typeof esquemaCursoParaColeta.Type;
+
+/** Um curso do relatório: a identidade e as matrizes como o SUAP as mostrou, sem derivação. */
+export const esquemaCursoColetado = Schema.Struct({
+  ...esquemaIdentidadeCursoSuap.fields,
+  matrizes: Schema.Array(esquemaMatrizSuap),
+});
+export type CursoColetado = typeof esquemaCursoColetado.Type;
+
+/** Relatório de coleta das matrizes (`matrizes-suap/1`), o contrato com a coleta de fora. */
+export const esquemaRelatorioMatrizes = Schema.Struct({
+  esquema: Schema.Literal(ESQUEMA_RELATORIO_MATRIZES),
+  coletado_em: Schema.String,
+  /** Cursos que falharam na coleta; a aplicação recusa relatório com algum. */
+  erros: Schema.Array(Schema.Struct({ ...esquemaIdentidadeCursoSuap.fields, erro: Schema.String })),
+  cursos: Schema.Array(esquemaCursoColetado),
+});
+export type RelatorioMatrizes = typeof esquemaRelatorioMatrizes.Type;
+
+/** Derivação das matrizes ativas, calculada na aplicação e gravada no registro do curso. */
+export interface ConsolidacaoMatrizes {
+  readonly situacao: SituacaoMatrizes;
+  /** Só existe quando todas as matrizes ativas têm a mesma carga horária. */
+  readonly carga_horaria_comum_h: number | null;
+}
 
 export function consolidarMatrizes(matrizes: ReadonlyArray<MatrizSuap>): ConsolidacaoMatrizes {
   const ativas = matrizes.filter((matriz) => matriz.ativa);

@@ -1,0 +1,70 @@
+{
+  "esquema": "matrizes-suap/1",
+  "coletado_em": "2026-11-19T10:00:00-03:00",
+  "erros": [],
+  "cursos": [
+    {
+      "curso_id": "exemplo/tecnico-em-exemplo",
+      "suap_id": 7,
+      "codigo": "EX001",
+      "matrizes": [
+        {
+          "id": 10,
+          "ativa": true,
+          "descricao": "MATRIZ 2020",
+          "url": "https://suap.ifpr.edu.br/edu/matriz/10/",
+          "carga_horaria_h": 1200,
+          "campos": {
+            "Exige estágio e afins": "Sim",
+            "Carga horária mínima": "200 horas"
+          }
+        },
+        {
+          "id": 11,
+          "ativa": false,
+          "descricao": "MATRIZ 2014"
+        }
+      ]
+    },
+    {
+      "curso_id": "exemplo/tecnico-em-outro",
+      "suap_id": 8,
+      "codigo": "EX002",
+      "matrizes": [
+        {
+          "id": 20,
+          "ativa": true,
+          "descricao": "MATRIZ 2019",
+          "url": "https://suap.ifpr.edu.br/edu/matriz/20/",
+          "carga_horaria_h": 3634,
+          "campos": {
+            "Exige estágio e afins": "Não",
+            "Carga horária mínima": "-"
+          }
+        },
+        {
+          "id": 21,
+          "ativa": true,
+          "descricao": "MATRIZ 2024 (Trimestral)",
+          "url": "https://suap.ifpr.edu.br/edu/matriz/21/",
+          "carga_horaria_h": 3348,
+          "campos": {
+            "Exige estágio e afins": "Não"
+          }
+        }
+      ]
+    },
+    {
+      "curso_id": "exemplo/tecnico-em-terceiro",
+      "suap_id": 9,
+      "codigo": "EX003",
+      "matrizes": [
+        {
+          "id": 30,
+          "ativa": false,
+          "descricao": "MATRIZ 2010"
+        }
+      ]
+    }
+  ]
+}

@@ -71,14 +71,15 @@ Para relatórios brutos do SUAP com coluna `DIRETORIA`, use `institucional/ifpr/
 
 ### Matrizes e cargas horárias
 
-A coleta consulta todos os cursos com `suap.id`, usando três sessões simultâneas e cookies somente em memória. A coleta é somente leitura no SUAP; a gravação nos arquivos dos cursos é uma etapa explícita separada.
+As matrizes chegam à base por um relatório de coleta (veja [Dado coletado fora do repositório](#dado-coletado-fora-do-repositório)). A coleta consulta todos os cursos com `suap.id`, usando três sessões simultâneas e cookies somente em memória, é somente leitura no SUAP e não grava nos registros; a aplicação do relatório é uma etapa explícita separada.
 
 ```bash
-node scripts/suap_coletar_matrizes.ts
-node scripts/suap_coletar_matrizes.ts --apply-report tmp/suap-matrizes/resultado.json
+node scripts/suap_coletar_matrizes.ts                                   # grava tmp/suap-matrizes/resultado.json
+node scripts/aplicar_matrizes_suap.ts tmp/suap-matrizes/resultado.json  # lista as mudanças
+node scripts/aplicar_matrizes_suap.ts tmp/suap-matrizes/resultado.json --apply
 ```
 
-Para restringir a consulta, use `--suap-id 211` (repetível). O relatório identifica cada curso por `curso_id` (`campus_id/curso_slug`), e a gravação confere `suap.id` e `suap.codigo` antes de escrever. Depois de gravar, publique com os comandos acima.
+Para restringir a coleta, use `--suap-id 211` (repetível). O relatório identifica cada curso por `curso_id` (`campus_id/curso_slug`), `suap_id` e `codigo`, e a aplicação confere `suap.id` e `suap.codigo` de todos antes de gravar. Depois de gravar, siga o pipeline da seção abaixo.
 
 Campos gravados em `suap.matrizes`:
 
@@ -86,9 +87,45 @@ Campos gravados em `suap.matrizes`:
 - `urls`: uma URL direta por matriz ativa (`https://suap.ifpr.edu.br/edu/matriz/<id>/`);
 - `carga_horaria_comum_h`: carga do cabeçalho da matriz, só quando todas as ativas exibem o mesmo valor;
 - `situacao`: `Única ativa`, `Múltiplas — mesma CH`, `Múltiplas — CH divergentes` ou `Sem matriz ativa`;
-- `coletado_em`: momento da consulta das matrizes.
+- `coletado_em`: momento da coleta que mudou as matrizes por último (uma coleta sem mudança não o atualiza).
+
+`resumo`, `urls`, `carga_horaria_comum_h` e `situacao` são calculados na aplicação, a partir das matrizes brutas do relatório (`scripts/dominio/matriz-suap.ts`).
 
 `Ativa = Sim` não comprova vigência para novos ingressos. Não selecione automaticamente a matriz de maior ID ou mais recente. Estágio e extensão devem ser conferidos separadamente: a rotina preserva o cabeçalho de carga horária e a carga mínima de estágio informada, sem somá-los.
+
+## Dado coletado fora do repositório
+
+Dado que vem de sistema com login (hoje, as matrizes do SUAP) é coletado por ferramenta que não grava na base. Ela entrega um **relatório de coleta** em JSON, e um comando `aplicar_*` daqui o confere e o aplica nos registros. A entrada de PPC novo pelo DOCX da coordenação (`importar_ppc_docx.ts`, em "Entrada de PPC novo na base") é outro caminho: a entrada dela é o documento, não um relatório.
+
+O relatório traz:
+
+- `esquema`: o nome e a versão do formato (por exemplo, `matrizes-suap/1`); o comando recusa versão que não conhece;
+- `coletado_em`: o momento da coleta, gravado nos registros que mudam;
+- `erros`: os itens que falharam na coleta, cada um com a identidade e a mensagem; o comando recusa relatório com algum erro, para não gravar às cegas;
+- os itens, cada um com a identidade (para o curso, `curso_id`, `suap_id` e `codigo`) e o **dado bruto** coletado. Derivações (como a situação e a carga comum das matrizes) são calculadas aqui, na aplicação, para que a regra fique num lugar só. O que só interessa a quem coleta (tempo, conexões, critério, título da página) vai para o terminal da coleta, não para o relatório.
+
+O esquema do relatório e um relatório de exemplo ficam aqui, junto da aplicação, e vão copiados para o repositório de quem coleta, cujos testes validam o exemplo.
+
+O comando `aplicar_*`:
+
+1. valida o relatório contra o esquema daqui e recusa `esquema` desconhecido e relatório com `erros`;
+2. confere **todos** os itens contra os registros antes de gravar qualquer um: um item ausente da base, repetido ou cuja identidade mudou desde a coleta recusa o relatório inteiro, sem aplicação pela metade;
+3. sem `--apply`, lista as mudanças substantivas e conta à parte os itens sem mudança, sem gravar nada;
+4. com `--apply`, grava só as mudanças substantivas e relê os registros para confirmar. Uma coleta que não mudou nada não mexe em arquivo nenhum, nem no `coletado_em`.
+
+A revisão é o diff no PR: o PR da aplicação deve mostrar só os campos que o relatório alimenta. Depois de aplicar, rode o pipeline da base e confira os gabaritos que o dado alimenta:
+
+```bash
+node scripts/gerar_base.ts
+node scripts/validar_base.ts
+pnpm kb:compilar
+sh testes-gabarito/banco.sh --comparar   # para matrizes, as linhas suap_matrizes e ppc_suap
+sh testes-gabarito/kb.sh --comparar      # para matrizes, os casos ppc-fatos*
+```
+
+Mudança esperada nos gabaritos é recapturada (`--capturar`) e registrada no [README do gabarito](../../testes-gabarito/README.md), no mesmo PR.
+
+Exemplo: `scripts/aplicar_matrizes_suap.ts` aplica o relatório `matrizes-suap/1` (esquema em `scripts/dominio/matriz-suap.ts`, exemplo em `scripts/dominio/fixtures/relatorio-matrizes-suap.json`) em `suap.matrizes` dos cursos (veja [Matrizes e cargas horárias](#matrizes-e-cargas-horárias)).
 
 ## Horários de aula
 

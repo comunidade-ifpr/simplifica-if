@@ -219,66 +219,18 @@ describe("registros institucionais", () => {
 });
 
 describe("RepositorioCursosLocal", () => {
-  test("lista cursos com SUAP ID e grava as matrizes no arquivo do curso", () => {
+  test("lista para a coleta os cursos com SUAP ID, com o nome do campus", () => {
     const raiz = raizTemporaria();
     gravarDadosInstitucionais(dadosExemplo(), raiz);
-    const repositorio = new RepositorioCursosLocal(raiz);
-    const [paraColeta] = repositorio.listarParaColeta();
-    expect(paraColeta).toEqual({
-      curso_id: "exemplo/tecnico-em-exemplo",
-      nome: "Técnico em Exemplo",
-      campus: "Campus Exemplo",
-      forma: "Integrado",
-      codigo: "EX001",
-      suap_id: 7,
-    });
-
-    repositorio.gravarMatrizes(
+    expect(new RepositorioCursosLocal(raiz).listarParaColeta()).toEqual([
       {
-        ...paraColeta!,
-        url: "https://suap.ifpr.edu.br/edu/cursocampus/7/",
-        titulo_suap: "Curso",
-        matrizes: [
-          {
-            id: 12,
-            ativa: true,
-            descricao: "MATRIZ 2027",
-            url: "https://suap.ifpr.edu.br/edu/matriz/12/",
-            carga_horaria_h: 3100,
-            campos: {},
-          },
-        ],
-        situacao: "Única ativa",
-        carga_horaria_comum_h: 3100,
-        segundos: 1,
+        curso_id: "exemplo/tecnico-em-exemplo",
+        nome: "Técnico em Exemplo",
+        campus: "Campus Exemplo",
+        forma: "Integrado",
+        codigo: "EX001",
+        suap_id: 7,
       },
-      "2026-11-13T10:00:00-03:00",
-    );
-    const salvo = paraDominio(carregarDadosInstitucionais(raiz).dados).cursos[0]!.suap.matrizes;
-    expect(salvo.cargaHorariaComumH).toBe(3100);
-    expect(salvo.urls).toBe("https://suap.ifpr.edu.br/edu/matriz/12/");
-    expect(salvo.coletadoEm).toBe("2026-11-13T10:00:00-03:00");
-  });
-
-  test("recusa gravar se o código SUAP mudou desde a coleta", () => {
-    const raiz = raizTemporaria();
-    gravarDadosInstitucionais(dadosExemplo(), raiz);
-    const repositorio = new RepositorioCursosLocal(raiz);
-    const [paraColeta] = repositorio.listarParaColeta();
-    expect(() =>
-      repositorio.gravarMatrizes(
-        {
-          ...paraColeta!,
-          codigo: "OUTRO",
-          url: "",
-          titulo_suap: "",
-          matrizes: [],
-          situacao: "Sem matriz ativa",
-          carga_horaria_comum_h: null,
-          segundos: 0,
-        },
-        "2026-11-13T10:00:00-03:00",
-      ),
-    ).toThrow("Curso alterado desde a coleta");
+    ]);
   });
 });

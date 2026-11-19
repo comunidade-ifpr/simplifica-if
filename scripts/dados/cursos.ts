@@ -1,7 +1,13 @@
-/** Leitura e gravação dos cursos locais usadas pela coleta de matrizes do SUAP. */
-import { resumoMatrizesAtivas, urlsMatrizesAtivas } from "../dominio/matriz-suap.ts";
+/** Leitura dos cursos locais para a coleta de matrizes do SUAP e aplicação do relatório nos registros. */
 import { chaveCurso } from "../dominio/curso.ts";
-import type { CursoColetado, CursoParaColeta } from "../suap/matrizes.ts";
+import {
+  consolidarMatrizes,
+  resumoMatrizesAtivas,
+  urlsMatrizesAtivas,
+  type CursoParaColeta,
+  type MatrizSuap,
+  type RelatorioMatrizes,
+} from "../dominio/matriz-suap.ts";
 import {
   caminhosRegistro,
   carregarDadosInstitucionais,
@@ -9,6 +15,46 @@ import {
   RAIZ_DADOS_INSTITUCIONAIS,
   type CursoLocal,
 } from "./institucional.ts";
+
+/** O bloco `suap.matrizes` do registro do curso. */
+export type MatrizesRegistro = NonNullable<NonNullable<CursoLocal["suap"]>["matrizes"]>;
+
+/** Os campos de `suap.matrizes` que fazem uma mudança substantiva; `coletado_em` sozinho não faz. */
+export const CAMPOS_SUBSTANTIVOS = ["situacao", "carga_horaria_comum_h", "urls", "resumo"] as const;
+
+/** Um curso cujo registro muda com o relatório. */
+export interface MudancaMatrizes {
+  readonly curso_id: string;
+  readonly suap_id: number;
+  readonly antes: MatrizesRegistro | undefined;
+  readonly depois: MatrizesRegistro;
+  readonly campos: ReadonlyArray<(typeof CAMPOS_SUBSTANTIVOS)[number]>;
+  readonly registro: CursoLocal;
+}
+
+/** O que a aplicação de um relatório faria, conferido contra todos os registros antes de gravar. */
+export interface PlanoMatrizes {
+  readonly mudancas: ReadonlyArray<MudancaMatrizes>;
+  /** Cursos do relatório cujo registro já tem as mesmas matrizes. */
+  readonly semMudanca: number;
+  /** Cursos do relatório que não conferem com o registro: ausentes, repetidos ou com outro SUAP. */
+  readonly divergencias: ReadonlyArray<string>;
+}
+
+/** O bloco `suap.matrizes` gravado a partir das matrizes brutas: a consolidação é calculada aqui. */
+export function matrizesDoRegistro(matrizes: ReadonlyArray<MatrizSuap>, coletadoEm: string): MatrizesRegistro {
+  const { situacao, carga_horaria_comum_h } = consolidarMatrizes(matrizes);
+  return {
+    resumo: resumoMatrizesAtivas(matrizes),
+    urls: urlsMatrizesAtivas(matrizes),
+    carga_horaria_comum_h: carga_horaria_comum_h ?? undefined,
+    situacao,
+    coletado_em: coletadoEm,
+  };
+}
+
+/** O valor como o arquivo do registro o guarda (sem as chaves `undefined`). */
+const comoNoArquivo = (valor: unknown) => JSON.stringify(valor ?? null);
 
 export class RepositorioCursosLocal {
   private readonly raiz: string;
@@ -21,6 +67,10 @@ export class RepositorioCursosLocal {
     const { dados, erros } = carregarDadosInstitucionais(this.raiz);
     if (erros.length) throw new Error(`institucional/ifpr/ inválido:\n- ${erros.join("\n- ")}`);
     return dados;
+  }
+
+  private cursosPorChave(): Map<string, CursoLocal> {
+    return new Map(this.carregar().cursos.map((curso) => [chaveCurso(curso.campus_id, curso.curso_slug), curso]));
   }
 
   listarParaColeta(): CursoParaColeta[] {
@@ -43,28 +93,61 @@ export class RepositorioCursosLocal {
     });
   }
 
-  /** Confere a identidade do curso, grava as matrizes no arquivo do curso e relê para confirmar. */
-  gravarMatrizes(coletado: CursoColetado, coletadoEm: string): void {
-    const encontrar = () =>
-      this.carregar().cursos.find((curso) => chaveCurso(curso.campus_id, curso.curso_slug) === coletado.curso_id);
-    const curso = encontrar();
-    if (!curso) throw new Error(`Curso não encontrado em institucional/ifpr/cursos/: ${coletado.curso_id}`);
-    if (curso.suap?.id !== coletado.suap_id || (curso.suap?.codigo ?? "") !== coletado.codigo) {
-      throw new Error(`Curso alterado desde a coleta: ${coletado.suap_id}`);
+  /**
+   * Confere todos os cursos do relatório contra os registros (`suap.id` e `suap.codigo`) e calcula as
+   * mudanças substantivas, sem gravar nada.
+   */
+  planejarMatrizes(relatorio: RelatorioMatrizes): PlanoMatrizes {
+    const cursos = this.cursosPorChave();
+    const vistos = new Set<string>();
+    const divergencias: string[] = [];
+    const mudancas: MudancaMatrizes[] = [];
+    let semMudanca = 0;
+    for (const coletado of relatorio.cursos) {
+      const { curso_id: chave, suap_id: suapId, codigo } = coletado;
+      if (vistos.has(chave)) {
+        divergencias.push(`${chave}: repetido no relatório`);
+        continue;
+      }
+      vistos.add(chave);
+      const curso = cursos.get(chave);
+      if (!curso) {
+        divergencias.push(`${chave}: não encontrado em institucional/ifpr/cursos/`);
+        continue;
+      }
+      const suap = curso.suap;
+      if (suap?.id !== suapId || (suap.codigo ?? "") !== codigo) {
+        divergencias.push(
+          `${chave}: no registro, SUAP ${suap?.id ?? "ausente"} código ${suap?.codigo ?? "ausente"}; ` +
+            `no relatório, SUAP ${suapId} código ${codigo}`,
+        );
+        continue;
+      }
+      const antes = suap.matrizes;
+      const depois = matrizesDoRegistro(coletado.matrizes, relatorio.coletado_em);
+      const campos = CAMPOS_SUBSTANTIVOS.filter(
+        (campo) => comoNoArquivo(antes?.[campo]) !== comoNoArquivo(depois[campo]),
+      );
+      if (antes && !campos.length) {
+        semMudanca += 1;
+        continue;
+      }
+      const registro: CursoLocal = { ...curso, suap: { ...suap, matrizes: depois } };
+      mudancas.push({ curso_id: chave, suap_id: suapId, antes, depois, campos, registro });
     }
-    const matrizes = {
-      resumo: resumoMatrizesAtivas(coletado.matrizes),
-      urls: urlsMatrizesAtivas(coletado.matrizes),
-      carga_horaria_comum_h: coletado.carga_horaria_comum_h ?? undefined,
-      situacao: coletado.situacao,
-      coletado_em: coletadoEm,
-    };
-    const atualizado: CursoLocal = { ...curso, suap: { ...curso.suap, matrizes } };
-    gravarRegistro(caminhosRegistro.curso(atualizado), atualizado, this.raiz);
+    return { mudancas, semMudanca, divergencias };
+  }
 
-    const salvo = encontrar()?.suap?.matrizes;
-    if (JSON.stringify(salvo) !== JSON.stringify(JSON.parse(JSON.stringify(matrizes)))) {
-      throw new Error(`Gravação local não confirmada para o curso ${coletado.suap_id}`);
-    }
+  /**
+   * Grava os registros das mudanças e relê a base para confirmar. Devolve os cursos cuja releitura não
+   * confere com o que foi gravado.
+   */
+  gravarMatrizes(mudancas: ReadonlyArray<MudancaMatrizes>): string[] {
+    for (const { registro } of mudancas) gravarRegistro(caminhosRegistro.curso(registro), registro, this.raiz);
+    if (!mudancas.length) return [];
+    const cursos = this.cursosPorChave();
+    return mudancas
+      .filter(({ curso_id, depois }) => comoNoArquivo(cursos.get(curso_id)?.suap?.matrizes) !== comoNoArquivo(depois))
+      .map(({ curso_id }) => curso_id);
   }
 }
