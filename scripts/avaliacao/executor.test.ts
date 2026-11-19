@@ -16,7 +16,8 @@ import * as Stream from "effect/Stream";
 import * as TestClock from "effect/testing/TestClock";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
-import { decodificarOuNada } from "../esquema.ts";
+import * as Schema from "effect/Schema";
+import { ESTRITO } from "../esquema.ts";
 import { carregarConfig } from "./carregar.ts";
 import { esquemaConfig } from "./esquema.ts";
 import {
@@ -124,9 +125,10 @@ describe("regras de permissão do claude -p", () => {
       ferramentas: ["Read"],
       ferramentas_permitidas: ["Read"],
     };
-    expect(decodificarOuNada(esquemaConfig, base)).toBeDefined();
-    expect(decodificarOuNada(esquemaConfig, { ...base, ferramentas: ["Read", "Bash"] })).toBeUndefined();
-    expect(decodificarOuNada(esquemaConfig, { ...base, ferramentas_permitidas: ["Bash(jq *)"] })).toBeUndefined();
+    const valida = (valor: unknown) => Exit.isSuccess(Schema.decodeUnknownExit(esquemaConfig)(valor, ESTRITO));
+    expect(valida(base)).toBe(true);
+    expect(valida({ ...base, ferramentas: ["Read", "Bash"] })).toBe(false);
+    expect(valida({ ...base, ferramentas_permitidas: ["Bash(jq *)"] })).toBe(false);
   });
 });
 

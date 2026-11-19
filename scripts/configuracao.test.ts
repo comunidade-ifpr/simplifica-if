@@ -37,7 +37,7 @@ describe("configuração dos scripts", () => {
     ).pipe(Effect.provide(NodeServices.layer)),
   );
 
-  it.effect("o .env.local ausente é o caso comum; o arquivo exigido (--env-file) ausente é erro", () =>
+  it.effect("o .env.local ausente é o caso comum: vale só o ambiente", () =>
     Effect.scoped(
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem;
@@ -45,8 +45,7 @@ describe("configuração dos scripts", () => {
         const inexistente = path.join(yield* fs.makeTempDirectoryScoped({ prefix: "configuracao-" }), "nao-existe.env");
 
         expect(yield* ler("A", inexistente, { A: "ambiente-a" })).toEqual(Option.some("ambiente-a"));
-        const erro = yield* Effect.flip(Configuracao.provedor(inexistente, { exigirArquivo: true }));
-        expect(erro).toMatchObject({ _tag: "ArquivoEnvIndisponivel", motivo: "ausente", arquivo: inexistente });
+        expect(yield* ler("B", inexistente, {})).toEqual(Option.none());
       }),
     ).pipe(Effect.provide(NodeServices.layer)),
   );

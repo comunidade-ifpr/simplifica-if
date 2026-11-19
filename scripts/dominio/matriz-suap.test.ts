@@ -1,7 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off -- lê a fixture do relatório com node:fs síncrono, como os vizinhos
 import { describe, expect, it } from "@effect/vitest";
 import * as NodeFS from "node:fs";
-import { decodificarOuNada, validarJson } from "../esquema.ts";
+import * as Exit from "effect/Exit";
+import * as Schema from "effect/Schema";
+import { ESTRITO, validarJson } from "../esquema.ts";
 import {
   consolidarMatrizes,
   ESQUEMA_RELATORIO_MATRIZES,
@@ -15,7 +17,9 @@ const FIXTURE_RELATORIO = new URL("./fixtures/relatorio-matrizes-suap.json", imp
 const fixture = (): Record<string, unknown> & { cursos: Array<Record<string, unknown>> } =>
   JSON.parse(NodeFS.readFileSync(FIXTURE_RELATORIO, "utf-8"));
 const lerRelatorio = (valor: unknown) => validarJson(esquemaRelatorioMatrizes, valor, "Relatório de teste");
-const relatorioValido = (valor: unknown) => decodificarOuNada(esquemaRelatorioMatrizes, valor) !== undefined;
+// Com `ESTRITO`, como a aplicação: o `Schema.is` aceitaria chave a mais, e o contrato recusa.
+const relatorioValido = (valor: unknown) =>
+  Exit.isSuccess(Schema.decodeUnknownExit(esquemaRelatorioMatrizes)(valor, ESTRITO));
 
 describe("domínio das matrizes", () => {
   const ativa = (id: number, carga: number) => ({

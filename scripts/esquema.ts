@@ -61,13 +61,3 @@ export function validarJson<T>(
 ): T {
   return validarOuFalhar(esquema, valor, `${origem} não tem o formato esperado:`, opcoes);
 }
-
-/** O dado decodificado, ou `undefined` se o valor não tem o formato (o `safeParse` do zod). */
-export function decodificarOuNada<T>(
-  esquema: EsquemaSincrono<T>,
-  valor: unknown,
-  opcoes: SchemaAST.ParseOptions = ESTRITO,
-): T | undefined {
-  const resultado = Schema.decodeUnknownExit(esquema)(valor, opcoes);
-  return Exit.isSuccess(resultado) ? resultado.value : undefined;
-}

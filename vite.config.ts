@@ -158,7 +158,8 @@ export default defineConfig({
     },
     // As regras do plugin próprio valem onde o código já é Effect: `packages/kb` (C1), `packages/mcp`
     // (C2), o motor, o servidor local (`apps/server`) e os contratos do app e, desde o C3, `scripts/`,
-    // as skills e o gabarito. As exceções reproduzem as do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
+    // as skills e o gabarito. As exceções reproduzem as do T3. A ordem importa: cada override
+    // posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
         files: [
