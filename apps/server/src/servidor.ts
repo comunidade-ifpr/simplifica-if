@@ -57,6 +57,7 @@ import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
 import * as RevisorPpc from "./revisao-ppc/RevisorPpc.ts";
+import * as TextosAnexos from "./textos-anexos/TextosAnexos.ts";
 import * as ListaViva from "./revisao-ppc/ListaViva.ts";
 import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
 import * as Listas from "./persistencia/Listas.ts";
@@ -91,6 +92,8 @@ export interface Opcoes {
   readonly pastaSkills?: string;
   /** Limites e script do Worker da revisão prévia (`RevisorPpc.LIMITES`); os testes os apertam. */
   readonly revisaoPpc?: RevisorPpc.OpcoesRevisao;
+  /** A versão em texto dos anexos (os testes apertam os limites). */
+  readonly textosAnexos?: TextosAnexos.OpcoesTextos;
   /** Paralelismo e tempo por turno da revisão com IA (`RevisaoIa.PARALELISMO`); os testes os mudam. */
   readonly revisaoIa?: RevisaoIa.OpcoesRevisaoIa;
   /** Tempo máximo de uma ação com IA sobre uma pendência (`ListaViva.TEMPO_ACAO`). */
@@ -192,7 +195,7 @@ const layerPastas = (opcoes: Opcoes) =>
         raiz,
         copias,
         ...(opcoes.limitesPasta === undefined ? {} : { limites: opcoes.limitesPasta }),
-      });
+      }).pipe(Layer.provide(TextosAnexos.layer(opcoes.textosAnexos)));
     }),
   );
 

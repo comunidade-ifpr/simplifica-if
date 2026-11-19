@@ -31,7 +31,7 @@ import { detectarIa } from "../deteccao.ts";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
 import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
-import { Anexos, comArquivos, comecarTarefa, EscolhaIa, nomeArquivo, useAnexos } from "../tarefas/comecar.tsx";
+import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo, useAnexos } from "../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
@@ -131,7 +131,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
         tarefa: "conversa",
         ia,
         anexos,
-        texto: comArquivos(texto, anexos.map(nomeArquivo)),
+        texto,
       });
       await navegar({ to: "/conversa", search: { id: sessao } });
     } catch (falha) {

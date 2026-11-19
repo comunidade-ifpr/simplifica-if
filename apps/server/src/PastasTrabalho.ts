@@ -39,6 +39,7 @@ import * as Ref from "effect/Ref";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import {
+  type ArquivoAnexado,
   type ArquivoPasta,
   ehExtensaoDocumento,
   FalhaPasta,
@@ -49,6 +50,7 @@ import * as ArquivosLiberados from "./ArquivosLiberados.ts";
 import { comNumero, criarSemColisao } from "./nome-livre.ts";
 import * as PastasNode from "./pastas-node.ts";
 import * as Historico from "./persistencia/Historico.ts";
+import * as TextosAnexos from "./textos-anexos/TextosAnexos.ts";
 
 export interface Limites {
   /** O tamanho máximo da pasta para guardar a cópia de um turno. */
@@ -109,7 +111,8 @@ export class PastasTrabalho extends Context.Service<
     readonly raiz: string;
     /** Cria a pasta da tarefa e devolve o caminho real. */
     readonly criar: (titulo: string) => Effect.Effect<string, FalhaPasta>;
-    readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoPasta, FalhaPasta>;
+    /** Copia o arquivo liberado para a pasta e grava a versão em texto dele, quando o formato pede. */
+    readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoAnexado, FalhaPasta>;
     /**
      * Grava o relato `nome` (um `.md`) em `<raiz>/Relatos de erro/`, fora do alcance da IA, sem
      * sobrescrever (` (2)`…), e devolve o caminho.
@@ -520,6 +523,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
   const path = yield* Path.Path;
   const historico = yield* Historico.Historico;
   const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
+  const textos = yield* TextosAnexos.TextosAnexos;
   // O `FileSystem` e o `Path` das funções de arquivo deste módulo.
   const comArquivos = Effect.provideContext(yield* Effect.context<FileSystem.FileSystem | Path.Path>());
   const raiz = path.resolve(opcoes.raiz);
@@ -561,6 +565,34 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     );
   }, comMotivo("Não foi possível criar a pasta da tarefa em Documentos/Simplifica IF."));
 
+  /**
+   * A versão em texto do anexo `nome` em `.simplifica/textos/` (`TextosAnexos`), convertida de
+   * `origem`, o arquivo liberado e já conferido (a cópia na pasta poderia virar link entre a cópia e a
+   * leitura: a IA escreve na pasta). A gravação não segue link, porque a IA também poderia ter posto
+   * um no lugar de `.simplifica`. Nunca falha.
+   */
+  const gravarTexto = Effect.fn("PastasTrabalho.gravarTexto")(function* (real: string, nome: string, origem: string) {
+    const resultado = yield* textos.converter(origem, nome);
+    switch (resultado.tipo) {
+      case "nao-converte":
+        return {};
+      case "sem-texto":
+        return { semTexto: resultado.motivo };
+      case "texto": {
+        const texto = TextosAnexos.caminhoDoTexto(nome);
+        return yield* gravarSemSeguirLinks(real, texto, new TextEncoder().encode(resultado.markdown)).pipe(
+          comArquivos,
+          Effect.as({ texto }),
+          Effect.catch((erro) =>
+            Effect.logError("texto do anexo: não foi possível gravar", erro).pipe(
+              Effect.as({ semTexto: "Não foi possível gravar a versão em texto na pasta." }),
+            ),
+          ),
+        );
+      }
+    }
+  });
+
   const anexar = Effect.fn("PastasTrabalho.anexar")(function* (pasta: string, arquivo: string) {
     const real = yield* gerida(pasta);
     if (real === undefined) return yield* falha("Só é possível anexar na pasta de uma tarefa do app.");
@@ -585,7 +617,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       tamanho: Number(copiado.size),
       alteradoEm: alteradoEm(copiado),
       origem: "anexado",
-    } satisfies ArquivoPasta;
+      ...(yield* gravarTexto(real, nome, arquivo)),
+    } satisfies ArquivoAnexado;
   });
 
   const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (nome: string, conteudo: string) {
@@ -797,5 +830,8 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
   });
 });
 
-/** Pede o `Historico`, os `ArquivosLiberados` (a liberação dos arquivos escolhidos no desktop), o `FileSystem` e o `Path`. */
+/**
+ * Pede o `Historico`, os `ArquivosLiberados` (a liberação dos arquivos escolhidos no desktop), os
+ * `TextosAnexos`, o `FileSystem` e o `Path`.
+ */
 export const layer = (opcoes: OpcoesPastas) => Layer.effect(PastasTrabalho, make(opcoes));

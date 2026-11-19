@@ -154,7 +154,12 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
         <label htmlFor={idPedido} className="font-medium text-sm">
           O pedido que vai para a IA
         </label>
-        <p className="text-muted-foreground text-xs">Você pode mudar o texto antes de começar.</p>
+        <p className="text-muted-foreground text-xs">
+          Você pode mudar o texto antes de começar.
+          {Object.values(anexos).some((lista) => lista.length > 0)
+            ? " A lista dos arquivos anexados vai junto, no fim, com o caminho da versão em texto de cada documento do Word."
+            : null}
+        </p>
         <Textarea id={idPedido} rows={4} value={pedido} onChange={(evento) => setEditado(evento.currentTarget.value)} />
       </div>
       {falta.length === 0 ? null : (

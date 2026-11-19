@@ -2,6 +2,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { etapasVistas, marcaDaEntrada } from "../conversa/etapas.ts";
 import type { Item } from "../conversa/estado.ts";
 import {
+  comArquivos,
   dataDaBase,
   dispositivoPorExtenso,
   duracaoPorExtenso,
@@ -118,5 +119,39 @@ describe("etapas", () => {
       id: "a",
       progresso: { feito: 3, total: 3 },
     });
+  });
+});
+
+describe("comArquivos", () => {
+  it("sem anexos, o pedido fica como está", () => {
+    expect(comArquivos("Confira a minuta.", [])).toBe("Confira a minuta.");
+  });
+
+  it("lista cada anexo: a versão em texto, o motivo de não haver, ou só o nome", () => {
+    expect(
+      comArquivos("Confira a minuta.", [
+        { nome: "Minuta (2).docx", texto: ".simplifica/textos/Minuta (2).docx.md" },
+        { nome: "Quebrado.docx", semTexto: "O arquivo não é um DOCX." },
+        { nome: "parecer.md" },
+      ]),
+    ).toBe(
+      [
+        "Confira a minuta.",
+        "",
+        "Arquivos na pasta:",
+        "- Minuta (2).docx: leia a versão em texto, `.simplifica/textos/Minuta (2).docx.md`",
+        "- Quebrado.docx: sem versão em texto. O arquivo não é um DOCX.",
+        "- parecer.md",
+      ].join("\n"),
+    );
+  });
+
+  it("crase e quebra de linha no nome não quebram o caminho nem abrem outra linha", () => {
+    const nota = comArquivos("Pedido.", [
+      { nome: "Parecer `final`\nv2.docx", texto: ".simplifica/textos/Parecer `final`_v2.docx.md" },
+    ]);
+    expect(nota).toBe(
+      "Pedido.\n\nArquivos na pasta:\n- Parecer `final` v2.docx: leia a versão em texto, ``.simplifica/textos/Parecer `final`_v2.docx.md``",
+    );
   });
 });

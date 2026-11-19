@@ -18,6 +18,7 @@ import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
+import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { comNumero } from "../src/nome-livre.ts";
 import { contadorDeAndamento, gravarSemSeguirLinks, nomeSeguro, removerSemSeguirLinks } from "../src/PastasTrabalho.ts";
 import * as Servidor from "../src/servidor.ts";
@@ -147,6 +148,78 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       // Só em pasta de tarefa do app.
       const foraDaRaiz = yield* Effect.exit(rpc["pasta.anexar"]({ pasta: fora, arquivo: original }));
       assert.isTrue(Exit.isFailure(foraDaRaiz));
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("o .docx anexado ganha a versão em texto na pasta oculta; o quebrado entra sem texto, com o motivo", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Texto do anexo" });
+      const liberar = (arquivo: string) =>
+        pedirHttp(urlRpc.replace(/\/rpc$/, CAMINHO_LIBERAR_ARQUIVO), {
+          metodo: "POST",
+          cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}`, "content-type": "application/json" },
+          corpo: JSON.stringify({ arquivo }),
+        });
+
+      const minuta = NodePath.join(fora, "Minuta.docx");
+      NodeFS.writeFileSync(
+        minuta,
+        montarDocx({ corpo: par("Dispõe sobre o estágio.") + par("Art. 1º O estágio é obrigatório.") }),
+      );
+      yield* liberar(minuta);
+      const anexado = yield* rpc["pasta.anexar"]({ pasta, arquivo: minuta });
+      assert.deepInclude(anexado, { nome: "Minuta.docx", texto: ".simplifica/textos/Minuta.docx.md" });
+      assert.notProperty(anexado, "semTexto");
+      const texto = NodeFS.readFileSync(NodePath.join(pasta, ".simplifica", "textos", "Minuta.docx.md"), "utf8");
+      assert.match(
+        texto,
+        /^> Texto extraído automaticamente de "Minuta\.docx" pelo Simplifica IF em \d{2}\/\d{2}\/\d{4}/,
+      );
+      // O que vem antes de qualquer título (a ementa de uma minuta) não se perde.
+      assert.include(texto, "Dispõe sobre o estágio.");
+      assert.include(texto, "Art. 1º O estágio é obrigatório.");
+
+      // O anexo repetido ganha " (2)", e o texto dele também.
+      const repetido = yield* rpc["pasta.anexar"]({ pasta, arquivo: minuta });
+      assert.strictEqual(repetido.texto, ".simplifica/textos/Minuta (2).docx.md");
+      // Barra invertida no nome (o macOS aceita): o anexo entra com o nome, e o texto, com um nome seguro.
+      const barra = NodePath.join(fora, "Ata\\final.docx");
+      NodeFS.copyFileSync(minuta, barra);
+      yield* liberar(barra);
+      const comBarra = yield* rpc["pasta.anexar"]({ pasta, arquivo: barra });
+      assert.strictEqual(comBarra.nome, "Ata\\final.docx");
+      assert.strictEqual(comBarra.texto, ".simplifica/textos/Ata_final.docx.md");
+      assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Ata_final.docx.md")));
+
+      // O arquivo que não é DOCX entra, sem texto e com o motivo para a nota.
+      const quebrado = NodePath.join(fora, "Quebrado.docx");
+      NodeFS.writeFileSync(quebrado, "isto não é um pacote do Word");
+      yield* liberar(quebrado);
+      const semTexto = yield* rpc["pasta.anexar"]({ pasta, arquivo: quebrado });
+      assert.strictEqual(semTexto.nome, "Quebrado.docx");
+      assert.notProperty(semTexto, "texto");
+      assert.match(semTexto.semTexto ?? "", /não é um DOCX/);
+      assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, "Quebrado.docx")));
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Quebrado.docx.md")));
+
+      // O formato que a IA já lê não ganha texto.
+      const nota = NodePath.join(fora, "nota.md");
+      NodeFS.writeFileSync(nota, "# Nota\n");
+      yield* liberar(nota);
+      const md = yield* rpc["pasta.anexar"]({ pasta, arquivo: nota });
+      assert.notProperty(md, "texto");
+      assert.notProperty(md, "semTexto");
+
+      // Um link no lugar de `.simplifica` (a IA escreve na pasta) não leva o texto para fora dela.
+      const { pasta: outra } = yield* rpc["pasta.criar"]({ titulo: "Texto com link" });
+      const alvo = diretorioTemporario("simplifica-alvo-texto-");
+      NodeFS.symlinkSync(alvo, NodePath.join(outra, ".simplifica"));
+      const comLink = yield* rpc["pasta.anexar"]({ pasta: outra, arquivo: minuta });
+      assert.strictEqual(comLink.texto, ".simplifica/textos/Minuta.docx.md");
+      assert.deepStrictEqual(NodeFS.readdirSync(alvo), []);
+      assert.isTrue(NodeFS.lstatSync(NodePath.join(outra, ".simplifica")).isDirectory());
     }).pipe(Effect.scoped),
   );
 

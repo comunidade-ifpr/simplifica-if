@@ -36,7 +36,7 @@ Argumentos depois de `dev` vão ao Electron, por exemplo `--remote-debugging-por
 
 ## Como empacotar
 
-O bundle do servidor leva também o Worker da revisão prévia, `servidor/trabalhador-ppc.mjs`, num bundle à parte, sem pedaços compartilhados com o `bin.mjs` (`scripts/construir.ts`).
+O bundle do servidor leva também os Workers da revisão prévia, `servidor/trabalhador-ppc.mjs`, e da versão em texto dos anexos, `servidor/trabalhador-textos.mjs`, cada um num bundle à parte, sem pedaços compartilhados com o `bin.mjs` (`scripts/construir.ts`).
 
 ```bash
 pnpm --filter @simplifica-if/desktop build          # os bundles em dist/ (servidor, interface, processo principal, preload)

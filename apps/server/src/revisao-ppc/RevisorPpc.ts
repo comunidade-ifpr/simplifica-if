@@ -19,10 +19,8 @@
  */
 import * as NodeFSP from "node:fs/promises";
 import * as NodePath from "node:path";
-import * as NodeWorkerThreads from "node:worker_threads";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
-import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -39,22 +37,14 @@ import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import type { EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
 import { comNumero, criarSemColisao } from "../nome-livre.ts";
+import { type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
-/** Os limites da revisão; os testes os apertam para provocar o estouro. */
-export interface Limites {
+/** Os limites da revisão (os do Worker e o do arquivo); os testes os apertam para provocar o estouro. */
+export interface Limites extends LimitesWorker {
   /** Tamanho máximo do arquivo, conferido antes de ler (o mesmo de `LIMITES_PADRAO.bytesDoArquivo`). */
   readonly bytesDoArquivo: number;
-  /**
-   * `resourceLimits.maxOldGenerationSizeMb` do Worker, com piso de `MEMORIA_MINIMA_MB`: com heap
-   * pequeno demais (2 MB, medido no Node 26), o V8 aborta o processo inteiro em vez de encerrar o Worker.
-   */
-  readonly memoriaMb: number;
-  /** Tempo máximo do Worker, em milissegundos. */
-  readonly tempoMs: number;
 }
-
-export const MEMORIA_MINIMA_MB = 64;
 
 export const LIMITES: Limites = { bytesDoArquivo: 20 * 1024 * 1024, memoriaMb: 512, tempoMs: 30_000 };
 
@@ -114,70 +104,48 @@ type Revisao = Extract<RespostaTrabalhador, { ok: true }>["revisao"];
 
 const ERRO_INTERNO = "Não foi possível revisar este arquivo por um erro interno do Simplifica IF.";
 
-/**
- * Roda o pedido no Worker. O tempo máximo e a interrupção (a conexão caiu) encerram o Worker pelo
- * finalizador do `callback` (`terminate()`).
- */
+/** Roda o pedido no Worker (`WorkerLimitado`) e traduz o que não for revisão para a frase da pessoa. */
 function rodarNoTrabalhador(
   pedido: PedidoTrabalhador,
   limites: Limites,
   url: URL,
   falha: (motivo: string) => FalhaRevisaoPpc,
 ): Effect.Effect<Revisao, FalhaRevisaoPpc> {
-  const rodar = Effect.callback<Revisao, FalhaRevisaoPpc>((resume) => {
-    const trabalhador = new NodeWorkerThreads.Worker(url, {
-      resourceLimits: { maxOldGenerationSizeMb: Math.max(MEMORIA_MINIMA_MB, limites.memoriaMb) },
-      stdout: true,
-      stderr: false,
-    });
-    let terminou = false;
-    const terminar = (efeito: Effect.Effect<Revisao, FalhaRevisaoPpc>) => {
-      if (terminou) return;
-      terminou = true;
-      void trabalhador.terminate();
-      resume(efeito);
-    };
-    trabalhador.once("message", (resposta: RespostaTrabalhador) => {
-      if (resposta.ok) return terminar(Effect.succeed(resposta.revisao));
-      terminar(
-        "arquivoInvalido" in resposta
-          ? Effect.fail(falha(mensagemErroDocx(resposta.arquivoInvalido)))
-          : Effect.logError("revisão prévia: defeito no Worker", resposta.defeito).pipe(
-              Effect.andThen(Effect.fail(falha(ERRO_INTERNO))),
-            ),
-      );
-    });
-    trabalhador.once("error", (erro: Error & { code?: string }) =>
-      terminar(
-        Effect.logError("revisão prévia: o Worker falhou", erro).pipe(
-          Effect.andThen(
-            Effect.fail(
+  return rodarNoWorker<RespostaTrabalhador>(url, pedido, [pedido.bytes.buffer as ArrayBuffer], limites).pipe(
+    Effect.catchTags({
+      FalhaWorker: (erro) => {
+        switch (erro.motivo) {
+          case "tempo":
+            return Effect.fail(
               falha(
-                erro.code === "ERR_WORKER_OUT_OF_MEMORY"
-                  ? "O arquivo exigiu memória demais para ser revisado. Compacte as imagens no Word (Arquivo > Compactar imagens) ou retire anexos grandes, e tente de novo."
-                  : ERRO_INTERNO,
+                `A revisão passou do tempo máximo (${Math.round(limites.tempoMs / 1000)} s) e foi interrompida. O arquivo pode ter estrutura incomum; salve-o de novo no Word como .docx e tente outra vez.`,
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-    trabalhador.once("exit", () => terminar(Effect.fail(falha("A revisão parou antes de terminar. Tente de novo."))));
-    trabalhador.postMessage(pedido, [pedido.bytes.buffer as ArrayBuffer]);
-    return Effect.sync(() => {
-      terminou = true;
-      void trabalhador.terminate();
-    });
-  });
-  return rodar.pipe(
-    Effect.timeoutOrElse({
-      duration: Duration.millis(limites.tempoMs),
-      orElse: () =>
-        Effect.fail(
-          falha(
-            `A revisão passou do tempo máximo (${Math.round(limites.tempoMs / 1000)} s) e foi interrompida. O arquivo pode ter estrutura incomum; salve-o de novo no Word como .docx e tente outra vez.`,
-          ),
-        ),
+            );
+          case "parou":
+            return Effect.fail(falha("A revisão parou antes de terminar. Tente de novo."));
+          case "memoria":
+          case "erro":
+            return Effect.logError("revisão prévia: o Worker falhou", erro.cause).pipe(
+              Effect.andThen(
+                Effect.fail(
+                  falha(
+                    erro.motivo === "memoria"
+                      ? "O arquivo exigiu memória demais para ser revisado. Compacte as imagens no Word (Arquivo > Compactar imagens) ou retire anexos grandes, e tente de novo."
+                      : ERRO_INTERNO,
+                  ),
+                ),
+              ),
+            );
+        }
+      },
+    }),
+    Effect.flatMap((resposta) => {
+      if (resposta.ok) return Effect.succeed(resposta.revisao);
+      return "arquivoInvalido" in resposta
+        ? Effect.fail(falha(mensagemErroDocx(resposta.arquivoInvalido)))
+        : Effect.logError("revisão prévia: defeito no Worker", resposta.defeito).pipe(
+            Effect.andThen(Effect.fail(falha(ERRO_INTERNO))),
+          );
     }),
   );
 }

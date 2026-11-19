@@ -7,9 +7,10 @@
  * - `dist/app/web/`: o build do `apps/web` (`pnpm --filter @simplifica-if/web build`) ou, sem ele, a
  *   página provisória de `src/provisoria/`;
  * - `dist/app/package.json`: o manifesto mínimo do app (sem dependências: tudo vai nos bundles);
- * - `dist/recursos/servidor/`: o servidor local (`apps/server/src/bin.ts`) em ESM e o Worker da revisão
- *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/revisao-ppc/trabalhador.ts`), com as dependências
- *   dentro, menos:
+ * - `dist/recursos/servidor/`: o servidor local (`apps/server/src/bin.ts`) em ESM e os Workers da revisão
+ *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/revisao-ppc/trabalhador.ts`) e da versão em texto
+ *   dos anexos (`trabalhador-textos.mjs`, de `apps/server/src/textos-anexos/trabalhador.ts`), com as
+ *   dependências dentro, menos:
  *   - os opcionais nativos do `ws` (`bufferutil`, `utf-8-validate`), que ficam de fora e não se
  *     instalam; o `ws` os carrega num `try` e segue sem eles;
  *   - o `undici`, que o `effect` carrega com `import()` dinâmico e usa pelos exports nomeados de um
@@ -87,14 +88,21 @@ async function construirServidor(): Promise<void> {
     define: { "import.meta.main": "false" },
   } as const;
   await empacotar({ ...comum, entry: { bin: NodePath.join(RAIZ, "apps", "server", "src", "bin.ts") }, clean: true });
-  // O Worker da revisão prévia (`RevisorPpc.ts` o procura em `./trabalhador-ppc.mjs`), num bundle à
-  // parte, sem pedaços compartilhados com o do servidor.
-  await empacotar({
-    ...comum,
-    entry: { "trabalhador-ppc": NodePath.join(RAIZ, "apps", "server", "src", "revisao-ppc", "trabalhador.ts") },
-    clean: false,
-    outputOptions: { codeSplitting: false },
-  });
+  // Os Workers da revisão prévia (`RevisorPpc.ts` procura `./trabalhador-ppc.mjs`) e da versão em texto
+  // dos anexos (`TextosAnexos.ts` procura `./trabalhador-textos.mjs`), cada um num bundle à parte, sem
+  // pedaços compartilhados com o do servidor.
+  const workers = {
+    "trabalhador-ppc": ["revisao-ppc", "trabalhador.ts"],
+    "trabalhador-textos": ["textos-anexos", "trabalhador.ts"],
+  } as const;
+  for (const [nome, caminho] of Object.entries(workers)) {
+    await empacotar({
+      ...comum,
+      entry: { [nome]: NodePath.join(RAIZ, "apps", "server", "src", ...caminho) },
+      clean: false,
+      outputOptions: { codeSplitting: false },
+    });
+  }
   // O pacote como o pnpm o resolve a partir do servidor (o undici do @effect/platform-node).
   const platformNode = NodeFS.realpathSync(NodePath.join(RAIZ, "node_modules", "@effect", "platform-node"));
   const requerer = NodeModule.createRequire(NodePath.join(platformNode, "package.json"));

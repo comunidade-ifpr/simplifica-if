@@ -35,6 +35,19 @@ export const ArquivoPasta = Schema.Struct({
 export type ArquivoPasta = typeof ArquivoPasta.Type;
 
 /**
+ * Um arquivo recém-anexado. Para o formato que a IA não lê sozinha (`.docx`), o servidor grava uma
+ * versão em texto na pasta oculta `.simplifica/textos/`: `texto` é o caminho dela, relativo à pasta
+ * e com `/`; quando a conversão não deu certo, `semTexto` diz por quê, numa frase para a pessoa. Sem
+ * os dois, o formato não se converte (a IA já o lê).
+ */
+export const ArquivoAnexado = Schema.Struct({
+  ...ArquivoPasta.fields,
+  texto: Schema.optionalKey(Schema.String),
+  semTexto: Schema.optionalKey(Schema.String),
+});
+export type ArquivoAnexado = typeof ArquivoAnexado.Type;
+
+/**
  * O que "Desfazer o que a IA fez nesta pasta" faria agora: só o que mudou **dentro** do turno mais
  * recente que mudou a pasta (o retrato de antes e o de depois do turno), não as mudanças feitas fora da
  * conversa depois dele.
@@ -84,11 +97,12 @@ export class GrupoPasta extends RpcGroup.make(
   }),
   /**
    * Copia para a pasta (criada por `pasta.criar`) um arquivo escolhido no diálogo do desktop, que o
-   * processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`); nome repetido ganha ` (2)`.
+   * processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`); nome repetido ganha ` (2)`. O `.docx`
+   * ganha a versão em texto para a IA (`ArquivoAnexado`).
    */
   Rpc.make("pasta.anexar", {
     payload: Schema.Struct({ pasta: Schema.String, arquivo: Schema.String }),
-    success: ArquivoPasta,
+    success: ArquivoAnexado,
     error: FalhaPasta,
   }),
   /** Os arquivos da pasta da conversa e o que "Desfazer" faria. */

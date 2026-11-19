@@ -274,7 +274,9 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await expect.element(comecar).toBeDisabled();
   await expect.element(page.getByText("Falta: Documento a conferir.")).toBeVisible();
   await page.getByRole("button", { name: "Escolher arquivo…" }).click();
-  expect(escolherAnexo).toHaveBeenCalledWith([".md", ".txt", ".pdf"]);
+  // A skill não limita o formato: o diálogo oferece todos os documentos que o app aceita.
+  expect(escolherAnexo).toHaveBeenCalledWith(undefined);
+  await expect.element(page.getByText(/^Aceita /)).not.toBeInTheDocument();
   const pedido = page.getByLabelText("O pedido que vai para a IA");
   await expect
     .element(pedido)
@@ -286,8 +288,13 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
 
   // A conversa: o pedido como a pessoa o escreveu (sem a indicação da skill, que só vai à IA).
   const mensagens = page.getByRole("log", { name: "Mensagens" });
+  // Seguido da nota dos anexos, com o nome que o arquivo ganhou na pasta.
   await expect
-    .element(mensagens.getByText("Conferir a fundamentação normativa do parecer.md, com atenção ao estágio."))
+    .element(
+      mensagens.getByText(
+        /^Conferir a fundamentação normativa do parecer\.md, com atenção ao estágio\.\s+Arquivos na pasta:\s+- parecer\.md$/,
+      ),
+    )
     .toBeVisible();
   expect(mensagens.element().textContent).not.toMatch(/Siga a skill|verificar-fundamentacao-normativa/);
   await expect.element(mensagens.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
@@ -755,7 +762,7 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   semIngles();
   await mensagem.fill("Confira o parecer anexado");
   await userEvent.keyboard("{Enter}");
-  await expect.element(mensagens.getByText(/Arquivos na pasta: parecer \(2\)\.md\./)).toBeVisible();
+  await expect.element(mensagens.getByText(/Arquivos na pasta:\s+- parecer \(2\)\.md/)).toBeVisible();
   await expect.element(anexadosConversa).not.toBeInTheDocument();
   await expect.element(page.getByText(/^Não entrou/)).not.toBeInTheDocument();
   await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();

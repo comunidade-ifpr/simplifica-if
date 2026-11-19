@@ -1,9 +1,9 @@
 /**
  * Textos do Modo Servidor (M1.9), em funções puras: o nome curto de uma citação `ifpr://` (o chip), a
- * duração estimada da tarefa, os nomes das áreas do catálogo, a data da base e o pedido que o
- * formulário da tarefa monta.
+ * duração estimada da tarefa, os nomes das áreas do catálogo, a data da base, o pedido que o
+ * formulário da tarefa monta e a nota dos anexos.
  */
-import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
+import type { ArquivoAnexado, EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
 import { dataCurta, inteiro } from "../lib/formato.ts";
 
 /* ================================================================== citações */
@@ -235,4 +235,35 @@ export function tituloDoPedido(texto: string): string {
   const linha = texto.trim().split(/\r?\n/, 1)[0] ?? "";
   const palavras = linha.split(/\s+/).filter(Boolean).slice(0, 8).join(" ");
   return palavras.length === 0 ? "Conversa" : palavras;
+}
+
+/* ================================================================== nota dos anexos */
+
+/** O nome numa linha só: o macOS aceita quebra de linha num nome de arquivo, e ela abriria outra linha na nota. */
+const umaLinha = (texto: string) => texto.replace(/[\r\n]+/g, " ");
+
+/** Código em linha do Markdown, com uma cerca maior que a maior sequência de crases do texto. */
+function codigoEmLinha(texto: string): string {
+  const maior = Math.max(0, ...[...texto.matchAll(/`+/g)].map((crases) => crases[0].length));
+  const cerca = "`".repeat(maior + 1);
+  const folga = texto.startsWith("`") || texto.endsWith("`") ? " " : "";
+  return `${cerca}${folga}${texto}${folga}${cerca}`;
+}
+
+type AnexoNaNota = Pick<ArquivoAnexado, "nome" | "texto" | "semTexto">;
+
+/** Um anexo na nota: o nome que ganhou na pasta e a versão em texto, quando o formato pede uma. */
+function linhaDoAnexo(anexo: AnexoNaNota): string {
+  const nome = umaLinha(anexo.nome);
+  if (anexo.texto !== undefined) return `- ${nome}: leia a versão em texto, ${codigoEmLinha(umaLinha(anexo.texto))}`;
+  if (anexo.semTexto !== undefined) return `- ${nome}: sem versão em texto. ${anexo.semTexto}`;
+  return `- ${nome}`;
+}
+
+/**
+ * O pedido com a lista dos arquivos que entraram na pasta, para a IA saber que estão lá e, para o
+ * `.docx`, onde está o texto que ela consegue ler.
+ */
+export function comArquivos(texto: string, anexos: ReadonlyArray<AnexoNaNota>): string {
+  return anexos.length === 0 ? texto : `${texto}\n\nArquivos na pasta:\n${anexos.map(linhaDoAnexo).join("\n")}`;
 }
