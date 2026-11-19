@@ -3,7 +3,7 @@
  * (`PonteDesktop`) e nada mais. Cada função só chama o processo principal pelo IPC; quem confere o
  * pedido é ele.
  */
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, webUtils } from "electron";
 import {
   CANAIS,
   type CredenciaisServidor,
@@ -35,6 +35,13 @@ const ponte: PonteDesktop = {
   },
   escolherAnexo: (extensoes?: ReadonlyArray<string>) =>
     ipcRenderer.invoke(CANAIS.escolherAnexo, extensoes === undefined ? [] : [...extensoes]) as Promise<string | null>,
+  // O caminho sai daqui, nunca da página: ela passa o `File`, e um `File` criado por script não tem caminho ("").
+  anexarSoltos: (arquivos: ReadonlyArray<File>, extensoes?: ReadonlyArray<string>) =>
+    ipcRenderer.invoke(
+      CANAIS.anexarSoltos,
+      arquivos.map((arquivo) => webUtils.getPathForFile(arquivo)),
+      extensoes === undefined ? [] : [...extensoes],
+    ) as Promise<ReadonlyArray<string | null>>,
   abrirArquivoTarefa: async (caminho: string) => {
     await ipcRenderer.invoke(CANAIS.abrirArquivoTarefa, caminho);
   },

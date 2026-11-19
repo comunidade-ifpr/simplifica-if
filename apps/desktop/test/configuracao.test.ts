@@ -240,6 +240,8 @@ describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostr
     expect(anexoEscolhido("/a/b/Parecer.MD", [".md"])).toBe("/a/b/Parecer.MD");
     expect(anexoEscolhido("/a/b/script.command", [".md"])).toBeUndefined();
     expect(anexoEscolhido("relativo.md", [".md"])).toBeUndefined();
+    // O `File` solto sem caminho (criado por script): `webUtils.getPathForFile` dá "".
+    expect(anexoEscolhido("", [".md"])).toBeUndefined();
   });
 
   test("abrir e mostrar: só dentro de uma pasta de tarefa, sem parte oculta; abrir só documentos", () => {

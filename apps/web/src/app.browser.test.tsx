@@ -603,9 +603,14 @@ it("Escolha da IA: só entram as IAs instaladas e com login", async () => {
 
 it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+Enter e o botão redondo", async () => {
   const escolherAnexo = vi.fn(async (_extensoes?: ReadonlyArray<string>) => servidor.parecer);
+  // O preload libera o arquivo de verdade e recusa o resto (pasta, programa).
+  const anexarSoltos = vi.fn(async (arquivos: ReadonlyArray<File>) =>
+    arquivos.map((arquivo) => (arquivo.name === "parecer.md" ? servidor.parecer : null)),
+  );
   window.simplifica = {
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherAnexo,
+    anexarSoltos,
   } satisfies PonteDesktop;
   await page.viewport(1100, 760);
   await using _app = await montarApp(servidor);
@@ -730,6 +735,30 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   }
   await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();
   await expect.element(mensagem).toHaveValue("");
+
+  // Na conversa, o mesmo clipe e o arrastar e soltar; o anexo entra na pasta ao enviar, com o nome que
+  // ganhou lá (o Início já tinha copiado o mesmo arquivo).
+  const alvoSoltar = document.querySelector<HTMLElement>("[data-caixa-pedido]")!;
+  await expect.element(page.getByRole("button", { name: "Anexar arquivo", exact: true })).toBeVisible();
+  const arrasto = new DataTransfer();
+  arrasto.items.add(new File(["# Nota"], "parecer.md", { type: "text/markdown" }));
+  arrasto.items.add(new File(["MZ"], "instalar.exe"));
+  alvoSoltar.dispatchEvent(new DragEvent("dragenter", { bubbles: true, cancelable: true, dataTransfer: arrasto }));
+  await expect.element(page.getByText("Solte para anexar")).toBeVisible();
+  expect(alvoSoltar.hasAttribute("data-arrastando")).toBe(true);
+  alvoSoltar.dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true, dataTransfer: arrasto }));
+  await expect.element(page.getByText("Solte para anexar")).not.toBeInTheDocument();
+  const anexadosConversa = page.getByRole("list", { name: "Arquivos anexados" });
+  await expect.element(anexadosConversa.getByText("parecer.md")).toBeVisible();
+  await expect.element(page.getByText(/^Não entrou: instalar\.exe\./)).toBeVisible();
+  expect(anexarSoltos).toHaveBeenCalledOnce();
+  semIngles();
+  await mensagem.fill("Confira o parecer anexado");
+  await userEvent.keyboard("{Enter}");
+  await expect.element(mensagens.getByText(/Arquivos na pasta: parecer \(2\)\.md\./)).toBeVisible();
+  await expect.element(anexadosConversa).not.toBeInTheDocument();
+  await expect.element(page.getByText(/^Não entrou/)).not.toBeInTheDocument();
+  await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();
 
   // A conversa rola por baixo do cartão: rolada até o fim, a última mensagem fica acima dele.
   const cartao = document.querySelector<HTMLElement>("[data-caixa-pedido]")!;

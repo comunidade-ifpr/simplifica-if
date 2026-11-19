@@ -26,6 +26,7 @@ import { RelatoErro } from "../components/RelatoErro.tsx";
 import { etapasVistas } from "../conversa/etapas.ts";
 import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
+import { Anexos, comArquivos, useAnexos } from "../tarefas/comecar.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import {
@@ -39,7 +40,8 @@ import {
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
-import { useConversa } from "../contexto.tsx";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
+import { useApi, useConversa } from "../contexto.tsx";
 import { cn } from "../lib/utils.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
@@ -150,19 +152,53 @@ function FormularioInicio() {
   );
 }
 
+/**
+ * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar,
+ * e o pedido diz à IA quais chegaram, com o nome que ganharam na pasta.
+ */
 function Compositor() {
+  const api = useApi();
   const [estado, conversa] = useConversa();
   const [texto, setTexto] = useState("");
+  const { anexos, mudar, recusados, soltar, limpar } = useAnexos();
+  const [anexando, setAnexando] = useState(false);
+  const [erro, setErro] = useState<MensagemErro>();
   const ocupada = estado.fase === "respondendo" || estado.fase === "interrompendo";
+  const enviar = async () => {
+    setErro(undefined);
+    const nomes: Array<string> = [];
+    if (anexos.length > 0) {
+      setAnexando(true);
+      let faltam = anexos;
+      try {
+        for (const arquivo of anexos) {
+          const copiado = await api.chamar((cliente) =>
+            cliente["pasta.anexar"]({ pasta: estado.pastaTrabalho, arquivo }),
+          );
+          nomes.push(copiado.nome);
+          faltam = faltam.filter((outro) => outro !== arquivo);
+        }
+      } catch (falha) {
+        // Os que já entraram saem da lista: tentar de novo não os copia outra vez.
+        mudar(faltam);
+        setErro(explicarErro(falha));
+        return;
+      } finally {
+        setAnexando(false);
+      }
+    }
+    conversa.enviar(comArquivos(texto, nomes));
+    setTexto("");
+    limpar();
+  };
   return (
     <CaixaPedido
       rotulo="Mensagem"
       valor={texto}
       aoMudar={setTexto}
-      aoEnviar={() => {
-        conversa.enviar(texto);
-        setTexto("");
-      }}
+      aoEnviar={() => void enviar()}
+      enviando={anexando}
+      rotuloEnviando="Anexando…"
       interromper={
         ocupada
           ? {
@@ -171,6 +207,9 @@ function Compositor() {
             }
           : undefined
       }
+      aoSoltarArquivos={soltar === undefined ? undefined : (arquivos) => void soltar(arquivos)}
+      esquerda={<Anexos anexos={anexos} aoMudar={mudar} recusados={recusados} />}
+      abaixo={erro === undefined ? undefined : <AvisoErro erro={erro} />}
       className="pointer-events-auto"
     />
   );

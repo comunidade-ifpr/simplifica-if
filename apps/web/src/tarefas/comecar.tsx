@@ -6,7 +6,7 @@
  */
 import type { ModeloProvider, Provider } from "@simplifica-if/contratos-app";
 import { ChevronDownIcon, PaperclipIcon, XIcon } from "lucide-react";
-import { useEffect, useId } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { MarcaIa } from "../components/MarcaIa.tsx";
 import { Button } from "../components/ui/button.tsx";
 import {
@@ -56,6 +56,34 @@ export async function comecarTarefa(
 
 /** O nome do arquivo de um caminho (macOS ou Windows). */
 export const nomeArquivo = (caminho: string): string => caminho.split(/[\\/]/).at(-1) ?? caminho;
+
+/** O pedido com a lista dos arquivos que entraram na pasta, para a IA saber que estão lá. */
+export const comArquivos = (texto: string, nomes: ReadonlyArray<string>): string =>
+  nomes.length === 0 ? texto : `${texto}\n\nArquivos na pasta: ${nomes.join(", ")}.`;
+
+/**
+ * Os anexos escolhidos e ainda não enviados: os do clipe e os soltos na caixa (`soltar`, só no app; no
+ * navegador fica `undefined`), sem repetir, e os nomes dos soltos que o app recusou.
+ */
+export function useAnexos(aceita?: ReadonlyArray<string>) {
+  const [anexos, setAnexos] = useState<ReadonlyArray<string>>([]);
+  const [recusados, setRecusados] = useState<ReadonlyArray<string>>([]);
+  const anexarSoltos = ponteDesktop()?.anexarSoltos;
+  const mudar = useCallback((novos: ReadonlyArray<string>) => {
+    setAnexos(novos);
+    setRecusados([]);
+  }, []);
+  const soltar =
+    anexarSoltos === undefined
+      ? undefined
+      : async (arquivos: ReadonlyArray<File>) => {
+          const liberados = await anexarSoltos(arquivos, aceita);
+          const novos = liberados.filter((caminho): caminho is string => caminho !== null);
+          setAnexos((atuais) => [...atuais, ...novos.filter((caminho) => !atuais.includes(caminho))]);
+          setRecusados(arquivos.filter((_, indice) => liberados[indice] == null).map((arquivo) => arquivo.name));
+        };
+  return { anexos, mudar, recusados, soltar, limpar: () => mudar([]) };
+}
 
 const NOMES_IA: Readonly<Record<Provider, string>> = {
   claude: "Claude",
@@ -251,11 +279,14 @@ export function Anexos({
   aoMudar,
   aceita,
   rotulo,
+  recusados = [],
 }: {
   readonly anexos: ReadonlyArray<string>;
   readonly aoMudar: (anexos: ReadonlyArray<string>) => void;
   readonly aceita?: ReadonlyArray<string> | undefined;
   readonly rotulo?: string | undefined;
+  /** Os nomes dos arquivos soltos que não entraram (`useAnexos`). */
+  readonly recusados?: ReadonlyArray<string>;
 }) {
   const escolher = ponteDesktop()?.escolherAnexo;
   return (
@@ -303,6 +334,12 @@ export function Anexos({
             </li>
           ))}
         </ul>
+      )}
+      {recusados.length === 0 ? null : (
+        <p role="status" className="text-muted-foreground text-xs">
+          {recusados.length === 1 ? "Não entrou" : "Não entraram"}: {recusados.join(", ")}. Anexe documentos (Word, PDF,
+          texto, planilha, apresentação ou imagem), não pastas.
+        </p>
       )}
     </div>
   );

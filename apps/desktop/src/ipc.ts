@@ -20,6 +20,9 @@ import {
   urlExternaSegura,
 } from "./seguranca.ts";
 
+/** Quantos arquivos um soltar libera de uma vez. */
+const MAXIMO_SOLTOS = 20;
+
 /** O que o IPC lê do processo principal, que guarda o estado (a janela, o servidor, a atualização). */
 export interface ContextoIpc {
   /** A origem da interface (`Configuracao.urlJanela`). */
@@ -178,6 +181,24 @@ export function registrarIpc(contexto: ContextoIpc): void {
     if (arquivo === undefined) return null;
     await liberarNoServidor(arquivo);
     return arquivo;
+  });
+
+  /** Os soltos na caixa de pedido: a regra do diálogo e, como o soltar aceita pasta, só arquivo comum. */
+  tratar(CANAIS.anexarSoltos, async (caminhos, pedidas) => {
+    if (!Array.isArray(caminhos) || caminhos.length > MAXIMO_SOLTOS) throw new Error("pedido recusado");
+    const aceitas = extensoesAnexo(pedidas);
+    const liberados: Array<string | null> = [];
+    for (const caminho of caminhos) {
+      const arquivo = anexoEscolhido(caminho, aceitas);
+      const info = arquivo === undefined ? undefined : NodeFS.lstatSync(arquivo, { throwIfNoEntry: false });
+      if (arquivo === undefined || info === undefined || !info.isFile()) {
+        liberados.push(null);
+        continue;
+      }
+      await liberarNoServidor(arquivo);
+      liberados.push(arquivo);
+    }
+    return liberados;
   });
 
   /** Um arquivo de pasta de tarefa: a regra de `arquivoDeTarefaPermitido` e o caminho real dentro da raiz. */

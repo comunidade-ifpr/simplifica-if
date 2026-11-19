@@ -120,6 +120,16 @@ export interface PonteDesktop {
    * `pasta.anexar` o copia para a pasta da tarefa. `null` se a pessoa cancelar.
    */
   escolherAnexo?(extensoes?: ReadonlyArray<string>): Promise<string | null>;
+  /**
+   * Os arquivos soltos na caixa de pedido (arrastar e soltar), com a mesma regra de `escolherAnexo`: o
+   * preload tira o caminho de cada `File` (`webUtils.getPathForFile`, que só o dá para arquivo vindo do
+   * sistema) e o processo principal confere e libera no servidor. Devolve, na ordem dos arquivos, o
+   * caminho liberado ou `null` para o recusado (pasta, extensão fora de `extensoes`, `File` sem caminho).
+   */
+  anexarSoltos?(
+    arquivos: ReadonlyArray<File>,
+    extensoes?: ReadonlyArray<string>,
+  ): Promise<ReadonlyArray<string | null>>;
   /** Abre no programa padrão um documento da pasta de uma tarefa (`Documentos/Simplifica IF/<tarefa>/`). */
   abrirArquivoTarefa?(caminho: string): Promise<void>;
   /** Mostra no Finder ou no Explorador um arquivo da pasta de uma tarefa. */
@@ -180,6 +190,7 @@ export const CANAIS = {
   procurarAtualizacaoApp: "simplifica:procurar-atualizacao-app",
   instalarAtualizacaoApp: "simplifica:instalar-atualizacao-app",
   escolherAnexo: "simplifica:escolher-anexo",
+  anexarSoltos: "simplifica:anexar-soltos",
   abrirArquivoTarefa: "simplifica:abrir-arquivo-tarefa",
   mostrarArquivoTarefa: "simplifica:mostrar-arquivo-tarefa",
   telaCheia: "simplifica:tela-cheia",

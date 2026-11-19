@@ -31,7 +31,7 @@ import { detectarIa } from "../deteccao.ts";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
 import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
-import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../tarefas/comecar.tsx";
+import { Anexos, comArquivos, comecarTarefa, EscolhaIa, nomeArquivo, useAnexos } from "../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
@@ -116,7 +116,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
   const [estado, conversa] = useConversa();
   const navegar = useNavigate();
   const [texto, setTexto] = useState(pedido ?? "");
-  const [anexos, setAnexos] = useState<ReadonlyArray<string>>([]);
+  const { anexos, mudar: setAnexos, recusados, soltar } = useAnexos();
   const [ia, setIa] = useState<EscolhaDaIa>({ provider: estado.provider });
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
@@ -131,7 +131,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
         tarefa: "conversa",
         ia,
         anexos,
-        texto: anexos.length === 0 ? texto : `${texto}\n\nArquivos na pasta: ${anexos.map(nomeArquivo).join(", ")}.`,
+        texto: comArquivos(texto, anexos.map(nomeArquivo)),
       });
       await navegar({ to: "/conversa", search: { id: sessao } });
     } catch (falha) {
@@ -150,7 +150,8 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
       aoMudar={setTexto}
       aoEnviar={() => void enviar()}
       enviando={enviando}
-      esquerda={<Anexos anexos={anexos} aoMudar={setAnexos} />}
+      aoSoltarArquivos={soltar === undefined ? undefined : (arquivos) => void soltar(arquivos)}
+      esquerda={<Anexos anexos={anexos} aoMudar={setAnexos} recusados={recusados} />}
       direita={<EscolhaIa compacta valor={ia} aoMudar={setIa} />}
       abaixo={erro === undefined ? undefined : <AvisoErro erro={erro} />}
     />
