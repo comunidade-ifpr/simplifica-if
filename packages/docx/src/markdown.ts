@@ -20,7 +20,7 @@ import {
 import { ErroDocx } from "./erro.ts";
 import { lerPacote, textosDeCaixas } from "./leitor.ts";
 import type { LimitesDoPacote } from "./limites.ts";
-import { type NotaOoxml, NAO_CARACTERES_DA_MARCA, RE_MARCA_DE_NOTA } from "./modelo.ts";
+import { NAO_CARACTERES_DA_MARCA, RE_MARCA_DE_NOTA } from "./modelo.ts";
 import { type LimitesDeTexto, Orcamento } from "./orcamento.ts";
 import { PacoteOoxml } from "./pacote.ts";
 import { normalizarTabela, type TabelaNormalizada, tabelaEmMarkdown } from "./tabelas.ts";
@@ -204,12 +204,18 @@ const paragrafoSimples = (texto: string): Paragrafo => ({
   tipoLista: null,
 });
 
-/**
- * As caixas de texto e formas, cada linha não vazia um parágrafo. O texto delas não passa pelas notas:
- * os não caracteres da marca saem, para um texto digitado na caixa não fingir uma referência.
- */
+/** As caixas de texto e formas do DOCX; o texto delas não passa pelas notas. */
 function elementosDasCaixas(pacote: PacoteOoxml): Elemento[] {
-  const linhas = textosDeCaixas(pacote)
+  return secaoDeCaixas(textosDeCaixas(pacote));
+}
+
+/**
+ * A seção "Caixas de texto": um título e cada linha não vazia das caixas um parágrafo; nada quando
+ * não há linha. Os não caracteres da marca de nota saem, para um texto digitado não fingir uma
+ * referência.
+ */
+export function secaoDeCaixas(caixas: readonly string[]): Elemento[] {
+  const linhas = caixas
     .flatMap((caixa) => caixa.split("\n"))
     .map((linha) => aparar(linha.replace(NAO_CARACTERES_DA_MARCA, "")))
     .filter(Boolean);
@@ -243,19 +249,38 @@ function definicaoDeNota(rotulo: string, texto: string): string {
 export function docxParaMarkdown(bytes: Uint8Array, opcoes: OpcoesDocxParaMarkdown = {}): string {
   const pacote = new PacoteOoxml(bytes, opcoes.limites);
   const documento = lerPacote(pacote, { notas: true });
-  const elementos = elementosDoDocumento(documento);
-  const caixas = elementosDasCaixas(pacote);
-  if (!elementos.some(temTexto) && !caixas.length) throw new ErroDocx({ motivo: "sem-texto" });
-  const notas = new Map<string, { nota: NotaOoxml; elementos: Elemento[] }>();
+  const notas = new Map<string, Elemento[]>();
   for (const nota of documento.notas) {
     const chave = `${nota.tipo === "rodape" ? "r" : "f"}:${nota.id}`;
     // Com ids repetidos vale a primeira nota.
-    if (!notas.has(chave))
-      notas.set(chave, { nota, elementos: elementosDoDocumento({ ...documento, blocos: nota.blocos }) });
+    if (!notas.has(chave)) notas.set(chave, elementosDoDocumento({ ...documento, blocos: nota.blocos }));
   }
+  return documentoEmMarkdown(
+    { elementos: elementosDoDocumento(documento), caixas: elementosDasCaixas(pacote), notas },
+    opcoes.limitesDeTexto,
+  );
+}
 
-  const orcamento = new Orcamento(opcoes.limitesDeTexto);
-  orcamento.conferirElementos([...elementos, ...caixas, ...[...notas.values()].flatMap((item) => item.elementos)]);
+/** O conteúdo de um documento, já em elementos, para `documentoEmMarkdown`. */
+export type ConteudoDoDocumento = {
+  /** O corpo, na ordem do documento, com as referências de nota marcadas (`marcaDeNota`). */
+  readonly elementos: Elemento[];
+  /** A seção "Caixas de texto", que vai depois do corpo (vazia quando não há caixa). */
+  readonly caixas: Elemento[];
+  /** O texto de cada nota, pela chave da marca: `r:<id>` (rodapé) ou `f:<id>` (fim). */
+  readonly notas: ReadonlyMap<string, Elemento[]>;
+};
+
+/**
+ * O Markdown de um documento já lido em elementos: a escrita comum a `docxParaMarkdown` e a
+ * `odtParaMarkdown` (o orçamento de texto, o corpo, as caixas e as notas numeradas no fim).
+ */
+export function documentoEmMarkdown(conteudo: ConteudoDoDocumento, limitesDeTexto?: Partial<LimitesDeTexto>): string {
+  const { elementos, caixas, notas } = conteudo;
+  if (!elementos.some(temTexto) && !caixas.length) throw new ErroDocx({ motivo: "sem-texto" });
+
+  const orcamento = new Orcamento(limitesDeTexto);
+  orcamento.conferirElementos([...elementos, ...caixas, ...[...notas.values()].flat()]);
   const normalizar: NormalizarTabela = (tabela) =>
     normalizarTabela(tabela, (caracteres) => orcamento.gastar(caracteres));
   const sequencia = { separarParagrafos: true };
@@ -281,7 +306,7 @@ export function docxParaMarkdown(bytes: Uint8Array, opcoes: OpcoesDocxParaMarkdo
   const definicoes = [...rotulos]
     .sort(([a], [b]) => (a[0] === b[0] ? 0 : a[0] === "r" ? -1 : 1))
     .map(([chave, rotulo]) => {
-      const conteudo = new Escritor(normalizar).elementos(notas.get(chave)!.elementos, sequencia);
+      const conteudo = new Escritor(normalizar).elementos(notas.get(chave)!, sequencia);
       // Uma referência dentro de uma nota não tem para onde apontar.
       return definicaoDeNota(
         rotulo,
@@ -291,6 +316,6 @@ export function docxParaMarkdown(bytes: Uint8Array, opcoes: OpcoesDocxParaMarkdo
 
   const markdown = `${[aparar(texto), ...definicoes].filter(Boolean).join("\n\n")}\n`;
   // O Markdown gerado também sai do orçamento.
-  new Orcamento(opcoes.limitesDeTexto).gastar(markdown.length);
+  new Orcamento(limitesDeTexto).gastar(markdown.length);
   return markdown;
 }

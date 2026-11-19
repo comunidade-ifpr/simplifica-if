@@ -1,5 +1,5 @@
 /**
- * XML do OOXML como árvore (`htmlparser2` em `xmlMode`), com nomes canônicos.
+ * XML do OOXML (e do OpenDocument, em `odt.ts`) como árvore (`htmlparser2` em `xmlMode`), com nomes canônicos.
  *
  * O `htmlparser2` não resolve namespaces: devolve o nome como está no arquivo (`w:p`). Quase todo
  * DOCX usa os prefixos convencionais, mas o prefixo é escolha de quem grava; o que identifica o
@@ -35,6 +35,15 @@ const PREFIXO_DA_URI: Record<string, string> = {
   "http://purl.oclc.org/ooxml/drawingml/main": "a",
   "http://purl.oclc.org/ooxml/drawingml/wordprocessingDrawing": "wp",
   "http://purl.oclc.org/ooxml/drawingml/picture": "pic",
+  // OpenDocument (`odt.ts`).
+  "urn:oasis:names:tc:opendocument:xmlns:office:1.0": "office",
+  "urn:oasis:names:tc:opendocument:xmlns:text:1.0": "text",
+  "urn:oasis:names:tc:opendocument:xmlns:table:1.0": "table",
+  "urn:oasis:names:tc:opendocument:xmlns:style:1.0": "style",
+  "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0": "draw",
+  "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0": "fo",
+  "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0": "manifest",
+  "http://www.w3.org/1999/xlink": "xlink",
 };
 
 type Escopo = ReadonlyMap<string, string>;

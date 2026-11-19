@@ -1,6 +1,7 @@
 /**
- * Limites de leitura de um DOCX, todos aqui. Quem abre o arquivo pode trocar qualquer um
- * (`new PacoteOoxml(bytes, limites)`, `lerDocx(bytes, { limites })`).
+ * Limites de leitura de um DOCX (e de um ODT, que usa o mesmo ZIP e o mesmo XML), todos aqui. Quem
+ * abre o arquivo pode trocar qualquer um (`new PacoteOoxml(bytes, limites)`, `lerDocx(bytes, { limites })`,
+ * `odtParaMarkdown(bytes, { limites })`).
  *
  * O arquivo vem do usuário e pode ser hostil; os limites existem para que um arquivo de poucos
  * kilobytes não esgote a memória nem o tempo. Os padrões folgam sobre os 12 PPCs reais conferidos

@@ -1,6 +1,6 @@
 // @effect-diagnostics extendsNativeError:off -- leitura síncrona, fora de Effect: o DOCX inválido é sinalizado por exceção, e quem chama o captura com `instanceof`
 /**
- * Arquivo que não é um DOCX legível: não é ZIP, está corrompido, protegido ou passa dos limites.
+ * Arquivo que não é um DOCX (ou ODT) legível: não é ZIP, está corrompido, protegido ou passa dos limites.
  *
  * O leitor é síncrono e o lança (`throw`); quem o chama de dentro de Effect o captura com
  * `Effect.try`. O `motivo` é o que se decide e se transporta (o Worker da revisão manda os `dados`,
@@ -25,6 +25,7 @@ const MOTIVOS = [
   "xml-mal-formado",
   // leitura do documento
   "sem-documento-principal",
+  "nao-e-odt",
   "celulas-por-linha",
   "tabela-grande-demais",
   // comentários
@@ -62,50 +63,63 @@ export type DadosErroDocx = {
   readonly tamanho?: number;
   /** O bloco que passou do limite ("um parágrafo", "uma célula de tabela"), na conversão. */
   readonly bloco?: string;
+  /** O formato do arquivo, nas frases; padrão `DOCX`. O `.odt` (`odtParaMarkdown`) lança com `ODT`. */
+  readonly formato?: "DOCX" | "ODT";
 };
 
 const megabytes = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
 
 /** A frase em português para a pessoa, montada do motivo e dos atributos. */
 export function mensagemErroDocx(dados: DadosErroDocx): string {
-  const { parte = "", limite = 0, limiteTotal = 0, tamanho = 0, bloco = "" } = dados;
+  const { parte = "", limite = 0, limiteTotal = 0, tamanho = 0, bloco = "", formato = "DOCX" } = dados;
+  const odt = formato === "ODT";
   switch (dados.motivo) {
     case "arquivo-grande-demais":
       return (
-        `O arquivo DOCX tem ${megabytes(tamanho)}, e o limite é de ${megabytes(limite)}. Um documento de texto raramente passa disso: ` +
-        "em geral são as imagens. No Word, use Arquivo › Compactar imagens e salve de novo."
+        `O arquivo ${formato} tem ${megabytes(tamanho)}, e o limite é de ${megabytes(limite)}. Um documento de texto raramente passa disso: ` +
+        (odt
+          ? "em geral são as imagens. No LibreOffice, compacte as imagens (botão direito na imagem › Compactar) e salve de novo."
+          : "em geral são as imagens. No Word, use Arquivo › Compactar imagens e salve de novo.")
       );
     case "doc-ou-protegido":
-      return "O arquivo é do Word 97-2003 (.doc) ou um DOCX protegido por senha. Salve como .docx, sem senha, e tente de novo.";
+      return odt
+        ? "O arquivo não é um ODT: é do Word 97-2003 (.doc) ou está protegido por senha. Salve como .odt, sem senha, e tente de novo."
+        : "O arquivo é do Word 97-2003 (.doc) ou um DOCX protegido por senha. Salve como .docx, sem senha, e tente de novo.";
     case "nao-e-zip":
-      return "O arquivo não é um DOCX: não tem o formato de pacote (ZIP) dos documentos do Word.";
+      return odt
+        ? "O arquivo não é um ODT: não tem o formato de pacote (ZIP) dos documentos OpenDocument."
+        : "O arquivo não é um DOCX: não tem o formato de pacote (ZIP) dos documentos do Word.";
     case "zip-corrompido":
-      return "O arquivo DOCX está corrompido ou incompleto: o pacote (ZIP) não pôde ser lido.";
+      return `O arquivo ${formato} está corrompido ou incompleto: o pacote (ZIP) não pôde ser lido.`;
     case "partes-demais":
-      return `O arquivo DOCX tem partes demais (o limite é de ${limite}).`;
+      return `O arquivo ${formato} tem partes demais (o limite é de ${limite}).`;
     case "protegido":
-      return "O arquivo DOCX está protegido por senha. Salve sem senha e tente de novo.";
+      return `O arquivo ${formato} está protegido por senha. Salve sem senha e tente de novo.`;
     case "parte-grande-demais":
       return (
-        `O arquivo DOCX é grande demais para ser lido: a parte ${parte} passa de ${megabytes(limite)}, ` +
+        `O arquivo ${formato} é grande demais para ser lido: a parte ${parte} passa de ${megabytes(limite)}, ` +
         `ou o documento passa de ${megabytes(limiteTotal)} no total.`
       );
     case "parte-corrompida":
-      return `O arquivo DOCX está corrompido: a parte ${parte} não pôde ser lida.`;
+      return `O arquivo ${formato} está corrompido: a parte ${parte} não pôde ser lida.`;
     case "compressao-anormal":
-      return `O arquivo DOCX não pôde ser lido: a parte ${parte} tem compressão anormal.`;
+      return `O arquivo ${formato} não pôde ser lido: a parte ${parte} tem compressão anormal.`;
     case "elementos-demais":
-      return `O arquivo DOCX é grande demais para ser lido: ${parte} tem mais de ${limite / 1000} mil elementos.`;
+      return `O arquivo ${formato} é grande demais para ser lido: ${parte} tem mais de ${limite / 1000} mil elementos.`;
     case "aninhamento-demais":
-      return `O arquivo DOCX não pôde ser lido: ${parte} tem elementos aninhados demais.`;
+      return `O arquivo ${formato} não pôde ser lido: ${parte} tem elementos aninhados demais.`;
     case "xml-mal-formado":
-      return `O arquivo DOCX está corrompido: ${parte} não é um XML bem formado.`;
+      return `O arquivo ${formato} está corrompido: ${parte} não é um XML bem formado.`;
     case "sem-documento-principal":
-      return "O arquivo não é um documento do Word: o pacote não tem documento principal.";
+      return odt
+        ? "O arquivo não é um documento OpenDocument: o pacote não tem documento principal."
+        : "O arquivo não é um documento do Word: o pacote não tem documento principal.";
+    case "nao-e-odt":
+      return "O arquivo não é um documento de texto OpenDocument (.odt): o pacote não declara esse tipo de documento.";
     case "celulas-por-linha":
-      return `O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${limite} células numa linha.`;
+      return `O arquivo ${formato} não pôde ser lido: há uma tabela com mais de ${limite} células numa linha.`;
     case "tabela-grande-demais":
-      return "O arquivo DOCX não pôde ser lido: há uma tabela grande demais.";
+      return `O arquivo ${formato} não pôde ser lido: há uma tabela grande demais.`;
     case "comentarios-sem-documento-principal":
       return "O arquivo não tem documento principal do Word.";
     case "comentarios-documento-ausente":
@@ -140,9 +154,9 @@ export function mensagemErroDocx(dados: DadosErroDocx): string {
         "ou sinais de pontuação seguidos."
       );
     case "mescladas-demais":
-      return "O arquivo DOCX não pôde ser lido: há uma tabela com texto demais nas células mescladas.";
+      return `O arquivo ${formato} não pôde ser lido: há uma tabela com texto demais nas células mescladas.`;
     case "celulas-demais":
-      return `O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${limite} células.`;
+      return `O arquivo ${formato} não pôde ser lido: há uma tabela com mais de ${limite} células.`;
   }
 }
 
