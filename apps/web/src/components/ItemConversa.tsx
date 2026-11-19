@@ -55,7 +55,7 @@ export function ItemConversa({
       return (
         <div
           data-conteudo
-          className="ml-auto max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-message px-4 py-2.5 text-message-foreground"
+          className="ml-auto max-w-[85%] whitespace-pre-wrap wrap-anywhere rounded-2xl rounded-br-sm bg-message px-4 py-2.5 text-message-foreground"
         >
           {item.texto}
         </div>
