@@ -1,0 +1,405 @@
+/**
+ * O resultado da revisão: o que corrigir primeiro e quanto do PPC já foi lido. De cima para baixo, o
+ * cabeçalho do documento, a frase-resultado com a régua de critérios, a faixa da IA (enquanto ela não
+ * leu), o bloqueio do curso (quando o CNCT não reconheceu o curso) e a lista em duas colunas: os temas à
+ * esquerda e as pendências à direita, uma aberta por vez. As ressalvas ficam juntas em "Sobre esta
+ * revisão", no pé da coluna de temas.
+ *
+ * Teclado na lista: ↑ e ↓ andam pelas linhas, Enter abre e fecha, F marca como feito (ou desfaz).
+ */
+import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
+import { type KeyboardEvent, useRef, useState } from "react";
+import { AvisoErro } from "../components/AvisoErro.tsx";
+import { PainelLeitura } from "../components/PainelLeitura.tsx";
+import { Pagina } from "../components/Pagina.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Input } from "../components/ui/input.tsx";
+import { Nota } from "../components/ui/nota.tsx";
+import { Spinner } from "../components/ui/spinner.tsx";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
+import { useApi } from "../contexto.tsx";
+import {
+  abrir as abrirNoHistorico,
+  avancar,
+  HISTORICO_VAZIO,
+  type Historico,
+  linkAtual,
+  voltar,
+} from "../leitor/historico.ts";
+import { dataCurta } from "../lib/formato.ts";
+import { ponteDesktop } from "../ponte-desktop.ts";
+import { BloqueioCurso } from "./BloqueioCurso.tsx";
+import { CabecalhoDocumento } from "./CabecalhoDocumento.tsx";
+import { ConclusaoIa, FaixaIa, nomeIa } from "./FaixaIa.tsx";
+import { temasProntos, textoConclusao } from "./ia.ts";
+import { LinhaPendencia } from "./LinhaPendencia.tsx";
+import {
+  contagens,
+  descreverCurso,
+  doBloqueio,
+  fraseResultado,
+  nomeDoArquivo,
+  ordenar,
+  passouPelaIa,
+  pendente,
+  plural,
+  principais,
+  temasDaNavegacao,
+  textoArquivoNovo,
+  textoFeitas,
+} from "./lista.ts";
+import { NavTemas, SeletorTema } from "./NavTemas.tsx";
+import { ReguaCriterios } from "./ReguaCriterios.tsx";
+import { useLeituraIa } from "./useLeituraIa.ts";
+
+const SEM_LEITURA: ReadonlySet<number> = new Set();
+
+export function Leitura({
+  inicial,
+  aoRevisarComCurso,
+  aoSair,
+}: {
+  readonly inicial: ListaPendencias;
+  /** "Qual é o curso?": revisar o arquivo de novo com o curso escolhido no CNCT. */
+  readonly aoRevisarComCurso: (arquivo: string, cnct: string, forma: string | null) => void;
+  /** Volta à entrada ("Revisar outro arquivo", depois de apagar). */
+  readonly aoSair: () => void;
+}) {
+  const api = useApi();
+  const ponte = ponteDesktop();
+  const [lista, setLista] = useState(inicial);
+  const [tema, setTema] = useState<number | null>(null);
+  const [aberta, setAberta] = useState<string | null>(null);
+  const [novas, setNovas] = useState<ReadonlySet<string>>(new Set());
+  const [conclusao, setConclusao] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
+  const [marcando, setMarcando] = useState<string | null>(null);
+  const [abrindo, setAbrindo] = useState(false);
+  const [caminhoCopia, setCaminhoCopia] = useState<string | null>(null);
+  const [confirmarApagar, setConfirmarApagar] = useState(false);
+  const [pedirCaminho, setPedirCaminho] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [leitura, setLeitura] = useState<Historico>(HISTORICO_VAZIO);
+  const listaRef = useRef<HTMLUListElement>(null);
+
+  const r = lista.resultado;
+  const pessoa = r.curso.origem === "pessoa";
+  const ia = useLeituraIa({
+    arquivo: lista.arquivoOriginal,
+    cnct: pessoa ? r.curso.cnct?.slug : undefined,
+    forma: pessoa ? (r.curso.forma ?? undefined) : undefined,
+    ativa: !passouPelaIa(r),
+    aoConcluir: (estado: EstadoRevisaoIa) => {
+      const id = estado.resultado?.lista;
+      if (id === undefined) return;
+      void api
+        .chamar((c) => c["revisaoPpc.lista"]({ lista: id }))
+        .then((nova) => {
+          const daIa = nova.pendencias.filter((v) => v.pendencia.origem === "ia" && pendente(v));
+          setLista(nova);
+          setNovas(new Set(daIa.map((v) => v.chave)));
+          setConclusao(textoConclusao(nomeIa(estado.provider), nova.resultado, daIa.length));
+          setAberta(null);
+        })
+        .catch((motivo: unknown) => setErro(explicarErro(motivo)));
+    },
+  });
+  const lendo = ia.estado?.situacao === "em_andamento" || ia.estado?.situacao === "pausada";
+  const provider = lista.provider ?? ia.provider;
+
+  const usar = async <A,>(acao: () => Promise<A>): Promise<A | undefined> => {
+    setErro(undefined);
+    try {
+      return await acao();
+    } catch (motivo) {
+      setErro(explicarErro(motivo));
+      return undefined;
+    }
+  };
+
+  const marcar = async (chave: string, situacao: "aberta" | "resolvida") => {
+    setMarcando(chave);
+    const nova = await usar(() => api.chamar((c) => c["revisaoPpc.marcar"]({ lista: lista.id, chave, situacao })));
+    setMarcando(null);
+    if (nova === undefined) return;
+    setLista(nova);
+    if (situacao === "resolvida" && aberta === chave) setAberta(null);
+  };
+
+  const abrirNoWord = async () => {
+    setAbrindo(true);
+    const nova = await usar(() => api.chamar((c) => c["revisaoPpc.gerarCopia"]({ lista: lista.id })));
+    if (nova !== undefined) {
+      setLista(nova);
+      const copia = nova.resultado.arquivoComentado;
+      if (ponte?.abrirDocumento === undefined) setCaminhoCopia(copia);
+      else
+        await ponte.abrirDocumento(copia).catch(() =>
+          setErro({
+            texto:
+              "Não foi possível abrir a cópia comentada. Ela pode estar aberta em outro programa, ou a pasta pode ter mudado; tente de novo.",
+          }),
+        );
+    }
+    setAbrindo(false);
+  };
+
+  const enviarCorrigida = async (arquivo: string) => {
+    setPedirCaminho(false);
+    setEnviando(true);
+    setAviso(null);
+    const novo = await usar(() => api.chamar((c) => c["revisaoPpc.revisarArquivoNovo"]({ lista: lista.id, arquivo })));
+    setEnviando(false);
+    if (novo === undefined) return;
+    setLista(novo.lista);
+    setAviso(textoArquivoNovo(novo));
+  };
+
+  const escolherCorrigida = async () => {
+    if (ponte?.escolherDocx === undefined) return setPedirCaminho(true);
+    const arquivo = await usar(() => ponte.escolherDocx!());
+    if (arquivo !== undefined && arquivo !== null) void enviarCorrigida(arquivo);
+  };
+
+  const exportar = async () => {
+    const csv = await usar(() => api.chamar((c) => c["revisaoPpc.exportarDiscordancias"]({})));
+    if (csv === undefined) return;
+    const url = URL.createObjectURL(new Blob(["﻿", csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "discordancias-das-regras (Simplifica IF).csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const apagar = async () => {
+    const ok = await usar(() => api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id })).then(() => true));
+    if (ok === true) aoSair();
+  };
+
+  const alternar = (chave: string) => {
+    setAberta((atual) => (atual === chave ? null : chave));
+    if (novas.has(chave))
+      setNovas((atuais) => {
+        const resto = new Set(atuais);
+        resto.delete(chave);
+        return resto;
+      });
+  };
+
+  // ↑ e ↓ entre os cabeçalhos das linhas; F marca a linha em foco. Nada nos campos de texto.
+  const teclado = (evento: KeyboardEvent<HTMLUListElement>) => {
+    const alvo = evento.target as HTMLElement;
+    const item = alvo.closest<HTMLElement>("li[data-chave]");
+    if (item === null || alvo !== item.querySelector("button")) return;
+    const botoes = [...(listaRef.current?.querySelectorAll<HTMLElement>("li[data-chave] > div > button") ?? [])];
+    const i = botoes.indexOf(alvo);
+    if (evento.key === "ArrowDown" || evento.key === "ArrowUp") {
+      evento.preventDefault();
+      botoes[evento.key === "ArrowDown" ? Math.min(botoes.length - 1, i + 1) : Math.max(0, i - 1)]?.focus();
+    } else if ((evento.key === "f" || evento.key === "F") && !evento.metaKey && !evento.ctrlKey && !evento.altKey) {
+      evento.preventDefault();
+      const chave = item.dataset.chave!;
+      const viva = lista.pendencias.find((v) => v.chave === chave);
+      if (viva !== undefined && marcando === null)
+        void marcar(chave, viva.situacao === "resolvida" ? "aberta" : "resolvida");
+    }
+  };
+
+  const c = contagens(lista);
+  const temas = temasDaNavegacao(lista);
+  const doTema = principais(lista).filter((v) => tema === null || v.pendencia.ordemTema === tema);
+  const linhas = ordenar(doTema);
+  const temaAtual = temas.find((t) => t.ordem === tema);
+  const bloqueio = doBloqueio(lista);
+  const discordancias = lista.pendencias.some(
+    (v) => v.pendencia.origem === "codigo" && v.historico.some((e) => e.acao === "contestar"),
+  );
+  const sobre = (
+    <Nota titulo="Sobre esta revisão">
+      <p>
+        É uma revisão prévia, para preparar o PPC antes de enviar: não é parecer da PROENS, e não ter pendência não quer
+        dizer PPC aprovado.
+      </p>
+      <p>
+        {!passouPelaIa(r)
+          ? `A régua tem os ${r.totalCriterios} critérios da revisão. O app confere ${r.conferidos} sozinho; os demais pedem leitura, sua ou da IA.`
+          : `A régua tem os ${r.totalCriterios} critérios da revisão: ${r.conferidos} conferidos pelo app e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${r.paraConferirIa ? ` ${plural(r.paraConferirIa, "ficou", "ficaram")} para você conferir.` : ""}`}
+      </p>
+      <p>
+        Seu arquivo não é alterado: os comentários vão para uma cópia, “{nomeDoArquivo(r.arquivoComentado)}”, na mesma
+        pasta.
+      </p>
+      <p>
+        O app guarda neste computador o texto do PPC e o que você escrever ao discordar, até você apagar esta revisão ou
+        depois de 30 dias sem uso.
+      </p>
+      <p>Base de normas de {dataCurta(r.dataBase)}.</p>
+    </Nota>
+  );
+
+  return (
+    <div className="flex h-full">
+      <div className="h-full min-w-0 flex-1">
+        <Pagina largura="larga" className="gap-6">
+          <header className="flex flex-col gap-1">
+            <h1 className="font-semibold text-muted-foreground text-small">Revisar um PPC</h1>
+            <CabecalhoDocumento
+              nome={nomeDoArquivo(lista.arquivoOriginal)}
+              curso={descreverCurso(r.curso)}
+              acoes={{
+                aoAbrirNoWord: () => void abrirNoWord(),
+                abrindo,
+                aoMostrarNaPasta:
+                  ponte?.mostrarNaPasta === undefined
+                    ? undefined
+                    : () => void usar(() => ponte.mostrarNaPasta!(r.arquivoComentado)),
+                aoEnviarCorrigida: () => void escolherCorrigida(),
+                aoExportar: discordancias ? () => void exportar() : undefined,
+                aoRevisarOutro: aoSair,
+                aoApagar: () => setConfirmarApagar(true),
+              }}
+            />
+            {caminhoCopia === null ? null : (
+              <p className="break-all text-muted-foreground text-small">Cópia comentada gravada em {caminhoCopia}</p>
+            )}
+          </header>
+
+          {confirmarApagar ? (
+            <div
+              role="alertdialog"
+              aria-label="Apagar esta revisão?"
+              className="flex flex-col gap-3 rounded-xl border border-destructive/40 p-4"
+            >
+              <p className="font-semibold text-heading">Apagar esta revisão?</p>
+              <p className="max-w-[68ch] text-small">
+                Some deste computador a lista, com o texto do PPC convertido, o que você marcou e o que escreveu ao
+                discordar. Seu arquivo e a cópia comentada ficam.
+              </p>
+              <div className="flex gap-2">
+                <Button variant="destructive" onClick={() => void apagar()}>
+                  Apagar a revisão
+                </Button>
+                <Button variant="ghost" onClick={() => setConfirmarApagar(false)}>
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {pedirCaminho ? (
+            <form
+              aria-label="Enviar a versão corrigida"
+              className="flex flex-wrap items-center gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const caminho = new FormData(e.currentTarget).get("caminho");
+                if (typeof caminho === "string" && caminho.trim()) void enviarCorrigida(caminho.trim());
+              }}
+            >
+              <Input
+                nativeInput
+                name="caminho"
+                aria-label="Caminho da versão corrigida (.docx)"
+                placeholder="/Users/voce/Documents/PPC corrigido.docx"
+                className="max-w-md"
+              />
+              <Button type="submit" variant="outline">
+                Conferir
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setPedirCaminho(false)}>
+                Cancelar
+              </Button>
+            </form>
+          ) : null}
+
+          <section aria-labelledby="frase-resultado" className="flex flex-col gap-3">
+            <h2 id="frase-resultado" className="text-display">
+              {fraseResultado(lista)}
+            </h2>
+            <ReguaCriterios
+              criterios={r.criterios}
+              temasLidosPelaIa={lendo && ia.estado !== undefined ? temasProntos(ia.estado) : SEM_LEITURA}
+              tema={tema}
+              aoEscolherTema={setTema}
+            />
+          </section>
+
+          {enviando ? (
+            <p role="status" className="flex items-center gap-2 text-body">
+              <Spinner /> Conferindo a versão corrigida…
+            </p>
+          ) : null}
+          {aviso === null ? null : <ConclusaoIa texto={`Versão corrigida: ${aviso}`} aoFechar={() => setAviso(null)} />}
+          {conclusao === null ? null : <ConclusaoIa texto={conclusao} aoFechar={() => setConclusao(null)} />}
+          {!passouPelaIa(r) ? <FaixaIa leitura={ia} faltam={r.totalCriterios - r.conferidos} /> : null}
+          {bloqueio.length ? (
+            <BloqueioCurso
+              pendencias={bloqueio}
+              aoEscolher={(cnct) => aoRevisarComCurso(lista.arquivoOriginal, cnct, r.curso.forma)}
+            />
+          ) : null}
+          {erro === undefined ? null : <AvisoErro erro={erro} />}
+
+          <div className="grid gap-6 min-[960px]:grid-cols-[15rem_minmax(0,1fr)] min-[960px]:gap-10">
+            <aside className="hidden min-[960px]:block">
+              <div className="sticky top-6 max-h-[calc(100dvh-8rem)] overflow-y-auto pr-1">
+                <NavTemas temas={temas} tema={tema} aoEscolher={setTema} feitas={textoFeitas(c)} sobre={sobre} />
+              </div>
+            </aside>
+            <div className="flex min-w-0 flex-col gap-3">
+              <div className="min-[960px]:hidden">
+                <SeletorTema temas={temas} tema={tema} aoEscolher={setTema} />
+              </div>
+              {/* Abaixo de 960 px, o seletor já diz o tema: o título fica só para o leitor de tela. */}
+              <h2 className="sr-only text-title min-[960px]:not-sr-only">{temaAtual?.tema ?? "Todos os temas"}</h2>
+              {linhas.length ? (
+                <ul ref={listaRef} className="border-border border-t" onKeyDown={teclado}>
+                  {linhas.map((v) => (
+                    <li key={v.chave} data-chave={v.chave}>
+                      <LinhaPendencia
+                        id={`pendencia-${v.chave.replace(/[^\w-]/g, "_")}`}
+                        lista={lista.id}
+                        viva={v}
+                        provider={provider}
+                        aberta={aberta === v.chave}
+                        aoAlternar={() => alternar(v.chave)}
+                        nova={novas.has(v.chave)}
+                        aoAtualizar={setLista}
+                        aoMarcar={(situacao) => void marcar(v.chave, situacao)}
+                        marcando={marcando === v.chave}
+                        aoAbrirLink={(link) => setLeitura((h) => abrirNoHistorico(h, link))}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="max-w-[68ch] text-muted-foreground text-body">
+                  {temaAtual?.naoLido
+                    ? "Ninguém leu este tema ainda: os critérios dele pedem leitura, sua ou da IA."
+                    : "Nada para corrigir nem para conferir aqui, nos critérios lidos."}
+                </p>
+              )}
+              <div className="flex flex-col gap-3 pt-4 min-[960px]:hidden">
+                <p className="font-semibold text-small tabular-nums">{textoFeitas(c)}</p>
+                {sobre}
+              </div>
+            </div>
+          </div>
+        </Pagina>
+      </div>
+      {linkAtual(leitura) === undefined ? null : (
+        <div className="h-full w-[min(40rem,45vw)] shrink-0">
+          <PainelLeitura
+            historico={leitura}
+            aoAbrirLink={(link) => setLeitura((h) => abrirNoHistorico(h, link))}
+            aoVoltar={() => setLeitura(voltar)}
+            aoAvancar={() => setLeitura(avancar)}
+            aoFechar={() => setLeitura(HISTORICO_VAZIO)}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

@@ -166,7 +166,7 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await expect.element(mensagens.getByText("Resposta interrompida.")).toBeVisible();
 });
 
-it("Revisar um PPC: do Início à lista de pendências por tema e à cópia comentada", async () => {
+it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, a lista por tema e a cópia comentada", async () => {
   const abrirDocumento = vi.fn(async (_caminho: string) => {});
   const mostrarNaPasta = vi.fn(async (_caminho: string) => {});
   window.simplifica = {
@@ -175,58 +175,85 @@ it("Revisar um PPC: do Início à lista de pendências por tema e à cópia come
     abrirDocumento,
     mostrarNaPasta,
   } satisfies PonteDesktop;
+  await page.viewport(1280, 900);
   await using _app = await montarApp(servidor);
 
-  // O cartão da tarefa nativa leva ao fluxo da revisão prévia.
+  // O cartão da tarefa nativa leva à entrada: a frase e a área de soltar, com o botão.
   await page.getByRole("link", { name: /^Revisar um PPC/ }).click();
   await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
-  await page.getByRole("button", { name: "Escolher o PPC (.docx)…" }).click();
+  await expect.element(page.getByText("Confira seu PPC contra as normas antes de enviar à PROENS.")).toBeVisible();
+  await page.getByRole("button", { name: "Escolher o PPC" }).click();
 
-  // O resumo: contagem em palavras, o curso, o que foi e o que não foi conferido, a cópia.
-  const resultado = page.getByRole("heading", { name: /precisam? de ajuste/ });
-  await expect.element(resultado).toBeVisible();
-  await expect.element(page.getByText(/critérios conferidos automaticamente; os demais exigem leitura/)).toBeVisible();
-  await expect.element(page.getByText(/Não identificamos o curso no Catálogo Nacional/)).toBeVisible();
-  await expect.element(page.getByText("PPC de teste - revisão prévia (Simplifica IF).docx")).toBeVisible();
+  // A frase-resultado diz quanto foi lido; a régua tem um traço por critério, agrupados por tema.
+  const frase = page.getByRole("heading", { name: /critérios que o app confere sozinho\.$/ });
+  await expect.element(frase).toBeVisible();
+  await expect.element(page.getByRole("group", { name: /^Régua de critérios\. \d+ critérios: / })).toBeVisible();
+  await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
 
-  // O roteiro: uma parada por vez, com o aviso do que ainda não foi visto.
-  await expect.element(page.getByRole("heading", { name: /^Parada 1 de \d+ · / })).toBeVisible();
-  await expect.element(page.getByText(/Ainda não viu:/)).toBeVisible();
+  // A faixa da IA já traz a estimativa, sem "etapas" nem "referência provisória".
+  const faixa = page.getByRole("region", { name: "Leitura com IA" });
+  await expect.element(faixa.getByText(/O Claude lê .* em cerca de \d+ minutos?, usando perto de/)).toBeVisible();
+  await expect.element(faixa.getByRole("button", { name: "Ler com o Claude" })).toBeEnabled();
+  expect(faixa.element().textContent).not.toMatch(/etapa|provisória/);
+
+  // O curso não identificado vira um bloqueio só, com as pendências que dependem dele.
+  await expect
+    .element(page.getByRole("heading", { name: "Não reconhecemos o curso no Catálogo Nacional (CNCT)" }))
+    .toBeVisible();
+  await expect.element(page.getByRole("button", { name: /pendências? dependem? disso/ })).toBeVisible();
   semIngles();
 
-  // Tudo de uma vez: os temas na ordem do parecer, com estados em linguagem comum.
-  await page.getByRole("button", { name: "Ver tudo de uma vez" }).click();
-  const temas = [...document.querySelectorAll("section[aria-label] > h3")].map((h) => h.textContent);
-  expect(temas.indexOf("Matriz e estrutura curricular")).toBeLessThan(temas.indexOf("Fundamentos legais e normativos"));
-  const aee = page.getByRole("region", { name: "Acesso, permanência, AEE e inclusão" });
-  await expect.element(aee.getByText("Precisa de ajuste")).toBeVisible();
-  await expect.element(aee.getByText("“Atendimento Educacional Especializado”", { exact: false })).toBeVisible();
-  await expect.element(aee.getByText("Comentado no trecho, na cópia do documento.")).toBeVisible();
-  expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\//);
+  // A coluna de temas filtra a lista; a pendência abre com o que fazer, o trecho e a fonte pelo nome.
+  await page
+    .getByRole("navigation", { name: "Temas" })
+    .getByRole("button", { name: /AEE e inclusão/ })
+    .click();
+  await expect.element(page.getByRole("heading", { name: "Acesso, permanência, AEE e inclusão" })).toBeVisible();
+  const linha = page.getByRole("button", { name: /O AEE aparece como componente/ });
+  await linha.click();
+  await expect.element(page.getByText("O que fazer")).toBeVisible();
+  await expect.element(page.getByText("Atendimento Educacional Especializado", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Nota Técnica PROENS/IFPR nº 1/2025" }).click();
+  await expect.element(page.getByRole("complementary", { name: "Painel de leitura" })).toBeVisible();
+  await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
+  expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\/|CT-[A-Z]+-\d/);
   semIngles();
 
-  await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
-  await page.getByRole("button", { name: "Mostrar na pasta" }).click();
+  // "Feito" esmaece a linha e conta; F, com o foco na linha, desfaz.
+  await page.getByRole("button", { name: "Feito" }).click();
+  await expect.element(page.getByText(/^1 de \d+ feitas?$/).first()).toBeInTheDocument();
+  (linha.element() as HTMLElement).focus();
+  await userEvent.keyboard("f");
+  await expect.element(page.getByText(/^0 de \d+ feitas?$/).first()).toBeInTheDocument();
+
+  // "Abrir no Word" regrava a cópia comentada e a abre; o ⋯ mostra na pasta.
+  await page.getByRole("button", { name: "Abrir no Word" }).click();
   const comentado = `${servidor.pasta}/PPC de teste - revisão prévia (Simplifica IF).docx`;
-  expect(abrirDocumento).toHaveBeenCalledWith(comentado);
-  expect(mostrarNaPasta).toHaveBeenCalledWith(comentado);
+  await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(comentado));
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Mostrar na pasta" }).click();
+  await vi.waitFor(() => expect(mostrarNaPasta).toHaveBeenCalledWith(comentado));
 
-  // A cópia movida ou apagada: o desktop recusa, e a tela diz o que houve.
-  abrirDocumento.mockRejectedValueOnce(new Error("a cópia comentada não foi encontrada"));
-  await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
-  await expect.element(page.getByText(/Não foi possível abrir a cópia comentada/)).toBeVisible();
+  // "Qual é o curso?": a escolha no CNCT revisa de novo, e o bloqueio sai.
+  await page.getByRole("combobox", { name: "Qual é o curso?" }).fill("enferm");
+  await page.getByRole("option", { name: /Técnico em Enfermagem/ }).click();
+  await page.getByRole("button", { name: "Conferir com este curso" }).click();
+  await expect.element(page.getByText(/^Técnico em Enfermagem/)).toBeVisible();
+  await expect
+    .element(page.getByRole("heading", { name: "Não reconhecemos o curso no Catálogo Nacional (CNCT)" }))
+    .not.toBeInTheDocument();
 
-  // Apagar a lista pede confirmação: cancelar não apaga; confirmar volta à escolha do arquivo.
-  await page.getByRole("button", { name: "Apagar esta lista" }).click();
-  const confirmacao = page.getByRole("group", { name: "Apagar esta lista?" });
-  await expect.element(confirmacao).toBeVisible();
+  // Apagar pede confirmação: cancelar não apaga; confirmar volta à entrada.
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
+  const confirmacao = page.getByRole("alertdialog", { name: "Apagar esta revisão?" });
   await confirmacao.getByRole("button", { name: "Cancelar" }).click();
   await expect.element(confirmacao).not.toBeInTheDocument();
-  await expect.element(resultado).toBeVisible();
-  await page.getByRole("button", { name: "Apagar esta lista" }).click();
-  await page.getByRole("button", { name: "Apagar a lista" }).click();
-  await expect.element(resultado).not.toBeInTheDocument();
-  await expect.element(page.getByRole("button", { name: "Escolher o PPC (.docx)…" })).toBeVisible();
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
+  await page.getByRole("button", { name: "Apagar a revisão" }).click();
+  await expect.element(page.getByRole("button", { name: "Escolher o PPC" })).toBeVisible();
+  semIngles();
 });
 
 it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
@@ -235,7 +262,7 @@ it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em portu
     escolherDocx: async () => `${servidor.pasta}/não existe.docx`,
   } satisfies PonteDesktop;
   await using _app = await montarApp(servidor, "/revisao-ppc");
-  await page.getByRole("button", { name: "Escolher o PPC (.docx)…" }).click();
+  await page.getByRole("button", { name: "Escolher o PPC" }).click();
   await expect.element(page.getByText("O arquivo não foi encontrado ou não pode ser lido.")).toBeVisible();
   semIngles();
 });

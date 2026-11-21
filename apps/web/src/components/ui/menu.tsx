@@ -1,7 +1,8 @@
 /**
  * Menu suspenso com grupos de escolha única (o `Menu` do Base UI): um botão que abre uma lista com um
  * ou mais grupos de opções marcáveis, cada grupo com seu valor. O `Select` desta pasta guarda um valor
- * só; este serve quando o mesmo botão reúne duas escolhas (o modelo e o raciocínio).
+ * só; este serve quando o mesmo botão reúne duas escolhas (o modelo e o raciocínio), e as ações
+ * soltas (`MenuItem`) servem ao menu ⋯ de um documento.
  */
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { CheckIcon } from "lucide-react";
@@ -77,8 +78,31 @@ function MenuRadioItem({
   );
 }
 
+/** Uma ação do menu (sem marca de escolha): "Mostrar na pasta", "Apagar esta revisão". */
+function MenuItem({ className, ...props }: MenuPrimitive.Item.Props) {
+  return (
+    <MenuPrimitive.Item
+      className={cn(
+        "flex min-h-8 cursor-pointer items-center gap-2 rounded-sm px-2 py-1 text-small outline-none data-disabled:pointer-events-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:opacity-64 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 function MenuSeparator({ className, ...props }: MenuPrimitive.Separator.Props) {
   return <MenuPrimitive.Separator className={cn("mx-1 my-1 h-px bg-border", className)} {...props} />;
 }
 
-export { Menu, MenuTrigger, MenuPopup, MenuGroup, MenuGroupLabel, MenuRadioGroup, MenuRadioItem, MenuSeparator };
+export {
+  Menu,
+  MenuTrigger,
+  MenuPopup,
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+};

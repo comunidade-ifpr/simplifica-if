@@ -1,19 +1,52 @@
 /**
- * Os textos da revisão com IA (M1.11, etapa 4) como a pessoa os lê: a estimativa antes de começar, o
- * andamento por tema (os blocos de cada tema ficando prontos) e a cobertura do resultado.
+ * Os textos da leitura com IA como a pessoa os lê, em funções puras: a estimativa na faixa, o detalhe
+ * do uso, o andamento por tema, a frase do fim e as revisões que ficaram por terminar.
  */
-import type { EstadoRevisaoIa, EstimativaRevisaoIa, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import type {
+  EstadoRevisaoIa,
+  EstimativaAcao,
+  EstimativaRevisaoIa,
+  ModoRevisaoIa,
+  ResultadoRevisaoPpc,
+} from "@simplifica-if/contratos-app";
 import { dolares } from "../lib/formato.ts";
+import { plural } from "./lista.ts";
+
+/** "14 %", com o espaço rígido. */
+const porcento = (n: number) => `${n} %`;
 
 /**
- * "Estimativa aproximada: cerca de 14% de uma janela de 5 horas do plano Pro (referência provisória)…".
- * Os tokens por critério são medidos; a janela, não (os providers não publicam o tamanho dela). A
- * contagem de tokens fica fora do texto (M1.14: a tela não fala em tokens); o tempo e a fração da
- * janela dizem o mesmo em termos da pessoa.
+ * O limite do plano como a pessoa o conhece: "do seu limite de 5 horas", "da sua cota diária". O
+ * servidor dá a janela de referência ("uma janela de 5 horas do plano Pro").
  */
-export function textoEstimativa(e: EstimativaRevisaoIa): string {
-  const custo = e.custoUsd === null ? "" : ` Pago por uso, isso custaria cerca de ${dolares(e.custoUsd)}.`;
-  return `${e.fichas} critérios em ${e.blocos} etapas. Estimativa aproximada: cerca de ${e.minutos} min e algo como ${e.percentualJanela}% de ${e.nomeJanela} (referência provisória: as empresas de IA não publicam o tamanho da janela).${custo}`;
+export function limiteDoPlano(nomeJanela: string): string {
+  const horas = /janela de (\d+) horas?/.exec(nomeJanela);
+  if (horas !== null) return `do seu limite de ${horas[1]} horas`;
+  if (/cota diária/.test(nomeJanela)) return "da sua cota diária";
+  return `de ${nomeJanela}`;
+}
+
+/**
+ * A segunda frase da faixa: "O Claude lê em cerca de 6 minutos, usando perto de 14 % do seu limite de 5
+ * horas." No escopo menor, diz quantos lê: "O Claude lê os 30 que mais devolvem PPC em cerca de…".
+ */
+export function textoEstimativa(e: EstimativaRevisaoIa, modo: ModoRevisaoIa, nomeIa: string): string {
+  const quais =
+    modo === "rapido" ? ` ${e.fichas === 1 ? "o que mais devolve" : `os ${e.fichas} que mais devolvem`} PPC` : "";
+  return `O ${nomeIa} lê${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${limiteDoPlano(e.nomeJanela)}.`;
+}
+
+/** O detalhe do uso, no "Opções": de onde vem a estimativa e, quando se sabe, o preço pago por uso. */
+export function detalheEstimativa(e: EstimativaRevisaoIa): string {
+  const custo = e.custoUsd === null ? "" : ` Pago por uso, custaria cerca de ${dolares(e.custoUsd)}.`;
+  return `Estimativa aproximada: o uso por critério vem de medições reais, mas as empresas de IA não publicam o tamanho do limite do plano. Dá para pausar, e o que já foi lido fica guardado.${custo}`;
+}
+
+/** "Cerca de 10 segundos." (as ações por pendência); sem IA, nada a estimar. */
+export function textoEstimativaAcao(e: EstimativaAcao): string {
+  if (e.tokensEntrada + e.tokensSaida === 0) return "";
+  const custo = e.custoUsd === null ? "" : ` Pago por uso, cerca de ${dolares(e.custoUsd)}.`;
+  return `Cerca de ${plural(Math.max(1, Math.round(e.segundos)), "segundo", "segundos")}.${custo}`;
 }
 
 export interface TemaAndamento {
@@ -22,55 +55,48 @@ export interface TemaAndamento {
   readonly prontos: number;
   readonly total: number;
   readonly emAndamento: boolean;
-  readonly naoConferidas: number;
 }
 
 /** Os blocos agrupados por tema, na ordem do parecer. */
-export function andamentoPorTema(estado: EstadoRevisaoIa): ReadonlyArray<TemaAndamento> {
-  const temas = new Map<
-    number,
-    { tema: string; prontos: number; total: number; emAndamento: boolean; naoConferidas: number }
-  >();
+export function andamentoPorTema(estado: Pick<EstadoRevisaoIa, "blocos">): ReadonlyArray<TemaAndamento> {
+  const temas = new Map<number, { tema: string; prontos: number; total: number; emAndamento: boolean }>();
   for (const b of estado.blocos) {
-    const t = temas.get(b.ordemTema) ?? { tema: b.tema, prontos: 0, total: 0, emAndamento: false, naoConferidas: 0 };
+    const t = temas.get(b.ordemTema) ?? { tema: b.tema, prontos: 0, total: 0, emAndamento: false };
     t.total += 1;
     if (b.estado === "pronto") t.prontos += 1;
     if (b.estado === "em_andamento") t.emAndamento = true;
-    t.naoConferidas += b.naoConferidas;
     temas.set(b.ordemTema, t);
   }
-  return [...temas.entries()].sort(([a], [b]) => a - b).map(([ordem, t]) => ({ ordem, ...t }));
+  return [...temas].sort(([a], [b]) => a - b).map(([ordem, t]) => ({ ordem, ...t }));
 }
 
-/** "34 de 84 critérios conferidos: 12 pelo código e 22 pela IA…; 13 ficaram para conferir…" */
-export function textoCobertura(r: ResultadoRevisaoPpc): string {
-  if (r.conferidosIa + r.paraConferirIa === 0)
-    return r.totalCriterios > r.conferidos
-      ? `${r.conferidos} de ${r.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
-      : `${r.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
-  const paraConferir = r.paraConferirIa
-    ? ` ${r.paraConferirIa} ${r.paraConferirIa === 1 ? "foi à IA e ficou" : "foram à IA e ficaram"} para conferir na leitura.`
-    : "";
-  const fora = r.foraDaRevisao.length
-    ? ` ${r.foraDaRevisao.length} ficaram de fora (modo rápido) e exigem leitura.`
-    : r.conferidos + r.conferidosIa + r.paraConferirIa < r.totalCriterios
-      ? " Os demais exigem leitura."
-      : "";
-  return `${r.conferidos + r.conferidosIa} de ${r.totalCriterios} critérios conferidos: ${r.conferidos} pelo código e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${paraConferir}${fora}`;
+/** Os temas cujos blocos já ficaram todos prontos (a régua os preenche). */
+export const temasProntos = (estado: Pick<EstadoRevisaoIa, "blocos">): ReadonlySet<number> =>
+  new Set(andamentoPorTema(estado).flatMap((t) => (t.prontos === t.total ? [t.ordem] : [])));
+
+/** "5 de 17 temas": os temas com todos os blocos prontos. */
+export function contagemTemas(estado: Pick<EstadoRevisaoIa, "blocos">): string {
+  const temas = andamentoPorTema(estado);
+  return `${temas.filter((t) => t.prontos === t.total).length} de ${plural(temas.length, "tema", "temas")}`;
 }
 
-export const ROTULO_SITUACAO: Record<EstadoRevisaoIa["situacao"], string> = {
-  preparada: "Pronta para começar",
-  em_andamento: "Em andamento",
-  pausada: "Pausada",
-  concluida: "Concluída",
-  falhou: "Não concluída",
-};
+/** "Lendo Estágio curricular — 5 de 17 temas"; sem bloco em andamento, só a contagem. */
+export function textoAndamento(estado: Pick<EstadoRevisaoIa, "blocos">): string {
+  const atual = andamentoPorTema(estado).find((t) => t.emAndamento);
+  return atual === undefined ? `Lendo — ${contagemTemas(estado)}` : `Lendo ${atual.tema} — ${contagemTemas(estado)}`;
+}
+
+/** "O Claude leu 72 critérios e encontrou mais 5 pontos." */
+export function textoConclusao(nomeIa: string, r: ResultadoRevisaoPpc, encontrados: number): string {
+  const lidos = r.conferidosIa + r.paraConferirIa;
+  const achou =
+    encontrados === 0 ? "não encontrou pontos novos" : `encontrou mais ${plural(encontrados, "ponto", "pontos")}`;
+  return `O ${nomeIa} leu ${plural(lidos, "critério", "critérios")} e ${achou}.`;
+}
 
 /**
- * A revisão com IA a reencontrar depois de recarregar a tela: a mais recente que ainda não terminou
- * (em andamento, pausada ou preparada; `revisaoPpc.listarIa` vem da mais recente para a mais antiga).
+ * As leituras com IA que ficaram por terminar (em andamento ou pausadas), da mais recente para a mais
+ * antiga. A preparada e nunca começada não conta: é só a estimativa da faixa.
  */
-export function revisaoParaRetomar(lista: ReadonlyArray<EstadoRevisaoIa>): EstadoRevisaoIa | undefined {
-  return lista.find((e) => e.situacao === "em_andamento" || e.situacao === "pausada" || e.situacao === "preparada");
-}
+export const leiturasPorTerminar = (lista: ReadonlyArray<EstadoRevisaoIa>): ReadonlyArray<EstadoRevisaoIa> =>
+  lista.filter((e) => e.situacao === "em_andamento" || e.situacao === "pausada");
