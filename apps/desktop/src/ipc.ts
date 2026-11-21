@@ -116,7 +116,7 @@ export function registrarIpc(contexto: ContextoIpc): void {
 
   /* ---------------------------------------------------------- revisão prévia de PPC (M1.11) */
 
-  /** Os `.docx` escolhidos no diálogo nesta execução: só as cópias comentadas deles abrem pelo app. */
+  /** Os `.docx` escolhidos no diálogo ou soltos nesta execução: só as cópias comentadas deles abrem pelo app. */
   const docxEscolhidos = new Set<string>();
 
   /** Libera no servidor o arquivo escolhido: sem isso, a revisão prévia o recusa. */
@@ -143,6 +143,19 @@ export function registrarIpc(contexto: ContextoIpc): void {
     // O filtro do diálogo pode ser contornado em alguns sistemas ("Todos os arquivos"): confere de novo.
     const arquivo = escolha.canceled ? undefined : docxEscolhido(escolha.filePaths[0]);
     if (arquivo === undefined) return null;
+    docxEscolhidos.add(arquivo);
+    await liberarNoServidor(arquivo);
+    return arquivo;
+  });
+
+  /**
+   * O `.docx` solto na área de soltar da revisão: a regra do diálogo e, como o soltar aceita pasta, só
+   * arquivo comum. Liberado como o escolhido (a cópia comentada dele também abre pelo app).
+   */
+  tratar(CANAIS.soltarDocx, async (caminho) => {
+    const arquivo = docxEscolhido(caminho);
+    const info = arquivo === undefined ? undefined : NodeFS.lstatSync(arquivo, { throwIfNoEntry: false });
+    if (arquivo === undefined || info === undefined || !info.isFile()) return null;
     docxEscolhidos.add(arquivo);
     await liberarNoServidor(arquivo);
     return arquivo;

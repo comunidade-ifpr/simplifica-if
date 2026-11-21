@@ -45,8 +45,9 @@ export interface LinhaPartida {
 /* ================================================================== arquivos */
 
 /**
- * O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx` (depois ` (2)`, ` (3)`…),
- * na pasta do original. O servidor grava com ele; o desktop só abre arquivos com ele.
+ * O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx`, na pasta do original,
+ * regravada a cada revisão (` (2)`, ` (3)`… só quando ela está aberta e travada). O servidor grava com
+ * ele; o desktop só abre arquivos com ele.
  */
 export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
 
@@ -107,6 +108,13 @@ export interface PonteDesktop {
   escolherPasta?(): Promise<string | null>;
   /** O diálogo de arquivo do sistema, só `.docx`; `null` se a pessoa cancelar. */
   escolherDocx?(): Promise<string | null>;
+  /**
+   * O `.docx` solto na área de soltar da revisão (arrastar e soltar), com a regra de `escolherDocx`: o
+   * preload tira o caminho do `File` (`webUtils.getPathForFile`) e o processo principal confere e libera
+   * no servidor (para `revisaoPpc.revisar`, `abrirDocumento` e `mostrarNaPasta`). `null` se recusado
+   * (outra extensão, pasta, `File` sem caminho).
+   */
+  soltarDocx?(arquivo: File): Promise<string | null>;
   /**
    * Abre no programa padrão (o Word) a cópia comentada de um `.docx` escolhido por `escolherDocx`;
    * outro arquivo é recusado.
@@ -183,6 +191,7 @@ export const CANAIS = {
   abrirExterno: "simplifica:abrir-externo",
   escolherPasta: "simplifica:escolher-pasta",
   escolherDocx: "simplifica:escolher-docx",
+  soltarDocx: "simplifica:soltar-docx",
   abrirDocumento: "simplifica:abrir-documento",
   mostrarNaPasta: "simplifica:mostrar-na-pasta",
   reiniciarServidor: "simplifica:reiniciar-servidor",

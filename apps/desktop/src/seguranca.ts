@@ -155,15 +155,18 @@ export function resolverArquivo(input: {
   return { tipo: "arquivo", caminho: NodePath.join(root, "index.html") };
 }
 
-/** Um `.docx` escolhido no diálogo do sistema (`escolherDocx`); `undefined` para outro arquivo. */
+/**
+ * Um `.docx` escolhido no diálogo do sistema (`escolherDocx`) ou solto na área de soltar (`soltarDocx`);
+ * `undefined` para outro arquivo e para o `File` sem caminho (`""`).
+ */
 export function docxEscolhido(caminho: unknown): string | undefined {
   if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
   return NodePath.extname(caminho).toLowerCase() === ".docx" ? NodePath.normalize(caminho) : undefined;
 }
 
 /**
- * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos no diálogo nesta execução:
- * na mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`. Só esses
+ * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos ou soltos nesta execução: na
+ * mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou, se ela estava travada, com ` (2)` a ` (99)`. Só esses
  * arquivos "Abrir o documento comentado" e "Mostrar na pasta" aceitam: a interface não abre outro
  * arquivo do computador por esse caminho. Quem chama confere ainda que é arquivo comum (não link).
  */

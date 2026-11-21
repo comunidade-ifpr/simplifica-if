@@ -6,6 +6,7 @@ Planos vivos do projeto: decisões, o que está em `main` e o que falta. O traba
 |---|---|---|
 | [app-simplifica-if.md](app-simplifica-if.md) | App desktop Simplifica IF até o Marco 2: decisões, arquitetura, situação dos marcos e o que falta | Marcos M0 e M1 em `main`, salvo assinatura, feed de produção, avaliação real com Codex e Antigravity e o piloto; Marco 2 por fazer |
 | [arquitetura-base.md](arquitetura-base.md) | Base de conhecimento, `packages/kb`, CLI `kb` e MCP: IDs canônicos, banco derivado, proveniência, vigência | Fases 0 e 2 a 7 em `main`; em aberto as revisões humanas e jurídicas |
+| [revisao-ppc-interface.md](revisao-ppc-interface.md) | Redesenho do "Revisar um PPC" (régua de critérios, lista por gravidade, faixa da IA) e do sistema visual do app (tokens, tipografia, componentes) | Plano de 21/11/2026; nada implementado |
 | [app-seguranca-dados.md](app-seguranca-dados.md) | Retenção de dados nos providers (ZDR), níveis de sensibilidade, LGPD | Suspenso: SUAP e SEI fora do app até o Marco 2 |
 | [opencode-openrouter.md](opencode-openrouter.md) | Caminho para modelos do OpenRouter com retenção zero (ZDR) e modelos locais: OpenCode por ACP | Pesquisa de 19/11/2026; nada implementado |
 

@@ -11,7 +11,13 @@ import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
-import { revisarDocx as revisarSemConferir, rotuloDispositivo, textoDoComentario } from "../src/revisao-previa.ts";
+import {
+  type EtapaRevisaoPrevia,
+  revisarDocx as revisarSemConferir,
+  rotuloDispositivo,
+  textoDoComentario,
+} from "../src/revisao-previa.ts";
+import { citacaoDoId } from "../src/verificadores/comum.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
 /** Toda cópia comentada passa pelo validador estrutural: o Word tem de abri-la sem reparo. */
@@ -54,8 +60,58 @@ describe("revisarDocx", () => {
       origem: "documento",
     });
     expect(revisao.conferidos).toBe(12);
+    expect(revisao.totalCriterios).toBe(Object.keys(base.fichas).length);
     expect(revisao.totalCriterios).toBe(84);
-    expect(revisao.criterios).toHaveLength(12);
+  });
+
+  test("a régua: todos os critérios da base, com o título humano; sem a IA, só os 12 do código decididos", () => {
+    expect(revisao.criterios).toHaveLength(revisao.totalCriterios);
+    expect(new Set(revisao.criterios.map((c) => c.ficha))).toEqual(new Set(Object.keys(base.fichas)));
+    const ordens = revisao.criterios.map((c) => c.ordemTema);
+    expect(ordens).toEqual([...ordens].sort((a, b) => a - b));
+    const decididos = revisao.criterios.filter((c) => c.estado !== "nao_lido");
+    expect(decididos).toHaveLength(revisao.conferidos);
+    expect(decididos.every((c) => c.origem === "codigo")).toBe(true);
+    expect(revisao.criterios.filter((c) => c.estado === "nao_lido")).toHaveLength(84 - 12);
+    for (const c of revisao.criterios) {
+      expect(c.titulo).not.toMatch(/^CT-/);
+      expect(c.titulo).toBe(base.fichas[c.ficha]);
+    }
+    // Ficha sem título na base: o das fichas D ou o do tema, nunca o código.
+    const semTitulos = revisarDocx(ppcSintetico(), "ppc.docx", { ...base, fichas: {} }, { agora: AGORA });
+    expect(semTitulos.criterios).toHaveLength(12);
+    for (const p of semTitulos.pendencias) expect(p.tituloFicha).not.toMatch(/^CT-/);
+  });
+
+  test("as etapas, na ordem em que começam", () => {
+    const etapas: EtapaRevisaoPrevia[] = [];
+    revisarDocx(ppcSintetico(), "ppc.docx", base, { agora: AGORA, aoEtapa: (e) => etapas.push(e) });
+    expect(etapas).toEqual(["identificando", "conferindo", "gravando"]);
+  });
+
+  test("fontes e títulos legíveis: nunca o ID da norma nem o código da ficha; sem pendência repetida", () => {
+    for (const p of revisao.pendencias) {
+      expect(p.tituloFicha).not.toMatch(/^CT-/);
+      for (const f of p.fontes) expect(f.rotulo).not.toMatch(/^(br|ifpr|externo:)[/a-z0-9-]*\/\d{4}\/\d+/);
+      expect(p.mensagem).not.toMatch(/\((s|es)\)/);
+    }
+    const aee = revisao.pendencias.find((p) => p.ficha === "CT-CURR-22")!;
+    expect(aee.fontes.map((f) => f.rotulo)).toEqual(["Nota Técnica PROENS/IFPR nº 1/2025"]);
+    expect(aee.mensagem).toContain("(1 linha)");
+    // Uma norma fora do registro: a citação montada do ID.
+    const semNt = revisarDocx(
+      ppcSintetico(),
+      "ppc.docx",
+      { ...base, normas: base.normas.filter((n) => n.id !== "ifpr/proens/nt/2025/1") },
+      { agora: AGORA },
+    );
+    expect(semNt.pendencias.find((p) => p.ficha === "CT-CURR-22")!.fontes[0]!.rotulo).toBe(
+      "Nota Técnica PROENS/IFPR nº 1/2025",
+    );
+    const iguais = revisao.pendencias.map((p) => JSON.stringify([p.ficha, p.mensagem, p.trecho]));
+    expect(new Set(iguais).size).toBe(iguais.length);
+    // Com o curso no CNCT, nada depende dele.
+    expect(revisao.pendencias.some((p) => p.dependeDoCurso)).toBe(false);
   });
 
   test("pendências na ordem dos temas, ancoradas no trecho (inclusive em tabela) ou no início", () => {
@@ -165,7 +221,25 @@ describe("revisarDocx", () => {
     expect(semCnct.curso.cnct).toBeNull();
     expect(semCnct.aviso).toContain("O curso não foi identificado no CNCT");
     expect(semCnct.pendencias.filter((p) => p.ficha === "CT-IDENT-01")).toHaveLength(1);
+    // As pendências que existem porque o curso não foi identificado: a interface as junta em "Qual é o curso?".
+    expect(
+      semCnct.pendencias
+        .filter((p) => p.dependeDoCurso)
+        .map((p) => p.ficha)
+        .sort(),
+    ).toEqual(["CT-CURR-02", "CT-CURR-16", "CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"]);
+    expect(semCnct.pendencias.filter((p) => !p.dependeDoCurso).length).toBeGreaterThan(0);
   });
+});
+
+test("citação montada do ID, para a norma fora do registro", () => {
+  expect(citacaoDoId("ifpr/proens/nt/2025/1")).toBe("Nota Técnica PROENS/IFPR nº 1/2025");
+  expect(citacaoDoId("ifpr/consup/res/2025/239")).toBe("Resolução CONSUP/IFPR nº 239/2025");
+  expect(citacaoDoId("br/cne-cp/res/2026/2")).toBe("Resolução CNE/CP nº 2/2026");
+  expect(citacaoDoId("br/lei/1996/9394")).toBe("Lei nº 9.394/1996");
+  expect(citacaoDoId("br/decreto/2004/5154~compilacao")).toBe("Decreto nº 5.154/2004");
+  expect(citacaoDoId("externo:cft/res/2019/89")).toBe("Resolução CFT nº 89/2019");
+  expect(citacaoDoId("externo:campus/regulamento-estagio")).toBe("norma citada");
 });
 
 test("rótulo legível do dispositivo", () => {

@@ -165,8 +165,6 @@ export default Effect.gen(function* () {
       linhas_texto_ia TEXT NOT NULL,
       nonce TEXT NOT NULL,
       resultado TEXT NOT NULL,
-      paradas_vistas TEXT NOT NULL,
-      parada_atual INTEGER NOT NULL,
       criada_em TEXT NOT NULL,
       atualizada_em TEXT NOT NULL
     )

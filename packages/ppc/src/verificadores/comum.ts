@@ -103,6 +103,45 @@ export const linkNorma = (id: string): Fonte => `ifpr://norma/${id}`;
 export const linkCnct = (slug: string): Fonte => `ifpr://cnct/${slug}`;
 export const linkFicha = (ficha: string): Fonte => `ifpr://ficha/${ficha}`;
 
+/** O nome legível de cada tipo de ato do ID (`ids.ts` do kb). */
+const NOME_DO_TIPO: Readonly<Record<string, string>> = {
+  lei: "Lei",
+  lc: "Lei Complementar",
+  decreto: "Decreto",
+  "decreto-lei": "Decreto-Lei",
+  mp: "Medida Provisória",
+  ec: "Emenda Constitucional",
+  res: "Resolução",
+  portaria: "Portaria",
+  nt: "Nota Técnica",
+  parecer: "Parecer",
+  in: "Instrução Normativa",
+  deliberacao: "Deliberação",
+};
+
+/**
+ * A citação de uma norma escrita a partir do ID, para quando o registro não tem o título (norma fora
+ * da base): `ifpr/proens/nt/2025/1` → "Nota Técnica PROENS/IFPR nº 1/2025", `br/lei/1996/9394` →
+ * "Lei nº 9.394/1996". O ID cru nunca vai para a pessoa; sem forma reconhecível, "norma citada".
+ */
+export function citacaoDoId(id: string): string {
+  const semVariante = id.replace(/^externo:/, "").replace(/[~#].*$/, "");
+  const segmentos = semVariante.split("/");
+  const [ano, numero] = segmentos.slice(-2);
+  const tipo = NOME_DO_TIPO[segmentos.at(-3) ?? ""];
+  if (!tipo || !/^\d{4}$/.test(ano ?? "") || !/^\d+$/.test(numero ?? "")) return "norma citada";
+  const orgaos = segmentos.slice(0, -3).filter((s) => s !== "br");
+  const ifpr = orgaos[0] === "ifpr";
+  const orgao = (ifpr ? orgaos.slice(1) : orgaos).map((s) => s.toUpperCase().replace(/-/g, "/")).join("/");
+  const sigla = [orgao, ifpr ? "IFPR" : ""].filter(Boolean).join("/");
+  // Ato da Presidência com o milhar separado por ponto, como se cita ("Lei nº 9.394/1996").
+  const n = orgao ? numero! : numero!.replace(/\B(?=(\d{3})+$)/g, ".");
+  return `${tipo}${sigla ? ` ${sigla}` : ""} nº ${n}/${ano}`;
+}
+
+/** O título da norma no registro ou, fora dele, a citação montada do ID (nunca o ID cru). */
+export const tituloDaNorma = (registro: Registro, id: string): string => registro.obter(id)?.title ?? citacaoDoId(id);
+
 export const chave = (texto: string) => removerAcentos(texto).toLowerCase().replace(/\s+/g, " ").trim();
 
 export function prepararPpc(markdown: string): PpcPreparado {
@@ -214,7 +253,7 @@ export function textoTransicao(
   opcoes: { incerta?: boolean } = {},
 ): { texto: string; fontes: Fonte[] } {
   const vigencia = base.vigencia(id);
-  const titulo = (n: string) => base.registro.obter(n)?.title ?? n;
+  const titulo = (n: string) => tituloDaNorma(base.registro, n);
   const regras = vigencia.transicoes.map(
     (t) => `${t.regra} (${titulo(t.norma)}, ${rotuloDispositivo(t.dispositivo.replace(/^#/, ""))})`,
   );
@@ -242,7 +281,7 @@ export function apontamentoRevogada(
 ): Apontamento {
   const segura = norma.citacoes.find(citacaoSegura);
   const citacao = segura ?? norma.citacoes[0]!;
-  const titulo = (id: string) => base.registro.obter(id)?.title ?? id;
+  const titulo = (id: string) => tituloDaNorma(base.registro, id);
   const trechos = [trecho(ppc, citacao.linha, citacao.trecho)];
   const vigencia = base.vigencia;
   const direta = norma.sucessoras[0];
@@ -320,7 +359,7 @@ export function resultado(
       mensagem:
         apontamentos.length === 1
           ? apontamentos[0]!.mensagem
-          : `${n} pendência(s); a primeira: ${apontamentos.find((a) => a.estado === "nao_atende")!.mensagem}`,
+          : `${n} ${n === 1 ? "pendência" : "pendências"}; a primeira: ${apontamentos.find((a) => a.estado === "nao_atende")!.mensagem}`,
       evidencias,
     };
   }

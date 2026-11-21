@@ -25,7 +25,14 @@ import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
-import { type BaseVerificacao, type CursoCnct, type Fonte, linkCnct, linkNorma } from "./verificadores/comum.ts";
+import {
+  type BaseVerificacao,
+  type CursoCnct,
+  type Fonte,
+  linkCnct,
+  linkNorma,
+  tituloDaNorma,
+} from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
 import { rotuloDispositivo } from "./verificadores/dispositivos.ts";
 import { vigenciaDeDados } from "./verificadores/vigencia.ts";
@@ -114,7 +121,15 @@ export type OpcoesRevisaoPrevia = {
    * título conta tudo.
    */
   situacoes?: Readonly<Record<string, MarcaPendencia>> | undefined;
+  /**
+   * Avisado quando cada etapa começa (o servidor repassa à interface): a identificação do curso, a
+   * conferência dos critérios e a gravação dos comentários. A leitura do arquivo começa antes.
+   */
+  aoEtapa?: ((etapa: EtapaRevisaoPrevia) => void) | undefined;
 };
+
+/** As etapas de `revisarDocx` depois da conversão, na ordem em que começam. */
+export type EtapaRevisaoPrevia = "identificando" | "conferindo" | "gravando";
 
 export type FonteLegivel = { rotulo: string; url: string | null; link: Fonte };
 
@@ -138,10 +153,27 @@ export type PendenciaRevisao = {
   noDocumento: LocalNoDocumento;
   /** `codigo`: conferido pela base (fichas D e triagem); `ia`: avaliação da IA, conferida em código. */
   origem: "codigo" | "ia";
+  /**
+   * A pendência existe porque o curso não foi identificado no CNCT (`FICHAS_DO_CURSO`): some quando a
+   * pessoa escolhe o curso e a revisão roda de novo com ele.
+   */
+  dependeDoCurso: boolean;
 };
 
+/**
+ * As fichas D que conferem o PPC contra o curso do CNCT (denominação, eixo, carga horária mínima,
+ * escolaridade de ingresso, legislação profissional). Sem o curso, o que elas apontam depende dele.
+ */
+export const FICHAS_DO_CURSO: ReadonlySet<string> = new Set([
+  "CT-IDENT-01",
+  "CT-IDENT-13",
+  "CT-CURR-02",
+  "CT-CURR-16",
+  "CT-SUP-21",
+]);
+
 /** A situação de uma pendência na lista viva (M1.11, etapa 5b), mantida pelo servidor. */
-export type SituacaoPendencia = "aberta" | "vou_ajustar" | "resolvida" | "contestada_aceita" | "contestada_mantida";
+export type SituacaoPendencia = "aberta" | "resolvida" | "contestada_aceita" | "contestada_mantida";
 
 /** A situação e, quando há, a nota que vai ao comentário (quem resolveu, o que a revisão manteve). */
 export type MarcaPendencia = {
@@ -168,7 +200,6 @@ export function chavePendencia(p: Pick<PendenciaRevisao, "ficha" | "origem" | "t
 
 const NOTA_SITUACAO: Record<SituacaoPendencia, string> = {
   aberta: "",
-  vou_ajustar: "Situação no app: a coordenação vai ajustar.",
   resolvida: "Situação no app: marcada como resolvida.",
   contestada_aceita:
     "Situação no app: a coordenação contestou, e a IA trouxe um trecho do PPC que o app conferiu. Confira antes de dar por resolvido.",
@@ -184,9 +215,6 @@ function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
       ? `${plural(conta("resolvida", true), "confirmada como resolvida", "confirmadas como resolvidas")} na reanálise do arquivo atualizado (sem comentário neste documento)`
       : "",
     conta("resolvida") ? plural(conta("resolvida"), "marcada como resolvida", "marcadas como resolvidas") : "",
-    conta("vou_ajustar")
-      ? plural(conta("vou_ajustar"), "que a coordenação vai ajustar", "que a coordenação vai ajustar")
-      : "",
     conta("contestada_mantida")
       ? plural(conta("contestada_mantida"), "contestada e mantida pela revisão", "contestadas e mantidas pela revisão")
       : "",
@@ -199,12 +227,16 @@ function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
     : "";
 }
 
+/**
+ * Um critério da revisão (uma ficha), com a decisão. `nao_lido`: ninguém decidiu ainda (ficha S ou J
+ * sem a revisão com IA, ou fora do modo rápido); a `origem` é então quem o decide, a IA.
+ */
 export type CriterioConferido = {
   ficha: string;
   titulo: string;
   tema: string;
   ordemTema: number;
-  estado: "atende" | "nao_atende" | "a_conferir" | "nao_se_aplica";
+  estado: "atende" | "nao_atende" | "a_conferir" | "nao_se_aplica" | "nao_lido";
   mensagem: string;
   origem: "codigo" | "ia";
 };
@@ -220,6 +252,7 @@ export type RevisaoPrevia = {
   docx: Uint8Array;
   curso: CursoIdentificado;
   pendencias: PendenciaRevisao[];
+  /** Todos os critérios da revisão (as fichas da base), na ordem dos temas, decididos ou `nao_lido`. */
   criterios: CriterioConferido[];
   /** Critérios conferidos pelo código (fichas D). */
   conferidos: number;
@@ -229,6 +262,7 @@ export type RevisaoPrevia = {
   paraConferirIa: number;
   /** Títulos dos critérios que ficaram de fora (o modo rápido), vazio sem IA ou no completo. */
   foraDaRevisao: string[];
+  /** Quantos critérios a revisão tem (`criterios.length`). */
   totalCriterios: number;
   dataBase: string;
   /** Texto do comentário-aviso no título. */
@@ -272,7 +306,7 @@ function fonteLegivel(link: Fonte, registro: Registro, base: BaseRevisaoPrevia):
   const norma = /^ifpr:\/\/norma\/([^#]+)(?:#(.+))?$/.exec(link);
   if (norma) {
     const [, id, dispositivo] = norma;
-    const titulo = registro.obter(id!)?.title ?? id!;
+    const titulo = tituloDaNorma(registro, id!);
     return {
       rotulo: dispositivo ? `${titulo}, ${rotuloDispositivo(dispositivo)}` : titulo,
       url: base.urls[id!] ?? null,
@@ -304,7 +338,7 @@ export function agruparFontes(links: readonly Fonte[], registro: Registro, base:
     const chaveGrupo = norma ? `norma:${norma[1]}` : `outro:${legivel.rotulo}`;
     const grupo = grupos.get(chaveGrupo) ?? {
       primeira: legivel,
-      titulo: norma ? (registro.obter(norma[1]!)?.title ?? norma[1]!) : legivel.rotulo,
+      titulo: norma ? tituloDaNorma(registro, norma[1]!) : legivel.rotulo,
       dispositivos: [],
     };
     if (norma?.[2]) {
@@ -334,7 +368,27 @@ export function agruparFontes(links: readonly Fonte[], registro: Registro, base:
 const temaDaFicha = (ficha: string, base: BaseRevisaoPrevia): number =>
   ordemDoTema(base.topicos.filter((t) => t.fichas.includes(ficha)).map((t) => t.id));
 
-type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] };
+/** Os títulos das fichas D, para uma base sem as fichas (o título vem sempre da base quando ela as tem). */
+const TITULO_FICHA_D: Readonly<Record<string, string>> = {
+  "CT-IDENT-01": "Denominação do curso alinhada ao CNCT",
+  "CT-IDENT-08": "Base legal atualizada nas seções de identidade",
+  "CT-IDENT-13": "Eixo tecnológico compatível com o CNCT",
+  "CT-CURR-02": "Carga horária total apresentada com consistência",
+  "CT-CURR-16": "Pré-requisitos de ingresso compatíveis com o CNCT",
+  "CT-CURR-18": "Componentes obrigatórios e conteúdos legais da FGB contemplados",
+  "CT-CURR-22": "AEE não incorporado como componente curricular da matriz ou do histórico",
+  "CT-SUP-09": "Referências com vigência normativa observável",
+  "CT-SUP-12": "Referências com vigência normativa atualizada",
+  "CT-SUP-14": "Referências institucionais e referenciais essenciais do curso",
+  "CT-SUP-21": "Legislação profissional CNCT tratada quando aplicável",
+  "CT-SUP-24": "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
+};
+
+/** O título humano da ficha: o da base, o das fichas D ou o do tema; nunca o código. */
+export const tituloDaFicha = (ficha: string, base: BaseRevisaoPrevia): string =>
+  base.fichas[ficha] ?? TITULO_FICHA_D[ficha] ?? `Critério do tema "${TEMAS[temaDaFicha(ficha, base)]!.titulo}"`;
+
+type ItemInterno = Omit<PendenciaRevisao, "noDocumento" | "dependeDoCurso"> & { trechos: string[] };
 
 /** A fonte de um resultado da IA como link `ifpr://` (a base dá o rótulo legível). */
 const linkDaFonte = (fonte: string, cnct: string | null): Fonte | null =>
@@ -369,7 +423,7 @@ function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, c
     const ordemTema = temaDaFicha(r.ficha, base);
     const mensagem =
       r.estado === "FALHOU"
-        ? `Não foi possível conferir este critério com a IA (${r.motivoFalha ?? "resposta fora do formato"}). Confira na leitura: ${base.fichas[r.ficha] ?? r.ficha}.`
+        ? `Não foi possível conferir este critério com a IA (${r.motivoFalha ?? "resposta fora do formato"}). Confira na leitura: ${tituloDaFicha(r.ficha, base)}.`
         : [
             ponto(r.justificativa),
             r.lacunas.length ? `Falta: ${r.lacunas.map((l) => l.replace(/[.;]\s*$/, "")).join("; ")}.` : "",
@@ -379,7 +433,7 @@ function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, c
     const trechos = r.trechos.map(comoNoDocumento).filter(Boolean);
     itens.push({
       ficha: r.ficha,
-      tituloFicha: base.fichas[r.ficha] ?? r.ficha,
+      tituloFicha: tituloDaFicha(r.ficha, base),
       tema: TEMAS[ordemTema]!.titulo,
       ordemTema,
       estado,
@@ -429,7 +483,7 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     const ordemTema = temaDaFicha(ficha, base);
     return {
       ficha,
-      tituloFicha: base.fichas[ficha] ?? ficha,
+      tituloFicha: tituloDaFicha(ficha, base),
       tema: TEMAS[ordemTema]!.titulo,
       ordemTema,
       oQueFazer: O_QUE_FAZER[ficha] ?? "Confira o critério no PPC.",
@@ -467,7 +521,7 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
       secao: item.trechos[0] ? (secoes.get(item.trechos[0]) ?? null) : null,
       trechos: item.trechos,
       fontes: fontes(item.fontes),
-      tambemEm: item.fichas.slice(1).map((ficha) => ({ ficha, titulo: base.fichas[ficha] ?? ficha })),
+      tambemEm: item.fichas.slice(1).map((ficha) => ({ ficha, titulo: tituloDaFicha(ficha, base) })),
       origem: "codigo",
     });
   }
@@ -632,6 +686,47 @@ function textoDoAviso(entrada: {
   return partes.join("\n\n");
 }
 
+/**
+ * A régua da revisão: todas as fichas da base, na ordem dos temas (e, dentro do tema, na da base), com a
+ * decisão do código (fichas D), a da IA ou `nao_lido`. Ficha decidida que a base não lista entra no fim
+ * do tema dela.
+ */
+function todosOsCriterios(
+  resultado: PreConferencia,
+  ia: EntradaIa | undefined,
+  base: BaseRevisaoPrevia,
+): CriterioConferido[] {
+  const criterio = (ficha: string, estado: CriterioConferido["estado"], mensagem: string, origem: "codigo" | "ia") => {
+    const ordemTema = temaDaFicha(ficha, base);
+    return {
+      ficha,
+      titulo: tituloDaFicha(ficha, base),
+      tema: TEMAS[ordemTema]!.titulo,
+      ordemTema,
+      estado,
+      mensagem,
+      origem,
+    };
+  };
+  const decididos = new Map<string, CriterioConferido>();
+  for (const ficha of resultado.fichas)
+    decididos.set(ficha.ficha, criterio(ficha.ficha, ficha.estado, ficha.mensagem, "codigo"));
+  for (const r of ia?.resultados ?? [])
+    decididos.set(
+      r.ficha,
+      criterio(
+        r.ficha,
+        ESTADO_CRITERIO_IA[r.estado],
+        r.estado === "FALHOU" ? `Não conferido: ${r.motivoFalha ?? ""}` : r.justificativa,
+        "ia",
+      ),
+    );
+  const fichas = [...new Set([...Object.keys(base.fichas), ...decididos.keys()])];
+  return fichas
+    .map((ficha) => decididos.get(ficha) ?? criterio(ficha, "nao_lido", "", "ia"))
+    .sort((a, b) => a.ordemTema - b.ordemTema);
+}
+
 /** Converte, pré-confere e comenta. Lança `ErroDocx` (mensagem em português) para arquivo inválido. */
 export function revisarDocx(
   bytes: Uint8Array,
@@ -640,6 +735,7 @@ export function revisarDocx(
   opcoes: OpcoesRevisaoPrevia,
 ): RevisaoPrevia {
   const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
+  opcoes.aoEtapa?.("identificando");
   // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
   const comum = verificacaoDaBase(base);
   const registro = comum.registro;
@@ -651,23 +747,35 @@ export function revisarDocx(
     forma,
     origem: opcoes.cnct || opcoes.forma ? "pessoa" : "documento",
   };
+  opcoes.aoEtapa?.("conferindo");
   const resultado = preConferir(conversao.markdown, {
     cnct,
     forma: forma ?? "",
     ...comum,
   });
+  // A mesma ficha com a mesma mensagem no mesmo trecho é uma pendência só.
+  const vistos = new Set<string>();
   const itens = [
     ...itensDaPreConferencia(resultado, registro, base),
     ...(opcoes.ia ? itensDaIa(opcoes.ia, registro, base, cnct?.slug ?? null) : []),
-  ].sort((a, b) => a.ordemTema - b.ordemTema);
+  ]
+    .filter((item) => {
+      const igual = JSON.stringify([item.ficha, item.mensagem, item.trecho]);
+      if (vistos.has(igual)) return false;
+      vistos.add(igual);
+      return true;
+    })
+    .sort((a, b) => a.ordemTema - b.ordemTema);
   const conferidos = resultado.fichas.length;
   // Só o que a IA decidiu conta como conferido; INCONCLUSIVO e a resposta recusada ficam para conferir.
   const decididos = (opcoes.ia?.resultados ?? []).filter((r) => r.estado !== "INCONCLUSIVO" && r.estado !== "FALHOU");
   const conferidosIa = decididos.length;
   const paraConferirIa = (opcoes.ia?.resultados.length ?? 0) - conferidosIa;
-  const foraDaRevisao = (opcoes.ia?.fora ?? []).map((f) => base.fichas[f] ?? f);
-  const totalCriterios = Math.max(Object.keys(base.fichas).length, conferidos);
+  const foraDaRevisao = (opcoes.ia?.fora ?? []).map((f) => tituloDaFicha(f, base));
+  const criterios = todosOsCriterios(resultado, opcoes.ia, base);
+  const totalCriterios = criterios.length;
 
+  opcoes.aoEtapa?.("gravando");
   // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
   // não foi localizado.
   const comentar = { data: opcoes.agora.toISOString(), ...AUTORIA };
@@ -696,6 +804,7 @@ export function revisarDocx(
   const pendencias: PendenciaRevisao[] = itens.map(({ trechos, ...item }, indice) => ({
     ...item,
     noDocumento: !trechos.length ? "no-inicio" : ancoradas.has(indice) ? "no-trecho" : "so-na-lista",
+    dependeDoCurso: cnct === null && FICHAS_DO_CURSO.has(item.ficha),
   }));
   const naoLocalizadas = pendencias.filter((p) => p.noDocumento === "so-na-lista");
   // Lido uma vez para todas as pendências não localizadas (e só se houver), pelo leitor e com os limites dele.
@@ -719,30 +828,6 @@ export function revisarDocx(
     notas: new Map(pendencias.map((p, indice) => [p, notaDe(indice)])),
   });
   const final = comentarDocx(comentado.docx, [{ trechos: [], texto: aviso, noInicioSeAusente: true }], comentar);
-  const criterios: CriterioConferido[] = resultado.fichas.map((ficha) => {
-    const ordemTema = temaDaFicha(ficha.ficha, base);
-    return {
-      ficha: ficha.ficha,
-      titulo: base.fichas[ficha.ficha] ?? ficha.ficha,
-      tema: TEMAS[ordemTema]!.titulo,
-      ordemTema,
-      estado: ficha.estado,
-      mensagem: ficha.mensagem,
-      origem: "codigo" as const,
-    };
-  });
-  for (const r of opcoes.ia?.resultados ?? []) {
-    const ordemTema = temaDaFicha(r.ficha, base);
-    criterios.push({
-      ficha: r.ficha,
-      titulo: base.fichas[r.ficha] ?? r.ficha,
-      tema: TEMAS[ordemTema]!.titulo,
-      ordemTema,
-      estado: ESTADO_CRITERIO_IA[r.estado],
-      mensagem: r.estado === "FALHOU" ? `Não conferido: ${r.motivoFalha ?? ""}` : r.justificativa,
-      origem: "ia",
-    });
-  }
   return {
     docx: final.docx,
     curso,

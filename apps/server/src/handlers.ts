@@ -171,7 +171,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
     const ia = yield* RevisaoIa.RevisaoIa;
     const viva = yield* ListaViva.ListaViva;
     return GrupoRevisaoPpc.of({
-      "revisaoPpc.revisar": (entrada) => traduzir("revisaoPpc.revisar", viva.revisar(entrada)),
+      "revisaoPpc.revisar": (entrada) => traduzirStream("revisaoPpc.revisar", viva.revisar(entrada)),
       "revisaoPpc.prepararIa": (entrada) => traduzir("revisaoPpc.prepararIa", ia.preparar(entrada)),
       "revisaoPpc.iniciarIa": ({ revisao }) => traduzir("revisaoPpc.iniciarIa", ia.iniciar(revisao)),
       "revisaoPpc.pausarIa": ({ revisao }) => traduzir("revisaoPpc.pausarIa", ia.pausar(revisao)),
@@ -185,7 +185,6 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
         traduzir("revisaoPpc.exportarDiscordancias", viva.exportarDiscordancias),
       "revisaoPpc.marcar": ({ lista, chave, situacao }) =>
         traduzir("revisaoPpc.marcar", viva.marcar(lista, chave, situacao)),
-      "revisaoPpc.verParada": ({ lista, ordem }) => traduzir("revisaoPpc.verParada", viva.verParada(lista, ordem)),
       "revisaoPpc.estimarAcao": ({ lista, chave, acao, provider }) =>
         traduzir("revisaoPpc.estimarAcao", viva.estimar(lista, chave, acao, provider)),
       "revisaoPpc.contestar": ({ lista, chave, motivo, provider }) =>
@@ -194,6 +193,8 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
         traduzir("revisaoPpc.sugerir", viva.sugerir(lista, chave, provider)),
       "revisaoPpc.revisarDeNovo": ({ lista, chave, arquivo, provider }) =>
         traduzir("revisaoPpc.revisarDeNovo", viva.revisarDeNovo(lista, chave, arquivo, provider)),
+      "revisaoPpc.revisarArquivoNovo": ({ lista, arquivo }) =>
+        traduzir("revisaoPpc.revisarArquivoNovo", viva.revisarArquivoNovo(lista, arquivo)),
       "revisaoPpc.gerarCopia": ({ lista }) => traduzir("revisaoPpc.gerarCopia", viva.gerarCopia(lista)),
     });
   }),

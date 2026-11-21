@@ -35,8 +35,6 @@ export interface RegistroLista {
   readonly linhasTextoParaIa: readonly number[];
   readonly nonce: string;
   readonly resultado: ResultadoRevisaoPpc;
-  readonly paradasVistas: readonly number[];
-  readonly paradaAtual: number;
   readonly criadaEm: string;
   readonly atualizadaEm: string;
 }
@@ -50,7 +48,10 @@ export interface RegistroPendencia {
   readonly sugestao: SugestaoTexto | null;
 }
 
-export type NovaLista = Omit<RegistroLista, "criadaEm" | "atualizadaEm" | "paradasVistas" | "paradaAtual">;
+export type NovaLista = Omit<RegistroLista, "criadaEm" | "atualizadaEm">;
+
+/** O arquivo de uma lista, trocado por "Enviar a versão corrigida". */
+export type ArquivoLista = Pick<RegistroLista, "arquivo" | "sha256" | "markdown" | "linhasTextoParaIa">;
 
 export interface Evento {
   readonly acao: AcaoPendencia;
@@ -73,8 +74,8 @@ export class Listas extends Context.Service<
   {
     /**
      * Cria a lista. A situação, o histórico e a sugestão das pendências de mesma chave passam da lista
-     * mais recente do mesmo arquivo com o mesmo conteúdo (o "Vou ajustar" da pré-conferência continua
-     * valendo depois da revisão com IA).
+     * mais recente do mesmo arquivo com o mesmo conteúdo (o "Feito" da pré-conferência continua
+     * valendo depois da revisão com IA, e na revisão com o curso escolhido pela pessoa), e essa lista sai.
      */
     readonly criar: (
       lista: NovaLista,
@@ -94,7 +95,8 @@ export class Listas extends Context.Service<
       },
       evento: Evento,
     ) => Effect.Effect<void>;
-    readonly verParada: (id: string, ordem: number) => Effect.Effect<void>;
+    /** A lista passa a ser do arquivo novo (o texto convertido dele, para as ações com IA). */
+    readonly trocarArquivo: (id: string, arquivo: ArquivoLista) => Effect.Effect<void>;
     readonly trocarResultado: (id: string, resultado: ResultadoRevisaoPpc) => Effect.Effect<void>;
     readonly gravarAcao: (id: string, chave: string, acao: AcaoIaGravada) => Effect.Effect<void>;
     readonly uso: (id: string) => Effect.Effect<UsoRevisaoIa>;
@@ -135,8 +137,6 @@ const Linha = Schema.Struct({
   linhas_texto_ia: NumerosJson,
   nonce: Schema.String,
   resultado: ResultadoJson,
-  paradas_vistas: NumerosJson,
-  parada_atual: Schema.Number,
   criada_em: Schema.String,
   atualizada_em: Schema.String,
 });
@@ -168,7 +168,6 @@ const lerLinhas = Schema.decodeUnknownEffect(Schema.Array(Linha));
 const lerPendencias = Schema.decodeUnknownEffect(Schema.Array(LinhaPendencia));
 const lerEventos = Schema.decodeUnknownEffect(Schema.Array(LinhaEvento));
 const lerContestacoes = Schema.decodeUnknownEffect(Schema.Array(LinhaContestacao));
-const lerParadas = Schema.decodeUnknownEffect(Schema.Array(Schema.Struct({ paradas_vistas: NumerosJson })));
 const lerUsos = Schema.decodeUnknownEffect(Schema.Array(Schema.Struct({ uso: UsoJson })));
 const codificarNumeros = Schema.encodeEffect(NumerosJson);
 const codificarResultado = Schema.encodeEffect(ResultadoJson);
@@ -189,18 +188,18 @@ const make = Effect.gen(function* () {
     pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
   ) {
     const data = yield* agora;
-    const anterior = (yield* sql<{ id: string; paradas_vistas: string; parada_atual: number }>`
-      SELECT id, paradas_vistas, parada_atual FROM listas_pendencias
+    const anterior = (yield* sql<{ id: string }>`
+      SELECT id FROM listas_pendencias
       WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} ORDER BY atualizada_em DESC LIMIT 1
     `)[0];
     yield* sql.withTransaction(
       Effect.gen(function* () {
         yield* sql`
           INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, provider, modelo, cnct, forma, markdown,
-            linhas_texto_ia, nonce, resultado, paradas_vistas, parada_atual, criada_em, atualizada_em)
+            linhas_texto_ia, nonce, resultado, criada_em, atualizada_em)
           VALUES (${l.id}, ${l.arquivo}, ${l.sha256}, ${l.revisao}, ${l.provider}, ${l.modelo}, ${l.cnct}, ${l.forma},
             ${l.markdown}, ${yield* codificarNumeros(l.linhasTextoParaIa)}, ${l.nonce}, ${yield* codificarResultado(l.resultado)},
-            ${anterior?.paradas_vistas ?? "[]"}, ${anterior?.parada_atual ?? 0}, ${data}, ${data})
+            ${data}, ${data})
         `;
         let ordem = 0;
         for (const p of pendencias) {
@@ -250,8 +249,6 @@ const make = Effect.gen(function* () {
       linhasTextoParaIa: l.linhas_texto_ia,
       nonce: l.nonce,
       resultado: l.resultado,
-      paradasVistas: l.paradas_vistas,
-      paradaAtual: l.parada_atual,
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
     } satisfies RegistroLista;
@@ -319,15 +316,11 @@ const make = Effect.gen(function* () {
     );
   }, Effect.orDie);
 
-  const verParada = Effect.fn("Listas.verParada")(function* (id: string, ordem: number) {
+  const trocarArquivo = Effect.fn("Listas.trocarArquivo")(function* (id: string, a: ArquivoLista) {
     const data = yield* agora;
-    const linha = (yield* lerParadas(yield* sql`SELECT paradas_vistas FROM listas_pendencias WHERE id = ${id}`))[0];
-    if (!linha) return;
-    const vistas = new Set(linha.paradas_vistas);
-    vistas.add(ordem);
     yield* sql`
-      UPDATE listas_pendencias SET paradas_vistas = ${yield* codificarNumeros([...vistas].sort((a, b) => a - b))}, parada_atual = ${ordem},
-        atualizada_em = ${data}
+      UPDATE listas_pendencias SET arquivo = ${a.arquivo}, sha256 = ${a.sha256}, markdown = ${a.markdown},
+        linhas_texto_ia = ${yield* codificarNumeros(a.linhasTextoParaIa)}, atualizada_em = ${data}
       WHERE id = ${id}
     `;
   }, Effect.orDie);
@@ -408,7 +401,7 @@ const make = Effect.gen(function* () {
     pendencias,
     eventos,
     mudar,
-    verParada,
+    trocarArquivo,
     trocarResultado,
     gravarAcao,
     uso,

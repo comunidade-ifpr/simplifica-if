@@ -1,9 +1,11 @@
 /**
  * Gravar sem sobrescrever: o primeiro nome livre de uma sequência (`nome`, `nome (2)`, `nome (3)`…). A
- * pasta da tarefa, o anexo, o relato e a cópia comentada da revisão prévia são criados assim: quem cria
- * usa uma operação exclusiva (`makeDirectory` sem `recursive`, `writeFile` com `flag: "wx"`), e o nome
- * ocupado (`AlreadyExists`) passa ao seguinte. Conferir antes e criar depois deixaria duas criações
- * simultâneas com o mesmo nome.
+ * pasta da tarefa, o anexo e o relato são criados assim: quem cria usa uma operação exclusiva
+ * (`makeDirectory` sem `recursive`, `writeFile` com `flag: "wx"`), e o nome ocupado (`AlreadyExists`)
+ * passa ao seguinte. Conferir antes e criar depois deixaria duas criações simultâneas com o mesmo nome.
+ *
+ * A cópia comentada da revisão prévia usa a mesma sequência com outro critério (`pular: travado`): ela
+ * regrava o nome fixo e só passa ao seguinte quando o arquivo está aberto e travado por outro programa.
  */
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
@@ -38,8 +40,16 @@ export class NomesEsgotados extends Schema.TaggedError<NomesEsgotados>()("NomesE
 const ocupado = (erro: unknown): boolean => PlatformError.isPlatformError(erro) && erro.reason._tag === "AlreadyExists";
 
 /**
- * Chama `criar` com `nomes(de)`, `nomes(de + 1)`… até `ate`, enquanto o nome estiver ocupado, e devolve
- * o resultado da primeira criação. Qualquer outra falha para a sequência.
+ * O arquivo existe e outro programa o segura: o Word no Windows trava o documento aberto (`EBUSY`,
+ * ou `EPERM`/`EACCES` na escrita).
+ */
+export const travado = (erro: unknown): boolean =>
+  PlatformError.isPlatformError(erro) && (erro.reason._tag === "Busy" || erro.reason._tag === "PermissionDenied");
+
+/**
+ * Chama `criar` com `nomes(de)`, `nomes(de + 1)`… até `ate`, enquanto o nome estiver ocupado (ou a
+ * falha for das que `pular` aceita), e devolve o resultado da primeira criação. Qualquer outra falha
+ * para a sequência.
  */
 export const criarSemColisao = Effect.fn("nomeLivre.criarSemColisao")(function* <A, E, R>(
   opcoes: {
@@ -48,6 +58,8 @@ export const criarSemColisao = Effect.fn("nomeLivre.criarSemColisao")(function* 
     readonly nomes: (n: number) => string;
     readonly de?: number;
     readonly ate: number;
+    /** As falhas que passam ao nome seguinte (padrão: o nome já existe). */
+    readonly pular?: (erro: unknown) => boolean;
   },
   criar: (nome: string) => Effect.Effect<A, E, R>,
 ) {
@@ -55,7 +67,7 @@ export const criarSemColisao = Effect.fn("nomeLivre.criarSemColisao")(function* 
   for (let n = de; n <= opcoes.ate; n++) {
     const criado = yield* criar(opcoes.nomes(n)).pipe(
       Effect.asSome,
-      Effect.catchIf(ocupado, () => Effect.succeedNone),
+      Effect.catchIf(opcoes.pular ?? ocupado, () => Effect.succeedNone),
     );
     if (Option.isSome(criado)) return criado.value;
   }

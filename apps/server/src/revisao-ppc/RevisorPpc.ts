@@ -12,7 +12,11 @@
  *    laço de eventos do servidor não pode parar. Estouro de memória, de tempo, `ErroDocx` e defeito
  *    viram uma `FalhaRevisaoPpc` com a frase em português; o servidor continua de pé.
  * 4. Grava a cópia comentada ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`,
- *    sem sobrescrever (` (2)`, ` (3)`… se já existir). O original nunca é aberto para escrita.
+ *    sempre com o mesmo nome (regravada a cada revisão); ` (2)`, ` (3)`… só quando a cópia está aberta e
+ *    travada (o Word no Windows). O original nunca é aberto para escrita.
+ *
+ * As etapas (`EtapaLeituraPpc`) vão para `aoEtapa` quando cada uma começa: `lendo` aqui, antes de ler os bytes, as
+ * outras do Worker, como avisos de andamento (`WorkerLimitado.AvisoAndamento`).
  *
  * No app empacotado, o Worker é o `trabalhador-ppc.mjs` do bundle, ao lado do `bin.mjs`
  * (`apps/desktop/scripts/construir.ts`); no desenvolvimento, o `trabalhador.ts`.
@@ -26,7 +30,12 @@ import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Semaphore from "effect/Semaphore";
-import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app";
+import {
+  type EtapaLeituraPpc,
+  FalhaRevisaoPpc,
+  type ResultadoRevisaoPpc,
+  SUFIXO_REVISAO_PREVIA,
+} from "@simplifica-if/contratos-app";
 import type * as Cursos from "@simplifica-if/kb/Cursos";
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as Normas from "@simplifica-if/kb/Normas";
@@ -36,9 +45,9 @@ import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import type { EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
-import { comNumero, criarSemColisao } from "../nome-livre.ts";
+import { comNumero, criarSemColisao, travado } from "../nome-livre.ts";
 import { type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
-import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
+import type { AndamentoTrabalhador, PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
 /** Os limites da revisão (os do Worker e o do arquivo); os testes os apertam para provocar o estouro. */
 export interface Limites extends LimitesWorker {
@@ -53,6 +62,9 @@ export interface EntradaRevisao {
   readonly cnct?: string;
   readonly forma?: string;
 }
+
+/** Avisado quando cada etapa da leitura começa (síncrono: o Worker avisa por um evento do Node). */
+export type AoEtapa = (etapa: EtapaLeituraPpc) => void;
 
 /** A revisão de um arquivo, para a revisão com IA (`RevisaoIa.ts`): sem os bytes do DOCX. */
 export interface RevisaoDoArquivo {
@@ -71,6 +83,7 @@ export interface EntradaRevisarArquivo extends EntradaRevisao {
   readonly gravar: boolean;
   /** Recusa o arquivo se o conteúdo mudou desde a preparação. */
   readonly sha256?: string;
+  readonly aoEtapa?: AoEtapa;
 }
 
 export class RevisorPpc extends Context.Service<
@@ -78,7 +91,10 @@ export class RevisorPpc extends Context.Service<
   {
     readonly revisar: (entrada: EntradaRevisao) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
     /** O mesmo `revisar`, com o Markdown e as linhas da triagem (a lista viva guarda o texto do PPC). */
-    readonly revisarCompleto: (entrada: EntradaRevisao) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
+    readonly revisarCompleto: (
+      entrada: EntradaRevisao,
+      aoEtapa?: AoEtapa,
+    ) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
      * Converte, pré-confere e (com `ia`) junta os resultados da IA; espera a vez em vez de recusar.
      * As mesmas conferências do `revisar` (arquivo liberado, tamanho, Worker com limites).
@@ -110,8 +126,15 @@ function rodarNoTrabalhador(
   limites: Limites,
   url: URL,
   falha: (motivo: string) => FalhaRevisaoPpc,
+  aoEtapa?: AoEtapa,
 ): Effect.Effect<Revisao, FalhaRevisaoPpc> {
-  return rodarNoWorker<RespostaTrabalhador>(url, pedido, [pedido.bytes.buffer as ArrayBuffer], limites).pipe(
+  return rodarNoWorker<RespostaTrabalhador, AndamentoTrabalhador>(
+    url,
+    pedido,
+    [pedido.bytes.buffer as ArrayBuffer],
+    limites,
+    aoEtapa,
+  ).pipe(
     Effect.catchTags({
       FalhaWorker: (erro) => {
         switch (erro.motivo) {
@@ -152,15 +175,25 @@ function rodarNoTrabalhador(
 
 /* ============================================================ arquivo */
 
-/** Grava ao lado do original sem sobrescrever: `<nome> - revisão prévia (Simplifica IF).docx`, depois ` (2)`… */
+/** Até quantas cópias travadas pular antes de desistir (` (2)` a ` (20)`). */
+const COPIAS_TRAVADAS = 20;
+
+/**
+ * Grava ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`, por cima da cópia da
+ * revisão anterior: a pasta fica com uma cópia só. Se ela está aberta e travada (o Word no Windows),
+ * passa a ` (2)`, ` (3)`…, que também são regravadas.
+ */
 const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: string, bytes: Uint8Array) {
   const fs = yield* FileSystem.FileSystem;
   const pasta = NodePath.dirname(original);
   const copia = `${NodePath.basename(original, NodePath.extname(original))}${SUFIXO_REVISAO_PREVIA}.docx`;
-  return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(copia, n), ate: 99 }, (nome) => {
-    const destino = NodePath.join(pasta, nome);
-    return fs.writeFile(destino, bytes, { flag: "wx" }).pipe(Effect.as(destino));
-  });
+  return yield* criarSemColisao(
+    { pasta, nomes: (n) => comNumero(copia, n), ate: COPIAS_TRAVADAS, pular: travado },
+    (nome) => {
+      const destino = NodePath.join(pasta, nome);
+      return fs.writeFile(destino, bytes).pipe(Effect.as(destino));
+    },
+  );
 });
 
 /* ============================================================ serviço */
@@ -213,6 +246,8 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
       return yield* falha(
         `O arquivo tem ${megabytes(info.size)}, acima do limite de ${megabytes(limites.bytesDoArquivo)}. Compacte as imagens no Word (Arquivo > Compactar imagens) e tente de novo.`,
       );
+    // A leitura começa depois das recusas (extensão, liberação, tamanho): uma recusa não mostra etapa.
+    entrada.aoEtapa?.("lendo");
     const bytes = yield* Effect.tryPromise({
       try: () => NodeFSP.readFile(arquivo),
       catch: () => falha("O arquivo não pode ser lido."),
@@ -240,6 +275,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
       limites,
       url,
       falha,
+      entrada.aoEtapa,
     );
     const arquivoComentado = entrada.gravar
       ? yield* gravarCopia(arquivo, revisao.docx).pipe(
@@ -253,8 +289,8 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
 
-  const revisarCompleto = (entrada: EntradaRevisao) =>
-    revisarUm({ ...entrada, gravar: true }).pipe(
+  const revisarCompleto = (entrada: EntradaRevisao, aoEtapa?: AoEtapa) =>
+    revisarUm({ ...entrada, gravar: true, ...(aoEtapa ? { aoEtapa } : {}) }).pipe(
       vez.withPermitsIfAvailable(1),
       Effect.flatMap(
         Option.match({

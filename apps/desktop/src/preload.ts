@@ -19,6 +19,9 @@ const ponte: PonteDesktop = {
   },
   escolherPasta: () => ipcRenderer.invoke(CANAIS.escolherPasta) as Promise<string | null>,
   escolherDocx: () => ipcRenderer.invoke(CANAIS.escolherDocx) as Promise<string | null>,
+  // O caminho sai daqui, como no `anexarSoltos`: um `File` criado por script não tem caminho ("").
+  soltarDocx: (arquivo: File) =>
+    ipcRenderer.invoke(CANAIS.soltarDocx, webUtils.getPathForFile(arquivo)) as Promise<string | null>,
   abrirDocumento: async (caminho: string) => {
     await ipcRenderer.invoke(CANAIS.abrirDocumento, caminho);
   },

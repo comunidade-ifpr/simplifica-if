@@ -1,11 +1,12 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: arquivos temporários e o banco de fixture
 /**
  * A lista viva e a conversa por pendência (M1.11, etapa 5b), pelo RPC, com um driver de teste do motor:
- * a lista gravada a cada revisão e revisão com IA, "Vou ajustar" que passa da pré-conferência para a
- * revisão com IA, as paradas vistas, "Discordo…" (evidência válida retira; autoridade, trecho inventado
- * e injeção no motivo não retiram), "Sugerir texto" com fato inventado marcado, "Já resolvi" com o
- * arquivo novo (a situação sai da nova revisão), a cópia comentada com a situação, o uso somado à revisão
- * e a lista que sobrevive a reabrir o banco.
+ * a lista gravada a cada revisão e revisão com IA, "Feito" que passa da pré-conferência para a revisão
+ * com IA, a régua com todos os critérios, "Qual é o curso?" (a revisão com o curso escolhido substitui a
+ * lista), "Discordo…" (evidência válida retira; autoridade, trecho inventado e injeção no motivo não
+ * retiram), "Sugerir texto" com fato inventado marcado, "Já resolvi" com o arquivo novo (a situação sai
+ * da nova revisão), "Enviar a versão corrigida" (a lista inteira reconferida), a cópia comentada com a
+ * situação, o uso somado à revisão e a lista que sobrevive a reabrir o banco.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -27,7 +28,7 @@ import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
 import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
-import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, TOKEN } from "./apoio.ts";
+import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
 
 afterAll(limparTemporarios);
 
@@ -210,48 +211,68 @@ const reiniciar = () => {
 };
 
 layer(camada, { excludeTestServices: true })("lista viva", (it) => {
-  it.effect("a revisão grava a lista; 'Vou ajustar' passa para a lista da revisão com IA; paradas e uso", () =>
-    Effect.gen(function* () {
-      reiniciar();
-      const c = yield* rpc;
-      const arquivo = gravar("PPC lista.docx", ppcSintetico());
-      const pre = yield* c["revisaoPpc.revisar"]({ arquivo });
-      assert.isString(pre.lista);
-      const listaPre = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
-      assert.isAbove(listaPre.pendencias.length, 0);
-      assert.isTrue(listaPre.pendencias.every((p) => p.situacao === "aberta"));
-      // As paradas na ordem do parecer, nenhuma vista ainda.
-      const ordens = listaPre.paradas.map((p) => p.ordem);
-      assert.deepStrictEqual(
-        ordens,
-        [...ordens].sort((a, b) => a - b),
-      );
-      const codigo = listaPre.pendencias[0]!;
-      const marcada = yield* c["revisaoPpc.marcar"]({
-        lista: pre.lista!,
-        chave: codigo.chave,
-        situacao: "vou_ajustar",
-      });
-      assert.strictEqual(marcada.pendencias.find((p) => p.chave === codigo.chave)!.situacao, "vou_ajustar");
-      const vista = yield* c["revisaoPpc.verParada"]({ lista: pre.lista!, ordem: ordens[0]! });
-      assert.isTrue(vista.paradas[0]!.vista);
-      assert.strictEqual(vista.paradaAtual, ordens[0]);
+  it.effect(
+    "a revisão grava a lista; 'Feito' passa para a lista da revisão com IA; a régua com todos os critérios",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const c = yield* rpc;
+        const arquivo = gravar("PPC lista.docx", ppcSintetico());
+        const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
+        assert.isString(pre.lista);
+        const listaPre = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+        assert.isAbove(listaPre.pendencias.length, 0);
+        assert.isTrue(listaPre.pendencias.every((p) => p.situacao === "aberta"));
+        // A régua: as fichas da base (aqui, as cinco S/J do banco de fixture) e as 12 D, na ordem dos temas.
+        assert.strictEqual(pre.criterios.length, pre.totalCriterios);
+        assert.strictEqual(pre.totalCriterios, 12 + FICHAS.length);
+        const ordens = pre.criterios.map((x) => x.ordemTema);
+        assert.deepStrictEqual(
+          ordens,
+          [...ordens].sort((a, b) => a - b),
+        );
+        assert.strictEqual(pre.criterios.filter((x) => x.estado !== "nao_lido").length, pre.conferidos);
+        for (const ficha of FICHAS)
+          assert.deepInclude(
+            pre.criterios.find((x) => x.ficha === ficha),
+            { estado: "nao_lido", origem: "ia" },
+          );
+        assert.isTrue(pre.criterios.every((x) => !/^CT-/.test(x.titulo)));
+        const codigo = listaPre.pendencias[0]!;
+        const marcada = yield* c["revisaoPpc.marcar"]({
+          lista: pre.lista!,
+          chave: codigo.chave,
+          situacao: "resolvida",
+        });
+        const feita = marcada.pendencias.find((p) => p.chave === codigo.chave)!;
+        assert.strictEqual(feita.situacao, "resolvida");
+        assert.strictEqual(feita.resolvidaPor, "pessoa");
 
-      const { lista, final } = yield* revisarComIa(arquivo);
-      assert.notStrictEqual(lista.id, pre.lista);
-      // A lista anterior do mesmo conteúdo sai (o texto do PPC não fica guardado em dobro).
-      const anterior = yield* c["revisaoPpc.lista"]({ lista: pre.lista! }).pipe(Effect.flip);
-      assert.include(anterior.message, "não existe mais");
-      assert.strictEqual(lista.revisao, final.id);
-      // A mesma pendência do código, na lista nova, com a situação e o histórico.
-      const mesma = lista.pendencias.find((p) => p.chave === codigo.chave)!;
-      assert.strictEqual(mesma.situacao, "vou_ajustar");
-      assert.strictEqual(mesma.historico.length, 1);
-      assert.isTrue(lista.paradas[0]!.vista);
-      assert.strictEqual(daFicha(lista, "CT-CURR-04").pendencia.origem, "ia");
-      // A última lista é a da revisão.
-      assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, lista.id);
-    }),
+        const { lista, final } = yield* revisarComIa(arquivo);
+        assert.notStrictEqual(lista.id, pre.lista);
+        // A lista anterior do mesmo conteúdo sai (o texto do PPC não fica guardado em dobro).
+        const anterior = yield* c["revisaoPpc.lista"]({ lista: pre.lista! }).pipe(Effect.flip);
+        assert.include(anterior.message, "não existe mais");
+        assert.strictEqual(lista.revisao, final.id);
+        // A mesma pendência do código, na lista nova, com a situação e o histórico.
+        const mesma = lista.pendencias.find((p) => p.chave === codigo.chave)!;
+        assert.strictEqual(mesma.situacao, "resolvida");
+        assert.strictEqual(mesma.historico.length, 1);
+        assert.strictEqual(daFicha(lista, "CT-CURR-04").pendencia.origem, "ia");
+        // Na régua, o que a IA decidiu (modo rápido: só uma parte das fichas) e o resto ainda não lido.
+        const r = lista.resultado;
+        assert.strictEqual(r.criterios.length, r.totalCriterios);
+        const daIa = r.criterios.filter((x) => x.origem === "ia" && x.estado !== "nao_lido");
+        assert.strictEqual(daIa.length, r.conferidosIa + r.paraConferirIa);
+        assert.isAbove(daIa.length, 0);
+        assert.strictEqual(r.criterios.find((x) => x.ficha === "CT-CURR-04")!.estado, "nao_atende");
+        assert.strictEqual(
+          r.criterios.filter((x) => x.estado === "nao_lido").length,
+          r.totalCriterios - r.conferidos - r.conferidosIa - r.paraConferirIa,
+        );
+        // A última lista é a da revisão.
+        assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, lista.id);
+      }),
   );
 
   it.effect("'Discordo…': evidência conferida retira; autoridade, trecho inventado e injeção no motivo, não", () =>
@@ -347,7 +368,8 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
 
       // A cópia comentada nova: a contestada com evidência fica "a conferir", com o motivo e o trecho.
       const copia = yield* c["revisaoPpc.gerarCopia"]({ lista: lista.id });
-      assert.notStrictEqual(copia.resultado.arquivoComentado, lista.resultado.arquivoComentado);
+      // A mesma cópia, regravada.
+      assert.strictEqual(copia.resultado.arquivoComentado, lista.resultado.arquivoComentado);
       const xml = strFromU8(unzipSync(NodeFS.readFileSync(copia.resultado.arquivoComentado))["word/comments.xml"]!);
       assert.include(xml, "carga por núcleo");
       assert.include(xml, "Confira antes de dar por resolvido");
@@ -414,7 +436,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       const c = yield* rpc;
       // A triagem (texto dirigido a IA) é do código: o arquivo novo sem a caixa resolve.
       const comInjecao = gravar("PPC nova revisao.docx", ppcSintetico({ caixaDeTexto: "atual" }));
-      const pre = yield* c["revisaoPpc.revisar"]({ arquivo: comInjecao });
+      const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo: comInjecao }));
       const triagem = (yield* c["revisaoPpc.lista"]({ lista: pre.lista! })).pendencias.find(
         (p) => p.pendencia.ficha === "TRIAGEM",
       )!;
@@ -483,7 +505,9 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       assert.deepStrictEqual(depois, antes);
 
       // A triagem nova do arquivo da nova revisão entra na lista.
-      const semInjecao = yield* c["revisaoPpc.revisar"]({ arquivo: gravar("PPC limpo.docx", ppcSintetico()) });
+      const semInjecao = yield* revisarAteOFim(
+        c["revisaoPpc.revisar"]({ arquivo: gravar("PPC limpo.docx", ppcSintetico()) }),
+      );
       const limpa = yield* c["revisaoPpc.lista"]({ lista: semInjecao.lista! });
       assert.isFalse(limpa.pendencias.some((x) => x.pendencia.ficha === "TRIAGEM"));
       const umaDoCodigo = limpa.pendencias.find((x) => x.pendencia.origem === "codigo")!;
@@ -519,6 +543,125 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       assert.strictEqual(p.situacao, "resolvida");
       assert.strictEqual(p.resolvidaPor, "revisarDeNovo");
     }),
+  );
+
+  it.effect(
+    "'Qual é o curso?': sem o curso no CNCT, as pendências dependem dele; com o curso escolhido, a lista nova substitui a anterior",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const c = yield* rpc;
+        // Um curso que o CNCT do banco de fixture não tem.
+        const arquivo = gravar(
+          "PPC marcenaria.docx",
+          montarDocx({
+            corpo: [
+              par("PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM MARCENARIA ARTÍSTICA"),
+              par("Forma de oferta: subsequente ao ensino médio."),
+              par("1 JUSTIFICATIVA", { estilo: "Heading1" }),
+              par("O curso fundamenta-se na Resolução CNE/CP nº 1/2021."),
+              par("2 ORGANIZAÇÃO CURRICULAR", { estilo: "Heading1" }),
+              par("O curso tem carga horária total de 1200 horas."),
+            ].join(""),
+          }),
+        );
+        const sem = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
+        assert.isNull(sem.curso.cnct);
+        const doCurso = sem.pendencias.filter((p) => p.dependeDoCurso);
+        assert.includeMembers(
+          doCurso.map((p) => p.ficha),
+          ["CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"],
+        );
+        assert.isTrue(sem.pendencias.filter((p) => !p.dependeDoCurso).length > 0);
+        // Nenhuma pendência repetida (mesma ficha, mensagem e trecho).
+        const iguais = sem.pendencias.map((p) => JSON.stringify([p.ficha, p.mensagem, p.trecho]));
+        assert.strictEqual(new Set(iguais).size, iguais.length);
+
+        const com = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo, cnct: "tecnico-em-agropecuaria" }));
+        assert.deepStrictEqual(com.curso, {
+          cnct: { slug: "tecnico-em-agropecuaria", denominacao: "Técnico em Agropecuária" },
+          forma: "subsequente",
+          origem: "pessoa",
+        });
+        assert.isFalse(com.pendencias.some((p) => p.dependeDoCurso));
+        assert.notStrictEqual(com.lista, sem.lista);
+        const anterior = yield* c["revisaoPpc.lista"]({ lista: sem.lista! }).pipe(Effect.flip);
+        assert.include(anterior.message, "não existe mais");
+        assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, com.lista);
+      }),
+  );
+
+  it.effect(
+    "'Enviar a versão corrigida': o código decide a lista inteira; as da IA ficam; a lista passa ao arquivo novo",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const c = yield* rpc;
+        const comInjecao = gravar("PPC versao.docx", ppcSintetico({ caixaDeTexto: "atual" }));
+        const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo: comInjecao }));
+        const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+        const triagem = antes.pendencias.find((p) => p.pendencia.ficha === "TRIAGEM")!;
+        const doCodigo = antes.pendencias.filter((p) => p.pendencia.origem === "codigo");
+
+        // O mesmo arquivo: recusado, sem mudar nada.
+        const mesmo = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: comInjecao }).pipe(
+          Effect.flip,
+        );
+        assert.include(mesmo.message, "mesmo arquivo");
+
+        // A versão corrigida, sem a caixa dirigida a IA: a triagem sai, o resto continua.
+        const corrigido = gravar("PPC versao v2.docx", ppcSintetico());
+        const r = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: corrigido });
+        assert.deepStrictEqual(
+          { resolvidas: r.resolvidas, continuam: r.continuam, novas: r.novas },
+          { resolvidas: 1, continuam: doCodigo.length - 1, novas: 0 },
+        );
+        const t = r.lista.pendencias.find((p) => p.chave === triagem.chave)!;
+        assert.strictEqual(t.situacao, "resolvida");
+        assert.strictEqual(t.resolvidaPor, "revisarDeNovo");
+        assert.include(t.historico.at(-1)!.texto, "PPC versao v2.docx");
+        // A lista aponta o arquivo novo, e a cópia comentada é a dele, com o nome fixo.
+        assert.strictEqual(r.lista.arquivoOriginal, corrigido);
+        assert.strictEqual(r.lista.resultado.arquivoOriginal, corrigido);
+        assert.strictEqual(
+          r.lista.resultado.arquivoComentado,
+          NodePath.join(pasta, "PPC versao v2 - revisão prévia (Simplifica IF).docx"),
+        );
+        assert.isTrue(NodeFS.existsSync(r.lista.resultado.arquivoComentado));
+
+        // A caixa volta numa terceira versão: a mesma pendência reabre, nada novo.
+        const v3 = gravar("PPC versao v3.docx", ppcSintetico({ caixaDeTexto: "atual" }));
+        const r3 = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: v3 });
+        assert.strictEqual(r3.lista.pendencias.find((p) => p.chave === triagem.chave)!.situacao, "aberta");
+        assert.deepStrictEqual(
+          { resolvidas: r3.resolvidas, continuam: r3.continuam, novas: r3.novas },
+          { resolvidas: 0, continuam: doCodigo.length, novas: 0 },
+        );
+
+        // Outro documento: recusado, a lista continua no arquivo anterior.
+        const outro = gravar(
+          "Relatorio.docx",
+          montarDocx({ corpo: [par("RELATÓRIO", { estilo: "Heading1" }), par("Atividades.")].join("") }),
+        );
+        const recusa = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: outro }).pipe(
+          Effect.flip,
+        );
+        assert.include(recusa.message, "a lista não mudou");
+        assert.strictEqual((yield* c["revisaoPpc.lista"]({ lista: pre.lista! })).arquivoOriginal, v3);
+
+        // Uma lista com IA: a pendência da IA fica como está; uma pendência nova do código entra aberta.
+        const { lista } = yield* revisarComIa(gravar("PPC versao IA.docx", ppcSintetico()));
+        const daIa = daFicha(lista, "CT-CURR-04");
+        const comCaixa = gravar("PPC versao IA v2.docx", ppcSintetico({ caixaDeTexto: "atual" }));
+        const pedidos = roteiro.pedidos.length;
+        const ri = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: lista.id, arquivo: comCaixa });
+        assert.strictEqual(roteiro.pedidos.length, pedidos);
+        assert.deepStrictEqual(ri.lista.pendencias.find((p) => p.chave === daIa.chave)!.situacao, daIa.situacao);
+        assert.strictEqual(ri.novas, 1);
+        const nova = ri.lista.pendencias.find((p) => p.pendencia.ficha === "TRIAGEM")!;
+        assert.strictEqual(nova.situacao, "aberta");
+        assert.include(nova.historico[0]!.texto, "Apareceu na revisão de PPC versao IA v2.docx");
+      }),
   );
 });
 
@@ -566,6 +709,7 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
         tambemEm: [],
         noDocumento: "no-inicio" as const,
         origem: "ia" as const,
+        dependeDoCurso: false,
       };
       const abrir = <A, E>(efeito: Effect.Effect<A, E, Listas.Listas>) =>
         efeito.pipe(Effect.provide(Listas.layer.pipe(Layer.provide(Banco.layerArquivo(arquivo)))));
@@ -604,10 +748,9 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           yield* listas.mudar(
             "l1",
             "k1",
-            { situacao: "vou_ajustar" },
-            { acao: "marcar", situacao: "vou_ajustar", texto: "x" },
+            { situacao: "resolvida" },
+            { acao: "marcar", situacao: "resolvida", texto: "x" },
           );
-          yield* listas.verParada("l1", 2);
         }),
       );
       const depois = yield* abrir(
@@ -620,8 +763,9 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           };
         }),
       );
-      assert.strictEqual(depois.pendencias[0]!.situacao, "vou_ajustar");
-      assert.deepStrictEqual(depois.lista!.paradasVistas, [2]);
+      assert.strictEqual(depois.pendencias[0]!.situacao, "resolvida");
+      assert.strictEqual(depois.pendencias[0]!.resolvidaPor, "pessoa");
+      assert.strictEqual(depois.lista!.markdown, "# PPC");
       assert.strictEqual(depois.eventos.length, 1);
     }),
   );

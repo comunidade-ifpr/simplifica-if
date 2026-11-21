@@ -21,6 +21,7 @@ const pendencia = (
   tambemEm: [],
   noDocumento: "no-inicio",
   origem: "codigo",
+  dependeDoCurso: false,
 });
 
 const resultado: ResultadoRevisaoPpc = {

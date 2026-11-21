@@ -198,6 +198,8 @@ describe("revisão prévia: o que a interface pode abrir", () => {
     expect(docxEscolhido("/Users/ana/PPCs/PPC Agro.pdf")).toBeUndefined();
     expect(docxEscolhido("PPC Agro.docx")).toBeUndefined();
     expect(docxEscolhido(undefined)).toBeUndefined();
+    // O `File` solto sem caminho (criado por script): `webUtils.getPathForFile` dá "".
+    expect(docxEscolhido("")).toBeUndefined();
   });
 
   test("abre a cópia comentada de um arquivo escolhido, e nada mais", () => {

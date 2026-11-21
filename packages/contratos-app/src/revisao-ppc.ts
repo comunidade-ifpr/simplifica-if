@@ -6,6 +6,7 @@ import { AvisoNaoAceito } from "./preferencias.ts";
 
 /** Uma fonte da pendência, legível para quem não conhece o `ifpr://`: nome e dispositivo, e o endereço oficial. */
 export const FonteRevisao = Schema.Struct({
+  /** O título ou a citação da norma, com o dispositivo ("Nota Técnica PROENS/IFPR nº 1/2025"); nunca o ID. */
   rotulo: Schema.String,
   /** Endereço oficial (http), quando a base o registra. */
   url: Schema.NullOr(Schema.String),
@@ -18,8 +19,9 @@ export const LocalNoDocumento = Schema.Literals(["no-trecho", "no-inicio", "so-n
 export type LocalNoDocumento = typeof LocalNoDocumento.Type;
 
 export const PendenciaRevisao = Schema.Struct({
-  /** A ficha da revisão de PPC (`CT-SUP-12`) ou `TRIAGEM`. */
+  /** A ficha da revisão de PPC (`CT-SUP-12`) ou `TRIAGEM`. Código interno: a interface mostra `tituloFicha`. */
   ficha: Schema.String,
+  /** O título humano da ficha (nunca o código). */
   tituloFicha: Schema.String,
   /** O tema na ordem do parecer da PROENS, e a posição dele (0 = "Antes de começar"). */
   tema: Schema.String,
@@ -37,17 +39,33 @@ export const PendenciaRevisao = Schema.Struct({
   noDocumento: LocalNoDocumento,
   /** `codigo`: conferido pela base; `ia`: avaliação da IA, com trechos e normas conferidos pelo app. */
   origem: Schema.Literals(["codigo", "ia"]),
+  /**
+   * A pendência existe porque o curso não foi identificado no CNCT (denominação, eixo, carga horária,
+   * ingresso, legislação profissional): a interface as junta em "Qual é o curso?", que chama
+   * `revisaoPpc.revisar` com o `cnct` escolhido.
+   */
+  dependeDoCurso: Schema.Boolean,
 });
 export type PendenciaRevisao = typeof PendenciaRevisao.Type;
 
-/** Um critério conferido automaticamente (ficha D), com o resultado. */
+/**
+ * A situação de um critério: a decisão (`atende`, `nao_atende`, `a_conferir`, `nao_se_aplica`) ou
+ * `nao_lido`, que ninguém decidiu ainda (ficha S ou J sem a revisão com IA, ou fora do modo rápido).
+ */
+export const EstadoCriterio = Schema.Literals(["atende", "nao_atende", "a_conferir", "nao_se_aplica", "nao_lido"]);
+export type EstadoCriterio = typeof EstadoCriterio.Type;
+
+/** Um critério da revisão (uma ficha da base), com a decisão do código, a da IA ou `nao_lido`. */
 export const CriterioRevisao = Schema.Struct({
   ficha: Schema.String,
+  /** O título humano da ficha (nunca o código). */
   titulo: Schema.String,
   tema: Schema.String,
   ordemTema: Schema.Number,
-  estado: Schema.Literals(["atende", "nao_atende", "a_conferir", "nao_se_aplica"]),
+  estado: EstadoCriterio,
+  /** O que a decisão diz; vazio no `nao_lido`. */
   mensagem: Schema.String,
+  /** Quem decidiu (no `nao_lido`, quem decide: a IA). */
   origem: Schema.Literals(["codigo", "ia"]),
 });
 export type CriterioRevisao = typeof CriterioRevisao.Type;
@@ -62,8 +80,12 @@ export const ResultadoRevisaoPpc = Schema.Struct({
     origem: Schema.Literals(["documento", "pessoa"]),
   }),
   pendencias: Schema.Array(PendenciaRevisao),
+  /**
+   * A régua: todos os critérios da revisão (as fichas da base, hoje 84), na ordem dos temas, cada um
+   * com a decisão ou `nao_lido`. `criterios.length === totalCriterios`.
+   */
   criterios: Schema.Array(CriterioRevisao),
-  /** Quantos critérios o código conferiu, de quantos a revisão tem. */
+  /** Quantos critérios o código conferiu (as fichas D), de quantos a revisão tem. */
   conferidos: Schema.Number,
   /** Quantos a IA decidiu (0 na pré-conferência), quantos foram à IA e ficaram para conferir, e os títulos dos que ficaram de fora (modo rápido). */
   conferidosIa: Schema.Number,
@@ -72,10 +94,25 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   totalCriterios: Schema.Number,
   /** `data_referencia` da base (AAAA-MM-DD). */
   dataBase: Schema.String,
-  /** A lista viva destas pendências no servidor (etapa 5b); ausente nos resultados gravados antes dela. */
+  /** A lista viva destas pendências no servidor (etapa 5b). */
   lista: Schema.optionalKey(Schema.String),
 });
 export type ResultadoRevisaoPpc = typeof ResultadoRevisaoPpc.Type;
+
+/** As etapas da leitura do PPC, na ordem em que começam. */
+export const EtapaLeituraPpc = Schema.Literals(["lendo", "identificando", "conferindo", "gravando"]);
+export type EtapaLeituraPpc = typeof EtapaLeituraPpc.Type;
+
+/**
+ * O andamento de `revisaoPpc.revisar`: cada etapa quando ela começa (`lendo` o documento,
+ * `identificando` o curso no CNCT, `conferindo` os critérios automáticos, `gravando` a cópia
+ * comentada) e, no fim, `pronto` com o resultado.
+ */
+export const EventoRevisaoPpc = Schema.Union([
+  Schema.Struct({ tipo: Schema.Literal("etapa"), etapa: EtapaLeituraPpc }),
+  Schema.Struct({ tipo: Schema.Literal("pronto"), resultado: ResultadoRevisaoPpc }),
+]);
+export type EventoRevisaoPpc = typeof EventoRevisaoPpc.Type;
 
 /** A revisão não terminou; `motivo` é a frase para a pessoa (arquivo grande, protegido, corrompido, tempo). */
 export class FalhaRevisaoPpc extends Schema.TaggedError<FalhaRevisaoPpc>()("FalhaRevisaoPpc", {
@@ -91,7 +128,10 @@ export const ehFalhaRevisaoPpc = Schema.is(FalhaRevisaoPpc);
 
 /* ---------------------------------------------------------------- revisão com IA (etapa 4) */
 
-/** `rapido`: as fichas que bloqueiam a submissão e os temas que mais devolvem; `completo`: as 68 S e J. */
+/**
+ * `rapido`: as fichas que bloqueiam a submissão e os temas que mais devolvem; `completo`: todas as S e J
+ * (as que pedem leitura: `totalCriterios - conferidos` do resultado, número que vem da base).
+ */
 export const ModoRevisaoIa = Schema.Literals(["rapido", "completo"]);
 export type ModoRevisaoIa = typeof ModoRevisaoIa.Type;
 
@@ -165,17 +205,11 @@ const EntradaRevisaoIa = Schema.Struct({ revisao: Schema.String });
 /* ---------------------------------------------------------------- lista viva e conversa (etapa 5b) */
 
 /**
- * A situação de uma pendência na lista viva: `aberta`; `vou_ajustar` e `resolvida` (a pessoa marca, ou
- * a revisão do arquivo novo decide); `contestada_aceita` (retirada: a resposta da IA trouxe trecho ou
+ * A situação de uma pendência na lista viva: `aberta`; `resolvida` (a pessoa marca "Feito", ou a
+ * revisão do arquivo novo decide); `contestada_aceita` (retirada: a resposta da IA trouxe trecho ou
  * norma que o app conferiu) e `contestada_mantida` (a discordância fica registrada).
  */
-export const SituacaoPendencia = Schema.Literals([
-  "aberta",
-  "vou_ajustar",
-  "resolvida",
-  "contestada_aceita",
-  "contestada_mantida",
-]);
+export const SituacaoPendencia = Schema.Literals(["aberta", "resolvida", "contestada_aceita", "contestada_mantida"]);
 export type SituacaoPendencia = typeof SituacaoPendencia.Type;
 
 export const AcaoPendencia = Schema.Literals(["marcar", "contestar", "sugerir", "revisarDeNovo"]);
@@ -218,14 +252,6 @@ export const PendenciaViva = Schema.Struct({
 });
 export type PendenciaViva = typeof PendenciaViva.Type;
 
-/** Uma parada do roteiro: um tema, na ordem do parecer da PROENS. */
-export const ParadaRoteiro = Schema.Struct({
-  ordem: Schema.Number,
-  tema: Schema.String,
-  vista: Schema.Boolean,
-});
-export type ParadaRoteiro = typeof ParadaRoteiro.Type;
-
 export const ListaPendencias = Schema.Struct({
   id: Schema.String,
   arquivoOriginal: Schema.String,
@@ -234,9 +260,6 @@ export const ListaPendencias = Schema.Struct({
   provider: Schema.NullOr(Provider),
   resultado: ResultadoRevisaoPpc,
   pendencias: Schema.Array(PendenciaViva),
-  paradas: Schema.Array(ParadaRoteiro),
-  /** A parada em que a pessoa estava (ordem do tema). */
-  paradaAtual: Schema.Number,
   /** O uso somado das ações com IA desta lista. */
   uso: UsoRevisaoIa,
   criadaEm: Schema.String,
@@ -256,11 +279,26 @@ export type EstimativaAcao = typeof EstimativaAcao.Type;
 
 const EntradaLista = Schema.Struct({ lista: Schema.String });
 
+/** "Enviar a versão corrigida": a lista reconferida contra o arquivo novo e o que mudou. */
+export const ResultadoArquivoNovo = Schema.Struct({
+  /** A lista, agora sobre o arquivo novo (`arquivoOriginal` e `resultado` dele, a cópia comentada regravada). */
+  lista: ListaPendencias,
+  /** Pendências do código que o arquivo novo resolveu (`resolvida`, `resolvidaPor: "revisarDeNovo"`). */
+  resolvidas: Schema.Number,
+  /** Pendências do código que o arquivo novo ainda aponta (ficam ou voltam a `aberta`). */
+  continuam: Schema.Number,
+  /** Pendências do código que só o arquivo novo aponta (entram abertas). */
+  novas: Schema.Number,
+});
+export type ResultadoArquivoNovo = typeof ResultadoArquivoNovo.Type;
+
 export class GrupoRevisaoPpc extends RpcGroup.make(
   /**
    * Revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3): conversão, pré-conferência das fichas D
-   * e cópia comentada do DOCX. `arquivo` é o caminho absoluto escolhido no diálogo do sistema; `cnct`
-   * (slug) e `forma` substituem o curso identificado no documento.
+   * e cópia comentada do DOCX, com uma lista viva nova. `arquivo` é o caminho absoluto liberado pelo
+   * desktop (`escolherDocx` ou `soltarDocx`); `cnct` (slug) e `forma` substituem o curso identificado
+   * no documento ("Qual é o curso?": a lista nova substitui a anterior). Em stream: as etapas, quando
+   * cada uma começa, e por último o `pronto`, com o resultado (e o id da lista em `resultado.lista`).
    */
   Rpc.make("revisaoPpc.revisar", {
     payload: Schema.Struct({
@@ -268,8 +306,9 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       cnct: Schema.optionalKey(Schema.String),
       forma: Schema.optionalKey(Schema.String),
     }),
-    success: ResultadoRevisaoPpc,
+    success: EventoRevisaoPpc,
     error: FalhaRevisaoPpc,
+    stream: true,
   }),
   /**
    * Prepara a revisão com IA (etapa 4) do arquivo já revisado: converte de novo, monta os blocos e
@@ -306,7 +345,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.apagarIa", { payload: EntradaRevisaoIa }),
   /** As revisões com IA gravadas (sem o resultado), da mais recente para a mais antiga. */
   Rpc.make("revisaoPpc.listarIa", { payload: Schema.Struct({}), success: Schema.Array(EstadoRevisaoIa) }),
-  /** A lista viva (etapa 5b): as pendências com a situação, o histórico e as paradas do roteiro. */
+  /** A lista viva (etapa 5b): as pendências com a situação e o histórico. */
   Rpc.make("revisaoPpc.lista", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
   /** A lista viva mais recente, para continuar depois de fechar o app (nula se não há). */
   Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
@@ -317,19 +356,13 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.exportarDiscordancias", { payload: Schema.Struct({}), success: Schema.String }),
   /** Apaga a lista viva (com o texto do PPC que ela guarda). */
   Rpc.make("revisaoPpc.apagarLista", { payload: EntradaLista }),
-  /** "Vou ajustar", "Já resolvi" (pela palavra da pessoa) ou "Reabrir": só muda a situação, sem IA. */
+  /** "Feito" (`resolvida`, pela palavra da pessoa) ou "Desfazer" (`aberta`): só muda a situação, sem IA. */
   Rpc.make("revisaoPpc.marcar", {
     payload: Schema.Struct({
       lista: Schema.String,
       chave: Schema.String,
-      situacao: Schema.Literals(["aberta", "vou_ajustar", "resolvida"]),
+      situacao: Schema.Literals(["aberta", "resolvida"]),
     }),
-    success: ListaPendencias,
-    error: FalhaRevisaoPpc,
-  }),
-  /** A pessoa chegou a uma parada do roteiro (fica vista; a lista lembra onde ela estava). */
-  Rpc.make("revisaoPpc.verParada", {
-    payload: Schema.Struct({ lista: Schema.String, ordem: Schema.Number }),
     success: ListaPendencias,
     error: FalhaRevisaoPpc,
   }),
@@ -375,6 +408,21 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     success: ListaPendencias,
     error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
-  /** Gera de novo a cópia comentada do original, com a situação de cada pendência no comentário e no aviso. */
+  /**
+   * "Enviar a versão corrigida": converte e pré-confere o `.docx` novo (só o código, sem IA). Cada
+   * pendência do código sai do resultado (resolvida ou aberta), as que só o arquivo novo aponta entram
+   * abertas, e as da IA ficam como estão (para elas, `revisarDeNovo` por pendência). A lista passa a
+   * apontar o arquivo novo, e a cópia comentada é regravada a partir dele. O arquivo precisa ter sido
+   * liberado pelo desktop, como no `revisar`.
+   */
+  Rpc.make("revisaoPpc.revisarArquivoNovo", {
+    payload: Schema.Struct({ lista: Schema.String, arquivo: Schema.String }),
+    success: ResultadoArquivoNovo,
+    error: FalhaRevisaoPpc,
+  }),
+  /**
+   * Regrava a cópia comentada (`<nome> - revisão prévia (Simplifica IF).docx`, sempre o mesmo nome;
+   * ` (2)`… só se ela estiver aberta e travada), com a situação de cada pendência no comentário e no aviso.
+   */
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
 ) {}

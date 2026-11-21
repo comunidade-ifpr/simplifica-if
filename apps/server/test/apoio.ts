@@ -14,7 +14,7 @@ import * as Layer from "effect/Layer";
 import * as Socket from "effect/socket/Socket";
 import * as Stream from "effect/Stream";
 import { RpcClient, RpcSerialization } from "effect/rpc";
-import { GrupoApp } from "@simplifica-if/contratos-app";
+import { type EtapaLeituraPpc, type EventoRevisaoPpc, GrupoApp } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { criarBancoFixture } from "../../../packages/mcp/test/fixture.ts";
@@ -203,6 +203,22 @@ export const cliente = (url: string, cabecalhos?: Record<string, string>) =>
     );
     return yield* RpcClient.make(GrupoApp).pipe(Effect.provide(protocolo));
   });
+
+/**
+ * `revisaoPpc.revisar` (ou o `ListaViva.revisar`) até o fim: as etapas, na ordem em que chegaram, e o
+ * resultado do `pronto`. Sem `pronto`, defeito.
+ */
+export const revisarAteOFim = <E, R>(stream: Stream.Stream<EventoRevisaoPpc, E, R>) =>
+  Stream.runCollect(stream).pipe(
+    Effect.flatMap((eventos) => {
+      const etapas: Array<EtapaLeituraPpc> = [];
+      for (const evento of eventos) if (evento.tipo === "etapa") etapas.push(evento.etapa);
+      const pronto = eventos.find((evento) => evento.tipo === "pronto");
+      return pronto?.tipo === "pronto"
+        ? Effect.succeed({ etapas, ...pronto.resultado })
+        : Effect.die("revisaoPpc.revisar terminou sem o resultado");
+    }),
+  );
 
 /** Um pedido de upgrade WebSocket cru: o status da resposta (101 se o servidor aceitou). */
 export const pedirUpgrade = (url: string, cabecalhos: Record<string, string>) =>

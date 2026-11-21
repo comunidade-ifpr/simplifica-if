@@ -3,7 +3,7 @@
  * parada (um tema por vez, na ordem do parecer da PROENS) ou toda de uma vez, com as ações em cada
  * pendência:
  *
- * - "Vou ajustar" e "Já resolvi" só mudam a situação; "Já resolvi" oferece conferir no arquivo
+ * - "Já resolvi" e "Reabrir" só mudam a situação; "Já resolvi" oferece conferir no arquivo
  *   atualizado (`revisaoPpc.revisarDeNovo`), e aí quem decide é a nova revisão;
  * - "Discordo…" manda o motivo à IA, e o app só retira com trecho ou norma conferidos;
  * - "Sugerir texto" mostra a redação da IA, com os fatos que o app não conferiu, para copiar e revisar.
@@ -29,7 +29,6 @@ import {
   RouteIcon,
   SparklesIcon,
   Trash2Icon,
-  WrenchIcon,
 } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
@@ -48,7 +47,7 @@ import { CopiaComentada, DetalhesPendencia } from "./componentes.tsx";
 import { textoCobertura } from "./ia.ts";
 import {
   avisoCobertura,
-  paradaInicial,
+  paradasDe,
   pendenciasDaParada,
   resumoSituacoes,
   ROTULO_SITUACAO_PENDENCIA,
@@ -62,6 +61,7 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
   const [lista, setLista] = useState<ListaPendencias | undefined>(undefined);
   const [modo, setModo] = useState<"roteiro" | "tudo">("roteiro");
   const [indice, setIndice] = useState(0);
+  const [vistas, setVistas] = useState<ReadonlySet<number>>(new Set());
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
   const [gerando, setGerando] = useState(false);
   const [confirmarApagar, setConfirmarApagar] = useState(false);
@@ -73,7 +73,7 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
       .then((l) => {
         if (!ativo) return;
         setLista(l);
-        setIndice(paradaInicial(l));
+        setIndice(0);
       })
       .catch((motivo: unknown) => ativo && setErro(explicarErro(motivo)));
     return () => {
@@ -93,15 +93,17 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
     }
   };
 
-  const parada = lista?.paradas[indice];
-  // Chegar a uma parada no roteiro a marca como vista (e a lista lembra onde a pessoa estava).
-  useEffect(() => {
-    if (modo !== "roteiro" || parada === undefined || parada.vista) return;
-    void api
-      .chamar((c) => c["revisaoPpc.verParada"]({ lista: id, ordem: parada.ordem }))
-      .then(setLista)
-      .catch(() => undefined);
-  }, [api, id, modo, parada]);
+  // A parada em que a pessoa está, no roteiro, conta como vista (só nesta tela).
+  const atual = lista === undefined ? undefined : paradasDe(lista, vistas)[indice]?.ordem;
+  const paradas =
+    lista === undefined
+      ? []
+      : paradasDe(lista, modo === "roteiro" && atual !== undefined ? new Set([...vistas, atual]) : vistas);
+  const parada = paradas[indice];
+  const irPara = (i: number) => {
+    if (modo === "roteiro" && atual !== undefined) setVistas(new Set([...vistas, atual]));
+    setIndice(i);
+  };
 
   if (lista === undefined)
     return erro === undefined ? (
@@ -126,7 +128,7 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
     await chamar(() => api.chamar((c) => c["revisaoPpc.gerarCopia"]({ lista: id })));
     setGerando(false);
   };
-  const aviso = avisoCobertura(lista);
+  const aviso = avisoCobertura(lista, paradas);
   const r = lista.resultado;
   const uso = lista.uso.entrada + lista.uso.saida + lista.uso.cacheLeitura + lista.uso.cacheEscrita;
   const precisam = lista.pendencias.filter((p) => p.pendencia.estado === "nao_atende").length;
@@ -212,13 +214,13 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
       {modo === "roteiro" && parada !== undefined ? (
         <>
           <ol className="flex flex-wrap gap-x-3 gap-y-1 text-sm" aria-label="Paradas do roteiro">
-            {lista.paradas.map((p, i) => (
+            {paradas.map((p, i) => (
               <li key={p.ordem}>
                 <button
                   type="button"
                   aria-current={i === indice ? "step" : undefined}
                   className={`inline-flex items-center gap-1 ${i === indice ? "font-semibold" : "text-muted-foreground"}`}
-                  onClick={() => setIndice(i)}
+                  onClick={() => irPara(i)}
                 >
                   {p.vista ? <CheckIcon className="size-3.5 text-success" aria-label="vista" /> : null}
                   {p.tema}
@@ -229,16 +231,16 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
           <Parada
             lista={lista}
             ordem={parada.ordem}
-            titulo={`Parada ${indice + 1} de ${lista.paradas.length} · ${parada.tema}`}
+            titulo={`Parada ${indice + 1} de ${paradas.length} · ${parada.tema}`}
             chamar={chamar}
           />
           <div className="flex flex-wrap justify-between gap-2">
-            <Button variant="outline" disabled={indice === 0} onClick={() => setIndice(indice - 1)}>
+            <Button variant="outline" disabled={indice === 0} onClick={() => irPara(indice - 1)}>
               <ArrowLeftIcon /> Parada anterior
             </Button>
-            {indice + 1 < lista.paradas.length ? (
-              <Button onClick={() => setIndice(indice + 1)}>
-                Próxima parada: {lista.paradas[indice + 1]!.tema} <ArrowRightIcon />
+            {indice + 1 < paradas.length ? (
+              <Button onClick={() => irPara(indice + 1)}>
+                Próxima parada: {paradas[indice + 1]!.tema} <ArrowRightIcon />
               </Button>
             ) : null}
           </div>
@@ -256,9 +258,7 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
         </>
       ) : null}
       {modo === "tudo"
-        ? lista.paradas.map((p) => (
-            <Parada key={p.ordem} lista={lista} ordem={p.ordem} titulo={p.tema} chamar={chamar} />
-          ))
+        ? paradas.map((p) => <Parada key={p.ordem} lista={lista} ordem={p.ordem} titulo={p.tema} chamar={chamar} />)
         : null}
     </section>
   );
@@ -329,7 +329,7 @@ function CartaoPendencia({
     setOcupada(false);
     if (ok) depois?.();
   };
-  const marcar = (situacao: "aberta" | "vou_ajustar" | "resolvida", depois?: () => void) =>
+  const marcar = (situacao: "aberta" | "resolvida", depois?: () => void) =>
     executar(() => api.chamar((c) => c["revisaoPpc.marcar"]({ ...base, situacao })), depois);
 
   const retirada = viva.situacao === "contestada_aceita";
@@ -354,11 +354,6 @@ function CartaoPendencia({
       </div>
       <DetalhesPendencia pendencia={p} />
       <div className="flex flex-wrap gap-2 pt-1">
-        {viva.situacao !== "vou_ajustar" ? (
-          <Button size="sm" variant="outline" disabled={ocupada} onClick={() => void marcar("vou_ajustar")}>
-            <WrenchIcon /> Vou ajustar
-          </Button>
-        ) : null}
         {viva.situacao !== "resolvida" ? (
           <Button
             size="sm"

@@ -10,9 +10,11 @@
  */
 import * as NodeWorkerThreads from "node:worker_threads";
 import { type DadosErroDocx, ErroDocx } from "@simplifica-if/docx/erro";
+import type { AvisoAndamento } from "../WorkerLimitado.ts";
 import {
   type BaseRevisaoPrevia,
   type EntradaIa,
+  type EtapaRevisaoPrevia,
   type MarcaPendencia,
   revisarDocx,
   type RevisaoPrevia,
@@ -32,6 +34,9 @@ export type PedidoTrabalhador = {
   situacoes?: Record<string, MarcaPendencia> | undefined;
 };
 
+/** O aviso de andamento que o Worker manda antes da resposta (`WorkerLimitado.AvisoAndamento`). */
+export type AndamentoTrabalhador = EtapaRevisaoPrevia;
+
 export type RespostaTrabalhador =
   | { ok: true; revisao: RevisaoPrevia }
   | { ok: false; arquivoInvalido: DadosErroDocx }
@@ -48,6 +53,8 @@ if (porta !== null)
         forma: pedido.forma,
         ia: pedido.ia,
         situacoes: pedido.situacoes,
+        // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
+        aoEtapa: (etapa) => porta.postMessage({ andamento: etapa } satisfies AvisoAndamento<AndamentoTrabalhador>),
       });
       porta.postMessage({ ok: true, revisao } satisfies RespostaTrabalhador, [revisao.docx.buffer as ArrayBuffer]);
       return;

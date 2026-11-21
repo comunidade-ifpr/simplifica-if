@@ -2,7 +2,8 @@
 /**
  * A revisão prévia sem IA no servidor (M1.11, etapa 3): o RPC `revisaoPpc.revisar` de ponta a ponta,
  * com o Worker de verdade, sobre o banco de fixture (a base vem só do `kb.sqlite`, nada do checkout):
- * a cópia comentada ao lado do original (sem sobrescrever, original intacto), as recusas antes de ler,
+ * as etapas da leitura em stream, a cópia comentada ao lado do original (sempre a mesma, regravada; " (2)"
+ * só travada; original intacto), as recusas antes de ler,
  * o DOCX hostil, o estouro de memória e de tempo do Worker, o servidor de pé depois de tudo, e o laço
  * de eventos livre durante a revisão.
  */
@@ -31,6 +32,7 @@ import {
   limparTemporarios,
   novoRegistro,
   pedirHttp,
+  revisarAteOFim,
   TOKEN,
 } from "./apoio.ts";
 
@@ -109,7 +111,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       // O laço de eventos do servidor anda durante a revisão (a conversão roda no Worker).
       let voltas = 0;
       const relogio = setInterval(() => (voltas += 1), 5);
-      const resultado = yield* rpc["revisaoPpc.revisar"]({ arquivo: original });
+      const resultado = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
       clearInterval(relogio);
       assert.isAtLeast(voltas, 5);
 
@@ -129,13 +131,31 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       const aee = resultado.pendencias.find((p) => p.ficha === "CT-CURR-22");
       assert.strictEqual(aee?.noDocumento, "no-trecho");
 
-      // De novo: não sobrescreve, ganha o sufixo numérico.
-      const segunda = yield* rpc["revisaoPpc.revisar"]({ arquivo: original, cnct: "tecnico-em-agropecuaria" });
+      // As etapas da leitura, na ordem em que começam, antes do resultado.
+      assert.deepStrictEqual(resultado.etapas, ["lendo", "identificando", "conferindo", "gravando"]);
+
+      // De novo: a mesma cópia, regravada (a pasta fica com uma só).
+      const segunda = yield* revisarAteOFim(
+        rpc["revisaoPpc.revisar"]({ arquivo: original, cnct: "tecnico-em-agropecuaria" }),
+      );
+      assert.strictEqual(segunda.arquivoComentado, resultado.arquivoComentado);
+      assert.strictEqual(segunda.curso.origem, "pessoa");
+      assert.deepStrictEqual(
+        NodeFS.readdirSync(pasta)
+          .filter((nome) => nome.startsWith("PPC Agropecuária"))
+          .sort(),
+        ["PPC Agropecuária - revisão prévia (Simplifica IF).docx", "PPC Agropecuária.docx"],
+      );
+
+      // A cópia travada (aberta no Word, no Windows; aqui, sem permissão de escrita): passa a " (2)".
+      NodeFS.chmodSync(resultado.arquivoComentado, 0o444);
+      const travada = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original })).pipe(
+        Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(resultado.arquivoComentado, 0o644))),
+      );
       assert.strictEqual(
-        segunda.arquivoComentado,
+        travada.arquivoComentado,
         NodePath.join(pasta, "PPC Agropecuária - revisão prévia (Simplifica IF) (2).docx"),
       );
-      assert.strictEqual(segunda.curso.origem, "pessoa");
     }),
   );
 
@@ -148,7 +168,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
         gravar("notas.txt", strToU8("x")),
         NodePath.join(pasta, "nao-existe.docx"),
       ]) {
-        const erro = yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo }));
+        const erro = yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo })));
         assert.isTrue(ehFalhaRevisaoPpc(erro));
       }
     }),
@@ -158,10 +178,14 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      const erro = yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo: gravar("hostil.docx", docxHostil()) }));
+      const erro = yield* Effect.flip(
+        revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: gravar("hostil.docx", docxHostil()) })),
+      );
       assert.isTrue(ehFalhaRevisaoPpc(erro));
       assert.match(erro.message, /compressão anormal/);
-      const depois = yield* rpc["revisaoPpc.revisar"]({ arquivo: gravar("depois.docx", ppcSintetico()) });
+      const depois = yield* revisarAteOFim(
+        rpc["revisaoPpc.revisar"]({ arquivo: gravar("depois.docx", ppcSintetico()) }),
+      );
       assert.isAbove(depois.pendencias.length, 0);
     }),
   );
@@ -256,7 +280,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       const { urlRpc, porta } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("liberado.docx", ppcSintetico());
-      const recusa = yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo }));
+      const recusa = yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo })));
       assert.match(recusa.message, /Escolha o arquivo pelo botão/);
 
       const url = `http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`;
@@ -283,11 +307,14 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       }
       assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}` })).status, 204);
 
-      const resultado = yield* rpc["revisaoPpc.revisar"]({ arquivo });
+      const resultado = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
       assert.isAbove(resultado.pendencias.length, 0);
       // Outro arquivo da mesma pasta continua recusado.
       const outro = gravar("outro.docx", ppcSintetico());
-      assert.match((yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo: outro }))).message, /Escolha o arquivo/);
+      assert.match(
+        (yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: outro })))).message,
+        /Escolha o arquivo/,
+      );
     }),
   );
 });

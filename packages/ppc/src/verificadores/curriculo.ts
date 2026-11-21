@@ -357,7 +357,7 @@ export const aeeComoComponente: Verificador = {
       ? [
           {
             estado: "nao_atende",
-            mensagem: `O AEE aparece como componente na matriz ou no quadro de componentes (${trechos.length} linha(s)); ele é serviço, não componente.`,
+            mensagem: `O AEE aparece como componente na matriz ou no quadro de componentes (${trechos.length} ${trechos.length === 1 ? "linha" : "linhas"}); ele é serviço, não componente.`,
             trechos: trechos.slice(0, 3),
             fontes,
           },

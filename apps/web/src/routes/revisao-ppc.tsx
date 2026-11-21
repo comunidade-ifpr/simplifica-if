@@ -9,6 +9,7 @@
  */
 import type { EstadoRevisaoIa, ListaPendencias, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
 import { createFileRoute } from "@tanstack/react-router";
+import * as Stream from "effect/Stream";
 import { FileSearchIcon, HistoryIcon } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
@@ -69,8 +70,11 @@ function RevisaoPpc() {
   const revisar = async (arquivo: string) => {
     setEstado({ fase: "revisando", arquivo });
     try {
-      const resultado = await api.chamar((cliente) => cliente["revisaoPpc.revisar"]({ arquivo }));
-      setEstado({ fase: "pronta", resultado });
+      // O stream das etapas até o `pronto` (a tela nova mostra as etapas; esta só espera o fim).
+      const eventos = await api.chamar((cliente) => Stream.runCollect(cliente["revisaoPpc.revisar"]({ arquivo })));
+      const pronto = eventos.find((evento) => evento.tipo === "pronto");
+      if (pronto?.tipo !== "pronto") throw new Error("a revisão terminou sem o resultado");
+      setEstado({ fase: "pronta", resultado: pronto.resultado });
     } catch (erro) {
       setEstado({ fase: "erro", erro: explicarErro(erro) });
     }

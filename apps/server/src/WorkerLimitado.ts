@@ -4,7 +4,8 @@
  * pessoa (a leitura de um `.docx`, que mantém a árvore do XML na memória): o laço de eventos do
  * servidor não para, e o estouro encerra só o Worker.
  *
- * O Worker recebe um pedido e responde uma mensagem só. O estouro de memória, o tempo máximo, o fim
+ * O Worker recebe um pedido e responde uma mensagem só; antes dela, pode mandar avisos de andamento
+ * (`{ andamento: … }`, ver `AvisoAndamento`), que vão para `aoAndamento`. O estouro de memória, o tempo máximo, o fim
  * antes da resposta e o erro do Worker viram `FalhaWorker`; quem chama traduz para a frase da pessoa.
  * O tempo máximo e a interrupção (a conexão caiu) encerram o Worker pelo finalizador (`terminate()`).
  */
@@ -44,12 +45,24 @@ export class FalhaWorker extends Schema.TaggedError<FalhaWorker>()("FalhaWorker"
   }
 }
 
-/** Roda `pedido` no Worker de `url` e devolve a primeira mensagem dele; `transferir` vai sem cópia. */
-export function rodarNoWorker<Resposta>(
+/** Um aviso de andamento do Worker, antes da resposta. */
+export interface AvisoAndamento<A> {
+  readonly andamento: A;
+}
+
+const ehAvisoAndamento = (mensagem: unknown): mensagem is AvisoAndamento<unknown> =>
+  typeof mensagem === "object" && mensagem !== null && "andamento" in mensagem;
+
+/**
+ * Roda `pedido` no Worker de `url` e devolve a primeira mensagem dele que não é aviso de andamento;
+ * os avisos vão, na ordem, para `aoAndamento`. `transferir` vai sem cópia.
+ */
+export function rodarNoWorker<Resposta, Andamento = never>(
   url: URL,
   pedido: unknown,
   transferir: ReadonlyArray<ArrayBuffer>,
   limites: LimitesWorker,
+  aoAndamento?: (andamento: Andamento) => void,
 ): Effect.Effect<Resposta, FalhaWorker> {
   const rodar = Effect.callback<Resposta, FalhaWorker>((resume) => {
     const trabalhador = new NodeWorkerThreads.Worker(url, {
@@ -64,7 +77,13 @@ export function rodarNoWorker<Resposta>(
       void trabalhador.terminate();
       resume(efeito);
     };
-    trabalhador.once("message", (resposta: Resposta) => terminar(Effect.succeed(resposta)));
+    trabalhador.on("message", (mensagem: Resposta | AvisoAndamento<Andamento>) => {
+      if (ehAvisoAndamento(mensagem)) {
+        if (!terminou) aoAndamento?.(mensagem.andamento as Andamento);
+        return;
+      }
+      terminar(Effect.succeed(mensagem));
+    });
     trabalhador.once("error", (erro: Error & { code?: string }) =>
       terminar(
         Effect.fail(

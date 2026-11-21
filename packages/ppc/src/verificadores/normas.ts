@@ -26,6 +26,7 @@ import {
   resultado,
   DATA_NAO_CONFIRMADA,
   textoTransicao,
+  tituloDaNorma,
   type Trecho,
   trecho,
   type Verificador,
@@ -39,7 +40,7 @@ const LEI_14945 = "br/lei/2024/14945";
 const PAE = "ifpr/consup/res/2025/239";
 const PAE_REVOGADAS = ["ifpr/consup/res/2009/11", "ifpr/consup/res/2011/53"];
 
-const titulo = (base: BaseVerificacao, id: string) => base.registro.obter(id)?.title ?? id;
+const titulo = (base: BaseVerificacao, id: string) => tituloDaNorma(base.registro, id);
 
 /** Primeira citação segura (ou a primeira) de cada ato citado. */
 function primeiraCitacao(ppc: PpcPreparado, id: string, linhas?: ReadonlySet<number>) {
@@ -429,6 +430,7 @@ export const politicaAssistenciaEstudantil: Verificador = {
     const antigas = PAE_REVOGADAS.map((id) => ({ id, citacao: primeiraCitacao(ppc, id) })).filter((a) => a.citacao);
     const trechosAntigas = antigas.flatMap((a) => evidenciaDe(ppc, a.citacao));
     const nomesAntigas = antigas.map((a) => titulo(base, a.id)).join(" e ");
+    const revogadas = antigas.length === 1 ? "revogada" : "revogadas";
     if (atual && !antigas.length)
       return resultado(this, [], {
         estado: "atende",
@@ -439,21 +441,21 @@ export const politicaAssistenciaEstudantil: Verificador = {
     const apontamento: Apontamento = atual
       ? {
           estado: "a_conferir",
-          mensagem: `O PPC cita ${titulo(base, PAE)} e também ${nomesAntigas}, revogada(s) por ela. Confira se a citação antiga é só histórica.`,
+          mensagem: `O PPC cita ${titulo(base, PAE)} e também ${nomesAntigas}, ${revogadas} por ela. Confira se a citação antiga é só histórica.`,
           trechos: [...evidenciaDe(ppc, atual), ...trechosAntigas],
           fontes,
         }
       : antigas.length && antigas.every((a) => citacaoSegura(a.citacao!))
         ? {
             estado: "nao_atende",
-            mensagem: `O PPC cita ${nomesAntigas}, revogada(s) pela ${titulo(base, PAE)}, sem citar a política vigente.`,
+            mensagem: `O PPC cita ${nomesAntigas}, ${revogadas} pela ${titulo(base, PAE)}, sem citar a política vigente.`,
             trechos: trechosAntigas,
             fontes: [...antigas.map((a) => linkNorma(a.id)), ...fontes],
           }
         : {
             estado: "a_conferir",
             mensagem: antigas.length
-              ? `O PPC parece citar ${nomesAntigas}, revogada(s) pela ${titulo(base, PAE)}; confira a citação.`
+              ? `O PPC parece citar ${nomesAntigas}, ${revogadas} pela ${titulo(base, PAE)}; confira a citação.`
               : `O PPC não cita ${titulo(base, PAE)}, a Política de Assistência Estudantil vigente; confira a seção de atendimento ao estudante.`,
             trechos: trechosAntigas,
             fontes,
