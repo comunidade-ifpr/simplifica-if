@@ -1,6 +1,5 @@
 /**
- * Validação contra os JSON Schemas da base (base-conhecimento/schemas/ e
- * base-analise/schemas/ da revisar-ppc), com o ajv (draft 2020-12).
+ * Validação contra os JSON Schemas da base (base-conhecimento/schemas/), com o ajv (draft 2020-12).
  * `validarJsonSchema` mantém o texto e a ordem do validador próprio que a base
  * usava antes do ajv; outros formatos de mensagem partem de `compilarJsonSchema`.
  */

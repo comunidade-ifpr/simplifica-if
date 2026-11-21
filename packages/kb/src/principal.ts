@@ -1,5 +1,5 @@
 /**
- * Ponto de entrada comum das CLIs (`kb`, `simplifica-mcp`, `sei`, `revisar_ppc.ts`) e dos scripts
+ * Ponto de entrada comum das CLIs (`kb`, `simplifica-mcp`, `sei`) e dos scripts
  * (`scripts/principal.ts`).
  *
  * `executarPrincipal(nome, programa, opcoes)` roda o programa com `NodeRuntime.runMain` e os serviços

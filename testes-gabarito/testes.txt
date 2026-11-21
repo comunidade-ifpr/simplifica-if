@@ -1,10 +1,3 @@
-.agents/skills/revisar-ppc/tests/base-analise.test.ts	20	0
-.agents/skills/revisar-ppc/tests/identificacao.test.ts	18	0
-.agents/skills/revisar-ppc/tests/marcos-normativos.test.ts	11	0
-.agents/skills/revisar-ppc/tests/orquestracao.test.ts	72	0
-.agents/skills/revisar-ppc/tests/preparar-docx.test.ts	3	0
-.agents/skills/revisar-ppc/tests/relatorio.test.ts	41	0
-.agents/skills/revisar-ppc/tests/schemas-gerados.test.ts	60	0
 ferramentas/oxlint-plugin/rules/namespace-node-imports.test.ts	5	0
 ferramentas/oxlint-plugin/rules/no-dom-test-environment.test.ts	12	0
 ferramentas/oxlint-plugin/rules/no-frame-waits-in-browser-tests.test.ts	16	0
@@ -74,6 +67,8 @@ scripts/avaliar_skill.test.ts	2	0
 scripts/base/base.test.ts	14	0
 scripts/base/gerados.test.ts	3	0
 scripts/base/importar-ppc.test.ts	18	0
+scripts/base/revisao-ppc/esquemas.test.ts	59	0
+scripts/base/revisao-ppc/validacao.test.ts	22	0
 scripts/base/validacao/privacidade.test.ts	2	0
 scripts/configuracao.test.ts	2	0
 scripts/dados/conselhos.test.ts	2	0
@@ -88,4 +83,4 @@ scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
 scripts/sincronizar_repos.test.ts	2	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1251	36
+TOTAL	1107	36

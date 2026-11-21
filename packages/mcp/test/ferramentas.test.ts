@@ -58,7 +58,7 @@ const DESCRICOES: Record<string, string> = {
   citacoes_da_norma:
     "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Use quando precisar da lista completa; `impacto_da_norma` traz só uma amostra. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
   impacto_da_norma:
-    'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da `revisar-ppc`, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma".',
+    'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da revisão de PPC, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma".',
   adequacao_art71:
     "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Use quando perguntarem quais PPCs ainda precisam ser atualizados para a nova DCN da EPT. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
   buscar_secoes:
@@ -72,7 +72,7 @@ const DESCRICOES: Record<string, string> = {
   fatos_ppc:
     "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
   pacote_contexto:
-    "Monta o contexto de uma tarefa da skill `revisar-ppc` para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use dentro da `revisar-ppc`. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
+    "Monta o contexto de uma tarefa da revisão de PPC para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use para conferir um PPC contra as fichas. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
   sobre_a_base:
     "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",

@@ -1,0 +1,83 @@
+{
+  "versao": 4,
+  "descricao": "Registro único dos marcos normativos que as fichas tratam como referência vigente: identificação do tema (id, tema, linha, aplica_a e fichas), a regra de transição e a orientação de análise. A linha lista os atos do tema, do mais antigo ao mais recente conhecido, por ID canônico. A norma vigente, as substituídas, as antecessoras históricas e os dispositivos revogados NÃO ficam aqui: são derivados em tempo de leitura de base-conhecimento/relacoes.yaml na data_referencia de base-conhecimento/config/vigencia.yaml (derivarLinha em packages/kb/src/normas/vigencia.ts; as regras de transição como dado estão em base-conhecimento/transicoes.yaml). Vai para a revisão com IA do app, com os campos derivados, na seção “Marcos e transições” do contexto, e é conferido por `node scripts/validar_base.ts` contra o Effect Schema de scripts/base/revisao-ppc/esquemas.ts (schemas/marcos-normativos.schema.json é gerado dele).",
+  "marcos": [
+    {
+      "id": "dcn_ept",
+      "tema": "Diretrizes Curriculares Nacionais da Educação Profissional e Tecnológica",
+      "linha": [
+        "br/cne-ceb/res/2012/6",
+        "br/cne-cp/res/2021/1",
+        "br/cne-cp/res/2026/2"
+      ],
+      "aplica_a": "Todos os cursos técnicos de nível médio, em qualquer forma e formato de oferta.",
+      "fichas_responsaveis": [
+        "CT-SUP-12"
+      ],
+      "fichas_base_legal": [
+        "CT-IDENT-05",
+        "CT-IDENT-08",
+        "CT-SUP-09",
+        "CT-SUP-12",
+        "CT-SUP-14"
+      ],
+      "transicao": "A Resolução CNE/CP nº 2/2026 entra em vigor na publicação no DOU (art. 75), cuja data ainda precisa ser confirmada na base. Processos de autorização de curso em tramitação na data de vigência e que ainda não estejam na fase de avaliação podem ser adequados à nova Resolução a pedido da instituição ou do órgão regulador, mas a adequação não é obrigatória (art. 70). Os cursos técnicos autorizados e em oferta têm até dois anos, contados da vigência, para se adequar (art. 71). Os estudantes matriculados até a publicação têm assegurado o direito de concluir o curso pela Resolução CNE/CP nº 1/2021 (art. 71, parágrafo único). O capítulo sobre formação docente tem transição até 31/12/2030 (art. 72).",
+      "orientacao_analise": "Distinguir três casos. (a) PPC elaborado ou protocolado antes da vigência da Resolução CNE/CP nº 2/2026, inclusive processo de autorização já em tramitação: citar a Resolução CNE/CP nº 1/2021 não é desconformidade; registrar ATENDE com recomendação de atualização, apontando os dispositivos equivalentes da nova norma. (b) PPC elaborado ou protocolado após a vigência: usar a Resolução CNE/CP nº 2/2026; citar a Resolução CNE/CP nº 1/2021 como fundamento vigente principal gera NAO_ATENDE (diligência para atualização). (c) Atualização de PPC de curso em oferta: adequar no prazo do art. 71, preservado o direito dos estudantes já matriculados. Use a data da capa, do histórico de versões ou do processo para decidir; se não for possível determinar o caso, use INCONCLUSIVO com revisão humana. A ficha responsável pela vigência do marco é CT-SUP-12 (OBRIG); as demais fichas de base legal registram o mesmo fato sem elevar a criticidade, e as fichas de conteúdo avaliam a regra material vigente sem repetir a penalidade pela citação. No feedback aos autores, informar que a Resolução CNE/CP nº 1/2021 foi revogada pela Resolução CNE/CP nº 2/2026 (art. 74, II), a partir da publicação no DOU. Conflitos conhecidos com normas do IFPR, a encaminhar à PROENS sem reprovar o PPC por si sós: prazo máximo de integralização (art. 28, XVI) versus Resolução CONSUP/IFPR nº 190/2024, art. 69, parágrafo único; formatos de oferta (arts. 49 a 52) versus Resolução CONSUP/IFPR nº 190/2024, art. 5º, que é mais restritiva e prevalece no IFPR."
+    },
+    {
+      "id": "dcnem",
+      "tema": "Diretrizes Curriculares Nacionais do Ensino Médio",
+      "linha": [
+        "br/cne-ceb/res/2012/2",
+        "br/cne-ceb/res/2018/3",
+        "br/cne-ceb/res/2024/2"
+      ],
+      "aplica_a": "Cursos técnicos integrados ao ensino médio e projetos concomitantes que organizem o currículo do ensino médio.",
+      "fichas_responsaveis": [
+        "CT-SUP-12"
+      ],
+      "fichas_base_legal": [
+        "CT-IDENT-08",
+        "CT-SUP-09",
+        "CT-SUP-12",
+        "CT-SUP-14"
+      ],
+      "transicao": "",
+      "orientacao_analise": "Normas de 2012 e de 2018 podem aparecer como contexto histórico, mas não como fundamento vigente principal. A formação geral básica mínima (art. 13) e as condições da contabilização simultânea (art. 25) da DCNEM se aplicam ao integrado junto com o art. 29 da Resolução CNE/CP nº 2/2026 (ver CT-CURR-03)."
+    },
+    {
+      "id": "eja",
+      "tema": "Diretrizes Operacionais Nacionais da Educação de Jovens e Adultos",
+      "linha": [
+        "br/cne-ceb/res/2021/1",
+        "br/cne-ceb/res/2025/3"
+      ],
+      "aplica_a": "Ofertas articuladas à EJA, incluindo PROEJA.",
+      "fichas_responsaveis": [
+        "CT-CURR-02"
+      ],
+      "fichas_base_legal": [
+        "CT-IDENT-08"
+      ],
+      "transicao": "O inciso III do art. 6º, que fixava 2.400 horas para a EJA articulada à educação profissional técnica de nível médio, foi revogado pela Resolução CNE/CP nº 2/2026 (art. 74, V).",
+      "orientacao_analise": "Para a carga horária da EJA articulada ao ensino médio com habilitação técnica, aplicar o art. 30 da Resolução CNE/CP nº 2/2026: formação geral básica mínima de 1.200 horas acrescida da carga horária da habilitação no CNCT ou de qualificações profissionais técnicas planejadas, com até 300 horas de contabilização simultânea."
+    },
+    {
+      "id": "assistencia_estudantil_ifpr",
+      "tema": "Política Institucional de Assistência Estudantil do IFPR",
+      "linha": [
+        "ifpr/consup/res/2009/11",
+        "ifpr/consup/res/2025/239"
+      ],
+      "aplica_a": "Cursos técnicos de nível médio presenciais e cursos superiores do IFPR.",
+      "fichas_responsaveis": [
+        "CT-SUP-24"
+      ],
+      "fichas_base_legal": [
+        "CT-SUP-24"
+      ],
+      "transicao": "",
+      "orientacao_analise": "As Resoluções nº 11/2009 e nº 53/2011 só podem aparecer como normas revogadas ou contexto histórico (ver CT-SUP-24)."
+    }
+  ]
+}

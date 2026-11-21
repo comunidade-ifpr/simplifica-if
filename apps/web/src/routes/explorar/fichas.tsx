@@ -1,4 +1,4 @@
-/** As fichas de análise de PPC (os critérios da `revisar-ppc`), por tema. Cada uma abre a página dela. */
+/** As fichas de análise de PPC (os critérios da revisão de PPC), por tema. Cada uma abre a página dela. */
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "../../components/ui/badge.tsx";
 import { nomeCriticidade, quantos } from "../../explorar/colecoes.ts";

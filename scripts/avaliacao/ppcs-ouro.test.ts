@@ -5,7 +5,7 @@ import * as NodePath from "node:path";
 import { carregarPpcOuro, DIR_AVALIACAO, RAIZ_REPOSITORIO } from "./carregar.ts";
 
 const DIR_OURO = NodePath.join(DIR_AVALIACAO, "ppcs-ouro");
-const DIR_FICHAS = NodePath.join(RAIZ_REPOSITORIO, ".agents", "skills", "revisar-ppc", "base-analise", "fichas");
+const DIR_FICHAS = NodePath.join(RAIZ_REPOSITORIO, "base-conhecimento", "revisao-ppc", "fichas");
 const arquivos = NodeFS.readdirSync(DIR_OURO)
   .filter((nome) => nome.endsWith(".yaml"))
   .sort();

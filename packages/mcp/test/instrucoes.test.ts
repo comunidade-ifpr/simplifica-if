@@ -28,13 +28,13 @@ describe("instruções do servidor", () => {
     }
   });
 
-  test("citação, selos de confiança, PPC como exemplo e o pacote_contexto na revisar-ppc", () => {
+  test("citação, selos de confiança, PPC como exemplo e o pacote_contexto na revisão de PPC", () => {
     expect(INSTRUCOES).toContain("`ifpr://`");
     expect(INSTRUCOES).toContain("texto literal");
     expect(INSTRUCOES).toContain('"a confirmar"');
     expect(INSTRUCOES).toContain("`extraido`");
     expect(INSTRUCOES).toMatch(/exemplos institucionais, não norma/);
-    expect(INSTRUCOES).toMatch(/`revisar-ppc`[^.]*`pacote_contexto`/);
+    expect(INSTRUCOES).toMatch(/Revisão de PPC[^\n]*`pacote_contexto`/);
     expect(INSTRUCOES).toMatch(/não preencha com memória/);
   });
 });

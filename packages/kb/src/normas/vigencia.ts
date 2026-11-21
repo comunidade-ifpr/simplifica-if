@@ -497,7 +497,7 @@ export function transicoesAplicaveis(
 }
 
 // ---------------------------------------------------------------------------------------------
-// Linhas normativas (marcos da revisar-ppc)
+// Linhas normativas (marcos da revisão de PPC)
 
 export interface LinhaDerivada {
   /** Ato vigente na data: fim da cadeia de revogações totais a partir do ato mais recente da linha. */

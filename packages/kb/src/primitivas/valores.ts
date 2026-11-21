@@ -1,6 +1,6 @@
 /**
  * Valores JSON tipados, para os arquivos que precisam sair sempre iguais, byte a
- * byte (os da rodada da revisar-ppc, os artefatos da conversão).
+ * byte (os artefatos da conversão).
  *
  * O JSON tipado distingue `1` (inteiro) de `1.0` (fracionário); o número do
  * JavaScript não. Por isso os fracionários lidos por `carregarJsonTipado` (e os

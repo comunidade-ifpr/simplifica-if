@@ -26,7 +26,7 @@ import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, TOKEN } 
 
 afterAll(limparTemporarios);
 
-const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../.agents/skills/revisar-ppc/base-analise/fichas");
+const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
 /** Duas S de temas do modo rápido, duas J da matriz e uma transversal BLOQ. */
 const FICHAS = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-04", "CT-CURR-07", "CT-TRANS-03"];
 

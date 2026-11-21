@@ -1,6 +1,6 @@
 /**
  * As telas próprias do leitor para os links que não são texto (o que no M1.6 era o texto do
- * `lerLink`): a ficha do curso, o campus, o curso do CNCT e a ficha de análise da `revisar-ppc`. Valem no
+ * `lerLink`): a ficha do curso, o campus, o curso do CNCT e a ficha da revisão de PPC. Valem no
  * painel ao lado da conversa e nas páginas do Explorar. Tudo vem da base pelo `GrupoLeitura`, sem IA:
  *
  * - **curso:** `fichaCurso` (dados institucionais, CNCT, PPC, fatos e o cruzamento com o SUAP, ofertas,
@@ -490,7 +490,7 @@ export function FichaCnct({ slug, aoAbrirLink }: { readonly slug: string; readon
   );
 }
 
-/* ================================================================== ficha da revisar-ppc */
+/* ================================================================== ficha da revisão de PPC */
 
 const DOMINIOS: Readonly<Record<string, string>> = {
   curriculo: "Currículo",

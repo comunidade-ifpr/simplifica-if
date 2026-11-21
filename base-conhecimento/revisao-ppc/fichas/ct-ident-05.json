@@ -1,0 +1,76 @@
+{
+  "id": "CT-IDENT-05",
+  "titulo": "Concepção de EPT explicitada",
+  "dominio": "identidade",
+  "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: concepção de EPT."
+  },
+  "topicos_tematicos": [
+    "concepcao_metodologias"
+  ],
+  "tipo_escopo": "tematico",
+  "ancoras_semanticas": [
+    "Concepção de EPT explicitada",
+    "Concepção pedagógica e metodologias",
+    "concepção do curso",
+    "concepção pedagógica",
+    "metodologia",
+    "metodologias de ensino",
+    "práticas profissionais",
+    "trabalho como princípio educativo",
+    "pesquisa como princípio pedagógico",
+    "integração teoria prática",
+    "metodologias",
+    "prática profissional",
+    "projeto integrador",
+    "educação profissional e tecnológica",
+    "formação integral",
+    "resolução cne/cp nº 1/2021",
+    "resolução cne/cp nº 2/2026",
+    "resolução cne/ceb nº 06/2012"
+  ],
+  "consultas": [
+    "educação profissional e tecnológica",
+    "trabalho como princípio educativo",
+    "formação integral",
+    "resolução cne/cp nº 1/2021",
+    "resolução cne/cp nº 2/2026",
+    "resolução cne/ceb nº 06/2012"
+  ],
+  "referencias_normativas": [
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art1",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art3",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art4",
+      "papel": "fundamento"
+    }
+  ],
+  "pergunta": "A concepção do curso explicita a perspectiva de Educação Profissional e Tecnológica com base normativa e pedagógica reconhecível?",
+  "rubrica": "Verificar se o PPC articula EPT, trabalho, ciência, cultura e tecnologia para além de uma citação superficial e se a concepção toma como referência normativa principal as DCN da EPT vigentes, a Resolução CNE/CP nº 2/2026, cujos princípios (art. 3º) incluem a centralidade do trabalho como princípio educativo, a indissociabilidade entre ensino, pesquisa, extensão, inovação, ciência e tecnologia, a integração entre teoria e prática, o protagonismo do estudante e a organização por itinerários formativos profissionais. A Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, e a Resolução CNE/CEB nº 06/2012 podem aparecer como referência histórica ou de transição, mas não como fundamento vigente principal. Aplicar a regra de transição registrada nos marcos normativos (a seção “Marcos e transições” do contexto).",
+  "boa_evidencia": "Seção conceitual que explicita princípios, base legal atual e visão formativa coerente com a EPT, usando a Resolução CNE/CP nº 2/2026 como marco central.",
+  "ma_evidencia": "Citações soltas sem desenvolvimento conceitual, ausência de concepção pedagógica explícita ou uso da Resolução CNE/CP nº 1/2021 ou da Resolução CNE/CEB nº 06/2012 como eixo normativo atual, sem indicar sua substituição pela Resolução CNE/CP nº 2/2026.",
+  "escalonar_quando": "Escalonar se a seção mencionar EPT apenas nominalmente, sem explicar implicações curriculares, ou se a concepção usar normas revogadas ou anteriores como fundamento central sem indicar sua relação com a norma vigente.",
+  "evidencia_minima": 2,
+  "estados_permitidos": [
+    "ATENDE",
+    "NAO_ATENDE",
+    "INCONCLUSIVO",
+    "NAO_APLICAVEL"
+  ]
+}

@@ -88,7 +88,7 @@ describe("pacote_contexto: contrato", () => {
       expect(dados.fichas_ids).toEqual(["CT-CURR-12"]);
       expect(dados.ppc.id).toBe(`ppc:${PPC_ENFERMAGEM}`);
       expect(dados.tamanho.caracteres_ppc_inteiro).toBe(12000);
-      expect(texto).toContain("**Pacote de contexto da revisar-ppc: CT-CURR-12**");
+      expect(texto).toContain("**Pacote de contexto da revisão de PPC: CT-CURR-12**");
       // a ficha da fixture não traz o título no JSON
       expect(texto).toContain("### [CT-CURR-12](ifpr://ficha/CT-CURR-12)");
       expect(texto).toContain(`ifpr://ppc/${PPC_ENFERMAGEM}`);

@@ -1,6 +1,6 @@
 # Instruções para agentes
 
-Este é o repositório do **Simplifica IF**, um app desktop para os servidores do IFPR: ele dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. O repositório contém o app e a base que o alimenta (normas, PPCs, cursos, CNCT, metadados institucionais), além das skills e dos scripts que agentes usam aqui para curar a base. Os planos estão em [`docs/plans/README.md`](docs/plans/README.md): o do app em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md), o da base em [`docs/plans/arquitetura-base.md`](docs/plans/arquitetura-base.md).
+Este é o repositório do **Simplifica IF**, um app desktop para os servidores do IFPR: ele dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. O repositório contém o app e a base que o alimenta (normas, PPCs, cursos, CNCT, metadados institucionais, fichas da revisão de PPC), além das skills e dos scripts que agentes usam aqui para curar a base. Os planos estão em [`docs/plans/README.md`](docs/plans/README.md): o do app em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md), o da base em [`docs/plans/arquitetura-base.md`](docs/plans/arquitetura-base.md).
 
 ## Mapa
 
@@ -23,7 +23,7 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 
 - **Conversa** com a IA da pessoa, com as ferramentas `ifpr` do `simplifica-mcp`, aprovação de ações, indicador de etapas, pasta da tarefa em `Documentos/Simplifica IF/` e "Desfazer".
 - **Tarefas** no Início: a nativa "Revisar um PPC" e as skills com bloco `simplifica:` no `SKILL.md` (hoje só a `verificar-fundamentacao-normativa`).
-- **Revisar um PPC** (`.docx`): pré-conferência em código, relatório com IA opcional, roteiro por pendência e cópia do documento com comentários do Word. Reaproveita as fichas da skill `revisar-ppc`, mas é conduzida pelo servidor, não pela skill.
+- **Revisar um PPC** (`.docx`): pré-conferência em código, relatório com IA opcional, roteiro por pendência e cópia do documento com comentários do Word. Os critérios são as fichas de `base-conhecimento/revisao-ppc/`.
 - **Leitor `ifpr://` e Explorar:** normas com vigência, PPCs, cursos (com as divergências PPC × SUAP já publicadas na base), campi, CNCT, Consepe e fichas, sem IA e sem rede.
 - Primeiro uso com perfil, "Isto está errado" (relato de erro) e atualização da base e das skills (pronta, sem feed de produção ligado).
 
@@ -33,7 +33,6 @@ O app foi desenhado para dado público (decisão 6 do plano do app): a base e os
 
 Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base:
 
-- a skill `revisar-ppc` com sub-agentes e relatório HTML (no app, a revisão é a tarefa nativa acima);
 - a skill `ifpr-design`, usada para desenhar a interface e materiais, não como tarefa do app.
 
 As ferramentas com login em sistemas internos (SEI, SUAP) ficam num repositório privado à parte. Elas não importam código daqui: leem a base pelo `simplifica-mcp` (`simplifica-mcp consultar`) e entregam dado coletado por um relatório que um comando `aplicar_*` daqui confere e aplica (veja "Dado coletado fora do repositório" na [doc de curadoria](base-conhecimento/docs/curadoria-metadados-institucionais.md)). A integração de sistemas com login ao app fica para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)).
@@ -42,7 +41,7 @@ As ferramentas com login em sistemas internos (SEI, SUAP) ficam num repositório
 
 A base reúne normas, catálogos, PPCs, e metadados institucionais. A fonte publicada fica em `base-conhecimento/`, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
 
-Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git; o kb os lê direto. Só `campi/index.json` é gerado (por `gerar_base.ts`, lido pela `revisar-ppc`); não o edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`.
+Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git; o kb os lê direto. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`.
 
 ## Skills
 
@@ -52,7 +51,7 @@ As skills ficam em `.agents/skills/`; `.claude/skills` é um symlink para esse d
 
 A base é consultada pela CLI `kb`, dentro do checkout, ou pelo MCP (o servidor `simplifica-mcp`, sem o checkout; veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md)), e depois pelo Markdown da norma ou do PPC que a resposta aponta. Não navegue a base por manifestos e índices, e não troque os arquivos locais por URLs públicas.
 
-Use a CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+Use a CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da revisão de PPC), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash
 pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o dispositivo (caput, texto, linhas); termos → busca nos metadados e nos dispositivos
@@ -60,7 +59,7 @@ pnpm kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecuari
 pnpm kb cursos --eixo "Informação e Comunicação" --processo processo-seletivo-2026 --json   # cursos com CNCT, ofertas e turno; filtros --turno, --campus, --nivel…
 pnpm kb ppc-fatos curitiba/tecnico-em-enfermagem --json              # carga horária, estágio e ano do PPC, cruzados com o SUAP
 pnpm kb ppc-fatos --divergencias --nivel médio                        # PPCs com divergência PPC × SUAP
-pnpm kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da revisar-ppc: CNCT, dispositivos citados, marcos e regras de transição, seções
+pnpm kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da revisão de PPC: CNCT, dispositivos citados, marcos e regras de transição, seções
 ```
 
 Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure com `rg` nos Markdown dos PPCs.
@@ -147,7 +146,7 @@ Depois, compile o banco (`pnpm kb:compilar`) e confira os gabaritos de `testes-g
 
 Não edite à mão `status_vigencia`, `revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`, `regulamentada_por`, `fundamenta_se_em`, `fundamenta` nem `vigencia_*` no front matter das normas: eles são gerados. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto; `pnpm kb relacoes --propor` lista o que o regex encontrou e ainda não foi confirmado. Ao mudar a marcação de uma norma, preserve as palavras (`pnpm --filter @simplifica-if/kb test src/normas` confere) e siga as convenções de corpo de `base-conhecimento/docs/padrao-front-matter-legislacao.md`.
 
-O código é TypeScript (salvo poucos `.js` e `.mjs` pontuais, como o script do relatório da `revisar-ppc` e os de build do desktop): o app (`apps/`), os pacotes (`packages/`), os scripts de manutenção e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/`, as skills e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
+O código é TypeScript (salvo poucos `.js` e `.mjs` pontuais, como os de build do desktop): o app (`apps/`), os pacotes (`packages/`), os scripts de manutenção e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/` e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
 
 ```bash
 pnpm fmt
@@ -160,17 +159,17 @@ As ferramentas são as do T3 Code, configuradas em `vite.config.ts`: `pnpm fmt` 
 
 As skills com bloco `simplifica:` no front matter do `SKILL.md` (hoje `verificar-fundamentacao-normativa`) também vão para o app desktop, que não tem o repositório: só as ferramentas MCP `ifpr` e os arquivos listados em `simplifica.arquivos`. Ao editá-las, mantenha as ferramentas `ifpr` como caminho principal e a CLI e os scripts como alternativa "dentro do repositório", e acrescente a `simplifica.arquivos` todo arquivo novo que o texto cite; `node scripts/validar_base.ts` confere o bloco (Effect Schema em `@simplifica-if/mcp/skills`) e os arquivos.
 
-Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `revisar-ppc`, use:
+### Fichas da revisão de PPC
+
+Os critérios da tarefa "Revisar um PPC" são as fichas de `base-conhecimento/revisao-ppc/` (`fichas/`, `topicos-fichas.json`, `marcos-normativos.json`); leia o [README da pasta](base-conhecimento/revisao-ppc/README.md) antes de mudá-las. O contrato está em `scripts/base/revisao-ppc/`. Depois de alterar fichas, tópicos ou marcos, rode:
 
 ```bash
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa --check
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice --check
-pnpm exec vp test run .agents/skills/revisar-ppc
+node scripts/gerar_base.ts        # schemas/ e mapa-fichas.md da revisão
+node scripts/validar_base.ts
+pnpm exec vp test run scripts/base/revisao-ppc
 ```
 
-Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do Effect Schema de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `revisar_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript, inclusive a conversão de entrada `.docx`: a skill só precisa do Node. A conversão fica em dois pacotes do workspace, `packages/docx` (leitor OOXML genérico, com os limites contra arquivo hostil) e `packages/ppc` (conversão do PPC e normalizador de Markdown), que o servidor do app também importa. Depois de alterá-los, rode os testes dos dois (`pnpm --filter @simplifica-if/docx --filter @simplifica-if/ppc test`); os gabaritos em `packages/ppc/test/fixtures/conversao-docx/` travam a saída byte a byte.
+Ficha D tem verificador em `packages/ppc/src/verificadores/`; mudar um verificador ou o modo de uma ficha pede `node packages/ppc/scripts/pre-conferencia.ts --base --check` e a atualização de `packages/ppc/PRECISAO.md`. A conversão do `.docx` fica em `packages/docx` (leitor OOXML genérico, com os limites contra arquivo hostil) e `packages/ppc` (conversão do PPC e normalizador de Markdown). Depois de alterá-los, rode os testes dos dois (`pnpm --filter @simplifica-if/docx --filter @simplifica-if/ppc test`); os gabaritos em `packages/ppc/test/fixtures/conversao-docx/` travam a saída byte a byte.
 
 ## Código com Effect
 

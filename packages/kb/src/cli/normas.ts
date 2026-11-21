@@ -334,7 +334,7 @@ export const impacto = Command.make(
     for (const n of resultado.normas_que_citam)
       linhas.push(`  norma que a cita: ${n.id} (${n.dispositivos.join(", ")})`);
     const estritos = resultado.arquivos.filter((a) => a.motivos.some((m) => m !== "tema"));
-    linhas.push(`\nArquivos das skills citando a norma ou dispositivos correspondentes: ${estritos.length}`);
+    linhas.push(`\nFichas e textos das skills citando a norma ou dispositivos correspondentes: ${estritos.length}`);
     for (const a of estritos) {
       linhas.push(
         `  ${a.arquivo} [${a.motivos.join(", ")}]${a.dispositivos.length ? ` ${a.dispositivos.join(" ")}` : ""}`,
@@ -347,9 +347,7 @@ export const impacto = Command.make(
     yield* imprimir(linhas);
   }, Effect.provide(camadaRepositorio)),
 ).pipe(
-  Command.withDescription(
-    "Fichas, validações cruzadas, textos das skills, normas e PPCs afetados por mudança na norma.",
-  ),
+  Command.withDescription("Fichas da revisão de PPC, textos das skills, normas e PPCs afetados por mudança na norma."),
 );
 
 export const avaliarResolvedorCmd = Command.make(

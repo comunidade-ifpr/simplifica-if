@@ -6,7 +6,7 @@ Conjuntos de avaliação. Os da base (resolvedor e busca de seções) são lidos
 |---|---|
 | `resolvedor/` | citações anotadas em 20 PPCs para medir o resolvedor de citações (rascunho), por `pnpm kb avaliar-resolvedor` |
 | `busca-secoes/` | consultas rotuladas para o recall@10 da busca de seções (rascunho), por `pnpm kb avaliar-busca` |
-| `ppcs-ouro/` | achados esperados por ficha da `revisar-ppc` em 3 PPCs técnicos (rascunho) |
+| `ppcs-ouro/` | achados esperados por ficha da revisão de PPC em 3 PPCs técnicos (rascunho) |
 | `skills/` | casos de avaliação das skills do app, com e sem a skill (ver [Skills do app](#skills-do-app)) |
 | `resultados/` | rodadas do `avaliar_skill.ts` (fora do git) |
 

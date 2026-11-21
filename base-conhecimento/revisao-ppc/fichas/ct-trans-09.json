@@ -1,0 +1,52 @@
+{
+  "id": "CT-TRANS-09",
+  "titulo": "Inclusão e AEE coerentes entre atendimento ao estudante, currículo e avaliação",
+  "dominio": "transversal",
+  "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento transversal: compara o que a seção de atendimento ao estudante promete (AEE, adaptação, flexibilização, avaliação diferenciada) com a organização curricular e a avaliação da aprendizagem. A incorporação literal do AEE à matriz é conferida em código pela CT-CURR-22."
+  },
+  "topicos_tematicos": [
+    "matriz_curricular",
+    "avaliacao_aprendizagem",
+    "aee_acessibilidade_inclusao",
+    "sintese_transversal_revisao"
+  ],
+  "tipo_escopo": "transversal",
+  "ancoras_semanticas": [
+    "Inclusão e AEE coerentes entre atendimento, currículo e avaliação",
+    "atendimento educacional especializado",
+    "AEE",
+    "NAPNE",
+    "necessidades educacionais específicas",
+    "necessidades específicas",
+    "adaptação curricular",
+    "flexibilização curricular",
+    "plano de ensino individualizado",
+    "avaliação diferenciada",
+    "critérios de avaliação",
+    "Avaliação Inicial de Caso de Estudante",
+    "AICE",
+    "organização curricular",
+    "avaliação da aprendizagem"
+  ],
+  "consultas": [
+    "atendimento educacional especializado",
+    "flexibilização curricular",
+    "avaliação diferenciada"
+  ],
+  "referencias_normativas": [],
+  "pergunta": "Quando o PPC trata de AEE, adaptação, flexibilização curricular ou estudantes com necessidades educacionais específicas, o que a seção de atendimento ao estudante promete é coerente com a organização curricular e com a avaliação da aprendizagem?",
+  "rubrica": "Comparar a seção de atendimento ao estudante (política de inclusão, NAPNE, AEE, plano de ensino individualizado, adaptação e flexibilização) com a organização curricular e com a seção de avaliação da aprendizagem. Verificar: (1) se todas as seções tratam o AEE como serviço ou modalidade transversal, compatível com a Avaliação Inicial de Caso de Estudante (AICE), a adaptação e a flexibilização, e nenhuma o converte em componente curricular, disciplina, carga horária de integralização, requisito de certificação ou lançamento no histórico escolar (a incorporação literal à matriz é conferida em código pela CT-CURR-22; aqui interessa a coerência entre o que as seções dizem); (2) se a adaptação e a flexibilização prometidas na seção de atendimento têm lugar reconhecível na organização curricular, isto é, se se entende como o currículo acomoda essas medidas; (3) se os critérios diferenciados de avaliação para estudantes com necessidades específicas, quando previstos na seção de atendimento, aparecem ou são compatíveis com a seção de avaliação da aprendizagem, sem contradição (por exemplo, avaliação diferenciada prometida numa seção e regra única e rígida na outra). Não reavaliar aqui a suficiência isolada de cada seção (CT-CURR-09, CT-SUP-04, CT-SUP-19, CT-SUP-20). Usar NAO_APLICAVEL apenas quando o PPC não tratar de AEE, inclusão nem necessidades específicas.",
+  "boa_evidencia": "As seções convergem: o AEE é descrito como serviço transversal em todas elas, a adaptação e a flexibilização têm lugar reconhecível na organização curricular e a avaliação da aprendizagem prevê ou remete a critérios diferenciados para quem precisa.",
+  "ma_evidencia": "A seção de atendimento promete adaptação, flexibilização ou avaliação diferenciada que a organização curricular ou a seção de avaliação contradizem ou ignoram; ou o AEE aparece como serviço numa seção e como disciplina, componente, carga horária ou item de histórico em outra.",
+  "escalonar_quando": "Escalonar se a coerência depender de regulamento do campus ou de documento institucional não transcrito no PPC.",
+  "evidencia_minima": 2,
+  "estados_permitidos": [
+    "ATENDE",
+    "NAO_ATENDE",
+    "INCONCLUSIVO",
+    "NAO_APLICAVEL"
+  ]
+}

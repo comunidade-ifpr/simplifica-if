@@ -31,14 +31,4 @@ Depois de alterar a base:
 node scripts/validar_base.ts
 ```
 
-Depois de alterar `revisar-ppc`:
-
-```bash
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa --check
-node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice --check
-pnpm exec vp test run .agents/skills/revisar-ppc
-```
-
-Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do Effect Schema de `scripts/esquemas.ts`), `base-analise/mapa-fichas.md` e `base-analise/indice.json`. O `node scripts/validar_base.ts` também roda a validação da base de análise. Os scripts TypeScript das skills ficam em `.agents/skills/<skill>/scripts/` e os testes em `.agents/skills/<skill>/tests/*.test.ts`; ambos entram em `pnpm typecheck`, `pnpm test` e `pnpm fmt`. Regras compartilhadas (texto, JSON, JSON Schema, IDs de norma, referências normativas estruturadas e seu texto legível) ficam em `packages/kb` e são importadas como `@simplifica-if/kb/...`.
+O `node scripts/validar_base.ts` também confere as fichas da tarefa "Revisar um PPC" (`base-conhecimento/revisao-ppc/`, veja o README da pasta). Regras compartilhadas (texto, JSON, JSON Schema, IDs de norma, referências normativas estruturadas e seu texto legível) ficam em `packages/kb` e são importadas como `@simplifica-if/kb/...`.

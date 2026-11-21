@@ -4,7 +4,7 @@
  * as fichas, com o texto no orçamento dela; o índice inteiro e a paleta de busca são para a tela):
  *
  * - `explorarIndice`: as coleções inteiras (normas, cursos, PPCs, campi, CNCT, fichas da
- *   `revisar-ppc`, processos seletivos e as reuniões do Consepe com os itens de pauta), com os campos
+ *   revisão de PPC, processos seletivos e as reuniões do Consepe com os itens de pauta), com os campos
  *   dos filtros. É pequeno (algumas centenas de KB) e não muda com o servidor no ar: a interface lê uma
  *   vez e filtra na memória;
  * - `explorarBuscar`: a busca da paleta (Ctrl/Cmd+K), com os resultados agrupados por tipo. Uma

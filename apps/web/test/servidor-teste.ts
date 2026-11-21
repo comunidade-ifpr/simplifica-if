@@ -60,12 +60,9 @@ const pasta = diretorioTemporario("simplifica-web-pasta-");
 inserirNormas(banco);
 // O que o Explorar mostra além das normas: CNCT, ofertas, horários de campus, Consepe, ficha e fatos do PPC.
 inserirExplorar(banco);
-// A taxonomia de tópicos das fichas da `revisar-ppc`, para a revisão prévia agrupar por tema.
+// A taxonomia de tópicos das fichas da revisão de PPC, para a revisão prévia agrupar por tema.
 {
-  const arquivo = NodePath.resolve(
-    import.meta.dirname,
-    "../../../.agents/skills/revisar-ppc/base-analise/topicos-fichas.json",
-  );
+  const arquivo = NodePath.resolve(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/topicos-fichas.json");
   const { topicos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as {
     topicos: Array<{ id: string; titulo: string }>;
   };
@@ -78,7 +75,7 @@ inserirExplorar(banco);
       topico.id,
       ordem,
       topico.titulo,
-      ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json",
+      "base-conhecimento/revisao-ppc/topicos-fichas.json",
       JSON.stringify(topico),
     ),
   );

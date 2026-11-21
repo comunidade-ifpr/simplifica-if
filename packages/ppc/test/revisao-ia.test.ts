@@ -1,6 +1,6 @@
 // @effect-diagnostics globalDate:off nodeBuiltinImport:off -- o teste fixa o relógio e lê as fichas da skill
 /**
- * Revisão com IA (M1.11, etapa 4), as partes puras: o plano dos blocos sobre as 80 fichas reais, os
+ * Revisão com IA (M1.11, etapa 4), as partes puras: o plano dos blocos sobre as fichas reais, os
  * recortes, a retirada do texto dirigido a IA, o pedido com o nonce, a conferência de cada resposta
  * (contrato, estados, trecho literal, norma do contexto) e a junção dos resultados da IA no DOCX.
  */
@@ -50,18 +50,18 @@ import { dirigidoAIa } from "../src/pre-conferencia.ts";
 import { estadoDaIa, revisarDocx } from "../src/revisao-previa.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
-const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../.agents/skills/revisar-ppc/base-analise/fichas");
+const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
 const fichas = NodeFS.readdirSync(PASTA_FICHAS)
   .filter((f) => f.endsWith(".json"))
   .map((f) => fichaIa(JSON.parse(NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, f), "utf8"))));
 const porId = new Map(fichas.map((f) => [f.id, f]));
 
 describe("plano dos blocos", () => {
-  test("o completo leva as 68 fichas S e J, nenhuma D, cada uma num só bloco", () => {
+  test("o completo leva as 72 fichas S e J, nenhuma D, cada uma num só bloco", () => {
     const blocos = planejarBlocos(fichas, "completo");
     const ids = blocos.flatMap((b) => b.fichas);
-    expect(ids).toHaveLength(68);
-    expect(new Set(ids).size).toBe(68);
+    expect(ids).toHaveLength(72);
+    expect(new Set(ids).size).toBe(72);
     expect(ids.some((id) => porId.get(id)!.modo === "D")).toBe(false);
     // Lotes S de até 6, um J por tema, as transversais num bloco no fim.
     for (const b of blocos) {
@@ -80,7 +80,7 @@ describe("plano dos blocos", () => {
     expect(bloq.every((f) => rapido.includes(f))).toBe(true);
     expect(rapido.length).toBeGreaterThan(15);
     expect(rapido.length).toBeLessThan(30);
-    expect(rapido.length + fichasForaDoModo(fichas, "rapido").length).toBe(68);
+    expect(rapido.length + fichasForaDoModo(fichas, "rapido").length).toBe(72);
   });
 });
 
@@ -534,7 +534,7 @@ describe("os resultados da IA no DOCX comentado", () => {
     // A ficha que falhou na conferência não conta como conferida: vai para "ficaram para conferir".
     expect(revisao.conferidosIa).toBe(2);
     expect(revisao.paraConferirIa).toBe(1);
-    expect(revisao.aviso).toContain("14 de 80 critérios conferidos: 12 pelo código");
+    expect(revisao.aviso).toContain("14 de 84 critérios conferidos: 12 pelo código");
     expect(revisao.aviso).toContain("e 2 pela IA");
     expect(revisao.aviso).toContain("1 critério foi à IA e ficou para conferir na leitura.");
     expect(revisao.aviso).toContain(

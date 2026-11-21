@@ -1,6 +1,6 @@
 /**
  * Conteúdos dos recursos `ifpr://` que não têm ferramenta própria (M1.5): o PPC sem seção, o curso do
- * CNCT, o campus e a ficha da `revisar-ppc`. Cada um tem a entrada, os dados (Effect Schema) e o texto
+ * CNCT, o campus e a ficha da revisão de PPC. Cada um tem a entrada, os dados (Effect Schema) e o texto
  * Markdown para a IA, como as ferramentas (`ferramentas/ferramenta.ts`); a leitura fica no serviço
  * `Leitura` (`leitura/recursos.ts`). Norma, dispositivo, curso e seção de PPC usam o texto das
  * ferramentas `ficha_norma`, `ler_dispositivos`, `ficha_curso` e `ler_secao` (ver `recursos.ts`).
@@ -191,7 +191,7 @@ export function textoCampus(resposta: Resposta<typeof DadosCampus.Type>): string
   );
 }
 
-/* ================================================================== ficha da revisar-ppc */
+/* ================================================================== ficha da revisão de PPC */
 
 const TETO_RECURSO_FICHA = 8_000;
 
@@ -204,7 +204,7 @@ export const DadosFicha = Schema.Struct({
     dominio: Schema.NullOr(Schema.String),
     criticidade: Schema.NullOr(Schema.String),
     tipo_escopo: Schema.NullOr(Schema.String),
-    /** O arquivo da ficha na skill `revisar-ppc`. */
+    /** O arquivo da ficha em `base-conhecimento/revisao-ppc/fichas/`. */
     path: Schema.String,
     link: EsquemaLink,
   }),

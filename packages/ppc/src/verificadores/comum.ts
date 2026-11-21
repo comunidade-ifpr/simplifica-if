@@ -1,5 +1,5 @@
 /**
- * Tipos e utilitários dos verificadores das fichas D da `revisar-ppc` (M1.11, etapa 2).
+ * Tipos e utilitários dos verificadores das fichas D da revisão de PPC (M1.11, etapa 2).
  *
  * Um verificador decide uma ficha canônica só com código e a base: recebe o PPC já segmentado
  * (`PpcPreparado`, montado uma vez por `prepararPpc`) e a base (`BaseVerificacao`: CNCT, forma de

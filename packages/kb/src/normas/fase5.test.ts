@@ -197,7 +197,7 @@ const conteudoSintetico = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const conteudo = yield* fs.makeTempDirectoryScoped({ prefix: "kb-impacto-" });
-  const pasta = path.join(conteudo, ".agents", "skills", "x", "base-analise", "fichas");
+  const pasta = path.join(conteudo, "base-conhecimento", "revisao-ppc", "fichas");
   yield* fs.makeDirectory(pasta, { recursive: true });
   const ficha = (nome: string, refs: { ref: string; dispositivo: string }[]) =>
     fs.writeFileString(path.join(pasta, `${nome}.json`), JSON.stringify({ referencias_normativas: refs }));
@@ -244,17 +244,14 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
   });
 
   describe("impacto", () => {
-    it.effect("revogação da 1/2021 alcança a sucessora, transições, normas e conteúdos das skills", () =>
+    it.effect("revogação da 1/2021 alcança a sucessora, transições, normas e as fichas", () =>
       Effect.gen(function* () {
         const impacto = yield* Impacto.Impacto;
         const r = yield* impacto.daNorma(DCN_2021, { incluirPpcs: false });
         expect(r.sucessoras).toEqual([DCN_2026]);
         expect(r.normas_que_citam.map((n) => n.id)).toContain("br/mec/portaria/2024/902");
         const arquivos = r.arquivos.map((a) => a.arquivo);
-        expect(arquivos).toContain(
-          ".agents/skills/revisar-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json",
-        );
-        expect(arquivos).toContain(".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-02.json");
+        expect(arquivos).toContain("base-conhecimento/revisao-ppc/fichas/ct-curr-02.json");
       }),
     );
   });

@@ -12,7 +12,7 @@
 # Filtros (iguais aos da CLI): ppc, cnct, campus, nivel, forma, tipo.
 
 consultas:
-  # --- dentro de um PPC (o uso da revisar-ppc)
+  # --- dentro de um PPC (o uso da revisão de PPC)
   - id: B01
     consulta: acompanhamento de egressos
     filtros: { ppc: curitiba/tecnico-em-enfermagem }

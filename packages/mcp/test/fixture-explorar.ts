@@ -1,8 +1,8 @@
-// @effect-diagnostics nodeBuiltinImport:off -- fixture de teste: lê a ficha real da revisar-ppc do checkout
+// @effect-diagnostics nodeBuiltinImport:off -- fixture de teste: lê a ficha real da revisão de PPC do checkout
 /**
  * O que o Explorar do app precisa além das normas da fixture (`fixture.ts` + `fixture-normas.ts`): o
  * CNCT do Técnico em Enfermagem ligado ao curso, ofertas, os horários e o calendário de um campus,
- * uma reunião do Consepe com um item ligado ao curso, uma ficha da `revisar-ppc`, fatos do PPC com uma
+ * uma reunião do Consepe com um item ligado ao curso, uma ficha da revisão de PPC, fatos do PPC com uma
  * divergência PPC × SUAP e o índice FTS das seções. É o banco do servidor de teste da interface
  * (`apps/web/test/servidor-teste.ts`) e o dos testes do RPC do Explorar.
  */
@@ -104,7 +104,7 @@ export function inserirExplorar(caminho: string): void {
 
     // a ficha real do repositório, como a compilação a grava: a revisão prévia do servidor de teste lê a
     // tabela `fichas` inteira, e uma ficha incompleta a quebraria
-    const arquivoFicha = ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-12.json";
+    const arquivoFicha = "base-conhecimento/revisao-ppc/fichas/ct-curr-12.json";
     const ficha = JSON.parse(
       NodeFS.readFileSync(NodePath.resolve(import.meta.dirname, "../../..", arquivoFicha), "utf8"),
     ) as Record<string, string | null>;

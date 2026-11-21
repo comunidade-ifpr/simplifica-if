@@ -1,7 +1,7 @@
 /**
  * `FontesNormativas`: os dados que as regras puras do kb recebem prontos — registro de normas,
  * datas dos atos, relações, regras de transição, data de referência, léxico da busca de seções e
- * tópicos da `revisar-ppc` — e o conteúdo das skills que o `impacto` percorre.
+ * tópicos da revisão de PPC — e o conteúdo das skills e das fichas que o `impacto` percorre.
  *
  * Duas layers, com o mesmo resultado (`db/base.test.ts` confere):
  *
@@ -83,9 +83,10 @@ export class FontesNormativas extends Context.Service<
     readonly topicosSecoes: TopicosSecoes;
     readonly topicosFichas: ReadonlyArray<TopicoFichas>;
     /**
-     * Taxonomia e arquivos de conteúdo das skills. Arquivos: todos os textos de `.agents/skills`
-     * (fichas, prompts, contratos…) em `layerArquivos`, opcionalmente de outra árvore (`raiz`); só
-     * as fichas da `revisar-ppc` em `layerBanco`, que ignora `raiz`.
+     * Taxonomia e arquivos de conteúdo das skills e da revisão de PPC. Arquivos: os textos de
+     * `.agents/skills` e de `base-conhecimento/revisao-ppc` (fichas, taxonomia, marcos) em
+     * `layerArquivos`, opcionalmente de outra árvore (`raiz`); só as fichas em `layerBanco`, que
+     * ignora `raiz`.
      */
     readonly conteudoDasSkills: (opcoes?: {
       readonly raiz?: string;
@@ -288,10 +289,12 @@ export const layerBanco = Layer.effect(FontesNormativas, makeBanco);
 
 /* ================================================================== arquivos */
 
-/** Diretórios de `.agents/skills` que não são conteúdo (código, testes, schemas, referências, `output/` das rodadas, fora do git). */
-const IGNORAR_SKILLS = new Set(["scripts", "tests", "schemas", "node_modules", "__pycache__", "referencias", "output"]);
-/** Arquivos gerados a partir das fichas (o impacto vê as fichas, não o índice). */
-const GERADOS_SKILLS = new Set(["indice.json", "mapa-fichas.md"]);
+/** Diretórios que não são conteúdo (código, testes, schemas gerados, referências). */
+const IGNORAR_SKILLS = new Set(["scripts", "tests", "schemas", "node_modules", "referencias"]);
+/** Arquivos gerados a partir das fichas (o impacto vê as fichas, não o mapa). */
+const GERADOS_SKILLS = new Set(["mapa-fichas.md"]);
+/** Onde fica o conteúdo que o impacto confere: as skills e a base da revisão de PPC. */
+const PASTAS_DE_CONTEUDO = [CAMINHOS.skills, CAMINHOS.revisaoPpc];
 
 const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz: string) {
   const fs = yield* FileSystem.FileSystem;
@@ -353,10 +356,10 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     Effect.flatMap((texto) => interpretar(CAMINHOS.topicosFichas, () => topicosFichasDoJson(texto))),
   );
 
-  /** Arquivos de conteúdo de `.agents/skills` (Markdown, JSON e YAML, sem README nem gerados), em ordem. */
-  const arquivosDasSkills = Effect.fnUntraced(function* (raizConteudo: string) {
-    const base = path.join(raizConteudo, ...CAMINHOS.skills.split("/"));
-    const naoLe = (cause: unknown) => new FalhaNasFontes({ arquivo: CAMINHOS.skills, cause });
+  /** Arquivos de conteúdo de uma pasta (Markdown, JSON e YAML, sem README nem gerados), em ordem. */
+  const arquivosDaPasta = Effect.fnUntraced(function* (raizConteudo: string, pasta: string) {
+    const base = path.join(raizConteudo, ...pasta.split("/"));
+    const naoLe = (cause: unknown) => new FalhaNasFontes({ arquivo: pasta, cause });
     if (!(yield* fs.exists(base).pipe(Effect.mapError(naoLe)))) return [];
     const saida: string[] = [];
     // em ordem de nome, com recursão manual para pular diretórios; sem span próprio por diretório
@@ -394,8 +397,10 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
         )
       : [];
     const arquivos: ArquivoConteudo[] = [];
-    for (const arquivo of yield* arquivosDasSkills(raizConteudo)) {
-      arquivos.push({ arquivo, texto: yield* lerDe(arquivo) });
+    for (const pasta of PASTAS_DE_CONTEUDO) {
+      for (const arquivo of yield* arquivosDaPasta(raizConteudo, pasta)) {
+        arquivos.push({ arquivo, texto: yield* lerDe(arquivo) });
+      }
     }
     return { topicos, arquivos };
   });

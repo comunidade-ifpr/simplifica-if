@@ -1,8 +1,8 @@
 /**
- * Registro ficha → verificador das fichas D da `revisar-ppc` (`execucao.modo: "D"`).
+ * Registro ficha → verificador das fichas D da revisão de PPC (`execucao.modo: "D"`).
  *
  * É o mapa que a etapa 4 do M1.11 (IA) consulta para saber o que o código já resolveu, e que o
- * `revisar_ppc.ts validar-base` confere: toda ficha D tem verificador aqui, e todo verificador daqui
+ * `scripts/validar_base.ts` confere: toda ficha D tem verificador aqui, e todo verificador daqui
  * é de uma ficha D. Cada verificador tem casos em `test/verificadores.test.ts` (o teste confere que
  * nenhum fica sem caso) e a precisão medida em `PRECISAO.md`.
  */

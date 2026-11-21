@@ -5,7 +5,7 @@
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 
-/** Os estados de uma ficha da `revisar-ppc`, na ordem em que o pedido os lista. */
+/** Os estados de uma ficha da revisão de PPC, na ordem em que o pedido os lista. */
 export const ESTADOS_IA = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
 
 export const EstadoIa = Schema.Literals(ESTADOS_IA);

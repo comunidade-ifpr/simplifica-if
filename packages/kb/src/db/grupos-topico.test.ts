@@ -1,5 +1,5 @@
-// @effect-diagnostics nodeBuiltinImport:off -- lê as fichas reais da revisar-ppc com node:fs síncrono
-/** Agrupamento das fichas da `revisar-ppc` por tópico (`agruparPorTopico`), sem banco. */
+// @effect-diagnostics nodeBuiltinImport:off -- lê as fichas reais da revisão de PPC com node:fs síncrono
+/** Agrupamento das fichas da revisão de PPC por tópico (`agruparPorTopico`), sem banco. */
 import { describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -58,7 +58,7 @@ describe("grupos por tópico", () => {
 
   test("nas fichas reais, toda ficha cai em exatamente um grupo de no máximo 20", () => {
     const raiz = raizRepositorio();
-    const dir = NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/fichas");
+    const dir = NodePath.join(raiz, "base-conhecimento/revisao-ppc/fichas");
     const reais = NodeFS.readdirSync(dir)
       .filter((nome) => nome.endsWith(".json"))
       .map((nome) => JSON.parse(NodeFS.readFileSync(NodePath.join(dir, nome), "utf-8")) as FichaPacote);

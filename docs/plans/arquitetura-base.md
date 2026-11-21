@@ -16,7 +16,7 @@ O problema da base não é busca, é identidade e relações. Por isso:
 
 1. **Os arquivos no git são a fonte de verdade.** Markdown das normas, `base-conhecimento/institucional/ifpr/`, fichas, CNCT e PPCs convertidos. Todo banco ou índice é derivado.
 2. **Uma linguagem.** TypeScript em Node, com Effect 4; o repositório não tem Python.
-3. **Contratos explícitos.** Effect Schema nos dados; os JSON Schemas de `base-conhecimento/schemas/` e da `revisar-ppc` são validados por `ajv`.
+3. **Contratos explícitos.** Effect Schema nos dados; os JSON Schemas de `base-conhecimento/schemas/` são validados por `ajv`, e as fichas da revisão de PPC, pelo Effect Schema de `scripts/base/revisao-ppc/`.
 4. **Nada inferido por LLM entra sem revisão humana.** Relações, tabela de correspondência e fatos de PPC são propostos automaticamente e confirmados por diff no git.
 5. **Cada mudança de retrieval se mede** contra os conjuntos de `avaliacao/` (`pnpm kb avaliar-resolvedor`, `pnpm kb avaliar-busca`).
 6. **Determinismo.** As mesmas fontes geram o mesmo banco byte a byte. O que depende de data, como a vigência, recebe a data como parâmetro (`data_referencia` em `base-conhecimento/config/vigencia.yaml`), nunca o relógio do build.

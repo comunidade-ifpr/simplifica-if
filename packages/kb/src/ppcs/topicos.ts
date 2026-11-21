@@ -1,7 +1,7 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carregadores síncronos, usados pela compilação do banco e pela revisar-ppc
+// @effect-diagnostics nodeBuiltinImport:off -- carregadores síncronos, usados pela compilação do banco e pela validação das fichas
 /**
- * Tópicos da `revisar-ppc`: os tipos de seção de cada tópico (`packages/kb/dados/topicos-secoes.yaml`)
- * e a taxonomia de tópicos das fichas (`.agents/skills/revisar-ppc/base-analise/topicos-fichas.json`).
+ * Tópicos da revisão de PPC: os tipos de seção de cada tópico (`packages/kb/dados/topicos-secoes.yaml`)
+ * e a taxonomia de tópicos das fichas (`base-conhecimento/revisao-ppc/topicos-fichas.json`).
  *
  * `topicosSecoesDoYaml` e `topicosFichasDoJson` interpretam o texto (a layer de arquivos de
  * `FontesNormativas` lê por `FileSystem`); `lerTopicosSecoes` e `lerTopicosFichas` leem o arquivo
@@ -63,7 +63,7 @@ export function lerTopicosSecoes(raiz: string): TopicosSecoes {
   return topicosSecoesDoYaml(NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.topicosSecoes), "utf-8"));
 }
 
-/** Tópicos de `.agents/skills/revisar-ppc/base-analise/topicos-fichas.json`, na ordem do arquivo. */
+/** Tópicos de `base-conhecimento/revisao-ppc/topicos-fichas.json`, na ordem do arquivo. */
 export function lerTopicosFichas(raiz: string): ReadonlyArray<TopicoFichas> {
   return topicosFichasDoJson(NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.topicosFichas), "utf-8"));
 }

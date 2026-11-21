@@ -268,7 +268,7 @@ normas:
     status_vigencia: a confirmar
     curadoria: rascunho
 
-  # --- IFPR (substituídas por marcos de base-analise/marcos-normativos.json da revisar-ppc)
+  # --- IFPR (substituídas por marcos de revisao-ppc/marcos-normativos.json)
   - id: ifpr/consup/res/2009/11
     title: Resolução CONSUP/IFPR nº 11/2009
     ementa: Política de assistência estudantil do IFPR anterior à Resolução CONSUP/IFPR nº 239/2025 (de 21 de dezembro de 2009, retificada pela Resolução nº 53/2011).

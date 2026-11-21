@@ -1,6 +1,6 @@
 /**
- * Ferramenta 14, `pacote_contexto`: o contexto de uma tarefa da `revisar-ppc` (uma ficha, várias, um
- * tópico, um grupo da rodada ou `todas`) para um PPC, montado pelo serviço `PacoteContexto` do kb.
+ * Ferramenta 14, `pacote_contexto`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um
+ * tópico, um grupo por tópico ou `todas`) para um PPC, montado pelo serviço `PacoteContexto` do kb.
  * O PPC é um da base (`ppc`) ou um `.md` da pasta de trabalho (`arquivo`); exatamente um dos dois.
  *
  * Os `dados` são o pacote do kb como está (o mesmo JSON de `kb pacote-contexto --json`): o de um PPC
@@ -25,7 +25,7 @@ const LITERAL_MINIMO = 300;
 export const Entrada = Schema.Struct({
   tarefa: textoAparado(
     { minimo: 1, maximo: 1000 },
-    'a tarefa da revisar-ppc: uma ficha ("CT-CURR-12"), várias separadas por vírgula ("CT-CURR-12,CT-IDENT-01"), um tópico ("estagio"), um grupo da rodada ("grupo-001") ou "todas"',
+    'a tarefa da revisão de PPC: uma ficha ("CT-CURR-12"), várias separadas por vírgula ("CT-CURR-12,CT-IDENT-01"), um tópico ("estagio"), um grupo por tópico ("grupo-001") ou "todas"',
   ),
   ppc: opcional(
     textoAparado(
@@ -144,7 +144,7 @@ export const PacoteDaBase = Schema.Struct({
   }),
   /** O curso do CNCT, como o catálogo o grava. */
   cnct: Schema.Unknown,
-  /** As fichas da `revisar-ppc`, como os arquivos as gravam. */
+  /** As fichas da revisão de PPC, como os arquivos as gravam. */
   fichas: Schema.Array(Schema.Unknown),
   normas: Schema.Array(Norma),
   marcos: Schema.Array(Marco),
@@ -327,8 +327,8 @@ function blocoSecao(s: (typeof Secao)["Type"], daBase: boolean): Elastico {
 function blocosDoPacote(d: Dados): Bloco[] {
   const daBase = ehDaBase(d);
   const cabecalho = daBase
-    ? `**Pacote de contexto da revisar-ppc: ${d.tarefa}** — PPC ${comLink(`${d.ppc.curso_nome} — ${d.ppc.campus_nome}`, linkPpc(d.ppc.id))} (${d.ppc.nivel}, ${d.ppc.tipo_oferta}${d.ppc.ano_documento ? `, PPC de ${d.ppc.ano_documento}` : ""})`
-    : `**Pacote de contexto da revisar-ppc** — arquivo \`${d.path}\` (PPC fora da base; escopo: ${d.escopo === "completo" ? "o PPC inteiro" : "seções"})`;
+    ? `**Pacote de contexto da revisão de PPC: ${d.tarefa}** — PPC ${comLink(`${d.ppc.curso_nome} — ${d.ppc.campus_nome}`, linkPpc(d.ppc.id))} (${d.ppc.nivel}, ${d.ppc.tipo_oferta}${d.ppc.ano_documento ? `, PPC de ${d.ppc.ano_documento}` : ""})`
+    : `**Pacote de contexto da revisão de PPC** — arquivo \`${d.path}\` (PPC fora da base; escopo: ${d.escopo === "completo" ? "o PPC inteiro" : "seções"})`;
   const tamanho = daBase
     ? `Tamanho: ${d.tamanho.secoes} seções do PPC, ${numero(d.tamanho.caracteres_secoes)} de ${numero(d.tamanho.caracteres_ppc_inteiro)} caracteres do PPC inteiro (${Math.round((100 * d.tamanho.caracteres_secoes) / Math.max(1, d.tamanho.caracteres_ppc_inteiro))}%).`
     : `Tamanho: ${d.secoes.length} seções do PPC; o PPC inteiro tem ${numero(d.tamanho.caracteres_ppc_inteiro)} caracteres.`;
@@ -433,7 +433,7 @@ export const pacoteContexto = definirFerramenta({
   nome: "pacote_contexto",
   titulo: "Contexto da revisão de PPC",
   descricao:
-    "Monta o contexto de uma tarefa da skill `revisar-ppc` para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use dentro da `revisar-ppc`. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
+    "Monta o contexto de uma tarefa da revisão de PPC para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use para conferir um PPC contra as fichas. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
   entrada: Entrada,
   dados: Dados,
   texto: (resposta) => corpoDoPacote(resposta.dados, orcamentoDoCorpo(resposta.avisos)).texto,

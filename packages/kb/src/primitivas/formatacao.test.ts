@@ -1,5 +1,5 @@
 /**
- * Primitivas de formatação que o relatório da revisar-ppc usa: quebra de
+ * Primitivas de formatação: quebra de
  * linhas, escape de HTML, expansão de tabs, divisão de linha de comando,
  * codificação de URL, URI de caminho e número com casas fixas. Os valores
  * esperados são gabaritos fixos.

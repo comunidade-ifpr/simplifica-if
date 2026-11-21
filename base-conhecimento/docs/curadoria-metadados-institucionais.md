@@ -16,9 +16,7 @@ Campi, cursos (com metadados de PPC e SUAP e horários dos campi), processos sel
 
 Relações usam essas chaves: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema, estrito: campo a mais é erro).
 
-O que continua gerado, e por quê:
-
-- `campi/index.json`: lista os campi com o nome e o `path`, para a identificação do PPC na `revisar-ppc`. Gerado por `gerar_base.ts` (`scripts/dados/indices.ts`), sem data, e conferido pelo `validar_base.ts`. Não edite. As demais coleções não têm índice: o kb lê os registros direto.
+As coleções não têm índice: o kb lê os registros direto.
 
 As reuniões do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)). Pareceres de Curso, Servidores e Conselheiros não fazem parte do repositório.
 

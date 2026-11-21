@@ -66,7 +66,7 @@
   ],
   "arquivos": [
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-01.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-01.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -77,7 +77,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-02.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-02.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-03.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-03.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -113,7 +113,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-04.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-04.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -125,7 +125,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-05.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-05.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-06.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-06.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -150,7 +150,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-07.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-07.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -161,7 +161,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-08.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-08.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -176,7 +176,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-09.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-09.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -187,7 +187,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-10.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-10.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -198,7 +198,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-11.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-11.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -209,7 +209,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-12.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-12.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -224,7 +224,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-13.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-13.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -239,7 +239,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-14.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-14.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -253,7 +253,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-15.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-15.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -268,7 +268,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-16.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-16.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -285,7 +285,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-17.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-17.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -303,7 +303,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-18.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-18.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -314,7 +314,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-19.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-19.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -331,7 +331,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-20.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-20.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -347,7 +347,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-21.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-21.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -362,7 +362,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-22.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-22.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -373,7 +373,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-23.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-23.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -385,7 +385,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-24.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-24.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -400,7 +400,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-25.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-25.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -412,7 +412,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-26.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-26.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -423,7 +423,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-27.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-curr-27.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -444,7 +444,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-01.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-01.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -458,7 +458,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-02.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-02.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -474,7 +474,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-03.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-03.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -489,7 +489,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-04.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-04.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -500,7 +500,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-05.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-05.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -516,7 +516,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-06.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-06.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -527,7 +527,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-07.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-07.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -538,7 +538,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-08.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-08.json",
       "categoria": "ficha",
       "motivos": [
         "citacao",
@@ -549,7 +549,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-09.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-09.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -560,7 +560,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-10.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-10.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -571,7 +571,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-11.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-11.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -582,7 +582,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-12.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-12.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -593,7 +593,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-13.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-13.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -604,7 +604,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-14.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-14.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -615,7 +615,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-15.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-15.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -631,7 +631,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-16.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-16.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -642,7 +642,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-17.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-17.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -654,7 +654,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-18.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-18.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -665,7 +665,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-ident-19.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-ident-19.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -676,7 +676,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-01.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-01.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -691,7 +691,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-02.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-02.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -706,7 +706,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-03.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-03.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -717,7 +717,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-04.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-04.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -728,7 +728,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-05.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-05.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -739,7 +739,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-06.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-06.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -750,7 +750,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-07.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-07.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -766,7 +766,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-08.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-08.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente"
@@ -777,7 +777,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-09.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-09.json",
       "categoria": "ficha",
       "motivos": [
         "citacao"
@@ -785,7 +785,7 @@
       "dispositivos": []
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-10.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-10.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -797,7 +797,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-11.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-11.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -809,7 +809,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-12.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-12.json",
       "categoria": "ficha",
       "motivos": [
         "citacao"
@@ -817,7 +817,7 @@
       "dispositivos": []
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-13.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-13.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -828,7 +828,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-14.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-14.json",
       "categoria": "ficha",
       "motivos": [
         "citacao"
@@ -836,7 +836,7 @@
       "dispositivos": []
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-15.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-15.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -854,7 +854,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-16.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-16.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -865,7 +865,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-17.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-17.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -882,7 +882,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-18.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-18.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -893,7 +893,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-19.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-19.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -904,7 +904,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-20.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-20.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -915,7 +915,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-21.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-21.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -930,7 +930,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-22.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-22.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -945,7 +945,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-23.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-23.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -956,7 +956,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-24.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-24.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -967,7 +967,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-25.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-25.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -979,7 +979,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-sup-26.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-sup-26.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -990,7 +990,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-01.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-01.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -1002,7 +1002,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-02.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-02.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -1014,7 +1014,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-03.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-03.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -1026,7 +1026,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-04.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-04.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -1039,7 +1039,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-05.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-05.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -1050,7 +1050,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-07.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-07.json",
       "categoria": "ficha",
       "motivos": [
         "tema"
@@ -1062,7 +1062,7 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/fichas/ct-trans-08.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-08.json",
       "categoria": "ficha",
       "motivos": [
         "referencia-correspondente",
@@ -1083,7 +1083,58 @@
       ]
     },
     {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json",
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-09.json",
+      "categoria": "ficha",
+      "motivos": [
+        "tema"
+      ],
+      "dispositivos": [],
+      "topicos": [
+        "matriz_curricular",
+        "avaliacao_aprendizagem",
+        "aee_acessibilidade_inclusao"
+      ]
+    },
+    {
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-10.json",
+      "categoria": "ficha",
+      "motivos": [
+        "tema"
+      ],
+      "dispositivos": [],
+      "topicos": [
+        "aee_acessibilidade_inclusao",
+        "corpo_docente_gestao",
+        "infraestrutura"
+      ]
+    },
+    {
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-11.json",
+      "categoria": "ficha",
+      "motivos": [
+        "tema"
+      ],
+      "dispositivos": [],
+      "topicos": [
+        "identificacao_oferta",
+        "matriz_curricular",
+        "estagio"
+      ]
+    },
+    {
+      "arquivo": "base-conhecimento/revisao-ppc/fichas/ct-trans-12.json",
+      "categoria": "ficha",
+      "motivos": [
+        "tema"
+      ],
+      "dispositivos": [],
+      "topicos": [
+        "identificacao_oferta",
+        "matriz_curricular"
+      ]
+    },
+    {
+      "arquivo": "base-conhecimento/revisao-ppc/marcos-normativos.json",
       "categoria": "conteudo-skill",
       "motivos": [
         "citacao",
@@ -1094,14 +1145,6 @@
         "br/cne-cp/res/2026/2#art29",
         "br/cne-cp/res/2026/2#art30"
       ]
-    },
-    {
-      "arquivo": ".agents/skills/revisar-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json",
-      "categoria": "validacao-cruzada",
-      "motivos": [
-        "citacao"
-      ],
-      "dispositivos": []
     }
   ],
   "ppcs": {

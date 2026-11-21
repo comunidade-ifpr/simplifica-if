@@ -18,7 +18,7 @@ export const LocalNoDocumento = Schema.Literals(["no-trecho", "no-inicio", "so-n
 export type LocalNoDocumento = typeof LocalNoDocumento.Type;
 
 export const PendenciaRevisao = Schema.Struct({
-  /** A ficha da `revisar-ppc` (`CT-SUP-12`) ou `TRIAGEM`. */
+  /** A ficha da revisão de PPC (`CT-SUP-12`) ou `TRIAGEM`. */
   ficha: Schema.String,
   tituloFicha: Schema.String,
   /** O tema na ordem do parecer da PROENS, e a posição dele (0 = "Antes de começar"). */

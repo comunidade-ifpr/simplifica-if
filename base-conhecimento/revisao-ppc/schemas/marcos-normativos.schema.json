@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simplifica-if.local/revisao-ppc/marcos-normativos.schema.json",
+  "title": "Registro de marcos normativos",
+  "description": "Gerado de scripts/base/revisao-ppc/esquemas.ts (Effect Schema) por `gerar_base.ts`; não edite à mão.",
+  "type": "object",
+  "properties": {
+    "versao": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "marcos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tema": {
+            "type": "string"
+          },
+          "linha": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
+            },
+            "minItems": 1,
+            "description": "IDs dos atos do tema, do mais antigo ao mais recente conhecido; vigente, substituídas, antecessoras e dispositivos revogados são derivados de base-conhecimento/relacoes.yaml"
+          },
+          "aplica_a": {
+            "type": "string"
+          },
+          "fichas_responsaveis": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fichas_base_legal": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "transicao": {
+            "type": "string"
+          },
+          "orientacao_analise": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tema",
+          "linha",
+          "aplica_a",
+          "fichas_responsaveis",
+          "fichas_base_legal",
+          "transicao",
+          "orientacao_analise"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "versao",
+    "descricao",
+    "marcos"
+  ],
+  "additionalProperties": false
+}

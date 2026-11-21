@@ -5,7 +5,7 @@
  * os dispositivos da norma, a correspondência, os segmentos de outras normas que citam e os PPCs.
  *
  * Sobre `FontesNormativas.layerArquivos`, os arquivos afetados incluem todos os textos das skills;
- * sobre `layerBanco`, só as fichas da `revisar-ppc` (a exceção aceita da paridade).
+ * sobre `layerBanco`, só as fichas da revisão de PPC (a exceção aceita da paridade).
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";

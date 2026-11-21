@@ -6,9 +6,9 @@
  *   fundamenta) e dispositivos de outras normas da base que a citam no texto;
  * - sucessora e correspondência: se a norma foi revogada no todo, a norma que a revogou, as regras
  *   de transição e os dispositivos correspondentes (tabela de correspondência);
- * - fichas e validações cruzadas da `revisar-ppc`: referência estruturada à norma, referência a um
+ * - fichas da revisão de PPC: referência estruturada à norma, referência a um
  *   dispositivo correspondente da sucessora, ou citação no texto (resolvedor de citações);
- * - outros textos de conteúdo das skills (prompts, contratos, taxonomia, marcos): citação no texto;
+ * - outros textos de conteúdo (das skills, a taxonomia e os marcos da revisão de PPC): citação no texto;
  * - PPCs convertidos que citam a norma (`kb citacoes`).
  *
  * Os arquivos de conteúdo podem vir de outra árvore (`raizConteudo`, por exemplo um `git archive` de
@@ -17,7 +17,7 @@
  *
  * A regra é `impactoEm`, pura, sobre uma `FonteImpacto` já carregada; o serviço `Impacto` a monta
  * a partir de `FontesNormativas` (arquivos do checkout ou `kb.sqlite`) e do banco. O banco guarda as
- * fichas da `revisar-ppc`, mas não os outros textos das skills: sobre `FontesNormativas.layerBanco`,
+ * fichas da revisão de PPC, mas não os outros textos: sobre `FontesNormativas.layerBanco`,
  * `arquivos` traz só as fichas.
  */
 import type { PpcCitante } from "../ppcs/citacoes.ts";
@@ -39,7 +39,7 @@ export type MotivoImpacto =
 export interface ArquivoAfetado {
   /** Caminho relativo à raiz do conteúdo. */
   arquivo: string;
-  categoria: "ficha" | "validacao-cruzada" | "conteudo-skill";
+  categoria: "ficha" | "conteudo-skill";
   motivos: MotivoImpacto[];
   /** Dispositivos citados (da norma ou correspondentes da sucessora). */
   dispositivos: string[];
@@ -160,7 +160,6 @@ function referenciasEstruturadas(json: unknown): RefEstruturada[] {
 
 function categoria(arquivo: string): ArquivoAfetado["categoria"] {
   if (arquivo.includes("/fichas/")) return "ficha";
-  if (arquivo.includes("/validacoes-cruzadas/")) return "validacao-cruzada";
   return "conteudo-skill";
 }
 

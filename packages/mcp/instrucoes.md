@@ -1,6 +1,6 @@
 # Base de conhecimento do IFPR
 
-1. **O que é a base.** Normas e legislação da educação profissional, PPCs vigentes do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da `revisar-ppc`, numa versão com data de referência. `sobre_a_base` diz o que ela contém e de quando é.
+1. **O que é a base.** Normas e legislação da educação profissional, PPCs vigentes do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da revisão de PPC, numa versão com data de referência. `sobre_a_base` diz o que ela contém e de quando é.
 
 2. **Citação.** Afirmação sobre norma, curso ou PPC sai de uma ferramenta: cite o link `ifpr://` e o texto literal devolvido, nunca uma paráfrase de memória. Antes de afirmar uma obrigação normativa, ache o dispositivo: `buscar_norma` com a citação ou os termos, `ler_dispositivos` se já tiver o ID. Para conferir as citações de um documento, `resolver_citacoes`. Os links `ifpr://` também se leem como recursos MCP (`resources/read`). Escreva a citação como link Markdown, com o ato e o dispositivo no texto, fora de crase: `[Lei nº 11.788/2008, art. 2º, § 3º](ifpr://norma/br/lei/2008/11788#art2)`.
 
@@ -10,6 +10,6 @@
 
 5. **PPCs.** São exemplos institucionais, não norma. Para ver como outros cursos escreveram uma seção, `buscar_secoes` e, para o texto inteiro, `ler_secao`. Para um curso, `ficha_curso` (ache o ID com `listar_cursos`); para comparar vários PPCs com o SUAP, `fatos_ppc`.
 
-6. **Revisão de PPC.** Dentro da skill `revisar-ppc`, peça o contexto de cada tarefa a `pacote_contexto` (um PPC da base ou o `.md` da pasta de trabalho) em vez de montá-lo com várias chamadas. Chame `etapa` só quando a skill pedir.
+6. **Revisão de PPC.** Para conferir um PPC (da base ou o `.md` da pasta de trabalho) contra as fichas da revisão de PPC, peça o contexto a `pacote_contexto` em vez de montá-lo com várias chamadas. Chame `etapa` só quando a skill pedir.
 
 7. **Fora da base e versão.** Se a base não tem a informação, diga isso; não preencha com memória. Quando a resposta depender da data da base, informe-a: ela está na última linha de cada resposta.

@@ -27,7 +27,7 @@ afterAll(limparTemporarios);
 
 const bancoPpcs = criarBancoFixturePpcs();
 
-/** Uma ficha com os campos da `revisar-ppc` (a da fixture só tem o ID e as referências). */
+/** Uma ficha com os campos da revisão de PPC (a da fixture só tem o ID e as referências). */
 const FICHA = {
   id: "CT-TESTE-01",
   titulo: "Acompanhamento de egressos",
@@ -42,7 +42,7 @@ const FICHA = {
   db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
     FICHA.id,
     FICHA.titulo,
-    ".agents/skills/revisar-ppc/base-analise/fichas/ct-teste-01.json",
+    "base-conhecimento/revisao-ppc/fichas/ct-teste-01.json",
     JSON.stringify(FICHA),
     JSON.stringify(FICHA),
   );
@@ -238,7 +238,7 @@ describe.each([
         "**[CT-TESTE-01: Acompanhamento de egressos](ifpr://ficha/CT-TESTE-01)** — domínio gestao; criticidade OBRIG",
       );
       expect(ficha).toContain(
-        "**Pergunta**\n> O PPC descreve o acompanhamento de egressos?\nfonte: `.agents/skills/revisar-ppc/base-analise/fichas/ct-teste-01.json:6-6`",
+        "**Pergunta**\n> O PPC descreve o acompanhamento de egressos?\nfonte: `base-conhecimento/revisao-ppc/fichas/ct-teste-01.json:6-6`",
       );
       expect(ficha).toContain(
         "- [br/cne-cp/res/2026/2#art28-xviii](ifpr://norma/br/cne-cp/res/2026/2#art28-xviii) (fundamento)",

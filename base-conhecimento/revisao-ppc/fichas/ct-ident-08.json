@@ -1,0 +1,82 @@
+{
+  "id": "CT-IDENT-08",
+  "titulo": "Base legal atualizada nas seções de identidade",
+  "dominio": "identidade",
+  "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Normas citadas nas seções de identidade com status revogada no registro, e se a sucessora vigente também é citada."
+  },
+  "topicos_tematicos": [
+    "referencias_normativas"
+  ],
+  "tipo_escopo": "tematico",
+  "ancoras_semanticas": [
+    "Base legal atualizada nas seções de identidade",
+    "Referências, base legal e normas institucionais",
+    "base legal",
+    "fundamentação legal",
+    "referências",
+    "referências normativas",
+    "legislação",
+    "lei",
+    "resolução",
+    "portaria",
+    "parecer",
+    "norma",
+    "DCNEPT",
+    "DCNEM",
+    "CNCT",
+    "IFPR",
+    "lei 9.394",
+    "resolução cne/cp 1/2021",
+    "resolução cne/cp 2/2026",
+    "resolução cne/cp nº 1/2021",
+    "resolução cne/cp nº 2/2026",
+    "resolução cne/ceb nº 2/2024",
+    "resolução cne/ceb nº 02/2012",
+    "resolução cne/ceb nº 06/2012",
+    "lei 14.945/2024"
+  ],
+  "consultas": [
+    "lei 9.394",
+    "resolução cne/cp 1/2021",
+    "resolução cne/cp 2/2026",
+    "resolução cne/cp nº 1/2021",
+    "resolução cne/cp nº 2/2026",
+    "resolução cne/ceb nº 2/2024",
+    "resolução cne/ceb nº 02/2012",
+    "resolução cne/ceb nº 06/2012",
+    "lei 14.945/2024"
+  ],
+  "referencias_normativas": [
+    {
+      "ref": "br/lei/1996/9394",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2024/14945",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-ceb/res/2024/2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "papel": "fundamento"
+    }
+  ],
+  "pergunta": "As seções de identidade do curso usam base legal atualizada e coerente com a oferta proposta?",
+  "rubrica": "Checar se a fundamentação legal central do curso aparece de forma vigente e pertinente. Em qualquer forma de oferta, verificar a presença ou harmonização com a Resolução CNE/CP nº 2/2026 (DCN da EPT, que revogou a Resolução CNE/CP nº 1/2021) e a LDB. Para curso técnico integrado ao Ensino Médio, verificar também a Resolução CNE/CEB nº 2/2024 (DCNEM) e a Lei nº 14.945/2024. Para oferta articulada à EJA, verificar a Resolução CNE/CEB nº 3/2025, observando que o inciso III de seu art. 6º foi revogado e que a carga horária da EJA articulada ao ensino médio segue o art. 30 da Resolução CNE/CP nº 2/2026. A Resolução CNE/CP nº 1/2021 e as normas de 2012 podem ser citadas historicamente ou para a regra de transição, mas não devem aparecer como fundamento vigente principal sem contextualização. Aplicar a regra de transição registrada nos marcos normativos (a seção “Marcos e transições” do contexto).",
+  "boa_evidencia": "Citações atuais e referências consistentes com a forma de oferta, incluindo a DCN da EPT de 2026 e, no integrado, a DCNEM de 2024 como marcos centrais ou expressamente harmonizados.",
+  "ma_evidencia": "Base legal defasada, revogada ou incompleta: Resolução CNE/CP nº 1/2021 tratada como vigente, ou Resolução CNE/CEB nº 02/2012 ou nº 06/2012 como eixo principal, sem atualização para a DCN da EPT de 2026 e, no integrado, a DCNEM de 2024.",
+  "escalonar_quando": "Escalonar se a fundamentação existir, mas houver dúvida sobre vigência ou suficiência normativa, especialmente quando a seção de concepção ou identidade usa a Resolução CNE/CP nº 1/2021 ou atos de 2012 como referência central sem relação explícita com as normas mais recentes.",
+  "evidencia_minima": 2,
+  "estados_permitidos": [
+    "ATENDE",
+    "NAO_ATENDE",
+    "INCONCLUSIVO",
+    "NAO_APLICAVEL"
+  ]
+}

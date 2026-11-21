@@ -184,7 +184,7 @@ describe("pasta de skills", () => {
       assert.deepStrictEqual(pasta.invalidas, []);
       const nomes = pasta.skills.map((skill) => skill.nome);
       assert.includeMembers(nomes, ["verificar-fundamentacao-normativa"]);
-      assert.include(pasta.foraDoApp, "revisar-ppc");
+      assert.include(pasta.foraDoApp, "ifpr-design");
       const fundamentacao = pasta.skills.find((skill) => skill.nome === "verificar-fundamentacao-normativa");
       assert.includeMembers(fundamentacao?.arquivos.map((arquivo) => arquivo.caminho) ?? [], [
         "references/relatorio.md",

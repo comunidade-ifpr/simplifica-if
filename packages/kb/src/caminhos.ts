@@ -11,7 +11,7 @@ import * as NodePath from "node:path";
 
 const BASE = "base-conhecimento";
 const INSTITUCIONAL = `${BASE}/institucional/ifpr`;
-const BASE_ANALISE = ".agents/skills/revisar-ppc/base-analise";
+const REVISAO_PPC = `${BASE}/revisao-ppc`;
 const DADOS_KB = "packages/kb/dados";
 
 export const CAMINHOS = {
@@ -30,11 +30,13 @@ export const CAMINHOS = {
   institucional: INSTITUCIONAL,
   ppcs: `${INSTITUCIONAL}/ppcs`,
   indicePpcs: `${INSTITUCIONAL}/ppcs/index.json`,
-  /** A base de análise da skill `revisar-ppc`. */
-  baseAnalise: BASE_ANALISE,
-  fichas: `${BASE_ANALISE}/fichas`,
-  topicosFichas: `${BASE_ANALISE}/topicos-fichas.json`,
-  marcos: `${BASE_ANALISE}/marcos-normativos.json`,
+  /** A base da revisão de PPC: as fichas (os critérios), a taxonomia dos tópicos e os marcos normativos. */
+  revisaoPpc: REVISAO_PPC,
+  fichas: `${REVISAO_PPC}/fichas`,
+  topicosFichas: `${REVISAO_PPC}/topicos-fichas.json`,
+  marcos: `${REVISAO_PPC}/marcos-normativos.json`,
+  schemasRevisaoPpc: `${REVISAO_PPC}/schemas`,
+  mapaFichas: `${REVISAO_PPC}/mapa-fichas.md`,
   skills: ".agents/skills",
   dadosKb: DADOS_KB,
   sinonimos: `${DADOS_KB}/sinonimos.yaml`,

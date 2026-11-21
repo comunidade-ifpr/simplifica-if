@@ -1,8 +1,8 @@
 /**
- * Conversão de um PPC `.docx` nos artefatos que a skill consome: `PPC.md` normalizado, Markdown
- * bruto, `_dados.json`, matriz curricular, ementário e a figura da representação gráfica.
+ * Conversão de um PPC `.docx` nos artefatos da revisão: `PPC.md` normalizado, Markdown bruto,
+ * `_dados.json`, matriz curricular, ementário e a figura da representação gráfica.
  *
- * As regras de leitura e de conversão estão no README da skill `revisar-ppc`.
+ * As regras de leitura e de conversão estão no README do pacote ("Conversão do DOCX").
  *
  * Camadas, de baixo para cima:
  * - `@simplifica-if/docx`: o DOCX como modelo intermediário (pacote ZIP, XML, parágrafos, tabelas,

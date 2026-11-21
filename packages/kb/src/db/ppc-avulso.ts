@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off -- o banco em memória é um `DatabaseSync` do node:sqlite, gravado pelo mesmo código da compilação
 /**
- * O banco em memória de um PPC fora da base (o `PPC.md` de uma rodada da `revisar-ppc`, o PPC que a
- * pessoa revisa no app): o esquema do `kb.sqlite` com uma linha em `ppcs`, as seções pela mesma
+ * O banco em memória de um PPC fora da base (o PPC que a pessoa revisa no app, um `.md` da pasta de
+ * trabalho): o esquema do `kb.sqlite` com uma linha em `ppcs`, as seções pela mesma
  * segmentação e taxonomia do índice (`secoesIndexadas`) e as citações pelo mesmo resolvedor,
  * gravadas por `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de
  * citações rodam nele sem mudança, trocando só o `SqlClient` do ambiente.
@@ -43,8 +43,8 @@ export interface OpcoesPpcAvulso {
   todasAsSecoes?: boolean;
   /**
    * Reconhece `# Título` como título de seção. No índice publicado só `##` a `######` contam (nos
-   * PPCs convertidos de PDF, `#` aparece em linhas da capa); o normalizador e o conversor DOCX da
-   * `revisar-ppc` põem o primeiro nível numerado em `#`. A segmentação roda como se fosse `##`, com
+   * PPCs convertidos de PDF, `#` aparece em linhas da capa); o normalizador e o conversor DOCX do
+   * `packages/ppc` põem o primeiro nível numerado em `#`. A segmentação roda como se fosse `##`, com
    * as mesmas linhas.
    */
   titulosNivel1?: boolean;

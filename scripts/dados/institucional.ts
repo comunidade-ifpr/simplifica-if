@@ -3,8 +3,8 @@
  * Fonte de verdade dos dados institucionais: campi, cursos, processos seletivos, editais e ofertas
  * de ingresso. Cada registro é um arquivo JSON em `base-conhecimento/institucional/ifpr/<coleção>/`,
  * versionado no git e publicado como está. As relações usam chaves canônicas (`campus_id`,
- * `campus_id/curso_slug`, `processo_seletivo_id`, `edital_id`). O `index.json` de cada coleção é
- * gerado (`indices.ts`) e não é registro.
+ * `campus_id/curso_slug`, `processo_seletivo_id`, `edital_id`). Um `index.json` numa coleção é
+ * gerado e não é registro.
  *
  * Este módulo lê, valida e grava esses arquivos e os converte nas entidades do domínio que a
  * auditoria usa.

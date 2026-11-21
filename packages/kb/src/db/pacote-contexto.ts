@@ -1,10 +1,10 @@
 /**
- * `kb pacote-contexto <tarefa> <ppc>`: o contexto de uma tarefa da `revisar-ppc` montado pelo banco,
+ * `kb pacote-contexto <tarefa> <ppc>`: o contexto de uma tarefa da revisão de PPC montado pelo banco,
  * em vez do PPC inteiro mais os manifestos.
  *
  * Tarefa: uma ficha (`CT-CURR-12`), várias separadas por vírgula, um tópico de
- * `topicos-fichas.json` (`estagio`), um grupo da rodada (`grupo-001`: o n-ésimo grupo por tópico de
- * `agruparPorTopico`, o mesmo da skill) ou `todas`. O PPC é um da base (`campus/curso`) ou, por
+ * `topicos-fichas.json` (`estagio`), um grupo por tópico (`grupo-001`: o n-ésimo grupo de
+ * `agruparPorTopico`) ou `todas`. O PPC é um da base (`campus/curso`) ou, por
  * `abrirPpcAvulso`, um Markdown fora dela, segmentado num banco em memória (`ppc-avulso.ts`).
  *
  * O pacote traz:
@@ -52,7 +52,7 @@ import {
 import * as PpcAvulsoDb from "./ppc-avulso.ts";
 import * as Sql from "./sql.ts";
 
-/** Tamanho máximo de um grupo de sub-agente da `revisar-ppc` (fichas por grupo). */
+/** Tamanho máximo de um grupo por tópico (fichas por grupo). */
 export const TAMANHO_MAXIMO_GRUPO = 20;
 /** Grupo das fichas de escopo transversal, que recebem o PPC inteiro. */
 export const TOPICO_TRANSVERSAL = "transversal";
@@ -245,7 +245,7 @@ export const fichasResumidas = Effect.fn("pacoteContexto.fichasResumidas")(funct
 });
 
 /**
- * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `revisar-ppc`
+ * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico
  * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco); sem
  * `topicos`, os de `FontesNormativas`.
  */

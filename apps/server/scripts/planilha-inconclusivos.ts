@@ -82,7 +82,7 @@ const fichas = new Map<string, FichaIa>();
 const fichaDaBase = (id: string) => {
   let f = fichas.get(id);
   if (!f) {
-    const caminho = NodePath.join(RAIZ, ".agents/skills/revisar-ppc/base-analise/fichas", `${id.toLowerCase()}.json`);
+    const caminho = NodePath.join(RAIZ, "base-conhecimento/revisao-ppc/fichas", `${id.toLowerCase()}.json`);
     f = fichaIa(JSON.parse(NodeFS.readFileSync(caminho, "utf8")) as Record<string, unknown>);
     fichas.set(id, f);
   }

@@ -4,7 +4,8 @@
  *
  * - CT-SUP-12: normas revogadas citadas em qualquer ponto (a ficha responsável pela vigência);
  * - CT-IDENT-08: normas revogadas nas seções de identidade, e a DCN da EPT (e a DCNEM no integrado) citadas;
- * - CT-SUP-09: os marcos centrais vigentes na seção de referências;
+ * - CT-SUP-09: os marcos centrais vigentes na seção de referências, e as normas citadas no texto que
+ *   faltam nela;
  * - CT-SUP-14: CNCT e marcos institucionais (PDI, PPI, Regimento) referenciados;
  * - CT-SUP-21: a legislação profissional que o CNCT indica;
  * - CT-SUP-24: a Política de Assistência Estudantil (Res. CONSUP/IFPR nº 239/2025) e as revogadas por ela.
@@ -177,7 +178,7 @@ export const marcosNasReferencias: Verificador = {
   id: "d-marcos-nas-referencias",
   ficha: "CT-SUP-09",
   descricao:
-    "Na seção de referências, a DCN da EPT vigente (Res. CNE/CP nº 2/2026) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024), a LDB e a Lei nº 14.945/2024. Ausente em todo o PPC é pendência para a LDB; as DCN são marcos de CT-SUP-12 (aqui, a conferir) e a Lei nº 14.945/2024, “quando pertinente”, também fica a conferir; citada só fora das referências, a conferir. As normas revogadas ficam com CT-SUP-12.",
+    "Na seção de referências, a DCN da EPT vigente (Res. CNE/CP nº 2/2026) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024), a LDB e a Lei nº 14.945/2024. Ausente em todo o PPC é pendência para a LDB; as DCN são marcos de CT-SUP-12 (aqui, a conferir) e a Lei nº 14.945/2024, “quando pertinente”, também fica a conferir; citada só fora das referências, a conferir. As demais normas citadas com segurança no texto e ausentes das referências vão num apontamento só, a conferir. As normas revogadas ficam com CT-SUP-12.",
   verificar(ppc, base) {
     const linhas = new Set(linhasDasSecoes(ppc, new Set(["referencias"])));
     const exigidas = base.forma === "integrado" ? [DCN_EPT, DCNEM, LDB, LEI_14945] : [DCN_EPT];
@@ -222,6 +223,8 @@ export const marcosNasReferencias: Verificador = {
               },
       );
     }
+    const faltantes = normasForaDasReferencias(ppc, base, linhas, new Set(exigidas));
+    if (faltantes) apontamentos.push(faltantes);
     return resultado(this, apontamentos, {
       estado: "atende",
       mensagem: "A seção de referências traz os marcos vigentes da forma de oferta.",
@@ -230,6 +233,46 @@ export const marcosNasReferencias: Verificador = {
     });
   },
 };
+
+/** Quantas normas a mensagem nomeia; as demais entram na contagem. */
+const NORMAS_NA_MENSAGEM = 6;
+
+/** Normas superadas num marco (todas da linha, menos a última): citá-las é com CT-SUP-12, não aqui. */
+const SUPERADAS_EM_MARCO = new Set(MARCOS.flatMap((m) => m.linha.slice(0, -1)));
+
+/**
+ * As normas da base citadas com segurança fora da seção de referências e ausentes dela (nem com
+ * citação incerta), sem as externas (ABNT), as fora do registro, as revogadas e as superadas num
+ * marco (CT-SUP-12) e as que o verificador já cobre: um apontamento `a_conferir`, porque a citação
+ * pode ser só de passagem.
+ */
+function normasForaDasReferencias(
+  ppc: PpcPreparado,
+  base: BaseVerificacao,
+  linhas: ReadonlySet<number>,
+  jaCobertas: ReadonlySet<string>,
+): Apontamento | null {
+  const faltantes: { id: string; linha: number; trecho: string }[] = [];
+  for (const [id, lista] of citacoesPorAto(ppc.citacoes)) {
+    if (jaCobertas.has(id) || lista.some((c) => linhas.has(c.linha))) continue;
+    const situacao = base.registro.obter(id)?.situacao;
+    if (situacao === undefined || situacao === "externo" || SUPERADAS_EM_MARCO.has(id)) continue;
+    if (base.vigencia(id).status === "revogada") continue;
+    const segura = lista.find(citacaoSegura);
+    if (segura) faltantes.push({ id, linha: segura.linha, trecho: segura.trecho });
+  }
+  if (!faltantes.length) return null;
+  const nomes = faltantes.slice(0, NORMAS_NA_MENSAGEM).map((f) => titulo(base, f.id));
+  const resto = faltantes.length - nomes.length;
+  return {
+    estado: "a_conferir",
+    mensagem:
+      `${faltantes.length === 1 ? "Norma citada" : "Normas citadas"} no texto sem entrada na seção de referências: ` +
+      `${nomes.join("; ")}${resto > 0 ? ` e mais ${resto}` : ""}. Inclua nas referências as normas que fundamentam o curso.`,
+    trechos: faltantes.slice(0, 3).map((f) => trecho(ppc, f.linha, f.trecho)),
+    fontes: faltantes.slice(0, NORMAS_NA_MENSAGEM).map((f) => linkNorma(f.id)),
+  };
+}
 
 /* ------------------------------------------------------------------ CT-SUP-14 */
 

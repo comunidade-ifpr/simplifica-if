@@ -58,7 +58,7 @@ O mapa das pastas (`apps/desktop`, `apps/server`, `apps/web`, `packages/*`) est�
 | `ifpr://ppc/curitiba/tecnico-em-enfermagem#<secao>` | PPC convertido, na seção |
 | `ifpr://cnct/tecnico-em-enfermagem` | Curso no CNCT |
 | `ifpr://campus/curitiba` | Ficha do campus |
-| `ifpr://ficha/CT-CURR-12` | Ficha da `revisar-ppc` |
+| `ifpr://ficha/CT-CURR-12` | Ficha da revisão de PPC |
 
 As ferramentas do `simplifica-mcp` devolvem esses links prontos, e o `simplifica-mcp` também os serve como recursos MCP (`resources/read`), no app e no executável. O Consepe ainda não tem link próprio.
 
@@ -119,7 +119,7 @@ simplifica:
 - `ferramentas` lista só ferramentas do `simplifica-mcp`: a skill no app não chama comandos do repositório. `arquivos` lista o que vai para o app; `scripts/`, `tests/` e `agents/` nunca vão. Skill que precise de sistema com login não entra no app.
 - `publico` tem vocabulário fechado (`@simplifica-if/mcp/publicos`) e filtra os cartões pelo perfil. A ferramenta `etapa` vira o indicador de etapas da conversa.
 
-Hoje o Início tem duas tarefas: a nativa "Revisar um PPC" (conduzida pelo servidor, não pela skill `revisar-ppc`) e a `verificar-fundamentacao-normativa`.
+Hoje o Início tem duas tarefas: a nativa "Revisar um PPC" (conduzida pelo servidor, sobre as fichas de `base-conhecimento/revisao-ppc/`) e a `verificar-fundamentacao-normativa`. A skill `revisar-ppc`, com sub-agentes e relatório HTML, saiu em 21/11/2026: o app já fazia a revisão, e as validações cruzadas dela viraram fichas transversais e um verificador.
 
 ## Atualização: três ritmos
 
@@ -182,7 +182,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 | Anexos em texto | feito: `.docx`, `.odt` e PDF em Markdown para a IA (`apps/server/src/textos-anexos/`) |
 | M2.1 a M2.5 | M2.1 virou o M1.15; M2.2 a M2.5 faltam |
 
-**Revisar um PPC, em uma linha:** 80 fichas classificadas pelo campo `execucao` (12 D só código, 38 S trecho achado pelo código e confirmado pela IA, 30 J julgamento da IA sobre a seção); a pré-conferência roda sem IA, e a revisão com IA é orquestrada pelo servidor em sessões sem ferramentas, com toda resposta conferida em código.
+**Revisar um PPC, em uma linha:** 84 fichas classificadas pelo campo `execucao` (12 D só código, 38 S trecho achado pelo código e confirmado pela IA, 34 J julgamento da IA sobre a seção); a pré-conferência roda sem IA, e a revisão com IA é orquestrada pelo servidor em sessões sem ferramentas, com toda resposta conferida em código.
 
 ## O que falta
 

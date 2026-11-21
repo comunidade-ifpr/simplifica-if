@@ -31,7 +31,7 @@ const ROTULOS_CONTAGEM: [tabela: string, rotulo: string][] = [
   ["ofertas", "ofertas de ingresso"],
   ["cnct", "cursos do CNCT"],
   ["campi", "campi"],
-  ["fichas", "fichas da revisar-ppc"],
+  ["fichas", "fichas da revisão de PPC"],
 ];
 
 export const sobreABase = definirFerramenta({

@@ -1,14 +1,14 @@
 /**
  * Configuração do Vite+ (`vp`): testes (vitest), formatação (oxfmt) e lint (oxlint), como no T3 Code.
  *
- * Os testes da raiz (`scripts/` e skills) rodam com `vp test run` aqui; os de cada pacote rodam no
+ * Os testes da raiz (`scripts/` e `testes-gabarito/`) rodam com `vp test run` aqui; os de cada pacote rodam no
  * diretório do pacote com `vp test run --config ../../vite.config.ts --dir .`, como no T3 e como os
  * testes rodavam antes do C0 (alguns dependem do diretório atual).
  */
 import "vite-plus/test/config";
 import { defineConfig } from "vite-plus";
 
-// `.claude/skills` é um symlink para `.agents/skills`: sem a exclusão, os testes das skills rodariam duas vezes.
+// `.claude/` tem o symlink `.claude/skills` e os worktrees dos agentes: fora dos testes.
 const TEST_EXCLUDE = [
   "**/.repos/**",
   "**/.claude/**",
@@ -19,7 +19,7 @@ const TEST_EXCLUDE = [
 ];
 
 /** Código migrado no C3, sob as regras do plugin próprio (ver `lint.overrides`). */
-const ARQUIVOS_C3 = ["scripts/**", ".agents/skills/**", "testes-gabarito/**"];
+const ARQUIVOS_C3 = ["scripts/**", "testes-gabarito/**"];
 
 /** `vp test run` na raiz do repositório: os pacotes e os apps têm a própria execução (`pnpm -r test`). */
 const execucaoNaRaiz = process.cwd() === import.meta.dirname;
@@ -71,10 +71,6 @@ export default defineConfig({
       // builds e bundles (o apps/web e o apps/desktop)
       "**/dist/**",
       ".agents/skills/*/assets/**",
-      ".agents/skills/*/base-analise/**",
-      ".agents/skills/*/config/**",
-      ".agents/skills/*/prompts/**",
-      ".agents/skills/*/output/**",
       ".agents/skills/*/references/**",
     ],
   },
@@ -92,8 +88,6 @@ export default defineConfig({
       "apps/web/src/routeTree.gen.ts",
       "apps/web/dist/**",
       ".agents/skills/*/assets/**",
-      ".agents/skills/*/base-analise/**",
-      ".agents/skills/*/output/**",
       // pacotes copiados do T3 Code: o lint deles é o do upstream, com o plugin `t3code/*`
       "packages/effect-acp/**",
       "packages/effect-codex-app-server/**",

@@ -85,7 +85,7 @@ export const MODELOS: ReadonlyArray<ModeloDeRecurso> = [
   {
     tipo: "ficha",
     uriTemplate: "ifpr://ficha/{ficha}",
-    titulo: "Ficha da revisar-ppc",
+    titulo: "Ficha da revisão de PPC",
     descricao:
       'Pergunta, rubrica, evidências e referências normativas de uma ficha da revisão de PPC, como em "ifpr://ficha/CT-CURR-12".',
   },

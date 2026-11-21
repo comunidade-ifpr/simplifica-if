@@ -116,7 +116,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
   inserir("fichas", {
     id: "CT-CURR-12",
     titulo: "Progressão formativa explicitada na organização curricular",
-    path: ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-12.json",
+    path: "base-conhecimento/revisao-ppc/fichas/ct-curr-12.json",
     dados_json: JSON.stringify(ficha),
     arquivo_json: JSON.stringify(ficha, null, 2),
   });

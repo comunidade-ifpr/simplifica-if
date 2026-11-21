@@ -306,7 +306,7 @@ export const pacoteContexto = Command.make(
   }, Effect.provide(camadaRepositorio)),
 ).pipe(
   Command.withDescription(
-    "Contexto de uma tarefa da revisar-ppc (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
+    "Contexto de uma tarefa da revisão de PPC (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
   ),
 );
 

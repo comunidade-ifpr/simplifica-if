@@ -859,7 +859,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       }
     }
 
-    /* ---------- fichas, tópicos e marcos da revisar-ppc */
+    /* ---------- fichas, tópicos e marcos da revisão de PPC */
     const dirFichas = noCheckout(raiz, CAMINHOS.fichas);
     const arquivosFichas = NodeFS.existsSync(dirFichas)
       ? NodeFS.readdirSync(dirFichas)
@@ -937,7 +937,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     });
     lexico.grupos.forEach((termos, ordem) => ins.inserir("sinonimos_grupos", { ordem, termos_json: json(termos) }));
     // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
-    // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na revisar-ppc.
+    // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na validação das fichas.
     const arquivoMarcos = noCheckout(raiz, CAMINHOS.marcos);
     if (NodeFS.existsSync(arquivoMarcos)) {
       const marcos = decodificarMarcos(lerJson(arquivoMarcos));

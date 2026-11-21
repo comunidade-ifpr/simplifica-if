@@ -4,7 +4,7 @@
  * calcula (`statusEm`), se ele é certo ou depende de data "a confirmar" (a publicação da Res. CNE/CP
  * nº 2/2026 no DOU, por exemplo), e as regras de transição que preservam a norma revogada.
  *
- * E os marcos normativos da `revisar-ppc` (`base-analise/marcos-normativos.json`): para cada linha
+ * E os marcos normativos da revisão (`base-conhecimento/revisao-ppc/marcos-normativos.json`): para cada linha
  * normativa, a ficha responsável, a única que eleva a gravidade de um fato do marco a `nao_atende`; as
  * demais fichas de base legal registram o mesmo fato como `a_conferir`. `test/vigencia.test.ts`
  * confere que esta cópia bate com o arquivo da skill.
@@ -137,7 +137,7 @@ export function revogacaoRecente(
 
 export type Marco = { id: string; linha: readonly string[]; responsavel: string };
 
-/** Linhas normativas e ficha responsável, de `base-analise/marcos-normativos.json` (conferido em teste). */
+/** Linhas normativas e ficha responsável, de `base-conhecimento/revisao-ppc/marcos-normativos.json` (conferido em teste). */
 export const MARCOS: readonly Marco[] = [
   {
     id: "dcn_ept",

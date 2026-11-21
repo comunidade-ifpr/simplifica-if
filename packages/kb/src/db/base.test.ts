@@ -79,7 +79,7 @@ const vigenciaArquivos = carregarFonteVigencia(raiz);
 const doCheckout = () => ({ registro: carregarRegistro(raiz), sinonimos: lerSinonimos(raiz) });
 /** Instante do relógio de teste durante as compilações: vira o mtime de cada banco. */
 const INSTANTE = DateTime.toEpochMillis(DateTime.makeUnsafe("2026-11-13T12:00:00Z"));
-const FICHAS_DA_ANALISE = ".agents/skills/revisar-ppc/base-analise/fichas/";
+const FICHAS_DA_ANALISE = "base-conhecimento/revisao-ppc/fichas/";
 
 /* ------------------------------------------------------------------ layers */
 
@@ -385,7 +385,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       Effect.gen(function* () {
         const { pacote: servico } = yield* servicos;
         const original = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
-        // o primeiro nível em `#`, como o normalizador da revisar-ppc o põe, e as quebras de linha do Word
+        // o primeiro nível em `#`, como o normalizador do `packages/ppc` o põe, e as quebras de linha do Word
         const md = original.replace(/^## /gm, "# ").replace(/\n/g, "\r\n");
         const base = yield* servico.montar("estagio", PPC);
         const fichas = yield* servico.fichas(base.fichas_ids);
@@ -484,7 +484,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       Effect.gen(function* () {
         const fontes = yield* FontesNormativas.FontesNormativas;
         expect(fontes.relacoes).toEqual(carregarRelacoes(raiz));
-        const { marcos } = (yield* lerJson(".agents/skills/revisar-ppc/base-analise/marcos-normativos.json")) as {
+        const { marcos } = (yield* lerJson("base-conhecimento/revisao-ppc/marcos-normativos.json")) as {
           marcos: { id: string; linha: string[] }[];
         };
         for (const m of marcos) {

@@ -43,7 +43,7 @@ export const LIMITES_RESPOSTA = {
 
 const L = LIMITES_RESPOSTA;
 
-/** Um resultado de ficha, no contrato da `revisar-ppc` reduzido ao que o app usa. */
+/** Um resultado de ficha, no contrato da ficha reduzido ao que o app usa. */
 export const ResultadoIa = Schema.Struct({
   ficha_id: Texto,
   estado: EstadoIa,

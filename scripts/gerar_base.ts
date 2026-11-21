@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
- * vigência na data_referencia de config/vigencia.yaml), manifest.json e o índice dos campi
- * (institucional/ifpr/campi/index.json, lido pela revisar-ppc).
+ * vigência na data_referencia de config/vigencia.yaml), manifest.json e, na base da revisão de PPC
+ * (revisao-ppc/), os JSON Schemas da ficha e dos marcos e o mapa das fichas.
  */
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
@@ -13,8 +13,7 @@ import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { manifestJson, montarManifest } from "./base/front-matter.ts";
 import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
-import { indiceCampiGerado } from "./dados/indices.ts";
-import { carregarDadosInstitucionais } from "./dados/institucional.ts";
+import { geradosRevisaoPpc } from "./base/revisao-ppc/gerados.ts";
 import { sairCom } from "@simplifica-if/kb/principal";
 import { executarPrincipal } from "./principal.ts";
 
@@ -34,11 +33,6 @@ export const comando = Command.make(
       return yield* sairCom(1);
     }
 
-    const institucional = yield* Effect.sync(() => carregarDadosInstitucionais());
-    if (institucional.erros.length) {
-      for (const erro of institucional.erros) yield* Console.error(`ERRO: ${erro}`);
-      return yield* sairCom(1);
-    }
     const opcoes = { modo: check ? "verificar" : "gravar", raiz: caminhos.raiz } as const;
     const normas = yield* Effect.sync(() => normasComCamposGerados(caminhos.raizProjeto));
     // O manifest lê o front matter das normas: gravando, ele sai das normas já regravadas.
@@ -49,7 +43,10 @@ export const comando = Command.make(
     const manifest = yield* Effect.sync(() => montarManifest(caminhos));
     divergencias.push(
       ...(yield* aplicarGerados(
-        [{ caminho: caminhos.manifest, texto: manifestJson(manifest) }, indiceCampiGerado(institucional.dados)],
+        [
+          { caminho: caminhos.manifest, texto: manifestJson(manifest) },
+          ...(yield* Effect.sync(() => geradosRevisaoPpc())),
+        ],
         opcoes,
       )),
     );
@@ -73,8 +70,8 @@ export const comando = Command.make(
 ).pipe(
   Command.withDescription(
     "Gera os campos derivados do front matter das normas (relações e status de vigência) e manifest.json a " +
-      "partir de normas/*.md, relacoes.yaml e config/vigencia.yaml, e o índice dos campi a partir dos registros " +
-      "de institucional/ifpr/campi/.",
+      "partir de normas/*.md, relacoes.yaml e config/vigencia.yaml e, na revisão de PPC, os JSON Schemas da " +
+      "ficha e dos marcos e o mapa das fichas.",
   ),
 );
 

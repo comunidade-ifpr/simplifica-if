@@ -80,7 +80,11 @@
     "CT-TRANS-05",
     "CT-TRANS-06",
     "CT-TRANS-07",
-    "CT-TRANS-08"
+    "CT-TRANS-08",
+    "CT-TRANS-09",
+    "CT-TRANS-10",
+    "CT-TRANS-11",
+    "CT-TRANS-12"
   ],
   "ppc": {
     "id": "ppc:curitiba/tecnico-em-enfermagem",
@@ -2505,7 +2509,7 @@
       "criticidade": "OBRIG",
       "tipo_escopo": "tematico",
       "pergunta": "A concepção do curso explicita a perspectiva de Educação Profissional e Tecnológica com base normativa e pedagógica reconhecível?",
-      "rubrica": "Verificar se o PPC articula EPT, trabalho, ciência, cultura e tecnologia para além de uma citação superficial e se a concepção toma como referência normativa principal as DCN da EPT vigentes, a Resolução CNE/CP nº 2/2026, cujos princípios (art. 3º) incluem a centralidade do trabalho como princípio educativo, a indissociabilidade entre ensino, pesquisa, extensão, inovação, ciência e tecnologia, a integração entre teoria e prática, o protagonismo do estudante e a organização por itinerários formativos profissionais. A Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, e a Resolução CNE/CEB nº 06/2012 podem aparecer como referência histórica ou de transição, mas não como fundamento vigente principal. Aplicar a regra de transição registrada em `contextos.fundamentacao_normativa.marcos_normativos`.",
+      "rubrica": "Verificar se o PPC articula EPT, trabalho, ciência, cultura e tecnologia para além de uma citação superficial e se a concepção toma como referência normativa principal as DCN da EPT vigentes, a Resolução CNE/CP nº 2/2026, cujos princípios (art. 3º) incluem a centralidade do trabalho como princípio educativo, a indissociabilidade entre ensino, pesquisa, extensão, inovação, ciência e tecnologia, a integração entre teoria e prática, o protagonismo do estudante e a organização por itinerários formativos profissionais. A Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, e a Resolução CNE/CEB nº 06/2012 podem aparecer como referência histórica ou de transição, mas não como fundamento vigente principal. Aplicar a regra de transição registrada nos marcos normativos (a seção “Marcos e transições” do contexto).",
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -2682,7 +2686,7 @@
       "criticidade": "OBRIG",
       "tipo_escopo": "tematico",
       "pergunta": "As seções de identidade do curso usam base legal atualizada e coerente com a oferta proposta?",
-      "rubrica": "Checar se a fundamentação legal central do curso aparece de forma vigente e pertinente. Em qualquer forma de oferta, verificar a presença ou harmonização com a Resolução CNE/CP nº 2/2026 (DCN da EPT, que revogou a Resolução CNE/CP nº 1/2021) e a LDB. Para curso técnico integrado ao Ensino Médio, verificar também a Resolução CNE/CEB nº 2/2024 (DCNEM) e a Lei nº 14.945/2024. Para oferta articulada à EJA, verificar a Resolução CNE/CEB nº 3/2025, observando que o inciso III de seu art. 6º foi revogado e que a carga horária da EJA articulada ao ensino médio segue o art. 30 da Resolução CNE/CP nº 2/2026. A Resolução CNE/CP nº 1/2021 e as normas de 2012 podem ser citadas historicamente ou para a regra de transição, mas não devem aparecer como fundamento vigente principal sem contextualização. Aplicar a regra de transição registrada em `contextos.fundamentacao_normativa.marcos_normativos`.",
+      "rubrica": "Checar se a fundamentação legal central do curso aparece de forma vigente e pertinente. Em qualquer forma de oferta, verificar a presença ou harmonização com a Resolução CNE/CP nº 2/2026 (DCN da EPT, que revogou a Resolução CNE/CP nº 1/2021) e a LDB. Para curso técnico integrado ao Ensino Médio, verificar também a Resolução CNE/CEB nº 2/2024 (DCNEM) e a Lei nº 14.945/2024. Para oferta articulada à EJA, verificar a Resolução CNE/CEB nº 3/2025, observando que o inciso III de seu art. 6º foi revogado e que a carga horária da EJA articulada ao ensino médio segue o art. 30 da Resolução CNE/CP nº 2/2026. A Resolução CNE/CP nº 1/2021 e as normas de 2012 podem ser citadas historicamente ou para a regra de transição, mas não devem aparecer como fundamento vigente principal sem contextualização. Aplicar a regra de transição registrada nos marcos normativos (a seção “Marcos e transições” do contexto).",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -4076,7 +4080,7 @@
       "criticidade": "OBRIG",
       "tipo_escopo": "tematico",
       "pergunta": "A seção de referências apresenta base normativa suficiente e sem sinais evidentes de defasagem crítica?",
-      "rubrica": "Checar se as referências normativas centrais aparecem e se a lista não depende apenas de atos revogados, superados ou laterais. Em cursos técnicos integrados ao Ensino Médio, a seção de referências deve permitir localizar os marcos atuais de Ensino Médio e EPT: Resolução CNE/CEB nº 2/2024, Resolução CNE/CP nº 2/2026, LDB e Lei nº 14.945/2024 quando pertinente. Em qualquer forma de oferta, a DCN da EPT vigente (Resolução CNE/CP nº 2/2026) deve aparecer; a Resolução CNE/CP nº 1/2021 foi revogada e só pode constar como referência histórica ou de transição (ver `contextos.fundamentacao_normativa.marcos_normativos`).",
+      "rubrica": "Checar se as referências normativas centrais aparecem e se a lista não depende apenas de atos revogados, superados ou laterais. Em cursos técnicos integrados ao Ensino Médio, a seção de referências deve permitir localizar os marcos atuais de Ensino Médio e EPT: Resolução CNE/CEB nº 2/2024, Resolução CNE/CP nº 2/2026, LDB e Lei nº 14.945/2024 quando pertinente. Em qualquer forma de oferta, a DCN da EPT vigente (Resolução CNE/CP nº 2/2026) deve aparecer; a Resolução CNE/CP nº 1/2021 foi revogada e só pode constar como referência histórica ou de transição (ver os marcos normativos, na seção “Marcos e transições” do contexto). Além dos marcos, as normas que o texto do PPC cita como fundamento (inclusive as de inclusão e AEE na organização curricular e no atendimento ao estudante) devem constar na seção de referências.",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -4100,7 +4104,7 @@
       ],
       "execucao": {
         "modo": "D",
-        "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, e normas revogadas nela sem a sucessora."
+        "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, normas revogadas nela sem a sucessora e as normas da base citadas no texto que faltam nela (a conferir)."
       },
       "ancoras_semanticas": [
         "Referências com vigência normativa observável",
@@ -4276,7 +4280,7 @@
       "criticidade": "OBRIG",
       "tipo_escopo": "tematico",
       "pergunta": "A base normativa citada pelo PPC está apresentada com sinais observáveis de vigência atual, sem depender de atos revogados ou superados?",
-      "rubrica": "Verificar se a lista de referências e as seções normativas utilizam versões vigentes dos marcos centrais do curso e evitam tratar atos revogados ou superados como fundamento atual sem contextualização. Distinguir citação histórica de fundamento principal: normas de 2012 e a Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, não devem gerar problema se aparecerem apenas contextualizadas, mas devem gerar diligência quando sustentarem a proposta como marco vigente principal no lugar da Resolução CNE/CEB nº 2/2024 (DCNEM) e da Resolução CNE/CP nº 2/2026 (DCN da EPT). Aplicar a regra de transição registrada em `contextos.fundamentacao_normativa.marcos_normativos`. Esta é a ficha responsável pela vigência dos marcos normativos: o resultado esperado de norma revogada usada como fundamento principal é diligência para atualização, não reprovação.",
+      "rubrica": "Verificar se a lista de referências e as seções normativas utilizam versões vigentes dos marcos centrais do curso e evitam tratar atos revogados ou superados como fundamento atual sem contextualização. Distinguir citação histórica de fundamento principal: normas de 2012 e a Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, não devem gerar problema se aparecerem apenas contextualizadas, mas devem gerar diligência quando sustentarem a proposta como marco vigente principal no lugar da Resolução CNE/CEB nº 2/2024 (DCNEM) e da Resolução CNE/CP nº 2/2026 (DCN da EPT). Aplicar a regra de transição registrada nos marcos normativos (a seção “Marcos e transições” do contexto). Esta é a ficha responsável pela vigência dos marcos normativos: o resultado esperado de norma revogada usada como fundamento principal é diligência para atualização, não reprovação.",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -5421,7 +5425,7 @@
       "criticidade": "BLOQ",
       "tipo_escopo": "transversal",
       "pergunta": "Há coerência suficiente entre o que o curso promete formar, o perfil do egresso e o que efetivamente aparece na matriz curricular?",
-      "rubrica": "Trata-se de um cartão transversal de coerência global. Exige leitura articulada dos objetivos, perfil e organização curricular.",
+      "rubrica": "Trata-se de um cartão transversal de coerência global. Exige leitura articulada dos objetivos, perfil e organização curricular. Conferir a cobertura nos dois sentidos: cada competência do perfil do egresso tem objetivo específico correspondente e cada objetivo específico se reflete em competência ou componente; e cada objetivo específico e cada competência têm ao menos um componente curricular reconhecível que os desenvolve. Lacuna pontual sem efeito na formação prometida é recomendação, não NAO_ATENDE.",
       "topicos_tematicos": [
         "justificativa_objetivos",
         "perfil_egresso_mundo_trabalho",
@@ -5476,7 +5480,7 @@
         "competências"
       ],
       "boa_evidencia": "Objetivos, competências e componentes convergentes, sem lacunas formativas evidentes.",
-      "ma_evidencia": "Perfil profissional amplo sem cobertura curricular percebida ou matriz desalinhada com os objetivos.",
+      "ma_evidencia": "Perfil profissional amplo sem cobertura curricular percebida ou matriz desalinhada com os objetivos. Objetivos específicos sem componente correspondente, ou competências do perfil sem objetivo nem componente que as desenvolva.",
       "escalonar_quando": "Escalonar se houver coerência parcial, mas persistirem vazios relevantes entre intenção formativa e currículo.",
       "evidencia_minima": 3,
       "estados_permitidos": [
@@ -5493,7 +5497,7 @@
       "criticidade": "BLOQ",
       "tipo_escopo": "transversal",
       "pergunta": "A concepção do curso, as metodologias e a avaliação da aprendizagem operam de forma coerente entre si?",
-      "rubrica": "Verificar se o discurso pedagógico do PPC se materializa nas estratégias de ensino e avaliação. Usar como parâmetro a exigência de que critérios e instrumentos de avaliação sejam coerentes com o perfil profissional, os resultados de aprendizagem e a organização curricular (Resolução CNE/CP nº 2/2026, art. 38, § 2º).",
+      "rubrica": "Verificar se o discurso pedagógico do PPC se materializa nas estratégias de ensino e avaliação. Usar como parâmetro a exigência de que critérios e instrumentos de avaliação sejam coerentes com o perfil profissional, os resultados de aprendizagem e a organização curricular (Resolução CNE/CP nº 2/2026, art. 38, § 2º). Verificar em particular: se as metodologias de ensino decorrem da concepção pedagógica declarada (e não a contradizem); se a avaliação da aprendizagem segue a mesma concepção (por exemplo, avaliação processual e formativa quando a concepção é de formação integral); e se os instrumentos de avaliação são compatíveis com as metodologias e as práticas previstas na organização curricular (projetos, práticas laboratoriais e de campo avaliados por instrumentos adequados a eles).",
       "topicos_tematicos": [
         "avaliacao_aprendizagem",
         "concepcao_metodologias",
@@ -5557,7 +5561,7 @@
         "aprendizagem"
       ],
       "boa_evidencia": "Concepção pedagógica refletida em metodologias e critérios avaliativos compatíveis.",
-      "ma_evidencia": "Concepção progressista com avaliação puramente classificatória ou metodologias desconectadas.",
+      "ma_evidencia": "Concepção progressista com avaliação puramente classificatória ou metodologias desconectadas. Instrumentos de avaliação incompatíveis com as metodologias previstas (só provas escritas para componentes práticos ou de projeto, por exemplo).",
       "escalonar_quando": "Escalonar se o alinhamento for apenas parcial ou depender de inferência frágil.",
       "evidencia_minima": 3,
       "estados_permitidos": [
@@ -5650,7 +5654,7 @@
       "criticidade": "BLOQ",
       "tipo_escopo": "transversal",
       "pergunta": "O conjunto currículo-docentes-infraestrutura forma uma base institucional coerente para a oferta do curso?",
-      "rubrica": "Este cartão observa a compatibilidade entre o que será ofertado, quem sustentará a oferta e com quais meios.",
+      "rubrica": "Este cartão observa a compatibilidade entre o que será ofertado, quem sustentará a oferta e com quais meios. Verificar também se o corpo docente previsto tem formação para desenvolver as competências do perfil do egresso e se cada componente da matriz tem docente com formação compatível (a habilitação componente a componente é avaliada pela CT-SUP-15; aqui, a correspondência de conjunto entre perfil, matriz e quadro docente), e se os componentes práticos têm laboratórios ou ambientes correspondentes na infraestrutura.",
       "topicos_tematicos": [
         "corpo_docente_gestao",
         "infraestrutura",
@@ -5967,7 +5971,7 @@
       "criticidade": "OBRIG",
       "tipo_escopo": "transversal",
       "pergunta": "O PPC demonstra de forma suficiente que a matriz curricular, o ementário, os projetos integradores e as práticas formativas concretizam a concepção do curso e o perfil do egresso declarados?",
-      "rubrica": "Avaliar a articulação material entre concepção do curso, perfil do egresso, CNCT e organização curricular. Não basta haver discurso sobre formação integral, trabalho como princípio educativo, pesquisa como princípio pedagógico, autonomia, responsabilidade, sustentabilidade, tecnologias digitais, relações sociais de produção e mundo do trabalho; é necessário que a matriz, as ementas, os projetos integradores, práticas laboratoriais, práticas profissionais e estratégias avaliativas mostrem como essas dimensões serão desenvolvidas no percurso formativo. A análise deve produzir, além do estado e da justificativa, um texto de feedback aos autores quando houver fragilidade, desconexão ou necessidade de explicitação. Considerar os elementos da Resolução CNE/CP nº 2/2026, art. 22, inclusive a base tecnológica obrigatória com métodos, técnicas, ferramentas e tecnologias aplicáveis ao curso, com atenção às inovadoras e emergentes, como a IA (inciso V), e as competências socioemocionais integrantes do perfil profissional (inciso IV).",
+      "rubrica": "Avaliar a articulação material entre concepção do curso, perfil do egresso, CNCT e organização curricular. Não basta haver discurso sobre formação integral, trabalho como princípio educativo, pesquisa como princípio pedagógico, autonomia, responsabilidade, sustentabilidade, tecnologias digitais, relações sociais de produção e mundo do trabalho; é necessário que a matriz, as ementas, os projetos integradores, práticas laboratoriais, práticas profissionais e estratégias avaliativas mostrem como essas dimensões serão desenvolvidas no percurso formativo. A análise deve produzir, além do estado e da justificativa, um texto de feedback aos autores quando houver fragilidade, desconexão ou necessidade de explicitação. Considerar os elementos da Resolução CNE/CP nº 2/2026, art. 22, inclusive a base tecnológica obrigatória com métodos, técnicas, ferramentas e tecnologias aplicáveis ao curso, com atenção às inovadoras e emergentes, como a IA (inciso V), e as competências socioemocionais integrantes do perfil profissional (inciso IV). Comparar as seções de concepção do curso, perfil do egresso e organização curricular, verificando se o PPC demonstra, com evidências textuais, como componentes, ementas, projetos integradores, práticas laboratoriais, práticas profissionais e avaliação materializam o perfil profissional do CNCT e os princípios da EPT. Diferenciar matriz tecnicamente pertinente de matriz pedagogicamente explicitada: componentes compatíveis são condição necessária, mas não bastam quando o PPC não explica a mediação entre o discurso formativo e o percurso curricular.",
       "topicos_tematicos": [
         "concepcao_metodologias",
         "perfil_egresso_mundo_trabalho",
@@ -6073,6 +6077,208 @@
         "orientacao": "Produzir texto em linguagem dirigida aos autores do PPC, com diagnóstico, base normativa e sugestões de reescrita ou complementação. O texto deve considerar o conjunto normativo aplicável à forma de oferta e ao curso analisado, incluindo, quando pertinente, CNCT, DCNs da EPT, normas da educação básica/Ensino Médio, legislação profissional, normas institucionais do IFPR e demais leis, resoluções ou diretrizes relacionadas ao ensino técnico de nível médio. Não limitar o feedback ao CNCT ou à Resolução CNE/CP nº 2/2026; use esses marcos apenas como referências relevantes quando forem adequados ao achado."
       },
       "evidencia_minima": 4,
+      "estados_permitidos": [
+        "ATENDE",
+        "NAO_ATENDE",
+        "INCONCLUSIVO",
+        "NAO_APLICAVEL"
+      ]
+    },
+    {
+      "id": "CT-TRANS-09",
+      "titulo": "Inclusão e AEE coerentes entre atendimento ao estudante, currículo e avaliação",
+      "dominio": "transversal",
+      "criticidade": "OBRIG",
+      "tipo_escopo": "transversal",
+      "pergunta": "Quando o PPC trata de AEE, adaptação, flexibilização curricular ou estudantes com necessidades educacionais específicas, o que a seção de atendimento ao estudante promete é coerente com a organização curricular e com a avaliação da aprendizagem?",
+      "rubrica": "Comparar a seção de atendimento ao estudante (política de inclusão, NAPNE, AEE, plano de ensino individualizado, adaptação e flexibilização) com a organização curricular e com a seção de avaliação da aprendizagem. Verificar: (1) se todas as seções tratam o AEE como serviço ou modalidade transversal, compatível com a Avaliação Inicial de Caso de Estudante (AICE), a adaptação e a flexibilização, e nenhuma o converte em componente curricular, disciplina, carga horária de integralização, requisito de certificação ou lançamento no histórico escolar (a incorporação literal à matriz é conferida em código pela CT-CURR-22; aqui interessa a coerência entre o que as seções dizem); (2) se a adaptação e a flexibilização prometidas na seção de atendimento têm lugar reconhecível na organização curricular, isto é, se se entende como o currículo acomoda essas medidas; (3) se os critérios diferenciados de avaliação para estudantes com necessidades específicas, quando previstos na seção de atendimento, aparecem ou são compatíveis com a seção de avaliação da aprendizagem, sem contradição (por exemplo, avaliação diferenciada prometida numa seção e regra única e rígida na outra). Não reavaliar aqui a suficiência isolada de cada seção (CT-CURR-09, CT-SUP-04, CT-SUP-19, CT-SUP-20). Usar NAO_APLICAVEL apenas quando o PPC não tratar de AEE, inclusão nem necessidades específicas.",
+      "topicos_tematicos": [
+        "matriz_curricular",
+        "avaliacao_aprendizagem",
+        "aee_acessibilidade_inclusao",
+        "sintese_transversal_revisao"
+      ],
+      "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal: compara o que a seção de atendimento ao estudante promete (AEE, adaptação, flexibilização, avaliação diferenciada) com a organização curricular e a avaliação da aprendizagem. A incorporação literal do AEE à matriz é conferida em código pela CT-CURR-22."
+      },
+      "ancoras_semanticas": [
+        "Inclusão e AEE coerentes entre atendimento, currículo e avaliação",
+        "atendimento educacional especializado",
+        "AEE",
+        "NAPNE",
+        "necessidades educacionais específicas",
+        "necessidades específicas",
+        "adaptação curricular",
+        "flexibilização curricular",
+        "plano de ensino individualizado",
+        "avaliação diferenciada",
+        "critérios de avaliação",
+        "Avaliação Inicial de Caso de Estudante",
+        "AICE",
+        "organização curricular",
+        "avaliação da aprendizagem"
+      ],
+      "consultas": [
+        "atendimento educacional especializado",
+        "flexibilização curricular",
+        "avaliação diferenciada"
+      ],
+      "boa_evidencia": "As seções convergem: o AEE é descrito como serviço transversal em todas elas, a adaptação e a flexibilização têm lugar reconhecível na organização curricular e a avaliação da aprendizagem prevê ou remete a critérios diferenciados para quem precisa.",
+      "ma_evidencia": "A seção de atendimento promete adaptação, flexibilização ou avaliação diferenciada que a organização curricular ou a seção de avaliação contradizem ou ignoram; ou o AEE aparece como serviço numa seção e como disciplina, componente, carga horária ou item de histórico em outra.",
+      "escalonar_quando": "Escalonar se a coerência depender de regulamento do campus ou de documento institucional não transcrito no PPC.",
+      "evidencia_minima": 2,
+      "estados_permitidos": [
+        "ATENDE",
+        "NAO_ATENDE",
+        "INCONCLUSIVO",
+        "NAO_APLICAVEL"
+      ]
+    },
+    {
+      "id": "CT-TRANS-10",
+      "titulo": "Condições de inclusão: profissional de educação especial e acessibilidade da infraestrutura",
+      "dominio": "transversal",
+      "criticidade": "OBRIG",
+      "tipo_escopo": "transversal",
+      "pergunta": "Quando o PPC prevê AEE ou recursos de acessibilidade, ele indica quem os oferece (profissional de educação especial habilitado, no curso ou no campus) e uma infraestrutura que corresponda à acessibilidade descrita?",
+      "rubrica": "Comparar a seção de atendimento ao estudante com as seções de corpo docente e equipe técnica e de infraestrutura. Verificar: (1) se, quando o PPC prevê AEE, há docente ou profissional de educação especial habilitado indicado na equipe do curso ou do campus, ou remissão clara ao setor do campus que o provê (como o NAPNE, com o profissional), e não apenas a promessa do serviço; (2) se a acessibilidade descrita na seção de atendimento (sala de recursos multifuncionais, tecnologias assistivas, intérprete de Libras, acessibilidade arquitetônica) encontra correspondência na seção de infraestrutura, sem contradição (por exemplo, sala de recursos prometida e ausente da lista de ambientes, ou acessibilidade física afirmada e ambientes de uso do curso sem acesso). Não reavaliar aqui a suficiência isolada de cada seção (CT-SUP-11, CT-SUP-15, CT-SUP-19, CT-SUP-20, CT-SUP-25); avaliar a correspondência entre elas. Usar NAO_APLICAVEL apenas quando o PPC não prever AEE nem recursos de acessibilidade.",
+      "topicos_tematicos": [
+        "aee_acessibilidade_inclusao",
+        "corpo_docente_gestao",
+        "infraestrutura",
+        "sintese_transversal_revisao"
+      ],
+      "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal: compara o AEE e a acessibilidade prometidos na seção de atendimento com a equipe (corpo docente e técnico) e com a infraestrutura descritas no PPC."
+      },
+      "ancoras_semanticas": [
+        "Condições de inclusão: profissional de educação especial e acessibilidade da infraestrutura",
+        "atendimento educacional especializado",
+        "AEE",
+        "professor de educação especial",
+        "docente de educação especial",
+        "profissional de AEE",
+        "intérprete de Libras",
+        "NAPNE",
+        "sala de recursos multifuncionais",
+        "tecnologia assistiva",
+        "acessibilidade",
+        "acessibilidade arquitetônica",
+        "corpo docente",
+        "equipe técnica",
+        "infraestrutura"
+      ],
+      "consultas": [
+        "educação especial",
+        "sala de recursos multifuncionais",
+        "acessibilidade"
+      ],
+      "boa_evidencia": "Profissional de educação especial ou setor responsável identificado na equipe do curso ou do campus, e recursos de acessibilidade descritos no atendimento que aparecem na infraestrutura.",
+      "ma_evidencia": "AEE prometido sem nenhum profissional habilitado nem setor responsável identificado; recursos de acessibilidade afirmados no atendimento e ausentes ou contraditos na infraestrutura.",
+      "escalonar_quando": "Escalonar se o PPC remeter à estrutura do campus sem descrevê-la e a correspondência não puder ser conferida no próprio documento.",
+      "evidencia_minima": 2,
+      "estados_permitidos": [
+        "ATENDE",
+        "NAO_ATENDE",
+        "INCONCLUSIVO",
+        "NAO_APLICAVEL"
+      ]
+    },
+    {
+      "id": "CT-TRANS-11",
+      "titulo": "Estágio tratado de forma consistente em todo o PPC",
+      "dominio": "transversal",
+      "criticidade": "OBRIG",
+      "tipo_escopo": "transversal",
+      "pergunta": "Quando o PPC trata de estágio, as seções que o mencionam (apresentação do curso, matriz curricular, seção de estágio, certificação e integralização) dizem a mesma coisa sobre obrigatoriedade, carga horária e requisito de conclusão?",
+      "rubrica": "Comparar a apresentação ou identificação do curso, a matriz curricular, a seção de estágio, eventuais ementas e convênios e as regras de certificação e integralização. Procurar apenas contradições: estágio obrigatório numa seção e não obrigatório em outra; carga horária de estágio diferente entre a apresentação, a matriz e a seção de estágio; estágio obrigatório sem carga horária na matriz ou fora do total do curso; estágio não obrigatório tratado como requisito de aprovação, certificação ou integralização; campos pretendidos incompatíveis com a forma de oferta. A presença de linhas padronizadas de Atividades Complementares ou Estágio Supervisionado na matriz, com carga horária efetiva zero, não caracteriza obrigatoriedade nem contradição quando o texto declarar que são opcionais ou não exigidos para integralização. Não reavaliar aqui a decisão sobre o estágio (CT-CURR-20), os convênios (CT-CURR-21), a orientação (CT-CURR-24) nem os campos (CT-CURR-25): avaliar só a consistência entre as seções. Usar NAO_APLICAVEL quando o PPC declarar que não admite estágio em nenhuma modalidade e nenhuma seção o contradisser.",
+      "topicos_tematicos": [
+        "identificacao_oferta",
+        "matriz_curricular",
+        "estagio",
+        "sintese_transversal_revisao"
+      ],
+      "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal: procura contradições sobre o estágio (obrigatoriedade, carga horária, efeito na certificação) entre a apresentação do curso, a matriz e a seção de estágio. A decisão sobre o estágio, os convênios, a orientação e os campos ficam com CT-CURR-20, CT-CURR-21, CT-CURR-24 e CT-CURR-25."
+      },
+      "ancoras_semanticas": [
+        "Estágio tratado de forma consistente em todo o PPC",
+        "estágio",
+        "estágio curricular supervisionado",
+        "estágio obrigatório",
+        "estágio não obrigatório",
+        "carga horária do estágio",
+        "integralização",
+        "certificação",
+        "diploma",
+        "matriz curricular",
+        "atividades complementares",
+        "apresentação do curso"
+      ],
+      "consultas": [
+        "estágio obrigatório",
+        "estágio não obrigatório",
+        "carga horária do estágio"
+      ],
+      "boa_evidencia": "Todas as menções ao estágio convergem quanto a obrigatoriedade, carga horária, integralização e efeito na certificação. Linhas-modelo de Atividades Complementares ou Estágio Supervisionado com carga horária zero são aceitáveis quando o texto confirma a ausência de obrigatoriedade.",
+      "ma_evidencia": "Obrigatoriedade, carga horária ou requisito de certificação do estágio divergentes entre seções: estágio com carga obrigatória sem texto compatível; estágio obrigatório no texto e carga zero na matriz; estágio não obrigatório tratado como requisito; matriz e seção narrativa divergentes.",
+      "escalonar_quando": "Escalonar se a divergência puder vir de versões diferentes do texto coladas no PPC (ajuste curricular parcial) e não for possível dizer qual vale.",
+      "evidencia_minima": 2,
+      "estados_permitidos": [
+        "ATENDE",
+        "NAO_ATENDE",
+        "INCONCLUSIVO",
+        "NAO_APLICAVEL"
+      ]
+    },
+    {
+      "id": "CT-TRANS-12",
+      "titulo": "Fechamento aritmético entre horário, dias letivos e carga horária",
+      "dominio": "transversal",
+      "criticidade": "BLOQ",
+      "tipo_escopo": "transversal",
+      "pergunta": "O PPC permite reconstituir a compatibilidade aritmética entre horário semanal de oferta, duração da hora-aula, dias letivos, duração do curso, matriz curricular e carga horária total em hora-relógio?",
+      "rubrica": "Comparar a identificação ou apresentação do curso, o horário de oferta, a duração do curso, os dias letivos, a duração da hora-aula, a matriz curricular, os subtotais por série ou período e a carga horária total. Sempre que houver dados suficientes, apresentar a memória de cálculo passo a passo na justificativa: (1) converter cada janela de horário em minutos; (2) dividir pela duração declarada da hora-aula para estimar as aulas possíveis por turno, registrando sobras; (3) somar as aulas semanais regulares e os contraturnos; (4) calcular as semanas equivalentes por ano como dias letivos anuais divididos pelos dias letivos semanais regulares, quando aplicável; (5) multiplicar aulas por semana, semanas equivalentes e anos ou períodos; (6) converter hora-aula em hora-relógio pela fórmula aulas_totais × minutos_hora_aula ÷ 60; (7) comparar com a carga horária total declarada e com os totais da matriz. Não exigir coincidência exata entre a capacidade máxima do horário e a carga curricular, pois o horário pode indicar a janela de oferta; exigir que diferenças relevantes sejam explicadas por matriz, séries com cargas semanais distintas, arredondamento, semanas não letivas, componentes em hora-relógio, estágio, atividades complementares, PFI/TCC ou outra regra explícita. NAO_ATENDE quando o total em hora-relógio não for reconstituível, quando houver mistura de hora-aula e hora-relógio sem fórmula de conversão, quando o total declarado produzir fração de hora-aula sem explicação, quando a carga semanal da matriz exigir contraturnos não descritos, ou quando horário, dias letivos ou duração do curso apontarem valor materialmente incompatível com o total declarado. Faltando dados para a conta (horário ou duração da hora-aula não informados), INCONCLUSIVO, com o dado que falta.",
+      "topicos_tematicos": [
+        "identificacao_oferta",
+        "matriz_curricular",
+        "sintese_transversal_revisao"
+      ],
+      "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal com memória de cálculo: reconstitui a carga horária a partir do horário de oferta, da duração da hora-aula, dos dias letivos e da matriz. A comparação do total com o mínimo do CNCT e das DCN fica com CT-CURR-02, e a distribuição semanal com CT-CURR-23."
+      },
+      "ancoras_semanticas": [
+        "Fechamento aritmético entre horário, dias letivos e carga horária",
+        "horário de oferta",
+        "turno",
+        "hora-aula",
+        "duração da hora-aula",
+        "hora-relógio",
+        "dias letivos",
+        "semanas letivas",
+        "duração do curso",
+        "carga horária total",
+        "carga horária semanal",
+        "matriz curricular",
+        "contraturno"
+      ],
+      "consultas": [
+        "hora-aula",
+        "dias letivos",
+        "carga horária total"
+      ],
+      "boa_evidencia": "O PPC informa duração da hora-aula, dias letivos, duração do curso, matriz com cargas por componente e série ou período, subtotais e total; a conversão para hora-relógio é explícita ou reconstituível; eventuais diferenças entre a capacidade do horário e a carga curricular são explicadas por distribuição anual, contraturnos, arredondamento ou componentes específicos.",
+      "ma_evidencia": "O PPC declara carga horária total, horário semanal, dias letivos e duração de hora-aula, mas não permite fechar a conta; mistura hora-aula e hora-relógio sem conversão; apresenta total que gera fração de hora-aula sem justificativa; ou informa contraturnos ou janelas de oferta incompatíveis com a carga semanal da matriz.",
+      "escalonar_quando": "Escalonar se a conta fechar só com uma hipótese não declarada no PPC (por exemplo, semanas não letivas ou aulas aos sábados) e a hipótese mudar o resultado.",
+      "evidencia_minima": 3,
       "estados_permitidos": [
         "ATENDE",
         "NAO_ATENDE",
@@ -8848,7 +9054,7 @@
       },
       "transicao": "",
       "orientacao_analise": "As Resoluções nº 11/2009 e nº 53/2011 só podem aparecer como normas revogadas ou contexto histórico (ver CT-SUP-24).",
-      "path": ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json",
+      "path": "base-conhecimento/revisao-ppc/marcos-normativos.json",
       "citacoes_no_ppc": []
     },
     {
@@ -8879,7 +9085,7 @@
       },
       "transicao": "A Resolução CNE/CP nº 2/2026 entra em vigor na publicação no DOU (art. 75), cuja data ainda precisa ser confirmada na base. Processos de autorização de curso em tramitação na data de vigência e que ainda não estejam na fase de avaliação podem ser adequados à nova Resolução a pedido da instituição ou do órgão regulador, mas a adequação não é obrigatória (art. 70). Os cursos técnicos autorizados e em oferta têm até dois anos, contados da vigência, para se adequar (art. 71). Os estudantes matriculados até a publicação têm assegurado o direito de concluir o curso pela Resolução CNE/CP nº 1/2021 (art. 71, parágrafo único). O capítulo sobre formação docente tem transição até 31/12/2030 (art. 72).",
       "orientacao_analise": "Distinguir três casos. (a) PPC elaborado ou protocolado antes da vigência da Resolução CNE/CP nº 2/2026, inclusive processo de autorização já em tramitação: citar a Resolução CNE/CP nº 1/2021 não é desconformidade; registrar ATENDE com recomendação de atualização, apontando os dispositivos equivalentes da nova norma. (b) PPC elaborado ou protocolado após a vigência: usar a Resolução CNE/CP nº 2/2026; citar a Resolução CNE/CP nº 1/2021 como fundamento vigente principal gera NAO_ATENDE (diligência para atualização). (c) Atualização de PPC de curso em oferta: adequar no prazo do art. 71, preservado o direito dos estudantes já matriculados. Use a data da capa, do histórico de versões ou do processo para decidir; se não for possível determinar o caso, use INCONCLUSIVO com revisão humana. A ficha responsável pela vigência do marco é CT-SUP-12 (OBRIG); as demais fichas de base legal registram o mesmo fato sem elevar a criticidade, e as fichas de conteúdo avaliam a regra material vigente sem repetir a penalidade pela citação. No feedback aos autores, informar que a Resolução CNE/CP nº 1/2021 foi revogada pela Resolução CNE/CP nº 2/2026 (art. 74, II), a partir da publicação no DOU. Conflitos conhecidos com normas do IFPR, a encaminhar à PROENS sem reprovar o PPC por si sós: prazo máximo de integralização (art. 28, XVI) versus Resolução CONSUP/IFPR nº 190/2024, art. 69, parágrafo único; formatos de oferta (arts. 49 a 52) versus Resolução CONSUP/IFPR nº 190/2024, art. 5º, que é mais restritiva e prevalece no IFPR.",
-      "path": ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json",
+      "path": "base-conhecimento/revisao-ppc/marcos-normativos.json",
       "citacoes_no_ppc": [
         {
           "ato_id": "br/cne-cp/res/2021/1",
@@ -8929,7 +9135,7 @@
       },
       "transicao": "",
       "orientacao_analise": "Normas de 2012 e de 2018 podem aparecer como contexto histórico, mas não como fundamento vigente principal. A formação geral básica mínima (art. 13) e as condições da contabilização simultânea (art. 25) da DCNEM se aplicam ao integrado junto com o art. 29 da Resolução CNE/CP nº 2/2026 (ver CT-CURR-03).",
-      "path": ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json",
+      "path": "base-conhecimento/revisao-ppc/marcos-normativos.json",
       "citacoes_no_ppc": []
     }
   ],
@@ -9161,7 +9367,9 @@
         "busca:CT-CURR-02:hora-relógio",
         "busca:CT-CURR-02:hora aula",
         "busca:CT-IDENT-02:carga horária",
-        "busca:CT-SUP-02:frequência mínima"
+        "busca:CT-SUP-02:frequência mínima",
+        "busca:CT-TRANS-12:hora-aula",
+        "busca:CT-TRANS-12:carga horária total"
       ]
     },
     {
@@ -9179,7 +9387,10 @@
         "busca:CT-CURR-20:estágio não obrigatório",
         "busca:CT-CURR-20:carga horária do estágio",
         "busca:CT-CURR-21:Termo de Compromisso",
-        "busca:CT-CURR-24:estágio obrigatório"
+        "busca:CT-CURR-24:estágio obrigatório",
+        "busca:CT-TRANS-11:estágio obrigatório",
+        "busca:CT-TRANS-11:estágio não obrigatório",
+        "busca:CT-TRANS-11:carga horária do estágio"
       ]
     },
     {
@@ -9809,7 +10020,9 @@
         "topico:temas_transversais_cidadania",
         "busca:CT-CURR-09:flexibilização curricular",
         "busca:CT-SUP-19:flexibilização curricular",
-        "busca:CT-SUP-20:critérios diferenciados de avaliação"
+        "busca:CT-SUP-20:critérios diferenciados de avaliação",
+        "busca:CT-TRANS-09:flexibilização curricular",
+        "busca:CT-TRANS-09:avaliação diferenciada"
       ]
     },
     {
@@ -10373,7 +10586,10 @@
         "busca:CT-SUP-19:aee",
         "busca:CT-SUP-20:acessibilidade",
         "busca:CT-SUP-25:acessibilidade",
-        "busca:CT-SUP-25:mobiliário acessível"
+        "busca:CT-SUP-25:mobiliário acessível",
+        "busca:CT-TRANS-09:atendimento educacional especializado",
+        "busca:CT-TRANS-10:educação especial",
+        "busca:CT-TRANS-10:acessibilidade"
       ]
     },
     {
@@ -11087,7 +11303,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 776495,
+    "caracteres": 795052,
     "secoes": 120,
     "caracteres_secoes": 237381,
     "caracteres_ppc_inteiro": 255014

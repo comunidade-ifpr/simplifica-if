@@ -1,14 +1,13 @@
 /**
- * `PacoteContexto`: o contexto de uma tarefa da `revisar-ppc` (uma ficha, várias, um tópico, um
- * grupo da rodada ou `todas`) para um PPC — CNCT, fichas, dispositivos citados com caput, marcos,
+ * `PacoteContexto`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um tópico, um
+ * grupo por tópico ou `todas`) para um PPC — CNCT, fichas, dispositivos citados com caput, marcos,
  * regras de transição, seções relevantes e fatos (`kb pacote-contexto`). As partes e as regras de
  * agrupamento estão em `db/pacote-contexto.ts`.
  *
  * PPC fora da base: `doMarkdown` recebe o texto do Markdown (quem chama o lê) e o segmenta num banco
  * em memória, pelo mesmo código da compilação; `abrirAvulso` abre um banco desses no escopo de quem
- * chama e devolve o `PpcAvulso`, que monta o pacote de cada conjunto de fichas sobre ele (a
- * `revisar-ppc` reaproveita o mesmo banco em todos os grupos da rodada, e a revisão com IA do app em
- * todos os blocos).
+ * chama e devolve o `PpcAvulso`, que monta o pacote de cada conjunto de fichas sobre ele (a revisão
+ * com IA do app reaproveita o mesmo banco em todos os blocos).
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -68,7 +67,7 @@ export class PacoteContexto extends Context.Service<
       markdown: string,
       opcoes?: OpcoesAbrirAvulso,
     ) => Effect.Effect<PpcAvulso, Sql.FalhaNaConsulta, Scope.Scope>;
-    /** Fichas da `revisar-ppc` gravadas no banco (todas ou as de `ids`), por ID. */
+    /** fichas da revisão de PPC gravadas no banco (todas ou as de `ids`), por ID. */
     readonly fichas: (ids?: readonly string[]) => Effect.Effect<FichaPacote[], Sql.FalhaNaConsulta>;
     /** Todas as fichas pelas colunas da tabela (título, domínio, criticidade e arquivo), por ID. */
     readonly fichasResumidas: Effect.Effect<ReadonlyArray<FichaResumida>, Sql.FalhaNaConsulta>;

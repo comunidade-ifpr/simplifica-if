@@ -2,18 +2,14 @@
 /**
  * Validação dos registros de `institucional/ifpr/` (campi, cursos, processos seletivos, editais e
  * ofertas): schema, caminho de cada arquivo, as regras da auditoria institucional, o Markdown dos
- * PPCs e as reuniões dos conselhos (`conselhos.ts`). O
- * `campi/index.json` gerado dos registros volta em `gerados`, para o chamador conferir com
- * `aplicarGerados`.
+ * PPCs e as reuniões dos conselhos (`conselhos.ts`).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { RAIZ_BASE } from "../config.ts";
 import { chaveCurso } from "../dominio/curso.ts";
 import { auditarBase } from "../dominio/auditoria.ts";
-import type { ArquivoGerado } from "../base/gerados.ts";
 import { auditarConselhos, carregarConselhos } from "./conselhos.ts";
-import { indiceCampiGerado } from "./indices.ts";
 import {
   carregarDadosInstitucionais,
   paraDominio,
@@ -49,8 +45,8 @@ function markdownsInexistentes(cursos: CursoLocal[], raizBase: string): string[]
 
 export interface OpcoesValidacao {
   /**
-   * Confere também o que liga os registros ao resto da base: o Markdown dos PPCs, o `campi/index.json`
-   * gerado e os conselhos (padrão: sim). Os testes com raiz temporária desligam.
+   * Confere também o que liga os registros ao resto da base: o Markdown dos PPCs e os conselhos
+   * (padrão: sim). Os testes com raiz temporária desligam.
    */
   arquivosDaBase?: boolean;
 }
@@ -62,8 +58,6 @@ export function validarDadosInstitucionais(
 ): {
   erros: string[];
   total: number;
-  /** O `campi/index.json` que `gerar_base` gera dos registros, quando `arquivosDaBase`. */
-  gerados?: ArquivoGerado[];
 } {
   const carregados = carregarDadosInstitucionais(raiz);
   if (carregados.erros.length) return { erros: carregados.erros, total: 0 };
@@ -73,13 +67,11 @@ export function validarDadosInstitucionais(
   if (daBase) auditoria.push(...markdownsInexistentes(dados.cursos, raizBase));
   const erros = auditoria.map((erro) => `institucional/ifpr: ${erro}`);
   let reunioes = 0;
-  let gerados: ArquivoGerado[] | undefined;
   if (daBase) {
     const cursos = new Set(dados.cursos.map((curso) => chaveCurso(curso.campus_id, curso.curso_slug)));
     const conselhos = carregarConselhos(raiz);
     erros.push(...conselhos.erros);
     erros.push(...auditarConselhos(conselhos.dados, new Set(dados.campi.map((campus) => campus.campus_id)), cursos));
-    gerados = [indiceCampiGerado(dados, raiz)];
     reunioes = conselhos.dados.reunioes.length;
   }
   const total =
@@ -89,5 +81,5 @@ export function validarDadosInstitucionais(
     dados.editais.length +
     dados.ofertas.length +
     reunioes;
-  return { erros, total, ...(gerados ? { gerados } : {}) };
+  return { erros, total };
 }

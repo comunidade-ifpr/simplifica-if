@@ -78,7 +78,7 @@ export function linkCampus(id: string): Link {
   return montar("campus", semPrefixo("campus:", id), undefined, 1);
 }
 
-/** Ficha da `revisar-ppc`: `CT-CURR-12` (como na tabela `fichas`) ou `ficha:CT-CURR-12`. */
+/** Ficha da revisão de PPC: `CT-CURR-12` (como na tabela `fichas`) ou `ficha:CT-CURR-12`. */
 export function linkFicha(id: string): Link {
   return montar("ficha", semPrefixo("ficha:", id), undefined, 1);
 }

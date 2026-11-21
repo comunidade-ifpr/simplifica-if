@@ -68,7 +68,7 @@ const jsonsDe = (pasta: string) =>
 /** `topicos-fichas.json` lido aqui: os tópicos na ordem do arquivo, cada um com as suas fichas. */
 const topicosDoArquivo = () =>
   (
-    lerJson(NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json")) as {
+    lerJson(NodePath.join(raiz, "base-conhecimento/revisao-ppc/topicos-fichas.json")) as {
       topicos: { id: string; fichas?: string[] }[];
     }
   ).topicos.map((topico) => ({ id: topico.id, fichas: topico.fichas ?? [] }));
@@ -121,7 +121,7 @@ layer(layerBases, { timeout: "300 seconds", excludeTestServices: true })("base d
           );
           expect(doBanco.fichas).toEqual(
             Object.fromEntries(
-              jsonsDe(".agents/skills/revisar-ppc/base-analise/fichas").map(({ json }) => {
+              jsonsDe("base-conhecimento/revisao-ppc/fichas").map(({ json }) => {
                 const ficha = json as { id: string; titulo: string };
                 return [ficha.id, ficha.titulo];
               }),

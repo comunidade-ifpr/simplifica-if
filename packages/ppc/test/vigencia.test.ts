@@ -1,5 +1,5 @@
 // @effect-diagnostics nodeBuiltinImport:off -- o teste lê o registro de marcos da skill
-/** A cópia dos marcos em `verificadores/vigencia.ts` bate com `marcos-normativos.json` da `revisar-ppc`, e a vigência na data. */
+/** A cópia dos marcos em `verificadores/vigencia.ts` bate com `marcos-normativos.json` da revisão de PPC, e a vigência na data. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
@@ -15,7 +15,7 @@ const vigenciaEm = (data?: string) => verificacaoDaBase(base, data).vigencia;
 
 describe("marcos e vigência", () => {
   test("MARCOS é a cópia de linha e ficha responsável de marcos-normativos.json", () => {
-    const arquivo = NodePath.join(raizRepositorio(), ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json");
+    const arquivo = NodePath.join(raizRepositorio(), "base-conhecimento/revisao-ppc/marcos-normativos.json");
     const { marcos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as {
       marcos: { id: string; linha: string[]; fichas_responsaveis: string[] }[];
     };

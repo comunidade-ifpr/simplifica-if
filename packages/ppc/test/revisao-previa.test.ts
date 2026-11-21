@@ -59,7 +59,7 @@ describe("revisarDocx", () => {
       origem: "documento",
     });
     expect(revisao.conferidos).toBe(12);
-    expect(revisao.totalCriterios).toBe(80);
+    expect(revisao.totalCriterios).toBe(84);
     expect(revisao.criterios).toHaveLength(12);
   });
 
@@ -97,7 +97,7 @@ describe("revisarDocx", () => {
     expect(comentarios).toContain('w:author="Simplifica IF (revisão prévia)"');
     expect(comentarios).not.toContain("ifpr://");
     expect(comentarios).toContain("Não é parecer da PROENS");
-    expect(comentarios).toContain("12 de 80 critérios conferidos automaticamente; os demais exigem leitura.");
+    expect(comentarios).toContain("12 de 84 critérios conferidos automaticamente; os demais exigem leitura.");
     expect(comentarios).toContain("com a base de normas de 13/11/2026");
     expect(comentarios).toContain(
       "Fonte: Resolução CNE/CP nº 1/2021 (https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578)",

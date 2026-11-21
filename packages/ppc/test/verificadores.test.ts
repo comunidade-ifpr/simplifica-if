@@ -90,6 +90,8 @@ BRASIL. Lei nº 9.394, de 20 de dezembro de 1996.
 BRASIL. Lei nº 14.945, de 31 de julho de 2024.
 BRASIL. Resolução CNE/CP nº 2, de 11 de novembro de 2026.
 BRASIL. Resolução CNE/CEB nº 2, de 13 de novembro de 2024.
+BRASIL. Lei nº 5.524, de 5 de novembro de 1968.
+INSTITUTO FEDERAL DO PARANÁ. Resolução CONSUP/IFPR nº 239/2025.
 `;
 
 /** PPC integrado com um problema em cada ficha D. */
@@ -264,6 +266,17 @@ describe("regras de prudência", () => {
       expect(estado(resultado, ficha)).toBe("a_conferir");
       expect(da(resultado, ficha).apontamentos.every((a) => a.estado === "a_conferir")).toBe(true);
     }
+  });
+
+  test("norma citada no texto e ausente das referências: um apontamento só, a conferir", () => {
+    const ppc = PPC_BOM.replace("BRASIL. Lei nº 5.524, de 5 de novembro de 1968.\n", "");
+    const sup09 = da(preConferir(ppc, base("integrado")), "CT-SUP-09");
+    expect(sup09.estado).toBe("a_conferir");
+    expect(sup09.apontamentos).toHaveLength(1);
+    expect(sup09.apontamentos[0]!.mensagem).toMatch(
+      /^Norma citada no texto sem entrada na seção de referências: Lei nº 5\.524/,
+    );
+    expect(sup09.apontamentos[0]!.fontes).toEqual(["ifpr://norma/br/lei/1968/5524"]);
   });
 
   test("a cadeia conta: 6/2012 com a 1/2021 citada não é pendência, nem diz que falta a 2/2026", () => {

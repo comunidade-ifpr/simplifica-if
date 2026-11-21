@@ -34,7 +34,7 @@ PPCs: atende / não atende / a conferir / não se aplica. Apontamentos: `nao_ate
 | CT-CURR-16 | `d-requisito-ingresso` | 106/0/4/0 → igual | 0/4 → igual | só a conferir; `atende`: 8 de 8 com a evidência certa |
 | CT-CURR-18 | `d-componentes-fgb` | 73/0/9/28 → igual | 0/9 → igual | só a conferir; 9 de 9 úteis (FGB por área, nomes diferentes) |
 | CT-CURR-22 | `d-aee-componente` | 107/3/0/0 → igual | 3/0 → igual | 3 de 3 VP |
-| CT-SUP-09 | `d-marcos-nas-referencias` | 0/87/23/0 → **0/0/110/0** | 142/91 → **0/233** | as DCN são marcos da CT-SUP-12: aqui só registro; a LDB, que daria `nao_atende`, está nas referências de todos os PPCs com a seção reconhecida |
+| CT-SUP-09 | `d-marcos-nas-referencias` | 0/87/23/0 → 0/0/110/0 → igual | 142/91 → 0/233 → **0/313** | as DCN são marcos da CT-SUP-12: aqui só registro; a LDB, que daria `nao_atende`, está nas referências de todos os PPCs com a seção reconhecida. **21/11/2026:** as normas da base citadas com segurança no texto e ausentes das referências (sem revogadas, superadas em marco e externas) viram um apontamento `a_conferir` por PPC (80 PPCs); amostra: Goioerê (Lei nº 9.795/1999) e Áudio e Vídeo de Curitiba (Decreto nº 7.611/2011), ambos VP; a norma citada só na bibliografia de uma ementa também conta (por isso a conferir) |
 | CT-SUP-12 | `d-normas-revogadas` | 3/103/4/0 → 0/93/17/0 → **0/92/18/0** | 320/120 → 198/257 → **171/284** | 1ª amostra (deslocamento 0): 10 de 10 VP; **amostra nova (deslocamento 7): 12 de 12 VP** (54/2011, 13/2011, 2/2014, 6/2012 sem a 1/2021 nem a 2/2026; 2 PPCs integrados sem nenhuma norma da linha da DCNEM) |
 | CT-SUP-14 | `d-cnct-e-marcos-institucionais` | 70/11/29/0 → igual | 13/36 → **12/36** | 1ª amostra: 13 de 13; **amostra nova: os 12, todos VP** (Campo Largo, "CatalogoNacional dosCursosTécnicos", deixou de ser apontado pelo CNCT) |
 | CT-SUP-21 | `d-legislacao-profissional` | 23/14/73/0 → igual | 14/73 → igual | 1ª amostra: 6 de 6; **amostra nova (deslocamento 1): 7 de 7 VP** (Jaguariaíva diz "Registro profissional: não se aplica") |
@@ -48,7 +48,7 @@ Triagem (não é ficha): nenhum texto dirigido à IA na base; 78 PPCs com ao men
 
 ## Limites conhecidos
 
-- `atende` quer dizer "o código não achou o problema que procura", não "a ficha está atendida": CT-CURR-22 não vê o AEE com outro nome ("Educação Especial" com carga horária "a depender do estudante", Coronel Vivida), e CT-SUP-12 não vê citação que o resolvedor não reconhece. A tela diz "conferidos 12 de 80 critérios".
+- `atende` quer dizer "o código não achou o problema que procura", não "a ficha está atendida": CT-CURR-22 não vê o AEE com outro nome ("Educação Especial" com carga horária "a depender do estudante", Coronel Vivida), e CT-SUP-12 não vê citação que o resolvedor não reconhece. A tela diz "conferidos 12 de 84 critérios".
 - O código não sabe a data do PPC (capa, histórico, processo): por isso a transição da 2/2026 fica a conferir, e não `atende` com recomendação. Quando a publicação no DOU for registrada e os 180 dias passarem, a 1/2021 volta a ser pendência na CT-SUP-12, e os números mudam (`--check`).
 - Revogada citada sem a sucessora vira `nao_atende`, mesmo se a citação for histórica fora de uma seção de histórico.
 - O rótulo de seção de um trecho pode vir errado quando a segmentação toma uma linha numerada por título (ex.: `pitanga/tecnico-em-desenvolvimento-de-sistemas`, linha 2294, na "seção" "1 ) Aprovação em Processo Seletivo…"). O trecho e a linha estão certos; só o rótulo, que vem do `kb` (`segmentarPpc`), não foi corrigido aqui.

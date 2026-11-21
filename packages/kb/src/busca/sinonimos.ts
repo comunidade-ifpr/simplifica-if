@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do léxico, usado pelos scripts, pela skill revisar-ppc e pela compilação do banco
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do léxico, usado pelos scripts e pela compilação do banco
 /**
  * Léxico de sinônimos da busca de seções (`packages/kb/dados/sinonimos.yaml`).
  *

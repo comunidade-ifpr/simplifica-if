@@ -42,7 +42,7 @@ export function andamentoPorTema(estado: EstadoRevisaoIa): ReadonlyArray<TemaAnd
   return [...temas.entries()].sort(([a], [b]) => a - b).map(([ordem, t]) => ({ ordem, ...t }));
 }
 
-/** "34 de 80 critérios conferidos: 12 pelo código e 22 pela IA…; 13 ficaram para conferir…" */
+/** "34 de 84 critérios conferidos: 12 pelo código e 22 pela IA…; 13 ficaram para conferir…" */
 export function textoCobertura(r: ResultadoRevisaoPpc): string {
   if (r.conferidosIa + r.paraConferirIa === 0)
     return r.totalCriterios > r.conferidos

@@ -1,7 +1,7 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do índice do CNCT, usado pelos scripts e pela skill revisar-ppc
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do índice do CNCT, usado pelos scripts e pela validação das fichas
 /**
  * Referências normativas estruturadas: `{ ref, dispositivo?, papel, nota? }`, como nas fichas da
- * `revisar-ppc` (fase 2 do plano de arquitetura), e o texto legível renderizado a partir delas.
+ * revisão de PPC (fase 2 do plano de arquitetura), e o texto legível renderizado a partir delas.
  *
  * - `ref`: ID canônico de ato sem variante (`br/cne-cp/res/2026/2`), de stub, `externo:...` ou
  *   `cnct:...` (`cnct:catalogo` para o CNCT inteiro, `cnct:<slug>` para um curso do catálogo);

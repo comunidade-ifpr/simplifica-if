@@ -21,7 +21,7 @@
 import { TEMAS, ordemDoTema } from "../temas.ts";
 import { ESTADOS_IA } from "./resposta.ts";
 
-/** O que a revisão com IA usa de uma ficha da `revisar-ppc` (o JSON canônico, campos lidos). */
+/** O que a revisão com IA usa de uma ficha da revisão de PPC (o JSON canônico, campos lidos). */
 export type FichaIa = {
   id: string;
   titulo: string;

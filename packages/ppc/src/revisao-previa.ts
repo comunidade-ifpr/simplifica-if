@@ -39,7 +39,7 @@ export type BaseRevisaoPrevia = {
   cncts: readonly CursoCnct[];
   /** Endereço oficial (http) da norma, quando a base o registra. */
   urls: Readonly<Record<string, string>>;
-  /** Título de cada ficha da `revisar-ppc` (o total é o número de critérios da revisão). */
+  /** Título de cada ficha da revisão de PPC (o total é o número de critérios da revisão). */
   fichas: Readonly<Record<string, string>>;
   /** Tópicos das fichas (`topicos-fichas.json`), na ordem da taxonomia. */
   topicos: readonly { id: string; fichas: readonly string[] }[];
