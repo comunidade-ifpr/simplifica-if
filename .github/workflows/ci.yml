@@ -1,4 +1,4 @@
-# Integração contínua (passo T6 do M0.1, docs/plans/m0-simplifica-mcp.md).
+# Integração contínua.
 #
 # - verificacao (Linux x64): formatação, lint, tipos, testes (os de navegador do apps/web no Chromium
 #   headless do Playwright), banco, smoke do MCP contra a base real, validação da base e os gabaritos

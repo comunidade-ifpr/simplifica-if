@@ -1,18 +1,18 @@
 # Planos
 
-Planos de trabalho do projeto. Cada plano registra decisões, entregas e critérios de aceite; o andamento fica no próprio plano.
+Planos vivos do projeto: decisões, o que está em `main` e o que falta. O trabalho concluído sai do plano e fica no histórico do git.
 
 | Plano | Escopo | Situação |
 |---|---|---|
-| [PLANO-ARQUITETURA.md](../../PLANO-ARQUITETURA.md) | Base de conhecimento, `packages/kb`, CLI `kb`, migração Python → TypeScript | Fases 0 a 6 em `main`; ainda na raiz |
-| [app-simplifica-if.md](app-simplifica-if.md) | App desktop Simplifica IF até o Marco 2: app próprio no monorepo com a stack do T3, motor, língua do código, interface em português | Direção revista em 14/11/2026: app próprio, sem fork. Em `main`: M1.0, M1.1 (servidor, desktop, interface), M1.2 e M1.7 mínimos, M1.4, M1.5; skills do app nas conversas (M0.4 e M1.11 em parte, 16/11/2026); "Revisar um PPC" (M1.11, etapas 1 a 5b: pré-conferência, revisão com IA, roteiro por pendência e comentários no Word; registro em [propostas/](propostas/)); M1.6 (leitor `ifpr://`), M1.8 (primeiro uso), M1.9 (modo Servidor), M1.10 (atualização, sem feed de produção), M1.12 ("Isto está errado") e M1.15 (Explorar, 17/11/2026) |
-| [app-seguranca-dados.md](app-seguranca-dados.md) | Credenciais SUAP e SEI, níveis de sensibilidade, garantias de retenção dos providers (ZDR), LGPD | Suspenso: SUAP e SEI fora do app até o Marco 2 |
-| [opencode-openrouter.md](opencode-openrouter.md) | Caminho para modelos do OpenRouter com retenção zero (ZDR) e modelos locais: OpenCode por ACP, o que trazer do T3 | Pesquisa inicial de 19/11/2026; nada implementado |
+| [app-simplifica-if.md](app-simplifica-if.md) | App desktop Simplifica IF até o Marco 2: decisões, arquitetura, situação dos marcos e o que falta | Marcos M0 e M1 em `main`, salvo assinatura, feed de produção, avaliação real com Codex e Antigravity e o piloto; Marco 2 por fazer |
+| [arquitetura-base.md](arquitetura-base.md) | Base de conhecimento, `packages/kb`, CLI `kb` e MCP: IDs canônicos, banco derivado, proveniência, vigência | Fases 0 e 2 a 7 em `main`; em aberto as revisões humanas e jurídicas |
+| [app-seguranca-dados.md](app-seguranca-dados.md) | Retenção de dados nos providers (ZDR), níveis de sensibilidade, LGPD | Suspenso: SUAP e SEI fora do app até o Marco 2 |
+| [opencode-openrouter.md](opencode-openrouter.md) | Caminho para modelos do OpenRouter com retenção zero (ZDR) e modelos locais: OpenCode por ACP | Pesquisa de 19/11/2026; nada implementado |
 
 Documentos de apoio:
 
 | Documento | Para quê |
 |---|---|
 | [upstream-t3.md](../upstream-t3.md) | Código copiado do T3 Code: origem, commit, adaptações; `pnpm upstream:t3 status\|diff` |
-| [guia-piloto-zero.md](../guia-piloto-zero.md) | Guia de uma página para instalar o `simplifica-mcp` no app que a pessoa já usa (M0.6) |
-| [packages/motor/README.md](../../packages/motor/README.md) | Achados da PoC do motor (M1.0): como cada provider recebe o MCP, detecção, armadilhas |
+| [guia-piloto-zero.md](../guia-piloto-zero.md) | Guia de uma página para usar o `simplifica-mcp` fora do app, no app de IA que a pessoa já usa |
+| [packages/motor/README.md](../../packages/motor/README.md) | Como cada provider recebe o MCP, detecção, armadilhas |

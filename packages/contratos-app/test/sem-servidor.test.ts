@@ -32,7 +32,7 @@ const PERMITIDOS: ReadonlyArray<string> = EXCECOES_KB.map((caminho) => NodeURL.p
 const PROIBIDOS: ReadonlyArray<readonly [RegExp, string]> = [
   [/^node:/, "módulo do Node"],
   [/\/packages\/kb\//, "@simplifica-if/kb"],
-  [/\/packages\/mcp\/src\/(leitura|servidor|http|rpc|toolkit|envelope|SessaoAtual)/, "código de servidor do MCP"],
+  [/\/packages\/mcp\/src\/(leitura|servidor|http|rpc|envelope|SessaoAtual)/, "código de servidor do MCP"],
   [/\/packages\/mcp\/src\/ferramentas\/(registrar|toolkit)\.ts/, "registro de ferramentas do MCP"],
   [/\/packages\/motor\/src\/(drivers|processo|t3)\//, "driver do motor"],
   [/\/packages\/motor\/src\/(Motor|Driver|Canal|resultados|estados)\.ts$/, "implementação do motor"],

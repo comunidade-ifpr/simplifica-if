@@ -2,7 +2,7 @@
 
 Esta skill revisa Projetos Pedagógicos de Curso técnico do IFPR antes da submissão à PROENS, a partir de um arquivo Word (`.docx`) ou Markdown (`.md`). É uma revisão prévia: o produto é um relatório de revisão (o PPC HTML anotado), não um parecer, e não substitui a análise oficial da PROENS. A IA roda por sub-agentes na conversa atual; os scripts preparam o `PPC.md`, organizam as fichas e geram o relatório.
 
-A skill se chamava `analise-ppc` até 13/11/2026; o nome mudou para deixar claro que ela não é o ato oficial (veja o `PLANO-ARQUITETURA.md`, seção Andamento).
+A skill se chamava `analise-ppc` até 13/11/2026; o nome mudou para deixar claro que ela faz uma revisão prévia, antes da submissão à PROENS, e não é a análise oficial nem emite parecer.
 
 A skill, com sub-agentes e o relatório HTML, roda só no repositório: não tem bloco `simplifica:` e não vai para o app. No app Simplifica IF, a revisão é a tarefa nativa "Revisar um PPC", conduzida pelo servidor, que usa as fichas desta skill e a conversão de `packages/ppc` e devolve o `.docx` com comentários (veja [Execução no app](#execução-no-app-d-s-j)).
 
@@ -188,7 +188,7 @@ node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts medir-identificacao --err
 
 ## Execução no app (D, S, J)
 
-Cada ficha declara `execucao: { modo, justificativa }`, a classificação da revisão de PPC no app (M1.11, proposta C, em `docs/plans/propostas/m1-11-revisao-ppc-C.md`): **D** (12 fichas), o código decide com a base, sem IA; **S** (38), o código acha o trecho e decide a aplicabilidade, e a IA confirma numa resposta curta; **J** (30), julgamento da IA sobre as seções do tema (as transversais, sobre os resumos). A justificativa diz o que o código usa e o que sobra para a IA. O schema recusa ficha sem `execucao`; `validar-base` recusa ficha D sem verificador registrado em `packages/ppc/src/verificadores/registro.ts` e verificador de ficha que não é D. `indice.json` traz o modo e o verificador de cada ficha (e a contagem por modo em `resumo.fichas_por_execucao`), e `mapa-fichas.md` lista as fichas por modo.
+Cada ficha declara `execucao: { modo, justificativa }`, a classificação da revisão de PPC no app (M1.11, proposta C, no histórico do git em `docs/plans/propostas/m1-11-revisao-ppc-C.md`): **D** (12 fichas), o código decide com a base, sem IA; **S** (38), o código acha o trecho e decide a aplicabilidade, e a IA confirma numa resposta curta; **J** (30), julgamento da IA sobre as seções do tema (as transversais, sobre os resumos). A justificativa diz o que o código usa e o que sobra para a IA. O schema recusa ficha sem `execucao`; `validar-base` recusa ficha D sem verificador registrado em `packages/ppc/src/verificadores/registro.ts` e verificador de ficha que não é D. `indice.json` traz o modo e o verificador de cada ficha (e a contagem por modo em `resumo.fichas_por_execucao`), e `mapa-fichas.md` lista as fichas por modo.
 
 Os verificadores, o que cada um confere, o estado `a_conferir` para tudo o que depende de extração e a precisão medida nos 110 PPCs técnicos da base estão no [README do `packages/ppc`](../../../packages/ppc/README.md#pré-conferência-sem-ia-fichas-d) e em [`PRECISAO.md`](../../../packages/ppc/PRECISAO.md). Mudar uma ficha para D é uma edição versionada: o verificador, o registro, os casos de teste e a medição na base entram juntos. A revisão por sub-agentes desta skill continua a avaliar todas as 80 fichas; o modo só muda a revisão no app.
 

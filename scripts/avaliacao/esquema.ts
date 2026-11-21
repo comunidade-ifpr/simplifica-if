@@ -41,9 +41,9 @@ export const esquemaAncora = Schema.String.check(
   ),
 );
 
-export const ESTADOS_FICHA = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
+const ESTADOS_FICHA = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
 
-export const esquemaAchadoOuro = Schema.Struct({
+const esquemaAchadoOuro = Schema.Struct({
   ficha: Schema.String.check(Schema.isPattern(/^CT-(?:CURR|IDENT|SUP|TRANS)-\d{2}$/u)),
   estado_esperado: Schema.Literals(ESTADOS_FICHA),
   justificativa: textoNaoVazio,

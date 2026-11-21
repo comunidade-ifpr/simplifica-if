@@ -1,7 +1,7 @@
 /**
  * IDs canônicos de normas, de dispositivos e de referências fora da base.
  *
- * O ID é derivado do ato, nunca do nome do arquivo (plano de arquitetura, "Arquitetura alvo"):
+ * O ID é derivado do ato, nunca do nome do arquivo (`docs/plans/arquitetura-base.md`, "IDs canônicos"):
  *
  * - norma com órgão: `<jurisdição>/<órgão>/<tipo>/<ano>/<número>`, como `br/cne-cp/res/2026/2`,
  *   `ifpr/consup/res/2024/190` e `ifpr/proens/nt/2025/1`;

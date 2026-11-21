@@ -79,7 +79,7 @@ pnpm exec vp test run .agents/skills/revisar-ppc
 pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # todo o código: app, pacotes, scripts e skills
 ```
 
-Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho e reunião) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
+Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (CNCT e PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho e reunião) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
 
 ## Desenvolvimento
 

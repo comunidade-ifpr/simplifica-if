@@ -26,8 +26,10 @@ import Migracao0001 from "./migracoes/0001_Inicial.ts";
 export const ARQUIVO_BANCO = "conversas.sqlite";
 
 /**
- * As migrações, em ordem. Enquanto o app não tem usuários, a 1 é o banco inteiro e muda no lugar (apague
- * o `conversas.sqlite` de desenvolvimento); depois do primeiro piloto, cada mudança é uma migração nova.
+ * As migrações, em ordem. Enquanto o app não tem usuários, a 1 é o banco inteiro e muda no lugar:
+ * apague o `conversas.sqlite` de desenvolvimento, inclusive o migrado antes de 21/11/2026, que tem as
+ * ids 1 a 8 gravadas e pularia uma migração nova com essas ids. Depois do primeiro piloto, cada mudança
+ * é uma migração nova.
  */
 const MIGRACOES = [[1, "Inicial", Migracao0001]] as const;
 

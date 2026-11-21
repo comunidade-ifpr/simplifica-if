@@ -1,6 +1,6 @@
 # @simplifica-if/kb
 
-Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.md)): regras que mais de um consumidor usa (servidor do app em `apps/server`, servidor MCP, pipeline em `scripts/`, skills em `.agents/skills/`, avaliação). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
+Núcleo da base de conhecimento ([plano de arquitetura](../../docs/plans/arquitetura-base.md)): regras que mais de um consumidor usa (servidor do app em `apps/server`, servidor MCP, pipeline em `scripts/`, skills em `.agents/skills/`, avaliação). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
 
 Desde o C1 da consolidação na stack do T3, o kb é um conjunto de serviços [Effect 4](https://effect.website) sobre um `SqlClient` do `node:sqlite`. As regras puras (resolvedor, vigência, impacto, adequação, stemmer, texto, `primitivas/*`) continuam funções puras e síncronas; o Effect entra nas fontes de dados, no banco, nos erros e nas bordas (CLI). `effect` e `@effect/platform-node` são `peerDependencies`: quem consome traz a mesma versão (a do catalog).
 
