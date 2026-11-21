@@ -22,9 +22,10 @@ import { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
+import { identificarCurso } from "./identificacao.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
-import { type BaseVerificacao, chave, type CursoCnct, type Fonte, linkCnct, linkNorma } from "./verificadores/comum.ts";
+import { type BaseVerificacao, type CursoCnct, type Fonte, linkCnct, linkNorma } from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
 import { rotuloDispositivo } from "./verificadores/dispositivos.ts";
 import { vigenciaDeDados } from "./verificadores/vigencia.ts";
@@ -264,48 +265,6 @@ const O_QUE_FAZER: Record<string, string> = {
   "secoes-do-modelo":
     "Confira se as seções existem com outro título; se faltarem, inclua-as conforme o modelo de PPC da PROENS.",
 };
-
-/* ============================================================ curso */
-
-const dentroDoInicio = (markdown: string) =>
-  chave(
-    markdown
-      .split("\n")
-      .slice(0, 200)
-      .join(" ")
-      .replace(/[*_#|]/g, " "),
-  );
-
-/** O curso do CNCT cuja denominação aparece no início do PPC (a mais longa, se houver várias). */
-export function identificarCnct(markdown: string, cncts: readonly CursoCnct[]): CursoCnct | null {
-  const inicio = ` ${dentroDoInicio(markdown)
-    .replace(/[^a-z0-9 ]/g, " ")
-    .replace(/\s+/g, " ")} `;
-  let melhor: CursoCnct | null = null;
-  for (const curso of cncts) {
-    const alvo = chave(curso.denominacao)
-      .replace(/[^a-z0-9 ]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-    if (alvo && inicio.includes(` ${alvo} `) && (!melhor || alvo.length > chave(melhor.denominacao).length))
-      melhor = curso;
-  }
-  return melhor;
-}
-
-/** A forma de oferta declarada no início do PPC: PROEJA se aparece; senão, a mais citada. */
-export function identificarForma(markdown: string): string | null {
-  const inicio = dentroDoInicio(markdown);
-  if (/\bproeja\b|educacao de jovens e adultos/.test(inicio)) return "proeja";
-  const contagem = (padrao: RegExp) => inicio.match(padrao)?.length ?? 0;
-  const formas = [
-    ["integrado", contagem(/\bintegrad[oa]\b/g)],
-    ["subsequente", contagem(/\bsubsequente\b/g)],
-    ["concomitante", contagem(/\bconcomitante\b/g)],
-  ] as const;
-  const [forma, vezes] = [...formas].sort((a, b) => b[1] - a[1])[0]!;
-  return vezes > 0 ? forma : null;
-}
 
 /* ============================================================ fontes */
 
@@ -684,9 +643,9 @@ export function revisarDocx(
   // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
   const comum = verificacaoDaBase(base);
   const registro = comum.registro;
-  const escolhido = opcoes.cnct ? (base.cncts.find((c) => c.slug === opcoes.cnct) ?? null) : undefined;
-  const cnct = escolhido !== undefined ? escolhido : identificarCnct(conversao.markdown, base.cncts);
-  const forma = opcoes.forma ?? identificarForma(conversao.markdown);
+  const noDocumento = identificarCurso(conversao.markdown, base.cncts);
+  const cnct = opcoes.cnct ? (base.cncts.find((c) => c.slug === opcoes.cnct) ?? null) : noDocumento.cnct;
+  const forma = opcoes.forma ?? noDocumento.forma;
   const curso: CursoIdentificado = {
     cnct: cnct ? { slug: cnct.slug, denominacao: cnct.denominacao } : null,
     forma,

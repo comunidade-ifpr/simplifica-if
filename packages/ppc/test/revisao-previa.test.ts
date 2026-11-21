@@ -11,12 +11,7 @@ import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
-import {
-  identificarForma,
-  revisarDocx as revisarSemConferir,
-  rotuloDispositivo,
-  textoDoComentario,
-} from "../src/revisao-previa.ts";
+import { revisarDocx as revisarSemConferir, rotuloDispositivo, textoDoComentario } from "../src/revisao-previa.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
 /** Toda cópia comentada passa pelo validador estrutural: o Word tem de abri-la sem reparo. */
@@ -181,11 +176,4 @@ test("rótulo legível do dispositivo", () => {
   expect(rotuloDispositivo("art35D")).toBe("art. 35-D");
   expect(rotuloDispositivo("anexo1-art5-c")).toBe("Anexo 1, art. 5º, alínea c");
   expect(rotuloDispositivo("art10")).toBe("art. 10");
-});
-
-test("forma de oferta", () => {
-  expect(identificarForma("Curso Técnico em X integrado ao ensino médio")).toBe("integrado");
-  expect(identificarForma("Técnico em X, na modalidade PROEJA, integrado")).toBe("proeja");
-  expect(identificarForma("Forma: Subsequente")).toBe("subsequente");
-  expect(identificarForma("Projeto do curso")).toBeNull();
 });
