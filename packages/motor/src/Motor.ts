@@ -146,18 +146,17 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
       // Uma sessão sem ferramentas não recebe MCP nem skills.
       return yield* new FalhaProvider({ provider: pedida.provider, operacao: "iniciar", tipo: "mcp" });
     }
+    const politicaSessao = pedida.semFerramentas === true ? POLITICA_JULGAMENTO : politica;
     let pastaSkills = "";
     if (pedida.skills !== undefined && pedida.skills.length > 0) {
       pastaSkills = yield* Skills.gravarSkills(pedida).pipe(Effect.provideContext(arquivos));
     }
-    const instrucoes = Skills.instrucoesSessao(pedida, pastaSkills, path.sep);
+    const instrucoes = Skills.instrucoesSessao(pedida, pastaSkills, path.sep, { web: buscaWebLigada(politicaSessao) });
     const config: ConfigSessao = {
       ...pedida,
-      buscaWeb: buscaWebLigada(politica, pedida.buscaWeb),
       ...(instrucoes === undefined ? {} : { instrucoes }),
     };
     const escopo = yield* Scope.make();
-    const politicaSessao = config.semFerramentas === true ? POLITICA_JULGAMENTO : politica;
     return yield* comOperacaoAtiva(
       config.provider,
       Effect.gen(function* () {

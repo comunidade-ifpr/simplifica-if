@@ -43,7 +43,14 @@ export function AvisoUso({
           O app guarda seu perfil, suas conversas e as pastas só neste computador.{" "}
           <strong>O que você envia à IA também fica guardado na empresa dela</strong>, conforme os termos dela.
         </li>
-        <li>A IA pode errar: confira na fonte citada antes de usar a resposta num documento oficial.</li>
+        <li>
+          Quando a informação não está na base do IFPR, a IA também pode pesquisar fontes públicas na internet.{" "}
+          <strong>Os termos pesquisados e as páginas consultadas passam pela empresa da IA.</strong>
+        </li>
+        <li>
+          A IA pode errar: confira na fonte citada (da base do IFPR ou externa) antes de usar a resposta num documento
+          oficial.
+        </li>
       </ul>
       {aoEntender === undefined ? null : (
         <Button className="self-start" onClick={aoEntender}>

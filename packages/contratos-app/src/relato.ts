@@ -47,6 +47,8 @@ export const RascunhoRelato = Schema.Struct({
   resposta: Schema.String,
   /** Os links `ifpr://` da resposta, sem repetição, na ordem. */
   citacoes: Schema.Array(Schema.String),
+  /** Os links externos (`http://` / `https://`) da resposta, sem repetição, na ordem. */
+  fontesExternas: Schema.Array(Schema.String),
   versoes: VersoesRelato,
   /** O `dono/repo` da curadoria na política de fábrica; `null` enquanto o repositório não é público. */
   repositorio: Schema.NullOr(Schema.String),
@@ -155,11 +157,16 @@ const escaparRegex = (texto: string) => texto.replace(/[.*+?^${}()|[\]\\]/g, "\\
 /** Tira as fontes retiradas também do texto: o link em Markdown fica só com o texto dele, e o solto sai. */
 function semFontes(texto: string, retiradas: ReadonlySet<string>): string {
   let saida = texto;
-  for (const link of retiradas) {
+  // Mais longas primeiro evita que um prefixo (`https://a/b`) estrague uma URL maior (`https://a/b?x=1`).
+  const ordenadas = [...retiradas].sort((a, b) => b.length - a.length);
+  for (const link of ordenadas) {
     const escapado = escaparRegex(link);
+    const continua = /^https?:\/\//i.test(link)
+      ? String.raw`(?![A-Za-z0-9._~:/?#[\]@!$&'*+,;=%-]*[A-Za-z0-9_~/#=%-])`
+      : String.raw`(?![A-Za-z0-9._~:/#-]*[A-Za-z0-9_~/#-])`;
     saida = saida
       .replace(new RegExp(String.raw`\[([^\]\n]*)\]\(${escapado}\)`, "g"), `$1 ${FONTE_RETIRADA}`)
-      .replace(new RegExp(`${escapado}(?![A-Za-z0-9._~:/#-]*[A-Za-z0-9_~/#-])`, "g"), FONTE_RETIRADA);
+      .replace(new RegExp(`${escapado}${continua}`, "g"), FONTE_RETIRADA);
   }
   return saida;
 }
@@ -234,6 +241,7 @@ export function montarRelato(
   escolhas: EscolhasRelato,
 ): { readonly titulo: string; readonly corpo: string } {
   const citacoes = rascunho.citacoes.filter((link) => !escolhas.retiradasCitacoes.has(link));
+  const externas = rascunho.fontesExternas.filter((link) => !escolhas.retiradasCitacoes.has(link));
   const descricao = escolhas.descricao.trim();
   const retirar = (texto: string) => semFontes(texto, escolhas.retiradasCitacoes);
   const partes = [
@@ -250,6 +258,12 @@ export function montarRelato(
         : "_(retiradas por quem enviou)_"
       : citacoes.map((link) => `- \`${link}\``).join("\n"),
   ];
+  if (rascunho.fontesExternas.length > 0) {
+    partes.push(
+      "## Fontes externas citadas na resposta",
+      externas.length === 0 ? "_(retiradas por quem enviou)_" : externas.map((link) => `- \`${link}\``).join("\n"),
+    );
+  }
   if (!escolhas.semVersoes) partes.push("## Versões", linhasVersoes(rascunho.versoes).join("\n"));
   partes.push(
     "---",
@@ -299,6 +313,37 @@ export function citacoesDe(texto: string): ReadonlyArray<string> {
   for (const achado of texto.matchAll(/ifpr:\/\/[A-Za-z0-9._~:/#-]+/gi)) {
     const link = achado[0].replace(/[.,:;~-]+$/, "");
     if (link.length > "ifpr://".length) vistos.add(link);
+  }
+  return [...vistos];
+}
+
+/** Remove pontuação final, ênfase Markdown (`*`, `_`) e parênteses excedentes (como o autolink do GFM). */
+function limparFimUrl(bruta: string): string {
+  let url = bruta;
+  for (;;) {
+    const semPontuacao = url.replace(/[.,:;!?~*_'"`<>-]+$/, "");
+    if (semPontuacao !== url) {
+      url = semPontuacao;
+      continue;
+    }
+    if (url.endsWith(")")) {
+      const abertos = (url.match(/\(/g) ?? []).length;
+      const fechados = (url.match(/\)/g) ?? []).length;
+      if (fechados > abertos) {
+        url = url.slice(0, -1);
+        continue;
+      }
+    }
+    return url;
+  }
+}
+
+/** Os links externos (`http://` ou `https://`) de um texto, sem repetição, sem pontuação ou ênfase do fim. */
+export function fontesExternasDe(texto: string): ReadonlyArray<string> {
+  const vistos = new Set<string>();
+  for (const achado of texto.matchAll(/https?:\/\/[^\s<>`"'[\]]+/gi)) {
+    const link = limparFimUrl(achado[0]);
+    if (/^https?:\/\/[^/\s]+/i.test(link)) vistos.add(link);
   }
   return [...vistos];
 }

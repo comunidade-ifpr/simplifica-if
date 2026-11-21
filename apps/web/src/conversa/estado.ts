@@ -47,6 +47,8 @@ export type Item =
       readonly nome: string;
       readonly situacao: "andamento" | "concluida" | "falhou";
       readonly resumo?: string;
+      /** Consulta ou domínio de uma ferramenta web (substitui o resumo bruto da página na tela). */
+      readonly detalheWeb?: string;
       /** A marca da ferramenta `etapa` (o indicador de etapas da tarefa). */
       readonly etapa?: MarcaEtapa;
     }
@@ -223,12 +225,14 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
     }
     case "FerramentaIniciada": {
       const etapa = ehFerramentaEtapa(evento.nome) ? marcaDaEntrada(evento.entrada) : undefined;
+      const detalheWeb = detalheFerramentaWeb(evento.nome, evento.entrada);
       return comItem(estado, (chave) => ({
         tipo: "ferramenta",
         chave,
         id: evento.id,
         nome: evento.nome,
         situacao: "andamento",
+        ...(detalheWeb === undefined ? {} : { detalheWeb }),
         ...(etapa === undefined ? {} : { etapa }),
       }));
     }
@@ -236,6 +240,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
       const indice = estado.itens.findLastIndex((item) => item.tipo === "ferramenta" && item.id === evento.id);
       const anterior = estado.itens[indice];
       const etapa = anterior?.tipo === "ferramenta" ? anterior.etapa : undefined;
+      const detalheWeb = anterior?.tipo === "ferramenta" ? anterior.detalheWeb : undefined;
       const concluida = (chave: string): Item => ({
         tipo: "ferramenta",
         chave,
@@ -243,6 +248,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
         nome: evento.nome,
         situacao: evento.falhou ? "falhou" : "concluida",
         resumo: evento.resumo,
+        ...(detalheWeb === undefined ? {} : { detalheWeb }),
         ...(etapa === undefined ? {} : { etapa }),
       });
       return indice < 0 ? comItem(estado, concluida) : trocar(estado, indice, concluida(estado.itens[indice]!.chave));
@@ -440,10 +446,48 @@ const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
   execute: "Rodar comando",
   read: "Ler arquivo",
   search: "Procurar nos arquivos",
-  fetch: "Consultar a internet",
-  WebFetch: "Consultar a internet",
-  WebSearch: "Consultar a internet",
+  fetch: "Ler página na internet",
+  WebFetch: "Ler página na internet",
+  ler_pagina_web: "Ler página na internet",
+  read_url_content: "Ler página na internet",
+  WebSearch: "Pesquisar na internet",
+  busca_web: "Pesquisar na internet",
+  search_web: "Pesquisar na internet",
 };
+
+const FERRAMENTAS_BUSCA_WEB = new Set(["WebSearch", "busca_web", "search_web"]);
+const FERRAMENTAS_PAGINA_WEB = new Set(["WebFetch", "ler_pagina_web", "read_url_content", "fetch"]);
+
+/** Consulta (em busca web) ou domínio/caminho curto (em leitura de página), para auditar na conversa. */
+export function detalheFerramentaWeb(nome: string, entrada: unknown): string | undefined {
+  if (typeof entrada !== "object" || entrada === null) return undefined;
+  const dados = entrada as Record<string, unknown>;
+  const textoDe = (...chaves: ReadonlyArray<string>) => {
+    for (const chave of chaves) {
+      const valor = dados[chave];
+      if (typeof valor === "string" && valor.trim() !== "") return valor.trim();
+    }
+    return undefined;
+  };
+  if (FERRAMENTAS_PAGINA_WEB.has(nome)) {
+    const bruto = textoDe("url", "Url", "uri", "Uri");
+    if (bruto === undefined) return undefined;
+    try {
+      const lida = new URL(bruto);
+      const caminho = lida.pathname === "/" ? "" : lida.pathname;
+      const curto = `${lida.hostname}${caminho}`;
+      return curto.length <= 100 ? curto : `${curto.slice(0, 99)}…`;
+    } catch {
+      return bruto.length <= 100 ? bruto : `${bruto.slice(0, 99)}…`;
+    }
+  }
+  if (FERRAMENTAS_BUSCA_WEB.has(nome)) {
+    const consulta = textoDe("query", "Query", "consulta", "search_query");
+    if (consulta === undefined) return undefined;
+    return consulta.length <= 120 ? consulta : `${consulta.slice(0, 119)}…`;
+  }
+  return undefined;
+}
 
 /** Pelo jeito do nome, quando a ferramenta não está na lista (as nativas mudam de nome entre versões). */
 const ROTULOS_POR_PADRAO: ReadonlyArray<readonly [RegExp, string]> = [

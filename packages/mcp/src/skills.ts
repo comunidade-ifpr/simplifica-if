@@ -3,7 +3,8 @@
  * `SKILL.md`, seção "Manifesto de skill" do plano do app) e a leitura de uma pasta de skills.
  *
  * Fica neste pacote, e não no `@simplifica-if/kb`, porque o manifesto confere `ferramentas` contra a
- * lista do Toolkit (`FERRAMENTAS`): uma skill do app só chama ferramentas do `simplifica-mcp`. Quem usa:
+ * lista do Toolkit (`FERRAMENTAS`): `ferramentas` lista só as ferramentas do `simplifica-mcp` que a
+ * skill usa (a busca web, quando ligada, vem da política da sessão, não do manifesto). Quem usa:
  *
  * - o `apps/server` (`CatalogoSkills`), que entrega as skills válidas às conversas;
  * - o `scripts/validar_base.ts`, que recusa um bloco inválido ou um arquivo listado que falta;

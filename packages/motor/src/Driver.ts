@@ -95,11 +95,6 @@ export interface ConfigSessao {
    */
   readonly esforco?: NivelEsforco;
   /**
-   * Busca na web (padrão: desligada). Desligada, a resposta sai da base e do que o usuário anexa.
-   * Só vale se a política permitir (`isolamento.buscaWeb: "a-pedido"`); a de fábrica desliga.
-   */
-  readonly buscaWeb?: boolean;
-  /**
    * Retoma a conversa nativa do provider com este id (o `idNativo` de uma sessão anterior), em vez de
    * abrir uma nova: `resume` do Agent SDK (Claude), `thread/resume` (Codex), `session/load` do ACP
    * (Antigravity). Se o provider não retoma, o driver falha com `FalhaProvider` na operação `retomar`.

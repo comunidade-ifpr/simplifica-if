@@ -3,7 +3,7 @@
  * link ou soltos no texto (`linksIfpr.ts`), viram botões que abrem o painel de leitura; os outros abrem
  * fora do app (no desktop, no navegador do sistema).
  */
-import { BookOpenIcon } from "lucide-react";
+import { BookOpenIcon, ExternalLinkIcon } from "lucide-react";
 import { type ComponentProps, createContext, type MouseEvent, use } from "react";
 import ReactMarkdown, { type Components, defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -83,17 +83,26 @@ export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
   // `mailto:`, caminho relativo e o resto não abrem no app nem no navegador (o desktop só abre http e
   // https): ficam como texto.
   if (href === undefined || !ehLinkWeb(href)) return <span>{children}</span>;
+  let dominio: string | undefined;
+  try {
+    dominio = new URL(href).hostname;
+  } catch {
+    dominio = undefined;
+  }
   return (
     <a
       href={href}
       rel="noopener noreferrer"
       target="_blank"
+      data-fonte-externa
+      title={dominio === undefined ? "Abrir no navegador" : `Abrir no navegador: ${dominio}`}
       onClick={(evento) => {
         evento.preventDefault();
         abrirFora(href);
       }}
     >
       {children}
+      <ExternalLinkIcon aria-hidden className="ml-0.5 inline size-3.5 shrink-0 align-[-0.15em]" />
     </a>
   );
 }

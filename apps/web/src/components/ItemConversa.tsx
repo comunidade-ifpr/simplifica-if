@@ -78,7 +78,13 @@ export function ItemConversa({
           {item.final ? null : <span aria-hidden className="cursor-resposta" />}
         </div>
       );
-    case "ferramenta":
+    case "ferramenta": {
+      const subtitulo =
+        item.situacao === "falhou" && item.resumo !== undefined && item.resumo.length > 0
+          ? item.detalheWeb !== undefined && !item.resumo.includes(item.detalheWeb)
+            ? `${item.detalheWeb} — ${item.resumo}`
+            : item.resumo
+          : (item.detalheWeb ?? item.resumo);
       return (
         <div className="flex items-start gap-2 text-sm" data-ferramenta={item.id}>
           <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
@@ -92,14 +98,15 @@ export function ItemConversa({
           </span>
           <div className="min-w-0">
             <p className="font-medium">{rotuloFerramenta(item.nome)}</p>
-            {item.resumo === undefined || item.resumo.length === 0 ? null : (
+            {subtitulo === undefined || subtitulo.length === 0 ? null : (
               <p data-conteudo className="line-clamp-2 text-muted-foreground text-small">
-                {item.resumo}
+                {subtitulo}
               </p>
             )}
           </div>
         </div>
       );
+    }
     case "aprovacao":
       return <Aprovacao item={item} />;
     case "aviso":

@@ -179,7 +179,16 @@ export function classificarClaude(
   if (ferramenta === "Bash") {
     return { tipo: "comando", caminhos: typeof entrada.command === "string" ? caminhosDoComando(entrada.command) : [] };
   }
-  if (WEB.has(ferramenta)) return { tipo: "web", caminhos: [] };
+  if (WEB.has(ferramenta)) {
+    const exigeUrl = ferramenta === "WebFetch";
+    const urls = exigeUrl && typeof entrada.url === "string" && entrada.url.trim() !== "" ? [entrada.url] : [];
+    return {
+      tipo: "web",
+      caminhos: [],
+      ...(urls.length > 0 ? { urls } : {}),
+      ...(exigeUrl ? { exigeUrl: true } : {}),
+    };
+  }
   return { tipo: "outra", caminhos: [] };
 }
 
@@ -399,8 +408,10 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         cwd: config.pastaTrabalho,
         mcpServers: mcpServersClaude(config),
         // As ferramentas do app passam sem `canUseTool` quando a política as permite.
+        // WebSearch e WebFetch ficam fora de `allowedTools` para passarem pelo `canUseTool` e pelo
+        // filtro determinístico de URL de `avaliar`.
         allowedTools: politica.ferramentas.mcpApp === "permitir" ? servidoresApp.map((nome) => `mcp__${nome}`) : [],
-        ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
+        ...(buscaWebLigada(politica) ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
         // Julgamento: nenhuma ferramenta no contexto e nenhuma pergunta (`dontAsk` nega o que não foi
         // pré-aprovado); o prompt de sistema é só o do app.
         permissionMode: config.semFerramentas === true ? "dontAsk" : "default",

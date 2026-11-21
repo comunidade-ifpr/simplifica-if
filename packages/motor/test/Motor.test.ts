@@ -334,19 +334,25 @@ describe("Motor: política e skills", () => {
     }).pipe(Effect.provide(camadaComPolitica(configs)));
   });
 
-  it.effect("provider fora da política não abre sessão; busca web desligada pela de fábrica", () => {
-    const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
-    const soClaude = { ...Motor.POLITICA_FABRICA, providers: ["claude" as const] };
-    return Effect.gen(function* () {
-      const motor = yield* Motor.Motor;
-      const recusada = yield* Effect.exit(motor.iniciarSessao({ ...CONFIG, provider: "codex" }));
-      assert.isTrue(Exit.hasFails(recusada));
-      yield* motor.iniciarSessao({ ...CONFIG, buscaWeb: true });
-      assert.strictEqual(configs.length, 1);
-      assert.strictEqual(configs[0]?.config.buscaWeb, false);
-      assert.strictEqual(configs[0]?.politica, soClaude);
-    }).pipe(Effect.provide(camadaComPolitica(configs, soClaude)));
-  });
+  it.effect(
+    "provider fora da política não abre sessão; instruções de web entram na conversa normal e nunca no julgamento",
+    () => {
+      const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
+      const soClaude = { ...Motor.POLITICA_FABRICA, providers: ["claude" as const] };
+      return Effect.gen(function* () {
+        const motor = yield* Motor.Motor;
+        const recusada = yield* Effect.exit(motor.iniciarSessao({ ...CONFIG, provider: "codex" }));
+        assert.isTrue(Exit.hasFails(recusada));
+        yield* motor.iniciarSessao({ ...CONFIG });
+        yield* motor.iniciarSessao({ ...CONFIG, semFerramentas: true, instrucoes: "só julgamento" });
+        assert.strictEqual(configs.length, 2);
+        assert.strictEqual(configs[0]?.politica, soClaude);
+        assert.match(configs[0]?.config.instrucoes ?? "", /Base primeiro/);
+        assert.strictEqual(configs[1]?.politica, Motor.POLITICA_JULGAMENTO);
+        assert.strictEqual(configs[1]?.config.instrucoes, "só julgamento");
+      }).pipe(Effect.provide(camadaComPolitica(configs, soClaude)));
+    },
+  );
 
   it.effect("skills: grava SKILL.md e arquivos na pasta de trabalho e passa as instruções ao driver", () => {
     const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
@@ -374,7 +380,10 @@ describe("Motor: política e skills", () => {
       assert.match(skillMd, /Responda com a frase do arquivo frase.txt./);
       assert.strictEqual(yield* fs.readFileString(path.join(raiz, "frase.txt")), "Olá do IFPR");
       const instrucoes = configs[0]?.config.instrucoes ?? "";
-      assert.match(instrucoes, /^Responda em português\.\n\n## Skills do Simplifica IF/);
+      assert.match(
+        instrucoes,
+        /^Responda em português\.\n\n## Uso da base do IFPR[\s\S]+\n\n## Skills do Simplifica IF/,
+      );
       assert.include(instrucoes, `\`saudacao-ifpr\`: Use quando o usuário pedir a saudação do IFPR.`);
       assert.include(instrucoes, path.join(raiz, "SKILL.md"));
 

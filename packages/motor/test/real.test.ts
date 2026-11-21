@@ -253,8 +253,9 @@ describe.skipIf(!REAL)("M1.2: política, texto parcial, contexto e skills", () =
         const uso = eventos.flatMap(({ evento }) => (evento._tag === "UsoTokens" ? [evento] : []));
         const entrada = uso.reduce((soma, evento) => soma + evento.entrada, 0);
         yield* relatar(`[codex] tokens de entrada de um turno sem ferramenta: ${entrada}`);
-        // Antes do corte (só o isolamento do M1.4), 14 mil com as ferramentas do ifpr; ver o README.
-        assert.isBelow(entrada, 12_000);
+        // Antes do corte (só o isolamento do M1.4), 14 mil sem web; com web_search "live" + INSTRUCOES_WEB
+        // (codex-cli 0.171.0, 21/11/2026), medido em 12.935 tokens.
+        assert.isBelow(entrada, 14_000);
       }).pipe(Effect.scoped, Effect.provide(camada)),
     300_000,
   );

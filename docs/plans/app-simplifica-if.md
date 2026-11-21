@@ -116,7 +116,7 @@ simplifica:
 ```
 
 - O schema fica em `@simplifica-if/mcp/skills`, conferido no `validar_base.ts`. Obrigatórios: `titulo`, `resumo`, `area`, `ferramentas` e `arquivos`; `base_minima`, `app_minimo` e `donos` são opcionais (`donos` deve virar entrada num CODEOWNERS, que ainda não existe).
-- `ferramentas` lista só ferramentas do `simplifica-mcp`: a skill no app não chama comandos do repositório. `arquivos` lista o que vai para o app; `scripts/`, `tests/` e `agents/` nunca vão. Skill que precise de sistema com login não entra no app.
+- `ferramentas` lista só ferramentas do `simplifica-mcp` que a skill usa (a busca web, quando ligada, vem da política da sessão, não do manifesto): a skill no app não chama comandos do repositório. `arquivos` lista o que vai para o app; `scripts/`, `tests/` e `agents/` nunca vão. Skill que precise de sistema com login não entra no app.
 - `publico` tem vocabulário fechado (`@simplifica-if/mcp/publicos`) e filtra os cartões pelo perfil. A ferramenta `etapa` vira o indicador de etapas da conversa.
 
 Hoje o Início tem duas tarefas: a nativa "Revisar um PPC" (conduzida pelo servidor, sobre as fichas de `base-conhecimento/revisao-ppc/`) e a `verificar-fundamentacao-normativa`. A skill `revisar-ppc`, com sub-agentes e relatório HTML, saiu em 21/11/2026: o app já fazia a revisão, e as validações cruzadas dela viraram fichas transversais e um verificador.
@@ -144,7 +144,8 @@ A política é um Effect Schema embutido no app, só de leitura (`packages/motor
 | Providers permitidos | `claude`, `codex`, `antigravity` | provider novo é decisão de produto |
 | Ferramentas `ifpr` | aprovadas sem perguntar | só leitura, sobre dado público |
 | Escrita e comandos | pedem aprovação, só dentro da pasta da tarefa; negados fora | o servidor vê o que a IA quer fazer |
-| MCP, conectores e busca web do usuário | desligados na sessão | a resposta tem de vir da base |
+| MCP e conectores do usuário | desligados na sessão | a conversa não puxa MCPs, apps nem plugins pessoais |
+| Busca e leitura web | ligadas em conversas (filtro de URL pública; comandos de rede negados); desligadas na revisão de PPC | base primeiro, web oficial como complemento (ver [acesso-web-e-rigor-normativo.md](acesso-web-e-rigor-normativo.md)) |
 | Telemetria | desligada | só métricas agregadas com opt-in saem do computador |
 | Atualização | feed, canal padrão (`beta` no piloto), chave minisign | o app só aceita pacote assinado do feed próprio |
 | Curadoria | `repositorio` (`null` até definido) e `rotulos` | "Isto está errado" abre `issues/new` no navegador, sem token no app |
@@ -219,7 +220,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 | Risco | Mitigação |
 |---|---|
 | Deriva das CLIs dos providers | só interfaces oficiais (Agent SDK, `app-server`, ACP); detecção de versão; teste real nos três antes de cada versão; `pnpm upstream:t3 status` como alarme |
-| Isolamento incompleto | desligar por sessão MCP, conectores e busca web do usuário; teste que lista as ferramentas visíveis; `CODEX_HOME` próprio se não bastar |
+| Isolamento incompleto | desligar por sessão MCP, conectores, plugins e navegador automatizado do usuário; filtro determinístico de URL pública na leitura web; teste que lista as ferramentas visíveis; `CODEX_HOME` próprio se não bastar |
 | Servidor não técnico trava ao instalar a CLI | instalação gerenciada do Codex e do Antigravity; passo guiado do Claude |
 | Binário sem assinatura bloqueado | certificados de assinatura (decisão em aberto 1) |
 | Computador sem permissão de instalação | instalador por usuário; conversa prévia com a DTI |
@@ -257,5 +258,5 @@ Os números são os de sempre, porque o código e os READMEs os citam; a 2 (hosp
 - **5. Modo de permissão final** do Modo Servidor, com o atrito medido no piloto.
 - **6. Computadores do piloto:** sistema operacional, permissão de instalação e hardware.
 - **7. Aviso de uso:** o texto provisório (`apps/web/src/components/AvisoUso.tsx`) precisa da revisão do encarregado de dados antes do piloto.
-- **8. `CODEX_HOME` próprio.** O Antigravity já roda com perfil próprio do app; o Codex usa o `~/.codex` do usuário, com MCP, conectores e busca web desligados por thread. Uma pasta própria vale se o desligamento deixar escapar algo; o custo é o login (o T3 resolve com pasta-sombra e broker de token, `CodexHomeLayout`).
+- **8. `CODEX_HOME` próprio.** O Antigravity já roda com perfil próprio do app; o Codex usa o `~/.codex` do usuário, com MCP, conectores e plugins desligados por thread (e `web_search: "live"` nos servidores da OpenAI, ou `"disabled"` na revisão de PPC). Uma pasta própria vale se o desligamento deixar escapar algo; o custo é o login (o T3 resolve com pasta-sombra e broker de token, `CodexHomeLayout`).
 - **9. Política da máquina pela DTI:** se e quando o app lê um arquivo de política que só restringe a de fábrica.

@@ -1018,3 +1018,24 @@ it("Ver todas as tarefas e os avisos de conexão, sem inglês nem jargão (M1.14
     semIngles();
   }
 });
+
+it("Conversa com busca web: rótulos em português, consulta/domínio no lugar do resumo bruto e link externo marcado", async () => {
+  await using _app = await montarApp(servidor);
+  const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
+  await caixa.fill("Confira em fonte externa a Lei 7.498/1986");
+  await userEvent.keyboard("{Enter}");
+  const mensagens = page.getByRole("log", { name: "Mensagens" });
+  const linkExterno = mensagens.getByRole("link", { name: "Lei nº 7.498/1986" });
+  await expect.element(linkExterno).toBeVisible();
+  expect(linkExterno.element().hasAttribute("data-fonte-externa")).toBe(true);
+  expect(linkExterno.element().getAttribute("title")).toBe("Abrir no navegador: www.planalto.gov.br");
+  // Abre o bloco recolhido de consultas para conferir os rótulos e o detalhe web.
+  await mensagens.getByText("3 consultas", { exact: false }).click();
+  await expect.element(mensagens.getByText("Pesquisar na internet")).toBeVisible();
+  await expect.element(mensagens.getByText("Lei 7498 1986 exercicio profissional enfermagem")).toBeVisible();
+  await expect.element(mensagens.getByText("Ler página na internet")).toBeVisible();
+  await expect.element(mensagens.getByText("www.planalto.gov.br/ccivil_03/leis/l7498.htm")).toBeVisible();
+  // O resumo bruto em inglês da página não aparece na tela.
+  expect(mensagens.element().textContent).not.toContain("Fetched page content");
+  semIngles();
+});

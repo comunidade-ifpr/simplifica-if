@@ -8,10 +8,21 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import { arquivosDaSessaoAntigravity, classificarAcp, FERRAMENTAS_ANTIGRAVITY } from "../src/drivers/antigravity.ts";
-import { SEM_FERRAMENTAS_CODEX } from "../src/drivers/codex.ts";
+import {
+  arquivosDaSessaoAntigravity,
+  classificarAcp,
+  FERRAMENTAS_ANTIGRAVITY,
+  FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY,
+  FERRAMENTAS_NAVEGADOR_ANTIGRAVITY,
+  ferramentasDesligadasAntigravity,
+} from "../src/drivers/antigravity.ts";
 import { classificarClaude } from "../src/drivers/claude.ts";
-import { classificarComandoCodex } from "../src/drivers/codex.ts";
+import {
+  classificarComandoCodex,
+  configThreadCodex,
+  modoBuscaWebCodex,
+  SEM_FERRAMENTAS_CODEX,
+} from "../src/drivers/codex.ts";
 import {
   ambienteSemTelemetria,
   avaliar,
@@ -19,8 +30,12 @@ import {
   caminhosDoComando,
   type ClassePedido,
   dentroDaPasta,
+  LIMITE_QUERY_WEB,
+  LIMITE_URL_WEB,
+  motivoRecusaUrlWeb,
   Politica,
   POLITICA_FABRICA,
+  POLITICA_JULGAMENTO,
 } from "../src/politica.ts";
 
 const PASTA = "/Users/servidor/Documentos/tarefa";
@@ -58,15 +73,70 @@ describe("política de fábrica", () => {
       assert.strictEqual(comRepositorio(invalido), "Failure", invalido);
   });
 
-  it("busca web: desligada na de fábrica mesmo pedida; a pedido numa política que permite", () => {
-    assert.isFalse(buscaWebLigada(POLITICA_FABRICA, true));
-    const aPedido = {
+  it("busca web: ligada na de fábrica; desligada no julgamento ou quando a política proíbe", () => {
+    assert.isTrue(buscaWebLigada(POLITICA_FABRICA));
+    assert.isFalse(buscaWebLigada(POLITICA_JULGAMENTO));
+    assert.isFalse(
+      buscaWebLigada({
+        ...POLITICA_FABRICA,
+        isolamento: { ...POLITICA_FABRICA.isolamento, buscaWeb: "desligada" as const },
+      }),
+    );
+    assert.isFalse(
+      buscaWebLigada({
+        ...POLITICA_FABRICA,
+        ferramentas: { ...POLITICA_FABRICA.ferramentas, web: "negar" as const },
+      }),
+    );
+  });
+
+  it("filtro determinístico de URL em leitura web: aceita pública; nega intranet, loopback, IP, esquema e URL longa", () => {
+    assert.isUndefined(motivoRecusaUrlWeb("https://www.planalto.gov.br/ccivil_03/leis/l9394.htm"));
+    assert.isUndefined(motivoRecusaUrlWeb("http://portal.mec.gov.br/docman/doc.pdf?id=1"));
+    const bloqueadas = [
+      "file:///etc/passwd",
+      "ftp://ftp.exemplo.gov.br/a",
+      "https://user:pass@www.planalto.gov.br/",
+      "http://localhost:8080/api",
+      "http://localhost../api",
+      "http://sub.localhost/a",
+      "http://intranet.local/sigiloso",
+      "http://painel.internal/x",
+      "http://impressora.lan/x",
+      "http://router.home.arpa/",
+      "http://portal.intranet/x",
+      "http://app.corp/x",
+      "http://servidor/sei",
+      "http://127.0.0.1:4321/",
+      "http://127.0.0.1../",
+      "http://10.0.0.1/admin",
+      "http://172.16.0.5/",
+      "http://192.168.1.10/",
+      "http://169.254.169.254/latest/meta-data",
+      "http://2130706433/",
+      "http://[::1]/x",
+      "http://[::ffff:127.0.0.1]/x",
+      `https://www.planalto.gov.br/${"a".repeat(LIMITE_URL_WEB)}`,
+      `https://www.planalto.gov.br/busca?q=${"a".repeat(LIMITE_QUERY_WEB)}`,
+      "nao-e-url",
+    ];
+    for (const url of bloqueadas) {
+      assert.isDefined(motivoRecusaUrlWeb(url), url);
+      assert.strictEqual(regra({ tipo: "web", caminhos: [], urls: [url] }), "negar", url);
+    }
+    assert.strictEqual(
+      regra({ tipo: "web", caminhos: [], urls: ["https://www.planalto.gov.br/ccivil_03/leis/l9394.htm"] }),
+      "permitir",
+    );
+    // Leitura de página sem URL extraída falha fechada (negar), nunca passa sem filtro.
+    assert.strictEqual(regra({ tipo: "web", caminhos: [], exigeUrl: true }), "negar");
+    const perguntando = {
       ...POLITICA_FABRICA,
-      isolamento: { ...POLITICA_FABRICA.isolamento, buscaWeb: "a-pedido" as const },
       ferramentas: { ...POLITICA_FABRICA.ferramentas, web: "perguntar" as const },
     };
-    assert.isTrue(buscaWebLigada(aPedido, true));
-    assert.isFalse(buscaWebLigada(aPedido, undefined));
+    const av = avaliar(perguntando, { tipo: "web", caminhos: [] }, PASTA);
+    assert.strictEqual(av.regra, "perguntar");
+    assert.match(av.motivo, /pede aprovação/);
   });
 
   it("dentro da pasta: relativo, absoluto, subida, pasta pessoal e /tmp do macOS", () => {
@@ -92,7 +162,12 @@ describe("política de fábrica", () => {
   it("avalia por tipo e lugar", () => {
     assert.strictEqual(regra({ tipo: "mcp-app", caminhos: [] }), "permitir");
     assert.strictEqual(regra({ tipo: "mcp-outro", caminhos: [] }), "negar");
-    assert.strictEqual(regra({ tipo: "web", caminhos: [] }), "negar");
+    assert.strictEqual(regra({ tipo: "web", caminhos: [] }), "permitir");
+    assert.strictEqual(regra({ tipo: "comando-rede", caminhos: [], host: "exemplo.com" }), "negar");
+    assert.match(
+      avaliar(POLITICA_FABRICA, { tipo: "comando-rede", caminhos: [], host: "exemplo.com" }, PASTA).motivo,
+      /não permite rodar comandos com acesso à rede \(exemplo\.com\)/,
+    );
     assert.strictEqual(regra({ tipo: "outra", caminhos: [] }), "perguntar");
     assert.strictEqual(regra({ tipo: "leitura", caminhos: ["a.md"] }), "permitir");
     assert.strictEqual(regra({ tipo: "leitura", caminhos: ["/etc/hosts"] }), "negar");
@@ -141,22 +216,28 @@ describe("classificação por provider", () => {
       tipo: "comando",
       caminhos: ["~/x"],
     });
-    assert.deepStrictEqual(classificarClaude("WebFetch", { url: "https://x" }, app), { tipo: "web", caminhos: [] });
+    assert.deepStrictEqual(classificarClaude("WebFetch", { url: "https://x" }, app), {
+      tipo: "web",
+      caminhos: [],
+      urls: ["https://x"],
+      exigeUrl: true,
+    });
+    assert.strictEqual(regra(classificarClaude("WebFetch", {}, app)), "negar");
+    assert.deepStrictEqual(classificarClaude("WebSearch", { query: "cofen" }, app), { tipo: "web", caminhos: [] });
     assert.deepStrictEqual(classificarClaude("Task", {}, app), { tipo: "outra", caminhos: [] });
   });
 
-  it("Codex: comando com cwd e caminhos citados; rede é web", () => {
+  it("Codex: comando com cwd e caminhos citados; rede é comando-rede (negado mesmo com web permitir)", () => {
     assert.deepStrictEqual(classificarComandoCodex({ command: "/bin/zsh -lc 'cat /etc/hosts'", cwd: PASTA }), {
       tipo: "comando",
       caminhos: [PASTA, "/etc/hosts"],
     });
-    assert.deepStrictEqual(
-      classificarComandoCodex({ command: "curl x", cwd: PASTA, networkApprovalContext: { host: "x" } }),
-      { tipo: "web", caminhos: [] },
-    );
+    const rede = classificarComandoCodex({ command: "curl x", cwd: PASTA, networkApprovalContext: { host: "x" } });
+    assert.deepStrictEqual(rede, { tipo: "comando-rede", caminhos: [], host: "x" });
+    assert.strictEqual(regra(rede), "negar");
   });
 
-  it("Antigravity: kind do ACP, locations, entrada e MCP do app", () => {
+  it("Antigravity: kind do ACP, locations, entrada, MCP do app e classificação estreita de web", () => {
     const app = ["ifpr"];
     assert.deepStrictEqual(classificarAcp({ name: "mcp_ifpr_buscar_norma", kind: "other" }, app), {
       tipo: "mcp-app",
@@ -178,6 +259,28 @@ describe("classificação por provider", () => {
       { tipo: "comando", caminhos: [PASTA, "/etc/hosts"] },
     );
     assert.deepStrictEqual(classificarAcp({ name: "search_web", kind: "fetch" }, app), { tipo: "web", caminhos: [] });
+    // Mesmo com kind "read", read_url_content é classificado pelo nome antes do kind, levando a URL ao filtro.
+    assert.deepStrictEqual(
+      classificarAcp(
+        { name: "read_url_content", kind: "read", rawInput: { TargetUrl: "https://www.planalto.gov.br/a" } },
+        app,
+      ),
+      { tipo: "web", caminhos: [], urls: ["https://www.planalto.gov.br/a"], exigeUrl: true },
+    );
+    // Sem URL reconhecível em read_url_content, falha fechado (negar) no avaliar.
+    assert.strictEqual(
+      regra(classificarAcp({ name: "read_url_content", kind: "read", rawInput: { desconhecida: "x" } }, app)),
+      "negar",
+    );
+    // Outro kind "fetch" (ex.: browser ou ferramenta nova) cai em outra (pergunta), nunca em web.
+    assert.deepStrictEqual(classificarAcp({ name: "browser_subagent", kind: "fetch" }, app), {
+      tipo: "outra",
+      caminhos: [],
+    });
+    assert.deepStrictEqual(classificarAcp({ name: "ferramenta_nova", kind: "fetch" }, app), {
+      tipo: "outra",
+      caminhos: [],
+    });
   });
 
   it.layer(NodeServices.layer)((it) => {
@@ -228,16 +331,43 @@ describe("classificação por provider", () => {
   });
 });
 
-describe("sessão de julgamento nos drivers", () => {
-  it("Codex: shell, leitura de imagem, subagentes, apply_patch e busca web desligados", () => {
+describe("sessão de julgamento e busca web nos drivers", () => {
+  it("Codex: shell, leitura de imagem, subagentes, apply_patch e busca web desligados no julgamento; live com fallback na conversa", () => {
     assert.deepStrictEqual(
       Object.entries(SEM_FERRAMENTAS_CODEX).filter(([, v]) => v === false || v === "disabled").length,
       Object.keys(SEM_FERRAMENTAS_CODEX).length,
     );
     assert.strictEqual(SEM_FERRAMENTAS_CODEX["features.shell_tool"], false);
     assert.strictEqual(SEM_FERRAMENTAS_CODEX["features.unified_exec"], false);
+    // `configThreadCodex` garante `web_search: "disabled"` com `semFerramentas: true` mesmo com política de fábrica.
+    const julgamento = configThreadCodex({
+      configUsuario: {},
+      config: { provider: "codex", pastaTrabalho: PASTA, servidoresMcp: [], semFerramentas: true },
+      politica: POLITICA_FABRICA,
+    });
+    assert.strictEqual(julgamento.web_search, "disabled");
+    assert.strictEqual(julgamento["features.shell_tool"], false);
+    const conversa = configThreadCodex({
+      configUsuario: {},
+      config: { provider: "codex", pastaTrabalho: PASTA, servidoresMcp: [] },
+      politica: POLITICA_FABRICA,
+    });
+    assert.strictEqual(conversa.web_search, "live");
+    assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA), "live");
+    assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA, ["live", "cached"]), "live");
+    assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA, ["cached"]), "cached");
+    assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA, ["indexed"]), "indexed");
+    assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA, ["disabled"]), "disabled");
+    assert.strictEqual(modoBuscaWebCodex(POLITICA_JULGAMENTO, ["live"]), "disabled");
   });
-  it("Antigravity: as ferramentas de leitura e de comando vão para disabledTools, e os arquivos da sessão saem do perfil", () => {
+  it("Antigravity: browser sempre em disabledTools com web ligada; julgamento desliga tudo e limpa o perfil", () => {
+    const conversa = ferramentasDesligadasAntigravity(POLITICA_FABRICA, false);
+    for (const nav of FERRAMENTAS_NAVEGADOR_ANTIGRAVITY) assert.include(conversa, nav);
+    for (const busca of FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY) assert.notInclude(conversa, busca);
+    const semWeb = ferramentasDesligadasAntigravity(POLITICA_JULGAMENTO, false);
+    for (const busca of FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY) assert.include(semWeb, busca);
+    for (const nav of FERRAMENTAS_NAVEGADOR_ANTIGRAVITY) assert.include(semWeb, nav);
+    assert.strictEqual(ferramentasDesligadasAntigravity(POLITICA_FABRICA, true), FERRAMENTAS_ANTIGRAVITY);
     for (const nome of ["read_file", "view_file", "list_dir", "grep_search", "run_command"])
       assert.include(FERRAMENTAS_ANTIGRAVITY as ReadonlyArray<string>, nome);
     const juntar = (...p: string[]) => p.join("/");

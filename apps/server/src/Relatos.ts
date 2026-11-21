@@ -20,6 +20,7 @@ import * as Option from "effect/Option";
 import {
   citacoesDe,
   FalhaRelato,
+  fontesExternasDe,
   type ItemConversa,
   type RascunhoRelato,
   type RelatoRegistrado,
@@ -110,6 +111,7 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
       pergunta,
       resposta,
       citacoes: [...citacoesDe(resposta)],
+      fontesExternas: [...fontesExternasDe(resposta)],
       versoes: {
         app: estado.versaoApp,
         base: estado.base.versao,

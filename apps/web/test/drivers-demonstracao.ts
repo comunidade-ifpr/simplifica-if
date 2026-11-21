@@ -47,6 +47,8 @@ export const LINK_SECAO_PPC = "ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliac
 
 const respostaLeitor = `O PPC precisa prever o acompanhamento de egressos ([Res. CNE/CP nº 2/2026, art. 28, XVIII](${LINK_DISPOSITIVO})). Veja como o [PPC de Enfermagem](${LINK_SECAO_PPC}) trata a avaliação.`;
 
+const respostaExterna = `Esta norma não está na base do IFPR. Em fonte externa oficial, veja a [Lei nº 7.498/1986](https://www.planalto.gov.br/ccivil_03/leis/l7498.htm).`;
+
 const respostaFinal = `A Resolução CNE/CP nº 1/2021 define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica. Veja a [Res. CNE/CP nº 1/2021](${LINK_DEMONSTRACAO}).`;
 
 /**
@@ -180,7 +182,39 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
             yield* canal.emitir({ _tag: "TextoParcial", texto: "Esta resposta vai demorar" });
             return yield* Effect.never;
           }
-          const final = /leitor/i.test(texto) ? respostaLeitor : respostaFinal;
+          if (/fonte externa/i.test(texto)) {
+            yield* canal.emitir({
+              _tag: "FerramentaIniciada",
+              id: "t-web-busca",
+              nome: "WebSearch",
+              entrada: { query: "Lei 7498 1986 exercicio profissional enfermagem" },
+            });
+            yield* canal.emitir({
+              _tag: "FerramentaConcluida",
+              id: "t-web-busca",
+              nome: "WebSearch",
+              resumo: "Search results for Lei 7498/1986",
+              falhou: false,
+            });
+            yield* canal.emitir({
+              _tag: "FerramentaIniciada",
+              id: "t-web-pagina",
+              nome: "WebFetch",
+              entrada: { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
+            });
+            yield* canal.emitir({
+              _tag: "FerramentaConcluida",
+              id: "t-web-pagina",
+              nome: "WebFetch",
+              resumo: "Fetched page content from planalto.gov.br",
+              falhou: false,
+            });
+          }
+          const final = /fonte externa/i.test(texto)
+            ? respostaExterna
+            : /leitor/i.test(texto)
+              ? respostaLeitor
+              : respostaFinal;
           for (const pedaco of final.match(/.{1,40}/g) ?? []) {
             yield* canal.emitir({ _tag: "TextoParcial", texto: pedaco });
             yield* Effect.sleep(passo);

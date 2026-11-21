@@ -187,14 +187,30 @@ const ATUALIZACOES_SEM_FERRAMENTA = new Set([
   "agent_thought_chunk",
   "user_message_chunk",
   "available_commands_update",
+  "config_option_update",
   "session_info_update",
   "current_mode_update",
   "usage_update",
   "plan",
 ]);
 
-/** Ferramentas de web do `agy` 1.5.x, desligadas no `_meta.antigravity.disabledTools` sem busca web. */
-export const FERRAMENTAS_WEB_ANTIGRAVITY = ["search_web", "read_url_content", "browser_subagent"] as const;
+/**
+ * Ferramentas de busca e leitura web do `agy` 1.5.x, controladas por `buscaWebLigada`.
+ * Conferido no `agy` 1.5.14: `search_web` roda direto (sem `session/request_permission`) e
+ * `read_url_content` não vem exposta no ACP (mantida aqui e no `classificarAcp` por defesa em profundidade).
+ */
+export const FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY = ["search_web", "read_url_content"] as const;
+
+/** Automação de navegador do `agy` 1.5.x: sempre em `disabledTools`, mesmo com busca web ligada. */
+export const FERRAMENTAS_NAVEGADOR_ANTIGRAVITY = ["browser_subagent", "browser"] as const;
+
+/** As ferramentas que vão em `_meta.antigravity.disabledTools` conforme a política e o modo da sessão. */
+export function ferramentasDesligadasAntigravity(politica: Politica, semFerramentas: boolean): ReadonlyArray<string> {
+  if (semFerramentas) return FERRAMENTAS_ANTIGRAVITY;
+  return buscaWebLigada(politica)
+    ? FERRAMENTAS_NAVEGADOR_ANTIGRAVITY
+    : [...FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY, ...FERRAMENTAS_NAVEGADOR_ANTIGRAVITY];
+}
 
 /**
  * Todas as ferramentas do `agy` 1.5.9 que se conhecem (as `strings` do binário e as gravações em
@@ -203,7 +219,8 @@ export const FERRAMENTAS_WEB_ANTIGRAVITY = ["search_web", "read_url_content", "b
  * julgamento (nega sem perguntar) e pelo julgamento, que descarta o bloco que tentar ferramenta.
  */
 export const FERRAMENTAS_ANTIGRAVITY = [
-  ...FERRAMENTAS_WEB_ANTIGRAVITY,
+  ...FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY,
+  ...FERRAMENTAS_NAVEGADOR_ANTIGRAVITY,
   "read_file",
   "view_file",
   "list_dir",
@@ -223,7 +240,6 @@ export const FERRAMENTAS_ANTIGRAVITY = [
   "learn",
   "goal",
   "compact",
-  "browser",
   "boost",
 ] as const;
 
@@ -246,11 +262,14 @@ export function arquivosDaSessaoAntigravity(
 }
 
 const CHAVE_DE_CAMINHO = /path|file|dir|cwd/i;
+const CHAVE_DE_URL = /(?:url|uri)$/i;
 
 /**
- * Classifica o `toolCall` de um `session/request_permission` pelo `kind` do ACP (e pelo nome, para
- * MCP): `read`/`search` são leitura; `edit`/`delete`/`move`, escrita; `execute`, comando; `fetch`,
- * web. Os caminhos vêm de `locations` e das chaves de caminho da entrada (`Path`, `Cwd`…).
+ * Classifica o `toolCall` de um `session/request_permission` pelo nome (MCP e busca/leitura web
+ * conhecidas) e pelo `kind` do ACP: `read`/`search` são leitura; `edit`/`delete`/`move`, escrita;
+ * `execute`, comando. Só `search_web` e `read_url_content`, pelo nome (antes do `kind`), viram
+ * `web`; `read_url_content` exige URL extraível (sem ela, `avaliar` nega); qualquer outro `fetch`
+ * cai em `outra` (pergunta). Os caminhos vêm de `locations` e das chaves de caminho da entrada.
  */
 export function classificarAcp(toolCall: Registro, servidoresApp: ReadonlyArray<string>): ClassePedido {
   const nome = nomeFerramenta(toolCall, servidoresApp);
@@ -259,6 +278,18 @@ export function classificarAcp(toolCall: Registro, servidoresApp: ReadonlyArray<
   if (servidor !== undefined && servidoresApp.includes(servidor)) return { tipo: "mcp-app", caminhos: [] };
   if (nome.startsWith("mcp_") || nome.includes(".") || nome === "read_resource")
     return { tipo: "mcp-outro", caminhos: [] };
+  if ((FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY as ReadonlyArray<string>).includes(nome)) {
+    const exigeUrl = nome === "read_url_content";
+    const urls = Object.entries(entrada).flatMap(([chave, valor]) =>
+      typeof valor === "string" && valor.trim() !== "" && CHAVE_DE_URL.test(chave) ? [valor] : [],
+    );
+    return {
+      tipo: "web",
+      caminhos: [],
+      ...(urls.length > 0 ? { urls } : {}),
+      ...(exigeUrl ? { exigeUrl: true } : {}),
+    };
+  }
   const caminhos = [
     ...(Array.isArray(toolCall.locations) ? toolCall.locations.map((local) => texto(registro(local).path)) : []),
     ...Object.entries(entrada).flatMap(([chave, valor]) =>
@@ -280,12 +311,8 @@ export function classificarAcp(toolCall: Registro, servidoresApp: ReadonlyArray<
         caminhos: [...caminhos, ...(typeof comando === "string" ? caminhosDoComando(comando) : [])],
       };
     }
-    case "fetch":
-      return { tipo: "web", caminhos: [] };
     default:
-      return (FERRAMENTAS_WEB_ANTIGRAVITY as ReadonlyArray<string>).includes(nome)
-        ? { tipo: "web", caminhos: [] }
-        : { tipo: "outra", caminhos };
+      return { tipo: "outra", caminhos };
   }
 }
 
@@ -717,11 +744,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     const meta = antigravitySessionMeta(
       aberto.inicio,
       config.instrucoes,
-      config.semFerramentas === true
-        ? FERRAMENTAS_ANTIGRAVITY
-        : buscaWebLigada(politica, config.buscaWeb)
-          ? []
-          : FERRAMENTAS_WEB_ANTIGRAVITY,
+      ferramentasDesligadasAntigravity(politica, config.semFerramentas === true),
     );
     const pedidoSessao = { cwd: config.pastaTrabalho, mcpServers, ...(meta === undefined ? {} : { _meta: meta }) };
     const sessao =

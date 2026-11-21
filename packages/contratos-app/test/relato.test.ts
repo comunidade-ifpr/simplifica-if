@@ -8,6 +8,7 @@ import {
   citacoesDe,
   ESCOLHAS_INICIAIS,
   FONTE_RETIRADA,
+  fontesExternasDe,
   neutralizarGithub,
   montarRelato,
   montarUrlIssue,
@@ -24,6 +25,7 @@ const RASCUNHO: RascunhoRelato = {
   resposta:
     "Sim, conforme ifpr://norma/br/cne-cp/res/2021/1#art20.\n\n```\nlinha 1\n\nlinha 2\n```\n\nVeja também ifpr://cnct/tecnico-em-enfermagem.",
   citacoes: ["ifpr://norma/br/cne-cp/res/2021/1#art20", "ifpr://cnct/tecnico-em-enfermagem"],
+  fontesExternas: [],
   versoes: {
     app: "0.3.0",
     base: "2026.11.13",
@@ -53,10 +55,47 @@ describe("trechos", () => {
 
   it("citações sem repetição e sem a pontuação do fim", () => {
     expect(citacoesDe("ver ifpr://norma/x#art1, ifpr://norma/x#art1. e ifpr://")).toEqual(["ifpr://norma/x#art1"]);
+    expect(
+      fontesExternasDe(
+        "ver [Lei](https://www.planalto.gov.br/a.htm), **https://www.in.gov.br/web/dou/-/portaria-1**, _https://a.gov.br/x_, [Wiki](https://pt.wikipedia.org/wiki/Lei_(Brasil)) e http://in.gov.br/b!",
+      ),
+    ).toEqual([
+      "https://www.planalto.gov.br/a.htm",
+      "https://www.in.gov.br/web/dou/-/portaria-1",
+      "https://a.gov.br/x",
+      "https://pt.wikipedia.org/wiki/Lei_(Brasil)",
+      "http://in.gov.br/b",
+    ]);
   });
 });
 
 describe("montarRelato", () => {
+  it("fontes externas: lista à parte no corpo, preserva parênteses e não estraga URLs com mesmo prefixo", () => {
+    const comExterna: RascunhoRelato = {
+      ...RASCUNHO,
+      resposta:
+        "Ver https://a.gov.br/b, https://a.gov.br/b?x=1&y=2 e [Wiki](https://pt.wikipedia.org/wiki/Lei_(Brasil)).",
+      fontesExternas: [
+        "https://a.gov.br/b",
+        "https://a.gov.br/b?x=1&y=2",
+        "https://pt.wikipedia.org/wiki/Lei_(Brasil)",
+      ],
+    };
+    const { corpo } = montarRelato(comExterna, ESCOLHAS_INICIAIS);
+    expect(corpo).toContain("## Fontes externas citadas na resposta\n\n- `https://a.gov.br/b`");
+    // Retirar o prefixo curto e o link com parênteses não estraga a URL com query que permaneceu.
+    const parcial = montarRelato(comExterna, {
+      ...ESCOLHAS_INICIAIS,
+      retiradasCitacoes: new Set(["https://a.gov.br/b", "https://pt.wikipedia.org/wiki/Lei_(Brasil)"]),
+    });
+    expect(parcial.corpo).toContain(`> Ver ${FONTE_RETIRADA}, https://a.gov.br/b?x=1&y=2 e Wiki ${FONTE_RETIRADA}.`);
+    expect(parcial.corpo).toContain("## Fontes externas citadas na resposta\n\n- `https://a.gov.br/b?x=1&y=2`");
+    const sem = montarRelato(comExterna, {
+      ...ESCOLHAS_INICIAIS,
+      retiradasCitacoes: new Set(comExterna.fontesExternas),
+    });
+    expect(sem.corpo).toContain("## Fontes externas citadas na resposta\n\n_(retiradas por quem enviou)_");
+  });
   it("o pacote inteiro: o que está errado, pergunta, resposta, fontes e versões", () => {
     const { titulo, corpo } = montarRelato(RASCUNHO, {
       ...ESCOLHAS_INICIAIS,

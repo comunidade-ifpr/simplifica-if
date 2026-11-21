@@ -32,7 +32,6 @@ export const EntradaIniciar = Schema.Struct({
   modelo: Schema.optionalKey(Schema.String),
   /** O `esforcoAprofundado` do modelo escolhido; sem ele, o esforço padrão do modelo. */
   esforco: Schema.optionalKey(NivelEsforco),
-  buscaWeb: Schema.optionalKey(Schema.Boolean),
   /**
    * A tarefa da conversa (M1.9): o nome da skill do catálogo, ou `conversa` para a caixa livre do
    * Início. Fica gravada para a interface mostrar as etapas da skill ao reabrir.

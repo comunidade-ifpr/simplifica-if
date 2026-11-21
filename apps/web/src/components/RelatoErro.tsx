@@ -240,6 +240,24 @@ function Formulario({
             ))}
           </fieldset>
         )}
+        {rascunho.fontesExternas.length === 0 ? null : (
+          <fieldset className="flex flex-col gap-1">
+            <legend className="mb-1 font-medium text-sm">Fontes externas citadas</legend>
+            <p className="text-muted-foreground text-small">
+              Links de fora da base do IFPR. Tirar uma fonte a tira da lista e do texto da resposta.
+            </p>
+            {rascunho.fontesExternas.map((link) => (
+              <Caixa
+                key={link}
+                rotulo={`Incluir a fonte externa ${link}`}
+                marcada={!escolhas.retiradasCitacoes.has(link)}
+                aoMudar={() => mudar({ retiradasCitacoes: alternar(escolhas.retiradasCitacoes, link) })}
+              >
+                <code className="text-small">{link}</code>
+              </Caixa>
+            ))}
+          </fieldset>
+        )}
         <Caixa
           rotulo="Incluir as versões do app, da base, da tarefa e da IA"
           marcada={!escolhas.semVersoes}

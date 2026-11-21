@@ -42,7 +42,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | providers | `providers.detectar({ provider })` | `EstadoProvider`, com `podeInstalar` e `podeEntrar` (o driver tem `instalar`, `entrar`) |
 | | `providers.instalar({ provider })` | stream de `EstadoInstalacao` |
 | | `providers.entrar({ provider })` | stream de `EstadoLogin` |
-| conversa | `conversa.iniciar({ provider, pastaTrabalho, modelo?, buscaWeb?, tarefa? })` | `{ sessao }`; já com o MCP `ifpr` ligado. `tarefa`: a skill da tarefa (ou `conversa`); no primeiro turno, o servidor diz à IA qual skill seguir |
+| conversa | `conversa.iniciar({ provider, pastaTrabalho, modelo?, tarefa? })` | `{ sessao }`; já com o MCP `ifpr` ligado. `tarefa`: a skill da tarefa (ou `conversa`); no primeiro turno, o servidor diz à IA qual skill seguir |
 | | `conversa.enviar({ sessao, texto })` | stream de `Evento` até `FimTurno` |
 | | `conversa.responderAprovacao({ sessao, aprovacao, decisao })` | — |
 | | `conversa.interromper({ sessao })`, `conversa.encerrar({ sessao })` | — |

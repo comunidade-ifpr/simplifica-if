@@ -52,7 +52,6 @@ export default Effect.gen(function* () {
       provider TEXT NOT NULL,
       pasta_trabalho TEXT NOT NULL,
       modelo TEXT,
-      busca_web INTEGER,
       titulo TEXT NOT NULL DEFAULT '',
       id_nativo TEXT,
       estado TEXT NOT NULL,

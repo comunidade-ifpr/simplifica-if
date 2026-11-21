@@ -30,15 +30,17 @@ export const RegraPorLugar = Schema.Struct({ dentro: Regra, fora: Regra });
  * - `leitura`: ler arquivo, listar pasta, buscar em arquivos;
  * - `escrita`: criar, alterar, apagar ou mover arquivo;
  * - `comando`: rodar um comando no terminal;
+ * - `comando-rede`: comando no terminal que pede acesso à rede (proxy gerenciado do Codex);
  * - `mcp-app`: ferramenta (ou recurso) de um servidor MCP do app marcado `preAprovado` (o `ifpr`);
  * - `mcp-outro`: ferramenta de outro servidor MCP;
- * - `web`: busca na web ou leitura de uma URL;
+ * - `web`: busca na web ou leitura de uma URL (ferramentas nativas conhecidas);
  * - `outra`: o resto (subagente, plano, pergunta ao usuário…).
  */
 export const TipoFerramenta = Schema.Literals([
   "leitura",
   "escrita",
   "comando",
+  "comando-rede",
   "mcp-app",
   "mcp-outro",
   "web",
@@ -46,10 +48,16 @@ export const TipoFerramenta = Schema.Literals([
 ]);
 export type TipoFerramenta = typeof TipoFerramenta.Type;
 
-/** Um pedido de aprovação classificado: o tipo e os caminhos que ele toca (vazio: só a pasta da sessão). */
+/** Um pedido de aprovação classificado: o tipo, os caminhos que toca e, quando aplicável, URLs ou host. */
 export interface ClassePedido {
   readonly tipo: TipoFerramenta;
   readonly caminhos: ReadonlyArray<string>;
+  /** URLs que uma ferramenta `web` quer abrir (ex.: WebFetch, read_url_content). */
+  readonly urls?: ReadonlyArray<string>;
+  /** Ferramenta de leitura de página: sem URL extraída, o filtro nega (fail-closed). */
+  readonly exigeUrl?: boolean;
+  /** Host de um pedido `comando-rede` (ex.: `networkApprovalContext.host` no Codex). */
+  readonly host?: string;
 }
 
 export const Politica = Schema.Struct({
@@ -59,6 +67,7 @@ export const Politica = Schema.Struct({
     leitura: RegraPorLugar,
     escrita: RegraPorLugar,
     comando: RegraPorLugar,
+    comandoRede: Regra,
     mcpApp: Regra,
     mcpOutro: Regra,
     web: Regra,
@@ -71,11 +80,11 @@ export const Politica = Schema.Struct({
   }),
   /**
    * O que vem do usuário e não entra na sessão: MCP, conectores (apps do ChatGPT, plugins), skills,
-   * instruções e hooks. `buscaWeb` desligada ignora o `buscaWeb` da sessão; `a-pedido` o respeita.
+   * instruções e hooks. `buscaWeb` decide se a busca e a leitura web nativas ficam ligadas na sessão.
    */
   isolamento: Schema.Struct({
     configuracaoDoUsuario: Schema.Literals(["desligada"]),
-    buscaWeb: Schema.Literals(["desligada", "a-pedido"]),
+    buscaWeb: Schema.Literals(["desligada", "ligada"]),
   }),
   /** Telemetria dos providers: desligada; nada sai além do que a conversa precisa. */
   telemetria: Schema.Literals(["desligada"]),
@@ -104,8 +113,10 @@ const congelar = <A>(valor: A): A => {
 
 /**
  * A política de fábrica. As ferramentas `ifpr` passam sem perguntar (só leitura, sobre dado
- * público); escrita e comandos perguntam dentro da pasta de trabalho e se negam fora dela; ler fora
- * da pasta também se nega, porque a sessão só vê a base pública e o que o servidor anexa.
+ * público); busca e leitura web nativas passam com filtro de URL pública (comandos de terminal com
+ * rede seguem negados); escrita e comandos perguntam dentro da pasta de trabalho e se negam fora
+ * dela; ler fora da pasta também se nega, porque a sessão só vê a base pública e o que está na
+ * pasta da tarefa.
  */
 export const POLITICA_FABRICA: Politica = congelar(
   Schema.decodeSync(Politica)({
@@ -114,13 +125,14 @@ export const POLITICA_FABRICA: Politica = congelar(
       leitura: { dentro: "permitir", fora: "negar" },
       escrita: { dentro: "perguntar", fora: "negar" },
       comando: { dentro: "perguntar", fora: "negar" },
+      comandoRede: "negar",
       mcpApp: "permitir",
       mcpOutro: "negar",
-      web: "negar",
+      web: "permitir",
       outra: "perguntar",
     },
     codex: { sandbox: "read-only", aprovacao: "on-request" },
-    isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "desligada" },
+    isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "ligada" },
     telemetria: "desligada",
     atualizacao: ATUALIZACAO_FABRICA,
     curadoria: CURADORIA_FABRICA,
@@ -130,7 +142,7 @@ export const POLITICA_FABRICA: Politica = congelar(
 /**
  * A política das sessões de julgamento (`ConfigSessao.semFerramentas`, a revisão de PPC do M1.11):
  * o contexto vai pronto na mensagem, e qualquer ferramenta se nega sem perguntar, dentro ou fora da
- * pasta. Os providers e o isolamento são os de fábrica.
+ * pasta (inclusive a busca web). Os providers e o isolamento do usuário são os de fábrica.
  */
 export const POLITICA_JULGAMENTO: Politica = congelar(
   Schema.decodeSync(Politica)({
@@ -139,6 +151,7 @@ export const POLITICA_JULGAMENTO: Politica = congelar(
       leitura: { dentro: "negar", fora: "negar" },
       escrita: { dentro: "negar", fora: "negar" },
       comando: { dentro: "negar", fora: "negar" },
+      comandoRede: "negar",
       mcpApp: "negar",
       mcpOutro: "negar",
       web: "negar",
@@ -152,9 +165,53 @@ export const POLITICA_JULGAMENTO: Politica = congelar(
   }),
 );
 
-/** A busca web vale nesta sessão: pedida na sessão e permitida pela política. */
-export const buscaWebLigada = (politica: Politica, pedida: boolean | undefined): boolean =>
-  pedida === true && politica.isolamento.buscaWeb === "a-pedido" && politica.ferramentas.web !== "negar";
+/** A busca web vale nesta política: ligada no isolamento e não negada nas ferramentas. */
+export const buscaWebLigada = (politica: Politica): boolean =>
+  politica.isolamento.buscaWeb === "ligada" && politica.ferramentas.web !== "negar";
+
+/** Limites do filtro determinístico de URL em leitura web (reduz exfiltração e acesso à intranet). */
+export const LIMITE_URL_WEB = 512;
+export const LIMITE_QUERY_WEB = 200;
+
+/**
+ * Confere lexicamente se uma URL é de endereço público aceitável para leitura web (`WebFetch`,
+ * `read_url_content`), sem resolução de DNS (domínios externos que apontam para IPs privados não
+ * são detectados aqui). Devolve o motivo da recusa, ou `undefined` se a URL passa. Recusa esquemas
+ * fora de `http:`/`https:`, credenciais embutidas, `localhost`, sufixos internos (`.local`,
+ * `.internal`, `.lan`, `.home.arpa`, `.intranet`, `.corp`), host sem ponto, qualquer IP literal
+ * (IPv4 ou IPv6) e URLs longas demais (`LIMITE_URL_WEB` é o teto real incluindo o caminho).
+ */
+export function motivoRecusaUrlWeb(url: string): string | undefined {
+  if (url.length > LIMITE_URL_WEB) return "endereço longo demais";
+  let lida: URL;
+  try {
+    lida = new URL(url);
+  } catch {
+    return "endereço inválido";
+  }
+  if (lida.protocol !== "https:" && lida.protocol !== "http:") return `esquema ${lida.protocol} não permitido`;
+  if (lida.username !== "" || lida.password !== "") return "endereço com credenciais";
+  if (lida.search.length > LIMITE_QUERY_WEB) return "parâmetros de consulta longos demais";
+  const host = lida.hostname.toLowerCase().replace(/\.+$/, "");
+  if (
+    host === "" ||
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal") ||
+    host.endsWith(".lan") ||
+    host.endsWith(".home.arpa") ||
+    host.endsWith(".intranet") ||
+    host.endsWith(".corp") ||
+    !host.includes(".")
+  ) {
+    return "endereço local ou de rede interna";
+  }
+  // Bloqueia qualquer IPv6 (`[::1]`, `[fc00::1]`, `[::ffff:127.0.0.1]`) e qualquer IPv4 literal
+  // (o parser `new URL` também normaliza formas numéricas/hex/octais para `d.d.d.d`).
+  if (host.includes(":") || /^\d{1,3}(?:\.\d{1,3}){3}$/.test(host)) return "endereço IP direto não permitido";
+  return undefined;
+}
 
 /**
  * As formas de escrever a pasta da sessão. No macOS, `/tmp` e `/var` são atalhos para `/private/…`:
@@ -208,6 +265,7 @@ const DESCRICAO: Record<TipoFerramenta, string> = {
   leitura: "ler arquivos",
   escrita: "alterar arquivos",
   comando: "rodar comandos",
+  "comando-rede": "rodar comandos com acesso à rede",
   "mcp-app": "usar as ferramentas do app",
   "mcp-outro": "usar servidores MCP que não são do app",
   web: "acessar a web",
@@ -235,6 +293,13 @@ export function avaliar(politica: Politica, classe: ClassePedido, pasta: string)
         motivo: `A política do app ${regra === "negar" ? "não permite" : "permite"} ${DESCRICAO[classe.tipo]} ${onde}.`,
       };
     }
+    case "comando-rede": {
+      const alvo = classe.host ? ` (${classe.host})` : "";
+      return {
+        regra: regras.comandoRede,
+        motivo: `A política do app ${regras.comandoRede === "negar" ? "não permite" : "permite"} ${DESCRICAO["comando-rede"]}${alvo}.`,
+      };
+    }
     case "mcp-app":
       return {
         regra: regras.mcpApp,
@@ -242,8 +307,28 @@ export function avaliar(politica: Politica, classe: ClassePedido, pasta: string)
       };
     case "mcp-outro":
       return { regra: regras.mcpOutro, motivo: `A política do app não permite ${DESCRICAO["mcp-outro"]}.` };
-    case "web":
-      return { regra: regras.web, motivo: `A política do app não permite ${DESCRICAO.web} nesta sessão.` };
+    case "web": {
+      if (regras.web === "negar") {
+        return { regra: "negar", motivo: `A política do app não permite ${DESCRICAO.web} nesta sessão.` };
+      }
+      const urls = classe.urls ?? [];
+      if (classe.exigeUrl === true && urls.length === 0) {
+        return {
+          regra: "negar",
+          motivo: "A política do app exige um endereço conferível para ler páginas na web.",
+        };
+      }
+      for (const url of urls) {
+        const recusa = motivoRecusaUrlWeb(url);
+        if (recusa !== undefined) {
+          return { regra: "negar", motivo: `A política do app não permite acessar este endereço (${recusa}).` };
+        }
+      }
+      return {
+        regra: regras.web,
+        motivo: `A política do app ${regras.web === "permitir" ? "permite" : "pede aprovação para"} ${DESCRICAO.web} nesta sessão.`,
+      };
+    }
     case "outra":
       return { regra: regras.outra, motivo: `A política do app não permite ${DESCRICAO.outra}.` };
   }

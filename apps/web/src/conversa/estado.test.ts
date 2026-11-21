@@ -4,6 +4,7 @@ import {
   type Acao,
   aplicarEvento,
   aplicarItem,
+  detalheFerramentaWeb,
   type EstadoConversa,
   estadoInicial,
   foiInterrompido,
@@ -183,7 +184,46 @@ describe("rotuloFerramenta", () => {
     assert.strictEqual(rotuloAprovacao("execute"), "Rodar comando");
     assert.strictEqual(rotuloAprovacao("xyz_q"), "uma ação no computador");
     assert.strictEqual(rotuloAprovacao("mcp__ifpr__buscar_norma"), "Buscar norma");
+    assert.strictEqual(rotuloFerramenta("WebSearch"), "Pesquisar na internet");
+    assert.strictEqual(rotuloFerramenta("busca_web"), "Pesquisar na internet");
+    assert.strictEqual(rotuloFerramenta("search_web"), "Pesquisar na internet");
+    assert.strictEqual(rotuloFerramenta("WebFetch"), "Ler página na internet");
+    assert.strictEqual(rotuloFerramenta("ler_pagina_web"), "Ler página na internet");
+    assert.strictEqual(rotuloFerramenta("read_url_content"), "Ler página na internet");
     assert.strictEqual(rotuloFerramenta("Ferramenta"), "Ferramenta");
+  });
+
+  it("detalheFerramentaWeb extrai consulta ou domínio curto sem query e sobrevive à conclusão", () => {
+    assert.strictEqual(
+      detalheFerramentaWeb("WebSearch", { query: "Resolução COFEN 736/2024" }),
+      "Resolução COFEN 736/2024",
+    );
+    assert.strictEqual(
+      detalheFerramentaWeb("WebFetch", { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm?segredo=1" }),
+      "www.planalto.gov.br/ccivil_03/leis/l7498.htm",
+    );
+    assert.strictEqual(detalheFerramentaWeb("read_url_content", { Url: "https://www.in.gov.br/" }), "www.in.gov.br");
+    const estado = aplicar(
+      respondendo(),
+      evento({
+        _tag: "FerramentaIniciada",
+        id: "w1",
+        nome: "WebFetch",
+        entrada: { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
+      }),
+      evento({
+        _tag: "FerramentaConcluida",
+        id: "w1",
+        nome: "WebFetch",
+        resumo: "HTML bruto da página…",
+        falhou: false,
+      }),
+    );
+    assert.deepInclude(estado.itens[1], {
+      id: "w1",
+      situacao: "concluida",
+      detalheWeb: "www.planalto.gov.br/ccivil_03/leis/l7498.htm",
+    });
   });
 });
 

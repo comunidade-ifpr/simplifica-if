@@ -241,6 +241,62 @@ describe("normalização", () => {
       }),
     );
 
+    it.effect("Codex: webSearch distingue busca (search) de leitura de página (openPage)", () =>
+      Effect.sync(() => {
+        const passo = criarNormalizadorCodex();
+        const busca = passo("item/started", {
+          item: {
+            id: "ws-1",
+            type: "webSearch",
+            query: "Resolução COFEN 736/2024",
+            action: { type: "search", query: "Resolução COFEN 736/2024" },
+          },
+        });
+        assert.deepStrictEqual(busca, [
+          {
+            _tag: "FerramentaIniciada",
+            id: "ws-1",
+            nome: "busca_web",
+            entrada: { consulta: "Resolução COFEN 736/2024" },
+          },
+        ]);
+        const pagina = passo("item/started", {
+          item: {
+            id: "ws-2",
+            type: "webSearch",
+            query: "",
+            action: { type: "openPage", url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
+          },
+        });
+        assert.deepStrictEqual(pagina, [
+          {
+            _tag: "FerramentaIniciada",
+            id: "ws-2",
+            nome: "ler_pagina_web",
+            entrada: { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
+          },
+        ]);
+        const concluida = passo("item/completed", {
+          item: {
+            id: "ws-2",
+            type: "webSearch",
+            status: "completed",
+            query: "",
+            action: { type: "openPage", url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
+          },
+        });
+        assert.deepStrictEqual(concluida, [
+          {
+            _tag: "FerramentaConcluida",
+            id: "ws-2",
+            nome: "ler_pagina_web",
+            resumo: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm",
+            falhou: false,
+          },
+        ]);
+      }),
+    );
+
     it.effect("Antigravity: pergunta do CNCT com as ferramentas ifpr", () =>
       Effect.gen(function* () {
         const passo = criarNormalizadorAntigravity(["ifpr"]);
@@ -309,6 +365,42 @@ describe("normalização", () => {
         assert.strictEqual(deTipo(eventos, "FimTurno").length, 2);
       }),
     );
+
+    it.effect("Antigravity: base primeiro e search_web em fonte oficial (gravação real do agy 1.5.14)", () =>
+      Effect.gen(function* () {
+        const passo = criarNormalizadorAntigravity(["ifpr"]);
+        const eventos = yield* normalizar(
+          "antigravity-web.jsonl",
+          (m) => m.tipo === "session/update" || (m.tipo === "session/prompt" && m.resposta !== undefined),
+          (m) => passo(m as unknown as EntradaAcp),
+        );
+        const iniciadas = deTipo(eventos, "FerramentaIniciada");
+        const primeiroIfpr = iniciadas.findIndex((e) => e.nome.startsWith("ifpr."));
+        const primeiraWeb = iniciadas.findIndex((e) => e.nome === "search_web");
+        assert.isAtLeast(primeiroIfpr, 0);
+        assert.isAbove(primeiraWeb, primeiroIfpr);
+        conferirPares(eventos);
+        const buscas = iniciadas.filter((e) => e.nome === "search_web");
+        assert.isAtLeast(buscas.length, 1);
+        const primeiraEntrada = buscas[0]?.entrada as Record<string, unknown>;
+        assert.strictEqual(primeiraEntrada.domain, "planalto.gov.br");
+        assert.isString(primeiraEntrada.query);
+        assert.isFalse("toolSummary" in primeiraEntrada);
+        const linhas = yield* lerFixture("antigravity-web.jsonl");
+        const pedidosWeb = linhas.filter(
+          (l) =>
+            l.direcao === "entrada" &&
+            l.mensagem.tipo === "session/request_permission" &&
+            (l.mensagem.pedido as { toolCall?: { name?: string } })?.toolCall?.name === "search_web",
+        );
+        assert.strictEqual(pedidosWeb.length, 0);
+        const finais = deTipo(eventos, "TextoFinal");
+        assert.strictEqual(finais.length, 1);
+        assert.strictEqual(textoParcial(eventos), finais[0]?.texto);
+        assert.match(finais[0]?.texto ?? "", /https:\/\/www\.planalto\.gov\.br\/ccivil_03\/leis\/l7498\.htm/);
+        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+      }),
+    );
   });
 });
 
@@ -366,6 +458,7 @@ describe("sessão de julgamento: tipo desconhecido conta como ferramenta", () =>
       ["FerramentaIniciada"],
     );
     assert.deepStrictEqual(julgamento(entrada("available_commands_update")), []);
+    assert.deepStrictEqual(julgamento(entrada("config_option_update")), []);
     assert.deepStrictEqual(julgamento(entrada("agent_thought_chunk")), []);
     assert.deepStrictEqual(criarNormalizadorAntigravity()(entrada("terminal_output")), []);
   });

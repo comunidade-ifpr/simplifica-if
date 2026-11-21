@@ -13,11 +13,17 @@ Use este formato quando o usuário pedir revisão de documento, PPC, parecer, mi
 
 ## Fontes consultadas
 
+### Base do IFPR
+
+### Fontes externas oficiais
+
 ## Achados
 
 ### Achado 1 - <tema curto>
 
 **Status:** CONFIRMADA | CONFIRMADA COM RESSALVA | IMPRECISA | SEM SUPORTE NA FONTE | CONTRADITÓRIA | FONTE AUSENTE OU NÃO CONSULTADA | NÃO NORMATIVA
+
+**Origem:** Base do IFPR | Fonte externa oficial
 
 **Trecho analisado:** <copie apenas o trecho necessário>
 
@@ -30,6 +36,8 @@ Use este formato quando o usuário pedir revisão de documento, PPC, parecer, mi
 **Redação sugerida:** <quando aplicável>
 
 ## Lacunas da base
+
+Registre aqui normas relevantes não encontradas na base (inclusive as verificadas em fonte externa oficial) para orientar a curadoria.
 
 ## Recomendações finais
 ```

@@ -69,18 +69,24 @@ layer(camada, { excludeTestServices: true })("relato", (it) => {
         pastaTrabalho: pasta,
         tarefa: "verificar-fundamentacao-normativa",
       });
-      yield* rpc["conversa.enviar"]({ sessao, texto: "O estágio? ifpr://norma/br/cne-cp/res/2021/1#art20." }).pipe(
-        Stream.runDrain,
-      );
+      yield* rpc["conversa.enviar"]({
+        sessao,
+        texto:
+          "O estágio? ifpr://norma/br/cne-cp/res/2021/1#art20 e https://www.planalto.gov.br/ccivil_03/leis/l7498.htm.",
+      }).pipe(Stream.runDrain);
 
       const rascunho = yield* rpc["relato.preparar"]({ sessao, turno: 1 });
-      assert.strictEqual(rascunho.pergunta, "O estágio? ifpr://norma/br/cne-cp/res/2021/1#art20.");
+      assert.strictEqual(
+        rascunho.pergunta,
+        "O estágio? ifpr://norma/br/cne-cp/res/2021/1#art20 e https://www.planalto.gov.br/ccivil_03/leis/l7498.htm.",
+      );
       // O driver falso ecoa o que recebeu (com a indicação da skill, que só vai à IA).
       assert.match(
         rascunho.resposta,
-        /^Resposta a: [\s\S]*O estágio\? ifpr:\/\/norma\/br\/cne-cp\/res\/2021\/1#art20\.$/,
+        /^Resposta a: [\s\S]*O estágio\? ifpr:\/\/norma\/br\/cne-cp\/res\/2021\/1#art20 e https:\/\/www\.planalto\.gov\.br\/ccivil_03\/leis\/l7498\.htm\.$/,
       );
       assert.deepStrictEqual(rascunho.citacoes, ["ifpr://norma/br/cne-cp/res/2021/1#art20"]);
+      assert.deepStrictEqual(rascunho.fontesExternas, ["https://www.planalto.gov.br/ccivil_03/leis/l7498.htm"]);
       assert.deepInclude(rascunho.versoes, { provider: "claude", versaoProvider: "0.0.0-teste", app: "0.0.0" });
       assert.strictEqual(rascunho.versoes.tarefa?.nome, "verificar-fundamentacao-normativa");
       assert.strictEqual(rascunho.repositorio, "exemplo/simplifica-if");

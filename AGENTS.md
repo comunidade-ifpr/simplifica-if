@@ -21,7 +21,7 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 
 ## O que o app entrega hoje
 
-- **Conversa** com a IA da pessoa, com as ferramentas `ifpr` do `simplifica-mcp`, aprovação de ações, indicador de etapas, pasta da tarefa em `Documentos/Simplifica IF/` e "Desfazer".
+- **Conversa** com a IA da pessoa, com as ferramentas `ifpr` do `simplifica-mcp`, busca e leitura web por padrão como complemento à base (com filtro de URL pública e bloqueio de comandos de rede), aprovação de ações, indicador de etapas, pasta da tarefa em `Documentos/Simplifica IF/` e "Desfazer".
 - **Tarefas** no Início: a nativa "Revisar um PPC" e as skills com bloco `simplifica:` no `SKILL.md` (hoje só a `verificar-fundamentacao-normativa`).
 - **Revisar um PPC** (`.docx`): pré-conferência em código, relatório com IA opcional, roteiro por pendência e cópia do documento com comentários do Word. Os critérios são as fichas de `base-conhecimento/revisao-ppc/`.
 - **Leitor `ifpr://` e Explorar:** normas com vigência, PPCs, cursos (com as divergências PPC × SUAP já publicadas na base), campi, CNCT, Consepe e fichas, sem IA e sem rede.

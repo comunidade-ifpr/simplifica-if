@@ -67,8 +67,25 @@ export function ferramentaDoItem(item: Registro): { readonly nome: string; reado
         nome: "editar_arquivos",
         entrada: { arquivos: (Array.isArray(item.changes) ? item.changes : []).map((c) => registro(c).path) },
       };
-    case "webSearch":
-      return { nome: "busca_web", entrada: { consulta: item.query } };
+    case "webSearch": {
+      const acao = registro(item.action);
+      if (acao.type === "openPage") {
+        return {
+          nome: "ler_pagina_web",
+          entrada: {
+            ...(typeof acao.url === "string" ? { url: acao.url } : {}),
+            ...(typeof item.query === "string" && item.query !== "" ? { consulta: item.query } : {}),
+          },
+        };
+      }
+      return {
+        nome: "busca_web",
+        entrada: {
+          consulta: item.query,
+          ...(typeof acao.url === "string" ? { url: acao.url } : {}),
+        },
+      };
+    }
     default:
       // No lado seguro: todo item que não é mensagem, raciocínio ou a mensagem da pessoa conta como
       // ferramenta (`imageView`, `collabAgentToolCall`, `imageGeneration`, `openPage`, tipos novos…).
@@ -101,6 +118,12 @@ function resultadoDoItem(item: Registro): { readonly resumo: string; readonly fa
       return { resumo: resumir(item.status), falhou: item.status !== "completed" };
     case "dynamicToolCall":
       return { resumo: resumir(textoDeBlocos(item.contentItems)), falhou: item.success === false };
+    case "webSearch": {
+      const acao = registro(item.action);
+      const detalhe =
+        (acao.type === "openPage" ? texto(acao.url) : "") || texto(item.query) || texto(acao.url) || texto(item.status);
+      return { resumo: resumir(detalhe), falhou: item.status === "failed" };
+    }
     default:
       return { resumo: resumir(item.status ?? ""), falhou: item.status === "failed" };
   }
@@ -285,12 +308,56 @@ export function falhaQuedaCodex(erro: CodexAppServerError): FalhaProvider {
   return new FalhaProvider({ provider: PROVIDER, operacao: "sessão", tipo: "queda", cause: erro });
 }
 
+/**
+ * Modo do `web_search` no `config` da thread do Codex: `"live"` (servidores da OpenAI) quando a
+ * política liga a web, respeitando eventual restrição gerida em `allowedWebSearchModes` (cai para
+ * `"cached"`, `"indexed"` ou `"disabled"`). Quando a política desliga, sempre `"disabled"`.
+ */
+export function modoBuscaWebCodex(
+  politica: Politica,
+  modosPermitidos?: ReadonlyArray<string> | null,
+): "live" | "cached" | "indexed" | "disabled" {
+  if (!buscaWebLigada(politica)) return "disabled";
+  if (modosPermitidos == null) return "live";
+  if (modosPermitidos.includes("live")) return "live";
+  if (modosPermitidos.includes("cached")) return "cached";
+  if (modosPermitidos.includes("indexed")) return "indexed";
+  return "disabled";
+}
+
+/** O objeto `config` do `thread/start` e `thread/resume` do Codex (puro, para travar a ordem em teste). */
+export function configThreadCodex(entrada: {
+  readonly configUsuario: Registro;
+  readonly config: ConfigSessao;
+  readonly politica: Politica;
+  readonly skillsDoUsuario?: ReadonlyArray<string>;
+  readonly modosWebPermitidos?: ReadonlyArray<string> | null;
+  readonly esforco?: string;
+}): Record<string, Schema.Json> {
+  return {
+    ...isolamentoCodex(entrada.configUsuario, entrada.config, entrada.skillsDoUsuario),
+    ...CONTEXTO_CODEX,
+    ...configMcpCodex(entrada.config, entrada.politica),
+    web_search: modoBuscaWebCodex(entrada.politica, entrada.modosWebPermitidos),
+    // `SEM_FERRAMENTAS_CODEX` vem depois para garantir `web_search: "disabled"` no julgamento.
+    ...(entrada.config.semFerramentas === true ? SEM_FERRAMENTAS_CODEX : {}),
+    ...(entrada.esforco ? { model_reasoning_effort: entrada.esforco } : {}),
+  };
+}
+
+/**
+ * Classifica o pedido de comando: com `networkApprovalContext`, é `comando-rede` (negado sempre
+ * pela política, sem afrouxar `curl`/scripts de rede); sem ele, é `comando` com `cwd` e caminhos.
+ */
 export function classificarComandoCodex(p: {
   readonly command?: string | null;
   readonly cwd?: string | null;
   readonly networkApprovalContext?: unknown;
 }): ClassePedido {
-  if (p.networkApprovalContext !== undefined && p.networkApprovalContext !== null) return { tipo: "web", caminhos: [] };
+  if (p.networkApprovalContext !== undefined && p.networkApprovalContext !== null) {
+    const host = texto(registro(p.networkApprovalContext).host);
+    return { tipo: "comando-rede", caminhos: [], ...(host !== "" ? { host } : {}) };
+  }
   return {
     tipo: "comando",
     caminhos: [...(p.cwd ? [p.cwd] : []), ...(p.command ? caminhosDoComando(p.command) : [])],
@@ -507,12 +574,22 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     const modelo = config.modelo ?? efetivo?.model;
     const esforco = esforcoCodex(efetivo, config.esforco);
     // Isolamento sem tocar no `config.toml`: os MCP, os conectores (apps) e os plugins do usuário
-    // ficam desligados nesta thread. Sem isso, a resposta pode vir de outra ferramenta (busca web dos
-    // conectores, MCP pessoais), e não da base.
+    // ficam desligados nesta thread. A busca web nativa usa os servidores da OpenAI quando a
+    // política liga (`web_search: "live"`), respeitando restrições geridas em `configRequirements`.
     const configUsuario = yield* cliente.request("config/read", { includeLayers: false }).pipe(
       Effect.map((resposta) => registro(resposta.config)),
       Effect.orElseSucceed((): Registro => ({})),
     );
+    const modosWebPermitidos =
+      buscaWebLigada(politica) && config.semFerramentas !== true
+        ? yield* cliente.request("configRequirements/read", undefined).pipe(
+            Effect.map((resposta) => resposta.requirements?.allowedWebSearchModes ?? null),
+            Effect.tapError((erro) =>
+              Effect.logWarning("Codex: configRequirements/read falhou; seguindo com live", erro),
+            ),
+            Effect.orElseSucceed((): ReadonlyArray<string> | null => null),
+          )
+        : null;
     // Todas as skills que o Codex acharia para a pasta (do usuário, do sistema e da pasta).
     const skillsDoUsuario = yield* cliente.request("skills/list", { cwds: [config.pastaTrabalho] }).pipe(
       Effect.map((resposta) => resposta.data.flatMap((entrada) => entrada.skills.map((skill) => skill.path))),
@@ -523,14 +600,14 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
       // Na de fábrica, somente leitura: qualquer escrita ou comando fora do sandbox passa por aprovação.
       approvalPolicy: politica.codex.aprovacao,
       sandbox: politica.codex.sandbox,
-      config: {
-        ...isolamentoCodex(configUsuario, config, skillsDoUsuario),
-        ...CONTEXTO_CODEX,
-        ...configMcpCodex(config, politica),
-        ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { web_search: "disabled" }),
-        ...(config.semFerramentas === true ? SEM_FERRAMENTAS_CODEX : {}),
-        ...(esforco ? { model_reasoning_effort: esforco } : {}),
-      },
+      config: configThreadCodex({
+        configUsuario,
+        config,
+        politica,
+        skillsDoUsuario,
+        modosWebPermitidos,
+        ...(esforco ? { esforco } : {}),
+      }),
       // A thread de julgamento não é retomada (a retomada é por bloco, no servidor): não fica no
       // histórico do Codex do usuário.
       ...(config.semFerramentas === true ? { ephemeral: true } : {}),
