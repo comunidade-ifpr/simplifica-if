@@ -1,5 +1,5 @@
 /**
- * As preferências deste computador (M1.8, primeiro uso): o perfil (campus, função e cursos), o aviso
+ * As preferências deste computador (M1.8, primeiro uso): o perfil (campus, cargo e função), o aviso
  * de uso aceito, as boas-vindas concluídas e as IAs que a pessoa deixou de usar no app. Uma linha por
  * chave na tabela `preferencias` do banco das conversas, com o valor em JSON.
  *

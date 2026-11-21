@@ -3,7 +3,7 @@
  *
  * 1. **Conectar a IA:** Claude, ChatGPT (Codex) ou Gemini (Antigravity), com o cartão de
  *    Configurações (o app instala e faz o login do Codex e do Antigravity; o Claude tem o passo guiado);
- * 2. **Seu perfil:** campus, função e cursos, só neste computador;
+ * 2. **Seu perfil:** campus ou pró-reitoria, categoria, cargo e função, só neste computador;
  * 3. **Uma tarefa de exemplo:** a mais útil para o perfil, com o tempo e o gasto da cota.
  *
  * O Início traz a pessoa para cá enquanto o aviso não foi aceito ou as boas-vindas não terminaram

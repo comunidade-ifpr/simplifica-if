@@ -2,12 +2,11 @@
 name: verificar-fundamentacao-normativa
 description: Verificar fundamentação normativa de documentos, PPCs, pareceres, minutas, relatórios e respostas que citam ou afirmam obrigações baseadas em leis, resoluções, portarias, notas técnicas, CNCT ou regulamentos institucionais. Use quando o usuário pedir checagem de citações normativas, validação de afirmações sobre normas, conferência de base legal, identificação de norma ausente, correção de fundamentação ou análise de risco de uma redação normativa.
 simplifica:
-  versao: 0.2.0
+  versao: 0.2.1
   app_minimo: 0.2.0
   titulo: Conferir a fundamentação normativa
   resumo: Confere cada citação e afirmação normativa de um documento contra o texto das normas e do CNCT na base do IFPR e, quando a norma está fora da base, em fontes oficiais na internet.
   area: ensino
-  publico: [proens, dens, coordenacao-curso, pedagogia]
   entradas:
     - { id: documento, tipo: arquivo, rotulo: "Documento a conferir" }
   ferramentas:

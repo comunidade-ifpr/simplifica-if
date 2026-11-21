@@ -2,14 +2,14 @@
  * A tarefa de exemplo do terceiro passo das boas-vindas (M1.8): a mais útil para o perfil, que gaste
  * pouco da cota.
  *
- * - Para quem cuida de PPC (coordenação, pedagogia, direção de ensino, PROENS/DENS): "Revisar um PPC"
- *   com o PPC do próprio curso. A pré-conferência roda no computador, sem IA e sem gastar a cota; a
+ * - Para quem cuida de PPC (coordenações de curso e de ensino, pedagogia, direção de ensino, PROENS/DENS): "Revisar um PPC",
+ *   com o PPC que a pessoa escolher. A pré-conferência roda no computador, sem IA e sem gastar a cota; a
  *   revisão com IA é opcional e mostra a estimativa antes.
  * - Para os demais, e como segunda opção: "Conferir a fundamentação normativa" de um trecho real e curto
  *   de PPC publicado na base, que cita a Res. CNE/CP nº 1/2021 sem o órgão completo (a norma foi
  *   revogada pela Res. CNE/CP nº 2/2026: a resposta mostra a regra de transição).
  */
-import type { FuncaoPerfil, Perfil, ResumoSkill } from "@simplifica-if/contratos-app";
+import { type Perfil, type Publico, publicosDoPerfil, type ResumoSkill } from "@simplifica-if/contratos-app";
 
 /** A skill do exemplo de conversa. */
 export const SKILL_EXEMPLO = "verificar-fundamentacao-normativa";
@@ -38,7 +38,14 @@ export type Exemplo =
       readonly pedido: string;
     };
 
-const CUIDAM_DE_PPC: ReadonlyArray<FuncaoPerfil> = ["coordenacao-curso", "pedagogia", "direcao-ensino", "proens-dens"];
+const CUIDAM_DE_PPC: ReadonlyArray<Publico> = [
+  "coordenacao-curso",
+  "coordenacao-ensino",
+  "pedagogia",
+  "direcao-ensino",
+  "proens",
+  "dens",
+];
 
 /** As sugestões, a mais útil primeiro. A conversa só entra se a skill estiver no catálogo. */
 export function exemplosDoPerfil(
@@ -57,15 +64,14 @@ export function exemplosDoPerfil(
         },
       ]
     : [];
-  const curso = perfil?.cursos[0]?.nome;
   const ppc: Exemplo = {
     tipo: "revisar-ppc",
-    titulo: curso === undefined ? "Revisar um PPC" : `Revisar o PPC de ${curso}`,
+    titulo: "Revisar um PPC",
     frase:
       "Escolha o arquivo .docx do PPC. O app o confere com as normas, o CNCT e a matriz da base e devolve uma cópia do documento com comentários.",
     custo: "Alguns segundos. A pré-conferência roda no computador, sem IA: não gasta a sua cota.",
   };
-  return perfil?.funcao !== undefined && CUIDAM_DE_PPC.includes(perfil.funcao)
+  return publicosDoPerfil(perfil).some((publico) => CUIDAM_DE_PPC.includes(publico))
     ? [ppc, ...conversa]
     : [...conversa, ppc];
 }

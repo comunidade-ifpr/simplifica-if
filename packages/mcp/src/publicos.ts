@@ -7,6 +7,14 @@
  */
 
 /** Os públicos, na ordem em que o perfil os oferece. */
-export const PUBLICOS = ["coordenacao-curso", "pedagogia", "docente", "direcao-ensino", "proens", "dens"] as const;
+export const PUBLICOS = [
+  "coordenacao-curso",
+  "coordenacao-ensino",
+  "pedagogia",
+  "docente",
+  "direcao-ensino",
+  "proens",
+  "dens",
+] as const;
 
 export type Publico = (typeof PUBLICOS)[number];

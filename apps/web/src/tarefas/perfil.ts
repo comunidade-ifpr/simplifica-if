@@ -1,5 +1,5 @@
 /**
- * O perfil da pessoa (campus, função e cursos) e o resto do primeiro uso (M1.8): o aviso de uso
+ * O perfil da pessoa (campus, cargo e função) e o resto do primeiro uso (M1.8): o aviso de uso
  * aceito, as boas-vindas feitas e as IAs em uso. Fica só neste computador, no servidor local
  * (`preferencias.*`); a interface guarda uma cópia, carregada quando a conexão abre e trocada pela
  * resposta de cada mudança.

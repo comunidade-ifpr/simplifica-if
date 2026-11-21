@@ -1,46 +1,38 @@
 /**
- * O formulário do perfil (M1.8), nas boas-vindas e em Configurações › Seu perfil: o campus (os campi
- * da base, de `sobreABase`), a função (`FUNCOES`, que se traduz no `publico` dos manifestos) e os
- * cursos do campus escolhido (de `listarCursos`). Nada daqui vai à IA: o perfil fica no servidor local.
+ * O formulário do perfil (M1.8), nas boas-vindas e em Configurações › Seu perfil, na ordem do SUAP: o
+ * campus ou a pró-reitoria (os campi da base, de `sobreABase`, e `PRO_REITORIAS`), a categoria e o
+ * cargo e a função de gestão, se houver. Tudo se traduz no `publico` dos manifestos (`publicosDoPerfil`). Nada daqui vai à IA: o perfil fica no
+ * servidor local.
  */
 import {
-  DESCRICOES_FUNCAO,
+  CATEGORIAS,
+  type CargoPerfil,
+  type CategoriaPerfil,
+  cargosDaCategoria,
   FUNCOES,
   type FuncaoPerfil,
   type ItemPerfil,
-  MAXIMO_CURSOS_PERFIL,
+  OUTRO_CARGO,
   type Perfil,
+  PRO_REITORIAS,
+  ROTULOS_CATEGORIA,
+  ROTULOS_FUNCAO,
 } from "@simplifica-if/contratos-app";
 import { type FormEvent, type ReactNode, useEffect, useId, useState } from "react";
-import type { Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useEstadoConexao } from "../contexto.tsx";
 import { AvisoErro } from "./AvisoErro.tsx";
 import { Button } from "./ui/button.tsx";
 import { Spinner } from "./ui/spinner.tsx";
 
-interface CursoDaBase extends ItemPerfil {
-  /** "médio, subsequente", para distinguir cursos de mesmo nome. */
-  readonly detalhe: string;
-}
+/** O cargo que a categoria sugere ao ser escolhida: quase todo docente do IFPR é professor EBTT. */
+const CARGO_SUGERIDO: Readonly<Record<CategoriaPerfil, CargoPerfil | undefined>> = {
+  docente: "professor-ebtt",
+  "tecnico-administrativo": undefined,
+};
 
-/** Os cursos de um campus, de todas as páginas de `listarCursos`, em ordem de nome. */
-async function cursosDoCampus(api: Api, campus: string): Promise<ReadonlyArray<CursoDaBase>> {
-  const cursos: Array<CursoDaBase> = [];
-  let cursor: string | undefined;
-  for (let pagina = 0; pagina < 10; pagina++) {
-    const resposta = await api.chamar((cliente) =>
-      cliente.listarCursos({ campus, limite: 100, ...(cursor === undefined ? {} : { cursor }) }),
-    );
-    for (const curso of resposta.dados.cursos) {
-      const detalhe = [curso.nivel, curso.forma_oferta].filter((parte): parte is string => !!parte).join(", ");
-      cursos.push({ id: curso.id, nome: curso.nome, detalhe });
-    }
-    cursor = resposta.pagina?.cursor;
-    if (cursor === undefined) break;
-  }
-  return cursos.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
-}
+const classeOpcao =
+  "flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm has-checked:border-primary has-checked:bg-primary/6 has-focus-visible:ring-2 has-focus-visible:ring-ring";
 
 const classeSelect =
   "h-9 w-full max-w-sm rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -62,14 +54,9 @@ export function FormPerfil({
   const id = useId();
   const [campi, setCampi] = useState<ReadonlyArray<ItemPerfil>>();
   const [campus, setCampus] = useState(inicial?.campus?.id ?? "");
+  const [categoria, setCategoria] = useState<CategoriaPerfil | undefined>(inicial?.categoria);
+  const [cargo, setCargo] = useState<CargoPerfil | undefined>(inicial?.cargo);
   const [funcao, setFuncao] = useState<FuncaoPerfil | undefined>(inicial?.funcao);
-  // Os cursos com o campus a que pertencem: ao trocar de campus, os do anterior deixam de valer.
-  const [cursosCarregados, setCursosCarregados] = useState<{
-    readonly campus: string;
-    readonly lista: ReadonlyArray<CursoDaBase>;
-  }>();
-  const cursos = cursosCarregados?.campus === campus ? cursosCarregados.lista : undefined;
-  const [escolhidos, setEscolhidos] = useState<ReadonlyArray<string>>(inicial?.cursos.map((curso) => curso.id) ?? []);
   const [gravando, setGravando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
@@ -87,34 +74,25 @@ export function FormPerfil({
     };
   }, [api, conectado]);
 
-  useEffect(() => {
-    if (!conectado || campus === "") return;
-    let vale = true;
-    cursosDoCampus(api, campus).then(
-      (lista) => vale && setCursosCarregados({ campus, lista }),
-      (falha: unknown) => vale && setErro(explicarErro(falha)),
-    );
-    return () => {
-      vale = false;
-    };
-  }, [api, conectado, campus]);
-
-  const trocarCampus = (novo: string) => {
-    setCampus(novo);
-    setEscolhidos([]);
+  const trocarCategoria = (nova: CategoriaPerfil) => {
+    setCategoria(nova);
+    setCargo(CARGO_SUGERIDO[nova]);
   };
+
+  const campiDaBase = campi?.filter((item) => item.id !== "reitoria");
+  const reitoria = campi?.find((item) => item.id === "reitoria");
+  const unidades: ReadonlyArray<ItemPerfil> = [...(campi ?? []), ...PRO_REITORIAS];
 
   const gravar = async (evento: FormEvent) => {
     evento.preventDefault();
     setGravando(true);
     setErro(undefined);
-    const doCampus = campi?.find((item) => item.id === campus);
+    const doCampus = unidades.find((item) => item.id === campus);
     const perfil: Perfil = {
-      ...(doCampus === undefined ? {} : { campus: doCampus }),
+      ...(doCampus === undefined ? {} : { campus: { id: doCampus.id, nome: doCampus.nome } }),
+      ...(categoria === undefined ? {} : { categoria }),
+      ...(categoria === undefined || cargo === undefined ? {} : { cargo }),
       ...(funcao === undefined ? {} : { funcao }),
-      cursos: (cursos ?? [])
-        .filter((curso) => escolhidos.includes(curso.id))
-        .map(({ id: idCurso, nome }) => ({ id: idCurso, nome })),
     };
     try {
       await aoGravar(perfil);
@@ -129,92 +107,99 @@ export function FormPerfil({
     <form onSubmit={gravar} aria-label="Seu perfil" className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
         <label htmlFor={`${id}-campus`} className="font-medium text-sm">
-          Campus
+          Campus ou pró-reitoria
         </label>
         <select
           id={`${id}-campus`}
           className={classeSelect}
           value={campus}
-          onChange={(evento) => trocarCampus(evento.currentTarget.value)}
+          onChange={(evento) => setCampus(evento.currentTarget.value)}
           disabled={campi === undefined}
         >
-          <option value="">{campi === undefined ? "Carregando os campi…" : "Escolha o campus"}</option>
-          {campi?.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.nome}
-            </option>
-          ))}
+          <option value="">{campi === undefined ? "Carregando os campi…" : "Escolha onde você trabalha"}</option>
+          <optgroup label="Campi">
+            {campiDaBase?.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.nome}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Reitoria">
+            {reitoria === undefined ? null : <option value={reitoria.id}>{reitoria.nome}</option>}
+            {PRO_REITORIAS.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.nome}
+              </option>
+            ))}
+          </optgroup>
         </select>
       </div>
 
       <fieldset className="flex flex-col gap-1.5">
-        <legend className="mb-1.5 font-medium text-sm">Sua função</legend>
-        <div className="grid gap-1.5 sm:grid-cols-2">
-          {FUNCOES.map((opcao) => (
-            <label
-              key={opcao}
-              className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm has-checked:border-primary has-checked:bg-primary/6"
-            >
+        <legend className="mb-1.5 font-medium text-sm">Categoria</legend>
+        <div className="grid max-w-xl gap-1.5 sm:grid-cols-2">
+          {CATEGORIAS.map((opcao) => (
+            <label key={opcao} className={classeOpcao}>
               <input
                 type="radio"
-                name={`${id}-funcao`}
+                name={`${id}-categoria`}
                 value={opcao}
-                checked={funcao === opcao}
-                onChange={() => setFuncao(opcao)}
+                checked={categoria === opcao}
+                onChange={() => trocarCategoria(opcao)}
                 className="accent-primary"
               />
-              {DESCRICOES_FUNCAO[opcao].rotulo}
+              {ROTULOS_CATEGORIA[opcao]}
             </label>
           ))}
         </div>
       </fieldset>
 
-      {campus === "" ? null : (
-        <fieldset className="flex flex-col gap-1.5">
-          <legend className="mb-1.5 font-medium text-sm">
-            Seus cursos <span className="font-normal text-muted-foreground">(opcional)</span>
-          </legend>
-          {cursos === undefined ? (
-            <p className="flex items-center gap-2 text-muted-foreground text-sm">
-              <Spinner size="sm" /> Carregando os cursos do campus…
-            </p>
-          ) : cursos.length === 0 ? (
-            <p className="text-muted-foreground text-sm">A base não tem cursos deste campus.</p>
-          ) : (
-            <ul className="grid max-h-64 gap-1 overflow-y-auto rounded-md border border-border p-2 sm:grid-cols-2">
-              {cursos.map((curso) => (
-                <li key={curso.id}>
-                  <label className="flex items-start gap-2 rounded px-1.5 py-1 text-sm hover:bg-accent">
-                    <input
-                      type="checkbox"
-                      className="mt-0.5 accent-primary"
-                      checked={escolhidos.includes(curso.id)}
-                      disabled={!escolhidos.includes(curso.id) && escolhidos.length >= MAXIMO_CURSOS_PERFIL}
-                      onChange={(evento) =>
-                        setEscolhidos(
-                          evento.currentTarget.checked
-                            ? [...escolhidos, curso.id]
-                            : escolhidos.filter((outro) => outro !== curso.id),
-                        )
-                      }
-                    />
-                    <span>
-                      {curso.nome}
-                      {curso.detalhe === "" ? null : (
-                        <span className="block text-muted-foreground text-micro">{curso.detalhe}</span>
-                      )}
-                    </span>
-                  </label>
-                </li>
-              ))}
-            </ul>
-          )}
-        </fieldset>
+      {categoria === undefined ? null : (
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor={`${id}-cargo`} className="font-medium text-sm">
+            Cargo
+          </label>
+          <select
+            id={`${id}-cargo`}
+            className={classeSelect}
+            value={cargo ?? ""}
+            onChange={(evento) => {
+              const valor = evento.currentTarget.value;
+              setCargo(valor === "" ? undefined : (valor as CargoPerfil));
+            }}
+          >
+            <option value="">Escolha o cargo</option>
+            {cargosDaCategoria(categoria).map((opcao) => (
+              <option key={opcao.id} value={opcao.id}>
+                {opcao.rotulo}
+              </option>
+            ))}
+            <option value={OUTRO_CARGO}>Outro cargo</option>
+          </select>
+        </div>
       )}
 
+      <fieldset className="flex flex-col gap-1.5">
+        <legend className="mb-1.5 font-medium text-sm">Função de gestão</legend>
+        <div className="grid max-w-xl gap-1.5 sm:grid-cols-2">
+          {[...FUNCOES, undefined].map((opcao) => (
+            <label key={opcao ?? "nenhuma"} className={classeOpcao}>
+              <input
+                type="radio"
+                name={`${id}-funcao`}
+                value={opcao ?? ""}
+                checked={funcao === opcao}
+                onChange={() => setFuncao(opcao)}
+                className="accent-primary"
+              />
+              {opcao === undefined ? "Nenhuma das opções" : ROTULOS_FUNCAO[opcao]}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <p className="max-w-prose text-muted-foreground text-sm">
-        O perfil fica <strong>só neste computador</strong> e não vai para a IA. Serve para o Início mostrar primeiro as
-        tarefas da sua função.
+        O perfil fica <strong>só neste computador</strong> e define as tarefas que aparecem primeiro.
       </p>
       {erro === undefined ? null : <AvisoErro erro={erro} />}
       <div className="flex flex-wrap items-center gap-2">

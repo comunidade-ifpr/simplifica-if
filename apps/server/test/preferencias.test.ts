@@ -32,8 +32,9 @@ afterAll(limparTemporarios);
 
 const PERFIL: Perfil = {
   campus: { id: "curitiba", nome: "Curitiba" },
+  categoria: "docente",
+  cargo: "professor-ebtt",
   funcao: "coordenacao-curso",
-  cursos: [{ id: "curitiba/tecnico-em-enfermagem", nome: "Técnico em Enfermagem" }],
 };
 
 const camada = Servidor.layer({ banco: bancoFixture(), token: Redacted.make(TOKEN) }).pipe(
@@ -107,17 +108,18 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
     }),
   );
 
-  it.effect("o RPC recusa função fora da lista e cursos demais", () =>
+  it.effect("o RPC recusa função ou cargo fora da lista", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const funcao = yield* Effect.exit(
-        rpc["preferencias.gravarPerfil"]({ perfil: { ...PERFIL, funcao: "reitoria" as "outra" } }),
+        rpc["preferencias.gravarPerfil"]({ perfil: { ...PERFIL, funcao: "reitoria" as "direcao-ensino" } }),
       );
       assert.isTrue(Exit.isFailure(funcao));
-      const cursos = Array.from({ length: 31 }, (_, i) => ({ id: `c${i}`, nome: `Curso ${i}` }));
-      const demais = yield* Effect.exit(rpc["preferencias.gravarPerfil"]({ perfil: { ...PERFIL, cursos } }));
-      assert.isTrue(Exit.isFailure(demais));
+      const cargo = yield* Effect.exit(
+        rpc["preferencias.gravarPerfil"]({ perfil: { ...PERFIL, cargo: "reitor" as "outro" } }),
+      );
+      assert.isTrue(Exit.isFailure(cargo));
     }),
   );
 });
@@ -161,7 +163,7 @@ describe("preferências no arquivo", () => {
         Layer.provideMerge(Banco.layerArquivo(outro)),
         Layer.provide(NodeServices.layer),
       );
-      const marca = "Curso-Marca-Que-Deve-Sumir-7f3a";
+      const marca = "Campus-Marca-Que-Deve-Sumir-7f3a";
       const bytes = () =>
         [outro, `${outro}-wal`]
           .filter((arquivo) => NodeFS.existsSync(arquivo))
@@ -169,7 +171,7 @@ describe("preferências no arquivo", () => {
           .join("");
       yield* Effect.gen(function* () {
         const preferencias = yield* Preferencias.Preferencias;
-        yield* preferencias.gravarPerfil({ ...PERFIL, cursos: [{ id: "curitiba/marca", nome: marca }] });
+        yield* preferencias.gravarPerfil({ ...PERFIL, campus: { id: "marca", nome: marca } });
         yield* preferencias.aceitarAviso;
         assert.include(bytes(), marca);
         yield* preferencias.apagarPerfil;

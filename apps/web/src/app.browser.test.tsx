@@ -560,19 +560,26 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   await capturar("12-boas-vindas-ia");
   await page.getByRole("button", { name: "Continuar" }).click();
 
-  // Passo 2: o perfil, com os campi e os cursos da base.
+  // Passo 2: o perfil, na ordem do SUAP (sem os cursos).
   await expect.element(page.getByRole("heading", { name: "Conte quem você é" })).toBeVisible();
   await expect.element(page.getByText(/fica só neste computador/)).toBeVisible();
-  await userEvent.selectOptions(page.getByLabelText("Campus").element() as HTMLSelectElement, "curitiba");
+  await expect.element(page.getByText("Seus cursos")).not.toBeInTheDocument();
+  await userEvent.selectOptions(
+    page.getByLabelText("Campus ou pró-reitoria").element() as HTMLSelectElement,
+    "curitiba",
+  );
+  await expect.element(page.getByRole("option", { name: "Pró-Reitoria de Ensino (PROENS)" })).toBeInTheDocument();
+  await page.getByRole("radio", { name: "Docente" }).click();
+  // Docente: o cargo vem sugerido (professor EBTT).
+  expect((page.getByLabelText("Cargo").element() as HTMLSelectElement).value).toBe("professor-ebtt");
   await page.getByRole("radio", { name: "Coordenação de Curso" }).click();
-  await page.getByRole("checkbox", { name: /Técnico em Enfermagem/ }).click();
   semIngles();
   await capturar("13-boas-vindas-perfil");
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
 
-  // Passo 3: para a coordenação, revisar o PPC do curso vem primeiro; a conversa de exemplo, depois.
+  // Passo 3: para a coordenação, revisar um PPC vem primeiro; a conversa de exemplo, depois.
   await expect.element(page.getByRole("heading", { name: "Experimente uma tarefa" })).toBeVisible();
-  const ppc = page.getByRole("region", { name: "Revisar o PPC de Técnico em Enfermagem" });
+  const ppc = page.getByRole("region", { name: "Revisar um PPC" });
   await expect.element(ppc.getByText("Sugerida")).toBeVisible();
   await expect.element(ppc.getByText(/não gasta a sua cota/)).toBeVisible();
   const conferir = page.getByRole("region", { name: "Conferir a fundamentação normativa de um trecho" });
@@ -596,9 +603,11 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   // Configurações › Seu perfil: o salvo, editar e apagar; "Rever as boas-vindas".
   await app.roteador.navigate({ to: "/configuracoes" });
   await expect.element(page.getByText("Salvo: Coordenação de Curso · Campus Curitiba.")).toBeVisible();
-  await page.getByRole("radio", { name: "Pedagogia" }).click();
+  await page.getByRole("radio", { name: "Técnico-administrativo" }).click();
+  await userEvent.selectOptions(page.getByLabelText("Cargo").element() as HTMLSelectElement, "pedagogo");
+  await page.getByRole("radio", { name: "Nenhuma das opções" }).click();
   await page.getByRole("button", { name: "Salvar o perfil" }).click();
-  await expect.element(page.getByText("Salvo: Pedagogia · Campus Curitiba.")).toBeVisible();
+  await expect.element(page.getByText("Salvo: Pedagogo · Campus Curitiba.")).toBeVisible();
   await expect.element(page.getByRole("link", { name: "Rever as boas-vindas" })).toBeVisible();
   semIngles();
   await capturar("16-configuracoes");
