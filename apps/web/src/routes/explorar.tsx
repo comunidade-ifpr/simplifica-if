@@ -7,6 +7,8 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { SearchIcon } from "lucide-react";
 import { Button } from "../components/ui/button.tsx";
+import { classeColuna } from "../components/Pagina.tsx";
+import { cn } from "../lib/utils.ts";
 import { atalhoPaleta, usePaleta } from "../explorar/Paleta.tsx";
 
 export const Route = createFileRoute("/explorar")({ component: Explorar });
@@ -21,32 +23,33 @@ const COLECOES = [
   { to: "/explorar/fichas", nome: "Fichas de análise" },
 ] as const;
 
+// A aba ativa pelo traço embaixo e pela cor do texto, sem fundo: é navegação, não botão.
 const classeAba =
-  "rounded-md px-2.5 py-1 font-medium text-muted-foreground text-sm hover:bg-accent hover:text-foreground data-[status=active]:bg-primary/10 data-[status=active]:text-primary";
+  "border-transparent border-b-2 px-2.5 pt-1 pb-2 font-medium text-muted-foreground text-small hover:text-foreground data-[status=active]:border-primary data-[status=active]:text-foreground";
 
 function Explorar() {
   const { abrir } = usePaleta();
   return (
     <div className="flex h-full flex-col">
-      <div className="border-border border-b bg-card/50">
-        <div className="mx-auto flex max-w-5xl flex-col gap-3 px-6 pt-4 pb-2">
+      <div className="border-border border-b">
+        <div className={cn(classeColuna("larga"), "flex flex-col gap-4 pt-8")}>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="font-bold text-2xl tracking-tight">
+              <h1 className="text-display">
                 <Link to="/explorar">Explorar a base</Link>
               </h1>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground">
                 Normas, cursos, PPCs, campi, catálogo e Consepe, direto da base do app. Sem IA e sem internet.
               </p>
             </div>
             <Button variant="outline" onClick={() => abrir()}>
               <SearchIcon /> Buscar na base
-              <kbd className="ml-1 rounded border border-border px-1 font-sans text-muted-foreground text-xs">
+              <kbd className="ml-1 rounded border border-border px-1 font-sans text-micro text-muted-foreground">
                 {atalhoPaleta()}
               </kbd>
             </Button>
           </div>
-          <nav aria-label="Coleções" className="-mx-1 flex flex-wrap gap-1">
+          <nav aria-label="Coleções" className="-mx-2.5 -mb-px flex flex-wrap gap-1">
             {COLECOES.map((c) => (
               <Link key={c.to} to={c.to} className={classeAba}>
                 {c.nome}
@@ -57,7 +60,7 @@ function Explorar() {
       </div>
       {/* `relative`: o que tem posição absoluta (o `sr-only` do trecho citado) rola com a página. */}
       <div className="relative min-h-0 flex-1 overflow-y-auto" data-rolagem-explorar>
-        <div className="mx-auto max-w-5xl px-6 py-5">
+        <div className={cn(classeColuna("larga"), "py-6")}>
           <Outlet />
         </div>
       </div>

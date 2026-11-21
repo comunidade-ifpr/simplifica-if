@@ -201,7 +201,7 @@ export function FormPerfil({
                     <span>
                       {curso.nome}
                       {curso.detalhe === "" ? null : (
-                        <span className="block text-muted-foreground text-xs">{curso.detalhe}</span>
+                        <span className="block text-muted-foreground text-micro">{curso.detalhe}</span>
                       )}
                     </span>
                   </label>

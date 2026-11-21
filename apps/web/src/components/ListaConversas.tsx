@@ -93,7 +93,7 @@ export function ListaConversas({
                   {conversa.titulo || "Conversa sem mensagens"}
                 </span>
               </span>
-              <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground text-xs">
+              <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground text-micro">
                 <span>{DESCRICOES[conversa.provider].nome}</span>
                 <span>{dataHora(conversa.atualizadaEm)}</span>
                 {rotulo === undefined ? null : (

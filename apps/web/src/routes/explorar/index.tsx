@@ -29,10 +29,10 @@ function Cartao({
     <li>
       <Link
         to={to}
-        className="flex h-full flex-col gap-1 rounded-xl border border-border bg-card p-4 shadow-xs transition-colors hover:border-ring/45"
+        className="flex h-full flex-col gap-1 rounded-xl border border-border bg-card p-4 transition-colors hover:border-ring/45"
       >
         <span className="font-semibold">{titulo}</span>
-        <span className="font-bold text-2xl text-primary">{contagem}</span>
+        <span className="text-title tabular-nums">{contagem}</span>
         <span className="text-muted-foreground text-sm">{descricao}</span>
       </Link>
     </li>
@@ -45,8 +45,8 @@ function Entrada() {
       {(d) => (
         <div className="space-y-5">
           <p className="text-sm">
-            Use <kbd className="rounded border border-border px-1 text-xs">{atalhoPaleta()}</kbd> em qualquer tela para
-            buscar um curso, um campus, uma norma ou uma citação, como “Res. CNE/CP 1/2021, art. 20”.
+            Use <kbd className="rounded border border-border px-1 text-micro">{atalhoPaleta()}</kbd> em qualquer tela
+            para buscar um curso, um campus, uma norma ou uma citação, como “Res. CNE/CP 1/2021, art. 20”.
           </p>
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <Cartao

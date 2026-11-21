@@ -36,6 +36,7 @@ import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
+import { Pagina } from "../components/Pagina.tsx";
 
 /** A busca da rota: o pedido que veio pronto ("Perguntar à IA sobre isto", do Explorar). */
 export interface BuscaInicio {
@@ -166,10 +167,10 @@ function Tarefas() {
   return (
     <section aria-labelledby="titulo-tarefas" className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 id="titulo-tarefas" className="font-semibold text-lg">
+        <h2 id="titulo-tarefas" className="text-title">
           Tarefas
         </h2>
-        <Link to="/tarefas" className="flex items-center gap-1 font-medium text-primary text-sm hover:underline">
+        <Link to="/tarefas" className="flex items-center gap-1 text-link text-small underline underline-offset-2">
           Ver todas <ArrowRightIcon className="size-3.5" />
         </Link>
       </div>
@@ -235,39 +236,37 @@ function Inicio() {
   // Enquanto as preferências carregam (ou antes de desviar para as boas-vindas), nada pisca na tela.
   if (conexao.fase !== "sem-servidor" && pendente !== false) return <EsperaPreferencias />;
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex max-w-4xl flex-col gap-6 p-6">
-        <section className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <h1 className="font-bold text-2xl tracking-tight">Olá!</h1>
-            {perfil !== undefined ? (
-              <p className="text-muted-foreground" data-linha-perfil>
-                {perfil}
-              </p>
-            ) : preferencias === undefined ? null : (
-              <Link to="/configuracoes" hash="perfil" className="text-primary text-sm hover:underline">
-                Preencha seu perfil para ver primeiro as tarefas da sua função
-              </Link>
-            )}
-          </div>
-          {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
-        </section>
-        {conexao.fase === "sem-servidor" ? null : (
-          <>
-            <AvisoBaseAtualizada />
-            <AvisoSemIa />
-            <PedidoDoInicio key={pedido ?? ""} pedido={pedido} />
-            <Tarefas />
-            <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
-              <h2 id="titulo-recentes" className="font-semibold text-lg">
-                Recentes
-              </h2>
-              <UltimaRevisao />
-              <ListaConversas limite={5} />
-            </section>
-          </>
-        )}
-      </div>
-    </div>
+    <Pagina largura="larga">
+      <section className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-display">Olá!</h1>
+          {perfil !== undefined ? (
+            <p className="text-muted-foreground" data-linha-perfil>
+              {perfil}
+            </p>
+          ) : preferencias === undefined ? null : (
+            <Link to="/configuracoes" hash="perfil" className="text-link text-small underline underline-offset-2">
+              Preencha seu perfil para ver primeiro as tarefas da sua função
+            </Link>
+          )}
+        </div>
+        {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
+      </section>
+      {conexao.fase === "sem-servidor" ? null : (
+        <>
+          <AvisoBaseAtualizada />
+          <AvisoSemIa />
+          <PedidoDoInicio key={pedido ?? ""} pedido={pedido} />
+          <Tarefas />
+          <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
+            <h2 id="titulo-recentes" className="text-title">
+              Recentes
+            </h2>
+            <UltimaRevisao />
+            <ListaConversas limite={5} />
+          </section>
+        </>
+      )}
+    </Pagina>
   );
 }

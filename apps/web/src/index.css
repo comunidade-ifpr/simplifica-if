@@ -1,11 +1,13 @@
 /*
  * Tema do Simplifica IF: Tailwind 4 com as cores e a tipografia da identidade do IFPR (skill
  * `ifpr-design`: verde #1F8A42, vermelho #C72E2E, cinza #2D2D2D, Open Sans), num tema claro e num escuro.
+ * O sistema visual está em `docs/plans/revisao-ppc-interface.md` ("Sistema visual").
  *
  * Os nomes dos tokens (`--primary`, `--muted-foreground`, `--warning-surface`…) são os do T3
  * (`apps/web/src/index.css`), porque os componentes copiados para `components/ui` os usam. O texto
- * comum fica em cinza escuro; o verde institucional vai no cabeçalho (texto grande e negrito, como pede
- * o contraste) e, no tom escuro (#1B5E20, contraste AAA com branco), nos botões principais.
+ * comum fica em cinza escuro; o verde escuro (#1B5E20, AAA com branco) vai no cabeçalho e no botão
+ * principal. A cor da gravidade (`--grav-*`) é só da revisão de PPC; o azul `info`, só do estado do
+ * sistema (conexão, atualização).
  */
 @import "tailwindcss";
 
@@ -15,6 +17,8 @@
   --font-sans:
     "Open Sans Variable", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
+  /* A voz do documento: o texto do PPC e da norma, as citações e a sugestão de texto da IA. */
+  --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
@@ -52,6 +56,17 @@
   --color-message: var(--message);
   --color-message-foreground: var(--message-foreground);
   --color-marca: var(--marca);
+  --color-link: var(--link);
+  --color-grav-corrigir: var(--grav-corrigir);
+  --color-grav-corrigir-texto: var(--grav-corrigir-texto);
+  --color-grav-corrigir-fundo: var(--grav-corrigir-fundo);
+  --color-grav-conferir: var(--grav-conferir);
+  --color-grav-conferir-texto: var(--grav-conferir-texto);
+  --color-grav-conferir-fundo: var(--grav-conferir-fundo);
+  --color-grav-ok: var(--grav-ok);
+  --color-grav-ok-texto: var(--grav-ok-texto);
+  --color-grav-ok-fundo: var(--grav-ok-fundo);
+  --color-grav-nao-lido: var(--grav-nao-lido);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,10 +74,54 @@
   --radius-2xl: calc(var(--radius) + 8px);
 }
 
+/*
+ * A escala de texto (`text-display` … `text-micro`): tamanho, entrelinha e peso juntos. Nada abaixo de
+ * 13 px (`text-micro`). Os nomes estão também no `cn` (`lib/utils.ts`), para o tailwind-merge não os
+ * confundir com cor.
+ */
+@utility text-display {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  font-stretch: 87.5%;
+  letter-spacing: -0.01em;
+}
+@utility text-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+@utility text-heading {
+  font-size: 1.0625rem;
+  line-height: 1.625rem;
+  font-weight: 600;
+}
+@utility text-body {
+  font-size: 1rem;
+  line-height: 1.625rem;
+}
+@utility text-quote {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.75rem;
+}
+@utility text-small {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+@utility text-micro {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 500;
+}
+
 :root {
   color-scheme: light;
   --radius: 0.5rem;
   --control-radius: 0.5rem;
+  /* As duas larguras de página (`components/Pagina.tsx`). */
+  --page-narrow: 720px;
+  --page-wide: 1120px;
 
   /* Identidade do IFPR */
   --ifpr-verde: #1f8a42;
@@ -78,8 +137,9 @@
   --ifpr-cinza-claro: #bdbdbd;
   --ifpr-cinza-muito-claro: #f5f5f5;
 
-  --marca: var(--ifpr-verde);
-  --background: #fafafa;
+  /* O cabeçalho: o #1F8A42 com o branco dá 4,4:1 e falha o AA nos 14 px da navegação. */
+  --marca: var(--ifpr-verde-escuro);
+  --background: #ffffff;
   --foreground: var(--ifpr-cinza-escuro);
   --card: #ffffff;
   --card-foreground: var(--ifpr-cinza-escuro);
@@ -87,56 +147,72 @@
   --popover-foreground: var(--ifpr-cinza-escuro);
   --primary: var(--ifpr-verde-escuro);
   --primary-foreground: #ffffff;
-  --secondary: var(--ifpr-cinza-muito-claro);
+  --secondary: #f6f7f5;
   --secondary-foreground: var(--ifpr-cinza-escuro);
-  --muted: var(--ifpr-cinza-muito-claro);
-  /* #6b6b6b: o cinza médio do IFPR um pouco mais escuro, para AA também sobre #fafafa */
+  --muted: #f6f7f5;
+  /* #6b6b6b: o cinza médio do IFPR um pouco mais escuro, para AA também sobre #f6f7f5 */
   --muted-foreground: #6b6b6b;
   --accent: var(--ifpr-verde-muito-claro);
   --accent-foreground: var(--ifpr-verde-escuro);
+  /* O link: o verde do IFPR um pouco mais escuro, porque o #1F8A42 dá 4,4:1 com o branco e falha o AA. */
+  --link: #1e7f3e;
   --destructive: var(--ifpr-vermelho);
   --destructive-foreground: #a32424;
-  --border: #e0e0e0;
+  --border: #e2e4e0;
   --input: var(--ifpr-cinza-claro);
   --ring: var(--ifpr-verde);
   --placeholder: var(--muted-foreground);
-  --info: #0288d1;
+  --info: #0277bd;
   --info-foreground: #01579b;
   --success: var(--ifpr-verde);
   --success-foreground: var(--ifpr-verde-escuro);
   --warning: #ffa726;
   --warning-foreground: #8a4b00;
-  --warning-surface: #fff3e0;
+  --warning-surface: #fff4e0;
   --error: var(--ifpr-vermelho);
   --error-foreground: #a32424;
-  --error-surface: var(--ifpr-vermelho-muito-claro);
+  --error-surface: #fdecec;
   --message: var(--ifpr-verde-muito-claro);
   --message-foreground: var(--ifpr-cinza-escuro);
   /* Os componentes do T3 leem estas variáveis já com o ajuste de contraste deles; aqui, sem ajuste. */
   --contrast-muted-foreground: var(--muted-foreground);
+
+  /* A gravidade da revisão de PPC: glifo, cor e palavra andam juntos. */
+  --grav-corrigir: #c72e2e;
+  --grav-corrigir-texto: #a32424;
+  --grav-corrigir-fundo: #fdecec;
+  --grav-conferir: #b26a00;
+  --grav-conferir-texto: #8a4b00;
+  --grav-conferir-fundo: #fff4e0;
+  --grav-ok: #1f8a42;
+  --grav-ok-texto: var(--ifpr-verde-escuro);
+  --grav-ok-fundo: #e8f5e9;
+  --grav-nao-lido: #bdbdbd;
 }
 
 .dark {
   color-scheme: dark;
-  --marca: #17672f;
-  --background: #121412;
+  --marca: #14361a;
+  --background: #121512;
   --foreground: #ececec;
-  --card: #1b1e1b;
+  --card: #1a1e1b;
   --card-foreground: #ececec;
-  --popover: #1b1e1b;
+  --popover: #1a1e1b;
   --popover-foreground: #ececec;
-  --primary: var(--ifpr-verde-medio);
-  --primary-foreground: #0b1f0e;
-  --secondary: #262a26;
+  /* Sem o #4CAF50 cheio, que brilha: o verde do botão fica fechado, com texto branco. */
+  --primary: #2e7d32;
+  --primary-foreground: #ffffff;
+  --secondary: #232824;
   --secondary-foreground: #ececec;
-  --muted: #262a26;
-  --muted-foreground: #a8a8a8;
+  --muted: #232824;
+  --muted-foreground: #a8aca8;
   --accent: #223a26;
   --accent-foreground: #c8e6c9;
+  --link: var(--ifpr-verde-claro);
   --destructive: var(--ifpr-vermelho-claro);
   --destructive-foreground: #ff8a80;
-  --border: #2f342f;
-  --input: #3d433d;
+  --border: #2e342f;
+  --input: #3d443e;
   --ring: var(--ifpr-verde-medio);
   --info: #4fc3f7;
   --info-foreground: #81d4fa;
@@ -144,12 +220,23 @@
   --success-foreground: var(--ifpr-verde-claro);
   --warning: #ffa726;
   --warning-foreground: #ffcc80;
-  --warning-surface: color-mix(in srgb, #ffa726 14%, transparent);
+  --warning-surface: rgb(255 183 77 / 0.14);
   --error: var(--ifpr-vermelho-claro);
   --error-foreground: #ff8a80;
-  --error-surface: color-mix(in srgb, #ef5350 16%, transparent);
+  --error-surface: rgb(239 83 80 / 0.14);
   --message: #1f3323;
   --message-foreground: #ececec;
+
+  --grav-corrigir: #ef5350;
+  --grav-corrigir-texto: #ff8a80;
+  --grav-corrigir-fundo: rgb(239 83 80 / 0.14);
+  --grav-conferir: #ffb74d;
+  --grav-conferir-texto: #ffcc80;
+  --grav-conferir-fundo: rgb(255 183 77 / 0.14);
+  --grav-ok: #81c784;
+  --grav-ok-texto: #81c784;
+  --grav-ok-fundo: rgb(129 199 132 / 0.12);
+  --grav-nao-lido: #4a504b;
 }
 
 @layer base {
@@ -159,6 +246,10 @@
   html,
   body {
     @apply bg-background font-sans text-foreground antialiased;
+  }
+  /* Os radios e as caixas nativos no verde do app, não no azul do sistema. */
+  :root {
+    accent-color: var(--primary);
   }
   code {
     @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.875em];
@@ -239,10 +330,20 @@
   & li + li {
     margin-top: 0.25em;
   }
+  /* A citação é a voz do documento: serifada, com o filete verde. */
   & blockquote {
-    border-left: 4px solid var(--ifpr-verde);
+    border-left: 3px solid var(--ifpr-verde);
+    font-family: var(--font-serif);
+    font-size: 1.0625em;
+    line-height: 1.65;
     padding-left: 1em;
-    color: var(--muted-foreground);
+  }
+  /* A medida de leitura: no máximo 68 caracteres por linha nos parágrafos. */
+  & > p,
+  & > ul,
+  & > ol,
+  & > blockquote {
+    max-width: 68ch;
   }
   & pre {
     background: var(--muted);
@@ -269,9 +370,9 @@
     background: var(--muted);
     font-weight: 600;
   }
+  /* O link único do app (`text-link` sublinhado); o chip `.link-ifpr` fica para `ifpr://`. */
   & a {
-    color: var(--primary);
-    font-weight: 600;
+    color: var(--link);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
@@ -328,9 +429,31 @@
   }
 }
 
-/* O leitor `ifpr://` (M1.6): o texto da norma ou do PPC, em blocos montados aos poucos. */
+/*
+ * O leitor `ifpr://` (M1.6): o texto da norma ou do PPC, em blocos montados aos poucos. O texto vai em
+ * serifada (a voz do documento), na medida de 68 caracteres; os títulos ficam na Open Sans.
+ */
 .documento-leitor {
-  font-size: 0.9375rem;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+
+  & p,
+  & li,
+  & blockquote {
+    max-width: 68ch;
+  }
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6,
+  & th,
+  & .rotulo-regiao,
+  & .link-ifpr {
+    font-family: var(--font-sans);
+  }
 
   & [id] {
     scroll-margin-top: 0.75rem;
@@ -377,10 +500,8 @@
     margin-top: 0.5em;
   }
   & .rotulo-regiao {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
   }
   & s,
   & del {

@@ -10,6 +10,7 @@ import { FolderCogIcon, RotateCcwIcon, Trash2Icon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { AvisoUso } from "../components/AvisoUso.tsx";
 import { FormPerfil } from "../components/FormPerfil.tsx";
+import { Pagina } from "../components/Pagina.tsx";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
@@ -31,7 +32,7 @@ function Secao({
 }) {
   return (
     <section id={id} aria-labelledby={`titulo-${id}`} className="flex flex-col gap-3">
-      <h2 id={`titulo-${id}`} className="font-semibold text-xl">
+      <h2 id={`titulo-${id}`} className="text-title">
         {titulo}
       </h2>
       {children}
@@ -75,7 +76,7 @@ function SeuPerfil() {
               </Button>
             )}
             {gravado ? (
-              <span role="status" className="text-success text-sm">
+              <span role="status" className="text-small text-success-foreground">
                 Perfil salvo.
               </span>
             ) : null}
@@ -94,58 +95,56 @@ function Configuracoes() {
   const [, conversa] = useConversa();
   const navegar = useNavigate();
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8 p-6">
-        <h1 className="font-bold text-2xl tracking-tight">Configurações</h1>
-        <Secao id="ia" titulo="Sua IA">
-          <AvisoUso {...(avisoPendente ? { aoEntender: () => void aceitarAviso() } : {})} />
-          {conexao.fase === "sem-servidor" ? null : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {PROVIDERS.map((provider) => (
-                <CartaoProvider
-                  key={provider}
-                  provider={provider}
-                  avisoPendente={avisoPendente}
-                  uso={{
-                    usada: !(preferencias?.iasDesligadas ?? []).includes(provider),
-                    aoMudar: (usar) => void usarIa(provider, usar),
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          <p className="max-w-prose text-muted-foreground text-sm">
-            "Não usar no app" só tira a IA da escolha das conversas: a conta continua conectada no computador. Para sair
-            da conta de vez, use o próprio programa da IA.
-          </p>
-        </Secao>
-        <Secao id="perfil" titulo="Seu perfil">
-          {conexao.fase === "sem-servidor" ? null : <SeuPerfil />}
-          <div>
-            <Link to="/boas-vindas" className={buttonVariants({ size: "sm", variant: "outline" })}>
-              <RotateCcwIcon /> Rever as boas-vindas
-            </Link>
+    <Pagina largura="larga" className="gap-10">
+      <h1 className="text-display">Configurações</h1>
+      <Secao id="ia" titulo="Sua IA">
+        <AvisoUso {...(avisoPendente ? { aoEntender: () => void aceitarAviso() } : {})} />
+        {conexao.fase === "sem-servidor" ? null : (
+          <div className="grid gap-4 md:grid-cols-3">
+            {PROVIDERS.map((provider) => (
+              <CartaoProvider
+                key={provider}
+                provider={provider}
+                avisoPendente={avisoPendente}
+                uso={{
+                  usada: !(preferencias?.iasDesligadas ?? []).includes(provider),
+                  aoMudar: (usar) => void usarIa(provider, usar),
+                }}
+              />
+            ))}
           </div>
-        </Secao>
-        {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
-        <Secao id="avancado" titulo="Avançado">
-          <p className="max-w-prose text-muted-foreground text-sm">
-            Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.
-          </p>
-          <div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                conversa.nova();
-                void navegar({ to: "/conversa" });
-              }}
-            >
-              <FolderCogIcon /> Conversa com uma pasta escolhida
-            </Button>
-          </div>
-        </Secao>
-      </div>
-    </div>
+        )}
+        <p className="max-w-prose text-muted-foreground text-sm">
+          "Não usar no app" só tira a IA da escolha das conversas: a conta continua conectada no computador. Para sair
+          da conta de vez, use o próprio programa da IA.
+        </p>
+      </Secao>
+      <Secao id="perfil" titulo="Seu perfil">
+        {conexao.fase === "sem-servidor" ? null : <SeuPerfil />}
+        <div>
+          <Link to="/boas-vindas" className={buttonVariants({ size: "sm", variant: "outline" })}>
+            <RotateCcwIcon /> Rever as boas-vindas
+          </Link>
+        </div>
+      </Secao>
+      {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
+      <Secao id="avancado" titulo="Avançado">
+        <p className="max-w-prose text-muted-foreground text-sm">
+          Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.
+        </p>
+        <div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              conversa.nova();
+              void navegar({ to: "/conversa" });
+            }}
+          >
+            <FolderCogIcon /> Conversa com uma pasta escolhida
+          </Button>
+        </div>
+      </Secao>
+    </Pagina>
   );
 }

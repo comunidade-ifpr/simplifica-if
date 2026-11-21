@@ -41,7 +41,7 @@ function Cursos() {
         const nomeCampus = new Map(d.campi.map((c) => [c.id, c.nome]));
         return (
           <section aria-labelledby="titulo-cursos" className="space-y-4">
-            <h2 id="titulo-cursos" className="font-semibold text-lg">
+            <h2 id="titulo-cursos" className="text-title">
               Cursos
             </h2>
             <Filtros

@@ -87,7 +87,7 @@ export function Atualizacoes() {
 
   return (
     <section id="atualizacoes" aria-labelledby="titulo-atualizacoes" className="flex flex-col gap-5">
-      <h2 id="titulo-atualizacoes" className="font-semibold text-xl">
+      <h2 id="titulo-atualizacoes" className="text-title">
         Atualizações
       </h2>
       {erro !== null ? <AvisoErro erro={erro} icone /> : null}
@@ -140,7 +140,7 @@ export function Atualizacoes() {
                 </Button>
               ))}
             </fieldset>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-small">
               O beta recebe a base nova primeiro; o estável, depois de alguns dias sem erro confirmado. Trocar para o
               estável não volta a base: ela fica até sair uma versão estável mais nova.
             </p>
@@ -170,7 +170,7 @@ export function Atualizacoes() {
               ) : null}
             </div>
             {estado.anterior === null && estado.base.origem === "baixada" ? (
-              <p className="text-muted-foreground text-xs">
+              <p className="text-muted-foreground text-small">
                 Não há versão anterior para onde voltar: ou a anterior é a de que você acabou de voltar, ou a troca já
                 foi pedida. Uma versão mais nova da base aparece aqui quando sair.
               </p>

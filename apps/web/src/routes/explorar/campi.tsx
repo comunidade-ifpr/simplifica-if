@@ -14,7 +14,7 @@ function Campi() {
         const campi = [...d.campi].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
         return (
           <section aria-labelledby="titulo-campi" className="space-y-4">
-            <h2 id="titulo-campi" className="font-semibold text-lg">
+            <h2 id="titulo-campi" className="text-title">
               Campi
             </h2>
             <p role="status" className="text-muted-foreground text-sm">

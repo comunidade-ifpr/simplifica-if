@@ -33,7 +33,7 @@ export function Falha({
       <AlertTitle>{titulo}</AlertTitle>
       <AlertDescription>
         <p>{erro}</p>
-        <Button className="mt-2" size="sm" variant="outline" onClick={aoTentar}>
+        <Button className="mt-2 self-start" size="sm" variant="outline" onClick={aoTentar}>
           Tentar de novo
         </Button>
       </AlertDescription>
@@ -83,7 +83,7 @@ export function BotaoLink({
 export function Secao({ titulo, children }: { readonly titulo: string; readonly children: ReactNode }) {
   return (
     <section aria-label={titulo} className="space-y-1.5">
-      <h3 className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{titulo}</h3>
+      <h3 className="font-semibold text-muted-foreground text-small">{titulo}</h3>
       {children}
     </section>
   );
@@ -96,7 +96,7 @@ export function LinkExterno({ href, children }: { readonly href: string; readonl
       href={href}
       rel="noopener noreferrer"
       target="_blank"
-      className="nao-imprimir inline-flex items-center gap-1 font-semibold text-primary text-sm underline underline-offset-2"
+      className="nao-imprimir inline-flex items-center gap-1 text-link text-small underline underline-offset-2"
       onClick={(evento) => {
         evento.preventDefault();
         abrirFora(href);
@@ -119,8 +119,8 @@ export function Cabecalho({
 }) {
   return (
     <header className="space-y-2">
-      <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{tipo}</p>
-      <h2 className="font-semibold text-lg leading-snug">{titulo}</h2>
+      <p className="font-semibold text-muted-foreground text-small">{tipo}</p>
+      <h2 className="text-title">{titulo}</h2>
       {children}
     </header>
   );

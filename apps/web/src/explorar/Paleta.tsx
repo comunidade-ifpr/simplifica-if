@@ -208,7 +208,9 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
             className="h-12 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/80 sm:text-sm"
           />
           {fase === "buscando" ? <Spinner size="sm" /> : null}
-          <kbd className="hidden rounded border border-border px-1.5 text-muted-foreground text-xs sm:inline">Esc</kbd>
+          <kbd className="hidden rounded border border-border px-1.5 text-muted-foreground text-micro sm:inline">
+            Esc
+          </kbd>
         </div>
         <span id={`${idLista}-dica`} className="sr-only">
           Use as setas para escolher um resultado e Enter para abrir. Esc fecha.
@@ -224,7 +226,7 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
                 <p
                   id={idGrupo}
                   role="presentation"
-                  className="px-2 pt-1 pb-1 font-semibold text-muted-foreground text-xs uppercase tracking-wide"
+                  className="px-2 pt-1 pb-1 font-semibold text-muted-foreground text-small"
                 >
                   {NOMES_TIPO[g.tipo].grupo}
                 </p>
@@ -246,10 +248,10 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
                     >
                       <span className="block truncate font-medium">{r.titulo}</span>
                       {r.detalhe ? (
-                        <span className="block truncate text-muted-foreground text-xs">{r.detalhe}</span>
+                        <span className="block truncate text-muted-foreground text-micro">{r.detalhe}</span>
                       ) : null}
                       {r.trecho ? (
-                        <span className="line-clamp-2 text-muted-foreground text-xs" data-conteudo>
+                        <span className="line-clamp-2 font-serif text-muted-foreground text-small" data-conteudo>
                           {r.trecho}
                         </span>
                       ) : null}

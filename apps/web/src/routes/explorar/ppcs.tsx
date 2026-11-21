@@ -30,7 +30,7 @@ function Ppcs() {
         const nomeCampus = new Map(d.campi.map((c) => [c.id, c.nome]));
         return (
           <section aria-labelledby="titulo-ppcs" className="space-y-4">
-            <h2 id="titulo-ppcs" className="font-semibold text-lg">
+            <h2 id="titulo-ppcs" className="text-title">
               Projetos Pedagógicos de Curso
             </h2>
             <p className="text-muted-foreground text-sm">

@@ -160,7 +160,7 @@ export function CaixaPedido({
         <div className="flex shrink-0 items-center gap-1.5">
           {direita}
           {enviando ? (
-            <span role="status" className="text-muted-foreground text-xs">
+            <span role="status" className="text-muted-foreground text-micro">
               {rotuloEnviando}
             </span>
           ) : null}
@@ -173,7 +173,7 @@ export function CaixaPedido({
               disabled={vazio || enviando}
               className={cn(
                 botaoRedondo,
-                "cursor-pointer bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:scale-95 disabled:bg-foreground/10 disabled:text-muted-foreground disabled:shadow-none",
+                "cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 disabled:bg-foreground/10 disabled:text-muted-foreground",
               )}
             >
               {enviando ? <Spinner size="sm" /> : <ArrowUpIcon aria-hidden strokeWidth={2.5} />}
@@ -200,7 +200,7 @@ export function CaixaPedido({
         </div>
       </div>
       {arrastando ? (
-        <p className="px-4 pb-2.5 font-medium text-primary text-xs" aria-hidden>
+        <p className="px-4 pb-2.5 font-medium text-primary text-small" aria-hidden>
           Solte para anexar
         </p>
       ) : null}

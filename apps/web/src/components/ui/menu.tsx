@@ -45,7 +45,7 @@ function MenuPopup({
 function MenuGroupLabel({ className, ...props }: MenuPrimitive.GroupLabel.Props) {
   return (
     <MenuPrimitive.GroupLabel
-      className={cn("px-2 py-1.5 font-medium text-muted-foreground text-xs", className)}
+      className={cn("px-2 py-1.5 font-medium text-muted-foreground text-micro", className)}
       {...props}
     />
   );
@@ -72,7 +72,7 @@ function MenuRadioItem({
         </MenuPrimitive.RadioItemIndicator>
       </span>
       <span className="min-w-0 flex-1">{children}</span>
-      {dica === undefined ? null : <span className="text-muted-foreground text-xs">{dica}</span>}
+      {dica === undefined ? null : <span className="text-muted-foreground text-micro">{dica}</span>}
     </MenuPrimitive.RadioItem>
   );
 }

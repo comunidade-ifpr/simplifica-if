@@ -64,7 +64,7 @@ export function ItemConversa({
     case "pasta":
       return (
         <p
-          className="-mt-2 ml-auto flex max-w-[85%] items-start gap-1.5 text-right text-muted-foreground text-xs"
+          className="-mt-2 ml-auto flex max-w-[85%] items-start gap-1.5 text-right text-muted-foreground text-micro"
           data-mudancas-pasta
         >
           <FolderSyncIcon aria-hidden className="mt-px size-3.5 shrink-0" />
@@ -93,7 +93,7 @@ export function ItemConversa({
           <div className="min-w-0">
             <p className="font-medium">{rotuloFerramenta(item.nome)}</p>
             {item.resumo === undefined || item.resumo.length === 0 ? null : (
-              <p data-conteudo className="line-clamp-2 text-muted-foreground text-xs">
+              <p data-conteudo className="line-clamp-2 text-muted-foreground text-small">
                 {item.resumo}
               </p>
             )}

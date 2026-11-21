@@ -15,6 +15,7 @@ import { ArrowRightIcon, CheckCircle2Icon, FileSearchIcon, SparklesIcon } from "
 import { type ReactNode, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { AvisoUso } from "../components/AvisoUso.tsx";
+import { Pagina } from "../components/Pagina.tsx";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { FormPerfil } from "../components/FormPerfil.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -85,20 +86,18 @@ function Moldura({
 }) {
   const indice = PASSOS.findIndex((item) => item.passo === passo);
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
-        {passo === "aviso" ? null : <Etapas atual={passo} />}
-        <header className="flex flex-col gap-1">
-          {indice < 0 ? null : (
-            <p className="font-medium text-muted-foreground text-sm">
-              Passo {indice + 1} de {PASSOS.length}
-            </p>
-          )}
-          <h1 className="font-bold text-2xl tracking-tight">{titulo}</h1>
-        </header>
-        {children}
-      </div>
-    </div>
+    <Pagina largura="estreita">
+      {passo === "aviso" ? null : <Etapas atual={passo} />}
+      <header className="flex flex-col gap-1">
+        {indice < 0 ? null : (
+          <p className="font-medium text-muted-foreground text-sm">
+            Passo {indice + 1} de {PASSOS.length}
+          </p>
+        )}
+        <h1 className="text-display">{titulo}</h1>
+      </header>
+      {children}
+    </Pagina>
   );
 }
 
@@ -170,7 +169,7 @@ function PassoIa({
                 <CheckCircle2Icon aria-label="conectada" className="size-4 text-success" />
               ) : null}
             </span>
-            <span className="text-muted-foreground text-xs">{DESCRICOES[provider].conta}</span>
+            <span className="text-muted-foreground text-micro">{DESCRICOES[provider].conta}</span>
           </button>
         ))}
       </div>
@@ -240,13 +239,13 @@ function CartaoExemplo({
     >
       <h2 className="flex items-center gap-2 font-semibold">
         {exemplo.tipo === "revisar-ppc" ? (
-          <FileSearchIcon aria-hidden className="size-4 text-primary" />
+          <FileSearchIcon aria-hidden className="size-4 text-link" />
         ) : (
-          <SparklesIcon aria-hidden className="size-4 text-primary" />
+          <SparklesIcon aria-hidden className="size-4 text-link" />
         )}
         {exemplo.titulo}
         {principal ? (
-          <span className="rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs">Sugerida</span>
+          <span className="rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary text-micro">Sugerida</span>
         ) : null}
       </h2>
       <p className="text-muted-foreground text-sm">{exemplo.frase}</p>

@@ -68,7 +68,7 @@ function BarraProgresso({ estado }: { readonly estado: EstadoInstalacao }) {
           style={porcentagem === undefined ? undefined : { width: `${porcentagem}%` }}
         />
       </div>
-      <p className="text-muted-foreground text-xs">
+      <p className="text-muted-foreground text-small">
         {textoFaseInstalacao(estado.fase)}
         {estado.fase === "baixando" ? ` · ${tamanhoBaixado(estado)}` : ""}
         {estado.versao === undefined ? "" : ` · versão ${estado.versao}`}
@@ -94,7 +94,7 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
       </p>
       {estado.fase === "aguardando" && estado.url !== undefined ? (
         <a
-          className="inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2"
+          className="inline-flex items-center gap-1 text-link underline underline-offset-2"
           href={estado.url}
           rel="noopener noreferrer"
           target="_blank"
@@ -107,7 +107,7 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
         </a>
       ) : null}
       {estado.mensagem === undefined ? null : (
-        <p className="text-muted-foreground text-xs">
+        <p className="text-muted-foreground text-small">
           {explicarMensagemMotor({ mensagem: estado.mensagem, tipoFalha: estado.tipoFalha }).texto}
         </p>
       )}
@@ -132,7 +132,7 @@ function PassoManual({ orientacao }: { readonly orientacao: Orientacao }) {
     <div className="flex flex-col gap-1.5 text-sm" data-orientacao>
       <p className="text-muted-foreground">{orientacao.texto}</p>
       {orientacao.comando === undefined ? null : (
-        <code className="self-start rounded-md bg-muted px-2 py-1 font-mono text-xs">{orientacao.comando}</code>
+        <code className="self-start rounded-md bg-muted px-2 py-1 font-mono text-small">{orientacao.comando}</code>
       )}
     </div>
   );
@@ -228,11 +228,11 @@ export function CartaoProvider({
   return (
     <section
       aria-labelledby={`provider-${provider}`}
-      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-card-foreground shadow-xs/5"
+      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-card-foreground"
     >
       <header className="flex items-start justify-between gap-2">
         <div>
-          <h2 id={`provider-${provider}`} className="flex items-center gap-2 font-semibold text-lg">
+          <h2 id={`provider-${provider}`} className="flex items-center gap-2 text-heading">
             <MarcaIa provider={provider} className="size-5" />
             {descricao.nome}
           </h2>
@@ -269,7 +269,7 @@ export function CartaoProvider({
               </Badge>
             )}
             {deteccao.estado.origem === "gerenciada" ? (
-              <span className="text-muted-foreground text-xs">cópia do app</span>
+              <span className="text-muted-foreground text-micro">cópia do app</span>
             ) : null}
           </dd>
           <dt className="text-muted-foreground">Login</dt>

@@ -80,7 +80,7 @@ function BotaoCopiar({ texto }: { readonly texto: string | null }) {
         {estado === "copiada" ? "Citação copiada" : "Copiar citação"}
       </Button>
       {estado === "falhou" ? (
-        <span role="alert" className="text-destructive-foreground text-xs">
+        <span role="alert" className="text-destructive-foreground text-micro">
           Não foi possível copiar. Selecione o texto e copie com Ctrl+C.
         </span>
       ) : null}
@@ -181,8 +181,8 @@ function LeitorNorma({
         return (
           <article aria-label="Norma" className="leitor-impressao space-y-4">
             <header className="space-y-2">
-              <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">Norma</p>
-              <h2 className="font-semibold text-lg leading-snug">{norma.titulo}</h2>
+              <p className="font-semibold text-muted-foreground text-small">Norma</p>
+              <h2 className="text-title">{norma.titulo}</h2>
               {norma.ementa ? <p className="text-muted-foreground text-sm">{norma.ementa}</p> : null}
               <div role="group" className="flex flex-wrap gap-1.5" aria-label="Situação">
                 {selos.map((selo) => (
@@ -191,7 +191,7 @@ function LeitorNorma({
                   </Badge>
                 ))}
               </div>
-              <ul className="space-y-0.5 text-muted-foreground text-xs">
+              <ul className="space-y-0.5 text-muted-foreground text-micro">
                 {selos.map((selo) => (
                   <li key={selo.rotulo}>{selo.detalhe}</li>
                 ))}
@@ -206,7 +206,7 @@ function LeitorNorma({
                     href={fonteOficial}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="nao-imprimir inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2"
+                    className="nao-imprimir inline-flex items-center gap-1 text-link underline underline-offset-2"
                     onClick={(evento) => {
                       evento.preventDefault();
                       abrirFora(fonteOficial);
@@ -225,7 +225,7 @@ function LeitorNorma({
                   {transicoes.map((t) => (
                     <li key={t.id} className="rounded-md border border-border p-2">
                       <p>{t.regra}</p>
-                      <p className="mt-1 text-muted-foreground text-xs">
+                      <p className="mt-1 text-muted-foreground text-small">
                         Para: {t.aplica_a.replace(/\.$/, "")}. Situação: {situacaoDaTransicao(t.situacao_na_data)}
                         {t.inicio_em ? `; começa em ${dataCurta(t.inicio_em)}` : "; início a confirmar"}
                         {t.fim_em ? `; termina em ${dataCurta(t.fim_em)}` : ""}.{" "}
@@ -320,10 +320,8 @@ function LeitorPpc({
         return (
           <article aria-label="PPC" className="leitor-impressao space-y-4">
             <header className="space-y-2">
-              <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-                Projeto Pedagógico de Curso
-              </p>
-              <h2 className="font-semibold text-lg leading-snug">{ppc.nome}</h2>
+              <p className="font-semibold text-muted-foreground text-small">Projeto Pedagógico de Curso</p>
+              <h2 className="text-title">{ppc.nome}</h2>
               <p className="text-muted-foreground text-sm">
                 Campus {ppc.campus} · {ppc.nivel} · {ppc.forma}
               </p>
@@ -389,9 +387,7 @@ function LeitorLink({ link, aoAbrirLink }: { readonly link: string; readonly aoA
     <ComCarga carga={lido} titulo="Não foi possível ler este link">
       {(valor) => (
         <article aria-label={TIPOS[valor.tipo]} className="leitor-impressao">
-          <p className="mb-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-            {TIPOS[valor.tipo]}
-          </p>
+          <p className="mb-2 font-semibold text-muted-foreground text-small">{TIPOS[valor.tipo]}</p>
           <Markdown texto={valor.texto} aoAbrirLink={aoAbrirLink} />
         </article>
       )}

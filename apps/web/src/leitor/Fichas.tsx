@@ -72,13 +72,13 @@ function ListaConsepe({
         {itens.map(({ item, reuniao }) => (
           <li key={item.id} className="rounded-md border border-border p-2">
             <p data-conteudo>{item.resumo ?? item.titulo}</p>
-            <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-xs">
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-small">
               {item.tipo_demanda ? <Badge variant="outline">{item.tipo_demanda}</Badge> : null}
               {item.resultado ? <span>{item.resultado}</span> : null}
               <Link
                 to="/explorar/reuniao"
                 search={{ id: reuniao.id }}
-                className="font-semibold text-primary underline underline-offset-2"
+                className="text-link underline underline-offset-2"
               >
                 {reuniao.conselho}, reunião de {dataBr(reuniao.data)}
               </Link>
@@ -203,7 +203,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                           <caption className="sr-only">Comparação entre o PPC e o SUAP</caption>
-                          <thead className="text-muted-foreground text-xs">
+                          <thead className="text-muted-foreground text-small">
                             <tr>
                               <th scope="col" className="py-1 pr-2 font-semibold">
                                 Aspecto
@@ -239,7 +239,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                                         </Badge>
                                       ))}
                                     </span>
-                                    <span className="block text-muted-foreground text-xs">{c.explicacao}</span>
+                                    <span className="block text-muted-foreground text-micro">{c.explicacao}</span>
                                   </td>
                                 </tr>
                               );
@@ -261,7 +261,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                               <strong>{nomeFato(f.fato)}:</strong> {valorFato(f)}{" "}
                               {ressalvas.has(f.fato) ? <Badge variant="info">{ressalvas.get(f.fato)}</Badge> : null}
                             </p>
-                            <p className="text-muted-foreground text-xs" data-conteudo>
+                            <p className="font-serif text-muted-foreground text-small" data-conteudo>
                               “{f.trecho_fonte}” (linha {f.fonte.linha_inicio} do PPC)
                             </p>
                           </li>
@@ -310,7 +310,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                     {d.transicoes_aplicaveis.map((t) => (
                       <li key={t.id} className="rounded-md border border-border p-2">
                         <p data-conteudo>{t.regra}</p>
-                        <p className="mt-1 text-muted-foreground text-xs">
+                        <p className="mt-1 text-muted-foreground text-small">
                           Situação: {situacaoDaTransicao(t.situacao_na_data)}.{" "}
                           <BotaoLink link={t.link} aoAbrirLink={aoAbrirLink}>
                             Ver o dispositivo
@@ -393,7 +393,7 @@ export function FichaCampus({ id, aoAbrirLink }: { readonly id: string; readonly
                   <li>
                     <LinkExterno href={doIndice.horarios_url}>Horários de aula</LinkExterno>
                     {doIndice.horarios_coletado_em ? (
-                      <span className="text-muted-foreground text-xs">
+                      <span className="text-muted-foreground text-micro">
                         {" "}
                         (endereço conferido em {dataCurta(doIndice.horarios_coletado_em.slice(0, 10))})
                       </span>
@@ -519,7 +519,7 @@ export function FichaRevisao({ id, aoAbrirLink }: { readonly id: string; readonl
                 </Badge>
               ) : null}
             </p>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-small">
               Critério usado pela revisão de PPC do app. Ajuda a revisar; não é norma.
             </p>
           </Cabecalho>

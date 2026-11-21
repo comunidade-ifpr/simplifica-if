@@ -11,7 +11,7 @@ function Fichas() {
     <ComIndice>
       {(d) => (
         <section aria-labelledby="titulo-fichas" className="space-y-4">
-          <h2 id="titulo-fichas" className="font-semibold text-lg">
+          <h2 id="titulo-fichas" className="text-title">
             Fichas de análise de PPC
           </h2>
           <p className="text-muted-foreground text-sm">

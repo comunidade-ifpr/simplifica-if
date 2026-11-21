@@ -32,7 +32,7 @@ function Consepe() {
         return (
           <div className="space-y-6">
             <section aria-labelledby="titulo-reunioes" className="space-y-3">
-              <h2 id="titulo-reunioes" className="font-semibold text-lg">
+              <h2 id="titulo-reunioes" className="text-title">
                 Reuniões do Consepe
               </h2>
               <ul className="grid gap-2 sm:grid-cols-2">
@@ -41,11 +41,11 @@ function Consepe() {
                     <Link
                       to="/explorar/reuniao"
                       search={{ id: r.id }}
-                      className="font-semibold text-primary text-sm underline-offset-2 hover:underline"
+                      className="text-link text-small underline underline-offset-2"
                     >
                       {r.titulo}
                     </Link>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-muted-foreground text-small">
                       {dataBr(r.data)} · {quantos(r.itens.length, "item de pauta", "itens de pauta")} ·{" "}
                       {quantos(r.documentos.length, "documento", "documentos")}
                     </p>
@@ -54,7 +54,7 @@ function Consepe() {
               </ul>
             </section>
             <section aria-labelledby="titulo-itens" className="space-y-3">
-              <h2 id="titulo-itens" className="font-semibold text-lg">
+              <h2 id="titulo-itens" className="text-title">
                 Itens de pauta
               </h2>
               <Filtros
@@ -86,13 +86,13 @@ function Consepe() {
                   {achados.map(({ item, reuniao }) => (
                     <li key={item.id} className="rounded-lg border border-border bg-card px-3 py-2">
                       <p data-conteudo>{item.titulo}</p>
-                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-xs">
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-small">
                         {item.tipo_demanda ? <Badge variant="outline">{item.tipo_demanda}</Badge> : null}
                         {item.resultado ? <span>{item.resultado}</span> : null}
                         <Link
                           to="/explorar/reuniao"
                           search={{ id: reuniao.id }}
-                          className="text-primary underline underline-offset-2"
+                          className="text-link underline underline-offset-2"
                         >
                           Reunião de {dataBr(reuniao.data)}
                         </Link>
@@ -100,7 +100,7 @@ function Consepe() {
                           <Link
                             to="/explorar/ver"
                             search={{ link: `ifpr://curso/${item.curso}` }}
-                            className="font-semibold text-primary underline underline-offset-2"
+                            className="text-link underline underline-offset-2"
                           >
                             Ficha do curso
                           </Link>

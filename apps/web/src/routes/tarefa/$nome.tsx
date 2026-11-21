@@ -9,6 +9,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeftIcon, ClockIcon, FolderIcon, PlayIcon } from "lucide-react";
 import { type FormEvent, useId, useState } from "react";
 import { AvisoErro } from "../../components/AvisoErro.tsx";
+import { Pagina } from "../../components/Pagina.tsx";
 import { Button } from "../../components/ui/button.tsx";
 import { Input } from "../../components/ui/input.tsx";
 import { Spinner } from "../../components/ui/spinner.tsx";
@@ -58,7 +59,7 @@ function CampoEntrada({
           }}
         />
         {entrada.aceita === undefined ? null : (
-          <p className="text-muted-foreground text-xs">Aceita {entrada.aceita.join(", ")}.</p>
+          <p className="text-muted-foreground text-small">Aceita {entrada.aceita.join(", ")}.</p>
         )}
       </fieldset>
     );
@@ -123,7 +124,7 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
   return (
     <form onSubmit={aoEnviar} className="flex flex-col gap-5" aria-label={skill.titulo}>
       <div className="flex flex-col gap-2">
-        <h1 className="font-bold text-2xl tracking-tight">{skill.titulo}</h1>
+        <h1 className="text-display">{skill.titulo}</h1>
         <p className="max-w-prose text-muted-foreground">{skill.resumo}</p>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
           {duracao === undefined ? null : (
@@ -154,7 +155,7 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
         <label htmlFor={idPedido} className="font-medium text-sm">
           O pedido que vai para a IA
         </label>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-micro text-muted-foreground">
           Você pode mudar o texto antes de começar.
           {Object.values(anexos).some((lista) => lista.length > 0)
             ? " A lista dos arquivos anexados vai junto, no fim, com o caminho da versão em texto de cada documento do Word."
@@ -184,23 +185,21 @@ function TelaTarefa() {
   const catalogo = useCatalogo();
   const skill = catalogo.fase === "pronto" ? catalogo.skills.find((candidata) => candidata.nome === nome) : undefined;
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
-        <Link to="/" className="flex w-fit items-center gap-1 text-muted-foreground text-sm hover:text-foreground">
-          <ArrowLeftIcon className="size-3.5" /> Início
-        </Link>
-        {catalogo.fase === "carregando" ? (
-          <p className="flex items-center gap-2 text-muted-foreground">
-            <Spinner size="sm" /> Carregando a tarefa…
-          </p>
-        ) : catalogo.fase === "falhou" ? (
-          <AvisoErro erro={catalogo.erro} />
-        ) : skill === undefined ? (
-          <p>Esta tarefa não existe mais no app.</p>
-        ) : (
-          <Formulario skill={skill} />
-        )}
-      </div>
-    </div>
+    <Pagina largura="estreita" className="gap-4">
+      <Link to="/" className="flex w-fit items-center gap-1 text-muted-foreground text-small hover:text-foreground">
+        <ArrowLeftIcon className="size-3.5" /> Início
+      </Link>
+      {catalogo.fase === "carregando" ? (
+        <p className="flex items-center gap-2 text-muted-foreground">
+          <Spinner size="sm" /> Carregando a tarefa…
+        </p>
+      ) : catalogo.fase === "falhou" ? (
+        <AvisoErro erro={catalogo.erro} />
+      ) : skill === undefined ? (
+        <p>Esta tarefa não existe mais no app.</p>
+      ) : (
+        <Formulario skill={skill} />
+      )}
+    </Pagina>
   );
 }

@@ -48,7 +48,7 @@ export function IndicadorEtapas({
                   value={etapa.progresso.feito}
                   aria-label={`${etapa.rotulo}: ${etapa.progresso.feito} de ${etapa.progresso.total}`}
                 />
-                <span className="text-muted-foreground text-xs">
+                <span className="text-muted-foreground text-micro">
                   {etapa.progresso.feito} de {etapa.progresso.total}
                 </span>
               </span>

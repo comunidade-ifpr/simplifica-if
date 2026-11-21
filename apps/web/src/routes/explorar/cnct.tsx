@@ -35,7 +35,7 @@ function Cnct() {
         const contagem = cursosPorCnct(d.cursos);
         return (
           <section aria-labelledby="titulo-cnct" className="space-y-4">
-            <h2 id="titulo-cnct" className="font-semibold text-lg">
+            <h2 id="titulo-cnct" className="text-title">
               Catálogo Nacional de Cursos Técnicos
             </h2>
             <Filtros

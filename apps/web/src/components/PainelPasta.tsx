@@ -49,7 +49,7 @@ function Arquivo({
       <span className="min-w-0 flex-1 truncate font-medium" title={arquivo.nome}>
         {arquivo.nome}
       </span>
-      <span className="text-muted-foreground text-xs">
+      <span className="text-muted-foreground text-micro">
         {tamanho(arquivo.tamanho)} · {dataHora(arquivo.alteradoEm)}
       </span>
       {/* "Abrir" só para documento (a lista do contrato); o resto, só "Mostrar na pasta". */}
@@ -89,7 +89,7 @@ function ListaArquivos({
   if (arquivos.length === 0) return null;
   return (
     <section aria-label={titulo}>
-      <h3 className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{titulo}</h3>
+      <h3 className="font-semibold text-muted-foreground text-small">{titulo}</h3>
       <ul className="divide-y divide-border">
         {arquivos.map((arquivo) => (
           <Arquivo key={arquivo.nome} arquivo={arquivo} aoFalhar={aoFalhar} />
@@ -247,7 +247,7 @@ export function PainelPasta({
           </p>
         ) : (
           <>
-            <p className="text-muted-foreground text-xs">{ondeFica(vista.pasta)}</p>
+            <p className="text-muted-foreground text-small">{ondeFica(vista.pasta)}</p>
             {vista.arquivos.length === 0 ? <p className="text-muted-foreground text-sm">A pasta está vazia.</p> : null}
             <ListaArquivos
               titulo="Você trouxe"
@@ -307,7 +307,7 @@ export function PainelPasta({
                   </Button>
                 </div>
                 {emTurno ? (
-                  <p className="text-muted-foreground text-xs">Espere a resposta terminar para desfazer.</p>
+                  <p className="text-muted-foreground text-small">Espere a resposta terminar para desfazer.</p>
                 ) : null}
               </div>
             )}

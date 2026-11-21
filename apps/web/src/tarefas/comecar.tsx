@@ -295,7 +295,7 @@ export function Anexos({
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2">
       {escolher === undefined ? (
-        <span className="text-muted-foreground text-xs">Para anexar arquivos, use o app no computador.</span>
+        <span className="text-muted-foreground text-micro">Para anexar arquivos, use o app no computador.</span>
       ) : (
         <Button
           type="button"
@@ -322,7 +322,7 @@ export function Anexos({
           {anexos.map((arquivo) => (
             <li
               key={arquivo}
-              className="flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-xs"
+              className="flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-micro"
             >
               <PaperclipIcon aria-hidden className="size-3" />
               {nomeArquivo(arquivo)}
@@ -339,7 +339,7 @@ export function Anexos({
         </ul>
       )}
       {recusados.length === 0 ? null : (
-        <p role="status" className="text-muted-foreground text-xs">
+        <p role="status" className="text-muted-foreground text-small">
           {recusados.length === 1 ? "Não entrou" : "Não entraram"}: {recusados.join(", ")}. Anexe documentos (Word, PDF,
           texto, planilha, apresentação ou imagem), não pastas.
         </p>

@@ -57,7 +57,7 @@ function Reuniao() {
                   {r.itens.map((i) => (
                     <li key={i.id} className="rounded-md border border-border p-2">
                       <p data-conteudo>{i.titulo}</p>
-                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-xs">
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-small">
                         {i.tipo_demanda ? <Badge variant="outline">{i.tipo_demanda}</Badge> : null}
                         {i.resultado ? <span>{i.resultado}</span> : null}
                         {i.processo_sei ? <span>Processo SEI {i.processo_sei}</span> : null}
@@ -65,7 +65,7 @@ function Reuniao() {
                           <Link
                             to="/explorar/ver"
                             search={{ link: `ifpr://curso/${i.curso}` }}
-                            className="font-semibold text-primary underline underline-offset-2"
+                            className="text-link underline underline-offset-2"
                           >
                             Ficha do curso
                           </Link>
@@ -74,7 +74,7 @@ function Reuniao() {
                           <Link
                             to="/explorar/ver"
                             search={{ link: `ifpr://campus/${i.campus}` }}
-                            className="font-semibold text-primary underline underline-offset-2"
+                            className="text-link underline underline-offset-2"
                           >
                             Campus {nomeCampus.get(i.campus) ?? i.campus}
                           </Link>
@@ -91,7 +91,7 @@ function Reuniao() {
                       {doc.url ? <LinkExterno href={doc.url}>{doc.titulo}</LinkExterno> : <strong>{doc.titulo}</strong>}
                       <span className="text-muted-foreground"> · {primeiraMaiuscula(doc.tipo)}</span>
                       {doc.resumo ? (
-                        <p className="text-muted-foreground text-xs" data-conteudo>
+                        <p className="text-muted-foreground text-small" data-conteudo>
                           {doc.resumo}
                         </p>
                       ) : null}

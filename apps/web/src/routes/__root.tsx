@@ -79,7 +79,7 @@ function BotaoBuscar() {
       <SearchIcon aria-hidden className="size-3.5" />
       {/* Em janela estreita, só a lupa; o nome continua para o leitor de tela e na dica. */}
       <span className="sr-only lg:not-sr-only">Buscar</span>
-      <kbd className="hidden rounded bg-black/20 px-1 font-sans text-white/75 text-xs lg:inline">{atalho}</kbd>
+      <kbd className="hidden rounded bg-black/20 px-1 font-sans text-white/75 text-micro lg:inline">{atalho}</kbd>
     </button>
   );
 }

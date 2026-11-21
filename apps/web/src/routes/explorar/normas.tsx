@@ -48,7 +48,7 @@ function Normas() {
         const achadas = filtrarNormas(d.normas, filtros);
         return (
           <section aria-labelledby="titulo-normas" className="space-y-4">
-            <h2 id="titulo-normas" className="font-semibold text-lg">
+            <h2 id="titulo-normas" className="text-title">
               Normas
             </h2>
             <Filtros

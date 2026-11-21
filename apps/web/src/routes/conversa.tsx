@@ -21,6 +21,7 @@ import { CaixaPedido } from "../components/CaixaPedido.tsx";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { IndicadorEtapas } from "../components/IndicadorEtapas.tsx";
 import { ItemConversa } from "../components/ItemConversa.tsx";
+import { classeColuna } from "../components/Pagina.tsx";
 import { PainelPasta } from "../components/PainelPasta.tsx";
 import { RelatoErro } from "../components/RelatoErro.tsx";
 import { etapasVistas } from "../conversa/etapas.ts";
@@ -133,9 +134,13 @@ function FormularioInicio() {
     void conversa.iniciar();
   };
   return (
-    <form onSubmit={aoEnviar} className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6" aria-label="Nova conversa">
+    <form
+      onSubmit={aoEnviar}
+      className={cn(classeColuna("estreita"), "flex flex-col gap-6 py-8")}
+      aria-label="Nova conversa"
+    >
       <div>
-        <h1 className="font-bold text-2xl tracking-tight">Conversa com uma pasta escolhida</h1>
+        <h1 className="text-display">Conversa com uma pasta escolhida</h1>
         <p className="text-muted-foreground">
           A IA consulta a base do IFPR pelo app e cita as fontes. Para começar por uma tarefa, volte ao Início.
         </p>
@@ -349,7 +354,7 @@ function Conversa({
           passa por baixo dela; rolada até o fim, a última mensagem fica acima da caixa. */}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <div
-          className="mx-auto flex w-full max-w-3xl shrink-0 grow flex-col gap-4 px-4 pt-6 pb-4"
+          className="mx-auto flex w-full max-w-(--page-narrow) shrink-0 grow flex-col gap-4 px-4 pt-6 pb-4"
           role="log"
           aria-label="Mensagens"
         >
@@ -404,7 +409,7 @@ function Conversa({
             </p>
           ) : null}
         </div>
-        <div className="pointer-events-none sticky bottom-0 z-10 mx-auto w-full max-w-3xl shrink-0 bg-linear-to-t from-30% from-background to-transparent px-4 pt-3 pb-4">
+        <div className="pointer-events-none sticky bottom-0 z-10 mx-auto w-full max-w-(--page-narrow) shrink-0 bg-linear-to-t from-30% from-background to-transparent px-4 pt-3 pb-4">
           <Compositor />
         </div>
         <RolarParaOFim sinal={`${estado.itens.length}:${tamanhoUltimo}`} />
@@ -421,7 +426,7 @@ function BarraConversas() {
       aria-label="Conversas gravadas"
       className="hidden h-full w-64 shrink-0 flex-col gap-3 overflow-y-auto border-border border-r p-3 md:flex"
     >
-      <h2 className="px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide">Conversas</h2>
+      <h2 className="px-2 font-semibold text-muted-foreground text-small">Conversas</h2>
       <ListaConversas atual={estado.sessao} atualizar={`${estado.sessao ?? ""}:${estado.fase}`} />
     </nav>
   );

@@ -227,7 +227,7 @@ function Formulario({
         {rascunho.citacoes.length === 0 ? null : (
           <fieldset className="flex flex-col gap-1">
             <legend className="mb-1 font-medium text-sm">Fontes citadas</legend>
-            <p className="text-muted-foreground text-xs">Tirar uma fonte a tira da lista e do texto da resposta.</p>
+            <p className="text-muted-foreground text-small">Tirar uma fonte a tira da lista e do texto da resposta.</p>
             {rascunho.citacoes.map((link) => (
               <Caixa
                 key={link}
@@ -235,7 +235,7 @@ function Formulario({
                 marcada={!escolhas.retiradasCitacoes.has(link)}
                 aoMudar={() => mudar({ retiradasCitacoes: alternar(escolhas.retiradasCitacoes, link) })}
               >
-                <code className="text-xs">{link}</code>
+                <code className="text-small">{link}</code>
               </Caixa>
             ))}
           </fieldset>
@@ -255,7 +255,7 @@ function Formulario({
       <section aria-label="Prévia do relato" className="flex flex-col gap-1">
         <h4 className="font-medium text-sm">Assim vai o relato</h4>
         {rascunho.repositorio === null || rascunho.rotulos.length === 0 ? null : (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-small">
             No GitHub, com {rascunho.rotulos.length === 1 ? "o rótulo" : "os rótulos"}{" "}
             {rascunho.rotulos.map((rotulo) => (
               <code key={rotulo} className="rounded bg-muted px-1">
@@ -265,12 +265,12 @@ function Formulario({
             . Menções (@) e números de relato (#) vão entre crases, para não avisar ninguém no GitHub.
           </p>
         )}
-        <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-muted p-3 text-xs">
+        <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-muted p-3 text-small">
           {textoCompleto}
         </pre>
         {/* O texto vai no formato da curadoria, com "commit"; o rótulo da tela fica em português (M1.14). */}
         {escolhas.semVersoes || versoes.baseCommit === null ? null : (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-small">
             No relato, <code>commit</code> é a revisão da base: o código que a equipe da base usa para achar a versão
             exata.
           </p>

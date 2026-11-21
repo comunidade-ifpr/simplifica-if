@@ -25,7 +25,7 @@ function Comando({ comando, rotulo }: { readonly comando: string; readonly rotul
   const [copiado, setCopiado] = useState(false);
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <code className="rounded-md bg-muted px-2 py-1 font-mono text-xs" aria-label={rotulo}>
+      <code className="rounded-md bg-muted px-2 py-1 font-mono text-small" aria-label={rotulo}>
         {comando}
       </code>
       <Button

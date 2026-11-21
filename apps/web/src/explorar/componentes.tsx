@@ -33,7 +33,7 @@ export function CampoFiltro({
   const id = useId();
   return (
     <div className="flex min-w-36 flex-1 flex-col gap-1">
-      <label htmlFor={id} className="font-medium text-muted-foreground text-xs">
+      <label htmlFor={id} className="font-medium text-muted-foreground text-micro">
         {rotulo}
       </label>
       <select
@@ -66,7 +66,7 @@ export function CampoTexto({
   const id = useId();
   return (
     <div className="flex min-w-48 flex-[2] flex-col gap-1">
-      <label htmlFor={id} className="font-medium text-muted-foreground text-xs">
+      <label htmlFor={id} className="font-medium text-muted-foreground text-micro">
         {rotulo}
       </label>
       <input
@@ -126,14 +126,10 @@ export function LinhaItem({
 }) {
   return (
     <li className="rounded-lg border border-border bg-card px-3 py-2 hover:border-ring/40">
-      <Link
-        to="/explorar/ver"
-        search={{ link }}
-        className="font-semibold text-primary text-sm underline-offset-2 hover:underline"
-      >
+      <Link to="/explorar/ver" search={{ link }} className="text-link text-small underline underline-offset-2">
         {titulo}
       </Link>
-      {detalhe ? <p className="text-muted-foreground text-xs">{detalhe}</p> : null}
+      {detalhe ? <p className="text-muted-foreground text-small">{detalhe}</p> : null}
       {selos ? <p className="mt-1 flex flex-wrap gap-1">{selos}</p> : null}
     </li>
   );
