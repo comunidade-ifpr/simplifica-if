@@ -1,7 +1,8 @@
 /**
  * A entrada da revisão: o título, uma frase, a área de soltar o PPC (no desktop; no navegador, o campo
  * do caminho, que é o modo de desenvolvimento) e as revisões recentes, uma por linha: a lista guardada
- * e a leitura com IA que ficou por terminar.
+ * e a leitura com IA que ficou por terminar. "Continuar" abre a lista do arquivo, e a faixa da IA retoma
+ * a leitura dela: nada é revisado de novo (o curso escolhido e o que foi marcado ficam).
  */
 import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
 import { ChevronRightIcon } from "lucide-react";
@@ -11,10 +12,11 @@ import { Pagina } from "../components/Pagina.tsx";
 import { AreaSoltar } from "../components/ui/area-soltar.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
-import { type MensagemErro, mensagemDeErro } from "../conexao/erros.ts";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { dataCurta } from "../lib/formato.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
+import { obterArquivo } from "./arquivo.ts";
 import { nomeIa } from "./FaixaIa.tsx";
 import { leiturasPorTerminar } from "./ia.ts";
 import { contagens, descreverCurso, nomeDoArquivo } from "./lista.ts";
@@ -48,14 +50,25 @@ export function Entrada({
     };
   }, [api]);
 
-  const usarArquivo = async (obter: () => Promise<string | null>, recusado: string) => {
+  const usarArquivo = async (obter: () => Promise<string | null>, seRecusado?: MensagemErro) => {
+    setFalha(undefined);
+    const obtido = await obterArquivo(obter, seRecusado);
+    if (obtido === undefined) return;
+    if ("erro" in obtido) setFalha(obtido.erro);
+    else aoEscolher(obtido.arquivo);
+  };
+
+  /** A leitura com IA por terminar: a lista do arquivo, onde a faixa da IA a retoma. */
+  const continuar = async (leitura: EstadoRevisaoIa) => {
     setFalha(undefined);
     try {
-      const arquivo = await obter();
-      if (arquivo === null) return;
-      aoEscolher(arquivo);
+      const lista = await api.chamar((c) => c["revisaoPpc.listaDoArquivo"]({ arquivo: leitura.arquivoOriginal }));
+      if (lista !== null) return aoAbrirLista(lista);
+      setFalha({
+        texto: `A lista de “${nomeDoArquivo(leitura.arquivoOriginal)}” não está mais neste computador. Escolha o arquivo de novo para revisá-lo.`,
+      });
     } catch (motivo) {
-      setFalha({ texto: recusado, detalhe: mensagemDeErro(motivo) });
+      setFalha(explicarErro(motivo));
     }
   };
 
@@ -77,12 +90,7 @@ export function Entrada({
           titulo="Solte aqui o PPC em Word (.docx)"
           descricao="Seu arquivo não é alterado: os comentários vão para uma cópia, na mesma pasta."
           rotuloEscolher="Escolher o PPC"
-          aoEscolher={() =>
-            void usarArquivo(
-              () => ponte.escolherDocx!(),
-              "Não foi possível usar o arquivo escolhido. Tente escolhê-lo de novo.",
-            )
-          }
+          aoEscolher={() => void usarArquivo(() => ponte.escolherDocx!())}
           aoSoltar={(arquivos) => {
             const arquivo = arquivos[0];
             if (arquivo === undefined) return;
@@ -90,11 +98,9 @@ export function Entrada({
               setFalha({ texto: "Use o botão “Escolher o PPC” para abrir o arquivo." });
               return;
             }
-            void usarArquivo(async () => {
-              const caminho = await ponte.soltarDocx!(arquivo);
-              if (caminho === null) throw new Error(`recusado: ${arquivo.name}`);
-              return caminho;
-            }, "Só dá para revisar um arquivo do Word (.docx). Solte um .docx ou use “Escolher o PPC”.");
+            void usarArquivo(() => ponte.soltarDocx!(arquivo), {
+              texto: "Só dá para revisar um arquivo do Word (.docx). Solte um .docx ou use “Escolher o PPC”.",
+            });
           }}
         />
       )}
@@ -132,7 +138,7 @@ export function Entrada({
                   `leitura com o ${nomeIa(e.provider)} ${e.situacao === "pausada" ? "pausada" : "em andamento"}`,
                 ]}
                 fim="Continuar"
-                aoAbrir={() => aoEscolher(e.arquivoOriginal)}
+                aoAbrir={() => void continuar(e)}
               />
             ))}
           </ul>

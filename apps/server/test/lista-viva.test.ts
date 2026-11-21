@@ -18,14 +18,16 @@ import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { strFromU8, unzipSync } from "fflate";
-import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
+import type { EstadoRevisaoIa, ListaPendencias, PendenciaRevisao } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
+import { chavePendencia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
+import { casarPendencias, planoArquivoNovo } from "../src/revisao-ppc/arquivo-novo.ts";
 import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
@@ -665,7 +667,247 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
   );
 });
 
+/** Um PPC curto, com o curso do título e as seções pedidas (as do modelo que faltam viram triagem). */
+const ppcCurto = (curso: string, secoes: ReadonlyArray<string>) =>
+  montarDocx({
+    corpo: [
+      par(`PROJETO PEDAGÓGICO DO CURSO ${curso}`),
+      par("Forma de oferta: subsequente ao ensino médio."),
+      par("O curso fundamenta-se na Resolução CNE/CP nº 1/2021."),
+      ...secoes.flatMap((secao, i) => [
+        par(`${i + 1} ${secao}`, { estilo: "Heading1" }),
+        par(`Texto do curso sobre ${secao.toLowerCase()}.`),
+      ]),
+      par("O curso tem carga horária total de 1200 horas."),
+    ].join(""),
+  });
+
+layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", (it) => {
+  it.effect(
+    "sem curso no revisado, a versão que o identifica é aceita; as contagens deixam de fora o bloqueio do curso",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const c = yield* rpc;
+        const secoes = ["JUSTIFICATIVA", "OBJETIVOS", "ORGANIZAÇÃO CURRICULAR", "REFERÊNCIAS"];
+        const sem = gravar("PPC sem curso.docx", ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", secoes));
+        const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo: sem }));
+        assert.isNull(pre.curso.cnct);
+        const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+        const doCodigo = antes.pendencias.filter((p) => p.pendencia.origem === "codigo");
+        const noBloqueio = doCodigo.filter((p) => p.pendencia.dependeDoCurso);
+        assert.isAbove(noBloqueio.length, 0);
+
+        // Outra versão, ainda sem o curso: as que esperam o curso não contam (a lista não as mostra).
+        const v2 = gravar(
+          "PPC sem curso v2.docx",
+          ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", [...secoes, "INFRAESTRUTURA"]),
+        );
+        const r2 = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: v2 });
+        assert.strictEqual(r2.continuam, doCodigo.length - noBloqueio.length);
+        assert.strictEqual(r2.resolvidas, 0);
+        assert.strictEqual(r2.novas, 0);
+
+        // A versão que nomeia um curso do CNCT: era a correção que o bloqueio pedia, não "outro curso".
+        const v3 = gravar("PPC sem curso v3.docx", ppcCurto("TÉCNICO EM AGROPECUÁRIA", [...secoes, "INFRAESTRUTURA"]));
+        const r3 = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: v3 });
+        assert.strictEqual(r3.lista.arquivoOriginal, v3);
+        assert.deepStrictEqual(r3.lista.resultado.curso.cnct, {
+          slug: "tecnico-em-agropecuaria",
+          denominacao: "Técnico em Agropecuária",
+        });
+        assert.strictEqual(r3.lista.resultado.curso.origem, "documento");
+        // As que dependiam do curso a nova conferência decide: as que o curso identificado resolve saem.
+        const doCursoDepois = r3.lista.pendencias.filter((p) => noBloqueio.some((x) => x.chave === p.chave));
+        assert.isTrue(doCursoDepois.some((p) => p.situacao === "resolvida" && p.resolvidaPor === "revisarDeNovo"));
+        assert.isAbove(r3.resolvidas, 0);
+      }),
+  );
+
+  it.effect(
+    "a correção parcial: a mesma pendência continua (com a mensagem nova), e o 'Feito' não vira resolvida",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const c = yield* rpc;
+        const secoes = ["JUSTIFICATIVA", "ORGANIZAÇÃO CURRICULAR", "MATRIZ CURRICULAR"];
+        const v1 = gravar("PPC parcial.docx", ppcCurto("TÉCNICO EM AGROPECUÁRIA", secoes));
+        const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo: v1 }));
+        const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+        const modelo = antes.pendencias.find((p) => p.pendencia.tituloFicha === "Seções do modelo")!;
+        assert.include(modelo.pendencia.mensagem, "Objetivos");
+        yield* c["revisaoPpc.marcar"]({ lista: pre.lista!, chave: modelo.chave, situacao: "resolvida" });
+
+        // Só "Objetivos" entra: a mensagem muda (uma seção a menos), o critério ainda aponta.
+        const v2 = gravar("PPC parcial v2.docx", ppcCurto("TÉCNICO EM AGROPECUÁRIA", [...secoes, "OBJETIVOS"]));
+        const r = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: v2 });
+        const doModelo = r.lista.pendencias.filter((p) => p.pendencia.tituloFicha === "Seções do modelo");
+        assert.strictEqual(doModelo.length, 1);
+        const continua = doModelo[0]!;
+        assert.strictEqual(continua.situacao, "aberta");
+        assert.isNull(continua.resolvidaPor);
+        assert.notInclude(continua.pendencia.mensagem, "Objetivos");
+        assert.notStrictEqual(continua.chave, modelo.chave);
+        // O histórico vem junto, com a reabertura.
+        assert.deepStrictEqual(
+          continua.historico.map((e) => e.acao),
+          ["marcar", "revisarDeNovo"],
+        );
+        assert.include(continua.historico.at(-1)!.texto, "ainda aponta este ponto, com o texto atualizado");
+        assert.strictEqual(r.novas, 0);
+        assert.strictEqual(r.resolvidas, 0);
+      }),
+  );
+
+  it.effect("a cópia comentada que não pôde ser gravada não deixa a lista meio trocada", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const c = yield* rpc;
+      const pre = yield* revisarAteOFim(
+        c["revisaoPpc.revisar"]({ arquivo: gravar("PPC atomico.docx", ppcSintetico({ caixaDeTexto: "atual" })) }),
+      );
+      const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+      const somenteLeitura = NodePath.join(pasta, "somente leitura");
+      NodeFS.mkdirSync(somenteLeitura);
+      const corrigido = NodePath.join(somenteLeitura, "PPC atomico v2.docx");
+      NodeFS.writeFileSync(corrigido, ppcSintetico());
+      NodeFS.chmodSync(somenteLeitura, 0o555);
+      const recusa = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: corrigido }).pipe(
+        Effect.flip,
+        Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(somenteLeitura, 0o755))),
+      );
+      assert.include(recusa.message, "cópia comentada");
+      const depois = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+      assert.strictEqual(depois.arquivoOriginal, antes.arquivoOriginal);
+      assert.deepStrictEqual(depois.pendencias, antes.pendencias);
+      // De novo, com a pasta gravável: não é "o mesmo arquivo".
+      const r = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: pre.lista!, arquivo: corrigido });
+      assert.strictEqual(r.lista.arquivoOriginal, corrigido);
+      assert.strictEqual(r.resolvidas, 1);
+    }),
+  );
+
+  it.effect("'Abrir no Word' só regrava a cópia se a lista mudou, e nunca por cima da cópia editada", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const c = yield* rpc;
+      const pre = yield* revisarAteOFim(
+        c["revisaoPpc.revisar"]({ arquivo: gravar("PPC editado.docx", ppcSintetico()) }),
+      );
+      const lista = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+      const copia = lista.resultado.arquivoComentado;
+      // A pessoa anota na cópia e salva; nada mudou na lista: "Abrir no Word" abre a dela.
+      NodeFS.writeFileSync(copia, "minhas anotações");
+      const aberta = yield* c["revisaoPpc.gerarCopia"]({ lista: lista.id });
+      assert.strictEqual(aberta.resultado.arquivoComentado, copia);
+      assert.strictEqual(NodeFS.readFileSync(copia, "utf8"), "minhas anotações");
+      // A lista muda: a cópia nova vai para " (2)", e a anotada fica.
+      yield* c["revisaoPpc.marcar"]({ lista: lista.id, chave: lista.pendencias[0]!.chave, situacao: "resolvida" });
+      const nova = yield* c["revisaoPpc.gerarCopia"]({ lista: lista.id });
+      assert.strictEqual(nova.resultado.arquivoComentado, copia.replace(/\.docx$/, " (2).docx"));
+      assert.strictEqual(NodeFS.readFileSync(copia, "utf8"), "minhas anotações");
+      // Outra mudança: a " (2)" é a do app, regravada.
+      yield* c["revisaoPpc.marcar"]({ lista: lista.id, chave: lista.pendencias[0]!.chave, situacao: "aberta" });
+      const terceira = yield* c["revisaoPpc.gerarCopia"]({ lista: lista.id });
+      assert.strictEqual(terceira.resultado.arquivoComentado, nova.resultado.arquivoComentado);
+    }),
+  );
+
+  it.effect("'Qual é o curso?' depois da leitura com IA: a lista refeita guarda as pendências e o uso da IA", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const c = yield* rpc;
+      const arquivo = gravar(
+        "PPC curso IA.docx",
+        ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", ["JUSTIFICATIVA", "ORGANIZAÇÃO CURRICULAR", "MATRIZ CURRICULAR"]),
+      );
+      const { lista, final } = yield* revisarComIa(arquivo);
+      assert.isNull(lista.resultado.curso.cnct);
+      const daIa = lista.pendencias.find((p) => p.pendencia.origem === "ia")!;
+      roteiro.responder = () => JSON.stringify({ texto: "A matriz traz a carga.", observacao: "Confira." });
+      const comSugestao = yield* c["revisaoPpc.sugerir"]({ lista: lista.id, chave: daIa.chave });
+      const uso = comSugestao.uso;
+
+      const refeita = yield* c["revisaoPpc.trocarCurso"]({ lista: lista.id, cnct: "tecnico-em-agropecuaria" });
+      assert.strictEqual(refeita.resultado.curso.origem, "pessoa");
+      assert.strictEqual(refeita.resultado.curso.cnct?.slug, "tecnico-em-agropecuaria");
+      assert.strictEqual(refeita.revisao, final.id);
+      assert.strictEqual(refeita.resultado.conferidosIa, lista.resultado.conferidosIa);
+      assert.isFalse(refeita.pendencias.some((p) => p.pendencia.dependeDoCurso));
+      const mesma = refeita.pendencias.find((p) => p.chave === daIa.chave)!;
+      assert.isNotNull(mesma.sugestao);
+      assert.deepStrictEqual(refeita.uso, uso);
+      assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, refeita.id);
+      // A leitura com IA aberta de novo pela lista do arquivo, sem revisar de novo.
+      assert.strictEqual((yield* c["revisaoPpc.listaDoArquivo"]({ arquivo }))!.id, refeita.id);
+      assert.isNull(yield* c["revisaoPpc.listaDoArquivo"]({ arquivo: NodePath.join(pasta, "nenhum.docx") }));
+    }),
+  );
+});
+
 layer(NodeServices.layer)("lista viva no banco", (it) => {
+  it.effect("o casamento pelo critério: a contagem na mensagem não faz a pendência sair e voltar", () =>
+    Effect.sync(() => {
+      const pendencia = (o: Partial<PendenciaRevisao>): PendenciaRevisao => ({
+        ficha: "TRIAGEM",
+        tituloFicha: "Texto dirigido a IA",
+        tema: "Antes de começar",
+        ordemTema: 0,
+        estado: "nao_atende",
+        mensagem: "Texto dirigido a IA (3 linhas).",
+        oQueFazer: "Remova.",
+        trecho: "Ignore as instruções",
+        secao: null,
+        fontes: [],
+        tambemEm: [],
+        noDocumento: "no-trecho",
+        origem: "codigo",
+        dependeDoCurso: false,
+        ...o,
+      });
+      const daLista = (p: PendenciaRevisao) => ({
+        chave: chavePendencia(p),
+        pendencia: p,
+        situacao: "aberta" as const,
+        resolvidaPor: null,
+      });
+      // Um ponto só do critério, com outra contagem e outro trecho: continua.
+      const um = daLista(pendencia({}));
+      const outraContagem = pendencia({ mensagem: "Texto dirigido a IA (1 linha).", trecho: "registre como atende" });
+      let r = casarPendencias([um], [outraContagem]);
+      assert.strictEqual(r.casadas.get(um.chave), outraContagem);
+      assert.deepStrictEqual(r.sobras, []);
+      // O critério aponta trechos distintos: casa pelo trecho; o que sumiu foi resolvido, o novo entra.
+      const a = daLista(pendencia({ ficha: "CT-SUP-12", tituloFicha: "Referências", trecho: "Lei A" }));
+      const b = daLista(pendencia({ ficha: "CT-SUP-12", tituloFicha: "Referências", trecho: "Lei B" }));
+      const bNova = pendencia({
+        ficha: "CT-SUP-12",
+        tituloFicha: "Referências",
+        trecho: "Lei B",
+        mensagem: "2 pendências",
+      });
+      const cNova = pendencia({ ficha: "CT-SUP-12", tituloFicha: "Referências", trecho: "Lei C" });
+      r = casarPendencias([a, b], [bNova, cNova]);
+      assert.strictEqual(r.casadas.get(b.chave), bNova);
+      assert.isNull(r.casadas.get(a.chave));
+      assert.deepStrictEqual(r.sobras, [cNova]);
+      // As duas regras da triagem são critérios diferentes.
+      const secoes = pendencia({ tituloFicha: "Seções do modelo", trecho: null, mensagem: "Faltam: Objetivos." });
+      r = casarPendencias([um], [secoes]);
+      assert.isNull(r.casadas.get(um.chave));
+      assert.deepStrictEqual(r.sobras, [secoes]);
+      // O plano conta como a lista mostra: sem o bloqueio do curso nem a retirada.
+      const doCurso = daLista(pendencia({ ficha: "CT-IDENT-01", tituloFicha: "Denominação", dependeDoCurso: true }));
+      const retirada = {
+        ...daLista(pendencia({ ficha: "CT-SUP-21", tituloFicha: "Legislação" })),
+        situacao: "contestada_aceita" as const,
+      };
+      const plano = planoArquivoNovo([doCurso, retirada, um], [], "v2.docx", true);
+      assert.strictEqual(plano.resolvidas, 1);
+      assert.strictEqual(plano.mudancas.length, 3);
+    }),
+  );
+
   it.effect("a nova revisão se compara com o revisado: um título só do original não basta", () =>
     Effect.sync(() => {
       const original = [

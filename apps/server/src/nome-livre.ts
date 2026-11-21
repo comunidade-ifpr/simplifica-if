@@ -4,8 +4,8 @@
  * (`makeDirectory` sem `recursive`, `writeFile` com `flag: "wx"`), e o nome ocupado (`AlreadyExists`)
  * passa ao seguinte. Conferir antes e criar depois deixaria duas criações simultâneas com o mesmo nome.
  *
- * A cópia comentada da revisão prévia usa a mesma sequência com outro critério (`pular: travado`): ela
- * regrava o nome fixo e só passa ao seguinte quando o arquivo está aberto e travado por outro programa.
+ * A cópia comentada da revisão prévia usa a mesma sequência de nomes (`comNumero`) com outro critério:
+ * ver `gravarCopia` no `RevisorPpc`.
  */
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
@@ -38,13 +38,6 @@ export class NomesEsgotados extends Schema.TaggedError<NomesEsgotados>()("NomesE
 
 /** O nome já existe: a criação exclusiva recusou. */
 const ocupado = (erro: unknown): boolean => PlatformError.isPlatformError(erro) && erro.reason._tag === "AlreadyExists";
-
-/**
- * O arquivo existe e outro programa o segura: o Word no Windows trava o documento aberto (`EBUSY`,
- * ou `EPERM`/`EACCES` na escrita).
- */
-export const travado = (erro: unknown): boolean =>
-  PlatformError.isPlatformError(erro) && (erro.reason._tag === "Busy" || erro.reason._tag === "PermissionDenied");
 
 /**
  * Chama `criar` com `nomes(de)`, `nomes(de + 1)`… até `ate`, enquanto o nome estiver ocupado (ou a

@@ -2,7 +2,7 @@
  * O bloqueio de causa-raiz: o curso não foi reconhecido no CNCT, e os critérios que dependem dele
  * (denominação, eixo, carga horária mínima, ingresso) ficaram sem conferência. As pendências que
  * dependem disso saem da lista e ficam contadas aqui. "Qual é o curso?" procura no CNCT da base e
- * revisa o arquivo de novo com o curso escolhido.
+ * refaz a lista com o curso escolhido (com a leitura com IA, se houve).
  */
 import type { CnctDoIndice, PendenciaViva } from "@simplifica-if/contratos-app";
 import { ChevronRightIcon } from "lucide-react";
@@ -19,9 +19,12 @@ const MAXIMO_OPCOES = 8;
 
 export function BloqueioCurso({
   pendencias,
+  conferindo,
   aoEscolher,
 }: {
   readonly pendencias: ReadonlyArray<PendenciaViva>;
+  /** A lista está sendo refeita com o curso escolhido. */
+  readonly conferindo: boolean;
   readonly aoEscolher: (slug: string) => void;
 }) {
   const [verPendencias, setVerPendencias] = useState(false);
@@ -42,7 +45,7 @@ export function BloqueioCurso({
         </p>
       </div>
       <div className="flex flex-col gap-3 pl-6 sm:flex-row sm:items-start sm:justify-between">
-        <EscolhaCnct aoEscolher={aoEscolher} />
+        <EscolhaCnct conferindo={conferindo} aoEscolher={aoEscolher} />
         {pendencias.length ? (
           <button
             type="button"
@@ -71,7 +74,13 @@ export function BloqueioCurso({
 }
 
 /** A busca no CNCT da base: uma caixa de texto com a lista de sugestões (`combobox` com `listbox`). */
-function EscolhaCnct({ aoEscolher }: { readonly aoEscolher: (slug: string) => void }) {
+function EscolhaCnct({
+  conferindo,
+  aoEscolher,
+}: {
+  readonly conferindo: boolean;
+  readonly aoEscolher: (slug: string) => void;
+}) {
   const indice = useIndiceExplorar();
   const [busca, setBusca] = useState("");
   const [ativo, setAtivo] = useState(0);
@@ -150,7 +159,10 @@ function EscolhaCnct({ aoEscolher }: { readonly aoEscolher: (slug: string) => vo
           ) : null}
         </div>
         {escolhido === undefined ? null : (
-          <Button onClick={() => aoEscolher(escolhido.slug)}>Conferir com este curso</Button>
+          <Button disabled={conferindo} onClick={() => aoEscolher(escolhido.slug)}>
+            {conferindo ? <Spinner /> : null}
+            Conferir com este curso
+          </Button>
         )}
       </div>
       {indice.fase === "carregando" ? (

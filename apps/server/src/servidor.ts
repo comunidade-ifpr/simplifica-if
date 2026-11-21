@@ -60,6 +60,7 @@ import * as RevisorPpc from "./revisao-ppc/RevisorPpc.ts";
 import * as TextosAnexos from "./textos-anexos/TextosAnexos.ts";
 import * as ListaViva from "./revisao-ppc/ListaViva.ts";
 import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
+import * as CopiasComentadas from "./persistencia/CopiasComentadas.ts";
 import * as Listas from "./persistencia/Listas.ts";
 import * as Revisoes from "./persistencia/Revisoes.ts";
 
@@ -301,6 +302,7 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(Listas.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(RevisorPpc.layer(opcoes.revisaoPpc)),
+    Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),

@@ -341,6 +341,9 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const registro = yield* buscar(id);
     if (registro.situacao === "concluida") return yield* estado(registro);
     if (yield* FiberMap.has(execucoes, id)) return yield* estado(registro);
+    // O fim da leitura relê o arquivo: depois de fechar o app, a pessoa o escolhe de novo antes, e não
+    // descobre no fim, com a leitura paga, que ele não podia ser lido.
+    yield* revisor.exigirLiberado(registro.arquivo);
     if (registro.plano === null)
       return yield* falha(registro.arquivo, "Esta revisão não tem plano. Prepare-a de novo.");
     yield* revisoes.alterar(id, { situacao: "em_andamento" });

@@ -7,7 +7,9 @@
  *   Configurações) e o escopo menor, e estima de novo a cada opção trocada;
  * - a estimativa anterior, nunca começada, é apagada no servidor (ela guarda o texto do PPC), e a última
  *   também, quando a tela fecha sem começar;
- * - no fim, entrega o estado concluído a quem abriu (o resultado novo substitui o da tela).
+ * - no fim, entrega o estado concluído a quem abriu (o resultado novo substitui o da tela);
+ * - se o servidor pede o arquivo de novo (o app foi fechado desde que ele foi escolhido), oferece
+ *   `escolherArquivo`: escolhido o mesmo arquivo, a ação que falhou se repete.
  */
 import type { EstadoRevisaoIa, ModoRevisaoIa, Provider } from "@simplifica-if/contratos-app";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +18,9 @@ import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
 import { useIasProntas } from "../tarefas/modelos.ts";
+import { ponteDesktop } from "../ponte-desktop.ts";
 import { usePreferencias } from "../tarefas/perfil.ts";
+import { obterArquivo, pedeArquivoDeNovo, textoMesmoArquivo } from "./arquivo.ts";
 import { leiturasPorTerminar } from "./ia.ts";
 
 export interface LeituraIa {
@@ -41,6 +45,8 @@ export interface LeituraIa {
   readonly pausar: () => void;
   /** Depois de falhar: volta à estimativa, com o arquivo atual. */
   readonly tentarDeNovo: () => void;
+  /** O servidor pediu o arquivo de novo: escolhê-lo (o mesmo) repete a ação que falhou. */
+  readonly escolherArquivo: (() => void) | undefined;
 }
 
 const ehAvisoNaoAceito = (erro: unknown) =>
@@ -75,6 +81,8 @@ export function useLeituraIa({
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
   const [avisoPendente, setAvisoPendente] = useState(false);
   const [tentativa, setTentativa] = useState(0);
+  /** A ação que falhou por falta do arquivo, para repetir depois de escolhê-lo de novo. */
+  const [refazer, setRefazer] = useState<(() => void) | undefined>(undefined);
   const acompanhamento = useRef<Acompanhamento | undefined>(undefined);
   /** A estimativa ainda não começada, que sai do servidor quando outra a substitui ou a tela fecha. */
   const preparada = useRef<string | undefined>(undefined);
@@ -177,6 +185,7 @@ export function useLeituraIa({
           if (!vivo) return;
           if (ehAvisoNaoAceito(motivo)) setAvisoPendente(true);
           else setErro(explicarErro(motivo));
+          if (pedeArquivoDeNovo(motivo)) setRefazer(() => () => setTentativa((n) => n + 1));
         },
       )
       .finally(() => vivo && setEstimando(false));
@@ -185,9 +194,14 @@ export function useLeituraIa({
     };
   }, [api, podeEstimar, arquivo, provider, modo, cnct, forma, tentativa]);
 
-  const chamar = async (acao: () => Promise<EstadoRevisaoIa>, depois?: (e: EstadoRevisaoIa) => void) => {
+  const chamar = async (
+    acao: () => Promise<EstadoRevisaoIa>,
+    depois?: (e: EstadoRevisaoIa) => void,
+    repetir?: () => void,
+  ) => {
     setOcupada(true);
     setErro(undefined);
+    setRefazer(undefined);
     try {
       const novo = await acao();
       trocar(novo);
@@ -195,9 +209,36 @@ export function useLeituraIa({
     } catch (motivo) {
       if (ehAvisoNaoAceito(motivo)) setAvisoPendente(true);
       else setErro(explicarErro(motivo));
+      if (pedeArquivoDeNovo(motivo) && repetir !== undefined) setRefazer(() => repetir);
     } finally {
       setOcupada(false);
     }
+  };
+
+  const escolherDocx = ponteDesktop()?.escolherDocx;
+  const escolherArquivo =
+    refazer === undefined || escolherDocx === undefined
+      ? undefined
+      : () =>
+          void obterArquivo(escolherDocx).then((obtido) => {
+            if (obtido === undefined) return;
+            if ("erro" in obtido) return setErro(obtido.erro);
+            if (obtido.arquivo !== arquivo) return setErro(textoMesmoArquivo(arquivo));
+            setRefazer(undefined);
+            setErro(undefined);
+            refazer();
+          });
+
+  const iniciar = () => {
+    if (estado === undefined) return;
+    const id = estado.id;
+    // Começada, a estimativa deixa de ser descartável.
+    if (preparada.current === id) preparada.current = undefined;
+    void chamar(
+      () => api.chamar((c) => c["revisaoPpc.iniciarIa"]({ revisao: id })),
+      () => acompanhar(id),
+      iniciar,
+    );
   };
 
   return {
@@ -213,16 +254,7 @@ export function useLeituraIa({
     avisoPendente,
     erro,
     ocupada,
-    iniciar: () => {
-      if (estado === undefined) return;
-      const id = estado.id;
-      // Começada, a estimativa deixa de ser descartável.
-      if (preparada.current === id) preparada.current = undefined;
-      void chamar(
-        () => api.chamar((c) => c["revisaoPpc.iniciarIa"]({ revisao: id })),
-        () => acompanhar(id),
-      );
-    },
+    iniciar,
     pausar: () => {
       if (estado !== undefined) void chamar(() => api.chamar((c) => c["revisaoPpc.pausarIa"]({ revisao: estado.id })));
     },
@@ -231,5 +263,6 @@ export function useLeituraIa({
       trocar(undefined);
       setTentativa((n) => n + 1);
     },
+    escolherArquivo,
   };
 }

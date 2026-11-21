@@ -28,6 +28,7 @@ import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Preferencias from "../src/persistencia/Preferencias.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
+import * as CopiasComentadas from "../src/persistencia/CopiasComentadas.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import { alvoDosTrechos, julgarBloco, type ResultadoBloco } from "../src/revisao-ppc/julgamento.ts";
@@ -212,6 +213,7 @@ const nucleo = RevisaoIa.layer({ paralelismo }).pipe(
   Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(Banco.layerMemoria))),
   Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(Banco.layerMemoria))),
   Layer.provideMerge(RevisorPpc.layer()),
+  Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(Banco.layerMemoria))),
   Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
   Layer.provideMerge(Motor.layer.pipe(Layer.provide(drivers))),
   Layer.provideMerge(layerLeitura({ banco: NodePath.join(RAIZ, "tmp/kb.sqlite"), canal: "dev" })),

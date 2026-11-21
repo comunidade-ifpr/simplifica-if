@@ -46,8 +46,8 @@ export interface LinhaPartida {
 
 /**
  * O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx`, na pasta do original,
- * regravada a cada revisão (` (2)`, ` (3)`… só quando ela está aberta e travada). O servidor grava com
- * ele; o desktop só abre arquivos com ele.
+ * regravada a cada revisão (` (2)`, ` (3)`… quando ela está travada ou foi editada pela pessoa). O
+ * servidor grava com ele; o desktop só abre arquivos com ele.
  */
 export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
 

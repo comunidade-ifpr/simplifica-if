@@ -35,6 +35,10 @@ export interface RegistroLista {
   readonly linhasTextoParaIa: readonly number[];
   readonly nonce: string;
   readonly resultado: ResultadoRevisaoPpc;
+  /** Sobe a cada mudança nas pendências. */
+  readonly versao: number;
+  /** A versão que a cópia comentada reflete; nula se nenhuma (a lista herdou situações de outra). */
+  readonly versaoCopia: number | null;
   readonly criadaEm: string;
   readonly atualizadaEm: string;
 }
@@ -48,10 +52,25 @@ export interface RegistroPendencia {
   readonly sugestao: SugestaoTexto | null;
 }
 
-export type NovaLista = Omit<RegistroLista, "criadaEm" | "atualizadaEm">;
+export type NovaLista = Omit<RegistroLista, "criadaEm" | "atualizadaEm" | "versao" | "versaoCopia">;
 
-/** O arquivo de uma lista, trocado por "Enviar a versão corrigida". */
-export type ArquivoLista = Pick<RegistroLista, "arquivo" | "sha256" | "markdown" | "linhasTextoParaIa">;
+/** O arquivo de uma lista, trocado por "Enviar a versão corrigida", com o resultado da cópia gravada dele. */
+export type ArquivoLista = Pick<
+  RegistroLista,
+  "arquivo" | "sha256" | "markdown" | "linhasTextoParaIa" | "cnct" | "forma" | "resultado"
+>;
+
+/**
+ * O que "Enviar a versão corrigida" muda numa pendência: a situação (com o evento) e, quando o arquivo
+ * novo aponta o mesmo ponto com outro texto, a pendência como ele a aponta, com a chave nova.
+ */
+export interface MudancaPendencia {
+  readonly chave: string;
+  readonly nova?: { readonly chave: string; readonly pendencia: PendenciaRevisao };
+  readonly situacao: SituacaoPendencia;
+  readonly resolvidaPor: "pessoa" | "revisarDeNovo" | null;
+  readonly evento: Evento | null;
+}
 
 export interface Evento {
   readonly acao: AcaoPendencia;
@@ -95,9 +114,21 @@ export class Listas extends Context.Service<
       },
       evento: Evento,
     ) => Effect.Effect<void>;
-    /** A lista passa a ser do arquivo novo (o texto convertido dele, para as ações com IA). */
-    readonly trocarArquivo: (id: string, arquivo: ArquivoLista) => Effect.Effect<void>;
-    readonly trocarResultado: (id: string, resultado: ResultadoRevisaoPpc) => Effect.Effect<void>;
+    /** A lista mais recente de um arquivo, ou nula. */
+    readonly doArquivo: (arquivo: string) => Effect.Effect<string | null>;
+    /**
+     * "Enviar a versão corrigida", numa transação: as mudanças nas pendências, as novas (abertas, com o
+     * evento `textoNovas`) e a lista passando ao arquivo novo, com a cópia comentada dele em dia.
+     */
+    readonly aplicarArquivoNovo: (
+      id: string,
+      mudancas: ReadonlyArray<MudancaPendencia>,
+      novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+      textoNovas: string,
+      arquivo: ArquivoLista,
+    ) => Effect.Effect<void>;
+    /** O resultado da cópia comentada regravada, que reflete a `versaoCopia` da lista. */
+    readonly trocarResultado: (id: string, resultado: ResultadoRevisaoPpc, versaoCopia: number) => Effect.Effect<void>;
     readonly gravarAcao: (id: string, chave: string, acao: AcaoIaGravada) => Effect.Effect<void>;
     readonly uso: (id: string) => Effect.Effect<UsoRevisaoIa>;
     readonly apagar: (id: string) => Effect.Effect<void>;
@@ -137,6 +168,8 @@ const Linha = Schema.Struct({
   linhas_texto_ia: NumerosJson,
   nonce: Schema.String,
   resultado: ResultadoJson,
+  versao: Schema.Number,
+  versao_copia: Schema.NullOr(Schema.Number),
   criada_em: Schema.String,
   atualizada_em: Schema.String,
 });
@@ -180,8 +213,9 @@ const agora = Effect.map(DateTime.now, DateTime.formatIso);
 
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
+  /** Uma mudança nas pendências: a cópia comentada deixa de estar em dia. */
   const tocar = (id: string, data: string) =>
-    sql`UPDATE listas_pendencias SET atualizada_em = ${data} WHERE id = ${id}`;
+    sql`UPDATE listas_pendencias SET atualizada_em = ${data}, versao = versao + 1 WHERE id = ${id}`;
 
   const criar = Effect.fn("Listas.criar")(function* (
     l: NovaLista,
@@ -196,10 +230,10 @@ const make = Effect.gen(function* () {
       Effect.gen(function* () {
         yield* sql`
           INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, provider, modelo, cnct, forma, markdown,
-            linhas_texto_ia, nonce, resultado, criada_em, atualizada_em)
+            linhas_texto_ia, nonce, resultado, versao, versao_copia, criada_em, atualizada_em)
           VALUES (${l.id}, ${l.arquivo}, ${l.sha256}, ${l.revisao}, ${l.provider}, ${l.modelo}, ${l.cnct}, ${l.forma},
             ${l.markdown}, ${yield* codificarNumeros(l.linhasTextoParaIa)}, ${l.nonce}, ${yield* codificarResultado(l.resultado)},
-            ${data}, ${data})
+            0, ${anterior ? null : 0}, ${data}, ${data})
         `;
         let ordem = 0;
         for (const p of pendencias) {
@@ -249,6 +283,8 @@ const make = Effect.gen(function* () {
       linhasTextoParaIa: l.linhas_texto_ia,
       nonce: l.nonce,
       resultado: l.resultado,
+      versao: l.versao,
+      versaoCopia: l.versao_copia,
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
     } satisfies RegistroLista;
@@ -316,18 +352,95 @@ const make = Effect.gen(function* () {
     );
   }, Effect.orDie);
 
-  const trocarArquivo = Effect.fn("Listas.trocarArquivo")(function* (id: string, a: ArquivoLista) {
-    const data = yield* agora;
-    yield* sql`
-      UPDATE listas_pendencias SET arquivo = ${a.arquivo}, sha256 = ${a.sha256}, markdown = ${a.markdown},
-        linhas_texto_ia = ${yield* codificarNumeros(a.linhasTextoParaIa)}, atualizada_em = ${data}
-      WHERE id = ${id}
+  const doArquivo = Effect.fn("Listas.doArquivo")(function* (arquivo: string) {
+    const linhas = yield* sql<{ id: string }>`
+      SELECT id FROM listas_pendencias WHERE arquivo = ${arquivo} ORDER BY atualizada_em DESC LIMIT 1
     `;
+    return linhas[0]?.id ?? null;
   }, Effect.orDie);
 
-  const trocarResultado = Effect.fn("Listas.trocarResultado")(function* (id: string, r: ResultadoRevisaoPpc) {
+  /** Insere as pendências novas, abertas, depois da última, cada uma com o evento. */
+  const inserirNovas = Effect.fn("Listas.inserirNovas")(function* (
+    id: string,
+    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    texto: string,
+    data: string,
+  ) {
+    const maior =
+      (yield* sql<{ m: number | null }>`SELECT MAX(ordem) AS m FROM pendencias_vivas WHERE lista_id = ${id}`)[0]?.m ??
+      0;
+    let ordem = maior + 1;
+    for (const p of novas) {
+      yield* sql`
+        INSERT OR IGNORE INTO pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
+        VALUES (${id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL)
+      `;
+      yield* sql`
+        INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
+        VALUES (${id}, ${p.chave}, ${data}, 'revisarDeNovo', 'aberta', ${texto}, NULL, NULL)
+      `;
+    }
+  });
+
+  const aplicarArquivoNovo = Effect.fn("Listas.aplicarArquivoNovo")(function* (
+    id: string,
+    mudancas: ReadonlyArray<MudancaPendencia>,
+    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    textoNovas: string,
+    a: ArquivoLista,
+  ) {
     const data = yield* agora;
-    yield* sql`UPDATE listas_pendencias SET resultado = ${yield* codificarResultado(r)}, atualizada_em = ${data} WHERE id = ${id}`;
+    yield* sql.withTransaction(
+      Effect.gen(function* () {
+        for (const m of mudancas) {
+          let chave = m.chave;
+          if (m.nova !== undefined) {
+            // O mesmo ponto com outro texto: a pendência, o histórico e o uso passam à chave nova.
+            yield* sql`
+              UPDATE pendencias_vivas SET chave = ${m.nova.chave}, pendencia = ${yield* codificarPendencia(m.nova.pendencia)}
+              WHERE lista_id = ${id} AND chave = ${chave}
+            `;
+            yield* sql`UPDATE eventos_pendencia SET chave = ${m.nova.chave} WHERE lista_id = ${id} AND chave = ${chave}`;
+            yield* sql`UPDATE acoes_ia SET chave = ${m.nova.chave} WHERE lista_id = ${id} AND chave = ${chave}`;
+            chave = m.nova.chave;
+          }
+          yield* sql`
+            UPDATE pendencias_vivas SET situacao = ${m.situacao}, resolvida_por = ${m.situacao === "resolvida" ? m.resolvidaPor : null}
+            WHERE lista_id = ${id} AND chave = ${chave}
+          `;
+          if (m.evento !== null) {
+            const e = m.evento;
+            yield* sql`
+              INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
+              VALUES (${id}, ${chave}, ${data}, ${e.acao}, ${e.situacao}, ${e.texto}, ${e.motivo ?? null},
+                ${e.uso ? yield* codificarUso(e.uso) : null})
+            `;
+          }
+        }
+        yield* inserirNovas(id, novas, textoNovas, data);
+        // A cópia comentada já foi gravada com o estado final: fica em dia.
+        yield* sql`
+          UPDATE listas_pendencias SET arquivo = ${a.arquivo}, sha256 = ${a.sha256}, markdown = ${a.markdown},
+            linhas_texto_ia = ${yield* codificarNumeros(a.linhasTextoParaIa)}, cnct = ${a.cnct}, forma = ${a.forma},
+            resultado = ${yield* codificarResultado(a.resultado)}, versao = versao + 1, versao_copia = versao + 1,
+            atualizada_em = ${data}
+          WHERE id = ${id}
+        `;
+      }),
+    );
+  }, Effect.orDie);
+
+  const trocarResultado = Effect.fn("Listas.trocarResultado")(function* (
+    id: string,
+    r: ResultadoRevisaoPpc,
+    versaoCopia: number,
+  ) {
+    const data = yield* agora;
+    yield* sql`
+      UPDATE listas_pendencias SET resultado = ${yield* codificarResultado(r)}, versao_copia = ${versaoCopia},
+        atualizada_em = ${data}
+      WHERE id = ${id}
+    `;
   }, Effect.orDie);
 
   const gravarAcao = Effect.fn("Listas.gravarAcao")(function* (id: string, chave: string, a: AcaoIaGravada) {
@@ -359,21 +472,12 @@ const make = Effect.gen(function* () {
     texto: string,
   ) {
     const data = yield* agora;
-    const maior =
-      (yield* sql<{ m: number | null }>`SELECT MAX(ordem) AS m FROM pendencias_vivas WHERE lista_id = ${id}`)[0]?.m ??
-      0;
-    let ordem = maior + 1;
-    for (const p of novas) {
-      yield* sql`
-        INSERT OR IGNORE INTO pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
-        VALUES (${id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL)
-      `;
-      yield* sql`
-        INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
-        VALUES (${id}, ${p.chave}, ${data}, 'revisarDeNovo', 'aberta', ${texto}, NULL, NULL)
-      `;
-    }
-    yield* tocar(id, data);
+    yield* sql.withTransaction(
+      Effect.gen(function* () {
+        yield* inserirNovas(id, novas, texto, data);
+        yield* tocar(id, data);
+      }),
+    );
   }, Effect.orDie);
 
   const expirar = Effect.fn("Listas.expirar")(function* (antesDe: string) {
@@ -401,7 +505,8 @@ const make = Effect.gen(function* () {
     pendencias,
     eventos,
     mudar,
-    trocarArquivo,
+    doArquivo,
+    aplicarArquivoNovo,
     trocarResultado,
     gravarAcao,
     uso,

@@ -28,7 +28,11 @@
  *
  * Lista viva de pendências: a lista (com o texto do PPC que as ações com IA usam), a situação e a
  * sugestão de cada pendência, o histórico e o uso de cada ação com IA. A lista que veio de uma revisão
- * com IA some com ela (`ON DELETE CASCADE`).
+ * com IA some com ela (`ON DELETE CASCADE`). `versao` sobe a cada mudança nas pendências; `versao_copia`
+ * é a versão que a cópia comentada reflete (nula: nenhuma), e "Abrir no Word" só a regrava se elas diferem.
+ *
+ * `copias_comentadas`: o sha256 da última cópia comentada que o app gravou em cada caminho. Um arquivo
+ * nesse caminho com outro conteúdo foi editado pela pessoa (ou não é do app) e não é sobrescrito.
  *
  * `preferencias`: as preferências deste computador, uma linha por chave, com o valor em JSON
  * (`perfil`, `aviso_aceito_em`, `boas_vindas_em`, `ias_desligadas`). Ver `Preferencias.ts`.
@@ -165,6 +169,8 @@ export default Effect.gen(function* () {
       linhas_texto_ia TEXT NOT NULL,
       nonce TEXT NOT NULL,
       resultado TEXT NOT NULL,
+      versao INTEGER NOT NULL,
+      versao_copia INTEGER,
       criada_em TEXT NOT NULL,
       atualizada_em TEXT NOT NULL
     )
@@ -208,6 +214,13 @@ export default Effect.gen(function* () {
     )
   `;
   yield* sql`CREATE INDEX acoes_ia_lista ON acoes_ia (lista_id)`;
+  yield* sql`
+    CREATE TABLE copias_comentadas (
+      caminho TEXT PRIMARY KEY,
+      sha256 TEXT NOT NULL,
+      gravada_em TEXT NOT NULL
+    )
+  `;
 
   yield* sql`
     CREATE TABLE preferencias (

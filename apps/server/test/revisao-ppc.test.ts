@@ -22,6 +22,8 @@ import * as Layers from "@simplifica-if/kb/layers";
 import { par } from "@simplifica-if/docx/testes/sintetico";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
+import * as Banco from "../src/persistencia/Banco.ts";
+import * as CopiasComentadas from "../src/persistencia/CopiasComentadas.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
@@ -195,6 +197,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
 const semExigirLiberacao = Layer.mergeAll(
   Layers.layerSomenteLeitura({ caminho: banco }),
   ArquivosLiberados.layer({ exigirLiberacao: false }),
+  CopiasComentadas.layer.pipe(Layer.provide(Banco.layerMemoria)),
 );
 
 /** O serviço direto sobre o banco de fixture, com limites apertados para provocar cada estouro. */
@@ -267,9 +270,11 @@ layer(NodeServices.layer, { excludeTestServices: true })("uma revisão por vez",
 
 /** O servidor com o segredo do desktop: só os arquivos liberados pelo processo principal. */
 const TOKEN_DESKTOP = "segredo-do-processo-principal-0123456789";
+const conversasDesktop = NodePath.join(diretorioTemporario("simplifica-revisao-desktop-"), "conversas.sqlite");
 const camadaDesktop = Servidor.layer({
   primeiroUsoFeito: true,
   banco,
+  bancoConversas: conversasDesktop,
   token: Redacted.make(TOKEN),
   tokenDesktop: Redacted.make(TOKEN_DESKTOP),
 }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
@@ -281,7 +286,10 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("liberado.docx", ppcSintetico());
       const recusa = yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo })));
-      assert.match(recusa.message, /Escolha o arquivo pelo botão/);
+      // O botão que existe hoje e o soltar na janela; a interface pede o arquivo de novo.
+      assert.include(recusa.message, "pelo botão “Escolher o PPC” ou soltando-o na janela do app");
+      assert.notInclude(recusa.message, "(.docx)…");
+      assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);
 
       const url = `http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`;
       const liberar = (cabecalhos: Record<string, string>) =>
@@ -313,8 +321,87 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       const outro = gravar("outro.docx", ppcSintetico());
       assert.match(
         (yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: outro })))).message,
-        /Escolha o arquivo/,
+        /Escolha de novo o arquivo/,
       );
+    }),
+  );
+
+  it.effect("retomar a leitura com IA de um arquivo não liberado (o app reiniciou) recusa antes de ler", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const arquivo = gravar("pausada.docx", ppcSintetico());
+      // Uma leitura pausada de uma execução anterior do app, gravada no banco das conversas.
+      const estimativa = {
+        provider: "claude",
+        blocos: 1,
+        fichas: 1,
+        tokensEntrada: 1,
+        tokensSaida: 1,
+        minutos: 1,
+        custoUsd: null,
+        percentualJanela: 1,
+        nomeJanela: "uma janela de 5 horas",
+      };
+      const db = new NodeSqlite.DatabaseSync(conversasDesktop);
+      db.prepare(
+        `INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, plano,
+          estimativa, criada_em, atualizada_em)
+         VALUES (?, ?, ?, 'claude', NULL, 'rapido', NULL, NULL, 'pausada', 'O app foi fechado.', 'null', ?, ?, ?)`,
+      ).run(
+        "revisao-pausada",
+        arquivo,
+        hash(arquivo),
+        JSON.stringify(estimativa),
+        "2026-11-20T10:00:00Z",
+        "2026-11-20T10:00:00Z",
+      );
+      db.close();
+      const recusa = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "revisao-pausada" }));
+      assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);
+      assert.include(recusa.message, "Escolha de novo o arquivo “pausada.docx”");
+      // Nada começou: a leitura continua pausada, à espera do arquivo.
+      const estado = (yield* rpc["revisaoPpc.listarIa"]({})).find((e) => e.id === "revisao-pausada")!;
+      assert.strictEqual(estado.situacao, "pausada");
+    }),
+  );
+});
+
+layer(camada, { excludeTestServices: true })("a cópia comentada", (it) => {
+  it.effect("a cópia editada pela pessoa e o link no lugar da cópia ficam; a cópia vai para ' (2)'", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const original = gravar("PPC anotado.docx", ppcSintetico());
+      const primeira = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      NodeFS.writeFileSync(primeira.arquivoComentado, "minhas anotações");
+      const segunda = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      assert.strictEqual(
+        segunda.arquivoComentado,
+        NodePath.join(pasta, "PPC anotado - revisão prévia (Simplifica IF) (2).docx"),
+      );
+      assert.strictEqual(NodeFS.readFileSync(primeira.arquivoComentado, "utf8"), "minhas anotações");
+      // A " (2)" é a do app: regravada, sem " (3)".
+      const terceira = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      assert.strictEqual(terceira.arquivoComentado, segunda.arquivoComentado);
+      // Nenhum temporário fica na pasta.
+      assert.deepStrictEqual(
+        NodeFS.readdirSync(pasta).filter((nome) => nome.startsWith(".")),
+        [],
+      );
+
+      // Um link no lugar da cópia não é seguido: o arquivo para onde ele aponta fica intacto.
+      const comLink = gravar("PPC link.docx", ppcSintetico());
+      const alvo = gravar("alvo do link.txt", strToU8("intacto"));
+      const lugar = NodePath.join(pasta, "PPC link - revisão prévia (Simplifica IF).docx");
+      NodeFS.symlinkSync(alvo, lugar);
+      const r = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: comLink }));
+      assert.strictEqual(
+        r.arquivoComentado,
+        NodePath.join(pasta, "PPC link - revisão prévia (Simplifica IF) (2).docx"),
+      );
+      assert.strictEqual(NodeFS.readFileSync(alvo, "utf8"), "intacto");
+      assert.isTrue(NodeFS.lstatSync(lugar).isSymbolicLink());
     }),
   );
 });

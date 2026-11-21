@@ -222,6 +222,7 @@ describe("conversas gravadas", () => {
                 "avaliacoes",
                 "blocos_ia",
                 "conversas",
+                "copias_comentadas",
                 "effect_sql_migrations",
                 "eventos",
                 "eventos_pendencia",

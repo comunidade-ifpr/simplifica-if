@@ -5,6 +5,10 @@
  * esquerda e as pendências à direita, uma aberta por vez. As ressalvas ficam juntas em "Sobre esta
  * revisão", no pé da coluna de temas.
  *
+ * "Qual é o curso?" refaz a lista com o curso escolhido sem perder a leitura com IA (`trocarCurso`).
+ * Uma ação que precisa reler o arquivo depois que o app foi fechado pede para escolhê-lo de novo e se
+ * repete com ele.
+ *
  * Teclado na lista: ↑ e ↓ andam pelas linhas, Enter abre e fecha, F marca como feito (ou desfaz).
  */
 import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
@@ -28,6 +32,7 @@ import {
 } from "../leitor/historico.ts";
 import { dataCurta } from "../lib/formato.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
+import { obterArquivo, pedeArquivoDeNovo, textoMesmoArquivo } from "./arquivo.ts";
 import { BloqueioCurso } from "./BloqueioCurso.tsx";
 import { CabecalhoDocumento } from "./CabecalhoDocumento.tsx";
 import { ConclusaoIa, FaixaIa, nomeIa } from "./FaixaIa.tsx";
@@ -56,12 +61,9 @@ const SEM_LEITURA: ReadonlySet<number> = new Set();
 
 export function Leitura({
   inicial,
-  aoRevisarComCurso,
   aoSair,
 }: {
   readonly inicial: ListaPendencias;
-  /** "Qual é o curso?": revisar o arquivo de novo com o curso escolhido no CNCT. */
-  readonly aoRevisarComCurso: (arquivo: string, cnct: string, forma: string | null) => void;
   /** Volta à entrada ("Revisar outro arquivo", depois de apagar). */
   readonly aoSair: () => void;
 }) {
@@ -80,6 +82,9 @@ export function Leitura({
   const [confirmarApagar, setConfirmarApagar] = useState(false);
   const [pedirCaminho, setPedirCaminho] = useState(false);
   const [enviando, setEnviando] = useState(false);
+  const [trocandoCurso, setTrocandoCurso] = useState(false);
+  /** A ação que falhou porque o app pede o arquivo de novo; escolhido o mesmo, ela se repete. */
+  const [refazer, setRefazer] = useState<(() => void) | null>(null);
   const [leitura, setLeitura] = useState<Historico>(HISTORICO_VAZIO);
   const listaRef = useRef<HTMLUListElement>(null);
 
@@ -108,14 +113,27 @@ export function Leitura({
   const lendo = ia.estado?.situacao === "em_andamento" || ia.estado?.situacao === "pausada";
   const provider = lista.provider ?? ia.provider;
 
-  const usar = async <A,>(acao: () => Promise<A>): Promise<A | undefined> => {
+  const usar = async <A,>(acao: () => Promise<A>, repetir?: () => void): Promise<A | undefined> => {
     setErro(undefined);
+    setRefazer(null);
     try {
       return await acao();
     } catch (motivo) {
       setErro(explicarErro(motivo));
+      if (repetir !== undefined && pedeArquivoDeNovo(motivo)) setRefazer(() => repetir);
       return undefined;
     }
+  };
+
+  const escolherDeNovo = async () => {
+    if (ponte?.escolherDocx === undefined || refazer === null) return;
+    const obtido = await obterArquivo(ponte.escolherDocx);
+    if (obtido === undefined) return;
+    if ("erro" in obtido) return setErro(obtido.erro);
+    if (obtido.arquivo !== lista.arquivoOriginal) return setErro(textoMesmoArquivo(lista.arquivoOriginal));
+    setErro(undefined);
+    setRefazer(null);
+    refazer();
   };
 
   const marcar = async (chave: string, situacao: "aberta" | "resolvida") => {
@@ -129,7 +147,10 @@ export function Leitura({
 
   const abrirNoWord = async () => {
     setAbrindo(true);
-    const nova = await usar(() => api.chamar((c) => c["revisaoPpc.gerarCopia"]({ lista: lista.id })));
+    const nova = await usar(
+      () => api.chamar((c) => c["revisaoPpc.gerarCopia"]({ lista: lista.id })),
+      () => void abrirNoWord(),
+    );
     if (nova !== undefined) {
       setLista(nova);
       const copia = nova.resultado.arquivoComentado;
@@ -143,6 +164,21 @@ export function Leitura({
         );
     }
     setAbrindo(false);
+  };
+
+  /** "Qual é o curso?": a lista refeita com o curso, com a leitura com IA, se houve. */
+  const trocarCurso = async (cnct: string) => {
+    setTrocandoCurso(true);
+    const forma = r.curso.forma;
+    const nova = await usar(
+      () =>
+        api.chamar((c) => c["revisaoPpc.trocarCurso"]({ lista: lista.id, cnct, ...(forma === null ? {} : { forma }) })),
+      () => void trocarCurso(cnct),
+    );
+    setTrocandoCurso(false);
+    if (nova === undefined) return;
+    setLista(nova);
+    setAberta(null);
   };
 
   const enviarCorrigida = async (arquivo: string) => {
@@ -337,10 +373,16 @@ export function Leitura({
           {bloqueio.length ? (
             <BloqueioCurso
               pendencias={bloqueio}
-              aoEscolher={(cnct) => aoRevisarComCurso(lista.arquivoOriginal, cnct, r.curso.forma)}
+              conferindo={trocandoCurso}
+              aoEscolher={(cnct) => void trocarCurso(cnct)}
             />
           ) : null}
           {erro === undefined ? null : <AvisoErro erro={erro} />}
+          {erro === undefined || refazer === null || ponte?.escolherDocx === undefined ? null : (
+            <Button variant="outline" className="self-start" onClick={() => void escolherDeNovo()}>
+              Escolher o arquivo de novo
+            </Button>
+          )}
 
           <div className="grid gap-6 min-[960px]:grid-cols-[15rem_minmax(0,1fr)] min-[960px]:gap-10">
             <aside className="hidden min-[960px]:block">

@@ -118,6 +118,11 @@ export type EventoRevisaoPpc = typeof EventoRevisaoPpc.Type;
 export class FalhaRevisaoPpc extends Schema.TaggedError<FalhaRevisaoPpc>()("FalhaRevisaoPpc", {
   arquivo: Schema.String,
   motivo: Schema.String,
+  /**
+   * O arquivo não está liberado nesta execução do app (a liberação vale até fechar o app): a interface
+   * pede para escolher o mesmo arquivo de novo e repete a ação.
+   */
+  escolherDeNovo: Schema.optionalKey(Schema.Boolean),
 }) {
   override get message(): string {
     return this.motivo;
@@ -350,6 +355,25 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   /** A lista viva mais recente, para continuar depois de fechar o app (nula se não há). */
   Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
   /**
+   * A lista viva mais recente de um arquivo (nula se não há): "Continuar" uma leitura com IA que ficou
+   * por terminar abre a lista dela, sem revisar o arquivo de novo.
+   */
+  Rpc.make("revisaoPpc.listaDoArquivo", {
+    payload: Schema.Struct({ arquivo: Schema.String }),
+    success: Schema.NullOr(ListaPendencias),
+  }),
+  /**
+   * "Qual é o curso?": a lista refeita com o curso escolhido no CNCT (`cnct`, e a `forma`, se houver).
+   * Os resultados conferidos da leitura com IA, se a lista veio dela, entram de novo, como na cópia
+   * comentada; a situação, o histórico e a sugestão de cada pendência passam à lista nova, que
+   * substitui a anterior.
+   */
+  Rpc.make("revisaoPpc.trocarCurso", {
+    payload: Schema.Struct({ lista: Schema.String, cnct: Schema.String, forma: Schema.optionalKey(Schema.String) }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /**
    * As discordâncias registradas contra pendências do código (a conferência automática), em CSV, para a
    * curadoria das regras: se o verificador errou, é defeito da regra. Leva o trecho e o motivo da pessoa.
    */
@@ -421,8 +445,10 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     error: FalhaRevisaoPpc,
   }),
   /**
-   * Regrava a cópia comentada (`<nome> - revisão prévia (Simplifica IF).docx`, sempre o mesmo nome;
-   * ` (2)`… só se ela estiver aberta e travada), com a situação de cada pendência no comentário e no aviso.
+   * A cópia comentada com a situação de cada pendência no comentário e no aviso, regravada só se a lista
+   * mudou desde a última cópia (ou se ela sumiu). `<nome> - revisão prévia (Simplifica IF).docx`; ` (2)`…
+   * quando a cópia está travada, só de leitura, não é arquivo comum ou foi editada pela pessoa (a cópia
+   * editada nunca é sobrescrita).
    */
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
 ) {}

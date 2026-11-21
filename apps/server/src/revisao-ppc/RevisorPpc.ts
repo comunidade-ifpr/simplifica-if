@@ -11,9 +11,11 @@
  *    tempo máximo (30 s, depois `terminate()`): a conversão é síncrona e mantém o XML na memória, e o
  *    laço de eventos do servidor não pode parar. Estouro de memória, de tempo, `ErroDocx` e defeito
  *    viram uma `FalhaRevisaoPpc` com a frase em português; o servidor continua de pé.
- * 4. Grava a cópia comentada ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`,
- *    sempre com o mesmo nome (regravada a cada revisão); ` (2)`, ` (3)`… só quando a cópia está aberta e
- *    travada (o Word no Windows). O original nunca é aberto para escrita.
+ * 4. Grava a cópia comentada ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`, num
+ *    arquivo temporário da mesma pasta renomeado por cima. Só regrava o que o próprio app gravou (o sha256
+ *    registrado em `CopiasComentadas`): a cópia editada pela pessoa, só de leitura, travada (o Word no
+ *    Windows) ou que não é arquivo comum (um link) fica, e a cópia vai para ` (2)`, ` (3)`… O original
+ *    nunca é aberto para escrita.
  *
  * As etapas (`EtapaLeituraPpc`) vão para `aoEtapa` quando cada uma começa: `lendo` aqui, antes de ler os bytes, as
  * outras do Worker, como avisos de andamento (`WorkerLimitado.AvisoAndamento`).
@@ -26,9 +28,9 @@ import * as NodePath from "node:path";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
-import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
+import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import {
   type EtapaLeituraPpc,
@@ -45,7 +47,8 @@ import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import type { EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
-import { comNumero, criarSemColisao, travado } from "../nome-livre.ts";
+import * as CopiasComentadas from "../persistencia/CopiasComentadas.ts";
+import { comNumero, NomesEsgotados } from "../nome-livre.ts";
 import { type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
 import type { AndamentoTrabalhador, PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
@@ -102,6 +105,11 @@ export class RevisorPpc extends Context.Service<
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
+    /**
+     * Falha (com `escolherDeNovo`) se o desktop não liberou o arquivo nesta execução: a ação que vai
+     * precisar dele recusa antes de começar, e não no fim.
+     */
+    readonly exigirLiberado: (arquivo: string) => Effect.Effect<void, FalhaRevisaoPpc>;
   }
 >()("@simplifica-if/server/revisao-ppc/RevisorPpc") {}
 
@@ -175,25 +183,87 @@ function rodarNoTrabalhador(
 
 /* ============================================================ arquivo */
 
-/** Até quantas cópias travadas pular antes de desistir (` (2)` a ` (20)`). */
-const COPIAS_TRAVADAS = 20;
+/** A cópia comentada não pôde ser gravada (a pasta não aceita gravação, disco cheio). */
+class CopiaNaoGravada extends Schema.TaggedError<CopiaNaoGravada>()("CopiaNaoGravada", {
+  destino: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return `a cópia comentada não foi gravada em ${this.destino}`;
+  }
+}
+
+/** Até quantos nomes de cópia tentar antes de desistir (o nome fixo e ` (2)` a ` (20)`). */
+const COPIAS = 20;
+
+const sha256De = (bytes: Uint8Array) => NodeCrypto.createHash("sha256").update(bytes).digest("hex");
+
+const codigo = (erro: unknown) => (erro as NodeJS.ErrnoException | undefined)?.code;
+/** O Word no Windows segura o documento aberto: renomear por cima falha com um destes. */
+const TRAVADO = new Set(["EBUSY", "EPERM", "EACCES"]);
 
 /**
- * Grava ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`, por cima da cópia da
- * revisão anterior: a pasta fica com uma cópia só. Se ela está aberta e travada (o Word no Windows),
- * passa a ` (2)`, ` (3)`…, que também são regravadas.
+ * O que há no lugar da cópia: nada, a cópia que o app gravou por último (pode ser regravada) ou outra
+ * coisa, que fica: o arquivo editado pela pessoa, um que o app não conhece, um só de leitura (aberto e
+ * travado) ou o que não é arquivo comum (um link, que seria seguido, ou uma pasta).
+ */
+async function ocupacao(destino: string, conhecida: string | null): Promise<"livre" | "do-app" | "outro"> {
+  const info = await NodeFSP.lstat(destino).catch((erro: unknown) => {
+    if (codigo(erro) === "ENOENT") return null;
+    throw erro;
+  });
+  if (info === null) return "livre";
+  if (!info.isFile() || conhecida === null) return "outro";
+  const gravavel = await NodeFSP.access(destino, NodeFSP.constants.W_OK).then(
+    () => true,
+    () => false,
+  );
+  if (!gravavel) return "outro";
+  return sha256De(await NodeFSP.readFile(destino)) === conhecida ? "do-app" : "outro";
+}
+
+/**
+ * Grava num temporário da mesma pasta (criação exclusiva) e renomeia por cima do destino: quem abre a
+ * cópia nunca a vê pela metade, e um link no lugar dela é trocado, não seguido. `false` se o destino
+ * está travado.
+ */
+async function gravarPorCima(pasta: string, destino: string, bytes: Uint8Array): Promise<boolean> {
+  const temporario = NodePath.join(pasta, `.${NodePath.basename(destino)}.${NodeCrypto.randomUUID()}.tmp`);
+  await NodeFSP.writeFile(temporario, bytes, { flag: "wx" });
+  try {
+    await NodeFSP.rename(temporario, destino);
+    return true;
+  } catch (erro) {
+    await NodeFSP.rm(temporario, { force: true });
+    if (TRAVADO.has(codigo(erro) ?? "")) return false;
+    throw erro;
+  }
+}
+
+/**
+ * Grava ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`, por cima da cópia que o app
+ * gravou da última vez: a pasta fica com uma cópia só. O que não é a cópia do app (editada pela pessoa,
+ * travada, link) fica, e a cópia passa a ` (2)`, ` (3)`… (o próximo nome livre ou do app).
  */
 const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: string, bytes: Uint8Array) {
-  const fs = yield* FileSystem.FileSystem;
+  const copias = yield* CopiasComentadas.CopiasComentadas;
   const pasta = NodePath.dirname(original);
   const copia = `${NodePath.basename(original, NodePath.extname(original))}${SUFIXO_REVISAO_PREVIA}.docx`;
-  return yield* criarSemColisao(
-    { pasta, nomes: (n) => comNumero(copia, n), ate: COPIAS_TRAVADAS, pular: travado },
-    (nome) => {
-      const destino = NodePath.join(pasta, nome);
-      return fs.writeFile(destino, bytes).pipe(Effect.as(destino));
-    },
-  );
+  const sha256 = sha256De(bytes);
+  for (let n = 1; n <= COPIAS; n++) {
+    const destino = NodePath.join(pasta, comNumero(copia, n));
+    const conhecida = yield* copias.conhecida(destino);
+    const gravada = yield* Effect.tryPromise({
+      try: async () =>
+        (await ocupacao(destino, conhecida)) === "outro" ? false : gravarPorCima(pasta, destino, bytes),
+      catch: (cause) => new CopiaNaoGravada({ destino, cause }),
+    });
+    if (gravada) {
+      yield* copias.registrar(destino, sha256);
+      return destino;
+    }
+  }
+  return yield* new NomesEsgotados({ pasta, primeiro: copia });
 });
 
 /* ============================================================ serviço */
@@ -215,7 +285,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   const contexto = yield* Effect.context<
     FontesNormativas.FontesNormativas | Cursos.Cursos | Normas.Normas | PacoteContexto.PacoteContexto
   >();
-  const fs = yield* FileSystem.FileSystem;
+  const copias = yield* CopiasComentadas.CopiasComentadas;
   // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
     montarBaseRevisao.pipe(
@@ -230,13 +300,21 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   // Uma revisão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
+  const exigirLiberado = Effect.fn("RevisorPpc.exigirLiberado")(function* (arquivo: string) {
+    if (yield* liberacao.liberado(arquivo)) return;
+    return yield* new FalhaRevisaoPpc({
+      arquivo,
+      motivo: `Escolha de novo o arquivo “${NodePath.basename(arquivo)}”, pelo botão “Escolher o PPC” ou soltando-o na janela do app: depois que o app é fechado, ele pede o arquivo outra vez.`,
+      escolherDeNovo: true,
+    });
+  });
+
   const revisarUm = Effect.fn("RevisorPpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
     const arquivo = entrada.arquivo;
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
       return yield* falha("Escolha um arquivo do Word (.docx).");
-    if (!(yield* liberacao.liberado(arquivo)))
-      return yield* falha('Escolha o arquivo pelo botão "Escolher o PPC (.docx)…" do app.');
+    yield* exigirLiberado(arquivo);
     const info = yield* Effect.tryPromise({
       try: () => NodeFSP.stat(arquivo),
       catch: () => falha("O arquivo não foi encontrado ou não pode ser lido."),
@@ -279,7 +357,8 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     );
     const arquivoComentado = entrada.gravar
       ? yield* gravarCopia(arquivo, revisao.docx).pipe(
-          Effect.provideService(FileSystem.FileSystem, fs),
+          Effect.provideService(CopiasComentadas.CopiasComentadas, copias),
+          Effect.tapError((erro) => Effect.logError("revisão prévia: a cópia comentada não foi gravada", erro)),
           Effect.mapError(() =>
             falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
           ),
@@ -310,11 +389,11 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, ocupada });
+  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, ocupada, exigirLiberado });
 });
 
 /**
  * O serviço sobre os serviços do kb (`FontesNormativas`, `Cursos`, `Normas` e `PacoteContexto` do
- * `kb.sqlite`, os do `Leitura` do servidor), os `ArquivosLiberados` e o `FileSystem`.
+ * `kb.sqlite`, os do `Leitura` do servidor), os `ArquivosLiberados` e as `CopiasComentadas`.
  */
 export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));

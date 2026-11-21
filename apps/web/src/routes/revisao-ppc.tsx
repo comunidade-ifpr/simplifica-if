@@ -29,17 +29,12 @@ function RevisaoPpc() {
   const leitura = useRef<Acompanhamento | undefined>(undefined);
   useEffect(() => () => leitura.current?.cancelar(), []);
 
-  const revisar = (arquivo: string, curso?: { readonly cnct: string; readonly forma: string | null }) => {
+  const revisar = (arquivo: string) => {
     leitura.current?.cancelar();
     setTela({ fase: "lendo", arquivo, etapa: null });
     let lista: string | undefined;
     const acompanhamento = api.acompanhar(
-      (c) =>
-        c["revisaoPpc.revisar"]({
-          arquivo,
-          ...(curso === undefined ? {} : { cnct: curso.cnct }),
-          ...(curso?.forma == null ? {} : { forma: curso.forma }),
-        }),
+      (c) => c["revisaoPpc.revisar"]({ arquivo }),
       (evento) => {
         if (evento.tipo === "etapa") setTela({ fase: "lendo", arquivo, etapa: evento.etapa });
         else lista = evento.resultado.lista;
@@ -59,14 +54,7 @@ function RevisaoPpc() {
 
   if (tela.fase === "lendo") return <Lendo arquivo={tela.arquivo} etapa={tela.etapa} />;
   if (tela.fase === "resultado")
-    return (
-      <Leitura
-        key={tela.lista.id}
-        inicial={tela.lista}
-        aoRevisarComCurso={(arquivo, cnct, forma) => revisar(arquivo, { cnct, forma })}
-        aoSair={() => setTela({ fase: "entrada" })}
-      />
-    );
+    return <Leitura key={tela.lista.id} inicial={tela.lista} aoSair={() => setTela({ fase: "entrada" })} />;
   return (
     <Entrada
       erro={tela.erro}

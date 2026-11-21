@@ -53,7 +53,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
                 (estado.limite ? " O que já foi lido fica guardado; retome quando o limite renovar." : "")
               : `O ${nome} está lendo os temas um a um. Você pode trabalhar na lista enquanto isso.`}
           </p>
-          {leitura.erro === undefined ? null : <AvisoErro erro={leitura.erro} />}
+          <ErroDaLeitura leitura={leitura} />
         </div>
         {pausada ? (
           <Button className="shrink-0" disabled={leitura.ocupada} onClick={leitura.iniciar}>
@@ -125,7 +125,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
             <Spinner className="size-3.5" /> Calculando quanto a leitura usa do seu plano…
           </p>
         ) : null}
-        {leitura.erro === undefined ? null : <AvisoErro erro={leitura.erro} />}
+        <ErroDaLeitura leitura={leitura} />
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <Button disabled={preparada === undefined || leitura.estimando || leitura.ocupada} onClick={leitura.iniciar}>
@@ -135,6 +135,21 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
         <Opcoes leitura={leitura} faltam={faltam} />
       </div>
     </Caixa>
+  );
+}
+
+/** O erro da leitura e, quando o servidor pede o arquivo de novo, o botão para escolhê-lo. */
+function ErroDaLeitura({ leitura }: { readonly leitura: LeituraIa }) {
+  if (leitura.erro === undefined) return null;
+  return (
+    <>
+      <AvisoErro erro={leitura.erro} />
+      {leitura.escolherArquivo === undefined ? null : (
+        <Button variant="outline" className="self-start" onClick={leitura.escolherArquivo}>
+          Escolher o arquivo de novo
+        </Button>
+      )}
+    </>
   );
 }
 

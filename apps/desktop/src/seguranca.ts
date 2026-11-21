@@ -166,9 +166,10 @@ export function docxEscolhido(caminho: unknown): string | undefined {
 
 /**
  * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos ou soltos nesta execução: na
- * mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou, se ela estava travada, com ` (2)` a ` (99)`. Só esses
- * arquivos "Abrir o documento comentado" e "Mostrar na pasta" aceitam: a interface não abre outro
- * arquivo do computador por esse caminho. Quem chama confere ainda que é arquivo comum (não link).
+ * mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou, se ela estava travada ou foi editada
+ * pela pessoa, com ` (2)` a ` (99)` (o servidor usa até ` (20)`). Só esses arquivos "Abrir o documento
+ * comentado" e "Mostrar na pasta" aceitam: a interface não abre outro arquivo do computador por esse
+ * caminho. Quem chama confere ainda que é arquivo comum (não link).
  */
 export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySet<string>): string | undefined {
   if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;

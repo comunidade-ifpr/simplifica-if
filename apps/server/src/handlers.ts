@@ -180,6 +180,9 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.apagarIa": ({ revisao }) => traduzir("revisaoPpc.apagarIa", ia.apagar(revisao)),
       "revisaoPpc.lista": ({ lista }) => traduzir("revisaoPpc.lista", viva.lista(lista)),
       "revisaoPpc.ultimaLista": () => traduzir("revisaoPpc.ultimaLista", viva.ultima),
+      "revisaoPpc.listaDoArquivo": ({ arquivo }) => traduzir("revisaoPpc.listaDoArquivo", viva.doArquivo(arquivo)),
+      "revisaoPpc.trocarCurso": ({ lista, cnct, forma }) =>
+        traduzir("revisaoPpc.trocarCurso", viva.trocarCurso(lista, cnct, forma)),
       "revisaoPpc.apagarLista": ({ lista }) => traduzir("revisaoPpc.apagarLista", viva.apagar(lista)),
       "revisaoPpc.exportarDiscordancias": () =>
         traduzir("revisaoPpc.exportarDiscordancias", viva.exportarDiscordancias),
