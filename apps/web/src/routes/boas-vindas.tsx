@@ -102,33 +102,37 @@ function Moldura({
 }
 
 function PassoAviso({ aoSeguir }: { readonly aoSeguir: () => Promise<unknown> }) {
-  const { preferencias } = usePreferencias();
   const [gravando, setGravando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
   return (
     <Moldura passo="aviso" titulo="Boas-vindas ao Simplifica IF">
       <p className="max-w-prose text-muted-foreground">
-        O Simplifica IF ajuda servidores do IFPR com normas, PPCs e cursos, usando a base pública do IFPR e uma IA que
-        você conecta. Antes de começar, leia o que vai para a IA.
+        Consulte normas, PPCs e cursos usando a base pública do IFPR com a IA da sua conta pessoal. Antes de começar,
+        veja como seus dados circulam.
       </p>
       <AvisoUso />
       {erro === undefined ? null : <AvisoErro erro={erro} />}
-      <Button
-        className="self-start"
-        disabled={gravando}
-        onClick={async () => {
-          setGravando(true);
-          try {
-            await aoSeguir();
-          } catch (falha) {
-            setErro(explicarErro(falha));
-            setGravando(false);
-          }
-        }}
-      >
-        {gravando ? <Spinner /> : null}
-        {preferencias?.avisoAceitoEm === undefined ? "Entendi" : "Continuar"}
-      </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
+          disabled={gravando}
+          onClick={async () => {
+            setGravando(true);
+            try {
+              await aoSeguir();
+            } catch (falha) {
+              setErro(explicarErro(falha));
+              setGravando(false);
+            }
+          }}
+        >
+          {gravando ? <Spinner /> : null}
+          Entendi, continuar
+          <ArrowRightIcon />
+        </Button>
+        <p className="text-muted-foreground text-sm">
+          Depois: 3 passos rápidos (IA, perfil e exemplo). Você pode rever este aviso em Configurações.
+        </p>
+      </div>
     </Moldura>
   );
 }

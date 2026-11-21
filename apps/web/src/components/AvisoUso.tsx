@@ -4,8 +4,51 @@
  *
  * Texto provisório: precisa da revisão do encarregado de dados do IFPR antes do piloto.
  */
-import { ShieldAlertIcon } from "lucide-react";
+import { CheckCircle2Icon, FolderOpenIcon, LaptopIcon, ShieldAlertIcon, UserCheckIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { Button } from "./ui/button.tsx";
+
+const PONTOS: ReadonlyArray<{
+  readonly titulo: string;
+  readonly icone: ReactNode;
+  readonly texto: ReactNode;
+}> = [
+  {
+    titulo: "Conta pessoal",
+    icone: <UserCheckIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />,
+    texto: (
+      <>
+        Não é um serviço contratado pelo IFPR: você usa a conta pessoal que já possui (Claude, ChatGPT ou Gemini), sob
+        os termos da empresa da IA.
+      </>
+    ),
+  },
+  {
+    titulo: "O que a IA lê",
+    icone: <FolderOpenIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />,
+    texto: (
+      <>
+        A base pública do IFPR, o que você escreve ou anexa e os arquivos da pasta da tarefa (
+        <code>Documentos/Simplifica IF</code>). Pesquisas na internet também passam pela empresa.
+      </>
+    ),
+  },
+  {
+    titulo: "Onde fica salvo",
+    icone: <LaptopIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />,
+    texto: (
+      <>
+        Seu perfil, conversas e pastas ficam só neste computador; o que é enviado à IA também pode ficar guardado pelo
+        serviço de IA.
+      </>
+    ),
+  },
+  {
+    titulo: "Confira a fonte",
+    icone: <CheckCircle2Icon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />,
+    texto: <>A IA pode errar. Sempre valide a norma ou fonte citada antes de usar a resposta em documento oficial.</>,
+  },
+];
 
 export function AvisoUso({
   titulo = "O que vai para a IA",
@@ -16,42 +59,34 @@ export function AvisoUso({
   readonly aoEntender?: () => void;
 }) {
   return (
-    <section
-      aria-labelledby="titulo-aviso-uso"
-      className="flex max-w-prose flex-col gap-3 rounded-xl border border-warning/40 bg-warning-surface p-4 text-sm"
-    >
-      <h2 id="titulo-aviso-uso" className="flex items-center gap-2 font-semibold text-base">
-        <ShieldAlertIcon aria-hidden className="size-5 text-warning-foreground" />
+    <section aria-labelledby="titulo-aviso-uso" className="flex flex-col gap-3">
+      <h2 id="titulo-aviso-uso" className="text-heading">
         {titulo}
       </h2>
-      <ul className="flex list-disc flex-col gap-2 pl-5">
-        <li>
-          O Simplifica IF conversa com a IA da <strong>sua conta pessoal</strong> (Claude, ChatGPT ou Gemini). Não é um
-          serviço contratado pelo IFPR: o que você envia segue os termos da empresa da IA.
-        </li>
-        <li>
-          A IA recebe a <strong>base pública do IFPR</strong> (normas, catálogos, PPCs publicados),{" "}
-          <strong>o que você escrever ou anexar</strong> e <strong>os arquivos que estiverem na pasta da tarefa</strong>{" "}
-          (em Documentos/Simplifica IF), que ela pode abrir e ler.
-        </li>
-        <li>
-          <strong>Não anexe, não cole e não deixe na pasta da tarefa documento com dado pessoal</strong> (nome com CPF,
-          notas, laudos, endereço ou contato de estudante ou servidor) <strong>ou de acesso restrito</strong> (processo
-          sigiloso, documento interno ainda não publicado).
-        </li>
-        <li>
-          O app guarda seu perfil, suas conversas e as pastas só neste computador.{" "}
-          <strong>O que você envia à IA também fica guardado na empresa dela</strong>, conforme os termos dela.
-        </li>
-        <li>
-          Quando a informação não está na base do IFPR, a IA também pode pesquisar fontes públicas na internet.{" "}
-          <strong>Os termos pesquisados e as páginas consultadas passam pela empresa da IA.</strong>
-        </li>
-        <li>
-          A IA pode errar: confira na fonte citada (da base do IFPR ou externa) antes de usar a resposta num documento
-          oficial.
-        </li>
-      </ul>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {PONTOS.map((ponto) => (
+          <div
+            key={ponto.titulo}
+            className="flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 text-sm"
+          >
+            {ponto.icone}
+            <div className="flex flex-col gap-1">
+              <p className="font-semibold text-foreground">{ponto.titulo}</p>
+              <p className="text-muted-foreground">{ponto.texto}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-start gap-3 rounded-xl border border-warning/40 bg-warning-surface p-4 text-sm">
+        <ShieldAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-warning-foreground" />
+        <div className="flex flex-col gap-1">
+          <p className="font-semibold text-warning-foreground">Não envie dados pessoais nem restritos</p>
+          <p className="text-foreground">
+            Não anexe, cole ou deixe na pasta da tarefa dados pessoais (CPF, notas, laudos, endereço ou contato) nem
+            documentos de acesso restrito (processos sigilosos ou documentos internos não publicados).
+          </p>
+        </div>
+      </div>
       {aoEntender === undefined ? null : (
         <Button className="self-start" onClick={aoEntender}>
           Entendi

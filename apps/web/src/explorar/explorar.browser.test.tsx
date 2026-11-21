@@ -223,7 +223,7 @@ it("Perguntar à IA com o primeiro uso por fazer: o pedido atravessa as boas-vin
   await using app = await montarApp(novo, `/?pedido=${encodeURIComponent(JSON.stringify(pedido))}`);
   await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
   expect(app.roteador.state.location.search).toMatchObject({ pedido });
-  await page.getByRole("button", { name: "Entendi" }).click();
+  await page.getByRole("button", { name: "Entendi, continuar" }).click();
   await page.getByRole("button", { name: /^Pular/ }).click();
   await page.getByRole("button", { name: "Pular", exact: true }).click();
   await page.getByRole("button", { name: "Pular e ir para o Início" }).click();

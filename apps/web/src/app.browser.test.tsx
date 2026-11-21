@@ -526,13 +526,13 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   // O Início leva às boas-vindas; o aviso de uso vem antes dos passos.
   await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
   const aviso = page.getByRole("region", { name: "O que vai para a IA" });
-  await expect.element(aviso.getByText(/Não anexe, não cole e não deixe na pasta da tarefa/)).toBeVisible();
-  await expect.element(aviso.getByText(/os arquivos que estiverem na pasta da tarefa/)).toBeVisible();
-  await expect.element(aviso.getByText(/também fica guardado na empresa dela/)).toBeVisible();
+  await expect.element(aviso.getByText(/Não anexe, cole ou deixe na pasta da tarefa/)).toBeVisible();
+  await expect.element(aviso.getByText(/os arquivos da pasta da tarefa/)).toBeVisible();
+  await expect.element(aviso.getByText(/também pode ficar guardado pelo serviço de IA/)).toBeVisible();
   expect(app.roteador.state.location.pathname).toBe("/boas-vindas");
   semIngles();
   await capturar("10-boas-vindas-aviso");
-  await page.getByRole("button", { name: "Entendi" }).click();
+  await page.getByRole("button", { name: "Entendi, continuar" }).click();
 
   // Passo 1, Claude: o passo guiado, sem baixar nada pelo app.
   await expect.element(page.getByRole("heading", { name: "Conecte a sua IA" })).toBeVisible();
