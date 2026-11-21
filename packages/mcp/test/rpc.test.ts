@@ -19,8 +19,6 @@ import * as Logger from "effect/Logger";
 import type * as Schema from "effect/Schema";
 import { RpcTest } from "effect/rpc";
 import { ehEntradaInvalida, ehFalhaNaBase, type ErroDeLeitura, FalhaNaBase } from "../src/contratos.ts";
-import { buscarNorma } from "../src/ferramentas/buscar-norma.ts";
-import { buscarSecoes } from "../src/ferramentas/buscar-secoes.ts";
 import { fichaCurso } from "../src/ferramentas/ficha-curso.ts";
 import { fichaNorma } from "../src/ferramentas/ficha-norma.ts";
 import { lerDispositivos } from "../src/ferramentas/ler-dispositivos.ts";
@@ -92,16 +90,6 @@ describe("GrupoLeitura: mesma resposta que a ferramenta MCP", () => {
     }),
   );
 
-  it.effect("buscarNorma ↔ buscar_norma", () =>
-    Effect.gen(function* () {
-      const consulta = "Resolução CNE/CP nº 2/2026, art. 71, parágrafo único";
-      const r = yield* mesmaResposta(buscarNorma, { consulta }, bancoNormas(), (c) =>
-        c.buscarNorma({ consulta, limite: 8 }),
-      );
-      expect(r.dados.resultados).toHaveLength(1);
-    }),
-  );
-
   it.effect("fichaCurso ↔ ficha_curso", () =>
     mesmaResposta(fichaCurso, { curso: PPC_ENFERMAGEM }, criarBancoFixturePpcs(), (c) =>
       c.fichaCurso({ curso: PPC_ENFERMAGEM }),
@@ -113,16 +101,6 @@ describe("GrupoLeitura: mesma resposta que a ferramenta MCP", () => {
       const id = `${PPC_INFORMATICA}#estagio_praticas-1`;
       const r = yield* mesmaResposta(lerSecao, { id }, criarBancoFixturePpcs(), (c) => c.lerSecao({ id }));
       expect(r.dados.secao.id).toBe(id);
-    }),
-  );
-
-  it.effect("buscarSecoes ↔ buscar_secoes", () =>
-    Effect.gen(function* () {
-      const consulta = "estágio obrigatório";
-      const r = yield* mesmaResposta(buscarSecoes, { consulta }, criarBancoFixturePpcs(), (c) =>
-        c.buscarSecoes({ consulta, limite: 8, integral: false }),
-      );
-      expect(r.dados.resultados.length).toBeGreaterThan(0);
     }),
   );
 

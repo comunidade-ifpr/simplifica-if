@@ -108,7 +108,6 @@ const layerConversa = GrupoConversa.toLayer(
       "conversa.carregar": ({ sessao }) => traduzir("conversa.carregar", conversas.carregar(sessao)),
       "conversa.acompanhar": ({ sessao, depois }) =>
         traduzirStream("conversa.acompanhar", conversas.acompanhar(sessao, depois)),
-      "conversa.retomar": ({ sessao }) => traduzir("conversa.retomar", conversas.retomar(sessao)),
       "conversa.avaliar": ({ sessao, turno, nota }) =>
         traduzir("conversa.avaliar", conversas.avaliar(sessao, turno, nota)),
     });

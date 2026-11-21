@@ -5,10 +5,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./toolkit": "./src/toolkit.ts",
     "./rpc": "./src/rpc.ts",
     "./grupo-leitura": "./src/grupo-leitura.ts",
-    "./contratos": "./src/contratos.ts",
     "./http": "./src/http.ts",
     "./skills": "./src/skills.ts",
     "./publicos": "./src/publicos.ts"

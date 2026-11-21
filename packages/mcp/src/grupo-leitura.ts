@@ -24,8 +24,6 @@ import { EntradaBusca, EntradaIndice, SaidaBusca, SaidaIndice } from "./explorar
 export type { Ancora, DadosDocumento, DatasDoAto } from "./documento.ts";
 export type * from "./explorar.ts";
 export { ROTULOS_INDICADOR } from "./ferramentas/ficha-curso.ts";
-import { buscarNorma } from "./ferramentas/buscar-norma.ts";
-import { buscarSecoes } from "./ferramentas/buscar-secoes.ts";
 import { fichaCurso } from "./ferramentas/ficha-curso.ts";
 import { fichaNorma } from "./ferramentas/ficha-norma.ts";
 import { lerDispositivos } from "./ferramentas/ler-dispositivos.ts";
@@ -71,10 +69,8 @@ export class GrupoLeitura extends RpcGroup.make(
     success: lerDispositivos.saida,
     error: ErroDeLeitura,
   }),
-  Rpc.make("buscarNorma", { payload: buscarNorma.entrada, success: buscarNorma.saida, error: ErroDeLeitura }),
   Rpc.make("fichaCurso", { payload: fichaCurso.entrada, success: fichaCurso.saida, error: ErroDeLeitura }),
   Rpc.make("lerSecao", { payload: lerSecao.entrada, success: lerSecao.saida, error: ErroDeLeitura }),
-  Rpc.make("buscarSecoes", { payload: buscarSecoes.entrada, success: buscarSecoes.saida, error: ErroDeLeitura }),
   Rpc.make("listarCursos", { payload: listarCursos.entrada, success: listarCursos.saida, error: ErroDeLeitura }),
   Rpc.make("sobreABase", { payload: sobreABase.entrada, success: sobreABase.saida, error: ErroDeLeitura }),
   Rpc.make("lerLink", { payload: EntradaLink, success: LinkLido, error: ErroDeLeitura }),

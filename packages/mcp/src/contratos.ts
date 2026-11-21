@@ -2,8 +2,7 @@
  * Contratos de leitura da base do IFPR, em Effect Schema: o envelope comum das respostas
  * (especificação M0.1, "Envelope"), os tipos comuns às ferramentas ("Tipos comuns": `NormaResumo`,
  * `Relacao`, `DispositivoTexto`, transição e fatos de PPC) e os erros de leitura. São os mesmos
- * schemas das ferramentas MCP (`./toolkit`) e do grupo RPC (`./rpc`); o fork os importa daqui
- * (`@simplifica-if/mcp/contratos`).
+ * schemas das ferramentas MCP e do grupo RPC (`./rpc`).
  */
 import { CANAIS } from "@simplifica-if/kb/canal";
 import * as Schema from "effect/Schema";

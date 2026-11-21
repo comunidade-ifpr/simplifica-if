@@ -8,7 +8,6 @@ import { arquivosNormas } from "./front-matter.ts";
 import { ehObjeto } from "@simplifica-if/kb/json";
 import { validarCatalogos } from "./validacao/catalogos.ts";
 import { Contexto } from "./validacao/contexto.ts";
-import { validarInstitucional } from "./validacao/institucional.ts";
 import {
   carregarManifest,
   validarCoberturaManifest,
@@ -21,7 +20,7 @@ import {
   validarStubs,
   validarUnicidadeIds,
 } from "./validacao/normas.ts";
-import { validarArtefatosConversaoPpc } from "./validacao/ppcs.ts";
+import { validarArtefatosConversaoPpc, validarPpcs } from "./validacao/ppcs.ts";
 
 export type ResultadoValidacao = { erros: string[]; totalNormas: number };
 
@@ -35,7 +34,7 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
 
   erros.push(...validarCoberturaManifest(ctx, manifest));
   erros.push(...validarReadme(ctx));
-  erros.push(...validarInstitucional(ctx));
+  erros.push(...validarPpcs(ctx));
   erros.push(...validarCatalogos(ctx));
   if (opcoes.artefatosPpc) erros.push(...validarArtefatosConversaoPpc(ctx));
 

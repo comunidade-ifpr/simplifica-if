@@ -3,7 +3,7 @@
 /**
  * Gera `src/instrucoes.gerado.ts` a partir de `instrucoes.md`: o texto das instruções do servidor
  * vira uma constante, embutida no bundle e no executável sem import de texto (que cada ferramenta
- * trata de um jeito: Node, vitest, tsdown e o bundler do fork).
+ * trata de um jeito: Node, vitest, tsdown e o bundler do app).
  *
  *   pnpm mcp:instrucoes            # regrava o módulo
  *   pnpm mcp:instrucoes --check    # só confere (falha se o módulo estiver desatualizado)

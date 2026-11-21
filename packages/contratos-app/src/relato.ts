@@ -73,7 +73,6 @@ export class FalhaRelato extends Schema.TaggedError<FalhaRelato>()("FalhaRelato"
     return this.motivo;
   }
 }
-export const ehFalhaRelato = Schema.is(FalhaRelato);
 
 export class GrupoRelato extends RpcGroup.make(
   /** O rascunho do relato da resposta de um turno, da conversa gravada. */

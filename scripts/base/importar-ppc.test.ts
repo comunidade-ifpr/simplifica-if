@@ -347,7 +347,7 @@ describe("importarPpcDocx", () => {
       const caminhos = criarCaminhos(raiz);
       const { arquivos, ...pastas } = arquivosIndices(caminhos, gerarIndices(caminhos, "2026-11-17"));
       yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
-      expect(validarPpcs(new Contexto(caminhos), {})).toEqual([]);
+      expect(validarPpcs(new Contexto(caminhos))).toEqual([]);
       const relativo = "institucional/ifpr/ppcs/campus-a/tecnico-x.md";
       expect(dadosPessoaisEUrlsInternas(relativo, NodeFS.readFileSync(caminhoPpc(raiz), "utf-8"))).toEqual([]);
     }).pipe(Effect.provide(NodeServices.layer)),

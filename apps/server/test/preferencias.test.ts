@@ -53,8 +53,6 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
       assert.match(iniciar.message, /leia o aviso de uso/);
       const enviar = yield* Effect.flip(Stream.runDrain(rpc["conversa.enviar"]({ sessao: "x", texto: "oi" })));
       assert.strictEqual(enviar._tag, "AvisoNaoAceito");
-      const retomar = yield* Effect.flip(rpc["conversa.retomar"]({ sessao: "x" }));
-      assert.strictEqual(retomar._tag, "AvisoNaoAceito");
       const ia = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "x" }));
       assert.strictEqual(ia._tag, "AvisoNaoAceito");
       const sugerir = yield* Effect.flip(rpc["revisaoPpc.sugerir"]({ lista: "x", chave: "y", provider: "claude" }));

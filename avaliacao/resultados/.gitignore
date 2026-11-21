@@ -1,4 +1,4 @@
-# Saídas de node scripts/avaliar.ts: relatório JSON, resumo Markdown e stream-json bruto.
-# Ficam fora do git; para guardar uma linha de base, use git add -f no resumo.md da rodada.
+# Saídas de node scripts/avaliar_skill.ts: relatório JSON e transcrições.
+# Ficam fora do git.
 *
 !.gitignore

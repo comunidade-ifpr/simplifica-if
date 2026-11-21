@@ -3,7 +3,7 @@
  *
  * - `layerSomenteLeitura({ caminho })`: o `kb.sqlite` em `caminho`, só leitura, e todos os serviços
  *   de consulta, com as fontes remontadas das tabelas. Não exige `FileSystem`: o tipo garante que
- *   nada no caminho lê o repositório. É a do servidor MCP e a do fork.
+ *   nada no caminho lê o repositório. É a do servidor MCP e a do app.
  * - `layerRepositorio({ raiz })`: o checkout em `raiz`. Recompila o `tmp/kb.sqlite` quando ele está
  *   ausente ou mais velho que as fontes (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`
  *   desliga ou força) e lê as fontes normativas dos arquivos. É a da CLI.

@@ -141,7 +141,6 @@ Depois de alterar normas, `relacoes.yaml`, `transicoes.yaml`, `correspondencias/
 ```bash
 node scripts/gerar_base.ts      # campos gerados do front matter (relações, status de vigência) e manifest.json
 node scripts/validar_base.ts
-node scripts/avaliacao/gabaritos/gerar.ts   # universos e conjuntos esperados da avaliação (avaliacao/gabaritos/)
 ```
 
 Depois, compile o banco (`pnpm kb:compilar`) e confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes`) e recalcule a contagem de casos de `testes.txt` pelo roteiro JUnit do [README do gabarito](testes-gabarito/README.md): uma norma nova muda escores de busca, contagens do banco e o número de casos de `estrutura.test.ts`, que tem um caso por norma. Norma nova também entra em `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`), porque os testes de saneamento e de status manual comparam as normas com o commit anterior ao saneamento, e na contagem de `estrutura.test.ts`.

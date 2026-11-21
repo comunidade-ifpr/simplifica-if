@@ -143,7 +143,7 @@ const resumo = (conversas: Conversas.Conversas["Service"], id: string) =>
   Effect.map(conversas.listar, (lista) => lista.find((conversa) => conversa.id === id));
 
 describe("conversas gravadas", () => {
-  it.effect("sem o aviso de uso aceito, iniciar, enviar e retomar recusam antes de abrir a sessão", () =>
+  it.effect("sem o aviso de uso aceito, iniciar e enviar recusam antes de abrir a sessão", () =>
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, preferencias, fechar } = yield* abrir(novoBanco(), registro, undefined, Preferencias.layer);
@@ -151,8 +151,6 @@ describe("conversas gravadas", () => {
       assert.strictEqual(iniciar._tag, "AvisoNaoAceito");
       const enviar = yield* Effect.flip(Stream.runDrain(conversas.enviar("qualquer", "oi")));
       assert.strictEqual(enviar._tag, "AvisoNaoAceito");
-      const retomar = yield* Effect.flip(conversas.retomar("qualquer"));
-      assert.strictEqual(retomar._tag, "AvisoNaoAceito");
       assert.deepStrictEqual(registro.configs, []);
       assert.deepStrictEqual(yield* conversas.listar, []);
 
@@ -205,7 +203,7 @@ describe("conversas gravadas", () => {
     }),
   );
 
-  it.effect("migrações: o banco novo fica na versão 7, e reabrir não roda de novo", () =>
+  it.effect("migrações: o banco novo fica na versão 1, e reabrir não roda de novo", () =>
     Effect.gen(function* () {
       const arquivo = novoBanco();
       for (let vez = 0; vez < 2; vez++) {
@@ -240,16 +238,7 @@ describe("conversas gravadas", () => {
             `;
             assert.deepStrictEqual(
               migracoes.map((linha) => [linha.migration_id, linha.name]),
-              [
-                [1, "Conversas"],
-                [2, "RevisoesIa"],
-                [3, "TentativasIa"],
-                [4, "ListasPendencias"],
-                [5, "ModoServidor"],
-                [6, "Preferencias"],
-                [7, "Relatos"],
-                [8, "EsforcoConversa"],
-              ],
+              [[1, "Inicial"]],
             );
             // A layer já migrou: rodar de novo não executa nada.
             const executadas = yield* Banco.rodarMigracoes().pipe(Effect.provideService(SqlClient.SqlClient, sql));
@@ -467,14 +456,11 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       // A retomada reabre com o modelo e o esforço escolhidos no começo.
       assert.deepInclude(registro.configs.at(-1), { modelo: "opus", esforco: "xhigh" });
-      // `retomar` com a sessão aberta não abre outra.
-      yield* conversas.retomar(id);
-      assert.strictEqual(registro.configs.length, 2);
-      // `encerrar` libera a sessão, e `retomar` a reabre sem mensagem.
+      // `encerrar` libera a sessão, e a próxima mensagem a reabre.
       yield* conversas.encerrar(id);
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "liberada");
-      const retomada = yield* conversas.retomar(id);
-      assert.strictEqual(retomada.estado, "pronta");
+      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      assert.strictEqual((yield* resumo(conversas, id))?.estado, "pronta");
       assert.strictEqual(registro.configs.length, 3);
       yield* fechar;
     }),
@@ -497,14 +483,14 @@ describe("ciclo de vida da sessão do provider", () => {
 
       // Retomada pelo provider.
       yield* conversas.encerrar(id);
-      yield* conversas.retomar(id);
+      yield* Stream.runCollect(conversas.enviar(id, "voltei"));
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
 
       // Retomada recusada: a sessão recomeçada também as recebe.
       yield* conversas.encerrar(id);
       registro.recusarRetomada = true;
-      yield* conversas.retomar(id);
+      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
       assert.isUndefined(registro.configs.at(-1)?.retomar);
       assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
       yield* fechar;

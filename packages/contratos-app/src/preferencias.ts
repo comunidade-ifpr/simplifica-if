@@ -73,8 +73,6 @@ export class AvisoNaoAceito extends Schema.TaggedError<AvisoNaoAceito>()("AvisoN
   }
 }
 
-export const ehAvisoNaoAceito = Schema.is(AvisoNaoAceito);
-
 const Vazio = Schema.Struct({});
 
 export class GrupoPreferencias extends RpcGroup.make(

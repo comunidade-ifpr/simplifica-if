@@ -53,10 +53,8 @@ export const layerHandlersRpc = GrupoLeitura.toLayer(
     return GrupoLeitura.of({
       fichaNorma: traduzir("fichaNorma", leitura.fichaNorma),
       lerDispositivos: traduzir("lerDispositivos", leitura.lerDispositivos),
-      buscarNorma: traduzir("buscarNorma", leitura.buscarNorma),
       fichaCurso: traduzir("fichaCurso", leitura.fichaCurso),
       lerSecao: traduzir("lerSecao", leitura.lerSecao),
-      buscarSecoes: traduzir("buscarSecoes", leitura.buscarSecoes),
       listarCursos: traduzir("listarCursos", leitura.listarCursos),
       sobreABase: traduzir("sobreABase", leitura.sobreABase),
       lerLink: traduzir("lerLink", ({ link }: { readonly link: string }) =>

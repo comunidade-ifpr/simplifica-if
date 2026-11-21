@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off -- o resumo do nome longo é síncrono, numa função pura (`caminhoDoTexto`)
 /**
  * `TextosAnexos`: a versão em texto dos anexos que a IA não lê sozinha (proposta "Anexos em texto
- * para a IA", `docs/plans/propostas/anexos-em-texto.md`).
+ * para a IA", a proposta de 19/11/2026, no histórico do git).
  *
  * O `.docx`, o `.odt` e o PDF: o Claude não lê o `.docx` nem o `.odt`, e o Codex não lê nenhum deles sem um conversor
  * instalado e um comando, que pede aprovação. O `PastasTrabalho` lê o documento da pasta sem seguir link

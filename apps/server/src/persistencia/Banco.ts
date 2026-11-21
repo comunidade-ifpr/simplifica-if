@@ -20,29 +20,16 @@ import * as Path from "effect/Path";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as Migrator from "effect/sql/Migrator";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
-import Migracao0001 from "./migracoes/0001_Conversas.ts";
-import Migracao0002 from "./migracoes/0002_RevisoesIa.ts";
-import Migracao0003 from "./migracoes/0003_TentativasIa.ts";
-import Migracao0004 from "./migracoes/0004_ListasPendencias.ts";
-import Migracao0005 from "./migracoes/0005_ModoServidor.ts";
-import Migracao0006 from "./migracoes/0006_Preferencias.ts";
-import Migracao0007 from "./migracoes/0007_Relatos.ts";
-import Migracao0008 from "./migracoes/0008_EsforcoConversa.ts";
+import Migracao0001 from "./migracoes/0001_Inicial.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
 
-/** As migrações, em ordem. Uma vez publicada, uma migração não muda: a mudança seguinte é outra. */
-const MIGRACOES = [
-  [1, "Conversas", Migracao0001],
-  [2, "RevisoesIa", Migracao0002],
-  [3, "TentativasIa", Migracao0003],
-  [4, "ListasPendencias", Migracao0004],
-  [5, "ModoServidor", Migracao0005],
-  [6, "Preferencias", Migracao0006],
-  [7, "Relatos", Migracao0007],
-  [8, "EsforcoConversa", Migracao0008],
-] as const;
+/**
+ * As migrações, em ordem. Enquanto o app não tem usuários, a 1 é o banco inteiro e muda no lugar (apague
+ * o `conversas.sqlite` de desenvolvimento); depois do primeiro piloto, cada mudança é uma migração nova.
+ */
+const MIGRACOES = [[1, "Inicial", Migracao0001]] as const;
 
 const carregador = (ate: number) =>
   Migrator.fromRecord(

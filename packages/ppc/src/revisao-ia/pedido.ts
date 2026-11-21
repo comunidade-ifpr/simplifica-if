@@ -1,8 +1,7 @@
 /**
  * Revisão com IA (M1.11, etapa 4): as instruções da sessão de julgamento e o pedido de cada bloco.
  *
- * Vem das PoCs de A (`refs/arquivo/m1-11-proposta-A`, `julgamento.ts`) e de B
- * (`refs/arquivo/m1-11-proposta-B`, `parada.ts`): o PPC (texto da pessoa, não confiável) vai entre
+ * Vem das provas de conceito das propostas A (`julgamento.ts`) e B (`parada.ts`) do M1.11: o PPC (texto da pessoa, não confiável) vai entre
  * marcas com um código da rodada (nonce) que o PPC não tem como adivinhar; as fichas, o contexto
  * normativo e o contrato ficam fora delas. Ao contrário de B, a resposta é só JSON (a explicação de
  * cada pendência vai nele, e o servidor monta o texto), o que corta a saída pela metade.

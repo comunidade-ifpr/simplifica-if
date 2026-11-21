@@ -12,7 +12,7 @@
  *   revogado ao fechar) e grava a conversa com o id nativo do provider.
  * - Ociosa por `OCIOSIDADE` (30 minutos, como no T3), sem turno em andamento, a sessão se libera: o
  *   processo do provider morre, e a conversa fica `liberada`.
- * - Na próxima mensagem (ou em `retomar`), a sessão se reabre pela retomada do provider
+ * - Na próxima mensagem, a sessão se reabre pela retomada do provider
  *   (`ConfigSessao.retomar` com o id nativo). Se o provider não retomar (sem `session/load` no `agy`,
  *   transcrição apagada), abre-se uma sessão nova, e a próxima mensagem leva o histórico gravado como
  *   contexto.
@@ -34,7 +34,7 @@
  *
  * A política de aprovação (M1.7) fica no motor: aqui só chegam os pedidos que ela manda perguntar.
  *
- * **Aviso de uso (M1.8):** nada vai à IA antes do aviso aceito. `iniciar`, `enviar` e `retomar`, que
+ * **Aviso de uso (M1.8):** nada vai à IA antes do aviso aceito. `iniciar` e `enviar`, que
  * abrem a sessão do provider ou mandam a mensagem, recusam com `AvisoNaoAceito` antes de tudo.
  *
  * **Skills do app (M1.11):** toda sessão aberta (nova, retomada ou recomeçada com o histórico) leva as
@@ -119,9 +119,6 @@ export class Conversas extends Context.Service<
     readonly listar: Effect.Effect<ReadonlyArray<ResumoConversa>>;
     readonly carregar: (sessao: string) => Effect.Effect<ConversaGravada, Motor.SessaoDesconhecida>;
     readonly acompanhar: (sessao: string, depois: number) => Stream.Stream<ItemConversa, Motor.SessaoDesconhecida>;
-    readonly retomar: (
-      sessao: string,
-    ) => Effect.Effect<ResumoConversa, Motor.FalhaProvider | Motor.SessaoDesconhecida | AvisoNaoAceito>;
     /** 👍/👎 na resposta do turno; `null` retira. */
     readonly avaliar: (
       sessao: string,
@@ -909,22 +906,6 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       }),
     );
 
-  const retomar = Effect.fn("Conversas.retomar")(function* (id: string) {
-    yield* exigirAviso;
-    const viva = yield* obter(id);
-    yield* viva.trava.withPermits(1)(
-      Effect.gen(function* () {
-        const aberta = viva.sessao !== undefined;
-        yield* abrirSessao(viva);
-        if (!aberta && viva.turno === undefined) {
-          yield* alterar(viva, { estado: "pronta" });
-          yield* agendarOciosidade(viva);
-        }
-      }),
-    );
-    return resumo(viva.registro);
-  });
-
   const avaliar = Effect.fn("Conversas.avaliar")(function* (id: string, turno: number, nota: NotaResposta | null) {
     yield* obter(id);
     yield* historico.avaliar(id, turno, nota);
@@ -957,7 +938,6 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     listar: Effect.map(historico.listar, (registros) => registros.map(resumo)),
     carregar,
     acompanhar,
-    retomar,
   });
 });
 

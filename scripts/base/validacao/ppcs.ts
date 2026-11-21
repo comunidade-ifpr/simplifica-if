@@ -1,5 +1,5 @@
 // @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os PPCs e os índices com node:fs
-/** Validação do índice de PPCs, das seções indexadas, dos PPCPs e dos artefatos de conversão. */
+/** Validação do índice de PPCs, das seções indexadas e dos artefatos de conversão. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
@@ -9,7 +9,7 @@ import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
 import { analisarPpc, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
-import type { IndicePpcpsJson, IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
+import type { IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
 import { aparar, ESPACOS, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
 import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, type Recebido } from "./contexto.ts";
@@ -124,7 +124,7 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
   return erros;
 }
 
-export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
+export function validarPpcs(ctx: Contexto): string[] {
   const rIndice = ctx.rel(ctx.c.indicePpcs);
   const carregado = ctx.carregarJson(ctx.c.indicePpcs, "índice de PPCs");
   if (!carregado.ok) return carregado.erros;
@@ -155,12 +155,6 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
     return erros;
   }
   if (!valoresIguais(indice.total_itens, itens.length)) erros.push(`${rIndice}: total_itens diverge de items`);
-
-  const colecao = ctx.colecao(manifest, "colecoes", "ppcs-ifpr");
-  if (colecao === null) erros.push("institucional_manifest.json: coleção ppcs-ifpr ausente");
-  else if (colecao && !valoresIguais(colecao.total_itens, itens.length)) {
-    erros.push("institucional_manifest.json: total_itens de ppcs-ifpr diverge do index.json");
-  }
 
   const ppcsEsperados = ppcsConvertidosDosCursos(ctx);
   const idsVistos = new Set<string>();
@@ -237,53 +231,6 @@ function validarProvenienciaItem(
   }
   if (!valoresIguais(item.proveniencia, resumoProveniencia(proveniencia))) {
     erros.push(`índice de PPCs: proveniencia de ${ppcId} diverge do front matter`);
-  }
-  return erros;
-}
-
-export function validarPpcps(ctx: Contexto, manifest: unknown): string[] {
-  const rIndice = ctx.rel(ctx.c.indicePpcps);
-  const carregado = ctx.carregarJson(ctx.c.indicePpcps, "índice de PPCPs");
-  if (!carregado.ok) return carregado.erros;
-  const indice = carregado.valor;
-  if (!ehRecebido<IndicePpcpsJson>(indice)) return [];
-
-  const { erros } = ctx.conferirSchema(indice, "indicePpcps", rIndice);
-  const itens = indice.items;
-  if (!Array.isArray(itens) || !itens.length) return erros;
-  if (!valoresIguais(indice.total_itens, itens.length)) erros.push(`${rIndice}: total_itens diverge de items`);
-
-  const colecao = ctx.colecao(manifest, "colecoes", "ppcps-rede-certifica-ifpr");
-  if (colecao === null) erros.push("institucional_manifest.json: coleção ppcps-rede-certifica-ifpr ausente");
-  else if (colecao && !valoresIguais(colecao.total_itens, itens.length)) {
-    erros.push("institucional_manifest.json: total_itens de ppcps-rede-certifica-ifpr diverge do index.json");
-  }
-
-  const idsVistos = new Set<string>();
-  const pathsIndice = new Set<string>();
-  for (const item of itens) {
-    if (!ehRecebido<IndicePpcpsJson["items"][number]>(item)) continue;
-    const { id: itemId, path: valorPath } = item;
-    if (typeof itemId === "string") {
-      if (idsVistos.has(itemId)) erros.push(`${rIndice}: id duplicado: ${itemId}`);
-      idsVistos.add(itemId);
-    }
-    if (typeof valorPath !== "string") continue;
-    if (pathsIndice.has(valorPath)) erros.push(`${rIndice}: path duplicado: ${valorPath}`);
-    pathsIndice.add(valorPath);
-    const caminho = naBase(ctx.c, valorPath);
-    if (!NodeFS.existsSync(caminho)) {
-      erros.push(`${rIndice}: path inexistente: ${valorPath}`);
-      continue;
-    }
-    erros.push(...ctx.validarLinks(caminho, lerTexto(caminho)));
-  }
-
-  const pathsMarkdown = new Set(listarDiretorio(ctx.c.ppcps, ".md").map((caminho) => ctx.rel(caminho)));
-  if (!mesmosElementos(pathsIndice, pathsMarkdown)) {
-    erros.push(
-      `índice de PPCPs não cobre exatamente os Markdown da coleção: index=${listaOrdenada(pathsIndice)} arquivos=${listaOrdenada(pathsMarkdown)}`,
-    );
   }
   return erros;
 }

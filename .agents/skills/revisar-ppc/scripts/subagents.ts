@@ -239,8 +239,6 @@ export const contextoFundamentacaoNormativa = Effect.fn("subagents.contextoFunda
     base_path: yield* seExiste(base),
     manifestos: {
       normas: yield* seExiste(path.join(base, "manifest.json")),
-      institucional: yield* seExiste(path.join(base, "institucional_manifest.json")),
-      catalogos: yield* seExiste(path.join(base, "catalogos_manifest.json")),
       cnct: yield* seExiste(path.join(base, "catalogos", "cnct", "manifest.json")),
     },
     status_permitidos: [...STATUS_FUNDAMENTACAO_NORMATIVA],

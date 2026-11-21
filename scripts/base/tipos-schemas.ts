@@ -5,27 +5,6 @@
  */
 
 /**
- * Manifesto de catálogos estruturados (schemas/catalogos_manifest.schema.json).
- */
-export interface ManifestCatalogosJson {
-  title: string;
-  tipo: "catalogos_estruturados";
-  versao: number;
-  atualizado_em: string;
-  /**
-   * @minItems 1
-   */
-  catalogos: {
-    id: string;
-    title: string;
-    sigla: string;
-    tipo_item: "curso_tecnico_cnct";
-    path: string;
-    total_itens: number;
-  }[];
-}
-
-/**
  * Curso CNCT (schemas/cnct_curso.schema.json).
  */
 export interface CursoCnctJson {
@@ -101,46 +80,6 @@ export interface ManifestCnctJson {
    * @minItems 1
    */
   uso_recomendado: string[];
-}
-
-/**
- * Manifesto institucional (schemas/institucional_manifest.schema.json).
- */
-export interface ManifestInstitucionalJson {
-  title: string;
-  tipo: "cadastro_institucional";
-  versao: number;
-  atualizado_em: string;
-  /**
-   * @minItems 1
-   */
-  colecoes: {
-    id: string;
-    title: string;
-    tipo_item: "campus" | "referencia_institucional" | "ppc" | "ppcp";
-    path: string;
-    total_itens: number;
-  }[];
-}
-
-/**
- * Índice de PPCPs da Rede Certifica (schemas/ppcps_index.schema.json).
- */
-export interface IndicePpcpsJson {
-  collection: "ppcps-rede-certifica-ifpr";
-  title: string;
-  updated_at: string;
-  total_itens: number;
-  /**
-   * @minItems 1
-   */
-  items: {
-    id: string;
-    title: string;
-    tipo: string;
-    status: string;
-    path: string;
-  }[];
 }
 
 /**

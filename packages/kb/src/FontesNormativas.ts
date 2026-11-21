@@ -7,7 +7,7 @@
  *
  * - `layerBanco`: remonta tudo das tabelas do `kb.sqlite` (`normas`, `relacoes`, `transicoes`,
  *   `meta`, `sinonimos_*`, `topicos`, `topicos_secoes`, `fichas`). Exige só o `SqlClient`: o tipo
- *   garante que ela não lê arquivo, e é o que deixa o servidor MCP e o fork rodarem sem o
+ *   garante que ela não lê arquivo, e é o que deixa o servidor MCP e o app rodarem sem o
  *   repositório.
  * - `layerArquivos({ raiz })`: lê os arquivos do checkout por `FileSystem` e `Path` e os interpreta
  *   com as mesmas funções puras dos carregadores síncronos (`montarRegistro`, `relacoesDoYaml`…).

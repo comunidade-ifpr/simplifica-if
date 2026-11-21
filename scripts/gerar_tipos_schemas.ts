@@ -24,12 +24,9 @@ const RAIZ_SCHEMAS = NodePath.join(RAIZ_BASE, "schemas");
 
 /** Nome do tipo gerado para cada schema; um schema novo precisa ganhar nome aqui. */
 const NOMES_TIPOS: Record<string, string> = {
-  catalogos_manifest: "ManifestCatalogosJson",
   cnct_curso: "CursoCnctJson",
   cnct_index: "IndiceCnctJson",
   cnct_manifest: "ManifestCnctJson",
-  institucional_manifest: "ManifestInstitucionalJson",
-  ppcps_index: "IndicePpcpsJson",
   ppcs_index: "IndicePpcsJson",
   ppcs_secao: "SecaoPpcJson",
 };

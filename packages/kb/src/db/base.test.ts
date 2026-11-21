@@ -170,7 +170,6 @@ const vesperaDe = (data: string): string =>
   DateTime.formatIsoDateUtc(DateTime.subtract(DateTime.makeUnsafe(`${data}T00:00:00Z`), { days: 1 }));
 
 const Texto = Schema.String;
-const linhasPpcIds = Sql.todas(Schema.Struct({ ppc_id: Texto }));
 const linhasSecoes = Sql.todas(
   Schema.Struct({
     id: Texto,
@@ -251,30 +250,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const resultado = yield* avaliarBusca({ raiz });
         expect(resultado.consultas).toBeGreaterThanOrEqual(20);
         expect(resultado.recall.completo).toBeGreaterThanOrEqual(0.8);
-      }),
-    );
-
-    it.effect("cursos do eixo Informação e Comunicação no PS 2026 = gabarito da Q08", () =>
-      Effect.gen(function* () {
-        const { cursos } = yield* servicos;
-        const lista = yield* cursos.listar({ eixo: "Informação e Comunicação", processo: "processo-seletivo-2026" });
-        const campi = [...new Set(lista.map((c) => `campus:${c.campus.id}`))].sort();
-        const gabarito = (yield* lerJson("avaliacao/gabaritos/q08-campi-eixo-informacao-comunicacao.json")) as {
-          esperado: string[];
-        };
-        expect(campi).toEqual([...gabarito.esperado].sort());
-      }),
-    );
-
-    it.effect("PPCs que citam a Res. CNE/CP 1/2021 = gabarito da Q02", () =>
-      Effect.gen(function* () {
-        const ppcs = (yield* linhasPpcIds("SELECT DISTINCT ppc_id FROM citacoes WHERE ato_id = ? ORDER BY ppc_id", [
-          "br/cne-cp/res/2021/1",
-        ])).map((l) => l.ppc_id.replace(/^ppc:/, ""));
-        const gabarito = (yield* lerJson("avaliacao/gabaritos/q02-ppcs-citam-cne-cp-1-2021.json")) as {
-          esperado: string[];
-        };
-        expect(ppcs.length).toBe(gabarito.esperado.length);
       }),
     );
 

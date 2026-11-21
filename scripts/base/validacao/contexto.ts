@@ -3,17 +3,14 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
-import { ehObjeto, type ObjetoJson, representar } from "@simplifica-if/kb/json";
+import { ehObjeto, representar } from "@simplifica-if/kb/json";
 import { ehUrlAbsoluta, validarJsonSchema } from "@simplifica-if/kb/schema";
 import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import type {
   CursoCnctJson,
   IndiceCnctJson,
-  IndicePpcpsJson,
   IndicePpcsJson,
-  ManifestCatalogosJson,
   ManifestCnctJson,
-  ManifestInstitucionalJson,
   SecaoPpcJson,
 } from "../tipos-schemas.ts";
 
@@ -22,14 +19,11 @@ export type Resultado<T> = { ok: true; valor: T } | { ok: false; erros: string[]
 
 /** Formato de cada schema de `CaminhosBase["schemas"]`, gerado do próprio schema. */
 export type FormatosSchemas = {
-  manifestInstitucional: ManifestInstitucionalJson;
-  manifestCatalogos: ManifestCatalogosJson;
   manifestCnct: ManifestCnctJson;
   indiceCnct: IndiceCnctJson;
   cursoCnct: CursoCnctJson;
   indicePpcs: IndicePpcsJson;
   secaoPpc: SecaoPpcJson;
-  indicePpcps: IndicePpcpsJson;
 };
 export type NomeSchema = keyof CaminhosBase["schemas"] & keyof FormatosSchemas;
 
@@ -125,16 +119,5 @@ export class Contexto {
     if (typeof valor !== "string" || !valor) return [`${campo} deve ser URL textual não vazia`];
     if (!ehUrlAbsoluta(valor, "https")) return [`${campo} deve ser URL HTTPS absoluta válida`];
     return [];
-  }
-
-  /**
-   * Item `id` da lista `chaveLista` de um manifesto: `undefined` se o manifesto
-   * não tem a lista, `null` se a lista não tem o item.
-   */
-  colecao(manifest: unknown, chaveLista: string, id: string): ObjetoJson | null | undefined {
-    if (!ehObjeto(manifest)) return undefined;
-    const lista = manifest[chaveLista];
-    if (!Array.isArray(lista)) return undefined;
-    return lista.find((item): item is ObjetoJson => ehObjeto(item) && item.id === id) ?? null;
   }
 }

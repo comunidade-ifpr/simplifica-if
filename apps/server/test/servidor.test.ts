@@ -273,8 +273,6 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
         [...acompanhados].map((item) => item.ordem),
         [4, 5, 6],
       );
-      const retomada = yield* outro["conversa.retomar"]({ sessao });
-      assert.strictEqual(retomada.estado, "pronta");
       yield* outro["conversa.encerrar"]({ sessao });
     }).pipe(Effect.scoped),
   );

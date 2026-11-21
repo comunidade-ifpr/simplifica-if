@@ -4,7 +4,7 @@ Situação em 13/11/2026. Este plano consolida duas análises de arquitetura de 
 
 A versão 2 incorpora duas revisões independentes, uma da migração para TypeScript e outra das fases de retrieval. A seção [Histórico de revisões](#histórico-de-revisões) registra o que mudou.
 
-Desde a etapa C0 da [consolidação na stack do T3](docs/plans/consolidacao-stack-t3.md) (14/11/2026), o repositório roda em Node e pnpm. Os comandos deste plano foram atualizados; onde o texto registra como era antes, ele fala do Bun.
+Desde a etapa C0 da consolidação na stack do T3 (14/11/2026; o plano está no histórico do git), o repositório roda em Node e pnpm. Os comandos deste plano foram atualizados; onde o texto registra como era antes, ele fala do Bun.
 
 **Escopo:** a `revisar-ppc` (antes `analise-ppc`; veja a renomeação em [Andamento](#andamento)) e a base de conhecimento.
 

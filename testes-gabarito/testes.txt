@@ -22,7 +22,7 @@ packages/kb/src/avaliacao/resolvedor.test.ts	3	0
 packages/kb/src/busca/fts.test.ts	4	0
 packages/kb/src/busca/stemmer.test.ts	52	0
 packages/kb/src/busca/tokens.test.ts	19	0
-packages/kb/src/db/base.test.ts	35	0
+packages/kb/src/db/base.test.ts	33	0
 packages/kb/src/db/fontes.test.ts	8	0
 packages/kb/src/db/grupos-topico.test.ts	4	0
 packages/kb/src/db/unidades.test.ts	1	0
@@ -45,7 +45,6 @@ packages/kb/src/principal.test.ts	5	0
 packages/kb/src/texto.test.ts	12	0
 packages/mcp/test/abertura.test.ts	8	0
 packages/mcp/test/atualizacao.test.ts	1	0
-packages/mcp/test/consumidor/consumidor.test.ts	3	0
 packages/mcp/test/envelope.test.ts	8	0
 packages/mcp/test/equivalencia-schemas.test.ts	1	0
 packages/mcp/test/explorar.test.ts	7	0
@@ -57,7 +56,7 @@ packages/mcp/test/normas.test.ts	33	0
 packages/mcp/test/pacote-contexto.test.ts	16	0
 packages/mcp/test/ppcs-cursos.test.ts	31	0
 packages/mcp/test/recursos.test.ts	13	0
-packages/mcp/test/rpc.test.ts	17	0
+packages/mcp/test/rpc.test.ts	15	0
 packages/mcp/test/skills.test.ts	10	0
 packages/mcp/test/stdio.test.ts	11	0
 packages/mcp/test/texto.test.ts	6	0
@@ -70,13 +69,8 @@ packages/mcp/test/transversal/paridade.test.ts	17	16
 packages/mcp/test/transversal/pasta-de-trabalho.test.ts	1	0
 packages/mcp/test/transversal/sem-repositorio.test.ts	4	1
 scripts/aplicar_matrizes_suap.test.ts	10	0
-scripts/avaliacao/executor.test.ts	12	0
-scripts/avaliacao/gabaritos/gabaritos.test.ts	11	0
-scripts/avaliacao/perguntas.test.ts	12	0
-scripts/avaliacao/pontuacao.test.ts	16	0
 scripts/avaliacao/ppcs-ouro.test.ts	5	0
 scripts/avaliacao/skills.test.ts	8	0
-scripts/avaliacao/stream.test.ts	5	0
 scripts/avaliar_skill.test.ts	2	0
 scripts/base/base.test.ts	14	0
 scripts/base/gerados.test.ts	3	0
@@ -95,4 +89,4 @@ scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
 scripts/sincronizar_repos.test.ts	2	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1316	36
+TOTAL	1253	36

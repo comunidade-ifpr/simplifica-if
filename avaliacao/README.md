@@ -1,52 +1,16 @@
 # Avaliação da base
 
-Conjunto de avaliação e harness da fase 1 do [plano de arquitetura](../PLANO-ARQUITETURA.md). Mede a base como ela é usada de fato: um agente real (`claude -p`) responde a perguntas de uso, e a resposta é pontuada de forma determinística contra gabaritos ancorados em ID e texto citado.
+Conjuntos de avaliação. Os da base (resolvedor e busca de seções) são lidos pelo `kb`; os das skills rodam pelo motor do app, com o MCP `ifpr`.
 
 | Caminho | Conteúdo |
 |---|---|
-| `perguntas.yaml` | 25 perguntas (Q01–Q08 do plano + uso real), cada uma com gabarito |
-| `config.yaml` | modelo, execuções por pergunta, limite de turnos, orçamento e ferramentas |
-| `gabaritos/` | conjuntos esperados e universos, **gerados** (não edite à mão) |
-| `resolvedor/` | citações anotadas em 20 PPCs para medir o resolvedor de citações (rascunho) |
+| `resolvedor/` | citações anotadas em 20 PPCs para medir o resolvedor de citações (rascunho), por `pnpm kb avaliar-resolvedor` |
+| `busca-secoes/` | consultas rotuladas para o recall@10 da busca de seções (rascunho), por `pnpm kb avaliar-busca` |
 | `ppcs-ouro/` | achados esperados por ficha da `revisar-ppc` em 3 PPCs técnicos (rascunho) |
 | `skills/` | casos de avaliação das skills do app, com e sem a skill (ver [Skills do app](#skills-do-app)) |
-| `resultados/` | rodadas do harness (fora do git) |
+| `resultados/` | rodadas do `avaliar_skill.ts` (fora do git) |
 
-O código fica em `scripts/avaliacao/` e o entrypoint é `scripts/avaliar.ts`.
-
-## Como rodar
-
-```bash
-node scripts/avaliar.ts --dry-run                       # perguntas, gabaritos e comando, sem custo
-node scripts/avaliar.ts --pergunta Q09 --execucoes 1    # uma pergunta
-node scripts/avaliar.ts                                 # rodada completa (config.yaml)
-node scripts/avaliar.ts --modelo haiku                  # outro modelo
-node scripts/avaliar.ts --pontuar avaliacao/resultados/<rodada>/relatorio.json   # repontua sem chamar o modelo
-pnpm exec vp test run scripts/avaliacao
-```
-
-Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`) em `resultados/<data>-<modelo>/`. O agente roda com cwd na raiz, só com Read, Grep e Glob pré-aprovados dentro do repositório (`--permission-mode dontAsk` nega o resto), sem Bash, sem MCP e sem persistir sessão. Como ele escolhe o que ler, o executor não depende do `config.yaml` para proteger segredos: o `claude` recebe um ambiente mínimo por lista explícita (`PATH`, `HOME`, locale, proxy e a credencial do próprio `claude` quando vem do shell), sem nenhuma variável definida em `.env*`, e `--disallowedTools` nega sempre Bash, escrita, web e a leitura de `.env*`, `~/.ssh`, `~/.aws`, `~/.config`, `~/.claude` e `/etc` (`REGRAS_NEGADAS` em `scripts/avaliacao/executor.ts`). O relatório registra o ID efetivo do modelo, o commit, as chamadas de ferramenta (e as negadas), os tokens e o custo.
-
-**Pontuação** (`scripts/avaliacao/pontuacao.ts`), sobre a resposta normalizada (sem acentos, minúscula, `nº` → `no`):
-
-- `deve_conter`: fração dos critérios em que algum padrão casa;
-- `nao_deve_conter`: −0,25 na nota por critério encontrado (ex.: tratar a Res. CNE/CP nº 1/2021 como vigente);
-- `conjunto`: precisão e recall sobre os itens do universo (campi, cursos/PPCs, normas) reconhecidos na resposta, por caminho, por nome do curso na linha do campus ou por número e ano da norma;
-- nota = média entre a cobertura de `deve_conter` e o F1 do conjunto, menos as penalidades.
-
-## Como adicionar uma pergunta
-
-1. Acrescente a entrada em `perguntas.yaml` com `id` (Q26…), `texto`, `categoria`, `tipo` (`pontual` ou `conjunto`), `origem` e `gabarito`.
-2. Para cada critério de `deve_conter`, dê a `ancora` no formato de ID do plano (`br/cne-cp/res/2026/2#art37-par6`, `cnct:...`, `curso:...`), o `arquivo` e um `trecho` literal curto da fonte, e os `padroes` (regex sobre o texto normalizado). Nunca use número de linha.
-3. Marque `status: curado` só depois de conferir o gabarito na base local; use `provisorio`, com `observacoes`, quando depender de curadoria humana ou de fase futura.
-4. Para pergunta de conjunto, escreva o gerador em `scripts/avaliacao/gabaritos/conjuntos.ts`, registre-o em `GERADORES` e aponte `gabarito.conjunto.arquivo` para o JSON.
-5. Rode `node scripts/avaliacao/gabaritos/gerar.ts` e `pnpm exec vp test run scripts/avaliacao`. O teste confere que todo `trecho` existe no `arquivo` e que os gabaritos versionados batem com os geradores.
-
-## Como os gabaritos são gerados
-
-`node scripts/avaliacao/gabaritos/gerar.ts` lê os registros de `base-conhecimento/institucional/ifpr/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `pnpm kb citacoes <id>`. O curso chega ao CNCT pelo `cnct_id` cadastrado em `base-conhecimento/institucional/ifpr/cursos/` (fase 3), e o turno das ofertas é o enum `turno_padronizado` (a grafia da fonte fica em `turno`).
-
-O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml` (rascunho, revisão humana pendente), medido por `pnpm kb avaliar-resolvedor`.
+O código fica em `scripts/avaliacao/` e o entrypoint é `scripts/avaliar_skill.ts`.
 
 ## PPCs-ouro
 

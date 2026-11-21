@@ -2,8 +2,8 @@ packages:
   - apps/*
   - packages/*
 
-# Versões compartilhadas com o fork do T3 Code (simplifica-if-app): mesma versão nos dois
-# repositórios, atualizada no mesmo dia. Ver docs/plans/consolidacao-stack-t3.md, "Versões fixadas".
+# Uma versão só no monorepo. Ela acompanha a do T3 Code quando o código copiado dele depende dela
+# (docs/upstream-t3.md), não automaticamente.
 # `pnpm sync:repos` traz `.repos/effect` na tag de `effect` daqui.
 catalog:
   "@effect/openapi-generator": 4.1.2

@@ -60,7 +60,7 @@ export const SessaoIniciada = Schema.Struct({
  * - `pronta`: a sessão do provider está aberta, sem turno em andamento;
  * - `respondendo`: há um turno em andamento;
  * - `liberada`: sem sessão aberta (ociosa por 30 minutos, encerrada ou o app fechou); a próxima
- *   mensagem (ou `conversa.retomar`) a reabre pela retomada do provider;
+ *   mensagem a reabre pela retomada do provider;
  * - `caiu`: o processo do provider caiu; a próxima mensagem a reabre pela retomada.
  */
 export const EstadoConversa = Schema.Literals(["pronta", "respondendo", "liberada", "caiu"]);
@@ -191,12 +191,6 @@ export class GrupoConversa extends RpcGroup.make(
     success: ItemConversa,
     error: SessaoDesconhecida,
     stream: true,
-  }),
-  /** Reabre já a sessão do provider pela retomada (sem esperar a próxima mensagem). */
-  Rpc.make("conversa.retomar", {
-    payload: EntradaSessao,
-    success: ResumoConversa,
-    error: Schema.Union([FalhaProvider, SessaoDesconhecida, AvisoNaoAceito]),
   }),
   /** 👍/👎 na resposta do turno (`null` retira a avaliação); gravado no servidor. */
   Rpc.make("conversa.avaliar", {

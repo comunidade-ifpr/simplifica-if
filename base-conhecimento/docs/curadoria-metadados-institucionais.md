@@ -40,9 +40,7 @@ Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no c
 
 ## Organização da base
 
-Use `docs/` apenas para documentação de apoio à manutenção e curadoria. Conteúdos destinados à consulta pública devem ficar na coleção temática correspondente, como `normas/`, `catalogos/`, `institucional/ifpr/referencias/` ou as coleções de registros institucionais (`institucional/ifpr/campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`).
-
-Para referências institucionais transversais do IFPR que não sejam cadastro de campus, PPC ou processo seletivo, use `institucional/ifpr/referencias/` e atualize o índice da coleção quando necessário.
+Use `docs/` apenas para documentação de apoio à manutenção e curadoria. Conteúdos destinados à consulta pública devem ficar na coleção temática correspondente, como `normas/`, `catalogos/` ou as coleções de registros institucionais (`institucional/ifpr/campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`).
 
 ## Cursos
 
@@ -66,8 +64,6 @@ No registro do curso, esses dados ficam em `suap`. `suap.vagas` representa vagas
 
 - `cursos[].ppc.metadados.vagas`, que vem do PPC;
 - `processos-seletivos[].ofertas[].vagas`, que vem de edital de ingresso.
-
-Para relatórios brutos do SUAP com coluna `DIRETORIA`, use `institucional/ifpr/referencias/suap-diretorias.json` como apoio para associar diretoria a `campus_id`.
 
 ### Matrizes e cargas horárias
 

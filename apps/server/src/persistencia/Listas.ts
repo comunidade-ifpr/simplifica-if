@@ -1,5 +1,5 @@
 /**
- * A lista viva de pendências no banco das conversas (migração 4, M1.11 etapa 5b): a lista, cada
+ * A lista viva de pendências no banco das conversas (M1.11 etapa 5b): a lista, cada
  * pendência com a situação e a sugestão, o histórico e o uso das ações com IA. Os JSONs são do próprio
  * servidor, gravados e lidos pelos schemas do contrato; uma falha do banco ou um JSON fora de forma é
  * defeito, como nas `Revisoes`.

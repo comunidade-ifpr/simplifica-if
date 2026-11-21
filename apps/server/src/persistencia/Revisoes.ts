@@ -1,5 +1,5 @@
 /**
- * As revisões de PPC com IA no banco (`Banco.ts`, migração 2): a revisão, o plano e o resultado
+ * As revisões de PPC com IA no banco (`Banco.ts`): a revisão, o plano e o resultado
  * conferido de cada bloco. Os JSONs são do próprio servidor (`revisao-ppc/RevisaoIa.ts`), gravados e
  * lidos pelos schemas do contrato; uma falha do banco ou um JSON fora de forma é defeito, como no
  * `Historico`.

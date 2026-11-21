@@ -22,29 +22,12 @@ export function normalizarTexto(texto: string): string {
     .join("\n");
 }
 
-/** Linhas não vazias do texto normalizado. */
-export function linhasNormalizadas(texto: string): string[] {
-  return normalizarTexto(texto)
-    .split("\n")
-    .filter((linha) => linha !== "");
-}
-
-/** Escapa um literal para uso dentro de uma expressão regular. */
-export function escaparRegex(literal: string): string {
-  return literal.replace(/[.*+?^${}()|[\]\\/]/gu, "\\$&");
-}
-
 /** Compila um padrão do gabarito (fonte de regex sobre texto normalizado). */
 export function compilarPadrao(fonte: string): RegExp {
   return new RegExp(fonte, "u");
 }
 
-/** Comparação por código: a ordem não muda com a localidade da máquina. */
-export function compararTexto(a: string, b: string): number {
-  return a < b ? -1 : a > b ? 1 : 0;
-}
-
-/** JSON determinístico com quebra final, no formato dos gabaritos gerados. */
+/** JSON determinístico com quebra final. */
 export function serializarJson(valor: unknown): string {
   return `${JSON.stringify(valor, null, 2)}\n`;
 }

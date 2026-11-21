@@ -1,9 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), monta caminhos com node:path
-/** Validação dos catálogos (catalogos_manifest.json e CNCT). */
+/** Validação do catálogo do CNCT. */
 import * as NodePath from "node:path";
 import { listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import { textoDe, valoresIguais } from "@simplifica-if/kb/json";
-import type { CursoCnctJson, IndiceCnctJson, ManifestCatalogosJson, ManifestCnctJson } from "../tipos-schemas.ts";
+import type { CursoCnctJson, IndiceCnctJson, ManifestCnctJson } from "../tipos-schemas.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, RE_SLUG, type Recebido } from "./contexto.ts";
 
 type ItemIndiceCnct = IndiceCnctJson["items"][number];
@@ -71,23 +71,6 @@ function validarArquivoCursoCnct(
   return { erros, curso: erros.length ? null : validos };
 }
 
-function validarCatalogosManifest(ctx: Contexto, manifestCatalogos: unknown, rManifestCnct: string): string[] {
-  if (!ehRecebido<ManifestCatalogosJson>(manifestCatalogos))
-    return ["catalogos_manifest.json deve conter um objeto JSON"];
-  const { erros } = ctx.conferirSchema(manifestCatalogos, "manifestCatalogos", "catalogos_manifest.json");
-  const catalogos = manifestCatalogos.catalogos;
-  if (!Array.isArray(catalogos) || !catalogos.length) {
-    erros.push("catalogos_manifest.json: catalogos deve ser lista não vazia");
-    return erros;
-  }
-  const cnct = ctx.colecao(manifestCatalogos, "catalogos", "cnct");
-  if (!cnct) erros.push("catalogos_manifest.json: catálogo cnct ausente");
-  else if (!valoresIguais(cnct.path, rManifestCnct)) {
-    erros.push("catalogos_manifest.json: path do catálogo cnct diverge do manifesto CNCT");
-  }
-  return erros;
-}
-
 function validarManifestCnct(ctx: Contexto, manifestCnct: unknown, rManifestCnct: string, rIndiceCnct: string) {
   if (!ehRecebido<ManifestCnctJson>(manifestCnct)) return [`${rManifestCnct} deve conter um objeto JSON`];
   const { erros } = ctx.conferirSchema(manifestCnct, "manifestCnct", rManifestCnct);
@@ -104,22 +87,16 @@ function validarManifestCnct(ctx: Contexto, manifestCnct: unknown, rManifestCnct
 
 export function validarCatalogos(ctx: Contexto): string[] {
   const carregados = [
-    ctx.carregarJson(ctx.c.manifestCatalogos, "catalogos_manifest.json"),
     ctx.carregarJson(ctx.c.manifestCnct, "manifesto CNCT"),
     ctx.carregarJson(ctx.c.indiceCnct, "índice CNCT"),
   ];
   const errosLeitura = carregados.flatMap((carregado) => (carregado.ok ? [] : carregado.erros));
   if (errosLeitura.length) return errosLeitura;
-  const [manifestCatalogos, manifestCnct, indiceCnct] = carregados.map((carregado) =>
-    carregado.ok ? carregado.valor : null,
-  );
+  const [manifestCnct, indiceCnct] = carregados.map((carregado) => (carregado.ok ? carregado.valor : null));
 
   const rManifestCnct = ctx.rel(ctx.c.manifestCnct);
   const rIndiceCnct = ctx.rel(ctx.c.indiceCnct);
-  const erros = [
-    ...validarCatalogosManifest(ctx, manifestCatalogos, rManifestCnct),
-    ...validarManifestCnct(ctx, manifestCnct, rManifestCnct, rIndiceCnct),
-  ];
+  const erros = validarManifestCnct(ctx, manifestCnct, rManifestCnct, rIndiceCnct);
 
   if (!ehRecebido<IndiceCnctJson>(indiceCnct)) {
     erros.push(`${rIndiceCnct} deve conter um objeto JSON`);
@@ -133,10 +110,6 @@ export function validarCatalogos(ctx: Contexto): string[] {
     return erros;
   }
 
-  const cnct = ctx.colecao(manifestCatalogos, "catalogos", "cnct");
-  if (cnct && !valoresIguais(cnct.total_itens, itens.length)) {
-    erros.push("catalogos_manifest.json: total_itens do CNCT diverge do index.json");
-  }
   if (ehRecebido<ManifestCnctJson>(manifestCnct) && !valoresIguais(manifestCnct.total_cursos, itens.length)) {
     erros.push(`${rManifestCnct}: total_cursos diverge do index.json`);
   }
@@ -184,7 +157,6 @@ export function validarCatalogos(ctx: Contexto): string[] {
 
   const esperados = new Set([rManifestCnct, rIndiceCnct, ...pathsCursos]);
   const atuais = new Set(listarRecursivo(ctx.c.catalogos, ".json").map((caminho) => ctx.rel(caminho)));
-  atuais.delete("catalogos_manifest.json");
   if (!mesmosElementos(atuais, esperados)) {
     erros.push(
       `catalogos/ contém arquivos JSON fora do contrato esperado: esperado=${listaOrdenada(esperados)} arquivos=${listaOrdenada(atuais)}`,

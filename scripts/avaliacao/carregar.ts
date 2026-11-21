@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carregadores síncronos dos arquivos de avaliacao/, usados pelos testes, pelos geradores de gabarito e pelo avaliar.ts
+// @effect-diagnostics nodeBuiltinImport:off -- carregadores síncronos dos arquivos de avaliacao/, usados pelos testes e pelo avaliar_skill.ts
 /** Leitura e validação dos arquivos de `avaliacao/` (YAML com o pacote `yaml`, JSON e Effect Schema). */
 import { parse as interpretarYaml } from "yaml";
 import * as NodeFS from "node:fs";
@@ -7,18 +7,7 @@ import * as Exit from "effect/Exit";
 import * as Schema from "effect/Schema";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { ESTRITO, type EsquemaSincrono } from "../esquema.ts";
-import {
-  esquemaArquivoPerguntas,
-  esquemaConfig,
-  esquemaGabaritoConjunto,
-  esquemaPpcOuro,
-  esquemaUniversos,
-  type ArquivoPerguntas,
-  type ConfigAvaliacao,
-  type GabaritoConjunto,
-  type PpcOuro,
-  type Universos,
-} from "./esquema.ts";
+import { esquemaPpcOuro, type PpcOuro } from "./esquema.ts";
 
 export const RAIZ_REPOSITORIO = NodePath.resolve(import.meta.dirname, "..", "..");
 export const DIR_AVALIACAO = NodePath.join(RAIZ_REPOSITORIO, "avaliacao");
@@ -62,31 +51,6 @@ export function validar<T>(esquema: EsquemaSincrono<T>, dados: unknown, origem: 
 
 export function lerYaml(caminho: string): unknown {
   return interpretarYaml(NodeFS.readFileSync(caminho, "utf-8"));
-}
-
-export function interpretarPerguntas(texto: string, origem = "perguntas.yaml"): ArquivoPerguntas {
-  return validar(esquemaArquivoPerguntas, interpretarYaml(texto), origem);
-}
-
-export function carregarPerguntas(caminho = NodePath.join(DIR_AVALIACAO, "perguntas.yaml")): ArquivoPerguntas {
-  return interpretarPerguntas(NodeFS.readFileSync(caminho, "utf-8"), NodePath.relative(RAIZ_REPOSITORIO, caminho));
-}
-
-export function carregarConfig(caminho = NodePath.join(DIR_AVALIACAO, "config.yaml")): ConfigAvaliacao {
-  return validar(esquemaConfig, lerYaml(caminho), NodePath.relative(RAIZ_REPOSITORIO, caminho));
-}
-
-export function carregarGabaritoConjunto(arquivo: string): GabaritoConjunto {
-  const caminho = NodePath.resolve(RAIZ_REPOSITORIO, arquivo);
-  return validar(esquemaGabaritoConjunto, JSON.parse(NodeFS.readFileSync(caminho, "utf-8")), arquivo);
-}
-
-export function carregarUniversos(caminho = NodePath.join(DIR_AVALIACAO, "gabaritos", "universos.json")): Universos {
-  return validar(
-    esquemaUniversos,
-    JSON.parse(NodeFS.readFileSync(caminho, "utf-8")),
-    NodePath.relative(RAIZ_REPOSITORIO, caminho),
-  );
 }
 
 export function carregarPpcOuro(caminho: string): PpcOuro {

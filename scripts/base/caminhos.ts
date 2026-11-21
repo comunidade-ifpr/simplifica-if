@@ -12,7 +12,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
   const raiz = NodePath.join(raizProjeto, "base-conhecimento");
   const institucional = NodePath.join(raiz, "institucional");
   const ppcs = NodePath.join(institucional, "ifpr", "ppcs");
-  const ppcps = NodePath.join(institucional, "ifpr", "ppcps");
   const catalogos = NodePath.join(raiz, "catalogos");
   const schemas = NodePath.join(raiz, "schemas");
   const schema = (nome: string) => NodePath.join(schemas, `${nome}.schema.json`);
@@ -24,23 +23,16 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
     ppcs,
     indicePpcs: NodePath.join(ppcs, "index.json"),
     secoesPpcs: NodePath.join(ppcs, "secoes"),
-    ppcps,
-    indicePpcps: NodePath.join(ppcps, "index.json"),
     catalogos,
-    manifestInstitucional: NodePath.join(raiz, "institucional_manifest.json"),
-    manifestCatalogos: NodePath.join(raiz, "catalogos_manifest.json"),
     manifestCnct: NodePath.join(catalogos, "cnct", "manifest.json"),
     indiceCnct: NodePath.join(catalogos, "cnct", "index.json"),
     cursosCnct: NodePath.join(catalogos, "cnct", "cursos"),
     schemas: {
-      manifestInstitucional: schema("institucional_manifest"),
-      manifestCatalogos: schema("catalogos_manifest"),
       manifestCnct: schema("cnct_manifest"),
       indiceCnct: schema("cnct_index"),
       cursoCnct: schema("cnct_curso"),
       indicePpcs: schema("ppcs_index"),
       secaoPpc: schema("ppcs_secao"),
-      indicePpcps: schema("ppcps_index"),
     },
     manifest: NodePath.join(raiz, "manifest.json"),
     readme: NodePath.join(raiz, "README.md"),
