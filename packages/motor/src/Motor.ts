@@ -27,6 +27,7 @@ import {
   type EstadoProvider,
   FalhaProvider,
   OperacaoNaoSuportada,
+  type ResultadoAtualizacaoHarness,
   type SessaoDriver,
   type TurnoEmAndamento,
 } from "./Driver.ts";
@@ -70,6 +71,13 @@ export class Motor extends Context.Service<
      * que o app abre no navegador; termina numa fase final.
      */
     readonly entrar: (provider: Provider) => Stream.Stream<EstadoLogin, FalhaProvider | OperacaoNaoSuportada>;
+    /** Confere e aplica atualização silenciosa da CLI gerenciada (Codex, Antigravity). */
+    readonly atualizarHarness: (provider: Provider) => Effect.Effect<ResultadoAtualizacaoHarness>;
+    /**
+     * Remove versões antigas da CLI gerenciada em disco (mantendo a ativa e a anterior). Não remove
+     * nada enquanto houver sessão aberta desse provider neste motor.
+     */
+    readonly limparVersoesAntigasHarness: (provider: Provider) => Effect.Effect<number>;
   }
 >()("@simplifica-if/motor/Motor") {}
 
@@ -94,7 +102,30 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
   const arquivos = yield* Effect.context<FileSystem.FileSystem | Path.Path>();
   const path = yield* Path.Path;
   const sessoes = new Map<string, SessaoAberta>();
+  /** Operações que executam ou instalam a CLI do provider fora de `sessoes` (`iniciarSessao`, `detectar`, `instalar`, `entrar`, `atualizarHarness`). */
+  const operacoesAtivas = new Map<Provider, number>();
   let sequencia = 0;
+
+  const entrarOperacao = (provider: Provider) =>
+    Effect.sync(() => {
+      operacoesAtivas.set(provider, (operacoesAtivas.get(provider) ?? 0) + 1);
+    });
+  const sairOperacao = (provider: Provider) =>
+    Effect.sync(() => {
+      const restante = (operacoesAtivas.get(provider) ?? 1) - 1;
+      if (restante > 0) operacoesAtivas.set(provider, restante);
+      else operacoesAtivas.delete(provider);
+    });
+  const comOperacaoAtiva = <A, E, R>(provider: Provider, efeito: Effect.Effect<A, E, R>) =>
+    Effect.acquireUseRelease(
+      entrarOperacao(provider),
+      () => efeito,
+      () => sairOperacao(provider),
+    );
+  const comStreamOperacaoAtiva = <A, E, R>(provider: Provider, stream: Stream.Stream<A, E, R>) =>
+    Stream.unwrap(
+      Effect.acquireRelease(entrarOperacao(provider), () => sairOperacao(provider)).pipe(Effect.as(stream)),
+    );
 
   yield* Effect.addFinalizer(() =>
     Effect.forEach([...sessoes.values()], (sessao) => Scope.close(sessao.escopo, Exit.void), { discard: true }),
@@ -127,14 +158,19 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
     };
     const escopo = yield* Scope.make();
     const politicaSessao = config.semFerramentas === true ? POLITICA_JULGAMENTO : politica;
-    const driver = yield* drivers[config.provider].iniciar(config, politicaSessao).pipe(
-      Scope.provide(escopo),
-      Effect.onError(() => Scope.close(escopo, Exit.void)),
+    return yield* comOperacaoAtiva(
+      config.provider,
+      Effect.gen(function* () {
+        const driver = yield* drivers[config.provider].iniciar(config, politicaSessao).pipe(
+          Scope.provide(escopo),
+          Effect.onError(() => Scope.close(escopo, Exit.void)),
+        );
+        const completar = yield* Resultados.completador(config).pipe(Scope.provide(escopo));
+        const id = `${config.provider}-${++sequencia}`;
+        sessoes.set(id, { provider: config.provider, driver, escopo, completar });
+        return id;
+      }),
     );
-    const completar = yield* Resultados.completador(config).pipe(Scope.provide(escopo));
-    const id = `${config.provider}-${++sequencia}`;
-    sessoes.set(id, { provider: config.provider, driver, escopo, completar });
-    return id;
   });
 
   const encerrar = Effect.fn("Motor.encerrar")(function* (id: string) {
@@ -145,7 +181,7 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
 
   const detectar = Effect.fn("Motor.detectar")(function* (provider: Provider) {
     const driver = drivers[provider];
-    const deteccao = yield* driver.detectar;
+    const deteccao = yield* comOperacaoAtiva(provider, driver.detectar);
     return {
       ...deteccao,
       podeInstalar: driver.instalar !== undefined,
@@ -176,6 +212,27 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
     } satisfies InfoSessao;
   });
 
+  const atualizarHarness = Effect.fn("Motor.atualizarHarness")(function* (provider: Provider) {
+    if (!politica.providers.includes(provider)) {
+      return { status: "ignorado", motivo: "desligada" } satisfies ResultadoAtualizacaoHarness;
+    }
+    const atualizar = drivers[provider].atualizarHarness;
+    if (atualizar === undefined) {
+      return { status: "ignorado", motivo: "nao-suportado" } satisfies ResultadoAtualizacaoHarness;
+    }
+    return yield* comOperacaoAtiva(provider, atualizar);
+  });
+
+  const limparVersoesAntigasHarness = Effect.fn("Motor.limparVersoesAntigasHarness")(function* (provider: Provider) {
+    if ((operacoesAtivas.get(provider) ?? 0) > 0) return 0;
+    for (const sessao of sessoes.values()) {
+      if (sessao.provider === provider) return 0;
+    }
+    const limpar = drivers[provider].limparVersoesAntigas;
+    if (limpar === undefined) return 0;
+    return yield* limpar;
+  });
+
   return Motor.of({
     detectar,
     infoSessao,
@@ -185,10 +242,20 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
     responderAprovacao,
     interromper,
     encerrar,
-    instalar: (provider) =>
-      drivers[provider].instalar ?? Stream.fail(new OperacaoNaoSuportada({ provider, operacao: "instalação" })),
-    entrar: (provider) =>
-      drivers[provider].entrar ?? Stream.fail(new OperacaoNaoSuportada({ provider, operacao: "login" })),
+    instalar: (provider) => {
+      const instalar = drivers[provider].instalar;
+      return instalar === undefined
+        ? Stream.fail(new OperacaoNaoSuportada({ provider, operacao: "instalação" }))
+        : comStreamOperacaoAtiva(provider, instalar);
+    },
+    entrar: (provider) => {
+      const entrar = drivers[provider].entrar;
+      return entrar === undefined
+        ? Stream.fail(new OperacaoNaoSuportada({ provider, operacao: "login" }))
+        : comStreamOperacaoAtiva(provider, entrar);
+    },
+    atualizarHarness,
+    limparVersoesAntigasHarness,
   });
 });
 

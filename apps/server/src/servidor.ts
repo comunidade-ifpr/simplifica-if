@@ -44,6 +44,7 @@ import * as McpRpc from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as ArquivosLiberados from "./ArquivosLiberados.ts";
 import * as Atualizador from "./Atualizador.ts";
+import * as AtualizadorHarnesses from "./AtualizadorHarnesses.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
 import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
 import { layerHttp } from "@simplifica-if/atualizacao/remoto";
@@ -125,6 +126,13 @@ export interface Opcoes {
    * o serviço responde como desligado (`atualizacao.estado`), com o motivo.
    */
   readonly atualizacao?: OpcoesAtualizacao;
+  /** Atualização silenciosa dos harnesses gerenciados (Antigravity, Codex) em segundo plano. */
+  readonly atualizacaoHarnesses?: {
+    readonly automatico?: boolean;
+    readonly atrasoInicial?: Duration.Input;
+    readonly intervalo?: Duration.Input;
+    readonly intervaloOcupado?: Duration.Input;
+  };
 }
 
 export interface OpcoesAtualizacao {
@@ -139,6 +147,20 @@ export interface OpcoesAtualizacao {
   readonly automatico?: boolean;
 }
 
+/** Há revisão de PPC, conversa respondendo ou operação na pasta de tarefa em andamento? */
+const servidorOcupado = Effect.gen(function* () {
+  const revisor = yield* RevisorPpc.RevisorPpc;
+  const ia = yield* RevisaoIa.RevisaoIa;
+  const conversas = yield* Conversas.Conversas;
+  const pastas = yield* PastasTrabalho.PastasTrabalho;
+  return Effect.gen(function* () {
+    if (yield* revisor.ocupada) return true;
+    if (yield* pastas.emAndamento) return true;
+    if ((yield* ia.listar).some((revisao) => revisao.situacao === "em_andamento")) return true;
+    return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
+  });
+});
+
 /**
  * O serviço de atualização sobre as revisões e conversas em curso (a troca espera) e as skills do catálogo,
  * com o download pela proxy do ambiente (a que o desktop resolve e passa ao servidor).
@@ -147,19 +169,10 @@ const layerAtualizador = (opcoes: Opcoes) =>
   Layer.effect(
     Atualizador.Atualizador,
     Effect.gen(function* () {
-      const revisor = yield* RevisorPpc.RevisorPpc;
-      const ia = yield* RevisaoIa.RevisaoIa;
-      const conversas = yield* Conversas.Conversas;
       const catalogo = yield* CatalogoSkills.CatalogoSkills;
-      const pastas = yield* PastasTrabalho.PastasTrabalho;
       // A troca reinicia o servidor: espera a revisão prévia, a revisão com IA, conversa respondendo (as de
       // tarefa do M1.9 incluídas: são conversas com `tarefa`) e o Desfazer ou a cópia da pasta.
-      const ocupado = Effect.gen(function* () {
-        if (yield* revisor.ocupada) return true;
-        if (yield* pastas.emAndamento) return true;
-        if ((yield* ia.listar).some((revisao) => revisao.situacao === "em_andamento")) return true;
-        return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
-      });
+      const ocupado = yield* servidorOcupado;
       const a = opcoes.atualizacao;
       return yield* Atualizador.make({
         ...(a ?? {
@@ -178,6 +191,25 @@ const layerAtualizador = (opcoes: Opcoes) =>
       });
     }),
   ).pipe(Layer.provide(layerHttp()));
+
+/** Atualização silenciosa em segundo plano dos harnesses gerenciados (Antigravity e Codex). */
+const layerAtualizadorHarnesses = (opcoes: Opcoes) =>
+  Layer.effect(
+    AtualizadorHarnesses.AtualizadorHarnesses,
+    Effect.gen(function* () {
+      const preferencias = yield* Preferencias.Preferencias;
+      const ocupado = yield* servidorOcupado;
+      const h = opcoes.atualizacaoHarnesses;
+      return yield* AtualizadorHarnesses.make({
+        ocupado,
+        desligados: Effect.map(preferencias.ler, (lidas) => lidas.iasDesligadas),
+        ...(h?.automatico === undefined ? {} : { automatico: h.automatico }),
+        ...(h?.atrasoInicial === undefined ? {} : { atrasoInicial: h.atrasoInicial }),
+        ...(h?.intervalo === undefined ? {} : { intervalo: h.intervalo }),
+        ...(h?.intervaloOcupado === undefined ? {} : { intervaloOcupado: h.intervaloOcupado }),
+      });
+    }),
+  );
 
 /** As pastas de tarefa e das cópias: as dadas, ou temporárias (removidas com o servidor). */
 const layerPastas = (opcoes: Opcoes) =>
@@ -319,7 +351,9 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(mcp),
     Layer.provideMerge(leitura),
   );
-  const comAtualizacao = layerAtualizador(opcoes).pipe(Layer.provideMerge(nucleo));
+  const comAtualizacao = Layer.mergeAll(layerAtualizador(opcoes), layerAtualizadorHarnesses(opcoes)).pipe(
+    Layer.provideMerge(nucleo),
+  );
   const comRelatos = Relatos.layer(opcoes.relatos).pipe(Layer.provideMerge(comAtualizacao));
   const handlers = Handlers.layer.pipe(Layer.provide(comRelatos));
   const servir = HttpRouter.serve(layerRotaRpc, { disableLogger: true, disableListenLog: true });

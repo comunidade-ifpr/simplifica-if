@@ -105,17 +105,19 @@ function descreverSaida(saida: Saida): string {
 }
 
 /**
- * A proxy da rede para o servidor baixar a base (M1.10): a que o Electron resolve para o feed, como o
- * navegador do sistema. Sem feed, ou se a resolução falhar, nada muda.
+ * A proxy da rede para o servidor baixar a base (M1.10) e as CLIs gerenciadas dos providers:
+ * a que o Electron resolve como o navegador do sistema. Se a resolução falhar, nada muda.
  */
 async function ambienteComProxy(): Promise<NodeJS.ProcessEnv> {
   const feed = process.env[VARIAVEIS.feed]?.trim() || ATUALIZACAO_FABRICA.feed;
-  if (configuracao.pastaAtualizacao === undefined || feed === null) return process.env;
+  const url =
+    configuracao.pastaAtualizacao !== undefined && feed !== null
+      ? new URL("x", feedDoCanal(feed, canalGravado())).href
+      : "https://storage.googleapis.com/";
   try {
-    const url = new URL("x", feedDoCanal(feed, canalGravado())).href;
     const proxy = proxyParaServidor(await session.defaultSession.resolveProxy(url), process.env);
     if (Object.keys(proxy).length > 0)
-      registrar(`proxy do sistema para a atualização: ${proxy.HTTPS_PROXY ?? proxy.HTTP_PROXY}`);
+      registrar(`proxy do sistema para downloads: ${proxy.HTTPS_PROXY ?? proxy.HTTP_PROXY}`);
     return { ...process.env, ...proxy };
   } catch (erro) {
     registrar(`não foi possível resolver a proxy do sistema: ${String(erro)}`);

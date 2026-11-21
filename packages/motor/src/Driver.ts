@@ -7,11 +7,13 @@ import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
 import type * as Scope from "effect/Scope";
 import type * as Stream from "effect/Stream";
+import type { MotivoIgnoradoHarness, ResultadoAtualizacaoHarness } from "./atualizacao-harnesses.ts";
 import type { AprovacaoDesconhecida, Decisao, FalhaProvider, TurnoEmAndamento } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
 import type { DeteccaoProvider, EstadoInstalacao, EstadoLogin, NivelEsforco } from "./estados-provider.ts";
 import type { Politica } from "./politica.ts";
 
+export type { MotivoIgnoradoHarness, ResultadoAtualizacaoHarness };
 export * from "./erros.ts";
 export * from "./estados-provider.ts";
 
@@ -145,6 +147,10 @@ export interface Driver {
   readonly instalar?: Stream.Stream<EstadoInstalacao, FalhaProvider>;
   /** Login dentro do app; o stream termina numa fase final. */
   readonly entrar?: Stream.Stream<EstadoLogin, FalhaProvider>;
+  /** Confere e aplica atualização silenciosa da CLI gerenciada (Codex, Antigravity). */
+  readonly atualizarHarness?: Effect.Effect<ResultadoAtualizacaoHarness>;
+  /** Remove versões antigas da CLI gerenciada em disco, mantendo a ativa e a anterior. */
+  readonly limparVersoesAntigas?: Effect.Effect<number>;
 }
 
 /** Os drivers disponíveis, por provider. `Drivers.layerNode` (em `drivers/index.ts`) monta os reais. */

@@ -34,7 +34,7 @@ import * as Schema from "effect/Schema";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
-import { opcoesDaPolitica } from "@simplifica-if/atualizacao/remoto";
+import { layerHttp, opcoesDaPolitica } from "@simplifica-if/atualizacao/remoto";
 import { LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
 import { CANAIS } from "@simplifica-if/kb/canal";
 import { POLITICA_FABRICA } from "@simplifica-if/motor/politica";
@@ -184,12 +184,22 @@ const servidor = Command.make(
       const pastaTrabalhos = path.resolve(
         yield* expandHomePath(Option.getOrUndefined(opcoes.pastaTrabalhos) ?? (yield* pastaTrabalhosPadrao)),
       );
+      const httpProxy = ambiente.HTTP_PROXY ?? ambiente.http_proxy;
+      const httpsProxy = ambiente.HTTPS_PROXY ?? ambiente.https_proxy;
+      const noProxy = ambiente.NO_PROXY ?? ambiente.no_proxy;
+      const proxyAmbiente = {
+        ...(httpProxy ? { httpProxy } : {}),
+        ...(httpsProxy ? { httpsProxy } : {}),
+        ...(noProxy ? { noProxy } : {}),
+      };
       const drivers = Drivers.layerNode({
         ambiente,
         pastaEstado,
         // A ponte do Antigravity é este mesmo executável, como o `acp-mcp-bridge` do T3: no app
         // empacotado, o Electron (como Node) e o bundle do servidor.
         ponteMcp: yield* comandoPonte(),
+        // Respeita a proxy do ambiente (a que o desktop resolve e passa ao servidor).
+        http: layerHttp(proxyAmbiente),
       });
       const contexto = yield* Layer.build(
         Servidor.layer({
