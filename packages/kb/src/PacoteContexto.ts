@@ -1,8 +1,7 @@
 /**
- * `PacoteContexto`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um tópico, um
- * grupo por tópico ou `todas`) para um PPC — CNCT, fichas, dispositivos citados com caput, marcos,
- * regras de transição, seções relevantes e fatos (`kb pacote-contexto`). As partes e as regras de
- * agrupamento estão em `db/pacote-contexto.ts`.
+ * `PacoteContexto`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um tópico ou
+ * `todas`) para um PPC — CNCT, fichas, dispositivos citados com caput, marcos, regras de transição,
+ * seções relevantes e fatos (`kb pacote-contexto`). As partes estão em `db/pacote-contexto.ts`.
  *
  * PPC fora da base: `doMarkdown` recebe o texto do Markdown (quem chama o lê) e o segmenta num banco
  * em memória, pelo mesmo código da compilação; `abrirAvulso` abre um banco desses no escopo de quem
@@ -31,9 +30,9 @@ import {
   type PpcAvulso,
 } from "./db/pacote-contexto.ts";
 import * as Sql from "./db/sql.ts";
-import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "./pacote-contexto-erros.ts";
+import { PpcNaoEncontrado, TarefaNaoReconhecida } from "./pacote-contexto-erros.ts";
 
-export { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida };
+export { PpcNaoEncontrado, TarefaNaoReconhecida };
 export type {
   EstruturaAvulsa,
   FichaResumida,
@@ -51,14 +50,14 @@ export class PacoteContexto extends Context.Service<
       tarefa: string,
       ppc: string,
       opcoes?: OpcoesPacote,
-    ) => Effect.Effect<Pacote, Sql.FalhaNaConsulta | PpcNaoEncontrado | GrupoInexistente | TarefaNaoReconhecida>;
+    ) => Effect.Effect<Pacote, Sql.FalhaNaConsulta | PpcNaoEncontrado | TarefaNaoReconhecida>;
     /** Pacote de uma tarefa para um PPC fora da base, dado o texto do Markdown (`arquivo` só o identifica). */
     readonly doMarkdown: (
       tarefa: string,
       arquivo: string,
       markdown: string,
       opcoes?: OpcoesPacote,
-    ) => Effect.Effect<PacoteDoMarkdown, Sql.FalhaNaConsulta | GrupoInexistente | TarefaNaoReconhecida>;
+    ) => Effect.Effect<PacoteDoMarkdown, Sql.FalhaNaConsulta | TarefaNaoReconhecida>;
     /**
      * Um PPC fora da base, dado o texto do Markdown, segmentado num banco em memória que fecha com o
      * escopo de quem chama: o pacote de cada conjunto de fichas e a estrutura do PPC saem dele.

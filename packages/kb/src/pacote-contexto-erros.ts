@@ -12,21 +12,11 @@ export class PpcNaoEncontrado extends Schema.TaggedError<PpcNaoEncontrado>()("Pp
   }
 }
 
-export class GrupoInexistente extends Schema.TaggedError<GrupoInexistente>()("GrupoInexistente", {
-  grupo: Schema.String,
-  /** Quantos grupos a rodada tem. */
-  total: Schema.Number,
-}) {
-  override get message(): string {
-    return `grupo inexistente: ${this.grupo} (há ${this.total})`;
-  }
-}
-
 export class TarefaNaoReconhecida extends Schema.TaggedError<TarefaNaoReconhecida>()("TarefaNaoReconhecida", {
   /** Fichas pedidas que não estão no banco. */
   fichas: Schema.Array(Schema.String),
 }) {
   override get message(): string {
-    return `tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): ${this.fichas.join(", ")}`;
+    return `tarefa não reconhecida (ficha, tópico ou todas): ${this.fichas.join(", ")}`;
   }
 }

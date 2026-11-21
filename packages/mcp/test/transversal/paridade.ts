@@ -668,7 +668,7 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
         conferir: () =>
           Effect.gen(function* () {
             const arquivo = `base-conhecimento/institucional/ifpr/ppcs/${PPC}.md`;
-            const tarefas = ["CT-CURR-12", "grupo-001", "todas"];
+            const tarefas = ["CT-CURR-12", "estagio", "todas"];
             const cli = yield* Effect.promise(() =>
               Promise.all([
                 ...tarefas.map((t) => kbTexto("pacote-contexto", t, PPC)),

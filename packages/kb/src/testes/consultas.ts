@@ -67,7 +67,7 @@ export const todasAsConsultas = Effect.fn("testes.todasAsConsultas")(function* (
     secao: yield* ppcs.lerSecao(`${PPC}#carga_horaria-1`),
     indiceSecoes: yield* ppcs.indiceSecoesDoPpc(PPC),
     divergencias: yield* ppcs.divergencias({ nivel: "médio" }),
-    pacote: yield* cada(["CT-CURR-12", "grupo-003"], (t) => pacote.montar(t, PPC)),
+    pacote: yield* cada(["CT-CURR-12", "estagio"], (t) => pacote.montar(t, PPC)),
     pacoteMarkdown: yield* pacote.doMarkdown("estagio", "PPC.md", markdown),
     fichas: (yield* pacote.fichas(["CT-CURR-12", "CT-CURR-02"])).map((f) => f.id),
     nomesDeCampi: yield* pacote.nomesDeCampi,
@@ -88,6 +88,6 @@ export const consultasDoExecutavel = Effect.gen(function* () {
     impacto: yield* Effect.forEach(NORMAS, (id) => impacto.daNorma(id, { incluirPpcs: false })),
     adequacao: yield* cursos.adequacaoArt71(),
     secoes: yield* ppcs.buscarSecoes("acompanhamento de egressos"),
-    pacote: yield* pacote.montar("grupo-001", PPC),
+    pacote: yield* pacote.montar("estagio", PPC),
   };
 });

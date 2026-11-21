@@ -301,7 +301,7 @@ export const AMOSTRAS: { readonly [N in NomeFerramenta]: Amostras } = {
     ],
     reais: [
       { tarefa: "CT-CURR-12", ppc: PPC_REAL },
-      { tarefa: "grupo-001", ppc: PPC_REAL },
+      { tarefa: "estagio", ppc: PPC_REAL },
       { tarefa: "todas", ppc: PPC_REAL },
     ],
     invalidas: [

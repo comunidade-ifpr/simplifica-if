@@ -34,7 +34,6 @@ type Erro =
   | Sql.FalhaNaConsulta
   | FontesNormativas.FalhaNasFontes
   | PacoteContexto.PpcNaoEncontrado
-  | PacoteContexto.GrupoInexistente
   | PacoteContexto.TarefaNaoReconhecida;
 
 const CONSULTAS: ReadonlyArray<readonly [string, Effect.Effect<unknown, Erro, Layers.ServicosConsulta>]> = [

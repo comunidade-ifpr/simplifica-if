@@ -3,13 +3,12 @@
  * em vez do PPC inteiro mais os manifestos.
  *
  * Tarefa: uma ficha (`CT-CURR-12`), várias separadas por vírgula, um tópico de
- * `topicos-fichas.json` (`estagio`), um grupo por tópico (`grupo-001`: o n-ésimo grupo de
- * `agruparPorTopico`) ou `todas`. O PPC é um da base (`campus/curso`) ou, por
+ * `topicos-fichas.json` (`estagio`) ou `todas`. O PPC é um da base (`campus/curso`) ou, por
  * `abrirPpcAvulso`, um Markdown fora dela, segmentado num banco em memória (`ppc-avulso.ts`).
  *
  * O pacote traz:
  * - o PPC (ID, arquivo, curso, forma, ano) e o curso do CNCT inteiro;
- * - as fichas (JSON da ficha, como os sub-agentes recebem);
+ * - as fichas (o JSON de cada uma);
  * - as normas citadas pelas fichas, com o texto de cada dispositivo citado
  *   (`referencias_normativas[].dispositivo`) da tabela `dispositivos`: caput herdado, o próprio
  *   texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete;
@@ -33,11 +32,11 @@ import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
-import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
+import { PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { extrairFatosPpc, type FatoPpc } from "../fatos/ppc.ts";
 import { palavrasDeCampi, type SecaoPpc, segmentarPpc } from "../ppcs/secoes.ts";
-import type { TopicoFichas, TopicosSecoes } from "../ppcs/topicos.ts";
+import type { TopicosSecoes } from "../ppcs/topicos.ts";
 import { compararTexto } from "../texto.ts";
 import { idCnct, idPpc } from "./chaves.ts";
 import { fatosDosPpcs } from "./consultas-fatos.ts";
@@ -52,96 +51,13 @@ import {
 import * as PpcAvulsoDb from "./ppc-avulso.ts";
 import * as Sql from "./sql.ts";
 
-/** Tamanho máximo de um grupo por tópico (fichas por grupo). */
-export const TAMANHO_MAXIMO_GRUPO = 20;
-/** Grupo das fichas de escopo transversal, que recebem o PPC inteiro. */
-export const TOPICO_TRANSVERSAL = "transversal";
+/* ------------------------------------------------------------ fichas */
 
-/* ------------------------------------------------------------ fichas e grupos */
-
-/** Ficha como entra no pacote e no agrupamento: o JSON da ficha (`id`, tópicos, consultas, referências). */
+/** Ficha como entra no pacote: o JSON da ficha (`id`, tópicos, consultas, referências). */
 export type FichaPacote = { id: string } & Record<string, unknown>;
 
 function textos(valor: unknown): string[] {
   return Array.isArray(valor) ? valor.filter((v): v is string => typeof v === "string") : [];
-}
-
-/**
- * Tópico principal de uma ficha, o que decide o grupo do sub-agente:
- * - ficha com `tipo_escopo: transversal` (as de síntese, que cruzam o PPC inteiro) ou sem tópico
- *   conhecido → `transversal`;
- * - senão, dos `topicos_tematicos` da ficha, o mais específico: o de menos fichas na taxonomia; no
- *   empate, o primeiro na ordem de `topicos-fichas.json`.
- * A ficha multitemática fica num grupo só, mas o pacote do grupo traz as seções de todos os tópicos
- * dela (`secoesDoPacote`).
- */
-export function topicoPrincipal(ficha: FichaPacote, topicos: readonly TopicoFichas[]): string {
-  if (ficha.tipo_escopo === "transversal") return TOPICO_TRANSVERSAL;
-  const proprios = new Set(textos(ficha.topicos_tematicos));
-  const candidatos = topicos
-    .map((topico, ordem) => ({ id: topico.id, ordem, total: topico.fichas?.length ?? 0 }))
-    .filter((topico) => proprios.has(topico.id));
-  if (!candidatos.length) return TOPICO_TRANSVERSAL;
-  candidatos.sort((a, b) => a.total - b.total || a.ordem - b.ordem);
-  return candidatos[0]!.id;
-}
-
-/** Grupo de fichas de um tópico (ou parte dele) para um sub-agente. */
-export interface GrupoDeTopico<F extends FichaPacote = FichaPacote> {
-  topico: string;
-  topico_titulo: string;
-  /** Parte do tópico (1 a `partes`) quando ele passa do tamanho máximo. */
-  parte: number;
-  partes: number;
-  /** `secoes`: o pacote traz as seções do PPC dos tópicos das fichas; `completo`: o PPC inteiro. */
-  escopo: "secoes" | "completo";
-  fichas: F[];
-}
-
-/**
- * Grupos de sub-agente por tópico: cada ficha entra uma vez, no grupo do seu tópico principal
- * (`topicoPrincipal`). Os grupos seguem a ordem de `topicos-fichas.json`, com o `transversal` por
- * último; dentro do grupo, as fichas vão em ordem de ID. Tópico com mais fichas que
- * `tamanhoMaximo` é dividido em partes de tamanho equilibrado (14 com máximo 10 → 7 + 7).
- */
-export function agruparPorTopico<F extends FichaPacote>(
-  fichas: readonly F[],
-  topicos: readonly TopicoFichas[],
-  tamanhoMaximo: number = TAMANHO_MAXIMO_GRUPO,
-): GrupoDeTopico<F>[] {
-  if (!Number.isInteger(tamanhoMaximo) || tamanhoMaximo <= 0) {
-    throw new Error("O tamanho do grupo precisa ser maior que zero.");
-  }
-  const porTopico = new Map<string, F[]>();
-  for (const ficha of [...fichas].sort((a, b) => compararTexto(a.id, b.id))) {
-    const topico = topicoPrincipal(ficha, topicos);
-    porTopico.set(topico, [...(porTopico.get(topico) ?? []), ficha]);
-  }
-  const ordem = [...topicos.map((t) => t.id).filter((id) => id !== TOPICO_TRANSVERSAL), TOPICO_TRANSVERSAL];
-  const titulos = new Map(topicos.map((t) => [t.id, t.titulo ?? t.id]));
-  titulos.set(TOPICO_TRANSVERSAL, "Fichas transversais (PPC completo)");
-  const grupos: GrupoDeTopico<F>[] = [];
-  for (const topico of ordem) {
-    const lista = porTopico.get(topico);
-    if (!lista?.length) continue;
-    const partes = Math.ceil(lista.length / tamanhoMaximo);
-    const base = Math.floor(lista.length / partes);
-    const sobra = lista.length % partes;
-    let inicio = 0;
-    for (let parte = 1; parte <= partes; parte += 1) {
-      const tamanho = base + (parte <= sobra ? 1 : 0);
-      grupos.push({
-        topico,
-        topico_titulo: titulos.get(topico)!,
-        parte,
-        partes,
-        escopo: topico === TOPICO_TRANSVERSAL ? "completo" : "secoes",
-        fichas: lista.slice(inicio, inicio + tamanho),
-      });
-      inicio += tamanho;
-    }
-  }
-  return grupos;
 }
 
 /* ------------------------------------------------------------ linhas do banco */
@@ -244,25 +160,10 @@ export const fichasResumidas = Effect.fn("pacoteContexto.fichasResumidas")(funct
   return fichas;
 });
 
-/**
- * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico
- * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco); sem
- * `topicos`, os de `FontesNormativas`.
- */
-export const fichasDaTarefa = Effect.fn("pacoteContexto.fichasDaTarefa")(function* (
-  tarefa: string,
-  topicos?: readonly TopicoFichas[],
-) {
+/** IDs das fichas de uma tarefa: `todas`, um tópico ou fichas separadas por vírgula. */
+export const fichasDaTarefa = Effect.fn("pacoteContexto.fichasDaTarefa")(function* (tarefa: string) {
   const todas = (yield* linhasIdsFichas("SELECT id FROM fichas")).map((f) => f.id).sort(compararTexto);
   if (tarefa === "todas") return todas;
-  const grupo = /^grupo-(\d{3})$/.exec(tarefa);
-  if (grupo) {
-    const taxonomia = topicos ?? (yield* FontesNormativas.FontesNormativas).topicosFichas;
-    const grupos = agruparPorTopico(yield* fichasDoBanco(), taxonomia);
-    const escolhido = grupos[Number(grupo[1]) - 1];
-    if (!escolhido) return yield* new GrupoInexistente({ grupo: tarefa, total: grupos.length });
-    return escolhido.fichas.map((f) => f.id);
-  }
   const topico = yield* linhasFichasTopico(
     "SELECT ficha_id FROM fichas_topicos WHERE topico_id = ? ORDER BY ficha_id",
     [tarefa],
@@ -634,13 +535,8 @@ const cnctDoBanco = Effect.fn("pacoteContexto.cnctDoBanco")(function* (cnctId: s
 
 /* ------------------------------------------------------------ pacotes */
 
-/**
- * Opções do pacote. `lexico`, `topicosSecoes` e `topicosFichas` informados prevalecem sobre os de
- * `FontesNormativas`.
- */
-export interface OpcoesPacote extends OpcoesSecoes {
-  topicosFichas?: readonly TopicoFichas[];
-}
+/** Opções do pacote. `lexico` e `topicosSecoes` informados prevalecem sobre os de `FontesNormativas`. */
+export type OpcoesPacote = OpcoesSecoes;
 
 /** `lexico` e `topicosSecoes` das opções ou, onde faltam, os de `FontesNormativas`. */
 function opcoesComFontes(
@@ -668,7 +564,7 @@ export const pacoteContexto = Effect.fn("pacoteContexto.pacoteContexto")(functio
   );
   if (!ppc) return yield* new PpcNaoEncontrado({ ppc: ppcId });
   const secoesOpcoes = opcoesComFontes(opcoes, yield* FontesNormativas.FontesNormativas);
-  const fichasIds = yield* fichasDaTarefa(tarefa, opcoes.topicosFichas);
+  const fichasIds = yield* fichasDaTarefa(tarefa);
   const fichas = yield* fichasDoBanco(fichasIds);
   const refs = referenciasDasFichas(fichas);
   const citacoesPpc = yield* citacoesDoPpc(ppc.id);
@@ -708,8 +604,7 @@ export interface PacoteAvulso {
   marcos: MarcoDoPacote[];
   data_referencia: string;
   transicoes: TransicaoDoPacote[];
-  escopo: "secoes" | "completo";
-  /** Seções do PPC (vazio no escopo `completo`, em que o chamador usa o PPC inteiro). */
+  /** Seções do PPC dos tópicos das fichas, mais as achadas pelas `consultas`. */
   secoes: SecaoDoPacote[];
   /** Todas as citações normativas resolvidas do PPC, com linha, seção e papel (só com `citacoesPpc`). */
   citacoes_ppc?: CitacaoPpc[];
@@ -718,7 +613,6 @@ export interface PacoteAvulso {
 /** Opções do pacote de um PPC fora da base (`PpcAvulso.pacote`). */
 export type OpcoesPacoteAvulso = {
   cnctId?: string | null;
-  escopo?: "secoes" | "completo";
   /** Inclui `citacoes_ppc`: as fichas que conferem a base normativa citada no PPC inteiro. */
   citacoesPpc?: boolean;
 } & OpcoesSecoes;
@@ -734,7 +628,6 @@ const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvulso")(fu
   fichas: readonly FichaPacote[],
   opcoes: OpcoesPacoteAvulso,
 ) {
-  const escopo = opcoes.escopo ?? "secoes";
   const noPpc = Effect.provide(doPpc);
   const refs = referenciasDasFichas(fichas);
   const citacoesPpc = yield* citacoesDoPpc(ppcId).pipe(noPpc);
@@ -744,8 +637,7 @@ const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvulso")(fu
     normas: yield* normasDoPacote(refs),
     marcos: yield* marcosDoPacote(refs, citacoesPpc),
     ...(yield* transicoesDoPacote(refs, citacoesPpc)),
-    escopo,
-    secoes: escopo === "completo" ? [] : yield* secoesDoPacote(ppcId, fichas, opcoes).pipe(noPpc),
+    secoes: yield* secoesDoPacote(ppcId, fichas, opcoes).pipe(noPpc),
     ...(opcoes.citacoesPpc ? { citacoes_ppc: [...citacoesPpc] } : {}),
   };
   return pacote;
@@ -841,7 +733,7 @@ export type PacoteDoMarkdown = PacoteAvulso & {
 
 /**
  * `kb pacote-contexto <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
- * fichas e o agrupamento vêm do banco (`grupo-NNN` traz o escopo do grupo); o PPC (`markdown`, o
+ * fichas vêm do banco; o PPC (`markdown`, o
  * texto já lido de `arquivo`, que fica só como `path`) é segmentado e indexado num banco em memória
  * (`abrirPpcAvulso`), fechado no fim.
  */
@@ -852,16 +744,11 @@ export const pacoteDoMarkdown = Effect.fn("pacoteContexto.pacoteDoMarkdown")(fun
 ) {
   const fontes = yield* FontesNormativas.FontesNormativas;
   const secoes = opcoesComFontes(opcoes, fontes);
-  const topicos = opcoes.topicosFichas ?? fontes.topicosFichas;
-  const ids = yield* fichasDaTarefa(tarefa, topicos);
+  const ids = yield* fichasDaTarefa(tarefa);
   const fichas = yield* fichasDoBanco(ids);
-  const grupo = /^grupo-\d{3}$/.test(tarefa)
-    ? agruparPorTopico(yield* fichasDoBanco(), topicos)[Number(tarefa.slice(6)) - 1]
-    : undefined;
   const markdown = opcoes.markdown;
   const avulso = yield* abrirPpcAvulso(markdown, { path: arquivo, lexico: secoes.lexico });
   const pacote = yield* avulso.pacote(fichas, {
-    escopo: grupo?.escopo ?? "secoes",
     lexico: secoes.lexico,
     topicosSecoes: secoes.topicosSecoes,
   });
