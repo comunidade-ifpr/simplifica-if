@@ -1,8 +1,8 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: requisições HTTP cruas (Host, corpo) e a pasta de trabalho no disco
 /**
  * O servidor MCP por HTTP local (`src/http.ts`, M1.4), de verdade, em porta efêmera de `127.0.0.1`,
- * com o Client do SDK oficial: `initialize`, `tools/list` (as mesmas ferramentas do stdio) e
- * `tools/call`; o token por sessão (401 sem token, com token desconhecido e com token revogado; duas
+ * com o Client do SDK oficial na revisão 2026-07-28: `server/discover`, `tools/list` (as mesmas
+ * ferramentas do stdio) e `tools/call`; o token por sessão (401 sem token, com token desconhecido e com token revogado; duas
  * sessões com tokens diferentes); `chamadas`, com as chamadas de ferramenta e as leituras de recurso;
  * as defesas de `Host`, `Origin` e tamanho do corpo; a
  * pasta de trabalho por sessão; e a paridade de uma chamada com o executável stdio.
@@ -53,7 +53,10 @@ const NODE = process.execPath;
 const conectar = (sessao: Http.SessaoMcp) =>
   Effect.acquireRelease(
     Effect.promise(async () => {
-      const cliente = new Client({ name: "teste-http", version: "0" });
+      const cliente = new Client(
+        { name: "teste-http", version: "0" },
+        { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+      );
       await cliente.connect(
         new StreamableHTTPClientTransport(new URL(sessao.url), { requestInit: { headers: { ...sessao.cabecalhos } } }),
       );
@@ -75,7 +78,7 @@ const postar = (url: string, cabecalhos: Record<string, string>, corpo?: string)
               id: 1,
               method: "initialize",
               params: {
-                protocolVersion: "2025-06-18",
+                protocolVersion: "2025-11-25",
                 capabilities: {},
                 clientInfo: { name: "teste", version: "0" },
               },
@@ -127,7 +130,7 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
     }),
   );
 
-  it.effect("initialize, tools/list com as ferramentas do stdio e tools/call", () =>
+  it.effect("server/discover, tools/list com as ferramentas do stdio e tools/call", () =>
     Effect.gen(function* () {
       const servidor = yield* Http.ServidorMcpHttp;
       const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "basico" }));

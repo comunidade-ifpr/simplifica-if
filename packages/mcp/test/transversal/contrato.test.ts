@@ -31,8 +31,8 @@ const amostrasDe = (nome: string) => (AMOSTRAS as Partial<Record<string, Amostra
 /** O rodapé de toda resposta válida, com a data e a versão da base. */
 const RODAPE = /\n\nBase de \d{2}\/\d{2}\/\d{4} \(versão [^)]+\)\.$/;
 
-/** Prefixo da mensagem de entrada inválida, o do SDK que os clientes já conhecem (`src/validacao.ts`). */
-const prefixo = (nome: string) => `Input validation error: Invalid arguments for tool ${nome}: `;
+/** Prefixo da mensagem de entrada inválida (`src/validacao.ts`). */
+const prefixo = (nome: string) => `Entrada inválida para a ferramenta ${nome}: `;
 
 /**
  * A mensagem é legível: em português (o formatador de `src/validacao.ts` ou a mensagem do handler),

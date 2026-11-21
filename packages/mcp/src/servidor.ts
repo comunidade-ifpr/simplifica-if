@@ -3,10 +3,6 @@
  * registradas por `registrarFerramentas` num `McpServer` do `effect/ai`, em stdio
  * (`layerStdio`). Cada chamada devolve `structuredContent` (a `Resposta`, conferida pelo
  * `outputSchema`) e `content` (o texto Markdown para a IA).
- *
- * Os protocolos são os do T3 (`2025-06-18`, `2026-07-28`) mais o `2025-11-25`, que o servidor anterior
- * (SDK 2.x) negociava com os clientes que o pedem; o primeiro da lista é o de quem pede uma versão
- * desconhecida.
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
@@ -29,16 +25,11 @@ export const VERSAO_PACOTE = "0.1.0";
 export { INSTRUCOES };
 
 /**
- * Versões aceitas no `initialize`. As de 2024 e 2025-03 continuam: sem elas, o cliente que só fala
- * uma delas recebe outra versão e desconecta (o SDK 2.x anterior as aceitava).
+ * Revisões do protocolo MCP, as mesmas no stdio e no HTTP: a `2026-07-28` (sem sessão, `server/discover`),
+ * que o Claude Code e o `agy` usam, e a `2025-11-25`, a única com `initialize`, para o Codex, que ainda
+ * pede `2025-06-18` no `initialize` sem a opção `mcp_2026_07_28` e aceita a `2025-11-25` em resposta.
  */
-export const PROTOCOLOS = [
-  McpProtocol.v2025_11_25,
-  McpProtocol.v2025_06_18,
-  McpProtocol.v2025_03_26,
-  McpProtocol.v2024_11_05,
-  McpProtocol.v2026_07_28,
-] as const;
+export const PROTOCOLOS = [McpProtocol.v2026_07_28, McpProtocol.v2025_11_25] as const;
 
 export const MENSAGEM_INCOMPATIVEL = "base incompatível com esta versão do simplifica-mcp; atualize";
 

@@ -1,10 +1,16 @@
 {
+  "protocolo": "2026-07-28",
   "servidor": {
     "name": "ifpr",
-    "title": "Base de conhecimento do IFPR",
     "version": "0.1.0"
   },
   "capacidades": {
+    "logging": {},
+    "completions": {},
+    "resources": {
+      "subscribe": true,
+      "listChanged": true
+    },
     "tools": {
       "listChanged": true
     }
@@ -16,47 +22,48 @@
       "title": "Buscar norma",
       "description": "Busca na legislação e nas normas da base do IFPR. Uma citação ou um ID (\"Res. CNE/CP 2/2026, art. 28, VII\", \"br/lei/1996/9394#art36\") vai direto ao dispositivo; termos fazem busca textual nos dispositivos e nos metadados das normas. Use antes de afirmar qualquer obrigação normativa. Devolve o texto literal, com o caput herdado.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "consulta": {
             "type": "string",
+            "description": "citação (\"Res. CNE/CP 2/2026, art. 28, VII\"), ID (\"br/lei/1996/9394#art36\") ou termos",
             "minLength": 1,
-            "maxLength": 300,
-            "description": "citação (\"Res. CNE/CP 2/2026, art. 28, VII\"), ID (\"br/lei/1996/9394#art36\") ou termos"
+            "maxLength": 300
           },
           "limite": {
-            "default": 8,
-            "description": "máximo de resultados (padrão 8)",
             "type": "integer",
             "minimum": 1,
-            "maximum": 20
+            "maximum": 20,
+            "description": "máximo de resultados (padrão 8)",
+            "default": 8
           },
           "situacao": {
-            "description": "só normas da base, stubs ou referências externas",
             "type": "string",
             "enum": [
               "base",
               "stub",
               "externo"
-            ]
+            ],
+            "description": "só normas da base, stubs ou referências externas"
           },
           "vigentes": {
-            "description": "exclui atos e dispositivos revogados ou ainda não vigentes na data `em`",
-            "type": "boolean"
+            "type": "boolean",
+            "description": "exclui atos e dispositivos revogados ou ainda não vigentes na data `em`"
           },
           "em": {
-            "description": "data da vigência para `vigentes`, AAAA-MM-DD (padrão: data de referência)",
             "type": "string",
+            "description": "data da vigência para `vigentes`, AAAA-MM-DD (padrão: data de referência)",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           }
         },
         "required": [
           "consulta"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -66,9 +73,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -117,24 +128,36 @@
                           ]
                         },
                         "status_vigencia": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "vigencia_a_confirmar": {
                           "type": "boolean"
                         },
                         "data_publicacao": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "ementa": {
-                          "type": [
-                            "string",
-                            "null"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "link": {
@@ -291,9 +314,13 @@
                       "type": "string"
                     },
                     "pontuacao": {
-                      "type": [
-                        "number",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     }
                   },
@@ -371,12 +398,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Buscar norma",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -386,31 +413,32 @@
       "title": "Ler dispositivos",
       "description": "Lê dispositivos pelo ID (até 20 por chamada), com o caput herdado, as notas de redação e, se pedido, os incisos, alíneas e parágrafos. Use quando já tiver o ID, vindo de `buscar_norma`, de `resolver_citacoes` ou de uma ficha.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "ids": {
-            "minItems": 1,
-            "maxItems": 20,
             "type": "array",
             "items": {
               "type": "string",
               "pattern": "^[a-z0-9][a-z0-9/:~.-]*#[A-Za-z0-9-]+$"
             },
+            "minItems": 1,
+            "maxItems": 20,
             "description": "1 a 20 IDs \"norma#dispositivo\", como \"br/cne-cp/res/2026/2#art28-vii\""
           },
           "filhos": {
-            "default": false,
+            "type": "boolean",
             "description": "inclui incisos, alíneas e parágrafos de cada dispositivo",
-            "type": "boolean"
+            "default": false
           }
         },
         "required": [
           "ids"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -420,9 +448,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -538,9 +570,13 @@
                       }
                     },
                     "pai": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "estrutura": {
@@ -642,12 +678,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Ler dispositivos",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -657,6 +693,7 @@
       "title": "Ficha da norma",
       "description": "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "id": {
@@ -673,10 +710,10 @@
         "required": [
           "id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -1347,7 +1384,6 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
@@ -1363,25 +1399,26 @@
       "title": "Correspondência entre normas",
       "description": "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. Use quando um PPC ou documento citar dispositivo de norma revogada. A tabela é rascunho, sem revisão jurídica: trate-a como indicação, nunca como fundamento.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[a-z0-9][a-z0-9/:~.-]*(?:#[A-Za-z0-9-]+)?$",
-            "description": "norma de origem com o dispositivo (\"br/cne-cp/res/2021/1#art20\"); sem o dispositivo, todos os artigos"
+            "description": "norma de origem com o dispositivo (\"br/cne-cp/res/2021/1#art20\"); sem o dispositivo, todos os artigos",
+            "pattern": "^[a-z0-9][a-z0-9/:~.-]*(?:#[A-Za-z0-9-]+)?$"
           },
           "cursor": {
-            "description": "cursor da página seguinte, devolvido pela chamada anterior",
-            "type": "string"
+            "type": "string",
+            "description": "cursor da página seguinte, devolvido pela chamada anterior"
           }
         },
         "required": [
           "id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -1391,9 +1428,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -1437,15 +1478,23 @@
                         "type": "string"
                       },
                       "elaborado_em": {
-                        "type": [
-                          "string",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       },
                       "revisado_por": {
-                        "type": [
-                          "string",
-                          "null"
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       }
                     },
@@ -1662,15 +1711,23 @@
                       }
                     },
                     "nota": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "herdado_de": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "detalhes": {
@@ -1691,9 +1748,13 @@
                             }
                           },
                           "nota": {
-                            "type": [
-                              "string",
-                              "null"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           }
                         },
@@ -1785,12 +1846,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Correspondência entre normas",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -1800,27 +1861,28 @@
       "title": "Identificar citações",
       "description": "Identifica citações normativas escritas em texto livre (até 50 por chamada) e devolve o ID canônico, o dispositivo, a regra usada e a confiança. Use para conferir a fundamentação de um documento. Confiança abaixo de 0,9 pede conferência no trecho original.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "citacoes": {
-            "minItems": 1,
-            "maxItems": 50,
             "type": "array",
             "items": {
               "type": "string",
               "minLength": 1,
               "maxLength": 500
             },
+            "minItems": 1,
+            "maxItems": 50,
             "description": "1 a 50 citações em texto livre, como \"Resolução CNE/CP nº 1/2021, art. 20\""
           }
         },
         "required": [
           "citacoes"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -1830,9 +1892,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -1867,9 +1933,13 @@
                       "type": "string"
                     },
                     "id": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "dispositivos": {
@@ -1895,9 +1965,13 @@
                       ]
                     },
                     "titulo": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "link": {
@@ -1991,12 +2065,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Identificar citações",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -2006,60 +2080,61 @@
       "title": "PPCs que citam a norma",
       "description": "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Use quando precisar da lista completa; `impacto_da_norma` traz só uma amostra. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
+            "description": "ID canônico da norma, com dispositivo opcional (\"br/cne-cp/res/2021/1\" ou \"br/cne-cp/res/2021/1#art20\")",
             "minLength": 1,
             "maxLength": 300,
-            "pattern": "^[A-Za-z0-9._~:-]+(?:\\/[A-Za-z0-9._~:-]+)*(?:#[A-Za-z0-9._~-]+)?$",
-            "description": "ID canônico da norma, com dispositivo opcional (\"br/cne-cp/res/2021/1\" ou \"br/cne-cp/res/2021/1#art20\")"
+            "pattern": "^[A-Za-z0-9._~:-]+(?:\\/[A-Za-z0-9._~:-]+)*(?:#[A-Za-z0-9._~-]+)?$"
           },
           "confianca_min": {
-            "default": 0,
-            "description": "confiança mínima das citações (0 a 1); padrão 0",
             "type": "number",
             "minimum": 0,
-            "maximum": 1
+            "maximum": 1,
+            "description": "confiança mínima das citações (0 a 1); padrão 0",
+            "default": 0
           },
           "ppc": {
             "type": "string",
+            "description": "um PPC (\"campus/curso\"): devolve as ocorrências em vez do resumo",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "um PPC (\"campus/curso\"): devolve as ocorrências em vez do resumo"
+            "maxLength": 200
           },
           "nivel": {
             "type": "string",
+            "description": "nível do PPC (\"médio\", \"superior\", \"pós-graduação\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "nível do PPC (\"médio\", \"superior\", \"pós-graduação\")"
+            "maxLength": 200
           },
           "campus": {
             "type": "string",
+            "description": "campus, pelo ID (\"curitiba\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "campus, pelo ID (\"curitiba\")"
+            "maxLength": 200
           },
           "limite": {
-            "default": 30,
-            "description": "PPCs por página (1 a 50); padrão 30",
             "type": "integer",
             "minimum": 1,
-            "maximum": 50
+            "maximum": 50,
+            "description": "PPCs por página (1 a 50); padrão 30",
+            "default": 30
           },
           "cursor": {
-            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "type": "string",
+            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "minLength": 1
           }
         },
         "required": [
           "id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -2069,9 +2144,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -2118,24 +2197,36 @@
                     ]
                   },
                   "status_vigencia": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "vigencia_a_confirmar": {
                     "type": "boolean"
                   },
                   "data_publicacao": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "ementa": {
-                    "type": [
-                      "string",
-                      "null"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
                     ]
                   },
                   "link": {
@@ -2216,9 +2307,13 @@
                                 "type": "number"
                               },
                               "dispositivo": {
-                                "type": [
-                                  "string",
-                                  "null"
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
                                 ]
                               },
                               "link": {
@@ -2347,12 +2442,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "PPCs que citam a norma",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -2362,6 +2457,7 @@
       "title": "Impacto da norma",
       "description": "O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da `revisar-ppc`, as normas que a citam, as relações, as sucessoras e as transições. Use para responder \"o que muda com esta norma\".",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "id": {
@@ -2375,10 +2471,10 @@
         "required": [
           "id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -2812,7 +2908,6 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
@@ -2828,22 +2923,22 @@
       "title": "Adequação ao art. 71",
       "description": "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Use quando perguntarem quais PPCs ainda precisam ser atualizados para a nova DCN da EPT. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "campus": {
             "type": "string",
+            "description": "campus, pelo ID (\"curitiba\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "campus, pelo ID (\"curitiba\")"
+            "maxLength": 200
           },
           "curso": {
             "type": "string",
+            "description": "um curso (\"campus/curso\") ou o slug do curso em todos os campi (\"tecnico-em-agropecuaria\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "um curso (\"campus/curso\") ou o slug do curso em todos os campi (\"tecnico-em-agropecuaria\")"
+            "maxLength": 200
           },
           "indicador": {
-            "description": "DCN da EPT mais recente que o PPC cita, ou ausência de PPC ou de citação",
             "type": "string",
             "enum": [
               "cita-cne-cp-2-2026",
@@ -2852,30 +2947,31 @@
               "cita-cne-ceb-4-1999",
               "nao-cita-dcn",
               "sem-ppc-convertido"
-            ]
+            ],
+            "description": "DCN da EPT mais recente que o PPC cita, ou ausência de PPC ou de citação"
           },
           "incluir_tecnologia": {
-            "default": false,
+            "type": "boolean",
             "description": "inclui os cursos superiores de tecnologia (graduação tecnológica); padrão false",
-            "type": "boolean"
+            "default": false
           },
           "limite": {
-            "default": 50,
-            "description": "cursos por página (1 a 100); padrão 50",
             "type": "integer",
             "minimum": 1,
-            "maximum": 100
+            "maximum": 100,
+            "description": "cursos por página (1 a 100); padrão 50",
+            "default": 50
           },
           "cursor": {
-            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "type": "string",
+            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "minLength": 1
           }
         },
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -2885,9 +2981,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -2918,9 +3018,6 @@
               },
               "totais": {
                 "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
                 "additionalProperties": {
                   "type": "integer",
                   "minimum": 0,
@@ -2942,9 +3039,13 @@
                       "type": "string"
                     },
                     "forma_oferta": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "ppc_ano": {
@@ -3079,12 +3180,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Adequação ao art. 71",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -3094,75 +3195,76 @@
       "title": "Buscar em PPCs",
       "description": "Busca trechos dos PPCs da base (todos os campi e níveis), com radicais e sinônimos por tipo de seção. Use para ver como outros cursos escreveram uma seção (estágio, egressos, avaliação…). PPCs são exemplos institucionais, não norma.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "consulta": {
             "type": "string",
+            "description": "termos da busca (\"acompanhamento de egressos\")",
             "minLength": 1,
-            "maxLength": 300,
-            "description": "termos da busca (\"acompanhamento de egressos\")"
+            "maxLength": 300
           },
           "tipo": {
-            "description": "tipos de seção (\"estagio_praticas\", \"avaliacao\"); a lista está em sobre_a_base",
-            "minItems": 1,
-            "maxItems": 10,
             "type": "array",
             "items": {
               "type": "string",
               "minLength": 1,
               "maxLength": 100
-            }
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "tipos de seção (\"estagio_praticas\", \"avaliacao\"); a lista está em sobre_a_base"
           },
           "nivel": {
             "type": "string",
+            "description": "nível do PPC (\"médio\", \"superior\", \"pós-graduação\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "nível do PPC (\"médio\", \"superior\", \"pós-graduação\")"
+            "maxLength": 200
           },
           "campus": {
             "type": "string",
+            "description": "campus, pelo ID (\"curitiba\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "campus, pelo ID (\"curitiba\")"
+            "maxLength": 200
           },
           "cnct": {
             "type": "string",
+            "description": "curso do CNCT (\"tecnico-em-enfermagem\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "curso do CNCT (\"tecnico-em-enfermagem\")"
+            "maxLength": 200
           },
           "forma": {
             "type": "string",
+            "description": "forma de oferta (\"integrado\", \"subsequente\", \"bacharelado\"…)",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "forma de oferta (\"integrado\", \"subsequente\", \"bacharelado\"…)"
+            "maxLength": 200
           },
           "ppc": {
             "type": "string",
+            "description": "um PPC (\"campus/curso\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "um PPC (\"campus/curso\")"
+            "maxLength": 200
           },
           "limite": {
-            "default": 8,
-            "description": "seções (1 a 20); padrão 8; com integral, até 5",
             "type": "integer",
             "minimum": 1,
-            "maximum": 20
+            "maximum": 20,
+            "description": "seções (1 a 20); padrão 8; com integral, até 5",
+            "default": 8
           },
           "integral": {
-            "default": false,
+            "type": "boolean",
             "description": "texto inteiro de cada seção; no máximo 5 seções",
-            "type": "boolean"
+            "default": false
           }
         },
         "required": [
           "consulta"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -3172,9 +3274,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -3224,9 +3330,13 @@
                       "type": "string"
                     },
                     "cnct_id": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "tipo": {
@@ -3375,12 +3485,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Buscar em PPCs",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -3390,27 +3500,28 @@
       "title": "Ler seção de PPC",
       "description": "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`. Use quando o trecho devolvido por `buscar_secoes` não bastar.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
+            "description": "ID da seção (\"curitiba/tecnico-em-enfermagem#estagio_praticas-1\"), vindo de buscar_secoes, ou o link ifpr://ppc/…#secao",
             "minLength": 3,
-            "maxLength": 300,
-            "description": "ID da seção (\"curitiba/tecnico-em-enfermagem#estagio_praticas-1\"), vindo de buscar_secoes, ou o link ifpr://ppc/…#secao"
+            "maxLength": 300
           },
           "cursor": {
-            "description": "cursor do trecho seguinte de uma seção longa, devolvido pela chamada anterior",
             "type": "string",
+            "description": "cursor do trecho seguinte de uma seção longa, devolvido pela chamada anterior",
             "minLength": 1
           }
         },
         "required": [
           "id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -3420,9 +3531,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -3511,15 +3626,23 @@
                 "additionalProperties": false
               },
               "anterior": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "proxima": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               }
             },
@@ -3590,12 +3713,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Ler seção de PPC",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -3605,6 +3728,7 @@
       "title": "Listar cursos",
       "description": "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use quando a pergunta envolver vários cursos, como os de um eixo, campus, turno ou processo seletivo, e prefira filtros, porque a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "eixo": {
@@ -3668,10 +3792,10 @@
             "minLength": 1
           }
         },
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -3979,7 +4103,6 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
@@ -3995,6 +4118,7 @@
       "title": "Ficha do curso",
       "description": "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação. Use quando a pergunta for sobre um curso específico.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "curso": {
@@ -4007,10 +4131,10 @@
         "required": [
           "curso"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -4752,7 +4876,6 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
@@ -4768,48 +4891,49 @@
       "title": "Fatos do PPC × SUAP",
       "description": "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "ppc": {
             "type": "string",
+            "description": "um PPC (\"campus/curso\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "um PPC (\"campus/curso\")"
+            "maxLength": 200
           },
           "divergencias": {
-            "default": false,
+            "type": "boolean",
             "description": "só os PPCs com divergência PPC × SUAP (e só as linhas divergentes), com os totais por aspecto",
-            "type": "boolean"
+            "default": false
           },
           "nivel": {
             "type": "string",
+            "description": "nível do PPC (\"médio\", \"superior\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "nível do PPC (\"médio\", \"superior\")"
+            "maxLength": 200
           },
           "campus": {
             "type": "string",
+            "description": "campus, pelo ID (\"curitiba\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "campus, pelo ID (\"curitiba\")"
+            "maxLength": 200
           },
           "limite": {
-            "default": 20,
-            "description": "PPCs por página (1 a 50); padrão 20",
             "type": "integer",
             "minimum": 1,
-            "maximum": 50
+            "maximum": 50,
+            "description": "PPCs por página (1 a 50); padrão 20",
+            "default": 20
           },
           "cursor": {
-            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "type": "string",
+            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "minLength": 1
           }
         },
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -4819,9 +4943,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -4856,9 +4984,13 @@
                       "type": "string"
                     },
                     "curso": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "nome": {
@@ -4889,15 +5021,23 @@
                             "type": "string"
                           },
                           "valor_num": {
-                            "type": [
-                              "number",
-                              "null"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "unidade": {
-                            "type": [
-                              "string",
-                              "null"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "status_curadoria": {
@@ -4953,15 +5093,23 @@
                           "type": "object",
                           "properties": {
                             "situacao": {
-                              "type": [
-                                "string",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             },
                             "carga_horaria_comum_h": {
-                              "type": [
-                                "number",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             },
                             "matrizes": {
@@ -4987,15 +5135,23 @@
                                     ]
                                   },
                                   "ch_exibida_h": {
-                                    "type": [
-                                      "number",
-                                      "null"
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
                                     ]
                                   },
                                   "ch_estagio_h": {
-                                    "type": [
-                                      "number",
-                                      "null"
+                                    "anyOf": [
+                                      {
+                                        "type": "number"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
                                     ]
                                   },
                                   "trecho": {
@@ -5037,15 +5193,23 @@
                             "type": "string"
                           },
                           "valor_ppc": {
-                            "type": [
-                              "string",
-                              "null"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "valor_suap": {
-                            "type": [
-                              "string",
-                              "null"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "explicacao": {
@@ -5080,14 +5244,8 @@
               },
               "totais": {
                 "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
                 "additionalProperties": {
                   "type": "object",
-                  "propertyNames": {
-                    "type": "string"
-                  },
                   "additionalProperties": {
                     "type": "integer",
                     "minimum": 0,
@@ -5161,12 +5319,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Fatos do PPC × SUAP",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -5176,6 +5334,7 @@
       "title": "Contexto da revisão de PPC",
       "description": "Monta o contexto de uma tarefa da skill `revisar-ppc` para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use dentro da `revisar-ppc`. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "tarefa": {
@@ -5200,10 +5359,10 @@
         "required": [
           "tarefa"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -6452,7 +6611,6 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
@@ -6468,12 +6626,13 @@
       "title": "Sobre a base",
       "description": "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {},
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -6483,9 +6642,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -6513,9 +6676,6 @@
             "properties": {
               "contagens": {
                 "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
                 "additionalProperties": {
                   "type": "integer",
                   "minimum": 0,
@@ -6627,12 +6787,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Sobre a base",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -6642,16 +6802,16 @@
       "title": "Etapa da tarefa",
       "description": "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
       "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
+            "description": "ID da etapa, como a skill o indica",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "ID da etapa, como a skill o indica"
+            "maxLength": 200
           },
           "progresso": {
-            "description": "quanto da etapa já foi feito",
             "type": "object",
             "properties": {
               "feito": {
@@ -6671,16 +6831,17 @@
               "feito",
               "total"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "quanto da etapa já foi feito"
           }
         },
         "required": [
           "id"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "outputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
         "properties": {
           "base": {
@@ -6690,9 +6851,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -6787,12 +6952,12 @@
           "dados",
           "avisos"
         ],
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
         "additionalProperties": false
       },
       "annotations": {
         "title": "Etapa da tarefa",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -6805,6 +6970,12 @@
         "consulta": "Resolução CNE/CP nº 2/2026, art. 28"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -6813,7 +6984,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7005,6 +7176,12 @@
         "limite": 3
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -7013,7 +7190,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7135,6 +7312,12 @@
         "vigentes": true
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -7143,7 +7326,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7397,6 +7580,12 @@
         ]
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -7405,7 +7594,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7466,6 +7655,12 @@
         "filhos": true
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -7474,7 +7669,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7659,6 +7854,12 @@
         "id": "br/cne-cp/res/2021/1"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -7667,7 +7868,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7869,6 +8070,12 @@
         "id": "br/lei/1996/9394"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -7877,7 +8084,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -8211,6 +8418,12 @@
         "id": "br/xx/res/1900/1"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -8226,6 +8439,12 @@
         "id": "br/cne-cp/res/2021/1#art20"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -8234,7 +8453,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -8405,6 +8624,12 @@
         "id": "br/cne-cp/res/2021/1"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -8413,7 +8638,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -8971,6 +9196,12 @@
         ]
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -8979,7 +9210,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -9022,6 +9253,12 @@
         ]
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -9030,7 +9267,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -9066,10 +9303,16 @@
         ]
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Input validation error: Invalid arguments for tool resolver_citacoes: citacoes: Entrada inválida: esperava um vetor, recebeu um valor \"undefined\", Chave inválida: \"textos\""
+            "text": "Entrada inválida para a ferramenta resolver_citacoes: citacoes: campo obrigatório; esperava uma lista, Chave inválida: \"textos\""
           }
         ],
         "isError": true
@@ -9082,15 +9325,21 @@
         "limite": 5
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Atenção: há citações identificadas por regra de baixa confiança (dcnept-2021-orgao-trocado, orgao-no-documento): confira o trecho no PPC antes de afirmar que ele cita a norma\n\nPPCs que citam [Resolução CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1) (revogada): 59 PPCs, 233 ocorrências.\n- [Técnico em Melhoria de Processos (Arapongas)](ifpr://ppc/arapongas/tecnico-em-melhoria-de-processos) — `arapongas/tecnico-em-melhoria-de-processos`, médio, subsequente: 3 ocorrências\n- [Técnico em Sistemas de Energia Renovável (Arapongas)](ifpr://ppc/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio) — `arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio`, médio, integrado: 4 ocorrências\n- [Tecnologia em Processos Gerenciais (Arapongas)](ifpr://ppc/arapongas/tecnologia-em-processos-gerenciais) — `arapongas/tecnologia-em-processos-gerenciais`, superior, graduação tecnológica: 9 ocorrências\n- [Técnico em Alimentos (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-alimentos) — `assis-chateaubriand/tecnico-em-alimentos`, médio, subsequente: 3 ocorrências\n- [Técnico em Mecatrônica (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio) — `assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio`, médio, integrado: 5 ocorrências\n\nMostrando 5 de 59. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiNmFlNTVkNDhmMWYxIn0\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: há citações identificadas por regra de baixa confiança (dcnept-2021-orgao-trocado, orgao-no-documento): confira o trecho no PPC antes de afirmar que ele cita a norma\n\nPPCs que citam [Resolução CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1) (revogada): 59 PPCs, 233 ocorrências.\n- [Técnico em Melhoria de Processos (Arapongas)](ifpr://ppc/arapongas/tecnico-em-melhoria-de-processos) — `arapongas/tecnico-em-melhoria-de-processos`, médio, subsequente: 3 ocorrências\n- [Técnico em Sistemas de Energia Renovável (Arapongas)](ifpr://ppc/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio) — `arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio`, médio, integrado: 4 ocorrências\n- [Tecnologia em Processos Gerenciais (Arapongas)](ifpr://ppc/arapongas/tecnologia-em-processos-gerenciais) — `arapongas/tecnologia-em-processos-gerenciais`, superior, graduação tecnológica: 9 ocorrências\n- [Técnico em Alimentos (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-alimentos) — `assis-chateaubriand/tecnico-em-alimentos`, médio, subsequente: 3 ocorrências\n- [Técnico em Mecatrônica (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio) — `assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio`, médio, integrado: 5 ocorrências\n\nMostrando 5 de 59. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiYjA5OTE4YTNhNWI3In0\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -9166,7 +9415,7 @@
           "pagina": {
             "total": 59,
             "devolvidos": 5,
-            "cursor": "eyJkIjo1LCJjIjoiNmFlNTVkNDhmMWYxIn0"
+            "cursor": "eyJkIjo1LCJjIjoiYjA5OTE4YTNhNWI3In0"
           }
         }
       }
@@ -9178,6 +9427,12 @@
         "ppc": "curitiba/tecnico-em-enfermagem"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -9186,7 +9441,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -9258,6 +9513,12 @@
         "id": "br/cne-cp/res/2021/1"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -9266,7 +9527,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -10157,6 +10418,12 @@
         "id": "br/lei/1996/9394"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -10165,7 +10432,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11269,6 +11536,12 @@
         "limite": 5
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -11277,7 +11550,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-ecc671ca",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11305,15 +11578,21 @@
         "limite": 10
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Adequação ao [art. 71 da Res. CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2#art71): 24 cursos alcançados no recorte.\n\nCritério: Cursos de institucional/ifpr/cursos/ com nível 'médio' e situação ativo ou em_oferta. Indicador: a DCN da EPT mais recente citada no PPC convertido (citações resolvidas por resolverCitacao, inclusive a DCN de 2021 com órgão trocado).\n\nPor indicador:\n- cita a Res. CNE/CP nº 1/2021 (`cita-cne-cp-1-2021`): 6\n- cita a Res. CNE/CEB nº 6/2012 (`cita-cne-ceb-6-2012`): 14\n- não cita DCN da EPT (`nao-cita-dcn`): 1\n- sem PPC convertido na base (`sem-ppc-convertido`): 3\n\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curso:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio`, integrado, PPC 2014: **não cita DCN da EPT**\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curso:curitiba/tecnico-em-condominio`, subsequente, PPC 2020: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 271, 486, 1369)\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curso:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio`, integrado, PPC 2015: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 263)\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curso:curitiba/tecnico-em-defesa-civil-ead`, subsequente, PPC sem ano: **sem PPC convertido na base**\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curso:curitiba/tecnico-em-edificacoes`, subsequente, PPC 2014: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 263, 2575)\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curso:curitiba/tecnico-em-eletromecanica`, subsequente, PPC 2017: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 135, 293, 468, 482, 484, 1031)\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curso:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio`, integrado, PPC 2014: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 2048); [Res. CNE/CEB nº 4/1999](ifpr://norma/br/cne-ceb/res/1999/4) (linhas 399)\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curso:curitiba/tecnico-em-eletrotecnica`, subsequente, PPC 2015: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 301, 440, 1133)\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curso:curitiba/tecnico-em-enfermagem`, subsequente, PPC 2023: **cita a Res. CNE/CP nº 1/2021** — [Res. CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1) (linhas 213, 661); [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 629)\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curso:curitiba/tecnico-em-eventos`, subsequente, PPC 2020: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 269, 485, 1370)\n\nMostrando 10 de 24. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoxMCwiYyI6IjBiMDA2ODcyMTY5MyJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Adequação ao [art. 71 da Res. CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2#art71): 24 cursos alcançados no recorte.\n\nCritério: Cursos de institucional/ifpr/cursos/ com nível 'médio' e situação ativo ou em_oferta. Indicador: a DCN da EPT mais recente citada no PPC convertido (citações resolvidas por resolverCitacao, inclusive a DCN de 2021 com órgão trocado).\n\nPor indicador:\n- cita a Res. CNE/CP nº 1/2021 (`cita-cne-cp-1-2021`): 6\n- cita a Res. CNE/CEB nº 6/2012 (`cita-cne-ceb-6-2012`): 14\n- não cita DCN da EPT (`nao-cita-dcn`): 1\n- sem PPC convertido na base (`sem-ppc-convertido`): 3\n\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curso:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio`, integrado, PPC 2014: **não cita DCN da EPT**\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curso:curitiba/tecnico-em-condominio`, subsequente, PPC 2020: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 271, 486, 1369)\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curso:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio`, integrado, PPC 2015: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 263)\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curso:curitiba/tecnico-em-defesa-civil-ead`, subsequente, PPC sem ano: **sem PPC convertido na base**\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curso:curitiba/tecnico-em-edificacoes`, subsequente, PPC 2014: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 263, 2575)\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curso:curitiba/tecnico-em-eletromecanica`, subsequente, PPC 2017: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 135, 293, 468, 482, 484, 1031)\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curso:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio`, integrado, PPC 2014: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 2048); [Res. CNE/CEB nº 4/1999](ifpr://norma/br/cne-ceb/res/1999/4) (linhas 399)\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curso:curitiba/tecnico-em-eletrotecnica`, subsequente, PPC 2015: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 301, 440, 1133)\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curso:curitiba/tecnico-em-enfermagem`, subsequente, PPC 2023: **cita a Res. CNE/CP nº 1/2021** — [Res. CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1) (linhas 213, 661); [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 629)\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curso:curitiba/tecnico-em-eventos`, subsequente, PPC 2020: **cita a Res. CNE/CEB nº 6/2012** — [Res. CNE/CEB nº 6/2012](ifpr://norma/br/cne-ceb/res/2012/6) (linhas 269, 485, 1370)\n\nMostrando 10 de 24. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoxMCwiYyI6ImI5YzE5NTUwMmNlNCJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-ecc671ca",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11548,7 +11827,7 @@
           "pagina": {
             "total": 24,
             "devolvidos": 10,
-            "cursor": "eyJkIjoxMCwiYyI6IjBiMDA2ODcyMTY5MyJ9"
+            "cursor": "eyJkIjoxMCwiYyI6ImI5YzE5NTUwMmNlNCJ9"
           }
         }
       }
@@ -11560,6 +11839,12 @@
         "cnct": "tecnico-em-agropecuaria"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -11568,7 +11853,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-ecc671ca",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11830,6 +12115,12 @@
         "integral": true
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -11838,7 +12129,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-ecc671ca",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11907,10 +12198,16 @@
         "consulta": ""
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Input validation error: Invalid arguments for tool buscar_secoes: consulta: Pequeno demais: esperava que o texto tivesse >= 1 caracteres"
+            "text": "Entrada inválida para a ferramenta buscar_secoes: consulta: deve ter pelo menos 1 caractere"
           }
         ],
         "isError": true
@@ -11922,6 +12219,12 @@
         "id": "ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio#acompanhamento_egresso-1"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -11930,7 +12233,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11963,6 +12266,12 @@
         "id": "ppc:inexistente/inexistente#1"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -11978,15 +12287,21 @@
         "limite": 5
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n\nMostrando 5 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiYTkyNTZkYzE2OGU5In0\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n\nMostrando 5 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiNzg5ZDU2MmJmNDg3In0\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-9bbfc618",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -12093,7 +12408,7 @@
           "pagina": {
             "total": 225,
             "devolvidos": 5,
-            "cursor": "eyJkIjo1LCJjIjoiYTkyNTZkYzE2OGU5In0"
+            "cursor": "eyJkIjo1LCJjIjoiNzg5ZDU2MmJmNDg3In0"
           }
         }
       }
@@ -12105,15 +12420,21 @@
         "nivel": "médio"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "25 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curitiba/tecnico-em-administracao-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Administração (Gestão e Negócios); PPC 2014; turnos: matutino, matutino-com-contraturno\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curitiba/tecnico-em-condominio` — médio, subsequente, presencial, ativo; CNCT Técnico em Condomínio (Gestão e Negócios); PPC 2020; turnos: noturno\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Contabilidade (Gestão e Negócios); PPC 2015; turnos: matutino, matutino-com-contraturno\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curitiba/tecnico-em-defesa-civil-ead` — médio, subsequente, ead, em_oferta; CNCT Técnico em Defesa Civil (Segurança); sem PPC na base\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curitiba/tecnico-em-edificacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Edificações (Infraestrutura); PPC 2014; turnos: noturno\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curitiba/tecnico-em-eletromecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2017; turnos: noturno\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletrônica (Controle e Processos Industriais); PPC 2014; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curitiba/tecnico-em-eletrotecnica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC 2015; turnos: noturno\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curitiba/tecnico-em-enfermagem` — médio, subsequente, presencial, ativo; CNCT Técnico em Enfermagem (Ambiente e Saúde); PPC 2023; turnos: matutino\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curitiba/tecnico-em-eventos` — médio, subsequente, presencial, ativo; CNCT Técnico em Eventos (Turismo, Hospitalidade e Lazer); PPC 2020; turnos: noturno\n- [Técnico em Informática](ifpr://curso/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio) `curitiba/tecnico-em-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2019; turnos: vespertino, matutino\n- [Técnico em Massoterapia](ifpr://curso/curitiba/tecnico-em-massoterapia) `curitiba/tecnico-em-massoterapia` — médio, subsequente, presencial, ativo; CNCT Técnico em Massoterapia (Ambiente e Saúde); PPC 2021\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica) `curitiba/tecnico-em-mecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2025; turnos: noturno\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) `curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2016; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Petróleo e Gás](ifpr://curso/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) `curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Petróleo e Gás (Produção Industrial); PPC 2017; turnos: matutino, matutino-com-contraturno\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos) `curitiba/tecnico-em-processos-fotograficos` — médio, subsequente, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2018; turnos: matutino\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio) `curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2015; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Produção de Áudio e Vídeo](ifpr://curso/curitiba/tecnico-em-producao-de-audio-e-video) `curitiba/tecnico-em-producao-de-audio-e-video` — médio, subsequente, presencial, ativo; CNCT Técnico em Produção de Áudio e Vídeo (Produção Cultural e Design); PPC 2022; turnos: noturno, vespertino\n- [Técnico em Programação de Jogos Digitais](ifpr://curso/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio) `curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Programação de Jogos Digitais (Informação e Comunicação); PPC 2019; turnos: matutino, vespertino\n- [Técnico em Prótese Dentária](ifpr://curso/curitiba/tecnico-em-protese-dentaria) `curitiba/tecnico-em-protese-dentaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Prótese Dentária (Ambiente e Saúde); sem PPC na base; turnos: noturno, vespertino\n- [Técnico em Radiologia](ifpr://curso/curitiba/tecnico-em-radiologia) `curitiba/tecnico-em-radiologia` — médio, subsequente, presencial, ativo; CNCT Técnico em Radiologia (Ambiente e Saúde); PPC 2013; turnos: matutino\n- [Técnico em Saúde Bucal](ifpr://curso/curitiba/tecnico-em-saude-bucal) `curitiba/tecnico-em-saude-bucal` — médio, subsequente, presencial, ativo; CNCT Técnico em Saúde Bucal (Ambiente e Saúde); PPC 2025; turnos: noturno\n- [Técnico em Soldagem](ifpr://curso/curitiba/tecnico-em-soldagem-subsequente) `curitiba/tecnico-em-soldagem-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Soldagem (Controle e Processos Industriais); PPC 2025\n- [Técnico em Telecomunicações](ifpr://curso/curitiba/tecnico-em-telecomunicacoes) `curitiba/tecnico-em-telecomunicacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Telecomunicações (Informação e Comunicação); sem PPC na base; turnos: noturno\n\nMostrando 24 de 25. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNCwiYyI6Ijk4NjFhMDA1MTI4MyJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "25 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curitiba/tecnico-em-administracao-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Administração (Gestão e Negócios); PPC 2014; turnos: matutino, matutino-com-contraturno\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curitiba/tecnico-em-condominio` — médio, subsequente, presencial, ativo; CNCT Técnico em Condomínio (Gestão e Negócios); PPC 2020; turnos: noturno\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Contabilidade (Gestão e Negócios); PPC 2015; turnos: matutino, matutino-com-contraturno\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curitiba/tecnico-em-defesa-civil-ead` — médio, subsequente, ead, em_oferta; CNCT Técnico em Defesa Civil (Segurança); sem PPC na base\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curitiba/tecnico-em-edificacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Edificações (Infraestrutura); PPC 2014; turnos: noturno\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curitiba/tecnico-em-eletromecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2017; turnos: noturno\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletrônica (Controle e Processos Industriais); PPC 2014; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curitiba/tecnico-em-eletrotecnica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC 2015; turnos: noturno\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curitiba/tecnico-em-enfermagem` — médio, subsequente, presencial, ativo; CNCT Técnico em Enfermagem (Ambiente e Saúde); PPC 2023; turnos: matutino\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curitiba/tecnico-em-eventos` — médio, subsequente, presencial, ativo; CNCT Técnico em Eventos (Turismo, Hospitalidade e Lazer); PPC 2020; turnos: noturno\n- [Técnico em Informática](ifpr://curso/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio) `curitiba/tecnico-em-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2019; turnos: vespertino, matutino\n- [Técnico em Massoterapia](ifpr://curso/curitiba/tecnico-em-massoterapia) `curitiba/tecnico-em-massoterapia` — médio, subsequente, presencial, ativo; CNCT Técnico em Massoterapia (Ambiente e Saúde); PPC 2021\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica) `curitiba/tecnico-em-mecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2025; turnos: noturno\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) `curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2016; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Petróleo e Gás](ifpr://curso/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) `curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Petróleo e Gás (Produção Industrial); PPC 2017; turnos: matutino, matutino-com-contraturno\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos) `curitiba/tecnico-em-processos-fotograficos` — médio, subsequente, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2018; turnos: matutino\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio) `curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2015; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Produção de Áudio e Vídeo](ifpr://curso/curitiba/tecnico-em-producao-de-audio-e-video) `curitiba/tecnico-em-producao-de-audio-e-video` — médio, subsequente, presencial, ativo; CNCT Técnico em Produção de Áudio e Vídeo (Produção Cultural e Design); PPC 2022; turnos: noturno, vespertino\n- [Técnico em Programação de Jogos Digitais](ifpr://curso/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio) `curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Programação de Jogos Digitais (Informação e Comunicação); PPC 2019; turnos: matutino, vespertino\n- [Técnico em Prótese Dentária](ifpr://curso/curitiba/tecnico-em-protese-dentaria) `curitiba/tecnico-em-protese-dentaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Prótese Dentária (Ambiente e Saúde); sem PPC na base; turnos: noturno, vespertino\n- [Técnico em Radiologia](ifpr://curso/curitiba/tecnico-em-radiologia) `curitiba/tecnico-em-radiologia` — médio, subsequente, presencial, ativo; CNCT Técnico em Radiologia (Ambiente e Saúde); PPC 2013; turnos: matutino\n- [Técnico em Saúde Bucal](ifpr://curso/curitiba/tecnico-em-saude-bucal) `curitiba/tecnico-em-saude-bucal` — médio, subsequente, presencial, ativo; CNCT Técnico em Saúde Bucal (Ambiente e Saúde); PPC 2025; turnos: noturno\n- [Técnico em Soldagem](ifpr://curso/curitiba/tecnico-em-soldagem-subsequente) `curitiba/tecnico-em-soldagem-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Soldagem (Controle e Processos Industriais); PPC 2025\n- [Técnico em Telecomunicações](ifpr://curso/curitiba/tecnico-em-telecomunicacoes) `curitiba/tecnico-em-telecomunicacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Telecomunicações (Informação e Comunicação); sem PPC na base; turnos: noturno\n\nMostrando 24 de 25. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNCwiYyI6IjM4YmEyZTY5ZjVlYiJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-9bbfc618",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -12811,7 +13132,7 @@
           "pagina": {
             "total": 25,
             "devolvidos": 24,
-            "cursor": "eyJkIjoyNCwiYyI6Ijk4NjFhMDA1MTI4MyJ9"
+            "cursor": "eyJkIjoyNCwiYyI6IjM4YmEyZTY5ZjVlYiJ9"
           }
         }
       }
@@ -12820,15 +13141,21 @@
       "name": "listar_cursos",
       "arguments": {},
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n- [Técnico em Agente Comunitário de Saúde](ifpr://curso/arapongas/tecnico-em-agente-comunitario-de-saude) `arapongas/tecnico-em-agente-comunitario-de-saude` — médio, subsequente, ead, incerto; CNCT Técnico em Agente Comunitário de Saúde (Ambiente e Saúde); sem PPC na base\n- [Técnico em Logística](ifpr://curso/arapongas/tecnico-em-logistica) `arapongas/tecnico-em-logistica` — médio, subsequente, ead, incerto; CNCT Técnico em Logística (Gestão e Negócios); sem PPC na base\n- [Técnico em Meio Ambiente](ifpr://curso/arapongas/tecnico-em-meio-ambiente) `arapongas/tecnico-em-meio-ambiente` — médio, subsequente, ead, incerto; CNCT Técnico em Meio Ambiente (Ambiente e Saúde); sem PPC na base\n- [Técnico em Melhoria de Processos](ifpr://curso/arapongas/tecnico-em-melhoria-de-processos) `arapongas/tecnico-em-melhoria-de-processos` — médio, subsequente, ead, suspenso; PPC 2021; turnos: noturno\n- [Técnico em Sistemas de Energia Renovável](ifpr://curso/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio) `arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Sistemas de Energia Renovável (Controle e Processos Industriais); PPC 2025\n- [Tecnologia em Processos Gerenciais](ifpr://curso/arapongas/tecnologia-em-processos-gerenciais) `arapongas/tecnologia-em-processos-gerenciais` — superior, graduação tecnológica; PPC 2025\n- [Técnico em Agropecuária](ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria) `assis-chateaubriand/tecnico-em-agropecuaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Agropecuária (Recursos Naturais); PPC 2021; turnos: noturno\n- [Técnico em Agropecuária](ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Agropecuária (Recursos Naturais); PPC 2017; turnos: matutino-com-contraturno\n- [Técnico em Alimentos](ifpr://curso/assis-chateaubriand/tecnico-em-alimentos) `assis-chateaubriand/tecnico-em-alimentos` — médio, subsequente, presencial, ativo; CNCT Técnico em Alimentos (Produção Alimentícia); PPC 2022; turnos: noturno\n- [Técnico em Comércio](ifpr://curso/assis-chateaubriand/tecnico-em-comercio) `assis-chateaubriand/tecnico-em-comercio` — médio, integrado, presencial, ativo; CNCT Técnico em Comércio (Gestão e Negócios); PPC 2019; turnos: matutino-com-contraturno\n- [Técnico em Eletromecânica](ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2013; turnos: matutino\n- [Técnico em Eletromecânica](ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-subsequente) `assis-chateaubriand/tecnico-em-eletromecanica-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC sem ano; turnos: noturno\n- [Técnico em Eletrotécnica](ifpr://curso/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente) `assis-chateaubriand/tecnico-em-eletrotecnica-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC sem ano; turnos: noturno\n- [Técnico em Informática para Internet](ifpr://curso/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática para Internet (Informação e Comunicação); PPC 2019; turnos: matutino-com-contraturno\n- [Técnico em Mecatrônica](ifpr://curso/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecatrônica (Controle e Processos Industriais); PPC 2025; turnos: matutino-com-contraturno\n- [Tecnologia em Automação Industrial](ifpr://curso/assis-chateaubriand/tecnologia-em-automacao-industrial) `assis-chateaubriand/tecnologia-em-automacao-industrial` — superior, graduação tecnológica, presencial, ativo; PPC 2025\n- [Tecnologia em Gestão Comercial](ifpr://curso/assis-chateaubriand/tecnologia-em-gestao-comercial) `assis-chateaubriand/tecnologia-em-gestao-comercial` — superior, graduação tecnológica, presencial, ativo; PPC 2023\n- [Técnico em Informática](ifpr://curso/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio) `astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2010; turnos: matutino\n- [Licenciatura em Pedagogia](ifpr://curso/astorga/licenciatura-em-pedagogia) `astorga/licenciatura-em-pedagogia` — superior, licenciatura, presencial, ativo; PPC 2025\n- [Técnico em Desenvolvimento de Sistemas](ifpr://curso/astorga/tecnico-em-desenvolvimento-de-sistemas) `astorga/tecnico-em-desenvolvimento-de-sistemas` — médio, subsequente, presencial, suspenso; CNCT Técnico em Desenvolvimento de Sistemas (Informação e Comunicação); PPC 2022; turnos: noturno\n\nMostrando 25 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNSwiYyI6ImE5MjU2ZGMxNjhlOSJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n- [Técnico em Agente Comunitário de Saúde](ifpr://curso/arapongas/tecnico-em-agente-comunitario-de-saude) `arapongas/tecnico-em-agente-comunitario-de-saude` — médio, subsequente, ead, incerto; CNCT Técnico em Agente Comunitário de Saúde (Ambiente e Saúde); sem PPC na base\n- [Técnico em Logística](ifpr://curso/arapongas/tecnico-em-logistica) `arapongas/tecnico-em-logistica` — médio, subsequente, ead, incerto; CNCT Técnico em Logística (Gestão e Negócios); sem PPC na base\n- [Técnico em Meio Ambiente](ifpr://curso/arapongas/tecnico-em-meio-ambiente) `arapongas/tecnico-em-meio-ambiente` — médio, subsequente, ead, incerto; CNCT Técnico em Meio Ambiente (Ambiente e Saúde); sem PPC na base\n- [Técnico em Melhoria de Processos](ifpr://curso/arapongas/tecnico-em-melhoria-de-processos) `arapongas/tecnico-em-melhoria-de-processos` — médio, subsequente, ead, suspenso; PPC 2021; turnos: noturno\n- [Técnico em Sistemas de Energia Renovável](ifpr://curso/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio) `arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Sistemas de Energia Renovável (Controle e Processos Industriais); PPC 2025\n- [Tecnologia em Processos Gerenciais](ifpr://curso/arapongas/tecnologia-em-processos-gerenciais) `arapongas/tecnologia-em-processos-gerenciais` — superior, graduação tecnológica; PPC 2025\n- [Técnico em Agropecuária](ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria) `assis-chateaubriand/tecnico-em-agropecuaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Agropecuária (Recursos Naturais); PPC 2021; turnos: noturno\n- [Técnico em Agropecuária](ifpr://curso/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Agropecuária (Recursos Naturais); PPC 2017; turnos: matutino-com-contraturno\n- [Técnico em Alimentos](ifpr://curso/assis-chateaubriand/tecnico-em-alimentos) `assis-chateaubriand/tecnico-em-alimentos` — médio, subsequente, presencial, ativo; CNCT Técnico em Alimentos (Produção Alimentícia); PPC 2022; turnos: noturno\n- [Técnico em Comércio](ifpr://curso/assis-chateaubriand/tecnico-em-comercio) `assis-chateaubriand/tecnico-em-comercio` — médio, integrado, presencial, ativo; CNCT Técnico em Comércio (Gestão e Negócios); PPC 2019; turnos: matutino-com-contraturno\n- [Técnico em Eletromecânica](ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2013; turnos: matutino\n- [Técnico em Eletromecânica](ifpr://curso/assis-chateaubriand/tecnico-em-eletromecanica-subsequente) `assis-chateaubriand/tecnico-em-eletromecanica-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC sem ano; turnos: noturno\n- [Técnico em Eletrotécnica](ifpr://curso/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente) `assis-chateaubriand/tecnico-em-eletrotecnica-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC sem ano; turnos: noturno\n- [Técnico em Informática para Internet](ifpr://curso/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática para Internet (Informação e Comunicação); PPC 2019; turnos: matutino-com-contraturno\n- [Técnico em Mecatrônica](ifpr://curso/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio) `assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecatrônica (Controle e Processos Industriais); PPC 2025; turnos: matutino-com-contraturno\n- [Tecnologia em Automação Industrial](ifpr://curso/assis-chateaubriand/tecnologia-em-automacao-industrial) `assis-chateaubriand/tecnologia-em-automacao-industrial` — superior, graduação tecnológica, presencial, ativo; PPC 2025\n- [Tecnologia em Gestão Comercial](ifpr://curso/assis-chateaubriand/tecnologia-em-gestao-comercial) `assis-chateaubriand/tecnologia-em-gestao-comercial` — superior, graduação tecnológica, presencial, ativo; PPC 2023\n- [Técnico em Informática](ifpr://curso/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio) `astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2010; turnos: matutino\n- [Licenciatura em Pedagogia](ifpr://curso/astorga/licenciatura-em-pedagogia) `astorga/licenciatura-em-pedagogia` — superior, licenciatura, presencial, ativo; PPC 2025\n- [Técnico em Desenvolvimento de Sistemas](ifpr://curso/astorga/tecnico-em-desenvolvimento-de-sistemas) `astorga/tecnico-em-desenvolvimento-de-sistemas` — médio, subsequente, presencial, suspenso; CNCT Técnico em Desenvolvimento de Sistemas (Informação e Comunicação); PPC 2022; turnos: noturno\n\nMostrando 25 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNSwiYyI6Ijc4OWQ1NjJiZjQ4NyJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-9bbfc618",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -13449,7 +13776,7 @@
           "pagina": {
             "total": 225,
             "devolvidos": 25,
-            "cursor": "eyJkIjoyNSwiYyI6ImE5MjU2ZGMxNjhlOSJ9"
+            "cursor": "eyJkIjoyNSwiYyI6Ijc4OWQ1NjJiZjQ4NyJ9"
           }
         }
       }
@@ -13460,6 +13787,12 @@
         "curso": "curitiba/tecnico-em-enfermagem"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -13468,7 +13801,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-9bbfc618",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -14649,6 +14982,12 @@
         "curso": "campus-inexistente/curso"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -14664,6 +15003,12 @@
         "ppc": "curitiba/tecnico-em-enfermagem"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -14672,7 +15017,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6a02fd16",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -14812,15 +15157,21 @@
         "limite": 3
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Atenção: os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana: confira o trecho de origem antes de afirmar um valor ou uma divergência\n\nCruzamento PPC × SUAP, PPCs por resultado:\n- ano: confere 88, ppc-mais-recente-que-matrizes 13, sem-ano 2, sem-suap 7\n- carga_horaria: confere 45, confere-com-uma-matriz 14, diverge 31, explicada-pelo-estagio 2, sem-fato-ppc 13, sem-suap 5\n- estagio: confere 67, diverge 7, sem-fato-ppc 31, sem-suap 5\n\n### [Técnico em Agropecuária (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-agropecuaria) — `ppc:assis-chateaubriand/tecnico-em-agropecuaria`\n\n**ano_documento = 2021** — status `Revisado`, regra `dados-institucionais`\n> \"ano_documento\": 2021,\nfonte: `base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30-30`\n\n**carga_horaria_total_h = 1233 h** — status `extraido`, regra `rotulo-quadro-relogio`\n> **Horário de oferta do curso:** segundas às sextas-feiras das 19:00h às 22:40h. **Carga horária total:** 1480 horas-aulas e 1233 horas-relógio\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:86-86`\n\n**estagio_obrigatorio = nao** — status `extraido`, regra `rotulo-quadro-negativo`\n> **Carga horária de estágio:** Não está previsto no curso o estágio obrigatório **Número máximo de vagas do curso:** 40 vagas **Número mínimo de vagas do curso:** 24 vagas **Ano de criação do curso:** 2019 **Ano letivo de implantação do ajuste:** 2021 **Ano de início da primeira turma:** 2021 **Tipo de\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:88-88`\n\nSUAP (Única ativa):\n- 76 — TÉCNICO EM AGROPECUÁRIA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1232 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- ano: **ppc-mais-recente-que-matrizes** — nenhuma matriz do SUAP é de 2021 ou posterior (anos: 2020)\n- carga_horaria: **diverge** — PPC 1233 h; mais próxima: matriz 76 (2020): 1232 h (diferença +1 h)\n\n### [Técnico em Informática para Internet (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio) — `ppc:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio`\n\n**ano_documento = 2019** — status `Revisado`, regra `dados-institucionais`\n> \"ano_documento\": 2019,\nfonte: `base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json:32-32`\n\n**carga_horaria_total_h = 3147 h** — status `extraido`, regra `rotulo-quadro-relogio`\n> mana – Segunda- feira e quinta feira. **Carga horária total em hora-relógio:** 3147 **Carga horária de estágio profissional obrigatório:** 0 **Número máximo de vagas do curso:** 30 **Número mínimo de vagas do curso:** 20 **Ano de criação do curso:** 2019 **Ano de início de primeira turma:** 2020 **Tipo de matrícula:** Por Série **Regime a\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86-86`\n\n**estagio_obrigatorio = nao** — status `extraido`, regra `rotulo-quadro-negativo`\n> mana – Segunda- feira e quinta feira. **Carga horária total em hora-relógio:** 3147 **Carga horária de estágio profissional obrigatório:** 0 **Número máximo de vagas do curso:** 30 **Número mínimo de vagas do curso:** 20 **Ano de criação do curso:** 2019 **Ano de início de primeira turma:** 2020 **Tipo de matrícula:** Por Série **Regime a\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86-86`\n\nSUAP (Múltiplas — mesma CH):\n- 73 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n- 734 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n- 834 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 CR TOLEDO (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- carga_horaria: **diverge** — PPC 3147 h; mais próxima: matriz 73 (2020): 3181 h (diferença -34 h)\n\n### [Técnico em Agroecologia (Capanema)](ifpr://ppc/capanema/tecnico-em-agroecologia) — `ppc:capanema/tecnico-em-agroecologia`\n\n**ano_documento = 2017** — status `Precisa de revisão`, regra `dados-institucionais`\n> \"ano_documento\": 2017,\nfonte: `base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-agroecologia.json:30-30`\n\n**carga_horaria_total_h = 3610 h** — status `extraido`, regra `rotulo-quadro-sem-marca`\n> **Carga horária Total** : 3.610 horas, sendo:\nfonte: `base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:90-90`\n\n**estagio_carga_h = 120 h** — status `extraido`, regra `rotulo-quadro-sem-marca`\n> **Carga horária de estágio:** 120 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100-100`\n\n**estagio_obrigatorio = sim** — status `extraido`, regra `rotulo-quadro`\n> **Carga horária de estágio:** 120 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100-100`\n\nSUAP (Única ativa):\n- 67 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2022 CAPANEMA — CH exibida: 3210 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- carga_horaria: **diverge** — PPC 3610 h; mais próxima: matriz 67 (2022): 3210 h (diferença +400 h)\n- estagio: **diverge** — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 67 (2022))\n\nMostrando 3 de 45. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjozLCJjIjoiY2FjNmE0MGI1Yzc5In0\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana: confira o trecho de origem antes de afirmar um valor ou uma divergência\n\nCruzamento PPC × SUAP, PPCs por resultado:\n- ano: confere 88, ppc-mais-recente-que-matrizes 13, sem-ano 2, sem-suap 7\n- carga_horaria: confere 45, confere-com-uma-matriz 14, diverge 31, explicada-pelo-estagio 2, sem-fato-ppc 13, sem-suap 5\n- estagio: confere 67, diverge 7, sem-fato-ppc 31, sem-suap 5\n\n### [Técnico em Agropecuária (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-agropecuaria) — `ppc:assis-chateaubriand/tecnico-em-agropecuaria`\n\n**ano_documento = 2021** — status `Revisado`, regra `dados-institucionais`\n> \"ano_documento\": 2021,\nfonte: `base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30-30`\n\n**carga_horaria_total_h = 1233 h** — status `extraido`, regra `rotulo-quadro-relogio`\n> **Horário de oferta do curso:** segundas às sextas-feiras das 19:00h às 22:40h. **Carga horária total:** 1480 horas-aulas e 1233 horas-relógio\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:86-86`\n\n**estagio_obrigatorio = nao** — status `extraido`, regra `rotulo-quadro-negativo`\n> **Carga horária de estágio:** Não está previsto no curso o estágio obrigatório **Número máximo de vagas do curso:** 40 vagas **Número mínimo de vagas do curso:** 24 vagas **Ano de criação do curso:** 2019 **Ano letivo de implantação do ajuste:** 2021 **Ano de início da primeira turma:** 2021 **Tipo de\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:88-88`\n\nSUAP (Única ativa):\n- 76 — TÉCNICO EM AGROPECUÁRIA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1232 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- ano: **ppc-mais-recente-que-matrizes** — nenhuma matriz do SUAP é de 2021 ou posterior (anos: 2020)\n- carga_horaria: **diverge** — PPC 1233 h; mais próxima: matriz 76 (2020): 1232 h (diferença +1 h)\n\n### [Técnico em Informática para Internet (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio) — `ppc:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio`\n\n**ano_documento = 2019** — status `Revisado`, regra `dados-institucionais`\n> \"ano_documento\": 2019,\nfonte: `base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json:32-32`\n\n**carga_horaria_total_h = 3147 h** — status `extraido`, regra `rotulo-quadro-relogio`\n> mana – Segunda- feira e quinta feira. **Carga horária total em hora-relógio:** 3147 **Carga horária de estágio profissional obrigatório:** 0 **Número máximo de vagas do curso:** 30 **Número mínimo de vagas do curso:** 20 **Ano de criação do curso:** 2019 **Ano de início de primeira turma:** 2020 **Tipo de matrícula:** Por Série **Regime a\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86-86`\n\n**estagio_obrigatorio = nao** — status `extraido`, regra `rotulo-quadro-negativo`\n> mana – Segunda- feira e quinta feira. **Carga horária total em hora-relógio:** 3147 **Carga horária de estágio profissional obrigatório:** 0 **Número máximo de vagas do curso:** 30 **Número mínimo de vagas do curso:** 20 **Ano de criação do curso:** 2019 **Ano de início de primeira turma:** 2020 **Tipo de matrícula:** Por Série **Regime a\nfonte: `base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86-86`\n\nSUAP (Múltiplas — mesma CH):\n- 73 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n- 734 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n- 834 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 CR TOLEDO (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- carga_horaria: **diverge** — PPC 3147 h; mais próxima: matriz 73 (2020): 3181 h (diferença -34 h)\n\n### [Técnico em Agroecologia (Capanema)](ifpr://ppc/capanema/tecnico-em-agroecologia) — `ppc:capanema/tecnico-em-agroecologia`\n\n**ano_documento = 2017** — status `Precisa de revisão`, regra `dados-institucionais`\n> \"ano_documento\": 2017,\nfonte: `base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-agroecologia.json:30-30`\n\n**carga_horaria_total_h = 3610 h** — status `extraido`, regra `rotulo-quadro-sem-marca`\n> **Carga horária Total** : 3.610 horas, sendo:\nfonte: `base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:90-90`\n\n**estagio_carga_h = 120 h** — status `extraido`, regra `rotulo-quadro-sem-marca`\n> **Carga horária de estágio:** 120 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100-100`\n\n**estagio_obrigatorio = sim** — status `extraido`, regra `rotulo-quadro`\n> **Carga horária de estágio:** 120 horas\nfonte: `base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100-100`\n\nSUAP (Única ativa):\n- 67 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2022 CAPANEMA — CH exibida: 3210 h; estágio exigido: Não; CH mínima de estágio (separada): -\n\nPPC × SUAP:\n- carga_horaria: **diverge** — PPC 3610 h; mais próxima: matriz 67 (2022): 3210 h (diferença +400 h)\n- estagio: **diverge** — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 67 (2022))\n\nMostrando 3 de 45. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjozLCJjIjoiM2Y4ZGEwOTE5MmMwIn0\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6a02fd16",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -15127,7 +15478,7 @@
           "pagina": {
             "total": 45,
             "devolvidos": 3,
-            "cursor": "eyJkIjozLCJjIjoiY2FjNmE0MGI1Yzc5In0"
+            "cursor": "eyJkIjozLCJjIjoiM2Y4ZGEwOTE5MmMwIn0"
           }
         }
       }
@@ -15139,6 +15490,12 @@
         "ppc": "curitiba/tecnico-em-enfermagem"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -15147,7 +15504,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-0cb3191f",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -15764,6 +16121,12 @@
         "arquivo": "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -15772,7 +16135,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-0cb3191f",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -16255,6 +16618,12 @@
         "arquivo": "PPC.md"
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -16268,15 +16637,21 @@
       "name": "sobre_a_base",
       "arguments": {},
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Base de conhecimento do IFPR, versão `dev-8af865b3` (canal dev), com vigência calculada em 13/11/2026.\n\nConteúdo: 116 normas (base, stubs e externas), 4930 dispositivos de normas, 60 relações entre normas, 8 regras de transição, 202 PPCs, 20059 seções de PPC, 28990 citações normativas em PPCs, 225 cursos, 206 ofertas de ingresso, 218 cursos do CNCT, 28 campi, 80 fichas da revisar-ppc.\n\nNíveis: formação inicial e continuada, médio, pós-graduação, superior.\n\nTipos de seção de PPC (filtro `tipo`): `acessibilidade_inclusao`, `acompanhamento_egresso`, `anexos`, `aproveitamento_estudos`, `atendimento_estudante`, `atividades_complementares`, `avaliacao`, `avaliacao_curso`, `carga_horaria`, `certificados_diplomas`, `concepcao_pedagogica`, `contexto_institucional`, `corpo_docente`, `ementas`, `ensino_pesquisa_extensao`, `estagio_praticas`, `formato_oferta`, `gestao_curso`, `identificacao`, `infraestrutura`, `itinerario_formativo`, `justificativa`, `legislacao`, `matriz_curricular`, `mundo_trabalho`, `objetivos`, `organizacao_curricular`, `perfil_egresso`, `prazo_integralizacao`, `referencias`, `requisitos_acesso`, `trabalho_conclusao`.\n\nCampi (o ID entre crases é o valor do filtro `campus`): [Arapongas](ifpr://campus/arapongas) `arapongas`, [Assis Chateaubriand](ifpr://campus/assis-chateaubriand) `assis-chateaubriand`, [Astorga](ifpr://campus/astorga) `astorga`, [Barracão](ifpr://campus/barracao) `barracao`, [Campo Largo](ifpr://campus/campo-largo) `campo-largo`, [Capanema](ifpr://campus/capanema) `capanema`, [Cascavel](ifpr://campus/cascavel) `cascavel`, [Colombo](ifpr://campus/colombo) `colombo`, [Coronel Vivida](ifpr://campus/coronel-vivida) `coronel-vivida`, [Curitiba](ifpr://campus/curitiba) `curitiba`, [Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`, [Goioerê](ifpr://campus/goioere) `goioere`, [Irati](ifpr://campus/irati) `irati`, [Ivaiporã](ifpr://campus/ivaipora) `ivaipora`, [Jacarezinho](ifpr://campus/jacarezinho) `jacarezinho`, [Jaguariaíva](ifpr://campus/jaguariaiva) `jaguariaiva`, [Londrina](ifpr://campus/londrina) `londrina`, [Palmas](ifpr://campus/palmas) `palmas`, [Paranaguá](ifpr://campus/paranagua) `paranagua`, [Paranavaí](ifpr://campus/paranavai) `paranavai`, [Pinhais](ifpr://campus/pinhais) `pinhais`, [Pitanga](ifpr://campus/pitanga) `pitanga`, [Ponta Grossa](ifpr://campus/ponta-grossa) `ponta-grossa`, [Quedas do Iguaçu](ifpr://campus/quedas-do-iguacu) `quedas-do-iguacu`, [Reitoria](ifpr://campus/reitoria) `reitoria`, [Telêmaco Borba](ifpr://campus/telemaco-borba) `telemaco-borba`, [Umuarama](ifpr://campus/umuarama) `umuarama`, [União da Vitória](ifpr://campus/uniao-da-vitoria) `uniao-da-vitoria`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Base de conhecimento do IFPR, versão `dev-66f7cd2e` (canal dev), com vigência calculada em 13/11/2026.\n\nConteúdo: 116 normas (base, stubs e externas), 4930 dispositivos de normas, 60 relações entre normas, 8 regras de transição, 202 PPCs, 20059 seções de PPC, 28990 citações normativas em PPCs, 225 cursos, 206 ofertas de ingresso, 218 cursos do CNCT, 28 campi, 80 fichas da revisar-ppc.\n\nNíveis: formação inicial e continuada, médio, pós-graduação, superior.\n\nTipos de seção de PPC (filtro `tipo`): `acessibilidade_inclusao`, `acompanhamento_egresso`, `anexos`, `aproveitamento_estudos`, `atendimento_estudante`, `atividades_complementares`, `avaliacao`, `avaliacao_curso`, `carga_horaria`, `certificados_diplomas`, `concepcao_pedagogica`, `contexto_institucional`, `corpo_docente`, `ementas`, `ensino_pesquisa_extensao`, `estagio_praticas`, `formato_oferta`, `gestao_curso`, `identificacao`, `infraestrutura`, `itinerario_formativo`, `justificativa`, `legislacao`, `matriz_curricular`, `mundo_trabalho`, `objetivos`, `organizacao_curricular`, `perfil_egresso`, `prazo_integralizacao`, `referencias`, `requisitos_acesso`, `trabalho_conclusao`.\n\nCampi (o ID entre crases é o valor do filtro `campus`): [Arapongas](ifpr://campus/arapongas) `arapongas`, [Assis Chateaubriand](ifpr://campus/assis-chateaubriand) `assis-chateaubriand`, [Astorga](ifpr://campus/astorga) `astorga`, [Barracão](ifpr://campus/barracao) `barracao`, [Campo Largo](ifpr://campus/campo-largo) `campo-largo`, [Capanema](ifpr://campus/capanema) `capanema`, [Cascavel](ifpr://campus/cascavel) `cascavel`, [Colombo](ifpr://campus/colombo) `colombo`, [Coronel Vivida](ifpr://campus/coronel-vivida) `coronel-vivida`, [Curitiba](ifpr://campus/curitiba) `curitiba`, [Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`, [Goioerê](ifpr://campus/goioere) `goioere`, [Irati](ifpr://campus/irati) `irati`, [Ivaiporã](ifpr://campus/ivaipora) `ivaipora`, [Jacarezinho](ifpr://campus/jacarezinho) `jacarezinho`, [Jaguariaíva](ifpr://campus/jaguariaiva) `jaguariaiva`, [Londrina](ifpr://campus/londrina) `londrina`, [Palmas](ifpr://campus/palmas) `palmas`, [Paranaguá](ifpr://campus/paranagua) `paranagua`, [Paranavaí](ifpr://campus/paranavai) `paranavai`, [Pinhais](ifpr://campus/pinhais) `pinhais`, [Pitanga](ifpr://campus/pitanga) `pitanga`, [Ponta Grossa](ifpr://campus/ponta-grossa) `ponta-grossa`, [Quedas do Iguaçu](ifpr://campus/quedas-do-iguacu) `quedas-do-iguacu`, [Reitoria](ifpr://campus/reitoria) `reitoria`, [Telêmaco Borba](ifpr://campus/telemaco-borba) `telemaco-borba`, [Umuarama](ifpr://campus/umuarama) `umuarama`, [União da Vitória](ifpr://campus/uniao-da-vitoria) `uniao-da-vitoria`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-8af865b3",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -16517,6 +16892,12 @@
         }
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
@@ -16525,7 +16906,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-66f7cd2e",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -16543,10 +16924,16 @@
         "id": ""
       },
       "resultado": {
+        "_meta": {
+          "io.modelcontextprotocol/serverInfo": {
+            "name": "ifpr",
+            "version": "0.1.0"
+          }
+        },
         "content": [
           {
             "type": "text",
-            "text": "Input validation error: Invalid arguments for tool etapa: id: Pequeno demais: esperava que o texto tivesse >= 1 caracteres"
+            "text": "Entrada inválida para a ferramenta etapa: id: deve ter pelo menos 1 caractere"
           }
         ],
         "isError": true

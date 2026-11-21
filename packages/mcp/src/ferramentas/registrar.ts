@@ -9,7 +9,7 @@
  *
  * A chamada passa pelo Toolkit (`FerramentasIfpr`, com os handlers do ambiente), que confere a
  * entrada de novo e codifica a resposta pelo `outputSchema`. O `structuredContent` é a `Resposta`
- * como o handler a montou (a mesma ordem de chaves do servidor anterior), e o `content`, o texto.
+ * como o handler a montou, na ordem de chaves dele, e o `content`, o texto.
  *
  * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada chamada é medida e registrada nela, com o
  * começo do texto do resultado.
@@ -28,8 +28,7 @@ import { FERRAMENTAS, FerramentasIfpr } from "./toolkit.ts";
 
 /**
  * As anotações do `tools/list`. O `McpSchema` do Effect sempre escreve `destructiveHint` (o padrão do
- * MCP é `true`); por isso ele vai explícito, `false`, como a anotação `Tool.Destructive` do Toolkit. O
- * servidor anterior (SDK 2.x) o omitia: é a única diferença das anotações em relação ao gabarito do C0.
+ * MCP é `true`); por isso ele vai explícito, `false`, como a anotação `Tool.Destructive` do Toolkit.
  */
 const anotacoes = (titulo: string) =>
   ({

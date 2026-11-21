@@ -64,7 +64,10 @@ const fechar = (cliente: Client) => Effect.promise(() => cliente.close());
 const stdio: Abrir = (banco) =>
   Effect.acquireRelease(
     Effect.promise(async () => {
-      const cliente = new Client({ name: "teste-recursos", version: "0" });
+      const cliente = new Client(
+        { name: "teste-recursos", version: "0" },
+        { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+      );
       await cliente.connect(
         new StdioClientTransport({
           command: process.execPath,
@@ -85,7 +88,10 @@ const http: Abrir = (banco) =>
     const sessao = yield* servidor.abrirSessao({ rotulo: "recursos" });
     return yield* Effect.acquireRelease(
       Effect.promise(async () => {
-        const cliente = new Client({ name: "teste-recursos", version: "0" });
+        const cliente = new Client(
+          { name: "teste-recursos", version: "0" },
+          { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+        );
         await cliente.connect(
           new StreamableHTTPClientTransport(new URL(sessao.url), {
             requestInit: { headers: { ...sessao.cabecalhos } },
@@ -136,7 +142,7 @@ describe.each([
   { transporte: "stdio", abrir: stdio },
   { transporte: "HTTP", abrir: http },
 ])("recursos ifpr:// ($transporte)", ({ abrir }) => {
-  it.effect("initialize anuncia resources; resources/templates/list traz um modelo por tipo, sem o curinga", () =>
+  it.effect("server/discover anuncia resources; resources/templates/list traz um modelo por tipo, sem o curinga", () =>
     Effect.gen(function* () {
       const cliente = yield* abrir(bancoPpcs);
       expect(cliente.getServerCapabilities()?.resources).toMatchObject({ listChanged: true });

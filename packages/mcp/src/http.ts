@@ -24,9 +24,8 @@
  *    `guest/http.ts` do T3. O T3 não limita o corpo do `/mcp`.
  * 5. **`Origin`:** o `layerHttp` do Effect recusa (403) toda requisição com `Origin`, porque nenhuma
  *    origem é permitida; os clientes MCP, que não são navegadores, não o enviam. É o padrão do T3.
- * 6. **Protocolos:** os do stdio menos o `2024-11-05`, cujo transporte HTTP (HTTP+SSE, dois endpoints)
- *    o `layerHttp` não implementa. O T3 aceita só `2025-06-18` e `2026-07-28`; aqui ficam também o
- *    `2025-11-25` e o `2025-03-26`, como no stdio, para não desconectar quem pede um deles.
+ * 6. **Protocolos:** os do stdio (`PROTOCOLOS`). Na `2026-07-28`, cada requisição leva os cabeçalhos
+ *    `MCP-Protocol-Version` e `Mcp-Method`, que o `layerHttp` confere contra o corpo.
  *
  * Ficaram de fora, do T3: o OAuth (`McpClientAuthenticator`) e os cabeçalhos `T3-Mode-Limit` e
  * `T3-Sender-Thread`, que servem a ambientes ligados; a expiração do token por inatividade (aqui ele
@@ -63,31 +62,20 @@ import * as Schema from "effect/Schema";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import type * as Types from "effect/Types";
-import { McpProtocol, McpServer } from "effect/ai";
+import { McpServer } from "effect/ai";
 import { HttpIncomingMessage, HttpRouter, HttpServer, HttpServerRequest, HttpServerResponse } from "effect/http";
 import * as NetAddress from "effect/net/NetAddress";
 import type { Canal } from "@simplifica-if/kb/canal";
 import { EntradaInvalida } from "./contratos.ts";
 import * as PastaTrabalho from "./leitura/PastaTrabalho.ts";
 import * as SessaoAtual from "./SessaoAtual.ts";
-import { INSTRUCOES, layerLeitura, layerRegistro, NOME_SERVIDOR, VERSAO_PACOTE } from "./servidor.ts";
+import { INSTRUCOES, layerLeitura, layerRegistro, NOME_SERVIDOR, PROTOCOLOS, VERSAO_PACOTE } from "./servidor.ts";
 
 /** O caminho do endpoint MCP. */
 export const CAMINHO = "/mcp";
 
 /** Maior corpo de requisição aceito. A maior entrada das ferramentas (`resolver_citacoes`) tem 12 mil caracteres. */
 export const LIMITE_CORPO = 1024 * 1024;
-
-/**
- * Versões aceitas no `initialize`: as do stdio (`PROTOCOLOS`) menos a `2024-11-05`. A primeira é a de
- * quem pede uma versão desconhecida.
- */
-const PROTOCOLOS_HTTP = [
-  McpProtocol.v2025_11_25,
-  McpProtocol.v2025_06_18,
-  McpProtocol.v2025_03_26,
-  McpProtocol.v2026_07_28,
-] as const;
 
 /** Endereço e cabeçalhos com que uma CLI de provider se liga ao servidor numa sessão. */
 export interface SessaoMcp {
@@ -380,7 +368,7 @@ export const layerSobreLeitura = (opcoes: { readonly porta?: number; readonly pa
     version: VERSAO_PACOTE,
     instructions: INSTRUCOES,
     path: CAMINHO,
-    protocols: PROTOCOLOS_HTTP,
+    protocols: PROTOCOLOS,
     allowSessionTermination: true,
     registrations: layerRegistro,
   }).pipe(Layer.provide(layerAutorizacao));

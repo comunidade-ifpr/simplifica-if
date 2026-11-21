@@ -1,18 +1,13 @@
 /**
- * Validação da entrada das ferramentas e a mensagem de entrada inválida que a IA lê.
+ * Validação da entrada das ferramentas e a mensagem de entrada inválida que a IA lê para corrigir a
+ * chamada:
  *
- * A mensagem mantém o formato do servidor anterior (SDK 2.x com zod 4 e o idioma `pt-BR` do zod):
+ *   Entrada inválida para a ferramenta etapa: id: deve ter pelo menos 1 caractere
  *
- *   Input validation error: Invalid arguments for tool etapa: id: Pequeno demais: esperava que o texto tivesse >= 1 caracteres
- *
- * O prefixo em inglês é o do SDK, que os clientes e as avaliações do M0.5 já conhecem; cada problema
- * é `<caminho>: <mensagem>` (só `<mensagem>` na raiz), separados por vírgula. As mensagens reproduzem
- * as do zod em português, porque são o que a IA lê para corrigir a chamada, e o gabarito do C0 as
- * confere byte a byte. O formatador do kb (`esquema/mensagens.ts`) tem outro texto ("Entrada inválida:
- * não pode ser vazio"), pensado para pessoas na CLI; daí este formatador próprio do transporte.
- *
- * A ordem também é a do zod: os campos na ordem do schema e, por último, as chaves não permitidas de
- * cada objeto, numa só mensagem ("Chaves inválidas: "a", "b"").
+ * Cada problema é `<caminho>: <mensagem>` (só `<mensagem>` na raiz), separados por vírgula: os campos
+ * na ordem do schema e, por último, as chaves não permitidas de cada objeto, numa só mensagem
+ * ("Chaves inválidas: "a", "b""). O formatador do kb (`esquema/mensagens.ts`) fala com pessoas na CLI;
+ * este fala com a IA, pelo transporte MCP.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
@@ -33,34 +28,33 @@ export const OPCOES_ENTRADA: SchemaAST.ParseOptions = {
   reportInput: true,
 };
 
-/* ================================================================== nomes, como no zod pt-BR */
+/* ================================================================== nomes */
 
-/** "um texto", "um vetor"… (o artigo indefinido e o nome do tipo, como o `pt-BR` do zod). */
+/** O que veio: "um texto", "uma lista"… */
 function nomeDoValor(valor: unknown): string {
-  if (valor === undefined) return 'um valor "undefined"';
-  if (valor === null) return 'um valor "nulo"';
+  if (valor === undefined) return "nada";
+  if (valor === null) return "null";
   if (typeof valor === "string") return "um texto";
-  if (typeof valor === "number") return Number.isNaN(valor) ? 'um valor "NaN"' : "um número";
+  if (typeof valor === "number") return "um número";
   if (typeof valor === "boolean") return "um valor booleano";
-  if (typeof valor === "bigint") return "um número bigint";
-  if (Array.isArray(valor)) return "um vetor";
+  if (Array.isArray(valor)) return "uma lista";
   if (typeof valor === "object") return "um objeto";
-  return `um valor "${typeof valor}"`;
+  return `um valor do tipo ${typeof valor}`;
 }
 
-/** O tipo que um nó do schema espera, como o zod o nomeia ("um texto", "um vetor"). */
+/** O tipo que um nó do schema espera ("um texto", "uma lista"). */
 function nomeDoTipo(ast: SchemaAST.AST): string {
   const codificado = SchemaAST.toEncoded(ast);
   if (SchemaAST.isString(codificado) || SchemaAST.isTemplateLiteral(codificado)) return "um texto";
   if (SchemaAST.isNumber(codificado)) return "um número";
   if (SchemaAST.isBoolean(codificado)) return "um valor booleano";
-  if (SchemaAST.isArrays(codificado)) return "um vetor";
-  if (SchemaAST.isObjects(codificado)) return codificado.propertySignatures.length > 0 ? "um objeto" : "um registro";
-  if (SchemaAST.isNull(codificado)) return 'um valor "nulo"';
+  if (SchemaAST.isArrays(codificado)) return "uma lista";
+  if (SchemaAST.isObjects(codificado)) return "um objeto";
+  if (SchemaAST.isNull(codificado)) return "null";
   return "um valor";
 }
 
-/** As opções de uma união de literais (`z.enum`), ou `undefined` se a união não for só de literais. */
+/** As opções de uma união de literais, ou `undefined` se a união não for só de literais. */
 function literais(ast: SchemaAST.AST): ReadonlyArray<SchemaAST.LiteralValue> | undefined {
   const codificado = SchemaAST.toEncoded(ast);
   if (SchemaAST.isLiteral(codificado)) return [codificado.literal];
@@ -76,17 +70,23 @@ function literais(ast: SchemaAST.AST): ReadonlyArray<SchemaAST.LiteralValue> | u
 const comAspas = (valor: unknown) => (typeof valor === "string" ? `"${valor}"` : String(valor));
 
 function opcaoInvalida(valores: ReadonlyArray<SchemaAST.LiteralValue>): string {
-  if (valores.length === 1) return `Entrada inválida: esperava ${comAspas(valores[0])}`;
-  return `Opção inválida: esperava uma das seguintes opções: ${valores.map(comAspas).join("|")}`;
+  if (valores.length === 1) return `esperava ${comAspas(valores[0])}`;
+  return `esperava uma destas opções: ${valores.map(comAspas).join(", ")}`;
 }
 
-/** Valor esperado e ausente (chave faltando): o `invalid_type` do zod com `undefined`. */
+/** Chave obrigatória ausente: o que ela espera, quando o tipo é conhecido. */
 function ausente(ast: SchemaAST.AST | undefined): string {
-  if (ast === undefined) return 'Entrada inválida: esperava um valor, recebeu um valor "undefined"';
+  if (ast === undefined) return "campo obrigatório";
   const opcoes = literais(ast);
-  if (opcoes) return opcaoInvalida(opcoes);
-  if (SchemaAST.isUnion(SchemaAST.toEncoded(ast))) return "Entrada inválida";
-  return `Entrada inválida: esperava ${nomeDoTipo(ast)}, recebeu um valor "undefined"`;
+  if (opcoes) return `campo obrigatório; ${opcaoInvalida(opcoes)}`;
+  if (SchemaAST.isUnion(SchemaAST.toEncoded(ast))) return "campo obrigatório";
+  return `campo obrigatório; esperava ${nomeDoTipo(ast)}`;
+}
+
+/** "Chave inválida: "a"" ou "Chaves inválidas: "a", "b"". */
+function chavesInvalidas(chaves: ReadonlyArray<PropertyKey>): string {
+  const plural = chaves.length > 1 ? "s" : "";
+  return `Chave${plural} inválida${plural}: ${chaves.map((k) => comAspas(String(k))).join(", ")}`;
 }
 
 /* ================================================================== checagens */
@@ -95,11 +95,10 @@ function anotacao(origem: unknown, chave: string): unknown {
   return typeof origem === "object" && origem !== null ? (origem as Record<string, unknown>)[chave] : undefined;
 }
 
-/** "o texto … caracteres" ou "o vetor … elementos", conforme o nó checado. */
-function tamanho(ast: SchemaAST.AST | undefined): { readonly nome: string; readonly unidade: string } {
-  return ast !== undefined && SchemaAST.isArrays(ast)
-    ? { nome: "o vetor", unidade: "elementos" }
-    : { nome: "o texto", unidade: "caracteres" };
+/** "caractere(s)" ou "item(ns)", conforme o nó checado. */
+function unidade(ast: SchemaAST.AST | undefined, n: string): string {
+  const um = n === "1";
+  return ast !== undefined && SchemaAST.isArrays(ast) ? (um ? "item" : "itens") : um ? "caractere" : "caracteres";
 }
 
 function mensagemDaChecagem(filtro: SchemaIssue.Filter, checado: SchemaAST.AST | undefined): string {
@@ -112,24 +111,20 @@ function mensagemDaChecagem(filtro: SchemaIssue.Filter, checado: SchemaAST.AST |
   const payload = anotacao(representacao, "payload");
   const valor = (chave: string) => String(anotacao(payload, chave));
   switch (anotacao(representacao, "id")) {
-    case "effect/schema/isMinLength": {
-      const t = tamanho(checado);
-      return `Pequeno demais: esperava que ${t.nome} tivesse >= ${valor("minLength")} ${t.unidade}`;
-    }
-    case "effect/schema/isMaxLength": {
-      const t = tamanho(checado);
-      return `Grande demais: esperava que ${t.nome} tivesse <= ${valor("maxLength")} ${t.unidade}`;
-    }
+    case "effect/schema/isMinLength":
+      return `deve ter pelo menos ${valor("minLength")} ${unidade(checado, valor("minLength"))}`;
+    case "effect/schema/isMaxLength":
+      return `deve ter no máximo ${valor("maxLength")} ${unidade(checado, valor("maxLength"))}`;
     case "effect/schema/isGreaterThanOrEqualTo":
-      return `Pequeno demais: esperava que o número fosse >= ${valor("minimum")}`;
+      return `deve ser maior ou igual a ${valor("minimum")}`;
     case "effect/schema/isLessThanOrEqualTo":
-      return `Grande demais: esperava que o número fosse <= ${valor("maximum")}`;
+      return `deve ser menor ou igual a ${valor("maximum")}`;
     case "effect/schema/isInt":
-      return "Entrada inválida: esperava um número inteiro, recebeu um número";
+      return "esperava um número inteiro";
     case "effect/schema/isPattern":
-      return `Texto inválido: deve corresponder ao padrão /${valor("source")}/${valor("flags")}`;
+      return `deve seguir o padrão /${valor("source")}/${valor("flags")}`;
     default:
-      return "Entrada inválida";
+      return "valor inválido";
   }
 }
 
@@ -169,13 +164,7 @@ function percorrer(
         }
         percorrer(problema, caminho, { pai: issue.ast, checado: issue.ast }, saida);
       }
-      if (naoPermitidas.length > 0) {
-        const plural = naoPermitidas.length > 1 ? "s" : "";
-        saida.push({
-          caminho,
-          mensagem: `Chave${plural} inválida${plural}: ${naoPermitidas.map((k) => comAspas(String(k))).join(", ")}`,
-        });
-      }
+      if (naoPermitidas.length > 0) saida.push({ caminho, mensagem: chavesInvalidas(naoPermitidas) });
       return;
     }
     case "Encoding":
@@ -191,62 +180,60 @@ function percorrer(
         return;
       }
       if (SchemaAST.isUnion(SchemaAST.toEncoded(issue.ast))) {
-        saida.push({ caminho, mensagem: "Entrada inválida" });
+        saida.push({ caminho, mensagem: "valor inválido" });
         return;
       }
-      saida.push({
-        caminho,
-        mensagem: `Entrada inválida: esperava ${nomeDoTipo(issue.ast)}, recebeu ${nomeDoValor(issue.input)}`,
-      });
+      saida.push({ caminho, mensagem: `esperava ${nomeDoTipo(issue.ast)}, veio ${nomeDoValor(issue.input)}` });
       return;
     }
     case "AnyOf": {
       const opcoes = literais(issue.ast);
-      saida.push({ caminho, mensagem: opcoes ? opcaoInvalida(opcoes) : "Entrada inválida" });
+      saida.push({ caminho, mensagem: opcoes ? opcaoInvalida(opcoes) : "valor inválido" });
       return;
     }
     case "MissingKey":
       saida.push({ caminho, mensagem: ausente(undefined) });
       return;
-    case "UnexpectedKey": {
-      const chave = caminho.at(-1);
-      saida.push({ caminho: caminho.slice(0, -1), mensagem: `Chave inválida: ${comAspas(String(chave))}` });
+    case "UnexpectedKey":
+      saida.push({ caminho: caminho.slice(0, -1), mensagem: chavesInvalidas(caminho.slice(-1)) });
       return;
-    }
     case "InvalidValue": {
       const mensagem = anotacao(issue.annotations, "message");
-      saida.push({ caminho, mensagem: typeof mensagem === "string" ? mensagem : "Entrada inválida" });
+      saida.push({ caminho, mensagem: typeof mensagem === "string" ? mensagem : "valor inválido" });
       return;
     }
     case "OneOf":
     case "Forbidden":
-      saida.push({ caminho, mensagem: "Entrada inválida" });
+      saida.push({ caminho, mensagem: "valor inválido" });
       return;
   }
 }
 
-/** Os problemas de um `SchemaIssue` da entrada, na ordem do zod, com as mensagens em português. */
+/** Os problemas de um `SchemaIssue` da entrada, na ordem do schema, com as mensagens em português. */
 export function problemasDeEntrada(issue: SchemaIssue.Issue): ProblemaDeEntrada[] {
   const saida: ProblemaDeEntrada[] = [];
   percorrer(issue, [], { pai: undefined, checado: undefined }, saida);
   return saida;
 }
 
-/** `<caminho>: <mensagem>` (só `<mensagem>` na raiz), como o SDK formatava cada problema. */
+/** `<caminho>: <mensagem>` (só `<mensagem>` na raiz). */
 export function linhaDoProblema(problema: ProblemaDeEntrada): string {
   if (problema.caminho.length === 0) return problema.mensagem;
   return `${problema.caminho.map(String).join(".")}: ${problema.mensagem}`;
 }
 
-/** A mensagem de entrada inválida de uma ferramenta, no formato do servidor anterior. */
+/** A mensagem de entrada inválida de uma ferramenta: o nome dela e os problemas. */
 export function mensagemDeEntradaInvalida(ferramenta: string, issue: SchemaIssue.Issue): string {
-  const problemas = problemasDeEntrada(issue).map(linhaDoProblema).join(", ");
-  return `Input validation error: Invalid arguments for tool ${ferramenta}: ${problemas}`;
+  return comPrefixo(ferramenta, problemasDeEntrada(issue).map(linhaDoProblema).join(", "));
 }
 
+const comPrefixo = (ferramenta: string, problemas: string) =>
+  `Entrada inválida para a ferramenta ${ferramenta}: ${problemas}`;
+
 /**
- * Decodificador da entrada de uma ferramenta: os argumentos da chamada (ausentes viram `{}`, como no
- * SDK) contra o schema, com objetos fechados; entrada inválida é `EntradaInvalida` com a mensagem acima.
+ * Decodificador da entrada de uma ferramenta: os argumentos da chamada (ausentes, porque o protocolo
+ * os deixa opcionais, viram `{}`) contra o schema, com objetos fechados; entrada inválida é
+ * `EntradaInvalida` com a mensagem acima.
  */
 export function decodificadorDeEntrada<S extends Schema.Decoder<unknown>>(ferramenta: string, schema: S) {
   const decodificar = Schema.decodeUnknownEffect(schema);
@@ -258,13 +245,8 @@ export function decodificadorDeEntrada<S extends Schema.Decoder<unknown>>(ferram
   return (args: unknown): Effect.Effect<S["Type"], EntradaInvalida, S["DecodingServices"]> => {
     const valor = args ?? {};
     if (semCampos && typeof valor === "object" && !Array.isArray(valor) && Object.keys(valor).length > 0) {
-      const chaves = Object.keys(valor);
-      const plural = chaves.length > 1 ? "s" : "";
-      const mensagem = `Chave${plural} inválida${plural}: ${chaves.map((k) => comAspas(k)).join(", ")}`;
       return Effect.fail(
-        new EntradaInvalida({
-          mensagem: `Input validation error: Invalid arguments for tool ${ferramenta}: ${mensagem}`,
-        }),
+        new EntradaInvalida({ mensagem: comPrefixo(ferramenta, chavesInvalidas(Object.keys(valor))) }),
       );
     }
     return decodificar(valor, OPCOES_ENTRADA).pipe(

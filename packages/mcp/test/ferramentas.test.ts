@@ -262,9 +262,8 @@ describe("pelo protocolo MCP (em memória)", () => {
       );
       expect(r.isError).toBe(true);
       const texto = (r.content as { text: string }[])[0]!.text;
-      // "Input validation error: Invalid arguments for tool etapa: id: <mensagem>, progresso.total: …"
-      expect(texto).toContain("Invalid arguments for tool etapa");
-      expect(texto).toContain("id: Entrada inválida: esperava um texto");
+      expect(texto).toMatch(/^Entrada inválida para a ferramenta etapa: /);
+      expect(texto).toContain("id: campo obrigatório; esperava um texto");
       expect(texto).toContain("progresso.total: ");
     }).pipe(Effect.scoped),
   );

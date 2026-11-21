@@ -67,7 +67,7 @@ export function saidaValida(ferramenta: FerramentaTestada, resposta: unknown): b
  */
 export const conectarEmMemoria = (
   banco: string,
-  opcoes: { readonly canal?: Canal; readonly negociacao?: "legacy" | "auto" } = {},
+  opcoes: { readonly canal?: Canal; readonly negociacao?: "legacy" | "2026-07-28" } = {},
 ) =>
   Effect.acquireRelease(
     Effect.promise(async () => {
@@ -84,7 +84,7 @@ export const conectarEmMemoria = (
       );
       const cliente = new Client(
         { name: "teste", version: "0" },
-        { versionNegotiation: { mode: opcoes.negociacao ?? "legacy" } },
+        { versionNegotiation: { mode: opcoes.negociacao === "legacy" ? "legacy" : { pin: "2026-07-28" } } },
       );
       await cliente.connect(
         new StreamableHTTPClientTransport(new URL("http://ifpr.teste/mcp"), {

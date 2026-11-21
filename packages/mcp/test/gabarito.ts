@@ -1,24 +1,17 @@
 // @effect-diagnostics nodeBuiltinImport:off -- ferramenta de teste: lê e grava o gabarito em testes-gabarito/
 /**
- * Gabarito do servidor MCP: `initialize`, `tools/list` e as respostas (`content` e `structuredContent`)
- * de duas a três chamadas por ferramenta, colhidos pelo Client do SDK em stdio, com o servidor como
- * processo filho sobre o `tmp/kb.sqlite` real.
+ * Gabarito do servidor MCP: o `server/discover` (revisão 2026-07-28), o `tools/list` e as respostas
+ * (`content` e `structuredContent`) de duas a três chamadas por ferramenta, colhidos pelo Client do SDK
+ * em stdio, com o servidor como processo filho sobre o `tmp/kb.sqlite` real.
  *
  *   node packages/mcp/test/gabarito.ts --comparar     # confere com testes-gabarito/mcp.json
  *   node packages/mcp/test/gabarito.ts --capturar     # regrava o gabarito (só por decisão explícita)
- *   node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes
  *   node packages/mcp/test/gabarito.ts --atualizar pacote_contexto,instrucoes
  *
  * `--atualizar <partes>` regrava só as partes nomeadas, separadas por vírgula, e mantém o resto do
  * arquivo como foi capturado: o nome de uma ferramenta troca (ou acrescenta, na posição do
  * `tools/list`) a definição dela e as chamadas dela; `instrucoes` troca as instruções. Serve para uma
- * ferramenta nova ou para uma mudança decidida nas instruções sem regravar o gabarito do C0 inteiro.
- *
- * Com `--schemas-equivalentes` (critério do C2, servidor no `McpServer` do Effect), a comparação é por
- * partes: as chamadas (`content` e `structuredContent`) e as instruções continuam byte a byte; o
- * `tools/list` passa por `compararDefinicoes` (`equivalencia.ts`: textos e anotações iguais, schemas
- * equivalentes pela forma normalizada e pelo veredito do ajv); e o `initialize` aceita as diferenças do
- * `McpServer` do Effect 4.1.3 e a capacidade `resources` dos links `ifpr://` (M1.5).
+ * ferramenta nova ou para uma mudança decidida nas instruções sem regravar o gabarito inteiro.
  *
  * Neutro de runtime: o servidor roda com o mesmo executável deste script (`process.execPath`), ou com
  * o comando de `SIMPLIFICA_MCP_EXE` (o executável empacotado). A comparação é byte a byte, sobre o JSON
@@ -30,7 +23,6 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { Client } from "@modelcontextprotocol/client";
-import { type ChamadaDoGabarito, compararDefinicoes, type DefinicaoListada } from "./equivalencia.ts";
 import { mascarar } from "./mascara.ts";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
@@ -89,16 +81,12 @@ const CHAMADAS: ReadonlyArray<{ readonly name: string; readonly arguments: Recor
 ];
 
 const modo = process.argv[2];
-const equivalentes = process.argv.includes("--schemas-equivalentes");
 const partes = modo === "--atualizar" ? (process.argv[3] ?? "").split(",").filter(Boolean) : [];
 if (
   (modo !== "--capturar" && modo !== "--comparar" && modo !== "--atualizar") ||
-  (equivalentes && modo !== "--comparar") ||
   (modo === "--atualizar" && partes.length === 0)
 ) {
-  process.stderr.write(
-    "uso: gabarito.ts --capturar | --comparar [--schemas-equivalentes] | --atualizar <ferramenta|instrucoes>[,…]\n",
-  );
+  process.stderr.write("uso: gabarito.ts --capturar | --comparar | --atualizar <ferramenta|instrucoes>[,…]\n");
   process.exit(2);
 }
 
@@ -110,7 +98,7 @@ const transporte = new StdioClientTransport({
   env: { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "" },
   stderr: "pipe",
 });
-const cliente = new Client({ name: "gabarito", version: "0" }, { versionNegotiation: { mode: "legacy" } });
+const cliente = new Client({ name: "gabarito", version: "0" }, { versionNegotiation: { mode: { pin: "2026-07-28" } } });
 await cliente.connect(transporte);
 
 const { tools } = await cliente.listTools();
@@ -129,6 +117,7 @@ for (const chamada of CHAMADAS) {
   chamadas.push({ name: chamada.name, arguments: args, resultado });
 }
 const gabarito = {
+  protocolo: cliente.getNegotiatedProtocolVersion(),
   servidor: cliente.getServerVersion(),
   capacidades: cliente.getServerCapabilities(),
   instrucoes: cliente.getInstructions(),
@@ -181,47 +170,6 @@ if (modo === "--atualizar") {
   NodeFS.writeFileSync(ARQUIVO, texto);
   process.stdout.write(
     `gabarito do MCP gravado em ${NodePath.relative(RAIZ, ARQUIVO)} (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`,
-  );
-} else if (equivalentes) {
-  const antigo = JSON.parse(NodeFS.readFileSync(ARQUIVO, "utf8")) as {
-    readonly servidor: unknown;
-    readonly capacidades: unknown;
-    readonly instrucoes: unknown;
-    readonly tools: readonly DefinicaoListada[];
-    readonly chamadas: readonly ChamadaDoGabarito[];
-  };
-  const problemas: string[] = [];
-  const json = (valor: unknown) => mascarar(JSON.stringify(valor, null, 2));
-  // `initialize`: o `McpServer.layerStdio` do Effect 4.1.3 não aceita `title` no `serverInfo` e sempre
-  // anuncia `logging` e `completions` (o servidor não registra nenhum dos dois; os clientes os ignoram).
-  // Desde o M1.5, o servidor também serve os links `ifpr://` como recursos, e o `initialize` anuncia
-  // `resources` (em stdio, com `subscribe`), que o gabarito do C0 não tinha.
-  const servidor = { ...(antigo.servidor as Record<string, unknown>) };
-  delete servidor.title;
-  if (json(servidor) !== json(gabarito.servidor)) problemas.push(`servidor: ${json(gabarito.servidor)}`);
-  const capacidades = {
-    logging: {},
-    completions: {},
-    resources: { subscribe: true, listChanged: true },
-    ...(antigo.capacidades as Record<string, unknown>),
-  };
-  if (json(capacidades) !== json(gabarito.capacidades)) problemas.push(`capacidades: ${json(gabarito.capacidades)}`);
-  if (antigo.instrucoes !== gabarito.instrucoes) problemas.push("instruções diferentes");
-  const definicoes = compararDefinicoes(antigo.tools, tools as readonly DefinicaoListada[], antigo.chamadas);
-  problemas.push(...definicoes.problemas);
-  antigo.chamadas.forEach((esperada, i) => {
-    if (json(esperada) !== json(chamadas[i])) problemas.push(`chamada ${i + 1} (${esperada.name}) diferente`);
-  });
-  if (antigo.chamadas.length !== chamadas.length)
-    problemas.push(`${chamadas.length} chamadas; esperava ${antigo.chamadas.length}`);
-  if (problemas.length > 0) {
-    process.stderr.write(
-      `gabarito do MCP: ${problemas.length} diferença(s)\n${problemas.map((p) => `  ${p}`).join("\n")}\n`,
-    );
-    process.exit(1);
-  }
-  process.stdout.write(
-    `gabarito do MCP: equivalente (${tools.length} ferramentas, ${chamadas.length} chamadas iguais, ${definicoes.amostras} amostras com o mesmo veredito)\n`,
   );
 } else {
   const esperado = mascarar(NodeFS.readFileSync(ARQUIVO, "utf8"));

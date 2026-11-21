@@ -187,7 +187,7 @@ export function sessaoStdio(servidor: Servidor, lista: ReadonlyArray<Chamada>): 
   return (async () => {
     try {
       const initialize = await pedir(0, "initialize", {
-        protocolVersion: "2025-06-18",
+        protocolVersion: "2025-11-25",
         capabilities: {},
         clientInfo: { name: "transversal", version: "0" },
       });

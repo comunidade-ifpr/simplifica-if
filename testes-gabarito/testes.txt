@@ -46,7 +46,6 @@ packages/kb/src/texto.test.ts	12	0
 packages/mcp/test/abertura.test.ts	8	0
 packages/mcp/test/atualizacao.test.ts	1	0
 packages/mcp/test/envelope.test.ts	8	0
-packages/mcp/test/equivalencia-schemas.test.ts	1	0
 packages/mcp/test/explorar.test.ts	7	0
 packages/mcp/test/ferramentas.test.ts	17	0
 packages/mcp/test/http.test.ts	12	0
@@ -58,7 +57,7 @@ packages/mcp/test/ppcs-cursos.test.ts	31	0
 packages/mcp/test/recursos.test.ts	13	0
 packages/mcp/test/rpc.test.ts	15	0
 packages/mcp/test/skills.test.ts	10	0
-packages/mcp/test/stdio.test.ts	11	0
+packages/mcp/test/stdio.test.ts	10	0
 packages/mcp/test/texto.test.ts	6	0
 packages/mcp/test/transversal/consultar.test.ts	6	2
 packages/mcp/test/transversal/contrato.test.ts	18	0
@@ -89,4 +88,4 @@ scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
 scripts/sincronizar_repos.test.ts	2	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1253	36
+TOTAL	1251	36

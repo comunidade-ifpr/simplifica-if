@@ -30,9 +30,10 @@ function ambiente(extra: Record<string, string> = {}): Record<string, string> {
   return { PATH: EXE ? "/usr/bin:/bin" : (process.env.PATH ?? ""), HOME: process.env.HOME ?? "", ...extra };
 }
 
+/** O Client na revisão 2026-07-28 (`server/discover`), ou na era do `initialize` (`legacy`, 2025-11-25). */
 async function conectar(
   args: string[],
-  opcoes: { cwd: string; env?: Record<string, string>; negociacao?: "legacy" | "auto" },
+  opcoes: { cwd: string; env?: Record<string, string>; negociacao?: "legacy" | "2026-07-28" },
 ) {
   const transporte = new StdioClientTransport({
     command: COMANDO,
@@ -43,7 +44,7 @@ async function conectar(
   });
   const cliente = new Client(
     { name: "teste-stdio", version: "0" },
-    { versionNegotiation: { mode: opcoes.negociacao ?? "legacy" } },
+    { versionNegotiation: { mode: opcoes.negociacao === "legacy" ? "legacy" : { pin: "2026-07-28" } } },
   );
   await cliente.connect(transporte);
   return cliente;
@@ -97,16 +98,16 @@ describe("servidor em stdio", () => {
     }
   });
 
-  test("atende as duas eras do protocolo com a mesma resposta", async () => {
+  test("atende as duas revisões do protocolo com a mesma resposta", async () => {
     const banco = criarBancoFixture();
     const respostas: unknown[] = [];
-    for (const [negociacao, era] of [
-      ["legacy", "legacy"],
-      ["auto", "modern"],
+    for (const [negociacao, versao] of [
+      ["legacy", "2025-11-25"],
+      ["2026-07-28", "2026-07-28"],
     ] as const) {
       const cliente = await conectar(["--banco", banco], { cwd: diretorioTemporario(), negociacao });
       try {
-        expect(cliente.getProtocolEra()).toBe(era);
+        expect(cliente.getNegotiatedProtocolVersion()).toBe(versao);
         expect(cliente.getInstructions()).toBe(INSTRUCOES);
         const { tools } = await cliente.listTools();
         expect(tools.map((t) => t.name)).toEqual(FERRAMENTAS.map((f) => f.nome));
@@ -137,7 +138,11 @@ describe("servidor em stdio", () => {
 });
 
 /** Manda só o `initialize` com a versão pedida e devolve a versão que o servidor respondeu. */
-async function versaoNegociada(banco: string, pedida: string): Promise<string> {
+/** A primeira linha que o servidor escreve em resposta a `mensagem`, já decodificada. */
+async function primeiraResposta(
+  banco: string,
+  mensagem: object,
+): Promise<{ readonly result: Record<string, unknown> }> {
   const processo = NodeChildProcess.spawn(COMANDO, comCli(["--banco", banco]), {
     cwd: diretorioTemporario(),
     env: ambiente(),
@@ -152,28 +157,36 @@ async function versaoNegociada(banco: string, pedida: string): Promise<string> {
         const fim = saida.indexOf("\n");
         if (fim >= 0) resolve(saida.slice(0, fim));
       });
-      processo.stdin.write(
-        `${JSON.stringify({
-          jsonrpc: "2.0",
-          id: 1,
-          method: "initialize",
-          params: { protocolVersion: pedida, capabilities: {}, clientInfo: { name: "teste", version: "0" } },
-        })}\n`,
-      );
+      processo.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", id: 1, ...mensagem })}\n`);
     });
-    return (JSON.parse(linha) as { result: { protocolVersion: string } }).result.protocolVersion;
+    return JSON.parse(linha) as { readonly result: Record<string, unknown> };
   } finally {
     processo.kill();
   }
 }
 
 describe("negociação de versão", () => {
-  test.each(["2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"])(
-    "devolve a versão pedida (%s), como o SDK anterior",
-    async (versao) => {
-      expect(await versaoNegociada(criarBancoFixture(), versao)).toBe(versao);
-    },
-  );
+  test("server/discover anuncia a 2026-07-28 e a 2025-11-25", async () => {
+    const resposta = await primeiraResposta(criarBancoFixture(), {
+      method: "server/discover",
+      params: {
+        _meta: {
+          "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+          "io.modelcontextprotocol/clientInfo": { name: "teste", version: "0" },
+          "io.modelcontextprotocol/clientCapabilities": {},
+        },
+      },
+    });
+    expect(resposta.result.supportedVersions).toEqual(["2026-07-28", "2025-11-25"]);
+  });
+
+  test.each(["2025-06-18", "2025-11-25"])("initialize com %s recebe a 2025-11-25", async (pedida) => {
+    const resposta = await primeiraResposta(criarBancoFixture(), {
+      method: "initialize",
+      params: { protocolVersion: pedida, capabilities: {}, clientInfo: { name: "teste", version: "0" } },
+    });
+    expect(resposta.result.protocolVersion).toBe("2025-11-25");
+  });
 });
 
 describe("erros de inicialização", () => {

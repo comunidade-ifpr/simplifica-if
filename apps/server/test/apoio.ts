@@ -256,7 +256,7 @@ const CORPO_INITIALIZE = JSON.stringify({
   jsonrpc: "2.0",
   id: 1,
   method: "initialize",
-  params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "teste", version: "0" } },
+  params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "teste", version: "0" } },
 });
 
 /** Um `initialize` MCP por POST: o status da resposta. */

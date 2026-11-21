@@ -120,7 +120,7 @@ packages/mcp/
 │   ├── documento.ts         # schemas do lerDocumento (o documento inteiro do leitor do app, M1.6)
 │   ├── contratos.ts         # Effect Schema do envelope (Resposta, Aviso, Fonte, Página) e dos tipos comuns; erros
 │   ├── esquema.ts           # construtores de schema (texto aparado, inteiro…) e o JSON Schema das ferramentas
-│   ├── validacao.ts         # entrada inválida → mensagem em português, no formato do servidor anterior
+│   ├── validacao.ts         # entrada inválida → mensagem em português para a IA
 │   ├── leitura/             # serviço `Leitura`: um método por ferramenta (e por recurso sem ferramenta),
 │   │                        # com envelope, paginação e orçamento;
 │   │                        # `PastaTrabalho`, a leitura do `.md` do `pacote_contexto` (o único `FileSystem`)
@@ -156,14 +156,14 @@ O registro é próprio (`addTool`), e não `McpServer.registerToolkit`, para que
 ```bash
 pnpm --filter @simplifica-if/mcp test
 pnpm --filter @simplifica-if/mcp typecheck
-node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes   # na raiz: o gabarito do C0 pelo protocolo
+node packages/mcp/test/gabarito.ts --comparar                          # na raiz: o gabarito pelo protocolo
 node packages/mcp/test/gabarito.ts --atualizar pacote_contexto        # regrava só essa parte (ver testes-gabarito/README.md)
 node packages/mcp/test/gabarito.ts --atualizar instrucoes             # depois de mudar instrucoes.md e rodar pnpm mcp:instrucoes
 pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as suítes transversais também na base real (tmp/kb.sqlite)
 ```
 
-Limitação conhecida: o `serverInfo` do `initialize` sai sem o `title` ("Base de conhecimento do IFPR") que o servidor do C0 anunciava. O `McpServer` do Effect 4.1.3 não aceita `title` nas opções de `layerStdio` e `layerHttp`, e o runtime monta o `serverInfo` só com `name`, `version`, `description`, `websiteUrl` e `icons`; não há API pública para escolhê-lo (desvio 1 do C2). Por isso o `gabarito.ts --comparar` estrito falha na linha 4 desde o C2 (e também nas capacidades `logging`, `completions` e `resources` e na ordem das chaves dos schemas do `tools/list`), e o CI usa `--comparar --schemas-equivalentes`, que aceita essas diferenças. Quando uma versão do Effect aceitar o `title`, passe-o nas duas layers (`servidor.ts` e `http.ts`) e tire o `delete servidor.title` do `gabarito.ts`.
+Protocolo: só as duas revisões atuais do MCP, `2026-07-28` (sem sessão; o Claude e o Antigravity a usam) e `2025-11-25` (o Codex 0.171 só a pede com a opção em desenvolvimento `mcp_2026_07_28`), em stdio e em HTTP (`PROTOCOLOS` em `src/servidor.ts`). As anteriores (`2025-06-18`, `2025-03-26`, `2024-11-05`) não são aceitas. Quando o Codex usar a `2026-07-28` por padrão, a `2025-11-25` sai.
 
 ## Suítes transversais
 
@@ -200,7 +200,7 @@ O workflow `.github/workflows/ci.yml` roda em todo push e PR, sem segredos e sem
 
 | Job | Runner | Passos | Tempo estimado |
 |---|---|---|---|
-| `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts`, `testes-gabarito/kb.sh --comparar`, `testes-gabarito/base.sh --comparar` e `gabarito.ts --comparar --schemas-equivalentes` | 6 a 8 min |
+| `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts`, `testes-gabarito/kb.sh --comparar`, `testes-gabarito/base.sh --comparar` e `gabarito.ts --comparar` | 6 a 8 min |
 | `executavel` | `macos-15` (arm64), `ubuntu-24.04` (x64), `windows-2025` (x64) | `pnpm mcp:executavel`; `sem-repositorio.test.ts`, `determinismo.test.ts` e `pasta-de-trabalho.test.ts` contra o executável; o executável como artefato `simplifica-mcp-<alvo>`, por 14 dias | 3 a 6 min cada |
 
 O `testes-gabarito/banco.sh` fica fora do CI. Ele compara o `.dump` do `sqlite3`, e esse texto muda com o build do `sqlite3`, não com o banco: o 3.40 do Debian escreve `replace(…, char(10))` onde o 3.54 escreve `unistr(…)`, e o 3.54 do sqlite.org escreve `0` onde o da Apple escreve `0.0`. O banco compilado no Linux, despejado pelo `sqlite3` do macOS, é igual ao gabarito. Rode o `banco.sh` no macOS.

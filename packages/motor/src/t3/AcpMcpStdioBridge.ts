@@ -31,11 +31,57 @@ const decodeJsonLine = Schema.decodeUnknownOption(Schema.fromJsonString(Schema.U
 interface JsonRpcEnvelope {
   readonly id?: unknown;
   readonly method?: unknown;
+  readonly params?: unknown;
   readonly error?: unknown;
   readonly result?: unknown;
 }
 
-const MCP_PROTOCOL_VERSION = "2025-06-18";
+// Adaptado: a revisão com sessão (`initialize`) que o servidor `ifpr` ainda aceita, ao lado da 2026-07-28.
+const MCP_PROTOCOL_VERSION = "2025-11-25";
+
+// Adaptado: na revisão 2026-07-28 (sem sessão), cada requisição leva a versão em
+// `_meta["io.modelcontextprotocol/protocolVersion"]` e o HTTP exige os cabeçalhos `MCP-Protocol-Version`,
+// `Mcp-Method` e, em `tools/call`, `prompts/get` e `resources/read`, `Mcp-Name`. A ponte os tira da mensagem.
+const STATELESS_VERSION_META = "io.modelcontextprotocol/protocolVersion";
+const BASE64_PREFIX = "=?base64?";
+const BASE64_SUFFIX = "?=";
+
+function asRecord(value: unknown): Readonly<Record<string, unknown>> | undefined {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function statelessVersionOf(envelope: JsonRpcEnvelope): string | undefined {
+  const version = asRecord(asRecord(envelope.params)?._meta)?.[STATELESS_VERSION_META];
+  return typeof version === "string" && version.length > 0 ? version : undefined;
+}
+
+// Valor fora do ASCII visível vai em Base64, como manda a especificação 2026-07-28.
+function routingHeaderValue(value: string): string {
+  return /^[\x20-\x7e]*$/.test(value) &&
+    value.trim() === value &&
+    !(value.startsWith(BASE64_PREFIX) && value.endsWith(BASE64_SUFFIX))
+    ? value
+    : `${BASE64_PREFIX}${Buffer.from(value, "utf8").toString("base64")}${BASE64_SUFFIX}`;
+}
+
+function statelessHeaders(envelope: JsonRpcEnvelope, version: string): Record<string, string> {
+  if (typeof envelope.method !== "string") return {};
+  const headers: Record<string, string> = {
+    "mcp-protocol-version": version,
+    "mcp-method": envelope.method,
+  };
+  const params = asRecord(envelope.params);
+  const name =
+    envelope.method === "resources/read"
+      ? params?.uri
+      : envelope.method === "tools/call" || envelope.method === "prompts/get"
+        ? params?.name
+        : undefined;
+  if (typeof name === "string") headers["mcp-name"] = routingHeaderValue(name);
+  return headers;
+}
 
 export interface AcpMcpStdioBridgeOptions {
   readonly endpoint: string;
@@ -197,6 +243,7 @@ export function runAcpMcpStdioBridge(options: AcpMcpStdioBridgeOptions): Effect.
   return Effect.gen(function* () {
     let sessionId: string | null = null;
     let protocolVersion: string | null = null;
+    let statelessVersion: string | null = null;
     const running = new Set<Fiber.Fiber<void>>();
 
     const writeMessage = (message: unknown): Effect.Effect<void> =>
@@ -228,6 +275,14 @@ export function runAcpMcpStdioBridge(options: AcpMcpStdioBridgeOptions): Effect.
       "AcpMcpStdioBridge.forward",
     )(
       function* (line: string, envelope: JsonRpcEnvelope) {
+        // Adaptado: a cancelação sem `_meta` segue a versão sem sessão da última requisição.
+        const claimed = statelessVersionOf(envelope);
+        if (claimed !== undefined) statelessVersion = claimed;
+        const stateless =
+          claimed ??
+          (envelope.method === "notifications/cancelled" && statelessVersion !== null
+            ? statelessVersion
+            : undefined);
         const response = yield* Effect.tryPromise({
           try: (signal) =>
             fetchImplementation(options.endpoint, {
@@ -238,6 +293,7 @@ export function runAcpMcpStdioBridge(options: AcpMcpStdioBridgeOptions): Effect.
                 authorization: options.authorization,
                 ...(sessionId === null ? {} : { "mcp-session-id": sessionId }),
                 ...(protocolVersion === null ? {} : { "mcp-protocol-version": protocolVersion }),
+                ...(stateless === undefined ? {} : statelessHeaders(envelope, stateless)),
               },
               body: line,
               signal,

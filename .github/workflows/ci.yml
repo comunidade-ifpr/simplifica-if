@@ -98,7 +98,7 @@ jobs:
         run: sh testes-gabarito/base.sh --comparar
 
       - name: Gabarito do MCP pelo protocolo
-        run: node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes
+        run: node packages/mcp/test/gabarito.ts --comparar
 
   executavel:
     name: Executável (${{ matrix.alvo }})

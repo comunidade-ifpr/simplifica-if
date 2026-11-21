@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- sha256 síncrono da impressão da consulta no cursor (o mesmo hash do servidor anterior)
+// @effect-diagnostics nodeBuiltinImport:off -- sha256 síncrono da impressão da consulta no cursor
 /**
  * Envelope comum das respostas (especificação M0.1, "Envelope"): a `base` a partir da `meta` do
  * banco, a resposta com avisos e paginação, e o cursor opaco. Os schemas ficam em `contratos.ts`.

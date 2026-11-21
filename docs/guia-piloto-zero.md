@@ -4,7 +4,7 @@ Para a equipe da PROENS/DENS e as coordenações que vão usar a base de conheci
 
 O app desktop Simplifica IF traz o mesmo servidor e a base embutidos: quem usa o app não precisa deste guia.
 
-Use a versão mais recente do seu app de IA. O `simplifica-mcp` acompanha a versão atual do protocolo MCP, sem compatibilidade com versões antigas, e funciona como servidor local: a própria IA abre o programa no seu computador (transporte stdio). Não há endereço na internet para configurar.
+Use a versão mais recente do seu app de IA. O `simplifica-mcp` acompanha a versão atual do protocolo MCP, sem compatibilidade com versões antigas, e funciona como servidor local: a própria IA abre o programa no seu computador (transporte stdio). Não há endereço na internet para configurar. O Claude Code e o Antigravity falam a revisão `2026-07-28`; o Codex se liga pela `2025-11-25`, a anterior, sem configuração.
 
 ## 1. Os dois arquivos
 
