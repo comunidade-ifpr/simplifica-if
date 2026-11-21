@@ -110,9 +110,8 @@ describe("pacote_contexto: contrato", () => {
     Effect.gen(function* () {
       const { banco, pasta } = ambiente();
       const { resposta, texto } = yield* chamar({ tarefa: "CT-CURR-12", arquivo: "rodada/PPC.md" }, banco, pasta);
-      const dados = resposta.dados as { path: string; escopo: string; tamanho: { caracteres_ppc_inteiro: number } };
+      const dados = resposta.dados as { path: string; tamanho: { caracteres_ppc_inteiro: number } };
       expect(dados.path).toBe("rodada/PPC.md");
-      expect(dados.escopo).toBe("secoes");
       expect(dados.tamanho.caracteres_ppc_inteiro).toBe(MARKDOWN.length);
       expect(texto).toContain("arquivo `rodada/PPC.md` (PPC fora da base");
     }),
@@ -130,14 +129,11 @@ describe("pacote_contexto: contrato", () => {
     }),
   );
 
-  it.effect("tarefa, grupo e PPC desconhecidos: mensagem legível", () =>
+  it.effect("tarefa e PPC desconhecidos: mensagem legível", () =>
     Effect.gen(function* () {
       const { banco, pasta } = ambiente();
       expect(yield* erroDeEntrada({ tarefa: "CT-XXXX-99", ppc: PPC_ENFERMAGEM }, banco, pasta)).toBe(
-        "tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): CT-XXXX-99",
-      );
-      expect(yield* erroDeEntrada({ tarefa: "grupo-999", arquivo: "PPC.md" }, banco, pasta)).toMatch(
-        /^grupo inexistente: grupo-999 \(há \d+\)$/,
+        "tarefa não reconhecida (ficha, tópico ou todas): CT-XXXX-99",
       );
       expect(yield* erroDeEntrada({ tarefa: "CT-CURR-12", ppc: "curitiba/inexistente" }, banco, pasta)).toBe(
         'PPC não encontrado: ppc:curitiba/inexistente. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso',
@@ -357,6 +353,6 @@ describe("pacote_contexto: orçamento", () => {
     const { texto, resumido } = corpoDoPacote(sintetico(5, 1000, 200000), orcamento);
     expect(resumido).toBe(true);
     expect(texto.length).toBeLessThanOrEqual(orcamento);
-    expect(texto.endsWith("peça uma ficha, um tópico ou um grupo-NNN]")).toBe(true);
+    expect(texto.endsWith("peça uma ficha ou um tópico]")).toBe(true);
   });
 });

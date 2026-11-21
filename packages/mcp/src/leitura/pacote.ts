@@ -49,10 +49,7 @@ export const makePacote = Effect.fn("Leitura.makePacote")(function* (base: Base)
   const doKb = <A>(
     efeito: Effect.Effect<
       A,
-      | Sql.FalhaNaConsulta
-      | PacoteContexto.PpcNaoEncontrado
-      | PacoteContexto.GrupoInexistente
-      | PacoteContexto.TarefaNaoReconhecida
+      Sql.FalhaNaConsulta | PacoteContexto.PpcNaoEncontrado | PacoteContexto.TarefaNaoReconhecida
     >,
   ) =>
     efeito.pipe(
@@ -63,7 +60,6 @@ export const makePacote = Effect.fn("Leitura.makePacote")(function* (base: Base)
               mensagem: `${erro.message}. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso`,
             }),
           ),
-        GrupoInexistente: (erro) => Effect.fail(new EntradaInvalida({ mensagem: erro.message })),
         TarefaNaoReconhecida: (erro) => Effect.fail(new EntradaInvalida({ mensagem: erro.message })),
       }),
     );

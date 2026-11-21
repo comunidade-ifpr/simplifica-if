@@ -364,9 +364,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
               .map((s) => s.id.slice(s.id.indexOf("#")));
           expect(doTopico(pacote.secoes)).toEqual(doTopico(base.secoes));
           expect(pacote.secoes.every((s) => s.texto.length > 0)).toBe(true);
-          const completo = yield* avulso.pacote(fichas, { escopo: "completo" });
-          expect(completo.secoes).toEqual([]);
-          expect(completo.normas).toEqual(base.normas);
         }),
     );
 
@@ -789,12 +786,12 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         for (const [consulta, filtros] of buscas) {
           yield* paridade(Effect.flatMap(servicos, (s) => s.ppcs.buscarSecoes(consulta, filtros)));
         }
-        for (const tarefa of ["CT-CURR-12", "estagio", "grupo-002"]) {
+        for (const tarefa of ["CT-CURR-12", "estagio", "todas"]) {
           yield* paridade(Effect.flatMap(servicos, (s) => s.pacote.montar(tarefa, PPC)));
         }
         const arquivo = NodePath.join(raiz, "base-conhecimento/institucional/ifpr/ppcs", `${PPC}.md`);
         const markdown = yield* lerTexto(`base-conhecimento/institucional/ifpr/ppcs/${PPC}.md`);
-        for (const tarefa of ["CT-CURR-12", "grupo-001"]) {
+        for (const tarefa of ["CT-CURR-12", "avaliacao_aprendizagem"]) {
           yield* paridade(Effect.flatMap(servicos, (s) => s.pacote.doMarkdown(tarefa, arquivo, markdown)));
         }
       }),

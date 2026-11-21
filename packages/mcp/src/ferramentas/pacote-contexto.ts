@@ -1,6 +1,6 @@
 /**
  * Ferramenta 14, `pacote_contexto`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um
- * tópico, um grupo por tópico ou `todas`) para um PPC, montado pelo serviço `PacoteContexto` do kb.
+ * tópico ou `todas`) para um PPC, montado pelo serviço `PacoteContexto` do kb.
  * O PPC é um da base (`ppc`) ou um `.md` da pasta de trabalho (`arquivo`); exatamente um dos dois.
  *
  * Os `dados` são o pacote do kb como está (o mesmo JSON de `kb pacote-contexto --json`): o de um PPC
@@ -25,7 +25,7 @@ const LITERAL_MINIMO = 300;
 export const Entrada = Schema.Struct({
   tarefa: textoAparado(
     { minimo: 1, maximo: 1000 },
-    'a tarefa da revisão de PPC: uma ficha ("CT-CURR-12"), várias separadas por vírgula ("CT-CURR-12,CT-IDENT-01"), um tópico ("estagio"), um grupo por tópico ("grupo-001") ou "todas"',
+    'a tarefa da revisão de PPC: uma ficha ("CT-CURR-12"), várias separadas por vírgula ("CT-CURR-12,CT-IDENT-01"), um tópico ("estagio") ou "todas"',
   ),
   ppc: opcional(
     textoAparado(
@@ -172,8 +172,6 @@ export const PacoteDoArquivo = Schema.Struct({
   marcos: Schema.Array(Marco),
   data_referencia: Texto,
   transicoes: Schema.Array(Transicao),
-  /** `completo`: o grupo pede o PPC inteiro, e `secoes` vem vazio. */
-  escopo: Schema.Literals(["secoes", "completo"]),
   secoes: Schema.Array(Secao),
   citacoes_ppc: Schema.optionalKey(Schema.Array(CitacaoPpc)),
   fichas: Schema.Array(Schema.Unknown),
@@ -328,7 +326,7 @@ function blocosDoPacote(d: Dados): Bloco[] {
   const daBase = ehDaBase(d);
   const cabecalho = daBase
     ? `**Pacote de contexto da revisão de PPC: ${d.tarefa}** — PPC ${comLink(`${d.ppc.curso_nome} — ${d.ppc.campus_nome}`, linkPpc(d.ppc.id))} (${d.ppc.nivel}, ${d.ppc.tipo_oferta}${d.ppc.ano_documento ? `, PPC de ${d.ppc.ano_documento}` : ""})`
-    : `**Pacote de contexto da revisão de PPC** — arquivo \`${d.path}\` (PPC fora da base; escopo: ${d.escopo === "completo" ? "o PPC inteiro" : "seções"})`;
+    : `**Pacote de contexto da revisão de PPC** — arquivo \`${d.path}\` (PPC fora da base)`;
   const tamanho = daBase
     ? `Tamanho: ${d.tamanho.secoes} seções do PPC, ${numero(d.tamanho.caracteres_secoes)} de ${numero(d.tamanho.caracteres_ppc_inteiro)} caracteres do PPC inteiro (${Math.round((100 * d.tamanho.caracteres_secoes) / Math.max(1, d.tamanho.caracteres_ppc_inteiro))}%).`
     : `Tamanho: ${d.secoes.length} seções do PPC; o PPC inteiro tem ${numero(d.tamanho.caracteres_ppc_inteiro)} caracteres.`;
@@ -352,9 +350,7 @@ function blocosDoPacote(d: Dados): Bloco[] {
     );
   }
   if (d.normas.length) blocos.push("## Normas e dispositivos citados nas fichas", ...d.normas.flatMap(blocosNorma));
-  if (!daBase && d.escopo === "completo") {
-    blocos.push(`## PPC\nEscopo completo: leia o PPC inteiro em \`${d.path}\`; o pacote não traz seções.`);
-  } else if (d.secoes.length) {
+  if (d.secoes.length) {
     blocos.push("## Seções do PPC (o texto do PPC sob revisão)", ...d.secoes.map((s) => blocoSecao(s, daBase)));
   }
   return blocos;
@@ -392,7 +388,7 @@ function tetoPorLiteral(tamanhos: readonly number[], espaco: number): number {
 }
 
 const NOTA_CORTE =
-  "\n\n[texto cortado no teto de 80 mil caracteres: o pacote inteiro está no JSON da resposta; para um texto menor, peça uma ficha, um tópico ou um grupo-NNN]";
+  "\n\n[texto cortado no teto de 80 mil caracteres: o pacote inteiro está no JSON da resposta; para um texto menor, peça uma ficha ou um tópico]";
 
 /**
  * O corpo do texto em `orcamento` caracteres. `resumido` diz se algo foi cortado: primeiro os
@@ -426,7 +422,7 @@ export function orcamentoDoCorpo(avisos: ReadonlyArray<Aviso>): number {
 
 export const AVISO_RESUMIDO: Aviso = {
   tipo: "resultado-resumido",
-  mensagem: `o pacote passa do teto de ${numero(TETO_PACOTE_CONTEXTO)} caracteres do texto: os literais mais longos foram cortados e marcados (leia o resto com ler_secao ou ler_dispositivos); o JSON da resposta traz o pacote inteiro; para um texto inteiro, peça uma ficha, um tópico ou um grupo-NNN`,
+  mensagem: `o pacote passa do teto de ${numero(TETO_PACOTE_CONTEXTO)} caracteres do texto: os literais mais longos foram cortados e marcados (leia o resto com ler_secao ou ler_dispositivos); o JSON da resposta traz o pacote inteiro; para um texto inteiro, peça uma ficha ou um tópico`,
 };
 
 export const pacoteContexto = definirFerramenta({

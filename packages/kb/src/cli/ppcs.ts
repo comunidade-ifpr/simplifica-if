@@ -276,7 +276,7 @@ export const pacoteContexto = Command.make(
   "pacote-contexto",
   {
     tarefa: Argument.String("tarefa").pipe(
-      Argument.withDescription("CT-CURR-12, CT-CURR-12,CT-IDENT-01, estagio, grupo-001 ou todas"),
+      Argument.withDescription("CT-CURR-12, CT-CURR-12,CT-IDENT-01, estagio ou todas"),
     ),
     ppc: Argument.String("ppc").pipe(
       Argument.withDescription("campus/curso, ppc:campus/curso ou um arquivo .md (PPC fora da base)"),
@@ -306,7 +306,7 @@ export const pacoteContexto = Command.make(
   }, Effect.provide(camadaRepositorio)),
 ).pipe(
   Command.withDescription(
-    "Contexto de uma tarefa da revisão de PPC (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
+    "Contexto de uma tarefa da revisão de PPC (ficha, tópico ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
   ),
 );
 

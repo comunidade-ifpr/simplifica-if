@@ -17,7 +17,6 @@ packages/kb/src/busca/stemmer.test.ts	52	0
 packages/kb/src/busca/tokens.test.ts	19	0
 packages/kb/src/db/base.test.ts	33	0
 packages/kb/src/db/fontes.test.ts	8	0
-packages/kb/src/db/grupos-topico.test.ts	4	0
 packages/kb/src/db/unidades.test.ts	1	0
 packages/kb/src/fatos/fatos.test.ts	20	0
 packages/kb/src/normas/dispositivos.test.ts	17	0
@@ -83,4 +82,4 @@ scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
 scripts/sincronizar_repos.test.ts	2	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1107	36
+TOTAL	1103	36
