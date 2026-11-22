@@ -230,7 +230,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <Button disabled={preparada === undefined || leitura.estimando || leitura.ocupada} onClick={leitura.iniciar}>
-          {leitura.ocupada ? <Spinner /> : null}
+          {leitura.ocupada ? <Spinner /> : <MarcaIa provider={estado?.provider ?? provider} />}
           Ler com o {nome}
         </Button>
         <Opcoes leitura={leitura} faltam={faltam} />
