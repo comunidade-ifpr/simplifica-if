@@ -22,6 +22,7 @@ packages/kb/src/fatos/fatos.test.ts	20	0
 packages/kb/src/normas/dispositivos.test.ts	17	0
 packages/kb/src/normas/estrutura.test.ts	50	0
 packages/kb/src/normas/fase5.test.ts	15	0
+packages/kb/src/normas/ids.test.ts	3	0
 packages/kb/src/normas/nao-vigente.test.ts	2	0
 packages/kb/src/normas/referencia-estruturada.test.ts	31	0
 packages/kb/src/normas/resolver.test.ts	59	0
@@ -81,5 +82,6 @@ scripts/gerar_tipos_schemas.test.ts	1	0
 scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
 scripts/sincronizar_repos.test.ts	2	0
+scripts/traces.test.ts	4	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1103	36
+TOTAL	1110	36

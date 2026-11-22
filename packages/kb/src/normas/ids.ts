@@ -188,3 +188,52 @@ export function idEsperadoDaNorma(meta: {
   });
   return compilacao ? `${id}~compilacao` : id;
 }
+
+/** Segmento de tipo do ID → `tipo_documento`, como o front matter o escreve. */
+const DOCUMENTO_POR_TIPO: Readonly<Record<TipoAto, string>> = {
+  lei: "Lei",
+  lc: "Lei Complementar",
+  decreto: "Decreto",
+  "decreto-lei": "Decreto-Lei",
+  mp: "Medida Provisória",
+  ec: "Emenda Constitucional",
+  res: "Resolução",
+  portaria: "Portaria",
+  nt: "Nota Técnica",
+  parecer: "Parecer",
+  in: "Instrução Normativa",
+  deliberacao: "Deliberação",
+};
+
+/** Órgãos cujo nome não é sigla: o segmento do ID não volta ao nome só com maiúsculas. */
+const ORGAO_POR_SEGMENTO: Readonly<Record<string, string>> = { reitoria: "Reitoria" };
+
+/**
+ * Os metadados que o ID de um ato carrega, como o front matter os escreve: o inverso de
+ * `idEsperadoDaNorma`. Serve às normas sem texto na base (`stubs.yaml`), que não registram tipo, órgão,
+ * número nem ano à parte. `null` para ID que não é de ato (variante de arquivo, `externo:`).
+ */
+export function metadadosDoIdNorma(id: string): {
+  tipo_documento: string;
+  orgao: string;
+  jurisdicao: string;
+  numero: string;
+  ano: number;
+} | null {
+  const partes = ehIdAto(id) ? partesIdNorma(id) : null;
+  if (partes === null) return null;
+  const sigla = (segmento: string) => ORGAO_POR_SEGMENTO[segmento] ?? segmento.toUpperCase().replaceAll("-", "/");
+  const orgao =
+    partes.orgao === null
+      ? "Presidência da República"
+      : partes.jurisdicao === "ifpr"
+        ? `${sigla(partes.orgao)}/IFPR`
+        : sigla(partes.orgao);
+  return {
+    tipo_documento: DOCUMENTO_POR_TIPO[partes.tipo as TipoAto],
+    orgao,
+    jurisdicao: partes.jurisdicao.toUpperCase(),
+    numero: partes.numero,
+    ano: partes.ano,
+  };
+}

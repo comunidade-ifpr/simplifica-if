@@ -46,6 +46,7 @@ import { carregarDispositivos, descendentes, indiceDispositivos } from "../norma
 import { obterDispositivo as obterDispositivoArquivos } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
 import { raizRepositorio } from "../caminhos.ts";
+import { metadadosDoIdNorma } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "../normas/registro.ts";
 import { carregarRelacoes, sucessorasDe } from "../normas/relacoes.ts";
 import {
@@ -680,11 +681,17 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const stubs = lerRegistroStubs(caminhoStubs(raiz));
         const vazio = { tipo_documento: null, numero: null, ano: null, orgao: null, jurisdicao: null };
         for (const s of stubs.normas) {
+          // o stub não registra tipo, número, ano nem órgão: saem do ID
+          const doId = metadadosDoIdNorma(s.id)!;
           mesmoJson(yield* normas.ficha(s.id), {
             id: s.id,
             situacao: "stub",
             titulo: s.title,
-            ...vazio,
+            tipo_documento: doId.tipo_documento,
+            numero: doId.numero,
+            ano: doId.ano,
+            orgao: doId.orgao,
+            jurisdicao: doId.jurisdicao,
             data_publicacao: s.data_publicacao ?? null,
             status_vigencia: s.status_vigencia,
             ementa: s.ementa,

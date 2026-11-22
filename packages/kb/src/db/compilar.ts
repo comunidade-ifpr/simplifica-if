@@ -29,7 +29,7 @@ import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import { carregarDadosInstitucionaisKb, linhaDaChave, linhaDoValor, matrizesDoResumo } from "../institucional/dados.ts";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "../normas/front-matter.ts";
-import { idDoAto } from "../normas/ids.ts";
+import { idDoAto, metadadosDoIdNorma } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, type Registro } from "../normas/registro.ts";
 import { segmentosCitantes } from "../normas/citacoes-normas.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
@@ -510,10 +510,17 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         ...stubs.externos.map((s) => ({ ...s, situacao: "externo" as const, ementa: s.descricao })),
       ].sort((a, b) => compararTexto(a.id, b.id));
       for (const stub of todos) {
+        // o stub não registra tipo, órgão, número nem ano: saem do ID (o `externo:` fica sem eles)
+        const doId = metadadosDoIdNorma(stub.id);
         ins.inserir("normas", {
           id: stub.id,
           situacao: stub.situacao,
           titulo: stub.title,
+          tipo_documento: doId?.tipo_documento ?? null,
+          numero: doId?.numero ?? null,
+          ano: doId?.ano ?? null,
+          orgao: doId?.orgao ?? null,
+          jurisdicao: doId?.jurisdicao ?? null,
           data_publicacao: "data_publicacao" in stub ? stub.data_publicacao : null,
           status_vigencia: "status_vigencia" in stub ? stub.status_vigencia : null,
           status_fonte: "status_fonte" in stub ? stub.status_fonte : null,

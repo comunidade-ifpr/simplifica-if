@@ -143,7 +143,7 @@ O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é t
 
 ## Normas sem texto na base (stubs) e referências externas
 
-Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, data, ementa, `status_vigencia` e, quando houver, aliases, `fonte_url` e `fonte_referencia` (os mesmos campos do front matter). Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
+Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, data, ementa, `status_vigencia` e, quando houver, aliases, `fonte_url` e `fonte_referencia` (os mesmos campos do front matter). O stub não registra `tipo_documento`, `orgao`, `jurisdicao`, `numero` nem `ano`: o banco os tira do ID (`metadadosDoIdNorma`, em `packages/kb/src/normas/ids.ts`), e por isso o ID precisa seguir o padrão do ato. Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
 
 Referências fora do escopo normativo da base (conselhos profissionais, ABNT, documentos institucionais não normativos, regulamentos de campus) ficam na seção `externos` do mesmo arquivo, com IDs `externo:`.
 
