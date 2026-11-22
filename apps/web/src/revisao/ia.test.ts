@@ -58,23 +58,23 @@ const bloco = (
 
 describe("a estimativa na faixa", () => {
   test("o limite do plano em palavras da pessoa", () => {
-    expect(limiteDoPlano("uma janela de 5 horas do plano Pro")).toBe("do seu limite de 5 horas");
-    expect(limiteDoPlano("a cota diária do plano gratuito")).toBe("da sua cota diária");
+    expect(limiteDoPlano("uma janela de 5 horas do plano Pro")).toBe("do limite de 5 horas do plano Pro");
+    expect(limiteDoPlano("a cota diária do plano gratuito")).toBe("da cota diária do plano gratuito");
     expect(limiteDoPlano("o mês")).toBe("de o mês");
   });
 
   test("todos os critérios: tempo e fração do limite, sem etapas nem 'referência provisória'", () => {
     const texto = textoEstimativa(estimativa, "completo", "Claude");
-    expect(texto).toBe("O Claude lê em cerca de 3 minutos, usando perto de 5 % do seu limite de 5 horas.");
+    expect(texto).toBe("O Claude lê em cerca de 3 minutos, usando perto de 5 % do limite de 5 horas do plano Pro.");
     expect(texto).not.toMatch(/etapa|provisória|janela/);
   });
 
   test("o escopo menor diz quantos lê, com plural", () => {
     expect(textoEstimativa(estimativa, "rapido", "Claude")).toBe(
-      "O Claude lê os 20 que mais devolvem PPC em cerca de 3 minutos, usando perto de 5 % do seu limite de 5 horas.",
+      "O Claude lê os 20 que mais devolvem PPC em cerca de 3 minutos, usando perto de 5 % do limite de 5 horas do plano Pro.",
     );
     expect(textoEstimativa({ ...estimativa, fichas: 1, minutos: 1 }, "rapido", "Claude")).toBe(
-      "O Claude lê o que mais devolve PPC em cerca de 1 minuto, usando perto de 5 % do seu limite de 5 horas.",
+      "O Claude lê o que mais devolve PPC em cerca de 1 minuto, usando perto de 5 % do limite de 5 horas do plano Pro.",
     );
   });
 

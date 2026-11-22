@@ -19,19 +19,21 @@ import { plural } from "./lista.ts";
 const porcento = (n: number) => `${n} %`;
 
 /**
- * O limite do plano como a pessoa o conhece: "do seu limite de 5 horas", "da sua cota diária". O
- * servidor dá a janela de referência ("uma janela de 5 horas do plano Pro").
+ * O limite do plano como a pessoa o conhece, mantendo qual plano serviu de referência: "do limite de 5
+ * horas do plano Pro", "da cota diária do plano gratuito". O servidor dá a janela de referência
+ * ("uma janela de 5 horas do plano Pro").
  */
 export function limiteDoPlano(nomeJanela: string): string {
+  const plano = / do plano .+$/.exec(nomeJanela)?.[0] ?? "";
   const horas = /janela de (\d+) horas?/.exec(nomeJanela);
-  if (horas !== null) return `do seu limite de ${horas[1]} horas`;
-  if (/cota diária/.test(nomeJanela)) return "da sua cota diária";
+  if (horas !== null) return `do limite de ${horas[1]} horas${plano}`;
+  if (/cota diária/.test(nomeJanela)) return `da cota diária${plano}`;
   return `de ${nomeJanela}`;
 }
 
 /**
- * A segunda frase da faixa: "O Claude lê em cerca de 6 minutos, usando perto de 14 % do seu limite de 5
- * horas." No escopo menor, diz quantos lê: "O Claude lê os 30 que mais devolvem PPC em cerca de…".
+ * A segunda frase da faixa: "O Claude lê em cerca de 6 minutos, usando perto de 14 % do limite de 5
+ * horas do plano Pro." No escopo menor, diz quantos lê: "O Claude lê os 30 que mais devolvem PPC em cerca de…".
  */
 export function textoEstimativa(e: EstimativaRevisaoIa, modo: ModoRevisaoIa, nomeIa: string): string {
   const quais =
