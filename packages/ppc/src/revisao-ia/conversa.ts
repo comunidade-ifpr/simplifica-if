@@ -20,6 +20,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { alvoDosTrechos, fonteValida, maiorPedaco, trechoConferivel, trechoExiste } from "./conferencia.ts";
 import { dirigidoAIa } from "../pre-conferencia.ts";
+import { textoDaPendencia } from "../revisao-previa.ts";
 import { type ContextoNormativo, formatarContexto } from "./pedido.ts";
 import { dobrar, type FichaIa } from "./plano.ts";
 import { ate, ESTADOS_IA, EstadoIa, extrairJson } from "./resposta.ts";
@@ -27,7 +28,9 @@ import { ate, ESTADOS_IA, EstadoIa, extrairJson } from "./resposta.ts";
 /** A pendência como ela entra na conversa (o que a pessoa vê na lista). */
 export type PendenciaConversa = {
   ficha: string;
-  mensagem: string;
+  titulo: string;
+  explicacao: string | null;
+  faltas: readonly string[];
   oQueFazer: string;
   trecho: string | null;
   origem: "codigo" | "ia";
@@ -97,7 +100,7 @@ export function prefixoConversa(entrada: {
     "",
     "## A pendência apontada pela revisão",
     `Origem: ${pendencia.origem === "codigo" ? "conferência automática do app, com a base de normas" : "avaliação da IA, conferida pelo app"}.`,
-    `Apontamento: ${pendencia.mensagem}`,
+    `Apontamento: ${textoDaPendencia(pendencia)}`,
     `O que fazer: ${pendencia.oQueFazer}`,
     // O trecho já foi conferido no documento (é PPC): fica entre as marcas também.
     pendencia.trecho

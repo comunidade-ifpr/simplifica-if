@@ -31,6 +31,11 @@ import { ate, EstadoIa, extrairJson, Texto } from "./resposta.ts";
 /** Os tetos da resposta: o texto livre não é conferido contra o PPC, então ele fica curto. */
 export const LIMITES_RESPOSTA = {
   resposta: 80_000,
+  /**
+   * O pedido diz "até 120". O título é só apresentação: acima deste teto ele não recusa a resposta, é
+   * ignorado, e o título sai da justificativa (`itensDaIa`).
+   */
+  titulo: 160,
   justificativa: 600,
   lacunas: 5,
   lacuna: 200,
@@ -48,6 +53,12 @@ export const ResultadoIa = Schema.Struct({
   ficha_id: Texto,
   estado: EstadoIa,
   confianca: Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 1 })),
+  /**
+   * O problema numa frase curta: o título da pendência. Opcional e sem limite aqui: as respostas
+   * gravadas antes dele não o trazem, e um título longo demais não pode recusar o critério. Sem ele, ou
+   * acima de `LIMITES_RESPOSTA.titulo`, o título sai da primeira frase da justificativa (`itensDaIa`).
+   */
+  titulo: Schema.optionalKey(Texto),
   justificativa: ate(L.justificativa).check(Schema.isMinLength(1)),
   evidencias: Schema.Array(Schema.Struct({ trecho: ate(L.trecho) })).check(Schema.isMaxLength(L.evidencias)),
   lacunas: Schema.Array(ate(L.lacuna)).check(Schema.isMaxLength(L.lacunas)),

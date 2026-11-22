@@ -41,7 +41,7 @@ NodeModule.syncBuiltinESMExports();
 const Effect = await import("effect/Effect");
 const Layers = await import("@simplifica-if/kb/layers");
 const { montarBaseRevisao } = await import("@simplifica-if/ppc/base-revisao");
-const { revisarDocx } = await import("@simplifica-if/ppc/revisao-previa");
+const { revisarDocx, textoDaPendencia } = await import("@simplifica-if/ppc/revisao-previa");
 const { carregarRegistro } = await import("@simplifica-if/kb/normas/registro");
 
 const base = await Effect.runPromise(
@@ -65,6 +65,6 @@ console.log(
   JSON.stringify({
     leiturasDaRevisao,
     controle,
-    pendencias: revisao.pendencias.map((p) => ({ ficha: p.ficha, estado: p.estado, mensagem: p.mensagem })),
+    pendencias: revisao.pendencias.map((p) => ({ ficha: p.ficha, estado: p.estado, mensagem: textoDaPendencia(p) })),
   }),
 );

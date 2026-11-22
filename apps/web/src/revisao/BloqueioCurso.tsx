@@ -72,7 +72,7 @@ export function BloqueioCurso({
           {pendencias.map((v) => (
             <li key={v.chave} className="flex gap-2">
               <GlifoGravidade gravidade={v.pendencia.estado === "nao_atende" ? "corrigir" : "conferir"} />
-              <span className="min-w-0">{v.pendencia.mensagem}</span>
+              <span className="min-w-0">{v.pendencia.titulo}</span>
             </li>
           ))}
         </ul>

@@ -127,6 +127,7 @@ const exemploResposta = (bloco: Bloco, criterio: CriterioInconclusivo) =>
         estado: "NAO_ATENDE",
         confianca: 0.8,
         ...(criterio === "ausencia" ? { tipo_achado: "ausencia_em_secao_presente" } : {}),
+        titulo: "A seção de acesso não trata da reserva de vagas",
         justificativa:
           "A seção de requisitos de acesso descreve o processo seletivo, mas não trata da reserva de vagas.",
         evidencias: [{ trecho: "O ingresso no curso se dará por meio de processo seletivo" }],
@@ -170,6 +171,7 @@ const CONTRATO = (bloco: Bloco, fichas: readonly FichaIa[], criterio: CriterioIn
     criterio === "ausencia"
       ? '- "tipo_achado": obrigatório quando o estado é NAO_ATENDE: "ausencia_em_secao_presente", "contradicao" ou "merito" (omita nos outros estados);'
       : null,
+    '- "titulo": até 120, o problema numa frase curta, que se entende sozinha numa lista (o que está errado ou falta, e onde), sem ponto final, sem siglas de sistema nem códigos de ficha; quando o estado é ATENDE ou NAO_APLICAVEL, o que o PPC traz;',
     '- "justificativa": até 600, uma ou duas frases para a coordenação do curso, sem siglas de sistema nem códigos de ficha;',
     '- "evidencias": até 5 itens { "trecho": "..." }, cada trecho literal de 25 a 200 (veja a regra abaixo);',
     '- "lacunas": até 5 frases de até 200, o que falta; "o_que_fazer": até 300, o ajuste no PPC em uma frase (vazio se atende);',

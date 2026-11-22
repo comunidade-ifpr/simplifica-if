@@ -101,7 +101,7 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 ```
 
 - **A lista:** uma por tema, ordenada por gravidade (corrigir antes de conferir), com o tema escolhido na coluna da esquerda e "Tudo" no topo dela. A escolha entre "Revisar comigo" e "Ver tudo" deixa de existir; o roteiro com paradas e o aviso laranja de cobertura (`Roteiro.tsx:214-255`) saem.
-- **A linha recolhida:** o glifo de gravidade, a mensagem em até duas linhas e a localização ("seção 4.1" ou "falta no documento").
+- **A linha recolhida:** o glifo de gravidade, o título da pendência em até duas linhas e a localização ("seção 4.1" ou "falta no documento").
 - **A linha aberta:** "O que fazer", o trecho em serifada com o filete na cor da gravidade, a fonte pelo título da norma, como link `ifpr://`, e as ações.
 - **Teclado:** ↑ e ↓ andam pela lista, Enter abre e F marca como feito. É um app de desktop, e há quem revise um PPC por semana.
 - **Abaixo de 960 px:** a coluna de temas vira um seletor acima da lista.

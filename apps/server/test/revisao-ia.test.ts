@@ -319,9 +319,9 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const r = final.resultado!;
       const inventado = r.pendencias.find((p) => p.ficha === "CT-CURR-04")!;
       assert.strictEqual(inventado.estado, "a_conferir");
-      assert.include(inventado.mensagem, "a IA citou um trecho que não está no documento");
+      assert.include(inventado.titulo, "a IA citou um trecho que não está no documento");
       assert.include(
-        r.pendencias.find((p) => p.ficha === "CT-CURR-07")!.mensagem,
+        r.pendencias.find((p) => p.ficha === "CT-CURR-07")!.titulo,
         "norma que não estava entre as consultadas",
       );
       // Nenhum fato recusado chega ao Word.
@@ -437,7 +437,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         // Sem nova tentativa: uma ferramenta não é erro de formato.
         assert.strictEqual(roteiro.pedidos.filter((p) => blocoDo(p) === "s-01-1").length, 1);
         const r = final.resultado!;
-        assert.include(r.pendencias.find((p) => p.ficha === "CT-IDENT-02")!.mensagem, "tentou usar uma ferramenta");
+        assert.include(r.pendencias.find((p) => p.ficha === "CT-IDENT-02")!.titulo, "tentou usar uma ferramenta");
         assert.strictEqual(r.paraConferirIa, 1);
         assert.strictEqual(r.conferidosIa, 4);
       }),
@@ -479,7 +479,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const t = final.blocos.find((b) => b.id === "t")!;
       assert.strictEqual(t.naoConferidas, 1);
       const pendencia = final.resultado!.pendencias.find((p) => p.ficha === "CT-TRANS-03")!;
-      assert.include(pendencia.mensagem, "a IA citou um trecho que não está no documento");
+      assert.include(pendencia.titulo, "a IA citou um trecho que não está no documento");
     }),
   );
   it.effect(

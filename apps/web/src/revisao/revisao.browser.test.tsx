@@ -37,8 +37,9 @@ function montar(elemento: React.ReactNode) {
   return conteiner;
 }
 
-const MENSAGEM =
-  "Cita a Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, com vigência a confirmar. ".repeat(4) +
+const TITULO = "Cita a Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, com vigência a confirmar.";
+const EXPLICACAO =
+  `${TITULO} `.repeat(3) +
   "\nRegras de transição: o PPC elaborado antes da vigência pode manter a citação até a próxima revisão.";
 
 const viva: PendenciaViva = {
@@ -49,7 +50,9 @@ const viva: PendenciaViva = {
     tema: "Referências",
     ordemTema: 9,
     estado: "a_conferir",
-    mensagem: MENSAGEM,
+    titulo: TITULO,
+    explicacao: EXPLICACAO,
+    faltas: ["a norma que a substituiu", "a data da vigência"],
     oQueFazer: "Substitua a norma revogada pela vigente.",
     trecho: "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
     secao: "7 REFERÊNCIAS",
@@ -92,17 +95,25 @@ function Linha() {
   );
 }
 
-it("a linha recolhida corta a mensagem em duas linhas; aberta, mostra tudo, com as quebras, e o trecho com 'Copiar trecho'", async () => {
+it("a linha recolhida mostra só o título, em até duas linhas; aberta, a explicação com as quebras, o que falta em lista e o trecho com 'Copiar trecho'", async () => {
   const conteiner = montar(<Linha />);
-  const mensagem = () => [...conteiner.querySelectorAll("span")].find((s) => s.textContent === MENSAGEM)!;
-  await expect.poll(() => mensagem()?.className).toContain("line-clamp-2");
+  const titulo = () => [...conteiner.querySelectorAll("span")].find((s) => s.textContent === TITULO)!;
+  const explicacao = () => conteiner.querySelector<HTMLElement>("[data-explicacao]")!;
+  await expect.poll(() => titulo()?.className).toContain("line-clamp-2");
   await expect.element(page.getByText("Trecho no PPC")).not.toBeVisible();
 
   await page.getByRole("button", { name: /Cita a Resolução/ }).click();
-  await expect.poll(() => mensagem().className).toContain("whitespace-pre-line");
-  expect(mensagem().className).not.toContain("line-clamp-2");
-  // A mensagem inteira cabe na tela: nada cortado com reticências.
-  expect(mensagem().scrollHeight).toBeLessThanOrEqual(mensagem().clientHeight + 1);
+  await expect.poll(() => titulo().className).not.toContain("line-clamp-2");
+  expect(explicacao().textContent).toBe(EXPLICACAO);
+  expect(explicacao().className).toContain("whitespace-pre-line");
+  // A explicação cabe na tela: nada cortado com reticências.
+  expect(explicacao().scrollHeight).toBeLessThanOrEqual(explicacao().clientHeight + 1);
+  // O que falta, um item por linha.
+  await expect.element(page.getByText("O que falta")).toBeVisible();
+  expect([...conteiner.querySelectorAll("li li")].map((li) => li.textContent)).toEqual([
+    "a norma que a substituiu",
+    "a data da vigência",
+  ]);
   await expect.element(page.getByText("Trecho no PPC")).toBeVisible();
   await expect.element(page.getByText("Resolução CNE/CP nº 1, de 5 de janeiro de 2021")).toBeVisible();
 

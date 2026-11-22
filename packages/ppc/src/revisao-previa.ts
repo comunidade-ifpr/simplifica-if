@@ -25,7 +25,7 @@ import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
 import { indiceDeLinhas } from "./localizar-trecho.ts";
-import { alvoDosTrechos, textoDoMaiorPedaco } from "./revisao-ia/conferencia.ts";
+import { alvoDosTrechos, LIMITES_RESPOSTA, textoDoMaiorPedaco } from "./revisao-ia/conferencia.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
 import {
@@ -82,6 +82,8 @@ export type ResultadoFichaIa = {
   ficha: string;
   estado: "ATENDE" | "NAO_ATENDE" | "INCONCLUSIVO" | "NAO_APLICAVEL" | "FALHOU";
   confianca: number;
+  /** O problema numa frase curta, escrito pela IA; ausente nas respostas gravadas antes deste campo. */
+  titulo?: string | undefined;
   justificativa: string;
   lacunas: string[];
   oQueFazer: string;
@@ -156,7 +158,12 @@ export type PendenciaRevisao = {
   tema: string;
   ordemTema: number;
   estado: "nao_atende" | "a_conferir";
-  mensagem: string;
+  /** O problema numa frase: o título da linha na tela e a primeira linha do comentário no Word. */
+  titulo: string;
+  /** O resto da explicação (o raciocínio da IA, a regra de transição); `null` quando o título diz tudo. */
+  explicacao: string | null;
+  /** O que falta no PPC, item a item (as lacunas da IA); vazio quando a pendência não é de ausência. */
+  faltas: readonly string[];
   oQueFazer: string;
   /** Trecho do PPC como está no documento (o primeiro), quando há. */
   trecho: string | null;
@@ -197,13 +204,54 @@ export type MarcaPendencia = {
   foraDoDocumento?: boolean | undefined;
 };
 
+/** O texto de uma pendência (título, explicação e o que falta): o que a pessoa lê, sem a ação. */
+type TextoPendencia = Pick<PendenciaRevisao, "titulo" | "explicacao" | "faltas">;
+
+/** "Falta: a; b." (vazio sem faltas): o que falta numa linha, para o Word e para os pedidos à IA. */
+export const linhaDasFaltas = (faltas: readonly string[]): string =>
+  faltas.length ? `Falta: ${faltas.join("; ")}.` : "";
+
 /**
- * A chave estável de uma pendência: a ficha e um hash (FNV-1a) da origem, do trecho e da mensagem. As do
+ * A pendência num texto só, uma parte por linha: para o comentário no Word, o pedido à IA (contestar,
+ * sugerir), a exportação e a chave. A tela não usa: ela mostra as partes.
+ */
+export const textoDaPendencia = (p: TextoPendencia): string =>
+  [p.titulo, p.explicacao ?? "", linhaDasFaltas(p.faltas)].filter(Boolean).join("\n");
+
+/** Palavras que terminam em ponto sem fechar a frase ("art. 28", "Res. CNE/CP", "nº"). */
+const ABREVIATURA =
+  /(?:^|[\s(“"])(?:arts?|incs?|als?|n|nº|res|resol|port|dec|cf|ex|p|pp|par|parág|sec|cap|prof|profa|dr|dra|sr|sra|obs|vs|fls?|proc|etc)$/i;
+
+/**
+ * Separa um texto no título (a primeira frase, ou a primeira linha) e no resto. Abreviatura e número
+ * não fecham a frase. Nenhuma palavra se perde: o que não é o título é a explicação.
+ */
+export function tituloEExplicacao(texto: string): Pick<PendenciaRevisao, "titulo" | "explicacao"> {
+  const limpo = texto.trim();
+  const quebra = limpo.indexOf("\n");
+  let corte = quebra;
+  const fim = /[.!?](?=\s+[A-ZÀ-Ý“"(])/g;
+  for (let m = fim.exec(limpo); m !== null; m = fim.exec(limpo)) {
+    if (quebra !== -1 && m.index > quebra) break;
+    const antes = limpo.slice(0, m.index);
+    if (antes.length < 24 || (m[0] === "." && ABREVIATURA.test(antes))) continue;
+    corte = m.index + 1;
+    break;
+  }
+  if (corte <= 0) return { titulo: limpo, explicacao: null };
+  const explicacao = limpo.slice(corte).trim();
+  return { titulo: limpo.slice(0, corte).trim(), explicacao: explicacao === "" ? null : explicacao };
+}
+
+/**
+ * A chave estável de uma pendência: a ficha e um hash (FNV-1a) da origem, do trecho e do texto. As do
  * código são determinísticas, e a mesma pendência da pré-conferência tem a mesma chave depois da
  * revisão com IA (a situação marcada passa de uma lista para a outra).
  */
-export function chavePendencia(p: Pick<PendenciaRevisao, "ficha" | "origem" | "trecho" | "mensagem">): string {
-  const texto = [p.ficha, p.origem, p.trecho ?? "", p.mensagem].map((t) => t.replace(/\s+/g, " ").trim()).join("|");
+export function chavePendencia(p: Pick<PendenciaRevisao, "ficha" | "origem" | "trecho"> & TextoPendencia): string {
+  const texto = [p.ficha, p.origem, p.trecho ?? "", textoDaPendencia(p)]
+    .map((t) => t.replace(/\s+/g, " ").trim())
+    .join("|");
   let h = 0x811c9dc5;
   for (const c of texto) {
     h ^= c.codePointAt(0)!;
@@ -462,15 +510,23 @@ function itensDaIa(
     const estado = estadoDaIa(r);
     if (!estado) continue;
     const ordemTema = temaDaFicha(r.ficha, base);
-    const mensagem =
+    // O título é o que a IA escreveu para isso; sem ele (resposta gravada antes do campo) ou longo
+    // demais, a primeira frase da justificativa. As lacunas ficam em lista.
+    const tituloDaIa = (r.titulo ?? "").trim().length <= LIMITES_RESPOSTA.titulo ? (r.titulo ?? "").trim() : "";
+    const texto =
       r.estado === "FALHOU"
-        ? `Não foi possível conferir este critério com a IA (${r.motivoFalha ?? "resposta fora do formato"}). Confira na leitura: ${tituloDaFicha(r.ficha, base)}.`
-        : [
-            ponto(r.justificativa),
-            r.lacunas.length ? `Falta: ${r.lacunas.map((l) => l.replace(/[.;]\s*$/, "")).join("; ")}.` : "",
-          ]
-            .filter(Boolean)
-            .join(" ");
+        ? {
+            titulo: `Não foi possível conferir este critério com a IA (${r.motivoFalha ?? "resposta fora do formato"}).`,
+            explicacao: `Confira na leitura: ${tituloDaFicha(r.ficha, base)}.`,
+            faltas: [],
+          }
+        : {
+            ...(tituloDaIa === ""
+              ? tituloEExplicacao(ponto(r.justificativa))
+              : { titulo: ponto(tituloDaIa), explicacao: ponto(r.justificativa) }),
+            // sem aparar nem tirar a vazia: o texto reunido é o da mensagem antiga, e a chave não muda
+            faltas: r.lacunas.map((l) => l.replace(/[.;]\s*$/, "")),
+          };
     const literal = r.trechos.find((t) => comoNoDocumento(t));
     const trechos = r.trechos.map(comoNoDocumento).filter(Boolean);
     itens.push({
@@ -479,7 +535,7 @@ function itensDaIa(
       tema: TEMAS[ordemTema]!.titulo,
       ordemTema,
       estado,
-      mensagem,
+      ...texto,
       oQueFazer: r.oQueFazer.trim() ? ponto(r.oQueFazer) : "Confira o critério no PPC.",
       trecho: trechos[0] ?? null,
       secao: literal === undefined ? null : secaoDe(literal),
@@ -538,7 +594,8 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     ordemTema: 0,
     estado: achado.estado,
     // A ação vai em "O que fazer"; a mensagem da triagem a repetia.
-    mensagem: achado.mensagem.replace(/ Remova antes de submeter\.$/, ""),
+    ...tituloEExplicacao(achado.mensagem.replace(/ Remova antes de submeter\.$/, "")),
+    faltas: [],
     oQueFazer: O_QUE_FAZER[achado.regra]!,
     trecho: achado.trechos[0] ? comoNoDocumento(achado.trechos[0].texto) : null,
     secao: achado.trechos[0]?.secao ?? null,
@@ -558,7 +615,8 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     itens.push({
       ...dadosDaFicha(item.ficha),
       estado: item.estado,
-      mensagem: legivel(item.mensagem.replace(SUFIXO_TAMBEM, "")),
+      ...tituloEExplicacao(legivel(item.mensagem.replace(SUFIXO_TAMBEM, ""))),
+      faltas: [],
       trecho: item.trechos[0] ?? null,
       secao: item.trechos[0] ? (secoes.get(item.trechos[0]) ?? null) : null,
       trechos: item.trechos,
@@ -577,7 +635,8 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
       itens.push({
         ...dadosDaFicha(ficha.ficha),
         estado: ficha.estado,
-        mensagem: legivel(ficha.mensagem),
+        ...tituloEExplicacao(legivel(ficha.mensagem)),
+        faltas: [],
         trecho: null,
         secao: null,
         trechos: [],
@@ -590,7 +649,7 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
 
 type ItemDoComentario = Pick<
   PendenciaRevisao,
-  "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha" | "tambemEm" | "origem"
+  "estado" | "titulo" | "explicacao" | "faltas" | "oQueFazer" | "fontes" | "ficha" | "tambemEm" | "origem"
 >;
 
 const linhaFontes = (fontes: readonly FonteLegivel[]) =>
@@ -598,10 +657,12 @@ const linhaFontes = (fontes: readonly FonteLegivel[]) =>
 
 const linhaTambem = (item: ItemDoComentario) => `Também apontado em: ${item.tambemEm.map((t) => t.titulo).join("; ")}.`;
 
-/** As linhas de uma pendência: o problema, o que fazer, a fonte e as outras fichas. */
+/** As linhas de uma pendência: o problema, a explicação, o que falta, o que fazer, a fonte e as outras fichas. */
 function linhasDaPendencia(item: ItemDoComentario): string[] {
   const linhas = [
-    item.estado === "nao_atende" ? `Pendência: ${item.mensagem}` : `Confira: ${item.mensagem}`,
+    item.estado === "nao_atende" ? `Pendência: ${item.titulo}` : `Confira: ${item.titulo}`,
+    ...(item.explicacao === null ? [] : [item.explicacao]),
+    ...(item.faltas.length ? [linhaDasFaltas(item.faltas)] : []),
     item.estado === "nao_atende" ? `O que fazer: ${item.oQueFazer}` : `Se for o caso: ${item.oQueFazer}`,
   ];
   if (item.fontes.length) linhas.push(linhaFontes(item.fontes));
@@ -816,7 +877,7 @@ export function montarResultado(
     ...(ia ? itensDaIa(ia, registro, base, entrada.cnct, secaoDe) : []),
   ]
     .filter((item) => {
-      const igual = JSON.stringify([item.ficha, item.mensagem, item.trecho]);
+      const igual = JSON.stringify([item.ficha, textoDaPendencia(item), item.trecho]);
       if (vistos.has(igual)) return false;
       vistos.add(igual);
       return true;

@@ -232,7 +232,9 @@ describe("migrações do banco das conversas", () => {
         assert.isNull(revPausada?.resultado);
 
         // Filhos preservados (recriar `listas_pendencias` não disparou `ON DELETE CASCADE`).
-        assert.strictEqual((yield* listas.pendencias("lista-ia")).length, 1);
+        // (contadas pelo SQL: na versão 2 a pendência ainda tem `mensagem`, que o serviço não lê mais)
+        const vivas = sql<{ n: number }>`SELECT COUNT(*) AS n FROM pendencias_vivas WHERE lista_id = 'lista-ia'`;
+        assert.strictEqual((yield* vivas)[0]?.n, 1);
         assert.strictEqual((yield* listas.eventos("lista-ia")).length, 1);
         assert.strictEqual((yield* listas.uso("lista-ia")).entrada, 100);
 
@@ -242,7 +244,7 @@ describe("migrações do banco das conversas", () => {
         assert.isNotNull(depois);
         assert.isNull(depois!.revisao);
         assert.strictEqual(depois!.resultadosIa?.resultados.length, 1);
-        assert.strictEqual((yield* listas.pendencias("lista-ia")).length, 1);
+        assert.strictEqual((yield* vivas)[0]?.n, 1);
       }).pipe(Effect.provide(emMemoria)),
   );
 
@@ -261,21 +263,81 @@ describe("migrações do banco das conversas", () => {
     }).pipe(Effect.provide(emMemoria)),
   );
 
+  it.effect(
+    "upgrade 3 → 4 separa a mensagem da pendência em título, explicação e faltas, nos três lugares em que ela fica gravada",
+    () =>
+      Effect.gen(function* () {
+        const sql = yield* SqlClient.SqlClient;
+        const listas = yield* Listas.Listas;
+        const revisoes = yield* Revisoes.Revisoes;
+        yield* Banco.rodarMigracoes(1);
+        yield* popularV1;
+        yield* Banco.rodarMigracoes(3);
+
+        // Uma pendência da IA no formato antigo: a justificativa e, no fim, as lacunas numa frase só.
+        const daIa = JSON.stringify({
+          ...(JSON.parse(pendenciaJson) as object),
+          ficha: "CT-IDENT-02",
+          origem: "ia",
+          mensagem:
+            "O quadro traz o campus e a forma, mas o prazo máximo não aparece. A carga total (3.173 h) diverge da matriz. Falta: Prazo máximo não informado; Carga total diverge da matriz (3.367 h).",
+        });
+        yield* sql`UPDATE pendencias_vivas SET pendencia = ${daIa} WHERE lista_id = 'lista-ia'`;
+        const comPendencias = JSON.stringify({
+          ...(JSON.parse(resultadoV1("lista-ia", true)) as object),
+          leituraIa: "completa",
+          pendencias: [JSON.parse(daIa), JSON.parse(pendenciaJson)],
+        });
+        yield* sql`UPDATE listas_pendencias SET resultado = ${comPendencias} WHERE id = 'lista-ia'`;
+        yield* sql`UPDATE revisoes_ia SET resultado = ${comPendencias} WHERE id = 'rev-1'`;
+
+        const m4 = yield* Banco.rodarMigracoes(4);
+        assert.deepStrictEqual(m4, [[4, "TextoDaPendenciaEmPartes"]]);
+
+        const emPartes = {
+          titulo: "O quadro traz o campus e a forma, mas o prazo máximo não aparece.",
+          explicacao: "A carga total (3.173 h) diverge da matriz.",
+          faltas: ["Prazo máximo não informado", "Carga total diverge da matriz (3.367 h)"],
+        };
+        const [viva] = yield* listas.pendencias("lista-ia");
+        assert.deepInclude(viva!.pendencia, emPartes);
+        assert.notProperty(viva!.pendencia, "mensagem");
+        // a chave da pendência e o resto dela não mudam
+        assert.strictEqual(viva!.chave, "CT-IDENT-01:abc");
+        assert.strictEqual(viva!.pendencia.oQueFazer, "Ajuste o nome.");
+
+        const lista = yield* listas.buscar("lista-ia");
+        assert.deepInclude(lista!.resultado.pendencias[0], emPartes);
+        // a do código, de uma frase só: o título é a frase, sem explicação nem faltas
+        assert.deepInclude(lista!.resultado.pendencias[1], {
+          titulo: "Confira a denominação.",
+          explicacao: null,
+          faltas: [],
+        });
+        assert.notProperty(lista!.resultado.pendencias[1], "mensagem");
+        const revisao = yield* revisoes.buscar("rev-1");
+        assert.deepInclude(revisao!.resultado!.pendencias[0], emPartes);
+
+        // rodar de novo não faz nada: o banco já está na versão 4
+        assert.deepStrictEqual(yield* Banco.rodarMigracoes(4), []);
+      }).pipe(Effect.provide(emMemoria)),
+  );
+
   it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      yield* Banco.rodarMigracoes(3);
+      yield* Banco.rodarMigracoes(4);
 
-      // Simula um banco que recebeu uma migração 4 de uma versão mais nova do app.
-      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (4, 'Futura')`;
-      const erroDowngrade = yield* Banco.rodarMigracoes(3).pipe(Effect.flip);
+      // Simula um banco que recebeu uma migração 5 de uma versão mais nova do app.
+      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (5, 'Futura')`;
+      const erroDowngrade = yield* Banco.rodarMigracoes(4).pipe(Effect.flip);
       assert.strictEqual(erroDowngrade._tag, "BancoIncompativel");
       assert.include(erroDowngrade.message, "versão mais nova");
 
       // Simula histórico incompatível (ex.: nome trocado ou banco de dev antigo).
-      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = 4`;
+      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = 5`;
       yield* sql`UPDATE effect_sql_migrations SET name = 'AntigaDiferente' WHERE migration_id = 2`;
-      const erroIncompativel = yield* Banco.rodarMigracoes(3).pipe(Effect.flip);
+      const erroIncompativel = yield* Banco.rodarMigracoes(4).pipe(Effect.flip);
       assert.strictEqual(erroIncompativel._tag, "BancoIncompativel");
       assert.include(erroIncompativel.message, "não é compatível");
     }).pipe(Effect.provide(emMemoria)),
@@ -284,10 +346,10 @@ describe("migrações do banco das conversas", () => {
   it.effect("violação de FK dentro de uma migração faz rollback e mantém o banco na versão anterior", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      yield* Banco.rodarMigracoes(3);
+      yield* Banco.rodarMigracoes(4);
 
       const migracaoQuebrada: Banco.EntradaMigracao = [
-        4,
+        5,
         "QuebraFk",
         Effect.gen(function* () {
           const s = yield* SqlClient.SqlClient;
@@ -298,16 +360,16 @@ describe("migrações do banco das conversas", () => {
           `;
         }),
       ];
-      const erro = yield* Banco.rodarMigracoes(4, {
+      const erro = yield* Banco.rodarMigracoes(5, {
         migracoes: [...Banco.MIGRACOES, migracaoQuebrada],
       }).pipe(Effect.flip);
       assert.strictEqual(erro._tag, "MigrationError");
       assert.include(String(erro.cause), "MigracaoViolouIntegridade");
 
-      // Transação desfeita: o órfão não ficou e a migração 4 não foi registrada.
+      // Transação desfeita: o órfão não ficou e a migração 5 não foi registrada.
       const orfaos = yield* sql`SELECT * FROM pendencias_vivas WHERE lista_id = 'lista-inexistente'`;
       assert.strictEqual(orfaos.length, 0);
-      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = 4`;
+      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = 5`;
       assert.strictEqual(aplicada.length, 0);
       // `foreign_keys` foi religado mesmo após o erro.
       const fk = yield* sql<{ foreign_keys: number }>`PRAGMA foreign_keys;`;

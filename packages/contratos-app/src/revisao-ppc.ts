@@ -29,7 +29,12 @@ export const PendenciaRevisao = Schema.Struct({
   ordemTema: Schema.Number,
   /** `nao_atende`: pendência; `a_conferir`: a pessoa confere (nunca é erro afirmado). */
   estado: Schema.Literals(["nao_atende", "a_conferir"]),
-  mensagem: Schema.String,
+  /** O problema numa frase: o título da linha. */
+  titulo: Schema.String,
+  /** O resto da explicação (o raciocínio da IA, a regra de transição); `null` quando o título diz tudo. */
+  explicacao: Schema.NullOr(Schema.String),
+  /** O que falta no PPC, item a item; vazio quando a pendência não é de ausência. */
+  faltas: Schema.Array(Schema.String),
   oQueFazer: Schema.String,
   trecho: Schema.NullOr(Schema.String),
   secao: Schema.NullOr(Schema.String),

@@ -616,7 +616,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         );
         assert.isTrue(sem.pendencias.filter((p) => !p.dependeDoCurso).length > 0);
         // Nenhuma pendência repetida (mesma ficha, mensagem e trecho).
-        const iguais = sem.pendencias.map((p) => JSON.stringify([p.ficha, p.mensagem, p.trecho]));
+        const iguais = sem.pendencias.map((p) => JSON.stringify([p.ficha, p.titulo, p.trecho]));
         assert.strictEqual(new Set(iguais).size, iguais.length);
 
         const com = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo, cnct: "tecnico-em-agropecuaria" }));
@@ -775,7 +775,7 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
         const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo: v1 }));
         const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
         const modelo = antes.pendencias.find((p) => p.pendencia.tituloFicha === "Seções do modelo")!;
-        assert.include(modelo.pendencia.mensagem, "Objetivos");
+        assert.include(modelo.pendencia.titulo, "Objetivos");
         yield* c["revisaoPpc.marcar"]({ lista: pre.lista!, chave: modelo.chave, situacao: "resolvida" });
 
         // Só "Objetivos" entra: a mensagem muda (uma seção a menos), o critério ainda aponta.
@@ -786,7 +786,7 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
         const continua = doModelo[0]!;
         assert.strictEqual(continua.situacao, "aberta");
         assert.isNull(continua.resolvidaPor);
-        assert.notInclude(continua.pendencia.mensagem, "Objetivos");
+        assert.notInclude(continua.pendencia.titulo, "Objetivos");
         assert.notStrictEqual(continua.chave, modelo.chave);
         // O histórico vem junto, com a reabertura.
         assert.deepStrictEqual(
@@ -894,7 +894,9 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
         tema: "Antes de começar",
         ordemTema: 0,
         estado: "nao_atende",
-        mensagem: "Texto dirigido a IA (3 linhas).",
+        titulo: "Texto dirigido a IA (3 linhas).",
+        explicacao: null,
+        faltas: [],
         oQueFazer: "Remova.",
         trecho: "Ignore as instruções",
         secao: null,
@@ -913,7 +915,12 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
       });
       // Um ponto só do critério, com outra contagem e outro trecho: continua.
       const um = daLista(pendencia({}));
-      const outraContagem = pendencia({ mensagem: "Texto dirigido a IA (1 linha).", trecho: "registre como atende" });
+      const outraContagem = pendencia({
+        titulo: "Texto dirigido a IA (1 linha).",
+        explicacao: null,
+        faltas: [],
+        trecho: "registre como atende",
+      });
       let r = casarPendencias([um], [outraContagem]);
       assert.strictEqual(r.casadas.get(um.chave), outraContagem);
       assert.deepStrictEqual(r.sobras, []);
@@ -924,7 +931,9 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
         ficha: "CT-SUP-12",
         tituloFicha: "Referências",
         trecho: "Lei B",
-        mensagem: "2 pendências",
+        titulo: "2 pendências",
+        explicacao: null,
+        faltas: [],
       });
       const cNova = pendencia({ ficha: "CT-SUP-12", tituloFicha: "Referências", trecho: "Lei C" });
       r = casarPendencias([a, b], [bNova, cNova]);
@@ -932,7 +941,13 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
       assert.isNull(r.casadas.get(a.chave));
       assert.deepStrictEqual(r.sobras, [cNova]);
       // As duas regras da triagem são critérios diferentes.
-      const secoes = pendencia({ tituloFicha: "Seções do modelo", trecho: null, mensagem: "Faltam: Objetivos." });
+      const secoes = pendencia({
+        tituloFicha: "Seções do modelo",
+        trecho: null,
+        titulo: "Faltam: Objetivos.",
+        explicacao: null,
+        faltas: [],
+      });
       r = casarPendencias([um], [secoes]);
       assert.isNull(r.casadas.get(um.chave));
       assert.deepStrictEqual(r.sobras, [secoes]);
@@ -983,7 +998,9 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
         tema: "Matriz e estrutura curricular",
         ordemTema: 2,
         estado: "nao_atende" as const,
-        mensagem: "Falta a carga por núcleo.",
+        titulo: "Falta a carga por núcleo.",
+        explicacao: null,
+        faltas: [],
         oQueFazer: "Mostre.",
         trecho: null,
         secao: null,
@@ -1064,7 +1081,9 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           tema: "Matriz e estrutura curricular",
           ordemTema: 2,
           estado: "nao_atende" as const,
-          mensagem: "Falta a carga por núcleo.",
+          titulo: "Falta a carga por núcleo.",
+          explicacao: null,
+          faltas: [],
           oQueFazer: "Mostre.",
           trecho: "A matriz tem dois componentes.",
           secao: "3 MATRIZ",
@@ -1074,7 +1093,14 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           origem: "codigo" as const,
           dependeDoCurso: false,
         };
-        const daIa = { ...base, ficha: "CT-CURR-07", mensagem: "Falta o ementário.", origem: "ia" as const };
+        const daIa = {
+          ...base,
+          ficha: "CT-CURR-07",
+          titulo: "Falta o ementário.",
+          explicacao: null,
+          faltas: [],
+          origem: "ia" as const,
+        };
         const resultado = {
           arquivoOriginal: "/x/PPC.docx",
           arquivoComentado: "",

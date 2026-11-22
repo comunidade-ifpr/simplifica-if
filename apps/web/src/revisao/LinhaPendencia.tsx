@@ -1,7 +1,8 @@
 /**
  * Uma pendência da lista, numa linha que abre e fecha (uma aberta por vez). Recolhida: a gravidade
- * (glifo e palavra), a mensagem em até duas linhas e onde ela está no documento, com "Novo" ou
- * "Retirado" quando couber. Aberta: a mensagem inteira, o que fazer, o trecho do PPC (na serifada, com
+ * (glifo e palavra), o título da pendência em até duas linhas e onde ela está no documento, com "Novo"
+ * ou "Retirado" quando couber. Aberta: a explicação em texto comum, o que falta como lista (o servidor
+ * manda as três partes separadas), o que fazer, o trecho do PPC (na serifada, com
  * o filete da cor da gravidade, o rótulo "Trecho no PPC" e "Copiar trecho"), as fontes pelo nome (o link `ifpr://` abre o painel de leitura) e as ações: "Feito"
  * (ou "Desfazer"), "Sugerir texto" e, no ⋯, "Discordar", "Reconferir com o arquivo novo" e "Detalhes".
  *
@@ -74,6 +75,7 @@ export function LinhaPendencia({
   const feita = viva.situacao === "resolvida";
   const retirada = viva.situacao === "contestada_aceita";
   const onde = localizacao(p);
+  const faltas = p.faltas.map((falta) => falta.trim()).filter(Boolean);
   const [painelEscolhido, setPainel] = useState<Painel>("nenhum");
   const [ocupada, setOcupada] = useState(false);
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
@@ -102,13 +104,9 @@ export function LinhaPendencia({
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span
-          className={cn(
-            "font-medium text-heading",
-            aberta ? "whitespace-pre-line" : "line-clamp-2",
-            feita && "line-through decoration-1",
-          )}
+          className={cn("font-medium text-heading", aberta ? "" : "line-clamp-2", feita && "line-through decoration-1")}
         >
-          {p.mensagem}
+          {p.titulo}
         </span>
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-small">
           {onde === null ? null : <span>{onde}</span>}
@@ -131,7 +129,7 @@ export function LinhaPendencia({
       }}
       cabecalho={cabecalho}
     >
-      <div className="flex flex-col gap-4 pl-[calc(5.5rem+0.75rem)]">
+      <div className="flex flex-col gap-5 pt-1 pl-[calc(5.5rem+0.75rem)]">
         {retirada ? (
           <p className="text-muted-foreground text-small">Retirado: a IA conferiu o trecho que você indicou.</p>
         ) : null}
@@ -141,29 +139,47 @@ export function LinhaPendencia({
         {feita && viva.resolvidaPor === "revisarDeNovo" ? (
           <p className="text-muted-foreground text-small">Feito: conferido no arquivo novo.</p>
         ) : null}
-        <div className="flex max-w-[68ch] flex-col gap-1">
-          <p className="font-semibold text-small">{gravidade === "corrigir" ? "O que fazer" : "O que conferir"}</p>
+        {p.explicacao === null ? null : (
+          <p className="max-w-[68ch] whitespace-pre-line text-body" data-explicacao>
+            {p.explicacao}
+          </p>
+        )}
+        {faltas.length ? (
+          <div className="flex max-w-[68ch] flex-col gap-1.5">
+            <Rotulo>O que falta</Rotulo>
+            <ul className="flex list-disc flex-col gap-1 pl-5 text-body marker:text-muted-foreground">
+              {faltas.map((falta, i) => (
+                // a lista não muda de ordem, e a IA pode repetir um item
+                // oxlint-disable-next-line react/no-array-index-key
+                <li key={i}>{falta}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        <div className="flex max-w-[68ch] flex-col gap-1.5">
+          <Rotulo>{gravidade === "corrigir" ? "O que fazer" : "O que conferir"}</Rotulo>
           <p className="whitespace-pre-line text-body">{p.oQueFazer}</p>
         </div>
         {p.trecho === null ? null : (
           <Trecho trecho={p.trecho} filete={FILETE[gravidade]} aoVerNoPpc={() => aoAbrirLink(linkNoPpc)} />
         )}
         {p.fontes.length ? (
-          <p className="text-small">
-            <span className="font-semibold">{p.fontes.length === 1 ? "Fonte: " : "Fontes: "}</span>
-            {p.fontes.map((fonte, i) => (
-              <span key={fonte.link}>
-                {i > 0 ? "; " : null}
-                <button
-                  type="button"
-                  className="cursor-pointer text-link underline underline-offset-2 hover:no-underline"
-                  onClick={() => aoAbrirLink(fonte.link)}
-                >
-                  {fonte.rotulo}
-                </button>
-              </span>
-            ))}
-          </p>
+          <div className="flex max-w-[68ch] flex-col gap-1.5">
+            <Rotulo>{p.fontes.length === 1 ? "Fonte" : "Fontes"}</Rotulo>
+            <ul className="flex flex-col gap-1 text-small">
+              {p.fontes.map((fonte) => (
+                <li key={fonte.link}>
+                  <button
+                    type="button"
+                    className="cursor-pointer text-left text-link underline underline-offset-2 hover:no-underline"
+                    onClick={() => aoAbrirLink(fonte.link)}
+                  >
+                    {fonte.rotulo}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
         {viva.sugestao === null ? null : <Sugestao sugestao={viva.sugestao} nome={nomeIa(provider)} />}
 
@@ -238,6 +254,11 @@ export function LinhaPendencia({
   );
 }
 
+/** O rótulo de uma parte da pendência aberta: discreto, para o texto abaixo dele falar mais alto. */
+function Rotulo({ children }: { readonly children: ReactNode }) {
+  return <p className="font-semibold text-muted-foreground text-small">{children}</p>;
+}
+
 /**
  * O trecho do PPC, com o rótulo discreto, "Ver no PPC" (o documento inteiro no painel de leitura, rolado
  * e destacado no trecho, para ler o contexto) e "Copiar trecho" (para achar no Word com Ctrl+F). A seção
@@ -256,7 +277,7 @@ function Trecho({
   return (
     <div className="flex max-w-[68ch] flex-col gap-1">
       <div className="flex flex-wrap items-center justify-between gap-x-3">
-        <p className="font-semibold text-muted-foreground text-small">Trecho no PPC</p>
+        <Rotulo>Trecho no PPC</Rotulo>
         <span className="flex items-center gap-1">
           <Button size="sm" variant="ghost" onClick={aoVerNoPpc}>
             <FileSearchIcon /> Ver no PPC
@@ -494,7 +515,7 @@ function Sugestao({ sugestao, nome }: { readonly sugestao: SugestaoTexto; readon
   const [copiada, setCopiada] = useState(false);
   return (
     <div className="flex max-w-[68ch] flex-col gap-2">
-      <p className="font-semibold text-small">Sugestão do {nome}, para você revisar antes de usar</p>
+      <Rotulo>Sugestão do {nome}, para você revisar antes de usar</Rotulo>
       <p className="whitespace-pre-line rounded-xl bg-muted/60 p-4 font-serif text-quote">{sugestao.texto}</p>
       {sugestao.naoConferidos.length ? (
         <p className="text-grav-conferir-texto text-small">

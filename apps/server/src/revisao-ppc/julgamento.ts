@@ -146,6 +146,7 @@ const paraResultado = (r: ResultadoIa, revisaoHumana: boolean): ResultadoFichaIa
   ficha: r.ficha_id,
   estado: r.estado,
   confianca: r.confianca,
+  ...(r.titulo?.trim() ? { titulo: r.titulo.trim() } : {}),
   justificativa: r.justificativa,
   lacunas: [...r.lacunas],
   oQueFazer: r.o_que_fazer ?? "",

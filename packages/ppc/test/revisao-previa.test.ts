@@ -15,7 +15,10 @@ import {
   type EtapaRevisaoPrevia,
   revisarDocx as revisarSemConferir,
   rotuloDispositivo,
+  linhaDasFaltas,
+  textoDaPendencia,
   textoDoComentario,
+  tituloEExplicacao,
 } from "../src/revisao-previa.ts";
 import { citacaoDoId } from "../src/verificadores/comum.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
@@ -93,11 +96,11 @@ describe("revisarDocx", () => {
     for (const p of revisao.pendencias) {
       expect(p.tituloFicha).not.toMatch(/^CT-/);
       for (const f of p.fontes) expect(f.rotulo).not.toMatch(/^(br|ifpr|externo:)[/a-z0-9-]*\/\d{4}\/\d+/);
-      expect(p.mensagem).not.toMatch(/\((s|es)\)/);
+      expect(textoDaPendencia(p)).not.toMatch(/\((s|es)\)/);
     }
     const aee = revisao.pendencias.find((p) => p.ficha === "CT-CURR-22")!;
     expect(aee.fontes.map((f) => f.rotulo)).toEqual(["Nota Técnica PROENS/IFPR nº 1/2025"]);
-    expect(aee.mensagem).toContain("(1 linha)");
+    expect(textoDaPendencia(aee)).toContain("(1 linha)");
     // Uma norma fora do registro: a citação montada do ID.
     const semNt = revisarDocx(
       ppcSintetico(),
@@ -108,7 +111,7 @@ describe("revisarDocx", () => {
     expect(semNt.pendencias.find((p) => p.ficha === "CT-CURR-22")!.fontes[0]!.rotulo).toBe(
       "Nota Técnica PROENS/IFPR nº 1/2025",
     );
-    const iguais = revisao.pendencias.map((p) => JSON.stringify([p.ficha, p.mensagem, p.trecho]));
+    const iguais = revisao.pendencias.map((p) => JSON.stringify([p.ficha, textoDaPendencia(p), p.trecho]));
     expect(new Set(iguais).size).toBe(iguais.length);
     // Com o curso no CNCT, nada depende dele.
     expect(revisao.pendencias.some((p) => p.dependeDoCurso)).toBe(false);
@@ -123,14 +126,14 @@ describe("revisarDocx", () => {
     expect(revogada).toMatchObject({ estado: "a_conferir", noDocumento: "no-trecho" });
     expect([revogada.ficha, ...revogada.tambemEm.map((t) => t.ficha)].sort()).toEqual(["CT-IDENT-08", "CT-SUP-12"]);
     expect(revisao.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021")).toHaveLength(1);
-    expect(revogada.mensagem).toMatch(/\nRegras de transição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
-    expect(revogada.mensagem).toMatch(
+    expect(textoDaPendencia(revogada)).toMatch(/\nRegras de transição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
+    expect(textoDaPendencia(revogada)).toMatch(
       /\nSe o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação/,
     );
-    expect(revogada.mensagem).not.toMatch(/a confirmar na base|revogada|marco/);
+    expect(textoDaPendencia(revogada)).not.toMatch(/a confirmar na base|revogada|marco/);
     // A fonte da mesma norma vai junta.
     expect(revogada.fontes.map((f) => f.rotulo)).toContain("Resolução CNE/CP nº 2/2026, arts. 70 e 71");
-    expect(revogada.mensagem).not.toMatch(/\bart\d/);
+    expect(textoDaPendencia(revogada)).not.toMatch(/\bart\d/);
     // Norma "a confirmar": a ausência da DCN vigente não é mais "precisa de ajuste".
     for (const ficha of ["CT-IDENT-08", "CT-SUP-09"])
       expect(revisao.pendencias.filter((p) => p.ficha === ficha && p.estado === "nao_atende")).toEqual([]);
@@ -138,7 +141,7 @@ describe("revisarDocx", () => {
     const aee = revisao.pendencias.find((p) => p.ficha === "CT-CURR-22")!;
     expect(aee).toMatchObject({ noDocumento: "no-trecho", trecho: "Atendimento Educacional Especializado" });
     // Ausência (sem trecho): no comentário do título.
-    expect(revisao.pendencias.find((p) => p.mensagem.includes("não menciona o Catálogo"))!.noDocumento).toBe(
+    expect(revisao.pendencias.find((p) => textoDaPendencia(p).includes("não menciona o Catálogo"))!.noDocumento).toBe(
       "no-inicio",
     );
   });
@@ -170,7 +173,9 @@ describe("revisarDocx", () => {
     const ausentes = revisao.pendencias.filter((p) => p.noDocumento === "no-inicio");
     expect(ausentes.length).toBeGreaterThan(3);
     expect(revisao.aviso).toContain("O que falta no documento (sem trecho onde comentar):");
-    for (const ausente of ausentes) expect(revisao.aviso).toContain(ausente.mensagem);
+    // no aviso, cada ausência vai numa linha só: o título e, quando há, a explicação em seguida
+    for (const ausente of ausentes)
+      expect(revisao.aviso).toContain([ausente.titulo, ausente.explicacao ?? ""].filter(Boolean).join(" "));
     expect(marcado(documento, ids.at(-1)!)).toBe("PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM AGROPECUÁRIA");
     const ancoradas = revisao.pendencias.filter((p) => p.noDocumento === "no-trecho");
     for (const pendencia of ancoradas)
@@ -250,4 +255,44 @@ test("rótulo legível do dispositivo", () => {
   expect(rotuloDispositivo("art35D")).toBe("art. 35-D");
   expect(rotuloDispositivo("anexo1-art5-c")).toBe("Anexo 1, art. 5º, alínea c");
   expect(rotuloDispositivo("art10")).toBe("art. 10");
+});
+
+describe("o texto da pendência em partes", () => {
+  test("o título é a primeira frase (ou a primeira linha), e o resto é a explicação", () => {
+    expect(tituloEExplicacao("O quadro não traz o prazo máximo de integralização. A carga total diverge.")).toEqual({
+      titulo: "O quadro não traz o prazo máximo de integralização.",
+      explicacao: "A carga total diverge.",
+    });
+    expect(
+      tituloEExplicacao("Cita norma revogada, com vigência a confirmar\nRegras de transição: pode manter."),
+    ).toEqual({
+      titulo: "Cita norma revogada, com vigência a confirmar",
+      explicacao: "Regras de transição: pode manter.",
+    });
+    const curta = "O AEE aparece como componente na matriz (1 linha); ele é serviço, não componente.";
+    expect(tituloEExplicacao(curta)).toEqual({ titulo: curta, explicacao: null });
+  });
+
+  test("abreviatura e número não fecham a frase; a unidade e o numeral romano fecham", () => {
+    expect(
+      tituloEExplicacao("O PPC cita o art. 28 da Res. CNE/CP nº 2/2026 sem o inciso. Confira a seção de fundamentos.")
+        .titulo,
+    ).toBe("O PPC cita o art. 28 da Res. CNE/CP nº 2/2026 sem o inciso.");
+    expect(tituloEExplicacao("A carga horária total é de 1.200 h. Está abaixo do mínimo do CNCT.")).toEqual({
+      titulo: "A carga horária total é de 1.200 h.",
+      explicacao: "Está abaixo do mínimo do CNCT.",
+    });
+    expect(tituloEExplicacao("A matriz traz o componente Inglês I. Ele não tem ementa.").titulo).toBe(
+      "A matriz traz o componente Inglês I.",
+    );
+    // uma frase curta demais no começo não vira título sozinha
+    expect(tituloEExplicacao("Não. O PPC descreve o estágio na seção 5.").explicacao).toBeNull();
+  });
+
+  test("o texto reunido: uma parte por linha, com as faltas numa frase", () => {
+    expect(linhaDasFaltas([])).toBe("");
+    expect(linhaDasFaltas(["o prazo máximo", "a carga do estágio"])).toBe("Falta: o prazo máximo; a carga do estágio.");
+    expect(textoDaPendencia({ titulo: "T.", explicacao: null, faltas: [] })).toBe("T.");
+    expect(textoDaPendencia({ titulo: "T.", explicacao: "E.", faltas: ["a", "b"] })).toBe("T.\nE.\nFalta: a; b.");
+  });
 });

@@ -98,13 +98,9 @@ const programa = Effect.gen(function* () {
     const lista = yield* viva.lista(r.lista!);
     for (const p of lista.pendencias)
       console.log(
-        [
-          p.chave,
-          p.pendencia.tema,
-          p.pendencia.estado,
-          p.pendencia.tituloFicha,
-          p.pendencia.mensagem.slice(0, 220),
-        ].join(" | "),
+        [p.chave, p.pendencia.tema, p.pendencia.estado, p.pendencia.tituloFicha, p.pendencia.titulo.slice(0, 220)].join(
+          " | ",
+        ),
       );
     return;
   }
@@ -180,9 +176,7 @@ const programa = Effect.gen(function* () {
     });
     const lista = yield* viva.lista(r.lista!);
     for (const p of lista.pendencias.filter((x) => x.pendencia.origem === "ia"))
-      console.log(
-        [p.chave, p.pendencia.estado, p.pendencia.tituloFicha, p.pendencia.mensagem.slice(0, 300)].join(" | "),
-      );
+      console.log([p.chave, p.pendencia.estado, p.pendencia.tituloFicha, p.pendencia.titulo.slice(0, 300)].join(" | "));
     return;
   }
   const id = (yield* listas.ultima)!;

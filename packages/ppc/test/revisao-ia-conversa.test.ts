@@ -52,7 +52,9 @@ const contexto: ContextoNormativo = {
 const fontes = new Set(["br/lei/2012/12711", "br/lei/2012/12711#art4", "cnct"]);
 const pendencia = {
   ficha: ficha.id,
-  mensagem: "A seção de acesso não trata da reserva de vagas.",
+  titulo: "A seção de acesso não trata da reserva de vagas.",
+  explicacao: null,
+  faltas: [],
   oQueFazer: "Incluir a reserva de vagas.",
   trecho: null,
   origem: "ia" as const,

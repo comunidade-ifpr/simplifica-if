@@ -39,7 +39,9 @@ const pendencia = (
   tema: `Tema ${ordemTema}`,
   ordemTema,
   estado,
-  mensagem: `mensagem ${ficha}`,
+  titulo: `título ${ficha}`,
+  explicacao: null,
+  faltas: [],
   oQueFazer: "fazer",
   trecho: null,
   secao: null,
@@ -52,7 +54,7 @@ const pendencia = (
 });
 
 const viva = (p: PendenciaRevisao, situacao: PendenciaViva["situacao"] = "aberta"): PendenciaViva => ({
-  chave: `${p.ficha}|${p.mensagem}`,
+  chave: `${p.ficha}|${p.titulo}`,
   pendencia: p,
   situacao,
   resolvidaPor: situacao === "resolvida" ? "pessoa" : null,

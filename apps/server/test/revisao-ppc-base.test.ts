@@ -28,7 +28,7 @@ import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-if/kb/normas/vigencia";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
-import { revisarDocx, type BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
+import { revisarDocx, textoDaPendencia, type BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 
 const raiz = NodePath.resolve(import.meta.dirname, "../../..");
@@ -175,7 +175,7 @@ layer(layerBases, { timeout: "300 seconds", excludeTestServices: true })("base d
       const esperado = revisarDocx(ppcSintetico(), "ppc.docx", doBanco, { agora: AGORA }).pendencias.map((p) => ({
         ficha: p.ficha,
         estado: p.estado,
-        mensagem: p.mensagem,
+        mensagem: textoDaPendencia(p),
       }));
       expect(resultado.pendencias).toEqual(esperado);
     }),

@@ -48,6 +48,7 @@ import {
 } from "../src/revisao-ia/plano.ts";
 import { dirigidoAIa, preConferir } from "../src/pre-conferencia.ts";
 import {
+  chavePendencia,
   type EntradaIa,
   estadoDaIa,
   montarResultado,
@@ -164,6 +165,8 @@ describe("pedido", () => {
     for (const p of [pedido, ausencia]) {
       expect(p).toContain("Exemplo mínimo de resposta válida");
       expect(p).toContain('justificativa": até 600');
+      // o título curto da pendência, pedido à parte da justificativa
+      expect(p).toContain('"titulo": até 120');
       expect(p).not.toMatch(/^```/m);
     }
     expect(pedido).toContain("Na dúvida, use INCONCLUSIVO");
@@ -373,6 +376,23 @@ describe("conferência da resposta", () => {
       entrada,
     );
     expect(longo.problemas.get("CT-CURR-03")![0]).toContain("fora do contrato");
+    // o título: opcional (as respostas gravadas antes não o trazem)
+    const comTitulo = conferirResposta(
+      resposta(resultado("CT-CURR-03", { titulo: "A matriz não mostra a carga por núcleo" })),
+      bloco,
+      doBloco,
+      entrada,
+    );
+    expect(comTitulo.validos.get("CT-CURR-03")!.titulo).toBe("A matriz não mostra a carga por núcleo");
+    // longo demais, o título não recusa o critério (é só apresentação): a montagem o ignora
+    const tituloLongo = conferirResposta(
+      resposta(resultado("CT-CURR-03", { titulo: "x".repeat(400) })),
+      bloco,
+      doBloco,
+      entrada,
+    );
+    expect(tituloLongo.problemas.has("CT-CURR-03")).toBe(false);
+    expect(tituloLongo.validos.has("CT-CURR-03")).toBe(true);
     const lacunas = conferirResposta(
       resposta(resultado("CT-CURR-03", { lacunas: ["a", "b", "c", "d", "e", "f"] })),
       bloco,
@@ -523,9 +543,40 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(problemasOoxml(revisao.docx)).toEqual([]);
     const perfil = revisao.pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
     expect(perfil).toMatchObject({ estado: "nao_atende", origem: "ia", noDocumento: "no-trecho" });
-    expect(perfil.mensagem).toBe(
-      "O perfil é genérico e não traz as atribuições do CNCT. Falta: atribuições do técnico.",
-    );
+    // a justificativa é o título, e as lacunas ficam em lista (não mais numa frase "Falta: …")
+    expect(perfil).toMatchObject({
+      titulo: "O perfil é genérico e não traz as atribuições do CNCT.",
+      explicacao: null,
+      faltas: ["atribuições do técnico"],
+    });
+    // com o título escrito pela IA, ele é o título, e a justificativa inteira é a explicação
+    const comTitulo = revisarDocx(ppcSintetico(), "ppc.docx", base, {
+      agora: new Date("2026-11-16T12:00:00Z"),
+      ia: {
+        ...iaDoTeste,
+        resultados: iaDoTeste.resultados.map((r) =>
+          r.ficha === "CT-IDENT-07" ? { ...r, titulo: "O perfil não traz as atribuições do CNCT" } : r,
+        ),
+      },
+    }).pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
+    expect(comTitulo).toMatchObject({
+      titulo: "O perfil não traz as atribuições do CNCT.",
+      explicacao: "O perfil é genérico e não traz as atribuições do CNCT.",
+      faltas: ["atribuições do técnico"],
+    });
+    // o título da IA longo demais é ignorado: vale a primeira frase da justificativa
+    const comTituloLongo = revisarDocx(ppcSintetico(), "ppc.docx", base, {
+      agora: new Date("2026-11-16T12:00:00Z"),
+      ia: {
+        ...iaDoTeste,
+        resultados: iaDoTeste.resultados.map((r) =>
+          r.ficha === "CT-IDENT-07" ? { ...r, titulo: "x".repeat(161) } : r,
+        ),
+      },
+    }).pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
+    expect(comTituloLongo.titulo).toBe(perfil.titulo);
+    // a chave é a mesma com ou sem título longo, e a de antes do campo: o texto reunido não mudou
+    expect(chavePendencia(comTituloLongo)).toBe(chavePendencia(perfil));
     expect(perfil.fontes[0]!.rotulo).toContain("Catálogo Nacional de Cursos Técnicos");
     expect(comentarios).toContain("avaliação da IA conferida pelo app");
     // A seção do trecho citado pela IA, como nas pendências do código.
@@ -568,7 +619,7 @@ describe("os resultados da IA no DOCX comentado", () => {
   test('a ficha que falhou na conferência sai "Confira:" com o motivo, e a que atende não vira pendência', () => {
     const falhou = revisao.pendencias.find((p) => p.ficha === "CT-CURR-03")!;
     expect(falhou.estado).toBe("a_conferir");
-    expect(falhou.mensagem).toContain("a IA citou um trecho que não está no documento");
+    expect(falhou.titulo).toContain("a IA citou um trecho que não está no documento");
     expect(revisao.pendencias.some((p) => p.ficha === "CT-CURR-10")).toBe(false);
     expect(revisao.criterios.find((c) => c.ficha === "CT-CURR-10")).toMatchObject({ estado: "atende", origem: "ia" });
   });

@@ -77,7 +77,13 @@ import { type PendenciaDaLista, planoArquivoNovo } from "./arquivo-novo.ts";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { dobrar, retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
-import { chavePendencia, estadoDaIa, NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
+import {
+  chavePendencia,
+  estadoDaIa,
+  NOME_DA_FORMA,
+  type ResultadoFichaIa,
+  textoDaPendencia,
+} from "@simplifica-if/ppc/revisao-previa";
 import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
@@ -610,7 +616,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             recorte: ctx.recorte,
             contexto: ctx.contexto,
             fontes: new Set(ctx.fontes),
-            pendencia: [p.pendencia.mensagem, p.pendencia.oQueFazer, p.pendencia.trecho ?? ""].join("\n"),
+            pendencia: [textoDaPendencia(p.pendencia), p.pendencia.oQueFazer, p.pendencia.trecho ?? ""].join("\n"),
           });
       if (sugestao === null) {
         yield* listas.exclusivo(
@@ -710,7 +716,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         resolvida = ainda.length === 0;
         texto = resolvida
           ? `Conferida na nova revisão de ${nome}: o critério não aponta mais nada.`
-          : `A nova revisão de ${nome} ainda aponta: ${ponto(ainda[0]!.mensagem.split("\n")[0]!)}`;
+          : `A nova revisão de ${nome} ainda aponta: ${ponto(ainda[0]!.titulo)}`;
       } else {
         const { provider, modelo, ctx, nonce } = yield* prepararAcaoIa(registro, p, pedido, novo.revisao);
         const bloco = {
@@ -922,7 +928,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             l.arquivo.split(/[\\/]/).at(-1) ?? l.arquivo,
             l.pendencia.ficha,
             l.pendencia.tituloFicha,
-            l.pendencia.mensagem,
+            textoDaPendencia(l.pendencia).replaceAll("\n", " "),
             l.pendencia.trecho ?? "",
             l.motivo ?? "",
           ]
