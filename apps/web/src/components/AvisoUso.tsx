@@ -63,20 +63,17 @@ export function AvisoUso({
       <h2 id="titulo-aviso-uso" className="text-heading">
         {titulo}
       </h2>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-x-12 border-border border-t sm:grid-cols-2">
         {PONTOS.map((ponto) => (
-          <div
-            key={ponto.titulo}
-            className="flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 text-sm"
-          >
+          <li key={ponto.titulo} className="flex items-start gap-3 border-border border-b py-3 text-sm">
             {ponto.icone}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-0.5">
               <p className="font-semibold text-foreground">{ponto.titulo}</p>
               <p className="text-muted-foreground">{ponto.texto}</p>
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
       <div className="flex items-start gap-3 rounded-xl border border-warning/40 bg-warning-surface p-4 text-sm">
         <ShieldAlertIcon aria-hidden className="mt-0.5 size-5 shrink-0 text-warning-foreground" />
         <div className="flex flex-col gap-1">

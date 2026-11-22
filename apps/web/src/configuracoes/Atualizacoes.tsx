@@ -97,7 +97,7 @@ export function Atualizacoes() {
         </Alert>
       ) : null}
 
-      <section aria-labelledby="titulo-base" className="flex flex-col gap-3 rounded-lg border p-4">
+      <section aria-labelledby="titulo-base" className="flex flex-col gap-3">
         <h3 id="titulo-base" className="font-semibold">
           Base de conhecimento e tarefas
         </h3>
@@ -220,7 +220,7 @@ function AtualizacaoDoApp() {
   }, [ponte]);
 
   return (
-    <section aria-labelledby="titulo-app" className="flex flex-col gap-3 rounded-lg border p-4">
+    <section aria-labelledby="titulo-app" className="flex flex-col gap-3 border-border border-t pt-5">
       <h3 id="titulo-app" className="font-semibold">
         App
       </h3>

@@ -36,7 +36,8 @@ import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
-import { Pagina } from "../components/Pagina.tsx";
+import { classeColuna } from "../components/Pagina.tsx";
+import { cn } from "../lib/utils.ts";
 
 /** A busca da rota: o pedido que veio pronto ("Perguntar à IA sobre isto", do Explorar). */
 export interface BuscaInicio {
@@ -236,27 +237,36 @@ function Inicio() {
   // Enquanto as preferências carregam (ou antes de desviar para as boas-vindas), nada pisca na tela.
   if (conexao.fase !== "sem-servidor" && pendente !== false) return <EsperaPreferencias />;
   return (
-    <Pagina largura="larga">
-      <section className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h1 className="text-display">Olá!</h1>
-          {perfil !== undefined ? (
-            <p className="text-muted-foreground" data-linha-perfil>
-              {perfil}
-            </p>
-          ) : preferencias === undefined ? null : (
-            <Link to="/configuracoes" hash="perfil" className="text-link text-small underline underline-offset-2">
-              Preencha seu perfil para ver primeiro as tarefas da sua função
-            </Link>
+    <div className="h-full overflow-y-auto">
+      {/* A faixa de abertura, como a do Explorar: a saudação e a caixa de pedido, que é o centro da tela. */}
+      <div className="border-border border-b bg-muted">
+        <div className={cn(classeColuna("larga"), "flex flex-col gap-6 pt-12 pb-10")}>
+          <section className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+            <div className="space-y-1">
+              <h1 className="text-hero">Olá!</h1>
+              {perfil !== undefined ? (
+                <p className="text-muted-foreground" data-linha-perfil>
+                  {perfil}
+                </p>
+              ) : preferencias === undefined ? null : (
+                <Link to="/configuracoes" hash="perfil" className="text-link text-small underline underline-offset-2">
+                  Preencha seu perfil para ver primeiro as tarefas da sua função
+                </Link>
+              )}
+            </div>
+            {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
+          </section>
+          {conexao.fase === "sem-servidor" ? null : (
+            <>
+              <AvisoBaseAtualizada />
+              <AvisoSemIa />
+              <PedidoDoInicio key={pedido ?? ""} pedido={pedido} />
+            </>
           )}
         </div>
-        {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
-      </section>
+      </div>
       {conexao.fase === "sem-servidor" ? null : (
-        <>
-          <AvisoBaseAtualizada />
-          <AvisoSemIa />
-          <PedidoDoInicio key={pedido ?? ""} pedido={pedido} />
+        <div className={cn(classeColuna("larga"), "flex flex-col gap-10 py-10")}>
           <Tarefas />
           <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
             <h2 id="titulo-recentes" className="text-title">
@@ -265,8 +275,8 @@ function Inicio() {
             <UltimaRevisao />
             <ListaConversas limite={5} />
           </section>
-        </>
+        </div>
       )}
-    </Pagina>
+    </div>
   );
 }

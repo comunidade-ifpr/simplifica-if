@@ -14,7 +14,7 @@ import { FormPerfil } from "../components/FormPerfil.tsx";
 import { Pagina } from "../components/Pagina.tsx";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
-import { Diagnostico } from "../configuracoes/Diagnostico.tsx";
+import { Diagnostico, SECAO_DIAGNOSTICO } from "../configuracoes/Diagnostico.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
 import { useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
@@ -39,6 +39,39 @@ function Secao({
       </h2>
       {children}
     </section>
+  );
+}
+
+/** As seções da tela, na ordem, para o índice ao lado. */
+const SECOES = [
+  { id: "ia", nome: "Sua IA" },
+  { id: "perfil", nome: "Seu perfil" },
+  { id: "atualizacoes", nome: "Atualizações" },
+  { id: SECAO_DIAGNOSTICO, nome: "Diagnóstico" },
+  { id: "avancado", nome: "Avançado" },
+] as const;
+
+/**
+ * O índice das seções, que acompanha a rolagem (como a coluna lateral das páginas do Explorar). São
+ * botões, não âncoras: no desktop o roteador usa o `#` do endereço.
+ */
+function IndiceSecoes({ ocultas }: { readonly ocultas: ReadonlySet<string> }) {
+  return (
+    <nav aria-label="Seções" className="hidden lg:sticky lg:top-8 lg:block lg:self-start">
+      <ul className="border-border border-l">
+        {SECOES.filter((s) => !ocultas.has(s.id)).map((s) => (
+          <li key={s.id}>
+            <button
+              type="button"
+              onClick={() => document.getElementById(s.id)?.scrollIntoView({ block: "start", behavior: "smooth" })}
+              className="-ml-px block w-full border-transparent border-l-2 px-4 py-1.5 text-left text-muted-foreground text-small hover:border-primary hover:text-foreground"
+            >
+              {s.nome}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 
@@ -97,57 +130,63 @@ function Configuracoes() {
   const [, conversa] = useConversa();
   const navegar = useNavigate();
   return (
-    <Pagina largura="larga" className="gap-10">
+    <Pagina largura="larga" className="gap-8">
       <h1 className="text-display">Configurações</h1>
-      <Secao id="ia" titulo="Sua IA">
-        <AvisoUso {...(avisoPendente ? { aoEntender: () => void aceitarAviso() } : {})} />
-        {conexao.fase === "sem-servidor" ? null : (
-          <div className="grid gap-4 md:grid-cols-3">
-            {PROVIDERS.map((provider) => (
-              <CartaoProvider
-                key={provider}
-                provider={provider}
-                avisoPendente={avisoPendente}
-                uso={{
-                  usada: !(preferencias?.iasDesligadas ?? []).includes(provider),
-                  aoMudar: (usar) => void usarIa(provider, usar),
+      <div className="grid gap-x-12 lg:grid-cols-[11rem_minmax(0,1fr)]">
+        <IndiceSecoes ocultas={new Set(conexao.fase === "sem-servidor" ? ["atualizacoes", SECAO_DIAGNOSTICO] : [])} />
+        {/* Uma divisória entre as seções; cada uma para a rolagem com folga do topo. */}
+        <div className="flex min-w-0 flex-col gap-10 [&>section+section]:border-border [&>section+section]:border-t [&>section+section]:pt-10 [&>section]:scroll-mt-8">
+          <Secao id="ia" titulo="Sua IA">
+            <AvisoUso {...(avisoPendente ? { aoEntender: () => void aceitarAviso() } : {})} />
+            {conexao.fase === "sem-servidor" ? null : (
+              <div className="grid gap-4 md:grid-cols-3">
+                {PROVIDERS.map((provider) => (
+                  <CartaoProvider
+                    key={provider}
+                    provider={provider}
+                    avisoPendente={avisoPendente}
+                    uso={{
+                      usada: !(preferencias?.iasDesligadas ?? []).includes(provider),
+                      aoMudar: (usar) => void usarIa(provider, usar),
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+            <p className="max-w-prose text-muted-foreground text-sm">
+              "Não usar no app" só tira a IA da escolha das conversas: a conta continua conectada no computador. Para
+              sair da conta de vez, use o próprio programa da IA.
+            </p>
+          </Secao>
+          <Secao id="perfil" titulo="Seu perfil">
+            {conexao.fase === "sem-servidor" ? null : <SeuPerfil />}
+            <div>
+              <Link to="/boas-vindas" className={buttonVariants({ size: "sm", variant: "outline" })}>
+                <RotateCcwIcon /> Rever as boas-vindas
+              </Link>
+            </div>
+          </Secao>
+          {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
+          {conexao.fase === "sem-servidor" ? null : <Diagnostico />}
+          <Secao id="avancado" titulo="Avançado">
+            <p className="max-w-prose text-muted-foreground text-sm">
+              Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.
+            </p>
+            <div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  conversa.nova();
+                  void navegar({ to: "/conversa" });
                 }}
-              />
-            ))}
-          </div>
-        )}
-        <p className="max-w-prose text-muted-foreground text-sm">
-          "Não usar no app" só tira a IA da escolha das conversas: a conta continua conectada no computador. Para sair
-          da conta de vez, use o próprio programa da IA.
-        </p>
-      </Secao>
-      <Secao id="perfil" titulo="Seu perfil">
-        {conexao.fase === "sem-servidor" ? null : <SeuPerfil />}
-        <div>
-          <Link to="/boas-vindas" className={buttonVariants({ size: "sm", variant: "outline" })}>
-            <RotateCcwIcon /> Rever as boas-vindas
-          </Link>
+              >
+                <FolderCogIcon /> Conversa com uma pasta escolhida
+              </Button>
+            </div>
+          </Secao>
         </div>
-      </Secao>
-      {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
-      {conexao.fase === "sem-servidor" ? null : <Diagnostico />}
-      <Secao id="avancado" titulo="Avançado">
-        <p className="max-w-prose text-muted-foreground text-sm">
-          Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.
-        </p>
-        <div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              conversa.nova();
-              void navegar({ to: "/conversa" });
-            }}
-          >
-            <FolderCogIcon /> Conversa com uma pasta escolhida
-          </Button>
-        </div>
-      </Secao>
+      </div>
     </Pagina>
   );
 }
