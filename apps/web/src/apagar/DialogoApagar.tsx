@@ -1,5 +1,5 @@
 /**
- * O diálogo único de apagar (uma conversa, uma revisão de PPC): o que sai do app, o que fica no
+ * O diálogo único de apagar (conversas e revisões de PPC, uma ou várias): o que sai do app, o que fica no
  * computador e, quando houver, a escolha de mandar a pasta da tarefa à Lixeira. As frases vêm de
  * `textos.ts`; quem abre o diálogo faz o apagamento em `aoConfirmar`. Se algo ficou para trás (o
  * registro do provider, a pasta que a Lixeira recusou), o diálogo o diz antes de fechar.
@@ -20,7 +20,7 @@ import {
 import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import type { TextosApagar } from "./textos.ts";
+import type { NotaApagar, TextosApagar } from "./textos.ts";
 
 export function DialogoApagar({
   aberto,
@@ -38,13 +38,13 @@ export function DialogoApagar({
    * Apaga; recebe se a pessoa escolheu mandar a pasta à Lixeira e devolve a nota do que ficou para trás
    * (nula: tudo certo, e o diálogo fecha). Uma falha fica no diálogo.
    */
-  readonly aoConfirmar: (pastaParaLixeira: boolean) => Promise<string | null>;
+  readonly aoConfirmar: (pastaParaLixeira: boolean) => Promise<NotaApagar | null>;
   readonly aoFechar: () => void;
 }) {
   const [lixeira, setLixeira] = useState(false);
   const [apagando, setApagando] = useState(false);
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
-  const [nota, setNota] = useState<string | null>(null);
+  const [nota, setNota] = useState<NotaApagar | null>(null);
   const idOpcao = useId();
 
   const confirmar = async () => {
@@ -78,8 +78,8 @@ export function DialogoApagar({
       <AlertDialogContent>
         {nota !== null ? (
           <>
-            <AlertDialogTitle className="font-semibold text-heading">Apagado</AlertDialogTitle>
-            <AlertDialogDescription className="text-small">{nota}</AlertDialogDescription>
+            <AlertDialogTitle className="font-semibold text-heading">{nota.titulo}</AlertDialogTitle>
+            <AlertDialogDescription className="text-small">{nota.texto}</AlertDialogDescription>
             <div className="flex justify-end">
               <AlertDialogClose render={<Button variant="outline" />}>Fechar</AlertDialogClose>
             </div>

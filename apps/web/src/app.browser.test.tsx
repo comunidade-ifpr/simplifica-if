@@ -581,6 +581,34 @@ it("Modo Servidor: a caixa do Início abre uma conversa numa pasta nova", async 
   await expect.element(page.getByText("A pasta está vazia.")).toBeVisible();
 });
 
+it("Apagar várias conversas: Selecionar na barra, a prévia somada e o Início como destino", async () => {
+  await page.viewport(1280, 860);
+  await using app = await montarApp(servidor);
+  for (const pedido of ["Primeira para apagar", "Segunda para apagar"]) {
+    await page.getByRole("link", { name: "Início", exact: true }).click();
+    const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
+    await caixa.fill(pedido);
+    await userEvent.keyboard("{Enter}");
+    await expect.element(page.getByRole("log", { name: "Mensagens" }).getByText(pedido)).toBeVisible();
+  }
+  // A segunda está aberta; as duas vão juntas, pela seleção da barra de conversas.
+  const barra = page.getByRole("navigation", { name: "Conversas gravadas" });
+  await barra.getByRole("button", { name: "Selecionar" }).click();
+  await barra.getByRole("checkbox", { name: /Primeira para apagar/ }).click();
+  await barra.getByRole("checkbox", { name: /Segunda para apagar/ }).click();
+  await expect.element(barra.getByText("2 conversas marcadas")).toBeVisible();
+  await barra.getByRole("button", { name: "Apagar", exact: true }).click();
+  const dialogo = page.getByRole("alertdialog", { name: "Apagar 2 conversas?" });
+  await expect.element(dialogo.getByText("2 mensagens suas e as respostas da IA, em 2 conversas")).toBeVisible();
+  semIngles();
+  await dialogo.getByRole("button", { name: "Apagar 2 conversas" }).click();
+  // A conversa aberta saiu: a tela vai para o Início, sem as duas nos recentes.
+  await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
+  expect(app.roteador.state.location.pathname).toBe("/");
+  await expect.element(page.getByRole("link", { name: /Primeira para apagar/ })).not.toBeInTheDocument();
+  await expect.element(page.getByRole("link", { name: /Segunda para apagar/ })).not.toBeInTheDocument();
+});
+
 it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa de exemplo e Configurações", async () => {
   // Um servidor só deste teste: o primeiro uso por fazer e o Claude Code ausente até a pessoa
   // "instalar" (`simularInstalacaoClaude`), enquanto o app espera o "Já fiz, conferir".

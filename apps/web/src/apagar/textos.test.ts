@@ -1,6 +1,14 @@
 import type { ListaPendencias, PreviaApagarConversa } from "@simplifica-if/contratos-app";
 import { describe, expect, it } from "vite-plus/test";
-import { avisoDeSaida, notaDepoisDeApagar, textosApagarConversa, textosApagarRevisao } from "./textos.ts";
+import {
+  avisoDeSaida,
+  notaDepoisDeApagar,
+  pastasParaLixeira,
+  textosApagarConversa,
+  textosApagarConversas,
+  textosApagarRevisao,
+  textosApagarRevisoes,
+} from "./textos.ts";
 
 const previa = (mudar: Partial<PreviaApagarConversa> = {}): PreviaApagarConversa => ({
   respondendo: false,
@@ -61,11 +69,75 @@ describe("apagar a conversa", () => {
   });
 
   it("depois de apagar, diz só o que ficou para trás", () => {
-    expect(notaDepoisDeApagar({ transcricao: "apagada", pastaFicou: null }, "Claude")).toBeNull();
-    expect(notaDepoisDeApagar({ transcricao: "nenhuma", pastaFicou: null }, "Claude")).toBeNull();
-    expect(notaDepoisDeApagar({ transcricao: "ficou", pastaFicou: "/d/Simplifica IF/Tarefa" }, "Claude")).toBe(
-      "A conversa saiu do app. O registro que o Claude guarda neste computador não pôde ser apagado. A pasta “Tarefa” não foi para a Lixeira e continua em Documentos/Simplifica IF.",
+    expect(notaDepoisDeApagar([{ titulo: "a" }], "conversa")).toBeNull();
+    expect(notaDepoisDeApagar([{ titulo: "a", transcricaoFicou: "Claude" }], "conversa")?.titulo).toBe("Apagado");
+    expect(notaDepoisDeApagar([{ titulo: "a" }, { titulo: "b" }], "conversa")).toBeNull();
+    expect(
+      notaDepoisDeApagar(
+        [{ titulo: "a", transcricaoFicou: "Claude", pastaFicou: "/d/Simplifica IF/Tarefa" }],
+        "conversa",
+      )?.texto,
+    ).toBe(
+      "A conversa saiu do app. O registro que o Claude guarda neste computador não pôde ser apagado agora; o app tenta de novo quando abrir. A pasta “Tarefa” não foi para a Lixeira e continua em Documentos/Simplifica IF.",
     );
+  });
+
+  it("em lote, a falha de uma não esconde as que saíram", () => {
+    expect(
+      notaDepoisDeApagar([{ titulo: "a" }, { titulo: "b", falhou: true }, { titulo: "c", falhou: true }], "conversa"),
+    ).toEqual({
+      titulo: "Apagado em parte",
+      texto: "1 de 3 conversas saiu do app. Não foi possível apagar “b”, “c”. Tente de novo.",
+    });
+    expect(
+      notaDepoisDeApagar([{ titulo: "a" }, { titulo: "b" }, { titulo: "c", falhou: true }], "revisão")?.texto,
+    ).toBe("2 de 3 revisões saíram do app. Não foi possível apagar “c”. Tente de novo.");
+    expect(
+      notaDepoisDeApagar(
+        [
+          { titulo: "a", falhou: true },
+          { titulo: "b", falhou: true },
+        ],
+        "conversa",
+      ),
+    ).toEqual({ titulo: "Nada foi apagado", texto: "Não foi possível apagar “a”, “b”. Tente de novo." });
+    expect(
+      notaDepoisDeApagar(
+        [
+          { titulo: "a", transcricaoFicou: "Claude" },
+          { titulo: "b", transcricaoFicou: "Claude" },
+        ],
+        "conversa",
+      )?.texto,
+    ).toMatch(/^2 conversas saíram do app\. O registro de 2 conversas/);
+  });
+
+  it("várias conversas: as contagens somadas, o aviso e só as pastas que podem ir à Lixeira", () => {
+    const a = { previa: previa(), titulo: "a", ia: "Claude" };
+    const b = {
+      previa: previa({ respondendo: true, mensagens: 1, pasta: { ...previa().pasta, caminho: "/x/B", arquivos: 4 } }),
+      titulo: "b",
+      ia: "Claude",
+    };
+    const c = {
+      previa: previa({ mensagens: 0, pasta: { caminho: "/fora/C", gerida: false, compartilhada: false, arquivos: 1 } }),
+      titulo: "c",
+      ia: "Claude",
+    };
+    const t = textosApagarConversas([a, b, c], true);
+    expect(t.titulo).toBe("Apagar 3 conversas?");
+    expect(t.saiDoApp[0]).toBe("4 mensagens suas e as respostas da IA, em 3 conversas");
+    expect(t.ficaNoComputador[0]!.texto).toBe("3 pastas de tarefa, com 7 arquivos");
+    expect(t.aviso).toBe("A IA está respondendo em uma delas. O app para as respostas antes de apagar.");
+    expect(pastasParaLixeira([a, b, c])).toEqual([a.previa.pasta.caminho, "/x/B"]);
+    expect(t.opcaoPasta).toBe("Mandar também as 2 pastas para a Lixeira, com 6 arquivos");
+    expect(t.confirmar).toBe("Apagar 3 conversas");
+    // Duas conversas da mesma pasta: a pasta e os arquivos dela contam uma vez.
+    expect(textosApagarConversas([a, { ...a, titulo: "a2" }], true).ficaNoComputador[0]!.texto).toBe(
+      "1 pasta de tarefa, com 2 arquivos",
+    );
+    // Uma só: os textos de uma conversa.
+    expect(textosApagarConversas([a], true).titulo).toBe("Apagar a conversa “a”?");
   });
 });
 
@@ -95,6 +167,21 @@ describe("apagar a revisão", () => {
     const t = textosApagarRevisao(lista, true);
     expect(t.saiDoApp).toContain("A leitura com IA, com o que ela guardou do PPC");
     expect(t.aviso).toMatch(/para a leitura antes de apagar/);
+  });
+
+  it("várias revisões: as pendências somadas e a leitura em andamento", () => {
+    const t = textosApagarRevisoes([
+      { lista, lendo: false },
+      { lista, lendo: true },
+    ]);
+    expect(t.titulo).toBe("Apagar 2 revisões?");
+    expect(t.saiDoApp).toEqual([
+      "O texto de 2 PPCs convertidos e 4 pendências",
+      "O que você marcou e o que escreveu ao discordar",
+      "As leituras com IA, com o que elas guardaram dos PPCs",
+    ]);
+    expect(t.aviso).toBe("Uma leitura com IA está em andamento. O app a para antes de apagar.");
+    expect(textosApagarRevisoes([{ lista, lendo: false }]).titulo).toBe("Apagar a revisão de “PPC.docx”?");
   });
 
   it("avisa quando a lista sai sozinha em poucos dias", () => {
