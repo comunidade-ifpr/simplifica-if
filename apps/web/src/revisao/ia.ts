@@ -41,12 +41,6 @@ export function textoEstimativa(e: EstimativaRevisaoIa, modo: ModoRevisaoIa, nom
   return `O ${nomeIa} confere${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${limiteDoPlano(e.nomeJanela)}.`;
 }
 
-/** O detalhe do uso, no "Opções": de onde vem a estimativa e, quando se sabe, o preço pago por uso. */
-export function detalheEstimativa(e: EstimativaRevisaoIa): string {
-  const custo = e.custoUsd === null ? "" : ` Pago por uso, custaria cerca de ${dolares(e.custoUsd)}.`;
-  return `Estimativa aproximada: o uso por critério vem de medições reais, mas as empresas de IA não publicam o tamanho do limite do plano. Dá para pausar, e o que já foi conferido fica guardado.${custo}`;
-}
-
 /** "Cerca de 10 segundos." (as ações por pendência); sem IA, nada a estimar. */
 export function textoEstimativaAcao(e: EstimativaAcao): string {
   if (e.tokensEntrada + e.tokensSaida === 0) return "";

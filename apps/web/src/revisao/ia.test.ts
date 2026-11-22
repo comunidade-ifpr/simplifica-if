@@ -9,7 +9,6 @@ import {
   andamentoPorTema,
   blocosProntos,
   contagemTemas,
-  detalheEstimativa,
   duracao,
   leiturasPorTerminar,
   limiteDoPlano,
@@ -78,11 +77,6 @@ describe("a estimativa na faixa", () => {
     expect(textoEstimativa({ ...estimativa, fichas: 1, minutos: 1 }, "rapido", "Claude")).toBe(
       "O Claude confere o que mais devolve PPC em cerca de 1 minuto, usando perto de 5 % do limite de 5 horas do plano Pro.",
     );
-  });
-
-  test("o detalhe do uso, com o preço pago por uso quando se sabe", () => {
-    expect(detalheEstimativa(estimativa)).toMatch(/Pago por uso, custaria cerca de US\$ 0,33\.$/);
-    expect(detalheEstimativa({ ...estimativa, custoUsd: null })).not.toMatch(/Pago por uso/);
   });
 
   test("a estimativa de uma ação por pendência", () => {

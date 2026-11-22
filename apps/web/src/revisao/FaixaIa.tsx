@@ -22,7 +22,6 @@ import { cn } from "~/lib/utils";
 import {
   blocosProntos,
   contagemTemas,
-  detalheEstimativa,
   type LinhaAndamento,
   linhasAndamento,
   rodapeAndamento,
@@ -255,17 +254,16 @@ function ErroDaLeitura({ leitura }: { readonly leitura: LeituraIa }) {
 }
 
 function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly faltam: number }) {
-  const preparada = leitura.estado?.situacao === "preparada" ? leitura.estado : undefined;
   return (
     <Popover>
       <PopoverTrigger render={<Button variant="ghost" />}>
         <SlidersHorizontalIcon /> Opções
       </PopoverTrigger>
-      <PopoverContent className="flex w-96 flex-col gap-4">
-        <PopoverTitle className="font-semibold text-heading">Opções da conferência</PopoverTitle>
+      <PopoverContent className="flex w-[22rem] flex-col gap-5 p-5">
+        <PopoverTitle className="text-heading">Opções da conferência</PopoverTitle>
         {leitura.usaveis.length > 1 ? (
           <div className="flex flex-col gap-2">
-            <p className="font-semibold text-small">Com qual IA</p>
+            <p className="font-medium text-muted-foreground text-micro">Com qual IA</p>
             <RadioCartao<Provider>
               rotuloAria="Com qual IA"
               valor={leitura.provider}
@@ -279,8 +277,9 @@ function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly fal
           </div>
         ) : null}
         <div className="flex flex-col gap-2">
-          <p className="font-semibold text-small">O que conferir</p>
+          <p className="font-medium text-muted-foreground text-micro">O que conferir</p>
           <Segmented<ModoRevisaoIa>
+            cheio
             rotuloAria="O que conferir"
             valor={leitura.modo}
             aoMudar={leitura.escolherModo}
@@ -295,9 +294,6 @@ function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly fal
               : `Os ${plural(faltam, "critério que pede", "critérios que pedem")} leitura.`}
           </p>
         </div>
-        {preparada === undefined ? null : (
-          <p className="text-muted-foreground text-small">{detalheEstimativa(preparada.estimativa)}</p>
-        )}
       </PopoverContent>
     </Popover>
   );
