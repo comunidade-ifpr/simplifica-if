@@ -39,6 +39,8 @@ export interface Registro {
   /** Os textos que chegaram ao provider, na ordem. */
   readonly textos: Array<string>;
   encerradas: number;
+  /** As conversas que o provider apagou (`Driver.esquecer`), com a pasta: `<idNativo> em <pasta>`. */
+  readonly esquecidas: Array<string>;
   /** Chamado a cada sessão encerrada, para o teste esperar pelo encerramento sem relógio. */
   aoEncerrar?: (() => void) | undefined;
   /** Derruba o "processo" da sessão aberta mais recente (a queda), com `causa` no `cause` da falha. */
@@ -51,17 +53,19 @@ export interface Registro {
   segurarFim?: Deferred.Deferred<void> | undefined;
 }
 
-export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerradas: 0 });
+export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerradas: 0, esquecidas: [] });
 
 /**
  * Driver falso. A resposta depende do texto: com "escrev", pede aprovação para "escrever" e conclui
  * conforme a decisão; com "demor", só termina com a interrupção; senão, responde `Resposta a: <texto>`
  * com o texto parcial e o final. A sessão tem um id nativo (`nativo-<n>`, ou o retomado) e uma queda
  * que o teste dispara (`registro.derrubar`). O Codex falso falha ao iniciar, com um `cause` que não pode
- * chegar à interface.
+ * chegar à interface. Apagar a conversa no provider (`esquecer`) fica em `registro.esquecidas`.
  */
 export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor.Driver => ({
   detectar: Effect.succeed({ provider, instalado: true, autenticado: true, versao: "0.0.0-teste", plano: "teste" }),
+  esquecer: (idNativo, pasta) =>
+    Effect.sync(() => registro.esquecidas.push(`${idNativo} em ${pasta}`)).pipe(Effect.as(true)),
   iniciar: (config) =>
     Effect.gen(function* () {
       if (provider === "codex") {

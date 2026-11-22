@@ -345,6 +345,9 @@ export const ResultadoArquivoNovo = Schema.Struct({
 });
 export type ResultadoArquivoNovo = typeof ResultadoArquivoNovo.Type;
 
+/** Dias sem uso que uma lista viva fica guardada (com o texto do PPC e os motivos) antes de sair sozinha. */
+export const DIAS_LISTA = 30;
+
 export class GrupoRevisaoPpc extends RpcGroup.make(
   /**
    * Revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3): conversão, pré-conferência das fichas D
@@ -402,6 +405,8 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.lista", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
   /** A lista viva mais recente, para continuar depois de fechar o app (nula se não há). */
   Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
+  /** Todas as listas vivas guardadas, da mais recente para a mais antiga ("Revisões recentes"). */
+  Rpc.make("revisaoPpc.listas", { payload: Schema.Struct({}), success: Schema.Array(ListaPendencias) }),
   /**
    * A lista viva mais recente de um arquivo (nula se não há): "Continuar" uma leitura com IA que ficou
    * por terminar abre a lista dela, sem revisar o arquivo de novo.
@@ -426,7 +431,10 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
    * curadoria das regras: se o verificador errou, é defeito da regra. Leva o trecho e o motivo da pessoa.
    */
   Rpc.make("revisaoPpc.exportarDiscordancias", { payload: Schema.Struct({}), success: Schema.String }),
-  /** Apaga a lista viva (com o texto do PPC que ela guarda). */
+  /**
+   * Apaga a revisão: a lista viva (com o texto do PPC), o que a pessoa marcou e escreveu e todas as
+   * leituras com IA dela, parando a que estiver rodando. A cópia comentada e o original ficam.
+   */
   Rpc.make("revisaoPpc.apagarLista", { payload: EntradaLista }),
   /** "Feito" (`resolvida`, pela palavra da pessoa) ou "Desfazer" (`aberta`): só muda a situação, sem IA. */
   Rpc.make("revisaoPpc.marcar", {

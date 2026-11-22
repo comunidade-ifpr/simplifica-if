@@ -234,6 +234,17 @@ export class ControleConversa {
     if (sessao !== undefined && !emTurno) void this.encerrarNoServidor(sessao);
   }
 
+  /**
+   * A conversa `sessao` foi apagada: se é a corrente, a tela volta ao começo, sem pedir ao servidor que
+   * a encerre (ela não existe mais).
+   */
+  apagada(sessao: string): void {
+    if (this.estado.sessao !== sessao) return;
+    this.turno?.cancelar();
+    this.turno = undefined;
+    this.despachar({ tipo: "nova" });
+  }
+
   private async encerrarNoServidor(sessao: string): Promise<void> {
     try {
       await this.api.chamar((cliente) => cliente["conversa.encerrar"]({ sessao }));

@@ -555,6 +555,80 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
   );
 
   it.effect(
+    "apagar a conversa no meio do turno: o turno para e saem o histórico, as cópias e o registro do provider",
+    () =>
+      Effect.gen(function* () {
+        const { urlRpc } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Apagar" });
+        NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "original\n");
+        const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+        // O id nativo que o driver falso deu à sessão desta conversa.
+        const idNativo = `nativo-${registro.configs.length}`;
+        yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(Stream.runDrain);
+        assert.isTrue(NodeFS.existsSync(NodePath.join(copias, sessao)));
+        const emAndamento = yield* rpc["conversa.enviar"]({ sessao, texto: "demore" }).pipe(
+          Stream.runDrain,
+          Effect.forkScoped,
+        );
+        yield* Effect.repeat(rpc["conversa.carregar"]({ sessao }), {
+          until: (gravada) => gravada.conversa.estado === "respondendo",
+        });
+
+        const previa = yield* rpc["conversa.previaApagar"]({ sessao });
+        assert.isTrue(previa.respondendo);
+        assert.strictEqual(previa.mensagens, 2);
+        assert.deepStrictEqual(previa.pasta, { caminho: pasta, gerida: true, compartilhada: false, arquivos: 1 });
+        assert.deepStrictEqual(previa.relatos, []);
+
+        const resultado = yield* rpc["conversa.apagar"]({ sessao });
+        assert.strictEqual(resultado.transcricao, "apagada");
+        assert.include(registro.esquecidas, `${idNativo} em ${pasta}`);
+        yield* Fiber.await(emAndamento);
+        assert.notInclude(
+          (yield* rpc["conversa.listar"]({})).map((conversa) => conversa.id),
+          sessao,
+        );
+        assert.match(JSON.stringify(yield* Effect.exit(rpc["conversa.carregar"]({ sessao }))), /SessaoDesconhecida/);
+        assert.match(JSON.stringify(yield* Effect.exit(rpc["conversa.apagar"]({ sessao }))), /SessaoDesconhecida/);
+        assert.isFalse(NodeFS.existsSync(NodePath.join(copias, sessao)));
+        // A pasta da tarefa é da pessoa: fica (a Lixeira é com o desktop).
+        assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "entrada.md"), "utf8"), "original\n");
+      }).pipe(Effect.scoped),
+  );
+
+  it.effect("a pasta usada por duas conversas: apagar uma diz que a pasta é compartilhada e mantém os anexos", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Compartilhada" });
+      const origem = NodePath.join(fora, "anexo-compartilhado.md");
+      NodeFS.writeFileSync(origem, "anexo\n");
+      yield* pedirHttp(urlRpc.replace(/\/rpc$/, CAMINHO_LIBERAR_ARQUIVO), {
+        metodo: "POST",
+        cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}`, "content-type": "application/json" },
+        corpo: JSON.stringify({ arquivo: origem }),
+      });
+      yield* rpc["pasta.anexar"]({ pasta, arquivo: origem });
+      const { sessao: primeira } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      const { sessao: segunda } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      const previa = yield* rpc["conversa.previaApagar"]({ sessao: primeira });
+      assert.isTrue(previa.pasta.compartilhada);
+      assert.strictEqual(previa.anexos, 1);
+      yield* rpc["conversa.apagar"]({ sessao: primeira });
+      // A outra conversa ainda vê o arquivo como anexado pelo app.
+      const vista = yield* rpc["pasta.ver"]({ sessao: segunda });
+      assert.deepInclude(
+        vista.arquivos.map((arquivo) => [arquivo.nome, arquivo.origem]),
+        ["anexo-compartilhado.md", "anexado"],
+      );
+      const depois = yield* rpc["conversa.previaApagar"]({ sessao: segunda });
+      assert.isFalse(depois.pasta.compartilhada);
+      assert.strictEqual(depois.anexos, 1);
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect(
     "Desfazer não escreve fora da pasta: arquivo e pasta trocados por links, inclusive depois da previsão",
     () =>
       Effect.gen(function* () {

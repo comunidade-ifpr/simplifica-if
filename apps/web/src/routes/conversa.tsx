@@ -14,8 +14,9 @@
  */
 import type { ArquivoAnexado, Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
+import { EllipsisIcon, FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { ApagarConversa, type ConversaParaApagar } from "../apagar/ApagarConversa.tsx";
 import { Avaliacao } from "../components/Avaliacao.tsx";
 import { CaixaPedido } from "../components/CaixaPedido.tsx";
 import { AvisoErro } from "../components/AvisoErro.tsx";
@@ -40,6 +41,7 @@ import {
   voltar,
 } from "../leitor/historico.ts";
 import { Button } from "../components/ui/button.tsx";
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../components/ui/menu.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
@@ -322,6 +324,8 @@ function Conversa({
   // O relato aberto é da conversa em que foi aberto: trocar de conversa o fecha.
   const [relato, setRelato] = useState<{ readonly sessao?: string; readonly turno: number }>();
   const turnoRelato = relato !== undefined && relato.sessao === estado.sessao ? relato.turno : undefined;
+  // Com a conversa apagada, o estado volta ao começo (e `deTarefa` com ele): o destino se guarda ao abrir.
+  const [apagando, setApagando] = useState<{ readonly conversa: ConversaParaApagar; readonly deTarefa: boolean }>();
 
   return (
     <div className="flex h-full min-w-0 flex-1 flex-col">
@@ -348,8 +352,38 @@ function Conversa({
           >
             <PlusIcon /> {deTarefa ? "Nova tarefa" : "Nova conversa"}
           </Button>
+          {estado.sessao === undefined ? null : (
+            <Menu>
+              <MenuTrigger
+                render={
+                  <Button variant="ghost" size="icon-sm" aria-label="Mais ações da conversa" title="Mais ações" />
+                }
+              >
+                <EllipsisIcon />
+              </MenuTrigger>
+              <MenuPopup>
+                <MenuItem
+                  className="text-destructive-foreground"
+                  onClick={() =>
+                    setApagando({
+                      conversa: { id: estado.sessao!, titulo: estado.titulo ?? "", provider: estado.provider },
+                      deTarefa,
+                    })
+                  }
+                >
+                  Apagar a conversa…
+                </MenuItem>
+              </MenuPopup>
+            </Menu>
+          )}
         </div>
       </div>
+      <ApagarConversa
+        conversa={apagando?.conversa ?? null}
+        aoFechar={() => setApagando(undefined)}
+        // A conversa de uma tarefa começou no Início: volta para lá.
+        aoApagada={() => (apagando?.deTarefa === true ? navegar({ to: "/" }) : undefined)}
+      />
       {/* A caixa de pedido flutua sobre o fim da conversa: fica presa ao pé da rolagem (sticky), e a conversa
           passa por baixo dela; rolada até o fim, a última mensagem fica acima da caixa. */}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">

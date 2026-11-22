@@ -19,6 +19,7 @@
  *   `claude` morreu), o turno corrente falha e a sessão recusa os próximos (`Canal.morrer`).
  */
 import {
+  deleteSession,
   query,
   type CanUseTool,
   type McpServerConfig,
@@ -490,5 +491,23 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     } satisfies Awaited<Effect.Success<ReturnType<Driver["iniciar"]>>>;
   });
 
-  return { detectar, iniciar } satisfies Driver;
+  /**
+   * A transcrição `<id>.jsonl` (e a pasta dos subagentes) em `~/.claude/projects/`, pelo `deleteSession`
+   * do SDK, que procura no diretório do projeto (a pasta da conversa). Sem transcrição, nada a apagar.
+   */
+  const esquecer = Effect.fn("DriverClaude.esquecer")(function* (idNativo: string, pastaTrabalho: string) {
+    return yield* Effect.tryPromise({
+      try: () => deleteSession(idNativo, { dir: pastaTrabalho }),
+      catch: (falha) => String(falha),
+    }).pipe(
+      Effect.as(true),
+      Effect.catch((falha) =>
+        /not found/i.test(falha)
+          ? Effect.succeed(true)
+          : Effect.logWarning(`Claude: não foi possível apagar a transcrição: ${falha}`).pipe(Effect.as(false)),
+      ),
+    );
+  });
+
+  return { detectar, iniciar, esquecer } satisfies Driver;
 });

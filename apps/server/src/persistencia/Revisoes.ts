@@ -24,6 +24,7 @@ import {
   type SituacaoRevisaoIa,
   UsoRevisaoIa,
 } from "@simplifica-if/contratos-app";
+import { descarregar } from "./Banco.ts";
 
 export interface RegistroRevisaoIa<Plano = unknown> {
   readonly id: string;
@@ -87,8 +88,13 @@ export class Revisoes extends Context.Service<
     readonly usoTotal: (revisao: string) => Effect.Effect<UsoRevisaoIa>;
     /** Apaga a revisão, o plano (com o texto do PPC), os blocos e as tentativas. */
     readonly apagar: (id: string) => Effect.Effect<void>;
-    /** Apaga revisões não concluídas do mesmo arquivo e conteúdo (ao apagar a lista viva dele). */
-    readonly apagarNaoConcluidasDoArquivo: (arquivo: string, sha256: string) => Effect.Effect<void>;
+    /** As revisões do mesmo arquivo e conteúdo, em qualquer situação (ao apagar a lista viva dele). */
+    readonly doArquivo: (arquivo: string, sha256: string) => Effect.Effect<ReadonlyArray<string>>;
+    /**
+     * As revisões que nenhuma lista referencia e que não estão `preparada` nem `em_andamento`: a lista de
+     * que vieram foi apagada, expirou ou foi substituída, e o resultado já está (ou estava) nela.
+     */
+    readonly orfas: Effect.Effect<ReadonlyArray<string>>;
     /** Apaga as revisões `preparada` (nunca iniciadas) criadas antes de `antesDe` (ISO). */
     readonly expirarPreparadas: (antesDe: string) => Effect.Effect<number>;
     /** As revisões `preparada` do mesmo arquivo (para substituir ao preparar de novo). */
@@ -269,23 +275,31 @@ const make = Effect.gen(function* () {
 
   const apagar = Effect.fn("Revisoes.apagar")(function* (id: string) {
     yield* sql`DELETE FROM revisoes_ia WHERE id = ${id}`;
+    yield* descarregar(sql);
   }, Effect.orDie);
 
-  const apagarNaoConcluidasDoArquivo = Effect.fn("Revisoes.apagarNaoConcluidasDoArquivo")(function* (
-    arquivo: string,
-    sha256: string,
-  ) {
-    yield* sql`
-      DELETE FROM revisoes_ia
-      WHERE arquivo = ${arquivo} AND sha256 = ${sha256} AND situacao <> 'concluida'
+  const doArquivo = Effect.fn("Revisoes.doArquivo")(function* (arquivo: string, sha256: string) {
+    const linhas = yield* sql<{ id: string }>`
+      SELECT id FROM revisoes_ia WHERE arquivo = ${arquivo} AND sha256 = ${sha256}
     `;
+    return linhas.map((l) => l.id);
   }, Effect.orDie);
+
+  const orfas = sql<{ id: string }>`
+    SELECT r.id FROM revisoes_ia r
+    WHERE r.situacao NOT IN ('preparada', 'em_andamento')
+      AND NOT EXISTS (SELECT 1 FROM listas_pendencias l WHERE l.revisao_id = r.id)
+  `.pipe(
+    Effect.map((linhas) => linhas.map((l) => l.id)),
+    Effect.orDie,
+  );
 
   const expirarPreparadas = Effect.fn("Revisoes.expirarPreparadas")(function* (antesDe: string) {
     const linhas = yield* sql<{ id: string }>`
       SELECT id FROM revisoes_ia WHERE situacao = 'preparada' AND criada_em < ${antesDe}
     `;
     for (const l of linhas) yield* sql`DELETE FROM revisoes_ia WHERE id = ${l.id}`;
+    if (linhas.length > 0) yield* descarregar(sql);
     return linhas.length;
   }, Effect.orDie);
 
@@ -308,7 +322,8 @@ const make = Effect.gen(function* () {
     gravarTentativa,
     usoTotal,
     apagar,
-    apagarNaoConcluidasDoArquivo,
+    doArquivo,
+    orfas,
     expirarPreparadas,
     preparadasDoArquivo,
   });

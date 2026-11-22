@@ -297,6 +297,8 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
   const driver = (provider: Motor.Provider): Motor.Driver => ({
     detectar: detectar(provider),
     iniciar: iniciar(provider),
+    // Como os drivers reais, apaga o registro da conversa ao apagá-la no app (aqui não há o que apagar).
+    esquecer: () => Effect.succeed(true),
     // Como os drivers reais: o app instala e faz o login do Codex e do Antigravity; o Claude é à mão.
     ...(provider === "claude" ? {} : { instalar: instalar(provider), entrar: entrar(provider) }),
   });

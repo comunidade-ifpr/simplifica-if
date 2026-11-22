@@ -52,6 +52,7 @@ import {
   type PastaConversa,
   type PrevisaoDesfazer,
 } from "@simplifica-if/contratos-app";
+import { ehPastaDoApp, PASTA_DIAGNOSTICOS, PASTA_RELATOS } from "@simplifica-if/contratos-app/ponte";
 import * as ArquivosLiberados from "./ArquivosLiberados.ts";
 import { comNumero, criarSemColisao } from "./nome-livre.ts";
 import * as PastasNode from "./pastas-node.ts";
@@ -98,14 +99,11 @@ type IndiceTextos = { [nome: string]: (typeof IndiceTextos.Type)[string] };
 const lerIndiceJson = Schema.decodeUnknownEffect(Schema.fromJsonString(IndiceTextos));
 const codificarIndiceJson = Schema.encodeEffect(Schema.fromJsonString(IndiceTextos));
 
-/** Onde "Salvar o relato" grava, dentro da raiz e fora da pasta de qualquer tarefa (M1.12). */
-export const PASTA_RELATOS = "Relatos de erro";
-
-/** Onde "Gerar diagnóstico" grava o pacote, dentro da raiz e fora da pasta de qualquer tarefa. */
-export const PASTA_DIAGNOSTICOS = "Diagnósticos";
-
-/** As pastas da raiz que não são de tarefa: um título igual começa em " (2)". */
-const PASTAS_DO_APP = [PASTA_RELATOS, PASTA_DIAGNOSTICOS].map((nome) => nome.normalize("NFC").toLowerCase());
+/**
+ * Onde "Salvar o relato" grava (M1.12) e onde "Gerar diagnóstico" grava o pacote: dentro da raiz e fora
+ * da pasta de qualquer tarefa. Ficam na ponte para o desktop recusá-las ao mandar uma pasta à Lixeira.
+ */
+export { PASTA_DIAGNOSTICOS, PASTA_RELATOS };
 
 export interface OpcoesPastas {
   /** `Documentos/Simplifica IF`; criada no primeiro `criar`. */
@@ -181,6 +179,8 @@ export class PastasTrabalho extends Context.Service<
       pasta: string,
       incluirForaDaConversa: boolean,
     ) => Effect.Effect<PastaConversa, FalhaPasta>;
+    /** Apaga as cópias do Desfazer da conversa (ao apagá-la); a pasta da tarefa fica. Nunca falha. */
+    readonly esquecer: (conversa: string) => Effect.Effect<void>;
     /** Um Desfazer, uma cópia ou um retrato está em andamento? (a troca da base espera, M1.10) */
     readonly emAndamento: Effect.Effect<boolean>;
   }
@@ -624,7 +624,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
         pasta: raiz,
         nomes: (n) => (n === 1 ? nome : `${nome} (${n})`),
         // As pastas dos relatos e dos diagnósticos não são de tarefa: o título igual começa em " (2)".
-        de: PASTAS_DO_APP.includes(nome.toLowerCase()) ? 2 : 1,
+        de: ehPastaDoApp(nome) ? 2 : 1,
         ate: 999,
       },
       (candidato) =>
@@ -1127,6 +1127,11 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return yield* ver(conversa, real);
   });
 
+  const esquecer = Effect.fn("PastasTrabalho.esquecer")(function* (conversa: string) {
+    const copias = yield* pastaCopias(conversa);
+    yield* fs.remove(copias, { recursive: true, force: true });
+  }, soNoLog("apagar a conversa: não foi possível remover as cópias do Desfazer"));
+
   // Quantas operações sobre as pastas estão rodando: a troca da base (M1.10) não reinicia o servidor no meio delas.
   const { contando, emAndamento } = yield* contadorDeAndamento;
   return PastasTrabalho.of({
@@ -1158,6 +1163,9 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     ) {
       return yield* contando(desfazer(conversa, pasta, incluir));
     }),
+    esquecer: Effect.fn("PastasTrabalho.contandoEsquecer")(function* (conversa: string) {
+      return yield* contando(esquecer(conversa));
+    }),
     emAndamento,
   });
 });
@@ -1185,6 +1193,7 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     descartarCopia: Effect.fn("PastasTrabalho.descartarCopia")(() => Effect.void),
     confirmarAviso: Effect.fn("PastasTrabalho.confirmarAviso")(() => Effect.void),
     desfazer: recusa,
+    esquecer: Effect.fn("PastasTrabalho.esquecer")(() => Effect.void),
     emAndamento: Effect.succeed(false),
   });
 });

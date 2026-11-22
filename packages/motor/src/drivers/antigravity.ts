@@ -813,9 +813,25 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     } satisfies Effect.Success<ReturnType<Driver["iniciar"]>>;
   });
 
+  /** Os arquivos da sessão no perfil próprio do app (`arquivosDaSessaoAntigravity`). */
+  const esquecer = Effect.fn("DriverAntigravity.esquecer")(function* (idNativo: string, _pastaTrabalho: string) {
+    const alvos = arquivosDaSessaoAntigravity(path.join, pastas.profile, idNativo);
+    if (alvos.length === 0) return false;
+    const falhas = yield* Effect.forEach(alvos, (alvo) =>
+      fs.remove(alvo, { recursive: true, force: true }).pipe(
+        Effect.as(0),
+        Effect.catch((erro) =>
+          Effect.logWarning("Antigravity: não foi possível apagar a sessão", erro).pipe(Effect.as(1)),
+        ),
+      ),
+    );
+    return falhas.every((n) => n === 0);
+  });
+
   return {
     detectar,
     iniciar,
+    esquecer,
     instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao),
     entrar: acompanharLogin(PROVIDER, login.controller.start(DONO_LOGIN), login.controller.subscribe(DONO_LOGIN)),
   } satisfies Driver;

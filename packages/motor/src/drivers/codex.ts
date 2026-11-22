@@ -703,5 +703,41 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     }),
   );
 
-  return { detectar, iniciar, instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao), entrar } satisfies Driver;
+  /**
+   * A thread gravada em `~/.codex/sessions` (e no índice do Codex), pelo `thread/delete` de um app-server
+   * aberto só para isso. Uma thread que o Codex não conhece não tem o que apagar.
+   */
+  const esquecer = Effect.fn("DriverCodex.esquecer")(function* (idNativo: string, pastaTrabalho: string) {
+    return yield* Effect.scoped(
+      Effect.gen(function* () {
+        const executavel = yield* opcoes.instalacao.acquire();
+        const { cliente } = yield* abrir(executavel.executablePath, pastaTrabalho);
+        return yield* cliente.request("thread/delete", { threadId: idNativo }).pipe(
+          Effect.as(true),
+          // Só a recusa do próprio pedido diz que a thread não existe; um `codex` sem `thread/delete`
+          // ("Method not found") não apagou nada.
+          Effect.catchTags({
+            CodexAppServerRequestError: (erro) =>
+              !/method not found/i.test(erro.errorMessage) &&
+              /not found|no rollout|unknown thread|does not exist/i.test(erro.errorMessage)
+                ? Effect.succeed(true)
+                : Effect.fail(erro),
+          }),
+        );
+      }),
+    ).pipe(
+      Effect.timeout("30 seconds"),
+      Effect.catchCause((causa) =>
+        Effect.logWarning("Codex: não foi possível apagar a thread", causa).pipe(Effect.as(false)),
+      ),
+    );
+  });
+
+  return {
+    detectar,
+    iniciar,
+    esquecer,
+    instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao),
+    entrar,
+  } satisfies Driver;
 });

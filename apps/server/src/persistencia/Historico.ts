@@ -22,6 +22,7 @@ import {
   type Provider,
   type ResumoConversa,
 } from "@simplifica-if/contratos-app";
+import { descarregar } from "./Banco.ts";
 
 /** Uma conversa gravada: o resumo da interface e o que o servidor precisa para reabrir a sessão. */
 export interface RegistroConversa extends ResumoConversa {
@@ -49,6 +50,13 @@ export interface Alteracao {
   readonly estado?: EstadoConversa;
 }
 
+export interface PreviaHistorico {
+  readonly mensagens: number;
+  readonly anexos: number;
+  /** Outra conversa usa a mesma pasta de trabalho. */
+  readonly pastaCompartilhada: boolean;
+}
+
 export interface NovoRelato {
   readonly conversa: string;
   readonly turno: number;
@@ -70,8 +78,13 @@ export class Historico extends Context.Service<
     readonly gravar: (conversa: string, item: ItemConversa) => Effect.Effect<void>;
     /** Os itens com `ordem` maior que `depois` (todos, sem ele), em ordem. */
     readonly itens: (conversa: string, depois?: number) => Effect.Effect<ReadonlyArray<ItemConversa>>;
-    /** Apaga a conversa e os eventos dela. */
+    /**
+     * Apaga a conversa, os eventos, as avaliações e os relatos dela e, se nenhuma outra conversa usa a
+     * mesma pasta, o registro dos anexos da pasta.
+     */
     readonly apagar: (id: string) => Effect.Effect<void>;
+    /** O que apagar a conversa tira do app: as mensagens, os anexos registrados e se outra conversa usa a pasta. */
+    readonly previa: (id: string) => Effect.Effect<PreviaHistorico>;
     /** As conversas que o banco dá como abertas (`pronta`, `respondendo`), de uma execução anterior. */
     readonly abertas: Effect.Effect<ReadonlyArray<RegistroConversa>>;
     /** Grava (ou, com `null`, retira) a avaliação da resposta do turno. */
@@ -231,7 +244,35 @@ const make = Effect.gen(function* () {
   }, Effect.orDie);
 
   const apagar = Effect.fn("Historico.apagar")(function* (id: string) {
-    yield* sql`DELETE FROM conversas WHERE id = ${id}`;
+    yield* sql.withTransaction(
+      Effect.gen(function* () {
+        yield* sql`
+          DELETE FROM anexos_pasta
+          WHERE pasta = (SELECT pasta_trabalho FROM conversas WHERE id = ${id})
+            AND NOT EXISTS (
+              SELECT 1 FROM conversas c
+              WHERE c.id <> ${id} AND c.pasta_trabalho = (SELECT pasta_trabalho FROM conversas WHERE id = ${id})
+            )
+        `;
+        yield* sql`DELETE FROM conversas WHERE id = ${id}`;
+      }),
+    );
+    yield* descarregar(sql);
+  }, Effect.orDie);
+
+  const previa = Effect.fn("Historico.previa")(function* (id: string) {
+    const linha = (yield* sql<{ mensagens: number; anexos: number; compartilhada: number }>`
+      SELECT
+        (SELECT COUNT(*) FROM eventos WHERE conversa_id = c.id AND tipo = 'mensagem') AS mensagens,
+        (SELECT COUNT(*) FROM anexos_pasta WHERE pasta = c.pasta_trabalho) AS anexos,
+        EXISTS (SELECT 1 FROM conversas o WHERE o.id <> c.id AND o.pasta_trabalho = c.pasta_trabalho) AS compartilhada
+      FROM conversas c WHERE c.id = ${id}
+    `)[0];
+    return {
+      mensagens: linha?.mensagens ?? 0,
+      anexos: linha?.anexos ?? 0,
+      pastaCompartilhada: linha?.compartilhada === 1,
+    } satisfies PreviaHistorico;
   }, Effect.orDie);
 
   const avaliar = Effect.fn("Historico.avaliar")(function* (
@@ -301,6 +342,7 @@ const make = Effect.gen(function* () {
     itens,
     abertas,
     apagar,
+    previa,
     avaliar,
     avaliacoes,
     registrarAnexo,

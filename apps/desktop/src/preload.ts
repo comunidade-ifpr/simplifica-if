@@ -54,6 +54,9 @@ const ponte: PonteDesktop = {
   mostrarArquivoTarefa: async (caminho: string) => {
     await ipcRenderer.invoke(CANAIS.mostrarArquivoTarefa, caminho);
   },
+  pastaParaLixeira: async (caminho: string) => {
+    await ipcRenderer.invoke(CANAIS.pastaParaLixeira, caminho);
+  },
   janela: {
     plataforma: process.platform,
     telaCheia: () => ipcRenderer.invoke(CANAIS.telaCheia) as Promise<boolean>,

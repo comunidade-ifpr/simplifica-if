@@ -16,8 +16,10 @@
  *
  * Teclado na lista: ↑ e ↓ andam pelas linhas, Enter abre e fecha, F marca como feito (ou desfaz).
  */
-import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
+import { DIAS_LISTA, type EstadoRevisaoIa, type ListaPendencias } from "@simplifica-if/contratos-app";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { DialogoApagar } from "../apagar/DialogoApagar.tsx";
+import { textosApagarRevisao } from "../apagar/textos.ts";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import { Pagina } from "../components/Pagina.tsx";
@@ -257,9 +259,11 @@ export function Leitura({
     URL.revokeObjectURL(url);
   };
 
-  const apagar = async () => {
-    const ok = await usar(() => api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id })).then(() => true));
-    if (ok === true) aoSair();
+  const apagou = useRef(false);
+  const apagar = async (): Promise<null> => {
+    await api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id }));
+    apagou.current = true;
+    return null;
   };
 
   const alternar = (chave: string) => {
@@ -318,7 +322,7 @@ export function Leitura({
       </p>
       <p>
         O app guarda neste computador o texto do PPC e o que você escrever ao discordar, até você apagar esta revisão ou
-        depois de 30 dias sem uso.
+        depois de {DIAS_LISTA} dias sem uso.
       </p>
       <p>Base de normas de {dataCurta(r.dataBase)}.</p>
     </Nota>
@@ -353,27 +357,15 @@ export function Leitura({
             )}
           </header>
 
-          {confirmarApagar ? (
-            <div
-              role="alertdialog"
-              aria-label="Apagar esta revisão?"
-              className="flex flex-col gap-3 rounded-xl border border-destructive/40 p-4"
-            >
-              <p className="font-semibold text-heading">Apagar esta revisão?</p>
-              <p className="max-w-[68ch] text-small">
-                Some deste computador a lista, com o texto do PPC convertido, o que você marcou e o que escreveu ao
-                discordar. Seu arquivo e a cópia comentada ficam.
-              </p>
-              <div className="flex gap-2">
-                <Button variant="destructive" onClick={() => void apagar()}>
-                  Apagar a revisão
-                </Button>
-                <Button variant="ghost" onClick={() => setConfirmarApagar(false)}>
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          ) : null}
+          <DialogoApagar
+            aberto={confirmarApagar}
+            textos={textosApagarRevisao(lista, lendoAgora)}
+            aoConfirmar={apagar}
+            aoFechar={() => {
+              setConfirmarApagar(false);
+              if (apagou.current) aoSair();
+            }}
+          />
 
           {pedirCaminho ? (
             <form

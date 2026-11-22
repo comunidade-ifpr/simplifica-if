@@ -111,6 +111,7 @@ const navegador = {
       "react",
       "react-dom/client",
       "@tanstack/react-router",
+      "@base-ui/react/alert-dialog",
       "@base-ui/react/field",
       "@base-ui/react/input",
       "@base-ui/react/menu",

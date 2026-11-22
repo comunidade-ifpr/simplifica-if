@@ -47,6 +47,7 @@ import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import {
   type AvisoNaoAceito,
+  DIAS_LISTA,
   type DocumentoRevisado,
   type EstimativaAcao,
   type EventoRevisaoPpc,
@@ -80,6 +81,7 @@ import { chavePendencia, estadoDaIa, NOME_DA_FORMA, type ResultadoFichaIa } from
 import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
+import * as RevisaoIa from "./RevisaoIa.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
 import { cursoEscolhido, marcasDaCopia, regravarCopia as regravarCopiaDaLista } from "./copia-lista.ts";
 import { criarLista, novoNonce } from "./criar-lista.ts";
@@ -99,6 +101,8 @@ export class ListaViva extends Context.Service<
     readonly revisar: (entrada: RevisorPpc.EntradaRevisao) => Stream.Stream<EventoRevisaoPpc, FalhaRevisaoPpc>;
     readonly lista: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
     readonly ultima: Effect.Effect<ListaPendencias | null>;
+    /** Todas as listas guardadas, da mais recente para a mais antiga (as que passaram de `DIAS_LISTA` saem antes). */
+    readonly todas: Effect.Effect<ReadonlyArray<ListaPendencias>>;
     /** A lista mais recente de um arquivo (para continuar uma leitura com IA sem revisar de novo). */
     readonly doArquivo: (arquivo: string) => Effect.Effect<ListaPendencias | null>;
     /** "Qual é o curso?": a lista refeita com o curso escolhido, com os resultados da IA, se houve. */
@@ -107,6 +111,11 @@ export class ListaViva extends Context.Service<
       cnct: string,
       forma: string | undefined,
     ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
+    /**
+     * Apaga a lista (o texto do PPC, as pendências, o histórico e o uso das ações) e todas as leituras com
+     * IA dela, concluídas ou não, parando a que estiver rodando. A cópia comentada e o original ficam: são
+     * arquivos da pessoa. Uma ação com IA em andamento termina sem gravar nada.
+     */
     readonly apagar: (id: string) => Effect.Effect<void>;
     /** As discordâncias contra pendências do código, em CSV, para a curadoria das regras. */
     readonly exportarDiscordancias: Effect.Effect<string>;
@@ -178,9 +187,6 @@ export function comparacaoComOriginal(original: string, novo: string) {
 export const SEMELHANCA_MINIMA = 0.6;
 export const TAMANHO_MINIMO = 0.7;
 
-/** Dias sem uso que uma lista fica guardada (com o texto do PPC e os motivos). */
-export const DIAS_LISTA = 30;
-
 /* ============================================================ textos */
 
 const ROTULO_ACAO: Record<"aberta" | "resolvida", string> = {
@@ -223,6 +229,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const tempoAcao = opcoes.tempoAcao ?? TEMPO_ACAO;
   const listas = yield* Listas.Listas;
   const revisoes = yield* Revisoes.Revisoes;
+  const leiturasIa = yield* RevisaoIa.RevisaoIa;
   const revisor = yield* RevisorPpc.RevisorPpc;
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
@@ -359,7 +366,8 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     mudanca: Parameters<Listas.Listas["Service"]["mudar"]>[2],
     evento: Listas.Evento,
   ) {
-    yield* listas.exclusivo(listas.mudar(id, chave, mudanca, evento));
+    // A lista pode ter sido apagada enquanto a IA respondia: nada se grava nela.
+    yield* listas.exclusivo(buscar(id).pipe(Effect.andThen(listas.mudar(id, chave, mudanca, evento))));
     return yield* lista(id);
   });
 
@@ -829,7 +837,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         modelo: registro.modelo,
         resultadosIa: registro.resultadosIa,
       }).pipe(Effect.provideContext(contextoListas));
-      if (apagar !== null) yield* revisoes.apagar(apagar);
+      if (apagar !== null) yield* leiturasIa.apagar(apagar);
       return yield* lista(resultado.lista!);
     },
     (efeito, id) => trocandoALista(id, efeito),
@@ -878,7 +886,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         forma: curso.forma,
         resultado: { ...RevisorPpc.resultadoParaInterface(arquivo, final), lista: id },
       });
-      if (apagar !== null) yield* revisoes.apagar(apagar);
+      if (apagar !== null) yield* leiturasIa.apagar(apagar);
       return {
         lista: yield* lista(id),
         resolvidas: plano.resolvidas,
@@ -889,9 +897,11 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     (efeito, _id, arquivo) => trocandoALista(arquivo, efeito),
   );
 
+  // As leituras com IA das listas que expiram saem com elas.
   const expirar = DateTime.now.pipe(
     Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_LISTA }))),
     Effect.flatMap(listas.expirar),
+    Effect.andThen(leiturasIa.apagarOrfas),
   );
 
   /** As discordâncias contra pendências do código, em CSV (separado por ponto e vírgula, como o Excel em português lê). */
@@ -938,22 +948,40 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   // As listas sem uso há mais de `DIAS_LISTA` saem ao subir o servidor (e a cada `ultimaLista`).
   yield* expirar;
 
+  const todas = expirar.pipe(
+    Effect.andThen(listas.todas),
+    Effect.flatMap((ids) =>
+      Effect.forEach(ids, (id) => lista(id).pipe(Effect.option)).pipe(
+        Effect.map((achadas) => achadas.flatMap((o) => (o._tag === "Some" ? [o.value] : []))),
+      ),
+    ),
+  );
+
+  /**
+   * Na vez das escritas (`Listas.exclusivo`): nenhuma troca de curso, arquivo novo ou revisão do mesmo
+   * arquivo muda a lista no meio. A leitura com IA que espera a vez para mesclar é interrompida ali.
+   */
   const apagar = Effect.fn("ListaViva.apagar")(function* (id: string) {
-    const registro = yield* listas.buscar(id);
-    yield* listas.apagar(id);
-    if (registro === null) return;
-    if (registro.revisao !== null) {
-      const rev = yield* revisoes.resumo(registro.revisao);
-      if (rev !== null && rev.situacao !== "concluida") yield* revisoes.apagar(rev.id);
-    }
-    // Remove também leituras pausadas/preparadas órfãs do mesmo arquivo e conteúdo.
-    yield* revisoes.apagarNaoConcluidasDoArquivo(registro.arquivo, registro.sha256);
+    yield* listas.exclusivo(
+      Effect.gen(function* () {
+        const registro = yield* listas.buscar(id);
+        if (registro === null) return;
+        // A leitura ligada e as do mesmo arquivo e conteúdo (uma lista por arquivo e conteúdo; a preparada
+        // ainda não se ligou): a execução para antes, para não gravar um bloco numa lista que não existe.
+        const leituras = new Set(yield* revisoes.doArquivo(registro.arquivo, registro.sha256));
+        if (registro.revisao !== null) leituras.add(registro.revisao);
+        for (const leitura of leituras) yield* leiturasIa.apagar(leitura);
+        yield* listas.apagar(id);
+        yield* leiturasIa.apagarOrfas;
+      }),
+    );
   });
 
   return ListaViva.of({
     revisar,
     lista,
     ultima,
+    todas,
     doArquivo,
     trocarCurso,
     apagar,
@@ -970,7 +998,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 });
 
 /**
- * Pede as `Listas`, as `Revisoes`, o `RevisorPpc`, as `Preferencias`, o `Motor`, o `FileSystem`, as
+ * Pede as `Listas`, as `Revisoes`, a `RevisaoIa`, o `RevisorPpc`, as `Preferencias`, o `Motor`, o `FileSystem`, as
  * `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

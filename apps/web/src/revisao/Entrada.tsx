@@ -1,13 +1,17 @@
 /**
  * A entrada da revisão: o título, uma frase, a área de soltar o PPC (no desktop; no navegador, o campo
- * do caminho, que é o modo de desenvolvimento) e as revisões recentes, uma por linha: a lista guardada
- * e a leitura com IA que ficou por terminar. "Continuar" abre a lista do arquivo, e a faixa da IA retoma
- * a leitura dela: nada é revisado de novo (o curso escolhido e o que foi marcado ficam).
+ * do caminho, que é o modo de desenvolvimento) e as revisões recentes, uma por linha: todas as listas
+ * guardadas (com a leitura com IA que ficou por terminar e quando a lista sai sozinha, se falta pouco) e
+ * as leituras sem lista. "Continuar" abre a lista do arquivo, e a faixa da IA retoma a leitura dela: nada
+ * é revisado de novo (o curso escolhido e o que foi marcado ficam). O ⋯ de cada lista a apaga.
  */
 import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
-import { ChevronRightIcon } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
+import { ChevronRightIcon, EllipsisIcon } from "lucide-react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
+import { DialogoApagar } from "../apagar/DialogoApagar.tsx";
+import { avisoDeSaida, textosApagarRevisao } from "../apagar/textos.ts";
 import { AvisoErro } from "../components/AvisoErro.tsx";
+import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../components/ui/menu.tsx";
 import { Pagina } from "../components/Pagina.tsx";
 import { AreaSoltar } from "../components/ui/area-soltar.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -33,13 +37,16 @@ export function Entrada({
   const api = useApi();
   const ponte = ponteDesktop();
   const [falha, setFalha] = useState<MensagemErro | undefined>(undefined);
-  const [ultima, setUltima] = useState<ListaPendencias | null>(null);
+  const [listas, setListas] = useState<ReadonlyArray<ListaPendencias>>([]);
   const [porTerminar, setPorTerminar] = useState<ReadonlyArray<EstadoRevisaoIa>>([]);
+  const [apagando, setApagando] = useState<ListaPendencias | null>(null);
+  const [apagadas, setApagadas] = useState(0);
+  const [agora] = useState(() => Date.now());
   useEffect(() => {
     let vivo = true;
     api
-      .chamar((c) => c["revisaoPpc.ultimaLista"]({}))
-      .then((l) => vivo && setUltima(l))
+      .chamar((c) => c["revisaoPpc.listas"]({}))
+      .then((l) => vivo && setListas(l))
       .catch(() => undefined);
     api
       .chamar((c) => c["revisaoPpc.listarIa"]({}))
@@ -48,7 +55,9 @@ export function Entrada({
     return () => {
       vivo = false;
     };
-  }, [api]);
+    // `apagadas` é só o gatilho da recarga depois de apagar.
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies
+  }, [api, apagadas]);
 
   const usarArquivo = async (obter: () => Promise<string | null>, seRecusado?: MensagemErro) => {
     setFalha(undefined);
@@ -72,13 +81,12 @@ export function Entrada({
     }
   };
 
-  const leituraDaUltima =
-    ultima === null
-      ? undefined
-      : porTerminar.find((e) => e.arquivoOriginal === ultima.arquivoOriginal && e.sha256 === ultima.sha256);
+  const leituraDa = (lista: ListaPendencias) =>
+    porTerminar.find((e) => e.arquivoOriginal === lista.arquivoOriginal && e.sha256 === lista.sha256);
   const outras = porTerminar.filter(
-    (e) => e.arquivoOriginal !== ultima?.arquivoOriginal || e.sha256 !== ultima?.sha256,
+    (e) => !listas.some((l) => l.arquivoOriginal === e.arquivoOriginal && l.sha256 === e.sha256),
   );
+  const apagou = useRef(false);
   const mostrado = falha ?? erro;
 
   return (
@@ -109,30 +117,36 @@ export function Entrada({
         />
       )}
       {mostrado === undefined ? null : <AvisoErro erro={mostrado} icone />}
-      {ultima === null && outras.length === 0 ? null : (
+      {listas.length === 0 && outras.length === 0 ? null : (
         <section aria-labelledby="titulo-recentes" className="flex flex-col gap-2">
           <h2 id="titulo-recentes" className="text-heading">
             Revisões recentes
           </h2>
           <ul className="border-border border-t">
-            {ultima === null ? null : (
-              <Recente
-                titulo={nomeDoArquivo(ultima.arquivoOriginal)}
-                detalhes={[
-                  descreverCurso(ultima.resultado.curso),
-                  dataCurta(ultima.atualizadaEm),
-                  leituraDaUltima === undefined
-                    ? null
-                    : `leitura com o ${nomeIa(leituraDaUltima.provider)} ${leituraDaUltima.situacao === "pausada" ? "pausada" : "em andamento"}`,
-                ]}
-                fim={
-                  contagens(ultima).corrigir === 0
-                    ? "Nada para corrigir"
-                    : `${contagens(ultima).corrigir} para corrigir`
-                }
-                aoAbrir={() => aoAbrirLista(ultima)}
-              />
-            )}
+            {listas.map((lista) => {
+              const leitura = leituraDa(lista);
+              return (
+                <Recente
+                  key={lista.id}
+                  titulo={nomeDoArquivo(lista.arquivoOriginal)}
+                  detalhes={[
+                    descreverCurso(lista.resultado.curso),
+                    dataCurta(lista.atualizadaEm),
+                    leitura === undefined
+                      ? null
+                      : `leitura com o ${nomeIa(leitura.provider)} ${leitura.situacao === "pausada" ? "pausada" : "em andamento"}`,
+                    avisoDeSaida(lista.atualizadaEm, agora),
+                  ]}
+                  fim={
+                    contagens(lista).corrigir === 0
+                      ? "Nada para corrigir"
+                      : `${contagens(lista).corrigir} para corrigir`
+                  }
+                  aoAbrir={() => aoAbrirLista(lista)}
+                  aoApagar={() => setApagando(lista)}
+                />
+              );
+            })}
             {outras.map((e) => (
               <Recente
                 key={e.id}
@@ -148,6 +162,23 @@ export function Entrada({
           </ul>
         </section>
       )}
+      <DialogoApagar
+        aberto={apagando !== null}
+        textos={
+          apagando === null ? null : textosApagarRevisao(apagando, leituraDa(apagando)?.situacao === "em_andamento")
+        }
+        aoConfirmar={async () => {
+          if (apagando === null) return null;
+          await api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: apagando.id }));
+          apagou.current = true;
+          return null;
+        }}
+        aoFechar={() => {
+          setApagando(null);
+          if (apagou.current) setApagadas((n) => n + 1);
+          apagou.current = false;
+        }}
+      />
     </Pagina>
   );
 }
@@ -157,14 +188,17 @@ function Recente({
   detalhes,
   fim,
   aoAbrir,
+  aoApagar,
 }: {
   readonly titulo: string;
   readonly detalhes: ReadonlyArray<string | null>;
   readonly fim: string;
   readonly aoAbrir: () => void;
+  /** Só nas listas guardadas. */
+  readonly aoApagar?: () => void;
 }) {
   return (
-    <li className="border-border border-b">
+    <li className="flex items-center gap-1 border-border border-b">
       <button
         type="button"
         onClick={aoAbrir}
@@ -177,6 +211,29 @@ function Recente({
         <span className="shrink-0 text-small tabular-nums">{fim}</span>
         <ChevronRightIcon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
       </button>
+      {aoApagar === undefined ? null : (
+        <Menu>
+          <MenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={`Mais ações da revisão de “${titulo}”`}
+                // O rótulo leva o nome do arquivo da pessoa.
+                data-conteudo=""
+                title="Mais ações"
+              />
+            }
+          >
+            <EllipsisIcon />
+          </MenuTrigger>
+          <MenuPopup>
+            <MenuItem className="text-destructive-foreground" onClick={aoApagar}>
+              Apagar esta revisão…
+            </MenuItem>
+          </MenuPopup>
+        </Menu>
+      )}
     </li>
   );
 }

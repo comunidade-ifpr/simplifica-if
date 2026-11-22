@@ -356,6 +356,12 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         "2026-11-20T10:00:00Z",
         "2026-11-20T10:00:00Z",
       );
+      // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
+      db.prepare(
+        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, nonce, resultado,
+          versao, criada_em, atualizada_em)
+         VALUES ('lista-pausada', ?, ?, 'revisao-pausada', '', '[]', 'n', '{}', 0, ?, ?)`,
+      ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
       db.close();
       const recusa = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "revisao-pausada" }));
       assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);

@@ -20,6 +20,7 @@ import {
   arquivoDeTarefaPermitido,
   copiaComentadaPermitida,
   docxEscolhido,
+  pastaDeTarefaPermitida,
   extensoesAnexo,
   isSameOriginRendererNavigation,
   urlExternaSegura,
@@ -243,5 +244,21 @@ export function registrarIpc(contexto: ContextoIpc): void {
 
   tratar(CANAIS.mostrarArquivoTarefa, (caminho) => {
     shell.showItemInFolder(arquivoDeTarefa(caminho, false));
+  });
+
+  // Só para a Lixeira, nunca `rm`: se a Lixeira falha (pasta em rede, OneDrive), a pasta fica. A regra vale
+  // para o caminho pedido e de novo para o real (`realpath.native` expande os nomes curtos do Windows)
+  // contra a raiz real: o servidor manda o caminho real, e a raiz pode estar atrás de um link.
+  tratar(CANAIS.pastaParaLixeira, async (caminho) => {
+    const raizReal = NodeFS.realpathSync.native(contexto.pastaTrabalhos);
+    const pedida =
+      pastaDeTarefaPermitida(caminho, contexto.pastaTrabalhos) ?? pastaDeTarefaPermitida(caminho, raizReal);
+    if (pedida === undefined) throw new Error("só pastas de tarefa vão para a Lixeira por aqui");
+    const info = NodeFS.lstatSync(pedida, { throwIfNoEntry: false });
+    if (info === undefined) return;
+    if (!info.isDirectory()) throw new Error("não é uma pasta de tarefa");
+    const real = pastaDeTarefaPermitida(NodeFS.realpathSync.native(pedida), raizReal);
+    if (real === undefined) throw new Error("só pastas de tarefa vão para a Lixeira por aqui");
+    await shell.trashItem(real);
   });
 }

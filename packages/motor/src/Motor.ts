@@ -78,6 +78,12 @@ export class Motor extends Context.Service<
      * nada enquanto houver sessão aberta desse provider neste motor.
      */
     readonly limparVersoesAntigasHarness: (provider: Provider) => Effect.Effect<number>;
+    /**
+     * Apaga o que o provider guarda neste computador da conversa `idNativo` (`Driver.esquecer`). Recusa
+     * (devolve `false`) se alguma sessão aberta neste motor é dessa conversa. Nunca falha: o motivo vai
+     * para o log.
+     */
+    readonly esquecer: (provider: Provider, idNativo: string, pastaTrabalho: string) => Effect.Effect<boolean>;
   }
 >()("@simplifica-if/motor/Motor") {}
 
@@ -232,7 +238,17 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
     return yield* limpar;
   });
 
+  const esquecer = Effect.fn("Motor.esquecer")(function* (provider: Provider, idNativo: string, pasta: string) {
+    for (const sessao of sessoes.values()) {
+      if (sessao.provider === provider && sessao.driver.idNativo === idNativo) return false;
+    }
+    const apagar = drivers[provider].esquecer;
+    if (apagar === undefined) return false;
+    return yield* comOperacaoAtiva(provider, apagar(idNativo, pasta));
+  });
+
   return Motor.of({
+    esquecer,
     detectar,
     infoSessao,
     iniciarSessao,

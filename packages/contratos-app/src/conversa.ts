@@ -140,6 +140,41 @@ export type ConversaGravada = typeof ConversaGravada.Type;
 
 const EntradaSessao = Schema.Struct({ sessao: Schema.String });
 
+/**
+ * O que apagar a conversa faz, em fatos (a interface escreve as frases): o que sai do app e o que fica
+ * no computador da pessoa.
+ */
+export const PreviaApagarConversa = Schema.Struct({
+  /** A IA está respondendo: o app para o turno antes de apagar. */
+  respondendo: Schema.Boolean,
+  /** As mensagens da pessoa (as respostas da IA saem junto). */
+  mensagens: Schema.Number,
+  /** Os arquivos anexados pelo app registrados para a pasta. */
+  anexos: Schema.Number,
+  /**
+   * A pasta da tarefa, que fica no computador. Só a `gerida` (filha de `Documentos/Simplifica IF`) e
+   * não `compartilhada` com outra conversa pode ir para a Lixeira.
+   */
+  pasta: Schema.Struct({
+    caminho: Schema.String,
+    gerida: Schema.Boolean,
+    compartilhada: Schema.Boolean,
+    arquivos: Schema.Number,
+  }),
+  /** Os relatos de erro salvos em arquivo (`Relatos de erro/`), que ficam: trazem trecho da conversa. */
+  relatos: Schema.Array(Schema.String),
+});
+export type PreviaApagarConversa = typeof PreviaApagarConversa.Type;
+
+export const ResultadoApagarConversa = Schema.Struct({
+  /**
+   * O registro da conversa que a IA guarda neste computador (a transcrição do Claude, a thread do
+   * Codex, a sessão do Antigravity): `apagada`, `ficou` (o provider não deixou apagar) ou `nenhuma`.
+   */
+  transcricao: Schema.Literals(["apagada", "ficou", "nenhuma"]),
+});
+export type ResultadoApagarConversa = typeof ResultadoApagarConversa.Type;
+
 export class GrupoConversa extends RpcGroup.make(
   /**
    * Abre a sessão no provider, já com o MCP `ifpr` HTTP do servidor e um token só dela, e grava a
@@ -194,6 +229,22 @@ export class GrupoConversa extends RpcGroup.make(
   /** 👍/👎 na resposta do turno (`null` retira a avaliação); gravado no servidor. */
   Rpc.make("conversa.avaliar", {
     payload: Schema.Struct({ sessao: Schema.String, turno: Schema.Number, nota: Schema.NullOr(NotaResposta) }),
+    error: SessaoDesconhecida,
+  }),
+  /** O que apagar a conversa tira do app e o que fica no computador, para o diálogo de confirmação. */
+  Rpc.make("conversa.previaApagar", {
+    payload: EntradaSessao,
+    success: PreviaApagarConversa,
+    error: SessaoDesconhecida,
+  }),
+  /**
+   * Apaga a conversa: para o turno em andamento, fecha a sessão do provider e apaga as mensagens, as
+   * avaliações, as cópias do Desfazer e o registro que a IA guarda neste computador. A pasta da tarefa
+   * fica (a interface a manda à Lixeira pelo desktop, se a pessoa pedir).
+   */
+  Rpc.make("conversa.apagar", {
+    payload: EntradaSessao,
+    success: ResultadoApagarConversa,
     error: SessaoDesconhecida,
   }),
 ) {}

@@ -8,7 +8,7 @@
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodePath from "node:path";
-import { EXTENSOES_DOCUMENTO, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app/ponte";
+import { EXTENSOES_DOCUMENTO, ehPastaDoApp, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app/ponte";
 
 /**
  * A CSP da interface empacotada. Mais estreita que a do T3 (que aceita qualquer `http:`/`ws:`, por
@@ -222,5 +222,23 @@ export function arquivoDeTarefaPermitido(caminho: unknown, raiz: string, abrir: 
   const partes = relativo.split(NodePath.sep);
   if (partes.length < 2 || partes.some((parte) => parte === "" || parte.startsWith("."))) return undefined;
   if (abrir && !ehDocumento(caminho)) return undefined;
+  return caminho;
+}
+
+/**
+ * A pasta de uma tarefa para mandar à Lixeira, pelo caminho que a interface mandou: absoluto,
+ * normalizado, filha direta da raiz, sem nome oculto e fora das pastas do app (relatos, diagnósticos).
+ * Quem chama aplica a regra de novo ao caminho real contra a raiz real (um nome curto 8.3 do Windows ou
+ * um link na raiz não escapam) e confere que é pasta, não link.
+ */
+export function pastaDeTarefaPermitida(caminho: unknown, raiz: string): string | undefined {
+  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
+  if (NodePath.normalize(caminho) !== caminho) return undefined;
+  const semUnidade = /^[A-Za-z]:[\\/]/.test(caminho) ? caminho.slice(2) : caminho;
+  if (semUnidade.includes(":")) return undefined;
+  const relativo = NodePath.relative(raiz, caminho);
+  if (relativo === "" || relativo.startsWith("..") || NodePath.isAbsolute(relativo)) return undefined;
+  if (relativo.includes(NodePath.sep) || relativo.startsWith(".")) return undefined;
+  if (ehPastaDoApp(relativo)) return undefined;
   return caminho;
 }

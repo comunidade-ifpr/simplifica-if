@@ -532,6 +532,57 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     }),
   );
 
+  it.effect("apagar a lista apaga também a leitura concluída, que guarda o texto do PPC", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      roteiro.responder = (p) => ({ texto: respostaValida(p) });
+      const { rpc, pre, preparada, final } = yield* rodar(gravar("PPC K.docx", ppcSintetico()));
+      assert.strictEqual(final.situacao, "concluida");
+      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista! });
+      assert.notInclude(
+        (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
+        preparada.id,
+      );
+      assert.notInclude(
+        (yield* rpc["revisaoPpc.listas"]({})).map((l) => l.id),
+        pre.lista!,
+      );
+    }),
+  );
+
+  it.effect("apagar a lista com a leitura em andamento para a leitura antes de apagar", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      // A IA nunca termina de responder: a leitura fica em andamento até ser parada, e a sessão fechada
+      // interrompe a resposta.
+      const parou = yield* Deferred.make<void>();
+      roteiro.responder = (p) => ({
+        texto: respostaValida(p),
+        esperar: Effect.never.pipe(Effect.onInterrupt(() => Deferred.succeed(parou, undefined))),
+      });
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const arquivo = gravar("PPC L.docx", ppcSintetico());
+      const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+      yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
+      yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
+        // Com a IA já respondendo (a sessão do provider aberta), não só à espera da vez.
+        Stream.filter((e) => e.blocos.some((b) => b.etapa === "recebendo")),
+        Stream.take(1),
+        Stream.runDrain,
+      );
+      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista! });
+      // A resposta em andamento foi interrompida (sem isso, o teste não termina).
+      yield* Deferred.await(parou);
+      assert.notInclude(
+        (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
+        preparada.id,
+      );
+      assert.isNull(yield* rpc["revisaoPpc.listaDoArquivo"]({ arquivo }));
+    }),
+  );
+
   it.effect("apagar a lista apaga também a leitura pausada: não ressuscita nem recria a lista", () =>
     Effect.gen(function* () {
       reiniciar();

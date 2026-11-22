@@ -105,6 +105,16 @@ export const ehExtensaoDocumento = (nome: string): boolean => {
   return ponto > 0 && (EXTENSOES_DOCUMENTO as ReadonlyArray<string>).includes(nome.slice(ponto).toLowerCase());
 };
 
+/** As pastas da raiz (`Documentos/Simplifica IF`) que o app grava e que não são de tarefa. */
+export const PASTA_RELATOS = "Relatos de erro";
+export const PASTA_DIAGNOSTICOS = "Diagnósticos";
+
+/** O nome é de uma pasta do app (comparado sem caixa nem forma Unicode)? */
+export const ehPastaDoApp = (nome: string): boolean =>
+  [PASTA_RELATOS, PASTA_DIAGNOSTICOS].some(
+    (pasta) => pasta.normalize("NFC").toLowerCase() === nome.normalize("NFC").toLowerCase(),
+  );
+
 /* ================================================================== window.simplifica */
 
 /** Onde está o servidor local e com que token falar com ele. */
@@ -166,6 +176,12 @@ export interface PonteDesktop {
   abrirArquivoTarefa?(caminho: string): Promise<void>;
   /** Mostra no Finder ou no Explorador um arquivo da pasta de uma tarefa. */
   mostrarArquivoTarefa?(caminho: string): Promise<void>;
+  /**
+   * Manda à Lixeira do sistema a pasta de uma tarefa (`Documentos/Simplifica IF/<tarefa>`), depois de a
+   * conversa dela ser apagada. Só a pasta filha direta da raiz, que não é link nem uma pasta do app
+   * (relatos, diagnósticos); nunca apaga de vez.
+   */
+  pastaParaLixeira?(caminho: string): Promise<void>;
   /**
    * Reinicia o servidor local (novo token e nova porta; a janela recarrega). A atualização da base usa
    * para trocar o arquivo: a troca só acontece na abertura do servidor (M1.10).
@@ -232,6 +248,7 @@ export const CANAIS = {
   anexarSoltos: "simplifica:anexar-soltos",
   abrirArquivoTarefa: "simplifica:abrir-arquivo-tarefa",
   mostrarArquivoTarefa: "simplifica:mostrar-arquivo-tarefa",
+  pastaParaLixeira: "simplifica:pasta-para-lixeira",
   telaCheia: "simplifica:tela-cheia",
   /** Do processo principal para a janela: entrou (`true`) ou saiu (`false`) da tela cheia. */
   telaCheiaMudou: "simplifica:tela-cheia-mudou",

@@ -29,6 +29,7 @@ import {
   UsoRevisaoIa,
 } from "@simplifica-if/contratos-app";
 import type { EntradaIa } from "@simplifica-if/ppc/revisao-previa";
+import { descarregar } from "./Banco.ts";
 
 export interface RegistroLista {
   readonly id: string;
@@ -150,6 +151,8 @@ export class Listas extends Context.Service<
       obsoletas?: ReadonlyArray<string>,
     ) => Effect.Effect<void>;
     readonly ultima: Effect.Effect<string | null>;
+    /** Todas as listas, da mais recente para a mais antiga. */
+    readonly todas: Effect.Effect<ReadonlyArray<string>>;
     readonly pendencias: (id: string) => Effect.Effect<ReadonlyArray<RegistroPendencia>>;
     readonly eventos: (id: string) => Effect.Effect<ReadonlyArray<EventoPendencia & { chave: string }>>;
     readonly mudar: (
@@ -185,10 +188,11 @@ export class Listas extends Context.Service<
       versaoCopia: number,
       noDocumento: ReadonlyMap<string, PendenciaRevisao["noDocumento"]>,
     ) => Effect.Effect<void>;
+    /** Grava o uso de uma ação com IA; sem efeito se a lista foi apagada enquanto a ação rodava. */
     readonly gravarAcao: (id: string, chave: string, acao: AcaoIaGravada) => Effect.Effect<void>;
     readonly uso: (id: string) => Effect.Effect<UsoRevisaoIa>;
     readonly apagar: (id: string) => Effect.Effect<void>;
-    /** Acrescenta pendências novas (a triagem do arquivo da nova revisão), abertas, com o evento. */
+    /** Acrescenta pendências novas (a triagem do arquivo da nova revisão), abertas, com o evento; sem efeito se a lista sumiu. */
     readonly acrescentar: (
       id: string,
       pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
@@ -328,6 +332,8 @@ const make = Effect.gen(function* () {
         }
       }),
     );
+    // A lista substituída levava o texto do PPC.
+    if (anterior) yield* descarregar(sql);
   }, Effect.orDie);
 
   const buscar = Effect.fn("Listas.buscar")(function* (id: string) {
@@ -385,6 +391,11 @@ const make = Effect.gen(function* () {
     Effect.orDie,
   );
 
+  const todas = sql<{ id: string }>`SELECT id FROM listas_pendencias ORDER BY atualizada_em DESC`.pipe(
+    Effect.map((linhas) => linhas.map((l) => l.id)),
+    Effect.orDie,
+  );
+
   const pendencias = Effect.fn("Listas.pendencias")(function* (id: string) {
     const linhas = yield* lerPendencias(
       yield* sql`SELECT chave, ordem, pendencia, situacao, resolvida_por, sugestao FROM pendencias_vivas WHERE lista_id = ${id} ORDER BY ordem`,
@@ -432,10 +443,11 @@ const make = Effect.gen(function* () {
             sugestao = COALESCE(${sugestao}, sugestao)
           WHERE lista_id = ${id} AND chave = ${chave}
         `;
+        // A lista pode ter sido apagada enquanto a ação com IA rodava: nada se grava nela.
         yield* sql`
           INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
-          VALUES (${id}, ${chave}, ${data}, ${e.acao}, ${e.situacao}, ${e.texto}, ${e.motivo ?? null},
-            ${usoEvento})
+          SELECT ${id}, ${chave}, ${data}, ${e.acao}, ${e.situacao}, ${e.texto}, ${e.motivo ?? null}, ${usoEvento}
+          WHERE EXISTS (SELECT 1 FROM listas_pendencias WHERE id = ${id})
         `;
         yield* tocar(id, data);
       }),
@@ -583,8 +595,9 @@ const make = Effect.gen(function* () {
     const data = yield* agora;
     yield* sql`
       INSERT INTO acoes_ia (lista_id, chave, acao, numero, uso, segundos, ferramentas, criada_em)
-      VALUES (${id}, ${chave}, ${a.acao}, ${a.numero}, ${yield* codificarUso(a.uso)}, ${a.segundos},
-        ${yield* codificarFerramentas(a.ferramentas)}, ${data})
+      SELECT ${id}, ${chave}, ${a.acao}, ${a.numero}, ${yield* codificarUso(a.uso)}, ${a.segundos},
+        ${yield* codificarFerramentas(a.ferramentas)}, ${data}
+      WHERE EXISTS (SELECT 1 FROM listas_pendencias WHERE id = ${id})
     `;
   }, Effect.orDie);
 
@@ -600,6 +613,7 @@ const make = Effect.gen(function* () {
 
   const apagar = Effect.fn("Listas.apagar")(function* (id: string) {
     yield* sql`DELETE FROM listas_pendencias WHERE id = ${id}`;
+    yield* descarregar(sql);
   }, Effect.orDie);
 
   const acrescentar = Effect.fn("Listas.acrescentar")(function* (
@@ -610,6 +624,9 @@ const make = Effect.gen(function* () {
     const data = yield* agora;
     yield* sql.withTransaction(
       Effect.gen(function* () {
+        // A lista apagada no meio da nova revisão de uma pendência não ganha pendências.
+        const existe = yield* sql<{ n: number }>`SELECT COUNT(*) AS n FROM listas_pendencias WHERE id = ${id}`;
+        if ((existe[0]?.n ?? 0) === 0) return;
         yield* inserirNovas(id, novas, texto, data);
         yield* tocar(id, data);
       }),
@@ -619,6 +636,7 @@ const make = Effect.gen(function* () {
   const expirar = Effect.fn("Listas.expirar")(function* (antesDe: string) {
     const linhas = yield* sql<{ id: string }>`SELECT id FROM listas_pendencias WHERE atualizada_em < ${antesDe}`;
     for (const l of linhas) yield* sql`DELETE FROM listas_pendencias WHERE id = ${l.id}`;
+    if (linhas.length > 0) yield* descarregar(sql);
     return linhas.length;
   }, Effect.orDie);
 
@@ -642,6 +660,7 @@ const make = Effect.gen(function* () {
     ligarRevisao,
     mesclarIa,
     ultima,
+    todas,
     pendencias,
     eventos,
     mudar,

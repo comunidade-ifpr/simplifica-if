@@ -258,6 +258,12 @@ export const rodarMigracoes = Effect.fn("Banco.rodarMigracoes")(function* (
   return executadas;
 });
 
+/**
+ * Leva ao arquivo do banco a versão sem o que acabou de se apagar e esvazia o `-wal`, onde a versão
+ * antiga das páginas ficaria até o próximo checkpoint. Chame depois de apagar dado da pessoa.
+ */
+export const descarregar = (sql: SqlClient.SqlClient) => sql`PRAGMA wal_checkpoint(TRUNCATE)`.pipe(Effect.asVoid);
+
 const preparar = (backup?: {
   readonly arquivo: string;
   readonly fs: FileSystem.FileSystem;
@@ -274,6 +280,8 @@ const preparar = (backup?: {
       // T3: macOS fsync misses drive caches; F_FULLFSYNC flushes them at checkpoints and is ignored elsewhere.
       yield* sql`PRAGMA checkpoint_fullfsync = ON;`;
       yield* sql`PRAGMA temp_store = MEMORY;`;
+      // Apagar apaga de fato: as páginas liberadas por um `DELETE` (o texto do PPC, as mensagens) são zeradas.
+      yield* sql`PRAGMA secure_delete = ON;`;
       yield* rodarMigracoes(undefined, backup === undefined ? undefined : { backup });
     }).pipe(Effect.withSpan("Banco.preparar")),
   );

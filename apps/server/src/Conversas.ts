@@ -69,6 +69,8 @@ import {
   type NotaResposta,
   type PastaConversa,
   PastaTrabalhoInvalida,
+  type PreviaApagarConversa,
+  type ResultadoApagarConversa,
   type ResumoConversa,
   TarefaDesconhecida,
 } from "@simplifica-if/contratos-app";
@@ -133,6 +135,14 @@ export class Conversas extends Context.Service<
       sessao: string,
       incluirForaDaConversa: boolean,
     ) => Effect.Effect<PastaConversa, Motor.SessaoDesconhecida | Motor.TurnoEmAndamento | FalhaPasta>;
+    /** O que apagar a conversa tira do app e o que fica no computador. */
+    readonly previaApagar: (sessao: string) => Effect.Effect<PreviaApagarConversa, Motor.SessaoDesconhecida>;
+    /**
+     * Apaga a conversa: o turno em andamento para e fecha, a sessão do provider se libera, e saem o
+     * histórico (com as avaliações e os relatos registrados), as cópias do Desfazer e o registro que o
+     * provider guarda neste computador. A pasta da tarefa fica.
+     */
+    readonly apagar: (sessao: string) => Effect.Effect<ResultadoApagarConversa, Motor.SessaoDesconhecida>;
   }
 >()("@simplifica-if/server/Conversas") {}
 
@@ -192,6 +202,11 @@ interface Viva {
   readonly aoVivo: PubSub.PubSub<ItemConversa>;
   /** Abrir e fechar a sessão e começar o turno, um de cada vez. */
   readonly trava: Semaphore.Semaphore;
+  /**
+   * A conversa foi apagada (marcado com a `trava`): quem esperava a trava (um turno novo, o Desfazer, a
+   * liberação por ociosidade) não grava nada nela.
+   */
+  apagada: boolean;
   /** Gravar e publicar um item, e o retrato de `acompanhar`, um de cada vez. */
   readonly travaItens: Semaphore.Semaphore;
 }
@@ -378,19 +393,28 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
    * Libera a sessão do provider: um turno em andamento termina como interrompido, o processo morre e
    * o token do MCP é revogado. A conversa fica `liberada` (ou `caiu`, se foi queda).
    */
-  const liberar = (viva: Viva) =>
-    viva.trava.withPermits(1)(
-      Effect.gen(function* () {
-        // Sem a sessão antes de fechar o turno: o turno interrompido não agenda a ociosidade.
-        const sessao = viva.sessao;
-        viva.sessao = undefined;
-        yield* cancelarOciosidade(viva);
-        const turno = viva.turno;
-        if (turno?.fibra !== undefined) yield* Fiber.interrupt(turno.fibra);
-        if (sessao !== undefined) yield* fecharSessao(sessao);
-        if (viva.registro.estado !== estadoEmRepouso(viva)) yield* alterar(viva, { estado: estadoEmRepouso(viva) });
-      }),
-    );
+  const liberar = (viva: Viva) => viva.trava.withPermits(1)(Effect.suspend(() => soltar(viva)));
+
+  /** O corpo do `liberar`, para quem já segura a `trava` (o `apagar`). */
+  const soltar = Effect.fnUntraced(function* (viva: Viva) {
+    if (viva.apagada) return;
+    // Sem a sessão antes de fechar o turno: o turno interrompido não agenda a ociosidade.
+    const sessao = viva.sessao;
+    viva.sessao = undefined;
+    yield* cancelarOciosidade(viva);
+    const turno = viva.turno;
+    // Espera a fibra do turno terminar, com os finalizadores (o retrato da pasta e o `FimTurno` gravados).
+    if (turno?.fibra !== undefined) yield* Fiber.interrupt(turno.fibra);
+    if (sessao !== undefined) {
+      // O provider pode ter trocado o id nativo no meio da sessão (o Claude o manda em cada mensagem): a
+      // retomada e o apagar no provider usam o atual.
+      const info = yield* motor.infoSessao(sessao.id).pipe(Effect.option);
+      const idNativo = Option.isSome(info) ? info.value.idNativo : undefined;
+      if (idNativo !== undefined && idNativo !== viva.registro.idNativo) yield* alterar(viva, { idNativo });
+      yield* fecharSessao(sessao);
+    }
+    if (viva.registro.estado !== estadoEmRepouso(viva)) yield* alterar(viva, { estado: estadoEmRepouso(viva) });
+  });
 
   /**
    * O processo do provider caiu: a sessão sai da conversa e se fecha, e a conversa fica `caiu`. Sem
@@ -674,6 +698,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const comecarTurno = (viva: Viva, texto: string) =>
     viva.trava.withPermits(1)(
       Effect.gen(function* () {
+        if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id: viva.id });
         if (viva.turno !== undefined) return yield* new Motor.TurnoEmAndamento();
         const sessao = yield* abrirSessao(viva);
         yield* cancelarOciosidade(viva);
@@ -726,6 +751,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       aoVivo: yield* PubSub.unbounded<ItemConversa>(),
       trava: yield* Semaphore.make(1),
       travaItens: yield* Semaphore.make(1),
+      apagada: false,
     };
     return viva;
   });
@@ -819,6 +845,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     decisao: Motor.Decisao,
   ) {
     const viva = yield* obter(id);
+    if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
     const sessao = viva.sessao;
     const turno = viva.turno;
     if (sessao === undefined || turno === undefined) return yield* new Motor.AprovacaoDesconhecida({ id: aprovacao });
@@ -915,7 +942,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     );
 
   const avaliar = Effect.fn("Conversas.avaliar")(function* (id: string, turno: number, nota: NotaResposta | null) {
-    yield* obter(id);
+    if ((yield* obter(id)).apagada) return yield* new Motor.SessaoDesconhecida({ id });
     yield* historico.avaliar(id, turno, nota);
   });
 
@@ -928,16 +955,66 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     const viva = yield* obter(id);
     return yield* viva.trava.withPermits(1)(
       Effect.gen(function* () {
+        if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
         if (viva.turno !== undefined) return yield* new Motor.TurnoEmAndamento();
         return yield* pastas.desfazer(id, viva.registro.pastaTrabalho, incluirForaDaConversa);
       }),
     );
   });
 
+  const previaApagar = Effect.fn("Conversas.previaApagar")(function* (id: string) {
+    const viva = yield* obter(id);
+    const pastaTrabalho = viva.registro.pastaTrabalho;
+    const [doHistorico, relatos, pasta] = yield* Effect.all([
+      historico.previa(id),
+      historico.relatos(id),
+      pastas.ver(id, pastaTrabalho).pipe(Effect.option),
+    ]);
+    return {
+      respondendo: viva.turno !== undefined,
+      mensagens: doHistorico.mensagens,
+      anexos: doHistorico.anexos,
+      pasta: {
+        caminho: pastaTrabalho,
+        gerida: pasta._tag === "Some" && pasta.value.gerida,
+        compartilhada: doHistorico.pastaCompartilhada,
+        arquivos: pasta._tag === "Some" ? pasta.value.arquivos.length : 0,
+      },
+      relatos: relatos.flatMap((relato) => (relato.arquivo === null ? [] : [relato.arquivo])),
+    } satisfies PreviaApagarConversa;
+  });
+
+  /**
+   * Na `trava`: o turno para (a fibra termina com o retrato e o `FimTurno`) e a sessão fecha; a conversa
+   * sai da memória e do banco; então as cópias do Desfazer e, com o processo do provider já morto, o
+   * registro dele. Um pedido que esperava a trava encontra a conversa `apagada`.
+   */
+  const apagar = Effect.fn("Conversas.apagar")(function* (id: string) {
+    const viva = yield* obter(id);
+    const registro = yield* viva.trava.withPermits(1)(
+      Effect.gen(function* () {
+        if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
+        yield* soltar(viva);
+        viva.apagada = true;
+        yield* historico.apagar(id);
+        vivas.delete(id);
+        return viva.registro;
+      }),
+    );
+    yield* pastas.esquecer(id);
+    yield* Effect.logInfo(`conversa ${id}: apagada`);
+    if (registro.idNativo === undefined) return { transcricao: "nenhuma" } satisfies ResultadoApagarConversa;
+    const apagada = yield* motor.esquecer(registro.provider, registro.idNativo, registro.pastaTrabalho);
+    if (!apagada) yield* Effect.logWarning(`conversa ${id}: o registro no provider ficou`);
+    return { transcricao: apagada ? "apagada" : "ficou" } satisfies ResultadoApagarConversa;
+  });
+
   return Conversas.of({
     avaliar,
     pasta,
     desfazer,
+    previaApagar,
+    apagar,
     iniciar,
     enviar,
     responderAprovacao,

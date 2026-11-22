@@ -96,6 +96,12 @@ export class RevisaoIa extends Context.Service<
      * tentativas). A lista fica, com os resultados já mesclados ("Encerrar leitura por aqui").
      */
     readonly apagar: (id: string) => Effect.Effect<void>;
+    /**
+     * Apaga as leituras que nenhuma lista referencia mais (a lista foi apagada, expirou ou foi
+     * substituída): a leitura vive enquanto a lista dela vive, inclusive a concluída, que guarda o texto
+     * do PPC no plano e os trechos no resultado.
+     */
+    readonly apagarOrfas: Effect.Effect<void>;
   }
 >()("@simplifica-if/server/revisao-ppc/RevisaoIa") {}
 
@@ -669,13 +675,20 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* avisar(id);
   });
 
+  const apagarOrfas = Effect.gen(function* () {
+    for (const id of yield* revisoes.orfas) yield* apagar(id);
+  }).pipe(Effect.withSpan("RevisaoIa.apagarOrfas"));
+
+  yield* apagarOrfas;
+
   return RevisaoIa.of({
     preparar: prepararRevisao,
     iniciar,
     pausar,
     acompanhar,
-    listar: expirar.pipe(Effect.andThen(listar)),
+    listar: expirar.pipe(Effect.andThen(apagarOrfas), Effect.andThen(listar)),
     apagar,
+    apagarOrfas,
   });
 });
 

@@ -13,6 +13,7 @@ import {
   copiaComentadaPermitida,
   extensoesAnexo,
   docxEscolhido,
+  pastaDeTarefaPermitida,
   hashesScriptsInline,
   isSameOriginRendererNavigation,
   politicaConteudo,
@@ -286,6 +287,32 @@ describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostr
       42,
     ]) {
       expect(arquivoDeTarefaPermitido(recusado, raiz, true), String(recusado)).toBeUndefined();
+    }
+  });
+});
+
+describe("apagar a conversa: a pasta da tarefa que vai para a Lixeira", () => {
+  const raiz = "/Users/x/Documents/Simplifica IF";
+
+  test("só a pasta filha direta da raiz, fora das pastas do app", () => {
+    expect(pastaDeTarefaPermitida(`${raiz}/Conferir base legal`, raiz)).toBe(`${raiz}/Conferir base legal`);
+    for (const recusado of [
+      raiz,
+      `${raiz}/`,
+      `${raiz}/Tarefa/sub`,
+      `${raiz}/Relatos de erro`,
+      `${raiz}/relatos de erro`,
+      `${raiz}/Diagnósticos`,
+      `${raiz}/.simplifica`,
+      `${raiz}/Tarefa/..`,
+      `${raiz}/../Outra`,
+      "/Users/x/Documents",
+      "/Users/x/Documents/Simplifica IF Falsa/Tarefa",
+      `${raiz}/Tarefa:oculto`,
+      "Tarefa",
+      42,
+    ]) {
+      expect(pastaDeTarefaPermitida(recusado, raiz), String(recusado)).toBeUndefined();
     }
   });
 });

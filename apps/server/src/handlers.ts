@@ -163,6 +163,8 @@ const layerConversa = GrupoConversa.toLayer(
         traduzirStream("conversa.acompanhar", conversas.acompanhar(sessao, depois)),
       "conversa.avaliar": ({ sessao, turno, nota }) =>
         traduzir("conversa.avaliar", conversas.avaliar(sessao, turno, nota)),
+      "conversa.previaApagar": ({ sessao }) => traduzir("conversa.previaApagar", conversas.previaApagar(sessao)),
+      "conversa.apagar": ({ sessao }) => traduzir("conversa.apagar", conversas.apagar(sessao)),
     });
   }),
 );
@@ -244,6 +246,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.apagarIa": ({ revisao }) => traduzir("revisaoPpc.apagarIa", ia.apagar(revisao)),
       "revisaoPpc.lista": ({ lista }) => traduzir("revisaoPpc.lista", viva.lista(lista)),
       "revisaoPpc.ultimaLista": () => traduzir("revisaoPpc.ultimaLista", viva.ultima),
+      "revisaoPpc.listas": () => traduzir("revisaoPpc.listas", viva.todas),
       "revisaoPpc.listaDoArquivo": ({ arquivo }) => traduzir("revisaoPpc.listaDoArquivo", viva.doArquivo(arquivo)),
       "revisaoPpc.trocarCurso": ({ lista, cnct, forma }) =>
         traduzir("revisaoPpc.trocarCurso", viva.trocarCurso(lista, cnct, forma)),

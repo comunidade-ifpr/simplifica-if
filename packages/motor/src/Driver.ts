@@ -146,6 +146,12 @@ export interface Driver {
   readonly atualizarHarness?: Effect.Effect<ResultadoAtualizacaoHarness>;
   /** Remove versões antigas da CLI gerenciada em disco, mantendo a ativa e a anterior. */
   readonly limparVersoesAntigas?: Effect.Effect<number>;
+  /**
+   * Apaga o que o provider guarda neste computador da conversa `idNativo` (a transcrição do Claude em
+   * `~/.claude/projects/`, a thread do Codex, a sessão no perfil do Antigravity), aberta em
+   * `pastaTrabalho`. Chame com a sessão já encerrada. Devolve se apagou; nada guardado conta como apagado.
+   */
+  readonly esquecer?: (idNativo: string, pastaTrabalho: string) => Effect.Effect<boolean>;
 }
 
 /** Os drivers disponíveis, por provider. `Drivers.layerNode` (em `drivers/index.ts`) monta os reais. */

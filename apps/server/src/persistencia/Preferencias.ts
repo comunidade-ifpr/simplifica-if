@@ -14,6 +14,7 @@ import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import { AvisoNaoAceito, Perfil, Preferencias as PreferenciasApp, type Provider } from "@simplifica-if/contratos-app";
+import { descarregar } from "./Banco.ts";
 
 const CHAVES = {
   perfil: "perfil",
@@ -92,14 +93,12 @@ const make = Effect.gen(function* () {
   }, Effect.orDie);
 
   /**
-   * Apagar o perfil apaga de fato: `secure_delete` zera o conteúdo das páginas liberadas, e o
-   * checkpoint leva ao arquivo do banco a versão sem o perfil e esvazia o `-wal`, onde a versão antiga
-   * da página ficaria até o próximo checkpoint.
+   * Apagar o perfil apaga de fato: o banco abre com `secure_delete`, que zera o conteúdo das páginas
+   * liberadas, e `Banco.descarregar` esvazia o `-wal`.
    */
   const apagarPerfil = Effect.gen(function* () {
-    yield* sql`PRAGMA secure_delete = ON`;
     yield* sql`DELETE FROM preferencias WHERE chave = ${CHAVES.perfil}`;
-    yield* sql`PRAGMA wal_checkpoint(TRUNCATE)`;
+    yield* descarregar(sql);
     return yield* ler;
   }).pipe(Effect.orDie, Effect.withSpan("Preferencias.apagarPerfil"));
 

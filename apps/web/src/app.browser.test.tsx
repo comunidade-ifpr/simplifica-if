@@ -274,16 +274,20 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
     .element(page.getByRole("heading", { name: "Não reconhecemos o curso no Catálogo Nacional (CNCT)" }))
     .not.toBeInTheDocument();
 
-  // Apagar pede confirmação: cancelar não apaga; confirmar volta à entrada.
+  // Apagar pede confirmação, com o que sai e o que fica: cancelar não apaga; confirmar volta à entrada.
   await page.getByRole("button", { name: "Mais ações do documento" }).click();
   await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
-  const confirmacao = page.getByRole("alertdialog", { name: "Apagar esta revisão?" });
+  const confirmacao = page.getByRole("alertdialog", { name: "Apagar a revisão de “PPC de teste.docx”?" });
+  await expect.element(confirmacao.getByText(/^A cópia comentada/)).toBeVisible();
+  await expect.element(confirmacao.getByText(comentado)).toBeVisible();
   await confirmacao.getByRole("button", { name: "Cancelar" }).click();
   await expect.element(confirmacao).not.toBeInTheDocument();
   await page.getByRole("button", { name: "Mais ações do documento" }).click();
   await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
   await page.getByRole("button", { name: "Apagar a revisão" }).click();
   await expect.element(page.getByRole("button", { name: "Escolher o PPC" })).toBeVisible();
+  // A revisão apagada sai das revisões recentes.
+  await expect.element(page.getByRole("heading", { name: "Revisões recentes" })).not.toBeInTheDocument();
   semIngles();
 });
 
@@ -309,11 +313,13 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   const abrirArquivoTarefa = vi.fn(async (_caminho: string) => {});
   const mostrarArquivoTarefa = vi.fn(async (_caminho: string) => {});
   const escolherAnexo = vi.fn(async (_extensoes?: ReadonlyArray<string>) => servidor.parecer);
+  const pastaParaLixeira = vi.fn(async (_caminho: string) => {});
   window.simplifica = {
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherAnexo,
     abrirArquivoTarefa,
     mostrarArquivoTarefa,
+    pastaParaLixeira,
   } satisfies PonteDesktop;
   await page.viewport(1280, 860);
   await using _app = await montarApp(servidor);
@@ -453,6 +459,26 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
     .first()
     .click();
   await expect.element(page.getByRole("button", { name: "Resposta útil" })).toHaveAttribute("aria-pressed", "true");
+
+  // Apagar a conversa: o diálogo diz o que sai e o que fica; com a pasta marcada, ela vai à Lixeira pelo
+  // desktop, e a conversa da tarefa volta ao Início, sem ela nos recentes.
+  await page.getByRole("button", { name: "Mais ações da conversa", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Apagar a conversa…" }).click();
+  const apagar = page.getByRole("alertdialog", {
+    name: /^Apagar a conversa “Conferir a fundamentação normativa do parecer/,
+  });
+  await expect.element(apagar.getByText("As cópias que o app guardava para o Desfazer")).toBeVisible();
+  await expect.element(apagar.getByText(/^A pasta da tarefa “/)).toBeVisible();
+  await capturar("06-apagar-conversa");
+  semIngles();
+  await apagar.getByRole("checkbox", { name: /^Mandar também a pasta/ }).click();
+  await apagar.getByRole("button", { name: "Apagar a conversa" }).click();
+  await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
+  expect(pastaParaLixeira).toHaveBeenCalledTimes(1);
+  expect(pastaParaLixeira.mock.calls[0]![0]).toMatch(/Conferir a fundamentação normativa/);
+  await expect
+    .element(page.getByRole("link", { name: /Conferir a fundamentação normativa do parecer/ }))
+    .not.toBeInTheDocument();
 });
 
 it("“Isto está errado” (M1.12): do 👎 ao relato revisado, publicado no GitHub, salvo e copiado", async () => {
