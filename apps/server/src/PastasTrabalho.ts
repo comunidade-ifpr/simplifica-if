@@ -179,8 +179,11 @@ export class PastasTrabalho extends Context.Service<
       pasta: string,
       incluirForaDaConversa: boolean,
     ) => Effect.Effect<PastaConversa, FalhaPasta>;
-    /** Apaga as cópias do Desfazer da conversa (ao apagá-la); a pasta da tarefa fica. Nunca falha. */
-    readonly esquecer: (conversa: string) => Effect.Effect<void>;
+    /**
+     * Apaga as cópias do Desfazer da conversa (ao apagá-la); a pasta da tarefa fica. Devolve se deu certo
+     * (sem cópias também conta); nunca falha: o erro vai para o log.
+     */
+    readonly esquecer: (conversa: string) => Effect.Effect<boolean>;
     /** Um Desfazer, uma cópia ou um retrato está em andamento? (a troca da base espera, M1.10) */
     readonly emAndamento: Effect.Effect<boolean>;
   }
@@ -1127,10 +1130,15 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return yield* ver(conversa, real);
   });
 
-  const esquecer = Effect.fn("PastasTrabalho.esquecer")(function* (conversa: string) {
-    const copias = yield* pastaCopias(conversa);
-    yield* fs.remove(copias, { recursive: true, force: true });
-  }, soNoLog("apagar a conversa: não foi possível remover as cópias do Desfazer"));
+  const esquecer = Effect.fn("PastasTrabalho.esquecer")(
+    function* (conversa: string) {
+      const copias = yield* pastaCopias(conversa);
+      yield* fs.remove(copias, { recursive: true, force: true });
+      return true;
+    },
+    soNoLog("apagar a conversa: não foi possível remover as cópias do Desfazer"),
+    Effect.map((ok) => ok === true),
+  );
 
   // Quantas operações sobre as pastas estão rodando: a troca da base (M1.10) não reinicia o servidor no meio delas.
   const { contando, emAndamento } = yield* contadorDeAndamento;
@@ -1193,7 +1201,7 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     descartarCopia: Effect.fn("PastasTrabalho.descartarCopia")(() => Effect.void),
     confirmarAviso: Effect.fn("PastasTrabalho.confirmarAviso")(() => Effect.void),
     desfazer: recusa,
-    esquecer: Effect.fn("PastasTrabalho.esquecer")(() => Effect.void),
+    esquecer: Effect.fn("PastasTrabalho.esquecer")(() => Effect.succeed(true)),
     emAndamento: Effect.succeed(false),
   });
 });

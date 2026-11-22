@@ -25,6 +25,7 @@ import * as Migrator from "effect/sql/Migrator";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import Migracao0001 from "./migracoes/0001_Inicial.ts";
 import Migracao0002 from "./migracoes/0002_ResultadosIaNaLista.ts";
+import Migracao0003 from "./migracoes/0003_ApagamentosPendentes.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -74,6 +75,7 @@ export class MigracaoViolouIntegridade extends Schema.TaggedError<MigracaoViolou
 export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [
   [1, "Inicial", Migracao0001],
   [2, "ResultadosIaNaLista", Migracao0002],
+  [3, "ApagamentosPendentes", Migracao0003],
 ];
 
 const ultimaDe = (lista: ReadonlyArray<EntradaMigracao>) => lista[lista.length - 1]![0];

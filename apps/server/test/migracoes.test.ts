@@ -246,21 +246,36 @@ describe("migrações do banco das conversas", () => {
       }).pipe(Effect.provide(emMemoria)),
   );
 
-  it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
+  it.effect("upgrade 2 → 3 cria a fila do que falta apagar fora do banco, vazia, sem tocar nas conversas", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
       yield* Banco.rodarMigracoes(2);
+      yield* sql`
+        INSERT INTO conversas (id, provider, pasta_trabalho, estado, criada_em, atualizada_em)
+        VALUES ('c1', 'claude', '/tmp/tarefa', 'liberada', '2026-11-20T10:00:00Z', '2026-11-20T10:00:00Z')
+      `;
+      const m3 = yield* Banco.rodarMigracoes(3);
+      assert.deepStrictEqual(m3, [[3, "ApagamentosPendentes"]]);
+      assert.strictEqual((yield* sql`SELECT * FROM conversas`).length, 1);
+      assert.strictEqual((yield* sql`SELECT * FROM apagamentos_pendentes`).length, 0);
+    }).pipe(Effect.provide(emMemoria)),
+  );
 
-      // Simula um banco que recebeu uma migração 3 de uma versão mais nova do app.
-      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (3, 'Futura')`;
-      const erroDowngrade = yield* Banco.rodarMigracoes(2).pipe(Effect.flip);
+  it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
+    Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+      yield* Banco.rodarMigracoes(3);
+
+      // Simula um banco que recebeu uma migração 4 de uma versão mais nova do app.
+      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (4, 'Futura')`;
+      const erroDowngrade = yield* Banco.rodarMigracoes(3).pipe(Effect.flip);
       assert.strictEqual(erroDowngrade._tag, "BancoIncompativel");
       assert.include(erroDowngrade.message, "versão mais nova");
 
       // Simula histórico incompatível (ex.: nome trocado ou banco de dev antigo).
-      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = 3`;
+      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = 4`;
       yield* sql`UPDATE effect_sql_migrations SET name = 'AntigaDiferente' WHERE migration_id = 2`;
-      const erroIncompativel = yield* Banco.rodarMigracoes(2).pipe(Effect.flip);
+      const erroIncompativel = yield* Banco.rodarMigracoes(3).pipe(Effect.flip);
       assert.strictEqual(erroIncompativel._tag, "BancoIncompativel");
       assert.include(erroIncompativel.message, "não é compatível");
     }).pipe(Effect.provide(emMemoria)),
@@ -269,10 +284,10 @@ describe("migrações do banco das conversas", () => {
   it.effect("violação de FK dentro de uma migração faz rollback e mantém o banco na versão anterior", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      yield* Banco.rodarMigracoes(2);
+      yield* Banco.rodarMigracoes(3);
 
       const migracaoQuebrada: Banco.EntradaMigracao = [
-        3,
+        4,
         "QuebraFk",
         Effect.gen(function* () {
           const s = yield* SqlClient.SqlClient;
@@ -283,16 +298,16 @@ describe("migrações do banco das conversas", () => {
           `;
         }),
       ];
-      const erro = yield* Banco.rodarMigracoes(3, {
+      const erro = yield* Banco.rodarMigracoes(4, {
         migracoes: [...Banco.MIGRACOES, migracaoQuebrada],
       }).pipe(Effect.flip);
       assert.strictEqual(erro._tag, "MigrationError");
       assert.include(String(erro.cause), "MigracaoViolouIntegridade");
 
-      // Transação desfeita: o órfão não ficou e a migração 3 não foi registrada.
+      // Transação desfeita: o órfão não ficou e a migração 4 não foi registrada.
       const orfaos = yield* sql`SELECT * FROM pendencias_vivas WHERE lista_id = 'lista-inexistente'`;
       assert.strictEqual(orfaos.length, 0);
-      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = 3`;
+      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = 4`;
       assert.strictEqual(aplicada.length, 0);
       // `foreign_keys` foi religado mesmo após o erro.
       const fk = yield* sql<{ foreign_keys: number }>`PRAGMA foreign_keys;`;

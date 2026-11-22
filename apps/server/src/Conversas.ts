@@ -813,10 +813,11 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       )
       .pipe(
         // Sem sessão, a conversa não existe: não fica na lista.
+        // Nada ficou fora do banco: a sessão não abriu, e nenhum turno guardou cópia.
         Effect.onError(() =>
           Effect.suspend(() => {
             vivas.delete(id);
-            return historico.apagar(id);
+            return historico.apagar(id).pipe(Effect.andThen(historico.concluirApagamento(id)));
           }),
         ),
       );
@@ -985,29 +986,55 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   });
 
   /**
+   * O que ficou fora do banco de uma conversa apagada: as cópias do Desfazer e o registro do provider. A
+   * pendência sai quando os dois saem; senão, conta a tentativa e espera a próxima partida do servidor.
+   */
+  const limparFora = Effect.fn("Conversas.limparFora")(function* (pendente: Historico.ApagamentoPendente) {
+    const copias = yield* pastas.esquecer(pendente.conversa);
+    const transcricao: ResultadoApagarConversa["transcricao"] =
+      pendente.idNativo === null
+        ? "nenhuma"
+        : (yield* motor.esquecer(pendente.provider, pendente.idNativo, pendente.pastaTrabalho))
+          ? "apagada"
+          : "ficou";
+    if (copias && transcricao !== "ficou") yield* historico.concluirApagamento(pendente.conversa);
+    else {
+      yield* historico.registrarTentativaApagamento(pendente.conversa);
+      yield* Effect.logWarning(
+        `conversa ${pendente.conversa}: ficou o que apagar fora do banco (tentativa ${pendente.tentativas + 1}); tenta de novo na próxima partida`,
+      );
+    }
+    return transcricao;
+  });
+
+  /**
    * Na `trava`: o turno para (a fibra termina com o retrato e o `FimTurno`) e a sessão fecha; a conversa
-   * sai da memória e do banco; então as cópias do Desfazer e, com o processo do provider já morto, o
-   * registro dele. Um pedido que esperava a trava encontra a conversa `apagada`.
+   * sai da memória e do banco, que guarda na mesma transação o que falta apagar fora dele; então as cópias
+   * do Desfazer e, com o processo do provider já morto, o registro dele (`limparFora`). Um pedido que
+   * esperava a trava encontra a conversa `apagada`.
    */
   const apagar = Effect.fn("Conversas.apagar")(function* (id: string) {
     const viva = yield* obter(id);
-    const registro = yield* viva.trava.withPermits(1)(
+    const pendente = yield* viva.trava.withPermits(1)(
       Effect.gen(function* () {
         if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
         yield* soltar(viva);
         viva.apagada = true;
-        yield* historico.apagar(id);
+        const pendente = yield* historico.apagar(id);
         vivas.delete(id);
-        return viva.registro;
+        return pendente;
       }),
     );
-    yield* pastas.esquecer(id);
     yield* Effect.logInfo(`conversa ${id}: apagada`);
-    if (registro.idNativo === undefined) return { transcricao: "nenhuma" } satisfies ResultadoApagarConversa;
-    const apagada = yield* motor.esquecer(registro.provider, registro.idNativo, registro.pastaTrabalho);
-    if (!apagada) yield* Effect.logWarning(`conversa ${id}: o registro no provider ficou`);
-    return { transcricao: apagada ? "apagada" : "ficou" } satisfies ResultadoApagarConversa;
+    if (pendente === null) return { transcricao: "nenhuma" } satisfies ResultadoApagarConversa;
+    return { transcricao: yield* limparFora(pendente) } satisfies ResultadoApagarConversa;
   });
+
+  // O que ficou por apagar fora do banco de uma execução anterior (o provider recusou, o app fechou no
+  // meio): tenta de novo, em segundo plano, porque abrir o provider para apagar pode levar segundos.
+  yield* Effect.gen(function* () {
+    for (const pendente of yield* historico.apagamentosPendentes) yield* limparFora(pendente);
+  }).pipe(Effect.withSpan("Conversas.retomarApagamentos", { root: true }), Effect.forkIn(escopoDaLayer));
 
   return Conversas.of({
     avaliar,

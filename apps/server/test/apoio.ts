@@ -41,6 +41,10 @@ export interface Registro {
   encerradas: number;
   /** As conversas que o provider apagou (`Driver.esquecer`), com a pasta: `<idNativo> em <pasta>`. */
   readonly esquecidas: Array<string>;
+  /** O provider recusa apagar (o `esquecer` devolve `false`; não entra em `esquecidas`). */
+  recusarEsquecer?: boolean;
+  /** Chamado a cada `esquecer`, para o teste esperar sem relógio. */
+  aoEsquecer?: (() => void) | undefined;
   /** Chamado a cada sessão encerrada, para o teste esperar pelo encerramento sem relógio. */
   aoEncerrar?: (() => void) | undefined;
   /** Derruba o "processo" da sessão aberta mais recente (a queda), com `causa` no `cause` da falha. */
@@ -65,7 +69,12 @@ export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerrad
 export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor.Driver => ({
   detectar: Effect.succeed({ provider, instalado: true, autenticado: true, versao: "0.0.0-teste", plano: "teste" }),
   esquecer: (idNativo, pasta) =>
-    Effect.sync(() => registro.esquecidas.push(`${idNativo} em ${pasta}`)).pipe(Effect.as(true)),
+    Effect.sync(() => {
+      const apagou = registro.recusarEsquecer !== true;
+      if (apagou) registro.esquecidas.push(`${idNativo} em ${pasta}`);
+      registro.aoEsquecer?.();
+      return apagou;
+    }),
   iniciar: (config) =>
     Effect.gen(function* () {
       if (provider === "codex") {

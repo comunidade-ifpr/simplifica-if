@@ -221,6 +221,7 @@ describe("conversas gravadas", () => {
               [
                 "acoes_ia",
                 "anexos_pasta",
+                "apagamentos_pendentes",
                 "avaliacoes",
                 "blocos_ia",
                 "conversas",

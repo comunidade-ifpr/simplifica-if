@@ -50,6 +50,15 @@ export interface Alteracao {
   readonly estado?: EstadoConversa;
 }
 
+/** O que falta apagar fora do banco depois de apagar a conversa: as cópias do Desfazer e o registro do provider. */
+export interface ApagamentoPendente {
+  readonly conversa: string;
+  readonly provider: Provider;
+  readonly idNativo: string | null;
+  readonly pastaTrabalho: string;
+  readonly tentativas: number;
+}
+
 export interface PreviaHistorico {
   readonly mensagens: number;
   readonly anexos: number;
@@ -80,9 +89,16 @@ export class Historico extends Context.Service<
     readonly itens: (conversa: string, depois?: number) => Effect.Effect<ReadonlyArray<ItemConversa>>;
     /**
      * Apaga a conversa, os eventos, as avaliações e os relatos dela e, se nenhuma outra conversa usa a
-     * mesma pasta, o registro dos anexos da pasta.
+     * mesma pasta, o registro dos anexos da pasta. Na mesma transação, grava o que falta apagar fora do
+     * banco (`apagamentos_pendentes`) e o devolve; nulo se a conversa não existia.
      */
-    readonly apagar: (id: string) => Effect.Effect<void>;
+    readonly apagar: (id: string) => Effect.Effect<ApagamentoPendente | null>;
+    /** O que ficou por apagar fora do banco, das conversas apagadas antes. */
+    readonly apagamentosPendentes: Effect.Effect<ReadonlyArray<ApagamentoPendente>>;
+    /** O que faltava apagar da conversa saiu: a pendência sai também. */
+    readonly concluirApagamento: (conversa: string) => Effect.Effect<void>;
+    /** Uma tentativa de apagar o que faltava não deu certo; fica para a próxima partida do servidor. */
+    readonly registrarTentativaApagamento: (conversa: string) => Effect.Effect<void>;
     /** O que apagar a conversa tira do app: as mensagens, os anexos registrados e se outra conversa usa a pasta. */
     readonly previa: (id: string) => Effect.Effect<PreviaHistorico>;
     /** As conversas que o banco dá como abertas (`pronta`, `respondendo`), de uma execução anterior. */
@@ -243,9 +259,37 @@ const make = Effect.gen(function* () {
     return yield* Effect.forEach(linhas, paraItem);
   }, Effect.orDie);
 
+  const lerPendentes = (filtro: string | null) =>
+    sql<{
+      conversa: string;
+      provider: string;
+      id_nativo: string | null;
+      pasta_trabalho: string;
+      tentativas: number;
+    }>`
+      SELECT conversa, provider, id_nativo, pasta_trabalho, tentativas FROM apagamentos_pendentes
+      WHERE ${filtro === null ? sql`1 = 1` : sql`conversa = ${filtro}`}
+      ORDER BY criado_em
+    `.pipe(
+      Effect.map((linhas) =>
+        linhas.map((linha): ApagamentoPendente => ({
+          conversa: linha.conversa,
+          provider: linha.provider as Provider,
+          idNativo: linha.id_nativo,
+          pastaTrabalho: linha.pasta_trabalho,
+          tentativas: linha.tentativas,
+        })),
+      ),
+    );
+
   const apagar = Effect.fn("Historico.apagar")(function* (id: string) {
+    const data = yield* agora;
     yield* sql.withTransaction(
       Effect.gen(function* () {
+        yield* sql`
+          INSERT OR REPLACE INTO apagamentos_pendentes (conversa, provider, id_nativo, pasta_trabalho, criado_em)
+          SELECT id, provider, id_nativo, pasta_trabalho, ${data} FROM conversas WHERE id = ${id}
+        `;
         yield* sql`
           DELETE FROM anexos_pasta
           WHERE pasta = (SELECT pasta_trabalho FROM conversas WHERE id = ${id})
@@ -258,6 +302,23 @@ const make = Effect.gen(function* () {
       }),
     );
     yield* descarregar(sql);
+    return (yield* lerPendentes(id))[0] ?? null;
+  }, Effect.orDie);
+
+  const apagamentosPendentes = lerPendentes(null).pipe(Effect.orDie);
+
+  const concluirApagamento = Effect.fn("Historico.concluirApagamento")(function* (conversa: string) {
+    yield* sql`DELETE FROM apagamentos_pendentes WHERE conversa = ${conversa}`;
+  }, Effect.orDie);
+
+  const registrarTentativaApagamento = Effect.fn("Historico.registrarTentativaApagamento")(function* (
+    conversa: string,
+  ) {
+    const data = yield* agora;
+    yield* sql`
+      UPDATE apagamentos_pendentes SET tentativas = tentativas + 1, ultima_tentativa_em = ${data}
+      WHERE conversa = ${conversa}
+    `;
   }, Effect.orDie);
 
   const previa = Effect.fn("Historico.previa")(function* (id: string) {
@@ -342,6 +403,9 @@ const make = Effect.gen(function* () {
     itens,
     abertas,
     apagar,
+    apagamentosPendentes,
+    concluirApagamento,
+    registrarTentativaApagamento,
     previa,
     avaliar,
     avaliacoes,
