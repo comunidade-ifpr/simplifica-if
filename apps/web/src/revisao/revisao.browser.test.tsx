@@ -1,7 +1,7 @@
 /**
  * Peças da tela "Revisar um PPC" no Chromium, sem servidor: a linha da pendência (a mensagem inteira
  * só aberta, o trecho do PPC com o rótulo, "Ver no PPC" e "Copiar trecho") e a faixa da IA pausada ("Ver andamento",
- * bloco a bloco, e "Encerrar leitura por aqui").
+ * bloco a bloco, e "Encerrar conferência por aqui").
  */
 import type { BlocoRevisaoIa, EstadoRevisaoIa, PendenciaViva } from "@simplifica-if/contratos-app";
 import { createRoot } from "react-dom/client";
@@ -176,7 +176,7 @@ const pausada = {
   atualizadaEm: "2026-11-22T10:05:00Z",
 } satisfies EstadoRevisaoIa;
 
-it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar leitura por aqui' encerra", async () => {
+it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar conferência por aqui' encerra", async () => {
   let encerrou = 0;
   const leitura = {
     provider: "claude",
@@ -199,18 +199,18 @@ it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar leitura
   } satisfies LeituraIa;
   montar(<FaixaIa leitura={leitura} faltam={2} />);
 
-  await expect.element(page.getByText("Leitura pausada — 1 de 3 temas")).toBeVisible();
+  await expect.element(page.getByText("Conferência pausada — 1 de 3 temas")).toBeVisible();
   // Quieta: o painel só abre a pedido.
   expect(page.getByRole("list", { name: "Andamento por tema" }).query()).toBeNull();
   await page.getByRole("button", { name: "Ver andamento" }).click();
   const painel = page.getByRole("list", { name: "Andamento por tema" });
   await expect.element(painel).toBeVisible();
-  await expect.element(painel.getByText("Lido em 30 s; 1 ponto encontrado.", { exact: false })).toBeVisible();
-  await expect.element(painel.getByText("A leitura parou neste tema.", { exact: false })).toBeVisible();
+  await expect.element(painel.getByText("Conferido em 30 s; 1 ponto encontrado.", { exact: false })).toBeVisible();
+  await expect.element(painel.getByText("A conferência parou neste tema.", { exact: false })).toBeVisible();
   await expect.element(painel.getByText(pausada.motivo)).toBeVisible();
   await expect.element(page.getByText(/Modelo claude-sonnet-5-5/)).toBeVisible();
 
-  await page.getByRole("button", { name: "Encerrar leitura por aqui" }).click();
+  await page.getByRole("button", { name: "Encerrar conferência por aqui" }).click();
   expect(encerrou).toBe(1);
 });
 
@@ -237,5 +237,5 @@ it("sem tema lido, a faixa pausada não oferece encerrar", async () => {
   } satisfies LeituraIa;
   montar(<FaixaIa leitura={leitura} faltam={3} />);
   await expect.element(page.getByRole("button", { name: "Retomar" })).toBeVisible();
-  expect(page.getByRole("button", { name: "Encerrar leitura por aqui" }).query()).toBeNull();
+  expect(page.getByRole("button", { name: "Encerrar conferência por aqui" }).query()).toBeNull();
 });

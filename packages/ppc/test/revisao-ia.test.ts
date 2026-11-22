@@ -560,7 +560,9 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(parcial.leituraIa).toBe("parcial");
     expect(parcial.aviso).toContain("No modo rápido, ficaram de fora 1 critério");
     // 84 - 12 do código - 3 lidos pela IA - 1 de fora.
-    expect(parcial.aviso).toContain("A leitura com IA parou antes do fim: 68 critérios ainda não foram lidos.");
+    expect(parcial.aviso).toContain(
+      "A conferência com IA parou antes do fim: 68 critérios ainda não foram conferidos.",
+    );
   });
 
   test('a ficha que falhou na conferência sai "Confira:" com o motivo, e a que atende não vira pendência', () => {

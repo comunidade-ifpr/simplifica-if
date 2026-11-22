@@ -65,16 +65,18 @@ describe("a estimativa na faixa", () => {
 
   test("todos os critérios: tempo e fração do limite, sem etapas nem 'referência provisória'", () => {
     const texto = textoEstimativa(estimativa, "completo", "Claude");
-    expect(texto).toBe("O Claude lê em cerca de 3 minutos, usando perto de 5 % do limite de 5 horas do plano Pro.");
+    expect(texto).toBe(
+      "O Claude confere em cerca de 3 minutos, usando perto de 5 % do limite de 5 horas do plano Pro.",
+    );
     expect(texto).not.toMatch(/etapa|provisória|janela/);
   });
 
   test("o escopo menor diz quantos lê, com plural", () => {
     expect(textoEstimativa(estimativa, "rapido", "Claude")).toBe(
-      "O Claude lê os 20 que mais devolvem PPC em cerca de 3 minutos, usando perto de 5 % do limite de 5 horas do plano Pro.",
+      "O Claude confere os 20 que mais devolvem PPC em cerca de 3 minutos, usando perto de 5 % do limite de 5 horas do plano Pro.",
     );
     expect(textoEstimativa({ ...estimativa, fichas: 1, minutos: 1 }, "rapido", "Claude")).toBe(
-      "O Claude lê o que mais devolve PPC em cerca de 1 minuto, usando perto de 5 % do limite de 5 horas do plano Pro.",
+      "O Claude confere o que mais devolve PPC em cerca de 1 minuto, usando perto de 5 % do limite de 5 horas do plano Pro.",
     );
   });
 
@@ -118,8 +120,8 @@ describe("o andamento", () => {
 
   test("o texto da faixa durante a leitura, com os temas lidos em paralelo", () => {
     expect(contagemTemas(estado)).toBe("1 de 3 temas");
-    expect(textoAndamento(estado)).toBe("Lendo Identificação — 1 de 3 temas");
-    expect(textoAndamento({ blocos: [bloco("a", 1, "Identificação", "pendente")] })).toBe("Lendo — 0 de 1 tema");
+    expect(textoAndamento(estado)).toBe("Conferindo Identificação — 1 de 3 temas");
+    expect(textoAndamento({ blocos: [bloco("a", 1, "Identificação", "pendente")] })).toBe("Conferindo — 0 de 1 tema");
     const paralelo = {
       blocos: [
         bloco("s-01-1", 1, "Identificação e oferta", "em_andamento"),
@@ -128,7 +130,7 @@ describe("o andamento", () => {
         bloco("j-04", 4, "Avaliação", "pendente"),
       ],
     };
-    expect(textoAndamento(paralelo)).toBe("Lendo Identificação e oferta e Matriz curricular — 1 de 4 temas");
+    expect(textoAndamento(paralelo)).toBe("Conferindo Identificação e oferta e Matriz curricular — 1 de 4 temas");
   });
 
   test("o painel 'Ver andamento': pronto, lendo (etapa e tempo no relógio da tela), parado e na fila", () => {
@@ -151,9 +153,9 @@ describe("o andamento", () => {
       agora,
     );
     expect(linhas.map((l) => [l.titulo, l.situacao, l.detalhe])).toEqual([
-      ["Identificação", "pronto", "Lido em 42 s; 2 pontos encontrados."],
-      ["Matriz", "lendo", "Recebendo a resposta; lendo há 1 min 30 s; último sinal da IA há 5 s."],
-      ["Estágio", "pausado", "A leitura parou neste tema."],
+      ["Identificação", "pronto", "Conferido em 42 s; 2 pontos encontrados."],
+      ["Matriz", "lendo", "Recebendo a resposta; conferindo há 1 min 30 s; último sinal da IA há 5 s."],
+      ["Estágio", "pausado", "A conferência parou neste tema."],
       ["Critérios transversais", "fila", "Na fila."],
     ]);
     expect(linhas[1]!.criterios).toEqual(["Critério um", "Critério dois"]);
@@ -168,10 +170,10 @@ describe("o andamento", () => {
 
   test("a frase do fim, com plural", () => {
     const r = { conferidosIa: 60, paraConferirIa: 12 } as ResultadoRevisaoPpc;
-    expect(textoConclusao("Claude", r, 5)).toBe("O Claude leu 72 critérios e encontrou mais 5 pontos.");
-    expect(textoConclusao("Claude", r, 1)).toBe("O Claude leu 72 critérios e encontrou mais 1 ponto.");
+    expect(textoConclusao("Claude", r, 5)).toBe("O Claude conferiu 72 critérios e encontrou mais 5 pontos.");
+    expect(textoConclusao("Claude", r, 1)).toBe("O Claude conferiu 72 critérios e encontrou mais 1 ponto.");
     expect(textoConclusao("Claude", { conferidosIa: 1, paraConferirIa: 0 } as ResultadoRevisaoPpc, 0)).toBe(
-      "O Claude leu 1 critério e não encontrou pontos novos.",
+      "O Claude conferiu 1 critério e não encontrou pontos novos.",
     );
   });
 });

@@ -61,7 +61,7 @@ export function CabecalhoDocumento({
             )}
             <MenuItem disabled={acoes.aoEnviarCorrigida === undefined} onClick={acoes.aoEnviarCorrigida}>
               Enviar a versão corrigida
-              {acoes.aoEnviarCorrigida === undefined ? " (pause a leitura com IA antes)" : ""}
+              {acoes.aoEnviarCorrigida === undefined ? " (pause a conferência com IA antes)" : ""}
             </MenuItem>
             {acoes.aoExportar === undefined ? null : (
               <MenuItem onClick={acoes.aoExportar}>Exportar discordâncias</MenuItem>

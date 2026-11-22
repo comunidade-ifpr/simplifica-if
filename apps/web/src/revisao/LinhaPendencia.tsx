@@ -458,7 +458,7 @@ function Detalhes({ viva, aoFechar }: { readonly viva: PendenciaViva; readonly a
         <dt className="text-muted-foreground">Quem apontou</dt>
         <dd>
           {p.origem === "ia"
-            ? "a leitura com IA, com o trecho e as normas conferidos pelo app"
+            ? "a conferência com IA, com o trecho e as normas conferidos pelo app"
             : "a conferência automática"}
         </dd>
         <dt className="text-muted-foreground">Tema</dt>

@@ -82,13 +82,13 @@ export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean): Tex
     saiDoApp: [
       `O texto do PPC convertido e ${plural(lista.pendencias.length, "pendência", "pendências")}`,
       "O que você marcou e o que escreveu ao discordar",
-      ...(r.leituraIa === "nenhuma" && !lendo ? [] : ["A leitura com IA, com o que ela guardou do PPC"]),
+      ...(r.leituraIa === "nenhuma" && !lendo ? [] : ["A conferência com IA, com o que ela guardou do PPC"]),
     ],
     ficaNoComputador: [
       { texto: "Seu arquivo", caminho: lista.arquivoOriginal },
       { texto: "A cópia comentada", caminho: r.arquivoComentado },
     ],
-    aviso: lendo ? "A leitura com IA está em andamento. O app para a leitura antes de apagar." : null,
+    aviso: lendo ? "A conferência com IA está em andamento. O app para a conferência antes de apagar." : null,
     opcaoPasta: null,
     confirmar: "Apagar a revisão",
   };
@@ -234,14 +234,14 @@ export function textosApagarRevisoes(
     saiDoApp: [
       `O texto de ${n} PPCs convertidos e ${plural(pendencias, "pendência", "pendências")}`,
       "O que você marcou e o que escreveu ao discordar",
-      ...(comIa ? ["As leituras com IA, com o que elas guardaram dos PPCs"] : []),
+      ...(comIa ? ["As conferências com IA, com o que elas guardaram dos PPCs"] : []),
     ],
     ficaNoComputador: [{ texto: `Seus ${n} arquivos e as cópias comentadas, nas pastas deles` }],
     aviso:
       lendo === 0
         ? null
         : lendo === 1
-          ? "Uma leitura com IA está em andamento. O app a para antes de apagar."
+          ? "Uma conferência com IA está em andamento. O app a para antes de apagar."
           : `${lendo} leituras com IA estão em andamento. O app as para antes de apagar.`,
     opcaoPasta: null,
     confirmar: `Apagar ${n} revisões`,

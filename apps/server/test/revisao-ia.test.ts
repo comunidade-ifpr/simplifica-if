@@ -497,7 +497,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         // Outra leitura do mesmo PPC não começa enquanto esta está por terminar.
         const outra = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
         const recusa = yield* rpc["revisaoPpc.iniciarIa"]({ revisao: outra.id }).pipe(Effect.flip);
-        assert.include(recusa.message, "Já há uma leitura com IA deste PPC por terminar");
+        assert.include(recusa.message, "Já há uma conferência com IA deste PPC por terminar");
         // "Encerrar leitura por aqui": a revisão sai; a lista, a mesma, fica com o que foi lido.
         yield* rpc["revisaoPpc.apagarIa"]({ revisao: preparada.id });
         const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista! });
@@ -507,7 +507,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         assert.strictEqual(achado.pendencia.origem, "ia");
         // A cópia comentada, ao abrir no Word, diz que a leitura parou antes do fim.
         const copia = yield* rpc["revisaoPpc.gerarCopia"]({ lista: pre.lista! });
-        assert.include(comentarios(copia.resultado.arquivoComentado), "A leitura com IA parou antes do fim");
+        assert.include(comentarios(copia.resultado.arquivoComentado), "A conferência com IA parou antes do fim");
         assert.strictEqual(copia.resultado.leituraIa, "parcial");
       }),
   );

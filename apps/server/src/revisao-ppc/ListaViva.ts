@@ -401,7 +401,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           if (rev !== null && rev.situacao === "em_andamento")
             return yield* falha(
               entrada.arquivo,
-              "A leitura com IA deste PPC está em andamento. Pause-a antes de revisar o arquivo de novo.",
+              "A conferência com IA deste PPC está em andamento. Pause-a antes de revisar o arquivo de novo.",
             );
         }
         // Mesmo arquivo, conteúdo, curso e forma: preserva os resultados da IA que a lista anterior já tinha.
@@ -798,7 +798,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     if (revisao.situacao === "em_andamento")
       return yield* falha(
         registro.arquivo,
-        `A leitura com IA deste PPC está em andamento. Pause-a antes de ${acao}; o que ela já leu fica na lista.`,
+        `A conferência com IA deste PPC está em andamento. Pause-a antes de ${acao}; o que ela já conferiu fica na lista.`,
       );
     if (revisao.situacao === "concluida") return { mantida: revisao.id, apagar: null as string | null };
     return { mantida: null as string | null, apagar: revisao.id };

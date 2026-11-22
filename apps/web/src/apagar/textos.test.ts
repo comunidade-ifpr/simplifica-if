@@ -163,10 +163,10 @@ describe("apagar a revisão", () => {
     expect(t.opcaoPasta).toBeNull();
   });
 
-  it("com a leitura com IA, ela sai junto; em andamento, o app a para antes", () => {
+  it("com a conferência com IA, ela sai junto; em andamento, o app a para antes", () => {
     const t = textosApagarRevisao(lista, true);
-    expect(t.saiDoApp).toContain("A leitura com IA, com o que ela guardou do PPC");
-    expect(t.aviso).toMatch(/para a leitura antes de apagar/);
+    expect(t.saiDoApp).toContain("A conferência com IA, com o que ela guardou do PPC");
+    expect(t.aviso).toMatch(/para a conferência antes de apagar/);
   });
 
   it("várias revisões: as pendências somadas e a leitura em andamento", () => {
@@ -178,9 +178,9 @@ describe("apagar a revisão", () => {
     expect(t.saiDoApp).toEqual([
       "O texto de 2 PPCs convertidos e 4 pendências",
       "O que você marcou e o que escreveu ao discordar",
-      "As leituras com IA, com o que elas guardaram dos PPCs",
+      "As conferências com IA, com o que elas guardaram dos PPCs",
     ]);
-    expect(t.aviso).toBe("Uma leitura com IA está em andamento. O app a para antes de apagar.");
+    expect(t.aviso).toBe("Uma conferência com IA está em andamento. O app a para antes de apagar.");
     expect(textosApagarRevisoes([{ lista, lendo: false }]).titulo).toBe("Apagar a revisão de “PPC.docx”?");
   });
 

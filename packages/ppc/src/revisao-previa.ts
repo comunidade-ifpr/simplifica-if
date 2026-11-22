@@ -697,7 +697,7 @@ function textoDoAviso(entrada: {
         // Com o modo rápido e a leitura encerrada antes do fim, as duas frases valem juntas.
         naoLidos > 0
           ? entrada.leituraIa === "parcial"
-            ? `A leitura com IA parou antes do fim: ${plural(naoLidos, "critério ainda não foi lido", "critérios ainda não foram lidos")}.`
+            ? `A conferência com IA parou antes do fim: ${plural(naoLidos, "critério ainda não foi conferido", "critérios ainda não foram conferidos")}.`
             : entrada.foraDaRevisao.length
               ? ""
               : "Os demais exigem leitura."

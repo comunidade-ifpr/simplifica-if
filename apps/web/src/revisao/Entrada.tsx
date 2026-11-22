@@ -170,7 +170,7 @@ export function Entrada({
                     dataCurta(lista.atualizadaEm),
                     leitura === undefined
                       ? null
-                      : `leitura com o ${nomeIa(leitura.provider)} ${leitura.situacao === "pausada" ? "pausada" : "em andamento"}`,
+                      : `conferência com o ${nomeIa(leitura.provider)} ${leitura.situacao === "pausada" ? "pausada" : "em andamento"}`,
                     avisoDeSaida(lista.atualizadaEm, agora),
                   ]}
                   fim={
@@ -192,7 +192,7 @@ export function Entrada({
                 titulo={nomeDoArquivo(e.arquivoOriginal)}
                 detalhes={[
                   dataCurta(e.atualizadaEm),
-                  `leitura com o ${nomeIa(e.provider)} ${e.situacao === "pausada" ? "pausada" : "em andamento"}`,
+                  `conferência com o ${nomeIa(e.provider)} ${e.situacao === "pausada" ? "pausada" : "em andamento"}`,
                 ]}
                 fim="Continuar"
                 aoAbrir={() => void continuar(e)}

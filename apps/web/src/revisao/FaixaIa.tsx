@@ -1,8 +1,8 @@
 /**
  * A faixa da IA, enquanto a leitura não leu tudo: quantos critérios faltam ler, a estimativa já
- * calculada e "Ler com o Claude"; as opções (a IA, o escopo e o detalhe do uso) ficam num popover.
+ * calculada e "Conferir com o Claude"; as opções (a IA, o escopo e o detalhe do uso) ficam num popover.
  * Durante a leitura, a faixa vira o andamento, com "Pausar"; pausada, diz por quê e oferece "Retomar"
- * e, com algum tema já lido, "Encerrar leitura por aqui"; se falhar, diz o que fazer. "Ver andamento"
+ * e, com algum tema já lido, "Encerrar conferência por aqui"; se falhar, diz o que fazer. "Ver andamento"
  * abre, sob demanda, o painel bloco a bloco (a tela continua quieta). O fim fica na tela
  * (`ConclusaoIa`), não aqui.
  */
@@ -72,7 +72,7 @@ const MARCA: Readonly<Record<LinhaAndamento["situacao"], string>> = {
 
 const ROTULO_SITUACAO: Readonly<Record<LinhaAndamento["situacao"], string>> = {
   pronto: "Pronto",
-  lendo: "Lendo",
+  lendo: "Conferindo",
   pausado: "Parou aqui",
   fila: "Na fila",
 };
@@ -123,7 +123,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
   const { estado, provider } = leitura;
   const [andamento, setAndamento] = useState(false);
   const nome = nomeIa(estado?.provider ?? provider);
-  const rotulo = "Leitura com IA";
+  const rotulo = "Conferência com IA";
   const faltamTexto = `${faltam === 1 ? "Falta" : "Faltam"} ${plural(faltam, "critério que pede", "critérios que pedem")} leitura.`;
   const painel =
     andamento && estado !== undefined && estado.blocos.length > 0 ? <PainelAndamento estado={estado} /> : null;
@@ -137,13 +137,13 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
         <div className="flex min-w-0 flex-col gap-1">
           <p className="flex items-center gap-2 font-semibold text-body" role="status">
             {pausada ? null : <Spinner />}
-            {pausada ? `Leitura pausada — ${contagemTemas(estado)}` : textoAndamento(estado)}
+            {pausada ? `Conferência pausada — ${contagemTemas(estado)}` : textoAndamento(estado)}
           </p>
           <p className="max-w-[68ch] text-muted-foreground text-small">
             {pausada
-              ? (estado.motivo ?? "Você pausou a leitura.") +
-                (estado.limite ? " O que já foi lido fica guardado; retome quando o limite renovar." : "")
-              : `O ${nome} está lendo os temas um a um. Você pode trabalhar na lista enquanto isso.`}
+              ? (estado.motivo ?? "Você pausou a conferência.") +
+                (estado.limite ? " O que já foi conferido fica guardado; retome quando o limite renovar." : "")
+              : `O ${nome} está conferindo os temas um a um. Você pode trabalhar na lista enquanto isso.`}
           </p>
           <ErroDaLeitura leitura={leitura} />
         </div>
@@ -151,7 +151,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
           {verAndamento}
           {podeEncerrar ? (
             <Button variant="ghost" disabled={leitura.ocupada} onClick={leitura.encerrar}>
-              Encerrar leitura por aqui
+              Encerrar conferência por aqui
             </Button>
           ) : null}
           {pausada ? (
@@ -172,9 +172,9 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
     return (
       <Caixa rotulo={rotulo} abaixo={painel}>
         <div className="flex min-w-0 flex-col gap-1">
-          <p className="font-semibold text-body">A leitura com o {nome} não terminou.</p>
+          <p className="font-semibold text-body">A conferência com o {nome} não terminou.</p>
           <p className="max-w-[68ch] text-muted-foreground text-small">
-            {estado.motivo ?? "A IA parou no meio."} O que já foi lido fica guardado. Tente de novo; se o erro
+            {estado.motivo ?? "A IA parou no meio."} O que já foi conferido fica guardado. Tente de novo; se o erro
             continuar, confira a IA em Configurações › Sua IA.
           </p>
         </div>
@@ -189,7 +189,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
     return (
       <Caixa rotulo={rotulo}>
         <p className="max-w-[68ch] text-body">
-          {faltamTexto} Para lê-los, conecte uma IA (Claude, ChatGPT ou Gemini) em Configurações › Sua IA.
+          {faltamTexto} Para conferi-los, conecte uma IA (Claude, ChatGPT ou Gemini) em Configurações › Sua IA.
         </p>
         <Link to="/configuracoes" className={buttonVariants({ variant: "outline", className: "shrink-0" })}>
           Abrir Configurações
@@ -223,7 +223,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
         </p>
         {leitura.estimando || (preparada === undefined && leitura.erro === undefined) ? (
           <p role="status" className="flex items-center gap-2 text-muted-foreground text-small">
-            <Spinner className="size-3.5" /> Calculando quanto a leitura usa do seu plano…
+            <Spinner className="size-3.5" /> Calculando quanto a conferência usa do seu plano…
           </p>
         ) : null}
         <ErroDaLeitura leitura={leitura} />
@@ -231,7 +231,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
       <div className="flex shrink-0 items-center gap-2">
         <Button disabled={preparada === undefined || leitura.estimando || leitura.ocupada} onClick={leitura.iniciar}>
           {leitura.ocupada ? <Spinner /> : <MarcaIa provider={estado?.provider ?? provider} />}
-          Ler com o {nome}
+          Conferir com o {nome}
         </Button>
         <Opcoes leitura={leitura} faltam={faltam} />
       </div>
@@ -262,7 +262,7 @@ function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly fal
         <SlidersHorizontalIcon /> Opções
       </PopoverTrigger>
       <PopoverContent className="flex w-96 flex-col gap-4">
-        <PopoverTitle className="font-semibold text-heading">Opções da leitura</PopoverTitle>
+        <PopoverTitle className="font-semibold text-heading">Opções da conferência</PopoverTitle>
         {leitura.usaveis.length > 1 ? (
           <div className="flex flex-col gap-2">
             <p className="font-semibold text-small">Com qual IA</p>
@@ -279,9 +279,9 @@ function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly fal
           </div>
         ) : null}
         <div className="flex flex-col gap-2">
-          <p className="font-semibold text-small">O que ler</p>
+          <p className="font-semibold text-small">O que conferir</p>
           <Segmented<ModoRevisaoIa>
-            rotuloAria="O que ler"
+            rotuloAria="O que conferir"
             valor={leitura.modo}
             aoMudar={leitura.escolherModo}
             opcoes={[

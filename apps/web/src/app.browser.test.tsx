@@ -192,9 +192,9 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
 
   // A faixa da IA já traz a estimativa, sem "etapas" nem "referência provisória".
-  const faixa = page.getByRole("region", { name: "Leitura com IA" });
-  await expect.element(faixa.getByText(/O Claude lê .* em cerca de \d+ minutos?, usando perto de/)).toBeVisible();
-  await expect.element(faixa.getByRole("button", { name: "Ler com o Claude" })).toBeEnabled();
+  const faixa = page.getByRole("region", { name: "Conferência com IA" });
+  await expect.element(faixa.getByText(/O Claude confere .* em cerca de \d+ minutos?, usando perto de/)).toBeVisible();
+  await expect.element(faixa.getByRole("button", { name: "Conferir com o Claude" })).toBeEnabled();
   expect(faixa.element().textContent).not.toMatch(/etapa|provisória/);
 
   // O curso não identificado vira um bloqueio só, com as pendências que dependem dele.

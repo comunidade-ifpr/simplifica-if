@@ -74,8 +74,8 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 │  ▮▮▮▮ ▮▮▮▮▮▮ ▯▯▯▯▯▯▯▯ ▮▮▯▯▯▯▯ ▯▯▯▯▯▯▯▯▯ ▯▯▯▯▯ ▯▯▯▯▯▯▯▯▯▯ …        (84 traços)     │
 │                                                                                    │
 │  ┌──────────────────────────────────────────────────────────────────────────────┐ │
-│  │ Faltam 72 critérios que pedem leitura. O Claude lê em cerca de 6 minutos,    │ │
-│  │ usando perto de 14 % do seu limite de 5 horas.      [Ler com o Claude]  Opções│ │
+│  │ Faltam 72 critérios que pedem leitura. O Claude confere em cerca de 6 min,   │ │
+│  │ usando perto de 14 % do seu limite de 5 horas. [Conferir com o Claude] Opções│ │
 │  └──────────────────────────────────────────────────────────────────────────────┘ │
 │                                                                                    │
 │  ┌ Não reconhecemos o curso no Catálogo Nacional (CNCT) ────────────────────────┐ │
@@ -111,7 +111,7 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 ### Depois da IA
 
 - A régua se preenche ao vivo, e a faixa da IA vira o andamento: "Lendo Matriz curricular (5 de 17 temas)", com "Pausar".
-- No fim, a faixa diz o resultado em uma linha e some ao fechar: "O Claude leu 72 critérios e encontrou mais 5 pontos." Os pontos novos ganham a marca "Novo" até serem abertos.
+- No fim, a faixa diz o resultado em uma linha e some ao fechar: "O Claude conferiu 72 critérios e encontrou mais 5 pontos." Os pontos novos ganham a marca "Novo" até serem abertos.
 - O título passa a ser "6 para corrigir e 9 para conferir, em 84 critérios".
 - **Opções** (popover) reúnem a escolha da IA (padrão: a das Configurações), o escopo ("O que mais devolve PPC" / "Todos os 72") e o detalhe do uso do plano. A estimativa aparece já calculada na faixa; o botão "Ver quanto vai usar do plano" sai.
 
@@ -203,7 +203,7 @@ A Open Sans continua como regra de marca (`ifpr-design`), mas com o eixo de larg
 | "Revisão prévia, sem IA: o Simplifica IF confere…" (fixo) | "Confira seu PPC contra as normas antes de enviar à PROENS." |
 | CT-CURR-16, CT-IDENT-01 na linha | some; o código vai para o "⋯ > Detalhes" da pendência, junto com "Isto está errado" |
 | "conferido pela base" / "avaliação da IA" | some da linha; a régua e a marca "Novo" carregam a origem |
-| "Gerar relatório com IA (revisão completa)" | "Ler com o Claude" (o nome da IA escolhida) |
+| "Gerar relatório com IA (revisão completa)" | "Conferir com o Claude" (o nome da IA escolhida, com a marca dela) |
 | "Ver quanto vai usar do plano" | a estimativa já escrita na faixa |
 | "1 critérios em 1 etapas… janela de 5 horas do plano Pro (referência provisória…)" | "Cerca de 6 minutos, perto de 14 % do seu limite de 5 horas. Dá para pausar." |
 | "Os 68 critérios que exigem leitura." | "Os 72 critérios que pedem leitura", com o número vindo da base |
@@ -218,7 +218,7 @@ A Open Sans continua como regra de marca (`ifpr-design`), mas com o eixo de larg
 | "Gerar a cópia comentada com a situação atual" | some: "Abrir no Word" gera a versão atual |
 | "Apagar esta lista" | "Apagar esta revisão" (no ⋯) |
 
-Uma ação guarda o mesmo nome do começo ao fim. "Ler com o Claude" leva a "O Claude leu…"; "Feito" leva a "4 de 11 feitas".
+Uma ação guarda o mesmo nome do começo ao fim. "Conferir com o Claude" leva a "Conferindo…" e a "O Claude conferiu…"; "Feito" leva a "4 de 11 feitas".
 
 ## Fases
 
@@ -229,7 +229,7 @@ Uma ação guarda o mesmo nome do começo ao fim. "Ler com o Claude" leva a "O C
 - Ordenar por gravidade dentro de cada parada e abrir o roteiro na primeira parada que tenha "Corrigir".
 - Tirar da linha os selos "Aberta", o código CT-xx, "conferido pela base" e a frase de `ROTULO_LOCAL`. Juntar "Vou ajustar" e "Já resolvi" em "Feito". Levar "Discordar" para o menu.
 - Esconder o caminho absoluto, a nota de 30 dias e "Apagar" (para o ⋯). Juntar as ressalvas em "Sobre esta revisão".
-- Dar retorno ao fim da IA ("O Claude leu… e encontrou mais N").
+- Dar retorno ao fim da IA ("O Claude conferiu… e encontrou mais N").
 - Bugs: o "68" fixo, "critérios/etapas" sem plural, "linha(s)", o ID cru como fonte, o `tituloFicha` caindo no código e a estimativa preparada escondendo "Continuar".
 
 ### Fase 2: sistema visual

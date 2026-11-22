@@ -32,19 +32,19 @@ export function limiteDoPlano(nomeJanela: string): string {
 }
 
 /**
- * A segunda frase da faixa: "O Claude lê em cerca de 6 minutos, usando perto de 14 % do limite de 5
- * horas do plano Pro." No escopo menor, diz quantos lê: "O Claude lê os 30 que mais devolvem PPC em cerca de…".
+ * A segunda frase da faixa: "O Claude confere em cerca de 6 minutos, usando perto de 14 % do limite de 5
+ * horas do plano Pro." No escopo menor, diz quantos confere: "O Claude confere os 30 que mais devolvem PPC em cerca de…".
  */
 export function textoEstimativa(e: EstimativaRevisaoIa, modo: ModoRevisaoIa, nomeIa: string): string {
   const quais =
     modo === "rapido" ? ` ${e.fichas === 1 ? "o que mais devolve" : `os ${e.fichas} que mais devolvem`} PPC` : "";
-  return `O ${nomeIa} lê${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${limiteDoPlano(e.nomeJanela)}.`;
+  return `O ${nomeIa} confere${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${limiteDoPlano(e.nomeJanela)}.`;
 }
 
 /** O detalhe do uso, no "Opções": de onde vem a estimativa e, quando se sabe, o preço pago por uso. */
 export function detalheEstimativa(e: EstimativaRevisaoIa): string {
   const custo = e.custoUsd === null ? "" : ` Pago por uso, custaria cerca de ${dolares(e.custoUsd)}.`;
-  return `Estimativa aproximada: o uso por critério vem de medições reais, mas as empresas de IA não publicam o tamanho do limite do plano. Dá para pausar, e o que já foi lido fica guardado.${custo}`;
+  return `Estimativa aproximada: o uso por critério vem de medições reais, mas as empresas de IA não publicam o tamanho do limite do plano. Dá para pausar, e o que já foi conferido fica guardado.${custo}`;
 }
 
 /** "Cerca de 10 segundos." (as ações por pendência); sem IA, nada a estimar. */
@@ -86,7 +86,7 @@ const juntar = (partes: ReadonlyArray<string>): string =>
   partes.length <= 1 ? (partes[0] ?? "") : `${partes.slice(0, -1).join(", ")} e ${partes.at(-1)!}`;
 
 /**
- * "Lendo Identificação e oferta e Matriz curricular — 1 de 4 temas": os temas em andamento (os blocos
+ * "Conferindo Identificação e oferta e Matriz curricular — 1 de 4 temas": os temas em andamento (os blocos
  * vão em paralelo); sem bloco em andamento, só a contagem.
  */
 export function textoAndamento(estado: Pick<EstadoRevisaoIa, "blocos">): string {
@@ -94,8 +94,8 @@ export function textoAndamento(estado: Pick<EstadoRevisaoIa, "blocos">): string 
     .filter((t) => t.emAndamento)
     .map((t) => t.tema);
   return atuais.length === 0
-    ? `Lendo — ${contagemTemas(estado)}`
-    : `Lendo ${juntar(atuais)} — ${contagemTemas(estado)}`;
+    ? `Conferindo — ${contagemTemas(estado)}`
+    : `Conferindo ${juntar(atuais)} — ${contagemTemas(estado)}`;
 }
 
 /** Os blocos prontos (o "Encerrar leitura por aqui" só aparece com algum). */
@@ -156,7 +156,7 @@ export function linhasAndamento(
             ? "nenhum ponto"
             : plural(b.pendenciasEncontradas, "ponto encontrado", "pontos encontrados");
         const tempo = b.segundos === null ? "" : ` em ${duracao(b.segundos)}`;
-        return { ...base, situacao: "pronto", detalhe: `Lido${tempo}; ${pontos}.` };
+        return { ...base, situacao: "pronto", detalhe: `Conferido${tempo}; ${pontos}.` };
       }
       if (b.estado === "em_andamento") {
         const ha = desde(b.iniciadoEm, agora);
@@ -164,13 +164,13 @@ export function linhasAndamento(
         const etapa = ETAPA[b.etapa ?? "aguardando"];
         const partes = [
           `${etapa.charAt(0).toUpperCase()}${etapa.slice(1)}`,
-          ha === null ? "" : `lendo há ${duracao(ha)}`,
+          ha === null ? "" : `conferindo há ${duracao(ha)}`,
           sinal === null ? "" : `último sinal da IA há ${duracao(sinal)}`,
         ].filter(Boolean);
         return { ...base, situacao: "lendo", detalhe: `${partes.join("; ")}.` };
       }
       if (estado.blocoPausado === b.id && (estado.situacao === "pausada" || estado.situacao === "falhou"))
-        return { ...base, situacao: "pausado", detalhe: "A leitura parou neste tema." };
+        return { ...base, situacao: "pausado", detalhe: "A conferência parou neste tema." };
       return { ...base, situacao: "fila", detalhe: "Na fila." };
     });
 }
@@ -184,12 +184,12 @@ export function rodapeAndamento(estado: Pick<EstadoRevisaoIa, "modelo" | "uso">)
   return estado.modelo === null ? `Uso: ${uso}.` : `Modelo ${estado.modelo}. Uso: ${uso}.`;
 }
 
-/** "O Claude leu 72 critérios e encontrou mais 5 pontos." */
+/** "O Claude conferiu 72 critérios e encontrou mais 5 pontos." */
 export function textoConclusao(nomeIa: string, r: ResultadoRevisaoPpc, encontrados: number): string {
   const lidos = r.conferidosIa + r.paraConferirIa;
   const achou =
     encontrados === 0 ? "não encontrou pontos novos" : `encontrou mais ${plural(encontrados, "ponto", "pontos")}`;
-  return `O ${nomeIa} leu ${plural(lidos, "critério", "critérios")} e ${achou}.`;
+  return `O ${nomeIa} conferiu ${plural(lidos, "critério", "critérios")} e ${achou}.`;
 }
 
 /**

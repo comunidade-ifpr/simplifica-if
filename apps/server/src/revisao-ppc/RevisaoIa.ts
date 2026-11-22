@@ -121,7 +121,7 @@ export const DIAS_PREPARADA = 7;
 const MOTIVO_APP_FECHADO = "A revisão foi interrompida quando o app foi fechado. O que já foi revisado está guardado.";
 const MOTIVO_PAUSA = "Pausada por você. O que já foi revisado está guardado.";
 const SEM_LISTA =
-  "A lista de pendências deste PPC foi apagada ou trocada (outro curso, outra versão do arquivo). Revise o PPC de novo para começar outra leitura com IA.";
+  "A lista de pendências deste PPC foi apagada ou trocada (outro curso, outra versão do arquivo). Revise o PPC de novo para começar outra conferência com IA.";
 
 /** O que o estado mostra de cada bloco do plano, guardado em memória (o plano não se relê a cada mudança). */
 interface ResumoBloco {
@@ -592,7 +592,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       if (outra !== null && outra.situacao !== "concluida" && outra.situacao !== "falhou")
         return yield* falha(
           registro.arquivo,
-          "Já há uma leitura com IA deste PPC por terminar. Retome-a ou encerre-a antes de começar outra.",
+          "Já há uma conferência com IA deste PPC por terminar. Retome-a ou encerre-a antes de começar outra.",
         );
     }
     yield* listas.ligarRevisao(lista.id, registro.id, registro.provider, registro.modelo);

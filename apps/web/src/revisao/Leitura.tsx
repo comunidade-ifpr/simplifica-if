@@ -314,7 +314,7 @@ export function Leitura({
       <p>
         {!passouPelaIa(r)
           ? `A régua tem os ${r.totalCriterios} critérios da revisão. O app confere ${r.conferidos} sozinho; os demais pedem leitura, sua ou da IA.`
-          : `A régua tem os ${r.totalCriterios} critérios da revisão: ${r.conferidos} conferidos pelo app e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${r.paraConferirIa ? ` ${plural(r.paraConferirIa, "ficou", "ficaram")} para você conferir.` : ""}${r.leituraIa === "parcial" ? ` A leitura com IA ainda não leu ${plural(naoLidos(r), "critério", "critérios")}.` : ""}`}
+          : `A régua tem os ${r.totalCriterios} critérios da revisão: ${r.conferidos} conferidos pelo app e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${r.paraConferirIa ? ` ${plural(r.paraConferirIa, "ficou", "ficaram")} para você conferir.` : ""}${r.leituraIa === "parcial" ? ` A conferência com IA ainda não passou por ${plural(naoLidos(r), "critério", "critérios")}.` : ""}`}
       </p>
       <p>
         Seu arquivo não é alterado: os comentários vão para uma cópia, “{nomeDoArquivo(r.arquivoComentado)}”, na mesma
