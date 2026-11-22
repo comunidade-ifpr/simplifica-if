@@ -13,6 +13,7 @@ import * as Stream from "effect/Stream";
 import { codigoDoErro, FalhaDiagnostico, FalhaPasta } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import { traduzir, traduzirStream } from "../src/handlers.ts";
+import { resumoDaFalha } from "../src/observabilidade/resumoDaFalha.ts";
 
 interface Registro {
   readonly mensagem: unknown;
@@ -67,7 +68,11 @@ describe("traduzir", () => {
         description: `ENOENT: no such file or directory, copyfile '${pastaTarefa}/anexo sigiloso.pdf'`,
       });
       const falhas = [
-        new FalhaPasta({ motivo: "Não foi possível copiar o arquivo para a pasta da tarefa.", cause: plataforma }),
+        // A `FalhaPasta` já nasce com o resumo (o span dela o grava no trace); o log o repete.
+        new FalhaPasta({
+          motivo: "Não foi possível copiar o arquivo para a pasta da tarefa.",
+          cause: resumoDaFalha(plataforma),
+        }),
         new FalhaDiagnostico({ motivo: "Não foi possível gravar o diagnóstico.", cause: plataforma }),
         new Motor.FalhaProvider({
           provider: "claude",

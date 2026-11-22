@@ -7,12 +7,14 @@ const EntradaSessao = Schema.Struct({ sessao: Schema.String });
 
 /**
  * Uma recusa da pasta de trabalho (criar, anexar, ver, desfazer), com a frase para a pessoa em
- * `motivo`. A falha de arquivo embaixo dela fica em `cause`, que o servidor registra e não manda à
- * interface (pode ter caminho e pilha).
+ * `motivo`. Em `cause`, só o resumo da falha de arquivo embaixo dela (o `resumoDaFalha` do servidor:
+ * tipo, motivo, método e chamada do sistema), nunca o erro original: ele traz o caminho, e o span que
+ * termina com a `FalhaPasta` grava a cadeia de `cause` inteira no trace. O servidor não manda o
+ * `cause` à interface.
  */
 export class FalhaPasta extends Schema.TaggedError<FalhaPasta>()("FalhaPasta", {
   motivo: Schema.String,
-  cause: Schema.optional(Schema.Defect()),
+  cause: Schema.optional(Schema.String),
 }) {
   override get message(): string {
     return this.motivo;

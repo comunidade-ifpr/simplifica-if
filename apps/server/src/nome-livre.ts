@@ -32,7 +32,9 @@ export class NomesEsgotados extends Schema.TaggedError<NomesEsgotados>()("NomesE
   primeiro: Schema.String,
 }) {
   override get message(): string {
-    return `não há nome livre para ${this.primeiro} em ${this.pasta}`;
+    // Sem a pasta nem o nome: a mensagem vai ao evento `exception` do span, e o nome vem do anexo, do
+    // pedido ou do `.docx` da pessoa.
+    return "não há nome livre na pasta";
   }
 }
 
@@ -46,7 +48,7 @@ const ocupado = (erro: unknown): boolean => PlatformError.isPlatformError(erro) 
  */
 export const criarSemColisao = Effect.fn("nomeLivre.criarSemColisao")(function* <A, E, R>(
   opcoes: {
-    /** Onde se cria (para a mensagem de `NomesEsgotados`). */
+    /** Onde se cria (vai a `NomesEsgotados`, fora da mensagem). */
     readonly pasta: string;
     readonly nomes: (n: number) => string;
     readonly de?: number;

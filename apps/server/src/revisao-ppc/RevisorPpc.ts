@@ -184,13 +184,17 @@ function rodarNoTrabalhador(
 
 /* ============================================================ arquivo */
 
-/** A cópia comentada não pôde ser gravada (a pasta não aceita gravação, disco cheio). */
+/**
+ * A cópia comentada não pôde ser gravada (a pasta não aceita gravação, disco cheio). Em `cause`, só o
+ * resumo da falha (`resumoDaFalha`), e a mensagem sem o destino: o span grava a mensagem e a cadeia de
+ * `cause` no trace, e o destino fica ao lado do `.docx` da pessoa, fora das pastas do app.
+ */
 class CopiaNaoGravada extends Schema.TaggedError<CopiaNaoGravada>()("CopiaNaoGravada", {
   destino: Schema.String,
-  cause: Schema.Defect(),
+  cause: Schema.String,
 }) {
   override get message(): string {
-    return `a cópia comentada não foi gravada em ${this.destino}`;
+    return "a cópia comentada não foi gravada";
   }
 }
 
@@ -257,7 +261,7 @@ const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: str
     const gravada = yield* Effect.tryPromise({
       try: async () =>
         (await ocupacao(destino, conhecida)) === "outro" ? false : gravarPorCima(pasta, destino, bytes),
-      catch: (cause) => new CopiaNaoGravada({ destino, cause }),
+      catch: (falha) => new CopiaNaoGravada({ destino, cause: resumoDaFalha(falha) }),
     });
     if (gravada) {
       yield* copias.registrar(destino, sha256);

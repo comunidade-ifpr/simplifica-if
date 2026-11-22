@@ -439,9 +439,17 @@ export const removerSemSeguirLinks = Effect.fn("PastasTrabalho.removerSemSeguirL
 });
 
 /**
+ * A falha de arquivo vira a frase para a pessoa, com o resumo da falha em `cause` (`resumoDaFalha`): o
+ * erro original traz o caminho, que o evento `exception` do span gravaria no trace.
+ */
+const resumida = (motivo: string) => (falha: unknown) => new FalhaPasta({ motivo, cause: resumoDaFalha(falha) });
+const comMotivo = (motivo: string) => Effect.mapError(resumida(motivo));
+
+/**
  * Copia `origem` para `destino` sem sobrescrever: o destino é aberto com `wx` antes de ler a origem
  * (`AlreadyExists` se o nome está ocupado, sem tocá-lo), e a escrita vai pelo descritor aberto, sem
- * seguir um link plantado depois. A cópia pela metade sai.
+ * seguir um link plantado depois. A cópia pela metade sai. A falha de leitura da origem (o anexo, fora
+ * das pastas do app) sai resumida, já neste span: o `PlatformError` dela traz o caminho do original.
  */
 const copiarSemSobrescrever = Effect.fn("PastasTrabalho.copiarSemSobrescrever")(function* (
   origem: string,
@@ -453,7 +461,10 @@ const copiarSemSobrescrever = Effect.fn("PastasTrabalho.copiarSemSobrescrever")(
     Effect.gen(function* () {
       const saida = yield* fs.open(destino, { flag: "wx" });
       criado = true;
-      yield* fs.stream(origem).pipe(Stream.runForEach((pedaco) => saida.writeAll(pedaco)));
+      yield* fs.stream(origem).pipe(
+        Stream.mapError(resumida("Não foi possível ler o arquivo original.")),
+        Stream.runForEach((pedaco) => saida.writeAll(pedaco)),
+      );
     }),
   ).pipe(Effect.onError(() => (criado ? Effect.ignore(fs.remove(destino, { force: true })) : Effect.void)));
 });
@@ -572,9 +583,6 @@ export const contadorDeAndamento = Effect.gen(function* () {
     );
   return { contando, emAndamento: Ref.get(rodando).pipe(Effect.map((n) => n > 0)) };
 });
-
-/** A falha de arquivo vira a frase para a pessoa, com a falha em `cause`. */
-const comMotivo = (motivo: string) => Effect.mapError((cause: unknown) => new FalhaPasta({ motivo, cause }));
 
 export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPastas) {
   const limites = { ...LIMITES, ...opcoes.limites };
