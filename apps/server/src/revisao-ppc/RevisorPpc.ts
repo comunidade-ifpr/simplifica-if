@@ -45,7 +45,15 @@ import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as NodeCrypto from "node:crypto";
 import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
-import type { EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
+import { preConferir } from "@simplifica-if/ppc/pre-conferencia";
+import {
+  type EntradaIa,
+  type MarcaPendencia,
+  montarResultado,
+  pendenciasProvisorias,
+  type RevisaoPrevia,
+  verificacaoDaBase,
+} from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
 import * as CopiasComentadas from "../persistencia/CopiasComentadas.ts";
 import { comNumero, NomesEsgotados } from "../nome-livre.ts";
@@ -90,6 +98,16 @@ export interface EntradaRevisarArquivo extends EntradaRevisao {
   readonly aoEtapa?: AoEtapa;
 }
 
+/** O que a montagem leve recebe: o texto já convertido da lista e o curso dela, sem o `.docx`. */
+export interface EntradaMontagem {
+  readonly arquivo: string;
+  readonly markdown: string;
+  readonly curso: ResultadoRevisaoPpc["curso"];
+  /** A cópia comentada atual (fica a mesma: a montagem não grava cópia). */
+  readonly arquivoComentado: string;
+  readonly ia: EntradaIa;
+}
+
 export class RevisorPpc extends Context.Service<
   RevisorPpc,
   {
@@ -104,6 +122,13 @@ export class RevisorPpc extends Context.Service<
      * As mesmas conferências do `revisar` (arquivo liberado, tamanho, Worker com limites).
      */
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
+    /**
+     * A lista e a régua refeitas com os resultados da IA, sem Worker, sem reler o `.docx` e sem cópia
+     * comentada (a mesclagem de cada bloco pronto da leitura com IA): a pré-conferência roda de novo
+     * sobre o Markdown da lista (dezenas de milissegundos), com a base já montada. As pendências saem com
+     * `noDocumento` provisório, que a próxima cópia comentada corrige.
+     */
+    readonly montar: (entrada: EntradaMontagem) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
     /**
@@ -395,8 +420,46 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     revisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
+  // A parte da base dos verificadores que não depende do PPC, montada uma vez (o registro e a vigência).
+  const verificacao = yield* Effect.cached(base.pipe(Effect.map((dados) => ({ dados, ...verificacaoDaBase(dados) }))));
+
+  const montar = Effect.fn("RevisorPpc.montar")(function* (entrada: EntradaMontagem) {
+    const { dados, registro, relacoes, vigencia } = yield* verificacao.pipe(
+      Effect.mapError(
+        () =>
+          new FalhaRevisaoPpc({
+            arquivo: entrada.arquivo,
+            motivo: "A base de normas do Simplifica IF não pôde ser lida. Reinicie o app.",
+          }),
+      ),
+    );
+    const slug = entrada.curso.cnct?.slug ?? null;
+    const cnct = slug === null ? null : (dados.cncts.find((c) => c.slug === slug) ?? null);
+    const preConferencia = preConferir(entrada.markdown, {
+      cnct,
+      forma: entrada.curso.forma ?? "",
+      registro,
+      relacoes,
+      vigencia,
+    });
+    const montagem = montarResultado(preConferencia, entrada.ia, dados, {
+      markdown: entrada.markdown,
+      cnct: slug,
+      registro,
+    });
+    const { itens: _, temasForaDaRevisao: __, ...contagens } = montagem;
+    return {
+      arquivoOriginal: entrada.arquivo,
+      arquivoComentado: entrada.arquivoComentado,
+      curso: entrada.curso,
+      pendencias: pendenciasProvisorias(montagem, slug),
+      ...contagens,
+      dataBase: dados.dataBase,
+    } satisfies ResultadoRevisaoPpc;
+  });
+
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, ocupada, exigirLiberado });
+  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, montar, ocupada, exigirLiberado });
 });
 
 /**

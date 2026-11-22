@@ -20,11 +20,14 @@ const MAXIMO_OPCOES = 8;
 export function BloqueioCurso({
   pendencias,
   conferindo,
+  emLeitura = false,
   aoEscolher,
 }: {
   readonly pendencias: ReadonlyArray<PendenciaViva>;
   /** A lista está sendo refeita com o curso escolhido. */
   readonly conferindo: boolean;
+  /** A leitura com IA está em andamento: trocar o curso espera a pausa. */
+  readonly emLeitura?: boolean;
   readonly aoEscolher: (slug: string) => void;
 }) {
   const [verPendencias, setVerPendencias] = useState(false);
@@ -43,9 +46,14 @@ export function BloqueioCurso({
           Sem ele, a denominação, o eixo, a carga horária mínima e os requisitos de ingresso ficaram sem conferência.
           Confira o nome do curso: ele precisa estar como no CNCT.
         </p>
+        {emLeitura ? (
+          <p className="max-w-[68ch] pl-6 text-muted-foreground text-small">
+            Para trocar o curso, pause antes a leitura com IA; o que ela já leu fica na lista.
+          </p>
+        ) : null}
       </div>
       <div className="flex flex-col gap-3 pl-6 sm:flex-row sm:items-start sm:justify-between">
-        <EscolhaCnct conferindo={conferindo} aoEscolher={aoEscolher} />
+        <EscolhaCnct conferindo={conferindo} bloqueado={emLeitura} aoEscolher={aoEscolher} />
         {pendencias.length ? (
           <button
             type="button"
@@ -76,9 +84,11 @@ export function BloqueioCurso({
 /** A busca no CNCT da base: uma caixa de texto com a lista de sugestões (`combobox` com `listbox`). */
 function EscolhaCnct({
   conferindo,
+  bloqueado,
   aoEscolher,
 }: {
   readonly conferindo: boolean;
+  readonly bloqueado: boolean;
   readonly aoEscolher: (slug: string) => void;
 }) {
   const indice = useIndiceExplorar();
@@ -159,7 +169,7 @@ function EscolhaCnct({
           ) : null}
         </div>
         {escolhido === undefined ? null : (
-          <Button disabled={conferindo} onClick={() => aoEscolher(escolhido.slug)}>
+          <Button disabled={conferindo || bloqueado} onClick={() => aoEscolher(escolhido.slug)}>
             {conferindo ? <Spinner /> : null}
             Conferir com este curso
           </Button>

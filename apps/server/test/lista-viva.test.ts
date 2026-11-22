@@ -27,6 +27,8 @@ import { chavePendencia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
+import * as Revisoes from "../src/persistencia/Revisoes.ts";
+import { unirResultadosIa } from "../src/revisao-ppc/RevisaoIa.ts";
 import { casarPendencias, planoArquivoNovo } from "../src/revisao-ppc/arquivo-novo.ts";
 import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
@@ -186,10 +188,15 @@ const rpc = Effect.gen(function* () {
   return yield* cliente(urlRpc, AUTORIZACAO);
 });
 
-/** A pré-conferência e depois a revisão com IA (com CT-CURR-04 como pendência) do mesmo arquivo. */
+/**
+ * A revisão com IA (com CT-CURR-04 como pendência) do arquivo, mesclada na lista da pré-conferência
+ * dele (feita aqui, se ainda não houver).
+ */
 const revisarComIa = (arquivo: string) =>
   Effect.gen(function* () {
     const c = yield* rpc;
+    if ((yield* c["revisaoPpc.listaDoArquivo"]({ arquivo })) === null)
+      yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
     roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-04"]));
     const preparada = yield* c["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
     yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
@@ -214,7 +221,7 @@ const reiniciar = () => {
 
 layer(camada, { excludeTestServices: true })("lista viva", (it) => {
   it.effect(
-    "a revisão grava a lista; 'Feito' passa para a lista da revisão com IA; a régua com todos os critérios",
+    "a revisão grava a lista; a leitura com IA entra na mesma lista, com o 'Feito'; a régua com todos os critérios",
     () =>
       Effect.gen(function* () {
         reiniciar();
@@ -251,11 +258,11 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         assert.strictEqual(feita.resolvidaPor, "pessoa");
 
         const { lista, final } = yield* revisarComIa(arquivo);
-        assert.notStrictEqual(lista.id, pre.lista);
-        // A lista anterior do mesmo conteúdo sai (o texto do PPC não fica guardado em dobro).
-        const anterior = yield* c["revisaoPpc.lista"]({ lista: pre.lista! }).pipe(Effect.flip);
-        assert.include(anterior.message, "não existe mais");
+        // A leitura com IA não cria outra lista: os blocos entram na da pré-conferência.
+        assert.strictEqual(lista.id, pre.lista);
+        assert.strictEqual(final.resultado!.lista, pre.lista);
         assert.strictEqual(lista.revisao, final.id);
+        assert.strictEqual(lista.resultado.leituraIa, "completa");
         // A mesma pendência do código, na lista nova, com a situação e o histórico.
         const mesma = lista.pendencias.find((p) => p.chave === codigo.chave)!;
         assert.strictEqual(mesma.situacao, "resolvida");
@@ -982,8 +989,10 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
                 paraConferirIa: 0,
                 foraDaRevisao: [],
                 totalCriterios: 0,
+                leituraIa: "nenhuma",
                 dataBase: "2026-11-18",
               },
+              resultadosIa: null,
             },
             [{ chave: "k1", pendencia }],
           );
@@ -1009,6 +1018,171 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
       assert.strictEqual(depois.pendencias[0]!.resolvidaPor, "pessoa");
       assert.strictEqual(depois.lista!.markdown, "# PPC");
       assert.strictEqual(depois.eventos.length, 1);
+    }),
+  );
+  it.effect(
+    "a mesclagem da IA: na mesma lista, só as pendências novas; a cópia acerta o lugar; apagar a revisão só desliga",
+    () =>
+      Effect.gen(function* () {
+        const arquivo = NodePath.join(diretorioTemporario("simplifica-lista-mescla-"), "conversas.sqlite");
+        const base = {
+          ficha: "CT-CURR-04",
+          tituloFicha: "Matriz",
+          tema: "Matriz e estrutura curricular",
+          ordemTema: 2,
+          estado: "nao_atende" as const,
+          mensagem: "Falta a carga por núcleo.",
+          oQueFazer: "Mostre.",
+          trecho: "A matriz tem dois componentes.",
+          secao: "3 MATRIZ",
+          fontes: [],
+          tambemEm: [],
+          noDocumento: "no-trecho" as const,
+          origem: "codigo" as const,
+          dependeDoCurso: false,
+        };
+        const daIa = { ...base, ficha: "CT-CURR-07", mensagem: "Falta o ementário.", origem: "ia" as const };
+        const resultado = {
+          arquivoOriginal: "/x/PPC.docx",
+          arquivoComentado: "",
+          curso: { cnct: null, forma: null, origem: "documento" as const },
+          pendencias: [base],
+          criterios: [],
+          conferidos: 1,
+          conferidosIa: 0,
+          paraConferirIa: 0,
+          foraDaRevisao: [],
+          totalCriterios: 2,
+          leituraIa: "nenhuma" as const,
+          dataBase: "2026-11-18",
+        };
+        const camadaBanco = Banco.layerArquivo(arquivo);
+        yield* Effect.gen(function* () {
+          const listas = yield* Listas.Listas;
+          const revisoes = yield* Revisoes.Revisoes;
+          yield* listas.criar(
+            {
+              id: "l1",
+              arquivo: "/x/PPC.docx",
+              sha256: "abc",
+              revisao: null,
+              provider: null,
+              modelo: null,
+              cnct: null,
+              forma: null,
+              markdown: "# PPC",
+              linhasTextoParaIa: [],
+              nonce: "n",
+              resultado,
+              resultadosIa: null,
+            },
+            [{ chave: "k1", pendencia: base }],
+          );
+          assert.strictEqual(
+            yield* listas.localizar({ arquivo: "/x/PPC.docx", sha256: "abc", cnct: null, forma: null }),
+            "l1",
+          );
+          assert.isNull(yield* listas.localizar({ arquivo: "/x/PPC.docx", sha256: "outro", cnct: null, forma: null }));
+          yield* listas.mudar(
+            "l1",
+            "k1",
+            { situacao: "resolvida" },
+            { acao: "marcar", situacao: "resolvida", texto: "x" },
+          );
+          yield* revisoes.criar({
+            id: "r1",
+            arquivo: "/x/PPC.docx",
+            sha256: "abc",
+            provider: "claude",
+            modelo: null,
+            modo: "rapido",
+            cnct: null,
+            forma: null,
+            situacao: "em_andamento",
+            plano: {},
+            estimativa: {
+              provider: "claude",
+              blocos: 1,
+              fichas: 1,
+              tokensEntrada: 1,
+              tokensSaida: 1,
+              minutos: 1,
+              custoUsd: null,
+              percentualJanela: 1,
+              nomeJanela: "x",
+            },
+          });
+          const ia = { resultados: [], fora: [], parcial: true };
+          const mesclagem = {
+            resultado: { ...resultado, pendencias: [base, daIa], leituraIa: "parcial" as const, lista: "l1" },
+            resultadosIa: ia,
+            revisao: "r1",
+            provider: "claude" as const,
+            modelo: null,
+          };
+          // Duas vezes (o bloco e a retomada): a mesma lista, sem duplicar, e o "Feito" fica.
+          for (let i = 0; i < 2; i++)
+            yield* listas.mesclarIa("l1", mesclagem, [
+              { chave: "k1", pendencia: base },
+              { chave: "k2", pendencia: daIa },
+            ]);
+          const depois = yield* listas.pendencias("l1");
+          assert.deepStrictEqual(
+            depois.map((p) => [p.chave, p.situacao]),
+            [
+              ["k1", "resolvida"],
+              ["k2", "aberta"],
+            ],
+          );
+          const lista = (yield* listas.buscar("l1"))!;
+          assert.strictEqual(lista.revisao, "r1");
+          assert.deepStrictEqual(lista.resultadosIa, ia);
+          assert.strictEqual(lista.resultado.leituraIa, "parcial");
+          assert.strictEqual(lista.versao, 3);
+          // A cópia gravada: a pendência que não se achou no documento fica "só na lista".
+          yield* listas.trocarResultado("l1", mesclagem.resultado, lista.versao, new Map([["k2", "so-na-lista"]]));
+          const sincronizadas = yield* listas.pendencias("l1");
+          assert.strictEqual(sincronizadas.find((p) => p.chave === "k2")!.pendencia.noDocumento, "so-na-lista");
+          assert.strictEqual(sincronizadas.find((p) => p.chave === "k1")!.pendencia.noDocumento, "no-trecho");
+          assert.strictEqual((yield* listas.buscar("l1"))!.versaoCopia, lista.versao);
+          // "Encerrar leitura por aqui": a revisão sai, a lista e os resultados ficam.
+          yield* revisoes.apagar("r1");
+          const encerrada = (yield* listas.buscar("l1"))!;
+          assert.isNull(encerrada.revisao);
+          assert.deepStrictEqual(encerrada.resultadosIa, ia);
+          assert.strictEqual((yield* listas.pendencias("l1")).length, 2);
+        }).pipe(Effect.provide(Layer.mergeAll(Listas.layer, Revisoes.layer).pipe(Layer.provide(camadaBanco))));
+      }),
+  );
+
+  it.effect("os resultados da IA de uma leitura nova somam aos de uma encerrada, sem repetir a ficha", () =>
+    Effect.sync(() => {
+      const r = (ficha: string, estado: "ATENDE" | "NAO_ATENDE") => ({
+        ficha,
+        estado,
+        confianca: 0.9,
+        justificativa: "",
+        lacunas: [],
+        oQueFazer: "",
+        trechos: [],
+        fontes: [],
+        revisaoHumana: false,
+      });
+      const anterior = { resultados: [r("A", "ATENDE"), r("B", "NAO_ATENDE")], fora: [], parcial: true };
+      const nova = { resultados: [r("B", "ATENDE"), r("C", "ATENDE")], fora: ["A", "D"], parcial: true };
+      const unidos = unirResultadosIa(anterior, nova);
+      assert.deepStrictEqual(
+        unidos.resultados.map((x) => [x.ficha, x.estado]),
+        [
+          ["A", "ATENDE"],
+          ["B", "ATENDE"],
+          ["C", "ATENDE"],
+        ],
+      );
+      assert.deepStrictEqual(unidos.fora, ["D"]);
+      // Mesclar de novo a mesma leitura dá o mesmo resultado.
+      assert.deepStrictEqual(unirResultadosIa(unidos, nova), unidos);
+      assert.isFalse(unirResultadosIa(null, { ...nova, parcial: false }).parcial);
     }),
   );
 });

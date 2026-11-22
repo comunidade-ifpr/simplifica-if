@@ -15,7 +15,8 @@ export interface AcoesDocumento {
   readonly abrindo: boolean;
   /** Só no desktop. */
   readonly aoMostrarNaPasta: (() => void) | undefined;
-  readonly aoEnviarCorrigida: () => void;
+  /** Indefinido com a leitura com IA em andamento: a versão corrigida espera a pausa. */
+  readonly aoEnviarCorrigida: (() => void) | undefined;
   /** Só quando há discordância registrada contra a conferência automática. */
   readonly aoExportar: (() => void) | undefined;
   readonly aoRevisarOutro: () => void;
@@ -52,7 +53,10 @@ export function CabecalhoDocumento({
             {acoes.aoMostrarNaPasta === undefined ? null : (
               <MenuItem onClick={acoes.aoMostrarNaPasta}>Mostrar na pasta</MenuItem>
             )}
-            <MenuItem onClick={acoes.aoEnviarCorrigida}>Enviar a versão corrigida</MenuItem>
+            <MenuItem disabled={acoes.aoEnviarCorrigida === undefined} onClick={acoes.aoEnviarCorrigida}>
+              Enviar a versão corrigida
+              {acoes.aoEnviarCorrigida === undefined ? " (pause a leitura com IA antes)" : ""}
+            </MenuItem>
             {acoes.aoExportar === undefined ? null : (
               <MenuItem onClick={acoes.aoExportar}>Exportar discordâncias</MenuItem>
             )}

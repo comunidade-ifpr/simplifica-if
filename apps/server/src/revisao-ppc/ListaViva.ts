@@ -3,12 +3,15 @@
  * dentro de cada pendência.
  *
  * - **A lista** nasce de cada revisão (a pré-conferência, `revisar`, que avisa as etapas da leitura em
- *   stream) e de cada revisão com IA concluída (`criarLista`, de `criar-lista.ts`, chamada também pela
- *   `RevisaoIa`). Fica no `conversas.sqlite` (`Listas`), com o texto do PPC que as ações usam; sobrevive a
- *   fechar o app e à cota. A situação marcada passa para a lista nova do mesmo arquivo com o mesmo
- *   conteúdo (chave da pendência igual), e a lista nova substitui a anterior.
+ *   stream; `criarLista`, de `criar-lista.ts`). A leitura com IA não cria outra: a `RevisaoIa` mescla cada
+ *   bloco pronto nesta mesma lista, que guarda os resultados conferidos da IA (`resultados_ia`). Fica no
+ *   `conversas.sqlite` (`Listas`), com o texto do PPC que as ações usam; sobrevive a fechar o app e à cota.
+ *   A situação marcada passa para a lista nova do mesmo arquivo com o mesmo conteúdo (chave da pendência
+ *   igual), e a lista nova substitui a anterior.
  * - **"Qual é o curso?"** (`trocarCurso`): a lista refeita com o curso escolhido, com os resultados da
  *   leitura com IA, se houve, como na cópia comentada.
+ * - "Qual é o curso?" e "Enviar a versão corrigida" mudam o que a leitura com IA leu: recusam com ela em
+ *   andamento (a pessoa pausa antes) e apagam a pausada, na mesma operação.
  * - **"Feito" e "Desfazer"** (`marcar`): só mudam a situação, sem IA.
  * - **"Enviar a versão corrigida"** (`revisarArquivoNovo`): o `.docx` novo é pré-conferido (só o código) e
  *   decide as pendências do código da lista inteira, casadas pelo critério (`arquivo-novo.ts`); as que só
@@ -23,8 +26,9 @@
  * - O uso de cada ação com IA fica em `acoes_ia` e soma ao uso da revisão com IA de onde a lista veio.
  *   Uma ação com IA por vez; a estimativa vem antes (`estimar`). "Enviar a versão corrigida" e "Qual é o
  *   curso?" trocam a lista inteira: também esperam que nenhuma ação com IA esteja em andamento.
- * - As escritas curtas (`marcar`, `gerarCopia`, `revisarArquivoNovo`, `trocarCurso`) esperam a vez umas
- *   das outras: a cópia comentada não sai de um estado que outra escrita já mudou.
+ * - As escritas curtas (`marcar`, o fim de `contestar`, `sugerir` e `revisarDeNovo`, `gerarCopia`,
+ *   `revisarArquivoNovo`, `trocarCurso`) e a mesclagem da leitura com IA esperam a vez umas das outras
+ *   (`Listas.exclusivo`): a cópia comentada não sai de um estado que outra escrita já mudou.
  * - A cópia comentada é regravada só quando a lista mudou desde a última (`versao` e `versaoCopia` das
  *   `Listas`), e nunca por cima da cópia que a pessoa editou (`RevisorPpc`).
  * - As ações que mandam o PPC à IA (`contestar`, `sugerir`, `revisarDeNovo`) esperam o aviso de uso
@@ -70,20 +74,15 @@ import { type PendenciaDaLista, planoArquivoNovo } from "./arquivo-novo.ts";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { dobrar, retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
-import {
-  chavePendencia,
-  estadoDaIa,
-  type MarcaPendencia,
-  NOME_DA_FORMA,
-  type ResultadoFichaIa,
-} from "@simplifica-if/ppc/revisao-previa";
+import { chavePendencia, estadoDaIa, NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
+import { cursoEscolhido, marcasDaCopia, regravarCopia as regravarCopiaDaLista } from "./copia-lista.ts";
 import { criarLista, novoNonce } from "./criar-lista.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
-import { contextoDaFicha, type PlanoRevisaoIa } from "./preparo.ts";
+import { contextoDaFicha } from "./preparo.ts";
 
 export const TEMPO_ACAO = Duration.minutes(4);
 export const LIMITE_MOTIVO = 1500;
@@ -205,42 +204,6 @@ function turnosAnteriores(eventos: readonly { acao: string; situacao: SituacaoPe
 
 const ponto = (t: string) => (/[.!?]$/.test(t.trim()) ? t.trim() : `${t.trim()}.`);
 
-/** A situação de cada pendência não aberta, com a nota, para a cópia comentada (pela chave). */
-export function marcasDaCopia(
-  pendencias: ReadonlyArray<Pick<PendenciaDaLista, "chave" | "situacao" | "resolvidaPor">>,
-  eventos: ReadonlyArray<{ chave: string; acao: string; texto: string; motivo?: string | null | undefined }>,
-): Record<string, MarcaPendencia> {
-  const situacoes: Record<string, MarcaPendencia> = {};
-  for (const p of pendencias) {
-    if (p.situacao === "aberta") continue;
-    const ultimo = eventos.filter((e) => e.chave === p.chave).at(-1);
-    const ultimaContestacao = eventos.filter((e) => e.chave === p.chave && e.acao === "contestar").at(-1);
-    const nota =
-      p.situacao === "resolvida"
-        ? p.resolvidaPor === "revisarDeNovo"
-          ? "Conferida na nova revisão do arquivo atualizado."
-          : "Marcada pela coordenação, sem nova revisão."
-        : p.situacao === "contestada_mantida" && ultimo?.acao === "contestar"
-          ? ultimo.texto.replace(/^Mantida: /, "Resposta da revisão: ")
-          : p.situacao === "contestada_aceita" && ultimaContestacao
-            ? `Motivo da coordenação: “${ultimaContestacao.motivo ?? ""}”. ${ultimaContestacao.texto}`
-            : undefined;
-    situacoes[p.chave] = {
-      situacao: p.situacao,
-      ...(nota ? { nota } : {}),
-      // Só a pendência confirmada pela nova revisão sai do documento.
-      ...(p.situacao === "resolvida" && p.resolvidaPor === "revisarDeNovo" ? { foraDoDocumento: true } : {}),
-    };
-  }
-  return situacoes;
-}
-
-/** O curso que a pessoa escolheu ("Qual é o curso?"); o identificado no documento é o documento que diz. */
-const cursoEscolhido = (r: Listas.RegistroLista): { cnct?: string; forma?: string } =>
-  r.resultado.curso.origem !== "pessoa"
-    ? {}
-    : { ...(r.cnct === null ? {} : { cnct: r.cnct }), ...(r.forma === null ? {} : { forma: r.forma }) };
-
 /** Os dois lados nomeiam algo e diferem (um lado sem curso não é "outro curso"). */
 const difere = (a: string | null, b: string | null) => a !== null && b !== null && a !== b;
 
@@ -262,11 +225,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const contextoListas = yield* Effect.context<Listas.Listas | SecureRandom.SecureRandom>();
   const aleatorio = yield* SecureRandom.SecureRandom;
-  const fs = yield* FileSystem.FileSystem;
+  const contextoCopia = yield* Effect.context<Listas.Listas | RevisorPpc.RevisorPpc | FileSystem.FileSystem>();
   // Uma ação com IA por vez: um clique duplo não paga duas vezes.
   const vez = yield* Semaphore.make(1);
-  // As escritas curtas, uma por vez (ver o comentário do arquivo).
-  const escrita = yield* Semaphore.make(1);
   const EM_ANDAMENTO = "Já há uma ação com a IA em andamento nesta revisão. Espere ela terminar.";
 
   const falha = (arquivo: string, motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
@@ -295,6 +256,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     return {
       id: registro.id,
       arquivoOriginal: registro.arquivo,
+      sha256: registro.sha256,
       revisao: registro.revisao,
       provider: registro.provider,
       resultado: registro.resultado,
@@ -393,7 +355,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     mudanca: Parameters<Listas.Listas["Service"]["mudar"]>[2],
     evento: Listas.Evento,
   ) {
-    yield* listas.mudar(id, chave, mudanca, evento);
+    yield* listas.exclusivo(listas.mudar(id, chave, mudanca, evento));
     return yield* lista(id);
   });
 
@@ -412,13 +374,47 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     aoEtapa: RevisorPpc.AoEtapa,
   ) {
     const revisado = yield* revisor.revisarCompleto(entrada, aoEtapa);
-    return yield* criarLista({
-      arquivo: entrada.arquivo,
-      revisado,
-      revisao: null,
-      provider: null,
-      modelo: null,
-    }).pipe(Effect.provideContext(contextoListas));
+    return yield* listas.exclusivo(
+      Effect.gen(function* () {
+        const curso = revisado.revisao.curso;
+        const anteriorId = yield* listas.localizar({
+          arquivo: entrada.arquivo,
+          sha256: revisado.sha256,
+          cnct: curso.cnct?.slug ?? null,
+          forma: curso.forma,
+        });
+        const anterior = anteriorId === null ? null : yield* listas.buscar(anteriorId);
+        if (anterior !== null && anterior.revisao !== null) {
+          const rev = yield* revisoes.resumo(anterior.revisao);
+          if (rev !== null && rev.situacao === "em_andamento")
+            return yield* falha(
+              entrada.arquivo,
+              "A leitura com IA deste PPC está em andamento. Pause-a antes de revisar o arquivo de novo.",
+            );
+        }
+        // Mesmo arquivo, conteúdo, curso e forma: preserva os resultados da IA que a lista anterior já tinha.
+        const ia = anterior?.resultadosIa ?? null;
+        const final =
+          ia === null
+            ? revisado
+            : yield* revisor.revisarArquivo({
+                arquivo: entrada.arquivo,
+                gravar: true,
+                sha256: revisado.sha256,
+                ...(entrada.cnct === undefined ? {} : { cnct: entrada.cnct }),
+                ...(entrada.forma === undefined ? {} : { forma: entrada.forma }),
+                ia,
+              });
+        return yield* criarLista({
+          arquivo: entrada.arquivo,
+          revisado: final,
+          revisao: anterior?.revisao ?? null,
+          provider: anterior?.provider ?? null,
+          modelo: anterior?.modelo ?? null,
+          resultadosIa: ia,
+        }).pipe(Effect.provideContext(contextoListas));
+      }),
+    );
   });
 
   const revisar = (entrada: RevisorPpc.EntradaRevisao) =>
@@ -440,7 +436,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       { situacao, resolvidaPor: "pessoa" },
       { acao: "marcar", situacao, texto: ROTULO_ACAO[situacao] },
     );
-  }, escrita.withPermits(1));
+  });
 
   /* ------------------------------------------------------------ estimar */
 
@@ -605,16 +601,18 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             pendencia: [p.pendencia.mensagem, p.pendencia.oQueFazer, p.pendencia.trecho ?? ""].join("\n"),
           });
       if (sugestao === null) {
-        yield* listas.mudar(
-          id,
-          chave,
-          { situacao: p.situacao, resolvidaPor: p.resolvidaPor },
-          {
-            acao: "sugerir",
-            situacao: p.situacao,
-            texto: "A IA não devolveu uma redação que o app pudesse conferir.",
-            uso: turno.uso,
-          },
+        yield* listas.exclusivo(
+          listas.mudar(
+            id,
+            chave,
+            { situacao: p.situacao, resolvidaPor: p.resolvidaPor },
+            {
+              acao: "sugerir",
+              situacao: p.situacao,
+              texto: "A IA não devolveu uma redação que o app pudesse conferir.",
+              uso: turno.uso,
+            },
+          ),
         );
         return yield* falha(
           registro.arquivo,
@@ -688,7 +686,8 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         .filter((x) => x.ficha === "TRIAGEM")
         .map((x) => ({ chave: chavePendencia(x), pendencia: x }))
         .filter((x) => !existentes.has(x.chave));
-      if (novasTriagem.length) yield* listas.acrescentar(id, novasTriagem, `Apareceu na nova revisão de ${nome}.`);
+      if (novasTriagem.length)
+        yield* listas.exclusivo(listas.acrescentar(id, novasTriagem, `Apareceu na nova revisão de ${nome}.`));
       const ficha = p.pendencia.ficha;
       let resolvida: boolean;
       let texto: string;
@@ -751,53 +750,41 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   /* ------------------------------------------------------------ cópia com a situação */
 
-  /** Os resultados conferidos da leitura com IA de onde a lista veio, para entrarem de novo na revisão. */
-  const resultadosIa = Effect.fn("ListaViva.resultadosIa")(function* (registro: Listas.RegistroLista) {
-    if (registro.revisao === null) return undefined;
-    const revisao = yield* revisoes.buscar(registro.revisao);
-    const plano = revisao?.plano as PlanoRevisaoIa | null | undefined;
-    const blocos = yield* revisoes.blocos(registro.revisao);
-    return {
-      resultados: blocos.flatMap((b) => (b.resultado as { resultados: ResultadoFichaIa[] }).resultados),
-      fora: plano?.fora ?? [],
-    };
-  });
+  /** Os resultados conferidos da leitura com IA que a lista guarda, para entrarem de novo na revisão. */
+  const resultadosIa = (registro: Listas.RegistroLista) => registro.resultadosIa ?? undefined;
 
-  /**
-   * A cópia comentada do arquivo da lista, com a situação de cada pendência; o resultado da lista passa a
-   * ser o dela. Só regrava se a lista mudou desde a última cópia ou se a cópia sumiu.
-   */
-  const regravarCopia = Effect.fn("ListaViva.regravarCopia")(function* (registro: Listas.RegistroLista) {
-    const id = registro.id;
-    const copia = registro.resultado.arquivoComentado;
-    const existe = copia !== "" && (yield* fs.exists(copia).pipe(Effect.orElseSucceed(() => false)));
-    if (registro.versaoCopia === registro.versao && existe) return yield* lista(id);
-    const situacoes = marcasDaCopia(yield* listas.pendencias(id), yield* listas.eventos(id));
-    const ia = yield* resultadosIa(registro);
-    const final = yield* revisor.revisarArquivo({
-      arquivo: registro.arquivo,
-      gravar: true,
-      sha256: registro.sha256,
-      ...cursoEscolhido(registro),
-      ...(ia ? { ia } : {}),
-      situacoes,
-    });
-    yield* listas.trocarResultado(
-      id,
-      { ...RevisorPpc.resultadoParaInterface(registro.arquivo, final), lista: id },
-      registro.versao,
+  const gerarCopia = Effect.fn("ListaViva.gerarCopia")(function* (id: string) {
+    yield* listas.exclusivo(
+      buscar(id).pipe(Effect.flatMap(regravarCopiaDaLista), Effect.provideContext(contextoCopia)),
     );
     return yield* lista(id);
   });
 
-  const gerarCopia = Effect.fn("ListaViva.gerarCopia")(function* (id: string) {
-    return yield* regravarCopia(yield* buscar(id));
-  }, escrita.withPermits(1));
+  /**
+   * Confere a leitura com IA ligada à lista antes de trocar o que ela leu (o curso, o arquivo): recusa
+   * com ela em andamento e indica se há revisão pausada/preparada para apagar depois que a troca concluir
+   * (nunca antes das validações, para não perder uma leitura pausada numa ação recusada).
+   */
+  const verificarLeitura = Effect.fn("ListaViva.verificarLeitura")(function* (
+    registro: Listas.RegistroLista,
+    acao: string,
+  ) {
+    if (registro.revisao === null) return { mantida: null as string | null, apagar: null as string | null };
+    const revisao = yield* revisoes.resumo(registro.revisao);
+    if (revisao === null) return { mantida: null as string | null, apagar: null as string | null };
+    if (revisao.situacao === "em_andamento")
+      return yield* falha(
+        registro.arquivo,
+        `A leitura com IA deste PPC está em andamento. Pause-a antes de ${acao}; o que ela já leu fica na lista.`,
+      );
+    if (revisao.situacao === "concluida") return { mantida: revisao.id, apagar: null as string | null };
+    return { mantida: null as string | null, apagar: revisao.id };
+  });
 
   /** Troca a lista inteira: espera as escritas curtas e recusa se uma ação com IA está em andamento. */
   const trocandoALista = <A, E, R>(arquivo: string, efeito: Effect.Effect<A, E, R>) =>
     efeito.pipe(
-      escrita.withPermits(1),
+      listas.exclusivo,
       vez.withPermitsIfAvailable(1),
       Effect.flatMap((o) => (o._tag === "Some" ? Effect.succeed(o.value) : Effect.fail(falha(arquivo, EM_ANDAMENTO)))),
     );
@@ -807,7 +794,8 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const trocarCurso = Effect.fn("ListaViva.trocarCurso")(
     function* (id: string, cnct: string, forma: string | undefined) {
       const registro = yield* buscar(id);
-      const ia = yield* resultadosIa(registro);
+      const { mantida, apagar } = yield* verificarLeitura(registro, "trocar o curso");
+      const ia = resultadosIa(registro);
       const revisado = yield* revisor.revisarArquivo({
         arquivo: registro.arquivo,
         gravar: true,
@@ -821,10 +809,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       const resultado = yield* criarLista({
         arquivo: registro.arquivo,
         revisado,
-        revisao: registro.revisao,
+        revisao: mantida,
         provider: registro.provider,
         modelo: registro.modelo,
+        resultadosIa: registro.resultadosIa,
       }).pipe(Effect.provideContext(contextoListas));
+      if (apagar !== null) yield* revisoes.apagar(apagar);
       return yield* lista(resultado.lista!);
     },
     (efeito, id) => trocandoALista(id, efeito),
@@ -835,6 +825,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const revisarArquivoNovo = Effect.fn("ListaViva.revisarArquivoNovo")(
     function* (id: string, arquivo: string) {
       const registro = yield* buscar(id);
+      const { apagar } = yield* verificarLeitura(registro, "enviar a versão corrigida");
       const { novo, nome } = yield* lerArquivoNovo(registro, arquivo, "a lista não mudou");
       const pendencias = yield* listas.pendencias(id);
       const eventos = yield* listas.eventos(id);
@@ -853,7 +844,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         if (m.evento) eventosFinais.push({ chave, ...m.evento });
       }
       // A cópia primeiro: se ela falha, nada mudou na lista, e a pessoa pode tentar de novo.
-      const ia = yield* resultadosIa(registro);
+      const ia = resultadosIa(registro);
       const final = yield* revisor.revisarArquivo({
         arquivo,
         gravar: true,
@@ -872,6 +863,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         forma: curso.forma,
         resultado: { ...RevisorPpc.resultadoParaInterface(arquivo, final), lista: id },
       });
+      if (apagar !== null) yield* revisoes.apagar(apagar);
       return {
         lista: yield* lista(id),
         resolvidas: plano.resolvidas,
@@ -931,13 +923,25 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   // As listas sem uso há mais de `DIAS_LISTA` saem ao subir o servidor (e a cada `ultimaLista`).
   yield* expirar;
 
+  const apagar = Effect.fn("ListaViva.apagar")(function* (id: string) {
+    const registro = yield* listas.buscar(id);
+    yield* listas.apagar(id);
+    if (registro === null) return;
+    if (registro.revisao !== null) {
+      const rev = yield* revisoes.resumo(registro.revisao);
+      if (rev !== null && rev.situacao !== "concluida") yield* revisoes.apagar(rev.id);
+    }
+    // Remove também leituras pausadas/preparadas órfãs do mesmo arquivo e conteúdo.
+    yield* revisoes.apagarNaoConcluidasDoArquivo(registro.arquivo, registro.sha256);
+  });
+
   return ListaViva.of({
     revisar,
     lista,
     ultima,
     doArquivo,
     trocarCurso,
-    apagar: listas.apagar,
+    apagar,
     exportarDiscordancias,
     marcar,
     estimar,

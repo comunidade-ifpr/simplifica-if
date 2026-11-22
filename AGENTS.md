@@ -182,6 +182,7 @@ O backend, os pacotes e os scripts usam Effect 4. Antes de escrever ou revisar c
 - `runPromise` e `ManagedRuntime` só nas bordas, nunca dentro de serviço.
 - Testes com `@effect/vitest` (`it.effect`, `TestClock`), sem `sleep`, polling, relógio de parede nem `retry`.
 - Identificadores, mensagens e comentários em português; comentário só para o que o código não mostra, curto. Supressão de lint ou de diagnóstico diz por quê.
+- Migrações do `conversas.sqlite` (`apps/server/src/persistencia/migracoes/`) são imutáveis depois de irem para `main`: mudanças de schema ou novos campos obrigatórios em colunas JSON entram numa migração nova registrada em `Banco.ts`, com teste de upgrade em `apps/server/test/migracoes.test.ts`.
 
 ## Depurar o app
 

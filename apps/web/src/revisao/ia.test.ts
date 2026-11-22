@@ -1,12 +1,20 @@
 import { describe, expect, test } from "vite-plus/test";
-import type { EstadoRevisaoIa, EstimativaAcao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import type {
+  BlocoRevisaoIa,
+  EstadoRevisaoIa,
+  EstimativaAcao,
+  ResultadoRevisaoPpc,
+} from "@simplifica-if/contratos-app";
 import {
   andamentoPorTema,
+  blocosProntos,
   contagemTemas,
   detalheEstimativa,
+  duracao,
   leiturasPorTerminar,
   limiteDoPlano,
-  temasProntos,
+  linhasAndamento,
+  rodapeAndamento,
   textoAndamento,
   textoConclusao,
   textoEstimativa,
@@ -25,15 +33,27 @@ const estimativa = {
   nomeJanela: "uma janela de 5 horas do plano Pro",
 };
 
-const bloco = (id: string, ordemTema: number, tema: string, estado: "pendente" | "em_andamento" | "pronto") => ({
+const bloco = (
+  id: string,
+  ordemTema: number,
+  tema: string,
+  estado: "pendente" | "em_andamento" | "pronto",
+  extra: Partial<BlocoRevisaoIa> = {},
+): BlocoRevisaoIa => ({
   id,
-  tipo: "S" as const,
+  tipo: "S",
   tema,
   ordemTema,
   fichas: 2,
+  titulosFichas: ["Critério um", "Critério dois"],
   estado,
+  etapa: null,
+  iniciadoEm: null,
+  ultimaAtividadeEm: null,
   naoConferidas: 0,
+  pendenciasEncontradas: 0,
   segundos: null,
+  ...extra,
 });
 
 describe("a estimativa na faixa", () => {
@@ -93,13 +113,57 @@ describe("o andamento", () => {
       { ordem: 2, tema: "Matriz", prontos: 2, total: 2, emAndamento: false },
       { ordem: 3, tema: "Estágio", prontos: 0, total: 1, emAndamento: false },
     ]);
-    expect([...temasProntos(estado)]).toEqual([2]);
+    expect(blocosProntos(estado)).toBe(2);
   });
 
-  test("o texto da faixa durante a leitura", () => {
+  test("o texto da faixa durante a leitura, com os temas lidos em paralelo", () => {
     expect(contagemTemas(estado)).toBe("1 de 3 temas");
     expect(textoAndamento(estado)).toBe("Lendo Identificação — 1 de 3 temas");
     expect(textoAndamento({ blocos: [bloco("a", 1, "Identificação", "pendente")] })).toBe("Lendo — 0 de 1 tema");
+    const paralelo = {
+      blocos: [
+        bloco("s-01-1", 1, "Identificação e oferta", "em_andamento"),
+        bloco("j-02", 2, "Matriz curricular", "em_andamento"),
+        bloco("j-03", 3, "Estágio", "pronto"),
+        bloco("j-04", 4, "Avaliação", "pendente"),
+      ],
+    };
+    expect(textoAndamento(paralelo)).toBe("Lendo Identificação e oferta e Matriz curricular — 1 de 4 temas");
+  });
+
+  test("o painel 'Ver andamento': pronto, lendo (etapa e tempo no relógio da tela), parado e na fila", () => {
+    const agora = Date.parse("2026-11-22T10:01:30Z");
+    const linhas = linhasAndamento(
+      {
+        situacao: "pausada",
+        blocoPausado: "j-03",
+        blocos: [
+          bloco("j-03", 3, "Estágio", "pendente"),
+          bloco("s-01-1", 1, "Identificação", "pronto", { segundos: 42.3, pendenciasEncontradas: 2 }),
+          bloco("j-02", 2, "Matriz", "em_andamento", {
+            etapa: "recebendo",
+            iniciadoEm: "2026-11-22T10:00:00Z",
+            ultimaAtividadeEm: "2026-11-22T10:01:25Z",
+          }),
+          bloco("t", 9, "Transversais", "pendente", { tipo: "T" }),
+        ],
+      },
+      agora,
+    );
+    expect(linhas.map((l) => [l.titulo, l.situacao, l.detalhe])).toEqual([
+      ["Identificação", "pronto", "Lido em 42 s; 2 pontos encontrados."],
+      ["Matriz", "lendo", "Recebendo a resposta; lendo há 1 min 30 s; último sinal da IA há 5 s."],
+      ["Estágio", "pausado", "A leitura parou neste tema."],
+      ["Critérios transversais", "fila", "Na fila."],
+    ]);
+    expect(linhas[1]!.criterios).toEqual(["Critério um", "Critério dois"]);
+    expect(duracao(60)).toBe("1 min");
+    expect(
+      rodapeAndamento({
+        modelo: "claude-sonnet-5-5",
+        uso: { entrada: 1000, saida: 250, cacheLeitura: 0, cacheEscrita: 500, custoUsd: 0 },
+      }),
+    ).toBe("Modelo claude-sonnet-5-5. Uso: 1.500 tokens de entrada e 250 de saída até aqui.");
   });
 
   test("a frase do fim, com plural", () => {

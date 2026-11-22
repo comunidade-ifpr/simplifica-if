@@ -358,6 +358,37 @@ describe("regras de prudência", () => {
       expect(estado(resultado, ficha)).toBe("a_conferir");
   });
 
+  test("a conclusão do curso não é requisito de ingresso (CT-CURR-16, caso real da seção 4.1)", () => {
+    const frase =
+      "Após cumprirem os requisitos exigidos pelo curso, os estudantes receberão o Histórico Escolar de Conclusão do Ensino Médio e o diploma de Técnico em Agropecuária.";
+    const semRequisito = PPC_BOM.replace(
+      "- **Requisitos de acesso ao curso:** Ensino fundamental completo e aprovação no processo seletivo.\n",
+      "",
+    );
+    // Na seção de certificados e diplomas.
+    const naSecao = semRequisito.replace(
+      "## 5 PERFIL PROFISSIONAL",
+      `## 4.1 EXPEDIÇÃO DE DIPLOMAS E CERTIFICADOS\n\n${frase}\n\n## 5 PERFIL PROFISSIONAL`,
+    );
+    // Fora dela, a frase sobre a saída do curso também não conta.
+    const foraDaSecao = semRequisito.replace(
+      "A assistência estudantil segue",
+      `${frase} A assistência estudantil segue`,
+    );
+    for (const ppc of [naSecao, foraDaSecao]) {
+      const resultado = da(preConferir(ppc, base("integrado")), "CT-CURR-16");
+      expect(resultado.estado).toBe("a_conferir");
+      expect(resultado.apontamentos[0]!.mensagem).toMatch(/^Não encontramos o requisito/);
+      expect(resultado.apontamentos[0]!.trechos).toEqual([]);
+    }
+    // O requisito que se comprova por certificado ou diploma continua sendo requisito.
+    const comprovacao = semRequisito.replace(
+      "A assistência estudantil segue",
+      "Os candidatos deverão comprovar a conclusão do Ensino Fundamental no ato da matrícula, por certificado ou histórico escolar. A assistência estudantil segue",
+    );
+    expect(estado(preConferir(comprovacao, base("integrado")), "CT-CURR-16")).toBe("atende");
+  });
+
   test("escolaridade de ingresso: por forma no CNCT, única no CNCT, ou a do art. 18", () => {
     expect(escolaridadeExigida(CNCT.pre_requisitos_ingresso, "integrado")).toBe("fundamental");
     expect(escolaridadeExigida(CNCT.pre_requisitos_ingresso, "concomitante")).toBe("cursando_medio");

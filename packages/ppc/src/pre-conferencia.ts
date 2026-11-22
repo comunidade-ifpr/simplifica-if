@@ -10,6 +10,7 @@
  * literais do PPC com linha e seção e as fontes `ifpr://`. Para os comentários do Word,
  * `achadosParaComentarios` converte os trechos para o texto como está no DOCX.
  */
+import type { SecaoPpc } from "@simplifica-if/kb/ppcs/secoes";
 import {
   type BaseVerificacao,
   type Fonte,
@@ -42,6 +43,8 @@ export type PreConferencia = {
   /** Um resultado por ficha D, na ordem do registro. */
   fichas: ResultadoFicha[];
   triagem: AchadoTriagem[];
+  /** As seções do PPC (a segmentação do `kb`), para localizar os trechos que a IA cita. */
+  secoes: readonly SecaoPpc[];
 };
 
 /** Tipos de seção do modelo de PPC técnico que a PROENS espera encontrar (taxonomia `tecnico` do `kb`). */
@@ -138,7 +141,7 @@ export function triar(ppc: PpcPreparado): AchadoTriagem[] {
 /** Roda a triagem e todos os verificadores D sobre o PPC (Markdown convertido). */
 export function preConferir(markdown: string, base: BaseVerificacao): PreConferencia {
   const ppc = prepararPpcComCitacoes(markdown, base.registro);
-  return { fichas: VERIFICADORES.map((v) => v.verificar(ppc, base)), triagem: triar(ppc) };
+  return { fichas: VERIFICADORES.map((v) => v.verificar(ppc, base)), triagem: triar(ppc), secoes: ppc.secoes };
 }
 
 /**

@@ -65,8 +65,17 @@ export function contagens(lista: ListaPendencias): Contagens {
   };
 }
 
-/** O resultado passou pela leitura com IA (mesmo que ela tenha deixado tudo para conferir). */
-export const passouPelaIa = (r: ResultadoRevisaoPpc): boolean => r.conferidosIa + r.paraConferirIa > 0;
+/** O resultado passou pela leitura com IA, inteira ou em parte (mesmo que ela tenha deixado tudo para conferir). */
+export const passouPelaIa = (r: ResultadoRevisaoPpc): boolean => r.leituraIa !== "nenhuma";
+
+/** Os critérios que ninguém leu ainda (nem o código nem a IA): o que a faixa da IA oferece ler. */
+export const naoLidos = (r: ResultadoRevisaoPpc): number => r.criterios.filter((c) => c.estado === "nao_lido").length;
+
+/** As chaves que a lista nova tem e a anterior não: as pendências que chegaram com a leitura com IA. */
+export const chavesNovas = (antes: ListaPendencias, depois: ListaPendencias): ReadonlyArray<string> => {
+  const conhecidas = new Set(antes.pendencias.map((v) => v.chave));
+  return depois.pendencias.filter((v) => !conhecidas.has(v.chave)).map((v) => v.chave);
+};
 
 /** Quantos critérios alguém decidiu (o código ou a IA): os que não estão `nao_lido`. */
 export const criteriosLidos = (r: ResultadoRevisaoPpc): number =>

@@ -72,6 +72,8 @@ export class Revisoes extends Context.Service<
   {
     readonly criar: (revisao: NovaRevisaoIa) => Effect.Effect<void>;
     readonly buscar: (id: string) => Effect.Effect<RegistroRevisaoIa | null>;
+    /** A revisão sem o plano (que pode ter centenas de KB): o estado a cada mudança lê só esta linha. */
+    readonly resumo: (id: string) => Effect.Effect<RegistroRevisaoIa<null> | null>;
     /** Da mais recente para a mais antiga, sem o plano (que pode ser grande). */
     readonly listar: Effect.Effect<ReadonlyArray<RegistroRevisaoIa<null>>>;
     readonly alterar: (id: string, alteracao: AlteracaoRevisaoIa) => Effect.Effect<void>;
@@ -85,6 +87,8 @@ export class Revisoes extends Context.Service<
     readonly usoTotal: (revisao: string) => Effect.Effect<UsoRevisaoIa>;
     /** Apaga a revisão, o plano (com o texto do PPC), os blocos e as tentativas. */
     readonly apagar: (id: string) => Effect.Effect<void>;
+    /** Apaga revisões não concluídas do mesmo arquivo e conteúdo (ao apagar a lista viva dele). */
+    readonly apagarNaoConcluidasDoArquivo: (arquivo: string, sha256: string) => Effect.Effect<void>;
     /** Apaga as revisões `preparada` (nunca iniciadas) criadas antes de `antesDe` (ISO). */
     readonly expirarPreparadas: (antesDe: string) => Effect.Effect<number>;
     /** As revisões `preparada` do mesmo arquivo (para substituir ao preparar de novo). */
@@ -169,6 +173,17 @@ const make = Effect.gen(function* () {
   const buscar = Effect.fn("Revisoes.buscar")(function* (id: string) {
     const linhas = yield* lerLinhas(yield* sql`SELECT * FROM revisoes_ia WHERE id = ${id}`);
     return linhas[0] ? paraRegistro(linhas[0]) : null;
+  }, Effect.orDie);
+
+  const resumo = Effect.fn("Revisoes.resumo")(function* (id: string) {
+    const linhas = yield* lerLinhas(
+      yield* sql`
+        SELECT id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, limite, NULL AS plano,
+          estimativa, resultado, criada_em, atualizada_em
+        FROM revisoes_ia WHERE id = ${id}
+      `,
+    );
+    return linhas[0] ? (paraRegistro(linhas[0]) as RegistroRevisaoIa<null>) : null;
   }, Effect.orDie);
 
   const listar = sql`
@@ -256,6 +271,16 @@ const make = Effect.gen(function* () {
     yield* sql`DELETE FROM revisoes_ia WHERE id = ${id}`;
   }, Effect.orDie);
 
+  const apagarNaoConcluidasDoArquivo = Effect.fn("Revisoes.apagarNaoConcluidasDoArquivo")(function* (
+    arquivo: string,
+    sha256: string,
+  ) {
+    yield* sql`
+      DELETE FROM revisoes_ia
+      WHERE arquivo = ${arquivo} AND sha256 = ${sha256} AND situacao <> 'concluida'
+    `;
+  }, Effect.orDie);
+
   const expirarPreparadas = Effect.fn("Revisoes.expirarPreparadas")(function* (antesDe: string) {
     const linhas = yield* sql<{ id: string }>`
       SELECT id FROM revisoes_ia WHERE situacao = 'preparada' AND criada_em < ${antesDe}
@@ -274,6 +299,7 @@ const make = Effect.gen(function* () {
   return Revisoes.of({
     criar,
     buscar,
+    resumo,
     listar,
     alterar,
     gravarBloco,
@@ -282,6 +308,7 @@ const make = Effect.gen(function* () {
     gravarTentativa,
     usoTotal,
     apagar,
+    apagarNaoConcluidasDoArquivo,
     expirarPreparadas,
     preparadasDoArquivo,
   });

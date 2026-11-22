@@ -70,6 +70,9 @@ export const CriterioRevisao = Schema.Struct({
 });
 export type CriterioRevisao = typeof CriterioRevisao.Type;
 
+export const LeituraIaRevisao = Schema.Literals(["nenhuma", "parcial", "completa"]);
+export type LeituraIaRevisao = typeof LeituraIaRevisao.Type;
+
 export const ResultadoRevisaoPpc = Schema.Struct({
   arquivoOriginal: Schema.String,
   /** A cópia comentada, na mesma pasta do original; o original não é alterado. */
@@ -92,6 +95,11 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   paraConferirIa: Schema.Number,
   foraDaRevisao: Schema.Array(Schema.String),
   totalCriterios: Schema.Number,
+  /**
+   * Quanto a leitura com IA cobriu: `nenhuma` (só a pré-conferência), `parcial` (os blocos prontos de
+   * uma leitura em andamento, pausada ou encerrada antes do fim) ou `completa`.
+   */
+  leituraIa: LeituraIaRevisao,
   /** `data_referencia` da base (AAAA-MM-DD). */
   dataBase: Schema.String,
   /** A lista viva destas pendências no servidor (etapa 5b). */
@@ -164,6 +172,13 @@ export const UsoRevisaoIa = Schema.Struct({
 });
 export type UsoRevisaoIa = typeof UsoRevisaoIa.Type;
 
+/**
+ * O que um bloco em andamento está fazendo: `aguardando` a primeira resposta da IA, `recebendo` o
+ * texto, o app `conferindo` a resposta ou a `nova_tentativa` com os problemas da primeira.
+ */
+export const EtapaBlocoIa = Schema.Literals(["aguardando", "recebendo", "conferindo", "nova_tentativa"]);
+export type EtapaBlocoIa = typeof EtapaBlocoIa.Type;
+
 /** Um bloco da revisão: um lote S, um tema J ou as transversais, numa sessão curta do provider. */
 export const BlocoRevisaoIa = Schema.Struct({
   id: Schema.String,
@@ -171,9 +186,18 @@ export const BlocoRevisaoIa = Schema.Struct({
   tema: Schema.String,
   ordemTema: Schema.Number,
   fichas: Schema.Number,
+  /** Os títulos humanos dos critérios do bloco (nunca o código). */
+  titulosFichas: Schema.Array(Schema.String),
   estado: Schema.Literals(["pendente", "em_andamento", "pronto"]),
+  /** Só no `em_andamento`. */
+  etapa: Schema.NullOr(EtapaBlocoIa),
+  /** Quando o bloco começou nesta execução e quando a IA deu sinal de vida pela última vez (ISO). */
+  iniciadoEm: Schema.NullOr(Schema.String),
+  ultimaAtividadeEm: Schema.NullOr(Schema.String),
   /** Fichas que ficaram "a conferir" porque a resposta não passou na conferência. */
   naoConferidas: Schema.Number,
+  /** Nos blocos prontos: quantos pontos (para corrigir ou conferir) o bloco encontrou. */
+  pendenciasEncontradas: Schema.Number,
   segundos: Schema.NullOr(Schema.Number),
 });
 export type BlocoRevisaoIa = typeof BlocoRevisaoIa.Type;
@@ -189,6 +213,7 @@ export type SituacaoRevisaoIa = typeof SituacaoRevisaoIa.Type;
 export const EstadoRevisaoIa = Schema.Struct({
   id: Schema.String,
   arquivoOriginal: Schema.String,
+  sha256: Schema.String,
   provider: Provider,
   modelo: Schema.NullOr(Schema.String),
   modo: ModoRevisaoIa,
@@ -196,6 +221,8 @@ export const EstadoRevisaoIa = Schema.Struct({
   motivo: Schema.NullOr(Schema.String),
   /** A pausa veio de limite de taxa ou de cota (a pessoa espera e retoma). */
   limite: Schema.Boolean,
+  /** O bloco que parou a leitura (tempo, falha do provider), ao lado do `motivo`; só em memória. */
+  blocoPausado: Schema.NullOr(Schema.String),
   blocos: Schema.Array(BlocoRevisaoIa),
   estimativa: EstimativaRevisaoIa,
   uso: UsoRevisaoIa,
@@ -260,6 +287,7 @@ export type PendenciaViva = typeof PendenciaViva.Type;
 export const ListaPendencias = Schema.Struct({
   id: Schema.String,
   arquivoOriginal: Schema.String,
+  sha256: Schema.String,
   /** A revisão com IA de onde a lista veio, ou nulo (só a pré-conferência). */
   revisao: Schema.NullOr(Schema.String),
   provider: Schema.NullOr(Provider),

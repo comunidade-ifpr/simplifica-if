@@ -8,13 +8,16 @@ import type {
 } from "@simplifica-if/contratos-app";
 import {
   buscarCnct,
+  chavesNovas,
   contagens,
   descreverCurso,
   doBloqueio,
   fraseResultado,
   gruposDaRegua,
   localizacao,
+  naoLidos,
   ordenar,
+  passouPelaIa,
   principais,
   resumoGrupo,
   resumoRegua,
@@ -84,6 +87,7 @@ const resultado = (extra: Partial<ResultadoRevisaoPpc> = {}): ResultadoRevisaoPp
   paraConferirIa: 0,
   foraDaRevisao: [],
   totalCriterios: 6,
+  leituraIa: "nenhuma",
   dataBase: "2026-11-12",
   ...extra,
 });
@@ -94,6 +98,7 @@ const lista = (
 ): ListaPendencias => ({
   id: "lista-1",
   arquivoOriginal: "/a/PPC.docx",
+  sha256: "hash-1",
   revisao: null,
   provider: null,
   resultado: resultado(extra),
@@ -135,12 +140,28 @@ describe("as contagens e a frase-resultado", () => {
   test("depois da IA, a frase fala da régua inteira (ou do que foi lido)", () => {
     const todos = lista([corrigir1], {
       conferidosIa: 3,
+      leituraIa: "completa",
       criterios: resultado().criterios.map((c) => ({ ...c, estado: c.estado === "nao_lido" ? "atende" : c.estado })),
     });
     expect(fraseResultado(todos)).toBe("1 para corrigir, em 6 critérios.");
-    expect(fraseResultado(lista([conferir2], { conferidosIa: 1 }))).toBe(
+    expect(fraseResultado(lista([conferir2], { conferidosIa: 1, leituraIa: "parcial" }))).toBe(
       "Nada para corrigir e 1 para conferir, em 3 de 6 critérios.",
     );
+  });
+
+  test("a leitura com IA parcial conta como passada pela IA; os não lidos são o que a faixa oferece ler", () => {
+    expect(passouPelaIa(resultado())).toBe(false);
+    expect(passouPelaIa(resultado({ leituraIa: "parcial" }))).toBe(true);
+    // Mesmo sem decisão da IA (a leitura deixou tudo para conferir), a leitura conta.
+    expect(passouPelaIa(resultado({ leituraIa: "completa", conferidosIa: 0 }))).toBe(true);
+    expect(naoLidos(resultado())).toBe(3);
+  });
+
+  test("as pendências novas são só as chaves que a lista anterior não tinha", () => {
+    const antes = lista([corrigir1, conferir2]);
+    const depois = lista([corrigir1, conferir2, retirada, mantida]);
+    expect(chavesNovas(antes, depois)).toEqual([retirada.chave, mantida.chave]);
+    expect(chavesNovas(depois, depois)).toEqual([]);
   });
 
   test("sem pendências, nada apareceu (sem afirmar aprovação); com tudo feito, nada mais", () => {

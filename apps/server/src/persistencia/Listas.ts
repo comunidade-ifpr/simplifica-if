@@ -3,12 +3,20 @@
  * pendência com a situação e a sugestão, o histórico e o uso das ações com IA. Os JSONs são do próprio
  * servidor, gravados e lidos pelos schemas do contrato; uma falha do banco ou um JSON fora de forma é
  * defeito, como nas `Revisoes`.
+ *
+ * A lista é dona dos resultados conferidos da leitura com IA (`resultados_ia`), mesclados pela
+ * `RevisaoIa` a cada bloco pronto (`mesclarIa`); o tipo deles (`EntradaIa` do `ppc`) é tipo TypeScript,
+ * não `Schema`, e fica de fora da decodificação, como o plano nas `Revisoes`.
+ *
+ * As escritas que leem a lista e a regravam (marcar, a cópia comentada, trocar o curso, o arquivo novo,
+ * a mesclagem da IA) esperam a vez umas das outras em `exclusivo`.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
+import * as Semaphore from "effect/Semaphore";
 import * as SqlClient from "effect/sql/SqlClient";
 import {
   type AcaoPendencia,
@@ -20,6 +28,7 @@ import {
   SugestaoTexto,
   UsoRevisaoIa,
 } from "@simplifica-if/contratos-app";
+import type { EntradaIa } from "@simplifica-if/ppc/revisao-previa";
 
 export interface RegistroLista {
   readonly id: string;
@@ -35,6 +44,8 @@ export interface RegistroLista {
   readonly linhasTextoParaIa: readonly number[];
   readonly nonce: string;
   readonly resultado: ResultadoRevisaoPpc;
+  /** Os resultados conferidos da leitura com IA (com o que ficou de fora e se ela terminou), ou nulo. */
+  readonly resultadosIa: EntradaIa | null;
   /** Sobe a cada mudança nas pendências. */
   readonly versao: number;
   /** A versão que a cópia comentada reflete; nula se nenhuma (a lista herdou situações de outra). */
@@ -53,6 +64,15 @@ export interface RegistroPendencia {
 }
 
 export type NovaLista = Omit<RegistroLista, "criadaEm" | "atualizadaEm" | "versao" | "versaoCopia">;
+
+/** O que a mesclagem de um bloco da leitura com IA muda na lista (a mesma lista, nunca uma nova). */
+export interface MesclagemIa {
+  readonly resultado: ResultadoRevisaoPpc;
+  readonly resultadosIa: EntradaIa;
+  readonly revisao: string;
+  readonly provider: Provider;
+  readonly modelo: string | null;
+}
 
 /** O arquivo de uma lista, trocado por "Enviar a versão corrigida", com o resultado da cópia gravada dele. */
 export type ArquivoLista = Pick<
@@ -101,6 +121,34 @@ export class Listas extends Context.Service<
       pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
     ) => Effect.Effect<void>;
     readonly buscar: (id: string) => Effect.Effect<RegistroLista | null>;
+    /** Roda a escrita quando nenhuma outra escrita da lista está rodando (não reentrante). */
+    readonly exclusivo: <A, E, R>(efeito: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R>;
+    /** A lista mais recente do mesmo arquivo, conteúdo, curso e forma (a da leitura com IA), ou nula. */
+    readonly localizar: (chave: {
+      readonly arquivo: string;
+      readonly sha256: string;
+      readonly cnct: string | null;
+      readonly forma: string | null;
+    }) => Effect.Effect<string | null>;
+    /** Liga a lista à leitura com IA que começou (ou que retoma). */
+    readonly ligarRevisao: (
+      id: string,
+      revisao: string,
+      provider: Provider,
+      modelo: string | null,
+    ) => Effect.Effect<void>;
+    /**
+     * Os resultados da IA mesclados na mesma lista, numa transação: o resultado e os resultados da IA
+     * novos, e as pendências que ainda não estavam nela, abertas (as que estavam ficam como a pessoa as
+     * deixou). A cópia comentada deixa de estar em dia.
+     */
+    readonly mesclarIa: (
+      id: string,
+      mesclagem: MesclagemIa,
+      pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+      /** Chaves da IA de uma leitura anterior que não existem mais no resultado recalculado. */
+      obsoletas?: ReadonlyArray<string>,
+    ) => Effect.Effect<void>;
     readonly ultima: Effect.Effect<string | null>;
     readonly pendencias: (id: string) => Effect.Effect<ReadonlyArray<RegistroPendencia>>;
     readonly eventos: (id: string) => Effect.Effect<ReadonlyArray<EventoPendencia & { chave: string }>>;
@@ -127,8 +175,16 @@ export class Listas extends Context.Service<
       textoNovas: string,
       arquivo: ArquivoLista,
     ) => Effect.Effect<void>;
-    /** O resultado da cópia comentada regravada, que reflete a `versaoCopia` da lista. */
-    readonly trocarResultado: (id: string, resultado: ResultadoRevisaoPpc, versaoCopia: number) => Effect.Effect<void>;
+    /**
+     * O resultado da cópia comentada regravada, que reflete a `versaoCopia` da lista, e onde cada
+     * pendência ficou no documento (`noDocumento`, pela chave), numa transação.
+     */
+    readonly trocarResultado: (
+      id: string,
+      resultado: ResultadoRevisaoPpc,
+      versaoCopia: number,
+      noDocumento: ReadonlyMap<string, PendenciaRevisao["noDocumento"]>,
+    ) => Effect.Effect<void>;
     readonly gravarAcao: (id: string, chave: string, acao: AcaoIaGravada) => Effect.Effect<void>;
     readonly uso: (id: string) => Effect.Effect<UsoRevisaoIa>;
     readonly apagar: (id: string) => Effect.Effect<void>;
@@ -153,6 +209,8 @@ const PendenciaJson = Schema.fromJsonString(PendenciaRevisao);
 const SugestaoJson = Schema.fromJsonString(SugestaoTexto);
 const UsoJson = Schema.fromJsonString(UsoRevisaoIa);
 const FerramentasJson = Schema.fromJsonString(Schema.Array(Schema.String));
+/** Os resultados da IA, que quem os gravou lê com o tipo dele (`EntradaIa`). */
+const ResultadosIaJson = Schema.fromJsonString(Schema.Unknown);
 
 /** Uma linha de `listas_pendencias`, com as colunas JSON decodificadas. */
 const Linha = Schema.Struct({
@@ -168,6 +226,7 @@ const Linha = Schema.Struct({
   linhas_texto_ia: NumerosJson,
   nonce: Schema.String,
   resultado: ResultadoJson,
+  resultados_ia: Schema.NullOr(ResultadosIaJson),
   versao: Schema.Number,
   versao_copia: Schema.NullOr(Schema.Number),
   criada_em: Schema.String,
@@ -208,11 +267,14 @@ const codificarPendencia = Schema.encodeEffect(PendenciaJson);
 const codificarSugestao = Schema.encodeEffect(SugestaoJson);
 const codificarUso = Schema.encodeEffect(UsoJson);
 const codificarFerramentas = Schema.encodeEffect(FerramentasJson);
+const codificarResultadosIa = Schema.encodeEffect(ResultadosIaJson);
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
 
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
+  const escrita = yield* Semaphore.make(1);
+  const exclusivo = <A, E, R>(efeito: Effect.Effect<A, E, R>) => escrita.withPermits(1)(efeito);
   /** Uma mudança nas pendências: a cópia comentada deixa de estar em dia. */
   const tocar = (id: string, data: string) =>
     sql`UPDATE listas_pendencias SET atualizada_em = ${data}, versao = versao + 1 WHERE id = ${id}`;
@@ -230,9 +292,10 @@ const make = Effect.gen(function* () {
       Effect.gen(function* () {
         yield* sql`
           INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, provider, modelo, cnct, forma, markdown,
-            linhas_texto_ia, nonce, resultado, versao, versao_copia, criada_em, atualizada_em)
+            linhas_texto_ia, nonce, resultado, resultados_ia, versao, versao_copia, criada_em, atualizada_em)
           VALUES (${l.id}, ${l.arquivo}, ${l.sha256}, ${l.revisao}, ${l.provider}, ${l.modelo}, ${l.cnct}, ${l.forma},
             ${l.markdown}, ${yield* codificarNumeros(l.linhasTextoParaIa)}, ${l.nonce}, ${yield* codificarResultado(l.resultado)},
+            ${l.resultadosIa === null ? null : yield* codificarResultadosIa(l.resultadosIa)},
             0, ${anterior ? null : 0}, ${data}, ${data})
         `;
         let ordem = 0;
@@ -283,11 +346,38 @@ const make = Effect.gen(function* () {
       linhasTextoParaIa: l.linhas_texto_ia,
       nonce: l.nonce,
       resultado: l.resultado,
+      resultadosIa: l.resultados_ia as EntradaIa | null,
       versao: l.versao,
       versaoCopia: l.versao_copia,
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
     } satisfies RegistroLista;
+  }, Effect.orDie);
+
+  const localizar = Effect.fn("Listas.localizar")(function* (c: {
+    readonly arquivo: string;
+    readonly sha256: string;
+    readonly cnct: string | null;
+    readonly forma: string | null;
+  }) {
+    const linhas = yield* sql<{ id: string }>`
+      SELECT id FROM listas_pendencias
+      WHERE arquivo = ${c.arquivo} AND sha256 = ${c.sha256} AND cnct IS ${c.cnct} AND forma IS ${c.forma}
+      ORDER BY atualizada_em DESC LIMIT 1
+    `;
+    return linhas[0]?.id ?? null;
+  }, Effect.orDie);
+
+  const ligarRevisao = Effect.fn("Listas.ligarRevisao")(function* (
+    id: string,
+    revisao: string,
+    provider: Provider,
+    modelo: string | null,
+  ) {
+    yield* sql`
+      UPDATE listas_pendencias SET revisao_id = ${revisao}, provider = ${provider}, modelo = ${modelo}
+      WHERE id = ${id}
+    `;
   }, Effect.orDie);
 
   const ultima = sql<{ id: string }>`SELECT id FROM listas_pendencias ORDER BY atualizada_em DESC LIMIT 1`.pipe(
@@ -430,17 +520,63 @@ const make = Effect.gen(function* () {
     );
   }, Effect.orDie);
 
+  const mesclarIa = Effect.fn("Listas.mesclarIa")(function* (
+    id: string,
+    m: MesclagemIa,
+    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    obsoletas: ReadonlyArray<string> = [],
+  ) {
+    const data = yield* agora;
+    const resultado = yield* codificarResultado(m.resultado);
+    const resultadosIa = yield* codificarResultadosIa(m.resultadosIa);
+    yield* sql.withTransaction(
+      Effect.gen(function* () {
+        for (const chave of obsoletas)
+          yield* sql`DELETE FROM pendencias_vivas WHERE lista_id = ${id} AND chave = ${chave}`;
+        const maior =
+          (yield* sql<{ m: number | null }>`SELECT MAX(ordem) AS m FROM pendencias_vivas WHERE lista_id = ${id}`)[0]
+            ?.m ?? 0;
+        let ordem = maior + 1;
+        for (const p of novas)
+          yield* sql`
+            INSERT OR IGNORE INTO pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
+            VALUES (${id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL)
+          `;
+        yield* sql`
+          UPDATE listas_pendencias SET resultado = ${resultado}, resultados_ia = ${resultadosIa},
+            revisao_id = ${m.revisao}, provider = ${m.provider}, modelo = ${m.modelo},
+            versao = versao + 1, atualizada_em = ${data}
+          WHERE id = ${id}
+        `;
+      }),
+    );
+  }, Effect.orDie);
+
   const trocarResultado = Effect.fn("Listas.trocarResultado")(function* (
     id: string,
     r: ResultadoRevisaoPpc,
     versaoCopia: number,
+    noDocumento: ReadonlyMap<string, PendenciaRevisao["noDocumento"]>,
   ) {
     const data = yield* agora;
-    yield* sql`
-      UPDATE listas_pendencias SET resultado = ${yield* codificarResultado(r)}, versao_copia = ${versaoCopia},
-        atualizada_em = ${data}
-      WHERE id = ${id}
-    `;
+    const resultado = yield* codificarResultado(r);
+    yield* sql.withTransaction(
+      Effect.gen(function* () {
+        // Onde cada pendência ficou na cópia gravada (no trecho, no título ou só na lista).
+        for (const p of yield* pendencias(id)) {
+          const local = noDocumento.get(p.chave);
+          if (local === undefined || local === p.pendencia.noDocumento) continue;
+          yield* sql`
+            UPDATE pendencias_vivas SET pendencia = ${yield* codificarPendencia({ ...p.pendencia, noDocumento: local })}
+            WHERE lista_id = ${id} AND chave = ${p.chave}
+          `;
+        }
+        yield* sql`
+          UPDATE listas_pendencias SET resultado = ${resultado}, versao_copia = ${versaoCopia}, atualizada_em = ${data}
+          WHERE id = ${id}
+        `;
+      }),
+    );
   }, Effect.orDie);
 
   const gravarAcao = Effect.fn("Listas.gravarAcao")(function* (id: string, chave: string, a: AcaoIaGravada) {
@@ -501,6 +637,10 @@ const make = Effect.gen(function* () {
     contestacoes,
     criar,
     buscar,
+    exclusivo,
+    localizar,
+    ligarRevisao,
+    mesclarIa,
     ultima,
     pendencias,
     eventos,

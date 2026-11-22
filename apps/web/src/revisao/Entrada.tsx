@@ -73,8 +73,12 @@ export function Entrada({
   };
 
   const leituraDaUltima =
-    ultima === null ? undefined : porTerminar.find((e) => e.arquivoOriginal === ultima.arquivoOriginal);
-  const outras = porTerminar.filter((e) => e.arquivoOriginal !== ultima?.arquivoOriginal);
+    ultima === null
+      ? undefined
+      : porTerminar.find((e) => e.arquivoOriginal === ultima.arquivoOriginal && e.sha256 === ultima.sha256);
+  const outras = porTerminar.filter(
+    (e) => e.arquivoOriginal !== ultima?.arquivoOriginal || e.sha256 !== ultima?.sha256,
+  );
   const mostrado = falha ?? erro;
 
   return (

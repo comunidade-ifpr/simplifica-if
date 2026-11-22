@@ -46,8 +46,15 @@ import {
   retirarTextoParaIa,
   secoesDoTema,
 } from "../src/revisao-ia/plano.ts";
-import { dirigidoAIa } from "../src/pre-conferencia.ts";
-import { estadoDaIa, revisarDocx } from "../src/revisao-previa.ts";
+import { dirigidoAIa, preConferir } from "../src/pre-conferencia.ts";
+import {
+  type EntradaIa,
+  estadoDaIa,
+  montarResultado,
+  pendenciasProvisorias,
+  revisarDocx,
+  verificacaoDaBase,
+} from "../src/revisao-previa.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
 const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
@@ -467,47 +474,48 @@ describe("estado da lista para o resultado da IA", () => {
 const base = await carregarBaseRevisao(raizRepositorio());
 
 describe("os resultados da IA no DOCX comentado", () => {
+  const iaDoTeste: EntradaIa = {
+    resultados: [
+      {
+        ficha: "CT-IDENT-07",
+        estado: "NAO_ATENDE",
+        confianca: 0.9,
+        justificativa: "O perfil é genérico e não traz as atribuições do CNCT",
+        lacunas: ["atribuições do técnico"],
+        oQueFazer: "Descreva o perfil com as atribuições do CNCT",
+        trechos: ["O egresso atua na produção agropecuária."],
+        fontes: ["cnct"],
+        revisaoHumana: false,
+      },
+      {
+        ficha: "CT-CURR-03",
+        estado: "FALHOU",
+        confianca: 0,
+        justificativa: "",
+        lacunas: [],
+        oQueFazer: "",
+        trechos: [],
+        fontes: [],
+        revisaoHumana: true,
+        motivoFalha: "a IA citou um trecho que não está no documento",
+      },
+      {
+        ficha: "CT-CURR-10",
+        estado: "ATENDE",
+        confianca: 0.9,
+        justificativa: "Atende.",
+        lacunas: [],
+        oQueFazer: "",
+        trechos: ["Formar técnicos em agropecuária para a produção sustentável."],
+        fontes: [],
+        revisaoHumana: false,
+      },
+    ],
+    fora: ["CT-SUP-05"],
+  };
   const revisao = revisarDocx(ppcSintetico(), "ppc.docx", base, {
     agora: new Date("2026-11-16T12:00:00Z"),
-    ia: {
-      resultados: [
-        {
-          ficha: "CT-IDENT-07",
-          estado: "NAO_ATENDE",
-          confianca: 0.9,
-          justificativa: "O perfil é genérico e não traz as atribuições do CNCT",
-          lacunas: ["atribuições do técnico"],
-          oQueFazer: "Descreva o perfil com as atribuições do CNCT",
-          trechos: ["O egresso atua na produção agropecuária."],
-          fontes: ["cnct"],
-          revisaoHumana: false,
-        },
-        {
-          ficha: "CT-CURR-03",
-          estado: "FALHOU",
-          confianca: 0,
-          justificativa: "",
-          lacunas: [],
-          oQueFazer: "",
-          trechos: [],
-          fontes: [],
-          revisaoHumana: true,
-          motivoFalha: "a IA citou um trecho que não está no documento",
-        },
-        {
-          ficha: "CT-CURR-10",
-          estado: "ATENDE",
-          confianca: 0.9,
-          justificativa: "Atende.",
-          lacunas: [],
-          oQueFazer: "",
-          trechos: ["Formar técnicos em agropecuária para a produção sustentável."],
-          fontes: [],
-          revisaoHumana: false,
-        },
-      ],
-      fora: ["CT-SUP-05"],
-    },
+    ia: iaDoTeste,
   });
   const comentarios = strFromU8(unzipSync(revisao.docx)["word/comments.xml"]!);
 
@@ -520,6 +528,39 @@ describe("os resultados da IA no DOCX comentado", () => {
     );
     expect(perfil.fontes[0]!.rotulo).toContain("Catálogo Nacional de Cursos Técnicos");
     expect(comentarios).toContain("avaliação da IA conferida pelo app");
+    // A seção do trecho citado pela IA, como nas pendências do código.
+    expect(perfil.secao).toMatch(/PERFIL PROFISSIONAL DE CONCLUSÃO/);
+  });
+
+  test("a leitura completa: `leituraIa` e a montagem pura dão o mesmo resultado que o documento", () => {
+    expect(revisao.leituraIa).toBe("completa");
+    const resultado = preConferir(revisao.markdown, {
+      cnct: base.cncts.find((c) => c.slug === "tecnico-em-agropecuaria")!,
+      forma: "subsequente",
+      ...verificacaoDaBase(base),
+    });
+    const montagem = montarResultado(resultado, iaDoTeste, base, {
+      markdown: revisao.markdown,
+      cnct: "tecnico-em-agropecuaria",
+    });
+    expect(montagem.criterios).toEqual(revisao.criterios);
+    expect(montagem.conferidosIa).toBe(revisao.conferidosIa);
+    const provisorias = pendenciasProvisorias(montagem, "tecnico-em-agropecuaria");
+    expect(provisorias.map(({ noDocumento: _, ...p }) => p)).toEqual(
+      revisao.pendencias.map(({ noDocumento: _, ...p }) => p),
+    );
+    expect(provisorias.find((p) => p.ficha === "CT-IDENT-07")!.noDocumento).toBe("no-trecho");
+  });
+
+  test("a leitura parcial: o aviso diz o que ficou de fora e o que ainda não foi lido, juntos", () => {
+    const parcial = revisarDocx(ppcSintetico(), "ppc.docx", base, {
+      agora: new Date("2026-11-16T12:00:00Z"),
+      ia: { ...iaDoTeste, parcial: true },
+    });
+    expect(parcial.leituraIa).toBe("parcial");
+    expect(parcial.aviso).toContain("No modo rápido, ficaram de fora 1 critério");
+    // 84 - 12 do código - 3 lidos pela IA - 1 de fora.
+    expect(parcial.aviso).toContain("A leitura com IA parou antes do fim: 68 critérios ainda não foram lidos.");
   });
 
   test('a ficha que falhou na conferência sai "Confira:" com o motivo, e a que atende não vira pendência', () => {

@@ -101,6 +101,15 @@ export function trechoConferivel(trecho: string): boolean {
   );
 }
 
+/**
+ * O texto do maior pedaço contínuo do trecho (entre reticências), normalizado, ou `null` se o trecho não
+ * tem a forma: é o que se procura no PPC para achar onde o trecho está.
+ */
+export function textoDoMaiorPedaco(trecho: string): string | null {
+  if (!trechoConferivel(trecho)) return null;
+  return pedacosDoTrecho(trecho).reduce((maior, p) => (p.length > maior.length ? p : maior), "");
+}
+
 /** O maior pedaço contínuo do trecho (entre reticências), normalizado, ou 0 se o trecho não tem a forma. */
 export const maiorPedaco = (trecho: string) =>
   trechoConferivel(trecho) ? Math.max(...pedacosDoTrecho(trecho).map((p) => p.length)) : 0;

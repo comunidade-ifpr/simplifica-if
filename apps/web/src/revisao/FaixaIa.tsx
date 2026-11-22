@@ -1,12 +1,15 @@
 /**
- * A faixa da IA, enquanto o resultado não passou por ela: quantos critérios faltam ler, a estimativa já
+ * A faixa da IA, enquanto a leitura não leu tudo: quantos critérios faltam ler, a estimativa já
  * calculada e "Ler com o Claude"; as opções (a IA, o escopo e o detalhe do uso) ficam num popover.
- * Durante a leitura, a faixa vira o andamento, com "Pausar"; pausada, diz por quê e oferece "Retomar";
- * se falhar, diz o que fazer. O fim fica na tela (`ConclusaoIa`), não aqui.
+ * Durante a leitura, a faixa vira o andamento, com "Pausar"; pausada, diz por quê e oferece "Retomar"
+ * e, com algum tema já lido, "Encerrar leitura por aqui"; se falhar, diz o que fazer. "Ver andamento"
+ * abre, sob demanda, o painel bloco a bloco (a tela continua quieta). O fim fica na tela
+ * (`ConclusaoIa`), não aqui.
  */
-import type { ModoRevisaoIa, Provider } from "@simplifica-if/contratos-app";
+import type { EstadoRevisaoIa, ModoRevisaoIa, Provider } from "@simplifica-if/contratos-app";
 import { Link } from "@tanstack/react-router";
-import { PauseIcon, PlayIcon, SlidersHorizontalIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon, PauseIcon, PlayIcon, SlidersHorizontalIcon, XIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { MarcaIa } from "../components/MarcaIa.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
@@ -15,33 +18,122 @@ import { RadioCartao } from "../components/ui/radio-cartao.tsx";
 import { Segmented } from "../components/ui/segmented.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { DESCRICOES } from "../providers.ts";
-import { contagemTemas, detalheEstimativa, textoAndamento, textoEstimativa } from "./ia.ts";
+import { cn } from "~/lib/utils";
+import {
+  blocosProntos,
+  contagemTemas,
+  detalheEstimativa,
+  type LinhaAndamento,
+  linhasAndamento,
+  rodapeAndamento,
+  textoAndamento,
+  textoEstimativa,
+} from "./ia.ts";
 import { plural } from "./lista.ts";
 import type { LeituraIa } from "./useLeituraIa.ts";
 
 export const nomeIa = (provider: Provider) => DESCRICOES[provider].nome;
 
-function Caixa({ children, rotulo }: { readonly children: React.ReactNode; readonly rotulo: string }) {
+function Caixa({
+  children,
+  rotulo,
+  abaixo,
+}: {
+  readonly children: React.ReactNode;
+  readonly rotulo: string;
+  /** O que abre embaixo da faixa (o painel "Ver andamento"). */
+  readonly abaixo?: React.ReactNode;
+}) {
   return (
-    <section
-      aria-label={rotulo}
-      className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
-    >
-      {children}
+    <section aria-label={rotulo} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">{children}</div>
+      {abaixo}
     </section>
+  );
+}
+
+/** O relógio da tela, a cada segundo, só enquanto `ativo` (o painel aberto com algo lendo). */
+function useAgora(ativo: boolean): number {
+  const [agora, setAgora] = useState(() => Date.now());
+  useEffect(() => {
+    if (!ativo) return;
+    const relogio = setInterval(() => setAgora(Date.now()), 1000);
+    return () => clearInterval(relogio);
+  }, [ativo]);
+  return agora;
+}
+
+const MARCA: Readonly<Record<LinhaAndamento["situacao"], string>> = {
+  pronto: "bg-grav-ok",
+  lendo: "bg-primary animate-pulse motion-reduce:animate-none",
+  pausado: "bg-grav-conferir",
+  fila: "border border-grav-nao-lido",
+};
+
+const ROTULO_SITUACAO: Readonly<Record<LinhaAndamento["situacao"], string>> = {
+  pronto: "Pronto",
+  lendo: "Lendo",
+  pausado: "Parou aqui",
+  fila: "Na fila",
+};
+
+/** O painel "Ver andamento": um tema por linha, na ordem do parecer, e o uso no rodapé. */
+export function PainelAndamento({ estado }: { readonly estado: EstadoRevisaoIa }) {
+  const lendo = estado.blocos.some((b) => b.estado === "em_andamento");
+  const agora = useAgora(lendo);
+  const linhas = linhasAndamento(estado, agora);
+  return (
+    <div className="flex flex-col gap-3 border-border border-t pt-3">
+      <ol aria-label="Andamento por tema" className="flex flex-col gap-2">
+        {linhas.map((l) => (
+          <li key={l.id} className="flex items-start gap-3 text-small">
+            <span aria-hidden className={cn("mt-1.5 block size-2 shrink-0 rounded-full", MARCA[l.situacao])} />
+            <span className="flex min-w-0 flex-col gap-0.5">
+              <span>
+                <span className="font-semibold">{l.titulo}</span>{" "}
+                <span className="text-muted-foreground">
+                  · {ROTULO_SITUACAO[l.situacao]}: {l.detalhe}
+                </span>
+              </span>
+              {l.situacao === "lendo" || l.situacao === "pausado" ? (
+                <span className="text-muted-foreground text-micro">{l.criterios.join("; ")}</span>
+              ) : null}
+              {l.situacao === "pausado" && estado.motivo !== null ? (
+                <span className="text-grav-conferir-texto text-micro">{estado.motivo}</span>
+              ) : null}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="text-micro text-muted-foreground">{rodapeAndamento(estado)}</p>
+    </div>
+  );
+}
+
+function BotaoAndamento({ aberto, aoAlternar }: { readonly aberto: boolean; readonly aoAlternar: () => void }) {
+  return (
+    <Button variant="ghost" size="sm" aria-expanded={aberto} onClick={aoAlternar}>
+      Ver andamento
+      <ChevronDownIcon className={cn("transition-transform motion-reduce:transition-none", aberto && "rotate-180")} />
+    </Button>
   );
 }
 
 export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; readonly faltam: number }) {
   const { estado, provider } = leitura;
+  const [andamento, setAndamento] = useState(false);
   const nome = nomeIa(estado?.provider ?? provider);
   const rotulo = "Leitura com IA";
   const faltamTexto = `${faltam === 1 ? "Falta" : "Faltam"} ${plural(faltam, "critério que pede", "critérios que pedem")} leitura.`;
+  const painel =
+    andamento && estado !== undefined && estado.blocos.length > 0 ? <PainelAndamento estado={estado} /> : null;
+  const verAndamento = <BotaoAndamento aberto={andamento} aoAlternar={() => setAndamento((a) => !a)} />;
 
   if (estado?.situacao === "em_andamento" || estado?.situacao === "pausada") {
     const pausada = estado.situacao === "pausada";
+    const podeEncerrar = pausada && blocosProntos(estado) > 0;
     return (
-      <Caixa rotulo={rotulo}>
+      <Caixa rotulo={rotulo} abaixo={painel}>
         <div className="flex min-w-0 flex-col gap-1">
           <p className="flex items-center gap-2 font-semibold text-body" role="status">
             {pausada ? null : <Spinner />}
@@ -55,22 +147,30 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
           </p>
           <ErroDaLeitura leitura={leitura} />
         </div>
-        {pausada ? (
-          <Button className="shrink-0" disabled={leitura.ocupada} onClick={leitura.iniciar}>
-            <PlayIcon /> Retomar
-          </Button>
-        ) : (
-          <Button className="shrink-0" variant="outline" disabled={leitura.ocupada} onClick={leitura.pausar}>
-            <PauseIcon /> Pausar
-          </Button>
-        )}
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {verAndamento}
+          {podeEncerrar ? (
+            <Button variant="ghost" disabled={leitura.ocupada} onClick={leitura.encerrar}>
+              Encerrar leitura por aqui
+            </Button>
+          ) : null}
+          {pausada ? (
+            <Button disabled={leitura.ocupada} onClick={leitura.iniciar}>
+              <PlayIcon /> Retomar
+            </Button>
+          ) : (
+            <Button variant="outline" disabled={leitura.ocupada} onClick={leitura.pausar}>
+              <PauseIcon /> Pausar
+            </Button>
+          )}
+        </div>
       </Caixa>
     );
   }
 
   if (estado?.situacao === "falhou")
     return (
-      <Caixa rotulo={rotulo}>
+      <Caixa rotulo={rotulo} abaixo={painel}>
         <div className="flex min-w-0 flex-col gap-1">
           <p className="font-semibold text-body">A leitura com o {nome} não terminou.</p>
           <p className="max-w-[68ch] text-muted-foreground text-small">
@@ -78,9 +178,10 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
             continuar, confira a IA em Configurações › Sua IA.
           </p>
         </div>
-        <Button className="shrink-0" onClick={leitura.tentarDeNovo}>
-          Tentar de novo
-        </Button>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {verAndamento}
+          <Button onClick={leitura.tentarDeNovo}>Tentar de novo</Button>
+        </div>
       </Caixa>
     );
 

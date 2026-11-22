@@ -166,6 +166,16 @@ export function escolaridadeExigida(preRequisitos: string | null | undefined, fo
 const RE_CONTEXTO_INGRESSO =
   /ingress|acesso|requisit|candidat|processo seletivo|publico[- ]alvo|destina-se|destinado|inscri/;
 
+/**
+ * Frase sobre a saída do curso, não sobre o ingresso: "cumpridos os requisitos do curso, o estudante
+ * recebe o Histórico Escolar de Conclusão do Ensino Médio" não é requisito de escolaridade. Só vale
+ * fora da seção de requisitos e sem palavra forte de ingresso: "os candidatos comprovam a conclusão do
+ * ensino médio por atestado ou diploma" continua sendo requisito.
+ */
+const RE_CONCLUSAO_DO_CURSO = /diploma|certificad|historico escolar|conclusao do curso/;
+const RE_INGRESSO_FORTE = /ingress|acesso|candidat|processo seletivo|matricul|inscri/;
+const saidaDoCurso = (texto: string) => RE_CONCLUSAO_DO_CURSO.test(texto) && !RE_INGRESSO_FORTE.test(texto);
+
 export const requisitoIngresso: Verificador = {
   id: "d-requisito-ingresso",
   ficha: "CT-CURR-16",
@@ -188,21 +198,26 @@ export const requisitoIngresso: Verificador = {
         { estado: "a_conferir", mensagem: "" },
       );
     const secoesIngresso = new Set(linhasDasSecoes(ppc, new Set(["requisitos_acesso"])));
+    // A seção de certificados e diplomas fala da conclusão do curso, nunca do ingresso.
+    const secoesConclusao = new Set(linhasDasSecoes(ppc, new Set(["certificados_diplomas"])));
     const achados: Array<{ escolaridade: Escolaridade; trecho: Trecho }> = [];
     // Contexto e escolaridade na mesma frase: num parágrafo longo, "acesso" e "ensino médio" podem não ter relação.
     ppc.linhas.forEach((linha, indice) => {
+      if (secoesConclusao.has(indice + 1)) return;
       const naSecao = secoesIngresso.has(indice + 1);
       for (const frase of linha.split(/(?<=[.;])\s+|<br>/)) {
         const texto = chave(frase.replace(/\*/g, ""));
-        if (/transferencia/.test(texto) || (!naSecao && !RE_CONTEXTO_INGRESSO.test(texto))) continue;
+        if (/transferencia/.test(texto)) continue;
+        if (!naSecao && (!RE_CONTEXTO_INGRESSO.test(texto) || saidaDoCurso(texto))) continue;
         const escolaridade = escolaridadeDe(texto);
         if (escolaridade) achados.push({ escolaridade, trecho: trecho(ppc, indice + 1, frase.trim()) });
       }
       // Valor na linha seguinte a um rótulo de requisito.
-      if (RE_ROTULO_INGRESSO.test(chave(linha))) {
+      const rotulo = chave(linha);
+      if (RE_ROTULO_INGRESSO.test(rotulo) && !saidaDoCurso(rotulo)) {
         const seguinte = ppc.linhas.findIndex((l, i) => i > indice && l.trim() !== "");
         const escolaridade =
-          seguinte > 0 && seguinte - indice <= 2
+          seguinte > 0 && seguinte - indice <= 2 && !secoesConclusao.has(seguinte + 1)
             ? escolaridadeNoInicio(chave(ppc.linhas[seguinte]!.replace(/\*/g, "")))
             : null;
         if (escolaridade) achados.push({ escolaridade, trecho: trecho(ppc, seguinte + 1) });

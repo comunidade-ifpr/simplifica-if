@@ -7,7 +7,9 @@
  *   Configurações) e o escopo menor, e estima de novo a cada opção trocada;
  * - a estimativa anterior, nunca começada, é apagada no servidor (ela guarda o texto do PPC), e a última
  *   também, quando a tela fecha sem começar;
- * - no fim, entrega o estado concluído a quem abriu (o resultado novo substitui o da tela);
+ * - no fim, entrega o estado concluído a quem abriu (os blocos já entram na mesma lista, um a um);
+ * - pausada com algum tema lido, "Encerrar leitura por aqui" apaga a revisão (a lista fica com o que
+ *   foi lido) e avisa quem abriu, que recarrega a lista;
  * - se o servidor pede o arquivo de novo (o app foi fechado desde que ele foi escolhido), oferece
  *   `escolherArquivo`: escolhido o mesmo arquivo, a ação que falhou se repete.
  */
@@ -43,6 +45,8 @@ export interface LeituraIa {
   readonly ocupada: boolean;
   readonly iniciar: () => void;
   readonly pausar: () => void;
+  /** "Encerrar leitura por aqui": a lista fica com o que foi lido, e a revisão pausada sai. */
+  readonly encerrar: () => void;
   /** Depois de falhar: volta à estimativa, com o arquivo atual. */
   readonly tentarDeNovo: () => void;
   /** O servidor pediu o arquivo de novo: escolhê-lo (o mesmo) repete a ação que falhou. */
@@ -54,18 +58,23 @@ const ehAvisoNaoAceito = (erro: unknown) =>
 
 export function useLeituraIa({
   arquivo,
+  sha256,
   cnct,
   forma,
   ativa,
   aoConcluir,
+  aoEncerrar,
 }: {
   readonly arquivo: string;
+  /** Conteúdo do arquivo da lista: só retoma leitura pausada da mesma versão do `.docx`. */
+  readonly sha256: string;
   /** O curso escolhido pela pessoa ("Qual é o curso?"), que a leitura usa no lugar do documento. */
   readonly cnct: string | undefined;
   readonly forma: string | undefined;
-  /** A faixa aparece: o resultado ainda não passou pela IA. */
+  /** A faixa aparece: a leitura com IA ainda não leu tudo (nenhuma ou parcial). */
   readonly ativa: boolean;
   readonly aoConcluir: (estado: EstadoRevisaoIa) => void;
+  readonly aoEncerrar: () => void;
 }): LeituraIa {
   const api = useApi();
   const prontas = useIasProntas();
@@ -88,8 +97,10 @@ export function useLeituraIa({
   const preparada = useRef<string | undefined>(undefined);
   const situacao = useRef<EstadoRevisaoIa["situacao"] | undefined>(undefined);
   const concluir = useRef(aoConcluir);
+  const encerrada = useRef(aoEncerrar);
   useEffect(() => {
     concluir.current = aoConcluir;
+    encerrada.current = aoEncerrar;
   });
 
   const trocar = (novo: EstadoRevisaoIa | undefined) => {
@@ -131,7 +142,7 @@ export function useLeituraIa({
       .chamar((c) => c["revisaoPpc.listarIa"]({}))
       .then((lista) => {
         if (!vivo) return;
-        const achada = leiturasPorTerminar(lista).find((e) => e.arquivoOriginal === arquivo);
+        const achada = leiturasPorTerminar(lista).find((e) => e.arquivoOriginal === arquivo && e.sha256 === sha256);
         if (achada !== undefined) {
           setEscolhido(achada.provider);
           setModo(achada.modo);
@@ -144,8 +155,8 @@ export function useLeituraIa({
     return () => {
       vivo = false;
     };
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- uma vez por arquivo
-  }, [api, arquivo, ativa]);
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- uma vez por arquivo e versão
+  }, [api, arquivo, sha256, ativa]);
 
   // A estimativa, sozinha, ao abrir e a cada opção trocada (só antes de começar).
   const semIa = prontas !== undefined && usaveis.length === 0;
@@ -257,6 +268,23 @@ export function useLeituraIa({
     iniciar,
     pausar: () => {
       if (estado !== undefined) void chamar(() => api.chamar((c) => c["revisaoPpc.pausarIa"]({ revisao: estado.id })));
+    },
+    encerrar: () => {
+      if (estado === undefined) return;
+      const id = estado.id;
+      acompanhamento.current?.cancelar();
+      setOcupada(true);
+      setErro(undefined);
+      api
+        .chamar((c) => c["revisaoPpc.apagarIa"]({ revisao: id }))
+        .then(() => {
+          trocar(undefined);
+          // Volta à estimativa: a pessoa pode ler o resto depois.
+          setTentativa((n) => n + 1);
+          encerrada.current();
+        })
+        .catch((motivo: unknown) => setErro(explicarErro(motivo)))
+        .finally(() => setOcupada(false));
     },
     tentarDeNovo: () => {
       acompanhamento.current?.cancelar();

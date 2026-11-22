@@ -1,8 +1,8 @@
 /**
  * A régua de critérios: um traço por critério da revisão (as fichas da base), agrupados por tema, com a
  * cor da situação. Mostra a cobertura sem parágrafo: sem a IA, a maior parte fica contornada (não lida).
- * Durante a leitura com IA, os temas prontos passam de contorno a preenchido neutro (o resultado chega
- * no fim): é o único movimento automático da tela. Cada tema é um botão que filtra a lista.
+ * Durante a leitura com IA, cada bloco pronto entra na lista, e os critérios dele ganham a cor da
+ * decisão na hora: é o único movimento automático da tela. Cada tema é um botão que filtra a lista.
  *
  * O conjunto é um `group` com o resumo no rótulo (e não um `img`, que esconderia os botões do leitor
  * de tela).
@@ -19,13 +19,13 @@ const TRACO: Readonly<Record<EstadoCriterio, string>> = {
   nao_lido: "border border-grav-nao-lido",
 };
 
-function Traco({ estado, lidoPelaIa }: { readonly estado: EstadoCriterio; readonly lidoPelaIa: boolean }) {
+function Traco({ estado }: { readonly estado: EstadoCriterio }) {
   return (
     <span
       aria-hidden
       className={cn(
         "block h-[22px] w-1.5 rounded-[1px] transition-colors duration-500 motion-reduce:transition-none",
-        estado === "nao_lido" && lidoPelaIa ? "border border-transparent bg-muted-foreground/45" : TRACO[estado],
+        TRACO[estado],
       )}
     />
   );
@@ -33,19 +33,15 @@ function Traco({ estado, lidoPelaIa }: { readonly estado: EstadoCriterio; readon
 
 export function ReguaCriterios({
   criterios,
-  temasLidosPelaIa,
   tema,
   aoEscolherTema,
 }: {
   readonly criterios: ReadonlyArray<CriterioRevisao>;
-  /** Os temas que a leitura com IA em andamento já terminou. */
-  readonly temasLidosPelaIa: ReadonlySet<number>;
   /** O tema escolhido na lista (nulo: todos). */
   readonly tema: number | null;
   readonly aoEscolherTema: (ordem: number | null) => void;
 }) {
   const grupos = gruposDaRegua(criterios);
-  const iaLendo = temasLidosPelaIa.size > 0;
   return (
     <div className="flex flex-col gap-2">
       <div role="group" aria-label={`Régua de critérios. ${resumoRegua(criterios)}`} className="flex flex-wrap gap-y-2">
@@ -65,7 +61,7 @@ export function ReguaCriterios({
               )}
             >
               {g.criterios.map((c) => (
-                <Traco key={c.ficha} estado={c.estado} lidoPelaIa={temasLidosPelaIa.has(g.ordem)} />
+                <Traco key={c.ficha} estado={c.estado} />
               ))}
             </button>
           );
@@ -76,7 +72,6 @@ export function ReguaCriterios({
         <Legenda classe="bg-grav-conferir">conferir</Legenda>
         <Legenda classe="bg-grav-ok">em ordem</Legenda>
         <Legenda classe="border border-grav-nao-lido">ainda não lido</Legenda>
-        {iaLendo ? <Legenda classe="bg-muted-foreground/45">lido, resultado no fim</Legenda> : null}
       </ul>
     </div>
   );

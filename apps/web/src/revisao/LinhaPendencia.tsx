@@ -1,8 +1,8 @@
 /**
  * Uma pendência da lista, numa linha que abre e fecha (uma aberta por vez). Recolhida: a gravidade
  * (glifo e palavra), a mensagem em até duas linhas e onde ela está no documento, com "Novo" ou
- * "Retirado" quando couber. Aberta: o que fazer, o trecho do PPC (na serifada, com o filete da cor da
- * gravidade), as fontes pelo nome (o link `ifpr://` abre o painel de leitura) e as ações: "Feito"
+ * "Retirado" quando couber. Aberta: a mensagem inteira, o que fazer, o trecho do PPC (na serifada, com
+ * o filete da cor da gravidade, o rótulo "Trecho no PPC" e "Copiar trecho"), as fontes pelo nome (o link `ifpr://` abre o painel de leitura) e as ações: "Feito"
  * (ou "Desfazer"), "Sugerir texto" e, no ⋯, "Discordar", "Reconferir com o arquivo novo" e "Detalhes".
  *
  * Cada ação com IA mostra a estimativa antes de confirmar; a sugestão nunca é aplicada ao documento.
@@ -98,7 +98,13 @@ export function LinhaPendencia({
         <IndicadorGravidade gravidade={gravidade} apagado={feita || retirada} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className={cn("line-clamp-2 font-medium text-heading", feita && "line-through decoration-1")}>
+        <span
+          className={cn(
+            "font-medium text-heading",
+            aberta ? "whitespace-pre-line" : "line-clamp-2",
+            feita && "line-through decoration-1",
+          )}
+        >
           {p.mensagem}
         </span>
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-small">
@@ -136,11 +142,7 @@ export function LinhaPendencia({
           <p className="font-semibold text-small">{gravidade === "corrigir" ? "O que fazer" : "O que conferir"}</p>
           <p className="whitespace-pre-line text-body">{p.oQueFazer}</p>
         </div>
-        {p.trecho === null ? null : (
-          <blockquote className={cn("max-w-[68ch] border-l-[3px] pl-4 font-serif text-quote", FILETE[gravidade])}>
-            {p.trecho}
-          </blockquote>
-        )}
+        {p.trecho === null ? null : <Trecho trecho={p.trecho} filete={FILETE[gravidade]} />}
         {p.fontes.length ? (
           <p className="text-small">
             <span className="font-semibold">{p.fontes.length === 1 ? "Fonte: " : "Fontes: "}</span>
@@ -228,6 +230,34 @@ export function LinhaPendencia({
         {erro === undefined ? null : <AvisoErro erro={erro} />}
       </div>
     </LinhaExpansivel>
+  );
+}
+
+/**
+ * O trecho do PPC, com o rótulo discreto e "Copiar trecho" (para achar no Word com Ctrl+F). A seção já
+ * está no cabeçalho da linha.
+ */
+function Trecho({ trecho, filete }: { readonly trecho: string; readonly filete: string }) {
+  const [copiado, setCopiado] = useState(false);
+  return (
+    <div className="flex max-w-[68ch] flex-col gap-1">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-semibold text-muted-foreground text-small">Trecho no PPC</p>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() =>
+            void navigator.clipboard
+              .writeText(trecho)
+              .then(() => setCopiado(true))
+              .catch(() => undefined)
+          }
+        >
+          <ClipboardCopyIcon /> {copiado ? "Trecho copiado" : "Copiar trecho"}
+        </Button>
+      </div>
+      <blockquote className={cn("border-l-[3px] pl-4 font-serif text-quote", filete)}>{trecho}</blockquote>
+    </div>
   );
 }
 

@@ -1,18 +1,23 @@
 /**
  * O resultado da revisão: o que corrigir primeiro e quanto do PPC já foi lido. De cima para baixo, o
  * cabeçalho do documento, a frase-resultado com a régua de critérios, a faixa da IA (enquanto ela não
- * leu), o bloqueio do curso (quando o CNCT não reconheceu o curso) e a lista em duas colunas: os temas à
+ * leu tudo), o bloqueio do curso (quando o CNCT não reconheceu o curso) e a lista em duas colunas: os temas à
  * esquerda e as pendências à direita, uma aberta por vez. As ressalvas ficam juntas em "Sobre esta
  * revisão", no pé da coluna de temas.
  *
- * "Qual é o curso?" refaz a lista com o curso escolhido sem perder a leitura com IA (`trocarCurso`).
+ * A leitura com IA entra na mesma lista, bloco a bloco: a cada bloco pronto (e no fim), a lista é
+ * recarregada, e só as pendências que ela não tinha ganham "Novo".
+ *
+ * "Qual é o curso?" refaz a lista com o curso escolhido sem perder a leitura com IA (`trocarCurso`);
+ * com a leitura em andamento, ele e "Enviar a versão corrigida" esperam a pausa (o servidor recusa), e
+ * a leitura pausada sai.
  * Uma ação que precisa reler o arquivo depois que o app foi fechado pede para escolhê-lo de novo e se
  * repete com ele.
  *
  * Teclado na lista: ↑ e ↓ andam pelas linhas, Enter abre e fecha, F marca como feito (ou desfaz).
  */
 import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app";
-import { type KeyboardEvent, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import { Pagina } from "../components/Pagina.tsx";
@@ -36,17 +41,18 @@ import { obterArquivo, pedeArquivoDeNovo, textoMesmoArquivo } from "./arquivo.ts
 import { BloqueioCurso } from "./BloqueioCurso.tsx";
 import { CabecalhoDocumento } from "./CabecalhoDocumento.tsx";
 import { ConclusaoIa, FaixaIa, nomeIa } from "./FaixaIa.tsx";
-import { temasProntos, textoConclusao } from "./ia.ts";
+import { blocosProntos, textoConclusao } from "./ia.ts";
 import { LinhaPendencia } from "./LinhaPendencia.tsx";
 import {
+  chavesNovas,
   contagens,
   descreverCurso,
   doBloqueio,
   fraseResultado,
+  naoLidos,
   nomeDoArquivo,
   ordenar,
   passouPelaIa,
-  pendente,
   plural,
   principais,
   temasDaNavegacao,
@@ -56,8 +62,6 @@ import {
 import { NavTemas, SeletorTema } from "./NavTemas.tsx";
 import { ReguaCriterios } from "./ReguaCriterios.tsx";
 import { useLeituraIa } from "./useLeituraIa.ts";
-
-const SEM_LEITURA: ReadonlySet<number> = new Set();
 
 export function Leitura({
   inicial,
@@ -90,27 +94,66 @@ export function Leitura({
 
   const r = lista.resultado;
   const pessoa = r.curso.origem === "pessoa";
+  /** A lista de agora, para o diff das pendências novas (os retornos chegam depois do render). */
+  const atual = useRef(lista);
+  useEffect(() => {
+    atual.current = lista;
+  });
+  /** Quantas pendências a leitura em curso já trouxe (para a frase do fim). */
+  const novasDaLeitura = useRef(0);
+  /**
+   * A lista recarregada do servidor (a mesma, com os blocos da IA já mesclados): as chaves que ela não
+   * tinha ganham "Novo". Devolve a lista e quantas chegaram.
+   */
+  const recarregar = async (): Promise<{ nova: ListaPendencias; chegaram: number } | undefined> => {
+    try {
+      const nova = await api.chamar((c) => c["revisaoPpc.lista"]({ lista: atual.current.id }));
+      const chegaram = chavesNovas(atual.current, nova);
+      atual.current = nova;
+      setLista(nova);
+      if (chegaram.length)
+        setNovas((antes) => {
+          const todas = new Set(antes);
+          for (const chave of chegaram) todas.add(chave);
+          return todas;
+        });
+      return { nova, chegaram: chegaram.length };
+    } catch (motivo) {
+      setErro(explicarErro(motivo));
+      return undefined;
+    }
+  };
   const ia = useLeituraIa({
     arquivo: lista.arquivoOriginal,
+    sha256: lista.sha256,
     cnct: pessoa ? r.curso.cnct?.slug : undefined,
     forma: pessoa ? (r.curso.forma ?? undefined) : undefined,
-    ativa: !passouPelaIa(r),
-    aoConcluir: (estado: EstadoRevisaoIa) => {
-      const id = estado.resultado?.lista;
-      if (id === undefined) return;
-      void api
-        .chamar((c) => c["revisaoPpc.lista"]({ lista: id }))
-        .then((nova) => {
-          const daIa = nova.pendencias.filter((v) => v.pendencia.origem === "ia" && pendente(v));
-          setLista(nova);
-          setNovas(new Set(daIa.map((v) => v.chave)));
-          setConclusao(textoConclusao(nomeIa(estado.provider), nova.resultado, daIa.length));
-          setAberta(null);
-        })
-        .catch((motivo: unknown) => setErro(explicarErro(motivo)));
-    },
+    ativa: r.leituraIa !== "completa",
+    aoConcluir: (estado: EstadoRevisaoIa) =>
+      void recarregar().then((recarregada) => {
+        if (recarregada === undefined) return;
+        const encontrados = novasDaLeitura.current + recarregada.chegaram;
+        novasDaLeitura.current = 0;
+        setConclusao(textoConclusao(nomeIa(estado.provider), recarregada.nova.resultado, encontrados));
+        setAberta(null);
+      }),
+    aoEncerrar: () => void recarregar(),
   });
-  const lendo = ia.estado?.situacao === "em_andamento" || ia.estado?.situacao === "pausada";
+  const prontos = ia.estado === undefined ? 0 : blocosProntos(ia.estado);
+  const lendoAgora = ia.estado?.situacao === "em_andamento";
+  // Cada bloco pronto já está na lista: recarrega e marca como "Novo" só o que chegou (inclusive se o
+  // bloco irmão terminou junto com uma pausa).
+  const vistos = useRef(prontos);
+  const estavaLendo = useRef(lendoAgora);
+  useEffect(() => {
+    if (prontos > vistos.current && (lendoAgora || estavaLendo.current))
+      void recarregar().then((recarregada) => {
+        novasDaLeitura.current += recarregada?.chegaram ?? 0;
+      });
+    vistos.current = prontos;
+    estavaLendo.current = lendoAgora;
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- só quando a contagem ou a leitura mudam
+  }, [prontos, lendoAgora]);
   const provider = lista.provider ?? ia.provider;
 
   const usar = async <A,>(acao: () => Promise<A>, repetir?: () => void): Promise<A | undefined> => {
@@ -179,6 +222,8 @@ export function Leitura({
     if (nova === undefined) return;
     setLista(nova);
     setAberta(null);
+    // A leitura pausada saiu no servidor: a faixa volta à estimativa.
+    if (ia.estado?.situacao === "pausada") ia.tentarDeNovo();
   };
 
   const enviarCorrigida = async (arquivo: string) => {
@@ -190,6 +235,7 @@ export function Leitura({
     if (novo === undefined) return;
     setLista(novo.lista);
     setAviso(textoArquivoNovo(novo));
+    if (ia.estado?.situacao === "pausada") ia.tentarDeNovo();
   };
 
   const escolherCorrigida = async () => {
@@ -261,7 +307,7 @@ export function Leitura({
       <p>
         {!passouPelaIa(r)
           ? `A régua tem os ${r.totalCriterios} critérios da revisão. O app confere ${r.conferidos} sozinho; os demais pedem leitura, sua ou da IA.`
-          : `A régua tem os ${r.totalCriterios} critérios da revisão: ${r.conferidos} conferidos pelo app e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${r.paraConferirIa ? ` ${plural(r.paraConferirIa, "ficou", "ficaram")} para você conferir.` : ""}`}
+          : `A régua tem os ${r.totalCriterios} critérios da revisão: ${r.conferidos} conferidos pelo app e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${r.paraConferirIa ? ` ${plural(r.paraConferirIa, "ficou", "ficaram")} para você conferir.` : ""}${r.leituraIa === "parcial" ? ` A leitura com IA ainda não leu ${plural(naoLidos(r), "critério", "critérios")}.` : ""}`}
       </p>
       <p>
         Seu arquivo não é alterado: os comentários vão para uma cópia, “{nomeDoArquivo(r.arquivoComentado)}”, na mesma
@@ -291,7 +337,8 @@ export function Leitura({
                   ponte?.mostrarNaPasta === undefined
                     ? undefined
                     : () => void usar(() => ponte.mostrarNaPasta!(r.arquivoComentado)),
-                aoEnviarCorrigida: () => void escolherCorrigida(),
+                // Com a leitura com IA em andamento, a versão corrigida espera a pausa (o servidor recusa).
+                aoEnviarCorrigida: lendoAgora ? undefined : () => void escolherCorrigida(),
                 aoExportar: discordancias ? () => void exportar() : undefined,
                 aoRevisarOutro: aoSair,
                 aoApagar: () => setConfirmarApagar(true),
@@ -354,12 +401,7 @@ export function Leitura({
             <h2 id="frase-resultado" className="text-display">
               {fraseResultado(lista)}
             </h2>
-            <ReguaCriterios
-              criterios={r.criterios}
-              temasLidosPelaIa={lendo && ia.estado !== undefined ? temasProntos(ia.estado) : SEM_LEITURA}
-              tema={tema}
-              aoEscolherTema={setTema}
-            />
+            <ReguaCriterios criterios={r.criterios} tema={tema} aoEscolherTema={setTema} />
           </section>
 
           {enviando ? (
@@ -369,11 +411,12 @@ export function Leitura({
           ) : null}
           {aviso === null ? null : <ConclusaoIa texto={`Versão corrigida: ${aviso}`} aoFechar={() => setAviso(null)} />}
           {conclusao === null ? null : <ConclusaoIa texto={conclusao} aoFechar={() => setConclusao(null)} />}
-          {!passouPelaIa(r) ? <FaixaIa leitura={ia} faltam={r.totalCriterios - r.conferidos} /> : null}
+          {r.leituraIa !== "completa" ? <FaixaIa leitura={ia} faltam={naoLidos(r)} /> : null}
           {bloqueio.length ? (
             <BloqueioCurso
               pendencias={bloqueio}
               conferindo={trocandoCurso}
+              emLeitura={lendoAgora}
               aoEscolher={(cnct) => void trocarCurso(cnct)}
             />
           ) : null}

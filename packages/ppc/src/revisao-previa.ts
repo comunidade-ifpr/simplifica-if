@@ -18,11 +18,13 @@ import { comentarDocx } from "@simplifica-if/docx/comentarios";
 import { textosDeCaixas } from "@simplifica-if/docx/leitor";
 import { PacoteOoxml } from "@simplifica-if/docx/pacote";
 import type { EntradaRegistro } from "@simplifica-if/kb/normas/registro";
+import type { SecaoPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
+import { alvoDosTrechos, textoDoMaiorPedaco } from "./revisao-ia/conferencia.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
 import {
@@ -104,7 +106,18 @@ export type EntradaIa = {
   resultados: ResultadoFichaIa[];
   /** Fichas S e J fora da revisão (modo rápido), para o aviso do título. */
   fora: string[];
+  /**
+   * A leitura com IA ainda não leu todos os blocos (em andamento, pausada ou encerrada antes do fim):
+   * os resultados são parciais, e o aviso diz quantos critérios ainda não foram lidos.
+   */
+  parcial?: boolean | undefined;
 };
+
+/** Quanto a leitura com IA cobriu: nada, uma parte dos blocos ou todos. */
+export type LeituraIa = "nenhuma" | "parcial" | "completa";
+
+export const leituraDaIa = (ia: EntradaIa | undefined): LeituraIa =>
+  ia === undefined ? "nenhuma" : ia.parcial === true ? "parcial" : "completa";
 
 export type OpcoesRevisaoPrevia = {
   /** Relógio da rodada (data dos comentários e do aviso). */
@@ -264,6 +277,8 @@ export type RevisaoPrevia = {
   foraDaRevisao: string[];
   /** Quantos critérios a revisão tem (`criterios.length`). */
   totalCriterios: number;
+  /** Quanto a leitura com IA cobriu (`nenhuma` na pré-conferência). */
+  leituraIa: LeituraIa;
   dataBase: string;
   /** Texto do comentário-aviso no título. */
   aviso: string;
@@ -415,7 +430,42 @@ export function estadoDaIa(r: ResultadoFichaIa): "nao_atende" | "a_conferir" | n
 
 const ponto = (texto: string) => (/[.!?]$/.test(texto.trim()) ? texto.trim() : `${texto.trim()}.`);
 
-function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, cnct: string | null): ItemInterno[] {
+/**
+ * Onde está um trecho citado pela IA: a seção da linha do Markdown que contém o maior pedaço contínuo
+ * dele (entre reticências), normalizado como na conferência. Nulo se o trecho não tem a forma
+ * conferível ou não se acha (a conferência já o recusaria).
+ */
+export function localizadorDeSecoes(markdown: string, secoes: readonly SecaoPpc[]): (trecho: string) => string | null {
+  const linhas = markdown.split("\n").map(alvoDosTrechos);
+  // As linhas normalizadas juntas, com o começo de cada uma: um pedaço pode atravessar a quebra.
+  const inicios: number[] = [];
+  let tamanho = 0;
+  for (const linha of linhas) {
+    inicios.push(tamanho);
+    tamanho += linha.length + 1;
+  }
+  const texto = linhas.join(" ");
+  return (trecho) => {
+    const pedaco = textoDoMaiorPedaco(trecho);
+    if (pedaco === null) return null;
+    const onde = texto.indexOf(pedaco);
+    if (onde < 0) return null;
+    let indice = 0;
+    while (indice + 1 < inicios.length && inicios[indice + 1]! <= onde) indice += 1;
+    const linha = indice + 1;
+    let achada: SecaoPpc | null = null;
+    for (const secao of secoes) if (secao.linhaInicio <= linha && linha <= secao.linhaFim) achada = secao;
+    return achada?.titulo ?? null;
+  };
+}
+
+function itensDaIa(
+  ia: EntradaIa,
+  registro: Registro,
+  base: BaseRevisaoPrevia,
+  cnct: string | null,
+  secaoDe: (trecho: string) => string | null,
+): ItemInterno[] {
   const itens: ItemInterno[] = [];
   for (const r of ia.resultados) {
     const estado = estadoDaIa(r);
@@ -430,6 +480,7 @@ function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, c
           ]
             .filter(Boolean)
             .join(" ");
+    const literal = r.trechos.find((t) => comoNoDocumento(t));
     const trechos = r.trechos.map(comoNoDocumento).filter(Boolean);
     itens.push({
       ficha: r.ficha,
@@ -440,7 +491,7 @@ function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, c
       mensagem,
       oQueFazer: r.oQueFazer.trim() ? ponto(r.oQueFazer) : "Confira o critério no PPC.",
       trecho: trechos[0] ?? null,
-      secao: null,
+      secao: literal === undefined ? null : secaoDe(literal),
       trechos: trechos.slice(0, 1),
       fontes: agruparFontes(
         r.fontes.map((f) => linkDaFonte(f, cnct)).filter((f): f is Fonte => f !== null),
@@ -623,6 +674,7 @@ function textoDoAviso(entrada: {
   /** Os temas das fichas de fora, na ordem do parecer. */
   temasForaDaRevisao: readonly string[];
   totalCriterios: number;
+  leituraIa: LeituraIa;
   curso: CursoIdentificado;
   pendencias: readonly PendenciaRevisao[];
   /** Onde o trecho não localizado provavelmente está (`ondeNoArquivo`). */
@@ -639,7 +691,9 @@ function textoDoAviso(entrada: {
   const naoAtende = entrada.pendencias.filter((p) => p.estado === "nao_atende").length;
   const aConferir = entrada.pendencias.length - naoAtende;
   const vistos = entrada.conferidos + entrada.conferidosIa;
-  const comIa = entrada.conferidosIa + entrada.paraConferirIa > 0;
+  const comIa = entrada.leituraIa !== "nenhuma";
+  // Os que nem a leitura nem o modo rápido cobriram: a leitura com IA parou antes do fim.
+  const naoLidos = entrada.totalCriterios - vistos - entrada.paraConferirIa - entrada.foraDaRevisao.length;
   const total = comIa
     ? [
         `${vistos} de ${entrada.totalCriterios} critérios conferidos: ${entrada.conferidos} pelo código, com a base de normas, e ${entrada.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.`,
@@ -648,9 +702,15 @@ function textoDoAviso(entrada: {
           : "",
         entrada.foraDaRevisao.length
           ? `No modo rápido, ficaram de fora ${plural(entrada.foraDaRevisao.length, "critério", "critérios")}, que exigem leitura, dos temas: ${entrada.temasForaDaRevisao.join("; ")}.`
-          : vistos + entrada.paraConferirIa < entrada.totalCriterios
-            ? "Os demais exigem leitura."
-            : "",
+          : "",
+        // Com o modo rápido e a leitura encerrada antes do fim, as duas frases valem juntas.
+        naoLidos > 0
+          ? entrada.leituraIa === "parcial"
+            ? `A leitura com IA parou antes do fim: ${plural(naoLidos, "critério ainda não foi lido", "critérios ainda não foram lidos")}.`
+            : entrada.foraDaRevisao.length
+              ? ""
+              : "Os demais exigem leitura."
+          : "",
       ]
         .filter(Boolean)
         .join(" ")
@@ -727,6 +787,79 @@ function todosOsCriterios(
     .sort((a, b) => a.ordemTema - b.ordemTema);
 }
 
+/** Uma pendência antes da cópia comentada: com todos os trechos, que `comentarDocx` procura no documento. */
+export type ItemMontado = ItemInterno;
+
+/** A lista e a régua montadas da pré-conferência e dos resultados da IA, sem o documento. */
+export type Montagem = {
+  /** As pendências do código e da IA, sem repetição, na ordem dos temas. */
+  itens: ItemMontado[];
+  criterios: CriterioConferido[];
+  conferidos: number;
+  conferidosIa: number;
+  paraConferirIa: number;
+  foraDaRevisao: string[];
+  /** Os temas das fichas de fora, na ordem do parecer. */
+  temasForaDaRevisao: string[];
+  totalCriterios: number;
+  leituraIa: LeituraIa;
+};
+
+/**
+ * A montagem do resultado (pura, sem o `.docx`): as pendências da pré-conferência e as da IA, sem
+ * repetição (a mesma ficha com a mesma mensagem no mesmo trecho é uma pendência só), a régua e as
+ * contagens. É a mesma na revisão com o documento (`revisarDocx`) e na mesclagem dos blocos da leitura
+ * com IA, que o servidor faz a cada bloco pronto sem reler o arquivo.
+ */
+export function montarResultado(
+  preConferencia: PreConferencia,
+  ia: EntradaIa | undefined,
+  base: BaseRevisaoPrevia,
+  entrada: { markdown: string; cnct: string | null; registro?: Registro },
+): Montagem {
+  const registro = entrada.registro ?? new Registro(base.normas);
+  const secaoDe = localizadorDeSecoes(entrada.markdown, preConferencia.secoes);
+  const vistos = new Set<string>();
+  const itens = [
+    ...itensDaPreConferencia(preConferencia, registro, base),
+    ...(ia ? itensDaIa(ia, registro, base, entrada.cnct, secaoDe) : []),
+  ]
+    .filter((item) => {
+      const igual = JSON.stringify([item.ficha, item.mensagem, item.trecho]);
+      if (vistos.has(igual)) return false;
+      vistos.add(igual);
+      return true;
+    })
+    .sort((a, b) => a.ordemTema - b.ordemTema);
+  // Só o que a IA decidiu conta como conferido; INCONCLUSIVO e a resposta recusada ficam para conferir.
+  const decididos = (ia?.resultados ?? []).filter((r) => r.estado !== "INCONCLUSIVO" && r.estado !== "FALHOU");
+  const criterios = todosOsCriterios(preConferencia, ia, base);
+  return {
+    itens,
+    criterios,
+    conferidos: preConferencia.fichas.length,
+    conferidosIa: decididos.length,
+    paraConferirIa: (ia?.resultados.length ?? 0) - decididos.length,
+    foraDaRevisao: (ia?.fora ?? []).map((f) => tituloDaFicha(f, base)),
+    temasForaDaRevisao: [...new Set((ia?.fora ?? []).map((f) => temaDaFicha(f, base)))]
+      .sort((a, b) => a - b)
+      .map((i) => TEMAS[i]!.titulo),
+    totalCriterios: criterios.length,
+    leituraIa: leituraDaIa(ia),
+  };
+}
+
+/**
+ * As pendências da montagem antes da cópia comentada: `noDocumento` provisório (no trecho, se há
+ * trecho; no início, se é ausência), que a gravação da cópia corrige com o que o Word achou.
+ */
+export const pendenciasProvisorias = (montagem: Montagem, cnct: string | null): PendenciaRevisao[] =>
+  montagem.itens.map(({ trechos, ...item }) => ({
+    ...item,
+    noDocumento: trechos.length ? "no-trecho" : "no-inicio",
+    dependeDoCurso: cnct === null && FICHAS_DO_CURSO.has(item.ficha),
+  }));
+
 /** Converte, pré-confere e comenta. Lança `ErroDocx` (mensagem em português) para arquivo inválido. */
 export function revisarDocx(
   bytes: Uint8Array,
@@ -753,27 +886,12 @@ export function revisarDocx(
     forma: forma ?? "",
     ...comum,
   });
-  // A mesma ficha com a mesma mensagem no mesmo trecho é uma pendência só.
-  const vistos = new Set<string>();
-  const itens = [
-    ...itensDaPreConferencia(resultado, registro, base),
-    ...(opcoes.ia ? itensDaIa(opcoes.ia, registro, base, cnct?.slug ?? null) : []),
-  ]
-    .filter((item) => {
-      const igual = JSON.stringify([item.ficha, item.mensagem, item.trecho]);
-      if (vistos.has(igual)) return false;
-      vistos.add(igual);
-      return true;
-    })
-    .sort((a, b) => a.ordemTema - b.ordemTema);
-  const conferidos = resultado.fichas.length;
-  // Só o que a IA decidiu conta como conferido; INCONCLUSIVO e a resposta recusada ficam para conferir.
-  const decididos = (opcoes.ia?.resultados ?? []).filter((r) => r.estado !== "INCONCLUSIVO" && r.estado !== "FALHOU");
-  const conferidosIa = decididos.length;
-  const paraConferirIa = (opcoes.ia?.resultados.length ?? 0) - conferidosIa;
-  const foraDaRevisao = (opcoes.ia?.fora ?? []).map((f) => tituloDaFicha(f, base));
-  const criterios = todosOsCriterios(resultado, opcoes.ia, base);
-  const totalCriterios = criterios.length;
+  const montagem = montarResultado(resultado, opcoes.ia, base, {
+    markdown: conversao.markdown,
+    cnct: cnct?.slug ?? null,
+    registro,
+  });
+  const { itens, criterios, conferidos, conferidosIa, paraConferirIa, foraDaRevisao, totalCriterios } = montagem;
 
   opcoes.aoEtapa?.("gravando");
   // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
@@ -818,10 +936,9 @@ export function revisarDocx(
     conferidosIa,
     paraConferirIa,
     foraDaRevisao,
-    temasForaDaRevisao: [...new Set((opcoes.ia?.fora ?? []).map((f) => temaDaFicha(f, base)))]
-      .sort((a, b) => a - b)
-      .map((i) => TEMAS[i]!.titulo),
+    temasForaDaRevisao: montagem.temasForaDaRevisao,
     totalCriterios,
+    leituraIa: montagem.leituraIa,
     curso,
     pendencias: pendencias.filter((_, indice) => !retirada(indice)),
     situacoes: marcas.filter((m): m is MarcaPendencia => m !== undefined),
@@ -838,6 +955,7 @@ export function revisarDocx(
     paraConferirIa,
     foraDaRevisao,
     totalCriterios,
+    leituraIa: montagem.leituraIa,
     dataBase: base.dataBase,
     aviso,
     markdown: conversao.markdown,

@@ -178,26 +178,42 @@ function portaAtual(): number | undefined {
   return servidor?.linha.porta;
 }
 
-/** Erro do servidor: mostra o motivo e oferece reiniciar (ou sair). */
+/** Erro do servidor: mostra o motivo e oferece reiniciar (ou só sair quando o banco é incompatível). */
 async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> {
   if (saindo) return;
-  const opcoes = {
-    type: "error" as const,
-    title: NOME,
-    message: "O Simplifica IF parou de funcionar por um problema interno.",
-    // A frase para a pessoa primeiro; o texto técnico (em inglês, às vezes) depois, para quem for ajudar.
-    detail: [
-      "Clique em Reiniciar para continuar. Se o problema se repetir, feche o app e abra de novo.",
-      `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
-    ].join("\n\n"),
-    buttons: ["Reiniciar", "Sair"],
-    defaultId: 0,
-    cancelId: 1,
-    noLink: true,
-  };
+  const combinado = `${mensagem}\n${detalhe}`;
+  const erroBanco = /BancoIncompativel|MigracaoViolouIntegridade|MigrationError/.test(combinado);
+  const opcoes = erroBanco
+    ? {
+        type: "error" as const,
+        title: NOME,
+        message: "Não foi possível abrir o banco de dados local do Simplifica IF.",
+        detail: [
+          "O banco pode ter sido atualizado por uma versão mais nova do app ou falhou ao atualizar. Se houver uma cópia .bak na pasta de dados do app, ela foi preservada. Atualize o Simplifica IF ou peça ajuda com os detalhes abaixo.",
+          `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
+        ].join("\n\n"),
+        buttons: ["Sair"],
+        defaultId: 0,
+        cancelId: 0,
+        noLink: true,
+      }
+    : {
+        type: "error" as const,
+        title: NOME,
+        message: "O Simplifica IF parou de funcionar por um problema interno.",
+        // A frase para a pessoa primeiro; o texto técnico (em inglês, às vezes) depois, para quem for ajudar.
+        detail: [
+          "Clique em Reiniciar para continuar. Se o problema se repetir, feche o app e abra de novo.",
+          `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
+        ].join("\n\n"),
+        buttons: ["Reiniciar", "Sair"],
+        defaultId: 0,
+        cancelId: 1,
+        noLink: true,
+      };
   const { response } =
     janela && !janela.isDestroyed() ? await dialog.showMessageBox(janela, opcoes) : await dialog.showMessageBox(opcoes);
-  if (response !== 0) {
+  if (erroBanco || response !== 0) {
     app.quit();
     return;
   }

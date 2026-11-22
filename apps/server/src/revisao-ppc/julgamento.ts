@@ -21,7 +21,7 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import type { UsoRevisaoIa } from "@simplifica-if/contratos-app";
+import type { EtapaBlocoIa, UsoRevisaoIa } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import {
   alvoDosTrechos,
@@ -123,7 +123,15 @@ export interface EntradaJulgamento {
    * reavaliar a conferência sem nova chamada). O app não grava o texto bruto.
    */
   readonly registrarTexto?: (numero: number, texto: string) => Effect.Effect<void>;
+  /**
+   * Avisado quando o bloco muda de etapa (`aguardando`, `recebendo`, `conferindo`, `nova_tentativa`) e,
+   * no `recebendo`, a cada sinal de vida da IA (no máximo um por `INTERVALO_ATIVIDADE`).
+   */
+  readonly aoEtapa?: (etapa: EtapaBlocoIa) => Effect.Effect<void>;
 }
+
+/** O intervalo mínimo entre dois avisos de texto recebido: o andamento na tela, sem um aviso por pedaço. */
+export const INTERVALO_ATIVIDADE = Duration.seconds(5);
 
 const usoVazio = (): { -readonly [K in keyof UsoRevisaoIa]: UsoRevisaoIa[K] } => ({
   entrada: 0,
@@ -177,6 +185,29 @@ export interface EntradaTurno {
   /** Grava o uso assim que o turno acaba, em qualquer saída (sucesso, pausa, interrupção). */
   readonly registrarTentativa?: ((tentativa: TentativaIa) => Effect.Effect<void>) | undefined;
   readonly registrarTexto?: ((numero: number, texto: string) => Effect.Effect<void>) | undefined;
+  /** O que o turno avalia, para a frase do tempo esgotado ("o tema “Matriz curricular”"). */
+  readonly assunto?: string | undefined;
+  /** Avisado quando a IA manda texto (o primeiro pedaço e, depois, no máximo um por `INTERVALO_ATIVIDADE`). */
+  readonly aoReceber?: (() => Effect.Effect<void>) | undefined;
+}
+
+/**
+ * A pausa do tempo esgotado: o que estava sendo avaliado e se a IA chegou a responder em parte (os
+ * drivers não repassam o raciocínio, então "não respondeu" pode ser a IA pensando demais).
+ */
+export function pausaDoTempo(
+  provider: Motor.Provider,
+  assunto: string | undefined,
+  recebeuTexto: boolean,
+): PausaRevisao {
+  const sobre = assunto === undefined ? "" : ` sobre ${assunto}`;
+  const parte = recebeuTexto
+    ? "Ela chegou a responder em parte, mas não terminou a tempo."
+    : "Ela não chegou a mandar resposta.";
+  return new PausaRevisao({
+    limite: false,
+    motivo: `O ${NOME_PROVIDER[provider]} demorou demais para responder${sobre}. ${parte} O que já foi revisado está guardado; tente de novo quando quiser.`,
+  });
 }
 
 /** Uma sessão sem MCP e sem ferramentas, numa pasta vazia que some com o escopo. */
@@ -238,6 +269,19 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
       }),
     );
   });
+  let recebeuTexto = false;
+  let ultimoAviso = Number.NEGATIVE_INFINITY;
+  const intervalo = Duration.toMillis(INTERVALO_ATIVIDADE);
+  /** Um pedaço de texto chegou: avisa no primeiro e, depois, no máximo um por intervalo. */
+  const sinalDeVida = Effect.fnUntraced(function* () {
+    // Por evento de stream: o span é o do turno.
+    recebeuTexto = true;
+    if (entrada.aoReceber === undefined) return;
+    const agora = yield* Clock.currentTimeMillis;
+    if (agora - ultimoAviso < intervalo) return;
+    ultimoAviso = agora;
+    yield* entrada.aoReceber();
+  });
   const turno = Effect.gen(function* () {
     const sessao = yield* abrirSessaoSemFerramentas(entrada);
     const textos: string[] = [];
@@ -246,8 +290,12 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
       Stream.runForEach((evento) =>
         Effect.gen(function* () {
           switch (evento._tag) {
+            case "TextoParcial":
+              yield* sinalDeVida();
+              break;
             case "TextoFinal":
               textos.push(evento.texto);
+              yield* sinalDeVida();
               break;
             case "UsoTokens":
               uso.entrada += evento.entrada;
@@ -279,13 +327,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
       ),
       Effect.timeoutOrElse({
         duration: entrada.tempoTurno,
-        orElse: () =>
-          Effect.fail(
-            new PausaRevisao({
-              limite: false,
-              motivo: `O ${NOME_PROVIDER[entrada.provider]} demorou demais para responder. O que já foi revisado está guardado; tente de novo quando quiser.`,
-            }),
-          ),
+        orElse: () => Effect.failSync(() => pausaDoTempo(entrada.provider, entrada.assunto, recebeuTexto)),
       }),
     );
     if (erros.length && !ferramentas.length) {
@@ -315,9 +357,14 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
    * sessão: no teste real de 16/11/2026, o segundo turno de uma sessão do Claude levou um bloco fixo de
    * cerca de 158 mil tokens (lido ou gravado no cache); um pedido novo custa só o pedido.
    */
+  const etapa = (e: EtapaBlocoIa) => (entrada.aoEtapa ? entrada.aoEtapa(e) : Effect.void);
+  const assunto =
+    entrada.bloco.tipo === "T" ? "os critérios transversais" : `o tema “${entrada.bloco.tema}” (${entrada.bloco.id})`;
   const tentativa = (texto: string) => {
     numero += 1;
     return turnoSemFerramentas({
+      assunto,
+      aoReceber: () => etapa("recebendo"),
       provider: entrada.provider,
       modelo: entrada.modelo,
       instrucoes: instrucoesJulgador(entrada.nonce),
@@ -345,13 +392,17 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
       ferramentas,
     });
 
+  yield* etapa("aguardando");
   const r1 = yield* tentativa(entrada.pedido);
   if (r1.ferramentas.length) return yield* descartado(r1.ferramentas, 1);
+  yield* etapa("conferindo");
   const primeira = conferir(r1.texto);
   let segunda: Conferencia | null = null;
   if (precisaNovaTentativa(primeira)) {
+    yield* etapa("nova_tentativa");
     const r2 = yield* tentativa(`${entrada.pedido}\n\n${pedidoDeCorrecao(primeira)}`);
     if (r2.ferramentas.length) return yield* descartado(r2.ferramentas, 2);
+    yield* etapa("conferindo");
     segunda = conferir(r2.texto);
   }
   return yield* fim(resultadoDoBloco(entrada.fichas, primeira, segunda, entrada.revisaoHumana ?? false));
