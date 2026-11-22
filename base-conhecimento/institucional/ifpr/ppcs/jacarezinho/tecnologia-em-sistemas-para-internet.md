@@ -492,7 +492,7 @@ UNESCO sobre a Diversidade Cultural (promulgada em 2002). Na Carta de 2003, a UN
 
 Isso significa que no âmbito das políticas de defesa e preservação do patrimônio e da memória, que também se vinculam às políticas educacionais e ao processo de ensinoaprendizagem nas escolas, a essência “imaterial” ou “intangível” do patrimônio cultural também possui igual, urgente e impreterível relevância, conforme quadro abaixo.
 
-|Quadro 2 -CategoriasGerais de Patrimônio|Quadro 2 -CategoriasGerais de Patrimônio|
+|Quadro 2 -CategoriasGerais de Patrimônio||
 |---|---|
 |**Patrimônio**<br>**Material**<br>**(ou Tangível)**|Diz respeito à totalidade dos bens de natureza física, material, concreta ou manipulável,<br>produzidos pelo homem. Dentro desta categoria, podemos distinguir ainda os elementos de<br>caráter “móvel” ou “imóvel”.|
 |**Patrimônio**<br>**Imaterial**<br>**(ou Intangível)**|Diz respeito, com base na definição da UNESCO, às práticas, às representações, às<br>expressões, conhecimentos e competências ligadas aos instrumentos, objetos, artefatos e<br>espaços culturais de comunidades e grupos, transmitidos às novas gerações.|
@@ -508,7 +508,7 @@ Tais concepções servem como instrumental teórico e analítico para o estudant
 
 compreender o patrimônio cultural tanto em sua materialidade, quanto em sua imaterialidade, além de sua amplitude, abrangência e escalas de produção: global, nacional, regional ou local. Especificamente no que diz respeito ao patrimônio imaterial, a compreensão que se deve ter, também vinculada ao artigo 2º da Convenção de 2003, é a de que as formas de manifestação dessa categoria, podem ser vistas como sendo: “a) tradições e expressões orais, incluindo o idioma como veículo do patrimônio cultural imaterial; b) expressões artísticas; c) práticas sociais, rituais e atos festivos; d) conhecimentos e práticas relacionados à natureza e ao universo; e) técnicas artesanais tradicionais” (UNESCO, 2003, p. 03).
 
-|Quadro3-CategoriasSubsidiárias e Derivativas de Patrimônio|Quadro3-CategoriasSubsidiárias e Derivativas de Patrimônio|
+|Quadro3-CategoriasSubsidiárias e Derivativas de Patrimônio||
 |---|---|
 |**Patrimônio Artístico**|Bens de natureza artística ou carregados de valor artístico.|
 |**Patrimônio Arquitetônico**|Bens de caráter arquitetônico e de valor monumental.|
@@ -940,7 +940,7 @@ Conforme art. 4º da Resolução nº 07, de 18 de dezembro de 2018, a Curricular
 
 **MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET** Eixo Tecnológico do Curso: Informação e Comunicação Base legal: Resolução CNE/CP 03/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia Base Legal Específica do Curso: Resolução CNE/CES nº 277/2006 Resolução de Autorização do Curso no IFPR: Resolução nº 35/2018
 
-||(Criação Lei nº 11.892 de 29/12/2008)|(Criação Lei nº 11.892 de 29/12/2008)|(Criação Lei nº 11.892 de 29/12/2008)|(Criação Lei nº 11.892 de 29/12/2008)|(Criação Lei nº 11.892 de 29/12/2008)|(Criação Lei nº 11.892 de 29/12/2008)|(Criação Lei nº 11.892 de 29/12/2008)|
+||(Criação Lei nº 11.892 de 29/12/2008)|||||||
 |---|---|---|---|---|---|---|---|
 ||_Campus_Jacarezinho|||||||
 ||**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**SISTEMAS PARA INTERNET**|||||||
@@ -1028,7 +1028,7 @@ Conforme art. 4º da Resolução nº 07, de 18 de dezembro de 2018, a Curricular
 
 Os componentes curriculares optativos ofertados no âmbito do curso serão de 02 (duas) aulas semanais, totalizando 40 aulas no semestre, com uma carga horária de 33 horas-relógio. A oferta dos componentes optativos está circunstanciada à disponibilidade de carga horária dos docentes que atuam no curso, sendo obrigatória a oferta de pelo menos 02 (dois) componentes no sexto semestre.
 
-|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**||||
+|**Componentes Optativos**|||||||
 |---|---|---|---|---|---|---|
 |**Componente Curricular**|**Tipo**|**Número**|<br>**CH H/A**|**CH H/R**|**CH H/R**|<br>**CH H/R**<br>**Extensão**<br>**(60 min)**|
 ||**(C, CE,**|<br>**de aulas**|**Total**|**Total**|**T/P**||
@@ -1110,7 +1110,7 @@ curricular deste curso e cuja carga horária está totalmente destinada ao cumpr
 
 Os Planos de Ensino, por sua vez, serão registrados no sistema acadêmico conforme normativas vigentes. Os componentes não específicos e específicos de extensão a serem trabalhados do Curso Superior de Tecnologia em Sistemas para Internet, bem como a carga horária a ser creditada e a forma como se dará a comprovação/reconhecimento desta para o registro em histórico escolar, são apresentadas a seguir.
 
-|Quadro 4 -|ComponentesparaCurricularização da Extensão|ComponentesparaCurricularização da Extensão|ComponentesparaCurricularização da Extensão|
+|Quadro 4 -|ComponentesparaCurricularização da Extensão|||
 |---|---|---|---|
 ||||**CH H/R**|
 ||**Semestre**|||
@@ -1130,7 +1130,7 @@ Os Planos de Ensino, por sua vez, serão registrados no sistema acadêmico confo
 ||6°|Atividades Curriculares de Extensão|50|
 ||**TOTAL DE HORAS**||**215**|
 
-|Quadro 4 -|ComponentesparaCurricularização da Extensão|ComponentesparaCurricularização da Extensão|ComponentesparaCurricularização da Extensão|
+|Quadro 4 -|ComponentesparaCurricularização da Extensão|||
 |---|---|---|---|
 ||||**CH H/R**|
 ||**Semestre**|||
@@ -1158,7 +1158,7 @@ As Atividades Curriculares de Extensão (6° semestre) que compõem uma carga ho
 
 deverá comprovar a sua participação nas atividades estabelecidas, observado o limite máximo de horas descrito, conforme apresentado a seguir.
 
-|Quadro5- Lista de Atividades de Extensão eCarga Horária|Quadro5- Lista de Atividades de Extensão eCarga Horária|Quadro5- Lista de Atividades de Extensão eCarga Horária|
+|Quadro5- Lista de Atividades de Extensão eCarga Horária|||
 |---|---|---|
 |||**Carga Horária**|
 |**Atividade Curricular de Extensão**|**Regra**||
@@ -1296,7 +1296,7 @@ SOUZA, Adriana Grade Fiori _et al_ . **Leitura em língua inglesa** : uma aborda
 
 ## **COMPONENTE CURRICULAR: Interação Humano-Computador**
 
-|**COMPONENTE CURRICULAR: Interação Humano-Computador**|**COMPONENTE CURRICULAR: Interação Humano-Computador**|
+|**COMPONENTE CURRICULAR: Interação Humano-Computador**||
 |---|---|
 |Aulas Semanais: 2|Carga Horária: 40 horas/aula e 33 horas/relógio|
 |Relação entre Aulas Teóricas e Práticas: 1/1|Carga Horária Extensão: 0|
@@ -1400,7 +1400,7 @@ Janeiro: Campus, 2002.
 
 ## **COMPONENTE CURRICULAR: Multimídia para Web**
 
-|**COMPONENTE CURRICULAR: Multimídia para Web**|**COMPONENTE CURRICULAR: Multimídia para Web**|
+|**COMPONENTE CURRICULAR: Multimídia para Web**||
 |---|---|
 |Aulas Semanais: 4|Carga Horária: 80 horas/aula e 67 horas/relógio|
 |Relação entre Aulas Teóricas e Práticas: 1/3|Carga Horária Extensão: 21 horas|
@@ -1509,7 +1509,7 @@ WILDAUER, Egon Walter. **Plano de negócios** : elementos constitutivos e proces
 
 ## **COMPONENTE CURRICULAR: Banco de Dados III**
 
-|**COMPONENTE CURRICULAR: Banco de Dados III**|**COMPONENTE CURRICULAR: Banco de Dados III**|
+|**COMPONENTE CURRICULAR: Banco de Dados III**||
 |---|---|
 |Aulas Semanais: 2|Carga Horária: 40 horas/aula e 33 horas/relógio|
 |Relação entre Aulas Teóricas e Práticas: 1/1|Carga Horária Extensão: 0|
@@ -1525,7 +1525,7 @@ PUGA, Sandra; FRANÇA, Edson; GOYA, Milton. **Banco de dados** : implementação
 
 ## **COMPONENTE CURRICULAR: Engenharia de** _**Software**_ **III**
 
-|**COMPONENTE CURRICULAR: Engenharia de****_Software_ III**|**COMPONENTE CURRICULAR: Engenharia de****_Software_ III**|
+|**COMPONENTE CURRICULAR: Engenharia de****_Software_ III**||
 |---|---|
 |Aulas Semanais: 2|Carga Horária: 40 horas/aula e 33 horas/relógio|
 |Relação entre Aulas Teóricas e Práticas: 1/1|Carga Horária Extensão: 0|
@@ -1780,7 +1780,7 @@ SANTOS, Sandro. **Introdução à IoT** : desvendando a internet das coisas. Joi
 
 ## **COMPONENTE CURRICULAR: Projeto Integrador IV**
 
-|**COMPONENTE CURRICULAR: Projeto Integrador IV**|**COMPONENTE CURRICULAR: Projeto Integrador IV**|
+|**COMPONENTE CURRICULAR: Projeto Integrador IV**||
 |---|---|
 |Aulas Semanais: 2|Carga Horária: 40 horas/aula e 33 horas/relógio|
 |Relação entre Aulas Teóricas e Práticas: 1/1|Carga Horária Extensão: 0|

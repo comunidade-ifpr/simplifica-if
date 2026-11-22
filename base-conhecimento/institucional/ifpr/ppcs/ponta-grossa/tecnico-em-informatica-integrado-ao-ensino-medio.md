@@ -57,7 +57,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 **Comissão de Ajuste Curricular PORTARIA Nº047/2018 – DIR/CP/CTBA/IFPR**
 
-|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Denise Maria Vecino Sato|
@@ -93,7 +93,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **Comissão de Ajuste Curricular referente a Portaria Nº 103, DE 14 DE MAIO DE 2019**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Felipe Ventura Oliveira|
@@ -681,7 +681,7 @@ Os temas transversais serão trabalhados em todos os componentes curriculares de
 
 ## **1[o] ano (11 componentes curriculares)**
 
-|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|
+|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**||||
 |---|---|---|---|
 |**Ano de implantação: 2020**||||
 |**1o ano (11 componentes curriculares)**||||
@@ -763,7 +763,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Arquitetura e Manutenção de Computadores**||
@@ -797,7 +797,7 @@ TORRES, Gabriel. **Hardware** : Guia Completo, 4. ed. Rio de Janeiro: Axcel Book
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Design de Interface**||
@@ -930,7 +930,7 @@ CADENHEAD, Rogers; LEMAY, Laura. **Aprenda em 21 dias: java 2 ; professional ref
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |||
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
@@ -1044,7 +1044,7 @@ KUNZ, Elenor. Transformação didático-pedagógica do esporte. Editora Unijuí,
 
 ## **CAMPUS Curitiba do IFPR**
 
-|**CAMPUS Curitiba do IFPR**|**CAMPUS Curitiba do IFPR**|
+|**CAMPUS Curitiba do IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Geografia I**||
@@ -1075,7 +1075,7 @@ ROSS, J. S. (org.). **Geografia do Brasil.** São Paulo: EDUSP, 1995.
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |||
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
@@ -1190,7 +1190,7 @@ KOTZ, C. John; TREICHEL, Paul, M, Jr. Química geral e Reações Químicas. Vol 
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Análise e Projeto de Sistemas**||
@@ -1231,7 +1231,7 @@ BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. **UML: guia do usuário.** 2. ed.
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Banco de Dados**||
@@ -1309,7 +1309,7 @@ DALL’OGLIO, P.; PHP: Programando com orientação a objetos; 2ª Edição, Nov
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Programação de Sistemas**||
@@ -1369,7 +1369,7 @@ BOAL, Augusto. **Teatro Do Oprimido** . Rio De Janeiro. Civilização Brasileira
 
 BRASIL. Ministério da Educação e do Desporto. Secretaria de Educação Fundamental. **Parâmetros Curriculares Nacionais** _:_ arte. Brasília: MEC/SEF, 1997. GOMBRICH, E.H. A **História Da Arte** . Rio De Janeiro: LTC, 1999. OSSONA, Paulina. **A Educação Pela Dança** . São Paulo: Summus Editorial, 1988. OSTROWER, Fayga. **Universos Da Arte** . 24.Ed. Rio De Janeiro: Campus, 2004. TINHORÃO, José Ramos. **Pequena história da música popular** : segundo seus gêneros. São Paulo: Editora 34, 2013.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Biologia I**||
@@ -1401,7 +1401,7 @@ DE ROBERTIS, E.; HIB, J. **Bases da Biologia Celular e Molecular.** 4ª ed. Rio 
 
 WATSON, J. D.; BERRY,  A. **DNA – O segredo da vida.** Companhia das letras, 2005.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|<br>**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Física I**||
@@ -1417,7 +1417,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Ática, 2016. HEWITT, P. G.: **Física Conceitual.** São Paulo, Bookman Editora, 9ª Edição- 2002 e/ou 12ª Edição, 2015. TORRES, C. M. A.; FERRARO, N. G.; PAULO A. DE TOLEDO SOARES, P. T.; e PENTEADO, P. C. M.: **Física – Ciência e Tecnologia – Volume 1.** São Paulo, Ed. Moderna, 2016. SANT’ANNA, B.; MARTINI, G.; CARNEIRO, C.; SPNINELLI, W.: **Conexões com a Física – Volume 1.** São Paulo, Ed. Moderna , 2016. **Bibliografia Complementar:** ROCHA, J. F. (Org): **Origens e Evolução das Ideias da Física.** Salvador, Ed. UFBa, 2002. KANTOR, C. A.; JUNIOR, L. A. P.; MENEZES, L. C; BONETTI, M. C.; JUNIOR, O. C.; ALVES, V. M.: **Coleção Quanta – Física** – Volumes 1, 2 e 3 (1ª, 2ª e 3ª Séries). São Paulo, Pearson Education do Brasil, 2013. HALLIDAY, D.; RESNICK, R.; WALKER, J.: **Fundamentos de Física – Volume 1 – Mecânica.** Rio de Janeiro, LTC, 2014. HALLIDAY, D.; RESNICK, R.; WALKER, J.: **Fundamentos de Física – Volume 2 – Gravitação, Ondas e Termodinâmica.** Rio de Janeiro, LTC, 2014. HALLIDAY, D.; RESNICK, R.; WALKER, J.: **Fundamentos de Física – Volume 4 – Óptica e Física Moderna.** Rio de Janeiro, LTC, 2014. TIPLER, P.; MOSCA, G.: **Física para Cientistas e Engenheiros- Volume 1- Mecânica, Oscilações, Ondas e Termodinâmica.** Rio de Janeiro, LTC, 2009. TIPLER, P.; MOSCA, G.: **Física para Cientistas e Engenheiros- Volume 3- Física Moderna: Mecânica Quântica, Relatividade e a Estrutura da Matéria.** Rio de Janeiro, LTC, 2009. GRIBBIN, J.: **História da Ciência.** Mem Martins (Portugal), Publicações Europa-América LDA, 2005. FEYNMAN, R. P.; LEIGHTON, R. B.; SANDS, M.: **Lições da Física de Feynman – Edição Definitiva – Volumes I, II e III.** Rio de Janeiro, Ed. Bookman, 2008.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|<br>**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Geografia II**||
@@ -1483,7 +1483,7 @@ STAHEL, M. **Password: English Dictionary for Speakers of Portuguese** . 4th edi
 
 WIDDOWSON, H. D **. O ensino de línguas para a comunicação.** Campinas: Pontes, 2005.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico:  Informação e Comunicação**|
 |**Componente Curricular: Língua Portuguesa II**||
@@ -1545,7 +1545,7 @@ MELLO, José Luiz Pastore; BARROSO, Juliane Matsubara. **Matemática Construçã
 
 GIOVANNI, José Ruy; BONJORNO, José Roberto; GIOVANNI JR. José Ruy. **Matemática Fundamental** . 1ª Ed., Editora FTD, São Paulo, 2002.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Química II**||
@@ -1595,7 +1595,7 @@ TEIXEIRA, Fabricio. **Introdução e boas práticas em UX Design** . Casa do Có
 
 MORONEY, Laurence. **The Definitive Guide To Firebase - Build Android Apps On Google's Mobile Platform** . Apress, 2017.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Desenvolvimento Web II**||
@@ -1639,7 +1639,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Biologia II**||
@@ -1657,7 +1657,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Educação Física II**||
@@ -1702,7 +1702,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **Campus Curitiba do IFPR**
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|<br>**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Física II**||
@@ -1774,7 +1774,7 @@ REIS, FILHO, D.A.: FERREIRA, J. ZENHA, C. **O século XX** - O tempo das crises,
 
 SACCO, J. **Palestina: uma nação ocupada** . Editora Conrad: 2002.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |||
@@ -1825,7 +1825,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima. **El arte de leer español: volume único: lengua española, ensino médio.** Curitiba. Base Editora, 2006. REAL ACADEMIA ESPAÑOLA. **Diccionario de la lengua española.** 23. ed. Madrid: España, 2014. UNIVERSIDAD DE ALCALÁ DE HENARES. Departamento de Filologia. **Señas: diccionario para la enseñanza de la lengua española para brasileños.** 4. ed. São Paulo: WMF Martins Fontes, 2013. REAL ACADEMIA ESPAÑOLA **. Diccionario panhispánico de dudas.** Bogotá: Alfaguara, 2005. CASTRO VIUDEZ, Francisca. **Uso de la gramática española: elemental.** 1. ed. Madrid: Edelsa, 2010. WERBACH, k. ;HUNTER,D. **Gamificación.** Person, 2013. RAMÍREZ, Juan José Vergara; GÓMEZ, Ángel I. Pérez. **Aprendo porque quiero: el aprendizaje basado en proyectos (ABP), paso a paso.** SM, 2015.1 SANTIAGO, Raúl et al. **Mobile Learning: Nuevas realidades en el aula.** Editorial Océano, 2015. GELABERT, Miquel Àngel Essomba. **Liderar escuelas interculturales e inclusivas: equipos directivos y profesorado ante la diversidad cultural y la inmigración.** Graó, 2006.46 BAZARRA,I. **¿Por qué hoy es importante el tratamiento de la información?,** Arcix Formación, 2015.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico:  Informação e Comunicação**|
 |**Componente Curricular: Língua Portuguesa III**||
@@ -1860,7 +1860,7 @@ KOCHE, V. S.; BOFF, O. M. B.; PAVANI, C.F. **Prática textual: atividades de lei
 
 NEVES, M. H. de M. **Gramática de usos do português.** São Paulo: Unesp - Rio Claro, 2000.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |||
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
@@ -1899,7 +1899,7 @@ GIOVANNI, José Ruy; BONJORNO, José Roberto; GIOVANNI JR. José Ruy. **Matemát
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Química III**||
@@ -1933,7 +1933,7 @@ ROMERO, J.R. Fundamentos de Estereoquímica de compostos orgânicos. 1ª ed., Ed
 
 VOGEL, Arthur Israel. Química orgânica: análise orgânica qualitativa. Rio de Janeiro: Ao Livro Técnico, 1971. Vol 1, 2 e 3.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Sociologia I**||
@@ -2084,7 +2084,7 @@ HARARI, Yuval Noah. **Sapiens – Uma breve história da humanidade.** 3 ed. Por
 
 ## **CAMPUS CURITIBA DO IFPR**
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Educação Física III**||
@@ -2233,7 +2233,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima. **El arte de leer español: volume único: lengua española, ensino médio.** Curitiba. Base Editora, 2006. REAL ACADEMIA ESPAÑOLA. **Diccionario de la lengua española.** 23. ed. Madrid: España, 2014. UNIVERSIDAD DE ALCALÁ DE HENARES. Departamento de Filologia. **Señas: diccionario para la enseñanza de la lengua española para brasileños.** 4. ed. São Paulo: WMF Martins Fontes, 2013. REAL ACADEMIA ESPAÑOLA. **Diccionario panhispánico de dudas.** Bogotá: Alfaguara, 2005. CASTRO VIUDEZ, Francisca. **Uso de la gramática española: intermedio.** 1. ed. Madrid: Edelsa, 2010. WERBACH, k. ;HUNTER,D. **Gamificación.** Person, 2013. RAMÍREZ, Juan José Vergara; GÓMEZ, Ángel I. Pérez. **Aprendo porque quiero: el aprendizaje basado en proyectos (ABP), paso a paso.** SM, 2015.1 SANTIAGO, Raúl et al. **Mobile Learning: Nuevas realidades en el aula.** Editorial Océano, 2015. GELABERT, Miquel Àngel Essomba. **Liderar escuelas interculturales e inclusivas: equipos directivos y profesorado ante la diversidad cultural y la inmigración.** Graó, 2006.46 BAZARRA,I. **¿Por qué hoy es importante el tratamiento de la información?** , Arcix Formación, 2015.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Língua Portuguesa IV**||
@@ -2304,7 +2304,7 @@ MELLO, José Luiz Pastore; BARROSO, Juliane Matsubara. **Matemática Construçã
 
 GIOVANNI, José Ruy; BONJORNO, José Roberto; GIOVANNI JR. José Ruy. **Matemática Fundamental** . 1ª Ed., Editora FTD, São Paulo, 2002.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Sociologia II**||
@@ -2356,10 +2356,10 @@ SENNET, R. **A corrosão do caráter: as consequências pessoais do trabalho no 
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|análise e<br>desenvolvimento de<br>sistemas de<br>informação.||||
-|---|---|---|---|
-|Laboratório de<br>manutenção de<br>hardware.|SIM|Não|Não|
-|Laboratório de Redes<br>de computadores.|SIM|Não|Não|
+|análise e<br>desenvolvimento de<br>sistemas de<br>informação.|||
+|---|---|---|
+|Laboratório de<br>manutenção de<br>hardware.|SIM|Não|
+|Laboratório de Redes<br>de computadores.|SIM|Não|
 
 ## **8. INFRAESTRUTURA PARA ATENDIMENTO ÀS NECESSIDADES ESPECIAIS**
 

@@ -13,13 +13,13 @@ Vagas: 35
 |---:|---|---:|---:|---:|---:|---:|---:|
 | 1 | Matemática | 4 |  | 160 |  | 160 | 133 |
 | 1 | Eletricidade | 2 | 80 |  |  | 80 | 67 |
-| TOTAL ANO HORA-AULA | TOTAL ANO HORA-AULA |  | 80 | 160 | 0 | 240 |  |
-| TOTAL ANO HORA-RELÓGIO | TOTAL ANO HORA-RELÓGIO |  | 67 | 133 | 0 |  | 200 |
+| TOTAL ANO HORA-AULA |  |  | 80 | 160 | 0 | 240 |  |
+| TOTAL ANO HORA-RELÓGIO |  |  | 67 | 133 | 0 |  | 200 |
 | 2 | Projeto Integrador | 2 |  |  | 80 | 80 | 67 |
 | 2 | Física | 2 |  | 80 |  | 80 | 67 |
 | 2 | Automação | 3 | 120 |  |  | 120 | 100 |
-| Atividades Complementares | Atividades Complementares |  |  |  |  | 60 | 50 |
-| C.H. (HORA RELÓGIO) TOTAL DO CURSO | C.H. (HORA RELÓGIO) TOTAL DO CURSO |  | 167 | 200 | 67 | 484 |  |
+| Atividades Complementares |  |  |  |  |  | 60 | 50 |
+| C.H. (HORA RELÓGIO) TOTAL DO CURSO |  |  | 167 | 200 | 67 | 484 |  |
 
 ### 5.8 FLUXOGRAMA DO CURSO
 

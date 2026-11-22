@@ -1098,7 +1098,7 @@ A proposição dos componentes curriculares segue especificada pelos Princípios
 
 ## **4.1.2 Matriz Curricular**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº11.892 de 29/11/2008)|||||
 ||_Campus Foz do Iguaçu_|||||
@@ -3551,13 +3551,13 @@ processamento de rãs-touro para o consumo humano. Além de ser utilizada para a
 |Salão de convenção|Sim|Necessidade de reforma|3.000m2|
 |||||
 
-|||||
-|---|---|---|---|
-|Sala de audiovisual|Não|Não||
-|||||
-|||||
-|Mecanografia|Não|Não||
-|||||
+||||
+|---|---|---|
+|Sala de audiovisual|Não||
+||||
+||||
+|Mecanografia|Não||
+||||
 
 ## **7.7 BIBLIOTECA**
 

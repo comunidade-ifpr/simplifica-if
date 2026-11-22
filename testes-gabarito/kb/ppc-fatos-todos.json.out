@@ -945,7 +945,7 @@
           "unidade": "h",
           "status_curadoria": "extraido",
           "regra": "rotulo-quadro-tabela-sem-marca",
-          "trecho_fonte": "|CARGA HORÁRIA TOTAL: 1.360 h|||||||||||||||||||||||",
+          "trecho_fonte": "|CARGA HORÁRIA TOTAL: 1.360 h||||||||||||||||||||||",
           "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.md",
           "linha": 55,
           "alternativas": []
@@ -2175,7 +2175,7 @@
           "unidade": "h",
           "status_curadoria": "extraido",
           "regra": "rotulo-corpo-tabela-sem-marca",
-          "trecho_fonte": "||**CARGA HORÁRIA TOTAL DO CURSO**|||||**3680**|",
+          "trecho_fonte": "||**CARGA HORÁRIA TOTAL DO CURSO**||||**3680**|",
           "path": "base-conhecimento/institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica.md",
           "linha": 931,
           "alternativas": [
@@ -4055,7 +4055,7 @@
           "unidade": "h",
           "status_curadoria": "extraido",
           "regra": "rotulo-corpo-tabela-sem-marca",
-          "trecho_fonte": "|**CARGA HORÁRIA TOTAL DO CURSO**|||||||2600 h||||",
+          "trecho_fonte": "|**CARGA HORÁRIA TOTAL DO CURSO**||||||2600 h||||",
           "path": "base-conhecimento/institucional/ifpr/ppcs/colombo/tecnologia-em-alimentos.md",
           "linha": 1068,
           "alternativas": []

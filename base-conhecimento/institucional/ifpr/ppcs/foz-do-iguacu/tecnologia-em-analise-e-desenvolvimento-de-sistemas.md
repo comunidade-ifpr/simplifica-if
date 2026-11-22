@@ -510,7 +510,7 @@ Para contemplar o que preconiza a Lei nº 10.745 de 01 de outubro de 2003, que d
 
 ## **4.1.2  Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||
 |||_Campus Foz do Iguaçu_|||||
@@ -642,7 +642,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## 1º SEMESTRE
 
-|Componente Curricular:|Componente Curricular:|Introdução a Computação|Introdução a Computação|Introdução a Computação|Introdução a Computação|Introdução a Computação|
+|Componente Curricular:||Introdução a Computação|||||
 |---|---|---|---|---|---|---|
 |Semestre:||1º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Fornecer subsídios para o aluno conhecer e compreender os conceitos básicos<br>da área de computação e informática.||||||
@@ -650,7 +650,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. BROOKSHEAR, J. G. Ciência da Computação. 7 ed. São Paulo:<br>Bookman, 2005.<br>2. MOKARZEL, F.; SOMA, N. Y. Introdução a Ciência Da Computação.<br>Elsevier, 2008<br>3. MONTEIRO, Mário A.. Introdução à Organização de Computadores. 5.<br>ed. Rio de Janeiro: LTC, 2012.<br>4. PATTERSON, D. Organização e projeto de computadores: A interface<br>hardware/software. 4ª edição. 2013.<br>5. KUROSE, J. F., ROSS, K., Redes de Computadores e a Internet: Uma<br>Abordagem Top-down, 5ª ed, Addison Wesley, 2010.||||||
 |Bibliografia<br>Complementar|1. SCHIAVONI, Marilene. Hardware. Curitiba: Livro Técnico, 2010.<br>2. VIEIRA, N. J. Introdução aos Fundamentos da Computação, Pioneira<br>Thomson, 2006.<br>3. VELOSO, F. C. Informática: Conceitos Básicos, 8 ed. Rio de Janeiro:<br>Campus, 2011.<br>4. TANEMBAUM, A. S. Organização Estruturada de Computadores. 5 ed.<br>Rio de Janeiro: Prentice-Hall, 2006.<br>5. STALLINGS, W. Arquitetura e Organização de Computadores. 8 ed. São<br>Paulo: Pearson, 2010.||||||
 
-|Componente Curricular:|Componente Curricular:|Lógica de Programação|Lógica de Programação|Lógica de Programação|Lógica de Programação|Lógica de Programação|
+|Componente Curricular:||Lógica de Programação|||||
 |---|---|---|---|---|---|---|
 |Semestre:||1º|Horas aula:|120|Horas relógio:|100|
 |Objetivo|Possibilitar ao aluno o desenvolvimento do raciocínio lógico necessário à<br>programação de computadores, bem como o contato com uma linguagem de<br>programação para a aplicação prática dos conceitos trabalhados.||||||
@@ -658,7 +658,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1.MANZANO,<br>J.N.G.;<br>OLIVEIRA,<br>J.F.<br>**Algoritmos:**<br>**lógica**<br>**para**<br>**Desenvolvimento de Programação de Computadores.**26. ed. São<br>Paulo: Érica, 2012.<br>2.MEDINA, M.; FERTIG, C.**Algoritmos e programação: teoria e prática.**<br>São Paulo: Novatec Editora, 2006.<br>3.PEREIRA, S.L..**Algoritmos e Lógica de Programação em C: uma**<br>**abordagem didática.**São Paulo: Érica, 2010.<br>4.DEITEL, P.;, DEITEL, H.**C: como programar.**6. ed. São Paulo: Pearson<br>Prentince Hall, 2011.<br>5.FEOFILOFF, P.**Algoritmos: em linguagem C.**Rio de Janeiro: Elsevier,<br>2009.||||||
 |Bibliografia<br>Complementar|1.MIZRAHI, V. V.**Treinamento em linguagem C.**2. ed. São Paulo:<br>Pearson, 2008.<br>2.SCHILDT, H.**C: completo e total.**3. ed. São Paulo: Makron Books,<br>1997.<br>3.BERG, A.; FIGUEIRÓ, J. P.**Lógica de programação.**3. ed. Canoas:<br>ULBRA, 2006.<br>4.FARREL, J.**Lógica e design de programação: introdução.**São Paulo:<br>Cengage Learning, 2010.<br>5.ZIVIANI, N.**Projeto de Algoritmos: com implementações em Pascal e**<br>**C.**3. ed. São Paulo: Cengage Learning, 2013.||||||
 
-|Componente Curricular:|Componente Curricular:|Inglês Técnico|Inglês Técnico|Inglês Técnico|Inglês Técnico|Inglês Técnico|
+|Componente Curricular:||Inglês Técnico|Inglês Técnico|Inglês Técnico|Inglês Técnico|Inglês Técnico|
 |---|---|---|---|---|---|---|
 |Semestre:||1º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Ao término do componente curricular, o acadêmico deverá ser capaz de<br>utilizar as estratégias de leitura para a compreensão geral de um texto da<br>área técnica, assim como para a localização de informações específicas a<br>partir da bibliografia de sua área de conhecimento, com a finalidade de<br>desenvolver sua autonomia como leitor em Língua Inglesa.||||||
@@ -666,7 +666,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. LÍGIA RAZERA GALLO.**Inglês instrumental para informática -**<br>**MÓDULO I.**Ícone Editora 2014 172 p ISBN 9788527409742.<br>2. MUNHOZ, Rosângela.**Inglês instrumental:**estratégias de leitura:<br>módulo 1. 4. ed. São Paulo: Textonovo, 2002. 111p. ISBN 8585734367<br>(broch.).<br>3.MURPHY, Raymond.**Essential grammar in use.**Cambridge: Cambridge<br>University Press, 1997||||||
 |Bibliografia<br>Complementar|1. ALMEIDA FILHO, José Carlos P. de.**Dimensões comunicativas no**<br>**ensino de línguas.**7. ed. Campinas: Pontes, 2013. 113 p.<br>(Linguagem-Ensino).<br>2. SANTOS, Denise.**Ensino de língua inglesa: foco em estratégias.**<br>Barueri: Disal, 2012. 343 p. ISBN 9788578441050<br>3. SOUZA, Adriana Grade Fiori et al.**Leitura em língua inglesa: uma**<br>**abordagem instrumental.**2. ed., atual. Barueri: Disal, c2010. 203 p.<br>ISBN 9788578440626 (broch.).||||||
 
-|Componente Curricular:|Componente Curricular:|Matemática Aplicada|Matemática Aplicada|Matemática Aplicada|Matemática Aplicada|Matemática Aplicada|
+|Componente Curricular:||Matemática Aplicada|||||
 |---|---|---|---|---|---|---|
 |Semestre:||1º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|▪Fornecer ao acadêmico subsídio necessário para o Desenvolvimento do<br>raciocínio lógico, capacidade de comparação e análise das situações, através do<br>embasamento para soluções de algoritmos e programação;<br>▪ Proporcionar ao aluno bases para desenvolvimento de argumentos com<br>sequência lógica, desenvolvendo sua criticidade;<br>▪ Possibilitar ao aluno a ampliação da capacidade de análise de problemas e<br>possíveis soluções;<br>▪ Fornecer para aluno conhecimento sobre conjuntos, relações e associação de<br>conteúdo com informática.||||||
@@ -674,7 +674,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. GERSTING, Judith L. ,Fundamentos Matemáticos para a Ciência da<br>Computação: Um tratamento moderno de matemática discreta- 5a<br>edição, LTC Editora, 2004.<br>2. BUSSAB, W. O.; Hazzan, S.; Morettin, P. A.,Cálculo: funções de Uma e<br>Várias Variáveis,2a. Ed., Saraiva, 2010<br>3. FILHO, Plínio Barbieri.Fundamentos de Informática: lógica Para<br>Computação.Editora LTC.<br>4. MENEZES, P.B.;Matemática discreta para Computação e Informática;<br>Porto Alegre, Sagra-Luzzatto. Instituto de Informática da UFRGS, Série<br>Livros Didáticos<br>5. SOUZA, João Nunes de.Lógica para ciência da computação: uma<br>introdução concisa.2. ed. rev. atual. Rio de Janeiro: Elsevier,2008.||||||
 |Bibliografia<br>Complementar|1. ALENCAR FILHO, Edgard.**Iniciação à Lógica Matemática.**Nobel.<br>2. MENEZES, P. B.; TOSCANI, L. V.; LÓPEZ, J. G.**Aprendendo**<br>**Matemática Discreta com Exercícios.**Porto Alegre: Bookman, 2009.<br>3. MORTARI,CEZAR.A.**Introdução à lógica.**Ed. UNESP, 2001. São Paulo.<br>4. SCHEINERMAN, EDWARD R.**Matemática Discreta-uma introdução**<br>(Tradução da segunda edição americana). 2a Edição.Editora Cengage.<br>2010.<br>5. LIMA, D. M., GONZALES, L. E. F.**Matemática Aplicada à Informática.**<br>Porto Alegre: Bookman,2015.||||||
 
-|Componente Curricular:|Componente Curricular:|Desenvolvimento Web I|Desenvolvimento Web I|Desenvolvimento Web I|Desenvolvimento Web I|Desenvolvimento Web I|
+|Componente Curricular:||Desenvolvimento Web I|||||
 |---|---|---|---|---|---|---|
 |Semestre:||1º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Estudar e utilizar as tecnologias básicas para a construção de web sites, em<br>especial a linguagem de marcação HTML, em conjunto com a linguagem de folha<br>de estilos – CSS e a linguagem de programação Javascript.||||||
@@ -684,7 +684,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## 2º SEMESTRE
 
-|Componente Curricular:|Componente Curricular:|Orientação a Objetos I|Orientação a Objetos I|Orientação a Objetos I|Orientação a Objetos I|Orientação a Objetos I|
+|Componente Curricular:||Orientação a Objetos I|||||
 |---|---|---|---|---|---|---|
 |Semestre:||2º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Propiciar ao aluno a compreensão dos principais aspectos do paradigma de<br>desenvolvimento de software orientado a objetos. Realizar a implementação<br>destes conceitos em uma linguagem de programação.||||||
@@ -692,7 +692,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. Schildt, Herbert.Java para Iniciantes. 5ª ed., Bookman, 2013.<br>2. Coelho, Alex.Java Com Orientação a Objetos. 1ª ed., Ciência Moderna,<br>2012.<br>3. Santos, Rafael.Introdução À Programação Orientada a Objetos Usando<br>Java. 1ª ed., Campus, 2003.<br>4. DEITEL, Paul J.; DEITEL, Harvey M.Java: como programar. 8ª ed.,<br>Prentice Hall, 2010.<br>5. Cornell, Gary; Horstmann, Cay S.Core Java - Vol. 1 - Fundamentos- 8ª<br>ed.,Pearson Education,2010.||||||
 |Bibliografia<br>Complementar|1. Araújo, Everton Coimbra.Orientação a Objetos com Java.1ª ed., Visual<br>Books, 2008.<br>2. FURGERI, Sergio.Programação Orientada A Objetos: Conceitos E<br>Técnicas; 2015;<br>3. MANZANO, J. A. N. G., JÚNIOR, R. A. DA C.JAVA 8 - Programação de<br>Computadores. 1ª ED., ÉRICA, 2014.<br>4. HUNT, Andrew; THOMAS, David.O Programador Pragmático. 1ª ed.,<br>Bookman, 2010.<br>5. SIERRA, Kathy, BATES, Bert.Use a Cabeça! Java.2ª ed., Alta Books,<br>2007||||||
 
-|Componente Curricular:|Componente Curricular:|Banco de Dados I|Banco de Dados I|Banco de Dados I|Banco de Dados I|Banco de Dados I|
+|Componente Curricular:||Banco de Dados I|||||
 |---|---|---|---|---|---|---|
 |Semestre:||2º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Fornecer conhecimentos sobre a concepção, utilização, técnicas de estruturação,<br>manipulação de informações, modelos de representação e desenvolvimento de<br>bancos de dados relacionais.||||||
@@ -700,7 +700,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. SILBERCHATZ, Abrahan, KORTH, Henri F., SHUDARSHAN, S.,Sistema<br>de Banco de Dados, 5a. Ed., Campus, 2006.<br>2. HEUSER, Carlos A.,Projeto de Banco de Dados. Editora Sagra Luzzato,<br>5a. Edição, 2004.<br>3. ELMASRI, Ramez E., NAVATHE, Shamkant B.,Sistema de Banco de<br>Dados, 6a.Ed., Pearson, 2010.<br>4. DATE, Chris J.,Introdução a Sistemas de Banco de Dados, 8a. Ed,<br>Campus, 2004.<br>5. ABREU, Maurício P.; MACHADO, Felipe N. R.;Projeto de Banco de<br>Dados: Uma visão prática; Ed. Érica, 2006.||||||
 |Bibliografia<br>Complementar|1. ANGELOTTI, Elaini Simoni,Banco de Dados, Editora do Livro Técnico,<br>2010.<br>2. TAKAHASHI, Mana,Guia Mangá de Banco de Dados, Novatec, 2009.<br>3. LECHETA, Ricardo R.;Google Android; 3ª Edição, 2013, ed. Novatec.<br>4. CORONEL, Carlos; PETER, Robert.Sistemas de Banco de Dados -<br>Projeto, Implementação e Administração- 8a Ed. Norte-americana.<br>6. BEIGHLEY, Lynn; MACHADO, Leopoldino.SQL Use a cabeça!, Editora<br>Alta Books,2008.||||||
 
-|Componente Curricular:|Componente Curricular:|Sistemas Operacionais|Sistemas Operacionais|Sistemas Operacionais|Sistemas Operacionais|Sistemas Operacionais|
+|Componente Curricular:||Sistemas Operacionais|||||
 |---|---|---|---|---|---|---|
 |Semestre:||2º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Fornecer subsídios para o aluno compreender a estrutura básica de organização<br>e funcionamento dos sistemas operacionais e executar comandos e tarefas de<br>uso do sistema operacional Linux.||||||
@@ -708,7 +708,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1.TANENBAUM, Andrew S.Sistemas Operacionais Modernos, 3ª ed,<br>Prentice Hall, 2010.<br>2. MACHADO, Francis Berenger; MAIA, Luiz Paulo.Arquitetura de sistemas<br>operacionais. 5ª ed, LTC, 2013.<br>3. MOTA FILHO, João Eriberto.Descobrindo o Linux:Entenda o sistema<br>operacional GNU/Linux. Ed. Novatec, 3ª Edição. 2012.<br>4. WARD, Brian.Como o Linux funciona:O que todo superusuário deveria<br>saber. Ed. Novatec, 2015..<br>5. FERREIRA, R. E. Linux:Guia do administrador do sistema,2 ed.<br>Novatec, 2008.||||||
 |Bibliografia<br>Complementar|1. SOUZA, R. F.Administração de Servidores Linux: Passo-a-passo para<br>pequenas empresas. Fortaleza: Clube de Autores: 2012.<br>2.STALLINGS, William.Arquitetura de organização de computadores. 8ª<br>ed., Pearson, 2010.<br>3.PATTERSON,<br>David<br>A;<br>HENNESSY,<br>John<br>L.<br>Arquitetura<br>de<br>computadores: uma abordagem quantitativa. 4ª ed., Campus, 2008.<br>4.ROBBINS, Arnold; BEEBE, Nelson H F.Classic Shell Scripting:<br>automatize suas tarefas com Unix. Bookman, 2007.<br>5. MORIMOTO, C. E.Servidores Linux: Guia prático. Meridional: 2008.||||||
 
-|Componente Curricular:|Componente Curricular:|Estruturas de Dados|Estruturas de Dados|Estruturas de Dados|Estruturas de Dados|Estruturas de Dados|
+|Componente Curricular:||Estruturas de Dados|||||
 |---|---|---|---|---|---|---|
 |Semestre:||2º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Possibilitar ao aluno o entendimento das técnicas de organização de dados<br>heterogêneos,<br>em<br>relação<br>à<br>eficiência<br>de ocupação de espaço de<br>armazenamento, velocidade de armazenamento e de acesso aos dados.||||||
@@ -716,7 +716,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. ZIVIANI, Nívio.**Projeto de algoritmos com implementações em**<br>**Pascal e C.**3ª ed., Cengage Learning, 2010.<br>2. PEREIRA, Sílvio do Lago.**Estruturas de dados fundamentais:**<br>**conceitos e aplicações**. 8ª ed., Erica, 1996.<br>3. SZWARCFITER, Jaime Luis, MARKENZON, Lilian.**Estruturas de dados**<br>**e seus algoritmos.**3ª ed., LTC, 2010.<br>4. FEOFILOFF, Paulo.**Algoritmos em linguagem C**. 23ª ed., Campus,<br>2009.<br>5. AGUILAR,<br>Luis Joyannes.**Programação em C++: algoritmos,**<br>**estruturas de dados e objetos**. 2ª ed., Bookmann, 2008.||||||
 |Bibliografia<br>Complementar|1. TENENBAUM, Aaron M.; LANGSAM, Yedidyah; AUGENSTEIN, Moshe.<br>**Estruturas de dados usando C.**Makron Books, 1995.<br>2. EDELWEISS, Nina; GALANTE, Renata.**Estruturas de dados.**Bookman,<br>2009.<br>3. GOODRICH, Michael T.; TAMASSIA, Roberto.**Estruturas de dados e**<br>**algoritmos em java.**4ª ed., Bookman, 2007.<br>4. ASCENCIO, Ana Fernanda Gomes. Estruturas de dados. Pearson, 2011.<br>5. LAFORE, Robert.**Estruturas de dados e algoritmos em Java**. Ciência<br>Moderna, 2005.||||||
 
-|Componente Curricular:|Componente Curricular:|Desenvolvimento Web II|Desenvolvimento Web II|Desenvolvimento Web II|Desenvolvimento Web II|Desenvolvimento Web II|
+|Componente Curricular:||Desenvolvimento Web II|||||
 |---|---|---|---|---|---|---|
 |Semestre:||2º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Possibilitar ao aluno a compreensão e aplicação dos principais conceitos<br>relacionados ao desenvolvimento de aplicativos web. Conhecer e aplicar uma<br>linguagem de programação voltada para o desenvolvimento de software para<br>ambiente web server-side||||||
@@ -726,7 +726,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## 3º SEMESTRE
 
-|Componente Curricular:|Componente Curricular:|Análise e Modelagem de Sistemas I|Análise e Modelagem de Sistemas I|Análise e Modelagem de Sistemas I|Análise e Modelagem de Sistemas I|Análise e Modelagem de Sistemas I|
+|Componente Curricular:||Análise e Modelagem de Sistemas I|||||
 |---|---|---|---|---|---|---|
 |Semestre:||3º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Fornecer uma visão geral dos processos de desenvolvimento de software.<br>Apresentar a linguagem de modelagem UML (Unified Modeling Language) e seus<br>diagramas de definição, com foco em modelos de casos de uso e modelo de<br>classes. Especificar projetos de software orientado a objetos. Apresentar técnicas<br>para a elicitação de requisitos e para a escrita de documentação de modelagem<br>de software.||||||
@@ -734,7 +734,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. BEZERRA, Eduardo.**Princípios de Análise e Projeto de Sistemas com**<br>**UML**. Editora Campus, 2007.<br>2. BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar.**UML: guia do**<br>**usuário**. 2.ed., rev. e atual. Rio de Janeiro: Elsevier, 2005.<br>3. FOWLER, Martin; SCOTT, Kendall.**UML Essencial**. São Paulo: Bookman,<br>2005.<br>4. LARMAN, Craig.**Utilizando UML e padrões: uma introdução à análise e**<br>**ao projeto orientado a objetos**. 3. ed. Porto Alegre: Bookman, 2007.<br>5. PRESSMAN, Roger S.**Engenharia de Software: uma abordagem**<br>**profissional**. 7.ed. Porto Alegre: AMGH,2011.||||||
 |Bibliografia<br>Complementar|1. GÓES, Wilson Moraes;**Aprenda UML por Meio de Estudos de Caso**.<br>Editora Novatec, 2014.<br>2. GUEDES, Gilleanes;**UML 2 – Guia Prático - 2ª Edição**. Editora Novatec,<br>2014.<br>3. PAULA FILHO, Wilson de Pádua.**Engenharia de software: fundamentos,**<br>**métodos e padrões**. 3. ed. Rio de Janeiro: LTC, 2009.<br>4. SOMMERVILLE, Ian.**Engenharia de software**. 9. ed. São Paulo: Pearson<br>Prentice Hall, 2011.<br>5. WAZLAWICK, Raul Sidnei.**Análise e projeto de sistemas de informação**<br>**orientados a objetos**. 2. ed. Rio de Janeiro: Elsevier, 2011.||||||
 
-|Componente Curricular:|Componente Curricular:|Orientação a Objetos II|Orientação a Objetos II|Orientação a Objetos II|Orientação a Objetos II|Orientação a Objetos II|
+|Componente Curricular:||Orientação a Objetos II|||||
 |---|---|---|---|---|---|---|
 |Semestre:||3º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Favorecer ao aluno a compreensão de aspectos avançados do paradigma de<br>desenvolvimento de software orientado a objetos. Realizar a implementação<br>destes conceitos em uma linguagem de programação.||||||
@@ -742,7 +742,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. Coelho, Alex.Java Com Orientação a Objetos. 1ª ed., Ciência Moderna,<br>2012.<br>2. Santos, Rafael.Introdução À Programação Orientada a Objetos Usando<br>Java. 1ª ed., Campus, 2003.<br>3. DEITEL, Paul J.; DEITEL, Harvey M.Java: como programar.8ª ed.,<br>Prentice Hall, 2010.<br>4. FREEMAN, E., FREEMAN, E.Use a Cabeça! Padrões de Projetos. 2ª<br>ed., Alta Books, 2007.<br>5. WAZLAWICK, Raul Sidnei.Análise e Projeto de Sistemas de Informação<br>Orientados a Objetos. 2ª ed., Elsevier, 2010.||||||
 |Bibliografia<br>Complementar|1. Araújo, Everton Coimbra.Orientação a Objetos com Java. 1ª ed., Visual<br>Books, 2008.<br>2. Cornell, Gary; Horstmann, Cay S.Core Java - Vol. 1 - Fundamentos- 8ª<br>ed., Pearson Education,  2010.<br>3. Sierra, Kathy, Bates, Bert.Use a Cabeça! Java.2ª ed., Alta Books, 2007.<br>4. PINHEIRO, Francisco A. C.Fundamentos de Computação e Orientação<br>a Objetos Usando Java.<br>5. SCHILDT, Herbert.Java Para iniciantes: Crie, Compile e Execute<br>Programas Java Rapidamente. Ed. Bookman, 2013.||||||
 
-|Componente Curricular:|Componente Curricular:|Banco de Dados II|Banco de Dados II|Banco de Dados II|Banco de Dados II|Banco de Dados II|
+|Componente Curricular:||Banco de Dados II|||||
 |---|---|---|---|---|---|---|
 |Semestre:||3º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Aprofundar o conhecimento do aluno em banco de dados abordando os diversos<br>aspectos de SGBD relacionais, como gerenciamento de transações, controle de<br>concorrência, recuperação de falhas e otimização de consultas.||||||
@@ -750,7 +750,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. SILBERCHATZ, Abrahan, KORTH, Henri F., SHUDARSHAN, S.,Sistema<br>de Banco de Dados, 5a. Ed., Campus, 2006.<br>2. HEUSER,Projeto de Banco de Dados. Editora Sagra Luzzato, 5a.<br>Edição, 2004.<br>3. ELMASRI, Ramez E., NAVATHE, Shamkant B.,Sistema de Banco de<br>Dados, 6a. Ed., Pearson, 2010.<br>4. DATE, Chris J.,Introdução a Sistemas de Banco de Dados,8a. Ed,<br>Campus, 2004.<br>5. ABREU, Maurício P.; MACHADO, Felipe N. R.;Projeto de Banco de<br>Dados: Uma visãoprática;Ed. Érica,2006.||||||
 |Bibliografia<br>Complementar|1. CORONEL, Carlos; PETER, Robert.Sistemas de Banco de Dados -<br>Projeto, Implementação e Administração- 8a Ed. Norte-americana<br>2. DAMAS, Luís. Sql:Structured Query Language, 2007, 6a edição, Editora<br>LTC.<br>3. ANGELOTTI, Elaini Simoni,Banco de Dados, Editora do Livro Técnico,<br>2010.<br>4. TAKAHASHI, Mana,Guia Mangá de Banco de Dados, Novatec, 2009.<br>5. LECHETA, Ricardo R.;Google Android; 3a ed, Novatec, 2013.||||||
 
-|Componente Curricular:|Componente Curricular:|Desenvolvimento Web III|Desenvolvimento Web III|Desenvolvimento Web III|Desenvolvimento Web III|Desenvolvimento Web III|
+|Componente Curricular:||Desenvolvimento Web III|||||
 |---|---|---|---|---|---|---|
 |Semestre:||3º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Aprofundar os conceitos de desenvolvimento de sistemas web utilizando uma<br>linguagem de programação para a construção de páginas dinâmicas com<br>comunicação síncrona e assíncrona, mapeamento objeto-relacional para<br>persistência de dados e padrões de projetos voltados para desenvolvimento web.||||||
@@ -758,7 +758,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. QIAN, Kai; ALLEN, Richard; GAN, Mia; BROWN, Bob.Desenvolvimento<br>Web Java. LTC, 2010.<br>2. BASHAM, Bryan; SIERRA, Kathy; BATES, Bert.Use a Cabeça Servlets e<br>JSP. Altabooks, 2008.<br>3. TERUEL, Evandro Carlos.Arquitetura de Sistemas para Web com Java<br>Utilizando Design Patterns e Frameworks. 2012.<br>4. LUCKOW, Décio Heinzelmann; MELO, Alexandre Altair de.Programação<br>Java para a Web. Novatec, 2010.<br>5. GEARY, David; HORSTMANN, Cay.Core JavaServer Faces. Altabooks,<br>2012.||||||
 |Bibliografia<br>Complementar|1. OLSON, Steven Douglas.Ajax com Java. Altabooks, 2007.<br>2. RIORDAN, R. M.Use a Cabeça! Ajax Profissional. Rio de Janeiro: Alta<br>Books, 2009.<br>3. METLAPALLI, Prabhakar;Páginas JavaServer(JSP). LTC, 2010.<br>4. NETO, Antonio dos Santos Neto.Java na Web. Ciência Moderna, 2011.<br>5. GONÇALVES, Edson.Dominando Java Server Faces e Facelets<br>Utilizando Spring 2.5, Hibernate e JPA. Ciência Moderna, 2008.||||||
 
-|Componente Curricular:|Componente Curricular:|Redes de Computadores|Redes de Computadores|Redes de Computadores|Redes de Computadores|Redes de Computadores|
+|Componente Curricular:||Redes de Computadores|||||
 |---|---|---|---|---|---|---|
 |Semestre:||3º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Capacitar o aluno para o entendimento das tecnologias utilizadas para a<br>interligação em redes de computadores.||||||
@@ -768,7 +768,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## 4º SEMESTRE
 
-|Componente Curricular:|Componente Curricular:|Análise e Modelagem de Sistemas II|Análise e Modelagem de Sistemas II|Análise e Modelagem de Sistemas II|Análise e Modelagem de Sistemas II|Análise e Modelagem de Sistemas II|
+|Componente Curricular:||Análise e Modelagem de Sistemas II|||||
 |---|---|---|---|---|---|---|
 |Semestre:||4º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Apresentar a linguagem de modelagem UML (Unified Modeling Language) e seus<br>diagramas de definição, com foco em modelos de objetos, sequência,<br>comunicação, estados, atividades, componentes, pacotes e implantação.<br>Especificar projetos de software orientado a objetos. Apresentar técnicas para<br>escrita de documentação de modelagem de software.||||||
@@ -776,7 +776,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. BEZERRA, Eduardo.**Princípios de Análise e Projeto de Sistemas com**<br>**UML**. Editora Campus, 2007.<br>2. BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar.**UML: guia do**<br>**usuário**. 2.ed., rev. e atual. Rio de Janeiro: Elsevier, 2005.<br>3. FOWLER, Martin; SCOTT, Kendall.**UML Essencial**. São Paulo: Bookman,<br>2005.<br>4. LARMAN, Craig.**Utilizando UML e padrões: uma introdução à análise e**<br>**ao projeto orientado a objetos**. 3. ed. Porto Alegre: Bookman, 2007.<br>5. PRESSMAN, Roger S.**Engenharia de Software: uma abordagem**<br>**profissional**. 7.ed. Porto Alegre: AMGH,2011.||||||
 |Bibliografia<br>Complementar|1. DEBASTIANI, Carlos Alberto.**Definindo Escopo em Projetos de Software**.<br>Ed. Novatec, 2015.<br>2.<br>ENGHOLM JR, Hélio.;**Engenharia de Software na Prática**. Editora<br>Novatec, 2010.<br>3. GÓES, Wilson Moraes;**Aprenda UML por Meio de Estudos de Caso**.<br>Editora Novatec, 2014.<br>4. GUEDES, Gilleanes;**UML 2 – Guia Prático**- 2ª Edição. Editora Novatec,<br>2014.<br>5. HIRAMA, Kechi;**Engenharia De Software: Qualidade e Produtividade**<br>**com Tecnologia**. Editora Elsevier. 2011.<br>6. PAULA FILHO, Wilson de Pádua.**Engenharia de software: fundamentos,**<br>**métodos e padrões**. 3. ed. Rio de Janeiro: LTC, 2009.<br>7. SOMMERVILLE, Ian.**Engenharia de software**. 9. ed. São Paulo: Pearson<br>Prentice Hall, 2011.<br>8. WAZLAWICK, Raul Sidnei.**Análise e projeto de sistemas de informação**<br>**orientados a objetos**. 2. ed. Rio de Janeiro: Elsevier,2011.||||||
 
-|Componente Curricular:|Componente Curricular:|Letramentos Acadêmicos l|Letramentos Acadêmicos l|Letramentos Acadêmicos l|Letramentos Acadêmicos l|Letramentos Acadêmicos l|
+|Componente Curricular:||Letramentos Acadêmicos l|||||
 |---|---|---|---|---|---|---|
 |Semestre:||4º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Aprimorar a capacidade comunicativa reconhecendo e utilizando adequadamente<br>a linguagem, o estilo, as características, a função e finalidade dos gêneros<br>discursivos técnicos e acadêmicos.||||||
@@ -784,7 +784,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. BLIKSTEIN, Isidoro.**Técnicas de Comunicação Escrita**. 22 ed. São<br>Paulo: Editora Ática, 2006.<br>2. MEDEIROS, João Bosco.**Português Instrumental**. 6 ed. SP: Editora<br>Atlas, 2007.<br>3. NADOLSKIS, Hêndricas.**Comunicação Redacional Atualizada**. 10 ed.<br>São Paulo: Editora Saraiva, 2006.<br>4. FÁVERO, Leonor Lopes.**Coesão e coerência textuais**. 11 ed. São<br>Paulo: Editora Ática, 2007.<br>5. MEDEIROS, João Bosco.**Redação Empresarial**. 3 ed. São Paulo:<br>Editora Atlas, 2000.||||||
 |Bibliografia<br>Complementar|1. MOYSÉS, Carlos Alberto.**Língua Portuguesa:**atividades de leitura e<br>produção de textos. São Paulo: Editora Saraiva, 2005<br>2. FARACO, Carlos Alberto; TEZZA, Cristovão.**Prática de textos para**<br>**estudantes universitários.**16 ed. Rio de Janeiro: Editora Vozes, 2007.<br>3. ALMEIDA, Rita de Cássia Santos.**Jogos nas Aulas de Português.**<br>Editora Vozes. 2010.<br>4. ANDRADE, Maria Margarida de.**Guia Prático de Redação:**Exemplos e<br>exercícios. 3ª Edição. Editora Atlas. 2011.<br>5. CÂMARA, Joaquim Mattoso.**Manual de expressão oral e escrita.**24.<br>ed. Petrópolis: Vozes, 2004. 164 p.||||||
 
-|Componente Curricular:|Componente Curricular:|Estatística|Estatística|Estatística|Estatística|Estatística|
+|Componente Curricular:||Estatística|Estatística|Estatística|Estatística|Estatística|
 |---|---|---|---|---|---|---|
 |Semestre:||4º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|O objetivo da componente curricular é dar condições necessárias para que o<br>aluno seja capaz de utilizar a teoria estudada no curso em situações do cotidiano<br>e posteriormente na atuação profissional. Além disso, espera-se que o aluno seja<br>capaz de:<br>• Desenvolver raciocínio lógico e matemático.<br>• Identificar as técnicas estatísticas, executar análises de dados e interpretar<br>resultados experimentais para o auxílio na tomada de decisões.||||||
@@ -792,7 +792,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. AZEVEDO, A. G. de; CAMPOS, P. H. B. de.Estatística básica. 5. ed. Rio<br>de Janeiro: LTC, 1987.<br>2. FONSECA, J. S. da.; MARTINS, G. de A.; TOLEDO, G. L.Estatística<br>aplicada. 2 ed. São Paulo : Atlas, 1995.<br>3. LARSON, Ron ; Farber, Betsy.Estatística aplicada. 2 ed. São Paulo:<br>Prentice Hall, 2004.<br>4. LEVENE, D. L.; BERENSON, M. L.; STEPHAN, D.Estatística: teoria e<br>aplicações.Rio de Janeiro: LTC, 2000.<br>5. MARTINS, G. de A.; DONAIRE, D.Princípios de estatística.4. ed. São<br>Paulo : Atlas, 1990.||||||
 |Bibliografia<br>Complementar|1. BARBETTA, P. A.; BORNIA, A. C.; REIS, M. M.Estatística: para cursos<br>de engenharia e informática.São Paulo: Atlas, 2004. 410 p.<br>2. NAZARETH, H. R. de S.Curso básico de estatística.12. ed. São Paulo:<br>Ática, 1999.<br>3. CESAR, C. C.Introdução à Estatística, LTC, Rio de Janeiro, 1991.<br>4. TRIOLA, M. F. Introdução à Estatística, 7 ed., LTC, Rio de Janeiro, 1999.<br>5. VIEIRA, S.Estatística experimental.São Paulo: Atlas, 1999.||||||
 
-|Componente Curricular:|Componente Curricular:|Interação Humano-Computador|Interação Humano-Computador|Interação Humano-Computador|Interação Humano-Computador|Interação Humano-Computador|
+|Componente Curricular:||Interação Humano-Computador|||||
 |---|---|---|---|---|---|---|
 |Semestre:||4º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Discutir uma visão geral sobre interação homem-máquina; Capacitar os alunos<br>para realizar avaliação de ergonomia, usabilidade, Interface do Usuário (UI) e<br>Experiência do Usuário(UX).||||||
@@ -800,7 +800,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1.BARBOSA, S.D.J.; SILVA, B.S.**Interação Humano-Computador.**Editora<br>Campus-Elsevier, 2010.<br>2.CYBIS, W.; BETIOL, A. H.; FAUST, R.**Ergonomia e Usabilidade –**<br>**Conhecimentos, Métodos e Aplicações.**Editora Novatec, 2007.<br>3.JAKOB, N;, HOA, L.**Usabilidade na Web.**Elsevier Brasil, 2007<br>4.JAKOB, N.; HOA, L.**Projetando Websites com Usabilidade.**Editora:<br>Campus,<br>5.SHARP,<br>H.<br>**Design**<br>**de**<br>**Interação**<br>**-**<br>**Além**<br>**da**<br>**Interação**<br>**Homem-computador.**3. ed. Bookman, 2013.||||||
 |Bibliografia<br>Complementar|1.JONES, M.; Marsden, G.**Mobile Interaction Design.**London: Wiley &<br>Sons, 2005.<br>2.COOPER, A.**About Face 3. The Essentials of User Interface Design.**<br>IDG Books, 2007.<br>3.PREECE, J.; ROGERS, I.; SHARP, H.**Design de Interação: Além da**<br>**Interação Humano-Computador.**Porto Alegre: Bookman, 2005.<br>4.NIELSEN, J.**Usability Engineering.**San Francisco, California: Morgan<br>Kaufmann Publishers, Inc., 1993<br>5.NUDELMAN, G.**Padrões de Projeto para o Android – Soluções de**<br>**Projetos de Interação para Desenvolvedores.**São Paulo: Novatec,<br>2013.||||||
 
-|Componente Curricular:|Componente Curricular:|Gerenciamento de Projetos|Gerenciamento de Projetos|Gerenciamento de Projetos|Gerenciamento de Projetos|Gerenciamento de Projetos|
+|Componente Curricular:||Gerenciamento de Projetos|||||
 |---|---|---|---|---|---|---|
 |Semestre:||4º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Possibilitar<br>ao<br>aluno<br>a  compreensão  dos  conceitos  fundamentais<br>relacionados  ao gerenciamento  de  projeto.  Conhecer  e  aplicar  as  principais<br>ferramentas  e  técnicas empregadas no gerenciamento de projeto de software.||||||
@@ -808,7 +808,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1.HIGHSMITH, J. A.**Gerenciamento Ágil de Projeto**: Criando  Produtos<br>Inovadores. Rio de Janeiro: Alta Books, 2012.<br>2.NOKES, S.;  KELLY, S.**O  Guia  Definitivo  do  Gerenciamento  de**<br>**Projetos.**2. ed., Bookman, 2012.<br>3.VIEIRA, M. F.**Gerenciamento de Projetos de Tecnologia da**<br>**Informação.**2. ed. Campus, 2006.<br>4.VAZQUEZ,  C.  E.**Análise  de  Pontos  de  Função:**Medição,<br>Estimativas e Gerenciamento de Projetos de Software. 13. ed. Érica,<br>2013.<br>5.CRUZ,F.**Scrum e PMBOK:**Unidos no Gerenciamento de Projetos. 2013||||||
 |Bibliografia<br>Complementar|1.JORDAN, L.**Gerenciamento de projetos com DotProject.**Pearson,<br>2008.<br>2.ZANOLLI, R.**Gerenciamento de Projetos Sem Crise.**Novatec, 2012.<br>3.PHAM, A.; PHAM, Phuong-Van.**Scrum Em Ação.**Novatec, 2011.<br>4.RABECHINI Jr, Roque; CARVALHO, Marly Monteiro de.**Fundamentos**<br>**Em Gestão de Projetos**- Construindo Competências Para Gerenciar<br>Projetos. 3ª ed., Atlas, 2011.<br>5.HELDMAN, Kim.**Gerência de Projetos**- Fundamentos. 2ª ed., Campus,<br>2005.||||||
 
-|Componente Curricular:|Componente Curricular:|Projeto de Extensão I|Projeto de Extensão I|Projeto de Extensão I|Projeto de Extensão I|Projeto de Extensão I|
+|Componente Curricular:||Projeto de Extensão I|||||
 |---|---|---|---|---|---|---|
 |Semestre:||4º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Proporcionar a formação extensionista do estudante através da realização de<br>cursos, oficinas, capacitações em tecnologias ou ferramentas de informática,<br>assim como o desenvolvimento de pequenas soluções de informática.||||||
@@ -818,7 +818,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## 5º SEMESTRE
 
-|Componente Curricular:|Componente Curricular:|Projeto de Extensão II|Projeto de Extensão II|Projeto de Extensão II|Projeto de Extensão II|Projeto de Extensão II|
+|Componente Curricular:||Projeto de Extensão II|||||
 |---|---|---|---|---|---|---|
 |Semestre:||5º|Horas aula:|160|Horas relógio:|133|
 |Objetivo|Aprimorar a prática extensionista dos estudantes, de forma que consigam<br>mobilizar os conhecimentos e práticas adquiridas no curso em ações de extensão<br>junto à comunidade externa.||||||
@@ -826,7 +826,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. GRANVILLE, Maria Antonia.Projetos no Contexto de Ensino, Pesquisa e<br>Extensão: dimensões políticas, filosóficas e metodológicas.Campinas:<br>Mercado das Letras, 2011.<br>2.FREIRE, Paulo.Extensão ou comunicação.Paz e Terra, 2020.<br>3.DEMO, Pedro.Educação Hoje: Novas tecnologias, pressões e<br>oportunidades, Atlas, 2009.<br>4. MELLO, Cleyson de Moraes; ALMEIDA NETTO, José Rogério;<br>PETRILLO,<br>Regina<br>Pentagna.<br>Curricularização<br>da<br>Extensão<br>Universitária: Teoria e Pŕatica,Processo,2022(biblioteca virtual).||||||
 |Bibliografia<br>Complementar|1. DIÓGENES, E. M. N. (Org.).Avaliação de Políticas Públicas de<br>Educação: Texturas e tessituras do Programa Mais Educação, CRV,<br>2014.<br>2.<br>FERRETI, C. J. etall. (Orgs.).Novas Tecnologias, Trabalho e Educação:<br>Um debate multidisciplinar, Vozes, 2013.<br>3. BENINCÁ, Elli; MÜHL, Eldon Henrique (Org.).Educação: práxis e<br>ressignificação pedagógica.Passo Fundo: Ed. Universidade de Passo<br>Fundo, 2010.||||||
 
-|Componente Curricular:|Componente Curricular:|Padrões de projetos|Padrões de projetos|Padrões de projetos|Padrões de projetos|Padrões de projetos|
+|Componente Curricular:||Padrões de projetos|||||
 |---|---|---|---|---|---|---|
 |Semestre:||5º|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Aprofundar o estudo sobre padrões de projetos de software, suas aplicações e<br>análise de cenários de uso. Utilização de um framework de desenvolvimento de<br>software analisando as vantagens de ganho de produtividade no processo de<br>desenvolvimento e aplicação de padrões de projetos.||||||
@@ -834,7 +834,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. GEARY, D.; HORSTMANN, C.Core JavaServer Faces. 3. ed. Rio de<br>Janeiro: Alta Books, 2010.<br>2. KONDA, M.Introdução ao Hibernate.1ª ed, Novatec, 2014.<br>3. LISBOA, F. G. S.Zend Framework: Componentes Poderosos para PHP.<br>São Paulo: Novatec, 2009.<br>4. SAM-BODDEN, B.Desenvolvendo em POJOs: do Iniciante ao<br>Profissional. Rio de Janeiro: Alta Books, 2006.<br>5. LOPES, Camilo.Construindo Aplicações JEE Com Frameworks:<br>Exclusivo Para Iniciantes Jsf, Spring Security. Ciência Moderna. 2011.||||||
 |Bibliografia<br>Complementar|1.LISBOA, F. G. da S.Criando Aplicações PHP com Zend e Dojo. 2ª Ed.,<br>Novatec, 2012<br>2.ROUGHLEY, Ian.Practical Apache Struts 2 Web 2.0 Projects - Aprenda e<br>aplique o novo framework open source Apache Struts 2 em seus<br>projetos.Ciência Moderna, 2008.<br>3.VANDYK, J. K.Desenvolvimento Profissional com o Drupal.2. ed. Rio de<br>Janeiro: Alta Books, 2009.<br>4.CLARKE, J.; CONNORS, J.; BRUNO, E.Java FX: Desenvolvendo<br>Aplicações de Internet Ricas.Rio de Janeiro: Alta Books, 2010.<br>5.ANSELMO, F.Em busca do Grails.1ª ed. Visual Books, 2010.||||||
 
-|Componente Curricular:|Componente Curricular:|Letramentos acadêmicos lI|Letramentos acadêmicos lI|Letramentos acadêmicos lI|Letramentos acadêmicos lI|Letramentos acadêmicos lI|
+|Componente Curricular:||Letramentos acadêmicos lI|||||
 |---|---|---|---|---|---|---|
 |Semestre:||5º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Capacitar o aluno para leitura e produção de textos técnicos e acadêmicos||||||
@@ -842,7 +842,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. FRANCHI, Carlos.**Mas o que é mesmo gramática?**São Paulo:<br>Parábola, 2006.<br>2. CAMPS, Anna (org.).**Propostas didáticas para aprender a escrever**.<br>Porto Alegre: Artmed, 2006.<br>3. CAMPS, Anna e COLOMER, Teresa.**Ensinar a ler, ensinar a**<br>**compreender**. Porto Alegre: Artmed, 2008.<br>4. MOURA, Leonardo.**Como Escrever na Rede: Manual de Conteúdo e**<br>**Redação para Internet**. Editora Record: 2001.<br>5. FOLHA de S.Paulo.**Manual da Redação**. Editora: Publifolha. 17ª ed.<br>2011.||||||
 |Bibliografia<br>Complementar|1. MEDEIROS, João Bosco. Português instrumental. 9. ed. São Paulo:<br>Atlas, 2010. 442 p. ISBN.<br>2. MARCUSCHI, Luiz Antônio.**Produção textual, análise de gêneros e**<br>**compreensão**. São Paulo: Parábola, 2008.<br>3. SQUARISI, Dad.**Manual de Redação e Estilo Para Mídias**<br>**Convergentes**. Editora Geração: 2011.<br>4. SCHLITTLER, José Maria Martins.**Manual Prático de Redação**<br>**Profissional**. Editora Servanda: 2010.<br>5. MEDEIROS, João Bosco; TOMASI, Carolina.**Redação Técnica:**<br>**elaboração de Relatórios Técnico-Cientifícos e Técnica de**<br>**Normalização Textual**. Editora Atlas: 2010.||||||
 
-|Componente Curricular:|Componente Curricular:|Empreendedorismo e inovação|Empreendedorismo e inovação|Empreendedorismo e inovação|Empreendedorismo e inovação|Empreendedorismo e inovação|
+|Componente Curricular:||Empreendedorismo e inovação|||||
 |---|---|---|---|---|---|---|
 |Semestre:||5º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Conhecer os tipos de empreendedorismo e de inovação.<br>Informar sobre os ambientes existentes e as possibilidades de apoio para o<br>desenvolvimento de novos negócios.<br>Contribuir para o desenvolvimento da capacidade empreendedora através de<br>atividades teóricas e práticas pela elaboração do Modelo de Negócios.||||||
@@ -852,7 +852,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## 6º SEMESTRE
 
-|Componente Curricular:|Componente Curricular:|Informática e Sociedade|Informática e Sociedade|Informática e Sociedade|Informática e Sociedade|Informática e Sociedade|
+|Componente Curricular:||Informática e Sociedade|||||
 |---|---|---|---|---|---|---|
 |Semestre:||6º|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Incitar análises e compreensão de comportamentos sociais adequados e<br>inadequados em organizações sociais associadas com a atuação profissional do<br>tecnólogo em Análise e Desenvolvimento de Sistemas.||||||
@@ -860,7 +860,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1.Ministério da Ciência e Tecnologia.**Sociedade da Informação no Brasil**<br>**- Livro Verde**. Brasília: Imprensa Nacional, 2000.<br>2.VALENTE, J. A. (Org.).**O Computador na Sociedade do**<br>**Conhecimento.**Ministério da Educação:<br>3.CASTELLS, M.**A Sociedade em Rede.**São Paulo: Paz e Terra, 2005.<br>4.YOUSSEF, A. N.; FERNANDEZ, V. P.**Informática e Sociedade**, 2 ed.<br>Ática: 1988.<br>5.RUBEN, G. Informática,**Organizações e Sociedade no Brasil,**Cortês:<br>2003.||||||
 |Bibliografia<br>Complementar|1. MASIERO, P. C.**Ética em Computação.**São Paulo: EDUSP, 2000.<br>2. KUNSCH, D. A.; SILVEIRA, S. A.**Ciberespaço: a Luta Pelo**<br>**Conhecimento.**São Paulo: Salesiana, 2000.<br>3. PRETTO, N. L.; SILVEIRA. S. A.**Além das Redes de Colaboração.**<br>Salvador: EDUFBA, 2008.<br>4. LEVY, P.**Cibercultura.**São Paulo: Editora 34, 2001.<br>5. SCHAFF, A.**A Sociedade Informática: As consequências sociais na**<br>**segunda revolução industrial.**4 ed. São Paulo: Brasiliense, 1995.||||||
 
-|Componente Curricular:|Componente Curricular:|Projeto Integrador|Projeto Integrador|Projeto Integrador|Projeto Integrador|Projeto Integrador|
+|Componente Curricular:||Projeto Integrador|||||
 |---|---|---|---|---|---|---|
 |Semestre:||6º|Horas aula:|160|Horas relógio:|133|
 |Objetivo|Articular a teoria e a prática, valorizando a investigação individual e coletiva, a<br>partir de um espaço interdisciplinar de aplicação dos conhecimentos sobre<br>desenvolvimento web e seus conhecimentos correlatos.||||||
@@ -870,7 +870,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 
 ## COMPONENTES CURRICULARES OPTATIVAS
 
-|Componente Curricular:|Componente Curricular:|Administração de Servidores|Administração de Servidores|Administração de Servidores|Administração de Servidores|Administração de Servidores|
+|Componente Curricular:||Administração de Servidores|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Instrumentalizar os estudantes para administrar e gerenciar servidores de rede,<br>servidores em nuvem e contêineres.||||||
@@ -878,7 +878,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1.SCHRODER, C. Redes Linux - Livro de Receitas. Rio de Janeiro: Alta<br>Books, 2008.<br>2.FERREIRA, R. E. Linux: Guia do administrador do sistema, 2 ed.<br>Novatec, 2008.<br>3.SOUZA, R. F. Administração de Servidores Linux: Passo-a-passo para<br>pequenas empresas. Fortaleza: Clube de Autores: 2012.<br>4.WARD, Brian. Como o Linux funciona: O que todo superusuário deveria<br>saber. Ed. Novatec, 2015.<br>5.MOTA FILHO, João Eriberto. Descobrindo o Linux: Entenda o sistema<br>operacional GNU/Linux. Ed. Novatec, 3ª Edição. 2012.||||||
 |Bibliografia<br>Complementar|1.MORIMOTO, C. E. Servidores Linux: Guia prático. Meridional: 2008.<br>2.FERREIRA, Rubem E. Linux Guia do Administrador do Sistema - 2ª<br>Edição, Ed. Novatec, 2008.<br>3.VIANA, E. R. C. Virtualização de Servidores Linux Para Redes<br>Corporativas: Guia Prático. Ciência Moderna: 2008.<br>4.KUROSE, J. F.; ROSS, K. W. Redes de Computadores e a Internet: Uma<br>abordagem top-down. 5 ed. Addison Wesley, 2010.<br>5.COMER, D. E. Interligação em Redes com TCP/IP. Vol. 1, 5 ed. Rio de<br>Janeiro: Campus, 2006.||||||
 
-|Componente Curricular:|Componente Curricular:|Introdução a Internet das Coisas|Introdução a Internet das Coisas|Introdução a Internet das Coisas|Introdução a Internet das Coisas|Introdução a Internet das Coisas|
+|Componente Curricular:||Introdução a Internet das Coisas|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Conhecer e operar com tecnologias de hardware e software utilizadas em<br>aplicações de Internet das Coisas.||||||
@@ -886,7 +886,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. MONK, S. Internet das Coisas: Uma introdução com Photon. Porto<br>Alegre: Bookman, 2018.<br>2. OLIVEIRA, S. Internet das Coisas com ESP8266, Arduino e Raspberry<br>Pi, São Paulo: NOVATEC, 2021.<br>3. JAVED, A. Criando projetos com Arduíno para Internet das Coisas. São<br>Paulo: NOVATEC,2017.<br>4. KNIGHT, Indira. Conectando o Arduino à Web: Desenvolvimento de<br>frontend usando JavaScript, Novatec, 2018.||||||
 |Bibliografia<br>Complementar|1. Francis da Costa. Rethinking Internet of Things: A scalable approach to<br>connecting<br>everything.<br>Apress<br>Open,<br>2013.<br>https://www.researchgate.net/publication/315665046_Rethinking_the_Inte<br>rnet_of_Things_-_A_Scalable_Approach .<br>2. Antonio Liñán Colina, Alvaro Vives, Marco Zennaro, Antoine Bagula,<br>Ermanno Pietrosemoli. Internet of Things in Five Days, Internet Archive,<br>2016. http://www.iet.unipi.it/c.vallati/files/IoTinfivedays-v1.1.pdf.<br>3. Valerie Lampkin; Weng Tat Leong; Leonardo Olivera; Sweta Rawat;<br>Nagesh Subrahmanyam; Rong Xiang. Building Smarter Planet Solutions<br>with MQTT and IBM WebSphere MQ Telemetry, ibm.com/redbooks, 2012.<br>https://www.redbooks.ibm.com/redbooks/pdfs/sg248054.pdf.<br>4. MQTT Essentials: The Ultimate Kickstart For MQTT Beginners,<br>https://www.hivemq.com/mqtt-essentials/.<br>5. ARDUINO. Documentação de Referência da Linguagem Arduino,<br>https://www.arduino.cc/reference/pt/.||||||
 
-|Componente Curricular:|Componente Curricular:|Metodologias de Desenvolvimento de Software|Metodologias de Desenvolvimento de Software|Metodologias de Desenvolvimento de Software|Metodologias de Desenvolvimento de Software|Metodologias de Desenvolvimento de Software|
+|Componente Curricular:||Metodologias de Desenvolvimento de Software|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Oferecer ao aluno uma visão geral sobre as principais metodologias de<br>desenvolvimento de software adotadas pelo mercado, e sua relação com a<br>qualidade de software nas diversas fases do ciclo de vida de desenvolvimento de<br>aplicações.||||||
@@ -894,7 +894,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. COHN, Mike.Desenvolvimento de Software com Scrum: Aplicando<br>Métodos Ágeis com Sucesso. 1ª ed., Bookman, 2011.<br>2. CRUZ, Fábio.Scrum e Agile em Projetos:Guia Completo. Editora<br>Brasport. 2015.<br>3. HIGHSMITH, J.Gerenciamento ágil de projeto. 2ª ed., Alta books, 2012.<br>4. PRIKLADNICKI, R.; MILIANI, F.; WILLI, R.Métodos ágeis para<br>desenvolvimento de software. 1ª ed., Bookman, 2014.<br>5. SBROCCO, José Henrique Teixeira de Carvalho; MACEDO, Paulo Cesar<br>de.Metodologias ágeis: engenharia de software sob medida. 1. ed. São<br>Paulo: Érica, 2012.||||||
 |Bibliografia<br>Complementar|1. CRUZ, Fábio.Scrum e PMBOK:unidos no gerenciamento de projetos.<br>Rio de Janeiro: Brasport, 2013<br>2. CAMPOS, André L. N.Modelagem de Processos com BPMN. 2ª Edição.<br>Editora Brasport, 2014.<br>3. HEMRAJANI, Anil.Desenvolvimento Ágil em Java Com Spring, Hibernate<br>e Eclipse, 1ª ed., Pearson, 2006<br>4. PHAM, Andrew; PHAM, Phuong-Van.Scrum Em Ação. 1ª ed., Novatec,<br>2011.<br>5. TELES, Vinícius M.Extreme Programming. 1ª ed., Novatec, 2004.||||||
 
-|Componente Curricular:|Componente Curricular:|Tecnologias em Desenvolvimento de Sistemas|Tecnologias em Desenvolvimento de Sistemas|Tecnologias em Desenvolvimento de Sistemas|Tecnologias em Desenvolvimento de Sistemas|Tecnologias em Desenvolvimento de Sistemas|
+|Componente Curricular:||Tecnologias em Desenvolvimento de Sistemas|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Apresentar conteúdos atuais na área de informática como complemento à<br>formação curricular, abrangendo tópicos relacionados com as tecnologias de<br>desenvolvimento de software, ou outras relacionadas aos temas desenvolvidos<br>durante o currículo.||||||
@@ -902,7 +902,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. PEREIRA, Sílvio do Lago.Estruturas de dados fundamentais: conceitos e<br>aplicações. 8ª ed., Erica, 1996.<br>2. SILVA, Maurício Samy.JavaScript: Guia do Programador. Novatec, 2010.<br>3. Cornell, Gary; Horstmann, Cay S.Core Java - Vol. 1 - Fundamentos- 8ª<br>ed., Pearson Education,  2010.<br>4. SILBERCHATZ, Abrahan, KORTH, Henri F., SHUDARSHAN, S.,Sistema<br>de Banco de Dados, 5a. Ed., Campus, 2006.<br>5. PRESSMAN R. S.;Engenharia de Software- 6ª edição; Editora Mc Graw<br>Hill,2006.||||||
 |Bibliografia<br>Complementar|1. FREEMAN, E., FREEMAN, E.Use a Cabeça! Padrões de Projetos. 2ª<br>ed., Alta Books, 2007.<br>2. ANGELOTTI, Elaini Simoni.Banco de Dados, Editora do Livro Técnico,<br>2010.<br>3. IHRIG, Colin J.Pro Node.Js Para Desenvolvedores. 2014; Editora<br>Ciência Moderna.<br>4. Dall'oglio, Pablo.PHP: Programando com Orientação a Objetos. 2ª ed.,<br>Novatec, 2009.<br>5. SOMMERVILLE, Ian.Engenharia de software. 9ª ed. São Paulo: Pearson<br>Brasil, 2011.||||||
 
-|Componente Curricular:|Componente Curricular:|Libras|Libras|Libras|Libras|Libras|
+|Componente Curricular:||Libras|Libras|Libras|Libras|Libras|
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|40|Horas relógio:|33|
 |Objetivo|Compreender<br>as<br>especificidades<br>linguísticas<br>da<br>comunidade<br>surda,<br>desenvolvendo expressão corporal capaz de comunicar.||||||
@@ -910,7 +910,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. GESSER, Audrei. LIBRAS? Que língua é essa? Crenças e preconceitos<br>em torno da Língua Sinais e da realidade surda. São Paulo: Parábola,<br>2009.<br>2. LOPES, Maura Corcini. Surdez e Educação. Belo Horizonte: Autêntica,<br>2007.<br>3. THOMA, Adriana da Silva; KLEIN, Madalena. Currículo e avaliação: a<br>diferença surda na escola. Santa Cruz do Sul: EDUNISC, 2009.<br>4. FIGUEIRA, Alexandre dos Santos. Material de Apoio Para o Aprendizado<br>de Libras. Editora Phorte, 2011.<br>5. BRANDÃO, Flávio. Dicionário Ilustrado de Libras: Língua Brasileira de<br>Sinais. Editora Global, 2011.||||||
 |Bibliografia<br>Complementar|1. BOTELHO, Paula. Linguagem e letramento na educação dos surdos -<br>ideologias e práticas pedagógicas. Belo Horizonte: Autêntica, 2005.<br>2. FERNANDEZ, Eulália (Org.). Surdez e bilingüismo. Porto Alegre.<br>Mediação, 2005.<br>3. QUADROS, Ronice Muller de; KANOPP, Lodenir Becker. Língua de<br>Sinais Brasileira: estudos lingüísticos. Porto Alegre: Artmed, 2004.<br>4. SOUZA, Regina Maria de; SILVESTRE, Núria; ARANTES, Valéria Amorin<br>(Org.). Educação de surdos. São Paulo: Summus, 2007.<br>5. PEREIRA, Maria da Cristina da Cunha. Libras: Conhecimento Além Dos<br>Sinais. Editora Pearson, 2011||||||
 
-|Componente Curricular:|Componente Curricular:|Autodidatismo e Metacognição|Autodidatismo e Metacognição|Autodidatismo e Metacognição|Autodidatismo e Metacognição|Autodidatismo e Metacognição|
+|Componente Curricular:||Autodidatismo e Metacognição|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Proporcionar ao aluno conhecimento e ferramentas para que consiga<br>desenvolver autodidatismo e a prática de complementação do estudo para busca<br>de novas tecnologias e novos conhecimentos. Incentivar odesenvolvimento da<br>autonomia do estudante.||||||
@@ -918,7 +918,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. Pierre Vianin,**Estratégias de Ajuda a Alunos Com Dificuldades de**<br>**Aprendizagem**, ed. Penso, 1a. ed., 2012<br>2. Evelise Portilho,**Como se Aprende? – Estratégias, estilos e**<br>**metacognição**, 2a. ed., 2011, ed. Wak.<br>4.  Renato Alves,**O cérebro com foco e disciplina**, ed. Gente, 10a. ed. ,<br>2014.<br>5.  Steven Pinker,**Como a mente funciona**, 1a. ed., Companhia das<br>Letras, 1998||||||
 |Bibliografia<br>Complementar|1. Araujo, UF., Sastre, G.Aprendizagem baseada em problemas no ensino<br>superior.São Paulo: Sumus, 2009.<br>2. Alencar, E.S, Santos, A.A.A, Zenorini, R.P.C, Azzi, R.G., Polydoro , S. A.<br>J., Almeida, L.S., Guisande, M.A., Witter G. P., Costa E.R., D Fleith,<br>Motivação para aprender: Aplicações no contexto educativo, 2a. ed., Ed.<br>Vozes, 2010<br>3.Freire, P.**Pedagogia da Autonomia.**Saberes necessários à prática<br>educativa.17ª. ed. Coleção Leitura. São Paulo: Paz e Terra. 1996.<br>4. Antonio Munhoz,**ABP – Aprendizagem Baseada em Problemas em**<br>**ambientes virtuais de aprendizagem: Ferramenta de apoio ao**<br>**docente no processo de ensino e aprendizagem**, 1a. ed., ed. Cengage<br>Learning, 2015||||||
 
-|Componente Curricular:|Componente Curricular:|Introdução à Ciência de Dados|Introdução à Ciência de Dados|Introdução à Ciência de Dados|Introdução à Ciência de Dados|Introdução à Ciência de Dados|
+|Componente Curricular:||Introdução à Ciência de Dados|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Apresentar os conceitos básicos da ciência de dados e ferramentas de análise de<br>dados para a extração de conhecimento. Aplicar técnicas da área na preparação<br>de bases de dados, o seu uso na construção de modelos computacionais, e<br>interpretação dos resultados gerados. Compreender as etapas do processo de<br>extração de conhecimento a partir de um conjunto de dados, identificar padrões,<br>interpretar métricas estatísticas e gerar gráficos para visualização dos dados.||||||
@@ -926,7 +926,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. GRUS, J.Data Science Do Zero: Noções Fundamentais com Python. 2a.<br>ed. Rio de Janeiro: Alta Books, 2021.<br>2. MCKINNEY, Wes.Python Para Análise de Dados: Tratamento de Dados<br>com Pandas, NumPy e IPython. Novatec, 2018.<br>3. GERON, Aurélien.Mãos à obra: aprendizado de máquina com<br>Scikit-Learn, Keras & TensorFlow: Conceitos, ferramentas e técnicas para<br>a construção de sistemas inteligentes. 2a. ed. Rio de Janeiro: Alta Books,<br>2021.||||||
 |Bibliografia<br>Complementar|1. BRUCE, Andrew.Estatística Prática para Cientistas de Dados. Rio de<br>Janeiro: Alta Books, 2019.<br>2. KNAFLIC, Cole Nussbaumer.Storytelling com dados: Um guia sobre<br>visualização de dados. Rio de Janeiro: Alta Books, 2019.<br>3. PROVOST, Foster; FAWCETT, Tom.Data science para negócios: O que<br>você precisa saber sobre mineração de dados e pensamento analítico de<br>dados. Rio de Janeiro: Alta Books, 2016.<br>4. NETTO, Amilcar; MACIEL, Francisco.Python Para Data Science: E<br>Machine Learning Descomplicado. Rio de Janeiro: Alta Books, 2021.<br>5. KLOSTERMAN, Stephen.Projetos de Ciência de Dados com Python:<br>Abordagem de Estudo de Caso Para a Criação de Projetos de Ciência de<br>Dados Bem-sucedidos Usando Python, Pandas e Scikit-learn. Novatec,<br>2020.||||||
 
-|Componente Curricular:|Componente Curricular:|Desenvolvimento Web IV|Desenvolvimento Web IV|Desenvolvimento Web IV|Desenvolvimento Web IV|Desenvolvimento Web IV|
+|Componente Curricular:||Desenvolvimento Web IV|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Apresentar conceitos e características de aplicações web e distribuídas com<br>enfoque no uso de APIs e técnicas de serialização de dados abordando aspectos<br>relacionados  à  exposição e consumo de serviços no back-end e front-end.||||||
@@ -934,7 +934,7 @@ Componentes eletivos são definidos aqueles constantes na matriz curricular de o
 |Bibliografia<br>Básica|1. MACHACEK, Jan; VUKOTIC, Aleksa; CHAKRABORTY, Anyrvan; DITT,<br>Jessica.Pro Spring 2.5. Ciência Moderna, 2009.<br>2. LOPES, Camilo.Guia Prático Construindo Aplicações JEE com<br>Frameworks - Exclusivo para iniciantes JSF, Spring Security, Hibernate,<br>MySQL, Eclipse.Ciência Moderna, 2011.<br>3. TERUEL, Evandro Carlos.Arquitetura de Sistemas para WEB com Java<br>Utilizando Design Patterns e Frameworks.Ciência Moderna, 2012.<br>4. GOMES, Yuri Marx P.Java na Web com Jsf, Spring, Hibernate e<br>Netbeans.Ciência Moderna, 2008.||||||
 |Bibliografia<br>Complementar|1. GONÇALVES, Edson.Dominando Java Server Faces e Facelets<br>Utilizando Spring 2.5, Hibernate e JPA.Ciência Moderna, 2008.<br>2. VIANA, Marco Polo Monteiro.Sistemas Comerciais - Conceito,<br>Modelagem e Projeto.Ciência Moderna, 2013.<br>3. LUBBERS, Peter; ALBERS, Brian; SALIM, Frank.Programação<br>Profissional em HTML 5.Altabooks, 2013.<br>4. FLANAGAN, David.JavaScript: O Guia Definitivo.Bookman, 2013.<br>5. LECHETA, Ricardo R.Web Services Restful: Aprenda A Criar Web<br>Services Restful Em Java Na Nuvem Do Google;Editora Novatec; 2015;||||||
 
-|Componente Curricular:|Componente Curricular:|Desenvolvimento para Dispositivos Móveis|Desenvolvimento para Dispositivos Móveis|Desenvolvimento para Dispositivos Móveis|Desenvolvimento para Dispositivos Móveis|Desenvolvimento para Dispositivos Móveis|
+|Componente Curricular:||Desenvolvimento para Dispositivos Móveis|||||
 |---|---|---|---|---|---|---|
 |Semestre:||Optativo|Horas aula:|80|Horas relógio:|67|
 |Objetivo|Desenvolver aplicativos voltados para a plataforma de dispositivos móveis,<br>compreendendo suas características, bibliotecas e frameworks disponíveis que<br>auxiliam no desenvolvimento de interface do usuário, utilização de recursos<br>específicos da plataforma móvel e no consumo de serviços na nuvem.||||||
@@ -1899,7 +1899,7 @@ A biblioteca possui para pesquisas:
 
 I - Os prazos de empréstimo e quantidades são os seguintes:
 
-|**_Categoria de usuário_**|<br>**_Quantidade Prazo_**|<br>**_Quantidade Prazo_**|
+|**_Categoria de usuário_**|<br>**_Quantidade Prazo_**||
 |---|---|---|
 |Alunos de ensino médio/técnico .. .…............................Até 03 títulos por 07 dias|||
 |Alunos de graduação e pós-graduação...................…...Até||05 títulos por 07 dias|

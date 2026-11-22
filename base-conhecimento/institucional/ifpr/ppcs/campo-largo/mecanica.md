@@ -46,7 +46,7 @@ AJUSTE CURRICULAR DE CURSO XXXX RESOLUÇÃO DE CRIAÇÃO: nº 16 de 13 de junho 
 
 **COMISSÃO DE ESTRUTURAÇÃO DO CURSO  - Portaria 93/2018**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO- Portaria 93/2018**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO- Portaria 93/2018**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO- Portaria 93/2018**||
 |---|---|
 |<br>**Função**|<br>**Nome**|
 |Diretora de Ensino, Pesquisa e Extensão|Luciane Schulz Fonseca|
@@ -101,7 +101,7 @@ Segundo dados do Caderno Estatístico do Município de Campo Largo, disponibiliz
 
 **Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**
 
-|**Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**|**Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**|
+|**Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**||
 |---|---|
 |||
 |**ATIVIDADES ECONÔMICAS                                                      Nº DE PESSOAS**||
@@ -1106,7 +1106,7 @@ NIEMANN, Gustav. **Elementos de máquinas.** São Paulo: Blucher, 1971. 3 v. BUD
 
 COLLINS, J. A. **Projeto mecânico de elementos de máquinas: uma perspectiva de prevenção da falha.** Rio de Janeiro: LTC, c2006. CUNHA, Lamartine Bezerra da. **Elementos de máquinas.** Rio de Janeiro: LTC, 2005. DUBBEL, Heinrich. **Manual da construção de maquinas: (engenheiro mecânico).** 13. ed. edição alemã, rev. e ampl. São Paulo: Hemus Ed., 1974. 2 v.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Mecânica Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Qualidade e Gestão da Produção**||
@@ -1195,7 +1195,7 @@ BERGER, Peter. Perspectivas Sociológicas. Petropolis: Vozes, 2011. BOMENY, Hele
 
 CHESNAIS, François. A mundialização do capital. São Paulo: Xamã, 1996. HARVEY, David. Condição pós-moderna. São Paulo: Loyola, 1998. IANNI, Otavio. Teorias da globalização. Rio de Janeiro: Civilização Brasileira, 1995. LOJKINE, Jean. A revolução informacional. São Paulo: Cortez, 1999.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Mecânica Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Educação Física**||
@@ -1364,7 +1364,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Mecânica Integrado Eixo Tecnológ
 
 ## **TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|||
 |---|---|---|
 |QUANT.|CARGO||
 |2|Pedagoga||

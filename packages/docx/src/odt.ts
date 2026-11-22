@@ -402,9 +402,10 @@ class LeitorOdt {
   }
 
   /**
-   * A tabela em grade, como a do DOCX: a célula mesclada se repete em cada posição que ocupa. O ODF
-   * grava cada posição coberta como `table:covered-table-cell`; ela recebe a célula de cima, se a
-   * mescla vertical chega até ela, ou a da esquerda, se a horizontal chega.
+   * A tabela como a do DOCX: cada célula uma vez, com as colunas que ocupa e a marca de
+   * continuação. O ODF grava cada posição coberta como `table:covered-table-cell`: ela continua a
+   * célula de cima, se a mescla vertical chega até ela, ou alarga a da esquerda, se a horizontal
+   * chega.
    */
   #tabela(tabela: Element): Tabela {
     const { celulasPorLinha, posicoesPorTabela } = this.#limites;
@@ -420,39 +421,43 @@ class LeitorOdt {
         const coberta = elemento.name === "table:covered-table-cell";
         if (!coberta && elemento.name !== "table:table-cell") continue;
         const repeticoes = contagem(elemento, "table:number-columns-repeated");
-        if (linha.length + repeticoes > celulasPorLinha) {
+        if (origens.length + repeticoes > celulasPorLinha) {
           throw new ErroDocx({ motivo: "celulas-por-linha", limite: celulasPorLinha });
         }
-        const lida: CelulaTabela | null = coberta
-          ? null
-          : { texto: this.#textoDaCelula(elemento), colunas: 1, continuacao: false };
+        const texto = coberta ? "" : this.#textoDaCelula(elemento);
         for (let i = 0; i < repeticoes; i += 1) {
-          const coluna = linha.length;
+          const coluna = origens.length;
+          const deCima = acima[coluna];
           let origem: Origem;
-          if (lida) {
+          if (!coberta) {
+            const celula = { texto, colunas: 1, continuacao: false };
+            linha.push(celula);
             origem = {
-              celula: lida,
+              celula,
               fimLinha: indice + contagem(elemento, "table:number-rows-spanned") - 1,
               fimColuna: coluna + contagem(elemento, "table:number-columns-spanned") - 1,
             };
             esquerda = origem;
+          } else if (deCima && deCima.fimLinha >= indice) {
+            // A continuação de uma mescla de várias colunas é uma célula só, como a de cima.
+            if (origens.at(-1) === deCima && linha.at(-1)?.continuacao) linha.at(-1)!.colunas += 1;
+            else linha.push({ texto: "", colunas: 1, continuacao: true });
+            origem = deCima;
+          } else if (esquerda && esquerda.fimColuna >= coluna && linha.length) {
+            linha.at(-1)!.colunas += 1;
+            origem = esquerda;
           } else {
-            const deCima = acima[coluna];
-            origem =
-              deCima && deCima.fimLinha >= indice
-                ? deCima
-                : esquerda && esquerda.fimColuna >= coluna
-                  ? esquerda
-                  : // Posição coberta que nenhuma mescla alcança (arquivo malformado): vazia.
-                    { celula: { texto: "", colunas: 1, continuacao: false }, fimLinha: indice, fimColuna: coluna };
+            // Posição coberta que nenhuma mescla alcança (arquivo malformado): vazia.
+            const celula = { texto: "", colunas: 1, continuacao: false };
+            linha.push(celula);
+            origem = { celula, fimLinha: indice, fimColuna: coluna };
           }
-          linha.push(origem.celula);
           origens.push(origem);
         }
       }
       if (!linha.length) continue;
       const repeticoes = contagem(elementoDaLinha, "table:number-rows-repeated");
-      posicoes += linha.length * repeticoes;
+      posicoes += origens.length * repeticoes;
       if (posicoes > posicoesPorTabela) throw new ErroDocx({ motivo: "tabela-grande-demais" });
       for (let i = 0; i < repeticoes; i += 1) linhas.push(linha);
       acima = origens;

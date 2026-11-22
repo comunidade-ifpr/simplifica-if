@@ -39,20 +39,20 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 ## 2. **CARACTERÍSTICAS DO CURSO**
 
-|**NÍVEL:**|**NÍVEL:**|**NÍVEL:**|FIC|FIC|FIC|FIC|||TÉCNICO|TÉCNICO|TÉCNICO|TÉCNICO|TÉCNICO|TÉCNICO|X|X|X|X|TECNOLÓGICO|TECNOLÓGICO|TECNOLÓGICO|TECNOLÓGICO|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|BACHARELADO:|||||||||||||||||||||||
-|**MODALIDADE:**||||PROEJA|||||INTEGRADO|||||||||CONCOMITANTE|||||
-|SUBSEQUENTE|||||X||||||||||||||||||
-|OFERTA:|||PRESENCIAL|||||||X||||A DISTÂNCIA|||||||||
-|PARCERIA COM OUTRAS<br>INSTITUIÇÕES:<br>|||||||||||ESPECIFICAR:<br>Nome:<br>Endereço:||||||||||||
-|~~SIM~~||~~NÃO~~<br>||||||X|||||||||||||||
-|PERÍODO DO CURSO: 2 anos|||||||||||||||||||||||
-|TURNO: Noite|||||||||||||||||||||||
-|INÍCIO DO CURSO: 2012|||||||||||||||||||||||
-|CARGA HORÁRIA*: 1.360 h<br>||||||||||||NÚMERO DE VAGAS:<br>|||||||||40||
-|ESTÁGIO: Não obrigatório||||||||||||MÍNIMO||<br>20||MÁXIMO|||||40||
-|CARGA HORÁRIA TOTAL: 1.360 h|||||||||||||||||||||||
+|**NÍVEL:**|**NÍVEL:**|**NÍVEL:**|FIC|FIC|FIC|FIC|||TÉCNICO|TÉCNICO|TÉCNICO|TÉCNICO|TÉCNICO|TÉCNICO|X|X|X|X|TECNOLÓGICO|TECNOLÓGICO|TECNOLÓGICO|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|BACHARELADO:||||||||||||||||||||||
+|**MODALIDADE:**||||PROEJA|||||INTEGRADO|||||||||CONCOMITANTE||||
+|SUBSEQUENTE|||||X|||||||||||||||||
+|OFERTA:|||PRESENCIAL|||||||X||||A DISTÂNCIA||||||||
+|PARCERIA COM OUTRAS<br>INSTITUIÇÕES:<br>|||||||||||ESPECIFICAR:<br>Nome:<br>Endereço:|||||||||||
+|~~SIM~~||~~NÃO~~<br>||||||X||||||||||||||
+|PERÍODO DO CURSO: 2 anos||||||||||||||||||||||
+|TURNO: Noite||||||||||||||||||||||
+|INÍCIO DO CURSO: 2012||||||||||||||||||||||
+|CARGA HORÁRIA*: 1.360 h<br>||||||||||||NÚMERO DE VAGAS:<br>||||||||40||
+|ESTÁGIO: Não obrigatório||||||||||||MÍNIMO||<br>20||MÁXIMO||||40||
+|CARGA HORÁRIA TOTAL: 1.360 h||||||||||||||||||||||
 
 ## **3. ESTRUTURA E FUNCIONAMENTO**
 
@@ -250,7 +250,7 @@ O estágio não obrigatório também previsto neste projeto é aquele desenvolvi
 
 ## **3.10.1 Módulos**
 
-|**3.10.1 Módulos**|**3.10.1 Módulos**|**3.10.1 Módulos**|
+|**3.10.1 Módulos**|||
 |---|---|---|
 |**MÓDULO I: FUNDAMENTOS EM ELETROTÉCNICA**|||
 |**ÁREA CURRICULAR**|**CARGA**<br>**HORÁRIA (h/r)**|**CARGA**<br>**HORÁRIA (h/a)**|
@@ -301,7 +301,7 @@ UNIDADE DIDÁTICA: Eletricidade Básica
 
 EMENTA: Conceitos de eletricidade; Eletrostática; Grandezas Elétricas: tensão, corrente e resistência elétrica; Leis de Ohm e de Kirchhoff; Potência e energia elétrica; Divisores de tensão e corrente; Análise de circuitos; Associações elétricas em corrente contínua.
 
-|UNIDADE DIDÁTICA: Eletricidade Básica|UNIDADE DIDÁTICA: Eletricidade Básica|
+|UNIDADE DIDÁTICA: Eletricidade Básica||
 |---|---|
 |EMENTA: Conceitos de eletricidade; Eletrostática; Grandezas Elétricas: tensão, corrente e<br>resistência elétrica; Leis de Ohm e de Kirchhoff; Potência e energia elétrica; Divisores de<br>tensão e corrente; Análise de circuitos; Associações elétricas em corrente contínua.||
 |BIBLIOGRAFIA BÁSICA:<br>MENDONÇA, R. G. de; SILVA, R. V. R. da.<br>**Eletricidade básica**. 1. ed. Curitiba:<br>Editora do Livro Técnico, 2010.<br>WOLSKI, Belmiro.**Eletricidade Básica**. 1.<br>ed. Curitiba: Base Editorial, 2007.<br>ALBUQUERQUE, Rômulo Oliveira.**Análise**<br>**de circuitos em corrente contínua.**21.<br>ed. São Paulo: Érica, 2011.<br>FILHO, Matheus Teodoro Silva.<br>**Fundamentos de eletricidade.**1. ed. São<br>Paulo: LTC, 2007.|BIBLIOGRAFIA COMPLEMENTAR:<br>MEIRELLES, Vitor Cancela.<br> **Circuitos**<br>**elétricos.**4. ed. Rio de Janeiro: LTC, 2007.<br>MARKUS, O.**Circuitos elétricos:**corrente<br>contínua e corrente alternada. 8. ed. São<br>Paulo: Érica, 2009.<br>Say, M. G.**Eletricidade geral:**dispositivos<br>e aplicações. 13. ed.  São Paulo: Hemus,<br>2008.<br>Say, M. G.<br> **Eletricidade  geral:**<br>eletrotécnica. 13. ed.  São Paulo: Hemus,<br>2009.|
@@ -310,7 +310,7 @@ UNIDADE DIDÁTICA: Desenho Técnico
 
 EMENTA:  Instrumentos e materiais; Normas técnicas; Caligrafia técnica; Formato do papel  e  formatação  da  legenda;  Tipos  de  linhas;  Escalas;  Cotagem;  Construções geométricas; Vistas omitidas; Cortes; Noções e proporção; Projeções em perspectivas: isométrica,  bimétrica,  cavaleira  e  exata;  Elaboração  de  croquis  de  equipamentos  e circuitos elétricos; desenho assistido por computador.
 
-|UNIDADE DIDÁTICA: Desenho Técnico|UNIDADE DIDÁTICA: Desenho Técnico|
+|UNIDADE DIDÁTICA: Desenho Técnico||
 |---|---|
 |EMENTA:  Instrumentos e materiais; Normas técnicas; Caligrafia técnica; Formato do<br>papel  e  formatação  da  legenda;  Tipos  de  linhas;  Escalas;  Cotagem;  Construções<br>geométricas; Vistas omitidas; Cortes; Noções e proporção; Projeções em perspectivas:<br>isométrica,  bimétrica,  cavaleira  e  exata;  Elaboração  de  croquis  de  equipamentos  e<br>circuitos elétricos; desenho assistido por computador.||
 |BIBLIOGRAFIA BÁSICA:<br>STRAUHS, F. do R.**Desenho técnico.**1.<br>ed. Curitiba: Base Editora, 2010.<br>JUNGHANS, Daniel.**Informática aplicada**<br>**ao  desenho  técnico.**<br> Curitiba: Base<br>Editorial, 2010.<br>BUENO, Claudia Pimentel; PAPAZOGLOU,<br>Rosarita Steil.  **Desenho  técnico  para**<br>**engenharias.**Curitiba: Juruá Editora, 2008.|BIBLIOGRAFIA COMPLEMENTAR:<br>FRENCH,  Thomas  E.;  VIERCK,  Charles.<br>**Desenho técnico e tecnologia gráfica.**6.<br>ed. São Paulo: Editora Globo, 1999.<br>BARETA, Deives Roberto; WEBBER, Jaine.<br>**Fundamentos  de  desenho  técnico**<br>**mecânico.**1. ed. São Paulo: EDUCS, 2010.<br>SCHNEIDER, W.<br> **Desenho  técnico**<br>**industrial.**1. ed. São Paulo: Hemus, 2008.|
@@ -319,7 +319,7 @@ UNIDADE DIDÁTICA: Informática Instrumental
 
 EMENTA: Sistemas  Operacionais;  Editor  de  textos;  Formatação  de  textos;  Planilhas Eletrônicas; Produção de Relatórios; Apresentação de Slides.
 
-|UNIDADE DIDÁTICA: Informática Instrumental|UNIDADE DIDÁTICA: Informática Instrumental|
+|UNIDADE DIDÁTICA: Informática Instrumental||
 |---|---|
 |EMENTA: Sistemas  Operacionais;  Editor  de  textos;  Formatação  de  textos;  Planilhas<br>Eletrônicas; Produção de Relatórios; Apresentação de Slides.||
 |BIBLIOGRAFIA BÁSICA:<br>STAIR, R. M**. Princípios de sistemas de**<br>**informação:**uma abordagem gerencial.<br>Rio de Janeiro: LTC, 1998.<br>VELLOSO, F. de C..**Informática**:<br>conceitos básicos. Rio de Janeiro: Campus,<br>2004.<br>SEMOLA, M.**Gestão da segurança da**<br>**informação**. Rio de Janeiro: Campus,<br>2003.|BIBLIOGRAFIA COMPLEMENTAR:<br>COX, J.**Microsoft office system 2007**. Rio<br>de Janeiro: Campus, 2008.<br>SCHECHTER, R.**BrOffice.Org**: calc e<br>writer. Rio de Janeiro: Campus, 2006.<br>FORBELLONE, A. L.V..<br> **Lógica  de**<br>**programação**. São Paulo: Makron Books,<br>1999.|
@@ -328,14 +328,14 @@ UNIDADE DIDÁTICA: Física Aplicada
 
 EMENTA: Movimento em uma, duas e três dimensões; Leis de Newton; Trabalho e energia;  Conservação  da  energia;  Quantidade  de  movimento;  Fluidos;  Oscilações; Superposição de ondas; Leis da termodinâmica, entropia. Campo e indução magnética.
 
-|UNIDADE DIDÁTICA: Física Aplicada|UNIDADE DIDÁTICA: Física Aplicada|
+|UNIDADE DIDÁTICA: Física Aplicada||
 |---|---|
 |EMENTA: Movimento em uma, duas e três dimensões; Leis de Newton; Trabalho e<br>energia;  Conservação  da  energia;  Quantidade  de  movimento;  Fluidos;  Oscilações;<br>Superposição de ondas; Leis da termodinâmica, entropia. Campo e indução magnética.||
 |BIBLIOGRAFIA BÁSICA:<br>TIPLER,  Paul  A.;  MOSCA, Gene.  **Física**<br>**para  cientistas  e  engenheiros**.  Rio  de<br>Janeiro: LTC, 2006.<br>HALLIDAY, David; RESNICK, Robert;<br>AGUIAR,  Flávio  Menezes  de;  WALKER,<br>Jearl;  TABOSA,  José  Wellington  Rocha.<br>**Fundamentos de física**. Rio de Janeiro:<br>LTC, 2006.<br>NUSSENZVEIG,  H.  Moysés.  **Curso  de**<br>**física  básica**.  4.  ed.  São  Paulo:  Edgar<br>Blücher, 2002.<br>GASPAR, Alberto.**Do eletromagnetismo**<br>**à eletrônica.**1. ed. São Paulo: Ática, 1999.<br>**Ondas  eletromagnéticas.**1. ed. São<br>Paulo: Pearson, 2009.|**BIBLIOGRAFIA COMPLEMENTAR:**<br>RILEY,  William  F.;  STURGES,  Leroy  D.;<br>MORRIS, Don H.**Mecânica de materiais.**<br>5. ed. São Paulo: LTC, 2003.<br>HAYT, William H.; BUCK, John A.<br>**Eletromagnetismo.  **7. ed. São Paulo:<br>Mcgraw-Hill Brasil, 2008.<br>MENTWORTH,<br>Stuart<br>M.<br>**Eletromagnetismo  Aplicado.**1.  ed.  São<br>Paulo: Bookman, 2008.|
 
 UNIDADE DIDÁTICA: Comunicação e Expressão
 
-|UNIDADE DIDÁTICA: Comunicação e Expressão|UNIDADE DIDÁTICA: Comunicação e Expressão|
+|UNIDADE DIDÁTICA: Comunicação e Expressão||
 |---|---|
 |EMENTA: Princípios de comunicação humana; Regras básicas de comunicação: oral,<br>escrita, multimídia. Revisão da gramática básica, com ênfase na ortografia; Ortoépia e<br>Prosódia; A produção do texto científico: Relatório, Artigo e apresentação oral, Técnicas<br>de pesquisas bibliográficas. Referências bibliográficas; Elaboração e execução de<br>trabalhos científicos; Comunicação científica; Técnicas de oratória.||
 |BIBLIOGRAFIA BÁSICA:<br>ALANO, Elsi do Rocio Cardoso.<br>**Português.**Curitiba: Instituto Tecnológico<br>de Desenvolvimento Educacional, 2010.<br>WATANABE, Carmen Ballão;. MORETO,<br>Eutália Cristina do Nascimento; DUTRA,<br>Renato Roxo Coutinho.**Normas para**<br>**apresentação de trabalhos acadêmicos**<br>**do Instituto Federal do Paraná (IFPR).**<br>Curitiba: Sistemas de Bibliotecas, 2010.<br>BLIKSTEIN, Izidoro.**Técnicas de**<br>**comunicação escrita.**São Paulo: Ática,<br>2008.|BIBLIOGRAFIA COMPLEMENTAR:<br>KOCH, Ingedore Villaça.**A coesão textual**.<br>São Paulo: Contexto, 2009.<br>KOCH, Ingedore Villaça.  **O  texto  e  a**<br>**construção  dos  sentidos**. São Paulo:<br>Contexto, 2008.<br>ALMEIDA, Napoleão Mendes.**Gramática**<br>**metódica da língua portuguesa**. 42. ed.<br>1998.<br>BACK, E.; MATTOS, G.**Redação oficial e**<br>**comercial**. 6. ed. 1981.<br>GERALDI, João Wanderley.**Portos de**<br>**passagem**. São Paulo: Martins Fontes,<br>2003.<br>SARGENTINI, V.; NAVARRO-BARBOSA, P.<br>M.**Foucault e os domínios da linguagem:**<br>discurso, poder, subjetividade. São Carlos:<br>Clara luz, 2004.|
@@ -350,12 +350,12 @@ UNIDADE DIDÁTICA: Sistemas Digitais
 
 EMENTA: Sistemas de numeração e códigos; Portas lógicas; Análise de circuitos digitais combinacionais;  Análise  de  circuitos  digitais  seqüenciais;  Dispositivos  de  memória; Conversores analógico-digital e digital-analógico.
 
-|UNIDADE DIDÁTICA: Sistemas Digitais|UNIDADE DIDÁTICA: Sistemas Digitais|
+|UNIDADE DIDÁTICA: Sistemas Digitais||
 |---|---|
 |EMENTA: Sistemas de numeração e códigos; Portas lógicas; Análise de circuitos digitais<br>combinacionais;  Análise  de  circuitos  digitais  seqüenciais;  Dispositivos  de  memória;<br>Conversores analógico-digital e digital-analógico.||
 |BIBLIOGRAFIA BÁSICA:<br>CAPUANO, Francisco G., IDOETA, Ivan<br>Valeije.**Elementos de eletrônica digital**.<br>40. ed. São Paulo: Érica, 2009.<br>TOCCI, Ronald J.; WIDNER, Neal S.;<br>MOSS, Gregory L.**Sistemas digitais.**11.<br>ed. São Paulo: Pearson, 2011.<br>GARCIA, Paulo Alves.**Eletrônica digital:**<br>teoria e laboratório. 1. ed. São Paulo: Érica,<br>2006.|BIBLIOGRAFIA COMPLEMENTAR:<br>CAPUANO,  Francisco  G.,  IDOETA,  Ivan<br>Valeije.  **Laboratório  de  eletricidade  e**<br>**eletrônica**. 40. ed. São Paulo: Érica, 2009.<br>LOURENÇO, Antonio C. de; Cruz, Eduardo<br>C. Alves; FERREIRA, Sabrina R.; JÚNIOR,<br>Salomão C.**Circuitos digitais -**estude e<br>use. 9. ed. São Paulo: Érica, 2008.<br>GARUE, Sérgio.<br> **Eletrônica  digital:**<br>circuitos e teoria. 1. ed. São Paulo: Hemus.|
 
-|UNIDADE DIDÁTICA: Análise de Circuitos|UNIDADE DIDÁTICA: Análise de Circuitos|
+|UNIDADE DIDÁTICA: Análise de Circuitos||
 |---|---|
 |EMENTA: Sinal Senoidal; Indutância; Capacitância; Impedância; Admitância; Circutios RC<br>e RLC; Fator de potência; Potência complexa.||
 |BIBLIOGRAFIA BÁSICA:<br>ALBUQUERQUE, Rômulo Oliveira.**Análise**<br>**de circuitos em corrente alternada.**21.<br>ed. São Paulo: Érica, 2011.<br>MARKUS, Otávio.  **Circuitos  elétricos:**<br>corrente contínua e corrente alternada. 8.<br>ed. São Paulo: Érica, 2009.<br>MEIRELLES, Vitor Cancela.<br> **Circuitos**<br>**elétricos.**4. ed. Rio de Janeiro: LTC, 2007.|BIBLIOGRAFIA COMPLEMENTAR:<br>Say, M. G.**Eletricidade geral:**dispositivos<br>e aplicações. 13. ed.  São Paulo: Hemus,<br>2008.<br>Say, M. G.<br> **Eletricidade  geral:**<br>eletrotécnica. 13. ed.  São Paulo: Hemus,<br>2009.<br>WOLSKI, Belmiro.**Circuitos e medidas**<br>**elétricas.**Curitiba: Base Editorial, 2010.|
@@ -366,7 +366,7 @@ EMENTA: Semicondutores; Diodos; Circuitos Ceifadores, Grampeadores, Multiplicado
 
 TBJ; Transistores de Efeito de Campo (FET e MOSFET); Polarização dos transistores de Efeito  de  Campo;  Circuitos  Reguladores  de  Tensão;  Amplificadores  Operacionais; Circuitos inversores, não-inversores, comparadores, somadores, subtratores e diferenciais utilizando amplificadores operacionais.
 
-|TBJ; Transistores de Efeito de Campo (FET e MOSFET); Polarização dos transistores de<br>Efeito  de  Campo;  Circuitos  Reguladores  de  Tensão;  Amplificadores  Operacionais;<br>Circuitos inversores, não-inversores, comparadores, somadores, subtratores e diferenciais<br>utilizando amplificadores operacionais.|TBJ; Transistores de Efeito de Campo (FET e MOSFET); Polarização dos transistores de<br>Efeito  de  Campo;  Circuitos  Reguladores  de  Tensão;  Amplificadores  Operacionais;<br>Circuitos inversores, não-inversores, comparadores, somadores, subtratores e diferenciais<br>utilizando amplificadores operacionais.|
+|TBJ; Transistores de Efeito de Campo (FET e MOSFET); Polarização dos transistores de<br>Efeito  de  Campo;  Circuitos  Reguladores  de  Tensão;  Amplificadores  Operacionais;<br>Circuitos inversores, não-inversores, comparadores, somadores, subtratores e diferenciais<br>utilizando amplificadores operacionais.||
 |---|---|
 |BIBLIOGRAFIA BÁSICA:<br>FREITAS, Marcos Antônio de;<br>MENDONÇA, Roberlam Gonçalves de.<br>**Eletrônica básica.**Curitiba: Editora do<br>Livro Técnico, 2010.<br>JAIR, Urbanetz Junior; José da Silva Maia.<br>**Eletrônica aplicada.**Curitiba: Base<br>Editorial, 2010.<br>CAPUANO, F. G.; Marino, M. A. M.<br>**Laboratório de eletricidade e eletrônica**.<br>24. ed. São Paulo: Érica, 2009.<br>BOYLESTAD, Robert L.; NASHELSKY,<br>Louis.**Dispositivos eletrônicos e teoria**<br>**de circuitos.**8. ed. São Paulo: Prentice<br>Hall, 2004.|BIBLIOGRAFIA COMPLEMENTAR:<br>EDUARDO  Cesar  Alves  Cruz  e  Salomão<br>Choueri Jr.**Eletrônica aplicada**. 2. ed. São<br>Paulo: Érica, 2004.<br>MARQUES,  Angelo  Eduardo  B.;  CRUZ,<br>Eduardo Cesar A.; JÚNIOR, Salomão<br>Choueri.  **Dispositivos  semicondutores:**<br>diodos e transistores - estude e use. 12. ed.<br>São Paulo: Érica, 2008.<br>MALVINO, Albert Paul.**Eletrônica.**Vol. 1. 7.<br>ed. São Paulo: Mcgraw-Hill Brasil, 2008.<br>MALVINO, Albert Paul.**Eletrônica.**Vol. 2. 7.<br>ed. São Paulo: Mcgraw-Hill Brasil, 2008.|
 
@@ -374,7 +374,7 @@ TBJ; Transistores de Efeito de Campo (FET e MOSFET); Polarização dos transisto
 
 EMENTA: Materiais utilizados em instalações elétricas: fios, cabos, chaves, contatores, fusíveis,  disjuntores,  relés;  Simbologia;  Dimensionamento  de  eletrodutos,  fusíveis, condutores, disjuntores; Correção de fator de potência.
 
-|UNIDADE DIDÁTICA: Instalações Elétricas|UNIDADE DIDÁTICA: Instalações Elétricas|
+|UNIDADE DIDÁTICA: Instalações Elétricas||
 |---|---|
 |EMENTA: Materiais utilizados em instalações elétricas: fios, cabos, chaves, contatores,<br>fusíveis,  disjuntores,  relés;  Simbologia;  Dimensionamento  de  eletrodutos,  fusíveis,<br>condutores, disjuntores; Correção de fator de potência.||
 |BIBLIOGRAFIA BÁSICA:<br>CAVALIN, G., CERVELIN, S.**Instalações**<br>**elétricas prediais –**teoria e prática.<br>Curitiba: Base Editorial, 2010.<br>CERVELIN, Severino; CAVALIN, Geraldo.<br>**Instalações elétricas prediais**. 22. ed.<br>São Paulo: Érica, 2009.<br>CREDER, Helio.**Instalações elétricas**. 15.<br>ed. Rio de Janeiro: LTC, 2009.|BIBLIOGRAFIA COMPLEMENTAR:<br>GUERRINI, Délio Pereira.<br> **Iluminação:**<br>teoria  e  projeto.  2.  ed.  São  Paulo:  Érica,<br>2005.<br>FILHO, João Mamede.<br> **Instalações**<br>**elétricas industriais**. 8. ed. Rio de Janeiro:<br>LTC, 2010<br>COTRIM,  Ademaro  A.  M.  B.  **Instalações**<br>**Elétricas.**5. ed. São Paulo: Pearson, 2008.|
@@ -389,7 +389,7 @@ EMENTA:  Conselho  Regional  e  Federal  de  Engenharia;  Atribuições  Profiss
 
 UNIDADE DIDÁTICA: Segurança do Trabalho
 
-|UNIDADE DIDÁTICA: Segurança do Trabalho|UNIDADE DIDÁTICA: Segurança do Trabalho|
+|UNIDADE DIDÁTICA: Segurança do Trabalho||
 |---|---|
 |EMENTA: Princípios da Segurança do trabalho; Higiene e segurança no trabalho:<br>sistemas homem-máquina, posto de trabalho, postura de trabalho, audição, visão,<br>atividade mental; Acidentes de trabalho: conceitos, causas, custo; Métodos de prevenção<br>individual e coletiva; Aspectos da educação ambiental; Legislação específica de ST; CIPA;<br>Proteção contra incêndios, choques elétricos e riscos.||
 |BIBLIOGRAFIA BÁSICA:<br>**Segurança e Medicina do Trabalho**. 8.<br>ed. São Paulo: Saraiva, 2011.<br>PEPPLOW,  Luiz  Amilton.  **Segurança  do**<br>**trabalho.**Curitiba: Base Editorial, 2010.<br>HOEPPNER, Marcos Garcia.<br> **Normas**<br>**regulamentadoras relativas à segurança**<br>**e medicina do trabalho.**4. ed. São Paulo:<br>Ícone Editora, 2010.|BIBLIOGRAFIA COMPLEMENTAR:<br>FALZON,  Pierre.  **Ergonomia**.  1.  ed.  São<br>Paulo: Edgard Blucher, 2007.<br>BARROS, B. F. de; Guimarães, E. C. de A.;<br>Borelli, R.; Gedra, R. L.; Pinheiro, S. R.**NR-**<br>**10 -**guia prático de análise e aplicação. 1.<br>ed. São Paulo: Érica, 2008.<br>RODRIGUES, Flávio Riveiro.**Treinamento**<br>**em saúde e segurança do trabalho.**1. ed.<br>São Paulo: LTR Editora, 2009.|
@@ -411,7 +411,7 @@ EMENTA:  Equipamentos  de  manobra;  Equipamentos  de  proteção;  Equipamentos
 |EMENTA:  Componentes  semicondutores  em  eletrônica  de  potência;  Interruptores<br>controladores de potência; Conversores CA-CC básicos; Conversores CC-CC; Circuitos<br>com semicondutores de potência.||
 |BIBLIOGRAFIA BÁSICA:<br>AHMED, A.  **Eletrônica  de  potência**.<br>Editora Pearson no Brasil, 1. ed, 2000.<br>CAPELLI, Alexandre.<br> **Eletrônica  de**<br>**potência.**1. ed. Rio de Janeiro: Antenna<br>Edições Técnicas, 2006.<br>RASHID,  Muhammad  H.  **Eletrônica  de**<br>**potência:**<br> circuitos, dispositivos e<br>aplicações.  1.  ed.  São  Paulo:  Pearson,<br>1999.|BIBLIOGRAFIA COMPLEMENTAR:<br>DEL TORO, V.**Fundamentos de máquinas**<br>**elétricas**. LTC Editora, 1. ed., 1994<br>POMÍLIO,  J.  A.  **Eletrônica  de  potência**.<br>Campinas: Universidade Estadual de<br>Campinas, 2009.<br>GUAZELLI, M. B. P.<br> **Eletrônica  de**<br>**potência**.  Editora  da  UNICAMP,  2.  ed.,<br>1998.|
 
-|UNIDADE DIDÁTICA: Projetos Elétricos Residenciais e Prediais|UNIDADE DIDÁTICA: Projetos Elétricos Residenciais e Prediais|
+|UNIDADE DIDÁTICA: Projetos Elétricos Residenciais e Prediais||
 |---|---|
 |EMENTA: Projeto de instalações elétricas prediais: definições, simbologia, localização de<br>cargas  elétricas,  quadro  de  cargas,  dimensionamento  de  eletrodutos  e  condutores,<br>luminotécnica,  proteção  contra  sobrecargas,  curto-circuitos  e  descargas  atmosféricas;<br>Projeto   de   instalações   telefônicas:   definições,  simbologia,   esquemas   e<br>dimensionamento  de  tubulações  e  cabos  (entrada,  primária  e  secundária); Rede<br>interna: distribuição e blocos terminais.||
 |BIBLIOGRAFIA BÁSICA:<br>CERVELIN, Severino; CAVALIN, Geraldo.<br>**Instalações  elétricas  prediais**.  22.  ed.<br>São Paulo: Érica, 2009.<br>CREDER, Helio.**Instalações elétricas**.15.<br>ed. Rio de Janeiro: LTC, 2009.<br>CAVALIN, G., CERVELIN, S.**Instalações**<br>**elétricas  prediais  –  **teoria e prática.<br>Curitiba: Base Editorial, 2010.|BIBLIOGRAFIA COMPLEMENTAR:<br>FILHO, Silvério Visacro.<br> **Aterramentos**<br>**elétricos –**conceitos básicos, técnicas de<br>medição e instrumentação, filosofia de<br>aterramento. 1. ed. Rio de Janeiro:<br>Interciência, 2002.<br>GUERRINI, Délio Pereira.<br> **Iluminação:**<br>teoria  e  projeto.  2.  ed.  São  Paulo:  Érica,<br>2005.|
@@ -426,7 +426,7 @@ UNIDADE DIDÁTICA: Gestão de Produção
 
 EMENTA:  Introdução  à  gestão  de  produção;  Sistemas  de  Produção;  Previsão  de Demanda; Capacidade, Localização e Arranjo Físico das Instalações; Administração de Tecnologias; Métodos e Organização do Trabalho; Acompanhamento e Melhoramento da Produção; Controle e Qualidade; Logística; Novos Paradigmas; Planejamento, Controle e Programação da Produção; Jogos de Produção; Introdução à filosofia _Just-in-Time_ .
 
-|UNIDADE DIDÁTICA: Gestão de Produção|UNIDADE DIDÁTICA: Gestão de Produção|
+|UNIDADE DIDÁTICA: Gestão de Produção||
 |---|---|
 |EMENTA:  Introdução  à  gestão  de  produção;  Sistemas  de  Produção;  Previsão  de<br>Demanda; Capacidade, Localização e Arranjo Físico das Instalações; Administração de<br>Tecnologias; Métodos e Organização do Trabalho; Acompanhamento e Melhoramento da<br>Produção; Controle e Qualidade; Logística; Novos Paradigmas; Planejamento, Controle e<br>Programação da Produção; Jogos de Produção; Introdução à filosofia_Just-in-Time_.||
 |BIBLIOGRAFIA BÁSICA:<br>NIGEL  SLACK,  STUART  CHAMBERS  E<br>ROBERT JOHNSTON.**Administração da**<br>**produção.**São Paulo: Atlas, 2009.<br>MARTINS, PETRÔNIO GARCIA E<br>LAUGENI, FERNANDO P.**Administração**<br>**da produção,**São Paulo: Saraiva, 2005.<br>RICHARD B. CHASE, NICHOLAS J.<br>AQUILANO, F. ROBERT JACOBS.<br>**Administração da produção e operações**<br>**para vantagens competitivas.**11. ed. São<br>Paulo: Mcgraw Hill, 2006.|BIBLIOGRAFIA COMPLEMENTAR:<br>BALLOU, Ronald H.**Logística empresarial.**<br>São Paulo: Atlas, 1995.<br>TUBINO,<br>Dálvio<br>F.<br> **Manual**<br>**de**<br>**planejamento  e  controle  da  produção.**<br>São Paulo: Atlas, 2007.<br>RITZMAN, L. P., KRAJEWSKI, L. J.<br>**Administração de produção e operações.**<br>São Paulo: Pearson Prentice Hall, 2004.|
@@ -435,7 +435,7 @@ UNIDADE DIDÁTICA: Geração, Transmissão e Distribuição de Energia Elétrica
 
 EMENTA: Fontes alternativas de energia: termoelétrica; hidroelétrica, solar, eólica, mares, nuclear, hidrogênio; Biomossa; Transmissão cc e ca; Subestação.
 
-|UNIDADE DIDÁTICA: Geração, Transmissão e Distribuição de Energia Elétrica|UNIDADE DIDÁTICA: Geração, Transmissão e Distribuição de Energia Elétrica|
+|UNIDADE DIDÁTICA: Geração, Transmissão e Distribuição de Energia Elétrica||
 |---|---|
 |EMENTA: Fontes alternativas de energia: termoelétrica; hidroelétrica, solar, eólica, mares,<br>nuclear, hidrogênio; Biomossa; Transmissão cc e ca; Subestação.||
 |BIBLIOGRAFIA BÁSICA:<br>PRAZERES, Romildo Alves dos.**Redes de**<br>**distribuição de energia elétrica e**<br>**subestações.**Curitiba: Base Editorial,<br>2010.<br>TOLMASQUIM, Maurício Tiomno.**Fontes**<br>**renováveis de energia no Brasil**. 1. ed.<br>Rio de Janeiro: Interciência, 2003.<br>BRANCO, Samuel Murgel.**Energia e meio**<br>**ambiente.**2.  ed.  São  Paulo:  Moderna,<br>2004.|BIBLIOGRAFIA COMPLEMENTAR:<br>MEDEIROS,<br>Edmundo<br>Emerson.<br>**Infraestrutura energética:**planejamento e<br>regulação  do  setor  elétrico.  1.  ed.  São<br>Paulo: MP, 2009.<br>VASCONCELLOS, Gilberto Felisberto.<br>**Biomassa:**a eterna energia do futuro. 1.<br>ed. São Paulo: Senac, 2000.<br>WALISIEWICZ, Marek.**Energia alternativa:**<br>solar,<br>eólica,<br>hidrelétrica<br>e<br>de<br>biocombustíveis. 1. ed. São Paulo:<br>Publifolha, 2008.|
@@ -458,7 +458,7 @@ EMENTA: Fluxo de potência de uma linha de transmissão; Capacidade de transmiss
 
 KAGAN,  N.;  ROBBA,  E.J. **Introdução  a Infraestrutura energética:** planejamento e **sistemas elétricos de potência:** regulação  do  setor  elétrico.  1.  ed.  São componentes simétricas. 2. ed. São Paulo: Paulo: MP, 2009. Edgard Blücher, 2000. STEVENSON  Jr.,  W.  W. **Elementos  de** KAGAN, N.; Oliveira, C. C. B.; Robba, E. J. **análise de sistemas de potência.** 2. ed. **Introdução aos sistemas de distribuição** São Paulo: Mcgraw-Hill, 1996. **de  energia  elétrica** .  1.  ed.  São  Paulo: Edgard Blucher, 2005. PRAZERES, Romildo Alves dos. **Redes de distribuição de energia elétrica e** CAMARGO, C. Celso de Brasil. **subestações.** Curitiba: Base Editorial, 2010. **Transmissão de energia elétrica.** 4. ed. Florianópolis: UFSC, 2009.
 
-|UNIDADE DIDÁTICA: Acionamentos Elétricos|UNIDADE DIDÁTICA: Acionamentos Elétricos|
+|UNIDADE DIDÁTICA: Acionamentos Elétricos||
 |---|---|
 |EMENTA: Acionamento elétrico de máquinas; Partida direta; Partida estrela-triângulo;<br>Diagramas elétricos de sistemas de acionamento; Normas de segurança.||
 |BIBLIOGRAFIA BÁSICA:<br>LELUDAK, Jorge Assade.**Acionamentos**<br>**eletromagnéticos.**Curitiba: Base Editorial,<br>2010.<br>FRANCHI,  Claiton  Moro.  **Acionamentos**<br>**elétricos**. 4. ed. São Paulo: Érica, 2009.<br>BIM, Edson.<br> **Máquinas  elétricas  e**<br>**acionamentos.**1. ed. Campus, 2009.|BIBLIOGRAFIA COMPLEMENTAR:<br>FRANCHI,  Claiton  Moro.  **Inversores  de**<br>**freqüência:**teoria e aplicações. 1. ed. São<br>Paulo: Érica, 2009.<br>FITZGERALD, A. E.; KINGSLEY, Charles<br>Jr.; UMANS, Stephen D.**Máquinas**<br>**elétricas**. 6. ed. Bookman, 2006.<br>CORAIOLA, José Alberto. MACIEL,<br>Ednilson Soares,**Máquinas elétricas.**1. ed.<br>Curitiba: Base, 2010.|
@@ -482,7 +482,7 @@ UNIDADE DIDÁTICA: Conservação de Recursos Naturais
 
 EMENTA: Meio Ambiente natural e humano, integração e interdependência; Recursos naturais renováveis e não renováveis (consumo, degradação e ação antropogênica); Definições, conceitos, temas relacionados ao meio ambiente e interdisciplinaridade; Biodiversidade,  Desenvolvimento  Sustentável  e  Sustentabilidade; Impactos sócio-ambientais; Política, Legislação e Gestão Ambiental na empresa, no Brasil e no mundo.
 
-|UNIDADE DIDÁTICA: Conservação de Recursos Naturais|UNIDADE DIDÁTICA: Conservação de Recursos Naturais|
+|UNIDADE DIDÁTICA: Conservação de Recursos Naturais||
 |---|---|
 |EMENTA: Meio Ambiente natural e humano, integração e interdependência; Recursos<br>naturais renováveis e não renováveis (consumo, degradação e ação antropogênica);<br>Definições,<br>conceitos,<br>temas<br>relacionados<br>ao<br>meio<br>ambiente<br>e<br>interdisciplinaridade; Biodiversidade,  Desenvolvimento  Sustentável  e  Sustentabilidade;<br>Impactos sócio-ambientais; Política, Legislação e Gestão Ambiental na empresa, no Brasil<br>e no mundo.||
 |BIBLIOGRAFIA BÁSICA:<br>VERNIER, Jacques; APPENZELLER,<br>Marina;  tradução  de.  **O  meio  ambiente**.<br>Campinas: Papirus, 2005.<br>TOLMASQUIM, Mauricio Tiomno.**Água na**<br>**indústria:**fontes renováveis de energia no<br>Brasil. São Paulo: Interciência, 2006.<br>BRANCO, Samuel Murgel.**Energia e meio**<br>**ambiente.**2.  ed.  São  Paulo:  Moderna,<br>2004.|BIBLIOGRAFIA COMPLEMENTAR:<br>DREW, David.<br> **Processos  interativos**<br>**homem - meio ambiente**. Rio de Janeiro:<br>Bertrand Brasil, 2005.<br>TOLMASQUIM, Maurício Tiomno.**Fontes**<br>**renováveis de energia no Brasil**. 1. ed.<br>Rio de Janeiro: Interciência, 2003.<br>WALISIEWICZ, Marek.**Energia alternativa:**<br>solar,<br>eólica,<br>hidrelétrica<br>e<br>de<br>biocombustíveis. 1. ed. São Paulo:<br>Publifolha, 2008.|
@@ -503,14 +503,14 @@ UNIDADE DIDÁTICA: Elementos de Automação
 
 EMENTA: Sistemas hidráulicos e pneumáticos; Sistemas eletropneumáticos; Atuadores pneumáticos; Válvulas eletropneumáticas. Controlador Lógico Programável.
 
-|UNIDADE DIDÁTICA: Elementos de Automação|UNIDADE DIDÁTICA: Elementos de Automação|
+|UNIDADE DIDÁTICA: Elementos de Automação||
 |---|---|
 |EMENTA: Sistemas hidráulicos e pneumáticos; Sistemas eletropneumáticos; Atuadores<br>pneumáticos; Válvulas eletropneumáticas. Controlador Lógico Programável.||
 |BIBLIOGRAFIA BÁSICA:<br>LELUDAK, Jorge Assade.**Acionamentos**<br>**eletropneumáticos.**<br> Curitiba:<br>Base<br>Editorial, 2010.<br>SANTOS, Winderson Eugenio dos.<br>**Controladores  lógicos  programáveis**<br>**(CLPs).**Curitiba: Base Editorial, 2010.<br>STEWART, Harry L.<br> **Pneumática  e**<br>**hidráulica.**3. ed. São Paulo: Hemus, 2002.<br>NATALE,<br>Fernando.<br> **Automação**<br>**industrial.**2. ed. São Paulo: Érica, 2000.|BIBLIOGRAFIA COMPLEMENTAR:<br>FRANCHI,  Claiton  Moro;  Camargo,  Valter<br>Luis<br>A.<br> **Controladores**<br>**lógicos**<br>**programáveis**.  2.  ed.  São  Paulo:  Érica,<br>2009.<br>PINTO, J. R. Caldas.<br> **Técnicas  de**<br>**automação.**3. ed. Editora ETEP, 2010.<br>BONACORSO, Nelson Gauze; NOLL.<br>**Automação eletropneumática.**1. ed. São<br>Paulo: Érica, 1997.|
 
 UNIDADE DIDÁTICA: Empreendedorismo
 
-|UNIDADE DIDÁTICA: Empreendedorismo|UNIDADE DIDÁTICA: Empreendedorismo|
+|UNIDADE DIDÁTICA: Empreendedorismo||
 |---|---|
 |EMENTA: Empreendedorismo e o empreendedor; Ética no empreendedorismo; Metas e<br>objetivos  na  ação  empreendedora;  Liderança;  Perfil  do  empreendedor;  Contratos  de<br>Trabalho;  Incubadoras  Tecnológicas;  Análise  Organizacional;  Construção  da  rede  de<br>relações; Elaboração e apresentação de um plano de negócios.||
 |BIBLIOGRAFIA BÁSICA:<br>GAUTHIER, Fernando Alvaro Ostuni;<br>MACEDO, Marcelo; JUNIOR, Silvestre<br>Labiak.<br> **Empreendedorismo.**<br> Curitiba:<br>Editora do Livro Técnico, 2010.<br>DORNELAS, J. C. A.**Empreendedorismo:**<br>transformando idéias em negócios. Rio de<br>Janeiro: Elsevier, 2005.<br>CHIAVENATO, I.<br> **Empreendedorismo:**<br>dando  asas  ao  espírito  empreendedor:|BIBLIOGRAFIA COMPLEMENTAR:<br>BARON,  R.  A.  **Empreendedorismo:  **uma<br>visão do processo. São Paulo: Thompson<br>2007.<br>CHER, R.**Empreendedorismo na veia:**um<br>aprendizado constante. Rio de Janeiro:<br>Elsevier, 2008.<br>HISRICH, R. D.; PETERS, M. P.;<br>SHEPHERD,  D.  A..  **Empreendedorismo**.<br>Porto Alegre: Bookman, 2009.|

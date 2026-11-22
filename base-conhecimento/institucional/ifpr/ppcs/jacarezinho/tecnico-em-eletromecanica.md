@@ -1539,7 +1539,7 @@ KINDERMANN, Geraldo e Jorge Mário Campagnolo. **Aterramento Elétrico** . Porto
 
 **6.1 Itinerário formativo das unidades curriculares do Núcleo Técnico com ementas:**
 
-|**Técnico em Eletromecânica**|**Técnico em Eletromecânica**||
+|**Técnico em Eletromecânica**|||
 |---|---|---|
 |**Ano**|**Unidades Curriculares Técnicas**|**Carga Horária**<br>**Anual[horas]**|
 ||||

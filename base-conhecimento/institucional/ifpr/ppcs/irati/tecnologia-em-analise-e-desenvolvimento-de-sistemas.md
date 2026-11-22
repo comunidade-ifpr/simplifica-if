@@ -247,7 +247,7 @@ apresentando um crescimento sólido diante das adversidades econômicas que o pa
 
 **Tabela 1:** Produto Interno Bruto Per Capita do Paraná e Brasil 2002-2019
 
-|PRODUTO INTERNO BRUTO_PER CAPITA_DO PARANÁ E BRASIL - 2002-2019|PRODUTO INTERNO BRUTO_PER CAPITA_DO PARANÁ E BRASIL - 2002-2019|PRODUTO INTERNO BRUTO_PER CAPITA_DO PARANÁ E BRASIL - 2002-2019|PRODUTO INTERNO BRUTO_PER CAPITA_DO PARANÁ E BRASIL - 2002-2019|PRODUTO INTERNO BRUTO_PER CAPITA_DO PARANÁ E BRASIL - 2002-2019|
+|PRODUTO INTERNO BRUTO_PER CAPITA_DO PARANÁ E BRASIL - 2002-2019|||||
 |---|---|---|---|---|
 |ANOS||PRODUTO INTERNO BRUTO_PER CAPITA_|||
 |||Unidade|Paraná|Brasil|
@@ -3514,7 +3514,7 @@ III – Os estudantes com ingresso no Curso, por transferência, deverão compro
 
 **ART. 10** São considerados grupos de atividades complementares, bem como sua carga horária individual por atividade e respectivas pontuações:
 
-|**_Grupo 1: atividades relacionadas a ensino, pesquisa e inovação_**<br>**_(Mínimo de 45 horas)_**|**_Grupo 1: atividades relacionadas a ensino, pesquisa e inovação_**<br>**_(Mínimo de 45 horas)_**|**_Grupo 1: atividades relacionadas a ensino, pesquisa e inovação_**<br>**_(Mínimo de 45 horas)_**|
+|**_Grupo 1: atividades relacionadas a ensino, pesquisa e inovação_**<br>**_(Mínimo de 45 horas)_**|||
 |---|---|---|
 |**_Item_**|**_Horas_**|**_Limite_**<br>**_máximo (em_**<br>**_horas)_**|
 |Participação em curso de língua estrangeira,<br>realizado durante o período da graduação.|0,2 horas por hora de<br>atividade.|30|
@@ -3531,7 +3531,7 @@ III – Os estudantes com ingresso no Curso, por transferência, deverão compro
 |---|---|---|
 |Disciplina de nível superior da grade curricular do<br>curso (eletiva), além da carga horária obrigatória de<br>disciplinas eletivas, ou cursada em outro curso de<br>nível superior.|Carga horária da<br>atividade|80|
 
-|**_Grupo 2: atividades de prática profissional e atividades de caráter sociocomunitário_**<br>**_(Mínimo de 45 horas)_**|**_Grupo 2: atividades de prática profissional e atividades de caráter sociocomunitário_**<br>**_(Mínimo de 45 horas)_**|**_Grupo 2: atividades de prática profissional e atividades de caráter sociocomunitário_**<br>**_(Mínimo de 45 horas)_**|
+|**_Grupo 2: atividades de prática profissional e atividades de caráter sociocomunitário_**<br>**_(Mínimo de 45 horas)_**|||
 |---|---|---|
 |**_Item_**|**_Horas_**|**_Limite_**<br>**_máximo_**<br>**_(em horas)_**|
 |Realização de estágio supervisionado<br>não obrigatório, regulamentado pela lei<br>11.788/2008, realizado na área.|0,5 por hora comprovada|120|
@@ -3543,7 +3543,7 @@ III – Os estudantes com ingresso no Curso, por transferência, deverão compro
 
 **ART. 11** São consideradas atividades de extensão, bem como sua carga horária individual por atividade e respectivas pontuações:
 
-|**_Atividades relacionadas à extensão_**<br>**_(Mínimo de 210 horas)_**|**_Atividades relacionadas à extensão_**<br>**_(Mínimo de 210 horas)_**|**_Atividades relacionadas à extensão_**<br>**_(Mínimo de 210 horas)_**|
+|**_Atividades relacionadas à extensão_**<br>**_(Mínimo de 210 horas)_**|||
 |---|---|---|
 |**_Item_**|**_Horas_**|**_Limite_**<br>**_máximo_**<br>**_(em horas)_**|
 |Participação em Projeto de Extensão cadastrado no<br>COPE de outras áreas.|Carga horária da<br>atividade|<br>160|

@@ -638,7 +638,7 @@ Aproveitando a oportunidade de alterações, o Colegiado do Curso resolveu reali
 
 Quadro I. Carga horária dos grupos I, II e III, PCC, Estágio Supervisionado e carga horária de extensão conforme a Resoluções CNE/CP nº 02/2019
 
-|**NÚCLEOS - CARGA HORÁRIA (horas relógio)**|**NÚCLEOS - CARGA HORÁRIA (horas relógio)**|**NÚCLEOS - CARGA HORÁRIA (horas relógio)**|**NÚCLEOS - CARGA HORÁRIA (horas relógio)**||
+|**NÚCLEOS - CARGA HORÁRIA (horas relógio)**|||||
 |---|---|---|---|---|
 ||**PCC**|**Extensão**|**Teórico/prático**|**Total**|
 |Grupo I|136|133|573|842|
@@ -743,7 +743,7 @@ deverão cursá-las novamente, podendo também solicitar matrícula em component
 
 Quadro IV: Matriz curricular para um (a) estudante do Curso de Licenciatura em Química do IFPR _campus_ Jacarezinho, com a carga horária total de cada componente (CH), a carga horária destinada ao conteúdo teórico e prático (T/P) das disciplinas, as práticas como componente curricular (PCC) e o núcleo na qual o componente de enquadra conforme Resolução CNE/CP nº 2/2019.
 
-|**1º SEMESTRE**|**1º SEMESTRE**|||||
+|**1º SEMESTRE**||||||
 |---|---|---|---|---|---|
 |**Componente curricular**|**CH**|**CT/P**|**PCC**|**CHE**|**Grupo**|
 |Fundamentos da Química e da Matemática|33|23|-|10|II|
@@ -1461,7 +1461,7 @@ AUSUBEL, D. P. **A aprendizagem significativa: a teoria de David Ausubel** . Sã
 
 VYGOTSKY, L. S. **A formação social da mente.** 2.ed. SP: Martins Fontes, 2007.
 
-|**COMPONENTE CURRICULAR: POLÍTICAS EDUCACIONAIS**|**COMPONENTE CURRICULAR: POLÍTICAS EDUCACIONAIS**|**COMPONENTE CURRICULAR: POLÍTICAS EDUCACIONAIS**|
+|**COMPONENTE CURRICULAR: POLÍTICAS EDUCACIONAIS**|||
 |---|---|---|
 |**Carga Horária Total: 67 HORAS RELÓGIO (80 horas-aula)**|**CT/P:**24 h||
 |**Aulas por Semana: 4 aulas**|**PCC:**31 h|**CHE:**12 horas|
@@ -2250,7 +2250,7 @@ ARAUJO, N.R.S.; BUENO, E.A.S.; LABURÚ, C.E. Seleção **de Experimentos de Quí
 
 ATKINS, P. **Princípios de química** . 3 ed. LCT Rio de Janeiro, 2003.
 
-|**COMPONENTE CURRICULAR: TRABALHO DE CONCLUSÃO DE CURSO III**|**COMPONENTE CURRICULAR: TRABALHO DE CONCLUSÃO DE CURSO III**|**COMPONENTE CURRICULAR: TRABALHO DE CONCLUSÃO DE CURSO III**|
+|**COMPONENTE CURRICULAR: TRABALHO DE CONCLUSÃO DE CURSO III**|||
 |---|---|---|
 |**Carga Horária Total: 25 HORAS RELÓGIO (30 horas-aula)**|**CT/P:**25 h||
 |**Aulas por Semana: 1,5 aulas**|**PCC:**-|**CHE:**-|
@@ -2416,7 +2416,7 @@ BROWN, T. L. et al. **Química: A Ciência Central** . 9. ed. São Paulo: Pearso
 
 ## **COMPONENTE CURRICULAR:  QUÍMICA EXPERIMENTAL III**
 
-|**COMPONENTE CURRICULAR:  QUÍMICA EXPERIMENTAL III**|**COMPONENTE CURRICULAR:  QUÍMICA EXPERIMENTAL III**|**COMPONENTE CURRICULAR:  QUÍMICA EXPERIMENTAL III**|
+|**COMPONENTE CURRICULAR:  QUÍMICA EXPERIMENTAL III**|||
 |---|---|---|
 |**Carga Horária Total: 33 HORAS RELÓGIO (40 horas-aula)**|**CT/P:**33 h||
 |**Aulas por Semana: 4 aulas**|**PCC: -**|**CHE: -**|
@@ -2440,7 +2440,7 @@ COLLINS, C. H.; BRAGA, G. L.; BONATO, P. Fundamentos de cromatografia. 1ª Ed. C
 
 ## **COMPONENTE CURRICULAR: QUÍMICA DE ALIMENTOS**
 
-|**COMPONENTE CURRICULAR: QUÍMICA DE ALIMENTOS**|**COMPONENTE CURRICULAR: QUÍMICA DE ALIMENTOS**|**COMPONENTE CURRICULAR: QUÍMICA DE ALIMENTOS**|
+|**COMPONENTE CURRICULAR: QUÍMICA DE ALIMENTOS**|||
 |---|---|---|
 |**Carga Horária Total: 33 HORAS RELÓGIO (40 horas-aula)**|**CT/P: 28 h**||
 |**Aulas por Semana: 4 aulas**|**PCC: -**|**CHE: 5 horas**|
@@ -2494,7 +2494,7 @@ LAKATOS, Eva Maria; MARCONI, Marina de Andrade. **Metodologia do trabalho**
 
 ABAGNANNO, Nicola. **Dicionário de filosofia.** Tradução de Alfredo Bosi. São Paulo: Martins Fontes, 1998.
 
-|**COMPONENTE CURRICULAR: ESTÁGIO SUPERVISIONADO IV**|**COMPONENTE CURRICULAR: ESTÁGIO SUPERVISIONADO IV**|**COMPONENTE CURRICULAR: ESTÁGIO SUPERVISIONADO IV**|
+|**COMPONENTE CURRICULAR: ESTÁGIO SUPERVISIONADO IV**|||
 |---|---|---|
 |**Carga Horária Total: 100 HORAS RELÓGIO (120 horas-aula)**|**CT/P:**100 h||
 |**Aulas por Semana: 6 aulas**|**PCC: -**|**CHE: -**|
@@ -2537,7 +2537,7 @@ MORAN, J. M. **Leituras dos meios de comunicação** . São Paulo: Pancast, 1993
 
 KENSKI, V. M. **Tecnologias e ensino presencial e a distância** . 9ª Ed. Campinas: Papirus, 2013.
 
-|**COMPONENTE CURRICULAR: HISTÓRIA DA QUÍMICA**|**COMPONENTE CURRICULAR: HISTÓRIA DA QUÍMICA**|**COMPONENTE CURRICULAR: HISTÓRIA DA QUÍMICA**|
+|**COMPONENTE CURRICULAR: HISTÓRIA DA QUÍMICA**|||
 |---|---|---|
 |**Carga Horária Total: 33 HORAS RELÓGIO (40 horas-aula)**|**CT/P:**33 h||
 |**Aulas por Semana: 2 aulas**|**PCC: -**|**CHE: -**|
@@ -2618,7 +2618,7 @@ GALVEZ, C; ORLANDI, E.; OTONI, P. O texto: leitura e escrita. Campinas: Pontes, 
 
 **COMPONENTE CURRICULAR: QUÍMICA TECNOLÓGICA**
 
-|**Optativa II**|**Optativa II**|**Optativa II**|
+|**Optativa II**|||
 |---|---|---|
 |**COMPONENTE CURRICULAR: QUÍMICA TECNOLÓGICA**|||
 |**Carga Horária Total: 33 HORAS RELÓGIO (40 horas-aula)**|**CT/P:**33 h||
@@ -2698,7 +2698,7 @@ LANDESBERG, J.M; Bettelheim, F.A. Laboratory Experiments for General, Organic, a
 
 LEHNINGER, A.L.; NELSON, D.L.; COX, M.M. Princípios de Bioquímica. Porto Alegre: Artmed, 2011.
 
-|**COMPONENTE CURRICULAR: ASTRONOMIA PARA O ENSINO DE CIÊNCIAS**|**COMPONENTE CURRICULAR: ASTRONOMIA PARA O ENSINO DE CIÊNCIAS**|**COMPONENTE CURRICULAR: ASTRONOMIA PARA O ENSINO DE CIÊNCIAS**|
+|**COMPONENTE CURRICULAR: ASTRONOMIA PARA O ENSINO DE CIÊNCIAS**|||
 |---|---|---|
 |**Carga Horária Total: 33 HORAS RELÓGIO (40 horas-aula)**|**CT/P:**33 h||
 |**Aulas por Semana: 2 aulas**|**PCC: -**|**CHE:**-|
@@ -2731,7 +2731,7 @@ BROWN, T. L. et al. **Química: A Ciência Central** . 9. ed. São Paulo: Pearso
 
 ## **COMPONENTE CURRICULAR: TECNOLOGIA DAS FERMENTAÇÕES**
 
-|**COMPONENTE CURRICULAR: TECNOLOGIA DAS FERMENTAÇÕES**|**COMPONENTE CURRICULAR: TECNOLOGIA DAS FERMENTAÇÕES**|**COMPONENTE CURRICULAR: TECNOLOGIA DAS FERMENTAÇÕES**|
+|**COMPONENTE CURRICULAR: TECNOLOGIA DAS FERMENTAÇÕES**|||
 |---|---|---|
 |**Carga Horária Total: 33 HORAS RELÓGIO (40 horas-aula)**|**CT/P:**33 h||
 |**Aulas por Semana: 2 aulas**|**PCC:**|**CHE: -**|
@@ -4389,7 +4389,7 @@ Discente Orientando
 
 Prezado (a) Avaliador (a),
 
-|Temos a imensa satisfação de convidar V. S.apara participar como membroTitular/Suplenteda|Temos a imensa satisfação de convidar V. S.apara participar como membroTitular/Suplenteda|
+|Temos a imensa satisfação de convidar V. S.apara participar como membroTitular/Suplenteda||
 |---|---|
 |Banca<br>Examinadora<br>da<br>Defesa<br>de<br>TCC<br>do|discente|
 |___________________________________________________,<br>orientado<br>pelo|Prof.<br>(a)|
@@ -4573,7 +4573,7 @@ _**OBS: No mínimo 20% (40 horas) das atividades descritas em qualquer item deve
 
 ## ANEXO 1 - FICHA PARA ATIVIDADES CURRICULARES COMPLEMENTARES*
 
-|Nome:<br>Semestre:<br>Turma:|Nome:<br>Semestre:<br>Turma:|||||
+|Nome:<br>Semestre:<br>Turma:||||||
 |---|---|---|---|---|---|
 |**Nº**|**Nome da Atividade**<br>**Complementar**|**IFPR**<br>**(Sim/Não)**|**Núcleo****|**Carga**<br>**horária**|**Carga horária**<br>**validada*****|
 |||||||

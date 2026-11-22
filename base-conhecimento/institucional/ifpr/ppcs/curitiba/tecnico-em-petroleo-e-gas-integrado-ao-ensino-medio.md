@@ -328,7 +328,7 @@ INSTITUTOFEDERAL PARANA
 
 ## **3.8.1 - Pessoas envolvidas – Docentes:**
 
-|**3.8.1 - Pessoas envolvidas – Docentes:**|**3.8.1 - Pessoas envolvidas – Docentes:**|**3.8.1 - Pessoas envolvidas – Docentes:**|**3.8.1 - Pessoas envolvidas – Docentes:**|**3.8.1 - Pessoas envolvidas – Docentes:**|
+|**3.8.1 - Pessoas envolvidas – Docentes:**|||||
 |---|---|---|---|---|
 |**Nome Docente**<br>**Eixo**<br>**Tecnológico/Área**<br>**Titulação Graduação**<br>**Titulação Máxima**<br>**Regime**<br>**Trabalho**|||||
 |ADRIANO WILLIAN DA SILVA<br>Ciências<br>Exatas e<br>daTerra<br>Física<br>Doutorado em Física<br>DE|||||
@@ -356,7 +356,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||||
 |---|---|---|---|---|
 |Li.|||||
 |FLAVIA DUARTE FERRAZ SAMPAIO<br>Ciências<br>Biológicas<br>Graduação em<br>Ciências<br>Biológicas.<br>Mestrado em Ciências<br>Biológicas<br>DE|||||
@@ -384,7 +384,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||||
 |---|---|---|---|---|
 |a|||||
 |ROSA MARIKO KAETSU<br>Ciências<br>Exatas e<br>da Terra<br>Graduaçao em<br>Ciências com<br>Habilitação em<br>Quimica<br>Especialista<br>DE|||||
@@ -403,7 +403,7 @@ INSTITUTOFEDERAL PARANA
 
 ## **3.8.2 - Pessoas envolvidas – Técnicos:**
 
-|**3.8.2 - Pessoas envolvidas – Técnicos:**|**3.8.2 - Pessoas envolvidas – Técnicos:**|**3.8.2 - Pessoas envolvidas – Técnicos:**|
+|**3.8.2 - Pessoas envolvidas – Técnicos:**|||
 |---|---|---|
 |NOME<br>TITULAÇÃO<br>GRADUAÇÃO|||
 |ADILSON CARVALHO<br>Especialização<br>Administração|||
@@ -419,7 +419,7 @@ INSTITUTOFEDERAL PARANA
 
 MinisteriodaEducacao InstitutoFederaldoParana
 
-|DANIELLE PRISCILA GAMBALLI SCHULTZ<br>Graduação<br>Gestãopública<br>1<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|DANIELLE PRISCILA GAMBALLI SCHULTZ<br>Graduação<br>Gestãopública<br>1<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|DANIELLE PRISCILA GAMBALLI SCHULTZ<br>Graduação<br>Gestãopública<br>1<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|DANIELLE PRISCILA GAMBALLI SCHULTZ<br>Graduação<br>Gestãopública<br>1<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||
 |---|---|---|
 |DIRCÉIA ROMERO CALIXTO<br>Graduanda<br>Terapia ocupacional|||
 |DOUGLAS IVO D ESPINDOLA DE OLIVEIRA<br>Graduação<br>Administração|||
@@ -465,7 +465,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|Produção e Transporte do Petróleo<br>2<br>Engenharia de Petróleo,<br>Química ou áreas afins|Produção e Transporte do Petróleo<br>2<br>Engenharia de Petróleo,<br>Química ou áreas afins|Produção e Transporte do Petróleo<br>2<br>Engenharia de Petróleo,<br>Química ou áreas afins|
+|Produção e Transporte do Petróleo<br>2<br>Engenharia de Petróleo,<br>Química ou áreas afins|||
 |---|---|---|
 |Regulação e Legislação do Petróleo<br>2<br>Engenharia de Petróleo,<br>Química ou áreas afins|||
 |Operações Unitárias<br>2<br>Engenharia de Petróleo,<br>Química ou áreas afins|||
@@ -511,7 +511,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**COMPONENTES**<br>**CURRICULARES**<br>**CARGA HORÁRIA**<br>**TOTAL**<br>**(hora-aula)**<br>**TOTAL**<br>**(horas-relógio)**<br>**01***<br>**02***|**COMPONENTES**<br>**CURRICULARES**<br>**CARGA HORÁRIA**<br>**TOTAL**<br>**(hora-aula)**<br>**TOTAL**<br>**(horas-relógio)**<br>**01***<br>**02***|**COMPONENTES**<br>**CURRICULARES**<br>**CARGA HORÁRIA**<br>**TOTAL**<br>**(hora-aula)**<br>**TOTAL**<br>**(horas-relógio)**<br>**01***<br>**02***|**COMPONENTES**<br>**CURRICULARES**<br>**CARGA HORÁRIA**<br>**TOTAL**<br>**(hora-aula)**<br>**TOTAL**<br>**(horas-relógio)**<br>**01***<br>**02***|
+|**COMPONENTES**<br>**CURRICULARES**<br>**CARGA HORÁRIA**<br>**TOTAL**<br>**(hora-aula)**<br>**TOTAL**<br>**(horas-relógio)**<br>**01***<br>**02***||||
 |---|---|---|---|
 |**1º ANO**||||
 |Língua Portuguesa I<br>03<br>120<br>100||||
@@ -562,7 +562,7 @@ Ministerio da Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana||||
 |---|---|---|---|
 |Equipamentos Elétricos<br>02<br>80<br>67||||
 |**TOTAL**<br>**36**<br>**1440**<br>**1204**||||
@@ -804,7 +804,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico:**ProduçãoIndustrial|
 |**Componente Curricular**: Manutenção Industrial||
@@ -855,7 +855,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico:**ProduçãoIndustrial|
 |**Componente Curricular**: Espectrometria||
@@ -876,7 +876,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico:**ProduçãoIndustrial|
 |**Componente Curricular**: Tecnologia dos materiais||
@@ -1028,7 +1028,7 @@ Ministerio da Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico:**Produção Industrial|
 |**Componente Curricular**: Tubulações||
@@ -1861,7 +1861,7 @@ MARCHI, Lia; SAENGER, Juliana;  CORRÊA,  Roberto  (Org.). **Tocadores** : homem
 
 MARIZ. Vasco. **História da Música no Brasil** . Rio de Janeiro: Nova Fronteira, 2005.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico: Produção Industrial**|
 |**Componente Curricular**: ArteII||
@@ -1951,7 +1951,7 @@ ARGAN, Giulio Carlo. **Arte moderna** . São Paulo: Companhia das Letras, 1992.
 
 Reflexões em/sobre a língua inglesa com foco no Letramento Crítico. A língua inglesa como discurso. Representações sobre a língua inglesa em diferentes contextos sócio-discursivos. Perspectivas e conflitos na construção de sentidos em língua inglesa. Aspectos culturais e estruturais em língua inglesa com base em contextos discursivos diversos. Leitura de produções artísticas (literatura, cinema e outras linguagens) de/em língua inglesa.
 
-|Reflexões em/sobre a língua inglesa com foco no Letramento Crítico. A língua inglesa como discurso.<br>Representações sobre a língua inglesa em diferentes contextos sócio-discursivos. Perspectivas e<br>conflitos na construção de sentidos em língua inglesa. Aspectos culturais e estruturais em língua<br>inglesa com base em contextos discursivos diversos. Leitura de produções artísticas (literatura,<br>cinema e outras linguagens) de/em língua inglesa.|Reflexões em/sobre a língua inglesa com foco no Letramento Crítico. A língua inglesa como discurso.<br>Representações sobre a língua inglesa em diferentes contextos sócio-discursivos. Perspectivas e<br>conflitos na construção de sentidos em língua inglesa. Aspectos culturais e estruturais em língua<br>inglesa com base em contextos discursivos diversos. Leitura de produções artísticas (literatura,<br>cinema e outras linguagens) de/em língua inglesa.|
+|Reflexões em/sobre a língua inglesa com foco no Letramento Crítico. A língua inglesa como discurso.<br>Representações sobre a língua inglesa em diferentes contextos sócio-discursivos. Perspectivas e<br>conflitos na construção de sentidos em língua inglesa. Aspectos culturais e estruturais em língua<br>inglesa com base em contextos discursivos diversos. Leitura de produções artísticas (literatura,<br>cinema e outras linguagens) de/em língua inglesa.||
 |---|---|
 |Temas locais e globais em língua inglesa específicos da série, abordando vocabulário e estruturas<br>linguísticas pertinentes: jogos e competição; tecnologia e cidadania; alimentação e saúde; dinheiro e<br>educação financeira; Direitos Humanos.<br>Leitura e expressão (oral e escrita) em língua inglesa.||
 |**Bibliografia Básica:**<br>AMOS, Eduardo; PRESCHER, Elisabeth.**The Richmond Simplified Grammar of English.**<br>Richmond Publishing, 2008.<br>COLLINS.**Dicionario Prático Collins Inglês-Portugues-Inglês.**São Paulo: DISAL, 2004.<br>DIAS, Reinildes; JUCÁ, Leina; FARIA, Raquel.**PRIME 3 - student's book with audio CD.**Macmillan<br>ELT, 2010.<br>**OSDE Booklet.**Centre for the Study of Social and Global Justice. Nottingham University.<br>Nottingham, England. Disponívelemwww.osdemethodology.org.uk.<br>SAMPEDRO R.; HILLYARD, S.**Global Issues.**Oxford University Press, 2010.||
@@ -2080,7 +2080,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico: Produção Industrial**|
 |**Componente Curricular**: Química I||
@@ -2104,7 +2104,7 @@ Ministerio da Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico: Produção Industrial**|
 |**Componente Curricular**: Química II||
@@ -2128,7 +2128,7 @@ INSTITUTOFEDERAL PARANA
 
 Ministerioda Educacao InstitutoFederaldoParana
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso: Petróleo e Gás**|**Eixo Tecnológico: Produção Industrial**|
 |**Componente Curricular**: Química III||
@@ -2335,17 +2335,17 @@ Ministerio da Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|O supervisor deverá preencher os seguintes itens:|O supervisor deverá preencher os seguintes itens:|O supervisor deverá preencher os seguintes itens:|O supervisor deverá preencher os seguintes itens:|O supervisor deverá preencher os seguintes itens:|
-|---|---|---|---|---|
-|Aspectos considerados do<br>estagiário<br>Muito<br>bom<br>Bom<br>Regular|||||
-|1)<br>Assiduidade.|||||
-|2)<br>Relacionamento Interpessoal.|||||
-|3)<br>Ética profissional.|||||
-|4)<br>Capacidade de autocrítica.|||||
-|5)<br>Iniciativa e persistência no<br>desempenho das atividades.|||||
-|6)<br>Espontaneidade e participação<br>nas atividades planejadas.|||||
-|7)<br>Compreensão das tarefas.|||||
-|8)|Contribuição com idéias.||||
+|O supervisor deverá preencher os seguintes itens:|||
+|---|---|---|
+|Aspectos considerados do<br>estagiário<br>Muito<br>bom<br>Bom<br>Regular|||
+|1)<br>Assiduidade.|||
+|2)<br>Relacionamento Interpessoal.|||
+|3)<br>Ética profissional.|||
+|4)<br>Capacidade de autocrítica.|||
+|5)<br>Iniciativa e persistência no<br>desempenho das atividades.|||
+|6)<br>Espontaneidade e participação<br>nas atividades planejadas.|||
+|7)<br>Compreensão das tarefas.|||
+|8)|Contribuição com idéias.||
 
 Recomendações:___________________________________________________________________
 

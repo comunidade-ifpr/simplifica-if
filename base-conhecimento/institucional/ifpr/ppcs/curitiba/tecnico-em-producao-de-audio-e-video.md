@@ -57,7 +57,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL
 
-|**COMISSÃO DEAJUSTE CURRICULAR (CAJ)**<br>Portaria nº48, de 22 de março de 2022|**COMISSÃO DEAJUSTE CURRICULAR (CAJ)**<br>Portaria nº48, de 22 de março de 2022|
+|**COMISSÃO DEAJUSTE CURRICULAR (CAJ)**<br>Portaria nº48, de 22 de março de 2022||
 |---|---|
 |**Nome**|**Função**|
 |1918264 - Fabiana Maria Moro Van Abbema|Presidente|
@@ -730,7 +730,7 @@ Ministerio da Educacao
 
 ## **CAMPUS CURITIBA - IFPR**
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Produção de Áudio e Vídeo|**Eixo Tecnológico:**<br>Produção Cultural e Design|
 |**Componente Curricular:**Projeto Multidisciplinar I - Audiovisuais não-ficcionais: institucionais, educativos<br>e jornalísticos||
@@ -925,7 +925,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Produção de Áudio e Vídeo|**Eixo Tecnológico:**<br>Produção Cultural e Design|
 |**Componente Curricular:**Práticas de produção e edição de imagens||
@@ -1004,7 +1004,7 @@ Ministerio daEducacao
 
 ## **CAMPUS CURITIBA - IFPR**
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Produção de Áudio e Vídeo|**Eixo Tecnológico:**<br>Produção Cultural e Design|
 |**Componente Curricular:**Legislação aplicada à produção audiovisual||
@@ -1133,7 +1133,7 @@ Ministerio da Educacao
 
 **Bibliografia Básica:** GIBSON, David. **The Art of Mixing: A Visual Guide to Recording, Engineering, and Production** . Cengage Learning, 2005. CARREIRO, Rodrigo (Org). **O som do filme: uma introdução.** Curitiba: Ed. UFPR: Ed. UFPE, 2018. CHION, Michel. **Audiovision: sound on screen.** New York: Columbia Univ. Press. 1994. MORAES, Ulisses Quadros Galetto. **O sentido do som: uma introdução à pós-produção de som para o audiovisual** . Curitiba: Appris Editora, 2021. OPOLSKI, Débora **. Edição de diálogos no cinema** . Curitiba: UFPR, 2021. PURCELL, John. **Dialogue Editing for motion pictures.** Reino Unido: Focal Press, 2007. SALTZMAN, Steven. **Music Editing for Film and Television: The Art and the Process.** 1st edition. USA: Focal Press, 2015. SONNENSCHEIN, David. **Sound Design. The expressive Power of music, voice and sound effects in cinema** . USA: Michael Wiese, 2001. YEWDALL, David. **Practical art of motion picture sound** . NY: Focal, 2007 **Bibliografia Complementar:** BEAUCHAMP, Robin. **Designing Sound for Animation** . Focal Press, 2013. BURT, George. **The art of film music** . Boston: Northeastern, 1995. HENRIQUES, Fábio. **Guia de mixagem.** 2. ed. Rio de Janeiro: Música & Tecnologia, 2007. KENNY, Tom. **Sound for Picture. The art of sound design in film and television.** USA: Hal Leonard Books, 2000. LoBRUTTO, Vincent. **Sound on film: Interviews with Creators of Film Sound** . London: Praeger,1994. SERGI, Gianluca. **The Dolby era: filmsound in contemporary Hollywood** . NY: Manchester Univ. Press, 2004. OPOLSKI, Débora; BELTRÃO, Filipe; CARREIRO, Rodrigo (Org.). **Estilo e som no audiovisual.** São Paulo: Socine, 2018. WYATT, Hilary; AMYES, Tim. **Audio post production for television and film:** an introduction to technology and techniques. 3rd ed. Burlington, MA: Focal Press, 2006.
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Produção de Áudio e Vídeo|**Eixo Tecnológico:**<br>Produção Cultural e Design|
 |**Componente Curricular:**Empreendedorismo||
@@ -1196,7 +1196,7 @@ BRITTO, Janaina; FONTES, Nena. **Estratégias para eventos: uma ótica do market
 
 MELO NETO, Francisco Paulo de. **Criatividade em eventos** . 4.ed. São Paulo: Contexto, 2008. HOYLE, Leonard Jr. **Marketing de Eventos** . Editora: Atlas, 2003.
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**|**Eixo Tecnológico:**|
 |Técnico em Produção de Áudio e Vídeo|Produção Cultural e Design|
@@ -1308,7 +1308,7 @@ Parana Campus Curitiba
 
 Docentes graduados (bacharel ou tecnólogo) e pós-graduados em cursos relacionados à produção de áudio e vídeo e/ou com experiência profissional na área. No caso de componentes curriculares específicos, docentes graduados nas respectivas áreas afins.
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**NOME**|**PERFIL DE FORMAÇÃO**|
 |Fabiana Maria Moro van Abbema|Bacharelado em Comunicação Social – Publicidade e<br>Propaganda|
@@ -1322,7 +1322,7 @@ Docentes graduados (bacharel ou tecnólogo) e pós-graduados em cursos relaciona
 |Berenice Marie Ballande Romanelli|Bacharelado em Psicologia e Gravura|
 |Leticia de Sá Rocha|Bacharelado em Arquitetura e Urbanismo|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**Nome**|**Cargo Efetivo**|
 |Alex Neves Xiv rand Bagnara|Técnico de Laboratório - Prótese Dentária|

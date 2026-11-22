@@ -590,7 +590,7 @@ Consoante a esse documento, entende-se por Certificação de Conhecimentos Anter
 
 ## 6.5 MATRIZ CURRICULAR
 
-|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|
+|**Matriz curricular do Curso Técnico em Edificações, integrado ao ensino médio**|||||||
 |---|---|---|---|---|---|---|
 |**Componente Curricular**|**1º ano**<br>**(h/r)**|**2º ano**<br>**(h/r)**|**3º ano**<br>**(h/r)**|**Nº aula**<br>**semanal**<br>**(50 min)**|**Total**<br>**hora-aula**|**Total hora-**<br>**relógio**|
 |Artes I|67|||2|80|67|
@@ -652,7 +652,7 @@ Não está prevista a realização de atividades complementares no Curso Técnic
 
 ## **1° Ano**
 
-|**Cascavel do IFPR**|**Cascavel do IFPR**|
+|**Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Artes I||
@@ -767,7 +767,7 @@ SILVA, Flávia Heloísa da. **Corrida de orientação:** estratégia pedagógica
 
 SOLER, Reinaldo. **Brincando e aprendendo com os jogos cooperativos.** 3. ed. Rio de Janeiro: Sprint, 2011.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |<br>**Componente Curricular**: Filosofia I||
@@ -783,7 +783,7 @@ COPI, Irving M. **Introdução à lógica** . Tradução de Àlvaro Cabral. São
 
 FIGUEIREDO, Vinicius de (Org.). **Filósofos na sala de aula** . São Paulo: Berlendis & Vertecchia, 2008. (3 volumes).
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Física I||
@@ -821,7 +821,7 @@ FIGUEIREDO, Vinicius de (Org.). **Filósofos na sala de aula** . São Paulo: Ber
 |2007.||
 |ROSS, Jurandyr L. Sanches.**Geografia do Brasil.**São Paulo: Editora da Universidade de São Paulo, 2014.||
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: História I||
@@ -839,7 +839,7 @@ ALVES, A.; OLIVEIRA, L. F. de. **Conexões com a história:** das origens do hom
 
 BACZKO, B. **Enciclopédia Einaudi, Antropos-homem,** tomo 5. Porto: Imprensa Nacional, Casa da Moeda, 1986 CHARTIER, R. **O mundo como representação.** In.: Revista Annales, nov-dez. 1989, no 06, p. 1505-1520. DEL PRIORE, M.; VENÂNCIO, R. **Uma breve história do Brasil.** São Paulo, Editora Planeta do Brasil, 2010. GINZBURG, C. **O queijo e os vermes.** São Paulo: Companhia das Letras, 1988. HOLANDA, S. B de. **Raízes do Brasil.** 14 ed. Rio de Janeiro: José Olympio, 1981.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |<br>**Curso:**Técnico em Edificações|<br>**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Língua Estrangeira Moderna I–Espanhol||
@@ -854,7 +854,7 @@ FANJUL, Adrián Pablo; ELIAS, Neide; RUSSO, Martín; BAYGORRIA, Stella (org.). *
 
 GÓMEZ TORREGO, Leonardo. **Gramática didáctica del español** . 10. ed. Madrid: Ediciones SM, 2011. IBARRA, Juan Kattán. **Espanhol para brasileiros.** 2. ed. São Paulo: Pioneira Thomson Learning, 2006. SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños** . São Paulo: FTD, 2003.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Língua Estrangeira Moderna I–Inglês||
@@ -894,7 +894,7 @@ SOUZA, A. G. F. _et al._ **Leitura em língua inglesa** : uma abordagem instrume
 |MARCUSCHI, Luiz Antônio. **Produção textual, análise de gêneros e compreensão**. São Paulo: Parábola|
 |Editorial, 2008.|
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**:MatemáticaAplicada||
@@ -907,7 +907,7 @@ LOPES, Luiz Fernando; CALLIARI, Luiz Roberto. **Matemática aplicada na educaç�
 
 MUCELIN, Carlos Alberto. **Estatística.** Curitiba: LT, 2010.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Materiais de Construção||
@@ -955,7 +955,7 @@ MORTIMER, E.F, MACHADO, A.H; **Química.** Vol 1, 2 e 3.1º Ed. São Paulo, 2012
 
 **Eixo Tecnológico:** Infraestrutura
 
-|**Componente Curricular**: Sociologia I|**Componente Curricular**: Sociologia I|
+|**Componente Curricular**: Sociologia I||
 |---|---|
 |**Carga Horária**(hora/aula): 40|**Período letivo:**1ºAno|
 |**Ementa:**<br>Introdução à Sociologia. O contexto histórico de formação da Sociologia como ciência. A teoria positivista de<br>Auguste Comte. A relação indivíduo e sociedade nos clássicos. Émile Durkheim e o conceito de fato social.<br>Max Weber e os tipos de ação social. Karl Marx e o conceito de relação social de produção. A imaginação<br>sociológica em Mills. A sociologia como forma de consciência em Peter Berger. O conceito de socialização. A<br>importância das instituições na formação do ser social. O impacto das tecnologias na socialização dos<br>indivíduos. As noções de status, papéis sociais e estereótipos sociais. A construção social da identidade. O<br>conceito antropológico de cultura. Alteridade e estranhamento. As noções de etnocentrismo e de relativismo<br>cultural. A Escola de Frankfurt e o conceito de indústria cultural. A sociedade de consumo e a obsolescência<br>programada.||
@@ -964,7 +964,7 @@ MORTIMER, E.F, MACHADO, A.H; **Química.** Vol 1, 2 e 3.1º Ed. São Paulo, 2012
 
 ## **Ementas do 2° Ano**
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**:ArtesII||
@@ -1017,7 +1017,7 @@ MOORE, Keith L; PERSAUD, T. V. N.; TORCHIA, Mark G. **Embriologia básica** . 9.
 
 MADIGAN, Michael T. et al. **Microbiologia de Brock.** 14. ed. Porto Alegre: Artmed, 2016. 1006 p. ISBN 9788582712979 (broch.).
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: Construção Civil e Segurança do Trabalho||
@@ -1026,7 +1026,7 @@ MADIGAN, Michael T. et al. **Microbiologia de Brock.** 14. ed. Porto Alegre: Art
 |**Bibliografia Básica:**<br>CHING, Francis D. K.**Técnicas de construção ilustradas.**4 Edição. São Paulo: PINI, 2010.<br>SALGADO, Julio.**Técnicas e práticas construtivas para edificação.**1 Edição. São Paulo: Érica, 2009.<br>YAZIGI, Walid.**A Técnica de Edificar.**10 Edição. São Paulo: Pini, 2011.||
 |**Bibliografia Complementar:**<br>ABRAM, Isaac.**Manual prático de terraplenagem.**1 Edição. São Paulo: PINI, 2002.<br>BORGES, A.**Prática das pequenas construções - vol. 1.**Ed. Edgard Blucher. São Paulo, 2009. BORGES, A.<br>Prática das Pequenas Construções - vol. 2. Ed. Edgard Blucher. São Paulo, 2010.<br>BOTELHO, Manoel Henrique Campos. **Manual de primeiros socorros do engenheiro e do arquiteto.**2.ed.<br>São Paulo: E. Blücher, 2009.<br>NAZAR, Nilton. **Formas e escoramentos para edifícios:** critérios para dimensionamento e escolha do<br>sistema. 1 Edição. São Paulo: PINI, 2007.<br>SALGADO, J.**Técnicas e práticas construtivas para edificação.**Ed. Erica. 1a Edição. São Paulo, 2009.||
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: Educação Física II||
@@ -1035,7 +1035,7 @@ MADIGAN, Michael T. et al. **Microbiologia de Brock.** 14. ed. Porto Alegre: Art
 |**Bibliografia Básica:**<br>BRASIL.**Livro didático de educação física.**Secretaria de Estado da educação.<br>DARIDO, S.; GALVÃO, Z.; FERREIRA, L.; FIORIN, G. **Educação Física no Ensino Médio:** reflexões e<br>ações. Motriz, v. 5, n. 2, 1999, p.138-145.<br>MENDES, Miriam Garcia.**A dança.**2. ed. São Paulo: Ática, 1987.<br>REVERDITO, Riller Silva; SCAGLIA, Alcides José. **Pedagogia do esporte:** jogos coletivos de invasão. São<br>Paulo: Phorte, 2009.<br>SOUCHARD, Philippe.**Autoposturas da RPG.**Summus Editorial, 2019.<br>WILMORE, Jack H.; COSTILL, David L. **Fisiologia do esporte e do exercício.** 2.ed. São Paulo: Manole,<br>2001.||
 |**Bibliografia Complementar:**<br>CASTELLANI FILHO, L. **Educação física no Brasil:** história que não se conta. 4 ed. Campinas: Papirus,<br>1994.<br>COLETIVO DE AUTORES.**Metodologia do ensino de educação física.**São Paulo: Cortez, 1992.<br>DARIDO, S. C.**Educação física na escola:**questões e reflexões. Rio de Janeiro: Guanabara Koogan, 2003.<br>KRÖGER, C.; ROTH, K. **Escola da bola:** um ABC para iniciantes nos jogos esportivos. Ed. Phorte. São<br>Paulo. Brasil, 2002.||
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: Filosofia II||
@@ -1044,7 +1044,7 @@ MADIGAN, Michael T. et al. **Microbiologia de Brock.** 14. ed. Porto Alegre: Art
 |**Bibliografia Básica:**<br>GILSON, Etienne.**A Filosofia na idade média**. Trad. Eduardo Brandão. São Paulo: Martins Fontes, 1998.<br>GILSON, Etienne. **O Espírito da filosofia medieval**. Trad. Eduardo Brandão. São Paulo: Martins Fontes,<br>2006.<br>REALE, G; ANTISERI, D. **História da filosofia**. Tradução de Ivo Storniolo. São Paulo: Paulus, 2003. (em 7<br>volumes)<br>REALE, Giovanni.**História da filosofia antiga**. 2a Ed. Tradução de Marcelo Perine. São Paulo: Loyola, 2015.<br>(em 9 volumes).||
 |**Bibliografia Complementar:**<br>BURKHARDT, Jacob.**A cultura do Renascimento na Itália**. São Paulo: Companhia das Letras, 2012<br>FIGUEIREDO, Vinicius de (Org.). **Filósofos na sala de aula**. São Paulo: Berlendis & Vertecchia, 2008. (3<br>volumes)<br>MacGrade, A. S. (Org.) Trad. André Oídes.**Filosofia Medieval.**São Paulo: Ideias e letras, 2008.<br>FRAILE, Guillermo.**Historia de la filosofia**. Madrid. Biblioteca de Autores Cristianos, 1986. (em 4 volumes).||
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Física II||
@@ -1075,7 +1075,7 @@ GASPAR, Alberto. **Física:** ondas, ótica e termodinâmica. Volume 2. 1ª ed. 
 
 FEYNMAN, Richard Philips. **Física em 12 lições.** Tradução Ivo Korytowski. Rio de Janeiro: Ediouro, 2005.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>em<br>Edificações|**Eixo**<br>**Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: Geografia II||
@@ -1100,7 +1100,7 @@ SANTOS, M **. Por uma outra globalização:** do pensamento único à consciênc
 
 SPOSITO, Maria Encarnação Beltrão. **Capitalismo e urbanização.** São Paulo: Contexto, 2012. Biblioteca Virtual da Pearson.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo**<br>**Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: História II||
@@ -1118,7 +1118,7 @@ HOBSBAWM, E. **A era dos extremos:** o breve século XX. 1941-1991. São Paulo: 
 
 HOLANDA, S. B de. **Raízes do Brasil.** 14 ed. Rio de Janeiro: José Olympio, 1981.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo**<br>**Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**:InstalaçõesPrediais||
@@ -1129,7 +1129,7 @@ HOLANDA, S. B de. **Raízes do Brasil.** 14 ed. Rio de Janeiro: José Olympio, 1
 
 BOTELHO, Manoel Henrique Campos; RIBEIRO JR, Geraldo de Andrade. **Instalações hidráulicas prediais:** usando tubos de PVC e PPR. 3a Edição. Edgard Blucher, 2010.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |<br>**Componente Curricular**: Língua Estrangeira Moderna II–Inglês||
@@ -1138,7 +1138,7 @@ BOTELHO, Manoel Henrique Campos; RIBEIRO JR, Geraldo de Andrade. **Instalações
 |**Bibliografia Básica:**<br>MICHAELIS.<br>**Dicionário**<br>**escolar**<br>**inglê**s:<br>inglês-português,<br>português-inglês.<br>2.<br>ed.<br>São<br>Paulo:<br>Melhoramentos, 2009.<br>MUNHOZ, Rosângela. **Inglês instrumental**: estratégias de leitura: módulo 1. Edição reformulada e revisada.<br>São Paulo: Texto Novo, 2000.<br>MURPHY, Raymond. **Essential grammar in use**: a self-study reference and practice book for elementary<br>learners of English. 4th ed. Cambridge: Cambridge University, 2015.||
 |**Bibliografia Complementar:**<br>ANDREOTTI, V.; MENEZES DE SOUZA, L. M. T. **Learning to read the world through other eyes**.<br>Derby,<br>UK:<br>Global<br>Education,<br>2008.<br>Disponível<br>em:<br>https://www.academia.edu/575387/Learning_to_Read_the_World_Through_Other_Eyes_2008_. Acesso em:<br>03 abr. 2023.<br>CAMBRIDGE. **Dicionário Cambridge (on-line)**. Disponível em: https://dictionary.cambridge.org/. Acesso<br>em: 03 abr. 2023.<br>NUTTALL, Christine Elizabeth.**Teaching reading skills**: in a foreign language. Oxford: MacMillan, 2011.<br>SOUZA, A. G. F. _et al._ **Leitura em língua inglesa**: uma abordagem instrumental. 2. ed. atual. São Paulo:<br>Disal, 2005.||
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |<br>**Componente Curricular**: Língua Portuguesa II||
@@ -1211,7 +1211,7 @@ HIBBELER, R. C. **Estática:** Mecânica Para Engenharia. 12º Ed. São Paulo:Pe
 
 ADÃO, Francisco Xavier;HEMERLY, Adriano Chequetto. **Concreto Armado - Novo Milênio Cálculo Prático e Econômico.** 2º Ed. Rio de Janeiro: Interciência, 2010. BOTELHO, Manoel Henrique Campos; MARCHETTI, Osvaldemar. **Concreto armado eu te amo.** Vol. 1. 7º Ed. São Paulo: Blucher. 2013. CARVALHO, Roberto Chust; PINHEIRO, Libânio Miranda. **Cálculo e detalhamento de estruturas usuais de concreto armado.** 2. ed. São Paulo: PINI, 2013. v.2. CHING, F. D. K.; ONOUYE, B. S.; ZUBERBUHLER, D. **Sistemas estruturais ilustrados:** padrões, sistemas e projeto. 2. ed. Porto Alegre: Bookman, 2015. 352 p.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Sociologia II||
@@ -1239,7 +1239,7 @@ RIBEIRO, Darcy. **O povo brasileiro** : a formação e o sentido do Brasil. São
 
 SCHWARCZ, Lilia. **O espetáculo das raças** . São Paulo: Cia das letras, 1993.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: Topografia||
@@ -1290,7 +1290,7 @@ PAULSEN, Friedrich; WASCHKE, J. (Coord.). **Sobotta: atlas de anatomia humana : 
 
 TORTORA, Gerard J.; DERRICKSON, Bryan. **Princípios de anatomia e fisiologia.** 14. ed. Rio de Janeiro: Guanabara Koogan, 2016. 1201 p. ISBN 9788527728621 (enc.).
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: Empreendedorismo e Gestão||
@@ -1319,7 +1319,7 @@ TORTORA, Gerard J.; DERRICKSON, Bryan. **Princípios de anatomia e fisiologia.**
 |OSTERWALDER, Alexander; PIGNEUR, Yves. **Business model generation:** inovação em modelos de|
 |negócios: um manual para visionários, inovadores e revolucionários. Rio de Janeiro: Alta Books, 2011. 278 p.|
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**<br>Infraestrutura|
 |**Componente Curricular**: FILOSOFIA III||
@@ -1341,7 +1341,7 @@ MacGrade, A. S. (Org.) Trad. André Oídes. **Filosofia medieval.** São Paulo: 
 
 FRAILE, Guillermo. **Historia de la filosofia** . Madrid. Biblioteca de Autores Cristianos, 1986. (em 4 volumes).
 
-|**CAMPUS CASCAVEL DO IFPR**|**CAMPUS CASCAVEL DO IFPR**|
+|**CAMPUS CASCAVEL DO IFPR**||
 |---|---|
 |Curso: Técnico em Edificações|Eixo Tecnológico:<br>Infraestrutura|
 |Componente Curricular: Física III||
@@ -1370,7 +1370,7 @@ PARANÁ, Djalma Nunes da Silva. **Física.** São Paulo. Ática, 1999.
 
 BEER, F. P., RUSSELL, J., Jr. **Mecânica vetorial para engenheiros.** 5ª edição revisada. Editora Makron Books.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em<br>ações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**:HistóriaIII||
@@ -1395,7 +1395,7 @@ HOLANDA, S. B de. **Raízes do Brasil.** 14 ed. Rio de Janeiro: José Olympio, 1
 
 LEFEBVRE, H. **O Direito à Cidade.** Tradução de Rubens Frias. Primeira Edição, Editora Moraes, São Paulo. 1991.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Língua Estrangeira Moderna III – Inglês||
@@ -1415,7 +1415,7 @@ NUTTALL, Christine Elizabeth. **Teaching reading skills** : in a foreign languag
 
 SOUZA, A. G. F. _et al._ **Leitura em língua inglesa** : uma abordagem instrumental. 2. ed. atual. São Paulo: Disal, 2005.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Língua Portuguesa III||
@@ -1460,7 +1460,7 @@ LOPES, Luiz Fernando; CALLIARI, Luiz Roberto. **Matemática aplicada na educaç�
 
 **Campus Cascavel do IFPR**
 
-|**Componente Curricular**: Mecânica dos Solos e Fundações|**Componente Curricular**: Mecânica dos Solos e Fundações|
+|**Componente Curricular**: Mecânica dos Solos e Fundações||
 |---|---|
 |**Carga Horária**(hora/aula): 80|**Período Letivo:**3º|
 |**Ementa:**<br>Descrição das características dos principais tipos de solos. Índices físicos do solo e ensaios de caracterização.<br>Classificação dos solos. Permeabilidade. Compactação dos solos. Compressibilidade e resistência dos solos.<br>Ensaio SPT. Fundações superficiais. Fundações profundas. Contenções.||
@@ -1493,7 +1493,7 @@ SANTOS, Adriana de Paula Lacerda; JUNGLES, Antônio Edésio. **Como gerenciar as
 
 SOUZA, Jéssica Siqueira de. **Gerenciamento de obras e serviços.** NT Editora. Brasília: 2015. 166p.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Projeto Integrador de Conclusão de Curso||
@@ -1511,7 +1511,7 @@ GONÇALVES, Joana Carla Soares; BODE, Klaus. **Edifício ambienta** l. São Paul
 
 PRADO, Adriana R. de Almeida. **Desenho universal.** Caminhos da Acessibilidade no Brasil São Paulo: Annablume, 2010.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Química III||
@@ -1520,7 +1520,7 @@ PRADO, Adriana R. de Almeida. **Desenho universal.** Caminhos da Acessibilidade 
 |**Bibliografia Básica:**<br>REIS, Martha.**Química**. São Paulo: FTD, 2007. Vol 3.<br>FELTRE, Ricardo.**Fundamentos de Química.**v. 3. 6ª. ed. São Paulo: Moderna, 2004.<br>PERUZZO, Francisco Miragaia; CANTO, Eduardo Leite do. **Química:** na abordagem do cotidiano. 4. ed. São<br>Paulo: Moderna, 2006. 3 v.<br>TISSONI, A. M.**Química ser protagonista.**2ºEd. São Paulo: SM, 2013. Vol 1.||
 |<br>**Bibliografia Complementar:**<br>ATKINS, P.; JONES, L.**Princípios de química:**questionando a vida moderna e o meio ambiente. Ed. Bookman,<br>2006.<br>ALLINGER, N.**Química orgânica**, Editora LTC, 1978.<br>BARBOSA, L. C. A;**Introdução a química orgânica**. Ed. Pearson, 2011.<br>McMURRY, J.;**Química orgânica**, Ed. Pioneira Thomson Learning, 2006.<br>MCMURRY, John.**Química orgânica**. vol. 1 e 2. 6 ed. Cengage Learning, 2005.||
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Edificações Integrado|**Eixo Tecnológico:**Infraestrutura|
 |**Componente Curricular**: Sociologia III||
@@ -1735,7 +1735,7 @@ superior, médio profissionalizante;
 
 ## **8.1.2 Relação do Corpo docente**
 
-|**DOCENTES**|**DOCENTES**|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||||
 |---|---|---|---|
 |**Nome Completo**|**Área**|**Titulação**|**Link Currículo Lattes**|
 |André Luiz da Silva|Biologia|Doutorado|http://lattes.cnpq.br/352122347<br>4582097|
@@ -1789,7 +1789,7 @@ Os servidores técnicos administrativos interagem com a comunidade acadêmica, d
 
 Quantitativo de técnicos administrativos, cargo e regime de trabalho .
 
-|**TÉCNICOS ADMINISTRATIVOS**|**TÉCNICOS ADMINISTRATIVOS**|**TÉCNICOS ADMINISTRATIVOS**|
+|**TÉCNICOS ADMINISTRATIVOS**|||
 |---|---|---|
 |**Quantidade**|**Cargo**|**Regime de trabalho**|
 |09|Assistente em Administração|40h|

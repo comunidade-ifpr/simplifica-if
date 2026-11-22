@@ -2720,7 +2720,7 @@ MALHOTRA, Naresh K. **Pesquisa de marketing: uma orientação aplicada** . 7. ed
 
 Ministerio da Educacao<br>
 
-|1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|
+|1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao||
 |---|---|
 |**Campus Curitiba do IFPR**||
 |**Curso: Tecnologia em Secretariado**|**Eixo Tecnológico: **Gestão eNegócios|
@@ -3372,8 +3372,8 @@ O NDE do de Tecnologia em Secretariado será composto pelos seguintes professore
 
 ## **Quadro 2 - Composição do NDE**
 
-|**Nome Completo**|**Nome Completo**|**Curso de**<br>**Graduação**|**Maior**<br>**Titulação**|**Regime**<br>**de**<br>**Trabalho**|**Link Currículo Lattes**|
-|---|---|---|---|---|---|
+|**Nome Completo**|**Curso de**<br>**Graduação**|**Maior**<br>**Titulação**|**Regime**<br>**de**<br>**Trabalho**|**Link Currículo Lattes**|
+|---|---|---|---|---|
 
 125
 
@@ -3462,7 +3462,7 @@ desempenho acadêmico (progressão por mérito mediante avaliação de desempenh
 
 Os técnicos administrativos atuam no Campus Curitiba, não havendo um grupo especificamente para o curso. Os organismos internos têm por objetivo atender às demandas do Campus e estão compostos pelos seguintes profissionais **:**
 
-|do Campus e estão compostos pelos seguintes profissionais**:**|do Campus e estão compostos pelos seguintes profissionais**:**|
+|do Campus e estão compostos pelos seguintes profissionais**:**||
 |---|---|
 |**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |**QUANT.**|**CARGO**|

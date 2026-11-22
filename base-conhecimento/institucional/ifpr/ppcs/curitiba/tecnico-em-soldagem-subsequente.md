@@ -512,7 +512,7 @@ O estudante poderá solicitar certificação de conhecimentos anteriores adquiri
 
 ## 6.5 MATRIZ CURRICULAR
 
-|6.5 MATRIZ CURRICULAR|6.5 MATRIZ CURRICULAR|6.5 MATRIZ CURRICULAR|6.5 MATRIZ CURRICULAR|6.5 MATRIZ CURRICULAR|
+|6.5 MATRIZ CURRICULAR|||||
 |---|---|---|---|---|
 |**1º PERÍODO**|||||
 |**Componentes Curriculares**|**Carga Horária**<br>**(hora relógio)**|**Carga Horária**<br>**(hora aula)**|**Nº de aulas**<br>**na semana**||
@@ -564,7 +564,7 @@ Não se aplica.
 
 ## 6.7 EMENTÁRIO E BIBLIOGRAFIAS
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**FUNDAMENTOS DA MATEMÁTICA||
@@ -598,7 +598,7 @@ LEAKE, J.; BORGERSON, J. Manual de Desenho Técnico para Engenharia: São Paulo:
 
 MANFÉ, G. Desenho técnico mecânico – Vol. 1. São Paulo: Hemus, 2004.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**TECNOLOGIA  E ENSAIO DOS MATERIAIS||
@@ -628,7 +628,7 @@ CALLISTER, W. D. Jr. Fundamentos da Ciência e Engenharia dos Materiais. 2. ed. 
 
 CHIAVERINI, V. Aços e Ferros Fundidos. 7. ed. São Paulo: ABM, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**FUNDAMENTOS DA SOLDAGEM||
@@ -646,7 +646,7 @@ SILVA, Francisco J. G. Tecnologia da Soldadura: Uma Abordagem Técnico-Didática
 
 RODRIGUES, Sidnei Carraschi. Soldagem. Fundamentos e Processos para iniciantes. 1. ed. Bauru: Viena, 2019
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**DESENHO TÉCNICO||
@@ -692,7 +692,7 @@ SPECK, H. J. Desenho Técnico Auxiliado pelo Solidworks. Florianópolis: Visual 
 
 MANFÉ, G. Desenho técnico mecânico – Vol. 1. São Paulo: Hemus, 2004. MANFÉ, G. Desenho técnico mecânico – Vol. 2. São Paulo: Hemus, 2004. MANFÉ, G. Desenho técnico mecânico – Vol. 3. São Paulo: Hemus, 2004. SPECK, H. J. Manual básico de desenho técnico. 2. ed. Florianópolis: UFSC, 2001. MAGUIRE, D. E. Desenho Técnico: Problemas e Soluções Gerais de Desenho. São Paulo: Hemus, 2004.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**PROCESSOS DE SOLDAGEM I||
@@ -704,7 +704,7 @@ MANFÉ, G. Desenho técnico mecânico – Vol. 1. São Paulo: Hemus, 2004. MANF�
 
 VEIGA, E. Processo de Soldagem – MIG/MAG. São Paulo: Globus, 2011. SCOTTI, A. Fundamentos e Prática da Soldagem a Plasma. São Paulo: Artliber, 2007. SCOTTI, A. Soldagem MIG MAG. São Paulo: Artliber, 2008.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**GESTÃO DE QUALIDADE E MEIO AMBIENTE||
@@ -714,7 +714,7 @@ VEIGA, E. Processo de Soldagem – MIG/MAG. São Paulo: Globus, 2011. SCOTTI, A.
 |**Bibliografia Básica:**<br>HINRICHS, R. A.; KLEINBACH, M.; REIS, L. B. dos. Energia e Meio Ambiente. São<br>Paulo: Cengage<br>Learning, 2010.<br>DIAS, R. Gestão Ambiental. São Paulo: Átlas, 2006.<br>ROBLES Jr, A.; BONELLI, V. Gestão da Qualidade e do Meio Ambiente: Enfoque<br>Econômico,<br>Financeiro e Patrimonial. São Paulo: Átlas, 2006.<br>MOURA, L. A. A. de. Gestão e Qualidade Ambiental. Belo Horizonte: Juarez de Oliveira,<br>2004.<br>PALZ, W. Energia Solar e Fontes Alternativas. 2. ed. São Paulo: Hemus, 2005.||
 |**Bibliografia Complementar:**<br>PALADINI, E. P. Gestão da Qualidade. São Paulo: Átlas, 2004.<br>GOLDEMBERG, J. Energia, Meio Ambiente & Desenvolvimento. 2. ed. São Paulo:<br>EDUSP, 2003.<br>BARBOSA FILHO, A. N. Segurança do Trabalho e Gestão Ambiental. São Paulo: Átlas,<br>2011.<br>BRUNETTI, F. Motores de Combustão Interna. Vol. 2. São Paulo: Blucher, 2012.||
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**SEGURANÇA E SAÚDE DO TRABALHO||
@@ -740,7 +740,7 @@ PARANÁ, D. N. da S. Física – Vol. 1 – Mecânica. São Paulo: Ática, 1999.
 
 MELCONIAN, S. Fundamentos da Mecânica Técnica. 1. Ed. São Paulo: Érica. 2015. (Físico e Ebook) NASCIMENTO, S. V. do. A Matemática do Ensino Fundamental e Médio Aplicada à Vida. Rio de Janeiro: Ciência Moderna, 2012. HIBBELER, R. C. Estática. 10 ed. São Paulo: Pearson, 2008. HIBBELER, R. C. Dinâmica. 10 ed. São Paulo: Pearson, 2008.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**PROCESSOS DE FABRICAÇÃO||
@@ -776,7 +776,7 @@ PARIS, A. A. F. de. Tecnologia da Soldagem de Ferros Fundidos. Porto Alegre: UFS
 
 VEIGA, E. Processo de Soldagem – TIG. São Paulo: Globus, 2011. VEIGA, E. Processo de Soldagem – Eletrodos Revestidos. São Paulo: Globus, 2011. VEIGA, E. Processo de Soldagem – MIG/MAG. São Paulo: Globus, 2011. SCOTTI, A. Fundamentos e Prática da Soldagem a Plasma. São Paulo: Artliber, 2007. SCOTTI, A. Soldagem MIG MAG. São Paulo: Artliber, 2008.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**TRATAMENTOS TÉRMICOS E ENSAIOS DESTRUTIVOS||
@@ -790,7 +790,7 @@ VAN VLACK, L. H. Princípios de ciência e tecnologia dos materiais. 4. ed. São
 
 COLPAERT, H. Metalografia dos Produtos Metalúrgicos Comuns. 4. ed. São Paulo: Blucher, 2008. PADILHA, F. A. Materiais de Engenharia. São Paulo: Hemus, 1997. CALLISTER, W. D. Jr. Fundamentos da Ciência e Engenharia dos Materiais. 2. ed. São Paulo: LTC, 2006. CHIAVERINI, V. Aços e Ferros Fundidos. 7. ed. São Paulo: ABM, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**PLANEJAMENTO E CONTROLE DA PRODUÇÃO||
@@ -838,7 +838,7 @@ HIBBELER, R. C. Resistência dos Materiais. 7. ed. São Paulo: Pearson, 2010. PA
 
 HIBBELER, R. C. Estática. 10 ed. São Paulo: Pearson, 2008. HIBBELER, R. C. Dinâmica. 10 ed. São Paulo: Pearson, 2008.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**GESTÃO DE PESSOAS||
@@ -853,7 +853,7 @@ FERREIRA, Patricia Itala. Clima organizacional e qualidade de vida no trabalho. 
 
 PAULO DA LUZ. As organizações são como as árvores. Editora Labrador, 2022. 98 p. ISBN 9786556251844.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**PROCESSOS DE SOLDAGEM III||
@@ -901,7 +901,7 @@ CASARIN, Samuel José. Manufatura Mecânica: soldagem. 1. ed. Londrina: Editora 
 
 LIPPOLD, Jonh C. Welding Metallurgy and Weldability. 1. ed. New Jersey (EUA): Jonh Wiley & Sons, 2014.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**MANUTENÇÃO INDUSTRIAL||
@@ -915,7 +915,7 @@ Moderna, 2005. FOGLIATTO, F. S. Confiabilidade e Manutenção Industrial. São P
 
 SIQUEIRA, I. P. de. Manutenção Centrada na Confialbilidade. Rio de Janeiro: Qualitymark, 2005.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Soldagem|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**AUTOMAÇÃO NA SOLDAGEM||
@@ -1364,7 +1364,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 
 **LABORATÓRIO DE USINAGEM**
 
-|**LABORATÓRIO DE USINAGEM**|**LABORATÓRIO DE USINAGEM**|**LABORATÓRIO DE USINAGEM**|
+|**LABORATÓRIO DE USINAGEM**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |12|Torno mecânico|Torno mecânico horizontal 1000mm entre pontas.|
@@ -1376,7 +1376,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 
 **LABORATÓRIO DE SOLDAGEM**
 
-|**LABORATÓRIO DE SOLDAGEM**|**LABORATÓRIO DE SOLDAGEM**|**LABORATÓRIO DE SOLDAGEM**|
+|**LABORATÓRIO DE SOLDAGEM**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |7|Transformadorde solda|ProcessoERCA 110/220V,250A,60Hz.|
@@ -1393,7 +1393,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 
 **LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**
 
-|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|
+|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |1|Prensa hidráulica|Prensa hidráulica, Tipo C, com: Força no cilindro<br>superior de 150ton, Força no cilindro inferior de 60 ton,<br>Curso do cilindro de 600mm, Abertura do C = 800mm,<br>Mesa da prensa 800x800mm, Distância do centro da<br>mesa até a lateral interna do C 400mm, Velocidade<br>variável de 0 a 160mm/s.|
@@ -1404,7 +1404,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 |1|Ferramenta de estampagem|Ferramental completo para ensaio de estampagem<br>Marciniak, que consta de matriz, punção cilíndrico,<br>prensa chapas sem "_drawbead_”, colunas e suportes para<br>fixação na prensa.|
 |1|Compressor de ar|<br>Compressor apistão 200pés|
 
-|**LABORATÓRIO DE METROLOGIA**|**LABORATÓRIO DE METROLOGIA**|**LABORATÓRIO DE METROLOGIA**|
+|**LABORATÓRIO DE METROLOGIA**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |1|Braço de medição|Braço articulado de medição por coordenadas, com<br>scanner a laser integrado. Raio de giro 1m.|
@@ -1426,7 +1426,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 |3|Bancada metálica|Bancada metálica, perfil quadrado 40mm x 1,5 mm de<br>espessura, dimensões 200 x 90 x 60cm (comp. x alt. x<br>larg.).|
 |7|Bancada<br>para<br>práticas<br>de<br>medição|Bancada de madeira, dimensões 200 x 90 x 60cm (comp.<br>x alt. x larg.). Com cadeiras|
 
-|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|
+|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |1|Máquina de ensaio universal|Máquina de ensaio de tração entre outros ensaios,<br>capacidade de 10.000kgf, equipada com garras para<br>corpos de prova cilíndricos e chapas (gravata).|
@@ -1442,7 +1442,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 |1|Microdurômetro Vickers|<br>Durômetro de bancada digital escala Vickers, Força de<br>ensaio = 10 à 2.000kgf, lentes objetivas 10x e 50x,<br>ampliação de 100x e 500x e resolução de 0,2μm.|
 |1|Máquina ensaio de impacto|Máquina para ensaio de impacto Charpy e Izod.|
 
-|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|
+|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |4|Bancada<br>hidráulica<br>/<br>eletrohidráulica|Gabinete móvel em aço com 1200x700x1800mm<br>(CxLxA), gaveteiros com 4 gavetas, 2 painéis perfilados<br>em alumínio extrudado com 1100x50mm (CxL), 1<br>bastidor para fixação de placas elétricas. Equipado com<br>cilindros,<br>válvulas,<br>sensores,<br>filtros,<br>pressostatos,<br>fluxostatos, manômetros, CLPs, bomba hidráulica e<br>software de desenho e simulação.|
@@ -1452,7 +1452,7 @@ O IFPR campus Curitiba funciona em um prédio central com três andares, com ár
 |2|Bancada didática de elementos<br>de máquinas|Bancada com motor, acoplamento, e sistema de<br>transmissão.|
 |4|Bancada|Bancada de trabalho com tampo de madeira e estrutura<br>metálica. Dimensões 200x90x50cm(compr. x alt. x larg.)|
 
-|**LABORATÓRIO DE COMANDO NUMÉRICO COMPUTADORIZADO - CNC**|**LABORATÓRIO DE COMANDO NUMÉRICO COMPUTADORIZADO - CNC**|**LABORATÓRIO DE COMANDO NUMÉRICO COMPUTADORIZADO - CNC**|
+|**LABORATÓRIO DE COMANDO NUMÉRICO COMPUTADORIZADO - CNC**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |1|Centro de Torneamento CNC|Com comando numérico computadorizado, faixas de<br>velocidade de 6 a 6.000RPM, potência do motor<br>principal de 20CV, cabeçote móvel com acionamento<br>hidráulico da manga. Acompanha a máquina: placa<br>hidráulica, transportador de cavacos, leitor de posição de<br>ferramentas, pedal duplo, bomba de refrigeração pressão<br>de 2 bar, registros técnicos de qualidade, separador de<br>fluido de corte, compressor de ar, 3 jogos de castanhas, 2<br>suportes de ferramenta acionada axial, 1 jogo de pinças, 1<br>suporte para torneamento interno com refrigeração, 1<br>jogo de ferramentas de corte e insertos.|

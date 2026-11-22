@@ -280,7 +280,7 @@ A estrutura de colaboradores do Instituto Federal do Paraná no câmpus Cascavel
 
 André Luiz da Silva Graduação de Licenciatura em Ciências Biológicas - Biologia
 
-|Graduação de Licenciatura em Matemática -|Graduação de Licenciatura em Matemática -|Edson Luiz Reginaldo|
+|Graduação de Licenciatura em Matemática -||Edson Luiz Reginaldo|
 |---|---|---|
 |Matemática|||
 |Graduação em Ciência em Computação ou||Elisângela Maria da Silva|
@@ -463,7 +463,7 @@ Os  componentes  curriculares  do  núcleo  básico  e  técnicos  do  curso  es
 ||**(hora**|**(hora**|**na**|
 ||**relógio)**|**aula)**|**semana**|
 
-|Artes I<br>67<br>80<br>2|Artes I<br>67<br>80<br>2|
+|Artes I<br>67<br>80<br>2||
 |---|---|
 |Biologia I<br>67<br>80<br>2||
 |Educação Física I<br>67<br>80<br>2||
@@ -521,7 +521,7 @@ Tabela 2: Componentes curriculares - Segundo ano
 
 **Terceiro ano**
 
-|**Componentes Curriculares**<br>**Carga**<br>**Horária**<br>**(hora**<br>**relógio)**<br>**Carga**<br>**horária**<br>**(hora**<br>**aula)**<br>**Número**<br>**de**<br>**aulas**<br>**na**<br>**semana**|**Componentes Curriculares**<br>**Carga**<br>**Horária**<br>**(hora**<br>**relógio)**<br>**Carga**<br>**horária**<br>**(hora**<br>**aula)**<br>**Número**<br>**de**<br>**aulas**<br>**na**<br>**semana**|
+|**Componentes Curriculares**<br>**Carga**<br>**Horária**<br>**(hora**<br>**relógio)**<br>**Carga**<br>**horária**<br>**(hora**<br>**aula)**<br>**Número**<br>**de**<br>**aulas**<br>**na**<br>**semana**||
 |---|---|
 |Biologia III<br>67<br>80<br>2||
 |Empreendedorismo<br>67<br>80<br>2||
@@ -565,7 +565,7 @@ Tabela 4: Carga horária anual do curso
 
 Durante todo o decorrer do curso, a carga horária reservada aos componentes curriculares totaliza 3.332 horas, conforme apresentado na Tabela 5:
 
-|**Demonstrativo dos Componentes Curriculares/Carga Horária**|**Demonstrativo dos Componentes Curriculares/Carga Horária**|
+|**Demonstrativo dos Componentes Curriculares/Carga Horária**||
 |---|---|
 |**Componente Curricular**|**Horas relógio**|
 ||**durante o curso**|
@@ -613,7 +613,7 @@ Tabela 5: Carga horária das componentes curriculares do Curso Técnico em Infor
 
 As ementas de cada componente curricular foram delineadas compreendendo a especificidade de cada uma delas, sem contudo, desconsiderar o exposto no parecer 32/2013 CEMTEC/DEMTEC/PROENS, que orienta  o tratamento  transversal  de alguns conteúdos, tais como: educação  alimentar e  nutricional; processo  de  envelhecimento, respeito e valorização do idoso; educação para o trânsito e educação em direitos humanos.
 
-|**CAMPUS CASCAVEL DO IFPR**|**CAMPUS CASCAVEL DO IFPR**|||
+|**CAMPUS CASCAVEL DO IFPR**||||
 |---|---|---|---|
 |**Curso:**<br>Técnico em Informática|**Forma de Oferta:**||Integrado|
 |**Componente Curricular**<br>:  Artes I||||
@@ -1003,7 +1003,7 @@ REIS, Martha. **Química.** São Paulo: FTD, 2007. Vol 1.
 
 SOLOMONS, T. w. Graham / LTC **Química Orgânica** - Vol. 1 e 2 - 10ª Ed. 2012.
 
-|**CAMPUS CASCAVEL DO IFPR**|**CAMPUS CASCAVEL DO IFPR**|||
+|**CAMPUS CASCAVEL DO IFPR**||||
 |---|---|---|---|
 |**Curso:**<br>Técnico em Informática|**Forma de Oferta:**||Integrado|
 |**Componente Curricular**<br>: Sociologia I||||

@@ -92,7 +92,7 @@ _**Campus**_ **Pinhais**
 
 **RESOLUÇÃO DE CRIAÇÃO:** Resolução nº 50, de 16 de dezembro de 2014, do Conselho Superior - IFPR
 
-|**COMISSÃO DE AJUSTE CURRICULAR**|**COMISSÃO DE AJUSTE CURRICULAR**|
+|**COMISSÃO DE AJUSTE CURRICULAR**||
 |---|---|
 |**Nome**|**Função**|
 |Rodolfo Miranda Pereira|Coordenação (Coordenador de Curso)|
@@ -537,7 +537,7 @@ Desse modo, foram previstas 4 horas mínimas em cada bimestre para trabalho com 
 
 ## 6.14 MATRIZ CURRICULAR
 
-|**Matriz curricular do Curso Técnico em Informática**|**Matriz curricular do Curso Técnico em Informática**|**Matriz curricular do Curso Técnico em Informática**|**Matriz curricular do Curso Técnico em Informática**|**Matriz curricular do Curso Técnico em Informática**|**Matriz curricular do Curso Técnico em Informática**|||
+|**Matriz curricular do Curso Técnico em Informática**||||||||
 |---|---|---|---|---|---|---|---|
 |**Integrado ao Ensino Médio**||||||||
 |**Ano de implantação:**|||**2015**|||||
@@ -630,7 +630,7 @@ BARBOSA, Jacqueline Peixoto; ROVAI, Célia Fagundes. **Gêneros do discurso na e
 
 **Componente Curricular:** Língua Espanhola e Cultura Hispânica I **Carga Horária (hora-aula):** 120 **Período Letivo:** 1º ano **Ementa:** Discurso como prática social da língua espanhola. Norma padrão, variações linguísticas e cultura hispânica. Prática de leitura e compreensão auditiva de diversos gêneros textuais. Produção oral e escrita de diversos gêneros em língua espanhola. Alfabeto. Artigos. Pronomes pessoais e interrogativos. Numerais. Vocabulário relacionado ao cotidiano: dias, meses, comida, família, casa, roupa, cidade. Presente de Indicativo (verbos regulares e irregulares). Leitura e análise de obras literárias em língua espanhola. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** FANJUL, Adrian. **Gramática de español** : paso a paso. São Paulo: Santillana/Moderna, 2014. GUTIÉRREZ, Lina. **Pachamama, la tierra madre** . Madrid: Santillana, 2005. LERALTA, Susana Martín. **Todo oídos** . Barcelona: Difusión, 2010. QUEVEDO, Francisco de. **La vida del Buscón** . Italy: Lecturas ELi, 2015. **SEÑAS:** Diccionario para la enseñanza de la lengua española para brasileños. São Paulo: Martins Fontes, 2002. **Bibliografia Complementar:** F ABAL, Baltasar Pena. **Juegos y actividades en la clase de ELE para todos los niveles** . Madrid: EnClave-ELE, 2013. DIAZ Y GARCÍA-TALAVERA, Miguel. **Dicionário Santillana para estudantes** . São Paulo: Editora Moderna. 2009. MILANI, Esther Maria. **Gramática de espanhol para brasileiros** . 4. ed. São Paulo: Saraiva, 2011. SALLÉS, Matilde M. **Clase de Música** . Barcelona: Difusión, 2012. SILVA, Cecília Fonseca da. **Español a través de textos** : estudio contrastivo para brasileños. Rio de Janeiro: Imperial Novo Milênio, 2013.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Educação Física I||
@@ -651,7 +651,7 @@ KIRK, D.; MACDONALD, D.; O’SULLIVAN. **Handbook of Physical Education** . SAGE
 
 **CAMPUS PINHAIS DO IFPR Curso:** Técnico em Informática Integrado ao **Eixo Tecnológico:** Informação e Comunicação Ensino Médio **Componente Curricular:** Artes I **Carga Horária (hora-aula):** 80 **Período Letivo:** 1º ano **Ementa:** Produção e reflexão sobre entre arte e sociedade em suas diferentes linguagens artísticas (Dança, Teatro, Música, Cinema e Artes Visuais) em contextos históricos diversos, estabelecendo relações sobre o papel da arte em sua discussão crítica sobre com o mundo. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** AZEVEDO, F. de. **A cultura brasileira.** 5ª ed., revista e ampliada. São Paulo: Melhoramentos, editora da USP, 1971. BOSI, Alfredo. **Reflexões sobre a arte.** São Paulo: Ática, 1991. FISCHER, Ernest. **A necessidade da arte.** Rio de Janeiro: Zahar, 1979. BERTHOLD, M. **História mundial do teatro** . 2. ed. Campinas: Perspectiva, 2004. LABAN, R. **Domínio do movimento** . São Paulo: Summus, 1978. GOMBRICH, E. H. **Arte e ilusão.** São Paulo: M. Fontes, 1986. CANDE, R. **História universal da música** . 1ª  Edição. São Paulo: Martins Fontes, 2001. **Bibliografia Complementar:** José Miguel Wisnik. **O som e o sentido. Uma outra história das músicas** . São Paulo, Companhia das Letras, 1999. MARQUES, Isabel A. **Dançando na escola** , 4. ed. São Paulo,SP: Cortez, 2007. PAVIS, P. **Dicionário de Teatro.** São Paulo: Perspectiva, 2003. STRICKLAND, C. **Arte Comentada: da Pré-história ao Pós-moderno** . 13ª ed. Tradução: Ângela Lobo de Andrade. RJ: Ediouro, 2004. STAM, Robert. **Introdução à Teoria Do Cinema** . São Paulo: Papirus, 2000.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Matemática I||
@@ -691,7 +691,7 @@ MENDONÇA, F.; DANNI-OLIVEIRA, I. M. **Climatologia** : noções básicas e clim
 
 MONTEIRO, Carlos A. de Figueiredo; MENDONÇA, Francisco. **Clima urbano. São Paulo** : Contexto, 2003. TEIXEIRA, I. F. (Org.) **Noções básicas de cartografia** . São Paulo: IBGE, 2008. **Bibliografia Complementar:** AYOADE, J. O. **Introdução à Climatologia para os Trópicos** . Bertrand Brasil, 2012. CASTRO, Iná E. de; GOMES, Paulo C. da Costa; CORRÊA, Roberto Lobato (Orgs.) **Geografia: conceitos e temas** . Rio de Janeiro: Bertrand Brasil, 1995. CHRISTOFOLETTI, Antônio. **Geomorfologia** . São Paulo: Edgard Blücher, 1980. GUERRA, A. T.; GUERRA, A. J. T. **Novo dicionário geológico-geomorfológico** . Rio de Janeiro: Bertrand Brasil, 1997. TEIXEIRA, Wilson [et al.] (Orgs.) **Decifrando a Terra** . São Paulo: Cia Editorial Nacional, 2009.
 
-|**_CAMPUS_ PINHAIS DO IFPR**|**_CAMPUS_ PINHAIS DO IFPR**|
+|**_CAMPUS_ PINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Sociologia I||
@@ -715,7 +715,7 @@ Noção da atividade filosófica e a história da Filosofia. Temas abordados e c
 
 ## _**CAMPUS**_ **PINHAIS DO IFPR**
 
-|**_CAMPUS_ PINHAIS DO IFPR**|**_CAMPUS_ PINHAIS DO IFPR**|
+|**_CAMPUS_ PINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Algoritmos e Estruturas de Dados||
@@ -737,7 +737,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 História da Informática. Conceitos de software e hardware. Tipos de dispositivos. Conceitos de Sistemas Operacionais. A Internet e a Web. Tipos de arquivos. Softwares de tratamento básico de informação (edição de texto, planilha eletrônica e apresentação). Concepção de projetos de Informática. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** CAPRON, Harriet L.; JOHNSON, J. A. **Introdução à Informática** . São Paulo, 8 ed. Pearson, 2004. LAMAS, Murillo. **OpenOffice.org: ao Seu Alcance** . São Paulo: Letras & Letras, 2004. STALLINGS, W. **Arquitetura e Organização de Computadores** . São Paulo: Prentice Hall, 2002. Deitel, H. M., Deitel, P. J., Choffnes, D. R; **Sistemas Operacionais** . Prentice Hall. Tradução da 3ª Ed., 2005. SCHIAVONI, M. **Hardware** . Curitiba. Editora do Livro Técnico, 2010. **Bibliografia Complementar:** COSTA, Edgard Alves. BrOffice. org-da teoria à prática. Brasport, 2007. MARÇULA, M. e FILHO, B., ARMANDO, P. **Informática** : Conceitos e Aplicações. São Paulo: Erika 2008. PARHAMI, B. **Arquitetura de Computadores** . Rio de Janeiro: McGraw Hill, 2008. VELOSO, Fernando de Castro. **Informática** : conceitos básicos. 7.ed. Rio de Janeiro: Campus, 2004. MANZANO, JANG. **OpenOffice.org** : versão 1.1 em português: guia de aplicação. São Paulo: Érica, 2003.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Redes de Computadores||
@@ -757,7 +757,7 @@ História da Informática. Conceitos de software e hardware. Tipos de dispositiv
 
 Introdução à arquitetura e organização de computadores. Evolução dos sistemas computacionais. Componentes de hardware. Introdução à montagem e manutenção de computadores. Instalação dos principais componentes de um computador. Particionamento e formatação de discos. Instalação de Sistemas Operacionais. Manutenção preventiva e corretiva. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** D'AVILA, Edison. **Montagem, manutenção e configuração de computadores pessoais** . Editora Érica, 1997. LUIZ C. M. Lima; **Apostila de Montagem e Manutenção de Computadores** – Pronatec, 2012. JUNIOR, Réu.; FERNANDES, Elvado. **Informática, redes e manutenção de computadores** . São Paulo: Fundação Padre Anchieta, 2010. WEBER, Raul Fernando. **Arquitetura de Computadores Pessoais** . 2ª Edição. Porto Alegre: Editora da UFRGS, 2001. TANENBAUM, Andrew S, **Sistemas Operacionais Modernos** . 3ª Edição. 2009. **Bibliografia Complementar:** PATTERSON, D. A.; HENNESSY, J. L. **Organização e Projeto de Computadores** . São Paulo: Editora Campus, 2005. MONTEIRO, Mário A. **Introdução à Organização de Computadores** . 5ª Edição. Rio de Janeiro: LTC, 2007. TANENBAUM, Andrew S. **Organização estruturada de computadores** . 5ª Edição. São Paulo: Pearson Prentice Hall, 2007. LORIN, Harold; REINPRECHT, Ricardo. **Introdução a arquitetura e organização de computadores** . Rio de Janeiro: Campus, 1985. STALLINGS, William. **Arquitetura e organização de computadores** : projeto para o desempenho. 5.ed. São Paulo: Pearson Prentice Hall, 2002.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Literatura Inglesa e Cultura Anglófona I||
@@ -796,7 +796,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Discurso como prática social da língua espanhola. Língua e contexto histórico. Prática de leitura e compreensão auditiva de diversos gêneros textuais. Produção oral e escrita de diversos gêneros em língua espanhola. Heterogenéricos. Heterosemánticos. Pronomes. Muy e mucho. Pretéritos Indefinido, Perfecto Compuesto e Imperfecto de Indicativo (verbos regulares e irregulares). Leitura e análise de obras literárias em língua espanhola. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica: EL LAZARILLO de Tormes** . Italia: Lecturas ELi, 2011. FANJUL, Adrian. **Gramática de español** : paso a paso. São Paulo: Santillana/Moderna, 2014. LERALTA, Susana Martín. **Todo oídos.** Barcelona: Difusión, 2010. **SEÑAS:** Diccionario para la enseñanza de la lengua española para brasileños. São Paulo: Martins Fontes, 2002. SOLER-ESPIAUBA, Dolores. **Las nietas de Mayo** . Barcelona: Difusión, 2014. **Bibliografia Complementar:** DIAZ Y GARCÍA-TALAVERA, Miguel. **Dicionário Santillana para estudantes** . São Paulo: Editora Moderna. 2009. MILANI, Esther Maria. **Gramática de espanhol para brasileiros** . 4. ed. São Paulo: Saraiva, 2011. PERES, Ennio. **Juegos de palabras y con las palabras** . Barcelona: Octaedro, 2014. SALLÉS, Matilde M. **Clase de Música** . Barcelona: Difusión, 2012. SILVA, Cecília Fonseca da. **Español a través de textos** : estudio contrastivo para brasileños. Rio de Janeiro: Imperial Novo Milênio, 2013.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Educação Física II||
@@ -886,7 +886,7 @@ CARAÇA, B. J. **Conceitos fundamentais da matemática.** 4.ed. Lisboa: Gradiva,
 
 EVES, W. **Introdução à história da matemática.** Campinas. Editora: Unicamp. 2007. CHUEIRI, V. M. M.; GONÇALVES, E. M. **Dicionário Comentado de Matemática - Conteúdos de Matemática Dispostos em Forma de Dicionário.** Rio de Janeiro: Ed Ciência Moderna Ltda, 2012. LIMA, E.L. CARVALHO, P. C. P.; WAGNER, E. MORGADO, A. C. **Matemática do Ensino Médio, Volume 1** . Rio de Janeiro. Editora: Sociedade Brasileira de Matemática, 2006 BOYER, C. B. **História da Matemática.** São Paulo: Edgard Blücher, 1996. DANTE, L. R. **Didática da Resolução de Problemas.** São Paulo: Ática, 1989.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**História II||
@@ -915,7 +915,7 @@ KARNAL, Leandro et. al. **História dos Estados Unidos** : das origens ao sécul
 
 KI-ZERBO, Joseph. **Metodologia e pré-história da África** . São Paulo: Ática, 2010. LE GOFF, Jacques. **Uma breve história da Europa** . Editora Vozes, 2008.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Geografia II||
@@ -931,7 +931,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS**
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Sociologia II||
@@ -979,7 +979,7 @@ AMAS, L. M. D. **SQL** - Structured Query Language. 6ª Edição. Editora LTC, 2
 
 **Curso:** Técnico em Informática Integrado ao **Eixo Tecnológico:** Informação e Comunicação Ensino Médio **Componente Curricular:** Literatura Inglesa e Cultura Anglófona II **Carga Horária (hora-aula):** 120 **Período Letivo:** 2º ano **Ementa:** Discurso como prática social da língua Inglesa: Leitura; Escrita e Oralidade. Integração da Língua Estrangeira Moderna (Inglês) com a área técnica do curso. Leitura e produção de textos de acordo com gêneros textuais. Aspectos culturais históricos e geográficos da Língua Inglesa no contexto mundial. Estudos linguísticos e culturais de língua inglesa. Leitura de obras literárias em língua inglesa. Tópicos gramaticais. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** MUNHOZ, R. **Inglês instrumental** : estratégias de leitura. São Paulo: Texto Novo, 2002. MURPHY, R. **English grammar in use** . With answers. 3ª Edição. Cambridge: Cambridge University Press, 2007. REJANI, M. **Learning English through texts** . São Paulo: Texto novo, 2003. (v.1 e 2). SWAN, M.; WALTER, C.; O'SULLIVAN, D. **The new Cambridge English course 1 teacher's book** . Cambridge University Press, 1992. SWAN, M.; WALTER, C.; O'SULLIVAN, D. **The new Cambridge English course 2 teacher's book** . Cambridge University Press, 1992. **Bibliografia Complementar:** ESSENTIAL **English Dictionary.** Cambridge University Press, 2004. GILBERT, Judy B. **Clear Speech** . Pronunciation and Listening Comprehension in North American English. 4a. edição. Cambridge University Press, 2012. THORNLEY, G.C.; ROBERTS, G. **An Outline of English Literature** . London: Longman, 1990. SWAN, M.; WALTER, C.; O'SULLIVAN, D. **The new Cambridge English course 3 teacher's book** . Cambridge University Press, 1992. BRADLEY, E. S. et al. (eds.) **The American tradition in literature** . New York: Norton, 1962.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Língua Portuguesa e Literatura III||
@@ -990,7 +990,7 @@ AMAS, L. M. D. **SQL** - Structured Query Language. 6ª Edição. Editora LTC, 2
 
 Discurso como prática social: Leitura; Escrita e Oralidade. Intertextualidade. Estudos gramaticais: sintaxe da Língua Portuguesa (período simples, período composto, concordância verbal e nominal e regência). Tipologias textuais. Gêneros textuais escritos. Coesão e coerência. Gêneros textuais orais. Desenvolvimento de técnicas de expressão oral. Interpretação de textos verbais e não verbais. Letramento literário. Fundamentos da literatura: recursos estilísticos, figuras de linguagem, formas poéticas, elementos da narrativa. Diálogos interdisciplinares entre literatura, demais artes e gêneros textuais de outras esferas: publicidade, cinema, jornalismo, música, artes visuais, filosofia, ciência etc. História da literatura brasileira no século XX: contexto histórico-social, principais autores e obras. Cultura africana e indígena na linguagem e na literatura. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** CEREJA, William; DIAS VIANNA, Carolina; DAMIEN, Christiane. **Português Contemporâneo** : diálogo, reflexão e uso. v.3. São Paulo: Saraiva, 2016. CEREJA, William; MAGALHÃES, Thereza Cochar. **Gramática** : texto, reflexão e uso. 4. Ed. São Paulo: Atual, 2012. CEREJA, William; MAGALHÃES, Thereza Cochar; CLETO, Ciley. **Interpretação de textos** : construindo competências e habilidades em leitura. Ensino Médio. 2. ed. São Paulo: Atual, 2012. CUNHA, Celso & CINTRA, Lindley. **Nova Gramática do Português Contemporâneo** . Rio de Janeiro: Nova Fronteira, 3a ed..2001. NICOLA, José de. **Literatura brasileira** : das origens aos nossos dias. São Paulo: Scipione, 1998. **Bibliografia Complementar:** BAGNO, M. **Gramática pedagógica do português brasileiro** . São Paulo: Parábola, 2011. BOSI, Alfredo. **História concisa da literatura brasileira** . 38. ed. São Paulo: Cultrix, 2001. FELINTO, Renata (Org.). **Culturas africanas e afro-brasileiras em sala de aula** : saberes para os professores, fazeres para os alunos. Belo Horizonte: Fino Traço, 2012. FIORIN, José Luiz; SAVIOLI, Francisco Platão. **Para entender o texto** : leitura e redação. 17. ed. São Paulo: Ática, 2007. ROUXEL, Anne. **Aspectos metodológicos do ensino de literatura** . In: Leitura de literatura na escola. São Paulo: Parábola, 2013.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Língua Espanhola e Cultura Hispânica III||
@@ -1011,7 +1011,7 @@ CABRALES, José Manuel; HERNANDEZ, Guillermo. **Literatura española y latinoame
 
 FRANK, Christine. (et alli). **Escritura Creativa** : actividades para producir textos significativos en Ele. Madrid: SGEL, 2012.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo Tecnológico:**Informação e Comunicação|
 |Ensino Médio||
@@ -1028,7 +1028,7 @@ O estudo das raízes ontológicas dos conteúdos da Cultura Corporal: Esportes C
 
 ALMEIDA, M.T.P. **Jogos cooperativos - aprendizagens, métodos e práticas** . 1ª Ed. Várzea Paulista: Editora Fontoura, 2011. TEIXEIRA, H.V. Educação Física e Desportos – Ensino médio. 5ª Ed. São Paulo: Saraiva didáticos, 2013. AWAD, H. **Educação física escolar - Múltiplos caminhos** .  1ª Ed. Várzea Paulista: Editora Fontoura, 2010. MOREIRA, E.C; PEREIRA, R.S. **Educação física escolar: desafios e propostas** 2.  2ª Ed. Várzea Paulista: Editora Fontoura, 2011. SENAC NACIONAL. **Primeiros Socorros – Como agir em situações de emergência – Senac** . 3ª Ed. São Paulo: Senac, 2007. **Bibliografia Complementar: O'DRISCOLL, D.** 100 Physical Education Activites. **Athena Press, 2009.** PE4LIFE. PE4Life: Developing and Promoting Quality Physical Education. **Human Kinetics, 2006.** PE4LIFE. Game Changer: Phil Lawler's Wellness Based Physical Education. **Human Kinetics; 1 edition, 2011.** KIRK, D.; MACDONALD, D.; O’SULLIVAN. Handbook of Physical Education. **SAGE Publications Ltd, 2013.** MOREIRA, W.W.; SIMÕES, R. **Aulas de Educação física no ensino médio** . 1ª Ed. Papirus, 2010.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Biologia II||
@@ -1109,7 +1109,7 @@ BROWN, T. L., LEMAY, H. E., BURSTEN, B. E., BURDGE, J. R. **Química** : A Ciên
 
 **CAMPUS PINHAIS DO IFPR Curso:** Técnico em Informática Integrado ao **Eixo Tecnológico:** Informação e Comunicação Ensino Médio **Componente Curricular:** Matemática III **Carga Horária (hora-aula):** 80 **Período Letivo:** 3º ano **Ementa:** Geometria Plana; Geometria Espacial; Geometria Analítica: ponto e reta; Geometria Analítica: estudo da circunferência. Trigonometria no Ciclo; Números Complexos; Polinômios. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** CARAÇA, B. J. **Conceitos fundamentais da matemática** . 4.ed. Lisboa: Gradiva, 2002. DANTE, Luiz Roberto; **Matemática Contextos e Aplicações** . V. 2 e 3, 1.ed. 3a Impressão. São Paulo, Editora: Ática, 2012. IEZZI,G. _et al_ . **Fundamentos de Matemática Elementar.** V 6, 7, 9 e 10,São Paulo: Atual, 2013. LOPES, Luiz Fernando; CALLIARI, Luiz Roberto. **Matemática aplicada na Educação Profissional** . Curitiba: Base Editorial, 2010. RIBEIRO, Jackson. **Matemática** : ciência, linguagem e tecnologia. V.2 e 3, São Paulo: Scipione, 2010. SOUZA, Joamir Roberto. **Coleção Novo Olhar Matemática** . V.2 e 3, São Paulo: FTD, 2010. **Bibliografia Complementar:** EVES, W. **Introdução à história da matemática.** Campinas. Editora: Unicamp. 2007. CHUEIRI, V. M. M.; GONÇALVES, E. M. **Dicionário Comentado de Matemática - Conteúdos de Matemática Dispostos em Forma de Dicionário.** Rio de Janeiro: Ed Ciência Moderna Ltda, 2012. LIMA, E.L. CARVALHO, P. C. P.; WAGNER, E. MORGADO, A. C. **Matemática do Ensino Médio, Volume 1** . Rio de Janeiro. Editora: Sociedade Brasileira de Matemática, 2006 BOYER, C. B. **História da Matemática.** São Paulo: Edgard Blücher, 1996. DANTE, L. R. **Didática da Resolução de Problemas.** São Paulo: Ática, 1989.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**História III||
@@ -1148,7 +1148,7 @@ RAMONET, Ignácio. **Guerras do Século XXI – Novos temores e novas ameaças**
 
 SILVA, Golbery do Couto e. **Geopolítica do Brasil** . Rio de Janeiro: José Olympio, 1967. TOSTA, Octávio. **Teorias Geopolíticas** . Rio de janeiro. BIBLIEX, 1984.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Sociologia III||
@@ -1174,7 +1174,7 @@ MEC. Resolução CNE/CP nº 1/ 2012 - **Estabelece Diretrizes Nacionais para a E
 
 **CAMPUS PINHAIS DO IFPR Curso:** Técnico em Informática Integrado ao **Eixo Tecnológico:** Informação e Comunicação Ensino Médio **Componente Curricular:** Programação para Dispositivos Móveis **Carga Horária (hora-aula):** 120 **Período Letivo:** 3º ano **Ementa:** Introdução aos padrões de projeto. Conceito de código limpo. Introdução a programação para Android. Conceitos básicos ( _Activitiy_ , _Fragment_ , _Intent_ e _Bundle_ ). Adição de áudios em aplicações. _Toast_ . _PopUps_ . Tipos de Layouts. Criação de Menus. _Deploy_ de aplicativos. Alteração de ícones. Criação de notificações. Gerenciamento de permissões dos dispositivos. Bancos de dados SQLite. WebServices. Sincronização SQLite com MySQL. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** METSKER, Steven John **. Padrões de projeto em Java** . Bookman, 2004. MARTIN, Robert C. et al. **Código limpo: habilidades práticas do Agile software** . Rio de JaneiroRJ: Alta Books, 2009. DEITEL, Harvey; DEITEL, Paul; DEITEL, Abbey. **Android: Como programar.** Bookman Editora, 2015. LECHETA, Ricardo R. Google Android-3ª Edição: **Aprenda a criar aplicações para dispositivos móveis com o Android SDK** . Novatec Editora, 2013. LEITE, Thiago et al. **Orientação a Objetos: Aprenda seus conceitos e suas aplicabilidades de forma efetiva** . Editora Casa do Código, 2016. **Bibliografia Complementar:** FREEMAN, Eric; FREEMAN, Elisabeth. **Use a cabeça: Padrões de Projeto** , 2005. PEREIRA, Lucio Camilo Oliva; DA SILVA, Michel Lourenço. **Android para desenvolvedores** . Brasport, 2009. BEZERRA, Eduardo. **Princípios de Análise e Projeto de Sistemas com UML** . Rio de Janeiro: Campus, 2003. ARNOLD, Ken; GOSLING, James. **A linguagem de programação Java** . Bookman Editora, 2009. DEITEL, Harvey M.; DEITEL, Paul J. **Java: Como Programar** , 6ª Edição. 2005.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Desenvolvimento Web||
@@ -1221,7 +1221,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 **Carga Horária (hora-aula):** 80 **Período Letivo:** 4º ano **Ementa:** Discurso como prática social da língua espanhola. Aperfeiçoamento da expressão linguística oral e escrita. Integração da língua espanhola com a área técnica do curso. Língua e expressões artísticas. Viagens. Prática de leitura e compreensão auditiva de diversos gêneros textuais. Leitura instrumental. Produção oral e escrita de diversos gêneros em língua espanhola. Leitura e análise de obras literárias em língua espanhola. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** GARCÍA MÁRQUEZ, Gabriel. **Doce cuentos peregrinos** . 1. ed. Buenos Aires: Debolsillo, 2016. JACOBI, Claudia (et alli), **Gramática en contexto** . Madrid: Edelsa, 2011. MILANI, E. M. **Nuevo Listo:** parte B. São Paulo: Santillana/Moderna, 2012. PIQUERAS, Juan Vicente. **Yo que tú** : manual de gramática y poesía. Barcelona: Difusión, 2012. **SEÑAS:** Diccionario para la enseñanza de la lengua española para brasileños. São Paulo: Martins Fontes, 2002. **Bibliografia Complementar:** AIXALÀ, Evelyn (et alli). **Clase de cine** : actividades para la visualización de películas en español. Barcelona: Difusión, 2009. BELTRÁN, Blanca Aguirre. **Aprendizaje Y Enseñanza De Español Con Fines Específicos** . Madrid: SGEL, 2012. BEMBIBRE, Cecilia. CÁMARA, Noemí. **Vamos Al Cine** . Madrid: Edinumen, 2013. DIAZ Y GARCÍA-TALAVERA, Miguel. **Dicionário Santillana para estudantes** . São Paulo: Editora Moderna. 2009. PRIOR, Beatriz. TOUBES, Patrícia. **Juegos dramáticos para nuestra clase de ELE** . Barcelona: Octaedro, 2014.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Artes II||
@@ -1274,7 +1274,7 @@ MATIOLI, S. R.; FERNANDES, F. M. C. **Biologia molecular e evolução** . 2ª Ed
 
 MOORE, K. L.; Persaud, T. V. N., Torchia, M. G. **Embriologia Básica** . 9ª edição, Rio de Janeiro: Elsevier, 2016.
 
-||**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+||**CAMPUSPINHAIS DO IFPR**||
 |---|---|---|
 |**Curso:**|Técnico em Informática Integrado ao|**Eixo Tecnológico:**Informação e Comunicação|
 |Ensino|Médio||
@@ -1301,7 +1301,7 @@ ADIR MOYSÉIS E SÉRGIO LINS: **Gravitação e Ondas** , Fortaleza– CE – edi
 
 **Curso:** Técnico em Informática Integrado ao **Eixo Tecnológico:** Informação e Comunicação Ensino Médio **Componente Curricular:** Química III **Carga Horária (hora-aula):** 80 **Período Letivo:** 4º ano **Ementa:** Química Orgânica, importância do carbono e seus compostos, postulados, teoria da força vital, cadeias carbônicas, classificação das cadeias carbônicas, fórmulas estrutural, simplificada e molecular de compostos orgânicos, hidrocarbonetos, nomenclatura de hidrocarbonetos, funções oxigenadas: álcoois, aldeídos, cetonas, ácidos carboxílicos, éter e éster, propriedades físicas e químicas de compostos orgânicos, funções nitrogenadas: aminas, amidas, nitrilas e nitrocompostos, propriedades físicas e química de compostos nitrogenados, reações orgânicas; lipídios, açúcares, proteínas e educação nutricional e alimentar;  efeitos dos compostos orgânicos no meio ambiente, acidez e basicidade de compostos orgânicos. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** BRASIL. Secretaria de Educação Média e Tecnológica. **Parâmetros curriculares nacionais** : ensino médio. Brasília: MEC/SEMTEC, 2002. CANTO, E.L. PERUZZO, F. M. **Química na abordagem do cotidiano** . v. 2. 4ª ed. São Paulo: Moderna, 2010. FELTRE, R. **Química: Físico-Química** . v. 2. 6ª Edição. São Paulo: Editora Moderna, 2004. LISBOA, J. C, F. **Ser protagonista** . v. 2, 1ª Edição. São Paulo: Edições SM. 2010. REIS, M. **Interatividade Química – cidadania, participação e transformação** . v. único. São Paulo: FDT, 2003. SARDELLA, A., FALCONE, M. **Química** : série Brasil. Vol. único. São Paulo: Ática. 2004. **Bibliografia Complementar:** MORTIMER, E. F., MACHADO, A. H. **Química para o ensino médio** . São Paulo: Scipione, 2002. RUSSEL, J. B. **Química geral** . v. 1. 2 ed. São Paulo: Makron Books,1994. RUSSEL, J. B. **Química geral** . v. 2. 2ª Edição. São Paulo: Makron Books,1994. BROWN, T. L., LEMAY, H. E., BURSTEN, B. E., BURDGE, J. R. **Química** : A Ciência Central. 9. ed. São Paulo: PEARSON, 2005. PARANA, Secretaria de Estado da Educação do. **Diretrizes Curriculares da Educação Básica** . 2008. USBERCO, João; SALVADOR, Edgar. **Química Essencial** . Ed. Saraiva. São Paulo, 2003.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Trabalho de Conclusão de Curso||
@@ -1314,7 +1314,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Elaboração de um projeto teórico-prático que contribua para a melhoria da automação, do desempenho e da eficiência de processos e/ou serviços, em que o aluno mostrará os conhecimentos técnicos que adquiriu durante o curso. Temas transversais conforme Res. CNE/CEB nº 02/2012. Exibição de filmes de produção nacional no contexto da disciplina conforme § 8º do artigo 26 da Lei nº 9.394/1996. **Bibliografia Básica:** ANDRADE, M. M. **Introdução à metodologia do trabalho científico** . 8.ed. São Paulo: Atlas, 2007. GUIMARÃES, F. R. **Diretrizes para elaboração de trabalhos monográficos** ; Campina Grande; EDUEP, 2002. KÖCHE, José Carlos. **Fundamentos de metodologia científica** : teoria da ciência e iniciação à pesquisa. 26. ed. Petrópolis: Vozes, 2009. WAZLAWICK, R. S. **Metodologia de pesquisa para ciência da computação** , Rio de Janeiro: Elsevier, 2008. LAKATOS, Eva Maria; DE ANDRADE MARCONI, Marina. **Metodologia científica** . São Paulo: Atlas, 1991. **Bibliografia Complementar:** SEVERINO, Antônio Joaquim. **Metodologia do trabalho científico** . Cortez editora, 2017. RAMPAZZO, Lino. **Metodologia científica** . Edições Loyola, 2005. MATIAS-PEREIRA, José. **Manual de metodologia da pesquisa científica** . Atlas, 2010. RUIZ, João Álvaro. Metodologia científica. **Guia para eficiência nos estudos** , v. 13, p. 131, 1996. ISKANDAR, Jamil Ibrahim. **Normas da ABNT - Comentadas para Trabalhos Científicos.** 3a Edição. Jurua Editora, 2009.
 
-|**CAMPUSPINHAIS DO IFPR**|**CAMPUSPINHAIS DO IFPR**|
+|**CAMPUSPINHAIS DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Orientação para TCC||
@@ -1390,12 +1390,12 @@ Para a oferta do Curso Técnico em Informática Integrado ao Ensino Médio no IF
 |4 Laboratórios<br>Móveis com 40<br>Notebooks contendo<br>softwares de apoio ao<br>desenvolvimento de<br>sistemas|<br>4 Laboratórios<br>Móveis com 40<br>Notebooks contendo<br>softwares de apoio ao<br>desenvolvimento de<br>sistemas|<br>-|-|
 |Laboratório de<br>manutenção de<br>hardware|5 Computadores<br>disponíveis para<br>realização de ações<br>de manutenção|-|35 computadores<br>para atividades de<br>manutenção e uma<br>sala específica para<br>tal atividade|
 |Laboratório de<br>Redes de<br>computadores|-|-|Laboratório de<br>Redes de<br>computadores|
-|4 Salas de aulas com<br>quadro branco|4 Salas de aulas com<br>quadro branco|-|-|
+|4 Salas de aulas com<br>quadro branco||-|-|
 |4 projetores|4 projetores|-|-|
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|1 Biblioteca Central<br>com acervo<br>específico e<br>atualizado|1 Biblioteca Central<br>com acervo<br>específico e<br>atualizado|-|-|
+|1 Biblioteca Central<br>com acervo<br>específico e<br>atualizado||-|-|
 |---|---|---|---|
 |1 Auditório|-|-|1 Auditório|
 |1 Ginásio<br>poliesportivo coberto|1 Quadra externa em<br>asfalto|-|1 Ginásio<br>poliesportivo coberto|
@@ -1404,7 +1404,7 @@ Para a oferta do Curso Técnico em Informática Integrado ao Ensino Médio no IF
 |1 Laboratório de<br>Biologia|-|-|1 Laboratório de<br>Biologia|
 |1 Cantina com praça<br>de alimentação|-|-|1 Cantina com praça<br>de alimentação|
 |1 Área de Lazer /<br>Convivência|-|-|1 Área de Lazer /<br>Convivência|
-|Infraestrutura de<br>bloco padrão|Infraestrutura de<br>bloco padrão|-|-|
+|Infraestrutura de<br>bloco padrão||-|-|
 
 ## **8. INFRAESTRUTURA PARA ATENDIMENTO ÀS NECESSIDADES EDUCACIONAIS ESPECIAIS**
 
@@ -1434,17 +1434,17 @@ Destarte, os materiais, recursos e espaços físicos destinados ao atendimento d
 |Acionador de<br>pressão|-|-|Acionador de<br>pressão|
 |Alfabeto Braille|-|-|Alfabeto Braille|
 |Armário|Armário|-|-|
-|Armário de duas<br>portas|Armário de duas<br>portas|-|-|
+|Armário de duas<br>portas||-|-|
 |Bandinha Rítmica|-|-|Bandinha Rítmica|
-|Cadeira giratória de<br>rodinhas|Cadeira giratória de<br>rodinhas|-|-|
+|Cadeira giratória de<br>rodinhas||-|-|
 |Calculadora sonora|-|-|Calculadora sonora|
-|Computador de<br>mesa completo|Computador de<br>mesa completo|-|-|
+|Computador de<br>mesa completo||-|-|
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
 |Dominó de Animais<br>em LIBRAS(MDF)|-|-|Dominó de Animais<br>em LIBRAS(MDF)|
 |---|---|---|---|
-|Dominó de Animais<br>LIBRAS|Dominó de Animais<br>LIBRAS|-|-|
+|Dominó de Animais<br>LIBRAS||-|-|
 |Dominó de<br>Associação de Ideias|-|-|Dominó de<br>Associação de Ideias|
 |Dominó de Frases|-|-|Dominó de Frases|
 |Dominó de Frutas<br>em LIBRAS (MDF)|-|-|Dominó de Frutas<br>em LIBRAS (MDF)|
@@ -1456,8 +1456,8 @@ Destarte, os materiais, recursos e espaços físicos destinados ao atendimento d
 |Globo Terrestre Tátil|-|-|Globo Terrestre Tátil|
 |Guia de assinatura|-|-|Guia de assinatura|
 |Impressora Braille|-|-|Impressora Braille|
-|Jogo de Memória de<br>LIBRAS: Animais 1|Jogo de Memória de<br>LIBRAS: Animais 1|-|-|
-|Jogo de Memória de<br>LIBRAS: Frutas 1|Jogo de Memória de<br>LIBRAS: Frutas 1|-|-|
+|Jogo de Memória de<br>LIBRAS: Animais 1||-|-|
+|Jogo de Memória de<br>LIBRAS: Frutas 1||-|-|
 |Jogo: Cilada|Jogo: Cilada|-|-|
 |Jogo: Resta 1|Jogo: Resta 1|-|-|
 |Kit de desenho<br>geométrico adaptado|-|-|Kit de desenho<br>geométrico adaptado|
@@ -1473,14 +1473,14 @@ Destarte, os materiais, recursos e espaços físicos destinados ao atendimento d
 |Memória Tátil|-|-|Memória Tátil|
 |Mesa redonda|-|-|Mesa redonda|
 |Mouse com entrada<br>para acionador|-|-|Mouse com entrada<br>para acionador|
-|Piso direcional|Piso direcional|-|-|
+|Piso direcional||-|-|
 |Plano inclinado –<br>suportepara leitura|-|-|Plano inclinado –<br>suportepara leitura|
 |Punção|-|-|Punção|
 |Quadro branco|-|-|Quadro branco|
 |Quebra Cabeças -<br>sequência lógica|-|-|Quebra Cabeças -<br>sequência lógica|
 |Reglete de mesa|-|-|Reglete de mesa|
 |Sacolão Criativo<br>Monta Tudo|-|-|Sacolão Criativo<br>Monta Tudo|
-|Sala de Recursos<br>Multifuncionais|Sala de Recursos<br>Multifuncionais|-|-|
+|Sala de Recursos<br>Multifuncionais||-|-|
 |Scanner|Scanner|-|-|
 |Software<br>Comunicação<br>Alternativa|-|-|Software<br>Comunicação<br>Alternativa|
 |Software para<br>Produção de<br>Desenhos Gráficos e<br>Táteis|-|-|Software para<br>Produção de<br>Desenhos Gráficos e<br>Táteis|
@@ -1499,7 +1499,7 @@ A Tabela 4 apresenta os cálculos para o quantitativo de professores necessário
 
 **Tabela 4** . Quantitativo de Professores Necessários por Área/Eixo.
 
-|**Disciplinas Técnicas**|**Disciplinas Técnicas**|**Disciplinas Técnicas**|**Disciplinas Técnicas**|**Disciplinas Técnicas**||||
+|**Disciplinas Técnicas**||||||||
 |---|---|---|---|---|---|---|---|
 |**Componente Curriculares**|**Hora**<br>**Aula**|**Aulas Sem.**<br>**(H/A)**|**Hora**<br>**Relógio**|**Aulas Sem.**<br>**(H/R)**|**Total**|**Total***|**Qtd**<br>**Prof.**|
 |Algoritmos e Estruturas de Dados<br>Introdução a Informática<br>Redes de Computadores<br>Arq. e Manutenção de Computadores<br>Programação Orientada a Objetos<br>Banco de Dados<br>Programação para Dispositivos Móveis<br>Desenvolvimento Web<br>Trabalho de Conclusão de Curso<br>Orientação para TCC<br>Tópicos em Tecnologia da Informação|160<br>40<br>80<br>80<br>80<br>80<br>120<br>120<br>160<br>160<br>80|4<br>1<br>2<br>2<br>2<br>2<br>3<br>3<br>4<br>4<br>2|133<br>33<br>67<br>67<br>67<br>67<br>100<br>100<br>133<br>133<br>67|3,325<br>0,825<br>1,675<br>1,675<br>1,675<br>1,675<br>2,5<br>2,5<br>3,325<br>3,325<br>1,675|24,175|48,35|3|
@@ -1590,9 +1590,9 @@ O ciclo de avaliação é sempre anual, orientado, de certa forma, pelo cronogra
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|4. Correções conforme orientadas<br>pela PROENS, condicionadas ao<br>item 3|||||X|X||
-|---|---|---|---|---|---|---|---|
-|5. Reenvio do projeto com as<br>correções para novo parecer e<br>envio ao Consepe, condicionado<br>aos itens 3 e 4|||||||X|
+|4. Correções conforme orientadas<br>pela PROENS, condicionadas ao<br>item 3|||||X||
+|---|---|---|---|---|---|---|
+|5. Reenvio do projeto com as<br>correções para novo parecer e<br>envio ao Consepe, condicionado<br>aos itens 3 e 4||||||X|
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 

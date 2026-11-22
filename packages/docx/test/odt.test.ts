@@ -90,7 +90,7 @@ describe("odtParaMarkdown", () => {
     );
   });
 
-  test("tabela com mescla horizontal e vertical: a célula se repete em cada posição coberta", () => {
+  test("tabela com mescla horizontal e vertical: a vertical se repete, a horizontal fica na primeira coluna", () => {
     const corpo = tabela(
       [
         linha([celula("Componente"), celula("Carga horária", { colunas: 2 }), coberta()]),
@@ -100,7 +100,7 @@ describe("odtParaMarkdown", () => {
       3,
     );
     expect(md(corpo)).toBe(
-      "| Componente | Carga horária | Carga horária |\n" +
+      "| Componente | Carga horária |  |\n" +
         "|---|---:|---|\n" +
         "| Matemática | 80 | 1º |\n" +
         "| Matemática | 40 | 2º |\n",
@@ -262,7 +262,8 @@ describe("odtParaMarkdown", () => {
       linha([celula("a", { colunas: 1_000_000_000, linhas: 1_000_000_000 }), coberta()]),
       linha([coberta(), coberta()]),
     ]);
-    expect(md(mescla)).toBe("| a | a |\n|---|---|\n| a | a |\n");
+    // As duas colunas não se separam em linha nenhuma: viram uma só.
+    expect(md(mescla)).toBe("| a |\n|---|\n| a |\n");
   });
 
   test("o orçamento de texto vale, inclusive para as notas", () => {

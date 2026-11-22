@@ -1831,7 +1831,7 @@ que estão atualmente disponíveis.
 
 **Quadro 15.** Relação do laboratório de edificações e os equipamentos que estão atualmente disponíveis.
 
-|Bloco didático - I|Bloco didático - I|Bloco didático - I|
+|Bloco didático - I|||
 |---|---|---|
 |**Laboratório de edificações**|||
 |item|descrição|quantidade|
@@ -1884,7 +1884,7 @@ que estão atualmente disponíveis.
 
 **Quadro 16.** Relação do laboratório de Desenho técnico e os equipamentos que estão atualmente disponíveis.
 
-|bloco didático - I|bloco didático - I|bloco didático - I|
+|bloco didático - I|||
 |---|---|---|
 |**laboratório de desenho técnico**|||
 |item|descrição|quantidade|
@@ -1907,7 +1907,7 @@ No Quadro 17 é apresentada a relação do laboratório de química e pesquisa e
 
 **Quadro 17.** Relação do laboratório de química e pesquisa e os equipamentos que estão atualmente disponíveis.
 
-|Bloco didático - I|Bloco didático - I|Bloco didático - I|
+|Bloco didático - I|||
 |---|---|---|
 |**Laboratório de química e pesquisa**|||
 |Item|Descrição|Quantidade|
@@ -1948,7 +1948,7 @@ No Quadro 17 é apresentada a relação do laboratório de biologia e os equipam
 
 **Quadro 17.** Relação do laboratório de Biologia e os equipamentos que estão atualmente disponíveis.
 
-|Bloco didático - II|Bloco didático - II|Bloco didático - II|
+|Bloco didático - II|||
 |---|---|---|
 |**Laboratório de biologia**|||
 |Item|Descrição|Quantidade|
@@ -2024,7 +2024,7 @@ No Quadro 18 é apresentada a relação do laboratório de química e os equipam
 
 **Quadro 18.** Relação do laboratório de Química e os equipamentos que estão atualmente disponíveis.
 
-|Bloco didático - II|Bloco didático - II|Bloco didático - II|
+|Bloco didático - II|||
 |---|---|---|
 |**Laboratório de química**|||
 |Item|Descrição|Quantidade|
@@ -2184,23 +2184,23 @@ O planejamento de ocupação das salas de aula do IFPR Campus Cascavel, nos turn
 |Sala 07||Matutino|Técnico em<br>Edificações|Técnico em<br>Edificações|Técnico em<br>Edificações|
 |||Vespertino|Técnico em<br>Edificações*|Técnico em<br>Edificações*|Técnico em<br>Edificações*|
 
-|||Noturno|Tecnólogo em<br>Gestão<br>Ambiental|Tecnólogo em<br>Gestão<br>Ambiental|Tecnólogo em<br>Gestão<br>Ambiental|
-|---|---|---|---|---|---|
-|Sala 08||Matutino|Técnico em<br>Edificações|Técnico em<br>Edificações|Técnico em<br>Edificações|
-|||Vespertino|Técnico em<br>Edificações*|Técnico em<br>Edificações*|Técnico em<br>Edificações*|
-|||Noturno|Tecnólogo em<br>Gestão<br>Ambiental|Tecnólogo em<br>Gestão<br>Ambiental|Tecnólogo em<br>Gestão<br>Ambiental|
-|Sala 09||Matutino|Técnico em<br>Edificações|Técnico em<br>Edificações|Técnico em<br>Edificações|
-|||Vespertino|Técnico em<br>Edificações*|Técnico em<br>Edificações*|Técnico em<br>Edificações*|
-|||Noturno|Pós-Graduação|Pós-Graduação|Pós-Graduação|
-|Sala 10||Matutino|Sala dos<br>professores|Sala dos<br>professores|Sala dos<br>professores|
-|||Vespertino|Sala dos<br>professores|Sala dos<br>professores|Sala dos<br>professores|
-|||Noturno|Sala dos<br>professores|Sala dos<br>professores|Sala dos<br>professores|
-|Sala 11||Matutino|Sala dos<br>professores|Sala dos<br>professores|Sala dos<br>professores|
-|||Vespertino|Sala dos<br>professores|Sala dos<br>professores|Sala dos<br>professores|
-|||Noturno|Sala dos<br>professores|Sala dos<br>professores|Sala dos<br>professores|
-|Sala 12||Matutino|Atendimento e<br>projetos|Atendimento e<br>projetos|Atendimento e<br>projetos|
-|||Vespertino|Atendimento e<br>projetos|Atendimento e<br>projetos|Atendimento e<br>projetos|
-|||Noturno|Atendimento e<br>projetos|Atendimento e<br>projetos|Atendimento e<br>projetos|
+|||Noturno|Tecnólogo em<br>Gestão<br>Ambiental|
+|---|---|---|---|
+|Sala 08||Matutino|Técnico em<br>Edificações|
+|||Vespertino|Técnico em<br>Edificações*|
+|||Noturno|Tecnólogo em<br>Gestão<br>Ambiental|
+|Sala 09||Matutino|Técnico em<br>Edificações|
+|||Vespertino|Técnico em<br>Edificações*|
+|||Noturno|Pós-Graduação|
+|Sala 10||Matutino|Sala dos<br>professores|
+|||Vespertino|Sala dos<br>professores|
+|||Noturno|Sala dos<br>professores|
+|Sala 11||Matutino|Sala dos<br>professores|
+|||Vespertino|Sala dos<br>professores|
+|||Noturno|Sala dos<br>professores|
+|Sala 12||Matutino|Atendimento e<br>projetos|
+|||Vespertino|Atendimento e<br>projetos|
+|||Noturno|Atendimento e<br>projetos|
 
 *Aulas nas terças e quintas feiras à tarde. Demais salas disponíveis para atendimentos e projetos.
 
@@ -2229,15 +2229,15 @@ O planejamento de ocupação dos laboratórios do IFPR Campus Cascavel, nos turn
 |||Noturno|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso de Técnico<br>em Informática e<br>TADS.|Aulas e projetos do<br>curso de Técnico<br>em Informática e<br>TADS.|
 |Laboratório de<br>informática 01||Matutino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
 
-|||Vespertino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
-|---|---|---|---|---|---|
-|||Noturno|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
-|Laboratório de<br>informática 02||Matutino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
-|||Vespertino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
-|||Noturno|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
-|Laboratório de<br>desenho<br>técnico||Matutino|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|
-|||Vespertino|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|
-|||Noturno|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|
+|||Vespertino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
+|---|---|---|---|
+|||Noturno|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
+|Laboratório de<br>informática 02||Matutino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
+|||Vespertino|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
+|||Noturno|Aulas e projetos do<br>curso Técnico em<br>Informática e<br>TADS.|
+|Laboratório de<br>desenho<br>técnico||Matutino|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|
+|||Vespertino|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|
+|||Noturno|Aulas e projetos<br>dos cursos de<br>Técnicos em<br>edificações e<br>informática.|
 
 ## **8.1 EXPANSÃO DO QUADRO DOCENTE**
 

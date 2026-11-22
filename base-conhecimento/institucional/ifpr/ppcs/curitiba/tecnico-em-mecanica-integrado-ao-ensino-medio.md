@@ -342,7 +342,7 @@ Os conteúdos transversais referentes a Educação Ambiental (Lei nº 9.795/99, 
 
 ## **MATRIZ CURRICULAR**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-aula)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -842,7 +842,7 @@ INSTITUTOFEDERAL<br>PARANA<br>MinisteriodaEducacao InstitutoFederaldoParana
 
 ## **Curso: Mecânica Integrado Eixo Tecnológico: Controle e Processos Industriais**
 
-|**Processos Industriais**|**Processos Industriais**|
+|**Processos Industriais**||
 |---|---|
 |**Componente Curricular:Máquinas de Fluxo**||
 |**Carga Horária: 80**|**Período Letivo: 2º ANO**|
@@ -1061,7 +1061,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 ## **Eixo Tecnológico: Controle e Processos Industriais**
 
-|**Processos Industriais**|**Processos Industriais**|
+|**Processos Industriais**||
 |---|---|
 |**Componente Curricular:Gestão da Qualidade e Meio Ambiente**||
 |**Carga Horária: 40**|**Período Letivo: 3º ANO**|
@@ -1092,7 +1092,7 @@ INSTITUTOFEDERAL PARANA
 
 MinisteriodaEducacao InstitutoFederaldoParana
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso: Mecânica Integrado**||**Eixo Tecnológico: Controle e**|
 |||**Processos Industriais**|
@@ -1785,10 +1785,10 @@ Análise das diversas manifestações da Atividade Corporal nas diferentes fases
 
 66
 
-|**Curso: Mecânica Integrado**<br>INSTITUTOFEDERAL||**Eixo Tecnológico: Controle e**<br>**Processos Industriais**<br>Ministerioda Educacao<br>~~InctitutoEodoraldoP~~arana|**Eixo Tecnológico: Controle e**<br>**Processos Industriais**<br>Ministerioda Educacao<br>~~InctitutoEodoraldoP~~arana|**Eixo Tecnológico: Controle e**<br>**Processos Industriais**<br>Ministerioda Educacao<br>~~InctitutoEodoraldoP~~arana|
-|---|---|---|---|---|
-|**Componente Curricular**: Educação Física II|||||
-|**Carga Horária(horas-aulas): **80h||**Período letivo:**2º ano|||
+|**Curso: Mecânica Integrado**<br>INSTITUTOFEDERAL||**Eixo Tecnológico: Controle e**<br>**Processos Industriais**<br>Ministerioda Educacao<br>~~InctitutoEodoraldoP~~arana|**Eixo Tecnológico: Controle e**<br>**Processos Industriais**<br>Ministerioda Educacao<br>~~InctitutoEodoraldoP~~arana|
+|---|---|---|---|
+|**Componente Curricular**: Educação Física II||||
+|**Carga Horária(horas-aulas): **80h||**Período letivo:**2º ano||
 
 ## **Ementa:**
 

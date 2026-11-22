@@ -632,7 +632,7 @@ MOTA-ROTH. **Gêneros, teorias, métodos, debates.** São Paulo: Parábola, 2005
 
 ROJO, R. Gêneros do discurso e gêneros textuais: questões teóricas e aplicadas. In: MEURER, BONINI. MARCUSCHI, L. A _._ **Gêneros textuais emergentes no contexto da tecnologia digital.** In: Hipertexto e Gêneros Digitais. Rio de Janeiro: Editora Lucerna, 2004.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Química integrado ao Ensino Médio|<br>**Eixo Tecnológico:**<br>Controle e Processos Industriais|
 |**Componente Curricular:**LínguaEstrangeiraI(Inglês)||
@@ -1150,7 +1150,7 @@ LE GOFF, Jacques. **A bolsa e a vida** : economia e religião na Idade Média. R
 |**Bibliografia Básica:**<br>ARANHA, M. L. A.; MARTINS, M. H. P.**Filosofando – Introdução à Filosofia**. São Paulo:<br>Moderna, 2009.<br>_______**Temas de Filosofia**. São Paulo: Moderna, 2009.<br>COTRIM, G; FERNANDES, M.**Fundamentos de Filosofia**. São Paulo: Saraiva 2010.<br>CHAUÍ, M.**Convite à Filosofia**. 12ºEd. São Paulo: Ed. Moderna. 1993.|||
 |**Bibliografia Complementar:**<br>DELEUZE, G.; GUATTARI, F.**O que é a filosofia**? Rio de Janeiro: Ed. 34, 1992. (Coleção<br>Trans).<br>LEI N. 10.639, DE 9 DE JANEIRO DE 2003.**Diretrizes curriculares nacionais para a**<br>**educação das relações étnico-raciais e para o ensino de história e cultura afro-brasileira,**<br>**africana e indígena.**<br>MORAIS, João Francisco Regis de.**Filosofia da ciência e da tecnologia.**Campinas: Papirus,<br>2002.<br>REALE, G; ANTISERI, D**. História da Filosofia**. Antiguidade e Idade Média. Vol. I.São Paulo:<br>Paulus, 1990.<br>_________**História da Filosofia**. Do Humanismo a Kant Vol. II São Paulo: Paulus, 1990.<br>_________**História da Filosofia**. Do Romantismo aos nossos Dias Vol. III São Paulo: Paulus,<br>1990.|||
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico emQuímicaintegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Controle eProcessosIndustriais|
 |**Componente Curricular**:QuímicaAnalítica||
@@ -1159,7 +1159,7 @@ LE GOFF, Jacques. **A bolsa e a vida** : economia e religião na Idade Média. R
 |**Bibliografia Básica:**<br>BACCAN, N.et al.**Química quantitativa elementar**. 3ª ed. São Paulo, SP: Blucher - Instituto<br>Mauá de Tecnologia, 2001.<br>HIGSON, S.**Química analítica**. São Paulo: McGraw-Hill, 2009.<br>SKOOG, D. A. et al.**Fundamentos de Química Analítica**. 8ª ed. São Paulo: Cengage<br>Learning, 2010.||
 |**Bibliografia Complementar:**<br>HARRIS, D. C..**Análise Química Quantitativa.**7ª ed. Rio de Janeiro: LTC, 2008.<br>LEITE, F..**Práticas de Química Analítica**. 4ª ed. Campinas, SP: Editora Átomo, 2010.<br>VOGEL, A. I..**Análise Química Quantitativa**. 6ª ed. Rio de Janeiro: LTC, 2002.||
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico emQuímicaintegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Controle eProcessosIndustriais|
 |**Componente Curricular**: EstequiometriaIndustrial||
@@ -1168,7 +1168,7 @@ LE GOFF, Jacques. **A bolsa e a vida** : economia e religião na Idade Média. R
 |**Bibliografia Básica:**<br>FELDER, R. M.; ROSSEAU, R. W.;**Princípios Elementares de Processos Químicos**. Editora<br>LTC, 3ª Edição, 2005, ISBN: 85-2161429-2.<br>HIMMELBLAU, D. M.; RIGGS, J. B.**Engenharia Química:**Princípios e cálculos**.**Rio de<br>Janeiro: LTC, 2006.<br>SHREVE, R. NORRIS - BRINK Jr., JOSEPH A.,**Indústrias de Processos Químicos**, 4ª<br>Edição, Editora LTC, 1997.||
 |**Bibliografia Complementar:**<br>GOMIDE, R.**Manual de Operações Unitárias**. São Paulo: Cenpro, 1970.<br>PERRY, R.H., CHILTON, C.H.**Manual de Engenharia Química**. 5a ed., Guanabara Dois, Rio<br>de Janeiro, 1986.<br>SOUZA, Z.**Dimensionamento de Máquinas de Fluxo: turbinas, bombas, ventiladores**. São<br>Paulo: Edgar Blucher,1991.||
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico emQuímicaintegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Controle eProcessosIndustriais|
 |**Componente Curricular**: Empreendedorismo eInovação||
@@ -1251,7 +1251,7 @@ R.GRUPO DE REELABORAÇÃO DO ENSINO DE FÍSICA. São Paulo: Editora da USP, v.1 
 
 RAMALHO, Nicolau, Toledo, Mecânica, **Os fundamentos da física** , Vol. 1 e 2 ; Editora Moderna, 7[a] edição, 2003.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico emQuímicaintegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Controle eProcessosIndustriais|
 |**Componente Curricular**: BiologiaIV||
@@ -1262,7 +1262,7 @@ RAMALHO, Nicolau, Toledo, Mecânica, **Os fundamentos da física** , Vol. 1 e 2 
 
 **Câmpus Umuarama do IFPR Curso: Eixo Tecnológico:** Técnico em Química integrado ao Ensino Médio Controle e Processos Industriais **Componente Curricular** : Geografia III **Carga Horária** : 80 h/a **Período letivo: 4[0 ] Ano Ementa:** Geopolítica. Organização e regionalização do espaço mundial. O comércio internacional. Geografia do Paraná. **Bibliografia Básica:** HAESBAERT, Rogério. PORTO-GONÇALVES, Carlos Walter. **A nova des-ordem mundial.** São Paulo: Editora UNESP, 2006. MOREIRA, João C.; SENE, Eustáquio. **Geografia: volume único** . São Paulo: Scipione, 2005. VESENTINI, J. W. **Geografia Geral e do Brasil.** São Paulo: Ática, 2005. **Bibliografia Complementar:** CARLOS, Ana Fani A. **Espaço e Indústria.** São Paulo: Contexto, 2000. COSTA, Edmílson **A Globalização e o Capitalismo Contemporâneo** . São Paulo: Expressão Popular, 2008. HAESBAERT, Rogério. **Regional-Global** . Rio de Janeiro: Bertrand Brasil, 2010. PARANÁ, Secretaria de Estado da Educação do. **Diretrizes Curriculares de Geografia.** Curitiba: SEED, 2008. RUA, João _et al_ . **Para ensinar geografia.** Rio de Janeiro, RJ: ACESS Editora, 1993.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**|**Eixo Tecnológico:**|
 |Técnico emQuímicaintegrado aoEnsinoMédio|Controle eProcessosIndustriais|
@@ -1314,7 +1314,7 @@ _______ **História da Filosofia** . Do Romantismo aos nossos Dias Vol. III São
 
 _______ **O homem quem é ele? Elementos de Antropologia Filosófica** . São Paulo: Paulus, 1980.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico emQuímicaintegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Controle eProcessosIndustriais|
 |**Componente Curricular**: AnáliseInstrumental||

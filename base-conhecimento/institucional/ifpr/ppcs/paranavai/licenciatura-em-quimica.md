@@ -2609,7 +2609,7 @@ DUVAL, C. **Inorganic Thermogravimetric Analysis** , 2ª Edilçai, Elsevier (196
 
 ## EMENTAS CURRICULARES OPTATIVAS
 
-|**COMPONENTE CURRICULAR:**Biotecnologia|**COMPONENTE CURRICULAR:**Biotecnologia|
+|**COMPONENTE CURRICULAR:**Biotecnologia||
 |---|---|
 |**CARGA HORÁRIA (HORA AULA):**120 h/a (100<br>horas)|**PERÍODO LETIVO**: 3º ano|
 |**EMENTA**: Técnicas básicas em microbiologia. Processos Enzimáticos e Fermentativos<br>de interesse. Produtos elaborados por processos biotecnológicos. Noções de<br>Transgenia.||
@@ -2617,7 +2617,7 @@ DUVAL, C. **Inorganic Thermogravimetric Analysis** , 2ª Edilçai, Elsevier (196
 
 MALAJOVICH, M. A.; **Biotecnologia** 2011. Rio de Janeiro, Edições da Biblioteca Max Feffer do Instituto de Tecnologia ORT, 2012.
 
-|MALAJOVICH, M. A.;**Biotecnologia**2011. Rio de Janeiro, Edições da Biblioteca Max<br>Feffer do Instituto de Tecnologia ORT, 2012.|MALAJOVICH, M. A.;**Biotecnologia**2011. Rio de Janeiro, Edições da Biblioteca Max<br>Feffer do Instituto de Tecnologia ORT, 2012.|MALAJOVICH, M. A.;**Biotecnologia**2011. Rio de Janeiro, Edições da Biblioteca Max<br>Feffer do Instituto de Tecnologia ORT, 2012.|
+|MALAJOVICH, M. A.;**Biotecnologia**2011. Rio de Janeiro, Edições da Biblioteca Max<br>Feffer do Instituto de Tecnologia ORT, 2012.|||
 |---|---|---|
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>SCHMIDELL, Willibaldo et al. (Coord.).**Biotecnologia industrial 2**: engenharia<br>bioquímica. 1. ed. São Paulo: Blucher. 2001. 541 p<br>DANESI, Eliane Dalva Godoy; BOLANHO, Denise Maria.**Biotecnologia na produção**<br>**de alimento**s. Maringá: EDUEM, 2011. 63 p<br>BORÉM, Aluízio; SANTOS, Fabrício Rodrigues dos.**Entendendo a biotecnologia**.<br>Viçosa, MG: Universidade Federal de Viçosa, 2016. 342 p.|||
 |**COMPONENTE CURRICULAR:**Química de Produtos Naturais|||
@@ -2630,7 +2630,7 @@ MALAJOVICH, M. A.; **Biotecnologia** 2011. Rio de Janeiro, Edições da Bibliote
 
 Av. José Felipe “Tequinha”, 1400 – Jd. das Nações, Paranavaí - PR | CEP 87703-536 -
 
-|**COMPONENTE CURRICULAR:**Empreendedorismo Inovador e Gestão Tecnológica|**COMPONENTE CURRICULAR:**Empreendedorismo Inovador e Gestão Tecnológica||
+|**COMPONENTE CURRICULAR:**Empreendedorismo Inovador e Gestão Tecnológica|||
 |---|---|---|
 |**CARGA HORÁRIA (HORA AULA):**80 h/a (67<br>horas)|**PERÍODO LETIVO:**2º ou 3º ano||
 |**EMENTA:**A revolução científica. A revolução industrial. A sociedade atual. Técnica,<br>tecnologia e ciência. Inovação tecnológica. Transferência de tecnologia. O tecnólogo e<br>a tecnologia. Empreendedorismo. Intra-empreendedorismo. A gestão empreendedora<br>e a economia de mercado. Inovação e criatividade. Gerenciamento de projetos. Plano<br>de Negócios.|||
@@ -2653,7 +2653,7 @@ As atividades de Estágio Curricular Supervisionado do Curso de Química do Inst
 
 **INSTITUTO FEDERAL DO PARANÁ | Campus Paranavaí** Av. José Felipe “Tequinha”, 1400 – Jd. das Nações, Paranavaí - PR | CEP 87703-536 -
 
-|**Quadro 6.**Formato de Estágio do 2º ano.|**Quadro 6.**Formato de Estágio do 2º ano.|
+|**Quadro 6.**Formato de Estágio do 2º ano.||
 |---|---|
 |**PRÁTICA**<br>**PEDAGÓGICA**<br>**I**|<br>**HORAS/AULA**|
 |**/ESTÁGIO SUPERVISIONADO I**||
@@ -3114,7 +3114,7 @@ A formação dos docentes está assim distribuída, de acordo com tabela abaixo:
 
 O Colegiado do Curso deverá realizar quatro (04) em reuniões ordinárias por ano letivo ou sempre que convocado pelo Coordenador do Curso, em reuniões extraordinárias para tratar de assuntos referentes ao funcionamento do Curso de Licenciatura em Química, bem como para aprovar projetos de pesquisa e extensão de seu corpo docente.
 
-|**Formação dos Docentes de Licenciatura em Química**|**Formação dos Docentes de Licenciatura em Química**|**Formação dos Docentes de Licenciatura em Química**|
+|**Formação dos Docentes de Licenciatura em Química**|||
 |---|---|---|
 |**Titulação**|**Número de Docentes**|**Média**|
 |Doutores|14|67%|

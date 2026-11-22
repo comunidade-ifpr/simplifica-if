@@ -773,7 +773,7 @@ instituído pela Instrução Normativa Reitoria/IFPR n.1, de 26 de julho de 2021
 
 ## **4.1.2  Matriz Curricular**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||
 |---|---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||||
 ||_Campus Irati_||||||
@@ -1014,7 +1014,7 @@ EMENTA:
 
 Interações entre o homem e seu ambiente natural ou construído, principalmente o rural. Recursos naturais como energia. Fontes alternativas e renováveis de energia. Diagnósticos energéticos. Gestão energética. Energias renováveis hídricas, solares, da biomassa e eólicas. As políticas energéticas concernentes às energias renováveis no mundo e no Brasil. Assuntos atuais em recursos naturais e energias renováveis.
 
-|BIBLIOGRAFIA BÁSICA:|BIBLIOGRAFIA BÁSICA:||||
+|BIBLIOGRAFIA BÁSICA:|||||
 |---|---|---|---|---|
 |BRAGA, B.; HESPANHOL, B.; CONEJO, J. G. L.; BARROS, M. T. L.; SPENCER, M.; PORTO, M.; NUCCI,|||||
 |N.; JULIANO, N.; EIGER, S.**Introdução à Engenharia Ambiental**. São Paulo: Prentice Hall, 2002.|||||
@@ -1431,7 +1431,7 @@ COMPONENTE CURRICULAR: **Ecologia e manejo da biodiversidade** CARGA HORÁRIA: 6
 
 COMPONENTE CURRICULAR: **Prática profissional em extensão I**
 
-|CARGA HORÁRIA: 80 h/r ou 96 h/a|CARGA HORÁRIA: 80 h/r ou 96 h/a|CARGA HORÁRIA: 80 h/r ou 96 h/a|CARGA HORÁRIA: 80 h/r ou 96 h/a|||||
+|CARGA HORÁRIA: 80 h/r ou 96 h/a||||||||
 |---|---|---|---|---|---|---|---|
 |EMENTA:||||||||
 |Metodologia de pesquisa/ação para implantação de experiências a serem desenvolvidas||||||no||
@@ -1564,7 +1564,7 @@ MINISTÉRIO DO DESENVOLVIMENTO AGRÁRIO. Instituto Nacional de Colonização e R
 
 CERQUEIRA, J. M. C. **Hortofloricultura** . Lisboa: Popular Francisco Franco, 1986. FILGUEIRA, F. A. R. **Novo manual de olericultura: agrotecnologia moderna na produção e comercialização de hortaliças** . 2. ed. Viçosa: UFV, 2003. 412 p. FILGUEIRA, F. A. R. **Solanáceas: Agrotecnologia moderna na produção de tomate, batata, pimentão, pimenta, berinjela e jiló** . 2. ed. Viçosa: UFLA, 2003. 331 p. FONTES, Paulo Cezar Rezende. **Olericultura: teoria e prática.** Viçosa: UFV, 2005. 486 p. SILVA, A. C. F.; DELLA, B. E. **Cultive uma horta e um pomar orgânico: sementes e mudas para preservar a biodiversidade** . Florianópolis: Epagri, 2009. 319 p. SOUZA, J. L. de; RESENDE, P. **Manual de horticultura orgânica.** 2. ed. Viçosa: Aprenda Fácil, 2006. 843 p. TAIZ, L.; ZEIGER, E. **Fisiologia Vegetal** . 4. ed. Porto Alegre: Artmed, 2009. 848 p. BIBLIOGRAFIA COMPLEMENTAR: FILGUEIRA, F. A. R. **ABC da olericultura: guia da pequena horta** . São Paulo: Agronômica Ceres, 1987. 164 p. FILGUEIRA, F. A. R. **Manual de olericultura: cultura e comercialização de hortaliças.** 2. ed. ampl. e rev. São Paulo: Agronômica Ceres, 1981. FRANCISCO, N. J. **Manual de horticultura ecológica: auto-suficiência em pequenos espaços** . São Paulo: Nobel, 1995. 141 p. SILVA, A. G. et al. **Plantas Medicinais: Do cultivo, manipulação e uso a recomendação popular.** Embrapa. 2008. VILLALOBOS, J. U. G. **Agricultura e assentamentos** . Maringá: UEM, 2000. 165 p. COMPONENTE CURRICULAR: **Piscicultura** CARGA HORÁRIA: 60 h/r ou 72 h/a EMENTA: Introdução à piscicultura no Brasil. Principais espécies nativas e exóticas para piscicultura. Sistemas de produção de peixes. Ambiente aquático e qualidade da água na piscicultura. Anatomia e fisiologia de peixes. Instalações para piscicultura. Aspectos gerais da nutrição de
 
-||peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|
+||peixes. Manejo alimentar de peixes. Reprodução induzida de peixes. Reversão sexual de tilápias.|||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|
 ||Transporte de peixes. Principais doenças em piscicultura. Ações e atividades de extensão.|||||||||||
 ||BIBLIOGRAFIA BÁSICA:|||||||||||
@@ -1764,7 +1764,7 @@ COMPONENTE CURRICULAR: **Culturas agrícolas de verão** CARGA HORÁRIA: 60 h/r 
 
 SANTOS, R. H. S. **Princípios ecológicos para a agricultura** . Viçosa: Ed. UFV, 2004. VIEIRA, R. F.; VIEIRA, C.; VIEIRA, R. F. **Leguminosas graníferas.** Viçosa: UFV, 2001. 206 p. BIBLIOGRAFIA COMPLEMENTAR: ALTIERI, M. A. **Agroecologia: a Dinâmica Produtiva da Agricultura Sustentável.** Porto Alegre: UFRGS, 2004. 110 p. ALTIERI, M. **Biotecnologia Agrícola: mitos, riscos ambientais e alternativas** . Petrópolis: Vozes, 2004. BARBOSA, C. A. **Manual de adubação orgânica** . Viçosa: Agrojuris, 2009. 224 p. BONILLA, J. A. **Fundamentos da Agricultura Ecológica** . São Paulo: Nobel, 1992. 260 p. HEISER, C. B. **Sementes para a Civilização: a história da alimentação humana** . São Paulo: Ed. Universidade de São Paulo, 1977. 253 p. KIEHL, E. J. **Fertilizantes Orgânicos.** Piracicaba-SP: Editora Agronômica Ceres, 1985. 492 p. p. 112-131 (Adubos verdes e Rotação de culturas) & pp. 142-364 (Fertilizantes orgânicos simples, Compostagem e Processos especiais). MALAVOLTA, E. **Manual de Calagem e Adubação das Principais Culturas.** Piracicaba: Agronômica Ceres, 1987. 496 p. MIYASAKA, S. N. **Manejo da biomassa e do solo - visando a sustentabilidade da agricultura brasileira.** São Paulo: Editora Navegar, 2008. 192 p. PENTEADO, S. R. **Defensivos alternativos e naturais.** 3. ed. Campinas: Via Orgânica, 2007. 172 p. COMPONENTE CURRICULAR: **Prática profissional em extensão IV** CARGA HORÁRIA: 80 h/r ou 96 h/a EMENTA: Fundamentos da responsabilidade social. Projeto de responsabilidade socioambiental: diagnóstico, planejamento estratégico de RSE. Tópicos Avançados em Gestão Socioambiental. Organização de eventos (dias de campo, seminários, oficinas). Articulação com órgãos que prestam Assistência Técnica e Extensão Rural na região. BIBLIOGRAFIA BÁSICA:
 
-||ALMEIDA, J. R. de. et al.**Gestão Ambiental: planejamento, avaliação, implantação, operação e**|ALMEIDA, J. R. de. et al.**Gestão Ambiental: planejamento, avaliação, implantação, operação e**|ALMEIDA, J. R. de. et al.**Gestão Ambiental: planejamento, avaliação, implantação, operação e**|ALMEIDA, J. R. de. et al.**Gestão Ambiental: planejamento, avaliação, implantação, operação e**|ALMEIDA, J. R. de. et al.**Gestão Ambiental: planejamento, avaliação, implantação, operação e**|
+||ALMEIDA, J. R. de. et al.**Gestão Ambiental: planejamento, avaliação, implantação, operação e**|||||
 |---|---|---|---|---|---|
 ||**verificação**. Rio de Janeiro: Thex, 2000.|||||
 ||CAPORAL, F. R.; COSTABEBER, J. A.**Agroecologia e extensão rural: contribuições para**||||**a**|
@@ -3385,7 +3385,7 @@ III – Os estudantes com ingresso no Curso, por transferência, deverão compro
 
 Art. 7 Compete ao Colegiado do Curso dirimir dúvidas referentes à interpretação deste Regulamento, bem como suprir as suas lacunas, expedindo os atos complementares que se fizerem necessários.
 
-|**Grupo 1: atividades relacionadas a ensino, pesquisa, extensão e de caráter sociocomunitário mínimo de 60**<br>**horas**|**Grupo 1: atividades relacionadas a ensino, pesquisa, extensão e de caráter sociocomunitário mínimo de 60**<br>**horas**|**Grupo 1: atividades relacionadas a ensino, pesquisa, extensão e de caráter sociocomunitário mínimo de 60**<br>**horas**|
+|**Grupo 1: atividades relacionadas a ensino, pesquisa, extensão e de caráter sociocomunitário mínimo de 60**<br>**horas**|||
 |---|---|---|
 ||||
 |Item|Horas|Limite máximo<br>(em horas)|
@@ -3415,7 +3415,7 @@ Apresentação de trabalhos em eventos (congresso, Artigo: 5h por trabalho. 40 s
 
 **Grupo 2: atividades de prática profissional mínimo de 60 horas**
 
-|**Grupo 2: atividades de prática profissional mínimo de 60 horas**|**Grupo 2: atividades de prática profissional mínimo de 60 horas**|**Grupo 2: atividades de prática profissional mínimo de 60 horas**|
+|**Grupo 2: atividades de prática profissional mínimo de 60 horas**|||
 |---|---|---|
 |Item|Horas|Limite máximo (em<br>horas)|
 ||||

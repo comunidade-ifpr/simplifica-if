@@ -245,7 +245,7 @@ A carga horária total é de 3369 horas, sendo destas 400 horas de estágio obri
 
 **ÁREA: LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS Módulos Semestrais (   ) Anuais ( X )**
 
-|**ÁREA: LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|**ÁREA: LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|**ÁREA: LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|
+|**ÁREA: LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|||
 |---|---|---|
 |UNIDADES DIDÁTICAS|CARGA HORÁRIA||
 ||Horas aula|Horas|
@@ -269,7 +269,7 @@ A carga horária total é de 3369 horas, sendo destas 400 horas de estágio obri
 
 ## **ÁREA: ELETRICIDADE, MECÂNICA E SUAS TECNOLOGIAS Módulos Semestrais (   ) Anuais ( X )**
 
-|**ÁREA: ELETRICIDADE, MECÂNICA E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|**ÁREA: ELETRICIDADE, MECÂNICA E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|**ÁREA: ELETRICIDADE, MECÂNICA E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|
+|**ÁREA: ELETRICIDADE, MECÂNICA E SUAS TECNOLOGIAS**<br>**Módulos Semestrais (   ) Anuais ( X )**|||
 |---|---|---|
 |UNIDADES DIDÁTICAS|CARGA HORÁRIA||
 ||Horas aula|Horas|
@@ -318,7 +318,7 @@ Gráfico 2: Distribuição dos Componentes Curriculares do Curso de Tecnologia e
 
 UNIDADE DIDATICA: Cálculo I – 133 horas
 
-|**3.11.3 Ementas das Unidades Didáticas**|**3.11.3 Ementas das Unidades Didáticas**|
+|**3.11.3 Ementas das Unidades Didáticas**||
 |---|---|
 |UNIDADE DIDATICA: Cálculo I – 133 horas||
 |CONTEÚDO PROGRAMÁTICO: Estudo de números<br>integrais de funções de uma variável real.|reais, de funções, limites, continuidade, derivadas e|
@@ -338,7 +338,7 @@ UNIDADE DIDATICA: Práticas de Oralidade, Escrita e Leitura - 67 horas
 
 CONTEÚDO PROGRAMÁTICO: Linguagem e argumentação; O texto e sua estrutura; Tipos de textos e seus objetivos; A organização micro e macrotextual do texto: coesão e coerência; Formulação da introdução, desenvolvimento e da conclusão textual; Técnicas argumentativas; Revisão de noções gramaticais básicas; Elaboração de resumo, resenha e projeto; Normas ABNT; Introdução a história da cultura afro-brasileira e indígena e influência sociocultural na comunicação e expressão.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:|
 |---|---|---|
 ||BECHARA, Evanildo. Moderna gramática|Universidade Federal do Paraná. Sistema de|
 ||Portuguesa. Editora Lucerna, 2009.|Bibliotecas: Projetos. UFPR, 2007.|
@@ -366,7 +366,7 @@ CONTEÚDO PROGRAMÁTICO: Vetores, Produto escalar, vetorial, duplo e misto; Reta
 
 CONTEÚDO PROGRAMÁTICO: Leitura e interpretação de textos em Língua Inglesa através de técnicas de ESP - English for Specific Purposes - e de abordagem funcional da gramática, objetivando a compreensão em três níveis básicos: compreensão geral, de pontos principais e de pontos específicos.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||WITTE, R. E. Bussiness English: A Pratical||JACOBS, M. A. Tirando dúvidas de inglês.Editora|
 ||Aproach. Editora Saraiva, 2010.||Disal, 2003.|
@@ -391,7 +391,7 @@ CONTEÚDO PROGRAMÁTICO: Cinemática e dinâmica da partícula; Leis de Newton; 
 
 PRÉ-REQUISITOS: Cálculo I.
 
-|PRÉ-REQUISITOS: Cálculo I.|PRÉ-REQUISITOS: Cálculo I.|||
+|PRÉ-REQUISITOS: Cálculo I.||||
 |---|---|---|---|
 |BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 ||HALLIDAY, D.; RESNICK, R. Fundamentos de||BEER, F. P.; JOHNSTON, E. R. Mecânica|
@@ -406,7 +406,7 @@ PRÉ-REQUISITOS: Cálculo I.
 
 CONTEÚDO PROGRAMÁTICO: Organização de dados; Apresentação gráfica de dados; Distribuição de frequência; Medidas de tendência central; Medidas de dispersão; Probabilidades; Amostragem e estimação; Regressão e correlação; Teste de hipóteses; Números índices
 
-|UNIDADE DIDATICA: Estatística e Probabilidade – 67 horas|UNIDADE DIDATICA: Estatística e Probabilidade – 67 horas|
+|UNIDADE DIDATICA: Estatística e Probabilidade – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Organização de dados; Apresentação gráfica de dados; Distribuição de<br>frequência; Medidas de tendência central; Medidas de dispersão; Probabilidades; Amostragem e estimação;<br>Regressão e correlação; Teste de hipóteses; Números índices||
 |BIBLIOGRAFIA BASICA:<br><br>BUSSAB, W. O., MORETTIN, P. A. Editora<br>Saraiva, 2012.<br><br>FONSECA, J. S. Curso de Estatística. Editora<br>Atlas, 1996<br><br>MILONE, Guiseppe. Estatística Geral e Aplicada.<br>Editora Cengage Learning, 2003<br><br>MARTINS, G. A., DOMINGUES, O. Estatística<br>Geral e Aplicada, Editora Atlas, 2011<br><br>BARBETTA, P. A., REIS, M. M., BORNIA, A. C.<br>Estatística para Cursos de Engenharia e<br>Informática. Editora Atlas, 2010.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>MONTGOMERY, D. C.; RUNGER, G. C.<br>Estatística Aplicada e Probabilidade para<br>Engenheiros. Editora LTC, 2012.|
@@ -418,7 +418,7 @@ CONTEÚDO PROGRAMÁTICO: Introdução à eletricidade, Instrumentos de medida; c
 |BIBLIOGRAFIA BASICA:<br><br>MARTINO, G. Eletricidade industrial. Editora<br>Hemus, 2002.<br><br>CAPUANO, F. G. Laboratório de Eletricidade e<br>Eletrônica, Teoria e Prática. Editora Érica, 2011.<br><br>MALVINO, A. P. Eletrônica. Editora McGraw-Hill,<br>2008. Volume 1.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>ALBUQUERQUE, R. O. Análise de Circuitos em<br>Corrente Alternada. Editora Érica, 2011.<br><br>ALBUQUERQUE, R. O. Análise de Circuitos em<br>Corrente Contínua. Editora Érica, 2011.<br><br>GUSSOW, Milton. Eletricidade Básica. Editora<br>Makron Books, 1997.|
 |---|---|
 
-|UNIDADE DIDATICA: Desenho Técnico – 100 horas|UNIDADE DIDATICA: Desenho Técnico – 100 horas|
+|UNIDADE DIDATICA: Desenho Técnico – 100 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Normas e convenções; Escalas; Desenho básico; Projeções ortogonais e<br>auxiliares; Desenho à mão livre; Perspectivas; Cortes; Seções e representações convencionais;<br>Desenvolvimento de superfícies; Cotagem; Representação de elementos de máquinas; Soldas; Desenho de<br>conjunto e de detalhes, computação gráfica e sistemas CAD.||
 |BIBLIOGRAFIA BASICA:<br><br>FIALHO, A. B. Solidworks Premium 2009 - Teoria<br>e Prática no Desenvolvimento de Produto. Editora<br>Érica, 2009.<br><br>PROVENZA, Francesco. Desenhista de<br>Máquinas. Editora Provenza, 1997.<br><br>PROVENZA, Francesco. Projetista de Máquinas.<br>Editora Provenza, 1996.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>MANFÉ, G.; POZZA, R.; SCARATO G. Desenho<br>Técnico Mecânico. Editora Hemus, 2004.<br>Volumes 1, 2 e 3.|
@@ -427,7 +427,7 @@ UNIDADE DIDATICA: Administração, Segurança no Trabalho, Higiene e Normalizaç
 
 CONTEÚDO PROGRAMÁTICO: Compreender a relevância e aplicação dos conhecimentos de administração da produção; Organização industrial; Planejamento e controle da produção; Gerenciamento de projetos; Qualidade e produtividade e normas de conformidade nos sistemas produtivos; Legislação e normas; Implantação da segurança do trabalho; Controle estatístico de acidentes; Equipamentos de proteção individual e coletivo; Iluminação; Ruído; Agentes químicos; Calor, Frio; Umidade; Sinalização e cor; Condições sanitárias e de conforto.
 
-|UNIDADE DIDATICA: Administração, Segurança no Trabalho, Higiene e Normalização – 67 horas|UNIDADE DIDATICA: Administração, Segurança no Trabalho, Higiene e Normalização – 67 horas|
+|UNIDADE DIDATICA: Administração, Segurança no Trabalho, Higiene e Normalização – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Compreender a relevância e aplicação dos conhecimentos de administração<br>da produção; Organização industrial; Planejamento e controle da produção; Gerenciamento de projetos;<br>Qualidade e produtividade e normas de conformidade nos sistemas produtivos; Legislação e normas;<br>Implantação da segurança do trabalho; Controle estatístico de acidentes; Equipamentos de proteção<br>individual e coletivo; Iluminação; Ruído; Agentes químicos; Calor, Frio; Umidade; Sinalização e cor; Condições<br>sanitárias e de conforto.||
 |BIBLIOGRAFIA BASICA:<br><br>CHIAVENATO, Idalberto. Introdução à Teoria<br>Geral da Administração. Editora Campus, 2011.<br><br>SALIBA, T. M. Curso Básico de Segurança e<br>Higiene Ocupacional. Editora LTR, 2011.<br><br>SLACK NIGEL. Administração da produção.<br>Editora ATLAS, 2009.|BIBLIOGRAFIA COMPLEMENTAR:<br>CARDELLA, Benedito. Segurança no Trabalho e<br>Prevenção de Acidentes. Editora Atlas, 2008.<br>MATTOS, UBIRAJARA ALUIZIO DE OLIVEIRA<br>Higiene e Segurança do Trabalho. Editora<br>Elsevier-Campus, 2011<br>BARSANO, P. R. BARBOSA, R. P. Higiene e<br>Segurança do Trabalho. Editora Érica, 2014<br>CORREA, H. L. CORREA, C. L. Administração de<br>Produção e Operações - Manufatura e Serviços.<br>Editora Atlas, 2012<br>MIGUEL, ALBERTO SERGIO S.R. Manual de<br>Higiene e Segurança do Trabalho. Editora Porto,<br>2010<br>LAUGENI, F. P. MARTINS, P. G. Administração<br>da Produção. Editoras Saraiva, 2005<br>BARSANO, P. R. BARBOSA, R. P. Segurança do<br>Trabalho: Guia Prático e Didático. Editora Érica,<br>2012<br><br>JÚNIOR, ADALBERTO MOHAI SZABÓ. Manual<br>de Segurança, Higiene e Medicina do Trabalho.<br>Editora Rideel, 2014.|
@@ -445,7 +445,7 @@ BIBLIOGRAFIA BASICA: BIBLIOGRAFIA COMPLEMENTAR:   LIRA, F. A. Metrologia n
 
 CONTEÚDO PROGRAMÁTICO: Fundamentos da engenharia e ciência dos materiais; Classificação geral dos materiais; Estruturas e propriedades dos materiais metálicos; Técnicas para verificação e avaliação das estruturas dos Materiais Metálicos; Diagramas de fase; Diagramas Fe-C; Transformações de fases; Ensaios mecânicos; Tratamentos térmicos de materiais ferrosos e não ferrosos; Classificação dos polímeros: Características físicas dos polímeros; Relação entre estrutura e propriedades; Propriedades mecânicas; Compósitos poliméricos; Seleção de materiais poliméricos; Reologia; Processamento e propriedades dos polímeros fundidos; Moldagem por injeção; Introdução aos materiais cerâmicos e algumas aplicações na engenharia mecânica.
 
-|UNIDADE DIDATICA: Ciência dos Materiais e Ensaios - 167 horas|UNIDADE DIDATICA: Ciência dos Materiais e Ensaios - 167 horas|
+|UNIDADE DIDATICA: Ciência dos Materiais e Ensaios - 167 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Fundamentos da engenharia e ciência dos materiais; Classificação geral dos<br>materiais; Estruturas e propriedades dos materiais metálicos; Técnicas para verificação e avaliação das<br>estruturas dos Materiais Metálicos; Diagramas de fase; Diagramas Fe-C; Transformações de fases; Ensaios<br>mecânicos; Tratamentos térmicos de materiais ferrosos e não ferrosos; Classificação dos polímeros:<br>Características físicas dos polímeros; Relação entre estrutura e propriedades; Propriedades mecânicas;<br>Compósitos poliméricos; Seleção de materiais poliméricos; Reologia; Processamento e propriedades dos<br>polímeros fundidos; Moldagem por injeção; Introdução aos materiais cerâmicos e algumas aplicações na<br>engenharia mecânica.||
 |BIBLIOGRAFIA BASICA:<br><br>CALLISTER Jr., W.D. Ciência e Engenharia de<br>Materiais - Uma Introdução. Editora LTC, 2012.<br><br>SOUZA, S. A. Ensaios Mecânicos de Materiais<br>Metálicos. Editora Edgard Blücher, 2004.<br><br>SMITH, W. F., HASHEMI, J. Fundamentos de<br>Engenharia e Ciência dos Materiais. Editora<br>Mcgraw-Hill Brasil, 2012.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>VAN VLACK, L. H. Princípios de ciência dos<br>materiais. Editora Edgard Blücher, 2000.<br><br>CHIAVERINI, Vicente. Aços e Ferros Fundidos.<br>Editora ABM, 2012.<br><br>CHIAVERINI, Vicente. Tecnologia Mecânica.<br>Editora PEARSON EDUCATION, 1986. Vol. II e<br>III.<br><br>COSTA E SILVA, A. L. V. Aços e ligas especiais.<br>Editora EDGARD BLUCHER, 2010.<br><br>GUESSER, W. L. Propriedades Mecânicas dos<br>Ferros Fundidos. EDGARD BLUCHER, 2009.<br><br>FERREIRA, J. M. C. Tecnologia da Fundição.<br>Editora Calouste Gulbenkian, 2010.<br><br>MOURAO, M. B. Introdução a Siderurgia. Editora<br>ABM, 2007.<br><br>SIMIELLI, E. R.; SANTOS, P. A. Plásticos de<br>Engenharia. Editora Artliber. 2010.<br><br>THEISEN, W.; BERNS, H. Ferrous Materials<br>Steels And Cast Iron. Editora Springer Verlag,<br>2008.<br><br>PORTER, D. A. Phase Transformations In Metals<br>And Alloys. Editora CRC PRESS, 2009.<br><br>CULLITY, Bernard. Elements Of X-Ray Diffraction.<br>Editora Addison Wesley.2001.|
@@ -456,7 +456,7 @@ CONTEÚDO PROGRAMÁTICO: Processos de fundição: potencialidades, classificaç�
 
 ## PRÉ-REQUISITOS: Ciência dos Materiais e Ensaios Mecânicos.
 
-|PRÉ-REQUISITOS: Ciência dos Materiais e Ensaios Mecânicos.|PRÉ-REQUISITOS: Ciência dos Materiais e Ensaios Mecânicos.|
+|PRÉ-REQUISITOS: Ciência dos Materiais e Ensaios Mecânicos.||
 |---|---|
 |BIBLIOGRAFIA BASICA:<br><br>CETLIN, P. R.; HELMANN, H. Fundamentos de<br>Conformação Mecânica dos Metais. Editora<br>Artliber, 2005.<br><br>WAINER, E.; BRANDI, S. D.; MELLO, F.<br>Soldagem Processo e Metalúrgica. Editora<br>Edgard Blucher, 2010.<br><br>TORRE, Jorge. Manual Prático de Fundição.<br>Editora Hemus, 2004.<br><br>CHIAVERINI, V. Metalurgia do Pó. Editora ABM,<br>2001.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>SCOTTI, A.; PONOMAREV, V. Soldagem<br>MIG/MAG. Editora Artiliber, 2008.<br><br>SCHAEFFER, LIRIO. Conformação Mecânica.<br>Editora Imprensa Livre, 2007 .<br><br>FERREIRA, J. M. G. C. Tecnologia da Fundição.<br>Editora Calouste Gulbenkian, 1999.<br><br>ABBASCHIAN, Reza;  REED-HILL, R. E. Physical<br>metallurgy principles. Editora Cengage Learning,<br>2009..<br><br>REIS, Ruham Pablo; SCOTTI, Américo.<br>Fundamentos e Prática da Soldagem a Plasma.<br>Editora Artliber, 2007.<br><br>WAINER, EMILIO. Soldagem. Editora Edgard<br>Blucher, 1995.<br><br>PARIS, A. A. F. Tecnologia da soldagem de ferros<br>fundidos. Editora, 2003.<br><br>VEIGA, Emilio. Soldagem de manutenção. Editora<br>GLOBUS, 2010.<br><br>VEIGA, Emilio. Processo de soldagem: eletrodos<br>revestidos. Editora GLOBUS, 2011.<br><br>VEIGA, Emilio. Processo de soldagem: MIG/MAG.<br>Editora GLOBUS, 2011.<br><br>VEIGA, Emilio. Processo de soldagem: TIG.<br>Editora GLOBUS, 2011.<br><br>MARQUES, P. V.; MODENESI, P. J.;<br>BRACARENSE, A. Q. Soldagem: Fundamentos e<br>Tecnologia. Editora UFMG, 2009.<br><br>LIMA, C. C.; TREVISAN, Roseana. Aspersão<br>Térmica: fundamentos e aplicações. Editora<br>Artliber, 2007.<br><br>GARCIA, Amauri. Solidificação. Editora Uncamp,<br>2007.|
 
@@ -466,7 +466,7 @@ CONTEÚDO PROGRAMÁTICO: Tipos de vínculos; Equilíbrio estático: Diagrama de 
 
 PRÉ-REQUISITOS: Cálculo II, Física, Ciência dos Materiais e Ensaios Mecânicos.
 
-|UNIDADE DIDATICA: Resistência dos Materiais e Elementos de Máquinas – 200 horas|UNIDADE DIDATICA: Resistência dos Materiais e Elementos de Máquinas – 200 horas|
+|UNIDADE DIDATICA: Resistência dos Materiais e Elementos de Máquinas – 200 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Tipos de vínculos; Equilíbrio estático: Diagrama de força cortante, momento<br>fletor e momento torçor; Análise de tensões para flexão; Análise de tensões para forças cisalhantes; Tensões<br>compostas; Fadiga de metais; Falha por fadiga; Tolerâncias e ajustes; Solicitações estáticas e dinâmicas;<br>Parafusos de fixação e movimento; Eixos e árvores; Mancais de rolamento e deslizamento; União entre cubo<br>e eixo; Molas; Engrenagens (cinemática e capacidade de carga); Polias; Cabos de aço.<br>PRÉ-REQUISITOS: Cálculo II, Física, Ciência dos Materiais e Ensaios Mecânicos.||
 |BIBLIOGRAFIA BASICA:<br><br>HIBBELER, R.C. Resistência dos Materiais.<br>Editora Pearson, 2010.<br><br>BUDYNAS, R. G.; KEITH N. J. Elementos de<br>Máquinas de Shigley - Projeto de Engenharia<br>Mecânica. Editora Bookman, 2011.<br><br>BEER, F. P., JOHNSTON, E. R. Resistência dos<br>Materiais. Editora Pearson, 1996.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>DEWOLF, J. T.; JOHNSTON, E. R., BEER, F. P.<br>Mecânica dos Materiais. Editora Pearson, 2011.<br><br>HERTZBERG, R. W. Deformation and fracture<br>mechanics of engineering. Editora John Wiley<br>Professional, 2012.<br><br>MELCONIAN, Sarkis. Mecânica Técnica e<br>Resistência dos Materiais. Editora Érica, 2008.<br><br>MELCONIAN, Sarkis, Elementos de Máquinas.<br>Editora Érica, 2009.<br><br>JUVINALL, R. C.; MARSHEK, K. M. Fundamentos<br>do Projeto de Componentes de Máquinas. Editora<br>LTC, 2008.<br><br>COLLINS, J. A.; BUSBY, H. R. STAAB, G. H.<br>Projeto Mecânico de Elementos de Máquinas.<br>Editora LTC, 2009.|
@@ -477,7 +477,7 @@ CONTEÚDO PROGRAMÁTICO: Normas técnicas: NBR 5410, NBR 14039 e NBR 5419; Carac
 
 PRÉ-REQUISITOS: Fundamentos de Eletricidade Industrial.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||MAMEDE FILHO, João. Instalações Elétricas||LIMA FILHO, Domingos Leite. Projetos de|
 ||Industriais. Editora LTC, 2010.||Instalações Elétricas Prediais. 12ª. Edição,|
@@ -487,7 +487,7 @@ PRÉ-REQUISITOS: Fundamentos de Eletricidade Industrial.
 ||Instalações Elétricas. 5ª. Edição. Editora LTC. Rio|||
 ||de Janeiro, 2008.|||
 
-|UNIDADE DIDATICA: Gestão da Produção – 67 horas|UNIDADE DIDATICA: Gestão da Produção – 67 horas|
+|UNIDADE DIDATICA: Gestão da Produção – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Conhecer os passos da estratégia produtiva; Conhecer as filosofias JIT e<br>JIC; Classificar os sistemas de produção; Conhecer os processos de fabricação; Conhecer as características<br>do JIT; Entender o que é e determinar o tempo de ciclo de uma operação; Conhecer os processos de<br>integração entre cliente e fornecedor.||
 |BIBLIOGRAFIA BASICA:<br><br>TUBINO, D. F. Planejamento e Organização da<br>Produção - Teoria e prática. Editora Atlas, 2009.<br><br>SHINGO, Shigeo. O Sistema Toyota de Produção<br>– Do ponto de vista da engenharia de produção.<br>Editora Bookman, 1996.<br><br>SLACK NIGEL. Administração da produção.<br>Editora ATLAS, 2009.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>SHINGO, Shigeo. Troca Rápida de Ferramenta.<br>Editora Bookman, 2000.<br><br>LOBO, RENATO NOGUEIROL. Gestão da<br>Produção. Editora Érica, 2010.<br><br>PAOLESCH, BRUNO Logística Industrial<br>Integrada - Do Planejamento da Produção, Custo<br>e Qualidade. Editora Érica, 2008.<br><br>PALADINI, EDSON PACHECO. Gestão da<br>Qualidade: Teoria e Casos, Editora Campus,<br>2012.|
@@ -496,7 +496,7 @@ PRÉ-REQUISITOS: Fundamentos de Eletricidade Industrial.
 
 CONTEÚDO PROGRAMÁTICO: Introdução; Mecanismos de corrosão; Potencial elétrico de eletrodo; Polarização por ativação e por concentração; Passivação; Corrosão seletiva e localizada; Corrosão sob solicitações mecânicas; Corrosão atmosférica e por produtos metabólicos de microrganismos; Corrosão por gases oxidantes; Corrosão de metais por gases oxidantes; Corrosão de ligas pelo oxigênio; Revestimentos eletroquímicos em biomateriais; Anodização; Ensaios de corrosão; Análise de amostras.
 
-|PRÉ-REQUISITOS: Química.|PRÉ-REQUISITOS: Química.|||
+|PRÉ-REQUISITOS: Química.||||
 |---|---|---|---|
 |BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 ||GEMELLI, E. Corrosão de Materiais Metálicos e||SCHUTZE, MICHAEL; GRABKE, HANS|
@@ -512,7 +512,7 @@ CONTEÚDO PROGRAMÁTICO: Conceitos fundamentais em mecânica dos fluidos; Dimens
 
 ## PRÉ-REQUISITOS: Cálculo II.
 
-|PRÉ-REQUISITOS: Cálculo II.|PRÉ-REQUISITOS: Cálculo II.|
+|PRÉ-REQUISITOS: Cálculo II.||
 |---|---|
 |BIBLIOGRAFIA BASICA:<br><br>INCROPERA, F. P.; DE WITT, D. Fundamentos<br>de Transferência de Calor e de Massa. Editora<br>LTC, 2008.<br><br>CANEDO, E.L. FENÔMENOS DOS<br>TRANSPORTES. Editora LTC, 2010.<br><br>FOX, R. W.; MCDONALD, A. T. Introdução à<br>Mecânica dos Fluidos. Editora LTC, 2010.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>BRAGA FILHO, WASHIGTON. FENÔMENOS<br>DOS TRANSPORTES PARA ENGENHARIA.<br>EDITORA LTC.<br><br>CENGEL, YUNUS A. CIMBALA, JOHN M.<br>Mecânica dos Fluidos - Fundamentos e<br>Aplicações. Editora McGraw Hill, 2008<br><br>WHITE, FRANK. Mecânica Dos Fluidos. Editora<br>McGrawHill, 2011.<br><br>CENGEL YUNUS A., GHAJAR AFSHIN J.<br>Transferência de Calor e Massa – Uma<br>Abordagem Prática. Editora MCGraw-Hill, 2011|
 
@@ -522,7 +522,7 @@ CONTEÚDO PROGRAMÁTICO: Princípios funcionais e construtivos de máquinas oper
 
 PRÉ-REQUISITOS: Metrologia
 
-|UNIDADE DIDATICA: Usinagem Convencional – 133 horas|UNIDADE DIDATICA: Usinagem Convencional – 133 horas|
+|UNIDADE DIDATICA: Usinagem Convencional – 133 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Princípios funcionais e construtivos de máquinas operatrizes; Tornos;<br>Furadeiras; Fresadoras; Mandriladoras; Plainas; Brochadeiras; Rosqueadeiras; Máquinas de serrar metais;<br>Geometria de parte ativa da ferramenta de corte; Forças de corte metálico; Teoria do corte de metais;<br>Temperatura de corte; Força de corte e potência consumida; Vida da ferramenta; Usinabilidade dos materiais;<br>Materiais usados para ferramentas de corte; Processos especiais de fabricação; Conceito de Comando<br>Numérico (NC) e sua importância no contexto da Automatização Industrial; Características dos sistemas NC<br>envolvendo a máquina, o comando e a programação; Vantagens e limitações do NC; Conceito de<br>programação manual; Aspectos modernos da fabricação assistida por computador, relacionando NC com<br>sistemas CAD/CAM.<br>PRÉ-REQUISITOS: Metrologia||
 |BIBLIOGRAFIA BASICA:<br><br>FERRARESI, Dino. Fundamentos da Usinagem<br>dos Metais. Editora Edgard Blucher, 2003.<br><br>MACHADO, A. R.; ABRÃO, A. M.; COELHO R. T.;<br>SILVA, M. B. Teoria da Usinagem dos Materiais.<br>Editora Edgard Blucher, 2011.<br><br>NOVASKI, OLÍVIO. Introdução à Engenharia de<br>Fabricação Mecânica. Editora Edgard Blucher,<br>2013<br><br>FITZPATRICK, MICHAEL. Introdução aos<br>Processos de Usinagem. Editora McGraw-Hill,<br>2013|<br>BIBLIOGRAFIA COMPLEMENTAR:<br><br>SANTOS, S. C., SALES, W. F. Aspectos<br>Tribológicos da Usinagem dos Materiais. Editora<br>Artliber, 2007.<br><br>ROSSETI, TONINO. Manual Prático Torneiro<br>Mecânico e Fresador. Editora Hemus, 2004<br><br>RODRIGUES, ALESSANDRO ROGER.<br>Usinagem em Altas Velocidades. Editora Edgard<br>Blucher, 2011<br><br>DINIZ, A. E.; MARCONDES, F. C.; COPPINI, N.<br>L. Tecnologia da Usinagem dos Materiais. Editora<br>Artliber, 2013.<br><br>FISCHER, ULRICH; GOMERINGER, ROLAND;<br>HEINZLER, MAX; KILGUS, ROLAND; NÄHER,<br>FRIEDRICH; OESTERLE, STEFAN; PAETZOLD,<br>HEINZ; STEPHAN, ANDREAS. Manual de<br>Tecnologia Metal Mecânica. Editora Edgard<br>Blucher, 2008.<br><br>DAVIM, JOAO PAULO. Nontraditional Machining<br>Processes. Editora Springer, 2013|
@@ -533,7 +533,7 @@ CONTEÚDO PROGRAMÁTICO: Conceito de Comando Numérico (NC) e sua importância n
 
 PRÉ-REQUISITOS: Usinagem Convencional.
 
-|PRÉ-REQUISITOS: Usinagem Convencional.|PRÉ-REQUISITOS: Usinagem Convencional.|||
+|PRÉ-REQUISITOS: Usinagem Convencional.||||
 |---|---|---|---|
 |BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 ||SILVA, S. D. CNC - Programação de comandos||TRAUBOMATIC. Comando Numérico|
@@ -546,7 +546,7 @@ L. Tecnologia da Usinagem dos Materiais. Editora Artliber, 2013.  MADISON, Ja
 
 CONTEÚDO PROGRAMÁTICO: A ciência e o conhecimento; Técnicas de metodologia de pesquisa; Trabalhos científicos; Elaboração de Projeto; Relatório de Pesquisa.
 
-|UNIDADE DIDATICA: Metodologia Científica – 33 horas|UNIDADE DIDATICA: Metodologia Científica – 33 horas|
+|UNIDADE DIDATICA: Metodologia Científica – 33 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: A ciência e o conhecimento; Técnicas de metodologia de pesquisa;<br>Trabalhos científicos; Elaboração de Projeto; Relatório de Pesquisa.||
 |BIBLIOGRAFIA BASICA:<br><br>LAKATOS, Eva M.; MARCONI, Marina A.<br>Metodologia científica. Editora Atlas, 2011.<br><br>LAKATOS, Eva M.; MARCONI, Marina A.<br>Fundamentos de Metodologia Científica. Editora<br>Atlas, 2010.<br>BAUER, Martin W. et al. Pesquisa qualitativa com<br>texto, imagem e som. Petrópolis. Vozes, 2002.|BIBLIOGRAFIA COMPLEMENTAR:<br>LAVILLE, Dione. A Construção do Saber: manual<br>de metodologia da pesquisa em ciências<br>humanas. Trad. Heloísa Monteiro e Franscisco<br>Settineri. UFMG, 1999.<br>MINAYO, Maria Cecília de Souza. Pesquisa<br>social: teoria, método e criatividade. Vozes, 2004.<br>DEMO, Pedro. Metodologia de Investigação em<br>Educação. Ibpex, 2005.|
@@ -557,7 +557,7 @@ CONTEÚDO PROGRAMÁTICO: Sistemas hidráulicos, generalidades e componentes prin
 
 PRPE-REQUISITOS: Fundamentos de Eletricidade Industrial.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||PALMIERI, A. C. Manual de Hidráulica Básica.||PORTO, R. M. Hidráulica Básica. Editora EESC -|
 ||Editora Albarus, 1994.||Esc. Eng. Sao Carlos, 2006.|
@@ -572,7 +572,7 @@ PRPE-REQUISITOS: Fundamentos de Eletricidade Industrial.
 
 CONTEÚDO PROGRAMÁTICO: Classificação das Máquinas Hidráulicas; Bombas: Princípios, Componentes e Instalação; Tipos de Bombas para cada aplicação; Bombas Centrífugas; Sistemas de Bombeamento; Parametrização de Curvas de Bombas e Sistemas de Bombeamento; Turbinas Hidráulicas; Bombas de Deslocamento; Perdas e Rendimentos; Cavitação; Instalação de Bombas: Detalhes, Defeitos e Causas; Equações Fundamentais das Máquinas de Fluxo; Bombas Especiais; Aplicações de tubulações no meio industrial; Critérios utilizados no  dimensionamento e instalação de tubulações.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||MATTOS, E. E., FALCO, R. Bombas Industriais.||MACINTYRE, A. J. Equipamentos Industriais|
 ||Editora Interciência,1998.||e de Processos. Editora LTC, 2011.|
@@ -585,7 +585,7 @@ CONTEÚDO PROGRAMÁTICO: Classificação das Máquinas Hidráulicas; Bombas: Pri
 ||||PUMPS, SULZER. Centrifugal Pumps|
 ||||HandBook. Editora Elsevier, 2010.|
 
-|UNIDADE DIDATICA: Refrigeração e Ar Condicionado – 67 horas|UNIDADE DIDATICA: Refrigeração e Ar Condicionado – 67 horas|
+|UNIDADE DIDATICA: Refrigeração e Ar Condicionado – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Introdução aos Sistemas de Refrigeração; Compressores Frigoríficos;<br>Condensadores; Expansores; Evaporadores; Refrigerantes; Isolamento Térmico; Cargas Térmicas; Sistemas<br>Inteligentes de Refrigeração; Fundamentos ar condicionado; Ciclos e equipamentos de refrigeração; Sistemas<br>e equipamentos de condicionamento de ar; Distribuição e filtragem de ar. Controle do sistema de<br>condicionamento de ar<br>PRÉ-REQUISITOS: Fenômenos de Transporte.||
 |BIBLIOGRAFIA BASICA:<br><br>DOSSAT, R. J. Princípios de refrigeração. Editora<br>Hemus, 2002.<br><br>MILLER, M. R. Refrigeração e Ar Condicionado.<br>Editora LTC, 2008.<br><br>COSTA, Ênnio Cruz. Refrigeração. Editora<br>Edgard Blücher, 1982.|BIBLIOGRAFIA COMPLEMENTAR:<br>SILVA, J. C.; SILVA, A. C. G. C. Refrigeração e<br>Climatização para Técnicos e Engenheiros.<br>Editora Ciência Moderna, 2008<br>JABARDO, J. M. S.; STOECKER, W. F.<br>Refrigeração Industrial. Editora Edgard Blucher,<br>2002.<br>CREDER, HELIO. Instalações de AR<br>Condicionado. Editora LTC, 2004.<br>WIRZ, DICK. Refrigeração Comercial - Para<br>Técnicos Em Ar-condicionado. Editora Cengage,<br>2011.<br>Rapin, P. Manual do Frio - Fórmulas Técnicas<br>Refrigeração e Ar Condicionado. Editora Hemus,<br>2001.|
@@ -594,7 +594,7 @@ UNIDADE DIDATICA: Manutenção Industrial – 133 horas
 
 CONTEÚDO PROGRAMÁTICO: Fases da manutenção durante a vida útil dos ativos; Criticidade de equipamentos; Indicadores - Itens de controle; Orçamento - Despesa e investimento; Capacitação da equipe de manutenção; Descrição de atividade de manutenção; Gerenciamento de sobressalentes; Gerenciamento de falha em equipamento; TPM – Manutenção Produtiva Total; Softwares de gerenciamento de manutenção; Estrutura da manutenção; FMEA - Failure Mode and Effects Analysis; Manutenção mecânica; Manutenção elétrica.
 
-|UNIDADE DIDATICA: Manutenção Industrial – 133 horas|UNIDADE DIDATICA: Manutenção Industrial – 133 horas|
+|UNIDADE DIDATICA: Manutenção Industrial – 133 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Fases da manutenção durante a vida útil dos ativos; Criticidade de<br>equipamentos; Indicadores - Itens de controle; Orçamento - Despesa e investimento; Capacitação da equipe<br>de manutenção; Descrição de atividade de manutenção; Gerenciamento de sobressalentes; Gerenciamento<br>de falha em equipamento; TPM – Manutenção Produtiva Total; Softwares de gerenciamento de manutenção;<br>Estrutura da manutenção; FMEA - Failure Mode and Effects Analysis; Manutenção mecânica; Manutenção<br>elétrica.||
 |BIBLIOGRAFIA BASICA:<br><br>BRANCO FILHO, Gil. Dicionário de Termos de<br>Manutenção, Confiabilidade e Qualidade. Editora<br>Ciência Moderna, 2006.<br><br>KARDEC, A.; NASCIF, J. Manutenção Função<br>Estratégica. Editora Qualitymark, 2009.<br><br>FILHO, GIL. B. A Organização, o Planejamento e<br>o Controle da Manutenção. Editora Ciência<br>Moderna, 2008.<br><br>FLOGLIATTO, F. S.; DUARTE, J. L.<br>Confiabilidade e Manutenção Industrial. Editora<br>Elsevier, 2009.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>FOGLIATTO, F. S. Confiabilidade e Manutenção<br>Industrial. Editora Campus, 2009.<br><br>NEPOMUCENO, L. X. Técnicas de Manutenção<br>preditiva, v.1. Editora Edgard Blücher, 1999.<br><br>NEPOMUCENO, L. X. Tecnicas de manutençao<br>preditiva, v.2. Editora Edgard Blücher, 1999.<br><br>SANTOS, V. A. Manual Prático de Manutenção<br>Industrial. Editora ICONE EDITORA, 2007.<br><br>SIMHON, M. S. Instrumentação e Ensaios de<br>Manutenção Preditiva. Editora Moussa Salen<br>Simhon, 2011.<br><br>SIMHON, M. S. Manutenção e Manutensibilidade<br>de Máquinas Ferramentas. Editora Moussa Salen<br>Simhon, 2011.|
@@ -605,7 +605,7 @@ CONTEÚDO PROGRAMÁTICO: Concepção; Projeto preliminar; Planejamento; Estudo d
 
 PRÉ-REQUISITOS: Desenho Mecânico, Resistência dos Materiais e Elementos de Máquinas.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||JUVINALL, R. C.; MARSHEK, K. M. Fundamentos||PROVENZA, Francesco. Projetista de Máquinas.|
 ||do Projeto de Componentes de Máquinas. Editora||Editora Provenza, 1996.|
@@ -625,7 +625,7 @@ CONTEÚDO PROGRAMÁTICO: Atribuição da engenharia de manutenção e conceitos 
 
 PRE-REQUISITOS: Manutenção Industrial.
 
-|PRE-REQUISITOS: Manutenção Industrial.|PRE-REQUISITOS: Manutenção Industrial.|||
+|PRE-REQUISITOS: Manutenção Industrial.||||
 |---|---|---|---|
 |BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 ||LAFRAIA, J. R. B. Manual de Confiabilidade,||SANTOS, V. A. Manual Prático de Manutenção|
@@ -646,7 +646,7 @@ CONTEÚDO PROGRAMÁTICO: Atrito; Desgaste; Lubrificação; Lubrificantes. Mecân
 
 PRÉ-REQUISITOS: Ciências dos Materiais e Ensaios Mecânicos.
 
-|UNIDADE DIDATICA: Tribologia – 67 horas|UNIDADE DIDATICA: Tribologia – 67 horas|
+|UNIDADE DIDATICA: Tribologia – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Atrito; Desgaste; Lubrificação; Lubrificantes. Mecânica do contato. Teoria de<br>Hertz. Teorias de contato considerando deformação plástica. Contato microscópico entre superfícies. Leis de<br>atrito. Atrito estático e atrito cinético. Classificação dos sistemas tribológicos. Desgaste por deslizamento.<br>Desgaste por partículas duras. Desgaste e atrito em sistemas lubrificados.<br>PRÉ-REQUISITOS: Ciências dos Materiais e Ensaios Mecânicos.||
 |**BIBLIOGRAFIA BASICA:**<br><br>HUTCHINGS, I.M. Tribology: Friction and Wear of<br>Engineering Materials. London, Edward Arnold,<br>1992.<br><br>RABINOWICZ, E. Friction and Wear of Materials.<br>Editora John Wiley. 1981.<br><br>BATCHELOR, A. W.; STACHOWIAK, G.<br>Engineering Tribology. Editora<br>Butterworth-Heineman, 2005.|**BIBLIOGRAFIA COMPLEMENTAR:**<br><br>COLLINS, J. O. Failure of Material in Mechanical<br>Design. Editora John Wiley, 1993..<br><br>DUARTE JR., DURVAL. Tribologia, Lubrificação e<br>Mancais de Deslizamento. Editora Ciência<br>Moderna, 2005.<br><br>HAMROCK, B. J. Fundamentals Of Fluid Film<br>Lubrication. Editora Marcel Denker, 2004.<br><br>LUDEMA, K. C. Friction, Wear, Lubrication.<br>Editora Taylor Print, 1996.<br><br>GILMAN, J. J. Chemistry And Physics Of<br>Mechanical Hardness. Editora John Wiley<br>Professional, 2009.<br><br>TABOR, D. The Hardness Of Metals. Editora<br>Oxford UK, 2000.<br><br>MCCOLM, I. J. Ceramic Hardness. Editora<br>Kluwer, 1990|
@@ -665,7 +665,7 @@ BIBLIOGRAFIA COMPLEMENTAR:  THOMSON, W. T. Theory of Vibrations with Applicat
 
 CONTEÚDO PROGRAMÁTICO: Considerações gerais sobre ventilação industrial; Princípios de mecânica dos fluidos aplicados à ventilação industrial; Ventilação geral; Ventilação local e exaustora; Equipamentos de controle; Verificação de sistemas de ventilação; Projeto de um sistema de ventilação.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:|
 |---|---|---|
 ||CLEZAR, C. A.; NOGUEIRA, A. C. R. Ventilação|BRANCO, S. M.; MURGEL, E. Poluição do Ar.|
 ||Industrial. Editora UFSC, 2009.|Editora Moderna, 2005.|
@@ -680,7 +680,7 @@ CONTEÚDO PROGRAMÁTICO: Problema de projeto ótimo. Variáveis de projeto, fun�
 
 PRÉ-REQUISITOS: Resistência dos Materiais e Elementos de Máquinas.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||ARORA, J. S. Introduction to Optimum Design.||BAZARAA, M. S.; SHERALI, H. D.; SHETTY C. M.|
 ||Editora Academic Press, 2011.||Nonlinear Programming: theory and algorithms.|
@@ -695,7 +695,7 @@ CONTEÚDO PROGRAMÁTICO: Condução de calor em regime permanente e transiente, 
 
 PRÉ-REQUISITOS: Fenômenos de Transporte.
 
-|UNIDADE DIDATICA: Transferência de Calor e Mecânica dos Fluidos Computacional – 67 horas|UNIDADE DIDATICA: Transferência de Calor e Mecânica dos Fluidos Computacional – 67 horas|
+|UNIDADE DIDATICA: Transferência de Calor e Mecânica dos Fluidos Computacional – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Condução de calor em regime permanente e transiente, Cavidades, Aletas,<br>Escoamento interno, Escoamento externo, Escoamento Multifásico, Otimização com constructal design.<br>PRÉ-REQUISITOS: Fenômenos de Transporte.||
 |BIBLIOGRAFIA BASICA:<br><br>FLUENT. Documentation Manual.<br>(http://www.fluent.com/software/fluent/index.htm),<br>2007.<br><br>MALISKA, C. R., Transferência de Calor e<br>Mecânica dos Fluidos Computacional, Rio de<br>Janeiro: LTC – Livros Técnicos e Científicos,<br>2004.<br><br>BEJAN, A.; LORENTE, S.. Design with<br>Constructal Theory. Wiley, Hoboken, 2008.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>VERSTEEG, H. K., MALALASEKERA, W., An<br>Introduction to Computational Fluid Dynamics,<br>Malaysia : Longman, 1999.|
@@ -722,7 +722,7 @@ BIBLIOGRAFIA BASICA: BIBLIOGRAFIA COMPLEMENTAR:
 
 CONTEÚDO PROGRAMÁTICO: O Movimento histórico da Língua de Sinais – a utilização de uma língua própria; língua e linguagem; as tendências na educação dos surdos; as línguas de sinais e a língua de sinais Brasileira - LIBRAS; as relações espaciais, e a LIBRAS; estrutura linguística da LIBRAS e sua gramática. Vocabulário básico em LIBRAS.
 
-|UNIDADE DIDATICA: Linguagem Brasileira de Sinais (LIBRAS) – 67 horas|UNIDADE DIDATICA: Linguagem Brasileira de Sinais (LIBRAS) – 67 horas|
+|UNIDADE DIDATICA: Linguagem Brasileira de Sinais (LIBRAS) – 67 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: O Movimento histórico da Língua de Sinais – a utilização de uma língua<br>própria; língua e linguagem; as tendências na educação dos surdos; as línguas de sinais e a língua de sinais<br>Brasileira - LIBRAS; as relações espaciais, e a LIBRAS; estrutura linguística da LIBRAS e sua gramática.<br>Vocabulário básico em LIBRAS.||
 |BIBLIOGRAFIA BASICA:<br><br>CAPOVILLA, F. C.; RAPHAEL, W. D.<br>Enciclopédia da Língua de Sinais Brasileira.<br>Editora EDUSP, 2005. Volume 1.<br><br>CAPOVILLA, F. C.; RAPHAEL, W. D.. Novo Deit-<br>libras: dicionário enciclopédico ilustrado trilíngue<br>da língua de sinais brasileira baseado em<br>linguística e neurociências cognitivas. Editora<br>EDUSP, 2009. Volumes 1 e 2.<br><br>GESSER, Audrei. Libras: que língua é essa?<br>crenças e preconceitos em torno da língua de<br>sinais e da realidade surda. Editora Parábola,<br>2009.|BIBLIOGRAFIA COMPLEMENTAR:<br><br>ALMEIDA, E. C.; DUARTE, P. M. Atividades<br>Ilustradas em Sinais da Libras. Editora Revinter,<br>2004.|
@@ -735,7 +735,7 @@ CONTEÚDO PROGRAMÁTICO: Estágio curricular obrigatório, com 160 horas de dura
 
 PRÉ-REQUISITOS: Ter concluído todas as disciplinas do 1º ano.
 
-|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA BASICA:|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA BASICA:||BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|---|---|
 ||LAKATOS, Eva M.; MARCONI, Marina A.||MINAYO, Maria Cecília de Souza. Pesquisa|
 ||Metodologia científica. Editora Atlas, 2011.||social: teoria, método e criatividade. Vozes, 2004.|
@@ -749,7 +749,7 @@ PRÉ-REQUISITOS: Ter concluído todas as disciplinas do 1º ano.
 
 CONTEÚDO PROGRAMÁTICO: Escolha do tema, pesquisa bibliográfica. Definição. Planejamento do projeto. Execução do anteprojeto. Avaliação dos resultados. Apresentação. Defesa do projeto.
 
-|UNIDADE DIDATICA: Trabalho de Conclusão de Curso – 200 horas|UNIDADE DIDATICA: Trabalho de Conclusão de Curso – 200 horas|
+|UNIDADE DIDATICA: Trabalho de Conclusão de Curso – 200 horas||
 |---|---|
 |CONTEÚDO PROGRAMÁTICO: Escolha do tema, pesquisa bibliográfica. Definição. Planejamento do projeto.<br>Execução do anteprojeto. Avaliação dos resultados. Apresentação. Defesa do projeto.||
 |BIBLIOGRAFIA BASICA:<br><br>LAKATOS, Eva M.; MARCONI, Marina A.<br>Metodologia científica. Editora Atlas, 2011.<br><br>LAKATOS, Eva M.; MARCONI, Marina A.<br>Fundamentos de Metodologia Científica. Editora<br>Atlas, 2010.<br>BAUER, Martin W. et al. Pesquisa qualitativa com<br>texto, imagem e som. Petrópolis. Vozes, 2002.|BIBLIOGRAFIA COMPLEMENTAR:<br>LAVILLE, Dione. A Construção do Saber: manual<br>de metodologia da pesquisa em ciências<br>humanas. Trad. Heloísa Monteiro e Franscisco<br>Settineri. UFMG, 1999.<br><br>SEVERINO, A. J. Metodologia do Trabalho<br>Científico. Editora Cortez, 1996.|

@@ -1130,7 +1130,7 @@ Os projetos integradores objetivam integrar diferentes conteúdos – gerais e t
 
 O Quadro 1 apresenta os componentes curriculares relacionados ao Projeto Integrador, ano de oferta, carga horária, temática direcionadora e princípio pedagógico orientador.
 
-|**Quadro 1- Componentes curriculares relacionados ao Projeto Integrador**|**Quadro 1- Componentes curriculares relacionados ao Projeto Integrador**|**Quadro 1- Componentes curriculares relacionados ao Projeto Integrador**|**Quadro 1- Componentes curriculares relacionados ao Projeto Integrador**|
+|**Quadro 1- Componentes curriculares relacionados ao Projeto Integrador**||||
 |---|---|---|---|
 |<br>**Componente**<br>**curricular**|<br>**Ano / Carga**<br>**horária**|<br>**Temática direcionadora**|<br>**Princípio pedagógico**<br>**orientador**|
 |Projeto integrador I|1º ano<br>(67 horas)|Conhecer o mundo e as<br>organizações|Pesquisa|

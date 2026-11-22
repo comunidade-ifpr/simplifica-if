@@ -649,7 +649,7 @@ As ações de extensão e de interação com a comunidade constituem um processo
 
 **Projetos de extensão do curso de Educação Física do IFPR Campus Palmas** 
 
-|**Projetos de extensão do curso de Educação Física do IFPR Campus Palmas**|**Projetos de extensão do curso de Educação Física do IFPR Campus Palmas**|**Projetos de extensão do curso de Educação Física do IFPR Campus Palmas**|
+|**Projetos de extensão do curso de Educação Física do IFPR Campus Palmas**|||
 |---|---|---|
 |Coordenador do Projeto|Título do Projeto|Agência de Fomento|
 |Aluísio Menin Mendes|Escola de Atletismo do IFPR|Institucional|
@@ -1403,7 +1403,7 @@ PAIVA, I. M. **Brinquedos cantados.** 3ª ed. Rio de Janeiro: Sprint, 2003.
 
 61 
 
-|**Componente Curricular**|**Componente Curricular**|Ritmo e Expressão Corporal|Ritmo e Expressão Corporal|Ritmo e Expressão Corporal|
+|**Componente Curricular**||Ritmo e Expressão Corporal|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|14 horas||**Extensão**|8 horas|
@@ -1454,7 +1454,7 @@ THEREZO, Graciema Pires. **Redação e leitura para universitários** _._ 2ª ed
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Práticas Corporais de Aventura|Práticas Corporais de Aventura|Práticas Corporais de Aventura|
+|**Componente Curricular**||Práticas Corporais de Aventura|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|15 horas||**Extensão**|8 horas|
@@ -1579,7 +1579,7 @@ VENLIOLES, F. M. **Escola de futebol** . Rio de Janeiro: Sprint, 2001. COSTA, C.
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Fundamentos Históricos da Educação Física|Fundamentos Históricos da Educação Física|Fundamentos Históricos da Educação Física|
+|**Componente Curricular**||Fundamentos Históricos da Educação Física|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -1681,7 +1681,7 @@ SCHIAVON, Laurita; BORTOLETO, Marco; NUNOMURA, Myrian e TOLEDO, Eliana **Ginást
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Controle e Aprendizagem Motora|Controle e Aprendizagem Motora|Controle e Aprendizagem Motora|
+|**Componente Curricular**||Controle e Aprendizagem Motora|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PPC**|0 horas||**Extensão**|0 horas|
@@ -1735,7 +1735,7 @@ ALMEIDA, V. S. **Educação em Hannah Arendt: entre o mundo deserto e o amor ao 
 
 DURKHEIM, E. **Educação e sociologia** . Rio de Janeiro: Melhoramentos, 1982. DURKHEIM, E. **As regras do método sociológico** . São Paulo: Companhia Editora 
 
-|**Componente Curricular**|**Componente Curricular**|Psicologia do Desenvolvimento|Psicologia do Desenvolvimento|Psicologia do Desenvolvimento|
+|**Componente Curricular**||Psicologia do Desenvolvimento|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|67 horas - 80 hora/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -1907,7 +1907,7 @@ MAGLISCHO, Ernest W. **Nadando ainda mais rápido** . São Paulo: Manole, 1999. 
 
 ## **5º Período** 
 
-|**Componente Curricular**|**Componente Curricular**|Medidas e Avaliação em Educação Física|Medidas e Avaliação em Educação Física|Medidas e Avaliação em Educação Física|
+|**Componente Curricular**||Medidas e Avaliação em Educação Física|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|67 horas - 80 hora/aula|
 |**PPC**|0 horas||**Extensão**|0 horas|
@@ -1932,7 +1932,7 @@ PETROSKI, E.L. (org). **Antropometria: técnicas e padronizações.** Porto Aleg
 
 KISS, M. A. P. D. **Esporte e exercício: avaliação e prescrição.** São Paulo: Roca, 2003. 
 
-|**Componente Curricular**|**Componente Curricular**|Educação Físicapara Pessoas com Deficiência|Educação Físicapara Pessoas com Deficiência|Educação Físicapara Pessoas com Deficiência|
+|**Componente Curricular**||Educação Físicapara Pessoas com Deficiência|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|67 horas - 80 horas/aula|
 |**PCC**|30 horas||**Extensão**|16 horas|
@@ -1945,7 +1945,7 @@ KISS, M. A. P. D. **Esporte e exercício: avaliação e prescrição.** São Pau
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Treinamento Esportivo Escolar|Treinamento Esportivo Escolar|Treinamento Esportivo Escolar|
+|**Componente Curricular**||Treinamento Esportivo Escolar|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2021,7 +2021,7 @@ SILVA, N. Pithan e. **Ginástica Feminina** / N. Pithan e Silva. São Paulo: Com
 
 PEREIRA, Sissi. **Ginástica Rítmica Desportiva: aprendendo passo a passo.** Rio de Janeiro: Shape, 2000. BOTT, Jenny. **Ginástica Rítmica Desportiva** . São Paulo: Manole, 1986. BARROS, Dayse. **Os primeiros passos da Ginástica Rítmica.** Rio de Janeiro: Grupo Palestra Sport, 1980. MIMILLER. J. A **Escuta do Corpo** . Summus. 2007. 
 
-|**Componente Curricular**|**Componente Curricular**|Pedagogia do Esporte Escolar|Pedagogia do Esporte Escolar|Pedagogia do Esporte Escolar|
+|**Componente Curricular**||Pedagogia do Esporte Escolar|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PPC**|0 horas||**Extensão**|0 horas|
@@ -2055,7 +2055,7 @@ SILVA, Luiz Roberto Rigolin da (E.). **Desempenho esportivo:** treinamento com c
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Estágio II – Ensino Fundamental II|Estágio II – Ensino Fundamental II|Estágio II – Ensino Fundamental II|
+|**Componente Curricular**||Estágio II – Ensino Fundamental II|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|160 horas - 80 horas/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2106,7 +2106,7 @@ MOREIRA, E. C.; PEREIRA R. S. **Educação Física Escolar: desafios e propostas
 
 BRACHT, V.; CRISORIO, R. **A educação física no Brasil e na Argentina: identidade, desafios e perspectivas** . Campinas/SP: Autores Associados, 2003. 
 
-|**Componente curricular**|**Componente curricular**|Didática da Educação Física|Didática da Educação Física|
+|**Componente curricular**||Didática da Educação Física||
 |---|---|---|---|
 |**Aulas/semana**|4|**Carga horária**|67 horas/ 80 aulas|
 |**PCC**|0 horas|**Extensão**|0 horas|
@@ -2214,7 +2214,7 @@ CAPOVILLA, F. C. & RAPHAEL, D. W. **Enciclopédia da Língua de Sinais Brasileir
 
 CAPOVILLA, F. C. & RAPHAEL, D. W. **Enciclopédia da Língua de Sinais Brasileira** . São Paulo: EDUSP: Imprensa Oficial, 2005. v.4. 
 
-|**Componente Curricular**|**Componente Curricular**|Seminário de Ciências do Movimento Humano|Seminário de Ciências do Movimento Humano|Seminário de Ciências do Movimento Humano|
+|**Componente Curricular**||Seminário de Ciências do Movimento Humano|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2227,7 +2227,7 @@ CAPOVILLA, F. C. & RAPHAEL, D. W. **Enciclopédia da Língua de Sinais Brasileir
 
 
 
-|**Componente curricular**|**Componente curricular**|Avaliação da Aprendizagem|Avaliação da Aprendizagem|
+|**Componente curricular**||Avaliação da Aprendizagem||
 |---|---|---|---|
 |**Aulas/semana**|2|**Carga horária**|33 horas/ 40 aulas|
 |**PCC**|0 horas|**Extensão**|0 horas|
@@ -2241,7 +2241,7 @@ A história da avaliação educacional e a pedagogia do exame. Avaliação nas d
 
 AFONSO, A. J. **Avaliação educacional: regulação e emancipação - para uma sociologia das políticas avaliativas contemporâneas** . 4. ed. São Paulo: Cortez, 2009. DEMO, P. **Avaliação qualitativa** . 7.ed., rev. São Paulo: Cortez, 2002. ESTEBAN, M.T. (org.). **Avaliação: uma prática em busca de novos sentidos** . Rio de Janeiro: DP&amp;A, 1999. HOFFMANN, J. **Pontos e Contra Pontos: Do pensar ao agir em avaliação** . Porto Alegre: Mediação, 1998. SAVIANI, D. **Pedagogia histórico-crítica: primeiras aproximações** . 8. ed. Campinas: Autores Associados, 2003. 
 
-|**Componente Curricular**|**Componente Curricular**|Estágio IV – Educação Física na Educação de Jovens e|Estágio IV – Educação Física na Educação de Jovens e|Estágio IV – Educação Física na Educação de Jovens e|
+|**Componente Curricular**||Estágio IV – Educação Física na Educação de Jovens e|||
 |---|---|---|---|---|
 |||Adultos (EJA), para pessoas com deficiência (PCD) e|||
 |||gestão escolar|||
@@ -2397,7 +2397,7 @@ GALATTI, L. R.; SCAGLIA, A. J.; MONTAGNER, P. C.; PAE, Roberto R. **Desenvolvime
 
 MAKARENKO, L. P. **Natação:** seleção de talentos e iniciação esportiva. Porto Alegre: Artmed, 2001. ROSE JÚNIOR, Dante de (Org.). **Esporte e atividade física na infância e na adolescência:** uma abordagem multidisciplinar. 2ª ed. Porto Alegre: Artmed, 2009. SILVA, Luiz Roberto Rigolin da (E.). **Desempenho esportivo:** treinamento com crianças e adolescentes. 2ª ed. rev. e atual. São Paulo: Phorte, 2010. WEINECK, Jürgen. **Treinamento ideal.** 9ª ed. São Paulo: Manole, 2003. 
 
-|**Componente Curricular**|**Componente Curricular**|Estágio II – Gestão em Espaços Esportivos e de Lazer|Estágio II – Gestão em Espaços Esportivos e de Lazer|Estágio II – Gestão em Espaços Esportivos e de Lazer|
+|**Componente Curricular**||Estágio II – Gestão em Espaços Esportivos e de Lazer|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|160 horas - 80 horas/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2420,7 +2420,7 @@ JARMENDIA, A. M. **Formação de professores e estágios supervisionados: fundam
 
 MATIAS, Marlene. **Organização de eventos:** procedimentos e técnicas. São Paulo: Manole, 2001. ISBN 8520412521. 
 
-|**Componente Curricular**|**Componente Curricular**|Estudos Avançados da Ginástica Rítmica|Estudos Avançados da Ginástica Rítmica|Estudos Avançados da Ginástica Rítmica|
+|**Componente Curricular**||Estudos Avançados da Ginástica Rítmica|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|14 horas||**Extensão**|8 horas|
@@ -2465,7 +2465,7 @@ NISTA-PICCOLO, V. L; TOLEDO, E. de (Org.). **Abordagens pedagógicas do esporte:
 
 ## **7° Período** 
 
-|**Componente Curricular**|**Componente Curricular**|Avaliação e Prescrição do Exercício Físico|Avaliação e Prescrição do Exercício Físico|Avaliação e Prescrição do Exercício Físico|
+|**Componente Curricular**||Avaliação e Prescrição do Exercício Físico|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|67 horas - 80 hora/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2486,7 +2486,7 @@ McARDLE, William D. Fisiologia do Exercício: Energia, Nutrição e Desempenho H
 
 AMERICAN COLLEGE OF SPORTS MEDICINE. Manual do ACSM para avaliação da aptidão física relacionada à saúde. 3ª ed. Rio de Janeiro: Guanabara Koogan, 2011. 
 
-|**Componente Curricular**|**Componente Curricular**|Atividade Física e Envelhecimento|Atividade Física e Envelhecimento|Atividade Física e Envelhecimento|
+|**Componente Curricular**||Atividade Física e Envelhecimento|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2513,7 +2513,7 @@ AWAD, H. **Brinque, jogue, cante e encante com a recreação.** Jundiaí: Fontou
 
 GUERRA, M. **Recreação e Lazer.** 5ª ed. Porto Alegre: Sagra, 2005. 
 
-|**Componente Curricular**|**Componente Curricular**|Estágio III – Lazer e Recreação e/ou Atividades Físicas|Estágio III – Lazer e Recreação e/ou Atividades Físicas|Estágio III – Lazer e Recreação e/ou Atividades Físicas|
+|**Componente Curricular**||Estágio III – Lazer e Recreação e/ou Atividades Físicas|||
 |---|---|---|---|---|
 |||para Pessoas com Deficiência|||
 |**Aulas/semanal**|4||**Carga horária**|160 horas - 80 horas/aula|
@@ -2531,7 +2531,7 @@ GUERRA, M. **Recreação e Lazer.** 5ª ed. Porto Alegre: Sagra, 2005.
 
 99 
 
-|**Componente Curricular**|**Componente Curricular**|Aprofundamento do Treinamento Esportivo|Aprofundamento do Treinamento Esportivo|Aprofundamento do Treinamento Esportivo|
+|**Componente Curricular**||Aprofundamento do Treinamento Esportivo|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**CE:**|0 horas|
@@ -2544,7 +2544,7 @@ GUERRA, M. **Recreação e Lazer.** 5ª ed. Porto Alegre: Sagra, 2005.
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Gestão e Organização de Eventos|Gestão e Organização de Eventos|Gestão e Organização de Eventos|
+|**Componente Curricular**||Gestão e Organização de Eventos|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2566,7 +2566,7 @@ MARQUES, Renato Francisco Rodrigues; GUTIERREZ, Gustavo Luiz. O esporte paralím
 
 MATIAS, Marlene. Organização de eventos: procedimentos e técnicas. São Paulo: Manole, 2001. ISBN 8520412521. 
 
-|**Componente Curricular**|**Componente Curricular**|Ginástica Laboral e de Academia|Ginástica Laboral e de Academia|Ginástica Laboral e de Academia|
+|**Componente Curricular**||Ginástica Laboral e de Academia|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2579,7 +2579,7 @@ MATIAS, Marlene. Organização de eventos: procedimentos e técnicas. São Paulo
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Estágio IV – Atividade Física e Saúde|Estágio IV – Atividade Física e Saúde|Estágio IV – Atividade Física e Saúde|
+|**Componente Curricular**||Estágio IV – Atividade Física e Saúde|||
 |---|---|---|---|---|
 |**Aulas/semanal**|4||**Carga horária**|160 horas - 80 horas/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2606,7 +2606,7 @@ LEITE, Paulo Fernando. **Aptidão física, esporte e saúde.** 3. ed. São Paulo
 
 PITANGA, Francisco José Gondim. **Epidemiologia da atividade física, do exercício físico e da saúde/** Francisco José Gondim Pitanga. 3.ed. rev. e ampl. São Paulo: Phorte, 2010. 270 p. ISBN 9788576552772 (broch.). TEIXEIRA, Luzimar. **Atividade física adaptada e saúde:** da teoria à prática. São Paulo: Phorte, 2008. 455 p. ISBN 9788576551850 (enc.). 
 
-|**Componente Curricular**|**Componente Curricular**|Seminário de Ciências do Movimento Humano|Seminário de Ciências do Movimento Humano|Seminário de Ciências do Movimento Humano|
+|**Componente Curricular**||Seminário de Ciências do Movimento Humano|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|0 horas|
@@ -2635,7 +2635,7 @@ MACHADO, A. F; CAL ABAD, C. C. **Manual de avaliação física** . 2.ed. São Pa
 
 ## **Optativa I – 5º Período** 
 
-|**Componente Curricular**|**Componente Curricular**|Psicologia da Atividade Física|Psicologia da Atividade Física|Psicologia da Atividade Física|
+|**Componente Curricular**||Psicologia da Atividade Física|||
 |---|---|---|---|---|
 |**Aulas/semanal:**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2652,7 +2652,7 @@ MACHADO, A. F; CAL ABAD, C. C. **Manual de avaliação física** . 2.ed. São Pa
 
 SKINNER, B. F. **Ciência e Comportamento Humano** . 11.ed. São Paulo: Martins Fontes, 2003. 
 
-|**Componente Curricular**|**Componente Curricular**|Atividades Aquáticaspara Crianças e Adolescentes|Atividades Aquáticaspara Crianças e Adolescentes|Atividades Aquáticaspara Crianças e Adolescentes|
+|**Componente Curricular**||Atividades Aquáticaspara Crianças e Adolescentes|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 ||||||
@@ -2684,7 +2684,7 @@ KUNZ, E. **Educação Física: ensino & mudanças** . 3 ed. Ijuí: Uijuí, 2012.
 
 MARCELLINO, N. C. **Estudos do lazer** . 2. ed. Campinas: Autores Associados, 2000. PICCOLO, V. N. (Org.) **Abordagens pedagógicas do esporte: modalidades convencionais e não convencionais** . Campinas/SP: Papirus, 2014. 
 
-|**Componente Curricular**|**Componente Curricular**|Práticas corporais complementares|Práticas corporais complementares|Práticas corporais complementares|
+|**Componente Curricular**||Práticas corporais complementares|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2697,7 +2697,7 @@ MARCELLINO, N. C. **Estudos do lazer** . 2. ed. Campinas: Autores Associados, 20
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Ciências da motricidade humana|Ciências da motricidade humana|Ciências da motricidade humana|
+|**Componente Curricular**||Ciências da motricidade humana|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2719,7 +2719,7 @@ VIEIRA E CUNHA, Manuel Sergio."Um corte epistemológico, da Educação Física a
 
 ## **Optativa II - 8º Período** 
 
-|**Componente Curricular**|**Componente Curricular**|Metodologia do Ensino da Ginástica Artística|Metodologia do Ensino da Ginástica Artística|Metodologia do Ensino da Ginástica Artística|
+|**Componente Curricular**||Metodologia do Ensino da Ginástica Artística|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PPC**|0 horas||**Extensão**|8 horas|
@@ -2732,7 +2732,7 @@ VIEIRA E CUNHA, Manuel Sergio."Um corte epistemológico, da Educação Física a
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Técnica de Escrita de Artigos Científicos (*10 vagas|Técnica de Escrita de Artigos Científicos (*10 vagas|Técnica de Escrita de Artigos Científicos (*10 vagas|
+|**Componente Curricular**||Técnica de Escrita de Artigos Científicos (*10 vagas|||
 |---|---|---|---|---|
 |||porsemestre)|||
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
@@ -2767,7 +2767,7 @@ MATTOS, M. G. de; ROSSETTO JR., A. J.; BLECHER, S. **Teoria e prática da metodo
 
 MACHADO, A. F; CAL ABAD, C. C. **Manual de avaliação física** . 2.ed. São Paulo: Ícone, 2012. 
 
-|**Componente Curricular**|**Componente Curricular**|Estudos Avançados da Dança Escolar|Estudos Avançados da Dança Escolar|Estudos Avançados da Dança Escolar|
+|**Componente Curricular**||Estudos Avançados da Dança Escolar|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2790,7 +2790,7 @@ RIED, B. **Fundamentos de dança de salão.** Rio de Janeiro: S. editora, 2002. 
 
 GONZAGA, L. **Técnicas de Dança de Salão.** Rio de Janeiro: Sprint, 1996. 
 
-|**Componente Curricular**|**Componente Curricular**|Metodologias do Ensino do Futsal|Metodologias do Ensino do Futsal|Metodologias do Ensino do Futsal|
+|**Componente Curricular**||Metodologias do Ensino do Futsal|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2803,7 +2803,7 @@ GONZAGA, L. **Técnicas de Dança de Salão.** Rio de Janeiro: Sprint, 1996.
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Atividade Física da Criança e do Adolescente|Atividade Física da Criança e do Adolescente|Atividade Física da Criança e do Adolescente|
+|**Componente Curricular**||Atividade Física da Criança e do Adolescente|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2832,7 +2832,7 @@ PONT GEIS, Pilar. **Atividade física e saúde na terceira idade:** teoria e pr�
 
 ## **Optativa I - 5º Período** 
 
-|**Componente Curricular**|**Componente Curricular**|Projeto de Ensino: Esportes Radicais|Projeto de Ensino: Esportes Radicais|Projeto de Ensino: Esportes Radicais|
+|**Componente Curricular**||Projeto de Ensino: Esportes Radicais|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2845,7 +2845,7 @@ PONT GEIS, Pilar. **Atividade física e saúde na terceira idade:** teoria e pr�
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Psicologia do Esporte e do Exercício|Psicologia do Esporte e do Exercício|Psicologia do Esporte e do Exercício|
+|**Componente Curricular**||Psicologia do Esporte e do Exercício|||
 |---|---|---|---|---|
 |**Aulas/semanal:**|2||**Carga horária**|33 horas - 40 hora/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2899,7 +2899,7 @@ MARINHO, A; BRUHNS, H. T. **Viagens, lazer e esporte: o espaço da natureza** . 
 
 SCHWARTZ, G. M. **Atividades Recreativas** . São Paulo: Guanabara Koogan, 2004. TUBINO, M. J. G. **O que é esporte** . Rio de Janeiro: Brasiliense, 1993. 
 
-|**Componente Curricular**|**Componente Curricular**|Aperfeiçoamento da Natação|Aperfeiçoamento da Natação|Aperfeiçoamento da Natação|
+|**Componente Curricular**||Aperfeiçoamento da Natação|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2933,7 +2933,7 @@ VIEIRA E CUNHA, Manuel Sergio."Um corte epistemológico, da Educação Física a
 
 ## **Optativa II – 7º Período** 
 
-|**Componente Curricular**|**Componente Curricular**|Técnica de Escrita de Artigos Científicos (*10 vagas|Técnica de Escrita de Artigos Científicos (*10 vagas|Técnica de Escrita de Artigos Científicos (*10 vagas|
+|**Componente Curricular**||Técnica de Escrita de Artigos Científicos (*10 vagas|||
 |---|---|---|---|---|
 |||por semestre)|||
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 hora/aula|
@@ -2970,7 +2970,7 @@ SANTOS, T. M. (Org.). Bases para o desempenho no ciclismo: da avaliação à est
 
 CARVALHO, M. L.; FREITAS, C. M. Pedalando em busca de alternativas saudáveis e sustentáveis. Ciência e Saúde Coletiva. V. 17. No. 6: 1617-1628, 2012. DOMINGUES FILHO, L. A. Ciclismo indoor: um guia teórico-prático. Jundiaí: Fontoura, 2005. FERREIRA, B. E. Ciclismo: do atleta iniciante ao competitivo. 2014. SERVIÇO SOCIAL DA INDUSTRIA. Ciclismo, BMX e mountain bike. São Paulo: Sesi-SP Editora, 2012. 
 
-|**Componente Curricular**|**Componente Curricular**|Estudos Avançados do Voleibol|Estudos Avançados do Voleibol|Estudos Avançados do Voleibol|
+|**Componente Curricular**||Estudos Avançados do Voleibol|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -2999,7 +2999,7 @@ CARVALHO, M. L.; FREITAS, C. M. Pedalando em busca de alternativas saudáveis e 
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Atividades Físicas de Academia|Atividades Físicas de Academia|Atividades Físicas de Academia|
+|**Componente Curricular**||Atividades Físicas de Academia|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -3016,7 +3016,7 @@ CARVALHO, M. L.; FREITAS, C. M. Pedalando em busca de alternativas saudáveis e 
 
 FRAGA, A. B. WACHS, F. (Org.). Educação Física e saúde coletiva: políticas de formação e perspectivas de intervenção. Porto Alegre: UFRGS, 2007. ISACOVITZ, R.; Clippinger, K. Anatomia do Pilates: Guia Ilustrado de Solo para Estabilidade do Core e Equilíbrio. Manole, 2013. 
 
-|**Componente Curricular**|**Componente Curricular**|Estudos Avançados do Futsal|Estudos Avançados do Futsal|Estudos Avançados do Futsal|
+|**Componente Curricular**||Estudos Avançados do Futsal|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -3029,7 +3029,7 @@ FRAGA, A. B. WACHS, F. (Org.). Educação Física e saúde coletiva: políticas 
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Estudos Avançados da Dança|Estudos Avançados da Dança|Estudos Avançados da Dança|
+|**Componente Curricular**||Estudos Avançados da Dança|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -3088,7 +3088,7 @@ TEIXEIRA, Luzimar. **Atividade física adaptada e saúde:** da teoria à prátic
 
 
 
-|**Componente Curricular**|**Componente Curricular**|Métodos de treinamento de força|Métodos de treinamento de força|Métodos de treinamento de força|
+|**Componente Curricular**||Métodos de treinamento de força|||
 |---|---|---|---|---|
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
 |**PCC**|0 horas||**Extensão**|8 horas|
@@ -3117,7 +3117,7 @@ DANTAS, E. H. M. A prática da preparação física. 6. ed. Rio de Janeiro: SHAP
 
 UCHIDA, M. C. [et al]. Manual de musculação: uma abordagem teórico-prática ao treinamento de força. São Paulo: Phorte, 2003. SANTARÉM, J. M. Musculação em todas as idades: comece a praticar antes que seu médico recomende. São Paulo: Manole, 2012. SHEPHARD, R.J. Envelhecimento, Atividade Física e Saúde. São Paulo: Phorte, 2003. SIMÃO, R. Fisiologia e Precrição de Exercícios para grupos Especiais. 4 ed. São Paulo: Phorte, 2014. 
 
-|**Componente Curricular**|**Componente Curricular**|Organização e Avaliação de Projetos em Educação|Organização e Avaliação de Projetos em Educação|Organização e Avaliação de Projetos em Educação|
+|**Componente Curricular**||Organização e Avaliação de Projetos em Educação|||
 |---|---|---|---|---|
 |||Física e Saúde|||
 |**Aulas/semanal**|2||**Carga horária**|33 horas - 40 horas/aula|
@@ -4659,7 +4659,7 @@ Assinatura do (a) Professor (a) Orientador (a)
 
 ## **ANEXO B - FICHA DE AVALIAÇÃO – BANCA DE QUALIFICAÇÃO** 
 
-|Acadêmico (a): ......................................................................................................<br>Professor (a) Orientador (a): ...................................................................................<br>Título do Trabalho:..................................................................................................<br>.................................................................................................................................<br>Atribuir um conceito de A a D frente aos seguintes indicadores:|Acadêmico (a): ......................................................................................................<br>Professor (a) Orientador (a): ...................................................................................<br>Título do Trabalho:..................................................................................................<br>.................................................................................................................................<br>Atribuir um conceito de A a D frente aos seguintes indicadores:|
+|Acadêmico (a): ......................................................................................................<br>Professor (a) Orientador (a): ...................................................................................<br>Título do Trabalho:..................................................................................................<br>.................................................................................................................................<br>Atribuir um conceito de A a D frente aos seguintes indicadores:||
 |---|---|
 |**Critérios**|**Conceit**<br>**o**|
 |**A. PROJETO DE PESQUISA.**||
@@ -4693,7 +4693,7 @@ Assinatura do Avaliador:
 
 Acadêmico (a): ........................................................................................................ Professor (a) Orientador (a): .................................................................................... Título do Trabalho:.................................................................................................. 
 
-|.................................................................................................<br>Atribuir um conceito de A a D frente aos seguintes indicadores:|.................................................................................................<br>Atribuir um conceito de A a D frente aos seguintes indicadores:|.|
+|.................................................................................................<br>Atribuir um conceito de A a D frente aos seguintes indicadores:||.|
 |---|---|---|
 |**Critérios**<br>||**Conceito**|
 |**A. RELATÓRIO DE PESQUISA.**|||

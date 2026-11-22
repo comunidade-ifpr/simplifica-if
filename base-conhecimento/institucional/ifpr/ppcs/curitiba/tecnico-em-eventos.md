@@ -86,7 +86,7 @@ Ministerioda Educacao<br>
 
 **COMISSÃO DE AJUSTE CURRICULAR (CAJ)** Portaria nº 74, de 12 de abril de 2019, atualizada em 25 de abril de 2020.
 
-|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**<br>Portaria nº 74, de 12 de abril de 2019, atualizada em 25 de abril de 2020.|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**<br>Portaria nº 74, de 12 de abril de 2019, atualizada em 25 de abril de 2020.|
+|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**<br>Portaria nº 74, de 12 de abril de 2019, atualizada em 25 de abril de 2020.||
 |---|---|
 |**Nome**|**Função**|
 |Luiz Ailil Vianna Martins|Presidente|
@@ -763,7 +763,7 @@ INSTITUTOFEDERAL Parana Campus Curitiba
 
 Ministerioda Educacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**Técnico em Eventos|**Eixo Tecnológico:**Turismo, Hospitalidade e Lazer|
 |**Componente Curricular:**Laboratório de Eventos I||
@@ -780,7 +780,7 @@ INSTITUTOFEDERAL Parana Campus Curitiba
 
 Ministerioda Educacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**Técnico em Eventos|**Eixo Tecnológico:**Turismo, Hospitalidade e Lazer|
 |**Componente Curricular:**Projetos e Planejamento de Eventos||
@@ -921,7 +921,7 @@ INSTITUTOFEDERAL Parana Campus Curitiba
 
 Ministerioda Educacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**Técnico em Eventos|**Eixo Tecnológico:**Turismo, Hospitalidade e Lazer|
 |**Componente Curricular:**A Personalidade Criativa||
@@ -996,7 +996,7 @@ INSTITUTOFEDERAL Parana Campus Curitiba
 
 Ministerioda Educacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**||
 |---|---|
 |**Curso:**Técnico em Eventos|**Eixo Tecnológico:**Turismo, Hospitalidade e Lazer|
 |**Componente Curricular:**Gestão Financeira e Captação de Recursos||
@@ -1237,7 +1237,7 @@ Ministerio daEducacao
 
 ## **9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**Nome**|**Perfil de formação**|
 |Adriano Stadler|Bacharelado em Administração|
@@ -1249,7 +1249,7 @@ Ministerio daEducacao
 |Marcos Rogério Maioli|Bacharelado em Turismo|
 |Patricia Meyer|Bacharelado em Comunicação Social - Jornalismo|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|||
 |---|---|---|
 |**Nome**|**Cargo Efetivo**|**Nível de**<br>**Classificação**|
 |Ana Maria de Carvalho|Assistente Social|E|
@@ -1543,9 +1543,9 @@ Eu, ________________________________________________________________________, es
 
 mail: _______________________________________, venho requerer  validação e registro no histórico escolar, da carga horária referente à(s) atividade(s) complementar(es), conforme especificado no campo abaixo e cuja cópia da documentação comprobatória segue em anexo, ficando inteiramente responsável pela veracidade das informações prestadas.
 
-||||||**Carga Horária**|
-|---|---|---|---|---|---|
-|**Título da Atividade**|**Título da Atividade**|**Título da Atividade**|**Item descritor da**<br>**atividade***|**Carga**<br>**Horária**|**Total Validada**<br>(preenchimento pelo<br>colegiado de curso)|
+||||**Carga Horária**|
+|---|---|---|---|
+|**Título da Atividade**|**Item descritor da**<br>**atividade***|**Carga**<br>**Horária**|**Total Validada**<br>(preenchimento pelo<br>colegiado de curso)|
 
 - Colocar apenas o item da atividade, conforme regulamento.
 

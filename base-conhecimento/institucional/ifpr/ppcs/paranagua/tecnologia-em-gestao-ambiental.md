@@ -604,7 +604,7 @@ Figura 8. Representação gráfica do processo formativo do curso de Tecnologia 
 
 ## **4.1.2  Matriz Curricular**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||_Campus_Paranaguá|||||
@@ -1153,7 +1153,7 @@ BIBLIOGRAFIA  BÁSICA:
 
 CHIAVENATO, Idalberto. **Empreendedorismo:** dando asas ao espírito empreendedor. 4. ed. Barueri: Manole, 2012. 315 p. **(8 ex.  658.421  C532e)**
 
-|DORNELAS, José Carlos Assis.**Empreendedorismo:**transformando idéias em negócios. 2.|DORNELAS, José Carlos Assis.**Empreendedorismo:**transformando idéias em negócios. 2.||
+|DORNELAS, José Carlos Assis.**Empreendedorismo:**transformando idéias em negócios. 2.|||
 |---|---|---|
 |ed. rev. e atual. Rio de Janeiro: Elsevier, 2005. 293 p.**(12 ex.  658.421 D713e)**|||
 |MATTOS, João Roberto Loureiro de; GUIMARÃES, Leonam dos Santos.**Gestão**|**da**||
@@ -1233,7 +1233,7 @@ CARGA HORÁRIA:  20 Hora/aula e  17 Hora/relógio (60 min)
 
 EMENTA: Organização prévia de reuniões. Preparativos de levantamento de informações (foco em dados sobre crise). Sistematização e montagem de estratégias para reunião (foco em dados sobre crise). Estimular e praticar algumas habilidades relacionadas a moderação e/ou mediação de reuniões, reuniões de planejamento, oficinas, workshop ou encontros. Orientação de diálogos, facilitação dos processos de decisão em grupo. Técnicas de estímulo a participação de membros em reuniões ou encontros.
 
-|BIBLIOGRAFIA  BÁSICA:|BIBLIOGRAFIA  BÁSICA:||
+|BIBLIOGRAFIA  BÁSICA:|||
 |---|---|---|
 |BERG, Ernesto Artur.**Administração de conflitos:**abordagens práticas para o dia a dia. 1. ed.|||
 |Curitiba: Juruá, 2010. 135 p.**(8 ex.  658.4053  B493a)**|||
@@ -1292,7 +1292,7 @@ CARGA HORÁRIA:  40 Hora/aula e 33 Hora/relógio (60 min)
 
 EMENTA: A água marinha: propriedades físico-químicas e biológicas. Princípios da oceanografia química física, química e biológica. Os ecossistemas marinhos e costeiros. Os principais grupos taxonômicos e comunidades do ambiente marinho. O mar como fonte de recursos. Interação entre o ambiente marinho e costeiro e as atividades antrópicas - impactos ambientais. Princípios do gerenciamento costeiro, gestão ambiental de empreendimentos costeiros, conservação marinha. Trabalho de campo.
 
-|BIBLIOGRAFIA  BÁSICA:|BIBLIOGRAFIA  BÁSICA:||||||
+|BIBLIOGRAFIA  BÁSICA:|||||||
 |---|---|---|---|---|---|---|
 |CASTRO, Peter; HUBER, Michael E.||**Biologia marinha.**8. ed. Porto ALegre: AMGH, 2012.|||||
 |461 p.**(8 ex.  574  C355b)**|||||||
@@ -2413,13 +2413,13 @@ Fonte: os autores.
 
 **Ambiente Existente A construir Área (m[2] )**
 
-|||||
-|---|---|---|---|
-|**Atendimento psicológico**|Sim|Sim|20|
-|**Atendimento pedagógico**|Sim|Sim|20|
-|**Atendimento**<br>**odontológico**|Não|Não|-|
-|**Primeiros socorros**|Não|Não|9,5|
-|**Serviço social**|Sim|Sim|20|
+||||
+|---|---|---|
+|**Atendimento psicológico**|Sim|20|
+|**Atendimento pedagógico**|Sim|20|
+|**Atendimento**<br>**odontológico**|Não|-|
+|**Primeiros socorros**|Não|9,5|
+|**Serviço social**|Sim|20|
 
 ## 7.6 ÁREAS DE APOIO
 

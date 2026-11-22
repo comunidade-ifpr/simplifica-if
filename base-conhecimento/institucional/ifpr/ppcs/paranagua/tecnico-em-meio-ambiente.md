@@ -914,7 +914,7 @@ Figura 8 – Representação gráfica do processo formativo do curso Técnico em
 
 ¨ Tabela 6 - Matriz curricular do curso Técnico em Meio Ambiente
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|---|
 |||(CriaçãoLei nº 11.892de29/11/2008)|||||
 |||_Campus_Paranaguá|||||

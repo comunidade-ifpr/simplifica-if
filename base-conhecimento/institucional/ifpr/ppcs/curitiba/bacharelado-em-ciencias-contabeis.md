@@ -966,7 +966,7 @@ Ministerio da Educacao
 
 ## Quadro 2: Matriz Curricular do Curso de Ciências Contábeis
 
-|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||||||
 |---|---|---|---|---|---|---|---|---|
 |(Criação Lei nº11.892 de 29/11/2008)|||||||||
 |_Campus Curitiba_|||||||||
@@ -1122,7 +1122,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|
+|PRIMEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR: Administração Contemporânea||||CÓDIGO: ACO|
 |ÁREA DO CONHECIMENTO: Administração|||||
@@ -1146,7 +1146,7 @@ Ministerio da Educacao
 
 ## PRIMEIRO SEMESTRE
 
-|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|
+|PRIMEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Contabilidade Geral I||||CÓDIGO: CG1|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -1183,7 +1183,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|
+|PRIMEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Fundamentos da Matemática||||CÓDIGO:FDM|
 |ÁREA DO CONHECIMENTO: Ciências Exatas|||||
@@ -1205,7 +1205,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |PRIMEIRO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Teoria da Contabilidade I||||CÓDIGO: TC1|
@@ -1228,7 +1228,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|
+|PRIMEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:Psicologia do Trabalho||||CÓDIGO: PTR|
 |ÁREA DO CONHECIMENTO: Ciências Humanas|||||
@@ -1261,7 +1261,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|
+|PRIMEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Cultura e Arte na Perspectiva Empresarial||||CÓDIGO: CEM|
 |ÁREA DO CONHECIMENTO: Humanidades|||||
@@ -1300,7 +1300,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|
 |||PRIMEIRO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Direito do Trabalho||||||CÓDIGO: TRA|
-|ÁREA DO CONHECIMENTO: Ciências Jurídicas|ÁREA DO CONHECIMENTO: Ciências Jurídicas||||||
+|ÁREA DO CONHECIMENTO: Ciências Jurídicas|||||||
 |PRÉ-REQUISITO: N/A||||||CÓDIGO:  N/A|
 |Aulas/semana:|02||||||
 |Carga horária total|Horas relógio||33||Horas aulas|40|
@@ -1327,7 +1327,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|PRIMEIRO SEMESTRE|
+|PRIMEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Redação Acadêmica e Profissional||||CÓDIGO: RAP|
 |ÁREA DO CONHECIMENTO: Linguagens|||||
@@ -1349,7 +1349,7 @@ Ministerio da Educacao
 
 ## 1[INSTITUTOFEDERAL] Parana
 
-|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|
+|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |SEGUNDO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Contabilidade Ambiental e Sustentabilidade||||CÓDIGO:CAS|
@@ -1374,21 +1374,21 @@ Ministerio da Educacao
 
 ## SEGUNDO SEMESTRE
 
-|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|||||
-|---|---|---|---|---|---|---|
-|COMPONENTE CURRICULAR:  Matemática Financeira||||||CÓDIGO:MFI|
-|ÁREA DO CONHECIMENTO: Ciências Exatas|||||||
-|PRÉ-REQUISITO: Fundamentos da Matemática||||||CÓDIGO: FMA|
-|Aulas/semana:<br>04|||||||
-|Carga horária total<br>Horas relógio|67|||Horas aulas||80|
-|Carga horária em EaD<br>00|||||||
-|Carga horária em extensão<br>00|||||||
-|Natureza<br>(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar||(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar||
-|Periodicidade<br>(X) Semestral (  ) Anual  (  ) Modular|||||||
-|EMENTA: O valor do dinheiro no tempo. Noções fundamentais de matemática financeira.|||||||
-|Regime de juros simples. Descontos simples. Regime de juros compostos. Descontos|Regime de juros simples. Descontos simples. Regime de juros compostos. Descontos|Regime de juros simples. Descontos simples. Regime de juros compostos. Descontos|||||
-|compostos. Equivalência de capitais. Rendas ou série de pagamentos ou recebimentos.||||compostos. Equivalência de capitais. Rendas ou série de pagamentos ou recebimentos.|compostos. Equivalência de capitais. Rendas ou série de pagamentos ou recebimentos.||
-|Sistemas de amortização de empréstimos.|||||||
+|SEGUNDO SEMESTRE||||||
+|---|---|---|---|---|---|
+|COMPONENTE CURRICULAR:  Matemática Financeira|||||CÓDIGO:MFI|
+|ÁREA DO CONHECIMENTO: Ciências Exatas||||||
+|PRÉ-REQUISITO: Fundamentos da Matemática|||||CÓDIGO: FMA|
+|Aulas/semana:<br>04||||||
+|Carga horária total<br>Horas relógio|67||Horas aulas||80|
+|Carga horária em EaD<br>00||||||
+|Carga horária em extensão<br>00||||||
+|Natureza<br>(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar||(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar||
+|Periodicidade<br>(X) Semestral (  ) Anual  (  ) Modular||||||
+|EMENTA: O valor do dinheiro no tempo. Noções fundamentais de matemática financeira.||||||
+|Regime de juros simples. Descontos simples. Regime de juros compostos. Descontos||||||
+|compostos. Equivalência de capitais. Rendas ou série de pagamentos ou recebimentos.|||compostos. Equivalência de capitais. Rendas ou série de pagamentos ou recebimentos.|compostos. Equivalência de capitais. Rendas ou série de pagamentos ou recebimentos.||
+|Sistemas de amortização de empréstimos.||||||
 
 BIBLIOGRAFIA BÁSICA: CRESPO, A. A. **Matemática financeira fácil.** 14. ed. São Paulo: Saraiva, 2009. NETO, A. A. **Matemática financeira e suas aplicações** . 11 ed. São Paulo: Atlas, 2009. PUCCINI, Abelardo de Lima. **Matemática financeira:** objetiva e aplicada: edição compacta. 2. ed. São Paulo: Saraiva, 2011.
 
@@ -1404,7 +1404,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|
+|SEGUNDO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Contabilidade Geral II||||CÓDIGO: CG2|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -1444,7 +1444,7 @@ Ministerio da Educacao
 |||SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE||||
 |---|---|---|---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Teoria Microeconômica|||||||CÓDIGO:TMI|
-|ÁREA DO CONHECIMENTO: Ciências Econômicas|ÁREA DO CONHECIMENTO: Ciências Econômicas|||||||
+|ÁREA DO CONHECIMENTO: Ciências Econômicas||||||||
 |PRÉ-REQUISITO: N/A|||||||CÓDIGO:N/A|
 |Aulas/semana:|02|||||||
 |Carga horária total|Horas relógio|||33||Horas aulas|40|
@@ -1480,7 +1480,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|---|---|
 ||SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|||SEGUNDO SEMESTRE||||
 |COMPONENTE CURRICULAR: Relações humanas no trabalho||||||||CÓDIGO: RHU|
-|ÁREA DO CONHECIMENTO: Humanidades|ÁREA DO CONHECIMENTO: Humanidades||||||||
+|ÁREA DO CONHECIMENTO: Humanidades|||||||||
 |PRÉ-REQUISITO: N/A||||||||CÓDIGO: N/A|
 |Aulas/semana:|02||||||||
 |Carga horária total|Horas relógio|||33||Horas aulas||40|
@@ -1501,7 +1501,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|SEGUNDO SEMESTRE|
+|SEGUNDO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Direito Empresarial e Societário||||CÓDIGO:DEM|
 |ÁREA DO CONHECIMENTO: Ciências Jurídicas|||||
@@ -1527,7 +1527,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|
 |||TERCEIRO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Direito Tributário||||||CÓDIGO: DTR|
-|ÁREA DO CONHECIMENTO: Ciências Jurídicas|ÁREA DO CONHECIMENTO: Ciências Jurídicas||||||
+|ÁREA DO CONHECIMENTO: Ciências Jurídicas|||||||
 |PRÉ-REQUISITO: N/A||||||CÓDIGO:  N/A|
 |Aulas/semana:|02||||||
 |Carga horária total|Horas relógio||33||Horas aulas|40|
@@ -1544,7 +1544,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |TERCEIRO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Empreendedorismo & Inovação||||CÓDIGO: EIN|
@@ -1588,7 +1588,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|
 |||TERCEIRO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Contabilidade de Custos||||||CÓDIGO: CCU|
-|ÁREA DO CONHECIMENTO: Ciências Contábeis|ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
+|ÁREA DO CONHECIMENTO: Ciências Contábeis|||||||
 |PRÉ-REQUISITO: Contabilidade Geral II||||||CÓDIGO:  CG2|
 |Aulas/semana:|04||||||
 |Carga horária total|Horas relógio||67||Horas aulas|80|
@@ -1605,7 +1605,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|
+|TERCEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Contabilidade Empresarial I||||CÓDIGO: CE1|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -1627,7 +1627,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|TERCEIRO SEMESTRE|
+|TERCEIRO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Teoria Macroeconômica||||CÓDIGO:TMA|
 |ÁREA DO CONHECIMENTO: Ciências Econômicas|||||
@@ -1656,7 +1656,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |TERCEIRO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Fundamentos de Atuária||||CÓDIGO: FAT|
@@ -1722,7 +1722,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|---|---|
 ||||QUARTO SEMESTRE||||||
 |COMPONENTE CURRICULAR:  Finanças Corporativas||||||||CÓDIGO: FCO|
-|ÁREA DO CONHECIMENTO: Administração|ÁREA DO CONHECIMENTO: Administração||||||||
+|ÁREA DO CONHECIMENTO: Administração|||||||||
 |PRÉ-REQUISITO: Matemática Financeira||PRÉ-REQUISITO: Matemática Financeira||||||CÓDIGO: MFI|
 |Aulas/semana:||04|||||||
 |Carga horária total||Horas relógio|||67||Horas aulas|80|
@@ -1811,7 +1811,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|QUARTO SEMESTRE|QUARTO SEMESTRE|QUARTO SEMESTRE|QUARTO SEMESTRE|QUARTO SEMESTRE|
+|QUARTO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Análise de Custos||||CÓDIGO: ACU|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -1866,7 +1866,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|QUARTO SEMESTRE|QUARTO SEMESTRE|QUARTO SEMESTRE|QUARTO SEMESTRE|QUARTO SEMESTRE|
+|QUARTO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Contabilidade Tributária I||||CÓDIGO:<br>CT1|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -1899,7 +1899,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |QUARTO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Orçamento Público||||CÓDIGO:OPU|
@@ -1983,7 +1983,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|
+|QUINTO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Contabilidade Governamental||||CÓDIGO:CGO|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -2019,7 +2019,7 @@ Ministerio da Educacao
 |||QUINTO SEMESTRE|QUINTO SEMESTRE||||
 |---|---|---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Contabilidade Societária||||||CÓDIGO:CSO|
-|ÁREA DO CONHECIMENTO: Ciências Contábeis|ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
+|ÁREA DO CONHECIMENTO: Ciências Contábeis|||||||
 |PRÉ-REQUISITO: Contabilidade Empresarial II||||||CÓDIGO:  CE2|
 |Aulas/semana:|04||||||
 |Carga horária total|Horas relógio||67||Horas aulas|80|
@@ -2054,7 +2054,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|
 |||QUINTO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Contabilidade Tributária II||||||CÓDIGO: CT2|
-|ÁREA DO CONHECIMENTO: Ciências Contábeis|ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
+|ÁREA DO CONHECIMENTO: Ciências Contábeis|||||||
 |PRÉ-REQUISITO: Contabilidade Tributária I||||||CÓDIGO:  CT1|
 |Aulas/semana:|04||||||
 |Carga horária total|Horas relógio||67||Horas aulas|80|
@@ -2063,7 +2063,7 @@ Ministerio da Educacao
 |Natureza|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar||(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar|(X) Obrigatória (  ) Optativa (  ) Extensão  (  ) Complementar||
 |Periodicidade|(X) Semestral (  ) Anual  (  ) Modular|(X) Semestral (  ) Anual  (  ) Modular|||||
 
-|<br>1 INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>1 INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>1 INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>1 INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>1 INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>1 INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |QUINTO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Contabilidade Tributária II||||CÓDIGO: CT2|
@@ -2093,7 +2093,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|
+|QUINTO SEMESTRE||||||
 |---|---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Prática Contábil I|||||CÓDIGO: PC1|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
@@ -2127,7 +2127,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|QUINTO SEMESTRE|
+|QUINTO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Estatística Aplicada a Negócios||||CÓDIGO:EAN|
 |ÁREA DO CONHECIMENTO: Ciências Exatas|||||
@@ -2149,7 +2149,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |SEXTO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Planejamento Estratégico||||CÓDIGO: PES|
@@ -2179,7 +2179,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |SEXTO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Análise das Demonstrações Financeiras||||CÓDIGO:ADF|
@@ -2202,7 +2202,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|SEXTO SEMESTRE|SEXTO SEMESTRE|SEXTO SEMESTRE|SEXTO SEMESTRE|SEXTO SEMESTRE|
+|SEXTO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Auditoria Contábil||||CÓDIGO: AUD|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -2343,7 +2343,7 @@ Ministerio da Educacao
 |INSTITUTOFEDERAL<br>Parana||Ministerio da Educacao|
 |---|---|---|
 |SEXTO SEMESTRE|||
-|COMPONENTE CURRICULAR:  Metodologia da Pesquisa Aplicada à|COMPONENTE CURRICULAR:  Metodologia da Pesquisa Aplicada à|CÓDIGO:MET|
+|COMPONENTE CURRICULAR:  Metodologia da Pesquisa Aplicada à||CÓDIGO:MET|
 |Contabilidade|||
 ||||
 |ÁREA DO CONHECIMENTO: Metodologia e Pesquisa|||
@@ -2358,15 +2358,15 @@ Ministerio da Educacao
 |Periodicidade<br>(X) Semestral (  ) Anual  (  ) Modular|||
 ||||
 |EMENTA: Estudo dos fundamentos epistemológicos e metodológicos da pesquisa científica.|||
-|Tipos de pesquisa. Projeto de pesquisa. Ética na pesquisa. Fontes de pesquisa em|Tipos de pesquisa. Projeto de pesquisa. Ética na pesquisa. Fontes de pesquisa em||
+|Tipos de pesquisa. Projeto de pesquisa. Ética na pesquisa. Fontes de pesquisa em|||
 |Contabilidade. Normas técnicas para elaboração e apresentação de trabalhos acadêmicos.|||
-|Elaboração do pré-projeto de pesquisa, em Contabilidade, no formato artigo científico.|Elaboração do pré-projeto de pesquisa, em Contabilidade, no formato artigo científico.||
+|Elaboração do pré-projeto de pesquisa, em Contabilidade, no formato artigo científico.|||
 
-|BIBLIOGRAFIA BÁSICA:|BIBLIOGRAFIA BÁSICA:|||
+|BIBLIOGRAFIA BÁSICA:||||
 |---|---|---|---|
 |BARROS, Aidil de Jesus Paes de; LEHFELD, Neide Aparecida de Souza.|BARROS, Aidil de Jesus Paes de; LEHFELD, Neide Aparecida de Souza.**Fundamentos de**|||
 |**metodologia científica**. 3. ed. São Paulo: Pearson Prentice Hall, 2007. 158 p. ISBN|. 3. ed. São Paulo: Pearson Prentice Hall, 2007. 158 p. ISBN|||
-|9788576051565 (broch.).|9788576051565 (broch.).|||
+|9788576051565 (broch.).||||
 |BEUREN, Ilse Maria (Org.).**Como elaborar trabalhos monográficos em contabilidade:**|||**Como elaborar trabalhos monográficos em contabilidade:**|
 |**teoria e prática**. 3.ed. atual. São Paulo: Atlas, 2006. 195p. ISBN 9788522443918 (broch.).||||
 |MARCONI, Marina de Andrade; LAKATOS, Eva Maria.**Metodologia científica: ciência e**||||
@@ -2374,13 +2374,13 @@ Ministerio da Educacao
 |**jurídica**. 8. ed. Barueri: Atlas, 2022. 373 p. ISBN 9786559770656 (broch.).|||. 8. ed. Barueri: Atlas, 2022. 373 p. ISBN 9786559770656 (broch.).|
 |MARTINS, Gilberto de Andrade; THEÓPHILO, Carlos Renato.**Metodologia da investigação**||||
 |**científica para ciências sociais aplicadas**. 3. ed. São Paulo: Atlas, 2016. 247 p. ISBN||||
-|9788597008111 (broch.).|9788597008111 (broch.).|||
+|9788597008111 (broch.).||||
 |BIBLIOGRAFIA COMPLEMENTAR:||||
 |AQUINO, Italo de Souza.|AQUINO, Italo de Souza.**Como escrever artigos científicos: sem arrodeio e sem medo da**|||
 |**ABNT**. 9. ed. rev. e ampl. São Paulo: Saraiva, 2019. 134 p. ISBN 9788571440265 (broch.).||||
 |ANDRADE, Maria Margarida de.**Introdução à metodologia do trabalho científico:**||**Introdução à metodologia do trabalho científico:**||
 |**elaboração de trabalhos na graduação**. 10. ed. São Paulo: Atlas, 2010. 158 p. ISBN||||
-|9788522458561 (broch.).|9788522458561 (broch.).|||
+|9788522458561 (broch.).||||
 |FERNANDES, Alexandre Machado; STEFANELLO, Paulinho Rene (org.).**Gestão contábil:**||||
 |**reflexos na gestão empresarial e tributária da micro e pequena empresa**. Curitiba: CRV,||||
 |2021. 251 p. (Coleção gestão empresarial, contábil e tributária ; v. 1). ISBN 9786558684602||||
@@ -2410,7 +2410,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|
 |||SETIMO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Avaliação de Empresas||||||CÓDIGO: EM|
-|ÁREA DO CONHECIMENTO: Ciências Contábeis|ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
+|ÁREA DO CONHECIMENTO: Ciências Contábeis|||||||
 |PRÉ-REQUISITO: Finanças Corporativas||||||CÓDIGO:  FCO|
 |Aulas/semana:|02||||||
 |Carga horária total|Horas relógio||33||Horas aulas|40|
@@ -2457,7 +2457,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|
 |||SETIMO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Controladoria||||||CÓDIGO: CON|
-|ÁREA DO CONHECIMENTO: Ciências Contábeis|ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
+|ÁREA DO CONHECIMENTO: Ciências Contábeis|||||||
 |PRÉ-REQUISITO: Contabilidade Empresarial II||||||CÓDIGO: CE2|
 |Aulas/semana:|04||||||
 |Carga horária total|Horas relógio||67||Horas aulas|80|
@@ -2484,7 +2484,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL
 
-|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:||
+|BIBLIOGRAFIA COMPLEMENTAR:|||
 |---|---|---|
 |ANTHONY, Robert N.; GOVINDARAJAN, Vijay.**_Sistemas de controle gerencial_**_._16.|||
 |ed. São Paulo: McGraw-Hill, 2020.|||
@@ -2494,17 +2494,17 @@ Ministerio da Educacao
 |BIRKINSHAW, Julian M.; MARK, Ken.**25 ferramentas de gestão: inclui estratégia**|||
 |**do oceano azul, design thinking, startup enxuta, inovação aberta, inteligência**|||
 |**emocional, dentre outras**. Rio de Janeiro: Alta Books, 2020. 190 p. ISBN||. Rio de Janeiro: Alta Books, 2020. 190 p. ISBN|
-|9786555200669 (broch.).|9786555200669 (broch.).||
+|9786555200669 (broch.).|||
 |FREZATTI, Fábio.**Orçamento empresarial: planejamento e controle gerencial**. 6.|||
 |ed., rev. atual. São Paulo: Atlas, 2017. 231 p. ISBN 9788522499083 (broch.).||ed., rev. atual. São Paulo: Atlas, 2017. 231 p. ISBN 9788522499083 (broch.).|
 |OLIVEIRA, Antonio Benedito Silva.**Controladoria: fundamentos do controle**||**Controladoria: fundamentos do controle**|
 |**empresarial**. São Paulo: Saraiva, 2014. 432 p. ISBN 9788502081796 (broch.).|. São Paulo: Saraiva, 2014. 432 p. ISBN 9788502081796 (broch.).||
 |PADOVEZE, Clóvis Luís.**Controladoria estratégica aplicada: conceitos, estrutura**|||
 |**e sistema de informações**. São Paulo: Cengage Learning, 2016. 240 p. ISBN||. São Paulo: Cengage Learning, 2016. 240 p. ISBN|
-|9788522125814 (broch.).|9788522125814 (broch.).||
+|9788522125814 (broch.).|||
 |COMPETÊNCIAS DE ACORDO COM DCN:|||
-|O discente desenvolverá uma concepção multidisciplinar e transdisciplinar necessária|O discente desenvolverá uma concepção multidisciplinar e transdisciplinar necessária||
-|para aplicação prática da Controladoria.  Obtenção de uma visão sistêmica, holística e|para aplicação prática da Controladoria.  Obtenção de uma visão sistêmica, holística e||
+|O discente desenvolverá uma concepção multidisciplinar e transdisciplinar necessária|||
+|para aplicação prática da Controladoria.  Obtenção de uma visão sistêmica, holística e|||
 |humanista das organizações, assim como reconhecer a importância da diversidade e|||
 |de questões no âmbito social, ambiental e governança, a fim de planejar estratégias,|||
 |modelos e processos de gestão empresarial. E por meio da elaboração e controle|||
@@ -2518,7 +2518,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|SÉTIMO SEMESTRE|SÉTIMO SEMESTRE|SÉTIMO SEMESTRE|SÉTIMO SEMESTRE|SÉTIMO SEMESTRE|
+|SÉTIMO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Perícia Contábil||||CÓDIGO: PCO|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -2543,7 +2543,7 @@ Ministerio da Educacao
 ||SÉTIMO SEMESTRE|SÉTIMO SEMESTRE||||
 |---|---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Prática Contábil III|||||CÓDIGO: PC3|
-|ÁREA DO CONHECIMENTO: Ciências Contábeis|ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
+|ÁREA DO CONHECIMENTO: Ciências Contábeis||||||
 |PRÉ-REQUISITO: Prática Contábil II|||||CÓDIGO: PC2|
 |Aulas/semana:|02|||||
 |Carga horária total|Horas relógio|40||Horas aulas|33|
@@ -2570,7 +2570,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |SÉTIMO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Teoria da Contabilidade II||||CÓDIGO: TC2|
@@ -2593,7 +2593,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |SÉTIMO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Programa de Contabilidade (Projetos)||||CÓDIGO: PR1|
@@ -2616,7 +2616,7 @@ Ministerio da Educacao
 
 ## 1[INSTITUTOFEDERAL] Parana
 
-|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|
+|<br>1 [INSTITUTOFEDERAL]<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |OITAVO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Compliance e Governança Corporativa||||CÓDIGO: CGC|
@@ -2641,7 +2641,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |OITAVO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Jogos de Empresas||||CÓDIGO: JEM|
@@ -2664,7 +2664,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |OITAVO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Ética Profissional Contábil||||CÓDIGO: EPR|
@@ -2687,7 +2687,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|OITAVO SEMESTRE|OITAVO SEMESTRE|OITAVO SEMESTRE|OITAVO SEMESTRE|OITAVO SEMESTRE|
+|OITAVO SEMESTRE|||||
 |---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Trabalho de Conclusão de Curso||||CÓDIGO: TCC|
 |ÁREA DO CONHECIMENTO: Ciências Contábeis|||||
@@ -2718,7 +2718,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |OITAVO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Mercado Financeiro de Capitais||||CÓDIGO:MFC|
@@ -2741,7 +2741,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |OITAVO SEMESTRE|||||
 |COMPONENTE CURRICULAR:  Programa de Contabilidade (Projetos)||||CÓDIGO: PR2|
@@ -2858,7 +2858,7 @@ Ministerio da Educacao
 ||OPTATIVA|OPTATIVA||||
 |---|---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Gestão do Tempo e Produtividade|||||CÓDIGO:GTP|
-|ÁREA DO CONHECIMENTO: Administração|ÁREA DO CONHECIMENTO: Administração|||||
+|ÁREA DO CONHECIMENTO: Administração||||||
 |PRÉ-REQUISITO: N/A|||||CÓDIGO:  N/A|
 |Aulas/semana:|02|||||
 |Carga horária total|Horas relógio|33||Horas aulas|40|
@@ -2923,7 +2923,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|<br>INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||||
 |---|---|---|---|---|
 |OPTATIVA|||||
 |COMPONENTE CURRICULAR:  Negociação e Técnicas de Persuasão||||CÓDIGO: NTP|
@@ -2952,7 +2952,7 @@ Ministerio da Educacao
 |---|---|---|---|---|---|---|---|
 |COMPONENTE CURRICULAR:  Responsabilidade Social e Impacto||COMPONENTE CURRICULAR:  Responsabilidade Social e Impacto||COMPONENTE CURRICULAR:  Responsabilidade Social e Impacto|||CÓDIGO: RIE|
 |Econômico||||||||
-|ÁREA DO CONHECIMENTO: Administração|ÁREA DO CONHECIMENTO: Administração|||||||
+|ÁREA DO CONHECIMENTO: Administração||||||||
 |PRÉ-REQUISITO: N/A|||||||CÓDIGO:  N/A|
 |Aulas/semana:|02|||||||
 |Carga horária total|Horas relógio||33|||Horas aulas|40|
@@ -3027,8 +3027,8 @@ Ministerio da Educacao
 |Periodicidade<br>(X) Semestral (  ) Anual  (  ) Modular|||
 ||||
 |EMENTA: Filosofia moderna: o humanismo renascentista; a revolução científica. A revolução|||
-|no método da filosofia e das ciências: Francis Bacon e Renê Descartes. As construções|no método da filosofia e das ciências: Francis Bacon e Renê Descartes. As construções||
-|metafísicas do racionalismo: Spinoza e Leibniz; A filosofia iluminista na Inglaterra e na França.|metafísicas do racionalismo: Spinoza e Leibniz; A filosofia iluminista na Inglaterra e na França.||
+|no método da filosofia e das ciências: Francis Bacon e Renê Descartes. As construções|||
+|metafísicas do racionalismo: Spinoza e Leibniz; A filosofia iluminista na Inglaterra e na França.|||
 |A crítica ao iluminismo burguês: A crítica à razão iluminista: Theodor Adorno, Max Horkheimer|||
 |e Habermas. Relações ético-raciais, História/Cultura afro-brasileira e Africana.||e Habermas. Relações ético-raciais, História/Cultura afro-brasileira e Africana.|
 
@@ -3706,7 +3706,7 @@ abril de 2014, que regulamenta o Regimento Interno Comum aos Campi do IFPR. O co
 |Israel Bispo Dos<br>Santos|Tradutor Intérprete de<br>Linguagem Sinais|Pedagogia|40h|
 |Ivone Zapotoszek|Assistente em Administracao Administração|Assistente em Administracao Administração|40h|
 |Janice Mayumi Bark<br>Toda|Assistente em Administracao Secretariado|Assistente em Administracao Secretariado|40h|
-|Jenifer Caroline Leite Assistente em Administracao Ensino Médio|Jenifer Caroline Leite Assistente em Administracao Ensino Médio|Jenifer Caroline Leite Assistente em Administracao Ensino Médio|40h|
+|Jenifer Caroline Leite Assistente em Administracao Ensino Médio|||40h|
 |Jocelaine Espíndola<br>Da Silva Arruda|Técnico em Assuntos<br>Educacionais|Direito|40h|
 |Juliana Tracz Pereira Tecnico de Laboratorio Area|Juliana Tracz Pereira Tecnico de Laboratorio Area<br>Sigrh|Química|40h|
 |Jusane Oceli<br>Dalmonico|Assistente em Administracao Gestão Pública|Assistente em Administracao Gestão Pública|40h|
@@ -3716,7 +3716,7 @@ abril de 2014, que regulamenta o Regimento Interno Comum aos Campi do IFPR. O co
 |Lourdes Andressa<br>Zeizer Sato|Assistente em Administracao Letras|Assistente em Administracao Letras|40h|
 |Luciana de Cassia<br>Andrade  Nakatani|Assistente em Administracao Administração|Assistente em Administracao Administração|40h|
 |Luiz Custódio|Assistente de Estudante|Gestão Pública|40h|
-|Magno Antonio Gomes Assistente em Administracao Ensino Médio|Magno Antonio Gomes Assistente em Administracao Ensino Médio|Magno Antonio Gomes Assistente em Administracao Ensino Médio|40h|
+|Magno Antonio Gomes Assistente em Administracao Ensino Médio|||40h|
 |Maikon de Jesus<br>Costa|Tradutor Intérprete de<br>Linguagem Sinais|Ensino Médio|40h|
 |Marianna Angonese<br>Frankiv|Pedagogo-Área|Pedagogia|40h|
 
@@ -4356,10 +4356,10 @@ Venho respeitosamente apresentar a Vossa Senhoria os **CERTIFICADOS** e **COMPRO
 
 **Aluno(a)                                                                                                                                                            Matrícula**
 
-|**Curso                                                                                                                                                      Período Letivo**|**Curso                                                                                                                                                      Período Letivo**|**Curso                                                                                                                                                      Período Letivo**|**Curso                                                                                                                                                      Período Letivo**|**Curso                                                                                                                                                      Período Letivo**|**Curso                                                                                                                                                      Período Letivo**|
-|---|---|---|---|---|---|
-|**BCC - Bacharelado em Ciências Contábeis**||||||
-|**Código**|**Atividades**|||||
+|**Curso                                                                                                                                                      Período Letivo**|||
+|---|---|---|
+|**BCC - Bacharelado em Ciências Contábeis**|||
+|**Código**|**Atividades**||
 
 181
 
@@ -4538,7 +4538,7 @@ As Atividades de Curricularização da Extensão serão ofertadas nos componente
 
 Quadro 1: áreas temáticas, linhas e atividades ou ações de extensão do curso de Ciências Contábeis vinculado ao 7º semestre.
 
-|Componente curricular|Programa de Contabilidade(Projetos)– PR1|Programa de Contabilidade(Projetos)– PR1|
+|Componente curricular|Programa de Contabilidade(Projetos)– PR1||
 |---|---|---|
 |Período de oferta|Sétimo semestre||
 |Carga horária|Total|Extensão|
@@ -4549,7 +4549,7 @@ Quadro 1: áreas temáticas, linhas e atividades ou ações de extensão do curs
 
 Quadro 2: áreas temáticas, linhas e atividades ou ações de extensão do curso de Ciências Contábeis vinculado ao 8º semestre.
 
-|Componente curricular|Programa de contabilidade (projetos) – PR2|Programa de contabilidade (projetos) – PR2|
+|Componente curricular|Programa de contabilidade (projetos) – PR2||
 |---|---|---|
 |Período de oferta|Oitavo semestre||
 |Carga horária|Total|Extensão|

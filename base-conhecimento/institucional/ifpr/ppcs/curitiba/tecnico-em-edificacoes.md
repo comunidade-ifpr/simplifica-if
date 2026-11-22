@@ -1804,7 +1804,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||
 |---|---|---|
 |**Semestre 4**|||
 |**IFPR –**Campus Curitiba|||
@@ -1838,7 +1838,7 @@ INSTITUTOFEDERAL PARANA
 
 ## **IFPR –** Campus Curitiba
 
-|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana||
 |---|---|
 |**Semestre 4mestre 4estre 4re 4e 4 4**||
 |**IFPR –**Campusmpuspus Curitibaritibatibaibaba||
@@ -2519,16 +2519,16 @@ Como foi a orientação e supervisão exercidas pela empresa
 
 O supervisor deverá preencher os seguintes itens:
 
-||Aspectos considerados do estagiário|Muito Bom   Bom|Muito Bom   Bom|Regular|
-|---|---|---|---|---|
-|1)|Assiduidade.||||
-|2)|Relacionamento Interpessoal.||||
-|3)|Ética profissional.||||
-|4)|Capacidade de autocrítica.||||
-|5)|Iniciativa<br>e<br>persistência<br>no<br>desempenho<br>das<br>atividades.||||
-|6)|Espontaneidade<br>e<br>participação<br>nas<br>atividades<br>planejadas.||||
-|7)|Compreensão das tarefas.||||
-|8)|Contribuição com ideias.||||
+||Aspectos considerados do estagiário|Muito Bom   Bom|Regular|
+|---|---|---|---|
+|1)|Assiduidade.|||
+|2)|Relacionamento Interpessoal.|||
+|3)|Ética profissional.|||
+|4)|Capacidade de autocrítica.|||
+|5)|Iniciativa<br>e<br>persistência<br>no<br>desempenho<br>das<br>atividades.|||
+|6)|Espontaneidade<br>e<br>participação<br>nas<br>atividades<br>planejadas.|||
+|7)|Compreensão das tarefas.|||
+|8)|Contribuição com ideias.|||
 
 62
 

@@ -31,7 +31,7 @@ _Colégio de Ciências Exatas , Tecnológicas e Multidisciplinar Grande Área: C
 
 _1.2.1 Linhas de Pesquisa:_
 
-|_1.2.1 Linhas de Pesquisa:_|_1.2.1 Linhas de Pesquisa:_|
+|_1.2.1 Linhas de Pesquisa:_||
 |---|---|
 |_Área de Concentração – 1.00.00.00-3 Ciências Exatas e da Terra_||
 |_Área: 1.03.00.00-7 Ciência da Computação_||

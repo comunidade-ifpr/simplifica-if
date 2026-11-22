@@ -539,7 +539,7 @@ Essa certificação aplica-se exclusivamente aos estudantes que, por meio de um 
 
 ## 6.5 MATRIZ CURRICULAR
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||
 |||_Campus_Coronel Vivida|||||
@@ -1600,8 +1600,8 @@ Ademais, ressalta-se a intenção da construção de espaços de convivência, c
 |ESPECÍFICO|||
 |---|---|---|
 |Existente|Aconstruir|Área (m2)|
-|Não|Não|Não|
-|Não|Não|Não|
+|Não|||
+|Não|||
 
 ## 9.4 ÁREAS DE ESPORTE E VIVÊNCIA
 

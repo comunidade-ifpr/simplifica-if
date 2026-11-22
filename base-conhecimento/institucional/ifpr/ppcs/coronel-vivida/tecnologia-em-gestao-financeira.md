@@ -373,7 +373,7 @@ Fonte: AVICI (2020).
 
 Cabe  salientar  que,  atualmente,  o  Campus  Avançado  Coronel  Vivida  acolhe  estudantes oriundos  de  diversas  cidades  da  região,  tais  como:  Honório  Serpa,  Pato  Branco,  Mangueirinha, Chopinzinho,  São  João,  Laranjeiras  do  Sul,  Saudade  do  Iguaçú  e  Itapejara  D’Oeste. Evidenciamos  que  os  demais  municípios  atendidos  pelo  Instituto  Federal  do  Paraná,  Campus Avançado  Coronel  Vivida,  guardam  muita  similaridade  no  que  diz  respeito  à  configuração econômica  acima  destacada.  Deste  modo,  é  igualmente  relevante  a  oferta  do  Curso  Tecnologia em  Gestão  Financeira  para  absorver  demandas  não  apenas  locais,  mas  também  regionais,  o  que possibilita  a  ampliação  do  acesso  ao  Ensino  Superior,  gratuito  e  de  qualidade  em  municípios  que não  contam  com  instituições  de  ensino  superior,  que  ofereçam  este  nível  de  ensino,  ou,  que  não oferecem  cursos  nesta  área.  Conforme  dados  do  IPARDES,  o  município  de  Coronel  Vivida contava,  em  2018,  com  164  matrículas  no  ensino  superior,  na  esfera  estadual  e  privada.  Tais dados podem ser conferidos no quadro reproduzida abaixo:
 
-|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|
+|Quadro 3: Estudantes matriculados em ensino superior município de Coronel Vivida|||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|
 |<br>**MODALIDADE**<br>**DE ENSINO**||<br>**FEDERAL**||<br>**ESTADUAL**||<br>**MUNICIPAL**||<br>**PRIVADA**||**TOTAL**|
 |Educação Superior Presencial|||||||||||
@@ -389,7 +389,7 @@ Para  contextualizar  a  oferta  educacional  de  nível  superior  numa  perspe
 
 Quadro 4: Número de matrículas em instituições de ensino superior
 
-|Quadro 4: Número de matrículas em instituições de ensino superior|Quadro 4: Número de matrículas em instituições de ensino superior|Quadro 4: Número de matrículas em instituições de ensino superior|Quadro 4: Número de matrículas em instituições de ensino superior|Quadro 4: Número de matrículas em instituições de ensino superior|Quadro 4: Número de matrículas em instituições de ensino superior|
+|Quadro 4: Número de matrículas em instituições de ensino superior||||||
 |---|---|---|---|---|---|
 |**Número de matrículas em instituições de ensino superior por município atendido pelo IFPR –**<br>**Campus Avançado Coronel Vivida**||||||
 |Município|Matrículas<br>em<br>instituições<br>públicas<br>presenciais|Matrículas<br>em<br>instituições<br>públicas à<br>Distância|Matrículas<br>em<br>instituições<br>privadas<br>presenciais|Matrículas<br>em<br>instituições<br>privadas à<br>Distância|TOTAL|
@@ -416,7 +416,7 @@ Quadro 5: População na faixa etária de 15 a 19 anos
 
 ## **População na faixa etária de 15 a 19 anos**
 
-|Quadro 5: População na faixa etária de 15 a 19 anos|Quadro 5: População na faixa etária de 15 a 19 anos|
+|Quadro 5: População na faixa etária de 15 a 19 anos||
 |---|---|
 |**População na faixa etária de 15 a 19 anos**||
 |Município|Jovens na faixa etária de 15 a 19 anos|
@@ -709,7 +709,7 @@ Além  de  serem  abordados  nos  mais  variados  componentes  curriculares  dia
 
 Quadro 6 – Matriz Curricular
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||Campus  Avançado Coronel Vivida|||||
@@ -718,7 +718,7 @@ Quadro 6 – Matriz Curricular
 ||Base legal:Portaria MEC nº 413/2016- Catálogo Nacional  de Cursos Superiores em<br>Tecnologia|||||
 ||Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro de<br>2021.|||||
 ||Resolução de autorização do curso no IFPR: Resolução  CONSUP/IFPR Nº<br>128, de 07 de junho de 2023|||||
-|||||**CH**<br>**em**|**CH**<br>**em**|
+|||||**CH**<br>**em**||
 ||**Semanas do semestre letivo:**<br>**20**|**Tipo (C,**<br>**AC, ES)**|**Número**<br>**de**<br>**aulas**<br>**semanais**|**Hora-**<br>**aula**<br>**(min)**<br>**50**|**Hora-**<br>**relógio**<br>**(min)**<br>**60**|
 |**Períodos**|**Matriz curricular**|||||
 |**1º Semestre**|Contabilidade Geral (CG)|C|4|80|67|
@@ -2018,8 +2018,8 @@ Quadro 13: Áreas de Estudo Específico
 |ífico|||
 |---|---|---|
 |Existente|A construir|Área (m2)|
-|Não|Não|Não|
-|Não|Não|Não|
+|Não|||
+|Não|||
 
 ## 7.4  ÁREAS DE ESPORTE E VIVÊNCIA
 

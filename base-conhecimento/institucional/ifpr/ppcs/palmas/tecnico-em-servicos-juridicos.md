@@ -1460,7 +1460,7 @@ Separados por macroáreas, os Temas Contemporâneos serão trabalhados nos compo
 
 **Matriz Curricular do curso Técnico em Serviços Jurídicos**
 
-|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|**Matriz Curricular do curso Técnico em ServiçosJurídicos**|
+|**Matriz Curricular do curso Técnico em ServiçosJurídicos**||||||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |**Núcleos e Componentes**<br>**Curriculares**||**1º Ano**||||**2º Ano**||||**3º Ano**||||Total|Total|
 |||**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|Horas|Horas-|
@@ -1716,7 +1716,7 @@ VICENTINO, Cláudio. **História geral: ensino médio** . São Paulo: Scipione, 
 
 **CAMPUS PALMAS DO IFPR Curso:** Técnico em Serviços Jurídicos **Eixo Tecnológico:** Gestão e Negócios
 
-|**Componente Curricular:**Introdução ao Estudo do Direito I|**Componente Curricular:**Introdução ao Estudo do Direito I|
+|**Componente Curricular:**Introdução ao Estudo do Direito I||
 |---|---|
 |**Carga Horária(hora-aula): **80|**Período Letivo:**1º Ano|
 |**Ementa:**||
@@ -1728,7 +1728,7 @@ VICENTINO, Cláudio. **História geral: ensino médio** . São Paulo: Scipione, 
 
 ## **CAMPUS PALMAS DO IFPR**
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Serviços Jurídicos||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Língua Portuguesa I|||
@@ -2468,7 +2468,7 @@ RODRIGUES, Silvio. **Parte geral. In:. Direito civil** . 34. ed. 5ª tiragem atu
 
 AZEVEDO, Álvaro Villaça. **Teoria geral das obrigações e responsabilidade civil** . 11. ed. São Paulo: Atlas, 2008. (Curso de direito civil)
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Serviços Jurídicos||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Direito Penal I|||
@@ -2480,7 +2480,7 @@ AZEVEDO, Álvaro Villaça. **Teoria geral das obrigações e responsabilidade ci
 |**Bibliografia Complementar:**|||
 |BITENCOURT, Cezar Roberto.**Tratado de direito penal: parte geral**. 22.ed. São Paulo:<br>Saraiva, 2016. v.1;<br>CAPEZ, Fernando. Curso de direito penal: parte geral. 20.ed. São Paulo: Saraiva, 2016;<br>GRECO, Rogério.**Direito penal do equilíbrio: uma visão minimalista do direito penal**.<br>9.ed. Niterói, RJ: Impetus, 2016;<br>DAL RI JÚNIOR, Arno.**O estado e seus inimigos: a repressão política na história do**<br>**direito penal**. Rio de Janeiro: Revan, 2006;<br>JESUS, Damásio E. de.**Direito penal**. 36. ed. São Paulo: Saraiva, 2015. v. 1;<br>FERRAJOLI, Luigi.**Direito e razão: teoria do garantismo penal**. 2. ed.,rev. e ampl. São<br>Paulo: Revista dos Tribunais, 2006.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Serviços Jurídicos||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Direito do Trabalho I|||
@@ -3038,7 +3038,7 @@ XI - decidir sobre a aprovação ou reprovação de estudantes com dificuldade d
 
 ## 9.4 CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO
 
-|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|
+|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |---|---|---|---|
 |||||
 |||**Regime de**||

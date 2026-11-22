@@ -47,7 +47,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 **COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou COMISSÃO DE AJUSTE CURRICULAR (CAJ)**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|||
 |---|---|---|
 ||**Função**|**Nome**|
 ||Coordenadora de Curso– Presidente|Daniela Silvestrin|
@@ -663,10 +663,10 @@ Os temas transversais principais e que serão inseridos nos debates em sala de a
 
 O quadro a seguir trata-se da previsão de ações em que os professores abordarão os temas transversais para além da sala de aula. Os temas propostos também serão abordados em eventos científicos, palestras, ações de extensão, entre outros.
 
-|**TEMAS**<br>**TRANSVERSAIS**|**Ações e carga horária**|**Ações e carga horária**|**Ações e carga horária**|
+|**TEMAS**<br>**TRANSVERSAIS**|**Ações e carga horária**|||
 |---|---|---|---|
 ||1ºano|2ºano|3ºano|
-||Apresentação do<br>mapa da violência<br>homicídios entre<br>os jovens e as<br>respostas<br>sociológicas. 1h|Apresentação do<br>mapa da violência<br>homicídios entre<br>os jovens e as<br>respostas<br>sociológicas. 1h|Apresentação do<br>mapa da violência<br>homicídios entre<br>os jovens e as<br>respostas<br>sociológicas. 1h|
+||Apresentação do<br>mapa da violência<br>homicídios entre<br>os jovens e as<br>respostas<br>sociológicas. 1h|||
 |Prevenção de todas as<br>formas de violência contra<br>a criança e adolescente.||||
 |||||
 ||Física forense no<br>desvendar dos<br>acidentes de<br>trânsito 50 min<br>SICCAP ou<br>semana cultural 1h<br>Maio Amarelo:<br>Campanha de<br>conscientização<br>sobre a segurança<br>no trânsito.(2h)|<br>Física forense no<br>desvendar dos<br>acidentes de<br>trânsito 50 min<br>SICCAP ou<br>semana cultural 1h<br>Maio Amarelo:<br>Campanha de<br>conscientização<br>sobre a segurança<br>no trânsito.(2h)|Física forense no<br>desvendar dos<br>acidentes de<br>trânsito 50 min<br>SICCAP ou<br>semana cultural 1h<br>Maio Amarelo:<br>Campanha de<br>conscientização<br>sobre a segurança<br>no trânsito.(2h)|
@@ -687,7 +687,7 @@ O quadro a seguir trata-se da previsão de ações em que os professores abordar
 ||Atividade de<br>reconhecimento<br>de Tecnologias<br>assistivas (<br>software e<br>hardware) no<br>SICCAP ou na<br>semana Cultural -<br>2h|Atividade de<br>reconhecimento de<br>Tecnologias<br>assistivas (<br>software e<br>hardware) no<br>SICCAP ou na<br>semana Cultural -<br>2h|Atividade de<br>reconhecimento de<br>Tecnologias<br>assistivas (<br>software e<br>hardware) no<br>SICCAP ou na<br>semana Cultural -<br>2h|
 |Tecnologia assistiva||||
 |||||
-|Educação alimentar e<br>nutricional|Atividades de<br>sensibilização|Atividades de<br>sensibilização|Atividades de<br>sensibilização|
+|Educação alimentar e<br>nutricional|Atividades de<br>sensibilização|||
 
 ||coletiva na<br>semana Nacional<br>da<br>alimentação(3h).<br>Atividade em sala<br>referente às<br>Biomoléculas e<br>sua importância<br>nutricional com<br>discussão dos<br>termos Segurança<br>e Soberania<br>Alimentar. (3h)|coletiva na<br>semana Nacional<br>da alimentação<br>(3h).<br>Atividades em sala<br>referentes à<br>Transgenia e<br>alimentação:<br>impactos e<br>possibilidades<br>(1h30m).<br>Mitos e Verdades:<br>Panorama sobre<br>as políticas como<br>Fome Zero e Bolsa<br>Família e<br>erradicação   da<br>fome e da pobreza<br>noBrasil - 1h30|coletiva na<br>semana Nacional<br>da alimentação<br>(3h).<br>Mitos e Verdades:<br>Panorama e sobre<br>as políticas como<br>Fome Zero e Bolsa<br>Família e<br>erradicação   da<br>fome e da pobreza<br>no Brasil - 1h30|
 |---|---|---|---|
@@ -717,7 +717,7 @@ Nacional da Consciência Negra e Indígena, 20 de novembro, que contará com pal
 
 ## **6.12 MATRIZ CURRICULAR**
 
-|**Matrizcurricular do Curso Técnico em Informática Integrado ao Ensino Médio**|**Matrizcurricular do Curso Técnico em Informática Integrado ao Ensino Médio**|**Matrizcurricular do Curso Técnico em Informática Integrado ao Ensino Médio**|**Matrizcurricular do Curso Técnico em Informática Integrado ao Ensino Médio**|
+|**Matrizcurricular do Curso Técnico em Informática Integrado ao Ensino Médio**||||
 |---|---|---|---|
 |**Ano de implantação: 2021**||||
 |**Componente Curricular**|**1º ano (h/r)**|**Total**<br>**hora-aula**|**Total**<br>**hora-relógio**|
@@ -791,7 +791,7 @@ Nacional da Consciência Negra e Indígena, 20 de novembro, que contará com pal
 
 PIMENTEL, C. **Redação descomplicada.** 2.ed. São Paulo: Saraiva, 2008. VICENTE, G. **Auto da barca do inferno.** Porto Alegre: L&PM, 2014. MATOS, G. de. **Antologia.** Porto Alegre: L&PM, 2012. ASSIS, M. de. **O alienista.** Porto Alegre: L&PM, 1998.
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**LínguaEstrangeiraModerna– InglêsI||
@@ -911,7 +911,7 @@ GOWDAK, D. O.; MATTOS, N. S. de; PEZZI, A. C.. **Biologia: citologia, embriologi
 
 ZAHA, A; FERREIRA, H. B.; PASSAGLIA, L. MP. **Biologia Molecular Básica-5** . Artmed Editora, 2014. CAMPBELL, M. K.; FARRELL, S. O. **Bioquímica** . 2. ed. São Paulo: Cengage Learning, c2016.
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico: **Informação e Comunicação|
 |**Componente Curricular:**Iniciação àPesquisa Científica||
@@ -992,7 +992,7 @@ SBROCCO, J. H. T. de C. **UML 2.3** : teoria e prática. 1.ed. São Paulo: Èric
 
 **CAMPUS CAPANEMA DO IFPR Curso:** Técnico em Informática **Eixo Tecnológico:** Informação e Comunicação **Componente Curricular:** Arte II **Carga Horária (hora-aula):** 80 h **Período Letivo:** 2º ano **Ementa: Artes Visuais:** Neoclassicismo. Arte Moderna e Pós-Moderna (Vanguardas Artísticas), Arte Contemporânea Geral e Brasileira: Performance, Happening, Instalação. Interdisciplinaridade de gêneros artísticos. Elementos Compositivos das Artes Visuais (ponto, linha, cor, textura…). Técnicas de desenho e gêneros visuais (Retrato, Paisagem, Natureza Morta, Abstração). Arte e Tecnologia. Cibercultura. Multiculturalismo. Videoarte. Arte Cinética. Arte tridimensional: Móbiles. Op Art **Teatro** : História do Teatro: Teatro Renascentista, História do Teatro Brasileiro. Elementos Compositivos do Teatro (Expressões Corporais, Faciais e vocais); **Dança** : Expressão Corporal. Dança de Salão. Indústria Cultural. Hip Hop. Dança Popular Brasileira. **Música:** Elementos formais da música (Som, Ritmo, Textura, Densidade, Intensidade…). Música contemporânea. A tecnologia e a Música. **Arte e Cultura Afro-brasileira/diversidade** (música, dança, teatro e artes visuais) **Bibliografia Básica:** BRUSCKY, P.. **Arte e multimeios.** Recife: Zoludesign, 2010. DOMINGUES, D. (org.). **A arte no século XXI** : a humanização das tecnologias. São Paulo: Fundação da UNESP, 1997. MEDEIROS, M.B. **Arte e Tecnologia na Cultura Contemporânea.** São Paulo: Universidade de Brasília, 2002. **Bibliografia Complementar:** BRITO,G. da S.; PURIFICAÇÃO, I. **Educação e novas tecnologias** : um repensar. Curitiba, Pr: IBPEX, 2006. LEVY, P. **Cibercultura.** Tradução: Carlos Irineu Costa. São Paulo: Editora 34, 2010. MACHADO, A. **Arte e mídia** . Rio de Janeiro: Jorge Zahar Ed., 2007. COHEN, R. **Performance como Linguagem:** Criação de um tempo-espaço de criação. São Paulo: Perspectiva,1980
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**EducaçãoFísicaII||
@@ -1013,7 +1013,7 @@ CAMPOS, L.  A.  S. **Metodologia do ensino das lutas na educação física escol
 
 REZENDE, S. **Xadrez na Escola** : uma Abordagem Didática para Principiantes. São Paulo: Ciência Moderna, 2013. POIT, D. **Organização de eventos esportivos** . São Paulo: PHORTE, 2013.
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:** GeografiaII||
@@ -1040,7 +1040,7 @@ HOBSBAWN, E. **Mundos do Trabalho.** Rio de Janeiro: Paz e Terra, 2000. MENDONÇ
 |**Bibliografia Básica:**<br>CHAUÍ, M. de S.**Convite à filosofia**. 14. ed. São Paulo: Ática, 2015.<br>COTRIM, G.; FERNANDES, M.**Fundamentos de filosofia**. 4.ed. São Paulo: Saraiva, 2016.<br>ZILLES.U.**Teoria do conhecimento e teoria da ciência**.SãoPaulo: Paulus,2005.||
 |**Bibliografia Complementar:**<br>ABBAGNANO, N.**Dicionário de filosofia**. 6. ed. São Paulo: Martins Fontes, 2012.<br>MARCONDES, D.**Iniciação à história da filosofia**: dos Pré-Socráticos a Wittgenstein. Rio de<br>Janeiro: Zahar, 2007.<br>NIETZSCHE, F.**Sobre verdade e mentira**. São Paulo: Hedra, 2008.<br>REALE, G; ANTISERI, D.**História da Filosofia**: Patrística e Escolástica. São Paulo: Paulus, 2004.<br>(ColeçãoHistória daFilosofiaIII).||
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:** SociologiaII||
@@ -1051,7 +1051,7 @@ HOBSBAWN, E. **Mundos do Trabalho.** Rio de Janeiro: Paz e Terra, 2000. MENDONÇ
 
 GIDDENS, A. **Novas Regras do Método Sociológico.** Rio de Janeiro: Zahar, 1978. LARAIA, R. de B. **Cultura um conceito antropológico.** Rio de Janeiro: Zahar, 2003.
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**MatemáticaII||
@@ -1060,7 +1060,7 @@ GIDDENS, A. **Novas Regras do Método Sociológico.** Rio de Janeiro: Zahar, 197
 |**Bibliografia Básica:**<br>IEZZI, G.**Fundamentos de matemática elementar:**geometria analítica. 6. ed. São Paulo: Atual,<br>2013.<br>DOLCE, O.; POMPEO, J. N.**Fundamentos de matemática elementar:**geometria plana. 9. ed.<br>São Paulo: Atual, 2013.<br>DOLCE, O.; POMPEO, J. N.**Fundamentos de matemática elementar:**geometria espacial,<br>posição e métrica. 7. ed. São Paulo: Atual, 2013.||
 |**Bibliografia Complementar:**<br>IEZZI, G.**Fundamentos de matemática elementar**: trigonometria. 9. ed. São Paulo: Atual, 2013.<br>v. 3.<br>LEITE, Á. E.; CASTANHEIRA, N. P.**Geometria plana e trigonometria.**Curitiba: Intersaberes,<br>2014.<br>TAHAN, M; TAHAN, M.**Matemática divertida e curiosa.**25. ed. Rio de Janeiro: Record, 2008.<br>BOYER, C. B.**História da matemática.** 3.ed.SãoPaulo: Blucher,2012.||
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**FísicaII||
@@ -1115,7 +1115,7 @@ OLSEN, D. R.; LAUREANO, M. **Redes de computadores.** Curitiba: LT, 2010.
 
 ## **Componentes curriculares do 3º ano**
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**L. Portuguesa eLiteraturaBrasileiraIII||
@@ -1127,7 +1127,7 @@ OLSEN, D. R.; LAUREANO, M. **Redes de computadores.** Curitiba: LT, 2010.
 |**Bibliografia Complementar:**<br>||
 |KOCH, I. V.; ELIAS, V. M.**Ler e compreender os sentidos do texto**. 2. ed. São Paulo: Contexto,<br>2006.<br>ANDRADE, M. de.**Macunaíma**. 2. ed. São Paulo: Nova Fronteira, 2013.<br>CARNEIRO, A. D.**A Escritura do Texto**. São Paulo: Moderna, 2001.<br>CEREJA, W. R.; MAGALHÃES, T. C.**Gramática reflexiva**: texto, semântica e interação. 4. ed. São<br>Paulo: Atual,2013.||
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:** LínguaEstrangeiraModernaEspanhol I||
@@ -1155,7 +1155,7 @@ AYOAD, J. O. **Introdução a climatologia para os trópicos** . Rio de Janeiro:
 
 GUERRA, A. J. T. **Geomorfologia Ambiental** . Sã Paulo: Bertrand Brasil, 2006 GONÇALVES, C. W. P. **Os (des) Caminhos do meio ambiente.** São Paulo, Contexto, 1996. SILVEIRA, M. L. **O Brasil: Território e Sociedade no início do Século XXI** . Rio de Janeiro: Record, 2003. RIBEIRO, D. **O povo brasileiro:** A formação e o sentido do Brasil. São Paulo: Cia das Letras, 1995. OLIVEIRA, A. U; MARQUES, M. **O Campo no século XXI.** São Paulo: Casa Amarela/Paz e Terra, 2004.
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**HistóriaIII||
@@ -1247,7 +1247,7 @@ HICKMAN, C. P. et al _._ **Princípios integrados de zoologia** . 16. ed. Rio de
 
 **CAMPUS CAPANEMA DO IFPR Curso:** Técnico em Informática **Eixo Tecnológico:** Informação e Comunicação **Componente Curricular:** Linguagem e Técnicas de Programação II **Carga Horária (hora-aula):** 120 h **Período Letivo:** 3º ano **Ementa:** Paradigmas de programação web. Introdução a linguagem de marcação de hipertexto; Implementação e configuração de folhas de estilo; Interatividade web com linguagem interpretada; Definição de modelo de camadas; Desenvolvimento de componentes, módulos e projetos web; Programação de formulários e interfaces gráficas com o usuário; Integração com banco de dados; Implementação de funcionalidades de inserção, leitura, alteração e exclusão de dados via sistema. **Bibliografia Básica:** FREEMAN, E.; ROBSON, E. **Use a cabeça!** : programação em HTML 5: desenvolvendo aplicativos para web com JavaScript. Rio de Janeiro: Alta Books, 2014. SCHILDT, H **. Java para Iniciantes** . 6. ed. Porto Alegre: Grupo A, 2015. WAZLAWICK, R. S. **Análise e projeto de sistemas de informação orientados a objetos** . 3. ed. Rio de Janeiro: Elsevier, 2015. **Bibliografia Complementar:** BRITO, R. C.; GALON, H. E. **Introdução aos ambientes de programação NXT-G e IeJOS para o Lego Mindstorms.** Curitiba: Ed. UTFPR, 2016 LECHETA, R. R. **Android essencial.** São Paulo: Novatec, 2016. LUCKOW, D. H.; MELO, A. A. de. **Programação Java para a Web.** 2. ed., rev., atual. São Paulo: Novatec, 2015. SANTOS, Rafael. **Introdução à programação orientada a objetos usando Java.2.** ed. Rio de Janeiro: Elsevier, 2013.
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Banco deDadosII||
@@ -1256,7 +1256,7 @@ HICKMAN, C. P. et al _._ **Princípios integrados de zoologia** . 16. ed. Rio de
 |**Bibliografia Básica:**<br>SILBERSCHATZ, A.**Sistema de banco de dados**. Editora Elsevier. Rio de Janeiro: 6. Ed., 2012.<br>DATE, C. J.**Introdução a sistemas de bancos de dados.**8. ed. Rio de Janeiro: Ed. Campus,<br>1990.<br>ANGELOTTI,E. S.**Banco de dados.**Curitiba: Editora do Livro Técnico,2010||
 |**Bibliografia Complementar:**<br>MACHADO, F. N. R.**Banco de dados:**projeto e implementação . 2. ed. São Paulo, SP: Érica,<br>2008.<br>RAMAKRISHNAN, R.**Sistemas de Gerenciamento de Banco de Dados**. São Paulo: Saraiva,<br>2012.<br>HEUSER. C. A.**Projeto de banco de dados.**6.ed., São Paulo: Bookman, 2009.<br>BEIGHLEY,Lynn.**Use a Cabeça! SQL.**Rio de Janeiro. AltaBooks,2010.||
 
-|**CAMPUS CAPANEMA DO IFPR**|**CAMPUS CAPANEMA DO IFPR**|
+|**CAMPUS CAPANEMA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Projeto de SoluçãoTecnológica||

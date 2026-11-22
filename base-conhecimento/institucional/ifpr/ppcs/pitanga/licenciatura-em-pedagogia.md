@@ -2035,7 +2035,7 @@ O Núcleo Docente Estruturante é regulamentado pela Resolução nº 1/2010 (BRA
 
 ## **3.1.4 Relação do corpo docente**
 
-|**Nome Completo**|**Nome Completo**||||
+|**Nome Completo**|||||
 |---|---|---|---|---|
 ||**Nome Completo**|**Formação:**<br>**Graduação**|**Titulação**|**Link Currículo Lattes**|
 

@@ -46,7 +46,7 @@ ABERTURA DE CURSO: 2019
 
 AJUSTE CURRICULAR DE CURSO XXXX RESOLUÇÃO DE CRIAÇÃO: XXXX
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**||
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**|||
 |---|---|---|
 |**Função**|**Nome**||
 |Diretora de Ensino|Luciane Schulz Fonseca||
@@ -583,7 +583,7 @@ Ainda, ao longo do ano letivo, poderão acontecer semanas temáticas e palestras
 
 ## **6.13 TEMAS TRANSVERSAIS**
 
-|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA|||
+|Matriz curricular do Curso Técnico em Administração,<br>integrado ao ensinomédio– PROEJA||||||||
 |---|---|---|---|---|---|---|---|
 |Ano deimplantação: 2019||||||||
 |Componente Curricular|1º<br>ano<br>(h/r)|2º<br>ano<br>(h/r)|3º<br>ano<br>h/r)|Nº aula<br>semanal<br>(60min)|Total<br>Hora-<br>aula|Total<br>Hora relógio||
@@ -1100,7 +1100,7 @@ ROSSETTI, José Paschoal. **Introdução à Economia** . São Paulo: Atlas, 2015
 
 ## **3º SEMESTRE**
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Técnico em Administração Integrado<br>ao Ensino Médio– PROEJA|Eixo Tecnológico: Gestão e<br>Negócios|
 |Componente Curricular:**Língua Portuguesa** **III**||
@@ -1534,7 +1534,7 @@ http://www.planalto.gov.br/ccivil_03/constituicao/constituicaocompilado.htm> BRA
 
 LENZA, Pedro. **Direito Constitucional Esquematizado** . São Paulo: Saraiva, 2013.
 
-|Campus Campo Largo|Campus Campo Largo|
+|Campus Campo Largo||
 |---|---|
 |Curso: Técnico em Administração<br>Integrado aoEnsinoMédio - PROEJA|**Eixo:**Gestão e Negócios|
 |Componente Curricular<br>|**Planejamento Estratégico**|
@@ -1810,7 +1810,7 @@ da. **Administração de marketing: conceitos, estratégias, aplicações.** Sã
 
 ## **DOCENTES**
 
-|**9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**|**9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**|
+|**9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**||
 |---|---|
 |**DOCENTES**||
 |QUANT.|PERFIL DE FORMAÇÃO|

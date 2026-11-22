@@ -776,7 +776,7 @@ Base legal específica do curso: Resolução CNE/CP n.º 01/21
 
 Resolução de autorização do curso no IFPR: Resolução n.º 106/11 do Conselho Superior / IFPR
 
-|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|
 |(Criação Lei n.º 11.892 de 29/11/2008)Criação Lei n.º 11.892 de 29/11/2008)ção Lei n.º 11.892 de 29/11/2008)ão Lei n.º 11.892 de 29/11/2008))|||||
 |_Campuspusus_Curitiba|||||
@@ -1370,7 +1370,7 @@ FREIRE, P. **Pedagogia do oprimido** . 58. ed. São Paulo: Paz e Terra, 2014.
 
 HADDAD, A. E.; CRUZ, D. S.; BÖNECKER, M. **Odontopediatria ao alcance de todos:** práticas clínicas para os serviços público e privado. São Paulo: Santos, 2021. E-book. Disponível em: https:https://plataforma.bvirtual.com.br/Acervo/Publicacao/187298 . Acesso em: 23 out. 2024.
 
-|**Componente Curricular**:**ESPECIALIDADES ODONTOLÓGICAS**|**Componente Curricular**:**ESPECIALIDADES ODONTOLÓGICAS**|**Componente Curricular**:**ESPECIALIDADES ODONTOLÓGICAS**|
+|**Componente Curricular**:**ESPECIALIDADES ODONTOLÓGICAS**|||
 |---|---|---|
 |**Carga Horária**<br>Hora aula: 80h<br>Hora relógio: 67h|Aula teórica: 48h|**Período letivo:**2º Semes-<br>tre|
 ||Aulaprática: 32h||
@@ -2028,7 +2028,7 @@ SANTOS, J. A.; PARRA FILHO, D. **Metodologia científica.** 2. ed. São Paulo: C
 
 SOARES, A. M.; RIBEIRO, D. F. **Tópicos especiais em ciências da saúde:** teoria, métodos e práticas. Ponta Grossa: Aya, 2023.
 
-|**Componente Curricular**: **INFORMÁTICA BÁSICA II**|**Componente Curricular**: **INFORMÁTICA BÁSICA II**||
+|**Componente Curricular**: **INFORMÁTICA BÁSICA II**|||
 |---|---|---|
 |**Carga Horária**<br>Hora aula: 20h|Aula teórica: 20h|**Período letivo:**3º Semes-|
 |Hora relógio: 17h|Aulaprática: 00h|tre|
@@ -2622,7 +2622,7 @@ INSTITUTO FEDERAL Parana
 |**Nome**|**Cargo**|**Regime de**<br>**trabalho**|
 |---|---|---|
 |Alex Neves Xevrand Bag-<br>nara|Técnico de Laboratório –<br>Prótese|40h|
-|Allana Camargo Coutinho Assistente em Administração|Allana Camargo Coutinho Assistente em Administração|40h|
+|Allana Camargo Coutinho Assistente em Administração||40h|
 |Ana Maria de Carvalho|Assistente Social|40h|
 |Andrea Cristine Urbanetz<br>Ribeiro da Silva|Técnica em Contabilidade|40h|
 |Andre Luis Ribeiro|Técnico de Laboratório –<br>Área|40h|
@@ -2697,7 +2697,7 @@ INSTITUTO FEDERAL Parana
 |Reginaldo Ferreira|Técnico de Laboratório – Fí-<br>sico|40h|
 |Ricardo Alexandre Pe-<br>reira|Técnico em Assuntos Educa-<br>cionais|40h|
 |Ricardo Arruda Sowek|Técnico de Tecnologia Da<br>Informação|40h|
-|Ricardo de Brito Buquera Técnico de Laboratório/Área|Ricardo de Brito Buquera Técnico de Laboratório/Área|40h|
+|Ricardo de Brito Buquera Técnico de Laboratório/Área||40h|
 |Ricele Gonçalves Agra|Administrador|40h|
 |Roger Fernando de Sá|Auxiliar de Biblioteca|40h|
 
@@ -2719,7 +2719,7 @@ INSTITUTO FEDERAL Parana
 |Tatiane do Rocio Pu-<br>chalski|Técnico em Contabilidade|40h|
 |Tiago Machado Saretto|Tradutor Intérprete de Lin-<br>guagemSinais|40h|
 |Vivaldo Cordeiro Gonçal-<br>ves|Bibliotecário/Documentalista|40h|
-|Ximena Novais de Morais Assistente em Administração|Ximena Novais de Morais Assistente em Administração|40h|
+|Ximena Novais de Morais Assistente em Administração||40h|
 
 ## 8.3 INSTRUMENTOS DE GESTÃO DEMOCRÁTICA
 
@@ -3306,7 +3306,7 @@ Avalie as atividades que a(o) estudante realiza de acordo com a legenda de 0-10:
 
 (NA) Não se aplica
 
-|**Organização do serviço**|**Organização do serviço**|
+|**Organização do serviço**||
 |---|---|
 |Comunicabilidade (pacientes, empresas, laboratórios)||
 |Gestão da agenda||
@@ -3409,7 +3409,7 @@ _________________
 
 **DESCRIÇÃO DAS ATIVIDADES DO ESTÁGIO** (Supervisor - descrever as atividades que o estagiário exerceu em todo o período)
 
-|**AVALIAÇÃO DO DESENVOLVIMENTO DO ESTÁGIO** <br>(Supervisor - escolher umgrau de satisfação de 1 a 5,sendo 5 satisfeito)|**AVALIAÇÃO DO DESENVOLVIMENTO DO ESTÁGIO** <br>(Supervisor - escolher umgrau de satisfação de 1 a 5,sendo 5 satisfeito)|**AVALIAÇÃO DO DESENVOLVIMENTO DO ESTÁGIO** <br>(Supervisor - escolher umgrau de satisfação de 1 a 5,sendo 5 satisfeito)|**AVALIAÇÃO DO DESENVOLVIMENTO DO ESTÁGIO** <br>(Supervisor - escolher umgrau de satisfação de 1 a 5,sendo 5 satisfeito)|**AVALIAÇÃO DO DESENVOLVIMENTO DO ESTÁGIO** <br>(Supervisor - escolher umgrau de satisfação de 1 a 5,sendo 5 satisfeito)|
+|**AVALIAÇÃO DO DESENVOLVIMENTO DO ESTÁGIO** <br>(Supervisor - escolher umgrau de satisfação de 1 a 5,sendo 5 satisfeito)|||||
 |---|---|---|---|---|
 |**Fatores avaliados**|**Grau**|**Fatores avaliados**<br>06. Conhecimento técnico<br>07. Cumprimento das atividades<br>08. Relacionamento interpessoal<br>09. Interesse pela temática<br>10. Desempenho geral do estágio|**Fatores avaliados**|**Grau**|
 |01. Assiduidade|||06. Conhecimento técnico||

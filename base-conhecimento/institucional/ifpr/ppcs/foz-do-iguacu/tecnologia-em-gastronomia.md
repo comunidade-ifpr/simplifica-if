@@ -894,7 +894,7 @@ Conforme Decreto  nº.  5.626/2005  e Lei  nº  10.436,  de  24  de  abril  de  
 
 ## **4.1.2  Matriz Curricular**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||~~_Campus_ Foz do Iguaçu~~|||||
@@ -2709,18 +2709,18 @@ A ocupação de espaço físico será realizada da seguinte maneira:
 |**Sala 07**|Matutino|Edificações|Edificações|Edificações|Edificações|
 ||Vespertin|Edificações|Edificações|Edificações|Edificações|
 
-||o|||||
-|---|---|---|---|---|---|
-||Noturno|||Tecnologia em<br>Análise  Desen.<br>Sistemas|Tecnologia em<br>Análise  Desen.<br>Sistemas|
-|**Sala09**|Matutino|Aquicultura|Aquicultura|Aquicultura|Aquicultura|
-||Vespertin<br>o|Aquicultura|Aquicultura|Aquicultura|Aquicultura|
-||Noturno||||Tecnologia em<br>Análise  Desen.<br>Sistemas|
-|**Sala 12**|Matutino|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|
-||Vespertin<br>o|Física|Física|Física|Física|
-||Noturno|||||
-|**Sala 14**|Matutino|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|
-||Vespertin<br>o|Física|Física|Física|Física|
-||Noturno|||||
+||o||||
+|---|---|---|---|---|
+||Noturno||Tecnologia em<br>Análise  Desen.<br>Sistemas|Tecnologia em<br>Análise  Desen.<br>Sistemas|
+|**Sala09**|Matutino|Aquicultura|Aquicultura|Aquicultura|
+||Vespertin<br>o|Aquicultura|Aquicultura|Aquicultura|
+||Noturno|||Tecnologia em<br>Análise  Desen.<br>Sistemas|
+|**Sala 12**|Matutino|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|
+||Vespertin<br>o|Física|Física|Física|
+||Noturno||||
+|**Sala 14**|Matutino|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|Técnico<br>em<br>Cozinha|
+||Vespertin<br>o|Física|Física|Física|
+||Noturno||||
 
 A ocupação dos laboratórios é baseada na carga horária de aulas práticas do curso. Considerando o volume de aulas diárias (até 6h) e o número de dias letivos semanais (cinco), teremos até 30 (trinta) horas semanais para uso de cada laboratório, ou 600 (seiscentas) horas semestrais (20 semanas de aula). Outro aspecto importante é que as turmas de gastronomia serão divididas em duas para a boa execução das técnicas e também por questõ es de higiene e segurança do trabalho.
 
@@ -2728,7 +2728,7 @@ De acordo com a matriz curricular do curso, a carga horária com demanda por lab
 
 107
 
-||1° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 1<br>120<br>100<br>CQ<br>PAN<br>Nutrição aplicada àgastronomia<br>40<br>12<br>DEMO<br>REST<br>Serviço de salão e bar<br>40<br>20<br>DEMO<br>REST<br>Ambientaçãoprofssional(restaurante escola)<br>120<br>120<br>DEMO<br>REST<br>2° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 2<br>80<br>60<br>CQ<br>PAN<br>Garde Manger<br>80<br>72<br>CQ<br>PAN<br>Tecnologia dos alimentos aplicada à Gastronomia<br>80<br>40<br>DEMO<br>REST<br>Basesparapanifcação<br>80<br>72<br>CQ<br>PAN<br>Gastronomia Clássicas Francesa e Italiana<br>120<br>120<br>CQ<br>PAN<br>3° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Brasileira<br>120<br>100<br>CQ<br>PAN<br>Eventos<br>40<br>20<br>DEMO<br>REST<br>Confeitaria<br>80<br>72<br>CQ<br>PAN<br>Bebidas<br>40<br>20<br>DEMO<br>REST<br>Gastronomia Europeia<br>120<br>120<br>CQ<br>PAN<br>4° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Étnica(Américas,Ásia e África)<br>240<br>200<br>CQ<br>PAN<br>Enogastronomia<br>80<br>40<br>DEMO<br>REST|1° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 1<br>120<br>100<br>CQ<br>PAN<br>Nutrição aplicada àgastronomia<br>40<br>12<br>DEMO<br>REST<br>Serviço de salão e bar<br>40<br>20<br>DEMO<br>REST<br>Ambientaçãoprofssional(restaurante escola)<br>120<br>120<br>DEMO<br>REST<br>2° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 2<br>80<br>60<br>CQ<br>PAN<br>Garde Manger<br>80<br>72<br>CQ<br>PAN<br>Tecnologia dos alimentos aplicada à Gastronomia<br>80<br>40<br>DEMO<br>REST<br>Basesparapanifcação<br>80<br>72<br>CQ<br>PAN<br>Gastronomia Clássicas Francesa e Italiana<br>120<br>120<br>CQ<br>PAN<br>3° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Brasileira<br>120<br>100<br>CQ<br>PAN<br>Eventos<br>40<br>20<br>DEMO<br>REST<br>Confeitaria<br>80<br>72<br>CQ<br>PAN<br>Bebidas<br>40<br>20<br>DEMO<br>REST<br>Gastronomia Europeia<br>120<br>120<br>CQ<br>PAN<br>4° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Étnica(Américas,Ásia e África)<br>240<br>200<br>CQ<br>PAN<br>Enogastronomia<br>80<br>40<br>DEMO<br>REST|1° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 1<br>120<br>100<br>CQ<br>PAN<br>Nutrição aplicada àgastronomia<br>40<br>12<br>DEMO<br>REST<br>Serviço de salão e bar<br>40<br>20<br>DEMO<br>REST<br>Ambientaçãoprofssional(restaurante escola)<br>120<br>120<br>DEMO<br>REST<br>2° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 2<br>80<br>60<br>CQ<br>PAN<br>Garde Manger<br>80<br>72<br>CQ<br>PAN<br>Tecnologia dos alimentos aplicada à Gastronomia<br>80<br>40<br>DEMO<br>REST<br>Basesparapanifcação<br>80<br>72<br>CQ<br>PAN<br>Gastronomia Clássicas Francesa e Italiana<br>120<br>120<br>CQ<br>PAN<br>3° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Brasileira<br>120<br>100<br>CQ<br>PAN<br>Eventos<br>40<br>20<br>DEMO<br>REST<br>Confeitaria<br>80<br>72<br>CQ<br>PAN<br>Bebidas<br>40<br>20<br>DEMO<br>REST<br>Gastronomia Europeia<br>120<br>120<br>CQ<br>PAN<br>4° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Étnica(Américas,Ásia e África)<br>240<br>200<br>CQ<br>PAN<br>Enogastronomia<br>80<br>40<br>DEMO<br>REST|1° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 1<br>120<br>100<br>CQ<br>PAN<br>Nutrição aplicada àgastronomia<br>40<br>12<br>DEMO<br>REST<br>Serviço de salão e bar<br>40<br>20<br>DEMO<br>REST<br>Ambientaçãoprofssional(restaurante escola)<br>120<br>120<br>DEMO<br>REST<br>2° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 2<br>80<br>60<br>CQ<br>PAN<br>Garde Manger<br>80<br>72<br>CQ<br>PAN<br>Tecnologia dos alimentos aplicada à Gastronomia<br>80<br>40<br>DEMO<br>REST<br>Basesparapanifcação<br>80<br>72<br>CQ<br>PAN<br>Gastronomia Clássicas Francesa e Italiana<br>120<br>120<br>CQ<br>PAN<br>3° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Brasileira<br>120<br>100<br>CQ<br>PAN<br>Eventos<br>40<br>20<br>DEMO<br>REST<br>Confeitaria<br>80<br>72<br>CQ<br>PAN<br>Bebidas<br>40<br>20<br>DEMO<br>REST<br>Gastronomia Europeia<br>120<br>120<br>CQ<br>PAN<br>4° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Étnica(Américas,Ásia e África)<br>240<br>200<br>CQ<br>PAN<br>Enogastronomia<br>80<br>40<br>DEMO<br>REST|1° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 1<br>120<br>100<br>CQ<br>PAN<br>Nutrição aplicada àgastronomia<br>40<br>12<br>DEMO<br>REST<br>Serviço de salão e bar<br>40<br>20<br>DEMO<br>REST<br>Ambientaçãoprofssional(restaurante escola)<br>120<br>120<br>DEMO<br>REST<br>2° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 2<br>80<br>60<br>CQ<br>PAN<br>Garde Manger<br>80<br>72<br>CQ<br>PAN<br>Tecnologia dos alimentos aplicada à Gastronomia<br>80<br>40<br>DEMO<br>REST<br>Basesparapanifcação<br>80<br>72<br>CQ<br>PAN<br>Gastronomia Clássicas Francesa e Italiana<br>120<br>120<br>CQ<br>PAN<br>3° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Brasileira<br>120<br>100<br>CQ<br>PAN<br>Eventos<br>40<br>20<br>DEMO<br>REST<br>Confeitaria<br>80<br>72<br>CQ<br>PAN<br>Bebidas<br>40<br>20<br>DEMO<br>REST<br>Gastronomia Europeia<br>120<br>120<br>CQ<br>PAN<br>4° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Étnica(Américas,Ásia e África)<br>240<br>200<br>CQ<br>PAN<br>Enogastronomia<br>80<br>40<br>DEMO<br>REST|
+||1° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 1<br>120<br>100<br>CQ<br>PAN<br>Nutrição aplicada àgastronomia<br>40<br>12<br>DEMO<br>REST<br>Serviço de salão e bar<br>40<br>20<br>DEMO<br>REST<br>Ambientaçãoprofssional(restaurante escola)<br>120<br>120<br>DEMO<br>REST<br>2° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Habilidades básicas de cozinha 2<br>80<br>60<br>CQ<br>PAN<br>Garde Manger<br>80<br>72<br>CQ<br>PAN<br>Tecnologia dos alimentos aplicada à Gastronomia<br>80<br>40<br>DEMO<br>REST<br>Basesparapanifcação<br>80<br>72<br>CQ<br>PAN<br>Gastronomia Clássicas Francesa e Italiana<br>120<br>120<br>CQ<br>PAN<br>3° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Brasileira<br>120<br>100<br>CQ<br>PAN<br>Eventos<br>40<br>20<br>DEMO<br>REST<br>Confeitaria<br>80<br>72<br>CQ<br>PAN<br>Bebidas<br>40<br>20<br>DEMO<br>REST<br>Gastronomia Europeia<br>120<br>120<br>CQ<br>PAN<br>4° SEMESTRE<br>h/aula CH PRÁTICA<br>LABORATÓRIOS<br>Gastronomia Étnica(Américas,Ásia e África)<br>240<br>200<br>CQ<br>PAN<br>Enogastronomia<br>80<br>40<br>DEMO<br>REST|||||
 |---|---|---|---|---|---|
 ||1° SEMESTRE|h/aula|CH PRÁTICA|LABORATÓRIOS||
 ||Habilidades básicas de cozinha 1|120|100|CQ|PAN|

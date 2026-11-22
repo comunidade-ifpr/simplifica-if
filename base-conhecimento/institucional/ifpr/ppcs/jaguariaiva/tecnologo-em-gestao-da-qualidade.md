@@ -439,7 +439,7 @@ CGDH/DPEDHUC/SECADI/MEC e Direitos humanos, preconizado pelo Parecer CNE/CP n. 8
 
 ## **2.6.2 Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||
 |||_Campus_Jaguariaíva|||||
@@ -529,7 +529,7 @@ MARTIN, I.R. S **íntesis: curso de lengua española: ensino médio** . São Pau
 
 BIBLIOGRAFIA COMPLEMENTAR: FANJUL, A. **Gramática y Práctica de Español para Brasileños** . São Paulo: Moderna, 2005. MORENO FERNÁNDEZ, F. **Producción, expresión e interacción oral** . Madrid: Arco Libros, 2002. PALOMINO, Mª A. **Dual.** Pretextos para hablar. Madrid: Edelsa, 2006. RUEDA, S. A. **La expresión oral** . Barcelona: Ariel, 2000. VÁZQUEZ, G. **La destreza oral: conversar, exponer, argumentar.** Madrid: Edelsa, 2000.
 
-|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|(OPTATIVA)|(OPTATIVA)|(OPTATIVA)|(OPTATIVA)|
+|COMPONENTE CURRICULAR: FILOSOFIA DA TÉCNICA E DA TECNOLOGIA|||||||||||||(OPTATIVA)|(OPTATIVA)|(OPTATIVA)|(OPTATIVA)|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |CARGA HORÁRIA: 40 horas/aula e 33 Hora/relógio (60|||||||||min)||||||||
 |EMENTA:|||Técnica e Tecnologia, seus significados etimológicos, epistemológicos e||||||||||||históricos;||
@@ -599,7 +599,7 @@ BIBLIOGRAFIA COMPLEMENTAR: FANJUL, A. **Gramática y Práctica de Español para 
 
 COMPONENTE CURRICULAR: Gestão de resíduos sólidos (OPTATIVA) CARGA HORÁRIA: 40 horas/aula e 33 Hora/relógio (60 min) EMENTA: Geração de Resíduos Sólidos. Classificação dos Resíduos Sólidos Gerenciamento de resíduos sólidos. Metodologias e técnicas de minimização, reciclagem e reutilização Acondicionamento, coleta, transporte. Processos de tratamento: compostagem, usina de reciclagem. Disposição final de resíduos e recuperação de ambientes contaminados. BIBLIOGRAFIA BÁSICA: BARBOSA, Rildo Pereira; IBRAHIN, Francini Imene Dias. **Resíduos sólidos: impactos, manejo e gestão ambiental** . Érica, 2014. ISBN: 9788536508665 BARTHOLOMEU, Daniela Bacchi; CAIXETA-FILHO, José Vicente (Org.). **Logística ambiental de resíduos sólidos.** 1. ed. Atlas, 2011. ISBN: 9788522461981. BRAGA, Benedito et al. **Introdução à engenharia ambiental.** 2. ed. São Paulo: Pearson Education do Brasil, 2005. 318 p. ISBN 9788576050414. JARDIM, Arnaldo; YOSHIDA, Consuelo Yatsuda Moromizato; MACHADO FILHO, José Valverde. **Política nacional, gestão e gerenciamento de resíduos sólidos** . Manoele, 2012. ISBN: 9788520433799. RIBEIRO, Daniel Véras; MORELLI, Márcio Raymundo. **Resíduos sólidos: problema ou oportunidade?** . Interciência, 2009. ISBN: 9788571932180 . BIBLIOGRAFIA COMPLEMENTAR: AGRA FILHO, Severino Soares. **Planejamento e Gestão Ambiental no Brasil.** 1 ed. Elsevier, 2014. 248 p. ISBN: 8535280081. BAUMGARTEN, Maíra. **Conhecimento e sustentabilidade: políticas de ciência, tecnologia e inovação no Brasil contemporâneo** . Porto Alegre: Ed. UFRGS, 2008. 262 p. (Cenários do conhecimento). ISBN 9788520505144 Editora Sulina. BARBOSA FILHO, Antonio Nunes. **Segurança do trabalho & gestão ambiental** . 4. ed. São Paulo: Atlas, 2011. 378 p. ISBN 9788522462728. POLETO, Cristiano (Org.). **Introdução ao gerenciamento ambiental.** Rio de Janeiro: Interciência, 2010. 336 p. ISBN 9788571932227. SEIFFERT, Mari Elizabeti Bernardini. **Sistemas de Gestão Ambiental. Implantação Objetiva e Econômica** . 5 ed. Atlas, 2017. 280 p. ISBN:: 8597009489.
 
-|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|
+|COMPONENTE CURRICULAR: Gestão da qualidade em agroindústrias de origem animal (OPTATIVA)|||||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |CARGA HORÁRIA: 40 horas/aula e 33 Hora/relógio (60 min)|||||||||||||||
 |EMENTA:<br>Abordagem Gestão da Qualidade, seus fundamentos e benefícios|||||||||||para o desenvolvimento de||||
@@ -685,7 +685,7 @@ As atividades de extensão do curso compõem 201 horas, que representam 11% do t
 
 No tocante à curricularização da extensão, a carga horária será distribuída em 3 (três) componentes curriculares obrigatórios, conforme pode ser visto na tabela abaixo.
 
-|Componentes curriculares para curricularização da Extensão.|Componentes curriculares para curricularização da Extensão.|Componentes curriculares para curricularização da Extensão.|
+|Componentes curriculares para curricularização da Extensão.|||
 |---|---|---|
 |**Semestre**|<br>**Componente Curricular**|<br>**Carga Horária (Hora-relógio)**|
 |Terceiro|Atividades Curriculares de Extensão I|<br>67 horas|
@@ -760,7 +760,7 @@ BIBLIOGRAFIA COMPLEMENTAR: BISPO. C. A. F.; CASTANHEIRA, L. B.; FILHO, O. M. S. 
 
 COMPONENTE CURRICULAR: Relacionamento interpessoal CARGA HORÁRIA: 40 Hora/aula e 33 Hora/relógio EMENTA: A interação entre as pessoas e o trabalho. A temática da história e Cultura Afro-Brasileira e Indígena e as relações interpessoais. Competência, Comunicação e Desenvolvimento interpessoal. Motivação e trabalho. Liderança e Poder. A globalização e mudanças comportamentais. Ajustamento e produtividade frente aos processos de mudança de base tecnológica. Tensão e conflitos interpessoais. Estilos pessoais de atuação. BIBLIOGRAFIA BÁSICA: BOM SUCESSO, Edina de Paula. **Relações Interpessoais e Qualidade de vida no Trabalho.** Rio de Janeiro: Qualitymark Editora, 2002. CHIAVENATO, Idalberto. **Gestão de pessoas: o novo papel dos recursos humanos nas organizações** . 4. ed. Barueri: Manole, 2014. 494 p. ISBN 9788520437612 (broch.). CARVALHO, Maria do Carmo Nacif. Relacionamento Interpessoal. 1ª ed. São Paulo: Atlas, 2009. DUTRA, Joel Souza; FLEURY, Maria Tereza Leme; RUAS, Roberto. **Competências: conceitos, métodos e experiências.** 1. ed. São Paulo: Atlas, 2008. 303 p. ISBN 9788522450794 (broch.). DEL PRETTE, Almir; DEL PRETTE, Zilda A. P. **Psicologia das relações interpessoais: vivências para o trabalho em grupo** . 2. ed. Petrópolis: Vozes, 2002. 231p. BIBLIOGRAFIA COMPLEMENTAR: ARAÚJO, Paulo Henrique de. **Motivação Hoje e Sempre** . Rio de janeiro: Qualitymark, 2003. DUTRA, Joel Souza. **Administração de carreiras: uma proposta para repensar a gestão de pessoa** s. São Paulo: Atlas, 2011. 172 p. ISBN 85-224-1411-4. CHUNG, Tom. **Qualidade começa em mim: manual neurolinguístico de liderança e comunicação** . São Paulo: Novo Século, 2002. 341p. il. MACÊDO, Ivanildo Izaias de; RODRIGUES, Denize Ferreira; JOHANN, Maria Elizabeth Pupe; CUNHA, Neisa Maria Martins da. **Aspectos comportamentais da gestão de pessoas.** Rio de Janeiro: FGV Management, 2003. 148 p. (Gestão empresarial (FGV Management)). ISBN 8522504148 (broch.) MINUCUCCI, Agostinho. **Relações Humanas: psicologia das relações interpessoais** . 6ª ed. São Paulo: Editora Atlas, 2009.
 
-|COMPONENTE CURRICULAR: Informática básica|COMPONENTE CURRICULAR: Informática básica|COMPONENTE CURRICULAR: Informática básica|||
+|COMPONENTE CURRICULAR: Informática básica|||||
 |---|---|---|---|---|
 |CARGA HORÁRIA: 40 Hora/aula e 33 Hora/relógio|||||
 |EMENTA:<br>Noções básicas de sistemas computacionais. Noções básicas de edição de texto. Noções|||||
@@ -808,7 +808,7 @@ CARGA HORÁRIA: 40 Hora/aula e 33 Hora/relógio
 
 EMENTA: Conceitos básicos da gestão e de processos. Processos em Gestão da Qualidade. Principais Processos de uma Empresa. Técnicas de gestão de processos. Mapeamento de Processos. Método de avaliação de processos. Otimização de Processos. Instrumentos de análise e gestão de processos. Gráficos de processamento e organização. Arranjo físico. BIBLIOGRAFIA BÁSICA: ARAÚJO, Luis César G. – **Organização, Sistemas e Métodos e as Modernas Ferramentas de Gestão Organizacional** . 5ª ed. São Paulo: Atlas, 2011. BROCKE, Jan vom; ROSEMANN, Michael. **Manual de BPM: gestão de processos de negócio** . Porto Alegre: Bookman, 2013. 376 p. ISBN 9788582600658 (broch.). FERREIRA, Ayrton Sérgio Rochedo. **Modelagem organizacional por processos: um sistema óbvio de gestão : um passo além da hierarquia** . Rio de Janeiro: Mauad X, 2010. 270 p. ISBN 9788574783239 (broch.) . PAVANI JÚNIOR, Orlando; SCUCUGLIA, Rafael. **Mapeamento e gestão por processos: BPM : business process management** . São Paulo: M. Books do Brasil, 2011. 376p. ISBN 9788576801030 (broch.). SORDI, José Osvaldo De. **Gestão por processos: uma abordagem da moderna administração** . 3.ed. rev. e atual. São Paulo, SP: Saraiva, 2012 338 p. ISBN 9788502175518 (broch.). BIBLIOGRAFIA COMPLEMENTAR: BARBARÁ, Saulo (organizador). **Gestão por processos: fundamentos, técnicas e modelos de implementação.** Rio de Janeiro: Qualitymark, 2006. BOOG, Gustavo G.; BOOG, Magdalena (Coord.). **Manual de treinamento e desenvolvimento: processos e operações.** São Paulo: Pearson Prentice Hall, 2007. D'ASCENÇÃO, Luiz Carlos Menezes. **Organização, sistemas e métodos: análise, redesenho e informatização de processos administrativo** s. São Paulo: Atlas, 2001. DIAS, Sergio Vidal dos Santos. **Manual de controles internos: desenvolvimento e implantação: exemplos de processos organizacionais** . São Paulo: Atlas, 2010. VALLE, Rogério; OLIVEIRA, Saulo Barbará de. **Análise e modelagem de processos de negócio: foco na notação BPMN (Business Process Modeling Notation)** .São Paulo: Atlas, 2009.
 
-|COMPONENTE CURRICULAR: Comunicação empresarial|COMPONENTE CURRICULAR: Comunicação empresarial|COMPONENTE CURRICULAR: Comunicação empresarial||||
+|COMPONENTE CURRICULAR: Comunicação empresarial||||||
 |---|---|---|---|---|---|
 |CARGA HORÁRIA: 40 Hora/aula e 33 Hora/relógio||||||
 |EMENTA:<br>Linguagem escrita e linguagem oral;||Estruturação de sentenças e parágrafos;||||
@@ -877,7 +877,7 @@ COMPONENTE CURRICULAR: Estatística Descritiva CARGA HORÁRIA: 40 Hora/aula e 33
 
 EMENTA: Noções básicas da Análise Combinatória: Princípio Fundamental da Contagem, Permutação, Arranjo e Combinação Simples. Introdução ao estudo das Probabilidades; Fundamentos gerais da estatística: Classificação de variáveis aleatórias; Análise organização e representação de dados por meio de gráficos e tabelas, distribuição de frequência, Medidas de tendência central, medidas de dispersão, noções gerais de técnicas de amostragem. BIBLIOGRAFIA BÁSICA: CASTANHEIRA, N. P. **Estatística Aplicada a Todos os Níveis** . 4ed. Curitiba: Ibpex, 2008. 208 p. CARVALHO, P.C.P et. al. **Análise Combinatória e Probabilidade.** 10 ed. Rio de Janeiro: SBM, 2016. 326 p. HAZZAN, S. F **undamentos da Matemática Elementar 5: Combinatória e Probabilidade** . 8 ed. São Paulo: Atual, 2013, 208 p. IEZZI, G. et. al. **Fundamentos da Matemática Elementar 11: Matemática Comercial, Matemática Financeira, Estatística Descritiva** . 1 ed. São Paulo: Atual, 2004. 192. LIMA, E. L. et. al. **A Matemática do Ensino Médio: Volume 3** . 6 ed. Rio de Janeiro: SBM, 2006. 287 p. BIBLIOGRAFIA COMPLEMENTAR: DOWNING, D. CLARK, J. **Estatística aplicada** . São Paulo: Saraiva, 1998. LIMA, E. L. et. al. **A Matemática do Ensino Médio: Volume 2** . 6 ed. Rio de Janeiro: SBM, 2006. 373 p. RIBEIRO, Jackson. **Matemática 1: ciência, linguagem e tecnologia.** 1. ed. São Paulo: Scipione, 2012. 384 p. TRIOLA, Mario F. **Introdução à estatística.** 7 ed. Rio de Janeiro: LTC Livros Técnicos e Científicos Ed. S.A., 1999. XAVIER, Claudio; BARRETO, Benigno. **Matemática aula por aula 1: versão com progressões** . São Paulo: FTD, 2009. 351 p.
 
-|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|COMPONENTE CURRICULAR: Introdução a contabilidade|||
+|COMPONENTE CURRICULAR: Introdução a contabilidade||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|
 |CARGA HORÁRIA: 80 Hora/aula e 67 Hora/relógio||||||||||||
 |EMENTA:<br>Contabilidade e suas||||||finalidades.|Princípios contábeis. Patrimônio e patrimônio|||||
@@ -1098,7 +1098,7 @@ EMENTA: A evolução da segurança do trabalho e das NRS ligadas à segurança e
 
 BIBLIOGRAFIA BÁSICA: BARSANO, Paulo Roberto; BARBOSA, Rildo Pereira. **Higiene e segurança do trabalho** . 1. ed. São Paulo: Érica, 2014. 128 p. (Eixos : segurança). ISBN 9788536506074. CAMISASSA, Mara. **Segurança e Saúde no Trabalho – NR’s 1 a 36 – Comentadas e Descomplicadas** . 3 ed. Guanabara, 2016. 949 p. ISBN: 9788530969264 CAMPOS, Armando. **CIPA : Comissão Interna de Prevenção de Acidentes: uma nova abordagem** . 24. ed. rev. São Paulo: Senac São Paulo, 2016. 408 p. ISBN 9788539602025. GARCIA, Gustavo Filipe Barbosa. **Meio ambiente do trabalho: direito, segurança e medicina do trabalho** . 4. ed. rev. e atual. São Paulo: Método, 2014. 230 p. ISBN 9788530954796. SILVA, Helder Antonio da. **Método para avaliação do sistema de gestão da qualidade, meio ambiente, segurança e saúde ocupacional.** São Paulo: Scortecci, 2016. BIBLIOGRAFIA COMPLEMENTAR: BARBOSA FILHO, Antonio Nunes. **Segurança do trabalho & gestão ambiental** . 4. ed. São Paulo: Atlas, 2011. 378 p. ISBN 9788522462728. HOEPPNER, Marcos Garcia (Org.). **NR: normas regulamentadoras relativas à segurança e saúde no trabalho : NR-1 à NR-36.** 6. ed. rev. atual. e ampl. São Paulo: Ícone, 2015. 1184 p. ISBN 9788527411974. MANUAL de segurança e saúde no trabalho: normas regulamentadoras : NR 1 a 36. 12. ed. rev. e atual. Rio de Janeiro: Senac Rio: Difusão, 2014. 1194 p. (Segurança e saúde no trabalho). ISBN 9788578081843. PAOLESCHI, Bruno. **CIPA: Comissão Interna de Prevenção de Acidentes: guia prático de segurança do trabalho.** São Paulo: Érica, 2009. 128 p. ISBN 9788536502588. SILVA, Renata Moreira de Sá e. **Higiene e segurança do trabalho (HST) para educação profissional** . Brasília: Ed. IFB, 2013. 188 p. ISBN 9788564124202.
 
-|COMPONENTE CURRICULAR: Processos Produtivos II|COMPONENTE CURRICULAR: Processos Produtivos II|COMPONENTE CURRICULAR: Processos Produtivos II|COMPONENTE CURRICULAR: Processos Produtivos II|COMPONENTE CURRICULAR: Processos Produtivos II|||
+|COMPONENTE CURRICULAR: Processos Produtivos II|||||||
 |---|---|---|---|---|---|---|
 |CARGA HORÁRIA: 40 Hora/aula e 33 Hora/relógio|||||||
 |EMENTA:|Qualidade na indústria de Madeira e||do|Papel.|Processo de construção e||
@@ -1651,7 +1651,7 @@ Para ofertar o início do Curso a atual infraestrutura já oferece condições. 
 
 ## 5.3 PROJEÇÃO DE AQUISIÇÃO DE ACERVO BIBLIOGRÁFICO
 
-|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|**LISTA DE LIVROS – JAGUARIAÍVA**|
+|**LISTA DE LIVROS – JAGUARIAÍVA**||||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**TÍTULO**|**AUTOR(ES)**|**ED**|**EDITORA**|**ANO**|**ISBN**|**EX**|**VL**<br>**UNIT**<br>**R$**|**VL**<br>**TOTAL**<br>**R$**|**B/C***|
 |Qualidade - Fundamentos e<br>Práticas|Marco Antônio Lucinda|1|Brasport|2010|9788574524467|8|R$ 45,00|R$ 360,00|B|
@@ -2650,7 +2650,7 @@ _____________________________________________________________ Professor (a) da D
 
 Aluno:_________________________________________________________ Orientador:_____________________________________________________ Título:_________________________________________________________
 
-|**ITENS AVALIADOS**|**CONCEITOS**(A a D)*|**CONCEITOS**(A a D)*|**CONCEITOS**(A a D)*|**CONCEITOS**(A a D)*|
+|**ITENS AVALIADOS**|**CONCEITOS**(A a D)*||||
 |---|---|---|---|---|
 ||_Orientador(a_<br>_)_|_Avaliador_<br>_1_|_Avaliador_<br>_2_|_Conceito_<br>_final_|
 |Trabalho escrito|||||
@@ -2690,7 +2690,7 @@ Aluno:__________________________________________________________ Orientador:____
 
 __________________________________
 
-|Trabalho escrito - Conceito 1|Trabalho escrito - Conceito 1|Trabalho escrito - Conceito 1|Conceito*|
+|Trabalho escrito - Conceito 1|||Conceito*|
 |---|---|---|---|
 |01|Redação e estruturação do texto|(A a D)||
 |02|Coerência com relação à normas da ABNT|(A a D)||
@@ -2701,7 +2701,7 @@ __________________________________
 
 * Os conceitos atribuídos deverão estar de acordo com as normas estabelecidas na Resolução Nº 50/2017 do IFPR, sendo conceitos atribuídos A, B, C ou D.
 
-|0/2017 do IFPR, sendo conceitos atribuídos A, B, C ou D.|0/2017 do IFPR, sendo conceitos atribuídos A, B, C ou D.|0/2017 do IFPR, sendo conceitos atribuídos A, B, C ou D.||
+|0/2017 do IFPR, sendo conceitos atribuídos A, B, C ou D.||||
 |---|---|---|---|
 |Apresentação oral - Conceito 2|||Conceito*|
 |07|Clareza na introdução e na exposição do conteúdo do<br>trabalho|(A a D)||
@@ -2987,7 +2987,7 @@ Art. 21 - Os casos omissos neste Regulamento serão tratados pela Coordenação 
 
 **Tabela de Pontuação - Atividades Complementares**
 
-|**Tabela de Pontuação - Atividades Complementares**|**Tabela de Pontuação - Atividades Complementares**|
+|**Tabela de Pontuação - Atividades Complementares**||
 |---|---|
 |||
 |||

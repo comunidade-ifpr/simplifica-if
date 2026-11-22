@@ -1215,7 +1215,7 @@ O componente curricular de Língua Brasileira de Sinais - Libras na estrutura cu
 
 Ministerio da Educacao
 
-||Campus Curitiba|Campus Curitiba|Campus Curitiba|Campus Curitiba|Campus Curitiba|
+||Campus Curitiba|||||
 |---|---|---|---|---|---|
 ||**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**PROCESSOS ESCOLARES**|||||
 ||Eixo Tecnológico do Curso: Desenvolvimento educacional e social|||||
@@ -1279,7 +1279,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|**DISTRIBUIÇÃO - CARGA HORÁRIA**|**DISTRIBUIÇÃO - CARGA HORÁRIA**|
+|**DISTRIBUIÇÃO - CARGA HORÁRIA**||
 |---|---|
 |(C)Componentes curriculares|2.320|
 |(AC)Atividades Complementares|80|
@@ -1337,13 +1337,13 @@ STROBEL, Karin. **História da educação de surdos.** Florianópolis: UFSC, 200
 
 Ministerio da Educacao
 
-|COMPONENTE CURRICULAR: Práticas Sociais Educacionais|COMPONENTE CURRICULAR: Práticas Sociais Educacionais|||
+|COMPONENTE CURRICULAR: Práticas Sociais Educacionais||||
 |---|---|---|---|
 |CARGA HORÁRIA: 96 horas/aula e 80 horas/relógio||||
 |EMENTA: Teorias educacionais e de aprendizagem. A intencionalidade da educação, da||||
 |escola e do educador. O desenvolvimento social, afetivo e de aprendizagem das crianças e|||escola e do educador. O desenvolvimento social, afetivo e de aprendizagem das crianças e|
-|dos adolescentes. Infância e o papel das brincadeiras, dos jogos e do acompanhamento|dos adolescentes. Infância e o papel das brincadeiras, dos jogos e do acompanhamento|||
-|pedagógico dos profissionais da educação na escola.|pedagógico dos profissionais da educação na escola.|||
+|dos adolescentes. Infância e o papel das brincadeiras, dos jogos e do acompanhamento||||
+|pedagógico dos profissionais da educação na escola.||||
 |BIBLIOGRAFIA BÁSICA:||||
 |FREIRE, Paulo.**Educação como prática da liberdade.**15. ed. São Paulo: Paz e Terra,||||
 |2013.||||
@@ -1909,17 +1909,17 @@ Ministerio da Educacao
 
 INSTITUTOFEDERAL Parana
 
-|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana|||Ministerio da Educacao|
 |---|---|---|---|
 |EMENTA: Conceitos de pesquisa e ciência. Conhecimento científico e ciência. O processo|||EMENTA: Conceitos de pesquisa e ciência. Conhecimento científico e ciência. O processo|
 |do conhecimento científico. Caracterização da pesquisa (abordagem, natureza, objetivos e||||
 |procedimentos). Métodos de Pesquisa. Tipos de pesquisa. Técnicas de pesquisa.||||
 |Abordagem da pesquisa: Quantitativa, qualitativa e quanti-quali. Técnicas de coleta e|||Abordagem da pesquisa: Quantitativa, qualitativa e quanti-quali. Técnicas de coleta e|
-|tratamento de dados. População e amostra. Técnicas de registro e comunicação do|tratamento de dados. População e amostra. Técnicas de registro e comunicação do|tratamento de dados. População e amostra. Técnicas de registro e comunicação do||
+|tratamento de dados. População e amostra. Técnicas de registro e comunicação do||||
 |conhecimento. Ética na pesquisa (plágio acadêmico).||||
 |BIBLIOGRAFIA BÁSICA:||||
 |ANDRADE, M. M. de.**Introdução à Metodologia do Trabalho Científico:**elaboração de||||
-|trabalhos na graduação. 3. ed. São Paulo: Atlas, 1998.|trabalhos na graduação. 3. ed. São Paulo: Atlas, 1998.|||
+|trabalhos na graduação. 3. ed. São Paulo: Atlas, 1998.||||
 |MARCONI, Marina de Andrade; LAKATOS, Eva Maria.**Metodologia Científica.**3. ed.||||
 |São Paulo: Atlas, 2000.||||
 |MARCONI, Marina de Andrade; LAKATOS, Eva Maria.**Metodologia do Trabalho**||||
@@ -2127,7 +2127,7 @@ EMENTA: Meio ambiente. Conceito de Sustentabilidade. Responsabilidade Social, Am
 
 WEETMAN, Catherine. **Economia circular:** conceitos e estratégias para fazer negócios de forma mais inteligente, sustentável e lucrativa. São Paulo: Autêntica Business, 2019. 501 p. ISBN 9788551305140 (enc.).
 
-|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|||
+|BIBLIOGRAFIA COMPLEMENTAR:||||
 |---|---|---|---|
 |ABREU, Regina; CHAGAS, Mário de Souza (Orgs.).**Memória e patrimônio:**ensaios||||
 |contemporâneos. Rio de Janeiro: Lamparina, 2009.||||
@@ -3200,7 +3200,7 @@ A carreira docente se divide em seis classes: D I, D II, D III, D IV, D V e PROF
 
 Os técnicos administrativos atuam no Campus Curitiba, não havendo um grupo especificamente para o curso. Os organismos internos têm por objetivo atender às demandas do Campus e estão compostos pelos seguintes profissionais:
 
-|TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO|TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO|TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO|
+|TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO|||
 |---|---|---|
 |NOME|**CARGO**|**REGIME DE**<br>**TRABALHO**|
 |Adilson Claudio Muzi|Assistente em administração|40h|
@@ -3274,7 +3274,7 @@ Ministerio da Educagao
 |Maikon de Jesus Costa|Tradutor intérprete de linguagem<br>sinais|40h|
 |Marianna Angonese Frankiv|Pedagoga - área|40h|
 |Marilda Pontes Lacerda|Assistente de aluno|40h|
-|Marli Terezinha Fereira Becker Cozinheira|Marli Terezinha Fereira Becker Cozinheira|40h|
+|Marli Terezinha Fereira Becker Cozinheira||40h|
 
 134
 

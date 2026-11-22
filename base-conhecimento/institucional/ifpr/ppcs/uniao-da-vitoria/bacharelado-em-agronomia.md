@@ -1158,7 +1158,7 @@ Em atendimento a Resolução MEC/CNE/CES nº 02/2007, de 18 de junho de 2007, qu
 
 Sobre a matriz curricular esclarece-se que a hora-aula corresponde a 51 minutos. A opção por trabalhar com essa duração da hora-aula tem como objetivo evitar arredondamentos de carga horária na conversão de horas-aulas para horas-relógio, já que nesse caso, a conversão para horas-relógio é exata, pois ao se trabalhar com 20 semanas letivas por semestre (40 semanas letivas no ano), a carga horária de 20 horas-aula (para uma componente com 1 hora-aula semanal) totalizará 17 horas-relógio, sem qualquer tipo de aproximação, logo permite exatidão na conversão do total das horas-aulas para horas-relógio. Ressalta-se que esta conversão de hora-aula já é utilizada em outros PPCs do Campus. Portanto, a equação a ser utilizada para conversão de hora-aula para relógio é a seguinte: número de horas-aula (51 min) / valor da hora-relógio (60 min).
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||||||||||
 |||_Campus União da Vitória_|||||||||||||
@@ -2551,7 +2551,7 @@ DE OLIVEIRA ESTEVAM, Dimas; MIOR, Luiz Carlos (Ed.). **Inovações na agricultur
 
 COMPONENTE CURRICULAR: ARBORIZAÇÃO URBANA CARGA HORÁRIA: 40 horas-aula / 34 horas-relógio EMENTA: Utilização de árvores em ambientes urbanos. Legislação. Espécies empregadas em arborização urbana. Viveiros e seu manejo. Manejo de plantio e adubação. Manutenção de árvores em ambientes urbanos. Destinação de resíduos. BIBLIOGRAFIA BÁSICA: LORENZI, H. **Árvores brasileiras: manual de identificação e cultivo de plantas arbóreas nativas do Brasil** . Nova Odessa: Plantarum, 1992. MORAN, E. F.; OSTROM, E. (Orgs). **Ecossistemas florestais: interação homem-ambiente** . São Paulo: SENAC, 2009. PAIVA, H. N.; GONÇALVES, W. **Produção de Mudas para Arborização Urbana** . Viçosa: Aprenda fácil, 2013. BIBLIOGRAFIA COMPLEMENTAR: BATISTA, J. L. F.; DO COUTO, H. T. Z.; DA SILVA FILHO, D. F. **Quantificação de recursos florestais** . São Paulo: Oficina de Textos, 2014. CARVALHO, J. P. F. **Silvicultura próxima da natureza** . São Paulo: Agrobook, 2018 SOUZA JUNIOR, C. N.; BRANCALION, P. H. S. **Sementes e mudas** : **guia para propagação de árvores brasileiras** . São Paulo: Oficina de textos, 2016.
 
-|COMPONENTE CURRICULAR: CULTURAS INOVADORAS E POTENCIAIS|COMPONENTE CURRICULAR: CULTURAS INOVADORAS E POTENCIAIS||
+|COMPONENTE CURRICULAR: CULTURAS INOVADORAS E POTENCIAIS|||
 |---|---|---|
 |CARGA HORÁRIA: 40 horas-aula /|34 horas-relógio||
 |EMENTA:|||

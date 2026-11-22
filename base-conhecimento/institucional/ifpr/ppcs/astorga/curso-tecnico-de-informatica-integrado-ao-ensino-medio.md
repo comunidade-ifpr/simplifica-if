@@ -729,7 +729,7 @@ No que diz respeito ao número de aulas semanais destinadas a cada componente cu
 
 ## **3.10 Ementas dos Componentes Curriculares**
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Arte I||
@@ -842,7 +842,7 @@ _**Campus**_ **Avançado Astorga Curso:** Técnico em Informática **Eixo Tecnol
 
 Bibliografia Complementar: BENJAMIN, Walter. Sobre o conceito de História. In: **Obras escolhidas.** 2ª edição. São Paulo: Brasiliense, 1986. BOTTOMORE, Tom (Org.). **Dicionário do pensamento marxista.** Rio de Janeiro: Jorge Zahar, 1988. FAUSTO, Boris. **História do Brasil.** São Paulo: Edusp, 1997. LE GOFF, Jacques. **História e memória.** Campinas: Editora Unicamp, 1996. SCHWARCZ, Lilia Moritz e STARLING, Heloísa. **Brasil:** Uma Biografia. São Paulo: Cia das Letras, 2015.
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|<br>**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: Língua Espanhola I||
@@ -855,7 +855,7 @@ _**Campus**_ **Avançado Astorga Curso:** Técnico em Informática **Eixo Tecnol
 
 MOORE, John T. **Química Para Leigos** (For Dummies). Edição: 1ª. Jacaré: Alta Books Editora, 2008.
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Sociologia I||
@@ -864,7 +864,7 @@ MOORE, John T. **Química Para Leigos** (For Dummies). Edição: 1ª. Jacaré: A
 |Bibliografia Básica:<br>BOMENY, Helena & FREIRE- MEDEIROS, Bianca.**Tempos modernos, tempos de sociologia.**SP:<br>Ed. do Brasil & Fundação Getúlio Vargas, 2010.<br>COSTA, C.**Sociologia: introdução à ciência da sociedade.**SP: Ed. Moderna, 2001.<br>CUCHE, Denys.**A Noção de cultura nas ciências sociais.**Bauru, EDUSC, 1999.<br>GEERTZ. Clifford.**A interpretação das culturas.**Rio de Janeiro, LTC Editora, 1989.<br>QUINTANEIRO,Tânia.**Um Toque dos Clássicos. **BeloHorizonte: Ed. Minas Gerais,2003.||
 |Bibliografia Complementar:<br>BERGER, Peter. A perspectiva sociológica – A sociedade no Homem. In: _____.**Perspectivas**<br>**sociológicas:**uma visão humanística. Petrópolis: Vozes, 1976.<br>BERGER, Peter. A perspectiva sociológica – O homem na Sociedade. In: _____.**Perspectivas**<br>**sociológicas:**uma visão humanística. Petrópolis: Vozes, 1976.<br>____________. A sociologia como passatempo individual. In: _____.**Perspectivas Sociológicas:**<br>Uma visão humanística. Petrópolis: Vozes, 2002, 25ª. ed.<br>COHN, G.**Sociologia: para ler os clássicos.**RJ: LTC.<br>DAYRELL, Juarez.**O jovem como sujeito social.**Revista Brasileira de Educação, Rio de Janeiro,<br>n.24, p.40-52, set./dez. 2003. ISSN 1413-2478.<br>MARTINS, Carlos Benedito,**1948**– O que é sociologia / Carlos Benedito Martins – 38. ed. – São<br>Paulo: Brasiliense,1994.(Coleção primeiros passos; 57)||
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|<br>**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: Língua Portuguesa I||
@@ -927,7 +927,7 @@ GARCEZ, L. e OLIVEIRA, J. **Explicando a Arte Brasileira.** Rio de Janeiro: Nova
 
 SCHAFER, M. **O ouvido pensante.** 2 ed. São Paulo: Loyola, 2012. Bibliografia Complementar: BOSI, A. **Reflexões sobre a arte.** São Paulo: Editora Ática, 1991. EISENSTEIN, Serguéi. **O princípio cinematográfico e o cinema.** In: Ideograma: lógica, poesia, linguagem. Trad. De Heloysa de Lima Dantas. São Paulo: Cultrix, 1977. FARTHING, S. e CORK, R. **Tudo Sobre Arte.** Os movimentos e as obras mais importantes de todos os tempos. Rio de Janeiro: Sextante, 2010. FEIST, H. **Arte Africana.** São Paulo: Moderna, 2010. ______. **Arte Indígena.** São Paulo: Moderna, 2010. FRAGA, W.; ALBUQUERQUE, W. R. de. **Uma história da cultura afro-brasileira.** São Paulo: Moderna, 2009. METZ, Christian. **A significação do cinema.** Trad. De Jean-Claude Bernardet. São Paulo: Perspectiva, 1977. MOLES, Abraham. **Teoria da informação e percepção estética.** Trad. De Helena Parente Cunha. Brasília: UNB, 1978. ROSA, N. S. S. **Etnias e Cultura.** São Paulo: Moderna, 2004.
 
-|**_Campus_ Avançado Astorga**|**_Campus_ Avançado Astorga**|
+|**_Campus_ Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informática e Comunicação|
 |**Componente Curricular**: Biologia II||
@@ -938,7 +938,7 @@ SCHAFER, M. **O ouvido pensante.** 2 ed. São Paulo: Loyola, 2012. Bibliografia 
 
 ## **Campus Astorga do IFPR**
 
-|**Campus Astorga do IFPR**|**Campus Astorga do IFPR**|
+|**Campus Astorga do IFPR**||
 |---|---|
 |**Curso:**Técnico em informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: Educação Física II||
@@ -967,7 +967,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 
 ## _**Campus**_ **Avançado Astorga**
 
-|**_Campus_ Avançado Astorga**|**_Campus_ Avançado Astorga**|
+|**_Campus_ Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: História II||
@@ -978,7 +978,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 
 ## _**Campus**_ **Avançado Astorga**
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|<br>**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: Língua Espanhola II||
@@ -987,7 +987,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 |Bibliografia Básica:<br>DOMÍNGUEZ, Pablo; BAZO, Plácido; HERRERA, Juana.**Actividades comunicativas:**entre bromas<br>y veras... 2.ed. Madrid: Edelsa, 1999.<br>MARTIN, Ivan.**Síntesis:**curso de lengua española. 1 ed. São Paulo: Ática, 2010.<br>OSMAN, Soraia; ELIAS, Neide; REIS, Priscila; IZQUIERDO, Sonia; VALVERDE, Jenny.**Enlaces:**<br>español para jóvenes brasileños. 3 ed. Cotia, SP: Macmillan, 2013.<br>SECRETARIA de Estado da Educação.**Língua Estrangeira Moderna -**Espanhol e Inglês / vários<br>autores. 2 ed. Curitiba: SEED-PR, 2006.<br>SILES ARTÉS, José.**Adquisición de Léxico:**ejercicios prácticos. Madrid: Sgel, 1996.||
 |Bibliografia Complementar:<br>ALVES, Adda-Nari M, ALVES, Angélica Mello.**Mucho**: español para brasileños. São Paulo:<br>Moderna, 2000.<br>MARTIN, Ivan.**Espanhol**: volume único / São Paulo: Ática, 2010.<br>VILLALBA, T.K.B. (et al.)**_El Arte de Leer Español 1_. **São Paulo: Base Editorial, 2011.<br>VILLALBA, T.K.B. (et al.)**_El Arte de Leer Español 2_. **São Paulo: Base Editorial, 2011.<br>VILLALBA, T.K.B. (et al.)**_El Arte de Leer Español 3_. **São Paulo: Base Editorial, 2011.||
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|<br>**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Língua Portuguesa II||
@@ -996,7 +996,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 |Bibliografia Básica:<br>ABAURRE, Maria Luiza; PONTARA, Marcela Nogueira.**Literatura brasileira: tempos, leitores e**<br>**leitura.**São Paulo: Moderna, 2006.<br>KÖCHE, V. S.; BOFF, O. M. B.; PAVANI, C. F.**Prática textual.**6.ed. Petrópolis: Vozes, 2009.<br>MARCUSCHI, Luiz Antonio.**Gêneros textuais: definição e funcionalidade.**In: DIONÍSIO, Ângela<br>Paiva et al. Gêneros textuais e ensino. Rio de Janeiro: Lucena, 2005.<br>MESQUITA, Roberto Melo.**Gramática da Língua Portuguesa.**São Paulo: Saraiva, 2007.<br>PECORA,Alcir.**Problemas de redação.**São Paulo: Martins Fontes,2002.||
 |Bibliografia Complementar:<br>CEREJA, William Roberto; MAGALHÃES, Thereza Cochar; CLETO, Ciley.**Interpretação de textos:**<br>construindo competências e habilidades em leitura. São Paulo: Atual, 2009.<br>CUNHA, Celso e CINTRA.**Nova gramática do português contemporâneo.**3ed. Rio de Janeiro:<br>Nova Fronteira, 2001.<br>GARCIA, Othon M.**Comunicação em prosa moderna.**7 ed. Rio de Janeiro: Fundação Getúlio<br>Vargas, 2007.<br>NICOLA, José de.**Gramática:**palavra, frase, texto. São Paulo: Scipione, 2004.<br>HOUAISS, Antônio.**Dicionário Houaiss da Língua Portuguesa.**Rio de Janeiro: Objetiva, 2009.||
 
-|**_Campus_ Avançado Astorga**|**_Campus_ Avançado Astorga**|
+|**_Campus_ Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informática e Comunicação|
 |**Componente Curricular**: Matemática II||
@@ -1009,7 +1009,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 
 **Curso:** Técnico em Informática **Eixo Tecnológico:** Informação e Comunicação **Componente Curricular** : Química II **Carga Horária:** 40 horas **Período letivo:** 2° ano Ementa: Substâncias Inorgânicas e suas aplicações na produção e degradação de diferentes materiais para computadores: _Interações entre constituintes; Forças intermoleculares; Ácidos e bases no cotidiano; Teorias de ácidos e bases; Nomenclatura de ácidos e bases; A neutralização de ácidos e bases – sais; Óxidos._ Relações quantitativas envolvidas na transformação química: _Quantidade de matéria; estequiometria e rendimento; Soluções, coloides e agregados; Concentração e suas unidades; Composição; Diluição de soluções._ Equilíbrio químico: _Reações químicas e reversibilidade; Sistemas químicos reversíveis; Equilíbrio químico; Alterações do estado de equilíbrio; Aspectos quantitativos de equilíbrios químicos; Poluição das águas._ (Relações quantitativas envolvidas na transformação química e Equilíbrio químico são conteúdos que serão usados para entender as reações de obtenção e de degradação dos materiais usados na fabricação de dispositivos eletrônicos). Bibliografia Básica: BRUNI, Aline Thaís; NERY, Ana Luiza Petillo; LIEGEL, Rodrigo Marchiori; AOKI, Vera Lúcia Mitiko; LISBOA, Julio Cezar Foschini. Ser Protagonista - Química - 1° e 2° anos. Edição: 1ª. São Paulo: Edições SM, 2014. CANTO, Eduardo Leite do; PERUZZO, Tito Miragaia. Química na Abordagem do Cotidiano - 1º e 2 ° Anos. Edição: 4ª. São Paulo: Editora Saraiva, 2015. FONSECA, Martha Reis Marques da. Química - Volume 1 e 2. Coleção Projeto Múltiplo.  Edição: 1ª. São Paulo: Ática, 2014. SANTOS, Wildson Luiz Pereira dos;  MÓL, Gerson  de Souza (coords.). Química cidadã: Volumes 1 e 2: ensino médio.  Edição: 2ª. São Paulo: Editora AJS, 2013. USBERCO, João; SALVADOR, Edgard. Conecte Química - Volumes 1 e 2. Edição: 2ª. São Paulo: Editora Saraiva, 2014. Bibliografia Complementar: BRASIL. MEC. Secretaria de Educação Média e Tecnológica. PCNs+ Ensino Médio: orientações educacionais complementares aos Parâmetros Curriculares Nacionais. Brasília, 144 p., 2002. BROWN, Theodore L.; LEMAY Jr., H. Eugene; BURSTEN, Bruce E. Química, a ciência central. Edição: 9ª. São Paulo: Prentice Hall, 2005. CAMPOS, R.C. e SILVA, R.C. Funções da química inorgânica funcionam? Química Nova na Escola, n. 9, 1999. EMSLEY, John; Moléculas em Exposição: O Fantástico Mundo das Substâncias e dos Materiais que Fazem Parte do nosso Dia-a-Dia. Edição: 1ª. São Paulo: Editora Edgard Blucher, 2001. SILVA, Roberto Ribeiro da; BOCCHI, Nerilso; ROCHA-FILHO, Romeu C.; MACHADO, Patrícia Fernandes L. Introdução à química experimental. Edição: 2ª. São Carlos: Edufscar, 2014.
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Sociologia II||
@@ -1018,7 +1018,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 |Bibliografia Básica:<br>DaMatta, Roberto. (1987)**Relativizando:**Uma introdução à antropologia social. 5ª ed. Rio de<br>Janeiro: Rocco, 2000.<br>GEERTZ, C.**A interpretação das culturas.**Rio de Janeiro, Zahar, 1978.<br>HORKHEIMER, M., e ADORNO, T. W.,**Dialética do Esclarecimento:**Fragmentos filosóficos. Trad.<br>Guido Antonio de Almeida. Rio de Janeiro: Jorge Zahar, 1997.<br>MARTINS, Maria Helena Pires (2001).**Somos todos diferentes!**- Convivendo com a diversidade do<br>mundo. São Paulo: Moderna.<br>RIBEIRO, Darcy.**O povo brasileiro:**a formação e o sentido do Brasil. 2ª ed. São Paulo: Cia. da<br>Letras,2002.||
 |Bibliografia Complementar:<br>DAMATTA, Roberto.**Relativizando**: uma introdução à antropologia social. 6. ed. Rio de Janeiro:<br>Rocco, 2000.<br>ENGELS, Frederik. 1984 [1884].**A Origem da Família, da Propriedade Privada e do Estado.**São<br>Paulo: Global Editora. 5.<br>EVANS-PRITCHARD, Edward E. 1989.**História do Pensamento Antropológico.**Lisboa, Ed. 70. 6.<br>GEERTZ, Clifford. 1966. A Transição para a Humanidade. In S. Tax et alli.**Panorama da**<br>**Antropologia.**Rio de Janeiro, Lisboa: Fundo de Cultura, pp. 31-43.<br>LARAIA, R.B.**Cultura, um conceito antropológico**. Rio de Janeiro: Jorge Zahar, 2004.||
 
-|**_Campus_ Avançado Astorga**|**_Campus_ Avançado Astorga**|
+|**_Campus_ Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico**: Informação e comunicação|
 |**Componente Curricular:**Engenharia de Software I||
@@ -1033,7 +1033,7 @@ Ementa: Dimensão econômica do espaço geográfico; dimensão política do espa
 
 Bibliografia Complementar: GUIMARÃES, Ângelo de Moura. **Algoritmos e estruturas de dados.** LTC, 1985. ZIVIANI, N. **Projeto de algoritmos com implementação em Pascal e C.** São Paulo: Pioneira, 2000. SCHILDT, H. **C Completo e Total.** 3 ed. São Paulo: Makron Books, 1997. PEREIRA, Silvio do Lago. **Estruturas de Dados Fundamentais -** conceitos e aplicações. Ed. Érica. KNUTH, Donald Ervin. **The Art of Computer Programming -** Sorting and Searching Volume III. Ed. Addison-Wesley, 1997.
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico**: Informação e comunicação|
 |**Componente Curricular:**Banco de Dados||
@@ -1182,7 +1182,7 @@ BILIGIAN, Levon. **Geografia:** Espaço e vivência. Vol. Único. São Paulo, At
 
 MARTINELLI, Marcelo. **Mapas da Geografia e Cartografia Temática** . São Paulo, Contexto, 2003. SINGER, Paul. **Dinâmica Populacional e desenvolvimento.** São Paulo, Cebrap, 1970.
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: História III||
@@ -1191,7 +1191,7 @@ MARTINELLI, Marcelo. **Mapas da Geografia e Cartografia Temática** . São Paulo
 |Bibliografia Básica:<br>COSTA, Emília Viotti da.**Da monarquia à república: momentos decisivos.**São Paulo: UNESP,<br>1999.<br>NARO, Nancy Priscilla .**A formação dos Estados Unidos.**4 ed. São Paulo: Atual/ Campinas: Univ.<br>Est. de Campinas, 1987.<br>PRADO, Maria Ligia.**A formação das nações latino-americanas.**São Paulo: Atual/ Campinas:<br>Univ. Est. de Campinas, 1987.<br>SINGER, Paul.**A formação da classe operária.**São Paulo: Atual/ Campinas: Univ. Est. de<br>Campinas, 1988.<br>SCHWARCZ, Lilia Moritz.**As barbas do imperador:**D.PedroII, um monarca nos trópicos. São<br>Paulo:Cia dasLetras,1998.||
 |Bibliografia Complementar:<br>BENJAMIN, Walter. Sobre o conceito de História. In:**Obras escolhidas.**2ª edição. São Paulo:<br>Brasiliense, 1986.<br>BOTTOMORE, Tom (Org.).**Dicionário do pensamento marxista.**Rio de Janeiro: Jorge Zahar,<br>1988.<br>FAUSTO, Boris.**História do Brasil.**São Paulo: Edusp, 1997.<br>LE GOFF, Jacques.**História e memória.**Campinas: Editora Unicamp, 1996.<br>SCHWARCZ, Lilia Moritz e STARLING, Heloísa.**Brasil:**Uma Biografia. São Paulo: Cia das Letras,<br>2015.||
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|<br>**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: Língua Inglesa I||
@@ -1200,7 +1200,7 @@ MARTINELLI, Marcelo. **Mapas da Geografia e Cartografia Temática** . São Paulo
 |Bibliografia Básica:<br>AMORIM, J. Longman:**Gramática Escolar da Língua Inglesa.**São Paulo: Longman, 2004.<br>GLENDINNING, Eric H. e MCEWAN, John. Basic**English for computing.**Oxford: Oxford<br>University press, 2003.<br>PRESCHER, Amos.**The new simplified Grammar.**3ª Ed. São Paulo: Richmond<br>Publishing, 2004.<br>SASLOW, J.; ASCHER, A.**Top Notch Fundamentals**– Part A. Logman. 2nd ed. 2012<br>TULLIS, G.;TRAPPE,T.**New insights into business. **Longman,2004.||
 |Bibliografia Complementar:<br>AMORIN, V.; MAGALHÃES, V.**Cem aulas sem tédio:**sugestões práticas, dinâmicas e divertidas<br>para o professor de língua estrangeira. Instituto Padre Reus: Porto Alegre, 1998.<br>ESTERAS, Santiago R.**Infotec:**English for Computer Users. 3rd. ed. Cambridge University Press,<br>2004.<br>MARQUES, Amadeu.**On Stage 1**. Ensino Médio. 1. ed. São Paulo: Ática, 2011.SOARS, LIZ and<br>JOHN.**American Headway 1**. Oxford University Press, 2002.<br>RICHARDS,J. C.**New Interchange Intro.**Cambridge UniversityPress,2003.||
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|<br>**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular**: Língua Portuguesa III||
@@ -1241,7 +1241,7 @@ _**Campus**_ **Avançado Astorga Curso:** Técnico em Informática **Eixo Tecnol
 
 ## **Câmpus Avançado Astorga**
 
-|**Câmpus Avançado Astorga**|**Câmpus Avançado Astorga**|
+|**Câmpus Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e comunicação|
 |**Componente Curricular:**Sociologia III||
@@ -1260,7 +1260,7 @@ _**Campus**_ **Avançado Astorga Curso:** Técnico em Informática **Eixo Tecnol
 
 ## _**Campus**_ **Avançado Astorga**
 
-|**_Campus_Avançado Astorga**|**_Campus_Avançado Astorga**|
+|**_Campus_Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico**: Informação e comunicação|
 |**Componente Curricular:**Sistemas Operacionais||
@@ -1381,7 +1381,7 @@ Bibliografia complementar: BILIGIAN, Levon. **Geografia:** Espaço e vivência. 
 
 **Curso:** Técnico em Informática **Eixo Tecnológico:** Informação e Comunicação **Componente Curricular** : História IV **Carga Horária:** 40 horas **Período letivo:** 4º ano Ementa: O imperialismo; A instauração da república no Brasil; A Primeira Guerra Mundial; a Revolução Russa; O período entre guerras: a quebra da Bolsa de Nova York e o surgimento do nazifascismo; A república Oligárquica brasileira; Era Vargas; A Segunda Guerra Mundial e a Guerra Fria; Redemocratização no Brasil; A ditadura militar no Brasil e a Nova República. Bibliografia Básica: ARENDT, Hannah. **Origens do totalitarismo.** São Paulo: Companhia das Letras, 2004. BETTO, Frei [Carlos Alberto Libânio Christo]. **Batismo de sangue:** os dominicanos e a morte de Carlos Marighella/Dossiê Frei Tito. 10.ed. Rio de Janeiro: Bertrand Brasil, 1987. BOSI, Ecléa. **Memória e sociedade.** Lembranças de velhos. São Paulo: Companhia das Letras, 1995. BRASIL NUNCA MAIS. **Um relato para a História.** Petrópolis: Vozes, 1985. CAPELATO, Maria Helena R. **Multidões em cena:** propaganda política no varguismo e no peronismo. Campinas: Papirus, 1998. CARONE, Edgar. **A Primeira República:** texto e contexto. São Paulo: Difel, 1969. _____________. **A República velha:** evolução política. São Paulo: Difel, 1971. _____________. **A República velha:** instituições e classes sociais. São Paulo: Difel, 1971. CARVALHO, José Murilo. **A formação das almas.** São Paulo: Companhia das Letras, 1990. HOBSBAWN, Eric. **A era dos extremos:** o breve século XX. 1941-1991. São Paulo: Companhia das Letras, 1995. SKIDMORE, Thomas. **Brasil:** de Getúlio a Castelo. Civilização Brasileira, 1970. Bibliografia Complementar: BENJAMIN, Walter. Sobre o conceito de História. In: **Obras escolhidas.** 2ª edição. São Paulo: Brasiliense, 1986. BOTTOMORE, Tom (Org.). **Dicionário do pensamento marxista.** Rio de Janeiro: Jorge Zahar, 1988. FAUSTO, Boris. **História do Brasil.** São Paulo: Edusp, 1997. LE GOFF, Jacques. **História e memória.** Campinas: Editora Unicamp, 1996. SCHWARCZ, Lilia Moritz e STARLING, Heloísa. **Brasil:** Uma Biografia. São Paulo: Cia das Letras, 2015.
 
-|_Campus_Avançado Astorga|_Campus_Avançado Astorga|
+|_Campus_Avançado Astorga||
 |---|---|
 |Curso: Técnico em Informática|Eixo Tecnológico: Informação e Comunicação|
 |**Componente Curricular**: Língua Inglesa II||
@@ -1420,7 +1420,7 @@ D’AMBRÓSIO, B. Como ensinar matemática hoje? **Temas e debates.** Rio Claro,
 
 LIMA, E. L. e outros, **A Matemática do Ensino Médio.** 6. ed. SBM, 2006, v.3.
 
-|**_Campus_ Avançado Astorga**|**_Campus_ Avançado Astorga**|
+|**_Campus_ Avançado Astorga**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informática e Comunicação|
 |**Componente Curricular**: Química IV||

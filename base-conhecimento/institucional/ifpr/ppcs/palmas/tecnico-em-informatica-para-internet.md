@@ -1430,7 +1430,7 @@ A abordagem desses temas se dará na forma de ciclo de palestras, seminários, a
 
 7.15 MATRIZ CURRICULAR
 
-|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|**Matriz Curricular do curso Técnico em Informática para Internet**|
+|**Matriz Curricular do curso Técnico em Informática para Internet**||||||||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |**Núcleos e Componentes Curriculares**||||**1º Ano**||||**2º Ano**||||**3º Ano**||||Total<br>Hora<br>s<br>Aulas|Total<br>Horas<br>Relógio|
 |||||**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|||
@@ -1483,7 +1483,7 @@ Básica C: Carga Horária Formação Específica D: Total de Horas Relógio *Ati
 
 ## 7.16 EMENTAS DOS COMPONENTES CURRICULARES
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Biologia I|||
@@ -1495,7 +1495,7 @@ Básica C: Carga Horária Formação Específica D: Total de Horas Relógio *Ati
 |**Bibliografia Complementar:**|||
 |<br>1. CATANI, André et al.**Biologia**. 3. ed. São Paulo: Edições SM, 2016. 3 v. (Ser<br>protagonista)<br>2. CÉSAR & SEZAR.**Biologia**. Volume 1. São Paulo: Saraiva, 2006.<br>3. LINHARES, S. de V.; GEWANDSZNAJDER, F.**Biologia: ensino médio**. São<br>Paulo: Ática, 2003.<br>4. MACHADO, Sídio.**Biologia para ensino médio**. Volume único. São Paulo:<br>Scipione, 2003.<br>5. SOARES, José Luis.**Biologia**. Volume único. São Paulo: Scipone, 1999.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Educação Física I|||
@@ -1522,7 +1522,7 @@ compreensão e manifestação de experiências relacionadas ao lazer, ao trabalh
 
 **4.** SILVA, Pedro Antonio da. **3.000 exercícios e jogos para Educação Física Escolar.** 4. ed. Rio de Janeiro: Sprint, 2011.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Química I|||
@@ -1551,7 +1551,7 @@ compreensão e manifestação de experiências relacionadas ao lazer, ao trabalh
 
 4. MANAHAM, Stanley. E. **Química ambiental.** 9ª ed., São Paulo: Bookman, 2013. 5. BRAATHEN, P. C. **Ação e reação: ideias para aulas especiais de química** . 1. ed. Belo Horizonte: RHJ, 2012.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Filosofia I|||
@@ -1565,7 +1565,7 @@ compreensão e manifestação de experiências relacionadas ao lazer, ao trabalh
 
 1. COMTE-SPONVILLE, A. **Apresentação da filosofia** . São Paulo: Martins Fontes, 2002. 2. FERRY, L. **Aprender a Viver:** filosofia para novos tempos. Rio de Janeiro: Objetiva, 2010. 3. MARCONDES, D. **Textos básicos de filosofia:** dos pré-socráticos a Wittgenstein. Rio de Janeiro: Jorge Zahar Ed., 2005. 4. REALE, G.; ANTISERI, D. **História da filosofia** . São Paulo: Paulus, 2003/2006. Volumes 1 até 7.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Geografia I|||
@@ -1577,13 +1577,13 @@ compreensão e manifestação de experiências relacionadas ao lazer, ao trabalh
 |**Bibliografia Complementar:**|||
 |<br>1. LUCCI, Elian Alabi; BRANCO, Anselmo Lazaro; MENDONÇA, Claudio.<br>**Território e Sociedade no Mundo Globalizado**. Vol. 1, 1ª Edição. Editora Saraiva:<br>São Paulo, 2010.<br>2. MENDONÇA, Francisco; DANNI-OLIVEIRA, Inês Moresco.**Climatologia:**<br>**noções básicas e climas do Brasil**. São Paulo: Oficina de Textos, 2007. 206 p.<br>(Coleção geografia)<br>3. MENEZES, Sebastião de Oliveira.**Rochas: manual fácil de estudo e**<br>**classificação**. 1. ed. São Paulo: Oficina de Textos, 2013. 112 p.<br>4. POPP, José Henrique.**Geologia geral**. 7. ed. Rio de Janeiro: LTC, 2017. 332 p.<br>5. ROSS, Jurandyr Luciano Sanches (org.).**Geografia do Brasil**. 6. ed. São Paulo:<br>EDUSP, 2009. 549 p. (Didática; 3)<br>6. SILVEIRA, Ricardo Michael Pinheiro.**Cartografia geral**. Contentus, 2020. 98 p.<br>E-book. Disponível em:<br><https://middleware-bv.am4.com.br/SSO/ifpr/9786557456972>. Acesso em set.<br>2023.<br>7. TEIXEIRA, Wilson (org.) et al.**Decifrando a Terra**. 2. ed. São Paulo: Companhia<br>Editora Nacional, 2009. 623 p.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática para**|**Eixo Tecnológico: Informação e**|
 
 **Internet Comunicação**
 
-|**Componente Curricular:**História I|**Componente Curricular:**História I|
+|**Componente Curricular:**História I||
 |---|---|
 |<br>**Carga Horária (hora-aula):**80|**Período Letivo:**1ºAno|
 |**Ementa:**||
@@ -1593,7 +1593,7 @@ compreensão e manifestação de experiências relacionadas ao lazer, ao trabalh
 |**Bibliografia Complementar:**||
 |<br>1. CUNHA, Manuela Carneiro da.**História dos índios no Brasil**. São Paulo:<br>Companhia das Letras/FAPESP, 1992.<br>2. MEREDITH, Martin.**O destino da África: cinco mil anos de riquezas, ganâncias**<br>**e desafios**. Rio de Janeiro: Zahar, 2017.<br>3. MUNANGA, K.; GOMES, N. L.**O negro no Brasil de hoje**. São Paulo: Global,<br>2016.<br>4. SCHWARCZ, L. M.; STARLING, H. M**. Brasil: uma biografia**. São Paulo:<br>Companhia das Letras, 2018.<br>5. VICENTINO, Cláudio.**História geral: ensino médio**. São Paulo: Scipione, 2006.||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Língua Portuguesa I|||
@@ -1606,7 +1606,7 @@ Práticas de produção textual. Fatores da textualidade (com enfoque na coesão
 
 **Bibliografia Básica:** 1. CEREJA, Willian Roberto; MAGALHÃES, Thereza Cochar. **Português: Linguagens** . Editora Atual, São Paulo, 2006. 2. FARACO & MOURA. **Língua Portuguesa e Literatura** . Editora Ática, São Paulo, 1997. 3. GRANATIC, Branca. **Redação, Humor e Criatividade** . Editora Scipione, São Paulo, 1997. **Bibliografia Complementar:** 1. ABREU, Antônio Suárez. **Curso de redação** . Editora Ática. São Paulo, 2004. 2. KOCH, Ingedore G. Villaça. **A coesão textual** . Editora Contexto. São Paulo, 2000. 3. MATOS, Gregório de. **Antologia** . Porto Alegre: L&P, 1999. 4. José De Nicola. **Língua, Literatura e Produção de Textos 2** . 1° Edição. Editora Scipione, São Paulo, 2009. 5. MIGUEL, Jorge. **Análise comentada: sermão de Santo Antônio aos peixes de Padre Antônio Vieira** . São Paulo: DVS, 2013.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet **||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Sociologia I|||
@@ -1623,7 +1623,7 @@ Práticas de produção textual. Fatores da textualidade (com enfoque na coesão
 
 4. QUINTANEIRO, Tania; BARBOSA, Maria Ligia de Oliveira; OLIVEIRA, Márcia Gardênia de. **Um toque de clássicos:** Marx, Durkheim e Weber. 2. ed. Belo Horizonte: Ed. UFMG, 2002.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Física e Robótica I|||
@@ -1635,7 +1635,7 @@ Práticas de produção textual. Fatores da textualidade (com enfoque na coesão
 |**Bibliografia Complementar:**|||
 |1. FEYNMAN, R. P.; KORYTOWSKI, I. Física em seis lições: fundamentos da física<br>explicados por seu professor mais brilhante. Editora Edgard, Rio de Janeiro, 1999.<br>2. FEYNMAN, R. P. et al. Lições da Física de Feynman: Edição definitiva volumes I,<br>II e III. 1ª Edição. Editora Bookman, Rio de Janeiro, 2008.<br>3. ROCHA, J.F. (Org). Origens e Evolução das Ideias da Física. 1ª Edição. Salvador:<br>EDUFBA, 2002.<br>4. VALADARES, E. de C. Física mais que divertida: Inventos eletrizantes baseados<br>em materiais reciclados e de baixo custo. UFMG, Belo Horizonte, 2000.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular**:LínguaInglesa eInglêsInstrumental I|||
@@ -1647,7 +1647,7 @@ Práticas de produção textual. Fatores da textualidade (com enfoque na coesão
 |**Bibliografia Complementar:**|||
 |<br>1. BOLTON, David; GOODEY, Noel.**English Grammar in Steps.**Oxford:<br>Richmond, 2014.<br>2. BURNS, A.; RICHARDS, J. C.**The Cambridge Guide to Pedagogy and Practice**<br>**in Second Language Teaching.**Cambridge: CUP, 2012.<br>3. LIBERATO, Wilson.**English in Motion.**1. ed. São Paulo: FTD, 2010.<br>4. RICHARDS, Jack C.; FARRELL, Thomas S. C.**Practice Teaching: a Reflective**<br>**Approach.**New York: Cambridge University Press, 2011.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Matemática I|||
@@ -1676,7 +1676,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 5. PAIVA, Manoel. **Matemática: volume único** . 1. ed. São Paulo: Moderna, 1999. 461 p.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**WebDesigneArte|||
@@ -1689,7 +1689,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 3. MORRISON, Michael. **Use a cabeça JavaScript** . Rio de Janeiro: Alta Books, 2012 4. SILVA, Maurício Samy. **HTML 5:** a linguagem de marcação que revolucionou a Web. 2. ed.São Paulo: Novatec, 2014
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Informática Instrumental|||
@@ -1701,7 +1701,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 |**Bibliografia Complementar:**|||
 |1. CASTELLS, M.**A sociedade em rede**. 10. ed. São Paulo: Paz e Terra, 2007.<br>2. VELLOSO, F. C.**Informática: Conceitos Básicos.**7 ed. São Paulo: Campus,<br>2004.<br>3. SILBERSCHATZ, Abraham; GALVIN, Peter Baer; GAGNE, Greg.**Fundamentos**<br>**de sistemas operacionais: princípios básicos**. Rio de Janeiro: LTC, 2013.<br>4. NORTON, Peter.**Introdução à informática.**São Paulo: Pearson, 2012.<br>**5.**PAIXAO, Renato Rodrigues.**Montando e configurando PCs com inteligência.**<br>São Paulo: Érica 2007.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular: **Lógica deProgramação|||
@@ -1714,7 +1714,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 1. LOPES, Anita; GARCIA, Guto. **Introdução à programação** . Rio de Janeiro: Campus, 2002. 2. RYAN, Mark; HUTH, Michael. **Lógica em Ciência da Computação.** 2 de. Rio de Janeiro: LTC, 2008. 3. MANZANO, José Augusto N. G.; OLIVEIRA, Jayr Figueiredo de. **Algoritmos: lógica para desenvolvimento de programação de computadores** . 27. ed. rev. São Paulo: Érica, 2014. 328p. 4. MCCOMB, Gordon. **JavaScript sourcebook** . São Paulo: Makron Books do Brasil, 1997c, 1996. 5. GOODRICH, Michael T.; TAMASSIA, Roberto. **Estruturas de dados e algoritmos em Java** . 5. ed. Porto Alegre: Bookman, 2013. 713p. 6. MORRISON, Michael. **Use a cabeça!: JavaScript** . Rio de Janeiro: Alta Books, 2012. 606p. 7. CORMEN, Thomas H _et al._ **Algoritmos: teoria e prática** . Rio de Janeiro: Elsevier, 2012. 926p. 8. BHARGAVA, Aditya Y. **Entendendo algoritmos: um guia ilustrado para programadores e outros curiosos.** São Paulo: Novatec, 2017. 263p. 9. WIRTH, Niklaus. **Algoritmos e estruturas de dados** . Rio de Janeiro: Prentice-hall do Brasil, 1989. 255p. 10. GUIMARÃES, Angelo de Moura; LAGES, Newton Alberto de Castilho. **Algoritmos e estruturas de dados** . Rio de Janeiro: LTC, c1994. 216p.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Biologia II|||
@@ -1741,7 +1741,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 5. SOARES, José Luis. **Biologia** . Volume único. São Paulo: Scipone, 1999.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Educação Física II|||
@@ -1778,7 +1778,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 9. SAAD, Michel; COSTA, Claiton Frazzon. **Futsal, movimentações defensivas e ofensivas.** 2. ed. Florianópolis: Visual Books, 2005.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Química II|||
@@ -1808,7 +1808,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 6. MANAHAM, S. E. **Química ambiental.** 9ª ed., São Paulo: Bookman, 2013.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Filosofia II|||
@@ -1875,7 +1875,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 
 22. SARTRE, Jean-Paul. **O existencialismo é um humanismo** . Tradução: Rita Correia Guedes. Versão digital.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Língua Portuguesa II|||
@@ -1887,7 +1887,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 |**Bibliografia Complementar:**|||
 |1. ABREU, Antônio Suárez.**Curso de redação.**12. ed. São Paulo: Ática, 2004. 168<br>p. (Ática universidade). ISBN 9788508091386 (broch.).<br>2. ASSIS, Machado de.**O alienista.**Petrópolis: Vozes, 2016. 107 p. (Vozes de bolso).<br>ISBN 9788532651662 (broch.).<br>3. AZEVEDO, Aluísio.**O cortiço**. Rio de Janeiro: Edições de Ouro, 1997.<br>4. LIRA dos vinte anos. Porto Alegre: L&PM, 1998. 259 p. (L&PM pocket v. 118).<br>ISBN 8525408433.<br>5. José De Nicola.**Língua, Literatura e Produção de Textos 2**. 1° Edição. Editora<br>Scipione, São Paulo, 2009.<br>6. KOCH, Ingedore G. Villaça.**A coesão textual**. Editora Contexto. São Paulo, 2000.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Sociologia II|||
@@ -1899,7 +1899,7 @@ Porcentagem, Frações, Regra de três simples, sistemas de equação 2x2, unida
 |**Bibliografia Complementar:**|||
 |1. ARON, Raymond.**As etapas do pensamento sociológico.**5. ed. São Paulo:<br>Martins Fontes, 1999. 539 p. ISBN 8533609361 (broch.).<br>2. DAMATTA, Roberto.**Explorações: ensaios de sociologia interpretativa.**Rio de<br>Janeiro: Rocco, 1986. 147 p.<br>3. GIDDENS, Anthony.**Sociologia.**6. ed., rev. e atual. Porto Alegre: Penso, 2012.<br>847 p. ISBN 9788563899262 (enc.).<br>4. QUINTANEIRO, Tania; BARBOSA, Maria Ligia de Oliveira; OLIVEIRA, Márcia<br>Gardênia de.**Um toque de clássicos: Marx, Durkheim e Weber.**2. ed. Belo<br>Horizonte: Ed. UFMG, 2002.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Física e Robótica II|||
@@ -1912,7 +1912,7 @@ temperatura, sensor de luz, infravermelho e ultravioleta, e o estudo das formas 
 
 **Bibliografia Básica:** 1. GASPAR, A. C **ompreendendo a Física** Vol 2. 4° Edição, Editora Ática, São Paulo, 2018. 2. HEWITT, P. G. **Física Conceitual** . 12ª Edição. Editora Bookman, Porto Alegre, 2015. 3. MÁXIMO, A; ALVARENGA, B. **Física** Vol 2. Ensino Médio, 2° Edição, Editora Scipione, São Paulo, 2017. **Bibliografia Complementar:** 1. FEYNMAN, R. P. KORYTOWSKI, I. **Física em seis lições: fundamentos da física explicados por seu professor mais brilhante.** Editora Edgard, Rio de Janeiro, 1999. 2. FEYNMAN, R. P. et al. **Lições da Física de Feynman:** Edição definitiva volumes I, II e III. 1ª Edição. Editora Bookman, Rio de Janeiro, 2008. 3. ROCHA, J.F. (Org). **Origens e Evolução das Ideias da Física.** 1ª Edição. Salvador: EDUFBA, 2002. **4.** VALADARES, E. de C. **Física mais que divertida: Inventos eletrizantes baseados em materiais reciclados e de baixo custo.** UFMG, Belo Horizonte, 2000.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Informática e Sociedade|||
@@ -1929,7 +1929,7 @@ Fundamentos de Informática e Sociedade. Desenvolvimento tecnológico. Impactos 
 
 1. ARON, Raymond. **As etapas do pensamento sociológico.** 5. ed. São Paulo: Martins Fontes, 1999. 2. CASTELLS, M. **A sociedade em rede** . 10. ed. São Paulo: Paz e Terra, 2007. 3. GIDDENS, Anthony. **Sociologia.** 6. ed. Porto Alegre: Penso, 2012. 4. LÉVY, P. **Cibercultura** . Rio de Janeiro: Editora 34, 1999.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Língua Inglesa e Inglês Instrumental II|||
@@ -1954,7 +1954,7 @@ Fundamentos de Informática e Sociedade. Desenvolvimento tecnológico. Impactos 
 
 4. RICHARDS, Jack C.; FARRELL, Thomas S. C. **Practice Teaching: a Reflective Approach.** New York: Cambridge University Press, 2011.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Matemática II|||
@@ -1966,7 +1966,7 @@ Fundamentos de Informática e Sociedade. Desenvolvimento tecnológico. Impactos 
 |**Bibliografia Complementar:**|||
 |1. DANTE, Luiz Roberto.**Matemática**. Vol. único. São Paulo: Ática, 2005.<br>2. HAZZAN, Samuel.**Fundamentos de matemática elementar, v. 5: combinatória,**<br>**probabilidade**. 8. ed. São Paulo: Atual, 2013. 204 p.<br>3. IEZZI, Gelson; HAZZAN, Samuel; DEGENSZAJN, David Mauro.**Fundamentos**<br>**de matemática elementar, v. 11: matemática comercial, matemática financeira,**<br>**estatística descritiva**. 2. ed. São Paulo: Atual, 2013. 245 p.<br>4. PAIVA, Manoel Rodrigues,**Matemática**. Vol. único. São Paulo: Moderna, 2002.<br>5. PAIVA, Manoel.**Matemática: volume único**. 1. ed. São Paulo: Moderna, 1999.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Projeto Integrador I|||
@@ -1997,7 +1997,7 @@ Ementa: Metodologia e Iniciação Científica. Estudo e levantamento de problem�
 
 5. WAZLAWICK, Raul Sidnei. **Metodologia de pesquisa para ciência da computação.** 2. ed. Rio de Janeiro: Campus, 2014. 146 p.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Programação Web I|||
@@ -2018,7 +2018,7 @@ Ementa: Metodologia e Iniciação Científica. Estudo e levantamento de problem�
 
 2015. 302 p. ISBN 9788575224380 (broch.).
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Banco de Dados|||
@@ -2030,7 +2030,7 @@ Ementa: Metodologia e Iniciação Científica. Estudo e levantamento de problem�
 |**Bibliografia Complementar:**|||
 |1. HEUSER, Carlos Alberto. P**rojeto de banco de dados.**6. ed. Porto Alegre: Bookman,<br>2009. 282 p. (Série livros didáticos informática UFRGS, 4). ISBN 9788577803828<br>(broch.).<br>2. MACHADO, Felipe Nery Rodrigues; ABREU, Maurício Pereira de.**Projeto de banco**<br>**de dados: uma visão prática.**17. ed. São Paulo: Érica, 2012. 320 p. ISBN<br>9788536502526 (broch.).<br>3. SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S.**Sistema de banco**<br>**de dados**. São Paulo: Elsevier, 2012. 861 p. ISBN 9788535245356 (broch.).<br>4. HOWS, David; MEMBREY, Peter; PLUGGE, Eelco.**Introdução ao MongoDB.**São<br>Paulo: Novatec, 2015. 167 p. ISBN 9788575224229 (broch.).<br>5. SADALAGE, Pramod J.; FOWLER, Martin.**NoSQL essencial: um guia conciso para**<br>**o mundo emergente da persistência poliglota.**São Paulo: Novatec, 2013. 220 p.<br>ISBN 9788575223383 (broch.).|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular: **Análise de Sistemas|||
@@ -2051,7 +2051,7 @@ Conceitos e Metodologias de Análise, Projeto e Design de Arquitetura de Sistema
 
 1. WAZLAWICK, Raul Sidnei. **Análise e design orientados a objetos para sistemas de informação: modelagem com UML, OCL e IFML** . 3. ed. Rio de Janeiro: Campus, 2015. 462 p. ISBN 9788535279849. 2. BEZERRA, Eduardo. **Princípios de análise e projeto de sistemas com UML** . 2. ed., rev. e atual. Rio de Janeiro: Campus, 2007. 369 p. ISBN 9788535216967 (broch.). 3. ROSINI, Alessandro Marco; PALMISANO, Angelo. **Administração de sistemas de informação e a gestão do conhecimento.** 2. ed. rev. e ampl. São Paulo: Cengage Learning, 2012. 212 p. ISBN 9788522111305 (broch.). 4. IMONIANA, Joshua Onome. **Auditoria de sistemas de informação** . 3. ed. São Paulo: Atlas, 2016. 189 p. ISBN 9788597003116 (broch.).
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Interface Humano Computador|||
@@ -2078,7 +2078,7 @@ Conceitos e Metodologias de Análise, Projeto e Design de Arquitetura de Sistema
 
 5. NIELSEN, Jakob; BUDIU, Raluca. **Usabilidade móvel.** 1. ed. Rio de Janeiro: Elsevier, Campus, 2014
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Arte|||
@@ -2095,7 +2095,7 @@ Conceitos e Metodologias de Análise, Projeto e Design de Arquitetura de Sistema
 
 8. TADRA, Débora Sicupira Arzua et al. **Linguagem da dança.** Curitiba: IBPEX, 2009.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Biologia III|||
@@ -2107,7 +2107,7 @@ Conceitos e Metodologias de Análise, Projeto e Design de Arquitetura de Sistema
 |**Bibliografia Complementar:**|||
 |1. CATANI, André et al.**Biologia**.3 v. (Ser protagonista). 3. ed. São Paulo: Edições<br>SM, 2016. CÉSAR & SEZAR.**Biologia.**Volume 1. São Paulo: Saraiva, 2006.<br>2. LINHARES, S. de V.; GEWANDSZNAJDER, F.**Biologia: ensino médio**. São<br>Paulo: Ática, 2003.<br>3. MACHADO, Sídio.**Biologia para ensino médio**. Volume único. São Paulo:<br>Scipione, 2003.<br>4. SOARES, José Luis.**Biologia**. Volume único. São Paulo: Scipone, 1999.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Educação Física III|||
@@ -2126,7 +2126,7 @@ A apropriação, a ampliação e o aprofundamento de conhecimentos historicament
 
 1. LEITE, Paulo Fernando. **Aptidão Física, Esporte e Saúde.** 3. ed. São Paulo: Robe, 2000. 2. SECRETARIA DE ESTADO DA EDUCACAO. **Educação Física – Ensino Medio** . 2. ed. Curitiba: SEED-PR, 2006. 3. REZENDE, Sylvio. **Xadrez na escola: uma abordagem didática para principiantes.** Rio de Janeiro: Ciência Moderna, 2002. 4. SABA, Fabio. **Mexa-se: atividade física, saúde e bem-estar.** 3. ed. São Paulo: Phorte, 2011.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Química III|||
@@ -2161,7 +2161,7 @@ A apropriação, a ampliação e o aprofundamento de conhecimentos historicament
 
 5. BARBOSA, L. C. A. **Introdução a Química Orgânica.** Ed. Pearson Universidades; 2ª edição, 2010.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Geografia II|||
@@ -2182,7 +2182,7 @@ A apropriação, a ampliação e o aprofundamento de conhecimentos historicament
 
 3. MAGNOLI, Demétrio (org.). **História das Guerras** . Editora Contexto, 2022. 482 p. E-book. Disponível em: <https://middleware-bv.am4.com.br/SSO/ifpr/9788572443951>. Acesso em set. 2022. 4. ROLNIK, Raquel. **O que é cidade** . 4. ed. São Paulo: Brasiliense, 2012. 100 p. (Coleção primeiros passos; 203) 5. ROSS, Jurandyr Luciano Sanches (org.). **Geografia do Brasil** . 6. ed. São Paulo: EDUSP, 2009. 549 p. (Didática; 3) 6. SINGER, Paul; JUSTO, Marcelo Gomes. **Urbanização e desenvolvimento** . Autêntica Editora, 2017. 208 p. E-book. Disponível em: <https://middleware-bv.am4.com.br/SSO/ifpr/9788551300343>. Acesso em set. 2023.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**História II|||
@@ -2194,7 +2194,7 @@ A apropriação, a ampliação e o aprofundamento de conhecimentos historicament
 |**Bibliografia Complementar:**|||
 |<br>1. CUNHA, Manuela Carneiro da.**História dos índios no Brasil**. São Paulo:<br>Companhia das Letras/FAPESP, 1992.<br>2. MEREDITH, Martin.**O destino da África: cinco mil anos de riquezas, ganâncias**<br>**e desafios**. Rio de Janeiro: Zahar, 2017.<br>3. MUNANGA, K.; GOMES, N. L.**O negro no Brasil de hoje**. São Paulo: Global,<br>2016.<br>4. SCHWARCZ, L. M.; STARLING, H. M**. Brasil: uma biografia**. São Paulo:<br>Companhia das Letras, 2018.<br>5. VICENTINO, Cláudio.**História geral: ensino médio**. São Paulo: Scipione, 2006.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular: **LínguaEspanhola|||
@@ -2206,7 +2206,7 @@ A apropriação, a ampliação e o aprofundamento de conhecimentos historicament
 |**Bibliografia Complementar:**|||
 |<br>1. ALMARZA ACEDO, Nieves (coord.). C**lave diccionario de uso del español**<br>**actual.**Madrid: Ediciones SM, 2000. xx, 2056 p. ISBN 8434865106.<br>2. SECO, Manuel.**Gramática esencial del español**: introducción al estudio de la<br>lengua. 4. ed. Madrid: Espasa, 1996. 418 p. ISBN 8423992063 (broch.).<br>3. GÓMEZ TORREGO, Leonardo.**Gramática didáctica del español.**7. ed. Madrid:<br>Ediciones SM, 2000. 543 p. ISBN 8434854406.<br>4. GONZÁLEZ HERMOSO, Alfredo; CUENOT, J. R.; SÁNCHEZ ALFARO, M.<br>C**urso práctico: gramática de español lengua extranjera**. 3. ed. Madrid: Edelsa,<br>1995. 271 p. ISBN 8477110727 (broch.).<br>5. SILVA, Cecília Fonseca da.**Formas y usos del verbo en español: prácticas de**<br>**conjugación para lusohablantes.**3. ed. São Paulo: Embajada de España en Brasil,<br>1997. 100 p. ISBN 8521507933<br>6. VILLALBA, T. K. B.**El arte de leer español:**volumen único. Curitiba: Base,<br>2006.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Língua Portuguesa III|||
@@ -2217,7 +2217,7 @@ Língua oral e língua escrita e seus códigos sociais, contextuais e linguísti
 
 **Bibliografia Básica:** 1. CEREJA, Willian Roberto; MAGALHÃES, Thereza Cochar. **Português: Linguagens** . Editora Atual, São Paulo, 2006. 2. FARACO & MOURA **. Língua Portuguesa e Literatura** . Editora Ática, São Paulo, 1997. 3. GRANATIC, Branca. **Redação, Humor e Criatividade** . Editora Scipione, São Paulo, 1997. **Bibliografia Complementar:** 1. ABREU, Antônio Suárez. **Curso de redação** . Editora Ática. São Paulo, 2004. 2. BANDEIRA, Manuel. **Antologia poética** . 6 ed. São Paulo: Global, 2013. 3. BOSI, Alfredo (Org.). **O conto brasileiro contemporâneo** . 17 ed. São Paulo: Cultrix, 2004. 4. KOCH, Ingedore G. Villaça. **A coesão textual** . Editora Contexto. São Paulo, 2000. 5. RAMOS, Graciliano. **Angústia** . 80 ed. Rio de Janeiro: Record, 2020. 6. REZENDE, Neide. **A semana de arte moderna** . São Paulo: Ática, 1993.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Física e Robótica III|||
@@ -2245,7 +2245,7 @@ seu controle em projetos de robótica. Ondas eletromagnéticas, geração, propa
 
 **4.** VALADARES, E. de C. **Física mais que divertida: Inventos eletrizantes baseados em materiais reciclados e de baixo custo.** UFMG, Belo Horizonte, 2000.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Informática e Sociedade|||
@@ -2272,7 +2272,7 @@ seu controle em projetos de robótica. Ondas eletromagnéticas, geração, propa
 
 8. QUINTANEIRO, Tania; BARBOSA, Maria Ligia de Oliveira; OLIVEIRA, Márcia Gardênia de. **Um toque de clássicos:** Marx, Durkheim e Weber. 2. ed. Belo Horizonte: Ed.UFMG, 2002.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Matemática III|||
@@ -2291,7 +2291,7 @@ seu controle em projetos de robótica. Ondas eletromagnéticas, geração, propa
 
 4. IEZZI, Gelson, Hazzan, Samuel. **Fundamentos da Matemática Elementar** . Vol. 10. São Paulo: Atual, 1998.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Projeto Integrador II|||
@@ -2318,7 +2318,7 @@ Ementa: Retomada do projeto Integrador I. Execução e acompanhamento do projeto
 
 6. SOUZA, MÁRCIO VIEIRA DE; GIGLIO, KAMIL. **Mídias digitais, redes sociais e educação em rede: experiências na pesquisa e extensão universitária.** Editora Blucher 171 ISBN 9788580391282.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Inteligência Artificial|||
@@ -2343,7 +2343,7 @@ Ementa: Retomada do projeto Integrador I. Execução e acompanhamento do projeto
 
 4. REZENDE, Solange Oliveira Rezende. Organizadora. **SISTEMAS inteligentes: fundamentos e aplicações** . Barueri: Manole, 2003. 525 p. ISBN 8520416837.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Redes de Computadores e Segurança Web|||
@@ -2361,7 +2361,7 @@ Ementa: Retomada do projeto Integrador I. Execução e acompanhamento do projeto
 
 5. STALLINGS, W. **Criptografia e Segurança de Redes:** Princípios e Práticas. 4. Ed. São Paulo: Pearson. 2007.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Informática para**<br>**Internet **||**Eixo Tecnológico: Informação e**<br>**Comunicação**|
 |**Componente Curricular:**Programação Web II|||
@@ -2516,24 +2516,24 @@ A disponibilidade dos laboratórios no campus Palmas - PR é apresentada a segui
 |**Materiais, equipamentos e**<br>**espaços físicos**|**Existente no**<br>**campus**|**Disponibilizado**<br>**pelo(a)**<br>**conveniado(a)**|**A adquirir ou**<br>**construir**|
 |---|---|---|---|
 
-|Memória tátil|Sim|-|-|
-|---|---|---|---|
-|Dominó tátil|Sim|-|-|
-|Lupas para baixa visão|Sim|-|-|
-|Conjunto de bolas de guizo|Sim|-|-|
-|Alfabeto Braille|Sim|-|-|
-|Máquina de escrever Braille|Sim|-|-|
-|Punção e reglete|Sim|-|-|
-|Teclados para alunos cegos de<br>baixa visão|Sim|-|-|
-|Impressora Braille|Sim|-|-|
-|Cadeira de rodas|Sim|-|-|
-|Plataformas elevatórias para<br>cadeira de rodas|Sim|-|-|
-|Mouse trackball|Sim|-|-|
-|Quebra-cabeça superposto de<br>sequência lógica|Sim|-|-|
-|Dominó de associação de ideias|Sim|-|-|
-|Material dourado|Sim|-|-|
-|Caixa tátil de madeira|Sim|-|-|
-|Esquema corporal|Sim|-|-|
+|Memória tátil|Sim|-|
+|---|---|---|
+|Dominó tátil|Sim|-|
+|Lupas para baixa visão|Sim|-|
+|Conjunto de bolas de guizo|Sim|-|
+|Alfabeto Braille|Sim|-|
+|Máquina de escrever Braille|Sim|-|
+|Punção e reglete|Sim|-|
+|Teclados para alunos cegos de<br>baixa visão|Sim|-|
+|Impressora Braille|Sim|-|
+|Cadeira de rodas|Sim|-|
+|Plataformas elevatórias para<br>cadeira de rodas|Sim|-|
+|Mouse trackball|Sim|-|
+|Quebra-cabeça superposto de<br>sequência lógica|Sim|-|
+|Dominó de associação de ideias|Sim|-|
+|Material dourado|Sim|-|
+|Caixa tátil de madeira|Sim|-|
+|Esquema corporal|Sim|-|
 
 ## 8.3 ÁREAS DE ESTUDO GERAL
 
@@ -2749,7 +2749,7 @@ XI - decidir sobre a aprovação ou reprovação de estudantes com dificuldade d
 
 **Tabela 8:** Perfil de Técnicos Administrativos em Educação.
 
-|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|
+|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |---|---|---|---|
 |**Nome**|**Formação**|**Regime de**<br>**Trabalho**<br>**(40h, 30h**<br>**ou 20h)**|**Cargo**|
 |ADENOR<br>VICENTE<br>WENDLING|Graduação em Bacharelado em<br>agronegócios; Mestrado e Doutorado em<br>agroecossistemas.|40h|Tecnico de<br>laboratorio - area<br>de agronomia e<br>agroecologia|
@@ -2924,10 +2924,10 @@ O planejamento geral da expansão do quadro de servidores do campus para os anos
 ||||Total:|38|52|52|52|52|
 |||20hs||13|13|13|13|13|
 
-|DOCENTES||40hs||0|0|0|0|0|
-|---|---|---|---|---|---|---|---|---|
-|||DE||136|143|144|144|144|
-||Total:|||149|156|157|157|157|
+|DOCENTES||40hs||0|0|0|
+|---|---|---|---|---|---|---|
+|||DE||136|143|144|
+||Total:|||149|156|157|
 
 ## 10.1 EXPANSÃO DO QUADRO DOCENTE
 

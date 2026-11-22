@@ -1067,7 +1067,7 @@ A - Quantidade de aulas semanais B - Carga horária total em horas relógio C - 
 
 A matriz curricular do Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas está estruturada em 06 (seis) semestres progressivos e inter-relacionados, perfazendo um total de 2.280 horas, que são distribuídas da seguinte forma: 2.250 horas são destinadas aos componentes curriculares obrigatórios (2.025 horas às disciplinas do curso e 225 horas à curricularização da extensão) e 30 horas ao componente curricular optativo.
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||_Campus_Londrina|||||
@@ -2380,7 +2380,7 @@ horária de aulas, os docentes devem dedicar 04 (quatro) horas semanais à manut
 
 As atividades docentes são registradas nos Planos Individuais de Trabalho (PIT) e Planos de Ensino, e também em relatórios de Pesquisa e Extensão avaliados pelo Comitê de Pesquisa e Extensão (COPE). Os docentes do Curso de Tecnologia em Análise de Sistemas são apresentados a seguir.
 
-||Quadro 2 - Docentes do Curso|Quadro 2 - Docentes do Curso|Quadro 2 - Docentes do Curso|Quadro 2 - Docentes do Curso|
+||Quadro 2 - Docentes do Curso||||
 |---|---|---|---|---|
 ||||||
 |**Nome**<br>**Completo**|**Curso de**<br>**Graduação**|**Maior**<br>**Titulação**|**Regime de**<br>**Trabalho**<br>**(DE, 40h,**<br>**20h)**|**Link Currículo Lattes**|
@@ -2395,7 +2395,7 @@ As atividades docentes são registradas nos Planos Individuais de Trabalho (PIT)
 |Fernando<br>Accorsi<br>_em afastamento_|Bacharelado em<br>Ciência da<br>Computação|Mestrado|DE|http://lattes.cnpq.br/9830956263943638|
 |Josiane Junia<br>Facundo de<br>Almeida|Letras<br>Vernáculas e<br>Clássicas|Doutorado|DE|http://lattes.cnpq.br/5680573662875583|
 
-||Quadro 2 - Docentes do Curso|Quadro 2 - Docentes do Curso|Quadro 2 - Docentes do Curso|Quadro 2 - Docentes do Curso|
+||Quadro 2 - Docentes do Curso||||
 |---|---|---|---|---|
 ||||||
 |**Nome**<br>**Completo**|**Curso de**<br>**Graduação**|**Maior**<br>**Titulação**|**Regime de**<br>**Trabalho**<br>**(DE, 40h,**<br>**20h)**|**Link Currículo Lattes**|

@@ -456,7 +456,7 @@ Os componentes curriculares da matriz proposta, bem como número de horas e aula
 
 ## 1º ANO
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática Integrado ao Ensino Médio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**: LínguaPortuguesaI||
@@ -801,7 +801,7 @@ PAULINO, Wilson Roberto. **Biologia** : volume 3. 15. ed. São Paulo: Ática, 20
 
 SOARES, José Luis. **Biologia no terceiro milênio** : volume 3. São Paulo: SCIPIONE, 2011.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática Integrado ao Ensino Médio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**:QuímicaII||
@@ -858,7 +858,7 @@ BOMENY, H. & FREIRE-MEDEIROS, B. **Tempos Modernos, Tempos de sociologia.** São
 
 GIDDENS, A. **Sociologia** . 6. Ed. Porto Alegre: Artmed, 2012.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em InformáticaIntegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**: FilosofiaII||
@@ -1033,7 +1033,7 @@ IEZZI, G. Et al. **Fundamentos de matemática elementar.** 11 vols. São Paulo: 
 |**BIBLIOGRAFIA BÁSICA:**<br>AB'SABER, Aziz Nacib.**Os domínios de natureza no Brasil:**potencialidades paisagísticas. 7.<br>ed. São Paulo: Ateliê Editorial, 2012. 158 p.<br>CASTRO, Iná Elias de; GOMES, Paulo Cesar da Costa; CORRÊA, Roberto Lobato.**Geografia:**<br>**conceitos e temas**. 15. ed. Rio de Janeiro: Bertrand Brasil, 2012. 352 p.<br>GUERRA, Antonio José Teixeira ; CUNHA, Sandra Baptista da (Org).**Geomorfologia:**uma<br>atualização de bases e conceitos. 10.ed. Rio de Janeiro: Bertrand Brasil, 2011.<br>MARINA, Lúcia; RIGOLIN, Tércio.**Geografia:**volume único. 3. ed. São Paulo: Ática, 2012. 448<br>p.|||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>ALMEIDA, Rosângela D. de; PASSINI, Elza Y.**O espaço geográfico:**ensino e representação.<br>São Paulo: Contexto, 2001.<br>CARLOS, Ana Fani A.**Espaço e Indústria.**São Paulo: Contexto, 2000.<br>COSTA, Edmilson.**A Globalização e o Capitalismo Contemporâneo**. São Paulo: Expressão<br>Popular, 2008.<br>HAESBAERT, Rogério.**Regional-Global**. Rio de Janeiro: Bertrand Brasil, 2010.<br>PARANÁ, Secretaria de Estado da Educação do.**Diretrizes Curriculares de Geografia.**<br>Curitiba: SEED, 2008.<br>PONTUSCHKA, Nídia Nacib. (_et al_)**Para ensinar e aprender Geografia**. São Paulo: Cortez,<br>2007.<br>ROSS, Jurandyr Luciano Sanches.**Geomorfologia:**ambiente e planejamento. 2 ed. São Paulo:<br>Contexto, c1991. 85 p.<br>RUA, João_et al_.**Para ensinar geografia.**Rio de Janeiro, RJ: ACESS Editora, 1993.|||
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática Integrado ao Ensino Médio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**:SociologiaIII||
@@ -1076,7 +1076,7 @@ _________ **História da Filosofia** . Do Humanismo a Kant Vol. II São Paulo: P
 
 _________ **História da Filosofia** . Do Romantismo aos nossos Dias Vol. III São Paulo: Paulus, 1990.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em InformáticaIntegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**: LinguagemdeProgramaçãoIII||
@@ -1159,7 +1159,7 @@ LEDUR, Paulo Flávio. **Guia prático da nova ortografia:** as mudanças do acor
 
 SILVA, Maria Cecília Pérez de Souza e; KOCH, Ingedore Grunfeld Villaça. **Linguística Aplicada ao português:** morfologia. 18. ed. São Paulo: Cortez, 2011.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática Integrado ao Ensino Médio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**: LínguaInglesaII||
@@ -1210,7 +1210,7 @@ SILVA JUNIOR, César da; SASSON, Sezar. CALDINI JÚNIOR, Nélson. **Biologia:** 
 
 SOARES, José Luis. **Biologia no terceiro milênio** : volume 3. São Paulo: SCIPIONE, 2011.
 
-|**Câmpus Umuarama do IFPR**|**Câmpus Umuarama do IFPR**|
+|**Câmpus Umuarama do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em InformáticaIntegrado aoEnsinoMédio|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular**:GeografiaII||

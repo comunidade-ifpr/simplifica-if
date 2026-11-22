@@ -139,7 +139,7 @@ Quadro 1 - Horário das aulas no período noturno
 
 8
 
-|INSTITUTOFEDERAL|INSTITUTOFEDERAL|||
+|INSTITUTOFEDERAL||||
 |---|---|---|---|
 |Parana|||Ministerio da Educacao|
 |4ª aula||21h40|22h30|
@@ -1335,7 +1335,7 @@ extensão/metodologia extensionista), conforme detalhado adiante, no item 4.1.5 
 
 Desta forma, a organização dos componentes curriculares deste curso ocorre conforme o quadro abaixo:
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||||
 |---|---|---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||||
 ||_Campus_Colombo|||||||
@@ -1546,7 +1546,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -1562,7 +1562,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -1580,7 +1580,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -1707,7 +1707,7 @@ Ministerio da Educacao
 |67 H/R (carga horária total|||
 |para atividades de extensão)|||
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus:**Colombo**|||
 |Curso:**Licenciatura em História**|||
@@ -1757,7 +1757,7 @@ Campus: Colombo Curso: Licenciatura em História Componente Curricular: **Introd
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -1793,7 +1793,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|Campus: Colombo|Campus: Colombo|Campus: Colombo|
+|Campus: Colombo|||
 |---|---|---|
 |Curso: Licenciatura em História|||
 |Componente Curricular:**Organização dos Sistemas Educacionais**|||
@@ -1842,7 +1842,7 @@ Ministerio da Educacao
 
 Campus: Colombo
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -1950,7 +1950,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -1994,7 +1994,7 @@ Campus: Colombo
 
 Curso: Licenciatura em História
 
-|Componente Curricular:**História Antiga**|Componente Curricular:**História Antiga**||||
+|Componente Curricular:**História Antiga**|||||
 |---|---|---|---|---|
 |Carga Horária Total: 80 H/A e|Aulas por semana: 4 H/A (8||Aulas por semana: 4 H/A (8|Componente: 3° semestre|
 |67 H/R (sendo 8 H/A de|H/A<br>totais|de<br>prática|prática||
@@ -2045,7 +2045,7 @@ Conjuntura internacional do pós-Guerra e seu impacto sobre o Brasil. Crise do E
 
 ## **Bibliografia Básica:**
 
-|**Bibliografia Básica:**|**Bibliografia Básica:**||||
+|**Bibliografia Básica:**|||||
 |---|---|---|---|---|
 |CAMPOS, Pedro Henrique Pedreira.**Estranhas Catedrais: as empreiteiras brasileiras e a**||**Estranhas Catedrais: as empreiteiras brasileiras e a**|**Estranhas Catedrais: as empreiteiras brasileiras e a**||
 |**ditadura civil-militar, 1964-1988**. Niterói: EDUFF, 2014.|. Niterói: EDUFF, 2014.||||
@@ -2082,7 +2082,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -2104,7 +2104,7 @@ Campus: Colombo Curso: Licenciatura em História Componente Curricular: **Histó
 
 Estudo dos conceitos de “Idade Média” e “Medievalidade”. Idade Média e História Global. Antiguidade tardia e transição para a Idade Média: reinos sucessores na Europa Ocidental; o Império Romano do Oriente. A expansão das grandes religiões universais: expansão do cristianismo na Europa; surgimento e expansão do Islamismo; expansão do budismo na Ásia. A Globalização arcaica medieval: conexões comerciais e transformações econômicas: Rota da seda; o Saara; o Mediterrâneo. Formas de trabalho e organização econômica: o problema do Feudalismo na Europa e fora da Europa. Formação de Estados e Impérios Medievais Eurasianos: A fragmentação política na Europa; Califado Abássida: apogeu, crise e fragmentação; China nas dinastias Sui, Tang e Yuan; Império Khmer; Reinos e povos africanos sob a expansão do Islamismo. A “expansão europeia” medieval: desenvolvimentos agrários e expansão; o mundo urbano medieval: cultura, sociedade e economia; as transformações econômicas e culturais do final da Idade Média. Os Impérios da América Pré-Colombiana. Atividades de prática como componente curricular para a articulação entre o conteúdo da disciplina e a prática pedagógica (8 horas).
 
-|**Bibliografia Básica:**|**Bibliografia Básica:**||
+|**Bibliografia Básica:**|||
 |---|---|---|
 |FASI, Mohammed El; HRBEK, I. (org.).**História Geral da África**. Vol. III: África do século|||
 |VII ao XI. Brasília: UNESCO, 2010.|||
@@ -2199,7 +2199,7 @@ Campus: Colombo
 
 Curso: Licenciatura em História
 
-|Componente Curricular:**História da América Colonial e Independente**|Componente Curricular:**História da América Colonial e Independente**|Componente Curricular:**História da América Colonial e Independente**|
+|Componente Curricular:**História da América Colonial e Independente**|||
 |---|---|---|
 |Carga Horária Total: 80 H/A e|Aulas por semana: 4 H/A (8|Componente: 5° semestre|
 |67 H/R (sendo 8 H/A de|H/A<br>totais<br>de<br>prática||
@@ -2232,7 +2232,7 @@ Curso: Licenciatura em História Componente Curricular: **História da América 
 
 ## **Ementa:**
 
-|Campus: Colombo|Campus: Colombo|Campus: Colombo|
+|Campus: Colombo|||
 |---|---|---|
 |Curso: Licenciatura em História|||
 |Componente Curricular:**História da América Portuguesa**|||
@@ -2417,7 +2417,7 @@ Campus: Colombo
 
 Curso: Licenciatura em História
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -2500,7 +2500,7 @@ Estudo da sociedade brasileira a partir da construção da ordem republicana, da
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -2536,7 +2536,7 @@ Ministerio da Educacao
 
 Campus: Colombo
 
-|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana<br>Ministerio da Educacao|||
 |---|---|---|
 |Campus: Colombo|||
 |Curso: Licenciatura em História|||
@@ -3740,16 +3740,16 @@ A seção de Biblioteca do Campus Colombo disciplina em seu Regulamento Geral de
 
 185
 
-|INSTITUTOFEDERAL|INSTITUTOFEDERAL|||||
-|---|---|---|---|---|---|
-|Parana|||||Ministerio da Educacao|
-|Terceirizados/estagiários||3 títulos|3 títulos|7 dias|7 dias|
+|INSTITUTOFEDERAL|||||
+|---|---|---|---|---|
+|Parana||||Ministerio da Educacao|
+|Terceirizados/estagiários||3 títulos|7 dias|7 dias|
 
 O horário de funcionamento da Biblioteca do Campus Colombo é estabelecido de acordo com o horário das atividades de ensino, pesquisa e extensão, assim seu funcionamento é descrito a seguir:
 
 |**Segunda-feira**|**Terça-feira**|**Quarta-feira**|**Quinta-feira**|**Sexta-feira**|
 |---|---|---|---|---|
-|8h às 21h|8h às 21h|8h às 21h|8h às 21h|8h às 21h|
+|8h às 21h|||||
 
 Quanto ao seu acervo, a Biblioteca do Campus Colombo, possui 3816 exemplares distribuídos nas áreas de atuação do campus. Especificamente, a área de História/Ciencias Humanas conta com 416 exemplares, conforme detalhado no Anexo B. A Biblioteca do campus Colombo ainda dispõe do acesso ao Portal de Periódicos da Capes e oferece suporte por meio de seus serviços de referência.
 

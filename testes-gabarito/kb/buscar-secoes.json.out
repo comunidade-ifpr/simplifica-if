@@ -19,7 +19,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 534,
       "linha_fim": 548,
-      "pontuacao": -39.099,
+      "pontuacao": -39.068,
       "trecho": [
         {
           "linha": 536,
@@ -48,7 +48,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 460,
       "linha_fim": 508,
-      "pontuacao": -7.48,
+      "pontuacao": -7.473,
       "trecho": [
         {
           "linha": 462,
@@ -77,7 +77,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 3203,
       "linha_fim": 3223,
-      "pontuacao": -6.575,
+      "pontuacao": -6.566,
       "trecho": [
         {
           "linha": 3205,
@@ -106,7 +106,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 1614,
       "linha_fim": 1618,
-      "pontuacao": -4.295,
+      "pontuacao": -4.293,
       "trecho": [
         {
           "linha": 1618,
@@ -127,40 +127,11 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 1620,
       "linha_fim": 1628,
-      "pontuacao": -4.262,
+      "pontuacao": -4.26,
       "trecho": [
         {
           "linha": 1626,
           "texto": "I. Quando solicitado, viabilizar o deslocamento dos Professores Orientadores de Estágio à UCE para acompanhamento das atividades desenvolvidas pelos estagiários;"
-        }
-      ]
-    },
-    {
-      "id": "ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio#referencias-1",
-      "ppc": "ppc:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
-      "curso": "Técnico em Agropecuária",
-      "campus": "Ivaiporã",
-      "nivel": "médio",
-      "forma": "integrado",
-      "cnct_id": "cnct:tecnico-em-agropecuaria",
-      "tipo": "referencias",
-      "titulo": "REFERÊNCIAS",
-      "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
-      "linha_inicio": 3225,
-      "linha_fim": 3293,
-      "pontuacao": -3.979,
-      "trecho": [
-        {
-          "linha": 3255,
-          "texto": "CHUIEIRE, Mary Stela Ferreira. Concepções sobre a avaliação escolar. **Estudos em avaliação educacional** , v. 19, n. 39, p. 49-64, 2008."
-        },
-        {
-          "linha": 3281,
-          "texto": "INSTITUTO FEDERAL DO PARANÁ. **Resolução nº 23** , de 23 de julho de 2021- Dispõe sobre a política de acompanhamento de egressos nos cursos do Instituto Federal de Educação, Ciência e Tecnologia do Paraná, em todos os níveis e modalidades. Disponível em: https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2022/09/Politica-de-Acompanh amento-de-Egressos.pdf Acesso em: 25 set. 2023."
-        },
-        {
-          "linha": 3291,
-          "texto": "PERRENOUD, Philippe. Formar professores em contextos sociais em mudança: prática reflexiva e participação crítica. **Revista brasileira de educação** , v. 12, n. 5-21, 1999."
         }
       ]
     },
@@ -177,7 +148,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 2659,
       "linha_fim": 2689,
-      "pontuacao": -3.973,
+      "pontuacao": -3.968,
       "trecho": [
         {
           "linha": 2665,
@@ -194,6 +165,35 @@
       ]
     },
     {
+      "id": "ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio#referencias-1",
+      "ppc": "ppc:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+      "curso": "Técnico em Agropecuária",
+      "campus": "Ivaiporã",
+      "nivel": "médio",
+      "forma": "integrado",
+      "cnct_id": "cnct:tecnico-em-agropecuaria",
+      "tipo": "referencias",
+      "titulo": "REFERÊNCIAS",
+      "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
+      "linha_inicio": 3225,
+      "linha_fim": 3293,
+      "pontuacao": -3.967,
+      "trecho": [
+        {
+          "linha": 3255,
+          "texto": "CHUIEIRE, Mary Stela Ferreira. Concepções sobre a avaliação escolar. **Estudos em avaliação educacional** , v. 19, n. 39, p. 49-64, 2008."
+        },
+        {
+          "linha": 3281,
+          "texto": "INSTITUTO FEDERAL DO PARANÁ. **Resolução nº 23** , de 23 de julho de 2021- Dispõe sobre a política de acompanhamento de egressos nos cursos do Instituto Federal de Educação, Ciência e Tecnologia do Paraná, em todos os níveis e modalidades. Disponível em: https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2022/09/Politica-de-Acompanh amento-de-Egressos.pdf Acesso em: 25 set. 2023."
+        },
+        {
+          "linha": 3291,
+          "texto": "PERRENOUD, Philippe. Formar professores em contextos sociais em mudança: prática reflexiva e participação crítica. **Revista brasileira de educação** , v. 12, n. 5-21, 1999."
+        }
+      ]
+    },
+    {
       "id": "ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio#atendimento_estudante-3",
       "ppc": "ppc:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
       "curso": "Técnico em Agropecuária",
@@ -206,7 +206,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 2289,
       "linha_fim": 2441,
-      "pontuacao": -3.956,
+      "pontuacao": -3.945,
       "trecho": [
         {
           "linha": 2291,
@@ -235,7 +235,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 373,
       "linha_fim": 387,
-      "pontuacao": -3.527,
+      "pontuacao": -3.523,
       "trecho": [
         {
           "linha": 377,
@@ -256,7 +256,7 @@
       "path": "base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
       "linha_inicio": 1630,
       "linha_fim": 1650,
-      "pontuacao": -3.209,
+      "pontuacao": -3.204,
       "trecho": [
         {
           "linha": 1636,

@@ -503,7 +503,7 @@ mesmo em debates temáticos interdisciplinares emanados nos diversos componentes
 
 **Matriz curricular do Curso Técnico em Química, integrado ao ensino médio**
 
-|**6.14 Matriz Curricular**|**6.14 Matriz Curricular**|**6.14 Matriz Curricular**|**6.14 Matriz Curricular**|**6.14 Matriz Curricular**|**6.14 Matriz Curricular**|**6.14 Matriz Curricular**|
+|**6.14 Matriz Curricular**|||||||
 |---|---|---|---|---|---|---|
 |**Matriz curricular do Curso Técnico em Química, integrado ao ensino médio**|||||||
 ||||||||
@@ -563,7 +563,7 @@ mesmo em debates temáticos interdisciplinares emanados nos diversos componentes
 
 ## **6.15 Ementas dos Componentes Curriculares**
 
-|**6.15 Ementas dos Componentes Curriculares**|**6.15 Ementas dos Componentes Curriculares**|
+|**6.15 Ementas dos Componentes Curriculares**||
 |---|---|
 |||
 |**Campus Cascavel do IFPR**||
@@ -653,7 +653,7 @@ KOUDELA, I.D. **Jogos Teatrais** . São Paulo: Perspectiva, 1984.
 
 TIPARELI, PERCIVAL. **Arte Brasileira: Arte Indígena do Pré-Colonial à contemporaneidade.** São Paulo: Companhia Editora Nacional, 2006.
 
-|**Campus Cascavel do IFPR**|**Campus Cascavel do IFPR**|
+|**Campus Cascavel do IFPR**||
 |---|---|
 |**Curso:**Técnico em Química|**Eixo Tecnológico:**Produção industrial|
 |**Componente Curricular**: Biologia I||
@@ -1518,7 +1518,7 @@ RUDIO, Franz Victor. **Introdução ao projeto de pesquisa científica** . 43. e
 |Condutivímetro de Bancada|4|
 |Destilador de Água tipo Pilsen|2|
 
-|Estufa de Secagem<br>2<br>Forno Mufla<br>2<br>Geladeira<br>1<br>Liofilizador<br>1<br>Manta Aquecedora para Balão<br>5<br>Moinho de Facas<br>1<br>pHmetro de Bancada<br>5<br>pHmetro de Bolso<br>16<br>Potenciostato/Galvanostato<br>1<br>Turbidímetro de Bancada<br>2<br>Voltímetro Digital<br>1<br>Banho Maria – 30L<br>1<br>Banho Ultrassônico – 1L<br>2<br>Espectrofotômetro UV-VIS com varredura<br>1<br>Espectrofotômetro UV- VIS (Sem<br>varredura)<br>1<br>Medidor Multiparâmetros - Água<br>1<br>Medidor de Oxigênio Dissolvido<br>1<br>Medidor de Cloro Residual Livre e Total<br>1<br>Polarímetro de Bancada<br>1<br>Refratômetro Digital Portátil<br>1<br>Refratômetro Manual de Precisão<br>7<br>Voltímetro Digital<br>2<br>Autoclave<br>1<br>Bloco Microdigestor de proteínas<br>1<br>Capela de Fluxo Laminar<br>1<br>Contador de Colônias<br>1<br>Deionizador de Água<br>1<br>Destilador de Água 3,8L<br>1<br>Destilador de Nitrogênio - Kjeldahl<br>1<br>Evaporador Rotativo<br>1<br>Estufa de Cultura Bacteriológica<br>1<br>Freezer Duplex Frost Free<br>2|Estufa de Secagem<br>2<br>Forno Mufla<br>2<br>Geladeira<br>1<br>Liofilizador<br>1<br>Manta Aquecedora para Balão<br>5<br>Moinho de Facas<br>1<br>pHmetro de Bancada<br>5<br>pHmetro de Bolso<br>16<br>Potenciostato/Galvanostato<br>1<br>Turbidímetro de Bancada<br>2<br>Voltímetro Digital<br>1<br>Banho Maria – 30L<br>1<br>Banho Ultrassônico – 1L<br>2<br>Espectrofotômetro UV-VIS com varredura<br>1<br>Espectrofotômetro UV- VIS (Sem<br>varredura)<br>1<br>Medidor Multiparâmetros - Água<br>1<br>Medidor de Oxigênio Dissolvido<br>1<br>Medidor de Cloro Residual Livre e Total<br>1<br>Polarímetro de Bancada<br>1<br>Refratômetro Digital Portátil<br>1<br>Refratômetro Manual de Precisão<br>7<br>Voltímetro Digital<br>2<br>Autoclave<br>1<br>Bloco Microdigestor de proteínas<br>1<br>Capela de Fluxo Laminar<br>1<br>Contador de Colônias<br>1<br>Deionizador de Água<br>1<br>Destilador de Água 3,8L<br>1<br>Destilador de Nitrogênio - Kjeldahl<br>1<br>Evaporador Rotativo<br>1<br>Estufa de Cultura Bacteriológica<br>1<br>Freezer Duplex Frost Free<br>2|
+|Estufa de Secagem<br>2<br>Forno Mufla<br>2<br>Geladeira<br>1<br>Liofilizador<br>1<br>Manta Aquecedora para Balão<br>5<br>Moinho de Facas<br>1<br>pHmetro de Bancada<br>5<br>pHmetro de Bolso<br>16<br>Potenciostato/Galvanostato<br>1<br>Turbidímetro de Bancada<br>2<br>Voltímetro Digital<br>1<br>Banho Maria – 30L<br>1<br>Banho Ultrassônico – 1L<br>2<br>Espectrofotômetro UV-VIS com varredura<br>1<br>Espectrofotômetro UV- VIS (Sem<br>varredura)<br>1<br>Medidor Multiparâmetros - Água<br>1<br>Medidor de Oxigênio Dissolvido<br>1<br>Medidor de Cloro Residual Livre e Total<br>1<br>Polarímetro de Bancada<br>1<br>Refratômetro Digital Portátil<br>1<br>Refratômetro Manual de Precisão<br>7<br>Voltímetro Digital<br>2<br>Autoclave<br>1<br>Bloco Microdigestor de proteínas<br>1<br>Capela de Fluxo Laminar<br>1<br>Contador de Colônias<br>1<br>Deionizador de Água<br>1<br>Destilador de Água 3,8L<br>1<br>Destilador de Nitrogênio - Kjeldahl<br>1<br>Evaporador Rotativo<br>1<br>Estufa de Cultura Bacteriológica<br>1<br>Freezer Duplex Frost Free<br>2||
 |---|---|
 |Estufa de Secagem|2|
 |Forno Mufla|2|
@@ -1553,7 +1553,7 @@ RUDIO, Franz Victor. **Introdução ao projeto de pesquisa científica** . 43. e
 |Estufa de Cultura Bacteriológica|1|
 |Freezer Duplex Frost Free|2|
 
-|Incubadora tipo B.O.D<br>1<br>Medidor de Oxigênio Dissolvido<br>1<br>Medidor Multiparâmetros - Água<br>1<br>Microscópio Estereoscópio Lupa<br>11<br>Microscópio Binocular<br>22<br>Microscópio Trinocular<br>4<br>Microondas<br>1<br>Moedor de Café<br>1<br>Modelos anatômicos ( divisão celular,<br>coração, cérebro, vírus, célula, DNA)<br>9<br>Torso humano anatômico<br>1<br>Esqueleto humano padrão<br>1<br>Estojos de lâminas permanentes (<br>histologia)<br>2<br>Paquímetro Digital<br>2<br>Fotômetro de Chamas<br>1<br>Vidrarias diversas, lâminas, lamínulas,<br>reagente e meios de cultura, que atendem<br>as demandas dos quatro laboratórios<br>sim|Incubadora tipo B.O.D<br>1<br>Medidor de Oxigênio Dissolvido<br>1<br>Medidor Multiparâmetros - Água<br>1<br>Microscópio Estereoscópio Lupa<br>11<br>Microscópio Binocular<br>22<br>Microscópio Trinocular<br>4<br>Microondas<br>1<br>Moedor de Café<br>1<br>Modelos anatômicos ( divisão celular,<br>coração, cérebro, vírus, célula, DNA)<br>9<br>Torso humano anatômico<br>1<br>Esqueleto humano padrão<br>1<br>Estojos de lâminas permanentes (<br>histologia)<br>2<br>Paquímetro Digital<br>2<br>Fotômetro de Chamas<br>1<br>Vidrarias diversas, lâminas, lamínulas,<br>reagente e meios de cultura, que atendem<br>as demandas dos quatro laboratórios<br>sim|
+|Incubadora tipo B.O.D<br>1<br>Medidor de Oxigênio Dissolvido<br>1<br>Medidor Multiparâmetros - Água<br>1<br>Microscópio Estereoscópio Lupa<br>11<br>Microscópio Binocular<br>22<br>Microscópio Trinocular<br>4<br>Microondas<br>1<br>Moedor de Café<br>1<br>Modelos anatômicos ( divisão celular,<br>coração, cérebro, vírus, célula, DNA)<br>9<br>Torso humano anatômico<br>1<br>Esqueleto humano padrão<br>1<br>Estojos de lâminas permanentes (<br>histologia)<br>2<br>Paquímetro Digital<br>2<br>Fotômetro de Chamas<br>1<br>Vidrarias diversas, lâminas, lamínulas,<br>reagente e meios de cultura, que atendem<br>as demandas dos quatro laboratórios<br>sim||
 |---|---|
 |Incubadora tipo B.O.D|1|
 |Medidor de Oxigênio Dissolvido|1|
@@ -1649,7 +1649,7 @@ Neste sentido, o _campus_ oferece condições de acesso e materiais específicos
 
 ## **TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|||
 |---|---|---|
 |**NOME**|**TITULAÇÃO**|**CARGO**|
 |Alessandra Pereira do Amaral dos<br>Santos|Especialização|Assistente em Administração|

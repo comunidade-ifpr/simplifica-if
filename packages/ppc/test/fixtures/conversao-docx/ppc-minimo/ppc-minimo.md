@@ -36,8 +36,8 @@ Texto depois da lista.
 | 1º Ano | Subtotal (Total do período) | 7 | 280 | 210 |
 | 2º Ano | Banco de Dados | 4 | 160 | 120 |
 | 2º Ano | Subtotal (Total do período) | 4 | 160 | 120 |
-| Estágio Supervisionado | Estágio Supervisionado |  | 240 | 200 |
-| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO |  | 680 | 530 |
+| Estágio Supervisionado |  |  | 240 | 200 |
+| CARGA HORÁRIA TOTAL DO CURSO |  |  | 680 | 530 |
 
 Nota: a matriz acima é fictícia.
 

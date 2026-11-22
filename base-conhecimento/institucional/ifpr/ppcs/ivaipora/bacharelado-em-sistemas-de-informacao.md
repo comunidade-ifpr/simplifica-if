@@ -926,7 +926,7 @@ Os Ciclos de aprendizagem e seus Eixos temáticos se dividem em:
 
    - Eixo Temático: Sistemas e as organizações
 
-|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||||
 |---|---|---|---|---|---|---|---|
 |(Criação Lei nº 11.892 de 29/11/2008)||||||||
 |_Campus_Ivaiporã||||||||
@@ -1020,7 +1020,7 @@ Os Ciclos de aprendizagem e seus Eixos temáticos se dividem em:
 
 ## _**4.1.3 Componentes Optativos**_
 
-|**Optativos**|**Optativos**|**Optativos**|**Optativos**|
+|**Optativos**||||
 |---|---|---|---|
 |**Componente Curricular**|**Semestre**|**HA***|**HR****|
 |Software Livre|2|40|33|
@@ -1126,7 +1126,7 @@ As atividades poderão assumir formatos como programas, projetos, cursos, oficin
 
 Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecimento:** Ciências Exatas e da Terra _Algoritmos_ **Carga Horária:** 67h **Período letivo:** 1º Semestre **Ementa:** Estudo das formas para representação do pensamento lógico através das técnicas de desenvolvimento de algoritmos. Representação e manipulação de dados. Construções de algoritmos sequenciais, condicionais e com estruturas de repetição. Manipulação de estruturas de dados homogêneas e heterogêneas e utilização de subrotinas e funções. **Bibliografia Básica:** MANZANO, José Augusto N. G.; OLIVEIRA, Jayr Figueiredo de. **Algoritmos** : lógica para desenvolvimento de programação de computadores. 28. ed., rev. e atual. São Paulo: Érica, 2016. BACKES, André Ricardo. **Algoritmos e estruturas de dados em linguagem C** . Rio de Janeiro: LTC, 2023 PUGA, Sandra; RISSETTI, Gerson. **Lógica de programação e estruturas de dados** : com aplicações em Java. 2. ed. São Paulo: Pearson Prentice Hall, 2009. SALVETTI, Dirceu Douglas; BARBOSA, Lisbete Madsen. **Algoritmos** . São Paulo: Pearson Education do Brasil, 1998. CORMEN, Thomas H _et al._ **Algoritmos** : teoria e prática. 4. ed. Rio de Janeiro: LTC, 2024 **Bibliografia Complementar:** FEOFILOFF, Paulo. A **lgoritmos: em linguagem C** . Rio de Janeiro: Elsevier: Campus, 2009. MANZANO, José Augusto N.G; MATOS, Ecivaldo; LOURENÇO, André Evandro. **Algoritmos** : técnicas de programação. 2. ed. São Paulo: Érica, 2015 ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. **Fundamentos da programação de computadores** : algoritmos, pascal, C/ C++ (padrão ANSI) e Java. 3. ed. São Paulo: Pearson Prentice Hall, 2012. EDELWEISS, Nina; LIVI, Maria Aparecida Castro. **Algoritmos e programação com exemplos em Pascal e C** . Porto Alegre: Bookman,. 2014. GUIMARÃES, Angelo de Moura; LAGES, Newton Alberto de Castilho. **Algoritmos e estruturas de dados** . Rio de Janeiro: LTC, 1994.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Arquitetura e Organização de Computadores_||
@@ -1135,7 +1135,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |<br>**Bibliografia Básica:**<br>STALLINGS, William.**Arquitetura e organização de computadores.**8. ed. São Paulo:<br>Pearson, 2010.<br>DELGADO, José; RIBEIRO, Carlos N.**Arquitetura de computadores**. 5. ed. Rio de<br>Janeiro: LTC, 2017.<br>TANENBAUM, Andrew S.; AUSTIN, Todd.**Organização estruturada de computadores.**<br>5.ed. São Paulo: Pearson Prentice Hall, 2007.<br>SILVA, Luiz Ricardo Mantovani da.**Organização e arquitetura de computadores:**uma<br>jornada do fundamental ao inovador. Rio de Janeiro: Freitas Bastos, 2024.<br>CARVALHO, André Ponce de Leon F. de; LORENA, Ana Carolina.**Introdução à**<br>**computação:**hardware, software e dados. Rio de Janeiro: LTC, 2017.||
 |**Bibliografia Complementar:**<br>HENNESSY, John L.; PATTERSON, David A.**Organização e projeto de computadores:**<br>interface hardware/software**.**Rio de Janeiro: Elsevier, 2017.<br>WEBER, R. F.,**Fundamentos de Arquitetura de Computadores.**4. ed, Bookman, 2012.<br>LOURENÇO, Antonio Carlos de; CRUZ, Eduardo Cesar Alves; FERREIRA, Sabrina<br>Rodero; CHOUERI JÚNIOR, Salomão.**Circuitos digitais**. 9. ed. São Paulo: Érica, 2007.<br>MONTEIRO, Mário A.**Introdução à organização de computadore**s. 5. ed. Rio de Janeiro:<br>LTC, 2007.<br>RINO, José Pedro; COSTA, Bismarck Vaz da.**ABC da simulação computacional**. São<br>Paulo: Livraria da Física, 2013.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso: **Sistemas deInformação|<br>**Área do Conhecimento: **CiênciasExatas e daTerra|
 |_Fundamentos Matemáticos para Computação_||
@@ -1144,7 +1144,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |**Bibliografia Básica:**<br>GERSTING, J. L.**Fundamentos matemáticos para a ciência da computação**: matemática<br>discreta e suas aplicações. 7. ed. Rio de Janeiro: LTC, 2017.<br>IEZZI, G.; MURAKAMI, C.**Fundamentos de matemática elementar 1**: conjuntos e funções.<br>9. ed. São Paulo: Atual, 2013.<br>IEZZI, G.; HAZZAN, S.**Fundamentos de matemática elementar 4**: sequências, matrizes,<br>determinantes, sistemas. 8. ed. São Paulo: Atual, 2013.<br>ESPINOSA, I. C. O. N.; BISCOLLA, L. M. C. C. O.; BARBIERI FILHO, P. Á**lgebra linear**<br>**para computação**. Rio de Janeiro: LTC, 2007.<br>SANTOS, N. M.**Vetores e matrizes**: uma introdução à álgebra linear. 4. ed. São Paulo:<br>Cengage Learning, 2012.||
 |**Bibliografia Complementar:**<br>CARNIELLI, W. A.; EPSTEIN, R. L.**Computabilidade, funções computáveis, lógica e os**<br>**fundamentos da matemática**. 2. ed. São Paulo: Editora UNESP, 2009.<br>MCCALLUM, W. G.; CONNALLY, E.; HUGHES-HALLETT, D.**Álgebra**: forma e função.<br>Rio de Janeiro: LTC, 2011.<br>THOMAS, G. B.; WEIR, M. D.; HASS, J.**Cálculo:**volume 1. 12. ed. São Paulo: Pearson<br>Education do Brasil, 2012.<br>SCHEINERMAN, E. R.**Matemática Discreta**: uma introdução. 3. ed. São Paulo: Cengage<br>Learning, 2017.<br>SILVA, S. M.; SILVA, E. M.; SILVA, E. M.**Matemática básica para os cursos superiores**.<br>São Paulo: Atlas, 2011.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação<br>|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Fundamentos da Computação_||
@@ -1171,7 +1171,7 @@ SILVA, Maurício Samy. **CSS3 :** desenvolva aplicações web profissionais com 
 
 NIEDERAUER, Juliano. **PHP para quem conhece PHP:** Recursos avançados para a criação de websites dinâmicos. 5. ed. São Paulo: Novatec, 2017. MANZANO, José Augusto N.G; TOLEDO, Suely Alves de. **Guia de orientação e desenvolvimento de sites HTML, XHTML, CSS e JavaScript/JScript** . 2. Ed. São Paulo: Érica, 2010. ROBSON, Elisabeth; FREEMAN, Eric. **Use a cabeça!:** HTML com CSS e XHTML. 2. ed. Rio de Janeiro: Alta Books, 2008. BRITO, Diego. **Criação de sites na era da web 2.0:** desenvolva sites profissionais através de uma metodologia completa. Rio de Janeiro: Brasport, 2011. RIORDAN, Rebecca; VIEIRA, Eveline. **Use a cabeça!:** Ajax profissional. Rio de Janeiro: Alta Books, 2009.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Comunicação e Expressão_||
@@ -1182,7 +1182,7 @@ NIEDERAUER, Juliano. **PHP para quem conhece PHP:** Recursos avançados para a c
 
 ## _**4.2.2 Disciplinas Obrigatórias - 2º Semestre**_
 
-|||Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|||Campus Ivaiporã do IFPR||
 |---|---|---|---|
 |**Curso:**Sistemas de Informação|||**Área do Conhecimento:**Ciências Exatas e da Terra|
 ||_Linguagem de Programação I_|||
@@ -1202,7 +1202,7 @@ SCHILDT, Herbert. **C: completo e total.** 3.ed. São Paulo: Makron Books, 1997.
 
 DEITEL, Paul; DEITEL, Harvey. **C: Como Programar.** 8. ed. São Paulo: Pearson, 2016. FORBELLONE, André Luiz Villar; EBERSPÄCHER, Henri Frederico. **Lógica de Programação: A construção de algoritmos e estruturas de dados.** 4. ed. São Paulo: Pearson, 2015. TURBAK, F.; GIFFORD D. **Design Concepts in Programming Languages.** 1. ed., The MIT Press, 2008. ASCENCIO, A. F. G.; CAMPOS, E. e A. V. **Fundamentos de programação de computadore** s: Algoritmos, Pascal, C/C++ e Java. 3. ed. São Paulo: Pearson Education, 2012. ALVES, William Pereira. **Linguagem e lógica de programação** . 1. ed. São Paulo: Érica, 2014
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Probabilidade e Estatística_||
@@ -1237,7 +1237,7 @@ BLUM, Richard. **Linux para leigos** . Rio de Janeiro: Alta Books, 2023.
 
 STUART, Brian L. **Princípios de sistemas operacionais: projetos e aplicações** . São Paulo: Cengage Learning, 2011.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Banco de Dados_||
@@ -1246,7 +1246,7 @@ STUART, Brian L. **Princípios de sistemas operacionais: projetos e aplicações
 |<br>**Bibliografia Básica:**<br>SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S.**Sistema de banco de**<br>**dados.**7. ed. Rio de Janeiro: LTC, 2020.<br>NIELD, Thomas.**Introdução à linguagem SQL**: abordagem prática para iniciantes. São<br>Paulo: Novatec, 2016.<br>MACHADO, Felipe Nery Rodrigues.**Banco de dados:**projeto e implementação. 4. ed. São<br>Paulo: Érica, 2020.<br>ZHAO, Alice.**SQL guia prático**: um guia para o uso de SQL. 4. ed. São Paulo: Novatec,<br>2023.<br>HEUSER, Carlos Alberto.**Banco de dados relacional**: conceitos, SQL e administração. Porto<br>Alegre: Ed. do Autor, 2019.||
 |**Bibliografia Complementar:**<br>ALVES, William Pereira.**Banco de Dados: Teoria e Desenvolvimento**.  São Paulo : Editora<br>Erica, 2009.<br>ELMASRI, Ramez; NAVATHE, Sham**. Sistemas de banco de dados**. 6. ed. São Paulo:<br>Pearson Education do Brasil, 2011<br>PEREIRA NETO, Álvaro.**PostgreSQL: técnicas avançadas:**versões open source 7.x e 8.x<br>soluções para desenvolvedores e administradores de bancos de dados. 4. ed. São Paulo: Érica,<br>2007.<br>SOUZA, Thiago Hernandes de.**SQL:**_avançado e teoria relacional._Rio de Janeiro: Ciência<br>Moderna, 2013.<br>HEUSER, Carlos Alberto.**Projeto de banco de dados**. 6. ed. Porto Alegre: Bookman, 2009.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Desenvolvimento de Novos Negócios e Empreendedorismo._||
@@ -1255,7 +1255,7 @@ STUART, Brian L. **Princípios de sistemas operacionais: projetos e aplicações
 |**Bibliografia Básica:**<br>ALMEIDA, Dagoberto Alves de.**Desenvolvimento vs. desigualdade:**desafios e<br>oportunidades do Brasil no contexto mundial da educação, ciência, tecnologia e<br>empreendedorismo. São Paulo: Dialética, 2023.<br>DORNELAS, José Carlos Assis.**Empreendedorismo:**transformando ideias em negócios. 9.<br>ed. São Paulo: Atlas, 2023.<br>ARIELI, Inbal.**Chutzpah:**porque Israel é um hub de inovação e empreendedorismo. Porto<br>Alegre: Bookman, 2024.<br>DORNELAS, José Carlos Assis.**Empreendedorismo: transformando ideias em negócios**. 5.<br>ed. Rio de Janeiro: LTC, 2014.<br>THIEL, Peter A.**De zero a um: o que aprender sobre empreendedorismo com o Vale do**<br>**Silício**. Rio de Janeiro: Objetiva, 2014.||
 |**Bibliografia Complementar:**<br>CHIAVENATO, Idalberto.**Empreendedorismo: dando asas ao espírito empreendedor**. 4.<br>ed. Barueri: Manole, 2012.<br>GRANDO, Nei (Org.).**Empreendedorismo inovador: como criar startups de tecnologia no**<br>**Brasil**. São Paulo: Évora, 2012<br>PESCE, Bel.**A menina do Vale: como o empreendedorismo pode mudar sua vida**. Rio de<br>Janeiro: Casa da Palavra, 2012.<br>WALLIS, Ian.**As 50 Melhores Ideias de Negócios Dos Últimos 50 Anos.**Best Business,<br>2013.<br>PEIXOTO FILHO, Heitor Mello.**Empreendedorismo de A a Z**: casos de quem começou bem<br>e terminou melhor ainda. São Paulo, SP: Saint Paul, 2011.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Extensão I_||
@@ -1270,7 +1270,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 CARVALHO, Thiago Leite e. **Orientação a objetos** : aprenda seus conceitos e suas aplicabilidades de forma efetiva. São Paulo: Casa do Código, 2016. ANICHE, Maurício. **Orientação a objetos e SOLID para ninjas** : projetando classes flexíveis. São Paulo: Casa do Código, 2015 DEITEL, Paul J.; DEITEL, Harvey M. **Java** : como programar. 10. ed. São Paulo: Pearson Education do Brasil, 2016. **Bibliografia Complementar:** SANTOS, Rafael. **Introdução à programação orientada a objetos usando Java** . Rio de Janeiro: Elsevier: 2003. MANZANO, José Augusto N. G.; COSTA JUNIOR, Roberto Affonso da. **Java 8 - programação de computadores** : guia prático de introdução, orientação e desenvolvimento. 1. ed. São Paulo: Érica, 2014. MANZANO, José Augusto N.G; OLIVEIRA, Jayr Figueiredo de. **Algoritmos: lógica para desenvolvimento de programação de computadores** . 28. ed. São Paulo: Érica, 2016. ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. **Fundamentos da programação de computadores: algoritmos, pascal, C/ C++ (padrão ANSI) e Java** . 3. ed. São Paulo: Pearson Prentice Hall, 2012. FRANCO, Márcia Häfele Islabão; BERTAGNOLLI, Silvia de Castro. **Desenvolvimento de software III:** programação de sistemas web orientada a objetos em Java. Porto Alegre: Bookman, 2016.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Engenharia de Software I_||
@@ -1279,7 +1279,7 @@ CARVALHO, Thiago Leite e. **Orientação a objetos** : aprenda seus conceitos e 
 |**Bibliografia Básica:**<br>SOMMERVILLE, Ian.**Engenharia de software**. 10. ed. São Paulo: Pearson, 2019.<br>PRESSMAN, Roger S.; MAXIM, Bruce R.**Engenharia de software**: uma abordagem<br>profissional. 9. ed. Porto Alegre: AMGH, 2021.<br>WAZLAWICK, Raul Sidnei.**Engenharia de software: conceitos e práticas**. 2. ed. Rio de<br>Janeiro: Elsevier, 2019.<br>PAULA FILHO, Wilson de Pádua.**Engenharia de software**: projetos e processos. 4. ed. Rio<br>de Janeiro: LTC, 2019.<br>RICHARDS, Mark; FORD, Neal.**Fundamentos da arquitetura de software**: uma<br>abordagem de engenharia. Rio de Janeiro: Alta Books, 2024.||
 |**Bibliografia Complementar:**<br>ENGHOLM JUNIOR, Hélio.**Engenharia de software na prática**. São Paulo: Novatec, 2010.<br>VAZQUEZ, Carlos Eduardo; SIMÕES, Guilherme Siqueira; ALBERT, Renato Machado**.**<br>**Análise de pontos de função:**medição, estimativas e gerenciamento de projetos de software.<br>12. Ed. São Paulo: Érica, 2013.<br>GÓES, Wilson Moraes.**Aprenda UML por meio de estudos de caso.**1. ed. São Paulo:<br>Novatec, 2014.<br>BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar.**UML**: guia do usuário. 2. ed., rev.<br>e atual. Rio de Janeiro: Elsevier, 2012.<br>MACHADO, Felipe Nery Rodrigues.**Análise e gestão de requisitos de software:**onde<br>nascem os sistemas**.**3. ed. São Paulo: Érica, 2015||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |Redes de Computadores I||
@@ -1288,7 +1288,7 @@ CARVALHO, Thiago Leite e. **Orientação a objetos** : aprenda seus conceitos e 
 |**Bibliografia Básica:**<br>MARIN, Paulo S.**Cabeamento estruturado**. 2. Ed. São Paulo: Érica, 2020.<br>STALLINGS, William; VIEIRA, Daniel.**Criptografia e segurança de redes**: princípios e<br>práticas. 4. ed. São Paulo: Prentice-Hall, 2008.<br>TANENBAUM, Andrew S.; FEAMSTER, Nick; WETHERALL, D.**Redes de computadores**.<br>6. ed. São Paulo: Pearson; Porto Alegre: Bookman, 2021<br>COMER, Douglas.**Redes de computadores e internet.**6. ed. Porto Alegre: Bookman, 2016.<br>RUBINSTEIN, Marcelo G.; COSTA, Luís Henrique Maciel Kosmalski; DUARTE, Otto Carlos<br>M. B.**Redes domiciliares e redes de acesso à Internet**. Rio de Janeiro: Ciência Moderna,<br>2021||
 |**Bibliografia Complementar:**<br>KUROSE, James F.; ROSS, Keith W.**Redes de computadores e a internet: uma abordagem**<br>**top-down**. 5. ed. São Paulo: Pearson Education do Brasil, 2010.<br>OGLIARI, Ricardo da Silva.**Internet das coisas para desenvolvedores**. São Paulo: Novatec,<br>2019.<br>STATO FILHO, André.**Linux: controle de redes.**Florianópolis: Visual Books, 2009.<br>MORIMOTO, Carlos E.**Redes: guia prático**. 2. ed., ampl. e atual. Porto Alegre: Sul Editores,<br>2011.<br>FOROUZAN, Behrouz A.; FEGAN, Sophia Jung; GRIESI, Ariovaldo.**Comunicação de**<br>**dados e redes de computadores**. 4. ed. São Paulo: McGraw-Hill, 2008.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Tópicos Avançados em Banco de Dados_||
@@ -1297,7 +1297,7 @@ CARVALHO, Thiago Leite e. **Orientação a objetos** : aprenda seus conceitos e 
 |**Bibliografia Básica:**<br>MACHADO, Felipe Nery Rodrigues.**Banco de dados: projeto e implementação**. 4. ed. São<br>Paulo: Érica, 2020.<br>BENTO, Evaldo Junior.**Desenvolvimento web com PHP e MySQL**: edição atualizada para<br>PHP 8. São Paulo: Casa do Código, 2023.<br>ZHAO, Alice.**SQL guia prático**: um guia para uso de SQL. 4. ed. Rio de Janeiro: Novatec,<br>2024.<br>ELMASRI, Ramez; NAVATHE, Sham.**Sistemas de banco de dados**. 6. ed. São Paulo:<br>Pearson Education do Brasil, 2011.<br>SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S..**Sistema de banco de**<br>**dados**. 7. ed. Rio de Janeiro: LTC, 2020.||
 |**Bibliografia Complementar:**<br>DATE, C. J..**Introdução a sistemas de bancos de dados**. Rio de Janeiro: Campus, 2004.<br>SOUZA, Thiago Hernandes de.**SQL: avançado e teoria relacional**. Rio de Janeiro: Ciência<br>Moderna, 2013.<br>CARVALHO, André Ponce de Leon F. de; MENEZES, Angelo Garangau; BONIDIA, Robson<br>Parmezan.**Ciência de dados**: fundamentos e aplicações. Rio de Janeiro: LTC, 2024.<br>ALVES, William Pereira.**Banco de dados: teoria e desenvolvimento.**1. ed. São Paulo: Érica,<br>2009.<br>HEUSER, Carlos Alberto.**Projeto de banco de dados.**6. ed. Porto Alegre: Bookman, 2009.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso: **Sistemas deInformação|**Área do Conhecimento: **CiênciasExatas e daTerra|
 |_Filosofia e Ética_||
@@ -1310,7 +1310,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 ## _**4.2.4 Disciplinas Obrigatórias - 4º Semestre**_
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Estrutura de Dados_||
@@ -1319,7 +1319,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |**Bibliografia Básica:**<br>TENENBAUM, Aaron M.; LANGSAM, Yedidyah; AUGENSTEIN, Moshe.**Estrutura de**<br>**dados usando C**. São Paulo: Makron Books, 1995.<br>CARVALHO, Thiago Leite e.**Estrutura de dados**: domine as práticas em C, Java, C#, Python<br>e JavaScript. São Paulo: Casa do Código, 2024.<br>FORBELLONE, André Luiz Villar; EBERSPÄCHER, Henri Frederico.**Lógica de**<br>**programação: a construção de algoritmos e estruturas de dados**. 3. ed. São Paulo: Pearson<br>Prentice Hall, 2005.<br>PUGA, Sandra; RISSETTI, Gerson.**Lógica de programação e estruturas de dados.**3. ed.<br>São Paulo: Pearson Education do Brasil, 2017.<br>CORMEN, Thomas H_et al._ **Algoritmos**: teoria e prática. 4. ed. Rio de Janeiro: LTC, 2024||
 |**Bibliografia Complementar:**<br>GUIMARÃES, Angelo de Moura; LAGES, Newton Alberto de Castilho.**Algoritmos e**<br>**estruturas de dados.**Rio de Janeiro: LTC, c1994.<br>PIVA JÚNIOR, Dilermando_et al._ **Algoritmos e programação de computadores.**2. ed. Rio<br>de Janeiro: Elsevier, 2019.<br>SZWARCFITER, Jayme Luiz; MARKENZON, Lilian.**Estruturas de dados e seus**<br>**algoritmos.**3 ed.. Rio de Janeiro: LTC, 2010.<br>BACKES, André Ricardo.**Linguagem C: completa e descomplicada**. Rio de Janeiro:<br>Elsevier, 2013.<br>GOODRICH, Michael T.; TAMASSIA, Roberto.**Estruturas de dados e algoritmos em Java**.<br>5. ed. Porto Alegre: Bookman, 2013.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Redes de Computadores II_||
@@ -1328,7 +1328,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |**Bibliografia Básica:**<br>MARIN, Paulo S.**Cabeamento estruturado**. 2. Ed. São Paulo: Érica, 2020.<br>STALLINGS, William; VIEIRA, Daniel.**Criptografia e segurança de redes**: princípios e<br>práticas. 4. ed. São Paulo: Prentice-Hall, 2008.<br>TANENBAUM, Andrew S.; FEAMSTER, Nick; WETHERALL, D.**Redes de computadores**.<br>6. ed. São Paulo: Pearson; Porto Alegre: Bookman, 2021<br>COMER, Douglas.**Redes de computadores e internet.**6. ed. Porto Alegre: Bookman, 2016.<br>RUBINSTEIN, Marcelo G.; COSTA, Luís Henrique Maciel Kosmalski; DUARTE, Otto Carlos<br>M. B.**Redes domiciliares e redes de acesso à Internet**. Rio de Janeiro: Ciência Moderna,<br>2021||
 |**Bibliografia Complementar:**<br>KUROSE, James F.; ROSS, Keith W.**Redes de computadores e a internet: uma abordagem**<br>**top-down**. 5. ed. São Paulo: Pearson Education do Brasil, 2010.<br>OGLIARI, Ricardo da Silva.**Internet das coisas para desenvolvedores**. São Paulo: Novatec,<br>2019.<br>STATO FILHO, André.**Linux: controle de redes.**Florianópolis: Visual Books, 2009.<br>MORIMOTO, Carlos E.**Redes: guia prático**. 2. ed., ampl. e atual. Porto Alegre: Sul Editores,<br>2011.<br>FOROUZAN, Behrouz A.; FEGAN, Sophia Jung; GRIESI, Ariovaldo.**Comunicação de**<br>**dados e redes de computadores**. 4. ed. São Paulo: McGraw-Hill, 2008.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Business Intelligence_||
@@ -1341,7 +1341,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 ## _**4.2.5 Disciplinas Obrigatórias - 5º Semestre**_
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Engenharia de Software II_||
@@ -1356,7 +1356,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecimento:** Ciências Exatas e da Terra _Programação Web I_ **Carga Horária:** 67h **Período letivo:** 5º Semestre **Ementa:** Origens, estrutura e administração da Internet. Principais serviços e protocolos de aplicação. Arquitetura da World Wide Web: clientes, servidores, domínios, DNS. Linguagem de marcação HTML. Folhas de estilos CSS. Linguagens client-side e server-side. Desenvolvimento de aplicações para a Web. **Bibliografia Básica:** FERRAZ, Reinaldo. **Acessibilidade na Web** : boas práticas para construir sites e aplicações acessíveis. São Paulo: Casa do Código, 2020. PONTES, Guilherme. **Progressive Web App** s: Construa aplicações progressivas com React. São Paulo: Casa do Código, 2018 EIS, Diego. Guia Front-End: **O caminho das pedras para ser um dev Front-End** . São Paulo: Casa do Código, 2015. NIEDERAUER, Juliano. **Web interativa com Ajax e PHP** . 2.ed. São Paulo: Novatec, 2013. PEDRO, Paulo Henrique Santo. **HTML e CSS** . São Paulo: Ed. SENAC, 2024. **Bibliografia Complementar:** NIEDERAUER, Juliano. **PHP para quem conhece PHP:** Recursos avançados para a criação de websites dinâmicos. 5. ed. São Paulo: Novatec, 2017. FURTADO, Celso Marcos. **Introdução ao DNS** : aprenda a instalar e configurar uma infraestrutura de DNS na prática. São Paulo: Novatec, 2016. BRITO, Diego. **Criação de sites na era da web 2.0** : desenvolva sites profissionais através de uma metodologia completa. Rio de Janeiro: Brasport, 2011. TERUEL, Evandro Carlos. **HTML5** : guia prático. 2. ed. rev., atual. e ampl. São Paulo: Érica, 2014. SILVA, Maurício Samy. **React** : aprenda praticando. São Paulo: Novatec, 2021
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Sistemas Distribuídos_||
@@ -1365,7 +1365,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |<br>**Bibliografia Básica:**<br>TANENBAUM, Andrew S.**Sistemas distribuídos:**princípios e paradigmas. 2. ed. São Paulo:<br>Pearson Prentice Hall, 2007.<br>MANOEL VERAS DE SOUSA NETO. 2. ed.**Virtualização:**tecnologia central do<br>datacenter**.**Rio de janeiro: Editora Brasport, 2016.<br>BURNS, Brendan; BEDA, Joe; HIGHTOWER, Kelsey.**Kubernetes Básico:**Mergulhe no<br>futuro da infraestrutura. São Paulo: Novatec, 2020.<br>KUROSE, James F.; ROSS, Keith W.**Redes de computadores e a internet: uma abordagem**<br>**top-down**. 5. ed. São Paulo: Pearson Education do Brasil, 2010.<br>FOROUZAN, Behrouz A.; FEGAN, Sophia Jung.**Comunicação de dados e redes de**<br>**computadores**. 4. ed. São Paulo: McGraw-Hill, 2008||
 |**Bibliografia Complementar:**<br>MANOEL VERAS DE SOUSA NETO. 2. ed.**Linux Para Servidores.**Bauru: Viena, 2019.<br>VITALINO, Jeferson Fernando Noronha; CASTRO, Marcus André Nunes.**Descomplicando**<br>**o Docker.**2. Ed. Rio de janeiro: Editora Brasport, 2018.<br>MORIMOTO, Carlos E.**Redes: guia prático.**2. ed., ampl. e atual. Porto Alegre: Sul Editores,<br>2011.<br>MORIMOTO, Carlos E.**Linux: guia prático.**Porto Alegre: Sul Editores, 2009.<br>COMER, Douglas.**Redes de computadores e internet**. 6. ed. Porto Alegre: Bookman, 2016.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Extensão IV_||
@@ -1402,7 +1402,7 @@ PONTES, Guilherme. **Progressive Web Apps** : Construa aplicações progressivas
 
 EIS, Diego. **Guia Front-End** : O caminho das pedras para ser um dev Front-End. São Paulo: Casa do Código, 2015 **.**
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Auditoria e Segurança de Sistemas_||
@@ -1417,7 +1417,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 Linguagens de programação para Mineração de Dados; Conceitos do processo de descoberta de conhecimento; Técnicas para  visualização de dados; Técnicas de preparação de dados; Amostragem; Classificação; Regressão; Detecção de agrupamentos; Regras de Associação; Detecção de tendências; Algoritmos Rasos; Algoritmos Ensemble; Mineração de texto. **Bibliografia Básica:** AMARAL, Fernando. **Introdução à ciência de dados: mineração de dados e Big Data** . Rio de Janeiro: Alta Books, c2016. CASTRO, Leandro Nunes de; FERRARI, Daniel Gomes. **Introdução à mineração de dados: conceitos básicos, algoritmos e aplicações** . São Paulo: Saraiva, 2016. SILVA, Leandro Augusto da; PERES, Sarajane Marques; BOSCARIOLI, Clodis. **Introdução à mineração de dados: com aplicações em R** . Rio de Janeiro: Elsevier, 2016. PROVOST, Foster; FAWCETT, Tom. **Data science para negócios: o que você precisa saber sobre a mineração de dados e pensamento analítico de dados.** Rio de Janeiro: Alta Books, 2016. ASSUNÇÃO, Joaquim V. C. **Uma breve introdução à mineração de dados** : bases para a ciência de dados, com exemplos em R. São Paulo: Novatec, 2021. **Bibliografia Complementar:** CARVALHO, Luís Alfredo Vidal de. **Datamining: a mineração de dados no marketing, medicina, economia, engenharia e administração.** Rio de Janeiro: Ciência Moderna, c2005. MOORE, David S.; NOTZ, William; FLIGNER, Michael A.. **A estatística básica e sua prática.** 7. ed. Rio de Janeiro: LTC, 2017. KABACOFF, Robert. **R in action: data analysis and graphics with R.** New York: Manning, 2015. MENEZES, Nilo Ney Coutinho. **Introdução à programação com Python: algoritmos e lógica de programação para iniciantes.** 3. ed., rev. e ampl. São Paulo: Novatec, 2019. SCHILDT, Herbert. **Java para iniciantes: crie, compile e execute programas Java rapidamente** . 6. ed. Porto Alegre: Bookman, 2015.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Extensão V_||
@@ -1428,7 +1428,7 @@ Linguagens de programação para Mineração de Dados; Conceitos do processo de 
 
 ## _**4.2.7 Disciplinas Obrigatórias - 7º Semestre**_
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Sistemas Inteligentes_||
@@ -1449,7 +1449,7 @@ LAKATOS, Eva Maria; MARCONI, Marina de Andrade. **Metodologia do trabalho cient�
 
 **Bibliografia Complementar:** MEDEIROS, João Bosco; TOMASI, Carolina. **Redação técnica** : elaboração de relatórios técnico-científicos e técnica de normalização textual: teses, dissertações, monografias, relatórios técnico-científicos, TCC. 2. ed. São Paulo: Atlas, 2010 CASTRO, Claudio de Moura. **A Prática da Pesquisa. São Paulo** : Pearson Prentice Hall, 2006. MARCONI, Marina de Andrade; LAKATOS, Eva Maria. **Metodologia científica** : ciência e conhecimento científico, métodos científicos, teoria, hipóteses e variáveis, metodologia jurídica. 6. ed. São Paulo: Atlas, 2011. MAGALHÃES, Gildo. **Introdução à Metodologia da Pesquisa – Caminhos da Ciência e Tecnologia.** São Paulo: Ática, 2005. MEDEIROS, João Bosco. **Redação Científica: a prática de fichamentos, resumos e resenhas.** 7. ed. São Paulo: Editora Atlas, 2005.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |Projetos||
@@ -1490,7 +1490,7 @@ BANZI, Massimo. **Primeiros passos com o Arduino** . São Paulo: Novatec, 2012.
 
 Mendonça, Alexandre, Zelenovsky, Ricardo. **Módulos e Sensores** : Guia de Interface com o Arduino. 1ª edição. São Paulo: Érica, 2017.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Design de Interfaces Humano-Computador_||
@@ -1499,7 +1499,7 @@ Mendonça, Alexandre, Zelenovsky, Ricardo. **Módulos e Sensores** : Guia de Int
 |**Bibliografia Básica:**<br>PREECE, Jennifer; ROGERS, Yvonne; SHARP, Helen.**Design de interação: além da**<br>**interação homem-computador**. 3.ed. Porto Alegre: Bookman, 2013.<br>SOBRAL, Wilma Sirlange.**Design de interfaces**: introdução. São Paulo: Érica, 2019.<br>GREEVER, Tom.**Articulando decisões de design**: converse com os stakeholders, mantenha<br>sua sanidade e crie a melhor experiência do usuário. São Paulo: Novatec, 2021.<br>STATI, Cesar Ricardo; SARMENTO, Camila Freitas.**Experiência do usuário (UX)**. Curitiba:<br>InterSaberes, 2021.<br>SANTA ROSA, José Guilherme.**Teste de usabilidade**: aprimorando a experiência do usuário<br>e a interação humano-computador. Rio de Janeiro: 2AB, 2021.||
 |**Bibliografia Complementar:**<br>BÜRDEK, Bernhard E. Design:**História, teoria e prática do design de produtos**.  2. ed. São<br>Paulo: Editora Blucher, 2010.<br>CARDOSO, Leandro da Conceição.**Design de aplicativos**. Editora Intersaberes, 2022.<br>E-book.<br>SCHUYTEMA, Paul.**Design de games**: uma abordagem prática. São Paulo: Cengage<br>Learning, 2008.<br>PAULA FILHO, Wilson de Pádua.**Engenharia de software**: projetos e processos. 4. ed. Rio<br>de Janeiro: LTC, 2019.<br>DUCKETT, Jon.**HTML & CSS**: projete e construa websites. Rio de Janeiro: Alta Books,<br>2016.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Trabalho de Conclusão de Curso II_||
@@ -1524,7 +1524,7 @@ De acordo com o conteúdo a ser definido.
 
 ## _**4.2.9 Disciplinas Optativas - 2º Semestre**_
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Software Livre_||
@@ -1533,7 +1533,7 @@ De acordo com o conteúdo a ser definido.
 |**Bibliografia Básica:**<br>FARIA, Heitor Medrado de.**Licenças livres e direitos fundamentais.**1. ed. Rio de Janeiro,<br>RJ: Brasport, 2011<br>MARTIN, Robert C.**Desenvolvimento ágil limpo:**de volta às origens. Rio de Janeiro: Alta<br>Books, 2020.<br>SIQUEIRA, Luciano Antonio.**Certificação LPI-1: 101-102**. 6. ed., rev. e atual. Rio de<br>Janeiro: Alta Books, 2019.<br>SIQUEIRA, Luciano Antonio.**Certificação LPI-2: 201-202.**5. ed. Rio de Janeiro: Alta<br>Books, 2018.<br>CEZAR, Taurion.**Software Livre: Potencialidades e Modelos de Negócio**. Rio de Janeiro:<br>Brasport, 2004.||
 |**Bibliografia Complementar:**<br>ROSEN, Lawrence E.**Open source licensing**: software freedom and intellectual property law.<br>New Jersey: Pearson : Prentice Hall, 2004.<br>MOTA FILHO, João Eriberto.**Descobrindo o Linux**: entenda o sistema operacional<br>GNU/Linux. 3. ed. São Paulo: Novatec, 2012.<br>NICOLAO, Mariano (org.).**Desenvolvimento de software I**: conceitos básicos. Porto Alegre:<br>Bookman, 2014.<br>MILETTO, Evandro Manara; BERTAGNOLLI, Silvia de Castro (Org.).**Desenvolvimento de**<br>**software II:**introdução ao desenvolvimento web com HTML, CSS, JavaScript e PHP. Porto<br>Alegre: Bookman, 2014.<br>MACHADO, Rodrigo Prestes; FRANCO, Márcia Häfele Islabão; BERTAGNOLLI, Silvia de<br>Castro.**Desenvolvimento de software III:**programação de sistemas web orientada a objetos<br>em Java**.**Porto Alegre: Bookman, 2016.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Tecnologia da Informação e Comunicação na Educação_||
@@ -1544,7 +1544,7 @@ De acordo com o conteúdo a ser definido.
 
 Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecimento:** Ciências Exatas e da Terra _Álgebra Linear_ **Carga Horária:** 33h **Período letivo:** 2º Semestre **Ementa:** Matrizes e determinantes. Sistemas lineares. Coordenadas no plano e no espaço. Subespaços vetoriais. Bases. Transformações lineares. Autovalores e autovetores. **Bibliografia Básica:** STEINBRUCH, A.; WINTERLE, P. **Álgebra Linear.** 2. ed. São Paulo: Makron Books, 1987. LIPSCHUTZ, S.; LIPSON, M. **Álgebra Linear.** 4. ed. Porto Alegre: Bookman, 2011. STEINBRUCH, A.; WINTERLE, P. **Introdução à Álgebra Linear.** São Paulo: Makron Books, 1990. ESPINOSA, I. C. O. N.; BISCOLLA, L. M. C. C. O.; BARBIERI FILHO, P. **Álgebra Linear para computação.** Rio de Janeiro: LTC, 2007. COELHO, Flávio; LOURENÇO, Mary Lilian. **Um curso de álgebra linear.** 2. ed., rev. e ampl. São Paulo: EDUSP, 2020. **Bibliografia Complementar:** NICHOLSON, W. K. **Álgebra Linear.** 2. ed. São Paulo: McGraw-Hill, 2006. ANTON, H.; RORRES, C. **Álgebra Linear com aplicações.** 10. ed. Porto Alegre: Bookman, 2012. ANTON, H.; BUSBY, R. C. **Álgebra Linear contemporânea.** Porto Alegre: Bookman, 2006. LEON, S. J. **Álgebra Linear com aplicações.** 8. ed. Rio de Janeiro: LTC, 2011. LAY, D. C. **Álgebra Linear e suas aplicações.** 4. ed. Rio de Janeiro: LTC, 2013.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Game Design_||
@@ -1559,7 +1559,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 LEÃO, Lúcia Claúdia. **O labirinto da hipermídia** : arquitetura e navegação no ciberespaço. 2. ed. São Paulo: Iluminuras, FAPESP, 2001.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Inglês I_||
@@ -1600,7 +1600,7 @@ GILAT, A. **Matlab: com aplicações em engenharia.** 4. ed. Porto Alegre: Bookm
 
 Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecimento:** Ciências Exatas e da Terra _Segurança do Trabalho_ **Carga Horária:** 33h **Período letivo:** 3º Semestre **Ementa:** Conceito, importância e participação da engenharia de segurança do trabalho na proteção contra incêndios e a desastres de acordo com a Lei nº 13.425/2017. Legislação e normas brasileiras relativas à proteção contra incêndio. Seguro-incêndio. Relação empresa-segurança. Programas de proteção contra incêndio. Conceituação. Noções de Fisiologia do Trabalho. Idade, fadiga, vigilância e acidente. Aplicações de forças. Aspectos antropométricos. Sistema homem-máquina. Dimensionamento de postos de trabalho. Limitações sensoriais. Dispositivos de controle. Dispositivos de informações. Trabalho em turno. **Bibliografia Básica:** SARAIVA **. Segurança e medicina do trabalho** . 31. ed. São Paulo: Saraiva Jur, 2025. LEAL, Paulo. **Descomplicando a segurança do trabalho** : ferramentas para o dia a dia. São Paulo: LTr, 2018. GARCIA, Gustavo Filipe Barbosa. **Meio ambiente do trabalho** : direito, segurança e saúde no trabalho. 8. ed., rev., atual. e ampl. Salvador: JusPODIVM, 2021 LIDA, Itiro. **Ergonomia: Projeto e Produção.** São Paulo: Edgard Blücher Ltda, 2005. GONÇALVES, Isabelle Carvalho; GONÇALVES, Danielle Carvalho; GONÇALVES, Edwar Abreu. **Manual de segurança e saúde no trabalho** . 7. ed. São Paulo: LTr, 2018. **Bibliografia Complementar:** ATLAS. **Segurança e medicina do trabalho** . 80. ed. São Paulo: Atlas, 2018. SALIBA, Tuffi Messias; PAGANO, Sofia C. Reis Saliba. **Legislação de segurança, acidente do trabalho e saúde do trabalhador** . 14. ed. São Paulo: LTr, 2022 VIEIRA, Jair Lot (ed.). **Manual de ergonomia** : manual de aplicação da norma regulamentadora 17. 2. ed., rev. São Paulo: Edipro, 2014. CARVALHO JÚNIOR, Roberto de. **Interfaces prediais** : hidráulica, gás, segurança contra incêndio, elétrica e telefonia. São Paulo: Blucher, 2017 MACIEL, O. **Guia de Primeiros Socorros.** São Paulo: LTr, 2003.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Sustentabilidade_||
@@ -1609,7 +1609,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |**Bibliografia Básica:**<br>BRAGA, Benedito_et al_.**Introdução à engenharia ambienta**l. 2. ed. São Paulo: Pearson<br>Education do Brasil, 2005.<br>PEREIRA, Adriana Camargo; SILVA, Gibson Zucca da; CARBONARI, Maria Elisa Ehrhardt.<br>**Sustentabilidade, responsabilidade social e meio ambiente**. São Paulo: Saraiva, 2012.<br>MACEDO, Renato Luiz Grisi; FREITAS, Mirlaine Rotoly; VENTURIN, Nelson.**Educação**<br>**Ambiental: Referenciais teóricos e práticos para a formação de educadores ambientais**.<br>Lavras: Editora UFLA, 2011.<br>ROSA, André Henrique; FRACETO, Leonardo Fernandes; MOSCHINI-CARLOS, Viviane<br>(org.).**Meio ambiente e sustentabilidade**. Porto Alegre: Bookman, 2012<br>RUSCHEINSKY, Aloísio (org.).**Educação ambiental**: abordagens múltiplas. 2. ed., rev. e<br>ampl. Porto Alegre: Penso, 2012.||
 |**Bibliografia Complementar:**<br>BARROS, Raphael Tobias de Vasconcelos.**Elementos de Gestão de Resíduos Sólidos**. Belo<br>Horizonte: Tessitura Editora, 2012.<br>RUSCHEINSKY, Aloísio (org.).**Educação ambiental:**abordagens múltiplas. 2. ed., rev. e<br>ampl. Porto Alegre: Penso, 2012.<br>VEIGA, José Eli da.**Sustentabilidade: a legitimação de um novo valor**. São Paulo: Ed.<br>SENAC São Paulo, 2010.<br>INÁCIO, Caio de Teves.**Compostagem: ciência e prática para gestão de resíduos**<br>**orgânicos**. Rio de Janeiro: Embrapa Solos, 2009.<br>SÁNCHEZ, Luis Enrique.**Avaliação de Impacto Ambiental:**conceitos e métodos**. São**<br>**Paulo: Oficina de Textos**, 2008.||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Desenvolvimento de Games_||
@@ -1618,7 +1618,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |<br>**Bibliografia Básica:**<br>BOEIRA, Julia Naomi.**TDD para Games**: Desenvolvimento guiado a testes para jogos<br>digitais. São Paulo: Casa do Código, 2021<br>CÁSSIO, Éderson.**Desenvolva jogos com HTML5 Canvas e JavaScript**. São Paulo: Casa do<br>Código, 2018.<br>BECKER, Marcus.**A lógica do jogo**: recriando clássicos da história dos videogames. São<br>Paulo: Casa do Código, 2016.<br>BOEIRA, Julia Naomi.**Lean Game Development**: desenvolvimento enxuto de jogos. São<br>Paulo: Casa do Código, 2017<br>HIRATA, Andrei Inoue.**Desenvolvendo Games com Unity 3D:**Construa um jogo no estilo<br>arcade, controlando uma nave espacial e destruindo os asteroides**.**Rio de Janeiro: Editora<br>Ciência Moderna, 2011.||
 |**Bibliografia Complementar:**<br>MEYER, Jeanine.**O guia essencial do HTML5**: usando jogos para aprender HTML5 e<br>JavaScript. Rio de Janeiro: Ciência Moderna, 2011.<br>NOVAK, Jeannie.**Desenvolvimento de games. São Paulo: Cengage Learning**, 2011.<br>SCHUYTEMA, Paul.**Design de games:**uma abordagem prática. São Paulo: Cengage<br>Learning. 2008.<br>HARBOUR, Jonathan S.**Programação de Games com JAVA**. 2 ed. Editora Cengage, 2009.<br>KINSLEY, Harrison. I**ntrodução ao desenvolvimento de jogos em Python com PyGame**.<br>São Paulo: Novatec, c2015.||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Legislação para Informática_||
@@ -1679,7 +1679,7 @@ GARDINI, Giacomo; LIMA, Norberto de Paula. **Dicionário de eletrônica** : ingl
 
 ## _**4.2.11 Disciplinas Optativas - 5º Semestre**_
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Construção de Sistemas de Informação Integrados_||
@@ -1692,7 +1692,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecimento:** Ciências Exatas e da Terra _Processos Inclusivos_ **Carga Horária:** 33h **Período letivo:** 5º Semestre **Ementa:** O conhecimento científico-tecnológico e seus impactos nas dimensões sociais, culturais, éticos, políticos e ambientais envolvendo a Multiculturalidade; Gênero; Relações ético raciais; Inclusão da Pessoa com Deficiência; Proteção dos Direitos da Pessoa com Transtornos do Espectro Autista; Direitos Humanos. **Bibliografia Básica:** FIGUEIRA, Emílio **. O que é educação inclusiva** . São Paulo: Brasiliense, 2011. NASCIMENTO, Raquel Tonioli Arantes do. **Discentes com necessidades especiais na sala de aula:** informações elementares para o professor. São Paulo: Memnon, 2012. SIMEÃO, Elmira (Coord.). **Alfabetização informacional e inclusão digital:** modelo de info inclusão social. Brasília: Thesaurus, 2011. SILVA, Tania Fernandes; HENRIQUE, Adalberto Romualdo Pereira; ROCHA, Vívian Lamóia. **Acessibilidade:** edificações, mobiliários e espaços para uma real inclusão escolar. Rio de Janeiro: Wak, 2015. CUNHA, Eugênio. **Autismo e inclusão** : psicopedagogia e práticas educativas na escola e na família. 9. ed. Rio de Janeiro: Wak, 2022 **Bibliografia Complementar:** RODRIGUES, David (Org.). **Inclusão e educação:** doze olhares sobre a educação inclusiva. São Paulo: Summus, 2006. CARNEIRO, Moaci Alves. **O acesso de discentes com deficiência às escolas e classes comuns:** possibilidades e limitações. 4.ed. Petrópolis: Vozes, 2007 QUADROS, Ronice Müller de; KARNOPP, Lodenir Becker. **Língua de sinais brasileira** . Estudos linguísticos. Porto Alegre: Artmed, 2004. SILVA, Ivani Rodrigues; KAUCHAKJE, Samira; GESUELI, Zilda Maria. **Cidadania, surdez e linguagem** . Desafios e realidades. 4 ed. São Paulo: Plexus Editora, 2003. SONZA, Andréa Poletto (Org.). **Acessibilidade e tecnologia assistiva:** pensando na inclusão sociodigital de PNEs. Bento Gonçalves: IFRS - Campus Bento Gonçalves, 2013.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Serviços e Internet_||
@@ -1701,7 +1701,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |**Bibliografia Básica:**<br>VITALINO, Jeferson Fernando Noronha; CASTRO, Marcus André Nunes.**Descomplicando o**<br>**Docker**. 2. Ed. Rio de janeiro: Editora Brasport, 2018.<br>LEITE, Jaime.**Cloud computing**: framework para seleção de provedor de serviços em nuvem.<br>São Paulo: Dialética, 2023.<br>RAMOS, Atos.**Administração de servidores Linux.**Rio de Janeiro: Ciência Moderna, 2013.<br>VIANA, Eliseu Ribeiro Cherene.**Virtualização de servidores Linux vol.2:**sistemas de<br>armazenamento virtual guia prático. Rio de Janeiro: Ciência Moderna, 2012.<br>FURTADO, Celso Marcos.**Introdução ao DNS:**aprenda a instalar e configurar uma<br>infraestrutura de DNS na prática. São Paulo: Novatec, 2016||
 |**Bibliografia Complementar:**<br>ZACKER,Craig.**Exam ref 70-740**: instalação, armazenamento e computação com Windows<br>Server 2016. Porto Alegre:Bookman, 2018.<br>BRITO, Samuel Henrique Bucke.**Serviços de redes em servidores Linux.**São Paulo:<br>Novatec, 2017<br>MORIMOTO, Carlos E.**Linux: guia prático.**Porto Alegre: Sul Editores, 2009.<br>MOTA FILHO, João Eriberto.**Descobrindo o Linux: entenda o sistema operacional**<br>**GNU/Linux**. 3. ed. São Paulo: Novatec, 2012.<br>SOUSA, Ribamar Ferreira de.**Administração de servidores Linux: passo-a-passo para**<br>**pequenas empresas**. Fortaleza: Clube de Autores, 2012.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Pesquisa Operacional_||
@@ -1712,7 +1712,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 ## _**4.2.12 Disciplinas Optativas - 6º Semestre**_
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Ciência, Tecnologia e Sociedade_||
@@ -1741,7 +1741,7 @@ TORRES, Gabriel. **Hardware: versão revisada e atualizada** . São Paulo: Novat
 
 **Bibliografia Básica:** QUADROS, Ronice Müller de; KARNOPP, Lodenir Becker. **Língua de sinais brasileira** . Estudos linguísticos. Porto Alegre: Artmed, 2004. SILVA, Ivani Rodrigues; KAUCHAKJE, Samira; GESUELI, Zilda Maria (Orgs). **Cidadania, surdez e linguagem** . Desafios e realidades. 4 ed. São Paulo: Plexus Editora, 2003. SKLIAR, Carlos (org.). **Atualidade da educação bilíngue para surdos:** interfaces entre pedagogia e linguística. 6. ed. Porto Alegre: Mediação, 2016. FIGUEIRA, Emílio **. O que é educação inclusiva** . (Coleção Primeiros Passos). São Paulo: Brasiliense, 2011. ALMEIDA, Elizabeth Oliveira Crepaldi. **Leitura e surdez** . Um estudo com adultos não oralizados. 2 ed. Rio de Janeiro: Revinter, 2012. **Bibliografia Complementar:** LACERDA, Cristina B. F. de. Intérprete de Libras. **Em atuação na educação infantil e no ensino fundamental** . 6 ed. Porto Alegre: Mediação, 2014. LACERDA, Cristina B. F. de; SANTOS, Lara Ferreira dos (org.). **Tenho um aluno surdo, e agora?** : introdução à Libras e educação de surdos. São Carlos: EdUFSCar, 2013. QUADROS, Educação de surdos. **A aquisição da linguagem** . Porto Alegre: Artmed, 1997. WITKOSKI, Sílvia Andreis. **Educação de surdos e preconceito** . Curitiba, PR: CRV, 2012. FERNANDES, Eulália (Org.). **Surdez e bilinguismo** . 6 ed. Porto Alegre: Mediação, 2012.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Qualidade de Software_||
@@ -1754,7 +1754,7 @@ TORRES, Gabriel. **Hardware: versão revisada e atualizada** . São Paulo: Novat
 
 Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecimento:** Ciências Exatas e da Terra _Microsserviços_ **Carga Horária:** 33h **Período letivo:** 8 º Semestre **Ementa:** Conceitos e definições de microsserviços; Comparação entre arquiteturas monolíticas e microsserviços;  Comunicação entre microserviços (HTTP/REST); Design e desenvolvimento de APIs RESTful; Ferramentas e frameworks para microsserviços (Docker, Kubernetes, Spring Boot, etc.); Configuração e gerenciamento de serviços; Segurança em microsserviços (OAuth2, TLS/SSL); **Bibliografia Básica:** OSÓRIO, Victor. **Roadmap back-end:** conhecendo o protocolo HTTP e arquiteturas REST. São Paulo: Casa do Código, 2022. PEREIRA, Caio Ribeiro. C **onstruindo APIS REST com Node.js.** São Paulo: Casa do Código, 2018. SAUDATE, Alexandre. **APIs REST:** seus serviços prontos para o mundo real. São Paulo: Casa do Código, 2020. NEWMAN, Sam. **Criando Microsserviços.** 2. ed.  São Paulo: Novatec. 2022. HOCHREIN, Akos. **Design de Microsserviços com Django:** uma visão geral das ferramentas e práticas. 1. ed. São Paulo: Novatec Editora, 2020. **Bibliografia Complementar:** FOWLER, Susan J. **Microsserviços Prontos Para a Produção:** construindo sistemas padronizados em uma organização de engenharia de software. 1. ed. São Paulo: Novatec, 2017. LECHETA, Ricardo R. **Web Services RESTful:** aprenda a criar web services RESTful em Java na nuvem do Google. São Paulo: Novatec, 2015. BURNS, Brendan; BEDA, Joe; HIGHTOWER, Kelsey. **Kubernetes Básico:** mergulhe no futuro da infraestrutura. São Paulo: Novatec. 2020. ARUNDEL, John; DOMINGUS, Justin. **DevOps nativo de nuvem com Kubernetes:** como construir, implantar e escalar aplicações modernas na nuvem. São Paulo: Novatec, 2019. XAVIER, Albert _et al._ J **ornada Microsserviços:** do zero ao avançado somando conceitos e práticas. Rio de Janeiro: Brasport, 2022.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |<br>**Curso:**Sistemas de Informação|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Automação de Processos._||
@@ -1769,7 +1769,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 
 **Bibliografia Complementar:** DUCKETT, Jon. **HTML e CSS Projete e Construa Websites.** Alta Books, 2016. NIEDERAUER, J. **Web interativa com Ajax e PHP** . 2.ed. São Paulo: Novatec, 2007. DALL'OGLIO , Pablo. **PHP. Programando com Orientação a Objetos.** 3. Ed. 2015 LAUDON, Kenneth C.; LAUDON, Jane Price. **Sistemas de informação gerenciais** : administrando a empresa digital. 17. ed. São Paulo: Pearson; Porto Alegre: Bookman, 2023. DEITEL, Paul J.; DEITEL, Harvey M. **Java** : como programar. 10. ed. São Paulo: Pearson Education do Brasil, 2016.
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Computação Gráfica_||
@@ -1778,7 +1778,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |**Bibliografia Básica:**<br>AZEVEDO, Eduardo; CONCI, Aura; LETA, Fabiana.**Computação Gráfica**: Teoria e Prática:<br>Geração de Imagens. 1. ed. Rio de Janeiro: Alta Books, 2022.<br>TAVARES, Lúcia Maria.**Design de cenários de videogames**. Curitiba: Intersaberes, 2022.<br>CARDOSO, Leandro da Conceição.**Introdução ao processo de renderização**Curitiba:<br>Intersaberes, 2023.<br>CAMARA, Inara Pagnussat; RODRIGUES, Silvana da Rocha; SILVA, Tarcísio Marques da.<br>**Computação gráfica e perspectiva de interiores**. Recife: Editora Ser Educacional, 2022.<br>ARAÚJO, Camila Lima; PIRES, Felipe Augusto.**Editor de vídeo digital**: conceitos e<br>aplicações. Editora SENAC São Paulo, 2024.||
 |**Bibliografia Complementar:**<br>GONZALEZ, Rafael C.; WOODS, Richard E.**Processamento digital de imagens.**3. ed. São<br>Paulo, SP: Pearson, 2010<br>SANTA ROSA, José Guilherme; SANTA ROSA, Caroline de Oliveira.**Avaliação heurística**<br>**de interfaces**: aplicações para melhoria da usabilidade e acessibilidade. Rio de janeiro: 2AB<br>Novas Ideias, 2020.<br>DANTE, Luiz Roberto;**Matemática Contextos e Aplicações.**São Paulo, Editora: Ática, 2012.<br>v.2<br>GONZALEZ, Rafael; Woods, Richard.**Processamento Digital de Imagens**. 3. ed. Longman<br>do Brasil, 2010.<br>GAMBA JÚNIOR.**Computação gráfica para designers**: dialogando com as caixinhas de<br>diálogo. Rio de Janeiro: 2AB, 2011.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Tópicos Especiais em Inteligência Artificial_||
@@ -1787,7 +1787,7 @@ Campus Ivaiporã do IFPR **Curso:** Sistemas de Informação **Área do Conhecim
 |<br>**Bibliografia Básica:**<br>SPADINI, Allan; ALENCAR, Valquíria.**Séries Temporais com Prophet**: análise e previsão<br>de dados com python. 1. ed. São Paulo: Casa do Código, 2022.<br>NIELSEN, A.**Análise Prática de Séries Temporais**: Predição com Estatística e Aprendizado<br>de Máquina. Rio de Janeiro: Alta Books, 2021.<br>GONZÁLEZ, D. J.; ARAGONÉS, X. F.**Redes Neurais Adversariais Generativas Aplicadas**<br>**à Geração de Imagem**. Passo fundo: Nosso Conhecimento, 2022<br>CARRARO, Fabrício.**Inteligência artificial e chatGPT**: da revolução dos modelos de IA<br>generativa à Engenharia de Prompt. São Paulo: Casa do Código, 2024.<br>AUFFARTH, Ben.**Generative AI with LangChain:**Build large language model (LLM) apps<br>with Python, ChatGPT, and other LLMs.Birmingham:Packt Publishing Ltd, 2023.||
 |**Bibliografia Complementar:**<br>ROTHMAN, D.**Transformers for Natural Language Processing**.Birmingham:Packt<br>Publishing, 2021.<br>ARTERO, Almir Olivette.**Inteligência artificial: teórica e prática.**São Paulo: Livraria da<br>Física, c2008.<br>BRAGA, Antônio de Pádua; CARVALHO, André Ponce de Leon F. de; LUDERMIR, Teresa<br>Bernarda.**Redes neurais artificiais: teoria e aplicações**. 2. ed. Rio de Janeiro: LTC, 2007<br>.<br>KNEUSEL, Ronald T.**Como a inteligência artificial funciona**: da magia à ciência. São Paulo:<br>Novatec, 2024.<br>SILVA, Ivan Nunes da; SPATTI, Danilo Hernane; FLAUZINO, Rogério Andrade.**Redes**<br>**neurais artificiais:**para engenharia e ciências aplicada**s**. 2. ed., rev. e ampl. São Paulo:<br>Artliber, 2016.||
 
-|Campus Ivaiporã do IFPR|Campus Ivaiporã do IFPR|
+|Campus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Sistemas de Informação|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |_Design Thinking para Inovação em TI_||
@@ -2649,7 +2649,7 @@ Para que os cursos no IFPR sejam realizados com qualidade e atendendo aos princ�
 
 Quadro 3. Corpo Técnico Administrativo em Educação
 
-|Quadro 3. Corpo Técnico Administrativo em Educação|Quadro 3. Corpo Técnico Administrativo em Educação|Quadro 3. Corpo Técnico Administrativo em Educação|Quadro 3. Corpo Técnico Administrativo em Educação|
+|Quadro 3. Corpo Técnico Administrativo em Educação||||
 |---|---|---|---|
 |**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |**Nome**|**Formação**|**Regime de**<br>**trabalho (40h,**<br>**30h**<br>**ou 20h)**|**Cargo**|

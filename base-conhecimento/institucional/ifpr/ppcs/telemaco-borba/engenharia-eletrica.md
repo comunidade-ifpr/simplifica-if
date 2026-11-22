@@ -776,7 +776,7 @@ Cálculo Diferencial e  Cálculo Diferencial e  Máquinas Elétricas e  Sistemas
 
 **Tabela 8:** Matriz curricular do curso de Engenharia Elétrica.
 
-||**Tabela 8:**Matriz curricular do curso de Engenharia Elétrica.|**Tabela 8:**Matriz curricular do curso de Engenharia Elétrica.|**Tabela 8:**Matriz curricular do curso de Engenharia Elétrica.|**Tabela 8:**Matriz curricular do curso de Engenharia Elétrica.|
+||**Tabela 8:**Matriz curricular do curso de Engenharia Elétrica.||||
 |---|---|---|---|---|
 ||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 ||(Criação Lei nº 11.892 de 29/11/2008)||||
@@ -1415,7 +1415,7 @@ Introdução aos sistemas de supervisão de processos (SCADA): conceitos, elemen
 
 **Bibliografia Básica:** LUGLI, A. B.; SANTOS, M. M. D. **Sistemas Fieldbus para Automação Industrial: DeviceNet, CANopen, SDS e Ethernet.** São Paulo: Érica, 2009. LUGLI, A. B.; SANTOS, M. M. D. **Redes Industriais para Automação Industrial: AS-I, PROFIBUS e PROFINET.** São Paulo: Érica, 2010. PENIN, A. R. **Sistemas SCADA.** 2. ed. Barcelona: Marcombo, 2011. ROQUE, L. A. O. L. **Automação de Processos com Linguagem** _**Ladder**_ **e Sistemas Supervisórios.** Rio de Janeiro: LTC, 2014. PETERSON, L. L.; DAVIE, B. S. **Redes de Computadores: Uma Abordagem de Sistemas.** Rio de Janeiro: Elsevier, 2013. **Bibliografia Complementar:** TANENBAUM, A. S. **Redes de Computadores.** Rio de Janeiro: Elsevier, 2003. LUGLI, A. B.; SANTOS, M. M. D. **Redes sem fio para Automação Industrial.** São Paulo: Érica, 2013. ALBUQUERQUE, P. U. **Redes Industriais.** São Paulo: Ensino Profissional, 2010. BRANQUINHO, M. A.; SEIDL, J.; MORAES, L. C.; BRANQUINHO, T. B.; AZEVEDO JUNIOR, J. **Segurança de Automação Industrial e SCADA.** Rio de Janeiro: Elsevier, 2014. MORAES, C. C.; CASTRUCCI, P. **Engenharia de Automação Industrial.** 2. ed. Rio de Janeiro: LTC, 2007.
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Engenharia Elétrica|**Área do Conhecimento:**Engenharias|
 |**Componente Curricular:**Geração, Transmissão e Distribuição de Energia||
@@ -2465,7 +2465,7 @@ IFPR, Resolução 50/2017. Estabelece os Critérios de Avaliação do Processo d
 
 ## **LABORATÓRIOS – EQUIPAMENTOS**
 
-|**LABORATÓRIOS – EQUIPAMENTOS**|**LABORATÓRIOS – EQUIPAMENTOS**|**LABORATÓRIOS – EQUIPAMENTOS**|
+|**LABORATÓRIOS – EQUIPAMENTOS**|||
 |---|---|---|
 ||||
 ||**Laboratório de Física - Materiais Permanentes**||
@@ -2659,7 +2659,7 @@ Venturi: Estudo de um medidor de Venturi; Estudo do teorema de Bernoulli atravé
 
 ## **Laboratório de Eletrônica Industrial - Materiais Permanentes**
 
-|**Laboratório de Eletrônica Industrial - Materiais Permanentes**|**Laboratório de Eletrônica Industrial - Materiais Permanentes**|**Laboratório de Eletrônica Industrial - Materiais Permanentes**|
+|**Laboratório de Eletrônica Industrial - Materiais Permanentes**|||
 |---|---|---|
 |**Material (descrição genérica)**|**Especificidades**|**Quantidade**|
 |ARMÁRIO METÁLICO PARA OFICINA|ARMÁRIO METÁLICO PARA OFICINA, CONSTRUÍDO EM CHAPA DE AÇO, PINTADO, POSSUIR 5 PRATELEIRAS OU MAIS, COM CHAPA<br>DE NO MÍNIMO 0,60MM, POSSUIR PORTAS COM CHAVE.|3|
@@ -2917,7 +2917,7 @@ E/OU ACIDENTAL; PROTEÇÃO ELÉTRICA COM MICRO INTERRUPTOR NA PORTA DE ACESSO AO
 |CONDICIONADOR DE AR|CONDICIONADOR DE AR 60.000 BTU'S|1|
 |ESTABILIZADOR DE FREQUÊNCIA|ESTABILIZADOR 1500 VA,BIVOLT AUTOMÁTICO,5 TOMADAS,115V,COM PROTEÇÃO TELEFÔNICA,NORMA NBR 14373.|2|
 |ESTABILIZADOR TENSÃO|NOBREAK 1400 VA,ENTRADA BIVOLT AUTOMÁTICO, 8 TOMADAS DE SAÍDA 115 PADRÃO NBR 14136, 4 ESTÁGIOS DE<br>REGULAÇÃO,RECARGA DE BATERIA AUTOMÁTICA, GERENCIAMENTO DE BATERIAS, PROTEÇÃO CONTRA CURTOS,FUSÍVEL DE<br>PROTEÇÃO DE ENTRADA AC|3|
-|LOUSA INTERATIVA|LOUSA INTERATIVA|1|
+|LOUSA INTERATIVA||1|
 |MESA MICROCOMPUTADOR|COM PORTA-TECLADO RETRÁTIL, ESTRUTURA EM AÇO TUBULAR RETANGULAR 30X50MM C/ TRATAMENTO SUPERFICIAL C/ ANTI-<br>FERRUGINOSO FOSFATIZANTE E PINTURA; ACABAMENTO EM MELAMÍNICO; TAMPO EM MDF 20MM DE ESPESSURA (NO<br>MÍNIMO);REVESTIMENTO EM MELAMÍNICO;ACABAMENTO PADRÃO CASCA DE OVO.|24|
 |MESA MICROCOMPUTADOR|CANTO ARREDONDADO|1|
 |MICROCOMPUTADOR|Desktop PC - AMD Sempron 145 2.8GHz, 2GB DDR3, 160GB HDD, DVD-ROM, ATI Radeon HD 4200, Windows xp profissional 32 bit<br>(MONITOR, CPU, TECLADO E MOUSE)|20|

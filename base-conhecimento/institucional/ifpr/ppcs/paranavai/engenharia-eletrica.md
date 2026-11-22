@@ -274,22 +274,22 @@ Na Tabela 1 estão apresentados os cursos ofertados após a implantação do Ins
 |Técnico em<br>Informática|Subsequente|80|40|40|40|-|-|-|-|-|-|
 |Técnico em<br>Alimentos|Concomitant<br>e|-|40|-|-|-|-|-|-|-|-|
 
-|Técnico em<br>Eletromecânica|Concomitant<br>e|-|40|-|-|-|-|-|-|-|-|
-|---|---|---|---|---|---|---|---|---|---|---|---|
-|Técnico em<br>Informática|Concomitant<br>e|-|40|-|-|-|-|-|-|-|-|
-|Técnico em<br>Informática|Integrado|-|-|40|40|40|40|40|40|40|40|
-|Técnico em<br>Agroindústria|Integrado|-|-|-|-|40|40|40|40|40|40|
-|Técnico em<br>Eletromecânica|Integrado|-|-|-|-|40|40|40|-|-|-|
-|Técnico em<br>Mecatrônica|Integrado|-|-|-|-|-|-|-|40|40|40|
-||||Nível Superior|||||||||
-|Química|Licenciatura|-|-|-|-|40|40|40|40|40|40|
-|Tecnologia em<br>Análise e<br>Desenvolviment<br>o de Sistemas|Tecnólogo|-|-|-|-|40|40|40|40|40|-|
-|Engenharia<br>Elétrica|Bacharelado|-|-|-|-|-|-|-|40|40|40|
-|Engenharia de<br>Software|Bacharelado|-|-|-|-|-|-|-|-|-|40|
-||||Pós Graduação|||||||||
-|Desenvolviment<br>o de Sistemas<br>para WEB,<br>Móveis e<br>Embarcado|Lato Sensu||||||||30||30|
-|Meio Ambiente e<br>Desenvolviment<br>o Sustentável|Lato Sensu|||||||||30|30|
-|Práticas<br>Interdisciplinares|Lato Sensu||||||||40|||
+|Técnico em<br>Eletromecânica|Concomitant<br>e|-|40|-|-|-|-|-|
+|---|---|---|---|---|---|---|---|---|
+|Técnico em<br>Informática|Concomitant<br>e|-|40|-|-|-|-|-|
+|Técnico em<br>Informática|Integrado|-|-|40|40|40|40|40|
+|Técnico em<br>Agroindústria|Integrado|-|-|-|40|40|40|40|
+|Técnico em<br>Eletromecânica|Integrado|-|-|-|40|-|-|-|
+|Técnico em<br>Mecatrônica|Integrado|-|-|-|-|40|40|40|
+||||Nível Superior||||||
+|Química|Licenciatura|-|-|-|40|40|40|40|
+|Tecnologia em<br>Análise e<br>Desenvolviment<br>o de Sistemas|Tecnólogo|-|-|-|40|40|40|-|
+|Engenharia<br>Elétrica|Bacharelado|-|-|-|-|40|40|40|
+|Engenharia de<br>Software|Bacharelado|-|-|-|-|-|-|40|
+||||Pós Graduação||||||
+|Desenvolviment<br>o de Sistemas<br>para WEB,<br>Móveis e<br>Embarcado|Lato Sensu|||||30||30|
+|Meio Ambiente e<br>Desenvolviment<br>o Sustentável|Lato Sensu||||||30|30|
+|Práticas<br>Interdisciplinares|Lato Sensu|||||40|||
 
 no Contexto Escolar
 
@@ -2250,7 +2250,7 @@ III) Atividades de formação social, humana e cultural.
 
 Serão consideradas atividades de ensino aquelas realizadas no âmbito do próprio curso. Nesta modalidade o estudante do curso de Engenharia Elétrica deverá cumprir: no **mínimo 40 horas** e no **máximo 80 horas** .
 
-|**Atividades Grupo I**|**Carga Horária**|**Carga Horária**|
+|**Atividades Grupo I**|**Carga Horária**||
 |---|---|---|
 ||**Máximo de**<br>**horas**|***Equivalência**|
 |Estágio supervisionado (não obrigatório)|40|1:10|
@@ -2284,7 +2284,7 @@ São aquelas que se referem à produção do conhecimento, por meio de estudos e
 
 ## **horas** .
 
-|**Atividades Grupo II**|**Carga Horária**|**Carga Horária**|
+|**Atividades Grupo II**|**Carga Horária**||
 |---|---|---|
 ||**Máxi**<br>**mo de**<br>**horas**|***Equivalência**|
 |Participação em programas de bolsas Institucionaisrelacionados à<br>pesquisa e inovação|50|1:1|
@@ -2365,7 +2365,7 @@ Seu cumprimento é obrigatório para a conclusão do curso e é de responsabilid
 
 As Atividades Curriculares de Extensão deverão ser desenvolvidas no próprio IFPR e realizadas em  horários diferentes dos demais componentes curriculares do curso. Assim, o estudante do curso de Engenharia Elétrica deverá cumprir: no mínimo 100 horas e no máximo 120 horas.
 
-|**Atividades Curriculares de Extensão**|**Carga Horária**|**Carga Horária**|
+|**Atividades Curriculares de Extensão**|**Carga Horária**||
 |---|---|---|
 ||**Máximo de**<br>**horas**|***Equivalência**|
 |Participação em programas de bolsas Institucionais<br>relacionados à extensão|<br>20|1:1|
@@ -3639,7 +3639,7 @@ Apresenta-se a seguir o quantitativo de acervo geral e por curso:
 
 **QUADRO  1– Representação numérica do acervo geral da Biblioteca do IFPR – Campus Paranavaí.**
 
-|**REPRESENTAÇÃO NUMÉRICA DO ACERVO GERAL**|**REPRESENTAÇÃO NUMÉRICA DO ACERVO GERAL**||
+|**REPRESENTAÇÃO NUMÉRICA DO ACERVO GERAL**|||
 |---|---|---|
 ||**Títulos**|**Exemplares**|
 |Acervo Geral de Livros|4.026|13.004|
@@ -3652,7 +3652,7 @@ Fonte: Relatório Pergamum Est-Levantamentos Bibliográficos-Geral do Acervo 18 
 
 **– – QUADRO  2 Acervo de livros por curso da Biblioteca do IFPR Campus Paranavaí. ACERVO DE LIVROS POR CURSO**
 
-|**ACERVO DE LIVROS POR CURSO**|**ACERVO DE LIVROS POR CURSO**|**ACERVO DE LIVROS POR CURSO**|
+|**ACERVO DE LIVROS POR CURSO**|||
 |---|---|---|
 |**CURSO**|**Título**|**Exemplar**|
 |Engenharia Elétrica|413|2.177|

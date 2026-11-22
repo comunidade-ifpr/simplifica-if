@@ -650,7 +650,7 @@ HOWS, D. et al. **Introdução ao MongoDB** . São Paulo: Novatec, 2015.
 
 SILBERSCHATZ, A.; KORTH, H. F.; SUDARSHAN, S. **Sistema de Banco de Dados** . 6. ed. Rio de Janeiro: Elsevier, 2012. 
 
-|**_Campus_ Avançado Arapongas do IFPR**|**_Campus_ Avançado Arapongas do IFPR**|||
+|**_Campus_ Avançado Arapongas do IFPR**||||
 |---|---|---|---|
 |**Curso:**Programação_Web_(experimental)|**Eixo**<br>**Tecnológico:**<br>Comunicação|Informação|e|
 |**Componente Curricular:**Desenvolvimento WEB||||

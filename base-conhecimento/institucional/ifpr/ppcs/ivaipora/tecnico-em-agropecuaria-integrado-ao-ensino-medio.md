@@ -852,7 +852,7 @@ Os componentes curriculares obrigatórios são de natureza teórico-prático dis
 
 O IFPR campus Ivaiporã ofertará atividades que contemplem as diferentes possibilidades de atividades complementares, entretanto, os estudantes poderão também desenvolver ações externas, desde que essas ocorram ao longo do período em que se encontrem matriculados no curso técnico integrado em Agropecuária, conforme normas estabelecidas na seção 6.6 - Atividades complementares.
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|---|
 |||(CriaçãoLei nº 11.892de29/11/2008)||||
 |||_Campus_Ivaiporã||||
@@ -869,101 +869,101 @@ O IFPR campus Ivaiporã ofertará atividades que contemplem as diferentes possib
 |||Física I-Energia e Sociedade|2|40|40|
 |||Geografia I - Os Recursos Naturais e a<br>sua Apropriação Social|2|40|40|
 
-|||Matemática I - Teoria dos Conjuntos e<br>Funções|2|40|40|
-|---|---|---|---|---|---|
-|||Língua Portuguesa I - Introdução à<br>Comunicação Escrita|1|20|20|
-|||Literatura I - Gêneros Literários e<br>Linguagem Literária|1|20|20|
-|||Sociologia I - Fundamentos da<br>Sociologia eAntropologia|2|40|40|
-|||Morfologia e desenvolvimento de<br>plantas|2|40|40|
-|||Bases para produção animal|2|40|40|
-|||Informática aplicada à agropecuária|2|40|40|
-|||Olericultura Geral|1|20|20|
-|||Desenho técnico e instalações rurais|2|40|40|
-|||Manejo e gestão ambiental|1|20|20|
-|||**Subtotal (Total do período)**|**25**|**500**|**500**|
-|**2º Semestre**||Artes I - Arte, Comunicação e<br>Expressão|2|40|40|
-|||Educação Física II|2|40|40|
-|||Filosofia I - Fundamentos da Filosofia|2|40|40|
-|||História I - Historiografia e Estruturas<br>da Antiguidade|2|40|40|
-|||Inglês I-Fundamentos de Inglês|1|20|20|
-|||Matemática II-Funções e Aplicações|2|40|40|
-|||Língua Portuguesa II - Produção e<br>Interpretação de Texto Iniciais|2|40|40|
-|||Química I-Química Geral|2|40|40|
-|||Bases para o Manejo do Solos|2|40|40|
-|||Criação de Pequenos Animais|2|40|40|
-|||Basespara a fruticultura|1|20|20|
-|||Agrometeorologia|1|20|20|
-|||Saneamento rural|2|40|40|
-|||Agricultura aplicada|2|40|40|
-|||**Subtotal(Total doperíodo)**|**25**|**500**|**500**|
-|**3º Semestre**||Artes II - Linguagens Artísticas,<br>Comunicação eExpressão|2|40|40|
-|||Biologia III - Os Seres Vivos|2|40|40|
-|||Educação Física III|2|40|40|
-|||Física II-Universo e Movimento|2|40|40|
-|||Geografia II - Estado, Território e<br>Ideologias Geográficas|2|40|40|
-|||Matemática III - Trigonometria|2|40|40|
-|||Literatura II - Estilos e Épocas Literárias<br>no Brasil (XVI-XX)|1|20|20|
+|||Matemática I - Teoria dos Conjuntos e<br>Funções|2|40|
+|---|---|---|---|---|
+|||Língua Portuguesa I - Introdução à<br>Comunicação Escrita|1|20|
+|||Literatura I - Gêneros Literários e<br>Linguagem Literária|1|20|
+|||Sociologia I - Fundamentos da<br>Sociologia eAntropologia|2|40|
+|||Morfologia e desenvolvimento de<br>plantas|2|40|
+|||Bases para produção animal|2|40|
+|||Informática aplicada à agropecuária|2|40|
+|||Olericultura Geral|1|20|
+|||Desenho técnico e instalações rurais|2|40|
+|||Manejo e gestão ambiental|1|20|
+|||**Subtotal (Total do período)**|**25**|**500**|
+|**2º Semestre**||Artes I - Arte, Comunicação e<br>Expressão|2|40|
+|||Educação Física II|2|40|
+|||Filosofia I - Fundamentos da Filosofia|2|40|
+|||História I - Historiografia e Estruturas<br>da Antiguidade|2|40|
+|||Inglês I-Fundamentos de Inglês|1|20|
+|||Matemática II-Funções e Aplicações|2|40|
+|||Língua Portuguesa II - Produção e<br>Interpretação de Texto Iniciais|2|40|
+|||Química I-Química Geral|2|40|
+|||Bases para o Manejo do Solos|2|40|
+|||Criação de Pequenos Animais|2|40|
+|||Basespara a fruticultura|1|20|
+|||Agrometeorologia|1|20|
+|||Saneamento rural|2|40|
+|||Agricultura aplicada|2|40|
+|||**Subtotal(Total doperíodo)**|**25**|**500**|
+|**3º Semestre**||Artes II - Linguagens Artísticas,<br>Comunicação eExpressão|2|40|
+|||Biologia III - Os Seres Vivos|2|40|
+|||Educação Física III|2|40|
+|||Física II-Universo e Movimento|2|40|
+|||Geografia II - Estado, Território e<br>Ideologias Geográficas|2|40|
+|||Matemática III - Trigonometria|2|40|
+|||Literatura II - Estilos e Épocas Literárias<br>no Brasil (XVI-XX)|1|20|
 
-|||Sociologia II - Socialização e<br>Desigualdades|2|40|40|
-|---|---|---|---|---|---|
-|||Topografia egeoprocessamento|2|40|40|
-|||Manejo integrado do solo|2|40|40|
-|||Bases de nutrição e alimentação<br>animal|2|40|40|
-|||AgroindústriaVegetal|2|40|40|
-|||Agroecologia eprodução orgânica|2|40|40|
-|||**Subtotal (Total do período)**|**25**|**500**|**500**|
-|**4º Semestre**||ArtesIII - Arte e CulturaBrasileira|1|20|20|
-|||Educação Física IV|2|40|40|
-|||Filosofia II-A Idade da Razão|2|40|40|
-|||História II - Medievo, Modernidade e<br>Colonialismo|2|40|40|
-|||Inglês II - Língua e Cultura Inglesa|2|40|40|
-|||Matemática IV - Geometria Plana e<br>Espacial|2|40|40|
-|||Língua Portuguesa III - Correção<br>Gramatical|1|20|20|
-|||Literatura III - Estilos e Épocas<br>Literárias no Brasil(XX - XXI)|1|20|20|
-|||Química II-Química Orgânica|2|40|40|
-|||Plantas de lavouras perenes|2|40|40|
-|||Mecanização agrícola|2|40|40|
-|||Forragicultura|2|40|40|
-|||Fruticultura geral|2|40|40|
-|||Proteção de Plantas|2|40|40|
-|||**Subtotal (Total do período)**|**25**|**500**|**500**|
-|**5º Semestre**||Literatura IV - Contemporaneidades<br>em Literatura Portuguesa|1|20|20|
-|||Língua Espanhola I - Fundamentos<br>de Língua Espanhola|1|20|20|
-|||Inglês III - Leitura e interpretação<br>em Língua Inglesa|1|20|20|
-|||<br>Sociologia III - Relações de Poder e<br>Políticas|1|20|20|
-|||História III - Colonialismo na América e<br>Revoluções da Era Moderna|1|20|20|
-|||Geografia III - A Produção Capitalista<br>do Território|2|40|40|
-|||Matemática V - Elementos de Álgebra<br>e Introdução à Estatística|2|40|40|
-|||Física III - Transformação e<br>Conservação|2|40|40|
+|||Sociologia II - Socialização e<br>Desigualdades|2|40|
+|---|---|---|---|---|
+|||Topografia egeoprocessamento|2|40|
+|||Manejo integrado do solo|2|40|
+|||Bases de nutrição e alimentação<br>animal|2|40|
+|||AgroindústriaVegetal|2|40|
+|||Agroecologia eprodução orgânica|2|40|
+|||**Subtotal (Total do período)**|**25**|**500**|
+|**4º Semestre**||ArtesIII - Arte e CulturaBrasileira|1|20|
+|||Educação Física IV|2|40|
+|||Filosofia II-A Idade da Razão|2|40|
+|||História II - Medievo, Modernidade e<br>Colonialismo|2|40|
+|||Inglês II - Língua e Cultura Inglesa|2|40|
+|||Matemática IV - Geometria Plana e<br>Espacial|2|40|
+|||Língua Portuguesa III - Correção<br>Gramatical|1|20|
+|||Literatura III - Estilos e Épocas<br>Literárias no Brasil(XX - XXI)|1|20|
+|||Química II-Química Orgânica|2|40|
+|||Plantas de lavouras perenes|2|40|
+|||Mecanização agrícola|2|40|
+|||Forragicultura|2|40|
+|||Fruticultura geral|2|40|
+|||Proteção de Plantas|2|40|
+|||**Subtotal (Total do período)**|**25**|**500**|
+|**5º Semestre**||Literatura IV - Contemporaneidades<br>em Literatura Portuguesa|1|20|
+|||Língua Espanhola I - Fundamentos<br>de Língua Espanhola|1|20|
+|||Inglês III - Leitura e interpretação<br>em Língua Inglesa|1|20|
+|||<br>Sociologia III - Relações de Poder e<br>Políticas|1|20|
+|||História III - Colonialismo na América e<br>Revoluções da Era Moderna|1|20|
+|||Geografia III - A Produção Capitalista<br>do Território|2|40|
+|||Matemática V - Elementos de Álgebra<br>e Introdução à Estatística|2|40|
+|||Física III - Transformação e<br>Conservação|2|40|
 
-|||Química III - Química Inorgânica,<br>Soluções e Eletroquímica|2|40|40|
-|---|---|---|---|---|---|
-|||Biologia IV - Genética e Evolução|2|40|40|
-|||Agroindústria animal|2|40|40|
-|||Produção de olerícolas|2|40|40|
-|||Extensão rural|2|40|40|
-|||Projetos e perícias|1|20|20|
-|||Sistemas de irrigação e drenagem<br>agrícolas|1|20|20|
-|||Produção de não ruminantes|2|40|40|
-|||**Subtotal (Total do período)**|**25**|**500**|**500**|
-|**6º Semestre**||Língua Portuguesa IV -<br>Produção e Interpretação de<br>Texto Avançadas|1|20|20|
-|||Língua Portuguesa V -<br>Revisão Gramatical|1|20|20|
-|||Língua Espanhola II - Língua e<br>Cultura Espanhola|1|20|20|
-|||<br>Filosofia III–Atualidades|1|20|20|
-|||História IV - O Brasil e o<br>Mundo na<br>Contemporaneidade|2|40|40|
-|||Geografia IV - Estado,<br>Capital, Território e<br>Sociedade|1|20|20|
-|||Matemática VI - Geometria<br>Analítica|2|40|40|
-|||Física IV - Materiais, Luz e<br>Som: Modelos e<br>Propriedades|2|40|40|
-|||Química IV - Físico-química e<br>Química Analítica|2|40|40|
-|||Biologia V-O Ser Humano|2|40|40|
-|||Produção de Bovinos|2|40|40|
-|||Produção de Caprinos e ovinos|2|40|40|
-|||Sistemas de produção de plantas<br>graníferas|2|40|40|
-|||Gestão de Empreendimentos<br>Agropecuários|2|40|40|
-|||Silvicultura e sistemas<br>agroflorestais|2|40|40|
-|||**Subtotal (Total do período)**|**25**|**500**|**500**|
-||**DISTRIBUIÇÃO - CARGA HORÁRIA**|||||
-|(AC)Atividades Complementares (min. 200horas-relógio)||||200|200|
+|||Química III - Química Inorgânica,<br>Soluções e Eletroquímica|2|40|
+|---|---|---|---|---|
+|||Biologia IV - Genética e Evolução|2|40|
+|||Agroindústria animal|2|40|
+|||Produção de olerícolas|2|40|
+|||Extensão rural|2|40|
+|||Projetos e perícias|1|20|
+|||Sistemas de irrigação e drenagem<br>agrícolas|1|20|
+|||Produção de não ruminantes|2|40|
+|||**Subtotal (Total do período)**|**25**|**500**|
+|**6º Semestre**||Língua Portuguesa IV -<br>Produção e Interpretação de<br>Texto Avançadas|1|20|
+|||Língua Portuguesa V -<br>Revisão Gramatical|1|20|
+|||Língua Espanhola II - Língua e<br>Cultura Espanhola|1|20|
+|||<br>Filosofia III–Atualidades|1|20|
+|||História IV - O Brasil e o<br>Mundo na<br>Contemporaneidade|2|40|
+|||Geografia IV - Estado,<br>Capital, Território e<br>Sociedade|1|20|
+|||Matemática VI - Geometria<br>Analítica|2|40|
+|||Física IV - Materiais, Luz e<br>Som: Modelos e<br>Propriedades|2|40|
+|||Química IV - Físico-química e<br>Química Analítica|2|40|
+|||Biologia V-O Ser Humano|2|40|
+|||Produção de Bovinos|2|40|
+|||Produção de Caprinos e ovinos|2|40|
+|||Sistemas de produção de plantas<br>graníferas|2|40|
+|||Gestão de Empreendimentos<br>Agropecuários|2|40|
+|||Silvicultura e sistemas<br>agroflorestais|2|40|
+|||**Subtotal (Total do período)**|**25**|**500**|
+||**DISTRIBUIÇÃO - CARGA HORÁRIA**||||
+|(AC)Atividades Complementares (min. 200horas-relógio)||||200|
 
 47
 
@@ -2784,7 +2784,7 @@ extrapolem a competência didático-avaliativo-pedagógica docente, desde que co
 
 ## 8.2 CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO
 
-|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|
+|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |---|---|---|---|
 |**Nome**|**Formação**|**Regime de**<br>**Trabalho**<br>**(40h, 30h ou 20h)**|**Cargo**|
 |Ricardo Rodrigues<br>de Souza|Bacharelado em<br>Engenharia<br>Ambiental|40h DE|Diretor Geral|

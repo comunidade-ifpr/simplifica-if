@@ -613,6 +613,25 @@ export const FIXTURES: Fixture[] = [
         midia: { "image1.jpeg": PNG_MINIMO },
       }),
   },
+  // Quadro de ementário exportado do Google Docs: a grade tem três colunas, e cada linha é uma
+  // célula só, mesclada sobre as três.
+  {
+    nome: "ementario-mesclado",
+    partes: () => ({
+      corpo:
+        titulo("5.7 EMENTÁRIO") +
+        tabela(
+          QUADRO_EMENTA(
+            "Programação I",
+            "1º Ano",
+            80,
+            "Algoritmos e estruturas de controle.",
+            ["SOBRENOME, Autora. Livro de algoritmos. Cidade: Editora, 2020."],
+            ["SOBRENOME, Autor. Livro de lógica. Cidade: Editora, 2021."],
+          ).map(([texto]) => linha([celula(texto!, { colunas: 3 })])),
+        ),
+    }),
+  },
   // Mescla malformada: a continuação não tem célula acima na mesma coluna.
   {
     nome: "mescla-malformada",

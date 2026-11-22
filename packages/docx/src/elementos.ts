@@ -9,8 +9,10 @@
 import { match } from "@simplifica-if/kb/primitivas/regex";
 import { aparar, contarCaracteres } from "@simplifica-if/kb/texto";
 import {
+  type CelulaOoxml,
   type DocumentoOoxml,
   type FiguraOoxml,
+  type LinhaOoxml,
   type ParagrafoOoxml,
   runsDoParagrafo,
   type TabelaOoxml,
@@ -38,14 +40,16 @@ export type Paragrafo = {
   tipoLista: "marcador" | "numerada" | null;
 };
 
+/** Célula como o documento a grava, uma vez só, mesmo quando ocupa várias colunas ou linhas. */
 export type CelulaTabela = {
   texto: string;
-  /** Colunas ocupadas pela célula. */
+  /** Colunas da grade ocupadas pela célula. */
   colunas: number;
   /** Continuação de uma mescla vertical: o texto está na célula de cima. */
   continuacao: boolean;
 };
 
+/** Tabela com as células de cada linha; a grade, com as mesclas expandidas, sai de `tabelas.ts`. */
 export type Tabela = { tipo: "tabela"; linhas: CelulaTabela[][] };
 
 export type Figura = { tipo: "figura"; figura: FiguraOoxml };
@@ -197,80 +201,50 @@ function elementoDoParagrafo(paragrafo: ParagrafoOoxml): Titulo | Paragrafo | nu
 // ---------------------------------------------------------------- tabelas
 
 /**
- * Grade em que a célula mesclada se repete: uma célula que ocupa três colunas aparece três vezes,
- * e a continuação de uma mescla vertical repete a célula de cima. A extração da
- * matriz curricular depende dela: "CARGA HORÁRIA TOTAL DO CURSO"
- * mesclada sobre "Ano" e "Componente" chega nas duas colunas.
- *
- * Só vê as células filhas diretas da linha; as embrulhadas em `w:sdt` ficam para `gradeDireta`.
+ * As células de uma linha como o arquivo as grava, cada uma uma vez: as colunas que ocupa
+ * (`w:gridSpan`) e a marca de continuação de mescla vertical. As colunas puladas no início
+ * (`w:gridBefore`) viram uma célula vazia, para que as demais fiquem na coluna certa da grade. A
+ * expansão em grade, com as repetições das mesclas, fica em `tabelas.ts`.
  */
-function gradeRepetida(tabela: TabelaOoxml): CelulaTabela[][] {
-  // Numa linha com células diretas, as embrulhadas em `w:sdt` também são dela.
+function linhaDaTabela(linha: LinhaOoxml, celulas: CelulaOoxml[], profundo: boolean): CelulaTabela[] {
+  const lidas = celulas.map((celula): CelulaTabela => ({
+    texto: profundo ? celula.textoProfundo : aparar(celula.texto),
+    colunas: celula.colunas,
+    continuacao: celula.mesclaVertical === "continuacao",
+  }));
+  if (!lidas.length || !linha.colunasAntes) return lidas;
+  return [{ texto: "", colunas: linha.colunasAntes, continuacao: false }, ...lidas];
+}
+
+/**
+ * Só as células filhas diretas da linha (numa linha que tem alguma, as embrulhadas em `w:sdt`
+ * também são dela), com o texto dos parágrafos delas.
+ */
+function celulasDiretas(tabela: TabelaOoxml): CelulaTabela[][] {
   const mista = tabela.linhas.some((linha) => linha.celulas.some((celula) => celula.direta));
-  const daLinha = tabela.linhas.map((linha) =>
-    linha.celulas.filter((celula) => celula.direta || (mista && celula.embrulhada)),
-  );
-  /**
-   * Para cada célula, a que guarda o conteúdo: a própria, ou a do topo da mescla vertical. A
-   * resolução de uma linha usa a da linha de cima, já resolvida: uma mescla de milhares de linhas
-   * custa uma passada, sem recursão.
-   */
-  const origens: (typeof daLinha)[number][] = [];
-  for (const [indiceLinha, linha] of daLinha.entries()) {
-    const acima = indiceLinha > 0 ? daLinha[indiceLinha - 1]! : [];
-    let coluna = tabela.linhas[indiceLinha]!.colunasAntes;
-    origens.push(
-      linha.map((celula) => {
-        const inicio = coluna;
-        coluna += celula.colunas;
-        if (celula.mesclaVertical !== "continuacao" || indiceLinha === 0) return celula;
-        // A célula de cima é a que começa exatamente na mesma coluna da grade.
-        let restante = inicio - tabela.linhas[indiceLinha - 1]!.colunasAntes;
-        for (const [indice, candidata] of acima.entries()) {
-          if (restante < 0) break;
-          if (restante === 0) return origens[indiceLinha - 1]![indice]!;
-          restante -= candidata.colunas;
-        }
-        // Mescla malformada (nada começa nessa coluna na linha de cima): a célula vale por si.
-        return celula;
-      }),
-    );
-  }
-  // Cada célula de origem é aparada uma vez; as repetições (colunas e linhas da mescla) apontam
-  // para a mesma célula lida.
-  const lidas = new Map<(typeof daLinha)[number][number], CelulaTabela>();
-  return origens.map((linha) =>
-    linha.flatMap((celula) => {
-      let lida = lidas.get(celula);
-      if (!lida) lidas.set(celula, (lida = { texto: aparar(celula.texto), colunas: 1, continuacao: false }));
-      return Array.from({ length: celula.colunas }, () => lida);
-    }),
+  return tabela.linhas.map((linha) =>
+    linhaDaTabela(
+      linha,
+      linha.celulas.filter((celula) => celula.direta || (mista && celula.embrulhada)),
+      false,
+    ),
   );
 }
 
 /**
- * Grade lida direto do XML: todas as células descendentes da linha, cada uma uma vez, com o número
- * de colunas e a marca de continuação. Usada nas tabelas embrulhadas em `w:sdt` (Google Docs), em
- * que a linha não tem células filhas diretas.
+ * Todas as células descendentes da linha, com o texto de todos os parágrafos delas. Usada nas
+ * tabelas embrulhadas em `w:sdt` (Google Docs), em que a linha não tem células filhas diretas.
  */
-function gradeDireta(tabela: TabelaOoxml): CelulaTabela[][] {
-  return tabela.linhas
-    .map((linha) =>
-      linha.celulas.map((celula): CelulaTabela => ({
-        texto: celula.textoProfundo,
-        colunas: celula.colunas,
-        continuacao: celula.mesclaVertical === "continuacao",
-      })),
-    )
-    .filter((linha) => linha.length > 0);
+function celulasDescendentes(tabela: TabelaOoxml): CelulaTabela[][] {
+  return tabela.linhas.map((linha) => linhaDaTabela(linha, linha.celulas, true)).filter((linha) => linha.length > 0);
 }
 
 function elementoDaTabela(tabela: TabelaOoxml): Tabela {
-  if (tabela.emControle) return { tipo: "tabela", linhas: gradeDireta(tabela) };
-  const linhas = gradeRepetida(tabela);
+  if (tabela.emControle) return { tipo: "tabela", linhas: celulasDescendentes(tabela) };
+  const linhas = celulasDiretas(tabela);
   // Nenhuma célula direta com texto: as células estão embrulhadas (ou a tabela é vazia).
   const temTexto = linhas.some((linha) => linha.some((celula) => celula.texto));
-  return { tipo: "tabela", linhas: temTexto ? linhas : gradeDireta(tabela) };
+  return { tipo: "tabela", linhas: temTexto ? linhas : celulasDescendentes(tabela) };
 }
 
 // ---------------------------------------------------------------- documento

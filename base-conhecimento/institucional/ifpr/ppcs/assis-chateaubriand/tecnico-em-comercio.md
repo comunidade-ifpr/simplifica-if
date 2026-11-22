@@ -51,7 +51,7 @@ Av. Cívica, 475 - Centro Cívico - Assis Chateaubriand PR | CEP 85935-000  - Br
 
 ## 1.1 COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|||
 |---|---|---|
 |PORTARIA DE DESIGNAÇÃO||Nº91, de 03maio de2019|
 ||**Função**|**Nome**|
@@ -945,15 +945,15 @@ INSTITUTO FEDERAL DO PARANÁ | Campus Assis Chateaubriand
 
 Av. Cívica, 475 - Centro Cívico - Assis Chateaubriand PR | CEP 85935-000  - Brasil
 
-||palestras|||Artes|
-|---|---|---|---|---|
-||Encontro<br>em<br>Alusão ao Dia da<br>Consciência<br>Negra: palestras.|Roda de conversa<br>e palestra.|Roda de conversa<br>e palestra.|Geografia,<br>História,<br>Artes|
-|Cultura afro-brasileira|||||
-||||||
-||14 horas|14 horas|14 horas||
-|Carga horária total|||||
-||||||
-||||||
+||palestras||Artes|
+|---|---|---|---|
+||Encontro<br>em<br>Alusão ao Dia da<br>Consciência<br>Negra: palestras.|Roda de conversa<br>e palestra.|Geografia,<br>História,<br>Artes|
+|Cultura afro-brasileira||||
+|||||
+||14 horas|14 horas||
+|Carga horária total||||
+|||||
+|||||
 
 ## 11.8 COMPONENTES COMPLEMENTARES
 
@@ -991,7 +991,7 @@ Além da participação e organização de eventos, os estudantes também estar�
 
 ## **13. MATRIZ CURRICULAR**
 
-|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**||
+|**Matriz curricular do Curso Técnico Comércio,**<br>**Integrado ao ensino médio**|||||||
 |---|---|---|---|---|---|---|
 |**Ano de implantação: 2020**|||||||
 ||**1º**|**2º**|**3º**||||
@@ -1086,7 +1086,7 @@ Av. Cívica, 475 - Centro Cívico - Assis Chateaubriand PR | CEP 85935-000  - Br
 
 ## 13.1 EMENTAS DOS COMPONENTES CURRICULARES
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico emComércio|**Eixo Tecnológico**:Gestão eNegócios||
 |**Componente Curricular:**Língua Portuguesa e Literatura I|||
@@ -1110,7 +1110,7 @@ BUENO, Francisco da Silveira. **Minidicionário da língua portuguesa** . 2. ed.
 
 KOCH, Ingedore Villaça; ELIAS, Vanda Maria. **Ler e escrever** : estratégias de produção textual. 2. ed. São Paulo: Contexto, 2014.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |Componente Curricular: EducaçãoFísicaI|||
@@ -1147,7 +1147,7 @@ MANUAL do ACSM para avaliação da aptidão física relacionada a saúde. SOBOTT
 
 Origem da vida. Características dos seres vivos. Biologia celular: composição química, membranas celulares, citoplasma e organelas, núcleo, divisão celular e metabolismo. Reprodução, embriologia e histologia (Integrado ao conteúdo de Fisiologia e Anatomia humana básica em Educação Física I e II). Bibliografia Básica: AMABIS, J. M., MARTHO, G. R. **Biologia** . São Paulo: Moderna, 2010. JUNQUEIRA, L. C. U.; CARNEIRO, J. **Biologia celular e molecular** . 8. ed.  Rio de Janeiro: Guanabara Koogan, 2005. JUNQUEIRA, Luiz Carlos Uchoa; CARNEIRO, José. **Histologia básica** : texto e atlas. 12. ed. Rio de Janeiro: Guanabara Koogan, 2013. Bibliografia Complementar: BOLSOVER, Steven R. et al. **Biologia celular** . 2. ed. Rio de Janeiro: Guanabara Koogan, 2005. RAVEN, Peter H.; EVERT, Ray Franklin; EICHHORN, Susan E. **Biologia vegetal** . 7. ed. Rio de Janeiro: Guanabara Koogan, 2013. SANTOS, Maria Ângela dos. **Biologia educacional** . 17. ed. São Paulo: Ática, 2009. MOORE, K.L. **Embriologia básica** . 7.ed. Elsevier, 2008.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico Gestão eNegócios||
 |Componente Curricular: FísicaI|||
@@ -1191,7 +1191,7 @@ BARRETO FILHO; B.; SILVA, C. X. **Matemática participação e contexto** . São
 
 BARROSO, J. M. **Conexões com a matemática** . 1. ed. São Paulo: Moderna, 2012. FACCHINI, W. **Matemática para a escola de hoje** . São Paulo: FTD, 2008. Bibliografia Complementar: ALMEIDA, L. W.; SILVA, K. P. da; VERTUAN, R. E. **Modelagem matemática na educação básica.** 1 ed. São Paulo: Contexto, 2013. BASSANEZI, R. C. Ensino-aprendizagem com modelagem matemática: uma nova estratégia. 3. ed. São Paulo: Contexto, 2013. BOYER, C. B. **História da matemática** . Lisboa: Asa, 2010.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**||
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||||
 |---|---|---|---|---|
 |Curso: Técnico emComercio|EixoTecnológico:Gestão eNegócios||||
 |Componente Curricular: FilosofiaI|||||
@@ -1202,7 +1202,7 @@ BARROSO, J. M. **Conexões com a matemática** . 1. ed. São Paulo: Moderna, 201
 
 O saber mítico e o saber filosófico. História da Filosofia: períodos e principais pensadores. A importância da filosofia para o Comércio.  Ética e moral. Bibliografia Básica: ARANHA, M. L. A.; MARTINS, M. H. P. **Filosofando** : introdução à filosofia. São Paulo: Moderna, 2009. CHAUÍ, M. **Convite à filosofia** . São Paulo: Ática, 2003. COTRIM, G. **Fundamentos da filosofia** . São Paulo: Saraiva, 2000. Bibliografia Complementar: BRANDÃO, Junito de Souza. **Mitologia grega** . Petrópolis: Vozes, 1986, v. 1. BURKERT, W. **Religião grega na época clássica e arcaica** . Lisboa: Fundação Calouste Gulbenkian, 1993. CORNFORD, F. M. **Principium sapiantiae** : as origens do pensamento filosófico. Lisboa: Fundação Calouste Gulbenkian.
 
-|**_CAMPUS ASSIS CHATEAUBRIAND DO IFPR_**|**_CAMPUS ASSIS CHATEAUBRIAND DO IFPR_**|**_CAMPUS ASSIS CHATEAUBRIAND DO IFPR_**|
+|**_CAMPUS ASSIS CHATEAUBRIAND DO IFPR_**|||
 |---|---|---|
 |_Curso: Técnico em Comércio_|_Eixo Tecnológico Gestão e Negócios_||
 |**_Componente Curricular:_**_Língua Estrangeira: Inglês_|||
@@ -1264,7 +1264,7 @@ Bibliografia Complementar: BILHIM, João. **Teoria Organizacional** : **estrutur
 
 MOTTA, Fernando C. Prestes. **Teoria das Organizações** . 2. ed. São Paulo: Pioneira Thomsom Learning, 2001.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico em Comércio|Eixo Tecnológico Gestão e Negócios||
 |Componente Curricular: ProjetoIntegrador I|||
@@ -1300,7 +1300,7 @@ INSTITUTO FEDERAL DO PARANÁ | Campus Assis Chateaubriand
 
 Av. Cívica, 475 - Centro Cívico - Assis Chateaubriand PR | CEP 85935-000  - Brasil
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico Gestão eNegócios||
 |Componente Curricular: EducaçãoFísica||II|
@@ -1339,7 +1339,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados** . 6.ed. São Paulo: Ed
 
 ## **CAMPUS ASSIS CHATEAUBRIAND DO IFPR**
 
-|Curso: Técnico emComércio<br>EixoTecnológico Gestão eNegócios|Curso: Técnico emComércio<br>EixoTecnológico Gestão eNegócios|Curso: Técnico emComércio<br>EixoTecnológico Gestão eNegócios|
+|Curso: Técnico emComércio<br>EixoTecnológico Gestão eNegócios|||
 |---|---|---|
 |Componente Curricular: FísicaII|||
 |CargaHorária (hora-aula):80|PeríodoLetivo: 2º Ano||
@@ -1356,7 +1356,7 @@ STEFANOVITS, Angelo (Ed.). **Física** : Ensino Médio. Volume 2. 2ª ed. São P
 
 SANT’ANNA, Blaidi; MARTINI, Glória; CARNEIRO R., Hugo; SPINELLI, Walter; **Conexões Com a Física** , Vol.2, 1 Ed., São Paulo, Editora Moderna, 2010. TIPLER, Paul A.; MOSCA, **Gene; Física para Cientistas e Engenheiros** , Vol.2, 6ª Ed., Rio de Janeiro, LTC, 2013.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |Componente Curricular:QuímicaII|||
@@ -1406,7 +1406,7 @@ COSTA, C. **Sociologia** : introdução à ciência da sociedade. São Paulo: Mo
 
 ARON, Raymond. **As etapas do pensamento sociológico** . São Paulo: Martins Fontes, 2000. FERNANDES, Florestan. **Mudanças sociais no Brasil** . 1.ed. São Paulo: Editora Difel, 1974. LAKATOS, Eva Maria. **Sociologia geral** . São Paulo: Atlas, 1990.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |Componente Curricular: HistóriaI|||
@@ -1434,7 +1434,7 @@ REIS, João José.; GOMES, Flávio dos Santos. **Liberdade por um fio** : histó
 
 RIBEIRO, Berta G. (Berta Gleizer), 1924-1997. **O índio na cultura brasileira.** 1. ed. - Rio de Janeiro: Fundação Darcy Ribeiro, 2013.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico Gestão eNegócios||
 |Componente Curricular: FilosofiaII|||
@@ -1446,7 +1446,7 @@ RIBEIRO, Berta G. (Berta Gleizer), 1924-1997. **O índio na cultura brasileira.*
 |Bibliografia Complementar:|||
 |BRANDÃO, Junito de Souza.**Mitologia grega**. Petrópolis: Vozes, 1986, v. I.<br>BURKERT, W.**Religião grega na época clássica e arcaica**. Lisboa:<br>Fundação Calouste Gulbenkian, 1993.<br>DETIENNE, Marcel.**Os mestres da Verdade na Grécia Arcaica**. Rio de Janeiro:<br>Zahar, 1988.<br>DIAS, M. C.**O que é filosofia?**Ouro Preto: UFOP, 1996.|||
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico Gestão eNegócios||
 |Componente Curricular:GeografiaI|||
@@ -1474,7 +1474,7 @@ STEINKE, Ercilia Torres. **Climatologia Fácil** . 1. ed. São Paulo: Oficina de
 
 SUGUIO, K. **Mudanças Ambientais da Terra** . 01. ed. São Paulo: Instituto Geológico, 2008. v. 01. 336p .
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |**Componente Curricular:**Gestão de compras e estoque|||
@@ -1608,7 +1608,7 @@ CREPALDI, Silvio Aparecido; CREPALDI, Guilherme Simões. **Contabilidade gerenci
 
 SILVA **,** Jose Pereira da. **Análise Financeira das Empresas** . São Paulo: Atlas, 2012.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |Componente Curricular: MarketingEstratégico|||
@@ -1642,7 +1642,7 @@ ALVARENGA, A.C. **Logística Aplicada** . Ed. 3. São Paulo: Edgar Blücher, 200
 
 BOWERSOX, D.J. **Logística empresarial: o processo de integração da cadeia de suprimentos** . São Paulo: Atlas, 2001. CHRISTOPHER, M. **Logística e gerenciamento da cadeia de suprimentos, estratégias para a redução de custos e melhoria dos serviços** . São Paulo: Pioneira Thomson Learning, 2002. FLEURY, P.F. **Logística empresarial** - A perspectiva brasileira. 2002. 1 ed., São Paulo, Atlas. GOMES, C.F.S. **Gestão da Cadeia de Suprimentos** . São Paulo: Pioneira Thomson Learning, 2004.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso:<br>Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |**Componente Curricular:**Direito empresariale tributário|||
@@ -1670,7 +1670,7 @@ TOKARS, Fabio. **Primeiros Estudos de Direito Empresarial** . Editora LTr, 2007.
 
 **CAMPUS ASSIS CHATEAUBRIAND DO IFPR** Curso: Técnico em Comércio Eixo Tecnológico Gestão e Negócios Componente Curricular: Empreendedorismo Carga Horária (hora-aula): 80 Período Letivo: 3º Ano Ementa: Planejamento, Organização, Direção e Controle de uma Feira de Empreendedorismo. Noções sobre Empreendedorismo. Empreendedorismo e mercado de trabalho. Características de um Perfil Empreendedor. Identificação de oportunidades. Empreendedores de sucesso e casos de sucesso. Plano de Negócios. Bibliografia Básica: CHIAVENATO, Idalberto. Empreendedorismo: dando asas ao espírito empreendedor. 3 ed. São Paulo: Saraiva, 2008. DOLABELA, Fernando. **O Segredo de Luísa** . Rio de Janeiro: Sextante, 2008. DORNELAS, José Carlos Assis. **Empreendedorismo: Transformando ideias em negócios** . 2 ed. Rio de Janeiro: Elsevier, 2005. Bibliografia Complementar: CHÉR, Rogério. **Empreendedorismo na veia:** um aprendizado constante. Rio de Janeiro: Elsevier, 2008. DEGEN, Ronald Jean. **O empreendedor:** fundamentos da iniciativa empresarial. São Paulo: Makron Books, 2005. DORNELAS, José Carlos Assis. **Empreendedorismo na prática:** mitos e verdades do empreendedor de sucesso. Rio de Janeiro: Elselvier, 2007. LAS CASAS, Alexandre Luzzi. **Plano de Marketing para Micro e Pequena Empresa** . 5 ed. São Paulo: Atlas, 2007.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |Curso:<br>Técnico emComércio|EixoTecnológico:Gestão eNegócios|
 |Componente Curricular: Projeto Integrador III||
@@ -1709,7 +1709,7 @@ ERES FERNÁNDEZ, Gretel (Coord.). **Gêneros textuais e produção escrita** : t
 
 FANJUL, Adrian. **Gramática de Español Paso a Paso** . 2. ed. Santillana, 2011. FANJUN, Adrián. **Gramática y práctica de Español para brasileños** . 3. ed. São Paulo: Moderna, 2014.
 
-|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|
+|**CAMPUS ASSIS CHATEAUBRIAND DO IFPR**|||
 |---|---|---|
 |Curso: Técnico emComércio|EixoTecnológico:Gestão eNegócios||
 |**Componente Curricular:**AtendimentoEducacional Especializado|||
@@ -1811,7 +1811,7 @@ INSTITUTO FEDERAL DO PARANÁ | Campus Assis Chateaubriand
 
 Av. Cívica, 475 - Centro Cívico - Assis Chateaubriand PR | CEP 85935-000  - Brasil
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANTIDADE**|**PERFIL DE FORMAÇÃO**|
 |01|LínguaEstrangeira- Inglês|

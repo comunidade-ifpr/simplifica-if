@@ -575,6 +575,8 @@ export function ehParagrafoContinuavel(linha: string): boolean {
 }
 
 function devePromoverAHeading(conteudo: string, anterior: string): boolean {
+  // Linha de tabela não é título, nem quando a única célula preenchida está em maiúsculas.
+  if (conteudo.startsWith("|")) return false;
   if (match(LISTA, conteudo)) return false;
   if (match(NUMERO_SECAO, conteudo)) return true;
   if (aparar(anterior)) return false;

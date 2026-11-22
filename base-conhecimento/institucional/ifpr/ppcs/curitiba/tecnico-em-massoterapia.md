@@ -84,7 +84,7 @@ MinisteriodaEducacao
 
 ## INSTITUTOFEDERAL
 
-|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente da comissão, docente do Curso<br>técnico em Massoterapia|Presidente da comissão, docente do Curso<br>Elisângela Valevein Rodrigues|
@@ -1939,7 +1939,7 @@ PROENS
 
 MinisteriodaEducacao
 
-|**CAMPUS CURITIBADO IFPR**|**CAMPUS CURITIBADO IFPR**|**CAMPUS CURITIBADO IFPR**|
+|**CAMPUS CURITIBADO IFPR**|||
 |---|---|---|
 |**Curso: TÉCNICO EM MASSOTERAPIA**||**Eixo Tecnológico: AMBIENTE E**<br>**SAÚDE**|
 |**Componente Curricular:**TRABALHO DE CONCLUSÃO DE CURSO|||
@@ -2147,7 +2147,7 @@ Ministerio daEducacao
 
 ## PROENS
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**NOME**|**CARGO**|
 |AdemirGoncalvesPinto|Assistente emadministração|

@@ -769,7 +769,7 @@ Ministerio da Educacao
 
 ## 4.1 ESTRUTURA CURRICULAR
 
-|**COMPONENTES**|**COMPONENTES**|**COMPONENTES**|**COMPONENTES**|**COMPONENTES**|**COMPONENTES**||
+|**COMPONENTES**|||||||
 |---|---|---|---|---|---|---|
 |**Professor Responsável**|**Componente Curricular**|**Núcl**|**Tipo**|**CH**|**Sem**|**Titulação**|
 |Joyce Muzzi|Língua Portuguesa|1|C|80|1º|Doutora|
@@ -861,7 +861,7 @@ Ministerio da Educacao
 |**Núcleo III**|**1000**|
 |**CARGA HORÁRIA TOTAL DO CURSO**|**3200**|
 
-|**DISTRIBUIÇÃO - CARGA HORÁRIA**|**DISTRIBUIÇÃO - CARGA HORÁRIA**|
+|**DISTRIBUIÇÃO - CARGA HORÁRIA**||
 |---|---|
 |**(C) Componentes curriculares**|**2200**|
 |**(P) Prática como Componente Curricular**|**400**|
@@ -981,7 +981,7 @@ Ministerio da Educacao
 
 ## **4.1.2  Matriz Curricular**
 
-|INSTITUTO<br>FEDERAL<br>Parana|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|
+|INSTITUTO<br>FEDERAL<br>Parana|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>Criação Lei nº 11.892 de 29/11/2008<br>_Campus Curitiba_<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM PEDAGOGIA**<br>Código área do conhecimento do Curso: Educação - 70800006<br>Base legal: Resolução nº 19/ IFPR de 24/03/2017. Anexos I e II.<br>Base legal específica: Resolução CNE/CP 1/2006.Diretrizes Curriculares Nacionais Pedagogia<br>Resolução de autorização do curso no IFPR: Resolução nº 34/2018|||||||
 |---|---|---|---|---|---|---|---|
 |**Semanas do semestre letivo:**<br>**20**|||**Tipo: C,**<br>**P, ES,**<br>**AC.**|**Número**<br>**de aulas**<br>**sem.**|**CH. Hora**<br>**relógio 60.**|**io 60.**<br>**10 % CH**<br>**Extensão**<br>**Hora-**<br>**relógio**<br>**(60 min)**|**10 % CH**|
 |**Períodos**|**Matriz curricular**|**Núcleo**||||||
@@ -1072,7 +1072,7 @@ Ministerio da Educacao
 
 Ministerio da Educacao
 
-|**NÚCLEOS - CARGA HORÁRIA**|**NÚCLEOS - CARGA HORÁRIA**|||
+|**NÚCLEOS - CARGA HORÁRIA**||||
 |---|---|---|---|
 |Núcleo I|1160|||
 |Núcleo II|1040|||
@@ -1083,7 +1083,7 @@ Ministerio da Educacao
 
 ## **4.1.3 Componentes Optativos**
 
-|**Optativas**|**Optativas**|**Optativas**|**Optativas**|**Optativas**|
+|**Optativas**|||||
 |---|---|---|---|---|
 |Pedagogia Hospitalar|**2**|Op|2|40|
 |Robótica Educativa|**2**|Op|2|40|
@@ -1092,7 +1092,7 @@ Ministerio da Educacao
 
 ## **4.1.4 Componentes Eletivos**
 
-|**Eletivas**|**Eletivas**|**Eletivas**|**Eletivas**|**Eletivas**|
+|**Eletivas**|||||
 |---|---|---|---|---|
 |Língua Espanhola|**2**|Op|4|40|
 |Língua Inglesa|**2**|Op|4|40|
@@ -3480,15 +3480,15 @@ Ministerio da Educacao
 
 Ministerio da Educacao
 
-|Roberto José Medeiros<br>Junior|Matemática e<br>Gestão<br>Pública|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/3590320225<br>551774|
-|---|---|---|---|---|
-|Rosangela Gonçalves<br>Oliveira|Educação<br>Artística|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/9100032251<br>562275|
-|Sandra Terezinha<br>Urbanetz|Pedagogia|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/1967514941<br>253300|
-|Thiago Divardim<br>Oliveira|História|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/2954091467<br>954896|
-|Vanderci Ruschel|Ciências<br>Sociais|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/12215455858<br>07388|
-|Vanessa Lopes Ribeiro|Letras<br>Português/In<br>glês|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/71080303551<br>19454|
-|Wesley Soares Guedes<br>de Moraes|Teologia e<br>Pedagogia|Doutorado DE|Doutorado DE|http://lattes.cnpq.br/02920014854<br>17344|
-|Wilson Lemos Junior|Educação<br>Física,<br>Educação<br>Artística com<br>habilitação<br>em Música|Doutorado  DE|Doutorado  DE|http://lattes.cnpq.br/62359295760<br>86675|
+|Roberto José Medeiros<br>Junior|Matemática e<br>Gestão<br>Pública|Doutorado DE|http://lattes.cnpq.br/3590320225<br>551774|
+|---|---|---|---|
+|Rosangela Gonçalves<br>Oliveira|Educação<br>Artística|Doutorado DE|http://lattes.cnpq.br/9100032251<br>562275|
+|Sandra Terezinha<br>Urbanetz|Pedagogia|Doutorado DE|http://lattes.cnpq.br/1967514941<br>253300|
+|Thiago Divardim<br>Oliveira|História|Doutorado DE|http://lattes.cnpq.br/2954091467<br>954896|
+|Vanderci Ruschel|Ciências<br>Sociais|Doutorado DE|http://lattes.cnpq.br/12215455858<br>07388|
+|Vanessa Lopes Ribeiro|Letras<br>Português/In<br>glês|Doutorado DE|http://lattes.cnpq.br/71080303551<br>19454|
+|Wesley Soares Guedes<br>de Moraes|Teologia e<br>Pedagogia|Doutorado DE|http://lattes.cnpq.br/02920014854<br>17344|
+|Wilson Lemos Junior|Educação<br>Física,<br>Educação<br>Artística com<br>habilitação<br>em Música|Doutorado  DE|http://lattes.cnpq.br/62359295760<br>86675|
 
 ## **6.1.5 Colegiado de Curso**
 
@@ -4458,10 +4458,10 @@ Ministerio da Educacao<br>
 
 ## **ACADÊMICO(A):**
 
-|**NÚMERO**|**ATIVIDADE/ EVENTO**|**ATIVIDADE/ EVENTO**|**INSTITUIÇÃ**<br>**O**|**DATA/PERÍODO**|**CARGA**<br>**HORÁRI**|
-|---|---|---|---|---|---|
-||||**PROMOTOR**||**A**|
-||||**A**|||
+|**NÚMERO**|**ATIVIDADE/ EVENTO**|**INSTITUIÇÃ**<br>**O**|**DATA/PERÍODO**|**CARGA**<br>**HORÁRI**|
+|---|---|---|---|---|
+|||**PROMOTOR**||**A**|
+|||**A**|||
 
 **Código da Natureza da Atividade (N.A.):** 01- Atividade de Ensino; 02 – Atividade de Pesquisa; 03 – Atividade de Extensão; 04 -Outras atividades de Educação
 
@@ -4692,7 +4692,7 @@ Coordenação do Curso de Licenciatura em Pedagogia
 
 As partes abaixo qualificadas celebram neste ato o Termo de Compromisso de Estágio conforme a Lei nº 11.788/08.
 
-|a Lei nº 11.788/08.|a Lei nº 11.788/08.|
+|a Lei nº 11.788/08.||
 |---|---|
 |**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**||
 |**Instituição de Ensino:**||

@@ -59,7 +59,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 **RESOLUÇÃO DE CRIAÇÃO:** Autorizado pela Resolução n° 87/2010 – Conselho Superior
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |**Coordenador do curso**|Gabriella Giani Pieretti Gadelha|

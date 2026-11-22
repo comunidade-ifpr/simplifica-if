@@ -102,7 +102,7 @@ Noturno.
 
 As aulas ocorrerão de segunda-feira a sexta-feira das 19h00min às 22h40min com intervalo de 20 minutos entre 20h40min e 21h00min, sendo que cada aula contará com duração de 50 minutos, a saber:
 
-|**Quadro 01** –Horário das aulas|**Quadro 01** –Horário das aulas|
+|**Quadro 01** –Horário das aulas||
 |---|---|
 |1ªaula|19h00-19h50|
 |2ªaula|19h50-20h40|
@@ -690,7 +690,7 @@ Deixa-se claro que os créditos das atividades de extensão vinculadas como ativ
 
 ## **4.2 EMENTÁRIO E BIBLIOGRAFIAS**
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|160 H/A|133 H/R|
 |COMPONENTE CURRICULAR:**Algoritmos e Estrutura de Dados**|||
@@ -722,7 +722,7 @@ SEBESTA, R. W. **Conceitos de linguagem da programação.** 9. ed. Porto Alegre:
 
 LAFORE, Robert. **Estruturas de dados e algoritmos em Java** . Rio de Janeiro: Ciência Moderna, 2004.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Banco de Dados I**|||
@@ -749,7 +749,7 @@ MILANI, A. **PostgreSQL:** guia do programador. São Paulo: Novatec, c2008. 392 
 
 ROB, P.; CORONEL, C. **Sistemas de banco de dados:** projeto, implementação e gerenciamento. São Paulo: Cengage Learning, 2011. 711 p. ISBN 9788522107865
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Engenharia de Software**|||
@@ -777,7 +777,7 @@ NOGUEIRA, M. **Engenharia de software:** um framework para a gestão de riscos e
 
 WAZLAWICK, R. S. **Análise e projeto de sistemas de informação orientados a objetos.** 2. ed. Rio de Janeiro: Elsevier, 2011. 330 p. (Série, SBC - Sociedade Brasileira de Computação). ISBN 8535239164 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|80 H/A|67 H/R|
 
@@ -837,7 +837,7 @@ KUMARAVADIVELU, B. Critical language pedagogy: a postmethod perspective on Engli
 
 SOUZA, A. G. F. et al. **Leitura em língua inglesa** : uma abordagem instrumental. 2. ed. atual. São Paulo: Disal, 2005.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Introdução à Computação**|||
@@ -845,7 +845,7 @@ SOUZA, A. G. F. et al. **Leitura em língua inglesa** : uma abordagem instrument
 |**BIBLIOGRAFIA BÁSICA**<br>BARRIVIERA, R.; OLIVEIRA, E. D. de.**Introdução à informática.**Curitiba: Editora do Livro<br>Técnico, 2012. 152 p. ISBN 9788563687463 (broch.).<br>FOROUZAN, B. A.; MOSHARRAF, F.**Fundamentos da ciência da computação.**São Paulo:<br>Cengage Learning, 2012. 560p. ISBN 9788522110537 (broch.).<br>STALLINGS, W.**Arquitetura e organização de computadores.**8. ed. São Paulo: Pearson,<br>2010. 624 p. ISBN 9788576055648 (broch.).<br>WEBER, R. F.**Arquitetura de computadores pessoais.**2. ed. Porto Alegre: Bookman, 2008.<br>271 p. (Livros didáticos; 6). ISBN 9788577803118 (broch.).|||
 |**BIBLIOGRAFIA COMPLEMENTAR**<br>CAPRON, H. L.; JOHNSON, J. A.**Introdução à informática.**8. ed. São Paulo: Pearson<br>Education do Brasil, 2004. 350 p. ISBN 9788587918888 (broch.).<br>MORIMOTO, C. E.**Hardware II:**o guia definitivo. Porto Alegre: Sul Editores, c2010. 1086 p.<br>ISBN 9788599593165 (broch.).<br>TORRES, G.**Hardware:**versão revisada e atualizada. São Paulo: Nova Terra Editora, 2014.<br>xxxi, 888 p. ISBN 9788561893217 (enc.).<br>VELLOSO, F. de C.**Informática:**conceitos básicos. 8. ed. rev. e atual. Rio de Janeiro: Campus,<br>2011. 391p. ISBN 9788535243970(broch.).|||
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Língua Portuguesa**|||
@@ -866,7 +866,7 @@ ROONEY, Anne. **A história da matemática:** desde a criação das pirâmides a
 
 WINTERLE, Paulo. **Vetores e geometria analítica.** 2.ed. São Paulo: Pearson Education do Brasil, 2014
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Programação Web I**|||
@@ -888,7 +888,7 @@ MILANI, A. **PostgreSQL: guia do programador** . São Paulo: Novatec, c2008. 392
 
 ROB, Peter; CORONEL, Carlos. **Sistemas de banco de dados:** projeto, implementação e gerenciamento. São Paulo: Cengage Learning, 2011. 711 p. ISBN 9788522107865
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |2oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Ciência de Dados**|||
@@ -948,7 +948,7 @@ RUDIO, F. V. **Introdução ao projeto de pesquisa científica.** 43. ed. Petró
 
 SILVA, J. M. **Apresentação de trabalhos acadêmicos** : normas e técnicas. 2. ed. Petrópolis: Vozes, 2007.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |2oANO|160 H/A|133 H/R|
 |COMPONENTE CURRICULAR:**Programação Orientada à Objetos**|||
@@ -1027,7 +1027,7 @@ RABECHINI Jr., R.; CARVALHO, M. M. de.(Org.) **Gerenciamento de projetos na prá
 
 VIEIRA, M. F. **Gerenciamento de projetos de tecnologia da informação.** Rio de Janeiro : Câmpus, 2003.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |2oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Sistemas Operacionais**|||
@@ -1076,7 +1076,7 @@ NOGUEIRA, M. **Engenharia de software:** um framework para a gestão de riscos e
 
 WAZLAWICK, R. S. **Análise e projeto de sistemas de informação orientados a objetos.** 2. ed. Rio de Janeiro: Elsevier, 2011. 330 p. (Série, SBC - Sociedade Brasileira de Computação). ISBN 8535239164 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Desenvolvimento para Dispositivos Móveis**|||
@@ -1102,7 +1102,7 @@ JONES, M; MARSDEN, G. **Mobile interaction design** . Chichester: John Wiley & S
 
 TERUEL, Evandro Carlos. **Web mobile:** desenvolva sites para dispositivos móveis. Rio de Janeiro: Ciência Moderna, 2010. 339 p. ISBN 9788573938975
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 
@@ -1128,7 +1128,7 @@ OSTERWALDER, A. et al. **Value proposition design:** como construir propostas de
 
 OSTERWALDER, A.; PIGNEUR, Yves. **Business model generation:** inovação em modelos de negócios: um manual para visionários, inovadores e revolucionários **.** Rio de Janeiro: Alta Books, 2011. 278 p.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**LIBRAS - Optativa**|||
@@ -1197,7 +1197,7 @@ SINGH, S. **O livro dos códigos.** Rio de Janeiro: Editora Record, 2004.
 
 TORRES, G. **Redes de computadores** . Rio de Janeiro: Novaterra Editora, 2010.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Sistemas Embarcados**|||
@@ -1222,7 +1222,7 @@ MONK, S. **30 projetos com Arduino.** 2. ed. Porto Alegre: Bookman, 2014. 214 p
 
 SCHILDT, H. **C: completo e total** . 3. ed., rev. e atual. São Paulo: Makron Books, 1997. 827 p
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Tópicos Especiais em Computação - Optativa**|||
@@ -1249,14 +1249,14 @@ MATEUS, G. R.; LOUREIRO, A. A. **Introdução à computação móvel.** Livro di
 
 STATO, A. **Mikrotik para iniciantes - curso completo para implementação de RouterOS** - Passo a Passo. Instituto Alpha; Edição: 1ª. São Paulo 2017. 298 p.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Trabalho de Conclusão de Curso (TCC)**|||
 |**EMENTA**<br>Elaboração do trabalho final de conclusão de curso (monografia, artigo ou material didático):<br>discussão dos resultados, os aspectos gráficos da monografia, artigo ou material didático (as<br>normas da ABNT) e a elaboração das referências bibliográficas, sob supervisão de um orientador<br>e apresentação e defesa do trabalho final perante uma banca.|||
 |**BIBLIOGRAFIA BÁSICA**|||
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oANO|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Trabalho de Conclusão de Curso (TCC)**|||
@@ -2001,7 +2001,7 @@ Neste laboratório, além das aulas da disciplina de Informática Básica, a uti
 |Hack de Rede|1|
 |||
 
-|**Laboratório de Informática 2**<br>**Metragem:**68,06|**Laboratório de Informática 2**<br>**Metragem:**68,06|
+|**Laboratório de Informática 2**<br>**Metragem:**68,06||
 |---|---|
 |**Instalações Laboratório de Informática 2**|**Quantidade**|
 |Quadro de Vidro|1|

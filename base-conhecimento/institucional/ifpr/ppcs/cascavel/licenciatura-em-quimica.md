@@ -993,7 +993,7 @@ Não haverá pré-requisito nos componentes curriculares do curso de Licenciatur
 
 ## **EMENTAS DO PRIMEIRO ANO**
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra|
 |Componente Curricular: Língua Portuguesa||
@@ -1046,7 +1046,7 @@ HUMISTON, G. E.; BRADY, J. **Química: a Matéria e suas Transformações** , 5�
 
 BROWN, T.L., LEMAY Jr., H.E., BURSTEN, B.E., BURDGE, J.R. **Química: A Ciência Central** . 9ª. Ed. São Paulo: Pearson Prentice Hall, 2005.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da terra|
 |Componente Curricular:Química Inorgânica I||
@@ -1079,7 +1079,7 @@ CHAUÍ, Marilena. **Convite à filosofia** . São Paulo: Ática, 1995. LUCKESI, 
 
 SEVERINO, Antônio Joaquim. **Filosofia da Educação.** São Paulo: Ática, 1993
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências exatas e da Terra|
 |Componente Curricular: Biologia I||
@@ -1099,7 +1099,7 @@ VANZELA, André Luís Laforga; SOUZA, Rogério Fernandes de. **Avanços da biolo
 
 ## **EMENTAS DO SEGUNDO ANO**
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências exatas e da terra|
 |Componente Curricular: Cálculo II||
@@ -1108,7 +1108,7 @@ VANZELA, André Luís Laforga; SOUZA, Rogério Fernandes de. **Avanços da biolo
 |**Bibliografia Básica:**<br>ANTON, Howard; BIVENS, Irl; DAVIS, Stephen.**Cálculo.**10. ed. Porto Alegre: Bookman, 2014.<br>BOYER, Carl B.**História da Matemática**, 3ª ed. São Paulo: Blucher, 2014.<br>GONÇALVES, M. B.; FLEMMING, D. M.**Cálculo B:**funções de várias variáveis, integrais múltiplas,<br>integrais curvilíneas e desuperfície. 2. ed. São Paulo: Pearson Prentice Hall, 2009.<br>GUIDORIZZI, H. L.**Um Curso de Cálculo**. 5. ed. Rio de Janeiro: LTC, 2001.<br>MUNEM, Mustafa A.; FOULIS, David J.**Cálculo**. Rio de Janeiro: LTC, 1982.||
 |**Bibliografia Complementar:**<br>ÁVILA, G,**Cálculo diferencial e integral II**. Rio de Janeiro: LTC, 1995.<br>LEITHOLD, L.**Cálculo com Geometria analítica**V2. 3 Ed, São Paulo: Harbra, 1994.<br>MCCALLUM, W. G.; HUGUES HALLETT, D.; GLEASON, A. M.**Cálculo de várias variáveis**. São<br>Paulo: Blucher, 1997.<br>ROONEY, Anne.**A história da matemática**: desde a criação das pirâmides até a exploração do infinito.<br>São Paulo: M.Books, 2012<br>STEWART, J.**Cálculo**V2. . 5 Ed, São Paulo: Thompson Learning, 2006.||
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências exatas e da terra|
 |Componente Curricular: Física I||
@@ -1117,7 +1117,7 @@ VANZELA, André Luís Laforga; SOUZA, Rogério Fernandes de. **Avanços da biolo
 |**Bibliografia Básica:**<br>HALLIDAY, D.; RESNICK, R.; WALKER, J. Fundamentos de Física 1: Mecânica, 12ª ed., LTC, 2012.<br>HALLIDAY, D.; RESNICK, R.; WALKER, J. Fundamentos de Física 2: Gravitação, Ondas e<br>Termodinâmica, 12ª ed., LTC, 2012.<br>TIPLER, P. A.; MOSCA, G.; Física Para Cientistas e Engenheiros, vol.1, 6ª ed., Editora LTC, Rio de<br>Janeiro,2009.||
 |**Bibliografia Complementar:**<br>NUSSENZVEIG, H. M. Curso de física básica: 1: mecânica. 5. ed., rev. e atual. São Paulo: Blucher, 2013.<br>NUSSENZVEIG, H. M. Curso de física básica: 2: Fluidos, Oscilações e Ondas, Calor. 5. ed., rev. E atual.<br>São Paulo: Blucher, 2013.<br>PERUZZO, J. Experimentos de física básica: mecânica. 1. ed. São Paulo: Livraria da Física, 2012.<br>SEARS, F. W.; ZEMANSKI, M. W. Física. 2, Vol. 1ed. Rio de Janeiro: LTC, 1986.<br>RESNICK, R.; HALLIDAY, D.; KRANE, K. S. Física 1. 5. ed. Rio de Janeiro: LTC, 2003.||
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências exatas e da Terra|
 |Componente Curricular:Química Orgânica I||
@@ -1158,7 +1158,7 @@ HAYDT, R. C. C. **Avaliação do processo ensino-aprendizagem** . 6. ed. São Pa
 
 GANDIN, D. **Planejamento como prática educativa** . 20. ed. São Paulo: Loyola, 2013.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências exatas e da terra.|
 |Componente Curricular: Fundamentos de Educação II||
@@ -1211,7 +1211,7 @@ FARIA, W. de. **Teorias de ensino e planejamento pedagógico** _._ São Paulo: E
 
 ## **EMENTAS DO TERCEIRO ANO**
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra|
 |Componente Curricular: Metodologia da Pesquisa e Estatística||
@@ -1253,7 +1253,7 @@ COSTA, P.; PILLI, R.; PINHEIRO, S. &amp; VASCONCELLOS, M. Substâncias Carbonila
 
 ZUBRICK, J.W. Manual de Sobrevivência no Laboratório de Química Orgânica. 6ª Edição. Editora LTC. 2005.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da terra.|
 |Componente Curricular: Fundamentos de Educação|III|
@@ -1290,7 +1290,7 @@ Reflexão sobre a realidade educativa a partir da diversidade de situações rel
 
 RUDIO, F. V. **Introdução ao Projeto de Pesquisa Científica** . Petrópolis: Vozes, 1991. THIOLLENT, M. **Metodologia da Pesquisa-ação** . Cortez, SP, 1996. FARIA, W. de. **Teorias de ensino e planejamento pedagógico** . São Paulo: EPU, 1987. FERRACINE, L. **O professor como agente de mudança social** . São Paulo: EPU, 1987. MAZZOTTA, M. J. da S. **Educação Especial no Brasil** . 5. ed. São Paulo: Cortez, 2005
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra.|
 |Componente Curricular: Biologia III||
@@ -1308,7 +1308,7 @@ TORTORA, Gerard J.; DERRICKSON, Bryan. Princípios de anatomia e fisiologia. 14.
 
 SILVA JUNIOR, César da. Biologia 3. 8 ed. São Paulo: Saraiva, 2011. VANZELA, André Luís Laforga; SOUZA, Rogério Fernandes de. Avanços da biologia celular e da genética molecular. São Paulo: Ed. UNESP, 2009. 132 p.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra.|
 |Componente Curricular: Atividade de Extensão I||
@@ -1397,7 +1397,7 @@ BALL, David W. Físico-química. São Paulo: Cengage Learning, 2005. 2 v. LEVINE
 
 RANGEL, Renato N. Práticas de físico-química. 3. ed. rev. e ampl. São Paulo: Blucher, 2006. CHANG, Raymond. Físico-química para as ciências químicas e biológicas. [3.ed.]. Porto Alegre: AMGH, 2010. 2 v.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra|
 |Componente Curricular: Seminários de Ensino emQuímica||
@@ -1422,7 +1422,7 @@ BORDENAVE,J., PEREIRA, A. M., **Estratégias de Ensino-Aprendizagem.** Ed. Vozes
 
 Carvalho, A. M. P.; Gil-Pérez, D.; **Formação de Professores de Ciências** – Tendências e Inovações, Coleção: Questões da nossa época – vol. 26, 7ª edição, Ed. Cortez, São Paulo, 2003. MACHADO, A. H. **Aula de química** : Discurso e conhecimento. 2ª ed. Ijuí, RS: Ed. Unijuí, 2004.
 
-||Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+||Campus Cascavel do IFPR||
 |---|---|---|
 ||||
 ||Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências exatas e da terra|
@@ -1528,7 +1528,7 @@ SPERLING, M. V. **Introdução à qualidade das águas e ao tratamento de esgoto
 
 LEONARD, A.; CONRAD, A. **A História das coisas** : da natureza ao lixo, o que acontece com tudo que consumimos. Rio de Janeiro: Zahar, 2011. 302p. ROCHA, J. C.; ROSA, A. H.; CARDOSO, A. A. **Introdução à química ambiental.** Porto Alegre: Bookman, 2004.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra|
 |Componente Curricular: Microbiologia Industrial||
@@ -1567,7 +1567,7 @@ DUARTE, Newton. Educação escolar, teoria do cotidiano e a escola de Vigotski. 
 |**Bibliografia Básica:**<br>LAVOURA, Tiago Nicola; MARSIGLIA, Ana Carolina Galvão.**A pedagogia histórico-crítica e a defesa da**<br>**transmissão do saber elaborado**: apontamentos acerca do método pedagógico. Perspectiva, v. 33, n. 1, p. 345-<br>376, 2016.<br>MASSI, L., Souza, B. N. Sgarbosa, E. C., & Colturato, A. R.**Incorporação da pedagogia histórico-crítica**<br>**na educação em ciências: uma análise crítica dialética de uma revisão bibliográfica sistemática**.<br>Investigações em Ensino de Ciências, 2019.<br>http://dx.doi.org/10.22600/1518-8795.ienci2019v24n2p212<br>MESSEDER NETO, H. da S. (2022).**O Ensino da Química na pedagogia histórico-crítica**: considerações<br>sobre conteúdo e forma para pensarmos o trabalho pedagógico concreto._Investigações Em Ensino De Ciências_,<br>_27_(2), 271–293.https://doi.org/10.22600/1518-8795.ienci2022v27n2p271<br>SAVIANI, Dermeval. Pedagogia-Histórico Crítica: primeiras aproximações. 11° ed. Campinas, SP: Editora<br>Atores Associados LTDA, 2012.||
 |**Bibliografia Complementar:**<br>DUARTE, N.**A pedagogia histórico-crítica e a formação da individualidade para-si**. Germinal,<br>Londrina, v. 5, n. 2, p. 59-72, dez. 2013.<br>MARTINS, Lígia Márcia.**O Desenvolvimento do Psiquismo e a Educação Escolar: contribuições à luz**<br>**da psicologia histórico-cultural e da pedagogia histórico-crítica**.Campinas: Autores Associados, 2013.<br>MESSEDER NETO, H. S.**O lúdico no ensino de química na perspectiva histórico-cultural**: além do<br>espetáculo, além da aparência. 1. ed. Curitiba: Editora Prismas, 2016. (cap.1)<br>SAVIANI, Dermeval.**Escola e democracia.**São Paulo: Cortez, 1984.<br>SAVIANI, Dermeval. A pedagogia histórico-crítica.**Revista binacional Brasil-Argentina: diálogo entre as**<br>**ciências, **v.3,n.2, p. 11-36,2020.||
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra.|
 |Componente Curricular: Análise de Alimentos||
@@ -1590,7 +1590,7 @@ COULTATE, T. P. Alimentos: a química de seus componentes. 3. ed. Porto Alegre: 
 
 OETTERER, M.; D’ARCE, M. A. B. R.; SPOTO, M. H. Fundamentos de Ciência e Tecnologia de Alimentos. Barueri-SP: Manole, 2006, 612p. http://portal.anvisa.gov.br/.
 
-|Campus Cascavel do IFPR|Campus Cascavel do IFPR|
+|Campus Cascavel do IFPR||
 |---|---|
 |Curso: Licenciatura emQuímica|Eixo Tecnológico: Ciências Exatas e da Terra.|
 |Componente Curricular: Análise de Alimentos||
@@ -1859,7 +1859,7 @@ Serão considerados para efeito de equivalência as atividades listadas na tabel
 
 **Curso de Licenciatura em Química**
 
-|**ATIVIDADES DE ENSINO**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**ATIVIDADES DE ENSINO**|**CARGA HORÁRIA**||
 |---|---|---|
 ||**HORAS**|**EQUIVALÊNCIA**|
 |Certificação de participação em eventos sem<br>carga horária|Contabilizado por<br>dia de participação|Meio dia equivale a<br>4 horas|

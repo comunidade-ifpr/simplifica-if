@@ -615,7 +615,7 @@ Ministerio da Educacao
 
 Para a execução das aulas práticas, serão necessários os equipamentos e vidrarias abaixo listados para cada ano de curso:
 
-|**1º ANO**|**1º ANO**|**1º ANO**|**1º ANO**|
+|**1º ANO**||||
 |---|---|---|---|
 |Equipamento|Preço Unitário|Quantidade|Total|
 |Agitador Magnético Com Aquecimento Cap 10 L|R$2,152.87|2|R$4,305.74|
@@ -769,7 +769,7 @@ Ministerio da Educagao
 |**SUBTOTAL**|||**R$18,807.56**|
 |**TOTAL**|||**R$102,381.36**|
 
-|**2º ANO**|**2º ANO**|**2º ANO**|**2º ANO**|
+|**2º ANO**||||
 |---|---|---|---|
 |**Equipamento**|**Preço Unitário**|**Quantidade**|**Total**|
 |Bloco Kjeldahl micro-digestor de proteínas|R$4,271.79|1|R$4,271.79|
@@ -831,7 +831,7 @@ Ministerio da Educagao
 |Moinho multiuso para fertilizantes grãos|R$6,554.67|1|R$6,554.67||
 |**TOTAL**|||**R$ 174,493.79**||
 
-|**4º ANO**|**4º ANO**|**4º ANO**|**4º ANO**|
+|**4º ANO**||||
 |---|---|---|---|
 |Equipamento|Preço Unitário|Quantidade|Total|
 |Texturômetro|R$144,800.00|1|R$144,800.00|
@@ -1026,7 +1026,7 @@ As aprendizagens serão organizadas pela pesquisa como princípio pedagógico, e
 
 A duração das aulas no campus Colombo é de 50 minutos, distribuídas em 40 semanas letivas e 200 dias letivos. A matriz curricular do curso Técnico em Alimentos integrado ao Ensino Médio está estruturada em componentes curriculares, totalizando 3.351 horas relógio, cabe salientar que a cargas horárias sofreram arredondamentos para números inteiros. Será oferecido 25 horas-aula semanais, conforme abaixo:
 
-|**1º Ano**|**1º Ano**|**1º Ano**|**1º Ano**|**1º Ano**|
+|**1º Ano**|||||
 |---|---|---|---|---|
 |**Área**|**COMPONENTES**<br>**CURRICULARES**|**Carga horária**<br>**(50 min)**|**Carga horária**<br>**Nº aulas na**<br>**semana**|**Carga**<br>**Horária**<br>**(hora relógio)**|
 |Linguagens,<br>Códigos e suas<br>Tecnologias|Artes I|40|1|33|
@@ -1057,7 +1057,7 @@ A duração das aulas no campus Colombo é de 50 minutos, distribuídas em 40 se
 ||Projetos I|40|1|33|
 |**TOTAL**||**1.000**|**25**|**831**|
 
-|**2º Ano**|**2º Ano**|**2º Ano**|**2º Ano**|**2º Ano**|
+|**2º Ano**|||||
 |---|---|---|---|---|
 |**Área**|**COMPONENTES**<br>**CURRICULARES**|**Carga horária**<br>**(50 min)**|**Nº aulas na**<br>**semana**|**Carga**<br>**Horária**<br>**(hora relógio)**|
 |Linguagens,<br>Códigos e suas<br>Tecnologias|Artes II|40|1|33|
@@ -1084,7 +1084,7 @@ A duração das aulas no campus Colombo é de 50 minutos, distribuídas em 40 se
 ||Projetos II|40|1|33|
 |**TOTAL**||**1.000**|**25**|**831**|
 
-|**3º Ano**|**3º Ano**|**3º Ano**|**3º Ano**|**3º Ano**|
+|**3º Ano**|||||
 |---|---|---|---|---|
 |**Área**|**COMPONENTES**<br>**CURICULARES**|**Carga horária**<br>**(50 min)**|**Nº aulas na**<br>**semana**|**Carga**<br>**Horária**<br>**(hora relógio)**|
 |Linguagens,<br>Códigos e suas<br>Tecnologias|Educação Física III|40|1|33|
@@ -1112,7 +1112,7 @@ A duração das aulas no campus Colombo é de 50 minutos, distribuídas em 40 se
 
 Ministerio da Educacao<br>
 
-|**4º Ano**|**4º Ano**|**4º Ano**|**4º Ano**|**4º Ano**|
+|**4º Ano**|||||
 |---|---|---|---|---|
 |**Área**|**COMPONENTES**<br>**CURICULARES**|**Carga horária**<br>**(50 min)**|**Nº aulas na**<br>**semana**|**Carga**<br>**Horária**<br>**(hora relógio)**|
 |Linguagens,<br>Códigos e suas<br>Tecnologias|Artes III|40|1|33|
@@ -2767,12 +2767,12 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educagho
 
-|**Curso: Técnico em Alimentos integrado**|**Curso: Técnico em Alimentos integrado**|**Eixo Tecnológico: Produção Alimentícia**|
+|**Curso: Técnico em Alimentos integrado**||**Eixo Tecnológico: Produção Alimentícia**|
 |---|---|---|
 |**ao Ensino Médio**|||
 |**Área: Ciência e Tecnologia de Alimentos**||**Componente Curricular: Gestão da Qualidade e**|
 |||**Segurança de Alimentos**|
-|**Carga Horária: 40 horas-aula**|**Carga Horária: 40 horas-aula**|**Período letivo: 1° ano**|
+|**Carga Horária: 40 horas-aula**||**Período letivo: 1° ano**|
 
 Conceitos, teorias e programas de qualidade para aplicação na indústria de alimentos. Fundamentos de legislação de alimentos. Conceitos básicos de higiene alimentar e requisitos higiênicos nas indústrias de alimentos. Higienização e sanitização na indústria de alimentos. Estudo da qualidade dos alimentos sob os diversos aspectos (sensorial, microbiológico, econômico, nutricional, etc.), com especial atenção aos diversos tipos de perigos à segurança do alimento para o consumo humano. **BIBLIOGRAFIA BÁSICA:** ANDRADE, N. J.; MACEDO, J. A. B. **Higienização na indústria de alimentos.** São Paulo: Varela, 2014. AZEREDO, D. R. P. **Inocuidade dos Alimentos.** Coleção Ciência, Tecnologia, Engenharia de Alimentos e Nutrição. Vol 1. 1. ed.  Atheneu, 2016. GERMANO, P. M. L.; GERMANO, M. I. S. **Higiene e vigilância sanitária de alimentos.** 5. ed. São Paulo: Manole. 2015. KUAYE, A. Y. **Limpeza e Sanitização na Indústria de Alimentos** -  Vol.4 - Coleção Ciência, Tecnologia, Engenharia De Alimentos E Nutrição. Atheneu. 2016. NETO, N. C.; LOPES, T. H.; MARCOS, E. N. F.; SCHEIDT, M. H. **Higiene e Manipulação de Alimentos** . Curitiba: Editora Livro Técnico, 2012. LOBO, R.N.; SILVA, D. L. DA; **Gestão da qualidade - diretrizes, ferramentas, métodos e normatização** . 1 ed. São Paulo: Érica, 2014. PALADINI, E. P. **Gestão da qualidade teoria e prática.** São Paulo: Atlas, 2012. GERMANO, P. L.; GERMANO, M. I. S.; **Sistema e gestão - qualidade e segurança dos alimentos** . Barueri: Manole, 2012. TRIDA, V. C,; FERREIRA, F. M.; **Gestão da qualidade em serviços de alimentação - como elaborar um manual de boas práticas** . 1 ed. São Caetano do Sul: Yendis, 2014. PALADINI, E. P.; et al. **Gestão da qualidade teoria e casos** . 2 ed. Rio de Janeiro: Campus, 2012. **BIBLIOGRAFIA COMPLEMENTAR:** RODRIGUES, M. V. **Entendendo, aprendendo e desenvolvendo - qualidade padrão seis sigma** . 3 ed. Rio de Janeiro: Campus, 2016. JURAN, J. M. **A qualidade desde o projeto** . 1 ed. São Paulo: Cengage Learning, 2009. OLIVEIRA, O. J. **Curso básico de gestão da qualidade** . São Paulo: Cengage Learning, 2014. BRISOT, V. G. **Sistema de gestão da qualidade nbr iso 9001 na prática** . 1 ed. Santa Cruz do Rio Pardo: Viena, 2013. VALLE, C. E. DO. **Qualidade ambiental ISO 14000** . 12 ed. São Paulo: SENAC, 2012. SEIFFERT, M. E. B. **ISO 14001 -** sistemas de gestão ambiental - implantação objetiva e econômica. 5 ed. São Paulo: Atlas, 2017. CAMPBELL-PLATT, G. (Ed.). **Ciência e tecnologia de alimentos** . 1. ed. Barueri: Manole, 2015. CARELLE, A. C.; CÂNDIDO, C. C. **Manipulação e Higiene dos Alimentos** . 1. ed. Editora Érica, 2014. FORSYTHE, S. J. **Microbiologia da Segurança dos Alimentos** . 2. ed. Porto Alegre: Artmed, 2013. GAVA, A. J.; DA SILVA, C. A. B.; FRIAS, J. R. G. **Tecnologia de Alimentos – Princípios e**
 
@@ -2794,7 +2794,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educagao
 
-|**Curso: Técnico em Alimentos integrado**|**Curso: Técnico em Alimentos integrado**|**Eixo Tecnológico: Produção Alimentícia**|**Eixo Tecnológico: Produção Alimentícia**|
+|**Curso: Técnico em Alimentos integrado**||**Eixo Tecnológico: Produção Alimentícia**||
 |---|---|---|---|
 |**ao Ensino Médio**||||
 |**Área: Ciência e Tecnologia de Alimentos**||**Componente**<br>**Curricular:**|**Informática**|
@@ -3222,10 +3222,10 @@ Ministerio da Educagao
 
 ## Parana
 
-|**Curso: Técnico em Alimentos integrado ao**|**Eixo Tecnológico:** **Produção Alimentícia**|**Eixo Tecnológico:** **Produção Alimentícia**|
+|**Curso: Técnico em Alimentos integrado ao**|**Eixo Tecnológico:** **Produção Alimentícia**||
 |---|---|---|
 |**Ensino Médio**|||
-|**Área: Linguagens, Códigos e suas**|**Componente curricular: Língua Portuguesa**|**Componente curricular: Língua Portuguesa**|
+|**Área: Linguagens, Códigos e suas**|**Componente curricular: Língua Portuguesa**||
 |**Tecnologias**|**III**||
 |**Carga Horária: 80 horas-aula**|**Período letivo: 3° ano**||
 
@@ -3462,7 +3462,7 @@ Ministerio da Educagao
 
 ## INSTITUTOFEDERAL
 
-|**Curso: Técnico em Alimentos integrado ao**|**Curso: Técnico em Alimentos integrado ao**|**Eixo Tecnológico:** **Produção Alimentícia**|
+|**Curso: Técnico em Alimentos integrado ao**||**Eixo Tecnológico:** **Produção Alimentícia**|
 |---|---|---|
 |**Ensino Médio**|||
 |**Área: Ciência e Tecnologia de Alimentos**||**Componente Curricular: Projetos III**|
@@ -3584,7 +3584,7 @@ Ministerio da Educagao
 
 ## 1[INSTITUTOFEDERAL] Parana
 
-|**Curso: Técnico em Alimentos integrado ao**<br>**Ensino Médio**|**Eixo Tecnológico:** **Produção Alimentícia**|**Eixo Tecnológico:** **Produção Alimentícia**|
+|**Curso: Técnico em Alimentos integrado ao**<br>**Ensino Médio**|**Eixo Tecnológico:** **Produção Alimentícia**||
 |---|---|---|
 |**Área: Ciência da Natureza e suas**<br>**Tecnologias**|**Componente Curricular: Química IV**||
 |**Carga Horária**: **40 horas-aula**|**Período letivo: 4°ano**||
@@ -3620,7 +3620,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educagao
 
-|**Curso: Técnico em Alimentos integrado ao**<br>**Ensino Médio**|**Eixo Tecnológico:** **Produção Alimentícia**|**Eixo Tecnológico:** **Produção Alimentícia**|
+|**Curso: Técnico em Alimentos integrado ao**<br>**Ensino Médio**|**Eixo Tecnológico:** **Produção Alimentícia**||
 |---|---|---|
 |**Área: Ciências Humanas e suas Tecnologias**|**Componente Curricular: Geografia IV**||
 |**Carga Horária**: **40 horas-aula**|**Período letivo: 4°ano**||
@@ -3665,7 +3665,7 @@ Ministerio da Educagao
 
 ## 1[INSTITUTOFEDERAL] Parana
 
-|1 [INSTITUTOFEDERAL]<br>Parana|1 [INSTITUTOFEDERAL]<br>Parana|Ministerio da Educagao|
+|1 [INSTITUTOFEDERAL]<br>Parana||Ministerio da Educagao|
 |---|---|---|
 |**Curso: Técnico em Alimentos integrado ao**||**Eixo Tecnológico:** **Produção Alimentícia**|
 |**Ensino Médio**|||

@@ -62,7 +62,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 5
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Coordenadora do curso/Presidente CAJ|PAOLA STEFANUTTI|
@@ -619,7 +619,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 **CAMPUS FOZ DO IGUAÇU DO IFPR Curso: Técnico em Gastronomia Eixo Tecnológico: Turismo, Hospitalidade e Lazer Componente Curricular: Mundo do trabalho Carga Horária (hora-aula): 40 Período Letivo: 1[o] período Ementa:** Conceitos históricos básicos da gastronomia; Gastronomia como mundo do trabalho; Ambiente Profissional; Tipologia de Restaurantes; Brigada de Cozinha e seu organograma; Ética profissional; Princípios básicos de gastronomia e sustentabilidade; Tendências do mercado gastronômico. **Bibliografia Básica:** CULINARY INSTITUTE OF AMERICA. **Chef profissional** . 9. ed. São Paulo: Ed. Senac São Paulo, 2017. MONTANARI, Massimo. **Comida como cultura** . 2. ed. São Paulo: Senac São Paulo, 2013. Tradução Letícia Martins de Andrade. BARRETO, Ronaldo L. P. **Passaporte para o sabor: tecnologias para a elaboração de cardápios** . 7. ed. rev. e ampl. São Paulo: SENAC São Paulo, 2008. **Bibliografia Complementar:** BRILLART-SAVARIN, Anthelme. **A fisiologia do gosto** . 2. ed. Rio de Janeiro: Companhia das Letras, 1995. FLANDRIN, Jean-Louis; FLANDRIN, Jean Louis; MONTANARI, Massimo. **História da alimentação** . São Paulo: Estação Liberdade, 1998. FRANCO, Ariovaldo. **De caçador a gourmet** : uma história da gastronomia. 5. ed. São Paulo: SENAC São Paulo, 2010. RUHLMAN, Michael. **A alma de um chef** : viagem para a perfeição. São Paulo: Senac Nacional, 2007.
 
-|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|
+|**CAMPUS FOZ DO IGUAÇU DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Gastronomia**|**Eixo Tecnológico: Turismo, Hospitalidade e Lazer**||
 |**Componente Curricular: Técnicas de serviços**|||
@@ -681,7 +681,7 @@ Matérias primas alimentícias de origem vegetal e de origem animal; Composiçã
 
 **Bibliografia Básica:** ARAÚJO, W. M. C. et al. (org.). **Alquimia dos alimentos** . 3.ed. Brasília, DF: Senac-DF, 2016. KOBLITZ, M. G. B. **Matérias-primas alimentícias** : composição e controle de qualidade. Rio de Janeiro: Guanabara Koogan, 2011. KNIBEL, M. P.; ASSIS, D. C. de. **Nutrição contemporânea** : saúde com sabor. Rio de Janeiro: Rubio, 2010. **Bibliografia Complementar:** ALLEN, D.; KEARNEY, R. **Alimentação saudável sem glúten** . São Paulo: Ed. Senac São Paulo, 2014. ABICAIR, M.; BACCARIN, F. **Alta gastronomia diet e light** : sem glúten, sem lactose e com redução de sal. São Paulo: Ed. Senac São Paulo, 2015. GUTFILEN, V. **Com sabor** : sem glúten, sem lactose. Rio de Janeiro: Rubio, 2014. QUARESMA, L. S.; LETHIAS, H. **Nutrição, dietética e boa cozinha** : soluções criativas para restrições alimentares. Rio de Janeiro: SENAC Rio; São Paulo: Senac Nacional, 2013.
 
-|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|
+|**CAMPUS FOZ DO IGUAÇU DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Gastronomia**|**Eixo Tecnológico: Turismo, Hospitalidade e Lazer**||
 |**Componente Curricular:** **Empreendedorismo**|||
@@ -699,7 +699,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 30
 
-|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|
+|**CAMPUS FOZ DO IGUAÇU DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Gastronomia**|**Eixo Tecnológico: Turismo, Hospitalidade e Lazer**||
 |**Componente Curricular:** **Planejamento de cardápios**|||
@@ -727,7 +727,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 32
 
-|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|
+|**CAMPUS FOZ DO IGUAÇU DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Gastronomia**|**Eixo Tecnológico: Turismo, Hospitalidade e Lazer**||
 |**Componente Curricular:** **Práticas de restaurante 2**|||
@@ -739,7 +739,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 |**Bibliografia Complementar:**|||
 |CASTRO NETO, Nelson de; LOPES, Thiago Henrique.**Habilidades básicas de cozinha**. Curitiba:<br>LT, 2011.<br>BARRETO, Ronaldo Lopes Pontes.**Passaporte para o sabor**: tecnologias para a elaboração de<br>cardápios. 7. ed. rev. e ampl. São Paulo: Senac Nacional, 2008.<br>THIS, Hervé.**Um cientista na cozinha**. 4. ed. São Paulo: Ática, 2007.<br>MCGEE, Harold.**Comida e cozinha**: ciência e cultura da culinária. São Paulo: WMF Martins Fontes,<br>2011.|||
 
-|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|**CAMPUS FOZ DO IGUAÇU DO IFPR**|
+|**CAMPUS FOZ DO IGUAÇU DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Gastronomia**|**Eixo Tecnológico: Turismo, Hospitalidade e Lazer**||
 |**Componente Curricular:** **Habilidades básicas de cozinha 2**|||
@@ -819,7 +819,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 36
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**NOME**|**CARGO**|
 |Alisson Romario Santos de Mello|Auxiliar em Administração|

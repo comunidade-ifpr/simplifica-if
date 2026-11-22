@@ -1283,13 +1283,13 @@ Ministerio da Educacao
 |Processos contábeis em organizações<br>públicas eprivadas|||67|4|||||||80|
 |Direito do consumidor e direito digital|||67|4|||||||80|
 
-|**CERTIFICAÇÃO EM ANALISTA DE MARKETING – CBO 2531-25**|**CERTIFICAÇÃO EM ANALISTA DE MARKETING – CBO 2531-25**|**CERTIFICAÇÃO EM ANALISTA DE MARKETING – CBO 2531-25**|**CERTIFICAÇÃO EM ANALISTA DE MARKETING – CBO 2531-25**|**CERTIFICAÇÃO EM ANALISTA DE MARKETING – CBO 2531-25**||||||||
-|---|---|---|---|---|---|---|---|---|---|---|---|
-|**TERCEIRO SEMESTRE**||||||||||||
-|Práticas de cooperação 1: Arranjos<br>Produtivos Locais e Economia Solidária|||||67|4|||||80|
-|Práticas de cooperação 2: Associativismo<br>e Cooperativismo|||||67|4|||||80|
-|Processos Produtivos organizacionais|||||67|4|||||80|
-|Gestão de projetos|||||67|4|||||80|
+|**CERTIFICAÇÃO EM ANALISTA DE MARKETING – CBO 2531-25**|||||||||
+|---|---|---|---|---|---|---|---|---|
+|**TERCEIRO SEMESTRE**|||||||||
+|Práticas de cooperação 1: Arranjos<br>Produtivos Locais e Economia Solidária||67|4|||||80|
+|Práticas de cooperação 2: Associativismo<br>e Cooperativismo||67|4|||||80|
+|Processos Produtivos organizacionais||67|4|||||80|
+|Gestão de projetos||67|4|||||80|
 
 **CERTIFICAÇÃO EM Programador de controle de produção – CBO 3911-25**
 
@@ -1539,7 +1539,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Direito Público||
@@ -1556,7 +1556,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Tecnologias e inovação no mundo digital||
@@ -1571,7 +1571,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Marketing estratégico||
@@ -1588,7 +1588,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Processos contábeis nas organizações||
@@ -1605,7 +1605,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Direito do consumidor e direito digital||
@@ -1620,7 +1620,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Práticas de cooperação 1: Arranjos Produtivos Locais e Economia<br>Solidária||
@@ -1637,7 +1637,7 @@ Ministerio da Educagao
 
 TIROLE, J. **Economia do bem comum** . São Paulo: Zahar, 2020.
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Práticas de cooperação 2: Associativismo e Cooperativismo||
@@ -1652,7 +1652,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Processos Produtivos Organizacionais||
@@ -1667,7 +1667,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Gestão de projetos||
@@ -1686,9 +1686,9 @@ Campus Colombo
 
 Curso: Tecnologia em Processos Gerenciais
 
-|Componente Curricular: Práticas de integração ensino superior e comunidade|Componente Curricular: Práticas de integração ensino superior e comunidade 1|Componente Curricular: Práticas de integração ensino superior e comunidade 1|Componente Curricular: Práticas de integração ensino superior e comunidade 1|
-|---|---|---|---|
-|Carga Horária (hora aula): 80 H/A e 67 H/R||Componente: SEMESTRE 4|Componente: SEMESTRE 4|
+|Componente Curricular: Práticas de integração ensino superior e comunidade|Componente Curricular: Práticas de integração ensino superior e comunidade 1||
+|---|---|---|
+|Carga Horária (hora aula): 80 H/A e 67 H/R||Componente: SEMESTRE 4|
 
 ## **Ementa**
 
@@ -1709,7 +1709,7 @@ Ministerio da Educagao
 
 ## Campus Colombo
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Direito Privado||
@@ -1726,7 +1726,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Práticas administrativas||
@@ -1741,7 +1741,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Projeto Integrador Aplicado às Organizações 1||
@@ -1846,7 +1846,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Libras (Optativa)||
@@ -1863,7 +1863,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Temas contemporâneos brasileiros (Optativa)||
@@ -1880,7 +1880,7 @@ Ministerio da Educacao
 
 ## Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Temas contemporâneos (Optativa)||
@@ -1895,7 +1895,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|Campus Colombo|Campus Colombo|
+|Campus Colombo||
 |---|---|
 |Curso: Tecnologia em Processos Gerenciais||
 |Componente Curricular: Empreender no Brasil: desafios e oportunidades (Optativa)||
@@ -2801,10 +2801,10 @@ O horário de funcionamento da Biblioteca do Campus Colombo é estabelecido de a
 
 ## INSTITUTOFEDERAL Parana
 
-|Parana||||||
-|---|---|---|---|---|---|
-|Parana||||Ministerio da Educacao||
-|08h00 às 21h|8h às 21h|8h às 21h|8h às 21h|8h às 21h||
+|Parana||||
+|---|---|---|---|
+|Parana||Ministerio da Educacao||
+|08h00 às 21h|8h às 21h|8h às 21h||
 
 Quanto ao seu acervo, a Biblioteca do Campus Colombo, possui 3816 exemplares distribuídos nas áreas de atuação do campus. Especificamente, a área de Gestão e Negócios conta com 204 exemplares conforme detalhado no Anexo D. A Biblioteca do _campus_ Colombo ainda dispõe do acesso ao Portal de Periódicos da Capes e oferece suporte por meio de seus serviços de referência.
 
@@ -3553,7 +3553,7 @@ Ministerio da Educacao
 
 APÊNDICE D - REVISÃO BIBLIOGRAFIAS EMENTÁRIO
 
-|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|
+|**REVISÃO BIBLIOGRAFIA TPG**||||
 |---|---|---|---|
 |**Componente curricular**|**Tipo**|**De**|**Para**|
 |Administração pública e<br>privada|Complementar|LOUREIRO, Maria Rita; ABRUCIO, Fernando Luiz;<br>PACHECO, Regina Silvia (orgs.) Burocracia e Política no<br>Brasil: desafios para a ordem democrática no século XXI.<br>São Paulo: FGV, 2012|SANTOS, Milton. Brasil : território e sociedade no<br>início do século XXI, O - 22. ed. / 2021 Acervo<br>329657|
@@ -3577,7 +3577,7 @@ APÊNDICE D - REVISÃO BIBLIOGRAFIAS EMENTÁRIO
 
 150
 
-|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|
+|**REVISÃO BIBLIOGRAFIA TPG**||||
 |---|---|---|---|
 |Direito Público|Básica|FERNANDES, Bernardo Gonçalves. Curso de Direito<br>Constitucional. 12ª ed. Salvador: Juspodivm. 2020.|FERNANDES, Bernardo Gonçalves. Curso de<br>Direito Constitucional. 13ª ed. Salvador: Juspodivm.<br>2021. Acervo 329423|
 |Direito Público|Básica|OLIVEIRA, Rafael Carvalho Rezende. Curso de Direito<br>Administrativo. 7. ed. Rio de Janeiro: Forense; São<br>Paulo: Método, 2019.|OLIVEIRA, Rafael Carvalho Rezende. Curso de<br>Direito Administrativo. 9. ed. Rio de Janeiro:<br>Forense; São Paulo: Método, 2021. Acervo 329620|
@@ -3608,7 +3608,7 @@ APÊNDICE D - REVISÃO BIBLIOGRAFIAS EMENTÁRIO
 
 ## **REVISÃO BIBLIOGRAFIA TPG**
 
-|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|
+|**REVISÃO BIBLIOGRAFIA TPG**||||
 |---|---|---|---|
 |Arranjos Produtivos<br>Locais e Economia<br>Solidária|Básica|SINGER, Paul. Introdução à Economia Solidária. São<br>Paulo, Editora Fundação Perseu Abramo, 2002|SINGER, Paul. Introdução à Economia Solidária.<br>São Paulo, Editora Fundação Perseu Abramo, 2002<br>Disponível em: https://drive.google.<br>com/file/d/1pVuatBm_FLL3dD9BNnO3vDhNC7rTldP<br>w/view?usp=drive_link|
 |Arranjos Produtivos<br>Locais e Economia<br>Solidária|Básica|SINGER, Paul. A economia solidária no Brasil: a<br>autogestão como resposta ao desemprego. Contexto:<br>São Paulo, 2003.|DOWBOR, Ladislau. Economia social no Brasil - 3.<br>ed. / 2022. Acervo 341718|
@@ -3637,7 +3637,7 @@ APÊNDICE D - REVISÃO BIBLIOGRAFIAS EMENTÁRIO
 
 152
 
-|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**||
+|**REVISÃO BIBLIOGRAFIA TPG**||||
 |---|---|---|---|
 |Direito Privado|Básica|SCHREIBER, Anderson. Manual de Direito Civil<br>Contemporâneo. 5. ed. São Paulo: Saraiva, 2022.|SCHREIBER, Anderson. Manual de Direito Civil<br>Contemporâneo. 6. ed. São Paulo: Saraiva, 2023.|
 |Direito Privado|Complementar|BERTOLDI, Marcelo M.; RIBEIRO, Márcia Carla Pereira.<br>Curso Avançado de Direito Comercial. 11. ed. RT/<br>Thomson Reuters, 2020|GRINOVER, Ada Pellegrini. Código brasileiro de<br>defesa do consumidor : direito material e processo<br>coletivo : volume único, 11 ed.  Rio de Janeiro,<br>Forense, 2017|
@@ -3666,7 +3666,7 @@ APÊNDICE D - REVISÃO BIBLIOGRAFIAS EMENTÁRIO
 
 153
 
-|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|
+|**REVISÃO BIBLIOGRAFIA TPG**||||
 |---|---|---|---|
 |Gestão Financeira e<br>Orçamentária|Complementar|SILVA, Alexandre Alcântara da. Estrutura, Análise e<br>Interpretação das Demonstrações Contábeis. 2.ed. São<br>Paulo: Atlas, 2010|SILVA, Alexandre Alcântara da. Estrutura, Análise e<br>Interpretação das Demonstrações Contábeis. 5.ed.<br>São Paulo: Atlas, 2017|
 |Gestão Financeira e<br>Orçamentária|Complementar|REIS, Arnaldo. Demonstrações Contábeis: estrutura e<br>análise. Editora Saraiva, 2009|MARION, José Carlos, Análise das demonstrações<br>contábeis. 8 ed. São Paulo, Atlas, 2010|
@@ -3695,7 +3695,7 @@ APÊNDICE D - REVISÃO BIBLIOGRAFIAS EMENTÁRIO
 
 154
 
-|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|**REVISÃO BIBLIOGRAFIA TPG**|
+|**REVISÃO BIBLIOGRAFIA TPG**||||
 |---|---|---|---|
 |Temas contemporâneos|Complementar|LÉVY, Pierre. Cibercultura. São Paulo: Ed. 34, 2000.|AMARAL, Felipe Bueno. Cultura e pós-modernidade.<br>Curitiba: Editora Intersaberes, 2020.|
 |Empreender no Brasil:<br>desafios e<br>oportunidades (Optativa)|Complementar|GERBER, Michael. O Mito do Empreendedor. Curitiba:<br>Fundamento, 2011|KIM, W. Chan; MAUBORGNE, Renée. A estratégia<br>do oceano azul. Rio de Janeiro: Elsevier, 2005.|

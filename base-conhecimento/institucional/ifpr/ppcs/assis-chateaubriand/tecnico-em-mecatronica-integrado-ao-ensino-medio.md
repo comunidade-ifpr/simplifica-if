@@ -480,7 +480,7 @@ Conforme disposto na Lei nº 9.394/1996, o curso terá 200 dias letivos por ano,
 
 Em atendimento ao disposto no Art. 15 da Resolução CONSUP/IFPR nº 64/2022, que recomenda a oferta mínima de duas aulas semanais por componente curricular, a matriz do curso prevê três componentes curriculares com apenas uma aula semanal, o que representa 7,7% da carga horária obrigatória. Essa configuração se justifica pela natureza dos componentes, cujos conteúdos e objetivos permitem o desenvolvimento adequado em encontros de menor duração e favorecem a distribuição equilibrada de dois componentes da mesma área ao invés da concentração da carga horária em apenas um. Ademais, a organização do horário, com cinco aulas no período matutino, exige a alocação de componentes com carga horária ímpar (uma ou três aulas semanais). Como a quantidade de três aulas já é significativa diante da diversidade de áreas contempladas, tanto na Formação Geral quanto na Formação Técnica Profissional, não é viável ampliar essa configuração sem comprometer a distribuição equilibrada da matriz. Importa destacar que essa organização não comprometeu a quantidade total de componentes curriculares; ao contrário, com o equilíbrio proporcionado por outros que possuem três aulas semanais, reduziu-se a quantidade média anual de componentes, passando de aproximadamente 16 por ano no antigo curso Técnico em Eletromecânica Integrado para cerca de 13 por ano no atual Curso Técnico em Mecatrônica Integrado, o que favorece o aprofundamento dos conteúdos e a qualificação dos processos de ensino e aprendizagem, conforme preconiza o referido artigo.
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**||||
 |---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||
 |||_Campus_Assis Chateaubriand||||
@@ -540,7 +540,7 @@ Em atendimento ao disposto no Art. 15 da Resolução CONSUP/IFPR nº 64/2022, qu
 |||**Total do curso**|||**3300**|
 ||**CARGA HORÁRIA TOTAL DO CURSO**||||<br>**3300**|
 
-||**Componentes complementares optativos oferecidos no curso**|**Componentes complementares optativos oferecidos no curso**|**Componentes complementares optativos oferecidos no curso**|**Componentes complementares optativos oferecidos no curso**|**Componentes complementares optativos oferecidos no curso**|
+||**Componentes complementares optativos oferecidos no curso**|||||
 |---|---|---|---|---|---|
 |**Componentes**<br>**complementare**<br>**s**<br>**optativos**||Língua Estrangeira Moderna – Espanhol básico I|2|72|60|
 |||Língua Estrangeira Moderna – Espanhol básico II|2|72|60|
@@ -579,7 +579,7 @@ Olimpíadas do conhecimento ou específicas da área (Robótica, etc) Participa�
 
 **1º ANO**
 
-|**COMPONENTE CURRICULAR**:<br>Arte I|**COMPONENTE CURRICULAR**:<br>Arte I|**COMPONENTE CURRICULAR**:<br>Arte I|**COMPONENTE CURRICULAR**:<br>Arte I|
+|**COMPONENTE CURRICULAR**:<br>Arte I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |40<br>horas-aula|33<br>horas|1<br>hora-aula||
@@ -588,7 +588,7 @@ Olimpíadas do conhecimento ou específicas da área (Robótica, etc) Participa�
 
 ➔ Aplicar os conhecimentos sobre os elementos estruturais na análise e apreciação de obras de arte das diferentes linguagens. ➔ Relacionar a arte popular e o Cinema Nacional com a identidade cultural brasileira e as questões sociais. ➔ Experimentar a criação artística nas diferentes linguagens, explorando os elementos estruturais e expressivos. ➔ Expressar opiniões e reflexões sobre a arte, valorizando a diversidade de interpretações e perspectivas. **BIBLIOGRAFIA BÁSICA** : COLI, Jorge. **O que é arte?** . 15. ed. São Paulo: Brasiliense, 2007. FERRARI, Solange dos Santos Utuari. **Encontros com arte e cultura** . São Paulo: FTD, 2012. FISCHER, Ernst. **A necessidade da arte** . 9. ed. Rio de Janeiro: Guanabara, LTC, c1987. JANSON, H. W; JANSON, Anthony F. **Iniciação à história da arte** . 3. ed. São Paulo: Martins Fontes, 2009. LARAIA, Roque de Barros. **Cultura** : um conceito antropológico. 16. ed. Rio de Janeiro: Zahar, 2003. **BIBLIOGRAFIA COMPLEMENTAR:** ARANTES, Antonio Augusto. **O que é cultura popular** . 14. ed. São Paulo: Brasiliense, 1990. BATTISTONI FILHO, Duílio. **Pequena história da arte** . 19. ed. [Campinas, SP]: Papirus, 2012. JANSON, H. W; LEAL, Maurício Balthazar. **História geral da arte** . 2. ed. São Paulo: Martins Fontes, 2001. MATTOS, Regiane Augusto de. **História e cultura afro-brasileira** . 2. ed. São Paulo: Contexto, c2007. PROENÇA, Graça. **História da arte** . 17. ed. São Paulo: Ática, 2012. SABADIN, Celso. **A história do cinema para quem tem pressa** . Rio de Janeiro: Valentina, 2018. TEIXEIRA, Inês Assunção de Castro; LOPES, José de Sousa Miguel; DAYRELL, Juarez (org.). **A juventude vai ao cinema** . Belo Horizonte: Autêntica, 2009. TIRAPELI, Percival; TIRAPELI, Percival. **Arte popular** . São Paulo: IBEP, 2011.
 
-|**COMPONENTE CURRICULAR**:<br>Biologia I|**COMPONENTE CURRICULAR**:<br>Biologia I|**COMPONENTE CURRICULAR**:<br>Biologia I|**COMPONENTE CURRICULAR**:<br>Biologia I|
+|**COMPONENTE CURRICULAR**:<br>Biologia I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -597,7 +597,7 @@ Olimpíadas do conhecimento ou específicas da área (Robótica, etc) Participa�
 |**BIBLIOGRAFIA BÁSICA**:<br>AMABIS, J. M.; MARTHO, G. R.**Biologia Moderna**Amabis & Martho. 4. ed. São Paulo:<br>Moderna, 2016, v.1.<br>JUNQUEIRA, L. C. U.; CARNEIRO, J.**Biologia celular e molecular**. 8. ed. Rio de<br>Janeiro: Guanabara Koogan, 2005.<br>JUNQUEIRA, Luiz Carlos Uchoa; CARNEIRO, José.**Histologia básica**: texto e atlas. 12.<br>ed. Rio de Janeiro: Guanabara Koogan, 2013.||||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>BOLSOVER, Steven R. et al.**Biologia celular**. 2. ed. Rio de Janeiro: Guanabara Koogan,<br>2005.<br>RAVEN, Peter H.; EVERT, Ray Franklin; EICHHORN, Susan E.**Biologia vegetal**. 7. ed.<br>Rio de Janeiro: Guanabara Koogan, 2013.<br>SANTOS, Maria Ângela dos.**Biologia educacional**. 17. ed. São Paulo: Ática, 2009.<br>MOORE, K.L.**Embriologia básica**. 7.ed. Elsevier, 2008.||||
 
-|**COMPONENTE CURRICULAR**:<br>Biologia I|**COMPONENTE CURRICULAR**:<br>Biologia I|**COMPONENTE CURRICULAR**:<br>Biologia I|**COMPONENTE CURRICULAR**:<br>Biologia I|
+|**COMPONENTE CURRICULAR**:<br>Biologia I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -606,7 +606,7 @@ Olimpíadas do conhecimento ou específicas da área (Robótica, etc) Participa�
 |**BIBLIOGRAFIA BÁSICA**:<br>AMABIS, J. M.; MARTHO, G. R.**Biologia Moderna**Amabis & Martho. 4. ed. São Paulo:<br>Moderna, 2016, v.1.<br>JUNQUEIRA, L. C. U.; CARNEIRO, J.**Biologia celular e molecular**. 8. ed. Rio de<br>Janeiro: Guanabara Koogan, 2005.<br>JUNQUEIRA, Luiz Carlos Uchoa; CARNEIRO, José.**Histologia básica**: texto e atlas. 12.<br>ed. Rio de Janeiro: Guanabara Koogan, 2013.||||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>BOLSOVER, Steven R. et al.**Biologia celular**. 2. ed. Rio de Janeiro: Guanabara Koogan,<br>2005.<br>RAVEN, Peter H.; EVERT, Ray Franklin; EICHHORN, Susan E.**Biologia vegetal**. 7. ed.<br>Rio de Janeiro: Guanabara Koogan, 2013.<br>SANTOS, Maria Ângela dos.**Biologia educacional**. 17. ed. São Paulo: Ática, 2009.<br>MOORE, K.L.**Embriologia básica**. 7.ed. Elsevier, 2008.||||
 
-|**COMPONENTE CURRICULAR**:<br>Educação Física I|**COMPONENTE CURRICULAR**:<br>Educação Física I|**COMPONENTE CURRICULAR**:<br>Educação Física I|**COMPONENTE CURRICULAR**:<br>Educação Física I|
+|**COMPONENTE CURRICULAR**:<br>Educação Física I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -616,7 +616,7 @@ Olimpíadas do conhecimento ou específicas da área (Robótica, etc) Participa�
 
 um estilo de vida ativo. 3. ed. Londrina: Midiograf, 2003. SABA, F. **Mexa-se** : atividade física, saúde e bem estar. 3. ed. São Paulo: Phorte Editora LTDA, 2011. SOLER, R. **Jogos cooperativos** . Rio de Janeiro: Sprint, 2002. **BIBLIOGRAFIA COMPLEMENTAR:** BRASIL **, LEI DE DIRETRIZES E BASES DA EDUCAÇÃO BRASILEIRA** . LEI nº. 9.394, de 20 de Dezembro de 1996. BRASIL, Secretaria de Educação Média. **Parâmetros curriculares nacionais:** educação física **.** Brasília: MEC/SEF, 1997.96 p. CASTELLANI FILHO, L. **Educação Física no Brasil:** história que não se conta **.** 4. ed. Campinas: Papirus, 1994. COLETIVO DE AUTORES. **Metodologia do ensino de educação física** . São Paulo:Cortez, 1992. DARIDO, S. C. **Educação Física na Escola** : questões e reflexões. Rio de Janeiro: Guanabara Koogan, 2003. KRÖGER, C.; ROTH, K. **Escola da Bola** : um ABC para iniciantes nos jogos esportivos. São Paulo: Ed. Phortel, 2002. NAVARRO, F. _et. al._ **Manual de Avaliação Física.** São Paulo: Phorte Editora LTDA, 2010. SOBOTTA, J. **Sobotta –** Atlas da Anatomia Humana. 23. ed.  Rio de Janeiro: Guanabara Koogan, 2013. 3 v.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -627,7 +627,7 @@ MURPHY, Raymond. **English Grammar in Use Book with Answers** : A Self-Study Ref
 
 NASH, Mark G.; FERREIRA, Williams R. **Michaelis: dicionário de gírias:** inglês-português. São Paulo: Melhoramentos, 2010.
 
-|**COMPONENTE CURRICULAR**:<br>Física I|**COMPONENTE CURRICULAR**:<br>Física I|**COMPONENTE CURRICULAR**:<br>Física I|**COMPONENTE CURRICULAR**:<br>Física I|
+|**COMPONENTE CURRICULAR**:<br>Física I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -645,7 +645,7 @@ TIPLER, Paul Allen e MOSCA, Gene. **Física para Cientistas e Engenheiros:** mec
 
 FEYNMAN, Richard Phillips; LEIGHTON, Robert B. e SANDS, Matthew L. Feynman: **Lições de Física:** mecânica, radiação e calor. Porto Alegre: Bookman, 2019.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|
+|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |160<br>horas-aula|133<br>horas|4<br>horas-aula||
@@ -653,7 +653,7 @@ FEYNMAN, Richard Phillips; LEIGHTON, Robert B. e SANDS, Matthew L. Feynman: **Li
 |**OBJETIVOS**:<br>➔Desenvolver no indivíduo as habilidades comunicativas: oralidade, leitura e escrita.<br>➔Preparar os estudantes para situações cuja língua é a ferramenta principal na<br>construção de sentido em diferentes contextos.<br>➔Aperfeiçoar conteúdos fundamentais da gramática da Língua Portuguesa que<br>servem de base para a produção oral e escrita.<br>➔Aprofundar e ampliar conhecimentos artísticos e literários.<br>➔Capacitar o estudante a elaborar textos de gêneros distintos.||||
 |**BIBLIOGRAFIA BÁSICA**:||||
 
-|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I|
+|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |160<br>horas-aula|133<br>horas|4<br>horas-aula||
@@ -663,7 +663,7 @@ FEYNMAN, Richard Phillips; LEIGHTON, Robert B. e SANDS, Matthew L. Feynman: **Li
 
 ALMEIDA, Napoleão Mendes de. **Gramática Metódica da Língua Portuguesa** . Rio de Janeiro: Editora Centro Dom Bosco, 2024. BOSI, Alfredo. **História Concisa da Literatura Brasileira.** 50.ed. São Paulo: Cultrix, 2015. CANDIDO, Antonio. **Iniciação à Literatura Brasileira.** São Paulo: Editora Todavia, 2023. **BIBLIOGRAFIA COMPLEMENTAR:** COSTA VAL, Maria da Graça. **Redação e textualidade.** São Paulo: Martins Fontes, 1991. FARACO, Carlos Emílo; MOURA, Francisco Marto de. **Gramática Nova.** 15. ed. São Paulo: Ática, 2007. FARACO, Carlos Emílo. **Norma culta brasileira:** desatando alguns nós. São Paulo: Parábola, 2008. FIGUEIREDO, Adriana; GRACIOLI, Rodolfo. **Redação para Enem, Concursos e Vestibulares:** aprenda redação com lógica. São Paulo: Saraiva, 2019. NICOLA, José de. **Língua, literatura e redação.** 8. ed. São Paulo: Scipione, 1998.
 
-|**COMPONENTE CURRICULAR**:<br>Matemática I|**COMPONENTE CURRICULAR**:<br>Matemática I|**COMPONENTE CURRICULAR**:<br>Matemática I|**COMPONENTE CURRICULAR**:<br>Matemática I|
+|**COMPONENTE CURRICULAR**:<br>Matemática I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |160<br>horas-aula|133<br>horas|4<br>horas-aula||
@@ -672,7 +672,7 @@ ALMEIDA, Napoleão Mendes de. **Gramática Metódica da Língua Portuguesa** . R
 
 sensores e atuadores. ➔ Resolver sistemas lineares, utilizando-os para analisar circuitos elétricos e sistemas de controle. ➔ Aplicar geometria analítica, modelando posições e trajetórias de componentes em desenho técnico, como coordenadas em projetos mecânicos. ➔ Dominar números complexos em nível introdutório, empregando operações básicas e formas polares na análise de circuitos elétricos em corrente alternada. ➔ Desenvolver raciocínio lógico-matemático interdisciplinar, integrando conceitos matemáticos às necessidades técnicas da Mecatrônica, para propor soluções precisas em contextos industriais. **BIBLIOGRAFIA BÁSICA** : BARRETO FILHO; B.; SILVA, C. X. **Matemática participação e contexto** : Ensino médio. São Paulo: FTD, 2008. FACCHINI, W. **Matemática para a escola de hoje** : ensino médio. São Paulo: FTD, 2008. GIOVANNI, J. R.; BONJORNO, J. R. **Matemática fundamental** : uma nova abordagem. São Paulo: FTD, 2002. SOUZA, J. **Coleção Novo Olhar** : Matemática.1. ed. São Paulo: FTD, 2010. 1 v. **BIBLIOGRAFIA COMPLEMENTAR:** BOYER, C. B. **História da matemática** .  Lisboa: Asa, 2010. DANTE, L. R. **Projeto voaz – Matemática:** Ensino médio. São Paulo: Ática, 2012. MULLER, A. N.; ANTONIK, L. R. **Matemática financeira:** Instrumentos financeiros para a tomada de decisão. São Paulo: Saraiva, 2012. RAMOS, L. F. **Frações sem mistérios:** Frações conceitos fundamentais e operações. São Paulo: Ática, 2002.
 
-|**COMPONENTE CURRICULAR**:<br>Química I|**COMPONENTE CURRICULAR**:<br>Química I|**COMPONENTE CURRICULAR**:<br>Química I|**COMPONENTE CURRICULAR**:<br>Química I|
+|**COMPONENTE CURRICULAR**:<br>Química I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -682,7 +682,7 @@ Estrutura atômica; Radioatividade, suas leis e transformações nucleares; Tabe
 
 Paulo: Moderna. RUSSEL, Joel; RUSSEL, Paul. **Química Geral** . São Paulo: Pearson SANTOS, W.; Mol, G. **Química Cidadã** . Vol.1, 3 ed. São Paulo. Editora AJS, 2016.
 
-|**COMPONENTE CURRICULAR**:<br>Sociologia|**COMPONENTE CURRICULAR**:<br>Sociologia|**COMPONENTE CURRICULAR**:<br>Sociologia|**COMPONENTE CURRICULAR**:<br>Sociologia|
+|**COMPONENTE CURRICULAR**:<br>Sociologia||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -693,7 +693,7 @@ Estruturalismo e suas conexões com o capitalismo e as teorias de globalização
 
 **BIBLIOGRAFIA COMPLEMENTAR:** COMTE, Auguste. **Discurso sobre o espírito positivo** . São Paulo: Abril, 1996. DURKHEIM, Émile. **As regras do método sociológico** . São Paulo: Martin Claret, 2012. DURKHEIM, Émile. **A divisão do trabalho social** . São Paulo: Martins Fontes, 2012. DURKHEIM, Émile. **Formas elementares da vida religiosa** . São Paulo: Martins Fontes, 2012. FERNANDES, Florestan. **Mudanças Sociais no Brasil.** 1.ed. São Paulo: Editora Difel, 1974. FREYRE, Gilberto. **Uma interpretação do Brasil** . Rio de Janeiro: Biblioteca Nacional, 1989. LOCK, John. **Dois tratados sobre o governo.** São Paulo: Abril, 1996. MONTESQUIEAU, Charles-Louis de Secondat. **O espírito das leis** . São Paulo: Martins Fontes, 2010. RIBEIRO, G. **O povo brasileiro:** a formação e o sentido do Brasil. São Paulo: Companhia das Letras, 2005. SMITH, Adam. **A riqueza das nações** . São Paulo: Abril, 2000.
 
-|**COMPONENTE CURRICULAR**:<br>Introdução à Mecatrônica e Metodologia Científica|**COMPONENTE CURRICULAR**:<br>Introdução à Mecatrônica e Metodologia Científica|**COMPONENTE CURRICULAR**:<br>Introdução à Mecatrônica e Metodologia Científica|**COMPONENTE CURRICULAR**:<br>Introdução à Mecatrônica e Metodologia Científica|
+|**COMPONENTE CURRICULAR**:<br>Introdução à Mecatrônica e Metodologia Científica||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |40<br>horas-aula|33<br>horas|1<br>hora-aula||
@@ -701,7 +701,7 @@ Estruturalismo e suas conexões com o capitalismo e as teorias de globalização
 
 **OBJETIVOS** : ➔ Apresentar os conceitos fundamentais da Mecatrônica e suas aplicações. ➔ Explicar o funcionamento e a integração de sistemas mecânicos, elétricos e eletrônicos. ➔ Introduzir os princípios de automação industrial e controle. ➔ Desenvolver noções básicas de programação aplicada à Mecatrônica. ➔ Capacitar para a elaboração de projetos e relatórios técnicos e científicos. ➔ Ensinar o uso de normas técnicas para formatação e referências (ABNT). ➔ Promover o pensamento crítico e a resolução de problemas com base no método científico. ➔ Estimular a análise e interpretação de dados em pesquisas e estudos experimentais. ➔ Incentivar a ética e a responsabilidade no desenvolvimento de tecnologias e na pesquisa. ➔ Preparar os alunos para a aplicação de conhecimentos teóricos em práticas laboratoriais e acadêmicas. **BIBLIOGRAFIA BÁSICA** : BOLTON, W. **Mecatrônica: Princípios e Aplicações.** 5ª ed. São Paulo: Pearson, 2015. ROSÁRIO, J. M. **Mecatrônica Industrial.** 2ª ed. São Paulo: Érica, 2013. TOLEDO, J. C.; DIAS, M. S. **Introdução à Mecatrônica: Fundamentos de Sistemas Mecânicos, Elétricos e Computacionais.** São Paulo: Cengage Learning, 2012. SEVERINO, A. J. **Metodologia do Trabalho Científico.** 24ª ed. São Paulo: Cortez, 2020. ABNT. **Normas para Elaboração de Trabalhos Acadêmicos (NBR 14724).** Associação Brasileira de Normas Técnicas, 2011. **BIBLIOGRAFIA COMPLEMENTAR:** HALLIDAY, D.; RESNICK, R.; WALKER, J. **Fundamentos de Física - Volume 1: Mecânica.** 10ª ed. Rio de Janeiro: LTC, 2016. COSTA, R. F.; GARCIA, E. T. **Sistemas Eletromecânicos: Fundamentos e Aplicações.** São Paulo: Érica, 2014. MORAES, J. P. **Automação e Controle Industrial.** 2ª ed. São Paulo: LTC, 2018. RUMMEL, R. J. **Pesquisas e Técnicas Estatísticas Aplicadas.** São Paulo: Atlas, 2019. GIL, A. C. **Como Elaborar Projetos de Pesquisa.** 7ª ed. São Paulo: Atlas, 2019. NISE, N. S. **Engenharia de Sistemas de Controle.** 6ª ed. São Paulo: LTC, 2015.
 
-|**COMPONENTE CURRICULAR**:<br>Desenho Técnico e Metrologia|**COMPONENTE CURRICULAR**:<br>Desenho Técnico e Metrologia|**COMPONENTE CURRICULAR**:<br>Desenho Técnico e Metrologia|**COMPONENTE CURRICULAR**:<br>Desenho Técnico e Metrologia|
+|**COMPONENTE CURRICULAR**:<br>Desenho Técnico e Metrologia||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -712,7 +712,7 @@ Estruturalismo e suas conexões com o capitalismo e as teorias de globalização
 
 ABNT, 2021. ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. **ABNT NBR17067 - Desenho técnico - Requisitos para as especificidades das representações ortográficas.** Rio de Janeiro: ABNT, 2022. LIRA, Francisco Adval de,. **Metrologia na indústria** . 8. ed., rev. e ampl. São Paulo : Érica, 2009. PEREIRA, Nicole de Castro. **Desenho técnico** . Curitiba : LT, 2012. STRAUHS, Faimara do Rocio. **Desenho técnico.** Curitiba : Base Editorial, 2010. RODRIGUES, Alessandro Roger [et al.] **Desenho técnico mecânico : projeto e fabricação no desenvolvimento de produtos industriais.** Rio de Janeiro : Elsevier, 2015. SANTANA, Reinaldo Gomes. **Metrologia.** Curitiba : LT, 2012.
 
-|**COMPONENTE CURRICULAR**:<br>Eletricidade e Medidas Elétricas|**COMPONENTE CURRICULAR**:<br>Eletricidade e Medidas Elétricas|**COMPONENTE CURRICULAR**:<br>Eletricidade e Medidas Elétricas|**COMPONENTE CURRICULAR**:<br>Eletricidade e Medidas Elétricas|
+|**COMPONENTE CURRICULAR**:<br>Eletricidade e Medidas Elétricas||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>1º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -721,7 +721,7 @@ ABNT, 2021. ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. **ABNT NBR17067 - Desen
 
 ➔ Investigar o comportamento de circuitos RC, RL e RLC em regime permanente e transitório. ➔ Compreender o conceito de fator de potência e potência complexa, aplicando-os na correção e otimização de sistemas elétricos. ➔ Identificar e corrigir erros de medição, avaliando a precisão e a confiabilidade dos resultados obtidos. ➔ Utilizar instrumentos básicos de medição elétrica, como multímetros, wattímetros, amperímetros e osciloscópios. ➔ Desenvolver a capacidade de interpretar e aplicar normas e padrões elétricos em medições e projetos elétricos. **BIBLIOGRAFIA BÁSICA** : ALBUQUERQUE, R. O. **Análise de circuitos em corrente contínua.** 21. ed. São Paulo: Érica, 2011. ALBUQUERQUE R. O. **Análise de circuitos de corrente alternada.** 21. ed. São Paulo: Érica, 2011 BALBINOT, A.; BRUSAMARELLO, V. J. **Instrumentação e fundamentos de medidas.** 1. ed. Rio de Janeiro: LTC, 2007. 2 v. MEIRELLES, V. C. **Circuitos Elétricos.** 4. ed. Rio de Janeiro: LTC, 2007. MENDONÇA, R. G. de; SILVA, R. V. R. da. **Eletricidade básica** . 1. ed. Curitiba: Editora do Livro Técnico, 2010. WOLSKI, Belmiro. **Eletricidade Básica** . 1. ed.Curitiba: Base Editorial, 2007. **BIBLIOGRAFIA COMPLEMENTAR:** MARKUS, O. **Circuitos elétricos: corrente contínua e corrente alternada** . 8. ed. São Paulo: Érica, 2009. SAY, M. G. **Eletricidade geral: dispositivos e aplicações** . 13. ed. São Paulo: Hemus, 2008. SAY, M. G. **Eletricidade geral – eletrotécnica** . 13. ed. São Paulo: Hemus, 2009. WOLSKI, B. **Circuitos e Medidas.** Curitiba: Base Editorial, 2010.
 
-|**COMPONENTE CURRICULAR**:<br>Programação e Microcontroladores|**COMPONENTE CURRICULAR**:<br>Programação e Microcontroladores|**COMPONENTE CURRICULAR**:<br>Programação e Microcontroladores|
+|**COMPONENTE CURRICULAR**:<br>Programação e Microcontroladores|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**PERÍODO LETIVO**:|
 ||**CH SEMANAL**:||
@@ -747,7 +747,7 @@ ROSÁRIO, J. M. **Princípios de Mecatrônica** . 1. Ed. Editora Pearson, 2005.
 
 ## **2º ANO**
 
-|**COMPONENTE CURRICULAR**:<br>Arte II|**COMPONENTE CURRICULAR**:<br>Arte II|**COMPONENTE CURRICULAR**:<br>Arte II|**COMPONENTE CURRICULAR**:<br>Arte II|
+|**COMPONENTE CURRICULAR**:<br>Arte II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -755,7 +755,7 @@ ROSÁRIO, J. M. **Princípios de Mecatrônica** . 1. Ed. Editora Pearson, 2005.
 |**OBJETIVOS**:<br>➔Analisar os principais períodos e movimentos da história da arte brasileira;<br>➔Aprofundar o conhecimento sobre a história da arte, com foco na produção artística<br>brasileira em suas diversas linguagens;<br>➔Desenvolver habilidades de apreciação, análise crítica e criação artística,<br>explorando manifestações da Arte Moderna e Contemporânea;<br>➔Valorizar e compreender a importância da cultura Afro-brasileira e Indígena na<br>formação da identidade artística e cultural do Brasil;<br>➔Analisar a fotografia como linguagens artísticas, explorando suas técnicas, estéticas<br>e significados;<br>➔Ampliar a compreensão sobre o papel do Cinema Nacional como expressão artística<br>e cultural do Brasil.||||
 |**BIBLIOGRAFIA BÁSICA**:<br>ARGAN, Giulio Carlo.**Arte moderna**: do iluminismo aos movimentos contemporâneos.<br>2. ed. São Paulo: Companhia das Letras, 1992.<br>CAUQUELIN, Anne.**Arte contemporânea**: uma introdução . São Paulo: Martins, 2005.<br>DANTO, Arthur Coleman.**Após o fim da arte**: a arte contemporânea e os limites da<br>história . São Paulo, SP: EDUSP: Odysseus, 2006.<br>FARTHING, Stephen.**Tudo sobre arte**: os movimentos e as obras mais importantes de||||
 
-|**COMPONENTE CURRICULAR**:<br>Arte II|**COMPONENTE CURRICULAR**:<br>Arte II|**COMPONENTE CURRICULAR**:<br>Arte II|**COMPONENTE CURRICULAR**:<br>Arte II|
+|**COMPONENTE CURRICULAR**:<br>Arte II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -791,7 +791,7 @@ ROSÁRIO, J. M. **Princípios de Mecatrônica** . 1. Ed. Editora Pearson, 2005.
 
 Mecatrônica. **OBJETIVOS** : ➔ O aluno deverá ser capaz de compreender como as plantas e os animais surgiram no planeta e os processos que transformaram nosso ambiente dirigindo a evolução destes organismos. ➔ Entender como e quanto estes seres interferem na vida dos demais seres vivos e no cotidiano da sociedade **BIBLIOGRAFIA BÁSICA** : AMABIS, J. M.; MARTHO, G. R. **Biologia Moderna Amabis & Martho** . 4. ed. São Paulo: Moderna, 2016, v.2. CARMELLO-GUERREIRO, Sandra Maria. **Anatomia vegetal** . 3. ed. rev. e ampl. Viçosa, MG: UFV, 2012. 404 p. ISBN 9788572694407 (broch.). LOPES, S.; ROSSO, S. **Bio** . São Paulo: Saraiva, 2011. 1, 2, 3 v. **BIBLIOGRAFIA COMPLEMENTAR:** ROSSO, S., LOPES, S. **Conecte Biologia** : volume único: Ensino Médio. 1. ed. São Paulo: Saraiva, 2014 GRIFFITHS, A.J.et al. **Introdução à Genética** . 7.ed. Rio de Janeiro: Guanabara Koogan, 2002. PARANÁ, Secretaria de Estado da Educação do. **Diretrizes Curriculares de Biologia** . Curitiba: SEED, 2008. RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados** . 6.ed. Editora Roca, São Paulo, 1996.
 
-|**COMPONENTE CURRICULAR**:<br>Educação Física II|**COMPONENTE CURRICULAR**:<br>Educação Física II|**COMPONENTE CURRICULAR**:<br>Educação Física II|**COMPONENTE CURRICULAR**:<br>Educação Física II|
+|**COMPONENTE CURRICULAR**:<br>Educação Física II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -835,14 +835,14 @@ Mecatrônica. **OBJETIVOS** : ➔ O aluno deverá ser capaz de compreender como 
 |||BRASIL**, LEI DE DIRETRIZES E BASES DA EDUCAÇÃO BRASILEIRA**. LEI nº.<br>9.394, de 20 de Dezembro de 1996.<br>BRASIL, Secretaria de Educação Média.**Parâmetros curriculares nacionais:**educação<br>física. Brasília: MEC/SEF, 1997.96 p.<br>CASTELLANI FILHO, L.**Educação Física no Brasil:**história que não se conta. 4. ed.<br>Campinas: Papirus, 1994.<br>COLETIVO DE AUTORES.**Metodologia do ensino de educação física**. São<br>Paulo:Cortez, 1992.<br>DARIDO, S. C.**Educação Física na Escola**: questões e reflexões. Rio de Janeiro:<br>Guanabara Koogan, 2003.<br>KRÖGER, C.; ROTH, K.<br>**Escola da Bola**: um ABC para iniciantes nos jogos<br>esportivos.São Paulo: Phorte,  2002.<br>NAVARRO, F._et. al._**Manual de Avaliação Física.**São Paulo: Phorte Editora LTDA,<br>2010.<br>SOBOTTA, J.**Atlas da Anatomia Humana.**23. ed.  Rio de Janeiro: Guanabara Koogan,<br>2013. 1, 2, 3 v.||
 |---|---|---|---|
 
-|**COMPONENTE CURRICULAR**:<br>Física II|**COMPONENTE CURRICULAR**:<br>Física II|**COMPONENTE CURRICULAR**:<br>Física II|**COMPONENTE CURRICULAR**:<br>Física II|
+|**COMPONENTE CURRICULAR**:<br>Física II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
 |**EMENTA**:<br>Gravitação; Hidrostática; Ondas; Óptica Geométrica; Introdução à Termodinâmica;<br>Calorimetria; Estudo dos Gases; Leis da Termodinâmica e suas Aplicações.<br>Física aplicada: A abordagem destes conteúdos, especialmente os que tratam de fluidos,<br>fenômenos ondulatórios e termodinâmica, é fundamental para a análise e compreensão de<br>sistemas que envolvem a transmissão de força por meios líquidos e gasosos, a interação de<br>ondas com a matéria e os processos de conversão de energia, de grande relevância para a<br>área de Mecatrônica.||||
 |**OBJETIVOS**:||||
 
-|➔Compreender os princípios da gravitação e aplicar esses conceitos para explicar<br>fenômenos astronômicos e tecnológicos, como a órbita de satélites e o movimento<br>planetário.<br>➔Aplicar os princípios da hidrostática para resolver problemas envolvendo fluidos<br>em equilíbrio estático, utilizando os teoremas de Stevin, Pascal e o princípio de<br>Arquimedes.<br>➔Analisar<br>fenômenos ópticos sob perspectivas ondulatória e geométrica,<br>interpretando a propagação, interação e detecção de ondas sonoras e luminosas, e<br>aplicar conceitos em instrumentos ópticos com relevância científica e tecnológica.<br>➔Compreender os fundamentos da termodinâmica, investigando o calor como fluxo<br>de energia térmica, avaliando seus efeitos em sólidos, líquidos e gases, e<br>reconhecendo sua importância histórica a partir da revolução industrial.<br>➔Desenvolver pensamento crítico e reflexivo sobre o progresso do conhecimento<br>físico motivado por necessidades tecnológicas, discutindo como os avanços<br>científicos são influenciados e influenciam as inovações tecnológicas.|➔Compreender os princípios da gravitação e aplicar esses conceitos para explicar<br>fenômenos astronômicos e tecnológicos, como a órbita de satélites e o movimento<br>planetário.<br>➔Aplicar os princípios da hidrostática para resolver problemas envolvendo fluidos<br>em equilíbrio estático, utilizando os teoremas de Stevin, Pascal e o princípio de<br>Arquimedes.<br>➔Analisar<br>fenômenos ópticos sob perspectivas ondulatória e geométrica,<br>interpretando a propagação, interação e detecção de ondas sonoras e luminosas, e<br>aplicar conceitos em instrumentos ópticos com relevância científica e tecnológica.<br>➔Compreender os fundamentos da termodinâmica, investigando o calor como fluxo<br>de energia térmica, avaliando seus efeitos em sólidos, líquidos e gases, e<br>reconhecendo sua importância histórica a partir da revolução industrial.<br>➔Desenvolver pensamento crítico e reflexivo sobre o progresso do conhecimento<br>físico motivado por necessidades tecnológicas, discutindo como os avanços<br>científicos são influenciados e influenciam as inovações tecnológicas.|➔Compreender os princípios da gravitação e aplicar esses conceitos para explicar<br>fenômenos astronômicos e tecnológicos, como a órbita de satélites e o movimento<br>planetário.<br>➔Aplicar os princípios da hidrostática para resolver problemas envolvendo fluidos<br>em equilíbrio estático, utilizando os teoremas de Stevin, Pascal e o princípio de<br>Arquimedes.<br>➔Analisar<br>fenômenos ópticos sob perspectivas ondulatória e geométrica,<br>interpretando a propagação, interação e detecção de ondas sonoras e luminosas, e<br>aplicar conceitos em instrumentos ópticos com relevância científica e tecnológica.<br>➔Compreender os fundamentos da termodinâmica, investigando o calor como fluxo<br>de energia térmica, avaliando seus efeitos em sólidos, líquidos e gases, e<br>reconhecendo sua importância histórica a partir da revolução industrial.<br>➔Desenvolver pensamento crítico e reflexivo sobre o progresso do conhecimento<br>físico motivado por necessidades tecnológicas, discutindo como os avanços<br>científicos são influenciados e influenciam as inovações tecnológicas.|
+|➔Compreender os princípios da gravitação e aplicar esses conceitos para explicar<br>fenômenos astronômicos e tecnológicos, como a órbita de satélites e o movimento<br>planetário.<br>➔Aplicar os princípios da hidrostática para resolver problemas envolvendo fluidos<br>em equilíbrio estático, utilizando os teoremas de Stevin, Pascal e o princípio de<br>Arquimedes.<br>➔Analisar<br>fenômenos ópticos sob perspectivas ondulatória e geométrica,<br>interpretando a propagação, interação e detecção de ondas sonoras e luminosas, e<br>aplicar conceitos em instrumentos ópticos com relevância científica e tecnológica.<br>➔Compreender os fundamentos da termodinâmica, investigando o calor como fluxo<br>de energia térmica, avaliando seus efeitos em sólidos, líquidos e gases, e<br>reconhecendo sua importância histórica a partir da revolução industrial.<br>➔Desenvolver pensamento crítico e reflexivo sobre o progresso do conhecimento<br>físico motivado por necessidades tecnológicas, discutindo como os avanços<br>científicos são influenciados e influenciam as inovações tecnológicas.|||
 |---|---|---|
 |**BIBLIOGRAFIA BÁSICA**:<br>GASPAR, Alberto.**Compreendendo a Física**. Editora Ática, 2012. 2 v.<br>LUZ, Antonio Máximo Ribeiro da; ALVARENGA, Beatriz Gonçalves de.**Física**: volume<br>único. 2. ed. São Paulo: Scipione, 2007.<br>GRUPO DE REELABORAÇÃO DO ENSINO DE FÍSICA.**Física 2**: física térmica,<br>óptica. 5. ed. São Paulo: EDUSP, 2000.|||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>TIPLER, Paul Allen e MOSCA, Gene.**Física para Cientistas e Engenheiros:**mecânica,<br>oscilações e ondas, termodinâmica. 6. ed. Rio de Janeiro: LTC, 2009.<br>FEYNMAN, Richard Phillips; LEIGHTON, Robert B. e SANDS, Matthew L. Feynman.<br>**Lições de Física:**mecânica, radiação e calor. Porto Alegre: Bookman, 2019.<br>HALLIDAY, David; RESNICK, Robert; WALKER, Jearl.**Fundamentos de Física:**<br>gravitação, ondas e termodinâmica. 9. ed. Rio de Janeiro: LTC, 2012.<br>NUSSENZVEIG, H. Moysés.**Curso de Física Básica 2:**fluidos, oscilações e ondas, calor.<br>4. ed., São Paulo: Edgard Blücher, 2002.|||
@@ -866,7 +866,7 @@ Mecatrônica. **OBJETIVOS** : ➔ O aluno deverá ser capaz de compreender como 
 
 TORRES, F. T. P.; NETO, R. M.; MENEZES, S. O. **Introdução à geomorfologia** . São Paulo: Cengage learning, 2012. SENE, E. de; MOREIRA, J. C. **Geografia geral e do Brasil: espaço geográfico e globalização** . v. 3. São Paulo: Scipione, 2012. 272 p. VESENTINI, J. W. **Geografia: o mundo em transição** . Volume único. São Paulo: Ática, 2005. 544 p. SANTOS, M. **Novos Rumos da Geografia Brasileira** . 4. ed. São Paulo: Hucitec, 1996. **BIBLIOGRAFIA COMPLEMENTAR:** RAMOS, C. da S. **Visualização cartográfica e cartografia multimídia: conceitos e tecnologias** . São Paulo, Unesp, 2005. STEINKE, Ercilia Torres. **Climatologia Fácil** . 1. ed. São Paulo: Oficina de Textos, 2012. v. 1. 144p. SUGUIO, K. **Mudanças Ambientais da Terra** . 01. ed. São Paulo: Instituto Geológico, 2008. v. 01. 336p. SUGUIO, K. **Geologia do Quaternário: mudanças ambientais (passado + presente = futuro?)** . São Paulo: Paulos comunicações e arte gráficas, 1999.
 
-|**COMPONENTE CURRICULAR**:<br>História I|**COMPONENTE CURRICULAR**:<br>História I|**COMPONENTE CURRICULAR**:<br>História I|**COMPONENTE CURRICULAR**:<br>História I|
+|**COMPONENTE CURRICULAR**:<br>História I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -877,7 +877,7 @@ religiosas, e relacionando-as aos contextos históricos de desenvolvimento tecno
 
 2008. SOUZA, A. L. S.; CROSO, C. **Igualdade das relações étnico-raciais na escola:** possibilidades e desafios para a implementação da Lei 10.639/2003. Paulo: Petrópolis: Ação Educativa, Ceafro e Ceert, 2007. MUNANGA, Kabengele. **Superando o Racismo na escola** . 2.ed. rev. Brasília: Ministério da Educação, Secretaria de Educação Continuada, Alfabetização e Diversidade, 2008.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa II|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa II|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa II|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa II|
+|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -887,7 +887,7 @@ religiosas, e relacionando-as aos contextos históricos de desenvolvimento tecno
 
 Parábola Editorial, 2021. CANDIDO, Antonio. **Formação da Literatura Brasileira** : momentos decisivos. São Paulo: Editora Todavia, 2023. **BIBLIOGRAFIA COMPLEMENTAR:** FARACO, Carlos Emílo; MOURA, Francisco Marto de. **Gramática Nova.** 15. ed. São Paulo: Ática, 2007. FARACO, Carlos Emílo. **Norma culta brasileira:** desatando alguns nós. São Paulo: Parábola, 2008. FIGUEIREDO, Adriana; GRACIOLI, Rodolfo. **Redação para Enem, Concursos e Vestibulares: aprenda redação com lógica.** São Paulo: Saraiva, 2019. NICOLA, José de. **Língua, literatura e redação.** 8. ed. São Paulo: Scipione, 1998.
 
-|**COMPONENTE CURRICULAR**:<br>Matemática II|**COMPONENTE CURRICULAR**:<br>Matemática II|**COMPONENTE CURRICULAR**:<br>Matemática II|**COMPONENTE CURRICULAR**:<br>Matemática II|
+|**COMPONENTE CURRICULAR**:<br>Matemática II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -900,7 +900,7 @@ Parábola Editorial, 2021. CANDIDO, Antonio. **Formação da Literatura Brasilei
 
 químicos influenciam a eficiência de processos, a geração e armazenamento de energia e a durabilidade de equipamentos. **OBJETIVOS** : ➔ Definir os conceitos fundamentais da estequiometria e das leis ponderais, utilizando-os para realizar cálculos envolvendo massa, mol e volume, essenciais para o controle de processos industriais. ➔ Analisar os aspectos energéticos e cinéticos das reações químicas, interpretando diagramas de entalpia e avaliando como fatores como temperatura e catalisadores podem otimizar a velocidade e o rendimento de processos de fabricação e de geração de energia. ➔ Aplicar os conceitos de equilíbrio químico para prever o deslocamento de reações em sistemas fechados, relacionando o Princípio de Le Chatelier à otimização da produção industrial e ao funcionamento de sensores químicos. ➔ Avaliar a importância da eletroquímica em sistemas mecatrônicos, explicando o funcionamento de pilhas e baterias, os princípios da eletrólise aplicados no revestimento de metais (galvanoplastia) e os mecanismos de corrosão, propondo métodos para sua prevenção. ➔ Compreender as leis que regem o comportamento dos gases e as propriedades das soluções, aplicando esses conhecimentos para analisar sistemas pneumáticos, hidráulicos e processos de diluição de substâncias químicas. **BIBLIOGRAFIA BÁSICA** : FOSCHINI, L.J.C. **Ser protagonista** : química. Vol. 2, 3 ed. São Paulo, Editora SM, 2016. FELTRE, R. **Química** . São Paulo: Editora Moderna. REIS, M. **Química** . Volume 2. 2ª ed. São Paulo: Editora FTD, 2016. **BIBLIOGRAFIA COMPLEMENTAR** : PERUZZO, F. M.; CANTO, E. L. **Química na Abordagem do Cotidiano** . Volume 2. 3ª ed. São Paulo: Moderna, 2016. MORTIMER, E.; MACHADO, A. **Química na abordagem do cotidiano** . São Paulo: Moderna. RUSSEL, J.L; RUSSEL, P. **Química Geral** . São Paulo: Pearson SANTOS, W.; Mol, G. **Química Cidadã** . Vol.2, 3 ed. São Paulo. Editora AJS, 2016
 
-|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|
+|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -934,7 +934,7 @@ MARQUES, Angelo Eduardo B.; CRUZ, Eduardo Cesar A.; JÚNIOR, Salomão Choueri. *
 
 Janeiro : Fundação Roberto Marinho, 2009.
 
-|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|
+|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -942,7 +942,7 @@ Janeiro : Fundação Roberto Marinho, 2009.
 |**OBJETIVOS**:<br>➔Atuar no desenvolvimento de sistemas, circuitos e componentes de máquinas<br>elétricas e implementar sistemas automatizados industriais e de manufatura,<br>considerando as normas, padrões e requisitos técnicos, de qualidade, saúde e<br>segurança e de meio ambiente;<br>➔Elaborar circuitos de acionamento de motores elétricos, integrando a circuitos<br>eletropneumáticos e eletrohidráulicos e atuar nos processos de instalação de<br>sistemas eletromecânicos e eletroeletrônicos para sistemas mecatrônicos;<br>➔Comissionar e manter sistemas integrados industriais e de manufatura por meio de<br>sistemas lógicos programáveis;<br>➔Atuar nos processos de manutenção de sistemas mecatrônicos.||||
 |**BIBLIOGRAFIA BÁSICA**:<br>FRANCHI, Claiton Moro.**Acionamentos elétricos**. 5. ed. São Paulo: Érica, 2014. 252 p.<br>ISBN 9788536501499.<br>NASCIMENTO JUNIOR, Geraldo Carvalho do.**Comandos elétricos**: teoria e atividades.||||
 
-|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos|
+|**COMPONENTE CURRICULAR**:<br>Máquinas e Acionamentos Elétricos||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>2º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -954,7 +954,7 @@ Janeiro : Fundação Roberto Marinho, 2009.
 
 ## **3º ANO**
 
-|**COMPONENTE CURRICULAR**:<br>Biologia III|**COMPONENTE CURRICULAR**:<br>Biologia III|**COMPONENTE CURRICULAR**:<br>Biologia III|**COMPONENTE CURRICULAR**:<br>Biologia III|
+|**COMPONENTE CURRICULAR**:<br>Biologia III||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -963,7 +963,7 @@ Janeiro : Fundação Roberto Marinho, 2009.
 
 ➔ Construir a formação integral como cidadão, para que seja capaz de interagir e transformar a sociedade onde está inserido. **BIBLIOGRAFIA BÁSICA** : AMABIS, J. M.; MARTHO, G. R. **Biologia Moderna Amabis & Martho** . 4. ed. São Paulo: Moderna, 2016, v.3. LOPES, S.; ROSSO, S. **Bio** . Vol. 1, 2, 3. São Paulo: Saraiva, 2011. MOORE, K.L. Embriologia Básica. 7.ed. Elsevier, 2008. PEZZI, A.; GOWDAK, D.; MATTOS, N. S. **Biologia** . São Paulo: FTD, 2010. STORER, T.I.et al. **Zoologia Geral** . 6. ed., São Paulo: Nacional, 2000. 816p. **BIBLIOGRAFIA COMPLEMENTAR:** LINHARES, S.; GEWANDSZNAJDER, F. **Biologia** . São Paulo:Ática, 2006. 2 v. GRIFFITHS, A.J.et al. **Introdução à Genética** . 7.ed. Rio de Janeiro: Guanabara Koogan, 2002. PARANÁ, Secretaria de Estado da Educação do. Diretrizes Curriculares de Biologia. Curitiba: SEED, 2008. ODUM, Eugene Pleasants. **Ecologia** . Rio de Janeiro: Guanabara Koogan, 2013. 460 p. PEZZI, A.; GOWDAK, D.; MATTOS, N. S. Biologia. São Paulo: FTD, 2010. SANTILLI, Juliana. **Agrobiodiversidade e direitos dos agricultores** . São Paulo: Peirópolis, 2009. 519p. ULRICH, Henning et al. (Org.). Bases moleculares da biotecnologia. São Paulo: Roca, c2008. 218p.
 
-|**COMPONENTE CURRICULAR**:<br>Educação Física III|**COMPONENTE CURRICULAR**:<br>Educação Física III|**COMPONENTE CURRICULAR**:<br>Educação Física III|**COMPONENTE CURRICULAR**:<br>Educação Física III|
+|**COMPONENTE CURRICULAR**:<br>Educação Física III||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -972,7 +972,7 @@ Janeiro : Fundação Roberto Marinho, 2009.
 
 ➔ Promover o desenvolvimento físico, motor e intelectual por meio de atividades como esportes, jogos, dança, lutas e ginásticas. ➔ Explorar as bases antropométricas para análise e avaliação do condicionamento físico e das capacidades motoras. ➔ Estimular a prática de atividades físicas como meio de manutenção da saúde, prevenção de doenças e melhoria da qualidade de vida. ➔ Desenvolver habilidades sociais, como cooperação, respeito e trabalho em equipe, por meio de práticas esportivas e recreativas. ➔ Relacionar os conhecimentos sobre educação física com temas transversais, como educação sexual e prevenção ao uso de drogas ilícitas. ➔ Promover a consciência corporal e postural para prevenir lesões e melhorar a ergonomia em atividades técnicas e profissionais. ➔ Integrar os conteúdos de jogos eletrônicos como ferramentas de estímulo ao raciocínio lógico e coordenação motora. ➔ Abordar as relações entre atividade física, saúde mental e bem-estar emocional. ➔ Contextualizar os conteúdos da Educação Física com a área técnica de Mecatrônica, aplicando princípios de biomecânica e ergonomia no ambiente industrial. ➔ Incentivar a análise crítica sobre os impactos sociais, culturais e tecnológicos das práticas corporais e recreativas no ambiente escolar e profissional. **BIBLIOGRAFIA BÁSICA** : BRASIL **. Livro Didático de Educação Física** . Secretaria de Estado da educação. DARIDO, S.; GALVÃO, Z.; FERREIRA, L.; FIORIN, G. **Educação Física no Ensino Médio:** reflexões e ações. Motriz, v. 5, n. 2, 1999, p.138-145. LUCKESI. C.C. **Avaliação da aprendizagem escolar** . 9. ed. São Paulo: Cortez, 1999. **BIBLIOGRAFIA COMPLEMENTAR:** NAHAS, M. V. **Atividade física, saúde e qualidade de vida:** conceitos e sugestões para um estilo de vida ativo **.** 3. ed. Londrina: Midiograf, 2003. SABA, F. **Mexa-se:** atividade física, saúde e bem estar. 3. ed. São Paulo: Phorte Editora LTDA, 2011. SOLER, R. **Jogos cooperativos** . Rio de Janeiro: Sprint, 2002. SOBOTTA, J. **Atlas da Anatomia Humana.** 23. ed.  Rio de Janeiro: Guanabara Koogan, 2013. 1, 2, 3 v.
 
-|**COMPONENTE CURRICULAR**:<br>Filosofia|**COMPONENTE CURRICULAR**:<br>Filosofia|**COMPONENTE CURRICULAR**:<br>Filosofia|**COMPONENTE CURRICULAR**:<br>Filosofia|
+|**COMPONENTE CURRICULAR**:<br>Filosofia||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -982,7 +982,7 @@ Janeiro : Fundação Roberto Marinho, 2009.
 
 MARCONDES, DANILO. **Introdução à História da Filosofia** : dos pré-socráticos a Wittgenstein. Rio de Janeiro: Zahar, 1997. POPPER, KARL RAYMUND. **A lógica da pesquisa científica** . São Paulo: Cultrix, 2004. POPPER, KARL RAYMUND. **Conhecimento objetivo** : uma abordagem evolucionária. Petrópolis: Vozes e São Francisco, 2022. POPPER, KARL RAYMUND. **Conjecturas e refutações** . Lisboa: Edições 70, 2008. **BIBLIOGRAFIA COMPLEMENTAR:** MARCONDES, DANILO & JAPIASSU, HILTON. **Dicionário Básico de Filosofia** . Rio de Janeiro: Zahar, 1997. POPPER, KARL RAYMUND. **O universo aberto** : argumentos a favor do indeterminismo. Alfragide: Dom Quixote, 1988. POPPER, KARL RAYMUND. **A teoria dos quanta e o cisma na Física** . Alfragide: Dom Quixote, 1992. POPPER, KARL RAYMUND. **Um mundo de propensões** . Lisboa: Fragmentos, 1991. POPPER, KARL RAYMUND. **O Eu e seu cérebro** . Brasília: UNB, 1991. POPPER, KARL RAYMUND. **O Cérebro e o pensamento** . Campinas: Papirus, 1995. POPPER, KARL RAYMUND. **A lógica das Ciências Sociais** . Rio de Janeiro: Biblioteca Tempo Universitário, 2004. POPPER, KARL RAYMUND. **O conhecimento e o problema Corpo-mente** . Lisboa: Edições 70, 2009.
 
-|**COMPONENTE CURRICULAR**:<br>Física III|**COMPONENTE CURRICULAR**:<br>Física III|**COMPONENTE CURRICULAR**:<br>Física III|**COMPONENTE CURRICULAR**:<br>Física III|
+|**COMPONENTE CURRICULAR**:<br>Física III||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -992,7 +992,7 @@ magnéticos, é fundamental para a compreensão da conversão eletromecânica de
 
 HALLIDAY, David; RESNICK, Robert; WALKER, Jearl. **Fundamentos de Física:** eletromagnetismo. 9. ed. Rio de Janeiro: LTC, 2012. HALLIDAY, David; RESNICK, Robert; WALKER, Jearl. **Fundamentos de Física:** óptica e física moderna. 9. ed. Rio de Janeiro: LTC, 2012. NUSSENZVEIG, H. Moysés. **Curso de Física Básica 3:** eletromagnetismo. 2. ed. rev. e amp. São Paulo: Blucher, 2015. NUSSENZVEIG, H. Moysés. **Curso de Física Básica 4:** ótica, relatividade, física quântica. São Paulo: Blucher, 1998. v. 4.
 
-|**COMPONENTE CURRICULAR**:<br>Geografia II|**COMPONENTE CURRICULAR**:<br>Geografia II|**COMPONENTE CURRICULAR**:<br>Geografia II|**COMPONENTE CURRICULAR**:<br>Geografia II|
+|**COMPONENTE CURRICULAR**:<br>Geografia II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -1001,7 +1001,7 @@ HALLIDAY, David; RESNICK, Robert; WALKER, Jearl. **Fundamentos de Física:** ele
 
 espaço geográfico. ➔ Compreender os principais conceitos demográficos, analisando as principais tendências demográficas mundiais e brasileiras. ➔ Analisar os principais fatores atuais da geopolítica internacional e brasileira. - Reconhecer a estruturação socioeconômica do Brasil. ➔ Compreender os principais conceitos, processos e características relacionados à geografia urbana mundial e brasileira. ➔ Compreender os principais conceitos, processos e características relacionados à agropecuária brasileira. **BIBLIOGRAFIA BÁSICA** : ADAS, Melhen. **Panorama Geográfico do Brasil: contradições, impasses e desafios socioespaciais** . 3. ed. reform. São Paulo: Moderna, 1998. CASSAN, F. (org). **Atlas Visual da Ciência Rochas e Minerais** . Editora Sol 90, 2007. 94 p. HOBSBAWM, E. J. **Da Revolução Industrial Inglesa Ao Imperialismo** . Editora Forense Universitária, 2011. 364 p. LOUREIRO, F. P. As **Origens da Indústria no Brasil - Série Economia de Bolso** . Editora Lcte, 2008. 64 p. SANTOS, M. **Novos Rumos da Geografia Brasileira** . 4. ed. São Paulo: Hucitec, 1996. SENE, E. de; MOREIRA, J. C. **Geografia geral e do Brasil: espaço geográfico e globalização** , v. 3. São Paulo: Scipione, 2012. 272 p. VESENTINI, J. W. **Geografia: o mundo em transição** . Volume único. São Paulo: Ática, 2005. 544 p. **BIBLIOGRAFIA COMPLEMENTAR:** GONÇALVES, Carlos W. Porto. **Os (des) Caminhos do meio ambiente** . São Paulo, Contexto, 1996. MENDONÇA, F.; DANNI-OLIVEIRA, I. M. **Climatologia: noções básicas e climas do Brasil** . São Paulo: Oficina de textos, 2007. TEIXEIRA, W.; TOLEDO, M. C. M. de; FAIRCHILD, T. R.; TAIOLI, F. (org.). **Decifrando a Terra** . São Paulo: Oficina de Textos, 2000. 568 p. TUNDISI, J. G.; MATSUMURA TUNDISI, T. **Limnologia** . São Paulo: Oficina de Textos, 2008.
 
-|**COMPONENTE CURRICULAR**:<br>História II|**COMPONENTE CURRICULAR**:<br>História II|**COMPONENTE CURRICULAR**:<br>História II|**COMPONENTE CURRICULAR**:<br>História II|
+|**COMPONENTE CURRICULAR**:<br>História II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -1009,7 +1009,7 @@ espaço geográfico. ➔ Compreender os principais conceitos demográficos, anal
 |**OBJETIVOS**:<br>➔Analisar as relações de trabalho, poder e cultura nas Idades Moderna e<br>Contemporânea, relacionando transformações históricas, como as Revoluções<br>Industriais, ao surgimento de tecnologias precursoras da Mecatrônica, como<br>máquinas a vapor e sistemas automatizados.<br>➔Compreender os períodos colonial, imperial e republicano do Brasil, identificando<br>seus impactos econômicos, políticos e culturais na formação de sistemas produtivos<br>e sua relevância para o desenvolvimento técnico-industrial, incluindo a<br>Mecatrônica.<br>➔Examinar a história do Paraná, desde o período colonial até a atualidade,<br>conectando suas dinâmicas regionais às inovações tecnológicas e à evolução dos<br>processos industriais no contexto mecatrônico.<br>➔Valorizar a diversidade cultural, reconhecendo as contribuições das culturas<br>afro-brasileira e indígena para a sociedade brasileira, e aplicando essa compreensão<br>na promoção de práticas éticas e inclusivas no ambiente profissional da<br>Mecatrônica.<br>➔Desenvolver pensamento crítico interdisciplinar, utilizando o conhecimento<br>histórico para refletir sobre os impactos das tecnologias mecatrônicas na sociedade<br>contemporânea, considerando questões éticas, sociais e sustentáveis no exercício da<br>profissão.||||
 |**BIBLIOGRAFIA BÁSICA**:<br>ALVES, A.; OLIVEIRA, L. F. de.**Conexões com a História**. São Paulo: Moderna, 2010.||||
 
-|**COMPONENTE CURRICULAR**:<br>História II|**COMPONENTE CURRICULAR**:<br>História II|**COMPONENTE CURRICULAR**:<br>História II|**COMPONENTE CURRICULAR**:<br>História II|
+|**COMPONENTE CURRICULAR**:<br>História II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -1019,7 +1019,7 @@ espaço geográfico. ➔ Compreender os principais conceitos demográficos, anal
 
 V. 2 e 3. BRAICK, Patrícia Ramos; MOTA, Myriam Brecho. **História:** das cavernas ao terceiro Milênio. 2.ed. São Paulo: Moderna, 2010. V. 2 e 3. NOGUEIRA, Fausto Henrique Gomes; CAPELLARI, Marcos Alexandre (org.). **HISTÓRIA 2° e 3° Anos:** ensino médio. Coleção Ser Protagonista. São Paulo: Edições SM, 2010. **BIBLIOGRAFIA COMPLEMENTAR:** ALBORNOZ, Suzana. **O que é trabalho** . São Paulo: Brasiliense, 2008. CHÂTELET, François. **História das ideias políticas** . Rio de Janeiro: Jorge Zahar Ed., 2000. FAUSTO, Boris. **História Concisa do Brasil** . 2. ed., 5.reimpr. São Paulo: Editora da Universidade de São Paulo, 2012. FOUCAULT, Michel. **Microfísica do poder** . 26. ed. Rio de Janeiro: Edições Graal, 2008. FREYRE, Gilberto. **Casa-grande & senzala** : formação da família brasileira sob o regime da economia patriarcal. 51.ed. rev. São Paulo: Global, 2006. FUNARI, Pedro Paulo; PIÑÓN, Ana. **A temática indígena na escola:** subsídios para os professores **.** São Paulo: Contexto, 2011. MUNANGA, Kabengele (org.) **Superando o Racismo na escola** . 2. ed. rev.  Brasília: Ministério da Educação, Secretaria de Educação Continuada, Alfabetização e Diversidade, 2008. RIBEIRO, Darcy. **O povo brasileiro** : a formação e o sentido do Brasil. São Paulo: Companhia das Letras, 1995. Ministério da Educação / Secretaria de Educação Profissional e Tecnológica. **Implementação das Diretrizes Curriculares para a Educação das Relações Étnico-Raciais e o Ensino de História e Cultura Afro-Brasileira e Africana na Educação Profissional e Tecnológica.** Brasília, 2008. PAZZINATO, Alceu L.; SENISE, Maria Helena V. **História Moderna e Contemporânea** . São Paulo: Ática, 2002.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa III|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa III|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa III|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa III|
+|**COMPONENTE CURRICULAR**:<br>Língua Portuguesa III||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -1030,7 +1030,7 @@ V. 2 e 3. BRAICK, Patrícia Ramos; MOTA, Myriam Brecho. **História:** das caver
 
 **Vestibulares:** aprenda redação com lógica. São Paulo: Saraiva, 2019. NICOLA, José de. **Língua, literatura e redação.** 8. ed. São Paulo: Scipione, 1998.
 
-|**COMPONENTE CURRICULAR**:<br>Matemática III|**COMPONENTE CURRICULAR**:<br>Matemática III|**COMPONENTE CURRICULAR**:<br>Matemática III|**COMPONENTE CURRICULAR**:<br>Matemática III|
+|**COMPONENTE CURRICULAR**:<br>Matemática III||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -1052,7 +1052,7 @@ MULLER, A. N.; ANTONIK, L. R. **Matemática financeira:** Instrumentos financeir
 
 RAMOS, L. F. **Frações sem mistérios:** Frações conceitos fundamentais e operações. São Paulo: Atica, 2002.
 
-|**COMPONENTE CURRICULAR**:<br>Química III|**COMPONENTE CURRICULAR**:<br>Química III|**COMPONENTE CURRICULAR**:<br>Química III|**COMPONENTE CURRICULAR**:<br>Química III|
+|**COMPONENTE CURRICULAR**:<br>Química III||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -1061,7 +1061,7 @@ RAMOS, L. F. **Frações sem mistérios:** Frações conceitos fundamentais e op
 
 ➔ Compreender o conceito de isomeria, diferenciando os casos de isomeria plana e espacial (geométrica e óptica) e relacionando-os com as diferentes propriedades de moléculas estruturalmente semelhantes. ➔ Analisar as propriedades físicas dos compostos orgânicos, como polaridade e pontos de ebulição, com base nas forças intermoleculares, justificando a escolha de solventes, lubrificantes e fluidos refrigerantes em aplicações mecatrônicas. ➔ Classificar as principais reações orgânicas, prevendo os produtos formados em reações de adição, substituição e eliminação, e compreendendo sua importância na síntese de novos materiais. ➔ Avaliar a importância dos polímeros na tecnologia moderna, relacionando as estruturas de polímeros comuns (como PVC, PET, Teflon) com suas propriedades mecânicas e térmicas, e justificando seu uso na fabricação de carcaças, isolantes elétricos e componentes para automação. **BIBLIOGRAFIA BÁSICA** : FOSCHINI, L.J.C. **Ser protagonista** : química. Vol. 3, 3 ed. São Paulo, Editora SM, 2016. FELTRE, Ricardo. **Química** . São Paulo: Editora Moderna. REIS, M. **Química** . Volume 3. 2ª ed. São Paulo: Editora FTD, 2016. **BIBLIOGRAFIA COMPLEMENTAR:** PERUZZO, F. M.; CANTO, E. L. **Química na Abordagem do Cotidiano** . Volume 3. 3ª ed. São Paulo: Moderna, 2016. MORTIMER, Eduardo; MACHADO, Andréa. **Química na abordagem do cotidiano** . São Paulo: Moderna. RUSSEL, Joel; RUSSEL, Paul. **Química Geral** . São Paulo: Pearson SANTOS, W.; Mol, G. **Química Cidadã** . Vol.3, 3 ed. São Paulo. Editora AJS, 2016.
 
-|**COMPONENTE CURRICULAR**:<br>Elementos de Automação e Robótica Industrial|**COMPONENTE CURRICULAR**:<br>Elementos de Automação e Robótica Industrial|**COMPONENTE CURRICULAR**:<br>Elementos de Automação e Robótica Industrial|**COMPONENTE CURRICULAR**:<br>Elementos de Automação e Robótica Industrial|
+|**COMPONENTE CURRICULAR**:<br>Elementos de Automação e Robótica Industrial||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |160<br>horas-aula|133<br>horas|4<br>horas-aula||
@@ -1073,7 +1073,7 @@ NISE, N. S. **Engenharia de Sistemas de Controle.** 6ª ed. São Paulo: LTC, 201
 
 KAZMIER, L. J. **Redes Industriais e Comunicação de Dados.** 2ª ed. São Paulo: LTC, 2016.
 
-|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|
+|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |120<br>horas-aula|100<br>horas|3<br>horas-aula||
@@ -1082,7 +1082,7 @@ KAZMIER, L. J. **Redes Industriais e Comunicação de Dados.** 2ª ed. São Paul
 
 saída e folga). ➔ Programar, operar e ajustar máquinas CNC para a fabricação de peças técnicas. ➔ Executar processos de soldagem a gás, a arco elétrico e por resistência, incluindo seleção de materiais como gases, varetas, arames e eletrodos. ➔ Aplicar normas de segurança, regulagem de máquinas e controle de parâmetros nos processos de soldagem. ➔ Analisar e identificar defeitos em soldas, como trincas, porosidade e inclusões, propondo soluções para correção e melhoria. ➔ Promover a sustentabilidade e a qualidade nos processos de fabricação, por meio de práticas industriais eficientes e seguras. **BIBLIOGRAFIA BÁSICA** : CASSANIGA, F. A. **Fácil Programação do Controle Numérico** : Furadeiras, Tornos, Fresadoras, Centros de Usinagem Curso CNC sem Instrutor. 1. ed. Sorocaba: CNC Tecnologia, 2005. MARQUES, P. V.et. al. **Soldagem** : Fundamentos e Tecnologia. Belo Horizonte: Ed. UFMG, 2007. SILVA, D. S. **CNC** : Programação de Comandos Numéricos Computadorizados: Torneamento. 8. ed. São Paulo: Érica: 2008. WAINER, E. **Soldagem, Processos e Metalurgia** . 1. ed. São Paulo: Blucher 1995. **BIBLIOGRAFIA COMPLEMENTAR:** FERRARESI, D. **Fundamentos da Usinagem dos Metais** . 11. ed. São Paulo: Edgard Blücher, 2003. STEMMER, C. E. **Ferramentas de corte I** . Florianópolis: Ed. UFSC, 2001. STEMMER, C. E. **Ferramentas de corte II** : brocas, alargadores, ferramentas de roscar, fresas, brochas, rebolos. Florianópolis: Ed. UFSC, 2001. WEISS, Almiro. **Soldagem** . Curitiba: Editora do Livro Técnico, 2010.
 
-|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Resistência dos Materiais|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Resistência dos Materiais|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Resistência dos Materiais|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Resistência dos Materiais|
+|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Resistência dos Materiais||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>3º ano|
 |80<br>horas-aula|67<br>horas|2<br>horas-aula||
@@ -1104,14 +1104,14 @@ Manutenção Industrial e Segurança do Trabalho
 
 ## 5.7.2 COMPONENTES CURRICULARES OPTATIVOS
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico I|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico I|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico I|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico I|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico I||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||
 
 **EMENTA** : Las raíces de la lengua española. ¿Español o Castellano? Español en el mundo contemporáneo. Español: una lengua para la ciencia y la tecnología. Pluralidade cultural de los países hispanohablantes. Español: muchos pueblos, una lengua. La diversidad linguística del español. Estudio de las estructuras morfológicas y sintácticas básicas de la lengua española. Lectura y comprensión de textos del área de Mecatrónica. La lengua española como lengua de comunicación profesional. **OBJETIVOS** : ➔ Propiciar aos estudantes a compreensão do espanhol como uma importante língua de comunicação internacional; ➔ Motivar a valorização da língua espanhola e possibilitar o seu uso nas mais diversas áreas de atuação profissional da Mecatrônica; ➔ Reconhecer e fortalecer o uso da língua espanhola como um instrumento de acesso a diferentes culturas, histórias e histórias sociais; ➔ Estabelecer relações entre as estruturas linguísticas e a sua função/uso social; ➔ Relacionar e significar a gramática no texto; ➔ Possibilitar a leitura e a compreensão de textos em língua espanhola que estejam diretamente conectados à Mecatrônica; ➔ Fomentar a comunicação em língua espanhola como um importante recurso de formação profissional. **BIBLIOGRAFIA BÁSICA** : BAPTISTA, Lívia Rádis. **Español esencial** . Santillana: São Paulo, 2014. DIAZ, Miguel. TALAVERA, García. **Diccionário Santillana para estudiantes** . 4. ed. São Paulo: Moderna, 2014. MILANI, Esther Maria. **Gramática de espanhol para brasileiros.** 2. ed. Saraiva, 2000. **BIBLIOGRAFIA COMPLEMENTAR:** ARAGONÉS, Luis. PALENCIA, Ramón. **Gramática de uso, de español para extranjeros:** teoría y práctica. Madrid, 2003. FERNÁNDEZ, Gretel Eres et al. **Gêneros textuais e produção escrita:** teoria e prática nas aulas de espanhol como língua estrangeira. São Paulo: IBEP, 2012. MILANI, Esther Maria et al. **Listo: español a través de textos.** Santillana: Moderna, 2005. SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños** . São Paulo: FDT, 2003.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||
@@ -1120,7 +1120,7 @@ Manutenção Industrial e Segurança do Trabalho
 |**BIBLIOGRAFIA BÁSICA**:<br>BAPTISTA, Lívia Rádis.**Español esencial**. Santillana: São Paulo, 2014.<br>DIAZ, Miguel. TALAVERA, García.**Diccionário Santillana para estudiantes**. 4. ed. São<br>Paulo: Moderna, 2014.<br>MILANI, Esther Maria.**Gramática de espanhol para brasileiros.**2. ed. Saraiva, 2000.||||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>ARAGONÉS, Luis. PALENCIA, Ramón.**Gramática de uso, de español para**<br>**extranjeros:**teoría y práctica. Madrid, 2003.<br>FERNÁNDEZ, Gretel Eres et al.**Gêneros textuais e produção escrita:**teoria e<br>prática nas aulas de espanhol como língua estrangeira. São Paulo: IBEP, 2012.<br>MILANI, Esther Maria et al.**Listo: español a través de textos.**Santillana: Moderna, 2005.||||
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna – Espanhol básico II||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||
@@ -1131,7 +1131,7 @@ Manutenção Industrial e Segurança do Trabalho
 
 SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños** . São Paulo: FDT, 2003.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||
@@ -1139,7 +1139,7 @@ SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños** . São Pa
 |**OBJETIVOS**:<br>➔Desenvolver habilidades de leitura e interpretação de gêneros textuais específicos<br>em língua inglesa, com foco em manuais de instruções e e-mails formais,<br>identificando estruturas, vocabulário e finalidades comunicativas.<br>➔Desenvolver habilidades de escrita em língua inglesa considerando clareza, coesão<br>e adequação ao público-alvo.<br>➔Ampliar o conhecimento de sinônimos em língua inglesa, capacitando os alunos a<br>escolher as palavras mais adequadas ao contexto e a enriquecer sua expressão<br>escrita e oral.<br>➔Aplicar conceitos gramaticais da língua inglesa de forma prática.<br>➔Ampliar o vocabulário específico da área de Mecatrônica, preparando os alunos<br>para compreender e utilizar termos técnicos em leituras e produções textuais.<br>➔Introduzir os alunos a testes de proficiência em língua inglesa, familiarizando-os<br>com formatos e estratégias de resolução.<br>➔Promover a autonomia no aprendizado da língua inglesa, incentivando a prática<br>constante da leitura, escrita e interpretação de textos em contextos acadêmicos e<br>profissionais.<br>➔Oportunizar o contínuo desenvolvimento da oralidade em língua inglesa por meio<br>de práticas de conversação.||||
 |**BIBLIOGRAFIA BÁSICA**:<br>BASSANI, Sandra; CARVALHO, Danilo.**Inglês para automação industrial**. São Paulo:<br>Baraúna, 2012.<br>GEAR, Joelene; Robert, GEAR.**Cambridge preparation for the TOEFL test**. New York:||||
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês intermediário||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||
@@ -1149,7 +1149,7 @@ SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños** . São Pa
 
 Cambridge University Press, 2006. VALENTINI, Antonio Carlos; MUNIZ-OLIVEIRA, Vitória; MUNIZ-OLIVEIRA, Siderlene. **Inglês Instrumental para o Ensino Superior:** atividades didáticas. Campinas, SP: Pontes Editores, 2022. **BIBLIOGRAFIA COMPLEMENTAR:** LAGO, Andreza. **Jogos divertidos para a sua aula de inglês** . Barueri: Disal, c2009. MURPHY, Raymond. **English Grammar in Use Book with Answers** : A Self-Study Reference and Practice Book for Intermediate Learners of English. 5. ed. Cambridge: Cambridge University Press, 2019. POTTER, Louise Emma; LEDERMAN, Ligia. **Atividades de vídeo para o Ensino de Inglês** . Barueri: Disal, 2012. SILVA, Solimar. **Dinâmicas e jogos para aulas de idiomas** . Vozes, 2013.
 
-|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês avançado|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês avançado|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês avançado|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês avançado|
+|**COMPONENTE CURRICULAR**:<br>Língua Estrangeira Moderna - Inglês avançado||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||
@@ -1160,7 +1160,7 @@ inglesa, capacitando os alunos a compreender e utilizar termos específicos. ➔
 
 **BIBLIOGRAFIA COMPLEMENTAR:** GOWER, Roger. **Grammar in practice 1** . Rio de Janeiro: Cambridge University Press do Brasil, 2002. MACCARTHY, Michael; O’DELL, Felicity. **English phrasal verbs in use** : 70 units of vocabulary reference and practice self-study and classroom use. Cambridge: Cambridge University Press, 2017. PAGE, Mary Ellen Munoz. **ESL Writing: Intermediate and Advanced: Writing Intermediate & Advanced.** New Jersey: Research & Education Association, 2006. RICHARDS, Jack C.. **Interchange 1a student´s Book** . 5 ed. Cambridge: Cambridge University, 2021.
 
-|**COMPONENTE CURRICULAR**:<br>Fundamentos de Empreendedorismo e Gestão Empresarial|**COMPONENTE CURRICULAR**:<br>Fundamentos de Empreendedorismo e Gestão Empresarial|**COMPONENTE CURRICULAR**:<br>Fundamentos de Empreendedorismo e Gestão Empresarial|**COMPONENTE CURRICULAR**:<br>Fundamentos de Empreendedorismo e Gestão Empresarial|
+|**COMPONENTE CURRICULAR**:<br>Fundamentos de Empreendedorismo e Gestão Empresarial||||
 |---|---|---|---|
 |**CARGA HORÁRIA TOTAL**:||**CH SEMANAL**:|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |72<br>horas-aula|60<br>horas|2<br>horas-aula||

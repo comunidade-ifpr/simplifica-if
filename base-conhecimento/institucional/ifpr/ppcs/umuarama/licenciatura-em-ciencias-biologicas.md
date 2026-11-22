@@ -3542,7 +3542,7 @@ Instituto Federal do Paraná, Campus Umuarama (IFPR-Umuarama)
 
 ## **DISCENTE ESTAGIÁRIO**
 
-|**DISCENTE ESTAGIÁRIO**|**DISCENTE ESTAGIÁRIO**|
+|**DISCENTE ESTAGIÁRIO**||
 |---|---|
 |**Nome:**||
 |**Matrícula:**|**Período**:|

@@ -806,7 +806,7 @@ Esta “formação horizontal” compreende os períodos letivos como passos do 
 
 **Tabela 3 -** Matriz Curricular do Curso Superior de Tecnologia em Gestão da Tecnologia da Informação.
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||
 |---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||||
 |||_Campus_Pinhais||||||
@@ -871,7 +871,7 @@ Os componentes curriculares optativos (representados na matriz curricular como O
 
 **Tabela 4 -** Componentes Optativos do Curso Superior de Tecnologia em Gestão da Tecnologia da Informação.
 
-|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|
+|**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM**<br>**GESTÃO DA TECNOLOGIA DA INFORMAÇÃO – COMPONENTES CURRICULARES OPTATIVOS**|||||||
 |---|---|---|---|---|---|---|
 ||||||**CH em**|**CH em**|
 |**Semanas do semestre letivo:**|||**Tipo (C,**<br>**AC,**<br>**ES)**|**Número de**<br>**aulas**<br>**semanais**|**Hora-aula**<br>**(min)**|**Hora-relógio**<br>**(min)**|
@@ -2983,7 +2983,7 @@ I - Não é permitido, em nenhuma hipótese, computar a mesma atividade em mais 
 
 **Grupo 1: atividades relacionadas a ensino, pesquisa e extensão, e de caráter sociocomunitário**
 
-|**Grupo 1: atividades relacionadas a ensino, pesquisa e extensão, e de caráter sociocomunitário**|**Grupo 1: atividades relacionadas a ensino, pesquisa e extensão, e de caráter sociocomunitário**|**Grupo 1: atividades relacionadas a ensino, pesquisa e extensão, e de caráter sociocomunitário**|
+|**Grupo 1: atividades relacionadas a ensino, pesquisa e extensão, e de caráter sociocomunitário**|||
 |---|---|---|
 |**_Item_**|**_Cômputo de horas_**|**_Limite_**<br>**_máximo_**|
 |Realização de curso de língua estrangeira durante o<br>período da graduação e com comprovação de<br>aproveitamento|0,25h por hora comprovada|60 horas|

@@ -271,7 +271,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 |1<br>INSTITUTOFEDERAL<br>PARANA||Ministerioda Educacao<br>InstitutoFederaldoParana|
 |---|---|---|
 |Candida de Fátima Deichmann<br>Santos Lima|Doutoranda em Sociologia|Dedicação Exclusiva|
-|Cássia Cristina Moretto da Silva Mestrado em Ciências Humanas Dedicação Exclusiva|Cássia Cristina Moretto da Silva Mestrado em Ciências Humanas Dedicação Exclusiva|Cássia Cristina Moretto da Silva Mestrado em Ciências Humanas Dedicação Exclusiva|
+|Cássia Cristina Moretto da Silva Mestrado em Ciências Humanas Dedicação Exclusiva|||
 |Claudir Schmidlin|Especialização<br>em<br>Administração de Empresas|Dedicação Exclusiva|
 |Celso Luiz Buiar|Mestrado<br>em<br>Engenharia<br>Mecânica|Dedicação Exclusiva|
 |Cleverson Pereira Leal|Especialização em Gestão de<br>Negócios|Dedicação Exclusiva|
@@ -405,7 +405,7 @@ Os conteúdos obrigatórios com tratamento transversal serão trabalhados por me
 
 O Curso Técnico em Administração Integrado ao ensino Médio do Instituto Federal do Paraná – Câmpus Curitiba compreende três anos, compondo-se de componentes curriculares de formação geral do ensino médio que resultarão no total de 3840 horas aulas e 3288 horas relógio.
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-aula)**||**TOTAL**<br>**(horas-**<br>**relógio)**|
 ||**01***|**02***||
@@ -612,7 +612,7 @@ CHIAVENATO, I. **Administração:** teoria, processo e prática. 3. ed. São Pau
 
 MINTZBERG H.; QUINN, J.B. **O processo da estratégia** . 3. ed. São Paulo: Bookman, 2001. ROBBINS, S. P. **Administração** : mudanças e perspectivas. São Paulo: Saraiva, 2000. SENGE, P. **A quinta disciplina** . São Paulo: Best Seller, 1998.
 
-|**Campus Curitiba - IFPR**|**Campus Curitiba - IFPR**|
+|**Campus Curitiba - IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: Gestão de Pessoas||
@@ -624,7 +624,7 @@ Modelos e formas de gestão de pessoas; Gestão de carreira; Cultura e clima org
 
 **Bibliografia Básica:** BRASIL, Normas Regulamentadoras. **Segurança e Medicina do Trabalho** . 67 Ed. São Paulo: Atlas, 2011. CHIAVENATO, Idalberto. **Gestão de Pessoas** : O Novo Papel dos Recursos Humanos nas Organizações. Rio de Janeiro: Campus, 1999. FLEURY, M. T. L. (org.). **As Pessoas na Organização** . São Paulo: Gente, 2002. **Bibliografia Complementar:** ARAÚJO, G. M. **Normas Regulamentadoras Comentadas** : Legislação de Segurança e Saúde no Trabalho. 8. ed. Rio de Janeiro: Gerenciamento Verde, 2011. FARIA, José Henrique de. **Análise Crítica das Teorias e Práticas Organizacionais** . São Paulo: Atlas, 2007. LIMONGI-FRANÇA, Ana Cristina. **Práticas de Recursos Humanos** : Conceitos, Ferramentas e Procedimentos. São Paulo: Atlas, 2009.
 
-|**Campus Curitiba - IFPR**|**Campus Curitiba - IFPR**|
+|**Campus Curitiba - IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico**: Gestão e Negócios|
 |**Componente Curricular**: Administração da Produção e Qualidade||
@@ -668,7 +668,7 @@ SHINGO, S. **Sistema Toyota de produção** : do ponto de vista da engenharia da
 
 TUBINO, D. F. **Manual de planejamento e controle da produção** . 2. ed. São Paulo: Atlas, 1999.
 
-|**Campus Curitiba – IFPR**|**Campus Curitiba – IFPR**|
+|**Campus Curitiba – IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: Matemática Financeira e Análise de Investimentos||
@@ -767,7 +767,7 @@ FLEURY, P. F.; WANKE, P.; FIGUEIREDO, K. F. (Orgs.). **Logística empresarial** 
 
 POZO, H. **Administração de recursos materiais e patrimoniais** . 2ª Ed. São Paulo: Atlas, 2003.
 
-|**Campus Curitiba – IFPR**|**Campus Curitiba – IFPR**|
+|**Campus Curitiba – IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: Administração Financeira||
@@ -878,7 +878,7 @@ RICHERS, Raimar. **O que é empresa** . São Paulo: Brasiliense, 2010.
 
 RUIZ, J. A. **Metodologia Cientifica** . 6 ed. São Paulo: Atlas, 2006.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: Língua Portuguesa I||
@@ -937,12 +937,12 @@ KOCH, Ingedore; TRAVAGLIA, Luiz Carlos. **Texto e Coerência** _._ São Paulo: C
 
 SCHWARZ, Roberto. **Ao vencedor as batatas** _._ São Paulo: Editora 34, 2003.
 
-||**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
-|---|---|---|---|---|
-|**Curso:**Administração|ão**Eixo Tecnoló**|||**Eixo Tecnológico:**Gestão e Negócios|
-|**Componente Curricular**: Lín|: Língua Estrangeira – Espanhol I||||
-|**Carga Horária**: 80||||**Período letivo:**1º ano|
-|**Ementa:**|||||
+||**Campus Curitiba do IFPR**|||
+|---|---|---|---|
+|**Curso:**Administração|ão**Eixo Tecnoló**||**Eixo Tecnológico:**Gestão e Negócios|
+|**Componente Curricular**: Lín|: Língua Estrangeira – Espanhol I|||
+|**Carga Horária**: 80|||**Período letivo:**1º ano|
+|**Ementa:**||||
 
 Língua Espanhola como Língua Estrangeira Moderna, variedade padrão e variação linguística. Introdução às quatro habilidades comunicativas em língua espanhola: expressão oral/escrita e compreensão oral/leitora. Prática de leitura, escrita e oralidade em língua espanhola. Prática de escuta de textos orais em língua espanhola.Prática de análise linguística em situações comunicativas. Leitura e análise de gêneros textuais diversos. Produção oral e escrita em língua
 
@@ -970,7 +970,7 @@ Dicionário Larousse. **Espanhol-Português** .  1.ª Ed. Larousse do Brasil: S�
 
 SANTOS Gargallo, Isabel e SANCHEZ Lobato, Jesús. **Vademecum para la Formación de Profesores** . 1.ª Ed. S.G.E.L: Madrid, 2004. WIDDOWSON, H.G. **O Ensino de Línguas para a Comunicação** . São Paulo: Pontes, 2005. ABRAHÃO, Maria Helena Vieira Abrahão. **Prática de Ensino de Língua Estrangeira: experiências e reflexões** . 1. ed. São Paulo: Pontes, 2004. RAMOS, Rosinda de Castro Guerra (org.). **Reflexão e ações no ensino-aprendizagem de línguas** . 1. ed. São Paulo: Mercado de Letras, 2003.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Administração|ão**Eixo Tecnológico:**Gestão e Negócios||
 |**Componente Curricular**: Língua Estrangeira – Espanhol II|||
@@ -1008,7 +1008,7 @@ ABRAHÃO, Maria Helena Vieira Abrahão. **Prática de Ensino de Língua Estrange
 
 RAMOS, Rosinda de Castro Guerra (org.). **Reflexão e ações no ensino-aprendizagem de línguas** . 1. ed. São Paulo: Mercado de Letras, 2003.
 
-||**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+||**Campus Curitiba do IFPR**||
 |---|---|---|
 |**Curso:**Administração|ão**Eixo Tecnológico:**Gestão e Negócios||
 |**Componente Curricular**: Lín|: Língua Estrangeira – Espanhol III||
@@ -1034,7 +1034,7 @@ Dicionário Larousse Espanhol-Português.  1.ª Ed. Larousse do Brasil: São Pau
 
 **Referência Complementar** SANTOS Gargallo, Isabel e SANCHEZ Lobato, Jesús. **Vademecum para la Formación de Profesores** . 1.ª Ed. S.G.E.L: Madrid, 2004. WIDDOWSON, H.G. **O Ensino de Línguas para a Comunicação** . São Paulo: Pontes, 2005. ABRAHÃO, Maria Helena Vieira Abrahão. **Prática de Ensino de Língua Estrangeira: experiências e reflexões** . 1. ed. São Paulo: Pontes, 2004. RAMOS, Rosinda de Castro Guerra (org.). **Reflexão e ações no ensino-aprendizagem de línguas** . 1. ed. São Paulo: Mercado de Letras, 2003.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: MATEMÁTICA I||
@@ -1241,7 +1241,7 @@ REIS, FILHO, D.A.: FERREIRA, J. ZENHA, C. **O século XX** - O tempo das crises,
 
 TREVIZAN, C. **China** : o renascimento do império. São Paulo: Companhia das Letras, 2007.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: HISTORIA I||
@@ -1361,7 +1361,7 @@ Silva, A. C. A África explicada aos meus filhos. Rio de Janeiro: Agir, 2008.
 
 Fausto, B. História Concisa do Brasil. São Paulo: EDUSP, 2010.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: Sociologia I||
@@ -1613,7 +1613,7 @@ LUCENA, R. F. **O esporte na cidade** : aspectos do esforço civilizador brasile
 
 PEREIRA NETTO, Nilo S. Mancala. In: FOLHAS. Secretária de Estado da Educação – SEED. Curitiba, Paraná, 2011.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|**Eixo Tecnológico:**Gestão e Negócios|
 
@@ -1645,7 +1645,7 @@ DAOLIO, Jocimar. **Futebol, cultura e sociedade** . Campinas: Autores Associados
 
 STIGGER, Marco Paulo. **Esporte, lazer e estilos de vida** : um estudo etnográfico. Campinas, SP: Autores Associados, 2002.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||||
 |---|---|---|---|
 |**Curso:**Administração|**Eixo Tecnológico:**Gestão e Negócios|||
 |**Componente Curricular**: ArteI||||
@@ -1723,7 +1723,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Administração|ão|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: ArteIII|||
@@ -1793,7 +1793,7 @@ CONNOR, Steven. **Cultura pós-moderna: introdução às teorias do contemporân
 
 SANTOS, Maria das Graças V. **Proença dos. História da arte** . 16.ed. São Paulo: Ática, 2001.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: Língua Inglesa||
@@ -1815,7 +1815,7 @@ KERNERMAN, L. **Password – English Dictionary for speakers of Portuguese** . M
 
 MURPHY, Raymond. **Essential Grammar in Use – Elementary-Pre-Intermediate** . CUP, 2007.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Biologia I||
@@ -1865,7 +1865,7 @@ MILLER, T. **Ciência Ambietal.** Cencage Learning: São Paulo, 2007.
 
 REINACH, F. **A longa marcha dos grilos canibais** : e outras crônicas sobre a vida no planeta Terra. 1. ed. São Paulo: Companhia Das Letras, 2010.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Administração|ão<br>**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular**: BIOLOGIA III||

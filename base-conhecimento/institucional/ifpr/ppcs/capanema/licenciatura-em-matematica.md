@@ -703,7 +703,7 @@ NÚCLEOS - CARGA HORÁRIA<br>Núcleo I 560 468<br>Núcleo II 1880 1572<br>Núcle
 
 ## **4.1.3 Componentes Optativos**
 
-|**OPTATIVAS**|**NÚCLEO FORMATIVO**|**NÚCLEO FORMATIVO**|**NÚCLEO FORMATIVO**|
+|**OPTATIVAS**|**NÚCLEO FORMATIVO**|||
 |---|---|---|---|
 ||**GERAL**|**APROFUN-**<br>**DAMENTO**|**COMPLE-**<br>**MENTAR**|
 |Modelagem Matemática||67 h||

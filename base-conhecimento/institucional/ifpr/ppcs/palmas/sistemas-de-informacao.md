@@ -1890,7 +1890,7 @@ Considerado o exposto neste item, o curso de Sistemas de Informação apresenta 
 
 Quadro 3: áreas temáticas, linhas e atividades ou ações de extensão do curso de Sistemas de Informação:
 
-|Quadro 3: áreas temáticas,<br>Sistemas de Informação:|linhas e atividades ou ações de extensão do curso d|linhas e atividades ou ações de extensão do curso d|
+|Quadro 3: áreas temáticas,<br>Sistemas de Informação:|linhas e atividades ou ações de extensão do curso d||
 |---|---|---|
 ||||
 |**COMPONENTE CURRICULAR**|**Projeto Comunitário I**||
@@ -1983,7 +1983,7 @@ b. Quatro títulos da bibliografia complementar, sendo dois exemplares para cada
 
 ## **PRIMEIRO PERÍODO**
 
-|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|
+|**PRIMEIRO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 ||||||
@@ -2225,7 +2225,7 @@ BOULOS, P. **Cálculo diferencial e integral** . v 1. São Paulo: Pearson Makron
 
 STEWART, J. **Cálculo** . v. 1. 5. ed. São Paulo: Pioneira Thomson Learning, 2006.
 
-|**Componente Curricular**<br>**Fundamentos da Administração**|**Componente Curricular**<br>**Fundamentos da Administração**|**Componente Curricular**<br>**Fundamentos da Administração**|**Componente Curricular**<br>**Fundamentos da Administração**|||
+|**Componente Curricular**<br>**Fundamentos da Administração**||||||
 |---|---|---|---|---|---|
 |**Aulas/semana:**<br>**4**||||||
 |**Carga horária total**<br>**Horas relógio**||**67**|**Horas aula**||**80**|
@@ -2797,7 +2797,7 @@ WAZLAWICK, Raul Sidnei. **Engenharia de software: conceitos e práticas** . Rio 
 
 ## **SÉTIMO PERÍODO**
 
-|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|
+|**SÉTIMO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 ||||||

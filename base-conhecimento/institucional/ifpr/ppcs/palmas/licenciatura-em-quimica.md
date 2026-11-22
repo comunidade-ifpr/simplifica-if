@@ -1238,17 +1238,17 @@ Nos quatro primeiros semestres, os acadêmicos cursarão a área básica comum, 
 
 **Quadro 2.** Processo formativo do curso de Graduação em Química a partir do quinto período: ⬤ Licenciatura em Química; ⬤ Bacharelado em Química
 
-|**5° PERÍODO**|**5° PERÍODO**|
+|**5° PERÍODO**||
 |---|---|
 |||
 |•<br>Filosofia da Educação<br>•<br>Didática<br>•<br>PCC I: A profissão docente e a área<br>de Ciências da Natureza<br>•<br>Equilíbrio de Fases e Soluções<br>•<br>Psicologia da Educação<br>•<br>Optativa<br>•<br>Estágio Supervisionado I|•<br>Cálculo II<br>•<br>Normas Técnicas<br>•<br>Operações Unitárias<br>•<br>Desenho Técnico<br>•<br>Gerenciamento de Resíduos<br>•<br>Equilíbrio de Fases e Soluções|
-|**6° PERÍODO**|**6° PERÍODO**|
+|**6° PERÍODO**||
 |||
 |•<br>Química Verde e Sustentabilidade<br>•<br>Sociologia da Educação<br>•<br>Bioquímica<br>•<br>PCC II: Metodologias de ensino de<br>Ciências e Química<br>•<br>Análises Químicas<br>•<br>Estágio Supervisionado II|•<br>Física III<br>•<br>Empreendedorismo<br>•<br>Fundamentos de Química Quântica<br>•<br>Introdução a Biotecnologia<br>•<br>Ciência dos Materiais<br>•<br>Química Verde e Sustentabilidade|
-|**7° PERÍODO**|**7° PERÍODO**|
+|**7° PERÍODO**||
 |||
 |•<br>Introdução a Radioatividade<br>•<br>Introdução a Libras<br>•<br>PCC III - História, Sociologia e<br>Epistemologia da Ciência para o<br>ensino de Ciências e Química<br>•<br>PCC IV - Didática e Teorias de<br>Aprendizagem em Ciências da Natureza<br>•<br>Políticas Educacionais<br>•<br>TCC I<br>•<br>Gestão Educacional e Currículo<br>•<br>Estágio Supervisionado III|•<br>Tecnologia de Polímeros<br>•<br>Física IV<br>•<br>Processos Químicos Inorgânicos<br>•<br>Optativa<br>•<br>Introdução a Radioatividade<br>•<br>Química da Madeira<br>•<br>Estágio|
-|**8° PERÍODO**|**8° PERÍODO**|
+|**8° PERÍODO**||
 |||
 |•<br>Projeto Interdisciplinar de Extensão II<br>•<br>Educação em Direitos Humanos e<br>Diversidade<br>•<br>PPC V: Práticas de ensino em Ciências<br>da Natureza<br>•<br>TCC II<br>•<br>Fundamentos Teóricos e<br>Metodológicos da Educação Especial e<br>Inclusiva<br>•<br>PCC VI: Práticas de Ensino<br>em Química<br>•<br>Estágio Supervisionado IV|•<br>Tecnologia de Alimentos<br>•<br>Gestão da Qualidade e Produtividade<br> <br>•<br>Química Bioinorgânica<br>•<br>Processos Químicos Orgânicos<br>•<br>Gestão de Pessoas|
 
@@ -1680,7 +1680,7 @@ Considerado o exposto neste item, o curso de Graduação em Química apresenta a
 
 92
 
-|**ÁREA TEMÁTICA**|4.Educação<br>5.Meio Ambiente<br>6.Saúde<br>7.Tecnologia e Produção|4.Educação<br>5.Meio Ambiente<br>6.Saúde<br>7.Tecnologia e Produção|
+|**ÁREA TEMÁTICA**|4.Educação<br>5.Meio Ambiente<br>6.Saúde<br>7.Tecnologia e Produção||
 |---|---|---|
 |**LINHA DE EXTENSÃO**|7. 2006–Desenvolvimento de Produtos<br>10. 2006–Desenvolvimento Tecnológico<br>13. 2006–Educação Profissional<br>17. 2006 - Divulgação Científica e Tecnológica<br>21. 2006- Formação de Professores,<br>28. 2006–Inovação Tecnológica<br>32. 2006 - Metodologias e Estratégias de Ensino/Aprendizagem<br>40.2006 - Questões Ambientais,<br>41.2006 - Recursos Hídricos<br>42.2006 - Resíduos Sólidos<br>47. 2006 - Segurança Alimentar e Nutricional<br>52. 2006 - Uso de Drogas e Dependência Química<br>53. 2006 - Desenvolvimento Humano||
 |**ATIVIDADE/AÇÃO**|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>4.5Prestação de serviços||
@@ -1698,7 +1698,7 @@ Considerado o exposto neste item, o curso de Graduação em Química apresenta a
 
 93
 
-|**COMPONENTE**<br>**CURRICULAR**|**Química Analítica I**|**Química Analítica I**|
+|**COMPONENTE**<br>**CURRICULAR**|**Química Analítica I**||
 |---|---|---|
 |**PERÍODO DE OFERTA**|**3°**||
 |**CARGA HORÁRIA**|**TOTAL**|**EXTENSÃO**|
@@ -1724,7 +1724,7 @@ Considerado o exposto neste item, o curso de Graduação em Química apresenta a
 
 94
 
-|**ÁREA TEMÁTICA**|4.Educação<br>5.Meio Ambiente<br>6.Saúde|4.Educação<br>5.Meio Ambiente<br>6.Saúde|
+|**ÁREA TEMÁTICA**|4.Educação<br>5.Meio Ambiente<br>6.Saúde||
 |---|---|---|
 |**LINHA DE EXTENSÃO**|32. 2006 - Metodologias e Estratégias de Ensino/Aprendizagem<br>40. 2006 - Questões Ambientais<br>53. 2006 - Desenvolvimento Humano||
 |**ATIVIDADE/AÇÃO**|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>4.5Prestação de serviços||
@@ -1748,7 +1748,7 @@ Considerado o exposto neste item, o curso de Graduação em Química apresenta a
 
 95
 
-|**ATIVIDADE/AÇÃO**|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>4.5Prestação de serviços|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>4.5Prestação de serviços|
+|**ATIVIDADE/AÇÃO**|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>4.5Prestação de serviços||
 |---|---|---|
 ||4.6||
 ||||
@@ -1769,7 +1769,7 @@ Considerado o exposto neste item, o curso de Graduação em Química apresenta a
 |**ÁREA TEMÁTICA**|5. Meio Ambiente<br>6. Saúde||
 |**LINHA DE EXTENSÃO**|40. 2006 - Questões Ambientais||
 
-|**ATIVIDADE/AÇÃO**|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>Prestação de serviços|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>Prestação de serviços|
+|**ATIVIDADE/AÇÃO**|4.1Programa<br>4.2Projeto<br>4.3Curso<br>4.4Evento<br>Prestação de serviços||
 |---|---|---|
 ||||
 ||||
@@ -2045,7 +2045,7 @@ Artigos do **Journal of Chemical**
 
 114
 
-|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|
+|**SEGUNDO PERÍODO**||
 |---|---|
 |**COMPONENTE CURRICULAR**<br>**QUÍMICA ORGÂNICA I**||
 |PRÉ-REQUISITOS:<br>Elementos Matemáticos para Química<br>Química Geral I<br>Laboratório de Química||
@@ -2186,7 +2186,7 @@ INSTITUTO FEDERAL DO PARANÁ. Conselho Superior (CONSUP). **Resolução n° 02, 
 
 120
 
-|**TERCEIRO PERÍODO**|**TERCEIRO PERÍODO**|
+|**TERCEIRO PERÍODO**||
 |---|---|
 |**COMPONENTE CURRICULAR**<br>**QUÍMICA INORGÂNICA I**||
 |PRÉ-REQUISITOS:<br>Química Geral II<br>Laboratório de Química||
@@ -2213,7 +2213,7 @@ GONÇALVES, J. C. S. **Tabela atômica: um estudo completo da tabela periódica*
 
 JOLLY, W. L. **A química dos não metais** . São Paulo: Edgard Blücher, 1966. SHREVE, R. N. ; BRINK JR. J. A. **Indústria de Processos Químicos** . 4.ed. Rio de Janeiro: Editora Guanabara Koogan, 1997.
 
-|COSTA, J. A.**Química inorgânica: (estudo descritivo do sistema periódico,**<br>**gases nobres, hidrogênio, não metais e semimetais)**. 3 ed. São Paulo: Nobel,<br>1965. COTTON, F. A; WILKINSON, G.**Química inorgânica**. Rio de Janeiro: LTC,<br>1978. FARIAS, R. F. de.**Práticas de química inorgânica**. 3. ed rev. Campinas:<br>Átomo, 2010.<br>GONÇALVES, J. C. S.**Tabela atômica: um estudo completo da tabela**<br>**periódica**. Curitiba: Atômica, 2001.<br>JOLLY, W. L.**A química dos não metais**. São Paulo: Edgard Blücher, 1966.<br>SHREVE, R. N. ; BRINK JR. J. A.**Indústria de Processos Químicos**. 4.ed. Rio de<br>Janeiro: Editora Guanabara Koogan, 1997.|COSTA, J. A.**Química inorgânica: (estudo descritivo do sistema periódico,**<br>**gases nobres, hidrogênio, não metais e semimetais)**. 3 ed. São Paulo: Nobel,<br>1965. COTTON, F. A; WILKINSON, G.**Química inorgânica**. Rio de Janeiro: LTC,<br>1978. FARIAS, R. F. de.**Práticas de química inorgânica**. 3. ed rev. Campinas:<br>Átomo, 2010.<br>GONÇALVES, J. C. S.**Tabela atômica: um estudo completo da tabela**<br>**periódica**. Curitiba: Atômica, 2001.<br>JOLLY, W. L.**A química dos não metais**. São Paulo: Edgard Blücher, 1966.<br>SHREVE, R. N. ; BRINK JR. J. A.**Indústria de Processos Químicos**. 4.ed. Rio de<br>Janeiro: Editora Guanabara Koogan, 1997.|
+|COSTA, J. A.**Química inorgânica: (estudo descritivo do sistema periódico,**<br>**gases nobres, hidrogênio, não metais e semimetais)**. 3 ed. São Paulo: Nobel,<br>1965. COTTON, F. A; WILKINSON, G.**Química inorgânica**. Rio de Janeiro: LTC,<br>1978. FARIAS, R. F. de.**Práticas de química inorgânica**. 3. ed rev. Campinas:<br>Átomo, 2010.<br>GONÇALVES, J. C. S.**Tabela atômica: um estudo completo da tabela**<br>**periódica**. Curitiba: Atômica, 2001.<br>JOLLY, W. L.**A química dos não metais**. São Paulo: Edgard Blücher, 1966.<br>SHREVE, R. N. ; BRINK JR. J. A.**Indústria de Processos Químicos**. 4.ed. Rio de<br>Janeiro: Editora Guanabara Koogan, 1997.||
 |---|---|
 |||
 |**COMPONENTE CURRICULAR**|**EQUILÍBRIO QUÍMICO E EQUILÍBRIO**|
@@ -2250,7 +2250,7 @@ JOLLY, W. L. **A química dos não metais** . São Paulo: Edgard Blücher, 1966.
 ||serviços.|
 ||BIBLIOGRAFIA BÁSICA|
 
-|**Extensão:**As atividades curriculares de extensão compreendem o desenvolvimento<br>de atividades vinculadas a metodologias e estratégias de Ensino/Aprendizagem com<br>ênfase na parte teórica e em questões tecnológicas e ambientais. As ações<br>extensionistas podem compreender: programa, projeto, curso, evento, prestação de<br>serviços.|**Extensão:**As atividades curriculares de extensão compreendem o desenvolvimento<br>de atividades vinculadas a metodologias e estratégias de Ensino/Aprendizagem com<br>ênfase na parte teórica e em questões tecnológicas e ambientais. As ações<br>extensionistas podem compreender: programa, projeto, curso, evento, prestação de<br>serviços.|
+|**Extensão:**As atividades curriculares de extensão compreendem o desenvolvimento<br>de atividades vinculadas a metodologias e estratégias de Ensino/Aprendizagem com<br>ênfase na parte teórica e em questões tecnológicas e ambientais. As ações<br>extensionistas podem compreender: programa, projeto, curso, evento, prestação de<br>serviços.||
 |---|---|
 |BIBLIOGRAFIA BÁSICA||
 |HALLIDAYD.; RESNICK R.;WALKER J.**Fundamentos**<br>**de Física**. 9. ed. LTC, 2012.||
@@ -2303,7 +2303,7 @@ CONTADOR, C. R. **Projetos Sociais: avaliação e prática** . 4. ed. São Paulo
 
 126
 
-|**QUARTO PERÍODO**|**QUARTO PERÍODO**|**QUARTO PERÍODO**|
+|**QUARTO PERÍODO**|||
 |---|---|---|
 ||||
 |**COMPONENTE**|**FUNDAMENTOS DE CINÉTICA QUÍMICA E**||
@@ -2532,7 +2532,7 @@ BIANCHI, A. C. de M. et al. **Manual de orientação: estágio supervisionado** 
 
 141
 
-|**SEXTO PERÍODO**|**SEXTO PERÍODO**|
+|**SEXTO PERÍODO**||
 |---|---|
 |||
 |**COMPONENTE**|**QUÍMICA VERDE E**|
@@ -2658,7 +2658,7 @@ AULER, D. **Enfoque ciência-tecnologia-sociedade: pressupostos para o contexto 
 
 **esgotos** . Belo Horizonte: UFMG, 3. ed. 2005. 1 v VASCONCELOS, V. G. **Bromatologia** . Editora Pearson 2018
 
-|**esgotos**. Belo Horizonte: UFMG, 3. ed. 2005. 1 v<br>VASCONCELOS,V. G.**Bromatologia**. Editora Pearson 2018|**esgotos**. Belo Horizonte: UFMG, 3. ed. 2005. 1 v<br>VASCONCELOS,V. G.**Bromatologia**. Editora Pearson 2018|
+|**esgotos**. Belo Horizonte: UFMG, 3. ed. 2005. 1 v<br>VASCONCELOS,V. G.**Bromatologia**. Editora Pearson 2018||
 |---|---|
 |||
 |**COMPONENTE CURRICULAR**|**ESTÁGIO SUPERVISIONADO II**|
@@ -2851,7 +2851,7 @@ JARMENDIA, A. M. FERRARI, S. S. U. **Formação de professores e estágios super
 
 157
 
-|**OITAVO PERÍODO**|**OITAVO PERÍODO**|
+|**OITAVO PERÍODO**||
 |---|---|
 |||
 ||**PROJETO INTERDISCIPLINAR DE**|
@@ -3052,7 +3052,7 @@ XAVIER, L.; BRANDÃO, D.; CARVALHO, T. **Gestão de Resíduos Eletroeletrônicos
 
 ZVEIBIL, Victor Zular (coord). **Manual de Gerenciamento Integrado de resíduos sólidos** . Rio de Janeiro, RJ: IBAM, 2001.
 
-||**COMPONENTE CURRICULAR**<br>**EQUILÍBRIO DE FASES E SOLUÇÕES**|**COMPONENTE CURRICULAR**<br>**EQUILÍBRIO DE FASES E SOLUÇÕES**|
+||**COMPONENTE CURRICULAR**<br>**EQUILÍBRIO DE FASES E SOLUÇÕES**||
 |---|---|---|
 ||Carga horária (aula): 80h<br>Carga horária: (relógio): 67h<br>Carga horária Teórica: 40h<br>Carga horária Prática: 40h<br>Carga horária Extensão: --||
 ||PRÉ-REQUISITO:||
@@ -3077,7 +3077,7 @@ BALL, D.W.; Físico-Química, 1ª Ed., Editora Mc Graw Hill, 2005. METZ, Clyde R
 
 174
 
-|**SEXTO PERÍODO**|**SEXTO PERÍODO**|
+|**SEXTO PERÍODO**||
 |---|---|
 |||
 |**COMPONENTE CURRICULAR**|**FÍSICA III**|
@@ -3125,7 +3125,7 @@ GAZZOLA, A.L.A.; ALMEIDA, S.G. (Org.), **Universidade; Cooperação Internaciona
 
 SALIM, C. S.; SILVA, N. C. **Introdução ao empreendedorismo: despertando a atitude empreendedora.** Rio de Janeiro: Elsevier, 2010. 246 p. (Empreendedorismo). TIDD, J.; BESSANT, J.; PAVITT, Keith. **Gestão da Inovação.** Porto Alegre: Bookman, 2008.
 
-|BIBLIOGRAFIA COMPLEMENTAR|BIBLIOGRAFIA COMPLEMENTAR|
+|BIBLIOGRAFIA COMPLEMENTAR||
 |---|---|
 |BERNARDI, L. A.**Manual de empreendedorismo e gestão: Fundamentos,**<br>**Estratégias e Dinâmicas**. São Paulo: Atlas, 2012.<br>CHÉR, R.**Empreendedorismo na veia: um aprendizado constante**. Rio de Janeiro:<br>SEBRAE, 2008.<br>CONTADOR, C. R.**Projetos Sociais: avaliação e prática**. 4. ed. São Paulo: Atlas,<br>2000.<br>GAZZOLA, A.L.A.; ALMEIDA, S.G. (Org.),**Universidade; Cooperação Internacional e**<br>**diversidade**. Belo Horizonte: Editora UFMG, 2006.<br>SALIM, C. S.; SILVA, N. C.**Introdução ao empreendedorismo: despertando a**<br>**atitude empreendedora.**Rio de Janeiro: Elsevier, 2010. 246 p. (Empreendedorismo).<br>TIDD, J.; BESSANT, J.; PAVITT, Keith.**Gestão da Inovação.**Porto Alegre: Bookman,<br>2008.||
 |||
@@ -3147,7 +3147,7 @@ GASIOROWICZ, S.; VIDEIRA, A. L. L. Física quântica. Rio de Janeiro: Guanabara 
 
 SAKURAI, J. J. **Advanced quantum mechanics** . Massachusetts: Addison-Wesley publisching, 1967. xii, 336 p. (Addison - Wesley series advanced physics). SZABO, A.; OSTLUND, N. S. **Modern Quantum Chemistry: Introduction to Advanced Electronic Structure Theory** ; MacMillan Publishing Co., Inc.: 866 Third Av., New York, N. Y., 10022, 1982.
 
-|BUNGE, A. V.**Introdução à química quântica**. São Paulo: Blucher, 1977. 410 p.<br>DIAS, J. J. C. T.**Química quântica**. Lisboa: Fundação Calouste Gulbenkian, 1982.<br>EISBERG, R. R.,**Física Quântica: Átomos, Moléculas, Sólidos, Núcleos e**<br>**Partículas**, 7. Ed., Editora Compus, Rio de Janeiro, 1988.<br>GASIOROWICZ, S.; VIDEIRA, A. L. L. Física quântica. Rio de Janeiro: Guanabara<br>Dois, 1979, 1974.<br>SAKURAI, J. J.**Advanced quantum mechanics**. Massachusetts: Addison-Wesley<br>publisching, 1967. xii, 336 p. (Addison - Wesley series advanced physics).<br>SZABO, A.; OSTLUND, N. S. **Modern Quantum Chemistry: Introduction to**<br>**Advanced Electronic Structure Theory**; MacMillan Publishing Co., Inc.: 866 Third<br>Av., New York, N. Y., 10022, 1982.|BUNGE, A. V.**Introdução à química quântica**. São Paulo: Blucher, 1977. 410 p.<br>DIAS, J. J. C. T.**Química quântica**. Lisboa: Fundação Calouste Gulbenkian, 1982.<br>EISBERG, R. R.,**Física Quântica: Átomos, Moléculas, Sólidos, Núcleos e**<br>**Partículas**, 7. Ed., Editora Compus, Rio de Janeiro, 1988.<br>GASIOROWICZ, S.; VIDEIRA, A. L. L. Física quântica. Rio de Janeiro: Guanabara<br>Dois, 1979, 1974.<br>SAKURAI, J. J.**Advanced quantum mechanics**. Massachusetts: Addison-Wesley<br>publisching, 1967. xii, 336 p. (Addison - Wesley series advanced physics).<br>SZABO, A.; OSTLUND, N. S. **Modern Quantum Chemistry: Introduction to**<br>**Advanced Electronic Structure Theory**; MacMillan Publishing Co., Inc.: 866 Third<br>Av., New York, N. Y., 10022, 1982.|
+|BUNGE, A. V.**Introdução à química quântica**. São Paulo: Blucher, 1977. 410 p.<br>DIAS, J. J. C. T.**Química quântica**. Lisboa: Fundação Calouste Gulbenkian, 1982.<br>EISBERG, R. R.,**Física Quântica: Átomos, Moléculas, Sólidos, Núcleos e**<br>**Partículas**, 7. Ed., Editora Compus, Rio de Janeiro, 1988.<br>GASIOROWICZ, S.; VIDEIRA, A. L. L. Física quântica. Rio de Janeiro: Guanabara<br>Dois, 1979, 1974.<br>SAKURAI, J. J.**Advanced quantum mechanics**. Massachusetts: Addison-Wesley<br>publisching, 1967. xii, 336 p. (Addison - Wesley series advanced physics).<br>SZABO, A.; OSTLUND, N. S. **Modern Quantum Chemistry: Introduction to**<br>**Advanced Electronic Structure Theory**; MacMillan Publishing Co., Inc.: 866 Third<br>Av., New York, N. Y., 10022, 1982.||
 |---|---|
 |||
 |**COMPONENTE CURRICULAR**|**INTRODUÇÃO A BIOTECNOLOGIA**|
@@ -3357,7 +3357,7 @@ TAHUATA, L,; SALATI, I.P.A.; DI PRINZIO, R.; DI PRINZIO, A. R. Radioproteção e
 
 187
 
-|**OITAVO PERÍODO**|**OITAVO PERÍODO**|
+|**OITAVO PERÍODO**||
 |---|---|
 |||
 |**COMPONENTE CURRICULAR**|**TECNOLOGIA DE ALIMENTOS**|
@@ -5230,7 +5230,7 @@ Está prevista a contratação de um professor licenciado em Química (2023-2), 
 ||1o( 2 )<br>2o( 2)<br>3o( 2 )|1o(2)<br>2o(2)<br>3o(2)|1o(2)<br>2o(2)<br>3o(2)|1o(2)<br>2o(2)<br>3o(2)|1o(2)<br>2o(2)<br>3o(2)|1o(2)<br>2o(2)<br>3o(2)|1o(2)<br>2o(2)<br>3o(2)|1o(2)<br>2o(2)<br>3o(2)|
 |**Técnico Jurídico**|||||||||
 ||||||||||
-||1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|1o(2)<br>2o(4)<br>3o(2)|
+||1o(2)<br>2o(4)<br>3o(2)||||||||
 |**Técnico em**|||||||||
 |**Alimentos**|||||||||
 ||||||||||

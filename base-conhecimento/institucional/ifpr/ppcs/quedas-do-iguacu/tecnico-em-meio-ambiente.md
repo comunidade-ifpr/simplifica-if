@@ -95,7 +95,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **RESOLUÇÃO DE CRIAÇÃO:**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|André Luiz de Souza Celarino|
@@ -881,9 +881,9 @@ Dessa forma, permeando todo o currículo e atendendo a legislação vigente est�
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|Educação alimentar e nutricional|||||
-|---|---|---|---|---|
-|**Carga horária total**|**24h**|**12h**|**12h**|**48h**|
+|Educação alimentar e nutricional||||
+|---|---|---|---|
+|**Carga horária total**|**24h**|**12h**|**48h**|
 
 40
 
@@ -895,7 +895,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **Matriz curricular do Curso Técnico em Meio Ambiente, integrado ao ensino médio Ano de implantação: 2020**
 
-|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|
+|**Matriz curricular do Curso Técnico em Meio Ambiente,**<br>**integrado ao ensino médio**|||||||
 |---|---|---|---|---|---|---|
 |**Ano de implantação: 2020**|||||||
 |**Componente Curricular**|**1º**<br>**ano**<br>**(h/r)**|**2º**<br>**ano**<br>**(h/r)**|**3º**<br>**ano**<br>**h/r)**|**Nº aula**<br>**semanal**<br>**(50 min)**|**Total**<br>**hora-aula**|**Total**<br>**hora-relógio**|
@@ -971,7 +971,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 **6.15.1 EMENTÁRIO - 1° ANO**
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**||
 |---|---|
 |**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Arte I**||
@@ -1073,7 +1073,7 @@ Consoante com a Lei nº 9.795/1999 e artigos 5º e 6º do Decreto nº 4.281/2002
 
 1. CHAUÍ, M. S. **Convite à filosofia.** 14. ed. São Paulo **:** Ática, 2015. 2. GALLO, S. (Org.). **Ética e cidadania:** caminhos da filosofia. 20. ed. Campinas **:** Papirus, 2012. 3. MAQUIAVEL, N. **O príncipe.** São Paulo **:** Penguin, 2010. **Bibliografia Complementar:** 1. CORTELLA, M. S.; BARROS FILHO, C. **Ética e vergonha na cara** !. Campinas: Papirus 7 Mares, 2014. 2. GAARDER, J. **O mundo de Sofia:** romance da história da filosofia. São Paulo **:** Companhia das Letras, 2012. 3. MARX, K; ENGELS, F. **A ideologia alemã.** São Paulo. Expressão Popular, 2009. 4. PRADO JÚNIOR, Caio. **O que é filosofia.** São Paulo **:** Brasiliense, 1981.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**||
 |---|---|
 |**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
 
@@ -1083,7 +1083,7 @@ Consoante com a Lei nº 9.795/1999 e artigos 5º e 6º do Decreto nº 4.281/2002
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Componente Curricular: Física I**|**Componente Curricular: Física I**|
+|**Componente Curricular: Física I**||
 |---|---|
 |**Carga Horária (hora-aula):**80h|**Período Letivo:**1° ano|
 |**Ementa:**||
@@ -1097,7 +1097,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 3. KAZUHITO, Yamamoto; FUKE, Luiz Felipe. **Física para o ensino médio 1** : Mecânica. 4. ed. São Paulo: Editora Saraiva, 2016. ISBN 978-85-472-0573-7. **Bibliografia Complementar:** 1. FEYERABEND, Paul. **A ciência em uma sociedade livre** . São Paulo: Editora UNESP, 2011. ISBN 978-85-393-0145-4. 2. FEYNMANN, Richard. **Física em 12 lições fáceis e não tão fáceis** . 2. ed. Rio de Janeiro: Nova Fronteira, 2017. 3. FEYNMANN, Richard. **Lições de Física de Feynmann** . Porto Alegre: Bookman. 2008. 4 Volumes. ISBN 978-85-778-0321-7. 4. ROONEY, Anne. **A história da Física** . São Paulo: M.Books do Brasil, 2013. ISBN 978-85-768-0217-4.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**||
 |---|---|
 |**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
 
@@ -1155,7 +1155,7 @@ Os temas transversais podem ser abordados em todo o conjunto dos conteúdos, de 
 
 4. PINSKY, J.. **A escravidão no Brasil** . São Paulo: Contexto, 2015.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**||
 |---|---|
 |**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Língua Estrangeira Moderna I - Espanhol**||
@@ -1270,7 +1270,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
    4. WAGNER, E. et al. **Progressões e Matemática Financeira.** 6. ed. Rio de Janeiro: SBM, 2015.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Química I**|||
@@ -1394,7 +1394,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Educação Ambiental**|||
@@ -1430,7 +1430,7 @@ De acordo com os temas elencados nesta ementa, os temas transversais que mais se
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Segurança no Trabalho, Saúde e Meio Ambiente**|||
@@ -1454,7 +1454,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **6.15.2 EMENTÁRIO - 2° ANO**
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**||
 |---|---|
 |**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Arte II**||
@@ -1631,7 +1631,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Componente Curricular: História II**|**Componente Curricular: História II**|
+|**Componente Curricular: História II**||
 |---|---|
 |**Carga Horária (hora-aula):**40 h|**Período Letivo:**2° ano|
 |**Ementa:**||
@@ -1757,7 +1757,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 4. ROQUE, T. **História da Matemática** : Uma visão crítica, desfazendo mitos e lendas. 1. ed. Rio de Janeiro: Zahar, 2012.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Química II**|||
@@ -1854,7 +1854,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **Componente Curricular: Hidrologia e manejo de bacias hidrográficas**
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Hidrologia e manejo de bacias hidrográficas**|||
@@ -2041,7 +2041,7 @@ Os temas transversais serão abordados ao longo do desenvolvimento dos conteúdo
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Curso:**Técnico em Meio Ambiente|**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
+|**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |---|---|---|
 |**Componente Curricular: Filosofia II**|||
 |**Carga Horária (hora-aula):**40h|**Período Letivo:**3° ano||
@@ -2076,7 +2076,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Componente Curricular: Física III**|**Componente Curricular: Física III**|
+|**Componente Curricular: Física III**||
 |---|---|
 |**Carga Horária (hora-aula):**80h|**Período Letivo:**3° ano|
 |**Ementa:**||
@@ -2212,7 +2212,7 @@ comunicativas nas práticas sociais. Elementos composicionais, formais e estrutu
 
 **Bibliografia Básica:** 1. BOSI, A. **História concisa da literatura brasileira** . 48. ed. São Paulo: Cultrix, 2012. 2. CASTILHO, Ataliba T. de. **Nova Gramática do Português Brasileiro** . São Paulo: Contexto, 2010. 3. MARCUSCHI. L. A. **Produção Textual, Análise de Gêneros e Compreensão.** São Paulo: Parábola Editorial, 2008. **Bibliografia Complementar:** 1. KOCH, Ingedore Vilaça & Vanda Maria ELIAS. **Ler e escrever. Estratégias de produção textual.** São Paulo: Editora Contexto, 2009. 2. KLEIMAN, Ângela B. **Oficina de Leitura** : teoria e prática. Campinas: Pontes, 1999. 3. ROJO, R; MOURA, E. (Org). **Multiletramentos na escola** . São Paulo: Parábola, 2012. 4. SARMENTO, L. L. **Oficina de Redação.** 3. ed. São Paulo: Moderna, 2006.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**||
 |---|---|
 |**Curso:**Técnico em Meio Ambiente|**Eixo Tecnológico:**Ambiente e Saúde|
 
@@ -2276,7 +2276,7 @@ Serão abordados os seguintes temas transversais: Educação Ambiental, com foco
 
 ## **CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Sociologia II**|||
@@ -2505,7 +2505,7 @@ O componente curricular irá dialogar e abordar a temática transversal da Educa
 
 4. THOMAZ, Plínio. **Poluição difusa** . São Paulo: Navegar editora, 2006.
 
-|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|
+|**CAMPUS AVANÇADO QUEDAS DO IGUAÇU - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Meio Ambiente||**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular: Projeto Final Interdisciplinar**|||

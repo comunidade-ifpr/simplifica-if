@@ -95,7 +95,8 @@ function cargaHoraria(texto: string): number | null {
 }
 
 function ementa(texto: string): string {
-  const m = search(r`ementa:?\s*(.+?)(?=bibliografia|$)`, texto, { ignoreCase: true, dotAll: true });
+  // O rótulo pode vir sozinho no primeiro parágrafo da célula ("EMENTA<br>texto").
+  const m = search(r`ementa:?\s*(?:<br>\s*)*(.+?)(?=bibliografia|$)`, texto, { ignoreCase: true, dotAll: true });
   if (!m) return "";
   return aparar(sub(r`[ \t]+`, " ", sub(r`\n{3,}`, "\n\n", aparar(m[1]!))));
 }

@@ -696,7 +696,7 @@ Resolução nº 54/2011, alterada pela Resolução nº 71/2022. Ainda, conforme 
 
 ## **6.5 MATRIZ CURRICULAR**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||
 ||_Campus_Avançado Barracão||||
@@ -841,7 +841,7 @@ COMPONENTE CURRICULAR: Língua Estrangeira Moderna - Inglês I CARGA HORÁRIA: H
 ||GOMBRICH, E. H.<br>**Arte e ilusão**<br>. 4. ed. São Paulo: Martins Fontes, 2007.||
 ||OSTROWER,Fayga.<br>**Criatividade eprocessos de criação**<br>. 30. ed. Petrópolis: Vozes,2014.||
 
-|COMPONENTE CURRICULAR:<br>Educação Física I|COMPONENTE CURRICULAR:<br>Educação Física I|COMPONENTE CURRICULAR:<br>Educação Física I||
+|COMPONENTE CURRICULAR:<br>Educação Física I||||
 |---|---|---|---|
 |CARGA HORÁRIA:<br>80 horas-aula (80|horas-relógio)|||
 |EMENTA: Introdução à Educação Física; Estudo||e prática das diversas manifestações da||
@@ -882,7 +882,7 @@ COMPONENTE CURRICULAR: Língua Estrangeira Moderna - Inglês I CARGA HORÁRIA: H
 |SEIJAS  ALBIR, Guillermo.<br>**Anatomia e alongamentos  essenciais  para a corrida:**<br>guia||
 |completo com 100 exercícios de flexibilidade. Barueri, SP: Manole, 2015.||
 
-|COMPONENTE CURRICULAR: Geografia I|COMPONENTE CURRICULAR: Geografia I||
+|COMPONENTE CURRICULAR: Geografia I|||
 |---|---|---|
 |CARGA HORÁRIA: 4<br>0 horas-aula (40 horas-relógio)|||
 |EMENTA:<br>Conceitos e categorias de análise da Geografia; Noções de Astronomia; Noções|||
@@ -1149,7 +1149,7 @@ TRAVAGLIA, Luiz Carlos. **Gramática** : ensino plural. 5. ed. São Paulo: Corte
 
 COMPONENTE CURRICULAR: Língua Estrangeira Moderna - Espanhol I
 
-|CARGA HORÁRIA:<br>4<br>0 horas-aula (40 horas-relógio)|CARGA HORÁRIA:<br>4<br>0 horas-aula (40 horas-relógio)|||
+|CARGA HORÁRIA:<br>4<br>0 horas-aula (40 horas-relógio)||||
 |---|---|---|---|
 |EMENTA: Introdução ao processo de ensino-aprendizagem da||língua espanhola a partir das||
 |habilidades de produção e compreensão oral e escrita, com ênfase na oralidade, nos aspectos||||
@@ -1291,7 +1291,7 @@ EMENTA:  O desenvolvimento da Época Moderna: definição do conceito e contexto
 |Saraiva, 2016.||
 |HESSEN, Johannes.**Teoria do conhecimento**. 3. ed. São Paulo: Martins Fontes, 2012.||
 
-|SANDEL, Michael J.**Justiça:**o que é fazer a coisa certa. Rio de Janeiro: Civilização Brasileira,|SANDEL, Michael J.**Justiça:**o que é fazer a coisa certa. Rio de Janeiro: Civilização Brasileira,||
+|SANDEL, Michael J.**Justiça:**o que é fazer a coisa certa. Rio de Janeiro: Civilização Brasileira,|||
 |---|---|---|
 |2021.|||
 |SANDEL, Michael J.**O que o dinheiro não compra:**os limites morais do mercado. 16. ed. Rio|||
@@ -1361,7 +1361,7 @@ WALKER, Jearl. **O circo voador da física** . 2. ed. Rio de Janeiro: LTC, 2008.
 
 COMPONENTE CURRICULAR: Química I CARGA HORÁRIA: 40 horas-aula (40 horas-relógio) EMENTA: Introdução  ao  estudo  da  Química.  História  da  Química.  Estados  físicos  e propriedades da matéria. Substâncias puras e misturas. Separação de misturas. Fenômenos físicos e químicos. Reações químicas. Balanceamento de reações químicas.  Transformação química na natureza e no sistema produtivo. Estrutura atômica. Elementos químicos, íons e moléculas.  Modelos  atômicos:  Dalton,  Thomson,  Rutherford  e  Bohr.  Tabela  periódica: propriedades  periódicas  e  aperiódicas.  Ligações  químicas:  iônica,  covalente  e  metálica. Geometria molecular. Polaridade das ligações e moléculas. Solubilidade. Forças intermoleculares. Efeitos das interações intermoleculares. BIBLIOGRAFIA BÁSICA: LISBOA, Julio Cezar Foschini _et al._ **Química** . 2. ed. São Paulo: Edições SM, 2014. 3 v. (Ser protagonista). OLIVEIRA, André Fernando de; SILVA, Astréa F. de Souza; TENAN, Mário Alberto. **Redação de relatórios para químicos** . São Carlos: EDUFSCAR, 2012. SILVA,  Elaine  Lima. **Química  aplicada:** estrutura  dos  átomos  e  funções  inorgânicas  e orgânicas. 2. ed. São Paulo: Érica, 2014. ZECA, Júdse Luciano Chiqueleto. **Fundamentos de química geral.** Curitiba: Appris, 2021. (Coleção ensino de ciências). BIBLIOGRAFIA COMPLEMENTAR: BAIRD, Colin. **Química ambiental** . 2. ed. Porto Alegre: Bookman, 2002. GONICK, Larry; CRIDDLE, Craig. **Química geral em quadrinhos.** São Paulo: Blucher, 2014. GREENBERG, Arthur. **Uma breve história da química:** da alquimia às ciências moleculares modernas. São Paulo: Blucher, 2009. MOORE, John T. **Química para leigos** . Rio de Janeiro: Alta Books, 2008. (Para leigos). ROONEY, Anne. **A história da química:** da tabela periódica à nanotecnologia. São Paulo: M. Books do Brasil, 2019.
 
-|COMPONENTE CURRICULAR: Biologia I|COMPONENTE CURRICULAR: Biologia I|||||
+|COMPONENTE CURRICULAR: Biologia I||||||
 |---|---|---|---|---|---|
 |CARGA HORÁRIA:<br>4<br>0 horas-aula (40|horas-relógio)|||||
 |EMENTA: Composição química  dos|seres  vivos:||água,  sais  minerais,  glicídeos,  lipídeos,|||
@@ -1449,7 +1449,7 @@ COMPONENTE CURRICULAR: Metodologia Científica e da Pesquisa Aplicada à Adminis
 
 temáticas de Administração, orientado pelo professor da disciplina. BIBLIOGRAFIA BÁSICA: ANDRADE, Maria Margarida de. **Introdução à metodologia do trabalho científico** . 10. ed. São Paulo: Atlas, 2010. GIL, Antônio Carlos. **Métodos e técnicas de pesquisa social** . 7. ed. São Paulo: Atlas, 2019. GIL, Antonio Carlos. **Como elaborar projetos de pesquisa.** 6. ed. São Paulo: Atlas, 2017. MARCONI, Marina  de Andrade;  LAKATOS, Eva Maria. **Fundamentos  de metodologia científica** . 8. ed., atual. São Paulo: Atlas, 2017. BIBLIOGRAFIA COMPLEMENTAR: CASTRO, Evandra Campos _et al_ . **Manual de normas para apresentação de trabalhos acadêmicos do Instituto Federal do Paraná** : padrão ABNT. Curitiba: IFPR, 2023. E-book (101 p.). Disponível em: https://editora.ifpr.edu.br/index.php/aeditora/catalog/view/72/34/314. Acesso em: 28 fev. 2023. DEMO, Pedro. **Metodologia do conhecimento científico** . São Paulo: Atlas, 2000. KÖCHE, José Carlos. **Fundamentos de metodologia científica:** teoria da ciência e iniciação à pesquisa. 34. ed. Petrópolis: Vozes, 2015. SEVERINO, Antônio Joaquim. **Metodologia do trabalho científico** . 23. ed., rev. e atual. São Paulo: Cortez, 2007. YIN, Robert. **Estudo de caso:** planejamento e métodos. 5. ed. Porto Alegre: Bookman, 2015.
 
-|COMPONENTE CURRICULAR<br>: Língua Portuguesa e Literatura Brasileira III|COMPONENTE CURRICULAR<br>: Língua Portuguesa e Literatura Brasileira III|
+|COMPONENTE CURRICULAR<br>: Língua Portuguesa e Literatura Brasileira III||
 |---|---|
 |CARGA HORÁRIA:<br>4<br>0 horas-aula (40 horas-relógio)||
 |EMENTA: Os  mecanismos  utilizados  na  construção,  na  leitura,  na  compreensão  e  na||
@@ -1578,7 +1578,7 @@ RUFINO, Luiz Gustavo Bonatto; DARIDO, Suraya Cristina. **O ensino das lutas na e
 
 SEIJAS  ALBIR, Guillermo. **Anatomia e alongamentos  essenciais  para a corrida:** guia completo com 100 exercícios de flexibilidade. Barueri, SP: Manole, 2015.
 
-|COMPONENTE CURRICULAR: Geografia III|COMPONENTE CURRICULAR: Geografia III|COMPONENTE CURRICULAR: Geografia III||||
+|COMPONENTE CURRICULAR: Geografia III||||||
 |---|---|---|---|---|---|
 |CARGA HORÁRIA:<br>4<br>0 horas-aula (40|horas-relógio)|||||
 |EMENTA:<br>Demografia; Geografia da população e indicadores; Dinâmica populacional; O||||||
@@ -1752,7 +1752,7 @@ GONÇALVES, Carlos Alberto; MEIRELLES, Anthero de Moraes **. Projetos e relatór
 
 RICETTI, Miriam Aparecida; MAYER, Rosana. **Estágio** . Curitiba: Base Editorial, 2010. YIN, Robert K. **Estudo de caso:** planejamento e métodos. 5. ed. Porto Alegre: Bookman, 2015.
 
-|COMPONENTE CURRICULAR: Administração Financeira|COMPONENTE CURRICULAR: Administração Financeira|COMPONENTE CURRICULAR: Administração Financeira||
+|COMPONENTE CURRICULAR: Administração Financeira||||
 |---|---|---|---|
 |CARGA HORÁRIA:<br>8<br>0 horas-aula (80 horas-relógio)||||
 |EMENTA: Finanças Pessoais. Matemática Financeira||(HP12C). Sistema Financeiro Nacional.||
@@ -1787,7 +1787,7 @@ HOJI, M. **Administração financeira:** uma abordagem prática. São Paulo: Atl
 
 PUCCINI, Abelardo de Lima. **Matemática financeira:** objetiva e aplicada. 6. ed. São Paulo: Saraiva, 1999.
 
-|COMPONENTE CURRICULAR: Contabilidade Gerencial|COMPONENTE CURRICULAR: Contabilidade Gerencial|||
+|COMPONENTE CURRICULAR: Contabilidade Gerencial||||
 |---|---|---|---|
 |CARGA HORÁRIA:<br>4<br>0 horas-aula (40 horas-relógio)||||
 |EMENTA:<br>Estudo da contabilidade e o conjunto das demonstrações econômico-financeiras||||
@@ -1973,7 +1973,7 @@ COMPONENTE CURRICULAR: Química III CARGA HORÁRIA: 80 horas-aula (80 horas-rel�
 
 EMENTA: Eletroquímica: número de oxidação, reações de oxirredução, pilhas, corrosão, eletrólise.  Eletrólise  nos  processos  produtivos.  Química  nuclear:  radioatividade,  reações nucleares,  fusão  e  fissão  nuclear,  tempo  de  meia  vida.  Introdução  à  Química  Orgânica: histórico, carbono e seus compostos, cadeias carbônicas. Fórmulas de compostos orgânicos: molecular,  estrutural  e  simplificada.  Funções  orgânicas:  características,  classificações  e nomenclaturas.  Petróleo  e  hidrocarbonetos.  Funções  oxigenadas:  álcoois,  fenóis,  éteres, aldeídos, cetonas, ácidos carboxílicos e ésteres. Funções nitrogenadas: aminas e amidas. Haletos orgânicos. Propriedades físicas e químicas de compostos orgânicos. Isomeria plana e espacial.
 
-|Reações orgânicas: adição,|eliminação, substituição, esterificação. Polímeros.<br>A indústria da|eliminação, substituição, esterificação. Polímeros.<br>A indústria da|eliminação, substituição, esterificação. Polímeros.<br>A indústria da|
+|Reações orgânicas: adição,|eliminação, substituição, esterificação. Polímeros.<br>A indústria da|||
 |---|---|---|---|
 |reciclagem.||||
 |BIBLIOGRAFIA BÁSICA:||||
@@ -2009,7 +2009,7 @@ EMENTA: Leis de Mendel; Genética pós mendeliana: Grupos sanguíneos e polialel
 |UZUNIAN, Armênio; BIRNER, Ernesto.<br>**Biologia para um planeta sustentável**<br>. 2. ed. São|||
 |Paulo: Harbra, 2022.|||
 
-|COMPONENTE CURRICULAR:<br>Administração Estratégica|COMPONENTE CURRICULAR:<br>Administração Estratégica|COMPONENTE CURRICULAR:<br>Administração Estratégica||
+|COMPONENTE CURRICULAR:<br>Administração Estratégica||||
 |---|---|---|---|
 |CARGA HORÁRIA:<br>4<br>0 horas-aula (40|horas-relógio)|||
 |EMENTA: Apresentação da estratégia nas organizações. Visão, missão, valores e objetivos||||

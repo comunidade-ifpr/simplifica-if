@@ -1,8 +1,16 @@
 /**
- * Tabela em grade regular de textos (sem mesclas) e sua forma em Markdown.
+ * Tabela em grade regular de textos e sua forma em Markdown.
  *
- * A primeira linha é sempre o cabeçalho; as extrações de matriz, ementário e identificação do
- * `@simplifica-if/ppc` trabalham sobre esta forma.
+ * Uma célula mesclada não cabe numa tabela pipe; a grade sai de duas formas:
+ *
+ * - a de leitura (`normalizarTabela`), a do Markdown e do ementário: as colunas da grade que
+ *   nenhuma linha separa viram uma só, a cópia horizontal que sobra fica vazia e a continuação
+ *   vertical repete o texto de cima, para que cada linha se leia sozinha;
+ * - a repetida (`formasDaTabela(...).repetida`), a da extração da matriz e da identificação: a
+ *   célula mesclada se repete em cada posição que ocupa. "CARGA HORÁRIA TOTAL DO CURSO" mesclada
+ *   sobre "Ano" e "Componente" chega nas duas colunas.
+ *
+ * A primeira linha é sempre o cabeçalho.
  */
 import { match, sub } from "@simplifica-if/kb/primitivas/regex";
 import { ErroDocx } from "./erro.ts";
@@ -42,11 +50,20 @@ function limparTextoDaCelula(texto: string): string {
   return linhas.join("<br>");
 }
 
+/** Posição da grade: o texto da célula que a ocupa e se ela é a cópia de uma mescla horizontal. */
+type Posicao = { texto: string; copia: boolean };
+
 /**
- * Expande as mesclas: a célula de várias colunas deixa o texto na primeira e vazias as demais, e a
- * continuação vazia de uma mescla vertical recebe o texto da célula de cima.
+ * Expande as mesclas numa grade de `colunas` posições por linha. A célula de várias colunas ocupa
+ * a primeira posição e marca as demais como cópias; a continuação de uma mescla vertical recebe o
+ * texto da célula que começa na mesma coluna da linha de cima. `separadas[j]` diz se
+ * alguma linha começa uma célula na coluna `j` (o preenchimento de uma linha curta não conta).
  */
-function expandirMesclas(linhas: CelulaTabela[][], colunas: number, gastar?: (caracteres: number) => void): string[][] {
+function expandirMesclas(
+  linhas: CelulaTabela[][],
+  colunas: number,
+  gastar?: (caracteres: number) => void,
+): { grade: Posicao[][]; separadas: boolean[] } {
   // O texto de uma célula mesclada se repete na grade: é limpo uma vez só.
   const limpos = new Map<string, string>();
   const limpar = (texto: string) => {
@@ -54,37 +71,51 @@ function expandirMesclas(linhas: CelulaTabela[][], colunas: number, gastar?: (ca
     if (limpo === undefined) limpos.set(texto, (limpo = limparTextoDaCelula(texto)));
     return limpo;
   };
-  const grade = linhas.map((linha) => {
-    const expandida: Array<{ texto: string; continuacao: boolean }> = [];
+  const separadas = Array.from({ length: colunas }, (_, j) => j === 0);
+  const grade: Posicao[][] = [];
+  for (const [i, linha] of linhas.entries()) {
+    const expandida: Posicao[] = [];
     for (const celula of linha) {
-      const texto = limpar(celula.texto);
-      for (let i = 0; i < celula.colunas; i += 1) {
-        expandida.push({ texto: i === 0 ? texto : "", continuacao: celula.continuacao });
-      }
+      separadas[expandida.length] = true;
+      let texto = limpar(celula.texto);
+      // A linha de cima é sempre tão larga quanto esta: todas são completadas até `colunas`.
+      const acima = i > 0 ? grade[i - 1]![expandida.length]! : null;
+      // A continuação mostra a célula de cima, como no Word. Se nada começa nessa coluna na linha
+      // de cima (mescla malformada), a célula vale por si.
+      if (celula.continuacao && acima && !acima.copia) texto = acima.texto;
+      for (let k = 0; k < celula.colunas; k += 1) expandida.push({ texto, copia: k > 0 });
     }
-    while (expandida.length < colunas) expandida.push({ texto: "", continuacao: false });
-    return expandida;
-  });
-  for (let i = 1; i < grade.length; i += 1) {
-    for (const [j, celula] of grade[i]!.entries()) {
-      // A linha de cima é sempre tão larga quanto esta: todas foram completadas até `colunas`.
-      if (celula.continuacao && !celula.texto) celula.texto = grade[i - 1]![j]!.texto;
-    }
+    while (expandida.length < colunas) expandida.push({ texto: "", copia: false });
+    grade.push(expandida);
   }
   // A mescla multiplica o texto: uma célula de 1 MB repetida em 2 mil linhas daria uma tabela de
   // 2 GB no Markdown. O total vai para o orçamento do documento (`orcamento.ts`), quando há um.
   let caracteres = 0;
-  for (const linha of grade) for (const celula of linha) caracteres += celula.texto.length;
+  for (const linha of grade) for (const posicao of linha) caracteres += posicao.texto.length;
   if (caracteres > TEXTO_MAXIMO) {
     throw new ErroDocx({ motivo: "mescladas-demais" });
   }
   gastar?.(caracteres);
-  return grade.map((linha) => linha.map((celula) => celula.texto));
+  return { grade, separadas };
 }
 
-/** Tabela do documento em grade regular. */
-export function normalizarTabela(tabela: Tabela, gastar?: (caracteres: number) => void): TabelaNormalizada {
-  if (!tabela.linhas.length) return { cabecalho: [], linhas: [] };
+function emCabecalhoELinhas(grade: string[][]): TabelaNormalizada {
+  const [cabecalho = [], ...linhas] = grade;
+  return { cabecalho, linhas };
+}
+
+/** As duas formas da tabela: a de leitura e a repetida (veja o início do módulo). */
+export type FormasDaTabela = { leitura: TabelaNormalizada; repetida: TabelaNormalizada };
+
+/**
+ * Tabela do documento nas duas formas. `gastar` recebe os caracteres da forma repetida, a maior
+ * das duas.
+ */
+export function formasDaTabela(tabela: Tabela, gastar?: (caracteres: number) => void): FormasDaTabela {
+  if (!tabela.linhas.length) {
+    const vazia = { cabecalho: [], linhas: [] };
+    return { leitura: vazia, repetida: vazia };
+  }
   let colunas = 0;
   for (const linha of tabela.linhas) {
     colunas = Math.max(
@@ -97,8 +128,17 @@ export function normalizarTabela(tabela: Tabela, gastar?: (caracteres: number) =
   if (colunas * tabela.linhas.length > CELULAS_MAXIMAS) {
     throw new ErroDocx({ motivo: "celulas-demais", limite: CELULAS_MAXIMAS });
   }
-  const [cabecalho = [], ...linhas] = expandirMesclas(tabela.linhas, colunas, gastar);
-  return { cabecalho, linhas };
+  const { grade, separadas } = expandirMesclas(tabela.linhas, colunas, gastar);
+  const leitura = grade.map((linha) =>
+    linha.flatMap((posicao, j) => (separadas[j] ? [posicao.copia ? "" : posicao.texto] : [])),
+  );
+  const repetida = grade.map((linha) => linha.map((posicao) => posicao.texto));
+  return { leitura: emCabecalhoELinhas(leitura), repetida: emCabecalhoELinhas(repetida) };
+}
+
+/** Tabela do documento em grade regular, na forma de leitura. */
+export function normalizarTabela(tabela: Tabela, gastar?: (caracteres: number) => void): TabelaNormalizada {
+  return formasDaTabela(tabela, gastar).leitura;
 }
 
 function linhaMarkdown(celulas: string[], colunas: number): string {

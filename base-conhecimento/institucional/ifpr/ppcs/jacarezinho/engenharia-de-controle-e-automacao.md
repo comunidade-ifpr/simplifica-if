@@ -374,7 +374,7 @@ O arranjo produtivo de Jacarezinho e dos demais municípios no seu entorno merec
 
 Quadro 1. Principais empresas do arranjo produtivo regional.
 
-|**Empresas do arranjo produtivo regional**|**Empresas do arranjo produtivo regional**|
+|**Empresas do arranjo produtivo regional**||
 |---|---|
 |Empresa: BBA (ICE Italy Group)<br>Ramo: Indústria Química<br>Localização: Jacarezinho / PR|Empresa: Castor Colchões<br>Ramo: Indústria de Colchões e Estofados<br>Localização: Ourinhos / SP<br>Distância de Jacarezinho: 20 km|
 |Empresa: Certano<br>Ramo: Indústria Alimentícia<br>Localização: Cambará / PR<br>Distância de Jacarezinho: 20 km|Empresa: CTG Brasil – UHE Canoas II<br>Ramo: Geração de Energia Elétrica<br>Localização: Andirá / PR<br>Distância de Jacarezinho: 40 km|
@@ -3078,7 +3078,7 @@ Quadro 6. Relação do Corpo Docente do Curso de Engenharia de Controle e Automa
 |||**Componente Curricular:**Segurança do Trabalho; Sistemas Digitais||||
 |Héber Renato<br>Fadel de<br>Morais||Sistemas de<br>Informação|Especialização em<br>Tecnologia Java|Dedicação<br>Exclusiva|http://lattes.cnpq.br/<br>0333191216758108|
 
-|||**Componente Curricular:**Introdução à Otimização|**Componente Curricular:**Introdução à Otimização|**Componente Curricular:**Introdução à Otimização|**Componente Curricular:**Introdução à Otimização|
+|||**Componente Curricular:**Introdução à Otimização||||
 |---|---|---|---|---|---|
 |Hugo<br>Emmanuel da<br>Rosa Corrêa||História|Doutorado em Ensino<br>de Ciências e<br>Educação Matemática|Dedicação<br>Exclusiva|http://lattes.cnpq.br/<br>6369936810327186|
 |||**Componente Curricular:**Filosofia da Ciência e da Tecnologia; Relações<br>Humanas||||
@@ -4604,7 +4604,7 @@ Jacarezinho, _____ de ________ de _________
 
 ## **ATA DE AVALIAÇÃO DO TCC**
 
-|No dia ____ do mês de _____________________ de _________, sob a presidência do(a) Prof.|No dia ____ do mês de _____________________ de _________, sob a presidência do(a) Prof.|
+|No dia ____ do mês de _____________________ de _________, sob a presidência do(a) Prof.||
 |---|---|
 |(a)<br>_______________________________________________,<br>reuniram-se|<br>os|
 |docentes____________________________________________________________||

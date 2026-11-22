@@ -4085,7 +4085,7 @@ Destacamos que, estando os laboratórios didáticos em processo de viabilizaçã
 
 ## **PLANEJAMENTO ANUAL DOS INVESTIMENTOS NECESSÁRIOS**
 
-|**PLANEJAMENTO ANUAL DOS INVESTIMENTOS NECESSÁRIOS**|**PLANEJAMENTO ANUAL DOS INVESTIMENTOS NECESSÁRIOS**|**PLANEJAMENTO ANUAL DOS INVESTIMENTOS NECESSÁRIOS**|
+|**PLANEJAMENTO ANUAL DOS INVESTIMENTOS NECESSÁRIOS**|||
 |---|---|---|
 ||**Custeio**|**Capital**|
 |2024|30.000|-|
@@ -4095,7 +4095,7 @@ Destacamos que, estando os laboratórios didáticos em processo de viabilizaçã
 
 ## **PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**
 
-|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**|
+|**PLANEJAMENTO DE OCUPAÇÃO DAS SALAS DE AULA DO CAMPUS**||||||
 |---|---|---|---|---|---|
 |**Sala de Aula**|**Turno**|**2023**|**2024**|**2025**|**2026**|
 |Sala 01|matutino|||||
@@ -4105,13 +4105,13 @@ Destacamos que, estando os laboratórios didáticos em processo de viabilizaçã
 ||vespertino|||||
 ||noturno|||x|x|
 
-|Sala 03|matutino|||||
-|---|---|---|---|---|---|
-||vespertino|||||
-||noturno||||x|
-|Sala 04|matutino|||||
-||vespertino|||||
-||noturno|x|x|x|x|
+|Sala 03|matutino|||
+|---|---|---|---|
+||vespertino|||
+||noturno||x|
+|Sala 04|matutino|||
+||vespertino|||
+||noturno|x|x|
 
 ## **8.1 Expansão do Quadro Docente**
 

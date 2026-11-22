@@ -57,7 +57,7 @@ Ministerio da Educacao
 
 ## 1[INSTITUTOFEDERAL]
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou COMISSÃO DE AJUSTE**<br>**CURRICULAR (CAJ) -**PORTARIA Nº080/2018 – DIR/CP/CTBA/IFPR|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou COMISSÃO DE AJUSTE**<br>**CURRICULAR (CAJ) -**PORTARIA Nº080/2018 – DIR/CP/CTBA/IFPR|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou COMISSÃO DE AJUSTE**<br>**CURRICULAR (CAJ) -**PORTARIA Nº080/2018 – DIR/CP/CTBA/IFPR||
 |---|---|
 |**Função**|**Nome**|
 |Presidente da comissão|Adriana da Silva Santos|
@@ -488,7 +488,7 @@ Ministerio da Educacao
 
 ## **3.9. Matriz curricular do curso técnico subsequente em processos fotográficos**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-**<br>~~**l)**~~||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|~~**l )**~~<br>**02****||
@@ -592,7 +592,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e<br>Design|
 |**Componente Curricular**: Equipamentos Fotográficos||
@@ -753,7 +753,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|Processos Fotográficos<br>**Eixo Tecnológico:**Cultural e|
 ||Design|
@@ -828,7 +828,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e|
 |||Design|
@@ -1004,7 +1004,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e|
 ||Design|

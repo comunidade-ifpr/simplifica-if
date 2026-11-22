@@ -3,7 +3,7 @@
   "titulo": "Resolução CNE/CP nº 1/2021",
   "situacao": "base",
   "total_ppcs": 59,
-  "total_ocorrencias": 233,
+  "total_ocorrencias": 230,
   "ppcs": [
     {
       "ppc": "arapongas/tecnico-em-melhoria-de-processos",
@@ -1188,24 +1188,6 @@
         {
           "linha": 893,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
-          "regra": "estrutural",
-          "confianca": 0.98
-        },
-        {
-          "linha": 901,
-          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
-          "regra": "estrutural",
-          "confianca": 0.98
-        },
-        {
-          "linha": 901,
-          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
-          "regra": "estrutural",
-          "confianca": 0.98
-        },
-        {
-          "linha": 901,
-          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural",
           "confianca": 0.98
         },

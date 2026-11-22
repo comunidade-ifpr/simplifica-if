@@ -437,7 +437,7 @@ A organização curricular da habilitação em _**TÉCNICO EM PRÓTESE DENTÁRIA
 
 ## **Bibliografia Básica**
 
-|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|
+|- Ferramentas básicas de informática no ambiente de trabalho e na vida cotidiana.<br>- Identificação da necessidade de pessoal para o funcionamento do laboratório de prótese odontológica.|||||||
 |---|---|---|---|---|---|---|
 |**Bibliografia Básica**|||||||
 |Título|Autor|Edição|Local|Editora|Ano|LT|
@@ -449,7 +449,7 @@ A organização curricular da habilitação em _**TÉCNICO EM PRÓTESE DENTÁRIA
 |Phillips Materiais Dentários|ANUSAVICE, K.J; SHEN, C;<br>RAWLS,H.H.|12 ed.|Rio de Janeiro|Elsevier|2013||
 |Introdução à Informática|BARRIVIERA, R.; OLIVEIRA, E. D.||Curitiba|Livro<br>Técnico|2012|152p<br>.|
 
-|**Componente**<br>**Curricular:**|**Biossegurança**|**Biossegurança**|**Biossegurança**|**Biossegurança**|**Biossegurança**|**Biossegurança**|**Biossegurança**|**Biossegurança**|**Biossegurança**|
+|**Componente**<br>**Curricular:**|**Biossegurança**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**1º SEMESTRE / 1º MÓDULO**||**Carga Horária:**<br>**06 horas**||Horas-aulas: 06 horas        Horas-relógio: 06 horas|||||
 |**OBJETIVOS**<br>- Avaliar as condições físicas e de funcionamento do laboratório de prótese odontológica propondo medidas para a adequação do<br>espaço físico, visando a segurança, limpeza e desinfecção do ambiente de trabalho.<br>- Acompanhar a execução de projetos de construção e reforma da estrutura física do laboratório de prótese odontológica.||||||||||
@@ -476,7 +476,7 @@ A organização curricular da habilitação em _**TÉCNICO EM PRÓTESE DENTÁRIA
 ||Prevenção e controle de riscos.|||Brasília|ANVISA||||
 ||Tecnologia em serviços de saúde|||||2006|||
 
-|**Componente**<br>**Curricular:**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|**Informática Instrumental**|
+|**Componente**<br>**Curricular:**|**Informática Instrumental**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**1º SEMESTRE / 1º MÓDULO**||**Carga Horária:**<br>**18 horas**||Horas-aulas: 18 horas         Horas-relógio: 18 horas|||||
 |**OBJETIVOS**<br>**Objetivo Geral**<br>- Propiciar uma visão geral da Tecnologia da Informação;<br>- Possibilitar o uso da informática (hardware e software) visando à pesquisa, criação e manipulação de textos, planilhas e<br>apresentações inerentes as atividades do profissional em**Prótese Dentária.**<br>**Objetivos Específicos:**<br> - Apresentar a Evolução da Tecnologia da Informação e discutir  seu Impacto na Sociedade.<br>- Atualizar e exemplificar os elementos da Tecnologia da Informação existentes no mundo do trabalho.<br>- Prover conhecimento sobre o funcionamento dos componentes básicos de um computador.<br>- Capacitar a realização de atividades básicas e manipulação de arquivos no Sistema Operacional.<br>- Capacitar a elaboração de textos, planilhas e apresentações utilizando aplicativos de produtividade.<br>- Capacitar a utilização da internet para realização de pesquisas, interação com o mundo de trabalho e outras atividades<br>específicas das atividades profissionais.||||||||||
@@ -555,7 +555,7 @@ Componente<br>Anatomia Dentária<br>Curricular:<br>Período  Carga Horária:<br>
 ||||||Médicas||||
 ||Atlas de anatomia Humana|KAHLE, Werner|3°|Rio de Janeiro|Atheneu|1988|||
 
-|**Componente**<br>**Curricular:**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|**Enceramento Regressivo**|
+|**Componente**<br>**Curricular:**|**Enceramento Regressivo**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**1º SEMESTRE / 1º MÓDULO**||**Carga Horária:**<br>**42 horas**||Horas-aulas: 42 horas          Horas-relógio: 42 horas|||||
 |**OBJETIVOS**<br>- Desenvolver habilidades para escultura de dentes em cera conforme a anatomia humana.||||||||||
@@ -577,7 +577,7 @@ Componente<br>Anatomia Dentária<br>Curricular:<br>Período  Carga Horária:<br>
 ||Oclusão Dentária - Princípios e|MARCHINI, Leonardo;  SANTOS,|1ª||Elsevier|2012|||
 ||Prática Clínica|Jarbas Francisco F.|Edição||||||
 
-|**Componente**<br>**Curricular:**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|**Introdução à Prótese Total**|
+|**Componente**<br>**Curricular:**|**Introdução à Prótese Total**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**1º SEMESTRE / 1º MÓDULO**||**Carga Horária:**<br>**6 horas**||Horas-aulas: 6 horas       Horas-relógio: 6 horas|||||
 |**OBJETIVOS**<br>- Planejar e realizar as etapas de confecção das próteses dentárias em laboratório.||||||||||
@@ -631,7 +631,7 @@ Componente<br>Anatomia Dentária<br>Curricular:<br>Período  Carga Horária:<br>
 |PRÓTESE DENTÁRIA<br>PRINCÍPIOS<br>FUNDAMENTAIS -<br>TÉCNICAS<br>LABORATORIAIS|SHIRLEY KAYAKI|Edição:<br>2a./201<br>1||- Editora:<br>Napoleão|||
 |TÉCNICA DA CLONAGEM<br>TERAPÊUTICA EM<br>PRÓTESE TOTAL.TOMAZ<br>GOMES|OSMAR CASTRO Edição: 1ª/2009.|1ª<br>Edição:||Editora:<br>Santos|2009||
 
-|**Componente**<br>**Curricular:**|**Enceramento e Escultura Dental**|**Enceramento e Escultura Dental**|**Enceramento e Escultura Dental**|
+|**Componente**<br>**Curricular:**|**Enceramento e Escultura Dental**|||
 |---|---|---|---|
 |**Período**<br>**letivo:**|**2º SEMESTRE / 2º MÓDULO**|**Carga Horária:**<br>**147 horas**|Horas-aulas: 147 horas      Horas-relógio: 147 horas|
 |**OBJETIVOS**<br>- Desenvolver habilidades técnicas de manipulação das ceras de uso odontológico.<br>- Praticar as diferentes técnicas de enceramento e escultura dental.<br>- Conhecer os principais meios referenciais da habilitação morfofuncional dos arcos dentais.<br>- Criar habilidades exploratórias no desenvolvimento das características anatômicas dos dentes.<br>- Desenvolver a percepção das características estéticas dos dentes.<br>- Desenvolver a capacidade de conciliar as peculiaridades morfofuncionais com a necessidade estética do tratamento restaurador<br>odontológico.||||
@@ -641,7 +641,7 @@ Componente<br>Anatomia Dentária<br>Curricular:<br>Período  Carga Horária:<br>
 
 ## **Bibliografia Básica**
 
-|- Caracterização estética das coroas dentais esculpidas em ceras.|- Caracterização estética das coroas dentais esculpidas em ceras.|- Caracterização estética das coroas dentais esculpidas em ceras.|- Caracterização estética das coroas dentais esculpidas em ceras.|- Caracterização estética das coroas dentais esculpidas em ceras.|- Caracterização estética das coroas dentais esculpidas em ceras.|- Caracterização estética das coroas dentais esculpidas em ceras.|
+|- Caracterização estética das coroas dentais esculpidas em ceras.|||||||
 |---|---|---|---|---|---|---|
 |**Bibliografia Básica**|||||||
 |Título|Autor|Edição|Local|Editora|Ano|LT|
@@ -681,7 +681,7 @@ Executar as etapas laboratoriais na produção de próteses parciais fixas execu
 |Fundamentos de Prótese Fixa|HEBERT T. SHILLIGBURG Jr<br>SUMIYA HOBO<br>LOWELL D. WHITSETT<br>RICHARD JACOBI<br>SUSAN E. BRACKETT|4a|São Paulo|Quintessenc<br>e|2007||
 |Fundamentos dos prepares<br>dentários|SHILLINBURG, H. T.; JACOB, R.;<br>BRACKETT, S. E.|3a<br>edição|São Paulo|Quintessenc<br>e|1997||
 
-|**Componente**<br>**Curricular:**|**Confecção de Prótese Parcial Removível**|**Confecção de Prótese Parcial Removível**|**Confecção de Prótese Parcial Removível**|
+|**Componente**<br>**Curricular:**|**Confecção de Prótese Parcial Removível**|||
 |---|---|---|---|
 |**Período**<br>**letivo:**|**3º SEMESTRE / 3º MÓDULO**|**Carga Horária:**<br>**81 horas**|Horas-aulas: 81 horas           Horas-relógio: 81 horas|
 |**OBJETIVOS**<br>- GERAL: Planejar e realizar as etapas de confecção das próteses parciais removíveis em laboratório.<br>- ESPECÍFICO: Qualificar e definir os vários tipos de próteses parciais removíveis e as suas correlações com disciplinas conexas;<br>Executar o planejamento, desenho e o enceramento na produção de próteses parciais removíveis com base nas<br>informações teóricas adquiridas em aula;||||
@@ -734,7 +734,7 @@ Executar as etapas laboratoriais na produção de próteses parciais fixas execu
 ||Restauradores||||||||
 ||Phillips - Materiais Dentários|ANUSAVICE, Kenneth J|11a||Elsevier||||
 
-|**Componente**<br>**Curricular:**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|
+|**Componente**<br>**Curricular:**|**Introdução ao Trabalho de Conclusão de Curso (Tcc)**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**3º SEMESTRE / 3º MÓDULO**||**Carga Horária:**<br>**6 horas**||Horas-aulas: 6 horas          Horas-relógio: 6 horas|||||
 |**OBJETIVOS**<br>- Capacidade para confecção do Trabalho de Conclusão de Curso.||||||||||
@@ -751,7 +751,7 @@ Executar as etapas laboratoriais na produção de próteses parciais fixas execu
 |Metodologia científica: Guia para<br>eficiência nos estudos|Ruiz Já.|6 ed|São Paulo:<br>Atlas; 2006|Atlas2006|2006||
 |Normas<br>para<br>elaboração<br>de<br>trabalhos acadêmicos do Instituto<br>Federal do Paraná (IFPR).|INSTITUTO FEDERAL DO PARANÁ.<br>Sistema de Bibliotecas.|<br>1 ed.|Curitiba|Instituto<br>Federal<br>do<br>Paraná|2010||
 
-|**Componente**<br>**Curricular:**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|
+|**Componente**<br>**Curricular:**|**Confecção Prótese Parcial Fixa II (Troquelamento)**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**3º SEMESTRE / 3º MÓDULO**||**Carga Horária:**<br>**75 horas**||Horas-aulas: 75 horas         Horas-relógio: 75 horas|||||
 |**OBJETIVOS**<br>-Conhecer os diversos sistemas disponíveis para obtenção de modelos troquelados<br>- Desenvolver habilidades para confecção de modelos troquelados.||||||||||
@@ -873,7 +873,7 @@ Bibliografia Básica<br>
 |PRÓTESE DENTÁRIA<br>PRINCÍPIOS<br>FUNDAMENTAIS -<br>TÉCNICAS<br>LABORATORIAIS|SHIRLEY KAYAKI ASSAOKA|2a.Ediç<br>ão||Editora:<br>Napoleão|2011||
 |HARMONIA - GUIA<br>SIMPLIFICADO DE<br>COMUNICAÇÃO ENTRE<br>O CIRUUGIÃO-<br>DENTISTA, TÉCNICO EM<br>PRÓTESE E PACIENTE|GIOVANI PARREIRA GAMBOGI|1ª<br>Edição||Editora:<br>Quintessenc<br>e|2011||
 
-|**Componente**<br>**Curricular:**|**Confecção de Aparelho Ortodôntico**|**Confecção de Aparelho Ortodôntico**|**Confecção de Aparelho Ortodôntico**|
+|**Componente**<br>**Curricular:**|**Confecção de Aparelho Ortodôntico**|||
 |---|---|---|---|
 |**Período**<br>**letivo:**|**4º SEMESTRE / 4º MÓDULO**|**Carga Horária:**<br>**126 horas**|Horas-aulas: 126 horas       Horas-relógio: 126 horas|
 |**OBJETIVOS**<br>- GERAL: Planejar e realizar as etapas de confecção dos aparelhos ortodônticos removíveis em laboratório.<br>- ESPECÍFICO: Qualificar e definir os vários tipos de aparelhos móveis existentes em ortodontia e as suas correlações com<br>disciplinas conexas;<br>Executar o planejamento, confecção de grampos e acrilização dos aparelhos removíveis ortodônticos com base<br>nas informações teóricas adquiridas em aula;.||||
@@ -918,7 +918,7 @@ Componente<br>Confecção de Prótese Sobre Implante<br>Curricular:<br>Período 
 ||Princípios<br>de<br>Radiologia||WHAITES, E.|||São Paulo|Artmed|2003|||
 ||Odontológica||||||||||
 
-|**Componente**<br>**Curricular:**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|**Ética Profissional**|
+|**Componente**<br>**Curricular:**|**Ética Profissional**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**Período**<br>**letivo:**|**4º SEMESTRE / 4º MÓDULO**||**Carga Horária:**<br>**09 horas**||Horas-aulas: 09 horas      Horas-relógio: 09 horas|||||
 |**OBJETIVOS**<br>- Correlacionar a legislação profissional com o exercício ético da profissão.||||||||||

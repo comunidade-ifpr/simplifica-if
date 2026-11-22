@@ -545,7 +545,7 @@ FARACO, C. E.; MOURA, F. M. **Língua e literatura.** Volume único – 2º grau
 
 27
 
-|**Componente Curricular**: Artes I|**Componente Curricular**: Artes I|
+|**Componente Curricular**: Artes I||
 |---|---|
 |**Carga Horária:**80 horas|**Turma:**1º ano|
 |**Ementa:**<br>Arte e Cultura: relações e diferenças. Introdução a materiais. Organização espacial:<br>equilíbrio, harmonia, cor, composição de imagem e textura. Composição e Forma. Dese-<br>nho: noções básicas e técnicas. História da Arte: os principais períodos, escolas artísti-<br>cas e suas influências na composição de sociedade. Pintura: noções básicas de pintura<br>e coloração. Música: breve história da música, variáveis, compreendendo a música;<br>sons, elementos formais, composição, timbre, intensidade, altura, densidade, duração,<br>harmonia, melodia e ritmo. Folclore: Cultura Material e Imaterial.||
@@ -554,7 +554,7 @@ FARACO, C. E.; MOURA, F. M. **Língua e literatura.** Volume único – 2º grau
 
 28
 
-|**Componente Curricular**: Educação Física I|**Componente Curricular**: Educação Física I|
+|**Componente Curricular**: Educação Física I||
 |---|---|
 |**Carga Horária**: 80 horas|**Turma:**1º Ano|
 |**Ementa:**<br>O fenômeno esportivo. Vida moderna e controle do stress. Atividade física e sua influên-<br>cia na qualidade de vida. Saúde física e mental. Comportamento preventivo, atitude físi-<br>ca e mental, relacionamentos sociais. O movimento humano e suas relações com a<br>prática de atividades físicas e dos esportes. Conceito de Saúde e de Saúde Coletiva.<br>Atitudes de prevenção e promoção da saúde e saúde coletiva. A promoção, a reabilita-<br>ção e a proteção da saúde. A importância do controle dos aspectos nutricionais para a<br>saúde e o desempenho físico, discutido na melhoria da qualidade de vida e otimização<br>do exercício físico. Estudo e vivência das possibilidades expressivas e lúdicas dos movi-<br>mentos corporais. O corpo na perspectiva holística.||
@@ -563,7 +563,7 @@ FARACO, C. E.; MOURA, F. M. **Língua e literatura.** Volume único – 2º grau
 
 29
 
-|**Componente Curricular**: Química I|**Componente Curricular**: Química I|
+|**Componente Curricular**: Química I||
 |---|---|
 |**Carga Horária:**80 horas/aula|**Período letivo:**1º ano|
 |**Ementa:**Introdução à química. Estrutura e propriedades da matéria. Laboratório de quí-<br>mica. Tabela periódica dos elementos. Periodicidade química. Ligações químicas. Liga-<br>ções intermoleculares. Funções inorgânicas. Reações inorgânicas. Cálculos químicos.<br>Gases.||
@@ -888,7 +888,7 @@ DE ROSE, D. **Esporte e atividade física na infância e adolescência, uma abor
 
 BOHME, Maria Tereza. **Esporte infantojuvenil treinamento a longo prazo e talento esportivo** . 1ª Edição. Phorte, 2011.
 
-|**Componente Curricular**: Matemática I|**Componente Curricular**: Matemática I|
+|**Componente Curricular**: Matemática I||
 |---|---|
 |**Carga Horária:**120 horas|**Turma:**2º Ano|
 |**Ementa:**<br>Introdução à Teoria dos Conjuntos: Operações entre conjuntos. Conjuntos numéricos e<br>intervalos na reta real;. Funções: Função afim; Função quadrática; Função exponencial;<br>Logaritmo e Função logarítmica. Função Modular. Função Injetora, Sobrejetora e Bijeto-<br>ra. Função Composta e Função Inversa. Inequações e desigualdades. Sequências, pro-<br>gressão aritmética e progressão geométrica.||
@@ -920,7 +920,7 @@ IEZZI, G.; DOLCE, O.; MURAKAMI, C. **Fundamentos de Matemática Elementar:** vol
 
 IEZZI, G.; DOLCE, O.; MURAKAMI, C. **Fundamentos de Matemática Elementar:** volume 3 - trigonometria. 9 ed. São Paulo: Atual, 2004
 
-|**Componente Curricular**: Física I|**Componente Curricular**: Física I|
+|**Componente Curricular**: Física I||
 |---|---|
 |**Carga Horária**(hora aula): 160|**Período letivo:**2º ano|
 |**Ementa:**<br>As grandezas físicas e as suas medidas**.**Os fundamentos de cinemática escalar e veto-<br>rial. As forças. As leis do movimento de Newton e suas aplicações. A conservação da<br>quantidade de movimento. A gravitação universal e os movimentos dos astros. A estáti-<br>ca e o equilíbrio dos corpos. As rotações. O estudo dos fluidos. O trabalho e a conser-<br>vação da energia. As oscilações e as ondas mecânicas.||
@@ -940,7 +940,7 @@ DORIA, Mauro M.; MARINHO, Francioli. **Ondas e Bits** (Coleção Temas Atuais de
 
 ORZEL, Chad. **Como ensinar Física ao seu Cachorro. Uma visão bem humorada da Física Moderna.** Rio de Janeiro: Campus, 2010.
 
-|**Componente Curricular**: Química II|**Componente Curricular**: Química II|
+|**Componente Curricular**: Química II||
 |---|---|
 |**Carga Horária:**80 horas/aula|**Período letivo:**2º ano|
 |**Ementa:**Soluções; Propriedades das soluções; Diluição de soluções; Titulação ácido –<br>base; Pressão de vapor e temperatura de ebulição de um líquido; Efeitos coligativos;<br>Termoquímica; Cinética química;  Equilíbrio Químico; Deslocamento de equilíbrio; Equi-<br>líbrio iônico da água; Hidrólise salina e solução tampão; Pilhas; Eletrólise, Radioativida-<br>de.||
@@ -975,7 +975,7 @@ As interpretações históricas, Positivismo, Marxismo, Nova História e Microhi
 
 MOCELLIN, Renato. CAMARGO, Rosiane de. **História em Debate,** volume 1: ensino médio. São Paulo: Editora do Brasil, 2010. MOCELLIN, Renato. CAMARGO, Rosiane de. **História em Debate,** volume 2: ensino médio. São Paulo: Editora do Brasil, 2010. a PINSKY, Carla Bassanezi, (Org.). **Fontes Históricas** _._ 2 Edição. São Paulo: Contexto, 2008. CARDOSO, Ciro Flamarion; VAINFAS, Ronaldo. **Domínios da História:** ensaios de teoria e metodologia. Rio de Janeiro: Campus, 1997. GINBURG, Carlos. **O queijo e os vermes:** o cotidiano e as ideias de um moleiro perseguido pela Inquisição. Tradução: Maria Betania Amoroso. 3ª ed. São Paulo: Companhia das Letras, 1987. WACHOWICS, Ruy Christovam. **História do Paraná** . Curitiba: Vicentina, 1988. **Bibliografia Complementar:** AURAS, Marli. Guerra do Contestado: a organização da irmandade cabocla. Ed. UFSC. Cortez. São Paulo, 1984. BLAINEY, Geoffrey. **Uma Breve História do Mundo** . Editora Fundamento. São Paulo, 2007. MATTA, Roberto. **O que faz o brasil, Brasil?** Rio de Janeiro: Rocco, 1986. MOTTA, Márcia (Org.). **Dicionário da Terra.** Rio de Janeiro: Civilização Brasileira, 2005. RIBEIRO, Darci. **O povo brasileiro:** a formação e o sentido do Brasil. São Paulo, Companhia das Letras, 1995. TEDESCO, João Carlos. **Passado e presente em interfaces:** introdução a uma análise sócio-histórica da memória. Passofundo: Ed. Universidade de Passo Fundo; Xanxerê: Ed. Universidade do Oeste de Santa Catarina; Porto Alegre: Suliani Letas & Vida, 2011.
 
-|**Componente Curricular**: Sociologia II|**Componente Curricular**: Sociologia II|
+|**Componente Curricular**: Sociologia II||
 |---|---|
 |**Carga Horária:**40 horas|**Turma:**2º ano|
 |**Ementa:**||
@@ -1221,7 +1221,7 @@ MILANI, Esther Maria. **Gramática de espanhol para brasileiros** .São Paulo: S
 
 50
 
-|**Componente Curricular**: Matemática II|**Componente Curricular**: Matemática II|
+|**Componente Curricular**: Matemática II||
 |---|---|
 |**Carga Horária:**80 horas|**Turma:**3º Ano|
 |**Ementa:**Matrizes. Determinantes. Sistemas Lineares. Análise Combinatória. Triângulo<br>de Pascal e binômio de Newton. Probabilidade. Estatistica. Matemática Financeira.||
@@ -1328,7 +1328,7 @@ WACHOWICZ, Ruy C **. História do Paraná** . Curitiba: Vicentina, 1989.
 
 CAETANO, Marcos Fassina e PALHARES, José Mauro. **História do Paraná** : breve história de sua colonização e sua gente. Foz do Iguaçu, Editora Grasmil, 2003.
 
-|**Componente Curricular**: Sociologia III|**Componente Curricular**: Sociologia III|
+|**Componente Curricular**: Sociologia III||
 |---|---|
 |**Carga Horária:**40 horas|**Turma:**3º ano|
 |**Ementa:**<br>Análises sociológicas sobre elementos da sociedade contemporânea: tribos urbanas;<br>sexualidade/homossexualidade e gênero; normalidade e anormalidade; drogadição e<br>corpolatria; violências (físicas e simbólicas), crime e desvio; raça e etnicidade; a socie-<br>dade em rede; globalização e neoliberalismo; e, os novos movimentos sociais.||
@@ -1605,7 +1605,7 @@ GARBI, G. G. **O romance das equações algébricas.** 3 ed. rev. ampl. São Pau
 
 SURENDRA, V. **Ideias Geniais – os principais teoremas, teorias, leis e princípios científicos de todos os tempos.** 1 ed. Editora Gutenberg, 2011.
 
-|**Componente Curricular**: Química III|**Componente Curricular**: Química III|
+|**Componente Curricular**: Química III||
 |---|---|
 |**Carga Horária:**80 horas/aula|**Período letivo:**4º ano|
 |**Ementa:**Introdução a química orgânica, cadeias carbônicas, nomenclatura, grupos fun-<br>cionais, Isomeria plana, geométrica e óptica. Reações Orgânicas. Propriedades físicas<br>dos compostos Orgânicos. Bioquímica. Polímeros.||
@@ -1665,7 +1665,7 @@ Paulo. Ática, 2000.
 
 TOKITAKA, S.; GEBARA, H.; **O verde e a vida:** compreendendo o equilíbrio e o desiquilíbrio ecológico. São Paulo: Ática, 1997.
 
-|**Componente Curricular:**História II|**Componente Curricular:**História II|
+|**Componente Curricular:**História II||
 |---|---|
 |**Carga Horária**: 80 horas|**Turma:**4º Ano|
 |**Ementa:**<br>Os conflitos e processos imperialistas nas Américas, Asia e África. As sociedades afri-<br>canas no mundo colonial  e a imposição neocolonial. Os movimentos de descolonização<br>e conflitos no contesto geopolítico da guerra fria. A globalização  e o processo de mise-<br>rabilidade, violência e avanços e retrocessos dos direitos humanos no transcorrer da<br>história.  As grandes guerras, nacionalismos, revoluções e fundamentalismos, relações<br>de dominação, resistência e terror. Ocupação e transformações do território paranaen-<br>se.||
@@ -1732,7 +1732,7 @@ ARAÚJO, Inácio. **Cinema:** o mundo em movimento. São Paulo: Scipione,
 
 GAARDER, Jostein. **O mundo de Sofia** . São Paulo: Companhia das Letras, 1995. NAPOLITANO, Marcos. **Como usar o cinema na sala de aula.** São Paulo: Contexto, 2011. SÁNCHEZ VÁZQUEZ, Adolfo. **As idéias estéticas de Marx.** Rio de Janeiro: Paz e Terra, 1978.
 
-|**Componente Curricular**: Gerenciamento Ambiental|**Componente Curricular**: Gerenciamento Ambiental|
+|**Componente Curricular**: Gerenciamento Ambiental||
 |---|---|
 |**Carga Horária:**80 horas|**Período letivo: 4**º ano|
 |**Ementa:**<br>Impactos ambientais. Saneamento básico: objetivos e sua importância, tratamento de<br>águas, sistemas de tratamento de esgoto, gerenciamento de resíduos sólidos. Teoria<br>dos 3 Rs aplicado a construção civil. Relatório de impacto ambiental – RAP. Estudo do<br>impacto ambiental – EIA. Relatório de impacto ambiental – RIMA. Desenvolvimento<br>sustentável.||

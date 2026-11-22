@@ -466,7 +466,7 @@ De acordo com as orientações contidas no Catálogo Nacional de Cursos Técnico
 
 **Quadro 2** –Laboratório de ensino e pesquisa em Agroecologia 1. 
 
-|**Quadro 2**–Laboratório de ensino e pesquisa em Agroecologia1.|**Quadro 2**–Laboratório de ensino e pesquisa em Agroecologia1.|**Quadro 2**–Laboratório de ensino e pesquisa em Agroecologia1.|
+|**Quadro 2**–Laboratório de ensino e pesquisa em Agroecologia1.|||
 |---|---|---|
 |**LABORATÓRIO: Suporte as aulas de Biologia, Química e Sementes.**|||
 |**Quantidade**|**Equipamentos**|**Situação**|
@@ -494,7 +494,7 @@ De acordo com as orientações contidas no Catálogo Nacional de Cursos Técnico
 
 **Quadro 3** –Laboratório de ensino e pesquisa em Agroecologia 2. 
 
-|**Quadro 3**–Laboratório de ensino e pesquisa em Agroecologia2.|**Quadro 3**–Laboratório de ensino e pesquisa em Agroecologia2.|**Quadro 3**–Laboratório de ensino e pesquisa em Agroecologia2.|
+|**Quadro 3**–Laboratório de ensino e pesquisa em Agroecologia2.|||
 |---|---|---|
 |**LABORATÓRIO: Suporte as aulas de Microbiologia,Genética, Microscopia **|||
 |**Quantidade**|**Equipamentos**|**Situação**|
@@ -544,7 +544,7 @@ De acordo com as orientações contidas no Catálogo Nacional de Cursos Técnico
 
 
 
-|**Quadro 4 –**Laboratórios de análises químicas e de solos|**Quadro 4 –**Laboratórios de análises químicas e de solos|**Quadro 4 –**Laboratórios de análises químicas e de solos|
+|**Quadro 4 –**Laboratórios de análises químicas e de solos|||
 |---|---|---|
 |**LABORATÓRIO: Suporte as aulas de análises químicas, soloe água**|||
 |**Quantidade**|**Equipamentos**|**Situação**|
@@ -592,7 +592,7 @@ De acordo com as orientações contidas no Catálogo Nacional de Cursos Técnico
 
 ## **Quadro 5** –Laboratório de Agroindústria e preparo de Caldas. 
 
-|**Quadro 5**–Laboratório deAgroindústria e preparo de Caldas.|**Quadro 5**–Laboratório deAgroindústria e preparo de Caldas.|**Quadro 5**–Laboratório deAgroindústria e preparo de Caldas.|
+|**Quadro 5**–Laboratório deAgroindústria e preparo de Caldas.|||
 |---|---|---|
 |**LABORATÓRIO: Suporte as aulas de agroindústria e preparo de caldas.**|||
 |**Quantidade**|**Equipamentos**|**Situação**|
@@ -644,7 +644,7 @@ De acordo com as orientações contidas no Catálogo Nacional de Cursos Técnico
 
 ## **Quadro 6** – Equipamentos para o Laboratório de Química 
 
-|**Quadro 6**– Equipamentos para oLaboratório de Química|**Quadro 6**– Equipamentos para oLaboratório de Química|**Quadro 6**– Equipamentos para oLaboratório de Química|
+|**Quadro 6**– Equipamentos para oLaboratório de Química|||
 |---|---|---|
 |**LABORATÓRIO: Química**|||
 |**LABORATÓRIO: Suporte as aulas de agroindústria e preparo de caldas**|||
@@ -684,7 +684,7 @@ De acordo com as orientações contidas no Catálogo Nacional de Cursos Técnico
 
 **Quadro 7** - Laboratório de Física. 
 
-|**Quadro 7** -Laboratório de Física.|**Quadro 7** -Laboratório de Física.||
+|**Quadro 7** -Laboratório de Física.|||
 |---|---|---|
 |**LABORATÓRIO: Física**|||
 |**Quantidade**|**Equipamentos**|**Situação**|
@@ -1025,7 +1025,7 @@ O curso Técnico em Agroecologia Integrado ao Ensino Médio contempla também, e
 
 ## **3.9.2 Ementas dos Componentes Curriculares** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado aoEnsinoMédio|**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaPortuguesa eLiteraturaBrasileiraI||
@@ -1040,7 +1040,7 @@ O curso Técnico em Agroecologia Integrado ao Ensino Médio contempla também, e
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaPortuguesa eLiteraturaBrasileiraII||
@@ -1085,7 +1085,7 @@ FARACO, Carlos Alberto. **Área de Linguagem: algumas contribuições para sua o
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaPortuguesa eLiteraturaBrasileiraIV||
@@ -1100,7 +1100,7 @@ FARACO, Carlos Alberto. **Área de Linguagem: algumas contribuições para sua o
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaEstrangeiraModernaI – Espanhol I||
@@ -1115,7 +1115,7 @@ FARACO, Carlos Alberto. **Área de Linguagem: algumas contribuições para sua o
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaEstrangeiraModernaI – Espanhol II||
@@ -1130,7 +1130,7 @@ FARACO, Carlos Alberto. **Área de Linguagem: algumas contribuições para sua o
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaEstrangeiraModernaI – Espanhol III||
@@ -1145,7 +1145,7 @@ FARACO, Carlos Alberto. **Área de Linguagem: algumas contribuições para sua o
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã-PRdo IFPR**|**Câmpus Ivaiporã-PRdo IFPR**|
+|**Câmpus Ivaiporã-PRdo IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos naturais|
 |**Componente Curricular**: LínguaEstrangeiraModernaI – Espanhol IV||
@@ -1350,7 +1350,7 @@ HOBSBAWM, Eric J. **A era dos impérios** (1875-1914). Trad. Marcos Penchel. Mar
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia Integrado ao<br>Ensino Médio|<br>**Eixo Tecnológico**: Recursos Naturais|
 |||
@@ -1366,7 +1366,7 @@ HOBSBAWM, Eric J. **A era dos impérios** (1875-1914). Trad. Marcos Penchel. Mar
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia Integrado ao<br>Ensino Médio|<br>**Eixo Tecnológico**: Recursos Naturais|
 |||
@@ -1670,7 +1670,7 @@ CARUSO, Francisco; OGURI, Vitor. **FÍSICA MODERNA ORIGENS CLÁSSICAS & FUNDAMEN
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Recursos Naturais|
 |**Componente Curricular:**Química II||
@@ -1773,7 +1773,7 @@ Funções oxigenadas: álcoois, aldeídos, cetonas, ácidos carboxílicos, éter
 
 - RUSSEL, J.B. **Química geral** . v. 2. 2 ed. São Paulo: Makron Books,1994. 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado aoEnsinoMédio|**Eixo Tecnológico:**recursos naturais|
 |**Componente Curricular**: BiologiaI||
@@ -1804,7 +1804,7 @@ LOPES, S.; ROSSO, S. **Biologia.** V. Único. Editora Saraiva, 2005, 608p. PARAN
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**recursos naturais|
 |**Componente Curricular**: BiologiaII||
@@ -1819,7 +1819,7 @@ LOPES, S.; ROSSO, S. **Biologia.** V. Único. Editora Saraiva, 2005, 608p. PARAN
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**recursos naturais|
 |**Componente Curricular**: BiologiaIII||
@@ -1834,7 +1834,7 @@ LOPES, S.; ROSSO, S. **Biologia.** V. Único. Editora Saraiva, 2005, 608p. PARAN
 
 ## **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**recursos naturais|
 |**Componente Curricular**: BiologiaIV||
@@ -2103,7 +2103,7 @@ COSSENZA, C. **Musculação:** Métodos e Sistemas. Tijuca, RJ: Editora Sprint L
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**IFPRcampus Ivaiporã**|**IFPRcampus Ivaiporã**|
+|**IFPRcampus Ivaiporã**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**: ArtesI||
@@ -2118,7 +2118,7 @@ COSSENZA, C. **Musculação:** Métodos e Sistemas. Tijuca, RJ: Editora Sprint L
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**IFPRcampus Ivaiporã**|**IFPRcampus Ivaiporã**|
+|**IFPRcampus Ivaiporã**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**: ArtesII||
@@ -2153,7 +2153,7 @@ ANDRIOLO, J.L. Olericultura geral: princípios e técnicas. 1ª ed. Santa Maria:
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular**: HorticulturaII||
@@ -2218,7 +2218,7 @@ RIZZINI, AgarezPereira. BotânicaAngiospermae - Taxomia, Morfologia, Reproduçã
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**:Solos eNutrição dePlantasI||
@@ -2339,7 +2339,7 @@ WATANABE, JorgeKenjiro; YAMAOKA, RuySeji; BARONI, SidneiAparecido. Cadeiaproduti
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**CâmpusIvaiporãdoIFPR**|**CâmpusIvaiporãdoIFPR**|**CâmpusIvaiporãdoIFPR**|
+|**CâmpusIvaiporãdoIFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado aoEnsinoMédio|**EixoTecnológico:**RecursosNaturais||
 |**ComponenteCurricular**: ProduçãoAnimalIV|||
@@ -2354,7 +2354,7 @@ WATANABE, JorgeKenjiro; YAMAOKA, RuySeji; BARONI, SidneiAparecido. Cadeiaproduti
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**CâmpusIvaiporãdoIFPR**|**CâmpusIvaiporãdoIFPR**|
+|**CâmpusIvaiporãdoIFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Agroecologia<br>Integrado aoEnsinoMédio|**EixoTecnológico:**RecursosNaturais|
 |**ComponenteCurricular**: Redação Técnica||
@@ -2369,7 +2369,7 @@ WATANABE, JorgeKenjiro; YAMAOKA, RuySeji; BARONI, SidneiAparecido. Cadeiaproduti
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**: Agroecologia eProcessosEcológicos||
@@ -2384,7 +2384,7 @@ WATANABE, JorgeKenjiro; YAMAOKA, RuySeji; BARONI, SidneiAparecido. Cadeiaproduti
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**: ProduçãoVegetal I||
@@ -2399,7 +2399,7 @@ WATANABE, JorgeKenjiro; YAMAOKA, RuySeji; BARONI, SidneiAparecido. Cadeiaproduti
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**: ProduçãoVegetal II||
@@ -2536,7 +2536,7 @@ PONTE, K. F. (Re) Pensando o conceito do rural. **Revista NERA** , n.7, 2004.
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**:SaneamentoRural I||
@@ -2625,7 +2625,7 @@ MUNHOZ, R. **Inglês instrumental** : estratégias de leitura. São Paulo: Texto
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:** Técnico<br>em<br>Agroecologia<br>Integrado ao Ensino Médio|<br>**Eixo Tecnológico**: Recursos Naturais|
 |||
@@ -2641,7 +2641,7 @@ MUNHOZ, R. **Inglês instrumental** : estratégias de leitura. São Paulo: Texto
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:** Técnico<br>em<br>Agroecologia<br>Integrado ao Ensino Médio|**Eixo Tecnológico**: Recursos Naturais|
 |||
@@ -2735,7 +2735,7 @@ História da Homeopatia. Matérias médicas do reino vegetal, animal e mineral. 
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**CâmpusIvaiporãdoIFPR**|**CâmpusIvaiporãdoIFPR**|
+|**CâmpusIvaiporãdoIFPR**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado aoEnsinoMédio|**EixoTecnológico:**RecursosNaturais|
 |**ComponenteCurricular**: ProjetoIntegradorem Produção Animal Sustentável I||
@@ -2814,7 +2814,7 @@ LUZ, WilmarCório da Luz.Diagnose e controle das doenças da espiga de milho. Ci
 
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
-|**Campus de Ivaiporã**|**Campus de Ivaiporã**|
+|**Campus de Ivaiporã**||
 |---|---|
 |**Curso:**Técnico em Agroecologia<br>Integrado aoEnsinoMédio|**Eixo Tecnológico:**Recursos Naturais|
 |**Componente Curricular**: ProjetoIntegradoremSociologiaRural||

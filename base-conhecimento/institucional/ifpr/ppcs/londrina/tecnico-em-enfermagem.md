@@ -729,7 +729,7 @@ O Quadro 2 apresenta os pré-requisitos exigidos para cada componente curricular
 
 ## **QUADRO 2 - PRÉ-REQUISITOS PARA MATRÍCULA DE CADA COMPONENTE CURRICULAR**
 
-|**Semestre 1**|**Semestre 1**|
+|**Semestre 1**||
 |---|---|
 ||**Pré-requisitos para matrícula no componente**<br>**curricular**|
 |**Componentes curriculares**||
@@ -859,7 +859,7 @@ Pesquisa bibliográfica; Comitê de ética; Coleta de dados; Análise e discuss�
 
 As referências básicas e complementares dos componentes curriculares do Curso Técnico em Enfermagem estão de acordo com as normas para execução da política de formação e desenvolvimento de coleções das bibliotecas do Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR). Seguem abaixo com as ementas, na sequência lógica da matriz curricular:
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Anatomia e Fisiologia|||
@@ -868,7 +868,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>ELER, G. J. (org.).**Anatomia e fisiologia aplicadas à enfermagem**. Curitiba: CRV, 2020.<br>MOORE, K. L; Dalley A. F.; AGUR A.M.R.**Anatomia orientada para a clínica**. Rio de<br>Janeiro: Guanabara Koogan, 2012.<br>TORTORA, G. J.; DERRICKSON, B.**Princípios de anatomia e fisiologia**. 14. ed. Rio de<br>Janeiro: Guanabara Koogan, 2016.<br>ANATOMIA & fisiologia. Rio de Janeiro: Guanabara Koogan, 2003.<br>PEZZI, L. H. A._et al_.**Anatomia clínica baseada em problemas**. Rio de Janeiro: Guanabara<br>Koogan, 2012.|||
 |**Bibliografia Complementar:**<br>BRASIL. Ministério da Saúde. Secretaria de Gestão do Trabalho e da Educação na Saúde.<br>**Profissionalização de auxiliares de enfermagem**: cadernos do aluno: instrumentalizando a<br>ação profissional 1. 2. ed. rev. Brasília: Ministério da Saúde, 2003.<br>DRAKE, R. L.; VOGL, W.; MITCHELL, A. W. M.**Gray's**: anatomia para estudantes. 2. ed.<br>Rio de Janeiro: Elsevier, 2010.<br>ARAUJO, C. R. A.; ANTUNES, E. D.**Anatomia humana**. Curitiba: LT, 2011.<br>KAWAMOTO, E. E.**Anatomia e fisiologia humana**. 3. ed. São Paulo: EPU, 2009.<br>PAULSEN, F. ; WASCHKE, J. (coord.).**Sobotta**: atlas de anatomia humana: anatomia geral<br>e sistema muscular. 23. ed. Rio de Janeiro: Guanabara Koogan, 2012.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Biossegurança nos serviços de saúde|||
@@ -877,7 +877,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>CORINGA, J. E. S.**Biossegurança**. Curitiba: Editora do Livro Técnico, 2010.<br>COUTO, R. C.; PEDROSA, T. M. G.; CUNHA, A. F. A.; AMARAL, D. B.**Infecção**<br>**Hospitalar e outras complicações não-infecciosas da doença**. 4. ed. Rio de Janeiro:<br>Guanabara Koogan, 2009.<br>SILVA, A. S. F.; RIBEIRO, M. C.; RISSO, M.**Biossegurança em Odontologia e ambientes**<br>**de saúde**. 2.ed. rev. e ampl. São Paulo: Ícone, 2009.<br>SILVA, J. V.; BARBOSA, S. R. M.; DUARTE, S. R. M. P. (org).**Biossegurança no contexto**<br>**da saúde**. São Paulo: Iátria: 2013<br>TORTORA, G.; FUNKE, B.; CASE, C.**Microbiologia**. 10. ed. Porto Alegre: Artmed, 2012.|||
 |**Bibliografia Complementar:**<br>CORRÊA, L.; SILVA, A. A.; FERNANDES, M. V. L. (coord.).**Precauções e isolamento**. 2.<br>ed. rev. e ampl. São Paulo: Associação Paulista de Epidemiologia e Controle de Infecção<br>Relacionada à Assistência à Saúde, 2012.<br>AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA (BRASIL).**Critérios diagnósticos**<br>**de infecção relacionada à assistência à saúde**. Brasília: ANVISA, 2017._E-book._Disponível<br>em: https://bityli.com/LoeOLTwp. Acesso em: 19 out. 2022.<br>AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA (BRASIL).**Medidas de prevenção**<br>**de infecção relacionada à assistência à saúde**. Brasília: ANVISA, 2017._E-book._Disponível<br>em: https://bityli.com/FrzBNF. Acesso em: 19 out. 2022.<br>AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA (BRASIL).**Segurança do paciente**<br>**em serviços de saúde: limpeza e desinfecção de superfícies**. Brasília: ANVISA, 2012.<br>Disponível em:  https://bityli.com/jzMpzbpS. Acesso em: 19 out. 2022.<br>AGÊNCIA NACIONAL DE VIGILÂNCIA SANITÁRIA (BRASIL).**Manual de referência**<br>**técnica para a higiene das mãos**. Brasília: ANVISA, 2009. Disponível em:<br>https://bityli.com/NKTwpGoK. Acesso em: 19 out. 2022.<br>BRASIL. Ministério da Saúde. Secretaria de Vigilância em Saúde.**Guia de Vigilância**<br>**Epidemiológica**. 7. ed. Brasília: Ministério da Saúde, 2009. Disponível em:<br>http://bvsms.saude.gov.br/bvs/publicacoes/guia_vigilancia_epidemiologica_7ed.pdf. Acesso<br>em: 19 out. 2022.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Fundamentos de Enfermagem I|||
@@ -886,7 +886,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>PEREIRA, F. G.; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiânia: AB Ed., 2020.<br>PERRY, A. G.**Guia completo de procedimentos e competências de enfermagem**. 9. ed. Rio<br>de Janeiro: Guanabara Koogan, 2021.<br>SILVA, G. T. R.; SILVA, S. R. L. P. T.(org.).**Manual do técnico e auxiliar de enfermagem**.<br>3. ed. São Paulo: Martinari, 2021.<br>POTTER, P. A._et al_.**Fundamentos de enfermagem**. 8. ed. Rio de Janeiro: Elsevier, 2013.<br>TAYLOR, C._et al_.**Fundamentos de enfermagem**: a arte e a ciência do cuidado de<br>enfermagem. 7. ed. Porto Alegre: Artes Médicas, 2014. 1768 p.<br>SILVA, C. R. L._et al._**Feridas**: fundamentos e atualizações em enfermagem. 3. ed., rev. e<br>ampl. São Caetano do Sul: Yendis, 2011.|||
 |**Bibliografia Complementar:**<br>FUNDAMENTOS de enfermagem. Rio de Janeiro: Guanabara Koogan, 2008. (Incrivelmente<br>fácil).<br>PIANUCCI, A.**Saber cuidar**: procedimentos básicos em enfermagem. 17. ed. São Paulo:<br>Senac São Paulo, 2018. (Série apontamentos).<br>POSSARI, J. F.**Prontuário do paciente e os registros de enfermagem**. 2. ed. São Paulo:<br>Iátria, 2007.<br>OLIVEIRA, R. G.**Blackbook enfermagem**. Belo Horizonte: Blackbook, 2016. (Série<br>Blackbook).<br>PORTO, Andrea; VIANA, Dirce Laplaca (org).**Curso didático de enfermagem**. 10. ed. São<br>Caetano do Sul: Yendis, 2017._E-book_.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Introdução à Enfermagem|||
@@ -895,7 +895,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>CONSELHO FEDERAL DE ENFERMAGEM.**Resolução Cofen 564 [de] 6 de novembro**<br>**de 2007.**Código de Ética dos Profissionais de Enfermagem. Brasília, 2017.Disponível em:<br>http://www.cofen.gov.br/resolucao-cofen-no-5642017_59145.html. Acesso em: 18 out. 2022.<br>GEOVANINI, T._et al_.**História da Enfermagem**: versões e interpretações. 4 ed. Rio de<br>Janeiro: Revinter, 2019.<br>PEREIRA, F. G.; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiania: AB Ed., 2020.<br>OGUISSO, T.**Trajetória histórica e legal da Enfermagem**. 2 ed. São Paulo: Manole, 2007.<br>PORTO, F.; AMORIM, W. (Coord).**História da enfermagem**: identidade, profissionalização<br>e símbolos. 2. ed. São Caetano do Sul: Yendis, 2013.|||
 |**Bibliografia Complementar:**<br>BRASIL, Ministério da Saúde.**Profissionalizacao de auxiliares de enfermagem**: cadernos<br>do aluno: fundamentos de enfermagem. Brasília: Ministério da Saúde, 2001.<br>POTTER, P. A._et al_.**Grande tratado de enfermagem prática**: clínica e prática hospitalar.<br>3. ed. São Paulo: Santos, 1998.<br>POTTER, P. A._et al_.**Fundamentos de enfermagem**. 9. ed. Rio de Janeiro: Elsevier, c2017.<br>PERRY, A. G.**Guia completo de procedimentos e competências de enfermagem**. 9. ed. Rio<br>de Janeiro: Guanabara Koogan, 2021.<br>RIZZOTTO, M. L. F.**História da enfermagem e sua relação com a saúde pública**. Goiânia:<br>AB Ed., 1999.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Noções de Primeiros Socorros|||
@@ -904,7 +904,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>SOS cuidados emergenciais. São Paulo: Rideel, 2002.<br>SANTOS, Nívea Cristina Moreira.**Urgência e emergência para a enfermagem: do**<br>**atendimento pré-hospitalar (APH) à sala de emergência.**7. ed. São Paulo: Érica, 2019.<br>VOLPATO, Andrea Cristine Bressane; SILVA, Evandro de Sena.**Primeiros socorros**. São<br>Paulo: Martinari, 2017.<br>ZORZE, C. M. F. S.; PARTAMIAN, R. Primeiros socorros.  In: MURTA, Genilda Ferreira<br>(org.).**Saberes e práticas**: guia para ensino e aprendizagem de enfermagem. 8. ed. São<br>Caetano do Sul: Difusão, 2014. p. 159-178.|||
 |**Bibliografia Complementar:**<br>GOMES, Dino Roberto; SERRA, Maria Cristina; GUIMARÃES JÚNIOR, Luiz Macieira.<br>**Condutas atuais em queimaduras**. Rio de Janeiro: Revinter, 2001.<br>HAFEN, Brent Q.; KARREN, Keith J.; FRANDSEN, Kathryn J.**Guia de primeiros socorros**<br>**para estudantes**. 7.ed. São Paulo: Manole, 2002.<br>KAWAMOTO, Emília Emi.**Acidentes**: como socorrer e prevenir. São Paulo: EPU, 2002.<br>ATENDIMENTO pré-hospitalar ao traumatizado: PHTLS : prehospital trauma life support. 9.<br>ed. Burlington, MA: Jones & Bartlett Learning, 2021.<br>SUEOKA, Júnia Shizue; ABGUSSEN, Carla Maria Balieiro (Org.).**APH - resgate**:<br>emergência em trauma. Rio de Janeiro: Elsevier, 2019.<br>SOCIEDADE BRASILEIRA DE CARDIOLOGIA. Atualização da diretriz de ressuscitação<br>cardiopulmonar e cuidados cardiovasculares de emergência da Sociedade Brasileira de<br>Cardiologia.**Arquivos Brasileiros de Cardiologia**, Rio de Janeiro, v. 113, n. 3, p. 449-663,<br>2019. Disponível em: https://bityli.com/RCyDGX. Acesso em: 18 out. 2022.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Saúde Coletiva I|||
@@ -913,7 +913,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>ANDRADE, Selma Maffei de_et al._(org.).**Bases da saúde coletiva**. 2. ed., rev. e ampl.<br>Londrina: EDUEL, 2017.<br>BERTOLLI FILHO, Cláudio.**História da saúde pública no Brasil**. 5. ed. São Paulo: Ática,<br>2011. 72 p.<br>CRIVELLARO, J. L. G.**Sistema Único de Saúde e Saúde Coletiva.**Curitiba: Livro Técnico,<br>2012.<br>FIGUEIREDO, Nébia Maria Almeida de_et al_.**Ensinando a cuidar em saúde pública**. 2. ed.<br>São Paulo: Yendis, 2012.<br>BRASIL. Ministério da Saúde.**SUS**: a saúde do Brasil. Brasília: Ed. Ministério da Saúde,<br>2011._E-book._(Série F. Comunicação e Educação em Saúde). Disponível em:<br>https://bvsms.saude.gov.br/bvs/publicacoes/sus_saude_brasil_3ed.pdf. Acesso em: 17 out.<br>2022.|||
 |**Bibliografia Complementar:**<br>CAMPOS, Gastão Wagner de Sousa (org.)_et al._ **Tratado de saúde coletiva**. 2. ed. rev. e aum.<br>São Paulo: Hucitec, c2012.<br>COSTA, Elisa Maria Amorim da; CARBONE, Maria Herminda.**Saúde da família**: uma<br>abordagem multidisciplinar. 2. ed. Rio de Janeiro: Rubio, 2009.<br>KAWAMOTO, Emília Emi; SANTOS, Maria Cristina Honório dos; MATTOS, Thalita Maia<br>de.**Enfermagem comunitária**. 2. ed. atual. e ampl. São Paulo: EPU, 2009.<br>PEREIRA, Fernanda Guilarducci; LIMA, Idelmina Lopes de; MATÃO, Maria Eliane Liégio<br>(org.).**Manual do técnico e auxiliar de enfermagem**. 10. ed. Goiania: AB Ed., 2020.<br>PORTO, Andrea; VIANA, Dirce Laplaca (org).**Curso didático de enfermagem**. 10. ed. São<br>Caetano do Sul: Yendis, 2017._E-book_.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Fundamentos de Enfermagem I|||
@@ -922,7 +922,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>PEREIRA, F. G.; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiânia: AB Ed., 2020.<br>PORTO, Andrea; VIANA, Dirce Laplaca (org).**Curso didático de enfermagem**. 10. ed. São<br>Caetano do Sul: Yendis, 2017._E-book_.<br>POTTER, P. A._et al._ **Grande tratado de enfermagem prática**: clínica e prática hospitalar.<br>3. ed. São Paulo: Santos, 1998.<br>SILVA, G. T. R.; SILVA, S. R. L. P. T. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 3. ed. São Paulo: Martinari, 2021.<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: fundamentos de enfermagem. 2. ed., rev. Brasília: Ministério da Saúde, 2001.|||
 |**Bibliografia Complementar:**<br>TAYLOR, C. et al.**Fundamentos de enfermagem**: a arte e a ciência do cuidado de<br>enfermagem. 7. ed. Porto Alegre: Artes Médicas, 2014. 1768 p.<br>PERRY, A. G.**Guia completo de procedimentos e competências de enfermagem**. 9. ed.<br>Rio de Janeiro: Guanabara Koogan, 2021.<br>POSSARI, J. F.**Prontuário do paciente e os registros de enfermagem**. 2. ed. São Paulo:<br>Iátria, 2007.<br>POTTER, P. A. et al.**Fundamentos de enfermagem**. 9. ed. Rio de Janeiro: Elsevier, c2017.<br>CONSELHO FEDERAL DE ENFERMAGEM.**Guia de recomendações**: para registro de<br>enfermagem no prontuário do paciente e outros documentos de enfermagem. Brasília:<br>COFEN, [2015]._E-book._Disponível em: https://bityli.com/cakxhAEj. Acesso em: 18 out.<br>2022.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Fundamentos de Enfermagem II|||
@@ -931,7 +931,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>PEREIRA, F. G.; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiania: AB Ed., 2020.<br>SOUZA, A. B. G. (ed.).**Manual prático do técnico de enfermagem**. Rio de Janeiro: Atheneu,<br>2021.<br>PORTO, A.; VIANA, D. L. (org).**Curso didático de enfermagem**. 10. ed. São Caetano do<br>Sul: Yendis, 2017._E-book_.<br>POTTER, P. A._et al_.**Fundamentos de enfermagem**. 9. ed. Rio de Janeiro: Elsevier, c2017.<br>FONSECA, A. L.; SANTOS, M. N. (ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.|||
 |**Bibliografia Complementar:**<br>FIGUEIREDO, Nébia Maria Almeida de et al.**Práticas de enfermagem:**apresentando a<br>enfermagem e sua prática: fundamentos, conceitos, situações e exercícios. 2. ed. São Paulo:<br>Difusão Paulista de Enfermagem, 2002. 479 p<br>PIANUCCI, Ana.**Saber cuidar:**procedimentos básicos em enfermagem. 14. ed. São Paulo:<br>SENAC São Paulo, 2010. 292 p.<br>SILVA, G. T. R.; SILVA, S. R. L. P. T. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 3. ed. São Paulo: Martinari, 2021.<br>GOLDENZWAIG, N. R. S. C.**Administração de medicamentos na enfermagem.**10. ed.<br>São Paulo: AC Farmacêutica, 2012.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Farmacologia Aplicada à Enfermagem|||
@@ -940,7 +940,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>KATZUNG, B. G.**Farmacologia básica e clínica**. 10. Ed. Porto Alegre: AMGH, 2010.<br>MAYER, B.**Noções de farmacologia**. Curitiba: Editora do Livro Técnico, 2010.<br>ARONE, E. M.**Cálculos e conceitos em farmacologia**. 17. ed. São Paulo: Ed. Senac São<br>Paulo, 2013.<br>FONSECA, A. L.; SANTOS, M. N. (ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.<br>UTYAMA, I. K. A._et al._(org.).**Matemática aplicada à enfermagem**: cálculo de dosagens<br>em adultos e crianças. 2. ed. São Paulo: Atheneu, 2014.|||
 |**Bibliografia Complementar:**<br>GOLDENZWAIG, N. R. S. C.**Administração de medicamentos na enfermagem.**10. ed.<br>São Paulo: AC Farmacêutica, 2012.<br>GUARESCHI, A. P. D. F.; CARVALHO, L. V. B.; SALATI, M. I.**Medicamentos em**<br>**enfermagem**: farmacologia e administração. Rio de Janeiro: Guanabara Koogan, 2017.<br>SILVA, M. T.; SILVA, S. R. L. P. T.**Cálculo e administração de medicamentos na**<br>**enfermagem**. 4. ed. São Paulo: Martinari, 2014.<br>VIANA, D.  L.; SILVA, E. S.**Guia de medicamentos e cuidados de enfermagem**. São Paulo:<br>Yendis, 2010.<br>AMADEI, J. L.; ESTÉFANI, C. P.**Orientações para uso de medicamentos por sonda**. São<br>Paulo: Atheneu, 2012.<br>TORRIANI, M. S._et al_.**Medicamentos de A a Z:**2016-2018 : enfermagem. Porto Alegre:<br>Artmed, 2016.<br>HILAL-DANDAN, R.; BRUNTON, L. L.**Manual de farmacologia e terapêutica de**<br>**Goodman & Gilman**. 2. ed. Porto Alegre: McGraw-Hill, 2015.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Saúde da Mulher|||
@@ -949,7 +949,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica**:<br>BARROS, S. M. O. (org.).**Enfermagem no ciclo gravídico-puerperal**. São Paulo: Manole,<br>2006.<br>FERNANDES, R. A. Q.; NARCHI, N. Z. (org).**Enfermagem e saúde da mulher**. Barueri:<br>Manole, 2007.<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde da mulher, da criança e do adolescente. 2. ed. Brasília, DF: Ministério da<br>Saúde, 2002. p. 16-42.<br>MONTENEGRO, C. A. B.; REZENDE FILHO, J.**Rezende, Obstetrícia fundamental**. 14.<br>ed. Rio de Janeiro: Guanabara Koogan, 2018.|||
 |**Bibliografia Complementar**:<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde da mulher, da criança e do adolescente. 2. ed. Brasília, DF: Ministério da<br>Saúde, 2002. p. 86-122.<br>CARVALHO, G. M.**Enfermagem em obstetrícia**. 3.ed. rev. e amp. São Paulo: EPU, 2007.<br>CASTRO, L. M. C. P. ; ARAÚJO, L. D. S. (org.).**Aleitamento materno**: manual prático. 2.<br>ed. Londrina: Prefeitura de Londrina, 2006. 212 p.<br>CZERESNIA, D.; FREITAS, C. M. (org.).**Promoção da saúde**: conceitos, reflexões,<br>tendências. 2. ed. rev. e ampl. Rio de Janeiro: Fiocruz, 2009.<br>SANTOS, N. C. M.**Enfermagem em ginecologia e saúde da mulher**. São Paulo: Érica, 2019.<br>RICCI, S. S.**Enfermagem materno-neonatal e saúde da mulher**. Rio de Janeiro: Guanabara<br>Koogan, 2015.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Saúde da Criança e do Adolescente|||
@@ -958,7 +958,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>COLLET, N.; OLIVEIRA, B. R. G.; VIERA, C. S. (coord.).**Manual de enfermagem em**<br>**pediatria**. 3. ed., rev., atual. e ampl. Goiás: AB Ed., 2020.<br>HOCKENBERRY, M. J.; WILSON, D.; RODGERS, C. C.**Wong, Fundamentos de**<br>**enfermagem pediátrica**. 10. ed. Rio de Janeiro: Elsevier, 2018.<br>TOSO, B. R. G. O.; VIERA, C. S.; FIEWSKI, M. F. C. (coord.).**Cuidado de enfermagem ao**<br>**neonato, à criança e ao adolescente na atenção primária em saúde**. Cascavel:<br>EDUNIOESTE, 2017.<br>MARCONDES, E._et al._ **Pediatria básica.**9. ed. São Paulo: Sarvier, 2002.<br>BRASIL. Ministério da Saúde.**Saúde da criança:**crescimento e desenvolvimento. Brasília:<br>Ministério da Saúde, 2012._E-book._Disponível em: https://bityli.com/ObSjlfZSV. Acesso em:<br>20 out. 2022.|||
 |**Bibliografia Complementar:**<br>SOUZA, A. B. G. (org.).**Manual prático de enfermagem pediátrica**. Rio de Janeiro:<br>Atheneu, 2018.<br>CAMPOS, J.  D.; BURNS, D. A. R.; LOPEZ, F. A.**Tratado de Pediatria**. Barueri: Manole,<br>2013.<br>OLIVEIRA, R. G.**Blackbook pediatria**. 5. ed. Belo Horizonte: Blackbook, 2019. (Série<br>Blackbook).<br>BURNS, D. A. R. (org.)_et al._ **Tratado de pediatria**: Sociedade Brasileira de Pediatria. 4. ed.<br>Barueri: Manole, 2014.<br>FERREIRA, A. V. S._et al._(coord.).**Emergências pediátricas**: uma abordagem baseada em<br>casos clínicos e evidências científicas. Barueri: Manole, 2014.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Fundamentos de Enfermagem II|||
@@ -967,7 +967,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>PEREIRA, F. G.; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiania: AB Ed., 2020.<br>NETTINA, Sandra M.**Prática de enfermagem**. 10. ed. Rio de Janeiro: Guanabara Koogan,<br>2016.<br>PORTO, Andrea; VIANA, Dirce Laplaca (org).**Curso didático de enfermagem**. 10. ed. São<br>Caetano do Sul: Yendis, 2017._E-book_.<br>POTTER, P. A. et al.**Fundamentos de enfermagem**. 9. ed. Rio de Janeiro: Elsevier, c2017.<br>PERRY, A. G.**Guia completo de procedimentos e competências de enfermagem**. 9. ed. Rio<br>de Janeiro: Guanabara Koogan, 2021.<br>FONSECA, A. L.; SANTOS, M. N. (ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.|||
 |**Bibliografia Complementar:**<br>FIGUEIREDO, Nébia Maria Almeida de et al.**Práticas de enfermagem:**apresentando a<br>enfermagem e sua prática: fundamentos, conceitos, situações e exercícios. 2. ed. São Paulo:<br>Difusão Paulista de Enfermagem, 2002. 479 p<br>SILVA, G. T. R.; SILVA, S. R. L. P. T.(org.).**Manual do técnico e auxiliar de enfermagem**.<br>3. ed. São Paulo: Martinari, 2021.<br>PIANUCCI, A.**Saber cuidar**: procedimentos básicos em enfermagem. 17. ed. São Paulo:<br>Senac São Paulo, 2018. (Série apontamentos).<br>CARMAGNANI, M. I. S._et al_.**Procedimentos de enfermagem**: guia prático. 2. ed. Rio de<br>Janeiro: Guanabara Koogan, 2017.<br>GOLDENZWAIG, N. R. S. C.**Administração de medicamentos na enfermagem.**10. ed.<br>São Paulo: AC Farmacêutica, 2012.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Saúde da Mulher|||
@@ -976,7 +976,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica**:<br>BARROS, S. M. O. (org.).**Enfermagem no ciclo gravídico-puerperal**. São Paulo: Manole,<br>2006.<br>FERNANDES, R. A. Q.; NARCHI, N. Z. (org).**Enfermagem e saúde da mulher**. Barueri:<br>Manole, 2007.<br>BRASIL; Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde da mulher, da criança e do adolescente. 2. ed. Brasília: Ministério da Saúde,<br>2002. p. 16-42.<br>MONTENEGRO, C. A. B.; REZENDE FILHO, J.**Rezende, Obstetrícia fundamental**. 14.<br>ed. Rio de Janeiro: Guanabara Koogan, 2018.|||
 |**Bibliografia Complementar**:<br>BRASIL; Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde da mulher, da criança e do adolescente. 2. ed. Brasília: Ministério da Saúde,<br>2002. p. 86-122.<br>CARVALHO, G. M.**Enfermagem em obstetrícia**. 3.ed. rev. e amp. São Paulo: EPU, 2007.<br>CASTRO, L. M. C. P.; ARAÚJO, L. D. S. (org.).**Aleitamento materno**: manual prático. 2.ed.<br>Londrina: Prefeitura de Londrina, 2006. 212 p.<br>CZERESNIA, D.; FREITAS, C. M. (org.).**Promoção da saúde**: conceitos, reflexões,<br>tendências. 2. ed. rev. e ampl. Rio de Janeiro: Fiocruz, 2009.<br>SANTOS, N. C. M.**Enfermagem em ginecologia e saúde da mulher**. São Paulo: Érica, 2019.<br>RICCI, S. S.**Enfermagem materno-neonatal e saúde da mulher**. Rio de Janeiro: Guanabara<br>Koogan, 2015.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Saúde da Criança e do Adolescente|||
@@ -985,7 +985,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>COLLET, N.; OLIVEIRA, B. R. G.; VIERA, C. S. (coord.).**Manual de enfermagem em**<br>**pediatria**. 3. ed., rev., atual. e ampl. Goiás: AB Ed., 2020.<br>HOCKENBERRY, M. J.; WILSON, D.; RODGERS, C. C.**Wong, Fundamentos de**<br>**enfermagem pediátrica**. 10. ed. Rio de Janeiro: Elsevier, 2018.<br>TOSO, B. R. G. O.; VIERA, C. S.; FIEWSKI, M. F. C. (coord.).**Cuidado de enfermagem**<br>**ao neonato, à criança e ao adolescente na atenção primária em saúde**. Cascavel:<br>EDUNIOESTE, 2017.<br>MARCONDES, E._et al_.**Pediatria básica**. 9. ed. São Paulo: Sarvier, 2002.<br>BRASIL. Ministério da Saúde.**Saúde da criança**: crescimento e desenvolvimento. Brasília:<br>Ministério da Saúde, 2012._E-book_. Disponível em: https://bityli.com/ObSjlfZSV. Acesso em:<br>20 out. 2022.|||
 |**Bibliografia Complementar:**<br>SOUZA, A. B. G. (org.).**Manual prático de enfermagem pediátrica**. Rio de Janeiro:<br>Atheneu, 2018.<br>CAMPOS, J.  D.; BURNS, D. A. R.; LOPEZ, F. A.**Tratado de Pediatria**. Barueri: Manole,<br>2013.<br>OLIVEIRA, R. G.**Blackbook pediatria**. 5. ed. Belo Horizonte: Blackbook, 2019. (Série<br>Blackbook).<br>BURNS, D. A. R. (org.)_et al_.**Tratado de pediatria**: Sociedade Brasileira de Pediatria. 4. ed.<br>Barueri: Manole, 2014.<br>FERREIRA, A. V. S._et al_. (coord.).**Emergências pediátricas**: uma abordagem baseada em<br>casos clínicos e evidências científicas. Barueri: Manole, 2014.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Saúde Coletiva II|||
@@ -994,7 +994,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>ANDRADE, S. M._et al_. (org.).**Bases da saúde coletiva**. 2. ed., rev. e ampl. Londrina:<br>EDUEL, 2017.<br>CRIVELLARO, J. L. G.**Sistema Único de Saúde e Saúde Coletiva**. Curitiba: Livro Técnico,<br>2012.<br>FIGUEIREDO, N. M. A.; TONINI, T. (org.).**SUS e saúde da família**para enfermagem:<br>práticas para o cuidado em saúde coletiva. 2. ed. São Caetano do Sul: Yendis, 2012<br>GUSSO, G. D. F.; LOPES, J. M. C. (org.).**Tratado de medicina de família e comunidade**:<br>princípios, formação e prática. Porto Alegre: Artmed, 2012.<br>PINHEIRO, A. K. S.**Manual de vigilância epidemiológica e sanitária**. 2. ed. Goiânia: AB<br>Ed., 2017.|||
 |**Bibliografia Complementar:**<br>BRASIL. Ministério da Saúde. Secretaria de Vigilância em Saúde.**Plano de ações**<br>**estratégicas para o enfrentamento das doenças crônicas não transmissíveis (DCNT) no**<br>**Brasil:**<br>2021-2030.<br>Brasília:<br>Ministério<br>da<br>Saúde,<br>2021.<br>_E-book_.<br>Disponível:<br>https://bityli.com/XrqlucXE. Acesso em: 21 out. 2022.<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde coletiva. Brasília: Ministério da Saúde, 2001.<br>COSTA, E. M. A.; CARBONE, M. H.**Saúde da família**: uma abordagem interdisciplinar. Rio<br>de Janeiro: Rubio, 2009.<br>KAWAMOTO, E. E.; SANTOS, M. C. H.; MATTOS, T. M.**Enfermagem comunitária**. 2.<br>ed. atual. e ampl. São Paulo: EPU, 2009.<br>FIGUEIREDO, N. M. A._et al._ **Ensinando a cuidar em saúde pública**. 2. ed. São Paulo:<br>Yendis, 2012.<br>SOUZA, M. C. M. R.; HORTA, N. C.**Enfermagem em saúde coletiva**: teoria e prática. 2.<br>ed. Rio de Janeiro: Guanabara Koogan, 2017.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Clínica Médica|||
@@ -1003,7 +1003,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>FIGUEIREDO, N. M. A.; MACHADO, W. C. A. (org.).**Tratado cuidados de enfermagem**<br>**médico-cirúrgico**. São Paulo: Roca, 2012. 2 v.<br>FONSECA, A. L.; SANTOS, M. N. (ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.<br>NETTINA, S. M.**Prática de enfermagem**. 9. ed. Rio de Janeiro: Guanabara Koogan, 2011.<br>OLIVEIRA, R. G..**Blackbook enfermagem**. Belo Horizonte: Blackbook, 2016. (Série<br>Blackbook).<br>SMELTZER, S. C. O._et al_.**Brunner & Suddarth**: tratado de enfermagem médico-cirúrgica.<br>12. ed. Rio de Janeiro: Guanabara Koogan, 2011. 2 v.|||
 |**Bibliografia Complementar:**<br>BARROS, K. M.; LEMOS, I. C.**Processo de Enfermagem**: fundamentos e discussão de casos<br>clínicos. São Paulo: Atheneu, 2016._E-book_.<br>BERGAMASCO, E. C. (org.)_et al_.**Habilidades clínicas em enfermagem**. Rio de Janeiro:<br>Guanabara Koogan, 2020.<br>PEREIRA, F. G. ; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiânia: AB Ed., 2020.<br>PERRY, A. G.**Guia completo de procedimentos e competências de enfermagem**. 9. ed. Rio<br>de Janeiro: Guanabara Koogan, 2021.<br>SILVA, G. T. R.; SILVA, S. R. L. P. T. (org.).**Manual do técnico e auxiliar de enfermagem**.<br>3. ed. São Paulo: Martinari, 2021.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Clínica Cirúrgica|||
@@ -1012,7 +1012,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>ARIAS LÓPEZ, M.; REDONDO DE LA CRUZ, M. J.**Centro cirúrgico**. Rio de Janeiro:<br>McGraw-Hill Interamericana do Brasil, 2002.<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde do adulto: assistência cirúrgica, atendimento de emergência. Brasília:<br>Ministério da Saúde, 2001.<br>FIGUEIREDO, N. M. A._et al_.**Ensinando a cuidar de clientes em situações clínicas e**<br>**cirúrgicas**. São Paulo: Difusão Paulista de Enfermagem, 2003.<br>UENISHI, E. K.**Enfermagem médico-cirúrgica em unidade de terapia intensiva**. 11. ed.<br>São Paulo: Senac São Paulo, 2017.<br>SALMON, V. R. R.**Enfermagem em centro cirúrgico**: e central de material. Curitiba:<br>Editora do Livro Técnico, 2013.|||
 |**Bibliografia Complementar:**<br>DIRETRIZES de práticas em enfermagem cirúrgica e processamento de produtos para a saúde.<br>7. ed., rev. e atual. Barueri: Manole, 2017.<br>SANTOS, N. C. M.**Centro cirúrgico e os cuidados de enfermagem**. 6. ed. rev. São Paulo:<br>Iátria, 2010.<br>SILVA, M. D. A.; RODRIGUES, A. L.; CESARETTI, I. U. R.**Enfermagem na unidade de**<br>**centro cirúrgico**. 2. ed. São Paulo: EPU, 1997.<br>KAWAMOTO, E. E.**Enfermagem em clínica cirúrgica**. 3. ed. São Paulo: EPU, 2008.<br>SMELTZER, S. C. O. et al.**Brunner & Suddarth**: tratado de enfermagem médico-cirúrgica.<br>12. ed. Rio de Janeiro: Guanabara Koogan, 2011. 2 v.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Orientaçãopara o Trabalho de Conclusão de Curso I|||
@@ -1021,7 +1021,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>BREVIDELLI, M. M.; SERTÓRIO, S. C. M.**TCC-trabalho de conclusão de curso**: guia<br>prático para docentes e alunos da área da saúde. 4. ed. São Paulo: Iátria, 2010.<br>GIL, A. C.**Como elaborar projetos de pesquisa**. 5. ed. São Paulo: Atlas, 2010.<br>CASTRO, E. C. et al.**Manual de normas para apresentação de trabalhos acadêmicos do**<br>**Instituto Federal do Paraná**: padrão ABNT. Curitiba: IFPR, 2022.<br>MARCONI, M. A.; LAKATOS, E. M.**Fundamentos de metodologia científica**. 7. ed. São<br>Paulo: Atlas, 2010.<br>MEDEIROS, J. B.**Redação científica**: a prática de fichamentos, resumos, resenhas. 11. ed.<br>São Paulo: Atlas, 2009.|||
 |**Bibliografia Complementar:**<br>FAULSTICH, E. L. J.**Como ler, entender e redigir um texto**. 26. ed. Petrópolis: Vozes,<br>2013.<br>FERREIRA, H. S.**Redação de trabalhos acadêmicos nas áreas das ciências biológicas e da**<br>**saúde**. Rio de Janeiro: Rubio, c2012.<br>MARCONI, M. A.; LAKATOS, E. M.**Técnicas de pesquisa**. 8. ed. São Paulo: Atlas, 2017.<br>SEVERINO, A. J.**Metodologia do trabalho científico**. 23. ed. rev. e atual. São Paulo: Cortez,<br>2007.<br>GUSTAVII, B.**Como escrever e ilustrar um artigo científico**. São Paulo: Parábola Editorial,<br>2017.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Saúde Coletiva|||
@@ -1030,7 +1030,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>ANDRADE, S.  M. et al. (org.).**Bases da saúde coletiva**. 2. ed., rev. e ampl. Londrina:<br>EDUEL, 2017.<br>CRIVELLARO, J. L. G.**Sistema Único de Saúde e Saúde Coletiva**. Curitiba: Livro Técnico,<br>2012.<br>FIGUEIREDO, N. M. A.; TONINI, T. (org.).**SUS e saúde da família para enfermagem**:<br>práticas para o cuidado em saúde coletiva. 2. ed. São Caetano do Sul: Yendis, 2012<br>GUSSO, G. D. F.; LOPES, J. M. C. (org.).**Tratado de medicina de família e comunidade**:<br>princípios, formação e prática. Porto Alegre: Artmed, 2012.<br>PINHEIRO, A. K. S.**Manual de vigilância epidemiológica e sanitária**. 2. ed. Goiânia: AB<br>Ed., 2017.|||
 |**Bibliografia Complementar:**<br>BRASIL. Ministério da Saúde. Secretaria de Vigilância em Saúde.**Plano de ações**<br>**estratégicas para o enfrentamento das doenças crônicas não transmissíveis (DCNT) no**<br>**Brasil**:<br>2021-2030.<br>Brasília:<br>Ministério<br>da<br>Saúde,<br>2021.<br>E-book.<br>Disponível:<br>https://bityli.com/XrqlucXE. Acesso em: 21 out. 2022.<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde coletiva. Brasília: Ministério da Saúde, 2001.<br>COSTA, E. M. A.; CARBONE, M. H.**Saúde da família**: uma abordagem interdisciplinar. Rio<br>de Janeiro: Rubio, 2009.<br>KAWAMOTO, E. E.; SANTOS, M. C. H.; MATTOS, T. M.**Enfermagem comunitária**. 2.<br>ed. atual. e ampl. São Paulo: EPU, 2009.<br>FIGUEIREDO, N. M. A. et al.**Ensinando a cuidar em saúde pública**. 2. ed. São Paulo:<br>Yendis, 2012.<br>SOUZA, M. C. M. R.; HORTA, N. C.**Enfermagem em saúde coletiva**: teoria e prática. 2.<br>ed. Rio de Janeiro: Guanabara Koogan, 2017.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Clínica Médica|||
@@ -1039,7 +1039,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>FIGUEIREDO, N. M. A.; MACHADO, W. C. A. (org.).**Tratado cuidados de enfermagem**<br>**médico-cirúrgico**. São Paulo: Roca, 2012. 2 v.<br>FONSECA, A. L.; SANTOS, M. N. (ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.<br>NETTINA, S. M.**Prática de enfermagem**. 9. ed. Rio de Janeiro: Guanabara Koogan, 2011.<br>OLIVEIRA, R. G..**Blackbook enfermagem**. Belo Horizonte: Blackbook, 2016. (Série<br>Blackbook).<br>SMELTZER, S. C. O._et al_.**Brunner & Suddarth**: tratado de enfermagem médico-cirúrgica.<br>12. ed. Rio de Janeiro: Guanabara Koogan,2011. 2 v.|||
 |**Bibliografia Complementar:**<br>BARROS, K. M.; LEMOS, I. C.**Processo de Enfermagem**: fundamentos e discussão de casos<br>clínicos. São Paulo: Atheneu, 2016._E-book_.<br>BERGAMASCO, E. C. (org.)_et al_.**Habilidades clínicas em enfermagem**. Rio de Janeiro:<br>Guanabara Koogan, 2020.<br>PEREIRA, F. G.; LIMA, I. L.; MATÃO, M. E. L. (org.).**Manual do técnico e auxiliar de**<br>**enfermagem**. 10. ed. Goiânia: AB Ed., 2020.<br>PERRY, A. G.**Guia completo de procedimentos e competências de enfermagem**. 9. ed. Rio<br>de Janeiro: Guanabara Koogan, 2021.<br>SILVA, G. T. R.; SILVA, S. R. L. P. T. (org.).**Manual do técnico e auxiliar de enfermagem**.<br>3. ed. São Paulo: Martinari, 2021.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Clínica Cirúrgica|||
@@ -1048,7 +1048,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>ARIAS LÓPEZ, M.; REDONDO DE LA CRUZ, M. J.**Centro cirúrgico**. Rio de Janeiro:<br>McGraw-Hill Interamericana do Brasil, 2002.<br>BRASIL. Ministério da Saúde.**Profissionalização de auxiliares de enfermagem**: cadernos<br>do aluno: saúde do adulto: assistência cirúrgica, atendimento de emergência. Brasília:<br>Ministério da Saúde, 2001.<br>FIGUEIREDO, N. M. A._et al_.**Ensinando a cuidar de clientes em situações clínicas e**<br>**cirúrgicas**. São Paulo: Difusão Paulista de Enfermagem, 2003.<br>UENISHI, E. K.**Enfermagem médico-cirúrgica em unidade de terapia intensiva.**11. ed.<br>São Paulo: Senac São Paulo, 2017.<br>SALMON, V. R. R.**Enfermagem em centro cirúrgico**: e central de material. Curitiba:<br>Editora do Livro Técnico, 2013.|||
 |**Bibliografia Complementar:**<br>ARONE, E. M.; PHILIPPI, M. L. S.**Introdução à enfermagem médico-cirúrgica**. 3. ed. rev.<br>ampl. São Paulo: Ed. Senac São Paulo, 2010.<br>PARRA, O. M.; SAAD, W. A.**Instrumentação cirúrgica**: guia de instrumentação cirúrgica<br>e de auxílio técnico ao cirurgião. 3. ed. São Paulo: Atheneu, 2006.<br>ROSA, M. T. L.**Manual de instrumentação cirúrgica**. 3. ed. São Paulo: Rideel, 2009.<br>SILVA, M. D. A.; RODRIGUES, A. L.; CESARETTI, I. U. R.**Enfermagem na unidade de**<br>**centro cirúrgico**. 2. ed. São Paulo: EPU, 1997.<br>SMELTZER, S. C. O._et al_.**Brunner & Suddarth**: tratado de enfermagem médico-cirúrgica.<br>12. ed. Rio de Janeiro: Guanabara Koogan, 2011. 2 v.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Urgência e Emergência|||
@@ -1057,7 +1057,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>MARTINS, H. S._et al._ **Emergências clínicas**: abordagem prática. 9. ed., rev. e atual. Barueri:<br>Manole, 2014.<br>SANTOS, N. C. M.**Urgência e emergência para a enfermagem**: do atendimento pré-<br>hospitalar (APH) à sala de emergência. 7. ed. São Paulo: Érica, 2019.<br>BRASIL. Ministério da Saúde.**Urgência e emergência:**sistemas estaduais de referência<br>hospitalar para o atendimento de urgência e emergência. Brasília: Ministério da Saúde, 2001.<br>E-book. Disponível em: https://bityli.com/MlUxkPCO. Acesso em: 21 out. 2022.<br>TOBASE, L.; TOMAZINI, E. A. S.**Urgências e emergências em enfermagem**. Rio de<br>Janeiro: Guanabara Koogan, 2017.|||
 |**Bibliografia Complementar:**<br>ATENDIMENTO pré-hospitalar ao traumatizado: PHTLS: prehospital trauma life support. 9.<br>ed. Burlington, MA: Jones & Bartlett Learning, 2021.<br>JUNQUEIRA FILHO, E. A.; SILVA, G. A. R.; ELEUTÉRIO, R. S.**SOS plantão**:<br>emergências médicas: da criança ao idoso. Rio de Janeiro: MedBook, 2014<br>BRASIL. Ministério da Saúde. Secretaria de Atenção à Saúde.**Manual instrutivo da rede de**<br>**atenção as urgências e emergências no Sistema Único de Saúde**. Brasília: Ministério da<br>Saúde. 2013. E-book. Disponível em: https://bityli.com/eagbwevZ. Acesso em: 21 out. 2022.<br>SCHVARTSMAN, C.; REIS, A. G.; FARHAT, S. C. L.**Pronto-socorro**. 2. ed. Barueri:<br>Manole, 2013.<br>SANTOS, N. C. M.**Enfermagem em pronto atendimento**: urgência e emergência. São<br>Paulo: Érica, 2014.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Assistência ao Paciente Grave Adulto|||
@@ -1066,7 +1066,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>FONSECA, A. L.; SANTOS, M. N.(ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.<br>NOGUEIRA, M. A.**Unidade de Terapia Intensiva**: condutas da equipe de enfermagem.<br>Belém:  Neurus, 2022._E-book_.<br>OLIVEIRA, R. G.**Blackbook enfermagem**. Belo Horizonte: Blackbook, 2016. (Série<br>Blackbook)<br>PADILHA, K. G._et al._(org.).**Enfermagem em UTI**: cuidando do paciente crítico. 2. ed. São<br>Paulo: Manole, 2016. (Enfermagem).<br>UENISHI, E. K.**Enfermagem médico-cirúrgica em unidade de terapia intensiva**. 11. ed.<br>São Paulo: Senac São Paulo, 2017. (Série Apontamentos).|||
 |**Bibliografia Complementar:**<br>MORTON, P. G.; FONTAINE, D. K.**Cuidados críticos de enfermagem**: uma abordagem<br>holística. 9. ed. Rio de Janeiro: Guanabara Koogan, 2011.<br>SALCI, M. A._et al_.**Enfermagem em Unidade de Terapia Intensiva**. São Caetano do Sul:<br>Difusão, 2021._E-book._(Série Curso de Enfermagem, v. 8).<br>SILVA, S. C.; BRITO, C. M.; PIRES, P. S.**Cuidando do paciente crítico**. São Paulo:<br>Atheneu, 2013._E-book._<br>SOUZA, C. J.**Manual de rotina em enfermagem intensiva**. 2. ed. Rio de Janeiro: Cultura<br>Médica, 2016.<br>VIANA, R. A. P. P.**Enfermagem em terapia intensiva:**práticas baseadas em evidências.<br>São Paulo: Atheneu, 2011._E-book._|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Saúde do Idoso|||
@@ -1075,7 +1075,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>BRASILEIRO, M.**Enfermagem na saúde do idoso**. Goiânia: AB, 2005.<br>ROACH, S. S.**Introdução à enfermagem gerontológica**. Rio de Janeiro: Guanabara Koogan,<br>2003.<br>FREITAS, E. V.; PY, L. (coord.).**Tratado de geriatria e gerontologia**. 4. ed. Rio de Janeiro:<br>Guanabara Koogan, 2016.<br>MORAES, E. N.**Princípios básicos de geriatria e gerontologia**. Belo Horizonte:<br>COOPMED, 2008.<br>RAMOS, L. R.; CENDOROGLO, M. S. (coord.).**Guia de geriatria e gerontologia**. 2. ed.<br>Barueri: Manole, 2011.|||
 |**Bibliografia Complementar:**<br>BRASIL. Ministério da Saúde. Secretaria de atenção à saúde.**Envelhecimento e saúde da**<br>**pessoa idosa**. Brasília: Ministério da Saúde, 2006._E-book_. (Cadernos de atenção básica; 19).<br>Disponível em: https://bityli.com/PVPHKZ. Acesso em: 21 out. 2022.<br>MEZEY, M. D. (coord.)_et al_.**Protocolos em enfermagem geriátrica**. São Paulo: Andrei,<br>2006.<br>BRASIL. Ministério da Saúde.**Estatuto do idoso**. 2. ed. Brasília: Ministério da Saúde, 2008.<br>68 p.<br>VONO. Z. E.**Enfermagem gerontológica**: atenção à pessoa idosa. São Paulo: SENAC. 2007.<br>DALACORTE, R. R. (coord.)_et al_.**Cuidados paliativos em geriatria e gerontologia**. São<br>Paulo: Atheneu, 2012.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Saúde Mental|||
@@ -1084,7 +1084,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>MACHADO, A. L.; COLVERO, L. A.**Saúde mental**: texto de referência para auxiliares e<br>técnicos de Enfermagem. São Caetano do Sul: Difusão 2019._E-book_.<br>FONSECA, A. L.; SANTOS, M. N. (ed.).**AME**: dicionário de administração de medicamentos<br>na enfermagem. 11. ed. São Paulo: Martinari, 2019.<br>NOGUEIRA, M. A.**Centro de Atenção Psicossocial**: sistematização da assistência de<br>enfermagem. Belém:  Neurus, 2022._E-book_.<br>ROCHA, R. M.**Enfermagem em saúde mental**. 2. ed. Rio de Janeiro: Senac SP, 2019.<br>SOUSA, N. E.**A enfermagem na saúde mental**. 2. ed. Goiânia: AB Ed., 2019.|||
 |**Bibliografia Complementar:**<br>AMARANTE, P.**Saúde mental e atenção psicossocial**. 3. ed. Rio de Janeiro: Fiocruz, 2011.<br>FUKUDA, I.  M. K.; STEFANELLI, M. C.; ARANTES, E. C. (org.).**Enfermagem**<br>**psiquiátrica**: em suas dimensões assistenciais. 2. ed. Barueri: Manole, 2017. (Série<br>enfermagem).<br>LOURENÇO, D. C. L. C.**Saúde coletiva II**: CAPSi e CAPS AD. Curitiba: IFPR Educação a<br>Distância, 2012.<br>MARCOLAN, J. F.; CASTRO, R. C. B. R.**Enfermagem em saúde mental e psiquiátrica**:<br>desafios e possibilidades do novo contexto do cuidar. Rio de Janeiro: Elsevier, 2013.<br>SCHWIDERSKI, A. C.**Saúde mental e reforma psiquiátrica**. Curitiba: IFPR Educação a<br>Distância, 2012.<br>VIDEBECK, S. L.**Enfermagem em saúde mental e psiquiatria**. 5. ed. Porto Alegre: Artmed,<br>2012.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Orientaçãopara o Trabalho de Conclusão de Curso II|||
@@ -1093,7 +1093,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>BREVIDELLI, M. M.; SERTÓRIO, S. C. M.**TCC-trabalho de conclusão de curso**: guia<br>prático para docentes e alunos da área da saúde. 4. ed. São Paulo: Iátria, 2010.<br>GIL, A. C.**Como elaborar projetos de pesquisa**. 5. ed. São Paulo: Atlas, 2010.<br>CASTRO, E. C. et al.**Manual de normas para apresentação de trabalhos acadêmicos do**<br>**Instituto Federal do Paraná**: padrão ABNT. Curitiba: IFPR, 2022.<br>MARCONI, M. A.; LAKATOS, E. M.**Fundamentos de metodologia científica**. 7. ed. São<br>Paulo: Atlas, 2010.<br>MEDEIROS, J. B.**Redação científica**: a prática de fichamentos, resumos, resenhas. 11. ed.<br>São Paulo: Atlas, 2009.|||
 |**Bibliografia Complementar:**<br>FAULSTICH, E. L. J.**Como ler, entender e redigir um texto**. 26. ed. Petrópolis: Vozes,<br>2013.<br>FERREIRA, H. S.**Redação de trabalhos acadêmicos nas áreas das ciências biológicas e da**<br>**saúde**. Rio de Janeiro: Rubio, c2012.<br>MARCONI, M. A.; LAKATOS, E. M.**Técnicas de pesquisa**. 8. ed. São Paulo: Atlas, 2017.<br>SEVERINO, A. J.**Metodologia do trabalho científico**. 23. ed. rev. e atual. São Paulo: Cortez,<br>2007.<br>GUSTAVII, B.**Como escrever e ilustrar um artigo científico**. São Paulo: Parábola Editorial,<br>2017.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Urgência e Emergência|||
@@ -1102,7 +1102,7 @@ As referências básicas e complementares dos componentes curriculares do Curso 
 |**Bibliografia Básica:**<br>MARTINS, H. S. et al.**Emergências clínicas**: abordagem prática. 9. ed., rev. e atual. Barueri:<br>Manole, 2014.<br>SANTOS, N. C. M.**Urgência e emergência para a enfermagem**: do atendimento pré-<br>hospitalar (APH) à sala de emergência. 7. ed. São Paulo: Érica, 2019.<br>BRASIL. Ministério da Saúde.**Urgência e emergência**: sistemas estaduais de referência<br>hospitalar para o atendimento de urgência e emergência. Brasília: Ministério da Saúde, 2001.<br>E-book. Disponível em: https://bityli.com/MlUxkPCO. Acesso em: 21 out. 2022.<br>TOBASE, L.; TOMAZINI, E. A. S.**Urgências e emergências em enfermagem**. Rio de<br>Janeiro: Guanabara Koogan, 2017.|||
 |**Bibliografia Complementar:**<br>ATENDIMENTO pré-hospitalar ao traumatizado: PHTLS: prehospital trauma life support. 9.<br>ed. Burlington, MA: Jones & Bartlett Learning, 2021.<br>JUNQUEIRA FILHO, E. A.; SILVA, G. A. R.; ELEUTÉRIO, R. S.**SOS plantão**:<br>emergências médicas: da criança ao idoso. Rio de Janeiro: MedBook, 2014<br>BRASIL. Ministério da Saúde. Secretaria de Atenção à Saúde.**Manual instrutivo da rede de**<br>**atenção as urgências e emergências no Sistema Único de Saúde**. Brasília: Ministério da<br>Saúde. 2013._E-book_. Disponível em: https://bityli.com/eagbwevZ. Acesso em: 21 out. 2022.<br>SCHVARTSMAN, C.; REIS, A. G.; FARHAT, S. C. L.**Pronto-socorro**. 2. ed. Barueri:<br>Manole, 2013.<br>SANTOS, N. C. M.**Enfermagem em pronto atendimento**: urgência e emergência. São<br>Paulo: Érica, 2014.|||
 
-|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|**Câmpus Londrina do IFPR**|
+|**Câmpus Londrina do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Enfermagem|<br>**Eixo Tecnológico:**Ambiente e Saúde||
 |**Componente Curricular**: Estágio em Assistência ao Paciente Grave Adulto|||

@@ -1,16 +1,16 @@
 ## 1 MESCLAS
 
-| A | B e C | B e C | D |
+| A | B e C |  | D |
 |---|---|---|---|
 | Vertical | x | y | z |
-| Vertical | Bloco 2×2 | Bloco 2×2 | w |
-| fim | Bloco 2×2 | Bloco 2×2 | v |
+| Vertical | Bloco 2×2 |  | w |
+| fim | Bloco 2×2 |  | v |
 
 Em L: a continuação é mais estreita que a célula de cima.
-| Topo largo | Topo largo | 1 |  |
-|---|---|---|---:|
-| Topo largo | Topo largo | perna | 2 |
-| solta | 3 |  |  |
+| Topo largo |  | 1 |
+|---|---|---:|
+| Topo largo | perna | 2 |
+|  | solta | 3 |
 
 Tabela sem texto e tabela com célula de vários parágrafos.
 |  |  |

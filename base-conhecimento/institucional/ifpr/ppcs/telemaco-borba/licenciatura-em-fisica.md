@@ -682,7 +682,7 @@ O currículo do curso de Licenciatura em Física do _Campus_ de Telêmaco Borba 
 |||Álgebra Linear|67|
 |||Cálculo Diferencial e Integral I|67|
 
-|||Cálculo Diferencial e Integral II<br>67<br>Cálculo Diferencial e Integral III<br>67<br>Educaçãopara a Sustentabilidade<br>33<br>Evolução das Ideias da Física<br>33<br>Física I<br>67<br>Física II<br>67<br>Física III<br>67<br>Física IV<br>67<br>Física Moderna<br>67<br>História e Filosofia da Educação<br>67<br>Laboratório de Física I<br>33<br>Laboratório de Física II<br>33<br>Laboratório de Física III<br>33<br>Laboratório de Física IV<br>33<br>Laboratório de Física Moderna<br>33<br>Metodologia Científica<br>33<br>Pré-Cálculo<br>67<br>Psicologia da Educação<br>67<br>Tópicos de Física I<br>67<br>Tópicos de Física II<br>33<br>Tópicos de Física III<br>33<br>Vetores e Geometria Analítica<br>67<br>Subtotal<br>1268<br>Componente Curricular Optativo:<br>Cálculo Diferencial e Integral IV<br>Eletrônica para Professores de Física<br>Estudos Interdisciplinares entre Física e Música<br>Física Computacional<br>Introdução à Epistemologia<br>Introdução à Mecânica Quântica<br>Jogos Digitais para o Ensino de Física<br>Tópicos de Física Matemática<br>Tópicos em Astronomia<br>33<br>Educação em Direitos Humanos<br>33<br>Educação Inclusiva<br>67<br>Eletrodinâmica Clássica<br>33<br>Língua Brasileira de Sinais(LIBRAS)<br>33<br>Lógica de Programação<br>67<br>Mecânica Clássica<br>33<br>Oficina de Leitura e Produção Textual<br>33<br>Organização e administração escolar<br>33<br>Políticas Educacionais<br>33|Cálculo Diferencial e Integral II<br>67<br>Cálculo Diferencial e Integral III<br>67<br>Educaçãopara a Sustentabilidade<br>33<br>Evolução das Ideias da Física<br>33<br>Física I<br>67<br>Física II<br>67<br>Física III<br>67<br>Física IV<br>67<br>Física Moderna<br>67<br>História e Filosofia da Educação<br>67<br>Laboratório de Física I<br>33<br>Laboratório de Física II<br>33<br>Laboratório de Física III<br>33<br>Laboratório de Física IV<br>33<br>Laboratório de Física Moderna<br>33<br>Metodologia Científica<br>33<br>Pré-Cálculo<br>67<br>Psicologia da Educação<br>67<br>Tópicos de Física I<br>67<br>Tópicos de Física II<br>33<br>Tópicos de Física III<br>33<br>Vetores e Geometria Analítica<br>67<br>Subtotal<br>1268<br>Componente Curricular Optativo:<br>Cálculo Diferencial e Integral IV<br>Eletrônica para Professores de Física<br>Estudos Interdisciplinares entre Física e Música<br>Física Computacional<br>Introdução à Epistemologia<br>Introdução à Mecânica Quântica<br>Jogos Digitais para o Ensino de Física<br>Tópicos de Física Matemática<br>Tópicos em Astronomia<br>33<br>Educação em Direitos Humanos<br>33<br>Educação Inclusiva<br>67<br>Eletrodinâmica Clássica<br>33<br>Língua Brasileira de Sinais(LIBRAS)<br>33<br>Lógica de Programação<br>67<br>Mecânica Clássica<br>33<br>Oficina de Leitura e Produção Textual<br>33<br>Organização e administração escolar<br>33<br>Políticas Educacionais<br>33|Cálculo Diferencial e Integral II<br>67<br>Cálculo Diferencial e Integral III<br>67<br>Educaçãopara a Sustentabilidade<br>33<br>Evolução das Ideias da Física<br>33<br>Física I<br>67<br>Física II<br>67<br>Física III<br>67<br>Física IV<br>67<br>Física Moderna<br>67<br>História e Filosofia da Educação<br>67<br>Laboratório de Física I<br>33<br>Laboratório de Física II<br>33<br>Laboratório de Física III<br>33<br>Laboratório de Física IV<br>33<br>Laboratório de Física Moderna<br>33<br>Metodologia Científica<br>33<br>Pré-Cálculo<br>67<br>Psicologia da Educação<br>67<br>Tópicos de Física I<br>67<br>Tópicos de Física II<br>33<br>Tópicos de Física III<br>33<br>Vetores e Geometria Analítica<br>67<br>Subtotal<br>1268<br>Componente Curricular Optativo:<br>Cálculo Diferencial e Integral IV<br>Eletrônica para Professores de Física<br>Estudos Interdisciplinares entre Física e Música<br>Física Computacional<br>Introdução à Epistemologia<br>Introdução à Mecânica Quântica<br>Jogos Digitais para o Ensino de Física<br>Tópicos de Física Matemática<br>Tópicos em Astronomia<br>33<br>Educação em Direitos Humanos<br>33<br>Educação Inclusiva<br>67<br>Eletrodinâmica Clássica<br>33<br>Língua Brasileira de Sinais(LIBRAS)<br>33<br>Lógica de Programação<br>67<br>Mecânica Clássica<br>33<br>Oficina de Leitura e Produção Textual<br>33<br>Organização e administração escolar<br>33<br>Políticas Educacionais<br>33|
+|||Cálculo Diferencial e Integral II<br>67<br>Cálculo Diferencial e Integral III<br>67<br>Educaçãopara a Sustentabilidade<br>33<br>Evolução das Ideias da Física<br>33<br>Física I<br>67<br>Física II<br>67<br>Física III<br>67<br>Física IV<br>67<br>Física Moderna<br>67<br>História e Filosofia da Educação<br>67<br>Laboratório de Física I<br>33<br>Laboratório de Física II<br>33<br>Laboratório de Física III<br>33<br>Laboratório de Física IV<br>33<br>Laboratório de Física Moderna<br>33<br>Metodologia Científica<br>33<br>Pré-Cálculo<br>67<br>Psicologia da Educação<br>67<br>Tópicos de Física I<br>67<br>Tópicos de Física II<br>33<br>Tópicos de Física III<br>33<br>Vetores e Geometria Analítica<br>67<br>Subtotal<br>1268<br>Componente Curricular Optativo:<br>Cálculo Diferencial e Integral IV<br>Eletrônica para Professores de Física<br>Estudos Interdisciplinares entre Física e Música<br>Física Computacional<br>Introdução à Epistemologia<br>Introdução à Mecânica Quântica<br>Jogos Digitais para o Ensino de Física<br>Tópicos de Física Matemática<br>Tópicos em Astronomia<br>33<br>Educação em Direitos Humanos<br>33<br>Educação Inclusiva<br>67<br>Eletrodinâmica Clássica<br>33<br>Língua Brasileira de Sinais(LIBRAS)<br>33<br>Lógica de Programação<br>67<br>Mecânica Clássica<br>33<br>Oficina de Leitura e Produção Textual<br>33<br>Organização e administração escolar<br>33<br>Políticas Educacionais<br>33|||
 |---|---|---|---|---|
 ||Formação geral||Cálculo Diferencial e Integral II|67|
 ||||Cálculo Diferencial e Integral III|67|
@@ -833,7 +833,7 @@ de Oficinas de Ensino e Aprendizagem, o estudante tem a oportunidade de elaborar
 
 ## **4.1.2  Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||||
 |---|---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||||
 |||_Campus Telêmaco Borba_|||||||
@@ -918,7 +918,7 @@ de Oficinas de Ensino e Aprendizagem, o estudante tem a oportunidade de elaborar
 ||(C.EST) Estágio Supervisionado (min. 400 horas-relógio)||||||480|400|
 ||(C.EXT) Prática de Extensão (min. 334 horas-relógio)||||||401|334|
 
-|**NÚCLEOS - CARGA HORÁRIA**|**NÚCLEOS - CARGA HORÁRIA**|**NÚCLEOS - CARGA HORÁRIA**|
+|**NÚCLEOS - CARGA HORÁRIA**|||
 |---|---|---|
 |Núcleo I - Formação Geral|1522|1437|
 |Núcleo II - Aprofundamento|1198|565|
@@ -1042,7 +1042,7 @@ atividades; participação em fóruns Desenvolvimento Local Integrado e Sustent�
 
 **Campus Telêmaco Borba do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Educação para a Sustentabilidade **Carga Horária:** 33h **Período letivo:** Primeiro
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Educaçãopara a Sustentabilidade||
@@ -1074,7 +1074,7 @@ SAVIANI, D. **Pedagogia Histórico-Crítica** . São Paulo: Moderna, 2011. DALBO
 
 **Campus Telêmaco Borba do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Tópicos de Física I **Carga Horária:** 67h **Período letivo:** Primeiro **Ementa:** Vetores: Grandezas Vetoriais, Soma e Decomposição Vetorial; Conceitos de Mecânica do Ensino Médio: Introdução aos conceitos do movimento, Cinemática Escalar e Vetorial, Gráficos e funções de movimentos; Dinâmica: Leis de Newton, Trabalho e Energia, Impulso e Quantidade de Movimento. Hidrodinâmica: densidade, pressão, Teorema de Stevin, Teorema de Pascal (Prensa Hidráulica), Teorema de Arquimedes, Teorema de Bernoulli. **Bibliografia Básica:** HEWITT, P. G, **Física Conceitual.** 9. ed. Porto Alegre: Bookman, 2002. GASPAR, A. **Experiências de Ciências para o Ensino Fundamental** . São Paulo: Editora Ática, 2005. CARVALHO, A. M. P. de. **Ensino de Ciências: Unindo a Pesquisa e a Prática** . Pioneira Thomson Learning, São Paulo, 2004. GREF, **FÍSICA 1 MECÂNICA** ,  Editora Edusp . 7ª  ED. 2011 ISBN 9788531400148. CARVALHO, A. M. P. **Ensino de Física** . São Paulo: Cengage Learning. 2010. **Bibliografia Complementar:** TREFIL, J., HAZEN, R.M., Física Viva Vol. 1 - **Uma Introdução à Física Conceitual** . Editora LTC, 2006, ISBN 8521615086. HALLIDAY, D; WALKER, J; RESNICK, R. **Fundamentos de Física** . v. 1. 8. ed. Rio de Janeiro: LTC, 2009. FERRARO, N. G., SOARES, P. T.; **Física Básica** , volume único, 3ª ed. Editora Atual, 2009. GARCIA, N.M. D., HIGA, I., ZIMMERMANN, E., SILVA, C. C., MARTINS, A. F. (ORGS), **A Pesquisa Em Ensino De Fisica E A Sala De Aula: Articulações Necessárias.** Editora livraria da física. 2012. ISBN 9788578611828 CARVALHO, A.M. P. , RICARDO, E.C., SASSERON, L.H., ABIB, M.L.V.S., PIETROCOLO, M., **Ensino De Física - Coleção Idéias em Ação** . Editora CENGAGE, 2011, ISBN 9788522110629.
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Políticas Educacionais||
@@ -1086,7 +1086,7 @@ SAVIANI, D. **Pedagogia Histórico-Crítica** . São Paulo: Moderna, 2011. DALBO
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Probabilidade e Estatística Descritiva<br>**Carga Horária:**33h<br>**Período letivo:**Primeiro<br>**Ementa:**<br>Análise<br>Combinatória.<br>Cálculo<br>de<br>Probabilidades.<br>Distribuições<br>de<br>Probabilidades<br>Discretas<br>e<br>Contínuas. Distribuições Amostrais. Estatística Descritiva. Estatística aplicada em experimentos de<br>Física: arredondamento, algarismos significativos e tratamento de erros. Planilhas Eletrônicas: tabelas,<br>cálculos estatísticos, gráficos de dispersão e regressão linear.<br>**Bibliografia Básica:**<br>MORETTIN, L. G.**Estatística Básica: Probabilidade e Inferência**. São Paulo: Pearson, 2010.<br>WALPOLE, R. E. et. al. **Probabilidade e Estatística para Engenharia e Ciências**. 8.ed. São Paulo:<br>Pearson, 2009.<br>LARSON, R., FARBER, B.**Estatística Aplicada**. 4.ed. São Paulo: Pearson Prentice Hall, 2010.<br>GOMES, F. P.**Curso de Estatística Experimental**. Piracicaba: Nobel, 1985.<br>BARROS NETO, B; SCARMÍNIO, I. S.<br>BRUNS, R. E. **Como Fazer Experimentos: Pesquisa e**<br>**Desenvolvimento da Ciência e Indústria**. Campinas: UNICAMP, 2001.<br>**Bibliografia Complementar:**<br>COSTA NETO, P. L. O. **Estatística**. 2.ed. São Paulo: Edgard Blücher, 2002.<br>COSTA NETO, P. L. O., CYMBALISTA, M. **Probabilidades**. 2.ed. São Paulo: Edgard Blücher, 2005.<br>BUSSAB, W. O., MORETTIN, P. A. **Estatística Básica**. 5.ed. São Paulo: Saraiva, 2002.<br>SPIEGEL, M. R.**Estatística**. 3.ed. São Paulo: Makron Books, 1993.<br>MOORE, D. S. A **Estatística Básica e sua Prática**. 5.ed. Rio de Janeiro: LTC, 2011.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Oficina de Leitura e Produção Textual||
@@ -1101,7 +1101,7 @@ SAVIANI, D. **Pedagogia Histórico-Crítica** . São Paulo: Moderna, 2011. DALBO
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Psicologia da Educação<br>**Carga Horária:**67h<br>**Período letivo:**Segundo<br>**Ementa:**<br>Concepções<br>de<br>Ensino.<br>Teorias<br>clássicas<br>de<br>aprendizagem:<br>Behaviorismo,<br>Cognitivismo,<br>Construtivismo, teorias humanistas e teorias com bases neuropsicológicas. Introdução aos conceitos<br>básicos da Psicologia da Educação. Análise dos fundamentos da Psicologia do Desenvolvimento<br>Cognitivo<br>que<br>contemplem<br>o<br>processo<br>de<br>ensino<br>e aprendizagem. Teorias de aprendizagem<br>contemporâneas.<br>**Bibliografia Básica:**<br>MOREIRA, Marco A. **Teorias de aprendizagem.** 2. ed. ampl. São Paulo: E.P.U, 2015. 242 p. ISBN<br>9788512321806 (broch.).<br>COLL, C. S.; et al.**Psicologia do Ensino**. Porto Alegre: Artes Médicas do Sul, 2000.<br>MOREIRA, Marco A.; MASINI, Elcie F. Salzano. **Aprendizagem significativa: a teoria de David**<br>**Ausubel**. 2.ed. São Paulo: Centauro, 2006. 111 p. ISBN 9788588208766 (broch.).<br>LEFRANÇOIS, Guy R. **Teorias da aprendizagem: o que o professor disse**. São Paulo: Cengage<br>Learning, 2017. 475 p. ISBN 9788522125043 (broch.).<br>POZO, Juan Ignacio; GÓMEZ CRESPO, Miguel Ángel. **A aprendizagem e o ensino de ciências: do**<br>**conhecimento cotidiano ao conhecimento científico**. 5. ed. Porto Alegre: Artmed, 2009. 296 p. ISBN<br>9788536319889 (broch.).<br>**Bibliografia Complementar:**<br>CUNHA, M. V.**Psicologia da Educação**. Edição:1 Rio de Janeiro: Lamparina. 2008.<br>CARRARA, K.**Introdução a Psicologia da Educação**. Edição:1. São Paulo: Avercamp, 2004.<br>FREIRE, P.**Pedagogia da Autonomia**. 43. ed. Rio de Janeiro: Paz e Terra, 2011.<br>COLL, C.; MARCHESI, A.; PALACIOS, J. **Desenvolvimento psicológico e educação**, vol. 1. Porto<br>Alegre: Artmed, 2004.<br>COLL, C.; MARCHESI, A.; PALACIOS, J. **Desenvolvimento psicológico e educação**, vol. 2. Porto<br>Alegre: Artmed, 2004.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Tópicos de Física II||
@@ -1110,7 +1110,7 @@ SAVIANI, D. **Pedagogia Histórico-Crítica** . São Paulo: Moderna, 2011. DALBO
 |**Bibliografia Básica:**<br>HEWITT, P. G,**Física Conceitual**. 9. ed. Porto Alegre: Bookman, 2002.<br>GASPAR, A. **Experiências de Ciências para o Ensino Fundamental**. São Paulo: Editora Ática, 2005.<br>CARVALHO, A. M. P. de. **Ensino de Ciências: Unindo a Pesquisa e a Prática**. Pioneira Thomson<br>Learning, São Paulo, 2004.<br>GREF, **FÍSICA 2 FÍSICA TÉRMICA, ÓPTICA**, Editora Edusp, 5ª EDIÇÃO, 2005, ISBN 9788531400254<br>CARVALHO, A. M. P. **Ensino de Física**. São Paulo: Cengage Learning. 2010.||
 |**Bibliografia Complementar:**<br>TREFIL, J., HAZEN, R.M.,**Física Viva Vol. 1 - Uma Introdução à Física Conceitual.**Editora LTC,<br>2006, ISBN 8521615086.<br>BRASIL, Ministério da Educação e Cultura - Secretaria de Educação Básica.**Parâmetros Curriculares**<br>**Nacionais do Ensino Médio – PCNEM+.**Brasília, SEF/MEC, 2000<br>FERRARO, N. G., SOARES, P. T.;**Física Básica**, volume único, 3ª ed. Editora Atual, 2009.<br>GARCIA, N.M. D., HIGA, I., ZIMMERMANN, E., SILVA, C. C., MARTINS, A. F. (ORGS),**A Pesquisa Em**<br>**Ensino De Fisica E A Sala De Aula: Articulações Necessárias.**Editora livraria da física. 2012. ISBN<br>9788578611828<br>CARVALHO, A.M. P. , RICARDO, E.C., SASSERON, L.H., ABIB, M.L.V.S., PIETROCOLO, M**., Ensino**<br>**De Física - Coleção Idéias em Ação.** Editora CENGAGE, 2011, ISBN 9788522110629.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Vetores e Geometria Analítica||
@@ -1119,7 +1119,7 @@ SAVIANI, D. **Pedagogia Histórico-Crítica** . São Paulo: Moderna, 2011. DALBO
 |**Bibliografia Básica:**<br>CAMARGO, I., BOULOS, P.**Geometria Analítica**. 3. ed. São Paulo: Pearson Prentice Hall, 2004.<br>WINTERLE, P.**Vetores e Geometria Analítica**. São Paulo: Pearson Makron Books, 2000.<br>SANTOS, F. J., FERREIRA, S.**Geometria Analítica**. Porto Alegre: Bookman, 2009.<br>MELLO, D. A.; WATANABE, R. G. **Vetores e uma Iniciação à Geometria Analítica**. 2 ed. São Paulo:<br>Livraria da Física, 2011.<br>JULIANELLI, J. R.**Cálculo Vetorial e Geometria Analítica**. São Paulo: Ciência Moderna, 2008.||
 |**Bibliografia Complementar:**<br>STEINBRUCH, A. WINTERLE, P. **Geometria Analítica**. 2. ed. São Paulo: Pearson, 1987.<br>LORETO JR, A. P., LORETO, A. C. C.**Vetores e Geometria Analítica: Teoria e Exercícios**. 2. ed. São<br>Paulo: Lcte, 2009.<br>LEITHOLD, L.**Cálculo com Geometria Analítica**. v. 1. 3. ed. São Paulo: Harbra, 1994.<br>LEITHOLD, L.**Cálculo com Geometria Analítica**. v. 2. 3. ed. São Paulo: Harbra, 1994.<br>ZEGARELLI, Mark. **Matemática básica e pré-algébra: para leigos** . 2. ed. rev. Rio de Janeiro: Alta<br>Books, 2011. 367 p ISBN 9788576084006 (broch.).||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Educação em Direitos Humanos||
@@ -1132,7 +1132,7 @@ Icone Editora, 2013, ISBN 9788527412551.
 
 MONTEIRO, Aida Maria; TAVARES, Celma, **Políticas e Fundamentos da Educação em Direitos Humanos** , 1ª. Ed., Cortez Editora, 2010. ISBN 9788524916298.
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Produção de Textos Científicos||
@@ -1149,7 +1149,7 @@ ANDREOTTI, Azilde L.; LOMBARDI, José Claudinei. **História da administração 
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Cálculo Diferencial e Integral II<br>**Carga Horária:**67h<br>**Período letivo:**Terceiro<br>**Ementa:**<br>Técnicas de integração. Integrais impróprias. Funções de várias variáveis; Funções Vetoriais; Limites e<br>continuidade; Derivadas parciais e funções diferenciáveis; Funções implícitas. Máximos e mínimos.<br>**Bibliografia Básica:**<br>GUIDORIZZI, H. L.**Um Curso de Cálculo**. v. 1. 5. ed. Rio de Janeiro: LTC, 2001.<br>FLEMMING, D., GONÇALVES, M. **Cálculo A: Funções, Limite, Derivação e Integração**. 6. ed. São<br>Paulo: Pearson, 2006.<br>WEIR, M. D.; HASS, J.; GIORDANO, F. R. **Cálculo (George B. Thomas)**. v.1. 11. ed. São Paulo:<br>Pearson, 2009.<br>STEWART, J.**Cálculo.**v. 1. 7. Ed. São Paulo: Cengage Learning, 2013.<br>BOULOS, P., ABUD, Z. I. **Cálculo Diferencial e Integral**. v. 1. São Paulo: Makron Books, 1999.<br>**Bibliografia Complementar:**<br>LEITHOLD, L.**Cálculo com Geometria Analítica**. v. 1. 3. ed. São Paulo: Harbra, 1994.<br>ANTON, H.; BIVENS, I.; DAVIS, S.**Cálculo**. v. 1. 8. ed. Porto Alegre: Bookman, 2007.<br>ROGAWSKI, J.**Cálculo**. v. 1. Porto Alegre: Bookman, 2009.<br>GUIDORIZZI, H. L.**Um Curso de Cálculo**. v. 3. 5. ed. Rio de Janeiro: LTC, 2001.<br>ÁVILA, G.**Cálculo das Funções de Múltiplas Variáveis**. v. 3. 7. ed. Rio de Janeiro: LTC, 2006.<br>SPIEGEL, M. R.; LIPSCHUTZ, S.; LIU, J. **Manual de Fórmulas e Tabelas Matemáticas**. 3. ed. Porto<br>Alegre: Bookman, 2011.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Física I||
@@ -1158,7 +1158,7 @@ ANDREOTTI, Azilde L.; LOMBARDI, José Claudinei. **História da administração 
 |**Bibliografia Básica:**<br>HALLIDAY, D; WALKER, J; RESNICK, R. **Fundamentos de Física**. v. 1. 8. ed. Rio de Janeiro: LTC,<br>2009.<br>YOUNG, H. D.; FREEDMAN, R. A. **Física I: Mecânica**. 12. ed. São Paulo: Pearson, 2008.<br>TIPLER, P. A.; MOSCA, G. **Física para Cientistas e Engenheiros**. v. 1. 6. ed. Rio de Janeiro: LTC,<br>2009.<br>NUSSENZVEIG, H. M.**Curso de Física Básica: Mecânica**. v. 1. 4. ed. São Paulo: Edgard Blücher,<br>2002.<br>JEWETT,JR. J. W.;SERWAY, R. A.**Física para Cientistas e Engenheiros**. Mecânica. v. 1. 8 ed. São<br>Paulo: Cengage Learning, 2012.||
 |**Bibliografia Complementar:**<br>CHAVES, A. **Física Básica: Mecânica**. Rio de Janeiro: LTC, 2007.<br>YAMAMOTO, K.; FUKE, L. F.; SHIGEKIYO, C. T. **Os Alicerces da Física 1: Mecânica**. 15. ed. São<br>Paulo: Saraiva, 2007.<br>FEYNMAN, R. P.; SANDS, M.; LEIGHTON, R. B. **Feynman: Lições de Física**. Porto Alegre:<br>Bookman, 2008. 3 v.<br>SHAPIRO, I. L; PEIXOTO, G. B.. **Introdução à Mecânica Clássica**. São Paulo: Livraria da Física,<br>2010.<br>ALONSO, M.; FINN, E.J. **Física um Curso Universitário**. v. 1. 2 ed. São Paulo: Edgard Blucher,<br>2014.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Laboratório de Física I||
@@ -1167,7 +1167,7 @@ ANDREOTTI, Azilde L.; LOMBARDI, José Claudinei. **História da administração 
 |**Bibliografia Básica:**<br>JURAITIS, K. R.; DOMICIANO, J. B.**Introdução ao Laboratório de Física Experimental**. Londrina:<br>EDUEL, 2009.<br>JURAITIS, K. R.; DOMICIANO, J. B. **Guia de Laboratório de Física Geral 1 – Parte 1**. Londrina:<br>EDUEL, 2009.<br>HALLIDAY, D; WALKER, J; RESNICK, R. **Fundamentos de Física**. v. 1. 8. ed. Rio de Janeiro: LTC,<br>2009.<br>ALONSO, M.; FINN, E.J. **Física m Curso Universitário**. v. 1. 2 ed. São Paulo: Edgard Blucher,<br>2014.<br>ALBERTAZI, A. SOUSA, A.R. **Metrologia: Científica e Industrial.**São Paulo: Manole, 2008.||
 |**Bibliografia Complementar:**<br>VUOLO, J. H.**Fundamentos de Teoria de Erros**. 2. ed. São Paulo: Edgard Blücher, 1996.<br>TIPLER, P. A.; MOSCA, G. **Física para Cientistas e Engenheiros**. v. 1. 6. ed. Rio de Janeiro: LTC,<br>2009.<br>NUSSENZVEIG, H. M. **Curso de Física Básica: Mecânica**. v. 1. 4. ed. São Paulo: Edgard Blücher,<br>2002.<br>CUTNELL, J. D.; JOHNSON, K. W.**Física**. v. 1. 6. ed. Rio de Janeiro: LTC, 2006.<br>JEWETT,JR. J. W.;SERWAY, R. A.**Física para Cientistas e Engenheiros**. Mecânica. v. 1. 8 ed. São<br>Paulo: Cengage Learning, 2012.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Tópicos de Física III||
@@ -1176,7 +1176,7 @@ ANDREOTTI, Azilde L.; LOMBARDI, José Claudinei. **História da administração 
 |**Bibliografia Básica:**<br>HEWITT, P. G,**Física Conceitual**. 9. ed. Porto Alegre: Bookman, 2002.<br>GASPAR, A. **Experiências de Ciências para o Ensino Fundamental**. São Paulo: Editora Ática, 2005.<br>CARVALHO, A. M. P. de. **Ensino de Ciências: Unindo a Pesquisa e a Prática**. Pioneira Thomson<br>Learning, São Paulo, 2004.<br>GREF,**Física 3 Eletromagnetismo**, Editora Edusp, 5ª ED. 1995, ISBN 9788531401152<br>CARVALHO, A. M. P. **Ensino de Física**. São Paulo: Cengage Learning. 2010.||
 |**Bibliografia Complementar:**<br>TREFIL, J., HAZEN, R.M., **Física Viva Vol. 2 - Uma Introdução à Física Conceitual.** Editora LTC,<br>2006, ISBN 8521615086.<br>BRASIL, Ministério da Educação e Cultura - Secretaria de Educação Básica.**Parâmetros**<br>**Curriculares Nacionais do Ensino Médio – PCNEM+.**Brasília, SEF/MEC, 2000.<br>FERRARO, N. G., SOARES, P. T.;**Física Básica**, volume único, 3ª ed. Editora Atual, 2009.<br>GARCIA, N.M. D., HIGA, I., ZIMMERMANN, E., SILVA, C. C., MARTINS, A. F. (ORGS),**A Pesquisa Em**<br>**Ensino De Fisica E A Sala De Aula: Articulações Necessárias.**Editora livraria da física. 2012. ISBN<br>9788578611828<br>CARVALHO, A.M. P. , RICARDO, E.C., SASSERON, L.H., ABIB, M.L.V.S., PIETROCOLO, M**., Ensino**<br>**De Física - Coleção Idéias em Ação.** Editora CENGAGE, 2011, ISBN 9788522110629.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Educação Inclusiva||
@@ -1185,7 +1185,7 @@ ANDREOTTI, Azilde L.; LOMBARDI, José Claudinei. **História da administração 
 |**Bibliografia Básica:**<br>VASCONCELLOS, C. S. **(In) Disciplina Construção da Disciplina consciente e interativa em**<br>**sala de aula e na escola**. 18. ed. São Paulo: Libertad Editora, 2010.<br>STAINBACK, S.; STAINBACK, W. **Inclusão: Um Guia para Educadores**. Porto Alegre: Artmed,<br>1999.<br>REILY, Lúcia Helena.**Escola inclusiva: linguagem e mediçã**o. 4. ed. Campinas: Papirus, 2011. 188<br>p. (Série educação especial). ISBN 9788530807528 (broch.).<br>GOMES, Márcio (Org.). **Construindo as trilhas para a inclusão**. 2. ed. Petrópolis: Vozes, 2012.<br>295 p. (Coleção educação inclusiva). ISBN 9788532638472 (broch.).<br>PACHECO, J. **Caminhos para Inclusão: Um Guia Para o Aprimoramento da Equipe Escolar**.<br>Porto Alegre: Artmed, 2007.||
 |**Bibliografia Complementar:**<br>BAPTISTA, Claudio Roberto; JESUS, Denise Meyrelles de (Org.).**Avanços em políticas de**<br>**inclusão: o contexto da educação especial no Brasil e em outros países**. 2. ed.<br>DOCKRELL, Julie; MCSHANE, John.**Crianças com dificuldades de aprendizagem: uma**<br>**abordagem cognitiva**. Porto Alegre: Artmed, 2000. 208 p. (Biblioteca Artmed. Ciência cognitiva).<br>ISBN 9788573075625 (broch.).<br>Porto Alegre: Mediação, 2011. 228 p. ISBN 9788577060429 (broch.).<br>SILVA, A. B. B. **Bullying: mentes perigosas nas escolas**. Rio de Janeiro: Objetiva, 2010.<br>COLL, César; MARCHESI, Álvaro; PALACIOS, Jesús (Org.). **Desenvolvimento psicológico e**<br>**educação: transtornos do desenvolvimento e necessidades educativas especiais**. 2. ed. Porto<br>Alegre: Artmed, 2004. 367 p. (Biblioteca Artmed. Psicologia do desenvolvimento, infância e||
 
-|adolescência). ISBN 97885336302096 (broch.).<br>FARRELL, Michael. **Dificuldades de aprendizagem moderadas, graves e profundas : guia do**<br>**professor**. Porto Alegre: Artmed, 2008. 101 p. (Biblioteca Artmed. Educação inclusiva). ISBN<br>9788536314457 (broch.).|adolescência). ISBN 97885336302096 (broch.).<br>FARRELL, Michael. **Dificuldades de aprendizagem moderadas, graves e profundas : guia do**<br>**professor**. Porto Alegre: Artmed, 2008. 101 p. (Biblioteca Artmed. Educação inclusiva). ISBN<br>9788536314457 (broch.).|
+|adolescência). ISBN 97885336302096 (broch.).<br>FARRELL, Michael. **Dificuldades de aprendizagem moderadas, graves e profundas : guia do**<br>**professor**. Porto Alegre: Artmed, 2008. 101 p. (Biblioteca Artmed. Educação inclusiva). ISBN<br>9788536314457 (broch.).||
 |---|---|
 |**Campus Telêmaco Borba do IFPR**||
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
@@ -1206,7 +1206,7 @@ VEIGA, I. P. A. (org.). **Didática: o Ensino e suas Relações.** Campinas: Pap
 
 **Bibliografia Básica:** GUIDORIZZI, H. L. **Um Curso de Cálculo** . v. 2. 5. ed. Rio de Janeiro: LTC, 2001. FLEMMING, D., GONÇALVES, M. **Cálculo B: Funções de Várias Variáveis, Integrais Múltiplas, Integrais Curvilíneas e de Superfície** . 2. ed. São Paulo: Pearson, 2007. WEIR, M. D.; HASS, J.; GIORDANO, F. R. **Cálculo (George B. Thomas)** . v. 2. 11. ed. São Paulo: Pearson, 2009. STEWART, J. **Cálculo.** v. 1. 7. ed. São Paulo: Cengage Learning, 2013. BOULOS, P., ABUD, Z. I. **Cálculo Diferencial e Integral** . v. 2. 2. ed. São Paulo: Pearson, 2002. **Bibliografia Complementar:** GUIDORIZZI, H. L. **Um Curso de Cálculo** . v. 3. 5. ed. Rio de Janeiro: LTC, 2001. LEITHOLD, L. **Cálculo com Geometria Analítica** . v. 2. 3. ed. São Paulo: Harbra, 1994. ANTON, H.; BIVENS, I.; DAVIS, S. **Cálculo** . v. 2. 8. ed. Porto Alegre: Bookman, 2007. SIMMONS, G. F.; KRANTZ, S. G. **Equações Diferenciais: Teoria, Técnica e Prática** . São Paulo: McGraw-Hill, 2008. BRANNAN, J. R.; BOYCE, W. E. **Equações Diferenciais: Uma Introdução à Métodos Modernos e suas Aplicações** . Rio de Janeiro: LTC, 2009.
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Física II||
@@ -1215,7 +1215,7 @@ VEIGA, I. P. A. (org.). **Didática: o Ensino e suas Relações.** Campinas: Pap
 |**Bibliografia Básica:**<br>HALLIDAY, D; WALKER, J; RESNICK, R. **Fundamentos de Física**. v. 2. 8. ed. Rio de Janeiro: LTC,<br>2009.<br>YOUNG, H. D.; FREEDMAN, R. A. **Física II: Termodinâmica e Ondas**. 12. ed. São Paulo: Pearson,<br>2008.<br>TIPLER, P. A. **Física para Cientistas e Engenheiros**. v. 1. ed. Rio de Janeiro: LTC, 2012.<br>NUSSENZVEIG, H. M. **Curso de Física Básica: Fluidos, Oscilações e Ondas, Calor**. v. 2. 4. ed.<br>São Paulo: Edgard Blücher, 2002.<br>FEYNMAN, Richard Phillips; SANDS, Matthew L.; LEIGHTON, Robert B. **Feynman: lições de**<br>**física**. Porto Alegre: Bookman, 2008. 3 v. ISBN 9788577802593 (obra completa).||
 |**Bibliografia Complementar:**<br>ALONSO, M.; FINN, E.J.**Física um Curso Universitário**. v. 2. 2 ed. São Paulo: Edgard Blücher,<br>2014.<br>CHAVES, A. **Física Básica: Gravitação, Fluidos, Ondas, Termodinâmica**. Rio de Janeiro: LTC,<br>2007.<br>SERWAY, R. A.; JEWETT, Jr. J. W., **Física Para Cientistas E Engenheiros: Oscilações, Ondas e**<br>**Termodinâmica**. v. 2. São Paulo: Cengage Learning. 2012.<br>MORAIS, A.M.A. **Gravitação E Cosmologia - Uma Introdução**. São Paulo: Ed. Livraria da Física,<br>2010. ISBN 9788578610494.<br>CONTADOR, P. R. M.**Kepler: O Legislador dos Céus**. 2. ed. São Paulo: Livraria da Física, 2013.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Laboratório de Física II||
@@ -1245,7 +1245,7 @@ NUSSENZVEIG, H. M. **Curso de Física Básica: Mecânica** . v. 1. 4. ed. São P
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Química Geral I<br>**Carga Horária:**67h<br>**Período letivo:**Quinto<br>**Ementa:**<br>Equipamentos básicos e segurança em laboratório de química. Estrutura atômica. Tabela Periódica e<br>Propriedades Periódicas. Ligações Químicas e Geometria Molecular. Forças Intermoleculares. Funções<br>inorgânicas (ácido, base, sal e óxido).<br>**Bibliografia Básica:**<br>ATKINS, Peter, JONES, Loretta. **Princípios de Química Questionando a Vida Moderna e o Meio**<br>**Ambiente**5ª edição. São Paulo: Bookman, 2012.<br>BRADY, James E, HUMISTON, Gerard E.**Química Geral**v. 1. Rio de Janeiro: LTC, 2012.<br>RUSSEL, John B.**Química Geral**. 2ª ed. São Paulo, Makron Books, v. 1, 1994.<br>RUSSEL, John B**. Química Geral.**2ª ed. São Paulo, Makron Books, v. 2, 1994.<br>BROW, Theodore L., LEMAY, H. Eugene, BURSTEN, Bruce E. , BURDGE, Julia R.**Química a Ciência**<br>**Central**. São Paulo: Person, 2005.<br>**Bibliografia Complementar:**<br>KOTZ, John C., TRUCHEL, Paul M., WEAVER, Gabriela C. **Química Geral e Reações Químicas**- Vol.<br>1. São Paulo: Cengage Learning Edições Ltda, 2010.<br>KOTZ, John C., TRUCHEL, Paul M., WEAVER, Gabriela C. **Química Geral e Reações Químicas**- Vol.<br>2. São Paulo: Cengage Learning Edições Ltda, 2010.<br>LEE, J.D.**Química Inorgânica não tão Concisa**. São Paulo: Editora Blucher, 1999.<br>MAHAN, Bruce M., MYERS, Rollie J. **Química um Curso Universitário**. São Paulo: Editora Edgard<br>Blücher LTDA, 2011.<br>LENZI, Ervim; FAVERO, Luzia Otilia Bortotti; TANAKA, Aloísio Sueo; VIANNA FILHO, Evilásio de<br>Almeida; SILVA, Mauro Baldez da; GIMENES, Manoel Jacó Garcia. **Química geral experimental**. Rio<br>de Janeiro: Freitas Bastos, 2012. 360p. ISBN 9788579871566 (broch.).|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Física III||
@@ -1263,7 +1263,7 @@ NUSSENZVEIG, H. M. **Curso de Física Básica: Eletromagnetismo** . v. 3. 1. ed.
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Estágio I: Projetos Educacionais<br>**Carga Horária:**100h<br>**Período letivo:**Quinto<br>**Ementa:**<br>A prática pedagógica no exercício cotidiano do professor da educação básica. Análise da<br>organização do trabalho docente e o saber prático do professor de Física. A sala de aula como<br>espaço de produção do saber e suas relações com as transformações sociais, culturais, políticas,<br>econômicas e tecnológicas. Discussões sobre o processo de ensino-aprendizagem e a construção<br>do conhecimento de Física. Elaboração e desenvolvimento de projetos de investigação sobre<br>realidades educacionais.<br>**Bibliografia Básica:**<br>GANDIN, D.**A Prática do Planejamento Participativo**. Petrópolis: Vozes, 1994.<br>PIMENTA, S. G. (org.).**Estágio e Docência**. São Paulo: Cortez, 2009.<br>FARRELL, Michael. **Dificuldades de aprendizagem moderadas, graves e profundas : guia do**<br>**professor.** Porto Alegre: Artmed, 2008. 101 p. (Biblioteca Artmed. Educação inclusiva). ISBN<br>9788536314457.<br>DÍAZ BORDENAVE, Juan E; PEREIRA, Adair Martins. **Estratégias de ensino-aprendizagem.** 32.<br>ed. Petrópolis: Vozes, 2012. 357 p. ISBN 9788532601544.<br>FERRAÇO, C. E. (org.) **Cotidiano Escolar, Formação de Professores e Currículo**. São Paulo:<br>Cortez, 2005.<br>**Bibliografia Complementar:**<br>BRANDÃO, C. R.**O que é o Método Paulo Freire**. São Paulo: Brasiliense, 2005.<br>FAZENDA, I. (org.).**Práticas Interdisciplinares na Escola**. São Paulo: Cortez, 2005.<br>TEIXEIRA, P.M.M.**Ensino de Ciências: Pesquisas e Reflexões**. Ribeirão Preto: Holos, 2006.<br>ARROYO, M.**Ofício de Mestre: Imagens e Auto-Imagens**. Petrópolis: Vozes, 2000.<br>COLOMBO, S. S.**Gestão Educacional: Uma Nova Visão**. Porto Alegre: Artmed, 2004.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Oficinas de Ensino e Aprendizagem II||
@@ -1275,7 +1275,7 @@ NUSSENZVEIG, H. M. **Curso de Física Básica: Eletromagnetismo** . v. 3. 1. ed.
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Física IV<br>**Carga Horária:**67h<br>**Período letivo:**Sexto<br>**Ementa:**<br>Óptica geométrica: Leis da reflexão; Espelhos planos e esféricos; Leis da refração; Prismas e lentes<br>delgadas; Instrumentos ópticos. Óptica física: Experimento de Young; Interferência; Difração; Redes de<br>difração; Polarização. Introdução à relatividade: Éter luminífero; Postulados da relatividade; Dilatação<br>temporal e contração espacial; Transformações de Lorentz e transformação de velocidades; Efeito<br>Doppler relativístico.<br>**Bibliografia Básica:**<br>HALLIDAY, D; WALKER, J; RESNICK, R. **Fundamentos de Física**. v. 4. 8. ed. Rio de Janeiro: LTC,<br>2009.<br>YOUNG, H. D.; FREEDMAN, R. A. **Física IV: Ótica e Física Moderna**. 12. ed. São Paulo: Pearson,<br>2009.<br>JEWETT,JR. J. W.; SERWAY, R. A. **Física para Cientistas e Engenheiros**. Óptica e Física Moderna. v.<br>4. 8 ed. São Paulo: Cengage Learning, 2012.<br>NUSSENZVEIG, H. M. **Curso de Física Básica: Ótica, Relatividade, Física Quântica**. v. 4. 1. ed. São<br>Paulo: Edgard Blücher, 1998.<br>TIPLER, Paul Allen; LLEWELLYN, Ralph A. **Física Moderna**. 3. ed. Rio de Janeiro: Livros Técnicos e<br>Científicos, 2001.<br>**Bibliografia Complementar:**<br>BAUER, W.; WESTFALL, G. D.; DIAS , H. **Física para universitários.** Porto Alegre: Editora AMGH,<br>2013.<br>BORN, Max; GUINSBURG, Gita K. et al. () (Trad.). **Problemas da física moderna.** 3. ed. São Paulo:<br>Perspectiva, 2011. 121 p. (Debates ; 9). ISBN 8527302241.<br>OLIVEIRA,I. **Física moderna: para iniciados, interessados e aficionados**. 1. ed. São Paulo: Livraria<br>da Física, 2005.<br>ALONSO, M.; FINN, E.J.**Física um Curso Universitário**. v. 2. 2 ed. São Paulo: Edgard Blücher, 2014.<br>WOLFGANG, B. _et al_.**Física para universitários – Óptica e Física Moderna**. São Paulo: McGraw-Hill,<br>2013.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Laboratório de Física IV||
@@ -1296,7 +1296,7 @@ BRUICE, Paula. **Química Orgânica** v. 1  4ªed. São Paulo: Person, 2011. CAS
 
 BALL, David W. **Físico-química** . São Paulo, SP: Pioneira Thomson Learning, 2005. CHANG, R., **Físico-Química para as ciências químicas e biológicas** , trad. E. P. G. Arêas e F. R. Ornellas, McGraw-Hill, São Paulo, 2009. HAGE, D.S. & CARR, J.D. **Química analítica e análise quantitativa** . São Paulo: Pearson Prentice Hall, 2012. MCMURRY, J. **Química Orgânica** , 4. ed. Rio de Janeiro: LTC, 1997.
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Tecnologias da Informação e Comunicação na Educação||
@@ -1305,7 +1305,7 @@ BALL, David W. **Físico-química** . São Paulo, SP: Pioneira Thomson Learning,
 |**Bibliografia Básica:**<br>DEMO, P. **Educação Hoje - "novas" Tecnologias, Pressões e Oportunidades.**São Paulo: Atlas,<br>2009.<br>LITTO F. M.; FORMIGA, M. **Educação a distância o estado da arte.** São Paulo: Pearson<br>Education, 2009.<br>SILVA, R. S.**Modle para autores e tutores.**2. ed. São Paulo: Novatec Editora, 2012.<br>BRITO, D. **Criação de sites na era da web 2.0: desenvolva sites profissionais através de uma**<br>**metodologia completa.**Rio de Janeiro: Brasport, 2011.<br>GANDER, W. **Como Resolver Problemas em Computação Científica usando Maple e Matlab**.<br>São Paulo: Edgard Blücher, 2005.||
 |**Bibliografia Complementar:**<br>KENSKI, V. M.**Educação e Tecnologias: o novo ritmo da informação.**Campinas: Papirus, 2008.<br>LEÃO, L. **O labirinto da hipermídia: arquitetura e navegação no ciberespaço.**2. ed. São Paulo:<br>Iluminuras, 2001.<br>MORAN, J. M.; MASETTO, M. T.; BEHRENS, M. A. **Novas tecnologias e mediação pedagógica.**<br>Campinas: Papirus, 2000.<br>VERAS, M. (org.).**Inovação e métodos de ensino para nativos digitais.**São  Paulo, Atlas, 2011.<br>ROSINI, Alessandro Marco, **As Novas Tecnologias da Informação e a Educação a Distancia**, 2ª.<br>ed., Editora: CENGAGE LEARNING LV, 2013. ISBN: 8522115389.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Estágio II: Organização do Trabalho Pedagógico||
@@ -1321,7 +1321,7 @@ BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Física Moderna<br>**Carga Horária:**67h<br>**Período letivo:**Sétimo<br>**Ementa:**<br>Relatividade: Transformações de Galileu/Lorentz e invariância das leis físicas; Momento, força e energia<br>relativísticos; Conservação de momento/energia relativísticos. Quantização da energia: Radiação do<br>corpo negro e hipótese de Planck. Quantização da luz: Efeito fotoelétrico; Efeito Compton. Átomo<br>nuclear: Modelo de Rutherford; Modelo de Bohr. Ondas de matéria: Hipótese de de Broglie;<br>Experimento de Davisson-Germer. Equação de Schrödinger: Interpretação da função de onda; Partícula<br>livre; Potenciais unidimensionais; Átomo de hidrogênio. Princípio da Incerteza.<br>**Bibliografia Básica:**<br>TIPLER, P. A., LLEWELLYN, R. A., **Física Moderna**. 5. ed. São Paulo: LTC, 2010.<br>FEYNMAN, Richard Phillips; SANDS, Matthew L.; LEIGHTON, Robert B. **Feynman: lições de física**.<br>Porto Alegre: Bookman, 2008. 3 v. ISBN 9788577802593<br>NUSSENZVEIG, H. M. **Curso de Física Básica: Ótica, Relatividade, Física Quântica**. v. 4. 1. ed. São<br>Paulo: Edgard Blücher, 1998.<br>EISBERG, Robert Martin; RESNICK, Robert.**Física quântica: átomos, moléculas, sólidos, núcleos e**<br>**partículas**. Rio de Janeiro: Campus, 1979. 928 p. ISBN 9788570013095.<br>OLIVEIRA, I. **Física moderna: para iniciados, interessados e aficionados**. 1. ed. São Paulo: Livraria<br>da Física, 2005.<br>**Bibliografia Complementar:**<br>PERUZO, J._et al_.**Física Moderna e Contemporânea**. São Paulo: Livraria da Física, 2014.<br>SANCHES, Mônica Bordim; NEVES, Marcos Cesar Danhoni. **A física moderna e contemporânea no**<br>**ensino médio: uma reflexão didática**. Maringá: EDUEM, 2011. 128p. ISBN 9788576283331<br>CARUSO, F.; OGURI, V.**Física moderna: exercícios resolvidos.**Rio de Janeiro: Elsevier, 2009<br>BORN, M._et al_.**Problemas da física moderna**. 2. ed. São Paulo: Perspectiva, 2000.<br>MEDEIROS,<br>Damascynclito,<br>**FÍSICA**<br>**MODERNA**, Editora Ciência Moderna,1ª. ed., 2008. ISBN<br>9788573937336.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Mecânica Clássica||
@@ -1330,7 +1330,7 @@ BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2
 |**Bibliografia Básica:**<br>THORNTON, Stephen T; MARION, Jerry B. **Dinâmica clássica de partículas e sistemas.** São<br>Paulo: Cengage Learning, 2011. 575 p. ISBN 9788522109067 (broch.).<br>LEMOS, N. A. **Mecânica Analítica**. 2. ed. São Paulo: Editora Livraria da Física, 2007.<br>BARCELOS NETO, J. **Mecânica Newtoniana, Lagrangiana e Hamiltoniana**. São Paulo: Editora<br>Livraria da Física, 2004.<br>GOLDSTEIN, H.; POOLE, C.; SAFKO, J. **Classical Mechanics**. 3. ed. San Francisco: Addison<br>Wesley, 2002.<br>OLIVEIRA, J. U. C. L**. Introdução aos Princípios de Mecânica Clássica**. São Paulo: LTC, 2013.||
 |**Bibliografia Complementar:**<br>LOPES, A. O. **Introdução à Mecânica Clássica**. São Paulo: EDUSP, 2006.<br>WATARI, K.**Mecânica Clássica**. v.1. São Paulo: Editora Livraria da Física, 2001.<br>TAYLOR; J. R.**Mecânica Clássica**. Porto Alegre: Bookman, 2013.<br>NUSSENZVEIG, H. M. **Curso de Física Básica: Mecânica**. v. 1. 4. ed. São Paulo: Edgard Blücher,<br>2002.<br>LEMOS, N. A. **Mecânica Analítica**. São Paulo: Livraria da Física,  2004.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Metodologia Científica||
@@ -1339,7 +1339,7 @@ BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2
 |**Bibliografia Básica:**<br>BARROS, A. J. S., LEHFELD, N. A. S. **Fundamentos de Metodologia Científica**. 3. ed. São Paulo:<br>Pearson, 2008.<br>LAKATOS, E. M., MARCONI, M. A. **Metodologia Científica**. 6. ed. São Paulo: Atlas, 2011.<br>SEVERINO, A. J. **Metodologia do Trabalho Científico**. 23. ed. São Paulo: Cortez, 2007.<br>CERVO, A. B., BERVIAN, P. A., SILVA, R. **Metodologia Científica**. 6. ed. São Paulo: Pearson, 2007.<br>ANDRADE, M. M.**Introdução à Metodologia do Trabalho Científico**. 9. ed. São Paulo: Atlas, 2009.||
 |**Bibliografia Complementar:**<br>DEMO, P.**Metodologia do Conhecimento Científico**. São Paulo: Atlas, 2000.<br>DEMO, P.**Metodologia Científica em Ciências Sociais**. 3. ed. São Paulo: Atlas, 1995.<br>MATTAR NETO, J. A. **Metodologia Científica na Era da Informática**. 3. ed. São Paulo: Saraiva, 2008.<br>KOCHE, José Carlos, **Fundamentos de Metodologia Científica - Teoria Da Ciência E Prática Da**<br>**Pesquisa**, 32ª Edição, Editora Vozes, 2011. ISBN 9788532618047<br>BERVIAN, Pedro Alcino; CERVO, Amado Luiz; SILVA, Roberto Da;**Metodologia Científica,**6ª Edição,<br>Editora PRENTICE HALL (BRASIL), 2007, ISBN 8576050471.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Estágio III: Estratégias Didático-Pedagógicas||
@@ -1348,7 +1348,7 @@ BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2
 |**Bibliografia Básica:**<br>PACHECO, José et al. **Caminhos para a inclusão: um guia para o aprimoramento da equipe**<br>**escolar**. Porto Alegre: Artmed, 2007. 230 p. (Biblioteca Artmed: educação inclusiva). ISBN<br>9788536307572 (broch.).<br>DÍAZ BORDENAVE, Juan E; PEREIRA, Adair Martins. **Estratégias de ensino-aprendizagem**. 32.<br>ed. Petrópolis: Vozes, 2012. 357 p. ISBN 9788532601544.<br>FERRAÇO, C. E. (org.) **Cotidiano Escolar, Formação de Professores e Currículo**. São Paulo:<br>Cortez, 2005.<br>FREITAS, D. N. T. **A Avaliação da Educação Básica no Brasil**. Campinas: Autores Associados,<br>2007.<br>BORDENAVE, J. D., PEREIRA, A. M. **Estratégias de Ensino-Aprendizagem**. 27. ed. Petrópolis:<br>Vozes, 2006.||
 |**Bibliografia Complementar:**<br>BRANDÃO, C. R.**O que é o Método Paulo Freire**. São Paulo: Brasiliense, 2005.<br>FAZENDA, I. (org.).**Práticas Interdisciplinares na Escola**. São Paulo: Cortez, 2005.<br>TEIXEIRA, P.M.M.**Ensino de Ciências: Pesquisas e Reflexões**. Ribeirão Preto: Holos, 2006.<br>ARROYO, M.**Ofício de Mestre: Imagens e Auto-Imagens**. Petrópolis: Vozes, 2000.<br>COLOMBO, S. S.**Gestão Educacional: Uma Nova Visão**. Porto Alegre: Artmed, 2004.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Oficinas de Ensino e Aprendizagem IV||
@@ -1357,7 +1357,7 @@ BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2
 |**Bibliografia Básica:**<br>HALLIDAY, D; WALKER, J; RESNICK, R. **Fundamentos de Física**. v. 4. 8. ed. Rio de Janeiro: LTC,<br>2009.<br>YOUNG, H. D.; FREEDMAN, R. A. **Física IV: Ótica e Física Moderna**. 12. ed. São Paulo: Pearson,<br>2009.<br>TIPLER, Paul Allen; LLEWELLYN, Ralph A. **Física Moderna**. 3. ed. Rio de Janeiro: Livros Técnicos<br>e Científicos, 2001.<br>NUSSENZVEIG, H. M.**Curso de Física Básica: Ótica, Relatividade, Física Quântica**. v. 4. 1. ed.<br>São Paulo: Edgard Blucher, 1998.<br>JEWETT,JR. J. W.;SERWAY, R. A. **Física para Cientistas e Engenheiros**. v. 4. 8 ed. São Paulo:<br>Cengage Learning, 2012.||
 |**Bibliografia Complementar:**<br>GREF, Grupo de Reelaboração do Ensino de Física.**Física 3: Eletromagnetismo**. 7. ed. São Paulo:<br>EDUSP, 2011.<br>ALVES, A. S. _et al_.**Ensino de Física - Reflexões, Abordagens & Práticas**. São Paulo: Livraria da<br>Física, 2012.<br>CARUSO, F.; OGURI, V.**Física moderna: exercícios resolvidos.**Rio de Janeiro: Elsevier, 2009.<br>OLIVEIRA, I. S. **Física moderna: para iniciados, interessados e aficionados**. 1. ed. São Paulo:<br>Livraria da Física, 2005.<br>GASPAR, A. **Atividades Experimentais no Ensino de Física: Uma Nova Visão Baseada na**<br>**Teoria de Vigotski**. São Paulo: Livraria da Física, 2014.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Evolução das Ideias de Física||
@@ -1366,7 +1366,7 @@ BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2
 |**Bibliografia Básica:**<br>POZO, Juan Ignacio; GÓMEZ CRESPO, Miguel Ángel. **A aprendizagem e o ensino de ciências:**<br>**do conhecimento cotidiano ao conhecimento científico**. 5. ed. Porto Alegre: Artmed, 2009. 296<br>p. ISBN 9788536319889 (broch.).<br>BAZZO, W. A.. **Ciência, tecnologia e sociedade: e o contexto da educação tecnológica**. 4. ed.<br>Florianópolis: Ed. da UFSC, 2014.<br>GUERRA, Andréia; REIS, José Claudio; BRAGA, Marco. **Bohr e a interpretação quântica da**<br>**natureza.**São Paulo: Atual, 2005. 64 p. (Ciência no tempo;). ISBN 8535705619 (broch.)<br>FEYNMAN, Richard Phillips; SANDS, Matthew L.; LEIGHTON, Robert B. **Feynman: lições de**<br>**física.**Porto Alegre: Bookman, 2008. 3 v. ISBN 9788577802593 (obra completa).<br>HEWITT, Paul G.**Física conceitual.**11. ed. Porto Alegre: Bookman, 2011. 743 p.||
 |**Bibliografia Complementar:**<br>MOREIRA, Marco A. **Física de partículas: uma abordagem conceitual & epistemológica.** São<br>Paulo: Livraria da Física, 2011. 143 p. ISBN 9788578611132 (broch.).<br>MLODINOW, Leonard.**De primatas a astronautas: a jornada do homem em busca do**<br>**conhecimento**. 1. ed. Rio de Janeiro: Zahar, 2015. 391 p. ISBN 9788537814673 (broch.).<br>CHASSOT, Áttico Inácio.**Alfabetização científica: questões e desafios para a educação**. 7. ed.<br>Ijuí: Unijuí, 2016. 344 p. (Coleção educação em ciências). ISBN 9788541901888 (broch.).<br>TREFIL, James S.; HAZEN, Robert M. **Física viva: uma introdução à física conceitual.** Rio de<br>Janeiro: LTC, 2006. 3 v. ISBN 8521615086 ( v.1) (broch.).<br>KUHN, T. S.**A Estrutura das Revoluções Científicas**. 10. ed. São Paulo: Perspectiva, 2010.||
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Laboratório de Física Moderna||
@@ -1395,7 +1395,7 @@ WENTWORTH, S. M. **Eletromagnetismo Aplicado** . Porto Alegre: Bookman, 2009. JA
 
 **Campus Telêmaco Borba do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Estágio IV: Prática de Ensino **Carga Horária:** 100h **Período letivo:** Oitavo **Ementa:** O planejamento e desenvolvimento de atividades de ensino de Física para a educação básica. A intervenção escolar supervisionada. A avaliação dos processos de ensino e aprendizagem. Observação e aplicação de planos de ensino em regências no Ensino Médio. **Bibliografia Básica:** FREITAS, D. N. T. **A Avaliação da Educação Básica no Brasil** . Campinas: Autores Associados, 2007. BORDENAVE, J. D., PEREIRA, A. M. **Estratégias de Ensino-Aprendizagem** . 27.ed. Petrópolis: Vozes, 2006. FERRAÇO, C. E. (org.) **Cotidiano Escolar, Formação de Professores e Currículo** . São Paulo: Cortez, 2005. GANDIN, D. **A Prática do Planejamento Participativo** . Petrópolis: Vozes, 1994. BARREIRO, I. M. F. GEBRAN, R. A. **Prática de Ensino e Estágio Supervisionado na Formação de Professores.** São Paulo: Avercamp, 2006. **Bibliografia Complementar:** BRANDÃO, C. R. **O que é o Método Paulo Freire** . São Paulo: Brasiliense, 2005. FAZENDA, I. (org.). **Práticas Interdisciplinares na Escola** . São Paulo: Cortez, 2005. TEIXEIRA, P.M.M. **Ensino de Ciências: Pesquisas e Reflexões** . Ribeirão Preto: Holos, 2006. ARROYO, M. **Ofício de Mestre: Imagens e Auto-Imagens** . Petrópolis: Vozes, 2000. COLOMBO, S. S. **Gestão Educacional: Uma Nova Visão** . Porto Alegre: Artmed, 2004.
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Oficinas de Ensino e Aprendizagem V||
@@ -1490,7 +1490,7 @@ BAZZO, W. A.. **Ciência, tecnologia e sociedade: e o contexto da educação tec
 ||**Campus Telêmaco Borba do IFPR**<br>**Curso:**Licenciatura em Física<br>**Área do Conhecimento:**Ciências Exatas e da Terra<br>**Componente Curricular:**Eletrônicapara Professores de Física<br>**Carga Horária:**33h<br>**Período letivo:**Oitavo<br>**Ementa:**<br>Materiais semicondutores: cristais N e P, dopagem e junção PN; Diodo semicondutor: polarização,<br>curva característica e aplicações; Diodos especiais: zener, LED e fotodiodo; Transistor: tipos NPN e<br>PNP, polarização, curvas características e aplicações; Noções de Eletrônica Digital: portas lógicas e<br>circuitos com portas lógicas.<br>**Bibliografia Básica:**<br>BOYLESTAD, R. L.; NASHELSKY, L.**Dispositivos Eletrônicos e Teoria de Circuitos.**8. ed. Rio de<br>Janeiro: Pearson Prentice Hall, 2004.<br>MALVINO, A. P. **Eletrônica.**7. ed. São Paulo: Makron Books, 2007.<br>CIPELLI, A. M. V.; MARKUS, O.; SANDRINI, W. J. **Teoria e Desenvolvimento de Projetos de**<br>**Circuitos Eletrônicos.**23. ed. São Paulo: Érica, 2007.<br>IDOETA, I. V., CAPUANO, F. G.**Elementos de Eletrônica Digital**. 40. ed. São Paulo: Érica, 2008.<br>JUNIOR, CH. S.**Eletrônica Aplicada**. 2o Edição. São Paulo: Editora Érica, 2010.<br>**Bibliografia Complementar:**<br>CATHEY, J. J. **Teoria e Problemas de Dispositivos e Circuitos Eletrônicos**. 2. ed. Porto Alegre:<br>Bookman, 2003.<br>ALBUQUERQUE, R. O.; SEABRA, A. C.**Utilizando Eletrônica com AO, SCR, TRIAC, UJT, PUT, CI**<br>**555, LDR, LED, FET e IGBT**. São Paulo: Érica, 2009.<br>FIGINI, G.**Eletrônica Industrial: Circuitos e Aplicações**. São Paulo: HEMUS, 2002.<br>TOCCI, R. J., WIDMER, N. S.; MOSS, G. L. **Sistemas Digitais: Princípios e Aplicações**. 10. ed.<br>São Paulo: Pearson, 2007.<br>GARCIA, P. A.; MARTINI, J. S. C.**Eletrônica Digital: Teoria e Laboratório**. 2. ed. São Paulo: Érica,<br>2009.|
 |---|---|
 
-|**Campus Telêmaco Borba do IFPR**|**Campus Telêmaco Borba do IFPR**|
+|**Campus Telêmaco Borba do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Tópicos de Física Matemática||
@@ -2041,7 +2041,7 @@ O NDE do Curso de Licenciatura em Física é formado pelos seguintes docentes:
 |Lucas Anedino de<br>Souza|Licenciatura em<br>Física (UEPG)|Mestrado em<br>Engenharia e Ciência<br>dos Materiais (UEPG)|http://lattes.cnp<br>q.br/974297541<br>0550211|Dedicação exclusiva.|
 |Guilherne Sachs|Graduação: Letras<br>hispano-portuguesas<br>pela UEL<br>(Universidade<br>Estadual de<br>Londrina);<br>Graduação:<br>Pedagogia pela<br>UEPG (Universidade<br>Estadual de Ponta<br>Grossa);<br>Graduação: Artes<br>Visuais pela UNIMES<br>(Universidade<br>Metropolitana de<br>Santos);<br>Graduação:|Mestrado: Estudos da<br>Linguagem pela UEL.|https://lattes.<br>cnpq.br/4663<br>05786890819<br>2|Dedicação exclusiva.|
 
-|||||http://lattes.cnp<br>q.br/895963857<br>9225703<br>Dedicação exclusiva.<br>https://lattes.cn<br>pq.br/10110766<br>52835690<br>Dedicação exclusiva.<br>http://lattes.cnp<br>q.br/449887728<br>7121747<br>Dedicação exclusiva.|http://lattes.cnp<br>q.br/895963857<br>9225703<br>Dedicação exclusiva.<br>https://lattes.cn<br>pq.br/10110766<br>52835690<br>Dedicação exclusiva.<br>http://lattes.cnp<br>q.br/449887728<br>7121747<br>Dedicação exclusiva.|
+|||||http://lattes.cnp<br>q.br/895963857<br>9225703<br>Dedicação exclusiva.<br>https://lattes.cn<br>pq.br/10110766<br>52835690<br>Dedicação exclusiva.<br>http://lattes.cnp<br>q.br/449887728<br>7121747<br>Dedicação exclusiva.||
 |---|---|---|---|---|---|
 |||Geografia pela<br>UNIMES;<br>Especialização:<br>Metodologia do<br>Ensino Superior pela<br>UNOPAR<br>(Universidade do<br>Norte do Paraná);<br>Especialização: Arte<br>e Educação pela<br>UNIASSELVI (Centro<br>Universitário<br>Leonardo da Vinci);<br>Especialização:<br>Educação a Distância<br>– gestão e tutoria<br>pela UNIASSELVI;<br>Especialização:<br>Educação e Gestão<br>Ambiental pela<br>UNIASSELVI;||||
 ||Rafael João Ribeiro|Bacharel em Física<br>(UEPG).<br>Licenciatura em<br>Física e Formação<br>Pedagógica (UTFPR).|Doutorado em Ensino<br>de Ciência e Tecnologia<br>(UTFPR).|http://lattes.cnp<br>q.br/895963857<br>9225703|Dedicação exclusiva.|
@@ -2058,7 +2058,7 @@ O NDE do Curso de Licenciatura em Física é formado pelos seguintes docentes:
 |Celia Tamara<br>Coelho|Graduada em Letras<br>pela Universidade<br>Estadual de Londrina<br>(UEL);<br>Graduada em<br>Pedagogia pela<br>Universidade Norte do<br>Paraná (UENP);|Mestre em<br>Estudos da<br>Linguagem pela<br>Universidade<br>Estadual de<br>Londrina (UEL);<br>Doutorado em<br>Letras pela<br>Universidade<br>Estadual de<br>Maringá, UEM,<br>Brasil.|http://lattes.cn<br>pq.br/66157930<br>95746004|Psicologia da Educação.<br>Políticas Educacionais.<br>Métodos e práticas de<br>ensino. Organização e<br>administração escolar.<br>Educação Inclusiva. Estágios I<br>e II.|
 |Cristian Dekkers<br>Kremer|Técnico em Mecânica –<br>CEFET PG – 1999;<br>Licenciatura em<br>Matemática – UEPG –<br>2004;|Mestrado em<br>Engenharia de<br>Produção –<br>UTFPR PG –<br>2008.|http://lattes.cn<br>pq.br/50804467<br>04277361|Pré-Cálculo. Probabilidade e<br>Estatística Descritiva. Cálculo<br>Diferencial e Integral.<br>Vetores e Geometria<br>Analítica. Álgebra Linear.|
 
-|||||https://lattes.cn<br>pq.br/48759212<br>98444977<br>Química Geral I e II.<br>https://lattes.cn<br>pq.br/56433532<br>99917011<br>História e Filosofia da<br>Educação<br>https://lattes.cn<br>pq.br/10110766<br>52835690<br>Tópicos de Física. Física I, II,<br>III, IV e Moderna.<br>Laboratórios de Física.<br>Oficinas de Ensino e<br>Aprendizagem. Estágios.<br>Mecânica Clássica e<br>Eletrodinâmica Clássica.<br>Física Moderna. Evolução<br>das Ideias da Física.<br>http://lattes.cn<br>pq.br/63141563<br>06818152<br>Lógica de Programação.<br>https://lattes.cn<br>pq.br/46630578<br>68908192<br>Oficinas de Leitura e<br>Produção textual, Produção<br>de Textos Científicos.<br>Educação e Direitos<br>Humanos.<br>http://lattes.cn<br>pq.br/93860952<br>42700085<br>Oficinas de Leitura e<br>Produção textual, Produção<br>de Textos Científicos.<br>http://lattes.cn<br>pq.br/97429754<br>10550211<br>Tópicos de Física. Física I, II,<br>III, IV e Moderna.<br>Laboratórios de Física.<br>Oficinas de Ensino e<br>Aprendizagem. Estágios.<br>Mecânica Clássica e<br>Eletrodinâmica Clássica.<br>Evolução das Ideias da Física.<br>https://lattes.cn<br>pq.br/76437523<br>Cálculo Diferencial e Integral.<br>Probabilidade e Estatística.|https://lattes.cn<br>pq.br/48759212<br>98444977<br>Química Geral I e II.<br>https://lattes.cn<br>pq.br/56433532<br>99917011<br>História e Filosofia da<br>Educação<br>https://lattes.cn<br>pq.br/10110766<br>52835690<br>Tópicos de Física. Física I, II,<br>III, IV e Moderna.<br>Laboratórios de Física.<br>Oficinas de Ensino e<br>Aprendizagem. Estágios.<br>Mecânica Clássica e<br>Eletrodinâmica Clássica.<br>Física Moderna. Evolução<br>das Ideias da Física.<br>http://lattes.cn<br>pq.br/63141563<br>06818152<br>Lógica de Programação.<br>https://lattes.cn<br>pq.br/46630578<br>68908192<br>Oficinas de Leitura e<br>Produção textual, Produção<br>de Textos Científicos.<br>Educação e Direitos<br>Humanos.<br>http://lattes.cn<br>pq.br/93860952<br>42700085<br>Oficinas de Leitura e<br>Produção textual, Produção<br>de Textos Científicos.<br>http://lattes.cn<br>pq.br/97429754<br>10550211<br>Tópicos de Física. Física I, II,<br>III, IV e Moderna.<br>Laboratórios de Física.<br>Oficinas de Ensino e<br>Aprendizagem. Estágios.<br>Mecânica Clássica e<br>Eletrodinâmica Clássica.<br>Evolução das Ideias da Física.<br>https://lattes.cn<br>pq.br/76437523<br>Cálculo Diferencial e Integral.<br>Probabilidade e Estatística.|
+|||||https://lattes.cn<br>pq.br/48759212<br>98444977<br>Química Geral I e II.<br>https://lattes.cn<br>pq.br/56433532<br>99917011<br>História e Filosofia da<br>Educação<br>https://lattes.cn<br>pq.br/10110766<br>52835690<br>Tópicos de Física. Física I, II,<br>III, IV e Moderna.<br>Laboratórios de Física.<br>Oficinas de Ensino e<br>Aprendizagem. Estágios.<br>Mecânica Clássica e<br>Eletrodinâmica Clássica.<br>Física Moderna. Evolução<br>das Ideias da Física.<br>http://lattes.cn<br>pq.br/63141563<br>06818152<br>Lógica de Programação.<br>https://lattes.cn<br>pq.br/46630578<br>68908192<br>Oficinas de Leitura e<br>Produção textual, Produção<br>de Textos Científicos.<br>Educação e Direitos<br>Humanos.<br>http://lattes.cn<br>pq.br/93860952<br>42700085<br>Oficinas de Leitura e<br>Produção textual, Produção<br>de Textos Científicos.<br>http://lattes.cn<br>pq.br/97429754<br>10550211<br>Tópicos de Física. Física I, II,<br>III, IV e Moderna.<br>Laboratórios de Física.<br>Oficinas de Ensino e<br>Aprendizagem. Estágios.<br>Mecânica Clássica e<br>Eletrodinâmica Clássica.<br>Evolução das Ideias da Física.<br>https://lattes.cn<br>pq.br/76437523<br>Cálculo Diferencial e Integral.<br>Probabilidade e Estatística.||
 |---|---|---|---|---|---|
 ||Débora de<br>Andrade<br>Penteado<br>Forchetti|Licenciatura em<br>Química|Doutora em<br>Ciências pela<br>Universidade<br>Estadual de<br>Campinas<br>(Unicamp).|https://lattes.cn<br>pq.br/48759212<br>98444977|Química Geral I e II.|
 ||Diego Lourenço<br>Paes|Graduado em Filosofia<br>pela UFPR.|Mestre em<br>educação<br>profissional e<br>tecnológica pelo<br>IFPR.|https://lattes.cn<br>pq.br/56433532<br>99917011|História e Filosofia da<br>Educação|
@@ -2880,7 +2880,7 @@ Grupo 3 e 1 (uma) ou 3 (três) atividade do Grupo 4, conforme o Anexo II deste d
 
 ## **LABORATÓRIOS – EQUIPAMENTOS**
 
-|**Laboratório de Física - Materiais Permanentes**|**Laboratório de Física - Materiais Permanentes**|**Laboratório de Física - Materiais Permanentes**|
+|**Laboratório de Física - Materiais Permanentes**|||
 |---|---|---|
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Quanti**<br>**dade**|
 |ANEL DE GRAVESANDE<br>/DILATAÇÃO<br>VOLUMÉTRICA|ANEL DE GRAVESANDE PARA ESTUDO DA DILATAÇÃO VOLUMÉTRICA|4|
@@ -2922,7 +2922,7 @@ Grupo 3 e 1 (uma) ou 3 (três) atividade do Grupo 4, conforme o Anexo II deste d
 
 **Laboratório de Química - Materiais Permanentes**
 
-|**Laboratório deQuímica - Materiais Permanentes**|**Laboratório deQuímica - Materiais Permanentes**|**Laboratório deQuímica - Materiais Permanentes**|
+|**Laboratório deQuímica - Materiais Permanentes**|||
 |---|---|---|
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Quanti**<br>**dade**|
 |AR CONDICIONADO|CONDICIONADOR CONDICIONADOR DE AR TIPO SPLIT, PISO TETO, CAPACIDADE 60.000 BTUS; AR FRIO;<br>OPERAÇÕES REFRIGERAÇÃO E VENTILAÇÃO; COM CONTROLE REMOTO; COMPRESSOR ROTATIVO;<br>DISPLAY DIGITAL; GABINETE BRANCO; 03 VELOCIDADES; TENSÃO / FASE 220V / TRIFÁSICO; FREQÜÊNCIA<br>60HZ; VAZÃO DE AR MÍNIMA 2000 M³/H; CONSUMO MÁXIMO 6650W; CORRENTE ENTRE 18.8 E 20.0 A;<br>NÍVEL MÁXIMO DE RUÍDO INTERNO / EXTERNO 58/65DB|2|
@@ -2952,7 +2952,7 @@ Grupo 3 e 1 (uma) ou 3 (três) atividade do Grupo 4, conforme o Anexo II deste d
 
 **LABORATÓRIO INFORMÁTICA 2 – MATERIAIS PERMANENTES**
 
-|**LABORATÓRIO INFORMÁTICA 2 – MATERIAIS PERMANENTES**|**LABORATÓRIO INFORMÁTICA 2 – MATERIAIS PERMANENTES**|**LABORATÓRIO INFORMÁTICA 2 – MATERIAIS PERMANENTES**|
+|**LABORATÓRIO INFORMÁTICA 2 – MATERIAIS PERMANENTES**|||
 |---|---|---|
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Quanti**<br>**dade**|
 
@@ -2967,7 +2967,7 @@ Grupo 3 e 1 (uma) ou 3 (três) atividade do Grupo 4, conforme o Anexo II deste d
 
 ## **LABORATÓRIO INFORMÁTICA 3 – MATERIAIS PERMANENTES**
 
-|**LABORATÓRIO INFORMÁTICA 3 – MATERIAIS PERMANENTES**|**LABORATÓRIO INFORMÁTICA 3 – MATERIAIS PERMANENTES**|**LABORATÓRIO INFORMÁTICA 3 – MATERIAIS PERMANENTES**|
+|**LABORATÓRIO INFORMÁTICA 3 – MATERIAIS PERMANENTES**|||
 |---|---|---|
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Quanti**<br>**dade**|
 |AR CONDICIONADO|CONDICIONADOR DE AR TIPO SPLIT, PISO TETO, CAPACIDADE 60.000 BTUS; AR FRIO; OPERAÇÕES<br>REFRIGERAÇÃO E VENTILAÇÃO; COM CONTROLE REMOTO; COMPRESSOR ROTATIVO; DISPLAY DIGITAL;<br>GABINETE BRANCO; 03 VELOCIDADES; TENSÃO / FASE 220V / TRIFÁSICO; FREQÜÊNCIA 60HZ; VAZÃO DE<br>AR MÍNIMA 2000 M³/H; CONSUMO MÁXIMO 6650W; CORRENTE ENTRE 18.8 E 20.0 A; NÍVEL MÁXIMO<br>DE RUÍDO INTERNO / EXTERNO 58/65DB|1|
@@ -3082,7 +3082,7 @@ _____________________________________________________________________ __________
 
 **Estágio realizado** :_________________________________________________________________
 
-|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|
+|**REGISTRO DE ATIVIDADE DE ESTÁGIO**||||
 |---|---|---|---|
 |**DATA**|**ATIVIDADE DESENVOLVIDA**|**CARGA HORÁRIA**|**ASSINATURA**|
 |||||
@@ -3134,7 +3134,7 @@ Listas as referências utilizadas na escrita do relatório.
 
 ## **MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**
 
-|**MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**|**MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**|**MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**|**MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**|**MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**|
+|**MODELO DE AVALIAÇÃO DE REGÊNCIA DE ESTÁGIO CURRICULAR SUPERVISIONADO**|||||
 |---|---|---|---|---|
 |AVALIAÇÃO DA AULA|||||
 |**DISCIPLINA/ÁREA**|**DURAÇÃO**|**Conteúdo: (Assunto)**|||

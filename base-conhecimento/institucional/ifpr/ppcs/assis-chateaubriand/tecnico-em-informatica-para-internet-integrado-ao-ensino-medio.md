@@ -54,7 +54,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 ## 1.1 COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**|||
 |---|---|---|
 |PORTARIA DE DESIGNAÇÃO||Nº102, de 29 de maio de 2018|
 |DOCENTE E PRESIDENTE DA COMISSÃO||Rafael Luis Bartz|
@@ -681,11 +681,11 @@ A seguir apresenta-se os componentes curriculares que podem abordar os temas tra
 |Educação em<br>direitos humanos|Palestra sobre o<br>tema|Palestra sobre o<br>tema|Palestra sobre<br>o tema|Sociologia,<br>Filosofia e<br>EVENTOS|
 |Educação alimentar<br>e nutricional|Palestra com<br>nutricionista|Palestra com<br>nutricionista|Palestra com<br>nutricionista|Química,<br>Biologia e<br>eventos|
 
-||||||
-|---|---|---|---|---|
-|Cultura indígena|Leituras, roda de<br>conversa,<br>palestras|Palestras,<br>vídeos e<br>mostras|Palestras,<br>vídeos e<br>mostras|Geografia,<br>Sociologia<br>História,<br>Artes e eventos<br>s|
-|Cultura afro-<br>brasileira|Encontro em<br>Alusão ao Dia da<br>Consciência<br>Negra: palestras.|Roda de<br>conversa e<br>palestra.|Roda de<br>conversa e<br>palestra.|Geografia,<br>História,<br>Artes e eventos|
-|Carga horária total|14 horas|14 horas|14 horas||
+|||||
+|---|---|---|---|
+|Cultura indígena|Leituras, roda de<br>conversa,<br>palestras|Palestras,<br>vídeos e<br>mostras|Geografia,<br>Sociologia<br>História,<br>Artes e eventos<br>s|
+|Cultura afro-<br>brasileira|Encontro em<br>Alusão ao Dia da<br>Consciência<br>Negra: palestras.|Roda de<br>conversa e<br>palestra.|Geografia,<br>História,<br>Artes e eventos|
+|Carga horária total|14 horas|14 horas||
 
 ## 11. 7 COMPONENTE COMPLEMENTAR
 
@@ -711,7 +711,7 @@ Além da participação e organização de eventos, os estudantes também estar�
 
 ## **14. MATRIZ CURRICULAR**
 
-|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|
+|**Matriz curricular do Curso Técnico em Informática para Internet**<br>**Integrado ao ensino médio**|||||||
 |---|---|---|---|---|---|---|
 |**Ano**|||||||
 ||**de implantação: 2020**||||||
@@ -728,7 +728,7 @@ Além da participação e organização de eventos, os estudantes também estar�
 |Língua Estrangeira: Inglês|67|||2|80|67|
 |Linguagens de Apresentação e|134|||4|160|134|
 
-|Estruturação de Conteúdos|Estruturação de Conteúdos|||||||
+|Estruturação de Conteúdos||||||||
 |---|---|---|---|---|---|---|---|
 |Lógica de Programação||67|||2|80|67|
 |Fundamentos de Informática||67|||2|80|67|
@@ -1251,7 +1251,7 @@ MEDEIROS, João Bosco; TOMASI, Carolina. **Redação técnica** : elaboração d
 
 SEVERINO, Antônio Joaquim. **Metodologia do trabalho científico** . 23. ed. rev. e atual. São Paulo: Cortez, 2007.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||||
 |---|---|---|---|
 |**Curso: Técnico em Informática**<br>**para a Internet**||**Eixo Tecnológico: Informação e**<br>**Comunicação**||
 |**Componente Curricular:**Língua Portuguesa e Literatura III||||

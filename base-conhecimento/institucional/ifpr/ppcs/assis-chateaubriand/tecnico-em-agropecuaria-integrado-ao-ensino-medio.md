@@ -967,7 +967,7 @@ FUNDACENTRO Curso para engenheiros de segurança do Trabalho. São Paulo, 1981. 
 
 **Câmpus Assis Chateaubriand do IFPR**
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 ||**Curso:**Técnico em Agropecuária<br>**Eixo Tecnológico:**Recursos Naturais|
 ||**Componente Curricular**: Língua Portuguesa e Literatura II|
@@ -1028,7 +1028,7 @@ TIPLER, Paul A.; MOSCA, Gene; Física para Cientistas e Engenheiros, Vol.2, 6ª 
 
 ## **Câmpus Assis Chateaubriand do IFPR**
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 ||**Curso:**Técnico em Agropecuária<br>**Eixo Tecnológico:**Recursos Naturais|
 ||**Componente Curricular**: Química II|
@@ -1157,7 +1157,7 @@ BOTELHO, Manoel Henrique Campos. Resistência dos materiais: para entender e gos
 
 ## **Câmpus Assis Chateaubriand do IFPR**
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 ||**Curso:**Técnico em Agropecuária<br>**Eixo Tecnológico:**Recursos Naturais|
 ||**Componente Curricular**: Meteorologia e Bioclimatologia Animal na Agropecuária|

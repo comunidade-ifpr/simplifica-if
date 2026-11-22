@@ -810,7 +810,7 @@ A matriz curricular do curso está organizada por disciplinas em regime seriado 
 
 **Tabela 2:** Matriz Curricular do Curso
 
-|**Tabela**|**2:**Matriz Curricular do Curso|**2:**Matriz Curricular do Curso|**2:**Matriz Curricular do Curso|**2:**Matriz Curricular do Curso|
+|**Tabela**|**2:**Matriz Curricular do Curso||||
 |---|---|---|---|---|
 ||||||
 ||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**||||
@@ -3077,7 +3077,7 @@ Abaixo segue a lista de profissionais envolvidos no curso:
 
 **Quadro 4** : Servidores que atuam no curso
 
-|**Quadro 4**: Servidores que atuam no curso|**Quadro 4**: Servidores que atuam no curso|**Quadro 4**: Servidores que atuam no curso|**Quadro 4**: Servidores que atuam no curso|
+|**Quadro 4**: Servidores que atuam no curso||||
 |---|---|---|---|
 |||||
 ||**Docentes**|||
@@ -3189,7 +3189,7 @@ O Colegiado do Curso realiza reuniões periódicas ou por demanda, de forma extr
 
 **Quadro 6** : Corpo Técnico Administrativo em Educação
 
-|**Quadro 6**: Corpo Técnico Administrativo em Educação|**Quadro 6**: Corpo Técnico Administrativo em Educação|
+|**Quadro 6**: Corpo Técnico Administrativo em Educação||
 |---|---|
 |||
 |**O campus Irati conta com o seguinte quadro de técnicos administrativos:**||

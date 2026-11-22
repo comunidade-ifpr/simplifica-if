@@ -496,7 +496,7 @@ seminário no câmpus de Assis Chateaubriand os conteúdos pertinentes à histó
 
 ## 1° Semestre
 
-|1° Semestre|1° Semestre|1° Semestre|
+|1° Semestre|||
 |---|---|---|
 |UNIDADES DIDÁTICAS|CARGA HORÁRIA TOTAL<br>(h/a)|CARGA HORÁRIA<br>TOTAL(h/r)|
 |Comunicação eExpressão|40|34|
@@ -568,7 +568,7 @@ LINK, Walter, **Metrologia mecânica: expressão da incerteza de medição.** Mi
 
 ## UNIDADE DIDÁTICA: Comunicação e Expressão
 
-|UNIDADE DIDÁTICA: Comunicação e Expressão|UNIDADE DIDÁTICA: Comunicação e Expressão|
+|UNIDADE DIDÁTICA: Comunicação e Expressão||
 |---|---|
 |EMENTA: Princípios de comunicação humana, regras básicas de comunicação: oral, escrita,<br>multimídia. Revisão da gramática básica, com ênfase na ortografia. Ortoépia e Prosódia. A produção<br>do texto científico: Relatório, Artigo e apresentação oral, Técnicas de pesquisas bibliográficas.<br>Referências bibliográficas. Elaboração e execução de trabalhos científicos. Comunicação científica.<br>Elaboração de trabalhos observando aLei 10.639/2003 e11.645/2008.||
 |BIBLIOGRAFIA BÁSICA:<br>ALANO, Elsi do Rocio Cardoso.**Português.**<br>Curitiba:<br>Instituto<br>Tecnológico<br>de<br>Desenvolvimento Educacional, 2010.<br>WATANABE, Carmen Ballão;. MORETO, Eutália<br>Cristina do Nascimento; DUTRA, Renato Roxo<br>Coutinho.<br>**Normas**<br>**para**<br>**apresentação**<br>**de**<br>**trabalhos acadêmicos do Instituto Federal do**<br>**Paraná (IFPR).**Curitiba: Sistemas de Bibliotecas,<br>2010.<br>KOCH, Ingedore Villaça.**A coesão textual**. São<br>Paulo: Contexto, 2009.|<br> <br> <br> <br> <br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>BLIKSTEIN, Izidoro.**Técnicas de comunicação**<br>**escrita.**São Paulo: Ática, 2008.<br>KOCH, Ingedore Villaça.**O texto e a construção**<br>**dos sentidos**. São Paulo: Contexto, 2008.<br>ALMEIDA, Napoleão Mendes.**Gramática metódica**<br>**da língua portuguesa**. 42. ed. 1998.<br>BACK, E.; MATTOS, G.**Redação oficial e**<br>**comercial**. 6. ed. 1981.<br>GERALDI, João Wanderley.**Portos de passagem**.<br>São Paulo: Martins Fontes, 2003.<br>SARGENTINI, V.; NAVARRO-BARBOSA, P. M.<br>**Foucault e os domínios da linguagem:**discurso,<br>poder, subjetividade. São Carlos: Clara luz, 2004.|
@@ -593,14 +593,14 @@ BARETA, Deives Roberto; WEBBER, Jaine. BUENO, Claudia Pimentel; PAPAZOGLOU, **Fu
 
 ## UNIDADE DIDÁTICA: Eletricidade Básica
 
-|UNIDADE DIDÁTICA: Eletricidade Básica|UNIDADE DIDÁTICA: Eletricidade Básica|
+|UNIDADE DIDÁTICA: Eletricidade Básica||
 |---|---|
 |EMENTA: Conceitos de eletricidade; Eletrostática; tensão, corrente e resistência elétrica; Leis de<br>Ohm e de Kirchoff; Potência e energia elétrica; Divisores de tensão e corrente; Análise de<br>circuitos.||
 |BIBLIOGRAFIA BÁSICA:<br>MENDONÇA, R. G. de; SILVA, R. V. R. da.<br>**Eletricidade básica**. 1. ed. Curitiba: Editora do<br>Livro Técnico, 2010.<br>WOLSKI, Belmiro.**Eletricidade Básica**. 1. Ed.<br>Curitiba: Base Editorial, 2007.<br>ALBUQUERQUE, Rômulo Oliveira.**Análise de**<br>**circuitos em corrente contínua.**21. ed. São<br>Paulo: Érica, 2011.<br>FILHO, Matheus Teodoro Silva.**Fundamentos**<br>**de eletricidade.**1. ed. São Paulo: LTC, 2007.|<br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>MEIRELLES, Vitor Cancela.**Circuitos elétricos.**<br>4. ed. Rio de Janeiro: LTC, 2007.<br>MARKUS, O.**Circuitos elétricos:**corrente<br>contínua e corrente alternada. 8. ed. São Paulo:<br>Érica, 2009.<br>Say, M. G.**Eletricidade geral:**dispositivos e<br>aplicações. 13. ed.  São Paulo: Hemus, 2008.<br>Say, M. G.**Eletricidade geral –**eletrotécnica. 13.<br>ed.  São Paulo: Hemus, 2009.|
 
 ## UNIDADE DIDÁTICA: Eletrônica Analógica
 
-|UNIDADE DIDÁTICA: Eletrônica Analógica|UNIDADE DIDÁTICA: Eletrônica Analógica|
+|UNIDADE DIDÁTICA: Eletrônica Analógica||
 |---|---|
 |EMENTA: Semicondutores; Diodos; Circuitos Ceifadores, Grampeadores, Multiplicadores e<br>Retificadores; Fontes de Alimentação; TBJ; Polarização do TBJ; Corte e Saturação do TBJ;<br>Transistores de Efeito de Campo (FET e MOSFET); Polarização dos transistores de Efeito de<br>Campo; Circuitos Reguladores de Tensão; Amplificadores Operacionais; Circuitos inversores, não-<br>inversores, comparadores, somadores, subtratores e diferenciais utilizando amplificadores<br>operacionais.||
 |BIBLIOGRAFIA BÁSICA:<br>FREITAS, Marcos Antônio de; MENDONÇA,<br>Roberlam Gonçalves de.**Eletrônica básica.**<br>Curitiba: Editora do Livro Técnico, 2010.<br>JAIR, Urbanetz Junior; José da Silva Maia.<br>**Eletrônica aplicada.**Curitiba: Base Editorial,<br>2010.<br>CAPUANO, F. G.; Marino, M. A. M.**Laboratório**<br>**de eletricidade e eletrônica**. 24. ed. São Paulo:<br>Érica, 2009.<br>BOYLESTAD, Robert L.; NASHELSKY, Louis.<br>**Dispositivos eletrônicos e teoria de circuitos.**<br>8. ed. São Paulo: Prentice Hall, 2004.|<br> <br> <br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>EDUARDO Cesar Alves Cruz e Salomão Choueri<br>Jr.**Eletrônica aplicada**. 2. ed. São Paulo: Érica,<br>2004.<br>MARQUES, Angelo Eduardo B.; CRUZ, Eduardo<br>Cesar<br>A.;<br>JÚNIOR,<br>Salomão<br>Choueri.<br>**Dispositivos**<br>**semicondutores:**<br>diodos<br>e<br>transistores - estude e use. 12. ed. São Paulo:<br>Érica, 2008.<br>MALVINO, Albert Paul.**Eletrônica.**Vol. 1. 7. ed.<br>São Paulo: Mcgraw-Hill Brasil, 2008.<br>MALVINO, Albert Paul.**Eletrônica.**Vol. 2. 7. ed.<br>São Paulo: Mcgraw-Hill Brasil, 2008.|
@@ -650,7 +650,7 @@ FORBELLONE, A. L.V.. **Lógica de programação** SEMOLA, M. **Gestão da segura
 
 ## UNIDADE DIDATICA: Desenho Assistido por Computador
 
-|UNIDADE DIDATICA: Desenho Assistido por Computador|UNIDADE DIDATICA: Desenho Assistido por Computador|
+|UNIDADE DIDATICA: Desenho Assistido por Computador||
 |---|---|
 |EMENTA:<br>Apresentação do software de desenho – interface; Comandos de desenho – estudo detalhado de<br>comandos de desenho; Comandos de edição – estudo de comandos que permitem a modificação<br>de desenhos já existentes; Comandos de manipulação de tela – visualização do desenho;<br>Comandos de texto – inserção de textos em um desenho e modificação de texto; Comandos de<br>auxílio de desenho; Níveis de trabalho – controle de layers – cores, tipos de linhas; Propriedades<br>das entidades; Hachuras; Geração de bibliotecas – blocos – estudo dos componentes de uma<br>biblioteca; Comandos e variáveis de dimensionamento; Estudo dos tipos de dimensionamento;<br>Edição e variáveis de dimensionamento; Impressão e plotagem – como plotar e/ou imprimir um<br>desenho; Programas específicos de Desenho||
 |BIBLIOGRAFIA BASICA:<br>LIMA C. C.**Estudo dirigido de AutoCAD 2010.**São Paulo:<br>Erica, 2009;<br>FIALHO A. B.**SolidWorks Premium 2009 - Teoria e**<br>**Prática no Desenvolvimento de Produtos Industriais -**<br>**Plataforma para Projetos CAD/CAE/CAM.**São Paulo:<br>Érica, 2009.<br>JUNGHANS, Daniel.**Informática aplicada ao**<br>**desenho técnico.**Curitiba: Base Editorial, 2010.|<br>BIBLIOGRAFIA COMPLEMENTAR:<br>FRENCH,<br>Thomas<br>E.;<br>VIERCK,<br>Charles.<br>**Desenho técnico e tecnologia gráfica.**6. ed.<br>São Paulo: Editora Globo, 1999.<br>BARETA, Deives Roberto; WEBBER, Jaine.<br>**Fundamentos de desenho técnico mecânico.**<br>1. ed. São Paulo: EDUCS, 2010.<br>SCHNEIDER, W.**Desenho técnico industrial.**|
@@ -711,19 +711,19 @@ Medidas de uma grandeza; Padrões elétricos; Erros de medições; Fundamentos d
 
 ## UNIDADE DIDATICA: Processos de Fabricação II
 
-|UNIDADE DIDATICA: Processos de Fabricação II|UNIDADE DIDATICA: Processos de Fabricação II|
+|UNIDADE DIDATICA: Processos de Fabricação II||
 |---|---|
 |EMENTA:<br>Usinagem por geometria definida; Usinagem por geometria não-definida; Máquinas, nomenclatura e<br>formas de fresamento; Fresas e suas características; Teoria básica do corte em processos de<br>usinagem em fresadoras; Cálculos e operação de cabeçote divisor universal; Confecção de<br>superfícies técnicas em fresadoras; aplicação e parâmetros de corte; Características da tecnologia<br>CNC; Aplicação da tecnologia CNC; Programas CNC para a usinagem de superfícies técnicas;<br>Confecção de superfícies técnicas em máquinas operadas por CNC; Caracterização da soldagem;<br>Segurança na soldagem; Terminologia e simbologia na soldagem; Processos de soldagem e à gás;<br>Soldagem a arco elétrico; Procedimentos e inspeção de soldagem.||
 |BIBLIOGRAFIA BASICA:<br>FERRARESI, D.**Fundamentos da Usinagem dos Metais.**<br>11a ed. São Paulo: Edgard Blücher, 2003.<br>STEMMER, C. E.**Ferramentas de corte I.**Florianópolis:<br>Ed. UFSC, 2001.<br>STEMMER, C. E.**Ferramentas de corte II: brocas,**<br>**alargadores, ferramentas de roscar, fresas, brochas,**|BIBLIOGRAFIA COMPLEMENTAR:<br>MARQUES, P. V; et. al.**Soldagem:**<br>**Fundamentos e Tecnologia.**Belo Horizonte:<br>Ed. UFMG, 2007.<br>WAINER, E.**Soldagem, Processos e Metalurgia.**São Paulo:<br>Edgar Blucher, 2000.<br>MARQUES,Paulo V.;MODENESI,Paulo J. e|
 
 **rebolos.** Florianópolis: Ed. UFSC, 2001. BRACARENSE, Alexandre Q. **Soldagem: Fundamentos e Tecnologia.** São Paulo: Edgar Blucher, 2000.
 
-|UNIDADE DIDATICA: Resistência dos Materiais|UNIDADE DIDATICA: Resistência dos Materiais|
+|UNIDADE DIDATICA: Resistência dos Materiais||
 |---|---|
 |EMENTA:<br>Estática: Força Resultante - Equilíbrio da Partícula, - Equilíbrio de Corpos Rígidos, Cargas<br>Distribuídas; Características das Formas Geométricas simples: Centro de Gravidade, Momento de<br>Inércia; Tensão e Deformação; Lei de Hooke; Esforço de Tração e Compressão; Esforço de<br>Cisalhamento; Esforço de Flexão, Momento Fletor; Esforço de Torção, Momento Torçor; Esforço de<br>Flambagem.||
 |BIBLIOGRAFIA BASICA:<br>BEER, F. P.; JOHNSTON JR; E. RUSSELL.**Resistência**<br>**dos Materiais.**São Paulo: Mc Graw Hill, 1997.<br>MELCONIAN, S.**Mecânica Técnica e Resistência dos**<br>**Materiais.**São Paulo: Mc Graw Hill, 1996.<br>SHAMES, I.H , I**ntrodução à Mecânica dos Sólidos.**<br>Prentice-Hall do Brasil, 1984.|BIBLIOGRAFIA COMPLEMENTAR:<br>POPOV, E.P,**Introdução à Mecânica dos Sólidos.**Editora<br>Edgard Blucher Ltda., 1978.<br>VAN VLACK, LAWRENCE H.**Princípios de Ciência e**<br>**Tecnologia dos Materiais.**11° ed. Rio de Janeiro: Campus,<br>1994.<br>GARCIA, A.**Solidificação: Fundamentos e Aplicações.**<br>Campinas: UNICAMP,2001.|
 
-|UNIDADE DIDATICA: Máquinas Elétricas e Acionamentos|UNIDADE DIDATICA: Máquinas Elétricas e Acionamentos|
+|UNIDADE DIDATICA: Máquinas Elétricas e Acionamentos||
 |---|---|
 |EMENTA:<br>Conversão eletromecânica de energia; Transformadores; Máquinas de corrente contínua; Máquinas<br>de corrente alternada, assíncrona e síncronas; Motores de Passo; Servomotores; Máquinas<br>Especiais; Acionamento elétrico de máquinas; Partida direta; Partida estrela-triângulo; Diagramas<br>elétricos de sistemas de acionamento; Normas de segurança.||
 |BIBLIOGRAFIA BASICA:<br>CORAIOLA, José Alberto. MACIEL, Ednilson<br>Soares,**Máquinas elétricas.**1. ed. Curitiba:<br>Base, 2010.<br>CORAIOLA, José Alberto. MACIEL, Ednilson<br>Soares,**Trasformadores e motores de indução.**<br>1. ed. Curitiba: Base, 2010.<br>KOSOW,<br>Irving<br>L.<br>**Máquinas**<br>**elétricas**<br>**e**<br>**transformadores.**1. ed. Rio de Janeiro: Globo,<br>2004.<br>FRANCHI,<br>Claiton<br>Moro.<br>**Acionamentos**<br>**elétricos**. 4. ed. São Paulo: Érica, 2009.|<br> <br> <br> <br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>FITZGERALD, A. E.; KINGSLEY, Charles Jr.;<br>UMANS, Stephen D.**Máquinas elétricas**. 6. ed.<br>Bookman, 2006.<br>ALMEIDA, Jason Emirick.**Motores elétricos:**<br>manutenção e testes. 3. ed. São Paulo: Hemus,<br>2006.<br>SIMONE, Gilio Aluisio.**Máquinas de indução**<br>**trifásicas**: teoria e exercícios. 2. ed. São Paulo:<br>Érica, 2006.|
@@ -736,7 +736,7 @@ Termodinâmica; Ciclos térmicos; Teoria da Combustão; Máquinas térmicas; Tub
 
 de fluxo; Compressores; Classificação das Máquinas Hidráulicas; Bombas; Cavitação; Perdas e Rendimentos; Refrigeração e ar condicionado.
 
-|de fluxo; Compressores; Classificação das Máquinas Hidráulicas; Bombas; Cavitação; Perdas e<br>Rendimentos; Refrigeração e ar condicionado.|de fluxo; Compressores; Classificação das Máquinas Hidráulicas; Bombas; Cavitação; Perdas e<br>Rendimentos; Refrigeração e ar condicionado.|
+|de fluxo; Compressores; Classificação das Máquinas Hidráulicas; Bombas; Cavitação; Perdas e<br>Rendimentos; Refrigeração e ar condicionado.||
 |---|---|
 |BIBLIOGRAFIA BASICA:<br>COSTA, Enio Cruz.**Compressores.**São Paulo: Edgard<br>Blücher, 1996.<br>STOECKER, W. F.**Refrigeração Industrial.**São Paulo:<br>Edgard Blucher, 1997.<br>INCROPERA, Frank.**Fundamentos da Transferência de**<br>**Calor e Massa.**São Paulo: Livros Técnicos e Científicos,<br>1996.|BIBLIOGRAFIA COMPLEMENTAR:<br>MACINTYRE, Archibald.**Instalações de Bombas e**<br>**Bombeamento.**São Paulo: Livros Técnicos e Científicos,<br>1994.<br>CREDER, Hélio.**Instalações de Ar Condicionado.**São<br>Paulo: LTC, 1995.<br>SARAVANAMUTTOO, H.I.H.; Cohen, H.; Rogers, G. F.C.<br>**Gas turbine theory.**São Paulo. 5. ed. Pearson Education,<br>2001.|
 
@@ -744,21 +744,21 @@ UNIDADE DIDATICA: Elementos de Automação EMENTA: Sensores industriais; Control
 
 UNIDADE DIDÁTICA: Eletrônica de Potência EMENTA: Interruptores controladores de potência; Conversores CA-CC básicos; Conversores CCCC; Circuitos com semicondutores de potência.
 
-|UNIDADE DIDÁTICA: Eletrônica de Potência|UNIDADE DIDÁTICA: Eletrônica de Potência|
+|UNIDADE DIDÁTICA: Eletrônica de Potência||
 |---|---|
 |EMENTA: Interruptores controladores de potência; Conversores CA-CC básicos; Conversores CC-<br>CC; Circuitos com semicondutores de potência.||
 |BIBLIOGRAFIA BÁSICA:<br>DEL TORO, V.**Fundamentos de máquinas**<br>**elétricas**. LTC Editora, 1. ed., 1994<br>AHMED, A.**Eletrônica de potência**. Editora<br>Pearson no Brasil, 1. ed, 2000.<br>GUAZELLI, M. B. P.**Eletrônica de potência**.<br>Editora da UNICAMP, 2. ed., 1998.<br> <br> <br> <br> <br> <br> <br> <br>|<br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>RASHID, M. H.**Power electronics handbook**.<br>Academic Press, 1. ed. 2001<br>POMÍLIO,<br>J.<br>A.<br>**Eletrônica**<br>**de**<br>**potência**.<br>Campinas: Universidade Estadual de Campinas,<br>2009.<br>NATALE, Fernando.**Automação industrial.**2. ed.<br>São Paulo: Érica, 2000.|
 
 ## UNIDADE DIDÁTICA: Gestão de Produção
 
-|UNIDADE DIDÁTICA: Gestão de Produção|UNIDADE DIDÁTICA: Gestão de Produção|
+|UNIDADE DIDÁTICA: Gestão de Produção||
 |---|---|
 |EMENTA: Introdução à gestão de produção; Sistemas de Produção; Previsão de Demanda;<br>Capacidade, Localização e Arranjo Físico das Instalações; Administração de Tecnologias; Métodos<br>e Organização do Trabalho; Acompanhamento e Melhoramento da Produção; Controle e<br>Qualidade; Logística; Novos Paradigmas; Planejamento, Controle e Programação da Produção;<br>Jogos de Produção; Introdução à filosofia_Just-in-Time_.||
 |BIBLIOGRAFIA BÁSICA:<br>NIGEL<br>SLACK,<br>STUART<br>CHAMBERS<br>E<br>ROBERT<br>JOHNSTON.<br>**Administração**<br>**da**<br>**produção.**São Paulo: Atlas, 2009.<br>MARTINS, PETRÔNIO GARCIA E LAUGENI,<br>FERNANDO P.**Administração da produção,**<br>São Paulo: Saraiva, 2005.<br>RICHARD B. CHASE, NICHOLAS J. AQUILANO,<br>F.<br>ROBERT<br>JACOBS.<br>**Administração**<br>**da**<br>**produção**<br>**e**<br>**operações**<br>**para**<br>**vantagens**<br>**competitivas.**11. ed. São Paulo: Mcgraw Hill,<br>2006.|<br> <br> <br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>BALLOU, Ronald H.**Logística empresarial.**São<br>Paulo: Atlas, 1995.<br>TUBINO, Dálvio F.**Manual de planejamento e**<br>**controle da produção.**São Paulo: Atlas, 2007.<br>RITZMAN, L. P., KRAJEWSKI, L. J.**Administração**<br>**de produção e operações.**São Paulo: Pearson<br>Prentice Hall, 2004|
 
 ## UNIDADE DIDÁTICA: Projetos Elétricos Industriais
 
-|UNIDADE DIDÁTICA: Projetos Elétricos Industriais|UNIDADE DIDÁTICA: Projetos Elétricos Industriais|
+|UNIDADE DIDÁTICA: Projetos Elétricos Industriais||
 |---|---|
 |EMENTA: Levantamento de carga; Sistema de distribuição de energia elétrica em indústrias;<br>Tensões em instalações industriais; Dimensionamento; Proteção de instalações elétricas<br>industriais; Fator de potência em instalações elétricas industriais; Desenvolvimento de projetos<br>elétricos Industriais.||
 |BIBLIOGRAFIA BÁSICA:<br>WALENIA, Paulo Sérgio.**Projetos elétricos**<br>**industriais.**Curitiba: Base Editorial, 2010.<br>COTRIM, Ademaro A.<br>M.<br>B.<br>**Instalações**<br>**elétricas**. 5. ed. São Paulo: Pearson do Brasil,<br>2009.<br>CREDER, Helio.**Instalações elétricas**. 15. ed.<br>Rio de Janeiro: LTC, 2007.|<br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>CERVELIN,<br>Severino;<br>Cavalin,<br>Geraldo.<br>**Instalações elétricas prediais**. 22. ed. São Paulo:<br>Érica, 2009.<br>FILHO, Silvério Visacro.**Aterramentos elétricos:**<br>conceitos<br>básicos,<br>técnicas<br>de<br>medição<br>e<br>instrumentação, filosofia de aterramento. 1. ed. Rio<br>de Janeiro: Interciência, 2002.<br>GUERRINI, Délio Pereira.**Iluminação:**teoria e<br>projeto. 2. ed. São Paulo: Érica, 2005.<br>FILHO, Silvério Visacro.**Descargas atmosféricas:**<br>uma abordagem de engenharia. 1. ed. São Paulo:<br>ArtLiber, 2005.|
@@ -767,19 +767,19 @@ UNIDADE DIDÁTICA: Eletrônica de Potência EMENTA: Interruptores controladores 
 
 Conceitos físicos aplicados à pneumática; Componentes pneumáticos (simbologia e função); Sistemas pneumáticos; Sistemas eletropneumáticos; Análise e síntese de circuitos pneumáticos; Componentes físicos aplicados à hidráulica; Componentes hidráulicos (simbologia e função); Sistemas hidráulicos; Sistemas eletrohidráulicos; Análise e síntese de circuitos hidráulicos; Automação eletropneumática e eletrohidráulica
 
-|UNIDADE DIDATICA: Circuitos Hidráulicos e Pneumáticos|UNIDADE DIDATICA: Circuitos Hidráulicos e Pneumáticos|UNIDADE DIDATICA: Circuitos Hidráulicos e Pneumáticos|
+|UNIDADE DIDATICA: Circuitos Hidráulicos e Pneumáticos|||
 |---|---|---|
 |EMENTA:<br>Conceitos físicos aplicados à pneumática; Componentes pneumáticos (simbologia e função);<br>Sistemas pneumáticos; Sistemas eletropneumáticos; Análise e síntese de circuitos pneumáticos;<br>Componentes físicos aplicados à hidráulica; Componentes hidráulicos (simbologia e função);<br>Sistemas hidráulicos; Sistemas eletrohidráulicos; Análise e síntese de circuitos hidráulicos;<br>Automação eletropneumática e eletrohidráulica|||
 |BIBLIOGRAFIA BASICA:<br>LELUDAK,<br>Jorge<br>Assade.<br>**Acionamentos**<br>**eletropneumáticos.**<br>Curitiba:<br>Base<br>Editorial,<br>2010.<br>SANTOS,<br>Winderson<br>Eugenio<br>dos.<br>**Controladores lógicos programáveis (CLPs).**<br>Curitiba: Base Editorial, 2010.<br>STEWART, Harry L.**Pneumática e hidráulica.**3.<br>ed. São Paulo: Hemus, 2002.<br>NATALE, Fernando.**Automação industrial.**2. ed.<br>São Paulo: Érica, 2000.|<br> <br> <br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>FRANCHI, Claiton Moro; Camargo, Valter Luis A.<br>**Controladores lógicos programáveis**. 2. ed.<br>São Paulo: Érica, 2009.<br>PINTO, J. R. Caldas.**Técnicas de automação.**3.<br>ed. Editora ETEP, 2010.<br>BONACORSO,<br>Nelson<br>Gauze;<br>NOLL.<br>**Automação eletropneumática.**1. ed. São Paulo:<br>Érica, 1997.|<br> <br> <br> <br>|
 
 ## UNIDADE DIDATICA: Programação de Equipamentos Industriais
 
-|UNIDADE DIDATICA: Programação de Equipamentos Industriais|UNIDADE DIDATICA: Programação de Equipamentos Industriais|UNIDADE DIDATICA: Programação de Equipamentos Industriais|
+|UNIDADE DIDATICA: Programação de Equipamentos Industriais|||
 |---|---|---|
 |EMENTA:<br>Estruturas de programação; Algoritmos; Fluxogramas; Estruturas de decisão; Estruturas de<br>repetição; Programação e parametrização de Inversores de Frequência, Controladores,<br>Instrumentos e Controladores Lógicos Programáveis.||<br> <br> <br> <br> <br> <br>|
 |BIBLIOGRAFIA BASICA:<br>LUGLI, Alexandre Baratella e SANTOS, Max M. D.<br>**Sistemas Fieldbus para Automação Industrial -**<br>**DeviceNET, CANopen, SDS e Ethernet.**São<br>Paulo. 1. Ed.Érica, 2010.<br>LUGLI, Alexandre Baratella e SANTOS, Max M. D.<br>**Redes Industriais para Automação Industrial:**<br>**AS-I, PROFIBUS e PROFINET.**São Paulo. 1.<br>Ed.Érica, 2010.<br>CAPELLI, Alexandre.**Automação Industrial -**<br>**Controle**<br>**do**<br>**Movimento**<br>**e**<br>**Processos**<br>**Contínuos**. São Paulo. 2. Ed.Érica, 2010.|<br> <br> <br> <br> <br> <br> <br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>FRANCHI, Claiton Moro; Camargo, Valter Luis A.<br>**Controladores lógicos programáveis**. 2. ed.<br>São Paulo: Érica, 2009.<br>PINTO, J. R. Caldas.**Técnicas de automação.**3.<br>ed. Editora ETEP, 2010.<br>BONACORSO,<br>Nelson<br>Gauze;<br>NOLL.<br>**Automação eletropneumática.**1. ed. São Paulo:<br>Érica, 1997.||
 
-|UNIDADE DIDATICA: Elementos de Máquinas|UNIDADE DIDATICA: Elementos de Máquinas|
+|UNIDADE DIDATICA: Elementos de Máquinas||
 |---|---|
 |EMENTA:<br>Sistemas de transmissão; Transmissão por correias; Transmissão por engrenagens; Redutores e<br>Motoredutores; Principais elementos de máquinas (eixos, chavetas e acoplamentos, parafusos e<br>rebites); Mancais de rolamentos e de deslizamentos; Molas cilíndricas helicoidais; Cabos de aço.||
 |BIBLIOGRAFIA BASICA:<br>SHIGLEY, Joseph.**Elementos de Máquinas.**São<br>Paulo: LTC, 1992.<br>MELCONIAN, Sarkis.**Elementos de Máquina.**<br>São Paulo: Editora Érica, 1999.<br>PROVENZA, Francesco.**Mecânica Aplicada.**<br>São Paulo: PROTEC, 1994.|<br> <br>BIBLIOGRAFIA COMPLEMENTAR:<br>NIEMANN, Gustav.**Elementos de Máquinas.**São<br>Paulo: Edgard Blucher, 1993.<br>KOSOW,<br>Irving<br>L.<br>**Máquinas**<br>**elétricas**<br>**e**<br>**transformadores.**1. ed. Rio de Janeiro: Globo,<br>2004.<br>SIMONE, Gilio Aluísio e CREPPE, Renato<br>Crivellari.<br>**Conversão**<br>**Eletromecânica**<br>**de**<br>**Energia – Uma Introdução ao Estudo.**São<br>Paulo: Editora Érica, 1999.|

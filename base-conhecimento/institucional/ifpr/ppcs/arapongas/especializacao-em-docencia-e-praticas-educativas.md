@@ -274,7 +274,7 @@ O egresso da Especialização em Docência e Práticas Educativas será capaz de
 
 ## **11. RELAÇÃO DO CORPO DOCENTE**
 
-|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|
+|**11. RELAÇÃO DO CORPO DOCENTE**|||||||
 |---|---|---|---|---|---|---|
 |Anderson de<br>Freitas Vietro|Bacharelado e<br>Licenciatura<br>em Geografia|Doutorado|Efetivo|Educação<br>socioambiental:<br>paisagens,<br>políticas e<br>práticas|15h||
 |Anderson de<br>Freitas Vietro|Bacharelado e<br>Licenciatura<br>em Geografia|Doutorado|Efetivo|Seminários I –<br>Educação<br>Inclusiva e<br>Seminário II –<br>Práticas docentes|15h<br>30h||
@@ -290,7 +290,7 @@ O egresso da Especialização em Docência e Práticas Educativas será capaz de
 
 ## **12.1 Componente Curricular Obrigatório**
 
-|**12. MATRIZ CURRICULAR**|**12. MATRIZ CURRICULAR**|**12. MATRIZ CURRICULAR**|**12. MATRIZ CURRICULAR**|
+|**12. MATRIZ CURRICULAR**||||
 |---|---|---|---|
 |**12.1 Componente Curricular Obrigatório**||||
 |||||

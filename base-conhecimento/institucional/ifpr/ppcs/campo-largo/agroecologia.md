@@ -52,7 +52,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 **AJUSTE CURRICULAR DE CURSO** ( x ) **RESOLUÇÃO DE CRIAÇÃO:** Resolução n.º 49/2018
 
-|**COMISSÃO DE AJUSTE CURRICULAR(CAj)**|**COMISSÃO DE AJUSTE CURRICULAR(CAj)**|
+|**COMISSÃO DE AJUSTE CURRICULAR(CAj)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Rodrigo de Souza|
@@ -198,7 +198,7 @@ Fonte: Adaptado de IPARDES (2020)
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Rua Emilio Bertolini, n. 54, Cajuru | Curitiba – PR – Brasil | CEP 82920-030
 
-|**Tabela 2.**Número de estabelecimentos e empregos segundo as atividades<br>econômicas em 2018|**Tabela 2.**Número de estabelecimentos e empregos segundo as atividades<br>econômicas em 2018|**Tabela 2.**Número de estabelecimentos e empregos segundo as atividades<br>econômicas em 2018|
+|**Tabela 2.**Número de estabelecimentos e empregos segundo as atividades<br>econômicas em 2018|||
 |---|---|---|
 |**ATIVIDADES ECONÔMICAS**<br>|**ESTABELECIMENTOS**|**EMPREGOS**|
 |**INDÚSTRIA**|**436**|**9.572**|
@@ -1803,7 +1803,7 @@ PEIXOTO, F. **O que é teatro** . 14. ed. São Paulo: Brasiliense, 1995. 94 p. (
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Rua Emilio Bertolini, n. 54, Cajuru | Curitiba – PR – Brasil | CEP 82920-030
 
-|**CAMPUS CAMPO LARGO DO IFPR**|**CAMPUS CAMPO LARGO DO IFPR**|
+|**CAMPUS CAMPO LARGO DO IFPR**||
 |---|---|
 |**Curso: **Técnico em Agroecologia|**Eixo Tecnológico: **RecursosNaturais|
 |**Componente Curricular:**LínguaEspanhola- II||
@@ -2117,7 +2117,7 @@ PELICIONI, M. C. F; TORRES, A. L. **A Escola Promotora de Saúde** . São Paulo:
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Rua Emilio Bertolini, n. 54, Cajuru | Curitiba – PR – Brasil | CEP 82920-030
 
-|**CAMPUS CAMPO LARGO DO IFPR**|**CAMPUS CAMPO LARGO DO IFPR**|
+|**CAMPUS CAMPO LARGO DO IFPR**||
 |---|---|
 |**Curso: **Técnico em Agroecologia|**Eixo Tecnológico: **RecursosNaturais|
 |**Componente Curricular:**LínguaEspanhola- III||

@@ -993,7 +993,7 @@ Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores 
 
 Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>_Campus_Colombo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM ALIMENTOS**<br>Eixo Tecnológico do Curso: Produção Alimentícia<br>Base legal: RESOLUÇÃO CNE/CP 3/2002 - Catálogo Nacional de Cursos Superiores em Tecnologia<br>Base legal específica do curso: Resolução CNE/CP nº 29 de 03 de dezembro de 2002<br>Resolução de autorização do curso no IFPR: Resolução nº 33 de 29 de Junho de 2018||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|
 |||||**CH Total**||**CH Presencial**||**CH Ead**<br>**20 %**||**CH**<br>**Extensão**<br>**10%**|
 |**Semanas do semestre letivo:**||**Tipo**<br>**(C, AC,**<br>**ES)**|**Número**<br>**de aulas**<br>**semanais**|**hora-**<br>**aula**<br>**(min)**<br>**50**|**hora-**<br>**relógio**<br>**(min)**<br>**60**|**Hora-aula**<br>**(min)**<br>**50**|**Hora-**<br>**relógio**<br>**(min)**<br>**60**|**Hora-**<br>**aula**<br>**(min)**<br>**50**|**Hora-**<br>**relógio**<br>**(min)**<br>**60**|**hora-**<br>**relógio**|
@@ -1060,17 +1060,17 @@ Ministerio da Educacao
 
 ## Parana
 
-||Optativa III|C|2|48|40|40|33|8|7|4|
-|---|---|---|---|---|---|---|---|---|---|---|
-||**Subtotal (Total do período)**||**20**|**480**|**400**|**400**|**332**|**80**|**68**|**40**|
-|**CARGA HORÁRIA TOTAL DO CURSO**||||**2880**|**2400**|**2400**|**1997**|**480**|**403**|**240**|
-|**DISTRIBUIÇÃO - CARGA HORÁRIA**|||||||||||
-|**CARGA HORÁRIA TOTAL DO CURSO**|||||||2600 h||||
-|(C) Componentes curriculares presencial|||||||1997 h||||
-|(C) Componentes curriculares Ead (20%)|||||||403 h||||
-|(ES) Estágio Supervisionado|||||||100 h||||
-|(AC) Atividades Complementares|||||||100 h||||
-|Curricularização da Extensão*|||||||260 h||||
+||Optativa III|C|2|48|40|33|8|7|4|
+|---|---|---|---|---|---|---|---|---|---|
+||**Subtotal (Total do período)**||**20**|**480**|**400**|**332**|**80**|**68**|**40**|
+|**CARGA HORÁRIA TOTAL DO CURSO**||||**2880**|**2400**|**1997**|**480**|**403**|**240**|
+|**DISTRIBUIÇÃO - CARGA HORÁRIA**||||||||||
+|**CARGA HORÁRIA TOTAL DO CURSO**||||||2600 h||||
+|(C) Componentes curriculares presencial||||||1997 h||||
+|(C) Componentes curriculares Ead (20%)||||||403 h||||
+|(ES) Estágio Supervisionado||||||100 h||||
+|(AC) Atividades Complementares||||||100 h||||
+|Curricularização da Extensão*||||||260 h||||
 
 * A carga horária da extensão está inserida na carga horária total do curso.
 
@@ -3684,7 +3684,7 @@ O horário de funcionamento da Biblioteca do Campus Colombo é estabelecido de a
 
 |**Segunda-feira**|**Terça-feira**|**Quarta-feira**|**Quinta-feira**|**Sexta-feira**|
 |---|---|---|---|---|
-|08h30 às 21h30|08h30 às 21h30|08h30 às 21h30|08h30 às 21h30|08h30 às 21h30|
+|08h30 às 21h30|||||
 
 **Quadro 03** . Horário de funcionamento da Biblioteca do Campus Colombo
 
@@ -3718,7 +3718,7 @@ Para a oferta do curso superior de Tecnologia em Alimentos, foi prevista a neces
 
 Muitos equipamentos e materiais previstos para ser adquiridos para início da oferta do curso foram comprados. Assim esta projeção foi atualizada de acordo com o Planejamento e Gerenciamento de Contratações (PGC) 2023. Consideramos também em manter os materiais de consumo (vidrarias) na projeção, pois serão utilizados nos laboratórios previstos para construção. Segue abaixo:
 
-|**1º ANO**|**1º ANO**|**1º ANO**|**1º ANO**|
+|**1º ANO**||||
 |---|---|---|---|
 |**Equipamento**|**Preço unitário**<br>**(R$)**|**Quantidade**|**Total (R$)**|
 |Banho maria redondo Capacidade 4 litros|1.763,46|02|3.526,92|
@@ -3833,7 +3833,7 @@ Ministerio da Educacao
 |**Subtotal**|||**15.722,70**|
 |**Total**|||**24.531,24**|
 
-|**2º ANO**|**2º ANO**|**2º ANO**|**2º ANO**|
+|**2º ANO**||||
 |---|---|---|---|
 |**Equipamento**|**Preço unitário**<br>**(R$)**|**Quantidade**|**Total (R$)**|
 |Acidímetro de salut|304,80|01|304,80|
@@ -3864,7 +3864,7 @@ INSTITUTOFEDERAL Parana
 |Tumbler|37.200,00|01|37.200,00|
 |**Total**|||**151.394,54**|
 
-|**3º ANO**|**3º ANO**|**3º ANO**|**3º ANO**|
+|**3º ANO**||||
 |---|---|---|---|
 |**Equipamento**|**Preço unitário**<br>**(R$)**|**Quantidade**|**Total (R$)**|
 |Câmara de fermentação para pães|7.059,00|01|7.059,00|
@@ -4413,7 +4413,7 @@ Ministerio da Educacao<br>
 |O(a) estudante acima identificado realizou ____ (______________) horas de atividades complementares. Faltando _____ (______________) horas para||||||||||||
 |cumprir o disposto no Regulamento das Atividades Complementares do curso Superior de Tecnologia em Alimentos.||||cumprir o disposto no Regulamento das Atividades Complementares do curso Superior de Tecnologia em Alimentos.||||||||
 |Ao Registro Acadêmico para arquivo da primeira via da presente.||||||||||||
-|Colombo, ______ de__________________ de________|Colombo, ______ de__________________ de________|Colombo, ______ de__________________ de________|Colombo, ______ de__________________ de________|Colombo, ______ de__________________ de________||||||||
+|Colombo, ______ de__________________ de________||||||||||||
 |Cientes:||||||||||||
 |Coordenadoria de Curso: ____________________________________     Estudante:____________________________________________________________||||||||||||
 
@@ -4861,10 +4861,10 @@ Ministerio da Educacao
 |ZAHA, Arnaldo; FERREIRA, Henrique Bunselmeyer; PASSAGLIA, Luciane M. P (Org.).Biologia molecular básica.Porto Alegre: Artmed, 2014.||Quantidade : 1|
 |Classificação : 572.8 B615 2014 (PM) (AC) (CO) (CA) Ac.308096|||
 |Legenda: ** = Acervo incompleto|||
-|Total títulos / Livros : 149|Total de exemplares / Livros : 758|Total de exemplares / Livros : 758|
+|Total títulos / Livros : 149|Total de exemplares / Livros : 758||
 ||Total de material adicional / Livros : 10||
 |Total títulos / Colombo : 149|Total de exemplares / Colombo : 758||
-||Total de material adicional / Colombo : 10|Total de material adicional / Colombo : 10|
+||Total de material adicional / Colombo : 10||
 
 Total geral de exemplares : 758 Total geral de material adicional : 10
 

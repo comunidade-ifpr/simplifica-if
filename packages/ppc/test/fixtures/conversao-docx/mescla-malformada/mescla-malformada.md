@@ -1,6 +1,6 @@
 ## 1 MESCLA MALFORMADA
 
-| larga | larga | c |
+| larga |  | c |
 |---|---|---|
 | a | órfã | c2 |
 | a | x | y |

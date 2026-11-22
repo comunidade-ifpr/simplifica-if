@@ -896,7 +896,7 @@ Na sequência a apresentação da Matriz Curricular:
 
 ## **- I Semestre**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Massoterapia|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular**: Anatomia Humana||
@@ -997,7 +997,7 @@ Portaria n.º 102, de 08 de julho de 1943-Regula as instruções da Profissão.
 
 43
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Massoterapia|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular**: Técnica da Massagem Laboral||
@@ -1040,7 +1040,7 @@ WOLFFENBUTTEL, A. N. **Base química dos óleos essenciais e aromaterapia.** Sã
 
 45
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Massoterapia|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular**: Noções Básicas de Exames Complementares||
@@ -1081,7 +1081,7 @@ ROSENBERG, Stephen N. **Livro de primeiros socorros** : Johnson & Johnson . 2. e
 
 ## **- II Semestre –**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Massoterapia|**Eixo**<br>**Tecnológico:**Ambiente<br>e<br>Segurança|
 |||
@@ -1205,7 +1205,7 @@ WERNER, R. **Guia de Patologia para Massoterapeutas.** 2ªEd. Rio de Janeiro: Gu
 
 51
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Massoterapia|**Eixo**<br>**Tecnológico:**<br>Ambiente<br>e<br>Segurança|
 |||
@@ -1383,7 +1383,7 @@ VACCHIANO, A. **Shiatsu facial: a arte do rejuvenescimento.** Rio de Janeiro: Gr
 
 57
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Massoterapia|**Eixo Tecnológico:**Ambiente e Saúde|
 |**Componente Curricular**: Técnica da Massagem Drenagem Linfática||

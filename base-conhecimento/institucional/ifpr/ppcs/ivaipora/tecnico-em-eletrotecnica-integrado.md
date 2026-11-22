@@ -898,7 +898,7 @@ O IFPR Campus Ivaiporã ofertará atividades que contemplem as diferentes possib
 
 **INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ** (Criação lei nº 11.892 de 29/11/2008) Campus Ivaiporã **MATRIZ CURRICULAR DO CURSO TÉCNICO EM ELETROTÉCNICA**
 
-|||Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021|Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021|Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021|Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021|
+|||Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021||||
 |---|---|---|---|---|---|
 |||Resolução de autorização do curso no IFPR: Resolução nº32 de 09 de<br>dezembro de 2013||||
 |||**CH em hora-aula (min)**|**60**|||
@@ -916,72 +916,72 @@ O IFPR Campus Ivaiporã ofertará atividades que contemplem as diferentes possib
 |||Sociologia I - fundamentos da<br>sociologia e antropologia|2|40|40|
 |||Circuitos elétricos|4|80|80|
 
-|||Desenho técnico auxiliado por<br>computador|2|40|40|
-|---|---|---|---|---|---|
-|||Instalações elétricas I|2|40|40|
-|||Medidas elétricas e<br>instrumentação|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**2º semestre**||Arte I - arte, comunicação e<br>expressão|2|40|40|
-|||Educação física II|2|40|40|
-|||Filosofia I - fundamentos da<br>filosofia|2|40|40|
-|||História I - historiografia e<br>estruturas da antiguidade|2|40|40|
-|||Língua inglesa I - fundamentos de<br>inglês|1|20|20|
-|||Língua portuguesa II - produção e<br>interpretação de texto iniciais|2|40|40|
-|||Matemática II - funções e aplicações|2|40|40|
-|||Química I - química geral|2|40|40|
-|||Instalações elétricas II|2|40|40|
-|||Introdução a circuitos elétricos em<br>corrente alternada|2|40|40|
-|||Lógica de programação|2|40|40|
-|||Projetos de instalações elétricas|2|40|40|
-|||Segurança do trabalho|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**3º semestre**||Arte II - linguagens artísticas,<br>comunicação e expressão|2|40|40|
-|||Biologia III - os seres vivos|2|40|40|
+|||Desenho técnico auxiliado por<br>computador|2|40|
+|---|---|---|---|---|
+|||Instalações elétricas I|2|40|
+|||Medidas elétricas e<br>instrumentação|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**2º semestre**||Arte I - arte, comunicação e<br>expressão|2|40|
+|||Educação física II|2|40|
+|||Filosofia I - fundamentos da<br>filosofia|2|40|
+|||História I - historiografia e<br>estruturas da antiguidade|2|40|
+|||Língua inglesa I - fundamentos de<br>inglês|1|20|
+|||Língua portuguesa II - produção e<br>interpretação de texto iniciais|2|40|
+|||Matemática II - funções e aplicações|2|40|
+|||Química I - química geral|2|40|
+|||Instalações elétricas II|2|40|
+|||Introdução a circuitos elétricos em<br>corrente alternada|2|40|
+|||Lógica de programação|2|40|
+|||Projetos de instalações elétricas|2|40|
+|||Segurança do trabalho|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**3º semestre**||Arte II - linguagens artísticas,<br>comunicação e expressão|2|40|
+|||Biologia III - os seres vivos|2|40|
 
-|||Educação física III|2|40|40|
-|---|---|---|---|---|---|
-|||Física II - universo e movimento|2|40|40|
-|||Geografia II - estado, território e<br>ideologias geográficas|2|40|40|
-|||Literatura II - estilos e épocas<br>literárias no Brasil (XVI - XX)|1|20|20|
-|||Matemática III - trigonometria|2|40|40|
-|||Sociologia II - socialização e<br>desigualdades|2|40|40|
-|||Eletrônica analógica|2|40|40|
-|||Máquinas elétricas|2|40|40|
-|||Microcontroladores|4|80|80|
-|||Sistemas pneumáticos|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**4º semestre**||Arte III - arte e cultura brasileira|1|20|20|
-|||Educação física IV|2|40|40|
-|||Filosofia II - a idade da razão|2|40|40|
-|||História II - medievo, modernidade e<br>colonialismo|2|40|40|
-|||Língua inglesa II - língua e cultura<br>inglesa|2|40|40|
-|||Língua portuguesa III - correção<br>gramatical|1|20|20|
-|||Literatura III - estilos e épocas<br>literárias no Brasil (XX - XXI)|1|20|20|
-|||Matemática IV - geometria plana e<br>espacial|2|40|40|
-|||Química II - química orgânica|2|40|40|
-|||Acionamentos elétricos|2|40|40|
-|||Controlador lógico programável|4|80|80|
+|||Educação física III|2|40|
+|---|---|---|---|---|
+|||Física II - universo e movimento|2|40|
+|||Geografia II - estado, território e<br>ideologias geográficas|2|40|
+|||Literatura II - estilos e épocas<br>literárias no Brasil (XVI - XX)|1|20|
+|||Matemática III - trigonometria|2|40|
+|||Sociologia II - socialização e<br>desigualdades|2|40|
+|||Eletrônica analógica|2|40|
+|||Máquinas elétricas|2|40|
+|||Microcontroladores|4|80|
+|||Sistemas pneumáticos|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**4º semestre**||Arte III - arte e cultura brasileira|1|20|
+|||Educação física IV|2|40|
+|||Filosofia II - a idade da razão|2|40|
+|||História II - medievo, modernidade e<br>colonialismo|2|40|
+|||Língua inglesa II - língua e cultura<br>inglesa|2|40|
+|||Língua portuguesa III - correção<br>gramatical|1|20|
+|||Literatura III - estilos e épocas<br>literárias no Brasil (XX - XXI)|1|20|
+|||Matemática IV - geometria plana e<br>espacial|2|40|
+|||Química II - química orgânica|2|40|
+|||Acionamentos elétricos|2|40|
+|||Controlador lógico programável|4|80|
 
-|||Eletrônica digital|2|40|40|
-|---|---|---|---|---|---|
-|||Instalações elétricas industriais|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**5º semestre**||Biologia IV - genética e evolução|2|40|40|
-|||Física III - transformação e<br>Conservação|2|40|40|
-|||Geografia III - produção capitalista<br>do território|2|40|40|
-|||História III - colonialismo na América<br>e revoluções da Era Moderna|1|20|20|
-|||Língua espanhola I - fundamentos<br>de língua espanhola|1|20|20|
-|||Língua inglesa III - leitura e<br>interpretação em língua inglesa|1|20|20|
-|||Literatura IV - contemporaneidades<br>em literatura portuguesa|1|20|20|
-|||Matemática V - elementos de<br>álgebra e introdução à estatística|2|40|40|
-|||Química III - química inorgânica,<br>soluções e eletroquímica|2|40|40|
-|||Sociologia III - relações de poder e<br>políticas|1|20|20|
-|||Introdução à robótica|2|40|40|
-|||Modelagem 3D e manufatura<br>aditiva|2|40|40|
-|||Projeto e confecção de placas de<br>circuito impresso|2|40|40|
-|||Projeto integrador I|2|40|40|
-|||Sistemas fotovoltaicos I|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
+|||Eletrônica digital|2|40|
+|---|---|---|---|---|
+|||Instalações elétricas industriais|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**5º semestre**||Biologia IV - genética e evolução|2|40|
+|||Física III - transformação e<br>Conservação|2|40|
+|||Geografia III - produção capitalista<br>do território|2|40|
+|||História III - colonialismo na América<br>e revoluções da Era Moderna|1|20|
+|||Língua espanhola I - fundamentos<br>de língua espanhola|1|20|
+|||Língua inglesa III - leitura e<br>interpretação em língua inglesa|1|20|
+|||Literatura IV - contemporaneidades<br>em literatura portuguesa|1|20|
+|||Matemática V - elementos de<br>álgebra e introdução à estatística|2|40|
+|||Química III - química inorgânica,<br>soluções e eletroquímica|2|40|
+|||Sociologia III - relações de poder e<br>políticas|1|20|
+|||Introdução à robótica|2|40|
+|||Modelagem 3D e manufatura<br>aditiva|2|40|
+|||Projeto e confecção de placas de<br>circuito impresso|2|40|
+|||Projeto integrador I|2|40|
+|||Sistemas fotovoltaicos I|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
 
 |---|---|---|---|---|---|
 |**6º semestre**||Biologia V - o ser humano|2|40|40|
@@ -2576,7 +2576,7 @@ Atualmente, o colegiado do curso de eletrotécnica é instituído por meio da Po
 
 O corpo técnico administrativo em educação no IFPR Campus Ivaiporã é um pilar essencial para a excelência da instituição, desempenhando um papel crucial na gestão, suporte e organização de todas as atividades educacionais e administrativas. São esses profissionais dedicados que garantem o funcionamento eficiente dos processos acadêmicos, a manutenção das instalações, o suporte logístico para eventos e a prestação de serviços que promovem um ambiente propício para o aprendizado e o desenvolvimento de toda a comunidade acadêmica. Assim, o corpo técnico administrativo contribui diretamente para a formação de profissionais qualificados e o sucesso institucional do IFPR Campus Ivaiporã.
 
-|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|
+|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |---|---|---|---|
 |**Nome**|**Formação**|**Regime de**<br>**trabalho**<br>**(40h, 30h**<br>**ou 20h)**|**Cargo**|
 |Ricardo Rodrigues de<br>Souza|Bacharelado em Engenharia<br>Ambiental|40h DE|Diretor Geral|

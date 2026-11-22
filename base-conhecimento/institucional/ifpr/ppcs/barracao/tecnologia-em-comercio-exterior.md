@@ -480,7 +480,7 @@ São aulas de 50 minutos, sendo que na conversão para hora relógio as quebras 
 
 32
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ Resolução CONSUP/IFPR Nº 23, DE 14 DE junho**<br>**DE 2019**|||||||
 |---|---|---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||||
 ||_Campus_Avançado Barracão|||||||
@@ -590,7 +590,7 @@ diretamente com a comunidade, em interação dialógica, levando o conhecimento 
 
 ## **DISCIPLINAS DE EXTENSÃO**
 
-|integralmente no formato de extensão, conforme tabela abaixo:|integralmente no formato de extensão, conforme tabela abaixo:|integralmente no formato de extensão, conforme tabela abaixo:|integralmente no formato de extensão, conforme tabela abaixo:|
+|integralmente no formato de extensão, conforme tabela abaixo:||||
 |---|---|---|---|
 |**DISCIPLINAS DE EXTENSÃO**||||
 |**Semestre**|**Disciplina**|**Carga horária**<br>**em hora-aula**|**Carga horária**<br>**em hora-relógio**|

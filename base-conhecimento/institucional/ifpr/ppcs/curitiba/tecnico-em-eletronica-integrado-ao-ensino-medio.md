@@ -274,7 +274,7 @@ Os conteúdos transversais referentes à Educação Ambiental (Lei nº 9.795/199
 
 ## **MATRIZ CURRICULAR**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-aula)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -532,7 +532,7 @@ Os estudantes que integralizarem com aprovação todos os componentes curricular
 
 Os componentes curriculares do curso técnico em Eletrônica são apresentados a seguir.
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -542,7 +542,7 @@ Os componentes curriculares do curso técnico em Eletrônica são apresentados a
 |**Bibliografia Básica:**<br>BENEDUZZI, Humberto Martins; METZ, João Ariberto.**Lógica e Linguagem de Programação:**<br>Introdução ao desenvolvimento de software. 1ª ed. Curitiba: Editora do Livro Técnico, 2010.<br>MANZANO, José Augusto N. G.; JAYR, Figueiredo de Oliveira.**Algoritmos:**Lógica para<br>desenvolvimento de Programação de Computadores. 12ª ed. São Paulo: Érica, 2000.<br>LAUREANO, Marcos.**Programando em C para Linux, Unix e Windows.**1ª ed. Rio de Janeiro:<br>Brasport, 2005.||
 |**Bibliografia Complementar:**<br>SALIBA, Walter Luiz Caram.**Técnicas de Programação.**1ª ed. São Paulo: Makron, McGraw-Hill,<br>1992.<br>LEITE, Mário.**Técnicas de Programação:**uma Abordagem Moderna. 1ª ed. Rio de Janeiro:<br>Brasport, 2006.<br>SCHMITZ, Eber Assis; TELES, Antônio Anibal de Souza.**Pascal e Técnicas de Programação.**3ª ed.<br>Rio de Janeiro: LTC, 2001.<br>GUERREIRO, Pedro.**Pascal:**Técnicas de Programação. 5ª ed. Portugal: FCA, 2010.<br>VAREJÃO, Flavio Miguel.**Linguagens de Programação:**Conceitos e Técnicas**.**1ª ed. Rio de<br>Janeiro: Campus, 2004.||
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -632,7 +632,7 @@ NICOLOSI, D. E. C. **Microcontrolador 8051:** Detalhado. 8ª ed. São Paulo: Ér
 
 TOCCI, Ronald. **Sistemas Digitais:** Princípios e Aplicações. 10ª ed. Rio de Janeiro: Prentice Hall, 2007. PEREIRA, Fábio. **Microcontroladores PIC – Programação em C.** 1ª ed. São Paulo: Érica, 2003. MIYADAIRA, Alberto Noboru. **Microcontroladores PIC18 - Aprenda e Programe em Linguagem C.** 1ª ed. São Paulo: Érica, 2009. SOUZA, David José de. **Desbravando o PIC – Ampliado e Atualizado.** 12ª ed. São Paulo: Érica, 2007. KUMAR, N. Senthil. **Microprocessors and Microcontrolers.** 1ª ed. EUA: Oxford, 2011.
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -678,7 +678,7 @@ Amplificadores Operacionais: circuitos inversores, não-inversores, comparadores
 
 ALMEIDA, J.L. **Dispositivos Semicondutores: Tiristores.** 1ª ed. São Paulo: Érica, 1996. CHOUERI JUNIOR, Salomão; CRUZ Eduardo Cesar Alves. **Eletrônica Aplicada.** 1ª ed. São Paulo: Érica, 2007. TURNER, L. W. **Eletrônica Aplicada.** 1ª ed. São Paulo: Hemus, 2004. URBANETZ JUNIOR, Jair. **Eletrônica Aplicada.** 1ª ed. Curitiba: Base, 2008. KHANDPUR, R. **Troubleshooting Electronic Equipment.** 1ª ed. EUA: McGraw-Hill, 2006.
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -728,7 +728,7 @@ GRAMÁTICA Substantivo, Adjetivo, Artigo e numeral, Pronome, Verbo, Advérbio, P
 
 27
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -740,7 +740,7 @@ GRAMÁTICA Substantivo, Adjetivo, Artigo e numeral, Pronome, Verbo, Advérbio, P
 
 28
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e<br>Processos Industriais|
 |||
@@ -1034,7 +1034,7 @@ _____. **Os princípios ontológicos fundamentais de Marx** (excerto da Ontologi
 
 _____. **Para além do capital** . Trad. Paulo César Castanheira e Sérgio Lessa. São Paulo: Boitempo, 2002. _____. **O desafio e o fardo do tempo histórico** . São Paulo: Boitempo,2007.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|<br>**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -1237,7 +1237,7 @@ HEIDEGGER, Martin. **Da experiência do pensar.** Porto Alegre-RS: Globo, 1969.
 
 **Bibliografia Complementar:** ABBAGNANO, Nicola. **História da filosofia.** 6. ed. Vol. 1 e 2 Lisboa: Presença, 2000. REALE, Giovanni; ANTISERI, Dario. **História da filosofia.** Vol. 1 e 2. São Paulo: Paulus, 2003. HUME, David. **Tratado da natureza humana:** uma tentativa de introduzir o método experimental de raciocínio nos assuntos morais. São Paulo: UNESP, 2001.
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -1257,7 +1257,7 @@ ASSIS DE OLIVEIRA, Sávio. **Reinventando o esporte** : possibilidade da prátic
 
 COSTA, Roberto Fernandes da. **Composição corporal:** teoria e prática da avaliação. São Paulo: Manole, 2001. DANTAS, Estélio H. M. **Pensando o corpo e o movimento** . Rio de Janeiro: Shape, 2005. LUCENA, R. F. **O esporte na cidade** : aspectos do esforço civilizador brasileiro. Campinas: Autores Associados, 2001. PEREIRA NETTO, Nilo S. Mancala. In: FOLHAS. Secretária de Estado da Educação – SEED. Curitiba, Paraná, 2011.
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -1542,7 +1542,7 @@ DIAS, Reinildes; JUCÁ, Leina; FARIA, Raquel. **PRIME 3 - student's book with au
 
 51
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -1552,7 +1552,7 @@ DIAS, Reinildes; JUCÁ, Leina; FARIA, Raquel. **PRIME 3 - student's book with au
 |**Bibliografia Básica:**<br>LOPES, S.**Biologia**: essencial. 1. ed. São Paulo: Saraiva, 2003.<br>LOPES, S.; ROSSO, S.**Biologia**. 1. ed. São Paulo: Saraiva, 2005.<br>LOPES, S.; ROSSO, S.**Bio**. Volume 1. 1. ed. São Paulo: Saraiva, 2010.||
 |**Bibliografia Complementar:**<br>PEZZI, A.; GOWDAK, D.O.; MATTOS, N.S. de.**Biologia**. Volume 1. 1. ed. São Paulo: FTD, 2010.<br>REINACH, F.**A longa marcha dos grilos canibais**: e outras crônicas sobre a vida no planeta Terra.<br>1. ed. São Paulo: Companhia Das Letras, 2010.<br>SILVA JÚNIOR, C.; SASSON, S.**Biologia**. Volume 1. 8. ed. São Paulo: Saraiva, 2005.<br>COOPER, G.M; HAUSMAN, R.**A célula**: uma abordagem molecular, 3.ed. São Paulo: Artmed, 2007.<br>JUNQUEIRA, L. C.; CARNEIRO, J.**Histologia Básica**, 11. ed. São Paulo: Guanabara Koogan, 2008.||
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|<br>**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -1571,7 +1571,7 @@ MILLER, T. **Ciência Ambietal.** Cencage Learning: São Paulo, 2007.
 
 REINACH, F. **A longa marcha dos grilos canibais** : e outras crônicas sobre a vida no planeta Terra. 1. ed. São Paulo: Companhia Das Letras, 2010.
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -1581,7 +1581,7 @@ REINACH, F. **A longa marcha dos grilos canibais** : e outras crônicas sobre a 
 |**Bibliografia Básica:**<br>Griffiths, A. J. F.; Carroll, S.B.; Lewontin, R.C.; Wessler, S.R. 2009.**Introdução à Genética**. 9. Ed.<br>Editora: Guanabara Koogan. ISBN. 9788527714976.<br>Purves, W. K.; Sadava, D.; Orians, H. G.; Heller, H. C. 2009.**Vida - A Ciência da Biologia - Volume**<br>**II: Evolução, Diversidade e Ecologia.**8. Ed. Editora: Artmed. ISBN. 9788536319223.<br>Townsend, C.R.; Harper, J.L.; Begon, M. 2007.**Ecologia - De Indivíduos a Ecossistemas.**4. Ed.<br>Editora: Artmed. ISBN. 9788536308845||
 |**Bibliografia Complementar:**<br>Pereira, L. V. 2005.**Sequenciaram o Genoma Humano ... E agora ?**2. Ed. Editora: Moderna.<br>ISBN. 8516045889.<br>Lopes, R. J. 2009.**Além de Darwin.**Editora: Globo Editora. ISBN. 9788525047687.<br>Fernandez, F. 2004.**O Poema Imperfeito - Crônicas de Biologia, Conservação da Natureza e**<br>**seus Heróis.**2. Ed. Editora: UFPR. ISBN. 8573351152.||
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletrônica|<br>**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||

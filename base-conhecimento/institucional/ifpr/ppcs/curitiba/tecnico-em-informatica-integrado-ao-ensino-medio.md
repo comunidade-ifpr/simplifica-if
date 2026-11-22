@@ -78,7 +78,7 @@ MinisteriodaEducacao
 
 **Comissão de Ajuste Curricular PORTARIA Nº047/2018 – DIR/CP/CTBA/IFPR**
 
-|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Denise Maria Vecino Sato|
@@ -121,7 +121,7 @@ MinisteriodaEducacao
 
 **Comissão de Ajuste Curricular referente a Portaria Nº 103, DE 14 DE MAIO DE 2019**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Felipe Ventura Oliveira|
@@ -838,7 +838,7 @@ MinisteriodaEducacao
 
 ## **1[o] ano (11 componentes curriculares)**
 
-|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|
+|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**||||
 |---|---|---|---|
 |**Ano de implantação: 2020**||||
 |**1[o] ano (11 componentes curriculares)**||||
@@ -928,7 +928,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |---|---|
-|**Componente Curricular: Arquitetura e Manutenção de Computadores**|**Componente Curricular: Arquitetura e Manutenção de Computadores**|
+|**Componente Curricular: Arquitetura e Manutenção de Computadores**||
 |**Carga Horária (hora-aula): 160**|**Período Letivo: 1º**|
 
 ## **Ementa:**
@@ -1044,7 +1044,7 @@ KRUG, Steve. Não me faça pensar: uma abordagem de bom senso à usabilidade na 
 
 NIEMEYER, Luci. Elementos de semiótica aplicados ao design. Rio de Janeiro:2AB, 2010.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Introdução a Informática**||
@@ -1389,7 +1389,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Ministerioda Educacao
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Matemática I**||
@@ -1636,7 +1636,7 @@ MCLAUGHLIN, Brett; Use A Cabeça Análise E Projeto Orientado Ao Objeto; Editora
 
 LARMAN, Craig; Utilizando UML e Padrões; Editora Bookman; Edição 3; 2007.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |||
@@ -1662,7 +1662,7 @@ BOAL, Augusto. **Teatro Do Oprimido** . Rio De Janeiro. Civilização Brasileira
 
 BRASIL. Ministério da Educação e do Desporto. Secretaria de Educação Fundamental. **Parâmetros Curriculares Nacionais** _:_ arte. Brasília: MEC/SEF, 1997. GOMBRICH, E.H. A **História Da Arte** . Rio De Janeiro: LTC, 1999. OSSONA, Paulina. **A Educação Pela Dança** . São Paulo: Summus Editorial, 1988. OSTROWER, Fayga. **Universos Da Arte** . 24.Ed. Rio De Janeiro: Campus, 2004. TINHORÃO, José Ramos. **Pequena história da música popular** : segundo seus gêneros. São Paulo: Editora 34, 2013.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |||
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
@@ -1713,10 +1713,10 @@ DE ROBERTIS, E.; HIB, J. **Bases da Biologia Celular e Molecular.** 4ª ed. Rio 
 
 WATSON, J. D.; BERRY,  A. **DNA – O segredo da vida.** Companhia das letras, 2005.
 
-||**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+||**Campus Curitiba do IFPR**||
 |---|---|---|
 ||||
-|**Curso: Técnico em Informática**|**Curso: Técnico em Informática**|**Curso: Técnico em Informática**<br>**Eixo Tecnológico: Informação e Comunicação**|
+|**Curso: Técnico em Informática**||**Curso: Técnico em Informática**<br>**Eixo Tecnológico: Informação e Comunicação**|
 ||||
 |**Componente Curricular: Física I**|||
 ||||
@@ -1798,7 +1798,7 @@ Estudo dos aspectos demográficos mundiais e brasileiros, relacionando as mudan�
 |OLIVEIRA, Ariovaldo Umbelino de.**Amazônia**: monopólio, expropriação e conflitos. Campinas|||
 |(SP): Papirus, 1990.|||
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: História I**||
@@ -1821,7 +1821,7 @@ Introdução geral sobre a história antes da escrita. Natureza e importância d
 
 ## **Bibliografia Básica:**
 
-|ANDERSON, P.**Passagens da Antiguidade ao feudalismo.**São Paulo: Brasiliense, 1987.|ANDERSON, P.**Passagens da Antiguidade ao feudalismo.**São Paulo: Brasiliense, 1987.|ANDERSON, P.**Passagens da Antiguidade ao feudalismo.**São Paulo: Brasiliense, 1987.|ANDERSON, P.**Passagens da Antiguidade ao feudalismo.**São Paulo: Brasiliense, 1987.|São Paulo: Brasiliense, 1987.|
+|ANDERSON, P.**Passagens da Antiguidade ao feudalismo.**São Paulo: Brasiliense, 1987.||||São Paulo: Brasiliense, 1987.|
 |---|---|---|---|---|
 |ARMSTRONG, K.**O Islã.**Rio de Janeiro: Objetiva, 2001.|||Rio de Janeiro: Objetiva, 2001.||
 |BAKHTIN, M.**A cultura popular na Idade Média e no Renascimento.**||**A cultura popular na Idade Média e no Renascimento.**São Paulo: Hucitec,|||
@@ -1832,7 +1832,7 @@ Introdução geral sobre a história antes da escrita. Natureza e importância d
 |Rio de Janeiro, Fábrica de Livros/UFRJ, 2000.|||||
 |**Bibliografia Complementar:**|||||
 |VERNANT, Jean Pierre.**Origens do Pensamento Grego.**||**Origens do Pensamento Grego.**São Paulo: Difel, 1981. GRIMAL,||São Paulo: Difel, 1981. GRIMAL,|
-|Pierre. A Civilização Romana; Lisboa: Edições 70, 2001|Pierre. A Civilização Romana; Lisboa: Edições 70, 2001||||
+|Pierre. A Civilização Romana; Lisboa: Edições 70, 2001|||||
 |DIAS, Adriana Machado; GRINBERG, Keila. PELLEGRINI, Marco.**#CONTATO HISTÓRIA.**|||||
 |**QUINTETO**1a edição – 2016.|1a edição – 2016.||||
 |DUBY, Georges.**Guerreiros e Camponeses: Os Primórdios do Crescimento Econômico**|**Guerreiros e Camponeses: Os Primórdios do Crescimento Econômico**|**Guerreiros e Camponeses: Os Primórdios do Crescimento Econômico**|||
@@ -1893,7 +1893,7 @@ STAHEL, M. **Password: English Dictionary for Speakers of Portuguese** . 4th edi
 
 WIDDOWSON, H. D **. O ensino de línguas para a comunicação.** Campinas: Pontes, 2005.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico:  Informação e Comunicação**|
 |**Componente Curricular: Língua Portuguesa II**||
@@ -2022,7 +2022,7 @@ ATKINS, P. W.; PAULA, Julio de. Físico-química. 8. ed. Rio de Janeiro: LTC, 20
 
 BALL, David W. Físico-química. São Paulo, SP: Pioneira Thomson Learning, 2005-2006. CASTELLAN, Gilbert William. Fundamentos de físico-química. Rio de Janeiro, RJ: LTC, c1986. xx, 527 p.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Desenvolvimento de Aplicativos**||
@@ -2094,7 +2094,7 @@ MinisteriodaEducacao
 
 **Mobile Platform** . Apress, 2017.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Arte III**||
@@ -2371,7 +2371,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 |GOMES, Laurentino.**1808**: como uma rainha louca, um príncipe medroso. São Paulo: Planeta||||
 |Brasil, 2007.||||
 |GOMES, Laurentino.**1822**: Como um homem sábio, uma princesa triste e um escocês louco por||||
-|dinheiro ajudaram D. Pedro a criar o Brasil – um país que tinha tudo para dar errado. Rio de|dinheiro ajudaram D. Pedro a criar o Brasil – um país que tinha tudo para dar errado. Rio de|||
+|dinheiro ajudaram D. Pedro a criar o Brasil – um país que tinha tudo para dar errado. Rio de||||
 |Janeiro: Nova Fronteira, 2010.||||
 |GOMES, Laurentino.**1889:**Como um imperador cansado, um marechal vaidoso e um professor||||
 |injustiçado contribuíram para o fim da Monarquia e a Proclamação da República no Brasil. Rio||||
@@ -2384,7 +2384,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 |SANTOS, Joel Rufino dos Santos.**A escravidão no Brasil**. São Paulo: Melhoramentos, 2013.||||
 |(Como eu ensino).||||
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 
@@ -2396,7 +2396,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Ministerioda Educacao
 
-|**Componente Curricular: Língua Espanhola I**|**Componente Curricular: Língua Espanhola I**|
+|**Componente Curricular: Língua Espanhola I**||
 |---|---|
 |**Carga Horária (hora-aula): 80**|**Período Letivo: 3º**|
 |**Ementa:**||
@@ -2419,7 +2419,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## Ministerioda Educacao
 
-|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**|
+|VILLALBA, Terumi Koto Bonnet; PICANÇO, Deise Cristina de Lima.**El arte de leer español:**||||||
 |---|---|---|---|---|---|
 |**volume único: lengua española, ensino médio.**Curitiba. Base Editora, 2006.|||||Curitiba. Base Editora, 2006.|
 |REAL ACADEMIA ESPAÑOLA.**Diccionario de la lengua española.**23. ed. Madrid: España,||||||
@@ -2440,7 +2440,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 |BAZARRA,I.**¿Por qué hoy es importante el tratamiento de la información?,**|**¿Por qué hoy es importante el tratamiento de la información?,**Arcix|||||
 |Formación, 2015.||||||
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico:  Informação e Comunicação**|
 |**Componente Curricular: Língua Portuguesa III**||
@@ -2482,7 +2482,7 @@ KOCHE, V. S.; BOFF, O. M. B.; PAVANI, C.F. **Prática textual: atividades de lei
 
 NEVES, M. H. de M. **Gramática de usos do português.** São Paulo: Unesp - Rio Claro, 2000.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Matemática III**||
@@ -2573,7 +2573,7 @@ ROMERO, J.R. Fundamentos de Estereoquímica de compostos orgânicos. 1ª ed., Ed
 
 VOGEL, Arthur Israel. Química orgânica: análise orgânica qualitativa. Rio de Janeiro: Ao Livro Técnico, 1971. Vol 1, 2 e 3.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Sociologia I**||
@@ -2660,7 +2660,7 @@ LARMAN, Craig. **Utilizando UML e Padrões.** Ed. Bookman. 2007.
 
 GAMMA, Eric. HELM, Richard. RALPH, Johnson. VLISSIDES, John. **Padrões de projeto.** Ed. Bookman, 2005.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |||
@@ -2702,7 +2702,7 @@ PETERSON, Larry L.; Davie, Bruce S. **Redes de Computadores:** Uma abordagem sis
 
 SOARES, Luiz Fernando Gomes; Lemos; Guido; Colcher, Sergio. **Redes de Computadores:** das LANs, MANs e WANs às redes ATM. 5. ed. Rio de Janeiro: Campus, 1995.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Arte IV**||
@@ -2833,11 +2833,11 @@ PARANÁ. Secretaria de Educação. A inserção dos conteúdos de história e cu
 
 STIGGER, Marco Paulo. Esporte, lazer e estilos de vida: um estudo etnográfico. Campinas, SP: Autores Associados, 2002. [796.019 S855e]
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |||
-|**Componente Curricular: Filosofia II**|**Componente Curricular: Filosofia II**|
+|**Componente Curricular: Filosofia II**||
 |**Carga Horária (hora-aula): 80**|**Período Letivo: 4º**|
 |**Ementa:**||
 
@@ -2937,7 +2937,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 PROENS MinisteriodaEducacao
 
-|MÁXIMO, A.; ALVARENGA, B.; GUIMARÃES, C.:|MÁXIMO, A.; ALVARENGA, B.; GUIMARÃES, C.:**Física – Contexto & Aplicações– Volume 3.**|MÁXIMO, A.; ALVARENGA, B.; GUIMARÃES, C.:**Física – Contexto & Aplicações– Volume 3.**|
+|MÁXIMO, A.; ALVARENGA, B.; GUIMARÃES, C.:|MÁXIMO, A.; ALVARENGA, B.; GUIMARÃES, C.:**Física – Contexto & Aplicações– Volume 3.**||
 |---|---|---|
 |São Paulo, Ed. Scipione, 2016.|||
 |GASPAR, A:**Compreendendo a Física - Volume 3.**|**Compreendendo a Física - Volume 3.**São Paulo, Ed. Atica, 2016.||
@@ -2945,7 +2945,7 @@ PROENS MinisteriodaEducacao
 |**Física Moderna.**São Paulo, Ed. Atica, 2016.|||
 |HEWITT, P. G.:**Física Conceitual.**São Paulo, Bookman Editora, 9ª Edição- 2002 e/ou 12ª|São Paulo, Bookman Editora, 9ª Edição- 2002 e/ou 12ª||
 |Edição, 2015.|||
-|TORRES, C. M. A.; FERRARO, N. G.; PAULO A. DE TOLEDO SOARES, P. T.; e PENTEADO,|TORRES, C. M. A.; FERRARO, N. G.; PAULO A. DE TOLEDO SOARES, P. T.; e PENTEADO,||
+|TORRES, C. M. A.; FERRARO, N. G.; PAULO A. DE TOLEDO SOARES, P. T.; e PENTEADO,|||
 |P. C. M.:**Física – Ciência e Tecnologia – Volume 3.**São Paulo, Ed. Moderna , 2016.|||
 |SANT’ANNA, B.; MARTINI, G.; CARNEIRO, C.; SPNINELLI, W.:|SANT’ANNA, B.; MARTINI, G.; CARNEIRO, C.; SPNINELLI, W.:**Conexões com a Física –**||
 |**Volume 3.**São Paulo, Ed. Moderna , 2016.|||
@@ -2967,7 +2967,7 @@ PROENS MinisteriodaEducacao
 |FEYNMAN, R. P.; LEIGHTON, R. B.; SANDS, M.:**Lições da Física de Feynman – Edição**|||
 |**Definitiva – Volumes I, II e III.**Rio de Janeiro, Ed. Bookman, 2008.|Rio de Janeiro, Ed. Bookman, 2008.||
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: História III**||
@@ -2988,7 +2988,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Análise nas transformações do mundo contemporâneo a partir do final do século XIX até a contemporaneidade. Ênfase nas temáticas culturais e políticas buscando inserir o estudante nos principais temas do mundo atual: ideologia, guerras, papel da mulher, posição das minorias e nas novas relações humanas da sociedade do XXI. Buscar-se-á fazer a interlocução da história brasileira republicana com a chamada história mundial identificando suas conexões históricas e culturais.
 
-|**Bibliografia Básica:**|**Bibliografia Básica:**|
+|**Bibliografia Básica:**||
 |---|---|
 |ORWELL, G.**A Revolução dos bichos**. São Paulo: Companhia das Letras, 2007.||
 |HUXLEY, A.**Admirável Mundo Novo**. Rio de Janeiro: Globo, 2009.||
@@ -3001,9 +3001,9 @@ Análise nas transformações do mundo contemporâneo a partir do final do sécu
 |**tomaram as ruas do Brasil.**São Paulo: Boitempo: Carta Maior, 2013.||
 |VILALBA, Robson.**Notas de um tempo silenciado**. Porto Alegre: BesouroBox, 2015. 104 pg||
 |PRIORE, Mary Del.|**Histórias da Gente Brasileira**, Vol. 4: República - Memórias (1951-2000),|
-|Editora LeYa, 2018.|Editora LeYa, 2018.|
+|Editora LeYa, 2018.||
 |PRIORE, Mary Del.|**Histórias da Gente Brasileira**, Vol. 3: República - Memórias (1889-1950),|
-|Editora LeYa, 2017.|Editora LeYa, 2017.|
+|Editora LeYa, 2017.||
 |**Bibliografia Complementar:**||
 |GABEIRA, F.**O que é isso companheiro?**|**O que é isso companheiro?**São Paulo: Companhia das Letras. 2009|
 |SAVIANO, R.**Gomorra**: a história real de um jornalista infiltrado na violenta máfia Napolitana.||
@@ -3029,7 +3029,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Ministerioda Educacao
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
 |**Componente Curricular: Língua Espanhola II**||
@@ -3069,7 +3069,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 |BAZARRA,I.**¿Por qué hoy es importante el tratamiento de la información?**, Arcix||
 |Formación, 2015.||
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |||
 |**Curso: Técnico em Informática**|**Eixo Tecnológico: Informação e Comunicação**|
@@ -3220,10 +3220,10 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 86
 
-|análise e<br>desenvolvimento de<br>sistemas de<br>informação.||||
-|---|---|---|---|
-|Laboratório de<br>manutenção de<br>hardware.|SIM|Não|Não|
-|Laboratório de Redes<br>de computadores.|SIM|Não|Não|
+|análise e<br>desenvolvimento de<br>sistemas de<br>informação.|||
+|---|---|---|
+|Laboratório de<br>manutenção de<br>hardware.|SIM|Não|
+|Laboratório de Redes<br>de computadores.|SIM|Não|
 
 ## **8. INFRAESTRUTURA PARA ATENDIMENTO ÀS NECESSIDADES ESPECIAIS**
 
@@ -3242,7 +3242,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANT.**|**PERFIL DE FORMAÇÃO**|
 |1|Atendimento Educacional Especializado (AEE)|
@@ -3271,7 +3271,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 |1|Licenciatura em Língua Espanhola|
 |6|Bacharel em Informática, Bacharel em Sistemas de Informação, Bacharel em<br>Tecnologia da Informação, Engenheiro da Computação ou áreas afins|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**QUANT.**|**CARGO**|
 |1|Pedagogo|

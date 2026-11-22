@@ -371,7 +371,7 @@ De acordo com a Resolução IFPR n.54/11, art.63, no curso de ensino médio inte
 |CamillaDamian MizerkowskiCrestani|Letras/Português/Inglês|
 |CesiroAparecido da Cunha Junior|Ciências Contábeis|
 |Cícero JoséAlbano|Direito|
-|CiroBachtold|CiroBachtold|
+|CiroBachtold||
 |ClaudirSchmidlin|Ciências Contábeis|
 |Cleverson PereiraLeal|Ciências Contábeis|
 |CristinaMariaAyroza|Ciências Contábeis|
@@ -511,7 +511,7 @@ Os estudantes que integralizarem com aprovação todos os componentes curricular
 
 ## **3.11 - Componentes Curriculares**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-aula)**||**TOTAL**<br>**(horas-**<br>**relógio)**|
 ||**01***|**02***||
@@ -658,7 +658,7 @@ DANTAS, Estélio H. M. **Pensando o corpo e o movimento** . Rio de Janeiro: Shap
 
 24
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Contabilidade<br>Integrado|<br>**Eixo Tecnológico:**Gestão e<br>Negócios||
 |**Componente Curricular**: ArtesI|||
@@ -825,7 +825,7 @@ MENDONÇA, Francisco. Geografia socioambiental. In: MENDONÇA, F; KOZEL, S. (Org
 
 ROSS, Jurandir Sanches (org.). **Geografia do Brasil** . São Paulo: EDUSP, 1995.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Contabilidade<br>Integrado|**Eixo Tecnológico:**Gestão e Negócios|
 |||
@@ -1485,7 +1485,7 @@ KUNSCH, Margarida Maria Krohling. (org) A comunicação como fator de humanizaç
 
 54
 
-|**CAMPUS Curitiba do IFPR**|**CAMPUS Curitiba do IFPR**|
+|**CAMPUS Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Contabilidade<br>Integrado|**Eixo Tecnológico:**Gestão e<br>Negócios|
 |**Componente Curricular**: Língua Portuguesa III||
@@ -1586,7 +1586,7 @@ REIS, M; **Química Integral.** V. único. São Paulo: FTD, 1993.
 
 59
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Contabilidade<br>Integrado|**Eixo Tecnológico:**Gestão e Negócios|
 |||

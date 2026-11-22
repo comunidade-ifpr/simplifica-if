@@ -343,7 +343,7 @@ O curso será ofertado nas modalidades **presencial** e a **distância** por mei
 
 Cada componente curricular terá duração de 3 semanas, com carga horária de 24h, correspondente a 1,625 créditos. Em cada semana o estudante terá a seguinte distribuição de aulas, 3 (três) horas de aulas síncronas às sextas-feiras, com as câmeras abertas, 1 (uma) hora de atividades assíncronas via AVA/Moodle e 4 (quatro) horas de aulas presenciais no câmpus Curitiba, aos sábados. A exceção é o Trabalho de Conclusão de Curso (TCC) que terá organização horária diferenciada devido à sua peculiaridade.
 
-|**QUADRO 1**|**QUADRO 1**|**QUADRO 1**|**QUADRO 1**|
+|**QUADRO 1**||||
 |---|---|---|---|
 |**Componentes**<br>**Curriculares**<br>**Obrigatórios**|**Carga horária**<br>**presencial**|**Carga horária a**<br>**distância (síncrona)**|**Carga horária a**<br>**distância**<br>**(assíncrona)**|
 ||196h (48%)|148h (36%)|64 (16%)|
@@ -488,7 +488,7 @@ Serão 17 componentes curriculares com o trabalho de conclusão de curso, organi
 
 **Quadro 2: Eixos temáticos e articulação com componentes curriculares obrigatório**
 
-|**Quadro 2: Eixos temáticos e articulação com componentes curriculares obrigatório**|**Quadro 2: Eixos temáticos e articulação com componentes curriculares obrigatório**|
+|**Quadro 2: Eixos temáticos e articulação com componentes curriculares obrigatório**||
 |---|---|
 |**Eixos Temáticos**|**Componentes curriculares obrigatórios**|
 |**Perspectivas da Educação Profissional**|1. História e concepções da Educação<br>Profissional<br>2. Legislação e Políticas Públicas para a<br>educação profissional<br>3. Trabalho e Educação<br>4. Formação Docente<br>5. Seminário<br>1:<br>"Perspectivas<br>da<br>Educação Profissional"|
@@ -927,7 +927,7 @@ INSTITUTOFEDERAL Parana
 
 **10.1 Componentes Curriculares Obrigatórios**
 
-|**10. MATRIZ CURRICULAR**|**10. MATRIZ CURRICULAR**|
+|**10. MATRIZ CURRICULAR**||
 |---|---|
 |**10.1 Componentes Curriculares Obrigatórios**||
 |**Eixos Temáticos**|**Componentes curriculares**|
@@ -2231,7 +2231,7 @@ Especializacao em E Educacao Profissional IFPR- Campus Curitiba
 
 INSTITUTOFEDERAL Parana
 
-|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|
+|**12. CRONOGRAMA DAS ETAPAS DE REESTRUTURAÇÃO DO PPC**|||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 |**Atividades**|**2021**||||||||||||
 ||**1**|**2**|**3**|**4**|**5**|**6**|**7**|**8**|**9**|**10**|**11**|**12**|
@@ -2257,10 +2257,10 @@ INSTITUTOFEDERAL Parana
 
 ## Especializacao em Educacao Profissional IFPR- Campus Curitiba
 
-|dados - Anexo 01|||||||||||||
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|Reunião de apresentação dos<br>ajustes aos professores do<br>colegiado do curso|||**X**||||||||||
-|Redação do novo PPC|||**X**|**X**|**X**|**X**|**X**|**X**|**X**|**X**|**X**|**X**|
+|dados - Anexo 01|||||
+|---|---|---|---|---|
+|Reunião de apresentação dos<br>ajustes aos professores do<br>colegiado do curso|||**X**||
+|Redação do novo PPC|||**X**|**X**|
 
 |**Atividades**|||||||**2023**|**2023**||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

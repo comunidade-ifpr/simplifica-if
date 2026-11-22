@@ -966,7 +966,7 @@ Os componentes curriculares optativos constituem-se em um conjunto de componente
 
 Nos quadros a seguir, os componentes optativos estão mostrados de dois modos distintos: **a)** componentes curriculares optativos (não-extensionistas) — denominados com as siglas O8 e O9 na matriz curricular —; e, **b)** componentes curriculares específicos de extensão, de caráter exclusivamente extensionista, — denominados com as siglas CCEE1 e CCEE2 na matriz curricular. As ementas de cada um destes componentes serão apresentadas no item “Ementário e Bibliografias”.
 
-|**Componentes Curriculares Optativos (não-extensionistas)–**|**Componentes Curriculares Optativos (não-extensionistas)–**|**Componentes Curriculares Optativos (não-extensionistas)–**|**Componentes Curriculares Optativos (não-extensionistas)–**|**O8 e O9**|**O8 e O9**|
+|**Componentes Curriculares Optativos (não-extensionistas)–**||||**O8 e O9**|**O8 e O9**|
 |---|---|---|---|---|---|
 |**Componente Curricular**|**Períod**<br>**o**|**CH**<br>**Semanal**|**Teóric**<br>**a**|**Prátic**<br>**a**|**CH**<br>**Total**|
 |Processos Avaliativos|8°|2|33||33|
@@ -991,7 +991,7 @@ Nos quadros a seguir, os componentes optativos estão mostrados de dois modos di
 
 De forma específica, o componente curricular específico de extensão Interdisciplinaridade e Atuação Docente, devido às características de sua ementa, poderá ser ofertado por até 3 (três) docentes de áreas distintas do colegiado devendo a cada um deles ser atribuído, em seu Plano de Trabalho Docente (PTD), a carga horária integral desta componente, desde que os docentes atendam ao número mínimo de aulas definido pela legislação e que esta ação não impacte as demais atividades previstas em outros cursos.
 
-|**Componentes Curriculares Específicos de Extensão- CCEE1 e CCEE2**|**Componentes Curriculares Específicos de Extensão- CCEE1 e CCEE2**|**Componentes Curriculares Específicos de Extensão- CCEE1 e CCEE2**|**Componentes Curriculares Específicos de Extensão- CCEE1 e CCEE2**|**Componentes Curriculares Específicos de Extensão- CCEE1 e CCEE2**|
+|**Componentes Curriculares Específicos de Extensão- CCEE1 e CCEE2**|||||
 |---|---|---|---|---|
 |**Componente Curricular**|**Período**|**CH**<br>**Semanal**|**Extensão**|**CH**<br>**Total**|
 |Interdisciplinaridade e Atuação Docente|6°ou 9°|4|67|67|
@@ -1009,7 +1009,7 @@ Componentes eletivos são definidos como aqueles constantes na matriz curricular
 
 O Anexo II da Resolução IFPR nº 19/2017 prevê a possibilidade do licenciando realizar **um componente eletivo** . Considerando o disposto, e o entendimento sobre a potencialidade dos componentes eletivos para a formação do estudante, o Colegiado do curso de Licenciatura em Física deliberou que a aprovação nestes componentes pode implicar na substituição de um dos componentes optativos ofertados no curso. Desse modo, os estudantes poderão se matricular nos componentes ofertados pelos cursos de Tecnologia em Análise e Desenvolvimento de Sistemas e de Engenharia de Aquicultura, conforme listagem mostrada nos quadros a seguir, respeitada a respectiva carga horária, ao invés do componente optativo O8 ou O9 ofertados, respectivamente, no 8º e 9º períodos do curso.
 
-|**Curso de Tecnologia em Análise e Desenvolvimento de Sistemas**|**Curso de Tecnologia em Análise e Desenvolvimento de Sistemas**|**Curso de Tecnologia em Análise e Desenvolvimento de Sistemas**|**Curso de Tecnologia em Análise e Desenvolvimento de Sistemas**|
+|**Curso de Tecnologia em Análise e Desenvolvimento de Sistemas**||||
 |---|---|---|---|
 |**SUBSTITUTIVOS DO O8,**|**de 33 h**|**SUBSTITUTIVOS DO O9, de 67 h**||
 |**Componente Curricular**|**Período**|**Componente Curricular**|**Período**|
@@ -1052,7 +1052,7 @@ Conforme mostrado na Matriz Curricular, ressalta-se a existência de pré-requis
 
 ## **1º Período**
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Panorama do Conhecimento Físico**Sigla: F1-PCF**|||
@@ -1143,7 +1143,7 @@ AYRES, Frank, MOYER, Robert E. **Trigonometria: coleção Schaun.** 3º Edição
 
 IEZZI, Gelson; DOLCE, Osvaldo. **Matemática e realidade** . (5ª a 8ª série). São Paulo: Atual, 2005.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Matemática Elementar**Sigla: M1-MEL**|||
@@ -1293,7 +1293,7 @@ SIMMONS, G. F. **Cálculo com Geometria Analítica** . Volume 1. São Paulo: Mak
 
 63
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Cálculo Diferencial e Integral I**Sigla: M2-CDIN1**|||
@@ -1341,7 +1341,7 @@ MARTINS, M. H. **O que é leitura?** 2. Ed. São Paulo: Brasiliense, 1990.
 
 ## **3º Período**
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Mecânica Geral II**Sigla: F3-MG2**|||
@@ -1390,7 +1390,7 @@ Experimentos em laboratório referentes aos assuntos abordados nos componentes c
 
 **Bibliografia Básica:** PERUZZO, Jucimar. **Experimentos de Física Básica: Termodinâmica, Ondulatória e Óptica** . Ed. Livraria da Física, 2012. CHAVES, Alaor. **Física Básica** (Vol. 2. Gravitação, Fluidos, Ondas, Termodinâmica), 1a ed. LTC, 2007. KNIGHT, Randall D. **Física - Uma Abordagem Estratégica (vol.1)** : Mecânica Newtoniana, Gravitação, Oscilações e Ondas. 2[a] ed. Bookman, 2009. HALLIDAY, David; RESNICK, Robert; WALKER, Jearl. **Fundamentos de Física II** (Gravitação, Ondas e Termodinâmica). Rio de Janeiro: LTC, 2009. SEARS, Francis; YOUNG, Hugh D.; FREEDMAN, Roger A.; ZEMANSKY, Mark W. **Física 2 – Termodinâmica e Ondas** . 12a ed. Addison Wesley, 2008. **Bibliografia Complementar:** LUIZ. A.D. **Física 2:** Gravitação, Ondas e Termodinâmica. SP: Livraria da Física, 2007. BASSALO, José Maria Filardo; CATTANI, Mauro Sérgio Dorsa. **Osciladores Harmônicos: Clássicos e Quânticos** . Ed. Livraria da Física, 2009. PEDROSO LIMA, J.J. **Ouvido, Ondas e Vibrações - Aspectos Físicos e Biofísicos** . Coimbra, Portugal: Imprensa da Universidade de Coimbra, 2012. Dorsal Clinton. **Physics Demonstrations** : A Sourcebook for Teachers of Physics. University of Wisconsin Press, 2006. BLOOMFIELD, Louis, A. **How Things Work: The Physics of Everyday Life.** 5 edition. New York: Wiley, 2013.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Cálculo Diferencial e Integral II**Sigla: M3-CDIN2**|||
@@ -1402,7 +1402,7 @@ Experimentos em laboratório referentes aos assuntos abordados nos componentes c
 
 GONÇALVES, M. B. e FLEMMING, D. M. **Cálculo B** : Funções de Várias Variáveis, Integrais Duplas e Triplas, 2ª edição, Editora Makron Books do Brasil, São Paulo, 2007. **Bibliografia Complementar:** MUNEM, M. O. **Cálculo: volume 2** . Rio de Janeiro. LTC, 1982. SIMMONS, G. F. **Cálculo com Geometria Analítica** . Volume 2. São Paulo: Makron Books / McGraw-Hill do Brasil, 1987. GOLDSTEIN, L.J., LAY, D.C., SCHNEIDER, D.I. **Cálculo e suas Aplicações** . São Paulo: Hemus, 2007. HOFFMAN, L. D. **Cálculo – Um Curso Moderno e suas Aplicações** . 10ª Ed. Rio de Janeiro: Livros Técnicos e Científicos Editora, 2010. LEMOS, Nivaldo A. **Convite à Física Matemática** . São Paulo: Livraria da Física, 2013.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**:Química Geral**Sigla: I3-QG**|||
@@ -1415,7 +1415,7 @@ GONÇALVES, M. B. e FLEMMING, D. M. **Cálculo B** : Funções de Várias Variá
 
 69
 
-|**Curso:**Física|**Modalidade:**Licenciatura|**Modalidade:**Licenciatura|
+|**Curso:**Física|**Modalidade:**Licenciatura||
 |---|---|---|
 |**Componente Curricular**: Psicologia, Educação e Desenvolvimento**Sigla: E3-PDE**|||
 |**Carga Horária**: 80 h/a ou 67 h||**Período letivo: 3º**|
@@ -1425,13 +1425,13 @@ GONÇALVES, M. B. e FLEMMING, D. M. **Cálculo B** : Funções de Várias Variá
 
 ## **4º Período**
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**||
 |---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura|
 
 70
 
-|**Componente Curricular**: Fluidos e Termodinâmica**Sigla: F4-FLT**|**Componente Curricular**: Fluidos e Termodinâmica**Sigla: F4-FLT**|
+|**Componente Curricular**: Fluidos e Termodinâmica**Sigla: F4-FLT**||
 |---|---|
 |**Carga Horária**: 80 h/a ou 67 h|**Período letivo: 4º**|
 |**Ementa:**<br>Temperatura e equilíbrio térmico. Teoria cinética dos gases. Dilatação térmica. Mudanças de fase. Calor e 1ª<br>Lei da Termodinâmica. Entropia e 2ª Lei da Termodinâmica. Máquinas térmicas e ciclo de Carnot. Fluidos.||
@@ -1440,7 +1440,7 @@ GONÇALVES, M. B. e FLEMMING, D. M. **Cálculo B** : Funções de Várias Variá
 
 71
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Laboratório de Fluidos e Termodinâmica**Sigla: F4-LFT**|||
@@ -1449,7 +1449,7 @@ GONÇALVES, M. B. e FLEMMING, D. M. **Cálculo B** : Funções de Várias Variá
 |**Bibliografia Básica:**<br>CHAUI-BERLINCK, José Guilherme; MARTINS, Ricardo Alves.**As duas Primeiras Leis: Uma**<br>**Introdução à Termodinâmica.**São Paulo: Unesp, 2013.<br>PERUZZO, Jucimar.**Experimentos de Física Básica: Termodinâmica, Ondulatória e Óptica**. Ed. Livraria<br>da Física, 2012.<br>CHAVES, Alaor.**Física Básica**(Vol. 2. Gravitação, Fluidos, Ondas, Termodinâmica), 1a ed. LTC, 2007.<br>KNIGHT, Randall D.**Física - Uma Abordagem Estratégica (vol.2)**: Termodinâmica e Óptica. 2a. ed.<br>Bookman, 2009.<br>HALLIDAY, David; RESNICK, Robert; WALKER, Jearl.**Fundamentos de Física II**(Gravitação, Ondas e<br>Termodinâmica). Rio de Janeiro: LTC, 2009.|||
 |**Bibliografia Complementar:**<br>SOUZA, Paulo Henrique de.**Física Lúdica: Práticas para o Ensino Fundamental e Médio**. Cortez, 2011.<br>OLIVEIRA, Mário José de.**Termodinâmica**. 2ª Ed. SP: Ed. Livraria da Física, 2012.<br>SERWAY, Raymond A.; JEWETT, John W.**Princípios de Física: Movimento Ondulatório e**<br>**Termodinâmica**, vol. 2, Cengage Learning, 3a ed. São Paulo, 2013.<br>TIPLER, A.P.; MOSCA, G.**Física**. (Volume 1: Mecânica, Oscilações e Ondas, Termodinâmica) 6.ed. Rio de<br>Janeiro: LTC, 2009.<br>BORGNAKKE, C; SONNTAG, Richard Ewin.**Fundamentos da termodinâmica.**8.ed. São Paulo: Blucher,<br>2013. 728 p. (Série Van Wylen).|||
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Cálculo Diferencial e Integral III**Sigla: M4-CDIN3**|||
@@ -1482,7 +1482,7 @@ GOLDSTEIN, L. J., LAY, D. C., SCHNEIDER, D. I. **Cálculo e suas Aplicações** 
 
 HOFFMAN, L. D. **Cálculo – Um Curso Moderno e suas Aplicações** . 10ª Ed. Rio de Janeiro: Livros Técnicos e Científicos Editora, 2010.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso: Física**|**Modalidade: Licenciatura**||
 |**Componente Curricular:**Aprendizagem e Ensino de Ciências**Sigla: I4-AEC**|||
@@ -1522,7 +1522,7 @@ PIMENTA, S.G. (org.) **Didática e Formação de Professores: Percursos e Perspe
 
 VEIGA, Ilma P. A. (org.). **Didática: o ensino e suas relações.** Campinas: Papirus, 2008.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Ciência, Tecnologia e Sociedade**Sigla: I4-CTS**|||
@@ -1677,7 +1677,7 @@ GASPAR, Alberto. **Atividades Experimentais no Ensino de Física** : uma nova vi
 
 ASSIS, André Kock Torres. **Arquimedes, O centro de Gravidade e a Lei da Alavanca** . SP: Livraria da Física, 2011.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Óptica**Sigla: F5-OPT**|||
@@ -1844,7 +1844,7 @@ Elaboração de atividades teóricas e práticas para o ensino e aprendizagem da
 
 conteúdos de Termodinâmica e Fluidos, privilegiando situações problemáticas e problematizadoras em diálogo com as demandas dos diversos contextos. Análise e avaliação das ações de extensão desenvolvidas. **Bibliografia Básica:** GRANVILLE, Maria Antonia. **Projetos no Contexto de Ensino, Pesquisa e Extensão** : dimensões políticas, filosóficas e metodológicas. Campinas: Mercado das letras, 2011. GREF, Grupo de Reelaboração de Ensino de Física. **Física 2** : Física Térmica e Óptica. 5ª ed. São Paulo: EDUSP, 2005. PÁDUA, A. B.; PÁDUA, C.G.; SILVA, J.L.C. **História da Termodinâmica Clássica:** uma ciência fundamental. Londrina: EdUEL, 2009. VALADARES, Eduardo de Campos. **Física mais que Divertida** . 3ª. ed. Ed. UFMG, 2012. CARVALHO, Anna Maria Pessoa de. (org.) **Ensino de Ciências por Investigação** : condições para Implementação em Sala de Aula. Cengage, 2013. WANDERSEE, J.H.; NOVAK, J.D. **Ensinando Ciência para Compreensão.** Lisboa: Editora Platano, 2010. **Bibliografia Complementar:** CARVALHO, Regina Pinto de. **Física do dia a dia 1:** 105 perguntas e respostas sobre a física fora da sala de aula. 3ª ed. Autêntica, 2011. CARVALHO, Regina Pinto de. **Física do dia a dia 2** - mais 104 perguntas e respostas sobre a física fora da sala de aula... E uma na sala de aula! Autêntica, 2011. GASPAR, Alberto. **Atividades Experimentais no Ensino de Física** : uma nova visão baseada em Vigotski. SP: Livraria da Física, 2014 GUTIÉRREZ, J. C. H.; CARVALHO, R. P. de. **O Automóvel na Visão da Física** : Leituras Complementares para o Ensino Médio. Autêntica, 2013. STEFFENS, C.A.; ROSA, M. B. da. **Diversificando em Física** : Atividades Práticas e Experiências de Laboratório. Mediação, 2012.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Estagio Supervisionado I: Currículo e Organização Escolar**Sigla: EST1**|||
@@ -1892,7 +1892,7 @@ Escalas do Universo. Constelações. Etnoastronomia e Arqueoastronomia. Coordena
 
 **Bibliografia Básica:** OLIVEIRA FILHO, Kepler de; FATIMA, Maria de. **Astronomia e Astrofísica** . 3ª ed. SP: Saraiva, 2014. FRIAÇA, A. C. S, DAL PINO, E.: SODRÉ Jr, L. **Astronomia – Uma Visão Geral do Universo.** 2a Edição. São Paulo: EDUSP, 2008. HORVATH, O. T. **ABC da Astronomia e Astrofísica** _._ 2a Edição. São Paulo: Livraria da Física, 2011. VIEGAS, S. M. M.; OLIVEIRA, F. **Descobrindo o Universo** . Edusp, 2004. HORVATH, J.; LUGONES, G.; PORTO, M.; SCARANO, S.; TEIXEIRA, R. C. **Cosmologia Física: do micro ao macro cosmos e vice-versa.** 2ª ed. SP: Ed. Livraria da Física, 2011. COMINS, Neil F.; KAUFMANN, William J. **Descobrindo o universo.** 8. ed. Porto Alegre: Bookman, 2010. 557 p. **Bibliografia Complementar:** LANGHI, R.; NARDI, R. **Educação em Astronomia** : Repensando a Formação de Professores. São Paulo: Escrituras, 2012. CANIATO, Rodolpho. **Redescobrindo a Astronomia** . São Paulo: Átomo, 2010. MARAN, S. P. **Astronomia para leigos** . Rio de Janeiro: Alta books, 2011. MOURÃO, Ronaldo Rogério de Freitas. **Copérnico:** Pioneiro da Revolução Astronômica. Odysseus, 2004. MOURÃO, Ronaldo Rogério de Freitas. **Kepler:** A descoberta das Leis do Movimento Planetário. 2ª ed. Odysseus, 2008. SOBEL, Dava. **Longitude** . Companhia de bolso, 2008. MENDES, Carla C.A. **As Estrelas: Uma viagem pela Estrutura do Átomo** . São Paulo: Editora Livraria da Física, 2011. HORVATH, J. E.; CUSTÓDIO, P.S. **Os Buracos Negros na Ciência Atual:** Um Brevíssimo Manual Introdutório. São Paulo: Editora Livraria da Física, 2013.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Estrutura da Matéria I**Sigla: F7-ETM1**|||
@@ -1903,7 +1903,7 @@ Escalas do Universo. Constelações. Etnoastronomia e Arqueoastronomia. Coordena
 
 **Bibliografia Básica:** EISBERG, R.M.; RESNICK, R. **Física Quântica:** Átomos, Moléculas, Sólidos, Núcleos e Partículas. RJ: Campus, 1994. TIPLER, Paul A.; LLEWELLYN, Ralph A. **Física Moderna** . 5ª ed. Rio de Janeiro: LTC, 2010. OLIVEIRA, Ivan S. **Física Moderna para Iniciados, Interessados e Aficionados** (volume único). SP: Editora Livraria da Física, 2010. PESSOA JUNIOR, Osvaldo. **Conceitos de Física Quântica** (Volume 1). SP: Editora Livraria da Física **,** 2006. PESSOA JUNIOR, Osvaldo. **Conceitos de Física Quântica** (Volume 2). SP: Editora Livraria da Física, 2006. **Bibliografia Complementar:** PINTO NETO, Nelson. **Teorias e Interpretações da Mecânica Quântica** . SP: Editora Livraria da Física, 2010. FREIRE JR, Olival; PESSOA JR, Osvaldo; BRUMBERG, Joan Lisa. **Teoria Quântica: estudos Históricos e Implicações Culturais** . SP: Editora Livraria da Física, 2010. MAIA, Nelson B. **O Caminho para a Física Quântica** . SP: Editora Livraria da Física, 2010. PERUZZO, J.; POTTKER, Walmir E.; PRADO, Thiago G. do. **Física Moderna e Contemporânea** (vol.2): Das Teorias Quânticas e relativísticas às fronteiras da física. São Paulo: Livraria da Física, 2014. GRIFFITHS, D. J. **Mecânica Quântica.** São Paulo: Pearson, 2011.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Relatividade**Sigla: F7-REL**|||
@@ -1916,7 +1916,7 @@ Escalas do Universo. Constelações. Etnoastronomia e Arqueoastronomia. Coordena
 
 MAIA, Nelson B. **Introdução à Relatividade** . SP: Editora Livraria da Física **,** 2009. EINSTEIN, Albert. **Teoria da Relatividade Especial e Geral** . Contraponto, 1999. GAZZINELLI, Ramayana. **Teoria da Relatividade Especial** . 2ª Ed. Edgar Bluncher, 2009. LESCHE, Bernhad. **Teoria da Relatividade** . SP: Editora Livraria da Física **,** 2005 ACIOLI, José de Lima. **Introdução à Cinemática Relativística** . Brasília: UnB, 2004. STANNARD, Russel. **Relatividade** . Porto Alegre: L&PM, 2011.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: História e Filosofia da Ciência II**Sigla: I7-HIC2**|||
@@ -1929,7 +1929,7 @@ MAIA, Nelson B. **Introdução à Relatividade** . SP: Editora Livraria da Físi
 
 BACHELARD, Gaston. **A Experiência do Espaço na Física Contemporânea** . Contraponto, 2008. BRENNAN, Richard P. **Gigantes da Física: Uma História da Física Moderna através de Oito Biografias** . Jorge Zahar, 1998. FREIRE JR, Olival; GRECA, Ileana M.; EL-HANI, Charbel Niño. **Ciências na transição dos séculos** : conceitos, práticas e historicidade. EdUFBA, 2014.KOYRÉ, Alexandre. **Estudos de História do Pensamento Filosófico** . 2ª ed. Forense Universitária, 2011. KUHN, Thomas S. **A Tensão Essencial.** São Paulo: Unesp, 2011. LACEY, Hugh. **Valores e Atividade Científica 1** . Editora 34, 2008. LACEY, Hugh. **Valores e Atividade Científica 2** . Editora 34, 2010. LOPES, José Leite. **Uma História da Física no Brasil** . SP: Ed. Livraria da Física, 2004. SILVA, Cibele Celestino (org.). **Estudos de História e Filosofia das Ciências: Subsídios para aplicação no Ensino** . São Paulo: Editora Livraria da Física, 2006. SILVA, Ana Paula B.; GUERRA, Andrea. **História da Ciência e Ensino:** Fontes primárias e propostas para sala de aula. Livraria da Física, 2015.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Oficina de Ensino e Aprendizagem de Eletromagnetismo, Óptica e Ondas<br>**Sigla: I7-OEOO**|||
@@ -1941,7 +1941,7 @@ BACHELARD, Gaston. **A Experiência do Espaço na Física Contemporânea** . Con
 
 CACHAPUZ, A.; GIL-PEREZ, D.; CARVALHO, A. M. P.; VILCHES, J. P. A. (org.). **A necessária renovação do ensino de ciências.** São Paulo: Cortez Editora, 2005. PERUZO, Jucimar. **Experimentos de Física Básica: Eletromagnetismo, Física Moderna e Ciências Espaciais** . São Paulo: Editora Livraria da Física, 2013. **Bibliografia Complementar:** WALKER, Jearl. **O Circo Voador da Física** . 2ª ed. LTC, 2008. MORTIMER, E. F. **Linguagem e Formação de Conceitos no Ensino de Ciências** . Belo Horizonte: Editora UFMG, 2006. NEVES, Marcos Cesar Danhoni. **Memórias do Invisível: Uma reflexão sobre a História no Ensino de Física e a Ética na Ciência** . Maringá: EdUEM, 2008. ZABALA, Antoni. **A prática educativa: como ensinar** . Porto Alegre: Artes Médicas, 2008. GASPAR, Alberto. **Atividades Experimentais no Ensino de Física** : uma nova visão baseada em Vigotski. SP: Livraria da Física, 2014
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Estagio Supervisionado II: Estratégias didático-pedagógicas<br>**Sigla: EST2**|||
@@ -1966,7 +1966,7 @@ GALIAZZI, Maria do Carmo. **Educar pela Pesquisa: Ambiente de Formação de Prof
 
 91
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Educação em Direitos Humanos**Sigla: E8-EDH**|||
@@ -1977,7 +1977,7 @@ GALIAZZI, Maria do Carmo. **Educar pela Pesquisa: Ambiente de Formação de Prof
 
 ## **Campus Foz do Iguaçu do IFPR**
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Oficina de Ensino e Aprendizagem de Física Moderna e Contemporânea<br>**Sigla: I8-OEFMC**|||
@@ -2068,7 +2068,7 @@ SOUZA, Regina Maria de; SILVESTRE, Núria; ARANTES, Valéria Amorin (Org.). **Ed
 
 PEREIRA, Maria da Cristina da Cunha. **Libras: Conhecimento Além Dos Sinais** . Editora Pearson, 2011 CAPOVILLA, Fernando César et. al. NOVO DEIT-LIBRAS: **Dicionário Enciclopédico Ilustrado Trilíngue da Língua de Sinais Brasileira (Libras) baseado em Linguística e Neurociências Cognitivas** , 2 vols.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Trabalho de Conclusão de Curso - TCC**Sigla: I9-TCC**|||
@@ -2077,7 +2077,7 @@ PEREIRA, Maria da Cristina da Cunha. **Libras: Conhecimento Além Dos Sinais** .
 |**Bibliografia Básica:**<br>SANTOS, F. M. T.; GRECA, I.M.**Pesquisa em Ensino de Ciências no Brasil e suas Metodologias**. 2ª edição<br>revista. Unijuí, 2011.<br>FLICK, U.**Introdução à Metodologia de Pesquisa**. Editora Penso, 2012.<br>LUDKE, M.; ANDRÉ, M. D. A.**Pesquisa em Educação: Abordagens qualitativas**. EPU, 1986.<br>CARVALHO, Anna Maria Pessoa de. (org.)**Ensino de Ciências por Investigação. Condições para**<br>**Implementação em Sala de Aula**. Cengage, 2013.<br>CARVALHO, A. M. P.; CACHAPUZ, A.; GIL-PEREZ, D.**O Ensino de Ciências como Compromisso**<br>**Científico e Social:**Os caminhos que percorremos. Cortez, 2012.|||
 |**Bibliografia Complementar:**<br>GIL, Antônio Carlos.**Como Elaborar Projetos de Pesquisa**. 5a Ed. Atlas, 2010.<br>BOOTH, W. C.; WILLIAMS, J. M. G.; COLOMB, G. G.**A Arte da Pesquisa**. 2ª ed. Martins Fontes, 2005. <br>ANDRÉ, M. D. A.**O Papel da Pesquisa na Formação e Prática dos Professores**. 5ª ed. Papirus, 2005.<br>BOGDAN, R. C.; BIKLEN, S. K.**Investigação Qualitativa em Educação**. Porto: Porto Editora, 1994.<br>FLICK, Uwe.**Desenho da pesquisa qualitativa.**Porto Alegre: Bookman, 2009. 164p. (Coleção Pesquisa<br>qualitativa).<br>GALIAZZI, Maria do Carmo.**Educar pela Pesquisa: Ambiente de Formação de Professores de Ciências**.<br>Editora Unijuí, 2003.|||
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Estagio Supervisionado IV: Práticas de Ensino**Sigla: EST4**|||
@@ -2129,7 +2129,7 @@ Avaliação do processo ensino-aprendizagem: concepções, características, mod
 
 **Bibliografia Básica:** LUCKESI, Cipriano Carlos. **Avaliação da Aprendizagem: Componente do Ato Pedagógico** . Cortez. 2011. VASCONCELLOS, Celso dos S. **Avaliação** : concepção dialética-libertadora do processo de avaliação escolar. 17a. ed. Editora Libertad, 2009. HOFFMANN, Jussara. **Avaliar para Promover:** as setas do caminho. 15a. ed. Mediação, 2014. ROMAO, José Eustáquio. **Avaliação Dialógica:** Desafios e Perspectivas. 9a. ed. Cortez, 2011. ZABALA, Antoni. **A prática educativa: como ensinar** . Porto Alegre: Artes Médicas, 2008. **Bibliografia Complementar:** HOFFMAN, Jussara. **Avaliação mediadora** . Uma prática em construção da pré-escola à Universidade. Porto Alegre: Educação e realidade, 1993. PERRENOUD, Philippe. **Avaliação: da Excelência à Regulação das Aprendizagens.** Porto Alegre: Artmed, 2002. VILLATORRE, A.M.; HIGA, I.; TYCHANOWICZ, S.D. **Didática e Avaliação em Física** . 2ª Ed. IBPEX, 2012. FREITAS, Luiz Carlos. SORDI, M. Regina L. **Avaliação Educacional** . 6a. ed. Ed. Vozes, 2009. DEMO, Pedro. **Mitologias da Avaliação** : De como ignorar, em vez de enfrentar problemas. 3a. ed. Autores Associados, 2010. DEMO, Pedro. **Avaliação Qualitativa.** Autores Associados BOTH, Ivo José. **Avaliação** : “voz da consciência” da aprendizagem. Intersaberes, 2012. PACHECO, José; PACHECO, Maria de Fátima (orgs.). **A Avaliação da Aprendizagem na Escola da Ponte** . Wak, 2012. VASCONCELLOS, Celso dos S. **Avaliação da Aprendizagem** : Práticas de mudança por uma práxis transformadora. 9a. ed. Editora Libertad, 2009.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**:Química Experimental|||
@@ -2203,7 +2203,7 @@ ALVES, L. COUTINHO, I. J. **Jogos digitais e aprendizagem** : Fundamentos para u
 
 BACICH, L. MORAN, J. **Metodologias Ativas para uma Educação Inovadora** : Uma Abordagem Teórico-Prática. Editora Penso, 2017.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: História e Filosofia da FísicaQuântica|||
@@ -2232,7 +2232,7 @@ PUGA, Leila Zardo; PAZ, Alvaro Puga; TÁRCIA, José Henrique Mendes. **Cálculo 
 
 CANALE, Raymond P.; CHAPRA, Steven C. **Métodos Numéricos para Engenharia** . ed. Amgh, 2008.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Formação e Profissão Docente|||
@@ -2241,7 +2241,7 @@ CANALE, Raymond P.; CHAPRA, Steven C. **Métodos Numéricos para Engenharia** . 
 |**Bibliografia Básica:**<br>CARVALHO, A.M.P.de (coord.).**Formação Continuada de Professores**: Uma Releitura das Áreas de<br>Conhecimento. São Paulo: Pioneira Thomson Learning, 2003.<br>MIZUKAMI, M.G.N.; REALI, A.M.M.R.**Desenvolvimento Profissional da Docência: Teoria e Prática**.<br>EdUFSCar, 2012.<br>CONTRERAS, José.**A Autonomia de Professores**. São Paulo: Cortez, 2002.<br>PERRENOUD, Philippe.**A Prática Reflexiva no Ofício de Professor**: Profissionalização e Razão<br>Pedagógica. Porto Alegre: Artmed, 2002.<br>TARDIF, M.**Saberes docentes e formação profissional.**14. ed. Petrópolis: Vozes, 2011.|||
 |**Bibliografia Complementar:**<br>SCHON, Donald.**Educando o Profissional Reflexivo**. Porto Alegre: Artmed, 2005.<br>GAUTHIER, Clermont et al.**Por uma Teoria da Pedagogia: Pesquisas Contemporâneas sobre o Saber**<br>**Docente**. Ijuí, RS: Unijuí, 1998.<br>PERRENOUD, Philippe.**Pedagogia Diferenciada**. Porto Alegre: Artmed, 1999.<br>GAUTHIER, C.; BISSONNETTE; S. RICHARD, M.**Ensino Explícito e Desempenho dos Alunos**.<br>Petrópolis: Editora Vozes, 2014<br>CACHAPUZ, António Francisco; CARVALHO, Anna Maria Pessoa de; GIL-PÉREZ, Daniel (Org).**O ensino**<br>**das ciências como compromisso científico e social:**os caminhos que percorremos. São Paulo: Cortez, 2012.<br>247 p.|||
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Pesquisa em Ensino de Física|||
@@ -2252,7 +2252,7 @@ CANALE, Raymond P.; CHAPRA, Steven C. **Métodos Numéricos para Engenharia** . 
 
 Principais áreas e linhas de pesquisa em ensino de Física e Ciências. Histórico da pesquisa em ensino de Física no Brasil e no mundo. Problemas de pesquisa e temáticas contemporâneas. Articulações entre a pesquisa e a prática do ensino de física. **Bibliografia Básica:** CARVALHO, A M. P (org.) **Ensino de Ciências: unindo a pesquisa e a prática** . São Paulo: Pioneira Thompson Learning, 2004. GARCIA, Nilson M.D.; HIGA, I.; ZIMMERMANN, E.; SILVA, C.C.; MARTINS, A.F.P. (orgs.). **A Pesquisa em Ensino de Física e a Sala de Aula** : Articulações Necessárias. SP: Editora Livraria da Física, 2012. CACHAPUZ, A.; GIL-PEREZ, D.; CARVALHO, A. M. P. **A Necessária Renovação do Ensino das Ciências** . São Paulo: Cortez, 2005. LABURU, Carlos Eduardo; CARVALHO, Marcelo de. **Educação Científica: Controvérsias construtivistas e pluralismo metodológico** . Londrina: Eduel, 2005. CARVALHO, Anna Maria Pessoa de. (org.) **Ensino de Ciências por Investigação. Condições para Implementação em Sala de Aula** . Cengage, 2013. **Bibliografia Complementar:** NARDI, R **. Pesquisas em Ensino de Física.** São Paulo: Escrituras, 2004. PINHO, S.; BASSREI, A. **Tópicos de Física e de Ensino de Física** . Salvador: EdUFBA, 2008. BATISTA, I. L. **Pós-graduação em ensino de ciências e educação matemática** : um perfil de pesquisas. Londrina: EDUEL, 2009. SANTOS, F.M.T.; GRECA, I.M. **Pesquisa em Ensino de Ciências no Brasil e suas Metodologias** . 2ª edição revista. Unijuí, 2011. CAMARGO, S; GENOVEVE, L.G.R.; DRUMOND, J.M.H.F.; QUEIROZ, G.R.P.C.; NICOR, Y.E.; NASCIMENTO, S.S. (Orgs.) **Controvérsias na Pesquisa em Ensino de Física** . São Paulo: Editora livraria da Física, 2014. ANDRÉ, M.D.A. **O Papel da Pesquisa na Formação e Prática dos Professores** . 5ª ed. Papirus, 2005.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Mecânica Clássica|||
@@ -2265,7 +2265,7 @@ Principais áreas e linhas de pesquisa em ensino de Física e Ciências. Histór
 
 MARTINS, Jader B. **Mecânica Racional: De Newton à Mecânica Clássica** . Ed. Ciência Moderna, 2010. AGUIAR, Marcus A. M. de. **Tópicos de Mecânica Clássica** . São Paulo: Editora Livraria da Física, 2011. BARCELOS NETO, João. **Mecânica Newtoniana, Lagrangeana, Hamiltoniana** . São Paulo: Editora Livraria da Física, 2004.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular**: Física Nuclear e de Partículas|||
@@ -2354,7 +2354,7 @@ FOUREZ, Gerárd. **A construção das ciências** : Introdução à filosofia e 
 
 **Bibliografia Complementar:** DAVID, Maria Manuela M. S.; TOMAZ, Vanessa Sena David. **Interdisciplinaridade e aprendizagem da Matemática em sala de aula** . São Paulo: Autêntica, 2021. DOMINGUES, Ivan. **Conhecimento e transdisciplinaridade** . Belo Horizonte: UFMG, 2001. ESPÍRITO SANTO, Ruy Costa. **Desafios na formação do educador** : retomando o ato de educar. Campinas: Ágora, 2012. FAZENDA, Ivani Catarina Arantes. **Didática e interdisciplinaridade** . São Paulo: Papirus, 2015. FAZENDA, Ivani Catarina Arantes. **Interdisciplinaridade** : Pensar, Pesquisar e Intervir. São Paulo: Editora Cortez, 2014.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular (Específico de Extensão)**: Formação Docente em Contextos Multi/Plurilíngues de<br>Fronteira|||
@@ -2395,7 +2395,7 @@ VEIGA, Ilma Passos Alencastro (Org.). **Aula** : gênese, dimensões, princípio
 
 http://www.entrepalavras.ufc.br/revista/index.php/Revista/article/view/148/181. Acesso em: 19 abr. 2022. MOREIRA, Marcos A. **Teorias de aprendizagem** . São Paulo: Editora Pedagógica e Universitária, 2006.
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular (Específico de Extensão)**: Práticas de Extensão de Ensino de Física no Ensino<br>Fundamental|||
@@ -2404,7 +2404,7 @@ http://www.entrepalavras.ufc.br/revista/index.php/Revista/article/view/148/181. 
 |**Bibliografia Básica:**<br>GOMES, Marineide de Oliveira (org.).**Estágios na formação de professores**: possibilidades formativas entre<br>ensino, pesquisa e extensão. São Paulo: Edições Loyola, 2011.<br>GRANVILLE, Maria Antonia.**Projetos no Contexto de Ensino, Pesquisa e Extensão**: dimensões políticas,<br>filosóficas e metodológicas. Campinas: Mercado das Letras, 2011.<br>CACHAPUZ, António Francisco; CARVALHO, Anna Maria Pessoa de; GIL-PEREZ, Daniel (org.).**O ensino**<br>**das ciências como compromisso científico e social**: os caminhosquepercorremos. São Paulo: Cortez, 2012.|||
 |**Bibliografia Complementar:**<br>CARVALHO, Anna Maria Pessoa de (Org.). Ensino de ciências por investigação: condições para<br>implementação em sala de aula. São Paulo: Cengage Learning, 2013.<br>FREIRE, Paulo.**Extensão ou comunicação?**22. ed. São Paulo: Paz & Terra, 2020. VALADARES,<br>Eduardo de Campos.**Física mais que divertida**: inventos eletrizantes baseados em materiais reciclados e de<br>baixo custo. 3. ed., rev. e ampl. Belo Horizonte: UFMG, 2012.|||
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**|||
 |---|---|---|
 |**Curso:**Física|**Modalidade:**Licenciatura||
 |**Componente Curricular (Específico de Extensão)**: Práticas de Extensão em Temas de História e Filosofia<br>da Ciência no Ensino de Ciências ou Divulgação Científica|||
@@ -4298,7 +4298,7 @@ Ano:
 
 Na Tabela 2, preencher de acordo com os certificados ou outros documentos comprobatórios apresentados na solicitação do estudante.
 
-|**Tabela 2**: Registro das ações e /ou atividades de extensão desenvolvidas pelo estudante.|**Tabela 2**: Registro das ações e /ou atividades de extensão desenvolvidas pelo estudante.|**Tabela 2**: Registro das ações e /ou atividades de extensão desenvolvidas pelo estudante.|**Tabela 2**: Registro das ações e /ou atividades de extensão desenvolvidas pelo estudante.|**Tabela 2**: Registro das ações e /ou atividades de extensão desenvolvidas pelo estudante.|
+|**Tabela 2**: Registro das ações e /ou atividades de extensão desenvolvidas pelo estudante.|||||
 |---|---|---|---|---|
 ||**Nome da ação e/ou atividade**<br>(de acordo com o documento<br>comprobatório)|**Data do**<br>**documento**|**Carga horária**<br>**declarada**|**Carga horária**<br>**homologada**|
 |1.|||||
@@ -4486,8 +4486,8 @@ Exceto para as equivalências ou exigências necessárias para as equivalências
 |---|---|
 |**Matriz curricular atual (PPC 2022)**|**Matriz curricular anterior (PPC 2017)**|
 |**1º PERÍODO**||
-|**F1-PCF**Panorama do Conhecimento Físico|**F1-PCF**Panorama do Conhecimento Físico|
-|**F1-FEP**Introdução à Física Experimental|**F1-FEP**Introdução à Física Experimental|
+|**F1-PCF**Panorama do Conhecimento Físico||
+|**F1-FEP**Introdução à Física Experimental||
 |**M1-FGTR**<br>Fundamentos<br>de<br>Geometria<br>e<br>Trigonometria**(código novo)**|**M1-FGT**<br>Fundamentos<br>de<br>Geometria<br>e<br>Trigonometria|
 |**M1-MEL**Matemática Elementar**(código novo)**|**M1-MTE**Matemática Elementar|
 ||Alunos da matriz do PPC de 2017 podem cursar**E1-**<br>**HIF**(ofertada na matriz do PPC atual) + plano de<br>estudos como equivalentes a**E1-HFE**História e<br>Filosofia da Educação.<br>Alunos da matriz do PPC atual podem cursar**E1-**<br>**HFE**História e Filosofia da Educação como<br>equivalente a**E1-HIF**História e Filosofia da<br>Educação.|
@@ -4500,22 +4500,22 @@ Exceto para as equivalências ou exigências necessárias para as equivalências
 
 |||
 |---|---|
-|**F2-MG1**Mecânica Geral I|**F2-MG1**Mecânica Geral I|
-|**F2-LM1**Laboratório de Mecânica I|**F2-LM1**Laboratório de Mecânica I|
+|**F2-MG1**Mecânica Geral I||
+|**F2-LM1**Laboratório de Mecânica I||
 |**M2-GAA**Geometria Analítica e Álgebra Linear<br>**(código novo)**|**M2-GAAL**Geometria Analítica e Álgebra Linear|
 |**M2-CDIN1**Cálculo Diferencial e Integral I**(código**<br>**novo)**|**M2-CDI1**Cálculo Diferencial e Integral|
-|**I2-INFF**Informática Aplicada ao Ensino de Física|**I2-INFF**Informática Aplicada ao Ensino de Física|
-|**I2-PTA**Produção de Textos Acadêmicos|**I2-PTA**Produção de Textos Acadêmicos|
+|**I2-INFF**Informática Aplicada ao Ensino de Física||
+|**I2-PTA**Produção de Textos Acadêmicos||
 |**3º PERÍODO**||
-|**F3-MG2**Mecânica Geral II|**F3-MG2**Mecânica Geral II|
-|**F3-OSM**Oscilações e Ondas Mecânicas|**F3-OSM**Oscilações e Ondas Mecânicas|
-|**F3-LM2**Laboratório Mecânica II|**F3-LM2**Laboratório Mecânica II|
+|**F3-MG2**Mecânica Geral II||
+|**F3-OSM**Oscilações e Ondas Mecânicas||
+|**F3-LM2**Laboratório Mecânica II||
 |**M3-CDIN2**Cálculo Diferencial e Integral II**(código**<br>**novo)**|**M3-CDI2 **Cálculo Diferencial e Integral II|
-|**I3-QG**Química Geral|**I3-QG**Química Geral|
+|**I3-QG**Química Geral||
 |**E3-PDE**Psicologia, Educação e Desenvolvimento|**E3-PED**Psicologia, Educação e Desenvolvimento|
 |**4º PERÍODO**||
 |**F4-FLT**Fluidos e Termodinâmica**(código novo)**|Alunos da matriz do PPC de 2017 podem cursar**F4-**<br>**FLT**(ofertada na matriz do PPC atual) como<br>equivalente a**F4-TMD**Termodinâmica.<br>Alunos da matriz do PPC atual que solicitarem<br>matrícula em**F4-TMD**Termodinâmica, quando<br>ofertada na matriz de 2017, deverão cursar**F4-TMD**<br>+ plano de estudos OU**F4-TMD**+**F4-MCF**<br>Mecânica dos fluidos para equivaler a**F4-FLT**.|
-|**F4-LFT**Laboratório de Fluidos e Termodinâmica|**F4-LFT**Laboratório de Fluidos e Termodinâmica|
+|**F4-LFT**Laboratório de Fluidos e Termodinâmica||
 |**M4-CDIN3**Cálculo Diferencial e Integral III<br>**(código novo)**|**M4-CDI3**Cálculo Diferencial e Integral III|
 |**I4-AEC**Aprendizagem e Ensino de Ciências**(novo**<br>**código)**|alunos da matriz atual poderão cursar**I5-AEC**<br>Aprendizagem e Ensino de Ciências (PPC 2017),<br>caso seja ofertada, como equivalente.<br>Alunos da matriz do PPC de 2017 deverão cursar**I4-**<br>**AEC**Aprendizagem e Ensino de Ciências (PPC<br>atual) + plano de estudos para equivaler a**I5-AEC**.|
 |**E4-DDG**Didática Geral**(código novo)**|Alunos da matriz do PPC de 2017 podem cursar**E4-**<br>**DDG**(matriz atual) como equivalente a**E4-DDT**<br>Didática Geral.|
@@ -4525,7 +4525,7 @@ Exceto para as equivalências ou exigências necessárias para as equivalências
 |||
 |---|---|
 ||Alunos do PPC atual devem cursar**E4-DDT**Didática<br>Geral + plano de estudos para equivaler a**E4-DDG**.|
-|**I4-CTS**Ciência, Tecnologia e Sociedade|**I4-CTS**Ciência, Tecnologia e Sociedade|
+|**I4-CTS**Ciência, Tecnologia e Sociedade||
 |**5º PERÍODO**||
 |**F5-ELG1**Eletromagnetismo I**(código novo)**|**F5-EMG1**Eletromagnetismo I|
 |**F5-LEL1**Laboratório de Eletromagnetismo e Óptica<br>**(código novo)**|**F5-LEM1**Laboratório Eletromagnetismo I|
@@ -4544,30 +4544,30 @@ Exceto para as equivalências ou exigências necessárias para as equivalências
 |||
 |---|---|
 ||Alunos da matriz atual deverão cursar**I5-OEAT**<br>Oficina<br>de<br>Ensino<br>e<br>Aprendizagem<br>de<br>Termodinâmica + plano de estudos contemplando a<br>carga horária de extensão para equivaler a**I6-OEFT**<br>(PPC atual).|
-|**EST1**Estágio Supervisionado I: Currículo e<br>Organização Escolar|**EST1**Estágio Supervisionado I: Currículo e<br>Organização Escolar|
+|**EST1**Estágio Supervisionado I: Currículo e<br>Organização Escolar||
 |**7º PERÍODO**||
-|**F7-AST**Astronomia|**F7-AST**Astronomia|
-|**F7-ETM1**Estrutura da Matéria I|**F7-ETM1**Estrutura da Matéria I|
-|**F7-REL**Relatividade|**F7-REL**Relatividade|
+|**F7-AST**Astronomia||
+|**F7-ETM1**Estrutura da Matéria I||
+|**F7-REL**Relatividade||
 |**I7-HIC2**História e Filosofia da Ciência II**(código**<br>**novo)**|Alunos do PPC atual podem cursar**I7-HFC2**<br>História e Filosofia da Ciência II (PPC 2017)<br>como equivalente a**I7-HIC2**(PPC atual).<br>Alunos do PPC de 2017 devem cursar**I7-HIC2**<br>História e Filosofia da Ciência II (PPC atual) + plano<br>de estudos para equivaler a**I2-HFC2**(PPC de 2017).|
 |**I7-OEOO** Oficina de Ensino e Aprendizagem de<br>Eletromagnetismo, Óptica e Ondas (código novo)|**----------------------------------------------------------**|
-|**EST2**Estágio Supervisionado II - Estratégias<br>Didático-pedagógicas|**EST2**Estágio Supervisionado II - Estratégias<br>Didático-pedagógicas|
+|**EST2**Estágio Supervisionado II - Estratégias<br>Didático-pedagógicas||
 |**8º PERÍODO**||
 |**F8-EST2**Estrutura da Matéria II**(código novo)**|**F8-ETM2**Estrutura da Matéria II|
-|**E8-EDH**Educação em Direitos Humanos|**E8-EDH**Educação em Direitos Humanos|
+|**E8-EDH**Educação em Direitos Humanos||
 |**I8-OEFMC**Oficina de Ensino e Aprendizagem de<br>Física Moderna e Contemporânea**(código novo)**|Alunos do PPC atual deverão cursar**I8-OEAFM**<br>Oficina de Ensino e Aprendizagem de Física<br>Moderna e Contemporânea (PPC 2017) + plano de<br>estudos contemplando a carga horária de extensão<br>para equivaler a**I8-OEFMC**;<br>Alunos da matriz do PPC de 2017 poderão cursar**I8-**<br>**OEFMC**Oficina de Ensino e Aprendizagem de<br>Física Moderna e Contemporânea como equivalente<br>a**I8-OEAFM**(PPC 2017).|
-|**I8-PTCC**Projeto de Trabalho de Conclusão de<br>Curso|**I8-PTCC**Projeto de Trabalho de Conclusão de<br>Curso|
-|**O8 **Componente Curricular Optativo 1|**O8 **Componente Curricular Optativo 1|
-|**EST3**Estágio supervisionado III: Projetos Escolares|**EST3**Estágio supervisionado III: Projetos Escolares|
+|**I8-PTCC**Projeto de Trabalho de Conclusão de<br>Curso||
+|**O8 **Componente Curricular Optativo 1||
+|**EST3**Estágio supervisionado III: Projetos Escolares||
 |**9º PERÍODO**||
-|**O9**Componente Curricular Optativo 2|**O9**Componente Curricular Optativo 2|
+|**O9**Componente Curricular Optativo 2||
 
 199
 
-|**I9-LBR**Língua Brasileira de Sinais (LIBRAS)|**I9-LBR**Língua Brasileira de Sinais (LIBRAS)|
+|**I9-LBR**Língua Brasileira de Sinais (LIBRAS)||
 |---|---|
-|**I9-TCC**Trabalho de Conclusão de Curso|**I9-TCC**Trabalho de Conclusão de Curso|
-|**EST4**Estágio supervisionado IV: Prática de Ensino|**EST4**Estágio supervisionado IV: Prática de Ensino|
+|**I9-TCC**Trabalho de Conclusão de Curso||
+|**EST4**Estágio supervisionado IV: Prática de Ensino||
 |**CCEE2 **Componente Curricular Específico de<br>Extensão II|**-----------------------------------------------------------**|
 
 200

@@ -69,7 +69,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 **EIXO TECNOLÓGICO:** Saúde, Ambiente e Segurança **COORDENAÇÃO: Coordenador:** Marinei do Rocio Pacheco dos Santos **E-mail:** marinei.santos@ifpr.edu.br **Telefone:** (41) 3535 1428 **Vice-Coordenador:** Daniel Bussolaro **Telefone:** (41) 3535 1427 **E-mail:** daniel.bussolaro@ifpr.edu.br
 
-|**LOCAL DE REALIZAÇÃO/CÂMPUS (endereço):**João Negrão, 1285. Rebouças. Curitiba PR|**LOCAL DE REALIZAÇÃO/CÂMPUS (endereço):**João Negrão, 1285. Rebouças. Curitiba PR|**LOCAL DE REALIZAÇÃO/CÂMPUS (endereço):**João Negrão, 1285. Rebouças. Curitiba PR|
+|**LOCAL DE REALIZAÇÃO/CÂMPUS (endereço):**João Negrão, 1285. Rebouças. Curitiba PR|||
 |---|---|---|
 |**TEL:**<br>(41) 3535 1428|**HOME-PAGE:**<br>www.curitiba.ifpr.edu.br|**E-mail:**<br>direcao.ensino.curitiba@ifpr.edu.br|
 
@@ -390,7 +390,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 Ministerioda Educacao InstitutoFederaldoParana
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(horas-aulas)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -414,7 +414,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 Ministerioda Educacao InstitutoFederaldoParana
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(horas-aulas)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -437,7 +437,7 @@ INSTITUTOFEDERAL PARANA
 
 Ministerioda Educacao InstitutoFederaldoParana
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(horas-aulas)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -460,7 +460,7 @@ Ministerioda Educacao InstitutoFederaldoParana
 
 ## **3.12.1 Componentes Curriculares**
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança||
 |**Componente Curricular**: ANATOMIA HUMANA|||
@@ -582,7 +582,7 @@ INSTITUTOFEDERAL PARANA
 
 **Componente Curricular** : FUNDAMENTOS DA RADIOLOGIA MÉDICA I **Carga Horária** (hora aula): 80h **Período letivo:** 1º Semestre **Ementa:** História da Radiologia. Composição do serviço de radiologia. Filmes radiológicos. Salas de exames. Estudo da câmara escura. Tipos de revelação. Meios de contraste. Tipos de artefatos. Objetivos: - Conhecer a estrutura, o vocabulário e os protocolos dos serviços da radiologia. - Identificar e manusear corretamente os equipamentos e acessórios utilizados em serviços de diagnóstico por imagem. **Bibliografia Básica:** Bontrager, Kenneth L. - Lampignano, John P. Tratado de posicionamento radiográfico e Anatomia Associada. 7ª Ed. Elselvier, 2010 Karina Ferrassa Damas & Simone Savarego. Bases da Radiologia Convencional. 2ª Ed. Yendis, 2007 Simone Savarego & Nilton Fonseca. Manual de Posicionamentos Para Estágio em Radiologia. 1ª Ed. Yendis, 2007
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança||
 |**Componente Curricular**: FISIOPATOLOGIA|||
@@ -619,7 +619,7 @@ Introdução à Micro-Informática; Redes de Computadores; Segurança da Informa
 
 **CAPRON, H. L.; JOHNSON J. A** . Introdução à Informática. 8ª Ed. São Paulo: Pearson Prentice Hall, 2004
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança|
 
@@ -647,7 +647,7 @@ Xavier, A.M. et AL. Princípios de Segurança e Proteção Radiológica, Terceir
 
 Ministério do Trabalho e Emprego. NR 32 - Norma Regulamentadora de Segurança e Saúde no Trabalho em Estabelecimentos de Assistência à Saúde. Brasília, 2002
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança|
 |**Componente Curricular**: ANATOMIA RADIOLÓGICA||
@@ -793,7 +793,7 @@ Bontrager, Kenneth L. - Lampignano, John P. Tratado de posicionamento radiográf
 
 Karina Ferrassa Damas & Simone Savarego. Bases da Radiologia Convencional. 2 ª Ed. Yendis, 2007 SIMONE SAVAREGO & NILTON FONSECA. Manual de Posicionamentos Para Estagio em Radiologia. 1ª Yendis, 2007 Michael Y. M. Chen; Thomas L. Pope; David J. Ott. Radiologia Básica (LANGE). 2ª Artmed, 2012
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança|
 |**Componente Curricular**: RADIOTERAPIA||
@@ -916,7 +916,7 @@ CHIAVENATO, Idalberto. Administração Geral e Pública. 2ª Ed. São Paulo: Atl
 
 KOTLER, Philip.; KELLER, Kevin.L. Administração de Marketing. 12ª Ed. Pearson Prentice Hall, 2006 LAUDON, K C. e LAUDON, J. P. Sistemas de Informações Gerenciais. 9ª Ed. Pearson, 2011 CORRÊA, Henrique L. Gestão de Redes de Suprimento: Integrando Cadeias de Suprimento no Mundo Globalizado. Atlas, 2010 FLEURY, M. T. L. (org.). As Pessoas na Organização. Editora Gente, 2002
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança||
 |**Componente Curricular**: LABORATÓRIO DE TÉCNICAS RADIOLÓGICAS ESPECIAIS|||
@@ -1004,7 +1004,7 @@ FARAH, O. G. D.; SÁ, A. C. (Orgs.). Psicologia aplicada à enfermagem.  São Pa
 
 ## **Bibliografia Complementar:**
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Radiologia|Técnico em Radiologia<br>**Eixo Tecnológico:**Ambiente, Saúde e Segurança|
 |**Componente Curricular**: RADIOLOGIA INDUSTRIAL||

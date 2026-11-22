@@ -1468,7 +1468,7 @@ O **Núcleo Básico** contém disciplinas básicas de Ciência da Computação, 
 
 ## **2.6.2 Matriz Curricular**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||_Campus_Paranavaí|||||
@@ -1709,7 +1709,7 @@ COMPONENTE CURRICULAR: Projeto Integrador II CARGA HORÁRIA: 80/67 EMENTA: Desen
 
 COMPONENTE CURRICULAR: Novas Aplicações em Engenharia de Software CARGA HORÁRIA: 80/67 EMENTA: Abordagem do conteúdo dos componentes curriculares, numa leitura interdisciplinar com temas e abordagens atuais da área de Engenharia de Software. Inovações tecnológicas decorrentes de pesquisas recentes. BIBLIOGRAFIA BÁSICA: MOLINARI, Leonardo. **Inovação e automação de testes de software** . 1. ed. São Paulo: Érica, 2010. SBROCCO, José Henrique Teixeira de Carvalho. **UML 2.3: teoria e prática** . 1. ed. São Paulo: Érica, c2011. DUCKETT, Jon. **Introdução à programação web com HTML, XHTML e CSS** . 2. ed. Rio de Janeiro: Ciência Moderna, 2010. ENGHOLM JUNIOR, Hélio. **Engenharia de software na prática** . São Paulo: Novatec, 2010. 438 p. ISBN 9788575222171 (broch.). NOGUEIRA, Marcelo. **Engenharia de software: um framework para a gestão de riscos em projetos de software** . Rio de Janeiro: Ciência Moderna, 2009. 202 p. ISBN 9788573937855.
 
-|BIBLIOGRAFIA COMPLEMENTAR:|BIBLIOGRAFIA COMPLEMENTAR:|
+|BIBLIOGRAFIA COMPLEMENTAR:||
 |---|---|
 |SILVA, Mauricio Samy.**JavaScript: guia do programador**. São Paulo: Novatec, 2010.||
 |WIRTH, Niklaus.**Algoritmos e estruturas de dados**. Rio de Janeiro: LTC, 1999.||
@@ -3085,9 +3085,9 @@ Tabela - Quantitativo de Computadores
 |Auditório|Não|Não||
 |Salão de convenção|Não|Não||
 
-|Sala de áudio-visual|Não|Não||
-|---|---|---|---|
-|Mecanografia|Não|Não||
+|Sala de áudio-visual|Não||
+|---|---|---|
+|Mecanografia|Não||
 
 ## 4.7 BIBLIOTECA
 

@@ -2142,7 +2142,7 @@ CARGA HORÁRIA: 80 horas/aula (67 horas/relógio)
 
 EMENTA: Introdução a botânica, citologia e histologia vegetal, algas, briófitas criptógamas vasculares (pteridófitos), gimnospermas e angiospermas. Práticas de campo para coleta de material (folhas, flores, frutos e sementes) para confecções de exsicatas e para formar banco de sementes de plantas nativas.
 
-|BIBLIOGRAFIA BÁSICA:|BIBLIOGRAFIA BÁSICA:||
+|BIBLIOGRAFIA BÁSICA:|||
 |---|---|---|
 |AMABIS, MARTHO._Biologia_. Vol.1, 2 e 3 Ed. Moderna. 2004.|||
 |CHEIDA L. E._Biologia Integrada._Vol. 1,2 e 3. São Paulo-SP. FTD. 2002.|||
@@ -2810,7 +2810,7 @@ O acervo da Biblioteca do Campus Paranaguá conta com títulos em diversas área
 
 _Tabela: Quantidade de exemplares por tipo de material bibliográfico_
 
-|_Tabela:Quantidade de exemplarespor tipo de material bibliográfico_|_Tabela:Quantidade de exemplarespor tipo de material bibliográfico_|_Tabela:Quantidade de exemplarespor tipo de material bibliográfico_|
+|_Tabela:Quantidade de exemplarespor tipo de material bibliográfico_|||
 |---|---|---|
 |**Representação numérica do acervo geral**|||
 |**Tipo de material**|**Títulos**|**Exemplares**|

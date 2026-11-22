@@ -642,7 +642,7 @@ Quadro 03: Matriz curricular do Curso de Licenciatura em Química do IFPR - Camp
 
 _Campus_ Irati **MATRIZ CURRICULAR DO CURSO SUPERIOR DE LICENCIATURA EM QUÍMICA** Código área do conhecimento do Curso: 10000003 Base legal:  Resolução IFPR nº 19, de de 24/03/2017. Anexos I e II. Base legal específica do curso: Resolução CNE/CP nº 1.303/2001 Resolução de autorização do curso no IFPR: Resolução nº 38/2017
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**||||||
 |---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||||
 |||_Campus_Irati||||||
@@ -752,7 +752,7 @@ Os componentes curriculares optativos serão ofertados fora do horário regular 
 
 Quadro 06: Componentes curriculares optativos ofertados no Curso de Licenciatura em Química do IFPR - Campus Irati, ano e a carga horária anual.
 
-|do IFPR - Campus Irati, ano e a carga horária anual.|do IFPR - Campus Irati, ano e a carga horária anual.|do IFPR - Campus Irati, ano e a carga horária anual.|
+|do IFPR - Campus Irati, ano e a carga horária anual.|||
 |---|---|---|
 ||||
 |**COMPONENTES CURRICULARES OPTATIVOS **|||
@@ -1383,7 +1383,7 @@ PATY, M. **A física do século XX** . Aparecida: Idéias & Letras, 2009. MAGALH
 
 ## **Componentes curriculares optativos do curso**
 
-|**Curso: Licenciatura em Química**|**Eixo Tecnológico: Recursos Naturais**|**Eixo Tecnológico: Recursos Naturais**|
+|**Curso: Licenciatura em Química**|**Eixo Tecnológico: Recursos Naturais**||
 |---|---|---|
 ||||
 |Período Letivo: 1º ano|Carga horária||
@@ -1450,7 +1450,7 @@ INFORMÁTICA NA EDUCAÇÃO: TEORIA & PRÁTICA. Porto Alegre: Universidade Federa
 
 MESQUITA, D.; PIVA JUNIOR, D.; GARA, E. B. M. **Ambiente Virtual de Aprendizagem: conceitos, normas, procedimentos e práticas pedagógicas no ensino à distância** . São Paulo: Érica, 2014. McLOUGHLIN, C.; LEE, M. J. W. **Social software and participatory learning:** pedagogical choices with technology affordances in the Web 2.0 era. In: ASCILITE, Singapura, 2007. Disponível em <http://www.ascilite.org.au/conferences/singapore07/proc/mcloughlin.pdf>. Acesso em: 26 de março de 2015. DELIZOICOV, D.; ANGOTTI, J. A. **Ensino de Ciências:** fundamentos e métodos. 3.ed. São Paulo: Cortez, 2009.
 
-|**Curso: Licenciatura em Química**|**Eixo Tecnológico: Recursos Naturais**|**Eixo Tecnológico: Recursos Naturais**|
+|**Curso: Licenciatura em Química**|**Eixo Tecnológico: Recursos Naturais**||
 |---|---|---|
 |Período Letivo: 3º ano|Carga horária||
 |Optativo|40 h/a|40 h/r|
@@ -1501,7 +1501,7 @@ NETO, F. R. A.; NUNES, D. S. **Cromatografia:** princípios básicos e técnicas
 
 KOTZ, J. C.; TREICHEL Jr., P. M. **Química Geral e reações químicas** . 5.ed. São Paulo: Thomson Learning, 2005. v. 2.
 
-|**Curso: Licenciatura em Química**|**Eixo Tecnológico: Recursos Naturais**|**Eixo Tecnológico: Recursos Naturais**|
+|**Curso: Licenciatura em Química**|**Eixo Tecnológico: Recursos Naturais**||
 |---|---|---|
 |Período Letivo: 4º ano|Carga horária||
 |Optativo|40 h/a|40 h/r|
@@ -2122,7 +2122,7 @@ O Curso de Licenciatura em Química terá seu corpo docente formado pelos profes
 
 Quadro 08. Corpo docente do Curso de Licenciatura em Química do IFPR, Campus Irati.
 
-|**Nome Completo**|**Nome Completo**|||||
+|**Nome Completo**||||||
 |---|---|---|---|---|---|
 ||**Nome Completo**|**Curso de**<br>**Graduação**|**Maior**<br>**Titulação**|**Regime de**<br>**Trabalho**|**Link**<br>**Currículo**|
 
@@ -2615,7 +2615,7 @@ A biblioteca está localizada no bloco didático/administrativo, com área aprox
 |||e<br>eletromagnetismo<br>e<br>física moderna.||
 |Laboratório de<br>Química I|Sim.<br>Capacidade:<br>20<br>pessoas.<br>Principais<br>equipamentos<br>do<br>Laboratório:<br>Agitador<br>Magnético<br>TE-0851<br>c/<br>aquecimento.<br>Agitador<br>Magnético<br>TE-0851<br>c/<br>aquecimento. Agitador de<br>mesa sem aquecimento.<br>Agitador Vórtex BX-28.<br>Aquecedor<br>tipo<br>Banho<br>Maria.<br>Balança<br>de<br>Precisão. Barrilhete 50L.<br>Bomba de Vácuo. Capela<br>de<br>exaustão<br>de<br>gases.<br>Centrífuga NT810. Chapa<br>Aquecedora.<br>Condutivímetro<br>de<br>Bancada. Colorímetro de<br>Bancada.<br>Destilador<br>de<br>Água Portátil de Bancada.<br>Espectrofotômetro Model<br>Nova 1800UV. Lavadora<br>Ultrassônica Modelo L-<br>200. Estufa de Secagem.<br>Manta aquecedora. Mufla.<br>Phmetro digital JK PHM<br>005. Chuveiro Lavaolhos.||60m²|
 
-|Laboratório de<br>Química II|Laboratório de<br>Química II||||
+|Laboratório de<br>Química II|||||
 |---|---|---|---|---|
 ||Laboratório de<br>Química II|Sim.<br>Capacidade:<br>20<br>pessoas.<br>Principais<br>equipamentos<br>do<br>Laboratório:<br>Agitador<br>Magnético c/ Aquecimento<br>NI1103.<br>Agitador<br>Magnético c/ Aquecimento<br>NI1103. Agitador de mesa<br>sem<br>aquecimento.<br>Autoclave de Mesa Digital.<br>Aquecedor<br>tipo<br>Banho<br>Maria. Balança 30kg x 1g<br>COLE-PARMER. Balança<br>CTS 6000 6kg x 0,1g.<br>Balança<br>de<br>Precisão.<br>Barrilhete 50L. Bomba de<br>Vácuo. Capela de exaustão<br>de gases. Centrífuga LS-3<br>Plus. Chapa Aquecedora.<br>Contador de Colônia. Cuba<br>de eletroforese. Deionizador<br>modelo 50L/h. Destilador<br>de<br>Água<br>Portátil<br>de<br>Bancada.<br>Espectrofotômetro<br>Model<br>Nova<br>1600UV.<br>Estufa<br>Bacteriológica<br>ECB<br>1.1<br>Digital. Estufa de Secagem<br>e Circulação de Ar. Fonte<br>F500<br>para<br>Eletroforese.<br>Fonte<br>F500<br>para<br>Eletroforese.<br>11<br>Estereomicroscópios<br>(lupas). Geladeira Brastemp<br>Frost free. 3 Micropipetas<br>Digitais.<br>Micropipeta<br>volume variável 0,5 -10uL.<br>Micropipeta<br>volume<br>variável<br>10<br>a<br>100uL.<br>Micropipeta<br>volume<br>variável<br>20-200<br>uL.<br>Micropipeta<br>volume<br>variável 100 a 1000uL.<br>Micropipeta<br>volume|<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>|60m²|
 
@@ -2759,14 +2759,14 @@ Quadro 10. Necessidade de expansão do quadro docente do Curso de Licenciatura e
 |---|---|---|---|---|---|
 |2018|-|-|1<br>(regime|1||
 
-||||colaborativo<br>com IFPR)|||
-|---|---|---|---|---|---|
-|2019|-|-|1|-||
-|2020|-|-|1|-|1<br>(regime<br>colaborativo com<br>IFPR)|
-|2021|-|-|1|-|-|
-|2022|-|-|1|-|-|
-|2023<br>*|||1||1|
-|*Ainda necessária contratação de novos professores de química||||||
+|||colaborativo<br>com IFPR)|||
+|---|---|---|---|---|
+|2019|-|1|-||
+|2020|-|1|-|1<br>(regime<br>colaborativo com<br>IFPR)|
+|2021|-|1|-|-|
+|2022|-|1|-|-|
+|2023<br>*||1||1|
+|*Ainda necessária contratação de novos professores de química|||||
 
 O atual quadro de servidores do Campus conta com 44 (quarenta e quatro) docentes efetivos, 2 (dois) docentes em colaboração técnica, 3 (três) docentes substitutos, 35 (trinta e cinco) técnicos administrativos em educação e 1 (um) técnico administrativo em educação em colaboração técnica. Para o pleno funcionamento do curso será necessária uma expansão do quadro docente para 6 (seis) professores licenciados em química, atualmente temos 5 (três) efetivos.
 
@@ -3150,7 +3150,7 @@ Irati, _____ de _______________________ de _______. Assinatura do Orientador (a)
 
 ## **FORMULÁRIO VII CURSO DE LICENCIATURA EM QUÍMICA AVALIAÇÃO DO TCC**
 
-|Título do trabalho:.............................................................................................................................<br>Discente:............................................................................................................................................<br>Orientador (a):...................................................................................................................................<br>Coorientador (a):...............................................................................................................................<br>Data:......../......../........<br>Horários: Início: ...........horas<br>Término: ............horas<br>**Item**<br>**Parâmetro**<br>**Conceito**<br>**Apresentação pública**<br>Sequência da apresentação<br>Domínio do assunto e uso de termos técnicos<br>Postura na apresentação e expressão oral<br>Habilidade para responder a perguntas<br>Obediência ao tempo previsto na apresentação oral<br>Qualidade visual do material de apoio (cores,<br>conteúdo, estrutura, etc)<br>**Trabalho escrito**<br>Estrutura (normas técnicas e sequência)<br>Redação (uso correto da língua, clareza, objetividade,<br>etc)<br>Fundamentos teóricos e bibliografia<br>Metodologia, criatividade e desenvolvimento<br>Apresentação dos resultados, discussão e conclusão<br>**Conceito Final do Examinador**<br>**Observações:**|Título do trabalho:.............................................................................................................................<br>Discente:............................................................................................................................................<br>Orientador (a):...................................................................................................................................<br>Coorientador (a):...............................................................................................................................<br>Data:......../......../........<br>Horários: Início: ...........horas<br>Término: ............horas<br>**Item**<br>**Parâmetro**<br>**Conceito**<br>**Apresentação pública**<br>Sequência da apresentação<br>Domínio do assunto e uso de termos técnicos<br>Postura na apresentação e expressão oral<br>Habilidade para responder a perguntas<br>Obediência ao tempo previsto na apresentação oral<br>Qualidade visual do material de apoio (cores,<br>conteúdo, estrutura, etc)<br>**Trabalho escrito**<br>Estrutura (normas técnicas e sequência)<br>Redação (uso correto da língua, clareza, objetividade,<br>etc)<br>Fundamentos teóricos e bibliografia<br>Metodologia, criatividade e desenvolvimento<br>Apresentação dos resultados, discussão e conclusão<br>**Conceito Final do Examinador**<br>**Observações:**|Título do trabalho:.............................................................................................................................<br>Discente:............................................................................................................................................<br>Orientador (a):...................................................................................................................................<br>Coorientador (a):...............................................................................................................................<br>Data:......../......../........<br>Horários: Início: ...........horas<br>Término: ............horas<br>**Item**<br>**Parâmetro**<br>**Conceito**<br>**Apresentação pública**<br>Sequência da apresentação<br>Domínio do assunto e uso de termos técnicos<br>Postura na apresentação e expressão oral<br>Habilidade para responder a perguntas<br>Obediência ao tempo previsto na apresentação oral<br>Qualidade visual do material de apoio (cores,<br>conteúdo, estrutura, etc)<br>**Trabalho escrito**<br>Estrutura (normas técnicas e sequência)<br>Redação (uso correto da língua, clareza, objetividade,<br>etc)<br>Fundamentos teóricos e bibliografia<br>Metodologia, criatividade e desenvolvimento<br>Apresentação dos resultados, discussão e conclusão<br>**Conceito Final do Examinador**<br>**Observações:**|Título do trabalho:.............................................................................................................................<br>Discente:............................................................................................................................................<br>Orientador (a):...................................................................................................................................<br>Coorientador (a):...............................................................................................................................<br>Data:......../......../........<br>Horários: Início: ...........horas<br>Término: ............horas<br>**Item**<br>**Parâmetro**<br>**Conceito**<br>**Apresentação pública**<br>Sequência da apresentação<br>Domínio do assunto e uso de termos técnicos<br>Postura na apresentação e expressão oral<br>Habilidade para responder a perguntas<br>Obediência ao tempo previsto na apresentação oral<br>Qualidade visual do material de apoio (cores,<br>conteúdo, estrutura, etc)<br>**Trabalho escrito**<br>Estrutura (normas técnicas e sequência)<br>Redação (uso correto da língua, clareza, objetividade,<br>etc)<br>Fundamentos teóricos e bibliografia<br>Metodologia, criatividade e desenvolvimento<br>Apresentação dos resultados, discussão e conclusão<br>**Conceito Final do Examinador**<br>**Observações:**|
+|Título do trabalho:.............................................................................................................................<br>Discente:............................................................................................................................................<br>Orientador (a):...................................................................................................................................<br>Coorientador (a):...............................................................................................................................<br>Data:......../......../........<br>Horários: Início: ...........horas<br>Término: ............horas<br>**Item**<br>**Parâmetro**<br>**Conceito**<br>**Apresentação pública**<br>Sequência da apresentação<br>Domínio do assunto e uso de termos técnicos<br>Postura na apresentação e expressão oral<br>Habilidade para responder a perguntas<br>Obediência ao tempo previsto na apresentação oral<br>Qualidade visual do material de apoio (cores,<br>conteúdo, estrutura, etc)<br>**Trabalho escrito**<br>Estrutura (normas técnicas e sequência)<br>Redação (uso correto da língua, clareza, objetividade,<br>etc)<br>Fundamentos teóricos e bibliografia<br>Metodologia, criatividade e desenvolvimento<br>Apresentação dos resultados, discussão e conclusão<br>**Conceito Final do Examinador**<br>**Observações:**||||
 |---|---|---|---|
 |**Item**||**Parâmetro**|**Conceito**|
 |**Apresentação pública**||Sequência da apresentação||

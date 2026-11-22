@@ -340,19 +340,19 @@ O percentual da carga horária dos componentes curriculares ofertados a distânc
 
 Os conhecimentos que os alunos adquirirão dentro dos componentes curriculares propostos neste curso dialogarão necessariamente com a prática do trabalho pedagógico dos professores que irão atuar no aperfeiçoamento, uma vez que se trata de uma proposta pautada no exercício profissional da docência promovida pelo poder público. A principal competência dos profissionais formados no curso é a de se apropriar dos avanços do conhecimento no campo da Educação para as Relações Étnico-raciais e da valorização das culturas negras e indígenas, possibilitando a produção e difusão do conhecimento tanto a partir de pesquisas científicas quanto em ações comunitárias que promovam a superação dos conflitos gerados pela discriminação e o racismo estrutural na sociedade brasileira.
 
-|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|
+|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)||||||
 |---|---|---|---|---|---|
 |Nome<br>Completo|Formação<br>acadêmica|Maior<br>titulação|Efetivo/<br>docente<br>colaborador|Componente<br>curricular|Carga<br>horária|
 |Bolsista 1|Preferencial<br>mente<br>mestre<br>em<br>Educação ou<br>Ciências<br>Humanas|Doutorado|Bolsista 1|Educação<br>para<br>Relações<br>Étnico-raciais:<br>conceitos<br>básicos|60h|
 |Bolsista 2|Preferencial<br>mente<br>mestre<br>em<br>Educação ou<br>Ciências<br>Humanas|Doutorado|Bolsista 2|Descolonizando<br>a<br>História:<br>protagonismo<br>negro, cultura e<br>religiosidade<br>africana<br>e|60h|
 
-|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)|
+|**10. RELAÇÃO DO CORPO DOCENTE**<br>(Bolsistas e selecionados via Edital)||||||
 |---|---|---|---|---|---|
 |||||afro-brasileira||
 |Bolsista 3|Preferencial<br>mente<br>mestre<br>em<br>Educação ou<br>Ciências<br>Humanas|Doutorado|Bolsista 3|Povos Indígenas<br>e<br>Educação:<br>diálogos com a<br>História<br>e<br>Antropologia|30h|
 |Bolsista 4|Preferencial<br>mente<br>mestre<br>em<br>Educação ou<br>Ciências<br>Humanas|Doutorado|Bolsista 4|Metodologia<br>da<br>pesquisa<br>aplicada<br>à<br>Educação<br>para<br>Relações<br>Étnico-raciais|30h|
 
-|**11. MATRIZ CURRICULAR**|**11. MATRIZ CURRICULAR**|**11. MATRIZ CURRICULAR**|**11. MATRIZ CURRICULAR**|
+|**11. MATRIZ CURRICULAR**||||
 |---|---|---|---|
 |**11.1 Componentes Curriculares Obrigatórios**||||
 |<br>Componente Curricular|CHT|Créditos|CH EAD<br>(30%)|
@@ -417,7 +417,7 @@ Os conhecimentos que os alunos adquirirão dentro dos componentes curriculares p
 ||MEC, INEP. Diretrizes Curriculares Nacionais para a Educação das Relações||
 ||||
 
-|ÉtnicoRaciais e para o Ensino de História e Cultura Afro-Brasileira e Africana.|ÉtnicoRaciais e para o Ensino de História e Cultura Afro-Brasileira e Africana.|
+|ÉtnicoRaciais e para o Ensino de História e Cultura Afro-Brasileira e Africana.||
 |---|---|
 |Brasília, 2004.||
 |GOMES, Nilma Lino. O movimento negro educador. Saberes construídos na luta||
@@ -663,13 +663,13 @@ O Campus Colombo conta com área de ensino específicas compostas por 6 salas de
 |empréstimo. Além disso, consta em seu acervo livros específicos para o curso|
 |de aperfeiçoamento aqui proposto.|
 
-|**15. DESCRIÇÃO DAS ATRIBUIÇÕES BOLSISTAS**|**15. DESCRIÇÃO DAS ATRIBUIÇÕES BOLSISTAS**|
+|**15. DESCRIÇÃO DAS ATRIBUIÇÕES BOLSISTAS**||
 |---|---|
 |**Função/ativi**<br>**dade**|**Descrição das Atribuições***|
 |Professor<br>Formador|a) planejar e avaliar as atividades de formação;<br>b) ministrar o curso de formação dos tutores;<br>c) realizar a gestão acadêmica da turma;<br>d) coordenar, acompanhar e subsidiar a atuação dos tutores;<br>e) organizar os seminários e encontros com os tutores para acompanhamento e<br>avaliação do curso;<br>f)<br>analisar<br>com<br>os<br>tutores os relatórios sobre as turmas e orientar os<br>encaminhamentos;<br>g) orientar o processo de elaboração do trabalho de conclusão de curso (TCC)<br>dos<br>cursistas, quando for o caso;<br>h)<br>participar<br>dos<br>encontros<br>de<br>coordenação,<br>promovidos<br>pelo<br>coordenador-adjunto;<br>i) articular-se com o coordenador-adjunto e com o supervisor de curso;<br>j) indicar ao coordenador-adjunto cursistas e tutores que devem receber<br>certificação;<br>k) encaminhar ao supervisor de curso o relatório mensal de frequência dos<br>cursistas.|
 |Professor<br>responsável<br>pelas<br>disciplinas|a) participar, juntamente com demais professores-pesquisadores envolvidos no<br>curso e o coordenador-adjunto, do desenvolvimento de metodologias de ensino<br>e da elaboração de materiais didáticos adequados à modalidade a ser ofertada,<br>mediante avaliação de<br>metodologias consagradas e inovadoras;<br>b) elaborar proposta de implantação do curso e sugerir ações necessárias de<br>suporte<br>tecnológico<br>durante<br>o<br>processo<br>de<br>formação,<br>informando<br>ao<br>coordenador-adjunto;<br>c) elaborar e entregar, no prazo estabelecido, os conteúdos programáticos do<br>curso;<br>d) adequar a linguagem do material (conteúdos, materiais didáticos, mídias e<br>bibliografia) à modalidade ofertada;<br>e) assegurar os requisitos de acessibilidade física nas comunicações e no<br>material<br>didático pedagógico, possibilitando a plena participação de pessoas com<br>deficiência,<br>tanto na modalidade presencial, quanto a distância;<br>f) desenvolver as atividades docentes em consonância com a metodologia e os<br>recursos previstos no projeto acadêmico aprovado e, nas atividades a distância,<br>mediante o uso de recursos previstos naquele projeto;<br>g) coordenar as atividades acadêmicas dos tutores que atuam em módulos e<br>conteúdos sob sua orientação;<br>h) ministrar a formação da equipe pedagógica com o uso dos recursos e da<br>metodologia previstos no plano de formação;<br>i) desenvolver, em colaboração com o coordenador-adjunto, a metodologia de<br>avaliação dos cursistas e implantar um sistema de avaliação, de acordo com o<br>previsto no plano de curso;<br>j) apresentar ao coordenador-adjunto, ao final do módulo ofertado, relatório das<br>atividades e do desempenho dos cursistas;<br>k) elaborar relatório sobre as atividades de ensino na esfera de suas atribuições,<br>para<br>encaminhamento<br>à SECADI/MEC ao final de cada semestre ou quando<br>solicitado;|
 
-|**15. DESCRIÇÃO DAS ATRIBUIÇÕES BOLSISTAS**|**15. DESCRIÇÃO DAS ATRIBUIÇÕES BOLSISTAS**|
+|**15. DESCRIÇÃO DAS ATRIBUIÇÕES BOLSISTAS**||
 |---|---|
 |**Função/ativi**<br>**dade**|**Descrição das Atribuições***|
 |Professor<br>Formador|a) planejar e avaliar as atividades de formação;<br>b) ministrar o curso de formação dos tutores;<br>c) realizar a gestão acadêmica da turma;<br>d) coordenar, acompanhar e subsidiar a atuação dos tutores;<br>e) organizar os seminários e encontros com os tutores para acompanhamento e<br>avaliação do curso;<br>f)<br>analisar<br>com<br>os<br>tutores os relatórios sobre as turmas e orientar os<br>encaminhamentos;<br>g) orientar o processo de elaboração do trabalho de conclusão de curso (TCC)<br>dos<br>cursistas, quando for o caso;<br>h)<br>participar<br>dos<br>encontros<br>de<br>coordenação,<br>promovidos<br>pelo<br>coordenador-adjunto;<br>i) articular-se com o coordenador-adjunto e com o supervisor de curso;<br>j) indicar ao coordenador-adjunto cursistas e tutores que devem receber<br>certificação;<br>k) encaminhar ao supervisor de curso o relatório mensal de frequência dos<br>cursistas.|

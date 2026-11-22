@@ -591,7 +591,7 @@ Rua Surucuá Açu, 321 — Vila Araponguinha, Arapongas–PR | CEP 86705-590 - B
 
 ## **13.5 Ementas dos Componentes Curriculares**
 
-|**Campus Avançado Arapongas do IFPR**|**Campus Avançado Arapongas do IFPR**|
+|**Campus Avançado Arapongas do IFPR**||
 |---|---|
 |**Curso:** Programação com ênfase em Análise de<br>Dados|**Eixo**<br>**Tecnológico:**<br>Informação<br>e<br>Comunicação|
 |**Componente Curricular:**Introdução à Programação||

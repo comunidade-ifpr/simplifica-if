@@ -61,7 +61,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 ## **1.2 CARACTERÍSTICAS DO CURSO**
 
-|**1.2 CARACTERÍSTICAS DO CURSO**|**1.2 CARACTERÍSTICAS DO CURSO**||
+|**1.2 CARACTERÍSTICAS DO CURSO**|||
 |---|---|---|
 |**Nível:**Educação Profissional Técnica de Nível Médio|||
 |**Forma de oferta:**ArticuladaIntegrada|||
@@ -98,7 +98,7 @@ Analisando a atividade econômica da cidade, há 6.464 empresas no Cadastro Cent
 
 Grande parte das atividades realizadas pelas empresas envolvem conhecimentos na área administrativa, justificando a necessidade de pessoas capacitadas para trabalhar como técnicos administrativos. Segundo levantamento realizado pelo Ministério do Trabalho e Emprego, o número de pessoas em atividade, por categorias econômicas em Colombo, no ano de 2010 é de 109.659, segue o disposto no Quadro 1.
 
-|Quadro 1 - População ocupada segundo as atividades econômicas – 2010|Quadro 1 - População ocupada segundo as atividades econômicas – 2010|
+|Quadro 1 - População ocupada segundo as atividades econômicas – 2010||
 |---|---|
 |ATIVIDADES ECONÔMICAS(CNAE Domiciliar 2.0)|PESSOAS|
 |Agricultura,pecuária,produção florestal,pesca e aquicultura|2.785|
@@ -684,7 +684,7 @@ No terceiro ano, os estudantes terão 25 aulas somente durante as manhãs de seg
 
 ## **6.12 EMENTAS DOS COMPONENTES CURRICULARES**
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Artes**|||
@@ -710,7 +710,7 @@ No terceiro ano, os estudantes terão 25 aulas somente durante as manhãs de seg
 
 40
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Língua Espanhola II**|||
@@ -792,7 +792,7 @@ SARMENTO, Leila Lauar. **Gramática em textos** (Vereda Digital). São Paulo: Mo
 
 47
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Biologia I**|||
@@ -828,7 +828,7 @@ RICKLEFS, R. E. **A economia da natureza** . 6ª ed. Rio de Janeiro: Guanabara K
 
 50
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Física I**|||
@@ -874,7 +874,7 @@ Janeiro: Forense Universitária, 1991. LOPES, Jose Leite. **Uma história da fí
 
 55
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Química I**|||
@@ -892,7 +892,7 @@ Janeiro: Forense Universitária, 1991. LOPES, Jose Leite. **Uma história da fí
 
 57
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Química III**|||
@@ -916,7 +916,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 59
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Filosofia II**|||
@@ -930,7 +930,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 60
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Geografia I**|||
@@ -944,7 +944,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 61
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Geografia II**|||
@@ -958,7 +958,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 62
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: História I**|||
@@ -972,7 +972,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 63
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: História II**|||
@@ -986,7 +986,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 64
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Sociologia I**|||
@@ -1000,7 +1000,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 65
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Sociologia II**|||
@@ -1014,7 +1014,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 66
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Matemática I**|||
@@ -1028,7 +1028,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 67
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Matemática II**|||
@@ -1042,7 +1042,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 68
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Matemática III**|||
@@ -1060,7 +1060,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 70
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Fundamentos da Economia**|||
@@ -1074,7 +1074,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 71
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Fundamentos do Direito Público e Privado**|||
@@ -1088,7 +1088,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 72
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Informática aplicada à gestão**|||
@@ -1102,7 +1102,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 73
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Projeto Integrador I**|||
@@ -1116,7 +1116,7 @@ CHAUÍ, M. **A ideologia da violência** . BH : Autêntica, 2014 COPI, I. **Intr
 
 74
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Direito do Trabalho e regulação jurídica dos**<br>**recursos econômicos**|||
@@ -1240,7 +1240,7 @@ Gestão da qualidade e suas ferramentas; Custos da qualidade; Administração de
 
 83
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|e|
+|**CAMPUS COLOMBO DO IFPR**|||e|
 |---|---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**||
 |**Componente Curricular: Direito Privado**||||
@@ -1254,7 +1254,7 @@ Gestão da qualidade e suas ferramentas; Custos da qualidade; Administração de
 
 84
 
-|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|**CAMPUS COLOMBO DO IFPR**|
+|**CAMPUS COLOMBO DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Curso Técnico em**<br>**Administração**||**Eixo Tecnológico: Gestão e**<br>**Negócios**|
 |**Componente Curricular: Projeto Integrador III**|||

@@ -247,7 +247,7 @@ Os recursos encontrados atualmente em 2013 são insuficientes para a abertura de
 
 Os quadros de servidores envolvidos para o _início_ do curso atualmente são:
 
-|Os quadros de servidores envolvidos para o _início_<br>do curso atualmente são:|Os quadros de servidores envolvidos para o _início_<br>do curso atualmente são:|Os quadros de servidores envolvidos para o _início_<br>do curso atualmente são:|Os quadros de servidores envolvidos para o _início_<br>do curso atualmente são:|
+|Os quadros de servidores envolvidos para o _início_<br>do curso atualmente são:||||
 |---|---|---|---|
 |||||
 ||**DOCENTES**|||
@@ -352,7 +352,7 @@ Os componentes curriculares da matriz proposta bem como número de horas e aulas
 
 ## **3.10.1 - Organização Curricular**
 
-|**3.10.1 - Organização Curricular**|**3.10.1 - Organização Curricular**|**3.10.1 - Organização Curricular**|**3.10.1 - Organização Curricular**|
+|**3.10.1 - Organização Curricular**||||
 |---|---|---|---|
 |||||
 ||**1º Ano**|||
@@ -455,7 +455,7 @@ Os componentes curriculares da matriz proposta bem como número de horas e aulas
 
 ## **3.10.1.1 - Ementas dos Componentes Curriculares**
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: DesenhoTécnico||
@@ -466,7 +466,7 @@ Os componentes curriculares da matriz proposta bem como número de horas e aulas
 
 23
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Eletricidade eMedidasElétricas||
@@ -477,7 +477,7 @@ Os componentes curriculares da matriz proposta bem como número de horas e aulas
 
 24
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Tecnologia dosMateriais||
@@ -538,7 +538,7 @@ TIPARELI, Percival. **Arte colonial:** barroco e rococó- do séc. 16 ao 18. Sã
 
 28
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: BiologiaI||
@@ -553,7 +553,7 @@ TIPARELI, Percival. **Arte colonial:** barroco e rococó- do séc. 16 ao 18. Sã
 
 30
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: FilosofiaI||
@@ -564,7 +564,7 @@ TIPARELI, Percival. **Arte colonial:** barroco e rococó- do séc. 16 ao 18. Sã
 
 31
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**|
 |**Componente Curricular**: FísicaI||
@@ -583,7 +583,7 @@ TIPARELI, Percival. **Arte colonial:** barroco e rococó- do séc. 16 ao 18. Sã
 
 34
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaEstrangeiraModerna– Espanhol||
@@ -600,7 +600,7 @@ SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños.** São Pau
 
 36
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaPortuguesaI||
@@ -611,7 +611,7 @@ SOUZA, Jair de Oliveira. **¡Por Supuesto! Español para brasileños.** São Pau
 
 37
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: MatemáticaI||
@@ -634,7 +634,7 @@ MANAHAM, Stanley. E.; **Química ambiental.** 9. ed., São Paulo: Bookman, 2013.
 
 39
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:SociologiaI||
@@ -645,7 +645,7 @@ MANAHAM, Stanley. E.; **Química ambiental.** 9. ed., São Paulo: Bookman, 2013.
 
 40
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Metrologia||
@@ -656,7 +656,7 @@ MANAHAM, Stanley. E.; **Química ambiental.** 9. ed., São Paulo: Bookman, 2013.
 
 41
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:CálculoMecânico||
@@ -667,7 +667,7 @@ MANAHAM, Stanley. E.; **Química ambiental.** 9. ed., São Paulo: Bookman, 2013.
 
 42
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Processos deFabricaçãoI||
@@ -678,7 +678,7 @@ MANAHAM, Stanley. E.; **Química ambiental.** 9. ed., São Paulo: Bookman, 2013.
 
 43
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:SistemasDigitais||
@@ -711,7 +711,7 @@ MARQUES, Angelo Eduardo B.; CRUZ, Eduardo Cesar A.; JÚNIOR, Salomão Choueri. *
 
 45
 
-||**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+||**Câmpus Assis Chateaubriand do IFPR**||||
 |---|---|---|---|---|
 ||**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica||**Eixo Tecnológico:**Controle e Processos<br>Industriais||
 ||Eletromecânica||||
@@ -753,7 +753,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 47
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo**<br>**Tecnológico:**Controle<br>e<br>Processos<br>Industriais|
 |**Componente Curricular**: EducaçãoFísicaII||
@@ -764,7 +764,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 48
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: FilosofiaII||
@@ -775,7 +775,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 49
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: FísicaII||
@@ -786,7 +786,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 50
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:GeografiaII||
@@ -797,7 +797,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 51
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**|
 |**Componente Curricular**: HistóriaII||
@@ -808,7 +808,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 52
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaEstrangeiraModernaI – Inglês||
@@ -819,7 +819,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 53
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaPortuguesaII||
@@ -834,7 +834,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 55
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:QuímicaII||
@@ -845,7 +845,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 56
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:SociologiaII||
@@ -856,7 +856,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 57
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:Segurança doTrabalho||
@@ -867,7 +867,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 58
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Elementos deAutomação||
@@ -878,7 +878,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 59
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Processos deFabricaçãoII||
@@ -889,7 +889,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 60
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Projetos eInstalaçõesElétricas||
@@ -900,7 +900,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 61
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Máquinas eAcionamentos||
@@ -911,7 +911,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 62
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: BiologiaIII||
@@ -922,7 +922,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 63
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**|
 |**Componente Curricular**: EducaçãoFísicaIII||
@@ -932,7 +932,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 64
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: FilosofiaIII||
@@ -943,7 +943,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 65
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**|
 |**Componente Curricular**: FísicaIII||
@@ -954,7 +954,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 66
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:GeografiaIII||
@@ -969,7 +969,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 68
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaEstrangeiraModernaII – Inglês||
@@ -980,7 +980,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 69
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaPortuguesaIII||
@@ -991,7 +991,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 70
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: MatemáticaIII||
@@ -1002,7 +1002,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 71
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:QuímicaIII||
@@ -1013,7 +1013,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 72
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:SociologiaIII||
@@ -1024,7 +1024,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 73
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: Processos deFabricaçãoIII||
@@ -1035,7 +1035,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 74
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: MáquinasTérmicas e deFluxo||
@@ -1046,7 +1046,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 75
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: ManutençãoIndustriale Gestão daProdução||
@@ -1057,7 +1057,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 76
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: ProjetoIntegrador||
@@ -1068,7 +1068,7 @@ RUPPERT, E.E.; BARNES, R.D. **Zoologia de Invertebrados.** 6.ed. Editora Roca: S
 
 77
 
-||**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+||**Câmpus Assis Chateaubriand do IFPR**||||
 |---|---|---|---|---|
 ||**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica||**Eixo Tecnológico:**Controle e Processos<br>Industriais||
 ||**Componente Curricular**: ArtesIII||||
@@ -1103,7 +1103,7 @@ PARANÁ, Secretaria de Estado da Educação do. **Diretrizes Curriculares de Bio
 
 79
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: FilosofiaIV||
@@ -1138,7 +1138,7 @@ TORRES, Carlos M. A. **Física:** Ciência e Tecnologia. São Paulo: Moderna, 20
 
 81
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:GeografiaIV||
@@ -1149,7 +1149,7 @@ TORRES, Carlos M. A. **Física:** Ciência e Tecnologia. São Paulo: Moderna, 20
 
 82
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo**<br>**Tecnológico:**Controle<br>e<br>Processos<br>Industriais|
 |**Componente Curricular**: HistóriaIV||
@@ -1160,7 +1160,7 @@ TORRES, Carlos M. A. **Física:** Ciência e Tecnologia. São Paulo: Moderna, 20
 
 83
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaEstrangeiraModernaIII – Inglês||
@@ -1171,7 +1171,7 @@ TORRES, Carlos M. A. **Física:** Ciência e Tecnologia. São Paulo: Moderna, 20
 
 84
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**: LínguaPortuguesaIV||
@@ -1194,7 +1194,7 @@ RAMOS, L. F. **Frações sem mistérios:** Frações conceitos fundamentais e op
 
 86
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:QuímicaIV||
@@ -1205,7 +1205,7 @@ RAMOS, L. F. **Frações sem mistérios:** Frações conceitos fundamentais e op
 
 87
 
-|**Câmpus Assis Chateaubriand do IFPR**|**Câmpus Assis Chateaubriand do IFPR**|
+|**Câmpus Assis Chateaubriand do IFPR**||
 |---|---|
 |**Curso:**<br>Técnico<br>Integrado<br>em<br>Eletromecânica|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |**Componente Curricular**:SociologiaIV||

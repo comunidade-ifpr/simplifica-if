@@ -614,7 +614,7 @@ O Trabalho de Conclusão de Curso é um componente curricular obrigatório na fo
 
 **Quadro 2** . Matriz Curricular do curso de Engenharia Agronômica.
 
-|||||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ **|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ **|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ **|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ **|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ **|
+|||||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ **|||||
 |---|---|---|---|---|---|---|---|---|
 |||||(Criação Lei nº 11.892 de 29/11/2008)|||||
 |||||_Campus_Ivaiporã|||||
@@ -648,67 +648,67 @@ O Trabalho de Conclusão de Curso é um componente curricular obrigatório na fo
 ||17||Agrometeorologia||C|2|40|40|
 ||||**Subtotal (Total do período)**|||**24**|**480**|**480**|
 
-|**3º Período**|18|Filosofia da Ciência|C|2|40|40|
-|---|---|---|---|---|---|---|
-||19|Fisica|C|4|80|80|
-||20|Introdução a Zootecnia|C|2|40|40|
-||21|Solos I|C|4|80|80|
-||22|Topografia|C|2|40|40|
-||23|Bioquímica|C|2|40|40|
-||24|Manejo e Gestão Ambiental|C|2|40|40|
-||25|Administração<br>e<br>Gestão<br>da<br>Propriedade Rural|C|2|40|40|
-||26|Química analítica|C|4|80|80|
-|||**Subtotal (Total do período)**||**24**|**480**|**480**|
-|**4º Período**|27|Microbiologia|C|4|80|80|
-||28|Estatística básica|C|2|40|40|
-||29|Nutrição e alimentação animal|C|4|80|80|
-||30|Hidrologia e Manejo<br>de Bacias<br>hidrográficas|C|4|80|80|
-||31|Hidráulica Agrícola|C|2|40|40|
-||32|Solos II|C|2|40|40|
-||33|Economia Rural|C|2|40|40|
-||34|Fisiologia Vegetal|C|4|80|80|
-|||**Subtotal (Total do período)**||**24**|**480**|**480**|
-|**5º Período**|35|Genética|C|2|40|40|
-||36|Fertilidade do solo|C|4|80|80|
-||37|Mecanização Agrícola|C|2|40|40|
-||38|Olericultura|C|4|80|80|
-||39|Manejo de Plantas espontâneas|C|4|80|80|
-||40|Saneamento rural|C|2|40|40|
-||41|Silvicultura|C|2|40|40|
-||42|Estatística experimental|C|4|80|80|
-|||**Subtotal (Total do período)**||**24**|**480**|**480**|
+|**3º Período**|18|Filosofia da Ciência|C|2|40|
+|---|---|---|---|---|---|
+||19|Fisica|C|4|80|
+||20|Introdução a Zootecnia|C|2|40|
+||21|Solos I|C|4|80|
+||22|Topografia|C|2|40|
+||23|Bioquímica|C|2|40|
+||24|Manejo e Gestão Ambiental|C|2|40|
+||25|Administração<br>e<br>Gestão<br>da<br>Propriedade Rural|C|2|40|
+||26|Química analítica|C|4|80|
+|||**Subtotal (Total do período)**||**24**|**480**|
+|**4º Período**|27|Microbiologia|C|4|80|
+||28|Estatística básica|C|2|40|
+||29|Nutrição e alimentação animal|C|4|80|
+||30|Hidrologia e Manejo<br>de Bacias<br>hidrográficas|C|4|80|
+||31|Hidráulica Agrícola|C|2|40|
+||32|Solos II|C|2|40|
+||33|Economia Rural|C|2|40|
+||34|Fisiologia Vegetal|C|4|80|
+|||**Subtotal (Total do período)**||**24**|**480**|
+|**5º Período**|35|Genética|C|2|40|
+||36|Fertilidade do solo|C|4|80|
+||37|Mecanização Agrícola|C|2|40|
+||38|Olericultura|C|4|80|
+||39|Manejo de Plantas espontâneas|C|4|80|
+||40|Saneamento rural|C|2|40|
+||41|Silvicultura|C|2|40|
+||42|Estatística experimental|C|4|80|
+|||**Subtotal (Total do período)**||**24**|**480**|
 
-|**6º Período**|43|43|Tecnologia de Produtos de origem<br>vegetal|Tecnologia de Produtos de origem<br>vegetal|C|4|80|80|
-|---|---|---|---|---|---|---|---|---|
-||44||Fitopatologia||C|4|80|80|
-||45||Forragicultura||C|2|40|40|
-||46||Plantas de lavoura I||C|4|80|80|
-||47||Melhoramento de Plantas||C|2|40|40|
-||48||Entomologia agrícola||C|4|80|80|
-||49||Irrigação e Drenagem||C|4|80|80|
-||||**Subtotal (Total do período)**|||**24**|**480**|**480**|
-|**7º Período**|50||Produção de ruminantes||C|4|80|80|
-||51||Plantas de lavoura II||C|4|80|80|
-||52||Manejo e conservação do solo e da<br>água||C|4|80|80|
-||53||Construções rurais e ambiência||C|2|40|40|
-||54||Avaliações e Perícias||C|2|40|40|
-||55||Desenvolvimento Rural||C|2|40|40|
-||56||Optativa I (80h) OU Optativa I (40h)/<br>OptativaII(40h)||C|4|80|80|
-||||**Subtotal (Total do período)**|||**22**|**440**|**440**|
-|**8º Período**||57||Tecnologia de Produtos de Origem<br>Animal|C|4|80|80|
-|||58||Produção de não-ruminantes|C|4|80|80|
-|||59||Tecnologia de Produção de sementes|C|4|80|80|
-|||60||Fruticultura I|C|4|80|80|
-|||61||Trabalho de Conclusão de Curso I|C|2|40|40|
-|||62||Optativa I (80h) OU Optativa I<br>(40h)/ OptativaII(40h)|C|4|80|80|
-|||||**Subtotal (Total do período)**||**22**|**440**|**440**|
-|**9º Período**||63||Fruticultura II|C|4|80|80|
-|||64||Comunicação e Extensão rural|C|4|80|80|
-|||65||Planejamento e Projetos|C|2|40|40|
-|||66||Paisagismo|C|2|40|40|
-|||67||Trabalho de Conclusão de Curso II|C|2|40|40|
-|||68||Optativa III (80h)/Optativa IV (80h)<br>OU Optativa V (40h)/Optativa VI<br>(40h)/Optativa VII (40h)/Optativa<br>VIII (40h)|C|4|160|160|
-|||||**Subtotal (Total do período)**||**18**|**440**|**440**|
+|**6º Período**|43|43|Tecnologia de Produtos de origem<br>vegetal|Tecnologia de Produtos de origem<br>vegetal|C|4|80|
+|---|---|---|---|---|---|---|---|
+||44||Fitopatologia||C|4|80|
+||45||Forragicultura||C|2|40|
+||46||Plantas de lavoura I||C|4|80|
+||47||Melhoramento de Plantas||C|2|40|
+||48||Entomologia agrícola||C|4|80|
+||49||Irrigação e Drenagem||C|4|80|
+||||**Subtotal (Total do período)**|||**24**|**480**|
+|**7º Período**|50||Produção de ruminantes||C|4|80|
+||51||Plantas de lavoura II||C|4|80|
+||52||Manejo e conservação do solo e da<br>água||C|4|80|
+||53||Construções rurais e ambiência||C|2|40|
+||54||Avaliações e Perícias||C|2|40|
+||55||Desenvolvimento Rural||C|2|40|
+||56||Optativa I (80h) OU Optativa I (40h)/<br>OptativaII(40h)||C|4|80|
+||||**Subtotal (Total do período)**|||**22**|**440**|
+|**8º Período**||57||Tecnologia de Produtos de Origem<br>Animal|C|4|80|
+|||58||Produção de não-ruminantes|C|4|80|
+|||59||Tecnologia de Produção de sementes|C|4|80|
+|||60||Fruticultura I|C|4|80|
+|||61||Trabalho de Conclusão de Curso I|C|2|40|
+|||62||Optativa I (80h) OU Optativa I<br>(40h)/ OptativaII(40h)|C|4|80|
+|||||**Subtotal (Total do período)**||**22**|**440**|
+|**9º Período**||63||Fruticultura II|C|4|80|
+|||64||Comunicação e Extensão rural|C|4|80|
+|||65||Planejamento e Projetos|C|2|40|
+|||66||Paisagismo|C|2|40|
+|||67||Trabalho de Conclusão de Curso II|C|2|40|
+|||68||Optativa III (80h)/Optativa IV (80h)<br>OU Optativa V (40h)/Optativa VI<br>(40h)/Optativa VII (40h)/Optativa<br>VIII (40h)|C|4|160|
+|||||**Subtotal (Total do período)**||**18**|**440**|
 
 |**10º Período**|69|Estágio Curricular Supervisionado|ES|8|240|240|
 |---|---|---|---|---|---|---|
@@ -844,13 +844,13 @@ Os componentes curriculares optativos serão ofertados de acordo com a matriz cu
 ||Língua Brasileira de Sinais(Libras)|C|2|40||40|
 ||Ciência Tecnologia e Sociedade|C|2|40||40|
 
-||Tecnologia da Informação e Comunicação em<br>Educação|C|2|40|40|
-|---|---|---|---|---|---|
-||Processos Inclusivos|C|2|40|40|
-||Segurança no trabalho na Agronomia|C|2|40|40|
-||Automação na Agricultura|C|4|80|80|
-||Sistemas Embarcados|C|4|80|80|
-||**Total**|||**1240**|**1240**|
+||Tecnologia da Informação e Comunicação em<br>Educação|C|2|40|
+|---|---|---|---|---|
+||Processos Inclusivos|C|2|40|
+||Segurança no trabalho na Agronomia|C|2|40|
+||Automação na Agricultura|C|4|80|
+||Sistemas Embarcados|C|4|80|
+||**Total**|||**1240**|
 
 ## **3.7 EMENTÁRIO E BIBLIOGRAFIAS**
 
@@ -3957,7 +3957,7 @@ Parágrafo único.  No caso de estágio obrigatório em mais de um local, as hor
 
 ## **ESTUDANTE ESTAGIÁRIO IFPR**
 
-|**ESTUDANTE ESTAGIÁRIO IFPR**|**ESTUDANTE ESTAGIÁRIO IFPR**|**ESTUDANTE ESTAGIÁRIO IFPR**|**ESTUDANTE ESTAGIÁRIO IFPR**|
+|**ESTUDANTE ESTAGIÁRIO IFPR**||||
 |---|---|---|---|
 |NOME:||||
 |CPF:|RG:||DT. NASC.: ____/____/_________|
@@ -3969,7 +3969,7 @@ Parágrafo único.  No caso de estágio obrigatório em mais de um local, as hor
 
 ## **UNIDADE CONCEDENTE DE ESTÁGIO (UCE)**
 
-|**UNIDADE CONCEDENTE DE ESTÁGIO (UCE)**|**UNIDADE CONCEDENTE DE ESTÁGIO (UCE)**|**UNIDADE CONCEDENTE DE ESTÁGIO (UCE)**|
+|**UNIDADE CONCEDENTE DE ESTÁGIO (UCE)**|||
 |---|---|---|
 |RAZÃO SOCIAL:||CNPJ/CPF:|
 |RESPONSÁVEL LEGAL (repetir se for pessoa física):||DOC. (CPF, RG ou SIAPE):|
@@ -3979,7 +3979,7 @@ Parágrafo único.  No caso de estágio obrigatório em mais de um local, as hor
 
 ## **ESTÁGIO**
 
-|**ESTÁGIO**|**ESTÁGIO**|**ESTÁGIO**|**ESTÁGIO**|
+|**ESTÁGIO**||||
 |---|---|---|---|
 |MODALIDADE: (      ) Obrigatório<br>(      ) Não obrigatório||||
 |SUPERVISOR(A) NA UCE:<br>Nome:<br>CPF, RG ou SIAPE:<br>Formação:||PROFESSOR(A) NO IFPR:<br>Nome:<br>SIAPE:<br>Formação:||
@@ -4611,7 +4611,7 @@ Membro 2:
 
 ssssssssss<br>
 
-|CRITÉRIOS DE AVALIAÇÃO|CRITÉRIOS DE AVALIAÇÃO|
+|CRITÉRIOS DE AVALIAÇÃO||
 |---|---|
 |APRESENTAÇÃO ORAL|CONCEITO|
 |controle e organização do tempo;||

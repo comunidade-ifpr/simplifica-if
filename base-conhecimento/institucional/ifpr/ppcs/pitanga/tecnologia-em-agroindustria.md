@@ -843,7 +843,7 @@ FARIAS, R. F. **Introdução a Química Forense.** 3. ed. São Paulo: Átomo, 20
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -879,7 +879,7 @@ FARIAS, R. F. **Introdução a Química Forense.** 3. ed. São Paulo: Átomo, 20
 
 _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**||
 |---|---|
 |**Curso:**|**Eixo Tecnológico:**|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia|
@@ -941,7 +941,7 @@ MADEIRA, M.; FERRAO, M. E. M. **Alimentos conforme a lei.** Rio de Janeiro: Mano
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -970,7 +970,7 @@ ALVES, R. **Filosofia da ciência** : introdução ao jogo e suas regras. 10. ed
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1059,7 +1059,7 @@ BESSLER, K. E. **Química em Tubos de Ensaio: uma Abordagem para principiantes.*
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1091,7 +1091,7 @@ MAXIMIANO, A.C.A. **Fundamentos de Administração** . 2.ed. São Paulo: Atlas, 
 
 ORGANIZAÇÃO DAS COOPERATIVAS BRASILEIRAS. **Manual de Orientação para Constituição e Registro de Cooperativas** . 8ed. Brasília: Sescoop, 2004.
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**||
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**||
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1109,7 +1109,7 @@ BOTELHO, A.; SCHWARCZ, L. M. **Cidadania, um projeto em construção** : minoria
 
 _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1160,7 +1160,7 @@ CARNEIRO, J.; JUNQUEIRA, L. C. **Biologia Celular e Molecular** .9. ed., Rio de 
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br> <br> <br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1196,7 +1196,7 @@ CARNEIRO, J.; JUNQUEIRA, L. C. **Biologia Celular e Molecular** .9. ed., Rio de 
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**||
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1225,7 +1225,7 @@ CARNEIRO, J.; JUNQUEIRA, L. C. **Biologia Celular e Molecular** .9. ed., Rio de 
 |ROSA, G.**Química Analítica**– Práticas de Laboratório. Porto Alegre: Bookman: 2013.|||
 |TRINDADE,D.F._et al_.**Química Básica Experimental.**São Paulo: Icone,2011.|||
 
-|**Campus Pitanga do IFPR**|**Campus Pitanga do IFPR**|
+|**Campus Pitanga do IFPR**||
 |---|---|
 |**Curso:**|**Eixo Tecnológico:**|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia|
@@ -1253,7 +1253,7 @@ ALVES, R. E.; FILGUEIRAS, H. A. C.; RAMOS, V. H. V. EMPRESA BRASILEIRA DE PESQUI
 
 LUENGO, R. F. A.; CALBO, A. G. **Pós-colheita de hortaliças:** o produtor pergunta, a Embrapa responde. Brasília, DF: Embrapa Informação Tecnológica, 2011. MEDINA, J. C. **Banana: cultura, matéria-prima, processamento e aspectos econômicos.** 2º edição Campinas: ITAL, 1985. OETTERER, M.; REGITANO-D'ARCE, M.A.B; SPOTO, M.H.F. **Fundamentos de ciência e tecnologia de alimentos.** Barueri: Manole, 2006.
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|<br> <br> <br> <br>|
+|**_Campus_ Pitanga do IFPR**||<br> <br> <br> <br>|
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**||
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1291,7 +1291,7 @@ LUENGO, R. F. A.; CALBO, A. G. **Pós-colheita de hortaliças:** o produtor perg
 
 ## **Campus Pitanga do IFPR**
 
-|**Campus Pitanga do IFPR**|**Campus Pitanga do IFPR**|**Campus Pitanga do IFPR**|
+|**Campus Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1371,7 +1371,7 @@ CASS, Q. B.; DEGANI, A. L. G. **Desenvolvimento de métodos por HPLC:** fundamen
 
 _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1468,7 +1468,7 @@ LAWRIE, R. A. **Ciência da carne** . 6ª ed, São Paulo, Artmed, 2005, 384p. GE
 
 _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br> <br> <br> <br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1505,7 +1505,7 @@ _**Campus**_ **Pitanga do IFPR**
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1618,7 +1618,7 @@ AQUARONE, E.; BORZANI, W.; SCHMIDELL, W. LIMA, U.A. **Biotecnologia industrial.*
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1673,7 +1673,7 @@ BRETHERTON, Caroline. **Pães e outras delícias: passo a passo** . São Paulo: 
 
 ## _**Campus**_ **Pitanga do IFPR**
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|
+|**_Campus_ Pitanga do IFPR**|||
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**|<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>|
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -1724,7 +1724,7 @@ NEVES, L. F., Castro, L. T., **Marketing e estratégia em Agronegócios e Alimen
 
 ALMEIDA, T. C. A. _et al_ . **Avanços em análise sensorial = Avances en análisis sensorial** . São Paulo: Varela, 1999. 286 p. **ANÁLISE SENSORIAL: estudos com consumidores.** Viçosa, MG: UFV, 2006. ARAÚJO, M. J., **Fundamentos de Agronegócios** , 2ªed. Ed. Atlas, 2005, São Paulo. ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. **Métodos de análise sensorial dos alimentos e bebidas [NBR 12994]** . Rio de Janeiro, RJ: ABNT, 1993. CHENG, L. C., **QFD: Desdobramento da Função Qualidade na Gestão de Desenvolvimento de Produto** , Ed. Blucher, 2007, São Paulo.
 
-|**_Campus_ Pitanga do IFPR**|**_Campus_ Pitanga do IFPR**|<br> <br> <br> <br> <br>|
+|**_Campus_ Pitanga do IFPR**||<br> <br> <br> <br> <br>|
 |---|---|---|
 |**Curso:**|**Eixo Tecnológico:**||
 |Superior de Tecnologia em Agroindústria|Produção Alimentícia||
@@ -2560,27 +2560,27 @@ A seguir são apresentadas as justificativa da necessidade dos docentes da área
 |Análise<br>Físico-Química<br>de Alimentos|67h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
 |Matéria<br>prima<br>agroindustrial|67h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
 
-|Microbiologia<br>de<br>Alimentos|67h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
-|---|---|---|---|---|---|---|
-|Logística*|33h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
-|Análise Instrumental de<br>Alimentos|67h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
-|Operações Unitárias na<br>Agroindústria|67h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
-|Tecnologia de grãos e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
-|Marketing*|33h|Tenologia<br>em<br>Agroindústria|0|1|1|1|
-|Tecnologia de carnes e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Tecnologia de frutas e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Planejamento e controle<br>de produção|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Projetos de Instalações<br>industriais agroindustriais|33h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Análise de viabilidade de<br>empreendimentos|33h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Controle de Qualidade*|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Projeto Integrador I|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Tecnologia de leite e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Tecnologia de bebidas e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Massas, Pães e Farináceos|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Empreendedorismo*|33h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Análise Sensorial|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Embalagens|33h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
-|Projeto Integrador II|67h|Tenologia<br>em<br>Agroindústria|0|0|1|1|
+|Microbiologia<br>de<br>Alimentos|67h|Tenologia<br>em<br>Agroindústria|0|1|1|
+|---|---|---|---|---|---|
+|Logística*|33h|Tenologia<br>em<br>Agroindústria|0|1|1|
+|Análise Instrumental de<br>Alimentos|67h|Tenologia<br>em<br>Agroindústria|0|1|1|
+|Operações Unitárias na<br>Agroindústria|67h|Tenologia<br>em<br>Agroindústria|0|1|1|
+|Tecnologia de grãos e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|1|1|
+|Marketing*|33h|Tenologia<br>em<br>Agroindústria|0|1|1|
+|Tecnologia de carnes e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Tecnologia de frutas e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Planejamento e controle<br>de produção|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Projetos de Instalações<br>industriais agroindustriais|33h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Análise de viabilidade de<br>empreendimentos|33h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Controle de Qualidade*|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Projeto Integrador I|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Tecnologia de leite e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Tecnologia de bebidas e<br>derivados|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Massas, Pães e Farináceos|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Empreendedorismo*|33h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Análise Sensorial|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Embalagens|33h|Tenologia<br>em<br>Agroindústria|0|0|1|
+|Projeto Integrador II|67h|Tenologia<br>em<br>Agroindústria|0|0|1|
 
 **Tabela 14** : Componentes curriculares dos docentes com formação em Engenharia de Produção/Tecnologia em Agroindústria e Engenharia de Alimentos. * Componentes curriculares a serem ministrados exclusivamente por engenheiro de produção. ** Não foram contabilizadas turmas em regime de dependência.
 
@@ -2619,7 +2619,7 @@ O _Campus_ não conta com profissionais formados em Engenharia de Produção/Tec
 
 **Tabela 15:** Descrição de equipamentos necessários para o curso de Tecnologia em Agroindústria.
 
-||INVESTIMENTO NECESSÁRIO(R$)|INVESTIMENTO NECESSÁRIO(R$)|
+||INVESTIMENTO NECESSÁRIO(R$)||
 |---|---|---|
 |ANO|||
 ||CUSTEIO|CAPITAL|
@@ -2842,7 +2842,7 @@ Art.15 Os casos omissos serão resolvidos pela coordenação de estágio, cabend
 
 ## **TERMO DE COMPROMISSO DE ESTÁGIO NÃO OBRIGATÓRIO CELEBRADO ENTRE O ESTUDANTE DO IFPR E A PARTE CONCEDENTE**
 
-||A<br>_____________________________________________________________________________________________,|A<br>_____________________________________________________________________________________________,|A<br>_____________________________________________________________________________________________,|A<br>_____________________________________________________________________________________________,|
+||A<br>_____________________________________________________________________________________________,||||
 |---|---|---|---|---|
 |sediada|à<br>Rua|________________________________________________________<br>,<br>n°<br>_______,<br>Cidade|||
 |______________________,|||CEP|________________,<br>CNPJ<br>__________________________________,<br>Fone|

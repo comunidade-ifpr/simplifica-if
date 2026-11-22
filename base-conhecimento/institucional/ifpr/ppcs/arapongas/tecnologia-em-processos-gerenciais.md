@@ -1033,7 +1033,7 @@ Ministerio da Educacao
 
 Além da legislação emanada dos órgãos competentes, a organização curricular baseia-se em dados e levantamentos realizados no sentido de identificar a demanda profissional para o mundo do trabalho em nível nacional e, principalmente, em nível regional. Assim, a partir das discussões do Colegiado de Tecnologia em Processos Gerenciais, e diante desta contextualização, apresenta-se a seguir a organização curricular do Curso:
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||Câmpus Avançado Arapongas|||||
@@ -1165,7 +1165,7 @@ A diversidade de atividades extensionistas visa proporcionar experiências varia
 
 O quadro a seguir  lista as atividade de extensão que podem ser desenvolvidos ao longo do curso:
 
-|**Atividades curriculares de Extensão (AE) oferecidas no curso**|**Atividades curriculares de Extensão (AE) oferecidas no curso**|**Atividades curriculares de Extensão (AE) oferecidas no curso**|
+|**Atividades curriculares de Extensão (AE) oferecidas no curso**|||
 |---|---|---|
 |**Nome da atividade**|**Carga horária atribuída**|**Carga horária**<br>**limite**|
 |Projeto Integrador|100 horas por semestre|300 horas|
@@ -1331,10 +1331,10 @@ EMENTA:
 
 Estudo e aplicação de conceitos matemáticos fundamentais no contexto da gestão. Operações com números reais, porcentagens, razões, proporções e regra de três. **Noções de funções** (afim, quadrática e exponencial) aplicadas à resolução de problemas gerenciais. **Matemática financeira:** juros simples e compostos, descontos, Sistemas de amortização e Séries de pagamentos, análise de investimentos. **Estatística descritiva:** medidas de tendência central, medidas de dispersão, organização e interpretação de dados. **Introdução à probabilidade:** conceitos básicos, espaços amostrais, eventos, aplicações da probabilidade no contexto empresarial. Aplicação dos conteúdos na resolução de problemas práticos, apoio à tomada de decisão e desenvolvimento de raciocínio lógico e quantitativo no ambiente organizacional.
 
-|BIBLIOGRAFIA  BÁSICA:|BIBLIOGRAFIA  BÁSICA:|||
+|BIBLIOGRAFIA  BÁSICA:||||
 |---|---|---|---|
 |IEZZI, Gelson; MURAkAMI, Carlos. Fundamentos da Matemática Elementar, Volume 1,||IEZZI, Gelson; MURAkAMI, Carlos. Fundamentos da Matemática Elementar, Volume 1,||
-|Funções, São Paulo: Editora Atual, 8ª Edição, 2004|Funções, São Paulo: Editora Atual, 8ª Edição, 2004|||
+|Funções, São Paulo: Editora Atual, 8ª Edição, 2004||||
 |LIMA, Elon Lages et al. A matemática do ensino médio, v. 1; 11. ed. Rio de Janeiro: Sociedade||||
 |Brasileira de Matemática, 2016.||Brasileira de Matemática, 2016.||
 |IEZZI, Gelson; HAZZAN, Samuel; DEGENSZAJN, David Mauro. Fundamentos de matemática||||
@@ -1345,7 +1345,7 @@ Estudo e aplicação de conceitos matemáticos fundamentais no contexto da gest�
 |Paulo: Atual, c2004.||||
 |Dantas, CAB. Probabilidade: um curso introdutório. São Paulo: EDUSP, 2008.|||Dantas, CAB. Probabilidade: um curso introdutório. São Paulo: EDUSP, 2008.|
 |Morettin, LG. Estatística básica: probabilidade e inferência. São Paulo: Pearson, 2010.||||
-|TAHAN, Malba; TAHAN, Malba. Matemática divertida e curiosa. 25. ed. Rio de Janeiro:|TAHAN, Malba; TAHAN, Malba. Matemática divertida e curiosa. 25. ed. Rio de Janeiro:|||
+|TAHAN, Malba; TAHAN, Malba. Matemática divertida e curiosa. 25. ed. Rio de Janeiro:||||
 |Record, 2008.||||
 
 63
@@ -1470,12 +1470,12 @@ Ministerio da Educacao
 
 INSTITUTOFEDERAL Parana Ministerio da Educacao BIBLIOGRAFIA COMPLEMENTAR: BIRKINSHAW, J. M.; MARK, K. **25 ferramentas de gestão:** inclui estratégia do oceano azul, design thinking, startup enxuta, inovação aberta, inteligência emocional, dentre outras. Rio de Janeiro: Alta Books, 2020. BUSATO, L. H. **Atores, políticas e fomento à inovação-SNI:** lei da inovação, incentivos, venture, capital, anjos, incubadoras, aceleradoras, startups. Curitiba: Contentus, 2020. E-book (Biblioteca Virtual Pearson). FABRETE, T. C. L. **Empreendedorismo.** São Paulo: Pearson, 2019. E-book (Biblioteca Virtual Pearson). OSTERWALDER, A.; PIGNEUR, Y. **Business model generation:** inovação em modelos de negócios : um manual para visionários, inovadores e revolucionários. Rio de Janeiro: Alta Books, 2011.
 
-|COMPONENTE CURRICULAR:**Inteligência de Negócios**|COMPONENTE CURRICULAR:**Inteligência de Negócios**|COMPONENTE CURRICULAR:**Inteligência de Negócios**|
+|COMPONENTE CURRICULAR:**Inteligência de Negócios**|||
 |---|---|---|
 |CARGA HORÁRIA TOTAL: 80 horas-aula / 60 horas-relógio|||
 |EMENTA:|||
 |ESTATÍSTICA BÁSICA: Medidas de tendência central, dispersão e probabilidade aplicadas à|||
-|análise de dados. FUNDAMENTO DE BUSINESS INTELLIGENCE (BI): Fundamentos.|análise de dados. FUNDAMENTO DE BUSINESS INTELLIGENCE (BI): Fundamentos.|análise de dados. FUNDAMENTO DE BUSINESS INTELLIGENCE (BI): Fundamentos.|
+|análise de dados. FUNDAMENTO DE BUSINESS INTELLIGENCE (BI): Fundamentos.|||
 |Desenvolvimento de painéis interativos, gráficos e relatórios. Elaboração de relatórios||Desenvolvimento de painéis interativos, gráficos e relatórios. Elaboração de relatórios|
 |gerenciais. Uso de dados para suporte à gestão e inovação nos negócios.|||
 |BIBLIOGRAFIA  BÁSICA:|||
@@ -1618,7 +1618,7 @@ Ministerio da Educacao
 
 ## **4º semestre**
 
-|COMPONENTE CURRICULAR:**Administração Financeira**|COMPONENTE CURRICULAR:**Administração Financeira**|COMPONENTE CURRICULAR:**Administração Financeira**|COMPONENTE CURRICULAR:**Administração Financeira**|COMPONENTE CURRICULAR:**Administração Financeira**|COMPONENTE CURRICULAR:**Administração Financeira**||||
+|COMPONENTE CURRICULAR:**Administração Financeira**|||||||||
 |---|---|---|---|---|---|---|---|---|
 |CARGA HORÁRIA TOTAL: 80 horas-aula / 60 horas-relógio||CARGA HORÁRIA TOTAL: 80 horas-aula / 60 horas-relógio|||||||
 |EMENTA:|||||||||
@@ -1843,7 +1843,7 @@ COMPONENTE CURRICULAR: **Bem-Estar Organizacional: Estratégias para um Ambiente
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana|||||Ministerio da Educacao|
 |---|---|---|---|---|---|
 |contribuir para ambientes mais saudáveis e colaborativos.||||||
 |BIBLIOGRAFIA  BÁSICA:||||||
@@ -3049,7 +3049,7 @@ Quadro I – Atividades Complementares e Carga Horária
 
 **GRUPO I – ATIVIDADES DE COMPLEMENTAÇÃO DA FORMAÇÃO SOCIAL, HUMANA E CULTURAL**
 
-|**GRUPO I – ATIVIDADES DE COMPLEMENTAÇÃO DA FORMAÇÃO SOCIAL, HUMANA E**<br>**CULTURAL**|**GRUPO I – ATIVIDADES DE COMPLEMENTAÇÃO DA FORMAÇÃO SOCIAL, HUMANA E**<br>**CULTURAL**|
+|**GRUPO I – ATIVIDADES DE COMPLEMENTAÇÃO DA FORMAÇÃO SOCIAL, HUMANA E**<br>**CULTURAL**||
 |---|---|
 |**ATIVIDADE**|**PONTOS**|
 |1.1. Atividades esportivas - participação efetivas nas atividades esportivas<br>(ex.: academia, basquete, vôlei, tênis, natação, assessoria esportiva de<br>corrida, escola de futebol e outras).|0,1 ponto/hora<br>(limitado a 10 pontos)|
@@ -3067,7 +3067,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**GRUPO 2 – ATIVIDADES DE CUNHO COMUNITÁRIO E DE INTERESSE COLETIVO**|**GRUPO 2 – ATIVIDADES DE CUNHO COMUNITÁRIO E DE INTERESSE COLETIVO**|
+|**GRUPO 2 – ATIVIDADES DE CUNHO COMUNITÁRIO E DE INTERESSE COLETIVO**||
 |---|---|
 |2.1 Diretórios acadêmicos, entidades de classe, conselhos e colegiados de<br>curso|10 pontos/semestre|
 |2.2 Participação em Movimento Estudantil|5 pontos/semestre|
@@ -3163,7 +3163,7 @@ Ministerio da Educacao<br>
 
 **Quadro 1** - Atividades de extensão e carga horária
 
-|**Atividades curriculares de Extensão (AE) oferecidas no curso**|**Atividades curriculares de Extensão (AE) oferecidas no curso**|**Atividades curriculares de Extensão (AE) oferecidas no curso**|
+|**Atividades curriculares de Extensão (AE) oferecidas no curso**|||
 |---|---|---|
 |**Nome da atividade**|**Carga horária**<br>**atribuída**|**Carga horária**<br>**limite**|
 |Projeto Integrador|100 horas por semestre|300 horas|

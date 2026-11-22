@@ -24,7 +24,6 @@ import { type Elemento, elementosDoDocumento, type Tabela, temTexto } from "@sim
 import { type ComponenteDoEmentario, extrairComponenteDoEmentario } from "./ementario.ts";
 import { inserirBlocoNaSecao, type RepresentacaoGrafica, resolverRepresentacaoGrafica } from "./figura.ts";
 import { extrairDadosDeIdentificacao } from "./identificacao-tabelas.ts";
-import type { NormalizarTabela } from "@simplifica-if/docx/markdown";
 import { type LimitesDeTexto, Orcamento } from "@simplifica-if/docx/orcamento";
 import { escreverMarkdown } from "./markdown.ts";
 import {
@@ -41,7 +40,7 @@ import { lerPacote } from "@simplifica-if/docx/leitor";
 import type { PropriedadesOoxml } from "@simplifica-if/docx/modelo";
 import { LIMITES_PADRAO, type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes, type Secao } from "./secoes.ts";
-import { colunasDaTabela, normalizarTabela, type TabelaNormalizada } from "@simplifica-if/docx/tabelas";
+import { colunasDaTabela, type FormasDaTabela, formasDaTabela } from "@simplifica-if/docx/tabelas";
 
 export type OpcoesConversao = {
   /** Instante da conversão (`data_conversao`); quem chama passa o relógio da rodada. */
@@ -134,15 +133,21 @@ type DadosExtraidos = {
   ementario: ComponenteDoEmentario[];
 };
 
-function extrairDados(elementos: Elemento[], secoes: Secao[], normalizar: NormalizarTabela): DadosExtraidos {
+function extrairDados(
+  elementos: Elemento[],
+  secoes: Secao[],
+  formas: (tabela: Tabela) => FormasDaTabela,
+): DadosExtraidos {
   const identificacao = dicasDeIdentificacao(secoes);
   const ementario: ComponenteDoEmentario[] = [];
   let matriz: Matriz | null = null;
   const genericas: MatrizGenerica[] = [];
   for (const elemento of elementos) {
     if (elemento.tipo !== "tabela") continue;
-    const tabela = normalizar(elemento);
-    const componente = extrairComponenteDoEmentario(tabela);
+    // O ementário lê a forma de leitura (o quadro de uma coluna mesclada sobre a grade toda vira
+    // uma coluna só); a matriz e a identificação, a repetida.
+    const { leitura, repetida: tabela } = formas(elemento);
+    const componente = extrairComponenteDoEmentario(leitura);
     if (componente) {
       ementario.push(componente);
       continue;
@@ -235,18 +240,17 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
   }
   const orcamento = new Orcamento(opcoes.limitesDeTexto);
   orcamento.conferirElementos(elementos);
-  // Cada tabela é normalizada uma vez (a extração dos dados e o Markdown usam a mesma grade), e o
-  // texto dela, com as repetições das mesclas, sai do orçamento do documento.
-  const normalizadas = new Map<Tabela, TabelaNormalizada>();
-  const normalizarTabelaUmaVez: NormalizarTabela = (tabela) => {
-    let normalizada = normalizadas.get(tabela);
-    if (!normalizada) {
-      normalizadas.set(tabela, (normalizada = normalizarTabela(tabela, (caracteres) => orcamento.gastar(caracteres))));
-    }
-    return normalizada;
+  // Cada tabela é normalizada uma vez (a extração dos dados e o Markdown usam as mesmas formas), e
+  // o texto dela, com as repetições das mesclas, sai do orçamento do documento.
+  const normalizadas = new Map<Tabela, FormasDaTabela>();
+  const formasUmaVez = (tabela: Tabela) => {
+    let formas = normalizadas.get(tabela);
+    if (!formas)
+      normalizadas.set(tabela, (formas = formasDaTabela(tabela, (caracteres) => orcamento.gastar(caracteres))));
+    return formas;
   };
   const secoes = detectarSecoes(elementos);
-  const extraidos = extrairDados(elementos, secoes, normalizarTabelaUmaVez);
+  const extraidos = extrairDados(elementos, secoes, formasUmaVez);
   const representacaoGrafica = resolverRepresentacaoGrafica(secoes, pacote);
 
   const normalizar = (bruto: string) => {
@@ -256,7 +260,7 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
       : resultado.markdownNormalizado;
     return { markdownBruto: resultado.markdownBruto, markdown };
   };
-  const bruto = escreverMarkdown(elementos, secoes, normalizarTabelaUmaVez);
+  const bruto = escreverMarkdown(elementos, secoes, (tabela) => formasUmaVez(tabela).leitura);
   // O Markdown gerado também sai do orçamento, antes de ser normalizado.
   new Orcamento(opcoes.limitesDeTexto).gastar(bruto.length);
   let textos = normalizar(bruto);

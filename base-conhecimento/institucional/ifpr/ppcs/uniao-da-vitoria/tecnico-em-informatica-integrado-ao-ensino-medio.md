@@ -799,7 +799,7 @@ Cabe explicitar que as Oficinas Integradoras e Linguagens: corporal, verbal e ar
 
 integradas, aqui nomeadas como colegiadas, foram assim classificadas por serem componentes curriculares nas quais os docentes nelas envolvidos, conforme a quantidade especificada em cada uma delas, trabalham de forma conjunta nas mesmas, não há divisão de carga horária, ou seja, para que os docentes efetivamente se dediquem de forma integral ao componente e em seu planejamento, cada um deles terá a mesma carga horária disponibilizada em seu plano de trabalho docente. Se o componente for de quarenta horas-aula, cada um dos cinco docentes envolvidos receberá esta carga horária correspondente, e não apenas parcela. Essa característica foi estabelecida visto a experiência já vivida no campus em um componente curricular semelhante. Apenas no início de cada ano, dentre os docentes envolvidos, apenas um será responsável por  a realizar os registros oficiais no SIGAA.
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||
 |||_Campus União da Vitória_|||||
@@ -2247,7 +2247,7 @@ RAZÃO SOCIAL: CNPJ/CPF: E-MAIL: TEL: ( )
 
 Período de realização
 
-|**REGISTRO DE FREQUÊNCIA**|**REGISTRO DE FREQUÊNCIA**|**REGISTRO DE FREQUÊNCIA**|
+|**REGISTRO DE FREQUÊNCIA**|||
 |---|---|---|
 |Período de realização|||
 |Início||Fim|

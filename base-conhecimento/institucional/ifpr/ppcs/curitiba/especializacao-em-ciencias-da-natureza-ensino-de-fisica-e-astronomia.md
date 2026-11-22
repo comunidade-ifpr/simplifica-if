@@ -256,7 +256,7 @@ INSTITUTOFEDERAL Parana
 
 Carga Horária Total das Componentes Curriculares: **28 créditos / 420 h**
 
-|**QUADRO 1**|**QUADRO 1**|**QUADRO 1**|**QUADRO 1**|
+|**QUADRO 1**||||
 |---|---|---|---|
 |**Componentes**<br>**Curriculares**|**Horas/Créditos**|**Carga horária**<br>**presencial**|**Carga horária**<br>**assíncrona**|
 |**Obrigatórias**|360h / 24créditos|228h (63%)|132 h (37%)|

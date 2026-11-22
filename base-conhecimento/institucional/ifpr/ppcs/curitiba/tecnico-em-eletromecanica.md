@@ -533,7 +533,7 @@ A prática Profissional ocorrerá em diferentes situações de vivência, aprend
 
 Os componentes curriculares do curso técnico em Eletromecânica são apresentados a seguir.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e<br>Processos Industriais|
 |**Componente Curricular:**Desenho Técnico||

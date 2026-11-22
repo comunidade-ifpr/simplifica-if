@@ -82,7 +82,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 ## **RESOLUÇÃO DE CRIAÇÃO: Resolução Nº 14, de 31 de Julho de 2015.**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Giancarlo Zuchetto Belmonte|
@@ -843,7 +843,7 @@ Dessa forma, permeando todo o currículo e atendendo a legislação vigente est�
 
 ## **6.14 MATRIZ CURRICULAR**
 
-|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**|
+|**Matriz curricular do Curso Técnico em Informática,**<br>**integrado ao ensino médio**||||
 |---|---|---|---|
 |**Ano de implantação: 2019**||||
 |**Componente Curricular**|**1º ano**<br>**(h/r)**|**1º ano**<br>**(h/a)**|**Nº aula semanal**<br>**(50 min)**|
@@ -931,7 +931,7 @@ Dessa forma, permeando todo o currículo e atendendo a legislação vigente est�
 
 44 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Arte I|||
@@ -967,7 +967,7 @@ Dessa forma, permeando todo o currículo e atendendo a legislação vigente est�
 
 46 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |Componente Curricular: Biologia I|||
@@ -1007,7 +1007,7 @@ Dessa forma, permeando todo o currículo e atendendo a legislação vigente est�
 
 48 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |Componente Curricular: Educação Física I|||
@@ -1049,7 +1049,7 @@ Saber mítico: o mito como explicação de mundo dos povos da região que formar
 
 51 de 157
 
-|Heráclito e o surgimento da lógica; lógica: princípios e critérios para o pensar racional;|Heráclito e o surgimento da lógica; lógica: princípios e critérios para o pensar racional;|Heráclito e o surgimento da lógica; lógica: princípios e critérios para o pensar racional;|
+|Heráclito e o surgimento da lógica; lógica: princípios e critérios para o pensar racional;|||
 |---|---|---|
 |lógica tradicional; lógica matemática/simbólica.|||
 |**Bibliografa Básica:**|||
@@ -1076,7 +1076,7 @@ Saber mítico: o mito como explicação de mundo dos povos da região que formar
 
 52 de 157
 
-|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |Componente Curricular: Física I||
@@ -1109,7 +1109,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 54 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |Componente Curricular: Geografa I|||
@@ -1123,7 +1123,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 55 de 157
 
-|**Bibliografa Complementar:**|**Bibliografa Complementar:**||||
+|**Bibliografa Complementar:**|||||
 |---|---|---|---|---|
 |1.|MENDONÇA, Francisco. **Geografa física: ciência **|**humana?**.||8. ed. São Paulo:|
 ||Contexto, 2014. (Repensando a Geografa)||||
@@ -1141,7 +1141,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 56 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |Componente curricular: História I|||
@@ -1164,7 +1164,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 ||**privada na América portuguesa**. São Paulo: Companhia das Letras, 1997. (vol.|
 ||1).|
 
-|**Bibliografa Complementar:**|**Bibliografa Complementar:**||
+|**Bibliografa Complementar:**|||
 |---|---|---|
 |1.|GINZBURG, C..**O queijo e os vermes.**São Paulo: Companhia das Letras, 1988.||
 |2.|HOLANDA, S.B. de.**Raízes do Brasil.**14 ed. Rio de Janeiro: José Olympio, 1981.||
@@ -1475,7 +1475,7 @@ _**CAMPUS**_ **AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**
 
 Lógica de programação. Fundamentos de construção de algoritmos e programas. Algoritmos: conceito, variáveis, constantes, operadores (lógicos, aritméticos e relacionais) e expressões, estruturas de controle (atribuição, sequência, seleção, repetição, recursão), dados estruturados (vetores, matrizes, registros). Subprogramas. Parâmetros. Variáveis locais e globais. Funções. Recursividade.
 
-|**Bibliografa Básica:**|**Bibliografa Básica:**||
+|**Bibliografa Básica:**|||
 |---|---|---|
 |1.|CORMEN, T. H.;LEISERSON, C. E.; RIVEST,|R. L.; STEIN, C. **Algoritmos:** teoria e|
 ||prática. 3. ed. Rio de Janeiro: Elsevier, 2012.||
@@ -1509,7 +1509,7 @@ Lógica de programação. Fundamentos de construção de algoritmos e programas.
 
 72 de 157
 
-|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Sistemas Operacionais||
@@ -1590,7 +1590,7 @@ Os temas transversais serão abordados ao longo do desenvolvimento dos conteúdo
 
 76 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Filosofa II|||
@@ -1623,7 +1623,7 @@ Os temas transversais serão abordados ao longo do desenvolvimento dos conteúdo
 
 78 de 157
 
-|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Física II||
@@ -1651,7 +1651,7 @@ Os temas transversais serão abordados ao longo do desenvolvimento dos conteúdo
 
 80 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Geografa II|||
@@ -1681,7 +1681,7 @@ Os temas transversais serão abordados ao longo do desenvolvimento dos conteúdo
 
 82 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**História II|||
@@ -1763,7 +1763,7 @@ Sensibilização para o conhecimento de si mesmo e do Outro, em diferentes forma
 
 86 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Língua Portuguesa e Literatura Brasileira II|||
@@ -1777,7 +1777,7 @@ Sensibilização para o conhecimento de si mesmo e do Outro, em diferentes forma
 
 87 de 157
 
-|2.|BECHARA, Evanildo. **Gramática Escolar da Língua Portuguesa**. Rio de Janeiro:|BECHARA, Evanildo. **Gramática Escolar da Língua Portuguesa**. Rio de Janeiro:|
+|2.|BECHARA, Evanildo. **Gramática Escolar da Língua Portuguesa**. Rio de Janeiro:||
 |---|---|---|
 ||Nova Fronteira, 2010.||
 |3.|BOSI, A. **História concisa da literatura brasileira**. 48. ed. São Paulo: Cultrix,||
@@ -2037,7 +2037,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 98 de 157
 
-|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Engenharia de Software||
@@ -2070,7 +2070,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 100 de 157
 
-|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Algoritmos e Estrutura de Dados II||
@@ -2282,7 +2282,7 @@ As Atividades corporais e intelectuais dentro dos conteúdos globais da Educaç�
 
 110 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Filosofa III|||
@@ -2318,7 +2318,7 @@ As Atividades corporais e intelectuais dentro dos conteúdos globais da Educaç�
 
 112 de 157
 
-|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**CAMPUS AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Física III||
@@ -2405,7 +2405,7 @@ Os temas transversais podem ser abordados em todo o conjunto dos conteúdos, de 
 
 117 de 157
 
-|4.|FAUSTO, B.**História do Brasil**. 14. ed. São Paulo: Editora Edusp, 2012.|FAUSTO, B.**História do Brasil**. 14. ed. São Paulo: Editora Edusp, 2012.|
+|4.|FAUSTO, B.**História do Brasil**. 14. ed. São Paulo: Editora Edusp, 2012.||
 |---|---|---|
 |5.|HOBSBAWM, Eric. **A era dos extremos: o breve século XX. **|**1914-1991**. São|
 ||Paulo: Companhia das Letras, 1995.||
@@ -2426,7 +2426,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 118 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Língua Estrangeira Moderna III – Inglês||
@@ -2440,7 +2440,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 119 de 157
 
-|2.|CRUZ, D. T.; SILVA, A.V.; ROSAS, M. **Inglês.com.textos para informática.**|CRUZ, D. T.; SILVA, A.V.; ROSAS, M. **Inglês.com.textos para informática.**|
+|2.|CRUZ, D. T.; SILVA, A.V.; ROSAS, M. **Inglês.com.textos para informática.**||
 |---|---|---|
 ||Salvador, Disal Editora, 2001.||
 |3.|MARQUES, Amadeu.**Inglês para o ENEM**. 1.ed. São Paulo: Disal, 2015.||
@@ -2468,7 +2468,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 120 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Língua Portuguesa e Literatura Brasileira III||
@@ -2684,7 +2684,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 130 de 157
 
-|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Educação Empreendedora e Inovação||
@@ -2714,7 +2714,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 132 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Desenvolvimento para Dispositivos Móveis|||
@@ -2724,7 +2724,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 |**Bibliografa Básica:**|||
 |1.<br>DEITEL, P.; DEITEL, H.; DEITEL, A. **Android:** Como Programar. 2. ed. Porto<br>Alegre: Bookman, 2015.<br>2.<br>DEITEL, P.; DEITEL, H.; WALD, A. **Android 6 para Programadores:** uma<br>abordagem baseada em aplicativos. 3.ed. Porto Alegre: Bookman, 2016.<br>3.<br>GLAUBER, N.**Dominando o Android.**2.ed. São Paulo: Novatec, 2015.<br>4.<br>LECHETA, Ricardo R.**Google Android.**3. ed. São Paulo: Novatec, 2013.<br>5.<br>LECHETA, Ricardo R.**Android Essencial.**São Paulo: Novatec, 2016.|||
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|||
 |---|---|---|
 |**Curso:**<br>Técnico em Informática||**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Desenvolvimento para Dispositivos Móveis|||
@@ -2754,7 +2754,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 134 de 157
 
-|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**|
+|**_CAMPUS_ AVANÇADO DE QUEDAS DO IGUAÇU DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Projeto Final Interdisciplinar||
@@ -2784,7 +2784,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 136 de 157
 
-|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**|
+|**CAMPUS Avançado Quedas do Iguaçu DO IFPR**||
 |---|---|
 |**Curso:**<br>Técnico em Informática|**Eixo Tecnológico:**<br>Informação e Comunicação|
 |**Componente Curricular:**Redes de Computadores||
@@ -2800,7 +2800,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR | CEP 82530-230 - Br
 
 5. THOMPSON, M. A. **Microsoft Windows Server 2016** : Fundamentos. São Paulo: Érica, 2017
 
-|**Bibliografa Complementar:**|**Bibliografa Complementar:**||
+|**Bibliografa Complementar:**|||
 |---|---|---|
 |1.|FELIPPETTI, M. A. **Cisco CCNA 6.0:** guia de estudo completo. Florianópolis:||
 ||Visual Books, 2017.||
@@ -2866,7 +2866,7 @@ Além disso, em respeito à Lei 12.764/2012, haverá o direito de acompanhamento
 
 As tabelas a seguir descrevem o pessoal docente e técnico-administrativo, necessários ao funcionamento do Curso Técnico em Informática.
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANT.**|**PERFIL DE FORMAÇÃO**|
 |02|Licenciatura em Matemática|
@@ -2883,7 +2883,7 @@ As tabelas a seguir descrevem o pessoal docente e técnico-administrativo, neces
 |01|Licenciatura em Geografa|
 |01|Graduação em Ciência da Computação|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**QUANT.**|**CARGO**|
 |01|Assistente de Alunos|

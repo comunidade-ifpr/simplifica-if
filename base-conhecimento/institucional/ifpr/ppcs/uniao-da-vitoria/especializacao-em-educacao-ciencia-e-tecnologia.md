@@ -46,7 +46,7 @@ MINISTÉRIO DA EDUCAÇÃO INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA
 |2.13 Carga horária total do curso|||||||||
 |360 horas|||||||||
 
-|**QUADRO 1**|**QUADRO 1**|**QUADRO 1**|**QUADRO 1**|
+|**QUADRO 1**||||
 |---|---|---|---|
 |**Componentes**|**Horas/Créditos**|**EAD**|**porcentagem da**<br>**carga horária a**<br>**distância**|
 |Componente Curricular<br>Obrigatório|300 horas/ 20 créditos|—|—|
@@ -174,7 +174,7 @@ formação profissional nas áreas de ensino, promovendo a atualização curricu
 
 Ao concluírem o curso, espera-se que os profissionais formados adquiram a capacidade para refletir sobre a teoria e prática, possam elaborar novas estratégias e processos de entender, questionar e utilizar os conhecimentos científicos e tecnológicos, a fim de contribuir para melhoria do processo de ensino/aprendizagem em seus diversos níveis **.**
 
-|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|
+|**11. RELAÇÃO DO CORPO DOCENTE**||||||
 |---|---|---|---|---|---|
 |**Nome Completo**|**Formação**<br>**Acadêmica**|**Maior grau de**<br>**Titulação**|**Docente efetivo/**<br>**colaborador**|**Componente Curricular**|**Carga-**<br>**horária**|
 |Alex Mateus Porn|Informática de<br>Gestão|Doutorado em<br>Informática|Docente efetivo 40 h DE|Computação Educacional;<br>Seminário - Educação, Ciência e<br>Tecnologia|60 h|

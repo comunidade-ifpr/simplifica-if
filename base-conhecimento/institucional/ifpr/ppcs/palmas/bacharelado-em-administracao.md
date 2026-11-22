@@ -1264,7 +1264,7 @@ Base legal específica: Resolução CNE/CES nº 05, DE 14 DE OUTUBRO DE 2021- DC
 
 Resolução de autorização do curso no IFPR: Resolução nº 144/2011
 
-|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**||||||
+|**PRIMEIRO PERÍODO**||||||||
 |---|---|---|---|---|---|---|---|
 |||||||Carga horária||
 ||H/A|CH|CH|CH|CH|total||
@@ -1280,7 +1280,7 @@ Resolução de autorização do curso no IFPR: Resolução nº 144/2011
 
 ## **SEGUNDO PERÍODO**
 
-|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|
+|**SEGUNDO PERÍODO**||||||||
 |---|---|---|---|---|---|---|---|
 |Componente Curricular|H/A<br>sem.|CH<br>(T)|CH<br>(P)|CH<br>(EX)|CH<br>EaD|Carga horária<br>total||
 |||||||H/A|H/R|
@@ -1330,7 +1330,7 @@ Resolução de autorização do curso no IFPR: Resolução nº 144/2011
 
 ## **SEXTO PERÍODO**
 
-|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|
+|**SEXTO PERÍODO**||||||||
 |---|---|---|---|---|---|---|---|
 |Componente Curricular|H/A<br>sem.|CH<br>(T)|CH<br>(P)|CH<br>(EX)|CH<br>EaD|Carga horária<br>total||
 |||||||H/A|H/R|
@@ -1397,29 +1397,29 @@ Resolução de autorização do curso no IFPR: Resolução nº 144/2011
 ||2|2|0|0|1|40|33|
 |Educação em Direitos Humanos e Diversidade||||||||
 
-||2|2|0|0|1|40|33|
-|---|---|---|---|---|---|---|---|
-|Gestão de Micro e Pequenas Empresas||||||||
-||2|2|0|0|1|40|33|
-|Consultoria Empresarial||||||||
-||2|2|0|0|1|40|33|
-|Gestão de Cooperativas||||||||
-||2|2|0|0|1|40|33|
-|Gestão de Investimentos||||||||
-||2|2|0|0|1|40|33|
-|Economia Contemporânea||||||||
-|**DISTRIBUIÇÃO DA CARGA HORÁRIA DO CURSO**||||||**CARGA**<br>**HORÁRIA**||
-|||||||**HA**|**HR**|
-|Componentes Curriculares Teóricos (T)||||||2840|2370|
-|Componentes Curriculares Práticos (P)||||||380|316|
-|Estágio Curricular (E)||||||380|316|
-|**Atividades Curriculares de Extensão (EX)**||||||**380**|**316**|
-|Educação à Distância (EaD)||||||710|595|
-|Componentes Curriculares Optativos (OP)||||||120|100|
-|Componentes Curriculares Obrigatórios (O)||||||3480|2900|
-|Componentes Curriculares Eletivos (EL)||||||0|0|
-|Atividades Complementares||||||120|98|
-|**Carga horária total do curso**||||||**3720**|**3100**|
+||2|0|1|40|33|
+|---|---|---|---|---|---|
+|Gestão de Micro e Pequenas Empresas||||||
+||2|0|1|40|33|
+|Consultoria Empresarial||||||
+||2|0|1|40|33|
+|Gestão de Cooperativas||||||
+||2|0|1|40|33|
+|Gestão de Investimentos||||||
+||2|0|1|40|33|
+|Economia Contemporânea||||||
+|**DISTRIBUIÇÃO DA CARGA HORÁRIA DO CURSO**||||**CARGA**<br>**HORÁRIA**||
+|||||**HA**|**HR**|
+|Componentes Curriculares Teóricos (T)||||2840|2370|
+|Componentes Curriculares Práticos (P)||||380|316|
+|Estágio Curricular (E)||||380|316|
+|**Atividades Curriculares de Extensão (EX)**||||**380**|**316**|
+|Educação à Distância (EaD)||||710|595|
+|Componentes Curriculares Optativos (OP)||||120|100|
+|Componentes Curriculares Obrigatórios (O)||||3480|2900|
+|Componentes Curriculares Eletivos (EL)||||0|0|
+|Atividades Complementares||||120|98|
+|**Carga horária total do curso**||||**3720**|**3100**|
 
 **Fonte:** Curso de Administração (2022).
 
@@ -1822,7 +1822,7 @@ Considerado o exposto neste item, o curso de Administração apresenta a seguint
 |**COMPONENTE CURRICULAR**|**Extensão Comunitária III**||
 |**PERÍODO DE OFERTA**|**8º**||
 |**CARGA HORÁRIA**|**TOTAL**|**EXTENSÃO**|
-||117h/r (140h/a)|117h/r (140h/a)|
+||117h/r (140h/a)||
 |**ÁREA TEMÁTICA**|A ser definida pelo professor.||
 |**LINHA DE EXTENSÃO**|**OBS:**as linhas de extensão constam no documento do<br>FORPROEX, item 3.<br>Link: https://files.cercomp.ufg.br/weby/up/572/o/Forproex_2006-<br>1.pdf||
 |**ATIVIDADE/AÇÃO**|A ser definida pelo professor.||
@@ -2128,7 +2128,7 @@ SAFIER, F. Teoria e Problemas de Pré-Cálculo. Porto Alegre: Bookman, 2003.
 
 ## **SEGUNDO PERÍODO**
 
-|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|
+|**SEGUNDO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 ||||||
@@ -2170,7 +2170,7 @@ SAFIER, F. Teoria e Problemas de Pré-Cálculo. Porto Alegre: Bookman, 2003.
 
 ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano. Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações. Cadernos EBAPE. BR, v. 19, p. 552-563, 2021. Disponível em: <https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.
 
-|ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano.<br>Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações.<br>Cadernos<br>EBAPE.<br>BR,<br>v.<br>19,<br>p.<br>552-563,<br>2021.<br>Disponível<br>em:<br><https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.|ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano.<br>Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações.<br>Cadernos<br>EBAPE.<br>BR,<br>v.<br>19,<br>p.<br>552-563,<br>2021.<br>Disponível<br>em:<br><https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.|ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano.<br>Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações.<br>Cadernos<br>EBAPE.<br>BR,<br>v.<br>19,<br>p.<br>552-563,<br>2021.<br>Disponível<br>em:<br><https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.|ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano.<br>Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações.<br>Cadernos<br>EBAPE.<br>BR,<br>v.<br>19,<br>p.<br>552-563,<br>2021.<br>Disponível<br>em:<br><https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.|ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano.<br>Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações.<br>Cadernos<br>EBAPE.<br>BR,<br>v.<br>19,<br>p.<br>552-563,<br>2021.<br>Disponível<br>em:<br><https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.|
+|ZIOLI, ELINE GOMES DE OLIVEIRA; ICHIKAWA, Elisa Yoshie; MENDES, Luciano.<br>Contribuições de Deleuze e Guattari para uma perspectiva rizomática das organizações.<br>Cadernos<br>EBAPE.<br>BR,<br>v.<br>19,<br>p.<br>552-563,<br>2021.<br>Disponível<br>em:<br><https://www.scielo.br/j/cebape/a/hryDL7Wzjgq5GxVxn4XgFSx/?format=html&lang=pt>.|||||
 |---|---|---|---|---|
 ||||||
 ||||||
@@ -2355,7 +2355,7 @@ CALDAS, Marcus Túlio. As Múltiplas Relações Entre Trabalho e Psicologia. Par
 
 ## **TERCEIRO PERÍODO**
 
-|**TERCEIRO PERÍODO**|**TERCEIRO PERÍODO**|**TERCEIRO PERÍODO**|**TERCEIRO PERÍODO**|**TERCEIRO PERÍODO**|
+|**TERCEIRO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 ||||||
@@ -2524,7 +2524,7 @@ BOFF, L. Ética e moral: a busca dos fundamentos. 7.ed. Petrópolis: Vozes, 2011
 
 ## **Bibliografia Complementar**
 
-|**Bibliografia Complementar**|**Bibliografia Complementar**|
+|**Bibliografia Complementar**||
 |---|---|
 |CONSELHO FEDERAL DE ADMINISTRAÇÃO. RESOLUÇÃO NORMATIVA CFA Nº 537, de||
 |22<br>de<br>março<br>de<br>2018.<br>Disponível|em|
@@ -3126,7 +3126,7 @@ GIL, Antonio Carlos. Como elaborar projetos de pesquisa. 5. ed. São Paulo: Atla
 
 ## **SEXTO PERÍODO**
 
-|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|**SEXTO PERÍODO**|
+|**SEXTO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 ||||||
@@ -3422,7 +3422,7 @@ GIL, Antonio Carlos. Como elaborar projetos de pesquisa. 5. ed. São Paulo: Atla
 
 ## **SÉTIMO PERÍODO**
 
-|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|
+|**SÉTIMO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 ||||||
@@ -3785,7 +3785,7 @@ ANDER-EGG, Ezequiel; AGUILAR IDÁÑEZ, María José; HENRIQUES, Maria Filomena V
 
 ## **O P T A T I V A S**
 
-|**O P T A T I V A S**|**O P T A T I V A S**|**O P T A T I V A S**|**O P T A T I V A S**|**O P T A T I V A S**|
+|**O P T A T I V A S**|||||
 |---|---|---|---|---|
 ||||||
 |**Componente Curricular**|**Tópicos especiais em Administração (OP)**||||

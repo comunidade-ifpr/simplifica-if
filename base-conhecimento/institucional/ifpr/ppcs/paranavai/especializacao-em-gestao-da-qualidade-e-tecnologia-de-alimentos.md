@@ -339,7 +339,7 @@ Ressalta-se o desenvolvimento de uma grade curricular capaz de fomentar o diálo
 
 ## **DESCRIÇÃO DAS LINHAS DE PESQUISA**
 
-|Linhas de pesquisa:|Linhas de pesquisa:|Linhas de pesquisa:|
+|Linhas de pesquisa:|||
 |---|---|---|
 |**DESCRIÇÃO DAS LINHAS DE PESQUISA**|||
 |**Linha depesquisa**|**Área de concentração**|**Descrição**|

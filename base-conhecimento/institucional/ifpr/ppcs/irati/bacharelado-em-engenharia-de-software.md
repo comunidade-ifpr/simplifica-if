@@ -767,7 +767,7 @@ Finalmente, este PPC também considera a Lei nº 13.425, de 30 de março de 2017
 
 ## **4.1.2  Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||
 |---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||||
 |||_Campus Irati_||||||
@@ -2659,9 +2659,9 @@ Os laboratórios de informática possuem regulamento próprio, que fica disponí
 |Auditório|não|não|-|
 |Salão de convenção|não|não|-|
 
-|Sala de audiovisual|não|não|-|
-|---|---|---|---|
-|Mecanografia|não|não|-|
+|Sala de audiovisual|não|-|
+|---|---|---|
+|Mecanografia|não|-|
 
 ## 7.7 BIBLIOTECA
 
@@ -3521,7 +3521,7 @@ Art. 7º Compete ao NDE dirimir dúvidas referentes à interpretação deste Reg
 
 Art. 8º São consideradas Atividades Complementares, com suas respectivas carga horária individual por atividade e respectivas pontuações:
 
-|**Atividades relacionadas a ensino, pesquisa, inovação e de caráter sociocomunitário**<br>**(Mínimo de 80 horas)**|**Atividades relacionadas a ensino, pesquisa, inovação e de caráter sociocomunitário**<br>**(Mínimo de 80 horas)**|**Atividades relacionadas a ensino, pesquisa, inovação e de caráter sociocomunitário**<br>**(Mínimo de 80 horas)**|
+|**Atividades relacionadas a ensino, pesquisa, inovação e de caráter sociocomunitário**<br>**(Mínimo de 80 horas)**|||
 |---|---|---|
 |**Item**|**Horas**|**Limite máximo**<br>**(em horas)**|
 |Participação como ouvinte em curso presencial de<br>língua estrangeira, realizado durante o período da<br>graduação.|0,5 h por hora de atividade|80|

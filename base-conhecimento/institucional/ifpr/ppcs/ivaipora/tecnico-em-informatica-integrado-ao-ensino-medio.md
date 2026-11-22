@@ -838,7 +838,7 @@ A certificação de conhecimentos anteriores ocorrerá de acordo com Resolução
 
 ## **6.5 MATRIZ CURRICULAR**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||
 |||Campus Ivaiporã||||
@@ -857,91 +857,91 @@ A certificação de conhecimentos anteriores ocorrerá de acordo com Resolução
 |||Língua portuguesa I - introdução à<br>comunicação escrita|1|20|20|
 |||Literatura I - gêneros literários e<br>linguagem literária|1|20|20|
 
-|||Matemática I - teoria dos conjuntos<br>e funções|2|40|40|
-|---|---|---|---|---|---|
-|||Sociologia I - fundamentos da<br>sociologia e antropologia|2|40|40|
-|||Iniciação à informática|2|40|40|
-|||Arquitetura e manutenção de<br>computadores|2|40|40|
-|||Lógica de programação|2|40|40|
-|||Web design|2|40|40|
-|||Tecnologias web|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**2º semestre**||Arte I - arte, comunicação e<br>expressão|2|40|40|
-|||Educação física II|2|40|40|
-|||Filosofia I - fundamentos da<br>filosofia|2|40|40|
-|||História I - historiografia e<br>estruturas da antiguidade|2|40|40|
-|||Língua inglesa I - fundamentos de<br>inglês|1|20|20|
-|||Língua Portuguesa II - produção e<br>interpretação de texto iniciais|2|40|40|
-|||Matemática II - funções e aplicações|2|40|40|
-|||Química I - química geral|2|40|40|
-|||Banco de dados I|2|40|40|
-|||Engenharia de software|2|40|40|
-|||Linguagem de programação I|4|80|80|
-|||Redes I|2|40|40|
-|||**Subtotal (Total do período)**|**25**|**500**|**500**|
+|||Matemática I - teoria dos conjuntos<br>e funções|2|40|
+|---|---|---|---|---|
+|||Sociologia I - fundamentos da<br>sociologia e antropologia|2|40|
+|||Iniciação à informática|2|40|
+|||Arquitetura e manutenção de<br>computadores|2|40|
+|||Lógica de programação|2|40|
+|||Web design|2|40|
+|||Tecnologias web|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**2º semestre**||Arte I - arte, comunicação e<br>expressão|2|40|
+|||Educação física II|2|40|
+|||Filosofia I - fundamentos da<br>filosofia|2|40|
+|||História I - historiografia e<br>estruturas da antiguidade|2|40|
+|||Língua inglesa I - fundamentos de<br>inglês|1|20|
+|||Língua Portuguesa II - produção e<br>interpretação de texto iniciais|2|40|
+|||Matemática II - funções e aplicações|2|40|
+|||Química I - química geral|2|40|
+|||Banco de dados I|2|40|
+|||Engenharia de software|2|40|
+|||Linguagem de programação I|4|80|
+|||Redes I|2|40|
+|||**Subtotal (Total do período)**|**25**|**500**|
 
-|**3º semestre**||Artes II - linguagens artísticas,<br>comunicação e expressão|2|40|40|
-|---|---|---|---|---|---|
-|||Biologia III - os seres vivos|2|40|40|
-|||Educação física III|2|40|40|
-|||Física II - universo e movimento|2|40|40|
-|||Geografia II - estado, território e<br>ideologias geográficas|2|40|40|
-|||Literatura II - estilos e épocas<br>literárias no Brasil (XVI - XX)|1|20|20|
-|||Matemática III - trigonometria|2|40|40|
-|||Sociologia II - socialização e<br>Desigualdades|2|40|40|
-|||Banco de dados II|2|40|40|
-|||Linguagem de programação II|2|40|40|
-|||Programação web I|2|40|40|
-|||Serviços web I|2|40|40|
-|||Redes II|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**4º semestre**||Arte III - arte e cultura brasileira|1|20|20|
-|||Educação física IV|2|40|40|
-|||Filosofia II - a idade da razão|2|40|40|
-|||História II - medievo, modernidade e<br>colonialismo|2|40|40|
-|||Língua inglesa II - língua e cultura<br>inglesa|2|40|40|
-|||Língua portuguesa III - correção<br>gramatical|1|20|20|
-|||Literatura III - estilos e épocas<br>literárias no Brasil (XX - XXI)|1|20|20|
+|**3º semestre**||Artes II - linguagens artísticas,<br>comunicação e expressão|2|40|
+|---|---|---|---|---|
+|||Biologia III - os seres vivos|2|40|
+|||Educação física III|2|40|
+|||Física II - universo e movimento|2|40|
+|||Geografia II - estado, território e<br>ideologias geográficas|2|40|
+|||Literatura II - estilos e épocas<br>literárias no Brasil (XVI - XX)|1|20|
+|||Matemática III - trigonometria|2|40|
+|||Sociologia II - socialização e<br>Desigualdades|2|40|
+|||Banco de dados II|2|40|
+|||Linguagem de programação II|2|40|
+|||Programação web I|2|40|
+|||Serviços web I|2|40|
+|||Redes II|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**4º semestre**||Arte III - arte e cultura brasileira|1|20|
+|||Educação física IV|2|40|
+|||Filosofia II - a idade da razão|2|40|
+|||História II - medievo, modernidade e<br>colonialismo|2|40|
+|||Língua inglesa II - língua e cultura<br>inglesa|2|40|
+|||Língua portuguesa III - correção<br>gramatical|1|20|
+|||Literatura III - estilos e épocas<br>literárias no Brasil (XX - XXI)|1|20|
 
-|||Matemática IV - geometria plana e<br>espacial|2|40|40|
-|---|---|---|---|---|---|
-|||Química II - química orgânica|2|40|40|
-|||Banco de dados III|2|40|40|
-|||Programação web II|2|40|40|
-|||Serviços web II|2|40|40|
-|||Estrutura de dados|2|40|40|
-|||Robótica|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**5º semestre**||Biologia IV - genética e evolução|2|40|40|
-|||Física III - transformação e<br>conservação|2|40|40|
-|||Geografia III - a produção capitalista<br>do território|2|40|40|
-|||História III - colonialismo na América<br>e revoluções da era moderna|1|20|20|
-|||Língua espanhola I - fundamentos<br>de língua espanhola|1|20|20|
-|||Língua Inglesa III - leitura e<br>interpretação em língua inglesa|1|20|20|
-|||Literatura IV - contemporaneidades<br>em literatura portuguesa|1|20|20|
-|||Matemática V - elementos de<br>álgebra e introdução à estatística|2|40|40|
-|||Química III - química inorgânica,<br>soluções e eletroquímica|2|40|40|
-|||Sociologia III - relações de poder e<br>políticas|1|20|20|
-|||Segurança da informação I|2|40|40|
-|||Programação mobile I|2|40|40|
+|||Matemática IV - geometria plana e<br>espacial|2|40|
+|---|---|---|---|---|
+|||Química II - química orgânica|2|40|
+|||Banco de dados III|2|40|
+|||Programação web II|2|40|
+|||Serviços web II|2|40|
+|||Estrutura de dados|2|40|
+|||Robótica|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**5º semestre**||Biologia IV - genética e evolução|2|40|
+|||Física III - transformação e<br>conservação|2|40|
+|||Geografia III - a produção capitalista<br>do território|2|40|
+|||História III - colonialismo na América<br>e revoluções da era moderna|1|20|
+|||Língua espanhola I - fundamentos<br>de língua espanhola|1|20|
+|||Língua Inglesa III - leitura e<br>interpretação em língua inglesa|1|20|
+|||Literatura IV - contemporaneidades<br>em literatura portuguesa|1|20|
+|||Matemática V - elementos de<br>álgebra e introdução à estatística|2|40|
+|||Química III - química inorgânica,<br>soluções e eletroquímica|2|40|
+|||Sociologia III - relações de poder e<br>políticas|1|20|
+|||Segurança da informação I|2|40|
+|||Programação mobile I|2|40|
 
-|||Programação web III|4|80|80|
-|---|---|---|---|---|---|
-|||Cloud I|2|40|40|
-|||**Subtotal (total do período)**|**25**|**500**|**500**|
-|**6º semestre**||Biologia V - o ser humano|2|40|40|
-|||Filosofia III – atualidades|1|20|20|
-|||Física IV - materiais, luz e<br>som: modelos e<br>propriedades|2|40|40|
-|||Geografia IV - estado,<br>capital, território e<br>sociedade|1|20|20|
-|||História IV - o Brasil e o<br>mundo na<br>contemporaneidade|2|40|40|
-|||Língua espanhola II -<br>língua e cultura espanhola|1|20|20|
-|||Língua portuguesa IV -<br>produção e interpretação<br>de texto avançadas|1|20|20|
-|||Língua portuguesa V -<br>revisão gramatical|1|20|20|
-|||Matemática VI - geometria<br>analítica|2|40|40|
-|||Química IV - físico-química<br>e química analítica|2|40|40|
-|||Segurança da informação<br>II|2|40|40|
-|||Empreendedorismo e<br>marketing digital|2|40|40|
-|||Programação mobile II|4|80|80|
+|||Programação web III|4|80|
+|---|---|---|---|---|
+|||Cloud I|2|40|
+|||**Subtotal (total do período)**|**25**|**500**|
+|**6º semestre**||Biologia V - o ser humano|2|40|
+|||Filosofia III – atualidades|1|20|
+|||Física IV - materiais, luz e<br>som: modelos e<br>propriedades|2|40|
+|||Geografia IV - estado,<br>capital, território e<br>sociedade|1|20|
+|||História IV - o Brasil e o<br>mundo na<br>contemporaneidade|2|40|
+|||Língua espanhola II -<br>língua e cultura espanhola|1|20|
+|||Língua portuguesa IV -<br>produção e interpretação<br>de texto avançadas|1|20|
+|||Língua portuguesa V -<br>revisão gramatical|1|20|
+|||Matemática VI - geometria<br>analítica|2|40|
+|||Química IV - físico-química<br>e química analítica|2|40|
+|||Segurança da informação<br>II|2|40|
+|||Empreendedorismo e<br>marketing digital|2|40|
+|||Programação mobile II|4|80|
 
 ||Cloud II|2|40|40|
 |---|---|---|---|---|
@@ -2223,7 +2223,7 @@ Atualmente, o colegiado do curso de informática é instituído por meio da PORT
 
 O corpo técnico administrativo em educação no IFPR _Campus_ Ivaiporã, é um pilar essencial para a excelência da instituição, desempenhando um papel crucial na gestão, suporte e organização de todas as atividades educacionais e administrativas. São esses profissionais que garantem o funcionamento dos processos acadêmicos, a manutenção das instalações, o suporte logístico para eventos e a prestação de serviços que promovem um ambiente propício para o aprendizado e o desenvolvimento de toda a comunidade acadêmica. Assim, o corpo técnico administrativo contribui, diretamente, para a formação de profissionais qualificados e o sucesso institucional do IFPR campus Ivaiporã.
 
-|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|
+|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |---|---|---|---|
 |**Nome**|**Formação**|**Regime de**<br>**Trabalho**<br>**(40h, 30h**<br>**ou 20h)**|**Cargo**|
 |Ricardo Rodrigues de<br>Souza|Bacharelado em Engenharia<br>Ambiental|40h DE|Diretor Geral|

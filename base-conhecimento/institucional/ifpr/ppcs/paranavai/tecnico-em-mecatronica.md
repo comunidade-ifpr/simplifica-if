@@ -883,7 +883,7 @@ equivalência. Serão consideradas, para efeito de equivalência as atividades l
 
 ## **TABELA DE EQUIVALÊNCIA DAS ATIVIDADES COMPLEMENTARES DO CURSO TÉCNICO EM MECATRÔNICA INTEGRADO AO ENSINO MÉDIO**
 
-|**ATIVIDADES**|**CARGA HORÁRIA**<br>|**CARGA HORÁRIA**<br>|
+|**ATIVIDADES**|**CARGA HORÁRIA**<br>||
 |---|---|---|
 ||**HORAS**|**EQUIVALÊNCIA**|
 |Documento de Menção Honrosa|Não se aplica|10 horas por menção|
@@ -1122,7 +1122,7 @@ GARCIA, Hélio Carlos e GARAVELLO, Tito Márcio. **Geografia** : De olho no mund
 
 **INSTITUTO FEDERAL DO PARANÁ | Campus Paranavaí** Av. José Felipe “Tequinha”, 1400 – Jd. das Nações,  Paranavaí - PR | CEP 87703-536  - Brasil
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: História I||
@@ -1208,7 +1208,7 @@ GUEDES, Dartagnan P. & Guedes, Joana E. R. P. **Controle de peso corporal** : co
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: Língua Portuguesa e Literatura Brasileira II||
@@ -1326,7 +1326,7 @@ REALE, Giovanni; ANTISERI, Dario. **História da Filosofia** _._ São Paulo: Pau
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: Sociologia II||
@@ -1342,7 +1342,7 @@ REALE, Giovanni; ANTISERI, Dario. **História da Filosofia** _._ São Paulo: Pau
 
 **Curso** : Técnico em Mecatrônica Integrado ao **Eixo Tecnológico** : Controle e Processos Ensino Médio Industriais
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |||
@@ -1503,11 +1503,11 @@ D. L. P.; FIORIN, J. L. (Orgs.). 2 ed. 1 reimpr. São Paulo: EDUSP, 2003. HALL, 
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Curso**: Técnico em Mecatrônica<br>Integrado ao Ensino Médio|
 |**Componente Curricular**: Matemática III||
-|**Carga Horária (hora aula)**: 80|**Carga Horária (hora aula)**: 80|
+|**Carga Horária (hora aula)**: 80||
 |**EMENTA**<br>Matrizes. Determinantes. Sistemas Lineares. Revisão de geometria plana. Geometria<br>espacial (poliedros, prismas, cilindros, pirâmides, cones, tronco de cone, tronco de pirâmide,<br>esfera).||
 |**METODOLOGIA**<br>Aulas expositivo-dialogadas com uso de projetor multimídia; Vídeos; Pesquisa individual ou<br>em grupo, Leituras dirigidas e debates; Resolução de problemas; Atividade interdisciplinar<br>em sala de aula.||
 |**METODOLOGIA**<br>Ex: aulas expositivas, com a utilização de: experimentos, vídeos, áudios; pesquisa individual<br>ou em grupo e resolução de problemas.||
@@ -1643,7 +1643,7 @@ ALVES, A. & OLIVEIRA, L. F. de. **Conexões com a história** : das origens do h
 
 **Curso** : Técnico em Mecatrônica Integrado ao **Eixo Tecnológico** : Controle e Processos Ensino Médio Industriais
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |||
@@ -1732,7 +1732,7 @@ FLAVIAN, Eugenia. FERNANDEZ, Gretel Eres. BRIONES, Ana Isabel. **Español Ahora*
 
 **INSTITUTO FEDERAL DO PARANÁ | Campus Paranavaí** Av. José Felipe “Tequinha”, 1400 – Jd. das Nações,  Paranavaí - PR | CEP 87703-536  - Brasil
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: Língua Portuguesa e Literatura Brasileira IV||
@@ -1750,11 +1750,11 @@ KURY, A. G. **Novas lições de análise sintática** . São Paulo: Ática, 1998
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Curso**: Técnico em Mecatrônica<br>Integrado ao Ensino Médio|
 |**Componente Curricular**: Matemática IV||
-|**Carga Horária (hora aula)**: 120|**Carga Horária (hora aula)**: 120|
+|**Carga Horária (hora aula)**: 120||
 |**EMENTA**<br>Geometria analítica (estudo do ponto, reta, circunferência e plano). Análise Combinatória.<br>Binômio de Newton. Probabilidade. Conjunto dos números complexos. Polinômios.<br>Equações polinomiais.||
 |**METODOLOGIA**<br>Aulas expositivo-dialogadas com uso de projetor multimídia; Vídeos; Pesquisa individual ou<br>em grupo; Listas de exercícios; Atividade interdisciplinar em sala de aula.||
 |**METODOLOGIA**<br>Ex: aulas expositivas, com a utilização de: experimentos, vídeos, áudios; pesquisa individual<br>ou em grupo e resolução de problemas.||
@@ -1808,7 +1808,7 @@ BAUMAN, Zygmunt. **Modernidade líquida** . Editora Zahar, 2001. BOBBIO, Norbert
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: História IV||
@@ -1914,7 +1914,7 @@ ABNT. **Coletânea de normas de desenho técnico** . São Paulo, Senai-dte-dmd, 
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: Eletrônica Digital||
@@ -2066,7 +2066,7 @@ JACOBS, R.; CHASE, R. B. **Administração da produção e de operações** : o 
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: Eletrônica Analógica||
@@ -2190,7 +2190,7 @@ SANTOS, Winderson Eugenio dos. **Controladores lógicos programáveis** : CLPs. 
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Mecatrônica Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Controle e Processos<br>Industriais|
 |**Componente Curricular**: Elementos de Máquinas||

@@ -801,7 +801,7 @@ A tabela abaixo apresenta a matriz curricular do curso de Licenciatura em Quími
 
 ||**Semanas do semestre letivo:**||**Tipo**<br>**(C, P,**<br>**ES)**|**Número**<br>**de aulas**<br>**semanais**|**Hora-**<br>**aula**<br>**(min)**|**Hora-**<br>**Relógio**<br>**(min)**|**% CH**<br>**Extensão**|**% CH**<br>**em**<br>**EaD**|
 |---|---|---|---|---|---|---|---|---|
-||||||||**Hora-**<br>**relógio**<br>**(min)**|**Hora-**<br>**relógio**<br>**(min)**|
+||||||||**Hora-**<br>**relógio**<br>**(min)**||
 |**Períodos**|**Matriz curricular**|**Núcleo**|||||||
 |**1º Semestre**|Matemática I|1|C|4|80|67|0|0|
 ||Química Geral I|1|C|4|80|67|0|0|
@@ -3626,24 +3626,24 @@ Art. 15º Os casos omissos serão resolvidos pelo Colegiado do Curso de Licencia
 
 As partes abaixo qualificadas celebram neste ato o Termo de Compromisso de Estágio conforme a Lei nº 11.788/08.
 
-|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**||
-|---|---|---|---|---|---|---|
-|**Instituição de Ensino:**|||||||
-|**CNPJ:**|||||||
-|**Nome dapessoaque representada**|||||||
-|**Endereço:**|||||||
-|**Cidade:**|||||||
-|**Telefones:**|||||||
-||||||||
-|||||**DADOS DO ALUNO(A)**|||
-|**NOME:**|||||||
-|**CAMPUS:**|||||||
-|**CURSO:**<br>|||||||
-|**PERÍODO:**|||||||
-|**MATRICULA:**|||||||
-||Residente à rua||||||
-||||||||
-||/<br>/||||||
+|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**||||||
+|---|---|---|---|---|---|
+|**Instituição de Ensino:**||||||
+|**CNPJ:**||||||
+|**Nome dapessoaque representada**||||||
+|**Endereço:**||||||
+|**Cidade:**||||||
+|**Telefones:**||||||
+|||||||
+||||**DADOS DO ALUNO(A)**|||
+|**NOME:**||||||
+|**CAMPUS:**||||||
+|**CURSO:**<br>||||||
+|**PERÍODO:**||||||
+|**MATRICULA:**||||||
+||Residente à rua|||||
+|||||||
+||/<br>/|||||
 
 o Compromisso em consonância com o Art. 82 da Lei nº 9394/96 – LDB, Art. 1  da Lei nº 11.788/08 mediante as seguintes cláusulas e condições:
 

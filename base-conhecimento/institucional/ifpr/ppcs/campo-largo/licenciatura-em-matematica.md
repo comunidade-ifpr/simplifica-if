@@ -1016,7 +1016,7 @@ Campus Campo Largo do IFPR Curso: Licenciatura em Matemática Componente Curricu
 
 **Bibliografia Básica** GOMES, Marineide de Oliveira (Org). Estágios na formação de professores: possibilidades formativas entre ensino, pesquisa e extensão. São Paulo: Edições Loyola, 2011. PICONEZ, Stela C. Bertholo (Coord.). A prática de ensino e o estágio supervisionado. 24. ed. Campinas: Papirus, 2012. PIMENTA, Selma Garrido; LIMA, Maria Socorro Lucena. Estágio e docência. 7. ed. São Paulo: Cortez, 2012. **Bibliografia Complementar** BARREIRO, Iraíde Marques de Freitas; GEBRAN, Raimunda Abou. Prática de ensino e estágio supervisionado na formação de professores. 2. ed. São Paulo: Editora Avercamp, 2016. LIBÂNEO, José Carlos. Didática. 2. ed. São Paulo: Cortez, 2018. FREITAS, Luiz Carlos de. Crítica da organização do trabalho pedagógico e da didática. 11. ed. Campinas: Papirus, 2012. GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed., rev. Campinas: Autores Associados, 2011. ZABALA, Antoni. A prática educativa: Como ensinar. 1. ed. São Paulo: ArtMed, 1998.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Licenciatura em Matemática||
 |Componente Curricular:**Prática Profissional - II: Pesquisa da Prática**<br>**Pedagógica**||
@@ -1145,7 +1145,7 @@ OLIVEIRA, R. P. de; SANTANA, W. (Orgs). **Educação e federalismo no Brasil** :
 
 SAVIANI, D. **Sistema nacional de educação e plano nacional de educação** . Campinas: Autores Associados, 2014.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Licenciatura em Matemática||
 |Componente Curricular:**Estágio Obrigatório - II**||
@@ -1338,7 +1338,7 @@ FERRARO, N. G., TOLEDO, P. A. S. Física Básica. Volume único. Ed. Atual: São
 
 **Bibliografia Complementar** HEWITT, P. Fundamentos de Física conceitual. Porto Alegre: Bookman, 2009. SERWAY, Raymond A.; JEWETT, John W. Princípios de Física. São Paulo: Pioneira Thomson Learning, 2004-2005. v. 3. KNIGHT, R. D. Física: uma abordagem estratégica. São Paulo: Bookman, 2009. v.1 e v. 2 ÁLVARES, Beatriz Alvarenga; LUZ, Antônio Máximo Ribeiro da. **Física:** volume único. São Paulo: Scipione, 1997.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Licenciatura em Matemática||
 |Componente Curricular:**Introdução à Programação - II**||
@@ -1347,7 +1347,7 @@ FERRARO, N. G., TOLEDO, P. A. S. Física Básica. Volume único. Ed. Atual: São
 |**Bibliografia Básica**<br>ASCÊNCIO, A.F.G.; CAMPOS, E. A. V. Fundamentos da Programação de<br>Computadores. 3 ed. São Paulo: Pearson, 2012.<br>MANZANO, J. A.; Algoritmos e lógica para desenvolvimento de programação de<br>computadores. 26 ed. São Paulo: Érica, 2013.<br>MANZANO, José Augusto N.G; OLIVEIRA, Jayr Figueiredo de. Estudo dirigido de<br>algoritmos. 15. ed. São Paulo: Érica, 2012.||
 |**Bibliografia Complementar**<br>ALVES, W. P. Lógica de programação de computadores: ensino didático. 1 ed. São<br>Paulo: Érica, 2013.<br>FORBELLONE, A. L. V.; EBERSPACHER, H. F. Lógica de programação:<br>Construção de algoritmos e estrutura de dados. 3 ed. São Paulo: Pearson, 2005.<br>PUGA, Sandra; RISSETTI, Gerson. Lógica de programação e estruturas de dados:<br>com aplicações em Java. São Paulo: Pearson, 2016. (_on-line_)<br>SOUZA, Marco Antonio Furlan de et al. Algoritmos e lógica de programação: um<br>texto introdutório para engenharia. 2. ed. rev. e ampl. São Paulo: Cengage<br>Learning, 2011.||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Licenciatura em Matemática||
 |Componente Curricular:**História da Matemática**||
@@ -2509,7 +2509,7 @@ eventuais reposições e para o atendimento dos novos servidores. Com isso, ser�
 
 ## **II- Laboratório de Química e Biologia**
 
-||**BLOCO DE ENSINO**|**BLOCO DE ENSINO**|
+||**BLOCO DE ENSINO**||
 |---|---|---|
 ||**LABORATÓRIO DEQUÍMICA E BIOLOGIA**||
 ||**DESCRIÇÃO**|**QUANTIDADE**|
@@ -2555,7 +2555,7 @@ eventuais reposições e para o atendimento dos novos servidores. Com isso, ser�
 
 ## **III- Laboratório de Física e Matemática**
 
-||**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**|**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**|**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**|
+||**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**|||
 |---|---|---|---|
 ||**DESCRIÇÃO**|**QUANTIDADE**||
 |1|ARMÁRIOALTO2 PORTAS|2||

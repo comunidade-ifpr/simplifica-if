@@ -107,7 +107,7 @@ Quadro 1. Horários de oferta do curso Técnico em Alimentos.
 |---|---|---|---|---|---|
 |19:00|Aula 1|Aula 1|Aula 1|Aula 1|Aula 1|
 |19:50|Aula 2|Aula 2|Aula 2|Aula 2|Aula 2|
-|Intervalo|Intervalo|Intervalo|Intervalo|Intervalo|Intervalo|
+|Intervalo||||||
 |21:00|Aula 3|Aula 3|Aula 3|Aula 3|Aula 3|
 |21:50|Aula 4|Aula 4|Aula 4|Aula 4|Aula 4|
 
@@ -680,7 +680,7 @@ Diploma de Técnico em Alimentos (1.335 h)
 
 ## 6.5 MATRIZ CURRICULAR
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||
 ||_Campus_Assis Chateaubriand||||
@@ -781,7 +781,7 @@ SILVA, J. M.; SILVEIRA, E. S. **Apresentação de trabalhos acadêmicos** : norm
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Primeiro Semestre|
@@ -801,7 +801,7 @@ SILVA, J. M.; SILVEIRA, E. S. **Apresentação de trabalhos acadêmicos** : norm
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso: T**écnico em Alimentos Subsequente||**Período Letivo:**Primeiro semestre|
@@ -821,7 +821,7 @@ SILVA, J. M.; SILVEIRA, E. S. **Apresentação de trabalhos acadêmicos** : norm
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Primeiro Semestre|
@@ -841,7 +841,7 @@ SILVA, J. M.; SILVEIRA, E. S. **Apresentação de trabalhos acadêmicos** : norm
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Primeiro Semestre|
@@ -897,7 +897,7 @@ ASSAF NETO, A **Matemática financeira e suas aplicações** . 14. ed. São Paul
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Segundo Semestre|
@@ -917,7 +917,7 @@ ASSAF NETO, A **Matemática financeira e suas aplicações** . 14. ed. São Paul
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Terceiro Semestre|
@@ -937,7 +937,7 @@ ASSAF NETO, A **Matemática financeira e suas aplicações** . 14. ed. São Paul
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Segundo Semestre|
@@ -957,7 +957,7 @@ ASSAF NETO, A **Matemática financeira e suas aplicações** . 14. ed. São Paul
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Segundo Semestre|
@@ -1053,7 +1053,7 @@ Introdução à bromatologia. Análises de umidade, cinzas, carboidratos, lipíd
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Terceiro Semestre|
@@ -1139,7 +1139,7 @@ Introdução à bromatologia. Análises de umidade, cinzas, carboidratos, lipíd
 
 ## **IFPR - CAMPUS ASSIS CHATEAUBRIAND**
 
-|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|
+|**IFPR - CAMPUS ASSIS CHATEAUBRIAND**|||
 |---|---|---|
 ||||
 |**Curso:**Técnico em Alimentos Subsequente||**Período Letivo:**Quarto Semestre|

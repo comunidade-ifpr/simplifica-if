@@ -3674,7 +3674,7 @@ Ministerio da Educacao
 
 Orientações: Preencher a coluna de Horas Computadas e anexar os comprovantes das atividades, respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para a mesma atividade.
 
-|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para<br>a mesma atividade.|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para|
+|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para<br>a mesma atividade.|respeitando o máximo de horas por atividade. Não será permitida a duplicidade de pontuação para|||||
 |---|---|---|---|---|---|
 |**Atividades de complementação **|**da**||**Máximo de**|**Horas**|**Horas**|
 |**formação social, humana e cultural**|||**Horas**|**Computadas**|**Validadas**|
@@ -4135,7 +4135,7 @@ INSTITUTO FEDERAL DO PARANÁ Pergamum - Sistema Integrado de Bibliotecas RELATÓ
 |Classificação : 005.113 S999e 2012 (PM) (PN) 005.113 S998e 3. ed. (TB) (IR) (PV) (QI) (IV) (CO) 005.113 Ac.283412|||
 |TANENBAUM, Andrew S.. Sistemas operacionais modernos. São Paulo: Pearson Prentice Hall, 2010.||Quantidade : 2|
 |Classificação : 005.43 T164s 3.ed. (TB) (PV) (LD) (CS) (IV) (LD-IPO) (IR) (UV) (AS) (CA) (QI) 005.43 T1 Ac.277756|||
-|TANENBAUM, Andrew S.; AUSTIN, Todd. Organização estruturada de computadores. São Paulo: Pearson Prentice Hall, 2013.|TANENBAUM, Andrew S.; AUSTIN, Todd. Organização estruturada de computadores. São Paulo: Pearson Prentice Hall, 2013.|Quantidade : 5|
+|TANENBAUM, Andrew S.; AUSTIN, Todd. Organização estruturada de computadores. São Paulo: Pearson Prentice Hall, 2013.||Quantidade : 5|
 |Classificação : 004.256 T164o 6.ed. (PV) (UV) 004.22 T164o 2013 (AC) (CO) (CA) (PN) 004.22 T164o 6. ed. Ac.293157|||
 |TANENBAUM, Andrew S.; MARQUES, Arlete Simille. Sistemas distribuídos: princípios e paradigmas. São Paulo: Pearson Prentice Hall, 2007.||Quantidade : 4|
 |Classificação : 004.65 T164d 2007 (PM) 005.4476 T164s 2.ed. (LD-DB) (PV) (IV) (TB) (LD-IPO) (CO) 005.44 Ac.281117|||
@@ -4156,12 +4156,12 @@ INSTITUTO FEDERAL DO PARANÁ Pergamum - Sistema Integrado de Bibliotecas RELATÓ
 |Classificação : 005.25 Z23f 2020 (JA) (GO) (CO) Ac.329061|||
 |ZIVIANI, Nivio. Projeto de algoritmos: com implementações em Java e C++. São Paulo: Thomson Learning, 2007.||Quantidade : 8|
 |Classificação : 005.113 Z82p 2007 (PG) (PN) (CO) 005.113 Z82p 1. ed. (IR) (PV) Ac.290756|||
-|Legenda: ** = Acervo incompleto<br>**_Total títulos / Livros : 151_**|**_Total de exemplares / Livros : 864Total de_**|**_Total de exemplares / Livros : 864Total de_**|
+|Legenda: ** = Acervo incompleto<br>**_Total títulos / Livros : 151_**|**_Total de exemplares / Livros : 864Total de_**||
 ||**_material adicional / Livros : 16_**||
 |Total títulos / Colombo : 151|Total de exemplares / Colombo : 864Total de||
 ||material adicional / Colombo : 16||
 
-|ANEXO II|ANEXO II|ANEXO II|
+|ANEXO II|||
 |---|---|---|
 |**Referência**|**B/C**|**QTD**|
 |ABAURRE, M. L. M.; ABAURRE, M. B. M. Produção de texto: interlocução egêneros. São Paulo: Moderna, 2007.|B|3|

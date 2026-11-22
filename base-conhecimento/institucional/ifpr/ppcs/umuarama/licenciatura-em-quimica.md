@@ -630,7 +630,7 @@ A carga horária total da extensão no currículo perfará 326 horas/relógio.
 
 BROWN, T. L.; LEMAY JR.; H. E.; BURSTEN, B. E. **Química: a ciência central** . 9 Ed. São Paulo: Pearson Prentice Hall, 2002.
 
-|**Componente Curricular**: Química Geral I|**Componente Curricular**: Química Geral I|
+|**Componente Curricular**: Química Geral I||
 |---|---|
 |**Carga Horária**: 80 horas/aula; 67 horas/relógio||
 |**Ementa**:<br>Noções preliminares. Átomos, moléculas e Íons. Estequiometria: Cálculos com Fórmulas e<br>Equações Químicas. Reações em Solução e Estequiometria de Soluções. Periodicidade Química.<br>Ligações químicas. Forças Intermoleculares. Nomenclatura Química. Atividades extensionistas.||
@@ -642,7 +642,7 @@ BROWN, T. L.; LEMAY JR.; H. E.; BURSTEN, B. E. **Química: a ciência central** 
 
 **Componente Curricular:** Laboratório de Química I. **Carga Horária:** 33 horas/relógio; 40 horas/aula **Período Letivo:** primeiro semestre **Ementa** :
 
-|**Componente Curricular:**Laboratório de Química I.|**Componente Curricular:**Laboratório de Química I.|
+|**Componente Curricular:**Laboratório de Química I.||
 |---|---|
 |**Carga Horária:**33 horas/relógio; 40 horas/aula||
 |**Período Letivo:**primeiro semestre||
@@ -771,7 +771,7 @@ MAHAN, B.H. **Química- Um curso Universitário.** 2 Ed. São Paulo: Edgard Bluc
 
 **Bibliografia Básica:**
 
-|**Componente Curricular**: Laboratório de Química II|**Componente Curricular**: Laboratório de Química II|
+|**Componente Curricular**: Laboratório de Química II||
 |---|---|
 |**Carga Horária**: 33 horas/relógio; 40 horas/aula||
 |**Período**: Segundo Semestre||

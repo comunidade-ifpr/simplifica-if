@@ -570,7 +570,7 @@ TECNICO<br>EM MECANICA<br>1°PERiODO 2°PERiODO 3°PERiODO 4°PERiODO<br>SEGURAN
 
 ## 6.5 MATRIZ CURRICULAR
 
-|**1º PERÍODO**|**1º PERÍODO**|**1º PERÍODO**|**1º PERÍODO**|
+|**1º PERÍODO**||||
 |---|---|---|---|
 |**Componentes Curriculares**|**Carga Horária**<br>**(hora relógio)**|**Carga Horária**<br>**(hora aula)**|**Nº de aulas**<br>**na semana**|
 |Fundamentos da Matemática|67|80|4|
@@ -643,7 +643,7 @@ GIOVANNI Jr, J. R.; GIOVANNI, J. R. A Conquista da Matemática – 9o Ano. São 
 
 NASCIMENTO, S. V. do. A Matemática do Ensino Fundamental e Médio Aplicada à Vida. Rio de Janeiro: Ciência Moderna, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**MECÂNICA GERAL||
@@ -675,7 +675,7 @@ TELLES, D. A.; MONGELLI NETO, J. Física com Aplicação Tecnológica. Vol. 2. S
 
 RESNICK, R. Fundamentos da Física. Vol. 1. São Paulo: LTC, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**METROLOGIA||
@@ -709,7 +709,7 @@ FELIX, J. C. A Metrologia no Brasil. Rio de Janeiro: Qualitymark, 1995.
 
 LEAKE, J.; BORGERSON, J. Manual de Desenho Técnico para Engenharia: São Paulo: LTC, 2010. MANFÉ, G. Desenho técnico mecânico – Vol. 1. São Paulo: Hemus, 2004.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**TECNOLOGIA DOS MATERIAIS||
@@ -769,7 +769,7 @@ PEREIRA, N. de C. Desenho Técnico. Curitiba: Livro Técnico, 2012
 
 MANFÉ, G. Desenho técnico mecânico – Vol. 2. São Paulo: Hemus, 2004. MANFÉ, G. Desenho técnico mecânico – Vol. 3. São Paulo: Hemus, 2004. SPECK, H. J. Manual básico de desenho técnico. 2. ed. Florianópolis: UFSC, 2001. SILVA A. Desenho Técnico Fundamental. São Paulo: LTC, 1983. CRUZ, M. D. da. Desenho Técnico. São Paulo: Érica, 2014.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**ENSAIOS DOS MATERIAIS||
@@ -801,7 +801,7 @@ CALLISTER, W. D. Jr. Fundamentos da Ciência e Engenharia dos Materiais. 2. ed. 
 
 CHIAVERINI, V. Aços e Ferros Fundidos. 7. ed. São Paulo: ABM, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**DESENHO MECÂNICO||
@@ -829,7 +829,7 @@ SPECK, H. J. Desenho Técnico Auxiliado pelo Solidworks. Florianópolis: Visual 
 
 MANFÉ, G. Desenho técnico mecânico – Vol. 1. São Paulo: Hemus, 2004. MANFÉ, G. Desenho técnico mecânico – Vol. 2. São Paulo: Hemus, 2004. MANFÉ, G. Desenho técnico mecânico – Vol. 3. São Paulo: Hemus, 2004. SPECK, H. J. Manual básico de desenho técnico. 2. ed. Florianópolis: UFSC, 2001. MAGUIRE, D. E. Desenho Técnico: Problemas e Soluções Gerais de Desenho. São Paulo: Hemus, 2004.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**RESISTÊNCIA DOS MATERIAIS||
@@ -855,7 +855,7 @@ HIBBELER, R. C. Resistência dos Materiais. 7. ed. São Paulo: Pearson, 2010. PA
 
 HIBBELER, R. C. Estática. 10 ed. São Paulo: Pearson, 2008. HIBBELER, R. C. Dinâmica. 10 ed. São Paulo: Pearson, 2008.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**PROCESSOS DE FABRICAÇÃO||
@@ -885,7 +885,7 @@ SCHAEFFER, L. Conformação Mecânica. Rio de Janeiro: Imprensa Livre, 1999. CHI
 
 BRESCIANI FILHO, E. Conformação Plástica dos Metais: São Paulo: UNICAMP, 1997. GARCIA, A. Lingotamento Contínuo de Aços. São Paulo: ABM, 2006. SOUZA, S. A. de. Composição Química dos Aços. São Paulo: Blucher, 2003.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**ELETRICIDADE BÁSICA||
@@ -910,7 +910,7 @@ GUSSOW, M. Eletricidade Básica. 2. ed. São Paulo: Makron Books, 2009. CREDER, 
 
 EDMINISTER, J. A. Circuitos Elétricos. 2. ed. São Paulo: Makron Books, 1991. MARKUS, O. Eletricidade: Circuitos em Corrente Contínua. São Paulo: Érica, 1999. MARKUS, O. Eletricidade: Circuitos em Corrente Alternada. São Paulo: Érica, 1999. NAVY, U. S. Curso Completo de Eletricidade Básica. São Paulo: Hemus, 2002. CRUZ, E. C. A. Eletricidade Básica – Circuitos em Corrente Contínua. São Paulo: Érica, 2014.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**SOLDAGEM||
@@ -943,7 +943,7 @@ PARIS, A. A. F. de. Tecnologia da Soldagem de Ferros Fundidos. Porto Alegre: UFS
 
 VEIGA, E. Processo de Soldagem – TIG. São Paulo: Globus, 2011. VEIGA, E. Processo de Soldagem – Eletrodos Revestidos. São Paulo: Globus, 2011. VEIGA, E. Processo de Soldagem – MIG/MAG. São Paulo: Globus, 2011. SCOTTI, A. Fundamentos e Prática da Soldagem a Plasma. São Paulo: Artliber, 2007. SCOTTI, A. Soldagem MIG MAG. São Paulo: Artliber, 2008.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**USINAGEM||
@@ -1011,7 +1011,7 @@ NOBREGA, P. L. R. Manutenção de Compressores Alternativos e Centrífugos. Rio 
 
 TOMAZ, P. Golpe de Ariete em Casas de Bombas. São Paulo: Navegar, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**CIRCUITOS HIDRÁULICOS E PNEUMÁTICOS||
@@ -1040,7 +1040,7 @@ BONACORSO, N. Automação Eletropneumática. 7. ed. São Paulo: Erica, 2004. PAR
 
 SILVA, N. F. Compressores Alternativos Industriais. São Paulo: Interciência, 2009. MENDONÇA, R. G. de. . Eletricidade Básica. Curitiba: Livro Técnico, 2012.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**ELEMENTOS DE MÁQUINAS||
@@ -1185,7 +1185,7 @@ SPECK, H. J. Desenho Técnico Auxiliado pelo Solidworks. Florianópolis: Visual 
 
 LEAKE, J.; BORGERSON, J. Manual de Desenho Técnico para Engenharia: São Paulo: LTC, 2010.
 
-|**CAMPUS CURITIBA DO IFPR**|**CAMPUS CURITIBA DO IFPR**|
+|**CAMPUS CURITIBA DO IFPR**||
 |---|---|
 |**Curso:**Técnico em Mecânica|**Eixo Tecnológico:**Cont. e Proc. Industriais|
 |**Componente Curricular:**COMANDO NUMÉRICO COMPUTADORIZADO||
@@ -1712,7 +1712,7 @@ INSTITUTO FEDERAL Parana
 
 ## **LABORATÓRIO DE USINAGEM**
 
-|**LABORATÓRIO DE USINAGEM**|**LABORATÓRIO DE USINAGEM**|**LABORATÓRIO DE USINAGEM**|
+|**LABORATÓRIO DE USINAGEM**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |12|Torno mecânico|Torno mecânico horizontal 1000mm entre pontas.|
@@ -1728,7 +1728,7 @@ INSTITUTO FEDERAL Parana
 
 **LABORATÓRIO DE SOLDAGEM**
 
-|**LABORATÓRIO DE SOLDAGEMORATÓRIO DE SOLDAGEMRATÓRIO DE SOLDAGEMÓRIO DE SOLDAGEMRIO DE SOLDAGEMO DE SOLDAGEM DE SOLDAGEMSOLDAGEMLDAGEMGEMEM**|**LABORATÓRIO DE SOLDAGEMORATÓRIO DE SOLDAGEMRATÓRIO DE SOLDAGEMÓRIO DE SOLDAGEMRIO DE SOLDAGEMO DE SOLDAGEM DE SOLDAGEMSOLDAGEMLDAGEMGEMEM**|**LABORATÓRIO DE SOLDAGEMORATÓRIO DE SOLDAGEMRATÓRIO DE SOLDAGEMÓRIO DE SOLDAGEMRIO DE SOLDAGEMO DE SOLDAGEM DE SOLDAGEMSOLDAGEMLDAGEMGEMEM**|
+|**LABORATÓRIO DE SOLDAGEMORATÓRIO DE SOLDAGEMRATÓRIO DE SOLDAGEMÓRIO DE SOLDAGEMRIO DE SOLDAGEMO DE SOLDAGEM DE SOLDAGEMSOLDAGEMLDAGEMGEMEM**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |7|Transformador de solda|Processo ER CA 110/220V,250A,60Hz.|
@@ -1743,7 +1743,7 @@ INSTITUTO FEDERAL Parana
 
 **LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**
 
-|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|
+|**LABORATÓRIO DE PROCESSOS DE FABRICAÇÃO (CONF. MECÂNICA)**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |1|Prensa hidráulica|Prensa hidráulica, Tipo C, com: Força no cilindro<br>superior de 150ton, Força no cilindro inferior de 60 ton,<br>Curso do cilindro de 600mm, Abertura do C = 800mm,<br>Mesa da prensa 800x800mm, Distância do centro da<br>mesa até a lateral interna do C 400mm, Velocidade<br>variávelde0 a 160mm/s.|
@@ -1754,7 +1754,7 @@ INSTITUTO FEDERAL Parana
 |1|Ferramenta de estampagem|Ferramental completo para ensaio de estampagem<br>Marciniak, que consta de matriz, punção cilíndrico,<br>prensa chapas sem "_drawbead_”, colunas e suportes para<br>fixação na prensa.|
 |1|Compressordear|Compressor apistão200pés|
 
-|**LABORATÓRIO DE METROLOGIA**|**LABORATÓRIO DE METROLOGIA**|**LABORATÓRIO DE METROLOGIA**|
+|**LABORATÓRIO DE METROLOGIA**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |1|Braço de medição|Braço articulado de medição por coordenadas, com<br>scanner a laser integrado. Raio de giro 1m.|
@@ -1780,7 +1780,7 @@ INSTITUTO FEDERAL Parana
 |3|Bancada metálica|Bancada metálica, perfil quadrado 40mm x 1,5 mm de<br>espessura, dimensões 200 x 90 x 60cm (comp. x alt. x<br>larg.).|
 |7|Bancada<br>para<br>práticas<br>de<br>medição|Bancada de madeira, dimensões 200 x 90 x 60cm (comp.<br>x alt. x larg.). Com cadeiras|
 
-|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|
+|**LABORATÓRIO DE MATERIAIS (ENSAIOS MECÂNICOS E METALOGRÁFICOS)**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 
@@ -1800,7 +1800,7 @@ INSTITUTO FEDERAL Parana
 |1|Microdurômetro Vickers|Durômetro de bancada digital escala Vickers, Força de<br>ensaio = 10 à 2.000kgf, lentes objetivas 10x e 50x,<br>ampliação de 100x e 500x e resolução de 0,2μm.|
 |1|Máquina ensaio de impacto|Máquina para ensaio de impacto Charpy e Izod.|
 
-|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|
+|**LABORATÓRIO DE COMANDOS HIDRÁULICOS E PNEUMÁTICOS - CHP**|||
 |---|---|---|
 |QTDE|EQUIPAMENTO|CARACTERÍSTICAS|
 |4|Bancada<br>hidráulica<br>/<br>eletrohidráulica|Gabinete móvel em aço com 1200x700x1800mm<br>(CxLxA), gaveteiros com 4 gavetas, 2 painéis perfilados<br>em alumínio extrudado com 1100x50mm (CxL), 1<br>bastidor para fixação de placas elétricas. Equipado com<br>cilindros,<br>válvulas,<br>sensores,<br>filtros,<br>pressostatos,<br>fluxostatos, manômetros, CLPs, bomba hidráulica e<br>software de desenho e simulação.|

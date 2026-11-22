@@ -35,7 +35,14 @@ import { dataW3cEmUtc, lerDocx } from "@simplifica-if/docx/leitor";
 import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
-import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "@simplifica-if/docx/tabelas";
+import {
+  colunasDaTabela,
+  formasDaTabela,
+  normalizarTabela,
+  tabelaEmMarkdown,
+  type TabelaNormalizada,
+  todasAsLinhas,
+} from "@simplifica-if/docx/tabelas";
 import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
@@ -64,32 +71,55 @@ function arquivosConvertidos(nome: string): Record<string, string> {
 // ---------------------------------------------------------------- leitor OOXML
 
 describe("leitor OOXML", () => {
-  test("mescla horizontal, vertical e em bloco: a célula mesclada se repete na grade", () => {
+  test("mescla horizontal, vertical e em bloco: a repetida copia a célula; a leitura, só na vertical", () => {
     const [grade] = tabelas(elementos("mesclas"));
-    expect(textos(grade!)).toEqual([
+    // O modelo guarda cada célula uma vez, com as colunas que ocupa.
+    expect(grade!.linhas[0]).toEqual([
+      { texto: "A", colunas: 1, continuacao: false },
+      { texto: "B e C", colunas: 2, continuacao: false },
+      { texto: "D", colunas: 1, continuacao: false },
+    ]);
+    const { leitura, repetida } = formasDaTabela(grade!);
+    expect(todasAsLinhas(repetida)).toEqual([
       ["A", "B e C", "B e C", "D"],
       ["Vertical", "x", "y", "z"],
       ["Vertical", "Bloco 2×2", "Bloco 2×2", "w"],
       ["fim", "Bloco 2×2", "Bloco 2×2", "v"],
     ]);
+    expect(todasAsLinhas(leitura)).toEqual([
+      ["A", "B e C", "", "D"],
+      ["Vertical", "x", "y", "z"],
+      ["Vertical", "Bloco 2×2", "", "w"],
+      ["fim", "Bloco 2×2", "", "v"],
+    ]);
   });
 
-  test("mescla em L: a continuação repete a célula de cima com a largura dela; `gridBefore` desloca a linha", () => {
+  test("mescla em L: a continuação repete a célula de cima só na largura dela; `gridBefore` desloca a linha", () => {
     const [, emL] = tabelas(elementos("mesclas"));
-    expect(textos(emL!)).toEqual([
+    expect(todasAsLinhas(formasDaTabela(emL!).repetida)).toEqual([
       ["Topo largo", "Topo largo", "1"],
-      ["Topo largo", "Topo largo", "perna", "2"],
-      ["solta", "3"],
+      ["Topo largo", "perna", "2"],
+      ["", "solta", "3"],
     ]);
   });
 
   test("mescla malformada não aborta: a continuação sem célula acima vale por si", () => {
     const [grade] = tabelas(elementos("mescla-malformada"));
-    expect(textos(grade!)).toEqual([
+    expect(todasAsLinhas(formasDaTabela(grade!).repetida)).toEqual([
       ["larga", "larga", "c"],
       ["a", "órfã", "c2"],
       ["a", "x", "y"],
     ]);
+  });
+
+  test("colunas da grade que nenhuma linha separa viram uma só na leitura", () => {
+    const [quadro] = tabelas(elementos("ementario-mesclado"));
+    const { leitura, repetida } = formasDaTabela(quadro!);
+    expect(colunasDaTabela(repetida)).toBe(3);
+    expect(colunasDaTabela(leitura)).toBe(1);
+    expect(leitura.cabecalho).toEqual(["COMPONENTE CURRICULAR: Programação I"]);
+    // E o quadro, de uma coluna na leitura, é reconhecido como ementário.
+    expect(converter("ementario-mesclado").resumos.ementario).toMatchObject({ total_componentes: 1 });
   });
 
   test("tabela sem texto e célula de vários parágrafos", () => {
@@ -549,7 +579,7 @@ describe("matriz curricular", () => {
       totais: { ch_ftp: 167, ch_fgb: 200, ch_np: 67, ch_total_hora_relogio: 484 },
     });
     expect(markdown).toContain("| 2 | Automação | 3 | 120 |  |  | 120 | 100 |");
-    expect(markdown).toContain("| TOTAL ANO HORA-RELÓGIO | TOTAL ANO HORA-RELÓGIO |  | 67 | 133 | 0 |  | 200 |");
+    expect(markdown).toContain("| TOTAL ANO HORA-RELÓGIO |  |  | 67 | 133 | 0 |  | 200 |");
   });
 });
 
@@ -598,6 +628,12 @@ describe("tabelas e ementário", () => {
       ],
       bibliografia_complementar: ["BRASIL. Catálogo Nacional de Cursos Técnicos. Brasília: MEC, 2024."],
     });
+    // O rótulo sozinho no primeiro parágrafo da célula, sem dois-pontos.
+    const rotuloSozinho = extrairComponenteDoEmentario({
+      cabecalho: ["COMPONENTE CURRICULAR: Química I"],
+      linhas: [["EMENTA<br>Introdução à Química."], ["BIBLIOGRAFIA BÁSICA:<br>SILVA, Ana. Livro um. Atlas, 2020."]],
+    });
+    expect(rotuloSozinho?.ementa).toBe("Introdução à Química.");
   });
 
   test("referências emendadas são separadas por ano, hífen de lista, local aproximado e autor", () => {

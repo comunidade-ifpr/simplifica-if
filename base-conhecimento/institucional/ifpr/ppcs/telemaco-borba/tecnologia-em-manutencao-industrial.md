@@ -84,7 +84,7 @@ Noturno.
 
 |**Período**|**Segunda-feira**|**Terça-feira**|**Quarta-feira**|**Quinta-feira**|**Sexta-feira**|
 |---|---|---|---|---|---|
-|Noturno|19h00min às<br>22h40min|19h00min às<br>22h40min|19h00min às<br>22h40min|19h00min às<br>22h40min|19h00min às<br>22h40min|
+|Noturno|19h00min às<br>22h40min|||||
 
 ## **1.1.8 Prazo de Integralização Curricular**
 
@@ -707,7 +707,7 @@ Além disso, a utilização de computadores, internet, softwares e jogos eletrô
 
 ## **4.1.2 Matriz Curricular**
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº11.892 de 29/11/2008)|||||
 ||C_ampus_Telêmaco Borba|||||
@@ -1833,7 +1833,7 @@ Quadro 1: Docentes que integram o Núcleo Docente Estruturante do curso de Tecno
 |---|---|---|---|
 ||**Titulação**<br>**Regime de**<br>**trabalho**||**Link currículo lattes**|
 
-|||Manutenção Industrial.|Manutenção Industrial.|Manutenção Industrial.|
+|||Manutenção Industrial.|||
 |---|---|---|---|---|
 |**Nome completo**|**Graduação**|**Titulação**|**Regime de**<br>**trabalho**|**Link currículo lattes**|
 |Ademir Stefano Piechnicki|Tecnologia em<br>Fabricação<br>Mecânica|Mestre|DE|http://lattes.cnpq.br/3491061993340633|
@@ -2971,7 +2971,7 @@ ANEXO I – LABORATÓRIOS E EQUIPAMENTOS
 
 ## **LABORATÓRIOS – EQUIPAMENTOS**
 
-|**LABORATÓRIOS – EQUIPAMENTOS**|**LABORATÓRIOS – EQUIPAMENTOS**|**LABORATÓRIOS – EQUIPAMENTOS**|
+|**LABORATÓRIOS – EQUIPAMENTOS**|||
 |---|---|---|
 ||||
 |**Laboratório de Física - Materiais Permanentes**|||
@@ -3523,7 +3523,7 @@ DIMENSÕES APROXIMADAS (L X A X P) 47 X 70 X 48 CM
 |CONDICIONADOR DE AR|CONDICIONADOR DE AR 60.000 BTU'S|1|
 |ESTABILIZADOR DE FREQUÊNCIA|ESTABILIZADOR 1500 VA,BIVOLT AUTOMÁTICO,5 TOMADAS,115V,COM PROTEÇÃO TELEFÔNICA,NORMA NBR 14373.|2|
 |ESTABILIZADOR TENSÃO|NOBREAK 1400 VA,ENTRADA BIVOLT AUTOMÁTICO, 8 TOMADAS DE SAÍDA 115 PADRÃO NBR 14136, 4 ESTÁGIOS DE<br>REGULAÇÃO,RECARGA DE BATERIA AUTOMÁTICA, GERENCIAMENTO DE BATERIAS, PROTEÇÃO CONTRA CURTOS,FUSÍVEL DE<br>PROTEÇÃO DE ENTRADA AC|3|
-|LOUSA INTERATIVA|LOUSA INTERATIVA|1|
+|LOUSA INTERATIVA||1|
 |MESA MICROCOMPUTADOR|COM PORTA-TECLADO RETRÁTIL, ESTRUTURA EM AÇO TUBULAR RETANGULAR 30X50MM C/ TRATAMENTO SUPERFICIAL C/ ANTI-<br>FERRUGINOSO FOSFATIZANTE E PINTURA; ACABAMENTO EM MELAMÍNICO; TAMPO EM MDF 20MM DE ESPESSURA (NO MÍNIMO);<br>REVESTIMENTO EM MELAMÍNICO;ACABAMENTO PADRÃO CASCA DE OVO.|24|
 |MESA MICROCOMPUTADOR|CANTO ARREDONDADO|1|
 |MICROCOMPUTADOR|Desktop PC - AMD Sempron 145 2.8GHz, 2GB DDR3, 160GB HDD, DVD-ROM, ATI Radeon HD 4200, Windows xp profissional 32 bit<br>(MONITOR,CPU,TECLADO E MOUSE)|20|

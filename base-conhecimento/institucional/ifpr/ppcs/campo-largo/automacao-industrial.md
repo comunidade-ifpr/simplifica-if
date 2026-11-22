@@ -46,7 +46,7 @@ ABERTURA DE CURSO: ( )
 
 AJUSTE CURRICULAR DE CURSO: ( X ) RESOLUÇÃO DE CRIAÇÃO: Resolução nº 12/15 – Conselho Superior do IFPR
 
-|**COMISSÃO DEAJUSTE CURRICULAR - Portaria90/2019**|**COMISSÃO DEAJUSTE CURRICULAR - Portaria90/2019**|
+|**COMISSÃO DEAJUSTE CURRICULAR - Portaria90/2019**||
 |---|---|
 |**Função**|**Nome**|
 |Coordenador do Curso (Presidente)|Antônio Brandão Campos do Mar|
@@ -158,7 +158,7 @@ relacionadas (tabela 1), sendo apenas 28.712 estão formalmente empregados (tabe
 
 **Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**
 
-|**Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**|**Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**|
+|**Tabela 1. Pessoas ocupadas por área de atividade econômica em Campo Largo**||
 |---|---|
 |**ATIVIDADES ECONÔMICAS                                                      Nº DE PESSOAS**||
 |Agricultura, pecuária, produção florestal, pesca e aquicultura|4.303|
@@ -700,7 +700,7 @@ VIANA, Antonio Carlos (Coord.). **Roteiro de Redação: lendo e argumentando** .
 
 Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado Eixo Tecnológico: Controle e ao Ensino Médio Processos Industriais Componente Curricular: **Matemática I** Carga Horária (hora relógio): 80h Período letivo: 1º ano **Ementa** Conversão de medidas, trigonometria no triângulo retângulo e triângulo qualquer; Introdução à teoria dos conjuntos, operações com conjuntos, conjuntos numéricos, intervalos; Introdução à linguagem das funções, estudo da função afim, função quadrática, função modular, função exponencial, função logarítmica e inequações. **Bibliografia Básica** IEZZI, Gelson; MURAKAMI, Carlos. **Fundamentos da Matemática Elementar** : conjuntos, funções, volume 1, 9ª ed. São Paulo: Editora Atual, 2013. IEZZI, Gelson; MURAKAMI, Carlos; DOLCE Osvaldo. **Fundamentos da Matemática Elementar** : logaritmos, volume 2, 9ª ed. São Paulo: Editora Atual, 2013. IEZZI, Gelson. **Fundamentos da Matemática Elementar** : trigonometria, volume 3, 9ª ed. São Paulo: Editora Atual, 2013. **Bibliografia Complementar** BALESTRI, Rodrigo. **Matemática:** Interação e Tecnologia, volume 1, 2ª ed. São Paulo: Leya, 2016. IEZZI, Gelson, et. al. **Matemática ciência e aplicações** , volume 1, 7ª ed. São Paulo: Editora Saraiva, 2013. NETTO, Scipione Di Perro; FILHO, Sérgio Orsi; CARVALHO, Maria Cecília. **Quanta** : Matemática: ensino médio, 1º ano, volume 1, 3ª ed. São Paulo: Editora Saraiva, 2013. SOUZA, Joamir Roberto de; GARCIA, Jacqueline da Silva Ribeiro. **# contato matemática** , 1° ano, 1ª ed. São Paulo: FTD, 2016.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado ao<br>EnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**História I**||
@@ -710,7 +710,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado E
 |**Bibliografia Complementar**<br>EYLER, Flávia Schlee.**História Antiga:**Grécia e Roma - a formação do Ocidente. 3.<br>ed. Rio de Janeiro: PUC; Petrópolis: Vozes, 2014.<br>GERMINARI, Geyso Dongley.**Histórias de Campo Largo.**1. ed. Campo Largo: Edição<br>do autor, 2012.<br>HOBSBAWM, Eric.**A Era das Revoluções (1789-1848).**25. ed. São Paulo: Paz e<br>Terra, 2012.<br>MATTOS, Regiane Augusto de.**História e cultura afro-brasileira.**2. ed. São Paulo:<br>Contexto, 2007.<br>MICELI, Paulo.**História moderna.**1. ed. São Paulo: Contexto, 2013.<br>DEL PRIORE, Mary.**Histórias da gente brasileira:**Colônia. 1. ed. São Paulo: Leya,<br>2016.<br>RIBEIRO, Berta.**O índio na História do Brasil.**12.ed. São Paulo: Global, 2009.<br>SOUZA, Marina de Mello e.**África e Brasil africano.**3. ed. São Paulo: Ática, 2012.||
 |||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado ao<br>EnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Geografia I**||
@@ -724,7 +724,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado a
 
 DESSEN, M.A.; COSTA JUNIOR, A.L. A **Ciência do desenvolvimento humano** : tendências atuais e perspectivas futuras. Porto Alegre: Artmed, 2005. GALLAHUE, David L.; OZMUN, John C.; GOODWAY, Jackie D. **Compreendendo o desenvolvimento motor** : bebês, crianças, adolescentes e adultos. AMGH Editora, 2013. PELICIONI, M. C. F; TORRES, A.L. **A Escola Promotora de Saúde** . São Paulo: Departamento de Práticas de Saúde Pública, 1999.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Química I**||
@@ -734,7 +734,7 @@ DESSEN, M.A.; COSTA JUNIOR, A.L. A **Ciência do desenvolvimento humano** : tend
 |**Bibliografia Complementar**<br>DOS SANTOS, W. L. P., MÓL, G. S.,_et al._;**Química Cidadã**– Volume 1. 3. ed. São<br>Paulo: Editora AJS, 2016. ISBN 9788583191254.<br>LISBOA, J. C. F., BRUNI, A. T.,_et al._;**Ser Protagonista:**Química – Volume 1. 3. ed.<br>São Paulo: Edições SM, 2016. ISBN 9788541813891.<br>NOVAIS, V. L. D., ANTUNES, M. T.;**Vivá**: Química – Volume 1. 1. ed. Curitiba: Positivo,<br>_2016_. ISBN 9788546707973.<br>MAIA, D. J., BIANCHI, J. C.;**Química Geral.**Pearson 448. ISBN 9788576050513||
 |||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Física I**||
@@ -788,7 +788,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado E
 
 Práticas de leitura e intelecção de textos, visando a formação do leitor crítico. As interfaces de leitura de textos verbais e não verbais, permitindo a reflexão analítica e crítica sobre as linguagens, os códigos e suas tecnológicas, como fenômeno social, educacional, histórico, cultural e ideológico. O estudo do texto literário como uma experiência singular de expressão, interpretação e representação da realidade social e do seu contexto sociocultural e tecnológico, com ênfase aos textos ficcionais e não ficcionais produzidos no século XIX em Portugal e no Brasil. **Bibliografia Básica** CEREJA, Willian Roberto; MAGALHÃES, Thereza Cochar. **Português: Linguagens.** Editora Atual, São Paulo, 2006. FARACO & MOURA. **Língua Portuguesa e Literatura.** Editora Ática, São Paulo, 1997. GRANATIC, Branca. **Redação, Humor e Criatividade.** Editora Scipione, São Paulo, 1997. **Bibliografia Complementar** ABREU, Antônio Suárez. **Curso de redação.** Editora Ática. São Paulo, 2004. KOCH, Ingedore G. Villaça. A coesão textual. Editora Contexto. São Paulo, 2000. CADORE, Luís Agostinho. **Curso prático de Português** . São Paulo: Ática, 1999. AMARAL, Emília ; FERREIRA Mauro; LEITE, Ricardo Silva; ANTONIO Severino. **Novas Palavras** 2. 1° Edição. Editora FTD, São Paulo, 2010. NICOLA, José De. **Língua, Literatura e Produção de Textos** 2. 1° Edição. Editora Scipione, São Paulo, 2009.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso:<br>Técnico<br>em<br>Automação<br>Industrial<br>Integrado aoEnsinoMédio|Eixo<br>Tecnológico:<br>Controle<br>e<br>ProcessosIndustriais|
 |Componente Curricular:**Matemática II**||
@@ -811,7 +811,7 @@ Processos de independência nas colônias espanholas. Emancipação política do
 
 Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado ao Eixo Tecnológico: Controle e Ensino Médio Processos Industriais Componente Curricular: **Geografia II** Carga Horária (hora aula): 80h Período letivo: 2º ano **Ementa** Espaço geográfico brasileiro; O Brasil e a globalização; Sociedade e espaço geográfico brasileiro. Geografia do Paraná. **Bibliografia Básica** MOREIRA, J. C.; SENE, E. **Geografia para o Ensino Médio.** Volume único. São Paulo: Scipione, 2010. BOLIGIAN, L.; ALVES, A. **Geografia espaço e vivência:** as paisagens e as dinâmicas da natureza e da sociedade. São Paulo: Saraiva, 2010. BOLIGIAN, L.; ALVES, A. **Geografia espaço e vivência:** os espaços urbano e rural mundiais, organização do território brasileiro. São Paulo: Saraiva, 2010. **Bibliografia Complementar** TAMIANO, J. O.; MENDES, L. **Geografia:** estudos para compreensão do espaço. Volume 1. São Paulo: FTD, 2010. FIZ, P. R. **Cartografia básica.** São Paulo: Oficina de Textos, 2008. HAESBAERT, R. **Desterritorialização e Identidade:** a rede “gaúcha” no nordeste. Niterói: EdUFF, 1997. MAGNOLI, D. **Projeto de Ensino de Geografia - Naturezas, Tecnologias, Sociedades – Geografia Geral** . São Paulo: Moderna, 2004. POPP, J. H. **Geologia Geral.** Rio de Janeiro: LTC, 2012. STEINKE, E. T. **Climatologia fácil** . São Paulo: Oficina de Textos, 2012.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Química II**||
@@ -820,7 +820,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado a
 |**Bibliografia Básica**<br>ATKINS, P. W.; JONES, L.**Princípios de Química:**Questionando a Vida Moderna e o<br>Meio Ambiente. 5. ed. Porto Alegre: Bookman, 2012. 922 p. ISBN 9788540700383.<br>RUSSELL, J. B.**Química Geral**. 2. ed. São Paulo: Pearson Makron Books, 1994. 2 v.<br>ISBN 9788534601924.<br>FELTRE, R.**Fundamentos da Química:**Volume Único. 4. ed. São Paulo: Moderna,<br>2005. 700 p. ISBN 9788516048129.||
 |**Bibliografia Complementar**<br>DOS SANTOS, W. L. P., MÓL, G. S.,_et al._;**Química Cidadã**– Volume 2. 3. ed. São<br>Paulo: Editora AJS,**2016**. ISBN 9788583191254.<br>LISBOA, J. C. F., BRUNI, A. T.,_et al._;**Ser Protagonista**: Química – Volume 2. 3. ed.<br>São Paulo: Edições SM,**2016**. ISBN 9788541813891.<br>NOVAIS, V. L. D., ANTUNES, M. T.;**Vivá:**Química – Volume 2. 1. ed. Curitiba: Positivo,<br>_2016_. ISBN 9788546707973.<br>MAIA, D. J., BIANCHI, J. C.;**Química Geral.**Pearson 448. ISBN 9788576050513||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Física II**||
@@ -935,7 +935,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado E
 
 Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado Eixo Tecnológico: Controle e ao Ensino Médio Processos Industriais Componente Curricular: **Matemática III** Carga Horária (hora relógio): 80h Período letivo: 3º ano **Ementa** Geometria plana, geometria espacial, geometria analítica, sequências e progressões, análise combinatória. **Bibliografia Básica** IEZZI, Gelson, HAZZAN Samuel. **Fundamentos da Matemática Elementar** : sequências, matrizes, determinante, sistemas lineares, volume 4, 9ª ed. São Paulo: Editora Atual, 2013. HAZZAN Samuel. **Fundamentos da Matemática Elementar** : combinatória, probabilidade, volume 5, 9ª ed. São Paulo: Editora Atual, 2013. IEZZI, Gelson. **Fundamentos da Matemática Elementar** : geometria analítica, volume 7, 9ª ed. São Paulo: Editora Atual, 2013. DOLCE Osvaldo, POMPEO, José Nicolau. **Fundamentos da Matemática Elementar** : geometria plana,  volume 9, 9ª ed. São Paulo: Editora Atual, 2013. **Bibliografia Complementar** BALESTRI, Rodrigo, **Matemática:** Interação e Tecnologia, volume 1,2 e 3, 2ª ed. São Paulo: Leya, 2016. DOLCE Osvaldo, POMPEO, José Nicolau. **Fundamentos da Matemática Elementar** : geometria espacial, posição, métrica, volume 10, 9ª ed. São Paulo: Editora Atual, 2013. IEZZI, Gelson, et. al. **Matemática ciência e aplicações** , volume 1, 2 e 3, 7ª ed. São Paulo: Editora Saraiva, 2013. SOUZA, Joamir Roberto de, GARCIA, Jacqueline da Silva Ribeiro. **# contato matemática,** 1º, 2º e 3° ano, 1ª ed. São Paulo: FTD, 2016.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Biologia II**||
@@ -960,7 +960,7 @@ ARANHA, M. L. A.; MARTINS, M. H. **Filosofando.** São Paulo: Moderna, 2003. CHA
 
 ABAGNANNO, N. **Dicionário de Filosofia.** 6 ed. São Paulo: Martins Fontes, 2012. CHAUÍ, M. **Introdução à História da Filosofia.** 2 ed. São Paulo: Cia das Letras, 2002. MARCONDES, D. **Textos básicos de filosofia:** dos pré-socráticos a Wittgenstein 2 ed. Rio de Janeiro: Jorge Zahar, 2000. HRYNIEWICZ, Severo. **Para Filosofar** . 8 ed. Rio de Janeiro: Lumen Juris, 2010. VÁSQUEZ, Adolfo Sanchez. **Ética** . 5 ed. Rio de Janeiro: Civilização Brasileira, 2005.
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Física III**||
@@ -969,7 +969,7 @@ ABAGNANNO, N. **Dicionário de Filosofia.** 6 ed. São Paulo: Martins Fontes, 20
 |**Bibliografia Básica**<br>TORRES, CM; FERRARO, NG; SOARES PA; PENTEADO, PC.**Física**- Ciência e<br>Tecnologia. Eletromagnetismo, Física Moderna, Ed. Moderna, Vol 3, 2016.<br>FUKE, LUIS FELIPE; YAMAMOTO, KAZUHITO.**Física para o Ensino Médio**–<br>Eletricidade e Física Moderna. Volume 3, São Paulo: Ed. Saraiva, 2010.<br>FUKUI, ANA; MOLINA, MADSON DE M.**Ser Protagonista**– Física. Volume 3. São<br>Paulo, 2ª. Edição, Ed. SM, 2013.<br>PENTEADO, PAULO CEZAR M.**Física**: Conceitos e Aplicações. Volume 3, Ed.<br>Moderna, 1998.<br>RAMALHO JR., FRANCISCO.**Os Fundamentos da Física**. Volume 3. São Paulo, Ed.<br>Moderna, 1999.<br>GASPAR, ALBERTO.**Física**– Eletromagnetismo e Física Moderna. Volume 3, 1ª.<br>Edição, Ed. Ática, 2000.||
 |**Bibliografia Complementar**<br>HALLIDAY, DAVID.**Física Básica**. Volume 3, 2ª. Edição, Ed. LTC, 1991.<br>TIPLER, PAUL A.**Física – Gravitação, Termodinâmica e Ondas**, Volume 3. 3ª.<br>Edição, Ed. LTC, 1991.<br>NUSSENNZVEIG, HERCH MOYSÉS.**Curso de Física Básica – Eletromagnetismo**,<br>Volume 3, 5ª. Edição, Ed. Blucher, 2013.<br>NUSSENNZVEIG, HERCH MOYSÉS.**Curso de Física Básica – Óptica, Relatividade**<br>**e Física Quântica**, Volume 4, 5ª. Edição, Ed. Blucher, 2013.<br>RAMOS, LUIZ A. MACEDO.**Física Experimental**. Ed. Mercado Aberto, 1984.||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Sociologia I**||
@@ -978,7 +978,7 @@ ABAGNANNO, N. **Dicionário de Filosofia.** 6 ed. São Paulo: Martins Fontes, 20
 |**Bibliografia Básica**<br>ARAÚJO, Silvia Maria de; BRIDI, Maria Aparecida; MOTIM, Benilde Lenzi.**Sociologia**:<br>ensino médio: volume único. São Paulo: Scipione, 2013.<br>COSTA, Cristina.**Introdução à ciência da sociedade**. 5. ed. São Paulo: Moderna,<br>2016.<br>TOMAZI, Nelson Dacio.**Sociologia para o ensino médio**: volume único. 2. ed. São<br>Paulo: Saraiva, 2010.||
 |**Bibliografia Complementar**<br>BERGER, Peter Ludwig.**Perspectivas sociológicas**: uma visão humanística. 31. ed.<br>Petrópolis: Vozes, 2011.<br>GIDDENS, Anthony.**Sociologia**. 6. ed. Porto Alegre: Penso, 2012.<br>GOMES, Mércio Pereira.**Antropologia**: ciência do homem: filosofia da cultura. 2. ed.<br>São Paulo: Contexto, 2012.<br>MARTINS, Carlos Benedito.**O que é sociologia**. São Paulo: Brasiliense, 2006.<br>(Coleção Primeiros Passos, 57)||
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado ao<br>Ensino Médio|Eixo Tecnológico: Controle e<br>Processos Industriais|
 |Componente Curricular:**Arte I**||
@@ -1010,7 +1010,7 @@ THOMAZINI, D.; ALBUQUERQUE, P. U. B. **Sensores industriais:** fundamentos e apl
 
 Campus Campo Largo do IFPR
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>ao Ensino Médio|<br>Eixo<br>Tecnológico:<br>Controle<br>e<br>Processos Industriais|
 |Componente Curricular:**Automação Pneumática e Hidráulica**||
@@ -1029,7 +1029,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado a
 
 ## **4º ANO**
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Língua Portuguesa e Literatura Brasileira IV**||
@@ -1038,7 +1038,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado a
 |**Bibliografia Básica**<br>ANDRÉ, H. A.**Curso de redação**. 5. ed. São Paulo, Moderna, 1999.<br>BENVENISTE, E. Da subjetividade na linguagem. In: ___ .**Problemas de linguística**<br>**geral**I.  2 ed. Campinas: Ed. da Unicamp; Ed. Pontes, 1988.<br>MARCUSCHI, Luiz Antônio & XAVIER, Antônio Carlos (orgs.).**Hipertexto e gêneros**<br>**textuais.**Rio de Janeiro: Lucerna, 2004.<br>NEVES, Maria Helena de Moura.**Gramática de usos do português.**São Paulo:<br>UNESP, 2000.||
 |**Bibliografia Complementar**<br>ANTUNES, Irandé.**Lutar com palavras: coesão e coerência.**São Paulo: Parábola,<br>2005. (Na Ponta da Língua, 13).<br>ANTUNES, Irandé.**Análise de textos: fundamentos e práticas**. São Paulo: Parábola,<br>2010. (Estratégias de Ensino, 21)<br>BAKHTIN, M. 1953. Os gêneros do discurso. In: ___ .**Estética da criação verbal**. Trad.<br>do russo de Paulo Bezerra. São Paulo: Livraria Martins Fontes, 2010.<br>BARBOSA, Jacqueline Peixoto.**Notícia.**São Paulo: FTD, Coleção Trabalhando os<br>gêneros do discurso, 2001.<br>BARBOSA, Jacqueline Peixoto.**Receita.**São Paulo: FTD, Coleção Trabalhando os<br>gêneros do discurso, 2003.||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado ao<br>EnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Matemática IV**||
@@ -1047,7 +1047,7 @@ Campus Campo Largo do IFPR Curso: Técnico em Automação Industrial Integrado a
 |**Bibliografia Básica**<br>IEZZI, Gelson, MURAKAMI,Carlos.**Fundamentos da Matemática Elementar**:<br>conjuntos, funções, volume 1, 9ª ed. São Paulo: Editora Atual, 2013.<br>HAZZAN<br>Samuel.<br>**Fundamentos**<br>**da**<br>**Matemática**<br>**Elementar**:<br>combinatória,<br>probabilidade, volume 5, 9ª ed. São Paulo: Editora Atual, 2013.<br>IEZZI, Gelson.**Fundamentos da Matemática Elementar**: complexos, polinômios,<br>equações, volume 6, 9ª ed. São Paulo: Editora Atual, 2013.||
 |**Bibliografia Complementar**<br>BALESTRI, Rodrigo,**Matemática**: Interação e Tecnologia, volume 1,2 e 3, 2ª ed. São<br>Paulo: Leya, 2016.<br>IEZZI, Gelson, et. al.**Matemática ciência e aplicações,**volume 1, 2 e 3, 7ª ed. São<br>Paulo: Editora Saraiva, 2013.<br>SOUZA, Joamir Roberto de, GARCIA, Jacqueline da Silva Ribeiro.**# contato**<br>**matemática**, 1º, 2º e 3° ano, 1ª ed. São Paulo: FTD, 2016.<br>HAZZAN, Samuel, POMPEO, José Nicolau.**Matemática financeira.**7a ed. São<br>Paulo:Saraiva,2014.||
 
-|Campus CampoLargo doIFPR|Campus CampoLargo doIFPR|
+|Campus CampoLargo doIFPR||
 |---|---|
 |Curso: Técnico em Automação Industrial Integrado<br>aoEnsinoMédio|Eixo Tecnológico: Controle e<br>ProcessosIndustriais|
 |Componente Curricular:**Sociologia II**||

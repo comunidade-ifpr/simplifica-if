@@ -1911,7 +1911,7 @@ A investidura na Carreira de Técnico Administrativo em Educação, se dá unica
 
 ## **QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**
 
-|**QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**|**QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**|**QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**|**QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**|**QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**|
+|**QUADRO GERAL DOS TÉCNICOS DO CAMPUS COLOMBO**|||||
 |---|---|---|---|---|
 ||||||
 |**Servidor**|**Departamento**|**Cargo**|**Titulação**|**Nível**|
@@ -2229,7 +2229,7 @@ O horário de funcionamento da Biblioteca do Campus Colombo é estabelecido de a
 
 |**Segunda-feira**|**Terça-feira**|**Quarta-feira**|**Quinta-feira**|**Sexta-feira**|
 |---|---|---|---|---|
-|9h às 21h|9h às 21h|9h às 21h|9h às 21h|9h às 21h|
+|9h às 21h|||||
 
 Atualmente a biblioteca conta com dois servidores, TAES, Antonio Daudt, Bibliotecário e Documentalista (15h às 21h); e Kerly Cristina de Souza, Assistente em Administração (09h às 15h). Seu espaço físico consiste em 96m², contendo: duas mesas de estudos; quatro computadores com acesso à internet para consulta dos(as) alunos(as); duas mesas de atendimento com computador; três armários com portas chaveadas; duas estantes de exposição; um carrinho para livros; e, dois armários para bolsas dos(as) alunos(as). O espaço da biblioteca também conta com rede Wi-fi com dedicação exclusiva aos(às) alunos(as) com 20 megas.
 

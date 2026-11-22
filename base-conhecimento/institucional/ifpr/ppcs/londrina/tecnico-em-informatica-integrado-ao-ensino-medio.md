@@ -904,7 +904,7 @@ Salienta-se ainda que esses conteúdos específicos devem ser recorrentes nas at
 
 ## **1º ANO**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -921,7 +921,7 @@ Salienta-se ainda que esses conteúdos específicos devem ser recorrentes nas at
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1009,7 +1009,7 @@ GASPAR, Alberto. **Compreendendo a Física.** V.1. São Paulo: Ática, 2014. 304
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1066,7 +1066,7 @@ BRAICK, Patrícia Ramos. **História** : das cavernas ao terceiro milênio. 2.ed
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1082,7 +1082,7 @@ BRAICK, Patrícia Ramos. **História** : das cavernas ao terceiro milênio. 2.ed
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1096,7 +1096,7 @@ BRAICK, Patrícia Ramos. **História** : das cavernas ao terceiro milênio. 2.ed
 
 48
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -1194,7 +1194,7 @@ Vários Autores. **Dicionário manual espanhol-português.** Madrid: Ed. VOX, 20
 
 **2º ANO**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -1213,7 +1213,7 @@ Vários Autores. **Dicionário manual espanhol-português.** Madrid: Ed. VOX, 20
 
 56
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -1256,7 +1256,7 @@ BRUHNS, H. T. **O corpo parceiro e o corpo adversário.** Campinas: Papirus, 200
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1302,7 +1302,7 @@ GASPAR, Alberto. **Compreendendo a Física.** V.1. São Paulo: Ática, 2014. 304
 
 62
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -1368,7 +1368,7 @@ Apropriação dos efeitos de sentido dos recursos linguístico-discursivos neces
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1425,7 +1425,7 @@ VERA CLOTILDE GARCIA (Rio Grande do Sul). Instituto de Matemática - Universidad
 
 69
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -1440,7 +1440,7 @@ VERA CLOTILDE GARCIA (Rio Grande do Sul). Instituto de Matemática - Universidad
 
 70
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo Tecnológico**: Informação e Comunicação|
@@ -1503,7 +1503,7 @@ PALACIOS, M.; CATINO, G. Espanhol para o Ensino Médio. São Paulo: Scipione, 20
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1519,7 +1519,7 @@ PALACIOS, M.; CATINO, G. Espanhol para o Ensino Médio. São Paulo: Scipione, 20
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1567,7 +1567,7 @@ TERÇARIOLI, Gisela Ramos; PALEARI, Lucia Maria; BAGAGLI, Eduardo. O incrível m
 
 **Componente Curricular:** Educação Física III
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular:**Educação Física III||
@@ -1617,7 +1617,7 @@ NUSSENZVEIG, Moysés H. **Curso de Física Básica: Fluidos, Oscilações e Onda
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1686,7 +1686,7 @@ SOUZA, Laura. M. **Desclassificados do ouro:** a pobreza mineira no século XVII
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1702,7 +1702,7 @@ SOUZA, Laura. M. **Desclassificados do ouro:** a pobreza mineira no século XVII
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1718,7 +1718,7 @@ SOUZA, Laura. M. **Desclassificados do ouro:** a pobreza mineira no século XVII
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1744,7 +1744,7 @@ VERA CLOTILDE GARCIA (Rio Grande do Sul). Instituto de Matemática - Universidad
 
 87
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -1761,7 +1761,7 @@ VERA CLOTILDE GARCIA (Rio Grande do Sul). Instituto de Matemática - Universidad
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1825,7 +1825,7 @@ PALACIOS, M.; CATINO, G. Espanhol para o Ensino Médio. São Paulo: Scipione, 20
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1854,7 +1854,7 @@ AMABIS, José Mariano; MARTHO, Gilberto Rodrigues. Biologia 1 – Biologia das C
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1904,7 +1904,7 @@ NUSSENZVEIG, Moysés H. **Curso de Física Básica: Eletromagnetismo.** V.3. Sã
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1918,7 +1918,7 @@ NUSSENZVEIG, Moysés H. **Curso de Física Básica: Eletromagnetismo.** V.3. Sã
 
 97
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico em Informática Integrado ao|**Eixo**<br>**Tecnológico:**<br>Informação<br>e|
@@ -1939,7 +1939,7 @@ HOBSBAWM, Eric J. A Era dos Extremos: o breve século XX: 1914 – 1991. Trad. M
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1955,7 +1955,7 @@ HOBSBAWM, Eric J. A Era dos Extremos: o breve século XX: 1914 – 1991. Trad. M
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1971,7 +1971,7 @@ HOBSBAWM, Eric J. A Era dos Extremos: o breve século XX: 1914 – 1991. Trad. M
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -1987,7 +1987,7 @@ HOBSBAWM, Eric J. A Era dos Extremos: o breve século XX: 1914 – 1991. Trad. M
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -2017,7 +2017,7 @@ MARIA CRISTINA BONOMI BARUFFI (São Paulo). Pró-reitoria de Graduação da Univ
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -2033,7 +2033,7 @@ MARIA CRISTINA BONOMI BARUFFI (São Paulo). Pró-reitoria de Graduação da Univ
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -2047,7 +2047,7 @@ MARIA CRISTINA BONOMI BARUFFI (São Paulo). Pró-reitoria de Graduação da Univ
 
 105
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |||
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
@@ -2064,7 +2064,7 @@ MARIA CRISTINA BONOMI BARUFFI (São Paulo). Pró-reitoria de Graduação da Univ
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|
@@ -2100,7 +2100,7 @@ DAMATTA, Roberto. O que faz o Brasil, Brasil. Rio de Janeiro: Rocco, 1984. FOUCA
 
 ## **Campus Londrina do IFPR**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico<br>em<br>Informática<br>Integrado<br>ao|<br>**Eixo**<br>**Tecnológico**:<br>Informação<br>e|
 |Ensino Médio|Comunicação|

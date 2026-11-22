@@ -1134,7 +1134,7 @@ Adicionalmente, é possibilitado ao estudante devidamente matriculado no curso T
 
 ## **3.12.5.1 Componentes Curriculares Obrigatórios**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Biotecnologia|**Eixo Tecnológico:**Produção Industrial|
 |<br>Integrado ao Ensino Médio||
@@ -2160,7 +2160,7 @@ PADILHA, Paulo Roberto. Currículo intertranscultural: novos itinerários para a
 
 ## **3. 12.5.1 Componentes Curriculares Optativos**
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Biotecnologia Integrado|d<br>**Eixo Tecnológico:**Pro ução Industrial|
 |ao Ensino Médio||
@@ -2170,7 +2170,7 @@ PADILHA, Paulo Roberto. Currículo intertranscultural: novos itinerários para a
 |**BIBLIOGRAFIA BÁSICA**<br>FERNÁNDEZ, G. E.; MORENO, C.**Gramática Constrativa Del Español para Brasileños**.<br>Madrid: Sgel Educación, 2005.<br>MASIP, Vicente.**Gramática histórica espanhola e portuguesa**: um estudo sintético e<br>contrastivo. São Paulo: Editora E.P.U., 2003.<br>MILANI, Esther Maria.**Gramática de Espanhol para brasileiros**. São Paulo: Editora Saraiva,<br>2006.<br>MOLINER, Maria.**Diccionário de uso del español.**Madrid: Ed. GREDOS, 2007.<br>SILVA, C. F.**Español Através de Textos**. Rio de Janeiro: Ao livro técnico, 2004.||
 |**BIBLIOGRAFIA COMPLEMENTAR**<br>Vários Autores.**Dicionário manual espanhol-português.**Madrid: Ed. VOX, 2008.<br>PALACIOS, M.; CATINO, G.**Espanhol para o Ensino Médio.**São Paulo: Scipione, 2004.<br>SECO, Manuel.**Diccionário de dudas y dificultades em la lengua española.**Madrid:<br>Espasa Calpe, 1998.<br>SCHWARTZ, Jorge.**As vanguardas latino-americanas: polêmicas, manifestos e textos**<br>**críticos.**São Paulo: Edusp, 2008.<br>YURKIEVICH, Saúl.**Fundadores de la nueva poesia latinoamericana.**Barcelona: Edhasa,<br>2002.||
 
-|**Campus Londrina do IFPR**|**Campus Londrina do IFPR**|
+|**Campus Londrina do IFPR**||
 |---|---|
 |**Curso:**Técnico em Biotecnologia Integrado|r<br>**Eixo Tecnológico:**P odução Industrial|
 |ao Ensino Médio||

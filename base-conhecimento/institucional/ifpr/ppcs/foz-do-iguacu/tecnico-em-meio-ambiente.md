@@ -1630,7 +1630,7 @@ CARVALHO, Regina Pinto de. **Física do dia a dia 1** - 105 perguntas e resposta
 
 VACCA, Roberto. **La ciencia de todas las mañanas: Física para los que no saben nada de física** . Barcelona: Editorial Crítica, 2009. (ISBN: 978-84-7423-930-0)
 
-|**Componente Curricular**: Matemática III|**Componente Curricular**: Matemática III|
+|**Componente Curricular**: Matemática III||
 |---|---|
 |**Carga Horária**80 horas-aula|**Período letivo:**3º ano|
 |**Ementa:**<br>Conceitos Trigonométricos na Circunferência; Transformações Trigonométricas;<br>Funções Trigonométricas. Geometria Analítica: Ponto e Reta; Circunferência; Cônicas.||
@@ -1693,7 +1693,7 @@ GOVERNO  DO  ESTADO  DO  PARANÁ. **Geografia:  Ensino  Médio.  Secretaria  de 
 
 MAGNOLI, D.. ARAUJO, R. **Geografia: a construção do mundo – Geografia Geral e do Brasil** . São Paulo; Moderna; 2005
 
-|**Componente Curricular**: Filosofia III|**Componente Curricular**: Filosofia III|
+|**Componente Curricular**: Filosofia III||
 |---|---|
 |**Carga Horária**40 horas-aula|**Período letivo:**2º ano|
 |**Ementa:**Filosofia política grega; filosofia política moderna e contemporânea; conceito<br>moderno de Estado; contratualismo; liberalismo; política e neoliberalismo; socialismo;<br>marxismo; ideologia. A crise da razão na filosofia contemporânea.<br>Integração  com  Movimentos  Sociais  (Geografia  II,  Sociologia  III);  globalização  e<br>neoliberalismo ( Sociologia III).||
@@ -1898,7 +1898,7 @@ PEZZI, A.; GOWDAK, D.; MATTOS, N. S. **Biologia** . São Paulo: FTD,2010.
 
 PURVES, W. K., SADAVA, D., ORIANS, G.H., HELLER, H.C. Vida – **A Ciência da Biologia Volume I : Célula e Hereditariedade.** 6 ed. Porto Alegre: Ed. Artmed, 2002.
 
-|**Componente Curricular**: Matemática IV|**Componente Curricular**: Matemática IV|
+|**Componente Curricular**: Matemática IV||
 |---|---|
 |**Carga Horária**80 horas-aula|**Período letivo:**4º ano|
 |Ementa: Matrizes. Determinantes. Sistemas Lineares. Sequências, progressão aritmética<br>e  progressão  geométrica.  Análise  Combinatória.  Triângulo  de  Pascal  e  binômio  de<br>Newton. Probabilidade. Estatística. Matemática Financeira.<br>Integração com A evolução demográfica, a distribuição espacial da população e os<br>indicadores estatísticos (Geografia II);||

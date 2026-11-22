@@ -560,7 +560,7 @@ A criação das componentes curriculares eletivas será definida via aprovação
 
 ## 3.13.2 Componentes Curriculares do Núcleo Comum
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo Tecnológico:**Controle e Processos<br>Industriais|
 |||
@@ -580,7 +580,7 @@ LAJOLO, M. O que é literatura. São Paulo: Brasiliense, 1982.
 
 PERINI, M. A. A língua do Brasil amanhã e outros mistérios. São Paulo: Parábola Editorial, 2004. POSSENTI, S. Por que não ensinar gramática. 4. ed. Campinas: Mercado das Letras, 1996
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -591,7 +591,7 @@ PERINI, M. A. A língua do Brasil amanhã e outros mistérios. São Paulo: Pará
 
 **Câmpus Paranaguá Curso: Mecânica Eixo Tecnológico: Controle e Processos Industriais Componente Curricular** : Língua Portuguesa III **Ementa:** Concepções teóricas e práticas de Língua Portuguesa. O discurso e as práticas de oralidade, a leitura e a escrita como princípios norteadores do ensino de Língua Portuguesa. Concepções teóricas e práticas da Literatura. Os gêneros discursivos conforme as capacidades de linguagem dominantes na ordem do argumentar e persuadir. **Estratégias Pedagógicas:** Aulas expositivas participativas, trabalhos de grupo, estudos de caso, com o apoio de capítulos de livros, artigos técnicos e científicos. Problematização de temas utilizando-se recursos audiovisuais, documentários, matérias jornalísticas de casos de conflitos sociais, artigos científicos, obras e textos literários. Avaliação: Participação nas discussões de sala, apresentação de trabalhos, relatórios de atividades e provas. **Bibliografia Básica:** BAKHTIN, M. Marxismo e filosofia da linguagem. São Paulo: Hucitec, 1986. BAKHTIN, M. Estética da criação verbal. São Paulo: Martins Fontes, 1997. BAMBERGER, R. Como incentivar o hábito da leitura. São Paulo: Cultrix; Brasília: INL, 1977. BOSI, A. História concisa da literatura brasileira. 3. ed. São Paulo: Cultrix, 1980. BRONCKART, J. P. Atividades de linguagem, textos e discurso: por um interacionismo sóciodiscursivo. Trad. de Anna Rachel Machado e Péricles da Cunha. São Paulo: Educ, 1999, _____. Atividades de linguagem, discurso e desenvolvimento humano. Org. e trad. De Anna Rachel Machado et al. Campinas - SP: Mercado de Letras, 2006. (Coleção Ideias sobre linguagem). DOLZ, Joaquim; SCHNEUWLY, Bernand. Gêneros orais e escritos na escola. Campinas, SP: Mercado de Letras, 2004. 278 p. (Tradução e organização: Roxane Rojo; Glaís Sales Cordeiro). **Bibliografia Complementar:** BUESCU, M. L C. História da literatura. 2. ed. Lisboa: Imprensa Nacional/Casa da Moeda, 1994. FARACO, C. A. Linguagem e diálogo: as idéias do círculo de Bakhtin. São Paulo: Criar Edições, 2003. GERALDI, J. W. (org.). O texto na sala de aula. 2. ed. São Paulo: Ática, 1997. GERALDI, J. Portos de passagem. São Paulo: Martins Fontes, 1991. KLEIMAN, A; MORAES, S. E. Leitura e interdisciplinaridade: tecendo redes nos projetos da escola. Campinas: Mercado de Letras, 1999. LAJOLO, M. O que é literatura. São Paulo: Brasiliense, 1982. PERINI, M. A. A língua do Brasil amanhã e outros mistérios. São Paulo: Parábola Editorial, 2004. POSSENTI, S. Por que não ensinar gramática. 4. ed. Campinas: Mercado das Letras, 1996
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -610,7 +610,7 @@ BOSI, A. História concisa da literatura brasileira. 3. ed. São Paulo: Cultrix,
 
 BUESCU, M. L C. História da literatura. 2. ed. Lisboa: Imprensa Nacional/Casa da Moeda, 1994. FARACO, C. A. Linguagem e diálogo: as idéias do círculo de Bakhtin. São Paulo: Criar Edições, 2003. GERALDI, J. W. (org.). O texto na sala de aula. 2. ed. São Paulo: Ática, 1997. GERALDI, J. Portos de passagem. São Paulo: Martins Fontes, 1991. KLEIMAN, A; MORAES, S. E. Leitura e interdisciplinaridade: tecendo redes nos projetos da escola. Campinas: Mercado de Letras, 1999. LAJOLO, M. O que é literatura. São Paulo: Brasiliense, 1982. PERINI, M. A. A língua do Brasil amanhã e outros mistérios. São Paulo: Parábola Editorial, 2004. POSSENTI, S. Por que não ensinar gramática. 4. ed. Campinas: Mercado das Letras, 1996
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -619,7 +619,7 @@ BUESCU, M. L C. História da literatura. 2. ed. Lisboa: Imprensa Nacional/Casa d
 |**Bibliografia Básica:**<br>DIAS, R.; JUCÁ, L.; FARIA, R. PRIME I.  Inglês para Ensino Médio. 2. ed. São Paulo: Macmillan,<br>2010.<br>LONGMAN DICTIONARY OF CONTEPORARY ENGLISH. 3. ed. Oxford: Longman, 1995.<br>MURPHY, R. English grammar in use. 2 ed. New York: Cambridge, 1997.||
 |**Bibliografia Complementar:**<br>ABRAHÃO, M.H.V. Prática de Ensino de Língua Estrangeira: experiências e reflexões. 1. ed. São<br>Paulo: Pontes, 2004.<br>PAIVA, V.L.M.O. (org.). Ensino de Língua Inglesa. Reflexões e Experiências. 3. ed. São Paulo:<br>Pontes, 2005.<br>RAMOS, R.C.G. (org.). Reflexão e ações no ensino-aprendizagem de línguas. 1. ed. São Paulo:<br>Mercado de Letras, 2003.<br>SWAN, M. Practical English Usage. 3. ed. Oxford: OUP, 2005.<br>UR, P. A Course in Language Teaching. 2. ed. Cambridge: CUP, 2005<br>WIDDOWSON,H.G.OEnsino deLínguas para a Comunicação.SãoPaulo: Pontes,2005.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -628,7 +628,7 @@ BUESCU, M. L C. História da literatura. 2. ed. Lisboa: Imprensa Nacional/Casa d
 |**Bibliografia Básica:**<br>DIAS, R.; JUCÁ, L.; FARIA, R. PRIME I.  Inglês para Ensino Médio. 2. ed. São Paulo: Macmillan,<br>2010.<br>LONGMAN DICTIONARY OF CONTEPORARY ENGLISH. 3. ed. Oxford: Longman, 1995.<br>MURPHY,R. Englishgrammar inuse. 2ed. New York:Cambridge,1997.||
 |**Bibliografia Complementar:**<br>ABRAHÃO, M.H.V. Prática de Ensino de Língua Estrangeira: experiências e reflexões. 1. ed. São<br>Paulo: Pontes, 2004.<br>PAIVA, V.L.M.O. (org.). Ensino de Língua Inglesa. Reflexões e Experiências. 3. ed. São Paulo:<br>Pontes, 2005.<br>RAMOS, R.C.G. (org.). Reflexão e ações no ensino-aprendizagem de línguas. 1. ed. São Paulo:<br>Mercado de Letras, 2003.<br>SWAN, M. Practical English Usage. 3. ed. Oxford: OUP, 2005.<br>UR, P. A Course in Language Teaching. 2. ed. Cambridge: CUP, 2005<br>WIDDOWSON, H. G. O Ensino de Línguas para a Comunicação. São Paulo: Pontes,<br>2005.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -654,7 +654,7 @@ Avaliações bimestrais, uma ou mais por bimestre, correspondendo às unidades d
 
 Avaliações bimestrais, uma ou mais por bimestre, correspondendo às unidades do conteúdo programático. Os alunos serão avaliados por participação em sala de aula, verificada pela leitura e estudos dos conteúdos relacionados; pela apresentação de seminários individuais ou em grupos; por meio de provas dissertativas, trabalhos individuais ou em grupos, com ou sem consulta. **Bibliografia Básica:** OSMAN, S., ELIAS, N., IZQUIERDO, S. Enlaces 1: español para jóvenes brasileños. 2.ª Ed. São Paulo, Macmillan, 2010. GONZÁLEZ HERMOSO, A. Gramática de español lengua extrajera. Ed. Edelsa. Grupo Didascalia Sª. Madrid. 1995. DICIONÁRIO LAROUSSE ESPANHOL-PORTUGUÊS.  1.ª Ed. Larousse do Brasil: São Paulo, 2010. **Bibliografia Complementar:** SANTOS I.G., SANCHEZ J.L.. Vademecum para la Formación de Profesores. 1.ª Ed. S.G.E.L: Madrid, 2004. WIDDOWSON, H.G. O Ensino de Línguas para a Comunicação. São Paulo: Pontes, 2005. ABRAHÃO, M.H.V. Prática de Ensino de Língua Estrangeira: experiências e reflexões. 1ª Ed. São Paulo: Pontes, 2004. RAMOS, R.C.G. Reflexão e ações no ensino-aprendizagem de línguas. 1. ed. São Paulo: Mercado de Letras, 2003.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -663,7 +663,7 @@ Avaliações bimestrais, uma ou mais por bimestre, correspondendo às unidades d
 |**Bibliografia Básica:**<br>FARTHING, S. Tudo sobre Arte: os movimentos e as obras mais importantes de todos os tempos. Rio<br>de Janeiro: Sextante, 2011.<br>GOMBRICH, E. História da Arte. 16° Ed. São Paulo: LTC, 2000.<br>_PROENÇA, Graça. História da Arte_. 17°Ed. Ática: São Paulo, 2007.||
 |**Bibliografia Complementar:**<br>BENNETT, R. Uma breve história da música. Zahar: São Paulo, 1986.<br>OSTROWER, F. Sensibilidade do intelecto. Rio de Janeiro: Campus, 1998.<br>KOUDELA, I. D. Jogos Teatrais. Coleção Debates. 5° Ed. Perspectiva: São Paulo, 2001.<br>MOLINARI, C. História doTeatro. Arte e Comunicação:SãoPaulo,2010.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -676,7 +676,7 @@ Avaliações bimestrais, uma ou mais por bimestre, correspondendo às unidades d
 
 Música; A música medieval; improvisação de música; prática de canto coral; paródias musicais. **Estratégias Pedagógicas:** Atividades problematizadoras e situações-problema a partir de recursos de divulgação científica como artigos e documentários. Aulas expositivas com discussões englobando docente e discentes visando um dialogo sobre as temáticas propostas. Aulas de campo visando estudo partindo da observação discente. Elaboração de atividades artísticas com aplicabilidade conceitos discutidos em classe. Construção de figurino teatral. Produção de iluminação de teatro. Prática de canto em grupo de coral. Produção de poesia musical. Construção de dissertação e produção de dialogo com os contextos artísticos estudados embasados através de textos técnicos e/ou científicos. Pesquisa de campo com a funcionalidade de identificar produções artísticas em nosso espaço territorial. Seminários em sala de aula. Avaliações dos conteúdos apresentados e discutidos em classe. **Bibliografia Básica:** FARTHING, S. Tudo sobre Arte: os movimentos e as obras mais importantes de todos os tempos. Rio de Janeiro: Sextante, 2011. GOMBRICH, E. História da Arte. 16° Ed. São Paulo: LTC, 2000. - - STRIKLAND, C. Arte Comentada: da pré história ao pós moderno. Rio de Janeiro: Ediouro, 2004. **Bibliografia Complementar:** NAPOLITANO, M. História & Música – História Cultural da Música Popular. Autentica: São Paulo, 2002. MED, B. Teoria da Música. 4°ed. MusiMed: São Paulo, 2012 SPOLIN, V. Jogos Teatrais na Sala de Aula. Perspectiva: São Paulo, 2007.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -687,7 +687,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 
 **Câmpus Paranaguá Curso: Mecânica Eixo Tecnológico: Controle e Processos Industriais Componente Curricular** : Tópicos Especiais em Artes **Ementa:** Estudo dos materiais e da Arte Pré-Histórica e Antiga; Processos artísticos na Idade Média; As vanguardas artísticas e sua singularidade; Arte Brasileira e suas correlações; Fotografia uma prática de observação e sensibilidade; O avanço dos conceitos de artísticos contemporâneos; Novas Mídias Artísticas; Modelos Artísticos Orientais e suas ramificações no Ocidente. **Estratégias Pedagógicas:** Desenvolvimento através de aulas expositivas com possibilidade de diálogo e discussão entre os alunos utilizando uma contextualização dos conteúdos apresentados. Aulas de campo visando estudo partindo da observação discente. Elaboração de atividades artísticas com aplicabilidade conceitos discutidos em classe. Construção de dissertação e produção de diálogo com os contextos artísticos estudados embasados através de textos técnicos e/ou científicos. Pesquisa de campo com a funcionalidade de identificar produções artísticas em nosso espaço territorial. Seminários em sala de aula. Avaliações dos conteúdos apresentados e discutidos em classe. **Bibliografia Básica:** FARTHING, S. Tudo sobre Arte – Os movimentos e as obras mais importantes de todos os tempos. Rio de Janeiro: Sextante, 2011. GOMBRICH, E. H. J. A História da Arte. 16º ed. São Paulo: LTC, 2000. PARANÁ, Secretaria de Estado da Educação. Arte , Ensino Médio - Livro didático. Curitiba: 2005. **Bibliografia Complementar:** BARBOSA, A. M. (org.) Inquietações e mudanças no ensino da arte. São Paulo: Cortez, 2002. HAUSE. A. História social da arte e da literatura. São Paulo: Martins Fontes, 1995. KRAMER, S.; LEITE, M.I.F.P. Infância e produção cultural. Campinas: Papirus,1998. MARTIN-BARBERO, J.; REY, G. Os exercícios do ver: hegemonia audiovisual e ficção televisiva. São Paulo: Senac, 2001. - - STRIKLAND, C. Arte comentada: da Pré história ao pós moderno. Rio de Janeiro: Ediouro, 2004.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -696,7 +696,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>SECRETARIA DE ESTADO DA EDUCAÇÃO. Educação Física Ensino Médio. Curitiba: SEED-PR,<br>2006. ISBN: 85-85380-32-2. Disponível em: www.diaadiaeducacao.pr.gov.br<br>NUNOMURA,<br>Myrian;<br>TSUKAMOTO,<br>Mariana<br>Harumi<br>Cruz<br>(Org.). Fundamentos<br>das<br>ginásticas. Jundiaí: Fontoura, 2009.<br>SANTOS, Pedro Sérgio dos. O que é xadrez. São Paulo: Brasiliense, 1993. 74 p.||
 |**Bibliografia Complementar:**<br>ARTAXO, Inês; MONTEIRO, Gisele de Assis. Ritmo e movimento teoria e prática. 5ª edição, 2013.<br>PINTO, Inami Custódio. Folclore no Paraná. Curitiba: SEED-PR, 2006.<br>STUBBS, R. Livro dos esportes. Agir, 2012.<br>CARTAXO, Carlos Alberto. Jogos de combate: atividade recreativas e psicomotoras: teoria e prática .<br>Petrópolis,RJ: Vozes,2011.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -705,7 +705,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>SECRETARIA DE ESTADO DA EDUCAÇÃO. Educação Física Ensino Médio. Curitiba: SEED-PR,<br>2006. ISBN: 85-85380-32-2. Disponível em: www.diaadiaeducacao.pr.gov.br<br>OLIVEIRA, Vitor Marinho de. O que é educação física. 2. ed. São Paulo: Brasiliense, 2011.<br>144p. Pinto, Inami Custódio. Folclore no Paraná. Curitiba: SEED-PR,2006.<br>SOLER, Reinaldo. 210 novos jogos cooperativos para todas as idades. Rio de Janeiro: Sprint, 2009.<br>135 p.||
 |**Bibliografia Complementar:**<br>MATTHIESEN,Sara Quenzer (Org.). Atletismo se aprende na escola. 2. ed. rev. atual. São Paulo:<br>Fontoura, 2009. 144 p. ISBN 9788587114532 (broch.)<br>PINTO, Inami Custódio. Folclore no Paraná. Curitiba: SEED-PR, 2006.<br>ALMEIDA, Arthur José Medeiros de. Esporte e cultura: esportivização de práticas corporais nos jogos<br>dos povos indígenas . Brasília: Gráfica e Editora Ideal, 2011. 103 p.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -718,7 +718,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 
 **Bibliografia Básica:** SECRETARIA DE ESTADO DA EDUCAÇÃO. Educação Física Ensino Médio. Curitiba: SEED-PR, 2006. ISBN: 85-85380-32-2. SILVA, Cinthia Lopes da. Lazer educação física: textos didáticos para a formação de profissionais do lazer.São Paulo: Papirus, 2012. 95 p. STUBBS, R. Livro dos esportes. Agir, 2012. **Bibliografia Complementar:** CAMARGO, L. O que é lazer. Editora Brasiliense, 2008. PINTO, Inami Custódio. Folclore no Paraná. Curitiba: SEED-PR,2006. OLIVEIRA, Vitor Marinho de. O que é educação física. 2. ed. São Paulo: Brasiliense, 2011. 144p. Pinto, Inami Custódio. Folclore no Paraná. Curitiba: SEED-PR,2006.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -727,7 +727,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>BARROSO, J. M. Conexões com a Matemática. São Paulo, Editora Moderna, vol. 1, 2010.<br>SOUZA, J. Coleção Novo Olhar – Matemática. São Paulo, Editora FTD, 2010.<br>IEZZI, Gelson, DOLCE, Osvaldo, DEGENSZAJN, David, PÉRIGO, Roberto, ALMEIDA, Nilze<br>Matemática – Ciência e Aplicações,Editora Saraiva,2010.||
 |**Bibliografia Complementar:**<br>GIOVANNI, J. R., BONJORNO, J. R. Matemática Completa. São Paulo, Editora FTD, vol. 1, 2005.<br>MURAKAMI, C., IEZZI, G. Fundamentos da Matemática elementar - volume 1. São Paulo, Editora<br>Atual, 2010.<br>IEZZI, G, DOLCE, O., MURAKAMI, C. Fundamentos da Matemática elementar - volume 2. São Paulo,<br>Editora Atual, 2010.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -736,7 +736,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>BARROSO, J. M. Conexões com a Matemática. São Paulo, Editora Moderna, vol. 2, 2010.<br>SOUZA, J. Coleção Novo Olhar – Matemática. São Paulo, Editora FTD, 2010.<br>IEZZI, Gelson, DOLCE, Osvaldo, DEGENSZAJN, David, PÉRIGO, Roberto, ALMEIDA, Nilze<br>Matemática–Ciência e Aplicações, Editora Saraiva, 2010.||
 |**Bibliografia Complementar:**<br>ANNI, J. R., BONJORNO, J. R. Matemática Completa. São Paulo, Editora FTD, vol. 2, 2005.<br>IEZZI, G. Fundamentos da Matemática elementar - volume 3. São Paulo, Editora Atual, 2010.<br>IEZZI, G, HAZZAN, S. Fundamentos da Matemática elementar - volume 4. São Paulo, Editora Atual,<br>2010.<br>HAZZAN, S. Fundamentos da Matemática elementar - volume 5. São Paulo, Editora Atual, 2010.<br>DOLCE, O. POMPEO, J. N. Fundamentos da Matemática elementar - volume 9. São Paulo, Editora<br>Atual, 2010.<br>DOLCE, O. POMPEO, J. N. Fundamentos da Matemática elementar - volume 10. São Paulo, Editora<br>Atual,2010.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -745,7 +745,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>BARROSO, J. M. Conexões com a Matemática. São Paulo, Editora Moderna, vol. 3, 2010.<br>SOUZA, J. Coleção Novo Olhar – Matemática. São Paulo, Editora FTD, 2010.<br>IEZZI, Gelson, DOLCE, Osvaldo, DEGENSZAJN, David, PÉRIGO, Roberto, ALMEIDA, Nilze<br>Matemática–Ciência eAplicações,Editora Saraiva,2010.||
 |**Bibliografia Complementar:**<br>GIOVANNI, J. R., BONJORNO, J. R. Matemática Completa. São Paulo, Editora FTD, vol. 3, 2005.<br>IEZZI, G. Fundamentos da Matemática elementar - volume 6. São Paulo, Editora Atual, 2010.<br>IEZZI,G. Fundamentos da Matemática elementar - volume 7. São Paulo,Editora Atual,2010.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -754,7 +754,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>IEZZI, G, MACAHADO, N., MURAKAMI, C. Fundamentos da Matemática elementar - volume 8. São<br>Paulo, Editora Atual, 2010.<br>FLEMMING, D.M.; GONÇALVES, M. B. Cálculo A. São Paulo, Pearson, 6ª edição, 2010.<br>SAFIER, Fred. Pré-Cálculo. Porto Alegre, Bookman, 2ª edição, 2011.||
 |**Bibliografia Complementar:**<br>THOMAS, G. B. Cálculo volume I. São Paulo, Pearson, 2012.<br>STEWART, J. Cálculo, volume I. São Paulo: Editora Cengage Learning, 6ª edição, 2010.<br>MEDEIROS Valéria Zuma, CALDEIRA, André Machado. SILVA, Luiza Maria Oliveira, MACHADO,<br>Maria Augusta Soares. Pré-Cálculo. São Paulo: Editora Cengage Learning,2ªedição,2011.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -763,7 +763,7 @@ Música; A música medieval; improvisação de música; prática de canto coral;
 |**Bibliografia Básica:**<br>MÁXIMO, A., ALVARENGA, B. Física – volume 1. 6ª Ed. São Paulo. Ed. Scipione, 2006.<br>GASPAR, A. Física - Volume Único. 1ª Ed. São Paulo. Ed. Ática, 2001.<br>FILHO, A.G., TOSCANO, C. Física para o Ensino Médio – volume único. 1ª Ed. São Paulo. Ed.<br>Scipione,2008.||
 |**Bibliografia Complementar:**<br>SAMPAIO, J.L.P., CALÇADA, C.S.V. Universo da Física - volume 1. 2ª Edição. São Paulo. Ed. Atual,<br>2005.<br>SAMPAIO, J.L.P., CALÇADA, C.S.V. Física – volume único. 2ª Edição. São Paulo. Ed. Atual, 2005.<br>RAMALHO, F.Jr., FERRARO, N.G., SOARES, P.A.T. Os Fundamentos da Física - volume 1 -<br>Mecânica - 9ª Ed. São Paulo. Ed. Moderna, 2009.<br>FILHO,A.G.,TOSCANO, C. Física eRealidade. 1ª Ed.SãoPaulo. Ed.Scipione,1999.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -776,7 +776,7 @@ MÁXIMO, A., ALVARENGA, B. Física – volume 1. 6ª Ed. São Paulo. Ed. Scipion
 
 FILHO, A.G., TOSCANO, C. Física para o Ensino Médio – volume único. 1ª Ed. São Paulo. Ed. Scipione, 2008. **Bibliografia Complementar:** SAMPAIO, J.L.P., CALÇADA, C.S.V. Universo da Física - volume 1. 2ª Edição. São Paulo. Ed. Atual, 2005. SAMPAIO, J.L.P., CALÇADA, C.S.V. Física – volume único. 2ª Edição. São Paulo. Ed. Atual, 2005. RAMALHO, F.Jr., FERRARO, N.G., SOARES, P.A.T. Os Fundamentos da Física - volume 1 - Mecânica - 9ª Ed. São Paulo. Ed. Moderna, 2009. FILHO, A.G., TOSCANO, C. Física e Realidade. 1ª Ed. São Paulo. Ed. Scipione, 1999.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -797,7 +797,7 @@ GREF - Textos de mecânica, termologia e eletromagnetismo. Editora da USP, São 
 
 **Câmpus Paranaguá Curso: Mecânica Eixo Tecnológico: Controle e Processos Industriais Componente Curricular** : Química I **Ementa:** Estrutura Atômica: Histórico, modelos, representação e identificação das propriedades dos Elementos; Distribuição Eletrônica – Caracterização das propriedades periódicas e localização dos elementos na Tabela de acordo com sua distribuição eletrônica; Tabela Periódica – Construção e compreensão de sua estrutura; Ligações químicas – Compreensão de suas interações inter e intramoleculares; Funções Inorgânicas – Aprender a estruturar fórmulas de ácidos, bases, sais e óxidos e entre suas propriedades; Cálculo Estequiométrico - Estabelecer as relações quantitativas entre as substâncias participantes de uma reação química; Gases – Reconhecer as características do estado gasoso, identificando suas variáveis de estado e estabelecer relações baseadas nas leis das transformações gasosas. **Estratégias Pedagógicas:** Aulas expositivas com discussão coletiva e apoio de textos técnicos e/ou científicos. Avaliação por meio de apresentação de trabalhos, relatórios de atividades e provas como recursos avaliativos. **Bibliografia Básica:** FELTRE, R.. Fundamentos da Química. Moderna. Único. , v.1 Química Geral, v.2 Físico-Química, v.3 Química Orgânica. 4. ed. São Paulo: Moderna. TITO e CANTO. Química na abordagem do cotidiano. São Paulo: Moderna, 1996. Único. Química. São Paulo: Moderna. 3v. USBERCO - SALVADOR. Química. 2 ed. São Paulo: Saraiva, 1996. 3v. **Bibliografia Complementar:** CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química – Realidade e Contexto. São Paulo: Ática. 2003. Único. REIS, M. Química Integral. São Paulo: FTD. Único. , v.1 Química Geral, v.2 Físico-Química, v.3 Química Orgânica. São Paulo: FTD, 1992. SARDELLA, A. Curso de Química. Química Geral, Físico-química, Química Orgânica, Ática. v. 1 a 3.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -818,7 +818,7 @@ TITO e CANTO. Química na abordagem do cotidiano. São Paulo: Moderna, 1996. Ún
 
 CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química – Realidade e Contexto. São Paulo: Ática. 2003. Único. REIS, M. Química Integral. São Paulo: FTD. Único. , v.1 Química Geral, v.2 Físico-Química, v.3 Química Orgânica. São Paulo: FTD, 1992. SARDELLA, A. Curso de Química. Química Geral, Físico-química, Química Orgânica, Ática. v. 1 a 3.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -827,7 +827,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>FELTRE, R.. Fundamentos da Química. Moderna. Único. , v.1 Química Geral, v.2 Físico-Química, v.3<br>Química Orgânica. 4. ed. São Paulo: Moderna.<br>TITO e CANTO. Química na abordagem do cotidiano. São Paulo: Moderna, 1996. Único. Química.<br>São Paulo: Moderna. 3v.<br>USBERCO-SALVADOR. Química. 2 ed. São Paulo: Saraiva, 1996. 3v.||
 |**Bibliografia Complementar:**<br>CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v.<br>LEMBO. Química – Realidade e Contexto. São Paulo: Ática. 2003. Único.<br>REIS, M. Química Integral. São Paulo: FTD. Único. , v.1 Química Geral, v.2 Físico-Química, v.3<br>Química Orgânica. São Paulo: FTD, 1992.<br>SARDELLA, A. Curso de Química. Química Geral, Físico-química, Química Orgânica, Ática. v. 1 a 3.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -836,7 +836,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>BRANCO, S. M.; MURGEL, E. Poluição do ar. São Paulo: Moderna, 2001.<br>BRANCO, S. M. Água Origem, uso e preservação. São Paulo: Moderna, 2006.<br>CANTO, E. L: Plástico: bem supérfluo ou mal necessário? São Paulo: Moderna, 2001.<br>SPIRO, T. G.; STIGLIANI. Química Ambiental.  São Paulo: Pearson, 2009.<br>TUNDISI, H. S. F. Usos de Energia sistemas, fontes e alternativas: do fogo aos gradientes de<br>temperatura oceânicos. São Paulo: Atual, 1991.<br>FELTRE, R. Química. vol. 1. São Paulo: Moderna, 2010.<br>FELTRE, R. Química. vol. 2. São Paulo: Moderna, 2010.<br>FELTRE, R. Química. vol. 3. São Paulo: Moderna, 2010.<br>MANAHAN, S. E.; Química ambiental. Bookman: 2013.||
 |**Bibliografia Complementar:**<br>BAIRD, C.; Química Ambiental. Bookman: 2011.<br>BRANCO, S. M. O meio ambiente em debate. São Paulo: Moderna, 2002.<br>VANIN, J. A. Alquimistas e químicos: O passado, o presente e o futuro. São Paulo: Moderna, 2007.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -845,7 +845,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>MOREIRA, J.C.; SENE, E. Geografia. Ed. Scipione, São Paulo, 2010.<br>DUARTE, P. A. Escala: fundamentos. Florianópolis: ed. da UFSC, 1983.<br>___________. Cartografia básica. Florianópolis: ed. da UFSC, 1988.<br>___________. Cartografia temática. Florianópolis: ed. da UFSC, 1991.<br>___________. Fundamentos de Cartografia. Florianópolis: ed. da UFSC, 1994<br>ALMEIDA, R., PASSINI, E.Y. O espaço geográfico: ensino e representação.  São Paulo: Contexto,<br>1991.||
 |**Bibliografia Complementar:**<br>GARCIA, H.C. Geografia: de olho no mundo do trabalho: volume único para o ensino médio. SP:<br>scipione, 2005.<br>MOREIRA, J.C. Geografia para o ensino médio: Geografia Geral e do Brasil: volume único/ João<br>Carlos Moreira, Eustáquio de Sene. SP: Scipione, 2005.<br>VESENTINI, J.W. Geografia: geografia geral e do Brasil, volume único: Sp. Ática, 2005.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -854,7 +854,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>MOREIRA, J.C.; SENE, E. Geografia. Ed. Scipione, São Paulo, 2010.<br>DUARTE, P. A. Escala: fundamentos. Florianópolis: ed. da UFSC, 1983.<br>___________. Cartografia básica. Florianópolis: ed. da UFSC, 1988.<br>___________. Cartografia temática. Florianópolis: ed. da UFSC, 1991.<br>___________. Fundamentos de Cartografia. Florianópolis: ed. da UFSC, 1994<br>ALMEIDA, R., PASSINI, E.Y. O espaço geográfico: ensino e representação.  São Paulo: Contexto,<br>1991.||
 |**Bibliografia Complementar:**<br>GARCIA, H.C. Geografia: de olho no mundo do trabalho: volume único para o ensino médio. SP:<br>scipione, 2005.<br>MOREIRA, J.C. Geografia para o ensino médio: Geografia Geral e do Brasil: volume único/ João<br>Carlos Moreira, Eustáquio de Sene. SP: Scipione, 2005.<br>VESENTINI, J.W. Geografia: geografia geral e do Brasil, volume único: Sp. Ática, 2005.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -863,7 +863,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>MOREIRA, J.C.; SENE, E. Geografia. Ed. Scipione, São Paulo, 2010.<br>DUARTE, P. A. Escala: fundamentos. Florianópolis: ed. da UFSC, 1983.<br>___________. Cartografia básica. Florianópolis: ed. da UFSC, 1988.<br>___________. Cartografia temática. Florianópolis: ed. da UFSC, 1991.<br>___________. Fundamentos de Cartografia. Florianópolis: ed. da UFSC, 1994<br>ALMEIDA, R., PASSINI, E.Y. O espaço geográfico: ensino e representação.  São Paulo: Contexto,<br>1991.||
 |**Bibliografia Complementar:**<br>GARCIA, H.C. Geografia: de olho no mundo do trabalho: volume único para o ensino médio. SP:<br>scipione, 2005.<br>MOREIRA, J.C. Geografia para o ensino médio: Geografia Geral e do Brasil: volume único/ João<br>Carlos Moreira, Eustáquio de Sene. SP: Scipione, 2005.<br>VESENTINI, J.W. Geografia: geografia geral e do Brasil, volume único: Sp. Ática, 2005.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -872,7 +872,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>SANTOS, M.; SILVEIRA, M.L. O Brasil: território e sociedade no início do século XXI. Rio de Janeiro:<br>Record, 2001<br>MENDONÇA, F. Impactos Socioambientais Urbanos. Curitiba: Editora da UFPR, 2004.<br>MOTA, S.Urbanização eMeioAmbiente. Abes,RJ,2003.||
 |**Bibliografia Complementar:**<br>SANTOS, M. A urbanização brasileira. São Paulo: Edusp, 1993.<br>DUARTE, P. A. Fundamentos de Cartografia. Florianópolis: ed. da UFSC, 1994<br>ALMEIDA, R., PASSINI, E.Y. O espaço geográfico: ensino e representação.  São Paulo: Contexto,<br>1991.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -881,7 +881,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>COTRIN,G. História Global. Brasil e Geral. São Paulo: Saraiva, 2002. Único.<br>MOTA, M.B., BRAICK, P.R. História das Cavernas ao terceiro milênio. São Paulo: Moderna, 2005<br>(vol. 1, 2, 3)<br>FAUSTO, B. História do Brasil. São Paulo: Edusp/FDE, 1998.||
 |**Bibliografia Complementar:**<br>LINHARES, M. Y. (Org.). História Geral do Brasil. São Paulo: Campus, 2000.<br>VICENTINO, C.; DORIGO, G. História do Brasil. São Paulo: Scipione, 1998.<br>DIDIER, M. T.; REZENDE, A. P. Rumos da História. São Paulo: Atual, 2005.<br>ARRUDA, J.J., PILLETTI, N. Toda a História: História Geral e História do Brasil<br>.SãoPaulo: Ática,1997.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -890,7 +890,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 |**Bibliografia Básica:**<br>COTRIN,G. História Global. Brasil e Geral. São Paulo: Saraiva, 2002. Único.<br>MOTA, M.B., BRAICK, P.R. História das Cavernas ao terceiro milênio. São Paulo: Moderna, 2005<br>(vol. 1, 2, 3)<br>FAUSTO, B. História do Brasil. São Paulo: Edusp/FDE, 1998.||
 |**Bibliografia Complementar:**<br>LINHARES, M. Y. (Org.). História Geral do Brasil. São Paulo: Campus, 2000.<br>VICENTINO, C.; DORIGO, G. História do Brasil. São Paulo: Scipione, 1998.<br>DIDIER, M. T.; REZENDE, A. P. Rumos da História. São Paulo: Atual, 2005.<br>ARRUDA, J.J., PILLETTI, N. Toda a História: História Geral e História do Brasil<br>. São Paulo: Ática, 1997.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -902,7 +902,7 @@ CARVALHO, G.C. Química Moderna. São Paulo: Scipione,1997 3v. LEMBO. Química �
 
 LINHARES, M. Y. (Org.). História Geral do Brasil. São Paulo: Campus, 2000. VICENTINO, C.; DORIGO, G. História do Brasil. São Paulo: Scipione, 1998. DIDIER, M. T.; REZENDE, A. P. Rumos da História. São Paulo: Atual, 2005. ARRUDA, J.J., PILLETTI, N. Toda a História: História Geral e História do Brasil . São Paulo: Ática, 1997.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -923,7 +923,7 @@ OLIVEIRA, L.F., COSTA, R.C.R. Sociologia para jovens do século XXI. Rio de Jane
 
 CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006. VILA NOVA, S. Introdução à sociologia. São Paulo: Ed. Atlas, 2009. TOMAZI, N.D. Iniciação à sociologia. São Paulo: Atual, 2000
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -938,7 +938,7 @@ OLIVEIRA, L.F., COSTA, R.C.R. Sociologia para jovens do século XXI. Rio de Jane
 
 CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006. VILA NOVA, S. Introdução à sociologia. São Paulo: Ed. Atlas, 2009. TOMAZI, N.D. Iniciação à sociologia. São Paulo: Atual, 2000.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -949,7 +949,7 @@ CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006.
 
 **Câmpus Paranaguá Curso: Mecânica Eixo Tecnológico: Controle e Processos Industriais Componente Curricular** : Tópicos Especiais em Soci ologia **Ementa:** Modernidade e Pós-Modernidade. O Nacional, o Internacional e o Global.  Revolução tecnológica e sociedade virtual. Meio ambiente e ativismo global. Sistema econômico e Financeiro Internacional. Novos movimentos sociais e a política contemporânea. **Estratégias Pedagógicas:** Atividades problematizadoras e situações-problema a partir de recursos de divulgação científica como artigos e documentários. Aulas expositivas com discussão coletiva e apoio de textos técnicos e/ou científicos. Aulas de campo, apresentação de trabalhos, relatórios de atividades e provas como recursos avaliativos. **Bibliografia Básica:** IANNI, O. Teorias da globalização, Civ. Brasileira, 2000. SANTOS, M. Por uma outra globalização. Record: 2000. VIEIRA, L. Cidadania e globalização. Record, 1997. ALBUQUERQUE, J. A. Guilhon. Relações internacionais contemporâneas. A ordem mundial depois da Guerra Fria. Petrópolis: Vozes, 2005. GILPIN, R. O desafio do capitalismo global. Rio de Janeiro: Record, 2004 **Bibliografia Complementar:** HOBSBAWN, E. J. O novo século. Entrevista a Antonio Polito. S. Paulo: Comp. Das Letras, 2009. MORAES, R. Neoliberalismo: de onde vem, para onde vai? São Paulo: Ed. SENAC, 2001. PANITCH, L,; LEYS, C. (orgs.) O novo desafio imperial. Buenos Aires: Clacso, 2006.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -960,7 +960,7 @@ CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006.
 
 **Câmpus Paranaguá Curso: Mecânica Eixo Tecnológico: Controle e Processos Industriais Componente Curricular** : Filosofia II **Ementa:** Filosofia Política: Estado e Sociedade Civil, Concepções de Estado, Estado Técnica e poder, Técnica e emancipação, Estado e Poder, Liberalismo e totalitarismo, Republicanismo, Ideia de Revolução, Industria cultural e Educação Política, Entrevista sobre política. **Estratégias Pedagógicas:** Atividades problematizadoras e situações-problema a partir de recursos de divulgação científica como artigos e documentários. Aulas expositivas com discussão coletiva e apoio de textos técnicos e/ou científicos. Aulas de campo, apresentação de trabalhos, relatórios de atividades e provas como recursos avaliativos. **Bibliografia Básica:** ARANHA, M.L.A., MARTINS, M.H.P. Filosofando: Introdução à filosofia. São Paulo: Moderna, 2003. ARISTÓTELES. A POLÍTICA. Rio de Janeiro: Editora Tecnoprint, S/d CHAUÍ, M. Convite à Filosofia. São Paulo. Ed. Ática, 2012 HORKHEIMER, A. Dialética do Esclarecimento. Rio de Janeiro: Editora Zahar, 2006. HORKHEIMER, Max. Eclipse da razão. 7.ed. São Paulo: Centauro, 2002 HOBBES. O Leviatã. Coleção os pensadores. São Paulo: Abril Cultural, 1979. LOCKE. Segundo Tratado sobre o Governo. São Paulo: Abril Cultural, 1973. MACHIAVELLI. O Príncipe. Rio de Janeiro: Editora Tecnoprint, S/d. PLATÃO, A república. Rio de Janeiro: Editora Tecnoprint, S/d **Bibliografia Complementar:** BUZZI, A. R. Introdução ao pensar: O ser, o conhecimento, a linguagem. Petrópolis, RJ: Vozes, 2007. GAARDER, J. O mundo de Sofia. São Paulo: Cia das Letras, 1995. ROUSSEAU. O contrato social. Rio de Janeiro: Editora Tecnoprint, S/d.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -969,7 +969,7 @@ CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006.
 |**Bibliografia Básica:**<br>ADORNO. Introdução à filosofia da arte. São Paulo, Editora Ática, 1999.<br>ARANHA, M.L.A., MARTINS, M.H.P. Filosofando: Introdução à filosofia. São Paulo: Moderna, 2003.<br>CHAUÍ, M. Convite à Filosofia. São Paulo. Ed. Ática, 2012.<br>COTRIM, G. Fundamentos daFilosofia: história e grandes temas.SãoPaulo:Saraiva,2006.||
 |**Bibliografia Complementar:**<br>BUZZI, A. R. Introdução ao pensar: O ser, o conhecimento, a linguagem. Petrópolis, RJ: Vozes, 2007.<br>GAARDER, J. O mundo de Sofia. São Paulo: Cia das Letras, 1995.<br>KANT,I. Fundamentos da metafísica dos costumes. Porto: Porto Editora,2004.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -978,7 +978,7 @@ CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006.
 |**Bibliografia Básica:**<br>BEDIN, A. Gilmar. Cidadania, Direitos Humanos e Equidade. Ijuí: Editora Unijuí, 2012.<br>LIMA TRINDADE, JOSÉ DAMIÃO. História social dos direitos humanos. Editora Petrópolis, 2011.<br>DOUZINAS, costas. O fim dos direitos humanos. Editora Unisinos, 2009.<br>DIAS, Reinaldo. Introdução aos direitos humanos. Editora Alinea,2012<br>FERNANDES, Pádua. Para que servem os direitos humanos. Porto: Editora Angelus Novus, 2009<br>CONDER COMPARATO, Fábio . A afirmação histórica dos direitos humanos. Editora Saraiva,<br>2013.||
 |**Bibliografia Complementar:**<br>CULLETON, Alfredo, BRAGATO, f., FAJARDO, S. Porto. Curso de direitos humanos. Editora<br>Unisinos, 2009.<br>BOBBIO, Norberto. A era dos Direitos. Rio de Janeiro: Paz e Terra, 2001.<br>REIS DOS SANTOS, S. F. e LACERDA, C. M. Debate interdisciplinar sobre os direitos humanos.<br>Portugal: Editora insular,2010.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -987,7 +987,7 @@ CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006.
 |**Bibliografia Básica:**<br>CHAUI, M. Convite à Convite à Filosofia.  São Paulo: Editora ática, 2012.<br>DELACHAMPAGNE. C. A filosofia política hoje. Rio de Janeiro: Zahar, 2001.<br>LE NOUVEAU OBSERVATEUR. Café Philo. As grandes indagações da filosofia. Rio de Janeiro:<br>Zahar, 1999.||
 |**Bibliografia Complementar:**<br>ADORNO, T. Educação e. Emancipação. São Paulo: Paz e Terra, 2003.<br>BRUSTOLIN, L. (org.) Bioética — Cuidar da vida e do meio ambiente. São Paulo: Paulus, 2007.<br>CARVALHO, J. M. Cidadania no Brasil: o longo caminho Rio de Janeiro:  Civilização Brasileira, 2001.<br>FARAGO, F. A justiça. Barueri: Manolo, 2004.<br>FOUREZ, G. A construção das ciências: introdução à filosofia e à ética das ciências. São Paulo:<br>Unesp, 1995.<br>RUSS, J. Pensamento ético contemporâneo. São Paulo: Paulus, 1999.<br>VÁSQUEZ, A. Ética. Rio de Janeiro: Civilização Brasileira, 1998.||
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -1000,7 +1000,7 @@ CHINOY, E. Sociedade: uma introdução à sociologia. São Paulo: Cultrix, 2006.
 
 **Curso: Mecânica Eixo Tecnológico: Controle e Processos Industriais Componente Curricular** : Biologia II **Ementa:** Genética molecular e clássica; Teorias da origem da vida, evolução e ecologia geral. **Estratégias Pedagógicas:** Atividades problematizadoras e situações-problema a partir de recursos de divulgação científica como artigos e documentários. Aulas expositivas com discussão coletiva e apoio de textos técnicos e/ou científicos. Apresentação de trabalhos, relatórios de atividades e provas como recursos avaliativos. **Bibliografia Básica:** AMABIS, MARTHO. Biologia. Vol.1, 2 e 3 Ed. Moderna. 2004 CHEIDA L. E. Biologia Integrada Vol. 1,2 e 3. São Paulo-SP. FTD. 2002 LAURENCE J. Biologia Ensino Médio. Vol. Único 1° edição. São Paulo: Nova geração. 2005. **Bibliografia Complementar:** LINHARES S., GEWANDSZNAJDER F. Biologia. Vol. Único. Ed. Ática. 2008 LOPES, S, ROSSO S. Biologia. Vol. único. Ed. Saraiva. 2006. PAULINO, W. R. Biologia. Vol.1, 2 e 3. São Paulo. Ed. Ática. 2009.
 
-|**Câmpus Paranaguá**|**Câmpus Paranaguá**|
+|**Câmpus Paranaguá**||
 |---|---|
 |**Curso: Mecânica**|**Eixo**<br>**Tecnológico:**<br>**Controle**<br>**e**<br>**Processos Industriais**|
 |||
@@ -1020,7 +1020,7 @@ MORANDI, S. & GIL, I. C. TECNOLOGIA E AMBIENTE. Tecnologia e Ambiente, SP: 2001)
 
 ## 3.13.3 Componentes Curriculares Específicos/Técnicos
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1029,7 +1029,7 @@ MORANDI, S. & GIL, I. C. TECNOLOGIA E AMBIENTE. Tecnologia e Ambiente, SP: 2001)
 |**Bibliografia Básica:**<br>AMABIS E MARTHO. Biologia  Vol.1, 2 e 3   Ed. Moderna. 2004<br>CALLISTER Jr., W.D. Ciência e Engenharia de Materiais - Uma Introdução. Editora LTC. 2012<br>SOUZA,S. A. Ensaios Mecânicos de Materiais Metálicos. Editora Edgard Blücher. 2004||
 |**Bibliografia Complementar:**<br>VAN VLACK, L. H. Princípios de ciência dos materiais. Editora Edgard Blücher. 2000<br>SMITH, W. F., HASHEMI, J. Fundamentos de Engenharia e Ciência dos Materiais. Editora Mcgraw-<br>Hill Brasil. 2012.||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1038,7 +1038,7 @@ MORANDI, S. & GIL, I. C. TECNOLOGIA E AMBIENTE. Tecnologia e Ambiente, SP: 2001)
 |**Bibliografia Básica:**<br>MANFE, G., POZZA, R. SCARATO, G. Desenho Técnico Mecânico: Curso Completo - Vol. 1, 2 e 3.<br>Editora Hemus. 2004<br>PROVENZA, F. Desenhista de Maquinas - Manual Protec. Editora Provenza. 1997||
 |**Bibliografia Complementar:**<br>ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. Coletânea de Normas de Desenho Técnico.<br>Editora Senai. 1990<br>PROVENZA, F. Projetista de Máquinas-Manual Protec. Editora Provenza. 1997.||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1047,7 +1047,7 @@ MORANDI, S. & GIL, I. C. TECNOLOGIA E AMBIENTE. Tecnologia e Ambiente, SP: 2001)
 |**Bibliografia Básica:**<br>CHIAVENATO, Idalberto. Administração da Produção: Uma Abordagem Introdutória. Editora<br>Campus. 2005<br>SZABO Jr, A. M. Manual de Segurança, Higiene e Medicina do Trabalho. Editora Rideel.2012||
 |**Bibliografia Complementar:**<br>FERREIRA, A. A.; REIS, A. C. F.; PEREIRA, M. I. Gestão Empresarial: de Taylor aos Nossos Dias.<br>Editora Pioneira. 2002.<br>OLIVEIRA, D. P. R. Sistemas Organização & Métodos - Uma Abordagem Gerencial. Editora Atlas.<br>2011.||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1056,7 +1056,7 @@ MORANDI, S. & GIL, I. C. TECNOLOGIA E AMBIENTE. Tecnologia e Ambiente, SP: 2001)
 |**Bibliografia Básica:**<br>TUBINO, Dalvio. Planejamento e Controle da Produção: Teoria e Prática. Editora Atlas. 2009<br>SHINGO, Shigeo. Troca Rápida de Ferramenta. Editora Artmed. 2000||
 |**Bibliografia Complementar:**<br>SHINGO, Shigeo. O Sistema Toyota de Produção – Do ponto de vista da engenharia de produção.<br>Editora Bookman. 1996.<br>LUSTOSA, L.; MESQUISA, M. A.; QUELHAS, O.; OLIVEIRA,  R. Planejamento e Controle da<br>Produção. Editora Campus. 2008.||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1085,7 +1085,7 @@ Estática (força, momento e centro de gravidade); Momentos de Inércia Planar e
 
 HIBBELER, R. C. Resistência dos Materiais. Editora Pearson. 2011 BUDYNAS, R. G.; NISBETT, J. K. Elementos de Máquinas de Shigley: Projeto de Engenharia Mecânica. Editora Bookman.
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1107,7 +1107,7 @@ FERRARESI, Dino. Fundamentos da Usinagem dos Metais. Editora Edgard Blucher. 197
 
 FERREIRA, A.C. Comando Numérico. Editora UFSC/EMC/GRUCON. 1994 MACHADO, A. Comando Numérico Aplicado às Máquinas-Ferramentas. Editora Ícone. 1989.
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1116,7 +1116,7 @@ FERREIRA, A.C. Comando Numérico. Editora UFSC/EMC/GRUCON. 1994 MACHADO, A. Coma
 |**Bibliografia Básica:**<br>CETLIN, P. R.; HELMANN, H. Fundamentos de Conformação Mecânica dos Metais. Editora Artliber.<br>2005<br>WAINER, E.; BRANDI, S. D.; MELLO, F. Soldagem Processo e Metalúrgica. Editora Edgard Blucher.<br>2010<br>TORRE, Jorge. Manual Pratico de Fundição. Editora Hemus. 2004||
 |**Bibliografia Complementar:**<br>SCOTTI, A.; PONOMAREV, V. Soldagem MIG/MAG. Editora Artiliber. 2008<br>SCHAEFFER, LIRIO. Conformação Mecânica. Editora Imprensa Livre. 2007<br>FERREIRA, J. M. G. C. Tecnologia da Fundição.: Editora Calouste Gulbenkian. 1999.||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1125,7 +1125,7 @@ FERREIRA, A.C. Comando Numérico. Editora UFSC/EMC/GRUCON. 1994 MACHADO, A. Coma
 |**Bibliografia Básica:**<br>MILLER, M. R.; MILLER, Rex. Refrigeração e Ar Condicionado. Editora LTC. 2008<br>MARTINS, Jorge. Motores de Combustão Interna. Editora Publindústria. 2011||
 |**Bibliografia Complementar:**<br>DOSSAT, R. J. Princípios de Refrigeração. Editora Hemus. 2004<br>BAZZO, Edson. Geração de Vapor. Editora UFSC. 1995.||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1134,7 +1134,7 @@ FERREIRA, A.C. Comando Numérico. Editora UFSC/EMC/GRUCON. 1994 MACHADO, A. Coma
 |**Bibliografia Básica:**<br>TELES, P. C. S. Tubulações Industriais – Cálculo. Editora LTC. 1999<br>TELES, P. C. S. Tubulações Industriais – Materiais. Editora LTC. 2001<br>MACINTYRE,A.J. Bombas eInstalações deBombeamento. EditoraLTC. 1997||
 |**Bibliografia Complementar:**<br>MACINTYRE, A. J. Equipamentos Industriais e de Processos. Editora LTC. 2011<br>MACINTYRE, A. J. Instalações Hidráulicas Prediais e Industriais. Editora LTC. 2010||
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||
@@ -1147,7 +1147,7 @@ NEPOMUCENO, L. X. Técnicas de Manutenção Preditiva Vol. 1 e 2. Editora Edgard
 
 MIRSHAWKA, V. Manutenção Preditiva - Caminho para zero defeito. Editora Makron Books. 1991 KOSOW, I. L. Máquinas Elétricas e Transformadores. Editora Globo. 1996 DRAPINSKI, J. Manutenção Mecânica Básica. Editora Edgard Blücher. 1985
 
-|**Câmpus Paranaguá do IFPR**|**Câmpus Paranaguá do IFPR**|
+|**Câmpus Paranaguá do IFPR**||
 |---|---|
 |**Curso:**Mecânica|**Eixo**<br>**Tecnológico:**<br>Controle<br>e<br>Processos<br>Industriais|
 |||

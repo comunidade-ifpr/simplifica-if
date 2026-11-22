@@ -614,14 +614,14 @@ Código do Curso:ódigo do Curso:go do Curso:o do Curso:Curso:urso:: 000000 Base
 
 Certificação Intermediária - Programador de controle de produção – CBO 3911-25
 
-|||Gestão da Produção|C|4|80|67|
-|---|---|---|---|---|---|---|
-|||Logística Empresarial|C|4|80|67|
-|||Estatística|C|4|80|67|
-|2º Semestre|2º Semestre|Direito Empresarial|C|2|40|33|
-|||_Gestão da Qualidade_|C|2|40|33|
-|||_Gestão Social e Ambiental_|C|2|80|67|
-|||**Subtotal (Total do período)**|||**400**|**334 **|
+||Gestão da Produção|C|4|80|67|
+|---|---|---|---|---|---|
+||Logística Empresarial|C|4|80|67|
+||Estatística|C|4|80|67|
+|2º Semestre|Direito Empresarial|C|2|40|33|
+||_Gestão da Qualidade_|C|2|40|33|
+||_Gestão Social e Ambiental_|C|2|80|67|
+||**Subtotal (Total do período)**|||**400**|**334 **|
 
 25
 
@@ -629,7 +629,7 @@ Certificação Intermediária - Programador de controle de produção – CBO 39
 
 Certificação Intermediária - Analista de marketing – CBO 2531-25
 
-|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25|
+|**Módulo: Marketing e Finanças**<br>Certificação Intermediária - Analista de marketing – CBO 2531-25||||||
 |---|---|---|---|---|---|
 |**3º Semestre**|Gestão Financeira|C|4|80|67|
 ||Contabilidade Geral|C|4|80|67|
@@ -2479,7 +2479,7 @@ O Observatório do Ensino Médio da Universidade Federal do Paraná tem por obje
 
 5.1 O curso terá a necessidade de novas infraestruturas?   ( x  ) Sim   (   ) Não.
 
-|ANO|INVESTIMENTO NECESSÁRIO (R$)|INVESTIMENTO NECESSÁRIO (R$)|
+|ANO|INVESTIMENTO NECESSÁRIO (R$)||
 |---|---|---|
 ||CUSTEIO|CAPITAL|
 |2019|-|R$15.000,00|
@@ -2787,7 +2787,7 @@ Assinatura do Requerente
 
 ## **APÊNDICE E LISTA DE ATIVIDADES FORMATIVAS COMPLEMENTARES PARA O CURSO SUPERIOR DE TECNOLOGIA EM PROCESSOS GERENCIAIS***
 
-|**Descrição da Atividade**|**Descrição da Atividade**|**Carga horária**<br>**máxima para**<br>**validação (horas)**|
+|**Descrição da Atividade**||**Carga horária**<br>**máxima para**<br>**validação (horas)**|
 |---|---|---|
 |I – Componentes optativos||80|
 |II – Estágio supervisionado não-obrigatório relacionado aos||180|

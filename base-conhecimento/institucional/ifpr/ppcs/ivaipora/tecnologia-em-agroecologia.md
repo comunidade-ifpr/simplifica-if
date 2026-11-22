@@ -1088,7 +1088,7 @@ BASSEY, Nnimmo. **Aprendendo com a África: a extração destrutiva e a crise cl
 
 **Campus Ivaiporã-PR do IFPR**
 
-|**Campus Ivaiporã-PR do IFPR**|**Campus Ivaiporã-PR do IFPR**|
+|**Campus Ivaiporã-PR do IFPR**||
 |---|---|
 |||
 |**Curso Superior de Tecnologia em Agroecologia**|<br>**Eixo Tecnológico: Recursos**<br>**Naturais**|
@@ -2589,8 +2589,8 @@ VIII. Apoiar o desenvolvimento institucional e a inserção internacional do IFP
 |Biblioteca|Sim|Não|200,00|
 |Laboratório de<br>informática*|Sim|Sim|60,00|
 
-||Laboratório de<br>física*|Sim|Sim|30,00|
-|---|---|---|---|---|
+||Laboratório de<br>física*|Sim|30,00|
+|---|---|---|---|
 
 *Os equipamentos estão no Anexo I
 
@@ -2817,7 +2817,7 @@ Agroecologia a ser aprovada por aclamação. Nadir, representante da câmara de 
 
 ## **Laboratório de Física - Materiais Permanentes**
 
-|**Laboratório de Física - Materiais Permanentes**|**Laboratório de Física - Materiais Permanentes**|**Laboratório de Física - Materiais Permanentes**|
+|**Laboratório de Física - Materiais Permanentes**|||
 |---|---|---|
 ||||
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Qtde**|
@@ -2901,7 +2901,7 @@ Agroecologia a ser aprovada por aclamação. Nadir, representante da câmara de 
 
 ## **Laboratório de Informática - Materiais Permanentes**
 
-|**Laboratório de Informática - Materiais Permanentes**|**Laboratório de Informática - Materiais Permanentes**|**Laboratório de Informática - Materiais Permanentes**|
+|**Laboratório de Informática - Materiais Permanentes**|||
 |---|---|---|
 ||||
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Qtde**|

@@ -80,7 +80,7 @@ Ministerio daEducacao<br>
 
 ## **ABERTURA DOCURSO** : 2021
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**<br>Portaria nº22, de 12 de fevereiro de 2019.|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**<br>Portaria nº22, de 12 de fevereiro de 2019.|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**<br>Portaria nº22, de 12 de fevereiro de 2019.||
 |---|---|
 |**Nome**|**Função**|
 |Larissa Lopes Mellinger-2115026|Presidente|
@@ -627,7 +627,7 @@ MinisteriodaEducacao
 
 ## 6.15 EMENTAS DOS COMPONENTES CURRICULARES
 
-||**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+||**CAMPUS CURITIBA - IFPR**|||
 |---|---|---|---|
 |**Curso:**Técnico em Condomínio|||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Comunicação e Expressão em Língua Portuguesa||||
@@ -689,7 +689,7 @@ INSTITUTOFEDERAL 1 Parana CampusCuritiba
 
 MinisteriodaEducacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Condomínio||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Legislação Aplicada a Condomínios I|||
@@ -708,7 +708,7 @@ Ministerio daEducacao
 
 ## **CAMPUS CURITIBA – IFPR**
 
-|**CAMPUS CURITIBA – IFPR**|**CAMPUS CURITIBA – IFPR**|
+|**CAMPUS CURITIBA – IFPR**||
 |---|---|
 |**Curso:**Técnico em Condomínio|**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Matemática Básica e Financeira||
@@ -780,7 +780,7 @@ INSTITUTOFEDERAL Parana CampusCuritiba
 
 MinisteriodaEducacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Condomínio||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Contabilidade II|||
@@ -898,7 +898,7 @@ INSTITUTOFEDERAL Parana CampusCuritiba
 
 MinisteriodaEducacao
 
-|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|**CAMPUS CURITIBA - IFPR**|
+|**CAMPUS CURITIBA - IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Condomínio||**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Legislação Aplicada a Condomínios II|||
@@ -915,7 +915,7 @@ INSTITUTOFEDERAL Parana 1 CampusCuritiba
 
 MinisteriodaEducacao
 
-|**CAMPUS CURITIBA – IFPR**|**CAMPUS CURITIBA – IFPR**|
+|**CAMPUS CURITIBA – IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM CONDOMÍNIO**|**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Noções de Edificações**||
@@ -934,7 +934,7 @@ Ministerio daEducacao
 
 ## **CAMPUS CURITIBA – IFPR**
 
-|**CAMPUS CURITIBA – IFPR**|**CAMPUS CURITIBA – IFPR**|
+|**CAMPUS CURITIBA – IFPR**||
 |---|---|
 |**Curso:**Técnico em Condomínio|**Eixo Tecnológico:**Gestão e Negócios|
 |**Componente Curricular:**Redação Oficial||
@@ -1043,7 +1043,7 @@ MinisteriodaEducacao
 
 ## **9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANT.**|**PERFIL DE FORMAÇÃO**|
 |Adriano Stadler|Bacharel em Administração|
@@ -1062,7 +1062,7 @@ MinisteriodaEducacao
 |Rodrigo Kanning|Bacharel em Engenharia|
 |Danniela Rosa|Bacharel em Engenharia|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|||
 |---|---|---|
 |**Nome**|**Cargo Efetivo**|**Nível de**<br>**Vencimentos**|
 |Alex Neves XevrandBagnara|Técnico de Laboratório - Prótese<br>Dentária|D|

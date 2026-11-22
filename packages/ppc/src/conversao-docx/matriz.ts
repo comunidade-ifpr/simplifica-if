@@ -522,6 +522,11 @@ type ValorDeCelula = string | Inteiro | null | undefined;
 const linhaMd = (valores: ValorDeCelula[]): string =>
   `| ${valores.map((valor) => (valor === null || valor === undefined ? "" : String(valor))).join(" | ")} |`;
 
+/**
+ * As linhas de total e as de modelo (estágio, atividades) ocupam as colunas "Ano" e "Componente"
+ * no PPC: o rótulo fica na primeira, e a segunda vazia, como a mescla na forma de leitura
+ * (`@simplifica-if/docx/tabelas`).
+ */
 function legadoEmMarkdown(matriz: MatrizPpc): string {
   const linhas = [
     "| Ano | Componente Curricular | Número de aulas semanais | CH hora-aula no período | CH hora-relógio no período |",
@@ -545,11 +550,11 @@ function legadoEmMarkdown(matriz: MatrizPpc): string {
     }
   }
   for (const item of matriz.linhas_modelo) {
-    linhas.push(linhaMd([item.nome, item.nome, "", item.ch_hora_aula, item.ch_hora_relogio]));
+    linhas.push(linhaMd([item.nome, "", "", item.ch_hora_aula, item.ch_hora_relogio]));
   }
   if (Object.keys(matriz.totais).length) {
     const titulo = "CARGA HORÁRIA TOTAL DO CURSO";
-    linhas.push(linhaMd([titulo, titulo, "", matriz.totais.ch_total_hora_aula, matriz.totais.ch_total_hora_relogio]));
+    linhas.push(linhaMd([titulo, "", "", matriz.totais.ch_total_hora_aula, matriz.totais.ch_total_hora_relogio]));
   }
   return linhas.join("\n");
 }
@@ -577,13 +582,13 @@ function nucleosEmMarkdown(matriz: MatrizPpc): string {
     const s = ano.subtotais;
     if (!Object.keys(s).length) continue;
     const aula = "TOTAL ANO HORA-AULA";
-    linhas.push(linhaMd([aula, aula, "", s.ch_ftp, s.ch_fgb, s.ch_np, s.ch_total_hora_aula, ""]));
+    linhas.push(linhaMd([aula, "", "", s.ch_ftp, s.ch_fgb, s.ch_np, s.ch_total_hora_aula, ""]));
     if (Object.keys(s).some((chave) => chave.endsWith("_hora_relogio"))) {
       const relogio = "TOTAL ANO HORA-RELÓGIO";
       linhas.push(
         linhaMd([
           relogio,
-          relogio,
+          "",
           "",
           s.ch_ftp_hora_relogio,
           s.ch_fgb_hora_relogio,
@@ -596,22 +601,13 @@ function nucleosEmMarkdown(matriz: MatrizPpc): string {
   }
   for (const item of matriz.linhas_modelo) {
     linhas.push(
-      linhaMd([
-        item.nome,
-        item.nome,
-        "",
-        item.ch_ftp,
-        item.ch_fgb,
-        item.ch_np,
-        item.ch_hora_aula,
-        item.ch_hora_relogio,
-      ]),
+      linhaMd([item.nome, "", "", item.ch_ftp, item.ch_fgb, item.ch_np, item.ch_hora_aula, item.ch_hora_relogio]),
     );
   }
   const t = matriz.totais;
   if (Object.keys(t).length) {
     const titulo = "C.H. (HORA RELÓGIO) TOTAL DO CURSO";
-    linhas.push(linhaMd([titulo, titulo, "", t.ch_ftp, t.ch_fgb, t.ch_np, t.ch_total_hora_relogio, ""]));
+    linhas.push(linhaMd([titulo, "", "", t.ch_ftp, t.ch_fgb, t.ch_np, t.ch_total_hora_relogio, ""]));
   }
   return linhas.join("\n");
 }

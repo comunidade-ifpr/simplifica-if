@@ -1810,8 +1810,8 @@ Não se aplica.
 
 |Existente|A construir|Área (m2)|
 |---|---|---|
-|Não|Não|Não|
-|Não|Não|Não|
+|Não|||
+|Não|||
 
 ## 9.4 ÁREAS DE ESPORTE E VIVÊNCIA
 

@@ -749,7 +749,7 @@ Ressalta-se que, de forma mais detalhada, a Certificação de Conhecimentos Ante
 
 ## **6.5 MATRIZ CURRICULAR**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)||||
 |---|---|---|---|---|---|
 |||CAMPUS JAGUARIAÍVA||||
 |||**MATRIZ CURRICULAR DO CURSO TÉCNICO EM BIOTECNOLOGIA**||||
@@ -958,7 +958,7 @@ CADAMURO, Janieyre Scabio. **Aspectos das humanidades na educação física** . 
 
 - Vivenciar a prática de atividades físicas e desportivas, lúdicas e prazerosas aos alunos do Instituto, através das dimensões conceitual, procedimental e atitudinal.
 
-|**COMPONENTE CURRICULAR:**Física I|**COMPONENTE CURRICULAR:**Física I|
+|**COMPONENTE CURRICULAR:**Física I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>Introdução ao estudo da Física; Conceitos de Cinemática; Conceitos da Dinâmica: As leis<br>de Newton; Leis de Conservação: Energia e Momento Linear; Conceitos de Hidrostática.||
@@ -977,7 +977,7 @@ CADAMURO, Janieyre Scabio. **Aspectos das humanidades na educação física** . 
 
 - ● Interpretar e descrever fenômenos relacionados à Hidrostática.
 
-|**COMPONENTE CURRICULAR:**História I|**COMPONENTE CURRICULAR:**História I|
+|**COMPONENTE CURRICULAR:**História I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>A História e o tempo; Documentos históricos e as fontes para estudo da História; A<br>Pré-História e as transformações humanas; Primeiras civilizações; Civilizações Clássicas da<br>Antiguidade; Religião, cultura e política na Idade Média; O surgimento do mundo<br>moderno; Sociedades africanas da região subsaariana até o século XV.||
@@ -1044,7 +1044,7 @@ NEDER, A V. F.; KARL, E. B. **Química em Tubos de Ensaio** . Editora Blucher 20
 
 - Desenvolver um raciocínio lógico que permita expressar, discutir e interpretar resultados experimentais.
 
-|**COMPONENTE CURRICULAR:**Língua Espanhola I|**COMPONENTE CURRICULAR:**Língua Espanhola I|
+|**COMPONENTE CURRICULAR:**Língua Espanhola I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>A Língua Espanhola no mundo. Aspectos sociais e (inter)culturais do universo hispânico,<br>com ênfase na América Latina. A identidade e a integração latino-americanas. Aspectos de<br>variação linguística em Língua Espanhola. Estruturas linguísticas e comunicativas de nível<br>básico.<br>Aspectos<br>linguísticos<br>em<br>contraste:<br>heterossemânticos,<br>heterotônicos,<br>heterogenéricos. Introdução às quatro habilidades comunicativas em língua espanhola:<br>expressão oral/escrita e compreensão oral/leitora. Prática de leitura, escrita e oralidade em<br>língua espanhola.||
@@ -1052,7 +1052,7 @@ NEDER, A V. F.; KARL, E. B. **Química em Tubos de Ensaio** . Editora Blucher 20
 
 Macmillan, 2013. SEDYCIAS, J. **O Ensino do Espanhol no Brasil: passado, presente, futuro** . São Paulo: Parábola Editorial, 2005. **BIBLIOGRAFIA COMPLEMENTAR:** FANJUL, A. **Gramática y Práctica de Español para Brasileños** . São Paulo: Moderna, 2005. MORENO FERNÁNDEZ, F. **Producción, expresión e interacción oral** . Madrid: Arco Libros, 2002. PALOMINO, Mª A. Dual. **Pretextos para hablar** . Madrid: Edelsa, 2006. RDA, S. A. La expresión oral. Barcelona: Ariel, 2000. VÁZQUEUEZ, G. **La destreza oral: conversar, exponer, argumentar** . Madrid: Edelsa, 2000. **OBJETIVOS:** ● Desenvolver no estudante e no seu processo de aquisição de conhecimento, noções de uso da língua estrangeira e como esta prática pode trazer novos horizontes para a formação daquele; ● Desenvolver no estudante as habilidades básicas para o momento comunicativo: ler, escrever, ouvir e falar; ● Desenvolver no estudante o senso crítico quanto ao contexto comunicativo; ● Desenvolver um senso crítico no estudante quanto ao uso da língua estrangeira dentro da comunidade em que vive; ● Desenvolver no estudante o potencial crítico deste quanto ao domínio da língua estrangeira e o uso dela como elemento de busca por uma emancipação do indivíduo; ● Desenvolver nos estudantes uma condição de autonomia e uma prática reflexiva quanto à sua língua e à língua estrangeira.
 
-|**COMPONENTE CURRICULAR:**Língua Portuguesa e Literaturas I|**COMPONENTE CURRICULAR:**Língua Portuguesa e Literaturas I|
+|**COMPONENTE CURRICULAR:**Língua Portuguesa e Literaturas I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>**Língua Portuguesa:** Noções teóricas em comunicação - as funções da linguagem. Tipos<br>textuais: descritivo e injuntivo. Gêneros textuais das esferas descritiva e injuntiva: marcas<br>linguísticas e finalidade social. Conceito de Intertextualidade. Sociolinguística aplicada à<br>Língua Portuguesa. Aspectos fonológicos da língua portuguesa. Estrutura e formação de<br>palavras. Aspectos semânticos da língua portuguesa: conotação, denotação, contexto.<br>Introdução ao estudo das classes gramaticais. Oralidade e expressão em língua portuguesa.<br>**Literatura:** A arte da palavra. Os gêneros literários. Tópicos de Teoria da Literatura.<br>Estilos literários de origem portuguesa. Quinhentismo. Barroco brasileiro. Neoclassicismo<br>brasileiro e relação entre contextos geográficos/históricos/científicos.||
@@ -1094,7 +1094,7 @@ Macmillan, 2013. SEDYCIAS, J. **O Ensino do Espanhol no Brasil: passado, present
 ||||preconceito contra as formas populares em oposição às formas dos grupos||
 ||||socialmente favorecidos.||
 
-|**COMPONENTE CURRICULAR:**Matemática I|**COMPONENTE CURRICULAR:**Matemática I|
+|**COMPONENTE CURRICULAR:**Matemática I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>Tópicos de Matemática Básica; Introdução à Teoria de Conjuntos; Introdução ao estudo de<br>funções; Função afim; Progressão Aritmética; Função Quadrática.||
@@ -1110,7 +1110,7 @@ específica de formação;
 
 - Desenvolver a autonomia e a criatividade na resolução de problemas e na tomada de decisões **.**
 
-|**COMPONENTE CURRICULAR:**Sociologia I|**COMPONENTE CURRICULAR:**Sociologia I|
+|**COMPONENTE CURRICULAR:**Sociologia I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>1 - Introdução às Ciências Sociais (Sociologia, Antropologia e Ciência Política); Conceitos<br>de socialização, sociedade e instituições sociais; Contexto histórico da formação da<br>Sociologia; Sociologia positivista; Teorias sociológicas clássicas: Durkheim (grupos<br>sociais, fatos sociais e consciência coletiva), Weber (as tipologias da ação social e a<br>racionalização do mundo) e Marx (luta de classes, exploração no capitalismo, a concepção<br>materialista da história);<br>2 - Origem do capitalismo e proletariado; Estrutura social e desigualdades sociais; Conceito<br>de estrutura, estratificação social e classe social;<br>3 - Mundo do trabalho, capitalismo e globalização; Divisão social do trabalho; Conceitos<br>de mais valia, valor e preço; Mudanças no mundo do trabalho Fordismo-Taylorismo,<br>Toyotismo.||
@@ -1145,7 +1145,7 @@ SOLOMONS, T. W. G.; FRYHLE, C. B. **Química Orgânica, v2** . Editora LTC, 2012
 
 **BIBLIOGRAFIA COMPLEMENTAR:** BARBOSA, L. C. **Introdução à Química Orgânica** - 2ª ed. Editora Pearson, 2010. BRUICE, P. Y. **Fundamentos de química orgânica** , 2ª ed. Editora Pearson, 2014. LEHNINGER, A. L.; NELSON, D. L. **Princípios de bioquímica de Lehninger** . Editora ARTMED, 2014. ZUBRICK, J. W., **Manual de sobrevivência no laboratório de química orgânica** : guia de técnicas para o aluno,Editora LTC, 2005. **OBJETIVOS:** ● Conhecer a história e o desenvolvimento do conhecimento químico e seu impacto no desenvolvimento social e econômico da humanidade; ● Compreender os símbolos e fórmulas utilizadas na Química atual; ● Entender a estrutura dos átomos e relacioná-los com as ligações químicas e a estrutura geométrica das moléculas; ● Identificar a presença da Química no cotidiano; ● Conhecer os conceitos básicos de Química Orgânica; ● Identificar as diferentes classes de compostos orgânicos, assim como, suas estruturas moleculares, propriedades e nomenclaturas básicas; ● Aprender sobre os principais tipos de isomeria e seus impactos na indústria e na sociedade; ● Conhecer as principais reações orgânicas e os fatores que as influenciam.
 
-|**COMPONENTE CURRICULAR:**Arte I|**COMPONENTE CURRICULAR:**Arte I|
+|**COMPONENTE CURRICULAR:**Arte I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>A arte e o fazer artístico: análise de tensões entre o novo e a tradição; A comunicação<br>visual no cotidiano, leitura, análise e crítica da imagem nas mídias da propaganda, da<br>publicidade e do entretenimento; Cultura visual e Arte Decolonial; Exercícios de<br>sensibilização visual, auditivo, corporal e rítmico.||
@@ -1171,7 +1171,7 @@ SOLOMONS, T. W. G.; FRYHLE, C. B. **Química Orgânica, v2** . Editora LTC, 2012
 |||●<br>Criar<br>experimentos<br>em<br>artes<br>como<br>modo<br>possível<br>de<br>articulação<br>e|||
 |||compartilhamento de pensamento, crítica e reflexão.|||
 
-|**COMPONENTE CURRICULAR:**Biologia II|**COMPONENTE CURRICULAR:**Biologia II|
+|**COMPONENTE CURRICULAR:**Biologia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):**|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Noções de embriologia; Taxonomia e Sistemática; Vírus, Procariontes, Protistas, Fungos,<br>Vegetais; Reino Animal; Biologia comparada - Fisiologia dos sistemas.||
@@ -1217,7 +1217,7 @@ TORTORA, G. J.; CASE, C. L.; FUNKE, B. R. **Microbiologia** . 12. ed.Porto Alegr
 
 Artmed, 2017. 935p. MADIGAN, M. T. et al. **Microbiologia de Brock** . 14. ed. Porto Alegre: Artmed Editora, 2016. PELCZAR, M. J. et al. **Microbiologia** : conceitos e aplicações. 2. ed. São Paulo: Makron Books, 1997. 2 v. BORZANI, W. .et al. (Coord.). **Biotecnologia industrial 1** : fundamentos. 1. ed. São Paulo: Blucher. 2001. 254 p. SCHMIDELL, W. et al. (Coord.). **Biotecnologia industrial 2:** engenharia bioquímica. 1. ed. São Paulo: Blucher. 2001. 541p. LIMA, U. A.et al. (Coord.). **Biotecnologia industrial 3** : processos fermentativos e enzimáticos. 1. ed. São Paulo: Blucher. 2001. 593 p. AQUARONE, E. et al. (Coord.). **Biotecnologia industrial 4:** biotecnologia na produção de alimentos. Blucher, 2001. 523p. KOBLITZ, M. **Matérias-primas alimentícias** – Composição e Controle de Qualidade. São Paulo: Guanabara Koogan, 2011. **BIBLIOGRAFIA COMPLEMENTAR:** BRUNO, A. N (Org.). **Biotecnologia I** : Princípios e Métodos. Porto Alegre: Artmed, 2014. 244 p. NELSON, D.L.; COX, M.M. **Princípios de Bioquímica de Lehninger** . 6ª edição. Porto Alegre: Artmed, 2014. LIMA, U.A. **Matérias-primas dos alimentos** . São Paulo: Edgard Blucher, 2010. ORDONEZ, J.A. **Tecnologia de Alimentos:** Componentes dos Alimentos e Processos. São Paulo: Artmed, 2005. 294p. RIBEIRO, E. P.; SERAVALLI, E. **Química de Alimentos** . 2. ed. São Paulo: Blücher, 2007. KOBLITZ, M. **Bioquímica de Alimentos.** São Paulo: ed. LAB (Grupo GEN), 2018. **OBJETIVOS:** ● Reconhecer a importância da microbiologia tanto como ciência básica quanto suas aplicações industriais. ● Caracterizar micro-organismos que constituem o mundo microbiano e conhecer o papel que desempenham no ambiente. ● Conhecer e executar as técnicas mais comuns em trabalhos com micro-organismos.
 
-|**COMPONENTE CURRICULAR:**Educação Física II|**COMPONENTE CURRICULAR:**Educação Física II|
+|**COMPONENTE CURRICULAR:**Educação Física II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Ginástica Rítimica e Ginástica Artística. Esporte Coletivo. Esporte Individual. Danças.<br>Lutas. Temas contemporâneos em Educação Física e Sáude.||
@@ -1225,7 +1225,7 @@ Artmed, 2017. 935p. MADIGAN, M. T. et al. **Microbiologia de Brock** . 14. ed. P
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>DAMICO, Janyere Scabio Cadamuro.**Atividades rítmicas e expressivas**. Contentus 2021<br>68 p ISBN 9786559351169.<br>MANUEL, Carlos Mesquita Correa Pereira.**As lutas na Educação Física Escolar**. Phorte<br>Editora 2018 88 p ISBN 9788576556985.<br>ROJAS, Paola Neiza Camacho.**Aspectos pedagógicos do atletismo**. Editora Intersaberes 0<br>260 p ISBN 9788559726152.<br>TANI, Go; Corrêa, Umberto Cesar.**Aprendizagem motora e o ensino do esporte**. Editora<br>Blucher 2016 385 p ISBN 9788521210221.<br>CADAMURO, Janieyre Scabio.**Aspectos das humanidades na educação física**.<br>Contentus 2020 69 p ISBN 9786557450642.||
 |**OBJETIVOS:**<br>●<br>Integrar o estudante no mundo da cultura corporal do movimento por meio da<br>linguagem corporal, dos códigos e símbolos;<br>●<br>Desenvolver a autonomia na construção do conhecimento referente à cultura<br>corporal;Promover o senso crítico sobre as realidades do contexto cultural no qual<br>está inserido;<br>●<br>Vivenciar a prática de atividades físicas e desportivas, lúdicas e prazerosas aos<br>alunos do Instituto, através das dimensões conceitual, procedimental e atitudinal.||
 
-|**COMPONENTE CURRICULAR:**Física Aplicada|**COMPONENTE CURRICULAR:**Física Aplicada|
+|**COMPONENTE CURRICULAR:**Física Aplicada||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Termometria e Calorimetria. Comportamento térmico dos gases. Leis da Termodinâmica.<br>Óptica<br>geométrica:<br>Propagação<br>da<br>luz,<br>Absorção,<br>Reflexão<br>e<br>Refração.<br>Ondas<br>eletromagnéticas. Espectros de emissão e absorção da radiação eletromagnética.||
@@ -1233,7 +1233,7 @@ Artmed, 2017. 935p. MADIGAN, M. T. et al. **Microbiologia de Brock** . 14. ed. P
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>ROCHA, J.F. (Org). **Origens e Evolução das Ideias da Física**.1a Edição. Salvador:<br>EDUFBA, 2002.<br>FEYNMAN,R. P. et al.**Lições da Física de Feynman**: Edição definitiva volumes I, II e III.<br>1a Edição. Editora Bookman, Rio de Janeiro, 2008.<br>HALLIDAY D.; RESNICK R.; WALKER J. **Fundamentos de Física,** Vol. 1, 9a Edição,<br>LTC, 2012.<br>TIPLER, P.A., MOSCA, G., **Física**. 6.ed , v. 1, Rio de Janeiro: LTC, 2009 HALLIDAY D.;<br>RESNICK R.; WALKER J. Fundamentos de Física, Vol. 4, 9a Edição, LTC, 2012.||
 |**OBJETIVOS:**<br>●<br>Reconhecer o calor como uma forma de energia;<br>●<br>Diferenciar temperatura de calor;<br>●<br>Reconhecer os vários tipos termômetros existentes;<br>●<br>Caracterizar as escalas termométricas mais utilizadas, quais sejam: Celsius,<br>Fahrenheit e a Kelvin;<br>●<br>Reconhecer as formas de transmissão de calor;<br>●<br>Entender os conceitos de capacidade térmica e calor específico;<br>●<br>Caracterizar o calor latente e as mudanças de estado físico;<br>●<br>Compreender as leis de termodinâmica;<br>●<br>Reconhecer os princípios da óptica geométrica;<br>●<br>Interpretar e descrever os fenômenos relacionados a propagação da luz, absorção,<br>reflexão e refração;<br>●<br>Reconhecer a natureza das ondas eletromagnéticas e o espectro eletromagnético;<br>●<br>Entender os espectros de emissão e absorção da radiação eletromagnética e sua<br>interação com a matéria.||
 
-|**COMPONENTE CURRICULAR:**Geografia I|**COMPONENTE CURRICULAR:**Geografia I|
+|**COMPONENTE CURRICULAR:**Geografia I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Dinâmicas naturais ¹<br>1) Fenômenos geológicos e geomorfológicos e suas relações com o espaço geográfico.<br>2) A dinâmica climática e recursos hídricos e suas relações e apropriações pelas<br>sociedades.<br>3) Características das paisagens naturais brasileiras e as transformações antrópicas.<br>Os conteúdos de conceitos geográficos e cartografia serão abordados como temas<br>transversais.<br>Orientações para abordagem do tema abordagem:<br>Mapas das dinâmicas geológicas, geomorfológicas e climogramas. Identificação dos<br>conceitos geográficos em mapas e outras formas de representação;<br>A influência no meio físico no modo de vida das populações em suas vidas nos lugares;<br>Diferenciação e transformação das paisagens naturais e sociais.||
@@ -1254,7 +1254,7 @@ JAMIESON, Dale. **Ética e meio ambiente** : uma introdução. São Paulo: Ed. S
 
 - Perceber as alterações da ocupação antrópica nas paisagens naturais brasileiras.
 
-|**COMPONENTE CURRICULAR:**História II|**COMPONENTE CURRICULAR:**História II|
+|**COMPONENTE CURRICULAR:**História II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>A vida na América antes da conquista europeia; A Europa e o Novo Mundo: relações<br>econômicas, sociais e culturais do sistema colonial; O Brasil em seu período colonial ;<br>Iluminismo e Liberalismo; Independências na América Latina; Brasil Império.||
@@ -1434,7 +1434,7 @@ educadores;
 ||||preconceito contra as formas populares em oposição às formas dos grupos||||
 ||||socialmente favorecidos.||||
 
-|**COMPONENTE CURRICULAR:**Matemática II|**COMPONENTE CURRICULAR:**Matemática II|
+|**COMPONENTE CURRICULAR:**Matemática II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Função exponencial; Progressão Geométrica; Logaritmos e função Logarítmica; Matrizes e<br>Determinantes; Sistemas de Equações Lineares.||
@@ -1442,7 +1442,7 @@ educadores;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>IEZZI, Gelson (coord.) et al.**Matemática:**ciência e aplicações. 8. ed. São Paulo: Atual,<br>2014. 3 v. ISBN 9788535719598 - v. 1 (broch.).<br>LIMA, Elon Lages et al. **A matemática do ensino médio**. 11. ed. Rio de Janeiro:<br>Sociedade Brasileira de Matemática, 2016. 2 v. (Coleção do professor de matemática).<br>ISBN 9788583370901 - v. 1 (broch.).<br>LIMA, Elon Lages et al. **A matemática do ensino médio**. 7. ed. Rio de Janeiro: Sociedade<br>Brasileira de Matemática, 2016. 3 v. (Coleção do professor de matemática). ISBN<br>9788583370918 - v. 2 (broch.).<br>CARVALHO, Ana Márcia Fernandes Tucci de et al. (Org.). **A educação básica e as**<br>**oficinas de física, matemática e química**: contribuições do projeto Novos Talentos.<br>Londrina: EDUEL, 2014. 213 p. ISBN 9788578462901 (broch.).||
 |**OBJETIVOS:**<br>●<br>Estabelecer relações entre os conceitos matemáticos de funções e área técnica<br>específica de formação;<br>●<br>Desenvolver o pensamento algébrico;<br>●<br>Estabelecer<br>um<br>senso crítico e apreender os conceitos matemáticos como<br>conhecimentos essenciais ao desenvolvimento humano e a formação integral;<br>●<br>Desenvolver a autonomia e a criatividade na resolução de problemas e na tomada<br>de decisões.||
 
-|**COMPONENTE CURRICULAR:**Química|**COMPONENTE CURRICULAR:**Química|
+|**COMPONENTE CURRICULAR:**Química||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Funções<br>Inorgânicas.<br>Estequiometria.<br>Reações<br>Químicas.<br>Termoquímica.<br>Cinética.<br>Eletroquímica.||
@@ -1454,7 +1454,7 @@ na vida cotidiana e na indústria;
 
 - Compreender os fenômenos químicos envolvendo transferências de elétrons e noções sobre corrosão.
 
-|**COMPONENTE CURRICULAR:**Arte II|**COMPONENTE CURRICULAR:**Arte II|
+|**COMPONENTE CURRICULAR:**Arte II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Percepção musical e dramática: estudo de produções de teatro e música entre o novo e a<br>tradição; Processos criativos e técnicas de expressão corporal e vocal: autoconhecimento e<br>desconstrução de preconceitos e estereótipos; A construção do espetáculo teatral: elementos<br>da linguagem cênica.||
@@ -1462,7 +1462,7 @@ na vida cotidiana e na indústria;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>AMARAL, Ana Maria. **Teatro de formas animadas: máscaras, bonecos, objetos**. 3. ed.<br>São Paulo: EDUSP, 1996.<br>BENNET, Roy.**Elementos Básicos da Música**. 1ª ed. Rio de Janeiro: Zahar. 1990.<br>SPOLIN, Viola. **Jogos teatrais: o fichário de Viola Spolin**. 3. ed. São Paulo: Perspectiva,<br>2014.<br>WEIL, Pierre; TOMPAKOW, Roland. **O corpo fala: a linguagem silenciosa da**<br>**comunicação não-verbal**. 52. ed. Petrópolis: Vozes, 2001.||
 |**OBJETIVOS:**<br>●<br>Pesquisar, analisar e adaptar textos dramáticos com vistas à encenação;<br>●<br>Conhecer as etapas e elementos da construção cênica;<br>●<br>Atuar<br>na<br>prática<br>de<br>grupo<br>utilizando-se<br>dos<br>conhecimentos<br>adquiridos<br>e<br>respondendo ao desafio da encenação do personagem;<br>●<br>Utilizar a música como forma de expressão artística, através de exercícios de<br>apreciação, execução e composição.||
 
-|**COMPONENTE CURRICULAR:**Biologia III|**COMPONENTE CURRICULAR:**Biologia III|
+|**COMPONENTE CURRICULAR:**Biologia III||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Ecologia: Fluxo energético, Ciclos biogeoquímicos, Dinâmica de populações, Relações<br>ecológicas; Sucessão ecológica e Biomas; Fundamentos de genética; Evolução biológica;||
@@ -1470,7 +1470,7 @@ na vida cotidiana e na indústria;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>BARSANO, Paulo Roberto; BARBOSA, Rildo Pereira; VIANA, Viviane Japiassú.<br>**Biologia ambiental**. 1. ed. São Paulo: Érica, 2014. 120 p.<br>ALBERTS, Bruce et al. **Biologia molecular da célula**. 5. ed. Porto Alegre: Artmed, 2010.<br>1268 p.<br>CONTI, José Bueno.**Clima e meio ambiente**. 7. ed. São Paulo: Atual, 2011. 96 p.<br>SILVA, José Vitor da (Org.). **Bioética**: meio ambiente, saúde e pesquisa. 1. ed. São Paulo:<br>Iátria, c2006. 203 p.||
 |**OBJETIVOS:**<br>●<br>Aprender os conceitos ecológicos;<br>●<br>Compreender a influência do meio ambiente na saúde e na qualidade de vida dos<br>seres vivos;<br>●<br>Compreender as interações dos seres vivos com o meio ambiente;<br>●<br>Conhecer e aplicar conceitos básicos de genética;<br>●<br>Conhecer as leis de Mendel e suas implicações;<br>●<br>Aprender fundamentos de evolução.||
 
-|**COMPONENTE CURRICULAR:**Biologia III|**COMPONENTE CURRICULAR:**Biologia III|
+|**COMPONENTE CURRICULAR:**Biologia III||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Ecologia: Fluxo energético, Ciclos biogeoquímicos, Dinâmica de populações, Relações<br>ecológicas; Sucessão ecológica e Biomas; Fundamentos de genética; Evolução biológica;||
@@ -1478,7 +1478,7 @@ na vida cotidiana e na indústria;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>BARSANO, Paulo Roberto; BARBOSA, Rildo Pereira; VIANA, Viviane Japiassú.<br>**Biologia ambiental**. 1. ed. São Paulo: Érica, 2014. 120 p.<br>ALBERTS, Bruce et al. **Biologia molecular da célula**. 5. ed. Porto Alegre: Artmed, 2010.<br>1268 p.<br>CONTI, José Bueno.**Clima e meio ambiente**. 7. ed. São Paulo: Atual, 2011. 96 p.<br>SILVA, José Vitor da (Org.). **Bioética**: meio ambiente, saúde e pesquisa. 1. ed. São Paulo:<br>Iátria, c2006. 203 p.||
 |**OBJETIVOS:**<br>●<br>Aprender os conceitos ecológicos;<br>●<br>Compreender a influência do meio ambiente na saúde e na qualidade de vida dos<br>seres vivos;<br>●<br>Compreender as interações dos seres vivos com o meio ambiente;<br>●<br>Conhecer e aplicar conceitos básicos de genética;<br>●<br>Conhecer as leis de Mendel e suas implicações;<br>●<br>Aprender fundamentos de evolução.||
 
-|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada III: Biologia Molecular|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada III: Biologia Molecular|
+|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada III: Biologia Molecular||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Histórico e Dogma da Biologia Molecular. A natureza do material genético. Estrutura e<br>replicação do DNA. Estrutura de genomas eucariotos e procariotos. RNA, transcrição e<br>mecanismo de splicing. Tradução e síntese de proteínas, código genético. Regulação da<br>expressão gênica em procariotos e eucariotos. Técnicas laboratoriais da Biologia<br>Molecular. Extração de DNA e RNA. Reação em cadeia da polimerase (PCR). Genômica e<br>sequenciamento. Análise de expressão gênica. Princípios de bioinformática: bancos de<br>dados e alinhamento de sequências.||
@@ -1486,7 +1486,7 @@ na vida cotidiana e na indústria;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>LEWIN, B.**Genes IX**. 9. ed. Porto Alegre: Artmed, 2009.<br>CARVALHO, C.V.; RICCI, G.; AFFONSE, R. **Guia de práticas em biologia molecular**.<br>Yendis, 2014.<br>VITOLO, M.; PESSOA JR, **A. Biotecnologia Farmacêutica:** Aspectos sobre aplicação<br>industrial. São Paulo: Blucher, 2015.<br>AMABIS, J. M.; MARTHO, G.R.. Biologia 1 – **Biologia das Células**. São Paulo:<br>Moderna, 2010.||
 |**OBJETIVOS:**<br>●<br>Acessar os conhecimentos básicos referentes à natureza e estrutura dos ácidos<br>nucleicos, o conceito de gene e controle de expressão gênica bem como os<br>mecanismos moleculares de armazenamento e transmissão da informação genética;<br>●<br>Conhecer as principais técnicas de manipulação das biomoléculas em laboratório;<br>●<br>Compreender as aplicações da genética molecular.||
 
-|**COMPONENTE CURRICULAR:**Filosofia I|**COMPONENTE CURRICULAR:**Filosofia I|
+|**COMPONENTE CURRICULAR:**Filosofia I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Introdução à Filosofia. Pensamento Mítico. Teogonia e cosmogonia. O que é Filosofia.<br>Contexto histórico e características do desenvolvimento filosófico grego. Filosofia Política.<br>O que é política? Teorias políticas na História: antiguidade, Idade Média, modernidade e<br>contemporaneidade. Relações de poder. Democracia e autoritarismo. Política e ideologia.<br>Introdução à Ética. Estudos dos valores. Ética e moral. Concepções éticas na história do<br>pensamento ocidental. Liberdade, determinismo e autonomia.||
@@ -1494,7 +1494,7 @@ na vida cotidiana e na indústria;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>CORTELLA, Mario Sergio; BARROS FILHO, Clóvis de. **Ética e vergonha na cara!**<br>Campinas/São Paulo: Papirus/7Mares, 2014. 111p.<br>DELEUZE, Gilles; GUATTARI, Félix. **O que é filosofia?** São Paulo: Editora 34, 2010.<br>271p.<br>DIMENSTEIN, Gilberto. **Dez lições de filosofia para um Brasil cidadão**. São Paulo:<br>FTD, 2012. 320 p.<br>JAPIASSÚ, Hilton; MARCONDES, Danilo. **Dicionário básico de Filosofia**. Rio de<br>Janeiro: Zahar, 2006. 309 p.<br>PINSKY, Jaime; PINSKY Carla Bassanezi (Org.). **História da cidadania**. 6. ed. São<br>Paulo: Contexto, 2016. 573 p.||
 |**OBJETIVOS:**<br>●<br>Compreender o surgimento da Filosofia, seu surgimento, história e características;<br>●<br>Entender as diretrizes da Filosofia política, suas transformações na história e as<br>relações com a atualidade;<br>●<br>Estabelecer relações entre os diferentes contextos históricos, as concepções éticas e<br>os valores individuais.||
 
-|**COMPONENTE CURRICULAR:**Filosofia I|**COMPONENTE CURRICULAR:**Filosofia I|
+|**COMPONENTE CURRICULAR:**Filosofia I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Introdução à Filosofia. Pensamento Mítico. Teogonia e cosmogonia. O que é Filosofia.<br>Contexto histórico e características do desenvolvimento filosófico grego. Filosofia Política.<br>O que é política? Teorias políticas na História: antiguidade, Idade Média, modernidade e<br>contemporaneidade. Relações de poder. Democracia e autoritarismo. Política e ideologia.<br>Introdução à Ética. Estudos dos valores. Ética e moral. Concepções éticas na história do<br>pensamento ocidental. Liberdade, determinismo e autonomia.||
@@ -1502,7 +1502,7 @@ na vida cotidiana e na indústria;
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>CORTELLA, Mario Sergio; BARROS FILHO, Clóvis de. **Ética e vergonha na cara!**<br>Campinas/São Paulo: Papirus/7Mares, 2014. 111p.<br>DELEUZE, Gilles; GUATTARI, Félix. **O que é filosofia?** São Paulo: Editora 34, 2010.<br>271p.<br>DIMENSTEIN, Gilberto. **Dez lições de filosofia para um Brasil cidadão**. São Paulo:<br>FTD, 2012. 320 p.<br>JAPIASSÚ, Hilton; MARCONDES, Danilo. **Dicionário básico de Filosofia**. Rio de<br>Janeiro: Zahar, 2006. 309 p.<br>PINSKY, Jaime; PINSKY Carla Bassanezi (Org.). **História da cidadania**. 6. ed. São<br>Paulo: Contexto, 2016. 573 p.||
 |**OBJETIVOS:**<br>●<br>Compreender o surgimento da Filosofia, seu surgimento, história e características;<br>●<br>Entender as diretrizes da Filosofia política, suas transformações na história e as<br>relações com a atualidade;<br>●<br>Estabelecer relações entre os diferentes contextos históricos, as concepções éticas e<br>os valores individuais.||
 
-|**COMPONENTE CURRICULAR:**Física II|**COMPONENTE CURRICULAR:**Física II|
+|**COMPONENTE CURRICULAR:**Física II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 120|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Conceitos de Eletrostática e Eletrodinâmica; Conceitos do Magnetismo; Processos de<br>geração de Energia Elétrica; Introdução ao estudo das ondas e acústica||
@@ -1518,14 +1518,14 @@ na vida cotidiana e na indústria;
 
 - ● Desenvolver o projeto de pesquisa na área ambiental.
 
-|**COMPONENTE CURRICULAR:**Língua Espanhola II|**COMPONENTE CURRICULAR:**Língua Espanhola II|
+|**COMPONENTE CURRICULAR:**Língua Espanhola II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>A Língua Espanhola no mundo. Aspectos sociais e (inter)culturais do universo hispânico,<br>com ênfase na América Latina. A identidade e a integração latino-americanas. Aspectos de<br>variação linguística em Língua Espanhola. Aspectos linguísticos: o nome e as classes<br>gramaticais a ele associados - substantivos, adjetivos, artigos, pronomes . O verbo e as<br>classes gramaticais a ele associadas: os tempos verbais do modo indicativo (regular e<br>irregular), expressões adverbiais. Modo subjuntivo e imperativo e seus usos. O tempo e os<br>números: os numerais, as horas, os dias da semana, os meses, as estações. Aspectos de<br>coesão e coerência: conectores argumentativos, pronomes, complemento. Introdução às<br>quatro<br>habilidades<br>comunicativas<br>em<br>língua<br>espanhola:<br>expressão<br>oral/escrita<br>e<br>compreensão oral/leitora. Prática de leitura, escrita e oralidade em língua espanhola.||
 |**BIBLIOGRAFIA  BÁSICA:**<br>CASTRO, F. et al.**Nuevo Ven 1: Español Lengua Extranjera**. Madri: Edelsa, 2003.<br>HERMOSO, A.; DUEÑAS, C. R.; FREIRE, T. R. **Eco 1: curso modular de español**<br>**lengua extranjera, versión brasileña**. Madrid: Edelsa, 2010.<br>MARTIN, I.R. **Síntesis: curso de lengua española: ensino médio**. São Paulo: Ática,<br>2010. MILANI, E.M. **Gramática de Espanhol para brasileiros**. São Paulo: Saraiva,<br>2006.<br>OSMAN, S. et al. **Proyecto enlaces 1: español para jóvenes brasileños**. 3 ed. São Paulo:<br>Macmillan, 2013.<br>SEDYCIAS, J. **O Ensino do Espanhol no Brasil: passado, presente, futuro**. São Paulo:<br>Parábola Editorial, 2005.||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>FANJUL, A. **Gramática y Práctica de Español para Brasileños**. São Paulo: Moderna,<br>2005.<br>MORENO FERNÁNDEZ, F. **Producción, expresión e interacción oral**. Madrid: Arco<br>Libros, 2002.||
 
-|**COMPONENTE CURRICULAR:**Língua Espanhola II|**COMPONENTE CURRICULAR:**Língua Espanhola II|
+|**COMPONENTE CURRICULAR:**Língua Espanhola II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>A Língua Espanhola no mundo. Aspectos sociais e (inter)culturais do universo hispânico,<br>com ênfase na América Latina. A identidade e a integração latino-americanas. Aspectos de<br>variação linguística em Língua Espanhola. Aspectos linguísticos: o nome e as classes<br>gramaticais a ele associados - substantivos, adjetivos, artigos, pronomes . O verbo e as<br>classes gramaticais a ele associadas: os tempos verbais do modo indicativo (regular e<br>irregular), expressões adverbiais. Modo subjuntivo e imperativo e seus usos. O tempo e os<br>números: os numerais, as horas, os dias da semana, os meses, as estações. Aspectos de<br>coesão e coerência: conectores argumentativos, pronomes, complemento. Introdução às<br>quatro<br>habilidades<br>comunicativas<br>em<br>língua<br>espanhola:<br>expressão<br>oral/escrita<br>e<br>compreensão oral/leitora. Prática de leitura, escrita e oralidade em língua espanhola.||
@@ -1672,7 +1672,7 @@ ANTUNES, Ricardo L. C. **Os sentidos do trabalho** : ensaio sobre a afirmação 
 
 FRANCO, Maria Aparecida Ciavatta. **Mediações históricas de trabalho e educação** : gênese e disputas na formação dos trabalhadores: (Rio de Janeiro, 1930-60). Rio de Janeiro: CNPq: FAPERJ: Lamparina, 2009. 453 p. GIDDENS, Anthony. **Sociologia.** 6. ed. Porto Alegre: Penso, 2012. 847 p. HOBSBAWM, E. J. **A era das revoluções** : 1789-1848. 35. ed. São Paulo: Paz & Terra, 2015. 531 p. HOBSBAWM, E. J. **A era do capital** : 1848-1875. 24. ed. São Paulo: Paz & Terra, 2016. 517 p. HOBSBAWM, E. J. **Era dos extremos** : o breve século XX: 1914-1991. 2. ed. São Paulo: Companhia das Letras, 1995. 598 p. **BIBLIOGRAFIA COMPLEMENTAR:** GOMBRICH, E. H. **Os usos das imagens** : estudos sobre a função social da arte e da comunicação visual. Porto Alegre: Bookman, 2012. 304 p. HOLANDA, Arlene. **O Brasil que veio da África** . 2. ed. São Paulo: Nova Alexandria, 2015. 56 p. MURRAY, Jocelyn. **África: o despertar de um continente** . Barcelona: Folio, c2007. 240 p. (Grandes civilizações do passado). PINSKY, Jaime; PINSKY Carla Bassanezi (Org.). **História da cidadania** . 6. ed. São Paulo: Contexto, 2012. 573 p. **Filmes:** Hoje Eu Quero Voltar Sozinho (2014, Daniel Ribeiro). O Ano em que Meus Pais Saíram de Férias (2006, Cao Hamburger). O que é isso, companheiro? (1997, Bruno Barreto) **OBJETIVOS:** ● Estabelecer relações entre conceitos e práticas de poder, políticas e ideologias em múltiplos contextos sociais; ● Compreender o conceito de Ideologia e as diversas formas de direitos e suas implicações nas sociedades; ● Entender as concepções de cultura, estabelecendo relações com estruturas das sociedade.
 
-|**COMPONENTE CURRICULAR:**Química Analítica Quantitativa e Qualitativa|**COMPONENTE CURRICULAR:**Química Analítica Quantitativa e Qualitativa|
+|**COMPONENTE CURRICULAR:**Química Analítica Quantitativa e Qualitativa||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 
@@ -1718,13 +1718,13 @@ BARSANO, P. R. et al. **Biossegurança: ações fundamentais para promoção da 
 
 - Assimilar as implicações da manipulação de organismos geneticamente modificados em laboratório para a biossegurança.
 
-|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada V: Biotecnologia Ambiental|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada V: Biotecnologia Ambiental|
+|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada V: Biotecnologia Ambiental||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Revisão de conceitos ecológicos para biotecnologia. Meio ambiente e contaminantes<br>ambientais<br>(poluição<br>x<br>contaminação).<br>Testes<br>de<br>ecotoxicidade.<br>Biossensores de<br>poluição.Tratamento biológico de efluentes sólidos, líquidos e gasosos. Tratamento de<br>Resíduos laboratoriais. Biorremediação, Biodegradação (compostagem) e Biofiltração.<br>Enzimologia aplicada à biotecnologia ambiental. Impactos ambientais da Biotecnologia.||
 |**BIBLIOGRAFIA  BÁSICA:**<br>BRAGA, B.; HESPANHOL, I.; CONEJO, J. G. L. et al., **Introdução à Engenharia**<br>**Ambiental**. 2, ed. São Paulo: Pearson Prentice Hall, 2005.<br>BRUNO, A. N. (Org.). **Biotecnologia II: aplicações e tecnologias**. Porto Alegre: Artmed,<br>2017.<br>POLETO, C. (Org.)**Introdução ao gerenciamento ambiental**. Interciência. 2010.<br>MADIGAN, M. T. et al. **Microbiologia de Brock**. 14. ed. Porto Alegre: Artmed Editora,<br>2016.<br>MIRANDA, J. C. et al. **Biotecnologia ambiental e sustentabilidade**. Rio de Janeiro:<br>Fundação CECIERJ. 2019. 112p.<br>CAVALCANTI, J. E. W. A. **Manual de Tratamento de Efluentes Industriais**. Rio de<br>Janeiro: Abes 2009.<br>BARSANO, P. R.; BARBOSA, R. P.; VIANA, V. J.**Biologia Ambiental**. 1. ed. São Paulo:<br>Erica, 2004.<br>BARSANO, P.R.; BARBOSA, R.P. **Meio ambiente: guia prático e didático**. 2. ed. São||
 
-|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada V: Biotecnologia Ambiental|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada V: Biotecnologia Ambiental|
+|**COMPONENTE CURRICULAR:**Biotecnologia Aplicada V: Biotecnologia Ambiental||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Revisão de conceitos ecológicos para biotecnologia. Meio ambiente e contaminantes<br>ambientais<br>(poluição<br>x<br>contaminação).<br>Testes<br>de<br>ecotoxicidade.<br>Biossensores de<br>poluição.Tratamento biológico de efluentes sólidos, líquidos e gasosos. Tratamento de<br>Resíduos laboratoriais. Biorremediação, Biodegradação (compostagem) e Biofiltração.<br>Enzimologia aplicada à biotecnologia ambiental. Impactos ambientais da Biotecnologia.||
@@ -1742,7 +1742,7 @@ LIMA, U. A.et al. (Coord.). **Biotecnologia industrial 3: processos fermentativo
 
 ● Proporcionar aos estudantes conhecimentos relacionados aos aspectos relacionados à poluição ambiental, bem como as principais formas de se evitar e/ou minimizar os efeitos nocivos dos compostos tóxicos no meio ambiente; ● Contribuir para uma formação biotecnológica voltada para a sustentabilidade ambiental com inserção de temas relacionados às áreas de biorremediação, tratamento de resíduos e monitoramento ambiental.
 
-|**COMPONENTE CURRICULAR:**Controle Qualidade Industrial|**COMPONENTE CURRICULAR:**Controle Qualidade Industrial|
+|**COMPONENTE CURRICULAR:**Controle Qualidade Industrial||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Definição e controle de qualidade; Sistema de certificação de qualidade; Controle de<br>qualidade nas indústrias de bioprodutos; Estabelecimento de normas e padrões de<br>identidade e qualidade; Amostragem e preparo da amostra em análise de bioprodutos;<br>Confiabilidade<br>dos resultados; Técnicas e ensaios de análises físico-químicas de<br>bioprodutos.||
@@ -1810,7 +1810,7 @@ AVENI, Alessandro. **Empreendedorismo contemporâneo: teorias e tipologias** . S
 |||●<br>Compreender o que é inovação e sua importância;|||||
 |||●<br>Entender o processo de escrita e depósito de patentes.|||||
 
-|**COMPONENTE CURRICULAR:**Filosofia II|**COMPONENTE CURRICULAR:**Filosofia II|
+|**COMPONENTE CURRICULAR:**Filosofia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Teoria do conhecimento. O conhecimento, senso comum e ciência. Epistemologia nos<br>períodos históricos. Conhecimento e lógica. Filosofia da Ciência. Mulheres na Ciência.<br>Concepções estéticas na História. Filosofia, arte, estética e sociedade. O belo e o feio.<br>Indústria cultural. História da Filosofia. Filosofia na contemporaneidade. Existencialismo,<br>Filosofia da Linguagem, Escola de Frankfurt e Filosofia pós-moderna.||
@@ -1822,7 +1822,7 @@ tempo. Estabelecer relações entre o cotidiano e as questões artísticas e cul
 
 - Desenvolver conexões de continuidades e rupturas entre períodos e teorias filosóficas na história da Filosofia. Compreender as escolas filosóficas contemporâneas.
 
-|**COMPONENTE CURRICULAR:**Geografia II|**COMPONENTE CURRICULAR:**Geografia II|
+|**COMPONENTE CURRICULAR:**Geografia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Dinâmicas sociais:<br>●<br>Geografia da População e dinâmicas populacionais;<br>●<br>Urbanização e produção do espaço agrário;<br>●<br>Produção do espaço capitalista e industrialização;<br>Globalização e Geopolítica serão conceitos abordados como temas transversais.<br>Orientações para abordagem dos conceitos de Globalização e Geopolítica como temas<br>transversais:<br>●<br>Globalização da pobreza, migração e conflitos territoriais;<br>●<br>Rede urbana, fluxos globais e exportação de commodities;<br>●<br>Desenvolvimento tecnológico, mundo bipolar, compressão do espaço-tempo e<br>Divisão Internacional do Trabalho.||
@@ -1831,7 +1831,7 @@ tempo. Estabelecer relações entre o cotidiano e as questões artísticas e cul
 
 SIMIELLI, Maria Elena Ramos. **Geoatlas básico** . 23. ed. São Paulo: Ática, 2013. 80 p. TEIXEIRA, Wilson (Org.) et al. **Decifrando a Terra** . 2. ed. São Paulo: Companhia Editora Nacional, 2009. 623 p. SANTOS, Milton. **Por uma outra Globalização do pensamento único à consciência universal** . 6. ed.São Paulo: Record, 2001. SANTOS, Milton. **O Espaço do Cidadão** . São Paulo: EdUSP, 2014. JAMIESON, Dale. **Ética e meio ambiente: uma introdução** . São Paulo: Ed. Senac, 2010. 334 p. **OBJETIVOS:** ● Compreender os conceitos as dinâmicas populacionais em uma sociedade dinâmica e globalizada; ● Entender a interdependência do espaço urbano e agrário mundo no capitalista e globalizado ● Perceber o desenvolvimento do capitalista como fenômeno social prescritivo da produção do espaço e da dinâmica social industrial globalizada
 
-|**COMPONENTE CURRICULAR:**Informática Aplicada|**COMPONENTE CURRICULAR:**Informática Aplicada|
+|**COMPONENTE CURRICULAR:**Informática Aplicada||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Conceitos,<br>fundamentos,<br>evolução<br>e<br>aplicações da informática. Edição de textos,<br>apresentações, imagens e planilhas. Noções de linguagem de programação. Introdução a<br>robótica, inteligência artificial e tecnologias bioinspiradas. Automação, bioinformática e<br>outras aplicações da Informática na área de atuação do curso técnico.||
@@ -1967,7 +1967,7 @@ No processo de análise linguística, espera-se que o aluno:
 
 - Seja capaz de verificar as regularidades das diferentes variedades do Português, reconhecendo os valores sociais nelas implicados e, consequentemente, o preconceito contra as formas populares em oposição às formas dos grupos socialmente favorecidos."
 
-|**COMPONENTE CURRICULAR:**Matemática IV|**COMPONENTE CURRICULAR:**Matemática IV|
+|**COMPONENTE CURRICULAR:**Matemática IV||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Trigonometria; Funções Trigonométricas; Geometria Analítica; números complexos.||
@@ -2468,7 +2468,7 @@ O campus possui serviços de manutenção permanente, vigilância noturna e SDF 
 
 Equipamentos - Laboratório de Paleontologia
 
-|Equipamentos - Laboratório de Paleontologia|Equipamentos - Laboratório de Paleontologia|
+|Equipamentos - Laboratório de Paleontologia||
 |---|---|
 |Quantidade|Descrição|
 |1|Quadro|
@@ -2486,7 +2486,7 @@ Equipamentos - Laboratório de Paleontologia
 
 Equipamentos - Laboratório multidisciplinar de Ciências (biotecnologia, bioquímica e biologia molecular e Laboratório de microbiologia)
 
-|Equipamentos - Laboratório multidisciplinar de Ciências (biotecnologia, bioquímica e<br>biologia molecular e Laboratório de microbiologia)|Equipamentos - Laboratório multidisciplinar de Ciências (biotecnologia, bioquímica e<br>biologia molecular e Laboratório de microbiologia)|
+|Equipamentos - Laboratório multidisciplinar de Ciências (biotecnologia, bioquímica e<br>biologia molecular e Laboratório de microbiologia)||
 |---|---|
 |Quantidade|Descrição|
 |1|Capela para exaustão de gases em fibra de vidro 60M3/min|

@@ -52,7 +52,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 ## **COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou COMISSÃO DE AJUSTE CURRICULAR (CAJ)**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |**Presidente CAJ/ Coordenação de Curso/**<br>**Docente**|**Adrio Schwingel**|
@@ -648,7 +648,7 @@ A matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio é 
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|
+|**Matriz curricular do Curso Técnico em Teatro Subsequente ao Ensino Médio**|||||||
 |---|---|---|---|---|---|---|
 |**Ano de alteração: 2019**|||||||
 |**Eixo Curricular**|**1º**<br>**sem**<br>**(h/r)**|**2º**<br>**sem**<br>**(h/r)**|**3º**<br>**sem**<br>**(h/r)**|**4º**<br>**sem**<br>**(h/r)**|**Nº aula**<br>**semanal**<br>**(1h30**<br>**min)**|**Total**<br>**hora-relógio**|
@@ -712,7 +712,7 @@ GASSNER, John. Mestres do teatro I. 4.ed. São Paulo: Perspectiva, 2010. GASSNER
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**_CAMPUS_ JACAREZINHO DO IFPR**|**_CAMPUS_ JACAREZINHO DO IFPR**|**_CAMPUS_ JACAREZINHO DO IFPR**|
+|**_CAMPUS_ JACAREZINHO DO IFPR**|||
 |---|---|---|
 |**Curso: Teatro**||**Eixo Tecnológico: Produção Cultural e**<br>**Design **|
 |**Eixo Curricular: Arte e Contexto(I, II, III e IV)**|||
@@ -728,7 +728,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**_CAMPUS_ JACAREZINHO DO IFPR**|**_CAMPUS_ JACAREZINHO DO IFPR**|**_CAMPUS_ JACAREZINHO DO IFPR**|
+|**_CAMPUS_ JACAREZINHO DO IFPR**|||
 |---|---|---|
 |**Curso: Teatro**||**Eixo Tecnológico: Produção Cultural e**<br>**Design **|
 |**Eixo Curricular: Arte e Pesquisa(I, II, III e IV)**|||
@@ -744,7 +744,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**_CAMPUS_ JACAREZINHO DO IFPR**|**_CAMPUS_ JACAREZINHO DO IFPR**|**_CAMPUS_ JACAREZINHO DO IFPR**|
+|**_CAMPUS_ JACAREZINHO DO IFPR**|||
 |---|---|---|
 |**Curso: Teatro**||**Eixo Tecnológico: Produção Cultural e**<br>**Design **|
 |**Eixo Curricular:Atelier de** **Criação e Produção(I, II, III e IV)**|||
@@ -822,12 +822,12 @@ Deverão ser listados na tabela os materiais, equipamentos e ou espaços físico
 
 Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|1 bola com guizo<br>grande e pequena|sim|-x-|-x-|
-|---|---|---|---|
-|1 plano inclinado|sim|-x-|-x-|
-|1 dominó em madeira|sim|-x-|-x-|
-|1 alfabeto móvel|sim|-x-|-x-|
-|1 régua|sim|-x-|-x-|
+|1 bola com guizo<br>grande e pequena|sim|-x-|
+|---|---|---|
+|1 plano inclinado|sim|-x-|
+|1 dominó em madeira|sim|-x-|
+|1 alfabeto móvel|sim|-x-|
+|1 régua|sim|-x-|
 
 ## **9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 

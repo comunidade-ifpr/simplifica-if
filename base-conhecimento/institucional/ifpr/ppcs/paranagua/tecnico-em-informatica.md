@@ -1081,7 +1081,7 @@ Núcleo Comum Núcleo Técnico Núcleo Comum/Técnico Articulador
 
 ## _REPRESENTAÇÃO_
 
-|**1º ANO DO CURSO**|**1º ANO DO CURSO**|**1º ANO DO CURSO**|**1º ANO DO CURSO**|
+|**1º ANO DO CURSO**||||
 |---|---|---|---|
 |**1º SEMESTRE**||**2º SEMESTRE**||
 |ART11A|||**1**|
@@ -1113,7 +1113,7 @@ Núcleo Comum Núcleo Técnico Núcleo Comum/Técnico Articulador
 |TFO11M|**2**|TFO21N|**2**|
 |**Tópicos Formativos I**||**Tópicos Formativos II**||
 
-|**2º ANO DO CURSO**|**2º ANO DO CURSO**|**2º ANO DO CURSO**|**2º ANO DO CURSO**|
+|**2º ANO DO CURSO**||||
 |---|---|---|---|
 |**1º SEMESTRE**||**2º SEMESTRE**||
 |BIO12A|||**2**|
@@ -1143,7 +1143,7 @@ Núcleo Comum Núcleo Técnico Núcleo Comum/Técnico Articulador
 |OOB12L|**4**|
 |**Orientação a Objetos**||
 
-|**3º ANO DO CURSO**|**3º ANO DO CURSO**|**3º ANO DO CURSO**|**3º ANO DO CURSO**|
+|**3º ANO DO CURSO**||||
 |---|---|---|---|
 |**1º SEMESTRE**||**2º SEMESTRE**||
 |ART23A|||**1**|
@@ -1175,7 +1175,7 @@ Núcleo Comum Núcleo Técnico Núcleo Comum/Técnico Articulador
 |DWE13M|**3**|
 |**Desenvolvimento Web**||
 
-|**4º ANO DO CURSO**|**4º ANO DO CURSO**|**4º ANO DO CURSO**|**4º ANO DO CURSO**|
+|**4º ANO DO CURSO**||||
 |---|---|---|---|
 |**1º SEMESTRE**||**2º SEMESTRE**||
 |ART34A|||**1**|

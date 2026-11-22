@@ -105,7 +105,7 @@ Numa visão mais abrangente, faz-se necessário um maior espalhamento de nosso p
 
 De acordo com o que preveem os incisos I e II do artigo 4° da Resolução CONSUP n.° 18/2017-IFPR, são objetivos da proposta:
 
-|**4.1 Objetivo Geral**|**4.1 Objetivo Geral**|
+|**4.1 Objetivo Geral**||
 |---|---|
 |Qualificar docentes a fim de serem capazes de responder questões da sociedade atual,||
 |em seus aspectos sócio-históricos, políticos, ideológicos e pedagógicos, a partir de||
@@ -164,7 +164,7 @@ Espera-se dos egressos do curso a construção de uma visão crítica sobre os p
 
 ## **11. RELAÇÃO DO CORPO DOCENTE**
 
-|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|**11. RELAÇÃO DO CORPO DOCENTE**|
+|**11. RELAÇÃO DO CORPO DOCENTE**||||||
 |---|---|---|---|---|---|
 |Nome|Formação|Maior|Efetivo/|Componente|Carga|
 |Completo|||docente|<br>curricular|<br>horária|
@@ -222,7 +222,7 @@ Espera-se dos egressos do curso a construção de uma visão crítica sobre os p
 
 Rol dos componentes e carga horária e créditos respectivos
 
-|**12. MATRIZ CURRICULAR**|**12. MATRIZ CURRICULAR**|**12. MATRIZ CURRICULAR**|**12. MATRIZ CURRICULAR**|
+|**12. MATRIZ CURRICULAR**||||
 |---|---|---|---|
 |**12.1 Componente Curricular Obrigatório**||||
 |Rol dos componentes e carga horária e créditos respectivos||||
@@ -996,7 +996,7 @@ EDUCATIVO. Holos, [s. L.], v. 5, n. 31, p.182-200, set. 2015. Disponível em: <h
 
 ## **14. PROCESSO SELETIVO**
 
-|**14. PROCESSO SELETIVO**|**14. PROCESSO SELETIVO**|**14. PROCESSO SELETIVO**|**14. PROCESSO SELETIVO**|
+|**14. PROCESSO SELETIVO**||||
 |---|---|---|---|
 |14.1 Pré-requisitos||||
 |Conclusão do Ensino Superior||||

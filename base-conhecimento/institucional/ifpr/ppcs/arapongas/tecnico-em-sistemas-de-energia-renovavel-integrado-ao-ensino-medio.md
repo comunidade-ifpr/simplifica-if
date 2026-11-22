@@ -1292,7 +1292,7 @@ IFPRCAMPUSAVANCADOARAPONGAS<br>1°Ano 2° Ano 3°Ano 4°Ano<br>Lingua Portuguesa
 
 79
 
-|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**|
+|**MATRIZ CURRICULAR DO CURSO TÉCNICO EM SISTEMAS DE ENERGIA**<br>**RENOVÁVEL INTEGRADO AO ENSINO MÉDIO**||||||
 |---|---|---|---|---|---|
 |**Comp. Curricular / C.H.**|**1º ano**|**2º ano**|**3º ano**|**4º ano**|**Total**|
 |Língua Portuguesa e Literatura|120|80|80|40|320|
@@ -1351,7 +1351,7 @@ A matriz curricular foi concebida de maneira a reunir componentes que contribuam
 
 ## QUADRO 8: Componentes curriculares
 
-|QUADRO 8: Componentes curriculares<br>INSTITUTO<br>FEDERAL<br>Parana<br>Campus Avancado<br>Arapongas|QUADRO 8: Componentes curriculares<br>**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|QUADRO 8: Componentes curriculares<br>**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|QUADRO 8: Componentes curriculares<br>**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|QUADRO 8: Componentes curriculares<br>**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|
+|QUADRO 8: Componentes curriculares<br>INSTITUTO<br>FEDERAL<br>Parana<br>Campus Avancado<br>Arapongas|QUADRO 8: Componentes curriculares<br>**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**||||
 |---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||
 ||_Campus Avançado Arapongas_||||

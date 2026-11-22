@@ -1171,7 +1171,7 @@ MOSER, Paul K; MULDER, Dwayne H. & TROUT, J.D. **A teoria do conhecimento:** uma
 
 27
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**||
 |---|---|
 |**Curso: **Técnico em AquiculturaIntegrado aoEnsinoMédio|**Eixo Tecnológico: **RecursosNaturais|
 |**Componente Curricular**: FísicaI||
@@ -1394,7 +1394,7 @@ LOPES, S.; ROSSO, S. **Bio.** Vol. 1. São Paulo: Saraiva, 2011. PEZZI, A.; GOWD
 
 43
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**||
 |---|---|
 |**Curso: **Técnico em AquiculturaIntegrado aoEnsinoMédio|**Eixo Tecnológico: **RecursosNaturais|
 |**Componente Curricular**: FísicaII||
@@ -1501,7 +1501,7 @@ ALVES, D.R., **Apostila de Enfermidades de Peixes Ornamentais,** Rio de Janeiro:
 
 49
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**||
 |---|---|
 |**Curso: **Técnico em AquiculturaIntegrado aoEnsinoMédio|**Eixo Tecnológico: **RecursosNaturais|
 |**Componente Curricular:** Tilapicultura||
@@ -1606,7 +1606,7 @@ SURENDRA, V. **Ideias Geniais – os principais teoremas, teorias, leis e princ�
 
 55
 
-|**Campus Foz do Iguaçu do IFPR**|**Campus Foz do Iguaçu do IFPR**|
+|**Campus Foz do Iguaçu do IFPR**||
 |---|---|
 |**Curso: **Técnico em AquiculturaIntegrado aoEnsinoMédio|**Eixo Tecnológico: **RecursosNaturais|
 |**Componente Curricular**:QuímicaIII||

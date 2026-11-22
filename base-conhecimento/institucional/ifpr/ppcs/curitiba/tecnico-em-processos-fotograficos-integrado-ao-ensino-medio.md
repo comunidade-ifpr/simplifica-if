@@ -470,7 +470,7 @@ Conteúdos transversais referentes a Educação Ambiental (Lei nº 9.795/99, que
 
 ## **Matriz Curricular do Curso Técnico Integrado em Processos Fotográficos**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-aula)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -557,7 +557,7 @@ INSTITUTOFEDERAL PABANA
 
 ## **3.9. Ementas dos Componentes Curriculares**
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Teoria das Cores||
@@ -687,7 +687,7 @@ ARNHEIM, Rudolf. Arte & Percepção visual: Uma psicologia da visão criadora. S
 
 BARTHES, Roland. A câmara clara. Rio de Janeiro: Nova Fronteira, 1984. BUSSELE, Michael. Tudo sobre fotografia. São Paulo: Pioneira, 1999. SAMAIN, Etienne. (org.) O fotográfico. São Paulo: HUCITEC/CNPQ, 1998.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Tratamento de Imagem Avançado||
@@ -901,7 +901,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Língua Portuguesa I|uesa I|uesa I|
@@ -937,7 +937,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Educação Física I|||
@@ -967,7 +967,7 @@ INSTITUTOFEDERAL PABANA
 
 Maria Alice do Amaral Louzada. Artes Plásticas no Brasil. Ed. Julio Louzada.
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Matemática I||
@@ -1099,7 +1099,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Sociologia I|||
@@ -1197,7 +1197,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Artes II|||
@@ -1309,7 +1309,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: História II||
@@ -1324,7 +1324,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Sociologia II||
@@ -1339,7 +1339,7 @@ INSTITUTOFEDERAL PABANA
 
 Ministerio da Educacao InstitutoFederal doParana
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Filosofia II||
@@ -1354,11 +1354,11 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
-|---|---|---|---|
-|**Curso:**Processos Fotográficos|||**Eixo Tecnológico:**Cultural e Design|
-|**Componente Curricular**: Língua Portuguesa III||||
-|**Carga Horária** (hora aula): 80|||**Período letivo:**3º ano|
+|**Campus Curitiba do IFPR**|||
+|---|---|---|
+|**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
+|**Componente Curricular**: Língua Portuguesa III|||
+|**Carga Horária** (hora aula): 80||**Período letivo:**3º ano|
 
 ## **Ementa:**
 
@@ -1412,7 +1412,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||
 |---|---|
 |**Curso:**Processos Fotográficos|**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Artes III||
@@ -1507,7 +1507,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Biologia III|||
@@ -1537,7 +1537,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Geografia III|||
@@ -1565,7 +1565,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: História III|||
@@ -1635,7 +1635,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Língua Espanhola I|||
@@ -1689,7 +1689,7 @@ Ministerio da Educacao InstitutoFederal doParana
 
 INSTITUTOFEDERAL PABANA
 
-|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|**Campus Curitiba do IFPR**|
+|**Campus Curitiba do IFPR**|||
 |---|---|---|
 |**Curso:**Processos Fotográficos||**Eixo Tecnológico:**Cultural e Design|
 |**Componente Curricular**: Língua Espanhola III|||
@@ -1886,14 +1886,14 @@ O relatório será elaborado pelo estagiário devendo conter:
 
 67
 
-|1|1<br>INSTITUTOFEDERAL<br>PABANA||InstitutoFederal doParana|InstitutoFederal doParana|
-|---|---|---|---|---|
-|3)|Ética profissional.||||
-|4)|Capacidade de autocrítica.||||
-|5)|Iniciativa e persistência no<br>desempenho das atividades.||||
-|6)|Espontaneidade e participação nas<br>atividades planejadas.||||
-|7)|Compreensão das tarefas.||||
-|8)|Contribuição com ideias.||||
+|1|1<br>INSTITUTOFEDERAL<br>PABANA||InstitutoFederal doParana|
+|---|---|---|---|
+|3)|Ética profissional.|||
+|4)|Capacidade de autocrítica.|||
+|5)|Iniciativa e persistência no<br>desempenho das atividades.|||
+|6)|Espontaneidade e participação nas<br>atividades planejadas.|||
+|7)|Compreensão das tarefas.|||
+|8)|Contribuição com ideias.|||
 
 Recomendações:___________________________________________________________________
 

@@ -767,7 +767,7 @@ Base legal específica do curso: RESOLUÇÃO CNE/CP 1/2021 - Catálogo Nacional 
 |||Trabalho de Conclusão de Curso II|1|C|2|40|<br>34|
 |||**Subtotal(Total doperíodo)**||||**400**|**340**|
 
-|**DISTRIBUIÇÃO - CARGA HORÁRIA**|**DISTRIBUIÇÃO - CARGA HORÁRIA**|**DISTRIBUIÇÃO - CARGA HORÁRIA**|
+|**DISTRIBUIÇÃO - CARGA HORÁRIA**|||
 |---|---|---|
 |(C)Componentes curriculares obrigatórios|560|<br>476|
 |(O)Componentes Optativos|40|<br>34|

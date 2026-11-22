@@ -3843,7 +3843,7 @@ Assinatura do Examinador 2 ___________________________________________
 
 ## **FICHA DE AVALIAÇÃO DO TC**
 
-|Membros da<br>banca<br>examinadora|Membros da<br>banca<br>examinadora|||||
+|Membros da<br>banca<br>examinadora||||||
 |---|---|---|---|---|---|
 ||Membros da<br>banca<br>examinadora|Avaliação do<br>desenvolvimento<br>(orientador)|Apresentação<br>escrita do TC|Apresentação<br>oral do TC|Assinaturas|
 
@@ -4221,7 +4221,7 @@ Art 38. Os casos omissos a este Regulamento serão avaliados pelo Colegiado do C
 
 As partes abaixo qualificadas celebram neste ato Termo de Compromisso de Estágio conforme a Lei nº 11.788/08.
 
-|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**|
+|**DADOS DA INSTITUIÇÃO DE ENSINO – CAMPO DE ESTÁGIO**||
 |---|---|
 |**Unidade Concedente:**||
 |**CNPJ:**||

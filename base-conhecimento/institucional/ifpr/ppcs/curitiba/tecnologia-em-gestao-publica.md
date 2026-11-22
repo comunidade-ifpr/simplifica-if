@@ -305,7 +305,7 @@ A carga horária total do Curso é de 1.670 horas distribuídos em 5 semestres l
 
 ## **3.8.1 Matriz Curricular**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**||||
 |---|---|---|---|---|
 ||**TOTAL**<br>**(horas-aulas)**|||**TOTAL**<br>**(horas-relógio)**|
 ||**01***||<br>**02***||
@@ -395,7 +395,7 @@ Ministerio daEducacao InstitutoFederaldoParana
 
 ## Ministerio daEducacao InstitutoFederaldoParana
 
-|INSTITUTOFEDERAL<br>InstitutoFederaldoParana<br>PARANA|InstitutoFederaldoParana|InstitutoFederaldoParana|InstitutoFederaldoParana|
+|INSTITUTOFEDERAL<br>InstitutoFederaldoParana<br>PARANA|InstitutoFederaldoParana|||
 |---|---|---|---|
 |**PERÍODO LETIVO**|**3º SEMESTRE**|||
 |Relações Institucionais|04|80|67|
@@ -451,10 +451,10 @@ WEBER, Max. Economia e Sociedade: fundamentos da sociologia compreensiva. Vol.2.
 
 CARDOSO JUNIOR, José Celso (org.). **Burocracia e ocupação no setor público brasileiro.** 1ª Ed. **Rio de Janeiro:** IPEA, 2011.
 
-|Componente<br>Curricular|Ética no Serviço Publico||||
-|---|---|---|---|---|
-|Período letivo:|1º Semestre||Carga Horária: 33 h|Carga Horária: 33 h|
-|||Objetivos|||
+|Componente<br>Curricular|Ética no Serviço Publico|||
+|---|---|---|---|
+|Período letivo:|1º Semestre||Carga Horária: 33 h|
+|||Objetivos||
 
 Compreender a importância da ética e seus princípios; Compreender o campo de atuação da ética profissional; Identificar a aplicação da ética profissional no setor público.
 
@@ -513,10 +513,10 @@ MENDES, Judas Tadeu Grassi. Economia : fundamentos e aplicações. Pearson Prent
 
 SILVA, Eraldo Sergio Barbosa Barbosa; ORNELAS NETO, Joaquim.  Introdução à Economia. FDT Juruá, 2007.
 
-|Componente<br>Curricular|HISTÓRIA POLÍTICA DO BRASIL|HISTÓRIA POLÍTICA DO BRASIL|||
-|---|---|---|---|---|
-|Período letivo:|1º Semestre||Carga Horária: 33 h|Carga Horária: 33 h|
-|||Objetivos|||
+|Componente<br>Curricular|HISTÓRIA POLÍTICA DO BRASIL|HISTÓRIA POLÍTICA DO BRASIL||
+|---|---|---|---|
+|Período letivo:|1º Semestre||Carga Horária: 33 h|
+|||Objetivos||
 
 Compreender as diferentes etapas da história política brasileira a partir de sua estruturação como colônia lusitana, passando pela fase imperial e o recente período republicano contemplando suas especificidades e conseqüências para a realidade brasileira atual.
 
@@ -632,9 +632,9 @@ INSTITUT O FEDERAL<br>PARANA<br>
 
 MinisteriodaEducacao<br>InstitutoFederaldoParana<br>
 
-|Componente<br>Curricular|Trabalho e Sociedade|||
-|---|---|---|---|
-|Período letivo:|1º Semestre|Carga Horária: 33 h|Carga Horária: 33 h|
+|Componente<br>Curricular|Trabalho e Sociedade||
+|---|---|---|
+|Período letivo:|1º Semestre|Carga Horária: 33 h|
 
 Objetivos
 
@@ -696,11 +696,11 @@ Sennett, R. A corrosão do caráter. Conseqüências pessoais do trabalho no nov
 
 LEITE, M. P. Trabalho e sociedade em transformação. São Paulo: Perseu Abramo, 2003.
 
-|INSTITUTO~~F~~EDERAL<br>PARANA|INSTITUTO~~F~~EDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|---|
-|Componente<br>Curricular|Comunicação Oficial e Arquivística||||
-|Período letivo:|1º Semestre||Carga Horária: 67 h|Carga Horária: 67 h|
-|||Objetivos|||
+|INSTITUTO~~F~~EDERAL<br>PARANA|INSTITUTO~~F~~EDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|---|
+|Componente<br>Curricular|Comunicação Oficial e Arquivística|||
+|Período letivo:|1º Semestre||Carga Horária: 67 h|
+|||Objetivos||
 
 Compreender a importância da língua escrita e da língua falada; Compreender os tipos de comunicação oficial; Compreender a utilização de linguagem técnico-comercial e oficial; Compreender a importância da Gestão de Documentos; Reconhecer os principais sistemas e métodos de arquivamentos Ementa A comunicação escrita e suas formalidades Formas de discurso Formas de tratamento Frases e expressões usuais na linguagem técnico-comercial e oficial Competência do signatário e destinatário nas principais correspondências Paradigmas de registros da linguagem técnico-comercial e oficial Vantagens da língua escrita sobre a língua falada. Aspectos que diferenciam a língua escrita da falada. Concordância verbal (sujeito após o verbo). Relações lógicas da língua (causa e efeito contrário). Redação de Documentos Oficiais Gestão de Documentos e suas características; Métodos e Classificação de documentos; Métodos e sistemas de arquivamento; Dicas de conservação de documentos.
 
@@ -726,11 +726,11 @@ SANTOS, V.B. Gestão de Documentos Eletrônicos: uma visão arquivística. 1ª E
 
 PAES, Marilena Leite. Arquivo: teoria e prática. Rio de Janeiro: FGV, 1986.
 
-|Componente|Contabilidade Pública||||
-|---|---|---|---|---|
-|Curricular|||||
-|Período letivo:|2º Semestre||Carga Horária: 67 h|Carga Horária: 67 h|
-|||Objetivos|||
+|Componente|Contabilidade Pública|||
+|---|---|---|---|
+|Curricular||||
+|Período letivo:|2º Semestre||Carga Horária: 67 h|
+|||Objetivos||
 
 Conhecer os princípios e campo de aplicação da Contabilidade Pública; Relacionar a contabilidade à gestão pública;
 
@@ -793,12 +793,12 @@ A história do gerenciamento da informação Processos de arquivo de documentos 
 
 ## _Bibliografia Básica_
 
-|Título/Periódico|Autor|Edição|Local|Editora|Ano|Ano|
-|---|---|---|---|---|---|---|
-|Organizações do conhecimento: Infra-|ANGELONI, Maria Terezinha.|1ª|São Paulo|Saraiva|2005|2005|
-|estrutura, pessoas e tecnologias|||||||
-|Correspondência, Linguagem &|BELTRÃO, Odacir e Mariúsa.|23ª|São Paulo|Atlas|2005|2005|
-|Comunicação|||||||
+|Título/Periódico|Autor|Edição|Local|Editora|Ano|
+|---|---|---|---|---|---|
+|Organizações do conhecimento: Infra-|ANGELONI, Maria Terezinha.|1ª|São Paulo|Saraiva|2005|
+|estrutura, pessoas e tecnologias||||||
+|Correspondência, Linguagem &|BELTRÃO, Odacir e Mariúsa.|23ª|São Paulo|Atlas|2005|
+|Comunicação||||||
 
 INSTITUTOFEDERAL PARANA
 
@@ -826,16 +826,16 @@ _Bibliografia Básica_
 ||SARNO, Daniela Campos Libório|||||
 ||di|||||
 
-|INSTITUTOFEDERAL<br>PARANA|InstitutoFederaldoParana|InstitutoFederaldoParana|||||
-|---|---|---|---|---|---|---|
-|Função Social da Propriedade Urbana e<br>oPlanoDiretor|PIRES, Lilian Regina Gabriel<br>Moreira|1ª|Belo Horizonte|Fórum|2007|2007|
-|Direito Urbano Ambiental|MUKAI, Toshio|3|Belo Horizonte|Fórum|2006|2006|
-|Bibliografia Complementar|||||||
-|Estudo de Impacto de Vizinhança –<br>Instrumento de Garantia da Qualidade<br>de Vida dos Cidadãos Urbanos.|SANT´ANNA, Mariana Senna|3|Belo Horizonte|Fórum|2006|2006|
-|Gestão Ambiental: Responsabilidade<br>Sociale Sustentabilidade|DIAS, Reinaldo|1ª|São Paulo|Atlas|2006|2006|
-|Gestão Ambiental Empresarial:<br>Conceitos,modelos einstrumentos|BARBIERI, José Carlos|1ª|São Paulo|Saraiva|2004|2004|
-|Estatuto das Cidades: lei 10.257 de 10<br>de julho de2001|BRASIL||||2001|2001|
-|Direito e legislação imobiliária|SILVA, Antônio César da||Goiânia|AB|2001|2001|
+|INSTITUTOFEDERAL<br>PARANA|InstitutoFederaldoParana|InstitutoFederaldoParana||||
+|---|---|---|---|---|---|
+|Função Social da Propriedade Urbana e<br>oPlanoDiretor|PIRES, Lilian Regina Gabriel<br>Moreira|1ª|Belo Horizonte|Fórum|2007|
+|Direito Urbano Ambiental|MUKAI, Toshio|3|Belo Horizonte|Fórum|2006|
+|Bibliografia Complementar||||||
+|Estudo de Impacto de Vizinhança –<br>Instrumento de Garantia da Qualidade<br>de Vida dos Cidadãos Urbanos.|SANT´ANNA, Mariana Senna|3|Belo Horizonte|Fórum|2006|
+|Gestão Ambiental: Responsabilidade<br>Sociale Sustentabilidade|DIAS, Reinaldo|1ª|São Paulo|Atlas|2006|
+|Gestão Ambiental Empresarial:<br>Conceitos,modelos einstrumentos|BARBIERI, José Carlos|1ª|São Paulo|Saraiva|2004|
+|Estatuto das Cidades: lei 10.257 de 10<br>de julho de2001|BRASIL||||2001|
+|Direito e legislação imobiliária|SILVA, Antônio César da||Goiânia|AB|2001|
 
 1 MinisteriodaEducacao<br>INSTITUT O FEDERAL<br>InstitutoFederaldoParana<br>PARANA<br>Componente<br>Historia Econômica do Brasil<br>Curricular<br>2º Semestre<br>Período letivo:  Carga Horária: 33 h<br>Objetivos<br>
 
@@ -879,10 +879,10 @@ BRUM, Argemiro. Desenvolvimento econômico brasileiro. 24. ed. Petrópolis/Ijuí
 
 SICSU, João; PAULA, Luiz Fernando de; MICHEL, Renaut (orgs.). Novo- Desenvolvimentismo. Um projeto nacional de crescimento com eqüidade social. Rio de Janeiro: Manole, 2005.
 
-|..<br>INSTITUTOFEDERAL<br>PARANA|..<br>INSTITUTOFEDERAL<br>PARANA|Ministerio daEducacao<br>InstitutoFederaldoParana|Ministerio daEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|
-|Componente<br>Curricular|Matemática Financeira Aplicada|||
-|Período letivo:|2º Semestre|Carga Horária: 67 h|Carga Horária: 67 h|
+|..<br>INSTITUTOFEDERAL<br>PARANA||Ministerio daEducacao<br>InstitutoFederaldoParana|
+|---|---|---|
+|Componente<br>Curricular|Matemática Financeira Aplicada||
+|Período letivo:|2º Semestre|Carga Horária: 67 h|
 
 Objetivos
 
@@ -911,9 +911,9 @@ Fundamentos da Matemática Financeira Aplicada; Fluxo de Caixa; Juros Simples; J
 
 MinisteriodaEducacao<br>INSTITUT O FEDERAL<br>InstitutoFederaldoParana<br>PARANA<br>
 
-|Componente<br>Curricular|Estado e Sociedade|||
-|---|---|---|---|
-|Período letivo:|2º Semestre|Carga Horária: 33 h|Carga Horária: 33 h|
+|Componente<br>Curricular|Estado e Sociedade||
+|---|---|---|
+|Período letivo:|2º Semestre|Carga Horária: 33 h|
 
 ## Objetivos
 
@@ -988,11 +988,11 @@ Título/Periódico Autor Edição Local Editora Ano
 
 Ministerio daEducacao INSTITUTOFEDERAL InstitutoFederaldoParana PARANA Formação do Brasil PRADO Jr., C. São Paulo Braziliense 1961 Contemporâneo
 
-|.1.<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|
-|Componente<br>Curricular|Noções de Direito Público e Privado|||
-|Período letivo:|2º Semestre|Carga Horária: 33 hs|Carga Horária: 33 hs|
-||Objetivos|||
+|.1.<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|
+|Componente<br>Curricular|Noções de Direito Público e Privado||
+|Período letivo:|2º Semestre|Carga Horária: 33 hs|
+||Objetivos||
 
 Compreender o funcionamento jurídico do Estado e seu desenvolvimento histórico. Relacionar as esferas de poder na constituição do Estado Brasileiro e as instituições democráticas de direito. Diferenciar Direito Privado do Direito Público.
 
@@ -1020,10 +1020,10 @@ Bibliografia Complementar
 |Introdução ao estudo do<br>Direito.|VENOSA, Silvio de Sálvio|3ª|São Paulo|Saraiva|2010||
 |Direito Constitucional|LENZA, Pedro|16ª|São Paulo|Saraiva|2012||
 
-|INSTITUTOFEDERAL<br>PARANA|INSTITUTOFEDERAL<br>PARANA|MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|
-|Componente<br>Curricular|Relações Institucionais|||
-|Período letivo:|3 º Semestre|Carga Horária: 67 h|Carga Horária: 67 h|
+|INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|
+|Componente<br>Curricular|Relações Institucionais||
+|Período letivo:|3 º Semestre|Carga Horária: 67 h|
 
 ## Objetivos
 
@@ -1050,12 +1050,12 @@ Ministerio daEducacao InstitutoFederaldoParana
 |A Cidade Ativa: Referendo, plebiscito e<br>iniciativa popular.|BENEVIDES, Maria Vitória|3ª|São Paulo|Ática|2003||
 |Curso de Direito Constitucional|BITTENCOURT, Marcus V. C.||Belo<br>Horizonte|Fórum|2007||
 
-|INSTITUTOFEDERAL<br>PARANA|INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|---|
-|Componente|Gestão de Pessoas||||
-|Curricular|||||
-|Período letivo:|3º Semestre||Carga Horária: 33 h|Carga Horária: 33 h|
-|||Objetivos|||
+|INSTITUTOFEDERAL<br>PARANA|INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|---|
+|Componente|Gestão de Pessoas|||
+|Curricular||||
+|Período letivo:|3º Semestre||Carga Horária: 33 h|
+|||Objetivos||
 
 Compreender os princípios gerais da gestão de pessoas e sua aplicabilidade nas organizações públicas
 
@@ -1079,20 +1079,20 @@ _Bibliografia Básica_
 |---|---|---|---|---|---|---|
 |Teste sua inteligência emocional|DAVIS, M.||1ª|São Paulo|Arx|2006|
 
-|Administração: mudanças e perspectivas|ROBBINS, S. P.|1ª|São Paulo|Saraiva|2002|2002|
-|---|---|---|---|---|---|---|
-|Inteligência Emocional no Trabalho|WEISINGER, Hendrie|1ª|Rio de Janeiro|Objetiva|2001|2001|
-|_Bibliografia Complementar_<br>~~.E~~|||||||
-|Inteligência Emocional<br>~~.E三~~|GOLEMAN, Daniel<br>~~三~~|69ª|Rio de Janeiro|Revista|1995|1995|
-|Relações humanas: Psicologia das<br>relações interpessoais<br>~~.E三~~|MINICUCCI, A<br>~~三~~|1ª|São Paulo|Atlas|1982|1982|
-|Desenvolvimento Interpessoal:<br>Treinamento em grupo<br>~~.E三~~|MOSCOVICI F.<br>~~三~~|5ª|Rio de Janeiro|José<br>Olympio|1996|1996|
-|Como Fazer Amigos e Influenciar<br>Pessoas<br>~~.E三~~|CARNEGIE, Dale<br>~~三~~|35|São Paulo|Nacional|1985|1985|
-|**_Gestão com pessoas_**|TAKESKY, Tachizawa|5º|Rio de Janeiro|FGV|2006|2006|
+|Administração: mudanças e perspectivas|ROBBINS, S. P.|1ª|São Paulo|Saraiva|2002|
+|---|---|---|---|---|---|
+|Inteligência Emocional no Trabalho|WEISINGER, Hendrie|1ª|Rio de Janeiro|Objetiva|2001|
+|_Bibliografia Complementar_<br>~~.E~~||||||
+|Inteligência Emocional<br>~~.E三~~|GOLEMAN, Daniel<br>~~三~~|69ª|Rio de Janeiro|Revista|1995|
+|Relações humanas: Psicologia das<br>relações interpessoais<br>~~.E三~~|MINICUCCI, A<br>~~三~~|1ª|São Paulo|Atlas|1982|
+|Desenvolvimento Interpessoal:<br>Treinamento em grupo<br>~~.E三~~|MOSCOVICI F.<br>~~三~~|5ª|Rio de Janeiro|José<br>Olympio|1996|
+|Como Fazer Amigos e Influenciar<br>Pessoas<br>~~.E三~~|CARNEGIE, Dale<br>~~三~~|35|São Paulo|Nacional|1985|
+|**_Gestão com pessoas_**|TAKESKY, Tachizawa|5º|Rio de Janeiro|FGV|2006|
 
-|..<br>INSTITUTOFEDERAL<br>PARANA||Ministerio daEducacao<br>InstitutoFederaldoParana|Ministerio daEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|
-|Componente<br>Curricular|Direito Administrativo Aplicado|||
-|Período letivo:|3º Semestre|Carga Horária: 67 hs|Carga Horária: 67 hs|
+|..<br>INSTITUTOFEDERAL<br>PARANA||Ministerio daEducacao<br>InstitutoFederaldoParana|
+|---|---|---|
+|Componente<br>Curricular|Direito Administrativo Aplicado||
+|Período letivo:|3º Semestre|Carga Horária: 67 hs|
 
 Objetivos
 
@@ -1204,7 +1204,7 @@ Ministerio daEducacao InstitutoFederaldoParana
 
 _Bibliografia Básica_
 
-|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|.1.<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||||||
 |---|---|---|---|---|---|---|
 |_Bibliografia Básica_<br>PARANA|||||||
 |Título/Periódico|Autor|Edição|Local|Editora|Ano|Ano|
@@ -1218,10 +1218,10 @@ _Bibliografia Básica_
 |O Marketing Político|BONGRAND, Michel|1ª|Lisboa|Publicações<br>Europa-América|1986||
 |Marketing: Criando valor para os<br>clientes.|CHURCHILL, G.; PETER, P.|1ª|São Paulo|Saraiva|2000||
 
-|..<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|
-|Componente<br>Curricular|Psicologia do Trabalho|||
-|Período letivo:|3º Semestre|Carga Horária: 33 h|Carga Horária: 33 h|
+|..<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|
+|Componente<br>Curricular|Psicologia do Trabalho||
+|Período letivo:|3º Semestre|Carga Horária: 33 h|
 
 Objetivos
 
@@ -1252,11 +1252,11 @@ Reconhecer a psicologia como ciência, diferenciando-a do conhecimento do senso 
 |**A banalização da injustiça**<br>**social.**|DEJOURS, C.||Rio<br>de<br>Janeiro|Fundação<br>Getúlio<br>Vargas.|1999||
 |Assédio moral: um ensaio<br>sobre a expropriação da<br>dignidade no<br>trabalho.**RAE**, v. 3, n. 1, p.<br>3-8, jan./jun.<br>Disponível<br>em:www.scielo.br/pdf/raeel/<br>v3n1/v3n1a12.pdf|HELOANI, R.||São Paulo||jan./jun<br>2004||
 
-|.1<br>INSTITUTOFEDERAL<br>PARANA|.1<br>INSTITUTOFEDERAL<br>PARANA|MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|
-|Componente|Metodologia do Trabalho Científico|||
-|Curricular||||
-|Período letivo:|4º Semestre|Carga Horária: 33 h|Carga Horária: 33 h|
+|.1<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|
+|Componente|Metodologia do Trabalho Científico||
+|Curricular|||
+|Período letivo:|4º Semestre|Carga Horária: 33 h|
 
 Objetivos
 
@@ -1287,11 +1287,11 @@ _Bibliografia Básica_
 |**_Normas para Apresentação de_**<br>**_Trabalhos Acadêmicos do Instituto_**<br>**_Federal do Paraná (IFPR)._**|DUTRA, Renato Roxo C. MORETO,<br>Eulália Cristina do N., WATANABE,<br>Carmen Ballão||Curitiba|IFPR|2010||
 |**_Introdução à Metodologia da Ciência._**|DEMO, Pedro|2ª|São Paulo Atlas|São Paulo Atlas|1985||
 
-|1<br>INSTITUTOFEDERAL<br>PARANA|1<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|---|
-|Componente<br>Curricular|Gestão de Projetos||||
-|Período letivo:|4º Semestre||Carga Horária: 67 h|Carga Horária: 67 h|
-|||Objetivos|||
+|1<br>INSTITUTOFEDERAL<br>PARANA|1<br>INSTITUTOFEDERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|---|
+|Componente<br>Curricular|Gestão de Projetos|||
+|Período letivo:|4º Semestre||Carga Horária: 67 h|
+|||Objetivos||
 
 Reconhecer a importância do planejamento e da elaboração de projetos para as organizações Reconhecer o papel do Estado na oferta de serviços públicos. Relatar os conceitos fundamentais da gestão de projetos. Associar técnicas e metodologias de elaboração e execução de projetos. Delimitar as etapas de elaboração e implementação de projetos. Aplicar os princípios de planejamento e da gestão de projetos. Delimitar áreas de atuação de oferta de serviços públicos na esfera do Estado (União, Unidades Federativas e Municípios) Trabalhar técnicas e metodologia de elaboração e execução de projetos. Aplicar as etapas de elaboração e implementação de projetos. Elaborar projetos Gerenciar projetos
 
@@ -1355,7 +1355,7 @@ Políticas de Educação Ambiental
 
 _Bibliografia Básica_
 
-|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|..<br>MinisteriodaEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||||||
 |---|---|---|---|---|---|---|
 |Gestão em situações regionais;<br>O uso de tecnologias como instrumento de redução do impacto ambiental;<br>NBR ISO 14001:2004.<br>Políticas de Educação Ambiental<br>PARANA|||||||
 |_Bibliografia Básica_|||||||
@@ -1378,12 +1378,12 @@ Reconhecer a importância do processo de prestação de contas; Compreender o me
 
 Ministerio daEducacao<br>InstitutoFederaldoParana<br>
 
-|INSTITUTOFEDERAL<br>PARANA|||InstitutoFederaldoParana|InstitutoFederaldoParana|
-|---|---|---|---|---|
-|Componente|Direito Tributário||||
-|Curricular|||||
-|Período letivo:|4º Semestre||Carga Horária: 67 hs|Carga Horária: 67 hs|
-|||Objetivos|||
+|INSTITUTOFEDERAL<br>PARANA|||InstitutoFederaldoParana|
+|---|---|---|---|
+|Componente|Direito Tributário|||
+|Curricular||||
+|Período letivo:|4º Semestre||Carga Horária: 67 hs|
+|||Objetivos||
 
 Propiciar uma visão geral do direito tributário aplicado ao dia a dia do Gestor Público
 
@@ -1466,11 +1466,11 @@ _Bibliografia Básica_
 |Administração Estratégica:<br>conceitos|WRIGHT, P.; KROLL, M. J.; PARNELL, J.|1ª|São Paulo Atlas|São Paulo Atlas|2000||
 |Administração Estratégica|HITT, M.; IRELAND, R. D.; HOSKISSON,<br>R. E.|2ª|São Paulo Cengage|São Paulo Cengage|2008||
 
-|INSTITUTOF~~E~~DERAL<br>PARANA|INSTITUTOF~~E~~DERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|MinisteriodaEducacao<br>InstitutoFederaldoParana|
-|---|---|---|---|---|
-|Componente<br>Curricular|Gestão de Serviços e Obras Públicas||||
-|Período letivo:|5º Semestre||Carga Horária: 67 h|Carga Horária: 67 h|
-|||Objetivos|||
+|INSTITUTOF~~E~~DERAL<br>PARANA|INSTITUTOF~~E~~DERAL<br>PARANA||MinisteriodaEducacao<br>InstitutoFederaldoParana|
+|---|---|---|---|
+|Componente<br>Curricular|Gestão de Serviços e Obras Públicas|||
+|Período letivo:|5º Semestre||Carga Horária: 67 h|
+|||Objetivos||
 
 Reconhecer o papel do Estado na oferta de serviços públicos; Estabelecer o conceito de qualidade na oferta de serviços públicos; Inferir possibilidades de melhora na oferta de serviços públicos; Identificar os principais serviços públicos ofertados pelo Estado; Compreender os passos necessários para a realização de Obras Públicas; Conceituar parceria pública-privada na oferta de obras e serviços; Conceituar qualidade na execução de Obras Públicas.
 
@@ -1480,7 +1480,7 @@ Estado de bem estar social; O Estado como provedor de serviços e obras pública
 
 Ministerio daEducacao InstitutoFederaldoParana
 
-|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||||||
 |---|---|---|---|---|---|---|
 |Serviços e Obras públicas e seus benefícios para a população.<br>PARANA|||||||
 |_Bibliografia Básica_|||||||
@@ -1497,14 +1497,14 @@ Ministerio daEducacao InstitutoFederaldoParana
 
 1 Ministerio daEducacao INSTITUTOFEDERAL InstitutoFederaldoParana PARANA
 
-|Componente<br>Curricular|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|Patrimônio, Materiais e Logística|
-|---|---|---|---|---|---|---|---|---|---|
-|Período letivo:|5º Semestre||Carga Horária: 67 h||Carga Horária: 67 h|||||
-|Objetivos||||||||||
-|Reconhecer administração de estoques e do almoxarifado.<br>Conceituar bens patrimoniais e sistemas de controle do patrimônio.<br>Reconhecer a gestão do patrimônio na esfera pública.<br>Compreender a importância do controle do patrimônio público e suas técnicas.<br>Elencar princípios de distribuição e de cadeia de suprimentos.<br>Ementa<br>Conceito de Patrimônio Público;<br>Organização de almoxarifados;<br>Controle de estoques;<br>Controle do patrimônio público e suas técnicas;<br>Gerenciamento do patrimônio público;<br>Canais e rotas de distribuição;<br>Canais e meios de suprimentos;<br>Formação defornecedores.||||||||||
-|_Bibliografia Básica_||||||||||
-|Título/Periódico||Autor||Edição||Local|Editora|Ano|Ano|
-|Bens Públicos, Domínio Urbano, Infra-<br>Estruturas||MARRARA, Thiago||1ª||Belo<br>Horizonte|Fórum|2007|2007|
+|Componente<br>Curricular|Patrimônio, Materiais e Logística||||||||
+|---|---|---|---|---|---|---|---|---|
+|Período letivo:|5º Semestre||Carga Horária: 67 h||Carga Horária: 67 h||||
+|Objetivos|||||||||
+|Reconhecer administração de estoques e do almoxarifado.<br>Conceituar bens patrimoniais e sistemas de controle do patrimônio.<br>Reconhecer a gestão do patrimônio na esfera pública.<br>Compreender a importância do controle do patrimônio público e suas técnicas.<br>Elencar princípios de distribuição e de cadeia de suprimentos.<br>Ementa<br>Conceito de Patrimônio Público;<br>Organização de almoxarifados;<br>Controle de estoques;<br>Controle do patrimônio público e suas técnicas;<br>Gerenciamento do patrimônio público;<br>Canais e rotas de distribuição;<br>Canais e meios de suprimentos;<br>Formação defornecedores.|||||||||
+|_Bibliografia Básica_|||||||||
+|Título/Periódico||Autor||Edição||Local|Editora|Ano|
+|Bens Públicos, Domínio Urbano, Infra-<br>Estruturas||MARRARA, Thiago||1ª||Belo<br>Horizonte|Fórum|2007|
 
 |INSTITUTOFEDERAL<br>PARANA|InstitutoFederaldoParana|InstitutoFederaldoParana|||||
 |---|---|---|---|---|---|---|
@@ -1562,7 +1562,7 @@ Ministerio daEducacao InstitutoFederaldoParana
 
 _Bibliografia Básica_
 
-|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|
+|..<br>Ministerio daEducacao<br>INSTITUTOFEDERAL<br>PARANA<br>InstitutoFederaldoParana|||||||
 |---|---|---|---|---|---|---|
 |_Bibliografia Básica_<br>PARANA|||||||
 |Título/Periódico|Autor|Edição|Local|Editora|Ano||
@@ -1669,7 +1669,7 @@ Demais orientações estão previstas no regulamento do TCC do Campus CuritibaPr
 
 ## **4 Corpo Docente:**
 
-|**4.1 Direção**|**4.1 Direção**|
+|**4.1 Direção**||
 |---|---|
 |Nome<br>Adriano William da Silva|Regime de Trabalho<br>Dedicação Exclusiva|
 |Formação superior<br>Licenciatura e Bacharelado em Física pela Universidade Federal do Paraná||

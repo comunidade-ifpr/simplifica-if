@@ -489,7 +489,7 @@ Matriz curricular do Curso Técnico em Eletromecânica-Subsequente<br>Ano de imp
 
 31
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR||
 |---|---|
 |**Curso:**Técnico em Eletromecânica<br>**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Tecnologia dos Materiais||
@@ -534,7 +534,7 @@ Matriz curricular do Curso Técnico em Eletromecânica-Subsequente<br>Ano de imp
 
 33
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR||
 |---|---|
 |**Curso:**Técnico em Eletromecânica<br>**Eixo Tecnológico:**Controle e Processos Industriais||
 |Componente Curricular: Circuitos Elétricos||
@@ -559,7 +559,7 @@ Matriz curricular do Curso Técnico em Eletromecânica-Subsequente<br>Ano de imp
 
 34
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |Componente Curricular: Eletrônica Digital|||
@@ -580,7 +580,7 @@ Matriz curricular do Curso Técnico em Eletromecânica-Subsequente<br>Ano de imp
 
 35
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Segurança do Trabalho e Meio Ambiente|||
@@ -649,7 +649,7 @@ Matriz curricular do Curso Técnico em Eletromecânica-Subsequente<br>Ano de imp
 
 38
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Português e Inglês||Instrumental|
@@ -678,7 +678,7 @@ CAMPUS PARANAVAÍ DO IFPR<br>Curso:  Técnico em Eletromecânica  Eixo Tecnológ
 
 40
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Máquinas Térmicas e de Fluxo|||
@@ -701,7 +701,7 @@ CAMPUS PARANAVAÍ DO IFPR<br>Curso:  Técnico em Eletromecânica  Eixo Tecnológ
 
 41
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR||
 |---|---|
 |**Curso:**Técnico em Eletromecânica<br>**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Eletrônica Geral Básica Aplicada||
@@ -723,7 +723,7 @@ CAMPUS PARANAVAÍ DO IFPR<br>Curso:  Técnico em Eletromecânica  Eixo Tecnológ
 
 42
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Instalações e Máquinas Elétricas Industriais|||
@@ -748,7 +748,7 @@ Instrumentos de medição utilizados na indústria. Simbologia ABNT e ANSI. Term
 
 44
 
-|CAMPUS PARANAVAÍ|CAMPUS PARANAVAÍ|CAMPUS PARANAVAÍ|DO IFPR|
+|CAMPUS PARANAVAÍ|||DO IFPR|
 |---|---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais|||
 |**Componente Curricular:**Metodologia Científica e Projeto Integrador||||
@@ -768,7 +768,7 @@ Instrumentos de medição utilizados na indústria. Simbologia ABNT e ANSI. Term
 
 45
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Administração e Empreendedorismo|||
@@ -793,7 +793,7 @@ Instrumentos de medição utilizados na indústria. Simbologia ABNT e ANSI. Term
 
 46
 
-|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|CAMPUS PARANAVAÍ DO IFPR|
+|CAMPUS PARANAVAÍ DO IFPR|||
 |---|---|---|
 |**Curso:**Técnico em Eletromecânica|**Eixo Tecnológico:**Controle e Processos Industriais||
 |**Componente Curricular:**Pneumática e Hidráulica|||
@@ -1405,7 +1405,7 @@ Considerando a diversidade de metodologias, o(a) professor(a) deve especificar o
 
 ## **6. AVALIAÇÃO**
 
-||Avaliação e Recuperação|Avaliação e Recuperação|
+||Avaliação e Recuperação||
 |---|---|---|
 |Trimestre|Instrumentos Avaliativos|Critérios de avaliação|
 |1º|||

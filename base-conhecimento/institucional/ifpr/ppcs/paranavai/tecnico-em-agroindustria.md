@@ -618,7 +618,7 @@ Dentre as expectativas e planejamentos previstos, existe uma planta para a const
 
 ## **LABORATÓRIO DE TECNOLOGIA DE CARNES**
 
-|**LABORATÓRIO DE TECNOLOGIA DE CARNES**|**LABORATÓRIO DE TECNOLOGIA DE CARNES**|**LABORATÓRIO DE TECNOLOGIA DE CARNES**|**LABORATÓRIO DE TECNOLOGIA DE CARNES**|**LABORATÓRIO DE TECNOLOGIA DE CARNES**|
+|**LABORATÓRIO DE TECNOLOGIA DE CARNES**|||||
 |---|---|---|---|---|
 |**Quantidade**|**Equipamentos**<br>**Necessários**|**valor parcial**|**Valor R$**|**Situação**|
 |**1**|Cutter|R$ 60.000,00|R$ 60.000,00|Previsto após a<br>construção da<br>edificação|
@@ -698,19 +698,19 @@ Dentre as expectativas e planejamentos previstos, existe uma planta para a const
 |**Quantidade**|**Equipamentos**<br>**Necessários**|**valor parcial**|**Valor R$**|**Situação**|
 |1|alveógrafo|R$ 40.000,00|R$ 40.000,00|Previsto após a<br>construção da<br>edificação|
 
-|1|farinógrafo|R$ 50.000,00|R$ 50.000,00|Previsto após a<br>construção da<br>edificação|
-|---|---|---|---|---|
-|1|glutomatic|R$ 60.000,00|R$ 60.000,00|Previsto após a<br>construção da<br>edificação|
-|1|moinho martelo|R$ 16.000,00|R$ 16.000,00|Previsto após a<br>construção da<br>edificação|
-|1|panificadora<br>automática|R$ 5.000,00|R$ 5.000,00|Inicialmente<br>previsto para 2014|
-|1|batedeira<br>industrial|R$ 2.000,00|R$ 2.000,00|Disponível|
-|1|forno industrial<br>com injeção de<br>vapor|R$ 8.000,00|R$ 8.000,00|Previsto após a<br>construção da<br>edificação|
-|1|Divisora<br>(cortadora de<br>massa)|R$ 2.000,00|R$ 2.000,00|Previsto após a<br>construção da<br>edificação|
-|1|cilindro elétrico|R$ 1.500,00|R$ 1.500,00|Previsto após a<br>construção da<br>edificação|
-|1|carrinho para<br>bandejas de<br>confeitaria|R$ 2.000,00|R$ 2.000,00|Previsto após a<br>construção da<br>edificação|
-|1|extrusora elétrica<br>de massas|R$ 2.000,00|R$ 2.000,00|Previsto após a<br>construção da<br>edificação|
-|1|processador|R$ 900,00|R$ 900,00|Disponível|
-|1|modeladora de<br>pães|R$ 500,00|R$ 500,00|Previsto após a<br>construção da<br>edificação|
+|1|farinógrafo|R$ 50.000,00|Previsto após a<br>construção da<br>edificação|
+|---|---|---|---|
+|1|glutomatic|R$ 60.000,00|Previsto após a<br>construção da<br>edificação|
+|1|moinho martelo|R$ 16.000,00|Previsto após a<br>construção da<br>edificação|
+|1|panificadora<br>automática|R$ 5.000,00|Inicialmente<br>previsto para 2014|
+|1|batedeira<br>industrial|R$ 2.000,00|Disponível|
+|1|forno industrial<br>com injeção de<br>vapor|R$ 8.000,00|Previsto após a<br>construção da<br>edificação|
+|1|Divisora<br>(cortadora de<br>massa)|R$ 2.000,00|Previsto após a<br>construção da<br>edificação|
+|1|cilindro elétrico|R$ 1.500,00|Previsto após a<br>construção da<br>edificação|
+|1|carrinho para<br>bandejas de<br>confeitaria|R$ 2.000,00|Previsto após a<br>construção da<br>edificação|
+|1|extrusora elétrica<br>de massas|R$ 2.000,00|Previsto após a<br>construção da<br>edificação|
+|1|processador|R$ 900,00|Disponível|
+|1|modeladora de<br>pães|R$ 500,00|Previsto após a<br>construção da<br>edificação|
 
 |1|balança digital<br>de até 10 kg|R$ 900,00|R$ 900,00|R$ 900,00|R$ 900,00|Previsto após a<br>construção da<br>edificação|Previsto após a<br>construção da<br>edificação|
 |---|---|---|---|---|---|---|---|
@@ -920,7 +920,7 @@ Serão considerados para efeito de equivalência as atividades listadas na tabel
 
 ## **TABELA DE EQUIVALÊNCIA DAS ATIVIDADES COMPLENTARES DO CURSO TÉCNICO EM AGROINDÚSTRIA INTEGRADO AO ENSINO MÉDIO**
 
-|**ATIVIDADES**|**CARGA HORÁRIA**<br>|**CARGA HORÁRIA**<br>|
+|**ATIVIDADES**|**CARGA HORÁRIA**<br>||
 |---|---|---|
 ||**HORAS**|**EQUIVALÊNCIA**|
 |Documento de Menção Honrosa1|Não se aplica|10 horas por menção|
@@ -991,7 +991,7 @@ Av. José Felipe “Tequinha”, 1400 – Jd. das Nações,  Paranavaí - PR | C
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Língua Portuguesa e Literatura Brasileira I||
@@ -1017,7 +1017,7 @@ IEZZI, G. _et al_ . **Fundamentos da Matemática Elementar** . São Paulo: Atual
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Biologia I||
@@ -1029,7 +1029,7 @@ IEZZI, G. _et al_ . **Fundamentos da Matemática Elementar** . São Paulo: Atual
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Química I||
@@ -1049,7 +1049,7 @@ Mito e filosofia: Saber mítico: estrutura do pensamento mítico e característi
 
 **METODOLOGIA** Aulas expositivas, com a utilização de: experimentos, vídeos (objetivando o cumprimento do disposto na LEI Nº 13.006, DE 26 DE JUNHO DE 2014), áudios; pesquisa individual ou em grupo e resolução de problemas **. BIBLIOGRAFIA BÁSICA** ARANHA, M. L. de A.; MARTINS, M. H. P. **Filosofando** _:_ Introdução à Filosofia. 4. ed. São Paulo: Moderna, 2009. ARAÚJO, S. M. de; BÓRIO, E. M. _et al_ . **Para filosofar** . São Paulo: Scipione, 2000. CHAUÍ, M. **Iniciação à Filosofia** _:_ ensino médio. São Paulo: Ática, 2010. MARCONDES, D. **Textos Básicos de Filosofia** _:_ dos pré-socráticos a Wittgenstein. 6. ed. Rio de Janeiro: Jorge Zahar, 2009. MARCONDES, D. **Textos Básicos de Ética** _:_ de Platão a Foucault. 4. ed. Rio de Janeiro: Jorge Zahar, 2009. **BIBLIOGRAFIA COMPLEMENTAR** CHAUÍ, M. Convite à Filosofia. 6ª Edição. São Paulo: Editora Ática, 1997. COTRIM, G.; FERNANDES, M. **Fundamentos de Filosofia** _._ São Paulo: Saraiva, 2010. DELEUZE, G.; GUATTARI, F.. **O que é a Filosofia?** trad. Bento Prado Jr. e Alberto Alonso Muñoz. Rio de Janeiro: Ed. 34, 1992. KENNY, A. **Uma nova história da Filosofia Ocidental** . São Paulo: Edições Loyola, 2009. Vols. I a IV. MARÇAL, J. (Org.). **Antologia de Textos Filosóficos** . Curitiba: SEED-PR, 2009. REALE, G.; ANTISERI, D. **História da Filosofia** _._ São Paulo: Paulus, 1990. Vols. 1 a 3. SÁTIRO, A.; WUENSCH, A. M. Pensando Melhor – Iniciação ao Filosofar. – São Paulo: Saraiva, 1997.
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Sociologia I||
@@ -1061,7 +1061,7 @@ Mito e filosofia: Saber mítico: estrutura do pensamento mítico e característi
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Geografia I||
@@ -1101,7 +1101,7 @@ GASSET, J. O. Y. **Ensaios de Estética** : Monalisa. São Paulo: Cortez, 2011. 
 
 SPOLIN, Viola. **Improvisação para o teatro** . 6.ed. São Paulo: Perspectiva, 2015. xxviii, 349 p. (Estudos ; 62). SPOLIN, Viola. **O jogo teatral no livro do diretor** . 2. ed. São Paulo: Perpectiva, 2004. 154 p.
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Língua Portuguesa e Literatura Brasileira II||
@@ -1115,7 +1115,7 @@ Petrópolis:Vozes, 1992. FARACO, Carlos Emílio; MOURA, F. M. **Gramática** . S
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia.|
 |**Componente Curricular**: Matemática II||
@@ -1236,7 +1236,7 @@ ALVARENGA, B.; MÁXIMO, A. **Curso de Física** . São Paulo: Scipione, 2000. DO
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Filosofia II||
@@ -1284,7 +1284,7 @@ QUINTANEIRO, Tânia et. al. **Um Toque de Clássicos** : Durkheim, Marx e Weber.
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Geografia II||
@@ -1296,7 +1296,7 @@ QUINTANEIRO, Tânia et. al. **Um Toque de Clássicos** : Durkheim, Marx e Weber.
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: História II||
@@ -1420,7 +1420,7 @@ BOBBIO, Norberto. **Dicionário de política** . Norberto Bobbio, Nicola Matteuc
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: História III||
@@ -1454,7 +1454,7 @@ CARMAGNANI, A.M. As escolas de línguas e o discurso publicitário: construindo 
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Língua Portuguesa e Literatura Brasileira IV||
@@ -1490,7 +1490,7 @@ ADAS, M. **Panorama Geográfico do Brasil** : contradições, impasses e desafio
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Matemática IV||
@@ -1548,7 +1548,7 @@ BAUMAN, Zygmunt. Modernidade líquida. Editora Zahar, 2001. BOBBIO, Norberto. Di
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: História IV||
@@ -1580,7 +1580,7 @@ GUEDES, D. P.; GUEDES, J. E. R. P. **Controle de Peso Corporal** : composição 
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Princípios e técnicas da prática profissional||
@@ -1592,7 +1592,7 @@ GUEDES, D. P.; GUEDES, J. E. R. P. **Controle de Peso Corporal** : composição 
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Gestão Agroindustrial||
@@ -1644,7 +1644,7 @@ MELO FILHO, G.A.; QUEIROZ, H.P. **Gado de corte: o produtor pergunta, a Embrapa 
 
 **Curso** : Técnico em Agroindústria **Eixo Tecnológico** : Produção Alimentícia
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |||
@@ -1673,7 +1673,7 @@ ARAÚJO, J. M. A. **Química de Alimentos** : teoria e prática. 2. ed. Viçosa:
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Horticultura||
@@ -1709,7 +1709,7 @@ Aulas expositivas, com a utilização de: experimentos, vídeos, áudios; pesqui
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Equipamentos e Instalações Agroindustriais||
@@ -1721,7 +1721,7 @@ Aulas expositivas, com a utilização de: experimentos, vídeos, áudios; pesqui
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Bioquímica de Alimentos||
@@ -1755,7 +1755,7 @@ BORÉM, Aluízio; SANTOS, Fabrício Rodrigues dos. Entendendo a biotecnologia. V
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**|||
 |---|---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia||
 |**Componente Curricular**: Tecnologia de Produtos de Origem Animal|||
@@ -1805,7 +1805,7 @@ IMOF, K. Manual de tratamento de águas residuárias. São Paulo: Edgard Blucher
 
 ## **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**|||
 |---|---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia||
 |**Componente Curricular**: Segurança Alimentar e do Trabalho|||
@@ -1843,7 +1843,7 @@ MAXIMIANO, A. C. A. **Administração para Empreendedores** : fundamentos da cri
 
 **IFPR – CAMPUS PARANAVAÍ**
 
-|**IFPR – CAMPUS PARANAVAÍ**|**IFPR – CAMPUS PARANAVAÍ**|
+|**IFPR – CAMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Agroindústria|**Eixo Tecnológico**: Produção Alimentícia|
 |**Componente Curricular**: Língua Estrangeira Moderna – Espanhol||

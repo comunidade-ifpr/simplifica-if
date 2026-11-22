@@ -373,7 +373,7 @@ O Prédio Administrativo dispõe de:
 
 Técnico- Administrativos em exercício no Campus
 
-|Técnico- Administrativos em exercício no Campus|Técnico- Administrativos em exercício no Campus|Técnico- Administrativos em exercício no Campus|Técnico- Administrativos em exercício no Campus|
+|Técnico- Administrativos em exercício no Campus||||
 |---|---|---|---|
 |||||
 |**Nome**|**Atuação**|**Regime de**<br>**Trabalho**|**Nível de vencimento**|
@@ -386,7 +386,7 @@ Técnico- Administrativos em exercício no Campus
 
 Técnico- administrativos a serem contratados por concurso público
 
-|Técnico- administrativos a serem contratados por concurso público|Técnico- administrativos a serem contratados por concurso público|Técnico- administrativos a serem contratados por concurso público|Técnico- administrativos a serem contratados por concurso público|Técnico- administrativos a serem contratados por concurso público|
+|Técnico- administrativos a serem contratados por concurso público|||||
 |---|---|---|---|---|
 |**Nome**|**Área de**<br>**Conhecimento**|**Regime de**<br>**Trabalho**|**Nível de**<br>**vencimento**|**Quantidade**|
 |Aguardando<br>resultado<br>concurso-edital<br>15/2016|Assistente de<br>alunos|40h|C|1|
@@ -430,7 +430,7 @@ Técnico- administrativos a serem contratados por concurso público
 
 Docentes a serem contratados por concurso público
 
-|Docentes a serem contratados por concurso público|Docentes a serem contratados por concurso público|Docentes a serem contratados por concurso público|
+|Docentes a serem contratados por concurso público|||
 |---|---|---|
 |**Nome**|**Área de Conhecimento**|**Regime de Trabalho**|
 |Aguardando resultado concurso<br>edital 15/2016|Português/ Espanhol|40 h DE|
@@ -502,7 +502,7 @@ Em atendimento a lei nº 13.006, de 26 junho 2014, serão exibidos filmes nacion
 
 O curso contém a carga horária total de 3.600 horas, distribuídos em 40 semanas letivas relativas aos 200 dias letivos, cada aula apresenta duração de 45 minutos, sendo seis aulas ao dia. Seguem os componentes curriculares, carga horária e número de aulas semanais, divididos em 4 anos letivos:
 
-|semanais, divididos em 4 anos letivos:|semanais, divididos em 4 anos letivos:|semanais, divididos em 4 anos letivos:|semanais, divididos em 4 anos letivos:|
+|semanais, divididos em 4 anos letivos:||||
 |---|---|---|---|
 |||||
 ||**ANO 1**|||
@@ -1023,7 +1023,7 @@ KEAN, S. **A colher que desaparece:** loucura, amor, morte e a história do mund
 
 **Curso: Eixo Tecnológico** : Técnico em Cooperativismo Integrado ao Gestão e Negócios Ensino Médio **Componente Curricular:** Introdução à Economia **Carga Horária (hora aula):** 80 **Período letivo:** 1º ano **Ementa** :
 
-|**IFPR -CAMPUS PITANGA**|**IFPR -CAMPUS PITANGA**|
+|**IFPR -CAMPUS PITANGA**||
 |---|---|
 |**Curso:**<br>Técnico em Cooperativismo Integrado ao<br>EnsinoMédio|**Eixo Tecnológico**:<br>Gestão e Negócios|
 |**Componente Curricular:**Introdução àEconomia||

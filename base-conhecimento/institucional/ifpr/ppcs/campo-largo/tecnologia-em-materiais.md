@@ -724,7 +724,7 @@ Campus Campo Largo **MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM MATERI
 
 Base legal: LDB – Caráter Experimental Resolução CNE/CP nº01/2021 do CNE Resolução de autorização do curso no IFPR: nº **34 de 01/10/2021**
 
-|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|A matriz curricular do Curso tem carga horária total de**2.400**horas.|
+|A matriz curricular do Curso tem carga horária total de**2.400**horas.||||||||
 |---|---|---|---|---|---|---|---|
 |**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)<br>Campus Campo Largo<br>**MATRIZ CURRICULAR DO CURSO SUPERIOR DE TECNOLOGIA EM MATERIAIS**<br>Base legal: LDB – Caráter Experimental<br>Resolução CNE/CP nº01/2021 do CNE<br>Resolução de autorização do curso no IFPR: nº**34 de 01/10/2021**||||||||
 |Semanas do Semestre Letivo: 20||||||||
@@ -754,32 +754,32 @@ Base legal: LDB – Caráter Experimental Resolução CNE/CP nº01/2021 do CNE R
 ||Ciência dos Materiais - II|C|3|60|60||6|
 ||**Subtotal(Total doperíodo)**||**20**|**400**|**400**||**36**|
 
-|4°<br>Semestre|Estatística|C|2|40|40|2|
-|---|---|---|---|---|---|---|
-||Física - III|C|3|60|60||
-||Eletrotécnica e Instalações industriais|C|2|40|40||
-||Fenômenos de Transporte|C|2|40|40||
-||Materiais Cerâmicos|C|3|60|60|10|
-||Materiais Metálicos|C|4|80|80|20|
-||Materiais Poliméricos|C|4|80|80|20|
-||**Subtotal(Total doperíodo)**||**20**|**400**|**400**|**52**|
-|5°<br>Semestre|Empreendedorismo|C|2|40|40|20|
-||Administração da Produção e Operações|C|2|40|40||
-||Ensaios - I|C|4|80|80|20|
-||Processamento de Materiais Cerâmicos|C|3|60|60|10|
-||Processamento de Materiais Metálicos|C|3|60|60|10|
-||Processamento de Materiais Poliméricos|C|3|60|60|10|
-||Informática|C|3|60|60|20|
-||**Subtotal(Total doperíodo)**||**20**|**400**|**400**|**90**|
-|6°<br>Semestre|Gestão daQualidade|C|2|40|40||
-||Ensaios - II|C|4|80|80||
-||Materiais Compósitos e Avançados|C|2|40|40||
-||Tratamentos Térmicos|C|2|40|40||
-||Reologia dos Polímeros|C|2|40|40||
-||Seleção de Materiais|C|2|40|40||
-||Degradação dos Materiais|C|2|40|40||
-||Trabalho de Conclusão de Curso|C|4|80|80||
-||**Subtotal(Total doperíodo)**||**20**|**400**|**400**||
+|4°<br>Semestre|Estatística|C|2|40|2|
+|---|---|---|---|---|---|
+||Física - III|C|3|60||
+||Eletrotécnica e Instalações industriais|C|2|40||
+||Fenômenos de Transporte|C|2|40||
+||Materiais Cerâmicos|C|3|60|10|
+||Materiais Metálicos|C|4|80|20|
+||Materiais Poliméricos|C|4|80|20|
+||**Subtotal(Total doperíodo)**||**20**|**400**|**52**|
+|5°<br>Semestre|Empreendedorismo|C|2|40|20|
+||Administração da Produção e Operações|C|2|40||
+||Ensaios - I|C|4|80|20|
+||Processamento de Materiais Cerâmicos|C|3|60|10|
+||Processamento de Materiais Metálicos|C|3|60|10|
+||Processamento de Materiais Poliméricos|C|3|60|10|
+||Informática|C|3|60|20|
+||**Subtotal(Total doperíodo)**||**20**|**400**|**90**|
+|6°<br>Semestre|Gestão daQualidade|C|2|40||
+||Ensaios - II|C|4|80||
+||Materiais Compósitos e Avançados|C|2|40||
+||Tratamentos Térmicos|C|2|40||
+||Reologia dos Polímeros|C|2|40||
+||Seleção de Materiais|C|2|40||
+||Degradação dos Materiais|C|2|40||
+||Trabalho de Conclusão de Curso|C|4|80||
+||**Subtotal(Total doperíodo)**||**20**|**400**||
 
 Legenda:
 
@@ -912,7 +912,7 @@ Componente Curricular: **COMPORTAMENTO ORGANIZACIONAL** Carga Horária (hora aul
 
 **Ementa** Fundamentos do comportamento organizacional. Personalidade e emoções. Motivação, conceito e aplicações. Comportamento de grupo e trabalho em equipe. Comunicação. Poder e política. Liderança. Conflito e negociação. Cultura e mudança organizacional. Apresentação da atividade de extensão desenvolvida durante o semestre definida para o semestre.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**COMPORTAMENTO ORGANIZACIONAL**||
@@ -986,7 +986,7 @@ CHANG, R. **Química Geral: Conceitos Essenciais.** Porto Alegre: AMGH, 2010. FI
 
 MAIA, D. J; BIANCHI, J.C de A. **Química Geral: Fundamentos** . São Paulo: Pearson, 2007.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**SOCIOLOGIA DO TRABALHO**||
@@ -1063,7 +1063,7 @@ Boyd, R. N.; Morrison, R. T., **Química Orgânica** . 15 ed.; Fundação Calous
 
 BRUICE, P. Y.; **Química Orgânica** - vol. 1 e 2, 4ª ed., Pearson - Prentice Hall, São Paulo, 2006. T. W.; Fryhle, C., **Química Orgânica** . 9 ed.; LTC: 2009; Vol. ½. Campos, M. M. **Fundamentos de Química Orgânica** . 1 ed.; Edgard Blücher 2000.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**MEIO AMBIENTE E SUSTENTABILIDADE**||
@@ -1072,7 +1072,7 @@ BRUICE, P. Y.; **Química Orgânica** - vol. 1 e 2, 4ª ed., Pearson - Prentice 
 |**Bibliografia Básica**<br>VIANA, Gilney; SILVA, Marina; DINIZ, Nilo (Org.).**O desafio da sustentabilidade**: um<br>debate socioambiental no Brasil. São Paulo: Fundação Perseu Abramo, 2001.<br>LEFF, Enrique.**Saber ambiental**: sustentabilidade, racionalidade, complexidade, poder.<br>8. ed. Petrópolis: Vozes, 2011.<br>PEREIRA, Adriana Camargo; SILVA, Gibson Zucca da; CARBONARI, Maria Elisa<br>Ehrhardt.**Sustentabilidade, responsabilidade social e meio ambiente**. São Paulo:<br>Saraiva, 2012.||
 |**Bibliografia Complementar**<br>DIAS, Reinaldo.**Gestão ambiental: responsabilidade social e sustentabilidade**. 3.<br>ed. São Paulo: Atlas, 2017.<br>GUERRA, Sidney.**Resíduos sólidos: comentários à Lei 12.305/2010**. Rio de Janeiro:<br>Forense, 2012.<br>BAUMGARTEN, Maíra.**Conhecimento e sustentabilidade**: políticas de ciência,<br>tecnologia e inovação no Brasil contemporâneo. Porto Alegre: Ed. UFRGS, 2008.<br>CASAGRANDE JUNIOR, Eloy Fassi; PERALTA AGUDELO, Libia Patricia.**Meio**<br>**ambiente e desenvolvimento sustentável**. Curitiba: LT, 2012.||
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**DIREITO DO TRABALHO**||
@@ -1105,7 +1105,7 @@ NASH, William A.; POTTER, Merle C. **Resistência dos materiais** . 5. ed. Porto
 
 PHILPOT, Timothy A **. Mecânica dos materiais: um sistema integrado de ensino** . Rio de Janeiro: LTC, 2013.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**CIÊNCIA DOS MATERIAIS - II**||
@@ -1164,7 +1164,7 @@ BIRD, R. Byron; STEWART, Warren E.; LIGHTFOOT, Edwin N. **Fenômenos de transpor
 
 LIVI, Celso Pohlmann. **Fundamentos de fenômenos de transporte: um texto para cursos básicos** . 2ª Ed. Rio de Janeiro: LTC, 2012. MORAN, Michael J. et al. **Introdução à engenharia de sistemas térmicos: termodinâmica, mecânica dos fluidos e transferência de calor** . Rio de Janeiro: LTC, 2005. SESHADRI, Varadarajan. et al ASSOCIAÇÃO BRASILEIRA DE METALURGIA E MATERIAIS. **Fenômenos de transporte: fundamentos e aplicações nas engenharias metalúrgica e de materiais.** São Paulo: ABM, 2010.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**MATERIAIS CERÂMICOS**||
@@ -1173,7 +1173,7 @@ LIVI, Celso Pohlmann. **Fundamentos de fenômenos de transporte: um texto para c
 |**Bibliografia Básica**<br>CALLISTER, William D.; RETHWISCH, David G.**Ciência e engenharia de materiais:**<br>**uma introdução.**8. ed. Rio de Janeiro: LTC, c2012.<br>VAN VLACK, Lawrence H.**Princípios de ciência e tecnologia dos materiais**. Rio de<br>Janeiro: Elsevier, c2003.<br>SETZ, Luiz Fernando Grespan; SILVA, Antonio Carlos da.**O processamento cerâmico**<br>**sem mistérios**. São Paulo: Blucher, 2019.||
 |**Bibliografia Complementar**<br>SMITH, William F.; HASHEMI, Javad.**Fundamentos de engenharia e ciência dos**<br>**materiais**. 5. ed. Porto Alegre: AMGH, 2012.<br>SANTOS, Zora Ionara Gama dos.**Tecnologia dos materiais não metálicos:**<br>**classificação, estrutura, propriedades, processos de fabricação e aplicações**. 1.<br>ed. São Paulo: Érica, 2014.<br> CARTER, C. Barry; NORTON, M. Grant.**Ceramic materials: science and**<br>**engineering**. 2. ed. New York: Springer, 2013.<br>SHACKELFORD, James F; DOREMUS, Robert H. (Ed.).**Ceramic and glass**<br>**materials: structure, properties and processing**. New York: Springer, 2008.||
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**MATERIAIS METÁLICOS**||
@@ -1182,7 +1182,7 @@ LIVI, Celso Pohlmann. **Fundamentos de fenômenos de transporte: um texto para c
 |**Bibliografia Básica**<br>CALLISTER Jr., W. D., RETHWISCH, D. G.**Ciência e engenharia dos materiais: uma**<br>**introdução**. 8. ed. Rio de Janeiro: LTC, c2012.<br>VAN VLACK, L.H**. Princípios de ciência e tecnologia dos materiais**. Rio de Janeiro:<br>Elsevier, c2003.<br>SHACKELFORD, J.F.**Ciência dos materiais**, 6ª ed. São Paulo: Pearson Prentice Hall,<br>2008.||
 |**Bibliografia Complementar**<br>SILVA, A.L.C. MEI, P.R.**Aços e ligas especiais**, 3. ed. São Paulo: Blucher, 2010.<br>PADILHA, A.F.; AMBROZIO FILHO, F.**Técnicas de análise microestrutural**. São<br>Paulo: Hemus, c2004.<br>CHIAVERINI, V.,**Aços e ferros fundidos: características gerais, tratamentos**<br>**térmicos, principais tipos**, 7 ed., São Paulo: Associação Brasileira de Metalurgia e<br>Materiais, 1996.<br>SOUZA, S.A.**Composição química dos aços**. São Paulo: Blucher, 1989. (Disponível<br>também na BV)||
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**MATERIAIS POLIMÉRICOS**||
@@ -1245,7 +1245,7 @@ OLIVEIRA, Antonio Pedro Novaes de; HOTZA, Dachamir. **Tecnologia de fabricação
 
 **Bibliografia Complementar** CARTER, C. Barry; NORTON, M. Grant. **Ceramic materials: science and engineering** . 2. ed. New York: Springer, 2013. MAIA, Samuel Berg. **O vidro e sua fabricação** . Rio de Janeiro: Interciência, 2003. MARTIN, Andrew. **The essential guide to mold making & slip casting** . New York: Lark New York, 2006. SHACKELFORD, James F; DOREMUS, Robert H. (Ed.). **Ceramic and glass materials: structure, properties and processing** . New York: Springer, 2008.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**PROCESSAMENTO DE MATERIAIS METÁLICOS**||
@@ -1366,7 +1366,7 @@ Campus Campo Largo do IFPR Curso: Tecnologia em Materiais Componente Curricular:
 
 **Bibliografia Básica** CALLISTER Jr., W. D., RETHWISCH, D. G. **Ciência e Engenharia dos Materiais: uma introdução** . 8. ed. Rio de Janeiro: LTC, c2012. SHACKELFORD, J.F. **Ciência dos materiais** . 6ª ed. São Paulo: Pearson Prentice Hall, 2008. ASHBY, M. F; JOHNSON, Kara. **Materiais e design: arte e ciência da seleção de materiais no design de produto** . 2. ed. Rio de Janeiro: Campus, 2011. **Bibliografia Complementar** NUNES, Laerce de Paula. **Materiais: aplicações de engenharia, seleção e integridade** . Rio de Janeiro: 2012. NEWELL, James. **Fundamentos da moderna engenharia e ciência dos materiais** . Rio de Janeiro: LTC, 2010. SILVA, A.L.C.; MEI, P.R. **Aços e ligas especiais** . 3ª ed. rev. São Paulo: Blucher, 2010. CHIAVERINI, V. **Tecnologia mecânica: estrutura e propriedades das ligas metálicas** , 2ª ed. São paulo: Makron Books, Pearson Education, 1986.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**DEGRADAÇÃO DOS MATERIAIS**||
@@ -1375,7 +1375,7 @@ Campus Campo Largo do IFPR Curso: Tecnologia em Materiais Componente Curricular:
 |**Bibliografia Básica**<br>CALLISTER Jr., W. D., RETHWISCH, D. G.**Ciência e Engenharia dos Materiais: uma**<br>**introdução**. 8. ed. Rio de Janeiro: LTC, c2012.<br>GEMELLI, E**. Corrosão de materiais metálicos e sua caracterização.**Rio de Janeiro:<br>LTC, c2001.<br>SHACKELFORD, J.F.**Ciência dos materiais**. 6ª ed. São Paulo: Pearson Prentice Hall,<br>2008.||
 |**Bibliografia Complementar**<br>SMITH, W. F.; HASHEMI, J**. Fundamentos de engenharia e ciência dos materiais**. 5.<br>ed. Porto Alegre: AMGH, 2012.<br>CANEVAROLO, S.V.**Ciência dos polímeros: um texto básico para tecnólogos e**<br>**engenheiros**. 3ª ed., São Paulo: Artliber, 2010.<br>LATTMANN, B.H.; ALVES, K.M.P.**Corrosão: princípios, análises e soluções**.<br>Curitiba: Intersaberes, 2020.<br>LEONEL, R.F.**Polímeros e cerâmicas**. Curitiba: Intersaberes, 2020.||
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Tecnologia em Materiais||
 |Componente Curricular:**TRABALHO DECONCLUSÃO DECURSO **||
@@ -2519,7 +2519,7 @@ Tabela 28. Demanda de Docentes de acordo com PDI.
 |03|Administração|Bacharelado em Administração|
 |01|Contabilidade|Bacharelado em Contabilidade|
 |01|Professor Pedagogo|Licenciatura em Pedagogia|
-|02|Licenciatura em Matemática|Licenciatura em Matemática|
+|02|Licenciatura em Matemática||
 |02|Engenharia Elétrica|Engenharia / Licenciatura (a definir)*|
 |02|Recursos Naturais|Bacharelado em Engenharia Agronômica|
 |01|Professor AEE – Atendimento<br>Educacional Especializado|Licenciatura e formação para o<br>atendimento educacional especializado|
@@ -2787,7 +2787,7 @@ ________________________________________________________ (Avaliador 1) _________
 
 ## **Estudante:**
 
-|_____________________________________________________________<br>**Orientador:**___________________________________________________________<br>**Título:**________________________________________________________________<br>______________________________________________________________________<br>**Trabalho Escrito – Conceito 1**<br>**01**<br>Redação e estruturação do texto<br>**02**<br>Coerência com relação às normas ABNT<br>**03**<br>Coerência do título com o conteúdo do trabalho,<br>contextualização, delimitação do problema e formulação dos<br>objetivos<br>**04**<br>Revisão bibliográfica e apresentação da metodologia<br>empregada no trabalho<br>**05**<br>Apresentação dos resultados e análise dos dados<br>**06**<br>Coerência das conclusões com os objetivos traçados<br>**Apresentação Oral – Conceito 2**<br>**07**<br>Clareza na introdução e na exposição do conteúdo do trabalho<br>**08**<br>Coerência com o trabalho escrito<br>**09**<br>Eficiência na utilização do tempo de apresentação<br>**10**<br>Sustentação perante a banca|_____________________________________________________________<br>**Orientador:**___________________________________________________________<br>**Título:**________________________________________________________________<br>______________________________________________________________________<br>**Trabalho Escrito – Conceito 1**<br>**01**<br>Redação e estruturação do texto<br>**02**<br>Coerência com relação às normas ABNT<br>**03**<br>Coerência do título com o conteúdo do trabalho,<br>contextualização, delimitação do problema e formulação dos<br>objetivos<br>**04**<br>Revisão bibliográfica e apresentação da metodologia<br>empregada no trabalho<br>**05**<br>Apresentação dos resultados e análise dos dados<br>**06**<br>Coerência das conclusões com os objetivos traçados<br>**Apresentação Oral – Conceito 2**<br>**07**<br>Clareza na introdução e na exposição do conteúdo do trabalho<br>**08**<br>Coerência com o trabalho escrito<br>**09**<br>Eficiência na utilização do tempo de apresentação<br>**10**<br>Sustentação perante a banca|_____________________________________________________________<br>**Orientador:**___________________________________________________________<br>**Título:**________________________________________________________________<br>______________________________________________________________________<br>**Trabalho Escrito – Conceito 1**<br>**01**<br>Redação e estruturação do texto<br>**02**<br>Coerência com relação às normas ABNT<br>**03**<br>Coerência do título com o conteúdo do trabalho,<br>contextualização, delimitação do problema e formulação dos<br>objetivos<br>**04**<br>Revisão bibliográfica e apresentação da metodologia<br>empregada no trabalho<br>**05**<br>Apresentação dos resultados e análise dos dados<br>**06**<br>Coerência das conclusões com os objetivos traçados<br>**Apresentação Oral – Conceito 2**<br>**07**<br>Clareza na introdução e na exposição do conteúdo do trabalho<br>**08**<br>Coerência com o trabalho escrito<br>**09**<br>Eficiência na utilização do tempo de apresentação<br>**10**<br>Sustentação perante a banca|
+|_____________________________________________________________<br>**Orientador:**___________________________________________________________<br>**Título:**________________________________________________________________<br>______________________________________________________________________<br>**Trabalho Escrito – Conceito 1**<br>**01**<br>Redação e estruturação do texto<br>**02**<br>Coerência com relação às normas ABNT<br>**03**<br>Coerência do título com o conteúdo do trabalho,<br>contextualização, delimitação do problema e formulação dos<br>objetivos<br>**04**<br>Revisão bibliográfica e apresentação da metodologia<br>empregada no trabalho<br>**05**<br>Apresentação dos resultados e análise dos dados<br>**06**<br>Coerência das conclusões com os objetivos traçados<br>**Apresentação Oral – Conceito 2**<br>**07**<br>Clareza na introdução e na exposição do conteúdo do trabalho<br>**08**<br>Coerência com o trabalho escrito<br>**09**<br>Eficiência na utilização do tempo de apresentação<br>**10**<br>Sustentação perante a banca|||
 |---|---|---|
 ||**Trabalho Escrito – Conceito 1**||
 |**01**|Redação e estruturação do texto||

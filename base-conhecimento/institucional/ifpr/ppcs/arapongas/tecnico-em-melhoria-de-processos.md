@@ -958,7 +958,7 @@ QUADRO 3 - Exemplo da Distribuição das componentes curriculares por módulo
 
 ## **SEMESTRE 1 - AMBIENTAÇÃO**
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Comunicação Básica e Inglês**|||
@@ -995,7 +995,7 @@ MARÇULA, Marcelo; BENINI FILHO, Pio Armando. **Informática** : conceitos e apl
 
 BONAN, Adilson Rodrigues. **Linux** : fundamentos, prática e certificação LPI – Exame 117-101. Rio de Janeiro: Alta Books, 2010.
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Matemática Básica**|||
@@ -1061,7 +1061,7 @@ PROJECT MANAGEMENT INSTITUTE. **Guia Ágil** . Chicago: Independent Publishers G
 
 FINOCCHIO JÚNIOR, José. **Project model canvas:** gerenciamento de projetos sem burocracia. Rio de Janeiro: Elsevier, 2013. 229 p. ISBN 9788535274561 (broch).
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Integração Interdisciplinar de Projetos I**|||
@@ -1094,7 +1094,7 @@ SUTHERLAND, Jeffrey Victor. **Scrum** : a arte de fazer o dobro do trabalho na m
 
 ## **SEMESTRE 2 - FUNDAMENTOS**
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Competências Comportamentais e Inglês**|||
@@ -1125,7 +1125,7 @@ MONTGOMERY, L. M. **Anne de Windy Poplars** . Belo Horizonte: Autêntica, 2020. 
 
 GEAR, Jolene; GEAR, Robert. **Cambridge preparation for the TOEFL test** . 4. ed. New York: Cambridge University Press, 2006. 661 p. ISBN 9780521755849 (broch.).
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Informática Aplicada a Processos**|||
@@ -1154,7 +1154,7 @@ BRITO, José Augusto Pereira. Uma reflexão sobre a revolução da informação 
 
 TURBAN, E., LEIDNER, D. _et al._ **Tecnologia da informação para gestão** : transformando os negócios na economia digital. 6. ed. Artmed, 2010.
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Matemática Instrumental**|||
@@ -1211,11 +1211,11 @@ DANTE, L. R. **Didática da resolução de problemas** . São Paulo: Ática, 198
 |COSTA, Adriana Bastos da; PEREIRA, Fernanda da Silva. **Fundamentos de gestão de**<br>**projetos**: da teoria à prática. Curitiba: Intersaberes, 2019. ISBN 9788522701230.<br>MENDES, Marcone Magalhães.**Gerenciamento de aquisição em projetos**. Curitiba: Contentus,<br>2020. ISBN 9786557451656.<br>FOGGETTI, Cristiano (org.). **Gestão ágil de projetos**. São Paulo: Pearson, 2015. ISBN<br>9788543010106.||
 |**Bibliografia Complementar:**<br>VALERIANO, Dalton. **Moderno gerenciamento de projetos**, 2. ed. São Paulo: Pearson, 2015.<br>ISBN 9788543004518.<br>VARGAS, Ricardo Viana. **Manual prático do plano de projeto utilizando PMBOK guide.**6. ed.<br>Rio de Janeiro: Brasport, 2018. ISBN 9788574528816.<br>CARVALHO, Fábio Câmara Araújo de. **Gestão de projetos**. São Paulo: Pearson, 2012. ISBN<br>9788543005928.<br>PROJECT MANAGEMENT INSTITUTE. **Guia Ágil**. Chicago: Independent Publishers Group,<br>2018.<br>FINOCCHIO JÚNIOR, José. **Project model canvas**: gerenciamento de projetos sem burocracia.<br>Rio de Janeiro: Elsevier, 2013. ISBN 9788535274561.||
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**||
 |---|---|
 |**Curso: Técnico em Melhoria de Processos**|**Eixo Tecnológico: Gestão e Negócios**|
 
-|**Componente Curricular: Integração Interdisciplinar de Projetos II**|**Componente Curricular: Integração Interdisciplinar de Projetos II**|
+|**Componente Curricular: Integração Interdisciplinar de Projetos II**||
 |---|---|
 |**Carga Horária (hora-aula): 60**|**Período Letivo: 2º Semestre**|
 |**Ementa:**||
@@ -1229,7 +1229,7 @@ DANTE, L. R. **Didática da resolução de problemas** . São Paulo: Ática, 198
 
 **CAMPUS AVANÇADO ARAPONGAS DO IFPR**
 
-|**Curso: Técnico em Melhoria de Processos**|**Curso: Técnico em Melhoria de Processos**|**Eixo Tecnológico: Gestão e Negócios**|
+|**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |---|---|---|
 |**Componente Curricular: Habilidades Comportamentais e Inglês**|||
 |**Carga Horária (hora-aula): 60**|**Período Letivo: 3º Semestre**||
@@ -1244,7 +1244,7 @@ DANTE, L. R. **Didática da resolução de problemas** . São Paulo: Ática, 198
 
 **Curso: Técnico em Melhoria de Processos Eixo Tecnológico: Gestão e Negócios**
 
-|**Componente Curricular: Mapeamento de Processos**|**Componente Curricular: Mapeamento de Processos**|
+|**Componente Curricular: Mapeamento de Processos**||
 |---|---|
 |**Carga Horária (hora-aula): 60**|**Período Letivo: 3º Semestre**|
 |**Ementa:**||
@@ -1255,7 +1255,7 @@ DANTE, L. R. **Didática da resolução de problemas** . São Paulo: Ática, 198
 
 **CAMPUS AVANÇADO ARAPONGAS DO IFPR**
 
-|**Curso: Técnico em Melhoria de Processos**|**Curso: Técnico em Melhoria de Processos**|**Eixo Tecnológico: Gestão e Negócios**|
+|**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |---|---|---|
 |**Componente Curricular: Gestão de Projetos e da Inovação**|||
 |**Carga Horária (hora-aula): 60**|**Período Letivo: 3º Semestre**||
@@ -1268,7 +1268,7 @@ DANTE, L. R. **Didática da resolução de problemas** . São Paulo: Ática, 198
 
 **CAMPUS AVANÇADO ARAPONGAS DO IFPR**
 
-|**Curso: Técnico em Melhoria de Processos**|**Curso: Técnico em Melhoria de Processos**|**Eixo Tecnológico: Gestão e Negócios**|
+|**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |---|---|---|
 |**Componente Curricular: Desenvolvimento da Inovação e Criatividade**|||
 |**Carga Horária (hora-aula): 60**|**Período Letivo: 3º Semestre**||
@@ -1281,7 +1281,7 @@ DANTE, L. R. **Didática da resolução de problemas** . São Paulo: Ática, 198
 
 Alegre: Artmed, 2011.
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Integração Interdisciplinar de Projetos III**|||
@@ -1296,7 +1296,7 @@ SUTHERLAND, Jeffrey Victor. **Scrum** : a arte de fazer o dobro do trabalho na m
 
 ## **MÓDULO 4 - APLICAÇÕES**
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Liderança e Tecnologia de Projetos**|||
@@ -1348,7 +1348,7 @@ RIBEIRO, Osni Moura. **Contabilidade de custos** : fácil. 8. ed. rev. e atual. 
 
 KIYOSAKI, Robert T. **Pai rico, pai pobre** : o que os ricos ensinam a seus filhos sobre dinheiro. 2. ed. Rio de Janeiro: Alta Books, 2017. ISBN 9788550801483.
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Compliance, Governança e Gestão de Riscos**|||
@@ -1376,7 +1376,7 @@ BRASIL. Portaria nº 1.089, de 25 de abril de 2018. Estabelece orientações par
 
 ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. **ABNT NBR 31000** : gestão de riscos: diretrizes. 2. ed. Rio de Janeiro: ABNT, 2018.
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Melhoria de Processos**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular: Comércio Exterior e Inglês**|||
@@ -1388,7 +1388,7 @@ ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. **ABNT NBR 31000** : gestão de ris
 |**Bibliografia Complementar:**|||
 |ARIENTI, Patricia Fonseca Ferreira; VASCONCELOS, Daniel de Santana; ARIENTI, Wagner<br>Leal. **Economia política internacional**: um texto introdutório. Curitiba: Intersaberes, 2017. ISBN<br>9788559725117.<br>CARVALHO, Marly Monteiro de; RABECHINI JÚNIOR, Roque. **Fundamentos em gestão**<br>**de projetos:** construindo competências para gerenciar projetos. 3. ed. rev. e ampl. São<br>Paulo: Atlas, 2011. xv, 422 p. ISBN 9788522462285.<br>MÉRCHER,<br>Leonardo.<br>**Estratégias**<br>**de**<br>**internacionalização**:<br>teorias<br>e<br>práticas.<br>Curitiba:<br>Intersaberes, 2021. ISBN 9786555178418.<br>GRANT, David; HUGHES, John; TURNER, Rebecca. **Business result:** Part A. elementary<br>student's book. Oxford, New York: Oxford University Press, 2009. 127 p. ISBN 9780194739375<br>(broch.).|||
 
-|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**|
+|**CAMPUS AVANÇADO ARAPONGAS DO IFPR**||
 |---|---|
 |**Curso: Técnico em Melhoria de Processos**|**Eixo Tecnológico: Gestão e Negócios**|
 
@@ -1441,24 +1441,24 @@ SUTHERLAND, Jeffrey Victor. **Scrum** : a arte de fazer o dobro do trabalho na m
 |Armário Vitrine De<br>Parede|02|0|0|
 |Arquivo De Aço Com<br>4 Gavetas Para Pasta<br>Suspensa|02|0|0|
 
-|Balcão De<br>Atendimento|02|0|0|
-|---|---|---|---|
-|Banco De Jardim|05|0|0|
-|Cadeira Empilhável<br>Sem Braço - Lab.<br>Informática|40|0|0|
-|Cadeira Escritório<br>Fixa Sem Braço|10|0|0|
-|Cadeira Presidente<br>Giratória|10|0|0|
-|Carrinho Armazém,<br>Com 2 Rodas|01|0|0|
-|Conjunto Escolar Em<br>Polipropileno|160|0|0|
-|Estante Expositora|02|0|0|
-|Estante Face Dupla|02|0|0|
-|Mesa De Reunião<br>Redonda|02|0|0|
-|Mesa De Reunião<br>Retangular|02|0|0|
-|Mesa De Reunião<br>Semi Oval|01|0|0|
-|Mesa Em L|08|0|0|
-|Mesa Para<br>Microcomputador|40|0|0|
-|Mesa Para Professor|10|0|0|
-|Mesa Para Refeitório<br>Com 6 Lugares|05|0|0|
-|Módulo De Trabalho<br>Com Divisores<br>Separatórios|05|0|0|
+|Balcão De<br>Atendimento|02|0|
+|---|---|---|
+|Banco De Jardim|05|0|
+|Cadeira Empilhável<br>Sem Braço - Lab.<br>Informática|40|0|
+|Cadeira Escritório<br>Fixa Sem Braço|10|0|
+|Cadeira Presidente<br>Giratória|10|0|
+|Carrinho Armazém,<br>Com 2 Rodas|01|0|
+|Conjunto Escolar Em<br>Polipropileno|160|0|
+|Estante Expositora|02|0|
+|Estante Face Dupla|02|0|
+|Mesa De Reunião<br>Redonda|02|0|
+|Mesa De Reunião<br>Retangular|02|0|
+|Mesa De Reunião<br>Semi Oval|01|0|
+|Mesa Em L|08|0|
+|Mesa Para<br>Microcomputador|40|0|
+|Mesa Para Professor|10|0|
+|Mesa Para Refeitório<br>Com 6 Lugares|05|0|
+|Módulo De Trabalho<br>Com Divisores<br>Separatórios|05|0|
 
 |Quadro Branco|02|0|0|
 |---|---|---|---|
@@ -1506,7 +1506,7 @@ Para tanto, inicialmente contará com o apoio do Núcleo de Atendimento às Pess
 
 ## **9 PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANT.**|**PERFIL DE FORMAÇÃO**|
 |01|Bacharel em Administração|
@@ -1595,7 +1595,7 @@ Keila Fernanda Raimundo (Área de Química em Cooperação técnica Parcial, pro
 
 ## **VAGAS TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**QUANT.**|**CARGO**|
 |01|Técnico de Laboratório de Informática|

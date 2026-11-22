@@ -6,7 +6,7 @@
 | 1º Ano | Linha em controle | 2 | 80 | 67 |
 | 1º Ano | Célula em controle | 2 | 80 | 67 |
 | 1º Ano | Parágrafo em controle | 2 | 80 | 67 |
-| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO |  | 320 | 268 |
+| CARGA HORÁRIA TOTAL DO CURSO |  |  | 320 | 268 |
 
 ### 5.7 TEXTO PROFUNDO
 

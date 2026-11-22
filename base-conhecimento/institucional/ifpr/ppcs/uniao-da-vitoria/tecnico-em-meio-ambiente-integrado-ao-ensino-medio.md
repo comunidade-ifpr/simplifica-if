@@ -2482,9 +2482,9 @@ Não se aplica
 |Atendimento<br>pedagógico|Sim|Não|68,00|
 |Atendimento<br>odontológico|Não|Não||
 
-|Primeiros socorros|Não|Não||
-|---|---|---|---|
-|Serviço social|Não|Não||
+|Primeiros socorros|Não||
+|---|---|---|
+|Serviço social|Não||
 
 A ausência dos espaços exclusivos para atendimento pedagógico são resolvidos com a realização dos atendimentos individualizados em outros espaços do campus, como salas de aula e laboratórios (quando não ocupados) e salas de atendimento da biblioteca. Quanto aos ambientes para atendimento psicológico, odontológico e de primeiros socorros não existem profissionais para estas especificidades no campus. Quando existe a necessidade de um atendimento destas especialidades o caso é encaminhado aos serviços específicos da região, como Unidade de Pronto Atendimento (UPA) e Centro de Atendimento Psicossocial (CAPS).
 

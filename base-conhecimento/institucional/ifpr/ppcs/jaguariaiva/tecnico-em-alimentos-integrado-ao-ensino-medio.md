@@ -739,7 +739,7 @@ Ressalta-se que, de forma mais detalhada, a Certificação de Conhecimentos Ante
 
 ## 6.5 MATRIZ CURRICULAR
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)||||
 |---|---|---|---|---|---|
 |||CAMPUS JAGUARIAÍVA||||
 |||**MATRIZ CURRICULAR DO CURSO TÉCNICO EM ALIMENTOS**||||
@@ -822,7 +822,7 @@ Destarte, o estudante pode complementar a sua formação básica, buscando as at
 
 ## 6.7 EMENTÁRIO E BIBLIOGRAFIAS
 
-|**COMPONENTE CURRICULAR:**Biologia I|**COMPONENTE CURRICULAR:**Biologia I|
+|**COMPONENTE CURRICULAR:**Biologia I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |EMENTA:<br>Origem da vida; Bases Moleculares da vida (biomoléculas); Introdução à citologia; Tipos<br>celulares; Membrana Citoplasmática e Tipos de transportes; Citoplasma e organelas<br>celulares; Núcleo Celular e Divisão celular; Metabolismo energético: fotossíntese e<br>quimiossíntese, fermentação e respiração aeróbia; Noções de Histologia.||
@@ -839,7 +839,7 @@ Destarte, o estudante pode complementar a sua formação básica, buscando as at
 
 Contentus 2020 69 p ISBN 9786557450642. **OBJETIVOS:** ● Integrar o estudante no mundo da cultura corporal do movimento por meio da linguagem corporal, dos códigos e símbolos; ● Desenvolver a autonomia na construção do conhecimento referente à cultura corporal; ● Promover o senso crítico sobre as realidades do contexto cultural no qual está inserido; ● Vivenciar a prática de atividades físicas e desportivas, lúdicas e prazerosas aos alunos do Instituto, através das dimensões conceitual, procedimental e atitudinal.
 
-|**COMPONENTE CURRICULAR:**Física I|**COMPONENTE CURRICULAR:**Física I|
+|**COMPONENTE CURRICULAR:**Física I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>Introdução ao estudo da Física; Conceitos de Cinemática; Conceitos da Dinâmica: As leis<br>de Newton; Leis de Conservação: Energia e Momento Linear; Conceitos de Hidrostática.||
@@ -869,7 +869,7 @@ SAGRILLO, Fernanda Savacini et al. **Processos produtivos em biotecnologia** . 1
 
 - ● Desenvolver no aluno a habilidade de apresentar trabalhos científicos.
 
-|**COMPONENTE CURRICULAR:**História I|**COMPONENTE CURRICULAR:**História I|
+|**COMPONENTE CURRICULAR:**História I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>A História e o tempo; Documentos históricos e as fontes para estudo da História; A<br>Pré-História e as transformações humanas ; Primeiras civilizações ; Civilizações Clássicas<br>da Antiguidade; Religião, cultura e política na Idade Média; O surgimento do mundo<br>moderno; Sociedades africanas da região subsaariana até o século XV.||
@@ -895,7 +895,7 @@ SAGRILLO, Fernanda Savacini et al. **Processos produtivos em biotecnologia** . 1
 ||●<br>Estabelecer relações entre os períodos medieval e moderno com a||sociedade||
 ||contemporânea.||||
 
-|**COMPONENTE CURRICULAR:**Introdução ao Laboratório|**COMPONENTE CURRICULAR:**Introdução ao Laboratório|
+|**COMPONENTE CURRICULAR:**Introdução ao Laboratório||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>Normas de conduta em laboratório: riscos químicos, físicos e biológicos e os cuidados a<br>serem tomados. Equipamentos e vidrarias do laboratório: conhecendo os equipamentos e os<br>cuidados necessários para sua utilização. Unidades de medidas: conhecer as unidades e as<br>transformações de unidade. Estudo e preparação das soluções.||
@@ -1023,7 +1023,7 @@ A Língua Espanhola no mundo. Aspectos sociais e (inter)culturais do universo hi
 |||●<br>Realize escolhas de elementos lexicais, sintáticos, figurativos e ilustrativos,<br>ajustando-as às circunstâncias, formalidade e propósitos da interação;<br>●<br>Utilize com propriedade e desenvoltura os padrões da escrita em função das<br>exigências do gênero e das condições de produção;<br>●<br>Analise e revise o próprio texto em função dos objetivos estabelecidos, da intenção<br>comunicativa e do leitor a que se destina, redigindo tantas quantas forem as versões<br>necessárias para considerar o texto produzido bem escrito.<br>No processo de análise linguística, espera-se que o aluno:<br>●<br>Constitua um conjunto de conhecimentos sobre o funcionamento da linguagem e<br>sobre o sistema linguístico relevantes para as práticas de escuta, leitura e produção<br>de textos;<br>●<br>Aproprie-se dos instrumentos de natureza procedimental e conceitual necessários<br>para a análise e reflexão linguística (delimitação e identificação de unidades,<br>compreensão das relações estabelecidas entre as unidades e das funções discursivas<br>associadas a elas no contexto);<br>●<br>Seja capaz de verificar as regularidades das diferentes variedades do Português,<br>reconhecendo<br>os<br>valores<br>sociais<br>nelas<br>implicados<br>e,<br>consequentemente,<br>o<br>preconceito contra as formas populares em oposição às formas dos grupos<br>socialmente favorecidos.||
 |---|---|---|---|
 
-|**COMPONENTE CURRICULAR:**Matemática I|**COMPONENTE CURRICULAR:**Matemática I|
+|**COMPONENTE CURRICULAR:**Matemática I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**1° ano|
 |**EMENTA:**<br>Tópicos de Matemática Básica; Introdução à Teoria de Conjuntos; Introdução ao estudo de<br>funções; Função afim; Progressão Aritmética; Função Quadrática.||
@@ -1112,7 +1112,7 @@ LIMA, Elon Lages et al. **A matemática do ensino médio** . 11. ed. Rio de Jane
 
    - Identificar características do mundo do trabalho e sua estrutura organizacional no mundo capitalista.
 
-|**COMPONENTE CURRICULAR:**Arte I|**COMPONENTE CURRICULAR:**Arte I|
+|**COMPONENTE CURRICULAR:**Arte I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>●<br>A arte e o fazer artístico: análise de tensões entre o novo e a tradição.<br>●<br>A comunicação visual no cotidiano, leitura, análise e crítica da imagem nas mídias<br>da propaganda, da publicidade e do entretenimento.<br>●<br>Cultura visual e Arte Decolonial.<br>●<br>Exercícios de sensibilização visual, auditivo, corporal e rítmico.||
@@ -1124,7 +1124,7 @@ LIMA, Elon Lages et al. **A matemática do ensino médio** . 11. ed. Rio de Jane
 
 compartilhamento de pensamento, crítica e reflexão.
 
-|**COMPONENTE CURRICULAR:**Biologia II|**COMPONENTE CURRICULAR:**Biologia II|
+|**COMPONENTE CURRICULAR:**Biologia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):**|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Noções de embriologia; Taxonomia e Sistemática; Vírus, Procariontes, Protistas, Fungos,<br>Vegetais; Reino Animal; Biologia comparada - Fisiologia dos sistemas.||
@@ -1132,7 +1132,7 @@ compartilhamento de pensamento, crítica e reflexão.
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>KARDONG, Kenneth V. **Vertebrados**: anatomia comparada, função e evolução. 1. ed. São<br>Paulo: Roca, c2011. 913 p.<br>TAIZ, Lincoln; ZEIGER, Eduardo. **Fisiologia vegetal**. 5. ed. Porto Alegre: Artmed, 2013.<br>918 p.<br>SCHMIDT-NIELSEN, Knut. **Fisiologia animal**: adaptação e meio ambiente. 5. ed. São<br>Paulo: Santos, 2002. 611 p.<br>MOORE, Janet.**Uma introdução aos invertebrados**. 2. ed. São Paulo: Santos, 2011. 320p.||
 |**OBJETIVOS:**<br>●<br>Aprender o processo de desenvolvimento do embrião;<br>●<br>Aprender regras de nomenclatura;<br>●<br>Classificar os seres vivos;<br>●<br>Compreender a dinâmica e importância da classificação dos seres vivos;<br>●<br>Diferenciar os Reinos dos seres vivos quanto a anatomia e fisiologia;<br>●<br>Estudar a importância e diversidade de cada Reino;<br>●<br>Realizar um comparativo da fisiologia de sistemas do Reino animal.||
 
-|**COMPONENTE CURRICULAR:**Educação Física II|**COMPONENTE CURRICULAR:**Educação Física II|
+|**COMPONENTE CURRICULAR:**Educação Física II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 
@@ -1169,7 +1169,7 @@ compartilhamento de pensamento, crítica e reflexão.
 ||●<br>Vivenciar a|prática||de|atividades físicas e|||desportivas, lúdicas e prazerosas aos||||||
 ||alunos do Instituto, através das dimensões conceitual, procedimental e||||||||atitudinal.|||||
 
-|**COMPONENTE CURRICULAR:**Física Aplicada a Alimentos|**COMPONENTE CURRICULAR:**Física Aplicada a Alimentos|
+|**COMPONENTE CURRICULAR:**Física Aplicada a Alimentos||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Termometria e Calorimetria. Comportamento térmico dos gases. Leis da Termodinâmica.||
@@ -1260,7 +1260,7 @@ compartilhamento de pensamento, crítica e reflexão.
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>CÂNDIDO,<br>Antônio.<br>**Formação**<br>**da**<br>**literatura**<br>**brasileira**:<br>momentos<br>decisivos:<br>1750-1880. 15. ed. Rio de Janeiro: Ouro Sobre Azul, 2014. 798 p.<br>CARVALHO, José Murilo de. **Cidadania no Brasil**: o longo caminho. 15. ed. Rio de<br>Janeiro: Civilização Brasileira, 2012. 236 p.<br>HOBSBAWM, E. J. **A era do capital:** 1848-1875. 24. ed. São Paulo: Paz & Terra, 2016.<br>517 p.<br>LUCA, Tania Regina de. P**ráticas de pesquisa em História.** São Paulo: Contexto, 2020.<br>144 p.<br>PERROT, Michelle (Org.). **História da Vida Privada 4:**da Revolução Francesa à Primeira<br>Guerra Mundial. 1. ed. São Paulo: Companhia de Bolso, 2009. 620 p. (História da vida<br>privada;<br>SOUZA, Laura Oliveira Carneiro de. **Quilombos**: identidade e história. 1. ed. Rio de<br>Janeiro: Nova Fronteira, 2012. 134 p.||
 |**OBJETIVOS:**<br>●<br>Estabelecer relações entre os períodos medieval e moderno com a sociedade<br>contemporânea;<br>●<br>Compreender a diversidade cultural através do entendimento dos valores dos povos<br>pré-colombianos;<br>●<br>Entender as relações sociais, políticas e culturais estabelecidas entre a Europa e<br>outras partes do globo;<br>●<br>Avaliar os aspectos gerais da colonização do Brasil e suas particularidades em<br>relação a outros processos colonizadores;<br>●<br>Compreender as modificações ideológicas, sociais e políticas dos séculos XVIII e||
 
-|XIX.|XIX.|
+|XIX.||
 |---|---|
 |||
 |**COMPONENTE CURRICULAR:**Língua Inglesa I||
@@ -1348,14 +1348,14 @@ compartilhamento de pensamento, crítica e reflexão.
 ||●|Desenvolver a autonomia e a criatividade na resolução|||de problemas e na tomada|||
 |||de decisões.||||||
 
-|**COMPONENTE CURRICULAR:**Química|**COMPONENTE CURRICULAR:**Química|
+|**COMPONENTE CURRICULAR:**Química||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Funções<br>Inorgânicas.<br>Estequiometria.<br>Reações<br>Químicas.<br>Termoquímica.<br>Cinética.<br>Eletroquímica.||
 |**BIBLIOGRAFIA  BÁSICA:**<br>ATKINS, P. W.; JONES, L. **Princípios de química**: questionando a vida moderna e o meio<br>ambiente. 5. ed. Porto Alegre: Bookman, 2012.<br>LISBOA, J. Cezar F._et al_.**Química 1**. 2. ed. São Paulo: Edições SM, 2014.<br>SHRIVER, D. F_et al_.**Química inorgânica.**4. ed. Porto Alegre: Bookman, 2008.<br>USBERCO, J.; SALVADOR, E. **Química Essencial** - Vol. Único - 4ª Ed. São Paulo:<br>Saraiva, 2012.||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>AMERICAN CHEMICAL SOCIETY. **Química para um futuro sustentável**. 8. ed. Porto<br>Alegre: McGraw-Hill: Bookman, 2016. 592 p.<br>ATKINS, P. W.; DE PAULA, J.; SMITH, D. **Físico-química**: fundamentos. 6. ed. Rio de<br>Janeiro: LTC, 2018.<br>LIMA, A. L. L. **Estudos de eletroquímica**: reações químicas e energia. Editora<br>Intersaberes 2020.<br>SCHMIDELL,<br>Willibaldo<br>et<br>al.<br>(Coord.).<br>**Biotecnologia**<br>**industrial**:<br>engenharia<br>bioquímica. 1. ed. São Paulo: Blucher. 2001. 541 p.<br>GREENBERG, Arthur. **Uma Breve História da Química**: Da Alquimia às Ciências<br>Moleculares Modernas. 1º edição, 2010.<br>KOTZ, J. C.; TREICHEL, P. M.;TOWNSEND, J. R.; TREICHEL, D.**A. Química Geral e**||
 
-|**COMPONENTE CURRICULAR:**Química|**COMPONENTE CURRICULAR:**Química|
+|**COMPONENTE CURRICULAR:**Química||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**2° ano|
 |**EMENTA:**<br>Funções<br>Inorgânicas.<br>Estequiometria.<br>Reações<br>Químicas.<br>Termoquímica.<br>Cinética.<br>Eletroquímica.||
@@ -1511,7 +1511,7 @@ GAVA, Altanir Jaime; SILVA, Carlos Alberto Bento da; FRIAS, Jenifer Ribeiro Gava
 |||●|Reconhecer os|||principais atributos sensoriais da qualidade dos Produtos de Origem|||||
 ||||Animal.||||||||
 
-|**COMPONENTE CURRICULAR:**Arte II|**COMPONENTE CURRICULAR:**Arte II|
+|**COMPONENTE CURRICULAR:**Arte II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>●<br>Percepção musical e dramática: estudo de produções de teatro e música entre o novo<br>e a tradição;<br>●<br>Processos criativos e técnicas de expressão corporal e vocal: autoconhecimento e<br>desconstrução de preconceitos e estereótipos;<br>●<br>A construção do espetáculo teatral: elementos da linguagem cênica.||
@@ -1539,14 +1539,14 @@ SILVA, José Vitor da (Org.). **Bioética** : meio ambiente, saúde e pesquisa. 
 
 - ● Compreender as interações dos seres vivos com o meio ambiente; ● Conhecer e aplicar conceitos básicos de genética; ● Conhecer as leis de Mendel e suas implicações; ● Aprender fundamentos de evolução.
 
-|**COMPONENTE CURRICULAR:**Embalagem e Rotulagem|**COMPONENTE CURRICULAR:**Embalagem e Rotulagem|
+|**COMPONENTE CURRICULAR:**Embalagem e Rotulagem||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Introdução (histórico e conceitos). Importância, propriedades e funções das embalagens.<br>Tipos de Embalagens. Classificação das embalagens e aplicação. Seleção da embalagem.<br>Interação embalagem e alimento. Inovações na área de embalagens. Embalagem e os<br>impactos ambientais. Rotulagem de alimentos. Normas regulamentares no emprego das<br>embalagens e rotulagens. Aplicação da Embalagem e Rotulagem no desenvolvimento de<br>projetos intgradores entre os componentes curriculares.||
 |**BIBLIOGRAFIA  BÁSICA:**<br>ANYADIKE, Nnamdi. **Embalagens flexíveis**/ volume 1. São Paulo: Blucher, 2010. 127 p.<br>(Coleção quattor embalagem ; 1). ISBN 9788521204442 (broch.).<br>CASTRO, A. G.; POUZADA, A. S.. **Embalagens para a Indústria Alimentar**. Instituto<br>Piaget. 2005. ISBN-10: 9727716393 / ISBN-13: 978-9727716395.<br>BAUMGARTEN,<br>Maíra. **Conhecimento e sustentabilidade: políticas de ciência,**<br>**tecnologia e inovação no Brasil contemporâneo**. Porto Alegre: Ed. UFRGS, 2008. 262 p.<br>(Cenários do conhecimento).<br>DIAS, Reinaldo. **Eco-inovação: caminho para o crescimento sustentável**. São Paulo:<br>Atlas, 2014. 208 p.<br>GURGEL, Floriano do Amaral. **Administração da embalagem**. São Paulo: Thomson<br>Learning, 2007. 358 p. ISBN 9788522103300.||
 |**BIBLIOGRAFIA COMPLEMENTAR:**<br>AIME, Sandra Balan Mendoza; DANTAS, Fiorella Balardin Hellmeister. **Embalagens de**<br>**vidro para alimentos e bebidas: propriedades e requisitos de qualidade** . Campinas:<br>CETEA, 2009. ITAL 223 p. ISBN 9788570290632.<br>COLES, Robert E. **Estudo de embalagens para o varejo: uma revisão literária**: volume<br>4.<br>São<br>Paulo:<br>Blucher,<br>2010.<br>111 p. (Coleção Quattor embalagem ; 4). ISBN||
 
-|**COMPONENTE CURRICULAR:**Embalagem e Rotulagem|**COMPONENTE CURRICULAR:**Embalagem e Rotulagem|
+|**COMPONENTE CURRICULAR:**Embalagem e Rotulagem||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Introdução (histórico e conceitos). Importância, propriedades e funções das embalagens.<br>Tipos de Embalagens. Classificação das embalagens e aplicação. Seleção da embalagem.<br>Interação embalagem e alimento. Inovações na área de embalagens. Embalagem e os<br>impactos ambientais. Rotulagem de alimentos. Normas regulamentares no emprego das<br>embalagens e rotulagens. Aplicação da Embalagem e Rotulagem no desenvolvimento de<br>projetos intgradores entre os componentes curriculares.||
@@ -1555,7 +1555,7 @@ SILVA, José Vitor da (Org.). **Bioética** : meio ambiente, saúde e pesquisa. 
 
 9788521204428 (broch.). BROWN, Tim. **Design thinking: uma metodologia poderosa para decretar o fim das velhas ideias** . Rio de Janeiro: Elsevier, 2010. 249 p. ISBN 9788535238624 (broch.). RONCARELLI, Sarah; ELLICOTT, Candace. **Design de embalagem: 100 fundamentos de projeto e aplicação** . São Paulo: Blucher, 2010. 208 p. ISBN 9788521205647 (enc.). WANKE, Peter F. **Estratégia logística em empresas brasileiras: um enfoque em produtos acabados** . São Paulo: Atlas, 2010. 151 p. (Coleção Coppead de Administração.). ISBN 9788522459216 (broch.). CETEA. **Embalagens de papelão ondulado: propriedades e avaliação da qualidade** . Campinas: CETEA, 2010. ITAL187 p. ISBN 9788570291004. **OBJETIVOS:** ● Conhecer os diferentes materiais utilizados em embalagens de alimentos, suas aplicações e funções; ● Saber selecionar a embalagem adequada, conforme a característica de cada alimento. - Compreender as implicações tecnológicas de cada material para embalagem e importância da reciclagem no desenvolvimento destes produtos; ● Ser capaz de compreender e elaborar rotulagem de alimentos; ● Conhecer as legislações pertinentes à utilização de embalagens e rotulagem de alimentos; ● Desenvolver no estudante a habilidade em ler, interpretar e produzir textos técnicos e científicos; ● Desenvolver no aluno a habilidade de apresentar trabalhos científicos.
 
-|**COMPONENTE CURRICULAR:**Filosofia I|**COMPONENTE CURRICULAR:**Filosofia I|
+|**COMPONENTE CURRICULAR:**Filosofia I||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Introdução à Filosofia. Pensamento Mítico. Teogonia e cosmogonia. O que é Filosofia.<br>Contexto histórico e características do desenvolvimento filosófico grego. Filosofia Política.<br>O que é política? Teorias políticas na História: antiguidade, Idade Média, modernidade e<br>contemporaneidade. Relações de poder. Democracia e autoritarismo. Política e ideologia.<br>Introdução à Ética. Estudos dos valores. Ética e moral. Concepções éticas na história do<br>pensamento ocidental. Liberdade, determinismo e autonomia.||
@@ -1706,7 +1706,7 @@ CASTANHEIRA, Nelson Pereira. **Geometrias Não Euclidianas** . Editora Intersabe
 
 - ● Desenvolver a autonomia e a criatividade na resolução de problemas e na tomada de decisões.
 
-|**COMPONENTE CURRICULAR:**Química Analítica Quantitativa e Qualitativa|**COMPONENTE CURRICULAR:**Química Analítica Quantitativa e Qualitativa|
+|**COMPONENTE CURRICULAR:**Química Analítica Quantitativa e Qualitativa||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>Preparo de Soluções. Cálculo de pH. Equilíbrio Químico em Meio Aquoso. Conceitos<br>Básicos de Metrologia: medidas, erros e incertezas. Curvas de Calibração. Absorção<br>Atômica. Análise Espectrofotométrica. Volumetria. Análise Gravimétrica. Potenciometria.||
@@ -1757,7 +1757,7 @@ CASTANHEIRA, Nelson Pereira. **Geometrias Não Euclidianas** . Editora Intersabe
 ||●<br>Elaborar relatórios técnico-científicos para expressar e discutir os resultados||
 ||experimentais.||
 
-|**COMPONENTE CURRICULAR:**Sociologia II|**COMPONENTE CURRICULAR:**Sociologia II|
+|**COMPONENTE CURRICULAR:**Sociologia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**3° ano|
 |**EMENTA:**<br>1 -Poder, política e ideologia; Conceitos de democracia direta e democracia representativa;<br>Democracia versus autoritarismo; Origens e diferenças dos partidos políticos modernos;<br>Diferenças entre Estado, nação e governo; Origem do Estado nacional moderno e o<br>contrato social; Conceitos de esquerda e direita no vocabulário político.<br>2- Conceito de ideologia e sua relação com o poder político e o poder econômico; Direitos,<br>cidadania e movimentos sociais; Direitos civis, sociais e políticos; Direitos e cidadania no<br>Brasil; Revoluções e transformações sociais e políticas nos séc. XX e XXI; Noções de<br>Direitos humanos.<br>3 - Cultura e sociedade; Conceitos de capital cultural, darwinismo social, evolucionismo<br>social e colonialismo e o debate racial; Conceitos de cultura erudita e cultura popular e<br>indústria cultural; Identidade cultural e nacional brasileira; Interpretações sociológicas<br>sobre o Brasil.||
@@ -1822,7 +1822,7 @@ Introdução sobre grãos. Grãos: cereais, leguminosas e oleaginosas. Armazenam
 
 - ● Desenvolver no aluno a habilidade de apresentar trabalhos científicos.
 
-|**COMPONENTE CURRICULAR:**Análise de Alimentos|**COMPONENTE CURRICULAR:**Análise de Alimentos|
+|**COMPONENTE CURRICULAR:**Análise de Alimentos||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Conhecimento teórico e prático sobre as principais análises físico-químicas dos alimentos.<br>Importância da Análise Sensorial no controle da qualidade dos alimentos. Os órgãos do<br>sentido e a percepção sensorial. Seleção e treinamento de equipes de analistas sensoriais.<br>Métodos sensoriais: descritivos e afetivos. Aplicação da Análise de Alimentos no<br>desenvolvimento de projetos integradores entre os componentes.||
@@ -1831,7 +1831,7 @@ Introdução sobre grãos. Grãos: cereais, leguminosas e oleaginosas. Armazenam
 
 **OBJETIVOS:** 1. Desenvolver o censo crítico, a ética e questionamentos em relação a Análise dos alimentos; 2. Desenvolver a habilidade em ler, interpretar, produzir e apresentar textos e trabalhos técnicos e científicos; 3. Construir o conhecimento científico dos estudantes a partir de conhecimentos prévios existentes, possibilitando uma maior relação dos conteúdos com o cotidiano; 4. Conceituar alimentos e suas variedades aplicadas na análise de alimentos; 5. Obter noções fundamentais sobre o valor nutritivo dos alimentos; 6. Conhecer e Avaliar as principais metodologias aplicadas na análise de alimentos; 7. Reconhecer a amostragem e o tratamento da amostra como fundamentais no processo analítico; 8 Realizar operações básicas de laboratório para execução de experimentos; 9. Relacionar os conteúdos teóricos com os experimentos em laboratório; 10. Fornecer aos estudantes habilidades básicas necessárias para o uso de métodos físico-químicos de análise de alimentos; 11. Fornecer aos estudantes habilidades básicas necessárias para o uso de métodos de análise sensorial de alimentos; 12. Possibilitar a interpretação e discussão dos resultados em comparação com a Legislação vigente.
 
-|**COMPONENTE CURRICULAR:**Empreendedorismo e Inovação|**COMPONENTE CURRICULAR:**Empreendedorismo e Inovação|
+|**COMPONENTE CURRICULAR:**Empreendedorismo e Inovação||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Histórico sobre o empreendedorismo e participação no mercado atual; Definições,<br>características e comportamento de um empreendedor; Intraempreendedorismo; Inovação e<br>inovação tecnológica. Propriedade intelectual: conceitos e modalidades; Identificação de<br>oportunidades de negócios; Noções de plano de negócios.||
@@ -1857,7 +1857,7 @@ Introdução sobre grãos. Grãos: cereais, leguminosas e oleaginosas. Armazenam
 ||●<br>Compreender o que é inovação e sua importância;|||||||||
 ||●<br>Entender o processo de escrita e depósito de patentes.|||||||||
 
-|**COMPONENTE CURRICULAR:**Estatística Básica|**COMPONENTE CURRICULAR:**Estatística Básica|
+|**COMPONENTE CURRICULAR:**Estatística Básica||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 40|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Introdução ao estudo da estatística descritiva; Coleta de informações e organização de<br>dados; interpretação de dados expressos em gráficos e tabelas; representação de dados em<br>tabelas e gráficos; representação de dados estatísticos em planilhas eletrônicas; estudo das<br>medidas de tendência central; estudo das medidas de dispersão; realização de cálculos<br>estatísticos descritivos em planilhas eletrônicas; Noções de pesquisas e processos de<br>amostragem.||
@@ -1869,7 +1869,7 @@ Introdução sobre grãos. Grãos: cereais, leguminosas e oleaginosas. Armazenam
 
 - Se torne crítico e possa desenvolver a capacidade de tomar decisões pautadas em cálculos e estudos no âmbito da Estatística.
 
-|**COMPONENTE CURRICULAR:**Filosofia II|**COMPONENTE CURRICULAR:**Filosofia II|
+|**COMPONENTE CURRICULAR:**Filosofia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Teoria do conhecimento. O conhecimento, senso comum e ciência. Epistemologia nos<br>períodos históricos. Conhecimento e lógica. Filosofia da Ciência. Mulheres na Ciência.<br>Concepções estéticas na História. Filosofia, arte, estética e sociedade. O belo e o feio.<br>Indústria cultural. História da Filosofia. Filosofia na contemporaneidade. Existencialismo,<br>Filosofia da Linguagem, Escola de Frankfurt e Filosofia pós-moderna.||
@@ -1883,7 +1883,7 @@ Introdução sobre grãos. Grãos: cereais, leguminosas e oleaginosas. Armazenam
 
 - Desenvolver conexões de continuidades e rupturas entre períodos e teorias filosóficas na história da Filosofia. Compreender as escolas filosóficas contemporâneas.
 
-|**COMPONENTE CURRICULAR:**Geografia II|**COMPONENTE CURRICULAR:**Geografia II|
+|**COMPONENTE CURRICULAR:**Geografia II||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Dinâmicas sociais:<br>●<br>Geografia da População e dinâmicas populacionais;<br>●<br>Urbanização e produção do espaço agrário;<br>●<br>Produção do espaço capitalista e industrialização;<br>Globalização e Geopolítica serão conceitos abordados como temas transversais.<br>Orientações para abordagem dos conceitos de Globalização e Geopolítica como temas<br>transversais:<br>●<br>Globalização da pobreza, migração e conflitos territoriais;<br>●<br>Rede urbana, fluxos globais e exportação de commodities;<br>●<br>Desenvolvimento tecnológico, mundo bipolar, compressão do espaço-tempo e<br>Divisão Internacional do Trabalho.||
@@ -1920,7 +1920,7 @@ CAIÇARA JUNIOR, C.; WILDAUER, E. W. **Informática instrumental** . Editora Int
 
 - ● Compreender a informática como parte integradora de outras tecnologias inovadoras aplicadas na área profissional do curso.
 
-|**COMPONENTE CURRICULAR:**História III|**COMPONENTE CURRICULAR:**História III|
+|**COMPONENTE CURRICULAR:**História III||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Ideologias do século XIX; Imperialismo europeu; Primeira Guerra Mundial; Revolução<br>Russa e Stalinismo; Período entreguerras; Primeira República no Brasil; Era Vargas;<br>Segunda Guerra Mundial; Guerra Fria; Populismo no Brasil e na América Latina; Golpe<br>militar no Brasil e América Latina ; Redemocratização no Brasil; O fim da Guerra Fria e a<br>Nova Ordem Mundial.||
@@ -2043,7 +2043,7 @@ educadores;
 ||||preconceito contra as formas populares em oposição às formas dos grupos||||
 ||||socialmente favorecidos."||||
 
-|**COMPONENTE CURRICULAR:**Matemática IV|**COMPONENTE CURRICULAR:**Matemática IV|
+|**COMPONENTE CURRICULAR:**Matemática IV||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Trigonometria; Funções Trigonométricas; Geometria Analítica; números complexos.||
@@ -2122,7 +2122,7 @@ Introdução a microbiologia (conceito, aplicabilidade). História da microbiolo
 
 - ● Desenvolver no aluno a habilidade de apresentar trabalhos científicos.
 
-|**COMPONENTE CURRICULAR:**Tecnologia de Bebidas|**COMPONENTE CURRICULAR:**Tecnologia de Bebidas|
+|**COMPONENTE CURRICULAR:**Tecnologia de Bebidas||
 |---|---|
 |**CARGA HORÁRIA (hora-aula):** 80|**PERÍODO LETIVO:**4° ano|
 |**EMENTA:**<br>Introdução à Tecnologia de Bebidas. Legislação Brasileira de bebidas e Mercado. Recepção<br>e controle da matéria-prima para produção de bebidas. Classificação de bebidas (alcoólicas<br>e não alcoólicas). Tecnologia de bebidas não alcoólicas (água mineral, refrigerante, água de<br>coco, sucos de fruta, néctar e refresco), bebidas alcoólicas fermentadas e destiladas.<br>Processos produtivos; Legislação; Mercado; Envase. Aplicação da tecnologia de bebidas no<br>desenvolvimento de projetos intgradores entre os componentes curriculares.||
@@ -2595,7 +2595,7 @@ O campus possui serviços de manutenção permanente, vigilância noturna e SDF 
 
 Equipamentos - Laboratório de Paleontologia**
 
-|Equipamentos - Laboratório de Paleontologia**|Equipamentos - Laboratório de Paleontologia**|
+|Equipamentos - Laboratório de Paleontologia**||
 |---|---|
 |Quantidade|Descrição|
 |1|Quadro|

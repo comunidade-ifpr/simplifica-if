@@ -70,7 +70,7 @@ nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ) – Portaria nº 73 de 12 de maio  de 2022**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ) – Portaria nº 73 de 12 de maio  de 2022**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ) – Portaria nº 73 de 12 de maio  de 2022**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente \ Docente|Emerson Rabelo|
@@ -850,7 +850,7 @@ Matriz curricular do curso Técnico em Desenvolvimento de Sistemas<br>Ano de imp
 
 _**CAMPUS**_ **AVANÇADO ASTORGA - IFPR Curso:** Técnico em Desenvolvimento de **Eixo Tecnológico:** Informação e Sistemas comunicação **Componente Curricular:** Informática e Sociedade **Carga Horária (hora-aula):** 40 **Período Letivo:** 1º Semestre **Ementa:** Evolução tecnológica; A Sociedade da Informação; Impactos sociais do emprego da tecnologia; Humanização da informática; Tecnologia da Informação e Comunicação (TIC); Ética Profissional. **Bibliografia Básica:** BAUMAN, Zygmunt. **Modernidade líquida.** Rio de Janeiro: Jorge Zahar, 2001. LÉVY, P. **Cibercultura** . 3. ed. São Paulo: Editora 34, 2010. MASIERO, P. **Ética em computação** . São Paulo: EDUSP, 2000. RUBEN, G.; WAINER, J.; DWYER, T. **Informática, organizações e sociedade no Brasil** . 2. ed. São Paulo: Cortez, 2008. SCHAFF, A. **A sociedade informática** . São Paulo: Brasiliense, 2007. **Bibliografia Complementar:** CAPRON, H.L.; JOHNSON, J.A. **Introdução à informática** . 8. ed. São Paulo: Pearson Prentice Hall, 2004. FEDELI, R. D. et al. **Introdução à ciência da computação** . São Paulo: Pioneira - Thomson Learning, 2003. RÜDIGER, F. **Elementos para a crítica da cibercultura** . São Paulo: Hacker Editores, 2002. SCHEEFFER. F. **Temas e teorias da Sociologia** . Indaial: Grupo Uniasselvi, 2009. SELL, C. E. **Sociologia clássica** . Itajaí: Ed. UNIVALI, 2001.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Matemática I|||
@@ -863,7 +863,7 @@ Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - 
 
 conjuntos parcialmente ordenados e reticulados; princípios básicos das Álgebras Booleanas; Definições, tipos, exemplos e principais propriedades das estruturas algébricas mais importantes. **Bibliografia Básica:** FEJER, P. A.; SIMOVICI, D. A. Mathematical foundations of computer science: sets, relations and induction. New York: Springer Verlag, 1991. v.1 KOLMAN, Bernard; BUSBY, Robert C.; ROSS, Sharon. Discrete mathematical structures. 5th ed. New Jersey: Prentice Hall, 2003. GERSTING, Judith L. Fundamentos matemáticos para a ciência da computação. 5. ed. São Paulo: LTC Editora, 2004. **Bibliografia Complementar:** SCHEINERMAN, Edward R. Matemática discreta: uma introdução. São Paulo: Cengage Learning, 2003. GRIES, David; SCHNEIDER, Fred B. A logical **approach to discrete math** . New york: Springer Verlag, 1993. ALAGAR, Vangalaur S. **Fundamentals of computing** : theory and practice. São Paulo: Prentice-Hall, Englewood Cliffs, 1989. XUONG, Nguyen H. **Mathématiques discrètes et informatiqu** e. Paris: Masson, 1992.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Técnicas em Negociação|||
@@ -881,7 +881,7 @@ FLEURY, A. & FLEURY, M. T. L. **Estratégias empresariais e formação de compet
 
 JUNQUEIRA, Luiz Augusto Costacurta. **Negociação: tecnologia e comportamento** . Rio de Janeiro: COP Editora Ltda, 1988.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Algoritmo e Lógica de Programação I|||
@@ -890,7 +890,7 @@ JUNQUEIRA, Luiz Augusto Costacurta. **Negociação: tecnologia e comportamento**
 |**Bibliografa Básica:**<br>FORBELLONE, André Luiz Villar.**Lógica de programação**: a construção de algoritmos.São<br>Paulo: Makron Books, 2000.<br>LAGES, G.**Algoritmos e estruturas de dados**. São Paulo: Ed. LTC,1988.<br>KNUTH, Donald E.**The Art of Computer Programming**. São Paulo: Pearson AddisonWesley,<br>1998.<br>MANZANO, José Augusto N. G.**Algoritmos**: lógica para desenvolvimento. São Paulo: Érica,<br>1996.|||
 |**Bibliografa Complementar:**<br>Deitel, Paul; Deitel, Harvey.**C:**como programar. [C: how to program]. 6. ed. São Paulo: Pearson<br>Prentice Hall, 2011.<br>SALVETTI, Dirceu Douglas.**Algoritmos**. São Paulo: Makron Books, 1998.<br>Oliveira, J. F.**Algoritmos**: Lógica para desenvolvimento de programação. São Paulo: Érica,<br>1996.<br>TREMBLAY, B.**Ciência dos computadores**: uma abordagem algorítmica. São Paulo: Ed.<br>McGraw-Hill,1985.|||
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**||
 |---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas|**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Introdução à Engenharia de Software||
@@ -903,7 +903,7 @@ JUNQUEIRA, Luiz Augusto Costacurta. **Negociação: tecnologia e comportamento**
 |**Bibliografa Básica:**<br>PRESSMAN, Roger S.**Engenharia de software.**São Paulo: Pearson Education do Brasil, 1995.<br>SOMMERVILLE, I.**Engenharia de Software**. 8. ed. São Paulo: Pearson, 2007.<br>DE MARCO, Tom.**Análise de Sistemas**. Rio de Janeiro: Editora Campus, 1989.<br>CARVALHO, Ariadne Maria Brito Rizzoni; CHIOSSI, Thelma Cecília dos Santos.**Introdução à**<br>**Engenharia de Software**. Campinas: UNICAMP,2001.||
 |**Bibliografa Complementar:**<br>PRESSMAN, Roger S.**Software Engineering:**a practitioner approach**.**New York: Ed.<br>McGraw-Hill, 2001.<br>YOURDON, Edward.**Análise Estruturada Moderna**. Rio de Janeiro: Editora Campus, 1992.<br>GANE, C.; SARSON, T.**Análise Estruturada de Sistemas**. São Paulo: LTC, 1983.<br>PAGE, M.**Projeto Estruturado de Sistemas**. São Paulo: MCGRAW-HILL, 1988.<br>BOOCH, G.; JACOBSON, I.; RUMBAUGH, J.**UML:** guia do usuário. 2. ed. Rio de Janeiro: Campus,<br>2006.<br>FURLAN, José D.**Modelagem de Objetos através da UML: the Unifed Modeling Language.**<br>São Paulo: Makron Books, 1998.<br>RUMBAUGH, James et al.**Modelagem e projetos baseados em objetos.**Rio de Janeiro:<br>Campus,1994.||
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Introdução à Informática|||
@@ -919,7 +919,7 @@ VELOSO, Fernando de Castro. **Informática** : conceitos básicos. 7.ed. Rio de 
 
 RAMALHO, José A. A. **Introdução à Informática** . São Paulo: Editora Berkeley, 2000. NORTON, Peter. I **ntrodução à Informática.** São Paulo: Editora Pearson/makron Books,  2004.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Inglês Instrumental|||
@@ -932,14 +932,14 @@ _**CAMPUS**_ **AVANÇADO ASTORGA - IFPR Curso:** Técnico em Desenvolvimento de 
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Componente Curricular:**Inovação Tecnológica|**Componente Curricular:**Inovação Tecnológica|
+|**Componente Curricular:**Inovação Tecnológica||
 |---|---|
 |**Carga Horária(hora-aula):**40|**Período Letivo:**1º Semestre|
 |**Ementa:**<br>Conceito de tecnologia e inovação; Formas de inovação tecnológica; Projetos tecnológicos;<br>aquisição de tecnologia; Ferramentas de gestão tecnológica; fontes de fnanciamento para<br>pesquisa<br>e<br>desenvolvimento.<br>Propriedade<br>intelectual.<br>A<br>tecnologia<br>como<br>fonte<br>de<br>competitividade; gestão da propriedade industrial; incentivos governamentais à inovação<br>tecnológica eprospecção tecnológica.||
 |**Bibliografa Básica:**<br>CHRISTENSEN, M. C.**O Dilema da Inovação**. São Paulo: M.Books, 2012.<br>MATTOS, João Roberto L.; GUIMARÃES, Leonam dos Santos. **Gestão da tecnologia e da**<br>**inovação**: uma abordagem prática. São Paulo: Saraiva, 2005<br>MOREIRA, Daniel Augusto; QUEIROZ, Ana Carolina S.**Inovação Organizacional e Tecnológica**.<br>São Paulo: Cengage Learning, 2006.<br>BURGELMAN, Robert A.; CHRISTENSEN,<br>Clayton M.; WHEELWRIGTH, Steven C. **Gestão**<br>**Estratégica da Tecnologia e da inovação conceitos e soluções.** 5. ed. São Paulo:<br>McGraw-Hill, 2012.<br>STAL, Eva.**Inovação organizacional e tecnológica**. São Paulo: Thomson, 2007.||
 |**Bibliografa Complementar:**<br>ANDREASSI, Tales.**Gestão da inovação tecnológica.**São Paulo: Thomson, 2007.<br>BRASIL.**Lei 10.973 de 02/12/2004.**Lei de Inovação. Disponível em:<br>http://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l10.973.htm. Acesso em: 01 mar.<br>2019.<br>BRASIL.**Decreto No. 5.563 de 11/11/2005.**Regulamentação da Lei de Inovação. Disponível em:<br>http://www.planalto.gov.br/ccivil_03/_ato2004-2006/2005/decreto/d5563.htm. Acesso em: 01<br>mar. 2019.<br>BRASIL.**Lei 11.196 de 21/11/2005.**Lei do bem. Disponível em:<br>http://www.leidobem.com/lei-dobem/. Acesso em: 01 mar. 2019.<br>REIS, Dálcio Roberto dos.**Gestão da inovação tecnológica**. 2. ed. Barueri: Manole, 2008.<br>TIGRE, Paulo Bastos.**Gestão da inovação**: a economia da tecnologia no Brasil. Rio de Janeiro:<br>Elsevier: Campus,2006.||
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Banco de Dados I|||
@@ -961,7 +961,7 @@ DATE, C. J. **Introdução a sistemas de bancos de dados** . Rio de Janeiro: Cam
 
 _**CAMPUS**_ **AVANÇADO ASTORGA - IFPR Curso:** Técnico em Desenvolvimento de **Eixo Tecnológico:** Informação e Sistemas comunicação **Componente Curricular:** Algoritmo e Lógica de Programação II **Carga Horária (hora-aula):** 80 **Período Letivo:** 2º Semestre **Ementa:** Estruturas de dados: Filas, Pilhas, e Listas Encadeadas; Alocação dinâmica de memória; Métodos de Ordenação: Bolha, Seleção, Inserção, Intercalação (MergeSort) e QuickSort **Bibliografia Básica:** FORBELLONE, André Luiz Villar; EBERSPÄCHER, Henri Frederico. **Lógica de programação:** a construção de algoritmos e estruturas de dados. 3. ed. São Paulo: Prentice Hall, 2005. MANZANO, José Augusto N.G; OLIVEIRA, Jayr Figueiredo de. **Algoritmos:** lógica para desenvolvimento de programação de computadores. 12. ed. São Paulo: Érica, 2001. CORMEN, Thomas H et al. **Algoritmos:** teoria e prática. Rio de Janeiro: Campus, 2002 **Bibliografia Complementar:** FORBELLONE, André Luiz Villar. **Lógica de programação:** a construção de algoritmo e estrutura de dados. 2. ed. São Paulo : Makron, 2005. Mokarzel, Fábio; Soma, Nei. **Introdução à ciência da computação** . Rio de Janeiro: Elsevier, 2008. ZIVIANI, Nivio. **Projeto de algoritmos:** com implementações em Pascal e C. 5. ed. São Paulo: Pioneira, 2000. MANZANO, José Augusto Navarro Garcia; OLIVEIRA, Jayr Figueiredo. **Algoritmos:** lógica para desenvolvimento de programação. São Paulo : Érica, 2000.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Gerenciamento de Projetos|||
@@ -969,7 +969,7 @@ _**CAMPUS**_ **AVANÇADO ASTORGA - IFPR Curso:** Técnico em Desenvolvimento de 
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**Ementa:**<br>Defnição de projetos. Metodologia de desenvolvimento de projetos. O PMBOK. Estrutura e<br>Etapas de Projeto. Gerenciamento de Projeto.<br>Análise das necessidades dos clientes do<br>projeto. Análise de requisitos. Custos doprojeto. Gestão de Portfólio**.**|**Ementa:**<br>Defnição de projetos. Metodologia de desenvolvimento de projetos. O PMBOK. Estrutura e<br>Etapas de Projeto. Gerenciamento de Projeto.<br>Análise das necessidades dos clientes do<br>projeto. Análise de requisitos. Custos doprojeto. Gestão de Portfólio**.**|**Ementa:**<br>Defnição de projetos. Metodologia de desenvolvimento de projetos. O PMBOK. Estrutura e<br>Etapas de Projeto. Gerenciamento de Projeto.<br>Análise das necessidades dos clientes do<br>projeto. Análise de requisitos. Custos doprojeto. Gestão de Portfólio**.**|
+|**Ementa:**<br>Defnição de projetos. Metodologia de desenvolvimento de projetos. O PMBOK. Estrutura e<br>Etapas de Projeto. Gerenciamento de Projeto.<br>Análise das necessidades dos clientes do<br>projeto. Análise de requisitos. Custos doprojeto. Gestão de Portfólio**.**|||
 |---|---|---|
 |**Bibliografa Básica:**<br>CLELAND, David. I.**Gerência de projetos.**Rio de Janeiro: Reichmann & Afonso, 2002.<br>CARVALHO, M., RABECHINI, R.**Fundamentos em gestão de projeto**s: construindo<br>competências para gerenciar projetos. 3. ed. São Paulo: Atlas, 2011.<br>TRENTIM,M.**Gerenciamento de projetos**: guia para as certifcações CAPM e PMP. São Paulo:<br>Atlas, 2011.<br>VALERIANO, D.**Gerência em projetos**. Rio de Janeiro: Makron, 1998.<br>VARGAS,R. V.**Gerenciamento deprojetos**. 6. ed. Rio deJaneiro: Brasport,2005.|||
 |**Bibliografa Complementar:**<br>BUARQUE, C.**Avaliação Econômica de Projeto**s. 6. ed. Rio de Janeiro: Editora Campus, 1991.<br>MAXIMINIANO, A. C. A.**Administração de projetos**. São Paulo: Atlas, 1997.<br>PMI.**Um Guia do Conhecimento Em Gerenciamento de Projetos:**guia Pmbok® - 5. ed. Rio<br>de Janeiro: Saraiva, 2014.<br>RABECHINI,R.**O gerente de projetos na empresa**. 3. ed. São Paulo: Atlas, 2011.|||
@@ -1002,7 +1002,7 @@ HISRICH, Robert D.; PETERS, Michael P. **Empreendedorismo.** 5. ed. Porto Alegre
 
 MENDES, Jeronimo. **Manual do empreendedor** . São Paulo: Atlas, 2009
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Programação WEB|||
@@ -1017,7 +1017,7 @@ MELLO, R. CHIARA, R. Villela, R. **Aprendendo Java 2** . São Paulo: Novatec, 20
 
 SILVA, Maurício Samy. Fundamentos de HTML5 e CSS3. São Paulo: Novatec, 2015. SOMMERVILLE, Ian. **Engenharia de Software** . 8. ed. São Paulo: Pearson A. Wesley, 2007.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Programação Orientada a Objetos|||
@@ -1026,7 +1026,7 @@ SILVA, Maurício Samy. Fundamentos de HTML5 e CSS3. São Paulo: Novatec, 2015. S
 |<br>**Bibliografa Básica:**<br>KEOGH, J.; GIANNINI, M. OOP.**Desmistifcado:**programação a objetos. Rio de Janeiro: Alta<br>Books, 2005.<br>BARNES, K.**Programação orientada a objetos com Java:**uma introdução prática usando o<br>blueJ. 4. ed. São Paulo: Pearson Education, 2004.<br>DEITEL,M.D.;DEITEL,P.J.**C++ comoprogramar**. 3. ed. Porto Alegre: Bookman,2001.|||
 |**Bibliografa Complementar:**<br>BOOCH, G.; RUMBAUGH, J.; JACOBSON, I.**UML Guia do Usuário**. 2. ed. Rio de Janeiro: Elsevier,<br>2005.<br>SAVITCH, W.**C++ Absoluto.**São Paulo: Prentice-Hall, 2003.<br>KOFFMAN, E.B.; WOLFGANG, P.A.T.**Objetos, abstração, estruturas de dados e projeto**<br>**usando C++**. Rio de Janeiro: LTD, 2008.<br>DEITEL, H.M.; DEITEL, P.J.**Java:**como programar. 6. ed. São Paulo: Pearson Education, 2005.<br>PAGE-JONES, Meilir.**O que todo programador deveria saber sobre projeto orientado a**<br>**objetos.**São Paulo: Books,1997.|||
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Banco deDadosII|||
@@ -1044,7 +1044,7 @@ SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. **Sistema de banco de dado
 
 AFONSO, Adriano et al. **Folha de cálculo calc:** coleção manual TIC e LibreOffice. Lisboa: Editora ISCTE – Instituto Universitário de Lisboa, 2014. ANGELOTTI, Eliani Simoni. **Banco de dados** . Curitiba: Editora do Livro Técnico, 2010. Elmasri, R. and Navathe, S.B. Fundamentals of database systems **.** 4[th] ed.  New York: Addison-Wesley, 2003. Ramakrishnan, R. **Database management systems** . 3rd ed. New York: McGraw-Hill, 2003. TURBAN, Efrain; MCLEAN, Ephraim; WETHERBE, James. **Tecnologia da informação para gestão** . 3. ed. Porto Alegre: Bookman, 2004.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Engenharia de Software II|||
@@ -1055,7 +1055,7 @@ AFONSO, Adriano et al. **Folha de cálculo calc:** coleção manual TIC e LibreO
 
 **INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS** Av. Victor Ferreira do Amaral, 306 - Tarumã,  Curitiba - PR | CEP 82530-230  - Brasil
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Saúde no Trabalho|||
@@ -1064,7 +1064,7 @@ AFONSO, Adriano et al. **Folha de cálculo calc:** coleção manual TIC e LibreO
 |**Bibliografa Básica:**<br>BOMPA, Tudor; Di PASQUALE, Mauro; CORNACCHIA, Lorenzo.**Treinamento de força levado a**<br>**sério**. 3. ed.. Manole. 2015.<br>GUEDES, Dartagnan Pinto; GUEDES, Joana Elisabete Ribeiro Pinto.**Manual prático para**<br>**avaliação em educação física**. Barueri: Manole, 2006<br>NATIONAL STRENGTH AND CONDITIONING ASSOCIATION (NSCA).**Guia de condicionamento**<br>**físico e diretrizes para elaboração de programas**.1. ed.Manole-SP,2015.|||
 |**Bibliografa Complementar:**<br>HEYWARD, Vivian H. Avaliação física e prescrição de exercício: técnicas avançadas. 6. ed. Porto<br>Alegre: Artmed, c2010.<br>MCARDLE, WILLIAM D.; KATCH, FRANK I.; KATCH, VICTOR L. . **Fisiologia do exercício -**<br>**nutrição, energia e desempenho humano**. 7. ed. Guanabara koogan, 2011.<br>TRITSCHLER, Kathleen. **Medida e avaliação em educação física e esportes**: de Barrow e<br>McGee. 5.ed. São Paulo: Manole, 2003.|||
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Matemática Financeira|||
@@ -1084,7 +1084,7 @@ VERAS, L. L. **Matemática financeira** . 6. ed. São Paulo: Atlas, 2007.
 
 VIEIRA SOBRINHO, José Dutra. **Matemática financeira** . 7. ed. São Paulo: Atlas, 2006.
 
-|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|
+|**_CAMPUS_ AVANÇADO ASTORGA - IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Empreendedorismo II|||
@@ -1093,7 +1093,7 @@ VIEIRA SOBRINHO, José Dutra. **Matemática financeira** . 7. ed. São Paulo: At
 |**Bibliografa Básica:**<br>BROWN, Tim.**Design Thinking**: uma metodologia poderosa. São Paulo: Elsevier, 2010.<br>CHESBROUGH, H.**Inovação aberta:**como criar e lucrar com a tecnologia. Porto Alegre:<br>Bookman, 2012.<br>GRANDO, Nei.**Empreendedorismo inovador**: como criar startups de tecnologia no Brasil. São<br>Paulo: Editora Évora, 2010.<br>PINCHOT, G. PELLMAN, R.**Intraempreendedorismo na prática**: um guia de inovação nos<br>negócios.Rio de Janeiro:Elsevier,2004|||
 |**Bibliografa Complementar:**<br>BERNARDI, Luiz Antonio.**Manual de plano de negócios**. São Paulo: Atlas, 2011.<br>CECCONELLO, Antonio Renato; AJZENTAL, Alberto.**A construção do plano de negócio**. São<br>Paulo: Saraiva, 2008.<br>LACRUZ, Adonai José.**Plano de negócios passo a passo:**transformando sonhos em negócios.<br>3. ed. Rio de Janeiro: Qualitymark, 2008.<br>OSTERWALDER, Alexander; PIGNEUR, Yves. **Hoboken:** Business Model Generation. New Jersey:<br>John Wiley & Sons, Inc., 2010.<br>RIES, Eric.**A startup enxuta como os empreendedores atuais utilizam a inovação**<br>**contínuapara criar empresa**s.São Paulo:Lua de Papel,2012.|||
 
-|**_CAMPUS_ AVANÇADO DE ASTORGA DO IFPR**|**_CAMPUS_ AVANÇADO DE ASTORGA DO IFPR**|**_CAMPUS_ AVANÇADO DE ASTORGA DO IFPR**|
+|**_CAMPUS_ AVANÇADO DE ASTORGA DO IFPR**|||
 |---|---|---|
 |**Curso:** Técnico em Desenvolvimento de<br>Sistemas||**Eixo Tecnológico:**Informação e<br>comunicação|
 |**Componente Curricular:**Programação WEB II|||
@@ -1176,7 +1176,7 @@ Para atendimento de estudantes com necessidades atualmente o específicas, _Camp
 
 ## **9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**Nome**|**PERFIL DE FORMAÇÃO**|
 
@@ -1194,7 +1194,7 @@ Para atendimento de estudantes com necessidades atualmente o específicas, _Camp
 |Reinaldo Donizete de<br>Oliveira|Doutor em Educação para a Ciência; Licenciado em Matemática,<br>Ciências Biológicas e Pedagogia|
 |Em processo de<br>redistribuição|Professora da área de Inglês|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**QUANT.**|**CARGO**|
 |01|Pedagogo|

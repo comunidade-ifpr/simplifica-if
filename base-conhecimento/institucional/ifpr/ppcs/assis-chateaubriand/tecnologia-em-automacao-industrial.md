@@ -1083,7 +1083,7 @@ Ministerio da Educacao
 
 ## **Atividades Complementares (AC) oferecidas no curso**
 
-|**Atividades Complementares (AC) oferecidas no curso**|**Atividades Complementares (AC) oferecidas no curso**|**Atividades Complementares (AC) oferecidas no curso**|**Atividades Complementares (AC) oferecidas no curso**|
+|**Atividades Complementares (AC) oferecidas no curso**||||
 |---|---|---|---|
 |**Tipo da**<br>**atividade**|**Nome da atividade**|**Formas de**<br>**aproveitamento**|**CH limite**<br>**(hr)**|
 |A|Componentes eletivos¹|Carga horária do componente cursado|60|
@@ -1131,7 +1131,7 @@ Ministerio da Educacao
 
 estudantes tenham opções suficientes para compor sua trajetória acadêmica. Além disso, a oferta de componentes optativos é planejada para complementar a formação técnica e teórica, ampliando as competências e habilidades dos estudantes.
 
-|**Componentes Optativos(CO) oferecidos no curso**|**Componentes Optativos(CO) oferecidos no curso**|**Componentes Optativos(CO) oferecidos no curso**|**Componentes Optativos(CO) oferecidos no curso**|
+|**Componentes Optativos(CO) oferecidos no curso**||||
 |---|---|---|---|
 |**Nome do componente**|**CH semanal**<br>**(ha)**|**CH semanal**<br>**CH total**<br>**(ha)**|**CH total**<br>**(hr)**|
 |Arquitetura<br>e<br>Organização<br>de<br>Computadores|de<br>2|40|33|
@@ -1183,7 +1183,7 @@ Ministerio da Educacao
 
 desenvolve habilidades de pesquisa e aplicação prática de uma solução, a partir de uma demanda da comunidade; “Projetos de Eficiência Energética” e “Eficiência Energética Aplicada”, que incentivam soluções sustentáveis para otimização energética; “Projetos de Automação Industrial” e “Automação Industrial Aplicada”, que aprimoram competências profissionais em automação; “Participação em atividades institucionais ligadas ao público externo” e “Prestação de serviços e orientações técnicas relacionadas ao curso”, que fortalecem a interação com a comunidade; “Apresentação de trabalhos em eventos à comunidade” e “Ministrante de minicurso ou palestra à comunidade”, que promovem a disseminação do conhecimento técnico; “Atuação profissional na área de automação” e “Participação em projetos de extensão”, que conectam a formação à prática no setor produtivo; “Elaboração de material didático, audiovisual, informativo ou afins” e “Elaboração de dispositivo eletro eletrônico ou outro equipamento”, que estimulam a inovação e o benefício social; e “Monitoria de grupos de estudos”, que reforça o aprendizado colaborativo. Especificamente referente à atividade "Projeto Integrador", que substitui o tradicional TCC (Trabalho de Conclusão de Curso), ressalta-se que se objetiva não apenas resolver problemas concretos da sociedade, mas também promover a transferência de conhecimento e o fortalecimento da relação entre o Instituto Federal do Paraná e a comunidade, alinhando-se aos princípios de extensão universitária.
 
-|**Atividades curriculares de Extensão(AE) oferecidas no curso**|**Atividades curriculares de Extensão(AE) oferecidas no curso**|**Atividades curriculares de Extensão(AE) oferecidas no curso**|
+|**Atividades curriculares de Extensão(AE) oferecidas no curso**|||
 |---|---|---|
 |**Nome da atividade**|**Carga horária atribuída**|**CH limite**<br>**(hr)**|
 |Projeto integrador|280 horas|280|
@@ -1255,7 +1255,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função|
+|Funções: definição de função, domínio, contradomínio, imagem, gráfico. Função||||||
 |---|---|---|---|---|---|
 |afim, função quadrática, função definida por várias sentenças. Operações entre|||||afim, função quadrática, função definida por várias sentenças. Operações entre|
 |funções. Função par, função ímpar, função periódica, função crescente, função||||||
@@ -1276,7 +1276,7 @@ Ministerio da Educacao
 |**aplicações**. 10. ed. Rio de Janeiro: LTC, 2010.||||. 10. ed. Rio de Janeiro: LTC, 2010.||
 |STEWART, J.**Cálculo**. São Paulo: Cengage Learning, 2010.|. São Paulo: Cengage Learning, 2010.|||||
 
-|**COMPONENTE CURRICULAR**:<br>Ciência dos Materiais|**COMPONENTE CURRICULAR**:<br>Ciência dos Materiais|**COMPONENTE CURRICULAR**:<br>Ciência dos Materiais|
+|**COMPONENTE CURRICULAR**:<br>Ciência dos Materiais|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>1º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1324,7 +1324,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**COMPONENTE CURRICULAR**:<br>Desenho técnico CAD|**COMPONENTE CURRICULAR**:<br>Desenho técnico CAD|**COMPONENTE CURRICULAR**:<br>Desenho técnico CAD|
+|**COMPONENTE CURRICULAR**:<br>Desenho técnico CAD|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>1º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1379,7 +1379,7 @@ Princípios básicos de medição elétrica, tipos de instrumentos de medição 
 
 **COMPONENTE CURRICULAR** : Introdução à Tecnologia em Automação Industrial
 
-|**COMPONENTE CURRICULAR**:<br>Introdução à Tecnologia em Automação Industrial|**COMPONENTE CURRICULAR**:<br>Introdução à Tecnologia em Automação Industrial|**COMPONENTE CURRICULAR**:<br>Introdução à Tecnologia em Automação Industrial|
+|**COMPONENTE CURRICULAR**:<br>Introdução à Tecnologia em Automação Industrial|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>1º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1391,13 +1391,13 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|Apresentação e reflexão sobre o currículo, normas e procedimentos do curso de|Apresentação e reflexão sobre o currículo, normas e procedimentos do curso de|Apresentação e reflexão sobre o currículo, normas e procedimentos do curso de|Apresentação e reflexão sobre o currículo, normas e procedimentos do curso de|
+|Apresentação e reflexão sobre o currículo, normas e procedimentos do curso de||||
 |---|---|---|---|
 |Tecnologia em Automação Industrial; Atualidades, área de atuação, ARTs,||Tecnologia em Automação Industrial; Atualidades, área de atuação, ARTs,||
 |conselho regional da área e atribuições normativas do Tecnólogo em Automação||||
 |Industrial; Introdução à metodologias e técnicas de estudo; Trabalho científico:||||
 |concepções teóricas e práticas do conhecimento; Ferramentas computacionais||||
-|para suporte à pesquisa; Ética na pesquisa e uso adequado de fontes de|para suporte à pesquisa; Ética na pesquisa e uso adequado de fontes de|para suporte à pesquisa; Ética na pesquisa e uso adequado de fontes de||
+|para suporte à pesquisa; Ética na pesquisa e uso adequado de fontes de||||
 |informação; Normas para elaboração de trabalhos acadêmicos do Instituto Federal||||
 |do Paraná. Formas básicas de apresentação do trabalho acadêmico; Revisão da||||
 |literatura; Referenciais bibliográficos; Conceitos, fases e modalidades de|||literatura; Referenciais bibliográficos; Conceitos, fases e modalidades de|
@@ -1458,7 +1458,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de|
+|básicos de entrada, saída e atribuição; Estruturas de condição, controle e de||||||||
 |---|---|---|---|---|---|---|---|
 |repetição; Vetores e matrizes; Introdução a funções e métodos; algoritmos|||repetição; Vetores e matrizes; Introdução a funções e métodos; algoritmos|||||
 |recursivos e aplicações práticas de programação voltadas à resolução de||||recursivos e aplicações práticas de programação voltadas à resolução de|recursivos e aplicações práticas de programação voltadas à resolução de|||
@@ -1523,7 +1523,7 @@ https://middleware-bv.am4.com.br/SSO/ifpr/9786556754420. Acesso em: 07 ago 2025.
 
 ## **COMPONENTE CURRICULAR** :
 
-|**COMPONENTE CURRICULAR**:<br>Cálculo Diferencial e Integral|**COMPONENTE CURRICULAR**:<br>Cálculo Diferencial e Integral|**COMPONENTE CURRICULAR**:<br>Cálculo Diferencial e Integral|
+|**COMPONENTE CURRICULAR**:<br>Cálculo Diferencial e Integral|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>2º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1570,7 +1570,7 @@ Ministerio da Educacao
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL|INSTITUTOFEDERAL|INSTITUTOFEDERAL|||
+|INSTITUTOFEDERAL|||||
 |---|---|---|---|---|
 |Parana||||Ministerio da Educacao|
 |HALLIDAY, David; RESNICK, Robert e WALKER, Jearl.|HALLIDAY, David; RESNICK, Robert e WALKER, Jearl.**Fundamentos de física:**||||
@@ -1595,9 +1595,9 @@ Ministerio da Educacao
 |NUSSENZVEIG, Moysés.**Curso de física básica:**fluidos, oscilações e ondas,|||||
 |calor. 4. ed. Editora Edgard Blucher, 2002.||calor. 4. ed. Editora Edgard Blucher, 2002.|||
 |NUSSENZVEIG, Moysés.**Curso de física básica**: eletromagnetismo. 2. ed.|||||
-|Editora Edgard Blucher, 2015.|Editora Edgard Blucher, 2015.||||
+|Editora Edgard Blucher, 2015.|||||
 
-|**COMPONENTE CURRICULAR**:<br>Metrologia|**COMPONENTE CURRICULAR**:<br>Metrologia|**COMPONENTE CURRICULAR**:<br>Metrologia|
+|**COMPONENTE CURRICULAR**:<br>Metrologia|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>2º semestre|
 
@@ -1650,7 +1650,7 @@ https://middleware-bv.am4.com.br/SSO/ifpr/9788543016757. Acesso em: 09 jul. 2025
 
 ## **COMPONENTE CURRICULAR** :
 
-|**COMPONENTE CURRICULAR**:<br>Análise de Circuitos Elétricos|**COMPONENTE CURRICULAR**:<br>Análise de Circuitos Elétricos|**COMPONENTE CURRICULAR**:<br>Análise de Circuitos Elétricos|
+|**COMPONENTE CURRICULAR**:<br>Análise de Circuitos Elétricos|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>2º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>口<br>口|||
@@ -1674,7 +1674,7 @@ https://middleware-bv.am4.com.br/SSO/ifpr/9788571933019. Acesso em: 07 ago 2025.
 
 MARKUS, Otávio. **Circuitos elétricos** : corrente contínua e corrente alternada: teoria e exercícios. 9. ed. São Paulo: Érica, 2011.
 
-|**COMPONENTE CURRICULAR**:<br>Instrumentação Industrial|**COMPONENTE CURRICULAR**:<br>Instrumentação Industrial|**COMPONENTE CURRICULAR**:<br>Instrumentação Industrial|
+|**COMPONENTE CURRICULAR**:<br>Instrumentação Industrial|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>2º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1730,7 +1730,7 @@ São Paulo: Cengage Learning, 2012. **BIBLIOGRAFIA COMPLEMENTAR** : ÁVILA, Gera
 
 STEWART, James. **Cálculo** . São Paulo: Cengage Learning, 2015. v. 2
 
-|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|
+|**COMPONENTE CURRICULAR**:<br>Modelagem 3D e Manufatura Aditiva|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>3º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1818,7 +1818,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**COMPONENTE CURRICULAR**:<br>Eletrônica Analógica e de Potência|**COMPONENTE CURRICULAR**:<br>Eletrônica Analógica e de Potência|**COMPONENTE CURRICULAR**:<br>Eletrônica Analógica e de Potência|
+|**COMPONENTE CURRICULAR**:<br>Eletrônica Analógica e de Potência|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>3º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1836,7 +1836,7 @@ Ministerio da Educacao
 
 Porto Alegre: Bookman, 2006.
 
-|**COMPONENTE CURRICULAR**:<br>Sistemas Digitais|**COMPONENTE CURRICULAR**:<br>Sistemas Digitais|**COMPONENTE CURRICULAR**:<br>Sistemas Digitais|
+|**COMPONENTE CURRICULAR**:<br>Sistemas Digitais|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>3º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1858,7 +1858,7 @@ Ministerio da Educacao
 
 ## **COMPONENTE CURRICULAR** :
 
-|**COMPONENTE CURRICULAR**:<br>Introdução à Teoria de Controle|**COMPONENTE CURRICULAR**:<br>Introdução à Teoria de Controle|**COMPONENTE CURRICULAR**:<br>Introdução à Teoria de Controle|
+|**COMPONENTE CURRICULAR**:<br>Introdução à Teoria de Controle|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>4º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -1880,7 +1880,7 @@ JOHNSON, C. **Process control instrumentation technology** . Prentice Hall, 2005
 
 LUIS ANTONIO AGUIRRE. **Enciclopédia de automática: controle e automação** . Editora Blucher, 2017.
 
-|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|
+|**COMPONENTE CURRICULAR**:<br>Processos de Fabricação|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>4º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>口<br>口|||
@@ -2003,7 +2003,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**COMPONENTE CURRICULAR**:<br>Introdução ao Pensamento Social|**COMPONENTE CURRICULAR**:<br>Introdução ao Pensamento Social|**COMPONENTE CURRICULAR**:<br>Introdução ao Pensamento Social|
+|**COMPONENTE CURRICULAR**:<br>Introdução ao Pensamento Social|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>4º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -2011,7 +2011,7 @@ Ministerio da Educacao
 |**BIBLIOGRAFIA BÁSICA**:<br>CHAUÍ, Marilena de Souza.**Convite à filosofia**. São Paulo: Ática, 1999.<br>MORIN, Edgar.**Os sete saberes necessários à educação do futuro**. São Paulo:<br>Cortez, 2018.<br>SEN, Amartya.**Desenvolvimento como liberdade**. São Paulo: Companhia das<br>Letras, 2019.|||
 |**BIBLIOGRAFIA COMPLEMENTAR**:<br>BOBBIO, Norberto.**Teoria geral da política**. São Paulo: Elsevier, 2017.<br>CASTELLS, Manuel.**A sociedade em rede**. São Paulo: Paz e Terra, 2016.<br>FREIRE, Paulo.**Pedagogia do oprimido**. Rio de Janeiro: Paz e Terra, 2017.<br>SANTOS, Boaventura de Sousa.**Direito e epistemologias do sul**. São Paulo:<br>Lumen Juris, 2025.|||
 
-|**COMPONENTE CURRICULAR**:<br>Programação de Equipamentos Industriais|**COMPONENTE CURRICULAR**:<br>Programação de Equipamentos Industriais|**COMPONENTE CURRICULAR**:<br>Programação de Equipamentos Industriais|
+|**COMPONENTE CURRICULAR**:<br>Programação de Equipamentos Industriais|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>4º semestre|
 
@@ -2056,7 +2056,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**COMPONENTE CURRICULAR**:<br>Circuitos Hidráulicos e Pneumáticos|**COMPONENTE CURRICULAR**:<br>Circuitos Hidráulicos e Pneumáticos|**COMPONENTE CURRICULAR**:<br>Circuitos Hidráulicos e Pneumáticos|
+|**COMPONENTE CURRICULAR**:<br>Circuitos Hidráulicos e Pneumáticos|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>5º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -2078,7 +2078,7 @@ FRANCHI, Claiton Moro; Camargo, Valter Luís A. **Controladores lógicos program
 
 Comando Numérico Computadorizado (CNC)
 
-|**COMPONENTE CURRICULAR**:<br>Comando Numérico Computadorizado (CNC)|**COMPONENTE CURRICULAR**:<br>Comando Numérico Computadorizado (CNC)|**COMPONENTE CURRICULAR**:<br>Comando Numérico Computadorizado (CNC)|
+|**COMPONENTE CURRICULAR**:<br>Comando Numérico Computadorizado (CNC)|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>5º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -2104,7 +2104,7 @@ WEISS, Almiro. **Processos de fabricação mecânica.** Curitiba: LT, 2012.
 
 ## **COMPONENTE CURRICULAR** :
 
-|**COMPONENTE CURRICULAR**:<br>Redes Industriais|**COMPONENTE CURRICULAR**:<br>Redes Industriais|**COMPONENTE CURRICULAR**:<br>Redes Industriais|
+|**COMPONENTE CURRICULAR**:<br>Redes Industriais|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>5º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -2129,7 +2129,7 @@ VENTURELLI, Márcio. **Redes e protocolos industriais** : conceitos e aplicaçõ
 
 ## **6º semestre letivo**
 
-|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Manutenção Industrial|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Manutenção Industrial|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Manutenção Industrial|
+|**COMPONENTE CURRICULAR**:<br>Elementos de Máquinas e Manutenção Industrial|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>6º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>口<br>口|||
@@ -2189,7 +2189,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**COMPONENTE CURRICULAR**:<br>Gestão de Projetos|**COMPONENTE CURRICULAR**:<br>Gestão de Projetos|**COMPONENTE CURRICULAR**:<br>Gestão de Projetos|
+|**COMPONENTE CURRICULAR**:<br>Gestão de Projetos|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>6º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>  Obrigatório<br>Optativo<br>Extensionista<br>四<br>口|||
@@ -2203,7 +2203,7 @@ INSTITUTOFEDERAL Parana Ministerio da Educacao
 
 https://middleware-bv.am4.com.br/SSO/ifpr/9788521215905. Acesso em: 05 ago 2025. MASSARI, Vitor. **Agile Scrum Master no gerenciamento avançado de projetos.** Editora Brasport, 2016. E-book disponível em: https://middleware-bv.am4.com.br/SSO/ifpr/9788574527857. Acesso em: 05 ago 2025. MENEZES, Luís César de Moura. **Gestão de projetos.** 3. ed. São Paulo: Atlas, 2009. RODRIGUES, Eli. **21 erros clássicos da gestão de projetos.** Editora Brasport, 2014. E-book disponível em: https://middleware-bv.am4.com.br/SSO/ifpr/9788574527055. Acesso em: 05 ago 2025.
 
-|**COMPONENTE CURRICULAR**:<br>Instalações Elétricas Industriais|**COMPONENTE CURRICULAR**:<br>Instalações Elétricas Industriais|**COMPONENTE CURRICULAR**:<br>Instalações Elétricas Industriais|
+|**COMPONENTE CURRICULAR**:<br>Instalações Elétricas Industriais|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>6º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>四<br>口<br>口|||
@@ -2250,7 +2250,7 @@ Ministerio da Educacao
 |**BIBLIOGRAFIA BÁSICA**:||||||
 |---|---|---|---|---|---|
 |NIKU, Saeed B.**Introdução à robótica**: análise, controle, aplicações. 2. ed. Rio||||: análise, controle, aplicações. 2. ed. Rio||
-|de Janeiro: LTC, c2013. 382 p. ISBN 9788521622376 (broch.).|de Janeiro: LTC, c2013. 382 p. ISBN 9788521622376 (broch.).|||||
+|de Janeiro: LTC, c2013. 382 p. ISBN 9788521622376 (broch.).||||||
 |ROMANO, Vitor Pereira.**Robótica industrial aplicada na indústria de**||**Robótica industrial aplicada na indústria de**||||
 |**manufatura e processos.**São Paulo: Blucher, 2001.|||São Paulo: Blucher, 2001.|||
 |ROSÁRIO, João Maurício.**Princípios de mecatrônica.**São Paulo: Prentice Hall,||||||
@@ -2265,7 +2265,7 @@ Ministerio da Educacao
 |VELLOSO, Fernando de Castro.**Informática:**conceitos básicos. 8. ed. rev. e|||||conceitos básicos. 8. ed. rev. e|
 |atual. Rio de Janeiro: Campus, 2011.||||||
 
-|**COMPONENTE CURRICULAR**:<br>Sistemas Supervisórios|**COMPONENTE CURRICULAR**:<br>Sistemas Supervisórios|**COMPONENTE CURRICULAR**:<br>Sistemas Supervisórios|
+|**COMPONENTE CURRICULAR**:<br>Sistemas Supervisórios|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>6º semestre|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br>Optativo<br>Extensionista<br>口<br>口|||
@@ -2275,33 +2275,33 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|
-|---|---|---|
-|Parana<br>Ministerio da Educacao|||
-|**BIBLIOGRAFIA BÁSICA**:|||
-|BRANQUINHO, Marcelo Ayres_et al._ **Segurança de automação industrial e**|||
-|**SCADA.**Rio de Janeiro: Elsevier, 2014.|||
-|GARCIA JUNIOR, Ervaldo.**Introdução a sistemas de supervisão, controle e**|||
-|**aquisição de dados:**SCADA. Rio de Janeiro: Alta Books, 2019.|||
-|ROQUE, Luiz Alberto Oliveira Lima.**Automação de processos com linguagem**|||
-|**Ladder e sistemas supervisórios.**Rio de Janeiro: LTC, 2014.|||
-|**BIBLIOGRAFIA COMPLEMENTAR**:|||
-|FONSECA, Fabrício Ramos da; SANTOS, Fábio Lobue dos; COELHO, Marcelo|||
-|Saraiva.**Sistemas digitais de controle industrial**. 1. ed. São Paulo: SENAI-SP|||
-|Editora, 2016. 116 p. ISBN 8583933685.|||
-|GARCIA JÚNIOR, Ervaldo.**Os princípios do design de dashboards.**São Paulo:|||
-|Dashboard Design, 2021.|||
-|HERMANS,<br>Kris;<br>CYBELLIUM<br>Ltd.<br>**Mastering**<br>**InfluxDB**<br>**database:**<br>**a**|||
-|**comprehensive guide to learn InfluxDB Database**. 1. ed. Cybellium, 2023.|||
-|SALITURO, Eric.**Learn Grafana 10,x:**a beginner’s guide to practical data|||
-|analytics, interactive dashboards, and observability. 2. Ed. PACKT, 2023.|||
-|WEXLER, Steve; SHAFFER, Jeffrey; KNAFLIC, Cole Nussbaumer.**The big book**|||
-|**of dashboards:**visualizing your data using real-world business scenarios**.**|||
-|Hoboken: Wiley, 2017.|||
+|INSTITUTOFEDERAL<br>Parana||
+|---|---|
+|Parana<br>Ministerio da Educacao||
+|**BIBLIOGRAFIA BÁSICA**:||
+|BRANQUINHO, Marcelo Ayres_et al._ **Segurança de automação industrial e**||
+|**SCADA.**Rio de Janeiro: Elsevier, 2014.||
+|GARCIA JUNIOR, Ervaldo.**Introdução a sistemas de supervisão, controle e**||
+|**aquisição de dados:**SCADA. Rio de Janeiro: Alta Books, 2019.||
+|ROQUE, Luiz Alberto Oliveira Lima.**Automação de processos com linguagem**||
+|**Ladder e sistemas supervisórios.**Rio de Janeiro: LTC, 2014.||
+|**BIBLIOGRAFIA COMPLEMENTAR**:||
+|FONSECA, Fabrício Ramos da; SANTOS, Fábio Lobue dos; COELHO, Marcelo||
+|Saraiva.**Sistemas digitais de controle industrial**. 1. ed. São Paulo: SENAI-SP||
+|Editora, 2016. 116 p. ISBN 8583933685.||
+|GARCIA JÚNIOR, Ervaldo.**Os princípios do design de dashboards.**São Paulo:||
+|Dashboard Design, 2021.||
+|HERMANS,<br>Kris;<br>CYBELLIUM<br>Ltd.<br>**Mastering**<br>**InfluxDB**<br>**database:**<br>**a**||
+|**comprehensive guide to learn InfluxDB Database**. 1. ed. Cybellium, 2023.||
+|SALITURO, Eric.**Learn Grafana 10,x:**a beginner’s guide to practical data||
+|analytics, interactive dashboards, and observability. 2. Ed. PACKT, 2023.||
+|WEXLER, Steve; SHAFFER, Jeffrey; KNAFLIC, Cole Nussbaumer.**The big book**||
+|**of dashboards:**visualizing your data using real-world business scenarios**.**||
+|Hoboken: Wiley, 2017.||
 
 ## **Componentes Optativos (CO)**
 
-|**COMPONENTE CURRICULAR**:<br>Arquitetura e Organização de Computadores|**COMPONENTE CURRICULAR**:<br>Arquitetura e Organização de Computadores|**COMPONENTE CURRICULAR**:<br>Arquitetura e Organização de Computadores|
+|**COMPONENTE CURRICULAR**:<br>Arquitetura e Organização de Computadores|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |**CARÁTER DO COMPONENTE CURRICULAR**:|||
@@ -2385,7 +2385,7 @@ SERRA, Eduardo Torres. **Análise de falhas em materiais utilizados no setor el�
 
 Identificação de Sistemas
 
-|**COMPONENTE CURRICULAR**:<br>Identificação de Sistemas|**COMPONENTE CURRICULAR**:<br>Identificação de Sistemas|**COMPONENTE CURRICULAR**:<br>Identificação de Sistemas|
+|**COMPONENTE CURRICULAR**:<br>Identificação de Sistemas|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>80<br>horas-aula<br>67<br>horas|**CH SEMANAL**:<br>4<br>horas-aula|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br> <br>Optativo<br>Extensionista<br>口<br>口|||
@@ -2438,7 +2438,7 @@ Paulo: Baraúna, 2012. Cambridge School Classics. **Cambridge dictionary of Amer
 
 Língua Brasileira de Sinais (LIBRAS)
 
-|**COMPONENTE CURRICULAR**:<br>Língua Brasileira de Sinais (LIBRAS)|**COMPONENTE CURRICULAR**:<br>Língua Brasileira de Sinais (LIBRAS)|**COMPONENTE CURRICULAR**:<br>Língua Brasileira de Sinais (LIBRAS)|
+|**COMPONENTE CURRICULAR**:<br>Língua Brasileira de Sinais (LIBRAS)|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br> <br>Optativo<br>Extensionista<br>口<br>口|||
@@ -2466,11 +2466,11 @@ INSTITUTOFEDERAL Parana
 |SILVA, Marília da Piedade Marinho.**A construção de sentidos na escrita do**||||
 |**aluno surdo**. São Paulo: Plexus, 2001.||||
 |SKLIAR, Carlos (org.).|SKLIAR, Carlos (org.).**A surdez**: um olhar sobre as diferenças. 8. ed. Porto|||
-|Alegre: Mediação, 2016.|Alegre: Mediação, 2016.|||
+|Alegre: Mediação, 2016.||||
 |SOUZA, Danilo Pessoa Ferreira de.|SOUZA, Danilo Pessoa Ferreira de.**A Educação de surdos sob a perspectiva**|||
 |**de sua cultura e identidade**. Manaus: Clube de Autores, 2018.|||. Manaus: Clube de Autores, 2018.|
 
-|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Automação|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Automação|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Automação|
+|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Automação|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br> <br>Optativo<br>Extensionista<br>口<br>口|||
@@ -2561,7 +2561,7 @@ Sendo a ementa variável a bibliografia complementar será especificada para o p
 
 Tópicos Especiais em Inteligência Artificial
 
-|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Inteligência Artificial|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Inteligência Artificial|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Inteligência Artificial|
+|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Inteligência Artificial|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |**CARÁTER DO COMPONENTE CURRICULAR**:<br>Obrigatório<br> <br>Optativo<br>Extensionista<br>四<br>口|||
@@ -2569,7 +2569,7 @@ Tópicos Especiais em Inteligência Artificial
 |**BIBLIOGRAFIA BÁSICA**:<br>Sendo a ementa variável a bibliografia básica será especificada para o período em<br>que o componente for oferecido.|||
 |**BIBLIOGRAFIA COMPLEMENTAR**:<br>Sendo a ementa variável a bibliografia complementar será especificada para o<br>período em que o componente for oferecido.|||
 
-|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Matemática|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Matemática|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Matemática|
+|**COMPONENTE CURRICULAR**:<br>Tópicos Especiais em Matemática|||
 |---|---|---|
 |**CARGA HORÁRIA TOTAL**:<br>40<br>horas-aula<br>33<br>horas|**CH SEMANAL**:<br>2<br>horas-aula|**PERÍODO LETIVO**:<br>_(Optativo)_|
 |**CARÁTER DO COMPONENTE CURRICULAR**:|||
@@ -3701,7 +3701,7 @@ Ministerio da Educacao<br>
 
 ## **Quadro I – Atividades Complementares e Carga Horária**
 
-|**Atividades Complementares (AC)**|**Atividades Complementares (AC)**|**Atividades Complementares (AC)**|**Atividades Complementares (AC)**|**Atividades Complementares (AC)**|
+|**Atividades Complementares (AC)**|||||
 |---|---|---|---|---|
 |**Tipo da**<br>**atividade**|**Nome da atividade**|**Requisitos para validação**|**Formas de**<br>**aproveitamento**|**CH**<br>**máxima**<br>**(hr)**|
 |A|Componentes eletivos¹|Análise de Equivalência do<br>componente, assinada pela<br>Coordenação do Curso|Carga horária do componente<br>cursado|60|
@@ -3793,7 +3793,7 @@ Ministerio da Educacao<br>
 
 ## **Quadro I – Atividades de Extensão e Carga Horária**
 
-|**Atividades curriculares de Extensão(AE) oferecidas no curso**|**Atividades curriculares de Extensão(AE) oferecidas no curso**|**Atividades curriculares de Extensão(AE) oferecidas no curso**|**Atividades curriculares de Extensão(AE) oferecidas no curso**|
+|**Atividades curriculares de Extensão(AE) oferecidas no curso**||||
 |---|---|---|---|
 |**Nome da atividade**|**Critérios**|**Carga horária**<br>**atribuída**|**CH limite**<br>**(hr)**|
 |Projeto integrador|Declaração do(a)<br>orientador(a)|280 h|280|
@@ -4032,15 +4032,15 @@ promovam a disseminação do conhecimento, a interação entre a instituição e
 |➔|Potencializar a visibilidade do curso e da instituição, destacando as ações e||
 ||projetos desenvolvidos pela instituição e pelos seus estudantes.||
 |➔|Promover a interação entre os estudantes, professores, técnicos||
-||administrativos e membros da comunidade externa, ampliando a rede de|administrativos e membros da comunidade externa, ampliando a rede de|
-||contatos e criando oportunidades de desenvolvimento pessoal e|contatos e criando oportunidades de desenvolvimento pessoal e|
+||administrativos e membros da comunidade externa, ampliando a rede de||
+||contatos e criando oportunidades de desenvolvimento pessoal e||
 ||profissional.||
 
 ## **ATIVIDADE DE EXTENSÃO** :
 
 Apresentação de trabalhos em eventos à comunidade
 
-|**ATIVIDADE DE EXTENSÃO**:<br>Apresentação de trabalhos em eventos à comunidade|**ATIVIDADE DE EXTENSÃO**:<br>Apresentação de trabalhos em eventos à comunidade|**ATIVIDADE DE EXTENSÃO**:<br>Apresentação de trabalhos em eventos à comunidade|
+|**ATIVIDADE DE EXTENSÃO**:<br>Apresentação de trabalhos em eventos à comunidade|||
 |---|---|---|
 |**CARGA HORÁRIA ATRIBUÍDA**:<br>Conforme declaração, ou 70 horas por<br>atividade|**CH LIMITE**:<br>280<br>horas|**PERÍODO LETIVO**:<br>_(Opt. Extensionista)_|
 |**CARÁTER DA ATIVIDADE**:<br>Obrigatório<br> <br>Optativo<br>Extensionista<br>口<br>四|||
@@ -4136,7 +4136,7 @@ Esta atividade de extensão oportuniza a aplicação de conhecimentos e habilida
 
 |**OBJETIVOS**:|**OBJETIVOS**:||
 |---|---|---|
-|➔|Oferecer serviços e orientações técnicas de qualidade à comunidade,|Oferecer serviços e orientações técnicas de qualidade à comunidade,|
+|➔|Oferecer serviços e orientações técnicas de qualidade à comunidade,||
 ||contribuindo direta ou indiretamente para o desenvolvimento social e||
 ||econômico da região.||
 |➔|Aprimorar as habilidades de comunicação, negociação, gestão de projetos,||
@@ -4145,8 +4145,8 @@ Esta atividade de extensão oportuniza a aplicação de conhecimentos e habilida
 |➔|Incentivar<br>os<br>estudantes<br>ao<br>empreendedorismo,<br>bem<br>como<br>ao||
 ||desenvolvimento de projetos de consultoria e prestação de serviços, como||
 ||possibilidade para atuação profissional.||
-|➔|Promover a imagem do IFPR como instituição de ensino de excelência,|Promover a imagem do IFPR como instituição de ensino de excelência,|
-||comprometida com o desenvolvimento da região.|comprometida com o desenvolvimento da região.|
+|➔|Promover a imagem do IFPR como instituição de ensino de excelência,||
+||comprometida com o desenvolvimento da região.||
 |➔|Oferecer serviços e orientações técnicas a pessoas e organizações que||
 
 174
@@ -4230,7 +4230,7 @@ Ministerio da Educacao
 
 ## **ATIVIDADE DE EXTENSÃO** :
 
-|**ATIVIDADE DE EXTENSÃO**:<br>Elaboração de material didático, audiovisual, informativo ou afins para<br>comunidade|**ATIVIDADE DE EXTENSÃO**:<br>Elaboração de material didático, audiovisual, informativo ou afins para<br>comunidade|**ATIVIDADE DE EXTENSÃO**:<br>Elaboração de material didático, audiovisual, informativo ou afins para<br>comunidade|
+|**ATIVIDADE DE EXTENSÃO**:<br>Elaboração de material didático, audiovisual, informativo ou afins para<br>comunidade|||
 |---|---|---|
 |**CARGA HORÁRIA ATRIBUÍDA**:<br>Conforme declaração, ou 40 horas por<br>atividade|**CH LIMITE**:<br>160<br>horas|**PERÍODO LETIVO**:<br>_(Opt. Extensionista)_|
 |**CARÁTER DA ATIVIDADE**:<br>Obrigatório<br> <br>Optativo<br>Extensionista<br>口<br>四<br>四|||
@@ -4242,7 +4242,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|INSTITUTOFEDERAL<br>Parana|Ministerio da Educacao|
+|INSTITUTOFEDERAL<br>Parana||||||Ministerio da Educacao|
 |---|---|---|---|---|---|---|
 |apostilas, cartilhas, vídeos explicativos, infográficos, podcasts, tutoriais online,||||||apostilas, cartilhas, vídeos explicativos, infográficos, podcasts, tutoriais online,|
 |aplicativos, jogos educativos ou outros recursos, que abordem temas relacionados|||||||
@@ -4275,7 +4275,7 @@ Ministerio da Educacao
 
 |**ATIVIDADE DE EXTENSÃO**:||||
 |---|---|---|---|
-|Elaboração de dispositivo eletro eletrônico, ou outro tipo de equipamento ou|Elaboração de dispositivo eletro eletrônico, ou outro tipo de equipamento ou|||
+|Elaboração de dispositivo eletro eletrônico, ou outro tipo de equipamento ou||||
 |produto destinado à comunidade||||
 |**CARGA HORÁRIA ATRIBUÍDA**:||**CH LIMITE**:|**PERÍODO LETIVO**:|
 

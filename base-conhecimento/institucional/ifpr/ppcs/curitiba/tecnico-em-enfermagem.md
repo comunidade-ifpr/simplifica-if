@@ -654,7 +654,7 @@ A matriz curricular favorece a construção do conhecimento, através de conceit
 
 A distribuição dos módulos e respectivos componentes curriculares em horas e hora/aula está representada na matriz a seguir:
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)||||
 |---|---|---|---|---|
 ||Campus Curitiba||||
 ||**MATRIZ CURRICULAR DO CURSO TÉCNICO EM ENFERMAGEM**||||
@@ -758,7 +758,7 @@ embasamento teórico e conhecimento técnico-científico suficientes para garant
 
 A terminalidade em Auxiliar de Enfermagem compreende a aprovação nos componentes curriculares dos módulos 1 a 5, totalizando 1.200 horas. Os módulos 6 e 7 contemplam os componentes curriculares específicos para a habilitação em Técnico em Enfermagem, e para cursá-los, o estudante deve estar aprovado em todos os componentes curriculares do nível de Auxiliar de Enfermagem, conforme descritos a seguir:
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA**<br>**DO PARANÁ**<br>(Criação Lei nº 11.892 de 29/11/2008)||
 |---|---|---|
 ||Campus Curitiba||
 ||**PRÉ-REQUISITOS DO CURSO TÉCNICO EM ENFERMAGEM**||
@@ -785,7 +785,7 @@ A terminalidade em Auxiliar de Enfermagem compreende a aprovação nos component
 ||Relações Interpessoais I|Módulo I|
 ||TCC – Experiências Vivenciadas|-|
 
-||**TERCEIRO SEMESTRE**|**TERCEIRO SEMESTRE**|
+||**TERCEIRO SEMESTRE**||
 |---|---|---|
 ||||
 |**Módulo IV**|Enfermagem em Saúde da Mulher II|- Enfermagem em Saúde da Mulher I|
@@ -2014,7 +2014,7 @@ Os docentes do colegiado promovem ações de educação em saúde junto à comun
 
 Além do corpo docente, o Curso Técnico em Enfermagem conta também com um quadro profissional de Técnicos Administrativos capacitados para o atendimento das demandas advindas dos alunos, conforme discriminado abaixo:
 
-|**Técnicos Administrativos Em Educação**|**Técnicos Administrativos Em Educação**||
+|**Técnicos Administrativos Em Educação**|||
 |---|---|---|
 |**Nome**|**Cargo**|**Regime De**|
 |||**Trabalho**|

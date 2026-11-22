@@ -1495,7 +1495,7 @@ A  organização  dos  componentes  curriculares  ocorre  conforme  o  quadro ab
 
 **Quadro 3:** Matriz curricular do curso de Agronomia do IFPR _Campus_ Palmas
 
-|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas|
+|**Quadro 3:**Matriz curricular do curso de Agronomia do IFPR_Campus_Palmas||||||||
 |---|---|---|---|---|---|---|---|
 |**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||||
 |Criação Lei nº 11.892 de 29/11/2008||||||||
@@ -1620,7 +1620,7 @@ A  organização  dos  componentes  curriculares  ocorre  conforme  o  quadro ab
 |Estágio Supervisionado I **|||||84|70|Projetos de<br>Pesquisa e<br>Extensão|
 |**TOTAL OITAVO PERÍODO**|**17**|**260**|**40**|**40**|**424**|**353**||
 
-|**NONO PERÍODO**|**NONO PERÍODO**|**NONO PERÍODO**|**NONO PERÍODO**|**NONO PERÍODO**||||
+|**NONO PERÍODO**||||||||
 |---|---|---|---|---|---|---|---|
 |COMPONENTE CURRICULAR|H/A<br>Sem.|CH<br>(T)|CH (P)|CH<br>(Ex)|Carga horária<br>total||Pré-requisitos|
 ||||||H/A|H/R||
@@ -1822,24 +1822,24 @@ Carga<br>COMPONENTES CURRICULARESOPTATIVOS SemH/A CH(T) CH(P) (Ex)CH horária to
 |Arborização Urbana|2|2|0|0|40|33|Floricultura e<br>Paisagismo|
 |Sistemas Integrados de Produção|2|2|0|0|40|33|Bovinocultura de|
 
-|Agropecuária|||||||Corte|
-|---|---|---|---|---|---|---|---|
-|Adubos e Adubações|2|2|0|0|40|33|Fertilidade do Solo|
-|Aplicação de Microrganismos Benéficos na<br>Agricultura|2|2|0|0|40|33|Microbiologia<br>Agrícola|
-|Olericultura Especial|2|2|0|0|40|33|Olericultura|
-|Projetos de Irrigação e Drenagem|2|2|0|0|40|33|Irrigação e<br>Drenagem Agrícola|
-|Manejo de cultivos transgênicos|2|2|0|0|40|33|Culturas II|
-|Micropaisagismo|2|2|0|0|40|33|Fisiologia Vegetal|
-|Óleos Essenciais|2|2|0|0|40|33|Bioquímica|
-|Tecnologia de Produtos de Origem Animal|2|2|0|0|40|33|Tecnologia de<br>Alimentos|
-|Apicultura|2|2|0|0|40|33|Entomologia<br>Agrícola I|
-|Tecnologia de Produção de Café, Cacau e<br>Erva-mate|2|2|0|0|40|33|Fisiologia Vegetal;<br>Fertilidade do Solo|
-|Projetos Comunitários|4|4|0|0|80|67|Não há|
-|Desenvolvimento Rural Sustentável|2|2|0|0|40|33|Agroecologia e<br>Sustentabilidade|
-|Agricultura de Precisão|2|2|0|0|40|33|Culturas I; Culturas<br>II|
-|Estatística Experimental II|2|2|0|0|40|33|Estatística<br>Experimental I|
-|Fundamentos para o Manejo de Plantas<br>Cultivadas|2|2|0|0|40|33|Fisiologia Vegetal;<br>Climatologia e<br>Agrometeorologia|
-|Planilhas Eletrônicas de Cálculos para<br>Agronomia|2|2|0|0|40|33|Metodologia<br>Científica e<br>Informática|
+|Agropecuária|||||Corte|
+|---|---|---|---|---|---|
+|Adubos e Adubações|2|0|40|33|Fertilidade do Solo|
+|Aplicação de Microrganismos Benéficos na<br>Agricultura|2|0|40|33|Microbiologia<br>Agrícola|
+|Olericultura Especial|2|0|40|33|Olericultura|
+|Projetos de Irrigação e Drenagem|2|0|40|33|Irrigação e<br>Drenagem Agrícola|
+|Manejo de cultivos transgênicos|2|0|40|33|Culturas II|
+|Micropaisagismo|2|0|40|33|Fisiologia Vegetal|
+|Óleos Essenciais|2|0|40|33|Bioquímica|
+|Tecnologia de Produtos de Origem Animal|2|0|40|33|Tecnologia de<br>Alimentos|
+|Apicultura|2|0|40|33|Entomologia<br>Agrícola I|
+|Tecnologia de Produção de Café, Cacau e<br>Erva-mate|2|0|40|33|Fisiologia Vegetal;<br>Fertilidade do Solo|
+|Projetos Comunitários|4|0|80|67|Não há|
+|Desenvolvimento Rural Sustentável|2|0|40|33|Agroecologia e<br>Sustentabilidade|
+|Agricultura de Precisão|2|0|40|33|Culturas I; Culturas<br>II|
+|Estatística Experimental II|2|0|40|33|Estatística<br>Experimental I|
+|Fundamentos para o Manejo de Plantas<br>Cultivadas|2|0|40|33|Fisiologia Vegetal;<br>Climatologia e<br>Agrometeorologia|
+|Planilhas Eletrônicas de Cálculos para<br>Agronomia|2|0|40|33|Metodologia<br>Científica e<br>Informática|
 
 ## 2.9.5 Componentes Eletivos
 
@@ -2014,7 +2014,7 @@ COMPONENTE CURRICULAR INICIAÇÃO ÀS ATIVIDADES DE EXTENSÃO<br>PERÍODO DE OFE
 ||80 h/a ou 67 h|80 h/a ou 67 h|
 |**ÁREA TEMÁTICA**|7 - Tecnologia e Produção||
 
-|**LINHA DE EXTENSÃO**|7. 2006 - Desenvolvimento de Produtos;|7. 2006 - Desenvolvimento de Produtos;|
+|**LINHA DE EXTENSÃO**|7. 2006 - Desenvolvimento de Produtos;||
 |---|---|---|
 ||8. 2006 - Desenvolvimento Regional;||
 ||9. 2006 - Desenvolvimento Rural e Questão Agrária;||
@@ -7995,7 +7995,7 @@ As atividades complementares de integralização curricular são divididas em ci
 
 Assim  as  atividades  complementares  de  integralização  curricular  estão dispostas conforme abaixo:
 
-|REPRESENTAÇÃO ESTUDANTIL|REPRESENTAÇÃO ESTUDANTIL|
+|REPRESENTAÇÃO ESTUDANTIL||
 |---|---|
 |Atividade|Carga Horária|
 |Participação  estudantil  em  órgãos,  conselhos  ou<br>colegiados internos do IFPR|16 horas por semestre de representação;<br>Máximo de horas a serem computadas: 32|
@@ -8003,7 +8003,7 @@ Assim  as  atividades  complementares  de  integralização  curricular  estão 
 |Participação em Centro Acadêmico, Diretório Central<br>dos<br>Estudantes<br>ou<br>demais<br>instituições<br>representativas dos estudantes|20 horas por semestre de participação;<br>Máximo de horas a serem computadas: 40|
 |Máximo de horas desta modalidade a serem computadas: 100 horas||
 
-|ENSINO E FORMAÇÃO PROFISSIONAL|ENSINO E FORMAÇÃO PROFISSIONAL|
+|ENSINO E FORMAÇÃO PROFISSIONAL||
 |---|---|
 |Atividade|Carga Horária|
 |Componentes  curriculares  não  previstos  no<br>currículo pleno de Agronomia e que possuem|Carga horária do componente curricular;<br>Máximo de horas a serem computadas:|
@@ -8031,7 +8031,7 @@ Assim  as  atividades  complementares  de  integralização  curricular  estão 
 |Prestação de serviços comunitários|Máximo de horas a serem computadas:<br>40|
 |Máximo de horas desta modalidade a serem computadas: 100 horas||
 
-|PESQUISA|PESQUISA|
+|PESQUISA||
 |---|---|
 |Atividade|Carga Horária|
 |Participação  como bolsista ou  voluntário<br>em projetos de pesquisa sob orientação<br>de docente do IFPR|Máximo de horas a serem computadas: 40|
@@ -8041,7 +8041,7 @@ Assim  as  atividades  complementares  de  integralização  curricular  estão 
 |Participação na criação de produto<br>tecnológico|Máximo de horas a serem computadas: 40<br>40 horas por produto|
 |Máximo de horas desta modalidade a serem computadas: 100 horas||
 
-|PUBLICAÇÕES|PUBLICAÇÕES|
+|PUBLICAÇÕES||
 |---|---|
 |Atividade|Carga Horária|
 |Publicação e/ou apresentação de<br>trabalhos  de  extensão  ou  pesquisa  em<br>congressos, jornadas, simpósios, fóruns e|Máximo de horas a serem computadas: 40<br>20 horas por trabalho|

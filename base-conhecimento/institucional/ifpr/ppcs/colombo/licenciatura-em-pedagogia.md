@@ -597,7 +597,7 @@ Segundo o site da Prefeitura Municipal de Colombo, a Rede Municipal de Ensino co
 
 Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo
 
-|Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo|Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo|Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo|Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo|Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo||
+|Tabela 1-NumerodealunosdeeducacaobasicadacidadedeColombo||||||
 |---|---|---|---|---|---|
 ||NumerodealunosdeeducagaobasicadacidadedeColombo|||||
 |Ensino/NdeAlunos<br>Ed.Infantil|CMEI<br>Parcial<br>Integral<br>1781<br>4315|Escola<br>Parcial<br>Integral<br>3317<br>293|Total Parcial<br>5098|Total Integral<br>4608|Total<br>9706|
@@ -1577,7 +1577,7 @@ Dessa forma, os diferentes componentes curriculares procuram dar conta dos desaf
 
 Ministerio da Educacao<br>## **Quadro 5** - Matriz curricular
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||||||
 |---|---|---|---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)|||||||||
 |||_Campus Colombo_|||||||||
@@ -1857,7 +1857,7 @@ Este conjunto de ações processuais e contínuas de caráter comunitário, educ
 
 **Quadro 7:** Áreas temáticas, linhas e atividades ou ações de extensão do curso de Licenciatura em Pedagogia
 
-|**COMPONENTE**<br>**CURRICULAR**|**Seminário Interdisciplinar**|**Seminário Interdisciplinar**|
+|**COMPONENTE**<br>**CURRICULAR**|**Seminário Interdisciplinar**||
 |---|---|---|
 |**PERÍODO DE OFERTA**|**VI período**||
 |**CARGA HORÁRIA**|**TOTAL**|**EXTENSÃO**|
@@ -1882,7 +1882,7 @@ Ministerio daEducacao
 
    - Eventos de formação inicial e continuada (palestras, encontros, rodas de conversa, entre outros).
 
-|**ATIVIDADE/AÇÃO**|●<br>Aprofundamento sobre os fundamentos teóricos quanto a<br>indissociabilidade entre ensino, pesquisa e extensão como<br>base da formação docente inicial e continuada;<br>●<br>Planejamento das atividades a serem desenvolvidas em<br>conjunto com os segmentos envolvidos;<br>●<br>Aprofundamento dos temas a serem elencados pela<br>comunidade<br>acadêmica por<br>meio de seminários de<br>socialização;<br>●<br>Elaboração/ sistematização de projeto de extensão;<br>●<br>Eventos de formação inicial e continuada (palestras,<br>encontros, rodas de conversa, entre outros).|●<br>Aprofundamento sobre os fundamentos teóricos quanto a<br>indissociabilidade entre ensino, pesquisa e extensão como<br>base da formação docente inicial e continuada;<br>●<br>Planejamento das atividades a serem desenvolvidas em<br>conjunto com os segmentos envolvidos;<br>●<br>Aprofundamento dos temas a serem elencados pela<br>comunidade<br>acadêmica por<br>meio de seminários de<br>socialização;<br>●<br>Elaboração/ sistematização de projeto de extensão;<br>●<br>Eventos de formação inicial e continuada (palestras,<br>encontros, rodas de conversa, entre outros).|
+|**ATIVIDADE/AÇÃO**|●<br>Aprofundamento sobre os fundamentos teóricos quanto a<br>indissociabilidade entre ensino, pesquisa e extensão como<br>base da formação docente inicial e continuada;<br>●<br>Planejamento das atividades a serem desenvolvidas em<br>conjunto com os segmentos envolvidos;<br>●<br>Aprofundamento dos temas a serem elencados pela<br>comunidade<br>acadêmica por<br>meio de seminários de<br>socialização;<br>●<br>Elaboração/ sistematização de projeto de extensão;<br>●<br>Eventos de formação inicial e continuada (palestras,<br>encontros, rodas de conversa, entre outros).||
 |---|---|---|
 |**COMPONENTE**<br>**CURRICULAR**|**Modalidades da Educação e do Ensino I - Educação de Jovens e**<br>**Adultos, do Campo e não-formal**||
 |**PERÍODO DE OFERTA**|**VII período**||
@@ -1903,7 +1903,7 @@ MinisteriodaEducacao
 
 comitês, comissões, fóruns, associações, ONG’s, OSCIP’s, redes, cooperativas populares, sindicatos, dentre outros.
 
-||comitês, comissões, fóruns, associações, ONG’s, OSCIP’s, redes,<br>cooperativas populares, sindicatos, dentre outros.|comitês, comissões, fóruns, associações, ONG’s, OSCIP’s, redes,<br>cooperativas populares, sindicatos, dentre outros.|
+||comitês, comissões, fóruns, associações, ONG’s, OSCIP’s, redes,<br>cooperativas populares, sindicatos, dentre outros.||
 |---|---|---|
 |**ATIVIDADE/AÇÃO**|●<br>Planejamento das atividades a serem desenvolvidas junto<br>aos segmentos envolvidos;<br>●<br>Aprofundamento dos temas a serem elencados pela<br>comunidade acadêmica e comunidade externa por meio<br>de seminários de socialização;<br>●<br>Elaboração/ sistematização de trabalhos acadêmicos<br>(resumos, painéis, entre outros) explorando os temas a<br>serem trabalhados ao longo do semestre;<br>●<br>Eventos de formação inicial e continuada (palestras,<br>encontros, rodas de conversa, exposição de painel, mesas<br>temáticas, ciclo de debates, entre outros).||
 |**COMPONENTE**<br>**CURRICULAR**|**Modalidades da Educação e do Ensino II- Educação Especial**||
@@ -1977,7 +1977,7 @@ inicial, educação continuada, educação permanente e formação profissional.
 
 MinisteriodaEducacao
 
-|**COMPONENTE**<br>**CURRICULAR**|**Educação em Direitos Humanos e Diversidade**|**Educação em Direitos Humanos e Diversidade**|
+|**COMPONENTE**<br>**CURRICULAR**|**Educação em Direitos Humanos e Diversidade**||
 |---|---|---|
 |**PERÍODO DE OFERTA**|**VIII Período**||
 |**CARGA HORÁRIA**|**TOTAL**|**EXTENSÃO**|
@@ -4887,10 +4887,10 @@ O horário de funcionamento da Biblioteca do Campus Colombo é estabelecido de a
 
 201
 
-||INSTITUTOFEDERAL|INSTITUTOFEDERAL|INSTITUTOFEDERAL||||
-|---|---|---|---|---|---|---|
-||Parana||||MinisteriodaEducacao||
-|8h às 21h|8h às 21h|8h às 21h|8h às 21h|8h às 21h|8h às 21h||
+||INSTITUTOFEDERAL|INSTITUTOFEDERAL||||
+|---|---|---|---|---|---|
+||Parana|||MinisteriodaEducacao||
+|8h às 21h|8h às 21h|8h às 21h|8h às 21h|8h às 21h||
 
 Quanto ao seu acervo, a Biblioteca do Campus Colombo, possui 3816 exemplares distribuídos nas áreas de atuação do campus. Especificamente, a área de Gestão e Negócios conta com 204 exemplares conforme detalhado no Anexo D. A Biblioteca do campus Colombo ainda dispõe do acesso ao Portal de Periódicos da Capes e oferece suporte por meio de seus serviços de referência. Anualmente, o acervo é atualizado com base na bibliografia básica e complementar dos PPCs. Com o objetivo de atender as bibliografias do Curso de Licenciatura em Pedagogia, será efetuado um levantamento de todos os títulos citados nas ementas para que seja feita a adequação da quantidade, seguindo as orientações e exigências do Sistema Nacional de Avaliação do Ensino Superior (SINAES/MEC).
 
@@ -4978,15 +4978,15 @@ Ministerio da Educacao
 
 MinisteriodaEducacao
 
-||Microfones de<br>mão e<br>headset|Microfones de<br>Microfones Head Set e Bodypack<br>transmitter completes|Unid|4 R$3.623,98|4 R$3.623,98|R$14.495,92|
-|---|---|---|---|---|---|---|
-||Projetor<br>multimídia|PROJETOR FULL HD, 6000 LUMENS|Unid|1 R$ 2.551,52|1 R$ 2.551,52|R$ 2.551,52|
-||Notebook|NOTEBOOK 8 GB 1 TB COM<br>WINDOWS 10|Unid|3 R$ 3.558,96|3 R$ 3.558,96|R$10.676,88|
-||Tablet|Tablet 10,5” Wi-Fi 64GB - Android 11.0<br>UniSOC T618 Câm. 8MP + Selfie 5MP|Unid|20 R$1.304,00|20 R$1.304,00|R$ 26.080,00|
-|Mobiliário|Jogos de<br>mesas e<br>cadeiras<br>modulares|Mesa com cadeira escolar modular, forma<br>hexagonal adulto- 6 mesas e 6 cadeiras|Conj|6 R$ 2497,00|6 R$ 2497,00|R$ 14.982,00|
-||Armários|Armário para escritório, 2 portas com<br>chave. material MDP 15mm, altura 160cm,<br>largura 80cm eprofundidade 42cm|Unid|3 R$ 570,85|3 R$ 570,85|R$ 1712,55|
-||Prateleiras|Prateleira de aço para escritório com 6<br>prateleira Altura 174 cm, largura 91cm,<br>profundidade 30cm|Unid|2 R$ 219,99|2 R$ 219,99|R$ 439,98|
-|**TOTAL**||||||**R$95.277,18**|
+||Microfones de<br>mão e<br>headset|Microfones de<br>Microfones Head Set e Bodypack<br>transmitter completes|Unid|4 R$3.623,98|R$14.495,92|
+|---|---|---|---|---|---|
+||Projetor<br>multimídia|PROJETOR FULL HD, 6000 LUMENS|Unid|1 R$ 2.551,52|R$ 2.551,52|
+||Notebook|NOTEBOOK 8 GB 1 TB COM<br>WINDOWS 10|Unid|3 R$ 3.558,96|R$10.676,88|
+||Tablet|Tablet 10,5” Wi-Fi 64GB - Android 11.0<br>UniSOC T618 Câm. 8MP + Selfie 5MP|Unid|20 R$1.304,00|R$ 26.080,00|
+|Mobiliário|Jogos de<br>mesas e<br>cadeiras<br>modulares|Mesa com cadeira escolar modular, forma<br>hexagonal adulto- 6 mesas e 6 cadeiras|Conj|6 R$ 2497,00|R$ 14.982,00|
+||Armários|Armário para escritório, 2 portas com<br>chave. material MDP 15mm, altura 160cm,<br>largura 80cm eprofundidade 42cm|Unid|3 R$ 570,85|R$ 1712,55|
+||Prateleiras|Prateleira de aço para escritório com 6<br>prateleira Altura 174 cm, largura 91cm,<br>profundidade 30cm|Unid|2 R$ 219,99|R$ 439,98|
+|**TOTAL**|||||**R$95.277,18**|
 
 ## **8.3 PROJEÇÃO DE AQUISIÇÃO DE ACERVO BIBLIOGRÁFICO**
 

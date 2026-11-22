@@ -107,7 +107,7 @@ MinisteriodaEducacao
 
 **COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou COMISSÃO DE AJUSTE CURRICULAR (CAJ)**
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC) ou**<br>**COMISSÃO DE AJUSTE CURRICULAR (CAJ)**||
 |---|---|
 |**Função**|**Nome**|
 |Presidente|Fabio Luiz Pessoa Albini|
@@ -865,7 +865,7 @@ MinisteriodaEducacao
 
 ## INSTITUTOFEDERAL Parana PROENS
 
-|**1o ano (10 componentes curriculares)**|**1o ano (10 componentes curriculares)**|**1o ano (10 componentes curriculares)**|**1o ano (10 componentes curriculares)**|
+|**1o ano (10 componentes curriculares)**||||
 |---|---|---|---|
 |**Componente Curricular**|**Nº aula semanal**<br>**(50 min)**|**Total**<br>**Hora-aula**|**Total**<br>**Hora relógio**|
 |**Matemática e Física para Jogos**|**3**|**120**|**100**|
@@ -1679,7 +1679,7 @@ Ministerioda Educacao
 
 **Bibliografia Básica:** ARENA, Simone Sagres. **Exercício físico e qualidade de vida:** avaliação, prescrição e planejamento. São Paulo: Phorte, 2009. 237 p. [796.4077 A681e] BETTI, Mauro. **Janela de vidro:** esporte, televisão e educação física. Campinas: Papirus, 2003. [796.01 B565j] CORBIN, Alain; COURTINE, Jean-Jacques; VIGARELLO, Georges. **História do corpo.** ed. Petrópolis: Vozes, 2009 (3v.) [306.4 H673] GONÇALVES, M. A. S. **Sentir, pensar, agir:** corporeidade e educação. 15ª Edição. Campinas: Papirus, 2011. [796.01 G635s (CT)] KING, Daniel. **Aprenda tudo sobre o xadrez:** dos primeiros lances ao xeque-mate. São Paulo: Zastras, 2009. 64 p. [794.1 K52a] MARCHI JÚNIOR, Wanderley; ALMEIDA, Bárbara Schausteck de; SOUZA, Juliano. **Introdução à Sociologia do Esporte.** Curitiba: InterSaberes, 2019. NAHAS, Markus V. **Atividade física, saúde e qualidade de vida:** conceitos e sugestões para um estilo de vida ativo. 6. ed. Londrina: Midiograf, 2013. [796.4077 N153a] PERNA, Marco Antonio (Org.). **200 anos de dança de salão no Brasil.** Rio de Janeiro: Amaragão Edições de Periódicos, 2012 [793.33 D988] SHARKEY, B. J. **Condicionamento físico e saúde.** 5ª Edição. Porto Alegre: ArtMed,2006. [796.071 S531c] STEWART, Culin. **Mancala** : The National Game of Africa. 2018. **Bibliografia Complementar:** DANTAS, Estélio H. M. **Pensando o corpo e o movimento.** Rio de Janeiro: Shape, 2005. [128.2 P418] FLEGEL, Melinda J. **Primeiros socorros no esporte.** Barueri, SP: Manole, 2015 [Online] PERNA, Marco Antonio (Org.). **200 anos de dança de salão no Brasil.** Rio de Janeiro: Amaragão Edições de Periódicos, 2012 [793.33 D988] SANTOS, Ednei Fernando dos. **Manual de Primeiros Socorros da Educação Física aos Esportes.** O Papel do Educador Físico no Atendimento de Socorro. Editora Interciência [Online]
 
-||**CAMPUSCURITIBADO IFPR**|**CAMPUSCURITIBADO IFPR**|**CAMPUSCURITIBADO IFPR**|
+||**CAMPUSCURITIBADO IFPR**|||
 |---|---|---|---|
 |**Curso:  Programação de Jogos Digitais**|**Curso:  Programação de Jogos Digitais**||**Eixo Tecnológico: Informação e**|
 ||||**comunicação**|
@@ -2806,7 +2806,7 @@ MinisteriodaEducacao
 
 ## **9. PERFIL DO PESSOAL DOCENTE E TÉCNICO**
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANT.**|**PERFIL DE FORMAÇÃO**|
 |1|Atendimento Educacional Especializado (AEE)|
@@ -2840,7 +2840,7 @@ MinisteriodaEducacao
 |1|Bacharel em Design Gráfico ou Tecnólogo em Jogos Digitais|
 |3|Bacharel em Informática, Bacharel em Sistemas de Informação, Bacharel em<br>Tecnologia da Informação, Engenheiro da Computação ou áreas afins|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**QUANT.**|**CARGO**|
 |1|Pedagogo|

@@ -639,7 +639,7 @@ resultados  finais,  ficando  todo  o  processo  arquivado  com  os  demais  doc
 
 6.5 MATRIZ CURRICULAR
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||
 ||_Campus_Avançado Barracão||||
@@ -726,7 +726,7 @@ Não se aplica
 
 6.7 EMENTÁRIO E BIBLIOGRAFIAS
 
-|**COMPONENTE CURRICULAR**<br>: Língua Portuguesa e Literatura Brasileira I|**COMPONENTE CURRICULAR**<br>: Língua Portuguesa e Literatura Brasileira I||
+|**COMPONENTE CURRICULAR**<br>: Língua Portuguesa e Literatura Brasileira I|||
 |---|---|---|
 |**CARGA HORÁRIA**<br>:<br>80 Hora/aula e 80 Hora/relógio|||
 |**EMENTA**<br>: A língua como uma prática social. Variação linguística e adequação. A língua como|||
@@ -810,7 +810,7 @@ COMPONENTE CURRICULAR: Língua Estrangeira Moderna - Inglês I CARGA HORÁRIA: 4
 |GOMBRICH, E. H.<br>**Arte e ilusão**<br>. 4. ed. São Paulo: Martins Fontes, 2007.||||
 |OSTROWER,Fayga.<br>**Criatividade e processos de criação**<br>.30. ed.Petrópolis: Vozes,2014.||||
 
-|COMPONENTE CURRICULAR:<br>**Educação Física I**|COMPONENTE CURRICULAR:<br>**Educação Física I**|COMPONENTE CURRICULAR:<br>**Educação Física I**||
+|COMPONENTE CURRICULAR:<br>**Educação Física I**||||
 |---|---|---|---|
 |CARGA HORÁRIA:<br>80<br>Hora/aula e 80 Hora/relógio||||
 |EMENTA:<br>Introdução à Educação  Física;  Estudo||e prática  das diversas manifestações  da||
@@ -989,7 +989,7 @@ MASSEY, Doreen B. **Pelo espaço:** uma nova política da espacialidade. 5. ed. 
 ||MELANI, Ricardo.**Diálogo:**primeiros estudos de filosofia. São Paulo: Moderna, 2017.||||
 ||PLATÃO.**Apologia de Sócrates:**Críton. 3.||ed., rev. Belém: UFPA, 2015.||
 
-||VEGETTI, M.; TRABATTONI, F.**História da filosofia antiga**. São Leopoldo: Ed. Unisinos,|VEGETTI, M.; TRABATTONI, F.**História da filosofia antiga**. São Leopoldo: Ed. Unisinos,|VEGETTI, M.; TRABATTONI, F.**História da filosofia antiga**. São Leopoldo: Ed. Unisinos,|
+||VEGETTI, M.; TRABATTONI, F.**História da filosofia antiga**. São Leopoldo: Ed. Unisinos,|||
 |---|---|---|---|
 ||2018. 4 v.|||
 ||VERNANT, Jean Pierre.**O universo, os deuses, os homens**. São Paulo: Companhia das Letras,|||
@@ -1077,7 +1077,7 @@ COMPONENTE CURRICULAR: Física I CARGA HORÁRIA: 40 Hora/aula e 40 Hora/relógio
 ||MANZANO, Andre Luiz.<br>**Estudo dirigido de Microsoft Office Excel 2010.**<br>São Paulo: É<br>rica.|
 ||2010.|
 
-||MONTEIRO, Mário A.<br>**Introdução à organização de computadores.**<br>5. ed. Rio de Janeiro:|MONTEIRO, Mário A.<br>**Introdução à organização de computadores.**<br>5. ed. Rio de Janeiro:|
+||MONTEIRO, Mário A.<br>**Introdução à organização de computadores.**<br>5. ed. Rio de Janeiro:||
 |---|---|---|
 ||LTC,|2007.|
 ||NORTON, Peter. <br>**Introdução  à  informática. **<br>São Paulo: Makron Books,|1997.|
@@ -1113,7 +1113,7 @@ COMPONENTE CURRICULAR: Física I CARGA HORÁRIA: 40 Hora/aula e 40 Hora/relógio
 ||MENDONÇA, Tales Araújo; MARTINI, Luciano Andress.<br>**GNU/Linux:**<br>aprenda a operar o||
 ||sistema na prática. 2. ed. Santa Cruz do Rio Pardo, SP: Viena,|2009.|
 
-||SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg.<br>**Fundamentos de sistemas**|SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg.<br>**Fundamentos de sistemas**|
+||SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg.<br>**Fundamentos de sistemas**||
 |---|---|---|
 ||**operacionais.**<br>9.<br>ed.<br>Rio<br>de<br>Janeiro:<br>LTC,<br>2015.||
 ||SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg.<br>**Fundamentos de sistemas**||
@@ -1269,7 +1269,7 @@ TRAVAGLIA, Luiz Carlos. **Gramática** : ensino plural. 5. ed. São Paulo: Corte
 |WISNICK, José Miguel.<br>**O som e o sentido:**<br>uma outra história das músicas.<br>3. ed. São|Paulo:||
 |Companhia das Letras,<br>2017.|||
 
-|COMPONENTE CURRICULAR:<br>**Educação Física II**|COMPONENTE CURRICULAR:<br>**Educação Física II**|
+|COMPONENTE CURRICULAR:<br>**Educação Física II**||
 |---|---|
 |CARGA HORÁRIA:<br>80<br>Hora/aula e 80 Hora/relógio.||
 |EMENTA:<br>Estudo e vivência das diversas manifestações da Educação Física: Brincadeiras,||
@@ -1416,7 +1416,7 @@ BIBLIOGRAFIA COMPLEMENTAR: ALMEIDA, Silvio Luiz de. **Racismo estrutural.** São
 |LENGRUBER, Frederico.**Dicionário de matemática**: ENEM, concursos, vestibulares, ensino|||
 |fundamental e médio. Curitiba: Base Editorial, 2011.|||
 
-|POSAMENTIER, Alfred S.; KRULIK,|Stephen.**A arte de motivar os estudantes do ensino**|Stephen.**A arte de motivar os estudantes do ensino**|
+|POSAMENTIER, Alfred S.; KRULIK,|Stephen.**A arte de motivar os estudantes do ensino**||
 |---|---|---|
 |**médio para a matemática.**Porto Alegre: AMGH, 2014.|||
 |SMOLE, Kátia Cristina Stocco<br>_et al_<br>.|<br>**Jogos de matemática**<br>: de 1. a 3. ano. Porto Alegre:||
@@ -1496,7 +1496,7 @@ Ciclo celular: intérfase e divisão celular (mitose e meiose). Embriologia anim
 ||BIBLIOGRAFIA BÁSICA:|||
 ||DARIO, André Luiz.<br>**Internet**<br>: o uso seguro e as boas práticas de navegação. Santa Cruz do Rio<br>Pardo, SP: Viena, 2014.|||
 
-|MILETTO, Evandro Manara; BERTAGNOLLI, Silvia de Castro (Org.).<br>**Desenvolvimento de**|MILETTO, Evandro Manara; BERTAGNOLLI, Silvia de Castro (Org.).<br>**Desenvolvimento de**||
+|MILETTO, Evandro Manara; BERTAGNOLLI, Silvia de Castro (Org.).<br>**Desenvolvimento de**|||
 |---|---|---|
 |**software II**<br>: introdução ao desenvolvimento web com HTML, CSS, JavaScript e PHP. Porto|||
 |Alegre: Bookman, 2014.|||
@@ -1668,7 +1668,7 @@ EMENTA:  Demografia;  Geografia  da  população  e  indicadores;  Dinâmica  po
 ||AZEVEDO, Gislane; SERIACOPI, Reinaldo.**História:**passado e presente: do século XX aos<br>dias de hoje. São Paulo: Ática, 2016. v. 3|
 ||FAUSTO, Boris.<br>**História do Brasil**<br>. São Paulo: EDUSP, 2015.|
 
-|FERRARI,  Maristela.  **Conflitos  e  povoamento  na  fronteira  Brasil-Argentina:**Dionísio|FERRARI,  Maristela.  **Conflitos  e  povoamento  na  fronteira  Brasil-Argentina:**Dionísio|FERRARI,  Maristela.  **Conflitos  e  povoamento  na  fronteira  Brasil-Argentina:**Dionísio|
+|FERRARI,  Maristela.  **Conflitos  e  povoamento  na  fronteira  Brasil-Argentina:**Dionísio|||
 |---|---|---|
 |Cerqueira (SC), Barracão (PR), Bernardo de Irigoyen (Misiones). Florianópolis: Ed. UFSC,|||
 |2010.|||
@@ -2047,7 +2047,7 @@ CARGA HORÁRIA: 80 Hora/aula e 80 Hora/relógio.
 
 EMENTA:
 
-|Introdução ao desenvolvimento de sites dinâmicos. Linguagem de Programação para Web;|Introdução ao desenvolvimento de sites dinâmicos. Linguagem de Programação para Web;|||
+|Introdução ao desenvolvimento de sites dinâmicos. Linguagem de Programação para Web;||||
 |---|---|---|---|
 |Conexão com Banco de Dados. Construção de aplicações. Frameworks.||||
 |BIBLIOGRAFIA BÁSICA:||||

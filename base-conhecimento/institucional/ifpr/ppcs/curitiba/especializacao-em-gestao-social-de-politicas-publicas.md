@@ -234,7 +234,7 @@ A metodologia de trabalho adotada será composta por aulas presenciais, realizad
 
 ## **7. Cronograma das atividades:**
 
-|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|**7. Cronograma das atividades:**|
+|**7. Cronograma das atividades:**|||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 |**Atividades**|**Jan**|**Fev**|**Mar**|**Abr**|**Mai**|**Jun**|**Jul**|**Ago**|**Set**|**Out**|**Nov**|**Dez**|
 ||**2021**||||||||||||
@@ -296,9 +296,9 @@ INSTITUTOFEDERAL PARANA
 
 ## **8.1 Grupos de Pesquisa (formal ou informal) do corpo docente elencado no curso proposto**
 
-|**GRUPO DE PESQUISA**|**GRUPO DE PESQUISA**|**GRUPO DE PESQUISA**|**TIPO DO GRUPO**|**LINHA(S) DE PESQUISA**|**PESQUISADOR (ES)**<br>**VINCULADO (S)**|
-|---|---|---|---|---|---|
-||||**_NÃO HÁ GRUPO DE PESQUISA*_**|||
+|**GRUPO DE PESQUISA**|**TIPO DO GRUPO**|**LINHA(S) DE PESQUISA**|**PESQUISADOR (ES)**<br>**VINCULADO (S)**|
+|---|---|---|---|
+||**_NÃO HÁ GRUPO DE PESQUISA*_**|||
 
 * Os\as docentes elencados/as neste projeto não possuem grupos de pesquisa e extensão relacionados a área do curso, foram todos/as convidados/as levando-se em consideração suas respectivas áreas de formação, não necessariamente suas pesquisas.
 
@@ -396,7 +396,7 @@ certificado de “Aperfeiçoamento em Gestão Social de Políticas Públicas”,
 
 ## **15. Quadro de disciplinas** (Quadro sinótico adotado pela Resolução nº 18/2017 – Consup/IFPR)
 
-|**15. Quadro de disciplinas** (Quadro sinótico adotado pela Resolução nº 18/2017 – Consup/IFPR)|**15. Quadro de disciplinas** (Quadro sinótico adotado pela Resolução nº 18/2017 – Consup/IFPR)|
+|**15. Quadro de disciplinas** (Quadro sinótico adotado pela Resolução nº 18/2017 – Consup/IFPR)||
 |---|---|
 |**Componentes Curriculares**<br>i|**Carga horária total (h)**|
 |01. Metodologia Científica|32|

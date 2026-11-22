@@ -1238,7 +1238,7 @@ Ministerio da Educagao
 |**Objetivo Geral:**|||
 |Estabelecer uma dinâmica contínua de integração||entre pesquisa, extensão e atividades|
 |científico-culturais no contexto da|Educação do Campo, promovendo a articulação sinérgica||
-|dos conhecimentos adquiridos nos demais eixos curriculares. Essa integração visa enriquecer|dos conhecimentos adquiridos nos demais eixos curriculares. Essa integração visa enriquecer||
+|dos conhecimentos adquiridos nos demais eixos curriculares. Essa integração visa enriquecer|||
 |a<br>formação<br>dos<br>licenciandos,|proporcionando|uma cultura acadêmica dinâmica e|
 |colaborativa, na qual o ensino, pesquisa e a extensão sejam compreendidas como práticas|||
 |inseparáveis.|||
@@ -1372,10 +1372,10 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|Capacitar os professores para uma gestão eficaz e democrática de instituições educacionais e|Capacitar os professores para uma gestão eficaz e democrática de instituições educacionais e|uma gestão eficaz e democrática de instituições educacionais e|
+|Capacitar os professores para uma gestão eficaz e democrática de instituições educacionais e||uma gestão eficaz e democrática de instituições educacionais e|
 |---|---|---|
 |comunidades rurais, promovendo uma compreensão aprofundada e estratégica da gestão|||
-|escolar contextualizada às especificidades do meio rural. Isso inclui o desenvolvimento de uma|escolar contextualizada às especificidades do meio rural. Isso inclui o desenvolvimento de uma||
+|escolar contextualizada às especificidades do meio rural. Isso inclui o desenvolvimento de uma|||
 |compreensão abrangente das políticas educacionais vigentes, com foco nas políticas específicas|||
 |da Educação do Campo, e o entendimento dos conceitos fundamentais de||organização e|
 |educação comunitária, destacando sua importância no contexto rural. A meta busca capacitar|||

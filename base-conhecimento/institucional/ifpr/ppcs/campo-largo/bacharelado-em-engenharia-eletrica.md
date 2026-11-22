@@ -840,7 +840,7 @@ Em atendimento às peculiaridades atinentes à Engenharia, como temas transversa
 
 A matriz curricular da Engenharia Elétrica tem carga horária total de 3.680 horas (40h eletivas e 40h optativas), assim distribuídas:
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||
 |---|---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||||
 ||Campus Campo Largo||||||
@@ -873,72 +873,72 @@ A matriz curricular da Engenharia Elétrica tem carga horária total de 3.680 ho
 
 45
 
-||Resistência Materiais Aplicada a<br>Engenharia Elétrica|C|2|40|40|0|
-|---|---|---|---|---|---|---|
-||Circuitos Elétricos II|C|4|80|80|0|
-||Eletrônica Digital|C|4|80|80|0|
-||**Subtotal (Total do período)**|||**400**|**400**|**0**|
-|**4º**<br>**Semestre**|Cálculo IV|C|4|80|80|4|
-||Estatística II|C|2|40|40|2|
-||Cálculo Numérico|C|2|40|40|2|
-||Fenômenos Transporte Aplicada à<br>Engenharia Elétrica|C|2|40|40|2|
-||Eletrônica Analógica|C|4|80|80|4|
-||Microcontroladores|C|4|80|80|4|
-||**Subtotal (Total do período)**|||**360**|**360**|**18**|
-|**5º**<br>**Semestre**|Eletromagnetismo|C|4|80|80|0|
-||Desenho Técnico|C|2|40|40|0|
-||Eletrônica de Potência|C|3|60|60|0|
-||Amplificadores e Filtros|C|3|60|60|0|
-||Sinais e Sistemas|C|4|80|80|0|
-||**Subtotal (Total do período)**|||**320**|**320**|**0**|
-|**6º**<br>**Semestre**|Acionamentos elétricos e CLP|C|4|80|80|4|
-||Instalações Elétricas|C|4|80|80|4|
-||Lógica Programável|C|2|40|40|2|
-||Modelagem e Simulação|C|6|120|120|6|
-||**Subtotal (Total do período)**|||**320**|**320**|**16**|
-|**7º**<br>**Semestre**|Máquinas Elétricas|C|4|80|80|0|
-||Instrumentação Industrial|C|3|60|60|0|
-||Sistemas Mecânicos|C|2|40|40|0|
-||Controle Contínuo|C|4|80|80|0|
-||Empreendedorismo|C|2|40|40|29|
-||Projetos de Extensão I|C|5|100|100|100|
-||**Subtotal (Total do período)**|||**400**|**400**|**129**|
-|**8º**<br>**Semestre**|Gestão e Qualidade|C|2|40|40|2|
-||Geração, Transmissão e<br>Distribuição de Energia|C|2|40|40|2|
-||Redes Industriais|C|3|60|60|3|
-||Robótica Industrial|C|4|80|80|4|
-||Controle Discreto|C|4|80|80|4|
-||Projetos de Extensão II|C|1|20|20|20|
+||Resistência Materiais Aplicada a<br>Engenharia Elétrica|C|2|40|0|
+|---|---|---|---|---|---|
+||Circuitos Elétricos II|C|4|80|0|
+||Eletrônica Digital|C|4|80|0|
+||**Subtotal (Total do período)**|||**400**|**0**|
+|**4º**<br>**Semestre**|Cálculo IV|C|4|80|4|
+||Estatística II|C|2|40|2|
+||Cálculo Numérico|C|2|40|2|
+||Fenômenos Transporte Aplicada à<br>Engenharia Elétrica|C|2|40|2|
+||Eletrônica Analógica|C|4|80|4|
+||Microcontroladores|C|4|80|4|
+||**Subtotal (Total do período)**|||**360**|**18**|
+|**5º**<br>**Semestre**|Eletromagnetismo|C|4|80|0|
+||Desenho Técnico|C|2|40|0|
+||Eletrônica de Potência|C|3|60|0|
+||Amplificadores e Filtros|C|3|60|0|
+||Sinais e Sistemas|C|4|80|0|
+||**Subtotal (Total do período)**|||**320**|**0**|
+|**6º**<br>**Semestre**|Acionamentos elétricos e CLP|C|4|80|4|
+||Instalações Elétricas|C|4|80|4|
+||Lógica Programável|C|2|40|2|
+||Modelagem e Simulação|C|6|120|6|
+||**Subtotal (Total do período)**|||**320**|**16**|
+|**7º**<br>**Semestre**|Máquinas Elétricas|C|4|80|0|
+||Instrumentação Industrial|C|3|60|0|
+||Sistemas Mecânicos|C|2|40|0|
+||Controle Contínuo|C|4|80|0|
+||Empreendedorismo|C|2|40|29|
+||Projetos de Extensão I|C|5|100|100|
+||**Subtotal (Total do período)**|||**400**|**129**|
+|**8º**<br>**Semestre**|Gestão e Qualidade|C|2|40|2|
+||Geração, Transmissão e<br>Distribuição de Energia|C|2|40|2|
+||Redes Industriais|C|3|60|3|
+||Robótica Industrial|C|4|80|4|
+||Controle Discreto|C|4|80|4|
+||Projetos de Extensão II|C|1|20|20|
 
 46
 
-||**Subtotal (Total do período)**|||**320**|**320**|**35**|
-|---|---|---|---|---|---|---|
-|**9º**<br>**Semestre**|Trabalho de Conclusão de Curso I|C|1|20|20|0|
-||Energias Renováveis e Efic.<br>Energética|C|3|60|60|0|
-||Sistemas Supervisórios|C|3|60|60|0|
-||Técnicas de Controle Moderno|C|4|80|80|0|
-||Modelagem de Sistemas Discretos|C|2|40|40|0|
-||Projetos de Extensão III|C|7|140|140|140|
-||**Subtotal (Total do período)**|||**400**|**400**|**140**|
-|**10º**<br>**Semestre**|Trabalho de Conclusão de Curso II|C|1|20|20|1|
-||Disciplinas Eletivas|C|2|40|40|2|
-||Tópicos em Inteligência Artificial|C|2|40|40|2|
-||Sistemas de Manufatura|C|3|60|60|3|
-||Disciplinas Optativas|C|2|40|40|2|
-||Estágio Curricular Obrigatório|ES|8|160|160|0|
-||**Subtotal (Total do período)**|||**360**|**360**|**10**|
-||**CARGA HORÁRIA TOTAL DO CURSO**|||||**3680**|
-||**CARGA HORÁRIA TOTAL EM ATIVIDADES DE EXTENSÃO DO CURSO**|||||**368**|
-||**DISTRIBUIÇÃO - CARGA HORÁRIA**||||||
-|(C) Componentes curriculares||||||3.520|
-|(ES) Estágio Supervisionado||||||160|
+||**Subtotal (Total do período)**|||**320**|**35**|
+|---|---|---|---|---|---|
+|**9º**<br>**Semestre**|Trabalho de Conclusão de Curso I|C|1|20|0|
+||Energias Renováveis e Efic.<br>Energética|C|3|60|0|
+||Sistemas Supervisórios|C|3|60|0|
+||Técnicas de Controle Moderno|C|4|80|0|
+||Modelagem de Sistemas Discretos|C|2|40|0|
+||Projetos de Extensão III|C|7|140|140|
+||**Subtotal (Total do período)**|||**400**|**140**|
+|**10º**<br>**Semestre**|Trabalho de Conclusão de Curso II|C|1|20|1|
+||Disciplinas Eletivas|C|2|40|2|
+||Tópicos em Inteligência Artificial|C|2|40|2|
+||Sistemas de Manufatura|C|3|60|3|
+||Disciplinas Optativas|C|2|40|2|
+||Estágio Curricular Obrigatório|ES|8|160|0|
+||**Subtotal (Total do período)**|||**360**|**10**|
+||**CARGA HORÁRIA TOTAL DO CURSO**||||**3680**|
+||**CARGA HORÁRIA TOTAL EM ATIVIDADES DE EXTENSÃO DO CURSO**||||**368**|
+||**DISTRIBUIÇÃO - CARGA HORÁRIA**|||||
+|(C) Componentes curriculares|||||3.520|
+|(ES) Estágio Supervisionado|||||160|
 
 47
 
 ## Os seguintes pré-requisitos estão presentes na estrutura curricular:
 
-|||**Engenharia Elétrica**|**Engenharia Elétrica**|**Engenharia Elétrica**|
+|||**Engenharia Elétrica**|||
 |---|---|---|---|---|
 ||||||
 |||**Relação de Pré-requisitos**|||
@@ -1070,7 +1070,7 @@ BLUM, J. Explorando o Arduino: técnicas e ferramentas para mágicas de engenhar
 
 54
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Superior de Bacharelado em Engenharia Elétrica||
 |Componente Curricular:**Química Tecnológica e Materiais Elétricos**||
@@ -1085,7 +1085,7 @@ BLUM, J. Explorando o Arduino: técnicas e ferramentas para mágicas de engenhar
 
 ## **Carga Horária (hora aula): 80**
 
-|**Carga Horária (hora aula): 80**|**Carga Horária (hora aula): 80**|**Carga Horária (hora aula): 80**|
+|**Carga Horária (hora aula): 80**|||
 |---|---|---|
 |Campus Campo Largo do IFPR|||
 |Curso: Superior de Bacharelado em Engenharia Elétrica|||
@@ -1583,7 +1583,7 @@ SIMONE, G. A, Máquinas de indução trifásicas: teoria e exercícios, Érica, 
 
 84
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Superior de Bacharelado em Engenharia Elétrica||
 |Componente Curricular:**Instrumentação Industrial**||
@@ -1666,7 +1666,7 @@ BERNARDI, Luiz Antonio. Manual de empreendedorismo e gestão: fundamentos, estra
 
 ## **8º semestre**
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR|||
 |---|---|---|
 |Curso: Superior de Bacharelado em Engenharia Elétrica|||
 |Componente Curricular:**Redes Industriais**|||
@@ -1687,7 +1687,7 @@ ROMANO, V. F. (Ed). Robótica Industrial – Aplicações na Indústria de Manuf
 
 91
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR|||
 |---|---|---|
 |Curso: Superior de Bacharelado em Engenharia Elétrica|||
 |Componente Curricular:**Geração, Transmissão e Distribuição de Energia**|||
@@ -1855,7 +1855,7 @@ Não se aplica
 
 ## **Componentes Optativos**
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR|||
 |---|---|---|
 |Curso: Superior de Bacharelado em Engenharia Elétrica|||
 |Componente Curricular:**História da Ciência**|||
@@ -1870,7 +1870,7 @@ CHASSOT, Áttico Inácio. A ciência através dos tempos. 2. ed. São Paulo: Mod
 
 106
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR|||
 |---|---|---|
 |Curso: Superior de Bacharelado em Engenharia Elétrica|||
 |Componente Curricular:**Libras**|||
@@ -2486,7 +2486,7 @@ Atualmente, o Campus conta com três Laboratórios de Informática, que somam 80
 
 II- Laboratório de Física, Matemática e Elétrônica
 
-||**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**|**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**|
+||**LABORATÓRIO DE FÍSICA, MATEMÁTICA E ELETRÔNICA**||
 |---|---|---|
 ||**DESCRIÇÃO**|**QUANTIDADE**|
 |1|ARMÁRIO ALTO 2 PORTAS|2|
@@ -2507,7 +2507,7 @@ II- Laboratório de Física, Matemática e Elétrônica
 
 III- Laboratório de Química e Biologia
 
-||**BLOCO DE ENSINO**|**BLOCO DE ENSINO**|
+||**BLOCO DE ENSINO**||
 |---|---|---|
 ||**LABORATÓRIO DE QUÍMICA E BIOLOGIA**||
 ||**DESCRIÇÃO**|**QUANTIDADE**|

@@ -295,7 +295,7 @@ Segundo dados do Instituto Brasileiro de Geografia e Estatística (IBGE, 2018), 
 
 VALOR ADICIONADO BRUTO A PREÇOS BÁSICOS SEGUNDO OS RAMOS DE ATIVIDADES - 2015
 
-|**Tabela 1**- Valor Adicionado Bruto|**Tabela 1**- Valor Adicionado Bruto|
+|**Tabela 1**- Valor Adicionado Bruto||
 |---|---|
 |VALOR ADICIONADO BRUTO A PREÇOS BÁSICOS SEGUNDO OS<br>RAMOS DE ATIVIDADES - 2015||
 |RAMOS DE ATIVIDADES|VALOR (R$ 1.000,00)|
@@ -755,7 +755,7 @@ Essa organização sequencial do currículo assegura a integração progressiva 
 
 **Tabela 4 -** Matriz curricular do Bacharelado em Ciência da Computação.
 
-||||**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.|**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.|**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.|**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.|**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.|**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.|
+||||**Tabela 4 -**Matriz curricular do Bacharelado em Ciência da Computação.||||||
 |---|---|---|---|---|---|---|---|---|
 ||||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||
 ||||(Criação Lei nº 11.892 de 29/11/2008)||||||
@@ -845,7 +845,7 @@ Essa organização sequencial do currículo assegura a integração progressiva 
 
 ## **4.1.3 Componentes Optativos**
 
-|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.|
+|**Tabela5 -**Componentes optativos doBacharelado emCiênciadaComputação.||||||
 |---|---|---|---|---|---|
 |**COMPONENTES CURRICULARES OPTATIVOS**||||**CH em**|**CH em**|
 |**Semanas do semestre letivo:**|**Tipo (C,**<br>**AC, ES)**|**Número de**<br>**aulas**<br>**semanais**||**Hora-aula**|**Hora-relógio**|
@@ -2402,7 +2402,7 @@ Pátio coberto Sim Não 241
 
 ## 7.6 ÁREAS DE APOIO
 
-|7.6 ÁREAS DE APOIO|7.6 ÁREAS DE APOIO|7.6 ÁREAS DE APOIO|7.6 ÁREAS DE APOIO|
+|7.6 ÁREAS DE APOIO||||
 |---|---|---|---|
 |**Tabela 20 **- Áreas deApoio.||||
 |Ambiente|Existente|A construir|Área (m2)|
@@ -2884,7 +2884,7 @@ IV - Grupo 4: Representação Institucional e Gestão Acadêmica.
 |Participação em incubadora/startup/empresa<br>júnior|Carga horária comprovada|40h|
 |Hackathons ou desafios tecnológicos|Até 10h por participação|20h|
 
-|**Tabela B.4**- Atividades complementares do Grupo 4|**Tabela B.4**- Atividades complementares do Grupo 4|**Tabela B.4**- Atividades complementares do Grupo 4|
+|**Tabela B.4**- Atividades complementares do Grupo 4|||
 |---|---|---|
 |**Item**|**Cômputo de Horas**|**Limite**<br>**máximo**|
 |Participação em colegiados, conselhos e<br>comissões institucionais|Até 10h por semestre|40h|
@@ -2936,7 +2936,7 @@ IV - integralizar as 240h de creditação até o semestre anterior a sua pretens
 
 §1º O duplo cômputo da mesma atividade em mais de um item simultaneamente; §2º O aproveitamento das atividades extensionistas como Atividades Complementares.
 
-|**TabelaC.1**- AtividadesExtensionistas|**TabelaC.1**- AtividadesExtensionistas|**TabelaC.1**- AtividadesExtensionistas|
+|**TabelaC.1**- AtividadesExtensionistas|||
 |---|---|---|
 |Item|Cômputo de Horas|Limite<br>máximo|
 |Participação em projeto de extensão cadastrado<br>no IFPR ou em outra instituição de ensino<br>superior|Até 60h por projeto|180h|
@@ -3114,7 +3114,7 @@ Avaliação dos quesitos:
 
 **D** - Insuficiente
 
-|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|
+|**AVALIAÇÃO DO TRABALHO ESCRITO**|||||
 |---|---|---|---|---|
 |**Introdução**|**A**|**B**|**C**|**D**|
 |A introdução apresenta e contextualiza de forma<br>clara o tema do trabalho?|||||
@@ -3149,20 +3149,20 @@ Avaliação dos quesitos:
 
 **AVALIAÇÃO DA APRESENTAÇÃO ORAL E ARGUIÇÃO Estudante 1 Estudante 2**
 
-|**Item a ser avaliado**|**A**|**B**|**C**|**D**|**A**|**B**|**B**|**C**|**D**|
-|---|---|---|---|---|---|---|---|---|---|
-|O conteúdo da apresentação foi bem<br>estruturado e organizado?||||||||||
-|O discente demonstrou domínio<br>sobre o tema?||||||||||
-|A exposição das ideias foi clara e<br>fluente?||||||||||
-|O tempo foi respeitado?||||||||||
-|Compreende, demonstra segurança<br>e conhecimento e responde às<br>questões levantadas pela Banca||||||||||
-|**Avaliação**||||||||||
-|**Conceito da apresentação oral e arguição do Estudante 1**||||||||||
-|**Conceito da apresentação oral e arguição do Estudante 2**||||||||||
-|**Observações:**||||||||||
-|||||||||||
-|**Conceito Final do(a) Estudante 1**||||||||||
-|**Conceito Final do(a) Estudante 2**||||||||||
+|**Item a ser avaliado**|**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|
+|---|---|---|---|---|---|---|---|---|
+|O conteúdo da apresentação foi bem<br>estruturado e organizado?|||||||||
+|O discente demonstrou domínio<br>sobre o tema?|||||||||
+|A exposição das ideias foi clara e<br>fluente?|||||||||
+|O tempo foi respeitado?|||||||||
+|Compreende, demonstra segurança<br>e conhecimento e responde às<br>questões levantadas pela Banca|||||||||
+|**Avaliação**|||||||||
+|**Conceito da apresentação oral e arguição do Estudante 1**|||||||||
+|**Conceito da apresentação oral e arguição do Estudante 2**|||||||||
+|**Observações:**|||||||||
+||||||||||
+|**Conceito Final do(a) Estudante 1**|||||||||
+|**Conceito Final do(a) Estudante 2**|||||||||
 
 ____________________________
 
@@ -3205,7 +3205,7 @@ Avaliação dos quesitos:
 
 **D** - Insuficiente
 
-|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|**AVALIAÇÃO DO TRABALHO ESCRITO**|
+|**AVALIAÇÃO DO TRABALHO ESCRITO**|||||
 |---|---|---|---|---|
 |**Introdução**|**A**|**B**|**C**|**D**|
 |A introdução apresenta e contextualiza de forma<br>clara o tema do trabalho?|||||

@@ -30,17 +30,17 @@ Texto depois da lista.
 
 ### 5.6 MATRIZ CURRICULAR
 
-| MATRIZ CURRICULAR DO CURSO TÉCNICO EM TESTES | MATRIZ CURRICULAR DO CURSO TÉCNICO EM TESTES | MATRIZ CURRICULAR DO CURSO TÉCNICO EM TESTES | MATRIZ CURRICULAR DO CURSO TÉCNICO EM TESTES | MATRIZ CURRICULAR DO CURSO TÉCNICO EM TESTES |
+| MATRIZ CURRICULAR DO CURSO TÉCNICO EM TESTES |  |  |  |  |
 |---|---|---:|---:|---:|
-| Hora aula de 45 min | Hora aula de 45 min | Semanas do ano letivo: 40 | Semanas do ano letivo: 40 | Semanas do ano letivo: 40 |
+| Hora aula de 45 min |  | Semanas do ano letivo: 40 |  |  |
 | Ano | Componente Curricular | Número de aulas semanais | CH hora-aula no período | CH hora-relógio no período |
 | 1º Ano | Língua Portuguesa | 3 | 120 | 90 |
 | 1º Ano | Lógica de Programação | 4 | 160 | 120 |
 | 1º Ano | Subtotal (Total do período) | 7 | 280 | 210 |
 | 2º Ano | Banco de Dados | 4 | 160 | 120 |
 | 2º Ano | Subtotal (Total do período) | 4 | 160 | 120 |
-| Estágio Supervisionado | Estágio Supervisionado | Estágio Supervisionado | 240 | 200 |
-| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO | 680 | 530 |
+| Estágio Supervisionado |  |  | 240 | 200 |
+| CARGA HORÁRIA TOTAL DO CURSO |  |  | 680 | 530 |
 
 Nota: a matriz acima é fictícia.
 

@@ -547,7 +547,7 @@ Figura 2: Representação gráfica do processo formativo.
 
 ## **4.1.2  Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||
 |---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||||
 |||_Campus_PARANAGUÁ||||||
@@ -670,7 +670,7 @@ SILBERSCHATZ, A.; GALVIN P. B. Sistemas Operacionais com Java. 7ª ed., Campus, 
 
 STUART, B. L. Princípios de Sistemas Operacionais - Projetos e Aplicações. 1ª ed., Cengage Learning, 2010. LAUREANO, M. A. P. Sistemas Operacionais. 1ª ed., Lt, 2012. ALVES, J. M. Sistemas Operacionais. 1ª ed., LTC, 2011. NEVES, J.C. Programação Shell Linux. 13ª ed. Novatec, 2023. BARRETT, D.J. Linux Eficiente na Linha de Comando, 1ª ed, Novatec. 2022.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oSEMESTRE|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Arquitetura de Computadores**|||
@@ -723,7 +723,7 @@ DOWNEY, A.B. Pense em Python, 3ª ed., Novatec, 2024.
 
 VIGNATTI, André L. A Máquina da Natureza: Uma Perspectiva Cronológica da Ciência da Computação Teórica. 1. ed. [S.l.]: Clube de Autores, 2024. 425 p. ISBN 978-65-0110-526-0.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oSEMESTRE|60 H/A|50 H/R|
 |COMPONENTE CURRICULAR:**Matemática Para Informática**|||
@@ -742,7 +742,7 @@ MEDEIROS, V.Z. Pré-Cálculo. 2ª ed. São Paulo: Cengage Learning, 2010. DEMANA
 
 IEZZI G. Fundamentos da Matemática Elementar. Volume 1. 8 ed. Editora Atual, 2004. IEZZI G. Fundamentos da Matemática Elementar. Volume 3. 8 ed. Editora Atual, 2004. IEZZI G. Fundamentos da Matemática Elementar. Volume 4. 8 ed. Editora Atual, 2004. SAFIER, F. Pré-Cálculo. 2. ed. Porto Alegre: Bookman, 2011. MENEZES, P.B. Matemática Discreta para Computação e Informática. 3. ed. Porto Alegre: Bookman, 2010.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oSEMESTRE|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Português Instrumental**|||
@@ -761,7 +761,7 @@ MARTINS D.S., ZILBERKNOP, L.S. Português instrumental. 29ª ed. Atlas, 2010.
 
 BARROS D.L.P. Teoria semiótica do texto. 5ª ed. São Paulo: Ática, 2011. NICOLA J., TERRA E. 1001 dúvidas de português. 15ª ed. Saraiva, 2003. NEVES M.H.M. Gramática de usos do português. 2ª ed. UNESP, 2011. MAINGUENEAU D. Análise de textos de comunicação. 6ª ed. Cortez, 2013. MEDEIROS J.B. Português instrumental. 6ª. ed. São Paulo: Atlas, 2007. TRAVAGLIA L.C. Gramática: ensino plural. 5ª ed. Cortez, 2011.
 
-|**Período**<br>**Carga Horária**|**Período**<br>**Carga Horária**|
+|**Período**<br>**Carga Horária**||
 |---|---|
 |1oSEMESTRE<br>80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Evolução do Pensamento em**||
@@ -783,7 +783,7 @@ CHIAVENATO, Idalberto. Princípios da administração: o essencial em teoria ger
 
 FIORELLI J.O. Psicologia para administradores: integrando teoria e prática. 7.ed. Atlas, 2011. HERSEY P., BLANCHARD K.H. Psicologia para administradores: a teoria e as técnicas da liderança situacional. 1a ed. EPU, 1986. MAXIMIANO, Antonio Cesar Amaru. Administração para empreendedores: fundamentos da criação e da gestão de novos negócios. 2 Ed. São Paulo: Pearson, 2011. SOBRAL F., PECI A. Administração: teoria e prática no contexto brasileiro. 1a ed. Pearson Prentice Hall, 2008.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |1oSEMESTRE|40 H/A|33 H/R|
 
@@ -821,7 +821,7 @@ SILVA, Maurício Samy. JQuery: a biblioteca do programador JavaScript. 2.ed. rev
 
 SILVA, Maurício Samy. Fundamentos de HTML5 e CSS3. São Paulo: Novatec, 2015. 302 p. ISBN 9788575224380 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |2oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Análise de Sistemas**|||
@@ -848,7 +848,7 @@ MCCONNELL, Steve. Code complete. 2nd ed. Redmond: Microsoft Press, c2004. 914 p.
 
 RUMBAUGH, James  L  L. Modelagem e projetos baseados em objetos. Rio de Janeiro: Campus, 1994, c1991. 652 p. ISBN 857001841X (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |2oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Banco de Dados I**|||
@@ -873,7 +873,7 @@ BARBIERI, Carlos. Governança de Dados: Práticas, conceitos e novos caminhos. 1
 
 TANIMURA, Cathy. SQL para análise de dados. 1 ed. São Paulo: Novatec. 2022, 400p. VICCI, Cláudia. Banco de Dados. 1. Ed. São Paulo: Pearson. 2015, 196 p.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |2oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Orientação a Objetos**|||
@@ -935,7 +935,7 @@ LOUDON, Kyle; ZANOLLI, Rafael. Desenvolvimento de grandes aplicações web. São
 
 MORAES, William Bruno. Construindo aplicações com NodeJS. 2. ed. São Paulo: Novatec, 2018. 216 p. ISBN 9778575226858 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Engenharia de Software**|||
@@ -988,7 +988,7 @@ HOWS, David; MEMBREY, Peter; PLUGGE, Eelco. Introdução ao MongoDB. São Paulo:
 
 WITTIG, Andreas. Amazon web services em ação. São Paulo: Novatec, c2015. 509 p.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |3oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Redes de Computadores e Serviços**|||
@@ -1069,7 +1069,7 @@ SMITH, Ben. JSON básico. São Paulo: Novatec, 2015. 400 p. ISBN 9788575224366 (
 
 MORAES, William Bruno. Construindo aplicações com NodeJS. 2. ed. São Paulo: Novatec, 2018. 216 p. ISBN 9778575226858 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |4oSEMESTRE|80 H/A|67 H/R|
 
@@ -1110,7 +1110,7 @@ BERNARDES M.M.S. Microsoft Project 2010: gestão e desenvolvimento de projetos: 
 
 SABBAG P.Y. Gerenciamento de projetos e empreendedorismo. Saraiva, 2009. VARGAS R.V. Gerenciamento de projetos: estabelecendo diferenciais competitivos. 7. ed.  Brasport, 2009. MARTINS J.C.C., RAMIREZ F. Gerenciando projetos de desenvolvimento de software com PMI, RUP e UML. 5. ed. : Brasport, 2010. RABECHINI JUNIOR R., CARVALHO M.M. Gerenciamento de projetos na prática: casos brasileiros .  Atlas, 2006.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |4oSEMESTRE|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Economia**|||
@@ -1137,7 +1137,7 @@ VASCONCELLOS E. Competitividade e negócios eletrônicos: experiências de empre
 
 GIGLIO E.M. O comportamento do consumidor. 4.ed. Cengage learning, 2010. SOUZA N.J. Desenvolvimento econômico. 5. ed. rev. Atlas, 2005.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |5oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Dispositivos Móveis I**|||
@@ -1149,7 +1149,7 @@ GIGLIO E.M. O comportamento do consumidor. 4.ed. Cengage learning, 2010. SOUZA N
 
 SAMUEL, S. M.; BOCUTIU, S. Programando com Kotlin: conheça todos os recursos de Kotlin com este guia detalhado. Novatec, 2017 OGLIARI, R. S.; BRITO, R. C. Android: do básico ao avançado. Ciência Moderna, 2014. PEREIRA, L. C. O.; SILVA, M. L. Android para desenvolvedores. 2. ed. rev. atual. Brasport, 2012. ARAÚJO, E.C. Aprofundando Em Flutter: Desenvolva Aplicações Dart Com WidgetS. Editora Casa do Código, 2021. MARINHO, L. H. Iniciando Com Flutter Framework: Desenvolva Aplicações Móveis No Dart Side. Editora Casa do Código, 2020. ZAMMETTI, F. Flutter Na Prática: Melhore Seu Desenvolvimento Mobile Com O Sdk Open Source Mais Recente Do Google. Editora Novatec, 2020 ESCUDELARIO, B; PINHO, D. React Native: Desenvolvimento de aplicativos mobile com React. Editora Casa do Código, 2020.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |5oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Trabalho de Conclusão de Curso I**|||
@@ -1166,7 +1166,7 @@ SBROCCO J.H.T.C. UML 2.3: teoria e prática. 1.ed. Érica, 2011. DALL'OGLIO P. P
 
 LECHETA, Ricardo R. Node essencial. São Paulo: Novatec, 2018. 213 p. ISBN 9788575226773 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |5oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Programação Backend**|||
@@ -1188,7 +1188,7 @@ DOCWARE TRADUÇÕES TÉCNICAS; CAY S. HORSTMANN; GARY CORNELL. Core Java. Editor
 
 MIGRANDO SISTEMAS MONOLÍTICOS PARA MICROSSERVIÇOS: PADRÕES EVOLUTIVOS PARA TRANSFORMAR SEU SISTEMA MONOLÍTICO. Sam Newman. 2020 ROADMAP BACK-END: CONHECENDO O PROTOCOLO HTTP E ARQUITETURAS REST.. Victor Osório. 2022. Monteiro, Eduarda. et al. Sistemas Distribuídos. 2020. ISBN 9786556901978 DONOVAN, Alan A. A.; KERNIGHAN, Brian W. A linguagem de programação Go. São Paulo: Novatec, 2017. 478 p. ISBN 9788575225462 (broch.). PORCELLO, Eve; BANKS, Alex (Software engineer). Introdução ao GraphQL. São Paulo: Novatec, 2018. 216 p. ISBN 9788575227039 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |5oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Testes de Software**|||
@@ -1201,7 +1201,7 @@ HEMRAJANI, Anil. Desenvolvimento ágil em java com spring, hibernate e eclipse. 
 
 LECHETA, Ricardo R. Node essencial. São Paulo: Novatec, 2018. 213 p. ISBN 9788575226773 (broch.). 005.133NODEJS L459n 2018.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |5oSEMESTRE|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Legislação e Ética**|||
@@ -1220,7 +1220,7 @@ CARLIN V.I. Deontologia jurídica: ética e justiça. 3. ed. OAB/SC Editora, 200
 
 BRASIL. Secretaria Especial dos Direitos Humanos. Ética e cidadania: construindo valores na escola e na sociedade. Brasília: Secretaria Especial dos Direitos Humanos, 2004. GUILHEN B.A. Saberes do Direito 54 – Informática. 1ª ed. Saraiva, 2013. VIEIRA L. Cidadania e globalização. 11. ed. Record, 2012. SIQUEIRA JÚNIOR P.H., OLIVEIRA M.A.M. Direitos humanos e cidadania. 3. ed. rev. e atual. Revista dos Tribunais, 2011. MARQUES J., SILVA M.F. O Direito na era Digital, 1ª ed. Livraria do Advogado, 2012.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |6oSEMESTRE|80 H/A|67 H/R|
 |COMPONENTE CURRICULAR:**Dispositivos Móveis II**|||
@@ -1249,7 +1249,7 @@ DALL'OGLIO P. Php: programando com orientação a objetos. 2. ed. Novatec, 2009.
 
 PRESSMAN R.S. Engenharia de Software: uma abordagem profissional. 7. ed. McGraw-Hill, 2011. SBROCCO J.H.T.C. UML 2.3: teoria e prática. 1.ed. Érica, 2011. HEMRAJANI, Anil. Desenvolvimento ágil em java com spring, hibernate e eclipse. São Paulo: Pearson Prentice Hall, 2007. 290 p. ISBN 9788576051275 (broch.). LECHETA, Ricardo R. Node essencial. São Paulo: Novatec, 2018. 213 p. ISBN 9788575226773 (broch.). LARMAN C. Utilizando UML e padrões: uma introdução à análise e ao projeto orientados a objetos e ao desenvolvimento iterativo. 3. ed. Bookman, 2005. SABBAG P.Y. Gerenciamento de projetos e empreendedorismo. Saraiva, 2009. SBROCCO J.H.T.C. UML 2.3: teoria e prática. 1.ed. Érica, 2011. SOMMERVILLE, Ian. Engenharia de software. 9. Ed. São Paulo: Pearson Prentice Hall, 2011. 529 p. ISBN 9788579361081 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |6oSEMESTRE|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Estratégias de Produção e Operações**|||
@@ -1269,7 +1269,7 @@ PAIVA, Ely Laureano; DE CARVALHO JR, José Mário; FENSTERSEIFER, Jaime Evaldo. 
 
 SHINGO, Shigeo; SHAAN, Eduardo. O sistema Toyota de produção: do ponto de vista da engenharia de produção. Porto Alegre: Bookman, 1996.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |6oSEMESTRE|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Tecnologia e Sociedade**|||
@@ -1350,7 +1350,7 @@ PRUTEANU, Adrian. Manual do hacker: aprenda a proteger aplicações web conhecen
 
 LONG, Johnny; GARDNER, Bill; BROWN, Justin. Google hacking para pentest. São Paulo: Novatec, 2016. 263 p. ISBN 9788575225073 (broch.). RUFINO, Nelson Murilo de O. Segurança em redes sem fio: aprenda a proteger suas informações em ambientes Wi-Fi e Bluetooth. 3. ed. São Paulo: Novatec, 2011. 237 p. ISBN 9788575222430 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |Optativo|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Edição de Documento**|**com Latex**||
@@ -1371,7 +1371,7 @@ ECO, Umberto. Como se faz uma tese. 23ª ed. São Paulo: Perspectiva S.A., 2010.
 
 MARCONI, Marina de Andrade; LAKATOS, Eva Maria. Técnicas de pesquisa. 7ª. ed. São Paulo: Atlas, 2013. 001.42  M32t. ANDRADE, Maria Margarida de. Introdução à metodologia do trabalho científico: elaboração de trabalhos na graduação. 10ª ed. São Paulo: Atlas, 2010. 001.42  A553i .
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |Optativo|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Introdução à Mineração de Dados**|||
@@ -1392,7 +1392,7 @@ AMARAL, Fernando. Aprenda mineração de dados: teoria e prática. Rio de Janeir
 
 BRAGHITTONI, R. Data Visualization: Transforme dados em conhecimento., 1ª ed., Casa do Código, 2024.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |Optativo|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Ferramentas de Desenvolvimento de**<br>**Software**|||
@@ -1449,7 +1449,7 @@ ROBERSON CESAR ALVES DE ARAÚJO. Urban data analytics, urban big data e IOT. Con
 
 LECHETA, Ricardo R. Desenvolvendo para iPhone e iPad. 5. ed. São Paulo: Novatec, 2017. 607 p. ISBN 9788575225646 (broch.). OGLIARI, Ricardo da Silva; BRITO, Robison Cris. Android: do básico ao avançado. Rio de Janeiro: Ciência Moderna, 2014. 398 p. ISBN 9788539904839 (broch.). LECHETA, Ricardo R. Android essencial com Kotlin. 2. ed. São Paulo: Novatec, 2018. 535 p. ISBN 9788575226896 (broch.). ABLESON, W. Frank et al. Android em ação. 3. ed. Rio de Janeiro: Elsevier, 2012. 622 p. ISBN 9788535248098 (broch.). PEREIRA, Lúcio Camilo Oliva; SILVA, Michel Lourenço da. Android para desenvolvedores. 2. ed. rev. atual. Rio de Janeiro: Brasport, 2012. 233 p. ISBN 9788574524993 (broch.). JEMEROV, Dmitry; ISAKOVA, Svetlana. Kotlin em ação. São Paulo: Novatec, 2017. 432 p. ISBN 9788575226100 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |Optativo|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Redes de Computadores Avançadas**|||
@@ -1464,7 +1464,7 @@ Administração de Redes de Computadores -  Douglas Eduardo Basso EBOOK (BV) HAY
 
 COMER, Douglas. Interligação de redes com TCP/IP: princípios, protocolos e arquitetura. Rio de Janeiro: Elsevier, 2006. 435 p. ISBN 9788535220179 (broch.). TANENBAUM, Andrew S.; WETHERALL, D. Redes de computadores. 5. ed. São Paulo: Pearson, 2011. 582 p. ISBN 9788576059240 (broch.). MORAES, Alexandre Fernandes de. Redes sem fio: instalação, configuração e segurança : fundamentos. 1. ed. São Paulo: Érica, 2010. 284 p. ISBN 9788536503158 (broch.). TRONCO, Tania Regina. Redes de nova geração: a arquitetura de convergência do IP, telefonia e redes ópticas. 2. ed. rev. atual. São Paulo: Érica, 2011. 164 p. ISBN 9788536501383 (broch.). CHAPPELL, Laura; Farkas, Dan. Diagnosticando Redes: Cisco Internetwork Troubleshooting. Editora Pearson 2003 604 p ISBN 9788534614948. PAQUET, Catherine. Construindo Redes Cisco de Acesso Remoto. Editora Pearson 2003 618 p ISBN 9788534615037. WEBB, Karen. Construindo Redes Cisco Usando Comutação Multicamadas. Editora Pearson 2003 432 p ISBN 9788534615013. MORIMOTO, Carlos E. Linux: guia prático. Porto Alegre: Sul Editores, 2009. 719 p. ISBN 9788599593158 (broch.). RUFINO, Nelson Murilo de O. Segurança em redes sem fio: aprenda a proteger suas informações em ambientes Wi-Fi e Bluetooth. 3. ed. São Paulo: Novatec, 2011. 237 p. ISBN 9788575222430 (broch.).
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |Optativo|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Paradigmas de Programação**|||
@@ -1499,7 +1499,7 @@ BEAZLEY D, JONES B.K. Python Cookbook. 1ª ed. Novatec, 2013.
 
 SANTOS, L. C. Microsoft Visual C# 2010 Express: aprenda a programar na prática. 1ª ed. Érica, 2010.
 
-|**Período**|**Carga Horária**|**Carga Horária**|
+|**Período**|**Carga Horária**||
 |---|---|---|
 |Optativo|40 H/A|33 H/R|
 |COMPONENTE CURRICULAR:**Tópicos Especiais em Banco de Dados**|||

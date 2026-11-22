@@ -867,7 +867,7 @@ O curso de Licenciatura em Física oferece ao licenciando a oportunidade de dese
 
 ## **3.8.1. Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||||||
 |||_Campus_Ivaiporã||||||||
@@ -1056,7 +1056,7 @@ DEMANA, F.; FOLEY, G. D. Pré-Cálculo. São Paulo: Pearson Addison Wesley, 2009
 
 AYRES JR, F.; SCHMIDT, P. A. Teoria e Problemas de Matemática para o Ensino Superior. 3. ed. Porto Alegre: Bookman, 2006. GOLDSTEIN, L. J. ...[et al]. Matemática aplicada: economia, administração e contabilidade. Porto Alegre: Bookman, 2012.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Física Conceitual I||
@@ -1085,7 +1085,7 @@ FREIRE, Paulo. **Pedagogia do Oprimido** . 58 ed. Rio de janeiro: Paz e Terra, 2
 
 FERRAÇO, Carlos Eduardo (Org.) **Cotidiano escolar, formação de professores(as) e currículo** . 2 ed. São Paulo: cortez, 2008. SAVIANI, Nereide. **Saber escolar, currículo e didática** . Problemas da unidade contéudo/método no processo pedagógico. Campinas, SP: autores associados, 2010.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |<br>**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da<br>Terra|
 |**Componente Curricular:**História da Educação I||
@@ -1094,7 +1094,7 @@ FERRAÇO, Carlos Eduardo (Org.) **Cotidiano escolar, formação de professores(a
 |<br>Bibliografia Básica:<br>MANACORDA, M. A.**História da Educação**: da Antiguidade aos nossos Dias. 13. ed.<br>São Paulo: Cortez, 2010.<br>PAVIANI, J.**Platão e a Educação**. São Paulo: Autêntica, 2008.<br>SAVIANI, D. Escola e Democracia. 41. ed. São Paulo: Autores Associados, 2009.<br>PILETTI, Claudino. História da Educação.<br>ARANHA, M. L. A.**História da Educação e da Pedagogia**. Editora Moderna, 2006.||
 |Bibliografia Complementar:<br>CAMBI, F.**História da Pedagogia**. São Paulo: UNESP, 2001.<br>DALBOSCO, C. A.**Pedagogia Filosófica**: Cercanias de um Diálogo. São Paulo: Paulinas,<br>2007<br>FRANÇA, Leonel_._**_O Método Pedagógico dos Jesuítas_**_._Livraria Agir Ed., RJ, 1952.<br>GADOTTI, M.**História das Ideias Pedagógicas**. São Paulo: Ática, 2011.<br>LOPES,ElianeMartaTeixeira_._**_Origem da Educação Pública_**_._ Loyola, SãoPaulo,1981||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Filosofia da Educação I||
@@ -1103,7 +1103,7 @@ FERRAÇO, Carlos Eduardo (Org.) **Cotidiano escolar, formação de professores(a
 |Bibliografia Básica:<br>ADORNO, Theodor.**Educação e Emancipação**. Tradução: Wolfgang Leo Maar. Paz e<br>Terra: São Paulo, 2006.<br>COMENIUS.**Didática Magna**. 2ª ed., São Paulo: Martins Fontes, 2002.<br>HOURDAKIS, A.**Aristóteles e a Educação**. São Paulo: Loyola, 2001.<br>ROUSSEAU, Jean-Jacques.**Emílio ou da Educação**. Trad. Sérgio Milliet. 3. ed. Rio de<br>Janeiro: Bertrand Brasil, 1995.<br>PAVIANI, J.**Platão e a Educação**. São Paulo: Autêntica, 2008.||
 |Bibliografia Complementar:<br>DALBOSCO, Claudio. A. Dalbosco; CASAGRANDA, Edilson A.; Mühl (Orgs.)**Filosofia e**<br>**Pedagogia**. Aspectos Históricos e Temáticos. Campinas, SP: autores Associados, 2008.<br>GHIRALDELLI, P.**Filosofia e História da Educação Brasileira**. 2 ed. São Paulo: Manole,<br>2009.<br>GHIZZO NETO, A.**Corrupção, Estado Democrático de Direito e Educação**. Rio de<br>Janeiro: Lúmen Júris, 2011.<br>LUCKESI, Cipriano Carlos.**Filosofia da Educação**. 3 ed. São Paulo Cortez, 2011.<br>SAVIANI, Dermeval.**Educação**. Do senso comum à consciência filosófica. 19 ed.<br>Campunas, SP: autores Associados, 2013.<br>TORRES, C. A. e TEODORO, A.**Educação Crítica e Utopia**: Perspectivas para o Século<br>XXI. São Paulo: Cortez, 2006.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Filosofia da Educação I||
@@ -1184,7 +1184,7 @@ BARBONI, A. Cálculo e Análise: Cálculo diferencial integral a uma variável. 
 
 ROGAWSKI, J. Cálculo. V.1 Porto Alegre: Bookman, 2009.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Física Conceitual II||
@@ -1225,7 +1225,7 @@ LORETO JR, A. P., LORETO, A. C. C. **Vetores e Geometria Analítica: Teoria e Ex
 
 WINTERLE, P. **Vetores e Geometria Analítica** . São Paulo: Pearson Makron Books, 2004. ZILL, D.G.;CULLEN, M. R. **Matemática Avançada para engenharia** . Porto alegre: Bookman, 2009.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Sociologia da Educação I||
@@ -1320,7 +1320,7 @@ MARTÍNEZ, A. M. (org.). **Psicologia escolar e compromisso social** . 2. ed. Ca
 
 VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e Aplicação. Envolvimento dos alunos na escola. Lisboa: Climepsi Editores, 2013.
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |<br>**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da<br>Terra|
 |**Componente Curricular:**Física I: Elementos de Mecânica||
@@ -1329,7 +1329,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 |**Bibliografia Básica:**<br>HALLIDAY, D;WALKER, J; RESNICK. R._Fundamentos de Física. v.1. 8.ed._Editora LTC,<br>Rio de Janeiro;<br>NUSSENZVEIG, M.H._Curso de Física Básica: Mecânica.v.1 4. ed._Editora Edgar Blucher,<br>São Paulo.<br>FEYNMAN, R. P.; SANDS, M. LEIGHTON, R. B. Feyman: Lições de Física. V1.. Porto<br>Alegre. Bookman. 2008<br>HEWITT, P. G, Física Conceitual. 11. ed. Porto Alegre: Bookman, 2002.<br>TIPLER, P. A.; LIEWELLYN. Física para cientistas e engenheiros. LTC. 6ed. 2012.||
 |**Bibliografia Complementar:**<br>MORAIS, A. M. A. Gravitação e Cosmologia: uma introdução. Livraria da Física. 2009.<br>TREFIL,  J.,  HAZEN,  R.M.,  Física  Viva  Vol.  1  -  Uma  Introdução  à  Física  Conceitual.<br>Editora LTC, 2006<br>FEYNMAN, Richard Phillips; SANDS, Matthew; LEIGHTON, Robert B. Feynman: Lições de<br>Física. Porto Alegre: Bookman, 2008.<br>HOLZNER, S. Física para Leigos. 1ed. Alta Books. 2009<br>CONTADOR, P. R. M. Kepler: o legislador dos céus. Livraria da Física. 2012||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Educaçãopara a Sustentabilidade||
@@ -1338,7 +1338,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 |**Bibliografia Básica:**<br>BRAGA, Benedito. Introdução à Engenharia Ambiental. 2aEdição. São Paulo: PEARSON<br>EDUCATION, 2005.<br>DIAS, Genebaldo Freire Dias. Educação Ambiental – Principios e Práticas. 9ª edição. São<br>Paulo: Gaia, 2004.<br>MACEDO, Renato Luiz Grisi; FREITAS, Mirlaine Rotoly; VENTURIN, Nelson. Educação<br>Ambiental: Referenciais teóricos e práticos para a formação de educadores ambientais. 1ª<br>Edição. Lavras: Editora UFLA, 2011.<br>RUSCHEINSKY, Aloísio. Educação Ambiental: abordagens múltiplas. 2ª Edição. Porto<br>Alegre: Penso, 2012.<br>MILLER JR, G. TYLER. Ciência Ambiental. 1ªEdição. São Paulo: Cencage Learning, 2013.||
 |**Bibliografia Complementar:**<br>BARROS, Raphael Tobias de Vasconcelos. Elementos de Gestão de Resíduos Sólidos. 1ª<br>Edição. Belo Horizonte: Tessitura Editora, 2012.<br>ROSA, André Henrique; FRACETO, Leonardo Fernandes; MOSCHINI-CARLOS, Viviane.<br>Meio<br>ambiente e sustentabilidade. 1ª Edição. Porto Alegre: Bookman, 2012.<br>OLIVEIRA, Mariá Vendramini Castrignano. Princípios Básicos de Saneamento do Meio. 10ª<br>Edição. São Paulo: Editora Senac São Paulo, 2010.<br>INÁCIO, Caio de Teves. Compostagem: ciência e prática para gestão de resíduos<br>orgânicos. Rio de Janeiro: Embrapa Solos, 2009.<br>SÁNCHEZ, Luis Enrique. Avaliação de Impacto Ambiental: conceitos e métodos. São<br>Paulo: Oficina de Textos, 2008.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Políticas Educacionais||
@@ -1349,7 +1349,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 
 **Campus Ivaiporã do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Didática para o Ensino de Física **Carga Horária:** 33h **Período letivo:** 3º Período **Ementa:** O que é ciência. A evolução histórica do Ensino de Física no Brasil e os grandes projetos curriculares propostos (PCN, DCN, BCN, etc.). Tendências Atuais em Ensino de Física. Concepções Epistemológicas do Ensino de Física. O Papel da História da Didática das Ciências no Ensino de Física. O Ensino de Física em CTS. A Experimentação em Ensino de Física (laboratório e material alternativo). Análise de materiais e de recursos didáticos. Novas tecnologias no Ensino de Física. A Educação em Física por meio dos Centros e Museus de Ciência e Tecnologia, como elemento constitutivo da prática pedagógica do licenciando. Bibliografia Básica: ARNONI, Maria Eliza Brefere, ALMEIDA, José Luis Vieira de; OLIVEIRA, Edilson Moreira de. **Mediação dialética na educação escolar** : teoria e prática. Sociedade Educativa/Consciência e Compromisso. Edições Loyola, 2007. BACHELARD, Gaston **. A formação do espírito científico** . Contribuição para uma psicanálise do conhecimento. Tradução: Estela dos Santos Abreu. Rio de Janeiro: Contraponto, 1996. BORUCHOVITH, EVELY. & BZUNECK, José Aloyseo. (Orgs.). **A motivação do aluno** : contribuições da psicologia contemporânea. Petrópolis, RJ: Vozes, 2009. OLIVEIRA, M. R. (Org.). **Didática** : ruptura, compromisso e pesquisa. Campinas: Papirus, 1993. POZO, Juan Ignácio; CRESPO, Miguel Ángel Gómez. **A aprendizagem e o ensino de ciências** . Do conhecimento do cotidiano ao conhecimento científico. 5 ed. Porto Alegre: Artmed, 2009. Bibliografia Complementar: BECKER, Fernando. **Educação e Construção do Conhecimento.** Porto Alegre: Artmed Editora, 2001. JUNIOR, Gabriel Dias de Carvalho. Aula de Física. Do planejamento à avaliação. São Paulo: Editora Livraria da Física, 2011. GIROUX, H. A **. Os professores como intelectuais:** rumo a uma pedagogia crítica da aprendizagem. Trad. Daniel Bueno. Porto Alegre: Artes Médicas, 1997. MARCELO GARCIA, Carlos. **Formação de professores** : para uma mudança educativa. Porto: Porto Editora, 1999. VASCONCELLOS, Celso. **Construção do conhecimento em sala de aula** . São Paulo: Libertad, 1999.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da<br>Terra|
 |**Componente Curricular:**LínguaBrasileira de Sinais (Libras)||
@@ -1358,7 +1358,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 |Bibliografia Básica:<br>QUADROS, Ronice Müller de; KARNOPP, Lodenir Becker.**Língua de sinais brasileira**.<br>Estudos linguísticos. Porto Alegre: Artmed, 2004.<br>SILVA, Ivani Rodrigues; KAUCHAKJE, Samira; GESUELI, Zilda Maria (Orgs).**Cidadania,**<br>**surdez e linguagem**. Desafios e realidades. 4 ed. São Paulo: Plexus Editora, 2003.<br>SKLIAR, Carlos (Org.).**Atualidade da educação bilíngue para surdos**. Interfaces entre<br>pedagogia e linguística. 5 ed. Porto Alegre: Mediação, 2015.<br>FIGUEIRA, Emilio**. O que é educação inclusiva**. (Coleção Primeiros Passos). São Paulo:<br>Brasiliense, 2011.<br>ALMEIDA, Elizabeth Oliveira Crepaldi.**Leitura e surdez**. Um estudo com adultos não<br>oralizados. 2 ed. Rio de Janeiro: Revinter, 2012.||
 |Bibliografia Complementar:<br>LACERDA, Cristina B. F. de. Intérprete de Libras.**Em atuação na educação infantil e no**<br>**ensino fundamental**. 6 ed. Porto Alegre: Mediação, 2014.<br>LACERDA, Cristina Broglia Feitosa; SANTOS, Lara Ferreira (orgs).**Tenho um aluno**<br>**surdo e agora?**Introdução à Libras e educação de surdos. São Carlos: Edufscar, 2014.<br>QUADROS, Educação de surdos.**A aquisição da linguagem**. Porto Alegre: Artmed,<br>1997.<br>WITKOSKI, Sílvia Andreis.**Educação de surdos e preconceito**. Curitiba, PR: CRV, 2012.<br>FERNANDES, Eulália (Org.).**Surdez e bilinguismo**. 6 ed. Porto Alegre: Mediação, 2012.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em<br>Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Cálculo Diferencial e Integral II||
@@ -1367,7 +1367,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 |**Bibliografia Básica:**<br>LEITHOLD, L.**Cálculo com Geometria Analítica**. v. 2. 3. ed. São Paulo: Harbra, 1994.<br>FLEMMING, D., GONÇALVES, M.**Cálculo B: Funções de Várias Variáveis, Integrais**<br>**Múltiplas, Integrais Curvilíneas e de Superfície**. 2. ed. São Paulo: Pearson, 2007.<br>SIMMONS, G. F.**Cálculo com Geometria Analítica**, v.2. São Paulo: Pearson Makron<br>Books, 1998.<br>STEWART, James.**Cálculo.**Vol. II. Tradução: Antônio Carlos Moreti. Cengage Learning.<br>São Paulo, 2009.<br>KREYSZIG, Erwin.**Matemática Superior para Engenharia**. Volume II. 9ª ed. LTC. Rio de<br>Janeiro, 2009.||
 |**Bibliografia Complementar:**<br>GUIDORIZZI, H. L.**Um Curso de Cálculo**. v. 2,3. 5. ed. Rio de Janeiro: LTC, 2001.<br>BOULOS, P., ABUD, Z. I.**Cálculo Diferencial e Integral**. v. 2.,3. 2ª ed. São Paulo:<br>Pearson, 2002.<br>MUNEM, M. A; FOULIS, D. J.**Cálculo**. V 2. Rio de Janeiro: LTC, 2011.<br>ROGAWSKI, J.**Cálculo**. V.2 Porto Alegre: Bookman, 2009.<br>STEELE, J. Michael.**The Cauchy-Schwarz Master Class: An Introduction to the Art of**<br>**Mathematical Inequalities**.Cambridge:Cambridge UniversityPress ,2004.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |<br>**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Laboratório de Física I||
@@ -1376,7 +1376,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 |**Bibliografia Básica:**<br>ALBERTAZZI, A.;SOUSA, A.R._Fundamentos de Metrologia Científica e Industrial ._<br>Editora Manole, São Paulo. 2008.<br>PERUZZO, J._Experimentos de Física Básica: Mecânica._Editora Livraria da Física, São<br>Paulo. 2012.<br>JURAITIS, K.R.;DOMICIANO, J.B._Guia de Laboratório de Física Geral 1._Editora<br>EDUEL, Londrina. 2009.<br>MEDEIROS, J.B._Redação científica - A prática de fichamentos, resumos, resenhas._<br>Editora Atlas. São Paulo<br>JURAITIS, K.R.;DOMICIANO, J.B._Introdução ao laboratório de Física Experimental._<br>Editora EDUEL. 2009||
 |**Bibliografia Complementar:**<br>NUSSENZVEIG, M.H._Curso de Física Básica: Mecânica._Editora Edgar Blucher, São<br>Paulo.<br>PIMENTEL, F._Curso de Estatística Experimental._15 ed. Editora<br>GASPAR, A._Experiencias de Ciencias ._2.ed. Editora Ática, São Paulo. 2014<br>HALLIDAY, D;WALKER, J; RESNICK. R._Fundamentos de Física. v.2. 5.ed._Editora LTC,<br>Rio de Janeiro.<br>VUOLO, J. H. Fundamentos de Teoria de Erros. 2. ed. São Paulo: Edgard Blucher, 1996||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Curricularização da extensão III||
@@ -1389,7 +1389,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 
 **Bibliografia Complementar:** TREFIL,  J.,  HAZEN,  R.M.,  Física  Viva  Vol.  2  -  Uma  Introdução  à  Física  Conceitual. Editora LTC, 2006 FEYNMAN, Richard Phillips; SANDS, Matthew; LEIGHTON, Robert B. Feynman: Lições de Física. Porto Alegre: Bookman, V.2 2008. HOLZNER, S. Física para Leigos. 1ed. Alta Books. 2009 Grupo de Reelaboração do Ensino De Física. Física v. 2. 7. ed. São Paulo: EdUSP. 2011 WALKER, J. O circo voador da Física. 2ed. LTC. 2008
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|<br>**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Metodologia e Prática de Ensino de Física I||
@@ -1398,7 +1398,7 @@ VEIGA, F. H. (Coord.). **Psicologia da Educação** : Teoria, Investigação e A
 |**Bibliografia** **Básica**:<br>GREF, Grupo de Reelaboração do Ensino de Física. Física 1: Mecânica. 7. ed. São Paulo:<br>EDUSP, 2011.<br>NARDI, R. Pesquisas em Ensino de Física. Escrituras. 2004.<br>VILLATORRE, A. M.; HIGA, I.; TYCHANOWICZ, S. D. Didática e Avaliação em Física. Curitiba:<br>IBPEX; 2008.<br>MOREIRA, M. A.; VEIT, E. A. Ensino Superior – Bases teóricas e Metodológicas. EPU. 2010.<br>PIETROCOLA, Maurício (org.). Ensino de Física: Conteúdo, Metodologia e Epistemologia em<br>uma Concepção Integrada. 2. ed. Florianópolis: Editora da UFSC, 2005.||
 |**Bibliografia** **Complementar**:<br>GREF, Grupo de Reelaboração do Ensino de Física. Física 2: Térmica. 7. ed. São Paulo.<br>EDUSP, 2011.<br>MINITZES, J.J.; WANDERSEE, J.H.; NOVAK, J.D. Ensinando Ciência para Compreensão.<br>Lisboa: Editora Platano, 2010.<br>POZO, Juan I.; CRESPO, Miguel A.G. A Aprendizagem e o Ensino de Ciências. 5. ed. Porto<br>Alegre: Artmed, 2009.<br>BEHRENS, M. A. O paradigma Emergente e a prática pedagógica. 6ed. Petrópolis: Vozes.<br>2013.<br>GATTI, B. A.; BARRETO, E. S. S. Professores do Brasil: impasses e desafios. Brasília: Unesco,<br>2009.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |<br>**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Laboratório deFísicaII||
@@ -1433,7 +1433,7 @@ BENEVIDES. Maria Victória de Mesquita. **A Cidadania Ativa** . São Paulo: Áti
 
 PACHECO, Eliezer Moreira. **Ensino técnico, formação profissional e cidadania** : a revolução da educação profissional e tecnológica no Brasil. Porto Alegre: Tekné, 2012. SILVA, Aida Maria Monteiro; TAVARES, Celma **. Política e fundamentos da educação em direitos humanos** . São Paulo: Cortez, 2010.
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Gestão e Organização Escolar||
@@ -1442,7 +1442,7 @@ PACHECO, Eliezer Moreira. **Ensino técnico, formação profissional e cidadania
 |<br>Bibliografia Básica:<br>COLOMBO, Sonia Simões.**Gestão Educacional**. Uma nova Visão. Porto Alegre: Artmed,<br>2004.<br>PISTRAK, Moisey Mikhaylovich.**Fundamentos da Escola do Trabalho**. São Paulo:<br>Expressão Popular, 2011.<br>SAVIANI, D.**Educação Brasileira**: Estrutura e Sistema. 10. ed. Campinas: Autores<br>Associados, 2008.<br>PARO, V. H.**Gestão Democrática da Escola Pública**. 3. ed. São Paulo: Ática, 2008.<br>OLIVEIRA, R. P.**Gestão, Financiamento e Direito à Educação**. 2. ed. São Paulo: Xamã,<br>2002.||
 |Bibliografia Complementar:<br>OLIVEIRA, R. P; ADRIÃO, T.**Organização do Ensino no Brasil**. São Paulo: Xamã, 2002.<br>SAVIANI, D.**A Nova Lei da Educação**. 11. ed. Campinas: Autores Associados, 2008.<br>VEIGA, I. P; FONSECA, M.**As Dimensões do Projeto Político Pedagógico**. Campinas:<br>Papirus, 2001.<br>CARNEIRO, M. A.**LDB Fácil: Leitura Crítico-Compreensiva Artigo a Artigo**. 7. ed.<br>Petrópolis: Vozes, 2003.<br>LUCK, H.**A Gestão Participativa na Escola**. 8. ed. Petrópolis: Vozes, 2010.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em<br>Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Química Geral I||
@@ -1507,7 +1507,7 @@ GASPAR, A. _Atividades Experimentais no Ensino de Física: Uma nova visão basea
 
 HALLIDAY, D;WALKER, J; RESNICK. R. _Fundamentos de Física. v.3. 9.ed._ Editora LTC, Rio de Janeiro. 2013. CHAVES, A. Física Básica: Eletromagnetismo. LTC. 2009
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Tecnologia da Informação e Comunicação na Educação||
@@ -1516,7 +1516,7 @@ HALLIDAY, D;WALKER, J; RESNICK. R. _Fundamentos de Física. v.3. 9.ed._ Editora 
 |Bibliografia Básica:<br>SILVA, Robson Santos da. Modle para autores e tutores. 2. ed. São Paulo: Novatec Editora,<br>2012.<br>LITTO F. M. e FORMIGA, M. Educação a distância o estado da arte. São Paulo: Pearson<br>Education, 2009.<br>DEMO, Pedro. Educação Hoje - "novas" Tecnologias, Pressões e Oportunidades. São Paulo:<br>Atlas, 2009.<br>SANTAELLA, Lucia. Comunicação ubíqua: Repercussões na cultura e na educação. São<br>Paulo: Editora Paulus, 2013<br>SANTAELLA, Lúcia. Navegar no ciberespaço: o perfil cognitivo do leitor imersivo. São Paulo:<br>Paullus, 2004.||
 |Bibliografia Complementar:<br>KENSKI, Vani Moreira. Educação e Tecnologias: o novo ritmo da informação. Campinas:<br>Papirus, 2008.<br>MORAN, José Manuel; MASETTO, Marcos T.; BEHRENS, Marilda Aparecida. Novas<br>tecnologias e mediação pedagógica. Campinas: Papirus, 2000<br>BRITO, Diego. Criação de sites na era da web 2.0: desenvolva sites profissionais através de<br>uma metodologia completa. Rio de Janeiro: Brasport, 2011.<br>VERAS, Marcelo (org.). Inovação e métodos de ensino para nativos digitais. São Paulo, Atlas,<br>2011.<br>LEÃO, Lúcia. O labirinto da hipermídia: arquitetura e navegação no ciberespaço. 2. ed. São<br>Paulo: Iluminuras, 2001.||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Metodologia e Prática de Ensino de Física II||
@@ -1525,7 +1525,7 @@ HALLIDAY, D;WALKER, J; RESNICK. R. _Fundamentos de Física. v.3. 9.ed._ Editora 
 |**Bibliografia** **Básica**:<br>BATISTA, I. L.; SALVI, R. F. Pós-Graduação em Ensino de Ciências e Educação Matemática:<br>um perfil de pesquisas. Eduel. 2009.<br>CARVALHO Jr. G. D. Aulas de Física do planejamento à avaliação. Rio de Janeiro. Livraria da<br>Física. 2011.<br>GREF, Grupo de Reelaboração do Ensino de Física. Física 3: Eletromagnetismo. 7. ed. São<br>Paulo: EDUSP, 2011.<br>PIETROCOLA, Maurício (org.). Ensino de Física: Conteúdo, Metodologia e Epistemologia em<br>uma Concepção Integrada. 2. ed. Florianópolis: Editora da UFSC, 2005.<br>POZO, Juan I.; CRESPO, Miguel A.G. A Aprendizagem e o Ensino de Ciências. 5. ed. Porto<br>Alegre: Artmed, 2009.||
 |**Bibliografia** **Complementar**:<br>GASPAR, Alberto. Experiências de Ciências. São Paulo: Ática. 2014.<br>MINITZES, J.J.; WANDERSEE, J.H.; NOVAK, J.D. Ensinando Ciência para Compreensão.<br>Lisboa: Editora Platano, 2010.<br>GASPARIN, J. L. Uma didática para a pedagogia histórico-crítica. 5. ed. rev. Campinas:<br>Autores Associados, 2012.<br>OLIVEIRA, Ivan S. Física moderna: para iniciados, interessados e aficionados. V. único. São<br>Paulo: Livraria da Física, 2010.<br>VILLATORRE, A. M.; HIGA, I.; TYCHANOWICZ, S. D. Didática e Avaliação em Física. Curitiba:<br>IBPEX; 2008.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em<br>Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Curricularização da extensão V||
@@ -1534,7 +1534,7 @@ HALLIDAY, D;WALKER, J; RESNICK. R. _Fundamentos de Física. v.3. 9.ed._ Editora 
 |**Bibliografia Básica:**<br>ADFORPROEX. Extensão universitária: organização e sistematização. Belo Horizonte:<br>Coopmed, 2007 (Coleção Extensão Universitária, v. 6)<br>POZO, Juan Ignácio; CRESPO, Miguel Ángel Gómez. A aprendizagem e o ensino de<br>ciências. Do conhecimento do cotidiano ao conhecimento científico. 5 ed. Porto Alegre: Artmed,<br>2009.<br>DEUS, Sandra de. Extensão universitária : trajetórias e desafios. Santa Maria, RS : Ed.<br>PRE-UFSM, 2020 (Série Extensão).<br>CASTRO, Cláudio de Moura. A Prática da Pesquisa. São Paulo: Pearson Prentice Hall, 2006.<br>Resolução CNE/CES nº 7, de 18 de dezembro de 2018,  estabelece as Diretrizes para a<br>Extensão na Educação Superior Brasileira e regimenta o disposto na Meta 12.7 da Lei nº<br>13.005/2014, que aprova o Plano Nacional de Educação - PNE 2014-2024 e dá outras<br>providências.||
 |**Bibliografia Complementar:**<br>THIOLLLENT, Michel. Metodologia da Pesquisa-Ação. São Paulo: Cortez, 2011.<br>SANTOS, B.S. Universidade do Século XXI: para uma reforma democrática e emancipatória<br>da Universidade. São Paulo: Cortez, 2004. 120p. (Coleção questões da nossa época).<br>SEVERINO, A. J. Metodologia do Trabalho Científico. 23. ed. São Paulo: Cortez, 2007.<br>MÉSZÁROS. I. Estrutura Social e Formas de Consciência – a determinação social do<br>método. São Paulo: Boitempo, 2009.<br>SOUSA, Ana Luiza Lima. A história da extensão universitária a partir de seus interlocutores.<br>UFG 1995 (Dissertação de mestrado).||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Física IV – Elementos de Ótica e Física Moderna e Contemporânea||
@@ -1623,7 +1623,7 @@ BERDOULAY, Vincent. _A abordagem contextual_ . LEFEBVRE, Henri. _Lógica formal,
 
 **Câmpus Ivaiporã do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Metodologia de Pesquisa **Carga Horária:** 33h **Período letivo:** 6º Período **Ementa:** Pensamento Científico: senso comum e conhecimento científico: tipologia, universo conceitual. A pesquisa científica. Ética na pesquisa. Fases da pesquisa científica. Definições metodológicas: tipologia, universo, amostragem, seleção de sujeitos. Método: quantitativo e qualitativo, limites e possibilidades. Cronograma. Elaboração e Execução de Mini-projetos de Pesquisa em Temas Específicos em Física ou Ensino de Física. **Bibliografia Básica:** BARROS, A. J. S., LEHFELD, N. A. S. **Fundamentos de Metodologia Científica** . 3. ed. São Paulo: Pearson, 2008. GIL, Antonio Carlos. **Como elaborar projetos de Pesquisa** . 5. ed. São Paulo: Editora Atlas, 2010. LAKATOS, E. M., MARCONI, M. A. **Fundamentos de Metodologia Científica** . 7. ed. São Paulo: Atlas, 2010. SEVERINO, A. J. **Metodologia do Trabalho Científico** . 23. ed. São Paulo: Cortez, 2007. **Bibliografia Complementar:** DEMO, Pedro. **Introdução à Metodologia da Ciência** . São Paulo: Atlas 2012. CASTRO, Claudio de Moura. **A Prática da Pesquisa** . São Paulo: Pearson Prentice Hall, 2006. LAKATOS, Eva Maria; Marconi, Marina de Andrade. **Metodologia Científica** . São Paulo, Atlas, 2011. MAGALHÃES, Gildo. **Introdução à Metodologia da Pesquisa – Caminhos da Ciência e Tecnologia.** São Paulo: Ática, 2005. MEDEIROS, João Bosco. **Redação Científica: a prática de fichamentos, resumos e resenhas.** 7. ed. São Paulo: Editora Atlas, 2005. THIOLLLENT, Michel. **Metodologia da Pesquisa-Ação** . São Paulo: Cortez, 2011.
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Curricularização da extensão VI||
@@ -1702,7 +1702,7 @@ emancipatória da Universidade. São Paulo: Cortez, 2004. 120p. (Coleção quest
 
 SEVERINO, A. J. Metodologia do Trabalho Científico. 23. ed. São Paulo: Cortez, 2007. MÉSZÁROS. I. Estrutura Social e Formas de Consciência – a determinação social do método. São Paulo: Boitempo, 2009. SOUSA, Ana Luiza Lima. A história da extensão universitária a partir de seus interlocutores. UFG 1995 (Dissertação de mestrado).
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Trabalho de Conclusão de Curso II (TCC)||
@@ -1717,7 +1717,7 @@ A análise e reflexão sobre o ambiente escolar relativa à sala de aula de Fís
 
 **Bibliografia Complementar:** GASPAR, Alberto. Experiências de Ciências para o Ensino Fundamental. São Paulo: Ática. 2003. MINITZES, J.J.; WANDERSEE, J.H.; NOVAK, J.D. Ensinando Ciência para Compreensão. Lisboa: Editora Platano, 2010. POZO, Juan I.; CRESPO, Miguel A.G. A Aprendizagem e o Ensino de Ciências. 5. ed. Porto Alegre: Artmed, 2009. OLIVEIRA, Ivan S. Física moderna: para iniciados, interessados e aficionados. V. único. São Paulo: Livraria da Física, 2010. VILLATORRE, A. M.; HIGA, I.; TYCHANOWICZ, S. D. Didática e Avaliação em Física. Curitiba: IBPEX; 2008.
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em<br>Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Curricularização da extensão VIII||
@@ -1726,7 +1726,7 @@ A análise e reflexão sobre o ambiente escolar relativa à sala de aula de Fís
 |**Bibliografia Básica:**<br>ADFORPROEX. Extensão universitária: organização e sistematização. Belo Horizonte:<br>Coopmed, 2007 (Coleção Extensão Universitária, v. 6)<br>POZO, Juan Ignácio; CRESPO, Miguel Ángel Gómez. A aprendizagem e o ensino de<br>ciências. Do conhecimento do cotidiano ao conhecimento científico. 5 ed. Porto Alegre: Artmed,<br>2009.<br>DEUS, Sandra de. Extensão universitária : trajetórias e desafios. Santa Maria, RS : Ed.<br>PRE-UFSM, 2020 (Série Extensão).<br>CASTRO, Cláudio de Moura. A Prática da Pesquisa. São Paulo: Pearson Prentice Hall,<br>2006.<br>Resolução CNE/CES nº 7, de 18 de dezembro de 2018,  estabelece as Diretrizes para a<br>Extensão na Educação Superior Brasileira e regimenta o disposto na Meta 12.7 da Lei nº<br>13.005/2014, que aprova o Plano Nacional de Educação - PNE 2014-2024 e dá outras<br>providências.||
 |**Bibliografia Complementar:**<br>THIOLLLENT, Michel. Metodologia da Pesquisa-Ação. São Paulo: Cortez, 2011.<br>SANTOS, B.S. Universidade do Século XXI: para uma reforma democrática e emancipatória<br>da Universidade. São Paulo: Cortez, 2004. 120p. (Coleção questões da nossa época).<br>SEVERINO, A. J. Metodologia do Trabalho Científico. 23. ed. São Paulo: Cortez, 2007.<br>MÉSZÁROS. I. Estrutura Social e Formas de Consciência – a determinação social do<br>método. São Paulo: Boitempo, 2009.<br>SOUSA, Ana Luiza Lima. A história da extensão universitária a partir de seus interlocutores.<br>UFG 1995 (Dissertação de mestrado).||
 
-|Câmpus Ivaiporã do IFPR|Câmpus Ivaiporã do IFPR|
+|Câmpus Ivaiporã do IFPR||
 |---|---|
 |**Curso:**Licenciatura em<br>Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Trabalho de Conclusão de Curso III (TCC)||
@@ -1735,7 +1735,7 @@ A análise e reflexão sobre o ambiente escolar relativa à sala de aula de Fís
 |**Bibliografia Básica:**<br>BARROS, A. J. S., LEHFELD, N. A. S.**Fundamentos de Metodologia Científica**. 3. ed.<br>São Paulo: Pearson, 2008.<br>GIL, Antonio Carlos.**Como elaborar projetos de Pesquisa**. 5. ed. São Paulo: Editora<br>Atlas, 2010.<br>LAKATOS, E. M., MARCONI, M. A.**Fundamentos de Metodologia Científica**. 7. ed. São<br>Paulo: Atlas, 2010.<br>SEVERINO, A. J.**Metodologia do Trabalho Científico**. 23. ed. São Paulo: Cortez, 2007.||
 |<br>**Bibliografia Complementar:**<br>DEMO, Pedro.**Introdução à Metodologia da Ciência**. São Paulo: Atlas 2012.<br>CASTRO, Claudio de Moura.**A Prática da Pesquisa**. São Paulo: Pearson Prentice Hall,<br>2006.<br>LAKATOS, Eva Maria; Marconi, Marina de Andrade.**Metodologia Científica**. São Paulo,<br>Atlas, 2011.<br>MAGALHÃES, Gildo.**Introdução à Metodologia da Pesquisa – Caminhos da Ciência e**<br>**Tecnologia.**São Paulo: Ática, 2005.<br>MEDEIROS, João Bosco.**Redação Científica: a prática de fichamentos, resumos e**<br>**resenhas.**7. ed. São Paulo: Editora Atlas, 2005.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da<br>Terra|
 |**Componente Curricular:**Estágio Supervisionado III||
@@ -1744,7 +1744,7 @@ A análise e reflexão sobre o ambiente escolar relativa à sala de aula de Fís
 |**Bibliografia Básica:**<br>BENDER, W.N. Aprendizagem Baseada em Projetos :Educação Diferenciada para o<br>Século XXI. Editora Penso, Porto Alegre. 2014<br>BERGMANN, J. Sala de Aula Invertida. Uma metodologia Ativa de Aprendizagem. Editora<br>LTC, São Paulo. 2016.<br>MAZUR, E. Peer Instruction: A Revolução da Aprendizagem Ativa. Editora Penso, Porto<br>Alegre. 2015.||
 |**Bibliografia Complementar:**<br>GASPAR, Alberto. Experiências de Ciências para o Ensino Fundamental. São Paulo: Ática.<br>2003.<br>MINITZES, J.J.; WANDERSEE, J.H.; NOVAK, J.D. Ensinando Ciência para Compreensão.<br>Lisboa: Editora Platano, 2010.<br>POZO, Juan I.; CRESPO, Miguel A.G. A Aprendizagem e o Ensino de Ciências. 5. ed.<br>Porto Alegre: Artmed, 2009.<br>OLIVEIRA, Ivan S. Física moderna: para iniciados, interessados e aficionados. V. único.<br>São Paulo: Livraria da Física, 2010.<br>VILLATORRE, A. M.; HIGA, I.; TYCHANOWICZ, S. D. Didática e Avaliação em Física.<br>Curitiba: IBPEX; 2008.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em<br>Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:** Curricularização da extensãoIX||
@@ -1755,7 +1755,7 @@ A análise e reflexão sobre o ambiente escolar relativa à sala de aula de Fís
 
 ## **3.9.2 Componentes Curriculares Optativos**
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:  Seminários I**||
@@ -1786,7 +1786,7 @@ GLEISER, Marcelo. O fim da terra e do céu: o apocalipse na ciência e na religi
 
 GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed. rev. Campinas: Autores Associados, 2012. MOITA, Filomena. Game on: jogos eletrônicos na escola e na vida da geração @. Campinas: Alínea, 2007.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Leitura instrumental em língua inglesa||
@@ -1795,7 +1795,7 @@ GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed.
 |**Bibliografia** **Básica**:<br>AZAR, Betty Schrampfer.**Understanding and Using English Grammar.**3rd Ed. Upper<br>Sadle River, NJ: Prentice Hall Regents, 1998.<br>FÜRSTENAU, E.**Novo Dicionário de Termos Técnicos Inglês-Português**(2 volumes).<br>Editora Globo, Rio de Janeiro, 1988.<br>MUNHOZ, Rosangela.**Inglês Instrumental. Módulos I e II.**São Paulo: Texto novo, 2002.<br>OLIVEIRA, Sara.**Estratégias de Leitura para Inglês Instrumental.**Brasília: Ed. UnB., 1998.<br>TORRES, N.**Gramática prática da língua inglesa.**São Paulo: Saraiva, 2007||
 |**Bibliografia** **Complementar**:<br>EVARISTO, S.**Inglês instrumental: estratégias de leitura.**Teresina: Halley S.A. Gráfica<br>e Editora, sd.<br>HOUAISS, Antônio.**Webster's Dicionário Inglês-Português**. Record, Rio de Janeiro,<br>1982.<br>GAMA, A.N.M. et al. .**Introdução à Leitura em inglês.**2ed. rev. Rio de Janeiro: Ed. Gama<br>Filho, 2001.<br>MURPHY, Raymond.**English Grammar in Use**. Cambridge University Press, Cambridge,<br>1992.<br>SOUSA,Adriana et al.**Leitura em Língua Inglesa**. São Paulo: Disal,2005.||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Eixo Tecnológico**: Ciências Exatas e da Terra|
 |**Componente Curricular:**Leitura instrumental em Língua Espanhola||
@@ -1804,7 +1804,7 @@ GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed.
 |**Bibliografia Básica:**<br>_Livro:_<br>ANTÓN, Marta.**Métodos de Evaluación de ELE: cuadernos de didáctica del español**<br>**/LE.**Arco Libros: Madrid, 2013.<br>MILANI, Esther Maria.**Gramática de espanhol para brasileiros**. São Paulo: Saraiva,<br>1999.<br>RODRÍGUEZ, María Luisa R; RIVERA, Daniel M. Sáez.**El Español Académico: guia**<br>**práctica para elaboración de textos académicos**. Arco Libros: Madrid, 2013.<br>SÁNCHEZ, Josefa Gómez de Enterría**. La comunicación escrita en la empresa.**Arco<br>Libros: Madrid, 2003.<br>SILVA, Cecilia Fonseca da.**Español através de textos**. Rio de Janeiro: Ao livro técnico,<br>2004.||
 |**Bibliografia Complementar:**<br>FLAVIÁN,<br>Eugenia<br>y<br>ERES<br>FERNÁNDEZ,<br>Gretel.<br>**Minidicionário**<br>**Espanhol-Português/Português-Espanhol**. São Paulo: Ática, 1994.<br>GONZÁLEZ HERMOSO, A (et alli).**Gramática de español lengua extranjera**. Madrid:<br>Edelsa, 1996.<br>Diccionario Mini Collins.**Espanhol-Português/Português-Espanhol**. São Paulo: Siciliano,<br>1998.<br>SEÑAS.**Diccionario para la ensenãnza de la Lengua Espanhola para Brasileños**. São<br>Paulo: wmfmartinsfontes, 2013.<br>OSMAN, Soraia; ELIAS, Neide; REIS, Priscila; IZQUIERDO, Sônia; VALVERDE, Jenny.<br>**Enlaces: español pra jóvenes brasileños.**Vol I. Cotia: MACMILLAN, 2013.<br>OSMAN, Soraia; ELIAS, Neide; REIS, Priscila; IZQUIERDO, Sônia; VALVERDE, Jenny.<br>**Enlaces: español pra jóvenes brasileños.**Vol II. Cotia: MACMILLAN, 2013||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Eixo Tecnológico**: Ciências Exatas e da Terra|
 |**Componente Curricular:**Leitura instrumental em Língua Espanhola||
@@ -1815,7 +1815,7 @@ GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed.
 
 **Câmpus Ivaiporã do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Elementos de Astronomia e Astrofísica **Carga Horária:** 33h **Período letivo:** A partir do 1º período **Ementa:** Escalas do Universo. Constelações. Coordenadas astronômicas. Estrelas e evolução estelar. Galáxias e cosmologia. Sistema solar e planetas. Observações astronômicas. Atividades formais, não-formais e informais no ensino de Astronomia. **Bibliografia Básica** HORVATH, J. E. O abcd da astronomia e astrofísica. São Paulo: Livraria da Física, 2008. LONGHINI, M. D. (org.). Ensino de Astronomia na Escola. Rio de Janeiro. ATOMO. 2014. OLIVEIRA FILHO, Kepler de Souza; SARAIVA, Maria de Fátima Oliveira. Astronomia e astrofísica. 2. ed. São Paulo: Livraria da Física, 2004. LONGHINI, Marcos Daniel (Coord). Educação em astronomia: experiências e contribuições para a prática pedagógica. Campinas: Editora Átomo, 2010. FARIA, Romildo Povoa. Iniciação à astronomia. São Paulo: Ática, 2007. **Bibliografia Complementar:** FARIA, Romildo Povoa (Org.) Fundamentos da astronomia. 10. ed. Campinas: Papirus, 2009. HENBEST, N.; COUPER, H. A História da Astronomia. Rio de Janeiro. Larousse Brasil. 2009. MORAIS, A. M. A. Gravitação e Cosmologia: uma introdução. Livraria da Física. 2009. CONTADOR, P. R. M. Kepler: o legislador dos céus. Livraria da Física. 2012. MARAN, S. P. Astronomia para leigos. 2ª ed. São Paulo. Alta Books. 2011.
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Epistemologia do Conhecimento Científico||
@@ -1828,7 +1828,7 @@ GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed.
 
 **Bibliografia Básica:** HINRICHS, R.A., KLEINBACH, M., DOS REIS, L. B., _Energia e Meio Ambiente._ 4 ed. Editora Cengage Learning, São Paulo, 2011. FERREIRA, A.G. _Meteorologia Prática._ Editora Oficina de Textos, São Paulo. 2006 GRIBBIN, J.E., _Introdução a Hidráulica, Hidrologia e Gestão de águas pluviais._ Tradução da 3ª ed. Americana. Editora Cengage Learning, São Paulo, 2009. MENDONÇA, F., DANNIO-OLIVEIRA, I.M. _Climatologia: Noções básicas e climas do Brasil._ Editora Oficina de Textos, São Paulo. 2007. VESILIND, P.A.; MORGAN, S. M., _Introdução à Engenharia Ambiental,_ Editora Cengage Learnin, 2014. **Bibliografia Complementar:** VECCHIA, R. _O meio ambiente e as Energias Renováveis: Instrumentos de liderança visionária para a sociedade sustentável._ Editora Manole. São Paulo, 2010. VILLALVA, M.G., GAZOLI, J.R. _Energia Solar Fotovoltaica: Conceitos e Aplicações._ Editora Érica. São Paulo, 2014. CARVALHO, P.; NETO, M.R.B. _Geração de Energia: Fundamentos._ Editora Érica. São Paulo, 2012. HESPANHOL, I.; BRAGA, B. _Introdução à engenharia ambiental._ 2 ed. Editora Pearson. São Paulo, 2005. TORRES, F. T. P; MACHADO. P. J. _Introdução à Climatologia._ Editora Cengage Learning. São Paulo, 2011.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Robótica para o ensino de física||
@@ -1837,7 +1837,7 @@ GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed.
 |**Bibliografia** **Básica**:<br>GRIFFIN , Terry, The art of lego® mindStormS® nxt-g Programming 1 Ed. 2010, No Starch<br>Press, Inc.<br>MIZRAHI, Treinamento em Linguagem C, Pearson 2. Ed., São Paulo – SP  2008.<br>MCROBERTS, Micheal, Arduino Básico. Novatec 1. Ed., São Paulo – SP  2011.<br>BACKES, Linguagem C Completa e Descomplicada, Elsevier, Rio de Janeiro – RJ 2012.<br>Banzi, Massimo; Primeiros Passos com o Arduino, O REILLY, 2007.||
 |**Bibliografia** **Complementar**:<br>ZIVIANI, Nivio, Projeto de Algoritmos- com implementação em Pascal e C. Cengage<br>Learning<br>3. Ed., São Paulo – SP 2011.<br>EBERSPACHER; FORBELLONE, Lógica de Programação, Pearson 3. Ed, Rio de Janeiro –<br>RJ<br>2005.<br>GUIMARÃES, Algoritmos e Estruturas de Dados, LTC - Livros Técnicos e Científicos, Rio<br>de<br>Janeiro – RJ 1994.<br>MANZANO; OLIVEIRA, Algoritmos, Érica 15. Ed., São Paulo – SP 2014.<br>GERSTING, Fundamentos da Matemática para a Ciência da Computação, LTC - Livros<br>Técnicos e Científicos 5. Ed., Rio de Janeiro–RJ 2008.||
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Seminário III||
@@ -1848,7 +1848,7 @@ GASPARIN, João Luiz. Uma didática para a pedagogia histórico-crítica. 5. ed.
 
 **Câmpus Ivaiporã do IFPR Curso:** Licenciatura em Física **Área do Conhecimento:** Ciências Exatas e da Terra **Componente Curricular:** Seminários IV **Carga Horária: 33h Período letivo:** A partir do 4º período **Ementa:** Pesquisas atuais em Física e Ensino de Física. Impactos da Física e Ensino de Física na Educação Básica e Superior. **Bibliografia Básica:** MOREIRA, M. A.; VEIT, E. A. Ensino Superior – Bases teóricas e Metodológicas. EPU. 2010. NARDI, R. Pesquisas em Ensino de Física. Escrituras. 2004. SILVA, A. P. B.; GUERRA, A. (org). História da Ciência e Ensino: Fontes primárias e propostas para sala de aula. Livraria da Física. 2015. PIETROCOLA, Maurício (org.). Ensino de Física: Conteúdo, Metodologia e Epistemologia em uma Concepção Integrada. 2. ed. Florianópolis: Editora da UFSC, 2005. MAGALHÃES, Carlos Henrique Ferreira. Obstáculos da pedagogia histórico-crítica no cotidiano da escola/ Carlos Henrique Ferreira Magalhães, prefácio João dos Reis Silva Júnior. Maringá: EDUEM, 2012. **Bibliografia Complementar:** FREIRE, Paulo. Pedagogia do oprimido. 50. ed. Rio de Janeiro: Paz e Terra, 2011. BRANDÃO, Carlos Rodrigues. O que é educação popular. São Paulo: Brasiliense, 2006. BUARQUE, Cristóvam. O que é educacionismo. São Paulo: Brasiliense, 2008. MORIN, Edgar. Os sete saberes necessários à educação do futuro. 2. ed. rev. São Paulo: Cortez, 2011. GHIRALDELLI JÚNIOR, Paulo. O que é pedagogia. 4. ed. rev. atual. São Paulo: Brasiliense, 2007.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Introdução à Linguagem de Programação||
@@ -2043,7 +2043,7 @@ O papel do experimento no ensino de Física. Elaboração e construção de expe
 
 PERUZZO, J. _Experimentos de Física Básica: Termodinâmica, Ondulatória e Óptica,_ Editora Livraria da Física, São Paulo. 2012. PERUZZO, J. _Experimentos de Física Básica: Mecânica,_ Editora Livraria da Física, São Paulo. 2012 VALADARES, E. C. _Física mais que divertida: inventos eletrizantes baseados em materiais reciclados e de baixo custo_ **.** Editora UFMG, Belo Horizonte. 2009. **Bibliografia Complementar:** NUSSENZVEIG, M.H. _Curso de Física Básica: Mecânica._ Editora Edgar Blucher, São Paulo. GREF, Grupo de Reelaboração do Ensino de Física. _Física 2: Física térmica e Óptica._ Editora EDUSP, São Paulo. 2011. GASPAR, A. _Atividades Experimentais no Ensino de Física: Uma nova visão baseada na teoria de Vigotski._ Editora Livraria da Física, São Paulo. 2014. DE CARVALHO, A.M.F.T. (Org). _A educação básica e as oficinas de Física, Matemática e Química: Contribuições do projeto novos talentos._ Londrina, 2014. POZO, Juan I.; CRESPO, Miguel A.G. A Aprendizagem e o Ensino de Ciências. 5. ed. Porto Alegre: Artmed, 2009
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Física Computacional||
@@ -2052,7 +2052,7 @@ PERUZZO, J. _Experimentos de Física Básica: Termodinâmica, Ondulatória e Óp
 |**Bibliografia** **Básica**:<br>BURDEN, R. L.; FAIRES, J. D. Análise Numérica. 8.ed. São Paulo: Cengage, 2008.<br>FRANCO, N. M. B. Cálculo Numérico. São Paulo: Pearson, 2006.<br>SPERANDIO, D. et. al. Cálculo Numérico. São Paulo: Pearson, 2003.<br>GILAT, A. MATLAB com Aplicações em Engenharia. 2. ed. Porto Alegre: Bookman, 2006.<br>RUGGIERO, M. A. G.; LOPES, V. L. R. Cálculo Numérico: Aspectos Teóricos e<br>Computacionais. 2.ed.SãoPaulo: Makron Books,2004.||
 |**Bibliografia** **Complementar**:<br>BURIAN, Reinaldo; LIMA, Antonio Carlos de; HETEM JUNIOR, Annibal. Cálculo numérico:<br>fundamentos de informática. Rio de Janeiro: LTC, 2011.<br>GUIMARÃES, Algoritmos e Estruturas de Dados, LTC - Livros Técnicos e Científicos, Rio de<br>Janeiro – RJ 1994.<br>MANZANO; OLIVEIRA, Algoritmos, Érica 15. Ed., São Paulo – SP 2014.<br>CAMPOS FILHO, F. F. Algoritmos Numéricos. Rio de Janeiro: LTC, 2001.<br>ROQUE, W. R. Introdução ao Cálculo Numérico: Um Texto Integrado com DERIVE©. São<br>Paulo: Atlas,2000.||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: História do Pensamento Lógico||
@@ -2061,7 +2061,7 @@ PERUZZO, J. _Experimentos de Física Básica: Termodinâmica, Ondulatória e Óp
 |**Bibliografia** **Básica**:<br>STAN, Baronett._Lógica: uma introdução voltada para as ciências_. Editora Bookman, Porto<br>Alegre. 2009.<br>MORTARI, Cezar A._Introdução à Lógica_. Editora UNESP, São Paulo. 2001.<br>REALE, Giovanni._Introdução a Aristóteles_. Editora Contraponto, Rio de Janeiro. 2012.<br>COPI, Irving._Introdução à lógica_. Editora Mestre Jou, São Paulo. 1978.<br>DELEUZE,Gilles._Lógica do Sentido_. Editora Perspectiva,São Paulo. 2015.||
 |**Bibliografia** **Complementar**:<br>BRANQUINHO, João & MURCHO, Desidério._Enciclopédia de Termos Lógico-filosóficos_.<br>Editora WMF Martins Fontes, Rio de Janeiro. 2006.<br>MARQUES, Edgar._Wittgenstein e o Tractatus_. Editora Zahar. Rio de Janeiro. 2005.<br>MACHADO, Nilson & CUNHA, Marisa._Lógica e linguagem cotidiana_. Editora Autêntica, Belo<br>Horizonte. 2005.<br>RAIMOND, Smullyan._Alice no país dos enigmas_. Editora Zahar, Rio de Janeiro. 2000.<br>MARCONDES,Danilo._Filosofia Analítica_. Editora Zahar,Rio de Janeiro.||
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: História do Pensamento Lógico||
@@ -2154,7 +2154,7 @@ GARCIA, EDUARDO A. C, Biofísica, editora Sarvier, 2002.SALVAJOLI, J. V. Souhami
 
 OSWALDO BAFFA FILHO, DENISE MARIA ZEZELL, PAULO ROBERTO COSTA, ANA MARIA MARQUES DA SILVA, MARCELO BAPTISTA DE FREITAS, Física Médica, Pag. 83, Física 2011 - Estado da arte, desafios e perspectivas para os próximos cinco anos, McHilliard editora, 1ª ed., São Paulo, 2011 (disponível on-line gratuitamente no site da Sociedade Brasileira de Física - SBF), <>, acessado em 28/11/2016.
 
-|**Campus Ivaiporã do IFPR**|**Campus Ivaiporã do IFPR**|
+|**Campus Ivaiporã do IFPR**||
 |---|---|
 |**Curso**: Licenciatura em Física|**Área do Conhecimento**: Ciências Exatas e da Terra|
 |**Componente** **Curricular**: Estrutura da Matéria||
@@ -2193,7 +2193,7 @@ TOMA, H. E. – Estrutura Atômica, Ligações e Estereoquímica. - Vol. 1 São 
 
 TOMA, H. E. – Elementos químicos e seus compostos - Vol. 3 São Paulo, Blucher 2015. MORITA, T.; ASSUMPÇÃO, R. M. R. Manual de soluções, reagentes e solventes. São Paulo. Blucher, 2007. HOUSECROFT, C. E.; SHARPE, A. G. Química inorgânica. Vol 1, 4 ed. Rio de Janeiro, LTC, 2013. HOUSECROFT, C. E.; SHARPE, A. G. Química inorgânica. Vol 1, 4 ed. Rio de Janeiro, LTC, 2013.
 
-|**Câmpus Ivaiporã do IFPR**|**Câmpus Ivaiporã do IFPR**|
+|**Câmpus Ivaiporã do IFPR**||
 |---|---|
 |**Curso:**Licenciatura em Física|<br>**Área do Conhecimento:**Ciências Exatas e da Terra|
 |**Componente Curricular:**Instrumentação para o Ensino de Óptica e Eletromagnetismo||
@@ -2393,7 +2393,7 @@ As atividades poderão ser desenvolvidas conforme tabela abaixo:
 
 ## **4.1.1. Atribuições do Coordenador**
 
-|Compete ao Coordenador do curso de Licenciatura em Física:|Compete ao Coordenador do curso de Licenciatura em Física:|
+|Compete ao Coordenador do curso de Licenciatura em Física:||
 |---|---|
 |✔|Cumprir e fazer cumprir as normas e procedimentos institucionais;|
 |✔|Planejar<br>ação<br>didático/pedagógica<br>dos cursos juntamente com a|
@@ -2969,7 +2969,7 @@ Estágio
 
 **Estágio realizado** :
 
-|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|**REGISTRO DE ATIVIDADE DE ESTÁGIO**|
+|**REGISTRO DE ATIVIDADE DE ESTÁGIO**||||
 |---|---|---|---|
 |**D**<br>**ATA**|**ATIVIDADE DESENVOLVIDA**|**CARGA**<br>**HORÁRIA**|**ASSINAT**<br>**URA**|
 |||||
@@ -3455,7 +3455,7 @@ UM PROCESSO QUÍMICO. COMPRESSÃO E ENERGIA: EQUIPAMENTO PARA ESTUDO DO COMPORTA
 
 ## **Qtde. Bens: 190**
 
-|**Laboratório de Informática- Materiais Permanentes**|**Laboratório de Informática- Materiais Permanentes**|**Laboratório de Informática- Materiais Permanentes**|
+|**Laboratório de Informática- Materiais Permanentes**|||
 |---|---|---|
 |**Material (descrição**<br>**genérica)**|**Especificidades**|**Quantid**<br>**ade**|
 |CADEIRA FIXA SEM BRAÇOS|ASSENTO E ENCOSTO: ALMA EM MADEIRA COMPENSADA 12MM DE ESPESSURA, ESTOFADA COM<br>ESPUMA DE POLIURETANO FLEXÍVEL, DE ALTA RESISTÊNCIA, ALTA TENSÃO DE ALONGAMENTO E RUPTURA,<br>BAIXA FADIGA DINÂMICA E BAIXA DEFORMAÇÃO PERMANENTE, COM DENSIDADE ENTRE 55KG/M³ E 60KG/M³,<br>MOLDADA ANATOMICAMENTE E COM ESPESSURA MÍNIMA DE 40MM.REVESTIMENTO: TANTO ASSENTO<br>COMO ENCOSTO DEVERÃO SER REVESTIDOS EM TECIDO 100% POLIÉSTER .ENCOSTO FIXADO À<br>ESTRUTURA ATRAVÉS DE SUPORTE EM POLIPROPILENO, POSSUINDO PINO EXPANSOR OBTENDO MAIOR<br>FIXAÇÃO NESTE SUPORTE AO INTERNO DO TUBO DA ESTRUTURA; ESTRUTURA: BASE EM ESTRUTURA FIXA<br>TIPO TRAPÉZIO, EM TUBO INDUSTRIAL DE AÇO CURVADO DE 22,23MM X 1,50MM E TUBO DE AÇO TREFILADO<br>27 X 12 X 2,0MM, TOTALMENTE SOLDADA POR SISTEMA MIG ; PONTEIRAS DE ACABAMENTO INJETADAS EM<br>POLIPROPILENO; O ASSENTO E ENCOSTO DEVEM SER BIPARTIDOS SENDO A DISTÂNCIA ENTRE O ASSENTO<br>E O INÍCIO DO ENCOSTO DE NO MÍNIMO 12,5 CM. TODAS AS PEÇAS METÁLICAS DEVERÃO SER TRATADAS<br>COM APLICAÇÃO DE PINTURA ELETROSTÁTICA TOTALMENTE AUTOMATIZADA EM EPÓXI-PÓ NA COR PRETA,<br>REVESTINDO TOTALMENTE A ESTRUTURA. SEGURANÇA: CERTIFICADO DE CONFORMIDADE DE MARCA<br>EMITIDO PELA ABNT ATESTANDO OS CRITÉRIOS DE RESISTÊNCIA, DURABILIDADE, ESTABILIDADE E<br>ERGONOMIA, CONFORME NR-17, NBR 13962, E CAPACIDADE DE SUPORTE DE PESO ACIMA DE 120KG.|5|

@@ -1428,7 +1428,7 @@ Resolução de autorização do curso no IFPR: Resolução nº 13, DE 22 de ABRI
 
 ## **PRIMEIRO PERÍODO**
 
-|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|
+|**PRIMEIRO PERÍODO**||||||||
 |---|---|---|---|---|---|---|---|
 |||||||||
 |Componente Curricular|H/A<br>sem.|CH<br>(T)|CH<br>(P)|CH<br>(E<br>X)|CH<br>EaD|Carga<br>horária total||
@@ -2130,7 +2130,7 @@ Ainda, de acordo com a Resolução nº 7, de 18 de dezembro de 2018, a avaliaç�
 
 **Quadro 5** : Ementários e Bibliografias do curso de Enfermagem
 
-|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|**PRIMEIRO PERÍODO**|
+|**PRIMEIRO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 |**Componente Curricular**|**Anatomofisiologia Humana I**||||
@@ -2242,7 +2242,7 @@ TOSO BRGO, _et al._ Atuação do enfermeiro em distintos modelos de Atenção Pr
 
 SOUSA, P. (Org.) Segurança do paciente: conhecendo os riscos nas organizações de saúde. Organizado por Paulo Sousa e Walter Mendes. Rio de Janeiro, EaD/ENSP, 2014.
 
-|**Componente Curricular**|**Psicologia aplicada à Saúde**|**Psicologia aplicada à Saúde**|**Psicologia aplicada à Saúde**|**Psicologia aplicada à Saúde**|
+|**Componente Curricular**|**Psicologia aplicada à Saúde**||||
 |---|---|---|---|---|
 |**Aulas/semana:**|**2**||||
 |**Carga horária total **|**Horas relógio**|**33**|**Horas aula**|**40**|
@@ -2394,7 +2394,7 @@ KIERSZENBAUM, A. L.; TRES, L. L. Histologia e Biologia Celular: uma introdução
 
 ROSS, M.H. WOJCIECH, P. Histologia. Texto e Atlas – 6ª edição. Editora: Guanabara Koogan (Grupo GEN). 2012.
 
-|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|**SEGUNDO PERÍODO**|
+|**SEGUNDO PERÍODO**|||||
 |---|---|---|---|---|
 |**Componente Curricular**|**Vivências em Enfermagem II**||||
 |**Aulas/semana:**|**2**||||
@@ -2474,7 +2474,7 @@ VAN DE GRAAFF, K. M. Anatomia humana. 6. ed. São Paulo: Manole, 2003.
 
 WIDMAIER, E.P.; STRANG, K. T.; RAFF, H. Vander, Scherman e Luciano, fisiologia humana: os mecanismos das funções corporais. 12. ed. Rio de Janeiro: Guanabara Koogan, 2013.
 
-|**Componente Curricular**<br>**Saúde e Meio Ambiente**|**Componente Curricular**<br>**Saúde e Meio Ambiente**|||
+|**Componente Curricular**<br>**Saúde e Meio Ambiente**||||
 |---|---|---|---|
 |**Aulas/semana:**<br>**2**||||
 |**Carga horária total**<br>**Horas relógio**|**33**||**Horas aula**<br>**40**|
@@ -2760,7 +2760,7 @@ em:
 
 UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo: Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)
 
-|21/06/2022.<br>Disponível<br>em:<br><http://publicacoes.cardiol.br/portal/abc/portugues/2019/v11303/pdf/11303025.pdf><br>UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo:<br>Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)|21/06/2022.<br>Disponível<br>em:<br><http://publicacoes.cardiol.br/portal/abc/portugues/2019/v11303/pdf/11303025.pdf><br>UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo:<br>Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)|21/06/2022.<br>Disponível<br>em:<br><http://publicacoes.cardiol.br/portal/abc/portugues/2019/v11303/pdf/11303025.pdf><br>UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo:<br>Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)|21/06/2022.<br>Disponível<br>em:<br><http://publicacoes.cardiol.br/portal/abc/portugues/2019/v11303/pdf/11303025.pdf><br>UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo:<br>Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)|21/06/2022.<br>Disponível<br>em:<br><http://publicacoes.cardiol.br/portal/abc/portugues/2019/v11303/pdf/11303025.pdf><br>UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo:<br>Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)|
+|21/06/2022.<br>Disponível<br>em:<br><http://publicacoes.cardiol.br/portal/abc/portugues/2019/v11303/pdf/11303025.pdf><br>UENISHI, E. K. Enfermagem médico-cirúrgica em unidade de terapia intensiva. 10.ed. São Paulo:<br>Senac Nacional, 2011. 264 p. (Série Apontamentos). ISBN9788573595864 (broch.)|||||
 |---|---|---|---|---|
 ||||||
 |**Componente Curricular**|**Metodologia Científica**||||
@@ -2858,7 +2858,7 @@ SAVIANI, Dermeval. Escola e democracia: teorias da educação; curvatura da vara
 
 VEIGA, Ilma P. (Org.). Didática: o ensino e suas relações. 6. ed. Campinas, SP: Papirus, 2001.
 
-|**Componente Curricular**<br>**Educação em Saúde e Estratégias de Grupo **|**Componente Curricular**<br>**Educação em Saúde e Estratégias de Grupo **|**Componente Curricular**<br>**Educação em Saúde e Estratégias de Grupo **|||
+|**Componente Curricular**<br>**Educação em Saúde e Estratégias de Grupo **|||||
 |---|---|---|---|---|
 |**Aulas/semana:**<br>**4**|||||
 |**Carga horária total**<br>**Horas relógio**|**67**|**Horas aula**||**80**|
@@ -3132,7 +3132,7 @@ TANNURE, M. C; GONÇALVES, A. M. P; SAE: sistematização da assistência de enf
 
 ## **QUINTO PERÍODO**
 
-|**Componente Curricular**<br>**Processo de Cuidar do Adulto e Idoso I: condição clínica e**|**Componente Curricular**<br>**Processo de Cuidar do Adulto e Idoso I: condição clínica e**|**Componente Curricular**<br>**Processo de Cuidar do Adulto e Idoso I: condição clínica e**|**Componente Curricular**<br>**Processo de Cuidar do Adulto e Idoso I: condição clínica e**|
+|**Componente Curricular**<br>**Processo de Cuidar do Adulto e Idoso I: condição clínica e**||||
 |---|---|---|---|
 |**coletiva de saúde**||||
 |**Aulas/semana:**<br>**24**||||
@@ -3235,7 +3235,7 @@ COLLET, N.; OLIVEIRA, B.R.G. Manual de Enfermagem em Pediatria. Goiânia: AB, 20
 
 RICCI, SS. Enfermagem Materno infantil e saúde da mulher. 4 ed. Rio de Janeiro: Guanabara Koogan, 2019.
 
-|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|**SÉTIMO PERÍODO**|
+|**SÉTIMO PERÍODO**|||||
 |---|---|---|---|---|
 ||||||
 |**Componente Curricular**|**Processo de Cuidar em Saúde Coletiva**||||
@@ -3275,7 +3275,7 @@ GARCIA, Telma Ribeiro (Org.). Classificação internacional para a prática de e
 
 SANTOS, Álvaro da Silva; CUBAS, Márcia Regina. Saúde coletiva **:** linhas de cuidado e consulta de enfermagem. Rio de Janeiro: Elsevier, 2012
 
-|**OITAVO PERÍODO**|**OITAVO PERÍODO**|**OITAVO PERÍODO**|**OITAVO PERÍODO**|**OITAVO PERÍODO**|
+|**OITAVO PERÍODO**|||||
 |---|---|---|---|---|
 |**Componente Curricular**|**Processo de Cuidar do Adulto e Idoso II: Condição Cirúrgica**<br>**e Crítica**||||
 |**Aulas/semana:**|**24**||||
@@ -3357,7 +3357,7 @@ BRASIL, Associação Brasileira de Normas Técnicas. Normalização da Documenta
 
 ANDRADE, M. M. de. Introdução à metodologia do trabalho científico. 7. ed. São Paulo: Atlas, 2010.
 
-||**NONO PERÍODO**|**NONO PERÍODO**|**NONO PERÍODO**|**NONO PERÍODO**|
+||**NONO PERÍODO**||||
 |---|---|---|---|---|
 |**Componente Curricular**|**Estágio Curricular Supervisionado I**||||
 |**Aulas/semana:**|**24**||||
@@ -3453,7 +3453,7 @@ BRASIL, Associação Brasileira de Normas Técnicas. Normalização da Documenta
 
 ANDRADE, M. M. de. Introdução à metodologia do trabalho científico. 7. ed. São Paulo: Atlas, 2010.
 
-|**DÉCIMO PERÍODO**|**DÉCIMO PERÍODO**|**DÉCIMO PERÍODO**|**DÉCIMO PERÍODO**|**DÉCIMO PERÍODO**|
+|**DÉCIMO PERÍODO**|||||
 |---|---|---|---|---|
 |**Componente Curricular**|**Estágio Supervisionado II**||||
 |**Aulas/semana:**|**26**||||

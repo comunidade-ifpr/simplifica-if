@@ -1381,7 +1381,7 @@ BEDIN, A. Gilmar. **Cidadania, direitos humanos e equidade** . Ijuí: Editora Un
 
 VILA NOVA, S. **Introdução à sociologia.** São Paulo: Ed. Atlas, 2009. **Bibliografia Complementar:** ALBUQUERQUE, J. A. Guilhon. **Relações internacionais contemporâneas: a ordem mundial depois da guerra fria** . Petrópolis: Vozes, 2005. BUZZI, A. R. **Introdução ao pensar: o ser, o conhecimento, a linguagem** . Petrópolis, RJ: Vozes, 2007. DELACHAMPAGNE. C. **A filosofia política hoje** . Rio de Janeiro: Zahar, 2001. GILPIN, R. **O desafio do capitalismo global** . Rio de Janeiro: Record, 2004. HOBSBAWN, E. J. **O novo século: entrevista a AntonioPolito** . S. Paulo: Comp. Das Letras, 2009. MENDONÇA, F. **Impactos socioambientais urbanos** . Curitiba: Editora da UFPR, 2004. MOTA, S. **Urbanização e meio ambiente** . Abes, RJ, 2003. SANTOS, M.; SILVEIRA, M.L. **O Brasil: território e sociedade no início do século XXI** . Rio de Janeiro: Record, 2001 SAVIAN, Juvenal. **Argumentação** . São Paulo, Martins Fontes, 2010. SIMIELLI, M.E. **Geoatlas Básico.** 23 ed. São Paulo: Ática, 2012. VITOR, Nestor. **A terra do futuro: impressões do Paraná** . Curitiba: Prefeitura Municipal, 1996.
 
-|**Curso: Técnico em Informática**|**Curso: Técnico em Informática**|
+|**Curso: Técnico em Informática**||
 |---|---|
 |**Eixo Tecnológico: Informação e Comunicação**||
 |**Conteúdo da Área: Núcleo Técnico**||

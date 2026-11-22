@@ -1473,7 +1473,7 @@ WHITE, S. C.; PHAROAH, M. J. **Radiologia oral** : fundamentos e interpretação
 
 Quadro 17: Ementa do componente curricular de Desenvolvimento de Recursos Humanos II. 
 
-|**CÂMPUSLONDRINA**|**CÂMPUSLONDRINA**|**CÂMPUSLONDRINA**|
+|**CÂMPUSLONDRINA**|||
 |---|---|---|
 |**CURSO:** TÉCNICO EMSAÚDEBUCAL|**EIXOTECNOLÓGICO:** AMBIENTE ESAÚDE||
 |**COMPONENTECURRICULAR: **<br>DESENVOLVIMENTO DERECURSOSHUMANOSII||2º ANOLETIVO|
@@ -1534,7 +1534,7 @@ IMPARATO, J. C. P. **Selantes de fossas e fissuras** : quando, como e por quê? 
 
 Quadro 19: Ementa do componente curricular Projetos III. 
 
-|**CÂMPUSLONDRINA**|**CÂMPUSLONDRINA**|**CÂMPUSLONDRINA**|
+|**CÂMPUSLONDRINA**|||
 |---|---|---|
 |**CURSO:** TÉCNICO EMSAÚDEBUCAL|**EIXOTECNOLÓGICO:** AMBIENTE ESAÚDE||
 |**COMPONENTECURRICULAR: **<br>PROJETOSIII||2º ANOLETIVO|

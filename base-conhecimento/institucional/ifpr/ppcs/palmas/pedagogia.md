@@ -822,7 +822,7 @@ Dom Carlos, com sede na cidade de Palmas, no Estado do Paraná, nos termos do di
 |**HABILITAÇÕES**|**AUTORIZAÇÃO**|**RECONHECIMENTO**|
 |---|---|---|
 ||||
-||**PORTARIA/DECRETO**|**PORTARIA/DECRETO**|
+||**PORTARIA/DECRETO**||
 |Pedagogia<br>–<br>Licenciatura,<br>habilitações:|Decreto 63.583/68<br>11.11.1968<br>DOU 14/08/1968|Decreto 72.452/73<br>11.07.1973<br>DOU 12/07/1973|
 |Magistério<br>das<br>Matérias<br>Pedagógicas do Ensino Médio|Parecer 252/69|Decreto 72.452/73<br>11.07.1973<br>DOU 12/07/1973|
 |Administração<br>Escolar<br>para<br>exercício<br>nas<br>escolas<br>de<br>Educação Básica|Parecer 252/69|Decreto 72.452/73<br>11.07.1973<br>DOU 12/07/1973|
@@ -1555,7 +1555,7 @@ Neste sentido, ficou definido que o componente de Pesquisa Educacional III é pr
 
 **Quadro 04 -** Quadro resumo de componentes com pré-requisitos:
 
-|**COMPONENTE CURRICULAR**|**COMPONENTE CURRICULAR**|
+|**COMPONENTE CURRICULAR**||
 |---|---|
 |||
 |**COM PRÉ-REQUISITO**|**DE PRÉ REQUISITO**|
@@ -1837,7 +1837,7 @@ BAGNO, Marcos. **Língua materna: letramento, variação e ensino.** São Paulo.
 
 ZILBERMAN, Regina. **A literatura Infantil na Escola.** 11ª ed. rev., atual. e ampl. São Paulo: Global, 2003.
 
-|**_Campus_Palmas do IFPR**|**_Campus_Palmas do IFPR**|**_Campus_Palmas do IFPR**|
+|**_Campus_Palmas do IFPR**|||
 |---|---|---|
 |**Curso:**Pedagogia|||
 |**Componente Curricular**:PED09205 - Psicologia da Educação II|||
@@ -2164,7 +2164,7 @@ MANFREDI, Silvia Maria. **Educação Profissional no Brasil** . São Paulo: Cort
 
 SILVEIRA, Zuleide. **Contradições entre Capital e Trabalho** : concepções de Educação Tecnológica no Ensino Médio e Técnico. São Paulo: Paco, 2010.
 
-|**_Campus_Palmas do IFPR**|**_Campus_Palmas do IFPR**|
+|**_Campus_Palmas do IFPR**||
 |---|---|
 |||
 |**Curso:**Pedagogia||
@@ -2603,7 +2603,7 @@ Este conjunto de ações processuais e contínuas de caráter comunitário, educ
 
 **Quadro 08:** Áreas temáticas, linhas e atividades ou ações de extensão do curso de Licenciatura em Pedagogia
 
-|**COMPONENTE CURRICULAR**|**Seminário Interdisciplinar I**|**Seminário Interdisciplinar I**|
+|**COMPONENTE CURRICULAR**|**Seminário Interdisciplinar I**||
 |---|---|---|
 ||||
 |**PERÍODO DE OFERTA**|**V período**||
@@ -2620,7 +2620,7 @@ Este conjunto de ações processuais e contínuas de caráter comunitário, educ
 ||67h|67h|
 |**ÁREA TEMÁTICA**|4.Educação 8. Trabalho||
 
-|**LINHA DE EXTENSÃO**|**21.2006 Formação de Professores**: Formação e valorização de<br>professores, envolvendo a discussão de fundamentos e<br>estratégias para a organização do trabalho pedagógico, tendo em<br>vista o aprimoramento profissional, e sua a valorização.|**21.2006 Formação de Professores**: Formação e valorização de<br>professores, envolvendo a discussão de fundamentos e<br>estratégias para a organização do trabalho pedagógico, tendo em<br>vista o aprimoramento profissional, e sua a valorização.|
+|**LINHA DE EXTENSÃO**|**21.2006 Formação de Professores**: Formação e valorização de<br>professores, envolvendo a discussão de fundamentos e<br>estratégias para a organização do trabalho pedagógico, tendo em<br>vista o aprimoramento profissional, e sua a valorização.||
 |---|---|---|
 ||**32.**<br>**2006**<br>**-**<br>**Metodologias**<br>**e**<br>**Estratégias**<br>**de**<br>**Ensino/Aprendizagem:**Metodologias e estratégias específicas<br>de ensino/aprendizagem, o ensino presencial e de pedagogia de<br>formação inicial, educação continuada, educação permanente e<br>formação profissional.||
 |**ATIVIDADE/AÇÃO**|•<br>Planejamento das atividades a serem desenvolvidas;<br>•<br>Aprofundamento dos temas a serem elencados pela<br>comunidade acadêmica por meio de seminários de<br>socialização;<br>•<br>Elaboração/ sistematização de trabalho acadêmico<br>(artigo científico) explorando o tema a ser trabalhado<br>ao longo do semestre;<br>•<br>Eventos de formação inicial e continuada (palestras,<br>encontros, rodas de conversa, exposição de painel,<br>entre outros).||
@@ -2635,7 +2635,7 @@ Este conjunto de ações processuais e contínuas de caráter comunitário, educ
 
 estratégias para a organização do trabalho pedagógico, tendo em vista o aprimoramento profissional.
 
-||estratégias para a organização do trabalho pedagógico, tendo em<br>vista o aprimoramento profissional.|estratégias para a organização do trabalho pedagógico, tendo em<br>vista o aprimoramento profissional.|
+||estratégias para a organização do trabalho pedagógico, tendo em<br>vista o aprimoramento profissional.||
 |---|---|---|
 ||**30.2006 – Jovens e adultos:**Processos de atenção à educação<br>formal e não formal; de emancipação e inclusão; promoção,<br>defesa e garantia de direitos; desenvolvimento de metodologias<br>de intervenção.||
 ||**32.**<br>**2006**<br>**-**<br>**Metodologias**<br>**e**<br>**Estratégias**<br>**de**<br>**Ensino/Aprendizagem**; Metodologias e estratégias específicas<br>de ensino e aprendizagem, para a Educação do campo e<br>Educação de Jovens e Adultos.||
@@ -2648,7 +2648,7 @@ estratégias para a organização do trabalho pedagógico, tendo em vista o apri
 |**ÁREA TEMÁTICA**|4. Educação / 2. Cultura / 8. Trabalho||
 |**LINHA DE EXTENSÃO**|**36. 2006 - Organizações da Sociedade e Movimentos Sociais**<br>**e Populares:**Apoio à formação, organização e desenvolvimento<br>de comitês, comissões, fóruns, associações, ONG’s, OSCIP’s,<br>redes, cooperativas populares, sindicatos, dentre outros.||
 
-||**21.2006 – Formação de Professores**: Formação e valorização<br>de professores que atuam na educação não formal, envolvendo<br>a discussão de fundamentos e estratégias para a organização do<br>trabalho<br>pedagógico,<br>tendo<br>em<br>vista<br>o<br>aprimoramento<br>profissional.|**21.2006 – Formação de Professores**: Formação e valorização<br>de professores que atuam na educação não formal, envolvendo<br>a discussão de fundamentos e estratégias para a organização do<br>trabalho<br>pedagógico,<br>tendo<br>em<br>vista<br>o<br>aprimoramento<br>profissional.|
+||**21.2006 – Formação de Professores**: Formação e valorização<br>de professores que atuam na educação não formal, envolvendo<br>a discussão de fundamentos e estratégias para a organização do<br>trabalho<br>pedagógico,<br>tendo<br>em<br>vista<br>o<br>aprimoramento<br>profissional.||
 |---|---|---|
 ||**30.2006 – Jovens e adultos:**Processos de atenção à educação<br>formal e não formal; de emancipação e inclusão; promoção,<br>defesa e garantia de direitos; desenvolvimento de metodologias<br>de intervenção.||
 ||**32.**<br>**2006**<br>**-**<br>**Metodologias**<br>**e**<br>**Estratégias**<br>**de**<br>**Ensino/Aprendizagem**; Metodologias e estratégias específicas<br>de ensino e aprendizagem, para a educação não formal.||
@@ -2661,7 +2661,7 @@ estratégias para a organização do trabalho pedagógico, tendo em vista o apri
 |**ÁREA TEMÁTICA**|4. Educação / 2. Cultura / 8. Trabalho||
 |**LINHA DE EXTENSÃO**|**21.2006 – Formação de Professores**: Formação e valorização<br>de professores que atuam na educação não formal, envolvendo<br>a discussão de fundamentos e estratégias para a organização do||
 
-||trabalho<br>pedagógico,<br>tendo<br>em<br>vista<br>o<br>aprimoramento<br>profissional.|trabalho<br>pedagógico,<br>tendo<br>em<br>vista<br>o<br>aprimoramento<br>profissional.|
+||trabalho<br>pedagógico,<br>tendo<br>em<br>vista<br>o<br>aprimoramento<br>profissional.||
 |---|---|---|
 ||**32.**<br>**2006**<br>**-**<br>**Metodologias**<br>**e**<br>**Estratégias**<br>**de**<br>**Ensino/Aprendizagem**; Metodologias e estratégias específicas<br>de ensino e aprendizagem, para a educação escolar indígena e<br>educação indígena e para educação escolar quilombola e<br>educação quilombola.||
 |**ATIVIDADE/AÇÃO**|•<br>Planejamento das atividades a serem desenvolvidas<br>junto aos segmentos envolvidos;<br>•<br>Aprofundamento dos temas a serem elencados pela<br>comunidade acadêmica e comunidade externa por<br>meio de seminários de socialização;<br>•<br>Elaboração/ sistematização de trabalhos acadêmicos<br>(resumos, painéis, entre outros) explorando os temas<br>a serem trabalhados ao longo do semestre;<br>•<br>Eventos de formação inicial e continuada (palestras,<br>encontros, rodas de conversa, exposição de painel,<br>mesas temáticas, ciclo de debates, entre outros).||

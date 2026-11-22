@@ -806,7 +806,7 @@ Para compor a matriz curricular do presente curso, foram consideradas ainda:
 
 ## **4.1.1 Representação Gráfica do Processo Formativo**
 
-|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**|
+|**PROCESSO FORMATIVO DO CURSO SUPERIOR DE TECNOLOGIA EM SISTEMAS PARA INTERNET**||||||
 |---|---|---|---|---|---|
 |**1º SEMESTRE**|**2º SEMESTRE**|**3º SEMESTRE**|**4º SEMESTRE**|**5º SEMESTRE**|**6º SEMESTRE**|
 |Inglês<br>Instrumental<br>40h|Algoritmos e<br>Lógica de<br>Programação II<br>80h|Banco de Dados<br>I<br>40h|Segurança da<br>Informação<br>40h|Programação<br>Web I<br>80h|Estatística<br>Aplicada à<br>Computação<br>40h|
@@ -826,7 +826,7 @@ Núcleo Comum Núcleo Específico Núcleo Complementar
 
 ## **4.1.2  Matriz Curricular**
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|
 |||(Criação Lei nº11.892 de 29/11/2008)||||||||||
 |||_Campus_Capanema||||||||||
@@ -895,7 +895,7 @@ Núcleo Comum Núcleo Específico Núcleo Complementar
 
 Os componentes curriculares optativos ofertados no âmbito do curso serão de 02 (duas) aulas semanais, totalizando 40 aulas no semestre, com uma carga horária de 33 horas-relógio.
 
-|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|**Componentes Optativos**|
+|**Componentes Optativos**||||||||
 |---|---|---|---|---|---|---|---|
 |**Componente Curricular**|**Número**<br>**de aulas**<br>**semanais**|**CH H/A**|**CH H/R**|**CH H/A**<br>**Extensão**|<br>**CH H/R**<br>**Extensão**|**CH**<br>**H/A**<br>**EaD**|**CH**<br>**H/R**<br>**EaD**|
 |||**Total**<br>**(min)**|**Total**<br>**(min)**|||||
@@ -2958,12 +2958,12 @@ A coordenação do curso é parte integrante do NDE e também o preside. As reun
 
 O NDE do Curso Superior de Tecnologia em Sistemas para Internet é apresentado no quadro abaixo:
 
-|Membros do Núcleo Docente Estruturante|Membros do Núcleo Docente Estruturante|Membros do Núcleo Docente Estruturante|
+|Membros do Núcleo Docente Estruturante|||
 |---|---|---|
 |**Docente**|**Titulação Máxima**|**Formação**|
 |Ederson Altino Kobs|Especialista em Sistemas<br>de Informação|Informática|
 
-|Membros do Núcleo Docente Estruturante|Membros do Núcleo Docente Estruturante|Membros do Núcleo Docente Estruturante|
+|Membros do Núcleo Docente Estruturante|||
 |---|---|---|
 |Marcos Fernando Schmitt|Mestrado em PROFNIT|Informática|
 |Anderson José Lauer|Mestrado em Tecnologias<br>Educacionais em Rede|Informática|

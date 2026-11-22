@@ -602,7 +602,7 @@ O currículo do curso superior Tecnologia em Análise e Desenvolvimento de Siste
 
 dos cursos de graduação, o que, neste caso, corresponde a 210 horas. Assim sendo, o estudante deve cumprir o mínimo de 120 horas de Atividades Complementares, conforme itens dispostos no  APENDICE  B  II  -  Regulamento  de  Atividades  Complementares  e  APENDICE  C Regulamento de Atividades para Creditação da Extensão.
 
-|**T**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|**T**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|||||
 |---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)|||||
 ||_Campus_Umuarama|||||
@@ -673,7 +673,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 
 ## **4.2 EMENTÁRIO E BIBLIOGRAFIAS**
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Fundamentos Matemáticos para Computação I (FMC1)**||||
 |**Período**|1ºAno||**C/H Semanal**|02 aulas|
@@ -683,7 +683,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|ALENCAR FILHO, Edgard. Iniciação à Lógica Matemática. Nobel.<br>BIANCHINI,  Edwaldo,  Matemática  Básica,  5.a  Edição,  São  Paulo,<br>Moderna, 2003<br>CAPUANO & IDOETA. Exercícios de eletrônica digital. São Paulo: Ed.<br>Érica, 1991.<br>MENESES,  Paulo  Blauth,  Matemática  Discreta  para  Computação  e<br>Informática, 3.a Edição, Vol. 16, Editora ARTMED, 2010.<br>NOLT, John & ROHATYN, Dennis. Lógica. São Paulo: Ed. Mc Graw-Hill,<br>1990||||
 |**Bibliografia**<br>**Complementar**|COPI, I.M. Introdução à Lógica. São Paulo: Mestre Jou, 1978.<br>GERSTING, Judith L. Fundamentos Matemáticos para a Ciência da<br>Computação, 3ª Edição, LTC Editora, 1995<br>MENDELSON, Ellott. Álgebra Booleana e Circuitos de Chaveamento.<br>Makron Books do Brasil<br>SÉRATES,  Jonofon.  Raciocínio  Lógico:  lógico  matemático,  lógico<br>quantitativo, lógico  numérico, lógico analítico, lógico crítico. Ed.Jonofon<br>Ltda, BRASÍLIA, 1998. VOL 1.<br>ZEGARELLI, Mark, Matemática Básica & Pré-álgebra para leigos, Editora<br>Alta Books, 2009||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Linguagem de Programação I (LP1)**||||
 |**Período**|1ºAno||**C/H Semanal**|04 aulas|
@@ -693,7 +693,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|FURGERI, S. Java 7 - Ensino Didático. 1. ed. São Paulo: Érica, 2010.<br>PUGA, S.; RISSETTI, G. Lógica de programação e estruturas de dados<br>com aplicações em Java. 2. ed. São Paulo: Prentice-Hall, 2008.<br>SEBESTA, R. W. Conceitos de Linguagem de Programação. 9. ed. São<br>Paulo: Bookman, 2011.<br>SIERRA, K.; BATES, B. Use a Cabeça! Java. 1. ed. Rio de Janeiro: Alta<br>Books, 2005.<br>SZWARCFITER, J. L., MARKENZON, L. Estruturas de Dados e seus<br>Algoritmos. Editora LTC, terceira edição, 2010.||||
 |**Bibliografia**<br>**Complementar**|BARRY, P.; GRIFFITHS, D. Use a Cabeça! Programação. Rio de Janeiro:<br>Alta Books, 2010.<br>CORMEN, T. H., LEISERSON, C. E. RIVEST, R. L. Algoritmos:<br>Teoria e Prática. Campus, primeira edição, 2002<br>FARRER, H.; BECKER, C.. Algoritmos Estruturados. Rio de Janeiro,<br>LTC, 1999<br>JUNIOR, P. J. Java Guia do Programador. 3ed, Editora Novatec, 2015.<br>PUGA, S.; RISSETTI, G. Lógica de programação e estruturas de dados<br>com aplicações em Java. 2. ed. São Paulo: Prentice-Hall, 2008.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Arquitetura de Computadores (AC)**||||
 |**Período**|1ºAno||**C/H Semanal**|02 aulas|
@@ -703,7 +703,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|HENNESSY, JOHN L.. Arquitetura de Computadores: uma abordagem<br>quantitativa. Rio de Janeiro, Campus, 2003.<br>PATTERSON, DAVID A.; HENNESSY, JOHN L. Organização e Projeto<br>de Computadores. Rio de Janeiro, RJ, Elsevier, 2005.<br>STALLNGS,  William.  Arquitetura  e  organização  de  computadores  –<br>Projeto para o desempenho. 5ª Ed. – São Paulo, Editora Prentice Hall, 2002.<br>TANENBAUM, Andrew S. Organização estruturada de computadores. 5ª<br>Ed. – São Paulo, Editora Pearson Prentice Hall, 2007.<br>VELLOSO, F.C. Informática Conceitos Básicos. Rio de Janeiro:_Campus_.<br>1994||||
 |**Bibliografia**<br>**Complementar**|HENNESSY, John L., MACHADO/FILHO, Nery, PATTERSON, David<br>A.. Organização e projeto de computadores: a interface hardware/software.<br>2.ed. Rio de Janeiro: LTC, 2000<br>MONTEIRO, Mário, A. Introdução à organização de computadores. Rio de<br>Janeiro: LTC, 2001<br>TANENBAUM, Andrew S. Organização Estruturada de Computadores. 4.<br>ed., Editora Prentice/Hall do Brasil Ltda, 2004<br>TORRES, Gabriel. Hardware – Curso Completo. 4a ed., Rio de Janeiro:<br>Axcel Books, 2001.<br>ZELENOVSKY,  A.  M.  R.  PC:  um  guia  prático  de  hardware  e<br>interfaceamento. 4.ed. Rio de Janeiro: MZ, 2006. ISBN 8587385011||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Engenharia de Software I (ES1)**||||
 |**Período**|1ºAno||**C/H Semanal**|02 aulas|
@@ -713,7 +713,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|BOOCH, G. UML: guia do usuário. 2. ed. São Paulo:_Campus_, 2005.<br>GUEDES, G. T. A. UML 2 Guia de Consulta Rápida. São Paulo: Novatec,<br>2007.<br>LARMAN, Craig. Utilizando UML e padrões: uma introdução à análise e<br>ao projeto orientado a objetos: Porto Alegre, Bookman, 2000<br>PRESSMAN, R. S. Engenharia de Software. 6. ed. São Paulo: McGraw-<br>Hill, 2006.  (8 item)<br>SOMMERVILLE. I. Engenharia de Software. 8. ed. São Paulo: Pearson<br>Addison-Wesley, 2007.||||
 |**Bibliografia**<br>**Complementar**|BOOCH, Grady. RUMBAUGH, James; Jacobson, Ivar. UML: guia<br>do usuário: Rio de Janeiro, Campus, 2000<br>MELO, A. C. Desenvolvendo aplicações com UML 2.0: do conceitual à<br>implementação. 2. ed. Rio de Janeiro: Brasport, 2004.<br>SILVA, N. P. Análise e Estrutura de Sistemas de Informação. São Paulo:<br>Érica, 2007.<br>WAZLAWICK.  R.  Análise  e  Projetos  de  Sistemas  de  Informação<br>Orientados a Objetos. São Paulo:_Campus_, 2004.<br>YOURDON, E. Análise Estruturada Moderna. São Paulo,_Campus_, 1990.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Tecnologias para Web I (TW1)**||||
 |**Período**|1ºAno||**C/H Semanal**|02 aulas|
@@ -723,7 +723,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|BOWERS, M. Profissional Padrões de Projetos com CSS e HTML. Rio de<br>Janeiro: Alta Books, 2008.<br>DIAS,  C.  A.  Usabilidade  na  Web:  criando  portais  mais  acessíveis.<br>Altabooks, 2003.<br>FREEMAN, E.; FREEMAN, E. Use a Cabeça - Html com CSS e XHTML.<br>2ed., Rio de Janeiro: Alta Books, 2015.<br>GRANNELL, C. O Guia Essencial de Web Design com CSS e HTML.<br>Ciência Moderna, 2009.<br>SILVA, M. S. Criando Sites com CSS e XHTML. São Paulo: Novatec,<br>2007.||||
 |**Bibliografia**<br>**Complementar**|FLANAGAN, D. Javascript: O Guia definitivo.  Editora Bookman, 6ed.,<br>2012.<br>FREEMAN, E. Use a cabeça! Programação Javascript. Alta Books, 2016.<br>GOLDBERG, K. H. Guia Prático Visual XML. Rio de Janeiro: Alta Books,<br>2009.<br>WATRALL, E.; SIARTO, J. Use a Cabeça! Web Design. 2. ed. Rio de<br>Janeiro: Alta Books, 2009.<br>ZAKAS, N. C. JavaScript de Alto Desempenho. Editora Novatec, 2010.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Algoritmos e Estrutura de Dados (AED)**||||
 |**Período**|1ºAno||**C/H Semanal**|04 aulas|
@@ -744,7 +744,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|FOROUZAN, Behrouz A; Fegan, Sophia C. “Protocolo TCP/IP”. Editora<br>AMGH, 2009.<br>KUROSE, James F. Redes de computadores e a Internet: uma abordagem<br>Top-Down. 5a. ed. São Paulo: Pearson Addison Wesley, 2010.<br>MENDES, Douglas R. “Redes de Computadores: Teoria e Prática”. Editora<br>Novatec, 1ª Edição, 2007.<br>MORIMOTO, Carlos E. “Redes: Guia prático”. Sul Editores, 2ª Edição,<br>2011.<br>SOUZA, Lindeberg Barros de. Redes de Computadores – Guia Total –<br>Tecnologias, aplicações e Projetos em Ambientes Corporativos. São Paulo:<br>Editora Érica, 2009||||
 |**Bibliografia**<br>**Complementar**|MOREIRAS, Antonio M.; SANTOS, Rodrigo R.; et al.“Laboratório de<br>IPv6: Aprenda na prática usando um emulador de redes”. Editora Novatec,<br>2015.<br>MORIMOTO, Carlos E. “Servidores Linux: Guia prático”. Sul Editores,<br>2008.<br>SOUZA, Lindeberg B. “TCP/IP e Conectividade de Redes – Guia Prático”.<br>Editora Érica, 5ª Edição, 2010.<br>TANENBAUM, Andrew S; WETHERALL, David. “Redes de<br>Computadores”. Editora Pearson/Nacional, 5ª Edição, 2011.<br>STALLINGS, William. Redes e Sistemas de Comunicação de Dados. Rio<br>de Janeiro: Editora Campus, 2005.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Leitura e Produção de Textos Técnico-Científicos (LPTTC)**||||
 |**Período**|1ºAno||**C/H Semanal**|02 aulas|
@@ -755,7 +755,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|ANDRADE, Maria Margarida de; HENRIQUES, Antonio. Língua<br>portuguesa: noções básicas para cursos superiores. 9.ed. São Paulo: Atlas,<br>2010. 202 p.<br>CASTILHO, Ataliba Teixeira de; BASÍLIO, Margarida. Nova gramática do<br>português brasileiro. São Paulo: Contexto, 2012. 718p.<br>CEGALLA, Domingos Paschoal. Novissima gramática da língua<br>portuguesa. 48. ed. São Paulo: Nacional, 2008.<br>KOCH, Ingedore Grunfeld Villaça. A coesão textual. 22. ed. São Paulo:<br>Contexto, 2012.<br>USP. SIBI. Diretrizes para apresentação dissertações e de teses da USP.<br>Documento eletrônico e impresso. 2.ed. rev. ampl. Sibi: 2009||||
 |**Bibliografia**<br>**Complementar**|FARACO,  Carlos  Alberto;  TEZZA,  Cristovão.  Oficina  de  texto.  9.ed.<br>Petrópolis: Vozes, 2011. 319p.<br>LEDUR, Paulo Flávio. Guia prático da nova ortografia: as mudanças do<br>acordo ortográfico. 8.ed. Porto Alegre: AGE, 2010. 95p.<br>LIBERATO, Yara Goulart; FULGÊNCIO, Lúcia. É possível facilitar a<br>leitura: um guia para escrever claro. São Paulo: Contexto, 2012. 171 p<br>MEDEIROS, João Bosco; TOMASI, Carolina. Redação técnica: elaboração<br>de relatórios técnico-científicos e técnica de normalização textual: teses,<br>dissertações, monografias, relatórios técnico-científicos, TCC. 2. ed. São<br>Paulo: Atlas, 2010. 398 p.<br>SQUARISI, Dad; SALVADOR, Arlete. A arte de escrever bem: um guia<br>para jornalistas e profissionais do texto. 7. ed. São Paulo: Contexto, 2012.<br>105p.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Legislação e Ética em Informática (LEI)**||||
 |**Período**|2ºAno||**C/H Semanal**|02 aulas|
@@ -765,7 +765,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|CAMARGO, M. Fundamentos de Ética Geral e Profissional. ed.<br>Saraiva. 2002.<br>COMPARATO, F. (2006). Ética: direito, moral e religião no mundo<br>moderno. 2.ed. São Paulo: Companhia das Letras.<br>MORAIS, Régis de. Filosofia da ciência e da tecnologia: introdução<br>metodológica e crítica. 10. ed. Campinas: Papirus, 2010.<br>SILVEIRA, I. (2003). A construção do atraso: a discussão sobre a lei<br>de informática no Brasil. Maringá: EDUEM.<br>VASQUEZ, A. (2002). Ética. 23.ed. Rio de Janeiro: Civilização<br>Brasileira.||||
 |**Bibliografia**<br>**Complementar**|BARROCO, M. (2010). Ética: fundamentos sócio-históricos. 3.ed.<br>São Paulo: Cortez.<br>LINS,  B.  (2011).  Elementos  da  legislação  de  telecomunicações,<br>informática e comunicação social. Brasília: Câmara dos Deputados<br>Federais/Consultoria<br>Legislativa.<br>Disponível<br>em:<br><http://www2.camara.leg.br/documentos-e-pesquisa/publicacoes/estn<br>ottec/areas-da-conle/tema4/2011_191.pdf> , acesso em 16/09/2016.<br>PEGORARO, O. (1997). Ética é justiça. Petrópolis: Vozes.<br>POITRAS, L. (2014). Citizenfour. [Filme-vídeo]. Laura Poitras, dir.,<br>HBO Films.<br>SELL, C. (2006). Introdução à Sociologia Política. Petrópolis: Vozes.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Linguagem de Programação II (LP2)**||||
 |**Período**|2ºAno||**C/H Semanal**|04 aulas|
@@ -775,7 +775,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|BARNES, D. J. Programação Orientada a Objetos com Java. 4. ed. São<br>Paulo: Prentice-Hall, 2009.<br>DEITEL, H. M., DEITEL, P. J. Java: como programar. 8ed. São Paulo:<br>Prentice Hall, 2010.<br>LEE, Wei-Meng. Introdução ao Desenvolvimento de Aplicativos para o<br>Android. Ed. Ciência Moderna, 2011<br>MCLAUGHLIN, B.; POLLICE, G.; WEST, D. Use a Cabeça! Análise e<br>projeto Orientado ao Objeto. 1. ed. Rio de Janeiro: Alta Books, 2007.<br>MENDES, D. R. Programação Java com ênfase em Orientação a Objetos. 3.<br>ed. São Paulo: Novatec Editora, 2012.  (16 item)||||
 |**Bibliografia**<br>**Complementar**|BORATTI, I. C. Programação Orientada a Objetos em Java. Santa Catarina:<br>Visual Books, 2007.<br>GOODRICH, M. T.; TAMASSIA, R. Estrutura de Dados e Algoritmos em<br>Java. 4. ed. São Paulo: Bookman, 2007.<br>PUGA, S.; RISSETTI, G. Lógica de programação e estruturas de dados<br>com aplicações em Java. 2. ed. São Paulo: Prentice-Hall, 2008.<br>SANTOS, R. Introdução à Programação Orientada a Objetos Usando Java.<br>Rio de Janeiro:_Campus_, 2003.<br>WAZLAWICK, Raul Sidnei. Análise e Projeto de Sistemas de Informação<br>Orientados a Objetos. 3 ed., São Paulo: Novatec Editora, 2012.||||
 
-|**Unidade Curricular**|**Redes de Computadores II (RC2)**|**Redes de Computadores II (RC2)**|**Redes de Computadores II (RC2)**|**Redes de Computadores II (RC2)**|
+|**Unidade Curricular**|**Redes de Computadores II (RC2)**||||
 |---|---|---|---|---|
 |**Período**|2ºAno||**C/H Semanal**|02 aulas|
 |**Carga Horária**|**Hora relógio**|67|**Hora aula**|80|
@@ -784,7 +784,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|BIRKNER, Matthew H. Projeto de Interconexão de Redes. Makron<br>Books, 2003.<br>FOROUZAN, B.A. Comunicação de Dados e Redes de Computadores. 4ª<br>Edição. Bookman. 2009.<br>GUIMARÃES,  Alexandre  Guedes;  LINS,  Rafael  Dueire;  OLIVEIRA,<br>Raimundo de. Segurança com redes privadas virtuais VPNs. Rio de Janeiro:<br>Brasport, 2006.<br>MENDES, Douglas R. “Redes de Computadores: Teoria e Prática”. Editora<br>Novatec, 1ª Edição, 2007.<br>MORIMOTO, Carlos E. Redes: guia prático. 2. ed. ampl. atual. Porto<br>Alegre: Sul Editores, 2011.||||
 |**Bibliografia**<br>**Complementar**|DIMARZIO, J.F. Projeto e Arquitetura de Redes – Um Guia de Campo para<br>Profissionais de TI. 1a. ed: Rio de Janeiro: Editora Campus, 2001.<br>FERREIRA, Fernando Nicolau Freitas. Política de Segurança da<br>Informação: Guia Prático para Elaboração e Implementação. 2a Ed. 2008.<br>Ciências Moderna.<br>MORIMOTO, Carlos E. “Servidores Linux: Guia prático”. Sul Editores,<br>2008.<br>SOUZA, Lindeberg B. “TCP/IP e Conectividade de Redes – Guia Prático”.<br>Editora Érica, 5ª Edição, 2010.<br>TANENBAUM, Andrew S; WETHERALL, David. “Redes de<br>Computadores”. Editora Pearson/Nacional, 5ª Edição, 2011.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Banco de Dados I (BD1)**||||
 |**Período**|2ºAno||**C/H Semanal**|04 aulas|
@@ -794,7 +794,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|ANGELOTTI, E. S. Banco de dados. Curitiba: Livro Técnico, 2010.<br>BEIGHLEY, L. Use a Cabeça SQL. Rio de Janeiro: Alta Books, 2008.<br>DATE,  C.  J.  Introdução  a  Sistemas  de  Bancos  de  Dados.  8a  Ed.<br>Campus:Rio de Janeiro. 2003.<br>HEUSER, C. A. Projeto de Banco de Dados. 6. ed. Porto Alegre: Bookman,<br>2008.<br>MACHADO, Felipe Nery Rodrigues. Banco de Dados: Projeto e<br>Implementação 2a Ed. Érica:São Paulo. 2008||||
 |**Bibliografia**<br>**Complementar**|ELMASRI, R. Sistemas de Banco de Dados: fundamentos e aplicações. 4.<br>ed. São Paulo: Pearson Education, 2005.<br>HEUSER,  Carlos  Alberto.  Projetos  de  Banco  de  Dados.  Editora<br>Sagra, 2001.<br>RANGEL, A. MYSQL – Projeto, Modelagem e Desenvolvimento. Rio de<br>Janeiro: Alta Books, 2005.<br>SILBERSCHATZ, A. Sistema de Banco de Dados. 5. ed. São Paulo:<br>_Campus_, 2006<br>SILBERSCHATZ, Abraham Sistema de Banco de Dados. 3a Ed. Pearson:<br>São Paulo. 1999.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Tecnologias para Web II (TW2)**||||
 |**Período**|2ºAno||**C/H Semanal**|02 aulas|
@@ -804,7 +804,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|DALL’OGLIO, P. PHP Programando com Orientação a Objetos.  3ed.,<br>Editora Novatec, 2015.<br>FIRST, Head. Servlets & JSP TIM: O Guia de estudo que não dá dor<br>de cabeça (Use a Cabeça!). São Paulo: Alta Books, 2005.<br>GEARY,  David,  HORSTMANN,  Cay.  Core:  Java  Server  TM  Faces<br>Fundamentos. São Paulo: Alta Books, 2007<br>NIEDERAUER, J. Desenvolvendo Websites com PHP: Aprenda a criar<br>Websites dinâmicos e interativos com PHP e bancos de dados. 2ed. Editora<br>Novatec, 2011.<br>XAVIER, F. S. V. PHP do Básico à Orientação a Objetos. Rio de Janeiro:<br>Ciência Moderna, 2008.||||
 |**Bibliografia**<br>**Complementar**|AMPAIO, Cleuton. Java Enterprise Edition 6: desenvolvendo aplicações<br>corporativas. Brasport, 2011.<br>CONVERSE, T; PARK, J. PHP: A bíblia. Editora Elsevier, 2003.<br>GONÇALVES,  Edson.  Desenvolvendo  Aplicações  WEB  com  JSP,<br>SERVLETS, JAVASERVER FACES, HIBERNATE,EJB3. Rio de Janeiro:<br>Ciência Moderna, 2007.<br>MUELLER, J. P. Segurança para desenvolvedores web: Usando JavaScript,<br>HTML e CSS. Editora Novatec, 2016.<br>OLIVIERO, Carlos Antônio José. Faça um site PHP 4 Com Base de Dados<br>MySQL Orientado por Projeto. São Paulo: Érica, 2001||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Engenharia de Software II(ES2)**||||
 |**Período**|2ºAno||**C/H Semanal**|02 aulas|
@@ -814,7 +814,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|BOOCH, G.**UML**: guia do usuário. 2. ed. São Paulo:_Campus_, 2005.<br>GUEDES,  G.  T.  A.  **UML  2  Guia  de  Consulta  Rápida**.  São  Paulo:<br>Novatec, 2007.<br>PFLEEGER, Shari L. Engenharia de Software. 2 ed. Prentice-Hall: São<br>Paulo, 2004<br>PRESSMAN, R. S.**Engenharia de Software**. 6. ed. São Paulo: McGraw-<br>Hill, 2006.<br>SOMMERVILLE. I.**Engenharia de Software**. 8. ed. São Paulo: Pearson<br>Addison-Wesley, 2007.||||
 |**Bibliografia**<br>**Complementar**|BLAHA,  Michael  &  RUMBAUGH,  James.  Modelagem  e  Projetos<br>baseados em Objetos com UML 2. 2 ed. Campus: São Paulo, 2002.<br>MELO, A. C.**Desenvolvendo aplicações com UML 2.0**: do conceitual à<br>implementação. 2. ed. Rio de Janeiro: Brasport, 2004.<br>SILVA, N. P.**Análise e Estrutura de Sistemas de Informação**. São<br>Paulo: Érica, 2007.<br>WAZLAWICK.  R.  **Análise  e  Projetos  de  Sistemas  de  Informação**<br>**Orientados a Objetos**. São Paulo:_Campus_, 2004.<br>YOURDON,  E.  **Análise  Estruturada  Moderna**.  São  Paulo,  _Campus_,<br>1990.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Sistemas Operacionais (SO)**||||
 |**Período**|2ºAno||**C/H Semanal**|02 aulas|
@@ -824,7 +824,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|CASTILHO, E.B., SURIAN R. M. Windows XP.  São Paulo: SENAC,<br>2007.<br>JUNIOR, M. F. P. Ubuntu - Guia Prático para Iniciantes. Rio de Janeiro:<br>Ciência Moderna, 2007.<br>LAUDON, K. C.; LAUDON, J. P. Sistemas de Informação: com Internet.<br>Rio de Janeiro: Livros Técnicos e Científicos, 1999.<br>STALLINGS, William. Arquitetura e Organização de Computadores. 5ed.<br>São Paulo, Makron Books: 2002.<br>STUART, Brian. Princípios de Sistemas Operacionais. São Paulo: Cengage,<br>2010||||
 |**Bibliografia**<br>**Complementar**|CARISSIMI, Alexandre; OLIVEIRA, R. S.; TOSCANI, Simao. Sistemas<br>Operacionais. 4 ed. Porto Alegre: Bookman, 2010.<br>DEITEL, H. M., Sistemas Operacionais. 3 ed. São Paulo: Pearson, 2005.<br>MACHADO, F.M., MAIA, L.P. Arquitetura de Sistemas Operacionais, 4°<br>ed., Ed. LTC, 2007.<br>PFAFFENBERGER. B. Guia Oficial Do Microsoft Internet Explorer. São<br>Paulo: Câmpus, 2006.<br>TANENBAUM, A. S. Sistemas Operacionais Modernos. 3. ed. São Paulo:<br>Prentice- Hall, 2010.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Projeto Integrador**||||
 |**Período**|2ºAno||**C/H Semanal**|02 aulas|
@@ -836,7 +836,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 
 **Curso** Tecnologia em Análise e Desenvolvimento de Sistemas
 
-|**Unidade Curricular**|**Linguagem de Programação III (LP3)**|**Linguagem de Programação III (LP3)**|**Linguagem de Programação III (LP3)**|**Linguagem de Programação III (LP3)**|
+|**Unidade Curricular**|**Linguagem de Programação III (LP3)**||||
 |---|---|---|---|---|
 |**Período**|3ºAno||**C/H Semanal**|04 aulas|
 |**Carga Horária**|**Hora relógio**|134|**Hora aula**|160|
@@ -845,7 +845,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|CORNELL, G.; HORSTMANN, C. S. Core Java - Volume II Advanced<br>Features. 9ed., Editora Pearson, 2013.<br>CORNELL, Gary; HORSTMANN, Cay. Core Java: volume 1:<br>Fundamentos. 8 ed. Pearson Education do Brasil, 2010.<br>LOCH, J. Java Efetivo. 2ed. Editora: Alta Books, 2008.<br>MENDES, D. R. Programação Java em Ambientes Distribuídos. Editora<br>Novatec, 2011.<br>SCHILDT, H. Java: A Referência Completa. Editora: Alta Books, 2014.<br>SILVEIRA, P.; SILVEIRA, G.; LOPES, S.; MOREIRA, G.; STEPPAT, N.;<br>KUNG, F. Introdução a Arquitetura e Design de Software. Editora_Campus_,<br>2012.||||
 |**Bibliografia**<br>**Complementar**|ARNOLD, Ken; GOSLING, James; HOLMES, David.  A Linguagem de<br>Programação Java. 4a Ed. Bookman:Porto Alegre. 2007.<br>HEUSER, C. A. Projeto de banco de dados. 6. ed. Porto Alegre: Bookman,<br>2009.<br>HUBBARD, John. Programação com Java - Coleção Schaum<br>Bookman:Porto Alegre. 2006.<br>RUSSELL, M.; PILONE, D. Use a Cabeça - Desenvolvimento de Software.<br>Rio de Janeiro: Alta Books, 2009.<br>SANTOS, Rui R. Programação de Computadores em Java. NovaTerra:São<br>Paulo. 2011||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Banco de Dados II (BD2)**||||
 |**Período**|3ºAno||**C/H Semanal**|02 aulas|
@@ -867,7 +867,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|DALL’OGLIO, P. Criando Relatórios com PHP. 2ed., Editora Novatec,<br>2013.<br>LOCKHART, J. PHP Moderno: Novos recursos e boas práticas. Editora<br>Novatec, 2015.<br>MILANI,  A.  Construindo  Aplicações  Web  com  PHP  e  MySQL. 2ed.<br>Editora Novatec, 2016.<br>MITCHEL, L. J. Web Services em PHP. Editora Novatec, 2013.<br>MORRISON, M.; BEIGHLEY, L. Use a Cabeça PHP & MYSQL. Rio de<br>Janeiro: Alta Books, 2010.<br>SKLAR, D. Aprendendo PHP: Introdução amigável à linguagem  mais<br>popular da web. Editora Novatec, 2016.||||
 |**Bibliografia**<br>**Complementar**|BENEDETTI, R. Use A Cabeça! jQuery. Alta Books, 2013.<br>LUCKOW, D. H.; MELO A. A. Programação Java para a Web. Editora<br>Novatec, 2015.<br>NIEDERAUER, J. Desenvolvendo Websites com PHP. 2. Ed. São Paulo:<br>Novatec, 2004.<br>RIORDAN, R. M. Use a Cabeça Ajax Profissional. 2. ed. Rio de Janeiro:<br>Alta Books, 2009.<br>SOARES, W. PHP 5 - Conceitos, Programação e Integração com Banco de<br>Dados. 4. Ed. São Paulo: Érica, 2004.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Sistemas de Informação (SI)**||||
 |**Período**|3ºAno||**C/H Semanal**|02 aulas|
@@ -877,7 +877,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|AUDY, Jorge Luís Nicolas, org. Fundamentos de Sistema de Informação.<br>Ed.Bookman, 2005. Porto Alegre.<br>LAUDON, K. LAUDON, J. P. Sistemas de Informação: com internet. 4.<br>ed.,Rio de Janeiro: LTC, 1999.<br>LAUDON,  Kenneth  C.;  LAUDON,  Jane  P.  Sistemas  de  Informação<br>Gerenciais. 5.ed. Pearson, 2004.<br>O´BRIEN, James A. Sistemas de Informação e as decisões gerenciais na era<br>da Internet. 2.ed. Saraiva, 2006.<br>STAIR, Ralph M., REYNOLDS, George W., OLIVEIRA, Alexandre Melo<br>de Princípios de sistemas de informação: uma abordagem gerencial. 4.ed.<br>Rio de Janeiro: LTC, 2002.||||
 |**Bibliografia**<br>**Complementar**|CARVALHO, Luís Alfredo Vidal de. Datamining. São Paulo: Érica, 2001.<br>MACHADO, Felipe Nery R. Tecnologia e Projeto de Data Warehouse. São<br>Paulo: Érica, 2004.<br>O’BRIEN, James A. Sistemas de Informação e as decisões gerenciais na era<br>da Internet. SP: SARAIVA, 2001.<br>OLIVEIRA,  Djalma  de  Pinho  Rebouças  de.  Sistemas  de  Informações<br>Gerenciais. 11.ed. São Paulo : Atlas, 2007.<br>WAZLAWICK, Raul Sidnei. Análise e Projeto de Sistemas de Informação<br>Orientada a Objetos. 9a Ed. - 2004 – Campus.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Gerência de Projetos (GP)**||||
 |**Período**|3ºAno||**C/H Semanal**|02 aulas|
@@ -898,7 +898,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|CAMPOS, André L. N. Sistema de Segurança da Informação: Controlando<br>os Riscos. 2a Ed. 2007.Visual Books<br>FERREIRA, F N; ARAUJO, M. Política de Segurança da Informação.<br>Ciência Moderna, 2008.<br>FONTES, Eduardo Segurança da Informação - O Usuário faz a diferença -<br>CISM, CISA - 1a - 2006 – Saraiva.<br>FONTES, E. Praticando a segurança da informação. Brasport, 2008.<br>STALLINGS, W. Criptografia e Segurança de Redes. 4 ed. São Paulo:<br>Pearson, 2008.||||
 |**Bibliografia**<br>**Complementar**|BRAGA FILHO. João da Rocha. Os dados da sua empresa estão<br>seguros? Duvido! 2004. Brasport.<br>CARUSO,  Carlos  A.  A.;  STEFFEN,  Flávio  D.  Segurança  em<br>Informática e de Informações. 2ª ed. rev. e ampl. Senac, São Paulo,<br>1999.<br>CARVALHO, Daniel. Segurança de dados com criptografia: Métodos<br>e Algoritmos. 2001. Book Express.<br>NBR/ISSO/IEC 17799. Tecnologia da Informação: Código de prática para a<br>gestão  da  segurança  da  informação.  Associação  Brasileira  de  Normas<br>Técnicas ABNT, 2002.<br>PEIXOTO,  M  C  P.  Engenharia  Social  e  Segurança  da  Informação.<br>Brasport, 2006.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Gestão e Empreendedorismo em Tecnologia da Informação**<br>**(GETI)**||||
 |**Período**|3ºAno||**C/H Semanal**|02 aulas|
@@ -920,7 +920,7 @@ Ademais,  a  inclusão  da  extensão  está  descrito  no  Regulamento  de  Ati
 |**Bibliografia Básica**|BAZZO, Walter Antonio. Introdução à Engenharia: conceitos,<br>ferramentas e comportamentos. 1a ed., Florianópolis, Ed. da UFSC,<br>2007.<br>BROOKSHEAR, J. Glenn. Ciência da Computação: uma visão abrangente.<br>7ª ed., Porto Alegre, Bookman, 2005.<br>MARTINS, José Carlos Cordeiro. Gerenciamento de projetos de<br>desenvolvimento de software com PMI, RUP e UML. Rio de Janeiro:<br>Brasport, 2010.<br>MENEZES, Nilo Ney Coutinho. Introdução à programação com Python:<br>algoritmos e lógica de programação para iniciantes. São Paulo: Novatec,<br>2010.<br>MONTEIRO, Emiliano S. Certificados Digitais: conceitos e práticas. Rio<br>de Janeiro: Brasport, 2007.||||
 |**Bibliografia**<br>**Complementar**|FLOYD, Thomas L. Sistemas digitais: fundamentos e aplicações.  9. Ed.<br>Porto Alegre: Bookman, 2007.<br>GOLDEBERG, Kevin Howard. XML: aprenda XML de maneira prática e<br>fácil! Rio de Janeiro: Alta Books, 2009.<br>GREENE, J.; STELLMAN, A. Use a Cabeça! Pmp. 2. ed. Rio de Janeiro:<br>Alta Books, 2011.<br>LEMAY, Laura. Aprenda em 21 dias java 2: profissional reference. Rio de<br>Janeiro:_Campus_, 2001.<br>MATEUS, G. R.; LOUREIRO, A. A. Introdução à Computação Móvel.<br>Livro<br>digital<br>disponível<br>em<br>http://homepages.dcc.ufmg.br/~loureiro/cm/docs/cm_livro_2e.pdf. 2004.||||
 
-|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|Tecnologia em Análise e Desenvolvimento de Sistemas|
+|**Curso**|Tecnologia em Análise e Desenvolvimento de Sistemas||||
 |---|---|---|---|---|
 |**Unidade Curricular**|**Trabalho de Conclusão de Curso**||||
 |**Período**|3ºAno||**C/H Semanal**|02 aulas|
@@ -2038,9 +2038,9 @@ Cursos e cargas horárias com aulas de informática:
 |Proeja Vendas|02|02|-|-|
 |Ensino Subsequente em Agronegócio|-|-|-|-|
 
-|**Carga horária total do colegiado de informática**|**70**|**94**|**104**|**104**|
-|---|---|---|---|---|
-|**Tendo 6 docentes atuais, a média é**|**11,6**|**15,6**|**17,3**|**17,3**|
+|**Carga horária total do colegiado de informática**|**70**|**94**|**104**|
+|---|---|---|---|
+|**Tendo 6 docentes atuais, a média é**|**11,6**|**15,6**|**17,3**|
 
 Segundo  a  projeção  de  carga  horária  do  Quadro  acima,  a  previsão  para  contratação  de colaboradores do eixo Comunicação e Informação prevê, por aproximação, um novo docente para 2018 e outro novo docente para 2019.
 
@@ -2073,7 +2073,7 @@ Sendo assim é interessante que, no máximo 2019 já se tenha a contratação de
 
 Atuação dos docentes específicos de Informação e Comunicação nos cursos do _campus_ .
 
-|**Cursos do IFPR Umuarama**|**Carga horária semanal**|**Carga horária semanal**|**Carga horária semanal**|**Carga horária semanal**|
+|**Cursos do IFPR Umuarama**|**Carga horária semanal**||||
 |---|---|---|---|---|
 |**Referência: Processo seletivo 2017**|**2018**|**2019**|**2020**|**2021**|
 |Tecnologia em Análise e Desenvolvimento de<br>Sistemas|16|32|52|52|
@@ -2081,14 +2081,14 @@ Atuação dos docentes específicos de Informação e Comunicação nos cursos d
 |Licenciatura em Ciências Biológicas|02|02|02|02|
 |Ensino Médio em Química|04|04|04|04|
 
-|Ensino Médio em Informática|46|46|46|46|
-|---|---|---|---|---|
-|Ensino Médio em Edificações|-|-|-|-|
-|Proeja Vendas|03|03|03|03|
-|Ensino Subsequente em Informática|18|-|-|-|
-|**Carga horária total do colegiado de**<br>**informática**|91|89|109|109|
-|**Tendo 6 docentes atuais, a média é**|16|15|19|19|
-|**1 Contratação para 2019, com 7 docentes a**<br>**média é**|13|13|16|16|
+|Ensino Médio em Informática|46|46|46|
+|---|---|---|---|
+|Ensino Médio em Edificações|-|-|-|
+|Proeja Vendas|03|03|03|
+|Ensino Subsequente em Informática|18|-|-|
+|**Carga horária total do colegiado de**<br>**informática**|91|89|109|
+|**Tendo 6 docentes atuais, a média é**|16|15|19|
+|**1 Contratação para 2019, com 7 docentes a**<br>**média é**|13|13|16|
 
 ## **8.2 PROJEÇÃO DE AQUISIÇÃO DE MATERIAIS PERMANENTE E CONSUMO**
 
@@ -2138,24 +2138,24 @@ A partir das diretrizes da Política Orçamentária de Formação e Desenvolvime
 
 **Quadro 8:** Projeção de Aquisição de Acervo Bibliográfico
 
-|**Tipo**<br>**de**<br>**material**|**Nº**<br>**Exemplares**|**Nº**<br>**Exemplares**|**Nº**<br>**Exemplares**|**Nº**<br>**Exemplares**|**Nº**<br>**Exemplares**|
+|**Tipo**<br>**de**<br>**material**|**Nº**<br>**Exemplares**|||||
 |---|---|---|---|---|---|
 ||(aproximado)|(aproximado)|(aproximado)|(aproximado)|(aproximado)|
 ||**2014**|**2015**|**2016**|**2017**|**2018**|
 |**Livros**|||1906|1068|1068|
 
-|**Periódicos**||||||
-|---|---|---|---|---|---|
-|**Assinatura de**<br>**Revistas**||||||
-|**Assinatura de**<br>**Jornais**||||||
-|**Obras**<br>**clássicas**||||||
-|**Dicionários**||||||
-|**Enciclopédias**||||||
-|**Vídeos**||||||
-|**DVD**||||||
-|**CD Rom’s**||||||
-|**Assinatura**<br>**eletrônica**||||12705|12705|
-|**TOTAL**|||**1906**|**13773**|**13773**|
+|**Periódicos**|||||
+|---|---|---|---|---|
+|**Assinatura de**<br>**Revistas**|||||
+|**Assinatura de**<br>**Jornais**|||||
+|**Obras**<br>**clássicas**|||||
+|**Dicionários**|||||
+|**Enciclopédias**|||||
+|**Vídeos**|||||
+|**DVD**|||||
+|**CD Rom’s**|||||
+|**Assinatura**<br>**eletrônica**||||12705|
+|**TOTAL**|||**1906**|**13773**|
 
 O número de itens é resultado do valor do orçamento previsto, dividido pelo valor estimado de custo de cada item igual a R$ 76,17.
 
@@ -2835,7 +2835,7 @@ III – Os estudantes com ingresso no Curso, por transferência, deverão compro
 
 **ART. 10º** São consideradas Atividades Curriculares de Extensão, bem como sua carga horária individual por atividade e respectivas pontuações:
 
-|Atividades relacionadas à extensão<br>(Mínimo de 210 horas)|Atividades relacionadas à extensão<br>(Mínimo de 210 horas)||
+|Atividades relacionadas à extensão<br>(Mínimo de 210 horas)|||
 |---|---|---|
 |Item|Horas|Limite<br>máximo<br>(em horas)|
 |Participação em Projeto de Extensão<br>cadastrado no COPE de outras áreas.|Carga horária da<br>atividade|160|

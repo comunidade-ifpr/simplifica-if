@@ -222,7 +222,7 @@ Ministerio da Educacao
 
 Quadro 02 - Número de estabelecimentos e empregos segundo as atividades econômicas em 2011 no município de Colombo
 
-|Quadro 02 - Número de estabelecimentos e empregos segundo as atividades econômicas em 2011<br>no município de Colombo|Quadro 02 - Número de estabelecimentos e empregos segundo as atividades econômicas em 2011|Quadro 02 - Número de estabelecimentos e empregos segundo as atividades econômicas em 2011|
+|Quadro 02 - Número de estabelecimentos e empregos segundo as atividades econômicas em 2011<br>no município de Colombo|Quadro 02 - Número de estabelecimentos e empregos segundo as atividades econômicas em 2011||
 |---|---|---|
 |ATIVIDADES ECONÔMICAS|ESTABELECIMENTOS|EMPREGOS|
 |Indústria de extração de minerais|14|297|
@@ -1099,7 +1099,7 @@ Na sequência, apresenta-se a matriz curricular com a carga horária referente a
 
 ## **MATRIZ CURRICULAR DO CURSO TÉCNICO EM ADMINISTRAÇÃO Implantação 2019**
 
-|**Módulo 1– Ambientação**|**Módulo 1– Ambientação**|**Módulo 1– Ambientação**|**Módulo 1– Ambientação**|**Módulo 1– Ambientação**|
+|**Módulo 1– Ambientação**|||||
 |---|---|---|---|---|
 ||**CARGA HORÁRIA**||||
 |**COMPONENTES CURRICULARES**|**Hora**<br>**aula**|**Hora**<br>**relógio**|**Aulas**<br>**semanais**<br>**(hora**<br>**relógio)**|**Semanas**|
@@ -1114,7 +1114,7 @@ Na sequência, apresenta-se a matriz curricular com a carga horária referente a
 
 Ministerio da Educacao
 
-|**Módulo 2 - Fundamentos da Administração**|**Módulo 2 - Fundamentos da Administração**|**Módulo 2 - Fundamentos da Administração**|**Módulo 2 - Fundamentos da Administração**|**Módulo 2 - Fundamentos da Administração**|**Módulo 2 - Fundamentos da Administração**|
+|**Módulo 2 - Fundamentos da Administração**||||||
 |---|---|---|---|---|---|
 |**COMPONENTES CURRICULARES**||**CARGA HORÁRIA**||||
 |||**Hora**<br>**aula**|**Hora**<br>**relógio**|**Aulas**<br>**semanais**<br>**(hora**<br>**relógio)**|**Semanas**|
@@ -1130,7 +1130,7 @@ Ministerio da Educacao
 ||Projeto Integrador I|40 h/a|33h|3,33||
 |**Total carga horária Módulo 2**<br>**Fundamentos de gestão**||**400**<br>**horas**<br>**aula**|**331**<br>**horas**<br>**relógio**|**33 aulas**|**20**<br>**semanas**|
 
-|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**|
+|Projeto Integrador I<br>40 h/a<br>33h<br>3,33<br>**Total carga horária Módulo 2**<br>**Fundamentos de gestão**<br>**400**<br>**horas**<br>**aula**<br>**331**<br>**horas**<br>**relógio**<br>**33 aulas**<br>**20**<br>**semanas**||||||
 |---|---|---|---|---|---|
 |**Módulo 3 – Gestão aplicada I**||||||
 |**COMPONENTES CURRICULARES**||**CARGA HORÁRIA**||||
@@ -1155,7 +1155,7 @@ Ministerio da Educacao
 
 ## INSTITUTOFEDERAL Parana
 
-|**Módulo 4 – Gestão aplicada II**|**Módulo 4 – Gestão aplicada II**|**Módulo 4 – Gestão aplicada II**|**Módulo 4 – Gestão aplicada II**|**Módulo 4 – Gestão aplicada II**|**Módulo 4 – Gestão aplicada II**|
+|**Módulo 4 – Gestão aplicada II**||||||
 |---|---|---|---|---|---|
 |**COMPONENTES CURRICULARES**||**CARGA HORÁRIA**||||
 |||**Hora**<br>**aula**|**Hora**<br>**relógio**|**Aulas**<br>**semanais**<br>**(hora**<br>**relógio)**||
@@ -1182,7 +1182,7 @@ Ministerio da Educacao
 
 ## **6.15 EMENTAS DOS COMPONENTES CURRICULARES**
 
-|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|
+|**Campus Colombo do IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Técnico em Administração**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular:**Fundamentos Gerais|||
@@ -1228,7 +1228,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|
+|**Campus Colombo do IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Técnico em Administração**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular:**Fundamentos do Direito|||
@@ -1459,7 +1459,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|
+|**Campus Colombo do IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Administração**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular:**Projeto Integrador I|||
@@ -1685,7 +1685,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|
+|**Campus Colombo do IFPR**|||
 |---|---|---|
 |**Curso:**<br>**Técnico em Administração**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular:**Gestão de pessoas|||
@@ -1835,7 +1835,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|
+|**Campus Colombo do IFPR**||
 |---|---|
 |**Curso: Técnico em Administração**|**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular:**Gestão do Terceiro Setor||
@@ -1926,7 +1926,7 @@ INSTITUTOFEDERAL Parana
 
 Ministerio da Educacao
 
-|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|**Campus Colombo do IFPR**|
+|**Campus Colombo do IFPR**|||
 |---|---|---|
 |**Curso: Técnico em Administração**||**Eixo Tecnológico: Gestão e Negócios**|
 |**Componente Curricular:**Projeto Integrador III|||
@@ -1960,7 +1960,7 @@ Para atender ao Curso proposto será necessário o uso da infraestrutura e equip
 
 Além da aquisição de livros de bibliográfica básica e complementar, não há a necessidade de investimentos para a oferta do Curso Técnico em Administração.
 
-|ANO|INVESTIMENTO NECESSÁRIO(R$)|INVESTIMENTO NECESSÁRIO(R$)|
+|ANO|INVESTIMENTO NECESSÁRIO(R$)||
 |---|---|---|
 ||CUSTEIO|CAPITAL|
 |2018|R$10.000,00|-|

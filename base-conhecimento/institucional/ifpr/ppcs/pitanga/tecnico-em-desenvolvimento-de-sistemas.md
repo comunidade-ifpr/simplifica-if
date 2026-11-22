@@ -81,7 +81,7 @@ Matutino.
 
 As aulas regulares terão 45 minutos e serão distribuídas conforme horário a seguir. Turmas especiais em regime de dependência e/ou grupos de estudo dirigido poderão ser ofertados no contraturno, de modo a evitar sobreposição com horários de componentes curriculares regulares.
 
-|**Turno: Matutino (De segunda a sexta-feira)**|**Turno: Matutino (De segunda a sexta-feira)**|
+|**Turno: Matutino (De segunda a sexta-feira)**||
 |---|---|
 ||<br>Horário|
 |**1ª aula**|07h20|
@@ -720,7 +720,7 @@ II - Estágio obrigatório e não obrigatório.
 
 ## 6.4 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO
 
-|**Técnico em**|**Técnico em**|**Desenvolvimento de Sistemas Integrado ao Ensino Médio**|**Desenvolvimento de Sistemas Integrado ao Ensino Médio**|**Desenvolvimento de Sistemas Integrado ao Ensino Médio**|**Desenvolvimento de Sistemas Integrado ao Ensino Médio**|**Desenvolvimento de Sistemas Integrado ao Ensino Médio**|
+|**Técnico em**|**Técnico em**|**Desenvolvimento de Sistemas Integrado ao Ensino Médio**|||||
 |---|---|---|---|---|---|---|
 ||Área||1º Ano|2º Ano|3º Ano|4º Ano|
 |**Formação**<br>**Básica**|**Códigos,**<br>**Linguagens**<br>**e suas**<br>**Tecnologias**||Língua<br>Estrangeira -<br>Inglês I (60h)|Língua<br>Estrangeira -<br>Inglês II (60h)|Língua<br>Estrangeira -<br>Espanhol I (60h)|Língua Estrangeira<br>- Espanhol II  (60h)|
@@ -744,7 +744,7 @@ II - Estágio obrigatório e não obrigatório.
 
 ## 6.5 MATRIZ CURRICULAR
 
-|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+|||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|---|
 |||(Criação Lei nº 11.892 de 29/11/2008)||||
 |||_Campus_Pitanga||||

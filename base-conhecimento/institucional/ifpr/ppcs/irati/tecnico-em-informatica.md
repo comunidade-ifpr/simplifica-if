@@ -342,7 +342,7 @@ Diversos projetos de extensão, pesquisa e ensino estão em execução no moment
 ||Macedo|
 |||
 
-|Olhares Fotográficos: aplicações da linguagem fotográfica em<br>diferentes técnicas artísticas e usos da fotografia nas áreas de<br>agroecologia e informática|Olhares Fotográficos: aplicações da linguagem fotográfica em<br>diferentes técnicas artísticas e usos da fotografia nas áreas de<br>agroecologia e informática|Maressa de Oliveira|
+|Olhares Fotográficos: aplicações da linguagem fotográfica em<br>diferentes técnicas artísticas e usos da fotografia nas áreas de<br>agroecologia e informática||Maressa de Oliveira|
 |---|---|---|
 |||Macedo|
 ||||
@@ -747,7 +747,7 @@ Base legal específica do curso: Resolução CNE/CP nº 1, de 5 de janeiro de 20
 
 Resolução de autorização do curso no IFPR: Resolução n° 42 de 17 de setembro de 2012.
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO**<br>**PARANÁ**||||
 |---|---|---|---|---|
 ||(Criação Lei nº11.892 de 29/11/2008)||||
 ||_Campus_Irati||||
@@ -820,7 +820,7 @@ Não fazem parte da carga horária total do curso
 
 ## 6.7 EMENTÁRIO E BIBLIOGRAFIAS
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Algoritmos e Lógica de Programação||
@@ -863,7 +863,7 @@ TARNAS, Richard. **A Epopeia do Pensamento Ocidental** : Para compreender as ide
 
 **Bibliografia Complementar:** DESCARTES, R. **O Discurso do Método** [trad. Bento Prado Jr.] São Paulo: Nova Cultural, 1987. GAARDER, J. **O mundo de Sofia** . Companhia das Letras, 2005. GALLO, S.; KOHAN, W. O. (Orgs.). **Filosofia no Ensino Médio** . Petrópolis: Vozes, 2000. HESSEN, Joannes. **Teoria do Conhecimento** . São Paulo, Martins Fontes, 1999. PLATÃO. **A República** . Martins Fontes, 2006
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Física I||
@@ -872,7 +872,7 @@ TARNAS, Richard. **A Epopeia do Pensamento Ocidental** : Para compreender as ide
 |**Bibliografia Básica:**<br>MÁXIMO, A.; ALVARENGA, A.**Física. Ensino Médio**. Volume 1. São Paulo: Scipione,<br>2005.<br>GASPAR, A. Física.**Volume Único**. São Paulo: Ática, 2008.<br>RAMALHO, N.**Fundamentos da Física**. Volume 1. São Paulo: Moderna, 2003.||
 |**Bibliografia Complementar:**<br>FEYNMAN, R. P., LEIGHTON, R. B., SANDS, M.**Lições da Física de Feynman**– Edição<br>Definitiva – Volumes I, II e III. 1ª Edição. Rio de Janeiro: Ed. Bookman, 2008.<br>FILHO, A. G.; TOSCANO, C.**Física. Ensino Médio**. Volume Único. São Paulo: Scipione,<br>2003.<br>YAMAMOTO, K.; FUKE, L. F.**Física Para o Ensino Médio**, Volume 1. 2ª ed.: São Paulo:<br>Saraiva, 2011.<br>Rocha, J.F.**Origens e Evolução das Ideias da Física**. Salvador: EDUFBA, 2002.<br>SAMPAIO, J. L.; CALÇADA, C.**Universo da Física**. Volume 1. São Paulo: Atual, 2005.<br>PIRES, A. S. T**. Evolução das ideias da física**. 2ª. ed. São Paulo: Livraria da Física, 2011.||
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Geografia I||
@@ -887,7 +887,7 @@ ALMEIDA, Lúcia Marina Alves de; RIGOLIN, Tércio Barbosa.. **Fronteiras da glob
 
 ALMEIDA, Rosângela Doin de. **Cartografia escolar** . São Paulo: Contexto, 2007. ATLANTE geográfico De Agostini. Novara: Instituto Geográfico De Agostini, 2015. CASTROGIOVANNI, Antonio Carlos. **Ensino de Geografia** : práticas e textualizações no cotidiano. Porto Alegre: Mediação, 2000. COSTA, Jailton de Jesus; SANTOS, Cleane Oliveira dos; SANTOS, Marcelo Alves dos (Org.). **Questões geográficas em debate** . Aracaju: Ed. da UFS, 2013. GIANSANTI, Roberto. **O desafio do desenvolvimento sustentável** . São Paulo: Atual, 1998. (Meio ambiente). HAESBAERT, Rogério; PORTO-GONÇALVES, Carlos Walter. **A nova des-ordem mundial.** São Paulo: Ed. da Unesp, 2006. (Paradidáticos). HARVEY, David. **A produção capitalista do espaço** . São Paulo: Annablume, 2005. _____. **O neoliberalismo** : história e implicações. São Paulo: Loyola, 2008. HOBSBAWM, Eric J. **Era dos extremos:** o breve século XX. São Paulo: Companhia das Letras, 2008. LACOSTE, Yves. **Géopolitique** . Paris: Larousse, 2006. LENCIONI, Sandra. **Região e Geografia** . São Paulo: Edusp, 2003 MOREIRA, Ruy. **Pensar e ser em Geografia** . São Paulo: Contexto, 2010.
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**História I||
@@ -991,7 +991,7 @@ PROENÇA, G. **História da arte** . São Paulo: Ática, 2008. GRANERO, V. **Com
 
 BERTHOLD. B. **História do Teatro** . São Paulo: Editora Perspectiva, 2004. BOSI, A. **Reflexões sobre a arte.** São Paulo: Ática, 1991. CANDE, R. **História universal da música** . São Paulo: Martins Fontes, 2001. COSTA, C. **Questões de Arte:** O belo, a percepção estética e o fazer artístico. São Paulo: Editora moderna. 1999. FARO, A. **Pequena História da Dança.** Rio de Janeiro: Zahar, 1986.
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular: **Banco deDados||
@@ -999,7 +999,7 @@ BERTHOLD. B. **História do Teatro** . São Paulo: Editora Perspectiva, 2004. BO
 
 **Ementa:** Apresentação de sistemas de informação em ambiente de banco de dados. Modelagem conceitual, lógica e física de um banco de dados. Normalização de dados. Linguagem de manipulação de bancos de dados relacionais. **Bibliografia Básica:** DATE, C. J. **Introdução à Sistemas de Bancos de Dados** . Rio de Janeiro: Ed Campus, 2000. ELMASRI, Ramez. **Sistemas de Banco de Dados** . Addison Wesley, 4ª Ed., 2005. HEUSER, Carlos A. **Projeto de Banco de Dados** . Série de Livros Didáticos. Instituto de Informática da UFRGS. 5ª Edição. Sagra Luzzatto, 2004. KORTH, Henry F. SILBERSHCATZ, Abraham. **Sistemas de Banco de Dados** . Elsevier: 5ª Ed., 2006. SILBERSCHATZ, Abraham. **Sistema de Banco de Dados** . 3ª Edição. Makron Books, 2007. **Bibliografia Complementar:** DAMAS, L. M. D. **SQL** - **Structured Query Language** . 6ª ed. Editora LTC, 2007. GILLENSON, M. I et al. **Introdução à Gerência de Banco de Dados** . Editora LTC, 2009. KORTH, H. F.; SILBERSCHATZ, A **. Sistema de banco de dados** . 2ª ed. São Paulo: Makron, 1993. MACHADO, F.; ABREU, M. **Projeto de Banco de Dados:** uma visão prática. 7ª Ed. Editora Érica, 1996. TEOREY, T. J. **Projeto e Modelagem de Banco de Dados** . Elsevier – Campus: 2006.
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Biologia II||
@@ -1118,7 +1118,7 @@ CRAIG, John J. **Introduction to Robotics** : Mechanics and Control. 3ªd ed. Up
 
 GUIMARÃES, A. M.; LAGES, N. A. C **. Algoritmos e Estruturas de Dados** . 31ª Tiragem. Editora LTC. 1994. SOUZA, Marco Antonio Furlan de; GOMES, Marcelo Mar. **Algoritmos e lógica de programação** . São Paulo: CENGAGE LEARNING, 2004. SCIAVICCO, Lorenzo; KHATIB, Oussama. Editores. **Handbook of Robotics** . Berlin Heidelberg: SpringVerlag, 2008. SPONG, Mark W.; VIDYASAGAR, **Mathukumalli. Robot Dynamics and Control** . Republic of Singapore: John Willey & Sons, 1989. SPONG, Mark W.; VIDYASAGAR, Mathukumalli; HUTCHINSON. **Robot Modelling and Control** . United States of America: John Willey & Sons, 2006
 
-|Campus **Irati do IFPR**|Campus **Irati do IFPR**|
+|Campus **Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**História II||
@@ -1193,7 +1193,7 @@ AMABIS, J. M.; MARTHO, G. R. **Fundamentos da Biologia Moderna** . 4. ed. São P
 
 POWERS, Shelley; FERNANDES, Acauan Pereira. **Aprendendo JavaScript** . São Paulo: Novatec, California: O'Reilly, 2010. IAN, Kai et al. **Desenvolvimento web java** . Rio de Janeiro: LTC, 2010.
 
-|MEYER, Jeanine.**O guia essencial do HTML5**: usando jogos para aprender HTML5 e<br>JavaScript. Rio de Janeiro: Ciência Moderna, 2011.<br>ILVA, Maurício Samy.**JQuery: a biblioteca do programador JavaScript**. 2ª.ed. rev. a ampl.<br>São Paulo: Novatec, 2010.<br>BORBA, Fernando Emmanoel.**AJAX: guia de programação**. São Paulo: Érica, 2006. ISBN<br>MILANI, André.**Construindo aplicações web com PHP e MySQL**. São Paulo: Novatec, 2010.<br>OLIVEIRA, Cláudio; ZANETTI, Humberto Augusto Piovesana.**Arduino descomplicado**: como<br>elaborar projetos de eletrônica. 1. ed. São Paulo: Érica, 2015.<br>MUELLER, John.**Começando a programar em Python para leigos**. Rio de Janeiro: Alta<br>Books, 2016.<br>WILSON, Mike.**Construindo aplicações Node com MongoDB e Backbone**. 1ª. ed. São Paulo:<br>Novatec, 2013.<br>DEITEL, Paul J. et al.**Android para programadores**: uma abordagem baseada em aplicativos.<br>Porto Alegre: Bookman, 2013.<br>DATE, C. J.**Introdução a sistemas de bancos de dados.**Rio de Janeiro: Campus, 2004. 865 p.<br>ISBN 9788535212730 (broch.).|MEYER, Jeanine.**O guia essencial do HTML5**: usando jogos para aprender HTML5 e<br>JavaScript. Rio de Janeiro: Ciência Moderna, 2011.<br>ILVA, Maurício Samy.**JQuery: a biblioteca do programador JavaScript**. 2ª.ed. rev. a ampl.<br>São Paulo: Novatec, 2010.<br>BORBA, Fernando Emmanoel.**AJAX: guia de programação**. São Paulo: Érica, 2006. ISBN<br>MILANI, André.**Construindo aplicações web com PHP e MySQL**. São Paulo: Novatec, 2010.<br>OLIVEIRA, Cláudio; ZANETTI, Humberto Augusto Piovesana.**Arduino descomplicado**: como<br>elaborar projetos de eletrônica. 1. ed. São Paulo: Érica, 2015.<br>MUELLER, John.**Começando a programar em Python para leigos**. Rio de Janeiro: Alta<br>Books, 2016.<br>WILSON, Mike.**Construindo aplicações Node com MongoDB e Backbone**. 1ª. ed. São Paulo:<br>Novatec, 2013.<br>DEITEL, Paul J. et al.**Android para programadores**: uma abordagem baseada em aplicativos.<br>Porto Alegre: Bookman, 2013.<br>DATE, C. J.**Introdução a sistemas de bancos de dados.**Rio de Janeiro: Campus, 2004. 865 p.<br>ISBN 9788535212730 (broch.).|
+|MEYER, Jeanine.**O guia essencial do HTML5**: usando jogos para aprender HTML5 e<br>JavaScript. Rio de Janeiro: Ciência Moderna, 2011.<br>ILVA, Maurício Samy.**JQuery: a biblioteca do programador JavaScript**. 2ª.ed. rev. a ampl.<br>São Paulo: Novatec, 2010.<br>BORBA, Fernando Emmanoel.**AJAX: guia de programação**. São Paulo: Érica, 2006. ISBN<br>MILANI, André.**Construindo aplicações web com PHP e MySQL**. São Paulo: Novatec, 2010.<br>OLIVEIRA, Cláudio; ZANETTI, Humberto Augusto Piovesana.**Arduino descomplicado**: como<br>elaborar projetos de eletrônica. 1. ed. São Paulo: Érica, 2015.<br>MUELLER, John.**Começando a programar em Python para leigos**. Rio de Janeiro: Alta<br>Books, 2016.<br>WILSON, Mike.**Construindo aplicações Node com MongoDB e Backbone**. 1ª. ed. São Paulo:<br>Novatec, 2013.<br>DEITEL, Paul J. et al.**Android para programadores**: uma abordagem baseada em aplicativos.<br>Porto Alegre: Bookman, 2013.<br>DATE, C. J.**Introdução a sistemas de bancos de dados.**Rio de Janeiro: Campus, 2004. 865 p.<br>ISBN 9788535212730 (broch.).||
 |---|---|
 |||
 |**Campus Irati do IFPR**||
@@ -1295,7 +1295,7 @@ Campus **Irati do IFPR Curso:** Técnico em Informática **Eixo Tecnológico:** 
 
 afrodescendentes e dos indígenas em todas as esferas da sociedade brasileira com destaque para sua valorização enquanto sujeito histórico. Análise da conjuntura histórica brasileira a partir da Constituição de 1988 e das contradições sociais, políticas e econômicas de diferentes governos. **Bibliografia Básica:** DEL PRIORE, Mary; VENÂNCIO, Renato Pinto. **Uma breve história do Brasil.** São Paulo: Planeta, 2010. FAUSTO, Boris. **História concisa do Brasil** . 2. ed. São Paulo: EDUSP, 2012. HOBSBAWM, E. J. **Era dos extremos:** o breve século XX 1914-1991. 2. ed. São Paulo: Companhia das Letras, 1995. PROST, Antoine; VICENT, Gérard (Org.). **História da Vida Privada 5:** da primeira guerra a nossos dias. 2. ed. São Paulo: Companhia das Letras, 2010. SKIDMORE, Thomas E. **Brasil:** de Getúlio a Castello (1930-64). São Paulo: Companhia das Letras, 2010. **Bibliografia Complementar:** CARVALHO, José Murilo de. **Cidadania no Brasil** : o longo caminho. 16. ed. Rio de Janeiro: Civilização Brasileira, 2013. FERREIRA, Jorge; DELGADO, Lucília de Almeida Neves (Org.). **O Brasil republicano:** livro 1: o tempo do liberalismo excludente: da proclamação da república à revolução de 1930. 7. ed. Rio de Janeiro: Civilização Brasileira; 2014. HOBSBAWM, E. J. **Globalização, democracia e terrorismo** . São Paulo: Companhia das Letras, 2007. SALES, Jean Rodrigues. **A luta armada contra a ditadura militar:** a esquerda brasileira e a influência da revolução cubana. São Paulo: Fundação Perseu Abramo, 2007. SONDHAUS, Lawrence. **A primeira guerra mundial** . 1. ed. São Paulo: Contexto, 2011.
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Língua Estrangeira III-Espanhol||
@@ -1325,7 +1325,7 @@ Sequências numéricas: relações de recorrência, progressões aritméticas e 
 
 dispersão: amplitude, variância, desvio padrão e coeficiente de variação; Geometria analítica no R²: ponto, reta, circunferência e demais cônicas; Números complexos; Polinômios: definição, raízes e equações polinomiais. **Bibliografia Básica:** DANTE, L. R. **Matemática** . volume único. São Paulo: Ática, 2003. IEZZI, G.; DOLCE, O.; DEGENSZAJN, D.; PÉRIGO, R.; ALMEIDA, N **. Matemática ciência e aplicações, V. 2 e 3** . 6 ed. São Paulo: Saraiva, 2010. IEZZI, G. **Fundamentos de matemática elementar 6** : complexos, polinômios, equações. 7. ed. São Paulo: Atual, 2005. PAIVA, M. **Moderna Plus – matemática** . V. 2 e 3. São Paulo: Moderna, 2010. IEZZI, G.; HAZZAN, S.; DEGENSZAJN, D. M. **Fundamentos de matemática elementar** : matemática comercial, matemática financeira, estatística descritiva. São Paulo: Atual, 2004. **Bibliografia Complementar:** PAIVA, M. **Matemática 3.** 3ª ed. São Paulo: Moderna, 2010. PUCCINI, A. L. **Matemática financeira:** objetiva e aplicada. 6. ed. São Paulo: Saraiva, 1999. CORRÊA, P. S. Q. **Álgebra Linear e Geometria Analítica** . Editora Interciência 2006. IEZZI, G. **Fundamentos de matemática elementar 7** : geometria analítica. 4. ed. São Paulo: Atual, 1993. MELLO, J. L. P. **Matemática: construção e significado** . São Paulo: Moderna, 2005.
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|**Eixo Tecnológico:**Informação e Comunicação|
 |**Componente Curricular:**Orientação a objetos||
@@ -1344,7 +1344,7 @@ PRESSMAN, R. S. **Engenharia de Software** . 7ª ed. McGraw-Hill - Artmed: 2011.
 
 PFLEEGER, S. L. **Engenharia de Software:** Teoria e Prática. 2ª ed. Pearson, 2007. SCHACH, S. R. **Engenharia de Software** . 7ª. ed. McGraw-Hill - Artmed, 2009. SCOTT, Kendall. **O Processo Unificado Explicado – Uml** . Porto Alegre: Bookman, 2003. WEST, D. **Use a Cabeça** ! Análise e Projeto Orientado a Objetos. Editora Alta Books, 2007. HIRAMA, K. **Engenharia de Software: qualidade e produtividade com tecnologia** . Campus, 2011. LARMAN, Craig. **Utilizando UML e padrões** : uma introdução à análise e ao projeto orientados a objetos e ao desenvolvimento iterativo. 3ª ed. Porto Alegre: Bookman, 2005.
 
-|**Campus Irati do IFPR**|**Campus Irati do IFPR**|
+|**Campus Irati do IFPR**||
 |---|---|
 |**Curso:**Técnico em Informática|Eixo Tecnológico: Informação e Comunicação|
 |**Componente Curricular:**Química III||

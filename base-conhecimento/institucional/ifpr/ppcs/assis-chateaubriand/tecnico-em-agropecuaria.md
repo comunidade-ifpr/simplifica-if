@@ -60,7 +60,7 @@ _**CAMPUS**_ Assis Chateaubriand Endereço: Avenida Cívica, 475, Centro Cívico
 
 **AJUSTE CURRICULAR DE CURSO** (x) **RESOLUÇÃO DE CRIAÇÃO:** Resolução Nº 24, DE 14 DE junho DE 2019
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**<br>**Portaria nº 37, de 25 de fevereiro de 2019**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**<br>**Portaria nº 37, de 25 de fevereiro de 2019**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO (CEC)**<br>**Portaria nº 37, de 25 de fevereiro de 2019**||
 |---|---|
 |**Função**|**Nome**|
 |Revisão de linguagem do texto do<br>documento e normatização técnica|Adrian Lincoln Clarindo|
@@ -578,7 +578,7 @@ Em atendimento a Lei nº 13.006/2014, que altera o § 8º do artigo 26 da Lei 9.
 
 37
 
-||**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|**Matriz curricular do Curso Técnico em Agropecuária**|
+||**Matriz curricular do Curso Técnico em Agropecuária**|||||||||
 |---|---|---|---|---|---|---|---|---|---|
 |**ÁREA**||**COMPONENTE**<br>**CURRICULAR**|**1º**<br>**sem**<br>**(h/a)**|**2º**<br>**sem**<br>**(h/a)**|**3º**<br>**sem**<br>**(h/a)**|**4º**<br>**sem**<br>**(h/a)**|**Nº aulas**<br>**semanais**<br>**(50 min)**|**Total**<br>**hora -**<br>**aula**|**Total**<br>**hora -**<br>**relógi**<br>**o**|
 |**Componentes**<br>**Transversais**||Extensão e Comunicação<br>Rural||||40|2|40|33|
@@ -731,7 +731,7 @@ ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS - ABNT. NBR 6023: informação e doc
 
 GIL, A. C. Como elaborar projetos de pesquisa. 5. ed. São Paulo: Atlas, 2010. NEVES, M. F.; CASTRO, L. T. Agronegócios e desenvolvimento sustentável: uma agenda para a liderança mundial na produção de alimentos e bioenergia. São Paulo: Atlas, 2007.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: PLANEJAMENTO AGROPECUÁRIO**||
@@ -757,7 +757,7 @@ GUIMARÃES, J. J. C. Gestão agropecuária. 1. ed. Brasília: NT Editora, 2015. 
 
 SILVA, R. C. da. Planejamento e Projeto Agropecuário: Mapeamento e Estratégias Agrícolas. Série Eixos. 1. ed. São Paulo: Érica, 2015. 136 p.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: DESENHO TÉCNICO E INSTALAÇÕES AGROPECUÁRIAS**||
@@ -783,7 +783,7 @@ MAGUIRE, D. E.; SIMMONS, C. H. Desenho técnico. São Paulo: Hemus, 2004. PEREIR
 
 SILVA, A. et al. Desenho técnico moderno. 4. ed. Rio de Janeiro: LTC, 2006. SILVA, R. C. da. Planejamento e Projeto Agropecuário: Mapeamento e Estratégias Agrícolas. Série Eixos. 1. ed. São Paulo: Érica, 2015. 136 p.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: IRRIGAÇÃO E DRENAGEM**||
@@ -805,7 +805,7 @@ GHEYI, H. R. et al. Recursos Hídricos em Regiões Semiáridas: Estudos e Aplica
 
 PENTEADO, S. R. Manejo da água de irrigação: aproveitamento da água em propriedades ecológicas. Campinas: Via Orgânica, 2010.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: MECANIZAÇÃO AGRÍCOLA**||
@@ -841,7 +841,7 @@ IBRAHIM, F. I. D. Introdução ao Geoprocessamento Ambiental. São Paulo: Érica
 
 TULER, M.; SARAIVA, S. Fundamentos de Topografia. Porto Alegre: Bookman, 2014. 282 p.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: AVICULTURA**||
@@ -956,7 +956,7 @@ p.
 
 TAYLOR, M. A.; COOP, R. L.; WALL, R. Parasitologia veterinária. 3. ed. Rio de Janeiro: Guanabara Koogan, 2010. 742 p.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: OVINOCAPRINOCULTURA**||
@@ -1050,7 +1050,7 @@ p.
 
 MAFESSONI, E. L. Manual prático para produção de suínos. Guaíba: Agrolivros, 2014. 472 p. SEGANFREDO, M. A. Gestão Ambiental na Suinocultura. Brasília: Embrapa, 2007. 302 p.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: NUTRIÇÃO E ALIMENTAÇÃO ANIMAL**||
@@ -1106,7 +1106,7 @@ LOPES, T. H. et al. Higiene e manipulação de alimentos. Curitiba: LT, 2012. 16
 
 PINTO, P. S. A. Inspeção e Higiene de Carnes. 1. ed. Minas Gerais: UFV, 2008. 320 p. RAMOS, E. M.; GOMIDE, L. A. M. Avaliação da qualidade de carne: fundamentos e metodologias. Viçosa: UFV, 2017. 472 p. TRABULSI, L. R.; ALTERTHUM, F. Microbiologia. 6. ed. São Paulo: Atheneu, 2015. 888 p.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: CULTURAS I**||
@@ -1136,7 +1136,7 @@ FLOSS, E. L. Fisiologia das plantas cultivadas: o estudo que está por trás do 
 
 GALLO, D. et al. Entomologia agrícola. Piracicaba: Fealq, 2002. 920 p. VIDAL, R. Ação dos herbicidas: Plantio direto. [S.l.]: Ed. Própria, 2002.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: CULTURAS II**||
@@ -1166,7 +1166,7 @@ SANTOS, F.; BORÉM, A.; CALDAS, C. Cana de açúcar: bioenergia, açúcar e álc
 
 SILVA, R. C. da. Produção Vegetal - Processos, Técnicas e Formas de Cultivo. São Paulo: Érica, 2014.
 
-|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**|
+|**_CAMPUS_ ASSIS CHATEAUBRIAND DO IFPR**||
 |---|---|
 |**Curso: TÉCNICO EM AGROPECUÁRIA**|**Eixo Tecnológico: Recursos Naturais**|
 |**Componente Curricular: CULTURAS III**||
@@ -1332,11 +1332,11 @@ EVANGELISTA, J. Tecnologia de alimentos. São Paulo: Atheneu, 2005. JAY, J. M. M
 
 59
 
-|||||
-|---|---|---|---|
-|Laboratório didático de<br>topografia.|0|0|1|
-|Oficina didática de<br>mecanização agrícola.|0|0|1|
-|Unidades de produção<br>animal, vegetal e<br>agroindustrial.|0|0|1|
+||||
+|---|---|---|
+|Laboratório didático de<br>topografia.|0|1|
+|Oficina didática de<br>mecanização agrícola.|0|1|
+|Unidades de produção<br>animal, vegetal e<br>agroindustrial.|0|1|
 
 ## **8. INFRAESTRUTURA PARA ATENDIMENTO ÀS NECESSIDADES ESPECIAIS**
 
@@ -1396,7 +1396,7 @@ Em termos de estrutura de pessoal, o NAPNE e seus núcleos contam com pedagogos,
 
 O corpo docente do Curso Técnico em Agropecuária será composto por professores do IFPR, _campus_ Assis Chateaubriand:
 
-|**DOCENTES**|**DOCENTES**|
+|**DOCENTES**||
 |---|---|
 |**QUANT.**|**PERFIL DE FORMAÇÃO**|
 |4|Bacharel Engenharia Agronômica|
@@ -1406,7 +1406,7 @@ O corpo docente do Curso Técnico em Agropecuária será composto por professore
 |1|Licenciatura em História|
 |2|Licenciatura em Geografia|
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**||
 |---|---|
 |**QUANT.**|**CARGO**|
 |6|Assistente em Administração|

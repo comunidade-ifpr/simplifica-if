@@ -457,7 +457,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 ## **MATRIZ CURRICULAR**
 
-|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|**CARGA HORÁRIA**|
+|**COMPONENTES**<br>**CURRICULARES**|**CARGA HORÁRIA**|||
 |---|---|---|---|
 ||**TOTAL**<br>**(hora-aula)**||**TOTAL**<br>**(horas-relógio)**|
 ||**01***|**02***||
@@ -502,7 +502,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 ## 3.10 - Ementas das Componentes Curriculares
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||||
 |---|---|---|---|
 |**Curso:**Técnico Subsequente em||**Eixo Tecnológico:**Controle e||
 |Eletrotécnica|Eletrotécnica|Processos Industriais||
@@ -604,7 +604,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Câmpus Curitiba do IFPR**|**us Curitiba do IFPR**|**us Curitiba do IFPR**|**us Curitiba do IFPR**|**us Curitiba do IFPR**|**us Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**|**us Curitiba do IFPR**|||||
 |---|---|---|---|---|---|
 |**Curso:**Técnico Subsequente em|||**Eixo Tecnológico:**Controle e|||
 |Eletrotécnica|Eletrotécnica|Eletrotécnica|Processos Industriais|||
@@ -710,7 +710,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**||||
 |---|---|---|---|
 |**Curso:**Técnico Subsequente em||**Eixo Tecnológico:**Controle e||
 |Eletrotécnica|Eletrotécnica|Processos Industriais||
@@ -808,7 +808,7 @@ MinisteriodaEducacao InstitutoFederaldoParana
 
 INSTITUTOFEDERAL PARANA
 
-|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|**Câmpus Curitiba do IFPR**|
+|**Câmpus Curitiba do IFPR**|||||
 |---|---|---|---|---|
 |**Curso:**Técnico Subsequente em|||**Eixo Tecnológico:**Controle e||
 |Eletrotécnica|Eletrotécnica|Eletrotécnica|Processos Industriais||

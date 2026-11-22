@@ -678,7 +678,7 @@ Inicialmente  será  estimulada  a  compreensão  do  elemento  extensão  no ce
 
 ## **4.1.2 Matriz Curricular**
 
-||**INSTITUTO FEDERAL DO PARANÁ**|**INSTITUTO FEDERAL DO PARANÁ**|**INSTITUTO FEDERAL DO PARANÁ**|**INSTITUTO FEDERAL DO PARANÁ**|**INSTITUTO FEDERAL DO PARANÁ**|**INSTITUTO FEDERAL DO PARANÁ**|
+||**INSTITUTO FEDERAL DO PARANÁ**||||||
 |---|---|---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||||
 ||Campus Campo Largo||||||
@@ -1657,7 +1657,7 @@ A SRM é utilizada para o Atendimento Educacional Especializado (AEE) ministrado
 
 Quadro 1 - Estrutura da SRM
 
-|**SRM**|**SRM**|**SRM**|
+|**SRM**|||
 |---|---|---|
 |**Nº**|**DESCRIÇÃO**<br>|**QUANTIDADE**|
 |1|ARMÁRIO ALTO 2 PORTAS|2|
@@ -1950,7 +1950,7 @@ O _campus_ conta com quatro Laboratórios de Informática em um total de 112 (ce
 
 últimos anos quanto ao comprometimento dessas máquinas, estima-se que será necessário adquirir mais 20 (vinte) máquinas para eventuais reposições e para o atendimento dos novos servidores. Com isso, será necessária a aquisição de 48 (quarenta e oito) máquinas no período de 2025-2027.
 
-|**BLOCO E - SALA 4**<br>|**BLOCO E - SALA 4**<br>|**BLOCO E - SALA 4**<br>|
+|**BLOCO E - SALA 4**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE INFORMÁTICA 1**<br>|||
 ||**DESCRIÇÃO**|**QUANTIDADE**|
@@ -1968,7 +1968,7 @@ O _campus_ conta com quatro Laboratórios de Informática em um total de 112 (ce
 |12|SWITCH|1|
 |13|MICROCOMPUTADOR(CPU+MONITOR)|20|
 
-|**BLOCO D - SALA 11**<br>|**BLOCO D - SALA 11**<br>|**BLOCO D - SALA 11**<br>|
+|**BLOCO D - SALA 11**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE INFORMÁTICA 2**<br>|||
 ||**DESCRIÇÃO**|**QUANTIDADE**|
@@ -1984,7 +1984,7 @@ O _campus_ conta com quatro Laboratórios de Informática em um total de 112 (ce
 |10|PROJETOR MULTIMÍDIA|1|
 |11|TELA DE PROJECAO EM VINIL|1|
 
-|**BLOCO D – SALA 12**<br>|**BLOCO D – SALA 12**<br>|**BLOCO D – SALA 12**<br>|
+|**BLOCO D – SALA 12**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE INFORMÁTICA 3**<br>|||
 ||**DESCRIÇÃO**|**QUANTIDADE**|
@@ -2006,7 +2006,7 @@ O _campus_ conta com quatro Laboratórios de Informática em um total de 112 (ce
 |---|---|---|
 |15|LOUSA QUADRICULADA NA|1|
 
-|**BLOCO E – SALA 3**<br>|**BLOCO E – SALA 3**<br>|**BLOCO E – SALA 3**<br>|
+|**BLOCO E – SALA 3**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE INFORMÁTICA 4**<br>|||
 ||**DESCRIÇÃO**|**QUANTIDADE**|
@@ -2028,7 +2028,7 @@ O _campus_ conta com quatro Laboratórios de Informática em um total de 112 (ce
 
 ## **II- Laboratório de Química e Biologia**
 
-|**BLOCO A**<br>|**BLOCO A**<br>|**BLOCO A**<br>|
+|**BLOCO A**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE QUÍMICA E BIOLOGIA**|||
 ||**DESCRIÇÃO**|**QUANTIDAD**<br>**E**|
@@ -2068,7 +2068,7 @@ O _campus_ conta com quatro Laboratórios de Informática em um total de 112 (ce
 
 ## **III- Laboratório de Física e Matemática**
 
-|**BLOCO A**<br>|**BLOCO A**<br>|**BLOCO A**<br>|
+|**BLOCO A**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE FÍSICA E MATEMÁTICA**|||
 ||**DESCRIÇÃO**|**QUANTIDAD**<br>**E**|
@@ -2119,7 +2119,7 @@ As áreas de estudo específicas do curso compreendem um laboratório Interno de
 
 ## **IV- Laboratório de Agroecologia**
 
-|**BLOCO A**<br>|**BLOCO A**<br>|**BLOCO A**<br>|
+|**BLOCO A**<br>|||
 |---|---|---|
 |**LABORATÓRIO DE AGROECOLOGIA**|||
 ||**DESCRIÇÃO**|**QUANTIDAD**<br>**E**|
@@ -2249,7 +2249,7 @@ As áreas de estudo específicas do curso compreendem um laboratório Interno de
 
 ## **V -Laboratório de Práticas e Estudos em Agroecologia - LAPEA**
 
-|**LAPEA**<br>|**LAPEA**<br>|**LAPEA**<br>|
+|**LAPEA**<br>|||
 |---|---|---|
 ||**DESCRIÇÃO**|**QUANTIDADE**|
 |1|PULVERIZADOR COSTAL,20 LITROS<br>|1|

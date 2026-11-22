@@ -99,7 +99,7 @@ Matutino
 
 As aulas regulares serão distribuídas conforme horário a seguir. Turmas especiais em regime de dependência e/ou grupos de estudo dirigido poderão ser ofertados no contraturno, de modo a evitar sobreposição com horários de componentes curriculares regulares.
 
-|**Turno: Matutino (De segunda a sexta-feira)**|**Turno: Matutino (De segunda a sexta-feira)**|
+|**Turno: Matutino (De segunda a sexta-feira)**||
 |---|---|
 ||Horário|
 |**1ª aula**|07h20|
@@ -833,7 +833,7 @@ A avaliação para Certificação de Conhecimentos Anteriores poderá ser solici
 
 (Criação Lei nº 11.892 de 29/11/2008) _Campus_ Pitanga **MATRIZ CURRICULAR DO CURSO TÉCNICO EM ALIMENTOS** Base legal específica do curso: Resolução CNE/CP nº 0000000 Resolução de autorização do curso no IFPR: Resolução nº XXXXX
 
-||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**|
+||**INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ**||||
 |---|---|---|---|---|
 ||(Criação Lei nº 11.892 de 29/11/2008)||||
 ||_Campus_Pitanga||||

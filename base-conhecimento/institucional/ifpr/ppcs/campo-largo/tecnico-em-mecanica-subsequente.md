@@ -870,7 +870,7 @@ Tais conteudos devem fazer parte do trabalho transversal, dialogando com os dife
 |COMPONENTES|CARGAHORARIA|CARGAHORARIA|N°aulas|
 |---|---|---|---|
 |CURRICULARES|(hora relogio)|(hora<br>aula)|por<br>semana|
-|19PERiODO LETIVO|19PERiODO LETIVO|||
+|19PERiODO LETIVO||||
 |DesenhoTecnicoMecanico|67|80|2|
 |MecanicaTecnicaeResistenciadosMateriais|67|80|2|
 |MetodologiaeComunicacao|67|80|2|

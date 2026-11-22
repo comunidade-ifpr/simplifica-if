@@ -46,7 +46,7 @@ ABERTURA DE CURSO: **2023**
 
 AJUSTE CURRICULAR DE CURSO: XXXX RESOLUÇÃO DE CRIAÇÃO: nº 96 de 29 de agosto de 2022.
 
-|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO- Portaria nº 32/2022**|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO- Portaria nº 32/2022**|
+|**COMISSÃO DE ESTRUTURAÇÃO DO CURSO- Portaria nº 32/2022**||
 |---|---|
 |**Função**|**Nome**|
 |Diretora de Ensino, Pesquisa e Extensão|Luciane Schulz Fonseca|
@@ -516,7 +516,7 @@ Ao longo do ano letivo, serão realizadas visitas técnicas, atividades de integ
 
 ## **6.13 TEMAS TRANSVERSAIS**
 
-|**6.13 TEMAS TRANSVERSAIS**|**6.13 TEMAS TRANSVERSAIS**|||||||
+|**6.13 TEMAS TRANSVERSAIS**||||||||
 |---|---|---|---|---|---|---|---|
 |**Matriz curricular**||**do Ensino Médio integrado em Administração**||||||
 |Ano de implantação: 2023||||||||
@@ -976,7 +976,7 @@ MAGNOLI, D. **Projeto de Ensino de Geografia - Naturezas, Tecnologias, Sociedade
 
 STEINKE, E. T. **Climatologia fácil.** São Paulo: Oficina de Textos, 2012. TAMIANO, J. O.; MENDES, L. **Geografia: estudos para compreensão do espaço** . Volume 1. São Paulo FTD, 2010. FIZ, P. R. Cartografia básica. São Paulo Oficina de textos, 2008.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Técnico em Administração Integrado ao<br>Ensino Médio|Eixo Tecnológico: Gestão e<br>Negócios|
 |Componente Curricular:**Química- II**||
@@ -1163,7 +1163,7 @@ RICKLEFS, R.E. **A economia da Natureza** . 6 ed, Rio de Janeiro: Guanabara Koog
 
 SADAVA, D. **Vida** : A Ciência da Biologia. Tradução Carla Denise Bonan. 8 ed. Porto Alegre: Artmed, 2009.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Técnico em Administração<br>Integrado ao Ensino Médio|Eixo Tecnológico: Gestão e Negócios|
 |Componente Curricular:**História- III**||
@@ -1380,7 +1380,7 @@ RICKLEFS, R.E. **A economia da Natureza** . 2010. 6 ed, Rio de Janeiro: Guanabar
 
 SADAVA, D. **Vida** : A Ciência da Biologia. Tradução Carla Denise Bonan. 8 ed. Porto Alegre: Artmed, 2009.
 
-|Campus Campo Largo do IFPR|Campus Campo Largo do IFPR|
+|Campus Campo Largo do IFPR||
 |---|---|
 |Curso: Técnico em Administração<br>Integrado ao Ensino Médio|Eixo Tecnológico: Gestão e Negócios|
 |Componente Curricular:**História– IV**||
@@ -1611,7 +1611,7 @@ HOOLEY, Graham J.; SAUNDERS, John A.; PIERCY, Nigel. **Estratégia de marketing 
 
 ## **TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**
 
-|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|
+|**TÉCNICOS ADMINISTRATIVOS EM EDUCAÇÃO**|||
 |---|---|---|
 |QUANT.|<br>CARGO||
 |2|Pedagogo||

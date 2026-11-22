@@ -1362,7 +1362,7 @@ Separados por macroáreas, os Temas Contemporâneos serão trabalhados nos compo
 
 ## 7.15 MATRIZ CURRICULAR
 
-||||**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|**Matriz Curricular do curso Técnico em Alimentos**|
+||||**Matriz Curricular do curso Técnico em Alimentos**|||||||||||||||
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |**Núcleos e**<br>**Componentes**<br>**Curriculares**||||**1º Ano**||||**2º Ano**||||**3º Ano**||||Total<br>Horas<br>Aulas|Total<br>Horas-<br>Relógio|
 |||||**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|**A**|**B**|**C**|**D**|||
@@ -1397,11 +1397,11 @@ Separados por macroáreas, os Temas Contemporâneos serão trabalhados nos compo
 |||Estágio Profissional||-|-|-|-|-|-|-|-|-|-|-|67|-|67|
 |||Temas<br>Contemporâneos||-|-|-|-|-|-|-|-|-|-|-|-|-|*|
 
-|||Exibição de Filmes<br>Nacionais|-|-|-|-|-|-|-|-|-|-|-|-|-|*|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|||**Carga Horária na Formação Geral Básica**|||||||||||||**2.160**|**1.806**|
-|||**Carga Horária na Formação Específica**|||||||||||||**1.440**|**1.200**|
-|||**Total Carga Horária do curso com Estágio**|||||||||||||**3.600**|**3.073**|
+|||Exibição de Filmes<br>Nacionais|-|-|*|
+|---|---|---|---|---|---|
+|||**Carga Horária na Formação Geral Básica**||**2.160**|**1.806**|
+|||**Carga Horária na Formação Específica**||**1.440**|**1.200**|
+|||**Total Carga Horária do curso com Estágio**||**3.600**|**3.073**|
 
 **LEGENDA:** A: Número de Aulas Semanais (50 minutos) Básica C: Carga Horária Formação Específica
 
@@ -1413,7 +1413,7 @@ Separados por macroáreas, os Temas Contemporâneos serão trabalhados nos compo
 
 ## 7.16 EMENTAS DOS COMPONENTES CURRICULARES
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Análise Sensorial|||
@@ -1457,7 +1457,7 @@ CONDURU, Roberto. **Arte afro-brasileira.** Belo Horizonte: C/Arte, 2007. PROEN�
 
 TIRAPELI, Percival; TIRAPELI, Percival. **Arte indígena** : do pré-colonial à contemporaneidade. São Paulo: Companhia Editora Nacional, 2006.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Biologia I|||
@@ -1505,7 +1505,7 @@ SOLER, Reinaldo. **210 novos jogos cooperativos para todas as idades.** Rio de J
 
 SILVA, Pedro Antonio da. **3.000 exercícios e jogos para Educação Física Escolar.** 4. ed. Rio de Janeiro: Sprint, 2011.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Filosofia I|||
@@ -1517,7 +1517,7 @@ SILVA, Pedro Antonio da. **3.000 exercícios e jogos para Educação Física Esc
 |**Bibliografia Complementar:**|||
 |COMTE-SPONVILLE, A.**Apresentação da filosofia**. São Paulo: Martins Fontes, 2002.<br>FERRY, L.**Aprender a Viver:**filosofia para novos tempos. Rio de Janeiro: Objetiva,<br>2010.<br>MARCONDES, D.**Textos básicos de filosofia:**dos pré-socráticos a Wittgenstein. Rio de<br>Janeiro: Jorge Zahar Ed., 2005.<br>REALE, G.; ANTISERI, D.**História da filosofia**. São Paulo: Paulus, 2003/2006. Volumes<br>1 até 7.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Física I|||
@@ -1553,7 +1553,7 @@ SILVEIRA, Ricardo Michael Pinheiro. **Cartografia geral** . Contentus, 2020. 98 
 
 TEIXEIRA, Wilson (org.) et al. **Decifrando a Terra** . 2. ed. São Paulo: Companhia Editora Nacional, 2009. 623 p.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**História I|||
@@ -1625,7 +1625,7 @@ José De Nicola. **Língua, Literatura e Produção de Textos 2** . 1° Edição
 
 MIGUEL, Jorge. **Análise comentada: sermão de Santo Antônio aos peixes de Padre Antônio Vieira** . São Paulo: DVS, 2013.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Matemática I|||
@@ -1655,7 +1655,7 @@ LE COUTEUR, Penny; BURRESON, Jay. **Os botões de Napoleão: as 17 moléculas qu
 
 LISBOA, J. C. F. **Química: ser protagonista** . São Paulo: Edições SM, 2013. MACHADO, A. H.; MORTIMER, E. F. **Química** . São Paulo: Scipione, 2013. MATEUS, Alfredo Luis. **Química na cabeça** . Belo Horizonte: UFMG, 2001.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Sociologia I|||
@@ -1697,7 +1697,7 @@ SILVA NETO, Raimundo Marcelino da; PAIVA, Francisco Fábio de Assis. **Doce de f
 
 VENTURINI FILHO, Waldemar Gastoni (coord.). **Bebidas alcoólicas:** ciência e tecnologia. 2. ed. São Paulo: Blucher, 2016. 575 p.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: **Técnico em Alimentos||**Eixo Tecnológico: **ProduçãoAlimentícia|
 |**Componente Curricular:**Biologia II|||
@@ -1718,7 +1718,7 @@ LINHARES, S. de V.; GEWANDSZNAJDER, F. **Biologia: ensino médio** . São Paulo:
 
 MACHADO, Sídio. **Biologia para ensino médio** . Volume único. São Paulo: Scipione, 2003. SOARES, José Luis. **Biologia** . Volume único. São Paulo: Scipone, 1999.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Educação Física II|||
@@ -1753,7 +1753,7 @@ A dialética histórica de Hegel e de Marx. A fundamentação teórica do marxis
 
 CHAUÍ, M. de S. **Iniciação à filosofia.** 3. ed. São Paulo: Ática, 2016. COTRIM, G. **Fundamentos de filosofia.** 4. ed. São Paulo: Saraiva, 2016. GAARDER, J. **O mundo de Sofia:** romance da história da filosofia. São Paulo: Companhia das Letras, 1995. **Bibliografia Complementar:** FERRY, L. **Aprender a Viver:** filosofia para novos tempos. Rio de Janeiro: Objetiva, 2010. MARCONDES, D. **Textos básicos de filosofia:** dos pré-socráticos a Wittgenstein. Rio de Janeiro: Jorge Zahar Ed., 2005. MARCONDES, D. **Textos básicos de ética:** de Platão a Foucault. Rio de Janeiro: Jorge Zahar Ed., 2007. REALE, G.; ANTISERI, D. **História da filosofia** . São Paulo: Paulus, 2003/2006. Volumes 1 até 7.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alímentícia|
 |**Componente Curricular:**Física dos Alimentos|||
@@ -1765,7 +1765,7 @@ CHAUÍ, M. de S. **Iniciação à filosofia.** 3. ed. São Paulo: Ática, 2016. 
 |**BibliografiaComplementar:**|||
 |FEYNMAN, R. P.; KORYTOWSKI, I.**Física em seis lições: fundamentos da física**<br>**explicados por seu mais brilhante professor**. Editora Edgrag, Rio de Janeiro, 1999.<br>FEYNMAN,R. P. et al.**Lições da Física de Feynman: Edição definitiva volumes I, II e**<br>**III**. 1ª Edição. Editora Bookman, Rio de Janeiro, 2008.<br>ROCHA, J.F. (Org).**Origens e Evolução das Ideias da Física**. 1ª Edição. Salvador:<br>EDUFBA, 2002.<br>VALADARES, E. de C.**Física mais que divertida: Inventos eletrizantes baseados em**<br>**materiais reciclados e de baixo custo**. UFMG, Belo Horizonte, 2000.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Geografia II|||
@@ -1813,7 +1813,7 @@ SARMIENTO, R. & SÁNCHEZ, A. **Gramática básica del español: norma y uso** . 
 
 REAL ACADEMIA ESPAÑOLA. **Diccionario panhispánico de dudas** . Bogotá: Alfaguara, 2005.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Língua Portuguesa II|||
@@ -1865,7 +1865,7 @@ BASTOS, M. S. R. **Ferramentas da ciência e tecnologia para a segurança dos al
 
 FORSYTHE, S. J. **Microbiologia da Segurança Alimentar** . Porto Alegre: Artmed, 2002. SILVA, N.; JUNQUEIRA, V. C. A.; SILVEIRA, N. F. A.; TAMIWAKI, M. H.; GOMES, R. A. R. e OKAZAKI, M. M. **Manual de métodos de análises microbiológica de alimentos e água** . São Paulo: Blücher, 2017. TORTORA, G. J.; CASE, C. L.; FUNKE, B. R. **Microbiologia** . 10ª ed. Porto Alegre: Artmed, 2012.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Química Analítica Aplicada|||
@@ -1877,7 +1877,7 @@ FORSYTHE, S. J. **Microbiologia da Segurança Alimentar** . Porto Alegre: Artmed
 |**Bibliografia Complementar:**|||
 |CHRISPINO, Álvaro.**O que é química**. 4. ed. São Paulo: Brasiliense, 2008.<br>LE COUTEUR, Penny; BURRESON, Jay.**Os botões de Napoleão: as 17 moléculas que**<br>**mudaram a história**. Rio de Janeiro: J. Zahar, 2006.<br>LISBOA, J. C. F.**Química: ser protagonista**. São Paulo: Edições SM, 2013.<br>MACHADO, A. H.; MORTIMER, E. F.**Química**. São Paulo: Scipione, 2013.<br>MATEUS, Alfredo Luis.**Química na cabeça**. Belo Horizonte: UFMG, 2001.<br>ROBERTS JR., J; HOLLENBERG, J. L.**Química no Laboratório**. Tradução da 5ª edição.<br>1ª ed. Berueri: Manole, 2009.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Sociologia II|||
@@ -1889,7 +1889,7 @@ FORSYTHE, S. J. **Microbiologia da Segurança Alimentar** . Porto Alegre: Artmed
 |**Bibliografia Complementar:**|||
 |ARON, Raymond.**As etapas do pensamento sociológico.**5. ed. São Paulo: Martins<br>Fontes, 1999.<br>DAMATTA, Roberto.**Explorações:**ensaios de sociologia interpretativa. Rio de Janeiro:<br>Rocco, 1986.<br>GIDDENS, Anthony.**Sociologia.**6. ed. Porto Alegre: Penso, 2012.<br>QUINTANEIRO, Tania; BARBOSA, Maria Ligia de Oliveira; OLIVEIRA, Márcia<br>Gardênia de.**Um toque de clássicos:**Marx, Durkheim e Weber. 2. ed. Belo Horizonte: Ed.<br>UFMG, 2002.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Tecnologia de Produtos de Origem Animal|||
@@ -1909,7 +1909,7 @@ ARGAN, Giulio Carlo. **Arte moderna: do iluminismo aos movimentos contemporâneo
 
 BERTHOLD, Margot. **História mundial do teatro** . 5. ed. São Paulo: Perspectiva, 2011. 578 p. CANTON, Katia. **Da política às micropolíticas** . São Paulo: Martins Fontes, 2009. 69 p. (Temas da arte contemporânea) CANTON, Katia. **Espaço e lugar** . São Paulo: Martins Fontes, 2009. 72 p. (Temas da arte contemporânea) CARLSON, Marvin. **Teorias do Teatro** . São Paulo: Ed. Unesp, 1997. GUINSBURG, J.; BARBOSA, Ana Mae Tavares Bastos (org.). **O pós-modernismo** . São Paulo: Perspectiva, 2005. 711 p. (Stylus) MELIM, Regina. **Performance nas artes visuais** . Rio de Janeiro: Jorge Zahar Ed., 2008. 74 p. (Arte+) PEIXOTO, Fernando. **O que é teatro** . 14. ed. São Paulo: Brasiliense, 1995. 94 p. (Coleção primeiros passos: 10)
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: **Técnico em Alimentos||**Eixo Tecnológico: **ProduçãoAlimentícia|
 |**Componente Curricular:**Educação Física III|||
@@ -1921,7 +1921,7 @@ BERTHOLD, Margot. **História mundial do teatro** . 5. ed. São Paulo: Perspecti
 |**Bibliografia Complementar:**|||
 |FERREIRA, Vanja.**Dança escolar: um novo ritmo para a educação física.**2. ed. Rio de<br>Janeiro: Sprint, 2009.<br>PEREIRA, Dimitri Wuo; ARMBRUST, Igor.**Pedagogia da aventura: os esportes**<br>**radicais, de aventura e de ação na escola.**1. ed. Jundiaí: Fontoura, 2010.<br>REZENDE, Sylvio.**Xadrez na escola: uma abordagem didática para principiantes.**Rio<br>de Janeiro: Ciência Moderna, 2002.<br>SABA, Fabio.**Mexa-se: atividade física, saúde e bem-estar.**3. ed. São Paulo: Phorte,<br>2011.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Filosofia III|||
@@ -1965,7 +1965,7 @@ MAGNOLI, Demétrio (org.). **História das Guerras** . Editora Contexto, 2022. 4
 
 ROSS, Jurandyr Luciano Sanches (org.). **Geografia do Brasil** . 6. ed. São Paulo: EDUSP, 2009. 549 p. (Didática; 3)
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**Gestão e Educação Ambiental|||
@@ -1977,7 +1977,7 @@ ROSS, Jurandyr Luciano Sanches (org.). **Geografia do Brasil** . 6. ed. São Pau
 |**Bibliografia Complementar:**|||
 |CATANI, André et al.**Biologia**. 3. ed. São Paulo: Edições SM, 2016. 3 v. (Ser protagonista)<br>CÉSAR & SEZAR.**Biologia**. Volume 1. São Paulo: Saraiva, 2006.<br>DIAS, Genebaldo Freire.**Educação ambiental**: princípios e práticas. 9. ed., rev. e ampl.<br>São Paulo: Gaia, 2004. 551 p.<br>LINHARES, S. de V.; GEWANDSZNAJDER, F.**Biologia: ensino médio**. São Paulo:<br>Ática, 2003. SOARES, José Luis. Biologia. Volume único. São Paulo: Scipione, 1999.<br>MACHADO, Sídio.**Biologia para ensino médio**. Volume único. São Paulo: Scipione,<br>2003.|||
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso:**Técnico em Alimentos||**Eixo Tecnológico:**Produção Alimentícia|
 |**Componente Curricular:**História III|||
@@ -2061,7 +2061,7 @@ LIMA, Elon Lages et al **. A matemática do ensino médio** . 6. ed. Rio de Jane
 
 BENETTI, Gisele Bizon (org.). **Curso didático de nutrição - volume 1** . Editora Yendis 2013. 505 p. BENETTI, Gisele Bizon (org.). **Curso didático de nutrição - volume 3** . Editora Yendis 2013. 209 p. NASCIMENTO A. J. P. et al **. Introdução à nutrição: conceitos básicos** . São Paulo: Martinari, 2016. 200 p. PALERMO, Jane Rizzo. **Bioquímica da Nutrição - 2ª Edição** . Editora Atheneu 2014. 184 p. E-book. REICHMANN MICHELLE TEIXEIRA FROTA. **Biodisponibilidade de nutrientes** . Contentus 2020. 111 p. E-book. SANTOS, Danielle Machado Ribeiro dos. **A Dieta Saudável** . Editora Atheneu, 2010. 110 p. VASCONCELOS VIVIANI GODEGUEZ. **Avaliação nutricional** . Editora Pearson, 2016. 139 p. E-book. **Bibliografia Complementar:** AZEVEDO, Elaine de. **Alimentos orgânicos: ampliando os conceitos de saúde humana, ambiental e social** . São Paulo: Ed. Senac São Paulo, 2012. 386 p. BENETTI, Gisele Bizon (org.). **Curso didático de nutrição - volume 2** . Editora Yendis, 2013. 433 p. E-book. MAZEPA LETÍCIA. **Avaliação nutricional** . Contentus, 2020. 96 p. E-book. MENDONÇA, Rejane Teixeira. **Cardápios: técnicas e planejamento** . Rio de Janeiro: Rubio, 2014. 322 p. PALERMO, Jane Rizzo. **Bioquímica da nutrição** . 2. ed. São Paulo: Atheneu, 2014. 182 p. PACHECO, Manuela. **Tabela de Equivalentes, medidas caseiras e composição química dos alimentos** . 2 ed. Rio de Janeiro. Ed. Rubio. 2011. 669 p.
 
-|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|**CAMPUS PALMAS DO IFPR**|
+|**CAMPUS PALMAS DO IFPR**|||
 |---|---|---|
 |**Curso: **Técnico em Alimentos||**Eixo Tecnológico: **ProduçãoAlimentícia|
 |**Componente Curricular:**Orientaçõespara Estágio|||
@@ -2133,7 +2133,7 @@ DAMATTA, Roberto. **Explorações:** ensaios de sociologia interpretativa. Rio d
 
 **8 INFRAESTRUTURA**
 
-|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|
+|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**||||
 |---|---|---|---|
 |**Materiais, equipamentos e**<br>**espaços físicos**|**Existentes no**<br>**campus**|**Disponibilizado**<br>**pelo(a)**<br>**conveniado(a)**|**A adquirir ou**<br>**construir**|
 |Biblioteca com acervo físico<br>ou virtual específico e<br>atualizado|Sim|-|-|
@@ -2156,7 +2156,7 @@ DAMATTA, Roberto. **Explorações:** ensaios de sociologia interpretativa. Rio d
 |Pátio coberto|Sim|-|300 m²|
 |Atendimento Psicológico|Sim|-|20 m²|
 
-|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**|
+|**Infraestrutura Mínima - Catálogo Nacional dos Cursos Técnicos**||||
 |---|---|---|---|
 |**Materiais, equipamentos e**<br>**espaços físicos**|**Existentes no**<br>**campus**|**Disponibilizado**<br>**pelo(a)**<br>**conveniado(a)**|**A adquirir ou**<br>**construir**|
 |Biblioteca com acervo físico<br>ou virtual específico e<br>atualizado|Sim|-|-|
@@ -2393,7 +2393,7 @@ XI - decidir sobre a aprovação ou reprovação de estudantes com dificuldade d
 
 ## 9.4 CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO
 
-|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**|
+|**CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO**||||
 |---|---|---|---|
 |**Nome**|**Formação**|**Regime de**<br>**Trabalho**<br>**(40h, 30h ou**<br>**20h)**|<br>**Cargo**|
 |ADENOR<br>VICENTE<br>WENDLING|Graduação em Bacharelado em agronegócios;<br>Mestrado e Doutorado em agroecossistemas.|40h|Tecnico de laboratorio<br>- area de agronomia e<br>agroecologia|

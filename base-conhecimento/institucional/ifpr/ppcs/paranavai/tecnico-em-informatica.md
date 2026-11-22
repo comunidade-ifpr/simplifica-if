@@ -670,7 +670,7 @@ Serão considerados para efeito de equivalência as atividades listadas na tabel
 
 ## **TABELA DE EQUIVALÊNCIA DAS ATIVIDADES COMPLENTARES DO CURSO TÉCNICO EM INFORMÁTAICA INTEGRADO AO ENSINO MÉDIO**
 
-|**ATIVIDADES**|**CARGA HORÁRIA**<br>|**CARGA HORÁRIA**<br>|
+|**ATIVIDADES**|**CARGA HORÁRIA**<br>||
 |---|---|---|
 ||**HORAS**|**EQUIVALÊNCIA**|
 |Documento de Menção Honrosa|Não se aplica|10 horas por menção|
@@ -742,7 +742,7 @@ FORMAÇÃO GERAL:
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Língua Portuguesa e Literatura Brasileira I||
@@ -806,7 +806,7 @@ AMABIS, J.M.; MARTHO, G.R. **Conceitos de biologia** . São Paulo: Moderna, 2001
 
 **Eixo Tecnológico** : Informação e Comunicação
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |||
@@ -881,7 +881,7 @@ ADAS, Melhem. **Panorama Geográfico do Brasil** : contradições, impasses e de
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: História I||
@@ -1153,7 +1153,7 @@ ARRUDA, J. J. **Toda a História** . São Paulo. São Paulo: Ática, 2004. TEIXE
 
 **Componente Curricular** : Língua Estrangeira Moderna – Inglês I
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Língua Estrangeira Moderna – Inglês I||
@@ -1231,7 +1231,7 @@ LOPES, S.; ROSSO, S. **Bio** . 2. ed. São Paulo: Saraiva, 2010. Vol. 1. LOPES, 
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Química III||
@@ -1645,7 +1645,7 @@ TEIXEIRA, F M. P. **Brasil, História e Sociedade** . São Paulo: Ática, 2001.
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Língua Estrangeira Moderna - Inglês III||
@@ -1695,7 +1695,7 @@ MORENO, Guilherme. **Recreação 1000 com acessórios** . Rio de Janeiro: Sprint
 
 **Curso** : Técnico em Informática Integrado ao **Eixo Tecnológico** : Informação e Comunicação Ensino Médio
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |||
@@ -1712,7 +1712,7 @@ FORMAÇÃO DIVERSIFICADA E ESPECÍFICA:
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Introdução a Informática||
@@ -1828,7 +1828,7 @@ ROB, Peter; CORONEL, Carlos. **Sistemas de Banco de Dados** : Projeto, Implement
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Algoritmos e Linguagem de Programação II||
@@ -1881,7 +1881,7 @@ BLOCK, Joshua. **Java Efetivo** . 2. ed. Alta Books, 2009. ANDERSON, Julie; FRAN
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Análise e Projeto de Sistemas||
@@ -1895,7 +1895,7 @@ BLOCK, Joshua. **Java Efetivo** . 2. ed. Alta Books, 2009. ANDERSON, Julie; FRAN
 
 ## **IFPR – CÂMPUS PARANAVAÍ**
 
-|**IFPR – CÂMPUS PARANAVAÍ**|**IFPR – CÂMPUS PARANAVAÍ**|
+|**IFPR – CÂMPUS PARANAVAÍ**||
 |---|---|
 |**Curso**: Técnico em Informática Integrado ao<br>Ensino Médio|**Eixo Tecnológico**: Informação e Comunicação|
 |**Componente Curricular**: Sistemas Operacionais||
