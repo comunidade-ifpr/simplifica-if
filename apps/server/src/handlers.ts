@@ -263,6 +263,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.revisarArquivoNovo": ({ lista, arquivo }) =>
         traduzir("revisaoPpc.revisarArquivoNovo", viva.revisarArquivoNovo(lista, arquivo)),
       "revisaoPpc.gerarCopia": ({ lista }) => traduzir("revisaoPpc.gerarCopia", viva.gerarCopia(lista)),
+      "revisaoPpc.documento": ({ lista }) => traduzir("revisaoPpc.documento", viva.documento(lista)),
     });
   }),
 );

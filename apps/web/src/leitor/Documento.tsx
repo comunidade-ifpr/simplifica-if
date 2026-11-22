@@ -2,15 +2,16 @@
  * O texto de uma norma ou de um PPC no leitor (M1.6): o Markdown da base vira HTML na hora, pelo
  * `react-markdown` (sem `rehype-raw` nem `innerHTML`: o PPC é entrada não confiável, e o HTML cru do
  * arquivo some), com o plugin `rehypeDispositivos`, que põe o `id` de cada dispositivo ou seção e o
- * `<mark>` no trecho citado.
+ * `<mark>` no trecho citado. Com `realce` (o trecho de uma pendência, no PPC em revisão), a frase exata
+ * se pinta dentro do `<mark>` (`realce.ts`), e o leitor rola até ela.
  *
  * Desempenho: o documento é dividido em blocos (`blocos.ts`). O bloco do trecho pedido se monta
  * primeiro, e o leitor rola até ele; os outros se montam um a um, no tempo ocioso do navegador, a
  * partir dos vizinhos. Enquanto não se montam, ocupam um espaço estimado; a ancoragem de rolagem do
  * navegador mantém o trecho no lugar quando o texto de cima aparece. Os blocos montados usam
  * `content-visibility: auto`, e o navegador só desenha o que está à vista; o do trecho, não (com o
- * tamanho estimado, a rolagem até ele erraria o lugar). Para imprimir, todos se montam antes
- * (`beforeprint`).
+ * tamanho estimado, a rolagem até ele erraria o lugar). Para imprimir e para buscar, todos se montam
+ * antes (`beforeprint` e `MONTAR_TUDO`, de `busca.ts`).
  */
 import type { Ancora, DadosDocumento } from "@simplifica-if/contratos-app";
 import { ImageOffIcon } from "lucide-react";
@@ -20,6 +21,8 @@ import ReactMarkdown, { type Components, type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { AbrirLink, LinkMarkdown, transformarUrl } from "../components/Markdown.tsx";
 import { type Bloco, blocoDaLinha, dividirEmBlocos, ordemDeMontagem } from "./blocos.ts";
+import { MONTAR_TUDO } from "./busca.ts";
+import { faixasDoRealce, NOME_REALCE, rolarAte, textosDe } from "./realce.ts";
 import { ancorasPorLinha, linhasDoTrecho, rehypeDispositivos } from "./rehypeDispositivos.ts";
 import { remarkMarcadores, remarkQuebras } from "./remarkLeitor.ts";
 
@@ -104,13 +107,17 @@ export function Documento({
   alvo,
   aoAbrirLink,
   rotulo,
+  realce = null,
 }: {
-  readonly documento: DadosDocumento;
+  /** Uma norma ou um PPC da base, ou o PPC revisado (`ifpr://revisao/…`): o texto, as âncoras e o link sem fragmento. */
+  readonly documento: Pick<DadosDocumento, "markdown" | "ancoras"> & { readonly link: string };
   /** O fragmento a destacar e a mostrar (`art28-xviii`); `null` abre no começo. */
   readonly alvo: string | null;
   readonly aoAbrirLink: (link: string) => void;
   /** O nome acessível do texto ("Texto da norma"). */
   readonly rotulo: string;
+  /** A frase a realçar dentro do trecho destacado (o trecho da pendência); `null` destaca só o bloco. */
+  readonly realce?: string | null;
 }) {
   const blocos = useMemo(() => dividirEmBlocos(documento.markdown), [documento.markdown]);
   const ancoras = useMemo(() => ancorasPorLinha(documento.ancoras), [documento.ancoras]);
@@ -144,11 +151,19 @@ export function Documento({
     return () => cancelar();
   }, [blocos, primeiro]);
 
-  // Para imprimir, o documento inteiro.
+  // Para imprimir e para buscar (Ctrl/⌘+F no painel), o documento inteiro.
   useEffect(() => {
-    const montarTudo = () => flushSync(() => setMontados(new Set(blocos.map((_, i) => i))));
+    // Já tudo montado, o mesmo estado: a busca pede a cada tecla e não deve renderizar a lista de novo.
+    const montarTudo = () =>
+      flushSync(() =>
+        setMontados((atuais) => (atuais.size === blocos.length ? atuais : new Set(blocos.map((_, i) => i)))),
+      );
     window.addEventListener("beforeprint", montarTudo);
-    return () => window.removeEventListener("beforeprint", montarTudo);
+    window.addEventListener(MONTAR_TUDO, montarTudo);
+    return () => {
+      window.removeEventListener("beforeprint", montarTudo);
+      window.removeEventListener(MONTAR_TUDO, montarTudo);
+    };
   }, [blocos]);
 
   // Rola até o trecho pedido, uma vez por alvo.
@@ -163,6 +178,21 @@ export function Documento({
       elemento.scrollIntoView({ block: "start" });
     }
   });
+
+  // A frase exata dentro do destaque, depois da rolagem até o bloco (os efeitos rodam na ordem).
+  useLayoutEffect(() => {
+    const raiz = conteiner.current;
+    if (realce === null || trecho === null || raiz === null || !("highlights" in CSS)) return;
+    const faixas = faixasDoRealce(textosDe([...raiz.querySelectorAll("mark.trecho-citado")]), realce);
+    if (faixas.length === 0) return;
+    CSS.highlights.set(NOME_REALCE, new Highlight(...faixas));
+    raiz.classList.add("com-realce");
+    rolarAte(faixas[0]!);
+    return () => {
+      CSS.highlights.delete(NOME_REALCE);
+      raiz.classList.remove("com-realce");
+    };
+  }, [realce, trecho]);
 
   return (
     <AbrirLink value={aoAbrirLink}>

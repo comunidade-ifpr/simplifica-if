@@ -21,7 +21,8 @@ import { ErroDeLeitura } from "./contratos.ts";
 import { EntradaDocumento, SaidaDocumento } from "./documento.ts";
 import { EntradaBusca, EntradaIndice, SaidaBusca, SaidaIndice } from "./explorar.ts";
 
-export type { Ancora, DadosDocumento, DatasDoAto } from "./documento.ts";
+export { Ancora } from "./documento.ts";
+export type { DadosDocumento, DatasDoAto } from "./documento.ts";
 export type * from "./explorar.ts";
 export { ROTULOS_INDICADOR } from "./ferramentas/ficha-curso.ts";
 import { fichaCurso } from "./ferramentas/ficha-curso.ts";

@@ -14,7 +14,7 @@ import type {
   Provider,
   SugestaoTexto,
 } from "@simplifica-if/contratos-app";
-import { CheckIcon, ClipboardCopyIcon, EllipsisIcon, SparklesIcon, Undo2Icon } from "lucide-react";
+import { CheckIcon, ClipboardCopyIcon, EllipsisIcon, FileSearchIcon, SparklesIcon, Undo2Icon } from "lucide-react";
 import { type FormEvent, type ReactNode, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { Badge } from "../components/ui/badge.tsx";
@@ -50,6 +50,7 @@ export function LinhaPendencia({
   aoMarcar,
   marcando,
   aoAbrirLink,
+  linkNoPpc,
 }: {
   readonly id: string;
   readonly lista: string;
@@ -64,6 +65,8 @@ export function LinhaPendencia({
   readonly aoMarcar: (situacao: "aberta" | "resolvida") => void;
   readonly marcando: boolean;
   readonly aoAbrirLink: (link: string) => void;
+  /** O trecho no PPC revisado (`ifpr://revisao/…#p-<chave>`), para "Ver no PPC". */
+  readonly linkNoPpc: string;
 }) {
   const api = useApi();
   const p = viva.pendencia;
@@ -142,7 +145,9 @@ export function LinhaPendencia({
           <p className="font-semibold text-small">{gravidade === "corrigir" ? "O que fazer" : "O que conferir"}</p>
           <p className="whitespace-pre-line text-body">{p.oQueFazer}</p>
         </div>
-        {p.trecho === null ? null : <Trecho trecho={p.trecho} filete={FILETE[gravidade]} />}
+        {p.trecho === null ? null : (
+          <Trecho trecho={p.trecho} filete={FILETE[gravidade]} aoVerNoPpc={() => aoAbrirLink(linkNoPpc)} />
+        )}
         {p.fontes.length ? (
           <p className="text-small">
             <span className="font-semibold">{p.fontes.length === 1 ? "Fonte: " : "Fontes: "}</span>
@@ -234,27 +239,41 @@ export function LinhaPendencia({
 }
 
 /**
- * O trecho do PPC, com o rótulo discreto e "Copiar trecho" (para achar no Word com Ctrl+F). A seção já
- * está no cabeçalho da linha.
+ * O trecho do PPC, com o rótulo discreto, "Ver no PPC" (o documento inteiro no painel de leitura, rolado
+ * e destacado no trecho, para ler o contexto) e "Copiar trecho" (para achar no Word com Ctrl+F). A seção
+ * já está no cabeçalho da linha. A citação não é botão: a pessoa seleciona o texto.
  */
-function Trecho({ trecho, filete }: { readonly trecho: string; readonly filete: string }) {
+function Trecho({
+  trecho,
+  filete,
+  aoVerNoPpc,
+}: {
+  readonly trecho: string;
+  readonly filete: string;
+  readonly aoVerNoPpc: () => void;
+}) {
   const [copiado, setCopiado] = useState(false);
   return (
     <div className="flex max-w-[68ch] flex-col gap-1">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3">
         <p className="font-semibold text-muted-foreground text-small">Trecho no PPC</p>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() =>
-            void navigator.clipboard
-              .writeText(trecho)
-              .then(() => setCopiado(true))
-              .catch(() => undefined)
-          }
-        >
-          <ClipboardCopyIcon /> {copiado ? "Trecho copiado" : "Copiar trecho"}
-        </Button>
+        <span className="flex items-center gap-1">
+          <Button size="sm" variant="ghost" onClick={aoVerNoPpc}>
+            <FileSearchIcon /> Ver no PPC
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              void navigator.clipboard
+                .writeText(trecho)
+                .then(() => setCopiado(true))
+                .catch(() => undefined)
+            }
+          >
+            <ClipboardCopyIcon /> {copiado ? "Trecho copiado" : "Copiar trecho"}
+          </Button>
+        </span>
       </div>
       <blockquote className={cn("border-l-[3px] pl-4 font-serif text-quote", filete)}>{trecho}</blockquote>
     </div>

@@ -17,6 +17,7 @@ describe("nome curto das citações", () => {
   it("normas, com e sem dispositivo", () => {
     expect(nomeCurtoLink("ifpr://norma/br/cne-cp/res/2026/2#art28-xviii")).toBe("Res. CNE/CP 2/2026, art. 28, XVIII");
     expect(nomeCurtoLink("ifpr://norma/br/lei/1996/9394")).toBe("Lei 9.394/1996");
+    expect(nomeCurtoLink("ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc")).toBe("PPC em revisão (texto convertido)");
     expect(nomeCurtoLink("ifpr://norma/br/lei/1996/9394#art36A")).toBe("Lei 9.394/1996, art. 36-A");
     expect(nomeCurtoLink("ifpr://norma/ifpr/consup/res/2024/190")).toBe("Res. CONSUP/IFPR 190/2024");
   });

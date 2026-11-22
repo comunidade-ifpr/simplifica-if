@@ -20,6 +20,29 @@ export const plural = (n: number, um: string, varios: string): string => `${n} $
 
 export const nomeDoArquivo = (caminho: string): string => caminho.split(/[\\/]/).at(-1) ?? caminho;
 
+/**
+ * A versão do PPC revisado para o painel de leitura: o arquivo (`sha256`) e o conjunto das pendências,
+ * de que dependem o texto e as âncoras. Muda com o arquivo novo, a leitura com IA ou outro curso, e não
+ * com "Feito": o painel só lê de novo quando o que ele mostra mudou.
+ */
+export function versaoDoPpc(lista: Pick<ListaPendencias, "sha256" | "pendencias">): string {
+  let h = 0x811c9dc5;
+  for (const c of lista.pendencias
+    .map((p) => p.chave)
+    .sort()
+    .join("|")) {
+    h ^= c.codePointAt(0)!;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return `${lista.sha256.slice(0, 12)}-${h.toString(16).padStart(8, "0")}`;
+}
+
+/**
+ * O link do PPC revisado (`versaoDoPpc`), para "Abrir ao lado"; com `#p-<chave>`, o trecho da pendência,
+ * para "Ver no PPC".
+ */
+export const linkDoPpc = (lista: string, versao: string): string => `ifpr://revisao/${lista}/${versao}`;
+
 export type Gravidade = "corrigir" | "conferir";
 
 export const gravidadeDe = (p: PendenciaRevisao): Gravidade => (p.estado === "nao_atende" ? "corrigir" : "conferir");

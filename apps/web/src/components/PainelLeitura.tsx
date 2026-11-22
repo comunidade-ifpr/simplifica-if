@@ -1,18 +1,19 @@
 /**
  * O leitor `ifpr://` (M1.6): o painel ao lado da conversa que abre as fontes citadas, direto da base,
  * pelo `GrupoLeitura` do servidor local, sem passar pela IA. O conteúdo de cada tipo de link está em
- * `leitor/Leitor.tsx`; aqui ficam o cabeçalho (voltar, avançar, imprimir, fechar), a memória das
- * leituras do painel e a área de rolagem.
+ * `leitor/Leitor.tsx`; aqui ficam o cabeçalho (voltar, avançar, buscar, imprimir, fechar), a memória
+ * das leituras do painel, a busca no texto (Ctrl/⌘+F, `BuscaPainel.tsx`) e a área de rolagem.
  *
  * A área de rolagem é a mesma enquanto o documento é o mesmo: ir de um dispositivo a outro da mesma
  * norma só rola até ele, sem montar o texto de novo.
  */
-import { ArrowLeftIcon, ArrowRightIcon, PrinterIcon, XIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, PrinterIcon, SearchIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { type Historico, linkAtual, podeAvancar, podeVoltar } from "../leitor/historico.ts";
 import { ContextoMemoria, MemoriaLeitor } from "../leitor/carga.ts";
 import { ConteudoLink } from "../leitor/Leitor.tsx";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
+import { ATALHO_BUSCA, BuscaPainel, eAtalhoBusca, montarTudo } from "./BuscaPainel.tsx";
 import { Button } from "./ui/button.tsx";
 
 export function PainelLeitura({
@@ -38,6 +39,30 @@ export function PainelLeitura({
     if (link === undefined || elemento === null || elemento.contains(document.activeElement)) return;
     elemento.focus({ preventScroll: true });
   }, [link]);
+
+  // A busca: ⌘F (macOS) ou Ctrl+F, de qualquer lugar da tela, enquanto o painel está aberto (o app não
+  // tem outra). Ao fechar, o foco volta à lupa.
+  const area = useRef<HTMLDivElement>(null);
+  const lupa = useRef<HTMLButtonElement>(null);
+  const [pedidoBusca, setPedidoBusca] = useState(0);
+  const abrirBusca = () => {
+    montarTudo();
+    setPedidoBusca((n) => n + 1);
+  };
+  const fecharBusca = () => {
+    setPedidoBusca(0);
+    lupa.current?.focus();
+  };
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => {
+      if (!eAtalhoBusca(e)) return;
+      e.preventDefault();
+      montarTudo();
+      setPedidoBusca((n) => n + 1);
+    };
+    window.addEventListener("keydown", tecla);
+    return () => window.removeEventListener("keydown", tecla);
+  }, []);
   if (link === undefined) return null;
   const documento = link.split("#")[0]!;
   return (
@@ -71,6 +96,16 @@ export function PainelLeitura({
         <p className="min-w-0 flex-1 truncate font-semibold text-sm" title={nomeCurtoLink(link)}>
           {nomeCurtoLink(link)}
         </p>
+        <Button
+          ref={lupa}
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Buscar no texto"
+          title={`Buscar no texto (${ATALHO_BUSCA})`}
+          onClick={abrirBusca}
+        >
+          <SearchIcon />
+        </Button>
         <Button variant="ghost" size="icon-sm" aria-label="Imprimir" title="Imprimir" onClick={() => window.print()}>
           <PrinterIcon />
         </Button>
@@ -78,10 +113,14 @@ export function PainelLeitura({
           <XIcon />
         </Button>
       </header>
+      {pedidoBusca === 0 ? null : <BuscaPainel area={area} pedido={pedidoBusca} aoFechar={fecharBusca} />}
       <ContextoMemoria value={memoria}>
-        {/* `relative`: o `sr-only` do trecho citado (posição absoluta) fica dentro da rolagem do painel. */}
-        <div key={documento} className="relative min-h-0 flex-1 overflow-y-auto px-4 py-3">
-          <ConteudoLink link={link} aoAbrirLink={aoAbrirLink} />
+        {/* Estável entre documentos: a busca observa o texto aqui e o refaz quando ele muda. */}
+        <div ref={area} className="flex min-h-0 flex-1 flex-col">
+          {/* `relative`: o `sr-only` do trecho citado (posição absoluta) fica dentro da rolagem do painel. */}
+          <div key={documento} className="relative min-h-0 flex-1 overflow-y-auto px-4 py-3">
+            <ConteudoLink link={link} aoAbrirLink={aoAbrirLink} />
+          </div>
         </div>
       </ContextoMemoria>
     </aside>

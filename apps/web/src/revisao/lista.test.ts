@@ -14,10 +14,12 @@ import {
   doBloqueio,
   fraseResultado,
   gruposDaRegua,
+  linkDoPpc,
   localizacao,
   naoLidos,
   ordenar,
   passouPelaIa,
+  versaoDoPpc,
   principais,
   resumoGrupo,
   resumoRegua,
@@ -236,4 +238,20 @@ test("a busca no CNCT, sem acento e com todas as palavras", () => {
   expect(buscarCnct(cnct, "agro").map((c) => c.slug)).toEqual(["b", "a"]);
   expect(buscarCnct(cnct, "tecnico agropecuaria").map((c) => c.slug)).toEqual(["a"]);
   expect(buscarCnct(cnct, "  ")).toEqual([]);
+});
+
+describe("linkDoPpc e versaoDoPpc", () => {
+  const pendencia = (chave: string) => ({ chave }) as PendenciaViva;
+  test("o PPC revisado, com a versão no caminho", () => {
+    expect(linkDoPpc("abc", "v1")).toBe("ifpr://revisao/abc/v1");
+  });
+
+  test("a versão muda com o arquivo e com o conjunto das pendências, não com a ordem", () => {
+    const base = { sha256: "f".repeat(64), pendencias: [pendencia("A:1"), pendencia("B:2")] };
+    const versao = versaoDoPpc(base);
+    expect(versao).toMatch(/^f{12}-[0-9a-f]{8}$/);
+    expect(versaoDoPpc({ ...base, pendencias: [pendencia("B:2"), pendencia("A:1")] })).toBe(versao);
+    expect(versaoDoPpc({ ...base, pendencias: [pendencia("A:1")] })).not.toBe(versao);
+    expect(versaoDoPpc({ ...base, sha256: "e".repeat(64) })).not.toBe(versao);
+  });
 });

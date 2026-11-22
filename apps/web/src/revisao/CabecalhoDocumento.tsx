@@ -1,16 +1,19 @@
 /**
  * O cabeçalho do documento revisado: o nome do arquivo e o curso, "Abrir no Word" (regrava a cópia
- * comentada com a situação atual e a abre) e o menu ⋯ com o resto: mostrar na pasta, enviar a versão
+ * comentada com a situação atual e a abre), "Abrir ao lado" (o texto do PPC no painel de leitura, para
+ * consulta rápida, com a busca) e o menu ⋯ com o resto: mostrar na pasta, enviar a versão
  * corrigida, exportar as discordâncias, revisar outro arquivo e apagar esta revisão.
  *
  * No navegador (sem o desktop), não há como abrir o Word: o botão grava a cópia e mostra onde ela está.
  */
-import { EllipsisIcon, FileTextIcon } from "lucide-react";
+import { EllipsisIcon, FileTextIcon, PanelRightOpenIcon } from "lucide-react";
 import { Button } from "../components/ui/button.tsx";
 import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from "../components/ui/menu.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 
 export interface AcoesDocumento {
+  /** O texto do PPC no painel de leitura, desde o começo. */
+  readonly aoAbrirAoLado: () => void;
   readonly aoAbrirNoWord: () => void;
   readonly abrindo: boolean;
   /** Só no desktop. */
@@ -42,6 +45,9 @@ export function CabecalhoDocumento({
       <div className="flex shrink-0 items-center gap-1">
         <Button onClick={acoes.aoAbrirNoWord} disabled={acoes.abrindo}>
           {acoes.abrindo ? <Spinner /> : <FileTextIcon />} Abrir no Word
+        </Button>
+        <Button variant="outline" onClick={acoes.aoAbrirAoLado} title="O texto do PPC no painel ao lado, com a busca">
+          <PanelRightOpenIcon /> Abrir ao lado
         </Button>
         <Menu>
           <MenuTrigger

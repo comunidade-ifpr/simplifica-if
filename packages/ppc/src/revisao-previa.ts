@@ -24,6 +24,7 @@ import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
+import { indiceDeLinhas } from "./localizar-trecho.ts";
 import { alvoDosTrechos, textoDoMaiorPedaco } from "./revisao-ia/conferencia.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
@@ -436,23 +437,13 @@ const ponto = (texto: string) => (/[.!?]$/.test(texto.trim()) ? texto.trim() : `
  * conferível ou não se acha (a conferência já o recusaria).
  */
 export function localizadorDeSecoes(markdown: string, secoes: readonly SecaoPpc[]): (trecho: string) => string | null {
-  const linhas = markdown.split("\n").map(alvoDosTrechos);
-  // As linhas normalizadas juntas, com o começo de cada uma: um pedaço pode atravessar a quebra.
-  const inicios: number[] = [];
-  let tamanho = 0;
-  for (const linha of linhas) {
-    inicios.push(tamanho);
-    tamanho += linha.length + 1;
-  }
-  const texto = linhas.join(" ");
+  const { texto, linhaDe } = indiceDeLinhas(markdown.split("\n").map(alvoDosTrechos));
   return (trecho) => {
     const pedaco = textoDoMaiorPedaco(trecho);
     if (pedaco === null) return null;
     const onde = texto.indexOf(pedaco);
     if (onde < 0) return null;
-    let indice = 0;
-    while (indice + 1 < inicios.length && inicios[indice + 1]! <= onde) indice += 1;
-    const linha = indice + 1;
+    const linha = linhaDe(onde);
     let achada: SecaoPpc | null = null;
     for (const secao of secoes) if (secao.linhaInicio <= linha && linha <= secao.linhaFim) achada = secao;
     return achada?.titulo ?? null;

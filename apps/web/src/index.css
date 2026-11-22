@@ -522,6 +522,41 @@ mark.trecho-citado {
   background: color-mix(in srgb, #ffd54f 35%, transparent);
 }
 
+/* A frase exata do trecho (`realce.ts`): o bloco fica num tom leve, e a frase, forte e sublinhada. */
+.com-realce mark.trecho-citado {
+  background: color-mix(in srgb, #ffd54f 22%, transparent);
+}
+
+.dark .com-realce mark.trecho-citado {
+  background: color-mix(in srgb, #ffd54f 14%, transparent);
+}
+
+::highlight(trecho-exato) {
+  background-color: color-mix(in srgb, #ffb300 70%, transparent);
+  text-decoration: underline 2px color-mix(in srgb, #8a5a00 80%, transparent);
+  color: inherit;
+}
+
+/* A busca no painel (`leitor/busca.ts`): todas as ocorrências num tom, a atual em outro, mais forte. */
+::highlight(busca) {
+  background-color: color-mix(in srgb, #4fc3f7 40%, transparent);
+  color: inherit;
+}
+
+::highlight(busca-atual) {
+  background-color: #ff9800;
+  color: #000;
+}
+
+.dark ::highlight(busca) {
+  background-color: color-mix(in srgb, #4fc3f7 30%, transparent);
+}
+
+.dark ::highlight(trecho-exato) {
+  background-color: color-mix(in srgb, #ffb300 45%, transparent);
+  text-decoration-color: #ffd54f;
+}
+
 /*
  * Impressão do leitor: só o artigo aberto no painel (`.leitor-impressao`), com o texto inteiro (o
  * `Documento` monta todos os blocos no `beforeprint`). O que está em volta some, e os contêineres

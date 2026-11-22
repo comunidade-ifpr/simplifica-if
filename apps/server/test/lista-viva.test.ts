@@ -284,6 +284,39 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       }),
   );
 
+  it.effect("o PPC revisado para o painel: seções e o trecho de cada pendência como âncora", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const c = yield* rpc;
+      const arquivo = gravar("PPC painel.docx", ppcSintetico());
+      const pre = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
+      const lista = yield* c["revisaoPpc.lista"]({ lista: pre.lista! });
+      const doc = yield* c["revisaoPpc.documento"]({ lista: pre.lista! });
+      assert.strictEqual(doc.titulo, "PPC painel.docx");
+      assert.isAbove(doc.ancoras.filter((a) => a.id.startsWith("secao-")).length, 0);
+      const comTrecho = lista.pendencias.filter((p) => p.pendencia.trecho !== null);
+      assert.isAbove(comTrecho.length, 0);
+      const linhas = doc.markdown.split("\n");
+      for (const p of comTrecho) {
+        const ancora = doc.ancoras.find((a) => a.id === `p-${p.chave}`);
+        assert.isDefined(ancora, `sem âncora: ${p.pendencia.trecho}`);
+        assert.isAtMost(ancora!.linha_inicio, ancora!.linha_fim);
+        assert.isAtMost(ancora!.linha_fim, linhas.length);
+        assert.deepStrictEqual(
+          doc.trechos.find((t) => t.id === ancora!.id),
+          { id: ancora!.id, texto: p.pendencia.trecho! },
+        );
+      }
+      const inicios = doc.ancoras.map((a) => a.linha_inicio);
+      assert.deepStrictEqual(
+        inicios,
+        [...inicios].sort((a, b) => a - b),
+      );
+      const ausente = yield* Effect.flip(c["revisaoPpc.documento"]({ lista: "nao-existe" }));
+      assert.strictEqual(ausente._tag, "FalhaRevisaoPpc");
+    }),
+  );
+
   it.effect("'Discordo…': evidência conferida retira; autoridade, trecho inventado e injeção no motivo, não", () =>
     Effect.gen(function* () {
       reiniciar();

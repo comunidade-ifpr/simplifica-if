@@ -85,7 +85,7 @@ const TRECHO_MINIMO = 25;
  * O trecho existe no alvo. Com reticências, cada pedaço tem ao menos 15 caracteres e existe, na ordem
  * do texto; o trecho todo soma ao menos 25 (sem isso, "est ... 400" passaria em quase qualquer texto).
  */
-const pedacosDoTrecho = (trecho: string) =>
+export const pedacosDoTrecho = (trecho: string) =>
   trecho
     .split(/\s*(?:\.\.\.|…|\[\.\.\.\]|\[…\])\s*/)
     .map(normalizar)

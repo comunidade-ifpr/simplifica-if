@@ -1,4 +1,5 @@
 /** A revisão de PPC: a prévia sem IA, a revisão com IA e a lista viva das pendências. */
+import { Ancora } from "@simplifica-if/mcp/grupo-leitura";
 import { Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
@@ -312,6 +313,25 @@ export type EstimativaAcao = typeof EstimativaAcao.Type;
 
 const EntradaLista = Schema.Struct({ lista: Schema.String });
 
+/**
+ * O PPC revisado, para o leitor (`ifpr://revisao/<lista>/<versão>#p-<chave>`): o Markdown convertido do `.docx`
+ * que a lista guarda, com as seções e, para cada pendência com trecho, a âncora `p-<chave>` nas linhas
+ * onde o trecho está, localizado na hora sobre o texto atual da lista.
+ */
+export const DocumentoRevisado = Schema.Struct({
+  /** O nome do arquivo `.docx`. */
+  titulo: Schema.String,
+  markdown: Schema.String,
+  /** As seções (`secao-<n>`) e os trechos das pendências (`p-<chave>`), na ordem do documento. */
+  ancoras: Schema.Array(Ancora),
+  /**
+   * O texto de cada trecho com âncora (`id` = `p-<chave>`), como a pendência o mostra: o leitor destaca
+   * a frase exata dentro das linhas da âncora.
+   */
+  trechos: Schema.Array(Schema.Struct({ id: Schema.String, texto: Schema.String })),
+});
+export type DocumentoRevisado = typeof DocumentoRevisado.Type;
+
 /** "Enviar a versão corrigida": a lista reconferida contra o arquivo novo e o que mudou. */
 export const ResultadoArquivoNovo = Schema.Struct({
   /** A lista, agora sobre o arquivo novo (`arquivoOriginal` e `resultado` dele, a cópia comentada regravada). */
@@ -479,4 +499,6 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
    * editada nunca é sobrescrita).
    */
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
+  /** O texto do PPC revisado, com as seções e os trechos das pendências, para o painel de leitura. */
+  Rpc.make("revisaoPpc.documento", { payload: EntradaLista, success: DocumentoRevisado, error: FalhaRevisaoPpc }),
 ) {}

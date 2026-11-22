@@ -7,6 +7,7 @@
  * "Revisar um PPC" (a revisão prévia sem IA, com o Worker de verdade e a ponte do desktop simulada: o
  * diálogo devolve o PPC sintético do servidor de teste).
  */
+import { NO_MAC } from "./components/BuscaPainel.tsx";
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
@@ -215,6 +216,36 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await expect.element(page.getByText("Atendimento Educacional Especializado", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Nota Técnica PROENS/IFPR nº 1/2025" }).click();
   await expect.element(page.getByRole("complementary", { name: "Painel de leitura" })).toBeVisible();
+  // "Ver no PPC": o texto convertido do arquivo, no painel, com o trecho da pendência destacado.
+  await page.getByRole("button", { name: "Ver no PPC" }).click();
+  const revisado = page.getByRole("article", { name: "PPC em revisão" });
+  await expect.element(revisado.getByRole("heading", { level: 2, name: "PPC de teste.docx" })).toBeVisible();
+  await expect.element(revisado.getByText(/Trecho citado: o trecho apontado, destacado no texto/)).toBeVisible();
+  await expect
+    .poll(() =>
+      [...revisado.element().querySelectorAll("mark.trecho-citado")].map((m) => m.textContent ?? "").join(" "),
+    )
+    .toContain("Atendimento Educacional Especializado");
+  // dentro do bloco, a frase exata do trecho, realçada
+  await expect
+    .poll(() => [...(CSS.highlights.get("trecho-exato") ?? [])].map((r) => (r as Range).toString()).join(" "))
+    .toContain("Atendimento Educacional Especializado");
+  // ⌘F (macOS) ou Ctrl+F busca no texto do painel: a contagem e a ocorrência atual realçada.
+  await userEvent.keyboard(NO_MAC ? "{Meta>}f{/Meta}" : "{Control>}f{/Control}");
+  const busca = page.getByRole("searchbox", { name: "Buscar no texto" });
+  await expect.element(busca).toHaveFocus();
+  await busca.fill("educacional especializado");
+  await expect.element(page.getByText(/^1 de \d+$/)).toBeVisible();
+  expect(CSS.highlights.get("busca-atual")?.size).toBe(1);
+  await userEvent.keyboard("{Escape}");
+  await expect.element(busca).not.toBeInTheDocument();
+  expect(CSS.highlights.has("busca")).toBe(false);
+  await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
+  // "Abrir ao lado": o texto do PPC no painel, desde o começo.
+  await page.getByRole("button", { name: "Abrir ao lado" }).click();
+  await expect
+    .element(page.getByRole("article", { name: "PPC em revisão" }).getByRole("heading", { name: "PPC de teste.docx" }))
+    .toBeVisible();
   await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
   expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\/|CT-[A-Z]+-\d/);
   semIngles();

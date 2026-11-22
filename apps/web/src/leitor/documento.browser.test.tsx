@@ -11,6 +11,8 @@ import { page } from "vite-plus/test/browser";
 import "../index.css";
 import { ContextoMemoria, MemoriaLeitor, useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
+import { buscarNoTexto, visivel } from "./busca.ts";
+import { faixasDoRealce, textosDe } from "./realce.ts";
 
 const montados: Array<() => void> = [];
 afterEach(() => {
@@ -154,4 +156,98 @@ function Fase() {
 it("useCarga: a leitura que termina entre a renderização e o efeito não fica em 'carregando'", async () => {
   montar(<Leitura memoria={new MemoriaLeitor()} />);
   await expect.element(page.getByText("Lido: pronto")).toBeInTheDocument();
+});
+
+it("realce: a frase exata do trecho dentro do bloco destacado, sem marcação, acento nem caixa, e à vista", async () => {
+  const documento = documentoLongo();
+  const linhas = documento.markdown.split("\n");
+  // Um parágrafo longo da seção 40, com a frase no meio, em negrito e com link.
+  const linha = documento.ancoras.find((a) => a.id === "secao-40")!.linha_inicio + 2;
+  linhas[linha - 1] =
+    `${"Texto antes da frase. ".repeat(60)}O curso segue a **[Lei nº 14.945/2024](https://planalto.gov.br/x)** e o CNCT. ${"Texto depois. ".repeat(60)}`;
+  const comTrecho: DadosDocumento = {
+    ...documento,
+    markdown: linhas.join("\n"),
+    ancoras: [
+      ...documento.ancoras,
+      { id: "p-x", rotulo: "", tipo: "pendencia", pai: null, linha_inicio: linha, linha_fim: linha, revogado: false },
+    ],
+  };
+  const conteiner = montar(
+    <Documento
+      documento={comTrecho}
+      alvo="p-x"
+      aoAbrirLink={() => {}}
+      rotulo="Texto"
+      realce="o curso segue a LEI Nº 14.945/2024 e o CNCT … Texto depois"
+    />,
+  );
+  await expect.poll(() => CSS.highlights.get("trecho-exato")?.size).toBe(2);
+  const [frase, depois] = [...CSS.highlights.get("trecho-exato")!] as Range[];
+  expect(frase!.toString()).toBe("O curso segue a Lei nº 14.945/2024 e o CNCT");
+  expect(depois!.toString()).toBe("Texto depois");
+  expect(conteiner.querySelector(".com-realce")).not.toBeNull();
+  // a frase, no meio de um parágrafo maior que a área, fica à vista
+  const caixa = frase!.getBoundingClientRect();
+  const area = conteiner.getBoundingClientRect();
+  expect(caixa.top).toBeGreaterThanOrEqual(area.top);
+  expect(caixa.bottom).toBeLessThanOrEqual(area.bottom);
+  // desmontado, o realce sai
+  for (const desmontar of montados.splice(0)) desmontar();
+  expect(CSS.highlights.has("trecho-exato")).toBe(false);
+});
+
+it("realce: a marcação do Markdown no trecho (negrito, tabela, número do item) não impede achar a frase", () => {
+  const raiz = document.createElement("div");
+  raiz.innerHTML =
+    '<mark class="trecho-citado"><span class="sr-only">Trecho citado: </span>O <strong>Estágio</strong> supervisionado</mark>' +
+    '<mark class="trecho-citado"><span>tem 200 h</span></mark>';
+  document.body.append(raiz);
+  try {
+    const faixas = faixasDoRealce(
+      textosDe([...raiz.querySelectorAll("mark")]),
+      "1. o **estagio** | supervisionado tem 200 h",
+    );
+    // uma faixa, do "O" ao "h", sem o anúncio oculto; os dois blocos se juntam sem espaço no DOM
+    expect(faixas.map((f) => f.toString())).toEqual(["O Estágio supervisionadotem 200 h"]);
+  } finally {
+    raiz.remove();
+  }
+});
+
+it("busca: sem acento nem caixa, espaços juntos, sem juntar blocos vizinhos e sem o anúncio oculto", () => {
+  const raiz = document.createElement("div");
+  raiz.innerHTML =
+    "<p>A <strong>Lei nº</strong>  14.945/2024 trata do <em>ensino médio</em>.</p>" +
+    "<p>Ensino</p><p>médio técnico; LEI Nº 14.945/2024.</p>" +
+    '<p><span class="sr-only">Trecho citado: </span>fim</p>';
+  document.body.append(raiz);
+  try {
+    const achar = (termo: string) => buscarNoTexto(textosDe([raiz]), termo).map((f) => f.toString());
+    expect(achar("lei no")).toEqual([]);
+    expect(achar("lei nº 14.945")).toEqual(["Lei nº  14.945", "LEI Nº 14.945"]);
+    // entre parágrafos vizinhos, um espaço (como no Ctrl+F do navegador), e nunca as palavras juntas
+    expect(achar("ENSINO MEDIO")).toEqual(["ensino médio", "Ensinomédio"]);
+    expect(achar("ensinomédio")).toEqual([]);
+    expect(achar("Trecho citado")).toEqual([]);
+    expect(achar("a")).toEqual([]);
+  } finally {
+    raiz.remove();
+  }
+});
+
+it("busca: o que está num <details> fechado não conta, salvo o <summary>", () => {
+  const raiz = document.createElement("div");
+  raiz.innerHTML =
+    "<details><summary>Seções do texto</summary><ul><li>Justificativa</li></ul></details><p>Justificativa do curso</p>";
+  document.body.append(raiz);
+  try {
+    const achar = (termo: string) => buscarNoTexto(textosDe([raiz]).filter(visivel), termo).map((f) => f.toString());
+    expect(achar("justificativa")).toEqual(["Justificativa"]);
+    expect(achar("seções")).toEqual(["Seções"]);
+    raiz.querySelector("details")!.open = true;
+    expect(achar("justificativa")).toHaveLength(2);
+  } finally {
+    raiz.remove();
+  }
 });

@@ -49,6 +49,7 @@ import {
   descreverCurso,
   doBloqueio,
   fraseResultado,
+  linkDoPpc,
   naoLidos,
   nomeDoArquivo,
   ordenar,
@@ -58,6 +59,7 @@ import {
   temasDaNavegacao,
   textoArquivoNovo,
   textoFeitas,
+  versaoDoPpc,
 } from "./lista.ts";
 import { NavTemas, SeletorTema } from "./NavTemas.tsx";
 import { ReguaCriterios } from "./ReguaCriterios.tsx";
@@ -293,6 +295,7 @@ export function Leitura({
   const temas = temasDaNavegacao(lista);
   const doTema = principais(lista).filter((v) => tema === null || v.pendencia.ordemTema === tema);
   const linhas = ordenar(doTema);
+  const versaoPpc = versaoDoPpc(lista);
   const temaAtual = temas.find((t) => t.ordem === tema);
   const bloqueio = doBloqueio(lista);
   const discordancias = lista.pendencias.some(
@@ -331,6 +334,7 @@ export function Leitura({
               nome={nomeDoArquivo(lista.arquivoOriginal)}
               curso={descreverCurso(r.curso)}
               acoes={{
+                aoAbrirAoLado: () => setLeitura((h) => abrirNoHistorico(h, linkDoPpc(lista.id, versaoPpc))),
                 aoAbrirNoWord: () => void abrirNoWord(),
                 abrindo,
                 aoMostrarNaPasta:
@@ -455,6 +459,7 @@ export function Leitura({
                         aoMarcar={(situacao) => void marcar(v.chave, situacao)}
                         marcando={marcando === v.chave}
                         aoAbrirLink={(link) => setLeitura((h) => abrirNoHistorico(h, link))}
+                        linkNoPpc={`${linkDoPpc(lista.id, versaoPpc)}#p-${v.chave}`}
                       />
                     </li>
                   ))}

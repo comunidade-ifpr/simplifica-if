@@ -1,6 +1,6 @@
 /**
  * Peças da tela "Revisar um PPC" no Chromium, sem servidor: a linha da pendência (a mensagem inteira
- * só aberta, o trecho do PPC com o rótulo e "Copiar trecho") e a faixa da IA pausada ("Ver andamento",
+ * só aberta, o trecho do PPC com o rótulo, "Ver no PPC" e "Copiar trecho") e a faixa da IA pausada ("Ver andamento",
  * bloco a bloco, e "Encerrar leitura por aqui").
  */
 import type { BlocoRevisaoIa, EstadoRevisaoIa, PendenciaViva } from "@simplifica-if/contratos-app";
@@ -66,6 +66,8 @@ const viva: PendenciaViva = {
   aceitaIa: true,
 };
 
+const abertos: string[] = [];
+
 function Linha() {
   const [aberta, setAberta] = useState(false);
   return (
@@ -82,7 +84,8 @@ function Linha() {
           aoAtualizar={() => {}}
           aoMarcar={() => {}}
           marcando={false}
-          aoAbrirLink={() => {}}
+          aoAbrirLink={(link) => abertos.push(link)}
+          linkNoPpc="ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc"
         />
       </li>
     </ul>
@@ -111,6 +114,10 @@ it("a linha recolhida corta a mensagem em duas linhas; aberta, mostra tudo, com 
   await page.getByRole("button", { name: "Copiar trecho" }).click();
   await expect.element(page.getByRole("button", { name: "Trecho copiado" })).toBeVisible();
   expect(copiado).toBe(viva.pendencia.trecho);
+
+  // "Ver no PPC" abre o documento inteiro no painel, no trecho da pendência.
+  await page.getByRole("button", { name: "Ver no PPC" }).click();
+  expect(abertos).toEqual(["ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc"]);
 });
 
 const bloco = (

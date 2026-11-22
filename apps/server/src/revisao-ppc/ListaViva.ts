@@ -47,6 +47,7 @@ import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import {
   type AvisoNaoAceito,
+  type DocumentoRevisado,
   type EstimativaAcao,
   type EventoRevisaoPpc,
   FalhaRevisaoPpc,
@@ -69,6 +70,7 @@ import {
   prefixoConversa,
   type TurnoAnterior,
 } from "@simplifica-if/ppc/revisao-ia/conversa";
+import { documentoRevisado } from "./documento-revisado.ts";
 import { estimarAcao } from "./estimativa.ts";
 import { type PendenciaDaLista, planoArquivoNovo } from "./arquivo-novo.ts";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
@@ -139,6 +141,8 @@ export class ListaViva extends Context.Service<
     /** "Enviar a versão corrigida": a lista inteira reconferida em código contra o arquivo novo. */
     readonly revisarArquivoNovo: (id: string, arquivo: string) => Effect.Effect<ResultadoArquivoNovo, FalhaRevisaoPpc>;
     readonly gerarCopia: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
+    /** O texto do PPC da lista, com as seções e os trechos das pendências, para o painel de leitura. */
+    readonly documento: (id: string) => Effect.Effect<DocumentoRevisado, FalhaRevisaoPpc>;
   }
 >()("@simplifica-if/server/revisao-ppc/ListaViva") {}
 
@@ -760,6 +764,17 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     return yield* lista(id);
   });
 
+  /** Na vez das escritas: o texto e as pendências da mesma versão da lista (nunca no meio de um arquivo novo). */
+  const documento = Effect.fn("ListaViva.documento")(function* (id: string) {
+    const { registro, pendencias } = yield* listas.exclusivo(
+      Effect.gen(function* () {
+        const registro = yield* buscar(id);
+        return { registro, pendencias: yield* listas.pendencias(registro.id) };
+      }),
+    );
+    return documentoRevisado({ ...registro, pendencias });
+  });
+
   /**
    * Confere a leitura com IA ligada à lista antes de trocar o que ela leu (o curso, o arquivo): recusa
    * com ela em andamento e indica se há revisão pausada/preparada para apagar depois que a troca concluir
@@ -950,6 +965,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     revisarDeNovo,
     revisarArquivoNovo,
     gerarCopia,
+    documento,
   });
 });
 

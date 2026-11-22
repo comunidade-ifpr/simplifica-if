@@ -170,6 +170,8 @@ export function nomeCurtoLink(link: string): string {
       return `Campus ${slugLegivel(partes[0] ?? "")}`;
     case "ficha":
       return `Critério ${partes[0]}`;
+    case "revisao":
+      return "PPC em revisão (texto convertido)";
     default:
       return "Fonte da base";
   }
