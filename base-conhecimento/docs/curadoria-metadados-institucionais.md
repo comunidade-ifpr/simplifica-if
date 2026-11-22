@@ -40,6 +40,22 @@ Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no c
 
 Use `docs/` apenas para documentação de apoio à manutenção e curadoria. Conteúdos destinados à consulta pública devem ficar na coleção temática correspondente, como `normas/`, `catalogos/` ou as coleções de registros institucionais (`institucional/ifpr/campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`).
 
+## Dados pessoais e URLs internas
+
+A base é pública. A regra fica em `packages/kb/src/ppcs/dados-pessoais.ts`, com os casos de teste em `dados-pessoais.casos.json`; o `validar_base.ts` aplica a regra a todo arquivo de `base-conhecimento/` e recusa o que ela acharia, com só as contagens na mensagem. A importação de PPC (`importar_ppc_docx.ts`) aplica a mesma limpeza ao texto convertido.
+
+São omitidos, com o rótulo e o resto da frase mantidos:
+
+- CPF → `[CPF omitido]`: o número depois do rótulo `CPF` (inclusive com `|` ou `<br>` no meio, como em célula de tabela) e o `000.000.000-00` sem rótulo com dígito verificador válido;
+- RG → `[RG omitido]`: o número depois de `RG`, `R.G.`, `R.G`, `Registro Geral`, `cédula`/`carteira`/`doc. de identidade` ou `Identidade:`, com UF (`MG-12.345.678`) ou grupos separados por espaço; `RG/CPF:` com dois números vira os dois marcadores;
+- celular → `[telefone omitido]`: 9 dígitos começando por 9, com DDD (com ou sem parênteses, `+55`) ou, sem DDD, com separador;
+- matrícula de estudante → `[matrícula omitida]`: 11 dígitos começando pelo ano (`20xx…`);
+- SIAPE → `[SIAPE omitido]`: o número depois do rótulo `SIAPE` e os números da coluna `SIAPE` de tabela Markdown.
+
+Ficam: o nome de pessoa em ato oficial, quadro docente ou declaração; e-mail institucional; telefone fixo; endereço e contato de campus e de parceiros. Não são CPF nem RG: onze dígitos soltos (IDs do Lattes e ISBN partidos pela conversão), número de até 4 dígitos depois de `RG` (um ano) e `R.G.` depois de iniciais de autor em referência bibliográfica (`JORDÃO, R.G. 2010`). E-mail particular não tem regra automática: tire à mão.
+
+Também não entram, e o `validar_base.ts` recusa: URL pré-assinada (`AWSAccessKeyId`, `Signature`, `X-Amz-*`; grave sem a query string), link de planilha do Google (`docs.google.com/spreadsheets`; o texto da referência fica sem o link, salvo o `horarios_url` de um campus, grade pública apontada pelo site oficial) e parâmetros de sessão do SEI (`infra_hash`, `infra_sistema`, `infra_unidade_atual`; o `hash_download` da autenticação pública fica).
+
 ## Cursos
 
 Cada arquivo em `institucional/ifpr/cursos/` representa uma oferta de curso em um campus.
@@ -173,7 +189,7 @@ node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --font
 3. Rode o script. Ele recusa arquivo que não é `.docx` ou não é um DOCX legível, documento sem texto (vazio ou digitalizado como imagem) e, sem `--substituir`, a troca de um PPC já gravado no caminho do curso. Com `--substituir`, a versão anterior fica no histórico do git.
 4. O script grava:
    - o Markdown em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md`, com o front matter de proveniência `registrada` (abaixo): o hash do DOCX vai em `arquivo_convertido_sha256`, e o `fonte_sha256` fica `desconhecido`, porque ele é o hash dos bytes de `fonte_url` (em geral o PDF), que o script não baixa;
-   - sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita no AGENTS.md, que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google (um link Markdown `[texto](planilha)` vira `texto (planilha interna, link omitido)`), sem parâmetros de sessão do SEI e sem query de URL pré-assinada. A saída informa só as contagens do que omitiu;
+   - sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita em [Dados pessoais e URLs internas](#dados-pessoais-e-urls-internas), que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google (um link Markdown `[texto](planilha)` vira `texto (planilha interna, link omitido)`), sem parâmetros de sessão do SEI e sem query de URL pré-assinada. A saída informa só as contagens do que omitiu;
    - no lugar da representação gráfica, um aviso: a figura não é publicada na base;
    - no registro do curso, `ppc.url` e `ppc.markdown_path`, nas posições dos outros registros (`ppc` na posição do schema, `markdown_path` logo depois de `url`). Se o registro já tem `ano_documento` ou vagas, o status de curadoria do campo volta a `Precisa de revisão`, com a data do dia, porque o valor veio do texto anterior. `ppc.observacoes` fica como está, e a saída a aponta como "a reconferir".
 

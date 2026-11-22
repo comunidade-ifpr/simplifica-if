@@ -21,7 +21,7 @@ Com skills de todas as áreas, o app vira a porta de entrada para o conhecimento
 5. **App próprio no monorepo, com código do T3 copiado e registrado.** O app vive neste repositório, ao lado do `kb` e do `simplifica-mcp`. O código que vem do T3 Code é copiado por parte e registrado em [upstream-t3.md](../upstream-t3.md). Motivo em [Código do T3](#código-do-t3-copiar-registrar-sincronizar-sob-demanda).
 6. **Sem SUAP e sem SEI até o Marco 2.** O app só trabalha com dado público: a base e os documentos que o servidor anexa. Credenciais, níveis de sensibilidade e verificação de ZDR ficam fora do escopo; o desenho está em [app-seguranca-dados.md](app-seguranca-dados.md).
 7. **Stack única com o T3 Code, interface inclusive.** Node, pnpm, Effect 4 e Vite+ no backend e nas ferramentas; Electron, React, TanStack Router, Tailwind e shadcn sobre Base UI no app. O `kb` é um serviço Effect dentro do servidor local, e as ferramentas MCP são um Toolkit de `effect/ai`. Detalhes em [Tecnologia e língua do código](#tecnologia-e-língua-do-código).
-8. **Repositório aberto com histórico limpo.** O histórico foi reescrito antes da publicação, sem dados pessoais nem URLs assinadas. A base segue a política de dados pessoais do `AGENTS.md`, que o `validar_base` aplica.
+8. **Repositório aberto com histórico limpo.** O histórico foi reescrito antes da publicação, sem dados pessoais nem URLs assinadas. A base segue a [política de dados pessoais](../../base-conhecimento/docs/curadoria-metadados-institucionais.md#dados-pessoais-e-urls-internas), que o `validar_base` aplica.
 
 ## Princípios
 
@@ -242,7 +242,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 
 ## Fora do escopo até o Marco 2
 
-- Acesso a SUAP, SEI e outros sistemas com login, e qualquer dado não público. As ferramentas com login ficam num repositório privado à parte (veja o `AGENTS.md`).
+- Acesso a SUAP, SEI e outros sistemas com login, e qualquer dado não público.
 - Modelos locais e roteamento por OpenRouter: há só pesquisa, em [opencode-openrouter.md](opencode-openrouter.md).
 - Tarefas agendadas executadas pela IA.
 - App mobile.

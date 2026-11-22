@@ -183,3 +183,17 @@ Regras de transição (direito de conclusão, prazos de adequação) são dados 
 ## Correspondência entre normas sucessoras
 
 `base-conhecimento/correspondencias/*.yaml` liga cada dispositivo da norma revogada aos da sucessora (`equivalente`, `parcial`, `sem-equivalente`, com nota). A tabela 1/2021 → 2/2026 está em `rascunho`: exige revisão jurídica humana antes de servir de fundamento. Consulta: `pnpm kb correspondencia br/cne-cp/res/2021/1#art20`.
+
+## Inclusão de norma nova
+
+1. Grave o Markdown em `normas/` com o `id` canônico (acima) e retire de `normas/stubs.yaml` o stub correspondente, se houver. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto (`pnpm kb relacoes --propor` lista o que o regex achou e ainda não foi confirmado).
+2. Acrescente a norma a `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`): os testes de saneamento e de status manual comparam as normas com o commit anterior ao saneamento.
+3. Rode o pipeline e compile o banco:
+
+   ```bash
+   node scripts/gerar_base.ts
+   node scripts/validar_base.ts
+   pnpm kb:compilar
+   ```
+
+4. Confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar`) e recalcule a contagem de casos de `testes.txt` pelo roteiro JUnit do [README do gabarito](../../testes-gabarito/README.md): uma norma nova muda escores de busca, contagens do banco e o número de casos de `estrutura.test.ts`, que tem um caso por norma.

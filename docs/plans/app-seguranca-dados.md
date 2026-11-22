@@ -1,6 +1,6 @@
 # Segurança de dados do app
 
-> **Suspenso.** O app não acessa SUAP nem SEI até depois do Marco 2 e só trabalha com dados públicos ([decisão 6 do plano do app](app-simplifica-if.md#decisões-13112026)). O desenho de credenciais, sessões e ferramentas do SUAP e do SEI pertence ao repositório privado das ferramentas com login e fica fora do app até depois do Marco 2. Aqui ficam só as conclusões sobre retenção de dados dos providers e LGPD, que valem para qualquer caminho de IA do app.
+> **Suspenso.** O app não acessa SUAP nem SEI até depois do Marco 2 e só trabalha com dados públicos ([decisão 6 do plano do app](app-simplifica-if.md#decisões-13112026)). O desenho de credenciais, sessões e ferramentas do SUAP e do SEI fica fora do app até depois do Marco 2. Aqui ficam só as conclusões sobre retenção de dados dos providers e LGPD, que valem para qualquer caminho de IA do app.
 
 Fontes conferidas em 13/11/2026.
 

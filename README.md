@@ -11,7 +11,7 @@ O que ele entrega hoje:
 - leitor `ifpr://` e Explorar, para navegar por normas, PPCs, cursos, campi, CNCT, Consepe e fichas sem IA;
 - pasta de trabalho com "Desfazer", primeiro uso com perfil, relato de erro e atualização da base e das skills.
 
-O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). Sistemas com login, como SUAP e SEI, ficam fora dele (veja [Fora do app](#fora-do-app)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
+O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). Sistemas com login, como SUAP e SEI, ficam fora dele (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
 
 ```bash
 pnpm install
@@ -38,8 +38,6 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 - a skill `ifpr-design`.
 
-As ferramentas com login em sistemas internos (SEI, SUAP) ficam num repositório privado à parte. Elas leem a base pelo `simplifica-mcp` e entregam dado coletado por relatório, aplicado aqui por um comando `aplicar_*` (veja "Dado coletado fora do repositório" em [`base-conhecimento/docs/curadoria-metadados-institucionais.md`](base-conhecimento/docs/curadoria-metadados-institucionais.md)). A integração de sistemas com login ao app está nos planos (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)).
-
 ## Base, skills e scripts
 
 - `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `revisao-ppc/` (as fichas da tarefa "Revisar um PPC"), `manifest.json` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
@@ -49,7 +47,7 @@ As ferramentas com login em sistemas internos (SEI, SUAP) ficam num repositório
 
 ## Base de Conhecimento
 
-A base é lida pelo app, pelo `simplifica-mcp` e, no repositório, pela CLI `kb` (`pnpm kb`), todos sobre o `kb.sqlite` compilado de `base-conhecimento/`. Os comandos e o procedimento de consulta estão em "Consulta local da base", no [`AGENTS.md`](AGENTS.md#consulta-local-da-base); a resposta aponta o Markdown da norma ou do PPC, que é o que se abre e se cita.
+A base é lida pelo app, pelo `simplifica-mcp` e, no repositório, pela CLI `kb` (`pnpm kb`), todos sobre o `kb.sqlite` compilado de `base-conhecimento/`. Os comandos e o procedimento de consulta estão em "Consulta da base", no [`AGENTS.md`](AGENTS.md#consulta-da-base), e a lista completa da CLI no [`packages/kb/README.md`](packages/kb/README.md#cli); a resposta aponta o Markdown da norma ou do PPC, que é o que se abre e se cita.
 
 ## Skills
 
