@@ -144,14 +144,23 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
   semIngles();
 });
 
-it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de análise", async () => {
+it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; campus e ficha de análise", async () => {
   await using app = await montarApp(servidor, "/explorar");
   // a entrada mostra as coleções
   await expect.element(page.getByRole("link", { name: /Cursos 2/ })).toBeVisible();
+  // a linha do tempo: um sinal por norma, com a situação no nome, e o ano que abre a coleção filtrada
+  const tempo = page.getByRole("region", { name: "As normas no tempo" });
+  await expect.element(tempo.getByRole("link", { name: "Resolução CNE/CP nº 1/2021: Revogada" })).toBeVisible();
   semIngles();
+  await tempo.getByRole("link", { name: /^Normas de 2021/ }).click();
+  expect(app.roteador.state.location.search).toMatchObject({ ano: "2021" });
+  await expect.element(page.getByRole("region", { name: "Normas de 2021" })).toBeVisible();
 
   // Cursos: campus, turno e limpar
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Cursos" }).click();
+  await page
+    .getByRole("navigation", { name: "Coleções" })
+    .getByRole("link", { name: /^Cursos/ })
+    .click();
   const filtros = page.getByRole("group", { name: "Filtros" });
   await expect.element(page.getByText("2 cursos", { exact: true })).toBeVisible();
   await filtros.getByLabelText("Campus").selectOptions("curitiba");
@@ -166,7 +175,7 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   await expect.element(page.getByText("2 cursos", { exact: true })).toBeVisible();
 
   // PPCs: a coleção e o filtro de campus
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "PPCs" }).click();
+  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: /^PPCs/ }).click();
   await expect.element(page.getByRole("heading", { name: "Projetos Pedagógicos de Curso" })).toBeVisible();
   await expect.element(page.getByText("1 PPC", { exact: true })).toBeVisible();
   await page.getByRole("group", { name: "Filtros" }).getByLabelText("Campus").selectOptions("curitiba");
@@ -174,14 +183,17 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   semIngles();
 
   // Normas: a situação de vigência
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Normas" }).click();
+  await page
+    .getByRole("navigation", { name: "Coleções" })
+    .getByRole("link", { name: /^Normas/ })
+    .click();
   await page.getByRole("group", { name: "Filtros" }).getByLabelText("Situação de vigência").selectOptions("revogada");
   await expect.element(page.getByRole("link", { name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
   await expect.element(page.getByRole("link", { name: "Resolução CNE/CP nº 2/2026" })).not.toBeInTheDocument();
   semIngles();
 
   // CNCT: só os que o IFPR oferta
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "CNCT" }).click();
+  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: /^CNCT/ }).click();
   await expect.element(page.getByText("2 cursos do catálogo", { exact: true })).toBeVisible();
   await page.getByRole("group", { name: "Filtros" }).getByLabelText("No IFPR").selectOptions("sim");
   await expect.element(page.getByText("1 de 2 cursos do catálogo")).toBeVisible();
@@ -189,7 +201,10 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   semIngles();
 
   // Campi: a ficha do campus, com os horários de aula e os cursos
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Campi" }).click();
+  await page
+    .getByRole("navigation", { name: "Coleções" })
+    .getByRole("link", { name: /^Campi/ })
+    .click();
   await page.getByRole("link", { name: "Campus Curitiba" }).click();
   const campus = page.getByRole("article", { name: "Campus" });
   await expect
@@ -199,7 +214,10 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   semIngles();
 
   // Consepe: o tipo de demanda
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Consepe" }).click();
+  await page
+    .getByRole("navigation", { name: "Coleções" })
+    .getByRole("link", { name: /^Consepe/ })
+    .click();
   await page
     .getByRole("group", { name: "Filtros" })
     .getByLabelText("Tipo de demanda")
@@ -208,9 +226,11 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   await expect.element(page.getByRole("link", { name: "Ficha do curso" })).toBeVisible();
   semIngles();
 
-  // Fichas de análise: a página da ficha
-  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Fichas de análise" }).click();
-  await page.getByRole("link", { name: /CT-CURR-12/ }).click();
+  // As fichas da revisão de PPC não são coleção nem resultado de busca; a página de uma abre pelo link
+  await expect
+    .element(page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: /Ficha/ }))
+    .not.toBeInTheDocument();
+  await app.roteador.navigate({ to: "/explorar/ver", search: { link: "ifpr://ficha/CT-CURR-12" } });
   const ficha = page.getByRole("article", { name: "Ficha de análise" });
   await expect.element(ficha.getByText(/^A organização curricular deixa clara a progressão formativa/)).toBeVisible();
   await expect.element(ficha.getByText("Obrigatória")).toBeVisible();

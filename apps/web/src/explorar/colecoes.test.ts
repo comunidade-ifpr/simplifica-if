@@ -10,10 +10,12 @@ import {
   nomeResultado,
   nomeTurno,
   nomeVigencia,
+  normasPorAno,
   opcoes,
   pedidoSobre,
   quantos,
   ressalvaDoFato,
+  vigenciaDaNorma,
 } from "./colecoes.ts";
 import { nomeDaPagina } from "./nomes.ts";
 
@@ -83,7 +85,7 @@ describe("nomes", () => {
       ppcs: [],
       campi: [],
       cnct: [],
-      fichas: [],
+
       processos: [],
       reunioes: [],
     };
@@ -120,6 +122,22 @@ describe("filtros", () => {
     expect(filtrarNormas(normas, { vigencia: A_CONFIRMAR }).map((n) => n.ano)).toEqual([2021]);
     expect(filtrarNormas(normas, { texto: "ldb" }).map((n) => n.ano)).toEqual([1996]);
     expect(filtrarNormas(normas, { texto: "resolucao 2026" }).map((n) => n.ano)).toEqual([2026]);
+  });
+
+  it("os grupos por ano, do mais recente ao mais antigo, as sem ano no fim", () => {
+    const semAno = norma({ id: "externo:abnt/nbr/6023", titulo: "ABNT NBR 6023" });
+    expect(normasPorAno([semAno, ...normas]).map((g) => [g.ano, g.normas.length])).toEqual([
+      [2026, 1],
+      [2021, 1],
+      [1996, 1],
+      [null, 1],
+    ]);
+  });
+
+  it("a vigência que a tela mostra: a publicada, ou a confirmar", () => {
+    expect(vigenciaDaNorma({ status_vigencia: "parcialmente revogada" })).toBe("parcialmente revogada");
+    expect(vigenciaDaNorma({ status_vigencia: null })).toBe("a confirmar");
+    expect(vigenciaDaNorma({ status_vigencia: "a confirmar" })).toBe("a confirmar");
   });
 
   const cursos = [

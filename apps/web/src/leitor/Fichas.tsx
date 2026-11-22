@@ -40,7 +40,7 @@ import {
 } from "../explorar/colecoes.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { useCarga } from "./carga.ts";
-import { BotaoLink, Cabecalho, ComCarga, LinkExterno, Secao } from "./pecas.tsx";
+import { BotaoLink, Cabecalho, ComCarga, Fatos, LinkExterno, Secao } from "./pecas.tsx";
 import { dataCurta, situacaoDaTransicao } from "./textos.ts";
 
 type AoAbrirLink = (link: string) => void;
@@ -123,15 +123,32 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
         const divergencias = (d.fatos?.cruzamento ?? []).filter((c) => nomeResultado(c.resultado).alerta);
         const consepe = indice.fase === "lido" ? itensDoConsepe(indice.valor.reunioes, (i) => i.curso === id) : [];
         return (
-          <article aria-label="Curso" className="leitor-impressao space-y-4">
-            <Cabecalho tipo="Curso" titulo={d.curso.nome}>
-              <p className="text-muted-foreground text-sm">
-                {[`Campus ${d.campus.nome}`, d.curso.nivel, d.curso.forma_oferta, d.curso.modalidade]
-                  .filter(Boolean)
-                  .map((p) => primeiraMaiuscula(p!))
-                  .join(" · ")}
-              </p>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <article aria-label="Curso" className="leitor-impressao space-y-6">
+            <Cabecalho
+              tipo="Curso"
+              titulo={d.curso.nome}
+              acoes={
+                <>
+                  {d.ppc ? (
+                    <BotaoLink link={d.ppc.link} aoAbrirLink={aoAbrirLink}>
+                      Abrir o PPC
+                    </BotaoLink>
+                  ) : null}
+                  {doIndice?.pagina_oficial ? (
+                    <LinkExterno href={doIndice.pagina_oficial}>Página do curso</LinkExterno>
+                  ) : null}
+                </>
+              }
+            >
+              <Fatos>
+                <BotaoLink link={d.campus.link} aoAbrirLink={aoAbrirLink}>
+                  Campus {d.campus.nome}
+                </BotaoLink>
+                {[d.curso.nivel, d.curso.forma_oferta, d.curso.modalidade].filter(Boolean).map((p) => (
+                  <span key={p}>{primeiraMaiuscula(p!)}</span>
+                ))}
+              </Fatos>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 empty:hidden">
                 {d.curso.situacao ? (
                   <Badge variant={d.curso.situacao === "ativo" ? "success" : "warning"} size="lg">
                     {primeiraMaiuscula(d.curso.situacao)}
@@ -145,19 +162,6 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                   </Badge>
                 ) : null}
               </div>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                <BotaoLink link={d.campus.link} aoAbrirLink={aoAbrirLink}>
-                  Campus {d.campus.nome}
-                </BotaoLink>
-                {d.ppc ? (
-                  <BotaoLink link={d.ppc.link} aoAbrirLink={aoAbrirLink}>
-                    Abrir o PPC
-                  </BotaoLink>
-                ) : null}
-                {doIndice?.pagina_oficial ? (
-                  <LinkExterno href={doIndice.pagina_oficial}>Página do curso</LinkExterno>
-                ) : null}
-              </p>
             </Cabecalho>
 
             <Secao titulo="Catálogo Nacional de Cursos Técnicos">
@@ -371,19 +375,18 @@ export function FichaCampus({ id, aoAbrirLink }: { readonly id: string; readonly
           porNivel.set(nivel, [...(porNivel.get(nivel) ?? []), c]);
         }
         return (
-          <article aria-label="Campus" className="leitor-impressao space-y-4">
-            <Cabecalho tipo="Campus" titulo={`Campus ${d.campus.nome}`}>
-              <p className="text-muted-foreground text-sm">
-                {d.cursos.length === 1 ? "1 curso na base" : `${d.cursos.length} cursos na base`}
-              </p>
+          <article aria-label="Campus" className="leitor-impressao space-y-6">
+            <Cabecalho
+              tipo="Campus"
+              titulo={`Campus ${d.campus.nome}`}
+              acoes={d.campus.site ? <LinkExterno href={d.campus.site}>Site do campus</LinkExterno> : null}
+            >
+              <Fatos>
+                <span>{d.cursos.length === 1 ? "1 curso na base" : `${d.cursos.length} cursos na base`}</span>
+              </Fatos>
             </Cabecalho>
-            <Secao titulo="Contato e páginas do campus">
+            <Secao titulo="Calendário e horários">
               <ul className="space-y-1">
-                {d.campus.site ? (
-                  <li>
-                    <LinkExterno href={d.campus.site}>Site do campus</LinkExterno>
-                  </li>
-                ) : null}
                 {doIndice?.calendario_academico ? (
                   <li>
                     <LinkExterno href={doIndice.calendario_academico}>Calendário acadêmico</LinkExterno>
@@ -447,7 +450,7 @@ export function FichaCnct({ slug, aoAbrirLink }: { readonly slug: string; readon
   return (
     <ComCarga carga={lido} titulo="Não foi possível ler este curso do catálogo">
       {({ dados: d }) => (
-        <article aria-label="Curso do catálogo" className="leitor-impressao space-y-4">
+        <article aria-label="Curso do catálogo" className="leitor-impressao space-y-6">
           <Cabecalho tipo="Catálogo Nacional de Cursos Técnicos" titulo={d.cnct.denominacao}>
             <dl className="space-y-0.5">
               {d.cnct.eixo ? <Linha rotulo="Eixo tecnológico">{d.cnct.eixo}</Linha> : null}
@@ -505,7 +508,7 @@ export function FichaRevisao({ id, aoAbrirLink }: { readonly id: string; readonl
   return (
     <ComCarga carga={lido} titulo="Não foi possível ler esta ficha">
       {({ dados: d }) => (
-        <article aria-label="Ficha de análise" className="leitor-impressao space-y-4">
+        <article aria-label="Ficha de análise" className="leitor-impressao space-y-6">
           <Cabecalho tipo="Ficha de análise de PPC" titulo={`${d.ficha.id}: ${d.ficha.titulo}`}>
             <p className="flex flex-wrap gap-1.5">
               {d.ficha.criticidade ? (

@@ -10,7 +10,7 @@ import { Button } from "../../components/ui/button.tsx";
 import { dataBr, pedidoSobre, primeiraMaiuscula } from "../../explorar/colecoes.ts";
 import { ComIndice } from "../../explorar/componentes.tsx";
 import { PerguntarIa } from "../../explorar/PerguntarIa.tsx";
-import { Cabecalho, LinkExterno, Secao } from "../../leitor/pecas.tsx";
+import { Cabecalho, Fatos, LinkExterno, Secao } from "../../leitor/pecas.tsx";
 
 export const Route = createFileRoute("/explorar/reuniao")({
   component: Reuniao,
@@ -30,9 +30,9 @@ function Reuniao() {
         const nomeCampus = new Map(d.campi.map((c) => [c.id, c.nome]));
         const cursos = [...new Set(r.itens.flatMap((i) => (i.curso === null ? [] : [`ifpr://curso/${i.curso}`])))];
         return (
-          <div className="mx-auto max-w-3xl space-y-4">
-            <div className="nao-imprimir flex flex-wrap items-center justify-between gap-2">
-              <Button size="sm" variant="ghost" onClick={() => roteador.history.back()}>
+          <div className="space-y-6">
+            <div className="nao-imprimir -mt-2 flex flex-wrap items-center justify-between gap-2">
+              <Button size="sm" variant="ghost" className="-ml-2.5" onClick={() => roteador.history.back()}>
                 <ArrowLeftIcon /> Voltar
               </Button>
               <PerguntarIa
@@ -42,21 +42,25 @@ function Reuniao() {
                 )}
               />
             </div>
-            <article
-              aria-label="Reunião do Consepe"
-              className="space-y-4 rounded-xl border border-border bg-card p-5 text-card-foreground"
-            >
-              <Cabecalho tipo={r.conselho_nome} titulo={r.titulo}>
-                <p className="text-muted-foreground text-sm">
-                  {[dataBr(r.data), r.tipo ? `reunião ${r.tipo}` : null, r.situacao].filter(Boolean).join(" · ")}
-                </p>
-                {r.fonte ? <LinkExterno href={r.fonte}>Pautas no site do IFPR</LinkExterno> : null}
+            <article aria-label="Reunião do Consepe" className="space-y-8">
+              <Cabecalho
+                tipo={r.conselho_nome}
+                titulo={r.titulo}
+                acoes={r.fonte ? <LinkExterno href={r.fonte}>Pautas no site do IFPR</LinkExterno> : null}
+              >
+                <Fatos>
+                  {[dataBr(r.data), r.tipo ? `Reunião ${r.tipo}` : null, r.situacao].filter(Boolean).map((p) => (
+                    <span key={p}>{primeiraMaiuscula(p!)}</span>
+                  ))}
+                </Fatos>
               </Cabecalho>
               <Secao titulo={`Itens de pauta (${r.itens.length})`}>
-                <ol className="space-y-2 text-sm">
+                <ol className="divide-y divide-border border-border border-y">
                   {r.itens.map((i) => (
-                    <li key={i.id} className="rounded-md border border-border p-2">
-                      <p data-conteudo>{i.titulo}</p>
+                    <li key={i.id} className="py-3">
+                      <p className="max-w-[76ch]" data-conteudo>
+                        {i.titulo}
+                      </p>
                       <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-small">
                         {i.tipo_demanda ? <Badge variant="outline">{i.tipo_demanda}</Badge> : null}
                         {i.resultado ? <span>{i.resultado}</span> : null}

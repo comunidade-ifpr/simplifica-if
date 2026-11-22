@@ -1,7 +1,7 @@
 /**
  * O nome de uma página do Explorar pelo link `ifpr://`, para o pedido "Perguntar à IA sobre isto" e o
- * título da janela: o nome do índice quando há (curso, PPC, campus, CNCT, ficha), senão o nome curto do
- * link (normas e dispositivos, como nos chips da conversa).
+ * título da janela: o nome do índice quando há (curso, PPC, campus, CNCT), senão o nome curto do link
+ * (normas, dispositivos e critérios da revisão, como nos chips da conversa).
  */
 import type { DadosIndice } from "@simplifica-if/contratos-app";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
@@ -29,10 +29,6 @@ export function nomeDaPagina(link: string, indice: DadosIndice | undefined): str
     case "cnct": {
       const c = indice.cnct.find((x) => x.slug === caminho);
       return c ? `${c.denominacao} no Catálogo Nacional de Cursos Técnicos` : nomeCurtoLink(link);
-    }
-    case "ficha": {
-      const f = indice.fichas.find((x) => x.id === caminho);
-      return f ? `a ficha de análise ${f.id} (${f.titulo})` : nomeCurtoLink(link);
     }
     default:
       return nomeCurtoLink(link);

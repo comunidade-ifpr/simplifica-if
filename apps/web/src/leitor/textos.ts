@@ -4,6 +4,7 @@
  * referência formal, no feitio da ABNT NBR 6023 para legislação).
  */
 import type { LinkLido } from "@simplifica-if/contratos-app";
+import type { Vigencia } from "../explorar/colecoes.ts";
 import { dataCurta, dataPorExtenso } from "../lib/formato.ts";
 
 export type FichaNorma = Extract<LinkLido, { tipo: "norma" }>["resposta"]["dados"];
@@ -23,20 +24,41 @@ export interface Selo {
   readonly variante: VarianteSelo;
   /** A explicação, em linguagem comum. */
   readonly detalhe: string;
+  /** A forma do sinal de vigência (`explorar/Vigencia.tsx`); `null` no selo que não é de vigência. */
+  readonly sinal: Vigencia | null;
 }
 
 const STATUS: Readonly<
-  Record<string, { readonly rotulo: string; readonly variante: VarianteSelo; readonly estado: string }>
+  Record<
+    string,
+    {
+      readonly rotulo: string;
+      readonly variante: VarianteSelo;
+      readonly estado: string;
+      readonly sinal: Vigencia | null;
+    }
+  >
 > = {
-  vigente: { rotulo: "Em vigor", variante: "success", estado: "em vigor" },
+  vigente: { rotulo: "Em vigor", variante: "success", estado: "em vigor", sinal: "vigente" },
   alterada: {
     rotulo: "Em vigor, com alterações",
     variante: "info",
     estado: "em vigor, com partes alteradas por outras normas",
+    sinal: "alterada",
   },
-  "parcialmente revogada": { rotulo: "Revogada em parte", variante: "warning", estado: "revogada em parte" },
-  revogada: { rotulo: "Revogada", variante: "error", estado: "revogada" },
-  "ainda-nao-vigente": { rotulo: "Ainda não está em vigor", variante: "warning", estado: "ainda não está em vigor" },
+  "parcialmente revogada": {
+    rotulo: "Revogada em parte",
+    variante: "warning",
+    estado: "revogada em parte",
+    sinal: "parcialmente revogada",
+  },
+  revogada: { rotulo: "Revogada", variante: "error", estado: "revogada", sinal: "revogada" },
+  "ainda-nao-vigente": {
+    rotulo: "Ainda não está em vigor",
+    variante: "warning",
+    estado: "ainda não está em vigor",
+    sinal: null,
+  },
 };
 
 /** Uma data que pode faltar: "12/11/2026", ou "a confirmar, não antes de 11/11/2026". */
@@ -75,6 +97,7 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
       rotulo: ficha.norma.situacao === "stub" ? "Sem o texto na base" : "Referência externa",
       variante: "info",
       detalhe: "A base guarda só a referência desta norma, não o texto.",
+      sinal: null,
     });
   }
   const conhecido = STATUS[ficha.vigencia.status];
@@ -87,6 +110,7 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
     selos.push({
       rotulo: conhecido.rotulo,
       variante: conhecido.variante,
+      sinal: conhecido.sinal,
       detalhe: `Na data da base (${dataBase}): ${conhecido.estado}.${quando === null ? "" : ` ${quando}`}${transicao}`,
     });
   }
@@ -96,6 +120,7 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
     selos.push({
       rotulo: "Vigência a confirmar",
       variante: "warning",
+      sinal: "a confirmar",
       detalhe: `A data que decide a vigência ainda não está registrada na base; confira na fonte oficial.${motivos}`,
     });
   }

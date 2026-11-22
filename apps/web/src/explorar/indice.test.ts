@@ -9,7 +9,7 @@ function apiDeTeste() {
   let fase: EstadoConexao = { fase: "conectada" };
   const avisos = new Set<() => void>();
   let leituras = 0;
-  const dados = { normas: [], cursos: [], ppcs: [], campi: [], cnct: [], fichas: [], processos: [], reunioes: [] };
+  const dados = { normas: [], cursos: [], ppcs: [], campi: [], cnct: [], processos: [], reunioes: [] };
   const api = {
     chamar: () => {
       leituras++;

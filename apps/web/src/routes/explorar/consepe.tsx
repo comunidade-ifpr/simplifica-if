@@ -5,7 +5,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Badge } from "../../components/ui/badge.tsx";
 import { dataBr, opcoes, quantos } from "../../explorar/colecoes.ts";
-import { buscaDeTextos, CampoFiltro, ComIndice, Filtros } from "../../explorar/componentes.tsx";
+import {
+  buscaDeTextos,
+  CampoFiltro,
+  classeLinha,
+  classeLinkLinha,
+  ComIndice,
+  Filtros,
+} from "../../explorar/componentes.tsx";
 
 const CAMPOS = ["demanda", "campus"] as const;
 
@@ -35,20 +42,19 @@ function Consepe() {
               <h2 id="titulo-reunioes" className="text-title">
                 Reuniões do Consepe
               </h2>
-              <ul className="grid gap-2 sm:grid-cols-2">
+              <ul className="grid gap-x-12 border-border border-t md:grid-cols-2">
                 {d.reunioes.map((r) => (
-                  <li key={r.id} className="rounded-lg border border-border bg-card px-3 py-2">
-                    <Link
-                      to="/explorar/reuniao"
-                      search={{ id: r.id }}
-                      className="text-link text-small underline underline-offset-2"
-                    >
-                      {r.titulo}
-                    </Link>
-                    <p className="text-muted-foreground text-small">
-                      {dataBr(r.data)} · {quantos(r.itens.length, "item de pauta", "itens de pauta")} ·{" "}
-                      {quantos(r.documentos.length, "documento", "documentos")}
-                    </p>
+                  <li key={r.id} className={`${classeLinha} border-border border-b`}>
+                    <div className="min-w-0 flex-1">
+                      <Link to="/explorar/reuniao" search={{ id: r.id }} className={classeLinkLinha}>
+                        {r.titulo}
+                      </Link>
+                      <p className="text-muted-foreground text-small">
+                        {quantos(r.itens.length, "item de pauta", "itens de pauta")},{" "}
+                        {quantos(r.documentos.length, "documento", "documentos")}
+                      </p>
+                    </div>
+                    <span className="pt-0.5 text-muted-foreground text-small tabular-nums">{dataBr(r.data)}</span>
                   </li>
                 ))}
               </ul>
@@ -82,10 +88,12 @@ function Consepe() {
               {achados.length === 0 ? (
                 <p className="text-muted-foreground text-sm">Nada com esses filtros.</p>
               ) : (
-                <ul className="space-y-2 text-sm">
+                <ul className="divide-y divide-border border-border border-y">
                   {achados.map(({ item, reuniao }) => (
-                    <li key={item.id} className="rounded-lg border border-border bg-card px-3 py-2">
-                      <p data-conteudo>{item.titulo}</p>
+                    <li key={item.id} className="py-3">
+                      <p className="max-w-[76ch]" data-conteudo>
+                        {item.titulo}
+                      </p>
                       <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-small">
                         {item.tipo_demanda ? <Badge variant="outline">{item.tipo_demanda}</Badge> : null}
                         {item.resultado ? <span>{item.resultado}</span> : null}

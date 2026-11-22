@@ -114,7 +114,7 @@ const CRITICIDADES: Readonly<Record<string, string>> = {
   REC: "Recomendação",
 };
 
-/** A criticidade de uma ficha de análise (`BLOQ`, `OBRIG`, `REC`). */
+/** A criticidade de um critério da revisão de PPC (`BLOQ`, `OBRIG`, `REC`). */
 export function nomeCriticidade(criticidade: string): string {
   return CRITICIDADES[criticidade] ?? criticidade;
 }
@@ -129,7 +129,6 @@ export const NOMES_TIPO: Readonly<Record<TipoResultado, { readonly grupo: string
   campus: { grupo: "Campi", item: "Campus" },
   cnct: { grupo: "Catálogo Nacional de Cursos Técnicos", item: "CNCT" },
   consepe: { grupo: "Consepe", item: "Consepe" },
-  ficha: { grupo: "Fichas de análise de PPC", item: "Ficha de análise" },
 };
 
 /* ================================================================== ordem e opções */
@@ -165,6 +164,28 @@ export interface FiltrosNormas {
 }
 
 export const A_CONFIRMAR = "a-confirmar";
+
+/** A situação de vigência que a tela mostra: a publicada, ou "a confirmar" quando falta. */
+export type Vigencia = "vigente" | "alterada" | "parcialmente revogada" | "revogada" | "a confirmar";
+
+const VIGENCIAS: ReadonlySet<string> = new Set(["vigente", "alterada", "parcialmente revogada", "revogada"]);
+
+export function vigenciaDaNorma(norma: Pick<NormaDoIndice, "status_vigencia">): Vigencia {
+  return norma.status_vigencia !== null && VIGENCIAS.has(norma.status_vigencia)
+    ? (norma.status_vigencia as Vigencia)
+    : "a confirmar";
+}
+
+/** As normas por ano, do mais recente ao mais antigo; as sem ano (referências externas) ficam no fim. */
+export function normasPorAno<N extends Pick<NormaDoIndice, "ano">>(
+  normas: ReadonlyArray<N>,
+): ReadonlyArray<{ readonly ano: number | null; readonly normas: ReadonlyArray<N> }> {
+  const grupos = new Map<number | null, N[]>();
+  for (const n of normas) {
+    grupos.set(n.ano, [...(grupos.get(n.ano) ?? []), n]);
+  }
+  return [...grupos].sort(([a], [b]) => (b ?? -1) - (a ?? -1)).map(([ano, doAno]) => ({ ano, normas: doAno }));
+}
 
 export function filtrarNormas(normas: ReadonlyArray<NormaDoIndice>, f: FiltrosNormas): NormaDoIndice[] {
   return normas

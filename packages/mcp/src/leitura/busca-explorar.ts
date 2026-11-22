@@ -145,7 +145,6 @@ export const ORDEM_GRUPOS: ReadonlyArray<TipoResultado> = [
   "campus",
   "cnct",
   "consepe",
-  "ficha",
   "dispositivo",
   "secao",
 ];

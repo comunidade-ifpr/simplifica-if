@@ -1,6 +1,7 @@
 /**
  * Peças comuns das telas do leitor `ifpr://` e das fichas do Explorar: a espera, a falha com "Tentar de
- * novo", a carga (`ComCarga`), a seção com título e o link `ifpr://` como botão.
+ * novo", a carga (`ComCarga`), o cabeçalho, o corpo com a coluna lateral, a seção com título e o link
+ * `ifpr://` como botão.
  */
 import { ExternalLinkIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -107,21 +108,66 @@ export function LinkExterno({ href, children }: { readonly href: string; readonl
   );
 }
 
-/** O cabeçalho de uma página do leitor: o tipo, o título e o que vem abaixo dele. */
+/**
+ * O cabeçalho de uma página do leitor, em ordem de importância: o tipo, o título, o resumo (a ementa da
+ * norma, o campus do curso), as ações à direita (copiar a citação, a fonte oficial) e, abaixo, o que a
+ * página tem de próprio (a situação de vigência, os fatos). É um contêiner: no painel estreito ao lado da
+ * conversa o título é menor e as ações descem para baixo dele.
+ */
 export function Cabecalho({
   tipo,
   titulo,
+  resumo,
+  acoes,
   children,
 }: {
   readonly tipo: string;
   readonly titulo: string;
+  readonly resumo?: ReactNode;
+  readonly acoes?: ReactNode;
   readonly children?: ReactNode;
 }) {
   return (
-    <header className="space-y-2">
-      <p className="font-semibold text-muted-foreground text-small">{tipo}</p>
-      <h2 className="text-title">{titulo}</h2>
+    <header className="@container space-y-5">
+      <div className="flex flex-col gap-x-8 gap-y-3 @3xl:flex-row @3xl:items-start @3xl:justify-between">
+        <div className="min-w-0 space-y-1.5">
+          <p className="font-semibold text-muted-foreground text-small">{tipo}</p>
+          <h2 className="break-words text-title @3xl:text-display">{titulo}</h2>
+          {resumo}
+        </div>
+        {acoes ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 text-small @3xl:pt-7">{acoes}</div>
+        ) : null}
+      </div>
       {children}
     </header>
+  );
+}
+
+/** Os fatos curtos do cabeçalho (as datas do ato, o campus e o nível), numa linha com divisórias. */
+export function Fatos({ children }: { readonly children: ReactNode }) {
+  return (
+    <p className="flex flex-wrap gap-y-1 text-small [&>*+*]:ml-3 [&>*+*]:border-border [&>*+*]:border-l [&>*+*]:pl-3">
+      {children}
+    </p>
+  );
+}
+
+/**
+ * O corpo de uma página do leitor: o conteúdo principal e, quando há, a coluna lateral (relações da
+ * norma, seções do PPC). Com largura, a lateral fica à direita e acompanha a rolagem; no painel estreito,
+ * vem antes do conteúdo, como uma seção a mais.
+ */
+export function Corpo({ lateral, children }: { readonly lateral?: ReactNode; readonly children: ReactNode }) {
+  if (!lateral) return <div className="space-y-4">{children}</div>;
+  return (
+    <div className="@container">
+      <div className="grid gap-x-12 gap-y-6 @4xl:grid-cols-[minmax(0,1fr)_19rem]">
+        <aside className="nao-imprimir space-y-6 @4xl:sticky @4xl:top-0 @4xl:col-start-2 @4xl:row-start-1 @4xl:max-h-[calc(100dvh-9rem)] @4xl:self-start @4xl:overflow-y-auto @4xl:border-border @4xl:border-l @4xl:pl-6">
+          {lateral}
+        </aside>
+        <div className="min-w-0 space-y-4 @4xl:col-start-1 @4xl:row-start-1">{children}</div>
+      </div>
+    </div>
   );
 }

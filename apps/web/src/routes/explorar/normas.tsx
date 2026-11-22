@@ -1,26 +1,29 @@
 /**
- * As normas da base, com filtros por órgão, tipo, ano e situação de vigência (na data da base). Cada uma
- * abre no leitor do M1.6.
+ * As normas da base, agrupadas por ano (o mais recente primeiro), com o sinal da situação de vigência na
+ * data da base e filtros por órgão, tipo, ano e situação. Cada uma abre no leitor do M1.6.
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Badge } from "../../components/ui/badge.tsx";
 import {
   A_CONFIRMAR,
   filtrarNormas,
   type FiltrosNormas,
   nomeSituacaoNorma,
   nomeVigencia,
+  normasPorAno,
   opcoes,
+  vigenciaDaNorma,
 } from "../../explorar/colecoes.ts";
 import {
   buscaDeTextos,
   CampoFiltro,
   CampoTexto,
   ComIndice,
+  Dado,
   Filtros,
   LinhaItem,
   ListaItens,
 } from "../../explorar/componentes.tsx";
+import { SinalVigencia, SituacaoVigencia } from "../../explorar/Vigencia.tsx";
 
 const CAMPOS = ["texto", "orgao", "tipo", "ano", "vigencia"] as const;
 
@@ -28,14 +31,6 @@ export const Route = createFileRoute("/explorar/normas")({
   component: Normas,
   validateSearch: buscaDeTextos(CAMPOS),
 });
-
-const VARIANTE: Readonly<Record<string, "success" | "error" | "warning" | "outline">> = {
-  vigente: "success",
-  revogada: "error",
-  "parcialmente revogada": "warning",
-  alterada: "outline",
-  "a confirmar": "warning",
-};
 
 function Normas() {
   const filtros: FiltrosNormas = Route.useSearch();
@@ -88,30 +83,52 @@ function Normas() {
                 aoMudar={mudar("vigencia")}
               />
             </Filtros>
-            <ListaItens vazia={achadas.length === 0}>
-              {achadas.map((n) => (
-                <LinhaItem
-                  key={n.id}
-                  link={n.link}
-                  titulo={n.titulo}
-                  detalhe={n.ementa}
-                  selos={
-                    <>
-                      {n.status_vigencia ? (
-                        <Badge variant={VARIANTE[n.status_vigencia] ?? "outline"}>
-                          {nomeVigencia(n.status_vigencia)}
-                        </Badge>
-                      ) : null}
-                      {n.vigencia_a_confirmar && n.status_vigencia !== "a confirmar" ? (
-                        <Badge variant="warning">Vigência a confirmar</Badge>
-                      ) : null}
-                      {n.situacao !== "base" ? <Badge variant="outline">{nomeSituacaoNorma(n.situacao)}</Badge> : null}
-                      {n.orgao ? <Badge variant="outline">{n.orgao}</Badge> : null}
-                    </>
-                  }
-                />
-              ))}
-            </ListaItens>
+            {achadas.length === 0 ? (
+              <ListaItens vazia>{null}</ListaItens>
+            ) : (
+              <div className="border-border border-t">
+                {normasPorAno(achadas).map((grupo) => (
+                  <section
+                    key={grupo.ano ?? "sem-ano"}
+                    aria-label={grupo.ano === null ? "Normas sem ano" : `Normas de ${grupo.ano}`}
+                    className="grid border-border border-b sm:grid-cols-[6rem_minmax(0,1fr)]"
+                  >
+                    <h3 className="px-3 pt-3 font-bold text-muted-foreground text-title tabular-nums [font-stretch:80%] sm:sticky sm:top-0 sm:self-start">
+                      {grupo.ano ?? "Sem ano"}
+                    </h3>
+                    <ul className="divide-y divide-border">
+                      {grupo.normas.map((n) => {
+                        const vigencia = vigenciaDaNorma(n);
+                        return (
+                          <LinhaItem
+                            key={n.id}
+                            link={n.link}
+                            titulo={n.titulo}
+                            detalhe={n.ementa ?? (n.situacao === "base" ? null : nomeSituacaoNorma(n.situacao))}
+                            serifado={n.ementa !== null}
+                            marca={<SinalVigencia vigencia={vigencia} />}
+                            selos={
+                              <>
+                                {n.orgao ? <Dado>{n.orgao}</Dado> : null}
+                                {n.ementa !== null && n.situacao !== "base" ? (
+                                  <Dado>{nomeSituacaoNorma(n.situacao)}</Dado>
+                                ) : null}
+                                <span className="flex w-44 flex-col items-start gap-0.5">
+                                  <SituacaoVigencia vigencia={vigencia} />
+                                  {n.vigencia_a_confirmar && vigencia !== "a confirmar" ? (
+                                    <span className="text-micro text-warning-foreground">Vigência a confirmar</span>
+                                  ) : null}
+                                </span>
+                              </>
+                            }
+                          />
+                        );
+                      })}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            )}
           </section>
         );
       }}

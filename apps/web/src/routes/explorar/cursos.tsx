@@ -17,6 +17,7 @@ import {
   CampoFiltro,
   CampoTexto,
   ComIndice,
+  Dado,
   Filtros,
   LinhaItem,
   ListaItens,
@@ -108,9 +109,11 @@ function Cursos() {
                     .join(" · ")}
                   selos={
                     <>
-                      {c.cnct ? <Badge variant="outline">{c.cnct.eixo ?? "CNCT"}</Badge> : null}
+                      {c.cnct ? <Dado>{c.cnct.eixo ?? "CNCT"}</Dado> : null}
                       {c.ppc ? (
-                        <Badge variant="outline">PPC {c.ppc.ano ?? "sem ano"}</Badge>
+                        <span className="w-20 text-right">
+                          <Dado>PPC {c.ppc.ano ?? "sem ano"}</Dado>
+                        </span>
                       ) : (
                         <Badge variant="warning">Sem PPC na base</Badge>
                       )}

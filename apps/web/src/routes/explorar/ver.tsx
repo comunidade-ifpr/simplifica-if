@@ -33,14 +33,14 @@ function Pagina() {
     return <p className="text-muted-foreground text-sm">Página não encontrada na base.</p>;
   }
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <div className="nao-imprimir flex flex-wrap items-center justify-between gap-2">
-        <Button size="sm" variant="ghost" onClick={() => roteador.history.back()}>
+    <div className="space-y-6">
+      <div className="nao-imprimir -mt-2 flex flex-wrap items-center justify-between gap-2">
+        <Button size="sm" variant="ghost" className="-ml-2.5" onClick={() => roteador.history.back()}>
           <ArrowLeftIcon /> Voltar
         </Button>
         <PerguntarIa pedido={pedidoSobre(nome, [link])} />
       </div>
-      <div className="rounded-xl border border-border bg-card p-5 text-card-foreground">
+      <div>
         <ConteudoLink
           key={link.split("#")[0]}
           link={link}

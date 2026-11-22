@@ -22,7 +22,6 @@ import { Route as ExplorarVerRouteImport } from './routes/explorar/ver'
 import { Route as ExplorarReuniaoRouteImport } from './routes/explorar/reuniao'
 import { Route as ExplorarPpcsRouteImport } from './routes/explorar/ppcs'
 import { Route as ExplorarNormasRouteImport } from './routes/explorar/normas'
-import { Route as ExplorarFichasRouteImport } from './routes/explorar/fichas'
 import { Route as ExplorarCursosRouteImport } from './routes/explorar/cursos'
 import { Route as ExplorarConsepeRouteImport } from './routes/explorar/consepe'
 import { Route as ExplorarCnctRouteImport } from './routes/explorar/cnct'
@@ -93,11 +92,6 @@ const ExplorarNormasRoute = ExplorarNormasRouteImport.update({
   path: '/normas',
   getParentRoute: () => ExplorarRoute,
 } as any)
-const ExplorarFichasRoute = ExplorarFichasRouteImport.update({
-  id: '/fichas',
-  path: '/fichas',
-  getParentRoute: () => ExplorarRoute,
-} as any)
 const ExplorarCursosRoute = ExplorarCursosRouteImport.update({
   id: '/cursos',
   path: '/cursos',
@@ -131,7 +125,6 @@ export interface FileRoutesByFullPath {
   '/explorar/cnct': typeof ExplorarCnctRoute
   '/explorar/consepe': typeof ExplorarConsepeRoute
   '/explorar/cursos': typeof ExplorarCursosRoute
-  '/explorar/fichas': typeof ExplorarFichasRoute
   '/explorar/normas': typeof ExplorarNormasRoute
   '/explorar/ppcs': typeof ExplorarPpcsRoute
   '/explorar/reuniao': typeof ExplorarReuniaoRoute
@@ -150,7 +143,6 @@ export interface FileRoutesByTo {
   '/explorar/cnct': typeof ExplorarCnctRoute
   '/explorar/consepe': typeof ExplorarConsepeRoute
   '/explorar/cursos': typeof ExplorarCursosRoute
-  '/explorar/fichas': typeof ExplorarFichasRoute
   '/explorar/normas': typeof ExplorarNormasRoute
   '/explorar/ppcs': typeof ExplorarPpcsRoute
   '/explorar/reuniao': typeof ExplorarReuniaoRoute
@@ -171,7 +163,6 @@ export interface FileRoutesById {
   '/explorar/cnct': typeof ExplorarCnctRoute
   '/explorar/consepe': typeof ExplorarConsepeRoute
   '/explorar/cursos': typeof ExplorarCursosRoute
-  '/explorar/fichas': typeof ExplorarFichasRoute
   '/explorar/normas': typeof ExplorarNormasRoute
   '/explorar/ppcs': typeof ExplorarPpcsRoute
   '/explorar/reuniao': typeof ExplorarReuniaoRoute
@@ -193,7 +184,6 @@ export interface FileRouteTypes {
     | '/explorar/cnct'
     | '/explorar/consepe'
     | '/explorar/cursos'
-    | '/explorar/fichas'
     | '/explorar/normas'
     | '/explorar/ppcs'
     | '/explorar/reuniao'
@@ -212,7 +202,6 @@ export interface FileRouteTypes {
     | '/explorar/cnct'
     | '/explorar/consepe'
     | '/explorar/cursos'
-    | '/explorar/fichas'
     | '/explorar/normas'
     | '/explorar/ppcs'
     | '/explorar/reuniao'
@@ -232,7 +221,6 @@ export interface FileRouteTypes {
     | '/explorar/cnct'
     | '/explorar/consepe'
     | '/explorar/cursos'
-    | '/explorar/fichas'
     | '/explorar/normas'
     | '/explorar/ppcs'
     | '/explorar/reuniao'
@@ -345,13 +333,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExplorarNormasRouteImport
       parentRoute: typeof ExplorarRoute
     }
-    '/explorar/fichas': {
-      id: '/explorar/fichas'
-      path: '/fichas'
-      fullPath: '/explorar/fichas'
-      preLoaderRoute: typeof ExplorarFichasRouteImport
-      parentRoute: typeof ExplorarRoute
-    }
     '/explorar/cursos': {
       id: '/explorar/cursos'
       path: '/cursos'
@@ -388,7 +369,6 @@ interface ExplorarRouteChildren {
   ExplorarCnctRoute: typeof ExplorarCnctRoute
   ExplorarConsepeRoute: typeof ExplorarConsepeRoute
   ExplorarCursosRoute: typeof ExplorarCursosRoute
-  ExplorarFichasRoute: typeof ExplorarFichasRoute
   ExplorarNormasRoute: typeof ExplorarNormasRoute
   ExplorarPpcsRoute: typeof ExplorarPpcsRoute
   ExplorarReuniaoRoute: typeof ExplorarReuniaoRoute
@@ -401,7 +381,6 @@ const ExplorarRouteChildren: ExplorarRouteChildren = {
   ExplorarCnctRoute: ExplorarCnctRoute,
   ExplorarConsepeRoute: ExplorarConsepeRoute,
   ExplorarCursosRoute: ExplorarCursosRoute,
-  ExplorarFichasRoute: ExplorarFichasRoute,
   ExplorarNormasRoute: ExplorarNormasRoute,
   ExplorarPpcsRoute: ExplorarPpcsRoute,
   ExplorarReuniaoRoute: ExplorarReuniaoRoute,

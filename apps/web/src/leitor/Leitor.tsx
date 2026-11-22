@@ -3,7 +3,7 @@
  * servidor local, direto da base, sem passar pela IA:
  *
  * - **norma** (com ou sem `#dispositivo`): `fichaNorma` (selo de vigência, relações navegáveis,
- *   sucessoras, regras de transição), `lerDocumento` (o texto inteiro, com o dispositivo destacado) e,
+ *   sucessoras, regras de transição, na coluna lateral quando há largura), `lerDocumento` (o texto inteiro, com o dispositivo destacado) e,
  *   com dispositivo, `lerDispositivos` (o texto com o caput, para "Copiar citação");
  * - **ppc** (com ou sem `#secao`): `lerPpc` (curso, campus e o índice das seções), `lerDocumento` e,
  *   com seção, `lerSecao` (para a citação);
@@ -11,18 +11,20 @@
  *   (o mesmo do `resources/read` do MCP) fica para um link de outro tipo.
  */
 import type { LinkLido } from "@simplifica-if/contratos-app";
-import { CheckIcon, ClipboardCopyIcon, ExternalLinkIcon, LocateFixedIcon } from "lucide-react";
+import { CheckIcon, ClipboardCopyIcon, InfoIcon, LocateFixedIcon } from "lucide-react";
 import { useState } from "react";
 import { useApi } from "../contexto.tsx";
-import { abrirFora, Markdown } from "../components/Markdown.tsx";
+import { Markdown } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
-import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
+import { primeiraMaiuscula } from "../explorar/colecoes.ts";
+import { corVigencia, SinalVigencia } from "../explorar/Vigencia.tsx";
+import { cn } from "../lib/utils.ts";
 import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
 import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
-import { BotaoLink, ComCarga, Secao } from "./pecas.tsx";
+import { BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from "./pecas.tsx";
 import {
   citacaoDaNorma,
   citacaoDoDispositivo,
@@ -31,6 +33,7 @@ import {
   datasDoCabecalho,
   nomeDaRelacao,
   type Relacao,
+  type Selo,
   selosDaNorma,
   situacaoDaTransicao,
 } from "./textos.ts";
@@ -111,6 +114,42 @@ const linkDaNorma = (id: string, dispositivo?: string | null) =>
 
 /* ================================================================== norma */
 
+const COR_SELO: Readonly<Record<Selo["variante"], string>> = {
+  success: "text-success-foreground",
+  info: "text-info-foreground",
+  warning: "text-warning-foreground",
+  error: "text-destructive-foreground",
+};
+
+/**
+ * A situação da norma na data da base: em cada linha, o sinal com o nome do estado e, ao lado, o que ele
+ * quer dizer (desde quando, o que falta confirmar). É o que a pessoa precisa saber antes de citar.
+ */
+function Situacao({ selos }: { readonly selos: ReadonlyArray<Selo> }) {
+  return (
+    <div role="group" aria-label="Situação" className="divide-y divide-border rounded-xl bg-muted px-4">
+      {selos.map((selo) => (
+        <div key={selo.rotulo} className="grid gap-x-6 gap-y-0.5 py-3 @3xl:grid-cols-[14rem_minmax(0,1fr)]">
+          <p
+            className={cn(
+              "flex items-center gap-2 self-start font-semibold",
+              selo.sinal === null ? COR_SELO[selo.variante] : corVigencia(selo.sinal),
+            )}
+          >
+            {selo.sinal === null ? (
+              <InfoIcon aria-hidden className="size-3.5 shrink-0" />
+            ) : (
+              <SinalVigencia vigencia={selo.sinal} className="size-3.5" />
+            )}
+            {selo.rotulo}
+          </p>
+          <p className="max-w-[76ch] text-muted-foreground text-small">{selo.detalhe}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Relacoes({
   saida,
   entrada,
@@ -125,17 +164,23 @@ function Relacoes({
     ...entrada.map((r) => ({ r, nome: nomeDaRelacao(r.tipo, "entrada"), link: linkDaNorma(r.origem, r.operador) })),
   ];
   if (itens.length === 0) return null;
+  const grupos = new Map<string, Array<(typeof itens)[number]>>();
+  for (const item of itens) grupos.set(item.nome, [...(grupos.get(item.nome) ?? []), item]);
   return (
     <Secao titulo="Relações com outras normas">
-      <ul className="space-y-1 text-sm">
-        {itens.map(({ r, nome, link }) => (
-          <li key={`${nome}:${link}:${r.alcance ?? ""}`}>
-            <span className="text-muted-foreground">{nome}: </span>
-            <BotaoLink link={link} aoAbrirLink={aoAbrirLink} />
-            {r.alcance ? <span className="text-muted-foreground"> ({r.alcance})</span> : null}
-          </li>
+      <dl className="space-y-3 text-sm">
+        {[...grupos].map(([nome, doGrupo]) => (
+          <div key={nome}>
+            <dt className="text-muted-foreground text-small">{nome}</dt>
+            {doGrupo.map(({ r, link }) => (
+              <dd key={`${link}:${r.alcance ?? ""}`} className="mt-1">
+                <BotaoLink link={link} aoAbrirLink={aoAbrirLink} />
+                {r.alcance ? <span className="text-muted-foreground text-small"> ({r.alcance})</span> : null}
+              </dd>
+            ))}
+          </div>
         ))}
-      </ul>
+      </dl>
     </Secao>
   );
 }
@@ -178,108 +223,111 @@ function LeitorNorma({
           fragmento !== null &&
           ((documento.fase === "lido" && !documento.valor.dados.ancoras.some((a) => a.id === fragmento)) ||
             (dispositivo.fase === "lido" && lido === undefined));
+        const temLateral =
+          transicoes.length > 0 || sucessoras.length > 0 || relacoes.saida.length > 0 || relacoes.entrada.length > 0;
         return (
-          <article aria-label="Norma" className="leitor-impressao space-y-4">
-            <header className="space-y-2">
-              <p className="font-semibold text-muted-foreground text-small">Norma</p>
-              <h2 className="text-title">{norma.titulo}</h2>
-              {norma.ementa ? <p className="text-muted-foreground text-sm">{norma.ementa}</p> : null}
-              <div role="group" className="flex flex-wrap gap-1.5" aria-label="Situação">
-                {selos.map((selo) => (
-                  <Badge key={selo.rotulo} variant={selo.variante} size="lg" title={selo.detalhe}>
-                    {selo.rotulo}
-                  </Badge>
-                ))}
-              </div>
-              <ul className="space-y-0.5 text-muted-foreground text-micro">
-                {selos.map((selo) => (
-                  <li key={selo.rotulo}>{selo.detalhe}</li>
-                ))}
-              </ul>
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+          <article aria-label="Norma" className="leitor-impressao space-y-8">
+            <Cabecalho
+              tipo={
+                [norma.tipo_documento, norma.orgao]
+                  .filter(Boolean)
+                  .map((p) => primeiraMaiuscula(p!))
+                  .join(", ") || "Norma"
+              }
+              titulo={norma.titulo}
+              resumo={
+                norma.ementa ? (
+                  <p className="max-w-[68ch] text-quote" data-conteudo>
+                    {norma.ementa}
+                  </p>
+                ) : null
+              }
+              acoes={
+                <>
+                  <BotaoCopiar texto={citacao} />
+                  {fonteOficial !== null ? <LinkExterno href={fonteOficial}>Ver na fonte oficial</LinkExterno> : null}
+                </>
+              }
+            >
+              <Situacao selos={selos} />
+              <Fatos>
                 {datasDoCabecalho(norma, documento.fase === "lido" ? documento.valor.dados.datas : null).map((d) => (
                   <span key={d}>{d}</span>
                 ))}
                 {norma.fonte_referencia !== null ? <span>Fonte: {norma.fonte_referencia}</span> : null}
-                {fonteOficial !== null ? (
-                  <a
-                    href={fonteOficial}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className="nao-imprimir inline-flex items-center gap-1 text-link underline underline-offset-2"
-                    onClick={(evento) => {
-                      evento.preventDefault();
-                      abrirFora(fonteOficial);
-                    }}
-                  >
-                    Ver na fonte oficial <ExternalLinkIcon aria-hidden className="size-3.5" />
-                  </a>
-                ) : null}
-              </p>
-              <BotaoCopiar texto={citacao} />
-            </header>
+              </Fatos>
+            </Cabecalho>
 
-            {transicoes.length > 0 ? (
-              <Secao titulo="Regras de transição">
-                <ul className="space-y-2 text-sm">
-                  {transicoes.map((t) => (
-                    <li key={t.id} className="rounded-md border border-border p-2">
-                      <p>{t.regra}</p>
-                      <p className="mt-1 text-muted-foreground text-small">
-                        Para: {t.aplica_a.replace(/\.$/, "")}. Situação: {situacaoDaTransicao(t.situacao_na_data)}
-                        {t.inicio_em ? `; começa em ${dataCurta(t.inicio_em)}` : "; início a confirmar"}
-                        {t.fim_em ? `; termina em ${dataCurta(t.fim_em)}` : ""}.{" "}
-                        <BotaoLink link={t.link} aoAbrirLink={aoAbrirLink}>
-                          Ver o dispositivo
-                        </BotaoLink>
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </Secao>
-            ) : null}
+            <Corpo
+              lateral={
+                temLateral ? (
+                  <>
+                    {sucessoras.length > 0 ? (
+                      <Secao titulo="Normas que a substituem">
+                        <p className="flex flex-wrap gap-1.5 text-sm">
+                          {sucessoras.map((s) => (
+                            <BotaoLink key={s} link={linkDaNorma(s)} aoAbrirLink={aoAbrirLink} />
+                          ))}
+                        </p>
+                      </Secao>
+                    ) : null}
 
-            {sucessoras.length > 0 ? (
-              <Secao titulo="Normas que a substituem">
-                <p className="flex flex-wrap gap-1.5 text-sm">
-                  {sucessoras.map((s) => (
-                    <BotaoLink key={s} link={linkDaNorma(s)} aoAbrirLink={aoAbrirLink} />
-                  ))}
+                    <Relacoes saida={relacoes.saida} entrada={relacoes.entrada} aoAbrirLink={aoAbrirLink} />
+
+                    {transicoes.length > 0 ? (
+                      <Secao titulo="Regras de transição">
+                        <ul className="divide-y divide-border text-sm">
+                          {transicoes.map((t) => (
+                            <li key={t.id} className="space-y-1 py-2.5 first:pt-0">
+                              <p>{t.regra}</p>
+                              <p className="text-muted-foreground text-small">
+                                Para: {t.aplica_a.replace(/\.$/, "")}. Situação:{" "}
+                                {situacaoDaTransicao(t.situacao_na_data)}
+                                {t.inicio_em ? `; começa em ${dataCurta(t.inicio_em)}` : "; início a confirmar"}
+                                {t.fim_em ? `; termina em ${dataCurta(t.fim_em)}` : ""}.{" "}
+                                <BotaoLink link={t.link} aoAbrirLink={aoAbrirLink}>
+                                  Ver o dispositivo
+                                </BotaoLink>
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </Secao>
+                    ) : null}
+                  </>
+                ) : null
+              }
+            >
+              {naoAchado ? (
+                <Alert variant="warning">
+                  <AlertTitle>Trecho não encontrado</AlertTitle>
+                  <AlertDescription>
+                    O {dispositivoPorExtenso(fragmento)} não está no texto desta norma na base. Abaixo, a norma inteira.
+                  </AlertDescription>
+                </Alert>
+              ) : fragmento !== null ? (
+                <FaixaTrecho rotulo={dispositivoPorExtenso(fragmento)} alvo={fragmento} />
+              ) : null}
+
+              {temTexto ? (
+                <Secao titulo="Texto da norma">
+                  <ComCarga carga={documento} titulo="Não foi possível ler o texto da norma">
+                    {({ dados: doc }) => (
+                      <Documento
+                        documento={doc}
+                        alvo={naoAchado ? null : fragmento}
+                        aoAbrirLink={aoAbrirLink}
+                        rotulo="Texto da norma"
+                      />
+                    )}
+                  </ComCarga>
+                </Secao>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  O texto desta norma não está na base: ela guarda só a referência. Consulte a fonte oficial.
                 </p>
-              </Secao>
-            ) : null}
-
-            <Relacoes saida={relacoes.saida} entrada={relacoes.entrada} aoAbrirLink={aoAbrirLink} />
-
-            {naoAchado ? (
-              <Alert variant="warning">
-                <AlertTitle>Trecho não encontrado</AlertTitle>
-                <AlertDescription>
-                  O {dispositivoPorExtenso(fragmento)} não está no texto desta norma na base. Abaixo, a norma inteira.
-                </AlertDescription>
-              </Alert>
-            ) : fragmento !== null ? (
-              <FaixaTrecho rotulo={dispositivoPorExtenso(fragmento)} alvo={fragmento} />
-            ) : null}
-
-            {temTexto ? (
-              <Secao titulo="Texto da norma">
-                <ComCarga carga={documento} titulo="Não foi possível ler o texto da norma">
-                  {({ dados: doc }) => (
-                    <Documento
-                      documento={doc}
-                      alvo={naoAchado ? null : fragmento}
-                      aoAbrirLink={aoAbrirLink}
-                      rotulo="Texto da norma"
-                    />
-                  )}
-                </ComCarga>
-              </Secao>
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                O texto desta norma não está na base: ela guarda só a referência. Consulte a fonte oficial.
-              </p>
-            )}
+              )}
+            </Corpo>
           </article>
         );
       }}
@@ -314,14 +362,16 @@ function LeitorRevisao({
         const secoes = doc.ancoras.filter((a) => a.tipo !== "pendencia");
         return (
           <article aria-label="PPC em revisão" className="leitor-impressao space-y-4">
-            <header className="space-y-2">
-              <p className="font-semibold text-muted-foreground text-small">PPC em revisão</p>
-              <h2 className="break-words text-title">{doc.titulo}</h2>
-              <p className="text-muted-foreground text-sm">
-                Texto convertido do seu arquivo: a formatação do Word (layout, imagens, numeração automática) não
-                aparece.
-              </p>
-            </header>
+            <Cabecalho
+              tipo="PPC em revisão"
+              titulo={doc.titulo}
+              resumo={
+                <p className="max-w-[68ch] text-muted-foreground text-sm">
+                  Texto convertido do seu arquivo: a formatação do Word (layout, imagens, numeração automática) não
+                  aparece.
+                </p>
+              }
+            />
 
             {secoes.length > 0 ? (
               <details className="nao-imprimir rounded-md border border-border p-2 text-sm">
@@ -397,59 +447,92 @@ function LeitorPpc({
               ? citacaoDoPpc({ curso: ppc.nome, campus: ppc.campus, secao: secao.valor.dados.secao })
               : null;
         return (
-          <article aria-label="PPC" className="leitor-impressao space-y-4">
-            <header className="space-y-2">
-              <p className="font-semibold text-muted-foreground text-small">Projeto Pedagógico de Curso</p>
-              <h2 className="text-title">{ppc.nome}</h2>
-              <p className="text-muted-foreground text-sm">
-                Campus {ppc.campus} · {ppc.nivel} · {ppc.forma}
-              </p>
-              <p className="flex flex-wrap items-center gap-2 text-sm">
-                {ppc.curso !== null ? (
-                  <BotaoLink link={ppc.curso} aoAbrirLink={aoAbrirLink}>
-                    Ficha do curso
-                  </BotaoLink>
-                ) : null}
-              </p>
-              <BotaoCopiar texto={citacao} />
-            </header>
+          <article aria-label="PPC" className="leitor-impressao space-y-8">
+            <Cabecalho
+              tipo="Projeto Pedagógico de Curso"
+              titulo={ppc.nome}
+              acoes={
+                <>
+                  <BotaoCopiar texto={citacao} />
+                  {ppc.curso !== null ? (
+                    <BotaoLink link={ppc.curso} aoAbrirLink={aoAbrirLink}>
+                      Ficha do curso
+                    </BotaoLink>
+                  ) : null}
+                </>
+              }
+            >
+              <Fatos>
+                <span>Campus {ppc.campus}</span>
+                {[ppc.nivel, ppc.forma].filter(Boolean).map((p) => (
+                  <span key={p}>{primeiraMaiuscula(p!)}</span>
+                ))}
+              </Fatos>
+            </Cabecalho>
 
-            {secoes.length > 0 ? (
-              <details className="nao-imprimir rounded-md border border-border p-2 text-sm">
-                <summary className="cursor-pointer font-semibold">Seções do índice ({secoes.length})</summary>
-                <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
-                  {secoes.map((s) => (
-                    <li key={s.id}>
-                      <BotaoLink link={s.link} aoAbrirLink={aoAbrirLink}>
-                        {s.titulo}
-                      </BotaoLink>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ) : null}
+            <Corpo
+              lateral={
+                secoes.length > 0 ? (
+                  <>
+                    {/* Com largura, o índice fica aberto ao lado do texto; no painel estreito, recolhido. */}
+                    <nav aria-label="Seções do PPC" className="hidden space-y-1.5 @4xl:block">
+                      <h3 className="font-semibold text-muted-foreground text-small">Seções ({secoes.length})</h3>
+                      <ul>
+                        {secoes.map((s) => (
+                          <li key={s.id}>
+                            <button
+                              type="button"
+                              data-link={s.link}
+                              aria-current={s.id === atual?.id ? "location" : undefined}
+                              onClick={() => aoAbrirLink(s.link)}
+                              className="block w-full rounded-md px-2 py-1 text-left text-muted-foreground text-small hover:bg-muted hover:text-foreground aria-[current]:bg-accent aria-[current]:font-semibold aria-[current]:text-accent-foreground"
+                            >
+                              {s.titulo}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </nav>
+                    <details className="rounded-md border border-border p-2 text-sm @4xl:hidden">
+                      <summary className="cursor-pointer font-semibold">Seções do índice ({secoes.length})</summary>
+                      <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
+                        {secoes.map((s) => (
+                          <li key={s.id}>
+                            <BotaoLink link={s.link} aoAbrirLink={aoAbrirLink}>
+                              {s.titulo}
+                            </BotaoLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </>
+                ) : null
+              }
+            >
+              {fragmento !== null && atual === undefined ? (
+                <Alert variant="warning">
+                  <AlertTitle>Seção não encontrada</AlertTitle>
+                  <AlertDescription>
+                    Esta seção não está no índice do PPC. Abaixo, o documento inteiro.
+                  </AlertDescription>
+                </Alert>
+              ) : atual !== undefined ? (
+                <FaixaTrecho rotulo={atual.titulo} alvo={fragmento!} />
+              ) : null}
 
-            {fragmento !== null && atual === undefined ? (
-              <Alert variant="warning">
-                <AlertTitle>Seção não encontrada</AlertTitle>
-                <AlertDescription>Esta seção não está no índice do PPC. Abaixo, o documento inteiro.</AlertDescription>
-              </Alert>
-            ) : atual !== undefined ? (
-              <FaixaTrecho rotulo={atual.titulo} alvo={fragmento!} />
-            ) : null}
-
-            <Secao titulo="Texto do PPC">
-              <ComCarga carga={documento} titulo="Não foi possível ler o texto do PPC">
-                {({ dados: doc }) => (
-                  <Documento
-                    documento={doc}
-                    alvo={atual === undefined ? null : fragmento}
-                    aoAbrirLink={aoAbrirLink}
-                    rotulo="Texto do PPC"
-                  />
-                )}
-              </ComCarga>
-            </Secao>
+              <Secao titulo="Texto do PPC">
+                <ComCarga carga={documento} titulo="Não foi possível ler o texto do PPC">
+                  {({ dados: doc }) => (
+                    <Documento
+                      documento={doc}
+                      alvo={atual === undefined ? null : fragmento}
+                      aoAbrirLink={aoAbrirLink}
+                      rotulo="Texto do PPC"
+                    />
+                  )}
+                </ComCarga>
+              </Secao>
+            </Corpo>
           </article>
         );
       }}

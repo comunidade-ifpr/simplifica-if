@@ -3,9 +3,9 @@
  * `GrupoLeitura`, sem ferramenta MCP (a IA já tem `buscar_norma`, `listar_cursos`, `buscar_secoes` e
  * as fichas, com o texto no orçamento dela; o índice inteiro e a paleta de busca são para a tela):
  *
- * - `explorarIndice`: as coleções inteiras (normas, cursos, PPCs, campi, CNCT, fichas da
- *   revisão de PPC, processos seletivos e as reuniões do Consepe com os itens de pauta), com os campos
- *   dos filtros. É pequeno (algumas centenas de KB) e não muda com o servidor no ar: a interface lê uma
+ * - `explorarIndice`: as coleções inteiras (normas, cursos, PPCs, campi, CNCT, processos seletivos e
+ *   as reuniões do Consepe com os itens de pauta), com os campos dos filtros. As fichas da revisão de
+ *   PPC não são coleção: são critério interno da revisão. É pequeno (algumas centenas de KB) e não muda com o servidor no ar: a interface lê uma
  *   vez e filtra na memória;
  * - `explorarBuscar`: a busca da paleta (Ctrl/Cmd+K), com os resultados agrupados por tipo. Uma
  *   citação ("Res. CNE/CP 1/2021, art. 20") ou um ID vai direto ao dispositivo, pela mesma regra do
@@ -104,15 +104,6 @@ export const CnctDoIndice = Schema.Struct({
 });
 export type CnctDoIndice = typeof CnctDoIndice.Type;
 
-export const FichaDoIndice = Schema.Struct({
-  id: Schema.String,
-  titulo: Schema.String,
-  dominio: Texto,
-  criticidade: Texto,
-  link: EsquemaLink,
-});
-export type FichaDoIndice = typeof FichaDoIndice.Type;
-
 export const ProcessoDoIndice = Schema.Struct({ id: Schema.String, nome: Schema.String, ano_ingresso: Inteiro });
 export type ProcessoDoIndice = typeof ProcessoDoIndice.Type;
 
@@ -171,7 +162,6 @@ export const DadosIndice = Schema.Struct({
   ppcs: Schema.Array(PpcDoIndice),
   campi: Schema.Array(CampusDoIndice),
   cnct: Schema.Array(CnctDoIndice),
-  fichas: Schema.Array(FichaDoIndice),
   processos: Schema.Array(ProcessoDoIndice),
   /** Mais recente primeiro. */
   reunioes: Schema.Array(ReuniaoDoIndice),
@@ -182,17 +172,7 @@ export const SaidaIndice = Resposta(DadosIndice);
 
 /* ================================================================== busca */
 
-const TIPOS_RESULTADO = [
-  "dispositivo",
-  "norma",
-  "curso",
-  "ppc",
-  "secao",
-  "campus",
-  "cnct",
-  "consepe",
-  "ficha",
-] as const;
+const TIPOS_RESULTADO = ["dispositivo", "norma", "curso", "ppc", "secao", "campus", "cnct", "consepe"] as const;
 export type TipoResultado = (typeof TIPOS_RESULTADO)[number];
 
 export const EntradaBusca = Schema.Struct({

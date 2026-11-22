@@ -51,7 +51,9 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
   const norma = painel.getByRole("article", { name: "Norma" });
   await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  await expect.element(norma.getByRole("group", { name: "Situação" }).getByText("Em vigor")).toBeVisible();
+  await expect
+    .element(norma.getByRole("group", { name: "Situação" }).getByText("Em vigor", { exact: true }))
+    .toBeVisible();
   // o foco foi para o painel, que um chip da conversa abriu
   expect(document.activeElement).toBe(painel.element());
   // a data do ato e a publicação registrada, cada uma com o seu nome
@@ -89,8 +91,10 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await relacoes.getByRole("button", { name: "Res. CNE/CP 1/2021" }).click();
   const anterior = painel.getByRole("article", { name: "Norma" });
   await expect.element(anterior.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
-  await expect.element(anterior.getByLabelText("Situação").getByText("Revogada")).toBeVisible();
-  await expect.element(anterior.getByLabelText("Situação").getByText("Vigência a confirmar")).toBeVisible();
+  await expect.element(anterior.getByLabelText("Situação").getByText("Revogada", { exact: true })).toBeVisible();
+  await expect
+    .element(anterior.getByLabelText("Situação").getByText("Vigência a confirmar", { exact: true }))
+    .toBeVisible();
   await expect.element(anterior.getByText("Publicação no DOU: a confirmar")).toBeVisible();
   await expect.element(painel.getByRole("button", { name: "Avançar para o próximo link" })).toBeDisabled();
 

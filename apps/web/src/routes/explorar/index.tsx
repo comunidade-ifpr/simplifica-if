@@ -1,97 +1,101 @@
 /**
- * A entrada do Explorar: quanto há de cada coleção, com o caminho para ela, e a dica da busca.
+ * A entrada do Explorar, abaixo da busca: a linha do tempo das normas (um sinal por norma, com a
+ * situação de vigência) e o que há em cada coleção, com o caminho para ela.
  */
+import type { DadosIndice } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ComIndice } from "../../explorar/componentes.tsx";
-import { atalhoPaleta } from "../../explorar/Paleta.tsx";
+import { ChevronRightIcon } from "lucide-react";
+import { quantos } from "../../explorar/colecoes.ts";
+import { classeLinha, classeLinkLinha, ComIndice } from "../../explorar/componentes.tsx";
+import { LinhaDoTempo } from "../../explorar/LinhaDoTempo.tsx";
 
 export const Route = createFileRoute("/explorar/")({ component: Entrada });
 
-function Cartao({
-  to,
-  titulo,
-  contagem,
-  descricao,
-}: {
+const COLECOES: ReadonlyArray<{
   readonly to:
     | "/explorar/normas"
     | "/explorar/cursos"
     | "/explorar/ppcs"
     | "/explorar/campi"
     | "/explorar/cnct"
-    | "/explorar/consepe"
-    | "/explorar/fichas";
+    | "/explorar/consepe";
   readonly titulo: string;
-  readonly contagem: string;
   readonly descricao: string;
-}) {
-  return (
-    <li>
-      <Link
-        to={to}
-        className="flex h-full flex-col gap-1 rounded-xl border border-border bg-card p-4 transition-colors hover:border-ring/45"
-      >
-        <span className="font-semibold">{titulo}</span>
-        <span className="text-title tabular-nums">{contagem}</span>
-        <span className="text-muted-foreground text-sm">{descricao}</span>
-      </Link>
-    </li>
-  );
-}
+  readonly contagem: (d: DadosIndice) => string;
+}> = [
+  {
+    to: "/explorar/normas",
+    titulo: "Normas",
+    descricao: "Leis, resoluções, portarias e notas técnicas, com a situação de vigência e as relações entre elas.",
+    contagem: (d) => quantos(d.normas.length, "norma", "normas"),
+  },
+  {
+    to: "/explorar/cursos",
+    titulo: "Cursos",
+    descricao: "Os cursos do IFPR, com o PPC, as ofertas e as divergências com o SUAP.",
+    contagem: (d) => quantos(d.cursos.length, "curso", "cursos"),
+  },
+  {
+    to: "/explorar/ppcs",
+    titulo: "PPCs",
+    descricao: "Os Projetos Pedagógicos de Curso convertidos, para ler e comparar.",
+    contagem: (d) => quantos(d.ppcs.length, "PPC", "PPCs"),
+  },
+  {
+    to: "/explorar/campi",
+    titulo: "Campi",
+    descricao: "Os cursos de cada campus, o calendário e os horários de aula.",
+    contagem: (d) => quantos(d.campi.length, "campus", "campi"),
+  },
+  {
+    to: "/explorar/cnct",
+    titulo: "CNCT",
+    descricao: "O Catálogo Nacional de Cursos Técnicos e os cursos do IFPR de cada habilitação.",
+    contagem: (d) => quantos(d.cnct.length, "curso no catálogo", "cursos no catálogo"),
+  },
+  {
+    to: "/explorar/consepe",
+    titulo: "Consepe",
+    descricao: "As reuniões do conselho, os pareceres e os itens de pauta ligados aos cursos.",
+    contagem: (d) =>
+      `${quantos(d.reunioes.length, "reunião", "reuniões")}, ${quantos(
+        d.reunioes.reduce((n, r) => n + r.itens.length, 0),
+        "item de pauta",
+        "itens de pauta",
+      )}`,
+  },
+];
 
 function Entrada() {
   return (
     <ComIndice>
       {(d) => (
-        <div className="space-y-5">
-          <p className="text-sm">
-            Use <kbd className="rounded border border-border px-1 text-micro">{atalhoPaleta()}</kbd> em qualquer tela
-            para buscar um curso, um campus, uma norma ou uma citação, como “Res. CNE/CP 1/2021, art. 20”.
-          </p>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Cartao
-              to="/explorar/normas"
-              titulo="Normas"
-              contagem={String(d.normas.length)}
-              descricao="Leis, resoluções, portarias e notas técnicas, com a situação de vigência."
-            />
-            <Cartao
-              to="/explorar/cursos"
-              titulo="Cursos"
-              contagem={String(d.cursos.length)}
-              descricao="Os cursos do IFPR, com o PPC, as ofertas e as divergências com o SUAP."
-            />
-            <Cartao
-              to="/explorar/ppcs"
-              titulo="PPCs"
-              contagem={String(d.ppcs.length)}
-              descricao="Os Projetos Pedagógicos de Curso convertidos, para ler e comparar."
-            />
-            <Cartao
-              to="/explorar/campi"
-              titulo="Campi"
-              contagem={String(d.campi.length)}
-              descricao="Os cursos de cada campus, o calendário e os horários de aula."
-            />
-            <Cartao
-              to="/explorar/cnct"
-              titulo="CNCT"
-              contagem={String(d.cnct.length)}
-              descricao="O Catálogo Nacional de Cursos Técnicos e os cursos do IFPR de cada habilitação."
-            />
-            <Cartao
-              to="/explorar/consepe"
-              titulo="Consepe"
-              contagem={String(d.reunioes.reduce((n, r) => n + r.itens.length, 0))}
-              descricao="Reuniões, pareceres e itens de pauta ligados aos cursos."
-            />
-            <Cartao
-              to="/explorar/fichas"
-              titulo="Fichas de análise"
-              contagem={String(d.fichas.length)}
-              descricao="Os critérios da revisão de PPC do app."
-            />
-          </ul>
+        <div className="space-y-12">
+          <LinhaDoTempo normas={d.normas} />
+          <section aria-labelledby="titulo-colecoes" className="space-y-3">
+            <h2 id="titulo-colecoes" className="text-title">
+              O que há na base
+            </h2>
+            <ul className="grid gap-x-12 border-border border-t md:grid-cols-2">
+              {COLECOES.map((c) => (
+                <li key={c.to} className={`${classeLinha} border-border border-b`}>
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap items-baseline justify-between gap-x-3">
+                      <Link to={c.to} className={classeLinkLinha}>
+                        {c.titulo}
+                      </Link>
+                      <span className="text-muted-foreground text-small tabular-nums">{c.contagem(d)}</span>
+                    </p>
+                    <p className="text-muted-foreground text-small">{c.descricao}</p>
+                  </div>
+                  <ChevronRightIcon
+                    aria-hidden
+                    className="mt-1 size-4 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 group-has-[a:focus-visible]:opacity-100"
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
       )}
     </ComIndice>

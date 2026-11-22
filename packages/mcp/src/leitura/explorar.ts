@@ -2,8 +2,9 @@
  * As leituras do Explorar do app (`explorarIndice` e `explorarBuscar`, contrato em `../explorar.ts`).
  *
  * O índice sai dos serviços do kb (`Normas.listar`, `Cursos.listar`, a regra do `listar_cursos`, para
- * o CNCT, as ofertas e os turnos de cada curso, `Ppcs.listar`, `Cursos.campi`, o CNCT, as fichas, os
- * processos seletivos e `Conselhos.reunioes`). Ele é montado na primeira chamada e guardado: o banco
+ * o CNCT, as ofertas e os turnos de cada curso, `Ppcs.listar`, `Cursos.campi`, o CNCT, os processos
+ * seletivos e `Conselhos.reunioes`). As fichas da revisão de PPC ficam fora: são critério interno da
+ * revisão, e a página de cada uma (`lerFicha`) abre pelo link que a revisão e a IA dão. Ele é montado na primeira chamada e guardado: o banco
  * não muda com o servidor no ar (a troca da base é na abertura). A busca usa esse índice na memória
  * para as coleções pequenas, o `Normas.buscar` (a regra do `buscar_norma`: citação ou ID ao
  * dispositivo, termos no FTS dos dispositivos e dos metadados) e `Ppcs.buscarSecoesPorPrefixo`.
@@ -11,7 +12,6 @@
 import * as Conselhos from "@simplifica-if/kb/Conselhos";
 import * as Cursos from "@simplifica-if/kb/Cursos";
 import * as Normas from "@simplifica-if/kb/Normas";
-import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Effect from "effect/Effect";
 import type { Base } from "../contratos.ts";
@@ -23,7 +23,6 @@ import type {
   DadosIndice,
   EntradaBusca,
   EntradaIndice,
-  FichaDoIndice,
   GrupoBusca,
   NormaDoIndice,
   PpcDoIndice,
@@ -31,7 +30,7 @@ import type {
   ReuniaoDoIndice,
   TipoResultado,
 } from "../explorar.ts";
-import { linkCampus, linkCnct, linkCurso, linkFicha, linkNorma, linkPpc } from "../links.ts";
+import { linkCampus, linkCnct, linkCurso, linkNorma, linkPpc } from "../links.ts";
 import {
   buscarNaMemoria,
   campo,
@@ -52,7 +51,6 @@ interface ServicosDoIndice {
   readonly cursos: Cursos.Cursos["Service"];
   readonly ppcs: Ppcs.Ppcs["Service"];
   readonly conselhos: Conselhos.Conselhos["Service"];
-  readonly pacote: PacoteContexto.PacoteContexto["Service"];
 }
 
 /** O índice inteiro, dos serviços do kb. */
@@ -126,14 +124,6 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
     link: linkCnct(c.slug),
   }));
 
-  const fichas = (yield* kb.pacote.fichasResumidas).map((f): FichaDoIndice => ({
-    id: f.id,
-    titulo: f.titulo,
-    dominio: f.dominio,
-    criticidade: f.criticidade,
-    link: linkFicha(f.id),
-  }));
-
   const processos = (yield* kb.cursos.processos).map((p) => ({ id: p.id, nome: p.nome, ano_ingresso: p.ano_ingresso }));
 
   const reunioes = (yield* kb.conselhos.reunioes).map((r): ReuniaoDoIndice => ({
@@ -170,7 +160,7 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
     })),
   }));
 
-  return { normas, cursos, ppcs, campi, cnct, fichas, processos, reunioes };
+  return { normas, cursos, ppcs, campi, cnct, processos, reunioes };
 });
 
 type Indice = Effect.Success<ReturnType<typeof lerIndice>>;
@@ -297,22 +287,6 @@ function itensDaBusca(indice: Indice): ReadonlyMap<TipoResultado, ReadonlyArray<
         ),
       ]),
     ],
-    [
-      "ficha",
-      indice.fichas.map((f) =>
-        item(
-          {
-            tipo: "ficha",
-            titulo: `${f.id}: ${f.titulo}`,
-            detalhe: ["Ficha de análise de PPC", f.criticidade ? `criticidade ${f.criticidade}` : null]
-              .filter(Boolean)
-              .join(" · "),
-            link: f.link,
-          },
-          [campo([f.id, f.titulo], 3), campo([f.dominio, "ficha"], 1)],
-        ),
-      ),
-    ],
   ]);
 }
 
@@ -321,10 +295,9 @@ export const makeExplorar = Effect.fn("Leitura.makeExplorar")(function* (base: B
   const normas = yield* Normas.Normas;
   const ppcs = yield* Ppcs.Ppcs;
   const conselhos = yield* Conselhos.Conselhos;
-  const pacote = yield* PacoteContexto.PacoteContexto;
 
   // montado na primeira chamada e guardado (o banco não muda com o servidor no ar)
-  const indice = yield* Effect.cached(lerIndice({ normas, cursos, ppcs, conselhos, pacote }));
+  const indice = yield* Effect.cached(lerIndice({ normas, cursos, ppcs, conselhos }));
   const itens = yield* Effect.cached(Effect.map(indice, itensDaBusca));
 
   const explorarIndice = Effect.fn("Leitura.explorarIndice")(function* (_: typeof EntradaIndice.Type) {

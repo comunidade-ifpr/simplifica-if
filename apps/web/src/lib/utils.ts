@@ -8,7 +8,9 @@ import { extendTailwindMerge } from "tailwind-merge";
 // Aqui também a escala de texto do app (`index.css`), pelo mesmo motivo.
 const twMerge = extendTailwindMerge({
   extend: {
-    theme: { text: ["2xs", "3xs", "4xs", "5xs", "display", "title", "heading", "body", "quote", "small", "micro"] },
+    theme: {
+      text: ["2xs", "3xs", "4xs", "5xs", "hero", "display", "title", "heading", "body", "quote", "small", "micro"],
+    },
   },
 });
 

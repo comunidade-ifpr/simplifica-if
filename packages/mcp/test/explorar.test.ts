@@ -114,7 +114,6 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       expect(dados.campi.find((c) => c.id === "curitiba")?.horarios_url).toBe("https://ifpr.edu.br/curitiba/horarios/");
       expect(dados.ppcs[0]).toMatchObject({ chave: CURSO_ENFERMAGEM, curso: `ifpr://curso/${CURSO_ENFERMAGEM}` });
       expect(dados.cnct.map((c) => c.slug)).toEqual(["tecnico-em-enfermagem", "tecnico-em-informatica"]);
-      expect(dados.fichas).toEqual([expect.objectContaining({ id: "CT-CURR-12", link: "ifpr://ficha/CT-CURR-12" })]);
       const [reuniao] = dados.reunioes;
       expect(reuniao).toMatchObject({ id: REUNIAO_CONSEPE, conselho: "Consepe", data: "2026-03-20" });
       expect(reuniao!.itens[0]).toMatchObject({ curso: CURSO_ENFERMAGEM, resultado: "Favorável", ordem: 7 });
@@ -164,8 +163,10 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       const campus = yield* comCliente(banco, (c) => c.explorarBuscar({ consulta: "Foz", limite: 6 }));
       expect(grupo(campus.dados, "campus").map((r) => r.titulo)).toEqual(["Campus Foz do Iguaçu"]);
 
+      // as fichas da revisão de PPC não entram na busca do Explorar
       const ficha = yield* comCliente(banco, (c) => c.explorarBuscar({ consulta: "ct-curr-12", limite: 6 }));
-      expect(grupo(ficha.dados, "ficha")[0]?.link).toBe("ifpr://ficha/CT-CURR-12");
+      const links = ficha.dados.grupos.flatMap((g) => g.resultados.map((r) => r.link ?? ""));
+      expect(links.filter((l) => l.startsWith("ifpr://ficha/"))).toEqual([]);
 
       const vazia = yield* comCliente(banco, (c) => c.explorarBuscar({ consulta: "   ", limite: 6 }));
       expect(vazia.dados.grupos).toEqual([]);

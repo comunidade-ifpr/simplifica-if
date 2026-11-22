@@ -75,10 +75,18 @@
 }
 
 /*
- * A escala de texto (`text-display` … `text-micro`): tamanho, entrelinha e peso juntos. Nada abaixo de
+ * A escala de texto (`text-hero`, `text-display` … `text-micro`): tamanho, entrelinha e peso juntos. Nada abaixo de
  * 13 px (`text-micro`). Os nomes estão também no `cn` (`lib/utils.ts`), para o tailwind-merge não os
  * confundir com cor.
  */
+/* Só o título da entrada do Explorar: o momento de abertura, acima do `text-display`. */
+@utility text-hero {
+  font-size: clamp(2.25rem, 1.5rem + 2.4vw, 3.25rem);
+  line-height: 1.05;
+  font-weight: 700;
+  font-stretch: 82%;
+  letter-spacing: -0.015em;
+}
 @utility text-display {
   font-size: 1.875rem;
   line-height: 2.25rem;
