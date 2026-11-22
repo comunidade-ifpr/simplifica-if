@@ -196,4 +196,4 @@ Regras de transição (direito de conclusão, prazos de adequação) são dados 
    pnpm kb:compilar
    ```
 
-4. Confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar`) e recalcule a contagem de casos de `testes.txt` pelo roteiro JUnit do [README do gabarito](../../testes-gabarito/README.md): uma norma nova muda escores de busca, contagens do banco e o número de casos de `estrutura.test.ts`, que tem um caso por norma.
+4. Confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar`), como no [README do gabarito](../../testes-gabarito/README.md): uma norma nova muda escores de busca e contagens do banco.

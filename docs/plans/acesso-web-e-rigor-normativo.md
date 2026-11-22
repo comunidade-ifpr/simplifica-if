@@ -107,7 +107,7 @@ Cada camada tem um único dono para evitar divergência de redação e estouro d
    - Hoje tem **393 palavras** (teto rígido de **400 palavras** em `packages/mcp/test/instrucoes.test.ts:18` e `ferramentas.test.ts:274`; além disso, `ferramentas.test.ts:276-278` rejeita qualquer identificador `snake_case` em crase que não seja ferramenta do MCP).
    - Manter o teto de 400 palavras, os 7 itens (`1. **` a `7. **`), as 16 ferramentas e todas as frases verificadas em `instrucoes.test.ts`.
    - No item **7 (Fora da base e versão)**, acrescentar apenas uma frase portátil enxuta (compensando ~12–15 palavras com enxugamento leve no restante, sem citar nomes de ferramentas web em crase): *"Se houver busca na web, use-a só como complemento para o que falta na base, citando a URL oficial e indicando que é fonte externa."*
-   - Rodar `pnpm mcp:instrucoes`, `node packages/mcp/test/gabarito.ts --atualizar instrucoes`, registrar no histórico de `testes-gabarito/README.md` e recalcular `testes.txt` se mudar contagem de casos.
+   - Rodar `pnpm mcp:instrucoes`, `node packages/mcp/test/gabarito.ts --atualizar instrucoes`, registrar no histórico de `testes-gabarito/README.md`.
 
 2. **Bloco de sessão do app no `Motor` (novo helper, ex. `instrucoesWeb` em `packages/motor/src/skills.ts` ou `instrucoes-sessao.ts`):**
    - Injetado pelo `Motor.iniciarSessao` ao lado de `Skills.instrucoesSessao` **sempre que `buscaWebLigada(politicaSessao)` for `true`** (logo, entra em conversas livres, tarefas de skill e `avaliar_skill.ts`, e nunca em `POLITICA_JULGAMENTO`).
@@ -178,7 +178,7 @@ Atualizar todos os pontos que hoje afirmam que a busca web é desligada:
 - **`packages/motor/test/normalizacao.test.ts`:** `webSearch` do Codex com `action: { type: "openPage", url }` vs. `search`.
 - **`packages/mcp/test/instrucoes.test.ts`, `ferramentas.test.ts` e `node packages/mcp/test/gabarito.ts --comparar`:** teto ≤ 400 palavras, 7 itens, 16 ferramentas, sem `snake_case` estranho em crase, gabarito sincronizado.
 - **`apps/web`:** incluir chamada web em `apps/web/test/drivers-demonstracao.ts` para `apps/web/test/ingles.test.ts` validar rótulos e domínio exibido; testar `LinkMarkdown` (ícone externo em `https://` vs. `ifpr://`), `ItemConversa` (consulta/domínio em vez de resumo bruto) e `AvisoUso`.
-- **Pipeline geral:** `node scripts/validar_base.ts`, `pnpm fmt`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, mais recontagem de `testes-gabarito/testes.txt` se o número de casos mudar.
+- **Pipeline geral:** `node scripts/validar_base.ts`, `pnpm fmt`, `pnpm lint`, `pnpm typecheck`, `pnpm test`.
 
 ### 2. Validação real nos três providers e avaliação de aderência à base
 

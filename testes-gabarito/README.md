@@ -6,8 +6,6 @@ Capturado em 14/11/2026, ainda com Bun (1.4.4), antes da etapa C0 da consolidaç
 |---|---|---|
 | `kb.sh` e `kb/` | stdout (`kb/<caso>.out`) e código de saída (`kb/codigos.txt`) de 84 invocações da CLI `kb`, em texto e com `--json`, inclusive casos de erro | `sh testes-gabarito/kb.sh --comparar` |
 | `mcp.json` | `initialize` (servidor, capacidades, instruções), `tools/list` e 37 chamadas (`content` e `structuredContent`), pelo Client do SDK em stdio | `node packages/mcp/test/gabarito.ts --comparar` |
-| `testes.txt` | casos e pulados por arquivo de teste (`arquivo⇥casos⇥pulados`), da suíte inteira | relatórios JUnit + `node testes-gabarito/contar_testes.ts` |
-| `testes-smoke.txt` | o mesmo para o smoke contra a base real (`pnpm mcp:smoke`, com `SIMPLIFICA_SMOKE=1`) | relatório JUnit do `pnpm mcp:smoke` + `node testes-gabarito/contar_testes.ts packages/mcp=<relatório>` |
 | `banco.sh` e `banco.txt` | linhas e sha256 do `.dump` de cada tabela do `tmp/kb.sqlite`, sem as tabelas do FTS5 | `sh testes-gabarito/banco.sh --comparar` |
 | `base.sh` | `gerar_base` e `gerar_indice_ppcs` sem diferença no git e `validar_base` sem erro; o esperado é o próprio git, sem arquivo de gabarito | `sh testes-gabarito/base.sh --comparar` |
 
@@ -15,20 +13,9 @@ Os scripts de shell são neutros de runtime: o comando vem de `KB` (CLI `kb`) ou
 
 Notas da captura:
 
-- Na suíte com Bun, `testes.txt` soma 1015 casos: 1000 passando e 15 pulados (14 do smoke, que só roda com `SIMPLIFICA_SMOKE=1`, e 1 do teste de fluxo da CLI do SEI, que precisava de snapshots locais e saiu do repositório em 19/11/2026). Os blocos pulados pelo smoke contam 6 e 8 casos no JUnit do Bun; rodando, são 5 e 7 (`testes-smoke.txt`), porque o Bun conta de outro jeito os `describe.skipIf` pulados.
 - Até 18/11/2026, `base.sh` também gerava `site/` (uma cópia de `base-conhecimento/`) e conferia o hash dele em `base.txt`; o hash foi recalculado no C0, com o Bun, depois da troca dos comandos em `base-conhecimento/README.md` e `base-conhecimento/docs/*.md` (o da primeira captura era `5908118c…`). O gerador e o `base.txt` saíram (última linha da tabela abaixo).
 - `exportar_base_publica` fica fora de `base.sh`: lê as movimentações da base de gestão anterior e grava a data do dia. Com Bun, em 14/11/2026, a única diferença no git foi `atualizado_em` de `campi/index.json` (de `2026-11-13` para `2026-11-14`).
 - A impressão digital das fontes do banco (`meta.fontes_sha256`, `fontes_lista_sha256` e `fontes_total`) inclui o código de `packages/kb/src` e muda com qualquer mudança de código. `banco.sh` a deixa fora do hash da `meta`, e `gabarito.ts --comparar` mascara a versão `dev-<8 hex>` do envelope e a impressão da consulta nos cursores. O `banco.txt` foi recalculado com essa regra sobre o banco que o Bun compilou; as outras 33 linhas são as da primeira captura.
-
-Para conferir a contagem por arquivo no Node, gere o JUnit do vitest na raiz e em cada pacote e compare:
-
-```bash
-pnpm exec vp test run --reporter=junit --outputFile=/tmp/raiz.xml
-for p in kb mcp; do (cd packages/$p && pnpm exec vp test run --config ../../vite.config.ts --dir . --reporter=junit --outputFile=/tmp/$p.xml); done
-node testes-gabarito/contar_testes.ts .=/tmp/raiz.xml packages/kb=/tmp/kb.xml packages/mcp=/tmp/mcp.xml | diff testes-gabarito/testes.txt -
-```
-
-No C0, a única diferença esperada é a do JUnit do Bun nos blocos pulados do smoke (6 e 8 casos, contra 5 e 7) e o teste novo `packages/mcp/test/instrucoes.test.ts`.
 
 ## Atualizações por decisão explícita
 
@@ -91,6 +78,6 @@ O `gabarito.ts --atualizar <partes>` regrava só as partes nomeadas e mantém o 
 | 21/11/2026 | `node packages/mcp/test/gabarito.ts --atualizar instrucoes` | Acesso à web por padrão em conversas (`docs/plans/acesso-web-e-rigor-normativo.md`): o item 7 de `packages/mcp/instrucoes.md` ganha a frase portátil orientando usar busca web só como complemento para o que falta na base, citando a URL oficial e indicando fonte externa (392 palavras, dentro do teto de 400). Definições e chamadas não mudam |
 | 22/11/2026 | `sh testes-gabarito/kb.sh --capturar`; `sh testes-gabarito/banco.sh --capturar`; `node packages/mcp/test/gabarito.ts --capturar` | Tabelas sem a repetição horizontal das células mescladas: o conversor (`@simplifica-if/docx/tabelas`) passa a escrever a célula mesclada uma vez, junta as colunas da grade que nenhuma linha separa, e os 189 PPCs da base com repetição foram corrigidos no próprio Markdown, sem os `.docx` (125 colunas juntadas em 92 tabelas e 4.320 cópias esvaziadas; o número de linhas de cada arquivo não muda). Na CLI mudam os textos e escores de `buscar-secoes.*` e `pacote-contexto*`, o `trecho_fonte` de 3 PPCs em `ppc-fatos-todos.json` (valores iguais) e `citacoes.*` (233 → 230 ocorrências: a mesma citação repetida em três colunas da linha 901 de um PPC). No banco, `citacoes`, `documentos`, `ppcs`, `ppc_fatos`, `secoes` (20059 → 20058: some a seção `## PRIMEIRO SEMESTRE` de `curitiba/bacharelado-em-ciencias-contabeis`, que era só a linha repetida) e `meta`. No MCP, as mesmas contagens e textos, e a `versao` de desenvolvimento. `base.sh` não roda com a base por gravar; os geradores rodados duas vezes não mudam nada. `testes.txt` sem mudança: os testes de `docx` e `ppc` não entram nele |
 | 22/11/2026 | `sh testes-gabarito/banco.sh --capturar` (só a linha `normas` de `banco.txt`) | As 70 normas sem texto na base (`stubs.yaml`) passam a ter `tipo_documento`, `numero`, `ano`, `orgao` e `jurisdicao` no banco, tirados do ID (`metadadosDoIdNorma`); antes ficavam nulos, e os filtros de ano, órgão e tipo do Explorar não as alcançavam. As outras tabelas, `kb.sh --comparar` (84 invocações) e `gabarito.ts --comparar` (37 chamadas) iguais |
-| 22/11/2026 | roteiro JUnit acima + `node testes-gabarito/contar_testes.ts`; gravadas em `testes.txt` só as linhas dos arquivos novos | Entra `packages/kb/src/normas/ids.test.ts` (3 casos, do `metadadosDoIdNorma`) e `scripts/traces.test.ts` (4), que já estava na `main` sem linha no gabarito. De 1103 para 1110 casos. Os pulados não foram regravados: neste checkout `saneamento.test.ts` (36) e um caso de `fase5.test.ts` ficam pulados porque o commit de referência de antes do saneamento não existe no repositório |
+| 22/11/2026 | `testes.txt`, `testes-smoke.txt` e `contar_testes.ts` removidos | A contagem de casos por arquivo servia para a troca de Bun por Node não perder testes em silêncio. Feita a troca, nada a conferia sozinho, e ela ficava defasada a cada teste novo. As linhas deste histórico que a citam ficam como registro. Os testes do saneamento, que pulavam calados desde a reescrita do histórico (o commit de referência `fcfc006` deixou de existir), passam a apontar para o commit equivalente, `98e391b7` (a pasta `base-conhecimento/normas` é idêntica), e só pulam em clone raso: com o histórico inteiro e sem o commit, falham |
 
 Conferência depois dessas atualizações: `sh testes-gabarito/kb.sh --comparar`, `node packages/mcp/test/gabarito.ts --comparar` (o do CI) e `sh testes-gabarito/banco.sh --comparar` (com o `tmp/kb.sqlite` recém-compilado; o CI não o roda).

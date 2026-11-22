@@ -5,7 +5,8 @@
  * (`REF_ANTES_SANEAMENTO`). O front matter fica fora da comparação: ele muda de propósito (datas,
  * relações geradas de `relacoes.yaml`, status calculado).
  *
- * Roda só num checkout git que tenha o commit de referência; noutro caso, é pulado.
+ * Roda num checkout git que tenha o commit de referência. Num clone raso (o CI) é pulado; com o
+ * histórico inteiro e sem o commit, falha: a referência ficou velha (`situacaoDaReferencia`).
  */
 import * as NodeChildProcess from "node:child_process";
 import { describe, expect, test } from "vite-plus/test";
@@ -14,7 +15,7 @@ import * as NodePath from "node:path";
 import { listarNormas } from "./estrutura.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
 import { raizRepositorio } from "../caminhos.ts";
-import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO } from "./referencia-saneamento.ts";
+import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO, situacaoDaReferencia } from "./referencia-saneamento.ts";
 
 /**
  * Normas cujo texto foi substituído de propósito depois do saneamento (não é mudança de marcação).
@@ -38,11 +39,12 @@ function versaoAnterior(relativo: string): string | null {
   return resultado.status === 0 ? resultado.stdout : null;
 }
 
-const refDisponivel =
-  NodeChildProcess.spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], {
-    cwd: raiz,
-    stdio: "ignore",
-  }).status === 0;
+const referencia = situacaoDaReferencia(raiz);
+const refDisponivel = referencia === "disponivel";
+
+test(`o commit de referência (${REF_ANTES_SANEAMENTO}) existe quando o histórico está inteiro`, () => {
+  expect(referencia, "atualize REF_ANTES_SANEAMENTO para o commit equivalente").not.toBe("ausente");
+});
 
 describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_SANEAMENTO}`, () => {
   const todas = listarNormas(raiz);

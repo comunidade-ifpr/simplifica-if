@@ -21,7 +21,7 @@ import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { idDoAto } from "./ids.ts";
 import { raizRepositorio } from "../caminhos.ts";
-import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO } from "./referencia-saneamento.ts";
+import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO, situacaoDaReferencia } from "./referencia-saneamento.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
 import {
@@ -35,11 +35,8 @@ import {
 
 const raiz = raizRepositorio();
 const vigencia = carregarFonteVigencia(raiz);
-const refDisponivel =
-  NodeChildProcess.spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], {
-    cwd: raiz,
-    stdio: "ignore",
-  }).status === 0;
+// a referência velha (histórico inteiro, sem o commit) falha em `saneamento.test.ts`
+const refDisponivel = situacaoDaReferencia(raiz) === "disponivel";
 const DCN_2021 = "br/cne-cp/res/2021/1";
 const DCN_2026 = "br/cne-cp/res/2026/2";
 
@@ -89,7 +86,7 @@ describe("vigência", () => {
   });
 
   test.skipIf(!refDisponivel)(
-    "status calculado = manual (fcfc006) nas 36 normas de então, salvo divergências justificadas",
+    `status calculado = manual (${REF_ANTES_SANEAMENTO}) nas 36 normas de então, salvo divergências justificadas`,
     () => {
       // Status manuais anteriores que o cálculo muda, com a relação que justifica a mudança.
       const justificadas: Record<string, [string, string]> = {

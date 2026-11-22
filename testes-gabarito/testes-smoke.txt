@@ -1,9 +1,0 @@
-packages/mcp/test/transversal/consultar.test.ts	6	0
-packages/mcp/test/transversal/contrato.test.ts	18	0
-packages/mcp/test/transversal/descricoes.test.ts	1	0
-packages/mcp/test/transversal/determinismo.test.ts	4	0
-packages/mcp/test/transversal/orcamento.test.ts	32	0
-packages/mcp/test/transversal/paridade.test.ts	17	0
-packages/mcp/test/transversal/pasta-de-trabalho.test.ts	1	0
-packages/mcp/test/transversal/sem-repositorio.test.ts	4	0
-TOTAL	83	0
