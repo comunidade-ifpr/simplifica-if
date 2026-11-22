@@ -182,3 +182,26 @@ O backend, os pacotes e os scripts usam Effect 4. Antes de escrever ou revisar c
 - `runPromise` e `ManagedRuntime` só nas bordas, nunca dentro de serviço.
 - Testes com `@effect/vitest` (`it.effect`, `TestClock`), sem `sleep`, polling, relógio de parede nem `retry`.
 - Identificadores, mensagens e comentários em português; comentário só para o que o código não mostra, curto. Supressão de lint ou de diagnóstico diz por quê.
+
+## Depurar o app
+
+O app grava tudo localmente, na pasta de logs: `~/Library/Application Support/Simplifica IF (dev)/logs` no desenvolvimento (macOS), `~/Library/Logs/Simplifica IF` no app empacotado do macOS e `%APPDATA%\Simplifica IF\logs` no Windows. Nada sai do computador.
+
+- `simplifica-if.log` (giro em 5 MB para `.1`): o que o processo principal do desktop registra, o stderr do servidor (logfmt, uma linha por registro) e os erros da interface (linhas `[interface]`).
+- `traces.jsonl` e `logs-otlp.jsonl` (mesmo giro): os spans e os logs do servidor em OTLP/JSON, um pedido de exportação por linha. No desenvolvimento vai tudo; no app empacotado, a caixa-preta grava só os traces com erro (inteiros) e o resumo dos lentos ([`apps/server/README.md`](apps/server/README.md#traces-e-logs)).
+
+O código de um erro (o de "Detalhes técnicos" na interface, o `codigo=` do log) são os 8 primeiros caracteres do `traceId` do pedido. Com ele:
+
+```bash
+rg "codigo=ABCD1234" "<pasta de logs>/simplifica-if.log"   # as linhas do log do servidor e da interface
+pnpm traces --codigo ABCD1234                              # a árvore do trace: spans, duração, status, erro e logs
+pnpm traces --erros                                        # os traces com erro, mais recentes primeiro
+pnpm traces --lentos 2000 --ultimos 10                     # os traces de 2 s ou mais
+pnpm traces --logs                                         # os logs sem trace gravado (a partida, os avisos de gravação)
+pnpm traces --codigo ABCD1234 --json                       # a forma achatada, para ler por programa
+pnpm traces --pasta "<pasta de logs>"                      # outra pasta (padrão: a do desenvolvimento)
+```
+
+Quem relata um problema anexa o pacote de "Configurações › Diagnóstico" (`Documentos/Simplifica IF/Diagnósticos/diagnostico-AAAA-MM-DD-HHMMSS.zip`): os mesmos três arquivos e os `.1`, saneados (pastas de tarefa, pasta pessoal, usuário nos caminhos, e-mails, segredos e dados pessoais trocados por marcadores), mais o `sistema.json` (versões, IAs, sistema, modo dos traces) e um `LEIA-ME.txt`; sem conversas, anexos, perfil nem tokens ([`apps/server/README.md`](apps/server/README.md#diagnóstico)). Para ler: descompacte numa pasta e rode `pnpm traces --pasta <pasta descompactada> --codigo ABCD1234` (e `rg "codigo=ABCD1234" <pasta>/simplifica-if.log`).
+
+`SIMPLIFICA_TRACES` (`completo`, `caixa-preta`, `desligado`) muda o modo no `pnpm app:dev`. Com `OTEL_EXPORTER_OTLP_ENDPOINT` (por exemplo `http://localhost:4318`), o servidor manda os spans e os logs a um coletor OTLP/HTTP (Jaeger, otel-tui), no lugar dos arquivos; só para desenvolvimento.

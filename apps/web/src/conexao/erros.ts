@@ -13,10 +13,36 @@ import { TipoFalha } from "@simplifica-if/contratos-app";
 import * as Schema from "effect/Schema";
 import { DESCRICOES } from "../providers.ts";
 
-/** Uma frase para a pessoa e, quando há, o texto técnico original. */
+/** Uma frase para a pessoa e, quando há, o texto técnico original e o código do erro. */
 export interface MensagemErro {
   readonly texto: string;
   readonly detalhe?: string;
+  /** O código do pedido (`codigoDoErro`), o mesmo do log do app: a pessoa o informa ao relatar o problema. */
+  readonly codigo?: string;
+}
+
+/** O código de cada erro que saiu de uma chamada ao servidor (`marcarCodigo`). */
+const codigos = new WeakMap<object, string>();
+
+/**
+ * Guarda o código do pedido no erro de uma chamada, para `explicarErro`. Um defeito que não é objeto (o
+ * servidor manda em texto o motivo de recusar um payload) vira `Error`, com o texto em "Detalhes técnicos".
+ * Um objeto que já tem código (na queda da conexão, o `RpcClient` falha todas as chamadas pendentes com a
+ * mesma instância) é marcado numa cópia rasa, com o mesmo protótipo e as mesmas propriedades: `_tag`,
+ * `message` e `instanceof` continuam valendo, e cada chamada fica com o seu código.
+ */
+export function marcarCodigo(erro: unknown, codigo: string): unknown {
+  const objeto: object = typeof erro === "object" && erro !== null ? erro : new Error(String(erro));
+  const marcado = codigos.has(objeto)
+    ? (Object.create(Object.getPrototypeOf(objeto), Object.getOwnPropertyDescriptors(objeto)) as object)
+    : objeto;
+  codigos.set(marcado, codigo);
+  return marcado;
+}
+
+/** O erro saiu de uma chamada ao servidor e já tem o código dela (`marcarCodigo`). */
+export function temCodigo(erro: unknown): boolean {
+  return typeof erro === "object" && erro !== null && codigos.has(erro);
 }
 
 function comMaiuscula(texto: string): string {
@@ -122,8 +148,14 @@ const ERROS_DO_MOTOR: Readonly<Record<string, string>> = {
 export const PERDEU_CONTATO =
   "O Simplifica IF perdeu o contato com a parte do app que roda no seu computador. Espere alguns segundos e tente de novo.";
 
-/** O erro que chegou de uma chamada ao servidor, em português. */
+/** O erro que chegou de uma chamada ao servidor, em português, com o código do pedido, se houver. */
 export function explicarErro(erro: unknown): MensagemErro {
+  const mensagem = explicarSemCodigo(erro);
+  const codigo = typeof erro === "object" && erro !== null ? codigos.get(erro) : undefined;
+  return codigo === undefined ? mensagem : { ...mensagem, codigo };
+}
+
+function explicarSemCodigo(erro: unknown): MensagemErro {
   if (typeof erro === "object" && erro !== null) {
     const registro = erro as {
       readonly _tag?: unknown;
@@ -172,6 +204,8 @@ export function explicarErro(erro: unknown): MensagemErro {
       return { texto: "Algo deu errado no app. Tente de novo.", detalhe: erro.message };
     }
   }
+  if (typeof erro === "string" && erro.length > 0)
+    return { texto: "Algo deu errado no app. Tente de novo.", detalhe: erro };
   return { texto: "Algo deu errado no app. Tente de novo." };
 }
 

@@ -8,7 +8,15 @@ import {
   TurnoEmAndamento,
 } from "@simplifica-if/contratos-app";
 import { RpcClientDefect, RpcClientError } from "effect/rpc/RpcClientError";
-import { explicarErro, explicarErroDoTurno, explicarFalhaProvider, mensagemDeErro, PERDEU_CONTATO } from "./erros.ts";
+import {
+  explicarErro,
+  explicarErroDoTurno,
+  explicarFalhaProvider,
+  marcarCodigo,
+  mensagemDeErro,
+  PERDEU_CONTATO,
+  temCodigo,
+} from "./erros.ts";
 
 describe("mensagemDeErro", () => {
   it("usa a mensagem em português dos erros tipados, com maiúscula e ponto", () => {
@@ -26,6 +34,40 @@ describe("mensagemDeErro", () => {
       texto: "Algo deu errado no app. Tente de novo.",
       detalhe: "boom",
     });
+  });
+
+  it("o erro marcado traz o código do pedido; o defeito em texto vira detalhe", () => {
+    const tipado = marcarCodigo(new PastaTrabalhoInvalida({ pasta: "x" }), "0B618B15");
+    assert.strictEqual(explicarErro(tipado).codigo, "0B618B15");
+    assert.deepStrictEqual(explicarErro(marcarCodigo('Missing key at ["perfil"]["cursos"]', "ABCDEF12")), {
+      texto: "Algo deu errado no app. Tente de novo.",
+      detalhe: 'Missing key at ["perfil"]["cursos"]',
+      codigo: "ABCDEF12",
+    });
+    assert.strictEqual(explicarErro("sem código").detalhe, "sem código");
+    assert.isUndefined(explicarErro(new Error("boom")).codigo);
+  });
+
+  it("a mesma instância em várias chamadas (a queda da conexão): cada uma com o seu código", () => {
+    const queda = new RpcClientError({ reason: new RpcClientDefect({ message: "socket", cause: undefined }) });
+    assert.isFalse(temCodigo(queda));
+    const primeira = marcarCodigo(queda, "AAAAAAAA");
+    const segunda = marcarCodigo(queda, "BBBBBBBB");
+    assert.strictEqual(primeira, queda);
+    assert.notStrictEqual(segunda, queda);
+    assert.isTrue(temCodigo(primeira) && temCodigo(segunda));
+    assert.strictEqual(explicarErro(primeira).codigo, "AAAAAAAA");
+    assert.strictEqual(explicarErro(segunda).codigo, "BBBBBBBB");
+    // A cópia continua sendo o mesmo erro para `explicarErro`: `_tag`, `message` e `instanceof`.
+    assert.instanceOf(segunda, RpcClientError);
+    assert.instanceOf(segunda, Error);
+    assert.strictEqual((segunda as RpcClientError)._tag, "RpcClientError");
+    assert.strictEqual((segunda as RpcClientError).message, queda.message);
+    assert.strictEqual(explicarErro(segunda).texto, PERDEU_CONTATO);
+    assert.strictEqual(explicarErro(segunda).detalhe, explicarErro(primeira).detalhe);
+    const tipado = new PastaTrabalhoInvalida({ pasta: "x" });
+    marcarCodigo(tipado, "11111111");
+    assert.strictEqual(mensagemDeErro(marcarCodigo(tipado, "22222222")), mensagemDeErro(tipado));
   });
 
   it("OperacaoNaoSuportada aponta a orientação de Configurações › Sua IA", () => {

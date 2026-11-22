@@ -32,11 +32,13 @@ import {
 } from "./atualizacaoApp.ts";
 import { resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
 import { registrarIpc } from "./ipc.ts";
+import { VARIAVEL_SEM_REINICIO, vigiarCodigoDoServidor } from "./vigiaDev.ts";
 import { corFundoJanela, opcoesBarraTitulo } from "./janela.ts";
 import { CANAIS, type CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
 import { menuAplicacao } from "./menu.ts";
 import { registrarPrivilegiosEsquema, registrarProtocolo } from "./protocolo.ts";
-import { abrirLog } from "./registro.ts";
+import { abrirLog, limitarRegistros, linhaDaInterface } from "./registro.ts";
+import { serializar } from "./reinicio.ts";
 import { isSameOriginRendererNavigation, urlExternaSegura } from "./seguranca.ts";
 import { gerarToken, iniciarServidor, montarInicio, type Saida, type ServidorEmExecucao } from "./servidor.ts";
 
@@ -63,8 +65,11 @@ app.setAboutPanelOptions({
 });
 app.setPath("userData", NodePath.join(app.getPath("appData"), DESENVOLVIMENTO ? `${NOME} (dev)` : NOME));
 
+/** A pasta de logs: a do app e do servidor (`registro.ts`) e a dos traces do servidor (`--pasta-logs`). */
+const pastaLogs = DESENVOLVIMENTO ? NodePath.join(app.getPath("userData"), "logs") : app.getPath("logs");
+
 /** O log do app e do servidor (`registro.ts`), além do stderr. */
-const log = abrirLog(DESENVOLVIMENTO ? NodePath.join(app.getPath("userData"), "logs") : app.getPath("logs"));
+const log = abrirLog(pastaLogs);
 
 /** Copia para o arquivo de log o que vai para o stderr. */
 const paraStderrELog = (texto: string) => {
@@ -76,10 +81,12 @@ const registrar = (mensagem: string) => paraStderrELog(`${new Date().toISOString
 
 registrarPrivilegiosEsquema();
 
+/** A raiz do checkout no desenvolvimento: o main.cjs fica em apps/desktop/dist/app. */
+const RAIZ_REPOSITORIO = NodePath.resolve(__dirname, "..", "..", "..", "..");
+
 const configuracao: Configuracao = resolverConfiguracao({
   empacotado: app.isPackaged,
-  // main.cjs fica em apps/desktop/dist/app no desenvolvimento.
-  raizRepositorio: NodePath.resolve(__dirname, "..", "..", "..", ".."),
+  raizRepositorio: RAIZ_REPOSITORIO,
   pastaRecursos: process.resourcesPath,
   pastaAplicacao: app.getAppPath(),
   pastaApp: app.getPath("userData"),
@@ -98,6 +105,8 @@ let tokenDesktop: string | undefined;
 let janela: BrowserWindow | undefined;
 /** O app está saindo: a queda do servidor não é erro. */
 let saindo = false;
+/** Para o vigia do código do servidor (só no desenvolvimento). */
+let pararVigia: (() => void) | undefined;
 let encerrado = false;
 
 function descreverSaida(saida: Saida): string {
@@ -139,6 +148,8 @@ function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<CredenciaisServidor
     pastaAtualizacao: configuracao.pastaAtualizacao,
     versaoApp: app.getVersion(),
     pastaTrabalhos: configuracao.pastaTrabalhos,
+    pastaLogs,
+    traces: configuracao.traces,
     origens: configuracao.origens,
     token,
     ambiente,
@@ -190,15 +201,18 @@ async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> 
     app.quit();
     return;
   }
-  await iniciar();
+  await reinicio.pedir();
 }
 
-/** Sobe o servidor e mostra a janela; na falha, o diálogo de erro. */
+/**
+ * Sobe o servidor e mostra a janela; na falha, o diálogo de erro, sem esperá-lo: o "Reiniciar" dele pede
+ * outra troca (`reinicio`), e esta precisa ter acabado. Só pelo `reinicio`.
+ */
 async function iniciar(): Promise<void> {
   try {
     await subirServidor(await ambienteComProxy());
   } catch (erro) {
-    await aoCairServidor(erro instanceof Error ? erro.message : String(erro), "");
+    void aoCairServidor(erro instanceof Error ? erro.message : String(erro), "");
     return;
   }
   if (janela && !janela.isDestroyed()) {
@@ -348,6 +362,8 @@ function ligarAtualizacaoApp(): void {
     registrar,
     antesDeInstalar: async () => {
       saindo = true;
+      pararVigia?.();
+      await reinicio.ocioso();
       const atual = servidor;
       if (atual !== undefined) registrar(`servidor encerrado para instalar (${await atual.encerrar()})`);
       encerrado = true;
@@ -355,15 +371,26 @@ function ligarAtualizacaoApp(): void {
   });
 }
 
-/** Reinicia o servidor (a troca da base acontece na abertura dele); a janela recarrega. */
-async function reiniciarServidor(): Promise<void> {
+/** Encerra o servidor atual, se houver, e sobe outro (a troca da base acontece na abertura dele). */
+async function trocarServidor(): Promise<void> {
+  if (saindo) return;
   const atual = servidor;
   if (atual !== undefined) {
     servidor = undefined;
     registrar(`servidor encerrado para reiniciar (${await atual.encerrar()})`);
   }
+  if (saindo) return;
   await iniciar();
 }
+
+/**
+ * Toda subida do servidor passa por aqui, uma de cada vez (`reinicio.ts`): a partida, a troca da base, o
+ * vigia do desenvolvimento e o "Reiniciar" do diálogo de erro. Duas em paralelo deixavam um órfão.
+ */
+const reinicio = serializar(trocarServidor, (erro) => registrar(`falha ao reiniciar o servidor: ${String(erro)}`));
+
+/** Reinicia o servidor; a janela recarrega. */
+const reiniciarServidor = (): Promise<void> => reinicio.pedir();
 
 /* ============================================================ IPC (`ipc.ts`) */
 
@@ -380,6 +407,14 @@ registrarIpc({
   tokenDesktop: () => tokenDesktop,
   reiniciarServidor,
   atualizacaoApp: () => atualizacaoApp,
+  // Um teto defensivo: a interface já limita, mas uma janela em laço não enche o log.
+  registrarInterface: limitarRegistros({
+    maximo: 120,
+    janelaMs: 60_000,
+    agora: () => Date.now(),
+    gravar: (texto) => paraStderrELog(linhaDaInterface(new Date().toISOString(), texto)),
+    suprimidos: (n) => `${n} registros da interface suprimidos no último minuto (teto do processo principal)`,
+  }),
 });
 
 /* ============================================================ ciclo de vida */
@@ -388,8 +423,12 @@ registrarIpc({
 function sair(): void {
   if (saindo) return;
   saindo = true;
-  const atual = servidor;
-  const fim = atual === undefined ? Promise.resolve("ja-saira" as const) : atual.encerrar();
+  pararVigia?.();
+  // Uma troca em curso termina antes (a seguinte não começa: `saindo`), para o servidor dela não ficar órfão.
+  const fim = reinicio.ocioso().then(() => {
+    const atual = servidor;
+    return atual === undefined ? ("ja-saira" as const) : atual.encerrar();
+  });
   void fim
     .then((como) => registrar(`servidor encerrado (${como})`))
     .catch(() => undefined)
@@ -438,7 +477,17 @@ if (!app.requestSingleInstanceLock()) {
       `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +
         `skills: ${configuracao.pastaSkills ?? "nenhuma"}; atualização: ${configuracao.pastaAtualizacao ?? "desligada"}`,
     );
-    await iniciar();
+    await reinicio.pedir();
     ligarAtualizacaoApp();
+    if (DESENVOLVIMENTO && process.env[VARIAVEL_SEM_REINICIO] !== "1" && !saindo)
+      pararVigia = vigiarCodigoDoServidor({
+        raizRepositorio: RAIZ_REPOSITORIO,
+        registrar,
+        aoMudar: (arquivo) => {
+          if (saindo) return;
+          registrar(`código do servidor mudou (${arquivo}); reiniciando o servidor`);
+          void reiniciarServidor();
+        },
+      });
   });
 }

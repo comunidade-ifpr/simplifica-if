@@ -347,7 +347,13 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     if (registro.plano === null)
       return yield* falha(registro.arquivo, "Esta revisão não tem plano. Prepare-a de novo.");
     yield* revisoes.alterar(id, { situacao: "em_andamento" });
-    yield* FiberMap.run(execucoes, id, executarComPausa(id), { onlyIfMissing: true });
+    // A revisão roda além do pedido que a iniciou: abre o próprio trace.
+    yield* FiberMap.run(
+      execucoes,
+      id,
+      executarComPausa(id).pipe(Effect.withSpan("RevisaoIa.revisao", { root: true })),
+      { onlyIfMissing: true },
+    );
     yield* avisar(id);
     return yield* estadoPorId(id);
   });

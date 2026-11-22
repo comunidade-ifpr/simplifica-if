@@ -12,6 +12,7 @@ import * as NodePath from "node:path";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it } from "@effect/vitest";
+import * as Cause from "effect/Cause";
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
 import * as Duration from "effect/Duration";
@@ -20,6 +21,7 @@ import * as Exit from "effect/Exit";
 import type * as FileSystem from "effect/FileSystem";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import type * as Path from "effect/Path";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
@@ -430,6 +432,35 @@ describe("ciclo de vida da sessão do provider", () => {
         [saneado, saneado],
       );
       yield* fechar;
+    }),
+  );
+
+  it.effect("os logs registram o id da conversa, sem a pasta da tarefa, o anexo nem o texto do pedido", () =>
+    Effect.gen(function* () {
+      const registros: Array<string> = [];
+      const capturar = Logger.make((opcoes) => {
+        registros.push(`${String(opcoes.message)} ${Cause.pretty(opcoes.cause)}`);
+      });
+      const tarefa = NodePath.join(diretorioTemporario("simplifica-tarefas-"), "Parecer sobre o PAD do servidor João");
+      NodeFS.mkdirSync(tarefa);
+      const causa = new Error(`ENOENT: no such file or directory, open '${tarefa}/anexo sigiloso.pdf'`);
+      yield* Effect.gen(function* () {
+        const registro = novoRegistro();
+        const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+        const turno = yield* Stream.runCollect(conversas.enviar(id, "pedido sigiloso demorado")).pipe(Effect.forkChild);
+        yield* rodar;
+        yield* registro.derrubar!(causa);
+        yield* Fiber.join(turno);
+        assert.isTrue(registros.some((linha) => linha.includes(`conversa ${id}`) && linha.includes("sessão aberta")));
+        assert.isTrue(registros.some((linha) => linha.includes(`conversa ${id}: o turno falhou`)));
+        yield* fechar;
+      }).pipe(Effect.provide(Logger.layer([capturar])));
+      for (const linha of registros) {
+        assert.notInclude(linha, "Parecer sobre o PAD", linha);
+        assert.notInclude(linha, "anexo sigiloso", linha);
+        assert.notInclude(linha, "pedido sigiloso", linha);
+      }
     }),
   );
 

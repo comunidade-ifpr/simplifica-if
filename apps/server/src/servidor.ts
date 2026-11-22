@@ -16,6 +16,8 @@
  *   entregues a toda conversa e listadas por `skills.listar`.
  * - **Revisão prévia de PPC** (`revisao-ppc/RevisorPpc.ts`): DOCX → pendências e cópia comentada, sem
  *   IA, num `Worker` com limite de memória e de tempo, sobre a base do mesmo `kb.sqlite`.
+ * - **Diagnóstico** (`diagnostico/Diagnostico.ts`): o pacote `.zip` com os logs saneados da pasta de logs
+ *   e o `sistema.json`, em `Documentos/Simplifica IF/Diagnósticos/`.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
  *   conexão só ao banco) atende o RPC e o MCP HTTP (`McpHttp.layerSobreLeitura`).
  *
@@ -34,10 +36,16 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import type * as Redacted from "effect/Redacted";
 import * as Schema from "effect/Schema";
-import { HttpRouter, HttpServer, HttpServerRequest, HttpServerResponse } from "effect/http";
+import { HttpMiddleware, HttpRouter, HttpServer, HttpServerRequest, HttpServerResponse, UrlParams } from "effect/http";
 import * as NetAddress from "effect/net/NetAddress";
 import { RpcSerialization, RpcServer } from "effect/rpc";
-import { CAMINHO_INGRESSO, CAMINHO_LIBERAR_ARQUIVO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
+import {
+  CAMINHO_INGRESSO,
+  CAMINHO_LIBERAR_ARQUIVO,
+  CAMINHO_RPC,
+  GrupoApp,
+  PARAMETRO_INGRESSO,
+} from "@simplifica-if/contratos-app";
 import type { Canal, CanalDistribuicao } from "@simplifica-if/kb/canal";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as McpRpc from "@simplifica-if/mcp/rpc";
@@ -54,6 +62,7 @@ import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
 import * as Relatos from "./Relatos.ts";
+import * as Diagnostico from "./diagnostico/Diagnostico.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
@@ -119,6 +128,11 @@ export interface Opcoes {
   readonly limitesPasta?: Partial<PastasTrabalho.Limites>;
   /** "Isto está errado" (M1.12): o repositório da curadoria (padrão: o da política de fábrica). */
   readonly relatos?: Relatos.OpcoesRelatos;
+  /**
+   * "Gerar diagnóstico": a pasta de logs (`--pasta-logs`) e o modo dos traces. Sem a pasta, o pacote sai
+   * só com o `sistema.json` e o `LEIA-ME.txt`.
+   */
+  readonly diagnostico?: Diagnostico.OpcoesDiagnostico;
   /** Aviso de uso aceito e boas-vindas feitas ao abrir (M1.8): os testes que não passam por elas. */
   readonly primeiroUsoFeito?: boolean;
   /**
@@ -269,11 +283,13 @@ const layerRotaRpc = Layer.unwrap(
     const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
     const { protocol, httpEffect } = yield* RpcServer.makeProtocolWithHttpEffectWebsocket;
     // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas. A
-    // conexão que cai não encerra conversa: elas não dependem da conexão (`Conversas.ts`).
-    yield* RpcServer.make(GrupoApp, {
-      disableTracing: true,
-      disableFatalDefects: true,
-    }).pipe(Effect.provideService(RpcServer.Protocol, protocol), Effect.forkScoped);
+    // conexão que cai não encerra conversa: elas não dependem da conexão (`Conversas.ts`). O tracing
+    // fica ligado: o span do handler herda o `traceId` da interface, que dá o código do erro no log
+    // (`codigoDoErro`, em `handlers.ts`).
+    yield* RpcServer.make(GrupoApp, { disableFatalDefects: true }).pipe(
+      Effect.provideService(RpcServer.Protocol, protocol),
+      Effect.forkScoped,
+    );
     return Layer.mergeAll(
       HttpRouter.add(
         "GET",
@@ -354,9 +370,27 @@ export const layer = (opcoes: Opcoes) => {
   const comAtualizacao = Layer.mergeAll(layerAtualizador(opcoes), layerAtualizadorHarnesses(opcoes)).pipe(
     Layer.provideMerge(nucleo),
   );
-  const comRelatos = Relatos.layer(opcoes.relatos).pipe(Layer.provideMerge(comAtualizacao));
+  const comRelatos = Layer.mergeAll(Relatos.layer(opcoes.relatos), Diagnostico.layer(opcoes.diagnostico)).pipe(
+    Layer.provideMerge(comAtualizacao),
+  );
   const handlers = Handlers.layer.pipe(Layer.provide(comRelatos));
-  const servir = HttpRouter.serve(layerRotaRpc, { disableLogger: true, disableListenLog: true });
+  // Sem span HTTP para o `/rpc`: ele dura a conexão inteira e a URL pode trazer o `?ingresso=`; cada
+  // chamada RPC já tem o seu span, filho do da interface. Se uma URL com credencial ainda chegar a um span
+  // ou a um erro, o `ingresso` e o `token` saem como `REDACTED`.
+  const servir = HttpRouter.serve(layerRotaRpc, { disableLogger: true, disableListenLog: true }).pipe(
+    Layer.provide(
+      Layer.mergeAll(
+        Layer.succeed(HttpMiddleware.TracerDisabledWhen)(
+          (requisicao) => requisicao.url === CAMINHO_RPC || requisicao.url.startsWith(`${CAMINHO_RPC}?`),
+        ),
+        Layer.succeed(UrlParams.CurrentRedactedNames)([
+          ...UrlParams.CurrentRedactedNames.defaultValue(),
+          PARAMETRO_INGRESSO,
+          "token",
+        ]),
+      ),
+    ),
+  );
   // Sem o fechamento preventivo: ele espera as conexões abertas antes de interromper os fibers que as
   // fecham, e um WebSocket conectado segurava o encerramento pelos 20 s do prazo. Assim, as conexões
   // fecham (1001) e o servidor fecha logo depois.

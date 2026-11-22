@@ -199,9 +199,15 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
   });
 
   if (opcoes.automatico ?? true) {
+    // Cada conferência periódica abre o próprio trace: o fiber nasce no span de quem montou a layer, que já
+    // terminou, e herdaria o `traceId` dele.
     yield* uma
       .withPermits(1)(conferir)
-      .pipe(Effect.repeat(Schedule.spaced(opcoes.intervalo ?? Duration.hours(24))), Effect.forkScoped);
+      .pipe(
+        Effect.withSpan("Atualizador.conferir", { root: true }),
+        Effect.repeat(Schedule.spaced(opcoes.intervalo ?? Duration.hours(24))),
+        Effect.forkScoped,
+      );
   }
 
   return Atualizador.of({

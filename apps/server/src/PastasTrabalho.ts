@@ -11,6 +11,8 @@
  *   (`PASTA_RELATOS`), fora da pasta de qualquer tarefa: a política nega à IA a leitura fora da pasta da
  *   conversa, e o relato (que pode ter o que a pessoa não quer mandar de volta à IA) não entra nos
  *   próximos turnos. Nenhuma tarefa ganha esse nome (`criar` o pula), e nada se sobrescreve.
+ * - **Diagnóstico:** `gravarDiagnostico` grava o `.zip` de "Gerar diagnóstico" em `<raiz>/Diagnósticos/`
+ *   (`PASTA_DIAGNOSTICOS`), com as mesmas regras do relato.
  * - **Cópias (Desfazer):** antes de cada turno, uma cópia simples da pasta vai para
  *   `<copias>/<conversa>/<turno>/`, fora da pasta de trabalho (a IA não a vê nem a altera), com um
  *   `manifesto.json` (tamanho e SHA-256 de cada arquivo). Escolha: **cópia simples, não git oculto**.
@@ -55,6 +57,7 @@ import { comNumero, criarSemColisao } from "./nome-livre.ts";
 import * as PastasNode from "./pastas-node.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as TextosAnexos from "./textos-anexos/TextosAnexos.ts";
+import { resumoDaFalha } from "./observabilidade/resumoDaFalha.ts";
 
 export interface Limites {
   /** O tamanho máximo da pasta para guardar a cópia de um turno. */
@@ -98,6 +101,12 @@ const codificarIndiceJson = Schema.encodeEffect(Schema.fromJsonString(IndiceText
 /** Onde "Salvar o relato" grava, dentro da raiz e fora da pasta de qualquer tarefa (M1.12). */
 export const PASTA_RELATOS = "Relatos de erro";
 
+/** Onde "Gerar diagnóstico" grava o pacote, dentro da raiz e fora da pasta de qualquer tarefa. */
+export const PASTA_DIAGNOSTICOS = "Diagnósticos";
+
+/** As pastas da raiz que não são de tarefa: um título igual começa em " (2)". */
+const PASTAS_DO_APP = [PASTA_RELATOS, PASTA_DIAGNOSTICOS].map((nome) => nome.normalize("NFC").toLowerCase());
+
 export interface OpcoesPastas {
   /** `Documentos/Simplifica IF`; criada no primeiro `criar`. */
   readonly raiz: string;
@@ -134,6 +143,8 @@ export class PastasTrabalho extends Context.Service<
   PastasTrabalho,
   {
     readonly raiz: string;
+    /** Onde ficam as cópias dos turnos (o diagnóstico omite o que vem depois dela, como da raiz). */
+    readonly copias: string;
     /** Cria a pasta da tarefa e devolve o caminho real. */
     readonly criar: (titulo: string) => Effect.Effect<string, FalhaPasta>;
     /** Copia o arquivo liberado para a pasta e grava a versão em texto dele, quando o formato pede. */
@@ -143,6 +154,11 @@ export class PastasTrabalho extends Context.Service<
      * sobrescrever (` (2)`…), e devolve o caminho.
      */
     readonly gravarRelato: (nome: string, conteudo: string) => Effect.Effect<string, FalhaPasta>;
+    /**
+     * Grava o pacote de diagnóstico `nome` (um `.zip`) em `<raiz>/Diagnósticos/`, sem sobrescrever, e
+     * devolve o caminho.
+     */
+    readonly gravarDiagnostico: (nome: string, conteudo: Uint8Array) => Effect.Effect<string, FalhaPasta>;
     /** Os arquivos da pasta da conversa e a previsão do Desfazer. */
     readonly ver: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
     /**
@@ -219,14 +235,17 @@ const alteradoEm = (info: FileSystem.File.Info): string =>
 
 /**
  * A cópia e o retrato do turno não podem impedir a conversa de seguir: a falha e o defeito ficam no
- * log; a interrupção passa.
+ * log, pelo resumo (`resumoDaFalha`: sem o caminho, que traz o nome da pasta da tarefa e o dos arquivos);
+ * a interrupção passa.
  */
 const soNoLog =
   (mensagem: string) =>
   <A, E, R>(efeito: Effect.Effect<A, E, R>): Effect.Effect<A | void, never, R> =>
     efeito.pipe(
       Effect.catchCause((causa) =>
-        Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.logWarning(mensagem, Cause.squash(causa)),
+        Cause.hasInterruptsOnly(causa)
+          ? Effect.interrupt
+          : Effect.logWarning(`${mensagem}: ${resumoDaFalha(Cause.squash(causa))}`),
       ),
     );
 
@@ -596,8 +615,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       {
         pasta: raiz,
         nomes: (n) => (n === 1 ? nome : `${nome} (${n})`),
-        // A pasta dos relatos não é de tarefa: o título igual a ela começa em " (2)".
-        de: nome.toLowerCase() === PASTA_RELATOS.toLowerCase() ? 2 : 1,
+        // As pastas dos relatos e dos diagnósticos não são de tarefa: o título igual começa em " (2)".
+        de: PASTAS_DO_APP.includes(nome.toLowerCase()) ? 2 : 1,
         ate: 999,
       },
       (candidato) =>
@@ -660,7 +679,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
           comArquivos,
           Effect.as({ texto }),
           Effect.catch((erro) =>
-            Effect.logError("texto do anexo: não foi possível gravar", erro).pipe(
+            Effect.logError(`texto do anexo: não foi possível gravar: ${resumoDaFalha(erro)}`).pipe(
               Effect.andThen(semTextoNaPasta(real, nome, "Não foi possível gravar a versão em texto na pasta.")),
             ),
           ),
@@ -701,14 +720,14 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
             Effect.map((resultado) => ({ resultado, registrar: true })),
           ),
         LeituraNaoFeita: (erro) =>
-          Effect.logError("texto do anexo: não foi possível ler o arquivo", erro).pipe(
+          Effect.logError(`texto do anexo: não foi possível ler o arquivo: ${resumoDaFalha(erro)}`).pipe(
             Effect.andThen(semTextoNaPasta(real, nome, "O arquivo não pôde ser lido.")),
             Effect.map((resultado) => ({ resultado, registrar: true })),
           ),
         // A troca (link, pasta, fora, removido): o texto da versão anterior sai, para a IA não o ler como
         // atual, mas o índice não registra: o próximo turno vê o que ficou e tenta de novo.
         LeituraRecusada: (erro) =>
-          Effect.logWarning("texto do anexo: o arquivo mudou antes da leitura", erro).pipe(
+          Effect.logWarning(`texto do anexo: o arquivo mudou antes da leitura: ${resumoDaFalha(erro)}`).pipe(
             Effect.andThen(semTextoNaPasta(real, nome, "O arquivo mudou de novo e não pôde ser lido.")),
             Effect.map((resultado) => ({ resultado, registrar: false })),
           ),
@@ -802,6 +821,22 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       return fs.writeFileString(destino, conteudo, { flag: "wx" }).pipe(Effect.as(destino));
     });
   }, comMotivo("Não foi possível gravar o relato em Documentos/Simplifica IF/Relatos de erro."));
+
+  const gravarDiagnostico = Effect.fn("PastasTrabalho.gravarDiagnostico")(function* (
+    nome: string,
+    conteudo: Uint8Array,
+  ) {
+    const pasta = path.join(raiz, PASTA_DIAGNOSTICOS);
+    yield* fs.makeDirectory(pasta, { recursive: true });
+    // Um link no lugar da pasta levaria o pacote para fora de Documentos/Simplifica IF.
+    if ((yield* fs.lstat(pasta)).type !== "Directory")
+      return yield* new CaminhoRecusado({ caminho: pasta, regra: "nao-e-pasta" });
+    const seguro = `${nomeSeguro(path.basename(nome, ".zip"))}.zip`;
+    return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(seguro, n), ate: 999 }, (candidato) => {
+      const destino = path.join(pasta, candidato);
+      return fs.writeFile(destino, conteudo, { flag: "wx" }).pipe(Effect.as(destino));
+    });
+  }, comMotivo("Não foi possível gravar o diagnóstico em Documentos/Simplifica IF/Diagnósticos."));
 
   /**
    * O turno a desfazer: o mais recente cuja pasta mudou **dentro** dele (o retrato de antes × o do fim
@@ -1088,9 +1123,11 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
   const { contando, emAndamento } = yield* contadorDeAndamento;
   return PastasTrabalho.of({
     raiz,
+    copias: path.resolve(opcoes.copias),
     criar,
     anexar,
     gravarRelato,
+    gravarDiagnostico,
     ver,
     guardarCopia: Effect.fn("PastasTrabalho.contandoCopia")(function* (conversa: string, turno: number, pasta: string) {
       return yield* contando(guardarCopia(conversa, turno, pasta));
@@ -1127,9 +1164,11 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
   );
   return PastasTrabalho.of({
     raiz: "",
+    copias: "",
     criar: recusa,
     anexar: recusa,
     gravarRelato: recusa,
+    gravarDiagnostico: recusa,
     ver: Effect.fn("PastasTrabalho.ver")((_conversa: string, pasta: string) =>
       Effect.succeed({ pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa),
     ),

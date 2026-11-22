@@ -5,6 +5,7 @@
  */
 import { createRootRoute, type ErrorComponentProps, Link, Outlet } from "@tanstack/react-router";
 import { SearchIcon } from "lucide-react";
+import { useEffect } from "react";
 import { type BarraTitulo, useBarraTitulo } from "../barra-titulo.ts";
 import { AvisoConexao } from "../components/AvisoConexao.tsx";
 import { IndicadorConexao } from "../components/IndicadorConexao.tsx";
@@ -13,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx"
 import { Button } from "../components/ui/button.tsx";
 import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { explicarErro } from "../conexao/erros.ts";
+import { registrarErro, textoDoErro } from "../diagnostico.ts";
 import { atalhoPaleta, ProvedorPaleta, usePaleta } from "../explorar/Paleta.tsx";
 import logo from "../marca/logo-sobre-verde.svg";
 
@@ -40,6 +42,10 @@ function FaixaArrastavel() {
 }
 
 function ErroDaTela({ error, reset }: ErrorComponentProps) {
+  const mensagem = explicarErro(error);
+  useEffect(() => {
+    registrarErro(`erro na tela ${window.location.hash || window.location.pathname}: ${textoDoErro(error)}`);
+  }, [error]);
   return (
     <div className="flex h-dvh flex-col">
       <FaixaArrastavel />
@@ -47,8 +53,8 @@ function ErroDaTela({ error, reset }: ErrorComponentProps) {
         <Alert variant="error">
           <AlertTitle>Algo deu errado nesta tela</AlertTitle>
           <AlertDescription>
-            <p>{explicarErro(error).texto}</p>
-            <DetalhesTecnicos detalhe={explicarErro(error).detalhe} />
+            <p>{mensagem.texto}</p>
+            <DetalhesTecnicos detalhe={mensagem.detalhe} codigo={mensagem.codigo} />
             <div>
               <Button size="sm" variant="outline" onClick={reset}>
                 Tentar de novo

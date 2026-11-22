@@ -42,6 +42,30 @@ export interface LinhaPartida {
   readonly mcp: string;
 }
 
+/* ================================================================== diagnóstico */
+
+/**
+ * O código de um erro, o mesmo na interface e no log: os 8 primeiros caracteres do `traceId` do pedido.
+ * O `RpcClient` abre um span por chamada e manda o `traceId` ao servidor, e o span do handler é filho
+ * dele; a interface mostra o código em "Detalhes técnicos", e o log do servidor e o da interface o trazem.
+ */
+export const codigoDoErro = (traceId: string): string => traceId.slice(0, 8).toUpperCase();
+
+/** O maior registro que a interface manda ao log do app (`PonteDesktop.registrarErro`); o resto é cortado. */
+export const LIMITE_REGISTRO_INTERFACE = 4000;
+
+/**
+ * O registro cortado para caber em `limite` caracteres (unidades UTF-16), já com o "…" do corte, sem
+ * partir um par de surrogates. A interface corta assim; o processo principal corta de novo, por defesa.
+ */
+export const cortarRegistro = (texto: string, limite: number = LIMITE_REGISTRO_INTERFACE): string => {
+  if (texto.length <= limite) return texto;
+  let fim = Math.max(0, limite - 1);
+  const ultimo = texto.charCodeAt(fim - 1);
+  if (fim > 0 && ultimo >= 0xd800 && ultimo <= 0xdbff) fim -= 1;
+  return `${texto.slice(0, fim)}…`;
+};
+
 /* ================================================================== arquivos */
 
 /**
@@ -147,6 +171,11 @@ export interface PonteDesktop {
    * para trocar o arquivo: a troca só acontece na abertura do servidor (M1.10).
    */
   reiniciarServidor?(): Promise<void>;
+  /**
+   * Grava no log do app (`simplifica-if.log`) um erro da interface: o console da janela ninguém vê no app
+   * empacotado. Uma linha de texto, cortada em `LIMITE_REGISTRO_INTERFACE`.
+   */
+  registrarErro?(texto: string): Promise<void>;
   /** O estado da atualização do app (`electron-updater`). */
   atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
   /** Procura uma versão nova do app agora. */
@@ -195,6 +224,7 @@ export const CANAIS = {
   abrirDocumento: "simplifica:abrir-documento",
   mostrarNaPasta: "simplifica:mostrar-na-pasta",
   reiniciarServidor: "simplifica:reiniciar-servidor",
+  registrarErro: "simplifica:registrar-erro",
   atualizacaoApp: "simplifica:atualizacao-app",
   procurarAtualizacaoApp: "simplifica:procurar-atualizacao-app",
   instalarAtualizacaoApp: "simplifica:instalar-atualizacao-app",

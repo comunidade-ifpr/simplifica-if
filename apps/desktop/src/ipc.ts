@@ -7,7 +7,12 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { CAMINHO_LIBERAR_ARQUIVO, CANAIS, type CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
+import {
+  CAMINHO_LIBERAR_ARQUIVO,
+  CANAIS,
+  type CredenciaisServidor,
+  cortarRegistro,
+} from "@simplifica-if/contratos-app/ponte";
 import { dialog, ipcMain, shell, type BrowserWindow, type IpcMainInvokeEvent } from "electron";
 import type { ControleAtualizacaoApp } from "./atualizacaoApp.ts";
 import {
@@ -38,6 +43,8 @@ export interface ContextoIpc {
   tokenDesktop(): string | undefined;
   reiniciarServidor(): Promise<void>;
   atualizacaoApp(): ControleAtualizacaoApp | undefined;
+  /** Grava no log do app um erro da interface (`PonteDesktop.registrarErro`), com um teto por minuto. */
+  registrarInterface(texto: string): void;
 }
 
 /** Registra os canais do IPC. Chamado uma vez, na partida do processo principal. */
@@ -79,6 +86,10 @@ export function registrarIpc(contexto: ContextoIpc): void {
 
   tratar(CANAIS.reiniciarServidor, async () => {
     await contexto.reiniciarServidor();
+  });
+
+  tratar(CANAIS.registrarErro, (texto) => {
+    if (typeof texto === "string" && texto.length > 0) contexto.registrarInterface(cortarRegistro(texto));
   });
 
   /* ---------------------------------------------------------- atualização do app (M1.10) */

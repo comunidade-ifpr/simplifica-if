@@ -25,13 +25,13 @@
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
     "@simplifica-if/ppc": "workspace:*",
-    "effect": "catalog:"
+    "effect": "catalog:",
+    "fflate": "0.8.3"
   },
   "devDependencies": {
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
     "exceljs": "4.4.0",
-    "fflate": "0.8.3",
     "vite-plus": "catalog:"
   }
 }

@@ -131,6 +131,18 @@ describe("montarInicio", () => {
       pastaSkills: "/r/skills",
     });
     expect(comSkills.argumentos.slice(-2)).toEqual(["--pasta-skills", "/r/skills"]);
+    const comLogs = montarInicio({
+      ...base,
+      executor: { tipo: "electron", electron, bundle },
+      pastaLogs: "/Users/x/Library/Logs/Simplifica IF",
+      traces: "caixa-preta",
+    });
+    expect(comLogs.argumentos.slice(-4)).toEqual([
+      "--pasta-logs",
+      "/Users/x/Library/Logs/Simplifica IF",
+      "--traces",
+      "caixa-preta",
+    ]);
     expect(inicio.ambiente.ELECTRON_RUN_AS_NODE).toBe("1");
   });
 

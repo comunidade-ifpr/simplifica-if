@@ -12,16 +12,10 @@ import { useApi } from "../contexto.tsx";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { nomeArquivo } from "../tarefas/comecar.tsx";
 import { AvisoErro } from "./AvisoErro.tsx";
-import { dataHora, inteiro, megabytes } from "../lib/formato.ts";
+import { dataHora, tamanhoArquivo } from "../lib/formato.ts";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
 import { Button } from "./ui/button.tsx";
 import { Spinner } from "./ui/spinner.tsx";
-
-function tamanho(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${inteiro(Math.round(bytes / 1024))} KB`;
-  return megabytes(bytes);
-}
 
 /** "Documentos › Simplifica IF › Conferir base legal", sem o resto do caminho. */
 function ondeFica(pasta: string): string {
@@ -50,7 +44,7 @@ function Arquivo({
         {arquivo.nome}
       </span>
       <span className="text-muted-foreground text-micro">
-        {tamanho(arquivo.tamanho)} · {dataHora(arquivo.alteradoEm)}
+        {tamanhoArquivo(arquivo.tamanho)} · {dataHora(arquivo.alteradoEm)}
       </span>
       {/* "Abrir" só para documento (a lista do contrato); o resto, só "Mostrar na pasta". */}
       {ponte?.abrirArquivoTarefa === undefined || !ehExtensaoDocumento(arquivo.nome) ? null : (

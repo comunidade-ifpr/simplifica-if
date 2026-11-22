@@ -93,6 +93,14 @@ const sinalClaude = NodePath.join(pasta, "claude-instalado");
 /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
 const pastaTrabalhos = NodePath.join(diretorioTemporario("simplifica-web-tarefas-"), "Simplifica IF");
 
+/** A pasta de logs do app, com um registro curto, para "Configurações › Diagnóstico". */
+const pastaLogs = NodePath.join(pasta, "logs");
+NodeFS.mkdirSync(pastaLogs, { recursive: true });
+NodeFS.writeFileSync(
+  NodePath.join(pastaLogs, "simplifica-if.log"),
+  'nivel=INFO msg="servidor pronto" conta=pessoa@ifpr.edu.br\n',
+);
+
 const camada = Servidor.layer({
   banco,
   token: Redacted.make(token),
@@ -103,6 +111,7 @@ const camada = Servidor.layer({
   pastaTrabalhos,
   primeiroUsoFeito: !opcoes["primeiro-uso"],
   relatos: { curadoria: { repositorio: opcoes.curadoria ?? null, rotulos: ["relato-do-app"] } },
+  diagnostico: { pastaLogs, modoTraces: "completo" },
 }).pipe(
   Layer.provide(
     Demonstracao.layer({

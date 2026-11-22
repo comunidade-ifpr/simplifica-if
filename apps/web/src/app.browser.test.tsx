@@ -261,10 +261,17 @@ it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em portu
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherDocx: async () => `${servidor.pasta}/não existe.docx`,
   } satisfies PonteDesktop;
-  await using _app = await montarApp(servidor, "/revisao-ppc");
+  await using app = await montarApp(servidor, "/revisao-ppc");
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   await expect.element(page.getByText("O arquivo não foi encontrado ou não pode ser lido.")).toBeVisible();
   semIngles();
+  // Com o código do erro, "Detalhes técnicos" leva a Configurações › Diagnóstico.
+  await page.getByText("Detalhes técnicos").click();
+  await expect.element(page.getByText(/^[0-9A-F]{8}$/)).toBeVisible();
+  await page.getByRole("link", { name: "Gerar diagnóstico" }).click();
+  await expect.element(page.getByRole("region", { name: "Diagnóstico" })).toBeVisible();
+  expect(app.roteador.state.location.pathname).toBe("/configuracoes");
+  expect(app.roteador.state.location.hash).toBe("diagnostico");
 });
 
 it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tarefa e Desfazer", async () => {
@@ -627,6 +634,40 @@ it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async
   await aviso.getByRole("button", { name: "Entendi" }).click();
   await expect.element(gemini.getByRole("button", { name: "Entrar" })).toBeVisible();
   await expect.element(aviso.getByRole("button", { name: "Entendi" })).not.toBeInTheDocument();
+});
+
+it("Configurações › Diagnóstico: a prévia do pacote, gerar e mostrar na pasta", async () => {
+  const mostrarArquivoTarefa = vi.fn(async (_caminho: string) => {});
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    mostrarArquivoTarefa,
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor, "/configuracoes");
+  const secao = page.getByRole("region", { name: "Diagnóstico" });
+  await expect.element(secao.getByText(/anexe o arquivo ao relatar o problema/)).toBeVisible();
+  // "Gerar diagnóstico" só depois de ver a prévia; a região viva já existe, vazia.
+  await expect.element(secao.getByRole("button", { name: "Gerar diagnóstico" })).toBeDisabled();
+  await expect.element(secao.getByRole("status")).toBeInTheDocument();
+
+  await secao.getByRole("button", { name: "Ver o que vai no pacote" }).click();
+  const arquivos = secao.getByRole("list", { name: "Arquivos do pacote" });
+  await expect.element(arquivos.getByText("simplifica-if.log", { exact: true })).toBeVisible();
+  await expect.element(arquivos.getByText("sistema.json", { exact: true })).toBeVisible();
+  await expect.element(arquivos.getByText("LEIA-ME.txt", { exact: true })).toBeVisible();
+  await secao.getByText("Ver o conteúdo de sistema.json").click();
+  await expect.element(secao.getByText(/"plataforma":/)).toBeVisible();
+  // O fim do registro, já saneado (o e-mail vira o marcador).
+  await secao.getByText("Ver o fim de simplifica-if.log, como vai").click();
+  await expect.element(secao.getByText(/conta=\[e-mail omitido\]/)).toBeVisible();
+  await expect.element(secao.getByText(/montado na hora de gerar/)).toBeVisible();
+  semIngles();
+
+  await secao.getByRole("button", { name: "Gerar diagnóstico" }).click();
+  await expect.element(secao.getByText(/^Diagnóstico gerado: diagnostico-\d{4}-\d{2}-\d{2}-\d{6}\.zip/)).toBeVisible();
+  await secao.getByRole("button", { name: "Mostrar na pasta" }).click();
+  expect(mostrarArquivoTarefa).toHaveBeenCalledTimes(1);
+  expect(mostrarArquivoTarefa.mock.calls[0]![0]).toMatch(/[\\/]Diagnósticos[\\/]diagnostico-[\d-]+\.zip$/);
+  semIngles();
 });
 
 it("Escolha da IA: só entram as IAs instaladas e com login", async () => {

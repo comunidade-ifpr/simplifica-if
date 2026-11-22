@@ -11,10 +11,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.tsx";
 import { origemDaPagina } from "./conexao/origem.ts";
+import { instalarRegistroDeErros } from "./diagnostico.ts";
 import { inicializar } from "./inicializar.ts";
 import { criarRoteador } from "./router.ts";
 import { acompanharSistema, aplicarTema, lerPreferencia } from "./tema.ts";
 
+instalarRegistroDeErros();
 aplicarTema(lerPreferencia());
 acompanharSistema();
 

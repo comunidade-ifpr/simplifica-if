@@ -108,6 +108,21 @@ describe("resolverConfiguracao", () => {
     expect(comFeed.banco).toBe("/repo/tmp/kb.sqlite");
   });
 
+  test("traces: completo no desenvolvimento (ou SIMPLIFICA_TRACES), caixa-preta no app empacotado", () => {
+    expect(resolverConfiguracao(dev).traces).toBe("completo");
+    expect(
+      resolverConfiguracao({ ...dev, ambiente: { ...dev.ambiente, SIMPLIFICA_TRACES: "caixa-preta" } }).traces,
+    ).toBe("caixa-preta");
+    expect(() => resolverConfiguracao({ ...dev, ambiente: { ...dev.ambiente, SIMPLIFICA_TRACES: "tudo" } })).toThrow(
+      /SIMPLIFICA_TRACES/,
+    );
+    expect(resolverConfiguracao(empacotado).traces).toBe("caixa-preta");
+    expect(
+      resolverConfiguracao({ ...empacotado, ambiente: { ...empacotado.ambiente, SIMPLIFICA_TRACES: "completo" } })
+        .traces,
+    ).toBe("caixa-preta");
+  });
+
   test("o dev server tem de ser http(s) nesta máquina", () => {
     expect(() => resolverConfiguracao({ ...dev, ambiente: { SIMPLIFICA_WEB_URL: "https://exemplo.com" } })).toThrow(
       /localhost/,
@@ -251,6 +266,10 @@ describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostr
     expect(arquivoDeTarefaPermitido(`${raiz}/Tarefa/sub/planilha.xlsx`, raiz, true)).toBeDefined();
     // Mostrar na pasta aceita qualquer arquivo comum; abrir, não.
     expect(arquivoDeTarefaPermitido(`${raiz}/Tarefa/rodar.command`, raiz, false)).toBeDefined();
+    // O pacote de "Gerar diagnóstico" (Configurações › Diagnóstico) se mostra na pasta; não se abre.
+    const pacote = `${raiz}/Diagnósticos/diagnostico-2026-11-21-090507.zip`;
+    expect(arquivoDeTarefaPermitido(pacote, raiz, false)).toBe(pacote);
+    expect(arquivoDeTarefaPermitido(pacote, raiz, true)).toBeUndefined();
     for (const recusado of [
       `${raiz}/Tarefa/rodar.command`,
       `${raiz}/Tarefa/pagina.html`,

@@ -1,5 +1,5 @@
 /**
- * O contrato do app: os métodos do `GrupoApp` (os nove grupos, sem colisão de nome) e os envelopes da
+ * O contrato do app: os métodos do `GrupoApp` (os dez grupos, sem colisão de nome) e os envelopes da
  * partida do servidor.
  */
 import { assert, describe, it } from "@effect/vitest";
@@ -11,6 +11,7 @@ import {
   GrupoApp,
   GrupoAtualizacao,
   GrupoConversa,
+  GrupoDiagnostico,
   GrupoLeitura,
   GrupoPasta,
   GrupoPreferencias,
@@ -23,12 +24,13 @@ import {
 const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(EnvelopePartida));
 
 describe("contratos do app", () => {
-  it("o GrupoApp tem os métodos dos nove grupos", () => {
+  it("o GrupoApp tem os métodos dos dez grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
     const partes = [
       GrupoProviders,
       GrupoConversa,
       GrupoRelato,
+      GrupoDiagnostico,
       GrupoSkills,
       GrupoPasta,
       GrupoRevisaoPpc,
@@ -52,6 +54,8 @@ describe("contratos do app", () => {
       "pasta.anexar",
       "relato.preparar",
       "relato.registrar",
+      "diagnostico.preparar",
+      "diagnostico.gerar",
       "pasta.ver",
       "pasta.desfazer",
       "revisaoPpc.revisar",

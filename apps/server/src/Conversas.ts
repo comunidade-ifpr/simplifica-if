@@ -77,6 +77,7 @@ import * as Motor from "@simplifica-if/motor";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
 import { avisoDasMudancas } from "./textos-anexos/aviso.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
+import { resumoDaFalha } from "./observabilidade/resumoDaFalha.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
 
@@ -358,6 +359,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const agendarOciosidade = Effect.fn("Conversas.agendarOciosidade")(function* (viva: Viva) {
     yield* cancelarOciosidade(viva);
     if (viva.sessao === undefined || viva.turno !== undefined) return;
+    // A liberação abre o próprio trace: o fiber nasce no span do pedido que agendou, já terminado.
     viva.ociosidade = yield* Effect.sleep(opcoes.ociosidade).pipe(
       Effect.andThen(
         Effect.suspend(() => {
@@ -366,7 +368,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           return Effect.logInfo(
             `conversa ${viva.id}: sessão liberada depois de ${Duration.format(opcoes.ociosidade)} ociosa`,
           ).pipe(Effect.andThen(liberar(viva)));
-        }),
+        }).pipe(Effect.withSpan("Conversas.liberarOciosa", { root: true })),
       ),
       Effect.forkIn(escopoDaLayer),
     );
@@ -409,7 +411,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       Effect.gen(function* () {
         sessao.vigia = undefined;
         if (!(yield* derrubar(viva, sessao))) return;
-        yield* Effect.logWarning(`conversa ${viva.id}: o processo do provider caiu`, falha);
+        yield* Effect.logWarning(`conversa ${viva.id}: o processo do provider caiu: ${resumoDaFalha(falha)}`);
         // No meio de um turno, o próprio turno termina com o erro (`bombear`); fora dele, ninguém viu a
         // queda, e o `Erro` fica no histórico.
         if (viva.turno !== undefined) return;
@@ -464,7 +466,9 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
             Effect.catch((falha) =>
               Effect.gen(function* () {
                 // O provider não retomou: sessão nova, com o histórico gravado como contexto.
-                yield* Effect.logWarning(`conversa ${viva.id}: a retomada falhou; recomeça com o histórico`, falha);
+                yield* Effect.logWarning(
+                  `conversa ${viva.id}: a retomada falhou; recomeça com o histórico: ${resumoDaFalha(falha)}`,
+                );
                 const id = yield* motor.iniciarSessao(config);
                 viva.contexto = contextoDoHistorico(yield* historico.itens(viva.id));
                 return id;
@@ -479,11 +483,13 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     if (info.idNativo !== undefined && info.idNativo !== registro.idNativo) {
       yield* alterar(viva, { idNativo: info.idNativo });
     }
+    // A queda abre o próprio trace: o vigia nasce no span do pedido que abriu a sessão, já terminado.
     sessao.vigia = yield* info.queda.pipe(
-      Effect.flatMap((falha) => aoCair(viva, sessao, falha)),
+      Effect.flatMap((falha) => aoCair(viva, sessao, falha).pipe(Effect.withSpan("Conversas.aoCair", { root: true }))),
       Effect.forkIn(escopoDaLayer),
     );
-    yield* Effect.logInfo(`conversa ${viva.id} (${rotulo}): sessão aberta em ${pasta}`);
+    // O id, não a pasta: o nome dela vem do pedido da pessoa.
+    yield* Effect.logInfo(`conversa ${viva.id} (${rotulo}): sessão aberta`);
     return sessao;
   });
 
@@ -540,12 +546,14 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       Effect.catch((erro) =>
         Effect.gen(function* () {
           if (turno.fechado) {
-            yield* Effect.logWarning(`conversa ${viva.id}: o provider falhou depois do fim do turno`, erro);
+            yield* Effect.logWarning(
+              `conversa ${viva.id}: o provider falhou depois do fim do turno: ${resumoDaFalha(erro)}`,
+            );
             return;
           }
           // A falha do provider (inclusive a queda do processo) vira `Erro` e `FimTurno`: a conversa
           // continua, e a próxima mensagem reabre a sessão se for preciso.
-          yield* Effect.logWarning(`conversa ${viva.id}: o turno falhou`, erro);
+          yield* Effect.logWarning(`conversa ${viva.id}: o turno falhou: ${resumoDaFalha(erro)}`);
           turno.falhou = true;
           // Se foi queda do processo (o driver a avisa antes de falhar o turno), a sessão sai já, e o
           // turno fecha com a conversa `caiu`.
@@ -842,6 +850,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     if (sessao === undefined) return;
     yield* motor.interromper(sessao.id).pipe(Effect.catchTags({ SessaoDesconhecida: () => Effect.void }));
     // Se o provider não fechar o turno no prazo, a sessão se libera e o turno termina como interrompido.
+    // O prazo corre depois do fim do pedido: abre o próprio trace.
     yield* Deferred.await(turno.fim).pipe(
       Effect.timeoutOption(opcoes.prazoInterrupcao),
       Effect.flatMap((terminou) =>
@@ -851,6 +860,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
               `conversa ${id}: o provider não terminou o turno depois de interromper; sessão liberada`,
             ).pipe(Effect.andThen(liberar(viva))),
       ),
+      Effect.withSpan("Conversas.prazoInterrupcao", { root: true }),
       Effect.forkIn(escopoDaLayer),
     );
   });

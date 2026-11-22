@@ -12,6 +12,7 @@
  * | interface | `SIMPLIFICA_WEB_URL` (o dev server do `apps/web`); sem ela, o build em `dist/app/web` | o build do `apps/web` dentro do app, pelo protocolo `simplifica://app` |
  * | estado (`--pasta-estado`) | a pasta do app (`userData`, "Simplifica IF (dev)") | a pasta do app (`userData`, "Simplifica IF") |
  * | skills (`--pasta-skills`) | `.agents/skills` do repositório (o servidor aceita só as com bloco `simplifica:`) | `<Resources>/skills`, gerada no build só com as skills do app e os arquivos listados |
+ * | traces (`--traces`) | `SIMPLIFICA_TRACES`, ou `completo` (todo span em `traces.jsonl`) | `caixa-preta` (só os traces com erro ou lentos) |
  *
  * Sem a pasta de skills (não existe), o servidor sobe sem skills: as conversas funcionam, só sem elas.
  */
@@ -36,7 +37,13 @@ export const VARIAVEIS = {
   feed: "SIMPLIFICA_ATUALIZACAO_FEED",
   /** A raiz das pastas de tarefa, no lugar de `Documentos/Simplifica IF`. */
   trabalhos: "SIMPLIFICA_TRABALHOS",
+  /** O que vai para `traces.jsonl` no desenvolvimento: `completo`, `caixa-preta` ou `desligado`. */
+  traces: "SIMPLIFICA_TRACES",
 } as const;
+
+/** Os modos de `--traces` do servidor (`apps/server/src/observabilidade/Observabilidade.ts`). */
+export const MODOS_TRACES = ["completo", "caixa-preta", "desligado"] as const;
+export type ModoTraces = (typeof MODOS_TRACES)[number];
 
 /** O nome da pasta das tarefas dentro de Documentos. */
 export const PASTA_TAREFAS = "Simplifica IF";
@@ -73,6 +80,8 @@ export interface Configuracao {
   readonly pastaSkills: string | undefined;
   /** `--pasta-trabalhos`: `Documentos/Simplifica IF`, onde cada tarefa ganha a sua pasta (M1.9). */
   readonly pastaTrabalhos: string;
+  /** `--traces`: tudo no desenvolvimento, só os traces com erro ou lentos no app empacotado. */
+  readonly traces: ModoTraces;
   readonly interface: Interface;
   /** A URL que a janela abre. */
   readonly urlJanela: string;
@@ -94,6 +103,14 @@ export function urlDevServer(texto: string): URL {
     throw new Error(`${VARIAVEIS.web} precisa apontar para esta máquina (localhost): ${texto}`);
   }
   return url;
+}
+
+/** O `SIMPLIFICA_TRACES` do desenvolvimento, se houver; um valor desconhecido é erro, não silêncio. */
+function tracesDoAmbiente(valor: string | undefined): ModoTraces | undefined {
+  if (valor === undefined) return undefined;
+  const modo = MODOS_TRACES.find((m) => m === valor);
+  if (modo === undefined) throw new Error(`${VARIAVEIS.traces} precisa ser ${MODOS_TRACES.join(", ")}: ${valor}`);
+  return modo;
 }
 
 export function resolverConfiguracao(entrada: Entrada): Configuracao {
@@ -143,6 +160,7 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
     pastaTrabalhos: NodePath.resolve(
       definida(ambiente[VARIAVEIS.trabalhos]) ?? NodePath.join(entrada.pastaDocumentos, PASTA_TAREFAS),
     ),
+    traces: entrada.empacotado ? "caixa-preta" : (tracesDoAmbiente(definida(ambiente[VARIAVEIS.traces])) ?? "completo"),
     interface: interfaceApp,
     urlJanela,
     origens: [new URL(urlJanela).protocol === `${ESQUEMA}:` ? ORIGEM_APP : new URL(urlJanela).origin],

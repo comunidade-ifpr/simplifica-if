@@ -122,13 +122,16 @@ export const make = Effect.fn("AtualizadorHarnesses.make")(function* (opcoes: Op
   if (opcoes.automatico ?? true) {
     const intervalo = opcoes.intervalo ?? INTERVALO_PADRAO;
     const intervaloOcupado = opcoes.intervaloOcupado ?? INTERVALO_OCUPADO_PADRAO;
+    // Cada execução abre o próprio trace: o fiber nasce no span do `make`, que já terminou.
     yield* Effect.gen(function* () {
-      yield* uma.withPermits(1)(
-        Effect.forEach(HARNESSES_GERENCIADOS, (provider) => limpar(provider), { discard: true }),
-      );
+      yield* uma
+        .withPermits(1)(Effect.forEach(HARNESSES_GERENCIADOS, (provider) => limpar(provider), { discard: true }))
+        .pipe(Effect.withSpan("AtualizadorHarnesses.limparNaPartida", { root: true }));
       yield* Effect.sleep(opcoes.atrasoInicial ?? ATRASO_INICIAL_PADRAO);
       for (;;) {
-        const resultados = yield* conferirAgora;
+        const resultados = yield* conferirAgora.pipe(
+          Effect.withSpan("AtualizadorHarnesses.conferirPeriodico", { root: true }),
+        );
         const puladoPorOcupado = HARNESSES_GERENCIADOS.every((provider) => {
           const resultado = resultados[provider];
           return resultado?.status === "ignorado" && resultado.motivo === "ocupado";

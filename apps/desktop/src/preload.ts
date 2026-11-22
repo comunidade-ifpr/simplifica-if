@@ -31,6 +31,9 @@ const ponte: PonteDesktop = {
   reiniciarServidor: async () => {
     await ipcRenderer.invoke(CANAIS.reiniciarServidor);
   },
+  registrarErro: async (texto: string) => {
+    await ipcRenderer.invoke(CANAIS.registrarErro, texto);
+  },
   atualizacaoApp: () => ipcRenderer.invoke(CANAIS.atualizacaoApp) as Promise<EstadoAtualizacaoApp>,
   procurarAtualizacaoApp: () => ipcRenderer.invoke(CANAIS.procurarAtualizacaoApp) as Promise<EstadoAtualizacaoApp>,
   instalarAtualizacaoApp: async () => {

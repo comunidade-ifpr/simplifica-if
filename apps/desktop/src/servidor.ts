@@ -88,6 +88,10 @@ export interface OpcoesInicio {
   readonly versaoApp?: string | undefined;
   /** `--pasta-trabalhos`: a raiz das pastas de tarefa (`Documentos/Simplifica IF`). */
   readonly pastaTrabalhos?: string | undefined;
+  /** `--pasta-logs`: a pasta do `simplifica-if.log`, onde o servidor grava `traces.jsonl` e `logs-otlp.jsonl`. */
+  readonly pastaLogs?: string | undefined;
+  /** `--traces`: `completo`, `caixa-preta` ou `desligado`. */
+  readonly traces?: string | undefined;
   /** Origens da janela aceitas no WebSocket e no `POST /ingresso`. */
   readonly origens: ReadonlyArray<string>;
   readonly token: string;
@@ -134,6 +138,8 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
       ...(opcoes.pastaAtualizacao === undefined ? [] : ["--pasta-atualizacao", opcoes.pastaAtualizacao]),
       ...(opcoes.versaoApp === undefined ? [] : ["--versao-app", opcoes.versaoApp]),
       ...(opcoes.pastaTrabalhos === undefined ? [] : ["--pasta-trabalhos", opcoes.pastaTrabalhos]),
+      ...(opcoes.pastaLogs === undefined ? [] : ["--pasta-logs", opcoes.pastaLogs]),
+      ...(opcoes.traces === undefined ? [] : ["--traces", opcoes.traces]),
     ],
     ambiente,
     cwd: opcoes.cwd,

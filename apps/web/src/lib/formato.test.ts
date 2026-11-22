@@ -1,5 +1,15 @@
 import { assert, describe, it } from "@effect/vitest";
-import { dataCurta, dataHora, dataPorExtenso, diaDe, dolares, inteiro, megabytes, numeroMegabytes } from "./formato.ts";
+import {
+  dataCurta,
+  dataHora,
+  dataPorExtenso,
+  diaDe,
+  dolares,
+  inteiro,
+  megabytes,
+  numeroMegabytes,
+  tamanhoArquivo,
+} from "./formato.ts";
 
 describe("formato em pt-BR (M1.14)", () => {
   it("dólares pelo Intl, com 3 casas abaixo de 10 centavos", () => {
@@ -14,6 +24,9 @@ describe("formato em pt-BR (M1.14)", () => {
     assert.strictEqual(inteiro(12345), "12.345");
     assert.strictEqual(megabytes(1_310_720), "1,3 MB");
     assert.strictEqual(numeroMegabytes(47_815_066), "45,6");
+    assert.strictEqual(tamanhoArquivo(512), "512 B");
+    assert.strictEqual(tamanhoArquivo(12_800), "13 KB");
+    assert.strictEqual(tamanhoArquivo(1_310_720), "1,3 MB");
   });
 
   it("datas sem hora em UTC, e o que não é data como veio", () => {

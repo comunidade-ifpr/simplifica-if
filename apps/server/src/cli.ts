@@ -4,13 +4,18 @@
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
  *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-trabalhos <dir>]
  *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.2.0]
+ *        [--pasta-logs <dir>] [--traces completo|caixa-preta|desligado]
  *
  * Com `--pasta-atualizacao` (M1.10), antes de abrir a base, o servidor atende a troca pendente na pasta
  * (`prepararAbertura`) e abre a base mais nova entre a baixada e a do `--banco` (a empacotada); depois,
  * confere o feed da política na abertura e a cada 24 h.
  *
  * O token chega por `SIMPLIFICA_SERVIDOR_TOKEN` ou pelo envelope no stdin (`partida.ts`). Pronto o
- * servidor, a única linha do stdout é a `LinhaPartida` em JSON; os logs vão para o stderr.
+ * servidor, a única linha do stdout é a `LinhaPartida` em JSON; os logs vão para o stderr, em logfmt.
+ *
+ * Com `--pasta-logs`, os spans e os logs vão também para `traces.jsonl` e `logs-otlp.jsonl` nessa pasta
+ * (OTLP/JSON, `observabilidade/`), conforme `--traces`; com `OTEL_EXPORTER_OTLP_ENDPOINT`, vão a esse
+ * coletor, no lugar do arquivo.
  *
  * Encerramento: SIGTERM ou SIGINT (o `NodeRuntime.runMain` interrompe o programa) ou, com o token pelo
  * stdin, o stdin fechado ou o processo pai trocado. Em todos os casos o escopo fecha: o RPC para, as
@@ -26,7 +31,6 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
-import * as Logger from "effect/Logger";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Runtime from "effect/Runtime";
@@ -46,6 +50,7 @@ import * as Partida from "./partida.ts";
 import { comandoPonte } from "./ponte.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Servidor from "./servidor.ts";
+import * as Observabilidade from "./observabilidade/Observabilidade.ts";
 import { awaitLauncherLoss } from "./t3/launcherWatch.ts";
 
 const VERSAO = "0.2.0";
@@ -145,6 +150,18 @@ const servidor = Command.make(
       Flag.withDescription("versão do app, comparada ao app_minimo do manifesto"),
       Flag.withDefault(VERSAO),
     ),
+    pastaLogs: Flag.String("pasta-logs").pipe(
+      Flag.withDescription(
+        "pasta de logs do app: grava nela traces.jsonl e logs-otlp.jsonl (OTLP/JSON); sem ela, nada vai a arquivo",
+      ),
+      Flag.optional,
+    ),
+    traces: Flag.Literals("traces", Observabilidade.MODOS).pipe(
+      Flag.withDescription(
+        "o que vai para traces.jsonl: completo (tudo), caixa-preta (só os traces com erro ou lentos) ou desligado",
+      ),
+      Flag.withDefault("completo"),
+    ),
   },
   (opcoes) =>
     Effect.gen(function* () {
@@ -184,6 +201,8 @@ const servidor = Command.make(
       const pastaTrabalhos = path.resolve(
         yield* expandHomePath(Option.getOrUndefined(opcoes.pastaTrabalhos) ?? (yield* pastaTrabalhosPadrao)),
       );
+      const pastaLogsDada = Option.getOrUndefined(opcoes.pastaLogs);
+      const pastaLogs = pastaLogsDada === undefined ? undefined : path.resolve(yield* expandHomePath(pastaLogsDada));
       const httpProxy = ambiente.HTTP_PROXY ?? ambiente.http_proxy;
       const httpsProxy = ambiente.HTTPS_PROXY ?? ambiente.https_proxy;
       const noProxy = ambiente.NO_PROXY ?? ambiente.no_proxy;
@@ -219,6 +238,10 @@ const servidor = Command.make(
           pastaTrabalhos,
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
           ...(atualizacao === undefined ? {} : { atualizacao }),
+          diagnostico: {
+            ...(pastaLogs === undefined ? {} : { pastaLogs }),
+            modoTraces: opcoes.traces,
+          },
         }).pipe(Layer.provide(drivers)),
       );
       const app = Context.get(contexto, Servidor.ServidorApp);
@@ -240,7 +263,17 @@ const servidor = Command.make(
       } else {
         return yield* Effect.never;
       }
-    }).pipe(Effect.scoped),
+    }).pipe(
+      Effect.scoped,
+      // A falha fatal vai ao log aqui, ainda com a observabilidade montada: chega ao `logs-otlp.jsonl`
+      // e ao stderr; o `executar` não a registra de novo.
+      Effect.tapCause((causa) =>
+        Cause.hasInterruptsOnly(causa)
+          ? Effect.void
+          : Effect.logError(causa).pipe(Effect.andThen(Effect.sync(() => falhasRegistradas.add(causa)))),
+      ),
+      Effect.provide(layerObservabilidade(opcoes)),
+    ),
 ).pipe(
   Command.withDescription(`servidor local do Simplifica IF; \`${SUBCOMANDO_PONTE}\` roda a ponte MCP stdio → HTTP`),
 );
@@ -274,6 +307,32 @@ const montarAtualizacao = Effect.fn("cli.montarAtualizacao")(function* (entrada:
   } satisfies Servidor.OpcoesAtualizacao;
 });
 
+/**
+ * Os spans e os logs para a pasta de logs (ou para o coletor de `OTEL_EXPORTER_OTLP_ENDPOINT`). Envolve o
+ * servidor inteiro: no fim, depois do escopo do servidor, descarrega o que falta.
+ */
+const layerObservabilidade = (opcoes: {
+  readonly pastaLogs: Option.Option<string>;
+  readonly traces: Observabilidade.Modo;
+  readonly versaoApp: string;
+}) =>
+  Layer.unwrap(
+    Effect.gen(function* () {
+      const path = yield* Path.Path;
+      const endpoint = yield* Config.option(Config.String("OTEL_EXPORTER_OTLP_ENDPOINT")).pipe(Effect.orDie);
+      const pastaLogs = Option.getOrUndefined(opcoes.pastaLogs);
+      return Observabilidade.layer({
+        pastaLogs: pastaLogs === undefined ? undefined : path.resolve(yield* expandHomePath(pastaLogs)),
+        modo: opcoes.traces,
+        endpoint: Option.getOrUndefined(endpoint),
+        versao: opcoes.versaoApp,
+      });
+    }),
+  );
+
+/** As falhas do servidor já registradas dentro da observabilidade, que o `executar` não repete. */
+const falhasRegistradas = new WeakSet<Cause.Cause<unknown>>();
+
 /** Sem cordão (token pelo ambiente): não há envelope a ler nem fim a esperar. */
 const semCordao: Partida.Cordao = { primeiraLinha: Effect.succeedNone, fim: Effect.never };
 
@@ -283,8 +342,11 @@ const semCordao: Partida.Cordao = { primeiraLinha: Effect.succeedNone, fim: Effe
  */
 export function executar(): void {
   Command.run(servidor, { version: VERSAO }).pipe(
-    Effect.tapCause((causa) => (Cause.hasInterruptsOnly(causa) ? Effect.void : Effect.logError(causa))),
-    Effect.provide(Layer.mergeAll(NodeServices.layer, Layer.succeed(Logger.LogToStderr, true))),
+    // O que falhou fora do servidor (os argumentos, a montagem da observabilidade) vai só ao stderr.
+    Effect.tapCause((causa) =>
+      Cause.hasInterruptsOnly(causa) || falhasRegistradas.has(causa) ? Effect.void : Effect.logError(causa),
+    ),
+    Effect.provide(Layer.mergeAll(NodeServices.layer, Observabilidade.layerLoggerStderr)),
     NodeRuntime.runMain({
       disableErrorReporting: true,
       teardown: (saida, aoSair) =>

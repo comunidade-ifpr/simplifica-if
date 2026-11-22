@@ -2,7 +2,8 @@
  * Configurações do Modo Servidor (M1.9): Sua IA (o aviso de uso, instalar, entrar, o estado de cada
  * uma e "Não usar no app", M1.8), Seu perfil (editar e apagar, M1.8; e "Rever as boas-vindas"),
  * Atualizações (M1.10: versões do app, da base e das skills, canal, procurar, usar a versão nova e
- * voltar a base; `configuracoes/Atualizacoes.tsx`) e, no fim, discreta, a conversa com uma pasta
+ * voltar a base; `configuracoes/Atualizacoes.tsx`), Diagnóstico (o pacote para anexar ao relato de um
+ * problema; `configuracoes/Diagnostico.tsx`) e, no fim, discreta, a conversa com uma pasta
  * escolhida à mão, a tela técnica de antes do Modo Servidor.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -13,6 +14,7 @@ import { FormPerfil } from "../components/FormPerfil.tsx";
 import { Pagina } from "../components/Pagina.tsx";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
+import { Diagnostico } from "../configuracoes/Diagnostico.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
 import { useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
@@ -128,6 +130,7 @@ function Configuracoes() {
         </div>
       </Secao>
       {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
+      {conexao.fase === "sem-servidor" ? null : <Diagnostico />}
       <Secao id="avancado" titulo="Avançado">
         <p className="max-w-prose text-muted-foreground text-sm">
           Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.

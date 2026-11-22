@@ -37,6 +37,13 @@ export function megabytes(bytes: number): string {
   return `${DECIMAL_1.format(bytes / 1_048_576)} MB`;
 }
 
+/** O tamanho de um arquivo: "512 B", "12 KB", "1,3 MB". */
+export function tamanhoArquivo(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${inteiro(Math.round(bytes / 1024))} KB`;
+  return megabytes(bytes);
+}
+
 /** Só o número de MB, para "12,3 de 45,6 MB". */
 export function numeroMegabytes(bytes: number): string {
   return DECIMAL_1.format(bytes / 1_048_576);

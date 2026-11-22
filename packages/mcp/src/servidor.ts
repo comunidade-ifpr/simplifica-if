@@ -8,7 +8,7 @@ import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import * as Layers from "@simplifica-if/kb/layers";
 import * as Layer from "effect/Layer";
-import { McpProtocol, McpServer } from "effect/ai";
+import { McpProtocol, McpServer, Toolkit } from "effect/ai";
 import type { Canal } from "@simplifica-if/kb/canal";
 import { registrarFerramentas } from "./ferramentas/registrar.ts";
 import { layerHandlers } from "./ferramentas/toolkit.ts";
@@ -43,6 +43,13 @@ export const layerRegistro = Layer.mergeAll(
 );
 
 /**
+ * Os argumentos das ferramentas fora dos spans (`gen_ai.tool.call.arguments`): podem trazer o texto de
+ * um PPC ou de um anexo, e os spans vão a `traces.jsonl`. O padrão do Effect já é `false`; fica
+ * explícito onde o servidor MCP se monta, para que nenhuma camada de fora o ligue sem querer.
+ */
+export const layerSemArgumentosNosSpans = Layer.succeed(Toolkit.RecordToolArguments)(false);
+
+/**
  * O `Leitura` sobre o `kb.sqlite` em `banco`, só leitura, sem o repositório. Com `etapaRegistrada`
  * (o app), a ferramenta `etapa` responde que registrou a etapa.
  */
@@ -74,7 +81,7 @@ export const layerStdio = (opcoes: { readonly banco: string; readonly canal: Can
     instructions: INSTRUCOES,
     protocols: PROTOCOLOS,
     registrations: layerRegistro,
-  }).pipe(Layer.provideMerge(layerLeituraComPasta(opcoes)));
+  }).pipe(Layer.provide(layerSemArgumentosNosSpans), Layer.provideMerge(layerLeituraComPasta(opcoes)));
 
 /**
  * A mensagem dos erros de abertura do banco para quem instala o servidor: o kb fala "desta versão do

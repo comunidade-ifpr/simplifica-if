@@ -14,6 +14,7 @@ import * as Redacted from "effect/Redacted";
 import * as Ref from "effect/Ref";
 import * as Stream from "effect/Stream";
 import * as TestClock from "effect/testing/TestClock";
+import type * as Tracer from "effect/Tracer";
 import * as Motor from "@simplifica-if/motor";
 import * as AtualizadorHarnesses from "../src/AtualizadorHarnesses.ts";
 import * as Servidor from "../src/servidor.ts";
@@ -64,6 +65,34 @@ const montarDrivers = (
 };
 
 describe("AtualizadorHarnesses (serviço)", () => {
+  it.effect("a conferência periódica abre o próprio trace, não o do pedido que montou a layer", () =>
+    Effect.gen(function* () {
+      const registro: Registro = { atualizacoes: [], limpezas: [] };
+      const spanDaConferencia = yield* Deferred.make<Tracer.AnySpan>();
+      const drivers = montarDrivers(registro, {
+        antigravity: Effect.succeed({ status: "em-dia", versao: "1.5.14" }),
+        codex: Effect.gen(function* () {
+          yield* Deferred.succeed(spanDaConferencia, yield* Effect.orDie(Effect.currentSpan));
+          return { status: "em-dia", versao: "0.169.0" } satisfies Motor.ResultadoAtualizacaoHarness;
+        }),
+      });
+      const camada = AtualizadorHarnesses.layer({
+        ocupado: Effect.succeed(false),
+        desligados: Effect.succeed([]),
+        atrasoInicial: Duration.seconds(15),
+        automatico: true,
+      }).pipe(Layer.provide(Motor.layer), Layer.provide(drivers), Layer.provide(NodeServices.layer));
+
+      const [traceDoPedido, conferencia] = yield* Effect.gen(function* () {
+        const pedido = yield* Effect.orDie(Effect.currentSpan);
+        yield* AtualizadorHarnesses.AtualizadorHarnesses;
+        yield* TestClock.adjust(Duration.seconds(15));
+        return [pedido.traceId, yield* Deferred.await(spanDaConferencia)] as const;
+      }).pipe(Effect.provide(camada), Effect.withSpan("pedido"));
+      assert.notStrictEqual(conferencia.traceId, traceDoPedido);
+    }),
+  );
+
   it.effect("atualiza Antigravity e Codex, limpa apenas os atualizados e pula IAs desligadas", () =>
     Effect.gen(function* () {
       const registro: Registro = { atualizacoes: [], limpezas: [] };

@@ -69,7 +69,15 @@ import type { Canal } from "@simplifica-if/kb/canal";
 import { EntradaInvalida } from "./contratos.ts";
 import * as PastaTrabalho from "./leitura/PastaTrabalho.ts";
 import * as SessaoAtual from "./SessaoAtual.ts";
-import { INSTRUCOES, layerLeitura, layerRegistro, NOME_SERVIDOR, PROTOCOLOS, VERSAO_PACOTE } from "./servidor.ts";
+import {
+  INSTRUCOES,
+  layerLeitura,
+  layerRegistro,
+  layerSemArgumentosNosSpans,
+  NOME_SERVIDOR,
+  PROTOCOLOS,
+  VERSAO_PACOTE,
+} from "./servidor.ts";
 
 /** O caminho do endpoint MCP. */
 export const CAMINHO = "/mcp";
@@ -372,7 +380,10 @@ export const layerSobreLeitura = (opcoes: { readonly porta?: number; readonly pa
     allowSessionTermination: true,
     registrations: layerRegistro,
   }).pipe(Layer.provide(layerAutorizacao));
-  const servir = HttpRouter.serve(mcp, { disableLogger: true, disableListenLog: true });
+  // Os argumentos das ferramentas fora dos spans (`layerSemArgumentosNosSpans`): vale para cada requisição.
+  const servir = HttpRouter.serve(mcp, { disableLogger: true, disableListenLog: true }).pipe(
+    Layer.provide(layerSemArgumentosNosSpans),
+  );
   const node = Layer.effect(
     HttpServer.HttpServer,
     NodeHttpServer.make(() => NodeHttp.createServer(), { host: "127.0.0.1", port: porta }).pipe(

@@ -26,6 +26,7 @@ import * as Path from "effect/Path";
 import * as Semaphore from "effect/Semaphore";
 import { type FalhaWorker, type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
 import type { FormatoTexto, PedidoTexto, RespostaTexto } from "./trabalhador.ts";
+import { resumoDaFalha } from "../observabilidade/resumoDaFalha.ts";
 
 /** Onde fica o texto, relativo à pasta da tarefa (com `/`). */
 export const PASTA_TEXTOS = ".simplifica/textos";
@@ -131,7 +132,8 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
     );
     if (resposta.ok) return { tipo: "texto", markdown: resposta.markdown } satisfies ResultadoTexto;
     if ("arquivoInvalido" in resposta) return semTexto(resposta.arquivoInvalido);
-    yield* Effect.logError("texto do anexo: defeito no Worker", resposta.defeito);
+    // Só o tipo e o texto técnico curto: a mensagem do conversor pode citar um trecho do documento.
+    yield* Effect.logError(`texto do anexo: defeito no Worker: ${resumoDaFalha(resposta.defeito)}`);
     return semTexto(ERRO_INTERNO);
   });
 
@@ -144,7 +146,9 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
         return Effect.succeed(semTexto("A conversão passou do tempo máximo."));
       case "parou":
       case "erro":
-        return Effect.logError("texto do anexo: o Worker falhou", erro).pipe(Effect.as(semTexto(ERRO_INTERNO)));
+        return Effect.logError(`texto do anexo: o Worker falhou: ${resumoDaFalha(erro)}`).pipe(
+          Effect.as(semTexto(ERRO_INTERNO)),
+        );
     }
   };
 

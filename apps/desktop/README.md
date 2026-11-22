@@ -22,7 +22,7 @@ O `app:dev` faz tudo num terminal só:
 2. garante a interface: se `http://localhost:5190` já responde (por exemplo, `pnpm --filter @simplifica-if/web dev` noutro terminal), usa essa; senão, inicia o `apps/web` e espera ficar pronto;
 3. abre o Electron, que inicia o servidor com o Node do repositório (`node apps/server/src/bin.ts`) e carrega a interface.
 
-Ctrl+C ou fechar a janela encerra tudo, inclusive a interface que o `app:dev` iniciou. Mudanças em `apps/web` aparecem na hora; mudanças em `apps/desktop/src` ou `apps/server` pedem fechar e rodar de novo.
+Ctrl+C ou fechar a janela encerra tudo, inclusive a interface que o `app:dev` iniciou. Mudanças em `apps/web` aparecem na hora; mudanças em `apps/server/src` ou em `packages/` reiniciam o servidor sozinhas (a janela recarrega; `src/vigiaDev.ts`), para a interface nova não falar com o servidor velho; mudanças em `apps/desktop/src` pedem fechar e rodar de novo.
 
 Se a interface não responder, a janela tenta carregá-la 8 vezes, em cerca de 10 s, e desiste com uma mensagem no terminal dizendo o que rodar. Se a porta 5190 estiver ocupada por outro programa, o `apps/web` não sobe (`strictPort`) e o `app:dev` para com o aviso.
 
@@ -31,6 +31,9 @@ Se a interface não responder, a janela tenta carregá-la 8 vezes, em cerca de 1
 | `SIMPLIFICA_WEB_URL` | `http://localhost:5190` (o `PORTA_DEV` do `apps/web/vite.config.ts`) | o dev server da interface; vazia, a janela carrega o build em `dist/app/web` pelo protocolo `simplifica://app`, como no app empacotado |
 | `SIMPLIFICA_NODE` | o Node que rodou o `dev` | o Node que roda o servidor em desenvolvimento |
 | `SIMPLIFICA_KB` | `tmp/kb.sqlite` | a base (`--banco`) |
+| `SIMPLIFICA_DEV_SEM_REINICIO` | vazia | `1` desliga o reinício do servidor quando o código dele muda (por exemplo, no meio de uma conversa longa) |
+| `SIMPLIFICA_TRACES` | `completo` | o que o servidor grava em `traces.jsonl` (`--traces`): `completo`, `caixa-preta` (como no app empacotado) ou `desligado`; no app empacotado é sempre `caixa-preta` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | vazia | manda os spans e logs do servidor por OTLP/HTTP a esse coletor (Jaeger, otel-tui…), no lugar do `traces.jsonl` |
 
 Argumentos depois de `dev` vão ao Electron, por exemplo `--remote-debugging-port=9333` para inspecionar a janela pelo Chrome DevTools Protocol.
 
@@ -67,7 +70,7 @@ O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` o
    - em desenvolvimento, `node apps/server/src/bin.ts`;
    - no app empacotado, o próprio executável com `ELECTRON_RUN_AS_NODE=1` sobre `Resources/servidor/bin.mjs`;
    - com `--banco`, `--pasta-estado` e `--pasta-skills` (no desenvolvimento, `.agents/skills` do checkout, de onde o servidor aceita só as skills com bloco `simplifica:`; no app empacotado, `Resources/skills`; sem a pasta, o servidor sobe sem skills); o token e a origem da janela vão no `EnvelopePartida`, na primeira linha do stdin. Nunca na linha de comando nem no ambiente (o `SIMPLIFICA_SERVIDOR_TOKEN` herdado sai do ambiente do filho).
-2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app e ao arquivo de log, junto com o que o processo principal registra (`src/registro.ts`): `simplifica-if.log` em `~/Library/Logs/Simplifica IF` no macOS e em `<pasta do app>\logs` no Windows (no desenvolvimento, em `<pasta do app>/logs`); passando de 5 MB, o arquivo vira `simplifica-if.log.1` e outro começa.
+2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app e ao arquivo de log, junto com o que o processo principal registra (`src/registro.ts`): `simplifica-if.log` em `~/Library/Logs/Simplifica IF` no macOS e em `<pasta do app>\logs` no Windows (no desenvolvimento, em `<pasta do app>/logs`); passando de 5 MB, o arquivo vira `simplifica-if.log.1` e outro começa. A interface também escreve nele, por `registrarErro` (linhas `[interface]`): as chamadas ao servidor que terminam num defeito ou na queda da conexão, as telas que quebram e os erros sem dono da janela. Cada falha de chamada leva o código do erro (`codigoDoErro`, os 8 primeiros caracteres do `traceId` do pedido), o mesmo no log do servidor e em "Detalhes técnicos": com o código que a pessoa informa, acha-se o pedido no log. Na mesma pasta, o servidor grava os spans e os logs dele em OTLP/JSON (`traces.jsonl`, `logs-otlp.jsonl`; `--pasta-logs` e `--traces`, ver [`apps/server`](../server/README.md#traces-e-logs)): tudo no desenvolvimento, e no app empacotado a caixa-preta, só os traces com erro ou lentos. `pnpm traces --codigo <código>` mostra a árvore do pedido. Um defeito de handler aparece duas vezes, de propósito: no log do servidor e na linha `[interface]`, com o mesmo código. A queda da conexão vira uma linha só a cada 10 s, com os códigos das chamadas afetadas; a interface omite os valores que o Schema cita ao recusar um payload, registra a mesma linha uma vez por minuto e no máximo 30 linhas por minuto, e o processo principal aceita no máximo 120 por minuto.
 3. A interface pede a conexão pelo preload: `window.simplifica.conexao()` devolve `{ urlServidor: "http://127.0.0.1:<porta>", token }`. O processo principal só responde ao quadro principal da janela do app, na origem da interface.
 4. Ao sair (fechar a janela, Cmd+Q, SIGINT ou SIGTERM), fecha o stdin do servidor e espera 5 s; se ele não sair, SIGTERM e, 2 s depois, SIGKILL. Se o app morrer, o servidor sai sozinho: o stdin fecha e o processo pai muda (`launcherWatch.ts`).
 5. Se o servidor cair, ou não subir, um diálogo diz em português que o app parou por um problema interno, com o motivo (o fim do stderr) sob "Detalhes técnicos", e oferece **Reiniciar** (novo token, nova porta, a janela recarrega) ou **Sair**.
@@ -100,6 +103,7 @@ interface PonteDesktop {
   abrirArquivoTarefa?(caminho: string): Promise<void>;         // abre um documento de Documentos/Simplifica IF/<tarefa>/
   mostrarArquivoTarefa?(caminho: string): Promise<void>;       // mostra um arquivo da pasta da tarefa
   reiniciarServidor?(): Promise<void>;                          // reinicia o servidor (troca da base, M1.10)
+  registrarErro?(texto: string): Promise<void>;                 // grava um erro da interface no log do app
   atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;             // estado do electron-updater
   procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
   instalarAtualizacaoApp?(): Promise<void>;                     // "Reiniciar para atualizar"
@@ -138,6 +142,8 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 - `src/configuracao.ts`: de onde vêm o servidor, a base, a interface, a pasta de estado e a de skills; sem Electron.
 - `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.
 - `src/registro.ts`: o arquivo de log, com o giro em 5 MB; sem Electron.
+- `src/vigiaDev.ts`: só no desenvolvimento, reinicia o servidor quando o código dele muda; sem Electron.
+- `src/reinicio.ts`: a troca do servidor, uma de cada vez; sem Electron.
 - `src/preload.ts`: a ponte (o contrato está em `@simplifica-if/contratos-app/ponte`).
 - `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` (as skills do app no pacote), `scripts/dev.ts`, `scripts/gerar-marca.ts` (com `scripts/marca/`).
 - `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
@@ -154,7 +160,9 @@ pnpm --filter @simplifica-if/desktop test
 - `test/configuracao.test.ts`: os caminhos no desenvolvimento e no app empacotado, a CSP, a navegação, os links externos e os arquivos do protocolo.
 - `test/integracao.test.ts`: o servidor de verdade (`apps/server`, banco de fixture, nenhum provider chamado), iniciado como o app o inicia: a linha de partida, o `POST /ingresso` com o token e a origem da janela, as recusas e o encerramento pelo stdin. Se o bundle (`build`) e o Electron existirem, repete com o Electron como Node sobre o bundle.
 - `test/empacotar.test.ts`: a identidade e os alvos do electron-builder, e a cópia das skills do app (só as elegíveis, só os arquivos listados; uma inválida faz o build falhar).
-- `test/registro.test.ts`: o arquivo de log (pasta criada, acréscimo, giro no limite, falha sem derrubar o app).
+- `test/registro.test.ts`: o arquivo de log (pasta criada, acréscimo, giro no limite, falha sem derrubar o app), a linha `[interface]` (quebras, ANSI e controles) e o teto por minuto.
+- `test/vigia-dev.test.ts`: que arquivos reiniciam o servidor no desenvolvimento, e que uma pasta que falta ou um vigia que falha não derrubam o app.
+- `test/reinicio.test.ts`: a troca do servidor, uma de cada vez (pedidos no meio viram uma troca só, depois).
 - `test/atualizacao-app.test.ts`: quando o `electron-updater` fica desligado, o feed do canal e o ciclo procurar, baixar, pronta e instalar (com o servidor encerrado antes), com um atualizador falso.
 
 Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-desktop-app.ts`, Playwright com `_electron`) que roda nos jobs de release; aqui ele fica como pendência do CI. Para conferir o app de verdade, empacote com `--dir` e abra o `.app`; com `--remote-debugging-port`, a página pode ser lida pelo CDP.

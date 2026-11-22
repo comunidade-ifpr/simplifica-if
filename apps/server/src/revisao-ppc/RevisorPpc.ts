@@ -51,6 +51,7 @@ import * as CopiasComentadas from "../persistencia/CopiasComentadas.ts";
 import { comNumero, NomesEsgotados } from "../nome-livre.ts";
 import { type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
 import type { AndamentoTrabalhador, PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
+import { resumoDaFalha } from "../observabilidade/resumoDaFalha.ts";
 
 /** Os limites da revisão (os do Worker e o do arquivo); os testes os apertam para provocar o estouro. */
 export interface Limites extends LimitesWorker {
@@ -156,7 +157,7 @@ function rodarNoTrabalhador(
             return Effect.fail(falha("A revisão parou antes de terminar. Tente de novo."));
           case "memoria":
           case "erro":
-            return Effect.logError("revisão prévia: o Worker falhou", erro.cause).pipe(
+            return Effect.logError(`revisão prévia: o Worker falhou: ${resumoDaFalha(erro)}`).pipe(
               Effect.andThen(
                 Effect.fail(
                   falha(
@@ -174,7 +175,7 @@ function rodarNoTrabalhador(
       if (resposta.ok) return Effect.succeed(resposta.revisao);
       return "arquivoInvalido" in resposta
         ? Effect.fail(falha(mensagemErroDocx(resposta.arquivoInvalido)))
-        : Effect.logError("revisão prévia: defeito no Worker", resposta.defeito).pipe(
+        : Effect.logError(`revisão prévia: defeito no Worker: ${resumoDaFalha(resposta.defeito)}`).pipe(
             Effect.andThen(Effect.fail(falha(ERRO_INTERNO))),
           );
     }),
@@ -358,7 +359,9 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     const arquivoComentado = entrada.gravar
       ? yield* gravarCopia(arquivo, revisao.docx).pipe(
           Effect.provideService(CopiasComentadas.CopiasComentadas, copias),
-          Effect.tapError((erro) => Effect.logError("revisão prévia: a cópia comentada não foi gravada", erro)),
+          Effect.tapError((erro) =>
+            Effect.logError(`revisão prévia: a cópia comentada não foi gravada: ${resumoDaFalha(erro)}`),
+          ),
           Effect.mapError(() =>
             falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
           ),
