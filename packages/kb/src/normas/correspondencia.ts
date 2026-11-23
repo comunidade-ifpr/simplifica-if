@@ -13,7 +13,7 @@ import * as NodePath from "node:path";
 import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
-import { dispositivosDoAto, indiceDispositivos } from "./estrutura.ts";
+import { dispositivosDaNorma, indiceDispositivos } from "./estrutura.ts";
 import { ehIdNorma, ehIdDispositivo } from "./ids.ts";
 
 /** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
@@ -123,8 +123,7 @@ function ancestrais(dispositivoId: string, fonte: FonteCorrespondencia, ato: str
 
 /** Correspondência de um dispositivo (ou ato) de origem, pelas tabelas da base. */
 export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): ResultadoCorrespondencia[] {
-  const [norma, sufixo] = id.split("#") as [string, string | undefined];
-  const ato = norma;
+  const [ato, sufixo] = id.split("#") as [string, string | undefined];
   const saida: ResultadoCorrespondencia[] = [];
   const tabelas = fonte.tabelas.get(ato) ?? [];
   const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : (fonte.artigos.get(ato) ?? []);
@@ -207,7 +206,7 @@ export function validarCorrespondencias(raiz: string): string[] {
           erros.push(`${rotulo}: destino ${d} inexistente em ${tabela.destino}`);
       }
     });
-    for (const disp of dispositivosDoAto(tabela.origem, raiz)) {
+    for (const disp of dispositivosDaNorma(tabela.origem, raiz)) {
       if (disp.tipo === "artigo" && !vistas.has(disp.dispositivo)) {
         erros.push(`${tabela.arquivo}: artigo da origem sem item: ${disp.dispositivo}`);
       }

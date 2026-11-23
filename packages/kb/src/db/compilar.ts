@@ -28,7 +28,7 @@ import { cruzarPpcSuap } from "../fatos/divergencias.ts";
 import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import { carregarDadosInstitucionaisKb, linhaDaChave, linhaDoValor, matrizesDoResumo } from "../institucional/dados.ts";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
-import { analisarFrontMatter } from "../normas/front-matter.ts";
+import { analisarFrontMatter, listaDeTextos } from "../normas/front-matter.ts";
 import { metadadosDoIdNorma } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, type Registro } from "../normas/registro.ts";
 import { segmentosCitantes } from "../normas/citacoes-normas.ts";
@@ -81,12 +81,6 @@ export interface ResumoCompilacao {
 }
 
 const json = (valor: unknown): string => JSON.stringify(valor ?? null);
-
-/** Uma lista de textos do front matter (`pontos_chave`); vazia se o campo não é lista. */
-const listaDoMeta = (meta: Record<string, unknown>, campo: string): string[] => {
-  const valor = meta[campo];
-  return Array.isArray(valor) ? valor.filter((item): item is string => typeof item === "string") : [];
-};
 
 function lerJson(arquivo: string): unknown {
   return JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
@@ -352,7 +346,6 @@ export function gravarSecoesECitacoes(
       linha: citacao.linha,
       trecho: citacao.trecho,
       norma_id: citacao.id,
-      ato_id: citacao.id ? citacao.id : null,
       dispositivos_json: json(dispositivos),
       regra: citacao.regra,
       confianca: citacao.confianca,
@@ -501,7 +494,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       blocoMetadados(
         item.id,
         item.title,
-        [...(item.aliases ?? []), ...(item.keywords ?? []), item.ementa, ...listaDoMeta(meta, "pontos_chave")],
+        [...(item.aliases ?? []), ...(item.keywords ?? []), item.ementa, ...listaDeTextos(meta, "pontos_chave")],
         caminhoMd,
         1,
       );

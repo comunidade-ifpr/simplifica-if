@@ -72,7 +72,7 @@ const Norma = Schema.Struct({
 });
 
 const CitacaoPpc = Schema.Struct({
-  ato_id: Texto,
+  norma_id: Texto,
   linha: Linha,
   trecho: Texto,
   papel: Texto,
@@ -257,7 +257,7 @@ function blocoMarco(m: (typeof Marco)["Type"]): string {
   if (ehObjeto(m.normas)) linhas.push(`Normas do marco: ${markdownDeValor(m.normas, "")}`);
   for (const c of m.citacoes_no_ppc) {
     linhas.push(
-      `- citado no PPC, linha ${c.linha} (${c.ato_id}, ${c.papel}, regra ${c.regra}): "${cortar(c.trecho, 300)}"`,
+      `- citado no PPC, linha ${c.linha} (${c.norma_id}, ${c.papel}, regra ${c.regra}): "${cortar(c.trecho, 300)}"`,
     );
   }
   linhas.push(`fonte: \`${m.path}\``);

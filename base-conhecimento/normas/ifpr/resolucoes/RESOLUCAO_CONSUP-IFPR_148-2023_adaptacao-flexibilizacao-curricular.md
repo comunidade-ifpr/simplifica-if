@@ -28,18 +28,39 @@ vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 148/2
 pontos_chave:
   - "Público-alvo: estudantes com TEA, transtornos de aprendizagem, altas habilidades/superdotação, transtornos psicológicos/psiquiátricos e deficiências (art. 3º)."
   - "Hierarquia: as adaptações sempre precedem a flexibilização curricular, que só ocorre quando as adaptações não contemplam as dificuldades (art. 4º, § 1º)."
-  - "Adaptações: modificações didático-estruturais (materiais, atividades, linguagens, tecnologias, metodologias), registradas no PTE (Plano de Trabalho do Estudante, Anexo II), que dispensam processo SEI (art. 5º)."
-  - "Flexibilização curricular: alterações pedagógicas significativas, registradas no PFC (Plano de Flexibilização Curricular, Anexo I), que exigem processo SEI restrito na CNAPNE (art. 6º)."
-  - "Comissão de Flexibilização: coordenação da CNAPNE, coordenação de curso, docente de Educação Especial, pelo menos 2 docentes do núcleo comum, pelo menos 2 docentes da área técnica e pedagogo ou TAE da SEPAE/SENS (art. 7º, VI)."
+  - "Adaptações: modificações didático-estruturais (materiais, atividades, linguagens, tecnologias, metodologias) implementadas pelos docentes; é recomendável registrá-las no PTE (Plano de Trabalho do Estudante, Anexo II), sem abrir processo no SEI (art. 5º)."
+  - "Flexibilização curricular: alterações pedagógicas significativas, registradas no PFC (Plano de Flexibilização Curricular, Anexo I); o processo é aberto como restrito na unidade CNAPNE do SEI (arts. 6º e 8º)."
+  - "Comissão do Plano de Flexibilização Curricular: coordenadoria da CNAPNE, coordenadoria do curso, docente de Educação Especial (caso seja necessário), docentes da turma (no mínimo 2 do núcleo comum e 2 da área técnica), representante da SEPAE/SENS (preferencialmente pedagogo ou técnico em assuntos educacionais) e, se a CNAPNE julgar necessário, outros profissionais de apoio (art. 7º, VI)."
   - "Avaliação diferenciada: critérios diferenciados e adequados, considerando as singularidades dos estudantes (art. 7º, V)."
   - "Acompanhamento Individualizado Educacional (AIE): mínimo de 1 h semanal com docente (art. 7º, II)."
   - "Análise em duas etapas: primeiro pela Comissão (10 dias úteis), depois pela CONAPNE (10 dias úteis) (art. 9º)."
-  - "Sigilo: é vedada a divulgação de necessidade educacional específica em documentos oficiais, como histórico e diploma (art. 10, parágrafo único)."
+  - "É vedado divulgar nos documentos oficiais (histórico, certificado, diploma) informação sobre a necessidade educacional específica, as adaptações ou a flexibilização que configure forma de discriminação (art. 10, parágrafo único)."
   - "Reavaliação a cada bimestre ou semestre (art. 11)."
   - "A resolução exclui a terminalidade específica (art. 13)."
 notas_da_fonte:
-  - "Texto conferido e corrigido pela fonte oficial em 23/11/2026 (art. 8º, inciso I). No art. 7º, inciso VI, a fonte omite a palavra \"composta\" (\"a comissão será por:\"), que a base mantém."
+  - "Texto conferido pela fonte oficial (SEI nº 2616102) em 23/11/2026: corrigido o art. 8º, inciso I, e incluídos a ementa, o preâmbulo, os considerandos, a assinatura e os Anexos I a III, que faltavam."
+  - "No art. 7º, inciso VI, o ato publicado diz \"a comissão será por:\", sem o verbo; a base reproduz o texto como publicado."
 ---
+
+> Institui as normas para a adaptação de materiais e atividades, e a Flexibilização Curricular no IFPR.
+
+O Conselho Superior do Instituto Federal de Educação, Ciência e Tecnologia do Paraná, no uso de suas atribuições legais e estatutárias após análise do parecer do Conselheiro Rafael Poltronieri, considerando o contido no processo 23411.015491/2019-75, e
+
+CONSIDERANDO:
+
+- Constituição da República Federativa do Brasil de 1988, Art. 208, inciso III, em que define o dever do Estado com a Educação e o atendimento educacional especializado aos portadores de deficiência;
+- a Lei nº 9.394, de 20 de dezembro de 1996, que estabelece as diretrizes e bases da educação nacional;
+- a Lei nº 10.098, de 19 de dezembro de 2000, que estabelece normas gerais e critérios básicos para a promoção da acessibilidade das pessoas portadoras de deficiência ou com mobilidade reduzida;
+- o Decreto nº 5.296, de 2 de dezembro de 2004, que regulamenta as Leis nº 10.048, de 8 de novembro de 2000, e nº 10.098, de 19 de dezembro de 2000;
+- a Política Nacional de Educação Especial na Perspectiva da Educação Inclusiva, de janeiro de 2008;
+- a Resolução nº 54, de 21 de dezembro de 2011, e suas alterações, que dispõe sobre a organização Didático-Pedagógica da Educação Profissional Técnica de Nível Médio e Formação Inicial e Continuada de Trabalhadores no âmbito do Instituto Federal do Paraná (IFPR);
+- a Resolução nº 55, de 21 de dezembro de 2011, que dispõe sobre a Organização Didático Pedagógica da Educação Superior no âmbito do Instituto Federal do Paraná (IFPR);
+- a Lei nº 12.764, de 27 de dezembro de 2012, que institui a Política Nacional de Proteção dos Direitos da Pessoa com Transtorno do Espectro Autista;
+- a Lei nº 13.146, de 6 de julho de 2015, que institui a lei Brasileira da Inclusão da Pessoa com Deficiência (Estatuto da Pessoa com Deficiência);
+- o Decreto nº 6.949, de 25 de agosto de 2009, que promulga a Convenção Internacional sobre os Direitos das Pessoas com Deficiência e seu Protocolo Facultativo;
+- a Resolução nº 50, de 14 de julho de 2017, que estabelece as normas de avaliação dos processos de ensino-aprendizagem no âmbito do IFPR,
+
+RESOLVE:
 
 #### Art. 1º
 
@@ -99,7 +120,7 @@ Flexibilização Curricular será realizada mediante articulação entre os doce
 - **III –** dilação ou redução do prazo para a conclusão do curso;
 - **IV –** reorganização e/ou equivalência de componente curricular;
 - **V –** definição de critérios diferenciados e adequados de avaliação, considerando as singularidades e especificidades dos estudantes;
-- **VI –** a comissão será composta por:
+- **VI –** a comissão será por:
   - a) coordenadoria da CNAPNE;
   - b) coordenadoria do Curso;
   - c) docente de Educação Especial, caso seja necessário;
@@ -151,3 +172,128 @@ A regulamentação e aplicabilidade de adaptações e da flexibilização curric
 #### Art. 14.
 
 Esta resolução entra em vigor na data de sua publicação.
+
+ODACIR ANTONIO ZANATTA  
+Presidente
+
+Documento assinado eletronicamente por ODACIR ANTONIO ZANATTA, Reitor, em 11/10/2023, às 16:35. Código verificador 2616102, CRC DB0D5EDC. Referência: Processo nº 23411.015491/2019-75.
+
+## ANEXO I
+
+(a que se refere ao art. 5º, o II do art. 7º)
+
+**PLANO DE FLEXIBILIZAÇÃO CURRICULAR**
+
+Período de realização: ___/____/_____ a ___/____/_____
+
+**1. Dados do estudante**
+
+Nome:
+
+Curso/Turma:
+
+Série/Ano:
+
+Laudo: ( ) sim ( ) não
+
+Descrever a necessidade educacional específica:
+
+**2. Histórico de ações pedagógicas já realizadas e justificativa de implementação da flexibilização curricular**
+
+(Registrar todas as ações pedagógicas e tentativas de adaptações realizadas até o momento).
+
+**3. Atendimento Multiprofissional:**
+
+Profissionais, instituições ou serviços (internos ou externos ao IFPR) que fazem o acompanhamento do estudante.
+
+**4. Flexibilização Curricular, visando a implementação de 1 (uma) ou mais possibilidades:**
+
+| Ações a serem implementadas | Sim ou Não |
+| --- | --- |
+| I - Diferenciação dos conteúdos previstos na ementa do componente curricular e que sejam registrados no PTE | |
+| II - Acompanhamento educacional individualizado realizado pelo professor do componente curricular | |
+| III - Dilação ou redução do prazo para a conclusão do curso | |
+| IV - Reorganização e/ou equivalência de componente curricular | |
+| V - Definição de critérios diferenciados e adequados de avaliação, considerando as singularidades e especificidades dos estudantes. | |
+
+**5. Componentes curriculares a serem flexibilizados**
+
+(Incluir a nomenclatura do componente conforme registro do sistema acadêmico)
+
+1. Matemática (MAT 0089)
+2. inglês (INFO 0030)
+3. …
+
+**6. Informações adicionais**
+
+Assinatura eletrônica dos membros da comissão (Via SEI).
+
+## ANEXO II
+
+(a que se refere ao §4º art. 4º, o IV do art. 7º)
+
+**PLANO DE TRABALHO DO ESTUDANTE**
+
+Adaptação e/ou flexibilização curricular
+
+Período de realização do PTE: ___/____/_____ a ___/____/_____
+
+**1. Dados do estudante**
+
+Nome:
+
+Curso/Turma:
+
+Série/Ano:
+
+Componente curricular
+
+Docente:
+
+Carga horária de acompanhamento individualizado (se necessário):
+
+Dia/Horário/Local:
+
+Descrever a necessidade educacional específica:
+
+**2 - Particularidades do estudante (Registrado pela CNAPNE):**
+
+Atendimentos de setores e/ou profissionais, instituições ou serviços (internos ou externos ao IFPR);
+
+Recursos utilizados pelo estudante (por exemplo, tecnologia assistiva, etc).
+
+**3 - Conteúdos do componente curricular que necessitam de adaptação e/ou flexibilização:**
+
+**4 - Objetivos específicos para o estudante neste período**
+
+**5- Instrumentos avaliativos pretendidos e procedimentos adotados:**
+
+(De acordo com a especificidade do componente. Consultar o Art. 9 da Res. 50/2017)
+
+**6 - Outras considerações relevantes**
+
+Assinatura do docente
+
+## ANEXO III
+
+(a que se refere ao VI do art. 7º)
+
+**RELATÓRIO FINAL DO PFC**
+
+Período de realização: ___/____/_____ a ___/____/_____
+
+**1. Dados do estudante**
+
+Nome:
+
+Curso/Turma:
+
+Semestre/Ano:
+
+**2 - Parecer final da comissão**
+
+Sugerimos que sejam registradas as possibilidades previstas e implementadas, relatando os desafios e avanços no decorrer do processo de ensino-aprendizagem. De igual modo, podem ser consideradas as áreas de conhecimento e/ou aspectos em que o estudante apresentou maior facilidade, como também os recursos didático-pedagógicos, tecnológicos e de acessibilidade que foram favoráveis ao PFC.
+
+Colocar os componentes curriculares que foram previstos no PFC e também o resultado final nestes componentes (aprovado ou reprovado e justificativas de acordo com o relato do docente).
+
+Assinatura da Comissão do Plano de Flexibilização Curricular

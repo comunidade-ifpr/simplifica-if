@@ -133,11 +133,6 @@ export const fichaNorma = definirFerramenta({
       }),
     ];
     partes.push(linhasVigencia.join("\n"));
-    const editorial = (titulo: string, itens: ReadonlyArray<string>) => {
-      if (itens.length) partes.push([`**${titulo}**`, ...itens.map((item) => `- ${item}`)].join("\n"));
-    };
-    editorial("Pontos-chave (indicação da curadoria, não fundamento; cite o dispositivo):", norma.pontos_chave);
-    editorial("Notas da fonte:", norma.notas_da_fonte);
     if (sucessoras.length) partes.push(`**Sucessoras:** ${sucessoras.map((s) => nome(s)).join(", ")}.`);
     if (transicoes.length) {
       partes.push(
@@ -155,6 +150,12 @@ export const fichaNorma = definirFerramenta({
         ].join("\n"),
       );
     }
+    // depois da vigência e das transições, que o corte do teto não pode levar; as relações, por último
+    const editorial = (titulo: string, itens: ReadonlyArray<string>) => {
+      if (itens.length) partes.push([`**${titulo}**`, ...itens.map((item) => `- ${item}`)].join("\n"));
+    };
+    editorial("Pontos-chave (indicação da curadoria, não fundamento; cite o dispositivo):", norma.pontos_chave);
+    editorial("Notas da fonte:", norma.notas_da_fonte);
     const linhaRelacao = (r: Relacao) => {
       const trecho =
         r.evidencia.trecho.length > TRECHO_RELACAO

@@ -189,8 +189,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 258,
-          "linha_fim": 286
+          "linha_inicio": 259,
+          "linha_fim": 287
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-vii",
@@ -202,8 +202,8 @@
           ],
           "texto": "VII – o itinerário formativo profissional a ser percorrido pelos estudantes, com certificações intermediárias, quando oferecidas;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 465,
-          "linha_fim": 465
+          "linha_inicio": 466,
+          "linha_fim": 466
         }
       ],
       "sem_texto": []
@@ -241,7 +241,7 @@
       "path": "base-conhecimento/revisao-ppc/marcos-normativos.json",
       "citacoes_no_ppc": [
         {
-          "ato_id": "br/cne-cp/res/2021/1",
+          "norma_id": "br/cne-cp/res/2021/1",
           "linha": 213,
           "trecho": "Resolução do Conselho Nacional de Educação/CEB nº 1/2021",
           "papel": "fundamento",
@@ -249,7 +249,7 @@
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "ato_id": "br/cne-ceb/res/2012/6",
+          "norma_id": "br/cne-ceb/res/2012/6",
           "linha": 629,
           "trecho": "Resolução CNE/CEB nº 06/2012",
           "papel": "fundamento",
@@ -257,7 +257,7 @@
           "regra": "estrutural"
         },
         {
-          "ato_id": "br/cne-cp/res/2021/1",
+          "norma_id": "br/cne-cp/res/2021/1",
           "linha": 661,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "papel": "fundamento",
@@ -285,8 +285,8 @@
       "fim_em": null,
       "texto": "Art. 70. Os processos de autorização de cursos técnicos e de cursos superiores de tecnologia em tramitação nos órgãos competentes, e que ainda não estejam na fase de avaliação, podem ser adequados a esta Resolução por solicitação da instituição ou do órgão regulador do sistema de ensino, sem prejudicar a continuidade do processo de autorização e credenciamento.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1071,
-      "linha_fim": 1073
+      "linha_inicio": 1072,
+      "linha_fim": 1074
     },
     {
       "id": "dcnept-2026-art71",
@@ -304,8 +304,8 @@
       "fim_em": null,
       "texto": "Art. 71. Para a adequação dos cursos técnicos e cursos superiores de tecnologia autorizados e em oferta é assegurado período de transição de até dois anos, a partir da vigência desta Resolução.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1075,
-      "linha_fim": 1077
+      "linha_inicio": 1076,
+      "linha_fim": 1078
     },
     {
       "id": "dcnept-2026-art71-parunico",
@@ -326,8 +326,8 @@
       ],
       "texto": "Parágrafo único. Aos estudantes matriculados em cursos técnicos e em cursos superiores de tecnologia ofertados até a data de publicação desta Resolução, fica assegurado o direito de conclusão de seus cursos, com base na Resolução CNE/CP nº 1, de 5 de janeiro de 2021.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1079,
-      "linha_fim": 1079
+      "linha_inicio": 1080,
+      "linha_fim": 1080
     },
     {
       "id": "dcnept-2026-art72",
@@ -345,8 +345,8 @@
       "fim_em": null,
       "texto": "Art. 72. Fica definido, como período de transição para a implantação definitiva do disposto no Capítulo XIII, o intervalo compreendido entre a data de publicação desta Resolução e 31 de dezembro de 2030.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1081,
-      "linha_fim": 1083
+      "linha_inicio": 1082,
+      "linha_fim": 1084
     },
     {
       "id": "dcnept-2026-art73",
@@ -364,8 +364,8 @@
       "fim_em": null,
       "texto": "Art. 73. Os órgãos normativos dos sistemas de ensino, no âmbito de suas competências, editarão normas complementares destinadas à implementação das disposições desta Resolução, no prazo de até cento e oitenta dias contados de sua publicação.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1085,
-      "linha_fim": 1087
+      "linha_inicio": 1086,
+      "linha_fim": 1088
     },
     {
       "id": "dcnept-2021-art63",
@@ -584,7 +584,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 57639,
+    "caracteres": 57645,
     "secoes": 6,
     "caracteres_secoes": 20766,
     "caracteres_ppc_inteiro": 254501

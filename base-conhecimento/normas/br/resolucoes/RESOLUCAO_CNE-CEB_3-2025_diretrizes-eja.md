@@ -46,11 +46,11 @@ pontos_chave:
   - "A forma principal é presencial; a EaD é admitida só no Ensino Médio, com pelo menos 50% da carga horária presencial (art. 3º, III; art. 8º)."
   - "Carga horária mínima da EJA: 600 h nos anos iniciais do Ensino Fundamental, 1.600 h nos anos finais e 1.200 h no Ensino Médio, com no mínimo 200 h por área do conhecimento no Ensino Médio (art. 5º, § 3º)."
   - "EJA articulada à Educação Profissional e Tecnológica: 600 h de formação geral mais 160 h de qualificação profissional nos anos iniciais do Ensino Fundamental, e 1.600 h (1.400 h de formação geral e 200 h de formação profissional) nos anos finais; a organização deve observar as DCN da EPT, do Ensino Médio e da EJA e o Decreto nº 5.840/2006 (art. 6º, I e II; art. 6º, parágrafo único)."
-  - "O inciso III do art. 6º, que fixava 2.400 h para a educação profissional técnica de nível médio, foi revogado pela Resolução CNE/CP nº 2/2026 (art. 74, V); essa oferta passou a seguir o art. 30 da mesma resolução: 1.200 h de formação geral básica mais a carga horária da habilitação técnica (800, 1.000 ou 1.200 h), com até 300 h de contabilização simultânea (art. 6º, III)."
+  - "O inciso III, que fixava 2.400 h para a EJA articulada à educação profissional técnica de nível médio, foi revogado pela Resolução CNE/CP nº 2/2026, que passou a reger essa carga horária (art. 6º)."
   - "Formas de articulação com a Educação Profissional: concomitante, concomitante na forma e integrada no conteúdo, e integrada (art. 7º)."
   - "Idade mínima de ingresso: 15 anos completos no Ensino Fundamental e 18 anos completos no Ensino Médio (art. 16)."
   - "Admite a Pedagogia da Alternância, com Tempo Escola e Tempo Comunidade (art. 15)."
-  - "O aproveitamento de saberes adquiridos em práticas sociais e laborais deve ser garantido, e a classificação ou reclassificação do estudante exige deliberação do Conselho de Classe (art. 18, § 2º)."
+  - "O aproveitamento de saberes adquiridos em práticas sociais e laborais deve ser garantido; a escola pode reclassificar o estudante por avaliação, e a avaliação de classificação exige registro formal e deliberação do Conselho de Classe (art. 18, §§ 1º e 2º)."
   - "O período de transição para as novas modalidades de oferta e organização encerrou-se em 31/12/2025 (art. 18-A)."
 notas_da_fonte:
   - "Texto original conferido com o PDF oficial do CNE ([rceb003_25.pdf](https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf)) e com a publicação no DOU de 9/4/2025, Edição 68, Seção 1, p. 16."

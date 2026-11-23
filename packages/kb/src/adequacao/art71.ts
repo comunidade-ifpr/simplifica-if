@@ -100,7 +100,7 @@ export function adequacaoArt71Em(
       return { ...base, ppc: null, indicador: "sem-ppc-convertido" as const, dcn_citadas: [] };
     }
     const dcnCitadas = DCN_EPT.flatMap((dcn) => {
-      const daDcn = citacoes.filter((citacao) => citacao.id !== null && citacao.id === dcn.id);
+      const daDcn = citacoes.filter((citacao) => citacao.id === dcn.id);
       if (daDcn.length === 0) return [];
       return [
         {

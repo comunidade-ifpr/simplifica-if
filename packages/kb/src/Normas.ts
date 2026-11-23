@@ -14,6 +14,7 @@ import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import { UrlOficial } from "./normas/fonte.ts";
+import { listaDeTextos } from "./normas/front-matter.ts";
 import {
   buscarNormaDetalhada,
   carregarFonteCorrespondencia,
@@ -178,16 +179,12 @@ const make = Effect.gen(function* () {
     const { front_matter_json, ...n } = linha;
     const pendenciaBruta = front_matter_json?.["vigencia_a_confirmar"];
     const pendencia = typeof pendenciaBruta === "string" ? pendenciaBruta : null;
-    const lista = (campo: string): ReadonlyArray<string> => {
-      const valor = front_matter_json?.[campo];
-      return Array.isArray(valor) ? valor.filter((item): item is string => typeof item === "string") : [];
-    };
     const resultado: FichaNorma = {
       ...n,
       pendencia_vigencia: pendencia,
       vigencia_a_confirmar: pendencia !== null || n.status_vigencia === "a confirmar",
-      pontos_chave: lista("pontos_chave"),
-      notas_da_fonte: lista("notas_da_fonte"),
+      pontos_chave: listaDeTextos(front_matter_json, "pontos_chave"),
+      notas_da_fonte: listaDeTextos(front_matter_json, "notas_da_fonte"),
     };
     return resultado;
   }, prover);

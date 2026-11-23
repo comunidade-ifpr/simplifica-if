@@ -34,12 +34,9 @@ relaciona_se_a:
 pontos_chave:
   - "A orientação vale para os processos de abertura de curso, de elaboração e ajuste de PPC e de atualização de PPC."
   - "O AEE não deve ser incorporado como componente curricular nos PPCs."
-  - "A organização do AEE será tratada nos modelos atualizados de PPC e PPP disponibilizados pela PROENS."
 notas_da_fonte:
   - "Este arquivo traz só o trecho central da nota técnica, não o texto integral: a publicação oficial está no SEI/IFPR nº 3881287, listada na página \"IN e Notas Técnicas – Proens\" (https://ifpr.edu.br/institucional/pro-reitorias/proens/documentos-proens/iips/), mas o link do SEI público exige captcha e o texto integral não pôde ser obtido em 23/11/2026."
 ---
-
-Trecho central da nota técnica:
 
 > Os processos de abertura de curso, elaboração e ajuste de PPC;
 >

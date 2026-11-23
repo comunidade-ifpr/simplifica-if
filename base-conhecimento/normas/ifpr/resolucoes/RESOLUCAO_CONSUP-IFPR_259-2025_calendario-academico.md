@@ -43,8 +43,6 @@ pontos_chave:
 notas_da_fonte:
   - "Publicada no Boletim de Serviço Eletrônico em 15 de dezembro de 2025, documento SEI nº 3972484, processo 23411.017877/2025-60."
   - "Alterada pela Resolução CONSUP/IFPR nº 263, de 10 de dezembro de 2025 (datas de junho, prazo de envio do calendário à Proens e § 2º do art. 12). O texto é a versão consolidada publicada no SEI, que preserva as redações original e alterada dos dispositivos modificados."
-  - "Orientação da Proens, registrada a partir da prática de análise de calendários e que não consta do texto da resolução: o campus pode usar um feriado nacional como dia letivo (desfile cívico, evento cultural, outra atividade pedagógica), desde que o calendário venha acompanhado de despacho com a justificativa, de manifestação expressa da Direção Geral de que não haverá expediente nem convocação dos servidores nessa data e de registro em processo; a participação dos servidores é exclusivamente voluntária."
-  - "Orientação da Proens, fora do texto da resolução: dias de conselho de classe, reuniões pedagógicas, reuniões com famílias, formação e planejamento sem atividade com estudantes não atendem ao conceito de dia letivo do art. 4º, § 2º."
 ---
 
 > Estabelece o Calendário Acadêmico e Administrativo de referência dos cursos técnicos de nível médio e graduação, do IFPR, para o ano de 2026.

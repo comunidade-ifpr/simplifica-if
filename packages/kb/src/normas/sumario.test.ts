@@ -165,4 +165,29 @@ describe("sumarioDaNorma", () => {
       "x.md:3: o nome da divisão deve ser de nível 4 (####), um abaixo do rótulo",
     ]);
   });
+
+  test("o parser acusa a seção editorial: acima do capítulo, só divisão e anexo", () => {
+    const { problemas } = sumario([
+      "## TÍTULO I",
+      "",
+      "### DAS DISPOSIÇÕES",
+      "",
+      "#### Art. 1º",
+      "",
+      "Texto.",
+      "",
+      "## Contexto",
+      "",
+      "Comentário da curadoria, com o art. 5º da Lei nº 9.394/1996.",
+      "",
+      "## ANEXO I",
+      "",
+      "## REGULAMENTO DO CENTRO",
+      "",
+      "Texto.",
+    ]);
+    expect(problemas).toEqual([
+      'x.md:9: cabeçalho de nível 2 que não é divisão nem anexo ("Contexto"); o corpo é só o texto da norma',
+    ]);
+  });
 });

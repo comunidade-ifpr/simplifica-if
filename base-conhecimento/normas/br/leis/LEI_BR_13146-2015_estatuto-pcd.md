@@ -30,6 +30,10 @@ notas_da_fonte:
   - "Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: incluídos os dispositivos das Leis nº 14.724/2023 (art. 2º, § 3º), 14.624/2023 (art. 2º-A), 15.249/2025 (art. 3º, XV; art. 24, parágrafo único; art. 28, XIX; art. 42, § 3º; art. 62-A), 14.510/2022 (art. 19, V), 14.978/2024 (art. 45, § 3º), 14.863/2024 (art. 73-A) e 15.163/2025 (art. 90), as redações das Leis nº 15.280/2025 (art. 18, § 4º, V) e 14.159/2021 (art. 125, II)."
 ---
 
+**Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência (Estatuto da Pessoa com Deficiência).**
+
+A PRESIDENTA DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
+
 ## LIVRO I
 
 ### PARTE GERAL
@@ -569,7 +573,7 @@ Em todas as áreas de estacionamento aberto ao público, de uso público ou priv
 
 **§ 2º** Os veículos estacionados nas vagas reservadas devem exibir, em local de ampla visibilidade, a credencial de beneficiário, a ser confeccionada e fornecida pelos órgãos de trânsito, que disciplinarão suas características e condições de uso.
 
-**§ 3º** A utilização indevida das vagas de que trata este artigo sujeita os infratores às sanções previstas no inciso XX do art. 181 da Lei nº 9.503, de 23 de setembro de 1997 (Código de Trânsito Brasileiro). (Parágrafo com redação dada pela Lei nº 13.281, de 4/5/2016, publicada no DOU de 5/5/2016, em vigor 180 dias após a publicação)
+**§ 3º** A utilização indevida das vagas de que trata este artigo sujeita os infratores às sanções previstas no inciso XX do art. 181 da Lei nº 9.503, de 23 de setembro de 1997 (Código de Trânsito Brasileiro). (Redação dada pela Lei nº 13.281, de 2016) (Vigência)
 
 **§ 4º** A credencial a que se refere o § 2º deste artigo é vinculada à pessoa com deficiência que possui comprometimento de mobilidade e é válida em todo o território nacional.
 

@@ -187,7 +187,7 @@ const linhasCitacoes = Sql.todas(
   Schema.Struct({
     linha: Schema.Number,
     trecho: Texto,
-    ato_id: Schema.NullOr(Texto),
+    norma_id: Schema.NullOr(Texto),
     regra: Texto,
     secao_tipo: Schema.NullOr(Texto),
     papel: Texto,
@@ -207,7 +207,7 @@ const secoesDe = (ppcId: string) =>
   );
 const citacoesDe = (ppcId: string) =>
   linhasCitacoes(
-    "SELECT linha, trecho, ato_id, regra, secao_tipo, papel FROM citacoes WHERE ppc_id = ? ORDER BY ordem",
+    "SELECT linha, trecho, norma_id, regra, secao_tipo, papel FROM citacoes WHERE ppc_id = ? ORDER BY ordem",
     [ppcId],
   );
 

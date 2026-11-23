@@ -428,6 +428,16 @@ describe("ficha_norma", () => {
       expect(vigente.resposta.dados.vigencia).toMatchObject({ status: "vigente", certo: true, pendencias: [] });
       expect(vigente.resposta.avisos).toEqual([]);
       expect(vigente.resposta.dados.relacoes.saida.map((r) => r.alvo)).toEqual([DCN_2021]);
+      // os metadados editoriais: depois da vigência e antes das relações, com o aviso de que não são fundamento
+      expect(vigente.resposta.dados.norma.pontos_chave).toEqual([
+        "O PPC descreve o acompanhamento de egressos (art. 28, XVIII).",
+      ]);
+      expect(vigente.texto).toContain(
+        "**Pontos-chave (indicação da curadoria, não fundamento; cite o dispositivo):**\n- O PPC descreve o acompanhamento de egressos (art. 28, XVIII).",
+      );
+      expect(vigente.texto).toContain("**Notas da fonte:**\n- Texto convertido do PDF assinado.");
+      expect(vigente.texto.indexOf("**Vigência em")).toBeLessThan(vigente.texto.indexOf("**Pontos-chave"));
+      expect(vigente.texto.indexOf("**Notas da fonte:**")).toBeLessThan(vigente.texto.indexOf("**Relações"));
       const stub = yield* chamar(fichaNorma, { id: STUB }, ctx, TETO_FICHA_NORMA);
       expect(stub.resposta.dados.norma.situacao).toBe("stub");
       expect(tipos(stub.resposta.avisos)).toContain(`stub-sem-texto ${STUB}`);

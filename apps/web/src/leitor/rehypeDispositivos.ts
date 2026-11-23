@@ -132,7 +132,7 @@ export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
       }
     }
     const filhos = no.children ?? [];
-    // a redação não vigente e o que está fora do ato (`remarkLeitor.ts`) nunca se destacam como citados
+    // a redação não vigente (`remarkLeitor.ts`) nunca se destaca como citada
     if (no.type === "element" && temClasse(no, "regiao-marcada")) {
       for (const filho of filhos) visitar(filho, true);
       return;

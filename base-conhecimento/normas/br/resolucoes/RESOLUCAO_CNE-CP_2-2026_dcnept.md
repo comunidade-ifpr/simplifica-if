@@ -73,7 +73,8 @@ pontos_chave:
   - "Nas formas integrada e concomitante intercomplementar, mínimo de 3.000 h, admitida a contabilização simultânea de até 300 h entre a formação geral básica e a formação técnica, desde que haja integração curricular efetiva, vedada a simples justaposição ou duplicidade formal de componentes (art. 29, §§ 2º e 3º)."
   - "Certificações intermediárias: a qualificação profissional técnica exige no mínimo 20% da carga horária prevista no CNCT para o curso (art. 17, § 2º)."
   - "Especialização técnica (pós-técnico): exige 25% da carga horária mínima da habilitação (art. 29, § 5º)."
-  - "EJA articulada à EPT no ensino médio: formação geral básica de no mínimo 1.200 h mais a carga horária da habilitação técnica (800, 1.000 ou 1.200 h), com até 300 h de contabilização simultânea; este artigo substitui o inciso III do art. 6º da Resolução CNE/CEB nº 3/2025, que fixava 2.400 h (art. 30)."
+  - "EJA articulada à EPT no ensino médio: formação geral básica de no mínimo 1.200 h mais a carga horária da habilitação técnica (800, 1.000 ou 1.200 h), com até 300 h de contabilização simultânea (art. 30)."
+  - "Fica revogado o inciso III do art. 6º da Resolução CNE/CEB nº 3/2025, que fixava 2.400 h para a EJA articulada à educação profissional técnica de nível médio (art. 74, V)."
   - "PPC de curso técnico: o art. 28 lista 18 elementos mínimos, entre eles o formato da oferta, o itinerário formativo, os critérios de aproveitamento, a recomposição das aprendizagens, a estratégia de integração com o mundo do trabalho e a metodologia e o cronograma de acompanhamento de egressos (art. 28)."
   - "Acompanhamento de egressos: dura no mínimo dois anos após a conclusão, com proteção de dados nos termos da LGPD (art. 26, X; art. 28, § 4º)."
   - "Curso presencial concomitante ou subsequente: até 30% da carga horária mínima pode ser cumprida em atividades síncronas, síncronas mediadas ou assíncronas, com mediação de professor (art. 28, § 2º); pelo menos 70% da carga horária total deve ser presencial (art. 50)."
@@ -89,10 +90,10 @@ pontos_chave:
   - "Certificação específica para estudantes público da educação especial (art. 44, §§ 5º e 6º; art. 45, § 8º)."
   - "Diploma técnico com código autenticador do Sistec, nos termos da Resolução CNE/CP nº 2/2025 (art. 45, §§ 2º e 3º)."
   - "Cursos experimentais devem ser submetidos a reconhecimento em até um ano após a conclusão da primeira turma (art. 47)."
-  - "Formação docente para a EPTNM (arts. 55 a 63)."
+  - "Formação inicial e continuada de docentes para a EPT (arts. 55 a 63)."
 notas_da_fonte:
   - "Texto convertido do PDF da resolução assinado pelo Presidente do CNE, Cesar Callegari (35 páginas), e conferido palavra a palavra com o texto extraído do PDF."
-  - "`data_publicacao` registra provisoriamente a data do ato (11/11/2026). A resolução entra em vigor na publicação no DOU (art. 75), e os prazos dos arts. 71 a 73 contam a partir dessa data. A data, a página do DOU e a URL oficial ainda precisam ser confirmadas e registradas no campo `fonte`."
+  - "A data de publicação registrada é, provisoriamente, a do ato (11/11/2026). A resolução entra em vigor na publicação no DOU (art. 75), e os prazos dos arts. 71 a 73 contam a partir dessa data. A data, a página do DOU e o endereço oficial do texto ainda precisam ser confirmados."
 ---
 
 > Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.

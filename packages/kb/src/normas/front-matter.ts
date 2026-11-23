@@ -90,9 +90,11 @@ const listaTexto = Schema.Array(Schema.String);
 /** Lista de itens de texto: pelo menos um, nenhum vazio. */
 const listaItens = Schema.Array(texto).check(Schema.isMinLength(1));
 
-/** Os metadados editoriais do front matter, na ordem em que o leitor e a ficha os mostram. */
-export const CAMPOS_EDITORIAIS = ["pontos_chave", "notas_da_fonte"] as const;
-export type CampoEditorial = (typeof CAMPOS_EDITORIAIS)[number];
+/** Uma lista de textos do front matter lido (`pontos_chave`, `notas_da_fonte`); vazia se o campo não é lista. */
+export function listaDeTextos(meta: Readonly<Record<string, unknown>> | null, campo: string): string[] {
+  const valor = meta?.[campo];
+  return Array.isArray(valor) ? valor.filter((item): item is string => typeof item === "string") : [];
+}
 const RE_DATA_ISO = /^\d{4}-\d{2}-\d{2}$/;
 /** Data ISO ou "a confirmar" (dado que a base ainda não prova; nunca inventar). */
 const dataOuAConfirmar = Schema.Union([

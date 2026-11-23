@@ -108,7 +108,7 @@ interface NormasDoMarco {
 }
 
 const LinhaCitacao = Schema.Struct({
-  ato_id: Schema.String,
+  norma_id: Schema.String,
   linha: Schema.Int,
   trecho: Schema.String,
   papel: Schema.String,
@@ -373,7 +373,7 @@ export const normasDoPacote = Effect.fn("pacoteContexto.normasDoPacote")(functio
 /** Citações normativas resolvidas de um PPC (`citacoes`), na ordem do texto. */
 export const citacoesDoPpc = Effect.fn("pacoteContexto.citacoesDoPpc")(function* (ppcId: string) {
   return yield* linhasCitacoes(
-    "SELECT ato_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL ORDER BY ordem",
+    "SELECT norma_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND norma_id IS NOT NULL ORDER BY ordem",
     [ppcId],
   );
 });
@@ -383,7 +383,7 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
 ) {
-  const atosCitadosPpc = new Set(citacoesPpc.map((c) => c.ato_id));
+  const atosCitadosPpc = new Set(citacoesPpc.map((c) => c.norma_id));
   const atosFichas = new Set(refs.map((r) => r.ref));
   const marcos: MarcoDoPacote[] = [];
   for (const m of yield* linhasMarcos(
@@ -407,7 +407,7 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
       transicao: m.transicao,
       orientacao_analise: m.orientacao_analise,
       path: m.path,
-      citacoes_no_ppc: citacoesPpc.filter((c) => envolvidas.has(c.ato_id) && c.papel === "fundamento"),
+      citacoes_no_ppc: citacoesPpc.filter((c) => envolvidas.has(c.norma_id) && c.papel === "fundamento"),
     });
   }
   return marcos;
@@ -425,7 +425,7 @@ export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")
   const { dataReferencia: data } = yield* FontesNormativas.FontesNormativas;
   const atosFichas = new Set(refs.map((r) => r.ref));
   const atosTransicao = [
-    ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.ato_id)]),
+    ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.norma_id)]),
   ].sort(compararTexto);
   const transicoes: TransicaoDoPacote[] = [];
   for (const t of yield* transicoesDosAtos(atosTransicao, data)) {

@@ -73,6 +73,14 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   // o texto não traz os links crus
   expect(painel.element().textContent).not.toMatch(/ifpr:\/\//);
 
+  // os metadados da curadoria ficam fora do texto, recolhidos e com o aviso de que não são o texto oficial
+  const pontos = norma.getByText("Pontos-chave (1)");
+  await expect.element(pontos).toBeInTheDocument();
+  await pontos.click();
+  await expect.element(norma.getByText("O PPC descreve o acompanhamento de egressos (art. 28, XVIII).")).toBeVisible();
+  await expect.element(norma.getByText(/Não faz parte do texto oficial/)).toBeVisible();
+  await expect.element(norma.getByText("Notas da fonte (1)")).toBeVisible();
+
   // "Copiar citação": o texto do inciso com o caput e a referência formal.
   const escrever = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
   await norma.getByRole("button", { name: "Copiar citação" }).click();

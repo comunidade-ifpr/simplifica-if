@@ -473,7 +473,8 @@ relacoes:
     origem: ifpr/consup/res/2014/14
     alvo: ifpr/consup/res/2011/55
     alcance: retificação do art. 113 (§§ 1º a 18 acrescidos)
-    evidencia: { em: "ifpr/consup/res/2011/55", trecho: "Retificada pela Resolução nº 14/2014" }
+    alvo_dispositivo: "#art113"
+    evidencia: { em: "ifpr/consup/res/2011/55#art113-par1", trecho: "(Parágrafo acrescido pela Resolução nº 14/2014)" }
     confirmado_em: "2026-11-23"
     proposta: front-matter
   - tipo: altera

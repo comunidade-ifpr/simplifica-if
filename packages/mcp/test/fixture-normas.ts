@@ -88,7 +88,14 @@ const NORMAS: Norma[] = [
     fonte_url: "https://www.in.gov.br/dcnept-2026",
     path: MD_2026,
     aliases: ["Resolução CNE/CP nº 2/2026", "DCNEPT 2026"],
-    front_matter: { id: DCN_2026, assinada_em: "2026-11-11", publicada_em: "2026-11-12", vigente_de: "2026-11-12" },
+    front_matter: {
+      id: DCN_2026,
+      assinada_em: "2026-11-11",
+      publicada_em: "2026-11-12",
+      vigente_de: "2026-11-12",
+      pontos_chave: ["O PPC descreve o acompanhamento de egressos (art. 28, XVIII)."],
+      notas_da_fonte: ["Texto convertido do PDF assinado."],
+    },
     linha: 1,
   },
   {

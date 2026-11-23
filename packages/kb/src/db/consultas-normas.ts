@@ -262,11 +262,7 @@ export const carregarFonteCorrespondencia: Effect.Effect<
       "SELECT dispositivo, pai, texto FROM dispositivos WHERE norma_id = ? ORDER BY rowid",
       [ato],
     );
-    // o primeiro por rowid, como o `.get()` da consulta por dispositivo
-    for (const l of linhas) {
-      const id = `${ato}${l.dispositivo}`;
-      if (!dispositivos.has(id)) dispositivos.set(id, { pai: l.pai, texto: l.texto });
-    }
+    for (const l of linhas) dispositivos.set(`${ato}${l.dispositivo}`, { pai: l.pai, texto: l.texto });
   }
 
   const artigos = new Map<string, string[]>();

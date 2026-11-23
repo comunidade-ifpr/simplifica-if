@@ -469,6 +469,7 @@
         "tipo": "altera",
         "origem": "ifpr/consup/res/2014/14",
         "alvo": "ifpr/consup/res/2011/55",
+        "alvo_dispositivo": "#art113",
         "alcance": "retificação do art. 113 (§§ 1º a 18 acrescidos)",
         "efeito_de": "vigencia-da-origem"
       },

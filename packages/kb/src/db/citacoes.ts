@@ -44,7 +44,7 @@ export const ppcsQueCitam = Effect.fn("citacoes.ppcsQueCitam")(function* (
     `SELECT p.chave, p.campus_nome, p.curso_nome, p.nivel, p.tipo_oferta, p.path,
             c.linha, c.trecho, c.regra, c.confianca, c.dispositivos_json
      FROM citacoes c JOIN ppcs p ON p.id = c.ppc_id
-     WHERE c.ato_id = ? ORDER BY p.chave, c.ordem`,
+     WHERE c.norma_id = ? ORDER BY p.chave, c.ordem`,
     [ato(id)],
   );
   const porPpc = new Map<string, PpcCitante>();
@@ -92,7 +92,7 @@ export const normasCitadasDoPpc = Effect.fn("citacoes.normasCitadasDoPpc")(funct
   const id = idPpc(ppc);
   if (!(yield* existePpc("SELECT id FROM ppcs WHERE id = ?", [id]))) return null;
   const citacoes = yield* linhasCitacoesDoPpc(
-    "SELECT ato_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem",
+    "SELECT norma_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem",
     [id],
   );
   const normas: NormaCitadaNoPpc[] = normasCitadasNoPpc(citacoes);

@@ -311,7 +311,6 @@ CREATE TABLE citacoes (
   linha INTEGER NOT NULL,
   trecho TEXT NOT NULL,
   norma_id TEXT,
-  ato_id TEXT,
   dispositivos_json TEXT NOT NULL,
   regra TEXT NOT NULL,
   confianca REAL NOT NULL,
@@ -323,7 +322,7 @@ CREATE TABLE citacoes (
   path TEXT NOT NULL,
   PRIMARY KEY (ppc_id, ordem)
 ) WITHOUT ROWID;
-CREATE INDEX citacoes_ato ON citacoes(ato_id);
+CREATE INDEX citacoes_norma ON citacoes(norma_id);
 
 -- Fatos de PPC: extraídos do texto (status 'extraido') ou vindos de institucional/ifpr.
 CREATE TABLE ppc_fatos (
@@ -457,7 +456,7 @@ CREATE TABLE dispositivos (
 );
 CREATE INDEX dispositivos_norma ON dispositivos(norma_id, ordem);
 
--- Só os dispositivos canônicos. texto: texto_com_caput em tokens; radicais: radicais Snowball dele.
+-- texto: texto_com_caput em tokens; radicais: radicais Snowball dele.
 CREATE VIRTUAL TABLE dispositivos_fts USING fts5(
   texto, radicais, content='', columnsize=1, ${TOKENIZADOR}
 );
@@ -528,7 +527,6 @@ CREATE TABLE normas_citacoes (
   path TEXT NOT NULL,
   linha_inicio INTEGER NOT NULL
 );
-CREATE INDEX normas_citacoes_citado ON normas_citacoes(citado_id);
 CREATE INDEX transicoes_anterior ON transicoes(norma_anterior);
 
 CREATE TABLE correspondencias_tabelas (

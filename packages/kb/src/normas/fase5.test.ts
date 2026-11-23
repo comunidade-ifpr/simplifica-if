@@ -16,7 +16,7 @@ import * as Path from "effect/Path";
 import * as Impacto from "../Impacto.ts";
 import * as Layers from "../layers.ts";
 import { validarCorrespondencias } from "./correspondencia.ts";
-import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
+import { dispositivosDaNorma, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { raizRepositorio } from "../caminhos.ts";
@@ -183,7 +183,7 @@ describe("front matter gerado", () => {
 describe("correspondência 1/2021 → 2/2026", () => {
   test("válida e cobre todos os artigos da 1/2021", () => {
     expect(validarCorrespondencias(raiz)).toEqual([]);
-    const artigos = dispositivosDoAto(DCN_2021, raiz).filter((d) => d.tipo === "artigo");
+    const artigos = dispositivosDaNorma(DCN_2021, raiz).filter((d) => d.tipo === "artigo");
     expect(artigos.length).toBe(65);
   });
 });

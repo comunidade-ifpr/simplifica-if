@@ -277,7 +277,6 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
       linha,
       trecho,
       norma_id: ato,
-      ato_id: ato,
       dispositivos_json: JSON.stringify(dispositivos),
       regra,
       confianca,

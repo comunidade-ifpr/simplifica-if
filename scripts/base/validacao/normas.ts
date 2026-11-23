@@ -184,7 +184,7 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
   const ausentes = ordenarTextos(CAMPOS_OBRIGATORIOS.filter((campo) => !(campo in meta)));
   if (ausentes.length) erros.push(`${r}: campos obrigatórios ausentes: ${ausentes.join(", ")}`);
   // o corpo é só o texto da norma: resumo, notas e orientações são campos do front matter
-  for (const titulo of corpo.matchAll(/^#{1,2} +(Resumo|Notas?|Observaç(?:ão|ões)|Referências|Texto\b[^\n]*)\s*$/gim)) {
+  for (const titulo of corpo.matchAll(/^#{1,3} +(Resumo|Notas?|Observaç(?:ão|ões)|Referências|Texto\b[^\n]*)\s*$/gim)) {
     erros.push(
       `${r}: o corpo traz a seção "${titulo[1]}"; ele é só o texto da norma (use pontos_chave ou notas_da_fonte no front matter; orientação para PPC vai na ficha da revisão)`,
     );

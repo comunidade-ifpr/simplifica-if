@@ -119,7 +119,7 @@ const carregarFonteAdequacao = Effect.fn("Cursos.carregarFonteAdequacao")(functi
   for (const p of yield* linhasPpcs("SELECT path FROM ppcs")) porPpc.set(p.path, []);
   for (const c of yield* linhasCitacoes(
     `SELECT p.path, c.norma_id AS id, c.linha, c.regra FROM citacoes c JOIN ppcs p ON p.id = c.ppc_id
-     WHERE c.ato_id IN (${DCN_EPT.map(() => "?").join(", ")}) ORDER BY c.ppc_id, c.ordem`,
+     WHERE c.norma_id IN (${DCN_EPT.map(() => "?").join(", ")}) ORDER BY c.ppc_id, c.ordem`,
     DCN_EPT.map((dcn) => dcn.id),
   )) {
     porPpc.get(c.path)?.push({ id: c.id, linha: c.linha, regra: c.regra });

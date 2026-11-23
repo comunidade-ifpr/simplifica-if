@@ -42,6 +42,10 @@ const TEXTO_SUBSTITUIDO = new Map<string, string>([
     "texto conferido com a fonte oficial e corrigido em 23/11/2026 (paráfrase, redação desatualizada ou trecho que faltava)",
   ]),
   [
+    "normas/ifpr/notas-tecnicas/NOTA-TECNICA_PROENS-IFPR_1-2025_aee-nao-componente-curricular.md",
+    'saiu do corpo o rótulo editorial "Trecho central da nota técnica:"',
+  ],
+  [
     "normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
     'art. 1º, parágrafo único: o "1996." que a conversão deixou numa linha só dele (e o Markdown lia como lista vazia) voltou ao fim da frase',
   ],

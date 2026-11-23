@@ -44,7 +44,7 @@ pontos_chave:
   - "O Colegiado de Curso é composto pelos docentes do curso, por um representante técnico-administrativo, quando houver, e por dois representantes discentes, e é coordenado por um docente (art. 25)."
   - "O Colegiado de Curso reúne-se ordinariamente no mínimo a cada bimestre, e suas deliberações são lavradas em ata (art. 26)."
   - "Compete ao Colegiado de Curso, entre outras coisas, propor a revisão do Plano de Curso e manifestar-se sobre as formas de admissão e o número de vagas iniciais (art. 27, incisos II e III)."
-  - "A Unidade Executiva do campus compõe-se da Direção-Geral e das Diretorias de Planejamento e Administração e de Ensino, Pesquisa e Extensão (arts. 28 a 30)."
+  - "A Unidade Executiva do campus compõe-se da Direção-Geral, da Diretoria de Câmpus Avançado (quando for o caso), da Diretoria de Planejamento e Administração e da Diretoria de Ensino, Pesquisa e Extensão (art. 28)."
   - "Ingresso, matrícula, avaliação, controle de frequência, promoção e retenção são tratados em resolução específica (art. 43)."
 notas_da_fonte:
   - "Texto integral conferido em 23/11/2026 com a página oficial do IFPR (https://ifpr.edu.br/resolucao-082014/, atualizada em 7/7/2026), que traz a Resolução nº 08/2014 com o Regimento em anexo e as alterações das Resoluções CONSUP/IFPR nº 222/2024 e nº 242/2025 sinalizadas."

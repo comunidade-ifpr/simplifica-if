@@ -136,7 +136,7 @@ const paginas = <T>(f: FerramentaTestada, args: Record<string, unknown>, lista: 
     return itens;
   });
 
-const ato = (id: string) => id.split("#")[0]!.replace(/~[a-z]+$/, "");
+const ato = (id: string) => id.split("#")[0]!;
 
 /* ================================================================== casos */
 
@@ -619,7 +619,7 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
             const total = d.normas_citadas.reduce((s, n) => s + n.ocorrencias, 0);
             const db = new NodeSqlite.DatabaseSync(BANCO_REAL, { readOnly: true });
             const resolvidas = db
-              .prepare("SELECT count(*) AS n FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL")
+              .prepare("SELECT count(*) AS n FROM citacoes WHERE ppc_id = ? AND norma_id IS NOT NULL")
               .get(`ppc:${PPC}`) as { n: number };
             db.close();
             expect(total).toBe(resolvidas.n);

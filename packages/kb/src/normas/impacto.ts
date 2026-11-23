@@ -169,8 +169,7 @@ export function impactoEm(
 ): ResultadoImpacto {
   const id = fonte.id;
   const registro = fonte.vigencia.registro;
-  const [norma, sufixo] = id.split("#") as [string, string | undefined];
-  const ato = norma;
+  const [ato, sufixo] = id.split("#") as [string, string | undefined];
   const data = opcoes.data ?? fonte.dataReferencia;
   const vigencia = statusEm(ato, data, fonte.vigencia);
   const relacoes = fonte.vigencia.relacoes.filter((r) => r.origem === ato || r.alvo === ato);

@@ -28,12 +28,20 @@ vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 55/20
 revogada_por:
   - "Resolução CONSUP/IFPR nº 2/2017 — art. 104"
 alterada_por:
-  - "Resolução CONSUP/IFPR nº 14/2014 — retificação do art. 113 (§§ 1º a 18 acrescidos)"
+  - "Resolução CONSUP/IFPR nº 14/2014 — art. 113"
   - "Resolução CONSUP/IFPR nº 2/2017 — art. 102, parágrafo único"
 notas_da_fonte:
-  - "Retificada pela Resolução nº 14/2014."
+  - "A página oficial traz, abaixo do título, as anotações \"Retificada pela Resolução nº 14/2014.\" e \"Retificada pela Resolução nº 02/2017.\"; as retificações estão anotadas nos dispositivos."
   - "Texto conferido e corrigido pela fonte oficial em 23/11/2026: o art. 113 estava com parágrafos de versão anterior e o texto terminava no § 9º do art. 113, sem os arts. 114 a 123."
 ---
+
+> Dispõe sobre a Organização Didático-Pedagógica da Educação Superior no âmbito do Instituto Federal do Paraná – IFPR.
+
+O CONSELHO SUPERIOR DO INSTITUTO FEDERAL DO PARANÁ, no uso de suas atribuições legais e estatutárias, e, tendo vista o contido no parecer exarado pelo Conselheiro Luiz Eckstein no processo n.º 23411.004119/2011-86:
+
+RESOLVE:
+
+Normatizar a Organização Didático-Pedagógica da Educação Superior no âmbito do Instituto Federal do Paraná (IFPR), constituída nos seguintes termos:
 
 ## TÍTULO I – DA ORGANIZAÇÃO DIDÁTICA
 

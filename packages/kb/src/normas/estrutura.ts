@@ -29,7 +29,7 @@
  *
  * Reconstituição: `segmentos` cobre o corpo inteiro (preâmbulo, estrutura, dispositivos, fecho e
  * redação não vigente) na ordem do arquivo; as palavras dos segmentos concatenados são as
- * palavras do arquivo (`palavrasMarkdown`). O teste `estrutura.test.ts` confere isso nas 36 normas.
+ * palavras do arquivo (`palavrasMarkdown`). O teste `estrutura.test.ts` confere isso em todas as normas.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -498,6 +498,11 @@ class Parser {
       this.problemas.push(
         `${this.rotulo}:${inicio}: o nome da divisão deve ser de nível ${nivelDaRubrica} (${"#".repeat(nivelDaRubrica)}), um abaixo do rótulo`,
       );
+    } else if (nivel <= 2 && !RE_ANEXO_IMPLICITO.test(texto)) {
+      // o corpo é só a norma: acima do capítulo, só divisão e anexo (um "## Contexto" seria lido como texto do ato)
+      this.problemas.push(
+        `${this.rotulo}:${inicio}: cabeçalho de nível ${nivel} que não é divisão nem anexo ("${texto}"); o corpo é só o texto da norma`,
+      );
     }
     while (this.niveis.length && this.niveis.at(-1)! >= nivel) {
       this.niveis.pop();
@@ -745,7 +750,7 @@ export function indiceDispositivos(raiz: string): Map<string, Dispositivo> {
 }
 
 /** Dispositivos de uma norma, em ordem. */
-export function dispositivosDoAto(norma: string, raiz: string): Dispositivo[] {
+export function dispositivosDaNorma(norma: string, raiz: string): Dispositivo[] {
   return carregarEstruturas(raiz).find((estrutura) => estrutura.id === norma)?.dispositivos ?? [];
 }
 
