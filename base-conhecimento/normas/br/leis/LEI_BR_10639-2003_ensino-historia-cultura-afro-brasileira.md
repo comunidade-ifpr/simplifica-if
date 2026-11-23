@@ -29,13 +29,8 @@ altera:
   - "Lei nº 9.394/1996 (acrescenta os arts. 26-A, 79-A e 79-B)"
 relaciona_se_a:
   - "Lei nº 11.645/2008"
----
-
-## Resumo
-
-- Altera a Lei nº 9.394, de 20 de dezembro de 1996, que estabelece as diretrizes e bases da educação nacional, para incluir no currículo oficial da Rede de Ensino a obrigatoriedade da temática 'História e Cultura Afro-Brasileira', e dá outras providências
-- Relação normativa: Lei nº 11.645/2008
-
+notas_da_fonte:
+  - "Razões do veto ao § 3º do art. 26-A e ao art. 79-A (Mensagem nº 9, de 9 de janeiro de 2003): foram vetados por razões de técnica legislativa, pois rompem com a unidade do conteúdo da Lei nº 9.394/1996 e não atendem ao interesse público; tratam de aspectos específicos de implementação, que devem ser regulamentados posteriormente."
 ---
 
 **Altera a Lei nº 9.394, de 20 de dezembro de 1996, que estabelece as diretrizes e bases da educação nacional, para incluir no currículo oficial da Rede de Ensino a obrigatoriedade da temática "História e Cultura Afro-Brasileira", e dá outras providências.**
@@ -76,24 +71,3 @@ Cristovam Ricardo Cavalcanti Buarque
 **Publicado no Diário Oficial da União de 10 de janeiro de 2003.**
 
 ---
-
-## Notas
-
-### Razões do Veto ao § 3º do Art. 26-A e ao Art. 79-A
-
-**Mensagem nº 9, de 9 de janeiro de 2003**
-
-O § 3º do art. 26-A e o art. 79-A foram vetados por razões de técnica legislativa, pois rompem com a unidade do conteúdo da Lei nº 9.394/1996 (Lei de Diretrizes e Bases da Educação Nacional) e não atendem ao interesse público. As disposições vetadas tratam de aspectos específicos de implementação que devem ser regulamentados posteriormente, sem comprometer o objetivo principal da lei que é incluir a obrigatoriedade do ensino de História e Cultura Afro-Brasileira no currículo escolar.
-
-### Impacto da Lei
-
-Esta lei representa um marco histórico na luta pela valorização da cultura afro-brasileira e pelo combate ao racismo na educação. Ela:
-
-- Reconhece a importância da contribuição dos negros na formação da sociedade brasileira
-- Promove a educação das relações étnico-raciais
-- Institui o dia 20 de novembro como Dia Nacional da Consciência Negra (data da morte de Zumbi dos Palmares)
-- Foi posteriormente complementada pela Lei nº 11.645/2008, que incluiu também a obrigatoriedade do ensino de História e Cultura Indígena
-
-### Alterações Posteriores
-
-Esta lei foi alterada pela **Lei nº 11.645, de 10 de março de 2008**, que ampliou a obrigatoriedade para incluir também o ensino de História e Cultura Indígena no currículo escolar.

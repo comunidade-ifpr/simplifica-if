@@ -27,14 +27,6 @@ revoga:
   - "Portaria PROENS/IFPR nº 26/2021"
 ---
 
-## Resumo
-
-- Estabelece diretrizes e procedimentos para abertura, suspensão, reversão de suspensão e extinção de cursos no IFPR.
-- Disciplina atualizações e ajustes de projetos pedagógicos de cursos técnicos e de graduação nas modalidades presencial e a distância.
-- Define fluxos processuais, documentação exigida e instâncias responsáveis em cada etapa.
-
-## Texto da portaria
-
 **Boletim de Serviço Eletrônico em 13/06/2024**
 
 > Estabelece diretrizes e procedimentos de abertura, suspensão, reversão de suspensão e extinção de cursos e de atualizações e ajustes de projetos pedagógicos de cursos técnicos e de graduação nas modalidades presencial e a distância no âmbito do Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR).

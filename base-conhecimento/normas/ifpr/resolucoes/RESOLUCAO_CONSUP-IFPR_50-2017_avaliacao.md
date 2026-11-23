@@ -25,14 +25,9 @@ aliases:
   - "Resolução CONSUP/IFPR 50/2017"
 fonte_url: "https://ifpr.edu.br/resolucao-no-50-de-14-de-julho-de-2017/"
 vigencia_calculada_em: "2026-11-13"
+notas_da_fonte:
+  - "O arquivo trazia, ao fim, um segundo artigo (\"Art. 2º\", sobre a entrada em vigor) que não consta do texto publicado em ifpr.edu.br, conferido em 13/11/2026; ele foi retirado do texto da norma."
 ---
-
-## Resumo
-
-- Estabelece as normas de avaliação dos processos de ensino-aprendizagem no âmbito do IFPR
-- Documento normativo: RESOLUÇÃO Nº 50 DE 14 DE JULHO DE 2017
-
-## Texto da norma
 
 > Estabelece as normas de avaliação dos processos de ensino-aprendizagem no âmbito do IFPR.
 
@@ -291,14 +286,6 @@ Esta Resolução entra em vigor na data de sua publicação, produzindo seus efe
 **§ 1º** Os campi têm até o primeiro dia letivo do ano de 2018 para implementação das adequações a esta normativa.
 
 **§ 2º** A Pró-reitoria de Ensino – PROENS estabelecerá prazo para o encaminhamento dos Projetos Pedagógicos de Curso com as adequações a esta normativa.
-
-<!-- fora-do-ato: não consta do texto publicado em ifpr.edu.br (conferido em 13/11/2026) -->
-
-#### Art. 2º
-
-Esta Resolução entra em vigor nesta data, com ampla publicação e divulgação na página eletrônica do IFPR.
-
-<!-- /fora-do-ato -->
 
 **ODACIR ANTONIO ZANATTA**
 

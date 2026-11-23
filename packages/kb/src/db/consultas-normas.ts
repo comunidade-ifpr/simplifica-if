@@ -2,7 +2,7 @@
  * Consultas do serviço `Normas` ao `kb.sqlite`: as normas e a busca textual nos metadados e nos
  * dispositivos, e as tabelas da fase 5 (dispositivos, vigências, transições e correspondências), pelo
  * `SqlClient`, com as linhas decodificadas por Effect Schema na borda. As regras não são reescritas
- * aqui: a deduplicação vem gravada (`canonico`), e a herança da
+ * aqui: a herança da
  * correspondência, os descendentes e a situação da transição numa data usam as mesmas funções da
  * API de arquivos (`correspondenciaEm`, `descendentesEm`, `situacaoNaData`). `base.test.ts` confere
  * que banco e arquivos dão o mesmo resultado.
@@ -21,7 +21,6 @@ import { conceitosDaConsulta, expressaoFts } from "../busca/fts.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import type { FonteCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
 import { descendentesEm, type Dispositivo, TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
-import { idDoAto } from "../normas/ids.ts";
 import { resolverCitacao } from "../normas/resolver.ts";
 import { type DatasTransicao, type Situacao, STATUS_VIGENCIA, situacaoNaData } from "../normas/vigencia.ts";
 import { markdownDoArquivo } from "./consultas-documentos.ts";
@@ -35,12 +34,11 @@ const ListaTextos = Schema.Array(Schema.String);
 /* ============================================================== dispositivos */
 
 const COLUNAS_DISPOSITIVO =
-  "rowid, id, ato_id, norma_id, dispositivo, tipo, rotulo, pai, ordem, texto, caput_json, texto_com_caput, estrutura_json, notas_json, revogado, vetado, canonico, path, linha_inicio, linha_fim";
+  "rowid, id, norma_id, dispositivo, tipo, rotulo, pai, ordem, texto, caput_json, texto_com_caput, estrutura_json, notas_json, revogado, vetado, path, linha_inicio, linha_fim";
 
 const LinhaDispositivo = Schema.Struct({
   rowid: Inteiro,
   id: Texto,
-  ato_id: Texto,
   norma_id: Texto,
   dispositivo: Texto,
   tipo: Schema.Literals(TIPOS_DISPOSITIVO),
@@ -54,7 +52,6 @@ const LinhaDispositivo = Schema.Struct({
   notas_json: Schema.fromJsonString(Schema.Array(Schema.Struct({ tipo: Schema.Literals(TIPOS_NOTA), texto: Texto }))),
   revogado: Inteiro,
   vetado: Inteiro,
-  canonico: Inteiro,
   path: Texto,
   linha_inicio: Inteiro,
   linha_fim: Inteiro,
@@ -77,7 +74,6 @@ function paraDispositivo(l: typeof LinhaDispositivo.Type): DispositivoDoBanco {
       id: l.id,
       dispositivo: l.dispositivo,
       norma: l.norma_id,
-      ato: l.ato_id,
       tipo: l.tipo,
       rotulo: l.rotulo,
       pai: l.pai,
@@ -103,22 +99,10 @@ const uma = Effect.fnUntraced(function* (sql: string, parametros: ReadonlyArray<
   return linha ? paraDispositivo(linha) : undefined;
 });
 
-/**
- * Dispositivo pelo ID, com a regra de `obterDispositivo` (`normas/estrutura.ts`): pelo ID do ato, o
- * dispositivo canônico (o texto integral prevalece sobre a compilação); pelo ID do arquivo com
- * variante (`br/lei/1996/9394~compilacao#art36`), aquele dispositivo.
- */
+/** Dispositivo pelo ID (`br/cne-cp/res/2026/2#art71-parunico`). */
 export const obterDispositivo = Effect.fn("consultasNormas.obterDispositivo")(function* (id: string) {
-  const [norma, sufixo] = id.split("#") as [string, string | undefined];
-  if (!sufixo) return undefined;
-  const ato = idDoAto(norma);
-  const direto = yield* uma(
-    `SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE ato_id = ? AND dispositivo = ? AND canonico = 1`,
-    [ato, `#${sufixo}`],
-  );
-  if (direto && (norma === direto.disp.ato || norma === direto.disp.norma)) return direto;
-  if (norma !== ato) return yield* uma(`SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE id = ?`, [id]);
-  return direto;
+  if (!id.includes("#")) return undefined;
+  return yield* uma(`SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE id = ?`, [id]);
 });
 
 /** Descendentes de um dispositivo (pelo ID do arquivo), em ordem: `descendentesEm` sobre o arquivo dele. */
@@ -136,10 +120,8 @@ export const descendentes = Effect.fn("consultasNormas.descendentes")(function* 
 
 /** Texto literal de um dispositivo para citar: caput herdado, o próprio texto e, se pedido, os subordinados. */
 export interface TrechoDispositivo {
-  /** ID do ato com o dispositivo (`br/cne-cp/res/2026/2#art28-vii`). */
+  /** ID da norma com o dispositivo (`br/cne-cp/res/2026/2#art28-vii`). */
   id: string;
-  /** ID do arquivo, quando o texto vem de uma variante (compilação). */
-  arquivo_id: string;
   tipo: Dispositivo["tipo"];
   rotulo: string;
   /** Textos dos ancestrais, do artigo até o pai. */
@@ -164,13 +146,12 @@ export const paraTrecho = Effect.fn("consultasNormas.paraTrecho")(function* (
 ) {
   const filhos = opcoes.subordinados ? yield* descendentes(d.disp.id) : [];
   const trecho: TrechoDispositivo = {
-    id: `${d.disp.ato}${d.disp.dispositivo}`,
-    arquivo_id: d.disp.id,
+    id: d.disp.id,
     tipo: d.disp.tipo,
     rotulo: d.disp.rotulo,
     caput: d.disp.caput,
     texto: d.disp.texto,
-    subordinados: filhos.map((f) => ({ id: `${f.disp.ato}${f.disp.dispositivo}`, texto: f.disp.texto })),
+    subordinados: filhos.map((f) => ({ id: f.disp.id, texto: f.disp.texto })),
     notas: d.disp.notas,
     revogado: d.disp.revogado,
     vetado: d.disp.vetado,
@@ -260,9 +241,9 @@ const linhasArtigo = Sql.todas(Schema.Struct({ dispositivo: Texto }));
 
 /**
  * Fonte da correspondência (`correspondenciaEm`, `destinosDeOrigemEm`) sobre o banco, carregada de
- * uma vez: todas as tabelas de correspondência, os artigos canônicos dos atos de origem (na ordem
- * de antes: o texto integral primeiro, depois as variantes, por ordem no arquivo) e o pai e o texto
- * dos dispositivos canônicos dos atos de origem e de destino. A regra só pergunta por esses atos.
+ * uma vez: todas as tabelas de correspondência, os artigos dos atos de origem (por ordem no arquivo)
+ * e o pai e o texto dos dispositivos dos atos de origem e de destino. A regra só pergunta por esses
+ * atos.
  */
 export const carregarFonteCorrespondencia: Effect.Effect<
   FonteCorrespondencia,
@@ -278,7 +259,7 @@ export const carregarFonteCorrespondencia: Effect.Effect<
   const dispositivos = new Map<string, { pai: string | null; texto: string }>();
   for (const ato of atos) {
     const linhas = yield* linhasDispositivoCorrespondencia(
-      "SELECT dispositivo, pai, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY rowid",
+      "SELECT dispositivo, pai, texto FROM dispositivos WHERE norma_id = ? ORDER BY rowid",
       [ato],
     );
     // o primeiro por rowid, como o `.get()` da consulta por dispositivo
@@ -291,7 +272,7 @@ export const carregarFonteCorrespondencia: Effect.Effect<
   const artigos = new Map<string, string[]>();
   for (const ato of origens) {
     const linhas = yield* linhasArtigo(
-      "SELECT dispositivo FROM dispositivos WHERE ato_id = ? AND canonico = 1 AND tipo = 'artigo' ORDER BY norma_id <> ato_id, norma_id, ordem",
+      "SELECT dispositivo FROM dispositivos WHERE norma_id = ? AND tipo = 'artigo' ORDER BY ordem",
       [ato],
     );
     artigos.set(
@@ -330,7 +311,7 @@ export interface VigenciaNoBanco {
 export const vigenciaNaData = Effect.fn("consultasNormas.vigenciaNaData")(function* (id: string, data: string) {
   const v = yield* primeiraVigencia(
     "SELECT alvo, de, ate, status, certo, fonte FROM vigencias WHERE alvo = ? AND (de IS NULL OR de <= ?) AND (ate IS NULL OR ? < ate)",
-    [idDoAto(id.split("#")[0]!), data, data],
+    [id.split("#")[0]!, data, data],
   );
   if (v === undefined) return null;
   const vigencia: VigenciaNoBanco = { ...v, certo: v.certo === 1 };
@@ -410,15 +391,10 @@ export interface NormaResumo {
 const SQL_NORMA =
   "SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?";
 
-/** Norma pelo ID; se o ID tem variante (`~compilacao`) e não está na base, o ato; `null` se nenhum. */
+/** Norma pelo ID; `null` se não registrada. */
 export const obterNorma = Effect.fn("consultasNormas.obterNorma")(function* (id: string) {
   const linha: NormaResumo | undefined = yield* primeiraNorma(SQL_NORMA, [id]);
-  if (linha) return linha;
-  const ato = idDoAto(id);
-  if (ato === id) return null;
-  // o ID do ato não tem variante: a segunda consulta é a última
-  const doAto: NormaResumo | undefined = yield* primeiraNorma(SQL_NORMA, [ato]);
-  return doAto ?? null;
+  return linha ?? null;
 });
 
 /** A busca de normas: os achados e os avisos (ID desconhecido, citação excluída pelos filtros). */
@@ -552,7 +528,7 @@ export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalh
         saida.push({
           norma,
           dispositivo: trecho,
-          pedido: achado.disp.dispositivo === pedido ? null : `${idDoAto(norma.id)}${pedido}`,
+          pedido: achado.disp.dispositivo === pedido ? null : `${norma.id}${pedido}`,
           metadados: null,
           pontuacao: null,
           origem: "citacao-resolvida",
@@ -607,7 +583,7 @@ export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalh
     }
   });
   const dispositivos = Effect.fnUntraced(function* (expressao: string) {
-    const f = filtros("d.ato_id");
+    const f = filtros("d.norma_id");
     const achados = yield* linhasDispositivosPontuados(
       `SELECT d.rowid AS rowid, d.id, d.norma_id, bm25(dispositivos_fts, 1.0, 1.0) AS pontuacao
            FROM dispositivos_fts JOIN dispositivos d ON d.rowid = dispositivos_fts.rowid JOIN normas n ON n.id = d.norma_id

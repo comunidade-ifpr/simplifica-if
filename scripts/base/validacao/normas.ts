@@ -23,6 +23,7 @@ import {
 } from "../front-matter.ts";
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estrutura";
+import { artigosInexistentes } from "@simplifica-if/kb/normas/pontos-chave";
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { validarCorrespondencias } from "@simplifica-if/kb/normas/correspondencia";
 import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
@@ -36,9 +37,9 @@ import {
 import { palavrasDoTexto } from "@simplifica-if/kb/normas/markdown";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
-import { idDoAto, idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
+import { idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
-import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
+import { ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
 
 const decodificarNorma = Schema.decodeUnknownResult(esquemaNorma, { errors: "all" });
@@ -182,7 +183,17 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
 
   const ausentes = ordenarTextos(CAMPOS_OBRIGATORIOS.filter((campo) => !(campo in meta)));
   if (ausentes.length) erros.push(`${r}: campos obrigatórios ausentes: ${ausentes.join(", ")}`);
-  if (!apararInicio(corpo).startsWith("## Resumo")) erros.push(`${r}: corpo não começa com ## Resumo`);
+  // o corpo é só o texto da norma: resumo, notas e orientações são campos do front matter
+  for (const titulo of corpo.matchAll(/^#{1,2} +(Resumo|Notas?|Observaç(?:ão|ões)|Referências|Texto\b[^\n]*)\s*$/gim)) {
+    erros.push(
+      `${r}: o corpo traz a seção "${titulo[1]}"; ele é só o texto da norma (use pontos_chave ou notas_da_fonte no front matter; orientação para PPC vai na ficha da revisão)`,
+    );
+  }
+  if (/<!--\s*fora-do-ato/.test(corpo)) {
+    erros.push(
+      `${r}: marcador fora-do-ato no corpo; o que não consta do ato sai do arquivo (registre em notas_da_fonte)`,
+    );
+  }
   const keywords = meta.keywords;
   if (!Array.isArray(keywords) || !keywords.length) erros.push(`${r}: keywords deve ser lista não vazia`);
   const aliases = "aliases" in meta ? meta.aliases : [];
@@ -196,7 +207,7 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
 }
 
 /**
- * Contrato do front matter da norma (Effect Schema `esquemaNorma`): `id` e `variante`, datas e fonte oficial;
+ * Contrato do front matter da norma (Effect Schema `esquemaNorma`): `id`, datas e fonte oficial;
  * e o `id` igual ao derivado de tipo, órgão, jurisdição, ano e número (regras em `@simplifica-if/kb/normas/ids`).
  */
 export function validarContratoNorma(r: string, meta: FrontMatter): string[] {
@@ -208,7 +219,6 @@ export function validarContratoNorma(r: string, meta: FrontMatter): string[] {
       if (
         [
           "id",
-          "variante",
           "assinada_em",
           "publicada_em",
           "vigente_de",
@@ -228,7 +238,6 @@ export function validarContratoNorma(r: string, meta: FrontMatter): string[] {
     jurisdicao: textoDe(meta.jurisdicao ?? ""),
     numero: textoDe(meta.numero ?? ""),
     ano: textoDe(meta.ano ?? ""),
-    tipo_ato: typeof meta.tipo_ato === "string" ? meta.tipo_ato : undefined,
   });
   if (esperado === null)
     erros.push(
@@ -238,11 +247,10 @@ export function validarContratoNorma(r: string, meta: FrontMatter): string[] {
   return erros;
 }
 
-/** IDs únicos entre as normas; a variante (`~compilacao`) exige o ato publicado ou registrado como stub. */
+/** IDs únicos entre as normas, e nenhum repetido em `normas/stubs.yaml`. */
 export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegistrados: ReadonlySet<string>): string[] {
   const erros: string[] = [];
   const porId = new Map<string, string>();
-  const variantes: [string, string][] = [];
   for (const caminho of caminhos) {
     let meta: FrontMatter;
     try {
@@ -257,12 +265,6 @@ export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegist
     if (idsRegistrados.has(meta.id))
       erros.push(`${ctx.rel(caminho)}: id ${meta.id} também está em normas/stubs.yaml (remova o stub)`);
     else porId.set(meta.id, ctx.rel(caminho));
-    if (idDoAto(meta.id) !== meta.id) variantes.push([ctx.rel(caminho), meta.id]);
-  }
-  for (const [r, id] of variantes) {
-    const ato = idDoAto(id);
-    if (!porId.has(ato) && !idsRegistrados.has(ato))
-      erros.push(`${r}: variante ${id} sem o ato ${ato} na base ou nos stubs`);
   }
   return erros;
 }
@@ -330,13 +332,15 @@ export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
  * Estrutura do corpo da norma (parser de dispositivos de `@simplifica-if/kb/normas/estrutura`):
  * cabeçalho de artigo `#### Art. Nº` só com o rótulo, rótulos de parágrafo e inciso em negrito,
  * nenhum `**` solto, marcadores de trecho fechados e IDs de dispositivo únicos. Avisos (rótulo
- * repetido no texto publicado, com ID pela posição) não são erro.
+ * repetido no texto publicado, com ID pela posição) não são erro. Confere também que os artigos
+ * citados em `pontos_chave` existem na norma.
  */
 export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] {
   const texto = lerTexto(caminho);
   let id: string;
+  let meta: FrontMatter;
   try {
-    const { meta } = analisarFrontMatter(texto, ctx.rel(caminho));
+    ({ meta } = analisarFrontMatter(texto, ctx.rel(caminho)));
     if (typeof meta.id !== "string") return [];
     id = meta.id;
   } catch (erro) {
@@ -344,7 +348,20 @@ export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] 
     throw erro;
   }
   const estrutura = analisarNorma(texto, { id, path: ctx.rel(caminho) });
-  return estrutura.problemas.filter((problema) => !problema.startsWith("aviso:"));
+  const erros = estrutura.problemas.filter((problema) => !problema.startsWith("aviso:"));
+  // o artigo citado no parêntese final de um ponto-chave existe na norma
+  for (const campo of ["pontos_chave"] as const) {
+    const itens = meta[campo];
+    for (const item of Array.isArray(itens) ? itens : []) {
+      const faltam = artigosInexistentes(item, estrutura.dispositivos);
+      if (faltam.length) {
+        erros.push(
+          `${ctx.rel(caminho)}: ${campo} cita artigo que a norma não tem (${faltam.join(", ")}): "${item.slice(0, 80)}"`,
+        );
+      }
+    }
+  }
+  return erros;
 }
 
 /**

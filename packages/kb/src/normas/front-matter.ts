@@ -12,7 +12,7 @@ import * as SchemaTransformation from "effect/SchemaTransformation";
 import { parse, YAMLParseError } from "yaml";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { UrlOficial } from "./fonte.ts";
-import { ehIdNorma, idDoAto, VARIANTES, varianteDoId } from "./ids.ts";
+import { ehIdNorma } from "./ids.ts";
 
 export type ValorFrontMatter = string | number | string[];
 export type FrontMatter = Record<string, ValorFrontMatter>;
@@ -87,6 +87,12 @@ const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
   Schema.String.check(Schema.makeFilter((valor: string) => predicado(valor), { message: mensagem }));
 const texto = Schema.String.check(Schema.isMinLength(1));
 const listaTexto = Schema.Array(Schema.String);
+/** Lista de itens de texto: pelo menos um, nenhum vazio. */
+const listaItens = Schema.Array(texto).check(Schema.isMinLength(1));
+
+/** Os metadados editoriais do front matter, na ordem em que o leitor e a ficha os mostram. */
+export const CAMPOS_EDITORIAIS = ["pontos_chave", "notas_da_fonte"] as const;
+export type CampoEditorial = (typeof CAMPOS_EDITORIAIS)[number];
 const RE_DATA_ISO = /^\d{4}-\d{2}-\d{2}$/;
 /** Data ISO ou "a confirmar" (dado que a base ainda não prova; nunca inventar). */
 const dataOuAConfirmar = Schema.Union([
@@ -97,12 +103,11 @@ const dataOuAConfirmar = Schema.Union([
 /**
  * Contrato semântico do front matter de uma norma da base (depois da coerção). Os campos
  * obrigatórios e as relações são conferidos com mensagens próprias em `validar_base.ts`; aqui ficam
- * as regras de formato do `id`, da `variante` e dos tipos. Campos fora da lista ficam na saída.
+ * as regras de formato do `id` e dos tipos. Campos fora da lista ficam na saída.
  */
 export const esquemaNorma = Schema.StructWithRest(
   Schema.Struct({
     id: textoQue(ehIdNorma, "id fora do formato canônico"),
-    variante: Schema.optionalKey(Schema.Literals(VARIANTES)),
     title: texto,
     tipo_documento: texto,
     numero: texto,
@@ -132,21 +137,21 @@ export const esquemaNorma = Schema.StructWithRest(
     vigente_de: dataOuAConfirmar,
     /** De onde vieram as datas (dispositivo, nota de publicação, fonte oficial). */
     datas_fonte: texto,
+    /**
+     * Metadados editoriais: o corpo do arquivo é só o texto da norma, e o que a curadoria escreve
+     * sobre ela fica aqui, cada campo com a sua função. Nenhum deles é fundamento: quem cita, cita
+     * o dispositivo. Orientação para PPC não entra aqui: o lugar dela é a ficha da revisão de PPC
+     * (`base-conhecimento/revisao-ppc/fichas/`).
+     */
+    /** O que a norma dispõe, em pontos, cada um com o dispositivo que o sustenta: "(art. 29)". */
+    pontos_chave: Schema.optionalKey(listaItens),
+    /** Como o texto foi obtido e consolidado (fonte, republicação, o que ficou de fora e por quê). */
+    notas_da_fonte: Schema.optionalKey(listaItens),
   }),
   [Schema.Record(Schema.String, Schema.Unknown)],
 ).check(
   Schema.makeFilter((norma) => {
     const achados: Schema.FilterIssue[] = [];
-    const variante = varianteDoId(norma.id);
-    if ((norma.variante ?? null) !== variante) {
-      achados.push({
-        path: ["variante"],
-        issue: `variante (${norma.variante ?? "ausente"}) não corresponde ao sufixo do id (${variante ?? "sem sufixo"})`,
-      });
-    }
-    if (variante !== null && idDoAto(norma.id) === norma.id) {
-      achados.push({ path: ["id"], issue: "id de variante sem o ID do ato" });
-    }
     if (RE_DATA_ISO.test(norma.publicada_em) && norma.publicada_em < norma.assinada_em) {
       achados.push({ path: ["publicada_em"], issue: "publicada_em anterior a assinada_em" });
     }

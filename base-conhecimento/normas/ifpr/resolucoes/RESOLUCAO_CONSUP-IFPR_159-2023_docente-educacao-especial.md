@@ -27,35 +27,16 @@ aliases:
 relaciona_se_a:
   - "Resolução CONSUP/IFPR nº 148/2023"
   - "Nota Técnica PROENS/IFPR nº 1/2025"
+pontos_chave:
+  - "A Educação Especial deve constar no PDI do IFPR, nos PPPs dos campi e nos PPCs de cada campus (art. 3º)."
+  - "O público prioritário compreende estudantes com deficiência, TEA e altas habilidades/superdotação (art. 4º, I a III)."
+  - "O AEE deve ser ofertado por docente com formação específica em Educação Especial (art. 6º)."
+  - "O AEE é ofertado preferencialmente no contraturno e prioritariamente na Sala de Recursos Multifuncional (art. 12)."
+  - "O texto original afirma o registro do AEE como componente curricular no sistema acadêmico (art. 13)."
+  - "A organização do trabalho do Docente de Educação Especial abrange ensino, apoio ao ensino, manutenção do ensino, pesquisa, extensão e atividades administrativas (art. 10)."
+  - "A Avaliação Individualizada no Contexto Escolar (AICE) é o instrumento para definir o ingresso do estudante no AEE (arts. 21 a 28)."
 vigencia_calculada_em: "2026-11-13"
 ---
-
-## Resumo
-
-Resolução CONSUP/IFPR nº 159, de 12 de dezembro de 2023. Dispõe sobre as diretrizes do trabalho do Docente de Educação Especial no IFPR. Regulamenta a Educação Especial como modalidade transversal, define público prioritário, requisitos de formação docente, organização da carga horária, institucionalização do Atendimento Educacional Especializado (AEE), sua previsão nos PPCs e procedimentos de avaliação para ingresso e permanência no AEE.
-
-### Pontos-chave
-
-- A Educação Especial deve constar no PDI do IFPR, nos PPPs dos campi e nos PPCs de cada campus
-- O público prioritário compreende estudantes com deficiência, TEA e altas habilidades/superdotação
-- O AEE deve ser ofertado por docente com formação específica em Educação Especial
-- O texto original do art. 13 afirma registro do AEE como componente curricular no sistema acadêmico
-- Para análise, abertura, atualização e ajuste de PPCs, essa leitura foi corrigida pela Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287), datada de 29/10/2025 e assinada em 31/10/2025
-- A orientação mais atual para PPCs é que o AEE não deve ser incorporado como componente curricular da matriz
-- O PPC pode tratar o AEE de forma descritiva e institucional, sem convertê-lo em componente curricular ou item curricular do histórico escolar
-- O AEE é ofertado preferencialmente no contraturno e prioritariamente na Sala de Recursos Multifuncional
-- A organização do trabalho do Docente de Educação Especial abrange ensino, apoio ao ensino, manutenção do ensino, pesquisa, extensão e atividades administrativas
-- A Avaliação Individualizada no Contexto Escolar (AICE) é o instrumento para definir ingresso e permanência do estudante no AEE
-
-### Atualização interpretativa para PPCs
-
-- A Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287) esclarece que processos de abertura, elaboração, ajuste e atualização de PPCs não devem incorporar o AEE como componente curricular.
-- Para uso desta base na análise de PPC, prevalece a orientação posterior de 29/10/2025 sobre a redação anterior da Resolução nº 159/2023 quanto à incorporação do AEE como componente curricular.
-- Em consequência, a checagem de PPC deve reprovar matriz, fluxograma, ementário seriado, carga horária de integralização e histórico escolar que tratem o AEE como componente curricular do estudante.
-
----
-
-## Texto da norma
 
 > Dispõe sobre as diretrizes do Trabalho do Docente de Educação Especial no IFPR.
 

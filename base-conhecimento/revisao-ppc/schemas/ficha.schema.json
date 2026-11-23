@@ -88,7 +88,7 @@
           "ref": {
             "type": "string",
             "pattern": "^(?:(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)|externo:[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\\/[a-z0-9]+(?:[-.][a-z0-9]+)*)*|cnct:[a-z0-9]+(?:-[a-z0-9]+)*)$",
-            "description": "ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:..."
+            "description": "ID canônico: norma (br/..., ifpr/...), stub, externo:... ou cnct:..."
           },
           "dispositivo": {
             "type": "string",

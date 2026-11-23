@@ -27,13 +27,6 @@ vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CNE/CEB nº 7/2025 a confirmar (ato de 2025-08-01; publicação não registrada): presumida vigente"
 ---
 
-## Resumo
-
-- Institui as Diretrizes Operacionais Nacionais para a Educação Integral em Tempo Integral na Educação Básica
-- Documento normativo: RESOLUÇÃO CNE/CEB Nº 7, DE 1º DE AGOSTO DE 2025
-
-## Texto da norma
-
 > Institui as Diretrizes Operacionais Nacionais para a Educação Integral em Tempo Integral na Educação Básica.
 
 A PRESIDENTA DA CÂMARA DE EDUCAÇÃO BÁSICA DO CONSELHO NACIONAL DE EDUCAÇÃO, no uso das atribuições que lhe confere o art. 10, inciso VI, da Portaria MEC nº 1.306, de 2 de setembro de 1999, e tendo em vista o disposto no art. 7º, alíneas "b" e "d", e no art. 9º, § 1º, alínea "c", da Lei nº 4.024, de 20 de dezembro de 1961, com a redação dada pela Lei nº 9.131, de 24 de novembro de 1995, no art. 8º, § 1º, e no art. 90 da Lei nº 9.394, de 20 de dezembro de 1996, na Lei nº 14.640, de 31 de julho de 2023, na Lei nº 14.945, de 31 de julho de 2024, e com fundamento no Parecer CNE/CEB nº 12, de 11 de junho de 2025, homologado por Despacho do Senhor Ministro de Estado da Educação, publicado no Diário Oficial da União de 1º de agosto de 2025, Seção 1, p. 24, resolve:
@@ -215,7 +208,6 @@ Na dimensão estratégica da articulação intersetorial e integração com terr
 - **X –** integrar colegiados e outras formas de colaboração e gestão existentes no território (comissões, fóruns, conselhos), contribuindo com o planejamento, realização e acompanhamento de propostas e ações destinadas à garantia do direito à educação.
 
 **Parágrafo único.** No desenvolvimento das formas de colaboração com entidades privadas previstas no inciso IV, os sistemas de ensino priorizarão parcerias com organizações sociais sem fins lucrativos.
-
 
 #### Seção IV Do Currículo, das Práticas Pedagógicas e Avaliação da Aprendizagem e do Desenvolvimento
 

@@ -8,7 +8,6 @@
  * citações resolvidas do PPC convertido do curso (`ppc.markdown_path`): a DCN mais recente que o
  * PPC cita. Sem relógio.
  */
-import { idDoAto } from "../normas/ids.ts";
 import { compararTexto } from "../texto.ts";
 
 /** DCN da educação profissional técnica, da mais recente à mais antiga, com o indicador de cada uma. */
@@ -101,7 +100,7 @@ export function adequacaoArt71Em(
       return { ...base, ppc: null, indicador: "sem-ppc-convertido" as const, dcn_citadas: [] };
     }
     const dcnCitadas = DCN_EPT.flatMap((dcn) => {
-      const daDcn = citacoes.filter((citacao) => citacao.id !== null && idDoAto(citacao.id) === dcn.id);
+      const daDcn = citacoes.filter((citacao) => citacao.id !== null && citacao.id === dcn.id);
       if (daDcn.length === 0) return [];
       return [
         {

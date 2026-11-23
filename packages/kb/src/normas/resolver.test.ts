@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import { analisarDispositivos } from "./dispositivos.ts";
-import { ehIdDispositivo, ehIdExterno, ehIdNorma, idDoAto, idEsperadoDaNorma } from "./ids.ts";
+import { ehIdDispositivo, ehIdExterno, ehIdNorma, idEsperadoDaNorma } from "./ids.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "./registro.ts";
 import { extrairCitacoes, resolverCitacao } from "./resolver.ts";
@@ -10,13 +10,8 @@ const raiz = raizRepositorio();
 const registroCheckout = carregarRegistro(raiz);
 
 describe("IDs canônicos", () => {
-  test("formato de norma, variante, externo e dispositivo", () => {
-    for (const id of [
-      "br/cne-cp/res/2026/2",
-      "ifpr/consup/res/2024/190",
-      "br/lei/1996/9394",
-      "br/lei/1996/9394~compilacao",
-    ]) {
+  test("formato de norma, externo e dispositivo", () => {
+    for (const id of ["br/cne-cp/res/2026/2", "ifpr/consup/res/2024/190", "br/lei/1996/9394"]) {
       expect(ehIdNorma(id)).toBe(true);
     }
     for (const id of [
@@ -24,7 +19,7 @@ describe("IDs canônicos", () => {
       "br/lei/1996/09394",
       "BR/lei/1996/9394",
       "br/cne-cp/lei/2026/2",
-      "br/lei/1996/9394~x",
+      "br/lei/1996/9394~compilacao",
     ]) {
       expect(ehIdNorma(id)).toBe(false);
     }
@@ -34,7 +29,6 @@ describe("IDs canônicos", () => {
     for (const d of ["#art28-xvi", "#art28-par1-iv", "#art71-parunico", "#art36A", "#art5-al-a", "#anexo1-item3"]) {
       expect(ehIdDispositivo(d)).toBe(true);
     }
-    expect(idDoAto("br/lei/1996/9394~compilacao")).toBe("br/lei/1996/9394");
   });
 
   test("ID derivado do front matter", () => {
@@ -57,7 +51,7 @@ describe("IDs canônicos", () => {
         numero: "9394",
         ano: 1996,
       }),
-    ).toBe("br/lei/1996/9394~compilacao");
+    ).toBeNull();
     expect(idEsperadoDaNorma({ ...base, tipo_documento: "Lei", orgao: "Congresso" })).toBeNull();
   });
 });

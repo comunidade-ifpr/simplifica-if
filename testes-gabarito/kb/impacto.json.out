@@ -62,6 +62,12 @@
       "dispositivos": [
         "#art6"
       ]
+    },
+    {
+      "id": "ifpr/consup/res/2022/64",
+      "dispositivos": [
+        "preâmbulo"
+      ]
     }
   ],
   "arquivos": [

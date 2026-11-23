@@ -323,9 +323,9 @@ export function inserirNormas(caminho: string): void {
     }
 
     const insDisp = db.prepare(
-      `INSERT INTO dispositivos (id, ato_id, norma_id, dispositivo, tipo, rotulo, pai, ordem, texto, caput_json, texto_com_caput,
-         estrutura_json, notas_json, revogado, vetado, canonico, path, linha_inicio, linha_fim)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)`,
+      `INSERT INTO dispositivos (id, norma_id, dispositivo, tipo, rotulo, pai, ordem, texto, caput_json, texto_com_caput,
+         estrutura_json, notas_json, revogado, vetado, path, linha_inicio, linha_fim)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const insFtsDisp = db.prepare("INSERT INTO dispositivos_fts (rowid, texto, radicais) VALUES (?, ?, ?)");
     const lista = dispositivos();
@@ -343,7 +343,6 @@ export function inserirNormas(caminho: string): void {
       const linha = 100 + ordem * 2;
       const { lastInsertRowid } = insDisp.run(
         `${d.norma}${d.dispositivo}`,
-        d.norma,
         d.norma,
         d.dispositivo,
         d.tipo,

@@ -16,7 +16,7 @@
     {
       "tipo": "fundamenta-se-em",
       "origem": "br/cne-ceb/parecer/2002/31",
-      "operador": "#secao3",
+      "operador": "#secao2",
       "alvo": "br/lei/1996/9394",
       "alvo_dispositivo": "#art90"
     },
@@ -161,10 +161,10 @@
     {
       "id": "br/cne-ceb/parecer/2002/31",
       "dispositivos": [
+        "preâmbulo",
         "#secao1",
         "#secao2",
-        "#secao3",
-        "#secao4"
+        "#secao3"
       ]
     },
     {
@@ -284,6 +284,18 @@
       "dispositivos": [
         "#art1",
         "#art87"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2022/64",
+      "dispositivos": [
+        "preâmbulo"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2014/8",
+      "dispositivos": [
+        "#anexo1-art2"
       ]
     },
     {
@@ -411,9 +423,12 @@
       "categoria": "ficha",
       "motivos": [
         "referencia",
+        "citacao",
         "tema"
       ],
-      "dispositivos": [],
+      "dispositivos": [
+        "br/lei/1996/9394#art26A-par2"
+      ],
       "topicos": [
         "temas_transversais_cidadania"
       ]

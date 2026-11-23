@@ -11,7 +11,6 @@ import {
   type FrontMatter,
   type ValorFrontMatter,
 } from "@simplifica-if/kb/normas/front-matter";
-import { idDoAto } from "@simplifica-if/kb/normas/ids";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { compararTexto, lerTexto, ordenarCaminhos } from "@simplifica-if/kb/texto";
 
@@ -59,7 +58,6 @@ export const DIRETORIOS_POR_TIPO: Record<string, string> = {
   "BR|Decreto-Lei": "normas/br/decretos-lei",
   "BR|Portaria": "normas/br/portarias",
   "BR|Resolução": "normas/br/resolucoes",
-  "BR|Compilação": "normas/br/compilacoes",
   "BR|Parecer": "normas/br/pareceres",
   "IFPR|Resolução": "normas/ifpr/resolucoes",
   "IFPR|Portaria": "normas/ifpr/portarias",
@@ -96,7 +94,6 @@ export function itemManifest(caminhos: CaminhosBase, caminho: string): ItemManif
 
 /** Relações (origem ou alvo) do ato, de `relacoes.yaml`, com os campos que existirem. */
 export function relacoesManifest(id: string, raizProjeto: string): RelacaoManifest[] {
-  if (idDoAto(id) !== id) return [];
   return carregarRelacoes(raizProjeto)
     .filter((relacao) => relacao.origem === id || relacao.alvo === id)
     .map((relacao) => {

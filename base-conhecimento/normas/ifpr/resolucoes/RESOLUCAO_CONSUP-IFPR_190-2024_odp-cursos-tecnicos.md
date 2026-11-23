@@ -29,13 +29,6 @@ revoga:
   - "Resolução CONSUP/IFPR nº 54/2011"
 ---
 
-## Resumo
-
-- Dispõe sobre a Organização Didático-Pedagógica dos Cursos Técnicos de Nível Médio na modalidade presencial do Instituto Federal de Educação, Ciência e Tecnologia do Paraná
-- Documento normativo: RESOLUÇÃO CONSUP/IFPR Nº 190, DE 30 DE ABRIL DE 2024
-
-## Texto da norma
-
 > Dispõe sobre a Organização Didático-Pedagógica dos Cursos Técnicos de Nível Médio na modalidade presencial do Instituto Federal de Educação, Ciência e Tecnologia do Paraná.
 
 O Conselho Superior do Instituto Federal de Educação, Ciência e Tecnologia do Paraná, no uso de suas atribuições legais e estatutárias, após análise do parecer da conselheira relatora Patrícia Teixeira contido no processo 23411.004823/2022-91, e
@@ -617,9 +610,3 @@ Ficam revogadas a Resolução IFPR nº 54, de 21 de dezembro de 2011 e suas alte
 #### Art. 75.
 
 Esta resolução entra em vigor a partir da sua publicação.
-
-<!-- fora-do-ato: resto da assinatura eletrônica do SEI, truncado na conversão -->
-
-30/04/2024, às 18:26, conforme horário oficial de Brasília, com fundamento no art. 6º, caput, do Decreto nº 8.539, de 8 de outubro de 2015. acao=documento_conferir&id_orgao_acesso_externo=0, informando o código verificador 2981705 e o Rua Emilio Bertolini, nº 54, Curitiba - PR | CEP CEP 82920-030 - Brasil
-
-<!-- /fora-do-ato -->

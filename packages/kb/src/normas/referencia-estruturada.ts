@@ -3,7 +3,7 @@
  * Referências normativas estruturadas: `{ ref, dispositivo?, papel, nota? }`, como nas fichas da
  * revisão de PPC (fase 2 do plano de arquitetura), e o texto legível renderizado a partir delas.
  *
- * - `ref`: ID canônico de ato sem variante (`br/cne-cp/res/2026/2`), de stub, `externo:...` ou
+ * - `ref`: ID canônico de norma (`br/cne-cp/res/2026/2`), de stub, `externo:...` ou
  *   `cnct:...` (`cnct:catalogo` para o CNCT inteiro, `cnct:<slug>` para um curso do catálogo);
  * - `dispositivo`: um único dispositivo (`#art28-vii`). Uma citação de vários dispositivos da mesma
  *   norma vira várias entradas consecutivas, que o texto legível junta de novo ("arts. 29, 30 e 37,
@@ -19,7 +19,7 @@
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
-import { ehIdAto, ehIdCnct, ehIdExterno, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "./ids.ts";
+import { ehIdNorma, ehIdCnct, ehIdExterno, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "./ids.ts";
 import { carregarRegistro, type Registro, type Situacao } from "./registro.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
 
@@ -29,7 +29,7 @@ export type PapelReferencia = (typeof PAPEIS_REFERENCIA)[number];
 /** Referência normativa estruturada (decodificada sem chaves extras: `onExcessProperty: "error"`). */
 export const esquemaReferenciaNormativa = Schema.Struct({
   ref: Schema.String.check(Schema.isPattern(RE_REFERENCIA)).annotate({
-    description: "ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:...",
+    description: "ID canônico: norma (br/..., ifpr/...), stub, externo:... ou cnct:...",
   }),
   dispositivo: Schema.optionalKey(
     Schema.String.check(Schema.isPattern(RE_ID_DISPOSITIVO)).annotate({
@@ -85,8 +85,7 @@ export class UniversoReferencias {
         ? undefined
         : { id: ref, title: `${denominacao} (CNCT)`, situacao: "catalogo", path: `catalogos/cnct/cursos/${slug}.json` };
     }
-    // Só o ID exato do ato: a variante de arquivo (`~compilacao`) não é referência citável.
-    if (!ehIdAto(ref) && !ehIdExterno(ref)) return undefined;
+    if (!ehIdNorma(ref) && !ehIdExterno(ref)) return undefined;
     const entrada = this.registro.obter(ref);
     if (entrada === undefined || entrada.id !== ref) return undefined;
     return {

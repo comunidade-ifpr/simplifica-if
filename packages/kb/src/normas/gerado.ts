@@ -8,12 +8,8 @@
  * - `status_vigencia`, calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`,
  *   com `vigencia_calculada_em` e, quando o cálculo depende de data "a confirmar",
  *   `vigencia_a_confirmar` (a explicação).
- *
- * Variantes de arquivo (`~compilacao`) não têm campos gerados: o status da compilação descreve o
- * texto reproduzido e continua manual (padrão de front matter).
  */
 import * as NodeFS from "node:fs";
-import { idDoAto } from "./ids.ts";
 import { listarNormas } from "./estrutura.ts";
 import { carregarRegistro } from "./registro.ts";
 import { CAMPOS_RELACAO_FRONT_MATTER, camposRelacoesFrontMatter, carregarRelacoes } from "./relacoes.ts";
@@ -32,7 +28,6 @@ export type ValorGerado = string | string[];
 /** Campos gerados da norma `id` (arquivo), na ordem em que vão para o front matter. */
 export function camposGerados(id: string, raiz: string): Map<string, ValorGerado> {
   const campos = new Map<string, ValorGerado>();
-  if (idDoAto(id) !== id) return campos;
   const referencia = dataReferencia(raiz);
   const fonte = { registro: carregarRegistro(raiz), datas: carregarDatas(raiz), relacoes: carregarRelacoes(raiz) };
   const resultado = statusEm(id, referencia, fonte);

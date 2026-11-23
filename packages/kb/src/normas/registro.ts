@@ -9,7 +9,7 @@ import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
 import { UrlOficial } from "./fonte.ts";
-import { ehIdDispositivo, ehIdExterno, ehIdNorma, idDoAto, partesIdNorma } from "./ids.ts";
+import { ehIdDispositivo, ehIdExterno, ehIdNorma, partesIdNorma } from "./ids.ts";
 
 export type Situacao = "base" | "stub" | "externo";
 
@@ -93,7 +93,6 @@ export const esquemaRegistroStubs = Schema.Struct({
         });
       }
       const partes = partesIdNorma(stub.id);
-      if (partes?.variante) problemas.push({ path: ["normas", indice, "id"], issue: "stub não tem variante" });
       if (partes && stub.data_publicacao && !stub.data_publicacao.startsWith(String(partes.ano))) {
         problemas.push({
           path: ["normas", indice, "data_publicacao"],
@@ -149,19 +148,19 @@ export class Registro {
     for (const entrada of lista) if (!this.porId.has(entrada.id)) this.porId.set(entrada.id, entrada);
   }
 
-  /** Entrada do ID (a variante de arquivo cai no ato: `~compilacao` → ato). */
+  /** Entrada do ID. */
   obter(id: string): EntradaRegistro | undefined {
-    return this.porId.get(id) ?? this.porId.get(idDoAto(id));
+    return this.porId.get(id);
   }
 
   situacao(id: string): Situacao | "nao-registrada" {
     return this.obter(id)?.situacao ?? "nao-registrada";
   }
 
-  /** Normas (base e stub, sem variantes) com o mesmo tipo, ano e número, de qualquer órgão. */
+  /** Normas (base e stub) com o mesmo tipo, ano e número, de qualquer órgão. */
   normasPorChave(tipo: string, ano: number, numero: string, jurisdicao?: string): EntradaRegistro[] {
     return this.entradas.filter((entrada) => {
-      if (entrada.situacao === "externo" || idDoAto(entrada.id) !== entrada.id) return false;
+      if (entrada.situacao === "externo") return false;
       const partes = partesIdNorma(entrada.id);
       return (
         partes !== null &&
@@ -181,7 +180,7 @@ export class Registro {
   normasPorData(tipo: string, numero: string, data: string): EntradaRegistro[] {
     const candidatos = this.entradas.filter((entrada) => {
       const partes = partesIdNorma(entrada.id);
-      return partes !== null && partes.variante === null && partes.tipo === tipo && partes.numero === numero;
+      return partes !== null && partes.tipo === tipo && partes.numero === numero;
     });
     const doAto = candidatos.filter((entrada) => entrada.assinada_em === data);
     return doAto.length > 0 ? doAto : candidatos.filter((entrada) => entrada.data_publicacao === data);
@@ -191,7 +190,7 @@ export class Registro {
   atosPorNumero(tipo: string, numero: string): EntradaRegistro[] {
     return this.entradas.filter((entrada) => {
       const partes = partesIdNorma(entrada.id);
-      return partes !== null && partes.variante === null && partes.tipo === tipo && partes.numero === numero;
+      return partes !== null && partes.tipo === tipo && partes.numero === numero;
     });
   }
 }

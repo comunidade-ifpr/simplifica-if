@@ -29,7 +29,7 @@ import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import { carregarDadosInstitucionaisKb, linhaDaChave, linhaDoValor, matrizesDoResumo } from "../institucional/dados.ts";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "../normas/front-matter.ts";
-import { idDoAto, metadadosDoIdNorma } from "../normas/ids.ts";
+import { metadadosDoIdNorma } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, type Registro } from "../normas/registro.ts";
 import { segmentosCitantes } from "../normas/citacoes-normas.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
@@ -81,6 +81,12 @@ export interface ResumoCompilacao {
 }
 
 const json = (valor: unknown): string => JSON.stringify(valor ?? null);
+
+/** Uma lista de textos do front matter (`pontos_chave`); vazia se o campo não é lista. */
+const listaDoMeta = (meta: Record<string, unknown>, campo: string): string[] => {
+  const valor = meta[campo];
+  return Array.isArray(valor) ? valor.filter((item): item is string => typeof item === "string") : [];
+};
 
 function lerJson(arquivo: string): unknown {
   return JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
@@ -346,7 +352,7 @@ export function gravarSecoesECitacoes(
       linha: citacao.linha,
       trecho: citacao.trecho,
       norma_id: citacao.id,
-      ato_id: citacao.id ? idDoAto(citacao.id) : null,
+      ato_id: citacao.id ? citacao.id : null,
       dispositivos_json: json(dispositivos),
       regra: citacao.regra,
       confianca: citacao.confianca,
@@ -495,7 +501,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       blocoMetadados(
         item.id,
         item.title,
-        [...(item.aliases ?? []), ...(item.keywords ?? []), item.ementa],
+        [...(item.aliases ?? []), ...(item.keywords ?? []), item.ementa, ...listaDoMeta(meta, "pontos_chave")],
         caminhoMd,
         1,
       );
@@ -978,7 +984,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         estrutura_json: json(estrutura),
         notas_json: json(notas),
       });
-      if (d.canonico) insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
+      insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
     }
     for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", decodificarLinhaRelacao(linha));
     for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", decodificarLinhaVigencia(linha));
@@ -995,10 +1001,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       for (const citacao of segmento.citacoes) {
         ins.inserir("normas_citacoes", {
           norma_id: segmento.norma,
-          ato_id: segmento.ato,
           segmento: segmento.segmento,
           citado_id: citacao.id,
-          citado_ato: idDoAto(citacao.id),
           dispositivos_json: json(citacao.dispositivos),
           trecho: citacao.trecho,
           path: segmento.path,

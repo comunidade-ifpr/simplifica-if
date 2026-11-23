@@ -3,7 +3,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { raizRepositorio } from "../caminhos.ts";
 import { analisarDispositivos } from "./dispositivos.ts";
-import { ehIdAto, ehIdCnct, RE_ID_ATO_COM_DISPOSITIVO, RE_REFERENCIA, semAcento } from "./ids.ts";
+import { ehIdNorma, ehIdCnct, RE_ID_ATO_COM_DISPOSITIVO, RE_REFERENCIA, semAcento } from "./ids.ts";
 import {
   agruparReferencias,
   carregarUniversoReferencias,
@@ -22,15 +22,14 @@ describe("ids", () => {
     expect(semAcento("Ação ß Ⅻ ﬁ")).toBe("acao  xii fi");
   });
 
-  test("referência citável: ato sem variante, externo: ou cnct:", () => {
+  test("referência citável: norma, externo: ou cnct:", () => {
     for (const id of ["br/cne-cp/res/2026/2", "br/lei/1996/9394", "externo:abnt/nbr/6023", "cnct:catalogo"]) {
       expect(RE_REFERENCIA.test(id)).toBe(true);
     }
     for (const id of ["br/lei/1996/9394~compilacao", "Resolução CNE/CP nº 2/2026", "cnct:", "br/cne-cp/res/2026/02"]) {
       expect(RE_REFERENCIA.test(id)).toBe(false);
     }
-    expect(ehIdAto("br/lei/1996/9394")).toBe(true);
-    expect(ehIdAto("br/lei/1996/9394~compilacao")).toBe(false);
+    expect(ehIdNorma("br/lei/1996/9394")).toBe(true);
     expect(ehIdCnct("cnct:tecnico-em-enfermagem")).toBe(true);
     expect(RE_ID_ATO_COM_DISPOSITIVO.test("br/cne-ceb/res/2025/3#art6-iii")).toBe(true);
     expect(RE_ID_ATO_COM_DISPOSITIVO.test("br/cne-ceb/res/2025/3")).toBe(false);
@@ -157,13 +156,12 @@ describe("referências estruturadas", () => {
     ]);
   });
 
-  test("fontes: stub, curso do CNCT, variante e ID desconhecido", () => {
+  test("fontes: stub, curso do CNCT e ID desconhecido", () => {
     expect(universo.fonte("br/cne-cp/res/2022/1")).toMatchObject({ situacao: "stub", status_vigencia: "revogada" });
     expect(universo.fonte("cnct:tecnico-em-enfermagem")).toMatchObject({
       title: "Técnico em Enfermagem (CNCT)",
       path: "catalogos/cnct/cursos/tecnico-em-enfermagem.json",
     });
-    expect(universo.fonte("br/lei/1996/9394~compilacao")).toBeUndefined();
     expect(universo.fonte("br/cne-cp/res/2099/1")).toBeUndefined();
     expect(universo.titulo("br/cne-cp/res/2099/1")).toBe("br/cne-cp/res/2099/1");
     expect(textoIdComDispositivo("br/cne-ceb/res/2025/3#art6-iii", universo)).toBe(

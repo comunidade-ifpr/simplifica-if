@@ -34,12 +34,8 @@ altera:
   - "Lei nº 9.394/1996 (art. 82)"
 fundamenta:
   - "Resolução CONSUP/IFPR nº 82/2022"
----
-
-## Resumo
-
-- Dispõe sobre o estágio de estudantes; altera a redação do art. 428 da Consolidação das Leis do Trabalho – CLT, aprovada pelo Decreto-Lei nº 5.452, de 1º de maio de 1943, e a Lei nº 9.394, de 20 de dezembro de 1996; revoga as Leis nºs 6.494, de 7 de dezembro de 1977, e 8.859, de 23 de março de 1994, o parágrafo único do art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, e o art. 6º da Medida Provisória nº 2.164-41, de 24 de agosto de 2001; e dá outras providências
-
+notas_da_fonte:
+  - "Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: art. 6º (\"pode\", não \"deve\"), citação do art. 428 da CLT no art. 19, redação da Lei nº 14.913/2024 nos arts. 2º, § 3º, 4º e 9º, e signatário."
 ---
 
 **Dispõe sobre o estágio de estudantes; altera a redação do art. 428 da Consolidação das Leis do Trabalho – CLT, aprovada pelo Decreto-Lei nº 5.452, de 1º de maio de 1943, e a Lei nº 9.394, de 20 de dezembro de 1996; revoga as Leis nºs 6.494, de 7 de dezembro de 1977, e 8.859, de 23 de março de 1994, o parágrafo único do art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, e o art. 6º da Medida Provisória nº 2.164-41, de 24 de agosto de 2001; e dá outras providências.**
@@ -64,7 +60,13 @@ O estágio poderá ser obrigatório ou não-obrigatório, conforme determinaçã
 
 **§ 2º** Estágio não-obrigatório é aquele desenvolvido como atividade opcional, acrescida à carga horária regular e obrigatória.
 
+<!-- redacao-nao-vigente -->
+
 **§ 3º** As atividades de extensão, de monitorias e de iniciação científica na educação superior, desenvolvidas pelo estudante, somente poderão ser equiparadas ao estágio em caso de previsão no projeto pedagógico do curso.
+
+<!-- /redacao-nao-vigente -->
+
+**§ 3º** Na educação superior, as atividades de extensão, de monitorias, de iniciação científica e de intercâmbio no exterior desenvolvidas pelo estudante poderão ser equiparadas ao estágio em caso de previsão no projeto pedagógico do curso. (Redação dada pela Lei nº 14.913, de 2024)
 
 #### Art. 3º
 
@@ -82,7 +84,13 @@ O estágio, tanto na hipótese do § 1º do art. 2º desta Lei quanto na previst
 
 #### Art. 4º
 
+<!-- redacao-nao-vigente -->
+
 A realização de estágios, nos termos desta Lei, aplica-se aos estudantes estrangeiros regularmente matriculados em cursos superiores no País, autorizados ou reconhecidos, observado o prazo do visto temporário de estudante, na forma da legislação aplicável.
+
+<!-- /redacao-nao-vigente -->
+
+As disposições desta Lei relativas aos estágios aplicam-se aos estudantes estrangeiros ou brasileiros regularmente matriculados em cursos superiores no País, autorizados ou reconhecidos, ou no exterior, observado o prazo do visto temporário de estudante, na forma da legislação aplicável. (Redação dada pela Lei nº 14.913, de 2024)
 
 #### Art. 5º
 
@@ -106,7 +114,7 @@ As instituições de ensino e as partes cedentes de estágio podem, a seu crité
 
 #### Art. 6º
 
-O local de estágio deve ser selecionado a partir de cadastro de partes cedentes, organizado pelas instituições de ensino ou pelos agentes de integração.
+O local de estágio pode ser selecionado a partir de cadastro de partes cedentes, organizado pelas instituições de ensino ou pelos agentes de integração.
 
 ### CAPÍTULO II - DA INSTITUIÇÃO DE ENSINO
 
@@ -156,7 +164,13 @@ As pessoas jurídicas de direito privado e os órgãos da administração públi
 
 - **VII –** enviar à instituição de ensino, com periodicidade mínima de 6 (seis) meses, relatório de atividades, com vista obrigatória ao estagiário.
 
-**Parágrafo único.** No caso de estágio obrigatório, a responsabilidade pela contratação do seguro de que trata o inciso IV do caput deste artigo poderá, alternativamente, ser assumida pela instituição de ensino.
+**§ 1º** No caso de estágio obrigatório, a responsabilidade pela contratação do seguro de que trata o inciso IV do caput deste artigo poderá, alternativamente, ser assumida pela instituição de ensino. (Incluído pela Lei nº 14.913, de 2024)
+
+**§ 2º** O termo de compromisso referido no inciso I do caput deste artigo também poderá ser celebrado com a instituição de ensino superior: (Incluído pela Lei nº 14.913, de 2024)
+
+- **I –** a que esteja vinculado o intercambista estrangeiro; (Incluído pela Lei nº 14.913, de 2024)
+
+- **II –** em que se realizar o intercâmbio, no caso de estudante brasileiro intercambista. (Incluído pela Lei nº 14.913, de 2024)
 
 ### CAPÍTULO IV - DO ESTAGIÁRIO
 
@@ -242,17 +256,25 @@ A prorrogação dos estágios contratados antes do início da vigência desta Le
 
 O art. 428 da Consolidação das Leis do Trabalho – CLT, aprovada pelo Decreto-Lei nº 5.452, de 1º de maio de 1943, passa a vigorar com as seguintes alterações:
 
-> "Art. 428. Contrato de aprendizagem é o contrato de trabalho especial, ajustado por escrito e por prazo determinado, em que o empregador se compromete a assegurar ao maior de 14 (quatorze) e menor de 24 (vinte e quatro) anos inscrito em programa de aprendizagem formação técnico-profissional metódica, compatível com o seu desenvolvimento físico, moral e psicológico, e o aprendiz, a executar com zelo e diligência as tarefas necessárias a essa formação.
+> "Art. 428. ......................................................................
 >
-> § 1º A idade máxima prevista no caput deste artigo não se aplica a aprendizes portadores de deficiência.
+> § 1º A validade do contrato de aprendizagem pressupõe anotação na Carteira de Trabalho e Previdência Social, matrícula e freqüência do aprendiz na escola, caso não haja concluído o ensino médio, e inscrição em programa de aprendizagem desenvolvido sob orientação de entidade qualificada em formação técnico-profissional metódica.
 >
-> § 2º Aos estabelecimentos de qualquer natureza são vedadas a contratação de aprendizes em número superior ou inferior ao limite fixado nos §§ 2º a 6º do art. 429 ou em desacordo com o disposto no art. 432, ambos desta Consolidação, sob pena de nulidade do contrato de aprendizagem e de se configurarem, a partir de então, para todos os fins, as regras do contrato de trabalho por prazo indeterminado."
+> ......................................................................
+>
+> § 3º O contrato de aprendizagem não poderá ser estipulado por mais de 2 (dois) anos, exceto quando se tratar de aprendiz portador de deficiência. (Vide Medida Provisória nº 1.116, de 2022)
+>
+> ......................................................................
+>
+> § 7º Nas localidades onde não houver oferta de ensino médio para o cumprimento do disposto no § 1º deste artigo, a contratação do aprendiz poderá ocorrer sem a freqüência à escola, desde que ele já tenha concluído o ensino fundamental." (NR)
 
 #### Art. 20
 
 O art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação:
 
-> "Art. 82. Os sistemas de ensino estabelecerão as normas de realização de estágio em sua jurisdição, observada a lei federal sobre a matéria."
+> "Art. 82. Os sistemas de ensino estabelecerão as normas de realização de estágio em sua jurisdição, observada a lei federal sobre a matéria.
+>
+> Parágrafo único. (Revogado)." (NR)
 
 #### Art. 21
 
@@ -266,6 +288,6 @@ Brasília, 25 de setembro de 2008; 187º da Independência e 120º da República
 
 LUIZ INÁCIO LULA DA SILVA  
 Fernando Haddad  
-Luiz Marinho
+André Peixoto Figueiredo Lima
 
 **Publicado no Diário Oficial da União de 26 de setembro de 2008.**

@@ -1,7 +1,7 @@
 /**
  * O sumário de uma norma, para o índice de navegação do leitor: as divisões (Livro, Parte, Título,
- * Capítulo, Seção, Subseção), os anexos e as seções editoriais do arquivo, com a linha de cada uma, o
- * nível no índice e a faixa de artigos que ela cobre.
+ * Capítulo, Seção, Subseção) e os anexos, com a linha de cada um, o nível no índice e a faixa de
+ * artigos que ele cobre.
  *
  * O nível vem do tipo da divisão, não da profundidade do cabeçalho: `####` é do artigo, e Título,
  * Capítulo e Seção não cabem acima dele em níveis distintos. O nome (a rubrica, "DAS FORMAS DE
@@ -12,7 +12,7 @@
  */
 import type { Heading } from "mdast";
 import { divisaoDoCabecalho, nomeSemNotas, TIPOS_DIVISAO, type TipoDivisao } from "./divisoes.ts";
-import { classeH2, rotuloArtigo } from "./estrutura.ts";
+import { rotuloArtigo } from "./estrutura.ts";
 import { arvoreMarkdown, textoDoNo } from "./markdown.ts";
 
 export const TIPOS_ITEM_SUMARIO = [...TIPOS_DIVISAO, "anexo", "topico"] as const;
@@ -56,7 +56,6 @@ export function sumarioDaNorma(markdown: string, dispositivos: ReadonlyArray<Dis
   /** A profundidade do cabeçalho de cada tópico, para o nível relativo (norma sem artigos). */
   const profundidades = new Map<ItemSumario, number>();
   const pilha: TipoDivisao[] = [];
-  let regiao: "inicio" | "resumo" | "normativo" | "editorial" = "inicio";
   /** O item que ainda pode receber o nome dos cabeçalhos seguintes. */
   let aberto: ItemSumario | null = null;
 
@@ -68,37 +67,11 @@ export function sumarioDaNorma(markdown: string, dispositivos: ReadonlyArray<Dis
   };
 
   for (const no of arvoreMarkdown(markdown).children) {
-    if (no.type === "thematicBreak" && regiao === "resumo") regiao = "normativo";
     if (no.type !== "heading") {
       aberto = null;
       continue;
     }
     const texto = textoDoNo(no).trim().replace(/\s+/g, " ");
-    if (no.depth <= 2) {
-      const classe = classeH2(texto);
-      if (classe === "resumo") {
-        regiao = "resumo";
-        aberto = null;
-        continue;
-      }
-      if (classe === "editorial") {
-        regiao = "editorial";
-        pilha.length = 0;
-        aberto = null;
-        novo("topico", texto, null, 0, no);
-        continue;
-      }
-      regiao = "normativo";
-      if (classe === "texto") {
-        aberto = null;
-        continue;
-      }
-    }
-    if (regiao === "resumo" || regiao === "inicio") continue;
-    if (regiao === "editorial") {
-      if (no.depth === 3) novo("topico", texto, null, 1, no);
-      continue;
-    }
     if (porSecao) {
       profundidades.set(novo("topico", texto, null, 0, no), no.depth);
       continue;

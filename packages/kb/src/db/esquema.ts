@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 6;
+export const VERSAO_ESQUEMA = 7;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -434,12 +434,10 @@ CREATE TABLE marcos (
 );
 
 -- Fase 5 (carga por FontesNormativas: normas/fontes-db.ts sobre a API de normas/).
--- Dispositivos de todas as normas da base, compilação da LDB inclusive (id com ~variante);
--- canonico = 1 no dispositivo que o índice do ato usa (o texto integral prevalece).
+-- Dispositivos de todas as normas da base.
 CREATE TABLE dispositivos (
   rowid INTEGER PRIMARY KEY,
   id TEXT NOT NULL UNIQUE,
-  ato_id TEXT NOT NULL,
   norma_id TEXT NOT NULL,
   dispositivo TEXT NOT NULL,
   tipo TEXT NOT NULL,
@@ -453,12 +451,10 @@ CREATE TABLE dispositivos (
   notas_json TEXT NOT NULL,
   revogado INTEGER NOT NULL,
   vetado INTEGER NOT NULL,
-  canonico INTEGER NOT NULL,
   path TEXT NOT NULL,
   linha_inicio INTEGER NOT NULL,
   linha_fim INTEGER NOT NULL
 );
-CREATE INDEX dispositivos_ato ON dispositivos(ato_id, dispositivo);
 CREATE INDEX dispositivos_norma ON dispositivos(norma_id, ordem);
 
 -- Só os dispositivos canônicos. texto: texto_com_caput em tokens; radicais: radicais Snowball dele.
@@ -525,16 +521,14 @@ CREATE INDEX transicoes_norma ON transicoes(norma_id);
 CREATE TABLE normas_citacoes (
   rowid INTEGER PRIMARY KEY,
   norma_id TEXT NOT NULL,
-  ato_id TEXT NOT NULL,
   segmento TEXT NOT NULL,
   citado_id TEXT NOT NULL,
-  citado_ato TEXT NOT NULL,
   dispositivos_json TEXT NOT NULL,
   trecho TEXT NOT NULL,
   path TEXT NOT NULL,
   linha_inicio INTEGER NOT NULL
 );
-CREATE INDEX normas_citacoes_citado ON normas_citacoes(citado_ato);
+CREATE INDEX normas_citacoes_citado ON normas_citacoes(citado_id);
 CREATE INDEX transicoes_anterior ON transicoes(norma_anterior);
 
 CREATE TABLE correspondencias_tabelas (

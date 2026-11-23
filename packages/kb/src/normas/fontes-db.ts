@@ -2,8 +2,7 @@
  * `LinhasNormativas` (a carga da fase 5 no `kb.sqlite`, `db/fontes-normativas.ts`) pela API de
  * arquivos de `normas/`: nenhuma regra nova aqui, só o mapeamento para as linhas das tabelas.
  *
- * - `dispositivos`: `carregarEstruturas` (todas as normas, compilação da LDB inclusive, na ordem dos
- *   arquivos), com `canonico` pela deduplicação de `indiceDispositivos`;
+ * - `dispositivos`: `carregarEstruturas` (todas as normas, na ordem dos arquivos);
  * - `relacoes`: `carregarRelacoes`, com o efeito resolvido por `efeitoDaRelacao`;
  * - `vigencias`: `intervalosVigencia` (isto é, `statusEm` nas datas em que o status pode mudar) para
  *   cada ato da base e dos stubs;
@@ -25,20 +24,17 @@ import type {
 import { CAMINHOS } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
 import { carregarCorrespondencias } from "./correspondencia.ts";
-import { carregarEstruturas, indiceDispositivos } from "./estrutura.ts";
-import { idDoAto } from "./ids.ts";
+import { carregarEstruturas } from "./estrutura.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes } from "./relacoes.ts";
 import { carregarDatas, carregarTransicoes, datasTransicao, efeitoDaRelacao, intervalosVigencia } from "./vigencia.ts";
 
 /** Linha da tabela `dispositivos` de cada dispositivo das normas da base. */
 export function* linhasDispositivos(raiz: string): Generator<LinhaDispositivo> {
-  const indice = indiceDispositivos(raiz);
   for (const estrutura of carregarEstruturas(raiz)) {
     for (const d of estrutura.dispositivos) {
       yield {
         id: d.id,
-        ato_id: d.ato,
         norma_id: d.norma,
         dispositivo: d.dispositivo,
         tipo: d.tipo,
@@ -52,7 +48,6 @@ export function* linhasDispositivos(raiz: string): Generator<LinhaDispositivo> {
         notas: d.notas,
         revogado: d.revogado,
         vetado: d.vetado,
-        canonico: indice.get(`${d.ato}${d.dispositivo}`) === d,
         path: `${CAMINHOS.base}/${estrutura.path}`,
         linha_inicio: d.linha_inicio,
         linha_fim: d.linha_fim,
@@ -88,11 +83,11 @@ export function* linhasRelacoes(raiz: string): Generator<LinhaRelacao> {
   }
 }
 
-/** Atos com vigência calculável: normas da base (sem variante) e stubs. */
+/** Atos com vigência calculável: normas da base e stubs. */
 export function atosComVigencia(raiz: string): string[] {
   const atos = new Set<string>();
   for (const entrada of carregarRegistro(raiz).entradas) {
-    if (entrada.situacao !== "externo") atos.add(idDoAto(entrada.id));
+    if (entrada.situacao !== "externo") atos.add(entrada.id);
   }
   return [...atos].sort(compararTexto);
 }

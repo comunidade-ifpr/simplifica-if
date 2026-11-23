@@ -4,7 +4,6 @@
  * já decodificada e devolve a `Resposta` com os avisos; o texto para a IA fica nas ferramentas.
  */
 import * as Normas from "@simplifica-if/kb/Normas";
-import { idDoAto } from "@simplifica-if/kb/normas/ids";
 import type { EventoVigencia } from "@simplifica-if/kb/normas/vigencia";
 import * as Effect from "effect/Effect";
 import { type Aviso, type Base, type DispositivoTexto, EntradaInvalida, type NormaResumo } from "../contratos.ts";
@@ -81,7 +80,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
     for (const id of new Set(e.ids)) {
       const achado = yield* normas.dispositivo(id);
       const trecho = achado ? yield* normas.trecho(id, { subordinados: e.filhos }) : null;
-      const registrada = achado ? yield* norma(achado.disp.ato) : null;
+      const registrada = achado ? yield* norma(achado.disp.norma) : null;
       if (!achado || !trecho || !registrada) {
         naoEncontrados.push(id);
         continue;
@@ -92,7 +91,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
         ...(yield* dispositivoTexto(normas, trecho)),
         norma: registrada.titulo,
         notas: trecho.notas.map((n) => n.texto),
-        pai: pai === null ? null : `${achado.disp.ato}${pai.slice(pai.indexOf("#"))}`,
+        pai: pai === null ? null : `${achado.disp.norma}${pai.slice(pai.indexOf("#"))}`,
         estrutura: achado.disp.estrutura,
       });
     }
@@ -106,7 +105,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
   });
 
   const fichaNorma = Effect.fn("Leitura.fichaNorma")(function* (e: typeof FichaNorma.Entrada.Type) {
-    const ato = idDoAto(e.id.split("#")[0]!);
+    const ato = e.id.split("#")[0]!;
     const norma = yield* leitorDeNormas(normas)(ato);
     if (!norma) {
       return yield* new EntradaInvalida({
@@ -130,6 +129,8 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
           ano: norma.ano,
           fonte_url: norma.fonte_url,
           fonte_referencia: norma.fonte_referencia,
+          pontos_chave: norma.pontos_chave,
+          notas_da_fonte: norma.notas_da_fonte,
         },
         vigencia: {
           data: vigencia.data,
@@ -174,7 +175,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
   });
 
   const correspondencia = Effect.fn("Leitura.correspondencia")(function* (e: typeof Correspondencia.Entrada.Type) {
-    const ato = idDoAto(e.id.split("#")[0]!);
+    const ato = e.id.split("#")[0]!;
     const comDispositivo = e.id.includes("#");
     const tabelas = yield* normas.tabelasDeCorrespondencia(ato);
     const resultados = yield* normas.correspondencia(e.id);

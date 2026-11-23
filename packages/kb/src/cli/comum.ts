@@ -12,7 +12,7 @@ import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Flag from "effect/cli/Flag";
 import * as Layers from "../layers.ts";
-import { ehIdExterno, ehIdNorma, idDoAto } from "../normas/ids.ts";
+import { ehIdExterno, ehIdNorma } from "../normas/ids.ts";
 
 /** Entrada que os parsers de flag não pegam (formato do ID, combinação de argumentos). */
 export class EntradaInvalida extends Schema.TaggedError<EntradaInvalida>()("EntradaInvalida", {
@@ -70,7 +70,7 @@ export const exigirIdNorma = Effect.fn("cli.exigirIdNorma")(function* (
   if (!ehIdNorma(norma) && !(opcoes.aceitarExterno && ehIdExterno(norma))) {
     return yield* new EntradaInvalida({ motivo: "id-fora-do-formato", valor: id });
   }
-  return idDoAto(norma);
+  return norma;
 });
 
 export const flagJson = Flag.Boolean("json").pipe(Flag.withDescription("saída em JSON"), Flag.withDefault(false));

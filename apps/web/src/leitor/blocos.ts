@@ -9,7 +9,7 @@
  * ementário inteiro numa tabela, por exemplo): passado `LIMITE_SEM_CABECALHO` vezes o tamanho, o corte
  * vale também depois de uma linha em branco, antes de uma linha que não continua o bloco anterior (sem
  * recuo, não é item de lista, linha de tabela, citação nem HTML). Nunca se corta dentro de bloco de
- * código cercado nem de uma região `<!-- redacao-nao-vigente -->` ou `<!-- fora-do-ato -->` (que o
+ * código cercado nem de uma região `<!-- redacao-nao-vigente -->` (que o
  * `remarkMarcadores` agrupa). Exceções conhecidas: definição de link por referência e nota de rodapé
  * (`[^1]`) em outro bloco ficam sem par; a base não as usa nas normas.
  *
@@ -27,8 +27,8 @@ export interface Bloco {
 
 const CABECALHO = /^#{1,6}(?:[ \t]|$)/;
 const CERCA = /^ {0,3}(`{3,}|~{3,})/;
-const ABRE_MARCADOR = /^<!--\s*(redacao-nao-vigente|fora-do-ato)\b[^>]*-->\s*$/;
-const FECHA_MARCADOR = /^<!--\s*\/(redacao-nao-vigente|fora-do-ato)\s*-->\s*$/;
+const ABRE_MARCADOR = /^<!--\s*(redacao-nao-vigente)\b[^>]*-->\s*$/;
+const FECHA_MARCADOR = /^<!--\s*\/(redacao-nao-vigente)\s*-->\s*$/;
 /** O começo de linha que pode continuar o bloco de cima mesmo depois de uma linha em branco. */
 const CONTINUA = /^(?:[ \t]|[-*+](?:[ \t]|$)|\d{1,9}[.)](?:[ \t]|$)|\||>|<|\[\^)/;
 

@@ -137,7 +137,6 @@ const paginas = <T>(f: FerramentaTestada, args: Record<string, unknown>, lista: 
   });
 
 const ato = (id: string) => id.split("#")[0]!.replace(/~[a-z]+$/, "");
-const sufixo = (id: string) => id.slice(id.indexOf("#"));
 
 /* ================================================================== casos */
 
@@ -222,7 +221,7 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
               "br/cne-cp/res/2026/2#art28",
               "br/lei/1996/9394#art24-par1",
               "br/lei/1996/9394#art36",
-              "br/lei/1996/9394~compilacao#art26",
+              "br/lei/1996/9394#art26",
               "br/cne-cp/res/2026/2#art999",
             ];
             const cli = yield* kbTodos(ids.map((id) => ["dispositivo", id, "--filhos"]));
@@ -248,17 +247,17 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
                 subordinados: d.subordinados.map((s) => [s.id, s.rotulo, s.texto]),
                 fonte: [d.fonte.path, d.fonte.linha_inicio, d.fonte.linha_fim],
               }).toEqual({
-                id: `${e.ato}${e.dispositivo}`,
+                id: e.id,
                 rotulo: e.rotulo,
                 tipo: e.tipo,
                 caput: e.caput,
                 texto: e.texto,
                 notas: e.notas.map((n: Json) => n.texto),
                 estrutura: e.estrutura,
-                pai: e.pai === null ? null : `${e.ato}${sufixo(e.pai)}`,
+                pai: e.pai,
                 revogado: e.revogado,
                 vetado: e.vetado,
-                subordinados: e.filhos.map((f: Json) => [`${f.ato}${f.dispositivo}`, f.rotulo, f.texto]),
+                subordinados: e.filhos.map((f: Json) => [f.id, f.rotulo, f.texto]),
                 fonte: [
                   `base-conhecimento/${e.path}`,
                   e.linha_inicio,

@@ -27,11 +27,9 @@ const ordem = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0));
 
 /** Dispositivo normativo (artigo, parágrafo, inciso, alínea, item, anexo, seção), as colunas de `Dispositivo`. */
 export const esquemaLinhaDispositivo = Schema.Struct({
-  /** ID do arquivo: `br/cne-cp/res/2026/2#art28-vii` (ou `br/lei/1996/9394~compilacao#art36`). */
+  /** `br/cne-cp/res/2026/2#art28-vii` */
   id,
-  /** ID do ato (sem variante). */
-  ato_id: id,
-  /** ID do arquivo (com variante, se houver). */
+  /** ID da norma. */
   norma_id: id,
   /** `#art28-vii` */
   dispositivo: id,
@@ -54,8 +52,6 @@ export const esquemaLinhaDispositivo = Schema.Struct({
   notas: Schema.Array(Schema.Struct({ tipo: Schema.Literals(TIPOS_NOTA), texto: Schema.String })),
   revogado: Schema.Boolean,
   vetado: Schema.Boolean,
-  /** Este é o dispositivo do índice do ato (`indiceDispositivos`): o texto integral prevalece sobre a compilação. */
-  canonico: Schema.Boolean,
   /** Markdown, relativo à raiz do repositório. */
   path: Schema.String,
   linha_inicio: linha,

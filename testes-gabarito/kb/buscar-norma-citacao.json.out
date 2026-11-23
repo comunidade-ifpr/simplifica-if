@@ -15,7 +15,6 @@
       },
       "dispositivo": {
         "id": "br/cne-cp/res/2026/2#art28",
-        "arquivo_id": "br/cne-cp/res/2026/2#art28",
         "tipo": "artigo",
         "rotulo": "Art. 28.",
         "caput": [],
@@ -134,8 +133,8 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-        "linha_inicio": 454,
-        "linha_fim": 489
+        "linha_inicio": 455,
+        "linha_fim": 490
       },
       "pedido": null,
       "metadados": null,

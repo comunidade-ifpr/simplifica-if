@@ -25,273 +25,162 @@ aliases:
   - "Lei de Cotas"
 fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm"
 vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "alteração por Lei nº 14.723/2023 produz efeito na vigência da origem, a confirmar (não antes de 2023-11-13): presumida em vigor em 2026-11-13; alteração por Lei nº 13.409/2016 produz efeito na vigência da origem, a confirmar (não antes de 2016-12-28): presumida em vigor em 2026-11-13"
 alterada_por:
   - "Lei nº 14.945/2024 (art. 8º) — art. 1º"
+  - "Lei nº 14.723/2023 — parágrafo único do art. 1º, arts. 3º a 7º e inclusão dos arts. 7º-A a 7º-C"
+  - "Lei nº 13.409/2016 — arts. 3º, 5º e 7º (redação depois substituída pela Lei nº 14.723/2023)"
+pontos_chave:
+  - "As instituições federais de educação superior vinculadas ao MEC reservam, em cada concurso seletivo, por curso e turno, no mínimo 50% das vagas a estudantes que cursaram integralmente o ensino médio em escolas públicas ou em escolas comunitárias do campo conveniadas com o poder público (art. 1º)."
+  - "Das vagas reservadas, 50% vão para estudantes de famílias com renda igual ou inferior a 1 salário mínimo per capita (art. 1º, parágrafo único)."
+  - "Na educação superior, as vagas reservadas são preenchidas, por curso e turno, por autodeclarados pretos, pardos, indígenas e quilombolas e por pessoas com deficiência, em proporção no mínimo igual à dessas populações na unidade da Federação, segundo o último censo do IBGE (art. 3º)."
+  - "Educação superior: as vagas não preenchidas pelos critérios raciais e de deficiência vão primeiro a autodeclarados pretos, pardos, indígenas e quilombolas ou pessoas com deficiência e depois a estudantes que cursaram o ensino médio em escola pública (art. 3º, § 1º)."
+  - "Nos concursos seletivos, os candidatos concorrem primeiro às vagas de ampla concorrência e, se não alcançarem a nota, passam a concorrer às vagas reservadas (art. 3º, § 2º, e art. 4º, § 2º)."
+  - "As instituições federais de ensino técnico de nível médio reservam, em cada concurso seletivo, por curso e turno, no mínimo 50% das vagas a estudantes que cursaram integralmente o ensino fundamental em escolas públicas (art. 4º)."
+  - "Ensino técnico de nível médio: das vagas reservadas, 50% vão para estudantes de famílias com renda igual ou inferior a 1 salário mínimo per capita (art. 4º, § 1º)."
+  - "Ensino técnico de nível médio: as vagas reservadas são preenchidas, por curso e turno, por autodeclarados pretos, pardos, indígenas e quilombolas e por pessoas com deficiência, em proporção no mínimo igual à dessas populações na unidade da Federação, segundo o último censo do IBGE; as remanescentes seguem a mesma ordem de prioridade do ensino superior (art. 5º e parágrafo único)."
+  - "O MEC e os ministérios responsáveis pelas políticas de igualdade racial, indígena, direitos humanos e juventude acompanham e avaliam o programa, ouvida a Funai (art. 6º)."
+  - "A cada 10 anos, a contar da publicação da Lei, o programa especial é avaliado; o MEC divulga anualmente relatório sobre acesso, permanência e conclusão dos beneficiários e não beneficiários (art. 7º e parágrafo único)."
+  - "Optantes pela reserva em situação de vulnerabilidade social têm prioridade no auxílio estudantil (art. 7º-A); as instituições federais de ensino superior promovem ações afirmativas na pós-graduação stricto sensu (art. 7º-B)."
+notas_da_fonte:
+  - "Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: o corpo estava parafraseado e na redação original; passou a trazer a redação vigente (Leis nº 13.409/2016, nº 14.723/2023 e nº 14.945/2024), com a redação anterior de cada dispositivo alterado."
 ---
-
-## Resumo
-
-- Lei nº 12.711, de 29 de Agosto de 2012
 
 **Dispõe sobre o ingresso nas universidades federais e nas instituições federais de ensino técnico de nível médio e dá outras providências.**
 
-Presidenta da República: Dilma Rousseff  
-Data de Sanção: 29 de agosto de 2012
+A PRESIDENTA DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
----
+<!-- redacao-nao-vigente -->
 
-#### ARTIGO 1º
+#### Art. 1º
 
-As instituições federais de educação superior vinculadas ao Ministério da Educação reservarão, no mínimo, **50% (cinquenta por cento) de suas vagas** para estudantes que tenham cursado integralmente o ensino médio em escolas públicas.
+As instituições federais de educação superior vinculadas ao Ministério da Educação reservarão, em cada concurso seletivo para ingresso nos cursos de graduação, por curso e turno, no mínimo 50% (cinquenta por cento) de suas vagas para estudantes que tenham cursado integralmente o ensino médio em escolas públicas.
 
-**Parágrafo Único** No mínimo 50% das vagas reservadas de acordo com o caput deste artigo serão destinadas a estudantes oriundos de famílias com renda igual ou inferior a **1,5 (um vírgula cinco) salário mínimo per capita**.
+<!-- /redacao-nao-vigente -->
 
-#### ARTIGO 2º
+#### Art. 1º
 
-Vetado.
+As instituições federais de educação superior vinculadas ao Ministério da Educação reservarão, em cada concurso seletivo para ingresso nos cursos de graduação, por curso e turno, no mínimo 50% (cinquenta por cento) de suas vagas para estudantes que tenham cursado integralmente o ensino médio em escolas públicas ou em escolas comunitárias que atuam no âmbito da educação do campo conveniadas com o poder público, referidas na alínea b do inciso I do § 3º do art. 7º da Lei nº 14.113, de 25 de dezembro de 2020. (Redação dada pela Lei nº 14.945, de 2024)
 
-#### ARTIGO 3º
+<!-- redacao-nao-vigente -->
 
-Em cada instituição federal de educação superior, no mínimo 50% das vagas de que trata o art. 1º desta Lei será preenchido, por uma margem de preferência, por autodeclarados pretos, pardos e indígenas, em proporção **no mínimo igual à de pretos, pardos e indígenas na população da unidade da Federação** onde está instalada a instituição, segundo o último censo da Fundação Instituto Brasileiro de Geografia e Estatística (IBGE).
+**Parágrafo único.** No preenchimento das vagas de que trata o caput deste artigo, 50% (cinquenta por cento) deverão ser reservados aos estudantes oriundos de famílias com renda igual ou inferior a 1,5 salário-mínimo (um salário-mínimo e meio) per capita.
 
-**Parágrafo Único** As instituições federais de educação superior deverão implementar, em seus processos de seleção, mecanismos que favoreçam a comprovação da veracidade das informações prestadas por candidatos que se autodeclarem pretos, pardos ou indígenas, nos termos de regulamentação do Ministério da Educação.
+<!-- /redacao-nao-vigente -->
 
-#### ARTIGO 4º
+**Parágrafo único.** No preenchimento das vagas de que trata o caput deste artigo, 50% (cinquenta por cento) deverão ser reservadas aos estudantes oriundos de famílias com renda igual ou inferior a 1 (um) salário mínimo per capita. (Redação dada pela Lei nº 14.723, de 2023)
 
-As instituições federais de ensino técnico de nível médio vinculadas ao Ministério da Educação reservarão, no mínimo, **50% (cinquenta por cento) de suas vagas** para estudantes que tenham cursado integralmente o ensino fundamental em escolas públicas.
+#### Art. 2º
 
-**Parágrafo Único** No mínimo 50% das vagas reservadas de acordo com o caput deste artigo serão destinadas a estudantes oriundos de famílias com renda igual ou inferior a **1,5 (um vírgula cinco) salário mínimo per capita**.
+(VETADO).
 
-#### ARTIGO 5º
+<!-- redacao-nao-vigente -->
 
-Em cada instituição federal de ensino técnico de nível médio, no mínimo 50% das vagas de que trata o art. 4º desta Lei será preenchido, por uma margem de preferência, por autodeclarados pretos, pardos e indígenas, em proporção **no mínimo igual à de pretos, pardos e indígenas na população da unidade da Federação** onde está instalada a instituição, segundo o último censo do IBGE.
+#### Art. 3º
 
-**Parágrafo Único** As instituições federais de ensino técnico de nível médio deverão implementar, em seus processos de seleção, mecanismos que favoreçam a comprovação da veracidade das informações prestadas por candidatos que se autodeclarem pretos, pardos ou indígenas, nos termos de regulamentação do Ministério da Educação.
+Em cada instituição federal de ensino superior, as vagas de que trata o art. 1º desta Lei serão preenchidas, por curso e turno, por autodeclarados pretos, pardos e indígenas, em proporção no mínimo igual à de pretos, pardos e indígenas na população da unidade da Federação onde está instalada a instituição, segundo o último censo do Instituto Brasileiro de Geografia e Estatística (IBGE).
 
-#### ARTIGO 6º
+Em cada instituição federal de ensino superior, as vagas de que trata o art. 1º desta Lei serão preenchidas, por curso e turno, por autodeclarados pretos, pardos e indígenas e por pessoas com deficiência, nos termos da legislação, em proporção ao total de vagas no mínimo igual à proporção respectiva de pretos, pardos, indígenas e pessoas com deficiência na população da unidade da Federação onde está instalada a instituição, segundo o último censo da Fundação Instituto Brasileiro de Geografia e Estatística - IBGE. (Redação dada pela Lei nº 13.409, de 2016)
 
-O Ministério da Educação acompanhará e avaliará continuamente o programa de reserva de vagas instituído por esta Lei, devendo efetuar o acompanhamento da trajetória acadêmica dos estudantes beneficiários das ações afirmativas, de modo a avaliar o impacto dessas políticas na promoção da igualdade de oportunidades educacionais.
+**Parágrafo único.** No caso de não preenchimento das vagas segundo os critérios estabelecidos no caput deste artigo, aquelas remanescentes deverão ser completadas por estudantes que tenham cursado integralmente o ensino médio em escolas públicas.
 
-#### ARTIGO 7º
+<!-- /redacao-nao-vigente -->
 
-A implementação do disposto nos arts. 1º, 3º, 4º e 5º desta Lei será avaliada após dez anos de sua vigência, podendo ser prorrogada, revogada ou modificada por decisão do Poder Legislativo, com base em relatório técnico do Ministério da Educação.
+#### Art. 3º
 
-#### ARTIGO 8º
+Em cada instituição federal de ensino superior, as vagas de que trata o art. 1º desta Lei serão preenchidas, por curso e turno, por autodeclarados pretos, pardos, indígenas e quilombolas e por pessoas com deficiência, nos termos da legislação, em proporção ao total de vagas no mínimo igual à proporção respectiva de pretos, pardos, indígenas e quilombolas e de pessoas com deficiência na população da unidade da Federação onde está instalada a instituição, segundo o último censo da Fundação Instituto Brasileiro de Geografia e Estatística (IBGE). (Redação dada pela Lei nº 14.723, de 2023)
 
-O Ministério da Educação deverá implementar, no mínimo, 25% (vinte e cinco por cento) do total de vagas de reserva a cada ano, até o cumprimento integral do disposto nos arts. 1º, 3º, 4º e 5º desta Lei, com base no poder de alocação orçamentária anual de recursos para educação.
+**§ 1º** No caso de não preenchimento das vagas segundo os critérios estabelecidos no caput deste artigo, as remanescentes deverão ser destinadas, primeiramente, a autodeclarados pretos, pardos, indígenas e quilombolas ou a pessoas com deficiência e, posteriormente, completadas por estudantes que tenham cursado integralmente o ensino médio em escola pública. (Redação dada pela Lei nº 14.723, de 2023)
 
-**Parágrafo Único** Poderá ser implementado percentual superior a 25% (vinte e cinco por cento) anualmente, desde que não comprometa a qualidade da educação oferecida pelas instituições federais de educação superior e pelos institutos federais de educação, ciência e tecnologia.
+**§ 2º** Nos concursos seletivos para ingresso nas instituições federais de ensino superior, os candidatos concorrerão, inicialmente, às vagas disponibilizadas para ampla concorrência e, se não for alcançada nota para ingresso por meio dessa modalidade, passarão a concorrer às vagas reservadas pelo programa especial para o acesso às instituições de educação superior de estudantes pretos, pardos, indígenas e quilombolas e de pessoas com deficiência, bem como dos que tenham cursado integralmente o ensino médio em escola pública. (Incluído pela Lei nº 14.723, de 2023)
 
-#### ARTIGO 9º
+#### Art. 4º
+
+As instituições federais de ensino técnico de nível médio reservarão, em cada concurso seletivo para ingresso em cada curso, por turno, no mínimo 50% (cinquenta por cento) de suas vagas para estudantes que cursaram integralmente o ensino fundamental em escolas públicas.
+
+<!-- redacao-nao-vigente -->
+
+**Parágrafo único.** No preenchimento das vagas de que trata o caput deste artigo, 50% (cinquenta por cento) deverão ser reservados aos estudantes oriundos de famílias com renda igual ou inferior a 1,5 salário-mínimo (um salário-mínimo e meio) per capita.
+
+<!-- /redacao-nao-vigente -->
+
+**§ 1º** No preenchimento das vagas de que trata o caput deste artigo, 50% (cinquenta por cento) deverão ser reservadas aos estudantes oriundos de famílias com renda igual ou inferior a 1 (um) salário mínimo per capita. (Redação dada pela Lei nº 14.723, de 2023)
+
+**§ 2º** Nos concursos seletivos para ingresso nas instituições federais de ensino técnico de nível médio, os candidatos concorrerão, inicialmente, às vagas disponibilizadas para ampla concorrência e, se não for alcançada nota para ingresso por meio dessa modalidade, passarão a concorrer às vagas reservadas pelo programa especial para o acesso às instituições de educação de ensino técnico de nível médio de estudantes pretos, pardos, indígenas e quilombolas e de pessoas com deficiência, bem como dos que tenham cursado integralmente o ensino fundamental em escola pública. (Incluído pela Lei nº 14.723, de 2023)
+
+<!-- redacao-nao-vigente -->
+
+#### Art. 5º
+
+Em cada instituição federal de ensino técnico de nível médio, as vagas de que trata o art. 4º desta Lei serão preenchidas, por curso e turno, por autodeclarados pretos, pardos e indígenas, em proporção no mínimo igual à de pretos, pardos e indígenas na população da unidade da Federação onde está instalada a instituição, segundo o último censo do Instituto Brasileiro de Geografia e Estatística (IBGE).
+
+Em cada instituição federal de ensino técnico de nível médio, as vagas de que trata o art. 4º desta Lei serão preenchidas, por curso e turno, por autodeclarados pretos, pardos e indígenas e por pessoas com deficiência, nos termos da legislação, em proporção ao total de vagas no mínimo igual à proporção respectiva de pretos, pardos, indígenas e pessoas com deficiência na população da unidade da Federação onde está instalada a instituição, segundo o último censo do IBGE. (Redação dada pela Lei nº 13.409, de 2016)
+
+**Parágrafo único.** No caso de não preenchimento das vagas segundo os critérios estabelecidos no caput deste artigo, aquelas remanescentes deverão ser preenchidas por estudantes que tenham cursado integralmente o ensino fundamental em escola pública.
+
+<!-- /redacao-nao-vigente -->
+
+#### Art. 5º
+
+Em cada instituição federal de ensino técnico de nível médio, as vagas de que trata o art. 4º desta Lei serão preenchidas, por curso e turno, por autodeclarados pretos, pardos, indígenas e quilombolas e por pessoas com deficiência, nos termos da legislação, em proporção ao total de vagas no mínimo igual à proporção respectiva de pretos, pardos, indígenas e quilombolas e de pessoas com deficiência na população da unidade da Federação onde está instalada a instituição, segundo o último censo do IBGE. (Redação dada pela Lei nº 14.723, de 2023)
+
+**Parágrafo único.** No caso de não preenchimento das vagas segundo os critérios estabelecidos no caput deste artigo, as remanescentes deverão ser destinadas, primeiramente, aos autodeclarados pretos, pardos, indígenas e quilombolas ou às pessoas com deficiência e, posteriormente, completadas por estudantes que tenham cursado integralmente o ensino fundamental em escola pública. (Redação dada pela Lei nº 14.723, de 2023)
+
+<!-- redacao-nao-vigente -->
+
+#### Art. 6º
+
+O Ministério da Educação e a Secretaria Especial de Políticas de Promoção da Igualdade Racial, da Presidência da República, serão responsáveis pelo acompanhamento e avaliação do programa de que trata esta Lei, ouvida a Fundação Nacional do Índio (Funai).
+
+<!-- /redacao-nao-vigente -->
+
+#### Art. 6º
+
+O Ministério da Educação e os ministérios responsáveis pelas políticas de promoção da igualdade racial, de implementação da política indígena e indigenista, de promoção dos direitos humanos e da cidadania e de promoção de políticas públicas para a juventude serão responsáveis pelo acompanhamento e avaliação do programa especial de que trata esta Lei, ouvida a Fundação Nacional dos Povos Indígenas (Funai). (Redação dada pela Lei nº 14.723, de 2023)
+
+<!-- redacao-nao-vigente -->
+
+#### Art. 7º
+
+O Poder Executivo promoverá, no prazo de 10 (dez) anos, a contar da publicação desta Lei, a revisão do programa especial para o acesso de estudantes pretos, pardos e indígenas, bem como daqueles que tenham cursado integralmente o ensino médio em escolas públicas, às instituições de educação superior.
+
+No prazo de dez anos a contar da data de publicação desta Lei, será promovida a revisão do programa especial para o acesso às instituições de educação superior de estudantes pretos, pardos e indígenas e de pessoas com deficiência, bem como daqueles que tenham cursado integralmente o ensino médio em escolas públicas. (Redação dada pela Lei nº 13.409, de 2016)
+
+<!-- /redacao-nao-vigente -->
+
+#### Art. 7º
+
+A cada 10 (dez) anos a contar da data de publicação desta Lei, será promovida a avaliação do programa especial para o acesso às instituições de educação superior de estudantes pretos, pardos, indígenas e quilombolas e de pessoas com deficiência, bem como dos que tenham cursado integralmente o ensino médio em escola pública. (Redação dada pela Lei nº 14.723, de 2023)
+
+**Parágrafo único.** O Ministério da Educação divulgará, anualmente, relatório com informações sobre o programa especial de acesso às instituições federais de educação superior e de ensino técnico de nível médio, do qual deverão constar, pelo menos, dados sobre o acesso, a permanência e a conclusão dos alunos beneficiários e não beneficiários desta Lei. (Redação dada pela Lei nº 14.723, de 2023)
+
+#### Art. 7º-A.
+
+Os alunos optantes pela reserva de vagas no ato da inscrição do concurso seletivo que se encontrem em situação de vulnerabilidade social terão prioridade para o recebimento de auxílio estudantil de programas desenvolvidos nas instituições federais de ensino. (Incluído pela Lei nº 14.723, de 2023)
+
+#### Art. 7º-B.
+
+As instituições federais de ensino superior, no âmbito de sua autonomia e observada a importância da diversidade para o desenvolvimento científico, tecnológico e de inovação, promoverão políticas de ações afirmativas para inclusão de pretos, pardos, indígenas e quilombolas e de pessoas com deficiência em seus programas de pós-graduação stricto sensu. (Incluído pela Lei nº 14.723, de 2023)
+
+#### Art. 7º-C.
+
+Após 3 (três) anos da divulgação dos resultados do censo do IBGE, o Poder Executivo deverá adotar metodologia para atualizar anualmente os percentuais de pretos, pardos, indígenas e quilombolas e de pessoas com deficiência em relação à população das unidades da Federação, na forma da regulamentação. (Incluído pela Lei nº 14.723, de 2023)
+
+#### Art. 8º
+
+As instituições de que trata o art. 1º desta Lei deverão implementar, no mínimo, 25% (vinte e cinco por cento) da reserva de vagas prevista nesta Lei, a cada ano, e terão o prazo máximo de 4 (quatro) anos, a partir da data de sua publicação, para o cumprimento integral do disposto nesta Lei.
+
+#### Art. 9º
 
 Esta Lei entra em vigor na data de sua publicação.
 
----
-
-## ANÁLISE ESTRUTURAL
-
-### Período de Vigência
-
-**Início**: 29 de agosto de 2012  
-**Avaliação**: 10 anos após vigência (2022)  
-**Status**: Vigente com possibilidade de renovação ou modificação
-
-### Aplicação por Instituição
-
-#### Universidades Federais (Art. 1º - 3º)
-
-**Modalidade**: Entrada ao nível superior (graduação)
-
-**Reserva Obrigatória de Vagas**:
-
-- 50% para egressos de escolas públicas
-  - 50% desses 50% = 25% para baixa renda (≤ 1,5 SM per capita)
-  - 50% desses 50% = 25% para renda maior (> 1,5 SM per capita)
-
-**Distribuição de Raça/Etnia** (dos 50% para egressos de escola pública):
-
-- Proporção mínima igual à população estadual de pretos, pardos e indígenas (IBGE)
-- Exemplo: Se estado tem 30% de PPI, mínimo 30% das vagas de escola pública devem ser para PPI
-
-**Implementação Progressiva**:
-- Mínimo 25% ao ano
-- Máximo 4 anos para 100% (Arts. 8º e parágrafo único)
-
-#### Institutos Federais / Ensino Técnico de Nível Médio (Art. 4º - 5º)
-
-**Modalidade**: Entrada ao ensino técnico (fundamental completo)
-
-**Reserva Obrigatória de Vagas**:
-
-- 50% para egressos de escolas públicas
-  - 50% desses 50% = 25% para baixa renda
-  - 50% desses 50% = 25% para renda maior
-
-**Distribuição de Raça/Etnia** (dos 50% para egressos de escola pública):
-
-- Proporção mínima igual à população estadual de PPI (IBGE)
-
-**Implementação Progressiva**:
-- Idêntica às universidades federais
-
-### Mecanismo de Verificação (Parágrafo Único, Arts. 3º e 5º)
-
-Instituições devem implementar **mecanismos de comprovação de autodeclaração** de pretos, pardos e indígenas:
-
-- Entrevistas
-- Análise de documentação
-- Comissões de heteroidentificação
-- Verificação de critérios de pertencimento
-
-### Acompanhamento e Avaliação (Arts. 6º - 7º)
-
-**Responsabilidade**: Ministério da Educação
-
-**Aspectos Monitorados**:
-
-1. Trajetória acadêmica de beneficiários
-2. Taxa de conclusão
-3. Tempo médio de conclusão
-4. Impacto na igualdade de oportunidades
-
-**Avaliação Periódica**: Após 10 anos (2022)
-
-**Possibilidades Após Avaliação**:
-
-- Renovação
-- Modificação
-- Revogação
-
----
-
-## IMPACTO NA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA (EPTNM)
-
-### Estrutura de Cotas no IFPR e Institutos Federais
-
-1. **Primeira Metade de Vagas (50%)**
-   - Sem restrição especial
-   - Acesso aberto a todos
-
-2. **Segunda Metade de Vagas (50%)**
-   - 25% para egressos de escolas públicas + baixa renda (≤ 1,5 SM per capita)
-   - 25% para egressos de escolas públicas + renda maior
-   - Proporção racial/étnica respeitada em ambas
-
-### Exemplo Prático (100 vagas em curso técnico)
-
-```
-100 VAGAS TOTAIS
-│
-├─ 50 VAGAS: AMPLA CONCORRÊNCIA (sem restrição)
-│
-└─ 50 VAGAS: RESERVADAS PARA EGRESSOS DE ESCOLA PÚBLICA
-   │
-   ├─ 25 VAGAS: EP + Baixa Renda (≤ 1,5 SM per capita)
-   │  ├─ ~7-8 VAGAS: PPI (assumindo 30% de PPI no estado)
-   │  └─ ~17-18 VAGAS: Demais (pardos não-PPI, brancos de EP + BR)
-   │
-   └─ 25 VAGAS: EP + Renda Maior
-      ├─ ~7-8 VAGAS: PPI
-      └─ ~17-18 VAGAS: Demais
-```
-
-### Interseccionalidade de Critérios
-
-A Lei articula:
-
-- **Origem escolar**: Escola pública (EP) vs. privada
-- **Renda**: Até 1,5 SM per capita vs. acima
-- **Raça/Etnia**: PPI (Preto, Pardo, Indígena) vs. demais
-- **Fórmula**: EP × Renda × Raça/Etnia
-
----
-
-## LEGISLAÇÃO RELACIONADA
-
-### Alterações Posteriores
-
-1. **Lei nº 13.409/2016**
-   - Estendeu cotas para pessoas com deficiência
-   - Mínimo de 5% das vagas
-
-2. **Lei nº 14.945/2024**
-   - Reforça 50% para egressos de escolas públicas
-   - Inclui EPTNM em programas de bolsas
-
-### Leis Complementares
-
-- Lei nº 9.394/1996 (LDB) - Base educacional
-- Lei nº 11.096/2005 (ProUni) - Programas similares
-- Lei nº 10.558/2002 (Diversidade na Educação Superior)
-- Constituição Federal (Art. 208, V - Educação)
-
----
-
-## CRONOGRAMA ORIGINAL DE IMPLEMENTAÇÃO
-
-| Período | Implementação Mínima | Observações |
-|---------|-------------------|---|
-| 2012 - 2013 | 25% das cotas | Primeiro ano |
-| 2013 - 2014 | 50% das cotas | Segundo ano |
-| 2014 - 2015 | 75% das cotas | Terceiro ano |
-| 2015 em diante | 100% das cotas | Implementação completa |
-
-**Status Atual (2025)**: Lei em implementação completa há 10 anos
-
----
-
-## DEFINIÇÕES E CRITÉRIOS
-
-### Renda Per Capita
-
-**Cálculo**: Renda familiar total ÷ número de membros da família
-
-**Limite**: 1,5 salário mínimo federal per capita
-
-**Documentação**: Declaração de renda ou comprovantes
-
-### Egressos de Escola Pública
-
-**Critério**: Ter cursado **integralmente**:
-
-- Ensino médio completo (universidades)
-- Ensino fundamental completo (institutos técnicos)
-
-**Em escola pública**: Federal, estadual ou municipal
-
-### Autodeclaração de Raça/Etnia
-
-**Opções**:
-
-- Preto
-- Pardo
-- Indígena
-
-**Mecanismo**: Autodeclaração + comissão de heteroidentificação (quando houver suspeita de fraude)
-
----
-
-## PONTOS CRÍTICOS PARA PPCs
-
-1. **Impacto em Políticas de Ingresso**
-   - PPCs devem mencionar conformidade com Lei 12.711
-
-2. **Corpo Docente**
-   - Considerar formação em inclusão e educação antirracista
-
-3. **Infraestrutura**
-   - Acessibilidade para pessoas com deficiência (Lei 13.409/2016)
-
-4. **Currículo**
-   - Incorporação de temáticas de história e cultura africana, afro-brasileira e indígena (Lei 11.645/2008)
-
-5. **Monitoria e Tutoria**
-   - Programas de permanência e êxito estudantil
-
----
-
-**Processamento**: Convertido de HTML para Markdown estruturado  
-**Data de Processamento**: 2025-11-17  
-**Fonte**: Câmara dos Deputados  
-**Status**: Vigente  
-**Avaliação Periódica**: 10 anos após vigência (2022 - já passou)
+Brasília, 29 de agosto de 2012; 191º da Independência e 124º da República.
+
+DILMA ROUSSEFF
+Aloizio Mercadante
+Miriam Belchior
+Luís Inácio Lucena Adams
+Luiza Helena de Bairros
+Gilberto Carvalho
+
+**Publicado no Diário Oficial da União de 30 de agosto de 2012.**

@@ -7,9 +7,6 @@
  *   `ifpr/consup/res/2024/190` e `ifpr/proens/nt/2025/1`;
  * - ato da Presidência (lei, decreto, lei complementar...): `br/<tipo>/<ano>/<número>`, como
  *   `br/lei/1996/9394` e `br/decreto/2004/5154`;
- * - variante de arquivo do mesmo ato: `<id do ato>~<variante>`. Hoje só existe `~compilacao`,
- *   usada pela compilação de trechos da LDB (`br/lei/1996/9394~compilacao`). A variante tem ID
- *   próprio, para que o ID continue único por arquivo, mas a citação resolve para o ato;
  * - referência fora da base: `externo:<segmentos>`, como `externo:cft/res/2019/89`,
  *   `externo:abnt/nbr/6023` e `externo:campus/regulamento-estagio`;
  * - dispositivo: sufixo `#...` do ID da norma, como `#art28-xvi`, `#art28-par1-iv`,
@@ -30,16 +27,14 @@ export function semAcento(texto: string): string {
 export const TIPOS_SEM_ORGAO = ["lei", "lc", "decreto", "decreto-lei", "mp", "ec"] as const;
 /** Tipos de ato emitidos por órgão (conselho, ministério, pró-reitoria). */
 const TIPOS_COM_ORGAO = ["res", "portaria", "nt", "parecer", "in", "deliberacao"] as const;
-export const VARIANTES = ["compilacao"] as const;
 
 export type TipoAto = (typeof TIPOS_SEM_ORGAO)[number] | (typeof TIPOS_COM_ORGAO)[number];
 
 const SLUG = String.raw`[a-z0-9]+(?:-[a-z0-9]+)*`;
-const RE_ID_NORMA = new RegExp(
-  String.raw`^(?:br/(?:${TIPOS_SEM_ORGAO.join("|")})|(?:br|ifpr)/${SLUG}/(?:${TIPOS_COM_ORGAO.join("|")}))/(\d{4})/([1-9]\d*)(?:~(${VARIANTES.join("|")}))?$`,
+/** O ID de uma norma: um ato, um arquivo. É o que uma citação (ficha, marco, relação) referencia. */
+export const RE_ID_NORMA = new RegExp(
+  String.raw`^(?:br/(?:${TIPOS_SEM_ORGAO.join("|")})|(?:br|ifpr)/${SLUG}/(?:${TIPOS_COM_ORGAO.join("|")}))/(\d{4})/([1-9]\d*)$`,
 );
-/** Ato sem variante de arquivo: o que uma citação (ficha, marco) referencia. */
-export const RE_ID_ATO = new RegExp(RE_ID_NORMA.source.replace(String.raw`(?:~(${VARIANTES.join("|")}))?`, ""));
 const RE_ID_EXTERNO = /^externo:[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\/[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/;
 const RE_ID_CNCT = /^cnct:[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /**
@@ -67,34 +62,18 @@ export function ehIdCnct(id: string): boolean {
   return RE_ID_CNCT.test(id);
 }
 
-/** ID de ato sem variante (`br/lei/1996/9394`, e não `br/lei/1996/9394~compilacao`). */
-export function ehIdAto(id: string): boolean {
-  return RE_ID_ATO.test(id);
-}
-
 /**
- * Regex de uma referência citável (ato sem variante, `externo:` ou `cnct:`), para contratos que
+ * Regex de uma referência citável (norma, `externo:` ou `cnct:`), para contratos que
  * precisam do padrão como dado (zod → JSON Schema).
  */
 export const RE_REFERENCIA = new RegExp(
-  `^(?:${[RE_ID_ATO, RE_ID_EXTERNO, RE_ID_CNCT].map((re) => re.source.slice(1, -1)).join("|")})$`,
+  `^(?:${[RE_ID_NORMA, RE_ID_EXTERNO, RE_ID_CNCT].map((re) => re.source.slice(1, -1)).join("|")})$`,
 );
 export const RE_ID_DISPOSITIVO = RE_DISPOSITIVO;
-/** Ato com dispositivo: `br/cne-ceb/res/2025/3#art6-iii`. */
+/** Norma com dispositivo: `br/cne-ceb/res/2025/3#art6-iii`. */
 export const RE_ID_ATO_COM_DISPOSITIVO = new RegExp(
-  `${RE_ID_ATO.source.slice(0, -1)}${RE_DISPOSITIVO.source.slice(1)}`,
+  `${RE_ID_NORMA.source.slice(0, -1)}${RE_DISPOSITIVO.source.slice(1)}`,
 );
-
-/** ID do ato, sem a variante de arquivo (`br/lei/1996/9394~compilacao` → `br/lei/1996/9394`). */
-export function idDoAto(id: string): string {
-  const til = id.indexOf("~");
-  return til === -1 ? id : id.slice(0, til);
-}
-
-export function varianteDoId(id: string): string | null {
-  const til = id.indexOf("~");
-  return til === -1 ? null : id.slice(til + 1);
-}
 
 /** Partes de um ID de norma (`null` se o formato for inválido). */
 export function partesIdNorma(id: string): {
@@ -103,17 +82,15 @@ export function partesIdNorma(id: string): {
   tipo: string;
   ano: number;
   numero: string;
-  variante: string | null;
 } | null {
   if (!RE_ID_NORMA.test(id)) return null;
-  const [ato, variante] = id.split("~");
-  const segmentos = ato!.split("/");
+  const segmentos = id.split("/");
   if (segmentos.length === 4) {
     const [jurisdicao, tipo, ano, numero] = segmentos as [string, string, string, string];
-    return { jurisdicao, orgao: null, tipo, ano: Number(ano), numero, variante: variante ?? null };
+    return { jurisdicao, orgao: null, tipo, ano: Number(ano), numero };
   }
   const [jurisdicao, orgao, tipo, ano, numero] = segmentos as [string, string, string, string, string];
-  return { jurisdicao, orgao, tipo, ano: Number(ano), numero, variante: variante ?? null };
+  return { jurisdicao, orgao, tipo, ano: Number(ano), numero };
 }
 
 /** Monta o ID de um ato a partir das partes já canônicas. */
@@ -157,11 +134,8 @@ export function segmentoOrgao(orgao: string): string {
 }
 
 /**
- * ID esperado para uma norma da base, a partir do front matter.
- *
- * Uma compilação (`tipo_documento: Compilação`) reproduz dispositivos de outro ato: o ID é o do ato
- * de origem (o tipo vem de `tipo_ato`, ou é `lei` quando o órgão é a Presidência) com o sufixo
- * `~compilacao`. Devolve `null` quando o tipo ou o órgão não têm regra.
+ * ID esperado para uma norma da base, a partir do front matter. Devolve `null` quando o tipo ou o
+ * órgão não têm regra.
  */
 export function idEsperadoDaNorma(meta: {
   tipo_documento: string;
@@ -169,24 +143,20 @@ export function idEsperadoDaNorma(meta: {
   jurisdicao: string;
   numero: string | number;
   ano: string | number;
-  tipo_ato?: string | undefined;
 }): string | null {
-  const compilacao = semAcento(meta.tipo_documento) === "compilacao";
   const orgaoNormalizado = semAcento(meta.orgao).trim();
   const presidencia = ORGAOS_PRESIDENCIA.has(orgaoNormalizado);
-  const tipoDocumento = compilacao ? (meta.tipo_ato ?? (presidencia ? "Lei" : "")) : meta.tipo_documento;
-  const tipo = TIPO_POR_DOCUMENTO[semAcento(tipoDocumento).trim()];
+  const tipo = TIPO_POR_DOCUMENTO[semAcento(meta.tipo_documento).trim()];
   if (!tipo) return null;
   const semOrgao = (TIPOS_SEM_ORGAO as readonly string[]).includes(tipo);
   if (semOrgao !== presidencia) return null;
-  const id = montarIdNorma({
+  return montarIdNorma({
     jurisdicao: semAcento(meta.jurisdicao).trim(),
     orgao: semOrgao ? null : segmentoOrgao(meta.orgao),
     tipo,
     ano: meta.ano,
     numero: meta.numero,
   });
-  return compilacao ? `${id}~compilacao` : id;
 }
 
 /** Segmento de tipo do ID → `tipo_documento`, como o front matter o escreve. */
@@ -211,7 +181,7 @@ const ORGAO_POR_SEGMENTO: Readonly<Record<string, string>> = { reitoria: "Reitor
 /**
  * Os metadados que o ID de um ato carrega, como o front matter os escreve: o inverso de
  * `idEsperadoDaNorma`. Serve às normas sem texto na base (`stubs.yaml`), que não registram tipo, órgão,
- * número nem ano à parte. `null` para ID que não é de ato (variante de arquivo, `externo:`).
+ * número nem ano à parte. `null` para ID que não é de norma (`externo:`).
  */
 export function metadadosDoIdNorma(id: string): {
   tipo_documento: string;
@@ -220,7 +190,7 @@ export function metadadosDoIdNorma(id: string): {
   numero: string;
   ano: number;
 } | null {
-  const partes = ehIdAto(id) ? partesIdNorma(id) : null;
+  const partes = ehIdNorma(id) ? partesIdNorma(id) : null;
   if (partes === null) return null;
   const sigla = (segmento: string) => ORGAO_POR_SEGMENTO[segmento] ?? segmento.toUpperCase().replaceAll("-", "/");
   const orgao =

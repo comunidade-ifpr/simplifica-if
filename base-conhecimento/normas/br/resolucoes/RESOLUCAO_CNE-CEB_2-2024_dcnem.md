@@ -30,13 +30,6 @@ fundamenta_se_em:
   - "Lei nº 9.394/1996"
 ---
 
-## Resumo
-
-- Institui as Diretrizes Curriculares Nacionais para o Ensino Médio – DCNEM
-- Documento normativo: RESOLUÇÃO CNE/CEB Nº 2, DE 13 DE NOVEMBRO DE 2024 (*)
-
-## Texto da norma
-
 > Institui as Diretrizes Curriculares Nacionais para o Ensino Médio – DCNEM.
 
 A PRESIDENTA DA CÂMARA DE EDUCAÇÃO BÁSICA DO CONSELHO NACIONAL DE EDUCAÇÃO, considerando o disposto no art. 9º, § 1º, alínea "c", da Lei nº 4.024, de 20 de dezembro de 1961, e nos arts. 22, 23, 24, 25, 26, 26-A, 27, 28, 35, 35-B, 35-C, 35-D, 36, 36-A, 36-B, 36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996, e a Lei nº 14.945, de 31 de julho de 2024, e tendo em vista o Parecer CNE/CEB nº 4, de 7 de novembro de 2024, homologado por Despacho do Senhor Ministro de Estado da Educação, publicado no Diário Oficial da União de 13 de novembro de 2024, Seção 1, p. 67, resolve:
@@ -53,9 +46,7 @@ A PRESIDENTA DA CÂMARA DE EDUCAÇÃO BÁSICA DO CONSELHO NACIONAL DE EDUCAÇÃO
 
 Ficam instituídas as Diretrizes Curriculares Nacionais para o Ensino Médio e estabelecidas as diretrizes gerais para os Itinerários Formativos, a serem observadas pelos sistemas de ensino e suas unidades escolares na organização curricular.
 
-**Parágrafo único.** As Diretrizes de que trata o caput aplicam-se a todas as formas de oferta do Ensino Médio, complementadas, quando necessário, por diretrizes próprias de cada uma das modalidades da Educação Básica, definidas na Lei nº 9.394, de 20 de dezembro de
-
-1996.
+**Parágrafo único.** As Diretrizes de que trata o caput aplicam-se a todas as formas de oferta do Ensino Médio, complementadas, quando necessário, por diretrizes próprias de cada uma das modalidades da Educação Básica, definidas na Lei nº 9.394, de 20 de dezembro de 1996.
 
 #### Art. 2º
 

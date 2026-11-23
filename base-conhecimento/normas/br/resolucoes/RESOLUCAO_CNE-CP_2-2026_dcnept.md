@@ -62,37 +62,38 @@ relaciona_se_a:
   - "Decreto nº 5.154/2004"
   - "Decreto nº 12.603/2025"
   - "Lei nº 11.788/2008"
+pontos_chave:
+  - "Entra em vigor na data de sua publicação (art. 75)."
+  - "Revoga a Resolução CNE/CEB nº 1/2014, a Resolução CNE/CP nº 1/2021, a Resolução CNE/CP nº 1/2022, a Resolução CNE/CP nº 3/2022 e o inciso III do art. 6º da Resolução CNE/CEB nº 3/2025 (art. 74)."
+  - "Transição: os cursos técnicos e os cursos superiores de tecnologia autorizados e em oferta têm até dois anos, a partir da vigência, para se adequar; os estudantes matriculados até a publicação podem concluir o curso pela Resolução CNE/CP nº 1/2021 (art. 71)."
+  - "O Capítulo XIII (formação docente) tem transição até 31/12/2030 (art. 72)."
+  - "Os sistemas de ensino devem editar normas complementares em até 180 dias (art. 73)."
+  - "Formas dos cursos técnicos de nível médio: articulada ao ensino médio (integrada, concomitante e concomitante intercomplementar) e subsequente (art. 18)."
+  - "Carga horária mínima dos cursos técnicos de nível médio: 800, 1.000 ou 1.200 h, conforme o CNCT (art. 29)."
+  - "Nas formas integrada e concomitante intercomplementar, mínimo de 3.000 h, admitida a contabilização simultânea de até 300 h entre a formação geral básica e a formação técnica, desde que haja integração curricular efetiva, vedada a simples justaposição ou duplicidade formal de componentes (art. 29, §§ 2º e 3º)."
+  - "Certificações intermediárias: a qualificação profissional técnica exige no mínimo 20% da carga horária prevista no CNCT para o curso (art. 17, § 2º)."
+  - "Especialização técnica (pós-técnico): exige 25% da carga horária mínima da habilitação (art. 29, § 5º)."
+  - "EJA articulada à EPT no ensino médio: formação geral básica de no mínimo 1.200 h mais a carga horária da habilitação técnica (800, 1.000 ou 1.200 h), com até 300 h de contabilização simultânea; este artigo substitui o inciso III do art. 6º da Resolução CNE/CEB nº 3/2025, que fixava 2.400 h (art. 30)."
+  - "PPC de curso técnico: o art. 28 lista 18 elementos mínimos, entre eles o formato da oferta, o itinerário formativo, os critérios de aproveitamento, a recomposição das aprendizagens, a estratégia de integração com o mundo do trabalho e a metodologia e o cronograma de acompanhamento de egressos (art. 28)."
+  - "Acompanhamento de egressos: dura no mínimo dois anos após a conclusão, com proteção de dados nos termos da LGPD (art. 26, X; art. 28, § 4º)."
+  - "Curso presencial concomitante ou subsequente: até 30% da carga horária mínima pode ser cumprida em atividades síncronas, síncronas mediadas ou assíncronas, com mediação de professor (art. 28, § 2º); pelo menos 70% da carga horária total deve ser presencial (art. 50)."
+  - "Curso semipresencial: pelo menos 30% presencial mais 20% presencial ou síncrona mediada, sem cômputo duplo (art. 51)."
+  - "Curso a distância: pelo menos 10% presencial mais 10% presencial ou síncrona mediada, com no máximo 70 estudantes por mediador (art. 52)."
+  - "Cursos integrados e concomitantes intercomplementares são exclusivamente presenciais; no noturno, admitem excepcionalmente a educação mediada por tecnologia (art. 49, §§ 5º e 6º)."
+  - "É vedado o curso técnico em magistério a distância; os cursos da área Gestão e Promoção da Saúde e Bem-Estar, do eixo Ambiente e Saúde, só podem ser presenciais (art. 49, §§ 1º e 8º)."
+  - "Prática profissional supervisionada: é obrigatória, integra a carga horária mínima e pode ser transversal ou ter componentes próprios, conforme o PPC (art. 36)."
+  - "Estágio: a carga horária é acrescida à carga horária mínima do curso e a obrigatoriedade deve ser justificada no PPC; na EPTNM, o estágio obrigatório não pode passar de um terço da carga horária mínima da habilitação no CNCT (art. 37, §§ 3º, 4º e 6º)."
+  - "Avaliação da aprendizagem: prevalecem os aspectos qualitativos; componentes ofertados a distância exigem avaliação presencial; é vedada a avaliação automatizada para fins de progressão (art. 38, §§ 1º, 8º e 9º)."
+  - "Inteligência artificial: o uso de IA nos cursos deve seguir diretrizes específicas do CNE (art. 6º, parágrafo único); a IA é citada como tecnologia emergente da base tecnológica e das metodologias (art. 22, V; art. 26, VI)."
+  - "Aproveitamento de estudos e experiências (art. 42)."
+  - "Certificação específica para estudantes público da educação especial (art. 44, §§ 5º e 6º; art. 45, § 8º)."
+  - "Diploma técnico com código autenticador do Sistec, nos termos da Resolução CNE/CP nº 2/2025 (art. 45, §§ 2º e 3º)."
+  - "Cursos experimentais devem ser submetidos a reconhecimento em até um ano após a conclusão da primeira turma (art. 47)."
+  - "Formação docente para a EPTNM (arts. 55 a 63)."
+notas_da_fonte:
+  - "Texto convertido do PDF da resolução assinado pelo Presidente do CNE, Cesar Callegari (35 páginas), e conferido palavra a palavra com o texto extraído do PDF."
+  - "`data_publicacao` registra provisoriamente a data do ato (11/11/2026). A resolução entra em vigor na publicação no DOU (art. 75), e os prazos dos arts. 71 a 73 contam a partir dessa data. A data, a página do DOU e a URL oficial ainda precisam ser confirmadas e registradas no campo `fonte`."
 ---
-
-## Resumo
-
-- Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica (EPT), com fundamento no Parecer CNE/CP nº 21/2026, e substitui a Resolução CNE/CP nº 1/2021 (DCNEPT anterior).
-- Documento normativo: RESOLUÇÃO CNE/CP Nº 2, DE 11 DE NOVEMBRO DE 2026. Entra em vigor na data de sua publicação (art. 75).
-- Revoga a Resolução CNE/CEB nº 1/2014, a Resolução CNE/CP nº 1/2021, a Resolução CNE/CP nº 1/2022, a Resolução CNE/CP nº 3/2022 e o inciso III do art. 6º da Resolução CNE/CEB nº 3/2025 (art. 74).
-- Transição: os cursos técnicos e os cursos superiores de tecnologia autorizados e em oferta têm até dois anos, a partir da vigência, para se adequar. Os estudantes matriculados até a publicação podem concluir o curso pela Resolução CNE/CP nº 1/2021 (art. 71). O Capítulo XIII (formação docente) tem transição até 31/12/2030 (art. 72). Os sistemas de ensino devem editar normas complementares em até 180 dias (art. 73).
-- Formas dos cursos técnicos de nível médio (art. 18): articulada ao ensino médio (integrada, concomitante e concomitante intercomplementar) e subsequente.
-- Carga horária (art. 29): mínimo de 800, 1.000 ou 1.200 h conforme o CNCT. Nas formas integrada e concomitante intercomplementar, mínimo de 3.000 h, admitida a contabilização simultânea de até 300 h entre a formação geral básica e a formação técnica, desde que haja integração curricular efetiva, vedada a simples justaposição ou duplicidade formal de componentes (§§ 2º e 3º).
-- Certificações intermediárias: a qualificação profissional técnica exige no mínimo 20% da carga horária prevista no CNCT para o curso (art. 17, § 2º). A especialização técnica (pós-técnico) exige 25% da carga horária mínima da habilitação (art. 29, § 5º).
-- EJA articulada à EPT no ensino médio (art. 30): formação geral básica de no mínimo 1.200 h mais a carga horária da habilitação técnica (800, 1.000 ou 1.200 h), com até 300 h de contabilização simultânea. Este artigo substitui o inciso III do art. 6º da Resolução CNE/CEB nº 3/2025, que fixava 2.400 h.
-- PPC de curso técnico (arts. 26 e 28): o art. 28 lista 18 elementos mínimos, entre eles o formato da oferta, o itinerário formativo, os critérios de aproveitamento, a recomposição das aprendizagens, a estratégia de integração com o mundo do trabalho e a metodologia e o cronograma de acompanhamento de egressos. O acompanhamento de egressos dura no mínimo dois anos após a conclusão, com proteção de dados nos termos da LGPD (art. 26, X; art. 28, § 4º).
-- Formatos de oferta (arts. 48 a 53):
-  - Curso presencial concomitante ou subsequente: até 30% da carga horária mínima pode ser cumprida em atividades síncronas, síncronas mediadas ou assíncronas, com mediação de professor (art. 28, § 2º). Pelo menos 70% da carga horária total deve ser presencial (art. 50).
-  - Curso semipresencial: pelo menos 30% presencial mais 20% presencial ou síncrona mediada, sem cômputo duplo (art. 51).
-  - Curso a distância: pelo menos 10% presencial mais 10% presencial ou síncrona mediada, com no máximo 70 estudantes por mediador (art. 52).
-  - Os cursos integrados e concomitantes intercomplementares são exclusivamente presenciais. No noturno, admitem excepcionalmente a educação mediada por tecnologia (art. 49, §§ 5º e 6º).
-  - É vedado o curso técnico em magistério a distância. Os cursos da área Gestão e Promoção da Saúde e Bem-Estar, do eixo Ambiente e Saúde, só podem ser presenciais (art. 49, §§ 1º e 8º).
-- Prática profissional supervisionada (art. 36): é obrigatória, integra a carga horária mínima e pode ser transversal ou ter componentes próprios, conforme o PPC.
-- Estágio (art. 37): a carga horária é acrescida à carga horária mínima do curso. A obrigatoriedade deve ser justificada no PPC. Na EPTNM, o estágio obrigatório não pode passar de um terço da carga horária mínima da habilitação no CNCT (§§ 3º, 4º e 6º).
-- Avaliação da aprendizagem (art. 38): prevalecem os aspectos qualitativos. Componentes ofertados a distância exigem avaliação presencial. É vedada a avaliação automatizada para fins de progressão (§§ 1º, 8º e 9º).
-- Inteligência artificial: o uso de IA nos cursos deve seguir diretrizes específicas do CNE (art. 6º, parágrafo único). A IA é citada como tecnologia emergente da base tecnológica e das metodologias (art. 22, V; art. 26, VI).
-- Outros pontos:
-  - Aproveitamento de estudos e experiências (art. 42).
-  - Certificação específica para estudantes público da educação especial (art. 44, §§ 5º e 6º; art. 45, § 8º).
-  - Diploma técnico com código autenticador do Sistec, nos termos da Resolução CNE/CP nº 2/2025 (art. 45, §§ 2º e 3º).
-  - Cursos experimentais, que devem ser submetidos a reconhecimento em até um ano após a conclusão da primeira turma (art. 47).
-  - Formação docente para a EPTNM (arts. 55 a 63).
-
-## Texto da norma
 
 > Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.
 
@@ -1100,8 +1101,3 @@ Ficam revogados:
 Esta Resolução entra em vigor na data de sua publicação.
 
 CESAR CALLEGARI
-
-## Notas de consolidação
-
-- Texto convertido do PDF da resolução assinado pelo Presidente do CNE, Cesar Callegari (35 páginas), e conferido palavra a palavra com o texto extraído do PDF.
-- `data_publicacao` registra provisoriamente a data do ato (11/11/2026). A resolução entra em vigor na publicação no DOU (art. 75), e os prazos dos arts. 71 a 73 contam a partir dessa data. A data, a página do DOU e a URL oficial ainda precisam ser confirmadas e registradas no campo `fonte`.

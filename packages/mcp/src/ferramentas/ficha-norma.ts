@@ -39,6 +39,13 @@ export const Dados = Schema.Struct({
     fonte_url: Schema.NullOr(UrlOficial),
     /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
     fonte_referencia: Schema.NullOr(Schema.String),
+    /**
+     * Metadados editoriais da curadoria, fora do texto da norma: indicam onde olhar, não fundamentam.
+     * `pontos_chave`: o que a norma dispõe, com o dispositivo de cada ponto.
+     */
+    pontos_chave: Schema.Array(Schema.String),
+    /** Como o texto foi obtido e consolidado. */
+    notas_da_fonte: Schema.Array(Schema.String),
   }),
   vigencia: Schema.Struct({
     data: Schema.String,
@@ -86,7 +93,7 @@ export const fichaNorma = definirFerramenta({
   nome: "ficha_norma",
   titulo: "Ficha da norma",
   descricao:
-    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
+    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; as regras de transição; e os pontos-chave da curadoria, que indicam onde olhar e não são fundamento. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
   entrada: Entrada,
   dados: Dados,
   texto(resposta) {
@@ -126,6 +133,11 @@ export const fichaNorma = definirFerramenta({
       }),
     ];
     partes.push(linhasVigencia.join("\n"));
+    const editorial = (titulo: string, itens: ReadonlyArray<string>) => {
+      if (itens.length) partes.push([`**${titulo}**`, ...itens.map((item) => `- ${item}`)].join("\n"));
+    };
+    editorial("Pontos-chave (indicação da curadoria, não fundamento; cite o dispositivo):", norma.pontos_chave);
+    editorial("Notas da fonte:", norma.notas_da_fonte);
     if (sucessoras.length) partes.push(`**Sucessoras:** ${sucessoras.map((s) => nome(s)).join(", ")}.`);
     if (transicoes.length) {
       partes.push(

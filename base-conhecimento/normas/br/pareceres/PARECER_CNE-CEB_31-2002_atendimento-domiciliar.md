@@ -35,19 +35,16 @@ relaciona_se_a:
   - "Decreto-Lei nº 1.044/1969"
   - "Lei nº 6.202/1975"
   - "Lei nº 9.394/1996"
+pontos_chave:
+  - "A consulta é sobre a validade do Decreto-Lei nº 1.044/1969 e da Lei nº 6.202/1975 diante da exigência de frequência dos arts. 24, VI, e 47, § 3º, da LDB."
+  - "Com a competência do art. 90 da LDB, o CNE conclui que a Lei nº 9.394/1996 não proíbe o atendimento a alunos impedidos, temporária ou permanentemente, de frequentar as aulas, e que os arts. 58 a 60 da LDB (educação especial) obrigam sistemas e escolas a oferecer atendimento especializado, inclusive na forma domiciliar."
+  - "O atendimento segue as normas do respectivo sistema de ensino e, na escola, o projeto político-pedagógico, sob responsabilidade da administração escolar."
+  - "Condições mínimas do voto: o aluno deve estar regularmente matriculado; as normas específicas do sistema de ensino devem ser atendidas; e o projeto político-pedagógico da escola deve prever as condições e a viabilidade do atendimento."
+notas_da_fonte:
+  - "Texto conforme o PDF publicado pelo CNE (gerado em 2003 a partir do original em Word), com a grafia da época (\"freqüência\", \"seqüência\") e as falhas da fonte mantidas: \"setenta e cinco por cento o total de horas letivas\" (do total), \"em função da condições específicas\", \"Decreto e Lei 1.044/69, 6.202/75\" e a frase final do mérito (\"É, portanto, cumpridas as normas complementares...\"). A citação do art. 90 da LDB está como o parecer a transcreveu (\"autonomia das universidades\"); a redação da lei é \"autonomia universitária\"."
+  - "O \"Decreto 1.044/69\" do parecer é o Decreto-Lei nº 1.044/1969. O Parecer CNE/CEB nº 17/2001 e a Resolução CNE/CEB nº 2/2001 (Diretrizes Nacionais para a Educação Especial na Educação Básica), citados no voto, não têm texto nesta base."
+  - "Parecer de consulta: interpreta a LDB e não tem artigos."
 ---
-
-## Resumo
-
-- Parecer da Câmara de Educação Básica do CNE, aprovado em 3 de julho de 2002 e homologado pelo Ministro da Educação (DOU de 4/10/2002), em resposta a consulta de um professor sobre a validade do Decreto-Lei nº 1.044/1969 e da Lei nº 6.202/1975 diante da exigência de frequência da LDB (art. 24, VI, e art. 47, § 3º).
-- Com a competência do art. 90 da LDB, o CNE conclui que a Lei nº 9.394/1996 não proíbe o atendimento a alunos impedidos, temporária ou permanentemente, de frequentar as aulas, e que os arts. 58 a 60 (educação especial) obrigam sistemas e escolas a oferecer atendimento especializado, inclusive na forma domiciliar.
-- O atendimento segue as normas do respectivo sistema de ensino e, na escola, o projeto político-pedagógico, sob responsabilidade da administração escolar.
-- Voto (seção III): o aluno deve estar regularmente matriculado; as normas específicas do sistema de ensino devem ser atendidas; e o projeto político-pedagógico da escola deve prever as condições para o atendimento.
-- Natureza: parecer interpretativo em resposta a consulta, não ato com artigos. Orienta a aplicação da LDB e confirma que o regime domiciliar do Decreto-Lei nº 1.044/1969 e da Lei nº 6.202/1975 continua compatível com ela.
-
----
-
-## Texto do parecer
 
 PARECER CNE/CEB 31/2002 - HOMOLOGADO
 
@@ -158,9 +155,3 @@ Conselheiro Carlos Roberto Jamil Cury – Presidente
 Conselheiro Nelio Marco Vincenzo Bizzo – Vice-Presidente
 
 ---
-
-## Notas
-
-- Texto conforme o PDF publicado pelo CNE (gerado em 2003 a partir do original em Word), com a grafia da época ("freqüência", "seqüência") e as falhas da fonte mantidas: "setenta e cinco por cento o total de horas letivas" (do total), "em função da condições específicas", "Decreto e Lei 1.044/69, 6.202/75" e a frase final do mérito ("É, portanto, cumpridas as normas complementares..."). A citação do art. 90 da LDB está como o parecer a transcreveu ("autonomia das universidades"); a redação da lei é "autonomia universitária".
-- O "Decreto 1.044/69" do parecer é o Decreto-Lei nº 1.044/1969. O Parecer CNE/CEB nº 17/2001 e a Resolução CNE/CEB nº 2/2001 (Diretrizes Nacionais para a Educação Especial na Educação Básica), citados no voto, não têm texto nesta base.
-- Parecer de consulta: interpreta a LDB e não tem artigos. Na base, cada seção é um dispositivo `#secaoN`: `#secao1` cabeçalho e homologação, `#secao2` relatório, `#secao3` mérito, `#secao4` voto do relator, `#secao5` decisão da Câmara.

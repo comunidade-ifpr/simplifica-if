@@ -34,15 +34,6 @@ fundamenta:
   - "Portaria MEC nº 902/2024"
 ---
 
-## Resumo
-
-- Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica
-- Documento normativo: RESOLUÇÃO CNE/CP Nº 1, DE 5 DE JANEIRO DE 2021
-- Revogada pela Resolução CNE/CP nº 2, de 11 de novembro de 2026 (art. 74, II), que define as novas DCN da EPT.
-- Continua aplicável aos estudantes matriculados em cursos técnicos e cursos superiores de tecnologia ofertados até a publicação da Resolução CNE/CP nº 2/2026, que podem concluir o curso por esta resolução (art. 71, parágrafo único, da Resolução CNE/CP nº 2/2026). Os cursos autorizados e em oferta têm até dois anos para se adequar às novas diretrizes (art. 71, caput).
-
-## Texto da norma
-
 > Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.
 
 A Presidente do Conselho Nacional de Educação, de conformidade com o disposto nas alíneas "b" e "d" do art. 7º, na alínea "c" do § 1º e na alínea "c" do § 2º do art. 9º da Lei nº 4.024, de 20 de dezembro de 1961, com redação dada pela Lei nº 9.131, de 24 de novembro de 1995; no § 1º do art. 8º, nos incisos IV e VII e no § 1º do art. 9º, no art. 36, nos arts. 36-A a 36-D, nos arts. 39 a 57, nos arts. 80 e 81 e no art. 90 da Lei nº 9.394, de 20 de novembro de 1996 (LDB); no Decreto nº 5.154, de 23 de julho de 2004, alterado pelo Decreto nº 8.268, de 18 de junho de 2014, e com fundamento no Parecer CNE/CP nº 17/2020, homologado pela Portaria MEC nº 1.097, de 31 de dezembro de 2020, publicada no DOU de 4 de janeiro de 2021, Seção 1, p. 45, resolve:

@@ -18,9 +18,8 @@ export interface CitacaoResolvida {
 
 /** Segmento de uma norma da base (dispositivo ou preâmbulo) com as citações resolvidas dele. */
 export interface SegmentoCitante {
-  /** ID do arquivo citante (com variante, se houver). */
+  /** ID da norma citante. */
   norma: string;
-  ato: string;
   /** Sufixo do dispositivo (`#art5-ii`) ou `preâmbulo`. */
   segmento: string;
   /** Markdown, relativo à raiz do repositório. */
@@ -49,12 +48,11 @@ export function citacoesResolvidas(texto: string, registro: Registro): CitacaoRe
  */
 export function* segmentosCitantes(registro: Registro, raiz: string, excetoAto?: string): Generator<SegmentoCitante> {
   for (const estrutura of carregarEstruturas(raiz)) {
-    if (estrutura.ato === excetoAto) continue;
+    if (estrutura.id === excetoAto) continue;
     for (const segmento of estrutura.segmentos) {
       if (segmento.tipo !== "dispositivo" && segmento.tipo !== "preambulo") continue;
       yield {
         norma: estrutura.id,
-        ato: estrutura.ato,
         segmento: segmento.dispositivo ? segmento.dispositivo.slice(segmento.dispositivo.indexOf("#")) : "preâmbulo",
         path: `base-conhecimento/${estrutura.path}`,
         linha_inicio: segmento.linha_inicio,

@@ -73,8 +73,7 @@ export const dispositivoTexto = Effect.fn("Leitura.dispositivoTexto")(function* 
 ) {
   const rotulos = new Map<string, string>();
   if (trecho.subordinados.length > 0) {
-    for (const d of yield* normas.descendentes(trecho.arquivo_id))
-      rotulos.set(`${d.disp.ato}${d.disp.dispositivo}`, d.disp.rotulo);
+    for (const d of yield* normas.descendentes(trecho.id)) rotulos.set(d.disp.id, d.disp.rotulo);
   }
   const dispositivo: DispositivoTexto = {
     id: trecho.id,

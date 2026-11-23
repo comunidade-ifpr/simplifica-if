@@ -7,9 +7,8 @@
  * Convenções do Markdown (conferidas pelo lint de `scripts/validar_base.ts`; ver
  * `base-conhecimento/docs/padrao-front-matter-legislacao.md`, "Corpo da norma"):
  *
- * - regiões: `## Resumo` (até o primeiro `---` ou o próximo `##`) e seções `##` editoriais (notas,
- *   observações, análises) ficam fora do texto normativo; `## Texto ...` e cabeçalhos estruturais
- *   (`TÍTULO`, `CAPÍTULO`, `ANEXO`...) abrem ou continuam o texto normativo;
+ * - o corpo é só o texto da norma: resumo, notas e orientações são metadados do front matter
+ *   (`pontos_chave`, `notas_da_fonte`), e todo cabeçalho do corpo é da norma;
  * - artigo: cabeçalho `#### Art. 1º` só com o rótulo; o caput vem no parágrafo seguinte;
  * - parágrafo: parágrafo iniciado por `**§ 1º**` ou `**Parágrafo único.**`;
  * - inciso: item de lista iniciado por `**I –**` (filho do parágrafo corrente ou do caput);
@@ -28,8 +27,8 @@
  * Só o texto vigente: notas como "(Redação dada pela Lei nº ...)" e "(Incluído pela ...)" viram
  * metadado (`notas`); o dispositivo cujo texto é só a nota de revogação fica com `revogado: true`.
  *
- * Reconstituição: `segmentos` cobre o corpo inteiro (resumo, preâmbulo, estrutura, dispositivos,
- * fecho, notas editoriais) na ordem do arquivo; as palavras dos segmentos concatenados são as
+ * Reconstituição: `segmentos` cobre o corpo inteiro (preâmbulo, estrutura, dispositivos, fecho e
+ * redação não vigente) na ordem do arquivo; as palavras dos segmentos concatenados são as
  * palavras do arquivo (`palavrasMarkdown`). O teste `estrutura.test.ts` confere isso nas 36 normas.
  */
 import * as NodeFS from "node:fs";
@@ -38,7 +37,6 @@ import type { Heading, List, ListItem, Nodes, Paragraph, RootContent } from "mda
 import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { divisaoDoCabecalho, NIVEL_DO_CABECALHO } from "./divisoes.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
-import { idDoAto, varianteDoId } from "./ids.ts";
 import { arvoreMarkdown, palavrasDoTexto, textoDoNo } from "./markdown.ts";
 import { compararTexto } from "../texto.ts";
 
@@ -62,14 +60,12 @@ export interface NotaDispositivo {
 }
 
 export interface Dispositivo {
-  /** ID completo: `<id da norma (arquivo)>#<dispositivo>`. */
+  /** ID completo: `<id da norma>#<dispositivo>`. */
   id: string;
   /** Sufixo do dispositivo: `#art28-xvi`. */
   dispositivo: string;
-  /** ID do arquivo (com variante, se houver). */
+  /** ID da norma. */
   norma: string;
-  /** ID do ato (sem variante). */
-  ato: string;
   tipo: TipoDispositivo;
   /** Rótulo como está no texto: `Art. 28`, `§ 1º`, `XVI`, `a)`. */
   rotulo: string;
@@ -91,15 +87,7 @@ export interface Dispositivo {
   ordem: number;
 }
 
-export type TipoSegmento =
-  | "resumo"
-  | "editorial"
-  | "rotulo"
-  | "preambulo"
-  | "estrutura"
-  | "dispositivo"
-  | "fecho"
-  | "nao-vigente";
+export type TipoSegmento = "preambulo" | "estrutura" | "dispositivo" | "fecho" | "nao-vigente";
 
 export interface Segmento {
   tipo: TipoSegmento;
@@ -112,8 +100,6 @@ export interface Segmento {
 
 export interface EstruturaNorma {
   id: string;
-  ato: string;
-  variante: string | null;
   /** Caminho relativo a `base-conhecimento/`. */
   path: string;
   dispositivos: Dispositivo[];
@@ -141,12 +127,11 @@ const RE_FECHO =
 /** Assinatura: três ou mais palavras em caixa alta no início do parágrafo, ou parágrafo só com nome em caixa alta. */
 const RE_ASSINATURA = /^[A-ZÀ-Ú]{3,}(?:\s+(?:D[AEO]S?|[A-ZÀ-Ú]{2,})){2,}(?:\s|$)|^[A-ZÀ-Ú]{3,}(?:\s+[A-ZÀ-Ú]{3,})+$/;
 /**
- * Marcadores (comentário HTML, que não é texto) de trecho que fica fora dos dispositivos:
- * `redacao-nao-vigente` (redação anterior que o arquivo reproduz ao lado da vigente) e
- * `fora-do-ato` (texto que não consta do ato publicado). Fecham com `<!-- /marcador -->`.
+ * Marcador (comentário HTML, que não é texto) da redação anterior que o arquivo reproduz ao lado da
+ * vigente: o trecho fica fora dos dispositivos. Fecha com `<!-- /redacao-nao-vigente -->`.
  */
-const RE_MARCADOR = /^<!--\s*(redacao-nao-vigente|fora-do-ato)\b[^>]*-->$/;
-const RE_FIM_MARCADOR = /^<!--\s*\/(redacao-nao-vigente|fora-do-ato)\s*-->$/;
+const RE_MARCADOR = /^<!--\s*redacao-nao-vigente\b[^>]*-->$/;
+const RE_FIM_MARCADOR = /^<!--\s*\/redacao-nao-vigente\s*-->$/;
 
 /** Inteiro → romano (I a CCCXCIX). */
 export function inteiroParaRomano(n: number): string {
@@ -195,25 +180,6 @@ export function rotuloArtigo(texto: string): { numero: string; letra: string; ro
     rotulo: m[0].replace(/\*\*/g, "").trim(),
     resto: texto.trim().slice(m[0].length),
   };
-}
-
-// ---------------------------------------------------------------------------------------------
-// Regiões
-
-/** `## ...` que abrem o texto normativo (além de `## Texto ...`). */
-const RE_H2_NORMATIVO =
-  /^(?:TÍTULO|CAPÍTULO|LIVRO|PARTE|SEÇÃO|Seção|Subseção|ANEXO|ARTIGO|Art\.|REGULAMENTO|ESTATUTO|REGIMENTO|Lei de Diretrizes e Bases)\b/i;
-const RE_H2_TEXTO = /^Texto\b/i;
-
-export type ClasseH2 = "resumo" | "texto" | "normativo" | "editorial";
-
-/** Classe de um cabeçalho `##` do corpo da norma. */
-export function classeH2(titulo: string): ClasseH2 {
-  const t = titulo.trim();
-  if (/^Resumo$/i.test(t)) return "resumo";
-  if (RE_H2_TEXTO.test(t)) return "texto";
-  if (RE_H2_NORMATIVO.test(t)) return "normativo";
-  return "editorial";
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -379,7 +345,6 @@ class Parser {
       id,
       dispositivo,
       norma: this.norma,
-      ato: idDoAto(this.norma),
       tipo,
       rotulo,
       pai: pai?.disp.id ?? null,
@@ -693,70 +658,29 @@ function temArtigos(nos: RootContent[]): boolean {
 export function analisarNorma(texto: string, opcoes: { id: string; path: string }): EstruturaNorma {
   const arvore = arvoreMarkdown(texto);
   const rotulo = opcoes.path;
-  type Regiao = "inicio" | "resumo" | "normativo" | "editorial";
-  let regiao: Regiao = "inicio";
-  const normativos: RootContent[] = [];
-  const classes: { no: RootContent; regiao: Regiao; rotuloTexto: boolean }[] = [];
+  const parser = new Parser(opcoes.id, rotulo, !temArtigos(arvore.children));
+  let naoVigente = false;
   for (const no of arvore.children) {
-    let rotuloTexto = false;
-    if (no.type === "heading" && no.depth <= 2) {
-      const classe = classeH2(textoDoNo(no));
-      if (classe === "resumo") regiao = "resumo";
-      else if (classe === "editorial") regiao = "editorial";
-      else {
-        regiao = "normativo";
-        rotuloTexto = classe === "texto";
-      }
-    } else if (no.type === "thematicBreak" && regiao === "resumo") {
-      regiao = "normativo";
-    }
-    classes.push({ no, regiao, rotuloTexto });
-    if (regiao === "normativo" && !rotuloTexto) normativos.push(no);
-  }
-
-  const parser = new Parser(opcoes.id, rotulo, !temArtigos(normativos));
-  let marcador: TipoSegmento | null = null;
-  for (const { no, regiao, rotuloTexto } of classes) {
-    const inicio = linhaInicio(no as Nodes);
-    const fim = linhaFim(no as Nodes);
     if (no.type === "html") {
-      const abre = RE_MARCADOR.exec(no.value.trim());
-      if (abre) {
-        marcador = abre[1] === "fora-do-ato" ? "editorial" : "nao-vigente";
+      if (RE_MARCADOR.test(no.value.trim())) {
+        naoVigente = true;
         continue;
       }
       if (RE_FIM_MARCADOR.test(no.value.trim())) {
-        marcador = null;
+        naoVigente = false;
         continue;
       }
     }
-    if (marcador) {
-      parser.segmento(marcador, textoDoNo(no as Nodes), inicio, fim);
-      continue;
-    }
-    if (regiao === "normativo" && rotuloTexto && parser.modoSecao) {
-      parser.cabecalho(no as Heading);
-      continue;
-    }
-    if (regiao !== "normativo" || rotuloTexto) {
-      const tipo: TipoSegmento = rotuloTexto
-        ? "rotulo"
-        : regiao === "resumo"
-          ? "resumo"
-          : regiao === "inicio"
-            ? "editorial"
-            : "editorial";
-      parser.segmento(tipo, textoDoNo(no as Nodes), inicio, fim);
+    if (naoVigente) {
+      parser.segmento("nao-vigente", textoDoNo(no as Nodes), linhaInicio(no as Nodes), linhaFim(no as Nodes));
       continue;
     }
     parser.bloco(no);
   }
-  if (marcador) parser.problemas.push(`${rotulo}: marcador de trecho (${marcador}) sem fechamento`);
+  if (naoVigente) parser.problemas.push(`${rotulo}: marcador de redação não vigente sem fechamento`);
   parser.finalizar();
   return {
     id: opcoes.id,
-    ato: idDoAto(opcoes.id),
-    variante: varianteDoId(opcoes.id),
     path: opcoes.path,
     dispositivos: parser.dispositivos,
     segmentos: parser.segmentos,
@@ -810,52 +734,24 @@ export function carregarEstruturas(raiz: string): EstruturaNorma[] {
   return estruturas;
 }
 
-/**
- * Dispositivos de todas as normas da base, na ordem dos arquivos. A compilação da LDB
- * (`br/lei/1996/9394~compilacao`) entra com o ID do arquivo; `dispositivosDoAto` deduplica.
- */
+/** Dispositivos de todas as normas da base, na ordem dos arquivos. */
 export function carregarDispositivos(raiz: string): Dispositivo[] {
   return carregarEstruturas(raiz).flatMap((estrutura) => estrutura.dispositivos);
 }
 
-/**
- * Índice de dispositivos por ID do ato (`br/lei/1996/9394#art36`). Deduplicação da compilação: o
- * texto integral do ato prevalece; o dispositivo da compilação só entra quando o integral não o
- * tem (hoje não acontece: os trechos da LDB estão todos no texto integral).
- */
+/** Índice de dispositivos pelo ID (`br/lei/1996/9394#art36`). */
 export function indiceDispositivos(raiz: string): Map<string, Dispositivo> {
-  const indice = new Map<string, Dispositivo>();
-  const variantes: Dispositivo[] = [];
-  for (const disp of carregarDispositivos(raiz)) {
-    if (disp.norma !== disp.ato) {
-      variantes.push(disp);
-      continue;
-    }
-    indice.set(`${disp.ato}${disp.dispositivo}`, disp);
-  }
-  for (const disp of variantes) {
-    const chave = `${disp.ato}${disp.dispositivo}`;
-    if (!indice.has(chave)) indice.set(chave, disp);
-  }
-  return indice;
+  return new Map(carregarDispositivos(raiz).map((disp) => [disp.id, disp]));
 }
 
-/** Dispositivos de um ato (deduplicados pela regra de `indiceDispositivos`), em ordem. */
-export function dispositivosDoAto(ato: string, raiz: string): Dispositivo[] {
-  return [...indiceDispositivos(raiz).values()]
-    .filter((disp) => disp.ato === ato)
-    .sort((a, b) => (a.norma === b.norma ? a.ordem - b.ordem : a.norma === a.ato ? -1 : 1));
+/** Dispositivos de uma norma, em ordem. */
+export function dispositivosDoAto(norma: string, raiz: string): Dispositivo[] {
+  return carregarEstruturas(raiz).find((estrutura) => estrutura.id === norma)?.dispositivos ?? [];
 }
 
-/** Dispositivo pelo ID (`br/cne-cp/res/2026/2#art71-parunico`); aceita o ID do arquivo com variante. */
+/** Dispositivo pelo ID (`br/cne-cp/res/2026/2#art71-parunico`). */
 export function obterDispositivo(id: string, raiz: string): Dispositivo | undefined {
-  const [norma, sufixo] = id.split("#");
-  if (!sufixo) return undefined;
-  const indice = indiceDispositivos(raiz);
-  const direto = indice.get(`${idDoAto(norma!)}#${sufixo}`);
-  if (direto && (norma === direto.ato || norma === direto.norma)) return direto;
-  if (norma !== idDoAto(norma!)) return carregarDispositivos(raiz).find((disp) => disp.id === id);
-  return direto;
+  return indiceDispositivos(raiz).get(id);
 }
 
 /**

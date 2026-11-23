@@ -69,9 +69,7 @@ aliases: ["Lei 1/2020", "L1"]
 fonte_url: "https://exemplo.gov.br/lei"
 ---
 
-## Resumo
-
-Texto.
+Texto da lei.
 `;
 
 const README = `# Base
@@ -87,7 +85,7 @@ describe("front matter", () => {
     expect(meta.title).toBe("Lei nº 1/2020");
     expect(meta.keywords).toEqual(["teste"]);
     expect(meta.aliases).toEqual(["Lei 1/2020", "L1"]);
-    expect(corpo.startsWith("\n## Resumo")).toBe(true);
+    expect(corpo.startsWith("\nTexto da lei.")).toBe(true);
   });
 
   test("schema failsafe: número, data e booleano ficam como texto; só ano vira inteiro", () => {
@@ -328,7 +326,7 @@ describe("validação da base", () => {
     escrever(
       raiz,
       "base-conhecimento/normas/br/leis/lei.md",
-      NORMA.replace("## Resumo", "## Outro") + "\n[x](nao.md)\n",
+      NORMA.replace("Texto da lei.", "## Resumo\n\nTexto da lei.") + "\n[x](nao.md)\n",
     );
     escrever(
       raiz,
@@ -351,7 +349,7 @@ describe("validação da base", () => {
       "índice de PPCs não encontrado: institucional/ifpr/ppcs/index.json",
       "manifesto CNCT não encontrado: catalogos/cnct/manifest.json",
       "índice CNCT não encontrado: catalogos/cnct/index.json",
-      "normas/br/leis/lei.md: corpo não começa com ## Resumo",
+      'normas/br/leis/lei.md: o corpo traz a seção "Resumo"; ele é só o texto da norma (use pontos_chave ou notas_da_fonte no front matter; orientação para PPC vai na ficha da revisão)',
       "normas/br/leis/lei.md: link interno inexistente: nao.md",
       "normas/ifpr/resolucoes/2020-01-01_res.md: campos obrigatórios ausentes: keywords",
       "normas/ifpr/resolucoes/2020-01-01_res.md: keywords deve ser lista não vazia",

@@ -26,6 +26,8 @@ const NORMA: FichaNorma["norma"] = {
   ano: 2026,
   fonte_url: "https://www.in.gov.br/dcnept-2026" as FichaNorma["norma"]["fonte_url"],
   fonte_referencia: null,
+  pontos_chave: [],
+  notas_da_fonte: [],
 };
 
 const DISPOSITIVO: DispositivoLido = {

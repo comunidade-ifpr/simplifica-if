@@ -87,12 +87,12 @@ relacoes:
   # --- Parecer CNE/CEB nº 31/2002 (atendimento domiciliar) ---
   - tipo: fundamenta-se-em
     origem: br/cne-ceb/parecer/2002/31
-    operador: "#secao3"
+    operador: "#secao2"
     alvo: br/lei/1996/9394
     alvo_dispositivo: "#art90"
     evidencia:
       {
-        em: "br/cne-ceb/parecer/2002/31#secao3",
+        em: "br/cne-ceb/parecer/2002/31#secao2",
         trecho: "com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado",
       }
     confirmado_em: "2026-11-19"
@@ -251,6 +251,22 @@ relacoes:
     evidencia: { em: "br/lei/2024/14945#art8", trecho: "O caput do art. 1º da Lei nº 12.711, de 29 de agosto de 2012, passa a vigorar com a seguinte redação" }
     confirmado_em: "2026-11-13"
     proposta: manual
+  - tipo: altera
+    origem: br/lei/2023/14723
+    alvo: br/lei/2012/12711
+    alcance: parágrafo único do art. 1º, arts. 3º a 7º e inclusão dos arts. 7º-A a 7º-C
+    evidencia: { em: "br/lei/2012/12711#art1-parunico", trecho: "(Redação dada pela Lei nº 14.723, de 2023)" }
+    confirmado_em: "2026-11-23"
+    proposta: manual
+    nota: Evidência nas notas de redação do texto do Planalto; o texto da Lei nº 14.723/2023 não está na base.
+  - tipo: altera
+    origem: br/lei/2016/13409
+    alvo: br/lei/2012/12711
+    alcance: arts. 3º, 5º e 7º (redação depois substituída pela Lei nº 14.723/2023)
+    evidencia: { em: "br/lei/2012/12711", trecho: "(Redação dada pela Lei nº 13.409, de 2016)" }
+    confirmado_em: "2026-11-23"
+    proposta: manual
+    nota: A redação dada pela Lei nº 13.409/2016 está no arquivo como redação anterior, não vigente.
   - tipo: altera
     origem: br/lei/2026/15468
     operador: "#art1"
@@ -411,54 +427,54 @@ relacoes:
     origem: ifpr/consup/res/2014/8
     operador: "#art2"
     alvo: ifpr/consup/res/2010/8
-    evidencia: { em: "ifpr/consup/res/2014/8#art2", trecho: "Revogar a Resolução nº 08/2010-CONSUP, de 29 de março de 2010" }
-    confirmado_em: "2026-11-13"
+    evidencia: { em: "ifpr/consup/res/2014/8#art2", trecho: "Revogar a Resolução n.º 08/2010-CONSUP, de 29 de março de 2010" }
+    confirmado_em: "2026-11-23"
     proposta: front-matter
   - tipo: revoga
     origem: ifpr/consup/res/2014/8
     operador: "#art2"
     alvo: ifpr/consup/res/2013/41
-    evidencia: { em: "ifpr/consup/res/2014/8#art2", trecho: "a Resolução nº 41/2013-CONSUP, de 09 de dezembro de 2013" }
-    confirmado_em: "2026-11-13"
+    evidencia: { em: "ifpr/consup/res/2014/8#art2", trecho: "a Resolução n.º 41/2013-CONSUP, de 09 de dezembro de 2013" }
+    confirmado_em: "2026-11-23"
     proposta: front-matter
   - tipo: altera
     origem: ifpr/consup/res/2024/222
     operador: "#art1"
     alvo: ifpr/consup/res/2014/8
     alcance: art. 6º do Regimento Interno Comum aos Câmpus (anexo)
-    evidencia: { em: "ifpr/consup/res/2024/222#art1", trecho: "Altera o art. 6º da Resolução nº 08/2014" }
-    confirmado_em: "2026-11-13"
+    evidencia: { em: "ifpr/consup/res/2024/222#art1", trecho: "Alterar dispositivo da Resolução nº 08, de 30 de abril de 2014" }
+    confirmado_em: "2026-11-23"
     proposta: front-matter
   - tipo: revoga
     origem: ifpr/consup/res/2024/222
     operador: "#art2"
     alvo: ifpr/consup/res/2014/8
     alcance: § 1º do art. 6º do Regimento Interno Comum aos Câmpus (anexo)
-    evidencia: { em: "ifpr/consup/res/2024/222#art2", trecho: "Revoga o § 1º do art. 6º da Resolução nº 08/2014" }
-    confirmado_em: "2026-11-13"
+    evidencia: { em: "ifpr/consup/res/2024/222#art2", trecho: "§ 1º do art.6º da Resolução nº 08, de 30 de abril de 2014" }
+    confirmado_em: "2026-11-23"
     proposta: regex
   - tipo: altera
     origem: ifpr/consup/res/2025/242
     operador: "#art1"
     alvo: ifpr/consup/res/2014/8
     alcance: art. 6º do Regimento Interno Comum aos Câmpus (anexo)
-    evidencia: { em: "ifpr/consup/res/2025/242#art1", trecho: "Altera o art. 6º da Resolução nº 08/2014" }
-    confirmado_em: "2026-11-13"
+    evidencia: { em: "ifpr/consup/res/2025/242#art1", trecho: "Alterar dispositivos da Resolução nº 08, de 30 de abril de 2014" }
+    confirmado_em: "2026-11-23"
     proposta: front-matter
   - tipo: revoga
     origem: ifpr/consup/res/2025/242
     operador: "#art2"
     alvo: ifpr/consup/res/2014/8
     alcance: incisos II e III do art. 6º do Regimento Interno Comum aos Câmpus (anexo)
-    evidencia: { em: "ifpr/consup/res/2025/242#art2", trecho: "Revoga os incisos II e III do art. 6º da Resolução nº 08/2014" }
-    confirmado_em: "2026-11-13"
+    evidencia: { em: "ifpr/consup/res/2025/242#art2", trecho: "incisos II e III do art.6º da Resolução nº 08, de 30 de abril de 2014" }
+    confirmado_em: "2026-11-23"
     proposta: regex
   - tipo: altera
     origem: ifpr/consup/res/2014/14
     alvo: ifpr/consup/res/2011/55
-    alcance: retificação (parágrafo único do art. 113 transformado em § 1º)
+    alcance: retificação do art. 113 (§§ 1º a 18 acrescidos)
     evidencia: { em: "ifpr/consup/res/2011/55", trecho: "Retificada pela Resolução nº 14/2014" }
-    confirmado_em: "2026-11-13"
+    confirmado_em: "2026-11-23"
     proposta: front-matter
   - tipo: altera
     origem: ifpr/consup/res/2017/2

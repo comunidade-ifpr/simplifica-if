@@ -18,7 +18,7 @@ export function nomeSemNotas(nome: string): string | null {
   return limpo === "" ? null : limpo;
 }
 const RE_DIVISAO = new RegExp(
-  String.raw`^(LIVRO|Livro|PARTE|Parte|TÍTULO|Título|CAPÍTULO|Capítulo|SEÇÃO|Seção|SUBSEÇÃO|Subseção)\s+(${NUMERAL})(?=$|[\s.:–—-])\s*(.*)$`,
+  String.raw`^(LIVRO|Livro|PARTE|Parte|T[ÍI]TULO|T[íi]tulo|CAP[ÍI]TULO|Cap[íi]tulo|SEÇÃO|Seção|SUBSEÇÃO|Subseção)\s+(${NUMERAL})(?=$|[\s.:–—-])\s*(.*)$`,
   "su",
 );
 
@@ -26,7 +26,9 @@ const TIPO_DA_PALAVRA: Readonly<Record<string, TipoDivisao>> = {
   livro: "livro",
   parte: "parte",
   título: "titulo",
+  titulo: "titulo",
   capítulo: "capitulo",
+  capitulo: "capitulo",
   seção: "secao",
   subseção: "subsecao",
 };
@@ -47,7 +49,11 @@ export interface Divisao {
   nome: string | null;
 }
 
-/** A divisão que um cabeçalho abre (`CAPÍTULO II – DA OFERTA`, `Seção I Da Frequência`), ou `null`. */
+/**
+ * A divisão que um cabeçalho abre (`CAPÍTULO II – DA OFERTA`, `Seção I Da Frequência`), ou `null`. O
+ * rótulo sem acento (`TITULO IV`, como alguns textos oficiais grafam) também vale: o arquivo guarda a
+ * grafia da fonte.
+ */
 export function divisaoDoCabecalho(texto: string): Divisao | null {
   const m = RE_DIVISAO.exec(texto.trim().replace(/\s+/g, " "));
   if (!m) return null;

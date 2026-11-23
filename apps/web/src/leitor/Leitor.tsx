@@ -153,6 +153,50 @@ function Situacao({ selos }: { readonly selos: ReadonlyArray<Selo> }) {
   );
 }
 
+/** Os metadados editoriais da norma (do front matter), na ordem em que aparecem, com o que cada um é. */
+const EDITORIAIS = [
+  {
+    campo: "pontos_chave",
+    titulo: "Pontos-chave",
+    nota: "Resumo da curadoria, com o dispositivo de cada ponto. Não faz parte do texto oficial: para citar, use o dispositivo.",
+  },
+  {
+    campo: "notas_da_fonte",
+    titulo: "Notas da fonte",
+    nota: "Como este texto foi obtido e consolidado.",
+  },
+] as const;
+
+/**
+ * O que a curadoria escreveu sobre a norma, fora do texto dela: cada campo num bloco recolhido, com o
+ * nome da função e o aviso de que não é o texto oficial. O corpo da página fica só com a norma.
+ */
+function MetadadosEditoriais({
+  norma,
+  aoAbrirLink,
+}: {
+  readonly norma: Readonly<Record<(typeof EDITORIAIS)[number]["campo"], ReadonlyArray<string>>>;
+  readonly aoAbrirLink: (link: string) => void;
+}) {
+  const blocos = EDITORIAIS.filter(({ campo }) => norma[campo].length > 0);
+  if (blocos.length === 0) return null;
+  return (
+    <div className="nao-imprimir divide-y divide-border rounded-xl border border-border">
+      {blocos.map(({ campo, titulo, nota }) => (
+        <details key={campo} className="group px-4 py-2.5">
+          <summary className="cursor-pointer font-semibold text-small">
+            {titulo} <span className="font-normal text-muted-foreground">({norma[campo].length})</span>
+          </summary>
+          <p className="mt-1.5 text-muted-foreground text-micro">{nota}</p>
+          <div className="mt-1.5 max-w-[76ch] text-sm" data-conteudo>
+            <Markdown texto={norma[campo].map((item) => `- ${item}`).join("\n")} aoAbrirLink={aoAbrirLink} />
+          </div>
+        </details>
+      ))}
+    </div>
+  );
+}
+
 function Relacoes({
   saida,
   entrada,
@@ -265,6 +309,7 @@ function LeitorNorma({
                 ))}
                 {norma.fonte_referencia !== null ? <span>Fonte: {norma.fonte_referencia}</span> : null}
               </Fatos>
+              <MetadadosEditoriais norma={norma} aoAbrirLink={aoAbrirLink} />
             </Cabecalho>
 
             <Corpo

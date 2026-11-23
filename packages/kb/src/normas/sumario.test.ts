@@ -41,6 +41,10 @@ describe("divisaoDoCabecalho", () => {
     });
     expect(divisaoDoCabecalho("CAPÍTULO I - DA DEFINIÇÃO")?.rotulo).toBe("CAPÍTULO I");
   });
+  test("o rótulo sem acento, como alguns textos oficiais grafam", () => {
+    expect(divisaoDoCabecalho("TITULO IV")).toEqual({ tipo: "titulo", rotulo: "TITULO IV", nome: null });
+  });
+
   test("o que não é divisão", () => {
     expect(divisaoDoCabecalho("PARTE GERAL")).toBeNull();
     expect(divisaoDoCabecalho("DAS DISPOSIÇÕES GERAIS")).toBeNull();
@@ -52,11 +56,11 @@ describe("divisaoDoCabecalho", () => {
 describe("sumarioDaNorma", () => {
   test("títulos, capítulos e seções: o nível vem do tipo, o nome do cabeçalho seguinte, a faixa dos artigos", () => {
     const { itens, problemas } = sumario([
-      "## Resumo",
+      "O CONSELHO resolve:", // 1
       "",
-      "- resumo",
       "",
-      "## Texto da norma",
+      "",
+      "",
       "",
       "## TÍTULO I", // 7
       "",
@@ -95,12 +99,6 @@ describe("sumarioDaNorma", () => {
       "#### Art. 5º",
       "",
       "Texto.",
-      "",
-      "## Notas", // 45
-      "",
-      "### Contexto",
-      "",
-      "Fora do ato.",
     ]);
     expect(problemas).toEqual([]);
     expect(resumo(itens)).toEqual([
@@ -109,8 +107,6 @@ describe("sumarioDaNorma", () => {
       "  CAPÍTULO I · DAS FORMAS DE ACESSO [2–4-A]",
       "    Seção I · Das Vagas [3–4-A]",
       "  CAPÍTULO II · DO REGISTRO [5–5]",
-      "Notas",
-      "  Contexto",
     ]);
     expect(itens.map((i) => [i.linha, i.linha_fim])).toEqual([
       [7, 9],
@@ -118,15 +114,11 @@ describe("sumarioDaNorma", () => {
       [19, 23],
       [29, 29],
       [39, 39],
-      [45, 45],
-      [47, 47],
     ]);
   });
 
   test("o anexo recomeça os níveis e leva o nome do cabeçalho seguinte", () => {
     const { itens } = sumario([
-      "## Texto da norma",
-      "",
       "#### Art. 1º",
       "",
       "Aprova o regulamento.",
@@ -149,11 +141,7 @@ describe("sumarioDaNorma", () => {
 
   test("norma sem artigos: um tópico por cabeçalho do texto, pelo nível dele", () => {
     const { itens } = sumario([
-      "## Resumo",
-      "",
-      "- resumo",
-      "",
-      "## Texto do parecer",
+      "Interessado: o Conselho.",
       "",
       "### I – RELATÓRIO",
       "",
@@ -171,20 +159,10 @@ describe("sumarioDaNorma", () => {
   });
 
   test("o parser acusa a divisão e o nome fora do nível", () => {
-    const { problemas } = sumario([
-      "## Texto da norma",
-      "",
-      "## CAPÍTULO I",
-      "",
-      "### DAS DISPOSIÇÕES",
-      "",
-      "#### Art. 1º",
-      "",
-      "Texto.",
-    ]);
+    const { problemas } = sumario(["## CAPÍTULO I", "", "### DAS DISPOSIÇÕES", "", "#### Art. 1º", "", "Texto."]);
     expect(problemas).toEqual([
-      "x.md:3: cabeçalho de CAPÍTULO I deve ser de nível 3 (###)",
-      "x.md:5: o nome da divisão deve ser de nível 4 (####), um abaixo do rótulo",
+      "x.md:1: cabeçalho de CAPÍTULO I deve ser de nível 3 (###)",
+      "x.md:3: o nome da divisão deve ser de nível 4 (####), um abaixo do rótulo",
     ]);
   });
 });

@@ -36,9 +36,30 @@
     "governança",
     "gestão do curso"
   ],
-  "referencias_normativas": [],
+  "referencias_normativas": [
+    {
+      "ref": "ifpr/consup/res/2014/8",
+      "dispositivo": "#anexo1-art24",
+      "papel": "complementar"
+    },
+    {
+      "ref": "ifpr/consup/res/2014/8",
+      "dispositivo": "#anexo1-art25",
+      "papel": "complementar"
+    },
+    {
+      "ref": "ifpr/consup/res/2014/8",
+      "dispositivo": "#anexo1-art26",
+      "papel": "complementar"
+    },
+    {
+      "ref": "ifpr/consup/res/2014/8",
+      "dispositivo": "#anexo1-art27",
+      "papel": "complementar"
+    }
+  ],
   "pergunta": "O PPC descreve coordenação, colegiado e instâncias acadêmicas suficientes para governança do curso?",
-  "rubrica": "Verificar se há instâncias e responsabilidades acadêmicas identificáveis para acompanhamento e tomada de decisão.",
+  "rubrica": "Verificar se há instâncias e responsabilidades acadêmicas identificáveis para acompanhamento e tomada de decisão. No IFPR, o Colegiado de Curso tem finalidade, composição, reuniões e competências definidas no Regimento Interno Comum aos Câmpus (Resolução CONSUP/IFPR nº 8/2014, anexo, arts. 24 a 27); entre as competências estão propor a revisão do plano de curso e manifestar-se sobre as formas de admissão e seleção e o número de vagas iniciais (art. 27, II e III). A descrição do PPC não deve contrariar essas regras.",
   "boa_evidencia": "Trechos sobre coordenação, colegiado, NDE ou instâncias equivalentes de gestão e avaliação do curso.",
   "ma_evidencia": "Ausência de governança acadêmica explícita ou descrição muito genérica das responsabilidades.",
   "escalonar_quando": "Escalonar se a governança existir, mas as atribuições estiverem pouco delimitadas.",

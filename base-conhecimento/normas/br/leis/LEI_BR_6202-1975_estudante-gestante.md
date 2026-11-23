@@ -34,13 +34,11 @@ relaciona_se_a:
   - "Parecer CNE/CEB nº 31/2002"
   - "Resolução CONSUP/IFPR nº 190/2024"
   - "Resolução CONSUP/IFPR nº 55/2011"
----
-
-## Resumo
-
-- A partir do oitavo mês de gestação e durante três meses, a estudante gestante fica assistida pelo regime de exercícios domiciliares do Decreto-Lei nº 1.044/1969 (art. 1º); o início e o fim do afastamento são fixados por atestado médico apresentado à direção da escola (art. 1º, parágrafo único).
-- Em casos excepcionais comprovados por atestado médico, o período de repouso pode ser aumentado, antes e depois do parto (art. 2º), e fica assegurado o direito à prestação dos exames finais (art. 2º, parágrafo único).
-
+pontos_chave:
+  - "A partir do oitavo mês de gestação e durante três meses, a estudante em estado de gravidez fica assistida pelo regime de exercícios domiciliares do Decreto-Lei nº 1.044/1969; o início e o fim do afastamento são determinados por atestado médico apresentado à direção da escola (art. 1º)."
+  - "Em casos excepcionais comprovados por atestado médico, o período de repouso pode ser aumentado, antes e depois do parto; em qualquer caso, a estudante tem direito à prestação dos exames finais (art. 2º)."
+notas_da_fonte:
+  - "Texto e pontuação conforme a página do Planalto. No art. 1º, a fonte oficial escreve \"Decreto-lei número 1.044, 21 de outubro de 1969\", sem o \"de\" antes da data; foi mantido como está."
 ---
 
 **Atribui à estudante em estado de gestação o regime de exercícios domiciliares instituído pelo Decreto-lei nº 1.044, de 1969, e dá outras providências.**
@@ -71,9 +69,3 @@ Ney Braga
 **Este texto não substitui o publicado no DOU de 17.4.1975**
 
 ---
-
-## Notas
-
-- Texto e pontuação conforme a página do Planalto. No art. 1º, a fonte oficial escreve "Decreto-lei número 1.044, 21 de outubro de 1969", sem o "de" antes da data; foi mantido como está.
-- A lei estende à estudante gestante o regime do Decreto-Lei nº 1.044/1969 sem alterá-lo, regulamentá-lo nem revogá-lo. Os tipos de relação de `relacoes.yaml` (`revoga`, `altera`, `regulamenta`, `fundamenta-se-em`) não descrevem essa extensão, e `fundamenta-se-em` é usado na base para o fundamento do preâmbulo. Por isso a ligação está em `relaciona_se_a`.
-- Na base, a lei é citada pela Resolução CONSUP/IFPR nº 190/2024 (art. 52, I: regime de atividades domiciliares na licença-maternidade, nos cursos técnicos) e pela Resolução CONSUP/IFPR nº 55/2011 (art. 94, I: regime domiciliar de estudos na educação superior).

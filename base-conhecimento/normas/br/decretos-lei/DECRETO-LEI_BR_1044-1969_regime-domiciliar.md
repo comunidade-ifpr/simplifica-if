@@ -37,14 +37,13 @@ relaciona_se_a:
   - "Parecer CNE/CEB nº 31/2002"
   - "Resolução CONSUP/IFPR nº 190/2024"
   - "Resolução CONSUP/IFPR nº 55/2011"
----
-
-## Resumo
-
-- Considera merecedores de tratamento excepcional os alunos de qualquer nível de ensino com afecções congênitas ou adquiridas, infecções, traumatismos ou outras condições mórbidas que causem incapacidade física relativa, incompatível com a frequência às aulas, de ocorrência isolada ou esporádica e de duração compatível com a continuidade do processo pedagógico (art. 1º).
-- Atribui a esses estudantes, como compensação da ausência às aulas, exercícios domiciliares com acompanhamento da escola, quando compatíveis com o estado de saúde e as possibilidades do estabelecimento (art. 2º): o chamado regime domiciliar.
-- O regime depende de laudo médico (art. 3º) e de autorização do diretor do estabelecimento (art. 4º).
-
+pontos_chave:
+  - "Alunos de qualquer nível de ensino com afecções congênitas ou adquiridas, infecções, traumatismo ou outras condições mórbidas que causem incapacidade física relativa, incompatível com a frequência às aulas, de ocorrência isolada ou esporádica e de duração compatível com a continuidade do processo pedagógico, são merecedores de tratamento excepcional (art. 1º)."
+  - "Como compensação da ausência às aulas, esses alunos têm exercícios domiciliares com acompanhamento da escola, sempre que compatíveis com o estado de saúde e as possibilidades do estabelecimento: o chamado regime domiciliar (art. 2º)."
+  - "O regime depende de laudo médico elaborado por autoridade oficial do sistema educacional (art. 3º) e de autorização, da competência do diretor do estabelecimento (art. 4º)."
+notas_da_fonte:
+  - "Texto e grafia conforme a página do Planalto (ortografia anterior a 1971: \"sôbre\", \"êsses\", \"freqüência\"). Erros que já constam da fonte oficial foram mantidos como estão: \"mórbitas\" (mórbidas), \"cartide\" (provavelmente cardite), \"exercício domiciliares\" e \"síndromes hemorrágicos\". A ementa do front matter usa a ortografia atual."
+  - "Ato da Junta Militar que exercia a Presidência da República (Ministros da Marinha, do Exército e da Aeronáutica), com fundamento no Ato Institucional nº 16/1969. O órgão registrado é a Presidência da República, como nos demais atos do Planalto."
 ---
 
 **Dispõe sôbre tratamento excepcional para os alunos portadores das afecções que indica.**
@@ -93,10 +92,3 @@ Tarso Dutra
 **Este texto não substitui o publicado no D.O.U. de 22.10.1969 e retificado no D.O.U. 11.11.1969**
 
 ---
-
-## Notas
-
-- Texto e grafia conforme a página do Planalto (ortografia anterior a 1971: "sôbre", "êsses", "freqüência"). Erros que já constam da fonte oficial foram mantidos como estão: "mórbitas" (mórbidas), "cartide" (provavelmente cardite), "exercício domiciliares" e "síndromes hemorrágicos". A ementa do front matter usa a ortografia atual.
-- Ato da Junta Militar que exercia a Presidência da República (Ministros da Marinha, do Exército e da Aeronáutica), com fundamento no Ato Institucional nº 16/1969. O `orgao` registrado é a Presidência da República, como nos demais atos do Planalto.
-- A página do Planalto remete a: Lei nº 6.202/1975 (estende o regime de exercícios domiciliares à estudante gestante, com texto nesta base), Lei nº 6.503/1977 e Lei nº 7.692/1988 (sem texto nesta base).
-- Na base, o Decreto-Lei é citado pela LDB (art. 26, § 3º, IV: prática facultativa da educação física ao aluno "amparado pelo Decreto-Lei no 1.044"), pela Resolução CONSUP/IFPR nº 190/2024 (art. 52, III: regime de atividades domiciliares nos cursos técnicos) e pela Resolução CONSUP/IFPR nº 55/2011 (regime domiciliar de estudos na educação superior).

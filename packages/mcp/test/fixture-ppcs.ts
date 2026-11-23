@@ -103,10 +103,8 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
   });
   inserir("normas_citacoes", {
     norma_id: "br/cne-cp/res/2026/2",
-    ato_id: "br/cne-cp/res/2026/2",
     segmento: "#art71-parunico",
     citado_id: "br/cne-cp/res/2021/1",
-    citado_ato: "br/cne-cp/res/2021/1",
     dispositivos_json: "[]",
     trecho: "Resolução CNE/CP nº 1/2021",
     path: "base-conhecimento/normas/br_cne-cp_res_2026_2.md",

@@ -25,29 +25,21 @@ aliases:
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=2730182&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 148/2023 a confirmar (ato de 2023-10-11; publicação não registrada): presumida vigente"
+pontos_chave:
+  - "Público-alvo: estudantes com TEA, transtornos de aprendizagem, altas habilidades/superdotação, transtornos psicológicos/psiquiátricos e deficiências (art. 3º)."
+  - "Hierarquia: as adaptações sempre precedem a flexibilização curricular, que só ocorre quando as adaptações não contemplam as dificuldades (art. 4º, § 1º)."
+  - "Adaptações: modificações didático-estruturais (materiais, atividades, linguagens, tecnologias, metodologias), registradas no PTE (Plano de Trabalho do Estudante, Anexo II), que dispensam processo SEI (art. 5º)."
+  - "Flexibilização curricular: alterações pedagógicas significativas, registradas no PFC (Plano de Flexibilização Curricular, Anexo I), que exigem processo SEI restrito na CNAPNE (art. 6º)."
+  - "Comissão de Flexibilização: coordenação da CNAPNE, coordenação de curso, docente de Educação Especial, pelo menos 2 docentes do núcleo comum, pelo menos 2 docentes da área técnica e pedagogo ou TAE da SEPAE/SENS (art. 7º, VI)."
+  - "Avaliação diferenciada: critérios diferenciados e adequados, considerando as singularidades dos estudantes (art. 7º, V)."
+  - "Acompanhamento Individualizado Educacional (AIE): mínimo de 1 h semanal com docente (art. 7º, II)."
+  - "Análise em duas etapas: primeiro pela Comissão (10 dias úteis), depois pela CONAPNE (10 dias úteis) (art. 9º)."
+  - "Sigilo: é vedada a divulgação de necessidade educacional específica em documentos oficiais, como histórico e diploma (art. 10, parágrafo único)."
+  - "Reavaliação a cada bimestre ou semestre (art. 11)."
+  - "A resolução exclui a terminalidade específica (art. 13)."
+notas_da_fonte:
+  - "Texto conferido e corrigido pela fonte oficial em 23/11/2026 (art. 8º, inciso I). No art. 7º, inciso VI, a fonte omite a palavra \"composta\" (\"a comissão será por:\"), que a base mantém."
 ---
-
-## Resumo
-
-Resolução CONSUP/IFPR nº 148, de 11 de outubro de 2023. Institui normas para adaptação de materiais e atividades e flexibilização curricular para estudantes com necessidades educacionais específicas (NEE) no IFPR. Aplica-se a todos os níveis (médio e superior). Relaciona-se com a Resolução IFPR nº 50/2017 (avaliação) e a Lei nº 13.146/2015 (LBI).
-
-### Pontos-chave
-
-- **Público-alvo (Art. 3º):** Estudantes com TEA, Transtornos de Aprendizagem, AH/SD, Transtornos Psicológicos/Psiquiátricos e Deficiências
-- **Hierarquia (Art. 4º §1):** Adaptações **sempre precedem** flexibilização curricular — flexibilização só quando adaptações não contemplam as dificuldades
-- **Adaptações (Art. 5º):** Modificações didático-estruturais (materiais, atividades, linguagens, tecnologias, metodologias) — registradas em PTE (Plano de Trabalho do Estudante, Anexo II), dispensam processo SEI
-- **Flexibilização Curricular (Art. 6º):** Alterações pedagógicas significativas — registrada em PFC (Plano de Flexibilização Curricular, Anexo I), exige processo SEI restrito na CNAPNE
-- **Comissão de Flexibilização (Art. 7º, VI):** Coordenação CNAPNE + Coordenação de Curso + Docente de Ed. Especial + ≥2 docentes núcleo comum + ≥2 docentes área técnica + Pedagogo/TAE da SEPAE/SENS
-- **Avaliação diferenciada (Art. 7º, V):** Critérios diferenciados e adequados, considerando singularidades dos estudantes
-- **AIE (Art. 7º, II):** Acompanhamento Individualizado Educacional — mínimo 1h semanal com docente
-- **Análise em duas etapas (Art. 9º):** 1ª pela Comissão (10 dias úteis) → 2ª pela CONAPNE (10 dias úteis)
-- **Sigilo (Art. 10, parágrafo único):** Vedada divulgação de NEE em documentos oficiais (histórico, diploma)
-- **Reavaliação (Art. 11):** A cada bimestre ou semestre
-- **Exclui terminalidade específica (Art. 13)**
-
----
-
-## Texto integral
 
 #### Art. 1º
 
@@ -119,7 +111,7 @@ Flexibilização Curricular será realizada mediante articulação entre os doce
 
 O/A Coordenador/a do NAPNE ou um servidor designado por ele/a, abrirá processo restrito na unidade CNAPNE do SEI e instruirá o processo contemplando a seguinte organização dos documentos:
 
-- **I –** portaria da Comissão;
+- **I –** portaria da Comissão: coordenador/a da CNAPNE, coordenador/a do curso, um(a) docente do curso e pedagogo(a) ou técnico(a) em assuntos educacionais;
 - **II –** plano de Flexibilização Curricular (Anexo I);
 - **III –** relatórios, laudos e/ou pareceres, garantindo o sigilo da informação;
 - **IV –** PTE dos componentes curriculares (Anexo II);

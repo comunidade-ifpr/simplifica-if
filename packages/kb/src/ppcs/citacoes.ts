@@ -7,7 +7,6 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
-import { idDoAto } from "../normas/ids.ts";
 import type { Registro } from "../normas/registro.ts";
 import { type Citacao, extrairCitacoes } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
@@ -129,7 +128,7 @@ export interface RelatorioCitacoes {
 }
 
 export function relatorioCitacoes(id: string, ppcs: PpcCitante[], registro: Registro): RelatorioCitacoes {
-  const entrada = registro.obter(idDoAto(id.split("#")[0]!));
+  const entrada = registro.obter(id.split("#")[0]!);
   return {
     id,
     titulo: entrada?.title ?? null,
@@ -152,7 +151,7 @@ function ocorrencia(citacao: Citacao): Ocorrencia {
 }
 
 /**
- * PPCs que citam a norma `id` (o ato: variantes e dispositivos do argumento são ignorados na
+ * PPCs que citam a norma `id` (o ato: o dispositivo do argumento é ignorado na
  * comparação; com `dispositivo`, só as citações daquele dispositivo ou de seus filhos).
  */
 export function ppcsQueCitam(
@@ -161,12 +160,12 @@ export function ppcsQueCitam(
 ): PpcCitante[] {
   const { registro, raiz } = opcoes;
   const [idNorma, dispositivo] = idConsultado.split("#") as [string, string | undefined];
-  const ato = idDoAto(idNorma);
+  const ato = idNorma;
   const minimo = opcoes.confiancaMinima ?? 0;
   const saida: PpcCitante[] = [];
   for (const ppc of carregarIndicePpcs(raiz)) {
     const ocorrencias = citacoesDoArquivo(ppc.path, registro, raiz)
-      .filter((citacao) => citacao.id !== null && idDoAto(citacao.id) === ato && citacao.confianca >= minimo)
+      .filter((citacao) => citacao.id !== null && citacao.id === ato && citacao.confianca >= minimo)
       .filter((citacao) => {
         if (!dispositivo) return true;
         return cobreDispositivo(
@@ -191,7 +190,7 @@ export function ppcsQueCitam(
 
 /** Uma norma citada por um PPC: o ato, quantas citações, as linhas e as regras do resolvedor. */
 export interface NormaCitadaNoPpc {
-  /** ID do ato (sem variante nem dispositivo). */
+  /** ID do ato (sem dispositivo). */
   id: string;
   /** Citações do ato no PPC, as mesmas que `ppcsQueCitam(id)` conta para este PPC. */
   ocorrencias: number;
@@ -210,7 +209,7 @@ export function normasCitadasNoPpc(
   const porAto = new Map<string, { ocorrencias: number; linhas: Set<number>; regras: Set<string> }>();
   for (const citacao of citacoes) {
     if (citacao.id === null) continue;
-    const ato = idDoAto(citacao.id);
+    const ato = citacao.id;
     const atual = porAto.get(ato) ?? { ocorrencias: 0, linhas: new Set<number>(), regras: new Set<string>() };
     atual.ocorrencias += 1;
     atual.linhas.add(citacao.linha);

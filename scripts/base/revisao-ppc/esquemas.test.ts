@@ -93,7 +93,7 @@ const FICHAS_INVALIDAS: Array<Mutacao<ObjetoJson & { referencias_normativas: Obj
     (f) => void (f.referencias_normativas[0]!.ref = "Resolução CNE/CP nº 2/2026"),
   ],
   [
-    "ref com variante",
+    "ref com sufixo",
     ["$.referencias_normativas[0].ref"],
     (f) => void (f.referencias_normativas[0]!.ref = "br/lei/1996/9394~compilacao"),
   ],

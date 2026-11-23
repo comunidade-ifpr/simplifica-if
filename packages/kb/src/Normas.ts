@@ -38,7 +38,6 @@ import {
   type ResultadoCorrespondencia,
   type TabelaCorrespondencia,
 } from "./normas/correspondencia.ts";
-import { idDoAto } from "./normas/ids.ts";
 import { type Relacao, relacoesDeEm, sucessorasDe } from "./normas/relacoes.ts";
 import { type ResolucaoComEntrada, resolucaoComEntrada } from "./normas/resolver.ts";
 import { type ResultadoVigencia, type SituacaoTransicao, statusEm, transicoesAplicaveis } from "./normas/vigencia.ts";
@@ -80,6 +79,9 @@ export interface FichaNorma {
   readonly pendencia_vigencia: string | null;
   /** O status publicado está "a confirmar": há pendência registrada ou o status é `a confirmar` (stubs). */
   readonly vigencia_a_confirmar: boolean;
+  /** Metadados editoriais do front matter (vazios em stub e externo): indicação, não fundamento. */
+  readonly pontos_chave: ReadonlyArray<string>;
+  readonly notas_da_fonte: ReadonlyArray<string>;
 }
 
 const LinhaFicha = Schema.Struct({
@@ -102,7 +104,7 @@ const LinhaFicha = Schema.Struct({
 const primeiraFicha = Sql.primeira(LinhaFicha);
 const linhasFontes = Sql.todas(Schema.Struct({ id: Schema.String, fonte_url: UrlOficial }));
 
-const ato = (id: string) => idDoAto(id.split("#")[0]!);
+const ato = (id: string) => id.split("#")[0]!;
 
 export class Normas extends Context.Service<
   Normas,
@@ -116,7 +118,7 @@ export class Normas extends Context.Service<
     ) => Effect.Effect<ResultadoBuscaNorma, Sql.FalhaNaConsulta>;
     /** Resumo da norma pela tabela `normas` (`null` se não registrada). */
     readonly obter: (id: string) => Effect.Effect<NormaResumo | null, Sql.FalhaNaConsulta>;
-    /** Metadados completos da norma (do ato, do arquivo com variante ou com `#dispositivo`); `null` se não registrada. */
+    /** Metadados completos da norma (pelo ID, com ou sem `#dispositivo`); `null` se não registrada. */
     readonly ficha: (id: string) => Effect.Effect<FichaNorma | null, Sql.FalhaNaConsulta>;
     readonly dispositivo: (id: string) => Effect.Effect<DispositivoDoBanco | undefined, Sql.FalhaNaConsulta>;
     /** O dispositivo pedido ou, se ele não está no texto, o ancestral mais próximo que está. */
@@ -171,16 +173,21 @@ const make = Effect.gen(function* () {
         [chave],
       );
     const norma = id.split("#")[0]!;
-    const linha =
-      (yield* consultar(norma)) ?? (idDoAto(norma) !== norma ? yield* consultar(idDoAto(norma)) : undefined);
+    const linha = yield* consultar(norma);
     if (!linha) return null;
     const { front_matter_json, ...n } = linha;
     const pendenciaBruta = front_matter_json?.["vigencia_a_confirmar"];
     const pendencia = typeof pendenciaBruta === "string" ? pendenciaBruta : null;
+    const lista = (campo: string): ReadonlyArray<string> => {
+      const valor = front_matter_json?.[campo];
+      return Array.isArray(valor) ? valor.filter((item): item is string => typeof item === "string") : [];
+    };
     const resultado: FichaNorma = {
       ...n,
       pendencia_vigencia: pendencia,
       vigencia_a_confirmar: pendencia !== null || n.status_vigencia === "a confirmar",
+      pontos_chave: lista("pontos_chave"),
+      notas_da_fonte: lista("notas_da_fonte"),
     };
     return resultado;
   }, prover);

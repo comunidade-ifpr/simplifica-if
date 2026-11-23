@@ -33,19 +33,19 @@ vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "alteração por Resolução CONSUP/IFPR nº 263/2025 produz efeito na vigência da origem, a confirmar (não antes de 2025-12-10): presumida em vigor em 2026-11-13"
 alterada_por:
   - "Resolução CONSUP/IFPR nº 263/2025 — datas de junho, prazo de envio do calendário à Proens (art. 10, § 1º) e art. 12"
+pontos_chave:
+  - "O calendário de referência serve de base: cada campus elabora seu calendário local a partir das datas do art. 2º (art. 3º)."
+  - "Mínimo de 200 dias letivos anuais e 100 por semestre (art. 4º)."
+  - "Dia letivo é aquele com atividades de ensino, pesquisa, extensão e inovação previstas no PPP, no PPC e nos planos de ensino, com participação conjunta e obrigatória de professores e estudantes (art. 4º, § 2º)."
+  - "Planejamento, formação e reuniões são ações internas compatíveis com o recesso acadêmico, isto é, sem estudantes (art. 4º, § 4º)."
+  - "Ano letivo de 2026 entre 4 de fevereiro e 18 de dezembro, com início até 28 de fevereiro (art. 5º)."
+  - "Itens obrigatórios do calendário do campus, entre eles conselhos de classe (XIII e XV), reuniões com familiares e comunidade (XVI), formação pedagógica com mínimo de 40 horas anuais (XXII) e planejamento coletivo com mínimo de 20 horas anuais (XXIII) (art. 7º)."
+notas_da_fonte:
+  - "Publicada no Boletim de Serviço Eletrônico em 15 de dezembro de 2025, documento SEI nº 3972484, processo 23411.017877/2025-60."
+  - "Alterada pela Resolução CONSUP/IFPR nº 263, de 10 de dezembro de 2025 (datas de junho, prazo de envio do calendário à Proens e § 2º do art. 12). O texto é a versão consolidada publicada no SEI, que preserva as redações original e alterada dos dispositivos modificados."
+  - "Orientação da Proens, registrada a partir da prática de análise de calendários e que não consta do texto da resolução: o campus pode usar um feriado nacional como dia letivo (desfile cívico, evento cultural, outra atividade pedagógica), desde que o calendário venha acompanhado de despacho com a justificativa, de manifestação expressa da Direção Geral de que não haverá expediente nem convocação dos servidores nessa data e de registro em processo; a participação dos servidores é exclusivamente voluntária."
+  - "Orientação da Proens, fora do texto da resolução: dias de conselho de classe, reuniões pedagógicas, reuniões com famílias, formação e planejamento sem atividade com estudantes não atendem ao conceito de dia letivo do art. 4º, § 2º."
 ---
-
-## Resumo
-
-- Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2026. Cada campus elabora seu calendário local a partir dele.
-- Publicada no Boletim de Serviço Eletrônico em 15 de dezembro de 2025, documento SEI nº 3972484, processo 23411.017877/2025-60.
-- Alterada pela Resolução CONSUP/IFPR nº 263, de 10 de dezembro de 2025 (datas de junho, prazo de envio do calendário à Proens e § 2º do art. 12). O texto abaixo é a versão consolidada publicada no SEI, que preserva as redações original e alterada dos dispositivos modificados.
-- Mínimo de 200 dias letivos anuais e 100 por semestre (art. 4º). O art. 4º, § 2º, define dia letivo como aquele com atividades de ensino, pesquisa, extensão e inovação previstas no PPP, no PPC e nos planos de ensino, com participação conjunta e obrigatória de professores e estudantes. O § 4º trata planejamento, formação e reuniões como ações internas compatíveis com o recesso acadêmico, isto é, sem estudantes.
-- Ano letivo de 2026 entre 4 de fevereiro e 18 de dezembro, com início até 28 de fevereiro (art. 5º).
-- Art. 7º lista 25 itens obrigatórios do calendário, entre eles conselhos de classe (XIII e XV), reuniões com familiares e comunidade (XVI), formação pedagógica com mínimo de 40 horas anuais (XXII) e planejamento coletivo com mínimo de 20 horas anuais (XXIII).
-- Sucedida, para o ano de 2027, pela [Resolução CONSUP/IFPR nº 292/2026](RESOLUCAO_CONSUP-IFPR_292-2026_calendario-academico-2027.md).
-
-## Texto consolidado
 
 > Estabelece o Calendário Acadêmico e Administrativo de referência dos cursos técnicos de nível médio e graduação, do IFPR, para o ano de 2026.
 
@@ -243,26 +243,3 @@ ADRIANO WILIAN DA SILVA VIANA PEREIRA
 Presidente
 
 Documento assinado eletronicamente por ADRIANO WILLIAN DA SILVA VIANA PEREIRA, Reitor, em 15/12/2025, às 10:24. Código verificador 3972484, CRC 91B7BF6F. Referência: Processo nº 23411.017877/2025-60.
-
-## Orientações operacionais da Proens (não integram o texto da resolução)
-
-As orientações abaixo foram registradas a partir da prática de análise de calendários pela Proens e não constam do texto da resolução.
-
-### Feriados nacionais como dias letivos
-
-Em alguns casos, um campus pode optar por utilizar um feriado nacional como dia letivo para atividades específicas, como desfiles cívicos, eventos culturais ou outras atividades pedagógicas. Nesse caso, o calendário deve ser acompanhado de:
-
-1. Despacho com justificativa explicando a necessidade do uso do feriado como dia letivo.
-2. Manifestação expressa da Direção Geral do campus assegurando que não haverá obrigatoriedade de expediente dos servidores nessa data, que não haverá convocação para atividades laborais e que as atividades ocorrerão somente por adesão voluntária dos servidores envolvidos.
-3. Registro adequado em processo, garantindo que essa condição esteja devidamente documentada.
-
-A participação dos servidores em atividades realizadas em feriados nacionais é exclusivamente voluntária.
-
-### Síntese dos parâmetros de dias letivos
-
-- Mínimo anual: 200 dias letivos (art. 4º).
-- Mínimo semestral: 100 dias letivos por semestre (art. 4º, § 1º).
-- Formação pedagógica: mínimo de 40 horas anuais (art. 7º, XXII).
-- Planejamento coletivo: mínimo de 20 horas anuais (art. 7º, XXIII).
-- Ano letivo de 2026 entre 4 de fevereiro e 18 de dezembro, com início até 28 de fevereiro (art. 5º).
-- Dias de conselho de classe, reuniões pedagógicas, reuniões com famílias, formação e planejamento sem atividade com estudantes não atendem ao conceito de dia letivo do art. 4º, § 2º.

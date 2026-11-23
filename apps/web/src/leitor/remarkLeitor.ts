@@ -2,10 +2,10 @@
  * Plugins `remark` do leitor (M1.6), sobre a árvore mdast, antes de virar HTML. O leitor usa
  * `skipHtml`, e o HTML cru do arquivo some; dois casos de HTML na base têm sentido e não podem sumir:
  *
- * - `remarkMarcadores`: os marcadores `<!-- redacao-nao-vigente -->` e `<!-- fora-do-ato -->` do
- *   padrão das normas (`packages/kb/src/normas/estrutura.ts`), que o `kb` já tira dos dispositivos.
- *   O trecho entre a abertura e o fechamento vira um bloco esmaecido com o rótulo ("Redação anterior,
- *   não vigente", "Fora do texto publicado"), para a redação revogada não se ler como a vigente;
+ * - `remarkMarcadores`: o marcador `<!-- redacao-nao-vigente -->` do padrão das normas
+ *   (`packages/kb/src/normas/estrutura.ts`), que o `kb` já tira dos dispositivos. O trecho entre a
+ *   abertura e o fechamento vira um bloco esmaecido com o rótulo ("Redação anterior, não vigente"),
+ *   para a redação alterada não se ler como a vigente;
  * - `remarkQuebras`: o `<br>` dos PPCs convertidos (131 mil, 73 mil entre letras), que sem isso colaria
  *   palavras ("Logísticae Produção"), vira quebra de linha do Markdown.
  *
@@ -22,12 +22,11 @@ interface NoMd {
 
 export const MARCADORES = {
   "redacao-nao-vigente": "Redação anterior, não vigente",
-  "fora-do-ato": "Fora do texto publicado",
 } as const;
 type Marcador = keyof typeof MARCADORES;
 
-const RE_ABRE = /^<!--\s*(redacao-nao-vigente|fora-do-ato)\b[^>]*-->$/;
-const RE_FECHA = /^<!--\s*\/(redacao-nao-vigente|fora-do-ato)\s*-->$/;
+const RE_ABRE = /^<!--\s*(redacao-nao-vigente)\b[^>]*-->$/;
+const RE_FECHA = /^<!--\s*\/(redacao-nao-vigente)\s*-->$/;
 
 const marcadorQueAbre = (no: NoMd): Marcador | undefined =>
   no.type === "html" ? (RE_ABRE.exec((no.value ?? "").trim())?.[1] as Marcador | undefined) : undefined;

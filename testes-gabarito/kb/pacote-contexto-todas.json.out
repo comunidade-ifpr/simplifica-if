@@ -780,13 +780,18 @@
       "criticidade": "REC",
       "tipo_escopo": "tematico",
       "pergunta": "O currículo contempla temas transversais e dimensões de formação cidadã de modo perceptível?",
-      "rubrica": "Avaliar se a proposta curricular reconhece temas transversais relevantes para a formação integral e se trata, de modo verificável no currículo, conteúdos como direitos humanos, prevenção de violências, pessoa idosa, educação alimentar e nutricional, trânsito, educação ambiental, educação digital, multiculturalismo, história e cultura afro-brasileira e indígena, perspectivas femininas e exibição de filmes de produção nacional quando aplicável ao ensino médio. Na dimensão da EPT, considerar também as estratégias para superação das desigualdades de gênero, raça, etnia e território e o compromisso com direitos humanos, diversidade e equidade (Resolução CNE/CP nº 2/2026, art. 7º, § 4º; art. 22, X).",
+      "rubrica": "Avaliar se a proposta curricular reconhece temas transversais relevantes para a formação integral e se trata, de modo verificável no currículo, conteúdos como direitos humanos, prevenção de violências, pessoa idosa, educação alimentar e nutricional, trânsito, educação ambiental, educação digital, multiculturalismo, história e cultura afro-brasileira e indígena, perspectivas femininas e exibição de filmes de produção nacional quando aplicável ao ensino médio. Na dimensão da EPT, considerar também as estratégias para superação das desigualdades de gênero, raça, etnia e território e o compromisso com direitos humanos, diversidade e equidade (Resolução CNE/CP nº 2/2026, art. 7º, § 4º; art. 22, X). Os conteúdos de história e cultura afro-brasileira e dos povos indígenas valem para todo o currículo, e não só para uma disciplina, em especial nas áreas de educação artística e de literatura e história brasileiras (Lei nº 9.394/1996, art. 26-A, § 2º).",
       "topicos_tematicos": [
         "temas_transversais_cidadania"
       ],
       "referencias_normativas": [
         {
           "ref": "br/lei/1996/9394",
+          "papel": "fundamento"
+        },
+        {
+          "ref": "br/lei/1996/9394",
+          "dispositivo": "#art26A-par2",
           "papel": "fundamento"
         },
         {
@@ -3855,11 +3860,32 @@
       "criticidade": "OBRIG",
       "tipo_escopo": "tematico",
       "pergunta": "O PPC descreve coordenação, colegiado e instâncias acadêmicas suficientes para governança do curso?",
-      "rubrica": "Verificar se há instâncias e responsabilidades acadêmicas identificáveis para acompanhamento e tomada de decisão.",
+      "rubrica": "Verificar se há instâncias e responsabilidades acadêmicas identificáveis para acompanhamento e tomada de decisão. No IFPR, o Colegiado de Curso tem finalidade, composição, reuniões e competências definidas no Regimento Interno Comum aos Câmpus (Resolução CONSUP/IFPR nº 8/2014, anexo, arts. 24 a 27); entre as competências estão propor a revisão do plano de curso e manifestar-se sobre as formas de admissão e seleção e o número de vagas iniciais (art. 27, II e III). A descrição do PPC não deve contrariar essas regras.",
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
-      "referencias_normativas": [],
+      "referencias_normativas": [
+        {
+          "ref": "ifpr/consup/res/2014/8",
+          "dispositivo": "#anexo1-art24",
+          "papel": "complementar"
+        },
+        {
+          "ref": "ifpr/consup/res/2014/8",
+          "dispositivo": "#anexo1-art25",
+          "papel": "complementar"
+        },
+        {
+          "ref": "ifpr/consup/res/2014/8",
+          "dispositivo": "#anexo1-art26",
+          "papel": "complementar"
+        },
+        {
+          "ref": "ifpr/consup/res/2014/8",
+          "dispositivo": "#anexo1-art27",
+          "papel": "complementar"
+        }
+      ],
       "execucao": {
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: coordenação, colegiado, NDE (termos e seção)."
@@ -6330,8 +6356,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-          "linha_inicio": 227,
-          "linha_fim": 235
+          "linha_inicio": 218,
+          "linha_fim": 226
         },
         {
           "id": "br/cne-ceb/res/2024/2#art25",
@@ -6370,8 +6396,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-          "linha_inicio": 375,
-          "linha_fim": 390
+          "linha_inicio": 366,
+          "linha_fim": 381
         },
         {
           "id": "br/cne-ceb/res/2024/2#art28-par3",
@@ -6383,8 +6409,8 @@
           ],
           "texto": "§ 3º O Ensino Médio noturno, ofertado de forma regular e presencial, excepcionalmente, a critério do sistema de ensino, poderá se valer dos recursos da Educação mediada por tecnologia para atender suas especificidades.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-          "linha_inicio": 420,
-          "linha_fim": 420
+          "linha_inicio": 411,
+          "linha_fim": 411
         }
       ],
       "sem_texto": []
@@ -6465,8 +6491,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 105,
-          "linha_fim": 111
+          "linha_inicio": 106,
+          "linha_fim": 112
         },
         {
           "id": "br/cne-cp/res/2026/2#art2",
@@ -6593,8 +6619,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 113,
-          "linha_fim": 145
+          "linha_inicio": 114,
+          "linha_fim": 146
         },
         {
           "id": "br/cne-cp/res/2026/2#art3",
@@ -6673,8 +6699,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 155,
-          "linha_fim": 175
+          "linha_inicio": 156,
+          "linha_fim": 176
         },
         {
           "id": "br/cne-cp/res/2026/2#art4",
@@ -6717,8 +6743,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 181,
-          "linha_fim": 192
+          "linha_inicio": 182,
+          "linha_fim": 193
         },
         {
           "id": "br/cne-cp/res/2026/2#art5",
@@ -6746,8 +6772,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 194,
-          "linha_fim": 201
+          "linha_inicio": 195,
+          "linha_fim": 202
         },
         {
           "id": "br/cne-cp/res/2026/2#art7-par4",
@@ -6759,8 +6785,8 @@
           ],
           "texto": "§ 4º Na oferta de cursos da EPT devem ser consideradas estratégias que contribuam para a superação das desigualdades de gênero, raça, etnia e território, impulsionando a valorização das mulheres, dos saberes locais e de povos e comunidades tradicionais.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 243,
-          "linha_fim": 243
+          "linha_inicio": 244,
+          "linha_fim": 244
         },
         {
           "id": "br/cne-cp/res/2026/2#art9",
@@ -6832,8 +6858,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 257,
-          "linha_fim": 285
+          "linha_inicio": 258,
+          "linha_fim": 286
         },
         {
           "id": "br/cne-cp/res/2026/2#art17-par2",
@@ -6845,8 +6871,8 @@
           ],
           "texto": "§ 2º A qualificação profissional técnica corresponde à etapa da formação desenvolvida no âmbito dos cursos técnicos de nível médio, com o mínimo de 20% (vinte por cento) da carga horária prevista no CNCT para o respectivo curso, ofertada somente a quem já tenha concluído o ensino fundamental, de modo a compor itinerários formativos profissionais nesse nível e permitir certificações intermediárias.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 365,
-          "linha_fim": 365
+          "linha_inicio": 366,
+          "linha_fim": 366
         },
         {
           "id": "br/cne-cp/res/2026/2#art18",
@@ -6898,8 +6924,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 373,
-          "linha_fim": 389
+          "linha_inicio": 374,
+          "linha_fim": 390
         },
         {
           "id": "br/cne-cp/res/2026/2#art22",
@@ -6967,8 +6993,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 403,
-          "linha_fim": 417
+          "linha_inicio": 404,
+          "linha_fim": 418
         },
         {
           "id": "br/cne-cp/res/2026/2#art24-parunico",
@@ -6980,8 +7006,8 @@
           ],
           "texto": "Parágrafo único. Na hipótese de profissões regulamentadas, o perfil profissional de conclusão deve contemplar as atribuições funcionais previstas nos termos da legislação própria como condição para o registro e o exercício da profissão.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 427,
-          "linha_fim": 427
+          "linha_inicio": 428,
+          "linha_fim": 428
         },
         {
           "id": "br/cne-cp/res/2026/2#art26-ii",
@@ -6993,8 +7019,8 @@
           ],
           "texto": "II – a articulação e vinculação com o mundo do trabalho e a prática social, por meio de permanente estratégia dual de formação – escola e instituições do mundo do trabalho – com parcerias formalizadas para práticas profissionais e estágios;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 438,
-          "linha_fim": 438
+          "linha_inicio": 439,
+          "linha_fim": 439
         },
         {
           "id": "br/cne-cp/res/2026/2#art26-vi",
@@ -7006,8 +7032,8 @@
           ],
           "texto": "VI – a orientação para a inovação por meio de metodologias ativas, de utilização de tecnologias digitais, como a IA, que estimulem o protagonismo do estudante na área de atuação profissional;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 442,
-          "linha_fim": 442
+          "linha_inicio": 443,
+          "linha_fim": 443
         },
         {
           "id": "br/cne-cp/res/2026/2#art26-viii",
@@ -7019,8 +7045,8 @@
           ],
           "texto": "VIII – a organização curricular por áreas de estudos, projetos, núcleos temáticos ou outros critérios ou formas de organização, desde que compatíveis com os princípios da interdisciplinaridade, da contextualização e da integração permanente entre teoria e prática ao longo de todo o processo de ensino e aprendizagem;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 444,
-          "linha_fim": 444
+          "linha_inicio": 445,
+          "linha_fim": 445
         },
         {
           "id": "br/cne-cp/res/2026/2#art26-x",
@@ -7033,8 +7059,8 @@
           ],
           "texto": "X – a definição de mecanismo permanente de acompanhamento, por pelo menos dois anos, dos egressos do curso, o qual deverá fornecer subsídios para a atualização periódica do PPC;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 446,
-          "linha_fim": 446
+          "linha_inicio": 447,
+          "linha_fim": 447
         },
         {
           "id": "br/cne-cp/res/2026/2#art26-xii",
@@ -7046,8 +7072,8 @@
           ],
           "texto": "XII – os procedimentos de avaliação da execução do respectivo PPC.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 448,
-          "linha_fim": 448
+          "linha_inicio": 449,
+          "linha_fim": 449
         },
         {
           "id": "br/cne-cp/res/2026/2#art27",
@@ -7056,8 +7082,8 @@
           ],
           "texto": "Art. 27. A autorização de cursos técnicos pelo respectivo órgão competente está condicionada ao atendimento de aspirações e interesses dos cidadãos e da sociedade, e às especificidades e demandas socioeconômicas, tecnológicas e ambientais locais e regionais.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 450,
-          "linha_fim": 452
+          "linha_inicio": 451,
+          "linha_fim": 453
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-i",
@@ -7069,8 +7095,8 @@
           ],
           "texto": "I – a identificação do curso;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 458,
-          "linha_fim": 458
+          "linha_inicio": 459,
+          "linha_fim": 459
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-ii",
@@ -7083,8 +7109,8 @@
           ],
           "texto": "II – o formato da oferta – presencial, semipresencial ou a distância;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 459,
-          "linha_fim": 459
+          "linha_inicio": 460,
+          "linha_fim": 460
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-iii",
@@ -7096,8 +7122,8 @@
           ],
           "texto": "III – a justificativa e os objetivos;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 460,
-          "linha_fim": 460
+          "linha_inicio": 461,
+          "linha_fim": 461
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-iv",
@@ -7109,8 +7135,8 @@
           ],
           "texto": "IV – os requisitos e as formas de acesso;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 461,
-          "linha_fim": 461
+          "linha_inicio": 462,
+          "linha_fim": 462
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-v",
@@ -7122,8 +7148,8 @@
           ],
           "texto": "V – a acessibilidade para inclusão dos estudantes que são o público da educação especial;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 462,
-          "linha_fim": 462
+          "linha_inicio": 463,
+          "linha_fim": 463
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-vi",
@@ -7135,8 +7161,8 @@
           ],
           "texto": "VI – o perfil profissional de conclusão do curso e perfil profissional de certificações intermediárias, quando oferecidas;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 463,
-          "linha_fim": 463
+          "linha_inicio": 464,
+          "linha_fim": 464
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-vii",
@@ -7149,8 +7175,8 @@
           ],
           "texto": "VII – o itinerário formativo profissional a ser percorrido pelos estudantes, com certificações intermediárias, quando oferecidas;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 464,
-          "linha_fim": 464
+          "linha_inicio": 465,
+          "linha_fim": 465
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-viii",
@@ -7163,8 +7189,8 @@
           ],
           "texto": "VIII – a carga horária total do curso e de seus componentes curriculares, com indicação dos respectivos percentuais mínimos de frequência;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 465,
-          "linha_fim": 465
+          "linha_inicio": 466,
+          "linha_fim": 466
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-x",
@@ -7176,8 +7202,8 @@
           ],
           "texto": "X – os critérios para o aproveitamento de conhecimentos e experiências anteriores, mediante avaliação e reconhecimento de competências profissionais já constituídas pelos estudantes que o desejarem;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 467,
-          "linha_fim": 467
+          "linha_inicio": 468,
+          "linha_fim": 468
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xi",
@@ -7189,8 +7215,8 @@
           ],
           "texto": "XI – os critérios e procedimentos de avaliação da aprendizagem e de recomposição das aprendizagens, quando necessária;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 468,
-          "linha_fim": 468
+          "linha_inicio": 469,
+          "linha_fim": 469
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xii",
@@ -7202,8 +7228,8 @@
           ],
           "texto": "XII – a infraestrutura física e tecnológica, com a identificação de acervo bibliográfico físico ou digital, laboratórios, instalações e equipamentos, ambiente virtual de aprendizagem e da infraestrutura física e tecnológica dos polos de apoio presencial, quando aplicável;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 469,
-          "linha_fim": 469
+          "linha_inicio": 470,
+          "linha_fim": 470
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xiii",
@@ -7215,8 +7241,8 @@
           ],
           "texto": "XIII – a estratégia de integração entre escola e instituições do mundo do trabalho;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 470,
-          "linha_fim": 470
+          "linha_inicio": 471,
+          "linha_fim": 471
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xiv",
@@ -7228,8 +7254,8 @@
           ],
           "texto": "XIV – o perfil de qualificação dos professores, coordenadores, instrutores, mediadores pedagógicos e técnico-administrativos;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 471,
-          "linha_fim": 471
+          "linha_inicio": 472,
+          "linha_fim": 472
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xvi",
@@ -7241,8 +7267,8 @@
           ],
           "texto": "XVI – o prazo máximo para a integralização do curso;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 473,
-          "linha_fim": 473
+          "linha_inicio": 474,
+          "linha_fim": 474
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xvii",
@@ -7254,8 +7280,8 @@
           ],
           "texto": "XVII – a identificação da carga horária, das atividades e dos ambientes do estágio supervisionado obrigatório, quando exigido; e",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 474,
-          "linha_fim": 474
+          "linha_inicio": 475,
+          "linha_fim": 475
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-xviii",
@@ -7267,8 +7293,8 @@
           ],
           "texto": "XVIII – a metodologia e o cronograma de acompanhamento dos egressos do curso.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 475,
-          "linha_fim": 475
+          "linha_inicio": 476,
+          "linha_fim": 476
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par1-i",
@@ -7281,8 +7307,8 @@
           ],
           "texto": "I – os componentes curriculares e as suas unidades, as etapas ou módulos, acompanhados das respectivas cargas horárias presenciais e não presenciais, quando pertinente, o prazo máximo para integralização e a indicação da respectiva bibliografia básica e complementar;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 479,
-          "linha_fim": 479
+          "linha_inicio": 480,
+          "linha_fim": 480
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par1-ii",
@@ -7295,8 +7321,8 @@
           ],
           "texto": "II – as orientações metodológicas, incluídas as estratégias de execução das atividades presenciais e não presenciais com a utilização de metodologias ativas para o alcance dos resultados de aprendizagem previstos;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 480,
-          "linha_fim": 480
+          "linha_inicio": 481,
+          "linha_fim": 481
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par1-iii",
@@ -7309,8 +7335,8 @@
           ],
           "texto": "III – a prática profissional intrínseca ao currículo de todos os cursos, desenvolvida nos diversos ambientes de aprendizagem, inclusive em instituições do mundo do trabalho;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 481,
-          "linha_fim": 481
+          "linha_inicio": 482,
+          "linha_fim": 482
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par1-iv",
@@ -7323,8 +7349,8 @@
           ],
           "texto": "IV – o estágio profissional supervisionado, quando requerido pela natureza da ocupação profissional, como ato educativo desenvolvido em ambiente real de trabalho, nos termos da Lei nº 11.788, de 25 de setembro de 2008, realizado obrigatoriamente de modo presencial e cuja carga horária, quando obrigatória, não excederá o limite fixado no § 6º do art. 37; e",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 482,
-          "linha_fim": 482
+          "linha_inicio": 483,
+          "linha_fim": 483
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par2",
@@ -7336,8 +7362,8 @@
           ],
           "texto": "§ 2º O curso presencial, nas formas de oferta concomitante e subsequente, pode prever carga horária de atividades síncronas, síncronas mediadas ou assíncronas, com a utilização de tecnologias digitais, até o limite de 30% (trinta por cento) da carga horária mínima do curso, com a garantia de mediação pedagógica realizada por professor.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 485,
-          "linha_fim": 485
+          "linha_inicio": 486,
+          "linha_fim": 486
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par3",
@@ -7350,8 +7376,8 @@
           ],
           "texto": "§ 3º As instituições e redes de ensino devem comprovar a existência da necessária infraestrutura física e tecnológica, na mesma instituição, ou cedida em instituição distinta, com viabilidade de uso atestada por parceria formalizada.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 487,
-          "linha_fim": 487
+          "linha_inicio": 488,
+          "linha_fim": 488
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-par4",
@@ -7363,8 +7389,8 @@
           ],
           "texto": "§ 4º O acompanhamento dos egressos do curso deverá ser realizado sistematicamente pela instituição ofertante por meio de mecanismo permanente que colete, por pelo menos dois anos consecutivos, contados a partir da conclusão do curso, dados consistentes de inserção profissional para subsidiar a atualização periódica do PPC, assegurada a proteção de dados, conforme a Lei nº 13.709, de 14 de agosto de 2018 (Lei Geral de Proteção de Dados Pessoais).",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 489,
-          "linha_fim": 489
+          "linha_inicio": 490,
+          "linha_fim": 490
         },
         {
           "id": "br/cne-cp/res/2026/2#art29",
@@ -7403,8 +7429,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 491,
-          "linha_fim": 503
+          "linha_inicio": 492,
+          "linha_fim": 504
         },
         {
           "id": "br/cne-cp/res/2026/2#art30",
@@ -7420,8 +7446,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 505,
-          "linha_fim": 509
+          "linha_inicio": 506,
+          "linha_fim": 510
         },
         {
           "id": "br/cne-cp/res/2026/2#art36",
@@ -7440,8 +7466,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 576,
-          "linha_fim": 582
+          "linha_inicio": 577,
+          "linha_fim": 583
         },
         {
           "id": "br/cne-cp/res/2026/2#art37",
@@ -7488,8 +7514,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 588,
-          "linha_fim": 604
+          "linha_inicio": 589,
+          "linha_fim": 605
         },
         {
           "id": "br/cne-cp/res/2026/2#art38",
@@ -7547,8 +7573,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 614,
-          "linha_fim": 634
+          "linha_inicio": 615,
+          "linha_fim": 635
         },
         {
           "id": "br/cne-cp/res/2026/2#art42",
@@ -7584,8 +7610,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 664,
-          "linha_fim": 674
+          "linha_inicio": 665,
+          "linha_fim": 675
         },
         {
           "id": "br/cne-cp/res/2026/2#art43",
@@ -7656,8 +7682,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 676,
-          "linha_fim": 702
+          "linha_inicio": 677,
+          "linha_fim": 703
         },
         {
           "id": "br/cne-cp/res/2026/2#art44",
@@ -7698,8 +7724,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 708,
-          "linha_fim": 722
+          "linha_inicio": 709,
+          "linha_fim": 723
         },
         {
           "id": "br/cne-cp/res/2026/2#art45",
@@ -7755,8 +7781,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 724,
-          "linha_fim": 745
+          "linha_inicio": 725,
+          "linha_fim": 746
         },
         {
           "id": "br/cne-cp/res/2026/2#art47",
@@ -7847,8 +7873,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 758,
-          "linha_fim": 790
+          "linha_inicio": 759,
+          "linha_fim": 791
         },
         {
           "id": "br/cne-cp/res/2026/2#art48",
@@ -7895,8 +7921,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 796,
-          "linha_fim": 809
+          "linha_inicio": 797,
+          "linha_fim": 810
         },
         {
           "id": "br/cne-cp/res/2026/2#art49",
@@ -7951,8 +7977,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 811,
-          "linha_fim": 833
+          "linha_inicio": 812,
+          "linha_fim": 834
         },
         {
           "id": "br/cne-cp/res/2026/2#art50",
@@ -7971,8 +7997,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 835,
-          "linha_fim": 841
+          "linha_inicio": 836,
+          "linha_fim": 842
         },
         {
           "id": "br/cne-cp/res/2026/2#art51",
@@ -8003,8 +8029,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 843,
-          "linha_fim": 854
+          "linha_inicio": 844,
+          "linha_fim": 855
         },
         {
           "id": "br/cne-cp/res/2026/2#art52",
@@ -8039,8 +8065,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 856,
-          "linha_fim": 869
+          "linha_inicio": 857,
+          "linha_fim": 870
         },
         {
           "id": "br/cne-cp/res/2026/2#art53",
@@ -8092,8 +8118,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 871,
-          "linha_fim": 891
+          "linha_inicio": 872,
+          "linha_fim": 892
         },
         {
           "id": "br/cne-cp/res/2026/2#art57",
@@ -8148,8 +8174,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 935,
-          "linha_fim": 956
+          "linha_inicio": 936,
+          "linha_fim": 957
         },
         {
           "id": "br/cne-cp/res/2026/2#art59",
@@ -8172,8 +8198,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 968,
-          "linha_fim": 976
+          "linha_inicio": 969,
+          "linha_fim": 977
         },
         {
           "id": "br/cne-cp/res/2026/2#art60",
@@ -8182,8 +8208,8 @@
           ],
           "texto": "Art. 60. A experiência efetiva como profissional no mundo do trabalho, referente à habilitação profissional, ao eixo ou à área tecnológica em que for exercer a docência, preferencialmente deve ser incluída como requisito para atuar em curso de EPTNM, nos termos das normas definidas pelos sistemas de ensino.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 982,
-          "linha_fim": 984
+          "linha_inicio": 983,
+          "linha_fim": 985
         },
         {
           "id": "br/cne-cp/res/2026/2#art61",
@@ -8203,8 +8229,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 986,
-          "linha_fim": 991
+          "linha_inicio": 987,
+          "linha_fim": 992
         },
         {
           "id": "br/cne-cp/res/2026/2#art62",
@@ -8231,8 +8257,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 993,
-          "linha_fim": 1003
+          "linha_inicio": 994,
+          "linha_fim": 1004
         },
         {
           "id": "br/cne-cp/res/2026/2#art63",
@@ -8259,8 +8285,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 1005,
-          "linha_fim": 1014
+          "linha_inicio": 1006,
+          "linha_fim": 1015
         },
         {
           "id": "br/cne-cp/res/2026/2#art67",
@@ -8275,8 +8301,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 1056,
-          "linha_fim": 1060
+          "linha_inicio": 1057,
+          "linha_fim": 1061
         },
         {
           "id": "br/cne-cp/res/2026/2#art72",
@@ -8286,8 +8312,8 @@
           ],
           "texto": "Art. 72. Fica definido, como período de transição para a implantação definitiva do disposto no Capítulo XIII, o intervalo compreendido entre a data de publicação desta Resolução e 31 de dezembro de 2030.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 1080,
-          "linha_fim": 1082
+          "linha_inicio": 1081,
+          "linha_fim": 1083
         }
       ],
       "sem_texto": []
@@ -8339,8 +8365,8 @@
           ],
           "texto": "§ 1º Os currículos a que se refere o caput devem abranger, obrigatoriamente, o estudo da língua portuguesa e da matemática, o conhecimento do mundo físico e natural e da realidade social e política, especialmente do Brasil.",
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 443,
-          "linha_fim": 443
+          "linha_inicio": 445,
+          "linha_fim": 445
         },
         {
           "id": "br/lei/1996/9394#art26-par9B",
@@ -8358,8 +8384,27 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 470,
-          "linha_fim": 470
+          "linha_inicio": 472,
+          "linha_fim": 472
+        },
+        {
+          "id": "br/lei/1996/9394#art26A-par2",
+          "fichas": [
+            "CT-CURR-11"
+          ],
+          "caput": [
+            "Art. 26-A. Nos estabelecimentos de ensino fundamental e de ensino médio, públicos e privados, torna-se obrigatório o estudo da história e cultura afro-brasileira e indígena. (Redação dada pela Lei nº 11.645, de 2008)."
+          ],
+          "texto": "§ 2º Os conteúdos referentes à história e cultura afro-brasileira e dos povos indígenas brasileiros serão ministrados no âmbito de todo o currículo escolar, em especial nas áreas de educação artística e de literatura e história brasileiras. (Redação dada pela Lei nº 11.645, de 2008).",
+          "notas": [
+            {
+              "tipo": "redacao",
+              "texto": "(Redação dada pela Lei nº 11.645, de 2008)"
+            }
+          ],
+          "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
+          "linha_inicio": 484,
+          "linha_fim": 484
         },
         {
           "id": "br/lei/1996/9394#art61",
@@ -8389,24 +8434,28 @@
               "texto": "V – profissionais graduados que tenham feito complementação pedagógica, conforme disposto pelo Conselho Nacional de Educação. (Incluído pela lei nº 13.415, de 2017)"
             },
             {
-              "id": "br/lei/1996/9394#art61-parunico",
-              "texto": "Parágrafo único. A formação dos profissionais da educação, de modo a atender às especificidades do exercício de suas atividades, bem como aos objetivos das diferentes etapas e modalidades da educação básica, terá como fundamentos: (Incluído pela Lei nº 12.014, de 2009)"
+              "id": "br/lei/1996/9394#art61-par1",
+              "texto": "§ 1º A formação dos profissionais da educação, de modo a atender às especificidades do exercício de suas atividades, bem como aos objetivos das diferentes etapas e modalidades da educação básica, terá como fundamentos: (Redação dada pela Lei nº 15.326, de 2026)"
             },
             {
-              "id": "br/lei/1996/9394#art61-parunico-i",
+              "id": "br/lei/1996/9394#art61-par1-i",
               "texto": "I – a presença de sólida formação básica, que propicie o conhecimento dos fundamentos científicos e sociais de suas competências de trabalho; (Incluído pela Lei nº 12.014, de 2009)"
             },
             {
-              "id": "br/lei/1996/9394#art61-parunico-ii",
+              "id": "br/lei/1996/9394#art61-par1-ii",
               "texto": "II – a associação entre teorias e práticas, mediante estágios supervisionados e capacitação em serviço; (Incluído pela Lei nº 12.014, de 2009)"
             },
             {
-              "id": "br/lei/1996/9394#art61-parunico-iii",
+              "id": "br/lei/1996/9394#art61-par1-iii",
               "texto": "III – o aproveitamento da formação e experiências anteriores, em instituições de ensino e em outras atividades. (Incluído pela Lei nº 12.014, de 2009)"
             },
             {
-              "id": "br/lei/1996/9394#art61-parunico-iv",
+              "id": "br/lei/1996/9394#art61-par1-iv",
               "texto": "IV – a proteção integral dos direitos de crianças e adolescentes e o apoio à formação permanente dos profissionais de que trata o caput deste artigo para identificação de maus-tratos, de negligência e de violência sexual praticados contra crianças e adolescentes. (Incluído pela Lei nº 14.679, de 2023)"
+            },
+            {
+              "id": "br/lei/1996/9394#art61-par2",
+              "texto": "§ 2º São considerados professores da educação infantil, devendo ser enquadrados na carreira do magistério, independentemente da designação do cargo que ocupam, os que exercem função docente e atuam diretamente com as crianças educandas, com formação no magistério ou em curso de nível superior e aprovados em concurso público. (Incluído pela Lei nº 15.326, de 2026)"
             }
           ],
           "notas": [
@@ -8416,8 +8465,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 1058,
-          "linha_fim": 1074
+          "linha_inicio": 1055,
+          "linha_fim": 1073
         },
         {
           "id": "br/lei/1996/9394#art62",
@@ -8466,8 +8515,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 1076,
-          "linha_fim": 1095
+          "linha_inicio": 1075,
+          "linha_fim": 1094
         },
         {
           "id": "br/lei/1996/9394#art63",
@@ -8496,8 +8545,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 1114,
-          "linha_fim": 1120
+          "linha_inicio": 1112,
+          "linha_fim": 1118
         }
       ],
       "sem_texto": []
@@ -8690,6 +8739,128 @@
       "sem_texto": []
     },
     {
+      "ref": "ifpr/consup/res/2014/8",
+      "titulo": "Resolução CONSUP/IFPR nº 8/2014",
+      "status_vigencia": "parcialmente revogada",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_8-2014_regimento-interno-comum-campi.md",
+      "fichas": [
+        "CT-SUP-06"
+      ],
+      "dispositivos": [
+        {
+          "id": "ifpr/consup/res/2014/8#anexo1-art24",
+          "fichas": [
+            "CT-SUP-06"
+          ],
+          "texto": "Art. 24. Os Colegiados de Curso são órgãos consultivos e deliberativos do Câmpus para assuntos de natureza pedagógica, didática e disciplinar, no âmbito de cada curso, tendo como finalidade o desenvolvimento e fortalecimento dos cursos ofertados, assegurando a participação dos segmentos da comunidade escolar.",
+          "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_8-2014_regimento-interno-comum-campi.md",
+          "linha_inicio": 351,
+          "linha_fim": 353
+        },
+        {
+          "id": "ifpr/consup/res/2014/8#anexo1-art25",
+          "fichas": [
+            "CT-SUP-06"
+          ],
+          "texto": "Art. 25. Os Colegiados de Curso possuem os seguintes componentes:",
+          "subordinados": [
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art25-i",
+              "texto": "I – os(as) docentes dos componentes curriculares do curso;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art25-ii",
+              "texto": "II – 01 (um) representante técnico administrativo em educação ligado diretamente ao curso, quando houver;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art25-iii",
+              "texto": "III – 02 (dois) representantes discentes, de turmas distintas."
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art25-parunico",
+              "texto": "Parágrafo único. O Colegiado de Curso será coordenado por um(a) docente e na sua ausência pela Coordenação de Ensino do Câmpus."
+            }
+          ],
+          "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_8-2014_regimento-interno-comum-campi.md",
+          "linha_inicio": 355,
+          "linha_fim": 363
+        },
+        {
+          "id": "ifpr/consup/res/2014/8#anexo1-art26",
+          "fichas": [
+            "CT-SUP-06"
+          ],
+          "texto": "Art. 26. O Colegiado de Curso reunir-se-á ordinariamente com periodicidade mínima bimestral, por convocação da Coordenação de Curso ou, quando houver necessidade, por convocação da Coordenação de Curso ou da Direção de Ensino Pesquisa e Extensão do Câmpus.",
+          "subordinados": [
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art26-parunico",
+              "texto": "Parágrafo único. As proposições e deliberações advindas da reunião do Colegiado de Curso serão lavradas em ata, com a assinatura de todos os membros presentes."
+            }
+          ],
+          "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_8-2014_regimento-interno-comum-campi.md",
+          "linha_inicio": 365,
+          "linha_fim": 369
+        },
+        {
+          "id": "ifpr/consup/res/2014/8#anexo1-art27",
+          "fichas": [
+            "CT-SUP-06"
+          ],
+          "texto": "Art. 27. Compete aos Colegiados de Curso:",
+          "subordinados": [
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-i",
+              "texto": "I – cumprir e fazer cumprir as normas da instituição para o pleno funcionamento do curso;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-ii",
+              "texto": "II – propor revisão do Plano de Curso, quando necessário, respeitadas as diretrizes e normas do IFPR;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-iii",
+              "texto": "III – manifestar-se sobre as formas de admissão e seleção, bem como sobre o número de vagas iniciais, no que lhe couber;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-iv",
+              "texto": "IV – estabelecer normas internas de funcionamento do curso, respeitadas as diretrizes e normas da instituição;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-v",
+              "texto": "V – zelar pelo cumprimento dos Planos de Ensino dos componentes curriculares;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-vi",
+              "texto": "VI – orientar e acompanhar a vida escolar/acadêmica dos alunos do curso;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-vii",
+              "texto": "VII – deliberar sobre requerimentos de alunos no âmbito de suas competências;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-viii",
+              "texto": "VIII – deliberar o horário de aulas do Curso, respeitadas as diretrizes e normas da instituição;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-ix",
+              "texto": "IX – estudar, na qualidade de relator ou de membro de comissão especial, as matérias submetidas à apreciação do Colegiado, apresentando o relato e a decisão no prazo estabelecido pelo Colegiado ou pela Coordenação;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-x",
+              "texto": "X – recepcionar os ingressantes do Curso, orientando-os no que se refere ao funcionamento e organização do IFPR;"
+            },
+            {
+              "id": "ifpr/consup/res/2014/8#anexo1-art27-xi",
+              "texto": "XI – decidir sobre a aprovação ou reprovação de estudantes com dificuldade de aproveitamento nos componentes curriculares, ou em casos específicos que extrapolem a competência didático-avaliativo pedagógica docente, desde que convocados."
+            }
+          ],
+          "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_8-2014_regimento-interno-comum-campi.md",
+          "linha_inicio": 371,
+          "linha_fim": 385
+        }
+      ],
+      "sem_texto": []
+    },
+    {
       "ref": "ifpr/consup/res/2017/50",
       "titulo": "Resolução CONSUP/IFPR nº 50/2017",
       "status_vigencia": "vigente",
@@ -8722,8 +8893,8 @@
           ],
           "texto": "Art. 16. É recomendável que não se tenha trabalho de conclusão de curso (TCC), numa perspectiva acadêmica, nos cursos técnicos integrados, devendo ser priorizados trabalhos relacionados à prática profissional, como projetos de solidariedade, de cooperativa, de responsabilidade social, de extensão, de aprendizagem de práticas profissionais articuladas, dentre outros.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 172,
-          "linha_fim": 174
+          "linha_inicio": 190,
+          "linha_fim": 192
         },
         {
           "id": "ifpr/consup/res/2022/64#art22",
@@ -8758,8 +8929,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 210,
-          "linha_fim": 219
+          "linha_inicio": 228,
+          "linha_fim": 237
         },
         {
           "id": "ifpr/consup/res/2022/64#art31",
@@ -8768,8 +8939,8 @@
           ],
           "texto": "Art. 31. Os PPCs devem ser avaliados pelos colegiados de curso anualmente, na perspectiva da avaliação emancipatória, priorizando os aspectos qualitativos dos processos de ensino e aprendizagem.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 277,
-          "linha_fim": 279
+          "linha_inicio": 295,
+          "linha_fim": 297
         },
         {
           "id": "ifpr/consup/res/2022/64#art32",
@@ -8792,8 +8963,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 281,
-          "linha_fim": 287
+          "linha_inicio": 299,
+          "linha_fim": 305
         },
         {
           "id": "ifpr/consup/res/2022/64#art41",
@@ -8802,8 +8973,8 @@
           ],
           "texto": "Art. 41. A formação inicial e continuada dos servidores é condição para a apropriação dos princípios que fundamentam as teorias e as práticas inerentes ao currículo integrado na educação profissional e tecnológica.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 353,
-          "linha_fim": 355
+          "linha_inicio": 371,
+          "linha_fim": 373
         },
         {
           "id": "ifpr/consup/res/2022/64#art42",
@@ -8812,8 +8983,8 @@
           ],
           "texto": "Art. 42. O IFPR deverá desenvolver uma política de formação pedagógica permanente para os profissionais de educação da instituição, articulada aos fundamentos pedagógicos da educação profissional e tecnológica, assumindo os princípios da formação humana integral.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 357,
-          "linha_fim": 359
+          "linha_inicio": 375,
+          "linha_fim": 377
         },
         {
           "id": "ifpr/consup/res/2022/64#art43",
@@ -8822,8 +8993,8 @@
           ],
           "texto": "Art. 43. O IFPR deverá garantir os tempos e espaços para a formação permanente dos servidores.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 361,
-          "linha_fim": 363
+          "linha_inicio": 379,
+          "linha_fim": 381
         }
       ],
       "sem_texto": []
@@ -8904,8 +9075,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 95,
-          "linha_fim": 101
+          "linha_inicio": 88,
+          "linha_fim": 94
         },
         {
           "id": "ifpr/consup/res/2024/190#art56-par4",
@@ -8927,8 +9098,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 505,
-          "linha_fim": 508
+          "linha_inicio": 498,
+          "linha_fim": 501
         },
         {
           "id": "ifpr/consup/res/2024/190#art62-par4",
@@ -8950,8 +9121,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 546,
-          "linha_fim": 549
+          "linha_inicio": 539,
+          "linha_fim": 542
         },
         {
           "id": "ifpr/consup/res/2024/190#art69",
@@ -8966,8 +9137,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 587,
-          "linha_fim": 591
+          "linha_inicio": 580,
+          "linha_fim": 584
         }
       ],
       "sem_texto": []
@@ -9012,8 +9183,8 @@
           ],
           "texto": "Art. 67 O PPC deve ser avaliado de modo contínuo pelo Colegiado de Curso ou pelo NDE, nos casos dos cursos superiores, em diálogo com a Sepae, na perspectiva da avaliação emancipatória, priorizando os aspectos qualitativos dos processos de ensino e aprendizagem em consonância com o PPP do campus.",
           "path": "base-conhecimento/normas/ifpr/portarias/PORTARIA_PROENS-IFPR_121-2024_abertura-suspensao-extincao-cursos.md",
-          "linha_inicio": 554,
-          "linha_fim": 556
+          "linha_inicio": 546,
+          "linha_fim": 548
         },
         {
           "id": "ifpr/proens/portaria/2024/121#art68",
@@ -9022,8 +9193,8 @@
           ],
           "texto": "Art. 68 As avaliações, de periodicidade anual, deverão ser registradas em atas de reuniões do Colegiado de Curso ou do NDE.",
           "path": "base-conhecimento/normas/ifpr/portarias/PORTARIA_PROENS-IFPR_121-2024_abertura-suspensao-extincao-cursos.md",
-          "linha_inicio": 558,
-          "linha_fim": 560
+          "linha_inicio": 550,
+          "linha_fim": 552
         },
         {
           "id": "ifpr/proens/portaria/2024/121#art69",
@@ -9042,8 +9213,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/portarias/PORTARIA_PROENS-IFPR_121-2024_abertura-suspensao-extincao-cursos.md",
-          "linha_inicio": 562,
-          "linha_fim": 568
+          "linha_inicio": 554,
+          "linha_fim": 560
         }
       ],
       "sem_texto": []
@@ -9173,8 +9344,8 @@
       "fim_em": null,
       "texto": "Art. 70. Os processos de autorização de cursos técnicos e de cursos superiores de tecnologia em tramitação nos órgãos competentes, e que ainda não estejam na fase de avaliação, podem ser adequados a esta Resolução por solicitação da instituição ou do órgão regulador do sistema de ensino, sem prejudicar a continuidade do processo de autorização e credenciamento.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1070,
-      "linha_fim": 1072
+      "linha_inicio": 1071,
+      "linha_fim": 1073
     },
     {
       "id": "dcnept-2026-art71",
@@ -9192,8 +9363,8 @@
       "fim_em": null,
       "texto": "Art. 71. Para a adequação dos cursos técnicos e cursos superiores de tecnologia autorizados e em oferta é assegurado período de transição de até dois anos, a partir da vigência desta Resolução.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1074,
-      "linha_fim": 1076
+      "linha_inicio": 1075,
+      "linha_fim": 1077
     },
     {
       "id": "dcnept-2026-art71-parunico",
@@ -9214,8 +9385,8 @@
       ],
       "texto": "Parágrafo único. Aos estudantes matriculados em cursos técnicos e em cursos superiores de tecnologia ofertados até a data de publicação desta Resolução, fica assegurado o direito de conclusão de seus cursos, com base na Resolução CNE/CP nº 1, de 5 de janeiro de 2021.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1078,
-      "linha_fim": 1078
+      "linha_inicio": 1079,
+      "linha_fim": 1079
     },
     {
       "id": "dcnept-2026-art72",
@@ -9233,8 +9404,8 @@
       "fim_em": null,
       "texto": "Art. 72. Fica definido, como período de transição para a implantação definitiva do disposto no Capítulo XIII, o intervalo compreendido entre a data de publicação desta Resolução e 31 de dezembro de 2030.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1080,
-      "linha_fim": 1082
+      "linha_inicio": 1081,
+      "linha_fim": 1083
     },
     {
       "id": "dcnept-2026-art73",
@@ -9252,8 +9423,8 @@
       "fim_em": null,
       "texto": "Art. 73. Os órgãos normativos dos sistemas de ensino, no âmbito de suas competências, editarão normas complementares destinadas à implementação das disposições desta Resolução, no prazo de até cento e oitenta dias contados de sua publicação.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1084,
-      "linha_fim": 1086
+      "linha_inicio": 1085,
+      "linha_fim": 1087
     },
     {
       "id": "dcnept-2021-art63",
@@ -9271,8 +9442,8 @@
       "fim_em": null,
       "texto": "Art. 63. Os processos de autorização de cursos de Educação Profissional Tecnológica de Graduação em tramitação nos órgãos competentes e que ainda não estejam na fase de avaliação, podem ser, sem prejudicar a continuidade do processo, por solicitação da instituição, adequados a esta Resolução.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-      "linha_inicio": 685,
-      "linha_fim": 687
+      "linha_inicio": 676,
+      "linha_fim": 678
     },
     {
       "id": "dcnem-2024-art42",
@@ -9290,8 +9461,8 @@
       "fim_em": null,
       "texto": "Art. 42. É permitido às redes de ensino a manutenção da organização curricular orientada pela Resolução CNE/CEB nº 3, de 21 de novembro de 2018, em regime de transição, para os estudantes matriculados no Ensino Médio em data anterior à publicação da presente Resolução, ou a migração para nova organização curricular, garantido o aproveitamento integral dos estudos anteriormente realizados pelos estudantes e vedado o alongamento do período de duração dessa etapa da Educação Básica.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-      "linha_inicio": 623,
-      "linha_fim": 625
+      "linha_inicio": 614,
+      "linha_fim": 616
     },
     {
       "id": "dcnept-2021-art62",
@@ -9309,8 +9480,8 @@
       "fim_em": null,
       "texto": "Art. 62. Aos estudantes matriculados em cursos de Educação Profissional Técnica de Nível Médio e em cursos de Educação Profissional Tecnológica de Graduação oferecidos anteriormente ao exercício em que a presente Resolução produzirá efeitos, fica assegurado o direito de conclusão de seus cursos organizados, respectivamente, com base na Resolução CNE/CEB nº 6, de 20 de setembro de 2012, e na Resolução CNE/CP nº 3, de 18 de dezembro de 2002.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-      "linha_inicio": 681,
-      "linha_fim": 683
+      "linha_inicio": 672,
+      "linha_fim": 674
     }
   ],
   "secoes": [
@@ -11319,7 +11490,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 794964,
+    "caracteres": 803991,
     "secoes": 120,
     "caracteres_secoes": 236868,
     "caracteres_ppc_inteiro": 254501

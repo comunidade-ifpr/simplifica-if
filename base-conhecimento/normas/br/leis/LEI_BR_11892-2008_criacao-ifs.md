@@ -27,14 +27,9 @@ fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11892.
 vigencia_calculada_em: "2026-11-13"
 fundamenta:
   - "Portaria MEC nº 902/2024"
+notas_da_fonte:
+  - "Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: incorporadas as redações das Leis nº 15.521/2026 (art. 1º, III e parágrafo único; art. 18 revogado; Anexo III) e nº 15.367/2026 (art. 5º, XXXVII a XXXIX; arts. 12 e 13; Anexo I), com a redação anterior de cada dispositivo alterado."
 ---
-
-## Resumo
-
-- Institui a Rede Federal de Educação Profissional, Científica e (Vide Decreto nº 7.022, de 2009) Tecnológica, cria os Institutos Federais de Educação, Ciência e Tecnologia, e dá outras providências
-- Documento normativo: LEI Nº 11.892, DE 29 DE DEZEMBRO DE 2008
-
-## Texto da norma
 
 > Institui a Rede Federal de Educação Profissional, Científica e (Vide Decreto nº 7.022, de 2009) Tecnológica, cria os Institutos Federais de Educação, Ciência e Tecnologia, e dá outras providências.
 
@@ -50,7 +45,13 @@ Fica instituída, no âmbito do sistema federal de ensino, a Rede Federal de Edu
 
 - **I –** Institutos Federais de Educação, Ciência e Tecnologia - Institutos Federais;
 - **II –** Universidade Tecnológica Federal do Paraná - UTFPR;
+<!-- redacao-nao-vigente -->
+
 - **III –** Centros Federais de Educação Tecnológica Celso Suckow da Fonseca - CEFET-RJ e de Minas Gerais - CEFET- MG;
+
+<!-- /redacao-nao-vigente -->
+
+- **III –** (Revogado). (Redação dada pela Lei nº 15.521, de 2026)
 
 <!-- redacao-nao-vigente -->
 
@@ -67,7 +68,13 @@ Fica instituída, no âmbito do sistema federal de ensino, a Rede Federal de Edu
 
 <!-- /redacao-nao-vigente -->
 
+<!-- redacao-nao-vigente -->
+
 **Parágrafo único.** As instituições mencionadas nos incisos I, II, III e V do caput possuem natureza jurídica de autarquia, detentoras de autonomia administrativa, patrimonial, financeira, didático-pedagógica e disciplinar. (Redação dada pela Lei nº 12.677, de 2012)
+
+<!-- /redacao-nao-vigente -->
+
+**Parágrafo único.** As instituições previstas nos incisos I, II e V do caput deste artigo possuem natureza jurídica de autarquia, detentoras de autonomia administrativa, patrimonial, financeira, didático-pedagógica e disciplinar. (Redação dada pela Lei nº 15.521, de 2026)
 
 #### Art. 2o
 
@@ -139,8 +146,16 @@ Ficam criados os seguintes Institutos Federais de Educação, Ciência e Tecnolo
 - **XXXIV –** Instituto Federal de Santa Catarina, mediante transformação do Centro Federal de Educação Tecnológica de Santa Catarina;
 - **XXXV –** Instituto Federal Catarinense, mediante integração das Escolas Agrotécnicas Federais de Concórdia, de Rio do Sul e de Sombrio;
 - **XXXVI –** Instituto Federal de São Paulo, mediante transformação do Centro Federal de Educação Tecnológica de São Paulo;
+<!-- redacao-nao-vigente -->
+
 - **XXXVII –** Instituto Federal de Sergipe, mediante integração do Centro Federal de Educação Tecnológica de Sergipe e da Escola Agrotécnica Federal de São Cristóvão; e
 - **XXXVIII –** Instituto Federal do Tocantins, mediante integração da Escola Técnica Federal de Palmas e da Escola Agrotécnica Federal de Araguatins.
+
+<!-- /redacao-nao-vigente -->
+
+- **XXXVII –** Instituto Federal de Sergipe, mediante integração do Centro Federal de Educação Tecnológica de Sergipe e da Escola Agrotécnica Federal de São Cristóvão; (Redação dada pela Lei nº 15.367, de 2026)
+- **XXXVIII –** Instituto Federal do Tocantins, mediante integração da Escola Técnica Federal de Palmas e da Escola Agrotécnica Federal de Araguatins; e (Redação dada pela Lei nº 15.367, de 2026)
+- **XXXIX –** Instituto Federal do Sertão Paraibano, mediante desmembramento do Instituto Federal da Paraíba. (Incluído pela Lei nº 15.367, de 2026)
 
 **§ 1o** As localidades onde serão constituídas as reitorias dos Institutos Federais constam do Anexo I desta Lei.
 
@@ -255,12 +270,24 @@ Os Reitores serão nomeados pelo Presidente da República, para mandato de 4 (qu
 
 #### Art. 12.
 
+<!-- redacao-nao-vigente -->
+
 Os Reitores serão nomeados pelo Presidente da República, para mandato de 4 (quatro) anos, permitida uma recondução, após processo de consulta à comunidade escolar do respectivo Instituto Federal, atribuindo-se o peso de 1/3 (um terço) para a manifestação do corpo docente, de 1/3 (um terço) para a manifestação dos servidores técnico- administrativos e de 1/3 (um terço) para a manifestação do corpo discente. (Regulamento)
+
+<!-- /redacao-nao-vigente -->
+
+Os Reitores serão nomeados pelo Presidente da República, para mandato de 4 (quatro) anos, permitida uma recondução, escolhido(a) obrigatoriamente, para cada Instituto Federal, o(a) candidato(a) que obtiver o maior número de votos após processo de consulta à respectiva comunidade escolar, atribuindo-se o peso de 1/3 (um terço) para a manifestação do corpo docente, de 1/3 (um terço) para a manifestação dos servidores técnico-administrativos e de 1/3 (um terço) para a manifestação do corpo discente. (Redação dada pela Lei nº 15.367, de 2026)
 
 **§ 1o** Poderão candidatar-se ao cargo de Reitor os docentes pertencentes ao Quadro de Pessoal Ativo Permanente de qualquer dos campi que integram o Instituto Federal, desde que possuam o mínimo de 5 (cinco) anos de efetivo exercício em instituição federal de educação profissional e tecnológica e que atendam a, pelo menos, um dos seguintes requisitos:
 
 - **I –** possuir o título de doutor; ou
+<!-- redacao-nao-vigente -->
+
 - **II –** estar posicionado nas Classes DIV ou DV da Carreira do Magistério do Ensino Básico, Técnico e Tecnológico, ou na Classe de Professor Associado da Carreira do Magistério Superior.
+
+<!-- /redacao-nao-vigente -->
+
+- **II –** estar posicionado na Classe C, nível 4, ou na Classe Titular da Carreira do Magistério do Ensino Básico, Técnico e Tecnológico. (Redação dada pela Lei nº 15.367, de 2026)
 
 **§ 2o** O mandato de Reitor extingue-se pelo decurso do prazo ou, antes desse prazo, pela aposentadoria, voluntária ou compulsória, pela renúncia e pela destituição ou vacância do cargo.
 
@@ -286,7 +313,13 @@ Os campi serão dirigidos por Diretores-Gerais, nomeados pelo Reitor para mandat
 
 Os campi serão dirigidos por Diretores-Gerais, nomeados pelo Reitor para mandato de 4 (quatro) anos, permitida uma recondução, após processo de consulta à comunidade do respectivo campus, atribuindo-se o peso de 1/3 (um terço) para a manifestação do corpo docente, de 1/3 (um terço) para a manifestação dos servidores técnico-administrativos e de 1/3 (um terço) para a manifestação do corpo discente. (Regulamento)
 
+<!-- redacao-nao-vigente -->
+
 **§ 1o** Poderão candidatar-se ao cargo de Diretor-Geral do campus os servidores ocupantes de cargo efetivo da carreira docente ou de cargo efetivo de nível superior da carreira dos técnico-administrativos do Plano de Carreira dos Cargos Técnico-Administrativos em Educação, desde que possuam o mínimo de 5 (cinco) anos de efetivo exercício em instituição federal de educação profissional e tecnológica e que se enquadrem em pelo menos uma das seguintes situações:
+
+<!-- /redacao-nao-vigente -->
+
+**§ 1o** Poderão candidatar-se ao cargo de Diretor-Geral de campus os servidores ocupantes de cargo efetivo da carreira docente ou os servidores com formação em nível superior ocupantes de cargo efetivo da carreira dos técnicos-administrativos do Plano de Carreira dos Cargos Técnico-Administrativos em Educação, desde que possuam o mínimo de 5 (cinco) anos de efetivo exercício em instituição federal de educação profissional e tecnológica e que se enquadrem em pelo menos uma das seguintes situações: (Redação dada pela Lei nº 15.367, de 2026)
 
 - **I –** preencher os requisitos exigidos para a candidatura ao cargo de Reitor do Instituto Federal;
 - **II –** possuir o mínimo de 2 (dois) anos de exercício em cargo ou função de gestão na instituição; ou
@@ -353,7 +386,13 @@ O patrimônio de cada um dos novos Institutos Federais será constituído:
 
 #### Art. 18.
 
+<!-- redacao-nao-vigente -->
+
 Os Centros Federais de Educação Tecnológica Celso Suckow da Fonseca CEFET-RJ e de Minas Gerais - CEFET-MG, não inseridos no reordenamento de que trata o art. 5o desta Lei, permanecem como entidades autárquicas vinculadas ao Ministério da Educação, configurando-se como instituições de ensino superior pluricurriculares, especializadas na oferta de educação tecnológica nos diferentes níveis e modalidades de ensino, caracterizando-se pela atuação prioritária na área tecnológica, na forma da legislação.
+
+<!-- /redacao-nao-vigente -->
+
+(Revogado pela Lei nº 15.521, de 2026)
 
 #### Art. 19.
 
@@ -392,7 +431,13 @@ LUIZ INÁCIO LULA DA SILVA Fernando Haddad Paulo Bernardo Silva Este texto não 
 
 ### ANEXO I
 
+<!-- redacao-nao-vigente -->
+
 Localidades onde serão constituídas as Reitorias dos novos Institutos Federais Instituição Sede da Reitoria Instituto Federal do Acre Rio Branco Instituto Federal de Alagoas Maceió Instituto Federal do Amapá Macapá Instituto Federal do Amazonas Manaus Instituto Federal da Bahia Salvador Instituto Federal Baiano Salvador Instituto Federal de Brasília Brasília Instituto Federal do Ceará Fortaleza Instituto Federal do Espírito Santo Vitória Instituto Federal de Goiás Goiânia Instituto Federal Goiano Goiânia Instituto Federal do Maranhão São Luís Instituto Federal de Minas Gerais Belo Horizonte Instituto Federal do Norte de Minas Gerais Montes Claros Instituto Federal do Sudeste de Minas Gerais Juiz de Fora Instituto Federal do Sul de Minas Gerais Pouso Alegre Instituto Federal do Triângulo Mineiro Uberaba Instituto Federal de Mato Grosso Cuiabá Instituto Federal de Mato Grosso do Sul Campo Grande Instituto Federal do Pará Belém Instituto Federal da Paraíba João Pessoa Instituto Federal de Pernambuco Recife Instituto Federal do Sertão Pernambucano Petrolina Instituto Federal do Piauí Teresina Instituto Federal do Paraná Curitiba Instituto Federal do Rio de Janeiro Rio de Janeiro Instituto Federal Fluminense Campos dos Goytacazes Instituto Federal do Rio Grande do Norte Natal Instituto Federal do Rio Grande do Sul Bento Gonçalves Instituto Federal Farroupilha Santa Maria Instituto Federal Sul-rio-grandense Pelotas Instituto Federal de Rondônia Porto Velho Instituto Federal de Roraima Boa Vista Instituto Federal de Santa Catarina Florianópolis Instituto Federal Catarinense Blumenau Instituto Federal de São Paulo São Paulo Instituto Federal de Sergipe Aracaju Instituto Federal do Tocantins Palmas
+
+<!-- /redacao-nao-vigente -->
+
+Localidades onde serão constituídas as Reitorias dos novos Institutos Federais Instituição Sede da Reitoria Instituto Federal do Acre Rio Branco Instituto Federal de Alagoas Maceió Instituto Federal do Amapá Macapá Instituto Federal do Amazonas Manaus Instituto Federal da Bahia Salvador Instituto Federal Baiano Salvador Instituto Federal de Brasília Brasília Instituto Federal do Ceará Fortaleza Instituto Federal do Espírito Santo Vitória Instituto Federal de Goiás Goiânia Instituto Federal Goiano Goiânia Instituto Federal do Maranhão São Luís Instituto Federal de Minas Gerais Belo Horizonte Instituto Federal do Norte de Minas Gerais Montes Claros Instituto Federal do Sudeste de Minas Gerais Juiz de Fora Instituto Federal do Sul de Minas Gerais Pouso Alegre Instituto Federal do Triângulo Mineiro Uberaba Instituto Federal de Mato Grosso Cuiabá Instituto Federal de Mato Grosso do Sul Campo Grande Instituto Federal do Pará Belém Instituto Federal da Paraíba João Pessoa Instituto Federal do Sertão Paraibano Patos Instituto Federal de Pernambuco Recife Instituto Federal do Sertão Pernambucano Petrolina Instituto Federal do Piauí Teresina Instituto Federal do Paraná Curitiba Instituto Federal do Rio de Janeiro Rio de Janeiro Instituto Federal Fluminense Campos dos Goytacazes Instituto Federal do Rio Grande do Norte Natal Instituto Federal do Rio Grande do Sul Bento Gonçalves Instituto Federal Farroupilha Santa Maria Instituto Federal Sul-rio-grandense Pelotas Instituto Federal de Rondônia Porto Velho Instituto Federal de Roraima Boa Vista Instituto Federal de Santa Catarina Florianópolis Instituto Federal Catarinense Blumenau Instituto Federal de São Paulo São Paulo Instituto Federal de Sergipe Aracaju Instituto Federal do Tocantins Palmas (Redação dada pela Lei nº 15.367, de 2026)
 
 ### ANEXO II
 
@@ -400,4 +445,4 @@ Escolas Técnicas Vinculadas que passam a integrar os Institutos Federais Escola
 
 ### ANEXO III
 
-Escolas Técnicas Vinculadas às Universidades Federais Escola Técnica Vinculada Universidade Federal Escola Agrotécnica da Universidade Federal de Roraima - UFRR Universidade Federal de Roraima Colégio Universitário da UFMA Universidade Federal do Maranhão Escola Técnica de Artes da UFAL Universidade Federal de Alagoas Colégio Técnico da UFMG Universidade Federal de Minas Gerais Centro de Formação Especial em Saúde da UFTM Universidade Federal do Triângulo Mineiro Escola Técnica de Saúde da UFU Universidade Federal de Uberlândia Centro de Ensino e Desenvolvimento Agrário da UFV Universidade Federal de Viçosa Escola de Música da UFP Universidade Federal do Pará Escola de Teatro e Dança da UFP Universidade Federal do Pará Colégio Agrícola Vidal de Negreiros da UFPB Universidade Federal da Paraíba Escola Técnica de Saúde da UFPB Universidade Federal da Paraíba Escola Técnica de Saúde de Cajazeiras da UFCG Universidade Federal de Campina Grande Colégio Agrícola Dom Agostinho Ikas da UFRP Universidade Federal Rural de Pernambuco Colégio Agrícola de Floriano da UFPI Universidade Federal do Piauí Colégio Agrícola de Teresina da UFPI Universidade Federal do Piauí Colégio Agrícola de Bom Jesus da UFPI Universidade Federal do Piauí Colégio Técnico da UFRRJ Universidade Federal Rural do Rio de Janeiro Escola Agrícola de Jundiaí da UFRN Universidade Federal do Rio Grande do Norte Escola de Enfermagem de Natal da UFRN Universidade Federal do Rio Grande do Norte Escola de Música da UFRN Universidade Federal do Rio Grande do Norte Conjunto Agrotécnico Visconde da Graça da UFPEL Universidade Federal de Pelotas Colégio Agrícola de Frederico Westphalen da UFSM Universidade Federal de Santa Maria Colégio Politécnico da Universidade Federal de Santa Maria Universidade Federal de Santa Maria Colégio Técnico Industrial da Universidade Federal de Santa Maria Universidade Federal de Santa Maria *
+Escolas Técnicas Vinculadas às Universidades Federais Escola Técnica Vinculada Universidade Federal Escola Agrotécnica da Universidade Federal de Roraima - UFRR Universidade Federal de Roraima Colégio Universitário da UFMA Universidade Federal do Maranhão Escola Técnica de Artes da UFAL Universidade Federal de Alagoas Colégio Técnico da UFMG Universidade Federal de Minas Gerais Centro de Formação Especial em Saúde da UFTM Universidade Federal do Triângulo Mineiro Escola Técnica de Saúde da UFU Universidade Federal de Uberlândia Centro de Ensino e Desenvolvimento Agrário da UFV Universidade Federal de Viçosa Escola de Música da UFP Universidade Federal do Pará Escola de Teatro e Dança da UFP Universidade Federal do Pará Colégio Agrícola Vidal de Negreiros da UFPB Universidade Federal da Paraíba Escola Técnica de Saúde da UFPB Universidade Federal da Paraíba Escola Técnica de Saúde de Cajazeiras da UFCG Universidade Federal de Campina Grande Colégio Agrícola Dom Agostinho Ikas da UFRP Universidade Federal Rural de Pernambuco Colégio Agrícola de Floriano da UFPI Universidade Federal do Piauí Colégio Agrícola de Teresina da UFPI Universidade Federal do Piauí Colégio Agrícola de Bom Jesus da UFPI Universidade Federal do Piauí Colégio Técnico da UFRRJ Universidade Federal Rural do Rio de Janeiro Escola Agrícola de Jundiaí da UFRN Universidade Federal do Rio Grande do Norte Escola de Enfermagem de Natal da UFRN Universidade Federal do Rio Grande do Norte Escola de Música da UFRN Universidade Federal do Rio Grande do Norte Conjunto Agrotécnico Visconde da Graça da UFPEL Universidade Federal de Pelotas Colégio Agrícola de Frederico Westphalen da UFSM Universidade Federal de Santa Maria Colégio Politécnico da Universidade Federal de Santa Maria Universidade Federal de Santa Maria Colégio Técnico Industrial da Universidade Federal de Santa Maria Universidade Federal de Santa Maria Centro de Formação e Ensino Técnico da Universidade Federal de Ciência e Inovação de Minas Gerais (Incluído pela Lei nº 15.521, de 2026) Universidade Federal de Ciência e Inovação de Minas Gerais (UFCI/MG) Centro de Formação e Ensino Técnico da Universidade Federal de Ciência e Inovação do Rio de Janeiro (Incluído pela Lei nº 15.521, de 2026) Universidade Federal de Ciência e Inovação do Rio de Janeiro (UFCI/RJ) *

@@ -32,16 +32,13 @@ revogada_por:
   - "Resolução CONSUP/IFPR nº 282/2026 — art. 31, parágrafo único"
 regulamenta:
   - "Portaria MEC nº 902/2024"
+pontos_chave:
+  - "A norma exige um PPCP específico e aprovado para cada perfil profissional a ser certificado (art. 13, I)."
+  - "Os PPCP são analisados pelo CONSEPE e aprovados pelo CONSUP (art. 29)."
+notas_da_fonte:
+  - "A versão é a consolidação publicada no Boletim de Serviço Eletrônico em 13 de agosto de 2026, documento SEI nº 4333864, processo 23411.019945/2025-25, assinada eletronicamente em 13 de agosto de 2026, código CRC 52AB31B3."
+  - "A Resolução nº 276, de 11 de junho de 2026, foi expedida ad referendum, homologada pelo CONSUP em 23 de junho de 2026 e alterada pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026."
 ---
-
-## Resumo
-
-- Institui e regulamenta o processo de certificação profissional da Rede Certifica no IFPR.
-- A versão abaixo é a consolidação publicada no Boletim de Serviço Eletrônico em 13 de agosto de 2026, documento SEI nº 4333864.
-- A Resolução nº 276, de 11 de junho de 2026, foi expedida ad referendum, homologada pelo CONSUP em 23 de junho de 2026 e alterada pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026.
-- A norma exige um PPCP específico e aprovado para cada perfil profissional. A aprovação cabe ao CONSUP, após análise do CONSEPE.
-
-## Texto consolidado
 
 > Dispõe sobre o Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR.
 
@@ -457,11 +454,3 @@ Esta Resolução entra em vigor nesta data, com ampla publicação e divulgaçã
 
 ADRIANO WILLIAN DA SILVA VIANA PEREIRA  
 Presidente
-
-## Identificação da consolidação
-
-- Processo: 23411.019945/2025-25
-- Documento: SEI nº 4333864
-- Assinatura eletrônica: 13 de agosto de 2026, às 19h22
-- Código CRC: 52AB31B3
-- Publicação: Boletim de Serviço Eletrônico de 13 de agosto de 2026

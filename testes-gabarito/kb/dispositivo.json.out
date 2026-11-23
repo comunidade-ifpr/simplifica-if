@@ -2,7 +2,6 @@
   "id": "br/cne-cp/res/2026/2#art28-xviii",
   "dispositivo": "#art28-xviii",
   "norma": "br/cne-cp/res/2026/2",
-  "ato": "br/cne-cp/res/2026/2",
   "tipo": "inciso",
   "rotulo": "XVIII",
   "pai": "br/cne-cp/res/2026/2#art28",
@@ -17,8 +16,8 @@
   "notas": [],
   "revogado": false,
   "vetado": false,
-  "linha_inicio": 475,
-  "linha_fim": 475,
+  "linha_inicio": 476,
+  "linha_fim": 476,
   "ordem": 210,
   "path": "normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
   "filhos": []

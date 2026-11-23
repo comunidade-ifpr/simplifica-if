@@ -31,20 +31,20 @@ aliases:
   - "SEI 4422750"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4606058&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
+pontos_chave:
+  - "O calendário de referência serve de base: cada campus elabora seu calendário local a partir dele (art. 3º)."
+  - "Mínimo de 200 dias letivos anuais por curso e 100 por semestre (art. 4º)."
+  - "Os campi podem ter calendários distintos por nível, forma de oferta e organização dos cursos (art. 4º, § 2º)."
+  - "Dia letivo é o dia fixado no calendário para atividades de ensino, pesquisa, extensão e inovação previstas no PPP, no PPC e nos planos de ensino, com efetiva participação de professores e estudantes (art. 5º)."
+  - "Planejamento, formação e reuniões são ações internas compatíveis com o recesso acadêmico, isto é, sem estudantes (art. 7º)."
+  - "Ano letivo de 2027 entre 1º de fevereiro e 17 de dezembro, com início até 15 de fevereiro (art. 8º)."
+  - "Itens obrigatórios do calendário do campus, entre eles conselhos de classe (XIII e XV), reuniões com familiares e comunidade (XVI), formação pedagógica com mínimo de 40 horas anuais (XXII), planejamento coletivo com mínimo de 20 horas anuais (XXIII) e a nova Semana Nacional da Ética e da Cidadania (XXV) (art. 11)."
+  - "Calendário do campus enviado à Proens com antecedência mínima de 60 dias do início do ano letivo (art. 15)."
+  - "Alterações do calendário após a aprovação com antecedência mínima de 30 dias (art. 16, § 3º)."
+notas_da_fonte:
+  - "Publicada no Boletim de Serviço Eletrônico em 5 de outubro de 2026, documento SEI nº 4422750, processo 23411.011715/2026-07; autenticidade verificável no SEI com o código verificador 4422750 e CRC 057D5696."
+  - "Estrutura reorganizada em relação ao calendário de 2026: o conceito de dia letivo passou a artigo próprio (art. 5º) e os conceitos de recesso para os arts. 6º e 7º."
 ---
-
-## Resumo
-
-- Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2027. Cada campus elabora seu calendário local a partir dele.
-- Publicada no Boletim de Serviço Eletrônico em 5 de outubro de 2026, documento SEI nº 4422750, processo 23411.011715/2026-07. Autenticidade verificável no SEI com o código verificador 4422750 e CRC 057D5696.
-- Sucede a [Resolução CONSUP/IFPR nº 259/2025](RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md), que regeu o ano de 2026, com estrutura reorganizada: o conceito de dia letivo passou a artigo próprio (art. 5º) e os conceitos de recesso para os arts. 6º e 7º.
-- Mínimo de 200 dias letivos anuais por curso e 100 por semestre (art. 4º). Os campi podem ter calendários distintos por nível, forma de oferta e organização dos cursos (art. 4º, § 2º).
-- Dia letivo é o dia fixado no calendário para atividades de ensino, pesquisa, extensão e inovação previstas no PPP, no PPC e nos planos de ensino, com efetiva participação de professores e estudantes (art. 5º). Planejamento, formação e reuniões são ações internas compatíveis com o recesso acadêmico, isto é, sem estudantes (art. 7º).
-- Ano letivo de 2027 entre 1º de fevereiro e 17 de dezembro, com início até 15 de fevereiro (art. 8º).
-- Art. 11 lista 26 itens obrigatórios do calendário, entre eles conselhos de classe (XIII e XV), reuniões com familiares e comunidade (XVI), formação pedagógica com mínimo de 40 horas anuais (XXII), planejamento coletivo com mínimo de 20 horas anuais (XXIII) e a nova Semana Nacional da Ética e da Cidadania (XXV).
-- Calendário do campus enviado à Proens com antecedência mínima de 60 dias do início do ano letivo (art. 15); alterações com antecedência mínima de 30 dias (art. 16, § 3º).
-
-## Texto da norma
 
 > Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2027.
 

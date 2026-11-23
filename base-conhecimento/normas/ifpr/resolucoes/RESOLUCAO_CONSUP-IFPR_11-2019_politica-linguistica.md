@@ -31,14 +31,6 @@ vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 11/2019 a confirmar (ato de 2019-06-13; publicação não registrada): presumida vigente"
 ---
 
-## Resumo
-
-- Institui a Política Linguística do Instituto Federal do Paraná (IFPR).
-- Fixa diretrizes, normas e concepções de língua, ensino e aprendizagem de línguas e apoio à internacionalização.
-- Documento normativo: RESOLUÇÃO Nº 11, DE 11 DE JUNHO DE 2019.
-
-## Texto da norma
-
 > Institui a Política linguística do Instituto Federal de Educação, Ciência e Tecnologia do Paraná e fixa as diretrizes, normas e concepções de língua, ensino e aprendizagem de línguas e apoio à internacionalização.
 
 O CONSELHO SUPERIOR DO INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ, no uso de suas atribuições legais e estatutárias, e, tendo vista o contido no parecer exarado pelo conselheiro Adriano Silva no processo nº. 23411.007207/2018-14;

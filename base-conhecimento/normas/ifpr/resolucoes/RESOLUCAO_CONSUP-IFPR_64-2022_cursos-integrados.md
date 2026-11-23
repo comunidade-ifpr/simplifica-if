@@ -24,16 +24,34 @@ aliases:
   - "Resolução IFPR 64/2022"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=1736791&id_orgao_publicacao=0"
 vigencia_calculada_em: "2026-11-13"
+notas_da_fonte:
+  - "Texto conferido e corrigido pela fonte oficial em 23/11/2026 (inclusão do preâmbulo e do Art. 1º)."
 ---
 
-## Resumo
-
-- Estabelece as diretrizes para a oferta de cursos técnicos integrados ao ensino médio do IFPR
-- Documento normativo: RESOLUÇÃO CONSUP/IFPR Nº 64, DE 23 DE MARÇO DE 2022
-
-## Texto da norma
-
 > Estabelece as diretrizes para a oferta de cursos técnicos integrados ao ensino médio do IFPR.
+
+O Conselho Superior do Instituto Federal de Educação, Ciência e Tecnologia do Paraná - IFPR, no uso de suas atribuições legais e estatutárias, após análise do parecer do conselheiro relator Rodolfo Fiorucci e o contido no processo nº 23411.005550/2020-31,
+
+CONSIDERANDO:
+
+- a Lei de Diretrizes e Bases da Educação Nacional, lei nº 9.394, de 20 de dezembro de 1996;
+- a Lei nº 8.069, de 13 de julho de 1990, que dispõe sobre o Estatuto da Criança e do Adolescente e dá outras providências;
+- a Lei n° 13.005, de 25 de junho de 2014, que aprova o Plano Nacional de Educação (PNE) e dá outras providências;
+- o Decreto nº 5.154, de 23 de julho de 2004, que estabelece as diretrizes para a educação profissional;
+- a Lei nº 11.892, de 29 de dezembro de 2008, que institui a Rede Federal de Educação Profissional, Científica e Tecnológica, que cria os Institutos Federais de Educação, Ciência e Tecnologia e dá outras providências;
+- o Decreto 5.840, de 13 de julho de 2006, que institui, no âmbito federal, o Programa Nacional de Integração da Educação Profissional com a Educação Básica na Modalidade de Educação de Jovens e Adultos (PROEJA) e dá outras providências;
+- as Diretrizes indutoras para a oferta de cursos técnicos integrados ao ensino médio na Rede Federal de Educação Profissional, Científica e Tecnológica, aprovadas pelo pleno do Conselho Nacional das Instituições da Rede Federal de Educação Profissional, Científica e Tecnológica (Conif);
+- a Resolução Consup/IFPR nº 54, de 21 de dezembro de 2011, que estabelece a organização didático-pedagógica da educação profissional técnica de nível médio e formação inicial e continuada de trabalhadores no IFPR;
+- a Resolução Consup/IFPR nº 50, de 14 de julho de 2017, que dispõe sobre a avaliação do processo ensino-aprendizagem no âmbito do IFPR;
+- a Resolução Consup/IFPR nº 05, de 27 de março de 2018, que define as diretrizes institucionais para a oferta de cursos que articulam a educação profissional e técnica com a modalidade Educação de Jovens e Adultos;
+- a Resolução CNE/CP nº 1, de 05 de janeiro de 2021, que define as diretrizes curriculares gerais para a educação profissional e tecnológica;
+- a Resolução nº 11, de 11 de junho de 2019, que institui a política linguística do IFPR e fixa as diretrizes, normas e concepções de língua e ensino e aprendizagem de línguas na instituição,
+
+**RESOLVE:**
+
+#### Art. 1º
+
+Estabelecer as diretrizes para a oferta de Educação Profissional Técnica de Nível Médio na forma de oferta integrada.
 
 ## TÍTULO I
 

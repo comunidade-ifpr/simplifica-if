@@ -30,17 +30,14 @@ revoga:
 altera:
   - "Lei nº 9.394/1996 (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D)"
   - "Lei nº 12.711/2012 (art. 1º)"
+pontos_chave:
+  - "Dá nova redação aos arts. 24, 26, 36 e 44 da Lei nº 9.394/1996 (LDB) e inclui os arts. 35-B, 35-C e 35-D (art. 1º)."
+  - "Formação geral básica de no mínimo 2.400 horas, ou 2.100 horas na formação técnica e profissional (LDB, art. 35-C, incluído por esta Lei) (art. 1º)."
+  - "Itinerários formativos de no mínimo 600 horas, ressalvadas as especificidades da formação técnica e profissional (LDB, art. 36, na redação desta Lei) (art. 1º)."
+  - "Revoga o art. 35-A e os §§ 1º, 3º, 8º, 10, 11 e 12 e o inciso II do § 6º do art. 36 da LDB (art. 11)."
+  - "Altera também as Leis nºs 14.818/2024, 12.711/2012, 11.096/2005 e 14.640/2023 (arts. 7º a 10)."
+  - "Entra em vigor na data de sua publicação (art. 12)."
 ---
-
-## Resumo
-
-- Dá nova redação aos arts. 24, 26, 36 e 44 da Lei nº 9.394/1996 (LDB) e inclui os arts. 35-B, 35-C e 35-D (art. 1º).
-- Formação geral básica de no mínimo 2.400 horas, ou 2.100 horas na formação técnica e profissional (LDB, art. 35-C); itinerários formativos de no mínimo 600 horas (LDB, art. 36).
-- Revoga o art. 35-A e os §§ 1º, 3º, 8º, 10, 11 e 12 e o inciso II do § 6º do art. 36 da LDB (art. 11).
-- Altera também as Leis nºs 14.818/2024, 12.711/2012, 11.096/2005 e 14.640/2023 (arts. 7º a 10).
-- Entra em vigor na data de sua publicação, 1º de agosto de 2024 (art. 12).
-
-## Texto da lei
 
 > Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.
 

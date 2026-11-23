@@ -14,7 +14,7 @@ import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { dispositivosDoAto, indiceDispositivos } from "./estrutura.ts";
-import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
+import { ehIdNorma, ehIdDispositivo } from "./ids.ts";
 
 /** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
 const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
@@ -46,8 +46,8 @@ export const esquemaItemCorrespondencia = Schema.Struct({
 );
 
 export const esquemaCorrespondencia = Schema.Struct({
-  origem: textoQue(ehIdAto, "origem deve ser ID de ato"),
-  destino: textoQue(ehIdAto, "destino deve ser ID de ato"),
+  origem: textoQue(ehIdNorma, "origem deve ser ID de ato"),
+  destino: textoQue(ehIdNorma, "destino deve ser ID de ato"),
   status: Schema.Literals(["rascunho", "revisado"]),
   elaborado_em: Schema.String.check(Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/)),
   revisado_por: Schema.optionalKey(Schema.String),
@@ -124,7 +124,7 @@ function ancestrais(dispositivoId: string, fonte: FonteCorrespondencia, ato: str
 /** Correspondência de um dispositivo (ou ato) de origem, pelas tabelas da base. */
 export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): ResultadoCorrespondencia[] {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
-  const ato = idDoAto(norma);
+  const ato = norma;
   const saida: ResultadoCorrespondencia[] = [];
   const tabelas = fonte.tabelas.get(ato) ?? [];
   const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : (fonte.artigos.get(ato) ?? []);
@@ -176,7 +176,7 @@ export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia):
     }
     return saida;
   }
-  for (const tabela of fonte.tabelas.get(idDoAto(origem)) ?? []) {
+  for (const tabela of fonte.tabelas.get(origem) ?? []) {
     for (const item of tabela.itens) for (const d of item.destino) saida.add(`${tabela.destino}${d}`);
   }
   return saida;

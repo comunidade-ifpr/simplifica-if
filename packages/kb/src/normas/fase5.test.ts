@@ -19,7 +19,6 @@ import { validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
-import { idDoAto } from "./ids.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO, situacaoDaReferencia } from "./referencia-saneamento.ts";
 import { carregarRegistro } from "./registro.ts";
@@ -131,7 +130,7 @@ describe("vigência", () => {
     expect(datados.length).toBeGreaterThan(20);
     const errados: string[] = [];
     for (const stub of datados) {
-      const efeito = inicioVigencia(idDoAto(stub.status_fonte!.split("#")[0]!), vigencia);
+      const efeito = inicioVigencia(stub.status_fonte!.split("#")[0]!, vigencia);
       const limite = efeito.data ?? efeito.minimo!;
       const vespera = vesperaDe(limite);
       const antes = statusEm(stub.id, vespera, vigencia).status;

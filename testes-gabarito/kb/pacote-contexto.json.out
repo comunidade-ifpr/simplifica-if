@@ -189,8 +189,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 257,
-          "linha_fim": 285
+          "linha_inicio": 258,
+          "linha_fim": 286
         },
         {
           "id": "br/cne-cp/res/2026/2#art28-vii",
@@ -202,8 +202,8 @@
           ],
           "texto": "VII – o itinerário formativo profissional a ser percorrido pelos estudantes, com certificações intermediárias, quando oferecidas;",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-          "linha_inicio": 464,
-          "linha_fim": 464
+          "linha_inicio": 465,
+          "linha_fim": 465
         }
       ],
       "sem_texto": []
@@ -285,8 +285,8 @@
       "fim_em": null,
       "texto": "Art. 70. Os processos de autorização de cursos técnicos e de cursos superiores de tecnologia em tramitação nos órgãos competentes, e que ainda não estejam na fase de avaliação, podem ser adequados a esta Resolução por solicitação da instituição ou do órgão regulador do sistema de ensino, sem prejudicar a continuidade do processo de autorização e credenciamento.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1070,
-      "linha_fim": 1072
+      "linha_inicio": 1071,
+      "linha_fim": 1073
     },
     {
       "id": "dcnept-2026-art71",
@@ -304,8 +304,8 @@
       "fim_em": null,
       "texto": "Art. 71. Para a adequação dos cursos técnicos e cursos superiores de tecnologia autorizados e em oferta é assegurado período de transição de até dois anos, a partir da vigência desta Resolução.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1074,
-      "linha_fim": 1076
+      "linha_inicio": 1075,
+      "linha_fim": 1077
     },
     {
       "id": "dcnept-2026-art71-parunico",
@@ -326,8 +326,8 @@
       ],
       "texto": "Parágrafo único. Aos estudantes matriculados em cursos técnicos e em cursos superiores de tecnologia ofertados até a data de publicação desta Resolução, fica assegurado o direito de conclusão de seus cursos, com base na Resolução CNE/CP nº 1, de 5 de janeiro de 2021.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1078,
-      "linha_fim": 1078
+      "linha_inicio": 1079,
+      "linha_fim": 1079
     },
     {
       "id": "dcnept-2026-art72",
@@ -345,8 +345,8 @@
       "fim_em": null,
       "texto": "Art. 72. Fica definido, como período de transição para a implantação definitiva do disposto no Capítulo XIII, o intervalo compreendido entre a data de publicação desta Resolução e 31 de dezembro de 2030.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1080,
-      "linha_fim": 1082
+      "linha_inicio": 1081,
+      "linha_fim": 1083
     },
     {
       "id": "dcnept-2026-art73",
@@ -364,8 +364,8 @@
       "fim_em": null,
       "texto": "Art. 73. Os órgãos normativos dos sistemas de ensino, no âmbito de suas competências, editarão normas complementares destinadas à implementação das disposições desta Resolução, no prazo de até cento e oitenta dias contados de sua publicação.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
-      "linha_inicio": 1084,
-      "linha_fim": 1086
+      "linha_inicio": 1085,
+      "linha_fim": 1087
     },
     {
       "id": "dcnept-2021-art63",
@@ -383,8 +383,8 @@
       "fim_em": null,
       "texto": "Art. 63. Os processos de autorização de cursos de Educação Profissional Tecnológica de Graduação em tramitação nos órgãos competentes e que ainda não estejam na fase de avaliação, podem ser, sem prejudicar a continuidade do processo, por solicitação da instituição, adequados a esta Resolução.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-      "linha_inicio": 685,
-      "linha_fim": 687
+      "linha_inicio": 676,
+      "linha_fim": 678
     },
     {
       "id": "dcnept-2021-art62",
@@ -402,8 +402,8 @@
       "fim_em": null,
       "texto": "Art. 62. Aos estudantes matriculados em cursos de Educação Profissional Técnica de Nível Médio e em cursos de Educação Profissional Tecnológica de Graduação oferecidos anteriormente ao exercício em que a presente Resolução produzirá efeitos, fica assegurado o direito de conclusão de seus cursos organizados, respectivamente, com base na Resolução CNE/CEB nº 6, de 20 de setembro de 2012, e na Resolução CNE/CP nº 3, de 18 de dezembro de 2002.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-      "linha_inicio": 681,
-      "linha_fim": 683
+      "linha_inicio": 672,
+      "linha_fim": 674
     }
   ],
   "secoes": [

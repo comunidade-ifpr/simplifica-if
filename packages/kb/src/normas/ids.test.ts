@@ -37,7 +37,7 @@ describe("metadadosDoIdNorma", () => {
     }
   });
 
-  test("ID que não é de ato não tem metadados", () => {
+  test("ID que não é de norma não tem metadados", () => {
     expect(metadadosDoIdNorma("br/lei/1996/9394~compilacao")).toBeNull();
     expect(metadadosDoIdNorma("externo:abnt/nbr/6023")).toBeNull();
   });

@@ -242,7 +242,7 @@ test("citação montada do ID, para a norma fora do registro", () => {
   expect(citacaoDoId("ifpr/consup/res/2025/239")).toBe("Resolução CONSUP/IFPR nº 239/2025");
   expect(citacaoDoId("br/cne-cp/res/2026/2")).toBe("Resolução CNE/CP nº 2/2026");
   expect(citacaoDoId("br/lei/1996/9394")).toBe("Lei nº 9.394/1996");
-  expect(citacaoDoId("br/decreto/2004/5154~compilacao")).toBe("Decreto nº 5.154/2004");
+  expect(citacaoDoId("br/decreto/2004/5154")).toBe("Decreto nº 5.154/2004");
   expect(citacaoDoId("externo:cft/res/2019/89")).toBe("Resolução CFT nº 89/2019");
   expect(citacaoDoId("externo:campus/regulamento-estagio")).toBe("norma citada");
 });

@@ -510,7 +510,7 @@
   overflow-anchor: none;
 }
 
-/* Redação anterior, não vigente, e texto fora do ato publicado (`leitor/remarkLeitor.ts`): esmaecidos, com o rótulo. */
+/* Redação anterior, não vigente (`leitor/remarkLeitor.ts`): esmaecida, com o rótulo. */
 .regiao-marcada {
   border-left: 3px dashed var(--border);
   color: var(--muted-foreground);

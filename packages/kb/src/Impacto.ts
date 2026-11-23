@@ -16,7 +16,6 @@ import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Citacoes from "./db/citacoes.ts";
 import { carregarFonteCorrespondencia } from "./db/consultas-normas.ts";
 import * as Sql from "./db/sql.ts";
-import { idDoAto } from "./normas/ids.ts";
 import { type FonteImpacto, impactoEm, type ResultadoImpacto, type TopicoTaxonomia } from "./normas/impacto.ts";
 
 const LinhaDispositivo = Schema.Struct({ dispositivo: Schema.String, texto: Schema.String });
@@ -24,7 +23,6 @@ const linhasDispositivos = Sql.todas(LinhaDispositivo);
 
 const LinhaSegmento = Schema.Struct({
   norma_id: Schema.String,
-  ato_id: Schema.String,
   segmento: Schema.String,
   citado_id: Schema.String,
   dispositivos_json: Schema.fromJsonString(Schema.Array(Schema.String)),
@@ -59,18 +57,17 @@ const make = Effect.gen(function* () {
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
 
   const daNorma = Effect.fn("Impacto.daNorma")(function* (id: string, opcoes: OpcoesImpacto = {}) {
-    const ato = idDoAto(id.split("#")[0]!);
+    const ato = id.split("#")[0]!;
     const dispositivos = yield* linhasDispositivos(
-      "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
+      "SELECT dispositivo, texto FROM dispositivos WHERE norma_id = ? ORDER BY ordem",
       [ato],
     );
     // uma citação por segmento: o impacto só pergunta se o segmento cita a norma
     const segmentos = (yield* linhasSegmentos(
-      "SELECT norma_id, ato_id, segmento, citado_id, dispositivos_json, trecho FROM normas_citacoes WHERE ato_id <> ? ORDER BY rowid",
+      "SELECT norma_id, segmento, citado_id, dispositivos_json, trecho FROM normas_citacoes WHERE norma_id <> ? ORDER BY rowid",
       [ato],
     )).map((c) => ({
       norma: c.norma_id,
-      ato: c.ato_id,
       segmento: c.segmento,
       citacoes: [{ id: c.citado_id, dispositivos: [...c.dispositivos_json], trecho: c.trecho }],
     }));

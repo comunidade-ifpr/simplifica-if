@@ -28,13 +28,6 @@ revoga:
   - "Resolução CONSUP/IFPR nº 53/2011"
 ---
 
-## Resumo
-
-- Dispõe acerca da Política Institucional de Assistência Estudantil no Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR)
-- Documento normativo: RESOLUÇÃO CONSUP/IFPR Nº 239, DE 10 DE JUNHO DE 2025
-
-## Texto da norma
-
 > Dispõe acerca da Política Institucional de Assistência Estudantil no Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR).
 
 **Boletim de Serviço Eletrônico em 17/06/2025**
@@ -165,7 +158,3 @@ Esta resolução deverá ser revista a cada 5 anos.
 #### Art. 14.
 
 Esta resolução entrará em vigor após a sua publicação.
-
-<!-- fora-do-ato: resto da assinatura eletrônica do SEI, truncado na conversão -->
-17/06/2025, às 12:19, conforme horário oficial de Brasília, com fundamento no art. 6º, caput, do Decreto nº 8.539, de 8 de outubro de 2015. acao=documento_conferir&id_orgao_acesso_externo=0, informando o código verificador 3633841 e Rua Emilio Bertolini, nº 54, Curitiba - PR | CEP CEP 82920-030 - Brasil
-<!-- /fora-do-ato -->

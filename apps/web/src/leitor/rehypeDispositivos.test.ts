@@ -138,7 +138,7 @@ describe("rehypeDispositivos", () => {
   });
 });
 
-describe("redação não vigente, fora do ato e <br> (remarkLeitor)", () => {
+describe("redação não vigente e <br> (remarkLeitor)", () => {
   // Lei 11.892/2008, art. 1º: o inciso IV e o parágrafo único anteriores ficam ao lado dos vigentes
   const LEI = [
     "#### Art. 1º", // 1
@@ -152,12 +152,6 @@ describe("redação não vigente, fora do ato e <br> (remarkLeitor)", () => {
     "<!-- /redacao-nao-vigente -->", // 9
     "",
     "**Parágrafo único.** Redação vigente, com o inciso V.", // 11
-    "",
-    "<!-- fora-do-ato: não consta do texto publicado -->", // 13
-    "",
-    "#### Art. 2º", // 15
-    "",
-    "<!-- /fora-do-ato -->", // 17
   ].join("\n");
   const ANCORAS_LEI = [
     { id: "art1", pai: null, linha_inicio: 1, linha_fim: 1 },
@@ -174,7 +168,6 @@ describe("redação não vigente, fora do ato e <br> (remarkLeitor)", () => {
     expect(saida).toContain(
       '<div class="regiao-marcada regiao-redacao-nao-vigente" data-marcador="redacao-nao-vigente"><p class="rotulo-regiao">Redação anterior, não vigente</p><p><strong>Parágrafo único.</strong> Redação antiga, sem o inciso V.</p></div>',
     );
-    expect(saida).toContain('<p class="rotulo-regiao">Fora do texto publicado</p>');
     expect(saida).toContain(
       '<p id="art1-parunico"><mark class="trecho-citado"><strong>Parágrafo único.</strong> Redação vigente, com o inciso V.</mark></p>',
     );

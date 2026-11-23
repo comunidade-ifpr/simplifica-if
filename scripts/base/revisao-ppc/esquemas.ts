@@ -17,7 +17,7 @@ import * as Schema from "effect/Schema";
 import * as Struct from "effect/Struct";
 import { problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
-import { RE_ID_ATO, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
+import { RE_ID_NORMA, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
 
 /**
@@ -109,7 +109,7 @@ export const esquemaMarcosNormativos = Schema.Struct({
     Schema.Struct({
       id: Schema.String,
       tema: Schema.String,
-      linha: Schema.Array(Schema.String.check(Schema.isPattern(RE_ID_ATO, padraoJson(RE_ID_ATO))))
+      linha: Schema.Array(Schema.String.check(Schema.isPattern(RE_ID_NORMA, padraoJson(RE_ID_NORMA))))
         .check(Schema.isMinLength(1))
         .annotate({
           description:

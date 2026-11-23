@@ -19,8 +19,15 @@ import * as NodeFS from "node:fs";
 import { parse } from "yaml";
 import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
-import { carregarDispositivos, carregarEstruturas, type Dispositivo, indiceDispositivos } from "./estrutura.ts";
-import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
+import {
+  carregarDispositivos,
+  carregarEstruturas,
+  type Dispositivo,
+  indiceDispositivos,
+  listarNormas,
+} from "./estrutura.ts";
+import { analisarFrontMatter } from "./front-matter.ts";
+import { ehIdNorma, ehIdDispositivo } from "./ids.ts";
 import { palavrasDoTexto } from "./markdown.ts";
 import { carregarRegistro, type Registro } from "./registro.ts";
 import { extrairCitacoes } from "./resolver.ts";
@@ -34,7 +41,7 @@ const RE_DATA = /^\d{4}-\d{2}-\d{2}$/;
 const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
   Schema.String.check(Schema.makeFilter((valor: string) => predicado(valor), { message: mensagem }));
 const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
-const idAto = textoQue(ehIdAto, "ID de ato fora do formato canônico");
+const idAto = textoQue(ehIdNorma, "ID de ato fora do formato canônico");
 const dispositivo = textoQue(ehIdDispositivo, "dispositivo fora do formato (#art28-xvi)");
 
 export const esquemaRelacao = Schema.Struct({
@@ -50,7 +57,7 @@ export const esquemaRelacao = Schema.Struct({
   evidencia: Schema.Struct({
     em: textoQue((valor) => {
       const [ato, disp] = valor.split("#");
-      return ehIdAto(ato!) && (disp === undefined || ehIdDispositivo(`#${disp}`));
+      return ehIdNorma(ato!) && (disp === undefined || ehIdDispositivo(`#${disp}`));
     }, "evidencia.em deve ser ID de ato com dispositivo opcional"),
     trecho: textoNaoVazio,
   }),
@@ -127,7 +134,7 @@ export function relacoesDe(id: string, raiz: string): { saida: Relacao[]; entrad
 
 /** `relacoesDe` sobre uma lista de relações (a do arquivo, ou a do `kb.sqlite`: `relacoesBanco`). */
 export function relacoesDeEm(id: string, relacoes: readonly Relacao[]): { saida: Relacao[]; entrada: Relacao[] } {
-  const ato = idDoAto(id.split("#")[0]!);
+  const ato = id.split("#")[0]!;
   return {
     saida: relacoes.filter((relacao) => relacao.origem === ato),
     entrada: relacoes.filter((relacao) => relacao.alvo === ato),
@@ -138,12 +145,22 @@ function palavrasNormalizadas(texto: string): string {
   return palavrasDoTexto(texto.replace(/[“”"]/g, '"')).join(" ");
 }
 
-/** Texto do dispositivo (ou do arquivo inteiro, sem dispositivo) em que a evidência deve estar. */
+/**
+ * Texto em que a evidência deve estar: o do dispositivo ou, sem dispositivo, o do arquivo inteiro com
+ * as `notas_da_fonte` do front matter (a nota de consolidação que registra uma alteração por norma
+ * que a base não tem).
+ */
 function textoDaEvidencia(em: string, raiz: string, indice: Map<string, Dispositivo>): string | null {
   const [ato, disp] = em.split("#");
   if (disp) return indice.get(`${ato}#${disp}`)?.texto ?? null;
   const estrutura = carregarEstruturas(raiz).find((e) => e.id === ato);
-  return estrutura ? palavrasDoTexto(estrutura.segmentos.map((s) => s.texto).join("\n")).join(" ") : null;
+  if (!estrutura) return null;
+  const arquivo = listarNormas(raiz).find((norma) => norma.id === estrutura.id)?.arquivo;
+  const notas = arquivo
+    ? analisarFrontMatter(NodeFS.readFileSync(arquivo, "utf-8"), estrutura.path).meta["notas_da_fonte"]
+    : [];
+  const textos = [...estrutura.segmentos.map((s) => s.texto), ...(Array.isArray(notas) ? notas : [])];
+  return palavrasDoTexto(textos.join("\n")).join(" ");
 }
 
 /**
@@ -258,7 +275,7 @@ export function camposRelacoesFrontMatter(
   raiz: string,
   registro: Registro = carregarRegistro(raiz),
 ): Partial<Record<CampoRelacao, string[]>> {
-  const ato = idDoAto(id);
+  const ato = id;
   const campos: Partial<Record<CampoRelacao, string[]>> = {};
   const titulo = (outro: string) => registro.obter(outro)?.title ?? outro;
   for (const relacao of carregarRelacoes(raiz)) {
@@ -301,27 +318,27 @@ export function proporRelacoes(raiz: string, registro: Registro = carregarRegist
   const descartadasTodas = new Set(arquivo.descartadas.filter((d) => d.operador === "*").map((d) => d.origem));
   const propostas: Proposta[] = [];
   for (const disp of carregarDispositivos(raiz)) {
-    if (disp.norma !== disp.ato || disp.tipo === "secao" || disp.tipo === "anexo") continue;
+    if (disp.tipo === "secao" || disp.tipo === "anexo") continue;
     // Só o texto próprio do dispositivo (sem o texto de outra norma citado depois de "redação:").
     const proprio = disp.texto.split(/redação:|alterações:|seguinte[s]? [^:]{0,40}:/)[0]!;
     const m = RE_OPERADOR.exec(proprio);
     if (!m) continue;
-    const chave = `${disp.ato}${disp.dispositivo}`;
-    if (registradas.has(chave) || descartadas.has(chave) || descartadasTodas.has(disp.ato)) continue;
+    const chave = disp.id;
+    if (registradas.has(chave) || descartadas.has(chave) || descartadasTodas.has(disp.norma)) continue;
     // Revogação no caput ("Ficam revogados:") se resolve nos incisos.
     if (/revogad[oa]s?:\s*$/i.test(proprio.trim())) continue;
     const alvos = [
       ...new Set(
         extrairCitacoes(proprio, registro)
-          .filter((c) => c.id !== null && idDoAto(c.id) !== disp.ato)
-          .map((c) => idDoAto(c.id!)),
+          .filter((c) => c.id !== null && c.id !== disp.norma)
+          .map((c) => c.id!),
       ),
     ];
-    const operadorPai = disp.pai ? disp.pai.slice(disp.ato.length) : null;
+    const operadorPai = disp.pai ? disp.pai.slice(disp.norma.length) : null;
     if (alvos.length === 0 && !(operadorPai && /revogad/i.test(disp.caput.at(-1) ?? ""))) continue;
     propostas.push({
       tipo: /revog/i.test(m[0]) ? "revoga" : "altera",
-      origem: disp.ato,
+      origem: disp.norma,
       operador: disp.dispositivo,
       alvos,
       trecho: proprio.slice(0, 300),
@@ -329,21 +346,21 @@ export function proporRelacoes(raiz: string, registro: Registro = carregarRegist
   }
   // Incisos de um caput "Ficam revogados:" também são propostas.
   for (const disp of carregarDispositivos(raiz)) {
-    if (disp.norma !== disp.ato || disp.tipo !== "inciso") continue;
+    if (disp.tipo !== "inciso") continue;
     if (!/revogad[oa]s?(?: as seguintes [^:]*)?:\s*$/i.test(disp.caput.at(-1) ?? "")) continue;
-    const chave = `${disp.ato}${disp.dispositivo}`;
-    if (registradas.has(chave) || descartadas.has(chave) || descartadasTodas.has(disp.ato)) continue;
-    if (propostas.some((p) => p.origem === disp.ato && p.operador === disp.dispositivo)) continue;
+    const chave = disp.id;
+    if (registradas.has(chave) || descartadas.has(chave) || descartadasTodas.has(disp.norma)) continue;
+    if (propostas.some((p) => p.origem === disp.norma && p.operador === disp.dispositivo)) continue;
     const alvos = [
       ...new Set(
         extrairCitacoes(disp.texto, registro)
-          .filter((c) => c.id !== null && idDoAto(c.id) !== disp.ato)
-          .map((c) => idDoAto(c.id!)),
+          .filter((c) => c.id !== null && c.id !== disp.norma)
+          .map((c) => c.id!),
       ),
     ];
     propostas.push({
       tipo: "revoga",
-      origem: disp.ato,
+      origem: disp.norma,
       operador: disp.dispositivo,
       alvos,
       trecho: disp.texto.slice(0, 300),

@@ -38,32 +38,15 @@ revoga:
   - "Resolução CONSUP/IFPR nº 59/2018"
   - "Resolução CONSUP/IFPR nº 60/2018"
   - "Resolução CONSUP/IFPR nº 6/2020"
+pontos_chave:
+  - "Aprova o novo Estatuto do IFPR (art. 1º)."
+  - "O Estatuto trata da natureza e finalidades da instituição, da gestão (órgãos colegiados, Reitoria e campi), do regime acadêmico, da comunidade acadêmica, dos diplomas, certificados e títulos, da autonomia para oferta de curso e do patrimônio (arts. 2 a 59 do Estatuto)."
+  - "O Anexo I do Estatuto traz a relação dos campi, centros de referência e sedes da Reitoria do IFPR (art. 2º, § 2º)."
+  - "Revoga expressamente atos anteriores relacionados ao Estatuto do IFPR, incluindo as Resoluções CONSUP/IFPR nº 01/2009 e nº 13/2011 (art. 7º)."
+notas_da_fonte:
+  - "Publicada no Boletim de Serviço Eletrônico em 05/02/2026, processo SEI 23411.003587/2019-91, documento SEI 4047102, código CRC D64AF741; fonte oficial: [publicação no SEI](https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4216886&id_orgao_publicacao=0)."
+  - "A grafia, a numeração e eventuais inconsistências textuais do documento oficial foram preservadas; a formatação foi adaptada para Markdown com cabeçalhos, artigos e tabelas."
 ---
-
-## Resumo
-
-Resolução CONSUP/IFPR nº 271, de 04 de fevereiro de 2026. Aprova o novo Estatuto do Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR).
-
-### Dados da publicação
-
-- **Boletim de Serviço Eletrônico:** 05/02/2026
-- **Processo SEI:** 23411.003587/2019-91
-- **Documento SEI:** 4047102
-- **Código CRC:** D64AF741
-- **Fonte oficial:** https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4216886&id_orgao_publicacao=0
-
-### Pontos-chave
-
-- Aprova o novo Estatuto do IFPR.
-- Define aspectos da organização institucional, gestão, órgãos colegiados, Reitoria, campi, regime acadêmico, comunidade acadêmica, diplomas, certificados, títulos, autonomia para oferta de curso e patrimônio.
-- Inclui, no Anexo I, a relação dos campi, centros de referência e sedes da Reitoria do IFPR.
-- Revoga expressamente atos anteriores relacionados ao Estatuto do IFPR, incluindo a Resolução CONSUP/IFPR nº 01/2009 e a Resolução CONSUP/IFPR nº 13/2011.
-
-> Nota de conversão: a grafia, a numeração e eventuais inconsistências textuais do documento oficial foram preservadas. A formatação foi adaptada para Markdown com cabeçalhos, artigos e tabelas para facilitar leitura e renderização.
-
----
-
-## Texto integral
 
 ### Resolução CONSUP/IFPR Nº 271, DE 04 DE fevereiro DE 2026
 

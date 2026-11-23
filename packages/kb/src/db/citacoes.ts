@@ -5,7 +5,6 @@
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import { idDoAto } from "../normas/ids.ts";
 import {
   cobreDispositivo,
   type NormaCitadaNoPpc,
@@ -17,7 +16,7 @@ import { compararTexto } from "../texto.ts";
 import { idPpc } from "./chaves.ts";
 import * as Sql from "./sql.ts";
 
-const ato = (id: string) => idDoAto(id.split("#")[0]!);
+const ato = (id: string) => id.split("#")[0]!;
 
 const LinhaCitante = Schema.Struct({
   chave: Schema.String,

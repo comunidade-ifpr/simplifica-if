@@ -29,14 +29,6 @@ altera:
   - "Lei nº 9.394/1996 (art. 26, § 9º-B)"
 ---
 
-## Resumo
-
-- Acrescenta o § 9º-B ao art. 26 da Lei nº 9.394/1996 (LDB).
-- Torna educação política e direitos da cidadania componente curricular obrigatório da educação básica, no âmbito do estudo da realidade social e política previsto no § 1º do art. 26 da LDB.
-- Entra em vigor na data de sua publicação, em 14 de julho de 2026.
-
-## Texto da lei
-
 > Altera o art. 26 da Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), para incluir educação política e direitos da cidadania como componente curricular obrigatório da educação básica.
 
 O PRESIDENTE DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:

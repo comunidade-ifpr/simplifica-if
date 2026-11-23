@@ -33,7 +33,6 @@ import * as SqlClient from "effect/sql/SqlClient";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import { PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
-import { idDoAto } from "../normas/ids.ts";
 import { extrairFatosPpc, type FatoPpc } from "../fatos/ppc.ts";
 import { palavrasDeCampi, type SecaoPpc, segmentarPpc } from "../ppcs/secoes.ts";
 import type { TopicosSecoes } from "../ppcs/topicos.ts";
@@ -344,7 +343,7 @@ export const normasDoPacote = Effect.fn("pacoteContexto.normasDoPacote")(functio
     const trechos: { trecho: TrechoDispositivo; citados: string[]; fichas: string[] }[] = [];
     const semTexto: string[] = [];
     for (const pedido of ordenados) {
-      const id = `${idDoAto(ref)}${pedido}`;
+      const id = `${ref}${pedido}`;
       const fichasPedido = pedidos.get(pedido)!;
       const cobre = trechos.find((t) => t.trecho.id === id || t.trecho.subordinados.some((s) => s.id === id));
       if (cobre) {
@@ -385,7 +384,7 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
   citacoesPpc: readonly CitacaoPpc[],
 ) {
   const atosCitadosPpc = new Set(citacoesPpc.map((c) => c.ato_id));
-  const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
+  const atosFichas = new Set(refs.map((r) => r.ref));
   const marcos: MarcoDoPacote[] = [];
   for (const m of yield* linhasMarcos(
     "SELECT id, tema, vigente, aplica_a, transicao, orientacao_analise, normas_json, path FROM marcos ORDER BY id",
@@ -396,7 +395,7 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
       normasMarco.vigente,
       ...normasMarco.substitui,
       ...normasMarco.antecessoras_historicas,
-      ...normasMarco.dispositivos_revogados.map(idDoAto),
+      ...normasMarco.dispositivos_revogados,
     ]);
     const ligado = [...envolvidas].some((id) => atosFichas.has(id) || atosCitadosPpc.has(id));
     if (!ligado) continue;
@@ -424,7 +423,7 @@ export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")
   citacoesPpc: readonly CitacaoPpc[],
 ) {
   const { dataReferencia: data } = yield* FontesNormativas.FontesNormativas;
-  const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
+  const atosFichas = new Set(refs.map((r) => r.ref));
   const atosTransicao = [
     ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.ato_id)]),
   ].sort(compararTexto);

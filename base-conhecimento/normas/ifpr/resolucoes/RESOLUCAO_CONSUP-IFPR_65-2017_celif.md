@@ -29,14 +29,6 @@ fonte_url: "https://ifpr.edu.br/resolucao-no-65-2017/"
 vigencia_calculada_em: "2026-11-13"
 ---
 
-## Resumo
-
-- Institui o Centro de Línguas (CELIF) do Instituto Federal do Paraná (IFPR).
-- Aprova o Regulamento do Centro de Línguas do IFPR.
-- Documento normativo: RESOLUÇÃO Nº 65 DE 13 DE DEZEMBRO DE 2017.
-
-## Texto da norma
-
 > Dispõe sobre a instituição e funcionamento do Centro de Línguas do IFPR.
 
 O CONSELHO SUPERIOR DO INSTITUTO FEDERAL DO PARANÁ, no uso de suas atribuições legais e estatutárias, tendo em vista o Parecer nº 11, de 29 de novembro de 2017, do Conselho de Administração e Planejamento e o parecer exarado pela conselheira Raquel do Nascimento Glir no Processo 23411.004760/2017-14,

@@ -33,16 +33,15 @@ fundamenta_se_em:
   - "Lei nº 9.394/1996"
   - "Lei nº 11.892/2008"
   - "Resolução CNE/CP nº 1/2021"
+pontos_chave:
+  - "A Rede Certifica é política pública da Educação Profissional e Tecnológica para o reconhecimento formal de conhecimentos e competências adquiridos ao longo da vida e do trabalho, voltada a trabalhadores maiores de dezoito anos (art. 1º; art. 2º)."
+  - "Adesão institucional: a instituição de ensino submete termo de adesão e regulamentação interna, e a adesão deve ser renovada a cada cinco anos (art. 10; art. 27)."
+  - "A certificação de um perfil profissional exige um curso de referência correspondente, conforme o tipo de certificação (art. 17)."
+  - "Deve ser autorizado um PPCP específico para cada perfil de certificação profissional, com o conteúdo mínimo definido na Portaria (art. 19; art. 20)."
+  - "Os processos de certificação seguem etapas obrigatórias, começando pela inscrição (art. 24)."
+  - "Os PPCPs devem prever as condições para o atendimento adequado às pessoas com deficiência (art. 22)."
+  - "O processo de certificação é gratuito, e a unidade certificadora arca com seus custos (art. 26)."
 ---
-
-## Resumo
-
-- Institui a Rede Certifica como política pública de Educação Profissional e Tecnológica para reconhecimento formal de conhecimentos e competências adquiridos ao longo da vida e do trabalho.
-- Define adesão institucional, requisitos do curso de referência, conteúdo mínimo de cada PPCP, etapas obrigatórias, documentos, gratuidade, acessibilidade e renovação da adesão a cada cinco anos.
-- Exige um PPCP autorizado para cada perfil profissional e atribui à unidade certificadora os custos do processo. A Portaria não institui repasse financeiro automático do MEC.
-- Publicada no Diário Oficial da União em 10 de setembro de 2024, Edição 175, Seção 1, página 33.
-
-## Texto da norma
 
 > Institui a Rede Nacional de Certificação Profissional no âmbito do Ministério da Educação - Rede Certifica.
 

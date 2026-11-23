@@ -6,7 +6,6 @@ import {
   analisarNorma,
   carregarDispositivos,
   carregarEstruturas,
-  dispositivosDoAto,
   indiceDispositivos,
   listarNormas,
   notasDoTexto,
@@ -25,12 +24,6 @@ describe("parser sintético", () => {
     "---",
     "id: br/x/res/2020/1",
     "---",
-    "",
-    "## Resumo",
-    "",
-    "- resumo",
-    "",
-    "## Texto da norma",
     "",
     "O PRESIDENTE resolve:",
     "",
@@ -63,10 +56,6 @@ describe("parser sintético", () => {
     "Brasília, 1º de janeiro de 2020.",
     "",
     "FULANO DE TAL",
-    "",
-    "## Notas",
-    "",
-    "Nota editorial.",
   ].join("\n");
   const estrutura = analisarNorma(texto, { id: "br/x/res/2020/1", path: "normas/x.md" });
   const porId = new Map(estrutura.dispositivos.map((d) => [d.dispositivo, d]));
@@ -93,33 +82,34 @@ describe("parser sintético", () => {
     expect(porId.get("#art1-i")!.notas).toEqual([{ tipo: "redacao", texto: "(Redação dada pela Lei nº 1, de 2020)" }]);
     expect(porId.get("#art1-iii")!.revogado).toBe(true);
     expect(porId.get("#art1-i")!.revogado).toBe(false);
-    expect(porId.get("#art1")!.linha_inicio).toBe(15);
+    expect(porId.get("#art1")!.linha_inicio).toBe(9);
     expect(porId.get("#art1-par1")!.estrutura).toEqual(["CAPÍTULO I"]);
   });
 
-  test("citação fica no artigo que altera; fecho e notas editoriais fora", () => {
+  test("citação fica no artigo que altera; o fecho fica fora", () => {
     expect(porId.get("#art36A")!.texto).toContain("Art. 2º texto citado § 1º parágrafo citado");
     expect(porId.get("#art36A")!.texto).not.toContain("Brasília");
     const tipos = estrutura.segmentos.map((s) => s.tipo);
-    expect(tipos).toContain("fecho");
-    expect(tipos.at(-1)).toBe("editorial");
+    expect(tipos[0]).toBe("preambulo");
+    expect(tipos.at(-1)).toBe("fecho");
     expect(palavrasDosSegmentos(estrutura.segmentos)).toEqual(palavrasMarkdown(texto));
   });
 
   test("norma sem artigos é lida por seção", () => {
-    const nt = analisarNorma("## Resumo\n\nx\n\n## Texto de referência\n\n> trecho\n\n## Observação\n\ny\n", {
+    const nt = analisarNorma("Abertura.\n\n## Análise\n\n> trecho\n\n## Conclusão\n\ny\n", {
       id: "ifpr/proens/nt/2025/1",
       path: "nt.md",
     });
-    expect(nt.dispositivos.map((d) => d.dispositivo)).toEqual(["#secao1"]);
+    expect(nt.dispositivos.map((d) => d.dispositivo)).toEqual(["#secao1", "#secao2"]);
+    expect(nt.segmentos[0]!.tipo).toBe("preambulo");
   });
 
-  test("rótulo repetido antes de (Revogado) não esconde a revogação", () => {
+  test("dispositivo revogado da LDB; rótulo repetido antes de (Revogado) não esconde a revogação", () => {
     const ldb = obterDispositivo("br/lei/1996/9394#art36-par3", raiz)!;
-    expect(String(ldb.texto).startsWith("§ 3o § 3º (Revogado).")).toBe(true);
+    expect(String(ldb.texto).startsWith("§ 3º (Revogado).")).toBe(true);
     expect(ldb.revogado).toBe(true);
     const sintetico = analisarNorma(
-      "## Texto da norma\n\n#### Art. 5º\n\nCaput.\n\n**§ 2o** § 2º (Revogado). (Redação dada pela Lei nº 9, de 2024)\n\n**§ 3o** § 3º do art. 4º continua.\n",
+      "#### Art. 5º\n\nCaput.\n\n**§ 2o** § 2º (Revogado). (Redação dada pela Lei nº 9, de 2024)\n\n**§ 3o** § 3º do art. 4º continua.\n",
       { id: "br/x/res/2020/2", path: "x.md" },
     );
     const porDisp = new Map(sintetico.dispositivos.map((d) => [d.dispositivo, d]));
@@ -138,8 +128,8 @@ describe("normas da base", () => {
   const estruturas = carregarEstruturas(raiz);
   const arquivos = new Map(listarNormas(raiz).map((n) => [n.path, n.arquivo]));
 
-  test("39 normas, nenhum problema de estrutura (só avisos)", () => {
-    expect(estruturas.length).toBe(39);
+  test("38 normas, nenhum problema de estrutura (só avisos)", () => {
+    expect(estruturas.length).toBe(38);
     expect(estruturas.flatMap((e) => e.problemas.filter((p) => !p.startsWith("aviso:")))).toEqual([]);
   });
 
@@ -168,19 +158,6 @@ describe("normas da base", () => {
     expect(obterDispositivo("br/decreto-lei/1969/1044#art1", raiz)?.rotulo).toBe("Art 1º");
     expect(obterDispositivo("br/decreto-lei/1969/1044#art1-al-c", raiz)?.tipo).toBe("alinea");
     expect(obterDispositivo("ifpr/consup/res/2017/65#anexo1-art1", raiz)?.tipo).toBe("artigo");
-  });
-
-  test("compilação deduplica com o texto integral do ato", () => {
-    const indice = indiceDispositivos(raiz);
-    expect(indice.get("br/lei/1996/9394#art36B")?.norma).toBe("br/lei/1996/9394");
-    const daCompilacao = carregarDispositivos(raiz).filter((d) => d.norma === "br/lei/1996/9394~compilacao");
-    expect(daCompilacao.length).toBeGreaterThan(0);
-    expect(
-      daCompilacao.filter(
-        (d) => !indice.has(`${d.ato}${d.dispositivo}`) || indice.get(`${d.ato}${d.dispositivo}`)!.norma !== d.ato,
-      ),
-    ).toEqual([]);
-    expect(dispositivosDoAto("br/lei/1996/9394", raiz).every((d) => d.norma === "br/lei/1996/9394")).toBe(true);
   });
 
   test("100% dos dispositivos citados nas fichas e nos marcos existem (normas com texto na base)", () => {

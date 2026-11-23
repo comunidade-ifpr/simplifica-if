@@ -7,7 +7,6 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
     expect(linkNorma("br/cne-cp/res/2026/2", "art28-xviii")).toBe("ifpr://norma/br/cne-cp/res/2026/2#art28-xviii");
     expect(linkNorma("br/cne-cp/res/2026/2#art28-xviii")).toBe("ifpr://norma/br/cne-cp/res/2026/2#art28-xviii");
     expect(linkNorma("br/cne-ceb/res/2025/3#art18A-par1")).toBe("ifpr://norma/br/cne-ceb/res/2025/3#art18A-par1");
-    expect(linkNorma("br/lei/1996/9394~compilacao#art24")).toBe("ifpr://norma/br/lei/1996/9394~compilacao#art24");
     expect(linkNorma("externo:abnt/nbr/6023")).toBe("ifpr://norma/externo:abnt/nbr/6023");
   });
 

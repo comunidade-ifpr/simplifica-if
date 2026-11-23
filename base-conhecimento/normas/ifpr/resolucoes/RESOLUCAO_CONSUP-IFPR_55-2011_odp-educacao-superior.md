@@ -28,27 +28,11 @@ vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 55/20
 revogada_por:
   - "Resolução CONSUP/IFPR nº 2/2017 — art. 104"
 alterada_por:
-  - "Resolução CONSUP/IFPR nº 14/2014 — retificação (parágrafo único do art. 113 transformado em § 1º)"
+  - "Resolução CONSUP/IFPR nº 14/2014 — retificação do art. 113 (§§ 1º a 18 acrescidos)"
   - "Resolução CONSUP/IFPR nº 2/2017 — art. 102, parágrafo único"
----
-
-## Resumo
-
-- Dispõe sobre a Organização Didático-Pedagógica da Educação Superior no âmbito do Instituto Federal do Paraná – IFPR
-- Alterações relacionadas: Retificada pela Resolução nº 14/2014; Alterada pela Resolução nº 02/2017
-
-**Retificada pela Resolução nº 14/2014.**
-
-**Alterada pela Resolução nº 02/2017.**
-
-**Ementa:** Dispõe sobre a Organização Didático-Pedagógica da Educação Superior no âmbito do Instituto Federal do Paraná – IFPR.
-
-O **CONSELHO SUPERIOR DO INSTITUTO FEDERAL DO PARANÁ**, no uso de suas atribuições legais e estatutárias, e, tendo vista o contido no parecer exarado pelo Conselheiro Luiz Eckstein no processo n.º 23411.004119/2011-86:
-
-**RESOLVE:**
-
-Normatizar a Organização Didático-Pedagógica da Educação Superior no âmbito do Instituto Federal do Paraná (IFPR), constituída nos seguintes termos:
-
+notas_da_fonte:
+  - "Retificada pela Resolução nº 14/2014."
+  - "Texto conferido e corrigido pela fonte oficial em 23/11/2026: o art. 113 estava com parágrafos de versão anterior e o texto terminava no § 9º do art. 113, sem os arts. 114 a 123."
 ---
 
 ## TÍTULO I – DA ORGANIZAÇÃO DIDÁTICA
@@ -873,22 +857,108 @@ Entende-se por jubilamento o tempo máximo definido pelo Instituto Federal do Pa
 
 #### Art. 113.
 
-Para o Ensino Superior, o tempo máximo para jubilamento consiste no dobro do tempo mínimo previsto no PPC menos um ano, ou seja, para cursos com três anos, o tempo para jubilamento será de cinco anos; para os cursos com quatro anos, o tempo para jubilamento será de sete anos, e para os cursos com cinco anos, o tempo para jubilamento será de nove anos.
+Para o Ensino Superior, o tempo máximo para jubilamento consiste no dobro do tempo mínimo previsto no PPC menos um ano, ou seja, para cursos com três anos, o tempo para jubilamento será de cinco anos; para os cursos com quatro anos, o tempo para jubilamento será de sete anos, e para os cursos com cinco anos, o tempo para jubilamento será de nove anos. *(Retificado pela Resolução nº 14/2014)*
 
-**§ 1º** O estudante jubilado deverá participar de processo seletivo do IFPR e, uma vez aprovado, fará jus ao aproveitamento de estudos. *(Parágrafo único, transformado § 1°, pela resolução 14/2014, de 10/06/2014)*
+**§ 1º** Jubilamento é o desligamento de alunos, da Instituição de Ensino, que ultrapassarem o prazo máximo de tempo para a conclusão de seus cursos. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 2º** Jubilamento é o desligamento de alunos, da Instituição de Ensino, que ultrapassarem o prazo máximo de tempo para a conclusão de seus cursos *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 2º** Perderá o vínculo com o curso o estudante que não integralizar os componentes curriculares no prazo estabelecido no caput deste artigo, exceto casos de que tratam o § 6º deste Artigo. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 3º** Perderá o vínculo com o curso o estudante que não integralizar os componentes curriculares no prazo estabelecido no caput deste artigo, exceto casos de que tratam o § 6º deste Artigo. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 3º** No caso de estudantes transferidos de outras Instituições de Ensino ou migrados para o IFPR por processo de federalização, o tempo de jubilamento passa a contar a partir da data da primeira matrícula na Instituição de origem, subtraindo o tempo de transferência ocorrido sem aulas. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 4º** No caso de estudantes transferidos de outras Instituições de Ensino ou migrados para o IFPR por processo de federalização, o tempo de jubilamento passa a contar a partir da data da primeira matrícula na Instituição de origem, subtraindo o tempo de transferência ocorrido sem aulas. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 4º** Não contará para o período de jubilamento o trancamento de curso. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 5º** Não contará para o período de jubilamento o trancamento de curso. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 5º** A Secretaria Acadêmica do Câmpus comunicará ao estudante sua iminente incorrência em jubilamento, com antecedência mínima de um semestre. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 6º** A Secretaria Acadêmica do Câmpus comunicará ao estudante sua iminente incorrência em jubilamento, com antecedência mínima de um semestre. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 6º** Poderá ser solicitada pelo estudante que realizou Intercâmbio Estudantil a dilatação do prazo máximo estabelecido para conclusão de curso, a partir do momento em que ficar caracterizada a impossibilidade de conclusão do respectivo curso em tempo hábil, até o final do último período do prazo de integralização curricular. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 7º** Poderá ser solicitada pelo estudante que realizou Intercâmbio Estudantil a dilatação do prazo máximo estabelecido para conclusão de curso, a partir do momento em que ficar caracterizada a impossibilidade de conclusão do respectivo curso em tempo hábil, até o final do último período do prazo de integralização curricular. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 7º** A solicitação da dilatação justificada e documentada deverá ser requerida pelo aluno na Secretaria Acadêmica do Câmpus, sendo endereçada à Coordenação de Curso, que analisará o pedido. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 8º** A solicitação da dilatação justificada e documentada deverá ser requerida pelo aluno na Secretaria Acadêmica do Câmpus, sendo endereçada à Coordenação de Curso, que analisará o pedido. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 8º** Será concedido somente um semestre letivo adicional em relação aos prazos estabelecidos no caput deste artigo, caso seja possível ao estudante do Intercâmbio Estudantil concluir as atividades de ensino que faltam para a integralização do currículo ao qual está vinculado, independentemente à oferta das mesmas para matrícula. *(Parágrafo acrescido pela Resolução nº 14/2014)*
 
-**§ 9º** Será concedido somente um semestre letivo adicional em relação aos prazos estabelecidos no caput deste artigo. *(Parágrafo acrescido pela resolução 4/2014, de 10/06/2014)*
+**§ 9º** A concessão referida no caput deste artigo dar-se-á mediante manifestação do Colegiado de Curso respectivo, atestando o atendimento ao disposto no mesmo. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 10.** Concedido o período adicional, o estudante será jubilado se for reprovado em qualquer uma das atividades de ensino que faltam para a integralização de seu currículo, ou não cursar alguma delas. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 11.** Para estudantes do Intercâmbio Estudantil, na hipótese de uma ou mais atividades de ensino, dentre as que faltam para a integralização de seu curso, não tiver sido ofertada para matrícula, será concedido um segundo período adicional, exclusivo para cursar a(s) referida(s) atividade(s) de ensino. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 12.** Concedido o segundo período adicional, o estudante será jubilado se não cursar ou for reprovado em uma ou mais atividades de ensino. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 13.** Após esgotado o prazo para conclusão do curso, o processo de jubilamento será instruído pela Secretaria Acadêmica e encaminhado ao Colegiado de Curso para emissão do parecer final, fazendo constar em ata. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 14.** O estudante em situação de jubilamento poderá solicitar reconsideração ao Colegiado de Curso, em até dez dias de sua notificação, mediante justificativa comprobatória, cujo parecer final será homologado no Colegiado do Curso. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 15.** Das decisões do Colegiado do Curso, cabe recurso ao Conselho de Ensino, Pesquisa e Extensão (CONSEPE) do IFPR. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 16.** O recurso para o CONSEPE deverá ser protocolado em até 10 (dez) dias de sua notificação da decisão final do Colegiado de Curso. O recurso deverá ser apreciado na próxima reunião ordinária do respectivo Conselho. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 17.** O estudante jubilado poderá participar de processo seletivo do IFPR e, uma vez aprovado, fará jus ao aproveitamento de estudos, conforme estabelecido nesta Organização Didático Pedagógica, com novo registro acadêmico e período de integralização do curso, submetendo-se às alterações curriculares vigentes. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+**§ 18.** O prazo para jubilamento constará no histórico de cada estudante, contabilizado a partir de sua primeira matrícula no curso. *(Parágrafo acrescido pela Resolução nº 14/2014)*
+
+### CAPÍTULO XIV – DA DIPLOMAÇÃO
+
+#### Art. 114.
+
+O estudante que frequentar todos os módulos/unidades curriculares previstos no curso, tendo obtido aproveitamento em todos eles, frequência mínima de setenta e cinco por cento (75%) das horas–aula e Trabalho de Conclusão de Curso ou relatório de Estágio aprovado, quando o curso exigir, antes do prazo para jubilamento, receberá o diploma de concluinte do curso, que será obtido junto à Secretaria Acadêmica de seu Câmpus, após ter realizado a colação de grau na data agendada pela Instituição.
+
+**§ 1º** Antes da colação de grau, o formando deverá apresentar à Secretaria Acadêmica do Câmpus o comprovante de ausência de débito com a biblioteca e com a Direção de Ensino, Pesquisa e Extensão do Câmpus e, no caso de ter sofrido mudança no nome durante o curso, entregar cópia do documento do qual consta o nome atualizado.
+
+**§ 2º** O formando que não comparecer à cerimônia de formatura de seu curso deverá solicitar à Direção Geral, mediante requerimento, nova data para formatura em Gabinete, para receber a outorga do diploma.
+
+#### Art. 115.
+
+O estudante concluinte de curso poderá requerer, após a sua Formatura, declaração de Conclusão de Curso junto à Secretaria Acadêmica de seu Câmpus.
+
+## TÍTULO VI – DAS OUTRAS ATIVIDADES DE ENSINO
+
+### CAPÍTULO I – DA MONITORIA
+
+#### Art. 116.
+
+O serviço de monitoria segue as normas constantes do Regulamento do Programa de Monitoria do IFPR.
+
+### CAPÍTULO II – DAS ATIVIDADES DE PESQUISA
+
+#### Art. 117.
+
+As atividades de pesquisa seguem as normas constantes do Regulamento do Programa de Pesquisa do IFPR.
+
+### CAPÍTULO III – DAS ATIVIDADES DE EXTENSÃO
+
+#### Art. 118.
+
+As atividades de extensão seguem as normas constantes do Regulamento do Programa de Extensão do IFPR.
+
+### CAPÍTULO IV – DO ESTÁGIO CURRICULAR
+
+#### Art. 119.
+
+O estágio curricular é parte integrante do currículo e tem sua carga horária e validade definidas no regulamento do estágio curricular, obedecendo às Diretrizes Curriculares Nacionais especificas ao curso, quando couberem.
+
+### CAPÍTULO V – DO TRABALHO DE CONCLUSÃO DE CURSO (TCC)
+
+#### Art. 120.
+
+O TCC é parte integrante do currículo e tem sua carga horária e validade definidas no regulamento do TCC, obedecendo às Diretrizes Curriculares Nacionais específicas ao curso, quando couberem.
+
+## TÍTULO VII – DAS DISPOSIÇÕES FINAIS E TRANSITÓRIAS
+
+#### Art. 121.
+
+Esta Organização Didático–Pedagógica poderá sofrer modificações, quando se fizerem necessárias, mediante proposta apresentada ao CONSEPE.
+
+**Parágrafo único.** Não havendo solicitação de modificação conforme previsto no *caput*, esta Organização Didático–Pedagógica deverá ser reavaliada, parcial ou integralmente, se necessário, a cada 02 (dois) anos, para homologação no CONSEPE.
+
+#### Art. 122.
+
+Os casos omissos serão resolvidos pelo Conselho de Ensino, Pesquisa e Extensão do Instituto Federal do Paraná.
+
+#### Art. 123.
+
+Esta Resolução entra em vigor na data de sua aprovação pelo Conselho Superior do IFPR.
+
+**Sala de Sessões do Conselho, em 21 de dezembro de 2011.**
+
+PROF. IRINEU MARIO COLOMBO
+
+PRESIDENTE

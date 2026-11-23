@@ -35,15 +35,16 @@ relaciona_se_a:
   - "Lei nº 11.788/2008"
   - "Lei nº 9.394/1996"
   - "Lei nº 13.146/2015"
+pontos_chave:
+  - "O estágio pode ser obrigatório ou não obrigatório, conforme as especificidades de cada curso (art. 3º; art. 4º; art. 5º)."
+  - "O Regulamento Geral de Estágios (RGE) é único por campus e trata do estágio não obrigatório e do obrigatório, quando previsto em PPC (art. 10)."
+  - "Campos de estágio e convênios: a resolução disciplina quando o convênio é formalizado e o que compete às unidades concedentes de estágio (arts. 21 a 28)."
+  - "Equivalência: regras para equiparar atividades ao estágio obrigatório (arts. 29 a 32)."
+  - "Desligamento do estudante da unidade concedente (arts. 33 a 35)."
+  - "Orientação, supervisão e avaliação do estágio (arts. 36 a 41)."
+  - "Estudantes com deficiência: regras específicas de acessibilidade do campo, período, orientação e relatório (arts. 42 a 46)."
+  - "Organização administrativa dos estágios: Saee/Proens, Serc, coordenadores e colegiados de curso, professores orientadores e Progepe (art. 47)."
 ---
-## Resumo
-
-- Dispõe sobre a política de estágios do Instituto Federal do Paraná (IFPR) e define orientações para sua realização.
-- Diferencia estágio obrigatório e não obrigatório, disciplina o Regulamento Geral de Estágios (RGE) e estabelece responsabilidades de estudantes, UCE, Serc, coordenações, colegiados, professores orientadores, Saee/Proens e Progepe.
-- Trata de campos de estágio, convênios, jornada, seguro, equivalência, desligamento, orientação, supervisão e avaliação, além de regras específicas para estudantes com deficiência.
-- Documento normativo: RESOLUÇÃO CONSUP/IFPR Nº 82, DE 02 DE JUNHO DE 2022.
-
-## Texto da norma
 
 > Dispõe sobre a política de estágios do IFPR e define as orientações para sua realização.
 

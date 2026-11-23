@@ -339,6 +339,7 @@ Gerado de `referencias_normativas`. Quando uma norma mudar, estas são as fichas
 - `externo:ifpr/pdi` Plano de Desenvolvimento Institucional do IFPR: `CT-SUP-14`
 - `externo:ifpr/ppi` Projeto Pedagógico Institucional do IFPR: `CT-SUP-14`
 - `externo:ifpr/regimento-geral` Regimento Geral do IFPR: `CT-SUP-14`
+- `ifpr/consup/res/2014/8` Resolução CONSUP/IFPR nº 8/2014: `CT-SUP-06` (complementar)
 - `ifpr/consup/res/2017/50` Resolução CONSUP/IFPR nº 50/2017: `CT-SUP-01`, `CT-SUP-26`
 - `ifpr/consup/res/2022/64` Resolução CONSUP/IFPR nº 64/2022: `CT-CURR-02`, `CT-CURR-03` (complementar), `CT-CURR-14`, `CT-CURR-19`, `CT-SUP-08`, `CT-SUP-17`
 - `ifpr/consup/res/2022/82` Resolução CONSUP/IFPR nº 82/2022: `CT-CURR-20`, `CT-CURR-21`, `CT-CURR-24`, `CT-CURR-25`

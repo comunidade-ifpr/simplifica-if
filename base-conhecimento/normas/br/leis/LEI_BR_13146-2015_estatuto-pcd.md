@@ -26,19 +26,9 @@ aliases:
   - LBI
 fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm"
 vigencia_calculada_em: "2026-11-13"
+notas_da_fonte:
+  - "Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: incluídos os dispositivos das Leis nº 14.724/2023 (art. 2º, § 3º), 14.624/2023 (art. 2º-A), 15.249/2025 (art. 3º, XV; art. 24, parágrafo único; art. 28, XIX; art. 42, § 3º; art. 62-A), 14.510/2022 (art. 19, V), 14.978/2024 (art. 45, § 3º), 14.863/2024 (art. 73-A) e 15.163/2025 (art. 90), as redações das Leis nº 15.280/2025 (art. 18, § 4º, V) e 14.159/2021 (art. 125, II)."
 ---
-
-## Resumo
-
-- Centro de Documentação e Informação
-
-CÂMARA DOS DEPUTADOS
-Centro de Documentação e Informação
-LEI Nº 13.146, DE 6 DE JULHO DE 2015
-Institui a Lei Brasileira de Inclusão da Pessoa com
-Deficiência (Estatuto da Pessoa com Deficiência).
-A PRESIDENTA DA REPÚBLICA
-Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
 ## LIVRO I
 
@@ -71,6 +61,16 @@ Considera-se pessoa com deficiência aquela que tem impedimento de longo prazo d
 
 **§ 2º** O Poder Executivo criará instrumentos para avaliação da deficiência.
 
+**§ 3º** O exame médico-pericial componente da avaliação biopsicossocial da deficiência de que trata o § 1º deste artigo poderá ser realizado com o uso de tecnologia de telemedicina ou por análise documental, conforme situações e requisitos definidos em regulamento. (Incluído pela Lei nº 14.724, de 2023)
+
+#### Art. 2º-A
+
+É instituído o cordão de fita com desenhos de girassóis como símbolo nacional de identificação de pessoas com deficiências ocultas. (Incluído pela Lei nº 14.624, de 2023)
+
+**§ 1º** O uso do símbolo de que trata o caput deste artigo é opcional, e sua ausência não prejudica o exercício de direitos e garantias previstos em lei. (Incluído pela Lei nº 14.624, de 2023)
+
+**§ 2º** A utilização do símbolo de que trata o caput deste artigo não dispensa a apresentação de documento comprobatório da deficiência, caso seja solicitado pelo atendente ou pela autoridade competente. (Incluído pela Lei nº 14.624, de 2023)
+
 #### Art. 3º
 
 Para fins de aplicação desta Lei, consideram-se:
@@ -95,6 +95,7 @@ Para fins de aplicação desta Lei, consideram-se:
 - **XII –** atendente pessoal: pessoa, membro ou não da família, que, com ou sem remuneração, assiste ou presta cuidados básicos e essenciais à pessoa com deficiência no exercício de suas atividades diárias, excluídas as técnicas ou os procedimentos identificados com profissões legalmente estabelecidas;
 - **XIII –** profissional de apoio escolar: pessoa que exerce atividades de alimentação, higiene e locomoção do estudante com deficiência e atua em todas as atividades escolares nas quais se fizer necessária, em todos os níveis e modalidades de ensino, em instituições públicas e privadas, excluídas as técnicas ou os procedimentos identificados com profissões legalmente estabelecidas;
 - **XIV –** acompanhante: aquele que acompanha a pessoa com deficiência, podendo ou não desempenhar as funções de atendente pessoal.
+- **XV –** pessoa com necessidades complexas de comunicação: aquela que, por qualquer motivo, tem dificuldades significativas para compreender ou expressar mensagens de forma oral, escrita, gestual ou por meio de outras formas convencionais de comunicação, necessitando de recursos e estratégias alternativas ou aumentativas para viabilizar a interação social, o acesso à informação e a participação em atividades da vida cotidiana. (Incluído pela Lei nº 15.249, de 2025)
 
 ### CAPÍTULO II
 
@@ -242,7 +243,13 @@ Os serviços do SUS e do Suas deverão promover ações articuladas para garanti
 - **II –** serviços de habilitação e de reabilitação sempre que necessários, para qualquer tipo de deficiência, inclusive para a manutenção da melhor condição de saúde e qualidade de vida;
 - **III –** atendimento domiciliar multidisciplinar, tratamento ambulatorial e internação;
 - **IV –** campanhas de vacinação;
+<!-- redacao-nao-vigente -->
+
 - **V –** atendimento psicológico, inclusive para seus familiares e atendentes pessoais;
+
+<!-- /redacao-nao-vigente -->
+
+- **V –** atendimento psicológico, inclusive para seus familiares e atendentes pessoais, especialmente em caso de vitimização em crime contra a dignidade sexual; (Redação dada pela Lei nº 15.280, de 2025)
 - **VI –** respeito à especificidade, à identidade de gênero e à orientação sexual da pessoa com deficiência;
 - **VII –** atenção sexual e reprodutiva, incluindo o direito à fertilização assistida;
 - **VIII –** informação adequada e acessível à pessoa com deficiência e a seus familiares sobre sua condição de saúde;
@@ -260,6 +267,7 @@ Compete ao SUS desenvolver ações destinadas à prevenção de deficiências po
 - **II –** promoção de práticas alimentares adequadas e saudáveis, vigilância alimentar e nutricional, prevenção e cuidado integral dos agravos relacionados à alimentação e nutrição da mulher e da criança;
 - **III –** aprimoramento e expansão dos programas de imunização e de triagem neonatal;
 - **IV –** identificação e controle da gestante de alto risco.
+- **V –** aprimoramento do atendimento neonatal, com a oferta de ações e serviços de prevenção de danos cerebrais e sequelas neurológicas em recém-nascidos, inclusive por telessaúde. (Incluído pela Lei nº 14.510, de 2022)
 
 #### Art. 20.
 
@@ -284,6 +292,8 @@ São vedadas todas as formas de discriminação contra a pessoa com deficiência
 #### Art. 24.
 
 É assegurado à pessoa com deficiência o acesso aos serviços de saúde, tanto públicos como privados, e às informações prestadas e recebidas, por meio de recursos de tecnologia assistiva e de todas as formas de comunicação previstas no inciso V do art. 3º desta Lei.
+
+**Parágrafo único.** Os serviços públicos de saúde implementarão sistemas de comunicação aumentativa e alternativa de baixa tecnologia e promoverão a capacitação permanente das suas equipes para o atendimento de pessoas com necessidades complexas de comunicação. (Incluído pela Lei nº 15.249, de 2025)
 
 #### Art. 25.
 
@@ -327,6 +337,7 @@ Incumbe ao poder público assegurar, criar, desenvolver, implementar, incentivar
 - **XVI –** acessibilidade para todos os estudantes, trabalhadores da educação e demais integrantes da comunidade escolar às edificações, aos ambientes e às atividades concernentes a todas as modalidades, etapas e níveis de ensino;
 - **XVII –** oferta de profissionais de apoio escolar;
 - **XVIII –** articulação intersetorial na implementação de políticas públicas.
+- **XIX –** sistemas de comunicação aumentativa e alternativa de baixa tecnologia para o atendimento educacional especializado de estudantes com necessidades complexas de comunicação. (Incluído pela Lei nº 15.249, de 2025)
 
 **§ 1º** Às instituições privadas, de qualquer nível e modalidade de ensino, aplica-se obrigatoriamente o disposto nos incisos I, II, III, V, VII, VIII, IX, X, XI, XII, XIII, XIV, XV, XVI, XVII e XVIII do caput deste artigo, sendo vedada a cobrança de valores adicionais de qualquer natureza em suas mensalidades, anuidades e matrículas no cumprimento dessas determinações.
 
@@ -498,6 +509,8 @@ A pessoa com deficiência tem direito à cultura, ao esporte, ao turismo e ao la
 
 **§ 2º** O poder público deve adotar soluções destinadas à eliminação, à redução ou à superação de barreiras para a promoção do acesso a todo patrimônio cultural, observadas as normas de acessibilidade, ambientais e de proteção do patrimônio histórico e artístico nacional.
 
+**§ 3º** O poder público incentivará que museus, exposições, monumentos, exibições e galerias empreguem técnicas de comunicação aumentativa e alternativa para a acessibilidade de pessoas com necessidades complexas de comunicação. (Incluído pela Lei nº 15.249, de 2025)
+
 #### Art. 43.
 
 O poder público deve promover a participação da pessoa com deficiência em atividades artísticas, intelectuais, culturais, esportivas e recreativas, com vistas ao seu protagonismo, devendo:
@@ -531,6 +544,8 @@ Os hotéis, pousadas e similares devem ser construídos observando-se os princí
 **§ 1º** Os estabelecimentos já existentes deverão disponibilizar, pelo menos, 10% (dez por cento) de seus dormitórios acessíveis, garantida, no mínimo, 1 (uma) unidade acessível.
 
 **§ 2º** Os dormitórios mencionados no § 1º deste artigo deverão ser localizados em rotas acessíveis.
+
+**§ 3º** Os meios de hospedagem já existentes que, por impossibilidade técnica decorrente de riscos estruturais da edificação, não possam cumprir o percentual estipulado no § 1º deste artigo, ficam dispensados dessa exigência mediante comprovação por laudo técnico estrutural, que deverá ser renovado a cada 5 (cinco) anos. (Incluído pela Lei nº 14.978, de 2024)
 
 ### CAPÍTULO X
 
@@ -676,6 +691,12 @@ A formulação, a implementação e a manutenção das ações de acessibilidade
 
 É assegurado à pessoa com deficiência, mediante solicitação, o recebimento de contas, boletos, recibos, extratos e cobranças de tributos em formato acessível.
 
+#### Art. 62-A.
+
+Com a finalidade de atender pessoas com necessidades complexas de comunicação, o poder público instalará, em praças, parques e demais espaços públicos de uso coletivo, placas com sistemas de comunicação aumentativa e alternativa, compostas de pranchas de baixa tecnologia com pictogramas. (Incluído pela Lei nº 15.249, de 2025)
+
+**Parágrafo único.** As placas referidas no caput deste artigo deverão ser adaptadas aos respectivos contextos comunicativos e confeccionadas em materiais adequados para resistir às condições climáticas e de uso no ambiente externo. (Incluído pela Lei nº 15.249, de 2025)
+
 ### CAPÍTULO II
 
 #### DO ACESSO À INFORMAÇÃO E À COMUNICAÇÃO
@@ -743,6 +764,10 @@ Os programas, as linhas de pesquisa e os projetos a serem desenvolvidos com o ap
 #### Art. 73.
 
 Caberá ao poder público, diretamente ou em parceria com organizações da sociedade civil, promover a capacitação de tradutores e intérpretes da Libras, de guias intérpretes e de profissionais habilitados em Braille, audiodescrição, estenotipia e legendagem.
+
+#### Art. 73-A.
+
+As campanhas sociais, preventivas e educativas devem ser acessíveis à pessoa com deficiência. (Incluído pela Lei nº 14.863, de 2024)
 
 ### CAPÍTULO III
 
@@ -916,9 +941,23 @@ Apropriar-se de ou desviar bens, proventos, pensão, benefícios, remuneração 
 
 #### Art. 90.
 
-Abandonar pessoa com deficiência em hospitais, casas de saúde, entidades de abrigamento ou congêneres: Pena - reclusão, de 6 (seis) meses a 3 (três) anos, e multa.
+Abandonar pessoa com deficiência em hospitais, casas de saúde, entidades de abrigamento ou congêneres:
 
-**Parágrafo único.** Na mesma pena incorre quem não prover as necessidades básicas de pessoa com deficiência quando obrigado por lei ou mandado.
+<!-- redacao-nao-vigente -->
+
+Pena - reclusão, de 6 (seis) meses a 3 (três) anos, e multa.
+
+<!-- /redacao-nao-vigente -->
+
+Pena - reclusão, de 2 (dois) a 5 (cinco) anos, e multa. (Redação dada pela Lei nº 15.163, de 2025)
+
+**Parágrafo único.** (Revogado). (Redação dada pela Lei nº 15.163, de 2025)
+
+**§ 1º** Se do abandono resulta lesão corporal de natureza grave: Pena - reclusão, de 3 (três) a 7 (sete) anos, e multa. (Incluído pela Lei nº 15.163, de 2025)
+
+**§ 2º** Se do abandono resulta morte: Pena - reclusão, de 8 (oito) a 14 (quatorze) anos, e multa. (Incluído pela Lei nº 15.163, de 2025)
+
+**§ 3º** Nas mesmas penas incorre quem não prover as necessidades básicas de pessoa com deficiência quando obrigado por lei ou mandado. (Incluído pela Lei nº 15.163, de 2025)
 
 #### Art. 91.
 
@@ -1534,7 +1573,7 @@ O § 1º do art. 2º desta Lei deverá entrar em vigor em até 2 (dois) anos, co
 Devem ser observados os prazos a seguir discriminados, a partir da entrada em vigor desta Lei, para o cumprimento dos seguintes dispositivos:
 
 - **I –** incisos I e II do § 2º do art. 28, 48 (quarenta e oito) meses;
-- **II –** § 6º do art. 44, 48 (quarenta e oito) meses;
+- **II –** § 6º do art. 44, 84 (oitenta e quatro) meses; (Redação dada pela Lei nº 14.159, de 2021)
 - **III –** art. 45, 24 (vinte e quatro) meses;
 - **IV –** art. 49, 48 (quarenta e oito) meses.
 

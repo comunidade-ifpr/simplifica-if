@@ -154,7 +154,7 @@ export const dispositivo = Command.make(
       return yield* new EncerrarComCodigo({ codigo: 1 });
     }
     const { disp } = achado;
-    const titulo = (yield* normas.obter(disp.ato))?.titulo ?? disp.ato;
+    const titulo = (yield* normas.obter(disp.norma))?.titulo ?? disp.norma;
     const descendentes = filhos ? (yield* normas.descendentes(disp.id)).map((f) => f.disp) : [];
     // path relativo a base-conhecimento/, como no manifest
     const path = achado.path.replace(/^base-conhecimento\//, "");

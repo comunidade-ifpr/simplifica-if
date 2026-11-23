@@ -28,46 +28,45 @@ revoga:
   - "Resolução CONSUP/IFPR nº 8/2014 (incisos II e III do art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
 altera:
   - "Resolução CONSUP/IFPR nº 8/2014 (art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
+pontos_chave:
+  - "Altera o art. 6 do Regimento Interno Comum aos Câmpus: inclui o inciso XI (diretores(as) e/ou equivalentes) e o § 4º, que limita o CODIC às diretorias do nível organizacional mais elevado (art. 1)."
+  - "Revoga os incisos II e III do art. 6 do Regimento Interno Comum aos Câmpus, que a Resolução CONSUP/IFPR nº 222/2024 havia reescrito (art. 2)."
+  - "As demais disposições da Resolução nº 08/2014 permanecem inalteradas (art. 3)."
+notas_da_fonte:
+  - "Texto integral conferido em 23/11/2026 com a publicação do SEI/IFPR (Boletim de Serviço Eletrônico de 17/06/2025, documento 3642136): https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3797141&id_orgao_publicacao=0."
+  - "Fora do arquivo: o bloco de assinatura eletrônica e de autenticidade do SEI. A redação do inciso XI e do § 4º fica em citação, no art. 1, e não vira dispositivo desta resolução."
 ---
 
-## Resumo
+> Altera dispositivos da Resolução nº 08, de 30 de abril de 2014, que Regulamenta o Regimento Interno Comum aos Campus do Instituto Federal do Paraná.
 
-- Altera novamente dispositivos da Resolução CONSUP/IFPR nº 08/2014.
-- Ajusta o art. 6º e o § 4º do art. 6º do Regimento Interno Comum aos Câmpus.
-- Revoga os incisos II e III do art. 6º, que haviam sido objeto de redação anterior em 2024.
+O Conselho Superior do Instituto Federal de Educação, Ciência e Tecnologia do Paraná, no uso de suas atribuições legais e estatutárias, após análise do parecer do conselheiro relator Gabriel Augusto Cação Quinato e o contido no processo 23411.008228/2025-78:
 
-## Dados essenciais
-
-- **Norma**: Resolução CONSUP/IFPR nº 242, de 13 de junho de 2025
-- **Publicação no Boletim de Serviço Eletrônico**: 17 de junho de 2025
-- **Processo**: 23411.008228/2025-78
-- **SEI**: 3642136
-- **Fonte oficial**: [SEI/IFPR - publicação da Resolução nº 242/2025](https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3797141&id_orgao_publicacao=0)
-
-## Texto essencial
-
-> Altera dispositivos da Resolução nº 08, de 30 de abril de 2014, que regulamenta o Regimento Interno Comum aos Campus do Instituto Federal do Paraná.
+RESOLVE:
 
 #### Art. 1º
 
-Altera o art. 6º da Resolução nº 08/2014, com as seguintes mudanças:
+Alterar dispositivos da Resolução nº 08, de 30 de abril de 2014, que Regulamentou o Regimento Interno Comum aos Campus do Instituto Federal de Educação, Ciência e Tecnologia do Paraná, que passam a vigorar com as seguintes alterações:
 
-> - XI – Diretores(as) e/ou equivalentes;
+> "Art. 6º .................................................................................................................................
 >
-> § 4º Quando o organograma do campus previr a existência de diretorias e mais de um nível organizacional, comporão o CODIC exclusivamente as diretorias que integrarem o nível organizacional mais elevado.
+> ................................................................................................................................................:
+>
+> XI – Diretores(as) e/ou equivalentes" (NR).
+>
+> "§ 4º Quando o organograma do campus previr a existência de diretorias e mais de um nível organizacional, comporão o Codic exclusivamente as diretorias que integrarem o nível organizacional mais elevado." (N.R).
 
 #### Art. 2º
 
-Revoga os incisos II e III do art. 6º da Resolução nº 08/2014.
+Ficam revogados os "incisos II e III do art.6º da Resolução nº 08, de 30 de abril de 2014" (NR).
 
 #### Art. 3º
 
-Permanecem inalteradas as demais disposições da Resolução nº 08/2014.
+Permanecem inalteradas as demais disposições da Resolução nº 08, de 30 de abril de 2014.
 
 #### Art. 4º
 
-Esta Resolução entra em vigor na data de sua publicação.
+Esta Resolução entra em vigor na data de sua publicação, com ampla divulgação na página eletrônica do IFPR.
 
-## Efeito prático na leitura da Resolução nº 08/2014
+ADRIANO WILLIAN DA SILVA VIANA PEREIRA
 
-Na leitura consolidada do Regimento Interno Comum aos Câmpus, esta resolução deve prevalecer sobre a redação introduzida pela Resolução CONSUP/IFPR nº 222/2024 nos pontos em que houve nova alteração ou revogação, especialmente quanto aos incisos II e III do art. 6º.
+PRESIDENTE

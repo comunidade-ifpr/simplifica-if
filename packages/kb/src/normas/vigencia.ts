@@ -29,7 +29,6 @@ import * as NodeFS from "node:fs";
 import { parse } from "yaml";
 import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
-import { idDoAto } from "./ids.ts";
 import { listarNormas } from "./estrutura.ts";
 import { carregarRegistro, type Registro } from "./registro.ts";
 import { carregarRelacoes, type Relacao, relacaoParcial } from "./relacoes.ts";
@@ -97,7 +96,6 @@ export function montarDatas(
 ): Map<string, DatasNorma> {
   const datas = new Map<string, DatasNorma>();
   for (const norma of normas) {
-    if (idDoAto(norma.id) !== norma.id) continue;
     datas.set(norma.id, datasDoFrontMatter(norma.meta));
   }
   for (const entrada of registro.entradas) {
@@ -163,7 +161,7 @@ export interface Inicio {
 }
 
 export function inicioVigencia(id: string, fonte: Pick<FonteVigencia, "datas">): Inicio {
-  const datas = fonte.datas.get(idDoAto(id));
+  const datas = fonte.datas.get(id);
   if (datas && RE_DATA.test(datas.vigente_de)) return { data: datas.vigente_de, minimo: datas.vigente_de, certo: true };
   return { data: null, minimo: datas?.assinada_em ?? null, certo: false };
 }
@@ -178,7 +176,7 @@ export function efeitoDaRelacao(relacao: Relacao, fonte: Pick<FonteVigencia, "da
 /** Data de efeito do status registrado de um stub: a vigência do ato de `status_fonte`. */
 function efeitoDoStatusRegistrado(statusFonte: string | undefined, fonte: Pick<FonteVigencia, "datas">): Inicio | null {
   if (!statusFonte) return null;
-  const efeito = inicioVigencia(idDoAto(statusFonte.split("#")[0]!), fonte);
+  const efeito = inicioVigencia(statusFonte.split("#")[0]!, fonte);
   return efeito.data || efeito.minimo ? efeito : null;
 }
 
@@ -219,7 +217,7 @@ const ORDEM: Record<string, number> = { vigente: 0, alterada: 1, "parcialmente r
 /** Status de vigência do ato `id` na data `data` (AAAA-MM-DD). */
 export function statusEm(id: string, data: string, fonte: FonteStatus): ResultadoVigencia {
   if (!RE_DATA.test(data)) throw new Error(`data fora do formato AAAA-MM-DD: ${data}`);
-  const ato = idDoAto(id.split("#")[0]!);
+  const ato = id.split("#")[0]!;
   const registro = fonte.registro;
   const entrada = registro.obter(ato);
   const inicio = inicioVigencia(ato, fonte);
@@ -295,7 +293,7 @@ export function statusEm(id: string, data: string, fonte: FonteStatus): Resultad
         certo = false;
         pendencias.push(
           efeito
-            ? `status registrado de ${titulo(ato)} (${registrado}) depende da vigência de ${titulo(idDoAto(entrada.status_fonte!.split("#")[0]!))}, a confirmar` +
+            ? `status registrado de ${titulo(ato)} (${registrado}) depende da vigência de ${titulo(entrada.status_fonte!.split("#")[0]!)}, a confirmar` +
                 `${efeito.minimo ? ` (não antes de ${efeito.minimo})` : ""}`
             : `status registrado de ${titulo(ato)} (${registrado}) sem data de efeito conhecida`,
         );
@@ -324,7 +322,7 @@ export interface IntervaloVigencia {
  * numa anterior a todas, dá a função inteira. Intervalos vizinhos iguais são fundidos.
  */
 export function intervalosVigencia(id: string, dados: FonteStatus): IntervaloVigencia[] {
-  const ato = idDoAto(id.split("#")[0]!);
+  const ato = id.split("#")[0]!;
   const marcos = new Map<string, string[]>();
   const marcar = (data: string | null, fonte: string) => {
     if (data) marcos.set(data, [...new Set([...(marcos.get(data) ?? []), fonte])]);
@@ -490,7 +488,7 @@ export function transicoesAplicaveis(
   data: string,
   fonte: Pick<FonteVigencia, "datas" | "transicoes">,
 ): SituacaoTransicao[] {
-  const ato = idDoAto(id.split("#")[0]!);
+  const ato = id.split("#")[0]!;
   return fonte.transicoes
     .filter((t) => t.norma === ato || t.norma_anterior === ato)
     .map((t) => situacaoTransicao(t, data, fonte));

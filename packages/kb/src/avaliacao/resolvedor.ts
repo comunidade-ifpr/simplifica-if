@@ -12,7 +12,6 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
-import { idDoAto } from "../normas/ids.ts";
 import type { Registro } from "../normas/registro.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
 import { carregarIndicePpcs } from "../ppcs/citacoes.ts";
@@ -116,7 +115,7 @@ export function avaliarResolvedor(anotacoes: CitacoesAnotadas, registro: Registr
       const daLinha = citacoes.filter((citacao) => citacao.linha === numero && citacao.id !== null);
       const emitidosLinha = new Map<string, { regras: Set<string>; dispositivos: Set<string> }>();
       for (const citacao of daLinha) {
-        const id = idDoAto(citacao.id!);
+        const id = citacao.id!;
         const registroLinha = emitidosLinha.get(id) ?? { regras: new Set<string>(), dispositivos: new Set<string>() };
         registroLinha.regras.add(citacao.regra);
         for (const d of citacao.dispositivos ?? (citacao.dispositivoId ? [citacao.dispositivoId] : [])) {

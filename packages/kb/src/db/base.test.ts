@@ -42,10 +42,11 @@ import { INDICADORES } from "../adequacao/art71.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { carregarCorrespondencias } from "../normas/correspondencia.ts";
-import { carregarDispositivos, descendentes, indiceDispositivos } from "../normas/estrutura.ts";
+import { descendentes, indiceDispositivos } from "../normas/estrutura.ts";
 import { obterDispositivo as obterDispositivoArquivos } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
 import { raizRepositorio } from "../caminhos.ts";
+import { analisarFrontMatter } from "../normas/front-matter.ts";
 import { metadadosDoIdNorma } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "../normas/registro.ts";
 import { carregarRelacoes, sucessorasDe } from "../normas/relacoes.ts";
@@ -419,9 +420,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           expect((yield* normas.dispositivo(id))?.disp).toEqual(disp);
           expect((yield* normas.dispositivo(disp.id))?.disp).toEqual(obterDispositivoArquivos(disp.id, raiz)!);
         }
-        for (const disp of carregarDispositivos(raiz).filter((d) => d.norma !== d.ato)) {
-          expect((yield* normas.dispositivo(disp.id))?.disp).toEqual(obterDispositivoArquivos(disp.id, raiz)!);
-        }
         for (const id of ["br/cne-cp/res/2026/2#art28", "br/lei/1996/9394#art36", "br/cne-cp/res/2021/1#art20"]) {
           expect((yield* normas.descendentes(id)).map((d) => d.disp)).toEqual(descendentes(id, raiz));
         }
@@ -659,6 +657,8 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const nulo = (valor: unknown) => (valor === undefined ? null : valor);
         for (const item of manifest) {
           const pendencia = nulo(item["vigencia_a_confirmar"]);
+          const caminho = `base-conhecimento/${String(item["path"])}`;
+          const { meta } = analisarFrontMatter(yield* lerTexto(caminho), caminho);
           mesmoJson(yield* normas.ficha(String(item["id"])), {
             id: item["id"],
             situacao: "base",
@@ -676,10 +676,14 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             path: `base-conhecimento/${String(item["path"])}`,
             pendencia_vigencia: pendencia,
             vigencia_a_confirmar: pendencia !== null || item["status_vigencia"] === "a confirmar",
+            // os metadados editoriais não vão para o manifest: vêm do front matter do arquivo
+            pontos_chave: meta["pontos_chave"] ?? [],
+            notas_da_fonte: meta["notas_da_fonte"] ?? [],
           });
         }
         const stubs = lerRegistroStubs(caminhoStubs(raiz));
         const vazio = { tipo_documento: null, numero: null, ano: null, orgao: null, jurisdicao: null };
+        const semEditoriais = { pontos_chave: [], notas_da_fonte: [] };
         for (const s of stubs.normas) {
           // o stub não registra tipo, número, ano nem órgão: saem do ID
           const doId = metadadosDoIdNorma(s.id)!;
@@ -700,6 +704,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             path: null,
             pendencia_vigencia: null,
             vigencia_a_confirmar: s.status_vigencia === "a confirmar",
+            ...semEditoriais,
           });
         }
         for (const s of stubs.externos) {
@@ -716,6 +721,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             path: null,
             pendencia_vigencia: null,
             vigencia_a_confirmar: false,
+            ...semEditoriais,
           });
         }
         expect((yield* normas.ficha("br/cne-cp/res/2021/1#art20"))?.id).toBe("br/cne-cp/res/2021/1");

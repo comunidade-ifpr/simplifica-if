@@ -24,7 +24,6 @@ import type { PpcCitante } from "../ppcs/citacoes.ts";
 import type { CitacaoResolvida } from "./citacoes-normas.ts";
 import { citacoesResolvidas } from "./citacoes-normas.ts";
 import { correspondenciaEm, destinosDeOrigemEm, type FonteCorrespondencia } from "./correspondencia.ts";
-import { idDoAto } from "./ids.ts";
 import { sucessorasDe } from "./relacoes.ts";
 import { type FonteVigencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
@@ -88,14 +87,14 @@ export interface FonteImpacto {
   readonly vigencia: FonteVigencia;
   readonly dataReferencia: string;
   readonly correspondencia: FonteCorrespondencia;
-  /** Dispositivos do ato (pela deduplicação de `dispositivosDoAto`), em ordem, com o texto. */
+  /** Dispositivos da norma, em ordem, com o texto. */
   readonly dispositivos: ReadonlyArray<{ dispositivo: string; texto: string }>;
   /** Tópicos de `topicos-fichas.json`, na ordem do arquivo (vazio sem a taxonomia). */
   readonly topicos: ReadonlyArray<TopicoTaxonomia>;
   /** Arquivos de conteúdo das skills (caminho relativo à raiz do conteúdo e texto), em ordem. */
   readonly arquivosConteudo: Iterable<{ arquivo: string; texto: string }>;
   /** Segmentos das normas da base de outros atos, com as citações resolvidas. */
-  readonly segmentosCitantes: Iterable<{ norma: string; ato: string; segmento: string; citacoes: CitacaoResolvida[] }>;
+  readonly segmentosCitantes: Iterable<{ norma: string; segmento: string; citacoes: CitacaoResolvida[] }>;
   /** PPCs que citam a norma (`id`, com o dispositivo, se houver). */
   readonly ppcsQueCitam: ReadonlyArray<PpcCitante>;
 }
@@ -171,7 +170,7 @@ export function impactoEm(
   const id = fonte.id;
   const registro = fonte.vigencia.registro;
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
-  const ato = idDoAto(norma);
+  const ato = norma;
   const data = opcoes.data ?? fonte.dataReferencia;
   const vigencia = statusEm(ato, data, fonte.vigencia);
   const relacoes = fonte.vigencia.relacoes.filter((r) => r.origem === ato || r.alvo === ato);
@@ -189,7 +188,7 @@ export function impactoEm(
     let sucessora = false;
     const dispositivos: string[] = [];
     for (const c of citacoes) {
-      const alvo = idDoAto(c.id);
+      const alvo = c.id;
       const lista = c.dispositivos;
       if (alvo === ato) {
         if (sufixo && !lista.some(noDispositivo)) continue;
@@ -225,7 +224,7 @@ export function impactoEm(
       if (json !== null) {
         textos = textosDoJson(json).join("\n");
         for (const ref of referenciasEstruturadas(json)) {
-          if (idDoAto(ref.ref) === ato && (!sufixo || noDispositivo(ref.dispositivo))) {
+          if (ref.ref === ato && (!sufixo || noDispositivo(ref.dispositivo))) {
             motivos.add("referencia");
             if (ref.dispositivo) dispositivos.add(`${ato}${ref.dispositivo}`);
           } else if (
@@ -266,7 +265,7 @@ export function impactoEm(
   // Normas da base que citam a norma: dispositivos e preâmbulo (fundamento citado nos considerandos).
   const normasQueCitam = new Map<string, Set<string>>();
   for (const segmento of fonte.segmentosCitantes) {
-    if (segmento.ato === ato || !citaLista(segmento.citacoes).cita) continue;
+    if (segmento.norma === ato || !citaLista(segmento.citacoes).cita) continue;
     const lista = normasQueCitam.get(segmento.norma) ?? new Set<string>();
     lista.add(segmento.segmento);
     normasQueCitam.set(segmento.norma, lista);
