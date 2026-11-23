@@ -190,7 +190,7 @@ IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`
 
 **Legibilidade.** Linha em branco antes e depois de cabeçalho, antes e depois de lista e entre parágrafos; um parágrafo (`§`) ou inciso por linha, nunca colado no fim do dispositivo anterior; alínea recuada dois espaços sob o inciso dela. Um `#` solto no fim de uma linha é resto de cabeçalho da conversão e sai (não conta como palavra).
 
-**Saneamento.** Mudanças de marcação não podem mudar palavras: `packages/kb/src/normas/saneamento.test.ts` compara, sem a marcação Markdown, a sequência de palavras de cada norma com a do commit anterior ao saneamento, e `estrutura.test.ts` confere que os segmentos do parser reconstituem o corpo.
+**Saneamento.** Mudanças de marcação não podem mudar palavras: `packages/kb/src/normas/saneamento.test.ts` compara, sem a marcação Markdown, a sequência de palavras do corpo de cada norma com a do commit de referência (`REF_DO_TEXTO`, o da última conferência do texto com a fonte oficial), sem norma isenta, e `estrutura.test.ts` confere que os segmentos do parser reconstituem o corpo. Correção do texto pela fonte oficial vai num commit próprio, e `REF_DO_TEXTO` sobe para ele. O parser também recusa, no corpo, cabeçalho de nível 1 ou 2 que não seja divisão nem anexo.
 
 ## Relações (`relacoes.yaml`)
 
@@ -209,7 +209,7 @@ Regras de transição (direito de conclusão, prazos de adequação) são dados 
 ## Inclusão de norma nova
 
 1. Grave o Markdown em `normas/` com o `id` canônico (acima) e retire de `normas/stubs.yaml` o stub correspondente, se houver. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto (`pnpm kb relacoes --propor` lista o que o regex achou e ainda não foi confirmado).
-2. Acrescente a norma a `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`): os testes de saneamento e de status manual comparam as normas com o commit anterior ao saneamento.
+2. Acrescente a norma a `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`): os testes de saneamento e de status manual comparam as normas com um commit de referência, em que ela ainda não existia. Ela passa a ter as palavras conferidas quando `REF_DO_TEXTO` subir.
 3. Rode o pipeline e compile o banco:
 
    ```bash
