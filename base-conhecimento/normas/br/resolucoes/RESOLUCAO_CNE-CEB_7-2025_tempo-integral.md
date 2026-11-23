@@ -86,17 +86,17 @@ A implementação da Educação Integral em Tempo Integral deverá observar, al�
 - **VII –** a valorização da pluralidade cultural e linguística, com atenção à educação escolar indígena, quilombola, do campo, especial e bilíngue de surdos e reconhecimento e valorização das múltiplas linguagens, das ciências da natureza, das ciências humanas e sociais e da matemática;
 - **VIII –** a promoção de práticas pedagógicas inovadoras e interdisciplinares que garantam o desenvolvimento integral dos educandos; e
 - **IX –** a gestão democrática e participativa da escola e do território educativo.
+
 #### Art. 6º
 
 No exercício de sua autonomia, os sistemas de ensino poderão estruturar o atendimento da Educação Integral em Tempo Integral articulando uma ou mais de uma das seguintes formas de oferta:
 
 - **I –** escolas exclusivas de tempo integral, caracterizadas pela oferta de todas as matrículas e todas as turmas em jornada ampliada de, no mínimo, sete horas diárias ou trinta e cinco horas semanais; e
-- **II –** escolas mistas, caracterizadas pela oferta de parte de suas turmas em jornada ampliada de, no mínimo, sete horas diárias ou trinta e cinco horas semanais e parte de suas turmas em jornada parcial. ##
+- **II –** escolas mistas, caracterizadas pela oferta de parte de suas turmas em jornada ampliada de, no mínimo, sete horas diárias ou trinta e cinco horas semanais e parte de suas turmas em jornada parcial.
+
 ### CAPÍTULO III
 
-#### DAS DIMENSÕES DO PROCESSO DE IMPLEMENTAÇÃO DA EDUCAÇÃO INTEGRAL EM TEMPO
-
-#### INTEGRAL
+#### DAS DIMENSÕES DO PROCESSO DE IMPLEMENTAÇÃO DA EDUCAÇÃO INTEGRAL EM TEMPO INTEGRAL
 
 #### Art. 7º
 
@@ -107,7 +107,8 @@ Para assegurar a implementação da Educação Integral em Tempo Integral, os si
 - **III –** Articulação Intersetorial e Integração com os territórios e as comunidades;
 - **IV –** Currículo, Práticas Pedagógicas e Avaliação da Aprendizagem e do Desenvolvimento;
 - **V –** Valorização e Desenvolvimento Profissional de Educadores; e
-- **VI –** Monitoramento e Avaliação. ###
+- **VI –** Monitoramento e Avaliação.
+
 #### Seção I Do Acesso e Permanência com Equidade
 
 #### Art. 8º
@@ -120,16 +121,16 @@ Na dimensão estratégica do acesso e permanência com equidade, compete aos sis
 
 - **I –** realizar a análise contínua da equidade educacional na rede de ensino na distribuição das matrículas de Educação Integral em Tempo Integral;
 - **II –** definir e implementar critérios objetivos:
-- a) que garantam a compatibilidade entre a ampliação da oferta da Educação Integral em Tempo Integral e a manutenção, expansão e qualidade da oferta da Educação Escolar Indígena, da Educação Escolar no Campo, da Educação Escolar Quilombola e da Educação de Jovens e Adultos - EJA;
-- b) para a tomada de decisão a respeito da expansão da Educação Integral em Tempo Integral, considerando a necessária articulação com a garantia da oferta da Educação Especial na perspectiva da Educação Inclusiva, bem como da Educação Profissional e Tecnológica - EPT;
-- c) para a expansão de matrículas na Educação Escolar Indígena e na Educação Escolar Quilombola, respeitadas a consulta pública informada às comunidades e as diretrizes curriculares específicas destas modalidades, e considerando, sempre que possível, a proporção das matrículas conforme perfil demográfico da população local;
-- d) para assegurar o acesso universal, equitativo e inclusivo às matrículas de Educação Integral, sem quaisquer estratégias e mecanismos de seleção que possam caracterizar a violação do direito à igualdade de condições para o acesso e a permanência na escola; e
-- e) para priorizar a expansão de matrículas em tempo integral em territórios e escolas com maior vulnerabilidade social, e que busquem favorecer o acesso de estudantes pretos e pardos proporcionalmente ao perfil demográfico dos estudantes da Educação Básica no território.
+  - a) que garantam a compatibilidade entre a ampliação da oferta da Educação Integral em Tempo Integral e a manutenção, expansão e qualidade da oferta da Educação Escolar Indígena, da Educação Escolar no Campo, da Educação Escolar Quilombola e da Educação de Jovens e Adultos - EJA;
+  - b) para a tomada de decisão a respeito da expansão da Educação Integral em Tempo Integral, considerando a necessária articulação com a garantia da oferta da Educação Especial na perspectiva da Educação Inclusiva, bem como da Educação Profissional e Tecnológica - EPT;
+  - c) para a expansão de matrículas na Educação Escolar Indígena e na Educação Escolar Quilombola, respeitadas a consulta pública informada às comunidades e as diretrizes curriculares específicas destas modalidades, e considerando, sempre que possível, a proporção das matrículas conforme perfil demográfico da população local;
+  - d) para assegurar o acesso universal, equitativo e inclusivo às matrículas de Educação Integral, sem quaisquer estratégias e mecanismos de seleção que possam caracterizar a violação do direito à igualdade de condições para o acesso e a permanência na escola; e
+  - e) para priorizar a expansão de matrículas em tempo integral em territórios e escolas com maior vulnerabilidade social, e que busquem favorecer o acesso de estudantes pretos e pardos proporcionalmente ao perfil demográfico dos estudantes da Educação Básica no território.
 - **III –** definir e implementar:
-- a) estratégias de continuidade da matrícula em tempo integral ao longo das etapas da Educação Básica, com atenção especial às transições entre Educação Infantil, anos iniciais e finais do Ensino Fundamental e Ensino Médio;
-- b) ações de prevenção e enfrentamento à infrequência, ao abandono e à evasão que envolvam a atuação de professores, das equipes gestoras e dos órgãos centrais de gestão do sistema de ensino;
-- c) protocolos para a atuação intersetorial, integrando ações de política educacional às políticas de assistência social, saúde, cultura, esporte, lazer e trabalho, promovendo permanência escolar; e
-- d) estratégias para que todas as escolas realizem ações permanentes que promovam melhoria do clima e da convivência escolar, da prevenção e superação de violências, como bullying, racismo, preconceito religioso, capacitismo, machismo, etarismo e violências contra as populações LGBTQIAP+.
+  - a) estratégias de continuidade da matrícula em tempo integral ao longo das etapas da Educação Básica, com atenção especial às transições entre Educação Infantil, anos iniciais e finais do Ensino Fundamental e Ensino Médio;
+  - b) ações de prevenção e enfrentamento à infrequência, ao abandono e à evasão que envolvam a atuação de professores, das equipes gestoras e dos órgãos centrais de gestão do sistema de ensino;
+  - c) protocolos para a atuação intersetorial, integrando ações de política educacional às políticas de assistência social, saúde, cultura, esporte, lazer e trabalho, promovendo permanência escolar; e
+  - d) estratégias para que todas as escolas realizem ações permanentes que promovam melhoria do clima e da convivência escolar, da prevenção e superação de violências, como bullying, racismo, preconceito religioso, capacitismo, machismo, etarismo e violências contra as populações LGBTQIAP+.
 - **IV –** garantir que todas as decisões de expansão da jornada em tempo integral estejam fundamentadas em indicadores de desigualdade educacional e social, priorizando territórios de maior vulnerabilidade e com histórico de exclusão escolar.
 
 **§ 1º** A análise contínua da equidade educacional de que trata o inciso I deve ser feita mediante coleta e sistematização de informações sobre a distribuição das matrículas em tempo integral em articulação com informações a respeito de raça/cor, gênero, nível socioeconômico, deficiência e localização geográfica.
@@ -147,7 +148,8 @@ Na dimensão estratégica do acesso e permanência com equidade, compete às esc
 - **V –** comunicar e demandar apoio técnico às instâncias regionais de gestão e secretarias de educação para assegurar acesso e permanência dos educandos na escola;
 - **VI –** desenvolver ações para melhoria do clima e convivência escolar e para prevenção e a superação de violências, como bullying, racismo, preconceito religioso, capacitismo, machismo, etarismo e violências contra as populações LGBTQIAP+;
 - **VII –** revisar continuamente seu Projeto Político-Pedagógico - PPP, com participação da comunidade, incorporando a concepção de Educação Integral, na perspectiva de assegurar o exercício do conjunto dos direitos de aprendizagem e desenvolvimento integral dos estudantes; e
-- **VIII –** criar canais permanentes de diálogo com as famílias, promovendo sua participação no projeto pedagógico, ações culturais e estratégias de apoio ao desenvolvimento integral dos educandos, inclusive por meio de ações formativas. ###
+- **VIII –** criar canais permanentes de diálogo com as famílias, promovendo sua participação no projeto pedagógico, ações culturais e estratégias de apoio ao desenvolvimento integral dos educandos, inclusive por meio de ações formativas.
+
 #### Seção II Da Gestão Democrática
 
 #### Art. 11.
@@ -165,6 +167,7 @@ Na dimensão estratégica da gestão democrática da política de Educação Int
 - **IX –** promover a contratação e alocação de número necessário de profissionais da educação para a efetiva implementação da Educação Integral em Tempo Integral;
 - **X –** definir e implementar estratégias, metodologias e protocolos de apoio para a melhoria da gestão escolar na perspectiva da Educação Integral em Tempo Integral; e
 - **XI –** elaborar e apresentar anualmente ao respectivo conselho de educação relatório de monitoramento da política de Educação Integral.
+
 #### Art. 12.
 
 Na dimensão estratégica da gestão democrática da política de Educação Integral, compete às escolas:
@@ -180,7 +183,8 @@ Na dimensão estratégica da gestão democrática da política de Educação Int
 - **IX –** adotar práticas de sustentabilidade ambiental no cotidiano escolar, promovendo consumo consciente, reutilização e redução de desperdícios;
 - **X –** planejar as atividades em finais de semana, de modo a favorecer a participação familiar e comunitária e o fortalecimento dos vínculos e convivência;
 - **XI –** executar com responsabilidade os recursos financeiros descentralizados priorizando ações pedagógicas e de melhoria da infraestrutura física e pedagógica; e
-- **XII –** promover a escuta ativa dos estudantes em decisões pedagógicas e organizacionais, incentivando a formação de grêmios, conselhos mirins ou outras instâncias participativas, envolvendo-os, com mediação pedagógica, na gestão dos tempos e espaços da escola. ###
+- **XII –** promover a escuta ativa dos estudantes em decisões pedagógicas e organizacionais, incentivando a formação de grêmios, conselhos mirins ou outras instâncias participativas, envolvendo-os, com mediação pedagógica, na gestão dos tempos e espaços da escola.
+
 #### Seção III Da Articulação Intersetorial e Integração com Territórios e Comunidades
 
 #### Art. 13.
@@ -194,6 +198,7 @@ Na dimensão estratégica da articulação intersetorial e integração com terr
 - **V –** estabelecer orientações para que suas escolas adotem estratégias de flexibilização da jornada escolar para contemplar as especificidades de estudantes que participem de projetos e iniciativas esportivas, artísticas e culturais e que tenham compromissos com treinos, competições, ensaios ou apresentações artísticas coincidentes com o horário e a jornada regular da Educação Integral em Tempo Integral;
 - **VI –** estabelecer orientações para que suas escolas adotem estratégias de flexibilização da jornada escolar para contemplar as especificidades de estudantes e famílias atendidas em serviços de saúde e assistência social e que tenham compromissos na forma de consultas, atendimentos ou eventos semelhantes; e
 - **VII –** estabelecer parcerias e protocolos de cooperação com os órgãos do Sistema de Garantia de Direitos da Criança e do Adolescente - SGDCA, assegurando a atuação integrada da escola com conselhos tutelares, defensorias, Ministério Público e demais instâncias de proteção, defesa e controle social dos direitos tendo como foco o pleno desenvolvimento dos sujeitos.
+
 #### Art. 14.
 
 Na dimensão estratégica da articulação intersetorial e integração com territórios e comunidades, compete às escolas:
@@ -209,7 +214,8 @@ Na dimensão estratégica da articulação intersetorial e integração com terr
 - **IX –** apoiar os educandos que sejam atendidos em serviços de saúde e de assistência social na compatibilização de sua jornada escolar com os compromissos em consultas, atendimentos e eventos semelhantes; e
 - **X –** integrar colegiados e outras formas de colaboração e gestão existentes no território (comissões, fóruns, conselhos), contribuindo com o planejamento, realização e acompanhamento de propostas e ações destinadas à garantia do direito à educação.
 
-**Parágrafo único.** No desenvolvimento das formas de colaboração com entidades privadas previstas no inciso IV, os sistemas de ensino priorizarão parcerias com organizações sociais sem fins lucrativos. #
+**Parágrafo único.** No desenvolvimento das formas de colaboração com entidades privadas previstas no inciso IV, os sistemas de ensino priorizarão parcerias com organizações sociais sem fins lucrativos.
+
 
 #### Seção IV Do Currículo, das Práticas Pedagógicas e Avaliação da Aprendizagem e do Desenvolvimento
 
@@ -254,6 +260,7 @@ Na dimensão estratégica do currículo, das práticas pedagógicas e da avalia�
 - **VII –** promover e apoiar, nas unidades que compõem seu sistema de ensino, a articulação entre diferentes modalidades de organização do trabalho didático e pedagógico (sequências didáticas, atividades permanentes, projetos didáticos) e a articulação interdisciplinar entre os diferentes componentes curriculares;
 - **VIII –** disponibilizar materiais de apoio didático e pedagógico às escolas; e
 - **IX –** promover e apoiar práticas avaliativas integradas, orientadas para a melhoria contínua dos resultados de aprendizagem e desenvolvimento dos educandos e que considerem a justiça curricular e a articulação entre os diferentes componentes curriculares.
+
 #### Art. 22.
 
 Na mesma dimensão, compete às escolas:
@@ -269,7 +276,8 @@ Na mesma dimensão, compete às escolas:
 - **IX –** promover os direitos digitais, o uso responsável, ético e crítico das tecnologias da informação e comunicação, bem como da educação digital e midiática, com ênfase no desenvolvimento de competências tecnológicas, cidadania, segurança, ética e bem-estar no ambiente digital e o uso de recursos educacionais abertos, incentivando, inclusive, o letramento digital e a capacidade não apenas de acessar e usufruir, mas de produzir tecnologias da informação, programação digital e comunicação, integrando essas práticas às atividades escolares planejadas e ao currículo com vistas à integralidade dos sujeitos e formação de cidadãos conscientes e ativos no contexto digital;
 - **X –** estimular, acompanhar e orientar os educandos na construção de seus projetos de vida, em perspectiva socialmente referenciada, considerando suas singularidades, interesses e contextos sociais;
 - **XI –** planejar e implementar ações de recomposição de aprendizagens com base nas dificuldades observadas; e
-- **XII –** planejar e implementar estratégias de avaliação da aprendizagem e do desenvolvimento dos educandos que considerem a justiça curricular, a integração entre os diferentes componentes curriculares e a valorização das diferentes formas de aprender e que estejam comprometidas com o alcance dos resultados de aprendizagem para todos os educandos. ###
+- **XII –** planejar e implementar estratégias de avaliação da aprendizagem e do desenvolvimento dos educandos que considerem a justiça curricular, a integração entre os diferentes componentes curriculares e a valorização das diferentes formas de aprender e que estejam comprometidas com o alcance dos resultados de aprendizagem para todos os educandos.
+
 #### Seção V Da Valorização e Formação Permanente de Educadores
 
 #### Art. 23.
@@ -284,6 +292,7 @@ Na dimensão estratégica da valorização e desenvolvimento profissional de edu
 - **VI –** assegurar condições de trabalho e de progressão nas carreiras para todos os profissionais que atuam na Educação Integral em Tempo Integral;
 - **VII –** estimular a participação dos profissionais da educação em projetos de pesquisa, ações de extensão universitária, congressos científicos e encontros de compartilhamento de práticas voltados à Educação Integral em Tempo Integral; e
 - **VIII –** fomentar a articulação entre as redes de ensino e as Instituições de Educação Superior - IES, promovendo a integração dos estágios curriculares obrigatórios às escolas de Educação Básica, bem como o desenvolvimento de ações de extensão e programas de iniciação à docência, de modo a fortalecer a formação inicial na prática e em contexto real, alinhada aos princípios e estrutura da Educação Integral em Tempo Integral.
+
 #### Art. 24.
 
 Na dimensão estratégica da valorização e desenvolvimento profissional de educadores, compete às escolas:
@@ -294,7 +303,8 @@ Na dimensão estratégica da valorização e desenvolvimento profissional de edu
 - **IV –** incluir os profissionais não-docentes (funcionários da secretaria escolar, de limpeza, de alimentação) em ações formativas integradas ao PPP, valorizando suas contribuições e experiências;
 - **V –** desenvolver iniciativas que promovam a melhoria das condições de trabalho, com foco no bem-estar, incluindo aquelas relacionadas ao clima e à convivência democrática na escola;
 - **VI –** apoiar a participação dos profissionais da educação em ações formativas externas, como projetos de pesquisa, ações de extensão universitária, congressos científicos e encontros de práticas com foco na implementação da Educação Integral em Tempo Integral; e
-- **VII –** estabelecer parcerias com IES para acolher e acompanhar estudantes de licenciatura em estágios curriculares obrigatórios, bem como em projetos e programas de iniciação à docência e ações de extensão, contribuindo para a formação inicial na Educação Integral em Tempo Integral na prática e para o fortalecimento do diálogo entre a escola e os processos formativos dos futuros educadores. ###
+- **VII –** estabelecer parcerias com IES para acolher e acompanhar estudantes de licenciatura em estágios curriculares obrigatórios, bem como em projetos e programas de iniciação à docência e ações de extensão, contribuindo para a formação inicial na Educação Integral em Tempo Integral na prática e para o fortalecimento do diálogo entre a escola e os processos formativos dos futuros educadores.
+
 #### Seção VI Do Monitoramento e Avaliação
 
 #### Art. 25.
@@ -315,6 +325,7 @@ Na dimensão estratégica do monitoramento e avaliação, compete aos sistemas d
 - **III –** de condições de infraestrutura física e pedagógica;
 - **IV –** de efetivação da gestão democrática; e
 - **V –** de qualidade da articulação intersetorial e da integração com os territórios.
+
 #### Art. 26.
 
 Na dimensão estratégica do monitoramento e avaliação, compete às escolas:

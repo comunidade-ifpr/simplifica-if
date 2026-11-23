@@ -84,9 +84,9 @@ Os Colegiados de Curso são órgãos consultivos e deliberativos do Câmpus para
 
 Os Colegiados de Curso possuem os seguintes componentes:
 
-- I – os(as) docentes dos componentes curriculares do curso;
-- II – 01 (um) representante técnico-administrativo em educação ligado diretamente ao curso, quando houver;
-- III – 02 (dois) representantes discentes, de turmas distintas.
+- **I –** os(as) docentes dos componentes curriculares do curso;
+- **II –** 01 (um) representante técnico-administrativo em educação ligado diretamente ao curso, quando houver;
+- **III –** 02 (dois) representantes discentes, de turmas distintas.
 
 **Parágrafo único.** O Colegiado de Curso será coordenado por um(a) docente e, na sua ausência, pela Coordenação de Ensino do Câmpus.
 
@@ -100,17 +100,17 @@ O Colegiado de Curso reunir-se-á ordinariamente com periodicidade mínima bimes
 
 Compete aos Colegiados de Curso:
 
-- I – cumprir e fazer cumprir as normas da instituição para o pleno funcionamento do curso;
-- II – propor revisão do Plano de Curso, quando necessário, respeitadas as diretrizes e normas do IFPR;
-- III – manifestar-se sobre as formas de admissão e seleção, bem como sobre o número de vagas iniciais, no que lhe couber;
-- IV – estabelecer normas internas de funcionamento do curso, respeitadas as diretrizes e normas da instituição;
-- V – zelar pelo cumprimento dos Planos de Ensino dos componentes curriculares;
-- VI – orientar e acompanhar a vida escolar/acadêmica dos alunos do curso;
-- VII – deliberar sobre requerimentos de alunos no âmbito de suas competências;
-- VIII – deliberar o horário de aulas do Curso, respeitadas as diretrizes e normas da instituição;
-- IX – estudar, na qualidade de relator ou de membro de comissão especial, as matérias submetidas à apreciação do Colegiado, apresentando o relato e a decisão no prazo estabelecido pelo Colegiado ou pela Coordenação;
-- X – recepcionar os ingressantes do Curso, orientando-os no que se refere ao funcionamento e organização do IFPR;
-- XI – decidir sobre a aprovação ou reprovação de estudantes com dificuldade de aproveitamento nos componentes curriculares, ou em casos específicos que extrapolem a competência didático-avaliativo-pedagógica docente, desde que convocados.
+- **I –** cumprir e fazer cumprir as normas da instituição para o pleno funcionamento do curso;
+- **II –** propor revisão do Plano de Curso, quando necessário, respeitadas as diretrizes e normas do IFPR;
+- **III –** manifestar-se sobre as formas de admissão e seleção, bem como sobre o número de vagas iniciais, no que lhe couber;
+- **IV –** estabelecer normas internas de funcionamento do curso, respeitadas as diretrizes e normas da instituição;
+- **V –** zelar pelo cumprimento dos Planos de Ensino dos componentes curriculares;
+- **VI –** orientar e acompanhar a vida escolar/acadêmica dos alunos do curso;
+- **VII –** deliberar sobre requerimentos de alunos no âmbito de suas competências;
+- **VIII –** deliberar o horário de aulas do Curso, respeitadas as diretrizes e normas da instituição;
+- **IX –** estudar, na qualidade de relator ou de membro de comissão especial, as matérias submetidas à apreciação do Colegiado, apresentando o relato e a decisão no prazo estabelecido pelo Colegiado ou pela Coordenação;
+- **X –** recepcionar os ingressantes do Curso, orientando-os no que se refere ao funcionamento e organização do IFPR;
+- **XI –** decidir sobre a aprovação ou reprovação de estudantes com dificuldade de aproveitamento nos componentes curriculares, ou em casos específicos que extrapolem a competência didático-avaliativo-pedagógica docente, desde que convocados.
 
 ## Observação sobre consolidação
 

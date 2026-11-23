@@ -31,6 +31,8 @@ export interface OpcoesDispositivos {
   readonly deslocamento: number;
   /** A última linha do bloco no arquivo (padrão: a última da árvore). */
   readonly linhaFinal?: number;
+  /** As linhas dos cabeçalhos de divisão (Título, Capítulo, Seção e o nome delas): ganham a classe `divisao`. */
+  readonly divisoes?: ReadonlySet<number>;
 }
 
 /** As âncoras agrupadas pela linha de início. */
@@ -117,6 +119,9 @@ export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
     const tag = no.tagName ?? "";
     const l = linha(no);
     if (no.type === "element" && l !== undefined) candidatos.push({ linha: l, no });
+    if (no.type === "element" && l !== undefined && /^h[1-6]$/.test(tag) && opcoes.divisoes?.has(l)) {
+      no.properties = { ...no.properties, className: ["divisao"] };
+    }
     if (no.type === "element" && l !== undefined && RECEBEM_ID.has(tag) && !usadas.has(l)) {
       const ids = opcoes.ancoras.get(l);
       if (ids !== undefined && ids.length > 0) {

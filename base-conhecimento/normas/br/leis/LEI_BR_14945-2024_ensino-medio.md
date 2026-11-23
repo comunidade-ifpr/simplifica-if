@@ -273,10 +273,10 @@ Esta Lei entra em vigor na data de sua publicação.
 
 Brasília, 31 de julho de 2024; 203º da Independência e 136º da República.
 
-LUIZ INÁCIO LULA DA SILVA
-Silvio Luiz de Almeida
-Camilo Sobreira de Santana
-Anielle Francisco da Silva
+LUIZ INÁCIO LULA DA SILVA  
+Silvio Luiz de Almeida  
+Camilo Sobreira de Santana  
+Anielle Francisco da Silva  
 Luiz Henrique Eloy Amado
 
 Este texto não substitui o publicado no DOU de 1º.8.2024.

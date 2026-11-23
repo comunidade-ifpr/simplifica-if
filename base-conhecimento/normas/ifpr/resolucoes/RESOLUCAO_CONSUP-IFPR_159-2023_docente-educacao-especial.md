@@ -86,9 +86,9 @@ O Conselho Superior do Instituto Federal de Educação, Ciência e Tecnologia do
 
 Estabelecer as diretrizes do trabalho do docente de Educação Especial no âmbito do Instituto Federal de Educação, Ciência e Tecnologia do Paraná - IFPR.
 
-## CAPÍTULO I
+### CAPÍTULO I
 
-### DAS DISPOSIÇÕES PRELIMINARES
+#### DAS DISPOSIÇÕES PRELIMINARES
 
 #### Art. 2º
 
@@ -132,15 +132,15 @@ Além de atuar na oferta do AEE, o Docente de Educação Especial poderá atuar 
 
 O AEE é um dos serviços proporcionados pela Educação Especial no âmbito do IFPR que visa complementar e/ou suplementar a formação dos estudantes público da Educação Especial, realizado prioritariamente em período de contraturno dos cursos em que os estudantes estão matriculados.
 
-## CAPÍTULO II
+### CAPÍTULO II
 
-### DA ATIVIDADE DOCENTE
+#### DA ATIVIDADE DOCENTE
 
 #### Art. 10
 
 São atribuições do docente de Educação Especial, conforme Regime de Trabalho dos docentes efetivos do quadro permanente do IFPR e especificidades da área:
 
-##### § 1º Relacionadas ao ensino
+**§ 1º** Relacionadas ao ensino
 
 - **I -** Atendimento Educacional Especializado (AEE);
 - **II -** docência em componentes curriculares relacionados à área da Educação Especial e Inclusiva em nível médio, superior, pós-graduação, formação inicial e continuada;
@@ -148,7 +148,7 @@ São atribuições do docente de Educação Especial, conforme Regime de Trabalh
 - **IV -** proposição e execução de projetos de ensino;
 - **V -** avaliação individualizada no contexto escolar.
 
-##### § 2º Relacionadas às atividades de apoio ao ensino
+**§ 2º** Relacionadas às atividades de apoio ao ensino
 
 - **I -** atividade colaborativa de orientação aos docentes;
 - **II -** atividade colaborativa com as famílias dos estudantes;
@@ -156,18 +156,18 @@ São atribuições do docente de Educação Especial, conforme Regime de Trabalh
 - **IV -** orientações de trabalhos de conclusão de cursos;
 - **V -** orientações e supervisões de estágio e bolsistas.
 
-##### § 3º Relacionadas à manutenção do ensino
+**§ 3º** Relacionadas à manutenção do ensino
 
 - **I -** planejamento;
 - **II -** avaliação das aulas ministradas nos cursos e aos programas regularmente ofertados pelo campus;
 - **III -** elaboração de relatórios sobre o desenvolvimento dos estudantes e encaminhamentos necessários.
 
-##### § 4º Relacionadas à pesquisa e/ou extensão
+**§ 4º** Relacionadas à pesquisa e/ou extensão
 
 - **I -** desenvolvimento de projetos de pesquisa;
 - **II -** desenvolvimento de ações ou atividades de extensão.
 
-##### § 5º Atividades administrativas
+**§ 5º** Atividades administrativas
 
 - **I -** participação em comissões, núcleos, conselhos, comitês e demais atividades correlatas;
 - **II -** desempenho de atividades, conforme designação de cargo e/ou função.
@@ -181,9 +181,9 @@ A carga horária de trabalho do docente da Educação Especial será distribuíd
 
 **Parágrafo único.** A carga horária do Docente de Educação Especial será organizada e/ou distribuída de acordo com a legislação vigente que regulamenta a carreira dos demais docentes EBTT.
 
-## CAPÍTULO III
+### CAPÍTULO III
 
-### DO ATENDIMENTO EDUCACIONAL ESPECIALIZADO
+#### DO ATENDIMENTO EDUCACIONAL ESPECIALIZADO
 
 #### Art. 12
 
@@ -203,9 +203,9 @@ A organização do AEE se dará por meio de atendimento individual ou em pequeno
 
 **Parágrafo único.** A duração e frequência dos atendimentos serão definidas com base nas necessidades dos estudantes identificadas na avaliação do Docente de Educação Especial.
 
-### Seção I
+#### Seção I
 
-#### Do objetivo e atribuições
+##### Do objetivo e atribuições
 
 #### Art. 16
 
@@ -231,9 +231,9 @@ São atribuições do Docente de Educação Especial no Atendimento Educacional 
 - **V -** participar da formação continuada e/ou em ações institucionais dialogando com os demais docentes com o propósito de estabelecer encaminhamentos para atender as necessidades educacionais dos estudantes;
 - **VI -** incentivar o uso de tecnologia assistiva, em parceria com profissionais da área na instituição, de forma a ampliar habilidades funcionais dos estudantes, promovendo autonomia e participação.
 
-### Seção II
+#### Seção II
 
-#### Da institucionalização do Atendimento Educacional Especializado
+##### Da institucionalização do Atendimento Educacional Especializado
 
 #### Art. 19
 
@@ -247,9 +247,9 @@ A oferta do AEE deve constar no Plano de Desenvolvimento Institucional do IFPR, 
 - **VI -** articulação entre Docente da Educação Especial e os do ensino comum por meio do trabalho colaborativo;
 - **VII -** redes de apoio: no âmbito da atuação intersetorial, da formação docente, do acesso aos recursos, serviços e equipamentos, entre outros que contribuam para a realização do AEE.
 
-### Seção III
+#### Seção III
 
-#### Da avaliação para o ingresso e permanência do estudante no Atendimento Educacional Especializado
+##### Da avaliação para o ingresso e permanência do estudante no Atendimento Educacional Especializado
 
 #### Art. 20
 
@@ -305,9 +305,9 @@ Deverá ser elaborado um parecer (Anexo III) que sintetize a AICE.
 
 Os registros dos atendimentos realizados com cada estudante no AEE serão organizados pelo Docente de Educação Especial, em conformidade com as práticas de cada campus.
 
-## CAPÍTULO IV
+### CAPÍTULO IV
 
-### DA FORMAÇÃO CONTINUADA
+#### DA FORMAÇÃO CONTINUADA
 
 #### Art. 30
 
@@ -321,9 +321,9 @@ O IFPR deverá organizar e garantir os espaços e tempos para a formação conti
 
 O Docente de Educação Especial deverá colaborar no processo de formação dos servidores e colaboradores em parceria com a equipe pedagógica do campus e com a Conapne.
 
-## CAPÍTULO V
+### CAPÍTULO V
 
-### DAS DISPOSIÇÕES FINAIS
+#### DAS DISPOSIÇÕES FINAIS
 
 #### Art. 33
 

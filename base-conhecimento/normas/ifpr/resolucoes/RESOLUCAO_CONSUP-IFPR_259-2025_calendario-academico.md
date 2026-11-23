@@ -239,7 +239,7 @@ Os casos omissos serão resolvidos pela Proens, pela Pró-Reitoria de Pesquisa, 
 
 Esta Resolução entra em vigor na data de sua publicação, com ampla divulgação na página eletrônica do IFPR.
 
-ADRIANO WILIAN DA SILVA VIANA PEREIRA
+ADRIANO WILIAN DA SILVA VIANA PEREIRA  
 Presidente
 
 Documento assinado eletronicamente por ADRIANO WILLIAN DA SILVA VIANA PEREIRA, Reitor, em 15/12/2025, às 10:24. Código verificador 3972484, CRC 91B7BF6F. Referência: Processo nº 23411.017877/2025-60.

@@ -87,12 +87,12 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-        "linha_inicio": 333,
-        "linha_fim": 333
+        "linha_inicio": 342,
+        "linha_fim": 342
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -8.449,
+      "pontuacao": -8.483,
       "origem": "busca-textual"
     },
     {
@@ -119,12 +119,12 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-        "linha_inicio": 316,
-        "linha_fim": 316
+        "linha_inicio": 323,
+        "linha_fim": 323
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -7.805,
+      "pontuacao": -7.837,
       "origem": "busca-textual"
     }
   ]

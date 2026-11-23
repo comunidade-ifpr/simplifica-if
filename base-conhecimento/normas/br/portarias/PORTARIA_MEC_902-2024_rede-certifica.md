@@ -58,9 +58,9 @@ A Rede Certifica constitui iniciativa de política pública da Educação Profis
 
 **Parágrafo único.** Podem participar do processo de certificação profissional trabalhadores maiores de dezoito anos de idade, com escolaridade mínima requerida para o respectivo processo, inseridos ou não no mundo do trabalho.
 
-## CAPÍTULO I
+### CAPÍTULO I
 
-### DAS DISPOSIÇÕES GERAIS
+#### DAS DISPOSIÇÕES GERAIS
 
 #### Art. 3º
 
@@ -110,9 +110,9 @@ O processo de certificação profissional, no âmbito da Rede Certifica, possui 
 
 **Parágrafo único.** O processo de certificação profissional, o estímulo à elevação da escolaridade, à participação em itinerários formativos e a inserção no mundo do trabalho são considerados fatores indutores ao efetivo exercício da cidadania.
 
-## CAPÍTULO II
+### CAPÍTULO II
 
-### DA ORGANIZAÇÃO E DAS COMPETÊNCIAS
+#### DA ORGANIZAÇÃO E DAS COMPETÊNCIAS
 
 #### Art. 7º
 
@@ -185,9 +185,9 @@ São atribuições das unidades certificadoras:
 - **XIII –** assegurar o atendimento adequado ao trabalhador no desenvolvimento do processo de certificação profissional, inclusive às pessoas com deficiência; e
 - **XIV –** guardar a documentação comprobatória do processo de certificação profissional por pelo menos dez anos, para fins de supervisão pelo respectivo sistema de ensino.
 
-## CAPÍTULO III
+### CAPÍTULO III
 
-### DA REGULAMENTAÇÃO INTERNA PARA ADESÃO À REDE CERTIFICA
+#### DA REGULAMENTAÇÃO INTERNA PARA ADESÃO À REDE CERTIFICA
 
 #### Art. 13.
 
@@ -208,9 +208,9 @@ A instituição de ensino elaborará regulamentação para estabelecer as normas
 
 **Parágrafo único.** A regulamentação de que trata o caput deverá ser aprovada pelo órgão competente do respectivo sistema de ensino a que pertence a instituição de ensino.
 
-## CAPÍTULO IV
+### CAPÍTULO IV
 
-### DOS TIPOS DE CERTIFICAÇÃO E DOS DOCUMENTOS EMITIDOS
+#### DOS TIPOS DE CERTIFICAÇÃO E DOS DOCUMENTOS EMITIDOS
 
 #### Art. 14.
 
@@ -235,9 +235,9 @@ O histórico escolar que acompanha os certificados de qualificação profissiona
 
 **Parágrafo único.** A forma da obtenção dos certificados, por meio de reconhecimento de conhecimentos e competências profissionais, bem como a modalidade educacional empregada não devem constar do documento expedido.
 
-## CAPÍTULO V
+### CAPÍTULO V
 
-### DOS REQUISITOS PARA A OFERTA
+#### DOS REQUISITOS PARA A OFERTA
 
 #### Art. 17.
 
@@ -257,9 +257,9 @@ A certificação de um perfil profissional exige oferta de curso de Educação P
 
 Para conduzir os processos de certificação profissional, a unidade certificadora deve dispor de infraestrutura física e tecnológica já existente para os respectivos cursos de referência e de acordo com os Catálogos Nacionais de Cursos Técnicos e de Cursos Superiores de Tecnologia.
 
-## CAPÍTULO VI
+### CAPÍTULO VI
 
-### DO PROCESSO DE CERTIFICAÇÃO PROFISSIONAL
+#### DO PROCESSO DE CERTIFICAÇÃO PROFISSIONAL
 
 #### Art. 19.
 
@@ -352,9 +352,9 @@ A oferta dos processos de certificação profissional no âmbito da Rede Certifi
 
 **§ 2º** Não poderá haver cobrança de taxas aos trabalhadores para emissão da primeira via de nenhum documento do processo de certificação profissional.
 
-## CAPÍTULO VII
+### CAPÍTULO VII
 
-### DISPOSIÇÕES FINAIS
+#### DISPOSIÇÕES FINAIS
 
 #### Art. 27.
 

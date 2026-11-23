@@ -46,16 +46,16 @@ As diretrizes para os cursos técnicos integrados ao ensino médio pautam-se nos
 - **I –** valorização e oferta da educação pública, gratuita e de qualidade como direito de todas e todos, compreendendo-a como exercício da cidadania de estudantes adolescentes, jovens, adultos e idosos;
 - **II –** intencionalidade, expansão e garantia da oferta de cursos técnicos integrados ao ensino médio como compromisso e valorização da educação básica no âmbito do IFPR;
 - **III –** formação humana integral para as diferentes dimensões da vida, entre as quais:
-- a) o trabalho nos seus sentidos ontológico e histórico;
-- b) a ciência e os processos de construção de conhecimentos;
-- c) a cultura como expressão simbólica, estética e artística das relações sociais, dos significados, e campo de contestação e transformação da realidade social;
-- d) a tecnologia como meios, produtos e processos desenvolvidos pela humanidade para satisfazer suas necessidades.
+  - a) o trabalho nos seus sentidos ontológico e histórico;
+  - b) a ciência e os processos de construção de conhecimentos;
+  - c) a cultura como expressão simbólica, estética e artística das relações sociais, dos significados, e campo de contestação e transformação da realidade social;
+  - d) a tecnologia como meios, produtos e processos desenvolvidos pela humanidade para satisfazer suas necessidades.
 - **IV –** concepção de educação politécnica fundamentada:
-- a) na articulação entre os saberes historicamente produzidos;
-- b) na capacidade de o ser humano produzir sua existência;
-- c) na participação crítica, como base para a construção e transformação da sociedade;
-- d) na integração dos conhecimentos científicos gerais e técnicos profissionais, com vistas a superar a dualidade e a fragmentação entre eles;
-- e) na produção de expressões com valores éticos e estéticos.
+  - a) na articulação entre os saberes historicamente produzidos;
+  - b) na capacidade de o ser humano produzir sua existência;
+  - c) na participação crítica, como base para a construção e transformação da sociedade;
+  - d) na integração dos conhecimentos científicos gerais e técnicos profissionais, com vistas a superar a dualidade e a fragmentação entre eles;
+  - e) na produção de expressões com valores éticos e estéticos.
 - **V –** trabalho como princípio educativo e pesquisa como princípio pedagógico, com vistas à produção do conhecimento e intervenção na sociedade em busca de sua transformação;
 - **VI –** compromisso com a superação das desigualdades sociais, com a educação fundamentada pela dignidade do ser humano e pelo conhecimento dos direitos humanos em observância aos marcadores sociais da diferença;
 - **VII –** compromisso com a expansão da oferta de Educação de Jovens e Adultos articulada à Educação Profissional e Tecnológica (EJA-EPT);
@@ -67,6 +67,7 @@ As diretrizes para os cursos técnicos integrados ao ensino médio pautam-se nos
 - **XIII –** escuta e diálogo permanentes com a comunidade escolar como fundamento da prática educativa;
 - **XIV –** reconhecimento dos sujeitos com necessidades educacionais específicas, das identidades de gênero e de orientações sexuais, da diversidade étnico-racial, das religiosidades, assim como dos povos indígenas, quilombolas e das populações do campo;
 - **XV –** valorização e fortalecimento da participação estudantil nos processos políticos e pedagógicos dos cursos e da instituição.
+
 ## TÍTULO II
 
 ### DOS OBJETIVOS DOS CURSOS TÉCNICOS INTEGRADOS AO ENSINO MÉDIO
@@ -84,6 +85,7 @@ São objetivos gerais dos cursos técnicos integrados ao ensino médio:
 - **I –** a formação de estudantes para o trabalho e para a cidadania com autonomia;
 - **II –** o pleno desenvolvimento da pessoa humana;
 - **III –** a garantia do acesso da educação básica como etapa obrigatória.
+
 #### Art. 5º
 
 São objetivos específicos dos cursos técnicos integrados ao ensino médio:
@@ -95,6 +97,7 @@ São objetivos específicos dos cursos técnicos integrados ao ensino médio:
 - **V –** a formação tecnológica na perspectiva de transformação da ciência em força produtiva a partir do conhecimento científico mediado pelas relações sociais;
 - **VI –** a formação cultural, entendida como meio para a compreensão e participação no processo de produção de expressões materiais, símbolos, representações e significados que correspondem a valores éticos, políticos e estéticos que orientam as normas de conduta de uma sociedade;
 - **VII –** a formação voltada ao cuidado e à potencialização da vida.
+
 ## TÍTULO III
 
 ### CAPÍTULO I
@@ -112,6 +115,7 @@ A organização curricular dos cursos técnicos integrados ao ensino médio do I
 - **I –** filosófica, expressa nos conceitos de ética e de ser humano;
 - **II –** sociológica, expressa no conceito de trabalho como princípio educativo;
 - **III –** curricular, expressa no conceito de politecnia.
+
 #### Art. 8º
 
 A organização curricular da oferta integrada deve se estruturar:
@@ -125,6 +129,7 @@ A organização curricular da oferta integrada deve se estruturar:
 - **VII –** no reconhecimento da Língua Brasileira de Sinais (LIBRAS) como política e ação em todos os componentes curriculares do curso;
 - **VIII –** na seleção e organização dos conhecimentos de forma coletiva, que considere a investigação e a compreensão dos processos produtivos em suas múltiplas dimensões;
 - **IX –** no perfil profissional do egresso do curso de acordo com o Catálogo Nacional de Cursos Técnicos, observando as recomendações dos conselhos regulamentadores de cada categoria profissional.
+
 #### Art. 9º
 
 A partir da interface entre o perfil do ingressante e o perfil profissional do egresso, o currículo deve estabelecer os conhecimentos necessários para a composição das ementas, da organização dos componentes curriculares e da distribuição de carga horária no curso, de modo a garantir a complementaridade e a integração dos conhecimentos.
@@ -139,6 +144,7 @@ A integração curricular poderá se dar em diferentes níveis, dimensões e esp
 - **II –** na criação de unidades ou componentes curriculares específicos, tais como projetos integradores e práticas profissionais articuladas, tendo a compreensão de que a integração curricular deve ocorrer mediante a proposição da integração curricular, com a construção e elaboração do currículo como um todo;
 - **III –** na articulação entre as ações de ensino, pesquisa, extensão e inovação com os núcleos de arte e cultura, núcleos de estudos afro-brasileiros e indígenas, núcleos de atendimento às pessoas com necessidades específicas, núcleos de inovação tecnológica, centro de línguas e programa institucional de direitos humanos;
 - **IV –** na integração e composição de componentes curriculares relacionados às necessidades dos sujeitos, às demandas das lutas e grupos sociais, ao entorno da escola, de modo a trazer as vivências como currículo e conteúdo, tendo a prática social como princípio da organização curricular;
+
 #### Art. 11.
 
 A composição das ementas dos componentes curriculares deve ser pautada pelos objetivos de aprendizagem, com a superação de uma tradição curricular conteudista, ao passo que garanta o acesso aos conhecimentos historicamente produzidos e socialmente referenciados.
@@ -185,7 +191,8 @@ Para a efetivação dos cursos técnicos integrados ao ensino médio, a institui
 - b) realização do planejamento integrado dos componentes curriculares;
 - c) participação em instâncias colegiadas;
 - d) reuniões de acompanhamento pedagógico entre instituição, estudantes, pais e responsáveis legais;
-- e) formação inicial e continuada, em serviço, com propósito de favorecer a apropriação dos princípios que fundamentam as teorias e as práticas inerentes ao currículo integrado. ##
+- e) formação inicial e continuada, em serviço, com propósito de favorecer a apropriação dos princípios que fundamentam as teorias e as práticas inerentes ao currículo integrado.
+
 ### CAPÍTULO II
 
 #### DA CARGA HORÁRIA DOS CURSOS
@@ -205,11 +212,11 @@ As cargas horárias previstas nas regulamentações que tratam do ensino médio 
 Adotar-se-á como referência para a carga horária dos cursos técnicos integrados ao ensino médio o número de horas para as respectivas habilitações profissionais previstas no Catálogo Nacional de Cursos Técnicos.
 
 - **I –** para os cursos organizados em 3 anos, serão considerados:
-- a) mínimo de 3000 (três mil) horas para a duração total do curso, distribuídas em, no mínimo, 1000 (mil) horas anuais;
-- b) carga horária de 1000 (mil) horas anuais, sem ultrapassar 10% da carga horária total, incluindo a carga horária do estágio supervisionado obrigatório, quando previsto.
+  - a) mínimo de 3000 (três mil) horas para a duração total do curso, distribuídas em, no mínimo, 1000 (mil) horas anuais;
+  - b) carga horária de 1000 (mil) horas anuais, sem ultrapassar 10% da carga horária total, incluindo a carga horária do estágio supervisionado obrigatório, quando previsto.
 - **II –** para os cursos organizados em 4 anos, deve ser priorizada a oferta em turno único e serão considerados:
-- a) o mínimo de 3.200 horas para a duração total do curso, distribuídas em, no mínimo, 800 horas anuais;
-- b) carga horária mínima de 800 horas anuais, sem ultrapassar 10% da carga horária total, incluindo a carga horária do estágio supervisionado obrigatório, quando previsto.
+  - a) o mínimo de 3.200 horas para a duração total do curso, distribuídas em, no mínimo, 800 horas anuais;
+  - b) carga horária mínima de 800 horas anuais, sem ultrapassar 10% da carga horária total, incluindo a carga horária do estágio supervisionado obrigatório, quando previsto.
 
 #### Art. 23.
 

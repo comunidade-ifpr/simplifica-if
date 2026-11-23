@@ -37,6 +37,7 @@ relaciona_se_a:
   - "Lei nº 13.146/2015"
 ---
 ## Resumo
+
 - Dispõe sobre a política de estágios do Instituto Federal do Paraná (IFPR) e define orientações para sua realização.
 - Diferencia estágio obrigatório e não obrigatório, disciplina o Regulamento Geral de Estágios (RGE) e estabelece responsabilidades de estudantes, UCE, Serc, coordenações, colegiados, professores orientadores, Saee/Proens e Progepe.
 - Trata de campos de estágio, convênios, jornada, seguro, equivalência, desligamento, orientação, supervisão e avaliação, além de regras específicas para estudantes com deficiência.
@@ -66,13 +67,14 @@ a instrução normativa 213, de 17 de dezembro de 2019, que estabelece orientaç
 
 Estabelecer a política de estágios do Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR) e definir as orientações para sua realização.
 
-## CAPÍTULO I
+### CAPÍTULO I
 
-### DA NATUREZA DOS ESTÁGIOS
+#### DA NATUREZA DOS ESTÁGIOS
 
 #### Art. 2º
 
 Estágio é ato educativo escolar supervisionado e orientado, desenvolvido no ambiente de trabalho, que visa à preparação para o trabalho produtivo de estudantes que estejam frequentando os cursos do IFPR ou de estudantes que venham a estagiar nas dependências do IFPR. O estágio consiste em atividade pedagógica, devendo:
+
 - **I -** ser realizado sob a responsabilidade e coordenação da instituição de ensino;
 - **II -** propiciar experiência acadêmico-profissional;
 - **III -** oportunizar o aprendizado da atividade profissional e a contextualização curricular;
@@ -96,6 +98,7 @@ O estágio poderá ser obrigatório ou não obrigatório, de acordo com as espec
 #### Art. 6º
 
 O estágio não cria vínculo empregatício de qualquer natureza quando:
+
 - **I -** houver matrícula e frequência regular do estudante, atestadas pela instituição de ensino, em curso de educação superior, de educação profissional, de ensino médio, da educação especial e nos anos finais do ensino fundamental, na modalidade profissional da educação de jovens e adultos;
 - **II -** celebrado por meio de Termo de Compromisso de Estágio (TCE) entre o estudante, a Unidade Concedente de Estágio (UCE) e a Instituição de Ensino;
 - **III -** houver compatibilidade entre as atividades desenvolvidas no estágio e aquelas previstas no TCE.
@@ -116,9 +119,9 @@ No caso de cursos presenciais, os horários em que serão desenvolvidas as ativi
 
 O TCE deverá conter a qualificação das partes, o plano de estágio, as condições e as cláusulas para sua realização, bem como as assinaturas das partes.
 
-## CAPÍTULO II
+### CAPÍTULO II
 
-### DO REGULAMENTO GERAL DE ESTÁGIOS
+#### DO REGULAMENTO GERAL DE ESTÁGIOS
 
 #### Art. 10
 
@@ -160,13 +163,14 @@ O RGE é aprovado pelo Conselho de Ensino, Pesquisa e Extensão (Consepe) do IFP
 
 **Parágrafo único.** As alterações no RGE seguem o mesmo trâmite da aprovação.
 
-## CAPÍTULO III
+### CAPÍTULO III
 
-### DO ESTAGIÁRIO
+#### DO ESTAGIÁRIO
 
 #### Art. 18
 
 O estudante, ou seu representante legal, definirá em comum acordo com o IFPR e a UCE a jornada de estágio, a qual deverá constar no TCE, ser compatível com as atividades acadêmicas e não ultrapassar:
+
 - **I -** 4 (quatro) horas diárias e 20 (vinte) horas semanais, no caso de estudantes de educação especial e dos anos finais do ensino fundamental, na modalidade profissional de educação de jovens e adultos;
 - **II -** 6 (seis) horas diárias e 30 (trinta) horas semanais, no caso de estudantes do ensino superior, da educação profissional de nível médio e do ensino médio regular.
 
@@ -179,6 +183,7 @@ O estudante, ou seu representante legal, definirá em comum acordo com o IFPR e 
 #### Art. 19
 
 São responsabilidades do estagiário:
+
 - **I -** iniciar o estágio em acordo com as normas do PPC, do RGE e desta resolução, sob pena de não aproveitamento da carga horária;
 - **II -** cumprir as cláusulas do TCE;
 - **III -** zelar pelo nome do IFPR e da UCE;
@@ -190,6 +195,7 @@ São responsabilidades do estagiário:
 #### Art. 20
 
 É assegurado ao estagiário:
+
 - **I -** a redução da carga horária pelo menos à metade, segundo estipulado no TCE, nos períodos de avaliação;
 - **II -** período de recesso de 30 (trinta) dias sempre que o estágio tenha duração igual ou superior a 1 (um) ano, ou de forma proporcional nos casos de duração inferior, sendo a concessão preferencialmente no período de férias acadêmicas e com remuneração quando o estagiário receber bolsa ou outra forma de contraprestação;
 - **III -** promoção de cuidados relativos à saúde e a segurança no trabalho, sendo a implementação de responsabilidade da UCE;
@@ -199,13 +205,14 @@ São responsabilidades do estagiário:
 
 **Parágrafo único.** Para que o estudante possa se beneficiar da redução da carga horária, conforme inciso I, deverá apresentar cronograma de atividades avaliativas à UCE em cada período letivo, com ciência do professor orientador ou coordenador do curso.
 
-## CAPÍTULO IV
+### CAPÍTULO IV
 
-### DO CAMPO DE ESTÁGIO
+#### DO CAMPO DE ESTÁGIO
 
 #### Art. 21
 
 Constituem campo de estágio as entidades de direito privado, os órgãos de administração pública direta, autárquica e fundacional de qualquer dos Poderes da União, dos Estados, do Distrito Federal e dos Municípios, bem como profissionais liberais de nível superior e devidamente registrados em seus respectivos conselhos de fiscalização profissional, desde que apresentem condições para:
+
 - **I -** planejamento e execução conjunta das atividades de estágio;
 - **II -** avaliação e aprofundamento dos conhecimentos teórico-práticos de campo específico de trabalho;
 - **III -** vivência efetiva de situações concretas de vida e trabalho, dentro do campo profissional.
@@ -227,11 +234,13 @@ As UCE serão cadastradas pelo IFPR como campo de estágio.
 #### Art. 23
 
 O convênio de estágio, instrumento jurídico apropriado que visa o estreitamento institucional entre o IFPR e os parceiros de estágio, será formalizado quando:
+
 - **I -** se tratar de agente de integração;
 - **II -** a UCE pública ou privada exigi-lo previamente para receber os estudantes de estágio obrigatório e/ou não obrigatório do IFPR;
 - **III -** a UCE receber a partir de 10 (dez) estudantes simultaneamente do IFPR para estágio obrigatório, conforme controle efetuado pela Serc.
 
 **§ 1º** No contexto do inciso III, tratando-se de UCE:
+
 - **I -** privada, se não houver autorização para formalização de termo de convênio, o IFPR não excederá o quantitativo de estudantes;
 - **II -** pública, poderá o demandante, após recusa administrativa, encaminhar consulta à Saee/Proens para verificar a possibilidade de adequação do quantitativo de estudantes, que a analisará sob os aspectos de viabilidade, interesse institucional e coerência com os princípios pedagógicos do IFPR.
 
@@ -244,6 +253,7 @@ Quando o IFPR figurar como UCE, somente será formalizado convênio de estágio 
 #### Art. 25
 
 Para os convênios de estágio, os processos originados pelos demandantes deverão:
+
 - **I -** seguir as orientações e modelos disponibilizados pela Saee/Proens;
 - **II -** possuir termo de responsabilidade do coordenador do convênio;
 - **III -** possuir documentos de comprovação de regularidade da UCE e dos seus representantes legais;
@@ -255,14 +265,15 @@ Para os convênios de estágio, os processos originados pelos demandantes dever�
 #### Art. 26
 
 Compete às UCE, independente de convênio, e ainda que intermediada por agentes de integração:
+
 - **I -** celebrar TCE com o IFPR e o estudante, ou seu responsável legal, zelando por seu cumprimento;
 - **II -** ofertar instalações que tenham condições de proporcionar ao estudante atividades de aprendizagem social, profissional e cultural;
 - **III -** ofertar estágio para estudantes selecionados de comum acordo com o IFPR, para desenvolver atividades relacionadas com o curso ao qual pertencem;
 - **IV -** promover cuidados relativos à saúde;
 - **V -** promover cuidados relativos à segurança no trabalho, fornecendo os equipamentos necessários, bem como orientando e fiscalizando o seu uso;
 - **VI -** indicar funcionário/servidor do seu quadro de pessoal para atender o desenvolvimento do estudante, supervisionando no máximo 10 (dez) estagiários simultaneamente, com:
-- **a)** formação ou experiência profissional na área de conhecimento do curso do estagiário;
-- **b)** atuação no mesmo local onde se realiza o estágio.
+  - **a)** formação ou experiência profissional na área de conhecimento do curso do estagiário;
+  - **b)** atuação no mesmo local onde se realiza o estágio.
 - **VII -** contratar Seguro de Cobertura de Acidentes Pessoais para os estágios não obrigatórios;
 - **VIII -** contratar Seguro de Cobertura de Acidentes Pessoais para os estágios obrigatórios quando acordado com a IES em TCE ou convênio de estágio;
 - **IX -** proporcionar ao IFPR condições para acompanhamento, orientação e avaliação das atividades de estágio do estudante, sem prévio aviso;
@@ -283,9 +294,9 @@ Para os estágios obrigatórios, o IFPR contratará Seguro de Cobertura de Acide
 
 **Parágrafo único.** Por conveniência ou oportunidade, o IFPR poderá estender a cobertura do seguro para o estágio não obrigatório.
 
-## CAPÍTULO V
+### CAPÍTULO V
 
-### DA EQUIVALÊNCIA
+#### DA EQUIVALÊNCIA
 
 #### Art. 29
 
@@ -298,6 +309,7 @@ O estágio não obrigatório poderá ser considerado parte das atividades comple
 #### Art. 30
 
 O estudante do IFPR que exercer atividade profissional correlata ao seu curso poderá valer-se de tais atividades para efeitos de realização do seu estágio obrigatório, desde que atendam aos requisitos do PPC, do RGE, desta resolução e enquadre-se entre um dos seguintes casos:
+
 - **I -** empregado registrado, empresário formal, profissional liberal ou autônomo;
 - **II -** servidor público ou empregado público;
 - **III -** atuante oficialmente em programas de monitoria, de incentivo à pesquisa científica ou ao desenvolvimento tecnológico;
@@ -321,20 +333,21 @@ Os estudantes que realizarem estágio fora do país dentro de programas de inter
 
 O servidor do IFPR tem direito a requisitar à chefia imediata declaração com descritivo das atividades laborais para equivalência de estágio nos cursos do IFPR ou em outra instituição pública ou privada, sendo o prazo para emissão não superior a 5 (cinco) dias úteis.
 
-## CAPÍTULO VI
+### CAPÍTULO VI
 
-### DO DESLIGAMENTO
+#### DO DESLIGAMENTO
 
 #### Art. 33
 
 O desligamento do estudante IFPR da UCE ocorrerá:
+
 - **I -** automaticamente após encerrado o prazo fixado no TCE;
 - **II -** antes do período previsto no TCE nos seguintes casos:
-- **a)** por iniciativa do estudante;
-- **b)** por iniciativa da UCE;
-- **c)** por iniciativa da instituição de ensino, quando a UCE deixar de cumprir obrigações previstas no TCE, nesta resolução ou no convênio de estágio;
-- **d)** por iniciativa da instituição de ensino, quando ocorrer o trancamento da matrícula, o abandono do curso, o desligamento antecipado, a transferência ou a conclusão do curso, houver baixo rendimento no curso, não houver frequência regular ou situações que prejudiquem a formação em campo de estágio;
-- **e)** quando o convênio de estágio celebrado entre o IFPR e a UCE ou entre o IFPR e o agente de integração for rescindido ou encerrado.
+  - **a)** por iniciativa do estudante;
+  - **b)** por iniciativa da UCE;
+  - **c)** por iniciativa da instituição de ensino, quando a UCE deixar de cumprir obrigações previstas no TCE, nesta resolução ou no convênio de estágio;
+  - **d)** por iniciativa da instituição de ensino, quando ocorrer o trancamento da matrícula, o abandono do curso, o desligamento antecipado, a transferência ou a conclusão do curso, houver baixo rendimento no curso, não houver frequência regular ou situações que prejudiquem a formação em campo de estágio;
+  - **e)** quando o convênio de estágio celebrado entre o IFPR e a UCE ou entre o IFPR e o agente de integração for rescindido ou encerrado.
 
 **§ 1º** O RGE disciplinará os procedimentos para aferir os casos elencados no inciso II.
 
@@ -352,9 +365,9 @@ O cômputo de horas de estágio, obrigatório e não obrigatório, ocorre pela e
 
 **§ 2º** A data para entrega do relatório final é de até 30 (trinta) dias após a conclusão do estágio ou até 15 (quinze) dias antes da data de conclusão do curso, o que ocorrer primeiro.
 
-## CAPÍTULO VII
+### CAPÍTULO VII
 
-### DA ORIENTAÇÃO, SUPERVISÃO E AVALIAÇÃO
+#### DA ORIENTAÇÃO, SUPERVISÃO E AVALIAÇÃO
 
 #### Art. 36
 
@@ -371,6 +384,7 @@ A orientação do estágio é considerada atividade de ensino, devendo constar n
 #### Art. 38
 
 A orientação de estágio se dará em conformidade com as seguintes modalidades:
+
 - **I -** orientação direta: direcionamento e acompanhamento do estágio por meio de aulas, observação contínua e direta das atividades desenvolvidas nas UCE ao longo de todo o processo pelo professor orientador e reuniões com os profissionais supervisores;
 - **II -** orientação semidireta: direcionamento e acompanhamento do estágio por meio de aulas, observação periódica das atividades desenvolvidas nas UCE ao longo de todo o processo pelo professor orientador e reuniões com os profissionais supervisores;
 - **III -** orientação indireta: direcionamento e acompanhamento do estágio por meio de aulas, observação esporádica, ocorrendo ao menos uma vez por semestre, das atividades desenvolvidas nas UCE pelo professor orientador e reuniões com os profissionais supervisores.
@@ -380,6 +394,7 @@ A orientação de estágio se dará em conformidade com as seguintes modalidades
 #### Art. 39
 
 O planejamento, acompanhamento e avaliação do estágio:
+
 - **I -** cabem ao professor orientador e ao supervisor;
 - **II -** devem ocorrer de forma sistemática e contínua;
 - **III -** integram a dinâmica do processo de estágio;
@@ -399,9 +414,9 @@ O estudante na modalidade de Educação a Distância (EaD) terá as mesmas prerr
 
 A supervisão do estudante de outra instituição de ensino que realiza estágio não obrigatório no IFPR ocorrerá conforme normas complementares elaboradas pela Progepe.
 
-## CAPÍTULO VIII
+### CAPÍTULO VIII
 
-### DOS ESTUDANTES COM DEFICIÊNCIA
+#### DOS ESTUDANTES COM DEFICIÊNCIA
 
 #### Art. 42
 
@@ -423,13 +438,14 @@ Poderá haver, desde que previsto e justificado no PPC ou RGE, forma alternativa
 
 Os estudantes surdos e/ou deficientes auditivos, usuários de Libras (Língua Brasileira de Sinais) como meio de comunicação, poderão entregar seu relatório na modalidade bilíngue.
 
-## CAPÍTULO IX
+### CAPÍTULO IX
 
-### DA ADMINISTRAÇÃO
+#### DA ADMINISTRAÇÃO
 
 #### Art. 47
 
 A organização administrativa dos estágios do IFPR se dará de forma sistêmica e descentralizada, com os seguintes componentes:
+
 - **I -** Saee/Proens;
 - **II -** Serc;
 - **III -** Coordenadores de curso;
@@ -444,6 +460,7 @@ Os campi do IFPR deverão buscar o fortalecimento das relações de estágio e d
 #### Art. 49
 
 Compete à Saee/Proens:
+
 - **I -** construir as políticas de desenvolvimento, acompanhamento e avaliação do estágio, em consonância com as normativas da Pró-reitoria de Ensino (Proens);
 - **II -** manter relacionamento com as UCE e os agentes de integração;
 - **III -** realizar o controle administrativo geral dos estágios;
@@ -458,6 +475,7 @@ Compete à Saee/Proens:
 #### Art. 50
 
 Compete à Serc:
+
 - **I -** colaborar com a construção das políticas de desenvolvimento, acompanhamento e avaliação do estágio, em consonância com as normativas da Pró-reitoria de Ensino;
 - **II -** prospectar campos de estágio junto à comunidade local com o apoio do colegiado do curso;
 - **III -** manter relacionamento com as UCE e os agentes de integração;
@@ -473,6 +491,7 @@ Compete à Serc:
 #### Art. 51
 
 Compete aos coordenadores de curso:
+
 - **I -** manter relacionamento com as UCE e os agentes de integração;
 - **II -** definir, em conjunto com os professores orientadores, antecipadamente, os locais adequados para realização dos estágios do curso, por meio de visitas às UCE;
 - **III -** quando solicitado, enviar à Serc listagem ou documentos dos estudantes que realizam ou irão realizar estágio;
@@ -482,12 +501,14 @@ Compete aos coordenadores de curso:
 #### Art. 52
 
 Compete aos colegiados de curso:
+
 - **I -** acompanhar e fazer cumprir as normas do RGE;
 - **II -** articular as componentes curriculares com o desenvolvimento do estágio.
 
 #### Art. 53
 
 Compete aos professores orientadores:
+
 - **I -** acompanhar os estagiários sob sua orientação;
 - **II -** manter relacionamento com as UCE e os agentes de integração;
 - **III -** inspecionar o campo de estágio e realizar o registro em documento próprio;
@@ -497,6 +518,7 @@ Compete aos professores orientadores:
 #### Art. 54
 
 Compete à Progepe, para estágios remunerados quando o IFPR figurar como UCE:
+
 - **I -** o planejamento e acompanhamento administrativo dos estagiários;
 - **II -** a aprovação dos estagiários para estagiar no IFPR;
 - **III -** manter relacionamento com as instituições de ensinos demandantes;
@@ -506,9 +528,9 @@ Compete à Progepe, para estágios remunerados quando o IFPR figurar como UCE:
 
 Fica delegada a assinatura indicada no inciso IV do art. 48 ao chefe da Serc, independente de portaria, que entre suas prerrogativas deve representar o campus acerca dos estágios dos estudantes nos documentos elencados no inciso.
 
-## CAPÍTULO X
+### CAPÍTULO X
 
-### DAS DISPOSIÇÕES TRANSITÓRIAS
+#### DAS DISPOSIÇÕES TRANSITÓRIAS
 
 #### Art. 56
 
@@ -530,9 +552,9 @@ Os campi do IFPR e as Pró-reitorias se adaptarão às normas constantes nesta r
 
 **§ 2º** O RGE deverá ser elaborado ou revisado em acordo com esta resolução no prazo máximo estabelecido no caput do artigo, sendo, após a sua aprovação pelo Consepe, automaticamente revogados os regulamentos de estágios dos PPC.
 
-## CAPÍTULO XI
+### CAPÍTULO XI
 
-### DAS DISPOSIÇÕES GERAIS
+#### DAS DISPOSIÇÕES GERAIS
 
 #### Art. 60
 

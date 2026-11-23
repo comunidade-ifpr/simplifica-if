@@ -98,6 +98,7 @@ São princípios de avaliação no IFPR:
 - **XII –** a predominância dos aspectos qualitativos sobre os quantitativos;
 - **XIII –** a prevalência do desenvolvimento do estudante ao longo do período letivo;
 - **XIV –** a constante presença e imbricação da objetividade e subjetividade nas relações pedagógicas e avaliativas, dada sua coexistência nas relações humanas.
+
 #### Art. 6º
 
 O processo de avaliação deve considerar:
@@ -107,6 +108,7 @@ O processo de avaliação deve considerar:
 - **III –** a visão do estudante como um sujeito ativo do processo ensino-aprendizagem com sua antecipada ciência de o que será avaliado, com as regras, critérios e instrumentos estabelecidos de forma clara e democrática;
 - **IV –** a autoavaliação por parte dos estudantes, dos docentes e da instituição;
 - **V –** a definição de estratégias para a melhoria do processo ensino-aprendizagem mediante a discussão com os segmentos da comunidade acadêmica acerca dos resultados obtidos nos variados momentos do processo de avaliação.
+
 #### Art. 7º
 
 O processo de avaliação de ensino-aprendizagem será:
@@ -186,7 +188,11 @@ A recuperação de estudos como parte do processo ensino-aprendizagem é obrigat
 
 **§ 2º** A Recuperação Paralela, que se constitui como parte integrante do processo de ensino aprendizagem em busca da superação de dificuldades encontradas pelo estudante e deve envolver a recuperação de conteúdos e conceitos a ser realizada por meio de aulas e instrumentos definidos pelo docente em horário diverso das disciplinas/ unidades curriculares/ componentes curriculares/ áreas cursadas pelo estudante, podendo ser presencial e/ou não presencial.
 
-- a) Serão ofertados estudos de recuperação paralela a todos os estudantes, principalmente aos que apresentarem baixo rendimento, tão logo sejam identificadas as dificuldades no processo ensino aprendizagem. 1. A organização dos horários é de competência de cada docente em conjunto com a equipe pedagógica e gestora do campus, respeitadas as normativas institucionais. 2. É responsabilidade do professor comunicar a oferta da recuperação paralela ao estudante, bem como, é responsabilidade do estudante participar das atividades propostas. 3. Recuperação paralela implica em novos registros acadêmicos e, quando constatada a apropriação dos conteúdos estudados, ocorrerá a mudança do resultado.
+- a) Serão ofertados estudos de recuperação paralela a todos os estudantes, principalmente aos que apresentarem baixo rendimento, tão logo sejam identificadas as dificuldades no processo ensino aprendizagem.
+  - 1\. A organização dos horários é de competência de cada docente em conjunto com a equipe pedagógica e gestora do campus, respeitadas as normativas institucionais.
+  - 2\. É responsabilidade do professor comunicar a oferta da recuperação paralela ao estudante, bem como, é responsabilidade do estudante participar das atividades propostas.
+  - 3\. Recuperação paralela implica em novos registros acadêmicos e, quando constatada a apropriação dos conteúdos estudados, ocorrerá a mudança do resultado.
+
 ## TÍTULO VI
 
 ### DO CONSELHO DE CLASSE
@@ -237,6 +243,7 @@ A aprovação dos estudantes ocorrerá considerando os seguintes critérios:
 
 - **I –** obtenção de conceito A, B ou C na disciplina/ unidade curricular/ componente curricular/ área e frequência igual ou superior a 75% (setenta e cinco por cento) da carga horária total no período letivo dos cursos técnicos de nível médio;
 - **II –** obtenção de conceito A, B ou C na disciplina/ unidade curricular/ componente curricular/ área e frequência igual ou superior a 75% (setenta e cinco por cento) da carga horária total na disciplina/ unidade curricular/ componente curricular/ área dos cursos de graduação, de pós-graduação e de qualificação profissional.
+
 #### Art. 17.
 
 Cabe aos docentes, Coordenadores de Curso, Coordenador de Ensino, Seção Pedagógica e de Assuntos Estudantis e Direção de Ensino dar ciência do processo avaliativo aos estudantes e aos pais ou responsáveis pelos estudantes menores de idade.
@@ -293,6 +300,6 @@ Esta Resolução entra em vigor nesta data, com ampla publicação e divulgaçã
 
 <!-- /fora-do-ato -->
 
-#### ODACIR ANTONIO ZANATTA
+**ODACIR ANTONIO ZANATTA**
 
-#### PRESIDENTE
+PRESIDENTE

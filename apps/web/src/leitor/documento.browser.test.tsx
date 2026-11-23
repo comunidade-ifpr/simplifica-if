@@ -2,15 +2,16 @@
  * O `Documento` e o `useCarga` no Chromium, sem servidor: um documento de vários blocos (espaços
  * reservados, rolagem até o trecho, ancoragem da rolagem enquanto o texto de cima aparece e
  * `content-visibility`), a imagem do Markdown que não se carrega, os links que não são `http`, e a
- * leitura que termina entre a renderização e o efeito.
+ * leitura que termina entre a renderização e o efeito; e o índice da norma (`Sumario`) ao lado do texto.
  */
 import type { DadosDocumento } from "@simplifica-if/contratos-app";
 import { createRoot } from "react-dom/client";
 import { afterEach, expect, it } from "vite-plus/test";
-import { page } from "vite-plus/test/browser";
+import { page, userEvent } from "vite-plus/test/browser";
 import "../index.css";
 import { ContextoMemoria, MemoriaLeitor, useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
+import { Sumario } from "./Sumario.tsx";
 import { buscarNoTexto, visivel } from "./busca.ts";
 import { faixasDoRealce, textosDe } from "./realce.ts";
 
@@ -20,9 +21,9 @@ afterEach(() => {
   delete window.simplifica;
 });
 
-function montar(elemento: React.ReactNode, altura = 400) {
+function montar(elemento: React.ReactNode, altura = 400, largura = 500) {
   const conteiner = document.createElement("div");
-  conteiner.style.cssText = `height:${altura}px;width:500px;overflow-y:auto`;
+  conteiner.style.cssText = `height:${altura}px;width:${largura}px;overflow-y:auto`;
   document.body.append(conteiner);
   const raiz = createRoot(conteiner);
   raiz.render(elemento);
@@ -59,6 +60,7 @@ function documentoLongo(): DadosDocumento {
     path: "x.md",
     markdown: linhas.join("\n"),
     ancoras,
+    sumario: [],
     alvo: null,
     datas: null,
   };
@@ -250,4 +252,139 @@ it("busca: o que está num <details> fechado não conta, salvo o <summary>", () 
   } finally {
     raiz.remove();
   }
+});
+
+/** Uma norma de três títulos (o segundo com dois capítulos, o primeiro deles com duas seções) e nove artigos longos. */
+function normaComDivisoes(): Pick<DadosDocumento, "markdown" | "ancoras" | "sumario"> & { link: string } {
+  const linhas: string[] = [];
+  const ancoras: Array<DadosDocumento["ancoras"][number]> = [];
+  const sumario: Array<DadosDocumento["sumario"][number]> = [];
+  let artigo = 0;
+  const divisao = (tipo: "titulo" | "capitulo" | "secao", rotulo: string, nome: string, nivel: number) => {
+    sumario.push({ tipo, rotulo, nome, nivel, linha: linhas.length + 1, linha_fim: linhas.length + 3, artigos: null });
+    linhas.push(`${"#".repeat(nivel + 2)} ${rotulo}`, "", `${"#".repeat(nivel + 3)} ${nome}`, "");
+  };
+  const artigos = (quantos: number) => {
+    for (let i = 0; i < quantos; i += 1) {
+      artigo += 1;
+      ancoras.push({
+        id: `art${artigo}`,
+        rotulo: `Art. ${artigo}`,
+        tipo: "artigo",
+        pai: null,
+        linha_inicio: linhas.length + 1,
+        linha_fim: linhas.length + 3,
+        revogado: false,
+      });
+      linhas.push(`#### Art. ${artigo}`, "", `Caput do artigo ${artigo}. ${"texto ".repeat(250)}`, "");
+    }
+  };
+  divisao("titulo", "TÍTULO I", "DAS FINALIDADES", 0);
+  artigos(2);
+  divisao("titulo", "TÍTULO II", "DO ACESSO", 0);
+  divisao("capitulo", "CAPÍTULO I", "DAS FORMAS DE ACESSO", 1);
+  artigos(1);
+  divisao("secao", "Seção I", "Das Vagas", 2);
+  artigos(1);
+  divisao("secao", "Seção II", "Do Reingresso", 2);
+  artigos(1);
+  divisao("capitulo", "CAPÍTULO II", "DO REGISTRO", 1);
+  artigos(2);
+  divisao("titulo", "TÍTULO III", "DISPOSIÇÕES FINAIS", 0);
+  artigos(2);
+  return { markdown: linhas.join("\n"), ancoras, sumario, link: "ifpr://norma/teste/res/2026/1" };
+}
+
+it("índice da norma: rola até o item, marca o que está em leitura, abre as seções do capítulo e vai ao artigo", async () => {
+  const documento = normaComDivisoes();
+  const conteiner = montar(
+    <article className="@container flex gap-6">
+      <div className="min-w-0 flex-1">
+        <Documento documento={documento} alvo={null} aoAbrirLink={() => {}} rotulo="Texto da norma" />
+      </div>
+      <aside className="sticky top-0 w-72 shrink-0 self-start">
+        <Sumario documento={documento} modo="lateral" />
+      </aside>
+    </article>,
+    400,
+    1200,
+  );
+  const indice = page.getByRole("navigation", { name: "Neste documento" });
+  const distancia = (id: string) =>
+    document.getElementById(id)!.getBoundingClientRect().top - conteiner.getBoundingClientRect().top;
+  const item = (linha: number) => `sumario-${linha}`;
+  const [titulo1, titulo2, capitulo1, secao1, , , titulo3] = documento.sumario;
+
+  // dois níveis de início; as seções ficam para quando o capítulo delas estiver em leitura
+  await expect.element(indice.getByRole("button", { name: /Título I · DAS FINALIDADES/ })).toBeVisible();
+  await expect.element(indice.getByRole("button", { name: /Cap\. I · DAS FORMAS DE ACESSO/ })).toBeVisible();
+  expect(indice.getByRole("button", { name: /Seção I/ }).elements()).toHaveLength(0);
+  // os cabeçalhos de divisão levam a classe, o rótulo e o nome
+  await expect.poll(() => document.getElementById(item(titulo1!.linha))?.className).toBe("divisao");
+  expect(document.getElementById(item(titulo1!.linha))?.nextElementSibling?.className).toBe("divisao");
+
+  // o último título: o texto rola até ele, e o índice o marca
+  await indice.getByRole("button", { name: /Título III/ }).click();
+  await expect.poll(() => Math.abs(distancia(item(titulo3!.linha)))).toBeLessThan(40);
+  await expect
+    .poll(() =>
+      indice
+        .getByRole("button", { name: /Título III/ })
+        .element()
+        .getAttribute("aria-current"),
+    )
+    .toBe("location");
+
+  // o capítulo com seções: elas aparecem no índice; a seção marcada quando o texto chega nela
+  await indice.getByRole("button", { name: /Cap\. I · DAS FORMAS DE ACESSO/ }).click();
+  await expect.poll(() => Math.abs(distancia(item(capitulo1!.linha)))).toBeLessThan(40);
+  await expect.element(indice.getByRole("button", { name: /Seção I · Das Vagas/ })).toBeVisible();
+  await indice.getByRole("button", { name: /Seção I · Das Vagas/ }).click();
+  await expect.poll(() => Math.abs(distancia(item(secao1!.linha)))).toBeLessThan(40);
+  await expect
+    .poll(() =>
+      indice
+        .getByRole("button", { name: /Seção I · Das Vagas/ })
+        .element()
+        .getAttribute("aria-current"),
+    )
+    .toBe("location");
+  expect(document.getElementById(item(titulo2!.linha))).not.toBeNull();
+
+  // "Ir ao art.": o artigo no alto; o que a norma não tem, avisado
+  const campo = indice.getByRole("textbox", { name: "Ir ao artigo" });
+  await campo.fill("8");
+  await userEvent.keyboard("{Enter}");
+  await expect.poll(() => Math.abs(distancia("art8"))).toBeLessThan(40);
+  await campo.fill("99");
+  await userEvent.keyboard("{Enter}");
+  await expect.element(indice.getByText("Não há art. 99 neste texto.")).toBeVisible();
+});
+
+it("norma sem divisões: o índice é a grade com os números dos artigos", async () => {
+  const { markdown, ancoras, link } = normaComDivisoes();
+  const documento = { markdown, ancoras, link, sumario: [] };
+  const conteiner = montar(
+    <article className="@container flex gap-6">
+      <div className="min-w-0 flex-1">
+        <Documento documento={documento} alvo={null} aoAbrirLink={() => {}} rotulo="Texto da norma" />
+      </div>
+      <aside className="sticky top-0 w-72 shrink-0 self-start">
+        <Sumario documento={documento} modo="lateral" />
+      </aside>
+    </article>,
+    400,
+    1200,
+  );
+  const indice = page.getByRole("navigation", { name: "Neste documento" });
+  expect(indice.getByRole("textbox").elements()).toHaveLength(0);
+  await indice.getByRole("button", { name: "Artigo 7", exact: true }).click();
+  await expect
+    .poll(() =>
+      Math.abs(document.getElementById("art7")!.getBoundingClientRect().top - conteiner.getBoundingClientRect().top),
+    )
+    .toBeLessThan(40);
+  await expect
+    .poll(() => indice.getByRole("button", { name: "Artigo 7", exact: true }).element().getAttribute("aria-current"))
+    .toBe("location");
 });

@@ -154,6 +154,7 @@ Quando o texto de um stub entrar em `normas/`, remova a entrada de `stubs.yaml`:
 `packages/kb/src/normas/estrutura.ts` lê o corpo com `remark-parse` + `remark-gfm` e extrai os dispositivos com ID canônico; `validar_base.ts` acusa o que fugir destas convenções:
 
 - **Regiões.** `## Resumo` vai até o primeiro `---` ou o próximo `##`. Seções `##` editoriais (Notas, Observações, Referências, análises) ficam fora do texto normativo. `## Texto ...` e cabeçalhos estruturais (`TÍTULO`, `CAPÍTULO`, `ANEXO`, `REGULAMENTO`...) abrem ou continuam o texto normativo.
+- **Divisões** (Livro, Parte, Título, Capítulo, Seção, Subseção): um cabeçalho com o rótulo como está no texto oficial (`TÍTULO III`, `CAPÍTULO II-A`, `Seção Única`), no nível do tipo da divisão, qualquer que seja a divisão de cima: `##` para Livro, Parte e Título; `###` para Capítulo; `####` para Seção; `#####` para Subseção. O nome da divisão ("DAS FORMAS DE ACESSO") vem num cabeçalho só dele, logo depois do rótulo e um nível abaixo (`### CAPÍTULO I` e `#### DAS FORMAS DE ACESSO`), inteiro numa linha; também vale no próprio cabeçalho do rótulo, se o arquivo já o traz assim (`### CAPÍTULO I – DAS DISPOSIÇÕES GERAIS`, `#### Seção I Da Frequência`). A hierarquia vem do tipo, não do nível do cabeçalho (o `####` é do artigo): é dela que sai o índice "Neste documento" do leitor (`packages/kb/src/normas/sumario.ts`), com a faixa de artigos de cada divisão. Numeração que o texto oficial pula ou repete (um Título IV que não existe) fica como está.
 - **Artigo:** cabeçalho de nível 4 só com o rótulo (`#### Art. 4º-A.`); o caput vem no parágrafo seguinte. O rótulo fica como está no texto oficial (`Art. 5o`, `ARTIGO 1º`).
 - **Parágrafo:** parágrafo iniciado por `**§ 1º**` ou `**Parágrafo único.**`, um por linha, com linha em branco antes.
 - **Inciso:** item de lista iniciado por `**I –**` (com letra: `**IV – A -**`); **alínea:** item `a)`, aninhado no inciso ou logo depois dele; **item:** lista numerada dentro de alínea ou de anexo.
@@ -167,6 +168,8 @@ Quando o texto de um stub entrar em `normas/`, remova a entrada de `stubs.yaml`:
 IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`, `#art26-par9B`, `#art9-ivA`, `#art5-al-a`, `#art4-i-al-a-item1`, `#anexo1`, `#anexo1-item3`, `#anexo1-art5`, `#secao1`.
 
 **Compilação e ato.** Os dispositivos da compilação (`br/lei/1996/9394~compilacao`) têm o ID do arquivo; na consulta pelo ato (`br/lei/1996/9394#art36B`), o texto integral prevalece e o dispositivo da compilação só entra se o integral não o tiver (hoje todos os trechos da compilação estão no integral).
+
+**Legibilidade.** Linha em branco antes e depois de cabeçalho, antes e depois de lista e entre parágrafos; um parágrafo (`§`) ou inciso por linha, nunca colado no fim do dispositivo anterior; alínea recuada dois espaços sob o inciso dela. Um `#` solto no fim de uma linha é resto de cabeçalho da conversão e sai (não conta como palavra).
 
 **Saneamento.** Mudanças de marcação não podem mudar palavras: `packages/kb/src/normas/saneamento.test.ts` compara, sem a marcação Markdown, a sequência de palavras de cada norma com a do commit anterior ao saneamento, e `estrutura.test.ts` confere que os segmentos do parser reconstituem o corpo.
 

@@ -32,7 +32,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -15.476,
+      "pontuacao": -15.492,
       "origem": "busca-textual"
     },
     {
@@ -64,7 +64,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -13.585,
+      "pontuacao": -13.602,
       "origem": "busca-textual"
     },
     {
@@ -96,7 +96,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -12.832,
+      "pontuacao": -12.842,
       "origem": "busca-textual"
     },
     {
@@ -128,7 +128,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -12.302,
+      "pontuacao": -12.312,
       "origem": "busca-textual"
     },
     {
@@ -155,12 +155,12 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-        "linha_inicio": 336,
-        "linha_fim": 336
+        "linha_inicio": 341,
+        "linha_fim": 341
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -12.024,
+      "pontuacao": -12.038,
       "origem": "busca-textual"
     },
     {
@@ -174,23 +174,25 @@
         "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md"
       },
       "dispositivo": {
-        "id": "ifpr/consup/res/2024/190#art67",
-        "arquivo_id": "ifpr/consup/res/2024/190#art67",
-        "tipo": "artigo",
-        "rotulo": "Art. 67.",
-        "caput": [],
-        "texto": "Art. 67. Estágio é ato educativo escolar supervisionado e orientado, desenvolvido no ambiente de trabalho, que propicia experiência acadêmica e profissional na área de formação do estudante, em consonância com o perfil profissional descrito no PPC, e que prepara o estudante para o exercício da cidadania e para o mundo do trabalho. Parágrafo único. O estágio poderá ser obrigatório ou não obrigatório, de acordo com as especificidades de cada curso.",
+        "id": "ifpr/consup/res/2024/190#art67-parunico",
+        "arquivo_id": "ifpr/consup/res/2024/190#art67-parunico",
+        "tipo": "paragrafo",
+        "rotulo": "Parágrafo único",
+        "caput": [
+          "Art. 67. Estágio é ato educativo escolar supervisionado e orientado, desenvolvido no ambiente de trabalho, que propicia experiência acadêmica e profissional na área de formação do estudante, em consonância com o perfil profissional descrito no PPC, e que prepara o estudante para o exercício da cidadania e para o mundo do trabalho."
+        ],
+        "texto": "Parágrafo único. O estágio poderá ser obrigatório ou não obrigatório, de acordo com as especificidades de cada curso.",
         "subordinados": [],
         "notas": [],
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-        "linha_inicio": 535,
-        "linha_fim": 537
+        "linha_inicio": 577,
+        "linha_fim": 577
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -11.555,
+      "pontuacao": -11.573,
       "origem": "busca-textual"
     },
     {
@@ -222,7 +224,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -10.364,
+      "pontuacao": -10.377,
       "origem": "busca-textual"
     },
     {
@@ -249,12 +251,12 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-        "linha_inicio": 363,
-        "linha_fim": 363
+        "linha_inicio": 368,
+        "linha_fim": 368
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -9.65,
+      "pontuacao": -9.662,
       "origem": "busca-textual"
     },
     {
@@ -282,12 +284,12 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-        "linha_inicio": 209,
-        "linha_fim": 209
+        "linha_inicio": 216,
+        "linha_fim": 216
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -9.029,
+      "pontuacao": -9.04,
       "origem": "busca-textual"
     },
     {
@@ -315,12 +317,12 @@
         "revogado": false,
         "vetado": false,
         "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-        "linha_inicio": 212,
-        "linha_fim": 212
+        "linha_inicio": 219,
+        "linha_fim": 219
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -8.517,
+      "pontuacao": -8.527,
       "origem": "busca-textual"
     }
   ]

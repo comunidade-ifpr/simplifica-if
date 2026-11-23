@@ -474,6 +474,19 @@
   & h6 {
     margin-top: 1.25em;
   }
+  /* Título, Capítulo, Seção e o nome deles: centralizados na medida do texto, o nome colado ao rótulo. */
+  & .divisao {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    margin-top: 2em;
+    max-width: 68ch;
+    text-align: center;
+  }
+  & .divisao + .divisao {
+    margin-top: 0.15em;
+  }
   & .bloco-documento + .bloco-documento,
   & .espaco-reservado + .bloco-documento,
   & .bloco-documento + .espaco-reservado {

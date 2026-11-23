@@ -50,7 +50,9 @@ Nota técnica da PROENS/IFPR, datada de 29 de outubro de 2025 e assinada eletron
 Trecho central da nota técnica:
 
 > Os processos de abertura de curso, elaboração e ajuste de PPC;
+>
 > Os processos de atualização de PPC;
+>
 > Não deverão incorporar o Atendimento Educacional Especializado (AEE) como componente curricular.
 
 ## Observação de uso na análise de PPC

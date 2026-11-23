@@ -120,7 +120,7 @@ Esta Resolução entra em vigor nesta data, com ampla publicação e divulgaçã
 
 ### ESTATUTO DO INSTITUTO FEDERAL DE EDUCAÇÃO CIÊNCIA E TECNOLOGIA DO PARANÁ
 
-### TÍTULO I — DA INSTITUIÇÃO
+## TÍTULO I — DA INSTITUIÇÃO
 
 #### Art. 2º
 
@@ -136,7 +136,7 @@ O Instituto Federal de Educação, Ciência e Tecnologia do Paraná (IFPR), inst
 
 **§ 5º** A Reitoria, como órgão de administração central, poderá estar instalada em espaço físico distinto de quaisquer campi que integram o IFPR.
 
-#### CAPÍTULO I — DA NATUREZA E DAS FINALIDADES
+### CAPÍTULO I — DA NATUREZA E DAS FINALIDADES
 
 #### Art. 3º
 
@@ -148,7 +148,7 @@ O IFPR rege-se pelos atos normativos mencionados no caput do Art. 2º, pela legi
 - **IV –** Atos dos Órgãos Colegiados;
 - **V –** Atos da Reitoria.
 
-#### CAPÍTULO II — DOS PRINCÍPIOS, DAS FINALIDADES E CARACTERÍSTICAS E DOS OBJETIVOS
+### CAPÍTULO II — DOS PRINCÍPIOS, DAS FINALIDADES E CARACTERÍSTICAS E DOS OBJETIVOS
 
 #### Art. 4º
 
@@ -204,7 +204,7 @@ No desenvolvimento da sua ação acadêmica, o IFPR deverá garantir o mínimo d
 
 **§ 3º** Cada campus do IFPR terá atribuições, condições e prerrogativas equivalentes para uma atuação sistêmica no cumprimento dos percentuais referidos no Caput deste artigo.
 
-### TÍTULO II — DA GESTÃO
+## TÍTULO II — DA GESTÃO
 
 #### Art. 8º
 
@@ -240,9 +240,9 @@ A organização geral do IFPR compreende:
 
 As comissões permanentes são órgãos colegiados dotados de regimentos próprios aprovados pelo Consup que, no âmbito da sua atuação, têm natureza consultiva e/ou normativa, conforme trâmites institucionais e legislação aplicável.
 
-#### CAPÍTULO I — DOS ÓRGÃOS COLEGIADOS
+### CAPÍTULO I — DOS ÓRGÃOS COLEGIADOS
 
-##### Seção I — Do Conselho Superior
+#### Seção I — Do Conselho Superior
 
 #### Art. 11.
 
@@ -305,7 +305,7 @@ Compete ao Consup:
 
 **Parágrafo único.** O Consup reger-se-á por regulamento específico aprovado pelo próprio órgão colegiado.
 
-##### Seção II — Do Colégio de Dirigentes
+#### Seção II — Do Colégio de Dirigentes
 
 #### Art. 13.
 
@@ -330,7 +330,7 @@ Compete ao Codir:
 - **VI –** apreciar os assuntos e documentos de interesse da administração do IFPR a ele submetidos;
 - **VII –** apreciar normas, diretrizes e possíveis documentos que contemplem as condições materiais e relações humanas das/os servidoras/es e das/os estudantes, em atenção à legislação vigente e às orientações do SIPEC.
 
-##### Seção III — Do Conselho de Ensino, Pesquisa e Extensão
+#### Seção III — Do Conselho de Ensino, Pesquisa e Extensão
 
 #### Art. 15.
 
@@ -338,7 +338,7 @@ O Consepe é um órgão consultivo e propositivo da Reitoria no que tange às po
 
 **Parágrafo único.** A composição e as competências do Consepe serão detalhadas e regulamentadas através de resolução do Consup.
 
-##### Seção IV — Do Conselho de Administração e Planejamento
+#### Seção IV — Do Conselho de Administração e Planejamento
 
 #### Art. 16.
 
@@ -346,7 +346,7 @@ O Consap é o órgão normativo, consultivo e propositivo da Reitoria no que tan
 
 **Parágrafo único.** A composição e as competências do Consap serão detalhadas e regulamentadas por meio de resolução do Consup.
 
-##### Seção V — Do Colégio Dirigente do Campus
+#### Seção V — Do Colégio Dirigente do Campus
 
 #### Art. 17.
 
@@ -372,7 +372,7 @@ O CODIC terá a seguinte composição:
 
 **Parágrafo único.** Nos casos em que não houver no Campus oferta de todos os cursos previstos no inciso VII, o quantitativo mínimo de vagas deverá ser preenchido, obrigatoriamente, com um/a representante das/os estudantes de cada curso existente. A(s) vaga(s) remanescente(s) será(ão) preenchida(s) pela(s)/o(s) estudante(s) com maior votação, independente de seu curso, após a classificação das/os discentes mais votadas/os por curso.
 
-#### CAPÍTULO II — DA REITORIA
+### CAPÍTULO II — DA REITORIA
 
 #### Art. 19.
 
@@ -412,19 +412,19 @@ O IFPR tem administração de forma descentralizada, por meio de gestão delegad
 
 **Parágrafo único.** As/Os Diretoras/es Gerais dos campi respondem solidariamente com a/o Reitora/or por seus atos de gestão, no limite da delegação.
 
-##### Seção I — Do Gabinete
+#### Seção I — Do Gabinete
 
 #### Art. 24.
 
 O Gabinete, dirigido por uma/um Chefe nomeada/o pela/o Reitora/or, é responsável por organizar, assistir, coordenar, fomentar e articular a ação política e administrativa da Reitoria.
 
-##### Seção II — Das Assessorias Especiais
+#### Seção II — Das Assessorias Especiais
 
 #### Art. 25.
 
 As/Os Assessoras/es são colaboradoras/es ligadas/os à Reitoria e suas/seus titulares desempenham atividades específicas em programas e projetos, atendendo a necessidades permanentes ou emergentes da Administração Superior, tanto interna como externamente.
 
-##### Seção III — Das Pró-Reitorias e Diretorias Sistêmicas
+#### Seção III — Das Pró-Reitorias e Diretorias Sistêmicas
 
 #### Art. 26.
 
@@ -432,7 +432,7 @@ As Pró-Reitorias e Diretorias Sistêmicas do IFPR deverão ter natureza referen
 
 **Parágrafo Único.** As Pró-Reitorias e Diretorias Sistêmicas serão definidas pela/o Reitora/or eleita/o, após sua posse, publicadas em portaria.
 
-##### Seção IV — Da Auditoria Interna
+#### Seção IV — Da Auditoria Interna
 
 #### Art. 27.
 
@@ -444,13 +444,13 @@ A nomeação, designação, exoneração ou dispensa do Chefe da auditoria inter
 
 **§ 3º** O descumprimento dos requisitos previstos neste artigo impede a nomeação da/o titular da unidade de auditoria interna.
 
-##### Seção V — Da Procuradoria Federal
+#### Seção V — Da Procuradoria Federal
 
 #### Art. 28.
 
 A Procuradoria Federal é o órgão de execução da Procuradoria-Geral Federal responsável pela representação judicial e extrajudicial e pelas atividades de consultoria e assessoramento jurídicos, a apuração da liquidez e certeza dos créditos, de qualquer natureza, inerentes às suas atividades, inscrevendo-os em dívida ativa, para fins de cobrança amigável ou judicial, observada a legislação pertinente. A designação da chefia se dá nos termos da lei.
 
-##### Seção VI — Da Ouvidoria
+#### Seção VI — Da Ouvidoria
 
 #### Art. 29.
 
@@ -517,7 +517,7 @@ A/o indicada/o a ouvidora/or do IFPR deverá atender, no mínimo, a um dos segui
 
 A permanência no cargo de titular da unidade setorial de ouvidoria será de três anos consecutivos, podendo este prazo ser prorrogado, uma única vez, por igual período, nos termos da Portaria CGU nº 1181/2020.
 
-#### CAPÍTULO III — DOS CAMPI
+### CAPÍTULO III — DOS CAMPI
 
 #### Art. 39.
 
@@ -525,9 +525,9 @@ Os campi do IFPR são administrados por Diretoras/es Gerais e têm seu funcionam
 
 **Parágrafo único.** As/Os Diretoras/es Gerais são eleitas/os e nomeadas/os de acordo com o que determina o Art. 13 da Lei n.º 11.892/2008 e suas alterações, para mandato de quatro anos, contados da data da posse, permitida uma recondução.
 
-### TÍTULO III — DO REGIME ACADÊMICO
+## TÍTULO III — DO REGIME ACADÊMICO
 
-#### CAPÍTULO I — DO ENSINO
+### CAPÍTULO I — DO ENSINO
 
 #### Art. 40.
 
@@ -541,13 +541,13 @@ As diretrizes curriculares e a norma didática do IFPR serão fundamentadas em b
 
 As ofertas educacionais do IFPR estão organizadas por meio de cursos de formação inicial e continuada de trabalhadoras/es, da educação profissional técnica de nível médio e da educação superior.
 
-#### CAPÍTULO II — DA EXTENSÃO
+### CAPÍTULO II — DA EXTENSÃO
 
 #### Art. 43.
 
 A extensão é um processo educativo, cultural, político, social, inclusivo, científico e tecnológico que promove, de forma indissociável ao ensino e à pesquisa, a interação entre o IFPR e a sociedade. As ações de extensão são de interação com a sociedade e têm como objetivo a promoção da divulgação de conhecimentos científico, social, artístico e cultural que constituem o patrimônio da humanidade, de maneira inclusiva e reconhecendo os saberes existentes, através da oferta de atividades específicas.
 
-#### CAPÍTULO III — DA PESQUISA E INOVAÇÃO
+### CAPÍTULO III — DA PESQUISA E INOVAÇÃO
 
 #### Art. 44.
 
@@ -565,13 +565,13 @@ As ações de pesquisa, em todos os níveis e modalidades de ensino, contribuem 
 
 A inovação consiste na introdução de novidade ou aperfeiçoamento no ambiente produtivo ou social que resulte em novos produtos, processos ou serviços.
 
-### TÍTULO IV — DA COMUNIDADE ACADÊMICA
+## TÍTULO IV — DA COMUNIDADE ACADÊMICA
 
 #### Art. 48.
 
 A comunidade acadêmica do IFPR é composta pelos corpos discente, docente e técnico-administrativo em educação.
 
-#### CAPÍTULO I — DO CORPO DISCENTE
+### CAPÍTULO I — DO CORPO DISCENTE
 
 #### Art. 49.
 
@@ -585,19 +585,19 @@ O corpo discente do IFPR é constituído por estudantes matriculadas/os nos dive
 
 Somente as/os estudantes com matrícula regular ativa nos cursos técnicos, de graduação e pós-graduação poderão votar e serem votadas/os para as representações discentes do Consup, bem como participar dos processos eletivos para escolha da/o Reitora/or e Diretoras/es Gerais dos campi.
 
-#### CAPÍTULO II — DO CORPO DOCENTE
+### CAPÍTULO II — DO CORPO DOCENTE
 
 #### Art. 51.
 
 O corpo docente é constituído pelas/os professoras/es integrantes do quadro permanente de pessoal do IFPR, regidos pelo Regime Jurídico Único, e demais docentes admitidas/os na forma da lei.
 
-#### CAPÍTULO III — DO CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO
+### CAPÍTULO III — DO CORPO TÉCNICO ADMINISTRATIVO EM EDUCAÇÃO
 
 #### Art. 52.
 
 O corpo técnico-administrativo em educação é constituído pelas/os servidoras/es integrantes do quadro permanente de pessoal do Instituto Federal, regidos pelo Regime Jurídico Único, que exerçam atividades de apoio técnico, administrativo e operacional.
 
-#### CAPÍTULO IV — DO REGIME DISCIPLINAR
+### CAPÍTULO IV — DO REGIME DISCIPLINAR
 
 #### Art. 53.
 
@@ -607,7 +607,7 @@ O regime disciplinar do corpo discente é estabelecido em regulamento próprio a
 
 O regime disciplinar da/o servidora/or pública/o federal é regido pelas Leis n.º 8.112, n.º 12.779 e suas alterações.
 
-### TÍTULO V — DOS DIPLOMAS, CERTIFICADOS E TÍTULOS
+## TÍTULO V — DOS DIPLOMAS, CERTIFICADOS E TÍTULOS
 
 #### Art. 55.
 
@@ -621,7 +621,7 @@ No âmbito de sua atuação, o IFPR funciona como instituição acreditadora e c
 
 O IFPR poderá conferir títulos de reconhecimento acadêmico e afins, conforme disciplinado no Regimento Geral.
 
-#### CAPÍTULO I — DA AUTONOMIA PARA OFERTA DE CURSO
+### CAPÍTULO I — DA AUTONOMIA PARA OFERTA DE CURSO
 
 #### Art. 58.
 
@@ -631,7 +631,7 @@ O IFPR goza de autonomia para criar, ampliar e remanejar vagas discentes, organi
 
 **§ 2º** O IFPR terá autonomia para criar e extinguir cursos, nos limites de sua área de atuação territorial, mediante autorização do Consup, aplicando-se, no caso da oferta de cursos à distância, a legislação específica.
 
-### TÍTULO VI — DO PATRIMÔNIO
+## TÍTULO VI — DO PATRIMÔNIO
 
 #### Art. 59.
 

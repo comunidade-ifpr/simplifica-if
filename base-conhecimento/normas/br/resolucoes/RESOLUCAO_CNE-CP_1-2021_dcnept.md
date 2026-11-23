@@ -87,7 +87,8 @@ São princípios da Educação Profissional e Tecnológica:
 - **XVI –** identidade dos perfis profissionais de conclusão de curso, que contemplem as competências profissionais requeridas pela natureza do trabalho, pelo desenvolvimento tecnológico e pelas demandas sociais, econômicas e ambientais;
 - **XVII –** autonomia da instituição educacional na concepção, elaboração, execução, avaliação e revisão do seu Projeto Político Pedagógico (PPP), construído como instrumento de referência de trabalho da comunidade escolar, respeitadas a legislação e as normas educacionais, estas Diretrizes Curriculares Nacionais e as Diretrizes complementares de cada sistema de ensino;
 - **XVIII –** fortalecimento das estratégias de colaboração entre os ofertantes de Educação Profissional e Tecnológica, visando ao maior alcance e à efetividade dos processos de ensino- aprendizagem, contribuindo para a empregabilidade dos egressos; e
-- **XIX –** promoção da inovação em todas as suas vertentes, especialmente a tecnológica, a social e a de processos, de maneira incremental e operativa. ##
+- **XIX –** promoção da inovação em todas as suas vertentes, especialmente a tecnológica, a social e a de processos, de maneira incremental e operativa.
+
 ### CAPÍTULO III
 
 #### DA ORGANIZAÇÃO E FUNCIONAMENTO
@@ -99,6 +100,7 @@ A Educação Profissional e Tecnológica, com base no § 2º do art. 39 da LDB e
 - **I –** qualificação profissional, inclusive a formação inicial e a formação continuada de trabalhadores;
 - **II –** Educação Profissional Técnica de Nível Médio, incluindo saídas intermediárias de qualificação profissional técnica e cursos de especialização profissional técnica; e
 - **III –** Educação Profissional Tecnológica, de graduação e de pós-graduação, incluindo saídas intermediárias de qualificação profissional tecnológica, cursos de especialização profissional tecnológica e programas de Mestrado e Doutorado profissional.
+
 #### Art. 5º
 
 Os cursos de Educação Profissional e Tecnológica podem ser organizados por itinerários formativos, observadas as orientações oriundas dos eixos tecnológicos.
@@ -154,6 +156,7 @@ São critérios para o planejamento e a organização de cursos de Educação Pr
 - **V –** incentivo ao uso de recursos tecnológicos e recursos educacionais digitais abertos no planejamento dos cursos como mediação do processo de ensino e de aprendizagem centrados no estudante;
 - **VI –** aproximação entre empresas e instituições de Educação Profissional e Tecnológica, com vista a viabilizar estratégias de aprendizagem que insiram os estudantes na realidade do mundo do trabalho; e
 - **VII –** observação da integralidade de ocupações reconhecidas pelo setor produtivo, tendo como referência a Classificação Brasileira de Ocupações (CBO) e o acervo de cursos apresentados nos Catálogos Nacionais de Cursos Técnicos e de Cursos Superiores de Tecnologia.
+
 #### Art. 9º
 
 O Ministério da Educação, em regime de colaboração com os sistemas de ensino e as instituições e redes de Educação Profissional e Tecnológica, observada a Classificação Brasileira de Ocupações (CBO) e a dinâmica do mundo do trabalho, deve manter atualizado o CNCT e o CNCST, de modo a orientar na organização dos cursos e dar visibilidade às ofertas em Educação Profissional e Tecnológica.
@@ -167,6 +170,7 @@ As instituições e redes que oferecem Educação Profissional e Tecnológica po
 - **III –** submetam esses cursos à avaliação e reconhecimento pelo respectivo sistema de ensino no prazo de 3 (três) anos, no caso dos cursos de Educação Profissional Técnica de Nível Médio, contados da data da sua oferta inicial, e no prazo de 6 (seis) anos para os Cursos Superiores de Tecnologia;
 - **IV –** após o reconhecimento, sejam encaminhados para a inclusão no CNCT ou no CNCST, de modo a orientar na organização dos cursos e dar visibilidade às ofertas de Educação Profissional e Tecnológica; e
 - **V –** definam, junto aos órgãos próprios do respectivo sistema de ensino, as regras de transição para a descontinuidade dos cursos implantados como experimentais e não reconhecidos, dentro do prazo máximo estabelecido.
+
 #### Art. 11.
 
 O Ministério da Educação, em regime de colaboração com os sistemas de ensino, deve dar publicidade permanente em seu portal à relação dos cursos experimentais autorizados e em funcionamento.
@@ -211,6 +215,7 @@ A estruturação de cursos de qualificação profissional deve considerar, no m�
 - **VIII –** biblioteca, instalações, equipamentos e laboratórios;
 - **IX –** perfil de professores, instrutores e técnicos; e
 - **X –** certificados a serem emitidos.
+
 #### Art. 14.
 
 A formação inicial para o trabalho poderá compreender a oferta de cursos e programas especiais de capacitação profissional, de duração variável, abertos à comunidade e condicionada a matrícula à capacidade de aproveitamento do estudante, sem exigência de vinculação a nível formal de escolaridade ou ao perfil profissional de conclusão de uma determinada ocupação, voltados para o desenvolvimento de saberes instrumentais relacionados ao mundo do trabalho, na perspectiva da geração de trabalho e renda.
@@ -380,6 +385,7 @@ A Educação Tecnológica de Graduação e Pós-Graduação abrange:
 - **IV –** especialização profissional tecnológica;
 - **V –** mestrado profissional; e
 - **VI –** doutorado profissional.
+
 #### Art. 28.
 
 Os cursos de Educação Tecnológica de Graduação e Pós-Graduação devem:
@@ -390,12 +396,11 @@ Os cursos de Educação Tecnológica de Graduação e Pós-Graduação devem:
 - **IV –** promover a capacidade de continuar aprendendo e de acompanhar as mudanças nas condições de trabalho, bem como propiciar o prosseguimento de estudos;
 - **V –** adotar a flexibilidade, a interdisciplinaridade, a contextualização e a atualização permanente dos cursos e seus currículos;
 - **VI –** garantir a identidade do perfil profissional de conclusão de curso e da respectiva organização curricular; e
-- **VII –** incentivar o desenvolvimento da capacidade empreendedora e da compreensão do processo tecnológico, em suas causas e efeitos. ##
+- **VII –** incentivar o desenvolvimento da capacidade empreendedora e da compreensão do processo tecnológico, em suas causas e efeitos.
+
 ### CAPÍTULO VIII
 
-#### DA ESTRUTURA E ORGANIZAÇÃO DOS CURSOS DE EDUCAÇÃO PROFISSIONAL E
-
-#### TECNOLÓGICA DE GRADUAÇÃO
+#### DA ESTRUTURA E ORGANIZAÇÃO DOS CURSOS DE EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA DE GRADUAÇÃO
 
 #### Art. 29.
 
@@ -431,9 +436,7 @@ A carga horária mínima dos cursos de Educação Profissional Tecnológica de G
 
 ### CAPÍTULO IX
 
-#### DA ESTRUTURA E ORGANIZAÇÃO DA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA DE PÓS-
-
-#### GRADUAÇÃO
+#### DA ESTRUTURA E ORGANIZAÇÃO DA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA DE PÓS- GRADUAÇÃO
 
 #### Art. 32.
 
@@ -445,9 +448,7 @@ Na perspectiva da formação continuada, no âmbito do desenvolvimento de itiner
 
 ### CAPÍTULO X
 
-#### DA PRÁTICA PROFISSIONAL SUPERVISIONADA E ESTÁGIO PROFISSIONAL SUPERVISIONADO
-
-#### NA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA
+#### DA PRÁTICA PROFISSIONAL SUPERVISIONADA E ESTÁGIO PROFISSIONAL SUPERVISIONADO NA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA
 
 #### Art. 33.
 
@@ -548,7 +549,8 @@ Para prosseguimento de estudos, a instituição de ensino pode promover o aprove
 - **I –** em qualificações profissionais técnicas e unidades curriculares, etapas ou módulos de cursos técnicos ou de Educação Profissional e Tecnológica de Graduação regularmente concluídos em outros cursos;
 - **II –** em cursos destinados à qualificação profissional, incluída a formação inicial, mediante avaliação, reconhecimento e certificação do estudante, para fins de prosseguimento ou conclusão de estudos;
 - **III –** em outros cursos e programas de Educação Profissional e Tecnológica, inclusive no trabalho, por outros meios formais, não formais ou informais, ou até mesmo em outros cursos superiores de graduação, sempre mediante avaliação do estudante; e
-- **IV –** por reconhecimento, em processos formais de certificação profissional, realizado em instituição devidamente credenciada pelo órgão normativo do respectivo sistema de ensino ou no âmbito de sistemas nacionais de certificação profissional de pessoas. ##
+- **IV –** por reconhecimento, em processos formais de certificação profissional, realizado em instituição devidamente credenciada pelo órgão normativo do respectivo sistema de ensino ou no âmbito de sistemas nacionais de certificação profissional de pessoas.
+
 ### CAPÍTULO XV
 
 #### DO RECONHECIMENTO DE SABERES E COMPETÊNCIAS
@@ -644,6 +646,7 @@ A formação do docente da Educação Profissional e Tecnológica, além do bom 
 - **I –** possa fazer escolhas relevantes dos conteúdos que devem ser ensinados e aprendidos, para que o formando tenha competências para responder, de forma original e criativa, aos desafios diários de sua vida profissional e pessoal, como cidadão trabalhador;
 - **II –** tenha o domínio dos chamados conhecimentos disciplinares associados aos saberes pedagógicos e do conjunto dos conhecimentos da base científica e tecnológica da atividade profissional; e
 - **III –** saiba fazer e saiba ensinar, estando o saber vinculado diretamente ao mundo do trabalho, no setor produtivo objeto do curso.
+
 #### Art. 58.
 
 Nos cursos de qualificação profissional podem atuar instrutores:
@@ -666,6 +669,7 @@ Na formulação e no desenvolvimento de política pública para a Educação Pro
 - **III –** promover a melhoria da qualidade pedagógica e efetividade social, com ênfase no acesso, na permanência e no êxito no percurso formativo e na inserção socioprofissional;
 - **IV –** subsidiar políticas e ações de acesso, permanência e êxito com vista à efetiva inserção socioprofissional; e
 - **V –** zelar pelo cumprimento das responsabilidades sociais das instituições e redes de ensino mediante valorização de sua missão, afirmação da autonomia e da identidade institucional, atendimento às demandas socioeconômico ambientais, promoção dos valores democráticos e respeito à diferença e à diversidade.
+
 #### Art. 60.
 
 A avaliação dos Cursos Superiores de Tecnologia deve observar o disposto na legislação em vigor.

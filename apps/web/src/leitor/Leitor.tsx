@@ -3,7 +3,8 @@
  * servidor local, direto da base, sem passar pela IA:
  *
  * - **norma** (com ou sem `#dispositivo`): `fichaNorma` (selo de vigência, relações navegáveis,
- *   sucessoras, regras de transição, na coluna lateral quando há largura), `lerDocumento` (o texto inteiro, com o dispositivo destacado) e,
+ *   sucessoras, regras de transição, na coluna lateral quando há largura), `lerDocumento` (o texto inteiro, com o
+ *   dispositivo destacado, e o sumário, que vira o índice "Neste documento" no alto da lateral) e,
  *   com dispositivo, `lerDispositivos` (o texto com o caput, para "Copiar citação");
  * - **ppc** (com ou sem `#secao`): `lerPpc` (curso, campus e o índice das seções), `lerDocumento` e,
  *   com seção, `lerSecao` (para a citação);
@@ -25,6 +26,8 @@ import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
 import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
 import { BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from "./pecas.tsx";
+import { Sumario } from "./Sumario.tsx";
+import { conteudoDoIndice } from "./sumario.ts";
 import {
   citacaoDaNorma,
   citacaoDoDispositivo,
@@ -223,8 +226,14 @@ function LeitorNorma({
           fragmento !== null &&
           ((documento.fase === "lido" && !documento.valor.dados.ancoras.some((a) => a.id === fragmento)) ||
             (dispositivo.fase === "lido" && lido === undefined));
+        const texto = documento.fase === "lido" ? documento.valor.dados : null;
+        const temIndice = texto !== null && !conteudoDoIndice(texto).vazio;
         const temLateral =
-          transicoes.length > 0 || sucessoras.length > 0 || relacoes.saida.length > 0 || relacoes.entrada.length > 0;
+          temIndice ||
+          transicoes.length > 0 ||
+          sucessoras.length > 0 ||
+          relacoes.saida.length > 0 ||
+          relacoes.entrada.length > 0;
         return (
           <article aria-label="Norma" className="leitor-impressao space-y-8">
             <Cabecalho
@@ -262,6 +271,14 @@ function LeitorNorma({
               lateral={
                 temLateral ? (
                   <>
+                    {/* O índice primeiro: é ele que acompanha a leitura; as relações se leem uma vez. */}
+                    {texto !== null && temIndice ? (
+                      <>
+                        <Sumario documento={texto} modo="lateral" />
+                        <Sumario documento={texto} modo="recolhido" />
+                      </>
+                    ) : null}
+
                     {sucessoras.length > 0 ? (
                       <Secao titulo="Normas que a substituem">
                         <p className="flex flex-wrap gap-1.5 text-sm">
@@ -310,18 +327,17 @@ function LeitorNorma({
               ) : null}
 
               {temTexto ? (
-                <Secao titulo="Texto da norma">
-                  <ComCarga carga={documento} titulo="Não foi possível ler o texto da norma">
-                    {({ dados: doc }) => (
-                      <Documento
-                        documento={doc}
-                        alvo={naoAchado ? null : fragmento}
-                        aoAbrirLink={aoAbrirLink}
-                        rotulo="Texto da norma"
-                      />
-                    )}
-                  </ComCarga>
-                </Secao>
+                // sem título por cima: o arquivo já abre com "Resumo" e "Texto da norma"
+                <ComCarga carga={documento} titulo="Não foi possível ler o texto da norma">
+                  {({ dados: doc }) => (
+                    <Documento
+                      documento={doc}
+                      alvo={naoAchado ? null : fragmento}
+                      aoAbrirLink={aoAbrirLink}
+                      rotulo="Texto da norma"
+                    />
+                  )}
+                </ComCarga>
               ) : (
                 <p className="text-muted-foreground text-sm">
                   O texto desta norma não está na base: ela guarda só a referência. Consulte a fonte oficial.

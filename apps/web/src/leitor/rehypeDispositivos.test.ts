@@ -52,6 +52,18 @@ describe("rehypeDispositivos", () => {
     expect(saida).not.toContain("<mark");
   });
 
+  it("marca os cabeçalhos de divisão pela linha", () => {
+    const saida = html(["## TÍTULO I", "", "### DAS FINALIDADES", "", "#### Art. 1º"].join("\n"), {
+      ancoras: ancorasPorLinha([{ id: "sumario-1", linha_inicio: 1 }]),
+      destaque: null,
+      deslocamento: 0,
+      divisoes: new Set([1, 3]),
+    });
+    expect(saida).toContain('<h2 class="divisao" id="sumario-1">TÍTULO I</h2>');
+    expect(saida).toContain('<h3 class="divisao">DAS FINALIDADES</h3>');
+    expect(saida).toContain("<h4>Art. 1º</h4>");
+  });
+
   it("destaca o trecho citado em <mark>, e só ele", () => {
     const saida = html(NORMA, {
       ancoras: ancorasPorLinha(ANCORAS),

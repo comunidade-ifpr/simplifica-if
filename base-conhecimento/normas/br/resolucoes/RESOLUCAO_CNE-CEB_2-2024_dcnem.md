@@ -77,6 +77,7 @@ As instituições de ensino que ofertem o Ensino Médio devem estruturar as suas
 - **II –** a preparação básica para o trabalho e a cidadania do educando, para continuar aprendendo, de modo a ser capaz de se adaptar com flexibilidade a novas condições de ocupação ou aperfeiçoamento posteriores;
 - **III –** o aprimoramento do educando como pessoa humana, incluindo a formação ética e o desenvolvimento da autonomia intelectual e do pensamento crítico; e
 - **IV –** a compreensão dos fundamentos científico-tecnológicos dos processos produtivos, relacionando a teoria com a prática, nas diferentes áreas do conhecimento e no ensino de cada componente curricular.
+
 #### Art. 5º
 
 Considera-se, para fins desta Resolução:
@@ -84,44 +85,45 @@ Considera-se, para fins desta Resolução:
 - **I –** sistema de ensino: conjunto de instituições, órgãos executivos e normativos, redes de ensino e instituições educacionais, mobilizados pelo poder público competente, na articulação de meios e recursos necessários ao desenvolvimento da educação, utilizando o regime de colaboração, respeitadas as normas gerais vigentes, no âmbito destas Diretrizes, o poder público competente refere-se às Secretarias Estaduais, Municipais e Distrital de Educação e os Conselhos Estaduais, Distrital e Municipais de Educação, conforme normativo de cada Unidade da Federação;
 - **II –** rede de ensino: conjunto formado pelas instituições escolares públicas, articuladas de acordo com sua vinculação financeira e responsabilidade de manutenção, com atuação nas esferas municipal, estadual, distrital e federal; igualmente, as instituições escolares privadas também podem ser organizadas em redes de ensino;
 - **III –** proposta pedagógica: documento elaborado pelas unidades educacionais, segundo normas estabelecidas pelos sistemas de ensino, que estabelecem parâmetros e orientações objetivas para a tomada de decisão sobre os processos intencionais de gestão educacional, escolar, mediação pedagógica, na perspectiva de materializar o princípio da gestão democrática e garantir a todos os estudantes o conjunto de direitos e objetivos de aprendizagem, com o desenvolvimento das habilidades e competências previstas para a etapa do Ensino Médio, e tem como finalidade explicitar, organizar e sistematizar:
-- a) o conjunto de concepções e orientações que devem guiar o trabalho educativo realizado na escola;
-- b) as metas e os objetivos compartilhados pela comunidade escolar e seus compromissos comuns;
-- c) as escolhas metodológicas, os projetos e as ações definidas para garantir o pleno acesso à escola, a permanência estudantil, a aprendizagem e o desenvolvimento de todos os educandos; e
-- d) os processos de avaliação institucional permanente para a melhoria contínua da oferta educativa.
+  - a) o conjunto de concepções e orientações que devem guiar o trabalho educativo realizado na escola;
+  - b) as metas e os objetivos compartilhados pela comunidade escolar e seus compromissos comuns;
+  - c) as escolhas metodológicas, os projetos e as ações definidas para garantir o pleno acesso à escola, a permanência estudantil, a aprendizagem e o desenvolvimento de todos os educandos; e
+  - d) os processos de avaliação institucional permanente para a melhoria contínua da oferta educativa.
 - **IV –** justiça curricular: princípio de organização do currículo que estabelece como parâmetros para a tomada de decisões da gestão educacional, da gestão escolar e das práticas pedagógicas:
-- a) a priorização de conhecimentos e conteúdos de ensino orientados para a promoção, defesa e compromisso com a garantia de uma vida digna para todas as pessoas;
-- b) a explicitação e a materialização de uma ética do cuidado e do bem viver nas relações entre o estado e a sociedade; e
-- c) a construção de uma convivência solidária e democrática, comprometida com a realização cotidiana dos direitos humanos e a superação das múltiplas formas de exclusão, discriminação, preconceitos e opressão;
+  - a) a priorização de conhecimentos e conteúdos de ensino orientados para a promoção, defesa e compromisso com a garantia de uma vida digna para todas as pessoas;
+  - b) a explicitação e a materialização de uma ética do cuidado e do bem viver nas relações entre o estado e a sociedade; e
+  - c) a construção de uma convivência solidária e democrática, comprometida com a realização cotidiana dos direitos humanos e a superação das múltiplas formas de exclusão, discriminação, preconceitos e opressão;
 - **V –** currículo: elenco de experiências e vivências que acontecem nos espaços escolares e que condicionam os processos de produção, circulação e apropriação de conhecimentos e saberes de natureza conceitual, factual, procedimental e atitudinal, mediante interações entre os sujeitos da ação educativa e entre esses sujeitos e os conhecimentos historicamente acumulados pela humanidade;
 - **VI –** área de conhecimento: agrupamento de componentes curriculares com afinidade de matrizes epistemológicas e de métodos de produção do conhecimento, com a finalidade de facilitar:
-- a) a organização pedagógica e a integração de saberes, favorecendo uma visão interdisciplinar e contextualizada do processo de ensino e aprendizagem; e
-- b) a organização do trabalho pedagógico por área de conhecimento deve assegurar a aprendizagem dos conteúdos e o desenvolvimento das habilidades específicas;
+  - a) a organização pedagógica e a integração de saberes, favorecendo uma visão interdisciplinar e contextualizada do processo de ensino e aprendizagem; e
+  - b) a organização do trabalho pedagógico por área de conhecimento deve assegurar a aprendizagem dos conteúdos e o desenvolvimento das habilidades específicas;
 - **VII –** componente curricular: unidade didática que compõe a proposta curricular e que se define:
-- a) pela explicitação de objetivos de aprendizagem e desenvolvimento, conteúdos conceituais, factuais, procedimentais e atitudinais, abordagem metodológica e didática e processos de avaliação;
-- b) na integração com a proposta curricular, o componente curricular explicita sua relação com uma ou mais áreas do conhecimento e/ou com um percurso de qualificação ou habilitação profissional;
+  - a) pela explicitação de objetivos de aprendizagem e desenvolvimento, conteúdos conceituais, factuais, procedimentais e atitudinais, abordagem metodológica e didática e processos de avaliação;
+  - b) na integração com a proposta curricular, o componente curricular explicita sua relação com uma ou mais áreas do conhecimento e/ou com um percurso de qualificação ou habilitação profissional;
 - **VIII –** contextualização: estratégia de organização dos processos de ensino e aprendizagem que promove o reconhecimento e a explicitação das conexões e interfaces entre os conhecimentos e saberes selecionados para o trabalho pedagógico da escola e as múltiplas realidades socioculturais nas quais os sujeitos da ação educativa estão inseridos;
 - **IX –** interdisciplinaridade: abordagem de organização dos processos de ensino e aprendizagem que promove a interação e articulação intencional entre epistemologias, métodos e conhecimentos de diferentes componentes curriculares, assegurando, por parte dos educandos, a compreensão transversal de temas, questões e fenômenos da natureza e da vida social, a partir dos repertórios próprios da ciência, da cultura, do mundo do trabalho e das tecnologias;
 - **X –** projetos integradores: forma de organização pedagógica que assegura o planejamento interdisciplinar das unidades temáticas, das sequências didáticas e das formas de sistematização e avaliação das aprendizagens a partir da articulação e integração dos componentes curriculares das áreas de conhecimento. Os projetos integradores devem:
-- a) priorizar processos colaborativos de trabalho e aprendizagem, mobilizando o pensamento crítico, a reflexão sobre as relações dialéticas entre a realidade local, nacional e global e a construção coletiva de soluções para os desafios da sociedade contemporânea; e
-- b) aprofundar, ampliar e integrar aprendizagens da Formação Geral Básica e proporcionar a construção e apropriação de conhecimentos científicos, a articulação entre teoria e prática e ampliação de experiências conectadas aos interesses dos estudantes nas áreas do conhecimento eleitas, àqueles desenvolvidos nos Itinerários Formativos de Aprofundamento.
+  - a) priorizar processos colaborativos de trabalho e aprendizagem, mobilizando o pensamento crítico, a reflexão sobre as relações dialéticas entre a realidade local, nacional e global e a construção coletiva de soluções para os desafios da sociedade contemporânea; e
+  - b) aprofundar, ampliar e integrar aprendizagens da Formação Geral Básica e proporcionar a construção e apropriação de conhecimentos científicos, a articulação entre teoria e prática e ampliação de experiências conectadas aos interesses dos estudantes nas áreas do conhecimento eleitas, àqueles desenvolvidos nos Itinerários Formativos de Aprofundamento.
 - **XI –** competências:
-- a) mobilização de conhecimentos (conceitos e procedimentos), habilidades (práticas cognitivas e socioemocionais);
-- b) atitudes e valores para resolver demandas complexas da vida cotidiana, do pleno exercício da cidadania e do mundo do trabalho; e
-- c) expressam, na Base Nacional Comum Curricular – BNCC, direitos e objetivos de aprendizagem e desenvolvimento para cada área do conhecimento.
+  - a) mobilização de conhecimentos (conceitos e procedimentos), habilidades (práticas cognitivas e socioemocionais);
+  - b) atitudes e valores para resolver demandas complexas da vida cotidiana, do pleno exercício da cidadania e do mundo do trabalho; e
+  - c) expressam, na Base Nacional Comum Curricular – BNCC, direitos e objetivos de aprendizagem e desenvolvimento para cada área do conhecimento.
 - **XII –** habilidade:
-- a) prática cognitiva e socioemocional, estruturada em relação a determinados objetos de conhecimento e descrita na forma de comportamentos ou ações observáveis; e
-- b) a combinação e mobilização de diferentes habilidades e conhecimentos expressam uma competência.
+  - a) prática cognitiva e socioemocional, estruturada em relação a determinados objetos de conhecimento e descrita na forma de comportamentos ou ações observáveis; e
+  - b) a combinação e mobilização de diferentes habilidades e conhecimentos expressam uma competência.
 - **XIII –** habilitação profissional técnica de nível médio: forma de oferta da educação profissional e técnica de nível médio que permite aos educandos a habilitação e a certificação para o exercício de profissões reconhecidas pelo mercado de trabalho na Classificação Brasileira de Ocupações – CBO, a partir do desenvolvimento de saberes e competências profissionais fundamentados em conhecimentos científicos e tecnológicos em observância ao Catálogo Nacional de Cursos Técnicos – CNCT;
 - **XIV –** qualificação profissional técnica de nível médio: forma de oferta da educação profissional e técnica de nível médio que permite aos educandos certificações intermediárias, condicionadas ao desenvolvimento de parte dos saberes e competências profissionais de uma habilitação técnica definida na CBO, em planos curriculares que alcancem, no mínimo, 20% (vinte por cento) da carga horária do curso técnico correspondente;
 - **XV –** certificação intermediária: é a possibilidade de emitir certificação de qualificação para o trabalho quando a formação for estruturada e organizada em etapas com terminalidade;
 - **XVI –** Formação Integral e Integrada: desenvolvimento intencional dos aspectos físicos, cognitivos, ético-políticos, socioculturais e afetivos dos estudantes e mediante organização curricular que assegure a articulação e integração entre direitos e objetivos de aprendizagem e processos pedagógicos desenvolvidos no âmbito da Formação Geral Básica e dos Itinerários Formativos de que tratam o caput do art. 35 da Lei nº 9.394, de 20 de dezembro de 1996;
 - **XVII –** Formação Geral Básica: oferta curricular que compõe a Formação Integral e Integrada, na qual um conjunto de direitos e objetivos de aprendizagem e desenvolvimento, expressos na BNCC do Ensino Médio na forma de competências e habilidades, são assegurados a todos os estudantes mediante oferta dos componentes curriculares obrigatórios e das áreas do conhecimento que compõem o Ensino Médio;
 - **XVIII –** Itinerários Formativos de Aprofundamento:
-- a) percursos educacionais estruturados, de livre escolha dos estudantes, que permitem aos educandos o aprofundamento de suas aprendizagens e de seu desenvolvimento em uma ou em mais áreas do conhecimento; e
-- b) realiza-se por meio da oferta de projetos interdisciplinares e integradores, organizados com ênfase nos componentes curriculares que compõem a(s) área(s) de conhecimento eleitas, de modo a ampliar o diálogo entre as dimensões teóricas e práticas dos conteúdos, a consideração e valorização da diversidade territorial e cultural do Brasil e as escolhas estabelecidas na proposta pedagógica de cada unidade escolar.
+  - a) percursos educacionais estruturados, de livre escolha dos estudantes, que permitem aos educandos o aprofundamento de suas aprendizagens e de seu desenvolvimento em uma ou em mais áreas do conhecimento; e
+  - b) realiza-se por meio da oferta de projetos interdisciplinares e integradores, organizados com ênfase nos componentes curriculares que compõem a(s) área(s) de conhecimento eleitas, de modo a ampliar o diálogo entre as dimensões teóricas e práticas dos conteúdos, a consideração e valorização da diversidade territorial e cultural do Brasil e as escolhas estabelecidas na proposta pedagógica de cada unidade escolar.
 - **XIX –** Itinerário de Formação Técnica e Profissional: percursos educacionais destinados à educação profissional técnica de nível médio, desenvolvidos preferencialmente com oferta integrada ou concomitante intercomplementar, de modo integrado à Formação Geral Básica, observando a indissociabilidade entre a preparação para o mundo do trabalho, a preparação para a cidadania e a preparação para a continuidade dos estudos em nível superior;
 - **XX –** educação mediada por tecnologia: a educação mediada por tecnologia é uma prática pedagógica que permite a realização de aulas a partir de um local de transmissão para salas localizadas em qualquer lugar do país e seus pressupostos são aula ao vivo e presença de professores, atuando como mediadores da aprendizagem e do desenvolvimento dos educandos tanto em sala de aula que recebe a transmissão quanto no estúdio que oferece a transmissão; e
 - **XXI –** educação híbrida: é a combinação e/ou integração de atividades pedagógicas, por meio de educação presencial no espaço físico escolar e não presencial, mediadas pelo planejamento e ação docente, com suporte nas tecnologias digitais de informação e comunicação e ambientes on-line, que visam a inovação e ampliação de tempos e espaços no processo educativo, com organização curricular e de planejamento compatíveis.
+
 #### Art. 6º
 
 A oferta do Ensino Médio será orientada pelos princípios gerais definidos para toda a Educação Básica e por princípios específicos, associados às singularidades e às necessidades desta última etapa da Educação Básica.
@@ -141,6 +143,7 @@ São princípios gerais que devem orientar a oferta do Ensino Médio:
 - **IX –** a garantia de padrão de qualidade;
 - **X –** a valorização, na escola, da experiência extraescolar; e
 - **XI –** a articulação entre a educação escolar, o trabalho e as práticas sociais.
+
 #### Art. 8º
 
 São princípios específicos que devem orientar a oferta do Ensino Médio:
@@ -156,10 +159,11 @@ São princípios específicos que devem orientar a oferta do Ensino Médio:
 - **IX –** a integralidade e visão sistêmica da proteção às trajetórias escolares no Ensino Médio, com garantia de ações para a permanência, aprendizagem e conclusão do Ensino Médio na idade adequada;
 - **X –** o trabalho como princípio educativo e pesquisa como princípio pedagógico; e
 - **XI –** a indissociabilidade das dimensões do trabalho, da cultura, da ciência e da tecnologia na formação dos educandos, considerando:
-- a) o trabalho, em todas as suas formas de organização e expressão, na perspectiva ontológica de transformação da natureza e criação da cultura, como realização inerente ao ser humano e como mediação no processo de produção da sua existência sócio-histórica;
-- b) a ciência como o conjunto de conhecimentos sistematizados, produzidos socialmente ao longo da história, na busca da compreensão e da transformação da natureza e da sociedade;
-- c) a tecnologia como a transformação da ciência em força produtiva ou mediação do conhecimento científico e a produção, marcada desde sua origem, pelas relações sociais; e
-- d) a cultura como o processo de produção de expressões materiais, símbolos, representações e significados que correspondem a valores éticos, políticos e estéticos que orientam as normas de conduta de uma sociedade.
+  - a) o trabalho, em todas as suas formas de organização e expressão, na perspectiva ontológica de transformação da natureza e criação da cultura, como realização inerente ao ser humano e como mediação no processo de produção da sua existência sócio-histórica;
+  - b) a ciência como o conjunto de conhecimentos sistematizados, produzidos socialmente ao longo da história, na busca da compreensão e da transformação da natureza e da sociedade;
+  - c) a tecnologia como a transformação da ciência em força produtiva ou mediação do conhecimento científico e a produção, marcada desde sua origem, pelas relações sociais; e
+  - d) a cultura como o processo de produção de expressões materiais, símbolos, representações e significados que correspondem a valores éticos, políticos e estéticos que orientam as normas de conduta de uma sociedade.
+
 ## TÍTULO II
 
 ### ORGANIZAÇÃO CURRICULAR E FORMAS DE OFERTA
@@ -185,38 +189,39 @@ Na estruturação de suas propostas curriculares, os sistemas de ensino deverão
 - **I –** a adoção de metodologias de ensino e tecnologias pedagógicas promotoras do protagonismo e o papel ativo dos educandos no processo de ensino e aprendizagem;
 - **II –** a mobilização, orientação e apoio aos estudantes nos processos de reflexão individual e compartilhada a respeito da estruturação permanente e dinâmica de seus Projetos de Vida, socialmente referenciados e orientados para a construção e consolidação de sua autonomia e de sua emancipação;
 - **III –** o tratamento interdisciplinar, mediante composição e articulação de conteúdos das diferentes áreas do conhecimento, dos temas relativos à cultura, às linguagens e à cidadania digital, ao pensamento computacional e aos processos de inovação econômica e sociocultural mediados pelas tecnologias da informação e comunicação;
-- **IV –** a presença e mobilização dos temas contemporâneos transversais estabelecidos na
-#### BNCC:
+- **IV –** a presença e mobilização dos temas contemporâneos transversais estabelecidos na BNCC:
 
-- a) Meio Ambiente, considerando as dimensões relativas à educação para a sustentabilidade socioambiental, para a emergência climática e para o consumo consciente e responsável com o coletivo social;
-- b) Economia, considerando as dimensões relativas à educação para o mundo do trabalho, à cultura empreendedora, à educação financeira e à educação fiscal;
-- c) Saúde, considerando as dimensões da educação em saúde e da educação alimentar e nutricional;
-- d) Ciência e Tecnologia, considerando as dimensões da educação científica, do letramento digital e tecnológico, da ética no uso das tecnologias e da inovação responsável, com foco no desenvolvimento do pensamento crítico, na resolução de problemas e na preparação para o mundo digital e científico;
-- e) Cidadania e Civismo, considerando as dimensões relativas à educação em direitos humanos, ao processo de envelhecimento, ao respeito e valorização da pessoa idosa, aos direitos da criança e do adolescente, à educação para o trânsito, para às dinâmicas da vida familiar e social e às experiências e perspectivas femininas, como disposto na Lei nº 14.986, de 25 de setembro de 2024; e
-- f) Multiculturalismo, considerando a escola como espaço e tempo de interações, união, diálogo e cooperação entre diferentes culturas e contextos, potencializando o desenvolvimento da cidadania ao mesmo tempo local e global; uma educação multicultural e intercultural considera a afirmação da diferença como riqueza, que favorece a experiência humana e valoriza as matrizes históricas e culturais brasileiras, incluindo a educação das relações étnico-raciais e o ensino de história e cultura africana, afrobrasileira e dos povos originários do Brasil, de acordo com o estabelecido no art. 26-A da Lei nº 9.394, de 1996, incluído pelas Leis nº 10.639, de 9 de janeiro de 2003, e nº 11.645, de 10 de março de 2008.
+  - a) Meio Ambiente, considerando as dimensões relativas à educação para a sustentabilidade socioambiental, para a emergência climática e para o consumo consciente e responsável com o coletivo social;
+  - b) Economia, considerando as dimensões relativas à educação para o mundo do trabalho, à cultura empreendedora, à educação financeira e à educação fiscal;
+  - c) Saúde, considerando as dimensões da educação em saúde e da educação alimentar e nutricional;
+  - d) Ciência e Tecnologia, considerando as dimensões da educação científica, do letramento digital e tecnológico, da ética no uso das tecnologias e da inovação responsável, com foco no desenvolvimento do pensamento crítico, na resolução de problemas e na preparação para o mundo digital e científico;
+  - e) Cidadania e Civismo, considerando as dimensões relativas à educação em direitos humanos, ao processo de envelhecimento, ao respeito e valorização da pessoa idosa, aos direitos da criança e do adolescente, à educação para o trânsito, para às dinâmicas da vida familiar e social e às experiências e perspectivas femininas, como disposto na Lei nº 14.986, de 25 de setembro de 2024; e
+  - f) Multiculturalismo, considerando a escola como espaço e tempo de interações, união, diálogo e cooperação entre diferentes culturas e contextos, potencializando o desenvolvimento da cidadania ao mesmo tempo local e global; uma educação multicultural e intercultural considera a afirmação da diferença como riqueza, que favorece a experiência humana e valoriza as matrizes históricas e culturais brasileiras, incluindo a educação das relações étnico-raciais e o ensino de história e cultura africana, afrobrasileira e dos povos originários do Brasil, de acordo com o estabelecido no art. 26-A da Lei nº 9.394, de 1996, incluído pelas Leis nº 10.639, de 9 de janeiro de 2003, e nº 11.645, de 10 de março de 2008.
 - **V –** a adoção de metodologias de avaliação da aprendizagem, de caráter formativo ou somativo, que reconheçam as especificidades e singularidades dos sujeitos educandos do Ensino Médio e que mobilizem diferentes e diversificados instrumentos e estratégias de caráter individual e coletivo, tais como seminários, projetos integradores, desenvolvimento de trabalhos colaborativos de autoria na forma de produtos culturais, artísticos e tecnológicos, provas orais ou escritas, atividades de natureza lúdica e jogos mediados ou não por tecnologia da informação e da comunicação e projetos de intervenção social e comunitária; e
 - **VI –** as possibilidades de expansão e ampliação dos espaços em que se realizam as atividades pedagógicas, na perspectiva da educação integral, considerando conexões e interações com os territórios e a mobilização de equipamentos sociais de cultura, esporte, lazer, saúde, segurança e proteção social e trabalho.
+
 #### Art. 12.
 
 Os sistemas de ensino deverão assegurar aos estudantes oportunidades de construção de Projetos de Vida no ensino, de modo a promover processos intencionais e estruturados de aprendizagem e desenvolvimento integral dos jovens, mediante propostas didáticas que possibilitem que cada estudante possa se engajar:
 
 - **I –** na reflexão coletiva e individual sobre:
-- a) os desafios e dilemas do mundo contemporâneo e suas implicações para o presente e o futuro das juventudes;
-- b) sua história de vida pessoal, familiar e comunitária e como esta história de vida se relaciona com suas características pessoais, suas inclinações, hábitos, desejos e talentos;
-- c) sua participação em grupos, coletivos, turmas e a relação dessa participação com as suas formas de estar e se movimentar no mundo; e
-- d) suas escolhas e projetos para o futuro, numa perspectiva integrada, considerando dimensões da vida pessoal, familiar, comunitária e profissional, construindo a consciência que todo Projeto de Vida somente se realiza numa dimensão coletiva.
+  - a) os desafios e dilemas do mundo contemporâneo e suas implicações para o presente e o futuro das juventudes;
+  - b) sua história de vida pessoal, familiar e comunitária e como esta história de vida se relaciona com suas características pessoais, suas inclinações, hábitos, desejos e talentos;
+  - c) sua participação em grupos, coletivos, turmas e a relação dessa participação com as suas formas de estar e se movimentar no mundo; e
+  - d) suas escolhas e projetos para o futuro, numa perspectiva integrada, considerando dimensões da vida pessoal, familiar, comunitária e profissional, construindo a consciência que todo Projeto de Vida somente se realiza numa dimensão coletiva.
 - **II –** na construção de proposições e de ações e intervenções individuais e coletivas no mundo, considerando:
-- a) a escolha de seu itinerário formativo;
-- b) sua transição para a vida adulta e para o mundo do trabalho;
-- c) sua motivação, autonomia e disposição de progredir diante de desafios, desenvolvendo sua capacidade de definir seus objetivos e metas pessoais e mobilizar as estratégias necessárias para alcançá-las;
-- d) seu engajamento na vida comunitária e social e sua participação na transformação e melhoria contínua da vida comum;
-- e) sua participação cidadã e política, considerando os parâmetros democráticos que estruturam a sociedade brasileira; e
-- f) sua realização plena como pessoa.
+  - a) a escolha de seu itinerário formativo;
+  - b) sua transição para a vida adulta e para o mundo do trabalho;
+  - c) sua motivação, autonomia e disposição de progredir diante de desafios, desenvolvendo sua capacidade de definir seus objetivos e metas pessoais e mobilizar as estratégias necessárias para alcançá-las;
+  - d) seu engajamento na vida comunitária e social e sua participação na transformação e melhoria contínua da vida comum;
+  - e) sua participação cidadã e política, considerando os parâmetros democráticos que estruturam a sociedade brasileira; e
+  - f) sua realização plena como pessoa.
 
 **Parágrafo único.** A oferta do Projeto de Vida é estratégia curricular e poderá obedecer a uma lógica transversal às áreas do conhecimento e deverá estar presente ao longo de todo o Ensino Médio:
 
 - **I –** no início da trajetória formativa no Ensino Médio: a orientação e apoio aos estudantes para a identificação de seus interesses, inclinações e objetivos, definindo a escolha do itinerário que mais se alinha a seu Projeto de Vida; e
-- **II –** no final da trajetória formativa no Ensino Médio: a orientação e apoio aos estudantes para a identificação das diferentes oportunidades e possibilidades de progressão de estudos no Ensino Superior e de integração ao mundo do trabalho. ###
+- **II –** no final da trajetória formativa no Ensino Médio: a orientação e apoio aos estudantes para a identificação das diferentes oportunidades e possibilidades de progressão de estudos no Ensino Superior e de integração ao mundo do trabalho.
+
 #### Seção I Da Formação Geral Básica
 
 #### Art. 13.
@@ -249,6 +254,7 @@ Na oferta do Ensino Médio com carga horária superior a 3.000 (três mil) horas
 - **II –** objetivos e direitos de aprendizagem, expressos na forma de competências e habilidades;
 - **III –** conteúdos de ensino; e
 - **IV –** curso de licenciatura e/ou formação complementar exigido para a regência do componente curricular.
+
 #### Art. 16.
 
 A oferta da carga horária da Formação Geral Básica deverá ser distribuída ao longo dos 3 (três) anos do Ensino Médio, de modo a potencializar sua articulação e integração com as aprendizagens propostas nos Itinerários Formativos.
@@ -287,7 +293,7 @@ As competências e habilidades, expressões dos direitos e objetivos de aprendiz
 
 **§ 6º** Os sistemas de ensino deverão realizar levantamento das necessidades e possibilidades de oferta de uma segunda língua estrangeira em suas redes de ensino até o final ano letivo de 2025, com vistas a subsidiar a tomada de decisão sobre o tema.
 
-**§ 7º** Na oferta do componente curricular Arte, os sistemas de ensino deverão observar as especificidades e singularidades das linguagens da dança, da música, do teatro e das artes visuais ao longo do Ensino Médio. #
+**§ 7º** Na oferta do componente curricular Arte, os sistemas de ensino deverão observar as especificidades e singularidades das linguagens da dança, da música, do teatro e das artes visuais ao longo do Ensino Médio.
 
 #### Seção II Dos Itinerários Formativos
 
@@ -305,6 +311,7 @@ Os sistemas de ensino deverão estabelecer o planejamento da oferta educativa de
 - **II –** ofertar 4 (quatro) ou mais itinerários formativos, obedecendo cada um a ênfase em 1 (uma) área do conhecimento;
 - **III –** ofertar 2 (dois) ou mais Itinerários de Formação Técnica e Profissional; e
 - **IV –** ofertar um único Itinerário Formativo de Aprofundamento nas 4 (quatro) áreas do conhecimento e um Itinerário de Formação Técnica e Profissional;
+
 #### Art. 20.
 
 Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:
@@ -315,7 +322,9 @@ Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais pa
 
 **§ 1º** O CNE editará Parâmetros Nacionais para a Oferta dos Itinerários Formativos de Aprofundamento até o dia 31 de março de 2025.
 
-**§ 2º** Os Sistemas de Ensino deverão utilizar as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica em vigência para a organização do Itinerário de Formação Técnica e Profissional. Subseção I Dos Itinerários Formativos de Aprofundamento por Área de Conhecimento
+**§ 2º** Os Sistemas de Ensino deverão utilizar as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica em vigência para a organização do Itinerário de Formação Técnica e Profissional.
+
+##### Subseção I Dos Itinerários Formativos de Aprofundamento por Área de Conhecimento
 
 #### Art. 21.
 
@@ -332,7 +341,9 @@ Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de e
 
 **§ 4º** Os Itinerários Formativos devem seguir os padrões mínimos de qualidade previstos nos Parâmetros Nacionais para a Oferta dos Itinerários Formativos que serão elaborados pelo Ministério da Educação.
 
-**§ 5º** O Ministério da Educação operacionalizará assistência técnica e financeira aos sistemas de ensino, mediante adesão voluntária, para a disponibilização de material didático específico para os Itinerários Formativos de Aprofundamento, inclusive material didático no âmbito do Programa Nacional do Livro Didático – PNLD. Subseção II Do Itinerário Formativo de Educação Técnica e Profissional
+**§ 5º** O Ministério da Educação operacionalizará assistência técnica e financeira aos sistemas de ensino, mediante adesão voluntária, para a disponibilização de material didático específico para os Itinerários Formativos de Aprofundamento, inclusive material didático no âmbito do Programa Nacional do Livro Didático – PNLD.
+
+##### Subseção II Do Itinerário Formativo de Educação Técnica e Profissional
 
 #### Art. 22.
 
@@ -419,6 +430,7 @@ O Ensino Médio, etapa final da Educação Básica, concebida como conjunto org�
 - **III –** tempos e espaços próprios para o planejamento da atividade pedagógica, a organização e a realização dos projetos integradores e interdisciplinares, para assegurar o reconhecimento e o tratamento curricular adequado da heterogeneidade e da pluralidade de condições de oferta, os múltiplos interesses e aspirações dos estudantes e as necessidades e singularidades etárias, sociais e culturais;
 - **IV –** tempos e espaços, organizados pelas próprias escolas e sistemas de ensino, ou em parcerias com outras entidades, para o desenvolvimento de atividades, estudos e propostas de ação que apoiem o aprimoramento das ações pedagógicas na perspectiva da garantia plena do acesso, da permanência, das aprendizagens e do desenvolvimento integral dos estudantes; e
 - **V –** em situações excepcionais, respeitados os parâmetros legais vigentes no país e as diretrizes curriculares específicas das diferentes modalidades da Educação Básica, a educação mediada por tecnologia pode ser utilizada para assegurar o direito à educação em regiões de difícil acesso, para o currículo do Ensino Médio na modalidade EJA.
+
 #### Art. 29.
 
 Os sistemas de ensino poderão estabelecer parcerias para o fortalecimento da oferta da Formação Técnica e Profissional do Ensino Médio com organizações e instituições autorizadas e reconhecidas, de acordo com normas definidas pelo respectivo Conselho de Educação.
@@ -468,9 +480,7 @@ Os processos de avaliação educacional e da aprendizagem no Ensino Médio dever
 
 ### CAPÍTULO II
 
-#### DA PERMANÊNCIA ESTUDANTIL E PREVENÇÃO AO ABANDONO, À EVASÃO E À
-
-#### REPROVAÇÃO NO ENSINO MÉDIO
+#### DA PERMANÊNCIA ESTUDANTIL E PREVENÇÃO AO ABANDONO, À EVASÃO E À REPROVAÇÃO NO ENSINO MÉDIO
 
 #### Art. 31.
 
@@ -480,7 +490,8 @@ Os sistemas de ensino, atendendo a democratização do acesso, permanência e su
 - **II –** estabelecer programas e ações para o acompanhamento do acesso, da permanência e da superação da retenção escolar no Ensino Médio;
 - **III –** estabelecer estratégias permanentes e intersetoriais de prevenção ao abandono e à evasão escolar, inclusive com sistemas e plataformas de gestão de dados que permitam a identificação e intervenção precoce dos estudantes em risco de deixar a escola;
 - **IV –** estabelecer estratégias permanentes de monitoramento de dados e informações sobre evasão escolar e busca ativa dos estudantes que deixaram de se matricular em cada ano letivo; e
-- **V –** assegurar ações educacionais específicas e focalizadas para promover a permanência estudantil e a aprendizagem dos estudantes beneficiários do Programa de Incentivo Financeiro-Educacional definido na Lei nº 14.818, de 16 de janeiro de 2024. ##
+- **V –** assegurar ações educacionais específicas e focalizadas para promover a permanência estudantil e a aprendizagem dos estudantes beneficiários do Programa de Incentivo Financeiro-Educacional definido na Lei nº 14.818, de 16 de janeiro de 2024.
+
 ### CAPÍTULO III
 
 #### MONITORAMENTO E AVALIAÇÃO
@@ -493,6 +504,7 @@ No âmbito da Política Nacional de Ensino Médio, os processos de monitoramento
 
 - **I –** levantar, analisar e sistematizar dados e informações no âmbito dos seus territórios; e
 - **II –** realizar estudos técnicos que subsidiem o monitoramento e a avaliação periódica da implementação e resultados de programas e ações no contexto da Política Nacional de Ensino Médio.
+
 ## TÍTULO IV
 
 ### DOS SISTEMAS DE ENSINO E DA PROPOSTA PEDAGÓGICA
@@ -507,17 +519,18 @@ Os sistemas de ensino, de acordo com a legislação e a normatização nacional 
 
 - **I –** garantir liberdade, autonomia e responsabilidade às unidades escolares, fortalecendo a capacidade de concepção, formulação e execução de suas propostas político- pedagógicas; e
 - **II –** promover, mediante a institucionalização de mecanismos de participação da comunidade, alternativas de organização institucional que possibilitem:
-- a) respeito à identidade própria de adolescentes, jovens e adultos organizando espaços e tempos adequados para a aprendizagem;
-- b) várias alternativas pedagógicas, incluindo ações, situações e tempos diversos, bem como diferentes espaços – intraescolares ou de outras unidades escolares e da comunidade – para atividades educacionais e socioculturais favorecedoras de iniciativa, autonomia e protagonismo social dos estudantes;
-- c) articulações institucionais e comunitárias necessárias ao cumprimento dos planos dos sistemas de ensino e dos projetos pedagógicos das unidades escolares; e
-- d) realização, inclusive pelos colegiados escolares e órgãos de representação estudantil, de ações fundamentadas nos direitos humanos e nos princípios éticos, de convivência e de participação democrática visando a construir unidades escolares e sociedade livres de preconceitos, discriminações e das diversas formas de violência.
+  - a) respeito à identidade própria de adolescentes, jovens e adultos organizando espaços e tempos adequados para a aprendizagem;
+  - b) várias alternativas pedagógicas, incluindo ações, situações e tempos diversos, bem como diferentes espaços – intraescolares ou de outras unidades escolares e da comunidade – para atividades educacionais e socioculturais favorecedoras de iniciativa, autonomia e protagonismo social dos estudantes;
+  - c) articulações institucionais e comunitárias necessárias ao cumprimento dos planos dos sistemas de ensino e dos projetos pedagógicos das unidades escolares; e
+  - d) realização, inclusive pelos colegiados escolares e órgãos de representação estudantil, de ações fundamentadas nos direitos humanos e nos princípios éticos, de convivência e de participação democrática visando a construir unidades escolares e sociedade livres de preconceitos, discriminações e das diversas formas de violência.
 - **III –** fomentar alternativas de diversificação e flexibilização, pelas unidades escolares, de formatos, de projetos integradores ou formas de estudo e de atividades, estimulando a construção de Itinerários Formativos de Aprofundamento que atendam às características, aos interesses, às necessidades dos estudantes e às demandas culturais e territoriais, privilegiando propostas que possibilitem a formação integrada e integral dos estudantes, nas diferentes organizações de tempos e escolares e formato da oferta;
 - **IV –** orientar as instituições ou redes de ensino para promoverem:
-- a) classificação do estudante, mediante avaliação pela instituição, para inserção em etapa adequada ao seu grau de desenvolvimento e experiência;
-- b) aproveitamento de estudos realizados e de conhecimentos constituídos tanto no ensino formal como no informal e na experiência extraescolar conforme é especificada na presente Resolução; e
-- c) certificação que habilite o concluinte do Ensino Médio ao prosseguimento dos estudos em nível superior ou em outros cursos ou formações para os quais a conclusão do Ensino Médio seja etapa obrigatória.
+  - a) classificação do estudante, mediante avaliação pela instituição, para inserção em etapa adequada ao seu grau de desenvolvimento e experiência;
+  - b) aproveitamento de estudos realizados e de conhecimentos constituídos tanto no ensino formal como no informal e na experiência extraescolar conforme é especificada na presente Resolução; e
+  - c) certificação que habilite o concluinte do Ensino Médio ao prosseguimento dos estudos em nível superior ou em outros cursos ou formações para os quais a conclusão do Ensino Médio seja etapa obrigatória.
 - **V –** estabelecer normas complementares e políticas educacionais para execução e cumprimento das disposições destas Diretrizes, considerando as peculiaridades regionais ou locais; e
 - **VI –** instituir sistemas de avaliação e utilizar os sistemas de avaliação operados pelo Ministério da Educação, a fim de acompanhar resultados, tendo como referência as expectativas de aprendizagem dos conhecimentos e saberes a serem alcançados, a legislação e as normas, estas Diretrizes, os Documentos Curriculares dos territórios e os projetos pedagógicos das unidades escolares.
+
 #### Art. 34.
 
 Para a implementação destas Diretrizes, cabe aos sistemas de ensino proverem:
@@ -527,6 +540,7 @@ Para a implementação destas Diretrizes, cabe aos sistemas de ensino proverem:
 - **III –** os professores com jornada de trabalho e formação, inclusive continuada, adequadas para o desenvolvimento do currículo, bem como dos gestores e demais profissionais das unidades escolares;
 - **IV –** os instrumentos de incentivo e valorização dos profissionais da educação, com base em planos de carreira e outros dispositivos voltados para esse fim; e
 - **V –** o acompanhamento e a avaliação dos programas e ações educativas nas respectivas redes e unidades escolares.
+
 #### Art. 35.
 
 Em regime de colaboração com os estados, o Distrito Federal e os municípios, e na perspectiva de um sistema nacional de educação, cabe ao Ministério da Educação oferecer subsídios e apoio para a implementação destas Diretrizes.
@@ -579,6 +593,7 @@ A proposta pedagógica das unidades escolares que ofertam o Ensino Médio deve c
 - **I –** dispositivos, medidas e atos de organização do trabalho escolar;
 - **II –** mecanismos de promoção e fortalecimento da autonomia escolar, mediante a alocação de recursos financeiros, administrativos e de suporte técnico necessários à sua realização; e
 - **III –** adequação dos recursos físicos, inclusive organização dos espaços, equipamentos, biblioteca, laboratórios e outros ambientes educacionais.
+
 ## TÍTULO V
 
 ### DISPOSIÇÕES FINAIS E TRANSITÓRIAS
@@ -617,4 +632,4 @@ Fica revogada a Resolução CNE/CEB nº 3, de 21 de novembro de 2018, ressalvado
 
 Esta Resolução entrará em vigor em 2 de dezembro de 2024.
 
-#### MARIA DO PILAR LACERDA ALMEIDA E SILVA
+**MARIA DO PILAR LACERDA ALMEIDA E SILVA**

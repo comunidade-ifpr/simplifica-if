@@ -53,7 +53,8 @@ altera:
 Altera o art. 6º da Resolução nº 08/2014, com as seguintes mudanças:
 
 > - XI – Diretores(as) e/ou equivalentes;
-> - § 4º Quando o organograma do campus previr a existência de diretorias e mais de um nível organizacional, comporão o CODIC exclusivamente as diretorias que integrarem o nível organizacional mais elevado.
+>
+> § 4º Quando o organograma do campus previr a existência de diretorias e mais de um nível organizacional, comporão o CODIC exclusivamente as diretorias que integrarem o nível organizacional mais elevado.
 
 #### Art. 2º
 

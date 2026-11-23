@@ -43,9 +43,9 @@ Este documento consolida os artigos da LDB mais relevantes para análise de Proj
 
 ---
 
-## CAPÍTULO II - DA EDUCAÇÃO BÁSICA
+### CAPÍTULO II - DA EDUCAÇÃO BÁSICA
 
-### Seção I - Disposições Gerais
+#### Seção I - Disposições Gerais
 
 #### Art. 24.
 
@@ -100,7 +100,7 @@ Para análise de PPCs, esta obrigação alcança os projetos que abrangem o curr
 
 ---
 
-## CAPÍTULO III - DA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA
+### CAPÍTULO III - DA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA
 
 #### Art. 36-B.
 

@@ -6330,8 +6330,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-          "linha_inicio": 222,
-          "linha_fim": 230
+          "linha_inicio": 227,
+          "linha_fim": 235
         },
         {
           "id": "br/cne-ceb/res/2024/2#art25",
@@ -6370,8 +6370,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-          "linha_inicio": 364,
-          "linha_fim": 379
+          "linha_inicio": 375,
+          "linha_fim": 390
         },
         {
           "id": "br/cne-ceb/res/2024/2#art28-par3",
@@ -6383,8 +6383,8 @@
           ],
           "texto": "§ 3º O Ensino Médio noturno, ofertado de forma regular e presencial, excepcionalmente, a critério do sistema de ensino, poderá se valer dos recursos da Educação mediada por tecnologia para atender suas especificidades.",
           "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-          "linha_inicio": 409,
-          "linha_fim": 409
+          "linha_inicio": 420,
+          "linha_fim": 420
         }
       ],
       "sem_texto": []
@@ -8339,8 +8339,8 @@
           ],
           "texto": "§ 1º Os currículos a que se refere o caput devem abranger, obrigatoriamente, o estudo da língua portuguesa e da matemática, o conhecimento do mundo físico e natural e da realidade social e política, especialmente do Brasil.",
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 439,
-          "linha_fim": 439
+          "linha_inicio": 443,
+          "linha_fim": 443
         },
         {
           "id": "br/lei/1996/9394#art26-par9B",
@@ -8358,8 +8358,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 465,
-          "linha_fim": 465
+          "linha_inicio": 470,
+          "linha_fim": 470
         },
         {
           "id": "br/lei/1996/9394#art61",
@@ -8416,8 +8416,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 1040,
-          "linha_fim": 1055
+          "linha_inicio": 1058,
+          "linha_fim": 1074
         },
         {
           "id": "br/lei/1996/9394#art62",
@@ -8466,8 +8466,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 1057,
-          "linha_fim": 1076
+          "linha_inicio": 1076,
+          "linha_fim": 1095
         },
         {
           "id": "br/lei/1996/9394#art63",
@@ -8496,8 +8496,8 @@
             }
           ],
           "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
-          "linha_inicio": 1095,
-          "linha_fim": 1101
+          "linha_inicio": 1114,
+          "linha_fim": 1120
         }
       ],
       "sem_texto": []
@@ -8722,8 +8722,8 @@
           ],
           "texto": "Art. 16. É recomendável que não se tenha trabalho de conclusão de curso (TCC), numa perspectiva acadêmica, nos cursos técnicos integrados, devendo ser priorizados trabalhos relacionados à prática profissional, como projetos de solidariedade, de cooperativa, de responsabilidade social, de extensão, de aprendizagem de práticas profissionais articuladas, dentre outros.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 166,
-          "linha_fim": 168
+          "linha_inicio": 172,
+          "linha_fim": 174
         },
         {
           "id": "ifpr/consup/res/2022/64#art22",
@@ -8758,8 +8758,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 203,
-          "linha_fim": 212
+          "linha_inicio": 210,
+          "linha_fim": 219
         },
         {
           "id": "ifpr/consup/res/2022/64#art31",
@@ -8768,8 +8768,8 @@
           ],
           "texto": "Art. 31. Os PPCs devem ser avaliados pelos colegiados de curso anualmente, na perspectiva da avaliação emancipatória, priorizando os aspectos qualitativos dos processos de ensino e aprendizagem.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 270,
-          "linha_fim": 272
+          "linha_inicio": 277,
+          "linha_fim": 279
         },
         {
           "id": "ifpr/consup/res/2022/64#art32",
@@ -8792,8 +8792,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 274,
-          "linha_fim": 280
+          "linha_inicio": 281,
+          "linha_fim": 287
         },
         {
           "id": "ifpr/consup/res/2022/64#art41",
@@ -8802,8 +8802,8 @@
           ],
           "texto": "Art. 41. A formação inicial e continuada dos servidores é condição para a apropriação dos princípios que fundamentam as teorias e as práticas inerentes ao currículo integrado na educação profissional e tecnológica.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 346,
-          "linha_fim": 348
+          "linha_inicio": 353,
+          "linha_fim": 355
         },
         {
           "id": "ifpr/consup/res/2022/64#art42",
@@ -8812,8 +8812,8 @@
           ],
           "texto": "Art. 42. O IFPR deverá desenvolver uma política de formação pedagógica permanente para os profissionais de educação da instituição, articulada aos fundamentos pedagógicos da educação profissional e tecnológica, assumindo os princípios da formação humana integral.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 350,
-          "linha_fim": 352
+          "linha_inicio": 357,
+          "linha_fim": 359
         },
         {
           "id": "ifpr/consup/res/2022/64#art43",
@@ -8822,8 +8822,8 @@
           ],
           "texto": "Art. 43. O IFPR deverá garantir os tempos e espaços para a formação permanente dos servidores.",
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
-          "linha_inicio": 354,
-          "linha_fim": 356
+          "linha_inicio": 361,
+          "linha_fim": 363
         }
       ],
       "sem_texto": []
@@ -8904,8 +8904,8 @@
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 90,
-          "linha_fim": 96
+          "linha_inicio": 95,
+          "linha_fim": 101
         },
         {
           "id": "ifpr/consup/res/2024/190#art56-par4",
@@ -8915,10 +8915,20 @@
           "caput": [
             "Art. 56. O pedido de aproveitamento de estudos formalizados deverá ser avaliado por uma comissão de análise, indicada pela Coordenação do Curso, composta por professores da área de conhecimento."
           ],
-          "texto": "§ 4º O aproveitamento de estudos formalizados não se aplica para: I - Trabalho de Conclusão de Curso (TCC); II - Estágio obrigatório e não obrigatório.",
+          "texto": "§ 4º O aproveitamento de estudos formalizados não se aplica para:",
+          "subordinados": [
+            {
+              "id": "ifpr/consup/res/2024/190#art56-par4-i",
+              "texto": "I - Trabalho de Conclusão de Curso (TCC);"
+            },
+            {
+              "id": "ifpr/consup/res/2024/190#art56-par4-ii",
+              "texto": "II - Estágio obrigatório e não obrigatório."
+            }
+          ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 471,
-          "linha_fim": 471
+          "linha_inicio": 505,
+          "linha_fim": 508
         },
         {
           "id": "ifpr/consup/res/2024/190#art62-par4",
@@ -8936,22 +8946,28 @@
             },
             {
               "id": "ifpr/consup/res/2024/190#art62-par4-ii",
-              "texto": "II – Estágio obrigatório e não obrigatório. ###"
+              "texto": "II – Estágio obrigatório e não obrigatório."
             }
           ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 509,
-          "linha_fim": 512
+          "linha_inicio": 546,
+          "linha_fim": 549
         },
         {
           "id": "ifpr/consup/res/2024/190#art69",
           "fichas": [
             "CT-IDENT-02"
           ],
-          "texto": "Art. 69. Entende-se por integralização curricular a conclusão, com aproveitamento e frequência mínima, de todas as atividades curriculares previstas no PPC. Parágrafo único. Não há prazo limite para a integralização curricular.",
+          "texto": "Art. 69. Entende-se por integralização curricular a conclusão, com aproveitamento e frequência mínima, de todas as atividades curriculares previstas no PPC.",
+          "subordinados": [
+            {
+              "id": "ifpr/consup/res/2024/190#art69-parunico",
+              "texto": "Parágrafo único. Não há prazo limite para a integralização curricular."
+            }
+          ],
           "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
-          "linha_inicio": 547,
-          "linha_fim": 549
+          "linha_inicio": 587,
+          "linha_fim": 591
         }
       ],
       "sem_texto": []
@@ -9255,8 +9271,8 @@
       "fim_em": null,
       "texto": "Art. 63. Os processos de autorização de cursos de Educação Profissional Tecnológica de Graduação em tramitação nos órgãos competentes e que ainda não estejam na fase de avaliação, podem ser, sem prejudicar a continuidade do processo, por solicitação da instituição, adequados a esta Resolução.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-      "linha_inicio": 681,
-      "linha_fim": 683
+      "linha_inicio": 685,
+      "linha_fim": 687
     },
     {
       "id": "dcnem-2024-art42",
@@ -9274,8 +9290,8 @@
       "fim_em": null,
       "texto": "Art. 42. É permitido às redes de ensino a manutenção da organização curricular orientada pela Resolução CNE/CEB nº 3, de 21 de novembro de 2018, em regime de transição, para os estudantes matriculados no Ensino Médio em data anterior à publicação da presente Resolução, ou a migração para nova organização curricular, garantido o aproveitamento integral dos estudos anteriormente realizados pelos estudantes e vedado o alongamento do período de duração dessa etapa da Educação Básica.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
-      "linha_inicio": 608,
-      "linha_fim": 610
+      "linha_inicio": 623,
+      "linha_fim": 625
     },
     {
       "id": "dcnept-2021-art62",
@@ -9293,8 +9309,8 @@
       "fim_em": null,
       "texto": "Art. 62. Aos estudantes matriculados em cursos de Educação Profissional Técnica de Nível Médio e em cursos de Educação Profissional Tecnológica de Graduação oferecidos anteriormente ao exercício em que a presente Resolução produzirá efeitos, fica assegurado o direito de conclusão de seus cursos organizados, respectivamente, com base na Resolução CNE/CEB nº 6, de 20 de setembro de 2012, e na Resolução CNE/CP nº 3, de 18 de dezembro de 2002.",
       "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-      "linha_inicio": 677,
-      "linha_fim": 679
+      "linha_inicio": 681,
+      "linha_fim": 683
     }
   ],
   "secoes": [
@@ -11303,7 +11319,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 794539,
+    "caracteres": 794964,
     "secoes": 120,
     "caracteres_secoes": 236868,
     "caracteres_ppc_inteiro": 254501

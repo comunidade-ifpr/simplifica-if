@@ -60,9 +60,9 @@ RESOLVE AD REFERENDUM:
 
 Instituir e regulamentar o Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR, nos termos desta Resolução.
 
-## CAPÍTULO I
+### CAPÍTULO I
 
-### DAS DISPOSIÇÕES GERAIS
+#### DAS DISPOSIÇÕES GERAIS
 
 #### Art. 2º
 
@@ -108,9 +108,9 @@ O processo de certificação profissional, no âmbito da Rede Certifica, constit
 
 **Parágrafo único.** O processo de certificação profissional, o estímulo à elevação da escolaridade, à participação em itinerários formativos e a inserção no mundo do trabalho são considerados fatores indutores ao efetivo exercício da cidadania.
 
-## CAPÍTULO II
+### CAPÍTULO II
 
-### DO PÚBLICO BENEFICIÁRIO
+#### DO PÚBLICO BENEFICIÁRIO
 
 #### Art. 8º
 
@@ -122,9 +122,9 @@ A Rede Certifica destina-se a trabalhadores com idade mínima de 18 anos, inseri
 
 **§ 3º** Quando o processo de certificação estiver articulado à Educação de Jovens e Adultos (EJA), não será exigida escolaridade mínima prévia.
 
-## CAPÍTULO III
+### CAPÍTULO III
 
-### DOS NÍVEIS E DAS FORMAS DE OFERTA
+#### DOS NÍVEIS E DAS FORMAS DE OFERTA
 
 #### Art. 9º
 
@@ -135,9 +135,9 @@ A certificação profissional está vinculada às ofertas de educação profissi
 - **III –** Certificação de Especialização Profissional Técnica: referente a curso de especialização profissional técnica, conforme Catálogo Nacional de Cursos Técnicos (CNCT), mantido pelo MEC, para possuidores de diploma de técnico correspondente ao perfil a ser certificado;
 - **IV –** Certificação Profissional Tecnológica: referente a curso superior de tecnologia constante do Catálogo Nacional de Cursos Superiores de Tecnologia (CNCST), mantido pelo MEC, para possuidores de certificado de conclusão do Ensino Médio.
 
-## CAPÍTULO IV
+### CAPÍTULO IV
 
-### DOS REQUISITOS PARA A OFERTA
+#### DOS REQUISITOS PARA A OFERTA
 
 #### Art. 10.
 
@@ -165,9 +165,9 @@ Para a oferta de processos de certificação profissional, cada unidade certific
 
 As unidades certificadoras podem realizar parcerias com outras unidades ou com instituições, nos termos da regulamentação vigente do IFPR, para otimização de recursos, ampliando a oferta de certificação profissional.
 
-## CAPÍTULO V
+### CAPÍTULO V
 
-### DA FORMA DE ACESSO
+#### DA FORMA DE ACESSO
 
 #### Art. 15.
 
@@ -186,9 +186,9 @@ O acesso ao processo de certificação profissional dar-se-á mediante ampla div
 
 **Parágrafo único.** A divulgação deverá ocorrer em linguagem acessível, formatos digitais e físicos, e em meios que garantam acessibilidade para pessoas com deficiência.
 
-## CAPÍTULO VI
+### CAPÍTULO VI
 
-### DAS UNIDADES CERTIFICADORAS
+#### DAS UNIDADES CERTIFICADORAS
 
 #### Art. 16.
 
@@ -226,9 +226,9 @@ São atribuições das unidades certificadoras:
 - **XIII –** assegurar o atendimento adequado ao trabalhador no desenvolvimento do processo de certificação profissional, inclusive às pessoas com deficiência;
 - **XIV –** guardar a documentação comprobatória do processo de certificação profissional por pelo menos dez anos, para fins de supervisão pelo respectivo sistema de ensino.
 
-## CAPÍTULO VII
+### CAPÍTULO VII
 
-### DA EQUIPE MULTIPROFISSIONAL
+#### DA EQUIPE MULTIPROFISSIONAL
 
 #### Art. 20.
 
@@ -249,9 +249,9 @@ A equipe multiprofissional tem as seguintes atribuições:
 
 Todos os profissionais envolvidos deverão receber formação específica e contínua, conforme suas funções e responsabilidades no processo de certificação, em conformidade com o disposto no PPCP.
 
-## CAPÍTULO VIII
+### CAPÍTULO VIII
 
-### DOS PROJETOS PEDAGÓGICOS DE CERTIFICAÇÃO PROFISSIONAL - PPCP
+#### DOS PROJETOS PEDAGÓGICOS DE CERTIFICAÇÃO PROFISSIONAL - PPCP
 
 #### Art. 23.
 
@@ -301,9 +301,9 @@ Os PPCP serão elaborados por comissão designada pela unidade certificadora, co
 
 Os PPCP deverão ser analisados pelo Conselho de Ensino, Pesquisa e Extensão (CONSEPE) e aprovados pelo Conselho Superior do IFPR, conforme fluxo institucional estabelecido.
 
-## CAPÍTULO IX
+### CAPÍTULO IX
 
-### DAS ETAPAS QUE CONSTITUEM OS PROCESSOS DE CERTIFICAÇÃO PROFISSIONAL
+#### DAS ETAPAS QUE CONSTITUEM OS PROCESSOS DE CERTIFICAÇÃO PROFISSIONAL
 
 #### Art. 30.
 
@@ -355,9 +355,9 @@ Os processos de certificação profissional devem, sempre que possível, ser int
 
 **Parágrafo único.** A carga horária dos docentes envolvidos no processo de certificação profissional poderá ser contabilizada como atividade de ensino, conforme regulamentação institucional.
 
-## CAPÍTULO X
+### CAPÍTULO X
 
-### DO PROCESSO AVALIATIVO
+#### DO PROCESSO AVALIATIVO
 
 #### Art. 34.
 
@@ -380,9 +380,9 @@ As atividades avaliativas destinadas ao reconhecimento de conhecimentos e compet
 
 **Parágrafo único.** Os critérios e procedimentos de avaliação deverão ser estabelecidos, observando as normas de avaliação dos processos de ensino-aprendizagem do IFPR.
 
-## CAPÍTULO XI
+### CAPÍTULO XI
 
-### DA CERTIFICAÇÃO, DOS DOCUMENTOS EMITIDOS E DA COMPLEMENTAÇÃO
+#### DA CERTIFICAÇÃO, DOS DOCUMENTOS EMITIDOS E DA COMPLEMENTAÇÃO
 
 #### Art. 37.
 
@@ -431,9 +431,9 @@ Os participantes da Rede Certifica que necessitarem de complementação poderão
 
 **Parágrafo único.** Os trabalhadores participantes, durante o período de complementação de sua formação, manterão a matrícula vinculada ao processo de certificação da Rede Certifica.
 
-## CAPÍTULO XII
+### CAPÍTULO XII
 
-### DAS DISPOSIÇÕES FINAIS
+#### DAS DISPOSIÇÕES FINAIS
 
 #### Art. 42.
 

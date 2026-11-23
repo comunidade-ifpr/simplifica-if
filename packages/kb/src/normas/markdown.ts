@@ -7,7 +7,7 @@
  *   trazem `offset` em unidades UTF-16 (índice de string do JS); `linhaDoOffset` converte um offset
  *   em linha quando só ele estiver disponível.
  * - `palavrasMarkdown(texto)`: o texto sem a marcação Markdown (cabeçalhos, ênfase, listas,
- *   citações, tabelas, HTML) e sem `*` (negrito solto ou partido), em palavras separadas por espaço. É a régua do
+ *   citações, tabelas, HTML), sem `*` (negrito solto ou partido) e sem `#` solto, em palavras separadas por espaço. É a régua do
  *   saneamento ("texto preservado palavra por palavra") e da reconstituição pelos dispositivos.
  */
 import type { Nodes, Root } from "mdast";
@@ -77,9 +77,15 @@ export function textoDoNo(no: Nodes, opcoes: { semRiscado?: boolean } = {}): str
   return partes.join("");
 }
 
-/** Palavras de um texto já sem marcação: tira `*` soltos e separa por espaço. */
+/**
+ * Palavras de um texto já sem marcação: tira `*` soltos e separa por espaço. Uma palavra só de `#` é
+ * marcação de cabeçalho que a conversão deixou solta no fim de uma linha, e não conta.
+ */
 export function palavrasDoTexto(texto: string): string[] {
-  return texto.replace(/\*/g, "").split(/\s+/u).filter(Boolean);
+  return texto
+    .replace(/\*/g, "")
+    .split(/\s+/u)
+    .filter((palavra) => palavra !== "" && !/^#+$/.test(palavra));
 }
 
 /** Palavras do Markdown de uma norma (sem front matter e sem marcação). */

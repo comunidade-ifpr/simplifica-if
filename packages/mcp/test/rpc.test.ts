@@ -249,6 +249,18 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
       const inciso = dados.ancoras.find((a) => a.id === "art28-xviii")!;
       expect(inciso).toMatchObject({ tipo: "inciso", pai: "art28", rotulo: "XVIII" });
       expect(linhas[inciso.linha_inicio - 1]).toMatch(/^XVIII – /);
+      // o sumário: a fixture só tem o título do arquivo, um tópico na linha dele
+      expect(dados.sumario).toEqual([
+        {
+          tipo: "topico",
+          rotulo: "Resolução CNE/CP nº 2/2026",
+          nome: null,
+          nivel: 0,
+          linha: 5,
+          linha_fim: 5,
+          artigos: null,
+        },
+      ]);
       // na ordem do documento
       const inicios = dados.ancoras.map((a) => a.linha_inicio);
       expect(inicios).toEqual([...inicios].sort((a, b) => a - b));
@@ -267,6 +279,7 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         titulo: "Técnico em Enfermagem (Curitiba)",
         alvo: "avaliacao-1",
         datas: null,
+        sumario: [],
       });
       expect(dados.ancoras.map((a) => a.id)).toEqual(["avaliacao-1", "estagio-1", "estagio-2"]);
       expect(dados.markdown).toContain("# Projeto Pedagógico do Curso Técnico em Enfermagem");

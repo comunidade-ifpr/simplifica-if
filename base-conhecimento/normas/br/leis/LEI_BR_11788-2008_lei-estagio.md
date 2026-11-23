@@ -46,7 +46,7 @@ fundamenta:
 
 O PRESIDENTE DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
-## CAPÍTULO I - DA DEFINIÇÃO, CLASSIFICAÇÃO E RELAÇÕES DE ESTÁGIO
+### CAPÍTULO I - DA DEFINIÇÃO, CLASSIFICAÇÃO E RELAÇÕES DE ESTÁGIO
 
 #### Art. 1º
 
@@ -108,7 +108,7 @@ As instituições de ensino e as partes cedentes de estágio podem, a seu crité
 
 O local de estágio deve ser selecionado a partir de cadastro de partes cedentes, organizado pelas instituições de ensino ou pelos agentes de integração.
 
-## CAPÍTULO II - DA INSTITUIÇÃO DE ENSINO
+### CAPÍTULO II - DA INSTITUIÇÃO DE ENSINO
 
 #### Art. 7º
 
@@ -136,7 +136,7 @@ São obrigações das instituições de ensino, em relação aos estágios de se
 
 **Parágrafo único.** A celebração de convênio de concessão de estágio entre a instituição de ensino e a parte concedente não dispensa a celebração do termo de compromisso de que trata o inciso II do caput do art. 3º desta Lei.
 
-## CAPÍTULO III - DA PARTE CONCEDENTE
+### CAPÍTULO III - DA PARTE CONCEDENTE
 
 #### Art. 9º
 
@@ -158,7 +158,7 @@ As pessoas jurídicas de direito privado e os órgãos da administração públi
 
 **Parágrafo único.** No caso de estágio obrigatório, a responsabilidade pela contratação do seguro de que trata o inciso IV do caput deste artigo poderá, alternativamente, ser assumida pela instituição de ensino.
 
-## CAPÍTULO IV - DO ESTAGIÁRIO
+### CAPÍTULO IV - DO ESTAGIÁRIO
 
 #### Art. 10
 
@@ -196,7 +196,7 @@ O estagiário poderá receber bolsa ou outra forma de contraprestação que venh
 
 Aplica-se ao estagiário a legislação relacionada à saúde e segurança no trabalho, sendo sua implementação de responsabilidade da parte concedente do estágio.
 
-## CAPÍTULO V - DA FISCALIZAÇÃO
+### CAPÍTULO V - DA FISCALIZAÇÃO
 
 #### Art. 15
 
@@ -206,7 +206,7 @@ A manutenção de estagiários em desconformidade com esta Lei caracteriza vínc
 
 **§ 2º** A penalidade de que trata o § 1º deste artigo limita-se à filial ou agência em que for cometida a irregularidade.
 
-## CAPÍTULO VI - DAS DISPOSIÇÕES GERAIS
+### CAPÍTULO VI - DAS DISPOSIÇÕES GERAIS
 
 #### Art. 16
 
@@ -264,8 +264,8 @@ Revogam-se as Leis nºs 6.494, de 7 de dezembro de 1977, e 8.859, de 23 de març
 
 Brasília, 25 de setembro de 2008; 187º da Independência e 120º da República.
 
-LUIZ INÁCIO LULA DA SILVA
-Fernando Haddad
+LUIZ INÁCIO LULA DA SILVA  
+Fernando Haddad  
 Luiz Marinho
 
 **Publicado no Diário Oficial da União de 26 de setembro de 2008.**

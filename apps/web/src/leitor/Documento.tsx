@@ -12,6 +12,10 @@
  * `content-visibility: auto`, e o navegador só desenha o que está à vista; o do trecho, não (com o
  * tamanho estimado, a rolagem até ele erraria o lugar). Para imprimir e para buscar, todos se montam
  * antes (`beforeprint` e `MONTAR_TUDO`, de `busca.ts`).
+ *
+ * O índice da norma (`Sumario.tsx`) pede a rolagem até um item ou um artigo (`IR_PARA`): o bloco do
+ * destino se monta na hora, e o texto rola até o elemento. Os cabeçalhos do sumário ganham um `id`
+ * (`sumario-<linha>`) e os de divisão, a classe `divisao`.
  */
 import type { Ancora, DadosDocumento } from "@simplifica-if/contratos-app";
 import { ImageOffIcon } from "lucide-react";
@@ -25,6 +29,7 @@ import { MONTAR_TUDO } from "./busca.ts";
 import { faixasDoRealce, NOME_REALCE, rolarAte, textosDe } from "./realce.ts";
 import { ancorasPorLinha, linhasDoTrecho, rehypeDispositivos } from "./rehypeDispositivos.ts";
 import { remarkMarcadores, remarkQuebras } from "./remarkLeitor.ts";
+import { ancorasDoSumario, type Destino, IR_PARA, linhasDeDivisao } from "./sumario.ts";
 
 /** Imagem do PPC: não se carrega (o endereço vem de entrada não confiável e não está na base). */
 function ImagemOmitida({ alt }: ComponentProps<"img">) {
@@ -46,16 +51,21 @@ const BlocoMarkdown = memo(
     bloco,
     ancoras,
     destaque,
+    divisoes,
   }: {
     readonly bloco: Bloco;
     readonly ancoras: ReadonlyMap<number, ReadonlyArray<string>>;
     readonly destaque: Trecho | null;
+    readonly divisoes: ReadonlySet<number>;
   }) {
     const plugins = useMemo(
       (): Options["rehypePlugins"] => [
-        [rehypeDispositivos, { ancoras, destaque, deslocamento: bloco.linhaInicial - 1, linhaFinal: bloco.linhaFinal }],
+        [
+          rehypeDispositivos,
+          { ancoras, destaque, divisoes, deslocamento: bloco.linhaInicial - 1, linhaFinal: bloco.linhaFinal },
+        ],
       ],
-      [ancoras, destaque, bloco.linhaInicial, bloco.linhaFinal],
+      [ancoras, destaque, divisoes, bloco.linhaInicial, bloco.linhaFinal],
     );
     return (
       <div
@@ -77,6 +87,7 @@ const BlocoMarkdown = memo(
   (antes, depois) =>
     antes.bloco === depois.bloco &&
     antes.ancoras === depois.ancoras &&
+    antes.divisoes === depois.divisoes &&
     antes.destaque?.inicio === depois.destaque?.inicio &&
     antes.destaque?.fim === depois.destaque?.fim,
 );
@@ -110,7 +121,11 @@ export function Documento({
   realce = null,
 }: {
   /** Uma norma ou um PPC da base, ou o PPC revisado (`ifpr://revisao/…`): o texto, as âncoras e o link sem fragmento. */
-  readonly documento: Pick<DadosDocumento, "markdown" | "ancoras"> & { readonly link: string };
+  readonly documento: Pick<DadosDocumento, "markdown" | "ancoras"> & {
+    readonly link: string;
+    /** O sumário da norma; o PPC em revisão não tem. */
+    readonly sumario?: DadosDocumento["sumario"];
+  };
   /** O fragmento a destacar e a mostrar (`art28-xviii`); `null` abre no começo. */
   readonly alvo: string | null;
   readonly aoAbrirLink: (link: string) => void;
@@ -120,7 +135,11 @@ export function Documento({
   readonly realce?: string | null;
 }) {
   const blocos = useMemo(() => dividirEmBlocos(documento.markdown), [documento.markdown]);
-  const ancoras = useMemo(() => ancorasPorLinha(documento.ancoras), [documento.ancoras]);
+  const ancoras = useMemo(
+    () => ancorasPorLinha([...documento.ancoras, ...ancorasDoSumario(documento.sumario ?? [])]),
+    [documento.ancoras, documento.sumario],
+  );
+  const divisoes = useMemo(() => linhasDeDivisao(documento.sumario ?? []), [documento.sumario]);
   const trecho = useMemo(
     () => (alvo === null ? null : linhasDoTrecho(documento.ancoras as ReadonlyArray<Ancora>, alvo)),
     [documento.ancoras, alvo],
@@ -166,8 +185,35 @@ export function Documento({
     };
   }, [blocos]);
 
-  // Rola até o trecho pedido, uma vez por alvo.
   const conteiner = useRef<HTMLDivElement>(null);
+
+  // O índice pede um item ou um artigo: o bloco dele se monta já, e o texto rola até o elemento. Os
+  // blocos de cima ainda podem mudar de altura ao se desenhar; dois quadros depois, a rolagem se acerta.
+  useEffect(() => {
+    let quadro = 0;
+    const irPara = (evento: Event) => {
+      const { id, linha } = (evento as CustomEvent<Destino>).detail;
+      const indice = blocoDaLinha(blocos, linha);
+      flushSync(() => setMontados((atuais) => (atuais.has(indice) ? atuais : new Set(atuais).add(indice))));
+      const elemento = conteiner.current?.querySelector(`[id="${CSS.escape(id)}"]`);
+      if (!(elemento instanceof HTMLElement)) return;
+      cancelAnimationFrame(quadro);
+      let acertos = 2;
+      const rolar = () => {
+        elemento.scrollIntoView({ block: "start" });
+        quadro = acertos > 0 ? requestAnimationFrame(rolar) : 0;
+        acertos -= 1;
+      };
+      rolar();
+    };
+    window.addEventListener(IR_PARA, irPara);
+    return () => {
+      window.removeEventListener(IR_PARA, irPara);
+      cancelAnimationFrame(quadro);
+    };
+  }, [blocos]);
+
+  // Rola até o trecho pedido, uma vez por alvo.
   const rolado = useRef<string | null>(null);
   useLayoutEffect(() => {
     const chave = `${documento.link}#${alvo ?? ""}`;
@@ -203,6 +249,7 @@ export function Documento({
               key={bloco.linhaInicial}
               bloco={bloco}
               ancoras={ancoras}
+              divisoes={divisoes}
               destaque={trecho !== null && i >= primeiro && i <= ultimo ? trecho : null}
             />
           ) : (

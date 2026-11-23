@@ -1,10 +1,11 @@
 /**
  * `lerDocumento` (M1.6): o Markdown inteiro de uma norma da base ou de um PPC convertido
  * (`Normas.documento`, `Ppcs.documento`), com as âncoras do leitor: os dispositivos da norma ou as
- * seções do índice do PPC. O front matter vem em linhas em branco, para que as linhas do texto sejam
+ * seções do índice do PPC, e o sumário da norma (divisões, anexos e tópicos). O front matter vem em linhas em branco, para que as linhas do texto sejam
  * as do arquivo e as das âncoras.
  */
 import * as Normas from "@simplifica-if/kb/Normas";
+import { sumarioDaNorma } from "@simplifica-if/kb/normas/sumario";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Effect from "effect/Effect";
 import { type Aviso, type Base, EntradaInvalida, FalhaNaBase } from "../contratos.ts";
@@ -48,14 +49,16 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
       linha_fim: d.linha_fim,
       revogado: d.revogado,
     }));
+    const markdown = yield* comTexto(norma.markdown);
     return {
       tipo: "norma" as const,
       id: norma.id,
       titulo: norma.titulo,
       link: linkNorma(norma.id),
       path: norma.path,
-      markdown: yield* comTexto(norma.markdown),
+      markdown,
       ancoras,
+      sumario: sumarioDaNorma(markdown, norma.dispositivos),
       pedido,
       datas: norma.datas,
     };
@@ -86,6 +89,7 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
       path: ppc.path,
       markdown: yield* comTexto(ppc.markdown),
       ancoras,
+      sumario: [],
       pedido,
       datas: null,
     };

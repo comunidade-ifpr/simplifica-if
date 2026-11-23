@@ -36,6 +36,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import type { Heading, List, ListItem, Nodes, Paragraph, RootContent } from "mdast";
 import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
+import { divisaoDoCabecalho, NIVEL_DO_CABECALHO } from "./divisoes.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { idDoAto, varianteDoId } from "./ids.ts";
 import { arvoreMarkdown, palavrasDoTexto, textoDoNo } from "./markdown.ts";
@@ -325,6 +326,8 @@ class Parser {
   private emFecho = false;
   private secao: NoAberto | null = null;
   private numeroSecao = 0;
+  /** O nível esperado da rubrica, logo depois de uma divisão sem nome no próprio cabeçalho. */
+  private nivelDaRubrica: number | null = null;
 
   readonly norma: string;
   readonly rotulo: string;
@@ -475,6 +478,8 @@ class Parser {
     const inicio = linhaInicio(no);
     const fim = linhaFim(no);
     const art = this.modoSecao ? null : rotuloArtigo(texto);
+    const nivelDaRubrica = this.nivelDaRubrica;
+    this.nivelDaRubrica = null;
     if (art) {
       this.emFecho = false;
       this.inciso = null;
@@ -516,6 +521,19 @@ class Parser {
     }
     // Divisão estrutural ou rubrica: atualiza a pilha de estrutura pelo nível do cabeçalho.
     const nivel = no.depth;
+    const divisao = divisaoDoCabecalho(texto);
+    if (divisao) {
+      const esperado = NIVEL_DO_CABECALHO[divisao.tipo];
+      if (nivel !== esperado)
+        this.problemas.push(
+          `${this.rotulo}:${inicio}: cabeçalho de ${divisao.rotulo} deve ser de nível ${esperado} (${"#".repeat(esperado)})`,
+        );
+      if (divisao.nome === null) this.nivelDaRubrica = esperado + 1;
+    } else if (nivelDaRubrica !== null && nivel !== nivelDaRubrica) {
+      this.problemas.push(
+        `${this.rotulo}:${inicio}: o nome da divisão deve ser de nível ${nivelDaRubrica} (${"#".repeat(nivelDaRubrica)}), um abaixo do rótulo`,
+      );
+    }
     while (this.niveis.length && this.niveis.at(-1)! >= nivel) {
       this.niveis.pop();
       this.estrutura = this.estrutura.slice(0, -1);
@@ -538,6 +556,7 @@ class Parser {
     const inicio = linhaInicio(no as Nodes);
     const fim = linhaFim(no as Nodes);
     if (no.type === "heading") return this.cabecalho(no);
+    this.nivelDaRubrica = null;
     if (no.type === "list") return this.lista(no, null);
     if (no.type === "paragraph") return this.paragrafoMd(no);
     const texto = textoDoNo(no as Nodes);

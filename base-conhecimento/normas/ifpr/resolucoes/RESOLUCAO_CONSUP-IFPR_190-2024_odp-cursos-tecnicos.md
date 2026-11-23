@@ -52,6 +52,7 @@ A Educação Profissional Técnica de Nível Médio tem como concepções:
 - **II –** o fortalecimento de uma política de educação ética, que legitime a educação profissional como um espaço de reflexão da condição social dos sujeitos e da importância dos saberes, da cultura, da ciência e da tecnologia, para a transformação social e dos meios produtivos;
 - **III –** o fortalecimento de práticas pedagógicas comprometidas com a formação integral, politécnica e omnilateral dos estudantes, baseada em princípios históricos, científicos e tecnológicos, de modo a romper com a dualidade entre educação propedêutica e profissional;
 - **IV –** o preparo para o exercício da cidadania e da qualificação para o mundo do trabalho.
+
 #### Art. 2º
 
 Os cursos devem ser organizados com base nos seguintes princípios:
@@ -68,6 +69,7 @@ Os cursos devem ser organizados com base nos seguintes princípios:
 - **X –** o reconhecimento e o respeito às diversidades dos sujeitos, sejam estas étnico-raciais, de gênero, sexuais, geracionais, regionais, culturais e das pessoas com deficiência;
 - **XI –** a valorização dos temas transversais como elementos qualificadores do currículo;
 - **XII –** a indissociabilidade entre o ensino, a pesquisa e a extensão.
+
 #### Art. 3º
 
 Os cursos de Educação Profissional Técnica de Nível Médio têm por finalidade possibilitar o pleno desenvolvimento do educando e o acesso a conhecimentos, saberes e competências profissionais necessários ao exercício da profissão e da cidadania, com base nos fundamentos científico- tecnológicos, sócio-históricos e culturais.
@@ -86,7 +88,10 @@ Os cursos técnicos de nível médio serão desenvolvidos nas formas de oferta i
 
 - **I –** integrado ao Ensino Médio, destinado a quem já concluiu o Ensino Fundamental, proporcionando ao estudante a habilitação profissional técnica, ao mesmo tempo em que conclui a última etapa da Educação Básica;
 - **II –** concomitante ao Ensino Médio, destinado a quem já concluiu o Ensino Fundamental, proporcionando ao estudante a habilitação profissional técnica no IFPR e o Ensino Médio em outra instituição ou rede de ensino; e
-- **III –** subsequente ao Ensino Médio, destinado a quem já concluiu o Ensino Médio, proporcionando ao estudante a habilitação profissional técnica. Parágrafo único. A forma integrada poderá ser ofertada na modalidade da Educação de Jovens e Adultos (EJA/EPT), destinada às pessoas com mais de dezoito anos que concluíram o Ensino Fundamental.
+- **III –** subsequente ao Ensino Médio, destinado a quem já concluiu o Ensino Médio, proporcionando ao estudante a habilitação profissional técnica.
+
+**Parágrafo único.** A forma integrada poderá ser ofertada na modalidade da Educação de Jovens e Adultos (EJA/EPT), destinada às pessoas com mais de dezoito anos que concluíram o Ensino Fundamental.
+
 #### Art. 5º
 
 Os cursos da Educação Profissional Técnica de Nível Médio podem ser organizados nas modalidades presencial e a distância.
@@ -117,11 +122,15 @@ O currículo deve integrar a educação básica e a formação profissional, tor
 
 #### Art. 10.
 
-Os currículos poderão ser estruturados por componentes curriculares, áreas, unidades, módulos, temas, eixos ou outra forma de organização e agrupados sob a forma de módulos, séries, bimestres, trimestres, semestres, alternância regular de períodos de estudos ou outra forma de organização pedagógica que esteja de acordo com a legislação vigente e com as normativas institucionais. Parágrafo único. Os Projetos Pedagógicos de Curso (PPC) podem ser organizados prevendo certificação intermediária, de acordo com o itinerário formativo e com a carga horária necessária prevista no Catálogo Nacional de Cursos Técnicos (CNCT).
+Os currículos poderão ser estruturados por componentes curriculares, áreas, unidades, módulos, temas, eixos ou outra forma de organização e agrupados sob a forma de módulos, séries, bimestres, trimestres, semestres, alternância regular de períodos de estudos ou outra forma de organização pedagógica que esteja de acordo com a legislação vigente e com as normativas institucionais.
+
+**Parágrafo único.** Os Projetos Pedagógicos de Curso (PPC) podem ser organizados prevendo certificação intermediária, de acordo com o itinerário formativo e com a carga horária necessária prevista no Catálogo Nacional de Cursos Técnicos (CNCT).
 
 #### Art. 11.
 
-A organização curricular deverá ser estruturada considerando o período letivo previsto no PPC e no calendário acadêmico e administrativo. Parágrafo único. Entende-se por período letivo o espaço de tempo compreendido entre o início e o fim das atividades escolares, no qual são desenvolvidos os componentes curriculares, podendo ser semestral ou anual.
+A organização curricular deverá ser estruturada considerando o período letivo previsto no PPC e no calendário acadêmico e administrativo.
+
+**Parágrafo único.** Entende-se por período letivo o espaço de tempo compreendido entre o início e o fim das atividades escolares, no qual são desenvolvidos os componentes curriculares, podendo ser semestral ou anual.
 
 #### Art. 12.
 
@@ -136,6 +145,7 @@ O turno de funcionamento do curso é aquele no qual são ofertados os componente
 - **III –** noturno, quando os componentes curriculares obrigatórios são ofertados somente no período da noite;
 - **IV –** integral, quando o curso é ofertado predominantemente em um período e com algumas atividades curriculares obrigatórias desenvolvidas em outro turno;
 - **V –** regime de alternância, com indicação de turno majoritário conforme os incisos I, II, III ou IV
+
 ## TÍTULO III
 
 ### DO ACESSO, DA PERMANÊNCIA E DO ÊXITO
@@ -150,6 +160,7 @@ O ingresso de estudantes nas vagas iniciais dos cursos técnicos de nível médi
 
 - **I –** acesso unificado;
 - **II –** acesso simplificado.
+
 #### Art. 15.
 
 O acesso unificado é realizado periodicamente e simultaneamente em todos os campi, por meio de processo seletivo regular.
@@ -175,16 +186,17 @@ O acesso unificado pode ocorrer por:
 O acesso simplificado é realizado por meio de:
 
 - **I –** editais e tempos próprios para:
-- a) vagas remanescentes do acesso unificado;
-- b)transferência interna e externa;
-- c) reingresso;
-- d) portador de diploma.
-- **II –** convênios. ###
+  - a) vagas remanescentes do acesso unificado;
+  - b)transferência interna e externa;
+  - c) reingresso;
+  - d) portador de diploma.
+- **II –** convênios.
+
 #### Seção I Das Vagas remanescentes do acesso unificado
 
 #### Art. 18.
 
-As vagas remanescentes do acesso unificado poderão ser preenchidas por meio de processos de seleção de acesso simplificado, até decorridos vinte por cento do total de dias letivos, previsto em calendário acadêmico e administrativo. #
+As vagas remanescentes do acesso unificado poderão ser preenchidas por meio de processos de seleção de acesso simplificado, até decorridos vinte por cento do total de dias letivos, previsto em calendário acadêmico e administrativo.
 
 #### Seção II Das Transferências interna e externa
 
@@ -198,12 +210,14 @@ São formas de acesso por transferência:
 
 - **I –** transferência interna;
 - **II –** transferência externa.
+
 #### Art. 21.
 
 Transferência interna é a movimentação de estudante regularmente vinculado ao IFPR, nos seguintes termos:
 
 - **I –** dentro do mesmo campus: para o mesmo curso, em turno diferente ou para outro curso do mesmo campus;
 - **II –** para outro campus: para curso de mesma nomenclatura, independente do turno ou para outro curso.
+
 #### Art. 22.
 
 Transferência externa é a movimentação de estudante matriculado em curso de nível médio em outra instituição de ensino para curso de mesmo nível no IFPR.
@@ -214,7 +228,9 @@ Transferência externa é a movimentação de estudante matriculado em curso de 
 
 #### Art. 23.
 
-A transferência interna e externa será regulamentada por edital publicado e divulgado pelos campi, a cada período letivo, contendo a descrição dos cursos, o número de vagas e os critérios de seleção. Parágrafo único. O modelo de edital a ser utilizado será disponibilizado pela Proens.
+A transferência interna e externa será regulamentada por edital publicado e divulgado pelos campi, a cada período letivo, contendo a descrição dos cursos, o número de vagas e os critérios de seleção.
+
+**Parágrafo único.** O modelo de edital a ser utilizado será disponibilizado pela Proens.
 
 #### Art. 24.
 
@@ -235,7 +251,9 @@ Para a classificação dos candidatos, serão adotados os critérios a seguir, e
 
 #### Art. 25.
 
-O estudante poderá solicitar, a qualquer tempo, a transferência para outra instituição de ensino, desde que não possua débitos com a instituição. Parágrafo único. A transferência para outra instituição de ensino de estudante do ensino médio integrado com menos de dezoito anos exige, obrigatoriamente, a apresentação da declaração de existência de vaga emitida pela instituição pretendida.
+O estudante poderá solicitar, a qualquer tempo, a transferência para outra instituição de ensino, desde que não possua débitos com a instituição.
+
+**Parágrafo único.** A transferência para outra instituição de ensino de estudante do ensino médio integrado com menos de dezoito anos exige, obrigatoriamente, a apresentação da declaração de existência de vaga emitida pela instituição pretendida.
 
 #### Art. 26.
 
@@ -243,7 +261,7 @@ O estudante poderá solicitar, a qualquer tempo, a transferência para outra ins
 
 **§ 1º** Quando o campus não ofertar o curso objeto da transferência, a matrícula poderá ocorrer em outro curso similar.
 
-**§ 2º** Esta garantia não se aplica quando o estudante se deslocar para assumir cargo efetivo em razão de concurso público, cargo comissionado ou função de confiança #
+**§ 2º** Esta garantia não se aplica quando o estudante se deslocar para assumir cargo efetivo em razão de concurso público, cargo comissionado ou função de confiança
 
 #### Seção III Do Reingresso
 
@@ -255,7 +273,7 @@ Entende-se por reingresso o retorno do estudante que teve a matrícula cancelada
 
 **§ 2°** A ocupação de vagas para estudantes reingressantes ocorrerá após a ocupação das vagas por transferência interna e externa.
 
-**§ 3°** O estudante será reintegrado na matriz curricular vigente. #
+**§ 3°** O estudante será reintegrado na matriz curricular vigente.
 
 #### Seção IV Do Ingresso para portadores de diplomas
 
@@ -263,7 +281,7 @@ Entende-se por reingresso o retorno do estudante que teve a matrícula cancelada
 
 Poderão participar do processo de acesso simplificado para ocupação das vagas, portadores de diploma de cursos técnicos de nível médio.
 
-**Parágrafo único.** A ocupação de vagas para portadores de diploma ocorrerá após a ocupação das vagas por transferência interna e externa e por reingresso. #
+**Parágrafo único.** A ocupação de vagas para portadores de diploma ocorrerá após a ocupação das vagas por transferência interna e externa e por reingresso.
 
 #### Seção V Do Ingresso por acordo de convênio
 
@@ -285,7 +303,9 @@ Registro Acadêmico é o ato de vinculação oficial do estudante ao IFPR, media
 
 #### Art. 32.
 
-Matrícula é o ato que precede o ingresso do estudante em cada período letivo, vinculando-o aos componentes curriculares. Parágrafo único. Somente terá direito à matrícula o estudante que tiver efetuado o seu registro acadêmico.
+Matrícula é o ato que precede o ingresso do estudante em cada período letivo, vinculando-o aos componentes curriculares.
+
+**Parágrafo único.** Somente terá direito à matrícula o estudante que tiver efetuado o seu registro acadêmico.
 
 #### Art. 33.
 
@@ -326,7 +346,10 @@ O trancamento de curso é a interrupção total das atividades acadêmicas, a pe
 O tempo máximo para trancamento de cursos na forma de oferta subsequente e cursos da EJA/EPT será de:
 
 - **I –** dois semestres consecutivos no mesmo ano letivo ou dois semestres alternados em anos letivos diferentes para os cursos semestrais;
-- **II –** um ano para os cursos anuais. Parágrafo único. Períodos superiores poderão ser autorizados pelo colegiado de curso.
+- **II –** um ano para os cursos anuais.
+
+**Parágrafo único.** Períodos superiores poderão ser autorizados pelo colegiado de curso.
+
 #### Art. 38.
 
 O destrancamento de curso é o retorno das atividades acadêmicas mediante a solicitação de matrícula pelo estudante.
@@ -341,10 +364,13 @@ Entende-se por abandono de curso:
 
 - **I –** quando o estudante ausentar-se por mais de trinta dias consecutivos de todas as atividades curriculares do curso, sem protocolar justificativa;
 - **II –** quando o estudante não efetuar a renovação de matrícula no período letivo subsequente;
-- **III –** quando o estudante, em situação de trancamento, não realizar a rematrícula, após esgotado o período. Parágrafo único. O abandono de curso poderá levar ao cancelamento de matrícula no curso. ##
+- **III –** quando o estudante, em situação de trancamento, não realizar a rematrícula, após esgotado o período.
+
+**Parágrafo único.** O abandono de curso poderá levar ao cancelamento de matrícula no curso.
+
 ### CAPÍTULO III
 
-DO ACOMPANHAMENTO ACADÊMICO #
+#### DO ACOMPANHAMENTO ACADÊMICO
 
 #### Seção I Da Frequência
 
@@ -360,11 +386,15 @@ A frequência mínima para aprovação do estudante nos cursos técnicos na form
 
 #### Art. 42.
 
-É competência do campus zelar pela frequência dos estudantes. Parágrafo único. É obrigatória a notificação ao Conselho Tutelar do Município a relação dos estudantes com menos de dezoito anos que apresentem quantidade de faltas acima de 30% (trinta por cento) do percentual permitido em lei.
+É competência do campus zelar pela frequência dos estudantes.
+
+**Parágrafo único.** É obrigatória a notificação ao Conselho Tutelar do Município a relação dos estudantes com menos de dezoito anos que apresentem quantidade de faltas acima de 30% (trinta por cento) do percentual permitido em lei.
 
 #### Art. 43.
 
-Entende-se por justificativa de faltas, o ato de apresentar o motivo que impediu o estudante de comparecer à atividade pedagógica, referente às faltas que foram registradas. Parágrafo único. A justificativa da falta não anula o registro desta no sistema acadêmico.
+Entende-se por justificativa de faltas, o ato de apresentar o motivo que impediu o estudante de comparecer à atividade pedagógica, referente às faltas que foram registradas.
+
+**Parágrafo único.** A justificativa da falta não anula o registro desta no sistema acadêmico.
 
 #### Art. 44.
 
@@ -381,10 +411,13 @@ Os casos previstos para a justificativa de faltas do estudante são:
 - **V –** falecimento de parente em até 2º grau, por até 8 (oito) dias consecutivos;
 - **VI –** problema de saúde do estudante ou de seu respectivo dependente, por meio de atestado devidamente assinado por profissional habilitado;
 - **VII –** obrigações com o Serviço Militar;
-- **VIII –** demais casos não previstos em legislação, que serão avaliados pelo campus. Parágrafo único. As justificativas de faltas serão analisadas pelas coordenações de curso.
+- **VIII –** demais casos não previstos em legislação, que serão avaliados pelo campus.
+
+**Parágrafo único.** As justificativas de faltas serão analisadas pelas coordenações de curso.
+
 #### Art. 46.
 
-Não haverá abono de faltas, exceto em casos previstos em lei. #
+Não haverá abono de faltas, exceto em casos previstos em lei.
 
 #### Seção II Da Avaliação
 
@@ -394,7 +427,7 @@ A avaliação como parte do processo de ensino-aprendizagem deverá ser contínu
 
 #### Art. 48.
 
-A avaliação dos processos de ensino-aprendizagem é regulamentada em normativa própria. #
+A avaliação dos processos de ensino-aprendizagem é regulamentada em normativa própria.
 
 #### Seção III Do Conselho de Classe
 
@@ -404,7 +437,7 @@ O Conselho de Classe é um órgão colegiado e uma instância avaliativa que ana
 
 #### Art. 50.
 
-Os procedimentos para o Conselho de Classe estão previstos em normativa própria. #
+Os procedimentos para o Conselho de Classe estão previstos em normativa própria.
 
 #### Seção IV Do Regime de atividades domiciliares
 
@@ -430,9 +463,10 @@ Caracteriza-se como regime de atividades domiciliares aquele voltado aos estudan
 - **IV –** licença paternidade, em que é assegurado vinte dias corridos de atividade em regime domiciliar.
 - **V –** problema de saúde do estudante ou de familiares em primeiro grau, por meio de atestado devidamente assinado por profissional habilitado;
 - **VI –** demais casos não previstos em legislação, que serão avaliados pelo campus.
+
 #### Art. 53.
 
-Os procedimentos e fluxos para a realização do regime de atividades domiciliares são regulamentados em normativa própria. #
+Os procedimentos e fluxos para a realização do regime de atividades domiciliares são regulamentados em normativa própria.
 
 #### Seção V Do Aproveitamento de Estudos Formalizados
 
@@ -468,7 +502,10 @@ O pedido de aproveitamento de estudos formalizados deverá ser avaliado por uma 
 
 **§ 3º** Para os cursos técnicos na forma de oferta integrada, deve-se excluir, do cálculo da frequência total, os componentes que obtiveram o aproveitamento de estudos formalizados.
 
-**§ 4º** O aproveitamento de estudos formalizados não se aplica para: I - Trabalho de Conclusão de Curso (TCC); II - Estágio obrigatório e não obrigatório.
+**§ 4º** O aproveitamento de estudos formalizados não se aplica para:
+
+- **I -** Trabalho de Conclusão de Curso (TCC);
+- **II -** Estágio obrigatório e não obrigatório.
 
 #### Art. 57.
 
@@ -480,7 +517,7 @@ O pedido de aproveitamento de estudos formalizados deverá ser avaliado por uma 
 
 #### Art. 59.
 
-A comissão de análise poderá determinar o avanço do estudante para séries ou etapas posteriores, considerando seu desenvolvimento integral, comprovado mediante documentação apresentada na solicitação de aproveitamento de estudos formalizados. #
+A comissão de análise poderá determinar o avanço do estudante para séries ou etapas posteriores, considerando seu desenvolvimento integral, comprovado mediante documentação apresentada na solicitação de aproveitamento de estudos formalizados.
 
 #### Seção VI Da Certificação de Conhecimentos Anteriores
 
@@ -509,7 +546,8 @@ O pedido de certificação de conhecimentos anteriores deverá ser avaliado por 
 **§ 4º** A certificação de conhecimentos anteriores não se aplica para:
 
 - **I –** Trabalho de Conclusão de Curso (TCC); e
-- **II –** Estágio obrigatório e não obrigatório. ###
+- **II –** Estágio obrigatório e não obrigatório.
+
 #### Seção VIII Da Adaptação Curricular
 
 #### Art. 63.
@@ -518,7 +556,7 @@ A adaptação curricular inclui todas as modificações e ajustes didáticos est
 
 #### Art. 64.
 
-A adaptação curricular está prevista em normativa própria. #
+A adaptação curricular está prevista em normativa própria.
 
 #### Seção IX Da Flexibilização Curricular
 
@@ -528,13 +566,15 @@ A flexibilização curricular é alteração pedagógica significativa, bem como
 
 #### Art. 66.
 
-A flexibilização curricular está prevista em normativa própria. #
+A flexibilização curricular está prevista em normativa própria.
 
 #### Seção X Do Estágio
 
 #### Art. 67.
 
-Estágio é ato educativo escolar supervisionado e orientado, desenvolvido no ambiente de trabalho, que propicia experiência acadêmica e profissional na área de formação do estudante, em consonância com o perfil profissional descrito no PPC, e que prepara o estudante para o exercício da cidadania e para o mundo do trabalho. Parágrafo único. O estágio poderá ser obrigatório ou não obrigatório, de acordo com as especificidades de cada curso.
+Estágio é ato educativo escolar supervisionado e orientado, desenvolvido no ambiente de trabalho, que propicia experiência acadêmica e profissional na área de formação do estudante, em consonância com o perfil profissional descrito no PPC, e que prepara o estudante para o exercício da cidadania e para o mundo do trabalho.
+
+**Parágrafo único.** O estágio poderá ser obrigatório ou não obrigatório, de acordo com as especificidades de cada curso.
 
 #### Art. 68.
 
@@ -546,7 +586,9 @@ A regulamentação do estágio está prevista em normativa própria.
 
 #### Art. 69.
 
-Entende-se por integralização curricular a conclusão, com aproveitamento e frequência mínima, de todas as atividades curriculares previstas no PPC. Parágrafo único. Não há prazo limite para a integralização curricular.
+Entende-se por integralização curricular a conclusão, com aproveitamento e frequência mínima, de todas as atividades curriculares previstas no PPC.
+
+**Parágrafo único.** Não há prazo limite para a integralização curricular.
 
 #### Art. 70.
 
@@ -574,4 +616,10 @@ Ficam revogadas a Resolução IFPR nº 54, de 21 de dezembro de 2011 e suas alte
 
 #### Art. 75.
 
-Esta resolução entra em vigor a partir da sua publicação. 30/04/2024, às 18:26, conforme horário oficial de Brasília, com fundamento no art. 6º, caput, do Decreto nº 8.539, de 8 de outubro de 2015. acao=documento_conferir&id_orgao_acesso_externo=0, informando o código verificador 2981705 e o Rua Emilio Bertolini, nº 54, Curitiba - PR | CEP CEP 82920-030 - Brasil
+Esta resolução entra em vigor a partir da sua publicação.
+
+<!-- fora-do-ato: resto da assinatura eletrônica do SEI, truncado na conversão -->
+
+30/04/2024, às 18:26, conforme horário oficial de Brasília, com fundamento no art. 6º, caput, do Decreto nº 8.539, de 8 de outubro de 2015. acao=documento_conferir&id_orgao_acesso_externo=0, informando o código verificador 2981705 e o Rua Emilio Bertolini, nº 54, Curitiba - PR | CEP CEP 82920-030 - Brasil
+
+<!-- /fora-do-ato -->

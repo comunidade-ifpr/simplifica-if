@@ -34,6 +34,27 @@ export const Ancora = Schema.Struct({
 export type Ancora = typeof Ancora.Type;
 
 /**
+ * Um item do sumário da norma (`@simplifica-if/kb/normas/sumario`): uma divisão (Título, Capítulo,
+ * Seção), um anexo ou um tópico do arquivo, para o índice de navegação do leitor.
+ */
+export const ItemSumario = Schema.Struct({
+  tipo: Schema.Literals(["livro", "parte", "titulo", "capitulo", "secao", "subsecao", "anexo", "topico"]),
+  /** O rótulo como está no texto: `TÍTULO III`, `Seção I`; no tópico, o cabeçalho inteiro. */
+  rotulo: Schema.String,
+  /** O nome da divisão (`DO ACESSO, DA PERMANÊNCIA E DO ÊXITO`); `null` se o texto não traz. */
+  nome: Schema.NullOr(Schema.String),
+  /** O nível no índice, desde 0. */
+  nivel: Schema.Int,
+  /** A linha do cabeçalho no arquivo, desde 1. */
+  linha: Linha,
+  /** A linha do último cabeçalho do item (a do nome, quando ele vem em cabeçalho próprio). */
+  linha_fim: Linha,
+  /** O primeiro e o último artigo da divisão (`14`, `36-A`); `null` sem artigos. */
+  artigos: Schema.NullOr(Schema.Struct({ primeiro: Schema.String, ultimo: Schema.String })),
+});
+export type ItemSumario = typeof ItemSumario.Type;
+
+/**
  * As datas do ato, do front matter da norma, como estão (`AAAA-MM-DD` ou "a confirmar"); `null` no
  * campo que a norma não registra. O PPC não tem.
  */
@@ -61,6 +82,8 @@ export const DadosDocumento = Schema.Struct({
   markdown: Schema.String,
   /** Na ordem do documento. */
   ancoras: Schema.Array(Ancora),
+  /** O sumário da norma, na ordem do documento; vazio no PPC (as seções dele são as âncoras). */
+  sumario: Schema.Array(ItemSumario),
   /** O fragmento do link pedido, se ele é uma das âncoras; `null` sem fragmento ou se não achou. */
   alvo: Schema.NullOr(Schema.String),
   /** As datas do ato (assinatura, publicação, início de vigência); `null` no PPC. */

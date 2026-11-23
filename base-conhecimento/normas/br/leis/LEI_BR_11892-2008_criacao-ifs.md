@@ -95,7 +95,7 @@ O Colégio Pedro II é instituição federal de ensino, pluricurricular e multic
 
 ### CAPÍTULO II
 
-DOS INSTITUTOS FEDERAIS DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA #
+#### DOS INSTITUTOS FEDERAIS DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA
 
 #### Seção I Da Criação dos Institutos Federais
 
@@ -152,8 +152,13 @@ Ficam criados os seguintes Institutos Federais de Educação, Ciência e Tecnolo
 
 **§ 5o** A relação dos campi que integrarão cada um dos Institutos Federais criados nos termos desta Lei será estabelecida em ato do Ministro de Estado da Educação.
 
+<!-- redacao-nao-vigente -->
+
 **§ 6o** Os Institutos Federais poderão conceder bolsas de pesquisa, desenvolvimento, inovação e intercâmbio a alunos, docentes e pesquisadores externos ou de empresas, a serem regulamentadas por órgão técnico competente do Ministério da Educação. (Incluído pela Lei nº 12.863, de 2013)
-**§ 6º** Os Institutos Federais poderão conceder, nos termos de regulamentação a ser editada por órgão técnico competente do Ministério da Educação, bolsas de pesquisa, de desenvolvimento, de inovação e de intercâmbio a alunos, a docentes, a ocupantes de cargo público efetivo, a detentores de função ou de emprego público e a pesquisadores externos ou de empresas efetivamente envolvidos nessas atividades. (Redação dada pela Lei nº 14.695, de 2023) #
+
+<!-- /redacao-nao-vigente -->
+
+**§ 6º** Os Institutos Federais poderão conceder, nos termos de regulamentação a ser editada por órgão técnico competente do Ministério da Educação, bolsas de pesquisa, de desenvolvimento, de inovação e de intercâmbio a alunos, a docentes, a ocupantes de cargo público efetivo, a detentores de função ou de emprego público e a pesquisadores externos ou de empresas efetivamente envolvidos nessas atividades. (Redação dada pela Lei nº 14.695, de 2023)
 
 #### Seção II Das Finalidades e Características dos Institutos Federais
 
@@ -169,7 +174,7 @@ Os Institutos Federais têm por finalidades e características:
 - **VI –** qualificar-se como centro de referência no apoio à oferta do ensino de ciências nas instituições públicas de ensino, oferecendo capacitação técnica e atualização pedagógica aos docentes das redes públicas de ensino;
 - **VII –** desenvolver programas de extensão e de divulgação científica e tecnológica;
 - **VIII –** realizar e estimular a pesquisa aplicada, a produção cultural, o empreendedorismo, o cooperativismo e o desenvolvimento científico e tecnológico;
-- **IX –** promover a produção, o desenvolvimento e a transferência de tecnologias sociais, notadamente as voltadas à preservação do meio ambiente. ###
+- **IX –** promover a produção, o desenvolvimento e a transferência de tecnologias sociais, notadamente as voltadas à preservação do meio ambiente.
 
 #### Seção III Dos Objetivos dos Institutos Federais
 
@@ -183,11 +188,11 @@ Observadas as finalidades e características definidas no art. 6o desta Lei, sã
 - **IV –** desenvolver atividades de extensão de acordo com os princípios e finalidades da educação profissional e tecnológica, em articulação com o mundo do trabalho e os segmentos sociais, e com ênfase na produção, desenvolvimento e difusão de conhecimentos científicos e tecnológicos;
 - **V –** estimular e apoiar processos educativos que levem à geração de trabalho e renda e à emancipação do cidadão na perspectiva do desenvolvimento socioeconômico local e regional; e
 - **VI –** ministrar em nível de educação superior:
-- a) cursos superiores de tecnologia visando à formação de profissionais para os diferentes setores da economia;
-- b) cursos de licenciatura, bem como programas especiais de formação pedagógica, com vistas na formação de professores para a educação básica, sobretudo nas áreas de ciências e matemática, e para a educação profissional;
-- c) cursos de bacharelado e engenharia, visando à formação de profissionais para os diferentes setores da economia e áreas do conhecimento;
-- d) cursos de pós-graduação lato sensu de aperfeiçoamento e especialização, visando à formação de especialistas nas diferentes áreas do conhecimento; e
-- e) cursos de pós-graduação stricto sensu de mestrado e doutorado, que contribuam para promover o estabelecimento de bases sólidas em educação, ciência e tecnologia, com vistas no processo de geração e inovação tecnológica.
+  - a) cursos superiores de tecnologia visando à formação de profissionais para os diferentes setores da economia;
+  - b) cursos de licenciatura, bem como programas especiais de formação pedagógica, com vistas na formação de professores para a educação básica, sobretudo nas áreas de ciências e matemática, e para a educação profissional;
+  - c) cursos de bacharelado e engenharia, visando à formação de profissionais para os diferentes setores da economia e áreas do conhecimento;
+  - d) cursos de pós-graduação lato sensu de aperfeiçoamento e especialização, visando à formação de especialistas nas diferentes áreas do conhecimento; e
+  - e) cursos de pós-graduação stricto sensu de mestrado e doutorado, que contribuam para promover o estabelecimento de bases sólidas em educação, ciência e tecnologia, com vistas no processo de geração e inovação tecnológica.
 
 #### Art. 8o
 
@@ -195,7 +200,7 @@ No desenvolvimento da sua ação acadêmica, o Instituto Federal, em cada exerc�
 
 **§ 1o** O cumprimento dos percentuais referidos no caput deverá observar o conceito de aluno-equivalente, conforme regulamentação a ser expedida pelo Ministério da Educação.
 
-**§ 2o** Nas regiões em que as demandas sociais pela formação em nível superior justificarem, o Conselho Superior do Instituto Federal poderá, com anuência do Ministério da Educação, autorizar o ajuste da oferta desse nível de ensino, sem prejuízo do índice definido no caput deste artigo, para atender aos objetivos definidos no inciso I do caput do art. 7o desta Lei. #
+**§ 2o** Nas regiões em que as demandas sociais pela formação em nível superior justificarem, o Conselho Superior do Instituto Federal poderá, com anuência do Ministério da Educação, autorizar o ajuste da oferta desse nível de ensino, sem prejuízo do índice definido no caput deste artigo, para atender aos objetivos definidos no inciso I do caput do art. 7o desta Lei.
 
 #### Seção IV Da Estrutura Organizacional dos Institutos Federais
 
@@ -260,6 +265,7 @@ Os Reitores serão nomeados pelo Presidente da República, para mandato de 4 (qu
 **§ 2o** O mandato de Reitor extingue-se pelo decurso do prazo ou, antes desse prazo, pela aposentadoria, voluntária ou compulsória, pela renúncia e pela destituição ou vacância do cargo.
 
 **§ 3o** Os Pró-Reitores são nomeados pelo Reitor do Instituto Federal, nos termos da legislação aplicável à nomeação de cargos de direção.
+
 <!-- redacao-nao-vigente -->
 
 #### Art. 13.
@@ -287,6 +293,7 @@ Os campi serão dirigidos por Diretores-Gerais, nomeados pelo Reitor para mandat
 - **III –** ter concluído, com aproveitamento, curso de formação para o exercício de cargo ou função de gestão em instituições da administração pública.
 
 **§ 2o** O Ministério da Educação expedirá normas complementares dispondo sobre o reconhecimento, a validação e a oferta regular dos cursos de que trata o inciso III do § 1o deste artigo.
+
 ### CAPÍTULO II-A (Incluído pela Lei nº 12.677, de 2012)
 
 #### DO COLÉGIO PEDRO II
@@ -361,12 +368,14 @@ Os arts. 1o, 2o, 4o e 5o da Lei no 11.740, de 16 de julho de 2008, passam a vigo
 > Ficam criados, no âmbito do Ministério da Educação, para alocação a instituições federais de educação profissional e tecnológica, os seguintes cargos em comissão e as seguintes funções gratificadas:
 >
 > - **I –** 38 (trinta e oito) cargos de direção - CD-1;
+>
 > .............................................................................................
 >
 > - **IV –** 508 (quinhentos e oito) cargos de direção - CD-4;
 > .............................................................................................
 >
 > - **VI –** 2.139 (duas mil, cento e trinta e nove) Funções Gratificadas - FG-2. ................................................................................... ” (NR) “
+>
 > **Art. 4o**
 >
 > Ficam criados, no âmbito do Ministério da Educação, para redistribuição a instituições federais de ensino superior, nos termos de ato do Ministro de Estado da Educação, os seguintes cargos: ................................................................................... ” (NR) “

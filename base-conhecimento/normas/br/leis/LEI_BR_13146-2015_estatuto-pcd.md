@@ -42,7 +42,7 @@ Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
 ## LIVRO I
 
-## PARTE GERAL
+### PARTE GERAL
 
 ## TÍTULO I
 
@@ -812,7 +812,7 @@ Devem ser estimulados a pesquisa, o desenvolvimento, a inovação e a difusão d
 
 ## LIVRO II
 
-## PARTE ESPECIAL
+### PARTE ESPECIAL
 
 ## TÍTULO I
 
@@ -1547,13 +1547,23 @@ Prorroga-se até 31 de dezembro de 2021 a vigência da Lei nº 8.989, de 24 de f
 Esta Lei entra em vigor após decorridos 180 (cento e oitenta) dias de sua publicação oficial.
 
 Brasília, 6 de julho de 2015; 194º da Independência e 127º da República.
+
 DILMA ROUSSEFF
+
 Marivaldo de Castro Pereira
+
 Joaquim Vieira Ferreira Levy
+
 Renato Janine Ribeiro
+
 Armando Monteiro
+
 Nelson Barbosa
+
 Gilberto Kassab
+
 Luis Inácio Lucena Adams
+
 Gilberto José Spier Vargas
+
 Guilherme Afif Domingos

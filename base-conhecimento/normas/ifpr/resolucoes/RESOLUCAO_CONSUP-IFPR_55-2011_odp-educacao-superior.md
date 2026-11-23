@@ -51,15 +51,15 @@ Normatizar a Organização Didático-Pedagógica da Educação Superior no âmbi
 
 ---
 
-# TÍTULO I – DA ORGANIZAÇÃO DIDÁTICA
+## TÍTULO I – DA ORGANIZAÇÃO DIDÁTICA
 
-## CAPÍTULO I – DAS DISPOSIÇÕES GERAIS
+### CAPÍTULO I – DAS DISPOSIÇÕES GERAIS
 
 #### Art. 1º
 
 Esta Organização Didático-Pedagógica, em consonância com a Lei de Diretrizes e Bases da Educação Nacional/LDB – Lei nº. 9.394, de 20 de dezembro de 1996 –, com os Pareceres promulgados pelo Conselho Nacional da Educação – CNE, com as Diretrizes Curriculares Nacionais do Ensino Superior, com o Estatuto do Instituto Federal do Paraná e com o Plano de Desenvolvimento Institucional/PDI da Instituição, rege todos os procedimentos didático–pedagógico–administrativos dos Cursos de Ensino Superior do Instituto Federal do Paraná/IFPR.
 
-## CAPÍTULO II – DOS CURSOS E SEUS OBJETIVOS
+### CAPÍTULO II – DOS CURSOS E SEUS OBJETIVOS
 
 #### Art. 2º
 
@@ -93,9 +93,9 @@ O IFPR, ao oferecer diferentes cursos, tem como objetivos:
 
 ---
 
-# TÍTULO II – DAS MODALIDADES DE EDUCAÇÃO E ENSINO
+## TÍTULO II – DAS MODALIDADES DE EDUCAÇÃO E ENSINO
 
-## CAPÍTULO I – DA EDUCAÇÃO SUPERIOR
+### CAPÍTULO I – DA EDUCAÇÃO SUPERIOR
 
 #### Art. 5º
 
@@ -105,7 +105,7 @@ A Educação Superior, ofertada pelo IFPR nas modalidades presencial e a distân
 
 Os cursos na modalidade de Educação a Distância recebem a mesma certificação que seus equivalentes ofertados na modalidade presencial.
 
-### Seção I – Dos Cursos de Graduação
+#### Seção I – Dos Cursos de Graduação
 
 #### Art. 7º
 
@@ -138,7 +138,7 @@ Os Cursos de Graduação são estruturados por componentes curriculares que pode
 
 **Parágrafo único.** A duração e a carga horária dos cursos oferecidos são compatíveis com as exigências das formações profissionais delineadas nos respectivos Projetos Pedagógicos dos Cursos, observando–se as diretrizes curriculares aprovadas pelos órgãos competentes do Ministério da Educação.
 
-### Seção II – Dos Cursos e Programas de Pós–Graduação
+#### Seção II – Dos Cursos e Programas de Pós–Graduação
 
 #### Art. 13.
 
@@ -164,9 +164,9 @@ Os cursos de Pós-Graduação *Lato Sensu* e os Programas *Stricto Sensu* de Mes
 
 ---
 
-# TÍTULO III – DAS ATIVIDADES DE ENSINO
+## TÍTULO III – DAS ATIVIDADES DE ENSINO
 
-## CAPÍTULO I – DO CURRÍCULO DOS CURSOS
+### CAPÍTULO I – DO CURRÍCULO DOS CURSOS
 
 #### Art. 18.
 
@@ -239,15 +239,15 @@ Periodicamente, em época prevista no calendário acadêmico, devem ser atualiza
 
 É dever do docente apresentar e discutir com os alunos, no início do período letivo, o Plano de Ensino do componente curricular.
 
-## CAPÍTULO II – DA PROGRAMAÇÃO DAS ATIVIDADES DE ENSINO
+### CAPÍTULO II – DA PROGRAMAÇÃO DAS ATIVIDADES DE ENSINO
 
-### Seção I – Dos turnos e horários de funcionamento
+#### Seção I – Dos turnos e horários de funcionamento
 
 #### Art. 28.
 
 Os Câmpus do IFPR, em virtude da singularidade de sua organização e funcionamento, podem adequar seus turnos e horários de acordo com sua realidade local e regional, observando a legislação em vigor.
 
-### Seção II – Do Calendário Acadêmico
+#### Seção II – Do Calendário Acadêmico
 
 #### Art. 29.
 
@@ -293,9 +293,9 @@ O Calendário Acadêmico, quando não cumprido por motivo de força maior, dever
 
 ---
 
-# TÍTULO IV – DA OFERTA DE CURSOS E FORMAS DE INGRESSO
+## TÍTULO IV – DA OFERTA DE CURSOS E FORMAS DE INGRESSO
 
-## CAPÍTULO I – DOS CURSOS E VAGAS OFERTADAS
+### CAPÍTULO I – DOS CURSOS E VAGAS OFERTADAS
 
 #### Art. 35.
 
@@ -305,7 +305,7 @@ O número de cursos e vagas a serem oferecidos pelos Câmpus, para ingresso de a
 
 **§ 2º** A oferta de cursos através de convênios ou de outra natureza especial não prevista até a data limite definida em Calendário Acadêmico poderá ser aceita em datas posteriores à mesma, desde que devidamente justificada.
 
-## CAPÍTULO II – DAS FORMAS DE INGRESSO
+### CAPÍTULO II – DAS FORMAS DE INGRESSO
 
 #### Art. 36.
 
@@ -325,7 +325,7 @@ A elaboração do Edital do Processo Seletivo de Ingresso é de responsabilidade
 
 **Parágrafo único.** O Edital deve contemplar as políticas de ações afirmativas definidas em Resolução própria pelo Conselho Superior do IFPR.
 
-### Seção I – Do Ingresso por Processo Seletivo para os cursos regulares do Ensino Superior
+#### Seção I – Do Ingresso por Processo Seletivo para os cursos regulares do Ensino Superior
 
 #### Art. 38.
 
@@ -335,7 +335,7 @@ O ingresso nos cursos regulares do Ensino Superior do IFPR se faz mediante proce
 
 **§ 2º** O IFPR abrirá 40 vagas para cada curso presencial ofertado em seus Câmpus.
 
-### Seção II – Dos Processos Simplificados para Vagas Remanescentes
+#### Seção II – Dos Processos Simplificados para Vagas Remanescentes
 
 #### Art. 39.
 
@@ -345,7 +345,7 @@ O Processo Seletivo Simplificado destina–se ao preenchimento das vagas remanes
 
 **§ 2º** O processo seletivo simplificado é definido em edital próprio de cada Câmpus, com orientações da PROENS.
 
-### Seção III – Do Sistema de Seleção Unificada/SiSU
+#### Seção III – Do Sistema de Seleção Unificada/SiSU
 
 #### Art. 40.
 
@@ -365,7 +365,7 @@ O Sistema de Seleção Unificada/SiSU, de responsabilidade do Ministério da Edu
 
 A validade do Processo Seletivo restringir-se-á ao período letivo que esteja expressamente referido no edital.
 
-### Seção IV – Do Ingresso para portadores de Diploma de Graduação
+#### Seção IV – Do Ingresso para portadores de Diploma de Graduação
 
 #### Art. 43.
 
@@ -409,13 +409,13 @@ Divulgada a relação dos classificados, a Secretaria Acadêmica procederá à c
 
 **§ 2º** A vaga não preenchida, conforme o que dispõe o § 1º, será oferecida para o candidato remanescente, respeitando-se a ordem de classificação.
 
-### Seção V – Do Ingresso de Estudantes Estrangeiros através de Convênio Cultural, Educacional e/ou Científico e Tecnológico
+#### Seção V – Do Ingresso de Estudantes Estrangeiros através de Convênio Cultural, Educacional e/ou Científico e Tecnológico
 
 #### Art. 48.
 
 O ingresso de estudantes estrangeiros, decorrente de celebração de acordo de convênio cultural, educacional e/ou científico e tecnológico entre o Brasil e outros países, está sujeito à criação de vagas em edital específico.
 
-### Seção VI – Do Ingresso de Alunos Especiais
+#### Seção VI – Do Ingresso de Alunos Especiais
 
 #### Art. 49.
 
@@ -444,7 +444,7 @@ A cada início de período letivo, a coordenação do curso publicará comunicad
 
 Cada estudante tem direito a cursar no máximo 2 (dois) componentes curriculares em outros cursos como aluno especial, durante a realização do seu curso.
 
-### Seção VII – Da Transferência
+#### Seção VII – Da Transferência
 
 #### Art. 54.
 
@@ -476,9 +476,9 @@ O estudante pode solicitar, a qualquer tempo, na Secretaria Acadêmica, a transf
 
 ---
 
-# TÍTULO V – DO REGISTRO E ACOMPANHAMENTO ACADÊMICO
+## TÍTULO V – DO REGISTRO E ACOMPANHAMENTO ACADÊMICO
 
-## CAPÍTULO I – DO REGISTRO ACADÊMICO
+### CAPÍTULO I – DO REGISTRO ACADÊMICO
 
 #### Art. 58.
 
@@ -502,7 +502,7 @@ O aluno que ingressar mediante processo seletivo, tendo efetuado seu registro ac
 
 As vagas inicialmente destinadas ao processo seletivo que remanescerem em decorrência da não efetivação do registro acadêmico ou do cancelamento de registro acadêmico deverão ser preenchidas através de chamada(s) complementar(es), utilizando-se da chamada de candidatos suplentes por ordem de classificação do mesmo ano e curso, até o prazo limite que possibilite a matrícula do estudante antes de decorridos quinze por cento (15%) do período letivo corrente previsto para o curso no Calendário Acadêmico.
 
-## CAPÍTULO II – DA MATRÍCULA
+### CAPÍTULO II – DA MATRÍCULA
 
 #### Art. 61.
 
@@ -520,7 +520,7 @@ Nos casos de perda de prazo de matrícula pelo estudante, este ou seu representa
 
 **§ 1º** Uma vez deferida, o acadêmico terá prazo de até 3 (três) dias úteis, após a data de publicação do Edital, para efetuar a matrícula.
 
-### Seção I – Da Matrícula Decorrente de Convênio, Intercâmbio ou Acordo Cultural
+#### Seção I – Da Matrícula Decorrente de Convênio, Intercâmbio ou Acordo Cultural
 
 #### Art. 64.
 
@@ -578,7 +578,7 @@ Para a matrícula dos estudantes referidos no Inciso I do Artigo 70 desta Resolu
 
 **Parágrafo único.** Os documentos mencionados nas alíneas b, c e d deverão estar devidamente autenticados pelo consulado brasileiro no país de origem.
 
-## CAPÍTULO III – DO CANCELAMENTO DE MATRÍCULA
+### CAPÍTULO III – DO CANCELAMENTO DE MATRÍCULA
 
 #### Art. 72.
 
@@ -602,7 +602,7 @@ O estudante terá sua matrícula cancelada pela Instituição quando:
 
 **§ 2º** O Diretor–Geral terá prazo de 3 (três) dias úteis para apresentar a resposta ao recurso a que se refere o parágrafo anterior.
 
-## CAPÍTULO IV – DO ABANDONO DE CURSO
+### CAPÍTULO IV – DO ABANDONO DE CURSO
 
 #### Art. 74.
 
@@ -620,7 +620,7 @@ A readmissão dependerá da possibilidade de integralização curricular no praz
 
 **§ 2º** O resultado será publicado pela Secretaria Acadêmica do Câmpus em Edital.
 
-## CAPÍTULO V – DO TRANCAMENTO E DESTRANCAMENTO DE CURSO
+### CAPÍTULO V – DO TRANCAMENTO E DESTRANCAMENTO DE CURSO
 
 #### Art. 76.
 
@@ -668,7 +668,7 @@ Decorrido o prazo de trancamento de curso, o estudante deverá requerer sua matr
 
 **§ 2º** A Direção de Ensino, Pesquisa e Extensão do Câmpus, em conjunto com a coordenação do curso, deverá comunicar formalmente, à Secretaria Acadêmica, a opção curricular a qual o estudante deverá frequentar, em ficha de Adaptação Curricular.
 
-## CAPÍTULO VI – DO APROVEITAMENTO DE ESTUDOS ANTERIORES
+### CAPÍTULO VI – DO APROVEITAMENTO DE ESTUDOS ANTERIORES
 
 #### Art. 81.
 
@@ -709,7 +709,7 @@ Cabe à Secretaria Acadêmica do Câmpus proceder ao cadastramento do aproveitam
 
 É vedado o aproveitamento de estudos entre níveis de ensino diferentes.
 
-## CAPÍTULO VII – DA CERTIFICAÇÃO DE CONHECIMENTOS ANTERIORES
+### CAPÍTULO VII – DA CERTIFICAÇÃO DE CONHECIMENTOS ANTERIORES
 
 #### Art. 87.
 
@@ -743,7 +743,7 @@ Caberá à Direção de Ensino, Pesquisa e Extensão do Câmpus encaminhar o res
 
 **Parágrafo único.** Os componentes curriculares com certificação de conhecimento serão cadastrados, pela Secretaria Acadêmica do Câmpus, no sistema de controle acadêmico com a frequência integral e o desempenho atingido pelo estudante.
 
-## CAPÍTULO VIII – DA FREQUÊNCIA
+### CAPÍTULO VIII – DA FREQUÊNCIA
 
 #### Art. 91.
 
@@ -763,7 +763,7 @@ A Direção de Ensino, Pesquisa e Extensão do Câmpus, de comum acordo com o(s)
 
 **§ 2º** Encerrado o evento, o estudante deverá imediatamente apresentar ao(s) professor(es) documento comprobatório de sua participação no mesmo, no prazo máximo de cinco (5) dias, a fim de que sejam justificadas as faltas e marcadas as avaliações perdidas no período de afastamento.
 
-## CAPÍTULO IX – DO REGIME DOMICILIAR DE ESTUDOS
+### CAPÍTULO IX – DO REGIME DOMICILIAR DE ESTUDOS
 
 #### Art. 94.
 
@@ -794,7 +794,7 @@ Ao estudante que estiver impedido de frequentar as aulas, tendo em vista interna
 
 O estudante de curso na modalidade de Educação a Distância deverá seguir os mesmos procedimentos orientados nos artigos deste capítulo, sendo que terá de entregar as documentações solicitadas no polo em que encontra-se matriculado e assiste às aulas. Este último deverá encaminhar as documentações recebidas para o Setor EAD, por via postal, no prazo de até cinco (05) dias após seu recebimento.
 
-## CAPÍTULO X – DAS NORMAS GERAIS DE AVALIAÇÃO
+### CAPÍTULO X – DAS NORMAS GERAIS DE AVALIAÇÃO
 
 #### Art. 100.
 
@@ -808,7 +808,7 @@ Os cursos com regime de oferta semestral e matrícula por componente curricular 
 
 O estudante que obtiver reprovação em componente(s) curricular(es) terá progressão total ou parcial para o semestre seguinte, e deverá cursar o(s) componente(s) em regime de dependência preferencialmente na próxima oferta regular do curso.
 
-**Parágrafo único** –** Os acadêmicos com direito à progressão parcial poderão optar por matricular-se apenas nas disciplinas em dependência. *(Retificado pela Resolução nº 02/2017)*
+**Parágrafo único** – Os acadêmicos com direito à progressão parcial poderão optar por matricular-se apenas nas disciplinas em dependência. *(Retificado pela Resolução nº 02/2017)*
 
 #### Art. 103.
 
@@ -818,7 +818,7 @@ Na impossibilidade de cursar o componente curricular em regime de dependência, 
 
 ~~Os acadêmicos que reprovarem em 4 (quatro) ou mais disciplinas deverão, obrigatoriamente, matricular-se somente nessas unidades curriculares.~~ *(Revogado pela Resolução nº 02/2017)*
 
-## CAPÍTULO XI – DO REGISTRO E ARQUIVAMENTO DOS RESULTADOS DA AVALIAÇÃO
+### CAPÍTULO XI – DO REGISTRO E ARQUIVAMENTO DOS RESULTADOS DA AVALIAÇÃO
 
 #### Art. 105.
 
@@ -842,7 +842,7 @@ Compete à Secretaria acadêmica do Câmpus fornecer ao estudante, mediante requ
 
 **§ 3º** É de inteira responsabilidade do estudante conferir os documentos referentes à sua vida acadêmica emitidos pela Secretaria Acadêmica do Câmpus, solicitando sua correção, se for o caso. A Secretaria Acadêmica tem o prazo de até trinta (30) dias, a partir do pedido de correção do documento pelo estudante, para analisar o pedido junto com o responsável pela informação questionada (docente e direção de ensino, pesquisa e extensão do Câmpus) e emitir o documento corrigido, quando for o caso.
 
-## CAPÍTULO XII – DA ADAPTAÇÃO CURRICULAR
+### CAPÍTULO XII – DA ADAPTAÇÃO CURRICULAR
 
 #### Art. 108.
 
@@ -861,7 +861,7 @@ O estudante que for submetido à adaptação curricular poderá cumpri-la median
 
 Após conclusão da adaptação, compete à Secretaria Acadêmica proceder aos devidos registros no Histórico Escolar do estudante.
 
-## CAPÍTULO XIII – DA INTEGRALIZAÇÃO E JUBILAMENTO DOS CURSOS
+### CAPÍTULO XIII – DA INTEGRALIZAÇÃO E JUBILAMENTO DOS CURSOS
 
 #### Art. 111.
 

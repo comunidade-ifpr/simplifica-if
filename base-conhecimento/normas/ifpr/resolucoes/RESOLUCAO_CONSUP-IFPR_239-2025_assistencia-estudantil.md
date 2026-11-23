@@ -70,6 +70,7 @@ A Política Institucional de Assistência Estudantil no IFPR se pautará nos pri
 - **V –** Formação humana integral no processo de aprendizagem do estudante;
 - **VI –** Avanço no processo de universalização da Assistência Estudantil;
 - **VII –** Articulação entre os programas, projetos e ações relacionados à assistência estudantil com as demais políticas institucionais.
+
 #### Art. 4º
 
 São objetivos da Política Institucional de Assistência Estudantil:
@@ -83,6 +84,7 @@ São objetivos da Política Institucional de Assistência Estudantil:
 - **VII –** Incentivar a participação de estudantes em competições e eventos de natureza esportiva e acadêmica;
 - **VIII –** Estimular as iniciativas de formação, extensão e pesquisa específicas para a área de assistência estudantil;
 - **IX –** Promover o controle social por meio de instâncias de acompanhamento e avaliação;
+
 ### CAPÍTULO II
 
 #### DO FUNCIONAMENTO
@@ -117,6 +119,7 @@ A Política Institucional de Assistência Estudantil poderá abranger os seguint
 - **XII –** Pé de Meia;
 - **XIII –** Programa Dignidade Menstrual (PRODIM);
 - **XIV –** Outros programas, desde que estejam em consonância com a Lei 14.914/2024, observadas as dotações orçamentárias existentes.
+
 #### Art. 8°.
 
 Os programas e as ações de assistência estudantil, no âmbito da Política Institucional de Assistência Estudantil , executados pelo IFPR deverão considerar:
@@ -124,15 +127,14 @@ Os programas e as ações de assistência estudantil, no âmbito da Política In
 - **I –** As especificidades, as áreas estratégicas de ensino, pesquisa, extensão e inovação, as necessidades do corpo discente especialmente as situações de vulnerabilidade socioeconômica;
 - **II –** A necessidade de viabilizar a igualdade de oportunidades, de contribuir para a melhoria do desempenho acadêmico e de agir, preventivamente, nas situações de risco de retenção e de evasão decorrentes da insuficiência de condições financeiras ou de outras hipossuficiências associadas à situação de vulnerabilidade social.
 - **III –** Avaliação da condição socioeconômica do estudante expressa por meio de Índice de Vulnerabilidade Socioeconômica (IVS) cujos critérios serão definidos em ato normativo específico.
+
 #### Art. 9º.
 
 Os programas, projetos, serviços e ações de assistência estudantil serão regulamentados por normativas específicas.
 
 #### Art. 10.
 
-Os critérios, a metodologia para a seleção de beneficiários; a documentação exigível para a comprovação de elegibilidade; os requisitos adicionais para programas e projetos de repasse financeiro, bem como os instrumentos de acompanhamento e avaliação da Política Institucional de Assistência Estudantil , serão especificados em normativa institucional própria, considerando as prerrogativas da Lei
-
-14.914/2024.
+Os critérios, a metodologia para a seleção de beneficiários; a documentação exigível para a comprovação de elegibilidade; os requisitos adicionais para programas e projetos de repasse financeiro, bem como os instrumentos de acompanhamento e avaliação da Política Institucional de Assistência Estudantil , serão especificados em normativa institucional própria, considerando as prerrogativas da Lei 14.914/2024.
 
 ### CAPÍTULO IV
 
@@ -162,4 +164,8 @@ Esta resolução deverá ser revista a cada 5 anos.
 
 #### Art. 14.
 
-Esta resolução entrará em vigor após a sua publicação. 17/06/2025, às 12:19, conforme horário oficial de Brasília, com fundamento no art. 6º, caput, do Decreto nº 8.539, de 8 de outubro de 2015. acao=documento_conferir&id_orgao_acesso_externo=0, informando o código verificador 3633841 e Rua Emilio Bertolini, nº 54, Curitiba - PR | CEP CEP 82920-030 - Brasil
+Esta resolução entrará em vigor após a sua publicação.
+
+<!-- fora-do-ato: resto da assinatura eletrônica do SEI, truncado na conversão -->
+17/06/2025, às 12:19, conforme horário oficial de Brasília, com fundamento no art. 6º, caput, do Decreto nº 8.539, de 8 de outubro de 2015. acao=documento_conferir&id_orgao_acesso_externo=0, informando o código verificador 3633841 e Rua Emilio Bertolini, nº 54, Curitiba - PR | CEP CEP 82920-030 - Brasil
+<!-- /fora-do-ato -->

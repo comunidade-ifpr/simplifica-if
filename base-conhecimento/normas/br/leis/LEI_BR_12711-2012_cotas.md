@@ -35,7 +35,7 @@ alterada_por:
 
 **Dispõe sobre o ingresso nas universidades federais e nas instituições federais de ensino técnico de nível médio e dá outras providências.**
 
-Presidenta da República: Dilma Rousseff
+Presidenta da República: Dilma Rousseff  
 Data de Sanção: 29 de agosto de 2012
 
 ---
@@ -92,8 +92,8 @@ Esta Lei entra em vigor na data de sua publicação.
 
 ### Período de Vigência
 
-**Início**: 29 de agosto de 2012
-**Avaliação**: 10 anos após vigência (2022)
+**Início**: 29 de agosto de 2012  
+**Avaliação**: 10 anos após vigência (2022)  
 **Status**: Vigente com possibilidade de renovação ou modificação
 
 ### Aplicação por Instituição
@@ -103,11 +103,13 @@ Esta Lei entra em vigor na data de sua publicação.
 **Modalidade**: Entrada ao nível superior (graduação)
 
 **Reserva Obrigatória de Vagas**:
+
 - 50% para egressos de escolas públicas
   - 50% desses 50% = 25% para baixa renda (≤ 1,5 SM per capita)
   - 50% desses 50% = 25% para renda maior (> 1,5 SM per capita)
 
 **Distribuição de Raça/Etnia** (dos 50% para egressos de escola pública):
+
 - Proporção mínima igual à população estadual de pretos, pardos e indígenas (IBGE)
 - Exemplo: Se estado tem 30% de PPI, mínimo 30% das vagas de escola pública devem ser para PPI
 
@@ -120,11 +122,13 @@ Esta Lei entra em vigor na data de sua publicação.
 **Modalidade**: Entrada ao ensino técnico (fundamental completo)
 
 **Reserva Obrigatória de Vagas**:
+
 - 50% para egressos de escolas públicas
   - 50% desses 50% = 25% para baixa renda
   - 50% desses 50% = 25% para renda maior
 
 **Distribuição de Raça/Etnia** (dos 50% para egressos de escola pública):
+
 - Proporção mínima igual à população estadual de PPI (IBGE)
 
 **Implementação Progressiva**:
@@ -133,6 +137,7 @@ Esta Lei entra em vigor na data de sua publicação.
 ### Mecanismo de Verificação (Parágrafo Único, Arts. 3º e 5º)
 
 Instituições devem implementar **mecanismos de comprovação de autodeclaração** de pretos, pardos e indígenas:
+
 - Entrevistas
 - Análise de documentação
 - Comissões de heteroidentificação
@@ -143,6 +148,7 @@ Instituições devem implementar **mecanismos de comprovação de autodeclaraç�
 **Responsabilidade**: Ministério da Educação
 
 **Aspectos Monitorados**:
+
 1. Trajetória acadêmica de beneficiários
 2. Taxa de conclusão
 3. Tempo médio de conclusão
@@ -151,6 +157,7 @@ Instituições devem implementar **mecanismos de comprovação de autodeclaraç�
 **Avaliação Periódica**: Após 10 anos (2022)
 
 **Possibilidades Após Avaliação**:
+
 - Renovação
 - Modificação
 - Revogação
@@ -191,6 +198,7 @@ Instituições devem implementar **mecanismos de comprovação de autodeclaraç�
 ### Interseccionalidade de Critérios
 
 A Lei articula:
+
 - **Origem escolar**: Escola pública (EP) vs. privada
 - **Renda**: Até 1,5 SM per capita vs. acima
 - **Raça/Etnia**: PPI (Preto, Pardo, Indígena) vs. demais
@@ -245,6 +253,7 @@ A Lei articula:
 ### Egressos de Escola Pública
 
 **Critério**: Ter cursado **integralmente**:
+
 - Ensino médio completo (universidades)
 - Ensino fundamental completo (institutos técnicos)
 
@@ -253,6 +262,7 @@ A Lei articula:
 ### Autodeclaração de Raça/Etnia
 
 **Opções**:
+
 - Preto
 - Pardo
 - Indígena
@@ -280,8 +290,8 @@ A Lei articula:
 
 ---
 
-**Processamento**: Convertido de HTML para Markdown estruturado
-**Data de Processamento**: 2025-11-17
-**Fonte**: Câmara dos Deputados
-**Status**: Vigente
+**Processamento**: Convertido de HTML para Markdown estruturado  
+**Data de Processamento**: 2025-11-17  
+**Fonte**: Câmara dos Deputados  
+**Status**: Vigente  
 **Avaliação Periódica**: 10 anos após vigência (2022 - já passou)
