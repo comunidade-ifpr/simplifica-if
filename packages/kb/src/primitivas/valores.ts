@@ -149,20 +149,6 @@ export function arredondarParaPar(valor: number, casas: number): number {
   return resultado === 0 && negativo ? -0 : resultado;
 }
 
-/**
- * Número com `casas` decimais fixas: arredonda o valor binário exato com empate
- * para o par (o `toFixed` do JavaScript desempata para cima: `0.125` dá `0.13`;
- * aqui, `0.12`) e mantém o sinal de `-0.0`.
- */
-export function formatoFixo(valor: number, casas: number): string {
-  if (Number.isNaN(valor)) return "nan";
-  if (!Number.isFinite(valor)) return valor > 0 ? "inf" : "-inf";
-  const arredondado = arredondarParaPar(valor, casas);
-  const texto = Math.abs(arredondado).toFixed(casas);
-  const negativo = arredondado < 0 || Object.is(arredondado, -0);
-  return negativo ? `-${texto}` : texto;
-}
-
 /** Representação de um valor JSON: texto entre aspas simples, `None`, `True`, `False`, listas e objetos com `, ` e `: `. */
 export function representacaoDoValor(valor: unknown): string {
   if (valor === null || valor === undefined) return "None";
