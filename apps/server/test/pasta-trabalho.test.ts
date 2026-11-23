@@ -16,7 +16,6 @@ import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
-import * as Stream from "effect/Stream";
 import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
 import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { comNumero } from "../src/nome-livre.ts";
@@ -31,6 +30,7 @@ import {
   novoRegistro,
   pedirHttp,
   TOKEN,
+  turnoRpc,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -169,9 +169,16 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         montarDocx({ corpo: par("Dispõe sobre o estágio.") + par("Art. 1º O estágio é obrigatório.") }),
       );
       yield* liberar(minuta);
+      // O índice dos textos guarda o resultado e deixa o anexo pendente, para o próximo turno o avisar.
+      const indice = (de = pasta) =>
+        JSON.parse(NodeFS.readFileSync(NodePath.join(de, ".simplifica", "textos", "indice.json"), "utf8")) as Record<
+          string,
+          { origem: string; texto: boolean; pendente?: string; semTexto?: string }
+        >;
       const anexado = yield* rpc["pasta.anexar"]({ pasta, arquivo: minuta });
-      assert.deepInclude(anexado, { nome: "Minuta.docx", texto: ".simplifica/textos/Minuta.docx.md" });
-      assert.notProperty(anexado, "semTexto");
+      assert.deepInclude(anexado, { nome: "Minuta.docx", origem: "anexado" });
+      assert.deepInclude(indice()["Minuta.docx"], { texto: true, pendente: "anexado" });
+      assert.notProperty(indice()["Minuta.docx"], "semTexto");
       const texto = NodeFS.readFileSync(NodePath.join(pasta, ".simplifica", "textos", "Minuta.docx.md"), "utf8");
       assert.match(
         texto,
@@ -183,14 +190,14 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
 
       // O anexo repetido ganha " (2)", e o texto dele também.
       const repetido = yield* rpc["pasta.anexar"]({ pasta, arquivo: minuta });
-      assert.strictEqual(repetido.texto, ".simplifica/textos/Minuta (2).docx.md");
+      assert.strictEqual(repetido.nome, "Minuta (2).docx");
+      assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Minuta (2).docx.md")));
       // Barra invertida no nome (o macOS aceita): o anexo entra com o nome, e o texto, com um nome seguro.
       const barra = NodePath.join(fora, "Ata\\final.docx");
       NodeFS.copyFileSync(minuta, barra);
       yield* liberar(barra);
       const comBarra = yield* rpc["pasta.anexar"]({ pasta, arquivo: barra });
       assert.strictEqual(comBarra.nome, "Ata\\final.docx");
-      assert.strictEqual(comBarra.texto, ".simplifica/textos/Ata_final.docx.md");
       assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Ata_final.docx.md")));
 
       // O arquivo que não é DOCX entra, sem texto e com o motivo para a nota.
@@ -199,8 +206,8 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       yield* liberar(quebrado);
       const semTexto = yield* rpc["pasta.anexar"]({ pasta, arquivo: quebrado });
       assert.strictEqual(semTexto.nome, "Quebrado.docx");
-      assert.notProperty(semTexto, "texto");
-      assert.match(semTexto.semTexto ?? "", /não é um DOCX/);
+      assert.deepInclude(indice()["Quebrado.docx"], { texto: false, pendente: "anexado" });
+      assert.match(indice()["Quebrado.docx"]?.semTexto ?? "", /não é um DOCX/);
       assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, "Quebrado.docx")));
       assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Quebrado.docx.md")));
 
@@ -208,16 +215,16 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       const nota = NodePath.join(fora, "nota.md");
       NodeFS.writeFileSync(nota, "# Nota\n");
       yield* liberar(nota);
-      const md = yield* rpc["pasta.anexar"]({ pasta, arquivo: nota });
-      assert.notProperty(md, "texto");
-      assert.notProperty(md, "semTexto");
+      yield* rpc["pasta.anexar"]({ pasta, arquivo: nota });
+      assert.deepStrictEqual(indice()["nota.md"], { origem: "", texto: false, pendente: "anexado" });
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "nota.md.md")));
 
       // Um link no lugar de `.simplifica` (a IA escreve na pasta) não leva o texto para fora dela.
       const { pasta: outra } = yield* rpc["pasta.criar"]({ titulo: "Texto com link" });
       const alvo = diretorioTemporario("simplifica-alvo-texto-");
       NodeFS.symlinkSync(alvo, NodePath.join(outra, ".simplifica"));
-      const comLink = yield* rpc["pasta.anexar"]({ pasta: outra, arquivo: minuta });
-      assert.strictEqual(comLink.texto, ".simplifica/textos/Minuta.docx.md");
+      yield* rpc["pasta.anexar"]({ pasta: outra, arquivo: minuta });
+      assert.isTrue(NodeFS.existsSync(NodePath.join(outra, ".simplifica", "textos", "Minuta.docx.md")));
       assert.deepStrictEqual(NodeFS.readdirSync(alvo), []);
       assert.isTrue(NodeFS.lstatSync(NodePath.join(outra, ".simplifica")).isDirectory());
     }).pipe(Effect.scoped),
@@ -231,11 +238,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "original\n");
       NodeFS.writeFileSync(NodePath.join(pasta, "velho.docx"), montarDocx({ corpo: par("Velho.") }));
       const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-      const turno = (texto: string) =>
-        rpc["conversa.enviar"]({ sessao, texto }).pipe(
-          Stream.runCollect,
-          Effect.map((eventos) => [...eventos]),
-        );
+      const turno = (texto: string) => turnoRpc(rpc, sessao, texto);
 
       // Primeiro turno: sem turno anterior para comparar, mas o .docx posto antes ganha o texto e é avisado.
       const primeiro = yield* turno("oi");
@@ -243,6 +246,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         primeiro.find((evento) => evento._tag === "MudancasPasta"),
         {
           _tag: "MudancasPasta",
+          anexados: [],
           novos: [{ nome: "velho.docx", texto: ".simplifica/textos/velho.docx.md" }],
           mudados: [],
           removidos: [],
@@ -260,7 +264,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       NodeFS.rmSync(NodePath.join(pasta, "velho.docx"));
       // A trava do Word com o documento aberto não é documento da pessoa.
       NodeFS.writeFileSync(NodePath.join(pasta, "~$entrada.docx"), "trava");
-      // O anexo do app não se repete como novo: a nota do pedido já o trouxe.
+      // O anexo do app vai num grupo só dele, não como novo.
       const anexo = NodePath.join(fora, "anexo.md");
       NodeFS.writeFileSync(anexo, "# Anexo\n");
       yield* pedirHttp(urlRpc.replace(/\/rpc$/, CAMINHO_LIBERAR_ARQUIVO), {
@@ -274,6 +278,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       const mudancas = terceiro.find((evento) => evento._tag === "MudancasPasta");
       assert.deepStrictEqual(mudancas, {
         _tag: "MudancasPasta",
+        anexados: [{ nome: "anexo.md" }],
         novos: [{ nome: "atas/Ata.docx", texto: ".simplifica/textos/atas/Ata.docx.md" }],
         mudados: [{ nome: "entrada.md" }],
         removidos: ["velho.docx"],
@@ -286,11 +291,13 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "velho.docx.md")));
       // A IA recebe a mensagem e o aviso; o histórico guarda a mensagem e o evento à parte.
       const pedido = registro.textos.at(-1) ?? "";
-      assert.match(pedido, /^confira de novo\n\nDesde a sua última resposta, a pessoa mexeu na pasta da tarefa/);
+      assert.match(
+        pedido,
+        /^confira de novo\n\nA pessoa anexou à pasta da tarefa:\n- `anexo\.md`\n\nDesde a sua última resposta, a pessoa mexeu na pasta da tarefa/,
+      );
       assert.include(pedido, "- `atas/Ata.docx`: leia a versão em texto, `.simplifica/textos/atas/Ata.docx.md`");
       assert.include(pedido, "Arquivos mudados (releia antes de responder sobre eles):\n- `entrada.md`");
       assert.include(pedido, "Arquivos removidos:\n- `velho.docx`");
-      assert.notInclude(pedido, "anexo.md");
       const gravada = yield* rpc["conversa.carregar"]({ sessao });
       const doTurno = gravada.itens.filter((item) => item.turno === 3);
       assert.deepStrictEqual(
@@ -312,9 +319,8 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       docx("Minuta.docx", "Versão 1.");
       const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
       const turno = (texto: string) =>
-        rpc["conversa.enviar"]({ sessao, texto }).pipe(
-          Stream.runCollect,
-          Effect.map((eventos) => [...eventos].find((evento) => evento._tag === "MudancasPasta")),
+        turnoRpc(rpc, sessao, texto).pipe(
+          Effect.map((eventos) => eventos.find((evento) => evento._tag === "MudancasPasta")),
         );
       yield* turno("oi");
       assert.include(NodeFS.readFileSync(textoDe("Minuta.docx"), "utf8"), "Versão 1.");
@@ -372,9 +378,8 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       NodeFS.writeFileSync(NodePath.join(alvoFora, "Segredo.docx"), montarDocx({ corpo: par("CONTEÚDO DE FORA.") }));
       const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
       const turno = (texto: string) =>
-        rpc["conversa.enviar"]({ sessao, texto }).pipe(
-          Stream.runCollect,
-          Effect.map((eventos) => [...eventos].find((evento) => evento._tag === "MudancasPasta")),
+        turnoRpc(rpc, sessao, texto).pipe(
+          Effect.map((eventos) => eventos.find((evento) => evento._tag === "MudancasPasta")),
         );
       yield* turno("oi");
       assert.include(NodeFS.readFileSync(NodePath.join(textos, "atas", "Ata.docx.md"), "utf8"), "Ata da pasta.");
@@ -410,15 +415,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       NodeFS.mkdirSync(NodePath.join(pasta, ".simplifica"), { recursive: true });
       NodeFS.writeFileSync(NodePath.join(pasta, ".simplifica", "oculto.md"), "x");
 
-      const turno = (texto: string) =>
-        rpc["conversa.enviar"]({ sessao, texto }).pipe(
-          Stream.tap((evento) =>
-            evento._tag === "PedidoAprovacao"
-              ? rpc["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
-              : Effect.void,
-          ),
-          Stream.runDrain,
-        );
+      const turno = (texto: string) => turnoRpc(rpc, sessao, texto, { aprovar: true });
 
       yield* turno("oi"); // turno 1: não muda nada
       // O primeiro turno da tarefa indica a skill à IA; o histórico guarda só o que a pessoa escreveu.
@@ -485,14 +482,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "original\n");
       NodeFS.writeFileSync(NodePath.join(pasta, "nota.md"), "nota\n");
       const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-      yield* rpc["conversa.enviar"]({ sessao, texto: "grave com subpasta" }).pipe(
-        Stream.tap((evento) =>
-          evento._tag === "PedidoAprovacao"
-            ? rpc["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
-            : Effect.void,
-        ),
-        Stream.runDrain,
-      );
+      yield* turnoRpc(rpc, sessao, "grave com subpasta", { aprovar: true });
       // Depois do turno, a pessoa edita no Word a entrada (mudada pela IA) e a nota (que a IA não tocou).
       NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "editado pela pessoa\n");
       NodeFS.writeFileSync(NodePath.join(pasta, "nota.md"), "nota editada\n");
@@ -510,14 +500,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
 
       // Escolhendo incluir: a entrada volta ao que era antes do turno; a nota continua da pessoa.
       const { sessao: outra } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-      yield* rpc["conversa.enviar"]({ sessao: outra, texto: "grave" }).pipe(
-        Stream.tap((evento) =>
-          evento._tag === "PedidoAprovacao"
-            ? rpc["conversa.responderAprovacao"]({ sessao: outra, aprovacao: evento.id, decisao: "permitir" })
-            : Effect.void,
-        ),
-        Stream.runDrain,
-      );
+      yield* turnoRpc(rpc, outra, "grave", { aprovar: true });
       NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "de novo pela pessoa\n");
       yield* rpc["pasta.desfazer"]({ sessao: outra, incluirForaDaConversa: true });
       assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "entrada.md"), "utf8"), "editado pela pessoa\n");
@@ -532,10 +515,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Grande" });
       const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-      const emAndamento = yield* rpc["conversa.enviar"]({ sessao, texto: "demore" }).pipe(
-        Stream.runDrain,
-        Effect.forkScoped,
-      );
+      const emAndamento = yield* turnoRpc(rpc, sessao, "demore").pipe(Effect.forkScoped);
       // Espera o turno começar (o estado passa a `respondendo`).
       yield* Effect.repeat(rpc["conversa.carregar"]({ sessao }), {
         until: (gravada) => gravada.conversa.estado === "respondendo",
@@ -547,7 +527,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       yield* Fiber.await(emAndamento);
 
       NodeFS.writeFileSync(NodePath.join(pasta, "grande.bin"), Buffer.alloc(128 * 1024));
-      yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(Stream.runDrain);
+      yield* turnoRpc(rpc, sessao, "oi");
       const vista = yield* rpc["pasta.ver"]({ sessao });
       assert.isFalse(vista.desfazer.disponivel);
       assert.match(vista.desfazer.aviso ?? "", /não guardou a cópia/);
@@ -565,12 +545,9 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
         // O id nativo que o driver falso deu à sessão desta conversa.
         const idNativo = `nativo-${registro.configs.length}`;
-        yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(Stream.runDrain);
+        yield* turnoRpc(rpc, sessao, "oi");
         assert.isTrue(NodeFS.existsSync(NodePath.join(copias, sessao)));
-        const emAndamento = yield* rpc["conversa.enviar"]({ sessao, texto: "demore" }).pipe(
-          Stream.runDrain,
-          Effect.forkScoped,
-        );
+        const emAndamento = yield* turnoRpc(rpc, sessao, "demore").pipe(Effect.forkScoped);
         yield* Effect.repeat(rpc["conversa.carregar"]({ sessao }), {
           until: (gravada) => gravada.conversa.estado === "respondendo",
         });
@@ -642,14 +619,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         NodeFS.writeFileSync(NodePath.join(pasta, "sub", "a.txt"), "A\n");
         const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
         // O turno "da IA": troca x.txt por link para fora e muda sub/a.txt.
-        yield* rpc["conversa.enviar"]({ sessao, texto: `grave link:${NodePath.join(alvoFora, "alvo.txt")}` }).pipe(
-          Stream.tap((evento) =>
-            evento._tag === "PedidoAprovacao"
-              ? rpc["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
-              : Effect.void,
-          ),
-          Stream.runDrain,
-        );
+        yield* turnoRpc(rpc, sessao, `grave link:${NodePath.join(alvoFora, "alvo.txt")}`, { aprovar: true });
         const vista = yield* rpc["pasta.ver"]({ sessao });
         assert.isTrue(vista.desfazer.disponivel);
         // Entre a previsão e o Desfazer, a pasta vira link para fora.

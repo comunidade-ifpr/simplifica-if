@@ -152,7 +152,7 @@ const layerConversa = GrupoConversa.toLayer(
     return GrupoConversa.of({
       "conversa.iniciar": (entrada) =>
         traduzir("conversa.iniciar", conversas.iniciar(entrada).pipe(Effect.map((sessao) => ({ sessao })))),
-      "conversa.enviar": ({ sessao, texto }) => traduzirStream("conversa.enviar", conversas.enviar(sessao, texto)),
+      "conversa.enviar": ({ sessao, texto }) => traduzir("conversa.enviar", conversas.enviar(sessao, texto)),
       "conversa.responderAprovacao": ({ sessao, aprovacao, decisao }) =>
         traduzir("conversa.responderAprovacao", conversas.responderAprovacao(sessao, aprovacao, decisao)),
       "conversa.interromper": ({ sessao }) => traduzir("conversa.interromper", conversas.interromper(sessao)),

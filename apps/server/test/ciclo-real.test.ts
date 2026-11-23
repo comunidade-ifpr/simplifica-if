@@ -40,7 +40,6 @@ import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Scope from "effect/Scope";
-import * as Stream from "effect/Stream";
 import { type EventoConversa, Provider } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
@@ -48,6 +47,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
+import { turnoAoVivo } from "./apoio.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
 import * as Preferencias from "../src/persistencia/Preferencias.ts";
@@ -205,22 +205,17 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
           const turno = (conversas: Conversas.Conversas["Service"], id: string, texto: string, rotulo: string) =>
             Effect.gen(function* () {
               const tempo = yield* cronometro;
-              const eventos = [
-                ...(yield* Stream.runCollect(
-                  conversas
-                    .enviar(id, texto)
-                    .pipe(
-                      Stream.tap((evento) =>
-                        evento._tag === "PedidoAprovacao"
-                          ? Effect.sync(() => pedidos.push(evento.ferramenta)).pipe(
-                              Effect.andThen(conversas.responderAprovacao(id, evento.id, "negar")),
-                              Effect.ignore,
-                            )
-                          : Effect.void,
-                      ),
-                    ),
-                )),
-              ];
+              const eventos = yield* turnoAoVivo(
+                (depois) => conversas.acompanhar(id, depois),
+                conversas.enviar(id, texto),
+                (evento) =>
+                  evento._tag === "PedidoAprovacao"
+                    ? Effect.sync(() => pedidos.push(evento.ferramenta)).pipe(
+                        Effect.andThen(conversas.responderAprovacao(id, evento.id, "negar")),
+                        Effect.ignore,
+                      )
+                    : Effect.void,
+              );
               const fim = eventos.at(-1);
               yield* log(
                 provider,
@@ -240,15 +235,14 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
             Effect.gen(function* () {
               const tempo = yield* cronometro;
               const marco = yield* Deferred.make<void>();
-              const fibra = yield* conversas.enviar(id, PEDIDO_LONGO).pipe(
-                Stream.tap((evento) =>
+              const fibra = yield* turnoAoVivo(
+                (depois) => conversas.acompanhar(id, depois),
+                conversas.enviar(id, PEDIDO_LONGO),
+                (evento) =>
                   evento._tag === "FerramentaConcluida" || evento._tag === "TextoParcial"
                     ? Deferred.succeed(marco, undefined)
                     : Effect.void,
-                ),
-                Stream.runCollect,
-                Effect.forkChild,
-              );
+              ).pipe(Effect.forkChild);
               yield* Deferred.await(marco);
               const tempoAcao = yield* tempo;
               const depoisDaAcao = yield* cronometro;

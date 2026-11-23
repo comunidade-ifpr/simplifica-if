@@ -7,7 +7,8 @@ import { afterAll, assert, layer } from "@effect/vitest";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Servidor from "@simplifica-if/server";
-import type { ControleConversa } from "../src/conversa/ControleConversa.ts";
+import type { Api } from "../src/conexao/api.ts";
+import { ControleConversa } from "../src/conversa/ControleConversa.ts";
 import type { EstadoConversa } from "../src/conversa/estado.ts";
 import { inicializar } from "../src/inicializar.ts";
 import {
@@ -44,6 +45,32 @@ const app = Effect.acquireRelease(
   ),
   (iniciado) => Effect.promise(() => iniciado.encerrar()),
 );
+
+/**
+ * A `Api` com a queda da conexão sob comando: `derrubar` corta o acompanhamento em curso como o socket
+ * que cai (o stream rejeita com `RpcClientError`), sem parar nada no servidor.
+ */
+const comQueda = (api: Api) => {
+  let derrubar: (() => void) | undefined;
+  const instavel: Api = {
+    ...api,
+    acompanhar: (fluxo, aoItem) => {
+      let ativo = true;
+      const real = api.acompanhar(fluxo, (item) => {
+        if (ativo) aoItem(item);
+      });
+      const queda = new Promise<never>((_, rejeitar) => {
+        derrubar = () => {
+          ativo = false;
+          real.cancelar();
+          rejeitar({ _tag: "RpcClientError", message: "socket fechado" });
+        };
+      });
+      return { fim: Promise.race([real.fim, queda]), cancelar: real.cancelar };
+    },
+  };
+  return { api: instavel, derrubar: () => derrubar?.() };
+};
 
 layer(layerServidor(), { excludeTestServices: true })("conversa pela interface", (it) => {
   it.effect("inicia, recebe texto parcial e final, ferramentas e o link ifpr://, e responde à aprovação", () =>
@@ -173,6 +200,50 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       yield* Effect.promise(() => terceira.abrir("nao-existe"));
       assert.strictEqual(terceira.obter().fase, "configurando");
       assert.deepStrictEqual(terceira.obter().erroInicio, { texto: "Esta conversa não existe mais no app." });
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("a conexão que cai no meio da resposta: a interface retoma de onde parou, sem perder nem repetir", () =>
+    Effect.gen(function* () {
+      const { contexto } = yield* app;
+      const { api, derrubar } = comQueda(contexto.api);
+      const conversa = new ControleConversa(api);
+      conversa.escolher({ provider: "claude", pastaTrabalho: pasta });
+      yield* Effect.promise(() => conversa.iniciar());
+      conversa.enviar("Uma resposta demorada");
+      yield* esperar(conversa, (estado) =>
+        estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
+      );
+      derrubar();
+      // O turno segue no servidor; a interface volta a acompanhá-lo e o interrompe.
+      yield* Effect.promise(() => conversa.interromper());
+      const fim = yield* esperar(conversa, (estado) => estado.fase === "pronta");
+      assert.isFalse(fim.itens.some((item) => item.tipo === "aviso" && item.gravidade === "erro"));
+      // A resposta aberta na queda voltou pelo texto acumulado do servidor, uma vez só.
+      const abertas = fim.itens.filter((item) => item.tipo === "resposta" && item.texto.includes("demorar"));
+      assert.deepStrictEqual(
+        abertas.map((item) => (item.tipo === "resposta" ? [item.texto, item.final] : [])),
+        [["Esta resposta vai demorar", true]],
+      );
+      assert.deepInclude(fim.itens.at(-1), { tipo: "aviso", texto: "Resposta interrompida." });
+      assert.strictEqual(fim.estadoServidor, "pronta");
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("o turno que falha com a sessão viva deixa a conversa pronta, não caída", () =>
+    Effect.gen(function* () {
+      const { contexto } = yield* app;
+      const { conversa } = contexto;
+      conversa.escolher({ provider: "codex", pastaTrabalho: pasta });
+      yield* Effect.promise(() => conversa.iniciar());
+      conversa.enviar("Estourei o limite de uso?");
+      const fim = yield* esperar(
+        conversa,
+        (estado) => estado.fase === "pronta" && estado.itens.some((item) => item.tipo === "aviso"),
+      );
+      assert.deepInclude(fim.itens.at(-1), { tipo: "aviso", gravidade: "erro" });
+      // A sessão do provider continua aberta: o servidor diz `pronta`, e a interface não fala em queda.
+      assert.strictEqual(fim.estadoServidor, "pronta");
     }).pipe(Effect.scoped),
   );
 

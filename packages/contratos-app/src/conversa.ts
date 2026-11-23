@@ -100,13 +100,6 @@ export const ItemMensagem = Schema.TaggedStruct("Mensagem", {
 export const EventoConversa = Schema.Union([Evento, MudancasPasta]);
 export type EventoConversa = typeof EventoConversa.Type;
 
-/**
- * O `motivo` do `FimTurno` quando o turno acaba durante o preparo (a cópia da pasta e os textos), antes
- * de a IA receber a mensagem: o "Parar", ou a conversa encerrada. A mensagem fica no histórico, e a IA
- * não a viu.
- */
-export const MOTIVO_PARADO_ANTES_DO_ENVIO = "parado_antes_do_envio";
-
 export const ItemEvento = Schema.TaggedStruct("EventoTurno", {
   turno: Schema.Number,
   ordem: Schema.Number,
@@ -121,6 +114,20 @@ export const ItemDecisao = Schema.TaggedStruct("DecisaoAprovacao", {
 });
 export const ItemConversa = Schema.Union([ItemMensagem, ItemEvento, ItemDecisao]);
 export type ItemConversa = typeof ItemConversa.Type;
+
+/**
+ * O estado da conversa, como o servidor o vê, em `conversa.acompanhar`: o de agora ao começar e cada
+ * mudança depois (`respondendo` ao abrir o turno, o estado em repouso ao fechá-lo). Não se grava.
+ */
+export const EstadoAoVivo = Schema.TaggedStruct("Estado", { estado: EstadoConversa });
+
+/** O que `conversa.acompanhar` entrega: os itens da conversa e o estado dela. */
+export const ItemAoVivo = Schema.Union([ItemConversa, EstadoAoVivo]);
+export type ItemAoVivo = typeof ItemAoVivo.Type;
+
+/** O turno que `conversa.enviar` abriu: o número e a `ordem` da mensagem gravada. */
+export const TurnoAberto = Schema.Struct({ turno: Schema.Number, ordem: Schema.Number });
+export type TurnoAberto = typeof TurnoAberto.Type;
 
 /** Uma conversa com o histórico inteiro. */
 /** A avaliação de uma resposta (👍/👎), por turno. */
@@ -187,15 +194,15 @@ export class GrupoConversa extends RpcGroup.make(
     error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida, AvisoNaoAceito]),
   }),
   /**
-   * Envia a mensagem; o stream traz os eventos do turno e termina depois de `FimTurno`. Sem sessão
-   * aberta (`liberada`, `caiu`), reabre antes pela retomada. Uma falha do provider no meio do turno
+   * Abre o turno com a mensagem e responde assim que ele abre, com o número dele e a `ordem` da mensagem
+   * gravada. Sem sessão aberta (`liberada`, `caiu`), reabre antes pela retomada. O turno corre no
+   * servidor, e os itens dele chegam por `conversa.acompanhar`; uma falha do provider no meio do turno
    * chega como `Erro` e `FimTurno` (motivo `falha`), e a conversa continua.
    */
   Rpc.make("conversa.enviar", {
     payload: Schema.Struct({ sessao: Schema.String, texto: Schema.String }),
-    success: EventoConversa,
+    success: TurnoAberto,
     error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida, AvisoNaoAceito]),
-    stream: true,
   }),
   /** Responde a um `PedidoAprovacao` do turno em andamento. */
   Rpc.make("conversa.responderAprovacao", {
@@ -216,13 +223,15 @@ export class GrupoConversa extends RpcGroup.make(
   /** Uma conversa com o histórico (mensagens, eventos e decisões). */
   Rpc.make("conversa.carregar", { payload: EntradaSessao, success: ConversaGravada, error: SessaoDesconhecida }),
   /**
-   * Os itens depois de `depois` (a maior `ordem` já vista) e, se há turno em andamento, os que chegam
-   * até o `FimTurno` dele: é como a interface que recarregou volta a acompanhar a resposta. Sem turno
-   * em andamento, termina depois dos itens gravados.
+   * A conversa ao vivo: os itens gravados depois de `depois` (a maior `ordem` já vista), o texto parcial
+   * acumulado da resposta em andamento (com a `ordem` do último item gravado), o estado de agora
+   * (`Estado`) e, daí em diante, cada item e cada mudança de estado. Não termina sozinho: segue a
+   * conversa até quem acompanha cancelar ou a conversa ser apagada. É como a interface segue todo turno,
+   * e como volta a ele depois de recarregar ou de a conexão cair.
    */
   Rpc.make("conversa.acompanhar", {
     payload: Schema.Struct({ sessao: Schema.String, depois: Schema.Number }),
-    success: ItemConversa,
+    success: ItemAoVivo,
     error: SessaoDesconhecida,
     stream: true,
   }),

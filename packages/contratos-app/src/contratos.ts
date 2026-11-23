@@ -52,7 +52,7 @@ import {
   ModeloProvider,
   NivelEsforco,
 } from "@simplifica-if/motor/estados-provider";
-import { Evento, Provider } from "@simplifica-if/motor/eventos";
+import { AlvoWeb, Evento, MotivoFim, Provider, TipoFerramenta } from "@simplifica-if/motor/eventos";
 import { TipoFalha, TipoFalhaEstado } from "@simplifica-if/motor/falhas";
 import { GrupoAtualizacao } from "./atualizacao.ts";
 import { GrupoConversa } from "./conversa.ts";
@@ -67,7 +67,7 @@ import { GrupoSkills } from "./skills.ts";
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { EstadoInstalacao, EstadoLogin, EstadoProvider, ModeloProvider, NivelEsforco };
 export { TipoFalha, TipoFalhaEstado };
-export { Evento, Provider };
+export { AlvoWeb, Evento, MotivoFim, Provider, TipoFerramenta };
 export { GrupoLeitura, ROTULOS_INDICADOR };
 export type { Ancora, DadosDocumento, LinkLido };
 export type {

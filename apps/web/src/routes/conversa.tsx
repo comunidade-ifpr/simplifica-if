@@ -12,7 +12,7 @@
  * (`/conversa?id=…`). Ao recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico
  * e, se a IA estava respondendo, com o resto da resposta.
  */
-import type { ArquivoAnexado, Provider } from "@simplifica-if/contratos-app";
+import type { Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { EllipsisIcon, FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
@@ -29,7 +29,6 @@ import { etapasVistas } from "../conversa/etapas.ts";
 import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, useAnexos } from "../tarefas/comecar.tsx";
-import { comArquivos } from "../tarefas/textos.ts";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import {
@@ -161,8 +160,8 @@ function FormularioInicio() {
 }
 
 /**
- * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar,
- * e o pedido diz à IA quais chegaram, com o nome que ganharam na pasta e a versão em texto do `.docx`.
+ * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar;
+ * o servidor avisa a IA deles junto com a mensagem.
  */
 function Compositor() {
   const api = useApi();
@@ -174,16 +173,12 @@ function Compositor() {
   const ocupada = estado.fase === "respondendo" || estado.fase === "interrompendo";
   const enviar = async () => {
     setErro(undefined);
-    const anexados: Array<ArquivoAnexado> = [];
     if (anexos.length > 0) {
       setAnexando(true);
       let faltam = anexos;
       try {
         for (const arquivo of anexos) {
-          const copiado = await api.chamar((cliente) =>
-            cliente["pasta.anexar"]({ pasta: estado.pastaTrabalho, arquivo }),
-          );
-          anexados.push(copiado);
+          await api.chamar((cliente) => cliente["pasta.anexar"]({ pasta: estado.pastaTrabalho, arquivo }));
           faltam = faltam.filter((outro) => outro !== arquivo);
         }
       } catch (falha) {
@@ -195,7 +190,7 @@ function Compositor() {
         setAnexando(false);
       }
     }
-    conversa.enviar(comArquivos(texto, anexados));
+    conversa.enviar(texto);
     setTexto("");
     limpar();
   };
@@ -243,19 +238,15 @@ type Bloco =
 
 /**
  * Os itens em blocos para a tela: as chamadas de ferramenta seguidas viram um grupo (os "detalhes
- * técnicos"), e depois da última resposta de cada turno fechado vem a avaliação.
+ * técnicos"), e depois da última resposta de cada turno fechado vem a avaliação. O turno é o do item
+ * (o do servidor).
  */
 function emBlocos(itens: ReadonlyArray<Item>, turnoAberto: number | undefined): ReadonlyArray<Bloco> {
   const ultimaResposta = new Map<number, string>();
-  let turno = 0;
-  for (const item of itens) {
-    if (item.tipo === "pessoa") turno++;
-    else if (item.tipo === "resposta") ultimaResposta.set(turno, item.chave);
-  }
+  for (const item of itens) if (item.tipo === "resposta") ultimaResposta.set(item.turno, item.chave);
   const blocos: Array<Bloco> = [];
-  turno = 0;
   for (const item of itens) {
-    if (item.tipo === "pessoa") turno++;
+    const { turno } = item;
     const anterior = blocos.at(-1);
     if (item.tipo === "ferramenta") {
       if (anterior?.tipo === "ferramentas")
@@ -287,7 +278,7 @@ function DetalhesTecnicos({
         {rodando === undefined ? <WrenchIcon aria-hidden className="size-3.5" /> : <Spinner size="sm" tone="muted" />}
         {rodando === undefined
           ? `Detalhes técnicos · ${consultas}`
-          : `Consultando a base: ${rotuloFerramenta(rodando.nome)}…`}
+          : `Consultando a base: ${rotuloFerramenta(rodando)}…`}
       </summary>
       <div className="mt-2 flex flex-col gap-2 border-border border-l-2 pl-3">
         {itens.map((item) => (
@@ -313,7 +304,7 @@ function Conversa({
   const ultimo = estado.itens.at(-1);
   const tamanhoUltimo = ultimo?.tipo === "resposta" ? ultimo.texto.length : 0;
   const emTurno = estado.fase === "respondendo" || estado.fase === "interrompendo";
-  const turnoAberto = emTurno ? estado.itens.filter((item) => item.tipo === "pessoa").length : undefined;
+  const turnoAberto = emTurno ? estado.turno : undefined;
   const skill =
     catalogo.fase === "pronto" && estado.tarefa !== undefined
       ? catalogo.skills.find((candidata) => candidata.nome === estado.tarefa)

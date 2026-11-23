@@ -32,6 +32,7 @@ import {
   postarInitialize,
   type Registro,
   TOKEN,
+  turnoRpc,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -203,14 +204,7 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       assert.strictEqual(yield* postarInitialize(mcp.url, mcp.cabecalhos ?? {}), 200);
       assert.strictEqual(yield* postarInitialize(mcp.url, {}), 401);
 
-      const eventos = yield* c["conversa.enviar"]({ sessao, texto: "pode escrever?" }).pipe(
-        Stream.tap((evento) =>
-          evento._tag === "PedidoAprovacao"
-            ? c["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
-            : Effect.void,
-        ),
-        Stream.runCollect,
-      );
+      const eventos = yield* turnoRpc(c, sessao, "pode escrever?", { aprovar: true });
       assert.deepStrictEqual(
         eventos.map((evento) => evento._tag),
         ["TextoParcial", "FerramentaIniciada", "PedidoAprovacao", "FerramentaConcluida", "TextoFinal", "FimTurno"],
@@ -256,7 +250,7 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
         Effect.gen(function* () {
           const c = yield* cliente(urlRpc, AUTORIZACAO);
           const { sessao } = yield* c["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-          yield* Stream.runCollect(c["conversa.enviar"]({ sessao, texto: "olá" }));
+          yield* turnoRpc(c, sessao, "olá");
           return sessao;
         }),
       );
@@ -265,13 +259,16 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       const { conversa, itens } = yield* outro["conversa.carregar"]({ sessao });
       assert.strictEqual(conversa.estado, "pronta");
       assert.strictEqual(itens.length, 3);
-      const eventos = yield* Stream.runCollect(outro["conversa.enviar"]({ sessao, texto: "de novo" }));
+      const eventos = yield* turnoRpc(outro, sessao, "de novo");
       assert.strictEqual([...eventos].at(-1)?._tag, "FimTurno");
       assert.strictEqual(registro.encerradas, antes);
-      const acompanhados = yield* Stream.runCollect(outro["conversa.acompanhar"]({ sessao, depois: 3 }));
+      const acompanhados = yield* outro["conversa.acompanhar"]({ sessao, depois: 3 }).pipe(
+        Stream.takeUntil((item) => item._tag === "Estado"),
+        Stream.runCollect,
+      );
       assert.deepStrictEqual(
-        [...acompanhados].map((item) => item.ordem),
-        [4, 5, 6],
+        [...acompanhados].map((item) => (item._tag === "Estado" ? item.estado : item.ordem)),
+        [4, 5, 6, "pronta"],
       );
       yield* outro["conversa.encerrar"]({ sessao });
     }).pipe(Effect.scoped),

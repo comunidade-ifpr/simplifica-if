@@ -1,10 +1,10 @@
 /**
  * O começo de uma tarefa (M1.9), comum à caixa do Início e ao formulário da tarefa: a pasta em
  * `Documentos/Simplifica IF/<título>` (`pasta.criar`), os anexos copiados para ela (`pasta.anexar`), a
- * conversa com a tarefa e o pedido enviado, com a nota dos anexos (`comArquivos`). E os controles do
+ * conversa com a tarefa e o pedido enviado (o servidor avisa a IA dos anexos). E os controles do
  * começo: a escolha da IA, com o modelo e o raciocínio, e os anexos.
  */
-import type { ArquivoAnexado, ModeloProvider, Provider } from "@simplifica-if/contratos-app";
+import type { ModeloProvider, Provider } from "@simplifica-if/contratos-app";
 import { ChevronDownIcon, PaperclipIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useId, useState } from "react";
 import { MarcaIa } from "../components/MarcaIa.tsx";
@@ -35,7 +35,6 @@ import {
   useModelos,
 } from "./modelos.ts";
 import { usePreferencias } from "./perfil.ts";
-import { comArquivos } from "./textos.ts";
 
 export async function comecarTarefa(
   api: Api,
@@ -49,15 +48,14 @@ export async function comecarTarefa(
   },
 ): Promise<string> {
   const { pasta } = await api.chamar((cliente) => cliente["pasta.criar"]({ titulo: pedido.titulo }));
-  const anexados: Array<ArquivoAnexado> = [];
   for (const arquivo of pedido.anexos) {
-    anexados.push(await api.chamar((cliente) => cliente["pasta.anexar"]({ pasta, arquivo })));
+    await api.chamar((cliente) => cliente["pasta.anexar"]({ pasta, arquivo }));
   }
   return conversa.comecarTarefa({
     ia: pedido.ia,
     pasta,
     tarefa: pedido.tarefa,
-    pedido: comArquivos(pedido.texto, anexados),
+    pedido: pedido.texto,
   });
 }
 

@@ -43,7 +43,6 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import {
-  type ArquivoAnexado,
   type ArquivoMudado,
   type ArquivoPasta,
   ehExtensaoDocumento,
@@ -89,8 +88,11 @@ const IndiceTextos = Schema.Record(
   Schema.Struct({
     origem: Schema.String,
     texto: Schema.Boolean,
-    /** Convertido no começo de um turno e ainda não avisado à IA (o turno parou no preparo). */
-    pendente: Schema.optionalKey(Schema.Literals(["novo", "mudado"])),
+    /**
+     * Ainda não avisado à IA: `anexado` pelo app (`anexar`), ou `novo`/`mudado` convertido no começo de um
+     * turno que parou no preparo.
+     */
+    pendente: Schema.optionalKey(Schema.Literals(["anexado", "novo", "mudado"])),
     /** Por que não saiu texto, para repetir no aviso pendente. */
     semTexto: Schema.optionalKey(Schema.String),
   }),
@@ -145,8 +147,11 @@ export class PastasTrabalho extends Context.Service<
     readonly copias: string;
     /** Cria a pasta da tarefa e devolve o caminho real. */
     readonly criar: (titulo: string) => Effect.Effect<string, FalhaPasta>;
-    /** Copia o arquivo liberado para a pasta e grava a versão em texto dele, quando o formato pede. */
-    readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoAnexado, FalhaPasta>;
+    /**
+     * Copia o arquivo liberado para a pasta, grava a versão em texto dele, quando o formato pede, e o deixa
+     * pendente: o próximo turno o avisa à IA.
+     */
+    readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoPasta, FalhaPasta>;
     /**
      * Grava o relato `nome` (um `.md`) em `<raiz>/Relatos de erro/`, fora do alcance da IA, sem
      * sobrescrever (` (2)`…), e devolve o caminho.
@@ -160,20 +165,23 @@ export class PastasTrabalho extends Context.Service<
     /** Os arquivos da pasta da conversa e a previsão do Desfazer. */
     readonly ver: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
     /**
-     * A cópia de antes do turno e o que a pessoa mexeu na pasta desde o fim do turno anterior, fora da
-     * conversa (com a versão em texto dos documentos novos ou mudados, como no anexo); `undefined` sem
-     * mudança ou sem retrato para comparar. Nunca falha: o erro vai para o log, e o turno segue sem cópia.
+     * Abre o turno na pasta: guarda a cópia de antes dele (o Desfazer) e devolve o que a pessoa mexeu na
+     * pasta desde o fim do último turno que chegou à IA, fora da conversa (com a versão em texto dos
+     * documentos novos ou mudados), e os anexos ainda não avisados; `undefined` sem nada a avisar. Nunca
+     * falha: o erro vai para o log, e o turno segue sem cópia.
      */
-    readonly guardarCopia: (conversa: string, turno: number, pasta: string) => Effect.Effect<MudancasPasta | undefined>;
-    /** O retrato do fim do turno, ao lado da cópia; nunca falha. */
-    readonly fecharTurno: (conversa: string, turno: number, pasta: string) => Effect.Effect<void>;
+    readonly abrirTurno: (conversa: string, turno: number, pasta: string) => Effect.Effect<MudancasPasta | undefined>;
     /**
-     * Apaga a cópia de um turno que parou antes de a mensagem ir à IA: ela não tem o que desfazer, e o
-     * turno seguinte compara a pasta com a do último turno que chegou à IA. Nunca falha.
+     * Fecha o turno na pasta, uma vez por turno. Se a mensagem chegou à IA, o que `abrirTurno` avisou deixa
+     * de estar pendente e o retrato do fim fica ao lado da cópia; se não chegou, a cópia sai (ela não tem o
+     * que desfazer, e o turno seguinte compara a pasta com a do último que chegou à IA). Nunca falha.
      */
-    readonly descartarCopia: (conversa: string, turno: number) => Effect.Effect<void>;
-    /** A mensagem foi à IA com o aviso das mudanças: os textos deixam de estar pendentes. Nunca falha. */
-    readonly confirmarAviso: (pasta: string) => Effect.Effect<void>;
+    readonly fecharTurno: (
+      conversa: string,
+      turno: number,
+      pasta: string,
+      opcoes: { readonly chegouAIA: boolean },
+    ) => Effect.Effect<void>;
     readonly desfazer: (
       conversa: string,
       pasta: string,
@@ -746,20 +754,24 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     );
   });
 
-  /** O resultado de `gravarTexto` no índice, com a impressão (`tamanho:sha256`) do arquivo convertido. */
+  /**
+   * O resultado de `gravarTexto` no índice, com a impressão (`tamanho:sha256`) do arquivo convertido, e o
+   * aviso pendente. A impressão vazia faz o próximo turno converter de novo.
+   */
   const noIndice = (
     indice: IndiceTextos,
     nome: string,
     impressao: string,
     resultado: { texto?: string; semTexto?: string },
-    pendente?: "novo" | "mudado",
+    pendente: "anexado" | "novo" | "mudado",
   ) => {
-    // O que era novo e ainda não foi avisado continua novo para a IA, mesmo que tenha mudado de novo.
-    const aviso = pendente === undefined ? undefined : indice[nome]?.pendente === "novo" ? "novo" : pendente;
+    // O que era anexado ou novo e ainda não foi avisado continua assim para a IA, mesmo que tenha mudado.
+    const anterior = indice[nome]?.pendente;
+    const aviso = pendente === "anexado" || anterior === undefined || anterior === "mudado" ? pendente : anterior;
     indice[nome] = {
       origem: impressao,
       texto: resultado.texto !== undefined,
-      ...(aviso === undefined ? {} : { pendente: aviso }),
+      pendente: aviso,
       ...(resultado.semTexto === undefined ? {} : { semTexto: resultado.semTexto }),
     };
   };
@@ -790,24 +802,28 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     ).pipe(comMotivo("Não foi possível copiar o arquivo para a pasta da tarefa."));
     yield* historico.registrarAnexo(real, nome);
     const copiado = yield* fs.stat(path.join(real, nome)).pipe(comMotivo("O arquivo copiado sumiu."));
-    // Convertido da cópia na pasta, lida sem seguir link: a impressão no índice é a dos bytes convertidos,
-    // a que o retrato do começo do turno vai ver.
-    const texto = yield* travaTextos.withPermits(1)(
+    // O anexo fica pendente no índice, de qualquer formato: o próximo turno o avisa à IA (`abrirTurno`). O
+    // texto se converte da cópia na pasta, lida sem seguir link: a impressão no índice é a dos bytes
+    // convertidos, a que o retrato do começo do turno vai ver.
+    yield* travaTextos.withPermits(1)(
       Effect.gen(function* () {
-        if (!TextosAnexos.EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase())) return {};
         const indice = yield* lerIndice(real);
+        if (!TextosAnexos.EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase())) {
+          noIndice(indice, nome, "", {}, "anexado");
+          return yield* gravarIndice(real, indice);
+        }
         const { resultado, impressao, registrar } = yield* textoDoDocumento(real, nome);
-        if (!registrar) return resultado;
-        // Sem leitura (grande demais, erro de E/S), a impressão vem da cópia, sem guardar o conteúdo.
-        const registrada =
-          impressao ??
-          `${Number(copiado.size)}:${yield* sha256(path.join(real, nome)).pipe(
-            comArquivos,
-            Effect.orElseSucceed(() => ""),
-          )}`;
-        noIndice(indice, nome, registrada, resultado);
+        // Sem leitura (grande demais, erro de E/S), a impressão vem da cópia, sem guardar o conteúdo; a troca
+        // durante a leitura (`registrar` falso) fica sem impressão, e o próximo turno converte de novo.
+        const registrada = !registrar
+          ? ""
+          : (impressao ??
+            `${Number(copiado.size)}:${yield* sha256(path.join(real, nome)).pipe(
+              comArquivos,
+              Effect.orElseSucceed(() => ""),
+            )}`);
+        noIndice(indice, nome, registrada, resultado, "anexado");
         yield* gravarIndice(real, indice);
-        return resultado;
       }),
     );
     return {
@@ -816,8 +832,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       tamanho: Number(copiado.size),
       alteradoEm: alteradoEm(copiado),
       origem: "anexado",
-      ...texto,
-    } satisfies ArquivoAnexado;
+    } satisfies ArquivoPasta;
   });
 
   const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (nome: string, conteudo: string) {
@@ -962,22 +977,21 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
   });
 
   /**
-   * O que a pessoa mexeu na pasta desde o fim do turno anterior (`antes`, quando há) até `agora`, com os
-   * textos postos em dia. Os anexos do app ficam de fora dos novos (a nota do pedido já os trouxe), e os
-   * links, de tudo; os nomes de trava do Word já ficaram fora do retrato. O que o índice achou fora dessa
-   * janela (mudado durante o turno, antes do primeiro, depois de um Desfazer) entra também, porque o
-   * texto dele mudou.
+   * O que entrou ou mudou na pasta sem a IA saber, com os textos postos em dia: os anexos do app ainda
+   * pendentes no índice, e o que a pessoa mexeu desde o fim do turno anterior (`antes`, quando há) até
+   * `agora`. Os links ficam de fora de tudo; os nomes de trava do Word já ficaram fora do retrato. O que o
+   * índice achou fora dessa janela (mudado durante o turno, antes do primeiro, depois de um Desfazer)
+   * entra também, porque o texto dele mudou.
    */
   const mudancasForaDaConversa = Effect.fn("PastasTrabalho.mudancasForaDaConversa")(function* (
     real: string,
     antes: Retrato | undefined,
     agora: Retrato,
   ) {
-    const anexos = yield* historico.anexos(real);
     const { criados, alterados, apagados } =
       antes === undefined ? { criados: [], alterados: [], apagados: [] } : diferenca(antes, agora);
     const arquivo = (nome: string) => agora[nome] !== LINK;
-    const novosNomes = new Set(criados.filter((nome) => arquivo(nome) && !anexos.has(nome)));
+    const novosNomes = new Set(criados.filter(arquivo));
     const mudadosNomes = new Set(alterados.filter(arquivo));
     const removidosNomes = new Set(apagados.filter((nome) => antes?.[nome] !== LINK));
     const { resultados, removidos, conhecidos, indice } = yield* atualizarTextos(real, agora, [...mudadosNomes]);
@@ -985,8 +999,17 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       if (novosNomes.has(nome) || mudadosNomes.has(nome)) continue;
       (conhecidos.has(nome) ? mudadosNomes : novosNomes).add(nome);
     }
-    // O que um turno parado no preparo converteu e não chegou a avisar.
+    // Os anexos ainda não avisados, num grupo só deles, e o que um turno parado no preparo converteu e
+    // não chegou a avisar.
+    const anexadosNomes = new Set<string>();
     for (const [nome, entrada] of Object.entries(indice)) {
+      if (entrada.pendente === "anexado") {
+        if (agora[nome] === undefined || agora[nome] === LINK) continue;
+        anexadosNomes.add(nome);
+        novosNomes.delete(nome);
+        mudadosNomes.delete(nome);
+        continue;
+      }
       if (entrada.pendente === undefined || novosNomes.has(nome) || mudadosNomes.has(nome)) continue;
       (entrada.pendente === "novo" ? novosNomes : mudadosNomes).add(nome);
     }
@@ -999,26 +1022,28 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     const ordem = (nomes: Set<string>) => [...nomes].sort((a, b) => a.localeCompare(b, "pt-BR"));
     const mudancas: MudancasPasta = {
       _tag: "MudancasPasta",
+      anexados: ordem(anexadosNomes).map(comTexto),
       novos: ordem(novosNomes).map(comTexto),
       mudados: ordem(mudadosNomes).map(comTexto),
       removidos: ordem(removidosNomes),
     };
-    return mudancas.novos.length + mudancas.mudados.length + mudancas.removidos.length === 0 ? undefined : mudancas;
+    const total =
+      mudancas.anexados.length + mudancas.novos.length + mudancas.mudados.length + mudancas.removidos.length;
+    return total === 0 ? undefined : mudancas;
   });
 
-  const guardarCopia = Effect.fn("PastasTrabalho.guardarCopia")(function* (
-    conversa: string,
-    turno: number,
-    pasta: string,
-  ) {
+  /** O que `abrirTurno` avisou, por turno aberto (`<conversa>/<turno>`), para `fecharTurno` confirmar só isso. */
+  const avisados = new Map<string, ReadonlyArray<string>>();
+
+  const abrirTurno = Effect.fn("PastasTrabalho.abrirTurno")(function* (conversa: string, turno: number, pasta: string) {
     const criadaEm = DateTime.formatIso(yield* DateTime.now);
     const mudancas = yield* Effect.gen(function* () {
       const real = yield* gerida(pasta);
       if (real === undefined) return undefined;
       const copias = yield* pastaCopias(conversa);
-      // A cópia mais recente: a do último turno que chegou à IA (a do turno parado no preparo sai, em
-      // `descartarCopia`; um Desfazer apaga as do turno desfeito em diante). Se esse turno não fechou (o
-      // app caiu), não há retrato do fim, nem aviso: o que a IA fez nele pareceria da pessoa.
+      // A cópia mais recente: a do último turno que chegou à IA (a do turno que não chegou sai em
+      // `fecharTurno`; um Desfazer apaga as do turno desfeito em diante). Se esse turno não fechou (o app
+      // caiu), não há retrato do fim, nem aviso: o que a IA fez nele pareceria da pessoa.
       const anterior = (yield* lerManifestos(copias)).find((manifesto) => manifesto.turno < turno);
       const manifesto = yield* copiarTurno(real, copias, turno, criadaEm, limites);
       // Pasta grande demais para a cópia: sem retrato, sem textos nem aviso.
@@ -1026,51 +1051,77 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       const agora = manifesto.arquivos;
       return yield* travaTextos.withPermits(1)(mudancasForaDaConversa(real, anterior?.fim?.arquivos, agora));
     }).pipe(comArquivos, soNoLog(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`));
-    return mudancas ?? undefined;
+    if (mudancas === undefined || mudancas === null) return undefined;
+    avisados.set(
+      `${conversa}/${turno}`,
+      [...mudancas.anexados, ...mudancas.novos, ...mudancas.mudados].map((arquivo) => arquivo.nome),
+    );
+    return mudancas;
   });
 
+  /** Apaga a cópia do turno que não chegou à IA. */
   const descartarCopia = Effect.fn("PastasTrabalho.descartarCopia")(function* (conversa: string, turno: number) {
-    yield* Effect.gen(function* () {
-      const copias = yield* pastaCopias(conversa);
-      const copia = path.join(copias, String(turno));
-      if (Option.isNone(yield* Effect.option(fs.stat(copia)))) return;
-      // Primeiro o nome não numérico, de uma vez (`lerManifestos` o ignora); depois a remoção, que pode
-      // parar no meio sem deixar uma cópia pela metade valendo.
-      const descartada = path.join(copias, `descartada-${turno}-${DateTime.toEpochMillis(yield* DateTime.now)}`);
-      yield* fs.rename(copia, descartada);
-      yield* fs.remove(descartada, { recursive: true, force: true });
-    }).pipe(soNoLog(`conversa ${conversa}: a cópia do turno ${turno}, parado no preparo, não saiu`));
+    const copias = yield* pastaCopias(conversa);
+    const copia = path.join(copias, String(turno));
+    if (Option.isNone(yield* Effect.option(fs.stat(copia)))) return;
+    // Primeiro o nome não numérico, de uma vez (`lerManifestos` o ignora); depois a remoção, que pode
+    // parar no meio sem deixar uma cópia pela metade valendo.
+    const descartada = path.join(copias, `descartada-${turno}-${DateTime.toEpochMillis(yield* DateTime.now)}`);
+    yield* fs.rename(copia, descartada);
+    yield* fs.remove(descartada, { recursive: true, force: true });
   });
 
-  /** A mensagem foi à IA com o aviso: os textos convertidos deixam de estar pendentes no índice. Nunca falha. */
-  const confirmarAviso = Effect.fn("PastasTrabalho.confirmarAviso")(function* (pasta: string) {
-    yield* travaTextos
-      .withPermits(1)(
-        Effect.gen(function* () {
-          const real = yield* gerida(pasta);
-          if (real === undefined) return;
-          const indice = yield* lerIndice(real);
-          const pendentes = Object.keys(indice).filter((nome) => indice[nome]?.pendente !== undefined);
-          if (pendentes.length === 0) return;
-          for (const nome of pendentes) {
-            const { pendente: _, ...resto } = indice[nome]!;
-            indice[nome] = resto;
-          }
-          yield* gravarIndice(real, indice);
-        }),
-      )
-      .pipe(comArquivos, soNoLog("texto do anexo: o aviso não ficou confirmado no índice"));
+  /**
+   * Os nomes avisados à IA deixam de estar pendentes no índice. Só eles: um anexo que chegou durante o
+   * turno continua pendente até o aviso do próximo.
+   */
+  const confirmarAviso = Effect.fn("PastasTrabalho.confirmarAviso")(function* (
+    real: string,
+    nomes: ReadonlyArray<string>,
+  ) {
+    yield* travaTextos.withPermits(1)(
+      Effect.gen(function* () {
+        const indice = yield* lerIndice(real);
+        const pendentes = nomes.filter((nome) => indice[nome]?.pendente !== undefined);
+        if (pendentes.length === 0) return;
+        for (const nome of pendentes) {
+          const { pendente: _, ...resto } = indice[nome]!;
+          indice[nome] = resto;
+        }
+        yield* gravarIndice(real, indice);
+      }),
+    );
   });
 
   const fecharTurno = Effect.fn("PastasTrabalho.fecharTurno")(function* (
     conversa: string,
     turno: number,
     pasta: string,
+    opcoes: { readonly chegouAIA: boolean },
   ) {
+    const chave = `${conversa}/${turno}`;
+    const nomes = avisados.get(chave) ?? [];
+    avisados.delete(chave);
+    if (!opcoes.chegouAIA) {
+      yield* descartarCopia(conversa, turno).pipe(
+        comArquivos,
+        soNoLog(`conversa ${conversa}: a cópia do turno ${turno}, que não chegou à IA, não saiu`),
+      );
+      return;
+    }
+    // Dois passos independentes: o retrato sai mesmo que a confirmação morra.
     yield* Effect.gen(function* () {
       const real = yield* gerida(pasta);
-      if (real !== undefined) yield* retratarFim(real, yield* pastaCopias(conversa), turno, limites);
-    }).pipe(comArquivos, soNoLog(`conversa ${conversa}: sem retrato do fim do turno ${turno}`));
+      if (real === undefined) return;
+      yield* confirmarAviso(real, nomes).pipe(
+        comArquivos,
+        soNoLog("texto do anexo: o aviso não ficou confirmado no índice"),
+      );
+      yield* retratarFim(real, yield* pastaCopias(conversa), turno, limites).pipe(
+        comArquivos,
+        soNoLog(`conversa ${conversa}: sem retrato do fim do turno ${turno}`),
+      );
+    }).pipe(soNoLog(`conversa ${conversa}: sem retrato do fim do turno ${turno}`));
   });
 
   /** Volta a pasta ao que era antes do turno que `prever` aponta, e apaga as cópias dele em diante. */
@@ -1150,20 +1201,21 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     gravarRelato,
     gravarDiagnostico,
     ver,
-    guardarCopia: Effect.fn("PastasTrabalho.contandoCopia")(function* (conversa: string, turno: number, pasta: string) {
-      return yield* contando(guardarCopia(conversa, turno, pasta));
-    }),
-    fecharTurno: Effect.fn("PastasTrabalho.contandoRetrato")(function* (
+    abrirTurno: Effect.fn("PastasTrabalho.contandoAbertura")(function* (
       conversa: string,
       turno: number,
       pasta: string,
     ) {
-      return yield* contando(fecharTurno(conversa, turno, pasta));
+      return yield* contando(abrirTurno(conversa, turno, pasta));
     }),
-    descartarCopia: Effect.fn("PastasTrabalho.contandoDescarte")(function* (conversa: string, turno: number) {
-      return yield* contando(descartarCopia(conversa, turno));
+    fecharTurno: Effect.fn("PastasTrabalho.contandoFechamento")(function* (
+      conversa: string,
+      turno: number,
+      pasta: string,
+      opcoes: { readonly chegouAIA: boolean },
+    ) {
+      return yield* contando(fecharTurno(conversa, turno, pasta, opcoes));
     }),
-    confirmarAviso,
     desfazer: Effect.fn("PastasTrabalho.contandoDesfazer")(function* (
       conversa: string,
       pasta: string,
@@ -1196,10 +1248,8 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     ver: Effect.fn("PastasTrabalho.ver")((_conversa: string, pasta: string) =>
       Effect.succeed({ pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa),
     ),
-    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(() => Effect.undefined),
+    abrirTurno: Effect.fn("PastasTrabalho.abrirTurno")(() => Effect.undefined),
     fecharTurno: Effect.fn("PastasTrabalho.fecharTurno")(() => Effect.void),
-    descartarCopia: Effect.fn("PastasTrabalho.descartarCopia")(() => Effect.void),
-    confirmarAviso: Effect.fn("PastasTrabalho.confirmarAviso")(() => Effect.void),
     desfazer: recusa,
     esquecer: Effect.fn("PastasTrabalho.esquecer")(() => Effect.succeed(true)),
     emAndamento: Effect.succeed(false),

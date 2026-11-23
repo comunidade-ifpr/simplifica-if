@@ -8,16 +8,25 @@ import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import * as NodeSocket from "@effect/platform-node/NodeSocket";
+import type * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Queue from "effect/Queue";
 import * as Socket from "effect/socket/Socket";
 import * as Stream from "effect/Stream";
 import { RpcClient, RpcSerialization } from "effect/rpc";
-import { type EtapaLeituraPpc, type EventoRevisaoPpc, GrupoApp } from "@simplifica-if/contratos-app";
+import {
+  type EtapaLeituraPpc,
+  type EventoConversa,
+  type EventoRevisaoPpc,
+  GrupoApp,
+  type ItemAoVivo,
+} from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { criarBancoFixture } from "../../../packages/mcp/test/fixture.ts";
+import type * as Conversas from "../src/Conversas.ts";
 import { inserirNormas } from "../../../packages/mcp/test/fixture-normas.ts";
 
 export { diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
@@ -61,7 +70,8 @@ export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerrad
 
 /**
  * Driver falso. A resposta depende do texto: com "escrev", pede aprovação para "escrever" e conclui
- * conforme a decisão; com "demor", só termina com a interrupção; senão, responde `Resposta a: <texto>`
+ * conforme a decisão; com "demor", só termina com a interrupção; com "limite", falha (`Erro` e `FimTurno`
+ * com motivo `falha`) com a sessão viva; senão, responde `Resposta a: <texto>`
  * com o texto parcial e o final. A sessão tem um id nativo (`nativo-<n>`, ou o retomado) e uma queda
  * que o teste dispara (`registro.derrubar`). O Codex falso falha ao iniciar, com um `cause` que não pode
  * chegar à interface. Apagar a conversa no provider (`esquecer`) fica em `registro.esquecidas`.
@@ -111,10 +121,17 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       const escrever = (texto: string) =>
         Effect.gen(function* () {
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou " });
-          yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: "escrever", entrada: { texto } });
+          yield* canal.emitir({
+            _tag: "FerramentaIniciada",
+            id: "f1",
+            nome: "escrever",
+            tipo: "escrita",
+            entrada: { texto },
+          });
           const decisao = yield* canal.pedirAprovacao({
             id: "f1",
             ferramenta: "escrever",
+            tipo: "escrita",
             descricao: "escrever um arquivo",
             entrada: { texto },
           });
@@ -126,7 +143,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
             falhou: decisao === "negar",
           });
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Vou ${decisao}` });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       // "grav": pede aprovação e, permitido, cria `resultado.md` e altera `entrada.md` na pasta (o Desfazer).
       const gravar = (texto: string) =>
@@ -134,6 +151,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
           const decisao = yield* canal.pedirAprovacao({
             id: "g1",
             ferramenta: "Write",
+            tipo: "escrita",
             descricao: "gravar resultado.md",
             entrada: { texto },
           });
@@ -155,7 +173,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
             }
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: decisao === "permitir" ? "Gravei." : "Não gravei." });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       const responder = (texto: string) =>
         Effect.gen(function* () {
@@ -166,10 +184,15 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
             yield* canal.emitir({ _tag: "TextoParcial", texto: "Pensando " });
             return yield* Effect.never;
           }
+          // "limite": a conta no limite de uso; o turno falha e a sessão continua aberta.
+          if (texto.includes("limite")) {
+            yield* canal.emitir(Motor.erroDoTurno("You've hit your usage limit."));
+            return yield* canal.emitir({ _tag: "FimTurno", motivo: "falha" });
+          }
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Resposta a: " });
           yield* canal.emitir({ _tag: "TextoParcial", texto });
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Resposta a: ${texto}` });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       return {
         idNativo,
@@ -185,7 +208,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
         interromper:
           registro.ignorarInterrupcao === true
             ? Effect.void
-            : canal.emitir({ _tag: "FimTurno", motivo: "interrupted" }),
+            : canal.emitir({ _tag: "FimTurno", motivo: "interrompido" }),
       } satisfies Motor.SessaoDriver;
     }),
 });
@@ -307,3 +330,47 @@ export const postarInitialize = (url: string, cabecalhos: Readonly<Record<string
     requisicao.end(CORPO_INITIALIZE);
     return Effect.sync(() => requisicao.destroy());
   });
+
+/**
+ * Um turno inteiro como a interface o vê: acompanha a conversa desde agora (o estado de agora fecha o
+ * retrato, com a inscrição já feita), envia a mensagem e junta os eventos do turno até o `FimTurno`,
+ * passando cada um a `aoEvento` (para responder a uma aprovação, por exemplo).
+ */
+export const turnoAoVivo = <E1, E2, E3 = never>(
+  acompanhar: (depois: number) => Stream.Stream<ItemAoVivo, E1>,
+  enviar: Effect.Effect<{ readonly turno: number }, E2>,
+  aoEvento: (evento: EventoConversa) => Effect.Effect<unknown, E3> = () => Effect.void,
+): Effect.Effect<Array<EventoConversa>, E1 | E2 | E3 | Cause.Done> =>
+  Effect.scoped(
+    Effect.gen(function* () {
+      const fila = yield* Stream.toQueue(acompanhar(Number.MAX_SAFE_INTEGER), { capacity: "unbounded" });
+      let item = yield* Queue.take(fila);
+      while (item._tag !== "Estado") item = yield* Queue.take(fila);
+      const { turno } = yield* enviar;
+      const eventos: Array<EventoConversa> = [];
+      for (;;) {
+        item = yield* Queue.take(fila);
+        if (item._tag !== "EventoTurno" || item.turno !== turno) continue;
+        eventos.push(item.evento);
+        yield* aoEvento(item.evento);
+        if (item.evento._tag === "FimTurno") return eventos;
+      }
+    }),
+  );
+
+/** `turnoAoVivo` sobre as `Conversas`. */
+export const turnoCompleto = (conversas: Conversas.Conversas["Service"], id: string, texto: string) =>
+  turnoAoVivo((depois) => conversas.acompanhar(id, depois), conversas.enviar(id, texto));
+
+type ClienteRpc = Effect.Success<ReturnType<typeof cliente>>;
+
+/** `turnoAoVivo` pelo RPC; com `aprovar`, permite cada pedido de aprovação do turno. */
+export const turnoRpc = (rpc: ClienteRpc, sessao: string, texto: string, opcoes: { readonly aprovar?: boolean } = {}) =>
+  turnoAoVivo(
+    (depois) => rpc["conversa.acompanhar"]({ sessao, depois }),
+    rpc["conversa.enviar"]({ sessao, texto }),
+    (evento) =>
+      opcoes.aprovar === true && evento._tag === "PedidoAprovacao"
+        ? rpc["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
+        : Effect.void,
+  );

@@ -36,19 +36,6 @@ export const ArquivoPasta = Schema.Struct({
 });
 export type ArquivoPasta = typeof ArquivoPasta.Type;
 
-/**
- * Um arquivo recém-anexado. Para o formato que a IA não lê sozinha (`.docx`), o servidor grava uma
- * versão em texto na pasta oculta `.simplifica/textos/`: `texto` é o caminho dela, relativo à pasta
- * e com `/`; quando a conversão não deu certo, `semTexto` diz por quê, numa frase para a pessoa. Sem
- * os dois, o formato não se converte (a IA já o lê).
- */
-export const ArquivoAnexado = Schema.Struct({
-  ...ArquivoPasta.fields,
-  texto: Schema.optionalKey(Schema.String),
-  semTexto: Schema.optionalKey(Schema.String),
-});
-export type ArquivoAnexado = typeof ArquivoAnexado.Type;
-
 /** Um arquivo que a pessoa pôs ou mudou na pasta fora da conversa, com a versão em texto, quando há. */
 export const ArquivoMudado = Schema.Struct({
   /** O caminho relativo à pasta, com `/`. */
@@ -59,12 +46,14 @@ export const ArquivoMudado = Schema.Struct({
 export type ArquivoMudado = typeof ArquivoMudado.Type;
 
 /**
- * O que a pessoa mexeu na pasta da tarefa desde o fim do turno anterior, fora da conversa (pelo
- * Finder, pelo Word): o retrato do fim do turno anterior contra o de antes deste. Não entram o que a
- * IA fez (ela sabe), os anexos do app (a nota do pedido já os traz) nem a pasta oculta. Vai à IA junto
- * com a mensagem, e a conversa o mostra numa linha abaixo dela.
+ * O que entrou ou mudou na pasta da tarefa sem a IA saber, avisado a ela junto com a mensagem do turno:
+ * os arquivos anexados pelo app (`pasta.anexar`, pela caixa da conversa ou pelo painel da pasta) e o que
+ * a pessoa mexeu fora da conversa (pelo Finder, pelo Word) desde o fim do último turno que chegou à IA.
+ * Não entram o que a IA fez (ela sabe) nem a pasta oculta. A conversa o mostra numa linha abaixo da
+ * mensagem.
  */
 export const MudancasPasta = Schema.TaggedStruct("MudancasPasta", {
+  anexados: Schema.Array(ArquivoMudado),
   novos: Schema.Array(ArquivoMudado),
   mudados: Schema.Array(ArquivoMudado),
   removidos: Schema.Array(Schema.String),
@@ -121,12 +110,13 @@ export class GrupoPasta extends RpcGroup.make(
   }),
   /**
    * Copia para a pasta (criada por `pasta.criar`) um arquivo escolhido no diálogo do desktop, que o
-   * processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`); nome repetido ganha ` (2)`. O `.docx`
-   * ganha a versão em texto para a IA (`ArquivoAnexado`).
+   * processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`); nome repetido ganha ` (2)`. O documento
+   * que a IA não lê sozinha ganha a versão em texto, e o próximo turno avisa a IA do anexo
+   * (`MudancasPasta.anexados`).
    */
   Rpc.make("pasta.anexar", {
     payload: Schema.Struct({ pasta: Schema.String, arquivo: Schema.String }),
-    success: ArquivoAnexado,
+    success: ArquivoPasta,
     error: FalhaPasta,
   }),
   /** Os arquivos da pasta da conversa e o que "Desfazer" faria. */

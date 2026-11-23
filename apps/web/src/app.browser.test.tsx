@@ -117,7 +117,7 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await userEvent.keyboard("{Enter}");
   const mensagens = page.getByRole("log", { name: "Mensagens" });
   await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
-  await expect.element(page.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
+  await expect.element(page.getByText("A IA pede permissão: Alterar arquivos")).toBeVisible();
   // As chamadas de ferramenta ficam recolhidas em "Detalhes técnicos".
   await page.getByText("Detalhes técnicos · 1 consulta").click();
   await expect.element(page.getByText("Buscar norma")).toBeVisible();
@@ -359,16 +359,13 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
 
   // A conversa: o pedido como a pessoa o escreveu (sem a indicação da skill, que só vai à IA).
   const mensagens = page.getByRole("log", { name: "Mensagens" });
-  // Seguido da nota dos anexos, com o nome que o arquivo ganhou na pasta.
   await expect
-    .element(
-      mensagens.getByText(
-        /^Conferir a fundamentação normativa do parecer\.md, com atenção ao estágio\.\s+Arquivos na pasta:\s+- parecer\.md$/,
-      ),
-    )
+    .element(mensagens.getByText(/^Conferir a fundamentação normativa do parecer\.md, com atenção ao estágio\.$/))
     .toBeVisible();
+  // O servidor avisa a IA do anexo, com o nome que ele ganhou na pasta, e a conversa o mostra abaixo.
+  await expect.element(mensagens.getByText("Anexado: parecer.md. A IA foi avisada.")).toBeVisible();
   expect(mensagens.element().textContent).not.toMatch(/Siga a skill|verificar-fundamentacao-normativa/);
-  await expect.element(mensagens.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
+  await expect.element(mensagens.getByText("A IA pede permissão: Alterar arquivos")).toBeVisible();
   expect((mensagens.element() as HTMLElement).innerText).not.toMatch(/\bWrite\b/);
   await page.getByRole("button", { name: "Permitir" }).click();
 
@@ -924,7 +921,7 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   semIngles();
   await mensagem.fill("Confira o parecer anexado");
   await userEvent.keyboard("{Enter}");
-  await expect.element(mensagens.getByText(/Arquivos na pasta:\s+- parecer \(2\)\.md/)).toBeVisible();
+  await expect.element(mensagens.getByText("Anexado: parecer (2).md. A IA foi avisada.")).toBeVisible();
   await expect.element(anexadosConversa).not.toBeInTheDocument();
   await expect.element(page.getByText(/^Não entrou/)).not.toBeInTheDocument();
   await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();

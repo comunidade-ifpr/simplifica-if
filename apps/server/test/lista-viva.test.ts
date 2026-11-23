@@ -149,13 +149,13 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
           roteiro.pedidos.push(texto);
           yield* canal.emitir({ _tag: "UsoTokens", entrada: 10, saida: 5, cacheEscrita: 100 });
           yield* canal.emitir({ _tag: "TextoFinal", texto: roteiro.responder(texto, primeiro) });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       return {
         idNativo: "nativo",
         enviar: (texto) => canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo))),
         responder: canal.responder,
-        interromper: canal.emitir({ _tag: "FimTurno", motivo: "interrupted" }),
+        interromper: canal.emitir({ _tag: "FimTurno", motivo: "interrompido" }),
       } satisfies Motor.SessaoDriver;
     }),
 });

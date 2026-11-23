@@ -13,6 +13,7 @@ import * as Layer from "effect/Layer";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import * as Banco from "../src/persistencia/Banco.ts";
+import * as Historico from "../src/persistencia/Historico.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import { diretorioTemporario, limparTemporarios } from "./apoio.ts";
@@ -384,6 +385,90 @@ describe("migrações do banco das conversas", () => {
         assert.isNull((yield* revisoes.buscar("rev-preparada"))!.lista);
         assert.includeMembers([...(yield* revisoes.orfas)], ["rev-preparada", "rev-outro-curso"]);
       }).pipe(Effect.provide(emMemoria)),
+  );
+
+  it.effect(
+    "upgrade 4 → 6 põe os eventos do turno gravados na forma nova: anexados, motivo fechado e tipo da ferramenta",
+    () =>
+      Effect.gen(function* () {
+        const sql = yield* SqlClient.SqlClient;
+        yield* Banco.rodarMigracoes(4);
+        yield* sql`
+        INSERT INTO conversas (id, provider, pasta_trabalho, estado, criada_em, atualizada_em)
+        VALUES ('c1', 'claude', '/tmp/tarefa', 'liberada', '2026-11-20T10:00:00Z', '2026-11-20T10:00:00Z')
+      `;
+        const evento = (ordem: number, tipo: string, dados: unknown) =>
+          sql`
+          INSERT INTO eventos (conversa_id, ordem, turno, tipo, dados, criado_em)
+          VALUES ('c1', ${ordem}, 1, ${tipo}, ${JSON.stringify(dados)}, '2026-11-20T10:00:00Z')
+        `;
+        yield* evento(1, "mensagem", { texto: "Confira.\n\nArquivos na pasta:\n- Ata.docx" });
+        yield* evento(2, "evento", {
+          _tag: "MudancasPasta",
+          novos: [{ nome: "nota.md" }],
+          mudados: [],
+          removidos: ["velho.md"],
+        });
+        yield* evento(3, "evento", { _tag: "TextoFinal", texto: "Pronto." });
+        yield* evento(4, "evento", { _tag: "FimTurno", motivo: "end_turn" });
+        yield* evento(5, "evento", { _tag: "FerramentaIniciada", id: "t1", nome: "ifpr.buscar_norma", entrada: {} });
+        yield* evento(6, "evento", { _tag: "FerramentaIniciada", id: "t2", nome: "Bash", entrada: { command: "ls" } });
+        yield* evento(7, "evento", {
+          _tag: "FerramentaIniciada",
+          id: "t3",
+          nome: "read_url_content",
+          entrada: { Url: "https://www.in.gov.br/" },
+        });
+        yield* evento(8, "evento", {
+          _tag: "PedidoAprovacao",
+          id: "a1",
+          ferramenta: "Write",
+          descricao: "gravar",
+          entrada: {},
+        });
+        yield* evento(9, "evento", { _tag: "FimTurno", motivo: "interrupted" });
+        yield* evento(10, "evento", { _tag: "FimTurno", motivo: "cancelled" });
+        yield* evento(11, "evento", { _tag: "FimTurno", motivo: "failed" });
+        yield* evento(12, "evento", { _tag: "FimTurno", motivo: "falha" });
+        yield* evento(13, "evento", { _tag: "FimTurno", motivo: "parado_antes_do_envio" });
+        yield* evento(14, "evento", { _tag: "FimTurno", motivo: "completed" });
+
+        yield* Banco.rodarMigracoes(6);
+        const historico = yield* Historico.Historico;
+        const itens = yield* historico.itens("c1");
+        assert.deepStrictEqual(itens[1], {
+          _tag: "EventoTurno",
+          turno: 1,
+          ordem: 2,
+          evento: {
+            _tag: "MudancasPasta",
+            anexados: [],
+            novos: [{ nome: "nota.md" }],
+            mudados: [],
+            removidos: ["velho.md"],
+          },
+        });
+        // A mensagem gravada não muda: a nota antiga dos anexos fica no texto, como a interface a mandou.
+        assert.deepInclude(itens[0], { texto: "Confira.\n\nArquivos na pasta:\n- Ata.docx" });
+        assert.deepInclude(itens[2], { evento: { _tag: "TextoFinal", texto: "Pronto." } });
+        const eventos = itens.flatMap((item) => (item._tag === "EventoTurno" ? [item.evento] : []));
+        assert.deepStrictEqual(
+          eventos.flatMap((e) => (e._tag === "FimTurno" ? [e.motivo] : [])),
+          ["concluido", "interrompido", "interrompido", "falha", "falha", "parado_antes_do_envio", "concluido"],
+        );
+        assert.deepStrictEqual(
+          eventos.flatMap((e) => (e._tag === "FerramentaIniciada" ? [[e.tipo, e.web]] : [])),
+          [
+            ["mcp-app", undefined],
+            ["outra", undefined],
+            ["web", { acao: "ler", alvo: "https://www.in.gov.br/" }],
+          ],
+        );
+        assert.deepInclude(
+          eventos.find((e) => e._tag === "PedidoAprovacao"),
+          { tipo: "outra" },
+        );
+      }).pipe(Effect.provide(Historico.layer.pipe(Layer.provideMerge(emMemoria)))),
   );
 
   it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>

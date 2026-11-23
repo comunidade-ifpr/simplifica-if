@@ -43,7 +43,7 @@ import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Schema from "effect/Schema";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
-import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { alvoWeb, erroDoTurno, type Evento, type MotivoFim, resumir, textoDeBlocos } from "../eventos.ts";
 import { ehNivelClaude, modelosClaude } from "../modelos.ts";
 import {
   ambienteSemTelemetria,
@@ -67,10 +67,11 @@ const BLOCOS_SEM_FERRAMENTA = new Set<string>(["text", "thinking", "redacted_thi
 
 /**
  * Traduz as mensagens do Agent SDK em eventos. Guarda o nome de cada `tool_use` para o resultado,
- * que só traz o id.
+ * que só traz o id. `servidoresApp` são os servidores MCP `preAprovado` da sessão (o tipo das
+ * ferramentas, `classificarClaude`).
  */
 export function criarNormalizadorClaude(
-  opcoes: { readonly semFerramentas?: boolean } = {},
+  opcoes: { readonly semFerramentas?: boolean; readonly servidoresApp?: ReadonlyArray<string> } = {},
 ): (mensagem: SDKMessage) => ReadonlyArray<Evento> {
   const nomes = new Map<string, string>();
   return (mensagem) => {
@@ -94,7 +95,21 @@ export function criarNormalizadorClaude(
           } else if (bloco.type === "tool_use" || bloco.type === "mcp_tool_use") {
             const nome = nomeFerramentaClaude(bloco.name);
             nomes.set(bloco.id, nome);
-            eventos.push({ _tag: "FerramentaIniciada", id: bloco.id, nome, entrada: bloco.input });
+            const entrada = registroDe(bloco.input);
+            const web =
+              bloco.name === "WebFetch"
+                ? alvoWeb("ler", entrada.url)
+                : bloco.name === "WebSearch"
+                  ? alvoWeb("pesquisar", entrada.query)
+                  : undefined;
+            eventos.push({
+              _tag: "FerramentaIniciada",
+              id: bloco.id,
+              nome,
+              tipo: classificarClaude(bloco.name, entrada, opcoes.servidoresApp ?? []).tipo,
+              ...(web === undefined ? {} : { web }),
+              entrada: bloco.input,
+            });
           } else if (opcoes.semFerramentas === true && !BLOCOS_SEM_FERRAMENTA.has(bloco.type)) {
             // No lado seguro: numa sessão de julgamento, bloco que não é texto nem raciocínio
             // (`server_tool_use`, resultados de ferramentas do servidor, tipos novos) conta como ferramenta.
@@ -102,6 +117,7 @@ export function criarNormalizadorClaude(
               _tag: "FerramentaIniciada",
               id: `bloco-${eventos.length}`,
               nome: `bloco.${bloco.type}`,
+              tipo: "outra",
               entrada: {},
             });
           }
@@ -134,12 +150,15 @@ export function criarNormalizadorClaude(
             custoUsd: mensagem.total_cost_usd,
           },
         ];
+        let motivo: MotivoFim = "concluido";
         if (mensagem.subtype !== "success") {
           eventos.push(erroDoTurno(`turno terminou com ${mensagem.subtype}`));
+          motivo = "falha";
         } else if (mensagem.is_error) {
           eventos.push(erroDoTurno(mensagem.result));
+          motivo = "falha";
         }
-        eventos.push({ _tag: "FimTurno", motivo: mensagem.stop_reason ?? mensagem.subtype });
+        eventos.push({ _tag: "FimTurno", motivo });
         return eventos;
       }
       default:
@@ -147,6 +166,10 @@ export function criarNormalizadorClaude(
     }
   };
 }
+
+/** A entrada de uma ferramenta como registro (o SDK a tipa como `unknown`). */
+const registroDe = (valor: unknown): Record<string, unknown> =>
+  typeof valor === "object" && valor !== null && !Array.isArray(valor) ? (valor as Record<string, unknown>) : {};
 
 const PROVIDER = "claude" as const;
 const ehFalhaProvider = Schema.is(FalhaProvider);
@@ -435,7 +458,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       }),
     );
 
-    const normalizar = criarNormalizadorClaude({ semFerramentas: config.semFerramentas === true });
+    const normalizar = criarNormalizadorClaude({ semFerramentas: config.semFerramentas === true, servidoresApp });
     // Interrompido, o turno do Claude termina com `error_during_execution` (medido com o SDK 0.3.321):
     // não é erro para a pessoa, e o fim do turno sai como interrupção.
     let interrompendo = false;
@@ -444,7 +467,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       if (evento._tag === "Erro" && evento.mensagem.includes("error_during_execution")) return [];
       if (evento._tag !== "FimTurno") return [evento];
       interrompendo = false;
-      return [{ _tag: "FimTurno", motivo: "interrupted" }];
+      return [{ _tag: "FimTurno", motivo: "interrompido" }];
     };
     yield* Stream.fromAsyncIterable(consulta, Canal.falhaDe(PROVIDER, "ler mensagens")).pipe(
       Stream.runForEach((mensagem) => {

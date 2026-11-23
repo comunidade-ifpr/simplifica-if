@@ -37,7 +37,16 @@ import {
   FalhaProvider,
   Gravador,
 } from "../Driver.ts";
-import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import {
+  type AlvoWeb,
+  alvoWeb,
+  erroDoTurno,
+  type Evento,
+  type MotivoFim,
+  resumir,
+  textoDeBlocos,
+  type TipoFerramenta,
+} from "../eventos.ts";
 import { classificarFalha, textoTecnico } from "../falhas.ts";
 import {
   ambienteSemTelemetria,
@@ -53,33 +62,52 @@ import { type Ambiente, limparAmbiente } from "../processo.ts";
 import type * as CodexInstallation from "../t3/CodexInstallation.ts";
 import { type Registro, registro, texto } from "./json.ts";
 
-/** Nome e entrada de uma ferramenta do Codex, a partir do item `ThreadItem`. */
-export function ferramentaDoItem(item: Registro): { readonly nome: string; readonly entrada: unknown } | undefined {
+/**
+ * Nome, tipo e entrada de uma ferramenta do Codex, a partir do item `ThreadItem`. `servidoresApp` são os
+ * servidores MCP `preAprovado` da sessão.
+ */
+export function ferramentaDoItem(
+  item: Registro,
+  servidoresApp: ReadonlySet<string> = new Set(),
+):
+  | { readonly nome: string; readonly tipo: TipoFerramenta; readonly web?: AlvoWeb; readonly entrada: unknown }
+  | undefined {
   switch (item.type) {
     case "mcpToolCall":
-      return { nome: `${texto(item.server)}.${texto(item.tool)}`, entrada: item.arguments };
+      return {
+        nome: `${texto(item.server)}.${texto(item.tool)}`,
+        tipo: servidoresApp.has(texto(item.server)) ? "mcp-app" : "mcp-outro",
+        entrada: item.arguments,
+      };
     case "dynamicToolCall":
-      return { nome: texto(item.tool), entrada: item.arguments };
+      return { nome: texto(item.tool), tipo: "outra", entrada: item.arguments };
     case "commandExecution":
-      return { nome: "comando", entrada: { comando: item.command } };
+      return { nome: "comando", tipo: "comando", entrada: { comando: item.command } };
     case "fileChange":
       return {
         nome: "editar_arquivos",
+        tipo: "escrita",
         entrada: { arquivos: (Array.isArray(item.changes) ? item.changes : []).map((c) => registro(c).path) },
       };
     case "webSearch": {
       const acao = registro(item.action);
       if (acao.type === "openPage") {
+        const web = alvoWeb("ler", acao.url);
         return {
           nome: "ler_pagina_web",
+          tipo: "web",
+          ...(web === undefined ? {} : { web }),
           entrada: {
             ...(typeof acao.url === "string" ? { url: acao.url } : {}),
             ...(typeof item.query === "string" && item.query !== "" ? { consulta: item.query } : {}),
           },
         };
       }
+      const web = alvoWeb("pesquisar", item.query);
       return {
         nome: "busca_web",
+        tipo: "web",
+        ...(web === undefined ? {} : { web }),
         entrada: {
           consulta: item.query,
           ...(typeof acao.url === "string" ? { url: acao.url } : {}),
@@ -92,7 +120,7 @@ export function ferramentaDoItem(item: Registro): { readonly nome: string; reado
       // Numa sessão de julgamento, isso descarta o bloco.
       return ITENS_SEM_FERRAMENTA.has(texto(item.type))
         ? undefined
-        : { nome: `item.${texto(item.type) || "desconhecido"}`, entrada: {} };
+        : { nome: `item.${texto(item.type) || "desconhecido"}`, tipo: "outra", entrada: {} };
   }
 }
 
@@ -133,7 +161,9 @@ function resultadoDoItem(item: Registro): { readonly resumo: string; readonly fa
  * Traduz as notificações do app-server em eventos. O uso de tokens é o `total` da thread; o
  * normalizador desconta o total do fim do turno anterior, para dar o uso do turno.
  */
-export function criarNormalizadorCodex(): (metodo: string, parametros: unknown) => ReadonlyArray<Evento> {
+export function criarNormalizadorCodex(
+  servidoresApp: ReadonlySet<string> = new Set(),
+): (metodo: string, parametros: unknown) => ReadonlyArray<Evento> {
   let ultimoTotal: Registro | undefined;
   let totalAnterior = { entrada: 0, saida: 0, cache: 0 };
   return (metodo, parametros) => {
@@ -143,7 +173,7 @@ export function criarNormalizadorCodex(): (metodo: string, parametros: unknown) 
         return [{ _tag: "TextoParcial", texto: texto(p.delta) }];
       case "item/started": {
         const item = registro(p.item);
-        const ferramenta = ferramentaDoItem(item);
+        const ferramenta = ferramentaDoItem(item, servidoresApp);
         return ferramenta ? [{ _tag: "FerramentaIniciada", id: texto(item.id), ...ferramenta }] : [];
       }
       case "item/completed": {
@@ -180,7 +210,14 @@ export function criarNormalizadorCodex(): (metodo: string, parametros: unknown) 
           totalAnterior = total;
         }
         if (turno.error) eventos.push(erroDoTurno(texto(registro(turno.error).message)));
-        eventos.push({ _tag: "FimTurno", motivo: texto(turno.status) || "completed" });
+        // `status` do `Turn`: `completed`, `interrupted`, `failed` (`inProgress` não chega aqui).
+        const motivo: MotivoFim =
+          turno.status === "interrupted"
+            ? "interrompido"
+            : turno.status === "failed" || turno.error
+              ? "falha"
+              : "concluido";
+        eventos.push({ _tag: "FimTurno", motivo });
         return eventos;
       }
       default:
@@ -510,8 +547,8 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const { cliente } = yield* abrir(executavel.executablePath, config.pastaTrabalho);
-    const normalizar = criarNormalizadorCodex();
     const servidoresApp = new Set(config.servidoresMcp.filter((s) => s.preAprovado).map((s) => s.nome));
+    const normalizar = criarNormalizadorCodex(servidoresApp);
     // Os arquivos de cada `fileChange`: o pedido de aprovação só traz o id do item.
     const arquivosDoItem = new Map<string, ReadonlyArray<string>>();
 

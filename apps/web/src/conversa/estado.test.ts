@@ -4,17 +4,17 @@ import {
   type Acao,
   aplicarEvento,
   aplicarItem,
-  detalheFerramentaWeb,
+  detalheWeb,
   type EstadoConversa,
   estadoInicial,
-  foiInterrompido,
   reduzir,
   rotuloAprovacao,
   rotuloFerramenta,
 } from "./estado.ts";
 
 const aplicar = (estado: EstadoConversa, ...acoes: ReadonlyArray<Acao>) => acoes.reduce(reduzir, estado);
-const evento = (e: Evento): Acao => ({ tipo: "evento", evento: e });
+/** Um evento do turno 1 que chega por `conversa.acompanhar`. */
+const evento = (e: Evento): Acao => ({ tipo: "aoVivo", item: { _tag: "EventoTurno", turno: 1, ordem: 0, evento: e } });
 
 /** Uma conversa já iniciada, com a mensagem da pessoa enviada. */
 const respondendo = () =>
@@ -32,10 +32,10 @@ describe("reduzir: texto", () => {
       evento({ _tag: "TextoParcial", texto: "Car" }),
       evento({ _tag: "TextoParcial", texto: "ga hor" }),
       evento({ _tag: "TextoFinal", texto: "Carga horária: 1.200 h." }),
-      evento({ _tag: "FerramentaIniciada", id: "t1", nome: "ifpr.ficha_curso", entrada: {} }),
+      evento({ _tag: "FerramentaIniciada", id: "t1", nome: "ifpr.ficha_curso", tipo: "mcp-app", entrada: {} }),
       evento({ _tag: "TextoParcial", texto: "Segundo" }),
       evento({ _tag: "TextoFinal", texto: "Segundo bloco." }),
-      evento({ _tag: "FimTurno", motivo: "completed" }),
+      evento({ _tag: "FimTurno", motivo: "concluido" }),
     );
     assert.strictEqual(estado.fase, "pronta");
     assert.deepStrictEqual(
@@ -57,7 +57,7 @@ describe("reduzir: texto", () => {
     const soParcial = aplicar(
       respondendo(),
       evento({ _tag: "TextoParcial", texto: "Sem final" }),
-      evento({ _tag: "FimTurno", motivo: "end_turn" }),
+      evento({ _tag: "FimTurno", motivo: "concluido" }),
     );
     assert.deepInclude(soParcial.itens.at(-1), { tipo: "resposta", texto: "Sem final", final: true });
   });
@@ -67,7 +67,7 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
   it("atualiza a ferramenta pelo id, com o resumo e a falha", () => {
     const estado = aplicar(
       respondendo(),
-      evento({ _tag: "FerramentaIniciada", id: "t1", nome: "ifpr.buscar_norma", entrada: { q: 1 } }),
+      evento({ _tag: "FerramentaIniciada", id: "t1", nome: "ifpr.buscar_norma", tipo: "mcp-app", entrada: { q: 1 } }),
       evento({ _tag: "FerramentaConcluida", id: "t1", nome: "ifpr.buscar_norma", resumo: "3 normas", falhou: false }),
       evento({ _tag: "FerramentaConcluida", id: "t2", nome: "Bash", resumo: "erro", falhou: true }),
     );
@@ -78,14 +78,28 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
   it("acompanha a aprovação: pendente, enviando, permitida; a sem resposta expira no fim do turno", () => {
     const pedido = aplicar(
       respondendo(),
-      evento({ _tag: "PedidoAprovacao", id: "a1", ferramenta: "Write", descricao: "Escrever x.md", entrada: {} }),
-      evento({ _tag: "PedidoAprovacao", id: "a2", ferramenta: "Write", descricao: "Escrever y.md", entrada: {} }),
+      evento({
+        _tag: "PedidoAprovacao",
+        id: "a1",
+        ferramenta: "Write",
+        tipo: "escrita",
+        descricao: "Escrever x.md",
+        entrada: {},
+      }),
+      evento({
+        _tag: "PedidoAprovacao",
+        id: "a2",
+        ferramenta: "Write",
+        tipo: "escrita",
+        descricao: "Escrever y.md",
+        entrada: {},
+      }),
     );
     const respondida = aplicar(
       pedido,
       { tipo: "respondendo", aprovacao: "a1" },
       { tipo: "respondida", aprovacao: "a1", decisao: "negar" },
-      evento({ _tag: "FimTurno", motivo: "end_turn" }),
+      evento({ _tag: "FimTurno", motivo: "concluido" }),
     );
     assert.deepInclude(respondida.itens[1], { situacao: "negada" });
     assert.deepInclude(respondida.itens[2], { situacao: "expirada" });
@@ -117,12 +131,11 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
         "Sua conta do ChatGPT (Codex) chegou ao limite de uso. Espere o limite renovar ou escolha outra IA para esta conversa.",
       detalhe: "limite de uso",
       gravidade: "erro",
+      turno: 1,
     });
     assert.deepStrictEqual(estado.uso, { entrada: 10, saida: 2, custoUsd: 0.01 });
-    const fim = reduzir(estado, evento({ _tag: "FimTurno", motivo: "interrupted" }));
+    const fim = reduzir(estado, evento({ _tag: "FimTurno", motivo: "interrompido" }));
     assert.deepInclude(fim.itens.at(-1), { tipo: "aviso", texto: "Resposta interrompida.", gravidade: "info" });
-    assert.isTrue(foiInterrompido("cancelled"));
-    assert.isFalse(foiInterrompido("end_turn"));
   });
 
   it("o erro do provider no turno sai em português, com o original nos detalhes técnicos", () => {
@@ -137,14 +150,80 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
     });
   });
 
-  it("o turno que cai fecha o que ficou aberto e mostra o erro", () => {
+  it("o acompanhamento que falha fecha o que ficou aberto e mostra o erro", () => {
     const estado = aplicar(respondendo(), evento({ _tag: "TextoParcial", texto: "Meio" }), {
-      tipo: "turnoFalhou",
-      erro: { texto: "A conexão caiu.", detalhe: "socket fechado" },
+      tipo: "naoAcompanhou",
+      erro: { texto: "A conversa sumiu.", detalhe: "SessaoDesconhecida" },
     });
     assert.strictEqual(estado.fase, "pronta");
     assert.deepInclude(estado.itens[1], { final: true });
-    assert.deepInclude(estado.itens.at(-1), { tipo: "aviso", texto: "A conexão caiu.", detalhe: "socket fechado" });
+    assert.deepInclude(estado.itens.at(-1), {
+      tipo: "aviso",
+      texto: "A conversa sumiu.",
+      detalhe: "SessaoDesconhecida",
+    });
+  });
+});
+
+describe("reduzir: a conversa ao vivo", () => {
+  it("a mensagem gravada toma o lugar da pendente, com o turno do servidor", () => {
+    const enviada = respondendo();
+    assert.deepInclude(enviada.itens[0], { tipo: "pessoa", texto: "Olá", pendente: true, turno: 1 });
+    const gravada = aplicar(enviada, {
+      tipo: "aoVivo",
+      item: { _tag: "Mensagem", turno: 1, ordem: 1, texto: "Olá" },
+    });
+    assert.deepStrictEqual(gravada.itens, [{ tipo: "pessoa", chave: "i1", texto: "Olá", turno: 1 }]);
+    assert.strictEqual(gravada.ordem, 1);
+    // A mensagem de outra tela (sem pendente aqui) entra como nova.
+    const deOutra = aplicar(gravada, { tipo: "aoVivo", item: { _tag: "Mensagem", turno: 2, ordem: 5, texto: "E?" } });
+    assert.deepInclude(deOutra.itens.at(-1), { tipo: "pessoa", texto: "E?", turno: 2 });
+    assert.strictEqual(deOutra.turno, 2);
+  });
+
+  it("o servidor recusa a mensagem: ela sai, o turno volta e o erro aparece", () => {
+    const estado = aplicar(respondendo(), { tipo: "naoEnviou", erro: { texto: "Outra resposta em andamento." } });
+    assert.strictEqual(estado.fase, "pronta");
+    assert.strictEqual(estado.turno, 0);
+    assert.deepStrictEqual(
+      estado.itens.map((item) => item.tipo),
+      ["aviso"],
+    );
+  });
+
+  it("o estado vem do servidor: o turno que falha com a sessão viva deixa a conversa pronta", () => {
+    const estado = aplicar(
+      respondendo(),
+      { tipo: "aoVivo", item: { _tag: "Estado", estado: "respondendo" } },
+      evento({ _tag: "Erro", tipo: "cota", mensagem: "limite de uso" }),
+      { tipo: "aoVivo", item: { _tag: "Estado", estado: "pronta" } },
+      evento({ _tag: "FimTurno", motivo: "falha" }),
+    );
+    assert.strictEqual(estado.fase, "pronta");
+    assert.strictEqual(estado.estadoServidor, "pronta");
+    const caiu = aplicar(
+      respondendo(),
+      { tipo: "aoVivo", item: { _tag: "Estado", estado: "caiu" } },
+      evento({ _tag: "FimTurno", motivo: "falha" }),
+    );
+    assert.strictEqual(caiu.estadoServidor, "caiu");
+    assert.strictEqual(caiu.fase, "pronta");
+  });
+
+  it("ao retomar depois de uma queda, a resposta aberta sai: o servidor a manda de novo, acumulada", () => {
+    const aberta = aplicar(
+      respondendo(),
+      evento({ _tag: "TextoFinal", texto: "Primeiro bloco." }),
+      evento({ _tag: "TextoParcial", texto: "Seg" }),
+    );
+    const retomada = aplicar(aberta, { tipo: "retomando" }, evento({ _tag: "TextoParcial", texto: "Segundo" }));
+    assert.deepStrictEqual(
+      retomada.itens.flatMap((item) => (item.tipo === "resposta" ? [[item.texto, item.final]] : [])),
+      [
+        ["Primeiro bloco.", true],
+        ["Segundo", false],
+      ],
+    );
   });
 });
 
@@ -170,47 +249,35 @@ describe("reduzir: sessão", () => {
 });
 
 describe("rotuloFerramenta", () => {
-  it("usa o título das ferramentas do ifpr e deixa as outras legíveis", () => {
-    assert.strictEqual(rotuloFerramenta("ifpr.buscar_norma"), "Buscar norma");
-    assert.strictEqual(rotuloFerramenta("mcp__ifpr__ficha_curso"), "Ficha do curso");
-    assert.strictEqual(rotuloFerramenta("escrever_arquivo"), "Gravar arquivo");
-    assert.strictEqual(rotuloFerramenta("Write"), "Gravar arquivo");
-    assert.strictEqual(rotuloFerramenta("Bash"), "Rodar comando");
-    // Nativas desconhecidas pelo padrão do nome; pedido de permissão nunca com o nome técnico.
-    assert.strictEqual(rotuloFerramenta("str_replace_based_edit_tool"), "Alterar arquivo");
-    assert.strictEqual(rotuloFerramenta("comando"), "Rodar comando");
-    assert.strictEqual(rotuloFerramenta("editar_arquivos"), "Alterar arquivos");
-    assert.strictEqual(rotuloAprovacao("Write"), "Gravar arquivo");
-    assert.strictEqual(rotuloAprovacao("execute"), "Rodar comando");
-    assert.strictEqual(rotuloAprovacao("xyz_q"), "uma ação no computador");
-    assert.strictEqual(rotuloAprovacao("mcp__ifpr__buscar_norma"), "Buscar norma");
-    assert.strictEqual(rotuloFerramenta("WebSearch"), "Pesquisar na internet");
-    assert.strictEqual(rotuloFerramenta("busca_web"), "Pesquisar na internet");
-    assert.strictEqual(rotuloFerramenta("search_web"), "Pesquisar na internet");
-    assert.strictEqual(rotuloFerramenta("WebFetch"), "Ler página na internet");
-    assert.strictEqual(rotuloFerramenta("ler_pagina_web"), "Ler página na internet");
-    assert.strictEqual(rotuloFerramenta("read_url_content"), "Ler página na internet");
-    assert.strictEqual(rotuloFerramenta("Ferramenta"), "Ferramenta");
+  it("as do MCP pelo título ou legíveis; as nativas pelo tipo do driver, nunca pelo nome técnico", () => {
+    assert.strictEqual(rotuloFerramenta({ nome: "ifpr.buscar_norma", classe: "mcp-app" }), "Buscar norma");
+    assert.strictEqual(rotuloFerramenta({ nome: "pessoal.minha_tool", classe: "mcp-outro" }), "Minha tool");
+    assert.strictEqual(rotuloFerramenta({ nome: "Write", classe: "escrita" }), "Alterar arquivos");
+    assert.strictEqual(rotuloFerramenta({ nome: "Bash", classe: "comando" }), "Rodar comando");
+    assert.strictEqual(rotuloFerramenta({ nome: "Task", classe: "outra" }), "Outra ação da IA");
+    const pesquisa = { acao: "pesquisar", alvo: "x" } as const;
+    assert.strictEqual(rotuloFerramenta({ nome: "qualquer", classe: "web", web: pesquisa }), "Pesquisar na internet");
+    assert.strictEqual(
+      rotuloFerramenta({ nome: "qualquer", classe: "web", web: { acao: "ler", alvo: "https://x" } }),
+      "Ler página na internet",
+    );
+    assert.strictEqual(rotuloFerramenta({ nome: "qualquer", classe: "web" }), "Consultar a internet");
+    assert.strictEqual(rotuloAprovacao({ ferramenta: "Write", classe: "escrita" }), "Alterar arquivos");
+    assert.strictEqual(rotuloAprovacao({ ferramenta: "xyz_q", classe: "outra" }), "uma ação no computador");
+    assert.strictEqual(rotuloAprovacao({ ferramenta: "ifpr.buscar_norma", classe: "mcp-app" }), "Buscar norma");
   });
 
-  it("detalheFerramentaWeb extrai consulta ou domínio curto sem query e sobrevive à conclusão", () => {
+  it("detalheWeb mostra a consulta ou o domínio curto sem a consulta da URL, e sobrevive à conclusão", () => {
+    assert.strictEqual(detalheWeb({ acao: "pesquisar", alvo: "Resolução COFEN 736/2024" }), "Resolução COFEN 736/2024");
     assert.strictEqual(
-      detalheFerramentaWeb("WebSearch", { query: "Resolução COFEN 736/2024" }),
-      "Resolução COFEN 736/2024",
-    );
-    assert.strictEqual(
-      detalheFerramentaWeb("WebFetch", { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm?segredo=1" }),
+      detalheWeb({ acao: "ler", alvo: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm?segredo=1" }),
       "www.planalto.gov.br/ccivil_03/leis/l7498.htm",
     );
-    assert.strictEqual(detalheFerramentaWeb("read_url_content", { Url: "https://www.in.gov.br/" }), "www.in.gov.br");
+    assert.strictEqual(detalheWeb({ acao: "ler", alvo: "https://www.in.gov.br/" }), "www.in.gov.br");
+    const web = { acao: "ler", alvo: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" } as const;
     const estado = aplicar(
       respondendo(),
-      evento({
-        _tag: "FerramentaIniciada",
-        id: "w1",
-        nome: "WebFetch",
-        entrada: { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
-      }),
+      evento({ _tag: "FerramentaIniciada", id: "w1", nome: "WebFetch", tipo: "web", web, entrada: {} }),
       evento({
         _tag: "FerramentaConcluida",
         id: "w1",
@@ -219,11 +286,7 @@ describe("rotuloFerramenta", () => {
         falhou: false,
       }),
     );
-    assert.deepInclude(estado.itens[1], {
-      id: "w1",
-      situacao: "concluida",
-      detalheWeb: "www.planalto.gov.br/ccivil_03/leis/l7498.htm",
-    });
+    assert.deepInclude(estado.itens[1], { id: "w1", situacao: "concluida", classe: "web", web });
   });
 });
 
@@ -237,6 +300,7 @@ describe("MudancasPasta", () => {
     });
     estado = aplicarEvento(estado, {
       _tag: "MudancasPasta",
+      anexados: [{ nome: "Foto.png" }],
       novos: [{ nome: "Ata.docx", texto: ".simplifica/textos/Ata.docx.md" }],
       mudados: [{ nome: "Minuta.docx", semTexto: "O arquivo está protegido." }],
       removidos: ["velho.md"],
@@ -246,6 +310,7 @@ describe("MudancasPasta", () => {
       ["pessoa", "pasta"],
     );
     assert.deepInclude(estado.itens[1], {
+      anexados: ["Foto.png"],
       novos: ["Ata.docx"],
       mudados: ["Minuta.docx"],
       removidos: ["velho.md"],

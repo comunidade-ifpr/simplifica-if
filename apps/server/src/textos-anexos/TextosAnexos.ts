@@ -9,7 +9,7 @@
  * conversor do formato (`docxParaMarkdown`, `odtParaMarkdown`, `pdfParaMarkdown`) num Worker com teto de
  * memória e de tempo (`WorkerLimitado.ts`) e devolve o Markdown com o cabeçalho; o `PastasTrabalho` o grava
  * em `<pasta>/.simplifica/textos/<nome>.md` (`PASTA_TEXTOS`). A pasta é oculta: fica fora da lista do painel
- * e do Desfazer (o texto é derivado), e a IA o acha pelo caminho que a nota do pedido dá.
+ * e do Desfazer (o texto é derivado), e a IA o acha pelo caminho que o aviso do turno dá (`aviso.ts`).
  *
  * Este serviço não lê arquivo: quem lê confere o caminho e o tamanho, e só os bytes conferidos chegam aqui.
  * `converter` nunca falha: o anexo vale mesmo sem texto, e o motivo vai para a nota (`semTexto`).

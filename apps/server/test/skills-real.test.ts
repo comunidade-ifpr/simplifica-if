@@ -22,7 +22,6 @@ import * as Clock from "effect/Clock";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import * as Stream from "effect/Stream";
 import { Provider } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
@@ -33,6 +32,7 @@ import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
 import * as Preferencias from "../src/persistencia/Preferencias.ts";
+import { turnoCompleto } from "./apoio.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
 const PROVIDERS = process.env.SIMPLIFICA_PROVIDER
@@ -77,7 +77,7 @@ describe.skipIf(!REAL)("skills do app numa conversa real", () => {
           const conversas = yield* Conversas.Conversas;
           const inicio = yield* Clock.currentTimeMillis;
           const id = yield* conversas.iniciar({ provider, pastaTrabalho: pasta });
-          const eventos = [...(yield* Stream.runCollect(conversas.enviar(id, PERGUNTA)))];
+          const eventos = yield* turnoCompleto(conversas, id, PERGUNTA);
           const tempo = (yield* Clock.currentTimeMillis) - inicio;
 
           const ferramentas = eventos.flatMap((evento) =>

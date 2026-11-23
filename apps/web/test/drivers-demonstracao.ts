@@ -88,7 +88,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
       };
     });
 
-  const iniciar = (provider: Motor.Provider) => (config: Motor.ConfigSessao) =>
+  const iniciar = (_provider: Motor.Provider) => (config: Motor.ConfigSessao) =>
     Effect.gen(function* () {
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
@@ -102,6 +102,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
             _tag: "FerramentaIniciada",
             id: chamada,
             nome: "ifpr.etapa",
+            tipo: "mcp-app",
             entrada: { id, ...(progresso === undefined ? {} : { progresso }) },
           });
           yield* canal.emitir({
@@ -123,6 +124,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
         const decisao = yield* canal.pedirAprovacao({
           id: "a-relatorio",
           ferramenta: "Write",
+          tipo: "escrita",
           descricao: "Gravar relatorio.md na pasta da tarefa",
           entrada: { caminho: "relatorio.md" },
         });
@@ -145,6 +147,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
             _tag: "FerramentaIniciada",
             id: "t1",
             nome: "ifpr.buscar_norma",
+            tipo: "mcp-app",
             entrada: { consulta: texto },
           });
           yield* Effect.sleep(passo);
@@ -159,6 +162,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
             const decisao = yield* canal.pedirAprovacao({
               id: "a1",
               ferramenta: "escrever_arquivo",
+              tipo: "escrita",
               descricao: "Escrever resumo.md na pasta de trabalho",
               entrada: { caminho: "resumo.md" },
             });
@@ -175,7 +179,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
                 "You've hit your usage limit. Upgrade to Pro (https://openai.com/chatgpt/pricing) or try again later.",
               ),
             );
-            yield* canal.emitir({ _tag: "FimTurno", motivo: "failed" });
+            yield* canal.emitir({ _tag: "FimTurno", motivo: "falha" });
             return;
           }
           if (/demor/i.test(texto)) {
@@ -187,6 +191,8 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
               _tag: "FerramentaIniciada",
               id: "t-web-busca",
               nome: "WebSearch",
+              tipo: "web",
+              web: { acao: "pesquisar", alvo: "Lei 7498 1986 exercicio profissional enfermagem" },
               entrada: { query: "Lei 7498 1986 exercicio profissional enfermagem" },
             });
             yield* canal.emitir({
@@ -200,6 +206,8 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
               _tag: "FerramentaIniciada",
               id: "t-web-pagina",
               nome: "WebFetch",
+              tipo: "web",
+              web: { acao: "ler", alvo: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
               entrada: { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
             });
             yield* canal.emitir({
@@ -221,7 +229,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: final });
           yield* canal.emitir({ _tag: "UsoTokens", entrada: 1234, saida: 56 });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: provider === "codex" ? "completed" : "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
 
       return {
@@ -236,7 +244,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
         interromper: Effect.gen(function* () {
           if (resposta !== undefined) yield* Fiber.interrupt(resposta);
           resposta = undefined;
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "interrupted" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "interrompido" });
         }),
       } satisfies Motor.SessaoDriver;
     });

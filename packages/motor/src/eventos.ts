@@ -20,10 +20,51 @@ export const TextoFinal = Schema.TaggedStruct("TextoFinal", {
   texto: Schema.String,
 });
 
-/** O provider começou a chamar uma ferramenta. `nome` vem como `servidor.ferramenta` para MCP. */
+/**
+ * Tipos de ferramenta, iguais nos três providers; cada driver classifica as nativas dele (a política de
+ * aprovação usa o mesmo tipo):
+ * - `leitura`: ler arquivo, listar pasta, buscar em arquivos;
+ * - `escrita`: criar, alterar, apagar ou mover arquivo;
+ * - `comando`: rodar um comando no terminal;
+ * - `comando-rede`: comando no terminal que pede acesso à rede (proxy gerenciado do Codex);
+ * - `mcp-app`: ferramenta (ou recurso) de um servidor MCP do app marcado `preAprovado` (o `ifpr`);
+ * - `mcp-outro`: ferramenta de outro servidor MCP;
+ * - `web`: busca na web ou leitura de uma URL (ferramentas nativas conhecidas);
+ * - `outra`: o resto (subagente, plano, pergunta ao usuário…).
+ */
+export const TipoFerramenta = Schema.Literals([
+  "leitura",
+  "escrita",
+  "comando",
+  "comando-rede",
+  "mcp-app",
+  "mcp-outro",
+  "web",
+  "outra",
+]);
+export type TipoFerramenta = typeof TipoFerramenta.Type;
+
+/** O que uma ferramenta `web` abre: a página que ela lê (`ler`, a URL) ou a consulta que pesquisa. */
+export const AlvoWeb = Schema.Struct({
+  acao: Schema.Literals(["ler", "pesquisar"]),
+  alvo: Schema.String,
+});
+export type AlvoWeb = typeof AlvoWeb.Type;
+
+/** O `AlvoWeb` de um valor da entrada da ferramenta, se for texto não vazio. */
+export function alvoWeb(acao: AlvoWeb["acao"], valor: unknown): AlvoWeb | undefined {
+  return typeof valor === "string" && valor.trim() !== "" ? { acao, alvo: valor.trim() } : undefined;
+}
+
+/**
+ * O provider começou a chamar uma ferramenta. `nome` vem como `servidor.ferramenta` para MCP; `tipo` é o
+ * do driver, e `web`, o alvo de uma ferramenta `web`, quando a entrada o traz.
+ */
 export const FerramentaIniciada = Schema.TaggedStruct("FerramentaIniciada", {
   id: Schema.String,
   nome: Schema.String,
+  tipo: TipoFerramenta,
+  web: Schema.optionalKey(AlvoWeb),
   entrada: Schema.Unknown,
 });
 
@@ -39,6 +80,7 @@ export const FerramentaConcluida = Schema.TaggedStruct("FerramentaConcluida", {
 export const PedidoAprovacao = Schema.TaggedStruct("PedidoAprovacao", {
   id: Schema.String,
   ferramenta: Schema.String,
+  tipo: TipoFerramenta,
   descricao: Schema.String,
   entrada: Schema.Unknown,
 });
@@ -68,9 +110,17 @@ export function erroDoTurno(texto: string): Erro {
   return { _tag: "Erro", tipo: classificarFalha("", texto), mensagem: textoTecnico(texto) };
 }
 
-/** Fim do turno. `motivo` é o do provider (`end_turn`, `completed`, `interrupted`…). */
+/**
+ * Por que o turno acabou: `concluido` (o provider terminou a resposta), `interrompido` (o "Parar", ou o
+ * turno que o servidor fechou sem o fim do provider), `falha` (o provider falhou; um `Erro` vem antes) e
+ * `parado_antes_do_envio` (o servidor parou o turno no preparo, antes de a IA receber a mensagem). Cada
+ * driver mapeia o motivo nativo dele.
+ */
+export const MotivoFim = Schema.Literals(["concluido", "interrompido", "falha", "parado_antes_do_envio"]);
+export type MotivoFim = typeof MotivoFim.Type;
+
 export const FimTurno = Schema.TaggedStruct("FimTurno", {
-  motivo: Schema.String,
+  motivo: MotivoFim,
 });
 
 export const Evento = Schema.Union([
