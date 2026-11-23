@@ -30,6 +30,7 @@ import * as Listas from "../src/persistencia/Listas.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import { unirResultadosIa } from "../src/revisao-ppc/RevisaoIa.ts";
 import { casarPendencias, planoArquivoNovo } from "../src/revisao-ppc/arquivo-novo.ts";
+import { estimarAcao } from "../src/revisao-ppc/estimativa.ts";
 import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
@@ -459,7 +460,11 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
             "A matriz curricular apresenta a carga horária de 1200 horas, das quais 480 horas no núcleo tecnológico, conforme a Resolução CONSUP nº 77/2023, com [completar: carga do núcleo básico].",
           observacao: "Confira a carga por núcleo.",
         });
+      const estimativa = yield* c["revisaoPpc.estimarAcao"]({ lista: lista.id, chave, acao: "sugerir" });
       const l = yield* c["revisaoPpc.sugerir"]({ lista: lista.id, chave });
+      // A estimativa mede o texto que a ação mandou (o nonce muda, o tamanho não).
+      const enviado = roteiro.configs.at(-1)!.instrucoes!.length + roteiro.pedidos.at(-1)!.length;
+      assert.deepStrictEqual(estimativa, estimarAcao(enviado, "sugerir", estimativa.provider));
       const s = l.pendencias.find((x) => x.chave === chave)!.sugestao!;
       assert.deepStrictEqual(s.completar, ["carga do núcleo básico"]);
       const fatos = s.naoConferidos.map((f) => f.fato).join(" | ");

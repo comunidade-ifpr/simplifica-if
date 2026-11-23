@@ -74,13 +74,14 @@ import {
 import { documentoRevisado } from "./documento-revisado.ts";
 import { estimarAcao } from "./estimativa.ts";
 import { type PendenciaDaLista, planoArquivoNovo } from "./arquivo-novo.ts";
-import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { instrucoesJulgador, pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { dobrar, retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
 import {
   chavePendencia,
   estadoDaIa,
   NOME_DA_FORMA,
+  type PendenciaRevisao,
   type ResultadoFichaIa,
   textoDaPendencia,
 } from "@simplifica-if/ppc/revisao-previa";
@@ -92,7 +93,7 @@ import * as RevisorPpc from "./RevisorPpc.ts";
 import { cursoEscolhido, marcasDaCopia, regravarCopia as regravarCopiaDaLista } from "./copia-lista.ts";
 import { criarLista, novoNonce } from "./criar-lista.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
-import { contextoDaFicha } from "./preparo.ts";
+import { type ContextoDaFicha, contextoDaFicha } from "./preparo.ts";
 
 export const TEMPO_ACAO = Duration.minutes(4);
 export const LIMITE_MOTIVO = 1500;
@@ -222,6 +223,65 @@ const ponto = (t: string) => (/[.!?]$/.test(t.trim()) ? t.trim() : `${t.trim()}.
 
 /** Os dois lados nomeiam algo e diferem (um lado sem curso não é "outro curso"). */
 const difere = (a: string | null, b: string | null) => a !== null && b !== null && a !== b;
+
+/* ============================================================ pedidos */
+
+/** O que uma ação manda à IA: as instruções da sessão e o pedido. A estimativa mede este mesmo texto. */
+interface TextoDaAcao {
+  readonly instrucoes: string;
+  readonly pedido: string;
+}
+
+/** O preparo de uma conversa (contestar, sugerir): o prefixo com a pendência e os turnos anteriores. */
+interface Conversa {
+  readonly nonce: string;
+  readonly prefixo: string;
+  readonly anteriores: ReadonlyArray<TurnoAnterior>;
+}
+
+const textoContestacao = (c: Conversa, motivo: string): TextoDaAcao => ({
+  instrucoes: instrucoesConversa(c.nonce),
+  pedido: pedidoContestacao(c.prefixo, motivo, c.anteriores, c.nonce),
+});
+
+const textoSugestao = (c: Conversa): TextoDaAcao => ({
+  instrucoes: instrucoesConversa(c.nonce),
+  pedido: pedidoSugestao(c.prefixo, c.anteriores),
+});
+
+/** O lote de uma ficha só da nova revisão de uma pendência da IA. */
+const blocoRevisarDeNovo = (p: Pick<PendenciaRevisao, "ficha" | "tema" | "ordemTema">) => ({
+  id: `revisar-de-novo-${p.ficha.toLowerCase()}`,
+  tipo: "S" as const,
+  tema: p.tema,
+  ordemTema: p.ordemTema,
+  fichas: [p.ficha],
+});
+
+/** O pedido do lote S da leitura com IA, com a ficha da pendência; as instruções são as do julgamento. */
+const textoRevisarDeNovo = (
+  p: Pick<PendenciaRevisao, "ficha" | "tema" | "ordemTema">,
+  preparo: { readonly ctx: ContextoDaFicha; readonly nonce: string },
+): TextoDaAcao => {
+  const { ctx, nonce } = preparo;
+  return {
+    instrucoes: instrucoesJulgador(nonce),
+    pedido: pedidoS(
+      blocoRevisarDeNovo(p),
+      [ctx.ficha],
+      new Map([[ctx.ficha.id, ctx.proprio]]),
+      ctx.contexto,
+      nonce,
+      ctx.comum,
+    ),
+  };
+};
+
+/**
+ * O motivo da contestação na estimativa, que vem antes de a pessoa escrevê-lo: um tamanho típico. É o
+ * único texto da estimativa que não é o do pedido.
+ */
+const MOTIVO_TIPICO = "x".repeat(400);
 
 /* ============================================================ serviço */
 
@@ -473,32 +533,15 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     // A contestação de uma pendência do código não vai à IA.
     if (acao === "contestar" && p.pendencia.origem === "codigo")
       return { provider, tokensEntrada: 0, tokensSaida: 0, segundos: 1, custoUsd: 0 } satisfies EstimativaAcao;
-    const ctx = yield* contextoPara(registro, p.pendencia.ficha);
-    const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce: registro.nonce });
+    // O mesmo texto que a ação manda. Na nova revisão, o arquivo novo ainda não foi escolhido: o texto
+    // revisado da lista faz as vezes dele.
     const texto =
-      acao === "contestar"
-        ? pedidoContestacao(prefixo, "x".repeat(400), [], registro.nonce)
-        : acao === "sugerir"
-          ? pedidoSugestao(prefixo, [])
-          : pedidoS(
-              {
-                id: "revisarDeNovo",
-                tipo: "S",
-                tema: p.pendencia.tema,
-                ordemTema: p.pendencia.ordemTema,
-                fichas: [ctx.ficha.id],
-              },
-              [ctx.ficha],
-              new Map([[ctx.ficha.id, ctx.proprio]]),
-              ctx.contexto,
-              registro.nonce,
-              ctx.comum,
-            );
-    return estimarAcao(
-      texto.length + instrucoesConversa(registro.nonce).length,
-      acao,
-      provider,
-    ) satisfies EstimativaAcao;
+      acao === "revisarDeNovo"
+        ? textoRevisarDeNovo(p.pendencia, yield* prepararAcaoIa(registro, p, pedido))
+        : acao === "contestar"
+          ? textoContestacao(yield* prepararConversa(registro, p, pedido), MOTIVO_TIPICO)
+          : textoSugestao(yield* prepararConversa(registro, p, pedido));
+    return estimarAcao(texto.instrucoes.length + texto.pedido.length, acao, provider) satisfies EstimativaAcao;
   });
 
   /* ------------------------------------------------------------ conversa */
@@ -510,14 +553,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     acao: "contestar" | "sugerir";
     provider: Provider;
     modelo: string | null;
-    nonce: string;
-    pedido: string;
+    texto: TextoDaAcao;
   }) =>
     turnoSemFerramentas({
       provider: entrada.provider,
       modelo: entrada.modelo,
-      instrucoes: instrucoesConversa(entrada.nonce),
-      texto: entrada.pedido,
+      instrucoes: entrada.texto.instrucoes,
+      texto: entrada.texto.pedido,
       tempoTurno: tempoAcao,
       numero: 1,
       registrarTentativa: (t) => listas.gravarAcao(entrada.registro.id, entrada.chave, { acao: entrada.acao, ...t }),
@@ -553,15 +595,15 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           { situacao: "contestada_mantida" },
           { acao: "contestar", situacao: "contestada_mantida", texto: `Mantida: ${MANTIDA_CODIGO}`, motivo: limpo },
         );
-      const { provider, modelo, ctx, nonce, anteriores, prefixo } = yield* prepararConversa(registro, p, pedido);
+      const conversa = yield* prepararConversa(registro, p, pedido);
+      const { ctx } = conversa;
       const turno = yield* conversar({
         registro,
         chave,
         acao: "contestar",
-        provider,
-        modelo,
-        nonce,
-        pedido: pedidoContestacao(prefixo, limpo, anteriores, nonce),
+        provider: conversa.provider,
+        modelo: conversa.modelo,
+        texto: textoContestacao(conversa, limpo),
       });
       const decisao = turno.ferramentas.length
         ? {
@@ -600,15 +642,15 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       const { registro, p } = yield* abrirAcao(id, chave);
       if (p.pendencia.ficha === "TRIAGEM")
         return yield* falha(registro.arquivo, "Este apontamento é da triagem: o trecho sai do PPC, sem redação nova.");
-      const { provider, modelo, ctx, nonce, anteriores, prefixo } = yield* prepararConversa(registro, p, pedido);
+      const conversa = yield* prepararConversa(registro, p, pedido);
+      const { ctx } = conversa;
       const turno = yield* conversar({
         registro,
         chave,
         acao: "sugerir",
-        provider,
-        modelo,
-        nonce,
-        pedido: pedidoSugestao(prefixo, anteriores),
+        provider: conversa.provider,
+        modelo: conversa.modelo,
+        texto: textoSugestao(conversa),
       });
       const sugestao = turno.ferramentas.length
         ? null
@@ -718,29 +760,16 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           ? `Conferida na nova revisão de ${nome}: o critério não aponta mais nada.`
           : `A nova revisão de ${nome} ainda aponta: ${ponto(ainda[0]!.titulo)}`;
       } else {
-        const { provider, modelo, ctx, nonce } = yield* prepararAcaoIa(registro, p, pedido, novo.revisao);
-        const bloco = {
-          id: `revisar-de-novo-${ficha.toLowerCase()}`,
-          tipo: "S" as const,
-          tema: p.pendencia.tema,
-          ordemTema: p.pendencia.ordemTema,
-          fichas: [ficha],
-        };
-        const pedidoTexto = pedidoS(
-          bloco,
-          [ctx.ficha],
-          new Map([[ficha, ctx.proprio]]),
-          ctx.contexto,
-          nonce,
-          ctx.comum,
-        );
+        const preparo = yield* prepararAcaoIa(registro, p, pedido, novo.revisao);
+        const { provider, modelo, ctx, nonce } = preparo;
+        // As instruções do julgamento, o `julgarBloco` as monta com o mesmo nonce.
         const julgado = yield* julgarBloco({
           provider,
           modelo,
           nonce,
-          bloco,
+          bloco: blocoRevisarDeNovo(p.pendencia),
           fichas: [ctx.ficha],
-          pedido: pedidoTexto,
+          pedido: textoRevisarDeNovo(p.pendencia, preparo).pedido,
           fontes: new Set(ctx.fontes),
           tempoTurno: tempoAcao,
           revisaoHumana: teveTextoParaIa(retirarTextoParaIa(novo.revisao.markdown, novo.revisao.linhasTextoParaIa)),
