@@ -615,14 +615,16 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         );
         const sem = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
         assert.isNull(sem.curso.cnct);
-        const doCurso = sem.pendencias.filter((p) => p.dependeDoCurso);
+        const pendenciasDa = (lista: string) =>
+          c["revisaoPpc.lista"]({ lista }).pipe(Effect.map((l) => l.pendencias.map((v) => v.pendencia)));
+        const doCurso = (yield* pendenciasDa(sem.lista!)).filter((p) => p.dependeDoCurso);
         assert.includeMembers(
           doCurso.map((p) => p.ficha),
           ["CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"],
         );
-        assert.isTrue(sem.pendencias.filter((p) => !p.dependeDoCurso).length > 0);
+        assert.isTrue((yield* pendenciasDa(sem.lista!)).filter((p) => !p.dependeDoCurso).length > 0);
         // Nenhuma pendência repetida (mesma ficha, mensagem e trecho).
-        const iguais = sem.pendencias.map((p) => JSON.stringify([p.ficha, p.titulo, p.trecho]));
+        const iguais = (yield* pendenciasDa(sem.lista!)).map((p) => JSON.stringify([p.ficha, p.titulo, p.trecho]));
         assert.strictEqual(new Set(iguais).size, iguais.length);
 
         const com = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo, cnct: "tecnico-em-agropecuaria" }));
@@ -631,7 +633,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
           forma: "subsequente",
           origem: "pessoa",
         });
-        assert.isFalse(com.pendencias.some((p) => p.dependeDoCurso));
+        assert.isFalse((yield* pendenciasDa(com.lista!)).some((p) => p.dependeDoCurso));
         assert.notStrictEqual(com.lista, sem.lista);
         const anterior = yield* c["revisaoPpc.lista"]({ lista: sem.lista! }).pipe(Effect.flip);
         assert.include(anterior.message, "não existe mais");
@@ -1037,7 +1039,6 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
                 arquivoOriginal: "/x/PPC.docx",
                 arquivoComentado: "",
                 curso: { cnct: null, forma: null, origem: "documento" },
-                pendencias: [pendencia],
                 criterios: [],
                 conferidos: 0,
                 conferidosIa: 0,

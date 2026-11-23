@@ -79,6 +79,10 @@ export type CriterioRevisao = typeof CriterioRevisao.Type;
 export const LeituraIaRevisao = Schema.Literals(["nenhuma", "parcial", "completa"]);
 export type LeituraIaRevisao = typeof LeituraIaRevisao.Type;
 
+/**
+ * O resultado de uma revisão: os arquivos, o curso, a régua e as contagens. As pendências não vêm aqui:
+ * a lista viva (`ListaPendencias.pendencias`) é a única cópia delas.
+ */
 export const ResultadoRevisaoPpc = Schema.Struct({
   arquivoOriginal: Schema.String,
   /** A cópia comentada, na mesma pasta do original; o original não é alterado. */
@@ -88,7 +92,6 @@ export const ResultadoRevisaoPpc = Schema.Struct({
     forma: Schema.NullOr(Schema.String),
     origem: Schema.Literals(["documento", "pessoa"]),
   }),
-  pendencias: Schema.Array(PendenciaRevisao),
   /**
    * A régua: todos os critérios da revisão (as fichas da base, hoje 84), na ordem dos temas, cada um
    * com a decisão ou `nao_lido`. `criterios.length === totalCriterios`.

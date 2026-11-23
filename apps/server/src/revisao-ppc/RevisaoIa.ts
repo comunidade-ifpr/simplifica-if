@@ -62,7 +62,7 @@ import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
-import { regravarCopia } from "./copia-lista.ts";
+import { cursoEscolhido, regravarCopia } from "./copia-lista.ts";
 import { novoNonce } from "./criar-lista.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { cursoEmTexto, type PlanoRevisaoIa, preparar } from "./preparo.ts";
@@ -380,10 +380,10 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       fora: plano.fora,
       parcial: !completa,
     });
-    const resultado = yield* revisor.montar({
+    const { resultado, pendencias } = yield* revisor.montar({
       arquivo: lista.arquivo,
       markdown: lista.markdown,
-      curso: lista.resultado.curso,
+      ...cursoEscolhido(lista),
       arquivoComentado: lista.resultado.arquivoComentado,
       ia,
     });
@@ -391,7 +391,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const existentes = new Set(atuais.map((p) => p.chave));
     const chavesResultado = new Set<string>();
     const novas: { chave: string; pendencia: PendenciaRevisao }[] = [];
-    for (const pendencia of resultado.pendencias) {
+    for (const pendencia of pendencias) {
       const chave = chavePendencia(pendencia);
       chavesResultado.add(chave);
       if (existentes.has(chave)) continue;

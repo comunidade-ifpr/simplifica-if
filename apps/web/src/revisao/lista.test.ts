@@ -77,7 +77,6 @@ const resultado = (extra: Partial<ResultadoRevisaoPpc> = {}): ResultadoRevisaoPp
   arquivoOriginal: "/a/PPC.docx",
   arquivoComentado: "/a/PPC - revisão prévia (Simplifica IF).docx",
   curso: { cnct: null, forma: "subsequente", origem: "documento" },
-  pendencias: [],
   criterios: [
     criterio("A1", 1, "nao_atende"),
     criterio("A2", 1, "atende"),

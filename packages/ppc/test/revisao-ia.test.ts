@@ -46,16 +46,8 @@ import {
   retirarTextoParaIa,
   secoesDoTema,
 } from "../src/revisao-ia/plano.ts";
-import { dirigidoAIa, preConferir } from "../src/pre-conferencia.ts";
-import {
-  chavePendencia,
-  type EntradaIa,
-  estadoDaIa,
-  montarResultado,
-  pendenciasProvisorias,
-  revisarDocx,
-  verificacaoDaBase,
-} from "../src/revisao-previa.ts";
+import { dirigidoAIa } from "../src/pre-conferencia.ts";
+import { chavePendencia, type EntradaIa, estadoDaIa, revisarDocx, revisarMarkdown } from "../src/revisao-previa.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
 const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
@@ -583,24 +575,18 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(perfil.secao).toMatch(/PERFIL PROFISSIONAL DE CONCLUSÃO/);
   });
 
-  test("a leitura completa: `leituraIa` e a montagem pura dão o mesmo resultado que o documento", () => {
+  test("a leitura completa: `leituraIa`, e a revisão do texto dá o mesmo resultado que a do documento", () => {
     expect(revisao.leituraIa).toBe("completa");
-    const resultado = preConferir(revisao.markdown, {
-      cnct: base.cncts.find((c) => c.slug === "tecnico-em-agropecuaria")!,
-      forma: "subsequente",
-      ...verificacaoDaBase(base),
-    });
-    const montagem = montarResultado(resultado, iaDoTeste, base, {
-      markdown: revisao.markdown,
-      cnct: "tecnico-em-agropecuaria",
-    });
-    expect(montagem.criterios).toEqual(revisao.criterios);
-    expect(montagem.conferidosIa).toBe(revisao.conferidosIa);
-    const provisorias = pendenciasProvisorias(montagem, "tecnico-em-agropecuaria");
-    expect(provisorias.map(({ noDocumento: _, ...p }) => p)).toEqual(
+    const texto = revisarMarkdown(revisao.markdown, base, { ia: iaDoTeste });
+    expect(texto.criterios).toEqual(revisao.criterios);
+    expect(texto.conferidosIa).toBe(revisao.conferidosIa);
+    expect(texto.curso).toEqual(revisao.curso);
+    expect(texto.linhasTextoParaIa).toEqual(revisao.linhasTextoParaIa);
+    // O lugar no documento só a cópia comentada confirma; sem ela, é o provisório.
+    expect(texto.pendencias.map(({ noDocumento: _, ...p }) => p)).toEqual(
       revisao.pendencias.map(({ noDocumento: _, ...p }) => p),
     );
-    expect(provisorias.find((p) => p.ficha === "CT-IDENT-07")!.noDocumento).toBe("no-trecho");
+    expect(texto.pendencias.find((p) => p.ficha === "CT-IDENT-07")!.noDocumento).toBe("no-trecho");
   });
 
   test("a leitura parcial: o aviso diz o que ficou de fora e o que ainda não foi lido, juntos", () => {

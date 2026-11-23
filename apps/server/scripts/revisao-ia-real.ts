@@ -170,6 +170,7 @@ const programa = Effect.gen(function* () {
   );
   const revisoes = yield* Revisoes.Revisoes;
   const blocos = yield* revisoes.blocos(preparada.id);
+  const pendencias = (yield* (yield* Listas.Listas).pendencias(lista!)).map((p) => p.pendencia);
   const resultados = blocos.flatMap((b) => (b.resultado as ResultadoBloco).resultados);
   const resumo = {
     provider,
@@ -197,8 +198,8 @@ const programa = Effect.gen(function* () {
     injecaoRelatada: resultados
       .filter((r) => /ignor|aprovad|sistema de revis|instru/i.test(r.lacunas.join(" ")))
       .map((r) => r.ficha),
-    pendenciasIa: final.resultado?.pendencias.filter((p) => p.origem === "ia").length ?? null,
-    pendenciasCodigo: final.resultado?.pendencias.filter((p) => p.origem === "codigo").length ?? null,
+    pendenciasIa: pendencias.filter((p) => p.origem === "ia").length,
+    pendenciasCodigo: pendencias.filter((p) => p.origem === "codigo").length,
     arquivoComentado: final.resultado?.arquivoComentado ?? null,
   };
   NodeFS.writeFileSync(NodePath.join(saida, `revisao-${provider}-${modo}.json`), JSON.stringify(resumo, null, 2));

@@ -35,6 +35,7 @@ import * as Semaphore from "effect/Semaphore";
 import {
   type EtapaLeituraPpc,
   FalhaRevisaoPpc,
+  type PendenciaRevisao,
   type ResultadoRevisaoPpc,
   SUFIXO_REVISAO_PREVIA,
 } from "@simplifica-if/contratos-app";
@@ -45,13 +46,11 @@ import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as NodeCrypto from "node:crypto";
 import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
-import { preConferir } from "@simplifica-if/ppc/pre-conferencia";
 import {
   type EntradaIa,
   type MarcaPendencia,
-  montarResultado,
-  pendenciasProvisorias,
   type RevisaoPrevia,
+  revisarMarkdown,
   verificacaoDaBase,
 } from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
@@ -98,11 +97,13 @@ export interface EntradaRevisarArquivo extends EntradaRevisao {
   readonly aoEtapa?: AoEtapa;
 }
 
-/** O que a montagem leve recebe: o texto já convertido da lista e o curso dela, sem o `.docx`. */
+/** O que a montagem leve recebe: o texto já convertido da lista e o curso escolhido, sem o `.docx`. */
 export interface EntradaMontagem {
   readonly arquivo: string;
   readonly markdown: string;
-  readonly curso: ResultadoRevisaoPpc["curso"];
+  /** O curso que a pessoa escolheu ("Qual é o curso?"); sem ele, o identificado no texto. */
+  readonly cnct?: string;
+  readonly forma?: string;
   /** A cópia comentada atual (fica a mesma: a montagem não grava cópia). */
   readonly arquivoComentado: string;
   readonly ia: EntradaIa;
@@ -123,12 +124,17 @@ export class RevisorPpc extends Context.Service<
      */
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
-     * A lista e a régua refeitas com os resultados da IA, sem Worker, sem reler o `.docx` e sem cópia
-     * comentada (a mesclagem de cada bloco pronto da leitura com IA): a pré-conferência roda de novo
-     * sobre o Markdown da lista (dezenas de milissegundos), com a base já montada. As pendências saem com
-     * `noDocumento` provisório, que a próxima cópia comentada corrige.
+     * O resultado e as pendências refeitos com os resultados da IA, sem Worker, sem reler o `.docx` e sem
+     * cópia comentada (a mesclagem de cada bloco pronto da leitura com IA): `revisarMarkdown` do `ppc`
+     * sobre o texto da lista (dezenas de milissegundos), com a base já montada. As pendências saem com o
+     * `noDocumento` provisório de lá, que a próxima cópia comentada corrige.
      */
-    readonly montar: (entrada: EntradaMontagem) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    readonly montar: (
+      entrada: EntradaMontagem,
+    ) => Effect.Effect<
+      { readonly resultado: ResultadoRevisaoPpc; readonly pendencias: ReadonlyArray<PendenciaRevisao> },
+      FalhaRevisaoPpc
+    >;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
     /**
@@ -298,9 +304,9 @@ const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: str
 
 /* ============================================================ serviço */
 
-/** O resultado para a interface (sem o Markdown, o aviso e as linhas da triagem). */
+/** O resultado para a interface (sem as pendências, que vão à lista, o Markdown, o aviso e as linhas da triagem). */
 export const resultadoParaInterface = (arquivo: string, r: RevisaoDoArquivo): ResultadoRevisaoPpc => {
-  const { aviso: _, markdown: __, linhasTextoParaIa: ___, ...resto } = r.revisao;
+  const { aviso: _, markdown: __, linhasTextoParaIa: ___, pendencias: ____, ...resto } = r.revisao;
   return { arquivoOriginal: arquivo, arquivoComentado: r.arquivoComentado ?? "", ...resto };
 };
 
@@ -424,7 +430,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   const verificacao = yield* Effect.cached(base.pipe(Effect.map((dados) => ({ dados, ...verificacaoDaBase(dados) }))));
 
   const montar = Effect.fn("RevisorPpc.montar")(function* (entrada: EntradaMontagem) {
-    const { dados, registro, relacoes, vigencia } = yield* verificacao.pipe(
+    const { dados, ...comum } = yield* verificacao.pipe(
       Effect.mapError(
         () =>
           new FalhaRevisaoPpc({
@@ -433,29 +439,17 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
           }),
       ),
     );
-    const slug = entrada.curso.cnct?.slug ?? null;
-    const cnct = slug === null ? null : (dados.cncts.find((c) => c.slug === slug) ?? null);
-    const preConferencia = preConferir(entrada.markdown, {
-      cnct,
-      forma: entrada.curso.forma ?? "",
-      registro,
-      relacoes,
-      vigencia,
+    const texto = revisarMarkdown(entrada.markdown, dados, {
+      ia: entrada.ia,
+      cnct: entrada.cnct,
+      forma: entrada.forma,
+      verificacao: comum,
     });
-    const montagem = montarResultado(preConferencia, entrada.ia, dados, {
-      markdown: entrada.markdown,
-      cnct: slug,
-      registro,
-    });
-    const { itens: _, temasForaDaRevisao: __, ...contagens } = montagem;
+    const { pendencias, itens: _, temasForaDaRevisao: __, linhasTextoParaIa: ___, ...resto } = texto;
     return {
-      arquivoOriginal: entrada.arquivo,
-      arquivoComentado: entrada.arquivoComentado,
-      curso: entrada.curso,
-      pendencias: pendenciasProvisorias(montagem, slug),
-      ...contagens,
-      dataBase: dados.dataBase,
-    } satisfies ResultadoRevisaoPpc;
+      resultado: { arquivoOriginal: entrada.arquivo, arquivoComentado: entrada.arquivoComentado, ...resto },
+      pendencias,
+    };
   });
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));

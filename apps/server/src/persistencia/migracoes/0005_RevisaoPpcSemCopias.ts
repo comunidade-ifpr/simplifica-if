@@ -8,6 +8,8 @@
  *   que saiu fica órfã) no lugar do curso (`cnct`, `forma`), que a lista guarda. A lista de cada leitura
  *   gravada é a que a liga (`revisao_id`) ou, para a preparada, a que o servidor achava pelo arquivo, pelo
  *   conteúdo e pelo curso; sem nenhuma, fica nula.
+ * - O `resultado` de `listas_pendencias` e de `revisoes_ia` deixa de guardar as pendências: a lista viva
+ *   (`pendencias_vivas`) é a única cópia delas.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
@@ -56,6 +58,15 @@ export default Effect.gen(function* () {
   yield* sql`CREATE INDEX revisoes_ia_lista ON revisoes_ia (lista_id)`;
   yield* sql`ALTER TABLE revisoes_ia DROP COLUMN cnct`;
   yield* sql`ALTER TABLE revisoes_ia DROP COLUMN forma`;
+
+  yield* sql`
+    UPDATE listas_pendencias SET resultado = json_remove(resultado, '$.pendencias')
+    WHERE json_valid(resultado) AND json_type(resultado, '$.pendencias') IS NOT NULL
+  `;
+  yield* sql`
+    UPDATE revisoes_ia SET resultado = json_remove(resultado, '$.pendencias')
+    WHERE resultado IS NOT NULL AND json_valid(resultado) AND json_type(resultado, '$.pendencias') IS NOT NULL
+  `;
 
   const revisoes = yield* sql<{ id: string; estimativa: string }>`SELECT id, estimativa FROM revisoes_ia`;
   for (const revisao of revisoes) {

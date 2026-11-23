@@ -845,7 +845,7 @@ function todosOsCriterios(
 export type ItemMontado = ItemInterno;
 
 /** A lista e a régua montadas da pré-conferência e dos resultados da IA, sem o documento. */
-export type Montagem = {
+type Montagem = {
   /** As pendências do código e da IA, sem repetição, na ordem dos temas. */
   itens: ItemMontado[];
   criterios: CriterioConferido[];
@@ -862,10 +862,9 @@ export type Montagem = {
 /**
  * A montagem do resultado (pura, sem o `.docx`): as pendências da pré-conferência e as da IA, sem
  * repetição (a mesma ficha com a mesma mensagem no mesmo trecho é uma pendência só), a régua e as
- * contagens. É a mesma na revisão com o documento (`revisarDocx`) e na mesclagem dos blocos da leitura
- * com IA, que o servidor faz a cada bloco pronto sem reler o arquivo.
+ * contagens (`revisarMarkdown`).
  */
-export function montarResultado(
+function montarResultado(
   preConferencia: PreConferencia,
   ia: EntradaIa | undefined,
   base: BaseRevisaoPrevia,
@@ -903,30 +902,37 @@ export function montarResultado(
   };
 }
 
-/**
- * As pendências da montagem antes da cópia comentada: `noDocumento` provisório (no trecho, se há
- * trecho; no início, se é ausência), que a gravação da cópia corrige com o que o Word achou.
- */
-export const pendenciasProvisorias = (montagem: Montagem, cnct: string | null): PendenciaRevisao[] =>
-  montagem.itens.map(({ trechos, ...item }) => ({
-    ...item,
-    noDocumento: trechos.length ? "no-trecho" : "no-inicio",
-    dependeDoCurso: cnct === null && FICHAS_DO_CURSO.has(item.ficha),
-  }));
+/** A revisão do texto convertido, sem o documento (`revisarMarkdown`). */
+export type RevisaoDoTexto = Omit<RevisaoPrevia, "docx" | "aviso" | "markdown"> & {
+  /** As pendências com todos os trechos, que a cópia comentada procura no documento. */
+  itens: ItemMontado[];
+  /** Os temas das fichas de fora (modo rápido), na ordem do parecer, para o aviso do título. */
+  temasForaDaRevisao: string[];
+};
 
-/** Converte, pré-confere e comenta. Lança `ErroDocx` (mensagem em português) para arquivo inválido. */
-export function revisarDocx(
-  bytes: Uint8Array,
-  nomeDoArquivo: string,
+export type OpcoesRevisaoDoTexto = Pick<OpcoesRevisaoPrevia, "ia" | "cnct" | "forma"> & {
+  aoEtapa?: ((etapa: Exclude<EtapaRevisaoPrevia, "gravando">) => void) | undefined;
+  /** A parte da base que não depende do PPC (`verificacaoDaBase`), quando quem chama já a tem. */
+  verificacao?: ReturnType<typeof verificacaoDaBase> | undefined;
+};
+
+/**
+ * A revisão de um PPC já convertido (pura, sem o `.docx`): o curso (o escolhido ou o identificado no
+ * texto), a pré-conferência, as pendências do código e as da IA sem repetição, a régua e as contagens.
+ * Sem o documento, ninguém sabe ainda onde o Word ancora cada comentário: as pendências saem com
+ * `noDocumento` provisório (no trecho, se há trecho; no início, se é ausência), que `revisarDocx`, ao
+ * gravar a cópia comentada, troca pelo lugar real. O servidor a usa a cada bloco pronto da leitura com
+ * IA, sobre o texto que a lista guarda, sem reler o arquivo.
+ */
+export function revisarMarkdown(
+  markdown: string,
   base: BaseRevisaoPrevia,
-  opcoes: OpcoesRevisaoPrevia,
-): RevisaoPrevia {
-  const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
+  opcoes: OpcoesRevisaoDoTexto = {},
+): RevisaoDoTexto {
   opcoes.aoEtapa?.("identificando");
   // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
-  const comum = verificacaoDaBase(base);
-  const registro = comum.registro;
-  const noDocumento = identificarCurso(conversao.markdown, base.cncts);
+  const comum = opcoes.verificacao ?? verificacaoDaBase(base);
+  const noDocumento = identificarCurso(markdown, base.cncts);
   const cnct = opcoes.cnct ? (base.cncts.find((c) => c.slug === opcoes.cnct) ?? null) : noDocumento.cnct;
   const forma = opcoes.forma ?? noDocumento.forma;
   const curso: CursoIdentificado = {
@@ -935,17 +941,52 @@ export function revisarDocx(
     origem: opcoes.cnct || opcoes.forma ? "pessoa" : "documento",
   };
   opcoes.aoEtapa?.("conferindo");
-  const resultado = preConferir(conversao.markdown, {
-    cnct,
-    forma: forma ?? "",
-    ...comum,
-  });
+  const resultado = preConferir(markdown, { cnct, forma: forma ?? "", ...comum });
   const montagem = montarResultado(resultado, opcoes.ia, base, {
-    markdown: conversao.markdown,
+    markdown,
     cnct: cnct?.slug ?? null,
-    registro,
+    registro: comum.registro,
   });
-  const { itens, criterios, conferidos, conferidosIa, paraConferirIa, foraDaRevisao, totalCriterios } = montagem;
+  return {
+    curso,
+    pendencias: montagem.itens.map(({ trechos, ...item }) => ({
+      ...item,
+      noDocumento: trechos.length ? "no-trecho" : "no-inicio",
+      dependeDoCurso: cnct === null && FICHAS_DO_CURSO.has(item.ficha),
+    })),
+    criterios: montagem.criterios,
+    conferidos: montagem.conferidos,
+    conferidosIa: montagem.conferidosIa,
+    paraConferirIa: montagem.paraConferirIa,
+    foraDaRevisao: montagem.foraDaRevisao,
+    totalCriterios: montagem.totalCriterios,
+    leituraIa: montagem.leituraIa,
+    dataBase: base.dataBase,
+    linhasTextoParaIa: resultado.triagem
+      .filter((a) => a.regra === "texto-dirigido-a-ia")
+      .flatMap((a) => a.trechos.map((t) => t.linha)),
+    itens: montagem.itens,
+    temasForaDaRevisao: montagem.temasForaDaRevisao,
+  };
+}
+
+/**
+ * Converte, revisa o texto (`revisarMarkdown`) e comenta. Lança `ErroDocx` (mensagem em português) para
+ * arquivo inválido.
+ */
+export function revisarDocx(
+  bytes: Uint8Array,
+  nomeDoArquivo: string,
+  base: BaseRevisaoPrevia,
+  opcoes: OpcoesRevisaoPrevia,
+): RevisaoPrevia {
+  const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
+  const texto = revisarMarkdown(conversao.markdown, base, opcoes);
+  const { temasForaDaRevisao, ...revisado } = texto;
+  // Cópia: a contestada com evidência muda de estado só no documento.
+  const itens = [...texto.itens];
+  const { curso, conferidos, conferidosIa, paraConferirIa, foraDaRevisao, totalCriterios } = revisado;
+  const cnct = curso.cnct;
 
   opcoes.aoEtapa?.("gravando");
   // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
@@ -990,9 +1031,9 @@ export function revisarDocx(
     conferidosIa,
     paraConferirIa,
     foraDaRevisao,
-    temasForaDaRevisao: montagem.temasForaDaRevisao,
+    temasForaDaRevisao,
     totalCriterios,
-    leituraIa: montagem.leituraIa,
+    leituraIa: revisado.leituraIa,
     curso,
     pendencias: pendencias.filter((_, indice) => !retirada(indice)),
     situacoes: marcas.filter((m): m is MarcaPendencia => m !== undefined),
@@ -1003,18 +1044,16 @@ export function revisarDocx(
     docx: final.docx,
     curso,
     pendencias,
-    criterios,
+    criterios: revisado.criterios,
     conferidos,
     conferidosIa,
     paraConferirIa,
     foraDaRevisao,
     totalCriterios,
-    leituraIa: montagem.leituraIa,
-    dataBase: base.dataBase,
+    leituraIa: revisado.leituraIa,
+    dataBase: revisado.dataBase,
     aviso,
     markdown: conversao.markdown,
-    linhasTextoParaIa: resultado.triagem
-      .filter((a) => a.regra === "texto-dirigido-a-ia")
-      .flatMap((a) => a.trechos.map((t) => t.linha)),
+    linhasTextoParaIa: revisado.linhasTextoParaIa,
   };
 }

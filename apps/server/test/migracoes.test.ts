@@ -311,15 +311,19 @@ describe("migrações do banco das conversas", () => {
         assert.strictEqual(viva!.chave, "CT-IDENT-01:abc");
         assert.strictEqual(viva!.pendencia.oQueFazer, "Ajuste o nome.");
 
-        const lista = yield* listas.buscar("lista-ia");
-        assert.deepInclude(lista!.resultado.pendencias[0], emPartes);
+        // (pelo SQL: depois da versão 4, o resultado deixa de guardar as pendências)
+        const [lista] = yield* sql<{
+          resultado: string;
+        }>`SELECT resultado FROM listas_pendencias WHERE id = 'lista-ia'`;
+        const doResultado = (JSON.parse(lista!.resultado) as { pendencias: unknown[] }).pendencias;
+        assert.deepInclude(doResultado[0], emPartes);
         // a do código, de uma frase só: o título é a frase, sem explicação nem faltas
-        assert.deepInclude(lista!.resultado.pendencias[1], {
+        assert.deepInclude(doResultado[1], {
           titulo: "Confira a denominação.",
           explicacao: null,
           faltas: [],
         });
-        assert.notProperty(lista!.resultado.pendencias[1], "mensagem");
+        assert.notProperty(doResultado[1], "mensagem");
         const [revisao] = yield* sql<{ resultado: string }>`SELECT resultado FROM revisoes_ia WHERE id = 'rev-1'`;
         assert.deepInclude((JSON.parse(revisao!.resultado) as { pendencias: unknown[] }).pendencias[0], emPartes);
 
@@ -328,15 +332,17 @@ describe("migrações do banco das conversas", () => {
       }).pipe(Effect.provide(emMemoria)),
   );
 
-  it.effect("upgrade 4 → 5: a estimativa leva a frase do limite do plano, e a leitura, a lista de onde nasceu", () =>
-    Effect.gen(function* () {
-      const sql = yield* SqlClient.SqlClient;
-      const revisoes = yield* Revisoes.Revisoes;
-      yield* Banco.rodarMigracoes(1);
-      yield* popularV1;
-      yield* Banco.rodarMigracoes(4);
-      // Preparadas (nenhuma lista as liga): uma do conteúdo e do curso de `lista-pre`, outra de outro curso.
-      yield* sql`
+  it.effect(
+    "upgrade 4 → 5: a estimativa leva a frase do limite do plano, a leitura, a lista de onde nasceu, e o resultado, sem as pendências",
+    () =>
+      Effect.gen(function* () {
+        const sql = yield* SqlClient.SqlClient;
+        const revisoes = yield* Revisoes.Revisoes;
+        yield* Banco.rodarMigracoes(1);
+        yield* popularV1;
+        yield* Banco.rodarMigracoes(4);
+        // Preparadas (nenhuma lista as liga): uma do conteúdo e do curso de `lista-pre`, outra de outro curso.
+        yield* sql`
         INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, plano, estimativa, criada_em, atualizada_em)
         VALUES
           ('rev-preparada', '/tmp/Outro.docx', 'hash-2', 'claude', NULL, 'rapido', NULL, NULL, 'preparada', '{}',
@@ -345,27 +351,39 @@ describe("migrações do banco das conversas", () => {
             'preparada', '{}', ${estimativaJson}, '2026-11-20T12:00:00Z', '2026-11-20T12:00:00Z')
       `;
 
-      const m5 = yield* Banco.rodarMigracoes(5);
-      assert.deepStrictEqual(m5, [[5, "RevisaoPpcSemCopias"]]);
+        const m5 = yield* Banco.rodarMigracoes(5);
+        assert.deepStrictEqual(m5, [[5, "RevisaoPpcSemCopias"]]);
 
-      const rev1 = yield* revisoes.buscar("rev-1");
-      assert.strictEqual(rev1!.estimativa.limiteDoPlano, "do limite de 5 horas do plano Pro");
-      assert.notProperty(rev1!.estimativa, "nomeJanela");
-      assert.strictEqual(rev1!.estimativa.tokensEntrada, 1000);
+        const rev1 = yield* revisoes.buscar("rev-1");
+        assert.strictEqual(rev1!.estimativa.limiteDoPlano, "do limite de 5 horas do plano Pro");
+        assert.notProperty(rev1!.estimativa, "nomeJanela");
+        assert.strictEqual(rev1!.estimativa.tokensEntrada, 1000);
 
-      // A lista de cada leitura: a que a liga ou, na preparada, a do mesmo conteúdo e curso.
-      assert.strictEqual(rev1!.lista, "lista-ia");
-      assert.strictEqual((yield* revisoes.buscar("rev-pausada"))!.lista, "lista-pausada");
-      assert.strictEqual((yield* revisoes.buscar("rev-preparada"))!.lista, "lista-pre");
-      assert.isNull((yield* revisoes.buscar("rev-outro-curso"))!.lista);
-      const colunas = (yield* sql<{ name: string }>`PRAGMA table_info(revisoes_ia)`).map((c) => c.name);
-      assert.notInclude(colunas, "cnct");
-      assert.notInclude(colunas, "forma");
-      // A lista que sai deixa a leitura sem lista, órfã.
-      yield* sql`DELETE FROM listas_pendencias WHERE id = 'lista-pre'`;
-      assert.isNull((yield* revisoes.buscar("rev-preparada"))!.lista);
-      assert.includeMembers([...(yield* revisoes.orfas)], ["rev-preparada", "rev-outro-curso"]);
-    }).pipe(Effect.provide(emMemoria)),
+        // A lista de cada leitura: a que a liga ou, na preparada, a do mesmo conteúdo e curso.
+        assert.strictEqual(rev1!.lista, "lista-ia");
+        assert.strictEqual((yield* revisoes.buscar("rev-pausada"))!.lista, "lista-pausada");
+        assert.strictEqual((yield* revisoes.buscar("rev-preparada"))!.lista, "lista-pre");
+        assert.isNull((yield* revisoes.buscar("rev-outro-curso"))!.lista);
+        const colunas = (yield* sql<{ name: string }>`PRAGMA table_info(revisoes_ia)`).map((c) => c.name);
+        assert.notInclude(colunas, "cnct");
+        assert.notInclude(colunas, "forma");
+        // As pendências ficam só em `pendencias_vivas`; o resto do resultado não muda.
+        const semPendencias = yield* sql<{ n: number }>`
+        SELECT COUNT(*) AS n FROM listas_pendencias WHERE json_type(resultado, '$.pendencias') IS NOT NULL
+      `;
+        assert.strictEqual(semPendencias[0]?.n, 0);
+        assert.notProperty(rev1!.resultado!, "pendencias");
+        assert.strictEqual(rev1!.resultado!.conferidos, 12);
+        const listaIa = yield* Listas.Listas.pipe(Effect.flatMap((l) => l.buscar("lista-ia")));
+        assert.notProperty(listaIa!.resultado, "pendencias");
+        assert.strictEqual(listaIa!.resultado.leituraIa, "completa");
+        assert.strictEqual((yield* Listas.Listas.pipe(Effect.flatMap((l) => l.pendencias("lista-ia")))).length, 1);
+
+        // A lista que sai deixa a leitura sem lista, órfã.
+        yield* sql`DELETE FROM listas_pendencias WHERE id = 'lista-pre'`;
+        assert.isNull((yield* revisoes.buscar("rev-preparada"))!.lista);
+        assert.includeMembers([...(yield* revisoes.orfas)], ["rev-preparada", "rev-outro-curso"]);
+      }).pipe(Effect.provide(emMemoria)),
   );
 
   it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
