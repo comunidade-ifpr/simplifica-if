@@ -156,7 +156,7 @@ export const dispositivo = Command.make(
     const { disp } = achado;
     const titulo = (yield* normas.obter(disp.norma))?.titulo ?? disp.norma;
     const descendentes = filhos ? (yield* normas.descendentes(disp.id)).map((f) => f.disp) : [];
-    // path relativo a base-conhecimento/, como no manifest
+    // path relativo a base-conhecimento/, como no registro
     const path = achado.path.replace(/^base-conhecimento\//, "");
     if (json) return yield* Console.log(paraJson({ ...disp, path, filhos: descendentes }));
     const linhas = [`${disp.id} — ${titulo}`, `  ${achado.path}:${disp.linha_inicio}-${disp.linha_fim}`];

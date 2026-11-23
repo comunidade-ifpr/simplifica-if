@@ -3,8 +3,7 @@
  * texto) e contratos Effect Schema.
  *
  * O `failsafe` mantém `numero: 9394` como texto; só `ano` é convertido em inteiro, pela coerção de
- * `esquemaValoresFrontMatter` (inclusive com dígitos Unicode). Assim o `manifest.json` não muda de
- * tipo.
+ * `esquemaValoresFrontMatter` (inclusive com dígitos Unicode).
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -103,9 +102,10 @@ const dataOuAConfirmar = Schema.Union([
 ]);
 
 /**
- * Contrato semântico do front matter de uma norma da base (depois da coerção). Os campos
- * obrigatórios e as relações são conferidos com mensagens próprias em `validar_base.ts`; aqui ficam
- * as regras de formato do `id` e dos tipos. Campos fora da lista ficam na saída.
+ * Contrato do front matter de uma norma da base (depois da coerção): campos obrigatórios, formato
+ * do `id`, tipos, datas e fonte oficial. O `validar_base.ts` acusa todos os erros dele, e a
+ * compilação do banco recusa a norma fora dele. Campos fora da lista (os gerados, por exemplo)
+ * ficam na saída.
  */
 export const esquemaNorma = Schema.StructWithRest(
   Schema.Struct({
@@ -164,6 +164,18 @@ export const esquemaNorma = Schema.StructWithRest(
   }),
 );
 export type Norma = typeof esquemaNorma.Type;
+
+const decodificarNorma = Schema.decodeUnknownResult(esquemaNorma, { errors: "all" });
+
+/** O front matter `meta` decodificado por `esquemaNorma`; fora do contrato, lança `ErroFrontMatter` com todos os problemas. */
+export function normaDoFrontMatter(meta: FrontMatter, rotulo: string): Norma {
+  const resultado = decodificarNorma(meta);
+  if (Result.isSuccess(resultado)) return resultado.success;
+  const detalhe = problemas(resultado.failure.issue)
+    .map((problema) => `${caminhoTexto(problema.caminho)}: ${problema.mensagem}`)
+    .join("; ");
+  throw new ErroFrontMatter({ rotulo, detalhe: `front matter fora do contrato da norma: ${detalhe}` });
+}
 
 /** Separa front matter e corpo de um texto Markdown. `rotulo` prefixa as mensagens de erro. */
 export function analisarFrontMatter(texto: string, rotulo: string): { meta: FrontMatter; corpo: string } {

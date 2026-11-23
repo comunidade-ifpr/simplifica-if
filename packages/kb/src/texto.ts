@@ -1,7 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de texto (UTF-8 estrito), usada pelos carregadores e pelos scripts
 /**
- * Regras de texto que determinam o conteúdo gerado (manifest.json, README.md,
- * índices de PPC) e as mensagens do validador.
+ * Regras de texto que determinam o conteúdo gerado (README.md, índices de PPC) e as mensagens do validador.
  *
  * Os arquivos publicados foram produzidos por anos com essas regras, e as
  * alternativas nativas do JavaScript dão resultados diferentes:

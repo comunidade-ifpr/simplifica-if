@@ -7,7 +7,7 @@ import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
-import { analisarFrontMatter, ErroFrontMatter, itemManifest, manifestJson, montarManifest } from "./front-matter.ts";
+import { analisarFrontMatter, ErroFrontMatter } from "./front-matter.ts";
 import { aplicarGerados, type ArquivoGerado, mensagensDivergencias, type PastaGerada } from "./gerados.ts";
 import {
   arquivosIndices,
@@ -124,31 +124,6 @@ describe("caminhos", () => {
     expect(naBase(caminhos, "/etc/x")).toBe("/etc/x");
     expect(() => relativo(caminhos, "/etc/x")).toThrow("is not in the subpath");
   });
-});
-
-describe("manifest", () => {
-  it.effect("gera manifest ordenado; --check detecta divergência", () =>
-    Effect.gen(function* () {
-      const raiz = projetoTemporario();
-      escrever(raiz, "base-conhecimento/normas/br/leis/lei-b.md", NORMA);
-      escrever(
-        raiz,
-        "base-conhecimento/normas/br/leis/lei-a.md",
-        NORMA.replace("Lei nº 1/2020", "Lei nº 0/2019").replace('"2020-01-02"', '"2019-05-05"'),
-      );
-      escrever(raiz, "base-conhecimento/manifest.json", "[]\n");
-      const caminhos = criarCaminhos(raiz);
-      const manifest = montarManifest(caminhos);
-      expect(manifest.map((item) => item.path)).toEqual(["normas/br/leis/lei-a.md", "normas/br/leis/lei-b.md"]);
-      expect(Object.keys(manifest[0]!).at(-1)).toBe("path");
-      const arquivos = [{ caminho: caminhos.manifest, texto: manifestJson(manifest) }];
-      expect(yield* conferir(caminhos.raiz, arquivos)).toEqual(["manifest.json está desatualizado; rode x"]);
-
-      yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz });
-      expect(yield* conferir(caminhos.raiz, arquivos)).toEqual([]);
-      expect(NodeFS.readFileSync(caminhos.manifest, "utf-8")).toBe(manifestJson(manifest));
-    }).pipe(Effect.provide(NodeServices.layer)),
-  );
 });
 
 describe("índice de PPCs", () => {
@@ -322,7 +297,7 @@ describe("JSON Schema", () => {
 });
 
 describe("validação da base", () => {
-  test("aponta normas, manifest e coleções ausentes", () => {
+  test("aponta normas fora do contrato ou do lugar e coleções ausentes", () => {
     const raiz = projetoTemporario();
     escrever(
       raiz,
@@ -336,32 +311,34 @@ describe("validação da base", () => {
     );
     escrever(raiz, "base-conhecimento/README.md", `${README}\n[ok](normas/br/leis/lei.md) ${"/Us"}${"ers/"}x\n`);
     escrever(raiz, "base-conhecimento/solta.md", "x");
+    escrever(
+      raiz,
+      "base-conhecimento/normas/br/leis/outra.md",
+      NORMA.replace("id: br/lei/2020/1", "id: br/lei/2020/2")
+        .replace("numero: 1", "numero: 2")
+        .replace("jurisdicao: BR", "jurisdicao: XX"),
+    );
     const caminhos = criarCaminhos(raiz);
-    const manifest = [itemManifest(caminhos, NodePath.join(caminhos.normas, "br/leis/lei.md"))];
-    NodeFS.writeFileSync(caminhos.manifest, manifestJson(manifest));
 
     const { erros, totalNormas } = validarBase(caminhos);
-    expect(totalNormas).toBe(1);
+    expect(totalNormas).toBe(3);
     expect(erros).toEqual([
       `README.md contém padrão local proibido: ${"/Us"}${"ers/"}`,
       "normas não devem ficar na raiz do repositório: ['solta.md']",
-      "manifest.json não cobre exatamente as normas publicadas: manifest=['normas/br/leis/lei.md'] markdown=['normas/br/leis/lei.md', 'normas/ifpr/resolucoes/2020-01-01_res.md']",
       `README.md contém padrão local proibido: ${"/Us"}${"ers/"}`,
       "índice de PPCs não encontrado: institucional/ifpr/ppcs/index.json",
       "manifesto CNCT não encontrado: catalogos/cnct/manifest.json",
       "índice CNCT não encontrado: catalogos/cnct/index.json",
       'normas/br/leis/lei.md: o corpo traz a seção "Resumo"; ele é só o texto da norma (use pontos_chave ou notas_da_fonte no front matter; orientação para PPC vai na ficha da revisão)',
       "normas/br/leis/lei.md: link interno inexistente: nao.md",
+      "normas/br/leis/outra.md: id br/lei/2020/2 difere do derivado do ato: xx/lei/2020/2",
+      "normas/br/leis/outra.md: jurisdição/tipo sem diretório configurado: ('XX', 'Lei')",
       "normas/ifpr/resolucoes/2020-01-01_res.md: keywords: Entrada inválida: campo obrigatório ausente",
+      "normas/ifpr/resolucoes/2020-01-01_res.md: nome do arquivo não deve começar com data",
+      "normas/ifpr/resolucoes/2020-01-01_res.md: deveria estar em normas/br/leis",
       "normas/ifpr/resolucoes/2020-01-01_res.md: id duplicado br/lei/2020/1 (também em normas/br/leis/lei.md)",
       "config/vigencia.yaml não encontrado (data_referencia da vigência publicada)",
     ]);
-
-    NodeFS.writeFileSync(caminhos.manifest, manifestJson([{ ...manifest[0]!, jurisdicao: "XX", title: "Outro" }]));
-    const { erros: errosManifest } = validarBase(caminhos);
-    expect(errosManifest).toContain("manifest.json: item com jurisdição/tipo sem diretório configurado: ('XX', 'Lei')");
-    expect(errosManifest).toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo title");
-    expect(errosManifest).not.toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo ano");
   });
 
   test("contrato da norma: todos os erros de esquemaNorma, de qualquer campo", () => {
@@ -388,12 +365,7 @@ describe("validação da base", () => {
         norma.replace('fonte_url: "https://exemplo.gov.br/lei"', troca),
       );
       escrever(raiz, "base-conhecimento/README.md", README);
-      const caminhos = criarCaminhos(raiz);
-      NodeFS.writeFileSync(
-        caminhos.manifest,
-        manifestJson([itemManifest(caminhos, NodePath.join(caminhos.normas, "br/leis/lei.md"))]),
-      );
-      return validarBase(caminhos).erros.filter((erro) => /fonte|assinada_em/.test(erro));
+      return validarBase(criarCaminhos(raiz)).erros.filter((erro) => /fonte|assinada_em/.test(erro));
     };
     expect(errosDeFonte('fonte_url: "http://exemplo.gov.br/lei"')).toEqual([
       "normas/br/leis/lei.md: fonte_url: fonte_url deve ser URL https, sem espaços",

@@ -27,11 +27,13 @@ O `front matter` existe para:
 | `tipo_documento` | string | Ex.: `Lei`, `Resolução`, `Portaria`, `Parecer`, `Decreto` |
 | `numero` | string ou número | Número do ato, sem o ano embutido quando possível |
 | `ano` | inteiro | Ano da norma |
-| `data_publicacao` | data ISO | Formato `AAAA-MM-DD`; data do ato usada para ordenar o manifesto (as datas precisas estão nos três campos abaixo) |
+| `data_publicacao` | data ISO | Formato `AAAA-MM-DD`; data do ato usada para ordenar as normas (as datas precisas estão nos três campos abaixo) |
 | `assinada_em` | data ISO | Data do ato (assinatura) |
 | `publicada_em` | data ISO ou `a confirmar` | Publicação oficial (DOU, Boletim de Serviço) |
 | `vigente_de` | data ISO ou `a confirmar` | Início dos efeitos (vigência); `a confirmar` quando depende da publicação não registrada |
 | `datas_fonte` | string | De onde vieram as três datas (dispositivo de vigência, nota de publicação, fonte oficial conferida) |
+| `orgao` | string | Ex.: `CONSUP/IFPR`, `CNE/CP`, `Presidência da República` |
+| `jurisdicao` | string | Ex.: `BR`, `IFPR`; com `tipo_documento`, decide a pasta do arquivo |
 | `ementa` | string | Ementa oficial ou resumo normativo reconhecível |
 | `status_vigencia` | string | **Gerado** (ver [Vigência calculada](#vigência-calculada)): `vigente`, `alterada`, `parcialmente revogada`, `revogada` |
 | `keywords` | lista | Palavras-chave curtas e úteis para recuperação |
@@ -40,8 +42,6 @@ O `front matter` existe para:
 
 | Campo | Tipo | Uso |
 |-------|------|-----|
-| `orgao` | string | Ex.: `CONSUP/IFPR`, `CNE/CP`, `Presidência da República` |
-| `jurisdicao` | string | Ex.: `BR`, `IFPR`, `MEC`, `CNE` |
 | `aliases` | lista | Formas alternativas úteis de citação |
 | `fonte_url` | URL `https` | Endereço público do texto oficial (DOU, Planalto, portal do IFPR). Sem ele, a fonte oficial está pendente: não escreva a pendência em texto. O leitor do app mostra o link "Ver na fonte oficial" e a referência formal termina em "Disponível em:" só com este campo |
 | `fonte_referencia` | string | Referência da fonte sem link: número do SEI, Boletim de Serviço, PDF assinado. Pode acompanhar `fonte_url` |
@@ -140,7 +140,7 @@ Dispõe sobre as diretrizes do trabalho do Docente de Educação Especial no IFP
 
 ## ID canônico
 
-O `id` é derivado do ato (tipo, órgão, jurisdição, ano e número), nunca do nome do arquivo. Ele vai para o `manifest.json` e é a chave usada pelo resolvedor de citações (`pnpm kb resolver`), por `pnpm kb citacoes <id>` e pelos gabaritos da avaliação.
+O `id` é derivado do ato (tipo, órgão, jurisdição, ano e número), nunca do nome do arquivo. Ele é a chave usada pelo registro de normas, pelo resolvedor de citações (`pnpm kb resolver`), por `pnpm kb citacoes <id>` e pelos gabaritos da avaliação.
 
 | Ato | Formato | Exemplos |
 |-----|---------|----------|
@@ -159,7 +159,7 @@ Regras:
 
 `node scripts/validar_base.ts` confere o formato, a unicidade e a igualdade com o ID derivado dos demais campos. Cada ato tem um arquivo só, com o texto integral: a base não guarda compilação nem seleção de trechos de uma norma.
 
-O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é texto; só `ano` vira inteiro), com contrato em Effect Schema em `packages/kb/src/normas/front-matter.ts`. Por isso `numero: 9394` continua texto no `manifest.json`.
+O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é texto; só `ano` vira inteiro), com contrato em Effect Schema (`esquemaNorma`, em `packages/kb/src/normas/front-matter.ts`). Por isso `numero: 9394` continua texto. Esse esquema é o contrato inteiro: `node scripts/validar_base.ts` acusa todos os erros dele, e a compilação do banco recusa a norma fora dele.
 
 ## Normas sem texto na base (stubs) e referências externas
 
@@ -198,7 +198,7 @@ IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`
 
 ## Vigência calculada
 
-O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter (e o `manifest.json`) traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `pnpm kb vigencia <id> --em AAAA-MM-DD`.
+O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `pnpm kb vigencia <id> --em AAAA-MM-DD`.
 
 Regras de transição (direito de conclusão, prazos de adequação) são dados em `base-conhecimento/transicoes.yaml` e aparecem em `kb vigencia`: revogada não é inaplicável.
 

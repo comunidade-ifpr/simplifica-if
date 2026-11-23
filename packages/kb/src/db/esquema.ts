@@ -25,7 +25,7 @@ CREATE TABLE meta (
   valor TEXT NOT NULL
 ) WITHOUT ROWID;
 
--- Normas: manifest.json (situacao 'base'), stubs.yaml ('stub' e 'externo').
+-- Normas: front matter de normas/*.md (situacao 'base'), stubs.yaml ('stub' e 'externo').
 CREATE TABLE normas (
   id TEXT PRIMARY KEY,
   situacao TEXT NOT NULL,

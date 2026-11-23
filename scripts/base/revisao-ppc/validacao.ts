@@ -4,7 +4,7 @@
  * tópicos, modo de execução no app e marcos normativos.
  *
  * As referências normativas das fichas e os marcos são conferidos por ID canônico, contra
- * `manifest.json`, `normas/stubs.yaml` e o CNCT. Os JSON Schemas gerados são conferidos com os
+ * as normas da base, `normas/stubs.yaml` e o CNCT. Os JSON Schemas gerados são conferidos com os
  * outros arquivos gerados da base (`gerar_base.ts --check`).
  */
 import * as NodeFS from "node:fs";
@@ -244,7 +244,7 @@ function origemRevogacao(fonte: FonteReferencia): string {
 
 /**
  * Confere por ID as `referencias_normativas` das fichas: ID inexistente na base, norma revogada
- * (manifesto ou stub), norma substituída por um marco, dispositivo revogado (o próprio ou um
+ * (norma da base ou stub), norma substituída por um marco, dispositivo revogado (o próprio ou um
  * dispositivo dentro dele) e referência repetida. O formato de `ref` e `dispositivo` é do schema.
  */
 export function validarReferenciasFichas(
@@ -282,7 +282,7 @@ export function validarReferenciasFichas(
       if (fonte === undefined) {
         erros.push(
           `${campo} cita ID inexistente na base: ${ref} ` +
-            "(registre a norma em base-conhecimento/manifest.json ou em base-conhecimento/normas/stubs.yaml)",
+            "(inclua a norma em base-conhecimento/normas/ ou registre-a em base-conhecimento/normas/stubs.yaml)",
         );
         return;
       }
@@ -352,10 +352,10 @@ export function validarMarcosNormativos(
     const vigente = textoDe(marco.vigente);
     const fonteVigente = universo.fonte(vigente);
     if (fonteVigente === undefined || fonteVigente.situacao !== "base") {
-      erros.push(`${prefixo} norma vigente fora do manifesto da base: ${legivel(universo, vigente)} (${vigente})`);
+      erros.push(`${prefixo} norma vigente fora da base: ${legivel(universo, vigente)} (${vigente})`);
     } else if (fonteVigente.status_vigencia === "revogada") {
       erros.push(
-        `${prefixo} norma marcada como vigente está revogada no manifesto: ${legivel(universo, vigente)} (${vigente})`,
+        `${prefixo} norma marcada como vigente está revogada no registro: ${legivel(universo, vigente)} (${vigente})`,
       );
     }
     for (const campo of ["substitui", "antecessoras_historicas", "dispositivos_revogados"]) {
@@ -445,7 +445,7 @@ export function validarRevisaoPpc(
 
   const universo = carregarUniverso(caminhos);
   if (universo === null) {
-    erros.push(`${caminhos.manifestNormas}: manifesto de normas não encontrado; checagem de vigência não executada`);
+    erros.push(`${caminhos.normas}: pasta de normas não encontrada; checagem de vigência não executada`);
   } else {
     erros.push(...validarReferenciasFichas(fichasPorId, universo, carregarMarcos(caminhos.marcos, derivar)));
     erros.push(...validarMarcosNormativos(universo, caminhos.marcos, fichasPorId, derivar));

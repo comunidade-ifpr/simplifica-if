@@ -77,7 +77,7 @@ As `consultas` da ficha são buscadas no PPC e trazem a melhor seção de cada u
 ]
 ```
 
-- `ref`: o ID canônico do ato, nunca texto livre. Use o `id` de `base-conhecimento/manifest.json` (norma com texto na base) ou de `base-conhecimento/normas/stubs.yaml` (norma sem texto, `externo:`). Para o CNCT, use `cnct:catalogo` ou `cnct:<id do curso>`. Para achar o ID de uma citação, use `pnpm kb resolver "Resolução CNE/CP nº 2/2026, art. 28, VII"`. Norma que ainda não existe na base entra antes em `stubs.yaml`.
+- `ref`: o ID canônico do ato, nunca texto livre. Use o `id` do front matter da norma em `base-conhecimento/normas/` (norma com texto na base) ou de `base-conhecimento/normas/stubs.yaml` (norma sem texto, `externo:`). Para o CNCT, use `cnct:catalogo` ou `cnct:<id do curso>`. Para achar o ID de uma citação, use `pnpm kb resolver "Resolução CNE/CP nº 2/2026, art. 28, VII"`. Norma que ainda não existe na base entra antes em `stubs.yaml`.
 - `dispositivo` (opcional): um único dispositivo, no formato `#art28-vii`, `#art28-par1-iv`, `#art24-parunico`, `#art36A` ou `#art5-ii-al-a`. Para citar vários dispositivos da mesma norma, repita a entrada em sequência. Sem `dispositivo`, a referência é ao ato inteiro.
 - `papel`: `fundamento` quando a ficha aplica a regra da referência para decidir o estado; `complementar` quando só remete a ela (contexto, fonte local a que o PPC deve remeter, parâmetro técnico ou norma referida por outra).
 - `nota` (opcional): o que não cabe nos campos anteriores, como o número SEI ou o recorte do catálogo.
@@ -91,7 +91,7 @@ O texto legível sai da estrutura (`@simplifica-if/kb/normas/referencia-estrutur
 
 ## Vigência das normas
 
-A vigência de cada norma vem de `base-conhecimento/manifest.json` (`status_vigencia`, calculado na `data_referencia` de `config/vigencia.yaml` a partir de `relacoes.yaml`) ou, para stubs, de `normas/stubs.yaml`. `marcos-normativos.json` guarda só a `linha` de cada tema, a `transicao` e a `orientacao_analise`; o resto do marco é derivado das relações na leitura (`derivarLinha`, em `packages/kb/src/normas/vigencia.ts`). Assim, uma norma nova que revogue a vigente passa a ser a vigente do marco sem editar o arquivo. `node scripts/validar_base.ts` confere tudo por ID:
+A vigência de cada norma vem do front matter dela em `base-conhecimento/normas/` (`status_vigencia`, calculado na `data_referencia` de `config/vigencia.yaml` a partir de `relacoes.yaml`) ou, para stubs, de `normas/stubs.yaml`. `marcos-normativos.json` guarda só a `linha` de cada tema, a `transicao` e a `orientacao_analise`; o resto do marco é derivado das relações na leitura (`derivarLinha`, em `packages/kb/src/normas/vigencia.ts`). Assim, uma norma nova que revogue a vigente passa a ser a vigente do marco sem editar o arquivo. `node scripts/validar_base.ts` confere tudo por ID:
 
 - `ref` e `dispositivo` fora do formato canônico são erro de schema;
 - uma ficha não pode citar:

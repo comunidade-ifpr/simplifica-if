@@ -10,7 +10,7 @@
  * relógio: a vigência entra como intervalos datados (calculados por `statusEm` nas datas em que o
  * status pode mudar), e a consulta escolhe a data.
  *
- * Os arquivos que a carga lê, além das normas em `base-conhecimento/normas/` e do `manifest.json`,
+ * Os arquivos que a carga lê, além das normas em `base-conhecimento/normas/`,
  * estão em `ARQUIVOS_FONTES_NORMATIVAS`, para que a CLI recompile o banco quando eles mudarem.
  */
 import * as Schema from "effect/Schema";
@@ -162,7 +162,7 @@ export interface LinhasNormativas {
 
 /**
  * Arquivos e diretórios (relativos à raiz do repositório) que a carga da fase 5 lê, além das normas
- * em `base-conhecimento/normas/` e do `manifest.json`, que já são fonte do banco. Entram na
+ * em `base-conhecimento/normas/`, que já são fonte do banco. Entram na
  * impressão digital das fontes (`fontes.ts`).
  */
 export const ARQUIVOS_FONTES_NORMATIVAS: readonly string[] = [

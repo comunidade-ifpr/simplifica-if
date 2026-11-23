@@ -5,7 +5,7 @@ import { RAIZ_PROJETO } from "../config.ts";
 import { compararTexto } from "@simplifica-if/kb/texto";
 
 /**
- * Caminhos da base pública. Os `path` dos manifestos continuam relativos a
+ * Caminhos da base pública. Os `path` das normas e dos índices continuam relativos a
  * `base-conhecimento/` para preservar URLs como normas/... e institucional/...
  */
 export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
@@ -34,7 +34,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
       indicePpcs: schema("ppcs_index"),
       secaoPpc: schema("ppcs_secao"),
     },
-    manifest: NodePath.join(raiz, "manifest.json"),
     readme: NodePath.join(raiz, "README.md"),
   };
 }

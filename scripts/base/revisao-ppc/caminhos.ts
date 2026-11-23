@@ -4,7 +4,6 @@
  * tópicos, os marcos normativos, os JSON Schemas gerados e o mapa. Os testes montam os mesmos
  * caminhos sobre uma cópia temporária do projeto.
  */
-import * as NodePath from "node:path";
 import { CAMINHOS, noCheckout } from "@simplifica-if/kb/caminhos";
 import { RAIZ_PROJETO } from "../../config.ts";
 
@@ -12,7 +11,7 @@ export interface CaminhosRevisaoPpc {
   /** Raiz do projeto (a que contém `base-conhecimento/`). */
   readonly raiz: string;
   readonly baseConhecimento: string;
-  readonly manifestNormas: string;
+  readonly normas: string;
   readonly pasta: string;
   readonly fichas: string;
   readonly topicosFichas: string;
@@ -26,7 +25,7 @@ export function caminhosRevisaoPpc(raiz: string = RAIZ_PROJETO): CaminhosRevisao
   return {
     raiz,
     baseConhecimento,
-    manifestNormas: NodePath.join(baseConhecimento, "manifest.json"),
+    normas: noCheckout(raiz, CAMINHOS.normas),
     pasta: noCheckout(raiz, CAMINHOS.revisaoPpc),
     fichas: noCheckout(raiz, CAMINHOS.fichas),
     topicosFichas: noCheckout(raiz, CAMINHOS.topicosFichas),

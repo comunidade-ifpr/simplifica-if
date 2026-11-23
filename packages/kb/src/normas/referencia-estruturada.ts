@@ -13,7 +13,7 @@
  *   norma referida por outra);
  * - `nota`: detalhe da citação que não cabe nos campos anteriores (número SEI, recorte do catálogo).
  *
- * O texto legível usa o título canônico (`manifest.json`, `stubs.yaml` ou o catálogo) e o
+ * O texto legível usa o título canônico (front matter da norma, `stubs.yaml` ou o catálogo) e o
  * dispositivo por extenso: "Resolução CNE/CP nº 2/2026, art. 28, VII".
  */
 import * as Schema from "effect/Schema";
@@ -65,7 +65,7 @@ const CNCT_CATALOGO: FonteReferencia = {
   path: "catalogos/cnct/manifest.json",
 };
 
-/** Universo de IDs citáveis: registro de normas (manifesto + stubs) e cursos do CNCT. */
+/** Universo de IDs citáveis: registro de normas (normas da base + stubs) e cursos do CNCT. */
 export class UniversoReferencias {
   readonly registro: Registro;
   private readonly cursosCnct: ReadonlyMap<string, string>;

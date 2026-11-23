@@ -344,11 +344,7 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
       Effect.mapError((cause) => new FalhaNasFontes({ arquivo: relativo, cause })),
     );
 
-  const manifest = yield* ler(CAMINHOS.manifest);
-  const stubs = yield* lerSeExistir(CAMINHOS.stubs);
-  const registro = yield* interpretar(CAMINHOS.manifest, () => montarRegistro(manifest, stubs));
-
-  // datas dos atos: front matter de cada norma da base, na ordem de `listarNormas`
+  // registro e datas dos atos: front matter de cada norma da base, na ordem de `listarNormas`
   const normas: Array<{ id: string; meta: Readonly<Record<string, unknown>>; path: string }> = [];
   const textos: Array<readonly [string, StatusDoTexto | null]> = [];
   for (const arquivo of yield* listarMd(CAMINHOS.normas)) {
@@ -362,6 +358,8 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     textos.push([estrutura.id, statusDoTexto(estrutura.dispositivos)]);
   }
   normas.sort((a, b) => compararTexto(a.path, b.path));
+  const stubs = yield* lerSeExistir(CAMINHOS.stubs);
+  const registro = yield* interpretar(CAMINHOS.stubs, () => montarRegistro(normas, stubs));
   const datas = montarDatas(normas, registro);
 
   const relacoes = yield* ler(CAMINHOS.relacoes).pipe(

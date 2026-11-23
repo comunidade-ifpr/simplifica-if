@@ -42,7 +42,7 @@ import { INDICADORES } from "../adequacao/art71.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { carregarCorrespondencias } from "../normas/correspondencia.ts";
-import { descendentes, indiceDispositivos } from "../normas/estrutura.ts";
+import { descendentes, indiceDispositivos, listarNormas } from "../normas/estrutura.ts";
 import { obterDispositivo as obterDispositivoArquivos } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
 import { raizRepositorio } from "../caminhos.ts";
@@ -650,15 +650,14 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("norma: metadados iguais aos do manifest.json e do stubs.yaml", () =>
+    it.effect("norma: metadados iguais aos do front matter e do stubs.yaml", () =>
       Effect.gen(function* () {
         const { normas } = yield* servicos;
-        const manifest = (yield* lerJson("base-conhecimento/manifest.json")) as Record<string, unknown>[];
         const nulo = (valor: unknown) => (valor === undefined ? null : valor);
-        for (const item of manifest) {
+        for (const norma of listarNormas(raiz)) {
+          const caminho = `base-conhecimento/${norma.path}`;
+          const { meta: item } = analisarFrontMatter(yield* lerTexto(caminho), caminho);
           const pendencia = nulo(item["vigencia_a_confirmar"]);
-          const caminho = `base-conhecimento/${String(item["path"])}`;
-          const { meta } = analisarFrontMatter(yield* lerTexto(caminho), caminho);
           mesmoJson(yield* normas.ficha(String(item["id"])), {
             id: item["id"],
             situacao: "base",
@@ -673,12 +672,11 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             ementa: nulo(item["ementa"]),
             fonte_url: nulo(item["fonte_url"]),
             fonte_referencia: nulo(item["fonte_referencia"]),
-            path: `base-conhecimento/${String(item["path"])}`,
+            path: caminho,
             pendencia_vigencia: pendencia,
             vigencia_a_confirmar: pendencia !== null || item["status_vigencia"] === "a confirmar",
-            // os metadados editoriais não vão para o manifest: vêm do front matter do arquivo
-            pontos_chave: meta["pontos_chave"] ?? [],
-            notas_da_fonte: meta["notas_da_fonte"] ?? [],
+            pontos_chave: item["pontos_chave"] ?? [],
+            notas_da_fonte: item["notas_da_fonte"] ?? [],
           });
         }
         const stubs = lerRegistroStubs(caminhoStubs(raiz));

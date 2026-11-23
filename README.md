@@ -40,7 +40,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 ## Base, skills e scripts
 
-- `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `revisao-ppc/` (as fichas da tarefa "Revisar um PPC"), `manifest.json` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
+- `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `revisao-ppc/` (as fichas da tarefa "Revisar um PPC") e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
 - `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
 - `scripts/`: geração e validação da base, aplicação de dado coletado fora do repositório (`aplicar_matrizes_suap.ts`), fábrica da atualização e avaliação, em TypeScript (Node e pnpm). Um PPC novo, ou a versão nova do PPC de um curso, entra na base a partir do DOCX da coordenação, com `node scripts/importar_ppc_docx.ts` (passo a passo em `base-conhecimento/docs/curadoria-metadados-institucionais.md`); PDF não é convertido.
 - `base-conhecimento/docs/`: documentação de apoio à curadoria da base e ao desenvolvimento das skills.

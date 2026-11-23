@@ -40,7 +40,6 @@ Esta é a raiz lógica da base. No projeto unificado ela fica em `base-conhecime
 - `institucional/ifpr/ppcs/`: PPCs convertidos para Markdown e índices globais de PPCs e seções.
 - `catalogos/`: catálogos estruturados, como o CNCT.
 - `revisao-ppc/`: as fichas (critérios) da tarefa "Revisar um PPC" do app, com a taxonomia de tópicos e os marcos normativos ([README](revisao-ppc/README.md)).
-- `manifest.json`: índice das normas, gerado do front matter e lido pelo kb.
 - `schemas/`: JSON Schemas dos manifestos e índices, aplicados pelo `validar_base.ts`.
 - `docs/`: documentação de apoio à manutenção e curadoria da base, não conteúdo principal da base de conhecimento.
 - `docs/padrao-front-matter-legislacao.md`: contrato de metadados.

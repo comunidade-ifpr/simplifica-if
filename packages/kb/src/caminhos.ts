@@ -15,9 +15,8 @@ const REVISAO_PPC = `${BASE}/revisao-ppc`;
 const DADOS_KB = "packages/kb/dados";
 
 export const CAMINHOS = {
-  /** A base publicada; os `path` dos manifestos são relativos a ela. */
+  /** A base publicada; os `path` das normas e dos índices são relativos a ela. */
   base: BASE,
-  manifest: `${BASE}/manifest.json`,
   normas: `${BASE}/normas`,
   stubs: `${BASE}/normas/stubs.yaml`,
   relacoes: `${BASE}/relacoes.yaml`,

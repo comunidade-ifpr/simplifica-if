@@ -5,14 +5,11 @@
  */
 import type { CaminhosBase } from "./caminhos.ts";
 import { arquivosNormas } from "./front-matter.ts";
-import { ehObjeto } from "@simplifica-if/kb/json";
 import { validarCatalogos } from "./validacao/catalogos.ts";
 import { Contexto } from "./validacao/contexto.ts";
 import {
-  carregarManifest,
-  validarCoberturaManifest,
-  validarItemManifest,
   validarMarkdown,
+  validarNormasNaRaiz,
   validarPadroesLocais,
   validarReadme,
   validarEstruturaNorma,
@@ -28,29 +25,21 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
   const ctx = new Contexto(caminhos);
   const erros = validarPadroesLocais(ctx);
 
-  const carregado = carregarManifest(ctx);
-  const manifest = carregado.ok ? carregado.valor : [];
-  if (!carregado.ok) erros.push(...carregado.erros);
-
-  erros.push(...validarCoberturaManifest(ctx, manifest));
+  erros.push(...validarNormasNaRaiz(ctx));
   erros.push(...validarReadme(ctx));
   erros.push(...validarPpcs(ctx));
   erros.push(...validarCatalogos(ctx));
   if (opcoes.artefatosPpc) erros.push(...validarArtefatosConversaoPpc(ctx));
 
-  for (const caminho of arquivosNormas(caminhos)) {
+  const normas = arquivosNormas(caminhos);
+  for (const caminho of normas) {
     erros.push(...validarMarkdown(ctx, caminho));
     erros.push(...validarEstruturaNorma(ctx, caminho));
   }
   const stubs = validarStubs(ctx);
   erros.push(...stubs.erros);
-  erros.push(...validarUnicidadeIds(ctx, arquivosNormas(caminhos), stubs.ids));
+  erros.push(...validarUnicidadeIds(ctx, normas, stubs.ids));
   if (stubs.erros.length === 0) erros.push(...validarRelacoesEVigencia(ctx));
 
-  for (const item of manifest) {
-    if (ehObjeto(item)) erros.push(...validarItemManifest(ctx, item));
-    else erros.push("manifest.json contém item que não é objeto");
-  }
-
-  return { erros, totalNormas: manifest.length };
+  return { erros, totalNormas: normas.length };
 }

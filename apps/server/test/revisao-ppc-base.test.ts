@@ -24,6 +24,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
+import { listarNormas } from "@simplifica-if/kb/normas/estrutura";
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import {
@@ -134,11 +135,9 @@ layer(layerBases, { timeout: "300 seconds", excludeTestServices: true })("base d
             ),
           );
           // O banco tem também os endereços dos stubs; os da base publicada são os mesmos.
-          const manifesto = lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as {
-            id: string;
-            fonte_url?: string;
-          }[];
-          const comUrl = manifesto.filter((norma) => norma.fonte_url !== undefined);
+          const comUrl = listarNormas(raiz).flatMap(({ id, meta }) =>
+            typeof meta.fonte_url === "string" ? [{ id, fonte_url: meta.fonte_url }] : [],
+          );
           expect(comUrl.length).toBeGreaterThan(0);
           for (const { id, fonte_url } of comUrl) expect(doBanco.urls[id], id).toBe(fonte_url);
           expect(doBanco.normas.length).toBeGreaterThan(100);

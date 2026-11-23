@@ -35,13 +35,12 @@ afterEach(() => {
   for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
 
-/** Cópia da base da revisão e do registro de normas (manifesto, stubs, CNCT) num projeto temporário. */
+/** Cópia da base da revisão e do registro de normas (normas, stubs, CNCT) num projeto temporário. */
 function copiaDaBase(): CaminhosRevisaoPpc {
   const raiz = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisao-ppc-"));
   temporarios.push(raiz);
   for (const relativo of [
-    "base-conhecimento/manifest.json",
-    "base-conhecimento/normas/stubs.yaml",
+    CAMINHOS.normas,
     "base-conhecimento/catalogos/cnct/index.json",
     CAMINHOS.topicosSecoes,
     CAMINHOS.revisaoPpc,
@@ -174,7 +173,7 @@ describe("validador em casos inválidos", () => {
       "CT-SUP-01: `referencias_normativas[2]` cita dispositivo revogado (marco eja): " +
         "Resolução CNE/CEB nº 3/2025, art. 6º, III",
       "CT-SUP-01: `referencias_normativas[3]` cita ID inexistente na base: br/cne-cp/res/2099/1 " +
-        "(registre a norma em base-conhecimento/manifest.json ou em base-conhecimento/normas/stubs.yaml)",
+        "(inclua a norma em base-conhecimento/normas/ ou registre-a em base-conhecimento/normas/stubs.yaml)",
     ]);
   });
 
@@ -212,12 +211,10 @@ describe("validador em casos inválidos", () => {
     ]);
   });
 
-  test("manifesto de normas ausente", () => {
+  test("pasta de normas ausente", () => {
     const c = copiaDaBase();
-    NodeFS.unlinkSync(c.manifestNormas);
-    expect(validar(c)).toEqual([
-      `${c.manifestNormas}: manifesto de normas não encontrado; checagem de vigência não executada`,
-    ]);
+    NodeFS.rmSync(c.normas, { recursive: true });
+    expect(validar(c)).toEqual([`${c.normas}: pasta de normas não encontrada; checagem de vigência não executada`]);
   });
 });
 
@@ -369,7 +366,7 @@ describe("referências das fichas", () => {
     const erros = validarReferenciasFichas(fichas, UNIVERSO_SINTETICO, MARCOS_SINTETICOS);
 
     const inexistente =
-      "(registre a norma em base-conhecimento/manifest.json ou em base-conhecimento/normas/stubs.yaml)";
+      "(inclua a norma em base-conhecimento/normas/ ou registre-a em base-conhecimento/normas/stubs.yaml)";
     expect(erros).toEqual([
       "CT-X-01: `referencias_normativas[0]` cita norma revogada: Resolução CNE/CP nº 1/2021, art. 20 " +
         "(br/cne-cp/res/2021/1; veja `revogada_por` em base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md; " +
@@ -412,7 +409,7 @@ describe("registro de marcos normativos", () => {
     const erros = validar(arquivo, new Map([["CT-SUP-12", {}]]));
 
     expect(erros).toEqual([
-      `${arquivo}: marco dcn_ept: norma marcada como vigente está revogada no manifesto: Resolução CNE/CP nº 1/2021 (${DCN_EPT_2021})`,
+      `${arquivo}: marco dcn_ept: norma marcada como vigente está revogada no registro: Resolução CNE/CP nº 1/2021 (${DCN_EPT_2021})`,
       `${arquivo}: marco dcn_ept: norma listada como substituída está vigente na base: Resolução CNE/CP nº 2/2026 (${DCN_EPT_2026})`,
       `${arquivo}: marco dcn_ept: \`substitui\` cita ID inexistente na base: br/cne-cp/res/2099/9`,
       `${arquivo}: marco dcn_ept: \`dispositivos_revogados\` cita ID inexistente na base: br/cne-ceb/res/2099/3`,
@@ -421,7 +418,7 @@ describe("registro de marcos normativos", () => {
     ]);
   });
 
-  test("aponta norma vigente fora do manifesto (inexistente ou só stub) e linha sem derivação", () => {
+  test("aponta norma vigente fora da base (inexistente ou só stub) e linha sem derivação", () => {
     const arquivo = gravarMarcos(
       marcoValido({ linha: ["br/cne-cp/res/1999/9"] }),
       marcoValido({ id: "outro", linha: ["br/cne-ceb/res/2012/6"] }),
@@ -429,8 +426,8 @@ describe("registro de marcos normativos", () => {
     );
     expect(validar(arquivo)).toEqual([
       `${arquivo}: marco dcn_ept: \`linha\` cita ID inexistente na base: br/cne-cp/res/1999/9`,
-      `${arquivo}: marco dcn_ept: norma vigente fora do manifesto da base: br/cne-cp/res/1999/9 (br/cne-cp/res/1999/9)`,
-      `${arquivo}: marco outro: norma vigente fora do manifesto da base: Resolução CNE/CEB nº 6/2012 (br/cne-ceb/res/2012/6)`,
+      `${arquivo}: marco dcn_ept: norma vigente fora da base: br/cne-cp/res/1999/9 (br/cne-cp/res/1999/9)`,
+      `${arquivo}: marco outro: norma vigente fora da base: Resolução CNE/CEB nº 6/2012 (br/cne-ceb/res/2012/6)`,
       `${arquivo}: marco terceiro: linha normativa sem derivação: br/lei/1996/9394`,
     ]);
   });

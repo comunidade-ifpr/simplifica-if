@@ -6,7 +6,7 @@
  * Ambos devolvem `{ id, dispositivoId?, confianca, regra }`, além da situação do ID no registro.
  *
  * O ID é derivado do ato citado (tipo, órgão, ano e número), esteja a norma na base ou não. O
- * registro (`manifest.json` + `stubs.yaml`) completa citações incompletas: lei sem ano, órgão
+ * registro (normas da base + `stubs.yaml`) completa citações incompletas: lei sem ano, órgão
  * ausente ou só "CNE", data por extenso. Cada caminho tem uma regra nomeada e uma confiança; nada é
  * corrigido em silêncio.
  *

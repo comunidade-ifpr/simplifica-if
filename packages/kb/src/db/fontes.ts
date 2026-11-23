@@ -30,7 +30,6 @@ import { ARQUIVOS_FONTES_NORMATIVAS } from "./fontes-normativas.ts";
 
 /** Diretórios e arquivos de dados (relativos à raiz), com o filtro de extensão. */
 const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[] = [
-  { caminho: CAMINHOS.manifest, extensoes: [] },
   { caminho: CAMINHOS.normas, extensoes: [".md", ".yaml"] },
   { caminho: CAMINHOS.ppcs, extensoes: [".md", ".json", ".jsonl"] },
   { caminho: CAMINHOS.cnct, extensoes: [".json"] },

@@ -1,13 +1,15 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de manifest.json e stubs.yaml, usado pelos scripts e pela compilação do banco
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono das normas e de stubs.yaml, usado pelos scripts e pela compilação do banco
 /**
- * Registro de IDs conhecidos: normas da base (`manifest.json`), normas-stub e referências externas
- * (`normas/stubs.yaml`). É o universo contra o qual o resolvedor confere e completa citações.
+ * Registro de IDs conhecidos: normas da base (front matter dos Markdown de `normas/`), normas-stub e
+ * referências externas (`normas/stubs.yaml`). É o universo contra o qual o resolvedor confere e
+ * completa citações.
  */
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
+import { listarNormas } from "./estrutura.ts";
 import { UrlOficial } from "./fonte.ts";
 import { ehIdDispositivo, ehIdExterno, ehIdNorma, partesIdNorma } from "./ids.ts";
 
@@ -123,20 +125,6 @@ export function lerRegistroStubs(caminho: string): RegistroStubs {
   return registroStubsDoYaml(NodeFS.readFileSync(caminho, "utf-8"));
 }
 
-const esquemaItemManifest = Schema.StructWithRest(
-  Schema.Struct({
-    id: Schema.String,
-    title: Schema.String,
-    data_publicacao: Schema.String,
-    assinada_em: Schema.optionalKey(Schema.String),
-    status_vigencia: Schema.String,
-    aliases: Schema.optionalKey(Schema.Array(Schema.String)),
-    path: Schema.String,
-  }),
-  [Schema.Record(Schema.String, Schema.Unknown)],
-);
-const decodificarManifest = Schema.decodeUnknownSync(Schema.Array(esquemaItemManifest));
-
 /** Universo de IDs conhecidos, com buscas usadas pelo resolvedor. */
 export class Registro {
   readonly entradas: readonly EntradaRegistro[];
@@ -207,22 +195,37 @@ export function caminhoStubs(raiz: string): string {
   return noCheckout(raiz, CAMINHOS.stubs);
 }
 
+/** Norma da base como o registro a lê: o front matter e o caminho relativo a `base-conhecimento/`. */
+export interface NormaDaBase {
+  readonly path: string;
+  readonly meta: Readonly<Record<string, unknown>>;
+}
+
+const campoTexto = (meta: Readonly<Record<string, unknown>>, campo: string) => {
+  const valor = meta[campo];
+  return typeof valor === "string" ? valor : undefined;
+};
+
 /**
- * Monta o registro com o texto de `base-conhecimento/manifest.json` e, se existir, o de
- * `base-conhecimento/normas/stubs.yaml`.
+ * Monta o registro com o front matter das normas da base e, se existir, o texto de
+ * `base-conhecimento/normas/stubs.yaml`. O front matter é lido como está: o contrato dele
+ * (`esquemaNorma`) é conferido pelo `validar_base` e pela compilação do banco.
  */
-export function montarRegistro(manifestJson: string, stubsYaml: string | null): Registro {
-  const manifest = decodificarManifest(JSON.parse(manifestJson));
-  const entradas: EntradaRegistro[] = manifest.map((item) => ({
-    id: item.id,
-    title: item.title,
-    situacao: "base",
-    assinada_em: item.assinada_em && RE_DATA.test(item.assinada_em) ? item.assinada_em : undefined,
-    data_publicacao: item.data_publicacao,
-    status_vigencia: item.status_vigencia,
-    aliases: [...(item.aliases ?? [])],
-    path: item.path,
-  }));
+export function montarRegistro(normas: readonly NormaDaBase[], stubsYaml: string | null): Registro {
+  const entradas: EntradaRegistro[] = normas.map(({ path, meta }) => {
+    const assinada = campoTexto(meta, "assinada_em");
+    const aliases = meta["aliases"];
+    return {
+      id: String(meta["id"]),
+      title: campoTexto(meta, "title") ?? String(meta["id"]),
+      situacao: "base",
+      assinada_em: assinada && RE_DATA.test(assinada) ? assinada : undefined,
+      data_publicacao: campoTexto(meta, "data_publicacao"),
+      status_vigencia: campoTexto(meta, "status_vigencia"),
+      aliases: Array.isArray(aliases) ? aliases.filter((alias): alias is string => typeof alias === "string") : [],
+      path,
+    };
+  });
   if (stubsYaml !== null) {
     const stubs = registroStubsDoYaml(stubsYaml);
     for (const stub of stubs.normas) {
@@ -249,9 +252,11 @@ export function montarRegistro(manifestJson: string, stubsYaml: string | null): 
   return new Registro(entradas);
 }
 
-/** Monta o registro com `manifest.json` e `stubs.yaml` do checkout. */
+/** Monta o registro com as normas e o `stubs.yaml` do checkout. */
 export function carregarRegistro(raiz: string): Registro {
-  const manifest = NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.manifest), "utf-8");
   const arquivoStubs = caminhoStubs(raiz);
-  return montarRegistro(manifest, NodeFS.existsSync(arquivoStubs) ? NodeFS.readFileSync(arquivoStubs, "utf-8") : null);
+  return montarRegistro(
+    listarNormas(raiz),
+    NodeFS.existsSync(arquivoStubs) ? NodeFS.readFileSync(arquivoStubs, "utf-8") : null,
+  );
 }

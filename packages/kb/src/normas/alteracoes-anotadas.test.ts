@@ -3,7 +3,7 @@ import { alteracoesAnotadas, atoDaNota } from "./alteracoes-anotadas.ts";
 import { notasDoTexto } from "./estrutura.ts";
 import { montarRegistro } from "./registro.ts";
 
-const registro = montarRegistro("[]", null);
+const registro = montarRegistro([], null);
 
 test("o ato da nota, nas formas de data do Planalto", () => {
   expect(atoDaNota("(Redação dada pela Lei nº 14.945, de 2024)")).toEqual({

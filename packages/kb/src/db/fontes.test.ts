@@ -46,7 +46,7 @@ describe("estadoDoBanco", () => {
   const antes = instante("2026-01-01T00:00:00Z");
   const depois = instante("2026-02-01T00:00:00Z");
   const caminho = NodePath.join(raiz, "tmp", "kb.sqlite");
-  escrever("base-conhecimento/manifest.json", "[]", antes);
+  escrever("base-conhecimento/normas/stubs.yaml", "normas: []\nexternos: []\n", antes);
   escrever("base-conhecimento/institucional/ifpr/cursos/a/b.json", "{}", antes);
   NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
 

@@ -58,7 +58,7 @@ export type {
   TrechoDispositivo,
 } from "./db/consultas-normas.ts";
 
-/** Metadados de uma norma da base, stub ou referência externa, como o manifesto e o `stubs.yaml` os publicam. */
+/** Metadados de uma norma da base, stub ou referência externa, como o front matter e o `stubs.yaml` os publicam. */
 export interface FichaNorma {
   readonly id: string;
   readonly situacao: "base" | "stub" | "externo";

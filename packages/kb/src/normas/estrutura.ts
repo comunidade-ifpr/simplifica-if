@@ -36,7 +36,7 @@ import * as NodePath from "node:path";
 import type { Heading, List, ListItem, Nodes, Paragraph, RootContent } from "mdast";
 import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { divisaoDoCabecalho, NIVEL_DO_CABECALHO } from "./divisoes.ts";
-import { analisarFrontMatter } from "./front-matter.ts";
+import { analisarFrontMatter, type FrontMatter } from "./front-matter.ts";
 import { arvoreMarkdown, palavrasDoTexto, textoDoNo } from "./markdown.ts";
 import { compararTexto } from "../texto.ts";
 
@@ -701,6 +701,7 @@ export interface ArquivoNorma {
   /** Relativo a `base-conhecimento/`. */
   path: string;
   arquivo: string;
+  meta: FrontMatter;
 }
 
 function listarMd(diretorio: string): string[] {
@@ -720,7 +721,7 @@ export function listarNormas(raiz: string): ArquivoNorma[] {
     .map((arquivo) => {
       const relativo = NodePath.relative(base, arquivo).split(NodePath.sep).join("/");
       const { meta } = analisarFrontMatter(NodeFS.readFileSync(arquivo, "utf-8"), relativo);
-      return { id: String(meta.id), path: relativo, arquivo };
+      return { id: String(meta.id), path: relativo, arquivo, meta };
     })
     .sort((a, b) => compararTexto(a.path, b.path));
 }

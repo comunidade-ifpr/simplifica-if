@@ -28,7 +28,8 @@ import { cruzarPpcSuap } from "../fatos/divergencias.ts";
 import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import { carregarDadosInstitucionaisKb, linhaDaChave, linhaDoValor, matrizesDoResumo } from "../institucional/dados.ts";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
-import { analisarFrontMatter, listaDeTextos } from "../normas/front-matter.ts";
+import { analisarFrontMatter, listaDeTextos, normaDoFrontMatter } from "../normas/front-matter.ts";
+import { listarNormas } from "../normas/estrutura.ts";
 import { metadadosDoIdNorma } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, type Registro } from "../normas/registro.ts";
 import { segmentosCitantes } from "../normas/citacoes-normas.ts";
@@ -50,7 +51,6 @@ import {
   esquemaLinhaVigencia,
   type LinhasNormativas,
 } from "./fontes-normativas.ts";
-import { UrlOficial } from "../normas/fonte.ts";
 import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
 import { lerTopicosSecoes, type TopicosSecoes } from "../ppcs/topicos.ts";
 import { emTransacao } from "./transacao.ts";
@@ -93,26 +93,6 @@ const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
 /** Objeto frouxo: exige os campos dados e deixa os demais na saída, na ordem de entrada, depois deles. */
 const solto = <Campos extends Schema.Struct.Fields>(campos: Campos) =>
   Schema.StructWithRest(Schema.Struct(campos), resto);
-
-const esquemaManifest = Schema.Array(
-  solto({
-    id: Schema.String,
-    title: Schema.String,
-    tipo_documento: texto,
-    numero: Schema.optionalKey(Schema.Union([Schema.String, Schema.Number])),
-    ano: Schema.optionalKey(Schema.Int),
-    data_publicacao: texto,
-    orgao: texto,
-    jurisdicao: texto,
-    ementa: texto,
-    status_vigencia: texto,
-    keywords: Schema.optionalKey(Schema.Array(Schema.String)),
-    aliases: Schema.optionalKey(Schema.Array(Schema.String)),
-    fonte_url: Schema.optionalKey(UrlOficial),
-    fonte_referencia: Schema.optionalKey(texto),
-    path: Schema.String,
-  }),
-);
 
 const esquemaSecaoJsonl = solto({
   id: Schema.String,
@@ -195,7 +175,6 @@ const esquemaMarcos = solto({
 
 // Decodificadores compilados uma vez. Os das linhas da fase 5 recusam chaves extras: as linhas vão
 // inteiras para o INSERT, e uma chave a mais viraria uma coluna inexistente.
-const decodificarManifest = Schema.decodeUnknownSync(esquemaManifest);
 const decodificarSecaoJsonl = Schema.decodeUnknownSync(esquemaSecaoJsonl);
 const decodificarCnctIndice = Schema.decodeUnknownSync(esquemaCnctIndice);
 const decodificarFicha = Schema.decodeUnknownSync(esquemaFicha);
@@ -452,7 +431,6 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
   emTransacao(db, () => {
     /* ---------- normas */
     const registro = carregarRegistro(raiz);
-    const manifest = decodificarManifest(lerJson(noCheckout(raiz, CAMINHOS.manifest)));
     const insFtsNorma = db.prepare("INSERT INTO normas_fts (rowid, titulo, texto, radicais) VALUES (?, ?, ?, ?)");
     const blocoMetadados = (
       id: string,
@@ -465,16 +443,17 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       const rowid = ins.inserir("normas_metadados", { norma_id: id, texto, path: caminho, linha });
       insFtsNorma.run(rowid, titulo, texto, radicais(`${titulo}\n${texto}`).join(" "));
     };
-    for (const item of [...manifest].sort((a, b) => compararTexto(a.id, b.id))) {
-      const caminhoMd = `${CAMINHOS.base}/${item.path}`;
-      const md = NodeFS.readFileSync(NodePath.join(raiz, caminhoMd), "utf-8").replace(/\r\n?/g, "\n");
+    for (const norma of [...listarNormas(raiz)].sort((a, b) => compararTexto(a.id, b.id))) {
+      const caminhoMd = `${CAMINHOS.base}/${norma.path}`;
+      const md = NodeFS.readFileSync(norma.arquivo, "utf-8").replace(/\r\n?/g, "\n");
       const { meta } = analisarFrontMatter(md, caminhoMd);
+      const item = normaDoFrontMatter(meta, caminhoMd);
       ins.inserir("normas", {
         id: item.id,
         situacao: "base",
         titulo: item.title,
         tipo_documento: item.tipo_documento,
-        numero: item.numero === undefined ? null : String(item.numero),
+        numero: item.numero,
         ano: item.ano,
         orgao: item.orgao,
         jurisdicao: item.jurisdicao,
@@ -487,14 +466,14 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         curadoria: null,
         path: caminhoMd,
         aliases_json: json(item.aliases ?? []),
-        keywords_json: json(item.keywords ?? []),
+        keywords_json: json(item.keywords),
         front_matter_json: json(meta),
       });
       ins.inserir("documentos", { path: caminhoMd, texto: md });
       blocoMetadados(
         item.id,
         item.title,
-        [...(item.aliases ?? []), ...(item.keywords ?? []), item.ementa, ...listaDeTextos(meta, "pontos_chave")],
+        [...(item.aliases ?? []), ...item.keywords, item.ementa, ...listaDeTextos(meta, "pontos_chave")],
         caminhoMd,
         1,
       );

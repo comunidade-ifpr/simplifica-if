@@ -18,15 +18,15 @@ import {
 import { type CaminhosRevisaoPpc, caminhosRevisaoPpc } from "./caminhos.ts";
 
 /**
- * Universo de IDs citáveis do projeto (`manifest.json`, `normas/stubs.yaml` e CNCT), ou `null` quando
- * o manifesto de normas não existe.
+ * Universo de IDs citáveis do projeto (normas da base, `normas/stubs.yaml` e CNCT), ou `null` quando
+ * a pasta de normas não existe.
  */
 export function carregarUniverso(caminhos: CaminhosRevisaoPpc = caminhosRevisaoPpc()): UniversoReferencias | null {
-  if (!NodeFS.existsSync(caminhos.manifestNormas)) return null;
+  if (!NodeFS.existsSync(caminhos.normas)) return null;
   return carregarUniversoReferencias(caminhos.raiz);
 }
 
-/** Universo do projeto ou, sem manifesto, um universo vazio (os textos ficam com os IDs). */
+/** Universo do projeto ou, sem normas, um universo vazio (os textos ficam com os IDs). */
 export function universoOuVazio(caminhos: CaminhosRevisaoPpc = caminhosRevisaoPpc()): UniversoReferencias {
   return carregarUniverso(caminhos) ?? new UniversoReferencias(new Registro([]));
 }

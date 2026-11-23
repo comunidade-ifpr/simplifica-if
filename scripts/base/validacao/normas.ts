@@ -1,5 +1,5 @@
 // @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base) sobre os carregadores síncronos do kb
-/** Validação das normas (Markdown com front matter), do manifest.json e do README.md. */
+/** Validação das normas (Markdown com front matter) e do README.md. */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
@@ -11,16 +11,9 @@ import {
   ROTULOS_PESSOAIS,
 } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { RE_PLANILHA_GOOGLE, RE_URL_ASSINADA, RE_URL_SESSAO_SEI } from "../../dados/urls.ts";
-import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
-import {
-  analisarFrontMatter,
-  CAMPOS_MANIFEST,
-  CAMPOS_MANIFEST_OPCIONAIS,
-  DIRETORIOS_POR_TIPO,
-  ehErroFrontMatter,
-  type FrontMatter,
-} from "../front-matter.ts";
-import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
+import { ehArquivo, listarDiretorio, listarRecursivo } from "../caminhos.ts";
+import { analisarFrontMatter, DIRETORIOS_POR_TIPO, ehErroFrontMatter, type FrontMatter } from "../front-matter.ts";
+import { representar, textoDe } from "@simplifica-if/kb/json";
 import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estrutura";
 import { artigosInexistentes } from "@simplifica-if/kb/normas/pontos-chave";
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
@@ -40,7 +33,7 @@ import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
 import { idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
 import { ErroDecodificacao, lerTexto } from "@simplifica-if/kb/texto";
-import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
+import { type Contexto, listaOrdenada, PADROES_LOCAIS } from "./contexto.ts";
 
 const decodificarNorma = Schema.decodeUnknownResult(esquemaNorma, { errors: "all" });
 
@@ -56,12 +49,6 @@ const RE_ALIAS_COM_ANO = /[_-]\p{Nd}{4}[^\n]*\.md(?=\n?$)/u;
 function aliasPareceNomeAntigo(alias: unknown): boolean {
   if (typeof alias !== "string" || !alias.endsWith(".md")) return false;
   return RE_DATA_NO_INICIO.test(alias) || RE_ALIAS_COM_ANO.test(alias);
-}
-
-/** `ano` é comparado como texto: o front matter tem número e o manifest pode ter texto. */
-function comparavel(campo: string, valor: unknown): unknown {
-  if (campo === "ano" && valor !== null && valor !== undefined) return textoDe(valor);
-  return valor;
 }
 
 /**
@@ -123,35 +110,14 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
   return erros;
 }
 
-export function carregarManifest(ctx: Contexto): Resultado<unknown[]> {
-  let dados: unknown;
-  try {
-    dados = JSON.parse(lerTexto(ctx.c.manifest));
-  } catch (erro) {
-    return { ok: false, erros: [`manifest.json inválido: ${(erro as Error).message}`] };
-  }
-  if (!Array.isArray(dados)) return { ok: false, erros: ["manifest.json deve conter uma lista"] };
-  return { ok: true, valor: dados };
-}
-
-/** Normas fora de normas/ e cobertura do manifest.json sobre os Markdown publicados. */
-export function validarCoberturaManifest(ctx: Contexto, manifest: unknown[]): string[] {
-  const erros: string[] = [];
+/** Nenhuma norma solta na raiz de `base-conhecimento/`: elas ficam em `normas/`. */
+export function validarNormasNaRaiz(ctx: Contexto): string[] {
   const markdownsNaRaiz = listarDiretorio(ctx.c.raiz, ".md")
     .map((caminho) => NodePath.basename(caminho))
     .filter((nome) => nome !== "AGENTS.md" && nome !== "README.md");
-  if (markdownsNaRaiz.length) {
-    erros.push(`normas não devem ficar na raiz do repositório: ${listaOrdenada(markdownsNaRaiz)}`);
-  }
-
-  const pathsManifest = new Set<unknown>(manifest.filter(ehObjeto).map((item) => item.path ?? null));
-  const markdowns = listarRecursivo(ctx.c.normas, ".md").map((caminho) => ctx.rel(caminho));
-  if (!mesmosElementos(pathsManifest, new Set<unknown>(markdowns))) {
-    erros.push(
-      `manifest.json não cobre exatamente as normas publicadas: manifest=${listaOrdenada([...pathsManifest].map(textoDe))} markdown=${listaOrdenada(markdowns)}`,
-    );
-  }
-  return erros;
+  return markdownsNaRaiz.length
+    ? [`normas não devem ficar na raiz do repositório: ${listaOrdenada(markdownsNaRaiz)}`]
+    : [];
 }
 
 export function validarReadme(ctx: Contexto): string[] {
@@ -198,7 +164,24 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
   }
 
   erros.push(...validarContratoNorma(r, meta));
+  erros.push(...validarLocalDaNorma(ctx, caminho, meta));
   erros.push(...ctx.validarLinks(caminho, texto));
+  return erros;
+}
+
+/** Nome do arquivo sem data no começo e diretório pela jurisdição e pelo tipo do ato. */
+function validarLocalDaNorma(ctx: Contexto, caminho: string, meta: FrontMatter): string[] {
+  const r = ctx.rel(caminho);
+  const erros: string[] = [];
+  if (RE_DATA_NO_INICIO.test(NodePath.basename(caminho))) erros.push(`${r}: nome do arquivo não deve começar com data`);
+  const jurisdicao = textoDe(meta.jurisdicao ?? "");
+  const tipo = textoDe(meta.tipo_documento ?? "");
+  const diretorioEsperado = DIRETORIOS_POR_TIPO[`${jurisdicao}|${tipo}`];
+  if (diretorioEsperado === undefined) {
+    erros.push(`${r}: jurisdição/tipo sem diretório configurado: (${representar(jurisdicao)}, ${representar(tipo)})`);
+  } else if (ctx.rel(NodePath.dirname(caminho)) !== diretorioEsperado) {
+    erros.push(`${r}: deveria estar em ${diretorioEsperado}`);
+  }
   return erros;
 }
 
@@ -264,52 +247,6 @@ export function validarStubs(ctx: Contexto): { erros: string[]; ids: Set<string>
     if (Schema.isSchemaError(erro)) return { erros: linhasDoErro(ctx.rel(arquivo), erro), ids: new Set() };
     return { erros: [`${ctx.rel(arquivo)}: ${(erro as Error).message.split("\n")[0]}`], ids: new Set() };
   }
-}
-
-/** Item do manifest.json: campos obrigatórios, local do arquivo e coerência com o front matter. */
-export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
-  const erros: string[] = [];
-  for (const campo of [...CAMPOS_MANIFEST, "path"]) {
-    if (!Object.hasOwn(item, campo)) erros.push(`manifest.json: item sem campo ${campo}: ${representar(item)}`);
-  }
-
-  const valorPath = item.path;
-  if (typeof valorPath !== "string") return [...erros, "manifest.json: item sem path textual"];
-
-  const caminho = naBase(ctx.c, valorPath);
-  if (!NodeFS.existsSync(caminho)) return [...erros, `manifest.json aponta para arquivo inexistente: ${valorPath}`];
-
-  if (RE_DATA_NO_INICIO.test(NodePath.basename(caminho))) {
-    erros.push(`${valorPath}: nome do arquivo não deve começar com data`);
-  }
-
-  const jurisdicao = textoDe(item.jurisdicao);
-  const tipo = textoDe(item.tipo_documento);
-  const diretorioEsperado = DIRETORIOS_POR_TIPO[`${jurisdicao}|${tipo}`];
-  if (diretorioEsperado === undefined) {
-    erros.push(
-      `manifest.json: item com jurisdição/tipo sem diretório configurado: (${representar(jurisdicao)}, ${representar(tipo)})`,
-    );
-  } else if (ctx.rel(NodePath.dirname(caminho)) !== diretorioEsperado) {
-    erros.push(`${valorPath}: deveria estar em ${diretorioEsperado}`);
-  }
-
-  let meta: FrontMatter;
-  try {
-    ({ meta } = analisarFrontMatter(lerTexto(caminho), ctx.rel(caminho)));
-  } catch (erro) {
-    if (!ehErroFrontMatter(erro)) throw erro;
-    erros.push(erro.message);
-    return erros;
-  }
-
-  for (const campo of [...CAMPOS_MANIFEST, ...CAMPOS_MANIFEST_OPCIONAIS]) {
-    const valorMeta = campo in meta ? meta[campo] : null;
-    if (!valoresIguais(comparavel(campo, item[campo] ?? null), comparavel(campo, valorMeta))) {
-      erros.push(`${valorPath}: manifest.json diverge do front matter no campo ${campo}`);
-    }
-  }
-  return erros;
 }
 
 /**
