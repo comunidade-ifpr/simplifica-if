@@ -12,7 +12,6 @@ import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
-import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 import type { Perfil } from "@simplifica-if/contratos-app";
 import * as Banco from "../src/persistencia/Banco.ts";
@@ -52,7 +51,7 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
       const iniciar = yield* Effect.flip(rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: "/" }));
       assert.strictEqual(iniciar._tag, "AvisoNaoAceito");
       assert.match(iniciar.message, /leia o aviso de uso/);
-      const enviar = yield* Effect.flip(Stream.runDrain(rpc["conversa.enviar"]({ sessao: "x", texto: "oi" })));
+      const enviar = yield* Effect.flip(rpc["conversa.enviar"]({ sessao: "x", texto: "oi" }));
       assert.strictEqual(enviar._tag, "AvisoNaoAceito");
       const ia = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "x" }));
       assert.strictEqual(ia._tag, "AvisoNaoAceito");

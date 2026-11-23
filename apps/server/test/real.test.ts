@@ -29,9 +29,8 @@ import { assert, describe, it } from "@effect/vitest";
 import * as Clock from "effect/Clock";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import * as Stream from "effect/Stream";
 import { type EventoConversa, LinhaPartida, Provider, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
-import { cliente } from "./apoio.ts";
+import { cliente, turnoRpc } from "./apoio.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
 const PROVIDER = Schema.decodeUnknownSync(Provider)(process.env.SIMPLIFICA_PROVIDER ?? "claude");
@@ -121,14 +120,7 @@ describe.skipIf(!REAL)("servidor com provider real", () => {
         const turno = (rotulo: string, texto: string) =>
           Effect.gen(function* () {
             const inicio = yield* Clock.currentTimeMillis;
-            const eventos = yield* c["conversa.enviar"]({ sessao, texto }).pipe(
-              Stream.tap((evento) =>
-                evento._tag === "PedidoAprovacao"
-                  ? c["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
-                  : Effect.void,
-              ),
-              Stream.runCollect,
-            );
+            const eventos = yield* turnoRpc(c, sessao, texto, { aprovar: true });
             yield* registrarTurno(rotulo, eventos, (yield* Clock.currentTimeMillis) - inicio);
             return eventos;
           });

@@ -238,19 +238,15 @@ type Bloco =
 
 /**
  * Os itens em blocos para a tela: as chamadas de ferramenta seguidas viram um grupo (os "detalhes
- * técnicos"), e depois da última resposta de cada turno fechado vem a avaliação.
+ * técnicos"), e depois da última resposta de cada turno fechado vem a avaliação. O turno é o do item
+ * (o do servidor).
  */
 function emBlocos(itens: ReadonlyArray<Item>, turnoAberto: number | undefined): ReadonlyArray<Bloco> {
   const ultimaResposta = new Map<number, string>();
-  let turno = 0;
-  for (const item of itens) {
-    if (item.tipo === "pessoa") turno++;
-    else if (item.tipo === "resposta") ultimaResposta.set(turno, item.chave);
-  }
+  for (const item of itens) if (item.tipo === "resposta") ultimaResposta.set(item.turno, item.chave);
   const blocos: Array<Bloco> = [];
-  turno = 0;
   for (const item of itens) {
-    if (item.tipo === "pessoa") turno++;
+    const { turno } = item;
     const anterior = blocos.at(-1);
     if (item.tipo === "ferramenta") {
       if (anterior?.tipo === "ferramentas")
@@ -308,7 +304,7 @@ function Conversa({
   const ultimo = estado.itens.at(-1);
   const tamanhoUltimo = ultimo?.tipo === "resposta" ? ultimo.texto.length : 0;
   const emTurno = estado.fase === "respondendo" || estado.fase === "interrompendo";
-  const turnoAberto = emTurno ? estado.itens.filter((item) => item.tipo === "pessoa").length : undefined;
+  const turnoAberto = emTurno ? estado.turno : undefined;
   const skill =
     catalogo.fase === "pronto" && estado.tarefa !== undefined
       ? catalogo.skills.find((candidata) => candidata.nome === estado.tarefa)

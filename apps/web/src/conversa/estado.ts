@@ -1,6 +1,10 @@
 /**
- * O estado de uma conversa na interface e como cada evento do motor o muda. Funções puras: o
- * `ControleConversa` as chama a cada evento do stream de `conversa.enviar` e a cada ação da pessoa.
+ * O estado de uma conversa na interface e como cada item dela o muda. Funções puras: o
+ * `ControleConversa` as chama a cada item de `conversa.acompanhar` (`aoVivo`) e a cada ação da pessoa.
+ * Um caminho só: a conversa gravada (`conversa.carregar`) e a ao vivo passam pelos mesmos passos
+ * (`aplicarItem`). O estado da conversa (`respondendo`, `pronta`, `caiu`…) vem do servidor (`Estado`); a
+ * interface só antecipa o `respondendo` ao enviar e mostra a mensagem da pessoa antes de o servidor a
+ * gravar (`pendente`), trocando-a pela gravada quando ela chega.
  *
  * Texto: o `TextoParcial` se junta à resposta aberta mais recente (ou abre uma); o `TextoFinal` a
  * fecha com o texto completo, que vale mais que a soma dos parciais (no Claude, os parciais chegam
@@ -8,8 +12,7 @@
  * `TextoFinal` vira uma resposta nova. O `FimTurno` fecha o que ficou aberto. O `MudancasPasta` (o que
  * a pessoa mexeu na pasta fora da conversa) vira uma linha logo depois da mensagem dela.
  *
- * Uma conversa gravada (`conversa.carregar`) se remonta com os mesmos passos (`aplicarItem`): a
- * mensagem da pessoa, os eventos e as decisões de aprovação, na ordem.
+ * Cada item da tela leva o número do turno a que pertence (o do servidor).
  */
 import {
   type AlvoWeb,
@@ -17,6 +20,7 @@ import {
   type Decisao,
   type EstadoConversa as EstadoGravado,
   type EventoConversa,
+  type ItemAoVivo,
   type ItemConversa,
   type NotaResposta,
   type Provider,
@@ -26,11 +30,17 @@ import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
 import { ehFerramentaEtapa, type MarcaEtapa, marcaDaEntrada } from "./etapas.ts";
 
 /**
- * Um item da conversa. `chave` é da interface e única na conversa (a chave do React); `id`, nas
- * ferramentas e nas aprovações, é o do provider, que pode se repetir entre turnos.
+ * Um item da conversa, sem o turno. `chave` é da interface e única na conversa (a chave do React); `id`,
+ * nas ferramentas e nas aprovações, é o do provider, que pode se repetir entre turnos.
  */
-export type Item =
-  | { readonly tipo: "pessoa"; readonly chave: string; readonly texto: string }
+type ItemSemTurno =
+  | {
+      readonly tipo: "pessoa";
+      readonly chave: string;
+      readonly texto: string;
+      /** Mostrada ao enviar, antes de o servidor a gravar. */
+      readonly pendente?: true;
+    }
   | {
       readonly tipo: "pasta";
       readonly chave: string;
@@ -75,6 +85,9 @@ export type Item =
       readonly detalhe?: string;
     };
 
+/** Um item da conversa, com o número do turno a que pertence. */
+export type Item = ItemSemTurno & { readonly turno: number };
+
 export type FaseConversa =
   /** Sem sessão: a pessoa escolhe o provider e a pasta. */
   | "configurando"
@@ -100,10 +113,12 @@ export interface EstadoConversa {
   readonly sessao?: string;
   /** O título da conversa gravada (a primeira mensagem). */
   readonly titulo?: string;
-  /** O estado da sessão do provider no servidor, quando carregada: `liberada` e `caiu` reabrem por retomada. */
+  /** O estado da conversa no servidor (`Estado` de `conversa.acompanhar`): `liberada` e `caiu` reabrem por retomada. */
   readonly estadoServidor?: EstadoGravado;
-  /** A maior `ordem` de item gravado já vista (para `conversa.acompanhar`). */
+  /** A maior `ordem` de item gravado já vista (para voltar a `conversa.acompanhar` de onde parou). */
   readonly ordem: number;
+  /** O número do turno corrente (o do último item visto, ou o da mensagem que a pessoa acabou de enviar). */
+  readonly turno: number;
   readonly itens: ReadonlyArray<Item>;
   /** O erro de iniciar a sessão, mostrado no formulário. */
   readonly erroInicio?: MensagemErro;
@@ -122,6 +137,7 @@ export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = "")
   provider,
   pastaTrabalho,
   ordem: 0,
+  turno: 0,
   itens: [],
   proximoId: 1,
   avaliacoes: {},
@@ -134,16 +150,23 @@ export type Acao =
   /** 👍/👎 na resposta do turno (`null` retira). */
   | { readonly tipo: "avaliada"; readonly turno: number; readonly nota: NotaResposta | null }
   | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
+  /** A pessoa enviou: a mensagem aparece já, pendente, e a conversa passa a `respondendo`. */
   | { readonly tipo: "enviada"; readonly texto: string }
-  | { readonly tipo: "evento"; readonly evento: EventoConversa }
+  /** O servidor recusou a mensagem: ela sai, e o erro aparece. */
+  | { readonly tipo: "naoEnviou"; readonly erro: MensagemErro }
   /** Abrindo uma conversa gravada, pelo id. */
   | { readonly tipo: "abrindo"; readonly sessao: string }
   | { readonly tipo: "carregada"; readonly gravada: ConversaGravada }
   | { readonly tipo: "naoCarregou"; readonly erro: MensagemErro }
   /** Um item de `conversa.acompanhar`. */
-  | { readonly tipo: "item"; readonly item: ItemConversa }
-  /** O stream do turno terminou sem `FimTurno` (a conexão caiu, erro do servidor). */
-  | { readonly tipo: "turnoFalhou"; readonly erro: MensagemErro }
+  | { readonly tipo: "aoVivo"; readonly item: ItemAoVivo }
+  /**
+   * A conexão caiu e a interface volta a acompanhar de onde parou: a resposta aberta sai, porque o servidor
+   * a manda de novo, inteira, no texto parcial acumulado.
+   */
+  | { readonly tipo: "retomando" }
+  /** O acompanhamento falhou sem ser queda da conexão (a conversa sumiu, erro do servidor). */
+  | { readonly tipo: "naoAcompanhou"; readonly erro: MensagemErro }
   | { readonly tipo: "respondendo"; readonly aprovacao: string }
   | { readonly tipo: "respondida"; readonly aprovacao: string; readonly decisao: Decisao }
   | { readonly tipo: "respostaFalhou"; readonly aprovacao: string; readonly erro: MensagemErro }
@@ -154,7 +177,7 @@ export type Acao =
 /** Um aviso de erro, com o detalhe técnico quando há. */
 const avisoDeErro =
   (erro: MensagemErro) =>
-  (chave: string): Item => ({
+  (chave: string): ItemSemTurno => ({
     tipo: "aviso",
     chave,
     texto: erro.texto,
@@ -162,15 +185,16 @@ const avisoDeErro =
     ...(erro.detalhe === undefined ? {} : { detalhe: erro.detalhe }),
   });
 
-const comItem = (estado: EstadoConversa, item: (chave: string) => Item): EstadoConversa => ({
+const comItem = (estado: EstadoConversa, item: (chave: string) => ItemSemTurno): EstadoConversa => ({
   ...estado,
-  itens: [...estado.itens, item(`i${estado.proximoId}`)],
+  itens: [...estado.itens, { ...item(`i${estado.proximoId}`), turno: estado.turno }],
   proximoId: estado.proximoId + 1,
 });
 
-const trocar = (estado: EstadoConversa, indice: number, item: Item): EstadoConversa => ({
+/** Troca o item no `indice`, que fica no turno em que estava. */
+const trocar = (estado: EstadoConversa, indice: number, item: ItemSemTurno): EstadoConversa => ({
   ...estado,
-  itens: estado.itens.map((atual, i) => (i === indice ? item : atual)),
+  itens: estado.itens.map((atual, i) => (i === indice ? { ...item, turno: atual.turno } : atual)),
 });
 
 /** O índice da resposta aberta mais recente, ou -1. */
@@ -241,7 +265,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
       const indice = estado.itens.findLastIndex((item) => item.tipo === "ferramenta" && item.id === evento.id);
       const anterior = estado.itens[indice];
       const iniciada = anterior?.tipo === "ferramenta" ? anterior : undefined;
-      const concluida = (chave: string): Item => ({
+      const concluida = (chave: string): ItemSemTurno => ({
         tipo: "ferramenta",
         chave,
         id: evento.id,
@@ -276,14 +300,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
     case "Erro":
       return comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento)));
     case "FimTurno": {
-      const fechado: EstadoConversa = {
-        ...estado,
-        fase: "pronta",
-        itens: fecharTurno(estado.itens),
-        ...(estado.estadoServidor === "respondendo"
-          ? { estadoServidor: evento.motivo === "falha" ? "caiu" : "pronta" }
-          : {}),
-      };
+      const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
       if (evento.motivo === "parado_antes_do_envio")
         return comItem(fechado, (chave) => ({
           tipo: "aviso",
@@ -300,11 +317,28 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
 
 /** Um item gravado (ou acompanhado ao vivo) aplicado ao estado, como a interface o viu acontecer. */
 export function aplicarItem(estado: EstadoConversa, item: ItemConversa): EstadoConversa {
-  const comOrdem = item.ordem > estado.ordem ? { ...estado, ordem: item.ordem } : estado;
+  const comOrdem = {
+    ...estado,
+    ordem: Math.max(estado.ordem, item.ordem),
+    turno: Math.max(estado.turno, item.turno),
+  };
   switch (item._tag) {
     case "Mensagem": {
       const { uso: _uso, ...resto } = comOrdem;
-      return comItem({ ...resto, fase: "respondendo" }, (chave) => ({ tipo: "pessoa", chave, texto: item.texto }));
+      const comecado: EstadoConversa = {
+        ...resto,
+        fase: estado.fase === "interrompendo" ? "interrompendo" : "respondendo",
+        ...(estado.titulo ? {} : { titulo: item.texto }),
+      };
+      // A mensagem que esta tela enviou já está à vista: a gravada toma o lugar dela.
+      const pendente = estado.itens.findLastIndex((visto) => visto.tipo === "pessoa" && visto.pendente === true);
+      if (pendente >= 0) {
+        const itens = estado.itens.map((visto, i): Item =>
+          i === pendente ? { tipo: "pessoa", chave: visto.chave, texto: item.texto, turno: item.turno } : visto,
+        );
+        return { ...comecado, itens };
+      }
+      return comItem(comecado, (chave) => ({ tipo: "pessoa", chave, texto: item.texto }));
     }
     case "EventoTurno":
       return aplicarEvento(comOrdem, item.evento);
@@ -314,6 +348,19 @@ export function aplicarItem(estado: EstadoConversa, item: ItemConversa): EstadoC
 }
 
 /** A conversa gravada remontada: os itens na ordem e, se não há turno em andamento, o turno fechado. */
+/**
+ * O estado que o servidor diz. `respondendo` abre o turno na tela (a mensagem pode ter vindo de outra
+ * tela); os de repouso só ficam guardados: o turno se fecha no `FimTurno`, que vem logo depois.
+ */
+function aplicarEstado(estado: EstadoConversa, servidor: EstadoGravado): EstadoConversa {
+  if (servidor !== "respondendo") return { ...estado, estadoServidor: servidor };
+  return {
+    ...estado,
+    estadoServidor: servidor,
+    fase: estado.fase === "interrompendo" ? "interrompendo" : "respondendo",
+  };
+}
+
 export function estadoDaConversa(gravada: ConversaGravada): EstadoConversa {
   const { conversa } = gravada;
   const inicial: EstadoConversa = {
@@ -370,8 +417,17 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
       return estadoDaConversa(acao.gravada);
     case "naoCarregou":
       return { ...estadoInicial(estado.provider, estado.pastaTrabalho), erroInicio: acao.erro };
-    case "item":
-      return aplicarItem(estado, acao.item);
+    case "aoVivo":
+      return acao.item._tag === "Estado" ? aplicarEstado(estado, acao.item.estado) : aplicarItem(estado, acao.item);
+    case "retomando": {
+      // Só a resposta aberta do turno em andamento sai; o servidor a manda de novo, acumulada.
+      const aberta = respostaAberta(estado.itens);
+      return aberta < 0 ? estado : { ...estado, itens: estado.itens.filter((_, i) => i !== aberta) };
+    }
+    case "naoAcompanhou": {
+      const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
+      return comItem(fechado, avisoDeErro(acao.erro));
+    }
     case "naoIniciou":
       return { ...estado, fase: "configurando", erroInicio: acao.erro };
     case "enviada": {
@@ -380,17 +436,22 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
         {
           ...resto,
           fase: "respondendo",
+          turno: estado.turno + 1,
           ...(estado.titulo ? {} : { titulo: acao.texto }),
-          estadoServidor: "respondendo",
         },
-        (chave) => ({ tipo: "pessoa", chave, texto: acao.texto }),
+        (chave) => ({ tipo: "pessoa", chave, texto: acao.texto, pendente: true }),
       );
     }
-    case "evento":
-      return aplicarEvento(estado, acao.evento);
-    case "turnoFalhou": {
-      const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
-      return comItem(fechado, avisoDeErro(acao.erro));
+    case "naoEnviou": {
+      const pendente = estado.itens.findLastIndex((item) => item.tipo === "pessoa" && item.pendente === true);
+      if (pendente < 0) return comItem(estado, avisoDeErro(acao.erro));
+      const semMensagem: EstadoConversa = {
+        ...estado,
+        itens: estado.itens.filter((_, i) => i !== pendente),
+        turno: estado.turno - 1,
+        fase: estado.estadoServidor === "respondendo" ? "respondendo" : "pronta",
+      };
+      return comItem(semMensagem, avisoDeErro(acao.erro));
     }
     case "respondendo":
       return trocarAprovacao(estado, acao.aprovacao, "enviando");

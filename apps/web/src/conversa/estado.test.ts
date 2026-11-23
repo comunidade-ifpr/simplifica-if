@@ -13,7 +13,8 @@ import {
 } from "./estado.ts";
 
 const aplicar = (estado: EstadoConversa, ...acoes: ReadonlyArray<Acao>) => acoes.reduce(reduzir, estado);
-const evento = (e: Evento): Acao => ({ tipo: "evento", evento: e });
+/** Um evento do turno 1 que chega por `conversa.acompanhar`. */
+const evento = (e: Evento): Acao => ({ tipo: "aoVivo", item: { _tag: "EventoTurno", turno: 1, ordem: 0, evento: e } });
 
 /** Uma conversa já iniciada, com a mensagem da pessoa enviada. */
 const respondendo = () =>
@@ -130,6 +131,7 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
         "Sua conta do ChatGPT (Codex) chegou ao limite de uso. Espere o limite renovar ou escolha outra IA para esta conversa.",
       detalhe: "limite de uso",
       gravidade: "erro",
+      turno: 1,
     });
     assert.deepStrictEqual(estado.uso, { entrada: 10, saida: 2, custoUsd: 0.01 });
     const fim = reduzir(estado, evento({ _tag: "FimTurno", motivo: "interrompido" }));
@@ -148,14 +150,80 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
     });
   });
 
-  it("o turno que cai fecha o que ficou aberto e mostra o erro", () => {
+  it("o acompanhamento que falha fecha o que ficou aberto e mostra o erro", () => {
     const estado = aplicar(respondendo(), evento({ _tag: "TextoParcial", texto: "Meio" }), {
-      tipo: "turnoFalhou",
-      erro: { texto: "A conexão caiu.", detalhe: "socket fechado" },
+      tipo: "naoAcompanhou",
+      erro: { texto: "A conversa sumiu.", detalhe: "SessaoDesconhecida" },
     });
     assert.strictEqual(estado.fase, "pronta");
     assert.deepInclude(estado.itens[1], { final: true });
-    assert.deepInclude(estado.itens.at(-1), { tipo: "aviso", texto: "A conexão caiu.", detalhe: "socket fechado" });
+    assert.deepInclude(estado.itens.at(-1), {
+      tipo: "aviso",
+      texto: "A conversa sumiu.",
+      detalhe: "SessaoDesconhecida",
+    });
+  });
+});
+
+describe("reduzir: a conversa ao vivo", () => {
+  it("a mensagem gravada toma o lugar da pendente, com o turno do servidor", () => {
+    const enviada = respondendo();
+    assert.deepInclude(enviada.itens[0], { tipo: "pessoa", texto: "Olá", pendente: true, turno: 1 });
+    const gravada = aplicar(enviada, {
+      tipo: "aoVivo",
+      item: { _tag: "Mensagem", turno: 1, ordem: 1, texto: "Olá" },
+    });
+    assert.deepStrictEqual(gravada.itens, [{ tipo: "pessoa", chave: "i1", texto: "Olá", turno: 1 }]);
+    assert.strictEqual(gravada.ordem, 1);
+    // A mensagem de outra tela (sem pendente aqui) entra como nova.
+    const deOutra = aplicar(gravada, { tipo: "aoVivo", item: { _tag: "Mensagem", turno: 2, ordem: 5, texto: "E?" } });
+    assert.deepInclude(deOutra.itens.at(-1), { tipo: "pessoa", texto: "E?", turno: 2 });
+    assert.strictEqual(deOutra.turno, 2);
+  });
+
+  it("o servidor recusa a mensagem: ela sai, o turno volta e o erro aparece", () => {
+    const estado = aplicar(respondendo(), { tipo: "naoEnviou", erro: { texto: "Outra resposta em andamento." } });
+    assert.strictEqual(estado.fase, "pronta");
+    assert.strictEqual(estado.turno, 0);
+    assert.deepStrictEqual(
+      estado.itens.map((item) => item.tipo),
+      ["aviso"],
+    );
+  });
+
+  it("o estado vem do servidor: o turno que falha com a sessão viva deixa a conversa pronta", () => {
+    const estado = aplicar(
+      respondendo(),
+      { tipo: "aoVivo", item: { _tag: "Estado", estado: "respondendo" } },
+      evento({ _tag: "Erro", tipo: "cota", mensagem: "limite de uso" }),
+      { tipo: "aoVivo", item: { _tag: "Estado", estado: "pronta" } },
+      evento({ _tag: "FimTurno", motivo: "falha" }),
+    );
+    assert.strictEqual(estado.fase, "pronta");
+    assert.strictEqual(estado.estadoServidor, "pronta");
+    const caiu = aplicar(
+      respondendo(),
+      { tipo: "aoVivo", item: { _tag: "Estado", estado: "caiu" } },
+      evento({ _tag: "FimTurno", motivo: "falha" }),
+    );
+    assert.strictEqual(caiu.estadoServidor, "caiu");
+    assert.strictEqual(caiu.fase, "pronta");
+  });
+
+  it("ao retomar depois de uma queda, a resposta aberta sai: o servidor a manda de novo, acumulada", () => {
+    const aberta = aplicar(
+      respondendo(),
+      evento({ _tag: "TextoFinal", texto: "Primeiro bloco." }),
+      evento({ _tag: "TextoParcial", texto: "Seg" }),
+    );
+    const retomada = aplicar(aberta, { tipo: "retomando" }, evento({ _tag: "TextoParcial", texto: "Segundo" }));
+    assert.deepStrictEqual(
+      retomada.itens.flatMap((item) => (item.tipo === "resposta" ? [[item.texto, item.final]] : [])),
+      [
+        ["Primeiro bloco.", true],
+        ["Segundo", false],
+      ],
+    );
   });
 });
 

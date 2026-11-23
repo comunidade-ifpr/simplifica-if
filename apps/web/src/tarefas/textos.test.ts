@@ -89,6 +89,7 @@ describe("etapas", () => {
     id: chave,
     nome: "mcp__ifpr__etapa",
     classe: "mcp-app",
+    turno: 1,
     situacao: "concluida",
     ...(marcaDaEntrada(entrada) === undefined ? {} : { etapa: marcaDaEntrada(entrada)! }),
   });

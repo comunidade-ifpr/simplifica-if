@@ -3,9 +3,11 @@
  * `Motor` quando é preciso e liberada quando não é, como o `ProviderSessionManager` do T3.
  *
  * **A conversa não depende da conexão.** Ela tem um id próprio (UUID), dura no banco e não se encerra
- * quando a interface cai ou recarrega. A interface volta a ela por `carregar` e, se há turno em
- * andamento, por `acompanhar`. Os eventos de cada turno passam por um fiber do servidor (`bombear`),
- * que os grava e os publica para quem acompanha; a conexão que cai não interrompe o turno.
+ * quando a interface cai ou recarrega. `enviar` só abre o turno; os eventos dele passam por um fiber do
+ * servidor (`bombear`), que os grava e os publica para quem acompanha (`acompanhar`: os itens gravados
+ * depois de uma `ordem`, o texto parcial acumulado, o estado da conversa e, daí em diante, cada item e
+ * cada mudança de estado). A interface segue a conversa só por `acompanhar`, e volta a ela, depois de
+ * recarregar ou de a conexão cair, pela última `ordem` que viu; a conexão que cai não interrompe o turno.
  *
  * **Ciclo de vida da sessão do provider.**
  * - `iniciar` abre a sessão (já com o MCP `ifpr`: uma sessão no servidor MCP HTTP com token próprio,
@@ -64,6 +66,7 @@ import {
   type EstadoConversa,
   type EventoConversa,
   type FalhaPasta,
+  type ItemAoVivo,
   type ItemConversa,
   type NotaResposta,
   type PastaConversa,
@@ -72,6 +75,7 @@ import {
   type ResultadoApagarConversa,
   type ResumoConversa,
   TarefaDesconhecida,
+  type TurnoAberto as TurnoAbertoContrato,
 } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
@@ -103,11 +107,12 @@ export class Conversas extends Context.Service<
     readonly iniciar: (
       entrada: EntradaIniciar,
     ) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida | TarefaDesconhecida | AvisoNaoAceito>;
+    /** Abre o turno com a mensagem e devolve o número dele e a `ordem` da mensagem; o turno segue no servidor. */
     readonly enviar: (
       sessao: string,
       texto: string,
-    ) => Stream.Stream<
-      EventoConversa,
+    ) => Effect.Effect<
+      TurnoAbertoContrato,
       Motor.FalhaProvider | Motor.TurnoEmAndamento | Motor.SessaoDesconhecida | AvisoNaoAceito
     >;
     readonly responderAprovacao: (
@@ -120,7 +125,11 @@ export class Conversas extends Context.Service<
     readonly encerrar: (sessao: string) => Effect.Effect<void, Motor.SessaoDesconhecida>;
     readonly listar: Effect.Effect<ReadonlyArray<ResumoConversa>>;
     readonly carregar: (sessao: string) => Effect.Effect<ConversaGravada, Motor.SessaoDesconhecida>;
-    readonly acompanhar: (sessao: string, depois: number) => Stream.Stream<ItemConversa, Motor.SessaoDesconhecida>;
+    /**
+     * A conversa ao vivo, a partir de `depois`: os itens gravados, o parcial acumulado, o estado e o que vier;
+     * só termina quando a conversa é apagada.
+     */
+    readonly acompanhar: (sessao: string, depois: number) => Stream.Stream<ItemAoVivo, Motor.SessaoDesconhecida>;
     /** 👍/👎 na resposta do turno; `null` retira. */
     readonly avaliar: (
       sessao: string,
@@ -196,7 +205,7 @@ interface Viva {
   caiu: boolean;
   /** O último turno terminou com falha do provider (o `Erro` dele já está gravado). */
   ultimoTurnoFalhou: boolean;
-  readonly aoVivo: PubSub.PubSub<ItemConversa>;
+  readonly aoVivo: PubSub.PubSub<ItemAoVivo>;
   /** Abrir e fechar a sessão e começar o turno, um de cada vez. */
   readonly trava: Semaphore.Semaphore;
   /**
@@ -204,6 +213,8 @@ interface Viva {
    * liberação por ociosidade) não grava nada nela.
    */
   apagada: boolean;
+  /** Concluído ao apagar: os `acompanhar` em curso terminam. */
+  readonly encerrada: Deferred.Deferred<void>;
   /** Gravar e publicar um item, e o retrato de `acompanhar`, um de cada vez. */
   readonly travaItens: Semaphore.Semaphore;
 }
@@ -277,9 +288,13 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
 
   // `fnUntraced`: ajudante por mudança de estado da conversa, coberto pelo span da operação que a provoca.
   const alterar = Effect.fnUntraced(function* (viva: Viva, alteracao: Historico.Alteracao) {
+    const antes = viva.registro.estado;
     yield* historico.alterar(viva.id, alteracao);
     const atual = yield* historico.buscar(viva.id);
     if (Option.isSome(atual)) viva.registro = atual.value;
+    // Quem acompanha recebe o estado novo: a interface não o deduz dos eventos.
+    if (viva.registro.estado !== antes)
+      yield* PubSub.publish(viva.aoVivo, { _tag: "Estado", estado: viva.registro.estado });
   });
 
   const estadoEmRepouso = (viva: Viva): EstadoConversa =>
@@ -673,7 +688,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       ),
   );
 
-  /** Começa o turno e devolve a inscrição nos itens dele (no escopo de quem chama). */
+  /** Começa o turno e devolve o número dele e a `ordem` da mensagem gravada. */
   const comecarTurno = (viva: Viva, texto: string) =>
     viva.trava.withPermits(1)(
       Effect.gen(function* () {
@@ -681,7 +696,6 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         if (viva.turno !== undefined) return yield* new Motor.TurnoEmAndamento();
         const sessao = yield* abrirSessao(viva);
         yield* cancelarOciosidade(viva);
-        const inscricao = yield* PubSub.subscribe(viva.aoVivo);
         const numero = viva.registro.turnos + 1;
         // O turno abre antes do preparo (a cópia da pasta e os textos, em `executarTurno`), para o "Parar"
         // ter o que interromper desde a mensagem.
@@ -705,13 +719,16 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           estado: "respondendo",
           ...(viva.registro.titulo === "" ? { titulo: derivarTitulo(texto) } : {}),
         });
-        turno.fibra = yield* executarTurno(viva, turno, sessao, texto).pipe(Effect.forkIn(escopoDaLayer));
-        return { inscricao, turno };
+        const ordem = viva.registro.ultimaOrdem;
+        // O turno abre o próprio trace: o pedido de `enviar` termina assim que ele abre, e a caixa-preta
+        // ignora o que chega depois para um trace já descartado.
+        turno.fibra = yield* executarTurno(viva, turno, sessao, texto).pipe(
+          Effect.withSpan("Conversas.turno", { root: true }),
+          Effect.forkIn(escopoDaLayer),
+        );
+        return { turno: numero, ordem } satisfies TurnoAbertoContrato;
       }),
     );
-
-  /** Um stream vazio que acaba quando o turno se fecha. */
-  const esperarFim = (turno: TurnoAberto) => Stream.fromEffect(Deferred.await(turno.fim)).pipe(Stream.drain);
 
   /* ------------------------------------------------------------ conversas */
 
@@ -726,10 +743,11 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       chegouAIA: undefined,
       caiu: registro.estado === "caiu",
       ultimoTurnoFalhou: false,
-      aoVivo: yield* PubSub.unbounded<ItemConversa>(),
+      aoVivo: yield* PubSub.unbounded<ItemAoVivo>(),
       trava: yield* Semaphore.make(1),
       travaItens: yield* Semaphore.make(1),
       apagada: false,
+      encerrada: yield* Deferred.make<void>(),
     };
     return viva;
   });
@@ -802,21 +820,10 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     return id;
   });
 
-  const enviar = (id: string, texto: string) =>
-    Stream.unwrap(
-      Effect.gen(function* () {
-        yield* exigirAviso;
-        const viva = yield* obter(id);
-        const { inscricao, turno } = yield* comecarTurno(viva, texto);
-        return Stream.fromSubscription(inscricao).pipe(
-          Stream.filter((item) => item._tag === "EventoTurno"),
-          Stream.map((item) => item.evento),
-          Stream.takeUntil((evento) => evento._tag === "FimTurno"),
-          // O stream acaba com o turno fechado (estado gravado): a próxima mensagem já é aceita.
-          Stream.concat(esperarFim(turno)),
-        );
-      }),
-    );
+  const enviar = Effect.fn("Conversas.enviar")(function* (id: string, texto: string) {
+    yield* exigirAviso;
+    return yield* comecarTurno(yield* obter(id), texto);
+  });
 
   const responderAprovacao = Effect.fn("Conversas.responderAprovacao")(function* (
     id: string,
@@ -888,13 +895,14 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     Stream.unwrap(
       Effect.gen(function* () {
         const viva = yield* obter(id);
-        // O retrato e a inscrição juntos: nenhum item cai entre os gravados e os que chegam.
-        const { inscricao, gravados, turno } = yield* viva.travaItens.withPermits(1)(
+        // O retrato e a inscrição juntos: nenhum item cai entre os gravados e os que chegam. A inscrição
+        // vem antes do estado: uma mudança no meio chega pela inscrição (repetida, sem efeito).
+        const { inscricao, retrato } = yield* viva.travaItens.withPermits(1)(
           Effect.gen(function* () {
             const inscricao = yield* PubSub.subscribe(viva.aoVivo);
             const gravados = yield* historico.itens(id, depois);
             const turno = viva.turno !== undefined && !viva.turno.terminou ? viva.turno : undefined;
-            const parcial: ReadonlyArray<ItemConversa> =
+            const parcial: ReadonlyArray<ItemAoVivo> =
               turno === undefined || turno.acumulado === ""
                 ? []
                 : [
@@ -905,17 +913,12 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
                       evento: { _tag: "TextoParcial", texto: turno.acumulado },
                     },
                   ];
-            return { inscricao, gravados: [...gravados, ...parcial], turno };
+            const estado: ItemAoVivo = { _tag: "Estado", estado: viva.registro.estado };
+            return { inscricao, retrato: [...gravados, ...parcial, estado] };
           }),
         );
-        const anteriores = Stream.fromIterable(gravados);
-        if (turno === undefined) return anteriores;
-        return Stream.concat(
-          anteriores,
-          Stream.fromSubscription(inscricao).pipe(
-            Stream.takeUntil((item) => item._tag === "EventoTurno" && item.evento._tag === "FimTurno"),
-            Stream.concat(esperarFim(turno)),
-          ),
+        return Stream.concat(Stream.fromIterable(retrato), Stream.fromSubscription(inscricao)).pipe(
+          Stream.interruptWhen(Deferred.await(viva.encerrada)),
         );
       }),
     );
@@ -998,6 +1001,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
         yield* soltar(viva);
         viva.apagada = true;
+        yield* Deferred.succeed(viva.encerrada, undefined);
         const pendente = yield* historico.apagar(id);
         vivas.delete(id);
         return pendente;

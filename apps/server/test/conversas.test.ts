@@ -22,12 +22,13 @@ import type * as FileSystem from "effect/FileSystem";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Logger from "effect/Logger";
+import * as Queue from "effect/Queue";
 import type * as Path from "effect/Path";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as TestClock from "effect/testing/TestClock";
-import type { EventoConversa, ItemConversa } from "@simplifica-if/contratos-app";
+import type { EventoConversa, ItemAoVivo, ItemConversa } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import type { SkillDoApp } from "@simplifica-if/mcp/skills";
@@ -45,6 +46,7 @@ import {
   layerDriversFalsos,
   limparTemporarios,
   novoRegistro,
+  turnoCompleto,
   type Registro,
 } from "./apoio.ts";
 
@@ -152,14 +154,14 @@ describe("conversas gravadas", () => {
       const { conversas, preferencias, fechar } = yield* abrir(novoBanco(), registro, undefined, Preferencias.layer);
       const iniciar = yield* Effect.flip(conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }));
       assert.strictEqual(iniciar._tag, "AvisoNaoAceito");
-      const enviar = yield* Effect.flip(Stream.runDrain(conversas.enviar("qualquer", "oi")));
+      const enviar = yield* Effect.flip(conversas.enviar("qualquer", "oi"));
       assert.strictEqual(enviar._tag, "AvisoNaoAceito");
       assert.deepStrictEqual(registro.configs, []);
       assert.deepStrictEqual(yield* conversas.listar, []);
 
       yield* preferencias.aceitarAviso;
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      assert.strictEqual(tags(yield* Stream.runCollect(conversas.enviar(id, "olá"))).at(-1), "FimTurno");
+      assert.strictEqual(tags(yield* turnoCompleto(conversas, id, "olá")).at(-1), "FimTurno");
       yield* fechar;
     }),
   );
@@ -170,9 +172,9 @@ describe("conversas gravadas", () => {
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
 
-      const primeiro = yield* Stream.runCollect(conversas.enviar(id, "Qual a carga horária?\nsegunda linha"));
+      const primeiro = yield* turnoCompleto(conversas, id, "Qual a carga horária?\nsegunda linha");
       assert.deepStrictEqual(tags(primeiro), ["TextoParcial", "TextoParcial", "TextoFinal", "FimTurno"]);
-      yield* Stream.runCollect(conversas.enviar(id, "E o estágio?"));
+      yield* turnoCompleto(conversas, id, "E o estágio?");
 
       const conversa = yield* resumo(conversas, id);
       assert.strictEqual(conversa?.titulo, "Qual a carga horária?");
@@ -260,14 +262,14 @@ describe("conversas gravadas", () => {
       const registro = novoRegistro();
       const primeiro = yield* abrir(arquivo, registro);
       const id = yield* primeiro.conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      yield* Stream.runCollect(primeiro.conversas.enviar(id, "olá"));
+      yield* turnoCompleto(primeiro.conversas, id, "olá");
       yield* primeiro.fechar;
       assert.strictEqual(registro.encerradas, 1);
 
       const segundo = yield* abrir(arquivo, registro);
       const antes = yield* resumo(segundo.conversas, id);
       assert.strictEqual(antes?.estado, "liberada");
-      const eventos = yield* Stream.runCollect(segundo.conversas.enviar(id, "de novo"));
+      const eventos = yield* turnoCompleto(segundo.conversas, id, "de novo");
       assert.strictEqual(tags(eventos).at(-1), "FimTurno");
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       // A retomada nativa não leva o histórico como contexto.
@@ -285,9 +287,7 @@ describe("conversas gravadas", () => {
       const registro = novoRegistro();
       const primeiro = yield* abrir(arquivo, registro);
       const id = yield* primeiro.conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const turno = yield* Stream.runCollect(primeiro.conversas.enviar(id, "uma resposta demorada")).pipe(
-        Effect.forkChild,
-      );
+      const turno = yield* turnoCompleto(primeiro.conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       assert.strictEqual((yield* resumo(primeiro.conversas, id))?.estado, "respondendo");
       yield* primeiro.fechar;
@@ -332,7 +332,7 @@ describe("conversas gravadas", () => {
         evento: { _tag: "FimTurno", motivo: "interrompido" },
       });
       // A próxima mensagem retoma pelo id nativo gravado.
-      yield* Stream.runCollect(atual.conversas.enviar("orfa", "continua"));
+      yield* turnoCompleto(atual.conversas, "orfa", "continua");
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-orfa");
       yield* atual.fechar;
       yield* anterior.fechar;
@@ -345,12 +345,12 @@ describe("conversas gravadas", () => {
       const registro = novoRegistro();
       const primeiro = yield* abrir(arquivo, registro);
       const id = yield* primeiro.conversas.iniciar({ provider: "antigravity", pastaTrabalho: pasta });
-      yield* Stream.runCollect(primeiro.conversas.enviar(id, "Qual a carga horária?"));
+      yield* turnoCompleto(primeiro.conversas, id, "Qual a carga horária?");
       yield* primeiro.fechar;
 
       registro.recusarRetomada = true;
       const segundo = yield* abrir(arquivo, registro);
-      yield* Stream.runCollect(segundo.conversas.enviar(id, "E o estágio?"));
+      yield* turnoCompleto(segundo.conversas, id, "E o estágio?");
       assert.isUndefined(registro.configs.at(-1)?.retomar);
       const enviado = registro.textos.at(-1) ?? "";
       assert.match(enviado, /não pôde ser retomada/);
@@ -360,7 +360,7 @@ describe("conversas gravadas", () => {
       // Gravada fica só a mensagem da pessoa; e o id nativo novo vale para a próxima retomada.
       const { itens } = yield* segundo.conversas.carregar(id);
       assert.deepInclude(itens, { _tag: "Mensagem", turno: 2, ordem: 4, texto: "E o estágio?" });
-      yield* Stream.runCollect(segundo.conversas.enviar(id, "Obrigado"));
+      yield* turnoCompleto(segundo.conversas, id, "Obrigado");
       assert.strictEqual(registro.textos.at(-1), "Obrigado");
       yield* segundo.fechar;
       registro.recusarRetomada = false;
@@ -374,7 +374,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "uma resposta demorada")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       yield* registro.derrubar!();
       const eventos = [...(yield* Fiber.join(turno))];
@@ -385,7 +385,7 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "caiu");
       assert.strictEqual(registro.encerradas, 1);
 
-      const depois = yield* Stream.runCollect(conversas.enviar(id, "olá de novo"));
+      const depois = yield* turnoCompleto(conversas, id, "olá de novo");
       assert.strictEqual(tags(depois).at(-1), "FimTurno");
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "pronta");
@@ -398,13 +398,13 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       yield* registro.derrubar!();
       yield* rodar;
       const { conversa, itens } = yield* conversas.carregar(id);
       assert.strictEqual(conversa.estado, "caiu");
       assert.strictEqual(eventosDe(itens).at(-1)?._tag, "Erro");
-      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      yield* turnoCompleto(conversas, id, "de novo");
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       yield* fechar;
     }),
@@ -417,13 +417,13 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "uma resposta demorada")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       yield* registro.derrubar!(causa);
       const eventos = [...(yield* Fiber.join(turno))];
       assert.deepStrictEqual(eventos[1], { _tag: "Erro", tipo: "queda", mensagem: saneado });
 
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       yield* registro.derrubar!(causa);
       yield* rodar;
       // Recarregada, a conversa mantém o diagnóstico dos dois `Erro`.
@@ -450,7 +450,7 @@ describe("ciclo de vida da sessão do provider", () => {
         const registro = novoRegistro();
         const { conversas, fechar } = yield* abrir(novoBanco(), registro);
         const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
-        const turno = yield* Stream.runCollect(conversas.enviar(id, "pedido sigiloso demorado")).pipe(Effect.forkChild);
+        const turno = yield* turnoCompleto(conversas, id, "pedido sigiloso demorado").pipe(Effect.forkChild);
         yield* rodar;
         yield* registro.derrubar!(causa);
         yield* Fiber.join(turno);
@@ -477,7 +477,7 @@ describe("ciclo de vida da sessão do provider", () => {
         esforco: "xhigh",
       });
       assert.deepInclude(registro.configs.at(-1), { modelo: "opus", esforco: "xhigh" });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       yield* avancar(Duration.subtract(Conversas.OCIOSIDADE, Duration.seconds(1)));
       assert.strictEqual(registro.encerradas, 0);
       yield* avancar(Duration.seconds(1));
@@ -485,7 +485,7 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "liberada");
 
       // A interface que recarrega não muda nada: a conversa continua e se retoma.
-      yield* Stream.runCollect(conversas.enviar(id, "voltei"));
+      yield* turnoCompleto(conversas, id, "voltei");
       assert.strictEqual(registro.configs.length, 2);
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       // A retomada reabre com o modelo e o esforço escolhidos no começo.
@@ -493,7 +493,7 @@ describe("ciclo de vida da sessão do provider", () => {
       // `encerrar` libera a sessão, e a próxima mensagem a reabre.
       yield* conversas.encerrar(id);
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "liberada");
-      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      yield* turnoCompleto(conversas, id, "de novo");
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "pronta");
       assert.strictEqual(registro.configs.length, 3);
       yield* fechar;
@@ -517,14 +517,14 @@ describe("ciclo de vida da sessão do provider", () => {
 
       // Retomada pelo provider.
       yield* conversas.encerrar(id);
-      yield* Stream.runCollect(conversas.enviar(id, "voltei"));
+      yield* turnoCompleto(conversas, id, "voltei");
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
       assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
 
       // Retomada recusada: a sessão recomeçada também as recebe.
       yield* conversas.encerrar(id);
       registro.recusarRetomada = true;
-      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      yield* turnoCompleto(conversas, id, "de novo");
       assert.isUndefined(registro.configs.at(-1)?.retomar);
       assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
       yield* fechar;
@@ -541,14 +541,11 @@ describe("ciclo de vida da sessão do provider", () => {
         const { conversas, fechar } = yield* abrir(novoBanco(), registro);
         const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
         // Como a interface: o turno acabou quando chega o `FimTurno`; o stream do provider segue aberto.
-        const eventos = yield* conversas.enviar(id, "olá").pipe(
-          Stream.takeUntil((evento) => evento._tag === "FimTurno"),
-          Stream.runCollect,
-        );
+        const eventos = yield* turnoCompleto(conversas, id, "olá");
         assert.strictEqual(tags(eventos).at(-1), "FimTurno");
         assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
         registro.segurarFim = undefined;
-        const outra = yield* Stream.runCollect(conversas.enviar(id, "outra"));
+        const outra = yield* turnoCompleto(conversas, id, "outra");
         assert.deepStrictEqual([...outra].at(-1), { _tag: "FimTurno", motivo: "concluido" });
         yield* Deferred.succeed(segurar, undefined);
         yield* rodar;
@@ -564,10 +561,10 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, layerRetratoComDefeito);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const eventos = yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      const eventos = yield* turnoCompleto(conversas, id, "olá");
       assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "concluido" });
       assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
-      const outra = yield* Stream.runCollect(conversas.enviar(id, "outra"));
+      const outra = yield* turnoCompleto(conversas, id, "outra");
       assert.strictEqual(tags(outra).at(-1), "FimTurno");
       yield* fechar;
     }),
@@ -578,14 +575,14 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "uma resposta demorada")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
-      const emAndamento = yield* Effect.flip(Stream.runCollect(conversas.enviar(id, "outra")));
+      const emAndamento = yield* Effect.flip(turnoCompleto(conversas, id, "outra"));
       assert.strictEqual(emAndamento._tag, "TurnoEmAndamento");
       yield* conversas.interromper(id);
       const eventos = yield* Fiber.join(turno);
       assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "interrompido" });
-      const depois = yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      const depois = yield* turnoCompleto(conversas, id, "olá");
       assert.strictEqual(tags(depois).at(-1), "FimTurno");
       assert.strictEqual(registro.configs.length, 1);
       yield* fechar;
@@ -613,13 +610,13 @@ describe("ciclo de vida da sessão do provider", () => {
       ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasLentas);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       const enviados = registro.textos.length;
 
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "confira a pasta")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "confira a pasta").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       // No preparo, o turno já existe: outra mensagem espera, e o "Parar" tem o que interromper.
-      const emAndamento = yield* Effect.flip(Stream.runCollect(conversas.enviar(id, "outra")));
+      const emAndamento = yield* Effect.flip(turnoCompleto(conversas, id, "outra"));
       assert.strictEqual(emAndamento._tag, "TurnoEmAndamento");
       yield* conversas.interromper(id);
       const eventos = yield* Fiber.join(turno);
@@ -634,7 +631,7 @@ describe("ciclo de vida da sessão do provider", () => {
         { texto: "confira a pasta" },
       );
       // A conversa aceita a próxima mensagem, e ela vai à IA.
-      const depois = yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      const depois = yield* turnoCompleto(conversas, id, "de novo");
       assert.strictEqual(tags(depois).at(-1), "FimTurno");
       assert.strictEqual(registro.textos.at(-1), "de novo");
       yield* fechar;
@@ -664,19 +661,19 @@ describe("ciclo de vida da sessão do provider", () => {
       );
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastas);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
 
       // Entre os turnos, a pessoa põe um .docx e uma nota; a conversão do .docx trava, e ela para.
       NodeFS.writeFileSync(NodePath.join(tarefa, "Minuta.docx"), "conteúdo da minuta");
       NodeFS.writeFileSync(NodePath.join(tarefa, "nota.md"), "nota\n");
-      const parado = yield* Stream.runCollect(conversas.enviar(id, "confira")).pipe(Effect.forkChild);
+      const parado = yield* turnoCompleto(conversas, id, "confira").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.interromper(id);
       assert.deepStrictEqual([...(yield* Fiber.join(parado))], [{ _tag: "FimTurno", motivo: "parado_antes_do_envio" }]);
 
       // No turno seguinte, o aviso traz as duas mudanças (a comparação é com o turno 1, o último que
       // chegou à IA), e a minuta ganha o texto.
-      const seguinte = yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      const seguinte = yield* turnoCompleto(conversas, id, "de novo");
       assert.deepStrictEqual(
         [...seguinte].find((evento) => evento._tag === "MudancasPasta"),
         {
@@ -717,11 +714,11 @@ describe("ciclo de vida da sessão do provider", () => {
       const comecou = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(1, comecou));
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta, tarefa: "skill-de-teste" });
-      const parado = yield* Stream.runCollect(conversas.enviar(id, "primeiro")).pipe(Effect.forkChild);
+      const parado = yield* turnoCompleto(conversas, id, "primeiro").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.interromper(id);
       yield* Fiber.join(parado);
-      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      yield* turnoCompleto(conversas, id, "de novo");
       assert.match(registro.textos.at(-1) ?? "", /^Siga a skill `skill-de-teste`[\s\S]*\n\nde novo$/);
       yield* fechar;
     }),
@@ -734,9 +731,9 @@ describe("ciclo de vida da sessão do provider", () => {
       const solta = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(2, comecou, solta));
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       const enviados = registro.textos.length;
-      const parado = yield* Stream.runCollect(conversas.enviar(id, "segundo")).pipe(Effect.forkChild);
+      const parado = yield* turnoCompleto(conversas, id, "segundo").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* registro.derrubar!(new Error("o processo morreu"));
       yield* rodar;
@@ -754,9 +751,9 @@ describe("ciclo de vida da sessão do provider", () => {
       const solta = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(2, comecou, solta));
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       const enviados = registro.textos.length;
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "segundo")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "segundo").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* registro.derrubar!(new Error("o processo morreu"));
       yield* rodar;
@@ -767,7 +764,7 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.deepStrictEqual(eventos[1], { _tag: "FimTurno", motivo: "falha" });
       assert.strictEqual(registro.textos.length, enviados);
       // A próxima mensagem reabre a sessão e vai à IA.
-      yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      yield* turnoCompleto(conversas, id, "de novo");
       assert.strictEqual(registro.textos.at(-1), "de novo");
       yield* fechar;
     }),
@@ -779,7 +776,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const comecou = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(1, comecou));
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "olá")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "olá").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.encerrar(id);
       assert.deepStrictEqual([...(yield* Fiber.join(turno))], [{ _tag: "FimTurno", motivo: "parado_antes_do_envio" }]);
@@ -812,14 +809,14 @@ describe("ciclo de vida da sessão do provider", () => {
       );
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastas);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       NodeFS.writeFileSync(NodePath.join(tarefa, "A.docx"), "a");
       NodeFS.writeFileSync(NodePath.join(tarefa, "B.docx"), "b");
-      const parado = yield* Stream.runCollect(conversas.enviar(id, "confira")).pipe(Effect.forkChild);
+      const parado = yield* turnoCompleto(conversas, id, "confira").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.interromper(id);
       yield* Fiber.join(parado);
-      const seguinte = yield* Stream.runCollect(conversas.enviar(id, "de novo"));
+      const seguinte = yield* turnoCompleto(conversas, id, "de novo");
       assert.deepStrictEqual(
         [...seguinte].find((evento) => evento._tag === "MudancasPasta"),
         {
@@ -834,7 +831,7 @@ describe("ciclo de vida da sessão do provider", () => {
         },
       );
       // Avisado, o A.docx não volta no turno seguinte.
-      const depois = yield* Stream.runCollect(conversas.enviar(id, "e agora?"));
+      const depois = yield* turnoCompleto(conversas, id, "e agora?");
       assert.isUndefined([...depois].find((evento) => evento._tag === "MudancasPasta"));
       yield* fechar;
     }),
@@ -871,14 +868,14 @@ describe("ciclo de vida da sessão do provider", () => {
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
       // Como a tarefa do Início: o anexo entra na pasta antes da primeira mensagem.
       yield* pastas.anexar(tarefa, arquivoParaAnexar("Minuta.docx", "minuta"));
-      yield* Stream.runCollect(conversas.enviar(id, "confira a minuta"));
+      yield* turnoCompleto(conversas, id, "confira a minuta");
       assert.match(registro.textos.at(-1) ?? "", /^confira a minuta\n\n[\s\S]*`Minuta\.docx`/);
       // Como o "Anexar" do painel da pasta, sem nota nenhuma: o turno seguinte o avisa.
       yield* pastas.anexar(tarefa, arquivoParaAnexar("Foto.png", "png"));
-      yield* Stream.runCollect(conversas.enviar(id, "e a foto?"));
+      yield* turnoCompleto(conversas, id, "e a foto?");
       assert.match(registro.textos.at(-1) ?? "", /^e a foto\?\n\n[\s\S]*`Foto\.png`/);
       // Avisado uma vez, não volta; e o histórico guarda a mensagem como a pessoa a escreveu.
-      yield* Stream.runCollect(conversas.enviar(id, "obrigado"));
+      yield* turnoCompleto(conversas, id, "obrigado");
       assert.strictEqual(registro.textos.at(-1), "obrigado");
       const mensagens = (yield* conversas.carregar(id)).itens.flatMap((item) =>
         item._tag === "Mensagem" ? [item.texto] : [],
@@ -895,21 +892,18 @@ describe("ciclo de vida da sessão do provider", () => {
       const { conversas, pastas, fechar } = yield* abrir(novoBanco(), registro, camada);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
       yield* pastas.anexar(tarefa, arquivoParaAnexar("A.md", "a"));
-      const respondendo = yield* Deferred.make<void>();
-      const turno = yield* conversas.enviar(id, "uma resposta demorada").pipe(
-        Stream.tap((evento) =>
-          evento._tag === "TextoParcial" ? Deferred.succeed(respondendo, undefined) : Effect.void,
-        ),
-        Stream.runCollect,
-        Effect.forkChild,
+      const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
+      // A IA já está respondendo: o texto parcial chegou.
+      yield* conversas.acompanhar(id, Number.MAX_SAFE_INTEGER).pipe(
+        Stream.filter((item) => item._tag === "EventoTurno" && item.evento._tag === "TextoParcial"),
+        Stream.runHead,
       );
-      yield* Deferred.await(respondendo);
       // O turno já avisou o A.md; o B.md chega com a IA respondendo, e o fim do turno não o dá por avisado.
       yield* pastas.anexar(tarefa, arquivoParaAnexar("B.md", "b"));
       yield* conversas.interromper(id);
       yield* Fiber.join(turno);
       assert.match(registro.textos.at(-1) ?? "", /`A\.md`/);
-      yield* Stream.runCollect(conversas.enviar(id, "e agora?"));
+      yield* turnoCompleto(conversas, id, "e agora?");
       const pedido = registro.textos.at(-1) ?? "";
       assert.match(pedido, /^e agora\?\n\nA pessoa anexou à pasta da tarefa:\n- `B\.md`$/);
       yield* fechar;
@@ -921,7 +915,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = { ...novoRegistro(), ignorarInterrupcao: true };
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const turno = yield* Stream.runCollect(conversas.enviar(id, "uma resposta demorada")).pipe(Effect.forkChild);
+      const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       yield* conversas.interromper(id);
       yield* avancar(PRAZO);
@@ -930,8 +924,54 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.strictEqual(registro.encerradas, 1);
       assert.strictEqual((yield* resumo(conversas, id))?.estado, "liberada");
       registro.ignorarInterrupcao = false;
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
+      yield* fechar;
+    }),
+  );
+
+  it.effect(
+    "acompanhar: o turno que falha com a sessão viva deixa a conversa pronta, e o estado chega a quem acompanha",
+    () =>
+      Effect.gen(function* () {
+        const registro = novoRegistro();
+        const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+        const recebidos = yield* Effect.scoped(
+          Effect.gen(function* () {
+            const fila = yield* Stream.toQueue(conversas.acompanhar(id, 0), { capacity: "unbounded" });
+            const itens: Array<ItemAoVivo> = [yield* Queue.take(fila)];
+            yield* conversas.enviar(id, "estourei o limite?");
+            for (;;) {
+              const item = yield* Queue.take(fila);
+              itens.push(item);
+              if (item._tag === "EventoTurno" && item.evento._tag === "FimTurno") return itens;
+            }
+          }),
+        );
+        assert.deepStrictEqual(
+          recebidos.flatMap((item) => (item._tag === "Estado" ? [item.estado] : [])),
+          ["pronta", "respondendo", "pronta"],
+        );
+        assert.deepInclude(recebidos.at(-1), { evento: { _tag: "FimTurno", motivo: "falha" } });
+        assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
+        yield* fechar;
+      }),
+  );
+
+  it.effect("acompanhar termina quando a conversa é apagada", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      yield* Effect.scoped(
+        Effect.gen(function* () {
+          const fila = yield* Stream.toQueue(conversas.acompanhar(id, 0), { capacity: "unbounded" });
+          assert.deepStrictEqual(yield* Queue.take(fila), { _tag: "Estado", estado: "pronta" });
+          yield* conversas.apagar(id);
+          assert.isTrue(Exit.isFailure(yield* Effect.exit(Queue.take(fila))));
+        }),
+      );
       yield* fechar;
     }),
   );
@@ -941,9 +981,9 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* turnoCompleto(conversas, id, "olá");
       // A interface que enviou caiu no meio do turno (o stream dela foi interrompido).
-      const primeiro = yield* Stream.runCollect(conversas.enviar(id, "pode escrever?")).pipe(Effect.forkChild);
+      const primeiro = yield* turnoCompleto(conversas, id, "pode escrever?").pipe(Effect.forkChild);
       yield* rodar;
       yield* Fiber.interrupt(primeiro);
       const { conversa, itens } = yield* conversas.carregar(id);
@@ -951,26 +991,41 @@ describe("ciclo de vida da sessão do provider", () => {
       const visto = itens.at(-1)?.ordem ?? 0;
 
       // A que recarregou acompanha a partir do que já viu, e responde à aprovação.
-      const acompanhamento = yield* Stream.runCollect(conversas.acompanhar(id, visto - 2)).pipe(Effect.forkChild);
+      const acompanhamento = yield* conversas.acompanhar(id, visto - 2).pipe(
+        Stream.takeUntil((item) => item._tag === "EventoTurno" && item.evento._tag === "FimTurno"),
+        Stream.runCollect,
+        Effect.forkChild,
+      );
       yield* rodar;
       yield* conversas.responderAprovacao(id, "f1", "permitir");
       const recebidos = [...(yield* Fiber.join(acompanhamento))];
       assert.deepStrictEqual(
-        recebidos.map((item) => (item._tag === "EventoTurno" ? item.evento._tag : item._tag)),
+        recebidos.map((item) =>
+          item._tag === "EventoTurno" ? item.evento._tag : item._tag === "Estado" ? `Estado ${item.estado}` : item._tag,
+        ),
         [
           "FerramentaIniciada",
           "PedidoAprovacao",
           "TextoParcial",
+          // O retrato termina no estado de agora; o fim do turno traz o estado em repouso antes do `FimTurno`.
+          "Estado respondendo",
           "DecisaoAprovacao",
           "FerramentaConcluida",
           "TextoFinal",
+          "Estado pronta",
           "FimTurno",
         ],
       );
       assert.deepInclude(recebidos[2], { evento: { _tag: "TextoParcial", texto: "Vou " } });
-      // Sem turno em andamento, acompanhar só devolve o gravado.
-      const resto = yield* Stream.runCollect(conversas.acompanhar(id, 0));
-      assert.deepStrictEqual([...resto], (yield* conversas.carregar(id)).itens);
+      // Sem turno em andamento: o gravado e o estado, e o resto ao vivo.
+      const resto = yield* conversas.acompanhar(id, 0).pipe(
+        Stream.takeUntil((item) => item._tag === "Estado"),
+        Stream.runCollect,
+      );
+      assert.deepStrictEqual(
+        [...resto],
+        [...(yield* conversas.carregar(id)).itens, { _tag: "Estado", estado: "pronta" }],
+      );
       yield* fechar;
     }),
   );

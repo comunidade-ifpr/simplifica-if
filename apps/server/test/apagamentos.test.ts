@@ -13,7 +13,6 @@ import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
-import * as Stream from "effect/Stream";
 import * as Servidor from "../src/servidor.ts";
 import {
   bancoFixture,
@@ -24,6 +23,7 @@ import {
   novoRegistro,
   type Registro,
   TOKEN,
+  turnoRpc,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -70,7 +70,7 @@ describe("o que falta apagar fora do banco", () => {
         const rpc = yield* cliente(urlRpc, AUTORIZACAO);
         const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Recusada" });
         const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-        yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(Stream.runDrain);
+        yield* turnoRpc(rpc, sessao, "oi");
         const resultado = yield* rpc["conversa.apagar"]({ sessao });
         assert.strictEqual(resultado.transcricao, "ficou");
         // A conversa já não existe no app; as cópias do Desfazer saíram.

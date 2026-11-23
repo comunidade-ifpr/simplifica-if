@@ -12,7 +12,6 @@ import { afterAll, assert, it, layer } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
-import * as Stream from "effect/Stream";
 import { PASTA_RELATOS } from "../src/PastasTrabalho.ts";
 import { textoDoTurno } from "../src/Relatos.ts";
 import * as Servidor from "../src/servidor.ts";
@@ -24,6 +23,7 @@ import {
   limparTemporarios,
   novoRegistro,
   TOKEN,
+  turnoRpc,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -69,11 +69,11 @@ layer(camada, { excludeTestServices: true })("relato", (it) => {
         pastaTrabalho: pasta,
         tarefa: "verificar-fundamentacao-normativa",
       });
-      yield* rpc["conversa.enviar"]({
+      yield* turnoRpc(
+        rpc,
         sessao,
-        texto:
-          "O estágio? ifpr://norma/br/cne-cp/res/2021/1#art20 e https://www.planalto.gov.br/ccivil_03/leis/l7498.htm.",
-      }).pipe(Stream.runDrain);
+        "O estágio? ifpr://norma/br/cne-cp/res/2021/1#art20 e https://www.planalto.gov.br/ccivil_03/leis/l7498.htm.",
+      );
 
       const rascunho = yield* rpc["relato.preparar"]({ sessao, turno: 1 });
       assert.strictEqual(
@@ -129,7 +129,7 @@ layer(camada, { excludeTestServices: true })("relato", (it) => {
 
       // A conversa com pasta escolhida à mão também salva, em Relatos de erro, com o nome da pasta dela.
       const avulsa = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: fora });
-      yield* rpc["conversa.enviar"]({ sessao: avulsa.sessao, texto: "oi" }).pipe(Stream.runDrain);
+      yield* turnoRpc(rpc, avulsa.sessao, "oi");
       assert.isTrue((yield* rpc["relato.preparar"]({ sessao: avulsa.sessao, turno: 1 })).podeSalvar);
       const daAvulsa = yield* rpc["relato.registrar"]({ ...relato, sessao: avulsa.sessao, via: "arquivo" });
       assert.strictEqual(
