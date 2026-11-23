@@ -603,9 +603,10 @@ describe("ciclo de vida da sessão do provider", () => {
           const pastas = yield* PastasTrabalho.PastasTrabalho;
           return PastasTrabalho.PastasTrabalho.of({
             ...pastas,
-            guardarCopia: (_conversa, turno) =>
+            abrirTurno: (_conversa, turno) =>
               turno === 2 ? Deferred.succeed(comecou, undefined).pipe(Effect.andThen(Effect.never)) : Effect.undefined,
-            descartarCopia: (_conversa, turno) => Effect.sync(() => void descartadas.push(turno)),
+            fecharTurno: (_conversa, turno, _pasta, { chegouAIA }) =>
+              Effect.sync(() => void (chegouAIA ? undefined : descartadas.push(turno))),
           });
         }),
       ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
@@ -700,7 +701,7 @@ describe("ciclo de vida da sessão do provider", () => {
         const pastas = yield* PastasTrabalho.PastasTrabalho;
         return PastasTrabalho.PastasTrabalho.of({
           ...pastas,
-          guardarCopia: (_conversa, turno) =>
+          abrirTurno: (_conversa, turno) =>
             turno === n
               ? Deferred.succeed(comecou, undefined).pipe(
                   Effect.andThen(solta === undefined ? Effect.never : Deferred.await(solta)),
