@@ -328,12 +328,22 @@ describe("migrações do banco das conversas", () => {
       }).pipe(Effect.provide(emMemoria)),
   );
 
-  it.effect("upgrade 4 → 5: a estimativa leva a frase do limite do plano no lugar do nome da janela", () =>
+  it.effect("upgrade 4 → 5: a estimativa leva a frase do limite do plano, e a leitura, a lista de onde nasceu", () =>
     Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
       const revisoes = yield* Revisoes.Revisoes;
       yield* Banco.rodarMigracoes(1);
       yield* popularV1;
       yield* Banco.rodarMigracoes(4);
+      // Preparadas (nenhuma lista as liga): uma do conteúdo e do curso de `lista-pre`, outra de outro curso.
+      yield* sql`
+        INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, plano, estimativa, criada_em, atualizada_em)
+        VALUES
+          ('rev-preparada', '/tmp/Outro.docx', 'hash-2', 'claude', NULL, 'rapido', NULL, NULL, 'preparada', '{}',
+            ${estimativaJson}, '2026-11-20T12:00:00Z', '2026-11-20T12:00:00Z'),
+          ('rev-outro-curso', '/tmp/Outro.docx', 'hash-2', 'claude', NULL, 'rapido', 'tecnico-em-informatica', NULL,
+            'preparada', '{}', ${estimativaJson}, '2026-11-20T12:00:00Z', '2026-11-20T12:00:00Z')
+      `;
 
       const m5 = yield* Banco.rodarMigracoes(5);
       assert.deepStrictEqual(m5, [[5, "RevisaoPpcSemCopias"]]);
@@ -342,6 +352,19 @@ describe("migrações do banco das conversas", () => {
       assert.strictEqual(rev1!.estimativa.limiteDoPlano, "do limite de 5 horas do plano Pro");
       assert.notProperty(rev1!.estimativa, "nomeJanela");
       assert.strictEqual(rev1!.estimativa.tokensEntrada, 1000);
+
+      // A lista de cada leitura: a que a liga ou, na preparada, a do mesmo conteúdo e curso.
+      assert.strictEqual(rev1!.lista, "lista-ia");
+      assert.strictEqual((yield* revisoes.buscar("rev-pausada"))!.lista, "lista-pausada");
+      assert.strictEqual((yield* revisoes.buscar("rev-preparada"))!.lista, "lista-pre");
+      assert.isNull((yield* revisoes.buscar("rev-outro-curso"))!.lista);
+      const colunas = (yield* sql<{ name: string }>`PRAGMA table_info(revisoes_ia)`).map((c) => c.name);
+      assert.notInclude(colunas, "cnct");
+      assert.notInclude(colunas, "forma");
+      // A lista que sai deixa a leitura sem lista, órfã.
+      yield* sql`DELETE FROM listas_pendencias WHERE id = 'lista-pre'`;
+      assert.isNull((yield* revisoes.buscar("rev-preparada"))!.lista);
+      assert.includeMembers([...(yield* revisoes.orfas)], ["rev-preparada", "rev-outro-curso"]);
     }).pipe(Effect.provide(emMemoria)),
   );
 

@@ -344,10 +344,16 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         limiteDoPlano: "do limite de 5 horas",
       };
       const db = new NodeSqlite.DatabaseSync(conversasDesktop);
+      // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
       db.prepare(
-        `INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, plano,
+        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, nonce, resultado,
+          versao, criada_em, atualizada_em)
+         VALUES ('lista-pausada', ?, ?, NULL, '', '[]', 'n', '{}', 0, ?, ?)`,
+      ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
+      db.prepare(
+        `INSERT INTO revisoes_ia (id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, motivo, plano,
           estimativa, criada_em, atualizada_em)
-         VALUES (?, ?, ?, 'claude', NULL, 'rapido', NULL, NULL, 'pausada', 'O app foi fechado.', 'null', ?, ?, ?)`,
+         VALUES (?, 'lista-pausada', ?, ?, 'claude', NULL, 'rapido', 'pausada', 'O app foi fechado.', 'null', ?, ?, ?)`,
       ).run(
         "revisao-pausada",
         arquivo,
@@ -356,12 +362,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         "2026-11-20T10:00:00Z",
         "2026-11-20T10:00:00Z",
       );
-      // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
-      db.prepare(
-        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, nonce, resultado,
-          versao, criada_em, atualizada_em)
-         VALUES ('lista-pausada', ?, ?, 'revisao-pausada', '', '[]', 'n', '{}', 0, ?, ?)`,
-      ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
+      db.prepare(`UPDATE listas_pendencias SET revisao_id = 'revisao-pausada' WHERE id = 'lista-pausada'`).run();
       db.close();
       const recusa = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "revisao-pausada" }));
       assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);

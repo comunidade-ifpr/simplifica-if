@@ -4,6 +4,10 @@
  * - A estimativa de `revisoes_ia` troca `nomeJanela` ("uma janela de 5 horas do plano Pro") pela frase
  *   que a tela mostra, `limiteDoPlano` ("do limite de 5 horas do plano Pro"). A regra que a interface
  *   aplicava ao texto fica copiada aqui, e não importada: a migração não pode mudar junto com o código.
+ * - A leitura com IA nasce da lista viva: `revisoes_ia.lista_id` (`ON DELETE SET NULL`: a leitura da lista
+ *   que saiu fica órfã) no lugar do curso (`cnct`, `forma`), que a lista guarda. A lista de cada leitura
+ *   gravada é a que a liga (`revisao_id`) ou, para a preparada, a que o servidor achava pelo arquivo, pelo
+ *   conteúdo e pelo curso; sem nenhuma, fica nula.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
@@ -38,6 +42,20 @@ const converter = (texto: string, mudar: (valor: unknown) => unknown, onde: stri
 
 export default Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
+
+  yield* sql`ALTER TABLE revisoes_ia ADD COLUMN lista_id TEXT REFERENCES listas_pendencias (id) ON DELETE SET NULL`;
+  yield* sql`
+    UPDATE revisoes_ia SET lista_id = COALESCE(
+      (SELECT l.id FROM listas_pendencias l WHERE l.revisao_id = revisoes_ia.id ORDER BY l.atualizada_em DESC LIMIT 1),
+      (SELECT l.id FROM listas_pendencias l
+        WHERE l.arquivo = revisoes_ia.arquivo AND l.sha256 = revisoes_ia.sha256
+          AND l.cnct IS revisoes_ia.cnct AND l.forma IS revisoes_ia.forma
+        ORDER BY l.atualizada_em DESC LIMIT 1)
+    )
+  `;
+  yield* sql`CREATE INDEX revisoes_ia_lista ON revisoes_ia (lista_id)`;
+  yield* sql`ALTER TABLE revisoes_ia DROP COLUMN cnct`;
+  yield* sql`ALTER TABLE revisoes_ia DROP COLUMN forma`;
 
   const revisoes = yield* sql<{ id: string; estimativa: string }>`SELECT id, estimativa FROM revisoes_ia`;
   for (const revisao of revisoes) {

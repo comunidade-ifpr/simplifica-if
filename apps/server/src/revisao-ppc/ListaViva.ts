@@ -80,7 +80,6 @@ import { MODELO_PADRAO } from "./modelos.ts";
 import {
   chavePendencia,
   estadoDaIa,
-  NOME_DA_FORMA,
   type PendenciaRevisao,
   type ResultadoFichaIa,
   textoDaPendencia,
@@ -93,7 +92,7 @@ import * as RevisorPpc from "./RevisorPpc.ts";
 import { cursoEscolhido, marcasDaCopia, regravarCopia as regravarCopiaDaLista } from "./copia-lista.ts";
 import { criarLista, novoNonce } from "./criar-lista.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
-import { type ContextoDaFicha, contextoDaFicha } from "./preparo.ts";
+import { type ContextoDaFicha, contextoDaFicha, cursoEmTexto } from "./preparo.ts";
 
 export const TEMPO_ACAO = Duration.minutes(4);
 export const LIMITE_MOTIVO = 1500;
@@ -110,8 +109,6 @@ export class ListaViva extends Context.Service<
     readonly ultima: Effect.Effect<ListaPendencias | null>;
     /** Todas as listas guardadas, da mais recente para a mais antiga (as que passaram de `DIAS_LISTA` saem antes). */
     readonly todas: Effect.Effect<ReadonlyArray<ListaPendencias>>;
-    /** A lista mais recente de um arquivo (para continuar uma leitura com IA sem revisar de novo). */
-    readonly doArquivo: (arquivo: string) => Effect.Effect<ListaPendencias | null>;
     /** "Qual é o curso?": a lista refeita com o curso escolhido, com os resultados da IA, se houve. */
     readonly trocarCurso: (
       id: string,
@@ -358,13 +355,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     return { provider, modelo };
   };
 
-  const cursoEmTexto = (r: Listas.RegistroLista) => {
-    const c = r.resultado.curso;
-    return c.cnct
-      ? `${c.cnct.denominacao}${c.forma ? `, forma de oferta ${NOME_DA_FORMA[c.forma] ?? c.forma}` : ", forma de oferta não identificada"}`
-      : null;
-  };
-
   const contextoPara = (
     registro: Listas.RegistroLista,
     ficha: string,
@@ -375,7 +365,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       markdown,
       linhasTextoParaIa: linhas,
       cnct: registro.cnct,
-      curso: cursoEmTexto(registro),
+      curso: cursoEmTexto(registro.resultado.curso),
       ficha,
     }).pipe(
       Effect.provideContext(contextoKb),
@@ -455,13 +445,14 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     return yield* listas.exclusivo(
       Effect.gen(function* () {
         const curso = revisado.revisao.curso;
-        const anteriorId = yield* listas.localizar({
-          arquivo: entrada.arquivo,
-          sha256: revisado.sha256,
-          cnct: curso.cnct?.slug ?? null,
-          forma: curso.forma,
-        });
-        const anterior = anteriorId === null ? null : yield* listas.buscar(anteriorId);
+        // A lista anterior deste conteúdo, com o mesmo curso: a lista nova a substitui e leva a leitura com
+        // IA dela (com outro curso, a leitura não vale para a lista nova).
+        const anteriorId = yield* listas.doConteudo(entrada.arquivo, revisado.sha256);
+        const doConteudo = anteriorId === null ? null : yield* listas.buscar(anteriorId);
+        const anterior =
+          doConteudo !== null && doConteudo.cnct === (curso.cnct?.slug ?? null) && doConteudo.forma === curso.forma
+            ? doConteudo
+            : null;
         if (anterior !== null && anterior.revisao !== null) {
           const rev = yield* revisoes.resumo(anterior.revisao);
           if (rev !== null && rev.situacao === "em_andamento")
@@ -973,13 +964,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     Effect.flatMap((id) => (id === null ? Effect.succeed(null) : lista(id).pipe(Effect.orElseSucceed(() => null)))),
   );
 
-  const doArquivo = (arquivo: string) =>
-    listas
-      .doArquivo(arquivo)
-      .pipe(
-        Effect.flatMap((id) => (id === null ? Effect.succeed(null) : lista(id).pipe(Effect.orElseSucceed(() => null)))),
-      );
-
   // As listas sem uso há mais de `DIAS_LISTA` saem ao subir o servidor (e a cada `ultimaLista`).
   yield* expirar;
 
@@ -1001,9 +985,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       Effect.gen(function* () {
         const registro = yield* listas.buscar(id);
         if (registro === null) return;
-        // A leitura ligada e as do mesmo arquivo e conteúdo (uma lista por arquivo e conteúdo; a preparada
-        // ainda não se ligou): a execução para antes, para não gravar um bloco numa lista que não existe.
-        const leituras = new Set(yield* revisoes.doArquivo(registro.arquivo, registro.sha256));
+        // As leituras da lista e a ligada a ela: a execução para antes, para não gravar um bloco numa lista
+        // que não existe.
+        const leituras = new Set((yield* revisoes.daLista(id)).map((r) => r.id));
         if (registro.revisao !== null) leituras.add(registro.revisao);
         for (const leitura of leituras) yield* leiturasIa.apagar(leitura);
         yield* listas.apagar(id);
@@ -1017,7 +1001,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     lista,
     ultima,
     todas,
-    doArquivo,
     trocarCurso,
     apagar,
     exportarDiscordancias,

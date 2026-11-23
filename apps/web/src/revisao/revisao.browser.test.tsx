@@ -156,8 +156,8 @@ const bloco = (
 
 const pausada = {
   id: "revisao-1",
+  lista: "lista-1",
   arquivoOriginal: "/a/PPC.docx",
-  sha256: "hash-1",
   provider: "claude",
   modelo: "claude-sonnet-5-5",
   modo: "rapido",

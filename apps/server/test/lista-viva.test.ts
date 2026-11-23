@@ -196,10 +196,11 @@ const rpc = Effect.gen(function* () {
 const revisarComIa = (arquivo: string) =>
   Effect.gen(function* () {
     const c = yield* rpc;
-    if ((yield* c["revisaoPpc.listaDoArquivo"]({ arquivo })) === null)
-      yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
+    const id =
+      (yield* c["revisaoPpc.listas"]({})).find((l) => l.arquivoOriginal === arquivo)?.id ??
+      (yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }))).lista!;
     roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-04"]));
-    const preparada = yield* c["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+    const preparada = yield* c["revisaoPpc.prepararIa"]({ lista: id, provider: "claude", modo: "rapido" });
     yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
     const final: EstadoRevisaoIa = (yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
       Stream.filter((e) => e.situacao !== "em_andamento" && e.situacao !== "preparada"),
@@ -883,9 +884,8 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
       assert.isNotNull(mesma.sugestao);
       assert.deepStrictEqual(refeita.uso, uso);
       assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, refeita.id);
-      // A leitura com IA aberta de novo pela lista do arquivo, sem revisar de novo.
-      assert.strictEqual((yield* c["revisaoPpc.listaDoArquivo"]({ arquivo }))!.id, refeita.id);
-      assert.isNull(yield* c["revisaoPpc.listaDoArquivo"]({ arquivo: NodePath.join(pasta, "nenhum.docx") }));
+      // A leitura concluída passou à lista nova.
+      assert.strictEqual((yield* c["revisaoPpc.listarIa"]({})).find((e) => e.id === final.id)!.lista, refeita.id);
     }),
   );
 });
@@ -1142,11 +1142,8 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
             },
             [{ chave: "k1", pendencia: base }],
           );
-          assert.strictEqual(
-            yield* listas.localizar({ arquivo: "/x/PPC.docx", sha256: "abc", cnct: null, forma: null }),
-            "l1",
-          );
-          assert.isNull(yield* listas.localizar({ arquivo: "/x/PPC.docx", sha256: "outro", cnct: null, forma: null }));
+          assert.strictEqual(yield* listas.doConteudo("/x/PPC.docx", "abc"), "l1");
+          assert.isNull(yield* listas.doConteudo("/x/PPC.docx", "outro"));
           yield* listas.mudar(
             "l1",
             "k1",
@@ -1155,13 +1152,12 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           );
           yield* revisoes.criar({
             id: "r1",
+            lista: "l1",
             arquivo: "/x/PPC.docx",
             sha256: "abc",
             provider: "claude",
             modelo: null,
             modo: "rapido",
-            cnct: null,
-            forma: null,
             situacao: "em_andamento",
             plano: {},
             estimativa: {

@@ -247,7 +247,6 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.lista": ({ lista }) => traduzir("revisaoPpc.lista", viva.lista(lista)),
       "revisaoPpc.ultimaLista": () => traduzir("revisaoPpc.ultimaLista", viva.ultima),
       "revisaoPpc.listas": () => traduzir("revisaoPpc.listas", viva.todas),
-      "revisaoPpc.listaDoArquivo": ({ arquivo }) => traduzir("revisaoPpc.listaDoArquivo", viva.doArquivo(arquivo)),
       "revisaoPpc.trocarCurso": ({ lista, cnct, forma }) =>
         traduzir("revisaoPpc.trocarCurso", viva.trocarCurso(lista, cnct, forma)),
       "revisaoPpc.apagarLista": ({ lista }) => traduzir("revisaoPpc.apagarLista", viva.apagar(lista)),

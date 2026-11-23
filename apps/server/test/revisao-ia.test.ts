@@ -209,7 +209,7 @@ const rodar = (arquivo: string) =>
     const { urlRpc } = yield* Servidor.ServidorApp;
     const rpc = yield* cliente(urlRpc, AUTORIZACAO);
     const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-    const preparada = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+    const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
     yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
     const ate = (id: string) =>
       rpc["revisaoPpc.acompanharIa"]({ revisao: id }).pipe(
@@ -443,24 +443,31 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       }),
   );
 
-  it.effect("preparar de novo o mesmo arquivo substitui a preparada; apagar tira a revisão do banco", () =>
-    Effect.gen(function* () {
-      reiniciar();
-      const { urlRpc } = yield* Servidor.ServidorApp;
-      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      const arquivo = gravar("PPC F.docx", ppcSintetico());
-      const primeira = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
-      const segunda = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
-      const ids = (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id);
-      assert.notInclude(ids, primeira.id);
-      assert.include(ids, segunda.id);
-      yield* rpc["revisaoPpc.apagarIa"]({ revisao: segunda.id });
-      assert.notInclude(
-        (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
-        segunda.id,
-      );
-      assert.strictEqual(roteiro.pedidos.length, 0);
-    }),
+  it.effect(
+    "preparar sai do texto da lista, sem o .docx; preparar de novo a mesma lista substitui a preparada; apagar tira a revisão do banco",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { urlRpc } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        const arquivo = gravar("PPC F.docx", ppcSintetico());
+        const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+        // Sem o arquivo no disco: o plano sai do texto e do curso que a lista guarda.
+        NodeFS.rmSync(arquivo);
+        const primeira = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        assert.strictEqual(primeira.lista, pre.lista);
+        assert.isAbove(primeira.blocos.length, 0);
+        const segunda = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        const ids = (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id);
+        assert.notInclude(ids, primeira.id);
+        assert.include(ids, segunda.id);
+        yield* rpc["revisaoPpc.apagarIa"]({ revisao: segunda.id });
+        assert.notInclude(
+          (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
+          segunda.id,
+        );
+        assert.strictEqual(roteiro.pedidos.length, 0);
+      }),
   );
 
   it.effect("transversais: o trecho tem de estar no PPC entregue, não no resumo do tema escrito pela IA", () =>
@@ -495,7 +502,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         const { rpc, pre, preparada, final } = yield* rodar(arquivo);
         assert.strictEqual(final.situacao, "pausada");
         // Outra leitura do mesmo PPC não começa enquanto esta está por terminar.
-        const outra = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+        const outra = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
         const recusa = yield* rpc["revisaoPpc.iniciarIa"]({ revisao: outra.id }).pipe(Effect.flip);
         assert.include(recusa.message, "Já há uma conferência com IA deste PPC por terminar");
         // "Encerrar leitura por aqui": a revisão sai; a lista, a mesma, fica com o que foi lido.
@@ -564,7 +571,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("PPC L.docx", ppcSintetico());
       const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
       yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
       yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
         // Com a IA já respondendo (a sessão do provider aberta), não só à espera da vez.
@@ -579,7 +586,10 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
         preparada.id,
       );
-      assert.isNull(yield* rpc["revisaoPpc.listaDoArquivo"]({ arquivo }));
+      assert.notInclude(
+        (yield* rpc["revisaoPpc.listas"]({})).map((l) => l.id),
+        pre.lista!,
+      );
     }),
   );
 
@@ -599,7 +609,10 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       );
       const recusa = yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id }).pipe(Effect.flip);
       assert.include(recusa.message, "não existe mais");
-      assert.isNull(yield* rpc["revisaoPpc.listaDoArquivo"]({ arquivo: final.arquivoOriginal }));
+      assert.notInclude(
+        (yield* rpc["revisaoPpc.listas"]({})).map((l) => l.id),
+        pre.lista!,
+      );
     }),
   );
 });
@@ -639,7 +652,11 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         const rpc = yield* cliente(urlRpc, AUTORIZACAO);
         const arquivo = gravar("PPC paralelo.docx", ppcSintetico());
         const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-        const preparada = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+        const preparada = yield* rpc["revisaoPpc.prepararIa"]({
+          lista: pre.lista!,
+          provider: "claude",
+          modo: "rapido",
+        });
         yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
         const bloco = (e: EstadoRevisaoIa, id: string) => e.blocos.find((b) => b.id === id)!;
         // O irmão recebendo texto, depois de o outro bloco cair.
@@ -697,8 +714,8 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("PPC apagar.docx", ppcSintetico());
-      yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+      const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
       const inscrito = yield* Deferred.make<void>();
       const fibra = yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
         Stream.tap(() => Deferred.succeed(inscrito, undefined)),
@@ -723,8 +740,8 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("PPC dois erros.docx", ppcSintetico());
-      yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+      const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
       yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
       // Espera o primeiro (s-02-1) falhar antes de soltar o irmão (s-01-1).
       yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(

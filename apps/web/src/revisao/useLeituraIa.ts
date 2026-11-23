@@ -2,11 +2,12 @@
  * A leitura com IA do resultado aberto (`revisaoPpc.prepararIa`, `iniciarIa`, `pausarIa`,
  * `acompanharIa`), como a faixa da IA a usa:
  *
- * - ao abrir o resultado, retoma a leitura do mesmo arquivo que ficou por terminar (em andamento ou
- *   pausada); senão, estima sozinha com a IA padrão (a primeira pronta que a pessoa não desligou em
- *   Configurações) e o escopo menor, e estima de novo a cada opção trocada;
- * - a estimativa anterior, nunca começada, é apagada no servidor (ela guarda o texto do PPC), e a última
- *   também, quando a tela fecha sem começar;
+ * - ao abrir a lista, retoma a leitura dela que ficou por terminar (em andamento ou pausada); senão,
+ *   estima sozinha com a IA padrão (a primeira pronta que a pessoa não desligou em Configurações) e o
+ *   escopo menor, e estima de novo a cada opção trocada; o servidor substitui a estimativa anterior da
+ *   mesma lista;
+ * - a lista trocada ("Qual é o curso?" dá outra lista) ou com outro conteúdo ("Enviar a versão
+ *   corrigida") recomeça a faixa: a leitura dela, se houver, ou outra estimativa;
  * - no fim, entrega o estado concluído a quem abriu (os blocos já entram na mesma lista, um a um);
  * - pausada com algum tema lido, "Encerrar leitura por aqui" apaga a revisão (a lista fica com o que
  *   foi lido) e avisa quem abriu, que recarrega a lista;
@@ -57,20 +58,19 @@ const ehAvisoNaoAceito = (erro: unknown) =>
   typeof erro === "object" && erro !== null && (erro as { readonly _tag?: unknown })._tag === "AvisoNaoAceito";
 
 export function useLeituraIa({
+  lista,
   arquivo,
   sha256,
-  cnct,
-  forma,
   ativa,
   aoConcluir,
   aoEncerrar,
 }: {
+  /** A lista viva que a leitura confere. */
+  readonly lista: string;
+  /** O arquivo da lista, para escolhê-lo de novo quando o servidor pede. */
   readonly arquivo: string;
-  /** Conteúdo do arquivo da lista: só retoma leitura pausada da mesma versão do `.docx`. */
+  /** O conteúdo da lista: com outro, a estimativa feita sobre o anterior não vale mais. */
   readonly sha256: string;
-  /** O curso escolhido pela pessoa ("Qual é o curso?"), que a leitura usa no lugar do documento. */
-  readonly cnct: string | undefined;
-  readonly forma: string | undefined;
   /** A faixa aparece: a leitura com IA ainda não leu tudo (nenhuma ou parcial). */
   readonly ativa: boolean;
   readonly aoConcluir: (estado: EstadoRevisaoIa) => void;
@@ -84,7 +84,8 @@ export function useLeituraIa({
   const provider = escolhido ?? usaveis[0] ?? PROVIDERS[0]!;
   const [modo, setModo] = useState<ModoRevisaoIa>("rapido");
   const [estado, setEstado] = useState<EstadoRevisaoIa | undefined>(undefined);
-  const [procurou, setProcurou] = useState(false);
+  /** A lista (e o conteúdo) em que a procura pela leitura por terminar já acabou. */
+  const [procurada, setProcurada] = useState<string | undefined>(undefined);
   const [estimando, setEstimando] = useState(false);
   const [ocupada, setOcupada] = useState(false);
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
@@ -93,8 +94,6 @@ export function useLeituraIa({
   /** A ação que falhou por falta do arquivo, para repetir depois de escolhê-lo de novo. */
   const [refazer, setRefazer] = useState<(() => void) | undefined>(undefined);
   const acompanhamento = useRef<Acompanhamento | undefined>(undefined);
-  /** A estimativa ainda não começada, que sai do servidor quando outra a substitui ou a tela fecha. */
-  const preparada = useRef<string | undefined>(undefined);
   const situacao = useRef<EstadoRevisaoIa["situacao"] | undefined>(undefined);
   const concluir = useRef(aoConcluir);
   const encerrada = useRef(aoEncerrar);
@@ -107,12 +106,6 @@ export function useLeituraIa({
     situacao.current = novo?.situacao;
     setEstado(novo);
   };
-  const descartarPreparada = () => {
-    const id = preparada.current;
-    preparada.current = undefined;
-    if (id !== undefined) void api.chamar((c) => c["revisaoPpc.apagarIa"]({ revisao: id })).catch(() => undefined);
-  };
-
   const acompanhar = (id: string) => {
     acompanhamento.current?.cancelar();
     acompanhamento.current = api.acompanhar(
@@ -125,41 +118,42 @@ export function useLeituraIa({
     acompanhamento.current.fim.catch((motivo: unknown) => setErro(explicarErro(motivo)));
   };
 
-  useEffect(
-    () => () => {
-      acompanhamento.current?.cancelar();
-      descartarPreparada();
-    },
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- só ao desmontar
-    [],
-  );
+  useEffect(() => () => acompanhamento.current?.cancelar(), []);
 
-  // Uma leitura deste arquivo que ficou por terminar volta à faixa, com a IA e o escopo dela.
+  // A faixa recomeça a cada lista ou conteúdo: a leitura da lista que ficou por terminar volta, com a IA
+  // e o escopo dela.
+  const chave = `${lista}:${sha256}`;
   useEffect(() => {
     if (!ativa) return;
     let vivo = true;
+    acompanhamento.current?.cancelar();
     api
       .chamar((c) => c["revisaoPpc.listarIa"]({}))
-      .then((lista) => {
-        if (!vivo) return;
-        const achada = leiturasPorTerminar(lista).find((e) => e.arquivoOriginal === arquivo && e.sha256 === sha256);
-        if (achada !== undefined) {
-          setEscolhido(achada.provider);
-          setModo(achada.modo);
+      .then(
+        (leituras) => {
+          if (!vivo) return;
+          // A leitura (ou a estimativa) da lista ou do conteúdo anterior sai da faixa.
+          const achada = leiturasPorTerminar(leituras).find((e) => e.lista === lista);
+          setErro(undefined);
           trocar(achada);
-          acompanhar(achada.id);
-        }
-      })
-      .catch(() => undefined)
-      .finally(() => vivo && setProcurou(true));
+          if (achada !== undefined) {
+            setEscolhido(achada.provider);
+            setModo(achada.modo);
+            acompanhar(achada.id);
+          }
+        },
+        () => vivo && trocar(undefined),
+      )
+      .finally(() => vivo && setProcurada(chave));
     return () => {
       vivo = false;
     };
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- uma vez por arquivo e versão
-  }, [api, arquivo, sha256, ativa]);
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- uma vez por lista e conteúdo
+  }, [api, chave, ativa]);
 
   // A estimativa, sozinha, ao abrir e a cada opção trocada (só antes de começar).
   const semIa = prontas !== undefined && usaveis.length === 0;
+  const procurou = procurada === chave;
   const podeEstimar = ativa && procurou && prontas !== undefined && !semIa;
   // A `tentativa` muda a cada "Tentar de novo" (e só dispara outra estimativa).
   useEffect(() => {
@@ -170,24 +164,11 @@ export function useLeituraIa({
     setEstimando(true);
     setErro(undefined);
     api
-      .chamar((c) =>
-        c["revisaoPpc.prepararIa"]({
-          arquivo,
-          provider,
-          modo,
-          ...(cnct === undefined ? {} : { cnct }),
-          ...(forma === undefined ? {} : { forma }),
-        }),
-      )
+      .chamar((c) => c["revisaoPpc.prepararIa"]({ lista, provider, modo }))
       .then(
         (novo) => {
-          // A estimativa de opções que já mudaram não vale mais: sai do servidor.
-          if (!vivo)
-            return void api.chamar((c) => c["revisaoPpc.apagarIa"]({ revisao: novo.id })).catch(() => undefined);
-          const anterior = preparada.current;
-          preparada.current = novo.id;
-          if (anterior !== undefined)
-            void api.chamar((c) => c["revisaoPpc.apagarIa"]({ revisao: anterior })).catch(() => undefined);
+          // A de opções que já mudaram não vale mais; o servidor a substitui pela seguinte.
+          if (!vivo) return;
           setAvisoPendente(false);
           situacao.current = novo.situacao;
           setEstado(novo);
@@ -203,7 +184,7 @@ export function useLeituraIa({
     return () => {
       vivo = false;
     };
-  }, [api, podeEstimar, arquivo, provider, modo, cnct, forma, tentativa]);
+  }, [api, podeEstimar, lista, provider, modo, tentativa]);
 
   const chamar = async (
     acao: () => Promise<EstadoRevisaoIa>,
@@ -243,8 +224,6 @@ export function useLeituraIa({
   const iniciar = () => {
     if (estado === undefined) return;
     const id = estado.id;
-    // Começada, a estimativa deixa de ser descartável.
-    if (preparada.current === id) preparada.current = undefined;
     void chamar(
       () => api.chamar((c) => c["revisaoPpc.iniciarIa"]({ revisao: id })),
       () => acompanhar(id),

@@ -80,8 +80,8 @@ export function Entrada({
   const continuar = async (leitura: EstadoRevisaoIa) => {
     setFalha(undefined);
     try {
-      const lista = await api.chamar((c) => c["revisaoPpc.listaDoArquivo"]({ arquivo: leitura.arquivoOriginal }));
-      if (lista !== null) return aoAbrirLista(lista);
+      const id = leitura.lista;
+      if (id !== null) return aoAbrirLista(await api.chamar((c) => c["revisaoPpc.lista"]({ lista: id })));
       setFalha({
         texto: `A lista de “${nomeDoArquivo(leitura.arquivoOriginal)}” não está mais neste computador. Escolha o arquivo de novo para revisá-lo.`,
       });
@@ -90,11 +90,8 @@ export function Entrada({
     }
   };
 
-  const leituraDa = (lista: ListaPendencias) =>
-    porTerminar.find((e) => e.arquivoOriginal === lista.arquivoOriginal && e.sha256 === lista.sha256);
-  const outras = porTerminar.filter(
-    (e) => !listas.some((l) => l.arquivoOriginal === e.arquivoOriginal && l.sha256 === e.sha256),
-  );
+  const leituraDa = (lista: ListaPendencias) => porTerminar.find((e) => e.lista === lista.id);
+  const outras = porTerminar.filter((e) => !listas.some((l) => l.id === e.lista));
   const apagou = useRef(false);
   const selecao = useSelecao(listas.map((l) => l.id));
 
