@@ -211,6 +211,9 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
             .map((p) => ({ ppc: p.ppc, nome: p.curso, campus: p.campus, link: linkPpc(p.ppc) })),
         },
         fichas,
+        outros_arquivos: resultado.arquivos
+          .filter((a) => a.categoria !== "ficha")
+          .map((a) => ({ arquivo: a.arquivo, papel: a.motivos.join(", "), dispositivos: a.dispositivos })),
         topicos: resultado.topicos_atingidos,
       },
       { avisos },

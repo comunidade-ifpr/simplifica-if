@@ -136,6 +136,8 @@ export const Relacao = Schema.Struct({
   alvo_dispositivo: Schema.NullOr(Schema.String),
   /** Parte do alvo atingida, quando descrita em texto. */
   alcance: Schema.NullOr(Schema.String),
+  /** Quando a relação produz efeito: `vigencia-da-origem` ou uma data AAAA-MM-DD. */
+  efeito_de: Schema.String,
   evidencia: Schema.Struct({ em: Schema.String, trecho: Schema.String }),
   confirmado_em: Schema.NullOr(Schema.String),
   nota: Schema.NullOr(Schema.String),
@@ -149,6 +151,8 @@ export const DispositivoTexto = Schema.Struct({
   tipo: Schema.String,
   /** Caput herdado, do mais alto ao mais próximo. */
   caput: Schema.Array(Schema.String),
+  /** Divisões em que o dispositivo está (`CAPÍTULO V`, título do capítulo…), da mais alta à mais próxima. */
+  estrutura: Schema.Array(Schema.String),
   texto: Schema.String,
   subordinados: Schema.Array(Schema.Struct({ id: Schema.String, rotulo: Schema.String, texto: Schema.String })),
   revogado: Schema.Boolean,

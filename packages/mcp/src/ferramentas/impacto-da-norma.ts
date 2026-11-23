@@ -1,8 +1,7 @@
 /**
- * Ferramenta 7, `impacto_da_norma`: o que uma norma atinge na base, por `Impacto.daNorma` (a regra de
- * `kb impacto`): relações, sucessoras, transições, normas que a citam, fichas da revisão de PPC,
- * tópicos e PPCs. Os outros arquivos das skills ficam na CLI (servem à curadoria); a lista completa
- * de PPCs vem de `citacoes_da_norma`.
+ * Ferramenta 7, `impacto_da_norma`: o que uma norma atinge na base, por `Impacto.daNorma`: relações, sucessoras, transições, normas que a citam, fichas da revisão de PPC,
+ * outros textos da revisão de PPC (marcos normativos, taxonomia), tópicos e PPCs. A lista completa de
+ * PPCs vem de `citacoes_da_norma`.
  */
 import * as Schema from "effect/Schema";
 import { EsquemaLink, NormaResumo, Relacao, TransicaoResumo } from "../contratos.ts";
@@ -54,6 +53,15 @@ export const Dados = Schema.Struct({
       link: EsquemaLink,
     }),
   ),
+  /** Outros textos da revisão de PPC que citam a norma (os marcos normativos, a taxonomia dos tópicos). */
+  outros_arquivos: Schema.Array(
+    Schema.Struct({
+      /** Caminho relativo à raiz do repositório. */
+      arquivo: Schema.String,
+      papel: Schema.String,
+      dispositivos: Schema.Array(Schema.String),
+    }),
+  ),
   topicos: Schema.Array(Schema.String),
 });
 
@@ -91,6 +99,14 @@ export const impactoDaNorma = definirFerramenta({
         ),
         3500,
         "fichas (lista completa no JSON)",
+      ),
+      lista(
+        "Outros textos da revisão de PPC que a citam",
+        d.outros_arquivos.map(
+          (a) => `- \`${a.arquivo}\` — ${a.papel}${a.dispositivos.length ? ` (${a.dispositivos.join(", ")})` : ""}`,
+        ),
+        500,
+        "textos",
       ),
       `Tópicos atingidos: ${d.topicos.length ? d.topicos.map((t) => `\`${t}\``).join(", ") : "nenhum"}.`,
     ].join("\n\n");

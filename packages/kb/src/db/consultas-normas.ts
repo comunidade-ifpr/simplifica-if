@@ -126,6 +126,8 @@ export interface TrechoDispositivo {
   rotulo: string;
   /** Textos dos ancestrais, do artigo até o pai. */
   caput: string[];
+  /** Divisões estruturais em que o dispositivo está (`CAPÍTULO V`…). */
+  estrutura: string[];
   /** Texto do próprio dispositivo, com o rótulo. */
   texto: string;
   /** Incisos, alíneas, parágrafos… do dispositivo, em ordem (só com `subordinados`). */
@@ -150,6 +152,7 @@ export const paraTrecho = Effect.fn("consultasNormas.paraTrecho")(function* (
     tipo: d.disp.tipo,
     rotulo: d.disp.rotulo,
     caput: d.disp.caput,
+    estrutura: d.disp.estrutura,
     texto: d.disp.texto,
     subordinados: filhos.map((f) => ({ id: f.disp.id, texto: f.disp.texto })),
     notas: d.disp.notas,
@@ -506,7 +509,7 @@ export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalh
       if (opcoes.vigentes && (yield* atoForaDeVigencia(norma.id, data))) {
         avisos.push(
           `${norma.id} (citada) não está vigente em ${data} (${norma.status_vigencia ?? "sem status"}); ` +
-            `sem --vigentes ela volta, e \`kb vigencia ${norma.id}\` mostra as regras de transição`,
+            `sem vigentes ela volta, e a ficha da norma (ficha_norma, \`kb ficha-norma ${norma.id}\`) mostra as regras de transição`,
         );
         return vazia();
       }

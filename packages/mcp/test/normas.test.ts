@@ -2,7 +2,7 @@
 /**
  * Ferramentas de normas (T2) sobre a fixture: contrato (entradas válidas e inválidas, saída no
  * `outputSchema`), determinismo, orçamento (teto do texto, paginação completa e sem repetição) e
- * a chamada pelo protocolo. A paridade com a CLI sobre o banco real está em `transversal/paridade.ts`.
+ * a chamada pelo protocolo.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -391,7 +391,10 @@ describe("ficha_norma", () => {
           aplica_a: "Cursos técnicos autorizados e em oferta.",
           regra: expect.stringMatching(/^Período de transição de até dois anos/),
           situacao_na_data: "em-curso",
+          inicio: "vigencia",
+          fim: "P2Y",
           inicio_em: "2026-11-12",
+          inicio_minimo: "2026-11-12",
           fim_em: "2028-11-12",
           evidencia: "é assegurado período de transição de até dois anos",
           link: `ifpr://norma/${DCN_2026}#art71`,

@@ -1,7 +1,7 @@
 /**
- * Ferramenta 3, `ficha_norma`: a situação de uma norma numa data, composta de `kb vigencia`
- * (`Normas.vigencia`: status, eventos, pendências e transições), `kb relacoes`
- * (`Normas.relacoes`) e das sucessoras de `kb impacto` (`Normas.sucessoras`).
+ * Ferramenta 3, `ficha_norma`: a situação de uma norma numa data, composta de `Normas.vigencia`
+ * (status, eventos, pendências e transições, com as regras de início e fim de cada uma),
+ * `Normas.relacoes` e `Normas.sucessoras`.
  */
 import * as Schema from "effect/Schema";
 import { UrlOficial } from "@simplifica-if/kb/normas/fonte";
@@ -18,6 +18,24 @@ export const TETO_FICHA_NORMA = 12_000;
 const ATOS_ANOTADOS = 10;
 /** Evidência das relações no texto; o JSON traz o trecho inteiro. */
 const TRECHO_RELACAO = 200;
+
+/** Duração ISO da regra de transição em português: `P2Y` → "2 anos". */
+function duracaoBr(duracao: string): string {
+  const m = /^P(\d+)([YMD])$/.exec(duracao);
+  if (!m) return duracao;
+  const n = Number(m[1]);
+  const [um, varios] = { Y: ["ano", "anos"], M: ["mês", "meses"], D: ["dia", "dias"] }[m[2] as "Y" | "M" | "D"];
+  return `${n} ${n === 1 ? um : varios}`;
+}
+
+/** O fim de uma transição sem data calculada: a regra (prazo a partir do marco) ou "sem prazo". */
+function fimSemData(inicio: string, fim: string): string {
+  if (fim === "sem-prazo") return "sem prazo";
+  if (!fim.startsWith("P")) return `fim ${dataBr(fim)}`;
+  const marco =
+    inicio === "vigencia" ? "da vigência" : inicio === "publicacao" ? "da publicação" : `de ${dataBr(inicio)}`;
+  return `fim ${duracaoBr(fim)} a partir ${marco} (data a confirmar)`;
+}
 
 export const Entrada = Schema.Struct({
   id: esquemaIdNorma('ID canônico da norma, como "br/cne-cp/res/2021/1"'),
@@ -101,7 +119,13 @@ export const Dados = Schema.Struct({
       aplica_a: Schema.String,
       regra: Schema.String,
       situacao_na_data: Schema.String,
+      /** Marco do início: `vigencia` ou `publicacao` da norma que estabelece a regra, ou uma data. */
+      inicio: Schema.String,
+      /** Fim: duração ISO a partir do início (`P2Y`, `P180D`), data, ou `sem-prazo`. */
+      fim: Schema.String,
       inicio_em: Schema.NullOr(Schema.String),
+      /** Quando o início está a confirmar: o mais cedo em que ele pode cair. */
+      inicio_minimo: Schema.NullOr(Schema.String),
       fim_em: Schema.NullOr(Schema.String),
       evidencia: Schema.String,
       link: EsquemaLink,
@@ -173,8 +197,10 @@ export const fichaNorma = definirFerramenta({
           "**Regras de transição:**",
           ...transicoes.map((t) => {
             const prazo = [
-              t.inicio_em ? `início ${dataBr(t.inicio_em)}` : "início a confirmar",
-              t.fim_em ? `fim ${dataBr(t.fim_em)}` : null,
+              t.inicio_em
+                ? `início ${dataBr(t.inicio_em)}`
+                : `início a confirmar${t.inicio_minimo ? ` (não antes de ${dataBr(t.inicio_minimo)})` : ""}`,
+              t.fim_em ? `fim ${dataBr(t.fim_em)}` : fimSemData(t.inicio, t.fim),
             ]
               .filter(Boolean)
               .join(", ");

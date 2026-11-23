@@ -2,7 +2,7 @@
 /**
  * Ferramentas de PPCs e cursos (T3) sobre a fixture ampliada: contrato (entradas válidas e inválidas,
  * saída no outputSchema), conteúdo, avisos, determinismo, orçamento do texto e paginação completa e
- * sem repetição. A paridade com a CLI sobre a base real fica em `transversal/paridade.ts`.
+ * sem repetição.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -337,6 +337,7 @@ describe("impacto_da_norma", () => {
           alvo: "br/cne-cp/res/2021/1",
           alvo_dispositivo: null,
           alcance: null,
+          efeito_de: "vigencia-da-origem",
           evidencia: {
             em: "br/cne-cp/res/2026/2#art74-ii",
             trecho: "a Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
