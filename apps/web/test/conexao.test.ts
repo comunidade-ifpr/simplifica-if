@@ -10,15 +10,17 @@ import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
+import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as SubscriptionRef from "effect/SubscriptionRef";
-import { FetchHttpClient } from "effect/http";
+import * as TestClock from "effect/testing/TestClock";
+import { FetchHttpClient, HttpClient } from "effect/http";
 import * as Socket from "effect/socket/Socket";
 import * as Servidor from "@simplifica-if/server";
 import * as Conexao from "../src/conexao/Conexao.ts";
-import { comprarIngresso, urlRpc } from "../src/conexao/ingresso.ts";
+import { comprarIngresso, PRAZO_INGRESSO, urlRpc } from "../src/conexao/ingresso.ts";
 import { layerServidor, limparTemporarios, TOKEN, urlServidor } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -32,6 +34,26 @@ const esperarFase = (conexao: Conexao.Conexao["Service"], fase: Conexao.EstadoCo
     Stream.runHead,
     Effect.timeout(PRAZO),
   );
+
+describe("comprarIngresso", () => {
+  it.effect("sem resposta no prazo, falha como indisponível (e o laço tenta de novo)", () =>
+    Effect.gen(function* () {
+      const compra = yield* Effect.forkChild(
+        Effect.flip(comprarIngresso({ urlServidor: "http://127.0.0.1:1", token: TOKEN })),
+      );
+      yield* TestClock.adjust(PRAZO_INGRESSO);
+      const falha = yield* Fiber.join(compra);
+      assert.strictEqual(falha.motivo, "indisponivel");
+    }).pipe(
+      Effect.provide(
+        Layer.succeed(
+          HttpClient.HttpClient,
+          HttpClient.make(() => Effect.never),
+        ),
+      ),
+    ),
+  );
+});
 
 describe("urlRpc", () => {
   it("monta o WebSocket do RPC com o ingresso na URL", () => {

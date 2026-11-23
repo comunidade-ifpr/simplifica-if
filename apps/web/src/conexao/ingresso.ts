@@ -4,6 +4,7 @@
  * e abre `ws://127.0.0.1:<porta>/rpc?ingresso=…`. Cada conexão, e cada reconexão, compra um ingresso
  * novo; o token nunca vai numa URL. Ver `apps/server/src/Autenticacao.ts`.
  */
+import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
@@ -83,24 +84,37 @@ export function detalheFalha(motivo: MotivoFalha): string {
 
 const decodificarIngresso = HttpClientResponse.schemaBodyJson(Ingresso);
 
+/**
+ * Quanto a compra do ingresso pode levar. O servidor abre a porta antes de registrar o handler HTTP: um
+ * pedido que chega nesse intervalo (o servidor reiniciando na mesma porta) é aceito e nunca respondido.
+ */
+export const PRAZO_INGRESSO = Duration.seconds(5);
+
 /** Compra um ingresso com o token: `POST <urlServidor>/ingresso`. */
-export const comprarIngresso = Effect.fn("Ingresso.comprar")(function* (credenciais: CredenciaisServidor) {
-  const cliente = yield* HttpClient.HttpClient;
-  const pedido = HttpClientRequest.post(`${credenciais.urlServidor}${CAMINHO_INGRESSO}`).pipe(
-    HttpClientRequest.bearerToken(credenciais.token),
-  );
-  const resposta = yield* cliente
-    .execute(pedido)
-    .pipe(Effect.mapError((erro) => new FalhaConexao({ motivo: "indisponivel", detalhe: erro.message })));
-  if (resposta.status === 401) return yield* new FalhaConexao({ motivo: "token-recusado" });
-  if (resposta.status === 403) return yield* new FalhaConexao({ motivo: "origem-recusada" });
-  if (resposta.status !== 200) {
-    return yield* new FalhaConexao({ motivo: "resposta-invalida", detalhe: `status ${resposta.status}` });
-  }
-  return yield* decodificarIngresso(resposta).pipe(
-    Effect.mapError((erro) => new FalhaConexao({ motivo: "resposta-invalida", detalhe: erro.message })),
-  );
-});
+export const comprarIngresso = Effect.fn("Ingresso.comprar")(
+  function* (credenciais: CredenciaisServidor) {
+    const cliente = yield* HttpClient.HttpClient;
+    const pedido = HttpClientRequest.post(`${credenciais.urlServidor}${CAMINHO_INGRESSO}`).pipe(
+      HttpClientRequest.bearerToken(credenciais.token),
+    );
+    const resposta = yield* cliente
+      .execute(pedido)
+      .pipe(Effect.mapError((erro) => new FalhaConexao({ motivo: "indisponivel", detalhe: erro.message })));
+    if (resposta.status === 401) return yield* new FalhaConexao({ motivo: "token-recusado" });
+    if (resposta.status === 403) return yield* new FalhaConexao({ motivo: "origem-recusada" });
+    if (resposta.status !== 200) {
+      return yield* new FalhaConexao({ motivo: "resposta-invalida", detalhe: `status ${resposta.status}` });
+    }
+    return yield* decodificarIngresso(resposta).pipe(
+      Effect.mapError((erro) => new FalhaConexao({ motivo: "resposta-invalida", detalhe: erro.message })),
+    );
+  },
+  Effect.timeoutOrElse({
+    duration: PRAZO_INGRESSO,
+    orElse: () =>
+      Effect.fail(new FalhaConexao({ motivo: "indisponivel", detalhe: "o POST /ingresso não respondeu no prazo" })),
+  }),
+);
 
 /** A URL do WebSocket do RPC com o ingresso: `ws://127.0.0.1:<porta>/rpc?ingresso=…`. */
 export function urlRpc(urlServidor: string, ingresso: string): string {
