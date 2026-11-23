@@ -182,6 +182,20 @@ describe("front matter gerado", () => {
       '---\nid: x\nstatus_vigencia: "alterada"\nfonte_url: "https://u"\nfonte_referencia: "r"\nvigencia_calculada_em: "2026-11-13"\nalterada_por:\n  - "C (art. 1º)"\nrelaciona_se_a:\n  - "B"\n---\n\n## Resumo\n',
     );
   });
+
+  test("sem status_vigencia (norma nova), a primeira reescrita já é a final", () => {
+    const texto = '---\nid: x\nfonte_url: "https://u"\nrelaciona_se_a:\n  - "B"\n---\n\nTexto.\n';
+    const campos = new Map<string, string | string[]>([
+      ["status_vigencia", "vigente"],
+      ["vigencia_calculada_em", "2026-11-13"],
+      ["revoga", ["A"]],
+    ]);
+    const uma = reescreverFrontMatter(texto, campos);
+    expect(uma).toBe(
+      '---\nid: x\nfonte_url: "https://u"\nstatus_vigencia: "vigente"\nvigencia_calculada_em: "2026-11-13"\nrevoga:\n  - "A"\nrelaciona_se_a:\n  - "B"\n---\n\nTexto.\n',
+    );
+    expect(reescreverFrontMatter(uma, campos)).toBe(uma);
+  });
 });
 
 describe("correspondência 1/2021 → 2/2026", () => {

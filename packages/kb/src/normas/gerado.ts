@@ -59,8 +59,8 @@ function linhasCampo(campo: string, valor: ValorGerado): string[] {
 
 /**
  * Reescreve os campos gerados no front matter: remove os blocos existentes desses campos e insere
- * os novos. `status_vigencia` fica onde estava; os demais vão logo depois de `fonte_url` ou `fonte_referencia` (ou no fim do
- * front matter). O restante do arquivo não muda.
+ * os novos. `status_vigencia` fica onde estava (ausente, entra logo antes dos demais); os demais vão logo depois de
+ * `fonte_url` ou `fonte_referencia` (ou no fim do front matter). O restante do arquivo não muda.
  */
 export function reescreverFrontMatter(texto: string, campos: Map<string, ValorGerado>): string {
   if (campos.size === 0) return texto;
@@ -91,7 +91,8 @@ export function reescreverFrontMatter(texto: string, campos: Map<string, ValorGe
   const inserirDemais = posFonte === -1 ? saida.length : posFonte;
   saida.splice(inserirDemais, 0, ...demais);
   if (status !== undefined) {
-    const pos = posStatus === -1 ? saida.length : posStatus <= inserirDemais ? posStatus : posStatus + demais.length;
+    // sem status (norma nova), ele entra antes dos demais: é onde a reescrita seguinte o deixa
+    const pos = posStatus === -1 ? inserirDemais : posStatus <= inserirDemais ? posStatus : posStatus + demais.length;
     saida.splice(pos, 0, ...linhasCampo("status_vigencia", status));
   }
   return `---\n${saida.join("\n")}\n${texto.slice(fim + 1)}`;
