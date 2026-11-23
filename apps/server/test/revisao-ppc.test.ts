@@ -130,7 +130,8 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       });
       assert.strictEqual(resultado.conferidos, 12);
       assert.strictEqual(resultado.dataBase, "2026-11-13");
-      const aee = resultado.pendencias.find((p) => p.ficha === "CT-CURR-22");
+      const lista = yield* rpc["revisaoPpc.lista"]({ lista: resultado.lista! });
+      const aee = lista.pendencias.find((v) => v.pendencia.ficha === "CT-CURR-22")?.pendencia;
       assert.strictEqual(aee?.noDocumento, "no-trecho");
 
       // As etapas da leitura, na ordem em que começam, antes do resultado.
@@ -188,7 +189,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       const depois = yield* revisarAteOFim(
         rpc["revisaoPpc.revisar"]({ arquivo: gravar("depois.docx", ppcSintetico()) }),
       );
-      assert.isAbove(depois.pendencias.length, 0);
+      assert.strictEqual(depois.conferidos, 12);
     }),
   );
 });
@@ -230,7 +231,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
           Effect.flatMap((revisor) => revisor.revisar({ arquivo })),
           Effect.provide(RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao))),
         );
-        assert.isAbove(ok.pendencias.length, 0);
+        assert.strictEqual(ok.conferidos, 12);
       }),
     60_000,
   );
@@ -316,7 +317,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}` })).status, 204);
 
       const resultado = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      assert.isAbove(resultado.pendencias.length, 0);
+      assert.strictEqual(resultado.conferidos, 12);
       // Outro arquivo da mesma pasta continua recusado.
       const outro = gravar("outro.docx", ppcSintetico());
       assert.match(
@@ -341,13 +342,19 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         minutos: 1,
         custoUsd: null,
         percentualJanela: 1,
-        nomeJanela: "uma janela de 5 horas",
+        limiteDoPlano: "do limite de 5 horas",
       };
       const db = new NodeSqlite.DatabaseSync(conversasDesktop);
+      // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
       db.prepare(
-        `INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, plano,
+        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, nonce, resultado,
+          versao, criada_em, atualizada_em)
+         VALUES ('lista-pausada', ?, ?, NULL, '', '[]', 'n', '{}', 0, ?, ?)`,
+      ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
+      db.prepare(
+        `INSERT INTO revisoes_ia (id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, motivo, plano,
           estimativa, criada_em, atualizada_em)
-         VALUES (?, ?, ?, 'claude', NULL, 'rapido', NULL, NULL, 'pausada', 'O app foi fechado.', 'null', ?, ?, ?)`,
+         VALUES (?, 'lista-pausada', ?, ?, 'claude', NULL, 'rapido', 'pausada', 'O app foi fechado.', 'null', ?, ?, ?)`,
       ).run(
         "revisao-pausada",
         arquivo,
@@ -356,12 +363,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         "2026-11-20T10:00:00Z",
         "2026-11-20T10:00:00Z",
       );
-      // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
-      db.prepare(
-        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, nonce, resultado,
-          versao, criada_em, atualizada_em)
-         VALUES ('lista-pausada', ?, ?, 'revisao-pausada', '', '[]', 'n', '{}', 0, ?, ?)`,
-      ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
+      db.prepare(`UPDATE listas_pendencias SET revisao_id = 'revisao-pausada' WHERE id = 'lista-pausada'`).run();
       db.close();
       const recusa = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "revisao-pausada" }));
       assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);

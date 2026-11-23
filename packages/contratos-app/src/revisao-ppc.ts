@@ -79,6 +79,10 @@ export type CriterioRevisao = typeof CriterioRevisao.Type;
 export const LeituraIaRevisao = Schema.Literals(["nenhuma", "parcial", "completa"]);
 export type LeituraIaRevisao = typeof LeituraIaRevisao.Type;
 
+/**
+ * O resultado de uma revisão: os arquivos, o curso, a régua e as contagens. As pendências não vêm aqui:
+ * a lista viva (`ListaPendencias.pendencias`) é a única cópia delas.
+ */
 export const ResultadoRevisaoPpc = Schema.Struct({
   arquivoOriginal: Schema.String,
   /** A cópia comentada, na mesma pasta do original; o original não é alterado. */
@@ -88,7 +92,6 @@ export const ResultadoRevisaoPpc = Schema.Struct({
     forma: Schema.NullOr(Schema.String),
     origem: Schema.Literals(["documento", "pessoa"]),
   }),
-  pendencias: Schema.Array(PendenciaRevisao),
   /**
    * A régua: todos os critérios da revisão (as fichas da base, hoje 84), na ordem dos temas, cada um
    * com a decisão ou `nao_lido`. `criterios.length === totalCriterios`.
@@ -165,7 +168,8 @@ export const EstimativaRevisaoIa = Schema.Struct({
   /** US$ equivalentes na API, quando o preço do modelo é conhecido (Claude). */
   custoUsd: Schema.NullOr(Schema.Number),
   percentualJanela: Schema.Number,
-  nomeJanela: Schema.String,
+  /** De que é a porcentagem, como a frase a diz: "do limite de 5 horas do plano Pro", "da cota diária do plano gratuito". */
+  limiteDoPlano: Schema.String,
 });
 export type EstimativaRevisaoIa = typeof EstimativaRevisaoIa.Type;
 
@@ -218,8 +222,10 @@ export type SituacaoRevisaoIa = typeof SituacaoRevisaoIa.Type;
 
 export const EstadoRevisaoIa = Schema.Struct({
   id: Schema.String,
+  /** A lista viva de onde a leitura nasceu; nula se a lista saiu (apagada, expirada ou substituída). */
+  lista: Schema.NullOr(Schema.String),
+  /** O arquivo da lista quando a leitura foi preparada. */
   arquivoOriginal: Schema.String,
-  sha256: Schema.String,
   provider: Provider,
   modelo: Schema.NullOr(Schema.String),
   modo: ModoRevisaoIa,
@@ -372,17 +378,16 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     stream: true,
   }),
   /**
-   * Prepara a revisão com IA (etapa 4) do arquivo já revisado: converte de novo, monta os blocos e
-   * os pedidos (o contexto normativo vem do `kb.sqlite`) e estima o custo. Nada vai ao provider.
+   * Prepara a revisão com IA (etapa 4) de uma lista viva: monta os blocos e os pedidos sobre o texto e o
+   * curso que a lista guarda (o contexto normativo vem do `kb.sqlite`) e estima o custo, sem reler o
+   * `.docx`. Nada vai ao provider. A preparada anterior da mesma lista sai.
    */
   Rpc.make("revisaoPpc.prepararIa", {
     payload: Schema.Struct({
-      arquivo: Schema.String,
+      lista: Schema.String,
       provider: Provider,
       modo: ModoRevisaoIa,
       modelo: Schema.optionalKey(Schema.String),
-      cnct: Schema.optionalKey(Schema.String),
-      forma: Schema.optionalKey(Schema.String),
     }),
     success: EstadoRevisaoIa,
     error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
@@ -412,14 +417,6 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
   /** Todas as listas vivas guardadas, da mais recente para a mais antiga ("Revisões recentes"). */
   Rpc.make("revisaoPpc.listas", { payload: Schema.Struct({}), success: Schema.Array(ListaPendencias) }),
-  /**
-   * A lista viva mais recente de um arquivo (nula se não há): "Continuar" uma leitura com IA que ficou
-   * por terminar abre a lista dela, sem revisar o arquivo de novo.
-   */
-  Rpc.make("revisaoPpc.listaDoArquivo", {
-    payload: Schema.Struct({ arquivo: Schema.String }),
-    success: Schema.NullOr(ListaPendencias),
-  }),
   /**
    * "Qual é o curso?": a lista refeita com o curso escolhido no CNCT (`cnct`, e a `forma`, se houver).
    * Os resultados conferidos da leitura com IA, se a lista veio dela, entram de novo, como na cópia

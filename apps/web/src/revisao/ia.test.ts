@@ -11,7 +11,6 @@ import {
   contagemTemas,
   duracao,
   leiturasPorTerminar,
-  limiteDoPlano,
   linhasAndamento,
   rodapeAndamento,
   textoAndamento,
@@ -29,7 +28,7 @@ const estimativa = {
   minutos: 3,
   custoUsd: 0.33,
   percentualJanela: 5,
-  nomeJanela: "uma janela de 5 horas do plano Pro",
+  limiteDoPlano: "do limite de 5 horas do plano Pro",
 };
 
 const bloco = (
@@ -56,12 +55,6 @@ const bloco = (
 });
 
 describe("a estimativa na faixa", () => {
-  test("o limite do plano em palavras da pessoa", () => {
-    expect(limiteDoPlano("uma janela de 5 horas do plano Pro")).toBe("do limite de 5 horas do plano Pro");
-    expect(limiteDoPlano("a cota diária do plano gratuito")).toBe("da cota diária do plano gratuito");
-    expect(limiteDoPlano("o mês")).toBe("de o mês");
-  });
-
   test("todos os critérios: tempo e fração do limite, sem etapas nem 'referência provisória'", () => {
     const texto = textoEstimativa(estimativa, "completo", "Claude");
     expect(texto).toBe(

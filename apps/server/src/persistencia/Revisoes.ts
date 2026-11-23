@@ -28,13 +28,14 @@ import { descarregar } from "./Banco.ts";
 
 export interface RegistroRevisaoIa<Plano = unknown> {
   readonly id: string;
+  /** A lista viva de onde a leitura nasceu; nula se a lista saiu (apagada, expirada ou substituída). */
+  readonly lista: string | null;
+  /** O arquivo e o conteúdo da lista quando a leitura foi preparada. */
   readonly arquivo: string;
   readonly sha256: string;
   readonly provider: Provider;
   readonly modelo: string | null;
   readonly modo: ModoRevisaoIa;
-  readonly cnct: string | null;
-  readonly forma: string | null;
   readonly situacao: SituacaoRevisaoIa;
   readonly motivo: string | null;
   readonly limite: boolean;
@@ -88,17 +89,18 @@ export class Revisoes extends Context.Service<
     readonly usoTotal: (revisao: string) => Effect.Effect<UsoRevisaoIa>;
     /** Apaga a revisão, o plano (com o texto do PPC), os blocos e as tentativas. */
     readonly apagar: (id: string) => Effect.Effect<void>;
-    /** As revisões do mesmo arquivo e conteúdo, em qualquer situação (ao apagar a lista viva dele). */
-    readonly doArquivo: (arquivo: string, sha256: string) => Effect.Effect<ReadonlyArray<string>>;
+    /** As revisões de uma lista, em qualquer situação. */
+    readonly daLista: (
+      lista: string,
+    ) => Effect.Effect<ReadonlyArray<{ readonly id: string; readonly situacao: SituacaoRevisaoIa }>>;
     /**
-     * As revisões que nenhuma lista referencia e que não estão `preparada` nem `em_andamento`: a lista de
-     * que vieram foi apagada, expirou ou foi substituída, e o resultado já está (ou estava) nela.
+     * As revisões que não estão `em_andamento` e cuja lista saiu (apagada, expirou ou foi substituída), e
+     * as que nenhuma lista referencia mais e não estão `preparada` (uma leitura nova da mesma lista tomou
+     * o lugar dela): o resultado já está (ou estava) na lista.
      */
     readonly orfas: Effect.Effect<ReadonlyArray<string>>;
     /** Apaga as revisões `preparada` (nunca iniciadas) criadas antes de `antesDe` (ISO). */
     readonly expirarPreparadas: (antesDe: string) => Effect.Effect<number>;
-    /** As revisões `preparada` do mesmo arquivo (para substituir ao preparar de novo). */
-    readonly preparadasDoArquivo: (arquivo: string) => Effect.Effect<ReadonlyArray<string>>;
   }
 >()("@simplifica-if/server/persistencia/Revisoes") {}
 
@@ -112,13 +114,12 @@ const DesconhecidoJson = Schema.fromJsonString(Schema.Unknown);
 /** Uma linha de `revisoes_ia`, com as colunas JSON decodificadas. */
 const Linha = Schema.Struct({
   id: Schema.String,
+  lista_id: Schema.NullOr(Schema.String),
   arquivo: Schema.String,
   sha256: Schema.String,
   provider: Schema.String,
   modelo: Schema.NullOr(Schema.String),
   modo: Schema.String,
-  cnct: Schema.NullOr(Schema.String),
-  forma: Schema.NullOr(Schema.String),
   situacao: Schema.String,
   motivo: Schema.NullOr(Schema.String),
   limite: Schema.Number,
@@ -145,13 +146,12 @@ const codificarFerramentas = Schema.encodeEffect(FerramentasJson);
 
 const paraRegistro = (linha: typeof Linha.Type): RegistroRevisaoIa => ({
   id: linha.id,
+  lista: linha.lista_id,
   arquivo: linha.arquivo,
   sha256: linha.sha256,
   provider: linha.provider as Provider,
   modelo: linha.modelo,
   modo: linha.modo as ModoRevisaoIa,
-  cnct: linha.cnct,
-  forma: linha.forma,
   situacao: linha.situacao as SituacaoRevisaoIa,
   motivo: linha.motivo,
   limite: linha.limite === 1,
@@ -170,8 +170,8 @@ const make = Effect.gen(function* () {
   const criar = Effect.fn("Revisoes.criar")(function* (r: NovaRevisaoIa) {
     const data = yield* agora;
     yield* sql`
-      INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, plano, estimativa, criada_em, atualizada_em)
-      VALUES (${r.id}, ${r.arquivo}, ${r.sha256}, ${r.provider}, ${r.modelo}, ${r.modo}, ${r.cnct}, ${r.forma},
+      INSERT INTO revisoes_ia (id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, plano, estimativa, criada_em, atualizada_em)
+      VALUES (${r.id}, ${r.lista}, ${r.arquivo}, ${r.sha256}, ${r.provider}, ${r.modelo}, ${r.modo},
         ${r.situacao}, ${yield* codificarDesconhecido(r.plano)}, ${yield* codificarEstimativa(r.estimativa)}, ${data}, ${data})
     `;
   }, Effect.orDie);
@@ -184,7 +184,7 @@ const make = Effect.gen(function* () {
   const resumo = Effect.fn("Revisoes.resumo")(function* (id: string) {
     const linhas = yield* lerLinhas(
       yield* sql`
-        SELECT id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, limite, NULL AS plano,
+        SELECT id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, motivo, limite, NULL AS plano,
           estimativa, resultado, criada_em, atualizada_em
         FROM revisoes_ia WHERE id = ${id}
       `,
@@ -193,7 +193,7 @@ const make = Effect.gen(function* () {
   }, Effect.orDie);
 
   const listar = sql`
-    SELECT id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, limite, NULL AS plano,
+    SELECT id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, motivo, limite, NULL AS plano,
       estimativa, NULL AS resultado, criada_em, atualizada_em
     FROM revisoes_ia ORDER BY atualizada_em DESC
   `.pipe(
@@ -278,17 +278,20 @@ const make = Effect.gen(function* () {
     yield* descarregar(sql);
   }, Effect.orDie);
 
-  const doArquivo = Effect.fn("Revisoes.doArquivo")(function* (arquivo: string, sha256: string) {
-    const linhas = yield* sql<{ id: string }>`
-      SELECT id FROM revisoes_ia WHERE arquivo = ${arquivo} AND sha256 = ${sha256}
+  const daLista = Effect.fn("Revisoes.daLista")(function* (lista: string) {
+    const linhas = yield* sql<{ id: string; situacao: string }>`
+      SELECT id, situacao FROM revisoes_ia WHERE lista_id = ${lista}
     `;
-    return linhas.map((l) => l.id);
+    return linhas.map((l) => ({ id: l.id, situacao: l.situacao as SituacaoRevisaoIa }));
   }, Effect.orDie);
 
   const orfas = sql<{ id: string }>`
     SELECT r.id FROM revisoes_ia r
-    WHERE r.situacao NOT IN ('preparada', 'em_andamento')
-      AND NOT EXISTS (SELECT 1 FROM listas_pendencias l WHERE l.revisao_id = r.id)
+    WHERE r.situacao <> 'em_andamento'
+      AND (
+        r.lista_id IS NULL
+        OR (r.situacao <> 'preparada' AND NOT EXISTS (SELECT 1 FROM listas_pendencias l WHERE l.revisao_id = r.id))
+      )
   `.pipe(
     Effect.map((linhas) => linhas.map((l) => l.id)),
     Effect.orDie,
@@ -303,13 +306,6 @@ const make = Effect.gen(function* () {
     return linhas.length;
   }, Effect.orDie);
 
-  const preparadasDoArquivo = Effect.fn("Revisoes.preparadasDoArquivo")(function* (arquivo: string) {
-    const linhas = yield* sql<{ id: string }>`
-      SELECT id FROM revisoes_ia WHERE situacao = 'preparada' AND arquivo = ${arquivo}
-    `;
-    return linhas.map((l) => l.id);
-  }, Effect.orDie);
-
   return Revisoes.of({
     criar,
     buscar,
@@ -322,10 +318,9 @@ const make = Effect.gen(function* () {
     gravarTentativa,
     usoTotal,
     apagar,
-    doArquivo,
+    daLista,
     orfas,
     expirarPreparadas,
-    preparadasDoArquivo,
   });
 });
 

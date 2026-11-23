@@ -30,6 +30,7 @@ import * as Listas from "../src/persistencia/Listas.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import { unirResultadosIa } from "../src/revisao-ppc/RevisaoIa.ts";
 import { casarPendencias, planoArquivoNovo } from "../src/revisao-ppc/arquivo-novo.ts";
+import { estimarAcao } from "../src/revisao-ppc/estimativa.ts";
 import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
@@ -195,10 +196,11 @@ const rpc = Effect.gen(function* () {
 const revisarComIa = (arquivo: string) =>
   Effect.gen(function* () {
     const c = yield* rpc;
-    if ((yield* c["revisaoPpc.listaDoArquivo"]({ arquivo })) === null)
-      yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
+    const id =
+      (yield* c["revisaoPpc.listas"]({})).find((l) => l.arquivoOriginal === arquivo)?.id ??
+      (yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }))).lista!;
     roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-04"]));
-    const preparada = yield* c["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+    const preparada = yield* c["revisaoPpc.prepararIa"]({ lista: id, provider: "claude", modo: "rapido" });
     yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
     const final: EstadoRevisaoIa = (yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
       Stream.filter((e) => e.situacao !== "em_andamento" && e.situacao !== "preparada"),
@@ -459,7 +461,11 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
             "A matriz curricular apresenta a carga horária de 1200 horas, das quais 480 horas no núcleo tecnológico, conforme a Resolução CONSUP nº 77/2023, com [completar: carga do núcleo básico].",
           observacao: "Confira a carga por núcleo.",
         });
+      const estimativa = yield* c["revisaoPpc.estimarAcao"]({ lista: lista.id, chave, acao: "sugerir" });
       const l = yield* c["revisaoPpc.sugerir"]({ lista: lista.id, chave });
+      // A estimativa mede o texto que a ação mandou (o nonce muda, o tamanho não).
+      const enviado = roteiro.configs.at(-1)!.instrucoes!.length + roteiro.pedidos.at(-1)!.length;
+      assert.deepStrictEqual(estimativa, estimarAcao(enviado, "sugerir", estimativa.provider));
       const s = l.pendencias.find((x) => x.chave === chave)!.sugestao!;
       assert.deepStrictEqual(s.completar, ["carga do núcleo básico"]);
       const fatos = s.naoConferidos.map((f) => f.fato).join(" | ");
@@ -609,14 +615,16 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         );
         const sem = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo }));
         assert.isNull(sem.curso.cnct);
-        const doCurso = sem.pendencias.filter((p) => p.dependeDoCurso);
+        const pendenciasDa = (lista: string) =>
+          c["revisaoPpc.lista"]({ lista }).pipe(Effect.map((l) => l.pendencias.map((v) => v.pendencia)));
+        const doCurso = (yield* pendenciasDa(sem.lista!)).filter((p) => p.dependeDoCurso);
         assert.includeMembers(
           doCurso.map((p) => p.ficha),
           ["CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"],
         );
-        assert.isTrue(sem.pendencias.filter((p) => !p.dependeDoCurso).length > 0);
+        assert.isTrue((yield* pendenciasDa(sem.lista!)).filter((p) => !p.dependeDoCurso).length > 0);
         // Nenhuma pendência repetida (mesma ficha, mensagem e trecho).
-        const iguais = sem.pendencias.map((p) => JSON.stringify([p.ficha, p.titulo, p.trecho]));
+        const iguais = (yield* pendenciasDa(sem.lista!)).map((p) => JSON.stringify([p.ficha, p.titulo, p.trecho]));
         assert.strictEqual(new Set(iguais).size, iguais.length);
 
         const com = yield* revisarAteOFim(c["revisaoPpc.revisar"]({ arquivo, cnct: "tecnico-em-agropecuaria" }));
@@ -625,7 +633,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
           forma: "subsequente",
           origem: "pessoa",
         });
-        assert.isFalse(com.pendencias.some((p) => p.dependeDoCurso));
+        assert.isFalse((yield* pendenciasDa(com.lista!)).some((p) => p.dependeDoCurso));
         assert.notStrictEqual(com.lista, sem.lista);
         const anterior = yield* c["revisaoPpc.lista"]({ lista: sem.lista! }).pipe(Effect.flip);
         assert.include(anterior.message, "não existe mais");
@@ -878,9 +886,8 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
       assert.isNotNull(mesma.sugestao);
       assert.deepStrictEqual(refeita.uso, uso);
       assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, refeita.id);
-      // A leitura com IA aberta de novo pela lista do arquivo, sem revisar de novo.
-      assert.strictEqual((yield* c["revisaoPpc.listaDoArquivo"]({ arquivo }))!.id, refeita.id);
-      assert.isNull(yield* c["revisaoPpc.listaDoArquivo"]({ arquivo: NodePath.join(pasta, "nenhum.docx") }));
+      // A leitura concluída passou à lista nova.
+      assert.strictEqual((yield* c["revisaoPpc.listarIa"]({})).find((e) => e.id === final.id)!.lista, refeita.id);
     }),
   );
 });
@@ -1032,7 +1039,6 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
                 arquivoOriginal: "/x/PPC.docx",
                 arquivoComentado: "",
                 curso: { cnct: null, forma: null, origem: "documento" },
-                pendencias: [pendencia],
                 criterios: [],
                 conferidos: 0,
                 conferidosIa: 0,
@@ -1137,11 +1143,8 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
             },
             [{ chave: "k1", pendencia: base }],
           );
-          assert.strictEqual(
-            yield* listas.localizar({ arquivo: "/x/PPC.docx", sha256: "abc", cnct: null, forma: null }),
-            "l1",
-          );
-          assert.isNull(yield* listas.localizar({ arquivo: "/x/PPC.docx", sha256: "outro", cnct: null, forma: null }));
+          assert.strictEqual(yield* listas.doConteudo("/x/PPC.docx", "abc"), "l1");
+          assert.isNull(yield* listas.doConteudo("/x/PPC.docx", "outro"));
           yield* listas.mudar(
             "l1",
             "k1",
@@ -1150,13 +1153,12 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           );
           yield* revisoes.criar({
             id: "r1",
+            lista: "l1",
             arquivo: "/x/PPC.docx",
             sha256: "abc",
             provider: "claude",
             modelo: null,
             modo: "rapido",
-            cnct: null,
-            forma: null,
             situacao: "em_andamento",
             plano: {},
             estimativa: {
@@ -1168,7 +1170,7 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
               minutos: 1,
               custoUsd: null,
               percentualJanela: 1,
-              nomeJanela: "x",
+              limiteDoPlano: "x",
             },
           });
           const ia = { resultados: [], fora: [], parcial: true };

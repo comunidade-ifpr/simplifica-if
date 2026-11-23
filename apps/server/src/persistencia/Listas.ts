@@ -116,6 +116,8 @@ export class Listas extends Context.Service<
      * Cria a lista. A situação, o histórico e a sugestão das pendências de mesma chave passam da lista
      * mais recente do mesmo arquivo com o mesmo conteúdo (o "Feito" da pré-conferência continua
      * valendo depois da revisão com IA, e na revisão com o curso escolhido pela pessoa), e essa lista sai.
+     * A leitura com IA que a lista nova leva (`revisao`) passa a ser dela; as outras leituras da lista que
+     * saiu ficam sem lista (`Revisoes.orfas`).
      */
     readonly criar: (
       lista: NovaLista,
@@ -124,13 +126,6 @@ export class Listas extends Context.Service<
     readonly buscar: (id: string) => Effect.Effect<RegistroLista | null>;
     /** Roda a escrita quando nenhuma outra escrita da lista está rodando (não reentrante). */
     readonly exclusivo: <A, E, R>(efeito: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R>;
-    /** A lista mais recente do mesmo arquivo, conteúdo, curso e forma (a da leitura com IA), ou nula. */
-    readonly localizar: (chave: {
-      readonly arquivo: string;
-      readonly sha256: string;
-      readonly cnct: string | null;
-      readonly forma: string | null;
-    }) => Effect.Effect<string | null>;
     /** Liga a lista à leitura com IA que começou (ou que retoma). */
     readonly ligarRevisao: (
       id: string,
@@ -165,8 +160,8 @@ export class Listas extends Context.Service<
       },
       evento: Evento,
     ) => Effect.Effect<void>;
-    /** A lista mais recente de um arquivo, ou nula. */
-    readonly doArquivo: (arquivo: string) => Effect.Effect<string | null>;
+    /** A lista do arquivo com este conteúdo (há uma só: a nova substitui a anterior), ou nula. */
+    readonly doConteudo: (arquivo: string, sha256: string) => Effect.Effect<string | null>;
     /**
      * "Enviar a versão corrigida", numa transação: as mudanças nas pendências, as novas (abertas, com o
      * evento `textoNovas`) e a lista passando ao arquivo novo, com a cópia comentada dele em dia.
@@ -322,6 +317,8 @@ const make = Effect.gen(function* () {
             FROM eventos_pendencia e JOIN pendencias_vivas p ON p.lista_id = ${l.id} AND p.chave = e.chave
             WHERE e.lista_id = ${anterior.id}
           `;
+          // A leitura com IA que a lista nova leva passa a ela antes de a anterior sair.
+          if (l.revisao !== null) yield* sql`UPDATE revisoes_ia SET lista_id = ${l.id} WHERE id = ${l.revisao}`;
           // O uso das ações continua contado; as listas anteriores do mesmo conteúdo saem (o texto do
           // PPC e os motivos não ficam guardados em dobro).
           yield* sql`
@@ -358,20 +355,6 @@ const make = Effect.gen(function* () {
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
     } satisfies RegistroLista;
-  }, Effect.orDie);
-
-  const localizar = Effect.fn("Listas.localizar")(function* (c: {
-    readonly arquivo: string;
-    readonly sha256: string;
-    readonly cnct: string | null;
-    readonly forma: string | null;
-  }) {
-    const linhas = yield* sql<{ id: string }>`
-      SELECT id FROM listas_pendencias
-      WHERE arquivo = ${c.arquivo} AND sha256 = ${c.sha256} AND cnct IS ${c.cnct} AND forma IS ${c.forma}
-      ORDER BY atualizada_em DESC LIMIT 1
-    `;
-    return linhas[0]?.id ?? null;
   }, Effect.orDie);
 
   const ligarRevisao = Effect.fn("Listas.ligarRevisao")(function* (
@@ -454,9 +437,10 @@ const make = Effect.gen(function* () {
     );
   }, Effect.orDie);
 
-  const doArquivo = Effect.fn("Listas.doArquivo")(function* (arquivo: string) {
+  const doConteudo = Effect.fn("Listas.doConteudo")(function* (arquivo: string, sha256: string) {
     const linhas = yield* sql<{ id: string }>`
-      SELECT id FROM listas_pendencias WHERE arquivo = ${arquivo} ORDER BY atualizada_em DESC LIMIT 1
+      SELECT id FROM listas_pendencias WHERE arquivo = ${arquivo} AND sha256 = ${sha256}
+      ORDER BY atualizada_em DESC LIMIT 1
     `;
     return linhas[0]?.id ?? null;
   }, Effect.orDie);
@@ -656,7 +640,6 @@ const make = Effect.gen(function* () {
     criar,
     buscar,
     exclusivo,
-    localizar,
     ligarRevisao,
     mesclarIa,
     ultima,
@@ -664,7 +647,7 @@ const make = Effect.gen(function* () {
     pendencias,
     eventos,
     mudar,
-    doArquivo,
+    doConteudo,
     aplicarArquivoNovo,
     trocarResultado,
     gravarAcao,

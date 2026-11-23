@@ -27,6 +27,7 @@ import Migracao0001 from "./migracoes/0001_Inicial.ts";
 import Migracao0002 from "./migracoes/0002_ResultadosIaNaLista.ts";
 import Migracao0003 from "./migracoes/0003_ApagamentosPendentes.ts";
 import Migracao0004 from "./migracoes/0004_TextoDaPendenciaEmPartes.ts";
+import Migracao0005 from "./migracoes/0005_RevisaoPpcSemCopias.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -78,6 +79,7 @@ export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [
   [2, "ResultadosIaNaLista", Migracao0002],
   [3, "ApagamentosPendentes", Migracao0003],
   [4, "TextoDaPendenciaEmPartes", Migracao0004],
+  [5, "RevisaoPpcSemCopias", Migracao0005],
 ];
 
 const ultimaDe = (lista: ReadonlyArray<EntradaMigracao>) => lista[lista.length - 1]![0];

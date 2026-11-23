@@ -59,7 +59,7 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
       const sugerir = yield* Effect.flip(rpc["revisaoPpc.sugerir"]({ lista: "x", chave: "y", provider: "claude" }));
       assert.strictEqual(sugerir._tag, "AvisoNaoAceito");
       const preparar = yield* Effect.flip(
-        rpc["revisaoPpc.prepararIa"]({ arquivo: "/x.docx", provider: "claude", modo: "completo" }),
+        rpc["revisaoPpc.prepararIa"]({ lista: "x", provider: "claude", modo: "completo" }),
       );
       assert.strictEqual(preparar._tag, "AvisoNaoAceito");
       const contestar = yield* Effect.flip(

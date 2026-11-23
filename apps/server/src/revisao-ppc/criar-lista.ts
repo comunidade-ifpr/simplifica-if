@@ -33,7 +33,7 @@ export const criarLista = Effect.fn("ListaViva.criarLista")(function* (d: DadosN
   const id = d.id ?? `lista-${yield* aleatorio.uuidV4()}`;
   const resultado: ResultadoRevisaoPpc = { ...RevisorPpc.resultadoParaInterface(d.arquivo, d.revisado), lista: id };
   const vistas = new Set<string>();
-  const pendencias = resultado.pendencias.flatMap((p) => {
+  const pendencias = d.revisado.revisao.pendencias.flatMap((p) => {
     const chave = chavePendencia(p);
     if (vistas.has(chave)) return [];
     vistas.add(chave);

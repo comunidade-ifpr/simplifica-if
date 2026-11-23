@@ -26,11 +26,13 @@ import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import * as Banco from "../src/persistencia/Banco.ts";
+import * as Listas from "../src/persistencia/Listas.ts";
 import * as Preferencias from "../src/persistencia/Preferencias.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import * as CopiasComentadas from "../src/persistencia/CopiasComentadas.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
+import { criarLista } from "../src/revisao-ppc/criar-lista.ts";
 import { alvoDosTrechos, julgarBloco, type ResultadoBloco } from "../src/revisao-ppc/julgamento.ts";
 import type { PlanoRevisaoIa } from "../src/revisao-ppc/preparo.ts";
 import * as RevisaoIa from "../src/revisao-ppc/RevisaoIa.ts";
@@ -99,7 +101,10 @@ const programa = Effect.gen(function* () {
   NodeFS.writeFileSync(arquivo, docxDoMarkdown(NodeFS.readFileSync(ppcMd, "utf8")));
   const ia = yield* RevisaoIa.RevisaoIa;
   const inicio = Date.now();
-  const preparada = yield* ia.preparar({ arquivo, provider, modo });
+  // A pré-conferência e a lista viva, de onde a leitura com IA nasce.
+  const revisado = yield* (yield* RevisorPpc.RevisorPpc).revisarCompleto({ arquivo });
+  const { lista } = yield* criarLista({ arquivo, revisado, revisao: null, provider: null, modelo: null });
+  const preparada = yield* ia.preparar({ lista: lista!, provider, modo });
   const preparo = (Date.now() - inicio) / 1000;
   console.error(
     `preparo: ${preparo.toFixed(1)} s, ${preparada.blocos.length} blocos, estimativa ${JSON.stringify(preparada.estimativa)}`,
@@ -165,6 +170,7 @@ const programa = Effect.gen(function* () {
   );
   const revisoes = yield* Revisoes.Revisoes;
   const blocos = yield* revisoes.blocos(preparada.id);
+  const pendencias = (yield* (yield* Listas.Listas).pendencias(lista!)).map((p) => p.pendencia);
   const resultados = blocos.flatMap((b) => (b.resultado as ResultadoBloco).resultados);
   const resumo = {
     provider,
@@ -192,8 +198,8 @@ const programa = Effect.gen(function* () {
     injecaoRelatada: resultados
       .filter((r) => /ignor|aprovad|sistema de revis|instru/i.test(r.lacunas.join(" ")))
       .map((r) => r.ficha),
-    pendenciasIa: final.resultado?.pendencias.filter((p) => p.origem === "ia").length ?? null,
-    pendenciasCodigo: final.resultado?.pendencias.filter((p) => p.origem === "codigo").length ?? null,
+    pendenciasIa: pendencias.filter((p) => p.origem === "ia").length,
+    pendenciasCodigo: pendencias.filter((p) => p.origem === "codigo").length,
     arquivoComentado: final.resultado?.arquivoComentado ?? null,
   };
   NodeFS.writeFileSync(NodePath.join(saida, `revisao-${provider}-${modo}.json`), JSON.stringify(resumo, null, 2));
@@ -211,6 +217,7 @@ const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado });
 // Quem roda o script de medição já aceitou o aviso de uso: as preferências saem com ele aceito.
 const nucleo = RevisaoIa.layer({ paralelismo }).pipe(
   Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(Banco.layerMemoria))),
+  Layer.provideMerge(Listas.layer.pipe(Layer.provide(Banco.layerMemoria))),
   Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(Banco.layerMemoria))),
   Layer.provideMerge(RevisorPpc.layer()),
   Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(Banco.layerMemoria))),

@@ -97,7 +97,6 @@ export function Leitura({
   const listaRef = useRef<HTMLUListElement>(null);
 
   const r = lista.resultado;
-  const pessoa = r.curso.origem === "pessoa";
   /** A lista de agora, para o diff das pendências novas (os retornos chegam depois do render). */
   const atual = useRef(lista);
   useEffect(() => {
@@ -128,10 +127,9 @@ export function Leitura({
     }
   };
   const ia = useLeituraIa({
+    lista: lista.id,
     arquivo: lista.arquivoOriginal,
     sha256: lista.sha256,
-    cnct: pessoa ? r.curso.cnct?.slug : undefined,
-    forma: pessoa ? (r.curso.forma ?? undefined) : undefined,
     ativa: r.leituraIa !== "completa",
     aoConcluir: (estado: EstadoRevisaoIa) =>
       void recarregar().then((recarregada) => {
@@ -226,8 +224,6 @@ export function Leitura({
     if (nova === undefined) return;
     setLista(nova);
     setAberta(null);
-    // A leitura pausada saiu no servidor: a faixa volta à estimativa.
-    if (ia.estado?.situacao === "pausada") ia.tentarDeNovo();
   };
 
   const enviarCorrigida = async (arquivo: string) => {
@@ -239,7 +235,6 @@ export function Leitura({
     if (novo === undefined) return;
     setLista(novo.lista);
     setAviso(textoArquivoNovo(novo));
-    if (ia.estado?.situacao === "pausada") ia.tentarDeNovo();
   };
 
   const escolherCorrigida = async () => {

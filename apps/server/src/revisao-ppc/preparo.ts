@@ -38,6 +38,16 @@ import {
   type SecaoTexto,
   secoesDoTema,
 } from "@simplifica-if/ppc/revisao-ia/plano";
+import { NOME_DA_FORMA } from "@simplifica-if/ppc/revisao-previa";
+
+/** O curso em texto, para todo pedido: "Técnico em Agropecuária, forma de oferta integrada"; nulo sem curso. */
+export const cursoEmTexto = (curso: {
+  readonly cnct: { readonly denominacao: string } | null;
+  readonly forma: string | null;
+}): string | null =>
+  curso.cnct
+    ? `${curso.cnct.denominacao}${curso.forma ? `, forma de oferta ${NOME_DA_FORMA[curso.forma] ?? curso.forma}` : ", forma de oferta não identificada"}`
+    : null;
 
 /** Um bloco do plano, com o pedido pronto (vazio no T, montado na hora) e as fontes permitidas. */
 export type BlocoPlano = Bloco & { pedido: string; caracteres: number; fontes: string[] };

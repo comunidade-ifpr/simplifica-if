@@ -156,8 +156,8 @@ const bloco = (
 
 const pausada = {
   id: "revisao-1",
+  lista: "lista-1",
   arquivoOriginal: "/a/PPC.docx",
-  sha256: "hash-1",
   provider: "claude",
   modelo: "claude-sonnet-5-5",
   modo: "rapido",
@@ -179,7 +179,7 @@ const pausada = {
     minutos: 1,
     custoUsd: null,
     percentualJanela: 1,
-    nomeJanela: "uma janela de 5 horas",
+    limiteDoPlano: "do limite de 5 horas",
   },
   uso: { entrada: 1000, saida: 200, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 },
   resultado: null,

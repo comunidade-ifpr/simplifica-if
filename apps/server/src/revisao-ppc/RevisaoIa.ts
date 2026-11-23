@@ -2,11 +2,11 @@
  * `RevisaoIa`: a revisão completa de um PPC com a IA da conta da pessoa (M1.11, etapa 4), conduzida
  * pelo servidor, não pelo provider.
  *
- * 1. **Preparar** (`prepararIa`, sem IA): o arquivo é convertido de novo no Worker do `RevisorPpc` (o
- *    mesmo da pré-conferência), o `preparo.ts` monta os blocos (lotes S, temas J, transversais) e o
- *    texto de cada pedido com o contexto do `kb.sqlite`, e a estimativa sai do tamanho real dos
- *    pedidos. O plano fica gravado (`Revisoes`).
- * 2. **Executar** (`iniciarIa`): a revisão se liga à lista viva do arquivo (uma leitura por lista), e os
+ * 1. **Preparar** (`prepararIa`, sem IA nem o `.docx`): a leitura nasce de uma lista viva, e o
+ *    `preparo.ts` monta os blocos (lotes S, temas J, transversais) e o texto de cada pedido sobre o texto
+ *    e o curso que a lista guarda, com o contexto do `kb.sqlite`; a estimativa sai do tamanho real dos
+ *    pedidos. O plano fica gravado (`Revisoes`), e preparar de novo a mesma lista substitui a preparada.
+ * 2. **Executar** (`iniciarIa`): a revisão se liga à lista dela (uma leitura por lista), e os
  *    blocos pendentes vão ao `julgamento.ts`, `PARALELISMO` por vez; cada um se grava ao terminar e é
  *    mesclado na mesma lista (`Listas.mesclarIa`, sob `Listas.exclusivo`), com a montagem leve do
  *    `RevisorPpc` (sem Worker e sem reler o `.docx`): a pessoa vê os achados de cada bloco pronto, e a
@@ -18,8 +18,9 @@
  *    entre o bloco e a mesclagem). Uma revisão `em_andamento` de uma execução anterior do servidor (app
  *    fechado) aparece como `pausada`.
  * 3. **Concluir**: o último bloco mesclado, a cópia comentada da mesma lista é regravada com os
- *    resultados da IA (`copia-lista.ts`), e cada pendência guarda onde ficou no documento; o arquivo tem
- *    de ser o mesmo da preparação (sha256).
+ *    resultados da IA (`copia-lista.ts`), e cada pendência guarda onde ficou no documento. O conteúdo da
+ *    lista (sha256) tem de ser o da preparação: depois de "Enviar a versão corrigida", a leitura
+ *    preparada sobre o texto anterior não começa.
  *
  * O andamento ao vivo (a etapa de cada bloco, quando começou, o último sinal da IA) fica em memória, com
  * o resumo dos blocos do plano: o estado a cada mudança não relê o plano (centenas de KB) do banco, e os
@@ -56,15 +57,15 @@ import { estimar } from "./estimativa.ts";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
-import { chavePendencia, type EntradaIa, estadoDaIa, NOME_DA_FORMA } from "@simplifica-if/ppc/revisao-previa";
+import { chavePendencia, type EntradaIa, estadoDaIa } from "@simplifica-if/ppc/revisao-previa";
 import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
-import { regravarCopia } from "./copia-lista.ts";
+import { cursoEscolhido, regravarCopia } from "./copia-lista.ts";
 import { novoNonce } from "./criar-lista.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
-import { type PlanoRevisaoIa, preparar } from "./preparo.ts";
+import { cursoEmTexto, type PlanoRevisaoIa, preparar } from "./preparo.ts";
 
 /** Sessões ao mesmo tempo (o padrão; `OpcoesRevisaoIa.paralelismo` muda). */
 export const PARALELISMO = 2;
@@ -75,12 +76,11 @@ export const PARALELISMO = 2;
 export const TEMPO_TURNO = Duration.minutes(6);
 
 export interface EntradaPreparoIa {
-  readonly arquivo: string;
+  /** A lista viva cujo texto e curso a leitura confere. */
+  readonly lista: string;
   readonly provider: Provider;
   readonly modo: ModoRevisaoIa;
   readonly modelo?: string;
-  readonly cnct?: string;
-  readonly forma?: string;
 }
 
 export class RevisaoIa extends Context.Service<
@@ -274,8 +274,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     });
     return {
       id: registro.id,
+      lista: registro.lista,
       arquivoOriginal: registro.arquivo,
-      sha256: registro.sha256,
       provider: registro.provider,
       modelo: registro.modelo,
       modo: registro.modo,
@@ -305,21 +305,14 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
   const prepararRevisao = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparoIa) {
     yield* exigirAviso;
-    const revisado = yield* revisor.revisarArquivo({
-      arquivo: entrada.arquivo,
-      gravar: false,
-      ...(entrada.cnct === undefined ? {} : { cnct: entrada.cnct }),
-      ...(entrada.forma === undefined ? {} : { forma: entrada.forma }),
-    });
-    const curso = revisado.revisao.curso;
+    const lista = yield* listas.buscar(entrada.lista);
+    if (lista === null) return yield* falha("", "Esta lista de pendências não existe mais. Revise o PPC de novo.");
     const nonce = yield* novoNonce(aleatorio);
     const plano = yield* preparar({
-      markdown: revisado.revisao.markdown,
-      linhasTextoParaIa: revisado.revisao.linhasTextoParaIa,
-      cnct: curso.cnct?.slug ?? null,
-      curso: curso.cnct
-        ? `${curso.cnct.denominacao}${curso.forma ? `, forma de oferta ${NOME_DA_FORMA[curso.forma] ?? curso.forma}` : ", forma de oferta não identificada"}`
-        : null,
+      markdown: lista.markdown,
+      linhasTextoParaIa: lista.linhasTextoParaIa,
+      cnct: lista.cnct,
+      curso: cursoEmTexto(lista.resultado.curso),
       modo: entrada.modo,
       nonce,
       criterio,
@@ -327,7 +320,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       Effect.provideContext(contextoKb),
       Effect.tapError((erro) => Effect.logError("revisão com IA: preparo falhou", erro)),
       Effect.mapError(() =>
-        falha(entrada.arquivo, "Não foi possível preparar a revisão com IA. Reinicie o app e tente de novo."),
+        falha(lista.arquivo, "Não foi possível preparar a revisão com IA. Reinicie o app e tente de novo."),
       ),
     );
     const estimativa = estimar(
@@ -335,21 +328,21 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       entrada.provider,
       paralelismo,
     );
-    // Preparar de novo o mesmo arquivo substitui a preparada anterior (nunca iniciada).
-    for (const antiga of yield* revisoes.preparadasDoArquivo(entrada.arquivo)) {
-      yield* revisoes.apagar(antiga);
-      resumos.delete(antiga);
+    // Preparar de novo a mesma lista substitui a preparada anterior (nunca iniciada).
+    for (const antiga of yield* revisoes.daLista(lista.id)) {
+      if (antiga.situacao !== "preparada") continue;
+      yield* revisoes.apagar(antiga.id);
+      resumos.delete(antiga.id);
     }
     const id = `revisao-${yield* aleatorio.uuidV4()}`;
     yield* revisoes.criar({
       id,
-      arquivo: entrada.arquivo,
-      sha256: revisado.sha256,
+      lista: lista.id,
+      arquivo: lista.arquivo,
+      sha256: lista.sha256,
       provider: entrada.provider,
       modelo: entrada.modelo ?? MODELO_PADRAO[entrada.provider] ?? null,
       modo: entrada.modo,
-      cnct: curso.cnct?.slug ?? null,
-      forma: curso.forma,
       situacao: "preparada",
       plano,
       estimativa,
@@ -360,16 +353,13 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
   /* ------------------------------------------------------------ a lista da revisão */
 
-  /** A lista viva do arquivo da revisão (mesmo conteúdo, curso e forma), ou a falha que para a leitura. */
+  /**
+   * A lista da revisão, com o conteúdo da preparação, ou a falha que para a leitura: a lista saiu (outro
+   * curso, outra revisão do arquivo) ou passou a outra versão do arquivo.
+   */
   const listaDa = Effect.fn("RevisaoIa.listaDa")(function* (registro: Revisoes.RegistroRevisaoIa<unknown>) {
-    const id = yield* listas.localizar({
-      arquivo: registro.arquivo,
-      sha256: registro.sha256,
-      cnct: registro.cnct,
-      forma: registro.forma,
-    });
-    const lista = id === null ? null : yield* listas.buscar(id);
-    if (lista === null) return yield* falha(registro.arquivo, SEM_LISTA);
+    const lista = registro.lista === null ? null : yield* listas.buscar(registro.lista);
+    if (lista === null || lista.sha256 !== registro.sha256) return yield* falha(registro.arquivo, SEM_LISTA);
     return lista;
   });
 
@@ -390,10 +380,10 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       fora: plano.fora,
       parcial: !completa,
     });
-    const resultado = yield* revisor.montar({
+    const { resultado, pendencias } = yield* revisor.montar({
       arquivo: lista.arquivo,
       markdown: lista.markdown,
-      curso: lista.resultado.curso,
+      ...cursoEscolhido(lista),
       arquivoComentado: lista.resultado.arquivoComentado,
       ia,
     });
@@ -401,7 +391,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const existentes = new Set(atuais.map((p) => p.chave));
     const chavesResultado = new Set<string>();
     const novas: { chave: string; pendencia: PendenciaRevisao }[] = [];
-    for (const pendencia of resultado.pendencias) {
+    for (const pendencia of pendencias) {
       const chave = chavePendencia(pendencia);
       chavesResultado.add(chave);
       if (existentes.has(chave)) continue;
@@ -582,8 +572,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     );
 
   /**
-   * Uma leitura com IA por lista: liga a revisão à lista do arquivo, ou recusa se a lista já tem outra
-   * leitura por terminar (em andamento ou pausada).
+   * Uma leitura com IA por lista: liga a revisão à lista dela, ou recusa se a lista já tem outra leitura
+   * por terminar (em andamento ou pausada).
    */
   const ligarALista = Effect.fn("RevisaoIa.ligarALista")(function* (registro: Revisoes.RegistroRevisaoIa<unknown>) {
     const lista = yield* listaDa(registro);
