@@ -14,8 +14,9 @@
  * O `consultar` é a porta dos scripts de fora do repositório: a entrada da ferramenta em JSON
  * (`--args`) e o `structuredContent` (a `Resposta`, válida no `outputSchema`) em JSON, numa linha; com
  * `--todas-as-paginas`, segue o cursor e imprime uma resposta por linha (JSONL). A impressão é a dos
- * comandos da CLI `kb` (`consulta.ts`), que derivam as flags da mesma entrada. Não confere atualização nem baixa base: lê só o `--banco` (ou `SIMPLIFICA_KB`). Recusa a
- * `etapa`, que só faz sentido numa conversa.
+ * comandos da CLI `kb` (`consulta.ts`), que derivam as flags da mesma entrada. Não confere
+ * atualização nem baixa base: lê só o `--banco` (ou `SIMPLIFICA_KB`). Recusa a `etapa`, que só faz
+ * sentido numa conversa.
  *
  * O stdout é do protocolo MCP; as mensagens vão para o stderr. Um `~/` no início dos caminhos é
  * expandido aqui, porque nem todo cliente MCP passa os argumentos por um shell.
