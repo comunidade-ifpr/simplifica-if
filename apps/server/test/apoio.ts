@@ -111,10 +111,17 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       const escrever = (texto: string) =>
         Effect.gen(function* () {
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou " });
-          yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: "escrever", entrada: { texto } });
+          yield* canal.emitir({
+            _tag: "FerramentaIniciada",
+            id: "f1",
+            nome: "escrever",
+            tipo: "escrita",
+            entrada: { texto },
+          });
           const decisao = yield* canal.pedirAprovacao({
             id: "f1",
             ferramenta: "escrever",
+            tipo: "escrita",
             descricao: "escrever um arquivo",
             entrada: { texto },
           });
@@ -126,7 +133,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
             falhou: decisao === "negar",
           });
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Vou ${decisao}` });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       // "grav": pede aprovação e, permitido, cria `resultado.md` e altera `entrada.md` na pasta (o Desfazer).
       const gravar = (texto: string) =>
@@ -134,6 +141,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
           const decisao = yield* canal.pedirAprovacao({
             id: "g1",
             ferramenta: "Write",
+            tipo: "escrita",
             descricao: "gravar resultado.md",
             entrada: { texto },
           });
@@ -155,7 +163,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
             }
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: decisao === "permitir" ? "Gravei." : "Não gravei." });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       const responder = (texto: string) =>
         Effect.gen(function* () {
@@ -169,7 +177,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Resposta a: " });
           yield* canal.emitir({ _tag: "TextoParcial", texto });
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Resposta a: ${texto}` });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       return {
         idNativo,
@@ -185,7 +193,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
         interromper:
           registro.ignorarInterrupcao === true
             ? Effect.void
-            : canal.emitir({ _tag: "FimTurno", motivo: "interrupted" }),
+            : canal.emitir({ _tag: "FimTurno", motivo: "interrompido" }),
       } satisfies Motor.SessaoDriver;
     }),
 });

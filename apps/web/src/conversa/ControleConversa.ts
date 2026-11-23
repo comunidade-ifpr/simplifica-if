@@ -185,7 +185,7 @@ export class ControleConversa {
         this.turno = undefined;
         // O stream acaba depois do `FimTurno`; se acabou sem ele, o turno se fecha aqui.
         if (this.estado.fase === "respondendo" || this.estado.fase === "interrompendo") {
-          this.despachar({ tipo: "evento", evento: { _tag: "FimTurno", motivo: "fim_do_stream" } });
+          this.despachar({ tipo: "evento", evento: { _tag: "FimTurno", motivo: "concluido" } });
         }
       },
       (erro: unknown) => {

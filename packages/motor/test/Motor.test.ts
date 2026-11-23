@@ -31,10 +31,17 @@ const driverFalso = (registro: Registro): Motor.Driver => ({
       const responder = (texto: string) =>
         Effect.gen(function* () {
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou " });
-          yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: "escrever", entrada: { texto } });
+          yield* canal.emitir({
+            _tag: "FerramentaIniciada",
+            id: "f1",
+            nome: "escrever",
+            tipo: "escrita",
+            entrada: { texto },
+          });
           const decisao = yield* canal.pedirAprovacao({
             id: "f1",
             ferramenta: "escrever",
+            tipo: "escrita",
             descricao: "escrever um arquivo",
             entrada: { texto },
           });
@@ -46,7 +53,7 @@ const driverFalso = (registro: Registro): Motor.Driver => ({
             falhou: decisao === "negar",
           });
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Vou ${decisao}` });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       return {
         enviar: (texto) => canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo))),
@@ -261,7 +268,7 @@ const driverComPolitica = (configs: Array<{ config: Motor.ConfigSessao; politica
             falhou: resposta.decisao === "negar",
           });
         }
-        yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+        yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
       });
       return {
         enviar: () => canal.turno(Effect.asVoid(Effect.forkIn(responder, escopo))),

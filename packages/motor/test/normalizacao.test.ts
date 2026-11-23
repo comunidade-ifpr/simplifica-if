@@ -74,7 +74,7 @@ describe("normalização", () => {
   it.layer(NodeServices.layer)((it) => {
     it.effect("Claude: pergunta do CNCT com as ferramentas ifpr", () =>
       Effect.gen(function* () {
-        const passo = criarNormalizadorClaude();
+        const passo = criarNormalizadorClaude({ servidoresApp: ["ifpr"] });
         const eventos = yield* normalizar(
           "claude-cnct.jsonl",
           (m) => typeof m.type === "string",
@@ -85,6 +85,7 @@ describe("normalização", () => {
           "ifpr.ficha_curso",
           "ifpr.sobre_a_base",
         ]);
+        assert.isTrue(deTipo(eventos, "FerramentaIniciada").every((e) => e.tipo === "mcp-app"));
         conferirPares(eventos);
         assert.isTrue(deTipo(eventos, "FerramentaConcluida").every((e) => !e.falhou && e.resumo.startsWith('{"base"')));
         const finais = deTipo(eventos, "TextoFinal");
@@ -103,7 +104,7 @@ describe("normalização", () => {
           cacheEscrita: 48330,
           custoUsd: 0.42818280000000003,
         });
-        assert.deepStrictEqual(fim, { _tag: "FimTurno", motivo: "end_turn" });
+        assert.deepStrictEqual(fim, { _tag: "FimTurno", motivo: "concluido" });
       }),
     );
 
@@ -179,7 +180,7 @@ describe("normalização", () => {
 
     it.effect("Codex: pergunta do CNCT com as ferramentas ifpr", () =>
       Effect.gen(function* () {
-        const passo = criarNormalizadorCodex();
+        const passo = criarNormalizadorCodex(new Set(["ifpr"]));
         const eventos = yield* normalizar(
           "codex-cnct.jsonl",
           (m) => typeof m.metodo === "string",
@@ -191,6 +192,7 @@ describe("normalização", () => {
           "ifpr.listar_cursos",
           "ifpr.ficha_curso",
         ]);
+        assert.isTrue(deTipo(eventos, "FerramentaIniciada").every((e) => e.tipo === "mcp-app"));
         conferirPares(eventos);
         // A primeira `ficha_curso` veio sem argumento e o MCP recusou: o erro vira `falhou`.
         assert.deepStrictEqual(
@@ -204,7 +206,7 @@ describe("normalização", () => {
         const uso = deTipo(eventos, "UsoTokens");
         assert.strictEqual(uso.length, 1);
         assert.isAbove(uso[0]?.entrada ?? 0, 0);
-        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "completed" });
+        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "concluido" });
         // Nenhum MCP do usuário subiu com erro: o isolamento os desligou.
         assert.strictEqual(deTipo(eventos, "Erro").length, 0);
       }),
@@ -217,6 +219,10 @@ describe("normalização", () => {
           "codex-aprovacao.jsonl",
           (m) => typeof m.metodo === "string" && m.parametros !== undefined,
           (m) => passo(m.metodo as string, m.parametros),
+        );
+        assert.deepStrictEqual(
+          deTipo(eventos, "FerramentaIniciada").map((e) => e.tipo),
+          ["comando", "escrita", "comando", "comando"],
         );
         const concluidas = deTipo(eventos, "FerramentaConcluida");
         assert.deepStrictEqual(
@@ -236,7 +242,7 @@ describe("normalização", () => {
         assert.deepStrictEqual(decisoes, ["negar", "permitir"]);
         assert.deepStrictEqual(
           deTipo(eventos, "FimTurno").map((e) => e.motivo),
-          ["completed", "completed"],
+          ["concluido", "concluido"],
         );
       }),
     );
@@ -257,6 +263,8 @@ describe("normalização", () => {
             _tag: "FerramentaIniciada",
             id: "ws-1",
             nome: "busca_web",
+            tipo: "web",
+            web: { acao: "pesquisar", alvo: "Resolução COFEN 736/2024" },
             entrada: { consulta: "Resolução COFEN 736/2024" },
           },
         ]);
@@ -273,6 +281,8 @@ describe("normalização", () => {
             _tag: "FerramentaIniciada",
             id: "ws-2",
             nome: "ler_pagina_web",
+            tipo: "web",
+            web: { acao: "ler", alvo: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
             entrada: { url: "https://www.planalto.gov.br/ccivil_03/leis/l7498.htm" },
           },
         ]);
@@ -313,6 +323,8 @@ describe("normalização", () => {
           "ifpr.pacote_contexto",
           "ifpr.sobre_a_base",
         ]);
+        // O `read_resource` do servidor `ifpr` também é do app.
+        assert.isTrue(deTipo(eventos, "FerramentaIniciada").every((e) => e.tipo === "mcp-app"));
         conferirPares(eventos);
         // O `toolSummary` que o agy injeta sai da entrada.
         const entradas = deTipo(eventos, "FerramentaIniciada").map((e) => e.entrada as Record<string, unknown>);
@@ -335,7 +347,7 @@ describe("normalização", () => {
           saida: 1124,
           cacheLeitura: 84402,
         });
-        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "concluido" });
       }),
     );
 
@@ -386,6 +398,9 @@ describe("normalização", () => {
         assert.strictEqual(primeiraEntrada.domain, "planalto.gov.br");
         assert.isString(primeiraEntrada.query);
         assert.isFalse("toolSummary" in primeiraEntrada);
+        // A interface mostra a consulta pelo `web` do evento, sem conhecer as chaves do `agy`.
+        assert.strictEqual(buscas[0]?.tipo, "web");
+        assert.deepStrictEqual(buscas[0]?.web, { acao: "pesquisar", alvo: String(primeiraEntrada.query).trim() });
         const linhas = yield* lerFixture("antigravity-web.jsonl");
         const pedidosWeb = linhas.filter(
           (l) =>
@@ -398,7 +413,7 @@ describe("normalização", () => {
         assert.strictEqual(finais.length, 1);
         assert.strictEqual(textoParcial(eventos), finais[0]?.texto);
         assert.match(finais[0]?.texto ?? "", /https:\/\/www\.planalto\.gov\.br\/ccivil_03\/leis\/l7498\.htm/);
-        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+        assert.deepStrictEqual(eventos.at(-1), { _tag: "FimTurno", motivo: "concluido" });
       }),
     );
   });
@@ -461,5 +476,47 @@ describe("sessão de julgamento: tipo desconhecido conta como ferramenta", () =>
     assert.deepStrictEqual(julgamento(entrada("config_option_update")), []);
     assert.deepStrictEqual(julgamento(entrada("agent_thought_chunk")), []);
     assert.deepStrictEqual(criarNormalizadorAntigravity()(entrada("terminal_output")), []);
+  });
+});
+
+describe("motivo do fim do turno: cada driver mapeia o nativo num conjunto fechado", () => {
+  const fimDe = (eventos: ReadonlyArray<Evento>) => eventos.findLast((evento) => evento._tag === "FimTurno");
+
+  it.each([
+    ["completed", "concluido"],
+    ["interrupted", "interrompido"],
+    ["failed", "falha"],
+  ] as const)("Codex: status %s → %s", (status, motivo) => {
+    assert.deepStrictEqual(fimDe(criarNormalizadorCodex()("turn/completed", { turn: { status } })), {
+      _tag: "FimTurno",
+      motivo,
+    });
+  });
+
+  it.each([
+    [{ stopReason: "end_turn" }, "concluido"],
+    [{ stopReason: "max_tokens" }, "concluido"],
+    [{ stopReason: "cancelled" }, "interrompido"],
+    [{ stopReason: "end_turn", error: { message: "quota" } }, "falha"],
+  ] as const)("Antigravity: %j → %s", (resposta, motivo) => {
+    assert.deepStrictEqual(fimDe(criarNormalizadorAntigravity()({ tipo: "session/prompt", resposta })), {
+      _tag: "FimTurno",
+      motivo,
+    });
+  });
+
+  it.each([
+    [{ subtype: "success", is_error: false }, "concluido"],
+    [{ subtype: "success", is_error: true, result: "API Error: 529" }, "falha"],
+    [{ subtype: "error_max_turns", is_error: true }, "falha"],
+  ] as const)("Claude: %j → %s", (resultado, motivo) => {
+    const mensagem = {
+      type: "result",
+      usage: { input_tokens: 1, output_tokens: 1 },
+      total_cost_usd: 0,
+      stop_reason: "end_turn",
+      ...resultado,
+    } as unknown as Parameters<ReturnType<typeof criarNormalizadorClaude>>[0];
+    assert.deepStrictEqual(fimDe(criarNormalizadorClaude()(mensagem)), { _tag: "FimTurno", motivo });
   });
 });

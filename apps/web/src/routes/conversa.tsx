@@ -282,7 +282,7 @@ function DetalhesTecnicos({
         {rodando === undefined ? <WrenchIcon aria-hidden className="size-3.5" /> : <Spinner size="sm" tone="muted" />}
         {rodando === undefined
           ? `Detalhes técnicos · ${consultas}`
-          : `Consultando a base: ${rotuloFerramenta(rodando.nome)}…`}
+          : `Consultando a base: ${rotuloFerramenta(rodando)}…`}
       </summary>
       <div className="mt-2 flex flex-col gap-2 border-border border-l-2 pl-3">
         {itens.map((item) => (

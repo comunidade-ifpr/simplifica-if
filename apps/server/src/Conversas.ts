@@ -21,7 +21,7 @@
  *   fica `caiu`, e a próxima mensagem a reabre pela retomada.
  * - **Turno e interromper:** o turno abre antes do preparo (a cópia da pasta e os textos), na fase
  *   `preparando`, como o `starting` do T3 Code. Nessa fase, interromper para o preparo e fecha o turno com
- *   `MOTIVO_PARADO_ANTES_DO_ENVIO`, sem a mensagem ter ido à IA; depois (`respondendo`), pede ao provider
+ *   `parado_antes_do_envio`, sem a mensagem ter ido à IA; depois (`respondendo`), pede ao provider
  *   que pare, e se o turno não terminar em `PRAZO_INTERRUPCAO`, a sessão se libera e o turno termina como
  *   interrompido. Em todo caso a conversa aceita novo turno.
  * - Ao fim da layer (o app fechou), as sessões se liberam, e um turno em andamento termina como
@@ -65,7 +65,6 @@ import {
   type EventoConversa,
   type FalhaPasta,
   type ItemConversa,
-  MOTIVO_PARADO_ANTES_DO_ENVIO,
   type NotaResposta,
   type PastaConversa,
   PastaTrabalhoInvalida,
@@ -603,7 +602,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         (item) =>
           item._tag === "EventoTurno" &&
           item.evento._tag === "FimTurno" &&
-          item.evento.motivo !== MOTIVO_PARADO_ANTES_DO_ENVIO,
+          item.evento.motivo !== "parado_antes_do_envio",
       );
     }
     return viva.chegouAIA;
@@ -667,7 +666,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           Effect.suspend(() =>
             concluirTurno(viva, turno, {
               _tag: "FimTurno",
-              motivo: turno.fase === "preparando" ? MOTIVO_PARADO_ANTES_DO_ENVIO : "interrompido",
+              motivo: turno.fase === "preparando" ? "parado_antes_do_envio" : "interrompido",
             }),
           ),
         ),

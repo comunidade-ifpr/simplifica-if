@@ -42,7 +42,7 @@ const driverRoteiro = (
             if ("chamada" in passo) yield* Queue.offer(servidor, passo.chamada);
             else yield* Effect.forEach([passo.evento].flat(), canal.emitir, { discard: true });
           }
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       return {
         enviar: () => canal.turno(Effect.asVoid(Effect.forkIn(seguir(roteiros[turno++] ?? []), escopo))),
@@ -94,6 +94,7 @@ const iniciada = (id: string, nome: string, entrada: unknown): Motor.Evento => (
   _tag: "FerramentaIniciada",
   id,
   nome,
+  tipo: "mcp-app",
   entrada,
 });
 const chamada = (ferramenta: string, resumo: string, falhou = false): Passo => ({

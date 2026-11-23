@@ -4,7 +4,7 @@
  */
 import { CheckIcon, CircleAlertIcon, FolderSyncIcon, InfoIcon, ShieldQuestionIcon, XIcon } from "lucide-react";
 import { useConversa } from "../contexto.tsx";
-import { type Item, rotuloAprovacao, rotuloFerramenta } from "../conversa/estado.ts";
+import { detalheWeb, type Item, rotuloAprovacao, rotuloFerramenta } from "../conversa/estado.ts";
 import { resumoMudancasPasta } from "../tarefas/textos.ts";
 import { AvisoErro } from "./AvisoErro.tsx";
 import { Markdown } from "./Markdown.tsx";
@@ -24,7 +24,7 @@ function Aprovacao({ item }: { readonly item: Extract<Item, { tipo: "aprovacao" 
   return (
     <Alert variant="warning" data-aprovacao={item.id}>
       <ShieldQuestionIcon />
-      <AlertTitle>A IA pede permissão: {rotuloAprovacao(item.ferramenta)}</AlertTitle>
+      <AlertTitle>A IA pede permissão: {rotuloAprovacao(item)}</AlertTitle>
       <AlertDescription>
         <p>{item.descricao}</p>
         {item.situacao === "pendente" ? (
@@ -79,12 +79,13 @@ export function ItemConversa({
         </div>
       );
     case "ferramenta": {
+      const web = item.web === undefined ? undefined : detalheWeb(item.web);
       const subtitulo =
         item.situacao === "falhou" && item.resumo !== undefined && item.resumo.length > 0
-          ? item.detalheWeb !== undefined && !item.resumo.includes(item.detalheWeb)
-            ? `${item.detalheWeb} — ${item.resumo}`
+          ? web !== undefined && !item.resumo.includes(web)
+            ? `${web} — ${item.resumo}`
             : item.resumo
-          : (item.detalheWeb ?? item.resumo);
+          : (web ?? item.resumo);
       return (
         <div className="flex items-start gap-2 text-sm" data-ferramenta={item.id}>
           <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center">
@@ -97,7 +98,7 @@ export function ItemConversa({
             )}
           </span>
           <div className="min-w-0">
-            <p className="font-medium">{rotuloFerramenta(item.nome)}</p>
+            <p className="font-medium">{rotuloFerramenta(item)}</p>
             {subtitulo === undefined || subtitulo.length === 0 ? null : (
               <p data-conteudo className="line-clamp-2 text-muted-foreground text-small">
                 {subtitulo}

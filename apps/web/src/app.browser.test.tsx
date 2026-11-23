@@ -117,7 +117,7 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await userEvent.keyboard("{Enter}");
   const mensagens = page.getByRole("log", { name: "Mensagens" });
   await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
-  await expect.element(page.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
+  await expect.element(page.getByText("A IA pede permissão: Alterar arquivos")).toBeVisible();
   // As chamadas de ferramenta ficam recolhidas em "Detalhes técnicos".
   await page.getByText("Detalhes técnicos · 1 consulta").click();
   await expect.element(page.getByText("Buscar norma")).toBeVisible();
@@ -365,7 +365,7 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   // O servidor avisa a IA do anexo, com o nome que ele ganhou na pasta, e a conversa o mostra abaixo.
   await expect.element(mensagens.getByText("Anexado: parecer.md. A IA foi avisada.")).toBeVisible();
   expect(mensagens.element().textContent).not.toMatch(/Siga a skill|verificar-fundamentacao-normativa/);
-  await expect.element(mensagens.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
+  await expect.element(mensagens.getByText("A IA pede permissão: Alterar arquivos")).toBeVisible();
   expect((mensagens.element() as HTMLElement).innerText).not.toMatch(/\bWrite\b/);
   await page.getByRole("button", { name: "Permitir" }).click();
 

@@ -48,7 +48,7 @@ it("textoDoTurno: a mensagem da pessoa e os TextoFinal do turno", () => {
       { _tag: "EventoTurno", turno: 1, ordem: 2, evento: { _tag: "TextoFinal", texto: "um" } },
       { _tag: "Mensagem", turno: 2, ordem: 3, texto: "segunda" },
       { _tag: "EventoTurno", turno: 2, ordem: 4, evento: { _tag: "TextoFinal", texto: "dois" } },
-      { _tag: "EventoTurno", turno: 2, ordem: 5, evento: { _tag: "FimTurno", motivo: "end_turn" } },
+      { _tag: "EventoTurno", turno: 2, ordem: 5, evento: { _tag: "FimTurno", motivo: "concluido" } },
       { _tag: "EventoTurno", turno: 2, ordem: 6, evento: { _tag: "TextoFinal", texto: "três" } },
     ],
     2,

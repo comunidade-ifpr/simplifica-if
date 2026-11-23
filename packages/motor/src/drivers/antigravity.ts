@@ -31,7 +31,7 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as OpcoesAcp from "../acp/opcoes-sessao.ts";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
-import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { type AlvoWeb, alvoWeb, erroDoTurno, type Evento, type MotivoFim, resumir, textoDeBlocos } from "../eventos.ts";
 import {
   ambienteSemTelemetria,
   buscaWebLigada,
@@ -113,7 +113,13 @@ export function criarNormalizadorAntigravity(
         });
       }
       if (resposta.error) eventos.push(erroDoTurno(texto(registro(resposta.error).message)));
-      eventos.push({ _tag: "FimTurno", motivo: texto(resposta.stopReason) || "end_turn" });
+      // `stopReason` do ACP: `end_turn`, `max_tokens`, `max_turn_requests`, `refusal`, `cancelled`.
+      const motivo: MotivoFim = resposta.error
+        ? "falha"
+        : resposta.stopReason === "cancelled"
+          ? "interrompido"
+          : "concluido";
+      eventos.push({ _tag: "FimTurno", motivo });
       return eventos;
     }
     const atualizacao = registro(registro(entrada.notificacao).update);
@@ -136,11 +142,16 @@ export function criarNormalizadorAntigravity(
         if (!iniciadas.has(id)) {
           iniciadas.add(id);
           eventos.push(...fecharTexto());
+          const entrada = entradaFerramenta(atualizacao);
+          const classe = classificarAcp(atualizacao, servidores);
+          const web = classe.tipo === "web" ? alvoWebAcp(nomeFerramenta(atualizacao, servidores), entrada) : undefined;
           eventos.push({
             _tag: "FerramentaIniciada",
             id,
             nome: nomes.get(id) ?? nomeFerramenta(atualizacao, servidores),
-            entrada: entradaFerramenta(atualizacao),
+            tipo: classe.tipo,
+            ...(web === undefined ? {} : { web }),
+            entrada,
           });
         }
         if (atualizacao.status === "completed" || atualizacao.status === "failed") {
@@ -168,6 +179,7 @@ export function criarNormalizadorAntigravity(
                 _tag: "FerramentaIniciada",
                 id: `atualizacao-${tipo}`,
                 nome: `atualizacao.${tipo || "desconhecida"}`,
+                tipo: "outra",
                 entrada: {},
               },
             ]
@@ -263,6 +275,17 @@ export function arquivosDaSessaoAntigravity(
 
 const CHAVE_DE_CAMINHO = /path|file|dir|cwd/i;
 const CHAVE_DE_URL = /(?:url|uri)$/i;
+const CHAVE_DE_CONSULTA = /query/i;
+
+/** O alvo de uma ferramenta web do `agy`: a URL que `read_url_content` lê, ou a consulta de `search_web`. */
+function alvoWebAcp(nome: string, entrada: unknown): AlvoWeb | undefined {
+  const valores = Object.entries(registro(entrada));
+  const primeiro = (chave: RegExp) =>
+    valores.find(([nome, valor]) => chave.test(nome) && typeof valor === "string")?.[1];
+  return nome === "read_url_content"
+    ? alvoWeb("ler", primeiro(CHAVE_DE_URL))
+    : alvoWeb("pesquisar", primeiro(CHAVE_DE_CONSULTA));
+}
 
 /**
  * Classifica o `toolCall` de um `session/request_permission` pelo nome (MCP e busca/leitura web

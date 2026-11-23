@@ -9,7 +9,7 @@ import * as Effect from "effect/Effect";
 import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
 import { AprovacaoDesconhecida, type Decisao, FalhaProvider, type SessaoDriver, TurnoEmAndamento } from "./Driver.ts";
-import type { Evento } from "./eventos.ts";
+import type { Evento, TipoFerramenta } from "./eventos.ts";
 import { classificarFalha, textoDaCausa } from "./falhas.ts";
 import { type Avaliacao, type ClassePedido, type Politica, avaliar } from "./politica.ts";
 
@@ -45,7 +45,7 @@ export interface Canal {
    * Emite `PedidoAprovacao` e espera a resposta de `responder`. Se o turno acabar antes (interrupção),
    * a espera é interrompida junto com quem a chamou.
    */
-  readonly pedirAprovacao: (pedido: Pedido) => Effect.Effect<Decisao>;
+  readonly pedirAprovacao: (pedido: Pedido & { readonly tipo: TipoFerramenta }) => Effect.Effect<Decisao>;
   /**
    * Aplica a política ao pedido classificado: `permitir` e `negar` se respondem aqui, sem evento;
    * `perguntar` segue como `pedirAprovacao`. Sem política (`make`), sempre pergunta.
@@ -121,7 +121,9 @@ const criar = (decidir: ((classe: ClassePedido) => Avaliacao) | undefined): Effe
       Effect.suspend(() => {
         const avaliacao = decidir?.(classe);
         if (avaliacao === undefined || avaliacao.regra === "perguntar") {
-          return Effect.map(pedirAprovacao(pedido), (decisao): RespostaAprovacao => ({ decisao }));
+          return Effect.map(pedirAprovacao({ ...pedido, tipo: classe.tipo }), (decisao): RespostaAprovacao => ({
+            decisao,
+          }));
         }
         return Effect.succeed<RespostaAprovacao>({ decisao: avaliacao.regra, motivo: avaliacao.motivo });
       });

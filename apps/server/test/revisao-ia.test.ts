@@ -147,7 +147,13 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
           const r = roteiro.responder(primeiro, turnos);
           yield* canal.emitir({ _tag: "UsoTokens", entrada: 10, saida: 5, cacheEscrita: 100 });
           if ("ferramenta" in r && r.ferramenta)
-            yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: r.ferramenta, entrada: {} });
+            yield* canal.emitir({
+              _tag: "FerramentaIniciada",
+              id: "f1",
+              nome: r.ferramenta,
+              tipo: "outra",
+              entrada: {},
+            });
           if ("falha" in r) return;
           if ("erro" in r) {
             if (r.esperar !== undefined) yield* r.esperar;
@@ -159,7 +165,7 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
             yield* r.esperar;
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: r.texto });
-          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "concluido" });
         });
       return {
         idNativo: "nativo",
@@ -172,7 +178,7 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
             : canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo)));
         },
         responder: canal.responder,
-        interromper: canal.emitir({ _tag: "FimTurno", motivo: "interrupted" }),
+        interromper: canal.emitir({ _tag: "FimTurno", motivo: "interrompido" }),
       } satisfies Motor.SessaoDriver;
     }),
 });

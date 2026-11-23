@@ -16,7 +16,7 @@ import { ATUALIZACAO_FABRICA } from "./politica-atualizacao.ts";
 import { CURADORIA_FABRICA, RE_REPOSITORIO } from "./politica-curadoria.ts";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
-import { Provider } from "./eventos.ts";
+import { Provider, type TipoFerramenta } from "./eventos.ts";
 
 /** O que fazer com um pedido: responder sozinho (`permitir`, `negar`) ou perguntar ao servidor. */
 export const Regra = Schema.Literals(["permitir", "perguntar", "negar"]);
@@ -24,29 +24,6 @@ export type Regra = typeof Regra.Type;
 
 /** A regra para o que fica dentro da pasta de trabalho da sessão e para o que fica fora dela. */
 export const RegraPorLugar = Schema.Struct({ dentro: Regra, fora: Regra });
-
-/**
- * Tipos de ferramenta, iguais nos três providers:
- * - `leitura`: ler arquivo, listar pasta, buscar em arquivos;
- * - `escrita`: criar, alterar, apagar ou mover arquivo;
- * - `comando`: rodar um comando no terminal;
- * - `comando-rede`: comando no terminal que pede acesso à rede (proxy gerenciado do Codex);
- * - `mcp-app`: ferramenta (ou recurso) de um servidor MCP do app marcado `preAprovado` (o `ifpr`);
- * - `mcp-outro`: ferramenta de outro servidor MCP;
- * - `web`: busca na web ou leitura de uma URL (ferramentas nativas conhecidas);
- * - `outra`: o resto (subagente, plano, pergunta ao usuário…).
- */
-export const TipoFerramenta = Schema.Literals([
-  "leitura",
-  "escrita",
-  "comando",
-  "comando-rede",
-  "mcp-app",
-  "mcp-outro",
-  "web",
-  "outra",
-]);
-export type TipoFerramenta = typeof TipoFerramenta.Type;
 
 /** Um pedido de aprovação classificado: o tipo, os caminhos que toca e, quando aplicável, URLs ou host. */
 export interface ClassePedido {

@@ -27,7 +27,7 @@ import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as TestClock from "effect/testing/TestClock";
-import { type EventoConversa, type ItemConversa, MOTIVO_PARADO_ANTES_DO_ENVIO } from "@simplifica-if/contratos-app";
+import type { EventoConversa, ItemConversa } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import type { SkillDoApp } from "@simplifica-if/mcp/skills";
@@ -549,7 +549,7 @@ describe("ciclo de vida da sessão do provider", () => {
         assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
         registro.segurarFim = undefined;
         const outra = yield* Stream.runCollect(conversas.enviar(id, "outra"));
-        assert.deepStrictEqual([...outra].at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+        assert.deepStrictEqual([...outra].at(-1), { _tag: "FimTurno", motivo: "concluido" });
         yield* Deferred.succeed(segurar, undefined);
         yield* rodar;
         // O fim tardio do primeiro stream não toca o histórico: cada turno tem um só `FimTurno`.
@@ -565,7 +565,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, layerRetratoComDefeito);
       const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
       const eventos = yield* Stream.runCollect(conversas.enviar(id, "olá"));
-      assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+      assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "concluido" });
       assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
       const outra = yield* Stream.runCollect(conversas.enviar(id, "outra"));
       assert.strictEqual(tags(outra).at(-1), "FimTurno");
@@ -584,7 +584,7 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.strictEqual(emAndamento._tag, "TurnoEmAndamento");
       yield* conversas.interromper(id);
       const eventos = yield* Fiber.join(turno);
-      assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "interrupted" });
+      assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "interrompido" });
       const depois = yield* Stream.runCollect(conversas.enviar(id, "olá"));
       assert.strictEqual(tags(depois).at(-1), "FimTurno");
       assert.strictEqual(registro.configs.length, 1);
@@ -623,7 +623,7 @@ describe("ciclo de vida da sessão do provider", () => {
       assert.strictEqual(emAndamento._tag, "TurnoEmAndamento");
       yield* conversas.interromper(id);
       const eventos = yield* Fiber.join(turno);
-      assert.deepStrictEqual([...eventos], [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }]);
+      assert.deepStrictEqual([...eventos], [{ _tag: "FimTurno", motivo: "parado_antes_do_envio" }]);
       // A IA não recebeu a mensagem; o histórico a guarda, e a cópia do turno parado sai.
       assert.strictEqual(registro.textos.length, enviados);
       assert.deepStrictEqual(descartadas, [2]);
@@ -672,10 +672,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const parado = yield* Stream.runCollect(conversas.enviar(id, "confira")).pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.interromper(id);
-      assert.deepStrictEqual(
-        [...(yield* Fiber.join(parado))],
-        [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }],
-      );
+      assert.deepStrictEqual([...(yield* Fiber.join(parado))], [{ _tag: "FimTurno", motivo: "parado_antes_do_envio" }]);
 
       // No turno seguinte, o aviso traz as duas mudanças (a comparação é com o turno 1, o último que
       // chegou à IA), e a minuta ganha o texto.
@@ -744,10 +741,7 @@ describe("ciclo de vida da sessão do provider", () => {
       yield* registro.derrubar!(new Error("o processo morreu"));
       yield* rodar;
       yield* conversas.interromper(id);
-      assert.deepStrictEqual(
-        [...(yield* Fiber.join(parado))],
-        [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }],
-      );
+      assert.deepStrictEqual([...(yield* Fiber.join(parado))], [{ _tag: "FimTurno", motivo: "parado_antes_do_envio" }]);
       assert.strictEqual(registro.textos.length, enviados);
       yield* fechar;
     }),
@@ -788,10 +782,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const turno = yield* Stream.runCollect(conversas.enviar(id, "olá")).pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.encerrar(id);
-      assert.deepStrictEqual(
-        [...(yield* Fiber.join(turno))],
-        [{ _tag: "FimTurno", motivo: MOTIVO_PARADO_ANTES_DO_ENVIO }],
-      );
+      assert.deepStrictEqual([...(yield* Fiber.join(turno))], [{ _tag: "FimTurno", motivo: "parado_antes_do_envio" }]);
       yield* fechar;
     }),
   );

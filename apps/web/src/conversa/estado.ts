@@ -12,6 +12,7 @@
  * mensagem da pessoa, os eventos e as decisões de aprovação, na ordem.
  */
 import {
+  type AlvoWeb,
   type ConversaGravada,
   type Decisao,
   type EstadoConversa as EstadoGravado,
@@ -19,7 +20,7 @@ import {
   type ItemConversa,
   type NotaResposta,
   type Provider,
-  MOTIVO_PARADO_ANTES_DO_ENVIO,
+  type TipoFerramenta,
 } from "@simplifica-if/contratos-app";
 import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
 import { ehFerramentaEtapa, type MarcaEtapa, marcaDaEntrada } from "./etapas.ts";
@@ -46,10 +47,12 @@ export type Item =
       readonly chave: string;
       readonly id: string;
       readonly nome: string;
+      /** O tipo que o driver deu à ferramenta (o rótulo sai dele). */
+      readonly classe: TipoFerramenta;
       readonly situacao: "andamento" | "concluida" | "falhou";
       readonly resumo?: string;
-      /** Consulta ou domínio de uma ferramenta web (substitui o resumo bruto da página na tela). */
-      readonly detalheWeb?: string;
+      /** A página ou a consulta de uma ferramenta web (substitui o resumo bruto da página na tela). */
+      readonly web?: AlvoWeb;
       /** A marca da ferramenta `etapa` (o indicador de etapas da tarefa). */
       readonly etapa?: MarcaEtapa;
     }
@@ -58,6 +61,7 @@ export type Item =
       readonly chave: string;
       readonly id: string;
       readonly ferramenta: string;
+      readonly classe: TipoFerramenta;
       readonly descricao: string;
       /** `enviando`: a resposta saiu e o servidor ainda não confirmou; `expirada`: o turno acabou antes. */
       readonly situacao: "pendente" | "enviando" | "permitida" | "negada" | "expirada";
@@ -190,11 +194,6 @@ function fecharTurno(itens: ReadonlyArray<Item>): ReadonlyArray<Item> {
   });
 }
 
-/** O motivo de fim de turno que significa interrupção, nos três providers. */
-export function foiInterrompido(motivo: string): boolean {
-  return /interrupt|cancel|abort/i.test(motivo);
-}
-
 export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): EstadoConversa {
   switch (evento._tag) {
     case "MudancasPasta":
@@ -227,31 +226,31 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
     }
     case "FerramentaIniciada": {
       const etapa = ehFerramentaEtapa(evento.nome) ? marcaDaEntrada(evento.entrada) : undefined;
-      const detalheWeb = detalheFerramentaWeb(evento.nome, evento.entrada);
       return comItem(estado, (chave) => ({
         tipo: "ferramenta",
         chave,
         id: evento.id,
         nome: evento.nome,
+        classe: evento.tipo,
         situacao: "andamento",
-        ...(detalheWeb === undefined ? {} : { detalheWeb }),
+        ...(evento.web === undefined ? {} : { web: evento.web }),
         ...(etapa === undefined ? {} : { etapa }),
       }));
     }
     case "FerramentaConcluida": {
       const indice = estado.itens.findLastIndex((item) => item.tipo === "ferramenta" && item.id === evento.id);
       const anterior = estado.itens[indice];
-      const etapa = anterior?.tipo === "ferramenta" ? anterior.etapa : undefined;
-      const detalheWeb = anterior?.tipo === "ferramenta" ? anterior.detalheWeb : undefined;
+      const iniciada = anterior?.tipo === "ferramenta" ? anterior : undefined;
       const concluida = (chave: string): Item => ({
         tipo: "ferramenta",
         chave,
         id: evento.id,
         nome: evento.nome,
+        classe: iniciada?.classe ?? "outra",
         situacao: evento.falhou ? "falhou" : "concluida",
         resumo: evento.resumo,
-        ...(detalheWeb === undefined ? {} : { detalheWeb }),
-        ...(etapa === undefined ? {} : { etapa }),
+        ...(iniciada?.web === undefined ? {} : { web: iniciada.web }),
+        ...(iniciada?.etapa === undefined ? {} : { etapa: iniciada.etapa }),
       });
       return indice < 0 ? comItem(estado, concluida) : trocar(estado, indice, concluida(estado.itens[indice]!.chave));
     }
@@ -261,6 +260,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
         chave,
         id: evento.id,
         ferramenta: evento.ferramenta,
+        classe: evento.tipo,
         descricao: evento.descricao,
         situacao: "pendente",
       }));
@@ -284,14 +284,14 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
           ? { estadoServidor: evento.motivo === "falha" ? "caiu" : "pronta" }
           : {}),
       };
-      if (evento.motivo === MOTIVO_PARADO_ANTES_DO_ENVIO)
+      if (evento.motivo === "parado_antes_do_envio")
         return comItem(fechado, (chave) => ({
           tipo: "aviso",
           chave,
           texto: "Parado antes de a IA receber a mensagem. Envie de novo quando quiser.",
           gravidade: "info",
         }));
-      return foiInterrompido(evento.motivo)
+      return evento.motivo === "interrompido"
         ? comItem(fechado, (chave) => ({ tipo: "aviso", chave, texto: "Resposta interrompida.", gravidade: "info" }))
         : fechado;
     }
@@ -408,7 +408,7 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
 }
 
 /** Os títulos das ferramentas do MCP `ifpr` (o `titulo` de cada uma em `packages/mcp/src/ferramentas`). */
-const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
+const ROTULOS_IFPR: Readonly<Record<string, string>> = {
   adequacao_art71: "Adequação ao art. 71",
   buscar_norma: "Buscar norma",
   buscar_secoes: "Buscar seções de PPC",
@@ -425,107 +425,60 @@ const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
   pacote_contexto: "Contexto da revisão de PPC",
   resolver_citacoes: "Identificar citações",
   sobre_a_base: "Sobre a base",
-  // As nativas dos providers que mais aparecem (Claude, Codex, Antigravity).
-  Write: "Gravar arquivo",
-  Edit: "Alterar arquivo",
-  MultiEdit: "Alterar arquivo",
-  NotebookEdit: "Alterar arquivo",
-  Read: "Ler arquivo",
-  Glob: "Procurar arquivos",
-  Grep: "Procurar nos arquivos",
-  Bash: "Rodar comando",
-  apply_patch: "Alterar arquivo",
-  write_file: "Gravar arquivo",
-  read_file: "Ler arquivo",
-  run_command: "Rodar comando",
-  shell: "Rodar comando",
-  // Os nomes do Codex e os `kind` do ACP (Antigravity).
-  comando: "Rodar comando",
-  editar_arquivos: "Alterar arquivos",
-  edit: "Alterar arquivo",
-  delete: "Apagar arquivo",
-  move: "Mover arquivo",
-  execute: "Rodar comando",
-  read: "Ler arquivo",
-  search: "Procurar nos arquivos",
-  fetch: "Ler página na internet",
-  WebFetch: "Ler página na internet",
-  ler_pagina_web: "Ler página na internet",
-  read_url_content: "Ler página na internet",
-  WebSearch: "Pesquisar na internet",
-  busca_web: "Pesquisar na internet",
-  search_web: "Pesquisar na internet",
 };
 
-const FERRAMENTAS_BUSCA_WEB = new Set(["WebSearch", "busca_web", "search_web"]);
-const FERRAMENTAS_PAGINA_WEB = new Set(["WebFetch", "ler_pagina_web", "read_url_content", "fetch"]);
+/** As ferramentas nativas dos providers, pelo tipo que o driver lhes deu. */
+const ROTULOS_POR_TIPO: Readonly<Record<Exclude<TipoFerramenta, "mcp-app" | "mcp-outro">, string>> = {
+  leitura: "Ler arquivos",
+  escrita: "Alterar arquivos",
+  comando: "Rodar comando",
+  "comando-rede": "Rodar comando com acesso à rede",
+  web: "Consultar a internet",
+  outra: "Outra ação da IA",
+};
 
-/** Consulta (em busca web) ou domínio/caminho curto (em leitura de página), para auditar na conversa. */
-export function detalheFerramentaWeb(nome: string, entrada: unknown): string | undefined {
-  if (typeof entrada !== "object" || entrada === null) return undefined;
-  const dados = entrada as Record<string, unknown>;
-  const textoDe = (...chaves: ReadonlyArray<string>) => {
-    for (const chave of chaves) {
-      const valor = dados[chave];
-      if (typeof valor === "string" && valor.trim() !== "") return valor.trim();
-    }
-    return undefined;
-  };
-  if (FERRAMENTAS_PAGINA_WEB.has(nome)) {
-    const bruto = textoDe("url", "Url", "uri", "Uri");
-    if (bruto === undefined) return undefined;
-    try {
-      const lida = new URL(bruto);
-      const caminho = lida.pathname === "/" ? "" : lida.pathname;
-      const curto = `${lida.hostname}${caminho}`;
-      return curto.length <= 100 ? curto : `${curto.slice(0, 99)}…`;
-    } catch {
-      return bruto.length <= 100 ? bruto : `${bruto.slice(0, 99)}…`;
-    }
-  }
-  if (FERRAMENTAS_BUSCA_WEB.has(nome)) {
-    const consulta = textoDe("query", "Query", "consulta", "search_query");
-    if (consulta === undefined) return undefined;
-    return consulta.length <= 120 ? consulta : `${consulta.slice(0, 119)}…`;
-  }
-  return undefined;
-}
-
-/** Pelo jeito do nome, quando a ferramenta não está na lista (as nativas mudam de nome entre versões). */
-const ROTULOS_POR_PADRAO: ReadonlyArray<readonly [RegExp, string]> = [
-  [/write|create.?file|save|gravar|escrev/i, "Gravar arquivo"],
-  [/edit|patch|replace|alter|change/i, "Alterar arquivo"],
-  [/delete|remove|unlink|apagar/i, "Apagar arquivo"],
-  [/bash|shell|command|exec|terminal|run/i, "Rodar comando"],
-  [/web|fetch|browse|http|url/i, "Consultar a internet"],
-  [/read|view|open|cat|ler/i, "Ler arquivo"],
-  [/grep|glob|search|find|list/i, "Procurar nos arquivos"],
-];
+const ROTULOS_WEB: Readonly<Record<AlvoWeb["acao"], string>> = {
+  ler: "Ler página na internet",
+  pesquisar: "Pesquisar na internet",
+};
 
 /**
- * O nome de uma ferramenta para a pessoa: as do MCP `ifpr` (`ifpr.buscar_norma`, `mcp__ifpr__…`) e as
- * nativas mais comuns pelo rótulo; as nativas desconhecidas pelo padrão do nome ("Gravar arquivo",
- * "Rodar comando"); o resto, sem o servidor e com espaços no lugar de `_`.
+ * O nome de uma ferramenta para a pessoa, pelo tipo que o driver deu: as do MCP pelo título (as do `ifpr`)
+ * ou pelo nome legível, sem o servidor; as nativas pelo tipo, as web pela ação. Nunca o nome técnico de
+ * uma ferramenta nativa.
  */
-
-/**
- * O nome de uma ação no pedido de permissão: o rótulo, ou "uma ação no computador" quando o nome não
- * diz nada à pessoa (nunca o nome técnico).
- */
-export function rotuloAprovacao(nome: string): string {
-  const semServidor = nome.replace(/^mcp__[^_]+__/, "").replace(/^[\w-]+\./, "");
-  if (ROTULOS_FERRAMENTA[semServidor] !== undefined) return ROTULOS_FERRAMENTA[semServidor]!;
-  return ROTULOS_POR_PADRAO.find(([regra]) => regra.test(semServidor))?.[1] ?? "uma ação no computador";
+export function rotuloFerramenta(ferramenta: {
+  readonly nome: string;
+  readonly classe: TipoFerramenta;
+  readonly web?: AlvoWeb;
+}): string {
+  if (ferramenta.classe === "mcp-app" || ferramenta.classe === "mcp-outro") {
+    const semServidor = ferramenta.nome.replace(/^[\w-]+\./, "");
+    const conhecido = ROTULOS_IFPR[semServidor];
+    if (conhecido !== undefined) return conhecido;
+    const legivel = semServidor.replace(/[_-]+/g, " ").trim();
+    return legivel.length === 0 ? ferramenta.nome : `${legivel[0]!.toUpperCase()}${legivel.slice(1)}`;
+  }
+  if (ferramenta.classe === "web" && ferramenta.web !== undefined) return ROTULOS_WEB[ferramenta.web.acao];
+  return ROTULOS_POR_TIPO[ferramenta.classe];
 }
 
-export function rotuloFerramenta(nome: string): string {
-  const semServidor = nome.replace(/^mcp__[^_]+__/, "").replace(/^[\w-]+\./, "");
-  const conhecido = ROTULOS_FERRAMENTA[semServidor];
-  if (conhecido !== undefined) return conhecido;
-  // As do `ifpr` sem rótulo e as de outros servidores ficam legíveis; as nativas, pelo padrão do nome.
-  const nativa = !/^mcp__|^[\w-]+\./.test(nome);
-  const padrao = nativa ? ROTULOS_POR_PADRAO.find(([regra]) => regra.test(semServidor))?.[1] : undefined;
-  if (padrao !== undefined) return padrao;
-  const legivel = semServidor.replace(/[_-]+/g, " ").trim();
-  return legivel.length === 0 ? nome : `${legivel[0]!.toUpperCase()}${legivel.slice(1)}`;
+/** O nome de uma ação no pedido de permissão; "uma ação no computador" quando o tipo não diz nada à pessoa. */
+export function rotuloAprovacao(pedido: { readonly ferramenta: string; readonly classe: TipoFerramenta }): string {
+  return pedido.classe === "outra"
+    ? "uma ação no computador"
+    : rotuloFerramenta({ nome: pedido.ferramenta, classe: pedido.classe });
+}
+
+/** A consulta (busca) ou o domínio e o caminho curto, sem a consulta da URL (página), para auditar na conversa. */
+export function detalheWeb(web: AlvoWeb): string {
+  if (web.acao === "pesquisar") return web.alvo.length <= 120 ? web.alvo : `${web.alvo.slice(0, 119)}…`;
+  try {
+    const lida = new URL(web.alvo);
+    const caminho = lida.pathname === "/" ? "" : lida.pathname;
+    const curto = `${lida.hostname}${caminho}`;
+    return curto.length <= 100 ? curto : `${curto.slice(0, 99)}…`;
+  } catch {
+    return web.alvo.length <= 100 ? web.alvo : `${web.alvo.slice(0, 99)}…`;
+  }
 }
