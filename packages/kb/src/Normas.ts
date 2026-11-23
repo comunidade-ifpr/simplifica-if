@@ -14,6 +14,8 @@ import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import { UrlOficial } from "./normas/fonte.ts";
+import { type AlteracaoAnotada, alteracoesAnotadas } from "./normas/alteracoes-anotadas.ts";
+import { TIPOS_NOTA } from "./normas/estrutura.ts";
 import { listaDeTextos } from "./normas/front-matter.ts";
 import {
   buscarNormaDetalhada,
@@ -103,6 +105,14 @@ const LinhaFicha = Schema.Struct({
   front_matter_json: Schema.NullOr(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown))),
 });
 const primeiraFicha = Sql.primeira(LinhaFicha);
+const linhasNotas = Sql.todas(
+  Schema.Struct({
+    dispositivo: Schema.String,
+    notas: Schema.fromJsonString(
+      Schema.Array(Schema.Struct({ tipo: Schema.Literals(TIPOS_NOTA), texto: Schema.String })),
+    ),
+  }),
+);
 const linhasFontes = Sql.todas(Schema.Struct({ id: Schema.String, fonte_url: UrlOficial }));
 
 const ato = (id: string) => id.split("#")[0]!;
@@ -136,6 +146,11 @@ export class Normas extends Context.Service<
       opcoes?: { readonly em?: string },
     ) => Effect.Effect<ResultadoVigencia & { transicoes: SituacaoTransicao[] }>;
     /** Relações em que a norma é origem (`saida`) ou alvo (`entrada`). */
+    /**
+     * As alterações que o texto da norma anota ("Redação dada pela Lei nº ..."), por ato, do mais
+     * recente ao mais antigo; vazio em stub e externo. Não são relações: ver `alteracoes-anotadas.ts`.
+     */
+    readonly alteracoesAnotadas: (id: string) => Effect.Effect<AlteracaoAnotada[], Sql.FalhaNaConsulta>;
     readonly relacoes: (id: string) => Effect.Effect<{ id: string; saida: Relacao[]; entrada: Relacao[] }>;
     /** Atos que revogam a norma no todo. */
     readonly sucessoras: (id: string) => Effect.Effect<string[]>;
@@ -190,6 +205,13 @@ const make = Effect.gen(function* () {
   }, prover);
 
   return Normas.of({
+    alteracoesAnotadas: Effect.fn("Normas.alteracoesAnotadas")(function* (id: string) {
+      const linhas = yield* linhasNotas(
+        "SELECT dispositivo, notas_json AS notas FROM dispositivos WHERE norma_id = ? AND notas_json <> '[]' ORDER BY ordem",
+        [ato(id)],
+      );
+      return alteracoesAnotadas(linhas, fontes.registro);
+    }, prover),
     resolver: Effect.fn("Normas.resolver")((texto: string) =>
       Effect.succeed(resolucaoComEntrada(texto, fontes.registro)),
     ),

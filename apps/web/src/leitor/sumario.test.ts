@@ -2,6 +2,7 @@ import { describe, expect, it } from "@effect/vitest";
 import type { Ancora } from "@simplifica-if/contratos-app";
 import {
   artigoPedido,
+  artigosDosDispositivos,
   conteudoDoIndice,
   faixaDeArtigos,
   faixaPorExtenso,
@@ -64,6 +65,15 @@ describe("o índice do leitor", () => {
 
   it("as linhas dos cabeçalhos de divisão, sem o tópico", () => {
     expect([...linhasDeDivisao([SUMARIO[0]!, SUMARIO[7]!])]).toEqual([10, 11, 12]);
+  });
+
+  it("os artigos dos dispositivos alterados, sem repetir e na ordem dada", () => {
+    const ancoras = [artigo("art1", 5), artigo("art36A", 9), artigo("anexo1-art1", 20)];
+    const artigos = artigosDosDispositivos(
+      ["#art36A-par1", "#art36A-ii", "#art1", "#anexo1-art1-i", "#anexo1-item3", "#art99"],
+      ancoras,
+    );
+    expect(artigos.map((a) => a.id)).toEqual(["art36A", "art1", "anexo1-art1"]);
   });
 
   it("acha o artigo pedido: o do ato antes do do anexo", () => {

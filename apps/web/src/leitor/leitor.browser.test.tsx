@@ -80,6 +80,11 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await expect.element(norma.getByText("O PPC descreve o acompanhamento de egressos (art. 28, XVIII).")).toBeVisible();
   await expect.element(norma.getByText(/Não faz parte do texto oficial/)).toBeVisible();
   await expect.element(norma.getByText("Notas da fonte (1)")).toBeVisible();
+  // quem alterou a norma, pelas notas de redação do texto, com o artigo atingido
+  const alterada = norma.getByText("Alterada por (1)");
+  await alterada.click();
+  await expect.element(norma.getByText("Resolução CNE/CP nº 3/2026")).toBeVisible();
+  await expect.element(norma.getByRole("button", { name: "Ir ao artigo 28" })).toBeVisible();
 
   // "Copiar citação": o texto do inciso com o caput e a referência formal.
   const escrever = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);

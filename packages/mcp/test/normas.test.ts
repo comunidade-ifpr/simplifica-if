@@ -438,6 +438,21 @@ describe("ficha_norma", () => {
       expect(vigente.texto).toContain("**Notas da fonte:**\n- Texto convertido do PDF assinado.");
       expect(vigente.texto.indexOf("**Vigência em")).toBeLessThan(vigente.texto.indexOf("**Pontos-chave"));
       expect(vigente.texto.indexOf("**Notas da fonte:**")).toBeLessThan(vigente.texto.indexOf("**Relações"));
+      // as alterações anotadas no texto: por ato, sem relação registrada nem efeito na vigência
+      expect(vigente.resposta.dados.alteracoes_anotadas).toEqual([
+        {
+          ato: "Resolução CNE/CP nº 3/2026",
+          id: "br/cne-cp/res/2026/3",
+          link: null,
+          redacao: 1,
+          inclusao: 0,
+          revogacao: 0,
+          dispositivos: ["#art28-vii"],
+        },
+      ]);
+      expect(vigente.texto).toContain(
+        "**Alterações anotadas no texto** (1 ato; já estão na redação da base e não mudam a vigência calculada): Resolução CNE/CP nº 3/2026 (1 dispositivo).",
+      );
       const stub = yield* chamar(fichaNorma, { id: STUB }, ctx, TETO_FICHA_NORMA);
       expect(stub.resposta.dados.norma.situacao).toBe("stub");
       expect(tipos(stub.resposta.avisos)).toContain(`stub-sem-texto ${STUB}`);

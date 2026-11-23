@@ -11,7 +11,7 @@
  * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar); o texto do `lerLink`
  *   (o mesmo do `resources/read` do MCP) fica para um link de outro tipo.
  */
-import type { LinkLido } from "@simplifica-if/contratos-app";
+import type { Ancora, LinkLido } from "@simplifica-if/contratos-app";
 import { CheckIcon, ClipboardCopyIcon, InfoIcon, LocateFixedIcon } from "lucide-react";
 import { useState } from "react";
 import { useApi } from "../contexto.tsx";
@@ -27,13 +27,14 @@ import { Documento } from "./Documento.tsx";
 import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
 import { BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from "./pecas.tsx";
 import { Sumario } from "./Sumario.tsx";
-import { conteudoDoIndice } from "./sumario.ts";
+import { artigosDosDispositivos, conteudoDoIndice, type Destino, IR_PARA, numeroDoArtigo } from "./sumario.ts";
 import {
   citacaoDaNorma,
   citacaoDoDispositivo,
   citacaoDoPpc,
   dataCurta,
   datasDoCabecalho,
+  type FichaNorma,
   nomeDaRelacao,
   type Relacao,
   type Selo,
@@ -197,6 +198,69 @@ function MetadadosEditoriais({
   );
 }
 
+/**
+ * Os atos que alteraram a norma, pelas notas de redação do texto oficial ("Redação dada pela Lei nº ..."):
+ * um bloco recolhido, com os artigos atingidos por ato, que levam ao artigo no texto. Não são as relações
+ * registradas (essas ficam na lateral): o ato quase nunca tem texto na base.
+ */
+function AlteracoesAnotadas({
+  alteracoes,
+  ancoras,
+  aoAbrirLink,
+}: {
+  readonly alteracoes: FichaNorma["alteracoes_anotadas"];
+  readonly ancoras: ReadonlyArray<Ancora> | null;
+  readonly aoAbrirLink: (link: string) => void;
+}) {
+  if (alteracoes.length === 0) return null;
+  const irPara = (destino: Destino) => window.dispatchEvent(new CustomEvent<Destino>(IR_PARA, { detail: destino }));
+  return (
+    <details className="nao-imprimir rounded-xl border border-border px-4 py-2.5">
+      <summary className="cursor-pointer font-semibold text-small">
+        Alterada por <span className="font-normal text-muted-foreground">({alteracoes.length})</span>
+      </summary>
+      <p className="mt-1.5 text-muted-foreground text-micro">
+        Atos que mudaram dispositivos desta norma, segundo as notas do texto oficial, do mais recente ao mais antigo. As
+        mudanças já estão no texto abaixo.
+      </p>
+      <ul className="mt-1.5 max-w-[76ch] space-y-1.5 text-sm">
+        {alteracoes.map((a) => {
+          const artigos = ancoras === null ? [] : artigosDosDispositivos(a.dispositivos, ancoras);
+          const n = a.dispositivos.length;
+          return (
+            <li key={a.id}>
+              {a.link !== null ? <BotaoLink link={a.link} aoAbrirLink={aoAbrirLink} /> : <span>{a.ato}</span>}
+              <span className="text-muted-foreground text-small">
+                {" "}
+                · {n} {n === 1 ? "dispositivo" : "dispositivos"}
+              </span>
+              {artigos.length > 0 ? (
+                <span className="text-small">
+                  {" "}
+                  ·{" "}
+                  {artigos.map((artigo, i) => (
+                    <span key={artigo.id}>
+                      {i > 0 ? ", " : null}
+                      <button
+                        type="button"
+                        className="underline decoration-dotted underline-offset-2 hover:text-foreground"
+                        aria-label={`Ir ao artigo ${numeroDoArtigo(artigo.id)}`}
+                        onClick={() => irPara({ id: artigo.id, linha: artigo.linha_inicio })}
+                      >
+                        art. {numeroDoArtigo(artigo.id)}
+                      </button>
+                    </span>
+                  ))}
+                </span>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+    </details>
+  );
+}
+
 function Relacoes({
   saida,
   entrada,
@@ -256,7 +320,7 @@ function LeitorNorma({
   return (
     <ComCarga carga={ficha} titulo="Não foi possível ler esta norma">
       {({ dados }) => {
-        const { norma, relacoes, sucessoras, transicoes } = dados;
+        const { norma, relacoes, sucessoras, transicoes, alteracoes_anotadas: anotadas } = dados;
         const fonteOficial = norma.fonte_url;
         const selos = selosDaNorma(dados);
         const lido = dispositivo.fase === "lido" ? dispositivo.valor.dados.dispositivos[0] : undefined;
@@ -310,6 +374,11 @@ function LeitorNorma({
                 {norma.fonte_referencia !== null ? <span>Fonte: {norma.fonte_referencia}</span> : null}
               </Fatos>
               <MetadadosEditoriais norma={norma} aoAbrirLink={aoAbrirLink} />
+              <AlteracoesAnotadas
+                alteracoes={anotadas}
+                ancoras={documento.fase === "lido" ? documento.valor.dados.ancoras : null}
+                aoAbrirLink={aoAbrirLink}
+              />
             </Cabecalho>
 
             <Corpo

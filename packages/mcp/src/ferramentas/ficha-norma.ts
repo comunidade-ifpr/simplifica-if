@@ -14,6 +14,8 @@ import { esquemaData, esquemaIdNorma, limitarTexto, situacaoDaNorma, tetoDoCorpo
 
 /** Teto do texto para a IA (a especificação não fixa um para esta ferramenta). */
 export const TETO_FICHA_NORMA = 12_000;
+/** Atos listados em "Alterações anotadas no texto", do mais recente; o JSON traz todos, com os dispositivos. */
+const ATOS_ANOTADOS = 10;
 /** Evidência das relações no texto; o JSON traz o trecho inteiro. */
 const TRECHO_RELACAO = 200;
 
@@ -69,6 +71,23 @@ export const Dados = Schema.Struct({
     ),
     pendencias: Schema.Array(Schema.String),
   }),
+  /**
+   * As alterações que o texto consolidado anota ("Redação dada pela Lei nº ..."), por ato, do mais
+   * recente ao mais antigo. Já estão na redação da base e não entram no cálculo da vigência; o ato
+   * quase nunca tem texto na base (`link` nulo). Valem o que valem as notas da fonte oficial.
+   */
+  alteracoes_anotadas: Schema.Array(
+    Schema.Struct({
+      ato: Schema.String,
+      id: Schema.String,
+      link: Schema.NullOr(EsquemaLink),
+      /** Dispositivos com redação dada pelo ato, incluídos por ele e revogados por ele. */
+      redacao: Schema.Int,
+      inclusao: Schema.Int,
+      revogacao: Schema.Int,
+      dispositivos: Schema.Array(Schema.String),
+    }),
+  ),
   relacoes: Schema.Struct({ entrada: Schema.Array(Relacao), saida: Schema.Array(Relacao) }),
   sucessoras: Schema.Array(Schema.String),
   transicoes: Schema.Array(
@@ -97,7 +116,7 @@ export const fichaNorma = definirFerramenta({
   entrada: Entrada,
   dados: Dados,
   texto(resposta) {
-    const { norma, vigencia, relacoes, sucessoras, transicoes } = resposta.dados;
+    const { norma, vigencia, relacoes, sucessoras, transicoes, alteracoes_anotadas: anotadas } = resposta.dados;
     const titulos = new Map<string, string>([[norma.id, norma.titulo]]);
     const nome = (id: string, dispositivo?: string | null) => {
       const titulo = titulos.get(id);
@@ -133,6 +152,19 @@ export const fichaNorma = definirFerramenta({
       }),
     ];
     partes.push(linhasVigencia.join("\n"));
+    if (anotadas.length) {
+      const item = (a: (typeof anotadas)[number]) => {
+        const n = a.dispositivos.length;
+        return `${a.link ? comLink(a.ato, a.link) : a.ato} (${n} ${n === 1 ? "dispositivo" : "dispositivos"})`;
+      };
+      const resto = anotadas.length - ATOS_ANOTADOS;
+      partes.push(
+        `**Alterações anotadas no texto** (${anotadas.length} ${anotadas.length === 1 ? "ato" : "atos"}; já estão na redação da base e não mudam a vigência calculada): ` +
+          anotadas.slice(0, ATOS_ANOTADOS).map(item).join("; ") +
+          (resto > 0 ? `; e mais ${resto} anteriores (todos no JSON, com os dispositivos)` : "") +
+          ". Para ver o que mudou num dispositivo, leia-o: a nota de redação vem com ele.",
+      );
+    }
     if (sucessoras.length) partes.push(`**Sucessoras:** ${sucessoras.map((s) => nome(s)).join(", ")}.`);
     if (transicoes.length) {
       partes.push(

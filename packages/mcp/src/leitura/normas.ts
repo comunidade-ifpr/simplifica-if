@@ -118,6 +118,20 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
     const avisos: Aviso[] = vigencia.pendencias.map((p) => ({ tipo: "vigencia-a-confirmar", mensagem: p, ref: ato }));
     avisos.push(...avisosDasNormas([resumo]).filter((a) => a.tipo !== "vigencia-a-confirmar"));
     const sucessoras = yield* normas.sucessoras(ato);
+    const anotadas = yield* normas.alteracoesAnotadas(ato);
+    const leitor = leitorDeNormas(normas);
+    const alteracoesAnotadas = yield* Effect.forEach(anotadas, (a) =>
+      Effect.map(leitor(a.id), (registrada) => ({
+        ato: a.ato,
+        id: a.id,
+        // só o ato com texto na base abre no leitor
+        link: registrada?.situacao === "base" ? linkNorma(a.id) : null,
+        redacao: a.redacao,
+        inclusao: a.inclusao,
+        revogacao: a.revogacao,
+        dispositivos: a.dispositivos,
+      })),
+    );
     return responder(
       base,
       {
@@ -150,6 +164,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
           pendencias: vigencia.pendencias,
         },
         relacoes: { entrada: relacoes.entrada.map(relacaoSaida), saida: relacoes.saida.map(relacaoSaida) },
+        alteracoes_anotadas: alteracoesAnotadas,
         sucessoras,
         transicoes: vigencia.transicoes.map((t) => ({
           id: t.id,

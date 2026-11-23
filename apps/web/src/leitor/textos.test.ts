@@ -62,6 +62,7 @@ const ficha = (mudar: {
     eventos: [],
     pendencias: mudar.pendencias ?? [],
   },
+  alteracoes_anotadas: [],
   relacoes: { entrada: [], saida: [] },
   sucessoras: [],
   transicoes: [],

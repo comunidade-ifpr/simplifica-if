@@ -1045,6 +1045,62 @@
                 ],
                 "additionalProperties": false
               },
+              "alteracoes_anotadas": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ato": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "link": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^ifpr:\\/\\/[\\s\\S]{1,}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "redacao": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "inclusao": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revogacao": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "dispositivos": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "ato",
+                    "id",
+                    "link",
+                    "redacao",
+                    "inclusao",
+                    "revogacao",
+                    "dispositivos"
+                  ],
+                  "additionalProperties": false
+                }
+              },
               "relacoes": {
                 "type": "object",
                 "properties": {
@@ -1332,6 +1388,7 @@
             "required": [
               "norma",
               "vigencia",
+              "alteracoes_anotadas",
               "relacoes",
               "sucessoras",
               "transicoes"
@@ -7864,7 +7921,7 @@
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-7aca6973",
+            "versao": "dev-3cac3471",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -7976,6 +8033,7 @@
                 }
               ]
             },
+            "alteracoes_anotadas": [],
             "sucessoras": [
               "br/cne-cp/res/2026/2"
             ],
@@ -8077,12 +8135,12 @@
         "content": [
           {
             "type": "text",
-            "text": "**[Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394)** — `br/lei/1996/9394`; parcialmente revogada\n> Estabelece as diretrizes e bases da educação nacional.\nPresidência da República; Lei nº 9394; de 20/12/1996; fonte oficial: https://www.planalto.gov.br/ccivil_03/leis/l9394.htm\n\n**Vigência em 13/11/2026:** parcialmente revogada; início: 23/12/1996.\n- alteração por [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) (acrescenta os arts. 26-A, 79-A e 79-B): efeito em 10/01/2003; ocorreu na data: sim\n- alteração por [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) (#art26A): efeito em 11/03/2008; ocorreu na data: sim\n- alteração por [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) (#art82): efeito em 26/09/2008; ocorreu na data: sim\n- revogação por [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) (#art82-parunico): efeito em 26/09/2008; ocorreu na data: sim\n- alteração por [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): efeito em 01/08/2024; ocorreu na data: sim\n- revogação por [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): efeito em 01/08/2024; ocorreu na data: sim\n- alteração por [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) (#art26-par9B): efeito em 14/07/2026; ocorreu na data: sim\n\n**Notas da fonte:**\n- Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: arts. 4º (inciso XIII), 11 (inciso V), 12 (inciso VIII), 25-A, 56, 61 (§§ 1º e 2º), 67 (inciso II) e 70 (inciso VI).\n\n**Relações (esta norma é a origem):**\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1961/4024](ifpr://norma/br/lei/1961/4024) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"Revogam-se as disposições das Leis nºs 4.024, de 20 de dezembro de 1961, e 5.540, de 28 de novembro de 1968, não alteradas\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1968/5540](ifpr://norma/br/lei/1968/5540) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"5.540, de 28 de novembro de 1968, não alteradas pelas Leis nºs 9.131\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1971/5692](ifpr://norma/br/lei/1971/5692): \"as Leis nºs 5.692, de 11 de agosto de 1971\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1982/7044](ifpr://norma/br/lei/1982/7044): \"7.044, de 18 de outubro de 1982\"\n\n**Relações (esta norma é o alvo):**\n- [br/cne-cp/res/2026/2](ifpr://norma/br/cne-cp/res/2026/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"e nos termos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/cne-ceb/parecer/2002/31#secao2](ifpr://norma/br/cne-ceb/parecer/2002/31#secao2) fundamenta-se-em [Lei nº 9.394/1996, #art90](ifpr://norma/br/lei/1996/9394#art90): \"com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado\"\n- [br/cne-ceb/res/2024/2](ifpr://norma/br/cne-ceb/res/2024/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (acrescenta os arts. 26-A, 79-A e 79-B): \"passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B\"\n- [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) altera [Lei nº 9.394/1996, #art26A](ifpr://norma/br/lei/1996/9394#art26A): \"O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) altera [Lei nº 9.394/1996, #art82](ifpr://norma/br/lei/1996/9394#art82): \"O art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) revoga [Lei nº 9.394/1996, #art82-parunico](ifpr://norma/br/lei/1996/9394#art82-parunico): \"o parágrafo único do art. 82 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): \"A Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), passa a vigorar com as seguintes alterações\"\n- [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) revoga [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): \"Ficam revogados os seguintes dispositivos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) altera [Lei nº 9.394/1996, #art26-par9B](ifpr://norma/br/lei/1996/9394#art26-par9B): \"passa a vigorar acrescido do seguinte § 9º-B\"\n- [br/mec/portaria/2024/902](ifpr://norma/br/mec/portaria/2024/902) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"no art. 41 da Lei nº 9.394, de 20 de dezembro de 1996\"\n\nBase de 13/11/2026 (versão dev)."
+            "text": "**[Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394)** — `br/lei/1996/9394`; parcialmente revogada\n> Estabelece as diretrizes e bases da educação nacional.\nPresidência da República; Lei nº 9394; de 20/12/1996; fonte oficial: https://www.planalto.gov.br/ccivil_03/leis/l9394.htm\n\n**Vigência em 13/11/2026:** parcialmente revogada; início: 23/12/1996.\n- alteração por [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) (acrescenta os arts. 26-A, 79-A e 79-B): efeito em 10/01/2003; ocorreu na data: sim\n- alteração por [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) (#art26A): efeito em 11/03/2008; ocorreu na data: sim\n- alteração por [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) (#art82): efeito em 26/09/2008; ocorreu na data: sim\n- revogação por [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) (#art82-parunico): efeito em 26/09/2008; ocorreu na data: sim\n- alteração por [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): efeito em 01/08/2024; ocorreu na data: sim\n- revogação por [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): efeito em 01/08/2024; ocorreu na data: sim\n- alteração por [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) (#art26-par9B): efeito em 14/07/2026; ocorreu na data: sim\n\n**Alterações anotadas no texto** (63 atos; já estão na redação da base e não mudam a vigência calculada): [Lei nº 15.468/2026](ifpr://norma/br/lei/2026/15468) (1 dispositivo); Lei nº 15.462/2026 (1 dispositivo); Lei nº 15.369/2026 (1 dispositivo); Lei nº 15.360/2026 (1 dispositivo); Lei nº 15.326/2026 (2 dispositivos); Lei nº 15.276/2025 (1 dispositivo); Lei nº 15.231/2025 (3 dispositivos); Lei nº 15.017/2024 (4 dispositivos); Lei nº 15.001/2024 (24 dispositivos); Lei nº 14.986/2024 (2 dispositivos); e mais 53 anteriores (todos no JSON, com os dispositivos). Para ver o que mudou num dispositivo, leia-o: a nota de redação vem com ele.\n\n**Notas da fonte:**\n- Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: arts. 4º (inciso XIII), 11 (inciso V), 12 (inciso VIII), 25-A, 56, 61 (§§ 1º e 2º), 67 (inciso II) e 70 (inciso VI).\n\n**Relações (esta norma é a origem):**\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1961/4024](ifpr://norma/br/lei/1961/4024) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"Revogam-se as disposições das Leis nºs 4.024, de 20 de dezembro de 1961, e 5.540, de 28 de novembro de 1968, não alteradas\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1968/5540](ifpr://norma/br/lei/1968/5540) (disposições não alteradas pelas Leis nºs 9.131/1995 e 9.192/1995): \"5.540, de 28 de novembro de 1968, não alteradas pelas Leis nºs 9.131\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1971/5692](ifpr://norma/br/lei/1971/5692): \"as Leis nºs 5.692, de 11 de agosto de 1971\"\n- [Lei nº 9.394/1996, #art92](ifpr://norma/br/lei/1996/9394#art92) revoga [br/lei/1982/7044](ifpr://norma/br/lei/1982/7044): \"7.044, de 18 de outubro de 1982\"\n\n**Relações (esta norma é o alvo):**\n- [br/cne-cp/res/2026/2](ifpr://norma/br/cne-cp/res/2026/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"e nos termos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/cne-ceb/parecer/2002/31#secao2](ifpr://norma/br/cne-ceb/parecer/2002/31#secao2) fundamenta-se-em [Lei nº 9.394/1996, #art90](ifpr://norma/br/lei/1996/9394#art90): \"com a competência cometida ao Conselho Nacional de Educação, explícita no artigo 90 retrocitado\"\n- [br/cne-ceb/res/2024/2](ifpr://norma/br/cne-ceb/res/2024/2) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"36-C, 37 e 38 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2003/10639#art1](ifpr://norma/br/lei/2003/10639#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (acrescenta os arts. 26-A, 79-A e 79-B): \"passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B\"\n- [br/lei/2008/11645#art1](ifpr://norma/br/lei/2008/11645#art1) altera [Lei nº 9.394/1996, #art26A](ifpr://norma/br/lei/1996/9394#art26A): \"O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art20](ifpr://norma/br/lei/2008/11788#art20) altera [Lei nº 9.394/1996, #art82](ifpr://norma/br/lei/1996/9394#art82): \"O art. 82 da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação\"\n- [br/lei/2008/11788#art22](ifpr://norma/br/lei/2008/11788#art22) revoga [Lei nº 9.394/1996, #art82-parunico](ifpr://norma/br/lei/1996/9394#art82-parunico): \"o parágrafo único do art. 82 da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2024/14945#art1](ifpr://norma/br/lei/2024/14945#art1) altera [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D): \"A Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), passa a vigorar com as seguintes alterações\"\n- [br/lei/2024/14945#art11](ifpr://norma/br/lei/2024/14945#art11) revoga [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394) (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36): \"Ficam revogados os seguintes dispositivos da Lei nº 9.394, de 20 de dezembro de 1996\"\n- [br/lei/2026/15468#art1](ifpr://norma/br/lei/2026/15468#art1) altera [Lei nº 9.394/1996, #art26-par9B](ifpr://norma/br/lei/1996/9394#art26-par9B): \"passa a vigorar acrescido do seguinte § 9º-B\"\n- [br/mec/portaria/2024/902](ifpr://norma/br/mec/portaria/2024/902) fundamenta-se-em [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): \"no art. 41 da Lei nº 9.394, de 20 de dezembro de 1996\"\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-7aca6973",
+            "versao": "dev-3cac3471",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -8407,6 +8465,976 @@
                 }
               ]
             },
+            "alteracoes_anotadas": [
+              {
+                "ato": "Lei nº 15.468/2026",
+                "id": "br/lei/2026/15468",
+                "link": "ifpr://norma/br/lei/2026/15468",
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26-par9B"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.462/2026",
+                "id": "br/lei/2026/15462",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art67-ii"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.369/2026",
+                "id": "br/lei/2026/15369",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art11-v"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.360/2026",
+                "id": "br/lei/2026/15360",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art25A"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.326/2026",
+                "id": "br/lei/2026/15326",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art61-par1",
+                  "#art61-par2"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.276/2025",
+                "id": "br/lei/2025/15276",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art4-xiii"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.231/2025",
+                "id": "br/lei/2025/15231",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art12-viii",
+                  "#art12-viii-al-a",
+                  "#art12-viii-al-b"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.017/2024",
+                "id": "br/lei/2024/15017",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 4,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art5-par6",
+                  "#art5-par7",
+                  "#art5-par8",
+                  "#art5A"
+                ]
+              },
+              {
+                "ato": "Lei nº 15.001/2024",
+                "id": "br/lei/2024/15001",
+                "link": null,
+                "redacao": 2,
+                "inclusao": 22,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art3-xv",
+                  "#art5-par1-v",
+                  "#art14A",
+                  "#art14A-i",
+                  "#art14A-ii",
+                  "#art14A-iii",
+                  "#art14A-iv",
+                  "#art14A-v",
+                  "#art14A-vi",
+                  "#art14A-vii",
+                  "#art56",
+                  "#art72",
+                  "#art72-i",
+                  "#art72-ii",
+                  "#art72-parunico",
+                  "#art72-parunico-i",
+                  "#art72-parunico-ii",
+                  "#art72-parunico-iii",
+                  "#art77-v",
+                  "#art77-par3",
+                  "#art77-par3-i",
+                  "#art77-par3-ii",
+                  "#art77-par3-ii-al-a",
+                  "#art77-par3-ii-al-b"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.986/2024",
+                "id": "br/lei/2024/14986",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26B",
+                  "#art26B-parunico"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.952/2024",
+                "id": "br/lei/2024/14952",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 6,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art81A",
+                  "#art81A-i",
+                  "#art81A-ii",
+                  "#art81A-iii",
+                  "#art81A-par1",
+                  "#art81A-par2"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.945/2024",
+                "id": "br/lei/2024/14945",
+                "link": "ifpr://norma/br/lei/2024/14945",
+                "redacao": 14,
+                "inclusao": 28,
+                "revogacao": 1,
+                "dispositivos": [
+                  "#art24-i",
+                  "#art24-par1",
+                  "#art26-par7",
+                  "#art35A",
+                  "#art35B",
+                  "#art35B-par1",
+                  "#art35B-par1-i",
+                  "#art35B-par1-ii",
+                  "#art35B-par1-iii",
+                  "#art35B-par1-iv",
+                  "#art35B-par2",
+                  "#art35B-par3",
+                  "#art35B-par4",
+                  "#art35B-par4-i",
+                  "#art35B-par4-ii",
+                  "#art35B-par4-iii",
+                  "#art35C",
+                  "#art35C-parunico",
+                  "#art35D",
+                  "#art35D-i",
+                  "#art35D-ii",
+                  "#art35D-iii",
+                  "#art35D-iv",
+                  "#art35D-par1",
+                  "#art35D-par2",
+                  "#art35D-par3",
+                  "#art36",
+                  "#art36-v",
+                  "#art36-par1",
+                  "#art36-par1A",
+                  "#art36-par2A",
+                  "#art36-par2B",
+                  "#art36-par2C",
+                  "#art36-par2D",
+                  "#art36-par3",
+                  "#art36-par5",
+                  "#art36-par6",
+                  "#art36-par6-ii",
+                  "#art36-par8",
+                  "#art36-par8A",
+                  "#art36-par10",
+                  "#art36-par11",
+                  "#art36-par12"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.862/2024",
+                "id": "br/lei/2024/14862",
+                "link": null,
+                "redacao": 2,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art10-vii",
+                  "#art10-ix",
+                  "#art11-vi"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.767/2023",
+                "id": "br/lei/2023/14767",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art28-i"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.685/2023",
+                "id": "br/lei/2023/14685",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art5-par1-iv"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.679/2023",
+                "id": "br/lei/2023/14679",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art61-par1-iv"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.645/2023",
+                "id": "br/lei/2023/14645",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 12,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art9-viiA",
+                  "#art36B-par1",
+                  "#art36B-par2",
+                  "#art36B-par3",
+                  "#art36B-par3-i",
+                  "#art36B-par3-ii",
+                  "#art39-par4",
+                  "#art42A",
+                  "#art42A-par1",
+                  "#art42A-par2",
+                  "#art42A-par3",
+                  "#art42A-par4",
+                  "#art42B"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.644/2023",
+                "id": "br/lei/2023/14644",
+                "link": null,
+                "redacao": 3,
+                "inclusao": 17,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art3-viii",
+                  "#art10-viii",
+                  "#art11-vii",
+                  "#art12-xii",
+                  "#art14",
+                  "#art14-ii",
+                  "#art14-par1",
+                  "#art14-par1-i",
+                  "#art14-par1-ii",
+                  "#art14-par1-iii",
+                  "#art14-par1-iv",
+                  "#art14-par1-v",
+                  "#art14-par2",
+                  "#art14-par2-i",
+                  "#art14-par2-ii",
+                  "#art14-par2-iii",
+                  "#art14-par3",
+                  "#art14-par3-i",
+                  "#art14-par3-ii",
+                  "#art90A"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.560/2023",
+                "id": "br/lei/2023/14560",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art70-ix"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.533/2023",
+                "id": "br/lei/2023/14533",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 3,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art4-xii",
+                  "#art4-parunico",
+                  "#art26-par11"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.407/2022",
+                "id": "br/lei/2022/14407",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art4-xi",
+                  "#art22-parunico"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.333/2022",
+                "id": "br/lei/2022/14333",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art4-ix"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.191/2021",
+                "id": "br/lei/2021/14191",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 18,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art3-xiv",
+                  "#art60A",
+                  "#art60A-par1",
+                  "#art60A-par2",
+                  "#art60A-par3",
+                  "#art60B",
+                  "#art60B-parunico",
+                  "#art78A",
+                  "#art78A-i",
+                  "#art78A-ii",
+                  "#art79C",
+                  "#art79C-par1",
+                  "#art79C-par2",
+                  "#art79C-par2-i",
+                  "#art79C-par2-ii",
+                  "#art79C-par2-iii",
+                  "#art79C-par2-iv",
+                  "#art79C-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 14.164/2021",
+                "id": "br/lei/2021/14164",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26-par9"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.868/2019",
+                "id": "br/lei/2019/13868",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 3,
+                "revogacao": 1,
+                "dispositivos": [
+                  "#art16-ii",
+                  "#art19-iii",
+                  "#art19-par1",
+                  "#art19-par2",
+                  "#art20"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.840/2019",
+                "id": "br/lei/2019/13840",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art12-xi"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.826/2019",
+                "id": "br/lei/2019/13826",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art44-par1"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.796/2019",
+                "id": "br/lei/2019/13796",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 7,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art7A",
+                  "#art7A-i",
+                  "#art7A-ii",
+                  "#art7A-par1",
+                  "#art7A-par2",
+                  "#art7A-par3",
+                  "#art7A-par4"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.716/2018",
+                "id": "br/lei/2018/13716",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art4A"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.666/2018",
+                "id": "br/lei/2018/13666",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26-par9A"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.663/2018",
+                "id": "br/lei/2018/13663",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art12-ix",
+                  "#art12-x"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.632/2018",
+                "id": "br/lei/2018/13632",
+                "link": null,
+                "redacao": 2,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art3-xiii",
+                  "#art37",
+                  "#art58-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.530/2017",
+                "id": "br/lei/2017/13530",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 3,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art46-par3",
+                  "#art46-par4",
+                  "#art46-par5"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.490/2017",
+                "id": "br/lei/2017/13490",
+                "link": null,
+                "redacao": 7,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art53-par1",
+                  "#art53-par1-i",
+                  "#art53-par1-ii",
+                  "#art53-par1-iii",
+                  "#art53-par1-iv",
+                  "#art53-par1-v",
+                  "#art53-par1-vi",
+                  "#art53-par2",
+                  "#art53-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.478/2017",
+                "id": "br/lei/2017/13478",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 4,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art62B",
+                  "#art62B-par1",
+                  "#art62B-par2",
+                  "#art62B-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.415/2017",
+                "id": "br/lei/2017/13415",
+                "link": null,
+                "redacao": 7,
+                "inclusao": 9,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art24-par2",
+                  "#art26-par2",
+                  "#art26-par5",
+                  "#art26-par10",
+                  "#art36-i",
+                  "#art36-ii",
+                  "#art36-iii",
+                  "#art36-iv",
+                  "#art36-par6-i",
+                  "#art36-par7",
+                  "#art36-par9",
+                  "#art44-par3",
+                  "#art61-iv",
+                  "#art61-v",
+                  "#art62",
+                  "#art62-par8"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.278/2016",
+                "id": "br/lei/2016/13278",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26-par6"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.234/2015",
+                "id": "br/lei/2015/13234",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 3,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art9-ivA",
+                  "#art59A",
+                  "#art59A-parunico"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.184/2015",
+                "id": "br/lei/2015/13184",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art44-par2"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.174/2015",
+                "id": "br/lei/2015/13174",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art43-viii"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.168/2015",
+                "id": "br/lei/2015/13168",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 15,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art47-par1",
+                  "#art47-par1-i",
+                  "#art47-par1-i-al-a",
+                  "#art47-par1-i-al-b",
+                  "#art47-par1-i-al-c",
+                  "#art47-par1-i-al-d",
+                  "#art47-par1-ii",
+                  "#art47-par1-iii",
+                  "#art47-par1-iv",
+                  "#art47-par1-iv-al-a",
+                  "#art47-par1-iv-al-b",
+                  "#art47-par1-iv-al-c",
+                  "#art47-par1-v",
+                  "#art47-par1-v-al-a",
+                  "#art47-par1-v-al-b",
+                  "#art47-par1-v-al-c"
+                ]
+              },
+              {
+                "ato": "Lei nº 13.006/2014",
+                "id": "br/lei/2014/13006",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26-par8"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.960/2014",
+                "id": "br/lei/2014/12960",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art28-parunico"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.796/2013",
+                "id": "br/lei/2013/12796",
+                "link": null,
+                "redacao": 19,
+                "inclusao": 17,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art3-xii",
+                  "#art4-i",
+                  "#art4-i-al-a",
+                  "#art4-i-al-b",
+                  "#art4-i-al-c",
+                  "#art4-ii",
+                  "#art4-iii",
+                  "#art4-iv",
+                  "#art4-viii",
+                  "#art5",
+                  "#art5-par1",
+                  "#art5-par1-i",
+                  "#art6",
+                  "#art26",
+                  "#art29",
+                  "#art30-ii",
+                  "#art31",
+                  "#art31-i",
+                  "#art31-ii",
+                  "#art31-iii",
+                  "#art31-iv",
+                  "#art31-v",
+                  "#art58",
+                  "#art59",
+                  "#art60-parunico",
+                  "#art62-par4",
+                  "#art62-par5",
+                  "#art62-par6",
+                  "#art62-par7",
+                  "#art62A",
+                  "#art62A-parunico",
+                  "#art67-par3",
+                  "#art87-par2",
+                  "#art87-par3-i",
+                  "#art87-par4",
+                  "#art87A"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.603/2012",
+                "id": "br/lei/2012/12603",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art80-par4-i"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.472/2011",
+                "id": "br/lei/2011/12472",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art32-par6"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.416/2011",
+                "id": "br/lei/2011/12416",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art79-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.061/2009",
+                "id": "br/lei/2009/12061",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art10-vi"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.056/2009",
+                "id": "br/lei/2009/12056",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 3,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art62-par1",
+                  "#art62-par2",
+                  "#art62-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.014/2009",
+                "id": "br/lei/2009/12014",
+                "link": null,
+                "redacao": 3,
+                "inclusao": 4,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art61",
+                  "#art61-i",
+                  "#art61-ii",
+                  "#art61-iii",
+                  "#art61-par1-i",
+                  "#art61-par1-ii",
+                  "#art61-par1-iii"
+                ]
+              },
+              {
+                "ato": "Lei nº 12.013/2009",
+                "id": "br/lei/2009/12013",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art12-vii"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.788/2008",
+                "id": "br/lei/2008/11788",
+                "link": "ifpr://norma/br/lei/2008/11788",
+                "redacao": 2,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art82",
+                  "#art82-parunico"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.741/2008",
+                "id": "br/lei/2008/11741",
+                "link": null,
+                "redacao": 4,
+                "inclusao": 23,
+                "revogacao": 2,
+                "dispositivos": [
+                  "#art36-par2",
+                  "#art36-par4",
+                  "#art36A",
+                  "#art36A-parunico",
+                  "#art36B",
+                  "#art36B-i",
+                  "#art36B-ii",
+                  "#art36B-par1-i",
+                  "#art36B-par1-ii",
+                  "#art36B-par1-iii",
+                  "#art36C",
+                  "#art36C-i",
+                  "#art36C-ii",
+                  "#art36C-ii-al-a",
+                  "#art36C-ii-al-b",
+                  "#art36C-ii-al-c",
+                  "#art36D",
+                  "#art36D-parunico",
+                  "#art37-par3",
+                  "#art39",
+                  "#art39-par1",
+                  "#art39-par2",
+                  "#art39-par2-i",
+                  "#art39-par2-ii",
+                  "#art39-par2-iii",
+                  "#art39-par3",
+                  "#art41",
+                  "#art41-parunico",
+                  "#art42"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.700/2008",
+                "id": "br/lei/2008/11700",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art4-x"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.645/2008",
+                "id": "br/lei/2008/11645",
+                "link": "ifpr://norma/br/lei/2008/11645",
+                "redacao": 3,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26A",
+                  "#art26A-par1",
+                  "#art26A-par2"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.632/2007",
+                "id": "br/lei/2007/11632",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art44-i"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.525/2007",
+                "id": "br/lei/2007/11525",
+                "link": null,
+                "redacao": 0,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art32-par5"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.330/2006",
+                "id": "br/lei/2006/11330",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art87-par3"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.301/2006",
+                "id": "br/lei/2006/11301",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 1,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art67-par1",
+                  "#art67-par2"
+                ]
+              },
+              {
+                "ato": "Lei nº 11.274/2006",
+                "id": "br/lei/2006/11274",
+                "link": null,
+                "redacao": 4,
+                "inclusao": 0,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art32",
+                  "#art87-par3-i-al-a",
+                  "#art87-par3-i-al-b",
+                  "#art87-par3-i-al-c"
+                ]
+              },
+              {
+                "ato": "Lei nº 10.793/2003",
+                "id": "br/lei/2003/10793",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 6,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art26-par3",
+                  "#art26-par3-i",
+                  "#art26-par3-ii",
+                  "#art26-par3-iii",
+                  "#art26-par3-iv",
+                  "#art26-par3-v",
+                  "#art26-par3-vi"
+                ]
+              },
+              {
+                "ato": "Lei nº 10.639/2003",
+                "id": "br/lei/2003/10639",
+                "link": "ifpr://norma/br/lei/2003/10639",
+                "redacao": 0,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art79A",
+                  "#art79B"
+                ]
+              },
+              {
+                "ato": "Lei nº 9.475/1997",
+                "id": "br/lei/1997/9475",
+                "link": null,
+                "redacao": 1,
+                "inclusao": 2,
+                "revogacao": 0,
+                "dispositivos": [
+                  "#art33",
+                  "#art33-par1",
+                  "#art33-par2"
+                ]
+              }
+            ],
             "sucessoras": [],
             "transicoes": []
           },

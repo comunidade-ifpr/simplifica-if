@@ -94,6 +94,25 @@ export function numeroDoArtigo(id: string): string {
 }
 
 /**
+ * Os artigos de uma lista de dispositivos (`#art36-par1`, `#art36-ii`, `#art44`), sem repetir e na ordem
+ * dada, cada um como destino de rolagem: para as alterações anotadas, que atingem parágrafos e incisos.
+ * O dispositivo fora de artigo (item de anexo) fica de fora.
+ */
+export function artigosDosDispositivos(
+  dispositivos: ReadonlyArray<string>,
+  ancoras: ReadonlyArray<Ancora>,
+): ReadonlyArray<Ancora> {
+  const artigos = new Map(artigosDe(ancoras).map((a) => [a.id, a]));
+  const vistos = new Map<string, Ancora>();
+  for (const dispositivo of dispositivos) {
+    const id = /^#?((?:anexo\d+-)?art\d+[A-Z]?)(?:-|$)/.exec(dispositivo)?.[1];
+    const artigo = id === undefined ? undefined : artigos.get(id);
+    if (artigo !== undefined) vistos.set(artigo.id, artigo);
+  }
+  return [...vistos.values()];
+}
+
+/**
  * O artigo que a pessoa pediu em "Ir ao art." (`14`, `art. 36-A`, `5º`): o do ato primeiro; se o ato não
  * tem esse número, o do anexo (o estatuto, o regulamento). `null` se o texto não é um número de artigo
  * ou a norma não o tem.
