@@ -91,7 +91,11 @@ describe("vigência", () => {
       const justificadas: Record<string, [string, string]> = {
         "br/lei/1996/9394": ["alterada", "parcialmente revogada"], // Lei 11.788, art. 22: revoga o par. único do art. 82
         "br/lei/2003/10639": ["alterada", "vigente"], // a Lei 11.645 altera o art. 26-A da LDB, não a Lei 10.639
+        // o piso do texto consolidado: notas de redação e dispositivos revogados, sem relação registrada
+        "br/lei/2008/11788": ["vigente", "alterada"], // Lei 14.913/2024 (notas no texto)
+        "br/lei/2008/11892": ["vigente", "parcialmente revogada"], // art. 18 revogado pela Lei 15.521/2026
         "br/lei/2012/12711": ["vigente", "alterada"], // Lei 14.945/2024, art. 8º: nova redação do caput do art. 1º
+        "br/lei/2015/13146": ["vigente", "parcialmente revogada"], // par. único do art. 90 revogado (Lei 15.163/2025)
         "ifpr/consup/res/2011/55": ["alterada", "parcialmente revogada"], // art. 104 revogado pela Res. 2/2017 (nota no texto)
         "ifpr/consup/res/2014/8": ["alterada", "parcialmente revogada"], // Res. 222/2024 e 242/2025, art. 2º
         "ifpr/consup/res/2025/259": ["vigente", "alterada"], // Res. 263/2025 (notas no próprio texto)

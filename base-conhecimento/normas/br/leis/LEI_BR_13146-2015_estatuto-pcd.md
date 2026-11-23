@@ -12,7 +12,7 @@ datas_fonte: "Fonte (Planalto, conferida em 13/11/2026): \"publicado no DOU de 7
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência."
-status_vigencia: "vigente"
+status_vigencia: "parcialmente revogada"
 keywords:
   - "pessoa com deficiência"
   - acessibilidade

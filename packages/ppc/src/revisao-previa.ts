@@ -21,7 +21,7 @@ import type { EntradaRegistro } from "@simplifica-if/kb/normas/registro";
 import type { SecaoPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
-import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
+import type { DatasNorma, TextoConsolidado, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
 import { indiceDeLinhas } from "./localizar-trecho.ts";
@@ -58,6 +58,8 @@ export type BaseRevisaoPrevia = {
   datas: ReadonlyMap<string, DatasNorma>;
   /** Regras de transição (`transicoes.yaml`). */
   transicoes: readonly Transicao[];
+  /** O que os textos consolidados mostram na data da base (piso do status das normas). */
+  consolidado: TextoConsolidado;
   /** `data_referencia` da base (AAAA-MM-DD): a data em que a vigência é calculada. */
   dataBase: string;
 };

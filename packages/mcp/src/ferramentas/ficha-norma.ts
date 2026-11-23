@@ -73,7 +73,8 @@ export const Dados = Schema.Struct({
   }),
   /**
    * As alterações que o texto consolidado anota ("Redação dada pela Lei nº ..."), por ato, do mais
-   * recente ao mais antigo. Já estão na redação da base e não entram no cálculo da vigência; o ato
+   * recente ao mais antigo. Já estão na redação da base e não são eventos da vigência (dão só o piso
+   * do status na data de referência: `alterada` ou `parcialmente revogada`); o ato
    * quase nunca tem texto na base (`link` nulo). Valem o que valem as notas da fonte oficial.
    */
   alteracoes_anotadas: Schema.Array(
@@ -159,7 +160,7 @@ export const fichaNorma = definirFerramenta({
       };
       const resto = anotadas.length - ATOS_ANOTADOS;
       partes.push(
-        `**Alterações anotadas no texto** (${anotadas.length} ${anotadas.length === 1 ? "ato" : "atos"}; já estão na redação da base e não mudam a vigência calculada): ` +
+        `**Alterações anotadas no texto** (${anotadas.length} ${anotadas.length === 1 ? "ato" : "atos"}; já estão na redação da base): ` +
           anotadas.slice(0, ATOS_ANOTADOS).map(item).join("; ") +
           (resto > 0 ? `; e mais ${resto} anteriores (todos no JSON, com os dispositivos)` : "") +
           ". Para ver o que mudou num dispositivo, leia-o: a nota de redação vem com ele.",

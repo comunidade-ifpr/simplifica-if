@@ -12,7 +12,7 @@ datas_fonte: "Texto: \"Este texto não substitui o publicado no DOU de 30.12.200
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Institui a Rede Federal de Educação Profissional, Científica e Tecnológica e cria os Institutos Federais."
-status_vigencia: "vigente"
+status_vigencia: "parcialmente revogada"
 keywords:
   - "Rede Federal"
   - "Institutos Federais"

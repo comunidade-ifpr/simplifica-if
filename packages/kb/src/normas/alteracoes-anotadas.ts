@@ -4,7 +4,8 @@
  * atingidos.
  *
  * Não são relações de `relacoes.yaml`: o ato que altera quase nunca tem texto nem stub na base, e a
- * alteração já está na redação do arquivo, então não muda o cálculo de vigência. Servem para saber
+ * alteração já está na redação do arquivo. Não são eventos da vigência: dão só o piso do status na
+ * data de referência (`statusDoTexto`, em `vigencia.ts`). Servem para saber
  * quem mexeu em quê, por dispositivo. Valem o que valem as notas da fonte oficial: a alteração sem
  * nota não aparece.
  */

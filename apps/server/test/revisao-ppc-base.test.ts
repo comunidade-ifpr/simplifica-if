@@ -26,7 +26,12 @@ import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
-import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-if/kb/normas/vigencia";
+import {
+  carregarConsolidado,
+  carregarDatas,
+  carregarTransicoes,
+  dataReferencia,
+} from "@simplifica-if/kb/normas/vigencia";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import { revisarDocx, textoDaPendencia, type BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
@@ -83,6 +88,7 @@ const referenciaDosArquivos = (doBanco: BaseRevisaoPrevia): BaseRevisaoPrevia =>
   relacoes: carregarRelacoes(raiz),
   datas: carregarDatas(raiz),
   transicoes: carregarTransicoes(raiz),
+  consolidado: carregarConsolidado(raiz),
   topicos: topicosDoArquivo(),
   dataBase: dataReferencia(raiz),
   cncts: doBanco.cncts,

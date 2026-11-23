@@ -52,7 +52,7 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   const norma = painel.getByRole("article", { name: "Norma" });
   await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
   await expect
-    .element(norma.getByRole("group", { name: "Situação" }).getByText("Em vigor", { exact: true }))
+    .element(norma.getByRole("group", { name: "Situação" }).getByText("Revogada em parte", { exact: true }))
     .toBeVisible();
   // o foco foi para o painel, que um chip da conversa abriu
   expect(document.activeElement).toBe(painel.element());

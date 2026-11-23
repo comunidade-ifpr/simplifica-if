@@ -69,6 +69,12 @@ const ficha = (mudar: {
 });
 
 describe("selosDaNorma", () => {
+  it("estado sem relação registrada: vem do texto consolidado, e o selo diz onde ver os atos", () => {
+    const [selo] = selosDaNorma(ficha({ status: "alterada" }));
+    expect(selo).toMatchObject({ rotulo: "Em vigor, com alterações" });
+    expect(selo!.detalhe).toContain("É o que o texto consolidado mostra; os atos estão em “Alterada por”.");
+  });
+
   it("o estado é o da data da base, e a data do evento vem à parte", () => {
     const revogada = ficha({ status: "revogada" });
     const comEvento: FichaNorma = {

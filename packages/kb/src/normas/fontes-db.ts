@@ -27,7 +27,14 @@ import { carregarCorrespondencias } from "./correspondencia.ts";
 import { carregarEstruturas } from "./estrutura.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes } from "./relacoes.ts";
-import { carregarDatas, carregarTransicoes, datasTransicao, efeitoDaRelacao, intervalosVigencia } from "./vigencia.ts";
+import {
+  carregarConsolidado,
+  carregarDatas,
+  carregarTransicoes,
+  datasTransicao,
+  efeitoDaRelacao,
+  intervalosVigencia,
+} from "./vigencia.ts";
 
 /** Linha da tabela `dispositivos` de cada dispositivo das normas da base. */
 export function* linhasDispositivos(raiz: string): Generator<LinhaDispositivo> {
@@ -93,7 +100,12 @@ export function atosComVigencia(raiz: string): string[] {
 }
 
 export function* linhasVigencias(raiz: string): Generator<LinhaVigencia> {
-  const fonte = { registro: carregarRegistro(raiz), datas: carregarDatas(raiz), relacoes: carregarRelacoes(raiz) };
+  const fonte = {
+    registro: carregarRegistro(raiz),
+    datas: carregarDatas(raiz),
+    relacoes: carregarRelacoes(raiz),
+    consolidado: carregarConsolidado(raiz),
+  };
   for (const ato of atosComVigencia(raiz)) {
     let ordem = 0;
     for (const intervalo of intervalosVigencia(ato, fonte)) yield { alvo: ato, ordem: ordem++, ...intervalo };

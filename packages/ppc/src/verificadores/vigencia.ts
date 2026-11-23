@@ -17,6 +17,7 @@ import {
   type ResultadoVigencia,
   statusEm,
   type Transicao,
+  type TextoConsolidado,
   transicoesAplicaveis,
 } from "@simplifica-if/kb/normas/vigencia";
 
@@ -64,6 +65,7 @@ export type DadosVigencia = {
   datas: ReadonlyMap<string, DatasNorma>;
   relacoes: readonly Relacao[];
   transicoes: readonly Transicao[];
+  consolidado: TextoConsolidado;
 };
 
 /** A consulta sobre dados já carregados, sem ler arquivo nenhum (o app empacotado não tem o checkout). */
@@ -74,6 +76,7 @@ export function vigenciaDeDados(dados: DadosVigencia, data: string): ConsultaVig
       datas: dados.datas,
       relacoes: dados.relacoes,
       transicoes: dados.transicoes,
+      consolidado: dados.consolidado,
     },
     data,
   );

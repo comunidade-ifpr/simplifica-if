@@ -12,7 +12,7 @@ datas_fonte: "Texto: \"Publicado no Diário Oficial da União de 26 de setembro 
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Dispõe sobre o estágio de estudantes."
-status_vigencia: "vigente"
+status_vigencia: "alterada"
 keywords:
   - "estágio"
   - "educação profissional"

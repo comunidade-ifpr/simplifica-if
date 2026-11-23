@@ -421,11 +421,17 @@ describe("ficha_norma", () => {
     }),
   );
 
-  it.effect("norma vigente sem pendências: sem avisos; stub e externo com aviso de sem texto", () =>
+  it.effect("norma sem relações nem pendências: sem avisos; stub e externo com aviso de sem texto", () =>
     Effect.gen(function* () {
       const ctx = contexto();
       const vigente = yield* chamar(fichaNorma, { id: DCN_2026 }, ctx, TETO_FICHA_NORMA);
-      expect(vigente.resposta.dados.vigencia).toMatchObject({ status: "vigente", certo: true, pendencias: [] });
+      // nenhuma relação a atinge; o status vem do piso do texto consolidado (o inciso XX está revogado)
+      expect(vigente.resposta.dados.vigencia).toMatchObject({
+        status: "parcialmente revogada",
+        certo: true,
+        eventos: [],
+        pendencias: [],
+      });
       expect(vigente.resposta.avisos).toEqual([]);
       expect(vigente.resposta.dados.relacoes.saida.map((r) => r.alvo)).toEqual([DCN_2021]);
       // os metadados editoriais: depois da vigência e antes das relações, com o aviso de que não são fundamento
@@ -451,7 +457,7 @@ describe("ficha_norma", () => {
         },
       ]);
       expect(vigente.texto).toContain(
-        "**Alterações anotadas no texto** (1 ato; já estão na redação da base e não mudam a vigência calculada): Resolução CNE/CP nº 3/2026 (1 dispositivo).",
+        "**Alterações anotadas no texto** (1 ato; já estão na redação da base): Resolução CNE/CP nº 3/2026 (1 dispositivo).",
       );
       const stub = yield* chamar(fichaNorma, { id: STUB }, ctx, TETO_FICHA_NORMA);
       expect(stub.resposta.dados.norma.situacao).toBe("stub");

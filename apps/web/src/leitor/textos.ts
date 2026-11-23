@@ -74,7 +74,8 @@ function quandoDoEstado(ficha: FichaNorma): string | null {
     status === "revogada" || status === "parcialmente revogada" ? "revoga" : status === "alterada" ? "altera" : null;
   if (tipo !== null) {
     const evento = eventos.filter((e) => e.tipo === tipo && e.ocorreu !== "não").at(-1);
-    if (evento === undefined) return null;
+    // sem relação registrada, o estado vem do próprio texto (dispositivo revogado, nota de redação)
+    if (evento === undefined) return "É o que o texto consolidado mostra; os atos estão em “Alterada por”.";
     const nome = tipo === "revoga" ? "Revogação" : "Alteração";
     return `${nome} com efeito em ${dataOuAConfirmar(evento.efeito_de, evento.efeito_minimo)}.`;
   }

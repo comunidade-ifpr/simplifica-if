@@ -8554,7 +8554,7 @@
     {
       "ref": "br/lei/2008/11788",
       "titulo": "Lei nº 11.788/2008",
-      "status_vigencia": "vigente",
+      "status_vigencia": "alterada",
       "path": "base-conhecimento/normas/br/leis/LEI_BR_11788-2008_lei-estagio.md",
       "fichas": [
         "CT-CURR-20",
@@ -8579,7 +8579,7 @@
     {
       "ref": "br/lei/2015/13146",
       "titulo": "Lei nº 13.146/2015",
-      "status_vigencia": "vigente",
+      "status_vigencia": "parcialmente revogada",
       "path": "base-conhecimento/normas/br/leis/LEI_BR_13146-2015_estatuto-pcd.md",
       "fichas": [
         "CT-SUP-25"
@@ -11490,7 +11490,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 804063,
+    "caracteres": 804078,
     "secoes": 120,
     "caracteres_secoes": 236868,
     "caracteres_ppc_inteiro": 254501

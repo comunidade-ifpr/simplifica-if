@@ -15,6 +15,7 @@
  *   ainda não está registrada);
  * - uma relação produz efeito a partir de `efeito_de`; sem data, da vigência da origem; se essa for
  *   "a confirmar", o efeito é presumido a partir da assinatura da origem e marcado como incerto;
+ * - o texto consolidado dá um piso da `data_referencia` em diante (`TextoConsolidado`);
  * - status: `revogada` (revogação total) > `parcialmente revogada` (revogação de dispositivo ou com
  *   alcance) > `alterada` > `vigente`. `regulamenta` e `fundamenta-se-em` não mudam o status;
  * - stub sem relação com efeito na data fica com o status registrado em `stubs.yaml`, mas um status
@@ -29,7 +30,7 @@ import * as NodeFS from "node:fs";
 import { parse } from "yaml";
 import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
-import { listarNormas } from "./estrutura.ts";
+import { carregarEstruturas, listarNormas } from "./estrutura.ts";
 import { carregarRegistro, type Registro } from "./registro.ts";
 import { carregarRelacoes, type Relacao, relacaoParcial } from "./relacoes.ts";
 
@@ -133,13 +134,58 @@ export interface FonteVigencia {
   readonly datas: ReadonlyMap<string, DatasNorma>;
   readonly relacoes: readonly Relacao[];
   readonly transicoes: readonly Transicao[];
+  readonly consolidado: TextoConsolidado;
+}
+
+/** O status que o próprio texto de uma norma mostra, além das relações registradas. */
+export type StatusDoTexto = "alterada" | "parcialmente revogada";
+
+/**
+ * O que os textos consolidados da base mostram na `data_referencia` (`em`): a norma com dispositivo
+ * revogado ou com nota de redação ("Redação dada pela...", "Incluído pela...") foi alterada, mesmo
+ * que o ato que a alterou não esteja na base nem em `relacoes.yaml`. A nota só traz o ano do ato;
+ * por isso o piso vale da `data_referencia` em diante, e a consulta em data anterior segue só as
+ * relações registradas.
+ */
+export interface TextoConsolidado {
+  readonly em: string;
+  readonly status: ReadonlyMap<string, StatusDoTexto>;
+}
+
+/** O status que os dispositivos de uma norma mostram; `null` sem revogação nem nota de alteração. */
+export function statusDoTexto(
+  dispositivos: ReadonlyArray<{ readonly revogado: boolean; readonly notas: ReadonlyArray<{ readonly tipo: string }> }>,
+): StatusDoTexto | null {
+  if (dispositivos.some((d) => d.revogado)) return "parcialmente revogada";
+  const alterado = dispositivos.some((d) =>
+    d.notas.some((n) => n.tipo === "redacao" || n.tipo === "inclusao" || n.tipo === "renumeracao"),
+  );
+  return alterado ? "alterada" : null;
+}
+
+/** `TextoConsolidado` a partir do status de cada norma (`[id, statusDoTexto(...)]`). */
+export function montarConsolidado(
+  em: string,
+  normas: Iterable<readonly [string, StatusDoTexto | null]>,
+): TextoConsolidado {
+  const status = new Map<string, StatusDoTexto>();
+  for (const [id, valor] of normas) if (valor !== null) status.set(id, valor);
+  return { em, status };
+}
+
+/** O que os textos das normas do checkout em `raiz` mostram. */
+export function carregarConsolidado(raiz: string): TextoConsolidado {
+  return montarConsolidado(
+    dataReferencia(raiz),
+    carregarEstruturas(raiz).map((e) => [e.id, statusDoTexto(e.dispositivos)] as const),
+  );
 }
 
 /**
  * O que o status de vigência lê (`statusEm`, `intervalosVigencia`): sem as regras de transição. Cada
  * regra abaixo pede só os campos que lê, para que quem carrega dos arquivos não leia o resto.
  */
-export type FonteStatus = Pick<FonteVigencia, "registro" | "datas" | "relacoes">;
+export type FonteStatus = Pick<FonteVigencia, "registro" | "datas" | "relacoes" | "consolidado">;
 
 /** A fonte da vigência lida dos arquivos do checkout em `raiz`. */
 export function carregarFonteVigencia(raiz: string): FonteVigencia {
@@ -148,6 +194,7 @@ export function carregarFonteVigencia(raiz: string): FonteVigencia {
     datas: carregarDatas(raiz),
     relacoes: carregarRelacoes(raiz),
     transicoes: carregarTransicoes(raiz),
+    consolidado: carregarConsolidado(raiz),
   };
 }
 
@@ -270,6 +317,9 @@ export function statusEm(id: string, data: string, fonte: FonteStatus): Resultad
     }
     if (ORDEM[efeito]! > ORDEM[status]!) status = efeito;
   }
+  // o piso do texto consolidado: alteração ou revogação parcial que o texto mostra e nenhuma relação registra
+  const doTexto = data >= fonte.consolidado.em ? fonte.consolidado.status.get(ato) : undefined;
+  if (doTexto !== undefined && ORDEM[doTexto]! > ORDEM[status]!) status = doTexto;
 
   if (eventos.every((evento) => evento.ocorreu === false) && entrada?.situacao === "stub") {
     const registrado = entrada.status_vigencia ?? A_CONFIRMAR;
@@ -337,6 +387,7 @@ export function intervalosVigencia(id: string, dados: FonteStatus): IntervaloVig
     marcar(efeito.data, fonte);
     marcar(efeito.minimo, fonte);
   }
+  if (dados.consolidado.status.has(ato)) marcar(dados.consolidado.em, "texto consolidado");
   const entrada = dados.registro.obter(ato);
   if (entrada?.situacao === "stub") {
     const efeito = efeitoDoStatusRegistrado(entrada.status_fonte, dados);

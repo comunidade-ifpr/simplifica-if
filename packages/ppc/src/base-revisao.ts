@@ -34,6 +34,7 @@ export const montarBaseRevisao = Effect.gen(function* () {
     // A vigência vem do banco, como o resto: sem ela, os verificadores leriam a do checkout.
     datas: new Map(fontes.datas),
     transicoes: fontes.transicoes.map((transicao) => structuredClone(transicao)),
+    consolidado: { em: fontes.consolidado.em, status: new Map(fontes.consolidado.status) },
     cncts,
     urls: yield* normas.enderecosOficiais,
     fichas,

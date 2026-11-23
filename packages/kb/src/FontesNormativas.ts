@@ -26,6 +26,7 @@ import * as SqlClient from "effect/sql/SqlClient";
 import { CAMINHOS } from "./caminhos.ts";
 import { type Sinonimos, sinonimosDeObjeto, sinonimosDoYaml } from "./busca/sinonimos.ts";
 import * as Sql from "./db/sql.ts";
+import { analisarNorma } from "./normas/estrutura.ts";
 import { analisarFrontMatter } from "./normas/front-matter.ts";
 import { type EntradaRegistro, montarRegistro, Registro } from "./normas/registro.ts";
 import { type Relacao, relacoesDoYaml } from "./normas/relacoes.ts";
@@ -33,7 +34,11 @@ import {
   dataReferenciaDoYaml,
   type DatasNorma,
   esquemaTransicao,
+  montarConsolidado,
   montarDatas,
+  type StatusDoTexto,
+  statusDoTexto,
+  type TextoConsolidado,
   type Transicao,
   transicoesDoYaml,
 } from "./normas/vigencia.ts";
@@ -77,6 +82,8 @@ export class FontesNormativas extends Context.Service<
     readonly datas: ReadonlyMap<string, DatasNorma>;
     readonly relacoes: ReadonlyArray<Relacao>;
     readonly transicoes: ReadonlyArray<Transicao>;
+    /** O que os textos consolidados mostram na `data_referencia` (piso do status). */
+    readonly consolidado: TextoConsolidado;
     /** `data_referencia` de `base-conhecimento/config/vigencia.yaml` (no banco, a gravada em `meta`). */
     readonly dataReferencia: string;
     readonly sinonimos: Sinonimos;
@@ -126,6 +133,8 @@ const LinhaRelacao = Schema.Struct({
   nota: TextoNulo,
 });
 const linhasRelacoes = Sql.todas(LinhaRelacao);
+/** Por norma: há dispositivo revogado; há nota de redação, inclusão ou renumeração (a regra de `statusDoTexto`). */
+const linhasStatusDoTexto = Sql.todas(Schema.Struct({ id: Schema.String, revogado: Schema.Int, alterado: Schema.Int }));
 
 const LinhaTransicao = Schema.Struct({
   id: Schema.String,
@@ -239,6 +248,18 @@ const makeBanco = Effect.gen(function* () {
   if (referencia === undefined) {
     return yield* new Sql.FalhaNaConsulta({ consulta: "meta.data_referencia", cause: "ausente" });
   }
+  const consolidado = montarConsolidado(
+    referencia.valor,
+    (yield* linhasStatusDoTexto(
+      `SELECT norma_id AS id, MAX(revogado) AS revogado,
+              MAX(EXISTS (SELECT 1 FROM json_each(notas_json) AS nota
+                          WHERE json_extract(nota.value, '$.tipo') IN ('redacao', 'inclusao', 'renumeracao'))) AS alterado
+         FROM dispositivos GROUP BY norma_id ORDER BY norma_id`,
+    )).map((l): readonly [string, StatusDoTexto | null] => [
+      l.id,
+      l.revogado ? "parcialmente revogada" : l.alterado ? "alterada" : null,
+    ]),
+  );
 
   const tipos = yield* linhasSinonimosTipos("SELECT tipo, termos_json FROM sinonimos_tipos ORDER BY ordem");
   const grupos = yield* linhasSinonimosGrupos("SELECT termos_json FROM sinonimos_grupos ORDER BY ordem");
@@ -276,6 +297,7 @@ const makeBanco = Effect.gen(function* () {
     datas,
     relacoes,
     transicoes,
+    consolidado,
     dataReferencia: referencia.valor,
     sinonimos,
     topicosSecoes,
@@ -328,11 +350,16 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
 
   // datas dos atos: front matter de cada norma da base, na ordem de `listarNormas`
   const normas: Array<{ id: string; meta: Readonly<Record<string, unknown>>; path: string }> = [];
+  const textos: Array<readonly [string, StatusDoTexto | null]> = [];
   for (const arquivo of yield* listarMd(CAMINHOS.normas)) {
     const relativo = arquivo.slice(`${CAMINHOS.base}/`.length);
     const texto = yield* ler(arquivo);
     const { meta } = yield* interpretar(arquivo, () => analisarFrontMatter(texto, relativo));
     normas.push({ id: String(meta["id"]), meta, path: relativo });
+    const estrutura = yield* interpretar(arquivo, () =>
+      analisarNorma(texto, { id: String(meta["id"]), path: relativo }),
+    );
+    textos.push([estrutura.id, statusDoTexto(estrutura.dispositivos)]);
   }
   normas.sort((a, b) => compararTexto(a.path, b.path));
   const datas = montarDatas(normas, registro);
@@ -410,6 +437,7 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     datas,
     relacoes,
     transicoes,
+    consolidado: montarConsolidado(dataReferencia, textos),
     dataReferencia,
     sinonimos,
     topicosSecoes,

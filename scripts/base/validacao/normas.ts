@@ -29,6 +29,7 @@ import { validarCorrespondencias } from "@simplifica-if/kb/normas/correspondenci
 import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import {
   caminhoConfigVigencia,
+  carregarConsolidado,
   carregarDatas,
   carregarTransicoes,
   dataReferencia,
@@ -422,6 +423,7 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
       registro: carregarRegistro(raiz),
       datas: carregarDatas(raiz),
       relacoes: carregarRelacoes(raiz),
+      consolidado: carregarConsolidado(raiz),
     });
     if (calculado.eventos.some((evento) => evento.ocorreu !== false) && registrado !== calculado.status) {
       erros.push(
