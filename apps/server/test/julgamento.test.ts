@@ -5,6 +5,7 @@
  */
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, describe, it } from "@effect/vitest";
+import * as Deferred from "effect/Deferred";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
@@ -31,9 +32,15 @@ const motorCom = (eventos: Stream.Stream<Motor.Evento>) =>
 const parcial: Motor.Evento = { _tag: "TextoParcial", texto: "{" };
 const final: Motor.Evento = { _tag: "TextoFinal", texto: "{}" };
 
-/** Um turno com o motor dado, contando os avisos de texto recebido. */
+/**
+ * Um turno com o motor dado, contando os avisos de texto recebido. `enviou` se cumpre quando o turno
+ * chega ao motor: antes disso ele cria a pasta temporária (I/O de verdade, que o `yieldNow` não espera)
+ * e ainda não armou o prazo, então o `TestClock` só pode avançar depois.
+ */
 const turno = (eventos: Stream.Stream<Motor.Evento>, tempoTurno = Duration.minutes(6)) =>
   Effect.gen(function* () {
+    const enviou = yield* Deferred.make<void>();
+    const comAviso = Stream.fromEffect(Deferred.succeed(enviou, undefined)).pipe(Stream.drain, Stream.concat(eventos));
     let avisos = 0;
     const fibra = yield* turnoSemFerramentas({
       provider: "claude",
@@ -44,14 +51,16 @@ const turno = (eventos: Stream.Stream<Motor.Evento>, tempoTurno = Duration.minut
       numero: 1,
       assunto: "o tema “Matriz curricular” (j-02)",
       aoReceber: () => Effect.sync(() => (avisos += 1)),
-    }).pipe(Effect.provide(Layer.merge(motorCom(eventos), NodeServices.layer)), Effect.forkChild);
-    return { fibra, avisos: () => avisos };
+    }).pipe(Effect.provide(Layer.merge(motorCom(comAviso), NodeServices.layer)), Effect.forkChild);
+    return { fibra, avisos: () => avisos, enviou: Deferred.await(enviou) };
   });
 
-/** Deixa rodar o que está pronto (a fibra do turno). */
-const rodar = Effect.gen(function* () {
-  for (let i = 0; i < 20; i++) yield* Effect.yieldNow;
-});
+/** Espera os turnos chegarem ao motor e deixa rodar o que está pronto (o prazo, os primeiros eventos). */
+const rodar = (...turnos: ReadonlyArray<{ readonly enviou: Effect.Effect<void> }>) =>
+  Effect.gen(function* () {
+    for (const t of turnos) yield* t.enviou;
+    for (let i = 0; i < 20; i++) yield* Effect.yieldNow;
+  });
 
 describe("turno sem ferramentas", () => {
   it.effect("o texto parcial avisa o andamento no primeiro pedaço e, depois, no máximo um por intervalo", () =>
@@ -61,8 +70,9 @@ describe("turno sem ferramentas", () => {
         Stream.concat(espera),
         Stream.concat(Stream.make(parcial, parcial, final)),
       );
-      const { fibra, avisos } = yield* turno(eventos);
-      yield* rodar;
+      const t = yield* turno(eventos);
+      const { fibra, avisos } = t;
+      yield* rodar(t);
       assert.strictEqual(avisos(), 1);
       yield* TestClock.adjust(INTERVALO_ATIVIDADE);
       const resultado = yield* Fiber.join(fibra);
@@ -76,7 +86,7 @@ describe("turno sem ferramentas", () => {
       const tempo = Duration.minutes(6);
       const comTexto = yield* turno(Stream.make(parcial).pipe(Stream.concat(Stream.never)), tempo);
       const semTexto = yield* turno(Stream.never, tempo);
-      yield* rodar;
+      yield* rodar(comTexto, semTexto);
       yield* TestClock.adjust(tempo);
       const motivo = (saida: Exit.Exit<unknown, unknown>) => {
         assert.isTrue(Exit.isFailure(saida));
