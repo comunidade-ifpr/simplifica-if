@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off globalTimers:off globalDate:off globalConsole:off globalFetch:off -- script de desenvolvimento, sem runtime Effect
 /**
- * O app em desenvolvimento, num comando só: constrói o processo principal e o preload, garante o
- * Electron, garante a interface e abre o Electron sobre `dist/app`. O processo principal inicia o
+ * O app em desenvolvimento, num comando só: constrói o processo principal e o preload, recompila a
+ * base se ela estiver velha, garante o Electron, garante a interface e abre o Electron sobre `dist/app`. O processo principal inicia o
  * servidor com este Node (`SIMPLIFICA_NODE`, o Node 26 do repositório) e `apps/server/src/bin.ts`.
  *
  * A interface é o dev server do `apps/web` (`SIMPLIFICA_WEB_URL`; padrão `http://localhost:5190`, o
@@ -78,6 +78,21 @@ export function pacoteDev(electron: string): string {
   return executavel;
 }
 
+/**
+ * Deixa o `tmp/kb.sqlite` em dia com as fontes e com o esquema do código: o servidor do app só abre a
+ * base, não a recompila. Uma consulta da CLI `kb` faz a conferência (e a compilação, se preciso). Com
+ * `SIMPLIFICA_KB`, a base é de quem a passou.
+ */
+export function garantirBase(): void {
+  if (process.env.SIMPLIFICA_KB?.trim()) return;
+  const r = NodeChildProcess.spawnSync(
+    process.execPath,
+    [NodePath.join(RAIZ, "packages", "mcp", "src", "kb.ts"), "sobre-a-base"],
+    { cwd: RAIZ, stdio: ["ignore", "ignore", "inherit"] },
+  );
+  if (r.status !== 0) throw new Error("não foi possível compilar a base (tmp/kb.sqlite); veja a mensagem acima");
+}
+
 /** Prazo para o dev server da interface responder depois de iniciado. */
 const PRAZO_WEB_MS = 60_000;
 
@@ -137,6 +152,7 @@ if (import.meta.main) {
   let web: NodeChildProcess.ChildProcess | undefined;
   try {
     await construir({ soProcessoPrincipal: true, web: false });
+    garantirBase();
     const electron = pacoteDev(garantirElectron());
     if (urlWeb !== "" && !(await responde(urlWeb))) {
       // Só o dev server padrão é iniciado aqui; outra URL é responsabilidade de quem a passou.

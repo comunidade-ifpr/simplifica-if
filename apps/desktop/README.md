@@ -11,7 +11,6 @@ Na raiz do repositório:
 
 ```bash
 pnpm install          # uma vez, e depois de cada pull que mude dependências
-pnpm kb:compilar      # tmp/kb.sqlite, a base do servidor (uma vez; recompile quando a base mudar)
 pnpm app:dev          # abre o app; o mesmo que pnpm --filter @simplifica-if/desktop dev
 ```
 
@@ -19,8 +18,9 @@ O `app:dev` faz tudo num terminal só:
 
 1. constrói o processo principal e o preload em `dist/app` e baixa o Electron, se faltar;
    no macOS, roda o Electron de uma cópia do `Electron.app` em `dist/electron-dev`, com o nome e o ícone do app, porque o nome no menu e o ícone no Dock vêm do `Info.plist`, não de `app.setName`;
-2. garante a interface: se `http://localhost:5190` já responde (por exemplo, `pnpm --filter @simplifica-if/web dev` noutro terminal), usa essa; senão, inicia o `apps/web` e espera ficar pronto;
-3. abre o Electron, que inicia o servidor com o Node do repositório (`node apps/server/src/bin.ts`) e carrega a interface.
+2. recompila o `tmp/kb.sqlite`, a base do servidor, se ele faltar ou estiver mais velho que as fontes ou que o esquema do código (cerca de 12 s; com `SIMPLIFICA_KB`, não mexe na base);
+3. garante a interface: se `http://localhost:5190` já responde (por exemplo, `pnpm --filter @simplifica-if/web dev` noutro terminal), usa essa; senão, inicia o `apps/web` e espera ficar pronto;
+4. abre o Electron, que inicia o servidor com o Node do repositório (`node apps/server/src/bin.ts`) e carrega a interface.
 
 Ctrl+C ou fechar a janela encerra tudo, inclusive a interface que o `app:dev` iniciou. Mudanças em `apps/web` aparecem na hora; mudanças em `apps/server/src` ou em `packages/` reiniciam o servidor sozinhas (a janela recarrega; `src/vigiaDev.ts`), para a interface nova não falar com o servidor velho; mudanças em `apps/desktop/src` pedem fechar e rodar de novo.
 
