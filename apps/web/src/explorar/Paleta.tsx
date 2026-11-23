@@ -270,7 +270,7 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
           {fase === "vazia" ? (
             <p className="px-2 py-3 text-muted-foreground text-sm">
               Digite o nome de um curso, campus ou norma, um curso do catálogo, um assunto dos PPCs ou uma citação
-              (“LDB, art. 36”). A busca é na base do app, sem IA.
+              (“LDB, art. 36”).
             </p>
           ) : fase === "pronta" && total === 0 ? (
             <p className="px-2 py-3 text-muted-foreground text-sm">Nada encontrado na base. Tente outras palavras.</p>

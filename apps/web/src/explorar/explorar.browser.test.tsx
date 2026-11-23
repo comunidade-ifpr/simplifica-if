@@ -30,7 +30,7 @@ async function abrirPaleta() {
 
 it("paleta: uma citação vai direto ao dispositivo destacado na norma", async () => {
   await using app = await montarApp(servidor, "/explorar");
-  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar a base" })).toBeVisible();
+  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar o IFPR" })).toBeVisible();
   await expect
     .element(page.getByRole("link", { name: "Explorar", exact: true }))
     .toHaveAttribute("data-status", "active");
@@ -81,7 +81,7 @@ it("paleta: uma citação vai direto ao dispositivo destacado na norma", async (
 
 it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Perguntar à IA", async () => {
   await using app = await montarApp(servidor, "/explorar");
-  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar a base" })).toBeVisible();
+  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar o IFPR" })).toBeVisible();
   const campo = await abrirPaleta();
   await campo.fill("enferm");
   const dialogo = page.getByRole("dialog", { name: "Buscar na base" });

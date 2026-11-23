@@ -106,10 +106,10 @@ function Explorar() {
         {naEntrada ? (
           <div className={cn(classeColuna("larga"), "flex flex-col gap-6 pt-12")}>
             <div className="space-y-2">
-              <h1 className="text-hero">Explorar a base</h1>
+              <h1 className="text-hero">Explorar o IFPR</h1>
               <p className="max-w-[60ch] text-body text-muted-foreground">
-                As normas, os cursos, os PPCs, os campi, o catálogo de cursos técnicos e o Consepe, direto da base do
-                app. Sem IA e sem internet.
+                As normas que regem o Instituto, das federais às internas, os cursos, os PPCs, os campi, o catálogo de
+                cursos técnicos e o Consepe.
               </p>
             </div>
             <div className="space-y-3">
@@ -146,7 +146,7 @@ function Explorar() {
             <div className="flex flex-wrap items-end gap-x-6">
               <h1 className="pb-2 font-bold text-heading [font-stretch:87.5%]">
                 <Link to="/explorar" className="hover:text-link">
-                  Explorar a base
+                  Explorar o IFPR
                 </Link>
               </h1>
               <Abas />
