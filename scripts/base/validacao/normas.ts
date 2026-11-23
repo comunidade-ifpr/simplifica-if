@@ -16,7 +16,6 @@ import {
   analisarFrontMatter,
   CAMPOS_MANIFEST,
   CAMPOS_MANIFEST_OPCIONAIS,
-  CAMPOS_OBRIGATORIOS,
   DIRETORIOS_POR_TIPO,
   ehErroFrontMatter,
   type FrontMatter,
@@ -40,7 +39,7 @@ import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
 import { idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
-import { ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
+import { ErroDecodificacao, lerTexto } from "@simplifica-if/kb/texto";
 import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
 
 const decodificarNorma = Schema.decodeUnknownResult(esquemaNorma, { errors: "all" });
@@ -182,8 +181,6 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
     throw erro;
   }
 
-  const ausentes = ordenarTextos(CAMPOS_OBRIGATORIOS.filter((campo) => !(campo in meta)));
-  if (ausentes.length) erros.push(`${r}: campos obrigatórios ausentes: ${ausentes.join(", ")}`);
   // o corpo é só o texto da norma: resumo, notas e orientações são campos do front matter
   for (const titulo of corpo.matchAll(/^#{1,3} +(Resumo|Notas?|Observaç(?:ão|ões)|Referências|Texto\b[^\n]*)\s*$/gim)) {
     erros.push(
@@ -195,8 +192,6 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
       `${r}: marcador fora-do-ato no corpo; o que não consta do ato sai do arquivo (registre em notas_da_fonte)`,
     );
   }
-  const keywords = meta.keywords;
-  if (!Array.isArray(keywords) || !keywords.length) erros.push(`${r}: keywords deve ser lista não vazia`);
   const aliases = "aliases" in meta ? meta.aliases : [];
   for (const alias of Array.isArray(aliases) ? aliases : []) {
     if (aliasPareceNomeAntigo(alias)) erros.push(`${r}: alias parece nome antigo de arquivo: ${textoDe(alias)}`);
@@ -208,31 +203,19 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
 }
 
 /**
- * Contrato do front matter da norma (Effect Schema `esquemaNorma`): `id`, datas e fonte oficial;
- * e o `id` igual ao derivado de tipo, órgão, jurisdição, ano e número (regras em `@simplifica-if/kb/normas/ids`).
+ * Contrato do front matter da norma: todos os erros de `esquemaNorma` (campos obrigatórios, tipos,
+ * formatos, datas e fonte oficial) e o `id` igual ao derivado de tipo, órgão, jurisdição, ano e
+ * número (regras em `@simplifica-if/kb/normas/ids`).
  */
 export function validarContratoNorma(r: string, meta: FrontMatter): string[] {
-  if (!("id" in meta)) return [];
   const erros: string[] = [];
   const resultado = decodificarNorma(meta);
   if (Result.isFailure(resultado)) {
     for (const problema of problemas(resultado.failure.issue)) {
-      if (
-        [
-          "id",
-          "assinada_em",
-          "publicada_em",
-          "vigente_de",
-          "datas_fonte",
-          "fonte",
-          "fonte_url",
-          "fonte_referencia",
-        ].includes(String(problema.caminho[0]))
-      ) {
-        erros.push(`${r}: ${caminhoTexto(problema.caminho)}: ${problema.mensagem}`);
-      }
+      erros.push(`${r}: ${caminhoTexto(problema.caminho)}: ${problema.mensagem}`);
     }
   }
+  if (!("id" in meta)) return erros;
   const esperado = idEsperadoDaNorma({
     tipo_documento: textoDe(meta.tipo_documento ?? ""),
     orgao: textoDe(meta.orgao ?? ""),

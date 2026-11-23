@@ -20,6 +20,7 @@ import {
 import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import { validarBase } from "./validacao.ts";
+import { validarContratoNorma } from "./validacao/normas.ts";
 
 const temporarios: string[] = [];
 afterAll(() => {
@@ -351,8 +352,7 @@ describe("validação da base", () => {
       "índice CNCT não encontrado: catalogos/cnct/index.json",
       'normas/br/leis/lei.md: o corpo traz a seção "Resumo"; ele é só o texto da norma (use pontos_chave ou notas_da_fonte no front matter; orientação para PPC vai na ficha da revisão)',
       "normas/br/leis/lei.md: link interno inexistente: nao.md",
-      "normas/ifpr/resolucoes/2020-01-01_res.md: campos obrigatórios ausentes: keywords",
-      "normas/ifpr/resolucoes/2020-01-01_res.md: keywords deve ser lista não vazia",
+      "normas/ifpr/resolucoes/2020-01-01_res.md: keywords: Entrada inválida: campo obrigatório ausente",
       "normas/ifpr/resolucoes/2020-01-01_res.md: id duplicado br/lei/2020/1 (também em normas/br/leis/lei.md)",
       "config/vigencia.yaml não encontrado (data_referencia da vigência publicada)",
     ]);
@@ -362,6 +362,21 @@ describe("validação da base", () => {
     expect(errosManifest).toContain("manifest.json: item com jurisdição/tipo sem diretório configurado: ('XX', 'Lei')");
     expect(errosManifest).toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo title");
     expect(errosManifest).not.toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo ano");
+  });
+
+  test("contrato da norma: todos os erros de esquemaNorma, de qualquer campo", () => {
+    const { meta } = analisarFrontMatter(
+      NORMA.replace('title: "Lei nº 1/2020"', 'title: ""').replace(
+        "keywords:",
+        'pontos_chave: "texto"\nnotas_da_fonte:\n  - ""\nkeywords:',
+      ),
+      "x.md",
+    );
+    expect(validarContratoNorma("x.md", meta)).toEqual([
+      "x.md: title: Entrada inválida: não pode ser vazio",
+      "x.md: pontos_chave: Entrada inválida: esperava uma lista",
+      "x.md: notas_da_fonte.0: Entrada inválida: não pode ser vazio",
+    ]);
   });
 
   test("fonte oficial: fonte_url só https e o campo antigo fonte recusado", () => {
