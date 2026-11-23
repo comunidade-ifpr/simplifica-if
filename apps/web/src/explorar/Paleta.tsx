@@ -26,6 +26,7 @@ import { mensagemDeErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { cn } from "../lib/utils.ts";
 import { NOMES_TIPO } from "./colecoes.ts";
+import { ICONES_TIPO } from "./icones.ts";
 
 /** Resultados por grupo. */
 const LIMITE = 6;
@@ -218,17 +219,21 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
         <p role="status" className="sr-only">
           {fase === "pronta" ? (total === 0 ? "Nenhum resultado" : `${total} resultados`) : ""}
         </p>
-        <div id={idLista} role="listbox" aria-label="Resultados" className="min-h-0 overflow-y-auto p-2">
+        <div id={idLista} role="listbox" aria-label="Resultados" className="min-h-0 overflow-y-auto px-2 pb-2">
           {grupos.map((g) => {
             const idGrupo = `${idLista}-${g.tipo}`;
+            const Icone = ICONES_TIPO[g.tipo];
             return (
-              <div key={g.tipo} role="group" aria-labelledby={idGrupo} className="mb-2">
+              <div key={g.tipo} role="group" aria-labelledby={idGrupo}>
+                {/* o título fica preso no topo enquanto o grupo dele rola */}
                 <p
                   id={idGrupo}
                   role="presentation"
-                  className="px-2 pt-1 pb-1 font-semibold text-muted-foreground text-small"
+                  className="sticky top-0 z-10 flex items-center gap-2 bg-card px-2 pt-3 pb-1.5 font-semibold text-foreground text-micro"
                 >
+                  <Icone aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
                   {NOMES_TIPO[g.tipo].grupo}
+                  <span aria-hidden className="ml-1 h-px flex-1 bg-border" />
                 </p>
                 {g.resultados.map((r) => {
                   const i = indice++;
@@ -242,7 +247,8 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
                       onMouseMove={() => setAtivo(i)}
                       onClick={() => abrirResultado(r)}
                       className={cn(
-                        "cursor-pointer rounded-lg px-2 py-1.5 text-sm",
+                        // a margem de rolagem é a altura do título preso, que senão cobre o item ativo
+                        "cursor-pointer scroll-mt-9 rounded-lg px-2 py-1.5 text-sm",
                         i === atual ? "bg-accent text-accent-foreground" : "",
                       )}
                     >

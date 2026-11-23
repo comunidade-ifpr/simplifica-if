@@ -10,6 +10,7 @@ import type { DadosIndice } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { SearchIcon } from "lucide-react";
 import { classeColuna } from "../components/Pagina.tsx";
+import { ICONES_TIPO } from "../explorar/icones.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { atalhoPaleta, usePaleta } from "../explorar/Paleta.tsx";
 import { inteiro } from "../lib/formato.ts";
@@ -18,12 +19,48 @@ import { cn } from "../lib/utils.ts";
 export const Route = createFileRoute("/explorar")({ component: Explorar });
 
 const COLECOES = [
-  { to: "/explorar/normas", nome: "Normas", tipo: "norma", quantos: (d: DadosIndice) => d.normas.length },
-  { to: "/explorar/cursos", nome: "Cursos", tipo: "curso", quantos: (d: DadosIndice) => d.cursos.length },
-  { to: "/explorar/ppcs", nome: "PPCs", tipo: "ppc", quantos: (d: DadosIndice) => d.ppcs.length },
-  { to: "/explorar/campi", nome: "Campi", tipo: "campus", quantos: (d: DadosIndice) => d.campi.length },
-  { to: "/explorar/cnct", nome: "CNCT", tipo: "cnct", quantos: (d: DadosIndice) => d.cnct.length },
-  { to: "/explorar/consepe", nome: "Consepe", tipo: "reuniao", quantos: (d: DadosIndice) => d.reunioes.length },
+  {
+    to: "/explorar/normas",
+    nome: "Normas",
+    tipo: "norma",
+    icone: ICONES_TIPO.norma,
+    quantos: (d: DadosIndice) => d.normas.length,
+  },
+  {
+    to: "/explorar/cursos",
+    nome: "Cursos",
+    tipo: "curso",
+    icone: ICONES_TIPO.curso,
+    quantos: (d: DadosIndice) => d.cursos.length,
+  },
+  {
+    to: "/explorar/ppcs",
+    nome: "PPCs",
+    tipo: "ppc",
+    icone: ICONES_TIPO.ppc,
+    quantos: (d: DadosIndice) => d.ppcs.length,
+  },
+  {
+    to: "/explorar/campi",
+    nome: "Campi",
+    tipo: "campus",
+    icone: ICONES_TIPO.campus,
+    quantos: (d: DadosIndice) => d.campi.length,
+  },
+  {
+    to: "/explorar/cnct",
+    nome: "CNCT",
+    tipo: "cnct",
+    icone: ICONES_TIPO.cnct,
+    quantos: (d: DadosIndice) => d.cnct.length,
+  },
+  {
+    to: "/explorar/consepe",
+    nome: "Consepe",
+    tipo: "reuniao",
+    icone: ICONES_TIPO.consepe,
+    quantos: (d: DadosIndice) => d.reunioes.length,
+  },
 ] as const;
 
 /** O que a busca entende, para abrir a paleta já com a consulta. */
@@ -47,6 +84,7 @@ function Abas() {
     <nav aria-label="Coleções" className="-mx-2.5 -mb-px flex flex-wrap gap-1">
       {COLECOES.map((c) => (
         <Link key={c.to} to={c.to} className={cn(classeAba, c.tipo === tipo ? "border-primary text-foreground" : "")}>
+          <c.icone aria-hidden className="size-3.5 shrink-0 self-center" />
           {c.nome}{" "}
           {indice.fase === "lido" ? (
             <span className="font-normal text-micro tabular-nums opacity-80">{inteiro(c.quantos(indice.valor))}</span>
