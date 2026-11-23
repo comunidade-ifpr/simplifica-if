@@ -12,7 +12,7 @@
  * (`/conversa?id=…`). Ao recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico
  * e, se a IA estava respondendo, com o resto da resposta.
  */
-import type { ArquivoAnexado, Provider } from "@simplifica-if/contratos-app";
+import type { Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { EllipsisIcon, FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
@@ -29,7 +29,6 @@ import { etapasVistas } from "../conversa/etapas.ts";
 import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, useAnexos } from "../tarefas/comecar.tsx";
-import { comArquivos } from "../tarefas/textos.ts";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import {
@@ -161,8 +160,8 @@ function FormularioInicio() {
 }
 
 /**
- * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar,
- * e o pedido diz à IA quais chegaram, com o nome que ganharam na pasta e a versão em texto do `.docx`.
+ * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar;
+ * o servidor avisa a IA deles junto com a mensagem.
  */
 function Compositor() {
   const api = useApi();
@@ -174,16 +173,12 @@ function Compositor() {
   const ocupada = estado.fase === "respondendo" || estado.fase === "interrompendo";
   const enviar = async () => {
     setErro(undefined);
-    const anexados: Array<ArquivoAnexado> = [];
     if (anexos.length > 0) {
       setAnexando(true);
       let faltam = anexos;
       try {
         for (const arquivo of anexos) {
-          const copiado = await api.chamar((cliente) =>
-            cliente["pasta.anexar"]({ pasta: estado.pastaTrabalho, arquivo }),
-          );
-          anexados.push(copiado);
+          await api.chamar((cliente) => cliente["pasta.anexar"]({ pasta: estado.pastaTrabalho, arquivo }));
           faltam = faltam.filter((outro) => outro !== arquivo);
         }
       } catch (falha) {
@@ -195,7 +190,7 @@ function Compositor() {
         setAnexando(false);
       }
     }
-    conversa.enviar(comArquivos(texto, anexados));
+    conversa.enviar(texto);
     setTexto("");
     limpar();
   };

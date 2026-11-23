@@ -237,6 +237,7 @@ describe("MudancasPasta", () => {
     });
     estado = aplicarEvento(estado, {
       _tag: "MudancasPasta",
+      anexados: [{ nome: "Foto.png" }],
       novos: [{ nome: "Ata.docx", texto: ".simplifica/textos/Ata.docx.md" }],
       mudados: [{ nome: "Minuta.docx", semTexto: "O arquivo está protegido." }],
       removidos: ["velho.md"],
@@ -246,6 +247,7 @@ describe("MudancasPasta", () => {
       ["pessoa", "pasta"],
     );
     assert.deepInclude(estado.itens[1], {
+      anexados: ["Foto.png"],
       novos: ["Ata.docx"],
       mudados: ["Minuta.docx"],
       removidos: ["velho.md"],

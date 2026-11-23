@@ -13,6 +13,7 @@ import * as Layer from "effect/Layer";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import * as Banco from "../src/persistencia/Banco.ts";
+import * as Historico from "../src/persistencia/Historico.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import { diretorioTemporario, limparTemporarios } from "./apoio.ts";
@@ -171,6 +172,9 @@ const popularV1 = Effect.gen(function* () {
   `;
 });
 
+/** O id de uma migração que esta versão do app ainda não tem. */
+const FUTURA = Banco.MIGRACOES.at(-1)![0] + 1;
+
 const emMemoria = Layer.mergeAll(Listas.layer, Revisoes.layer).pipe(
   Layer.provideMerge(NodeSqliteClient.layer({ filename: ":memory:" })),
 );
@@ -323,21 +327,65 @@ describe("migrações do banco das conversas", () => {
       }).pipe(Effect.provide(emMemoria)),
   );
 
-  it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
+  it.effect("upgrade 4 → 6 põe os eventos do turno gravados na forma nova", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
       yield* Banco.rodarMigracoes(4);
+      yield* sql`
+        INSERT INTO conversas (id, provider, pasta_trabalho, estado, criada_em, atualizada_em)
+        VALUES ('c1', 'claude', '/tmp/tarefa', 'liberada', '2026-11-20T10:00:00Z', '2026-11-20T10:00:00Z')
+      `;
+      const evento = (ordem: number, tipo: string, dados: unknown) =>
+        sql`
+          INSERT INTO eventos (conversa_id, ordem, turno, tipo, dados, criado_em)
+          VALUES ('c1', ${ordem}, 1, ${tipo}, ${JSON.stringify(dados)}, '2026-11-20T10:00:00Z')
+        `;
+      yield* evento(1, "mensagem", { texto: "Confira.\n\nArquivos na pasta:\n- Ata.docx" });
+      yield* evento(2, "evento", {
+        _tag: "MudancasPasta",
+        novos: [{ nome: "nota.md" }],
+        mudados: [],
+        removidos: ["velho.md"],
+      });
+      yield* evento(3, "evento", { _tag: "TextoFinal", texto: "Pronto." });
+      yield* evento(4, "evento", { _tag: "FimTurno", motivo: "end_turn" });
 
-      // Simula um banco que recebeu uma migração 5 de uma versão mais nova do app.
-      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (5, 'Futura')`;
-      const erroDowngrade = yield* Banco.rodarMigracoes(4).pipe(Effect.flip);
+      yield* Banco.rodarMigracoes(6);
+      const historico = yield* Historico.Historico;
+      const itens = yield* historico.itens("c1");
+      assert.deepStrictEqual(itens[1], {
+        _tag: "EventoTurno",
+        turno: 1,
+        ordem: 2,
+        evento: {
+          _tag: "MudancasPasta",
+          anexados: [],
+          novos: [{ nome: "nota.md" }],
+          mudados: [],
+          removidos: ["velho.md"],
+        },
+      });
+      // A mensagem gravada não muda: a nota antiga dos anexos fica no texto, como a interface a mandou.
+      assert.deepInclude(itens[0], { texto: "Confira.\n\nArquivos na pasta:\n- Ata.docx" });
+      assert.deepInclude(itens[2], { evento: { _tag: "TextoFinal", texto: "Pronto." } });
+    }).pipe(Effect.provide(Historico.layer.pipe(Layer.provideMerge(emMemoria)))),
+  );
+
+  it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
+    Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+      yield* Banco.rodarMigracoes(FUTURA - 1);
+
+      // Simula um banco que recebeu uma migração de uma versão mais nova do app.
+      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (${FUTURA}, 'Futura')`;
+      const erroDowngrade = yield* Banco.rodarMigracoes(FUTURA - 1).pipe(Effect.flip);
       assert.strictEqual(erroDowngrade._tag, "BancoIncompativel");
       assert.include(erroDowngrade.message, "versão mais nova");
 
       // Simula histórico incompatível (ex.: nome trocado ou banco de dev antigo).
-      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = 5`;
+      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = ${FUTURA}`;
       yield* sql`UPDATE effect_sql_migrations SET name = 'AntigaDiferente' WHERE migration_id = 2`;
-      const erroIncompativel = yield* Banco.rodarMigracoes(4).pipe(Effect.flip);
+      const erroIncompativel = yield* Banco.rodarMigracoes(FUTURA - 1).pipe(Effect.flip);
       assert.strictEqual(erroIncompativel._tag, "BancoIncompativel");
       assert.include(erroIncompativel.message, "não é compatível");
     }).pipe(Effect.provide(emMemoria)),
@@ -349,7 +397,7 @@ describe("migrações do banco das conversas", () => {
       yield* Banco.rodarMigracoes(4);
 
       const migracaoQuebrada: Banco.EntradaMigracao = [
-        5,
+        FUTURA,
         "QuebraFk",
         Effect.gen(function* () {
           const s = yield* SqlClient.SqlClient;
@@ -360,16 +408,16 @@ describe("migrações do banco das conversas", () => {
           `;
         }),
       ];
-      const erro = yield* Banco.rodarMigracoes(5, {
+      const erro = yield* Banco.rodarMigracoes(FUTURA, {
         migracoes: [...Banco.MIGRACOES, migracaoQuebrada],
       }).pipe(Effect.flip);
       assert.strictEqual(erro._tag, "MigrationError");
       assert.include(String(erro.cause), "MigracaoViolouIntegridade");
 
-      // Transação desfeita: o órfão não ficou e a migração 5 não foi registrada.
+      // Transação desfeita: o órfão não ficou e a migração quebrada não foi registrada.
       const orfaos = yield* sql`SELECT * FROM pendencias_vivas WHERE lista_id = 'lista-inexistente'`;
       assert.strictEqual(orfaos.length, 0);
-      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = 5`;
+      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = ${FUTURA}`;
       assert.strictEqual(aplicada.length, 0);
       // `foreign_keys` foi religado mesmo após o erro.
       const fk = yield* sql<{ foreign_keys: number }>`PRAGMA foreign_keys;`;

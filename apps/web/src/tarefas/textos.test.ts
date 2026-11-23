@@ -2,7 +2,6 @@ import { describe, expect, it } from "vite-plus/test";
 import { etapasVistas, marcaDaEntrada } from "../conversa/etapas.ts";
 import type { Item } from "../conversa/estado.ts";
 import {
-  comArquivos,
   resumoMudancasPasta,
   dataDaBase,
   dispositivoPorExtenso,
@@ -124,55 +123,43 @@ describe("etapas", () => {
   });
 });
 
-describe("comArquivos", () => {
-  it("sem anexos, o pedido fica como está", () => {
-    expect(comArquivos("Confira a minuta.", [])).toBe("Confira a minuta.");
-  });
-
-  it("lista cada anexo: a versão em texto, o motivo de não haver, ou só o nome", () => {
-    expect(
-      comArquivos("Confira a minuta.", [
-        { nome: "Minuta (2).docx", texto: ".simplifica/textos/Minuta (2).docx.md" },
-        { nome: "Quebrado.docx", semTexto: "O arquivo não é um DOCX." },
-        { nome: "parecer.md" },
-      ]),
-    ).toBe(
-      [
-        "Confira a minuta.",
-        "",
-        "Arquivos na pasta:",
-        "- Minuta (2).docx: leia a versão em texto, `.simplifica/textos/Minuta (2).docx.md`",
-        "- Quebrado.docx: sem versão em texto. O arquivo não é um DOCX.",
-        "- parecer.md",
-      ].join("\n"),
-    );
-  });
-
-  it("crase e quebra de linha no nome não quebram o caminho nem abrem outra linha", () => {
-    const nota = comArquivos("Pedido.", [
-      { nome: "Parecer `final`\nv2.docx", texto: ".simplifica/textos/Parecer `final`_v2.docx.md" },
-    ]);
-    expect(nota).toBe(
-      "Pedido.\n\nArquivos na pasta:\n- Parecer `final` v2.docx: leia a versão em texto, ``.simplifica/textos/Parecer `final`_v2.docx.md``",
-    );
-  });
-});
-
 describe("resumoMudancasPasta", () => {
   it("conta cada grupo, com até três nomes e o resto como número", () => {
-    expect(resumoMudancasPasta({ novos: ["Ata.docx"], mudados: [], removidos: [] })).toBe(
+    expect(resumoMudancasPasta({ anexados: [], novos: ["Ata.docx"], mudados: [], removidos: [] })).toBe(
       "Na pasta, desde a última resposta: 1 novo (Ata.docx). A IA foi avisada.",
     );
     expect(
-      resumoMudancasPasta({ novos: [], mudados: ["a.md", "b.md", "c.md", "d.md", "e.md"], removidos: ["x\ny.md"] }),
+      resumoMudancasPasta({
+        anexados: [],
+        novos: [],
+        mudados: ["a.md", "b.md", "c.md", "d.md", "e.md"],
+        removidos: ["x\ny.md"],
+      }),
     ).toBe(
       "Na pasta, desde a última resposta: 5 mudados (a.md, b.md, c.md e mais 2); 1 removido (x y.md). A IA foi avisada.",
     );
   });
 
   it("diz à pessoa quais documentos ficaram sem versão em texto", () => {
-    expect(resumoMudancasPasta({ novos: [], mudados: ["Minuta.docx"], removidos: [], semTexto: ["Minuta.docx"] })).toBe(
+    expect(
+      resumoMudancasPasta({
+        anexados: [],
+        novos: [],
+        mudados: ["Minuta.docx"],
+        removidos: [],
+        semTexto: ["Minuta.docx"],
+      }),
+    ).toBe(
       "Na pasta, desde a última resposta: 1 mudado (Minuta.docx). A IA foi avisada. Sem versão em texto para a IA: Minuta.docx; a resposta pode não considerá-lo.",
+    );
+  });
+
+  it("os anexos vêm antes do que mudou fora da conversa", () => {
+    expect(resumoMudancasPasta({ anexados: ["Ata.docx"], novos: [], mudados: [], removidos: [] })).toBe(
+      "Anexado: Ata.docx. A IA foi avisada.",
+    );
+    expect(resumoMudancasPasta({ anexados: ["a.pdf", "b.png"], novos: ["c.md"], mudados: [], removidos: [] })).toBe(
+      "Anexados: a.pdf, b.png. Na pasta, desde a última resposta: 1 novo (c.md). A IA foi avisada.",
     );
   });
 });

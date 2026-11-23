@@ -169,9 +169,16 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         montarDocx({ corpo: par("Dispõe sobre o estágio.") + par("Art. 1º O estágio é obrigatório.") }),
       );
       yield* liberar(minuta);
+      // O índice dos textos guarda o resultado e deixa o anexo pendente, para o próximo turno o avisar.
+      const indice = (de = pasta) =>
+        JSON.parse(NodeFS.readFileSync(NodePath.join(de, ".simplifica", "textos", "indice.json"), "utf8")) as Record<
+          string,
+          { origem: string; texto: boolean; pendente?: string; semTexto?: string }
+        >;
       const anexado = yield* rpc["pasta.anexar"]({ pasta, arquivo: minuta });
-      assert.deepInclude(anexado, { nome: "Minuta.docx", texto: ".simplifica/textos/Minuta.docx.md" });
-      assert.notProperty(anexado, "semTexto");
+      assert.deepInclude(anexado, { nome: "Minuta.docx", origem: "anexado" });
+      assert.deepInclude(indice()["Minuta.docx"], { texto: true, pendente: "anexado" });
+      assert.notProperty(indice()["Minuta.docx"], "semTexto");
       const texto = NodeFS.readFileSync(NodePath.join(pasta, ".simplifica", "textos", "Minuta.docx.md"), "utf8");
       assert.match(
         texto,
@@ -183,14 +190,14 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
 
       // O anexo repetido ganha " (2)", e o texto dele também.
       const repetido = yield* rpc["pasta.anexar"]({ pasta, arquivo: minuta });
-      assert.strictEqual(repetido.texto, ".simplifica/textos/Minuta (2).docx.md");
+      assert.strictEqual(repetido.nome, "Minuta (2).docx");
+      assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Minuta (2).docx.md")));
       // Barra invertida no nome (o macOS aceita): o anexo entra com o nome, e o texto, com um nome seguro.
       const barra = NodePath.join(fora, "Ata\\final.docx");
       NodeFS.copyFileSync(minuta, barra);
       yield* liberar(barra);
       const comBarra = yield* rpc["pasta.anexar"]({ pasta, arquivo: barra });
       assert.strictEqual(comBarra.nome, "Ata\\final.docx");
-      assert.strictEqual(comBarra.texto, ".simplifica/textos/Ata_final.docx.md");
       assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Ata_final.docx.md")));
 
       // O arquivo que não é DOCX entra, sem texto e com o motivo para a nota.
@@ -199,8 +206,8 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       yield* liberar(quebrado);
       const semTexto = yield* rpc["pasta.anexar"]({ pasta, arquivo: quebrado });
       assert.strictEqual(semTexto.nome, "Quebrado.docx");
-      assert.notProperty(semTexto, "texto");
-      assert.match(semTexto.semTexto ?? "", /não é um DOCX/);
+      assert.deepInclude(indice()["Quebrado.docx"], { texto: false, pendente: "anexado" });
+      assert.match(indice()["Quebrado.docx"]?.semTexto ?? "", /não é um DOCX/);
       assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, "Quebrado.docx")));
       assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "Quebrado.docx.md")));
 
@@ -208,16 +215,16 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       const nota = NodePath.join(fora, "nota.md");
       NodeFS.writeFileSync(nota, "# Nota\n");
       yield* liberar(nota);
-      const md = yield* rpc["pasta.anexar"]({ pasta, arquivo: nota });
-      assert.notProperty(md, "texto");
-      assert.notProperty(md, "semTexto");
+      yield* rpc["pasta.anexar"]({ pasta, arquivo: nota });
+      assert.deepStrictEqual(indice()["nota.md"], { origem: "", texto: false, pendente: "anexado" });
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "nota.md.md")));
 
       // Um link no lugar de `.simplifica` (a IA escreve na pasta) não leva o texto para fora dela.
       const { pasta: outra } = yield* rpc["pasta.criar"]({ titulo: "Texto com link" });
       const alvo = diretorioTemporario("simplifica-alvo-texto-");
       NodeFS.symlinkSync(alvo, NodePath.join(outra, ".simplifica"));
-      const comLink = yield* rpc["pasta.anexar"]({ pasta: outra, arquivo: minuta });
-      assert.strictEqual(comLink.texto, ".simplifica/textos/Minuta.docx.md");
+      yield* rpc["pasta.anexar"]({ pasta: outra, arquivo: minuta });
+      assert.isTrue(NodeFS.existsSync(NodePath.join(outra, ".simplifica", "textos", "Minuta.docx.md")));
       assert.deepStrictEqual(NodeFS.readdirSync(alvo), []);
       assert.isTrue(NodeFS.lstatSync(NodePath.join(outra, ".simplifica")).isDirectory());
     }).pipe(Effect.scoped),
@@ -243,6 +250,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         primeiro.find((evento) => evento._tag === "MudancasPasta"),
         {
           _tag: "MudancasPasta",
+          anexados: [],
           novos: [{ nome: "velho.docx", texto: ".simplifica/textos/velho.docx.md" }],
           mudados: [],
           removidos: [],
@@ -260,7 +268,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       NodeFS.rmSync(NodePath.join(pasta, "velho.docx"));
       // A trava do Word com o documento aberto não é documento da pessoa.
       NodeFS.writeFileSync(NodePath.join(pasta, "~$entrada.docx"), "trava");
-      // O anexo do app não se repete como novo: a nota do pedido já o trouxe.
+      // O anexo do app vai num grupo só dele, não como novo.
       const anexo = NodePath.join(fora, "anexo.md");
       NodeFS.writeFileSync(anexo, "# Anexo\n");
       yield* pedirHttp(urlRpc.replace(/\/rpc$/, CAMINHO_LIBERAR_ARQUIVO), {
@@ -274,6 +282,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       const mudancas = terceiro.find((evento) => evento._tag === "MudancasPasta");
       assert.deepStrictEqual(mudancas, {
         _tag: "MudancasPasta",
+        anexados: [{ nome: "anexo.md" }],
         novos: [{ nome: "atas/Ata.docx", texto: ".simplifica/textos/atas/Ata.docx.md" }],
         mudados: [{ nome: "entrada.md" }],
         removidos: ["velho.docx"],
@@ -286,11 +295,13 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "textos", "velho.docx.md")));
       // A IA recebe a mensagem e o aviso; o histórico guarda a mensagem e o evento à parte.
       const pedido = registro.textos.at(-1) ?? "";
-      assert.match(pedido, /^confira de novo\n\nDesde a sua última resposta, a pessoa mexeu na pasta da tarefa/);
+      assert.match(
+        pedido,
+        /^confira de novo\n\nA pessoa anexou à pasta da tarefa:\n- `anexo\.md`\n\nDesde a sua última resposta, a pessoa mexeu na pasta da tarefa/,
+      );
       assert.include(pedido, "- `atas/Ata.docx`: leia a versão em texto, `.simplifica/textos/atas/Ata.docx.md`");
       assert.include(pedido, "Arquivos mudados (releia antes de responder sobre eles):\n- `entrada.md`");
       assert.include(pedido, "Arquivos removidos:\n- `velho.docx`");
-      assert.notInclude(pedido, "anexo.md");
       const gravada = yield* rpc["conversa.carregar"]({ sessao });
       const doTurno = gravada.itens.filter((item) => item.turno === 3);
       assert.deepStrictEqual(

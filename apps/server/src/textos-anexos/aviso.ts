@@ -1,6 +1,7 @@
 /**
- * O aviso à IA do que a pessoa mexeu na pasta fora da conversa (`MudancasPasta`), acrescentado ao
- * pedido do turno. Até `NOMES_POR_GRUPO` nomes por grupo, e "e mais N".
+ * O aviso à IA do que entrou ou mudou na pasta sem ela saber (`MudancasPasta`), acrescentado ao pedido
+ * do turno: os anexos do app e o que a pessoa mexeu fora da conversa. Até `NOMES_POR_GRUPO` nomes por
+ * grupo, e "e mais N".
  */
 import type { ArquivoMudado, MudancasPasta } from "@simplifica-if/contratos-app";
 
@@ -33,8 +34,11 @@ function grupo(titulo: string, linhas: ReadonlyArray<string>): ReadonlyArray<str
 
 /** O texto do aviso, para ir depois da mensagem da pessoa. */
 export function avisoDasMudancas(mudancas: MudancasPasta): string {
-  return [
-    "Desde a sua última resposta, a pessoa mexeu na pasta da tarefa, fora da conversa:",
+  const anexados = grupo(
+    "A pessoa anexou à pasta da tarefa:",
+    mudancas.anexados.map((arquivo) => linha(arquivo, false)),
+  );
+  const fora = [
     ...grupo(
       "Arquivos novos:",
       mudancas.novos.map((arquivo) => linha(arquivo, false)),
@@ -47,5 +51,11 @@ export function avisoDasMudancas(mudancas: MudancasPasta): string {
       "Arquivos removidos:",
       mudancas.removidos.map((nome) => `- ${codigoEmLinha(umaLinha(nome))}`),
     ),
-  ].join("\n");
+  ];
+  return [
+    ...(anexados.length === 0 ? [] : [anexados.join("\n")]),
+    ...(fora.length === 0
+      ? []
+      : [["Desde a sua última resposta, a pessoa mexeu na pasta da tarefa, fora da conversa:", ...fora].join("\n")]),
+  ].join("\n\n");
 }

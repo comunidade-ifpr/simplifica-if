@@ -102,7 +102,7 @@ const camada = (
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(CatalogoSkills.layerFixo([SKILL])),
-    Layer.provide(pastas),
+    Layer.provideMerge(pastas),
     Layer.provideMerge(Historico.layer),
     Layer.provideMerge(preferencias),
     Layer.provideMerge(Banco.layerArquivo(arquivo)),
@@ -123,6 +123,7 @@ const abrir = (arquivo: string, registro: Registro, pastas?: CamadaPastas, prefe
       conversas: Context.get(contexto, Conversas.Conversas),
       preferencias: Context.get(contexto, Preferencias.Preferencias),
       historico: Context.get(contexto, Historico.Historico),
+      pastas: Context.get(contexto, PastasTrabalho.PastasTrabalho),
       sql: Context.get(contexto, SqlClient.SqlClient),
       fechar: Scope.close(escopo, Exit.void),
     };
@@ -683,6 +684,7 @@ describe("ciclo de vida da sessão do provider", () => {
         [...seguinte].find((evento) => evento._tag === "MudancasPasta"),
         {
           _tag: "MudancasPasta",
+          anexados: [],
           novos: [{ nome: "Minuta.docx", texto: ".simplifica/textos/Minuta.docx.md" }, { nome: "nota.md" }],
           mudados: [],
           removidos: [],
@@ -831,6 +833,7 @@ describe("ciclo de vida da sessão do provider", () => {
         [...seguinte].find((evento) => evento._tag === "MudancasPasta"),
         {
           _tag: "MudancasPasta",
+          anexados: [],
           novos: [
             { nome: "A.docx", texto: ".simplifica/textos/A.docx.md" },
             { nome: "B.docx", texto: ".simplifica/textos/B.docx.md" },
@@ -842,6 +845,82 @@ describe("ciclo de vida da sessão do provider", () => {
       // Avisado, o A.docx não volta no turno seguinte.
       const depois = yield* Stream.runCollect(conversas.enviar(id, "e agora?"));
       assert.isUndefined([...depois].find((evento) => evento._tag === "MudancasPasta"));
+      yield* fechar;
+    }),
+  );
+
+  /** As pastas de verdade numa raiz nova, com a pasta `Tarefa` e os textos que convertem na hora. */
+  const pastasReais = () => {
+    const raiz = NodeFS.realpathSync(diretorioTemporario("simplifica-raiz-"));
+    const tarefa = NodePath.join(raiz, "Tarefa");
+    NodeFS.mkdirSync(tarefa);
+    const textos = Layer.succeed(TextosAnexos.TextosAnexos, {
+      bytesDoArquivo: TextosAnexos.LIMITES.bytesDoArquivo,
+      converter: (_bytes, nome) => Effect.succeed({ tipo: "texto", markdown: `texto de ${nome}` } as const),
+    });
+    const camada = PastasTrabalho.layer({ raiz, copias: diretorioTemporario("simplifica-copias-") }).pipe(
+      Layer.provide(textos),
+      Layer.provide(ArquivosLiberados.layer({ exigirLiberacao: false })),
+    );
+    return { tarefa, camada };
+  };
+
+  /** Um arquivo fora da raiz, para anexar. */
+  const arquivoParaAnexar = (nome: string, conteudo: string) => {
+    const caminho = NodePath.join(diretorioTemporario("simplifica-anexo-"), nome);
+    NodeFS.writeFileSync(caminho, conteudo);
+    return caminho;
+  };
+
+  it.effect("o anexo chega à IA pelo aviso do servidor: antes da primeira mensagem e entre os turnos", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { tarefa, camada } = pastasReais();
+      const { conversas, pastas, fechar } = yield* abrir(novoBanco(), registro, camada);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      // Como a tarefa do Início: o anexo entra na pasta antes da primeira mensagem.
+      yield* pastas.anexar(tarefa, arquivoParaAnexar("Minuta.docx", "minuta"));
+      yield* Stream.runCollect(conversas.enviar(id, "confira a minuta"));
+      assert.match(registro.textos.at(-1) ?? "", /^confira a minuta\n\n[\s\S]*`Minuta\.docx`/);
+      // Como o "Anexar" do painel da pasta, sem nota nenhuma: o turno seguinte o avisa.
+      yield* pastas.anexar(tarefa, arquivoParaAnexar("Foto.png", "png"));
+      yield* Stream.runCollect(conversas.enviar(id, "e a foto?"));
+      assert.match(registro.textos.at(-1) ?? "", /^e a foto\?\n\n[\s\S]*`Foto\.png`/);
+      // Avisado uma vez, não volta; e o histórico guarda a mensagem como a pessoa a escreveu.
+      yield* Stream.runCollect(conversas.enviar(id, "obrigado"));
+      assert.strictEqual(registro.textos.at(-1), "obrigado");
+      const mensagens = (yield* conversas.carregar(id)).itens.flatMap((item) =>
+        item._tag === "Mensagem" ? [item.texto] : [],
+      );
+      assert.deepStrictEqual(mensagens, ["confira a minuta", "e a foto?", "obrigado"]);
+      yield* fechar;
+    }),
+  );
+
+  it.effect("o anexo que chega durante um turno fica para o aviso do turno seguinte", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { tarefa, camada } = pastasReais();
+      const { conversas, pastas, fechar } = yield* abrir(novoBanco(), registro, camada);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      yield* pastas.anexar(tarefa, arquivoParaAnexar("A.md", "a"));
+      const respondendo = yield* Deferred.make<void>();
+      const turno = yield* conversas.enviar(id, "uma resposta demorada").pipe(
+        Stream.tap((evento) =>
+          evento._tag === "TextoParcial" ? Deferred.succeed(respondendo, undefined) : Effect.void,
+        ),
+        Stream.runCollect,
+        Effect.forkChild,
+      );
+      yield* Deferred.await(respondendo);
+      // O turno já avisou o A.md; o B.md chega com a IA respondendo, e o fim do turno não o dá por avisado.
+      yield* pastas.anexar(tarefa, arquivoParaAnexar("B.md", "b"));
+      yield* conversas.interromper(id);
+      yield* Fiber.join(turno);
+      assert.match(registro.textos.at(-1) ?? "", /`A\.md`/);
+      yield* Stream.runCollect(conversas.enviar(id, "e agora?"));
+      const pedido = registro.textos.at(-1) ?? "";
+      assert.match(pedido, /^e agora\?\n\nA pessoa anexou à pasta da tarefa:\n- `B\.md`$/);
       yield* fechar;
     }),
   );

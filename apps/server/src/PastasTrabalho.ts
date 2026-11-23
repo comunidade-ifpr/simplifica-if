@@ -43,7 +43,6 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import {
-  type ArquivoAnexado,
   type ArquivoMudado,
   type ArquivoPasta,
   ehExtensaoDocumento,
@@ -89,8 +88,11 @@ const IndiceTextos = Schema.Record(
   Schema.Struct({
     origem: Schema.String,
     texto: Schema.Boolean,
-    /** Convertido no começo de um turno e ainda não avisado à IA (o turno parou no preparo). */
-    pendente: Schema.optionalKey(Schema.Literals(["novo", "mudado"])),
+    /**
+     * Ainda não avisado à IA: `anexado` pelo app (`anexar`), ou `novo`/`mudado` convertido no começo de um
+     * turno que parou no preparo.
+     */
+    pendente: Schema.optionalKey(Schema.Literals(["anexado", "novo", "mudado"])),
     /** Por que não saiu texto, para repetir no aviso pendente. */
     semTexto: Schema.optionalKey(Schema.String),
   }),
@@ -145,8 +147,11 @@ export class PastasTrabalho extends Context.Service<
     readonly copias: string;
     /** Cria a pasta da tarefa e devolve o caminho real. */
     readonly criar: (titulo: string) => Effect.Effect<string, FalhaPasta>;
-    /** Copia o arquivo liberado para a pasta e grava a versão em texto dele, quando o formato pede. */
-    readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoAnexado, FalhaPasta>;
+    /**
+     * Copia o arquivo liberado para a pasta, grava a versão em texto dele, quando o formato pede, e o deixa
+     * pendente: o próximo turno o avisa à IA.
+     */
+    readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoPasta, FalhaPasta>;
     /**
      * Grava o relato `nome` (um `.md`) em `<raiz>/Relatos de erro/`, fora do alcance da IA, sem
      * sobrescrever (` (2)`…), e devolve o caminho.
@@ -749,20 +754,24 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     );
   });
 
-  /** O resultado de `gravarTexto` no índice, com a impressão (`tamanho:sha256`) do arquivo convertido. */
+  /**
+   * O resultado de `gravarTexto` no índice, com a impressão (`tamanho:sha256`) do arquivo convertido, e o
+   * aviso pendente. A impressão vazia faz o próximo turno converter de novo.
+   */
   const noIndice = (
     indice: IndiceTextos,
     nome: string,
     impressao: string,
     resultado: { texto?: string; semTexto?: string },
-    pendente?: "novo" | "mudado",
+    pendente: "anexado" | "novo" | "mudado",
   ) => {
-    // O que era novo e ainda não foi avisado continua novo para a IA, mesmo que tenha mudado de novo.
-    const aviso = pendente === undefined ? undefined : indice[nome]?.pendente === "novo" ? "novo" : pendente;
+    // O que era anexado ou novo e ainda não foi avisado continua assim para a IA, mesmo que tenha mudado.
+    const anterior = indice[nome]?.pendente;
+    const aviso = pendente === "anexado" || anterior === undefined || anterior === "mudado" ? pendente : anterior;
     indice[nome] = {
       origem: impressao,
       texto: resultado.texto !== undefined,
-      ...(aviso === undefined ? {} : { pendente: aviso }),
+      pendente: aviso,
       ...(resultado.semTexto === undefined ? {} : { semTexto: resultado.semTexto }),
     };
   };
@@ -793,24 +802,28 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     ).pipe(comMotivo("Não foi possível copiar o arquivo para a pasta da tarefa."));
     yield* historico.registrarAnexo(real, nome);
     const copiado = yield* fs.stat(path.join(real, nome)).pipe(comMotivo("O arquivo copiado sumiu."));
-    // Convertido da cópia na pasta, lida sem seguir link: a impressão no índice é a dos bytes convertidos,
-    // a que o retrato do começo do turno vai ver.
-    const texto = yield* travaTextos.withPermits(1)(
+    // O anexo fica pendente no índice, de qualquer formato: o próximo turno o avisa à IA (`abrirTurno`). O
+    // texto se converte da cópia na pasta, lida sem seguir link: a impressão no índice é a dos bytes
+    // convertidos, a que o retrato do começo do turno vai ver.
+    yield* travaTextos.withPermits(1)(
       Effect.gen(function* () {
-        if (!TextosAnexos.EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase())) return {};
         const indice = yield* lerIndice(real);
+        if (!TextosAnexos.EXTENSOES_CONVERTIDAS.includes(path.extname(nome).toLowerCase())) {
+          noIndice(indice, nome, "", {}, "anexado");
+          return yield* gravarIndice(real, indice);
+        }
         const { resultado, impressao, registrar } = yield* textoDoDocumento(real, nome);
-        if (!registrar) return resultado;
-        // Sem leitura (grande demais, erro de E/S), a impressão vem da cópia, sem guardar o conteúdo.
-        const registrada =
-          impressao ??
-          `${Number(copiado.size)}:${yield* sha256(path.join(real, nome)).pipe(
-            comArquivos,
-            Effect.orElseSucceed(() => ""),
-          )}`;
-        noIndice(indice, nome, registrada, resultado);
+        // Sem leitura (grande demais, erro de E/S), a impressão vem da cópia, sem guardar o conteúdo; a troca
+        // durante a leitura (`registrar` falso) fica sem impressão, e o próximo turno converte de novo.
+        const registrada = !registrar
+          ? ""
+          : (impressao ??
+            `${Number(copiado.size)}:${yield* sha256(path.join(real, nome)).pipe(
+              comArquivos,
+              Effect.orElseSucceed(() => ""),
+            )}`);
+        noIndice(indice, nome, registrada, resultado, "anexado");
         yield* gravarIndice(real, indice);
-        return resultado;
       }),
     );
     return {
@@ -819,8 +832,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       tamanho: Number(copiado.size),
       alteradoEm: alteradoEm(copiado),
       origem: "anexado",
-      ...texto,
-    } satisfies ArquivoAnexado;
+    } satisfies ArquivoPasta;
   });
 
   const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (nome: string, conteudo: string) {
@@ -965,22 +977,21 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
   });
 
   /**
-   * O que a pessoa mexeu na pasta desde o fim do turno anterior (`antes`, quando há) até `agora`, com os
-   * textos postos em dia. Os anexos do app ficam de fora dos novos (a nota do pedido já os trouxe), e os
-   * links, de tudo; os nomes de trava do Word já ficaram fora do retrato. O que o índice achou fora dessa
-   * janela (mudado durante o turno, antes do primeiro, depois de um Desfazer) entra também, porque o
-   * texto dele mudou.
+   * O que entrou ou mudou na pasta sem a IA saber, com os textos postos em dia: os anexos do app ainda
+   * pendentes no índice, e o que a pessoa mexeu desde o fim do turno anterior (`antes`, quando há) até
+   * `agora`. Os links ficam de fora de tudo; os nomes de trava do Word já ficaram fora do retrato. O que o
+   * índice achou fora dessa janela (mudado durante o turno, antes do primeiro, depois de um Desfazer)
+   * entra também, porque o texto dele mudou.
    */
   const mudancasForaDaConversa = Effect.fn("PastasTrabalho.mudancasForaDaConversa")(function* (
     real: string,
     antes: Retrato | undefined,
     agora: Retrato,
   ) {
-    const anexos = yield* historico.anexos(real);
     const { criados, alterados, apagados } =
       antes === undefined ? { criados: [], alterados: [], apagados: [] } : diferenca(antes, agora);
     const arquivo = (nome: string) => agora[nome] !== LINK;
-    const novosNomes = new Set(criados.filter((nome) => arquivo(nome) && !anexos.has(nome)));
+    const novosNomes = new Set(criados.filter(arquivo));
     const mudadosNomes = new Set(alterados.filter(arquivo));
     const removidosNomes = new Set(apagados.filter((nome) => antes?.[nome] !== LINK));
     const { resultados, removidos, conhecidos, indice } = yield* atualizarTextos(real, agora, [...mudadosNomes]);
@@ -988,8 +999,17 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       if (novosNomes.has(nome) || mudadosNomes.has(nome)) continue;
       (conhecidos.has(nome) ? mudadosNomes : novosNomes).add(nome);
     }
-    // O que um turno parado no preparo converteu e não chegou a avisar.
+    // Os anexos ainda não avisados, num grupo só deles, e o que um turno parado no preparo converteu e
+    // não chegou a avisar.
+    const anexadosNomes = new Set<string>();
     for (const [nome, entrada] of Object.entries(indice)) {
+      if (entrada.pendente === "anexado") {
+        if (agora[nome] === undefined || agora[nome] === LINK) continue;
+        anexadosNomes.add(nome);
+        novosNomes.delete(nome);
+        mudadosNomes.delete(nome);
+        continue;
+      }
       if (entrada.pendente === undefined || novosNomes.has(nome) || mudadosNomes.has(nome)) continue;
       (entrada.pendente === "novo" ? novosNomes : mudadosNomes).add(nome);
     }
@@ -1002,11 +1022,14 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     const ordem = (nomes: Set<string>) => [...nomes].sort((a, b) => a.localeCompare(b, "pt-BR"));
     const mudancas: MudancasPasta = {
       _tag: "MudancasPasta",
+      anexados: ordem(anexadosNomes).map(comTexto),
       novos: ordem(novosNomes).map(comTexto),
       mudados: ordem(mudadosNomes).map(comTexto),
       removidos: ordem(removidosNomes),
     };
-    return mudancas.novos.length + mudancas.mudados.length + mudancas.removidos.length === 0 ? undefined : mudancas;
+    const total =
+      mudancas.anexados.length + mudancas.novos.length + mudancas.mudados.length + mudancas.removidos.length;
+    return total === 0 ? undefined : mudancas;
   });
 
   /** O que `abrirTurno` avisou, por turno aberto (`<conversa>/<turno>`), para `fecharTurno` confirmar só isso. */
@@ -1031,7 +1054,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     if (mudancas === undefined || mudancas === null) return undefined;
     avisados.set(
       `${conversa}/${turno}`,
-      [...mudancas.novos, ...mudancas.mudados].map((arquivo) => arquivo.nome),
+      [...mudancas.anexados, ...mudancas.novos, ...mudancas.mudados].map((arquivo) => arquivo.nome),
     );
     return mudancas;
   });

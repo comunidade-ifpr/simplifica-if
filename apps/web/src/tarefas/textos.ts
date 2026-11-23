@@ -1,9 +1,9 @@
 /**
  * Textos do Modo Servidor (M1.9), em funções puras: o nome curto de uma citação `ifpr://` (o chip), a
  * duração estimada da tarefa, os nomes das áreas do catálogo, a data da base, o pedido que o
- * formulário da tarefa monta e a nota dos anexos.
+ * formulário da tarefa monta e a linha das mudanças na pasta.
  */
-import type { ArquivoAnexado, EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
+import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
 import { dataCurta, inteiro } from "../lib/formato.ts";
 
 /* ================================================================== citações */
@@ -239,68 +239,45 @@ export function tituloDoPedido(texto: string): string {
   return palavras.length === 0 ? "Conversa" : palavras;
 }
 
-/* ================================================================== nota dos anexos */
-
-/** O nome numa linha só: o macOS aceita quebra de linha num nome de arquivo, e ela abriria outra linha na nota. */
-const umaLinha = (texto: string) => texto.replace(/[\r\n]+/g, " ");
-
-/** Código em linha do Markdown, com uma cerca maior que a maior sequência de crases do texto. */
-function codigoEmLinha(texto: string): string {
-  const maior = Math.max(0, ...[...texto.matchAll(/`+/g)].map((crases) => crases[0].length));
-  const cerca = "`".repeat(maior + 1);
-  const folga = texto.startsWith("`") || texto.endsWith("`") ? " " : "";
-  return `${cerca}${folga}${texto}${folga}${cerca}`;
-}
-
-type AnexoNaNota = Pick<ArquivoAnexado, "nome" | "texto" | "semTexto">;
-
-/** Um anexo na nota: o nome que ganhou na pasta e a versão em texto, quando o formato pede uma. */
-function linhaDoAnexo(anexo: AnexoNaNota): string {
-  const nome = umaLinha(anexo.nome);
-  if (anexo.texto !== undefined) return `- ${nome}: leia a versão em texto, ${codigoEmLinha(umaLinha(anexo.texto))}`;
-  if (anexo.semTexto !== undefined) return `- ${nome}: sem versão em texto. ${anexo.semTexto}`;
-  return `- ${nome}`;
-}
-
-/**
- * O pedido com a lista dos arquivos que entraram na pasta, para a IA saber que estão lá e, para o
- * `.docx`, onde está o texto que ela consegue ler.
- */
-export function comArquivos(texto: string, anexos: ReadonlyArray<AnexoNaNota>): string {
-  return anexos.length === 0 ? texto : `${texto}\n\nArquivos na pasta:\n${anexos.map(linhaDoAnexo).join("\n")}`;
-}
-
 /* ================================================================== mudanças na pasta */
 
 const nomes = (lista: ReadonlyArray<string>) =>
   lista.length <= 3 ? lista.join(", ") : `${lista.slice(0, 3).join(", ")} e mais ${lista.length - 3}`;
 
 /**
- * A linha da conversa com o que a pessoa mexeu na pasta fora dela (`MudancasPasta`), que foi à IA
- * junto com a mensagem: "Na pasta, desde a última resposta: 1 novo (Ata.docx); 2 mudados (…)".
+ * A linha da conversa com o que entrou ou mudou na pasta sem a IA saber (`MudancasPasta`), que foi à IA
+ * junto com a mensagem: "Anexados: Ata.docx. Na pasta, desde a última resposta: 2 mudados (…)".
  */
 export function resumoMudancasPasta(mudancas: {
+  readonly anexados: ReadonlyArray<string>;
   readonly novos: ReadonlyArray<string>;
   readonly mudados: ReadonlyArray<string>;
   readonly removidos: ReadonlyArray<string>;
   readonly semTexto?: ReadonlyArray<string>;
 }): string {
+  const umaLinha = (lista: ReadonlyArray<string>) => nomes(lista.map((nome) => nome.replace(/[\r\n]+/g, " ")));
   const partes = [
     [mudancas.novos, "novo", "novos"],
     [mudancas.mudados, "mudado", "mudados"],
     [mudancas.removidos, "removido", "removidos"],
   ] as const;
-  const texto = partes
+  const fora = partes
     .filter(([lista]) => lista.length > 0)
-    .map(
-      ([lista, um, varios]) =>
-        `${lista.length} ${lista.length === 1 ? um : varios} (${nomes(lista.map((nome) => nome.replace(/[\r\n]+/g, " ")))})`,
-    )
+    .map(([lista, um, varios]) => `${lista.length} ${lista.length === 1 ? um : varios} (${umaLinha(lista)})`)
     .join("; ");
+  const anexados =
+    mudancas.anexados.length === 0
+      ? []
+      : [`${mudancas.anexados.length === 1 ? "Anexado" : "Anexados"}: ${umaLinha(mudancas.anexados)}.`];
   const semTexto = mudancas.semTexto ?? [];
-  const aviso =
-    semTexto.length === 0
-      ? ""
-      : ` Sem versão em texto para a IA: ${nomes(semTexto.map((nome) => nome.replace(/[\r\n]+/g, " ")))}; a resposta pode não considerá-${semTexto.length === 1 ? "lo" : "los"}.`;
-  return `Na pasta, desde a última resposta: ${texto}. A IA foi avisada.${aviso}`;
+  return [
+    ...anexados,
+    ...(fora === "" ? [] : [`Na pasta, desde a última resposta: ${fora}.`]),
+    "A IA foi avisada.",
+    ...(semTexto.length === 0
+      ? []
+      : [
+          `Sem versão em texto para a IA: ${umaLinha(semTexto)}; a resposta pode não considerá-${semTexto.length === 1 ? "lo" : "los"}.`,
+        ]),
+  ].join(" ");
 }

@@ -33,6 +33,7 @@ export type Item =
   | {
       readonly tipo: "pasta";
       readonly chave: string;
+      readonly anexados: ReadonlyArray<string>;
       readonly novos: ReadonlyArray<string>;
       readonly mudados: ReadonlyArray<string>;
       readonly removidos: ReadonlyArray<string>;
@@ -200,10 +201,11 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
       return comItem(estado, (chave) => ({
         tipo: "pasta",
         chave,
+        anexados: evento.anexados.map((arquivo) => arquivo.nome),
         novos: evento.novos.map((arquivo) => arquivo.nome),
         mudados: evento.mudados.map((arquivo) => arquivo.nome),
         removidos: evento.removidos,
-        semTexto: [...evento.novos, ...evento.mudados]
+        semTexto: [...evento.anexados, ...evento.novos, ...evento.mudados]
           .filter((arquivo) => arquivo.semTexto !== undefined)
           .map((arquivo) => arquivo.nome),
       }));
