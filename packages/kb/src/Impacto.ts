@@ -1,11 +1,11 @@
 /**
  * `Impacto`: o que uma mudança numa norma atinge na base (`kb impacto`, ferramenta
  * `impacto_da_norma`). A regra é `impactoEm` (`normas/impacto.ts`), pura; este serviço carrega a
- * fonte dela: registro, vigência, relações e conteúdo das skills de `FontesNormativas`, e do banco
+ * fonte dela: registro, vigência, relações e conteúdo da revisão de PPC de `FontesNormativas`, e do banco
  * os dispositivos da norma, a correspondência, os segmentos de outras normas que citam e os PPCs.
  *
- * Sobre `FontesNormativas.layerArquivos`, os arquivos afetados incluem todos os textos das skills;
- * sobre `layerBanco`, só as fichas da revisão de PPC (a exceção aceita da paridade).
+ * O conteúdo percorrido é o da revisão de PPC gravado no banco (fichas, marcos e taxonomia); os
+ * textos das skills de `.agents/skills` ficam de fora.
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -35,17 +35,12 @@ interface OpcoesImpacto {
   readonly data?: string;
   /** `false` não consulta os PPCs (mais rápido). */
   readonly incluirPpcs?: boolean;
-  /** Raiz alternativa dos textos das skills (`kb impacto --conteudo`); ignorada sobre o banco. */
-  readonly raizConteudo?: string;
 }
 
 export class Impacto extends Context.Service<
   Impacto,
   {
-    readonly daNorma: (
-      id: string,
-      opcoes?: OpcoesImpacto,
-    ) => Effect.Effect<ResultadoImpacto, Sql.FalhaNaConsulta | FontesNormativas.FalhaNasFontes>;
+    readonly daNorma: (id: string, opcoes?: OpcoesImpacto) => Effect.Effect<ResultadoImpacto, Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/Impacto") {}
 
@@ -72,9 +67,7 @@ const make = Effect.gen(function* () {
       citacoes: [{ id: c.citado_id, dispositivos: [...c.dispositivos_json], trecho: c.trecho }],
     }));
     const ppcs = opcoes.incluirPpcs === false ? [] : yield* Citacoes.ppcsQueCitam(id);
-    const conteudo = yield* fontes.conteudoDasSkills(
-      opcoes.raizConteudo === undefined ? {} : { raiz: opcoes.raizConteudo },
-    );
+    const conteudo = yield* fontes.conteudoRevisaoPpc();
 
     const fonte: FonteImpacto = {
       id,

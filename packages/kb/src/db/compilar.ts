@@ -916,6 +916,14 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
     });
 
+    // os textos que o impacto percorre além das fichas, na ordem do caminho
+    for (const relativo of [CAMINHOS.marcos, CAMINHOS.topicosFichas]) {
+      const arquivo = noCheckout(raiz, relativo);
+      if (NodeFS.existsSync(arquivo)) {
+        ins.inserir("revisao_ppc_arquivos", { path: relativo, arquivo_json: json(lerJson(arquivo)) });
+      }
+    }
+
     /* ---------- léxico da busca de seções */
     Object.entries(lexico.tipos).forEach(([tipo, termos], ordem) => {
       ins.inserir("sinonimos_tipos", { ordem, tipo, termos_json: json(termos) });

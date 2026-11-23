@@ -1,8 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off -- consulta o git (commit de referência) pelo node:child_process síncrono
 /**
  * Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). O impacto
- * roda o serviço `Impacto` sobre a layer da CLI (`layerRepositorio`): fontes lidas dos arquivos do
- * checkout e o `tmp/kb.sqlite`, recompilado se estiver velho.
+ * roda sobre a layer da CLI (`layerRepositorio`): o `tmp/kb.sqlite`, recompilado se estiver velho; o
+ * de um dispositivo, pela regra pura `impactoEm` com fichas sintéticas e a vigência e a
+ * correspondência do banco.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodePath from "node:path";
@@ -10,14 +11,15 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import { describe, expect, layer, test } from "@effect/vitest";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
-import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
-import * as Path from "effect/Path";
+import * as FontesNormativas from "../FontesNormativas.ts";
 import * as Impacto from "../Impacto.ts";
+import { carregarFonteCorrespondencia } from "../db/consultas-normas.ts";
 import * as Layers from "../layers.ts";
 import { validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDaNorma, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
+import { impactoEm } from "./impacto.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO, situacaoDaReferencia } from "./referencia-saneamento.ts";
@@ -206,21 +208,38 @@ describe("correspondência 1/2021 → 2/2026", () => {
   });
 });
 
-/** Árvore de conteúdo sintética (`kb impacto --conteudo`): cinco fichas que citam dispositivos das DCN. */
-const conteudoSintetico = Effect.gen(function* () {
-  const fs = yield* FileSystem.FileSystem;
-  const path = yield* Path.Path;
-  const conteudo = yield* fs.makeTempDirectoryScoped({ prefix: "kb-impacto-" });
-  const pasta = path.join(conteudo, "base-conhecimento", "revisao-ppc", "fichas");
-  yield* fs.makeDirectory(pasta, { recursive: true });
-  const ficha = (nome: string, refs: { ref: string; dispositivo: string }[]) =>
-    fs.writeFileString(path.join(pasta, `${nome}.json`), JSON.stringify({ referencias_normativas: refs }));
-  yield* ficha("ct-x-01", [{ ref: DCN_2021, dispositivo: "#art29" }]);
-  yield* ficha("ct-x-02", [{ ref: DCN_2021, dispositivo: "#art22-x" }]);
-  yield* ficha("ct-x-03", [{ ref: DCN_2026, dispositivo: "#art22" }]); // destino do art. 20 da 1/2021
-  yield* ficha("ct-x-04", [{ ref: DCN_2021, dispositivo: "#art2" }]);
-  yield* ficha("ct-x-05", [{ ref: DCN_2026, dispositivo: "#art1-par1" }]); // destino do art. 2º da 1/2021
-  return conteudo;
+/** Cinco fichas sintéticas que citam dispositivos das DCN, como o banco as guarda (caminho e JSON). */
+const FICHAS_SINTETICAS = (
+  [
+    ["ct-x-01", DCN_2021, "#art29"],
+    ["ct-x-02", DCN_2021, "#art22-x"],
+    ["ct-x-03", DCN_2026, "#art22"], // destino do art. 20 da 1/2021
+    ["ct-x-04", DCN_2021, "#art2"],
+    ["ct-x-05", DCN_2026, "#art1-par1"], // destino do art. 2º da 1/2021
+  ] as const
+).map(([nome, ref, dispositivo]) => ({
+  arquivo: `base-conhecimento/revisao-ppc/fichas/${nome}.json`,
+  texto: JSON.stringify({ referencias_normativas: [{ ref, dispositivo }] }),
+}));
+
+/** `impactoEm` sobre as fichas sintéticas, com a vigência e a correspondência da base. */
+const impactoSintetico = Effect.fn("fase5.impactoSintetico")(function* (id: string) {
+  const fontes = yield* FontesNormativas.FontesNormativas;
+  const correspondencia = yield* carregarFonteCorrespondencia;
+  return impactoEm(
+    {
+      id,
+      vigencia: fontes,
+      dataReferencia: fontes.dataReferencia,
+      correspondencia,
+      dispositivos: [],
+      topicos: [],
+      arquivosConteudo: FICHAS_SINTETICAS,
+      segmentosCitantes: [],
+      ppcsQueCitam: [],
+    },
+    { incluirPpcs: false },
+  );
 });
 
 const nomeDaFicha = (arquivo: string) => NodePath.basename(arquivo, ".json");
@@ -233,9 +252,7 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
   describe("impacto de um dispositivo", () => {
     it.effect("#art2 não casa #art29 nem #art22-x, e só os destinos do art. 2º contam como correspondentes", () =>
       Effect.gen(function* () {
-        const conteudo = yield* conteudoSintetico;
-        const impacto = yield* Impacto.Impacto;
-        const r = yield* impacto.daNorma(`${DCN_2021}#art2`, { raizConteudo: conteudo, incluirPpcs: false });
+        const r = yield* impactoSintetico(`${DCN_2021}#art2`);
         const porArquivo = Object.fromEntries(r.arquivos.map((a) => [nomeDaFicha(a.arquivo), a.motivos]));
         expect(porArquivo).toEqual({ "ct-x-04": ["referencia"], "ct-x-05": ["referencia-correspondente"] });
       }),
@@ -243,9 +260,7 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
 
     it.effect("o ato inteiro continua alcançando todos", () =>
       Effect.gen(function* () {
-        const conteudo = yield* conteudoSintetico;
-        const impacto = yield* Impacto.Impacto;
-        const r = yield* impacto.daNorma(DCN_2021, { raizConteudo: conteudo, incluirPpcs: false });
+        const r = yield* impactoSintetico(DCN_2021);
         expect(r.arquivos.map((a) => nomeDaFicha(a.arquivo)).sort()).toEqual([
           "ct-x-01",
           "ct-x-02",
@@ -266,6 +281,8 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
         expect(r.normas_que_citam.map((n) => n.id)).toContain("br/mec/portaria/2024/902");
         const arquivos = r.arquivos.map((a) => a.arquivo);
         expect(arquivos).toContain("base-conhecimento/revisao-ppc/fichas/ct-curr-02.json");
+        // além das fichas, os marcos normativos da revisão de PPC, que o banco também guarda
+        expect(arquivos).toContain("base-conhecimento/revisao-ppc/marcos-normativos.json");
       }),
     );
   });

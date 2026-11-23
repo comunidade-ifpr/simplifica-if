@@ -34,7 +34,7 @@ Desde o M1.5, os links que as ferramentas devolvem são recursos MCP, no execut�
 | `ifpr://ppc/{campus}/{curso}{#secao}` | sem seção, o índice do PPC (fatos × SUAP e o link de cada seção, com as linhas); com `#secao`, o texto literal da seção (a seção longa vem no primeiro trecho, com o `cursor` para continuar em `ler_secao`) | `Leitura.lerPpc`; `ler_secao` |
 | `ifpr://cnct/{slug}` | o curso no CNCT (eixo, área, carga horária, perfil, campo de atuação, CBO, infraestrutura, legislação, cada campo com a linha no JSON do catálogo) e os cursos do IFPR com a habilitação | `Leitura.lerCnct`, sobre `Cursos.cnct` do kb |
 | `ifpr://campus/{campus}` | o campus e os cursos dele | `Leitura.lerCampus` |
-| `ifpr://ficha/{ficha}` | pergunta, rubrica, evidências (com a linha no arquivo da ficha) e referências normativas de uma ficha da revisão de PPC | `Leitura.lerFicha`, sobre `FontesNormativas.conteudoDasSkills` |
+| `ifpr://ficha/{ficha}` | pergunta, rubrica, evidências (com a linha no arquivo da ficha) e referências normativas de uma ficha da revisão de PPC | `Leitura.lerFicha`, sobre `FontesNormativas.conteudoRevisaoPpc` |
 
 - **Conteúdo:** `text/markdown`, o mesmo texto da ferramenta: avisos ("Atenção:"), corpo com a fonte (`path:linhas`) e o rodapé com a versão da base. A `base` e os avisos vão também no `_meta` (`ifpr/base`, `ifpr/avisos`). Cada tipo tem o teto de tamanho da ferramenta correspondente; os novos, o seu (`TETO_RECURSO_*` em `src/recursos/conteudos.ts`).
 - **`resources/list`:** só pontos de entrada, não a base inteira: as normas centrais que estiverem na base (Res. CNE/CP nº 2/2026, Res. CNE/CP nº 1/2021, LDB) e os campi.

@@ -353,11 +353,12 @@ describe("esquema da base na abertura e na fábrica", () => {
     const pacote = JSON.parse(
       NodeFS.readFileSync(NodePath.resolve(import.meta.dirname, "../../../apps/desktop/package.json"), "utf8"),
     ) as { version: string };
-    // 0.2.0 é o primeiro app que lê o esquema 7 (o 5 veio com o Explorar, M1.15, o 6 com fonte_url e
-    // fonte_referencia nas normas, e o 7 sem as colunas da variante de arquivo em `dispositivos` e
-    // `normas_citacoes`; nenhum 0.2.0 saiu com o 5 nem com o 6): a primeira base do esquema 7 sai com
-    // --app-minimo 0.2.0, e o padrão da fábrica continua a primeira versão, 0.1.0
-    expect(VERSAO_ESQUEMA).toBe(7);
+    // 0.2.0 é o primeiro app que lê o esquema 8 (o 5 veio com o Explorar, M1.15, o 6 com fonte_url e
+    // fonte_referencia nas normas, o 7 sem as colunas da variante de arquivo em `dispositivos` e
+    // `normas_citacoes`, e o 8 com `revisao_ppc_arquivos`; nenhum 0.2.0 saiu com o 5, o 6 nem o 7): a
+    // primeira base do esquema 8 sai com --app-minimo 0.2.0, e o padrão da fábrica continua a primeira
+    // versão, 0.1.0
+    expect(VERSAO_ESQUEMA).toBe(8);
     expect(pacote.version).toBe("0.2.0");
     expect(APP_MINIMO_PADRAO).toBe("0.1.0");
     expect(compararVersoes(pacote.version, APP_MINIMO_PADRAO)).toBeGreaterThan(0);

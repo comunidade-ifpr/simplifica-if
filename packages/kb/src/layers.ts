@@ -6,10 +6,9 @@
  *   nada no caminho lê o repositório. É a do servidor MCP e a do app.
  * - `layerRepositorio({ raiz })`: o checkout em `raiz`. Recompila o `tmp/kb.sqlite` quando ele está
  *   ausente ou mais velho que as fontes (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`
- *   desliga ou força) e lê as fontes normativas dos arquivos. É a da CLI.
- * - `layerBancoDoCheckout({ raiz })`: o mesmo banco do checkout, recompilado do mesmo jeito, mas com
- *   as fontes remontadas das tabelas, como em `layerSomenteLeitura`: o que o app vê, para os scripts e
- *   os testes que precisam do mesmo resultado (a revisão prévia do `packages/ppc`).
+ *   desliga ou força) e dá os mesmos serviços de `layerSomenteLeitura` sobre ele, com o `Compilador`.
+ *   É a da CLI, dos scripts e dos testes que precisam do que o app vê (a revisão prévia do
+ *   `packages/ppc`).
  */
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
@@ -57,7 +56,7 @@ export const layerConsultas = Layer.mergeAll(
 export const layerSomenteLeitura = (opcoes: {
   readonly caminho: string;
 }): Layer.Layer<ServicosConsulta, BaseKb.BaseAusente | BaseKb.BaseIncompativel | Sql.FalhaNaConsulta> =>
-  layerConsultas.pipe(Layer.provideMerge(FontesNormativas.layerBanco), Layer.provideMerge(BaseKb.layerSqlite(opcoes)));
+  layerConsultas.pipe(Layer.provideMerge(FontesNormativas.layer), Layer.provideMerge(BaseKb.layerSqlite(opcoes)));
 
 /** Caminho do banco da CLI: `KB_SQLITE` ou `<raiz>/tmp/kb.sqlite`. */
 const caminhoDoBanco = Effect.fn("layers.caminhoDoBanco")(function* (raiz: string) {
@@ -78,7 +77,7 @@ const layerSqliteFresco = (raiz: string) =>
     }),
   );
 
-/** O checkout em `raiz`: banco recompilado se preciso e fontes normativas lidas dos arquivos. */
+/** O checkout em `raiz`: o banco recompilado se preciso e os serviços de consulta sobre ele, com o `Compilador`. */
 export const layerRepositorio = (opcoes: {
   readonly raiz: string;
 }): Layer.Layer<
@@ -86,33 +85,13 @@ export const layerRepositorio = (opcoes: {
   | BaseKb.BaseAusente
   | BaseKb.BaseIncompativel
   | Sql.FalhaNaConsulta
-  | FontesNormativas.FalhaNasFontes
   | Compilador.FalhaNaCompilacao
   | Compilador.BaseDesatualizada
   | Config.ConfigError,
   FileSystem.FileSystem | Path.Path
 > =>
   layerConsultas.pipe(
-    Layer.provideMerge(FontesNormativas.layerArquivos(opcoes)),
+    Layer.provideMerge(FontesNormativas.layer),
     Layer.provideMerge(layerSqliteFresco(opcoes.raiz)),
     Layer.provideMerge(Compilador.layer),
-  );
-
-/** O checkout em `raiz`, mas tudo do banco: recompilado se preciso e fontes remontadas das tabelas, como no app. */
-export const layerBancoDoCheckout = (opcoes: {
-  readonly raiz: string;
-}): Layer.Layer<
-  ServicosConsulta,
-  | BaseKb.BaseAusente
-  | BaseKb.BaseIncompativel
-  | Sql.FalhaNaConsulta
-  | Compilador.FalhaNaCompilacao
-  | Compilador.BaseDesatualizada
-  | Config.ConfigError,
-  FileSystem.FileSystem | Path.Path
-> =>
-  layerConsultas.pipe(
-    Layer.provideMerge(FontesNormativas.layerBanco),
-    Layer.provideMerge(layerSqliteFresco(opcoes.raiz)),
-    Layer.provide(Compilador.layer),
   );

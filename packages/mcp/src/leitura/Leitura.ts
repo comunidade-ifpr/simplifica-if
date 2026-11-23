@@ -7,12 +7,11 @@
  * A layer depende dos serviços de consulta do kb (`layerSomenteLeitura`, sem `FileSystem`) e do canal
  * da linha de comando, que entra no envelope quando o banco não registra um. A `PastaTrabalho`, de
  * onde o `pacote_contexto` lê um `.md`, é opcional: sem ela, o `arquivo` é recusado. As falhas do banco
- * (`FalhaNaConsulta`, `FalhaNasFontes`) chegam aos métodos como `FalhaNaBase`.
+ * (`FalhaNaConsulta`) chegam aos métodos como `FalhaNaBase`.
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import * as Cursos from "@simplifica-if/kb/Cursos";
 import type * as Sql from "@simplifica-if/kb/db/sql";
-import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -87,14 +86,13 @@ export class Leitura extends Context.Service<
 >()("@simplifica-if/mcp/leitura/Leitura") {}
 
 /** O que um método de leitura pode falhar antes da tradução: as falhas de leitura e as do kb. */
-type FalhaDoMetodo = ErroDeLeitura | Sql.FalhaNaConsulta | FontesNormativas.FalhaNasFontes;
+type FalhaDoMetodo = ErroDeLeitura | Sql.FalhaNaConsulta;
 
 /** As falhas do kb viram `FalhaNaBase`; os erros de leitura passam como estão. */
 const naBase = <A>(efeito: Effect.Effect<A, FalhaDoMetodo>): Effect.Effect<A, ErroDeLeitura> =>
   efeito.pipe(
     Effect.catchTags({
       FalhaNaConsulta: (cause) => Effect.fail(new FalhaNaBase({ operacao: "consulta ao kb.sqlite", cause })),
-      FalhaNasFontes: (cause) => Effect.fail(new FalhaNaBase({ operacao: "fontes normativas", cause })),
     }),
   );
 

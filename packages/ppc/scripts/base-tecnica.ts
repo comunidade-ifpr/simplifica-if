@@ -36,9 +36,7 @@ const lerJson = (arquivo: string): unknown => JSON.parse(NodeFS.readFileSync(arq
 /** A base da revisão prévia do `kb.sqlite` do checkout em `raiz` (a mesma montagem do app). */
 export function carregarBaseRevisao(raiz: string): Promise<BaseRevisaoPrevia> {
   return Effect.runPromise(
-    montarBaseRevisao.pipe(
-      Effect.provide(Layers.layerBancoDoCheckout({ raiz }).pipe(Layer.provide(NodeServices.layer))),
-    ),
+    montarBaseRevisao.pipe(Effect.provide(Layers.layerRepositorio({ raiz }).pipe(Layer.provide(NodeServices.layer)))),
   );
 }
 

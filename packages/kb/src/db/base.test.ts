@@ -5,10 +5,9 @@
  * igualdade entre o banco e a API de arquivos da fase 5 (dispositivos, correspondência, relações,
  * marcos, vigência e transições).
  *
- * Paridade (T0): os mesmos serviços (`Normas`, `Ppcs`, `Cursos`, `Impacto`, `PacoteContexto`)
- * rodam sobre `FontesNormativas.layerBanco` e sobre `FontesNormativas.layerArquivos({ raiz })`, as
- * duas sobre o mesmo `SqlClient` do banco compilado, e dão a mesma saída JSON; a exceção aceita é o
- * `impacto`, que sobre o banco só vê as fichas das skills. Sem o repositório: o tipo de
+ * As fontes normativas remontadas das tabelas (`FontesNormativas.layer`) e o que os serviços tiram
+ * delas são conferidos contra os carregadores síncronos dos arquivos (os da compilação) e contra o
+ * que se lê dos arquivos no próprio teste: é a volta da compilação. Sem o repositório: o tipo de
  * `layerSomenteLeitura` não exige `FileSystem`, e todas as consultas rodam sobre ela numa cópia do
  * banco num diretório vazio, também num executável (Node SEA). Compila três vezes (cerca de 10 s
  * cada; a terceira com `versao`, `commit` e `canal`).
@@ -68,10 +67,9 @@ import {
 } from "../ppcs/citacoes.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import { lerTopicosFichas, lerTopicosSecoes } from "../ppcs/topicos.ts";
-import { CITACOES, consultasDoExecutavel, NORMAS, PPC, todasAsConsultas } from "../testes/consultas.ts";
+import { consultasDoExecutavel, NORMAS, PPC, todasAsConsultas } from "../testes/consultas.ts";
 import * as PpcAvulso from "./ppc-avulso.ts";
 import { tabelasCorrespondencia, transicoesDosAtos, vigenciaNaData } from "./consultas-normas.ts";
-import type { FiltrosSecoes } from "./consultas-secoes.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as Sql from "./sql.ts";
 
@@ -110,26 +108,9 @@ const layerCompilados = Layer.effect(
 /** O `SqlClient` (só leitura) do banco `a`. */
 const layerSqlA = Layer.unwrap(Effect.map(Compilados, (c) => BaseKb.layerSqlite({ caminho: c.a })));
 
-/** Os serviços de consulta sobre as fontes lidas dos arquivos, montados à parte do contexto principal. */
-class LadoArquivos extends Context.Service<
-  LadoArquivos,
-  Context.Context<Exclude<Layers.ServicosConsulta, SqlClient.SqlClient>>
->()("@simplifica-if/kb/db/base.test/LadoArquivos") {}
-
-const layerLadoArquivos = Layer.effect(
-  LadoArquivos,
-  // `fresh`: memo próprio, para que nenhum serviço do lado do banco seja reaproveitado
-  Layer.build(Layer.fresh(Layers.layerConsultas.pipe(Layer.provideMerge(FontesNormativas.layerArquivos({ raiz }))))),
-);
-
-/**
- * Contexto dos testes: os serviços sobre `FontesNormativas.layerBanco` e, em `LadoArquivos`, os
- * mesmos serviços sobre `FontesNormativas.layerArquivos`; os dois sobre o `SqlClient` do banco `a`.
- */
-const layerTeste = Layer.mergeAll(
-  Layers.layerConsultas.pipe(Layer.provideMerge(FontesNormativas.layerBanco)),
-  layerLadoArquivos,
-).pipe(
+/** Contexto dos testes: os serviços de consulta sobre o `SqlClient` do banco `a`. */
+const layerTeste = Layers.layerConsultas.pipe(
+  Layer.provideMerge(FontesNormativas.layer),
   Layer.provideMerge(layerSqlA),
   Layer.provideMerge(layerCompilados),
   Layer.provideMerge(Compilador.layer),
@@ -138,24 +119,8 @@ const layerTeste = Layer.mergeAll(
 
 /* ------------------------------------------------------------------ apoio */
 
-/** O mesmo efeito sobre as fontes do banco e sobre as dos arquivos: `[banco, arquivos]`. */
-const nasDuas = <A, E>(efeito: Effect.Effect<A, E, Layers.ServicosConsulta>) =>
-  Effect.gen(function* () {
-    const arquivos = yield* LadoArquivos;
-    const doBanco = yield* efeito;
-    const dosArquivos = yield* Effect.provideContext(efeito, arquivos);
-    return [doBanco, dosArquivos] as const;
-  });
-
 /** Saída igual byte a byte (JSON, com a ordem das chaves), não só igualdade estrutural. */
 const mesmoJson = (banco: unknown, arquivos: unknown) => expect(JSON.stringify(banco)).toBe(JSON.stringify(arquivos));
-
-/** `nasDuas` com `mesmoJson`. */
-const paridade = <A, E>(efeito: Effect.Effect<A, E, Layers.ServicosConsulta>) =>
-  Effect.map(nasDuas(efeito), ([banco, arquivos]) => {
-    mesmoJson(banco, arquivos);
-    return banco;
-  });
 
 const lerTexto = (relativo: string) =>
   Effect.flatMap(FileSystem.FileSystem, (fs) => fs.readFileString(NodePath.join(raiz, relativo)));
@@ -585,27 +550,22 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
     );
   });
 
-  describe("paridade: os serviços sobre layerBanco e sobre layerArquivos dão a mesma saída", () => {
-    it.effect("léxico, tópicos, registro, datas, relações, transições e meta", () =>
+  describe("o banco reproduz os arquivos: fontes remontadas das tabelas contra os carregadores síncronos", () => {
+    it.effect("léxico, tópicos, registro, datas, relações, transições, consolidado e meta", () =>
       Effect.gen(function* () {
-        const banco = yield* paridade(
-          Effect.map(FontesNormativas.FontesNormativas, (f) => ({
-            sinonimos: f.sinonimos,
-            topicosSecoes: f.topicosSecoes,
-            topicosFichas: f.topicosFichas,
-            registro: f.registro.entradas,
-            // o Map é consultado por chave: a ordem de inserção (ID no banco, arquivo no checkout) não conta
-            datas: [...f.datas].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
-            relacoes: f.relacoes,
-            transicoes: f.transicoes,
-            dataReferencia: f.dataReferencia,
-          })),
-        );
-        // e os carregadores síncronos dos arquivos (os da compilação) dão o mesmo
+        const banco = yield* FontesNormativas.FontesNormativas;
+        // o Map é consultado por chave: a ordem de inserção (ID no banco, arquivo no checkout) não conta
+        const ordenado = <V>(mapa: ReadonlyMap<string, V>) =>
+          [...mapa].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
         mesmoJson(banco.sinonimos, lerSinonimos(raiz));
         mesmoJson(banco.topicosSecoes, lerTopicosSecoes(raiz));
         mesmoJson(banco.topicosFichas, lerTopicosFichas(raiz));
-        mesmoJson(banco.registro, carregarRegistro(raiz).entradas);
+        mesmoJson(banco.registro.entradas, carregarRegistro(raiz).entradas);
+        mesmoJson(ordenado(banco.datas), ordenado(vigenciaArquivos.datas));
+        mesmoJson(banco.relacoes, vigenciaArquivos.relacoes);
+        mesmoJson(banco.transicoes, vigenciaArquivos.transicoes);
+        mesmoJson(banco.consolidado, vigenciaArquivos.consolidado);
+        expect(banco.dataReferencia).toBe(dataReferencia(raiz));
         const { meta } = yield* BaseKb.BaseKb;
         expect(meta.versao_esquema).toBe(VERSAO_ESQUEMA);
         expect(meta.linhas["versao_esquema"]).toBe(String(VERSAO_ESQUEMA));
@@ -615,37 +575,18 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("resolver e buscar-norma", () =>
-      Effect.gen(function* () {
-        for (const texto of CITACOES) yield* paridade(Effect.flatMap(servicos, (s) => s.normas.resolver(texto)));
-        for (const consulta of [...CITACOES, "estágio supervisionado carga horária"]) {
-          yield* paridade(Effect.flatMap(servicos, (s) => s.normas.buscar(consulta)));
-        }
-      }),
-    );
-
-    it.effect("citacoes, vigencia e relacoes", () =>
+    it.effect("citacoes: as gravadas no banco são as que o resolvedor acha nos Markdown dos PPCs", () =>
       Effect.gen(function* () {
         const registro = carregarRegistro(raiz);
+        const { ppcs } = yield* servicos;
         for (const id of NORMAS) {
           for (const confianca of [undefined, 0.9]) {
             const opcoes = confianca === undefined ? {} : { confiancaMinima: confianca };
-            const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.ppcs.relatorioCitacoes(id, opcoes)));
-            // as citações gravadas no banco são as que o resolvedor acha nos Markdown dos PPCs
-            mesmoJson(banco, relatorioCitacoes(id, ppcsQueCitamArquivos(id, { raiz, registro, ...opcoes }), registro));
+            mesmoJson(
+              yield* ppcs.relatorioCitacoes(id, opcoes),
+              relatorioCitacoes(id, ppcsQueCitamArquivos(id, { raiz, registro, ...opcoes }), registro),
+            );
           }
-          for (const em of [undefined, "2020-01-01", "2026-11-01", "2030-01-01"]) {
-            yield* paridade(Effect.flatMap(servicos, (s) => s.normas.vigencia(id, em ? { em } : {})));
-          }
-          yield* paridade(Effect.flatMap(servicos, (s) => s.normas.relacoes(id)));
-        }
-      }),
-    );
-
-    it.effect("vigência de cada ato na data de referência (registro, datas e relações de cada fonte)", () =>
-      Effect.gen(function* () {
-        for (const ato of atosComVigencia(raiz)) {
-          yield* paridade(Effect.flatMap(servicos, (s) => s.normas.vigencia(ato)));
         }
       }),
     );
@@ -724,46 +665,47 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         }
         expect((yield* normas.ficha("br/cne-cp/res/2021/1#art20"))?.id).toBe("br/cne-cp/res/2021/1");
         expect(yield* normas.ficha("br/lei/1900/1")).toBeNull();
-        // a ficha só lê a tabela `normas`: sobre as fontes dos arquivos, a mesma
-        for (const id of NORMAS) yield* paridade(Effect.flatMap(servicos, (s) => s.normas.ficha(id)));
       }),
     );
 
     it.effect("sucessoras de cada ato: a regra de sucessorasDe sobre relacoes.yaml", () =>
       Effect.gen(function* () {
         const relacoes = carregarRelacoes(raiz);
-        for (const ato of atosComVigencia(raiz)) {
-          mesmoJson(
-            yield* paridade(Effect.flatMap(servicos, (s) => s.normas.sucessoras(ato))),
-            sucessorasDe(ato, relacoes),
-          );
-        }
         const { normas } = yield* servicos;
+        for (const ato of atosComVigencia(raiz)) {
+          mesmoJson(yield* normas.sucessoras(ato), sucessorasDe(ato, relacoes));
+        }
         expect(yield* normas.sucessoras("br/cne-cp/res/2021/1#art20")).toEqual(["br/cne-cp/res/2026/2"]);
       }),
     );
 
-    it.effect("impacto: igual ao dos arquivos restrito às fichas (o banco não tem os outros textos das skills)", () =>
+    it.effect("conteúdo da revisão de PPC: os arquivos de base-conhecimento/revisao-ppc, e o impacto os percorre", () =>
       Effect.gen(function* () {
-        const { normas } = yield* servicos;
-        const soFichas = <T extends { arquivos: readonly { arquivo: string }[] }>(r: T): T => ({
-          ...r,
-          arquivos: r.arquivos.filter((a) => a.arquivo.startsWith(FICHAS_DA_ANALISE)),
-        });
+        const fs = yield* FileSystem.FileSystem;
+        const fontes = yield* FontesNormativas.FontesNormativas;
+        const { arquivos } = yield* fontes.conteudoRevisaoPpc();
+        // referência independente: as fichas, os marcos e a taxonomia lidos da pasta, em ordem de caminho
+        const fichas = (yield* fs.readDirectory(NodePath.join(raiz, FICHAS_DA_ANALISE)))
+          .filter((nome) => nome.endsWith(".json"))
+          .map((nome) => `${FICHAS_DA_ANALISE}${nome}`);
+        const esperados = [
+          ...fichas,
+          "base-conhecimento/revisao-ppc/marcos-normativos.json",
+          "base-conhecimento/revisao-ppc/topicos-fichas.json",
+        ].sort();
+        expect(arquivos.map((a) => a.arquivo)).toEqual(esperados);
+        for (const { arquivo, texto } of arquivos) mesmoJson(JSON.parse(texto), yield* lerJson(arquivo));
+
+        const { impacto, normas } = yield* servicos;
         let foraDasFichas = 0;
         for (const id of NORMAS) {
-          const [banco, arquivos] = yield* nasDuas(Effect.flatMap(servicos, (s) => s.impacto.daNorma(id)));
-          expect(yield* normas.sucessoras(id)).toEqual(arquivos.sucessoras);
-          foraDasFichas += arquivos.arquivos.length - soFichas(arquivos).arquivos.length;
-          mesmoJson(banco, soFichas(arquivos));
+          const r = yield* impacto.daNorma(id);
+          expect(yield* normas.sucessoras(id)).toEqual(r.sucessoras);
+          expect(r.arquivos.every((a) => esperados.includes(a.arquivo))).toBe(true);
+          foraDasFichas += r.arquivos.filter((a) => !a.arquivo.startsWith(FICHAS_DA_ANALISE)).length;
         }
-        // sobre os arquivos, o impacto vê também prompts, contratos e validações; sobre o banco, só as fichas
+        // os marcos normativos citam as DCN: o impacto os vê além das fichas
         expect(foraDasFichas).toBeGreaterThan(0);
-        const opcoes = { incluirPpcs: false, data: "2026-11-01" };
-        const [banco, arquivos] = yield* nasDuas(
-          Effect.flatMap(servicos, (s) => s.impacto.daNorma("br/cne-cp/res/2021/1", opcoes)),
-        );
-        mesmoJson(banco, soFichas(arquivos));
       }),
     );
 
@@ -771,7 +713,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       Effect.gen(function* () {
         for (const incluirTecnologia of [undefined, true]) {
           const opcoes = incluirTecnologia === undefined ? {} : { incluirTecnologia };
-          const relatorio = yield* paridade(Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes)));
+          const relatorio = yield* Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes));
           const soma = INDICADORES.reduce((total, indicador) => total + relatorio.totais[indicador], 0);
           expect(soma).toBe(relatorio.total);
           expect(relatorio.cursos.every((c) => c.situacao === "ativo" || c.situacao === "em_oferta")).toBe(true);
@@ -787,27 +729,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("buscar-secoes e pacote-contexto (PPC da base e Markdown fora dela)", () =>
-      Effect.gen(function* () {
-        const buscas: [string, FiltrosSecoes][] = [
-          ["acompanhamento de egressos", { cnct: "tecnico-em-informatica" }],
-          ["estágio obrigatório", { ppc: PPC }],
-          ["avaliação da aprendizagem", { nivel: "médio", tipo: ["avaliacao"] }],
-        ];
-        for (const [consulta, filtros] of buscas) {
-          yield* paridade(Effect.flatMap(servicos, (s) => s.ppcs.buscarSecoes(consulta, filtros)));
-        }
-        for (const tarefa of ["CT-CURR-12", "estagio", "todas"]) {
-          yield* paridade(Effect.flatMap(servicos, (s) => s.pacote.montar(tarefa, PPC)));
-        }
-        const arquivo = NodePath.join(raiz, "base-conhecimento/institucional/ifpr/ppcs", `${PPC}.md`);
-        const markdown = yield* lerTexto(`base-conhecimento/institucional/ifpr/ppcs/${PPC}.md`);
-        for (const tarefa of ["CT-CURR-12", "avaliacao_aprendizagem"]) {
-          yield* paridade(Effect.flatMap(servicos, (s) => s.pacote.doMarkdown(tarefa, arquivo, markdown)));
-        }
-      }),
-    );
-
     it.effect("normas citadas por um PPC (ficha_curso): iguais às dos arquivos e às contagens de citacoes", () =>
       Effect.gen(function* () {
         const { ppcs } = yield* servicos;
@@ -818,7 +739,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const amostra = [PPC, ...indice.items.filter((_, i) => i % 25 === 0).map((item) => item.id)];
         for (const ppc of amostra) {
           const item = indice.items.find((i) => i.id === ppc)!;
-          const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.ppcs.normasCitadas(ppc)));
+          const banco = yield* ppcs.normasCitadas(ppc);
           mesmoJson(banco, normasCitadasDoArquivo(item.path, registro, raiz));
           expect(yield* ppcs.normasCitadas(`ppc:${ppc}`)).toEqual(banco);
         }
@@ -920,9 +841,9 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
   describe("sem o repositório (layerSomenteLeitura)", () => {
     it("o tipo garante que a layer não exige FileSystem nem Path", () => {
       expectTypeOf<Layer.Services<ReturnType<typeof Layers.layerSomenteLeitura>>>().toEqualTypeOf<never>();
-      expectTypeOf<Layer.Services<typeof FontesNormativas.layerBanco>>().toEqualTypeOf<SqlClient.SqlClient>();
-      // contraprova: a fonte dos arquivos exige o sistema de arquivos, e o tipo mostra
-      expectTypeOf<Layer.Services<ReturnType<typeof FontesNormativas.layerArquivos>>>().toEqualTypeOf<
+      expectTypeOf<Layer.Services<typeof FontesNormativas.layer>>().toEqualTypeOf<SqlClient.SqlClient>();
+      // contraprova: a layer do checkout exige o sistema de arquivos, e o tipo mostra
+      expectTypeOf<Layer.Services<ReturnType<typeof Layers.layerRepositorio>>>().toEqualTypeOf<
         FileSystem.FileSystem | Path.Path
       >();
       expectTypeOf<

@@ -8,7 +8,7 @@
  *   pnpm kb relacoes br/lei/1996/9394 [--json]
  *   pnpm kb relacoes --propor [--json]
  *   pnpm kb correspondencia br/cne-cp/res/2021/1#art20 [--json]
- *   pnpm kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs] [--conteudo <dir>]
+ *   pnpm kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs]
  *   pnpm kb avaliar-resolvedor [--json]
  *
  * Cada comando chama o serviço (`Normas`, `Impacto`) e formata a saída. As saídas não dependem do
@@ -312,18 +312,11 @@ export const impacto = Command.make(
     id: Argument.String("id").pipe(Argument.withDescription("ID da norma, como br/cne-cp/res/2021/1")),
     json: flagJson,
     semPpcs: flagLigada("sem-ppcs", "não lista os PPCs que citam a norma (mais rápido)"),
-    conteudo: flagTexto(
-      "conteudo",
-      "raiz alternativa dos arquivos de conteúdo das skills (ex.: git archive de um commit)",
-    ),
   },
-  Effect.fn("kb.impacto")(function* ({ id, json, semPpcs, conteudo }) {
+  Effect.fn("kb.impacto")(function* ({ id, json, semPpcs }) {
     yield* exigirIdNorma(id);
     const servico = yield* Impacto.Impacto;
-    const resultado = yield* servico.daNorma(id, {
-      incluirPpcs: !semPpcs,
-      ...(Option.isSome(conteudo) ? { raizConteudo: conteudo.value } : {}),
-    });
+    const resultado = yield* servico.daNorma(id, { incluirPpcs: !semPpcs });
     if (json) return yield* Console.log(paraJson(resultado));
     const linhas = [`${resultado.titulo ?? id} (${id}): ${resultado.status} em ${resultado.data_referencia}`];
     if (resultado.sucessoras.length) linhas.push(`  sucessora(s): ${resultado.sucessoras.join(", ")}`);
@@ -334,7 +327,9 @@ export const impacto = Command.make(
     for (const n of resultado.normas_que_citam)
       linhas.push(`  norma que a cita: ${n.id} (${n.dispositivos.join(", ")})`);
     const estritos = resultado.arquivos.filter((a) => a.motivos.some((m) => m !== "tema"));
-    linhas.push(`\nFichas e textos das skills citando a norma ou dispositivos correspondentes: ${estritos.length}`);
+    linhas.push(
+      `\nFichas e textos da revisão de PPC citando a norma ou dispositivos correspondentes: ${estritos.length}`,
+    );
     for (const a of estritos) {
       linhas.push(
         `  ${a.arquivo} [${a.motivos.join(", ")}]${a.dispositivos.length ? ` ${a.dispositivos.join(" ")}` : ""}`,

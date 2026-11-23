@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 7;
+export const VERSAO_ESQUEMA = 8;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -410,6 +410,14 @@ CREATE TABLE sinonimos_tipos (
 CREATE TABLE sinonimos_grupos (
   ordem INTEGER PRIMARY KEY,
   termos_json TEXT NOT NULL
+);
+
+-- Os outros arquivos de conteúdo da revisão de PPC (marcos-normativos.json e topicos-fichas.json),
+-- em JSON compacto com as chaves na ordem do arquivo, como fichas.arquivo_json: o impacto percorre
+-- os textos deles, com os das fichas.
+CREATE TABLE revisao_ppc_arquivos (
+  path TEXT PRIMARY KEY,
+  arquivo_json TEXT NOT NULL
 );
 
 CREATE TABLE fichas_topicos (

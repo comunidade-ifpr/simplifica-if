@@ -7,6 +7,7 @@
  * são o JSON com indentação de 2 espaços (o que `JSON.stringify(_, null, 2)` reproduz), e o banco
  * guarda o objeto com as chaves na ordem do arquivo. Sem o objeto (`{}`), a linha é a 1.
  */
+import { CAMINHOS } from "@simplifica-if/kb/caminhos";
 import * as Cursos from "@simplifica-if/kb/Cursos";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import { linhaDaChave } from "@simplifica-if/kb/institucional/dados";
@@ -131,11 +132,12 @@ export const makeRecursos = Effect.fn("Leitura.makeRecursos")(function* (
 
   const lerFicha = Effect.fn("Leitura.lerFicha")(function* (e: typeof Conteudos.EntradaFicha.Type) {
     const pedido = e.ficha.replace(/^ficha:/, "").toUpperCase();
-    const { arquivos } = yield* fontes.conteudoDasSkills();
+    const { arquivos } = yield* fontes.conteudoRevisaoPpc();
     // as fichas do banco (dezenas): decodifica só as que podem ser a pedida
     const padrao = new RegExp(`"id"\\s*:\\s*"${pedido.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`, "i");
     let achada: { readonly arquivo: string; readonly ficha: Readonly<Record<string, unknown>> } | null = null;
-    for (const candidato of arquivos.filter((a) => padrao.test(a.texto))) {
+    const fichas = arquivos.filter((a) => a.arquivo.startsWith(`${CAMINHOS.fichas}/`));
+    for (const candidato of fichas.filter((a) => padrao.test(a.texto))) {
       const ficha = yield* decodificarJson(candidato.texto).pipe(
         Effect.catchTags({
           SchemaError: (erro) => Effect.fail(new FalhaNaBase({ operacao: "ficha da revisão de PPC", cause: erro })),

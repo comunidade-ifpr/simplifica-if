@@ -43,7 +43,7 @@ export class Checkout extends Context.Service<Checkout, { readonly raiz: string 
   "@simplifica-if/kb/cli/comum/Checkout",
 ) {}
 
-/** Banco do checkout (recompilado se velho) e fontes normativas dos arquivos. */
+/** Banco do checkout, recompilado se velho, e os serviços de consulta sobre ele. */
 export const camadaRepositorio = Layer.unwrap(
   Effect.gen(function* () {
     const { raiz } = yield* Checkout;

@@ -89,7 +89,7 @@ export function datasDoFrontMatter(meta: Readonly<Record<string, unknown>>): Dat
 /**
  * Datas por ID do ato a partir do front matter das normas da base (em qualquer ordem) e do registro:
  * os stubs entram com `data_publicacao` como data do ato. A regra única, sobre os arquivos
- * (`carregarDatas`) e sobre o `kb.sqlite` (`FontesNormativas.layerBanco`).
+ * (`carregarDatas`) e sobre o `kb.sqlite` (`FontesNormativas.layer`).
  */
 export function montarDatas(
   normas: Iterable<{ id: string; meta: Readonly<Record<string, unknown>> }>,

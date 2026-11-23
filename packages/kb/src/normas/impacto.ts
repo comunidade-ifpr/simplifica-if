@@ -1,6 +1,6 @@
 /**
  * `kb impacto <id>` (fase 5): o que uma mudança na norma `id` (revogação, alteração, nova redação)
- * atinge na base e nas skills.
+ * atinge na base e na revisão de PPC.
  *
  * - normas: relações de `relacoes.yaml` (quem a revoga, altera, regulamenta ou nela se
  *   fundamenta) e dispositivos de outras normas da base que a citam no texto;
@@ -8,17 +8,12 @@
  *   de transição e os dispositivos correspondentes (tabela de correspondência);
  * - fichas da revisão de PPC: referência estruturada à norma, referência a um
  *   dispositivo correspondente da sucessora, ou citação no texto (resolvedor de citações);
- * - outros textos de conteúdo (das skills, a taxonomia e os marcos da revisão de PPC): citação no texto;
- * - PPCs convertidos que citam a norma (`kb citacoes`).
- *
- * Os arquivos de conteúdo podem vir de outra árvore (`raizConteudo`, por exemplo um `git archive` de
- * um commit antigo), para medir o impacto contra uma revisão real; o registro, as relações e a
- * correspondência vêm sempre de `raiz`.
+ * - outros textos de conteúdo da revisão de PPC (a taxonomia e os marcos): citação no texto;
+ * - PPCs convertidos que citam a norma (`citacoes_da_norma`).
  *
  * A regra é `impactoEm`, pura, sobre uma `FonteImpacto` já carregada; o serviço `Impacto` a monta
- * a partir de `FontesNormativas` (arquivos do checkout ou `kb.sqlite`) e do banco. O banco guarda as
- * fichas da revisão de PPC, mas não os outros textos: sobre `FontesNormativas.layerBanco`,
- * `arquivos` traz só as fichas.
+ * a partir de `FontesNormativas` e do `kb.sqlite`. Os textos das skills de `.agents/skills` não estão
+ * no banco e ficam de fora.
  */
 import type { PpcCitante } from "../ppcs/citacoes.ts";
 import type { CitacaoResolvida } from "./citacoes-normas.ts";
@@ -91,7 +86,7 @@ export interface FonteImpacto {
   readonly dispositivos: ReadonlyArray<{ dispositivo: string; texto: string }>;
   /** Tópicos de `topicos-fichas.json`, na ordem do arquivo (vazio sem a taxonomia). */
   readonly topicos: ReadonlyArray<TopicoTaxonomia>;
-  /** Arquivos de conteúdo das skills (caminho relativo à raiz do conteúdo e texto), em ordem. */
+  /** Arquivos de conteúdo da revisão de PPC (caminho relativo à raiz do repositório e texto), em ordem. */
   readonly arquivosConteudo: Iterable<{ arquivo: string; texto: string }>;
   /** Segmentos das normas da base de outros atos, com as citações resolvidas. */
   readonly segmentosCitantes: Iterable<{ norma: string; segmento: string; citacoes: CitacaoResolvida[] }>;

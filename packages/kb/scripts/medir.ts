@@ -21,7 +21,6 @@ import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import * as Compilador from "../src/Compilador.ts";
 import * as Cursos from "../src/Cursos.ts";
-import type * as FontesNormativas from "../src/FontesNormativas.ts";
 import type * as Sql from "../src/db/sql.ts";
 import * as Impacto from "../src/Impacto.ts";
 import * as Layers from "../src/layers.ts";
@@ -30,11 +29,7 @@ import * as PacoteContexto from "../src/PacoteContexto.ts";
 import * as Ppcs from "../src/Ppcs.ts";
 import { raizRepositorio } from "../src/caminhos.ts";
 
-type Erro =
-  | Sql.FalhaNaConsulta
-  | FontesNormativas.FalhaNasFontes
-  | PacoteContexto.PpcNaoEncontrado
-  | PacoteContexto.TarefaNaoReconhecida;
+type Erro = Sql.FalhaNaConsulta | PacoteContexto.PpcNaoEncontrado | PacoteContexto.TarefaNaoReconhecida;
 
 const CONSULTAS: ReadonlyArray<readonly [string, Effect.Effect<unknown, Erro, Layers.ServicosConsulta>]> = [
   ["buscar-secoes", Ppcs.Ppcs.use((p) => p.buscarSecoes("acompanhamento de egressos", {}, { limite: 10 }))],

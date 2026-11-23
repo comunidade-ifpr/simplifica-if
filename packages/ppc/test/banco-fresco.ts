@@ -3,7 +3,7 @@
  * `globalSetup` dos testes do pacote (no `vite.config.ts` dele): garante o `tmp/kb.sqlite` do
  * checkout fresco uma vez, antes dos arquivos de teste. Sem ele, os arquivos que leem a base
  * (`carregarBaseRevisao`) rodam em paralelo, cada um num processo, e num checkout desatualizado cada
- * um recompilaria o banco. A garantia é a da `layerBancoDoCheckout` que eles usam (mesmo caminho,
+ * um recompilaria o banco. A garantia é a da `layerRepositorio` que eles usam (mesmo caminho,
  * `KB_SQLITE` e `KB_RECOMPILAR`): construída aqui, ela recompila se preciso; nos arquivos, acha o
  * banco fresco.
  */
@@ -17,7 +17,7 @@ const raiz = NodePath.resolve(import.meta.dirname, "../../..");
 
 export default function garantirBancoFresco(): Promise<void> {
   return Effect.runPromise(
-    Layer.build(Layers.layerBancoDoCheckout({ raiz })).pipe(
+    Layer.build(Layers.layerRepositorio({ raiz })).pipe(
       Effect.scoped,
       Effect.asVoid,
       Effect.provide(NodeServices.layer),
