@@ -1,7 +1,7 @@
 /**
  * Ferramenta 13, `fatos_ppc`: fatos extraídos dos PPCs (carga horária, estágio, ano), com o trecho de
- * origem, cruzados com as matrizes do SUAP (`Ppcs.fatos` e `Ppcs.divergencias`, a regra de
- * `kb ppc-fatos`). Os fatos têm status `extraido`: o aviso `fato-extraido` vai sempre.
+ * origem, cruzados com as matrizes do SUAP (`Ppcs.fatos` e `Ppcs.divergencias`). Os
+ * fatos têm status `extraido`: o aviso `fato-extraido` vai sempre.
  */
 import * as Schema from "effect/Schema";
 import { FatosPpc } from "../contratos.ts";

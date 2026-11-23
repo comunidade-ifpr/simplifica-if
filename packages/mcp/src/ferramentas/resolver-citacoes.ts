@@ -1,6 +1,6 @@
 /**
  * Ferramenta 5, `resolver_citacoes`: citações normativas em texto livre, em lote, para o ID
- * canônico (`Normas.resolver`, o `kb resolver`, com o registro montado da tabela `normas`).
+ * canônico (`Normas.resolver`, com o registro montado da tabela `normas`).
  */
 import * as Schema from "effect/Schema";
 import { EsquemaLink } from "../contratos.ts";

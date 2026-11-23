@@ -1,7 +1,6 @@
 /**
  * Ferramenta 8, `adequacao_art71`: cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP
- * nº 2/2026, com a DCN mais recente que cada PPC cita (`Cursos.adequacaoArt71`, a regra de
- * `kb adequacao-art71`). Sem filtros, só os totais por indicador; com filtro, a lista paginada.
+ * nº 2/2026, com a DCN mais recente que cada PPC cita (`Cursos.adequacaoArt71`). Sem filtros, só os totais por indicador; com filtro, a lista paginada.
  */
 import * as Schema from "effect/Schema";
 import { DCN_EPT, INDICADORES, type Indicador, ROTULOS_INDICADOR } from "@simplifica-if/kb/adequacao/art71";

@@ -21,16 +21,16 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 
 ## Consulta da base
 
-A base é consultada pela CLI `kb`, dentro do checkout, ou pelo MCP `simplifica-mcp` ([`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md)), e depois pelo Markdown da norma ou do PPC que a resposta aponta. Não navegue a base por manifestos e índices, e não troque os arquivos locais por URLs públicas. A CLI lê `tmp/kb.sqlite`, que se recompila sozinho quando está mais velho que as fontes (`pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o arquivo e a linha, e é esse arquivo que se cita.
+A base é consultada pela CLI `kb`, dentro do checkout, ou pelo MCP `simplifica-mcp` ([`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md)): os comandos da CLI são as ferramentas do MCP, um por ferramenta, com o nome em kebab-case, a mesma entrada (argumento e flags) e a mesma resposta (o texto Markdown, ou a resposta inteira em JSON com `--json`). Depois, abra o Markdown da norma ou do PPC que a resposta aponta. pelo Markdown da norma ou do PPC que a resposta aponta. Não navegue a base por manifestos e índices, e não troque os arquivos locais por URLs públicas. A CLI lê `tmp/kb.sqlite`, que se recompila sozinho quando está mais velho que as fontes (`pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o arquivo e a linha, e é esse arquivo que se cita.
 
 ```bash
-pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação, ID ou termos → dispositivos
-pnpm kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecuaria --json   # seções de PPC
-pnpm kb ppc-fatos curitiba/tecnico-em-enfermagem --json              # fatos do PPC cruzados com o SUAP
-pnpm kb vigencia br/cne-cp/res/2021/1 --em 2026-11-01                # status numa data e regras de transição
+pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28"         # citação, ID ou termos → dispositivos
+pnpm kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecuaria   # seções de PPC
+pnpm kb fatos-ppc --ppc curitiba/tecnico-em-enfermagem               # fatos do PPC cruzados com o SUAP
+pnpm kb ficha-norma br/cne-cp/res/2021/1 --em 2026-11-01             # vigência numa data, relações e regras de transição
 ```
 
-Os outros comandos (`resolver`, `citacoes`, `dispositivo`, `relacoes`, `correspondencia`, `impacto`, `cursos`, `pacote-contexto`…) estão no [`packages/kb/README.md`](packages/kb/README.md#cli).
+Os outros (`resolver-citacoes`, `ler-dispositivos`, `correspondencia`, `citacoes-da-norma`, `impacto-da-norma`, `listar-cursos`, `ficha-curso`, `pacote-contexto`…) estão em `pnpm kb --help` e no [`packages/mcp/README.md`](packages/mcp/README.md#cli-kb).
 
 1. Ache a fonte pelo comando `kb`; abra o arquivo e as linhas que a resposta aponta antes de redigir resposta substantiva.
 2. Cite: norma pelo título, a fonte oficial do front matter e o dispositivo; PPC pelo arquivo e linhas; metadado institucional pelo registro JSON.
@@ -38,10 +38,10 @@ Os outros comandos (`resolver`, `citacoes`, `dispositivo`, `relacoes`, `correspo
 
 Armadilhas:
 
-- **Norma revogada não é inaplicável:** consulte as regras de transição (`kb vigencia`). Quando o status depende de data não registrada, o front matter traz `vigencia_a_confirmar`.
+- **Norma revogada não é inaplicável:** consulte as regras de transição (`kb ficha-norma`). Quando o status depende de data não registrada, o front matter traz `vigencia_a_confirmar`.
 - A tabela de correspondência 1/2021 → 2/2026 é rascunho sem revisão jurídica: indicação, não fundamento.
 - Confira `regra` e `confianca` das citações: as regras de confiança menor (`dcnept-2021-orgao-trocado`, `orgao-ausente-registro`, `orgao-no-documento`) pedem conferência no trecho.
-- Fatos de PPC têm status `extraido` (sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. Se `buscar-secoes` não achar o esperado, procure com `rg` nos Markdown dos PPCs.
+- Fatos de PPC têm status `extraido` (sem revisão humana): confira o trecho de origem antes de afirmar uma divergência. Se `buscar-secoes` não achar o esperado, procure com `rg` nos Markdown dos PPCs.
 - PPCs são exemplos institucionais, não fonte normativa. Em elaboração ou revisão de PPC, combine PPCs similares com normas vigentes e, para cursos técnicos, com o CNCT.
 
 ## Curadoria da base

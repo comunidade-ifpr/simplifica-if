@@ -66,7 +66,7 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `normas/gerado.ts` | campos gerados do front matter (relações e status) e reescrita do front matter, usados por `scripts/gerar_base.ts` |
 | `normas/correspondencia.ts` | tabelas de correspondência entre normas sucessoras (`correspondencias/*.yaml`), com herança pelo ancestral (`correspondenciaEm` sobre a `FonteCorrespondencia` que `db/consultas-normas.ts` carrega do banco) |
 | `normas/fontes-db.ts` | `LinhasNormativas` pela API de `normas/`: as linhas das tabelas da fase 5 que a compilação grava |
-| `normas/impacto.ts` | a regra de `kb impacto` (`impactoEm`, pura, sobre uma `FonteImpacto` que traz o `id` da norma para a qual foi carregada): fichas e textos da revisão de PPC, normas e PPCs afetados por uma norma |
+| `normas/impacto.ts` | a regra do impacto (`impactoEm`, ferramenta `impacto_da_norma`, pura, sobre uma `FonteImpacto` que traz o `id` da norma para a qual foi carregada): fichas e textos da revisão de PPC, normas e PPCs afetados por uma norma |
 | `normas/referencia-estruturada.ts` | `{ ref, dispositivo?, papel, nota? }` (Effect Schema), universo de IDs citáveis (normas, stubs, `externo:`, `cnct:`) e texto legível das referências das fichas da revisão de PPC |
 | `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma; `lerTextoSecao` (texto integral de uma seção do índice pelas linhas) |
 | `ppcs/front-matter.ts` | front matter de proveniência dos PPCs (`ppc:<campus>/<curso>`, URL, hash, data, conversor) e leitura com o front matter em branco |
@@ -87,39 +87,23 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `db/sql.ts`, `db/nodeSqliteClient.ts`, `db/conexao.ts` | consultas pelo `SqlClient` com as linhas decodificadas por Effect Schema (`Sql.todas`, `Sql.primeira`) e o ambiente que cada serviço captura na construção e dá aos métodos (`Sql.ambienteDoServico`); o cliente do `node:sqlite` copiado do T3 (MIT); um `SqlClient` sobre um `DatabaseSync` já aberto |
 | `db/consultas-normas.ts`, `db/consultas-secoes.ts`, `db/consultas-fatos.ts`, `db/consultas-cursos.ts`, `db/citacoes.ts`, `db/pacote-contexto.ts` | as consultas de cada serviço (`Normas`; `Ppcs`, seções, fatos e citações; `Cursos`; `PacoteContexto`), Effects sobre o `SqlClient` do ambiente, privadas ao serviço dono: quem está fora do `kb` chama o serviço e importa dele os tipos; `db/chaves.ts` completa os prefixos `ppc:` e `cnct:` |
 | `ppcs/indice.ts` | o decodificador único de `ppcs/index.json`, da compilação e das citações dos arquivos |
-| `cli.ts`, `cli/*.ts` | a CLI `kb`, em `effect/cli`: comandos de normas (`cli/normas.ts`), de PPCs e cursos (`cli/ppcs.ts`) e `compilar` (`cli/compilar.ts`), sobre `layerRepositorio` |
+| `cli/*.ts` | os comandos de curadoria da CLI `kb`, em `effect/cli`: `compilar` (`cli/compilar.ts`), `relacoes --propor`, `avaliar-resolvedor` e `avaliar-busca` (`cli/curadoria.ts`), sobre `layerRepositorio`; o ponto de entrada e as consultas estão em `packages/mcp/src/kb.ts` |
 | `normas/citacoes-normas.ts` | citações resolvidas no texto das normas da base (dispositivos e preâmbulo), para o `impacto` e a tabela `normas_citacoes` |
 
 ## CLI
 
-Da raiz do repositório:
+A CLI `kb` (`pnpm kb`, da raiz) tem o ponto de entrada em `packages/mcp/src/kb.ts`, porque as consultas dela são as ferramentas do `simplifica-mcp`, que o `kb` não importa: um comando por ferramenta (`buscar-norma`, `ler-dispositivos`, `ficha-norma`, `correspondencia`, `resolver-citacoes`, `citacoes-da-norma`, `impacto-da-norma`, `adequacao-art71`, `buscar-secoes`, `ler-secao`, `listar-cursos`, `ficha-curso`, `fatos-ppc`, `pacote-contexto`, `sobre-a-base`), com a entrada, o serviço `Leitura` e a resposta da ferramenta, sobre o `tmp/kb.sqlite` recompilado se velho (`layerRepositorio`). Os comandos, as flags e a saída estão no [`packages/mcp/README.md`](../mcp/README.md#cli-kb).
 
-```bash
-pnpm kb resolver "Res. CNE/CP 1/2021, art. 20" [--json]
-pnpm kb citacoes br/cne-cp/res/2021/1 [--json] [--confianca-min 0.8]
-pnpm kb adequacao-art71 [--json] [--incluir-tecnologia]
-pnpm kb avaliar-resolvedor [--json]
-pnpm kb dispositivo "br/cne-cp/res/2026/2#art71-parunico" [--json] [--filhos]   # lê o banco
-pnpm kb vigencia br/cne-cp/res/2021/1 [--em 2026-11-12] [--json]
-pnpm kb relacoes br/lei/1996/9394 [--json]
-pnpm kb relacoes --propor [--json]
-pnpm kb correspondencia "br/cne-cp/res/2021/1#art20" [--json]                  # lê o banco
-pnpm kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs]
-```
-
-A CLI roda os serviços sobre `layerRepositorio`: o banco, recompilado se velho, com as fontes normativas remontadas das tabelas, como no app. `vigencia` explica o status com os eventos e as pendências que `statusEm` monta sobre essas fontes (o banco guarda os intervalos que saem dele, conferidos contra `statusEm`); `relacoes --propor` roda o regex sobre o parser das normas; `impacto` percorre as fichas, os marcos e a taxonomia da revisão de PPC gravados no banco (os textos das skills de `.agents/skills` não entram).
-
-Sobre o banco compilado (`tmp/kb.sqlite`, fora do git):
+Aqui, em `cli/`, ficam os comandos de curadoria, que a mesma CLI monta:
 
 ```bash
 pnpm kb:compilar                                   # compila (cerca de 12 s, 132 MB); --destino muda o arquivo
-pnpm kb buscar-norma "Lei 11.788, art. 10" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes [--em AAAA-MM-DD]]
-pnpm kb buscar-secoes "estágio não obrigatório" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo simples|radicais|completo] [--integral]
-pnpm kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
-pnpm kb ppc-fatos [<campus/curso>] [--json] [--divergencias] [--nivel N]
-pnpm kb pacote-contexto <CT-CURR-12 | tópico | todas> <campus/curso | arquivo.md> [--json]
-pnpm kb avaliar-busca [--json]
+pnpm kb relacoes --propor [--json]                 # propostas do regex ainda não registradas em relacoes.yaml
+pnpm kb avaliar-resolvedor [--json]                # precisão e recall do resolvedor (avaliacao/resolvedor/)
+pnpm kb avaliar-busca [--json]                     # recall@10 da busca de seções (avaliacao/busca-secoes/)
 ```
+
+`relacoes --propor` roda o regex sobre o parser das normas; `avaliar-busca` mede os três modos da busca (`simples`, `radicais`, `completo`), que a ferramenta `buscar_secoes` não expõe (ela usa o completo). O `impacto` percorre as fichas, os marcos e a taxonomia da revisão de PPC gravados no banco; os textos das skills de `.agents/skills` não entram.
 
 As saídas não dependem do relógio e têm ordem estável. As regras do resolvedor e suas confianças estão no comentário de `normas/resolver.ts`; uma citação que não identifica o ato volta com `id: null` e a regra que explica por quê.
 
@@ -173,7 +157,7 @@ pnpm fmt                                    # na raiz: vp fmt no repositório in
 
 **`pacote-contexto`.** Por norma citada pelas fichas, o texto de cada dispositivo citado (`referencias_normativas[].dispositivo`): caput herdado, o próprio texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete (vai em `citados`). Também os marcos ligados (com os campos derivados) e as regras de transição das normas das fichas e das citadas como fundamento pelo PPC, com a situação na `data_referencia` e o texto do dispositivo que as estabelece. As seções do PPC são as dos tipos ligados aos tópicos das fichas (`dados/topicos-secoes.yaml`) mais a melhor seção de cada `consulta` das fichas. As partes são funções próprias (`normasDoPacote`, `marcosDoPacote`, `transicoesDoPacote`, `secoesDoPacote`), usadas pelo pacote de um PPC da base (`pacoteContexto`) e pelo de um PPC fora dela (`PacoteContexto.abrirAvulso`).
 
-**PPC fora da base.** `PacoteContexto.abrirAvulso(markdown, opcoes)` cria, no escopo de quem chama, um banco em memória com o esquema do `kb.sqlite` (`db/ppc-avulso.ts`, com o registro, o léxico e os nomes dos campi da base) e grava o PPC por `gravarSecoesECitacoes`, o mesmo caminho da compilação: seções de `secoesIndexadas` (ou, com `todasAsSecoes`, de `secoesComChave`, que mantém a capa, `outros` e as seções curtas) e citações do resolvedor. Com `titulosNivel1`, `# Título` conta como título (o normalizador do `packages/ppc` põe o primeiro nível numerado em `#`; no índice publicado só `##` a `######` contam). Para um PPC da base, o banco em memória dá as mesmas seções e citações do `kb.sqlite` (`db/base.test.ts`). O `PpcAvulso` devolvido tem `pacote(fichas, opcoes)`, o pacote de um conjunto de fichas: normas, marcos e transições do `kb.sqlite` (o `SqlClient` do ambiente); seções e citações do banco em memória (por `db/conexao.ts`); `citacoesPpc` acrescenta todas as citações normativas do PPC. Tem também `estrutura()`, todas as seções do Markdown (`segmentarPpc`, sobre o texto que o banco recebeu: quebras de linha e `titulosNivel1`, por `textoDoPpcAvulso`) e os fatos sobre elas, que a revisão com IA do app usa. Quem chama nunca vê o `DatabaseSync`, e o banco fecha com o escopo. A CLI aceita um `.md` no lugar de `<campus/curso>`.
+**PPC fora da base.** `PacoteContexto.abrirAvulso(markdown, opcoes)` cria, no escopo de quem chama, um banco em memória com o esquema do `kb.sqlite` (`db/ppc-avulso.ts`, com o registro, o léxico e os nomes dos campi da base) e grava o PPC por `gravarSecoesECitacoes`, o mesmo caminho da compilação: seções de `secoesIndexadas` (ou, com `todasAsSecoes`, de `secoesComChave`, que mantém a capa, `outros` e as seções curtas) e citações do resolvedor. Com `titulosNivel1`, `# Título` conta como título (o normalizador do `packages/ppc` põe o primeiro nível numerado em `#`; no índice publicado só `##` a `######` contam). Para um PPC da base, o banco em memória dá as mesmas seções e citações do `kb.sqlite` (`db/base.test.ts`). O `PpcAvulso` devolvido tem `pacote(fichas, opcoes)`, o pacote de um conjunto de fichas: normas, marcos e transições do `kb.sqlite` (o `SqlClient` do ambiente); seções e citações do banco em memória (por `db/conexao.ts`); `citacoesPpc` acrescenta todas as citações normativas do PPC. Tem também `estrutura()`, todas as seções do Markdown (`segmentarPpc`, sobre o texto que o banco recebeu: quebras de linha e `titulosNivel1`, por `textoDoPpcAvulso`) e os fatos sobre elas, que a revisão com IA do app usa. Quem chama nunca vê o `DatabaseSync`, e o banco fecha com o escopo. A CLI aceita um `.md` (`kb pacote-contexto <tarefa> --arquivo PPC.md`, do diretório atual).
 
 **Busca de seções.** Ao mudar `dados/sinonimos.yaml`, `busca/` ou as consultas de `db/consultas-secoes.ts`, rode `pnpm kb avaliar-busca` e compare o recall@10 dos três modos com o anterior; o conjunto de `avaliacao/busca-secoes/` é rascunho, rotulado pelos títulos das seções.
 

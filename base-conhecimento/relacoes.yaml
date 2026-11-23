@@ -25,7 +25,7 @@
 #
 # Regras de vigência (packages/kb/src/normas/vigencia.ts): revoga sem alvo_dispositivo nem alcance
 # revoga o ato inteiro; com eles, é revogação parcial. altera marca o alvo como alterado.
-# regulamenta e fundamenta-se-em não mudam o status, mas entram em `kb impacto`.
+# regulamenta e fundamenta-se-em não mudam o status, mas entram em `kb impacto-da-norma`.
 #
 # descartadas: propostas do regex que NÃO viraram relação, com o motivo. `kb relacoes --propor`
 # só lista o que não está nem em relacoes nem em descartadas.

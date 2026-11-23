@@ -1,6 +1,6 @@
 /**
  * Ferramenta 1, `buscar_norma`: citação ou ID vão direto ao dispositivo; termos fazem busca textual
- * nos dispositivos e nos metadados das normas (`Normas.buscar`, o `kb buscar-norma`).
+ * nos dispositivos e nos metadados das normas (`Normas.buscar`).
  */
 import * as Schema from "effect/Schema";
 import { DispositivoTexto, Fonte, NormaResumo, SITUACOES_NORMA } from "../contratos.ts";

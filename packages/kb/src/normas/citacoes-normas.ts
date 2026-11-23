@@ -1,7 +1,7 @@
 /**
  * Citações entre normas: as citações resolvidas no texto de cada norma da base (dispositivos e
  * preâmbulo, onde ficam os considerandos), segmento por segmento. É a entrada de "normas que citam"
- * do `kb impacto`; a compilação grava o mesmo resultado na tabela `normas_citacoes`, para o impacto
+ * do `kb impacto-da-norma`; a compilação grava o mesmo resultado na tabela `normas_citacoes`, para o impacto
  * responder pelo banco sem reprocessar os Markdown.
  */
 import { carregarEstruturas } from "./estrutura.ts";

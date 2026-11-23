@@ -1,0 +1,56 @@
+Atenção: a vigência de Resolução CNE/CP nº 1/2021 está a confirmar (status publicado: revogada); diga isso ao usuário (`br/cne-cp/res/2021/1`)
+
+Impacto de [Resolução CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1): revogada (a confirmar) em 13/11/2026.
+
+Sucessoras: [br/cne-cp/res/2026/2](ifpr://norma/br/cne-cp/res/2026/2).
+
+Regras de transição (norma revogada não é inaplicável):
+- [dcnept-2026-art70](ifpr://norma/br/cne-cp/res/2026/2#art70) (a confirmar): Podem ser adequados à Res. CNE/CP nº 2/2026 por solicitação da instituição ou do órgão regulador; a adequação é facultativa e não prejudica a continuidade do processo.
+- [dcnept-2026-art71](ifpr://norma/br/cne-cp/res/2026/2#art71) (a confirmar): Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.
+- [dcnept-2026-art71-parunico](ifpr://norma/br/cne-cp/res/2026/2#art71-parunico) (a confirmar): Têm assegurado o direito de concluir o curso com base na Res. CNE/CP nº 1/2021.
+- [dcnept-2021-art63](ifpr://norma/br/cne-cp/res/2021/1#art63) (a confirmar): Podem ser adequados à Res. CNE/CP nº 1/2021 por solicitação da instituição.
+- [dcnept-2021-art62](ifpr://norma/br/cne-cp/res/2021/1#art62) (a confirmar): Têm assegurado o direito de concluir o curso com base na Res. CNE/CEB nº 6/2012 (técnicos) e na Res. CNE/CP nº 3/2002 (tecnologia).
+
+Relações:
+- br/cne-cp/res/2026/2#art74-ii **revoga** br/cne-cp/res/2021/1 — evidência em br/cne-cp/res/2026/2#art74-ii: "a Resolução CNE/CP nº 1, de 5 de janeiro de 2021"
+- br/cne-cp/res/2021/1#art64 **revoga** br/cne-cp/res/2002/3 — evidência em br/cne-cp/res/2021/1#art64: "a Resolução CNE/CP nº 3, de 18 de dezembro de 2002"
+- br/cne-cp/res/2021/1#art64 **revoga** br/cne-ceb/res/2012/6 — evidência em br/cne-cp/res/2021/1#art64: "a Resolução CNE/CEB nº 6, de 20 de setembro de 2012"
+- br/mec/portaria/2024/902 **fundamenta-se-em** br/cne-cp/res/2021/1 — evidência em br/mec/portaria/2024/902: "na Resolução CNE/CP nº 1, de 5 de janeiro de 2021"
+
+Normas que a citam:
+- [Portaria MEC nº 902/2024](ifpr://norma/br/mec/portaria/2024/902) (preâmbulo)
+- [Resolução CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2) (#art71-parunico, #art74-ii)
+- [Portaria PROENS/IFPR nº 121/2024](ifpr://norma/ifpr/proens/portaria/2024/121) (#art6)
+- [Resolução CONSUP/IFPR nº 64/2022](ifpr://norma/ifpr/consup/res/2022/64) (preâmbulo)
+
+PPCs que a citam: 59 (amostra de 10; lista completa em `citacoes_da_norma`): [Técnico em Melhoria de Processos (Arapongas)](ifpr://ppc/arapongas/tecnico-em-melhoria-de-processos); [Técnico em Sistemas de Energia Renovável (Arapongas)](ifpr://ppc/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio); [Tecnologia em Processos Gerenciais (Arapongas)](ifpr://ppc/arapongas/tecnologia-em-processos-gerenciais); [Técnico em Alimentos (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-alimentos); [Técnico em Mecatrônica (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio); [Tecnologia em Automação Industrial (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnologia-em-automacao-industrial); [Tecnologia em Gestão Comercial (Assis Chateaubriand)](ifpr://ppc/assis-chateaubriand/tecnologia-em-gestao-comercial); [Técnico em Desenvolvimento de Sistemas (Astorga)](ifpr://ppc/astorga/tecnico-em-desenvolvimento-de-sistemas); [Técnico em Administração (Barracão)](ifpr://ppc/barracao/tecnico-em-administracao); [Técnico em Informática (Barracão)](ifpr://ppc/barracao/tecnico-em-informatica).
+
+fichas da revisão de PPC atingidas:
+- [CT-CURR-01](ifpr://ficha/CT-CURR-01) Matriz curricular estruturada e legível — tema
+- [CT-CURR-02](ifpr://ficha/CT-CURR-02) Carga horária total apresentada com consistência — referencia-correspondente, citacao-sucessora, tema (br/cne-cp/res/2026/2#art29, br/cne-cp/res/2026/2#art30, br/cne-cp/res/2026/2#art37-par3)
+- [CT-CURR-03](ifpr://ficha/CT-CURR-03) Distribuição entre formação geral e formação técnica — referencia-correspondente, citacao-sucessora, tema (br/cne-cp/res/2026/2#art18-par2, br/cne-cp/res/2026/2#art29-par2, br/cne-cp/res/2026/2#art29-par3, br/cne-cp/res/2026/2#art30)
+- [CT-CURR-04](ifpr://ficha/CT-CURR-04) Componentes curriculares alinhados ao perfil profissional — tema
+- [CT-CURR-05](ifpr://ficha/CT-CURR-05) Ementas completas e auditáveis — tema
+- [CT-CURR-06](ifpr://ficha/CT-CURR-06) Bibliografia básica e complementar minimamente suficiente — referencia-correspondente, tema (br/cne-cp/res/2026/2#art28-par1-i)
+- [CT-CURR-07](ifpr://ficha/CT-CURR-07) Progressão formativa e organização por períodos — tema
+- [CT-CURR-08](ifpr://ficha/CT-CURR-08) Metodologias e integração curricular compatíveis com a proposta — referencia-correspondente, tema (br/cne-cp/res/2026/2#art26-vi, br/cne-cp/res/2026/2#art28-par1-ii)
+- [CT-CURR-09](ifpr://ficha/CT-CURR-09) Inclusão, AEE e flexibilização curricular articulados ao currículo — tema
+- [CT-CURR-10](ifpr://ficha/CT-CURR-10) Representação gráfica coerente com a organização curricular — tema
+- [CT-CURR-11](ifpr://ficha/CT-CURR-11) Temas transversais e formação cidadã no currículo — tema
+- [CT-CURR-12](ifpr://ficha/CT-CURR-12) Progressão formativa explicitada na organização curricular — referencia-correspondente, citacao-sucessora, tema (br/cne-cp/res/2026/2#art9)
+- [CT-CURR-13](ifpr://ficha/CT-CURR-13) Aproveitamento de estudos com critérios e procedimento definidos — referencia-correspondente, tema (br/cne-cp/res/2026/2#art28-x, br/cne-cp/res/2026/2#art42)
+- [CT-CURR-14](ifpr://ficha/CT-CURR-14) Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto — referencia-correspondente, tema (br/cne-cp/res/2026/2#art26-viii)
+- [CT-CURR-15](ifpr://ficha/CT-CURR-15) Certificação de conhecimentos anteriores tratada, quando aplicável — referencia-correspondente, tema (br/cne-cp/res/2026/2#art42, br/cne-cp/res/2026/2#art43)
+- [CT-CURR-16](ifpr://ficha/CT-CURR-16) Pré-requisitos de ingresso compatíveis com o CNCT — referencia-correspondente, citacao-sucessora, tema (br/cne-cp/res/2026/2#art18, br/cne-cp/res/2026/2#art28-iv)
+- [CT-CURR-17](ifpr://ficha/CT-CURR-17) Itinerários formativos coerentes com o CNCT — referencia-correspondente, citacao-sucessora, tema (br/cne-cp/res/2026/2#art17-par2, br/cne-cp/res/2026/2#art28-vi, br/cne-cp/res/2026/2#art29-par4, br/cne-cp/res/2026/2#art9)
+- [CT-CURR-18](ifpr://ficha/CT-CURR-18) Componentes obrigatórios e conteúdos legais da FGB contemplados — tema
+- [CT-CURR-19](ifpr://ficha/CT-CURR-19) Integração curricular e práticas profissionais articuladas — referencia-correspondente, tema (br/cne-cp/res/2026/2#art22, br/cne-cp/res/2026/2#art26-ii, br/cne-cp/res/2026/2#art28-par1-iii, br/cne-cp/res/2026/2#art36)
+- [CT-CURR-20](ifpr://ficha/CT-CURR-20) Decisão sobre estágio e carga horária compatíveis com o CNCT — referencia-correspondente, tema (br/cne-cp/res/2026/2#art28-par1-iv, br/cne-cp/res/2026/2#art28-xvii, br/cne-cp/res/2026/2#art37)
+… e mais 63 fichas (lista completa no JSON)
+
+Outros textos da revisão de PPC que a citam:
+- `base-conhecimento/revisao-ppc/marcos-normativos.json` — citacao, citacao-sucessora (br/cne-cp/res/2021/1#art71-parunico, br/cne-cp/res/2026/2#art29, br/cne-cp/res/2026/2#art30)
+
+Tópicos atingidos: `identificacao_oferta`, `justificativa_objetivos`, `concepcao_metodologias`, `perfil_egresso_mundo_trabalho`, `matriz_curricular`, `ementario_bibliografias`, `estagio`, `aproveitamento_certificacao_tfc`, `avaliacao_aprendizagem`, `assistencia_estudantil_permanencia`, `aee_acessibilidade_inclusao`, `corpo_docente_gestao`, `infraestrutura`, `temas_transversais_cidadania`.
+
+Base de 13/11/2026 (versão dev).

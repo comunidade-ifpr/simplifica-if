@@ -1,6 +1,6 @@
 /**
  * Consultas do serviço `Ppcs` aos fatos extraídos dos PPCs e ao cruzamento com o SUAP no `kb.sqlite`
- * (`kb ppc-fatos`, ferramenta `fatos_ppc`). Pedem o `SqlClient` do ambiente.
+ * (`kb fatos-ppc`, ferramenta `fatos_ppc`). Pedem o `SqlClient` do ambiente.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";

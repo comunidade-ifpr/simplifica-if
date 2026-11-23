@@ -194,9 +194,9 @@ export default defineConfig({
         // Pontos de entrada (a CLI `kb` e os scripts do pacote) leem o processo do Node diretamente,
         // como `scripts/npm-launcher/**` no T3; o resto do pacote recebe o que precisar por injeção.
         files: [
-          "packages/kb/src/cli.ts",
           "packages/kb/scripts/**",
           "packages/mcp/src/cli.ts",
+          "packages/mcp/src/kb.ts",
           "packages/mcp/scripts/**",
           // O harness do motor e o teste com providers reais passam o ambiente do processo aos drivers.
           "packages/motor/scripts/**",

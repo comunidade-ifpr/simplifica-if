@@ -1,17 +1,26 @@
-br/cne-cp/res/2021/1#art20 → br/cne-cp/res/2026/2: parcial [rascunho]
-  br/cne-cp/res/2026/2#art22: Art. 22. Os cursos técnicos devem considerar os seguintes elementos em sua organização e oferta:
-  nota: A lista de elementos da estruturação dos cursos técnicos é retomada no art. 22, com acréscimos (competências para demandas complexas, direitos humanos, sustentabilidade, cidadania fiscal, uso responsável das tecnologias) e sem o inciso X (fundamentos de empreendedorismo, cooperativismo etc.).
-  #art20-i → #art22-v: equivalente; Base tecnológica, agora "composição obrigatória".
-  #art20-ii → #art22-vi: equivalente
-  #art20-iii → #art22-vii: equivalente
-  #art20-iv → #art22-iii: parcial; Pertinência e coerência passam a se referir às competências, e não aos conteúdos.
-  #art20-v → #art22-viii: parcial; O diálogo inclui sustentabilidade ambiental e cidadania fiscal.
-  #art20-vi → #art22-ix: equivalente
-  #art20-vii → #art22-ii: equivalente
-  #art20-viii → #art22-xi: parcial; Domínio das tecnologias passa a "utilização responsável" das tecnologias do eixo.
-  #art20-ix → #art28-par1-iii, #art36: parcial; A vivência de situações práticas passa à prática profissional intrínseca ao currículo e à prática profissional supervisionada obrigatória.
-  #art20-x → #art22-viii: parcial; Sem a lista de fundamentos aplicados ao curso (cooperativismo, trabalho em equipe, tecnologia da informação, gestão de pessoas, legislação trabalhista, ética profissional, segurança do trabalho, iniciação científica). Empreendedorismo, inovação e sustentabilidade ambiental continuam no art. 22, VIII, como campos de diálogo e referências da formação, e as competências para o empreendedorismo estão também nos princípios (art. 3º, VIII).
-  #art20-par1 → #art18-par2: parcial
-  #art20-par2 → #art22-iv: equivalente; Competências socioemocionais, agora inciso do art. 22.
+Atenção: a tabela de correspondência br/cne-cp/res/2021/1 → br/cne-cp/res/2026/2 é rascunho, sem revisão jurídica: use como indicação, nunca como fundamento (`base-conhecimento/correspondencias/br-cne-cp-res-2021-1--br-cne-cp-res-2026-2.yaml`)
 
-Tabela base-conhecimento/correspondencias/br-cne-cp-res-2021-1--br-cne-cp-res-2026-2.yaml: rascunho sem revisão jurídica.
+Tabela `base-conhecimento/correspondencias/br-cne-cp-res-2021-1--br-cne-cp-res-2026-2.yaml` (br/cne-cp/res/2021/1 → br/cne-cp/res/2026/2): rascunho, sem revisão, elaborada em 2026-11-13.
+
+**[Art. 20.](ifpr://norma/br/cne-cp/res/2021/1#art20)** — `br/cne-cp/res/2021/1#art20` → parcial
+> Art. 20. A estruturação dos cursos da Educação Profissional Técnica de Nível Médio, observados os princípios expressos no art. 3º, deve ainda considerar:
+fonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md:265-267`
+nota da tabela: A lista de elementos da estruturação dos cursos técnicos é retomada no art. 22, com acréscimos (competências para demandas complexas, direitos humanos, sustentabilidade, cidadania fiscal, uso responsável das tecnologias) e sem o inciso X (fundamentos de empreendedorismo, cooperativismo etc.).
+- detalhe: `br/cne-cp/res/2021/1#art20-i` → `br/cne-cp/res/2026/2#art22-v` (equivalente); Base tecnológica, agora "composição obrigatória".
+- detalhe: `br/cne-cp/res/2021/1#art20-ii` → `br/cne-cp/res/2026/2#art22-vi` (equivalente)
+- detalhe: `br/cne-cp/res/2021/1#art20-iii` → `br/cne-cp/res/2026/2#art22-vii` (equivalente)
+- detalhe: `br/cne-cp/res/2021/1#art20-iv` → `br/cne-cp/res/2026/2#art22-iii` (parcial); Pertinência e coerência passam a se referir às competências, e não aos conteúdos.
+- detalhe: `br/cne-cp/res/2021/1#art20-v` → `br/cne-cp/res/2026/2#art22-viii` (parcial); O diálogo inclui sustentabilidade ambiental e cidadania fiscal.
+- detalhe: `br/cne-cp/res/2021/1#art20-vi` → `br/cne-cp/res/2026/2#art22-ix` (equivalente)
+- detalhe: `br/cne-cp/res/2021/1#art20-vii` → `br/cne-cp/res/2026/2#art22-ii` (equivalente)
+- detalhe: `br/cne-cp/res/2021/1#art20-viii` → `br/cne-cp/res/2026/2#art22-xi` (parcial); Domínio das tecnologias passa a "utilização responsável" das tecnologias do eixo.
+- detalhe: `br/cne-cp/res/2021/1#art20-ix` → `br/cne-cp/res/2026/2#art28-par1-iii`, `br/cne-cp/res/2026/2#art36` (parcial); A vivência de situações práticas passa à prática profissional intrínseca ao currículo e à prática profissional supervisionada obrigatória.
+- detalhe: `br/cne-cp/res/2021/1#art20-x` → `br/cne-cp/res/2026/2#art22-viii` (parcial); Sem a lista de fundamentos aplicados ao curso (cooperativismo, trabalho em equipe, tecnologia da informação, gestão de pessoas, legislação trabalhista, ética profissional, segurança do trabalho, iniciação científica). Empreendedorismo, inovação e sustentabilidade ambiental continuam no art. 22, VIII, como campos de diálogo e referências da formação, e as competências para o empreendedorismo estão também nos princípios (art. 3º, VIII).
+- detalhe: `br/cne-cp/res/2021/1#art20-par1` → `br/cne-cp/res/2026/2#art18-par2` (parcial)
+- detalhe: `br/cne-cp/res/2021/1#art20-par2` → `br/cne-cp/res/2026/2#art22-iv` (equivalente); Competências socioemocionais, agora inciso do art. 22.
+
+  ↳ **[Art. 22.](ifpr://norma/br/cne-cp/res/2026/2#art22)** — `br/cne-cp/res/2026/2#art22`, correspondente de `br/cne-cp/res/2021/1#art20`
+> Art. 22. Os cursos técnicos devem considerar os seguintes elementos em sua organização e oferta:
+fonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:405-407`
+
+Base de 13/11/2026 (versão dev).

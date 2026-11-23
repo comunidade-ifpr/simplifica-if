@@ -1,6 +1,5 @@
 /**
- * Ferramenta 11, `listar_cursos`: cursos do IFPR com CNCT, eixo, ofertas e turno (`Cursos.listar`, a
- * regra de `kb cursos`). Cada curso numa linha compacta, sem o detalhe das ofertas, que fica na
+ * Ferramenta 11, `listar_cursos`: cursos do IFPR com CNCT, eixo, ofertas e turno (`Cursos.listar`). Cada curso numa linha compacta, sem o detalhe das ofertas, que fica na
  * `ficha_curso`.
  */
 import * as Schema from "effect/Schema";

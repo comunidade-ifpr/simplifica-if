@@ -1,6 +1,5 @@
 /**
- * Ferramenta 9, `buscar_secoes`: busca nas seções dos PPCs (`Ppcs.buscarSecoes`, a regra de
- * `kb buscar-secoes`, com o léxico de sinônimos do banco). Devolve as linhas literais mais próximas da
+ * Ferramenta 9, `buscar_secoes`: busca nas seções dos PPCs (`Ppcs.buscarSecoes`, com o léxico de sinônimos do banco). Devolve as linhas literais mais próximas da
  * consulta; com `integral`, o texto inteiro de até 5 seções.
  */
 import * as Schema from "effect/Schema";

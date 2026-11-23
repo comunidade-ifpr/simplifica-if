@@ -117,7 +117,7 @@ export function cobreDispositivo(lista: readonly string[], dispositivo: string):
   return lista.some((d) => d === alvo || d.startsWith(`${alvo}-`));
 }
 
-/** Saída de `kb citacoes <id>`: a norma no registro e os PPCs que a citam. */
+/** Saída de `Ppcs.relatorioCitacoes`: a norma no registro e os PPCs que a citam. */
 export interface RelatorioCitacoes {
   id: string;
   titulo: string | null;

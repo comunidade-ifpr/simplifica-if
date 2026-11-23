@@ -3,7 +3,7 @@
  * tópico ou `todas`) para um PPC, montado pelo serviço `PacoteContexto` do kb.
  * O PPC é um da base (`ppc`) ou um `.md` da pasta de trabalho (`arquivo`); exatamente um dos dois.
  *
- * Os `dados` são o pacote do kb como está (o mesmo JSON de `kb pacote-contexto --json`): o de um PPC
+ * Os `dados` são o pacote do kb como está : o de um PPC
  * da base ou o de um arquivo, que têm formas diferentes. O texto para a IA traz as fichas inteiras,
  * o CNCT, os fatos, os marcos, as transições, os dispositivos e as seções, com o literal, a fonte e o
  * link. Teto de 80 mil caracteres: acima dele, os literais mais longos (seções, dispositivos,

@@ -62,9 +62,28 @@ O servidor fala MCP pelo stdin/stdout; as mensagens de diagnóstico vão para o 
 
 Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packages/kb/src/db/esquema.ts`) é recusado com "base incompatível com esta versão do simplifica-mcp; atualize".
 
+## CLI `kb`
+
+Dentro do checkout, as ferramentas são também a CLI `kb` (`pnpm kb`, ponto de entrada `src/kb.ts`): um comando por ferramenta (menos a `etapa`), com o nome em kebab-case, sobre o `tmp/kb.sqlite` recompilado quando está velho (`KB_SQLITE`, `KB_RECOMPILAR=nunca|sempre`). Os comandos são derivados da ferramenta em `src/consulta.ts`: a descrição dela, e um parâmetro por campo do JSON Schema de entrada (o do `tools/list`). O primeiro campo obrigatório é o argumento posicional (repetível quando é uma lista); os outros são flags com o nome do campo em kebab-case (`confianca_min` → `--confianca-min`): booleano liga com a flag, lista repete a flag, número e texto levam o valor. A conferência da entrada é a da ferramenta, com as mesmas mensagens.
+
+```bash
+pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --limite 5
+pnpm kb ler-dispositivos "br/cne-cp/res/2026/2#art28" "br/cne-cp/res/2026/2#art71" --filhos
+pnpm kb ficha-norma br/cne-cp/res/2021/1 --em 2026-11-01          # vigência, relações, sucessoras, transições
+pnpm kb resolver-citacoes "Resolução CNE/CP nº 1/2021, art. 20" "Lei nº 9.394/1996, art. 36"
+pnpm kb buscar-secoes "estágio obrigatório" --nivel médio --tipo estagio_praticas --tipo avaliacao
+pnpm kb listar-cursos --campus curitiba --todas-as-paginas
+pnpm kb pacote-contexto CT-CURR-12 --ppc curitiba/tecnico-em-enfermagem   # ou --arquivo PPC.md (do diretório atual)
+pnpm kb <comando> --help
+```
+
+- **Saída:** o texto Markdown que a IA recebe; com `--json`, a `Resposta` inteira (o `structuredContent`) numa linha. Nas ferramentas paginadas, `--todas-as-paginas` segue o cursor e imprime todas as páginas (no JSON, uma por linha).
+- **Erros:** entrada inválida, ID que não está na base e falha do banco saem como `kb: <mensagem>` no stderr, com código 1; um erro de uso (flag desconhecida, argumento que falta) imprime o erro do `effect/cli`, também com 1.
+- **Curadoria:** `compilar`, `relacoes --propor`, `avaliar-resolvedor` e `avaliar-busca` ficam em `@simplifica-if/kb/cli` ([`packages/kb/README.md`](../kb/README.md#cli)) e entram na mesma CLI.
+
 ## Uso por scripts
 
-Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout. Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
+Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout. Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. A impressão é a mesma dos comandos da CLI `kb` com `--json` (`imprimirConsulta`, em `src/consulta.ts`); a diferença é a entrada, que no `consultar` é o JSON da ferramenta, como um script o monta. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
 
 ```bash
 simplifica-mcp consultar ficha_curso --args '{"curso":"curitiba/tecnico-em-enfermagem"}' --banco ~/SimplificaIF/kb.sqlite
@@ -114,6 +133,8 @@ packages/mcp/
 ├── instrucoes.md            # campo `instructions` do servidor, embutido em src/instrucoes.gerado.ts
 ├── src/
 │   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio; `consultar`
+│   ├── kb.ts                # a CLI `kb` do checkout (pnpm kb): os comandos de consulta.ts e a curadoria do kb
+│   ├── consulta.ts          # um comando por ferramenta, derivado do JSON Schema de entrada; imprimirConsulta
 │   ├── servidor.ts          # McpServer.layerStdio, layerLeitura, layerRegistro, mensagens de abertura
 │   ├── http.ts              # export @simplifica-if/mcp/http: o servidor HTTP local do app, com token por sessão
 │   ├── SessaoAtual.ts       # a sessão da chamada (só no HTTP): rótulo e registro das chamadas
@@ -135,7 +156,7 @@ packages/mcp/
 │   │   └── registrar.ts     # chamador (uma chamada de ferramenta) e registrarFerramentas, sobre McpServer.addTool
 │   └── rpc.ts               # export @simplifica-if/mcp/rpc: GrupoLeitura (ferramentas e links ifpr://) e layerHandlersRpc
 └── test/                    # fixtures com o DDL do kb; testes por ferramenta, equivalência, RPC, stdio
-    └── transversal/         # suítes de todas as ferramentas: amostras.ts, paridade.ts e os *.test.ts
+    └── transversal/         # suítes de todas as ferramentas: amostras.ts e os *.test.ts
 ```
 
 Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, o envelope, o orçamento e a formatação. As ferramentas MCP, os recursos `ifpr://` e o RPC chamam o mesmo serviço `Leitura`, com os mesmos schemas.
@@ -167,12 +188,12 @@ Protocolo: só as duas revisões atuais do MCP, `2026-07-28` (sem sessão; o Cla
 
 ## Suítes transversais
 
-As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, sem repetir os testes por ferramenta. Elas tiram as entradas de `amostras.ts` e os casos de paridade de `paridade.ts`. Os dois registros são indexados pelo nome da ferramenta: uma ferramenta nova sem amostra ou sem caso de paridade quebra o `typecheck` e os testes.
+As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, sem repetir os testes por ferramenta. Elas tiram as entradas de `amostras.ts`, indexado pelo nome da ferramenta: uma ferramenta nova sem amostra quebra o `typecheck` e os testes. Os comandos da CLI `kb` são as próprias ferramentas (`src/consulta.ts`); `test/consulta.test.ts` confere a derivação dos comandos, e `testes-gabarito/kb/`, o texto, o stderr e os códigos de saída.
 
 | Suíte | O que confere | Fixture | Base real |
 |---|---|---|---|
 | `contrato.test.ts` | Toda ferramenta tem amostras. Pelo protocolo, a entrada válida passa no `inputSchema`, responde sem erro, e a saída passa no `outputSchema` (ajv) e no Effect Schema. A inválida volta `isError`, com a mensagem em português que começa pelo campo | sim | — |
-| `paridade.test.ts` | Cada ferramenta × o comando da CLI `kb` no mesmo banco: mesmos IDs, textos e totais (o `pacote_contexto`, byte a byte, pela base e pelo arquivo). `etapa` não tem comando, e o motivo fica registrado | — | sim |
+| `base-real.test.ts` | As ferramentas umas contra as outras e contra o banco, sobre o banco do checkout (a camada da CLI `kb`): o texto integral de `buscar_secoes` é o de `ler_secao`; o `pacote_contexto` fica no teto, e o do PPC da base e o do mesmo PPC como arquivo trazem as mesmas fichas, normas, marcos e transições; as contagens de `sobre_a_base` são as linhas das tabelas | — | sim |
 | `sem-repositorio.test.ts` | Todas as ferramentas numa pasta só com o `kb.sqlite` (diretório atual e `HOME`, com o `PATH` mínimo), com as respostas iguais às do processo de teste e a pasta intacta | sim | sim |
 | `orcamento.test.ts` | Nenhum texto acima do teto da ferramenta. A paginação percorrida com o cursor tem mais de uma página e soma o total, sem repetir item | sim | sim |
 | `determinismo.test.ts` | Dois processos em stdio, com as mesmas chamadas, dão as linhas de resposta iguais byte a byte | sim | sim |
@@ -180,7 +201,7 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
 | `consultar.test.ts` | O `simplifica-mcp consultar` como processo: cada amostra (menos a `etapa`) sai como o `structuredContent`, ou com código 1 e a mensagem no stderr; `--todas-as-paginas` soma o total; na base real, as chamadas de `testes-gabarito/mcp.json` | sim | sim |
 | `descricoes.test.ts` | Pelo `tools/list`: título, descrição (até 600 caracteres) com a frase "Use quando…", parâmetros descritos e o tamanho do que vai ao modelo | sim | — |
 
-- **Fixture e base real:** o `pnpm test` roda a parte da fixture, que não depende do `tmp/kb.sqlite`. O `pnpm mcp:smoke` roda as suítes inteiras com `SIMPLIFICA_SMOKE=1`; a CLI `kb` compila o banco se ele faltar ou estiver velho.
+- **Fixture e base real:** o `pnpm test` roda a parte da fixture, que não depende do `tmp/kb.sqlite`. O `pnpm mcp:smoke` roda as suítes inteiras com `SIMPLIFICA_SMOKE=1`; o `base-real.test.ts` recompila o banco se ele faltar ou estiver velho, como a CLI `kb`.
 - **Amostras do `pacote_contexto`:** só com `ppc`. O `arquivo` depende da pasta de trabalho, e as suítes por amostra montam o `Leitura` sem ela; ele tem a suíte própria.
 - **Sem repositório:** sem `SIMPLIFICA_MCP_EXE`, o servidor é o bundle do executável (`conferirBundle`), no Node com `--permission`. Ele só lê a pasta do banco e o próprio código, não escreve e não abre processos, e um controle negativo confere que ler fora da pasta é negado. Com `SIMPLIFICA_MCP_EXE`, o servidor é o executável, sem o modelo de permissões. Duas ressalvas:
   - o `realpath` em JavaScript do Node faz `lstat` dos diretórios ancestrais, e o modelo de permissões nega isso. Um gancho de pré-carga troca o `realpath` pelo nativo. O executável não aceita o gancho, e por isso roda sem `--permission`;

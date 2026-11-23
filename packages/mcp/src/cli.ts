@@ -11,9 +11,10 @@
  *
  * Com `--pasta-atualizacao`, a base se atualiza pelo feed do canal (`atualizacao.ts`, M1.10).
  *
- * O `consultar` imprime o `structuredContent` da ferramenta (a `Resposta`, válida no `outputSchema`)
- * em JSON, numa linha; com `--todas-as-paginas`, segue o cursor e imprime uma resposta por linha
- * (JSONL). Não confere atualização nem baixa base: lê só o `--banco` (ou `SIMPLIFICA_KB`). Recusa a
+ * O `consultar` é a porta dos scripts de fora do repositório: a entrada da ferramenta em JSON
+ * (`--args`) e o `structuredContent` (a `Resposta`, válida no `outputSchema`) em JSON, numa linha; com
+ * `--todas-as-paginas`, segue o cursor e imprime uma resposta por linha (JSONL). A impressão é a dos
+ * comandos da CLI `kb` (`consulta.ts`), que derivam as flags da mesma entrada. Não confere atualização nem baixa base: lê só o `--banco` (ou `SIMPLIFICA_KB`). Recusa a
  * `etapa`, que só faz sentido numa conversa.
  *
  * O stdout é do protocolo MCP; as mensagens vão para o stderr. Um `~/` no início dos caminhos é
@@ -41,7 +42,8 @@ import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { prepararAtualizacao } from "./atualizacao.ts";
-import { chamador, NOMES_FERRAMENTAS } from "./ferramentas/registrar.ts";
+import { imprimirConsulta } from "./consulta.ts";
+import { NOMES_FERRAMENTAS } from "./ferramentas/registrar.ts";
 import { layerHandlers } from "./ferramentas/toolkit.ts";
 import { CANAIS, CANAIS_DISTRIBUICAO, type Canal } from "@simplifica-if/kb/canal";
 import * as Leitura from "./leitura/Leitura.ts";
@@ -114,7 +116,6 @@ const flagPastaTrabalho = Flag.String("pasta-trabalho").pipe(
 
 const JsonQualquer = Schema.fromJsonString(Schema.Unknown);
 const decodificarArgs = Schema.decodeUnknownEffect(JsonQualquer);
-const emJson = Schema.encodeEffect(JsonQualquer);
 
 const consultar = Command.make(
   "consultar",
@@ -152,17 +153,10 @@ const consultar = Command.make(
       canal: "dev",
       pastaTrabalho: pasta,
     });
-    // um banco aberto para todas as páginas
-    return yield* Effect.gen(function* () {
-      const chamarFerramenta = yield* chamador;
-      let entrada = argumentos;
-      for (;;) {
-        const resposta = yield* chamarFerramenta(opcoes.ferramenta, entrada);
-        yield* Console.log(yield* emJson(resposta).pipe(Effect.orDie));
-        const cursor = resposta.pagina?.cursor;
-        if (!opcoes.todasAsPaginas || cursor === undefined) return;
-        entrada = { ...(entrada as object), cursor };
-      }
+    // a mesma impressão dos comandos da CLI `kb`, sempre em JSON; um banco aberto para todas as páginas
+    return yield* imprimirConsulta(opcoes.ferramenta, argumentos, {
+      formato: "json",
+      todasAsPaginas: opcoes.todasAsPaginas,
     }).pipe(Effect.provide(layerHandlers.pipe(Layer.provide(leitura))));
   }),
 ).pipe(

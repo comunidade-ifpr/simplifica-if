@@ -1,5 +1,5 @@
 /**
- * `Cursos`: cursos de `base-conhecimento/institucional/ifpr/` com CNCT e ofertas (`kb cursos`, ferramenta
+ * `Cursos`: cursos de `base-conhecimento/institucional/ifpr/` com CNCT e ofertas (`kb listar-cursos`, ferramenta
  * `listar_cursos`) e a adequação dos cursos técnicos em oferta ao art. 71 da Res. CNE/CP nº 2/2026
  * (`kb adequacao-art71`). A regra da adequação é `adequacaoArt71Em`, pura; a fonte dela (cursos e
  * citações dos PPCs) é carregada do banco antes.

@@ -140,7 +140,7 @@ Dispõe sobre as diretrizes do trabalho do Docente de Educação Especial no IFP
 
 ## ID canônico
 
-O `id` é derivado do ato (tipo, órgão, jurisdição, ano e número), nunca do nome do arquivo. Ele é a chave usada pelo registro de normas, pelo resolvedor de citações (`pnpm kb resolver`), por `pnpm kb citacoes <id>` e pelos gabaritos da avaliação.
+O `id` é derivado do ato (tipo, órgão, jurisdição, ano e número), nunca do nome do arquivo. Ele é a chave usada pelo registro de normas, pelo resolvedor de citações (`pnpm kb resolver-citacoes`), por `pnpm kb citacoes-da-norma <id>` e pelos gabaritos da avaliação.
 
 | Ato | Formato | Exemplos |
 |-----|---------|----------|
@@ -198,9 +198,9 @@ IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`
 
 ## Vigência calculada
 
-O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `pnpm kb vigencia <id> --em AAAA-MM-DD`.
+O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `pnpm kb ficha-norma <id> --em AAAA-MM-DD`.
 
-Regras de transição (direito de conclusão, prazos de adequação) são dados em `base-conhecimento/transicoes.yaml` e aparecem em `kb vigencia`: revogada não é inaplicável.
+Regras de transição (direito de conclusão, prazos de adequação) são dados em `base-conhecimento/transicoes.yaml` e aparecem em `kb ficha-norma`: revogada não é inaplicável.
 
 ## Correspondência entre normas sucessoras
 

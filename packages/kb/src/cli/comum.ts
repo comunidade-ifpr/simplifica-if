@@ -1,5 +1,6 @@
 /**
- * Peças comuns aos comandos da CLI `kb`: erros da casca, flags repetidas, saída e a layer do
+ * Peças comuns aos comandos de curadoria da CLI `kb` (`compilar`, `relacoes --propor`,
+ * `avaliar-resolvedor`, `avaliar-busca`): erros da casca, flags repetidas, saída e a layer do
  * checkout.
  *
  * Cada comando recebe a layer dentro do próprio handler (`Effect.provide(camadaRepositorio)`), e
@@ -12,21 +13,15 @@ import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Flag from "effect/cli/Flag";
 import * as Layers from "../layers.ts";
-import { ehIdExterno, ehIdNorma } from "../normas/ids.ts";
 
-/** Entrada que os parsers de flag não pegam (formato do ID, combinação de argumentos). */
+/** Uso que os parsers de flag não pegam: `relacoes` sem `--propor`. */
 export class EntradaInvalida extends Schema.TaggedError<EntradaInvalida>()("EntradaInvalida", {
-  motivo: Schema.Literals(["id-fora-do-formato", "id-ausente"]),
-  valor: Schema.optionalKey(Schema.String),
+  motivo: Schema.Literals(["sem-propor"]),
 }) {
   override get message(): string {
-    return this.motivo === "id-fora-do-formato"
-      ? `ID fora do formato canônico: ${this.valor ?? ""} (ex.: br/cne-cp/res/2021/1)`
-      : "informe o ID da norma ou --propor";
+    return "relacoes só lista as propostas do regex (--propor); as relações de uma norma estão em kb ficha-norma <id>";
   }
 }
-
-export const ehEntradaInvalida = Schema.is(EntradaInvalida);
 
 /** Falha num comando de curadoria que lê os arquivos direto (`avaliar-resolvedor`, `relacoes --propor`). */
 export class FalhaNaCuradoria extends Schema.TaggedError<FalhaNaCuradoria>()("FalhaNaCuradoria", {
@@ -61,41 +56,7 @@ export const paraJsonCompacto = (valor: unknown): string => JSON.stringify(valor
 export const imprimir = (linhas: readonly string[]): Effect.Effect<void> =>
   linhas.length === 0 ? Effect.void : Console.log(linhas.join("\n"));
 
-/** Confere o formato do ID (aceita `#dispositivo`) e devolve o ID do ato. */
-export const exigirIdNorma = Effect.fn("cli.exigirIdNorma")(function* (
-  id: string,
-  opcoes: { readonly aceitarExterno?: boolean } = {},
-) {
-  const norma = id.split("#")[0]!;
-  if (!ehIdNorma(norma) && !(opcoes.aceitarExterno && ehIdExterno(norma))) {
-    return yield* new EntradaInvalida({ motivo: "id-fora-do-formato", valor: id });
-  }
-  return norma;
-});
-
 export const flagJson = Flag.Boolean("json").pipe(Flag.withDescription("saída em JSON"), Flag.withDefault(false));
-
-/** `--limite <n>`: inteiro positivo. */
-export const flagLimite = (descricao: string) =>
-  Flag.Int("limite").pipe(
-    Flag.withDescription(descricao),
-    Flag.filter(
-      (n) => n > 0,
-      () => "use um inteiro positivo",
-    ),
-    Flag.withDefault(10),
-  );
-
-/** `--em <data>`: AAAA-MM-DD, opcional. */
-export const flagData = (descricao: string) =>
-  Flag.String("em").pipe(
-    Flag.withDescription(descricao),
-    Flag.filter(
-      (valor) => /^\d{4}-\d{2}-\d{2}$/.test(valor),
-      () => "use AAAA-MM-DD",
-    ),
-    Flag.optional,
-  );
 
 /** Flag de texto opcional. */
 export const flagTexto = (nome: string, descricao: string) =>

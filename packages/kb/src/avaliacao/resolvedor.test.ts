@@ -29,7 +29,7 @@ describe("avaliação do resolvedor (avaliacao/resolvedor/citacoes-anotadas.yaml
 });
 
 describe("consultas sobre os PPCs", () => {
-  test("kb citacoes é determinístico e acha a DCN de 2021 com órgão trocado", () => {
+  test("o relatório de citações é determinístico e acha a DCN de 2021 com órgão trocado", () => {
     const primeira = ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro });
     expect(JSON.stringify(ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro }))).toBe(JSON.stringify(primeira));
     const trocados = primeira.filter((ppc) => ppc.ocorrencias.some((o) => o.regra.startsWith("dcnept-2021-orgao-")));

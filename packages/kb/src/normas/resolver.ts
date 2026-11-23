@@ -838,7 +838,7 @@ export function resolverCitacao(texto: string, registro: Registro): Resolucao {
   return resultado(null, "nao-reconhecida", registro);
 }
 
-/** Saída de `kb resolver`: a resolução, mais o título e o arquivo (relativo a `base-conhecimento/`) do ID. */
+/** Saída de `Normas.resolver`: a resolução, mais o título e o arquivo (relativo a `base-conhecimento/`) do ID. */
 export type ResolucaoComEntrada = { texto: string } & Resolucao & { titulo?: string; path?: string | null };
 
 export function resolucaoComEntrada(texto: string, registro: Registro): ResolucaoComEntrada {

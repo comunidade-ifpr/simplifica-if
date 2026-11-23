@@ -1,0 +1,7 @@
+Atenção: 1 citação não identificada: tente buscar_norma com os termos, e não preencha com memória
+
+1. "Resolução CNE/CP nº 1/2021, art. 20" → [Resolução CNE/CP nº 1/2021](ifpr://norma/br/cne-cp/res/2021/1): `br/cne-cp/res/2021/1#art20` (regra `estrutural`, confiança 0.98, base)
+2. "Lei nº 9.394/1996, art. 36" → [Lei nº 9.394/1996](ifpr://norma/br/lei/1996/9394): `br/lei/1996/9394#art36` (regra `estrutural`, confiança 0.98, base)
+3. "texto qualquer sem citação normativa" → não identificada (regra `nao-reconhecida`)
+
+Base de 13/11/2026 (versão dev).

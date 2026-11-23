@@ -122,7 +122,7 @@ export function relacaoParcial(relacao: Relacao): boolean {
   return relacao.alvo_dispositivo !== undefined || relacao.alcance !== undefined;
 }
 
-/** Atos que revogam `ato` no todo, na ordem das relações: as sucessoras de `kb impacto` e da ficha da norma. */
+/** Atos que revogam `ato` no todo, na ordem das relações: as sucessoras de `kb impacto-da-norma` e da ficha da norma. */
 export function sucessorasDe(ato: string, relacoes: readonly Relacao[]): string[] {
   return relacoes.filter((r) => r.tipo === "revoga" && r.alvo === ato && !relacaoParcial(r)).map((r) => r.origem);
 }

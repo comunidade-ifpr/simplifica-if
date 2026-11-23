@@ -77,7 +77,7 @@ As `consultas` da ficha são buscadas no PPC e trazem a melhor seção de cada u
 ]
 ```
 
-- `ref`: o ID canônico do ato, nunca texto livre. Use o `id` do front matter da norma em `base-conhecimento/normas/` (norma com texto na base) ou de `base-conhecimento/normas/stubs.yaml` (norma sem texto, `externo:`). Para o CNCT, use `cnct:catalogo` ou `cnct:<id do curso>`. Para achar o ID de uma citação, use `pnpm kb resolver "Resolução CNE/CP nº 2/2026, art. 28, VII"`. Norma que ainda não existe na base entra antes em `stubs.yaml`.
+- `ref`: o ID canônico do ato, nunca texto livre. Use o `id` do front matter da norma em `base-conhecimento/normas/` (norma com texto na base) ou de `base-conhecimento/normas/stubs.yaml` (norma sem texto, `externo:`). Para o CNCT, use `cnct:catalogo` ou `cnct:<id do curso>`. Para achar o ID de uma citação, use `pnpm kb resolver-citacoes "Resolução CNE/CP nº 2/2026, art. 28, VII"`. Norma que ainda não existe na base entra antes em `stubs.yaml`.
 - `dispositivo` (opcional): um único dispositivo, no formato `#art28-vii`, `#art28-par1-iv`, `#art24-parunico`, `#art36A` ou `#art5-ii-al-a`. Para citar vários dispositivos da mesma norma, repita a entrada em sequência. Sem `dispositivo`, a referência é ao ato inteiro.
 - `papel`: `fundamento` quando a ficha aplica a regra da referência para decidir o estado; `complementar` quando só remete a ela (contexto, fonte local a que o PPC deve remeter, parâmetro técnico ou norma referida por outra).
 - `nota` (opcional): o que não cabe nos campos anteriores, como o número SEI ou o recorte do catálogo.

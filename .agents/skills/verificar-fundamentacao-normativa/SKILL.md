@@ -2,7 +2,7 @@
 name: verificar-fundamentacao-normativa
 description: Verificar fundamentação normativa de documentos, PPCs, pareceres, minutas, relatórios e respostas que citam ou afirmam obrigações baseadas em leis, resoluções, portarias, notas técnicas, CNCT ou regulamentos institucionais. Use quando o usuário pedir checagem de citações normativas, validação de afirmações sobre normas, conferência de base legal, identificação de norma ausente, correção de fundamentação ou análise de risco de uma redação normativa.
 simplifica:
-  versao: 0.2.1
+  versao: 0.2.2
   app_minimo: 0.2.0
   titulo: Conferir a fundamentação normativa
   resumo: Confere cada citação e afirmação normativa de um documento contra o texto das normas e do CNCT na base do IFPR e, quando a norma está fora da base, em fontes oficiais na internet.
@@ -32,7 +32,7 @@ simplifica:
 
 Confira se cada afirmação normativa do documento está apoiada por fonte existente, vigente e pertinente. Nenhuma alegação sobre lei, resolução, portaria, regulamento ou CNCT se aceita sem ler a própria fonte.
 
-**Fontes.** Use as ferramentas `ifpr` conforme as instruções do servidor. Neste método: `resolver_citacoes` para as citações explícitas, `buscar_norma` para as alegações sem norma citada, `ler_dispositivos` para ler o trecho, `ficha_norma` para a vigência, `correspondencia` quando o documento cita dispositivo de norma revogada, e `listar_cursos` e `ficha_curso` para o CNCT. Dentro do repositório `simplifica-if`, sem elas, use a CLI `pnpm kb` (`resolver`, `buscar-norma`, `dispositivo`, `vigencia`, `correspondencia`, `cursos`).
+**Fontes.** Use as ferramentas `ifpr` conforme as instruções do servidor. Neste método: `resolver_citacoes` para as citações explícitas, `buscar_norma` para as alegações sem norma citada, `ler_dispositivos` para ler o trecho, `ficha_norma` para a vigência, `correspondencia` quando o documento cita dispositivo de norma revogada, e `listar_cursos` e `ficha_curso` para o CNCT. Dentro do repositório `simplifica-if`, sem elas, use as mesmas ferramentas pela CLI `pnpm kb`, um comando por ferramenta com o nome em kebab-case (`pnpm kb resolver-citacoes "…"`, `buscar-norma`, `ler-dispositivos`, `ficha-norma`, `correspondencia`, `listar-cursos`, `ficha-curso`): a mesma entrada, como argumento e flags, e a mesma resposta.
 
 **Documento.** Leia o documento na pasta de trabalho. Quando o pedido aponta uma versão em texto (no app, a do `.docx`, em `.simplifica/textos/`), leia-a no lugar do original. Se não conseguir ler o arquivo (formato que suas ferramentas não abrem, PDF digitalizado sem texto), diga isso e peça outro formato ou o texto colado; não confira pelo nome do arquivo nem de memória.
 

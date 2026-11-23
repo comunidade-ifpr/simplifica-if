@@ -1,5 +1,5 @@
 /**
- * `Impacto`: o que uma mudança numa norma atinge na base (`kb impacto`, ferramenta
+ * `Impacto`: o que uma mudança numa norma atinge na base (`kb impacto-da-norma`, ferramenta
  * `impacto_da_norma`). A regra é `impactoEm` (`normas/impacto.ts`), pura; este serviço carrega a
  * fonte dela: registro, vigência, relações e conteúdo da revisão de PPC de `FontesNormativas`, e do banco
  * os dispositivos da norma, a correspondência, os segmentos de outras normas que citam e os PPCs.

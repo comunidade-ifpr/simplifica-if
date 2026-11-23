@@ -1,0 +1,152 @@
+Atenção: os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana: confira o trecho de origem antes de afirmar um valor ou uma divergência
+
+Cruzamento PPC × SUAP, PPCs por resultado:
+- ano: confere 15, ppc-mais-recente-que-matrizes 5, sem-suap 1
+- carga_horaria: confere 6, confere-com-uma-matriz 5, diverge 8, sem-fato-ppc 1, sem-suap 1
+- estagio: confere 8, diverge 3, sem-fato-ppc 9, sem-suap 1
+
+### [Técnico em Administração (Curitiba)](ifpr://ppc/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) — `ppc:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio`
+
+**ano_documento = 2014** — status `Revisado`, regra `dados-institucionais`
+> "ano_documento": 2014,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json:32-32`
+
+**carga_horaria_total_h = 3254 h** — status `extraido`, regra `rotulo-quadro-aula`
+> **Carga horária Total:** 3254 h/a
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.md:83-83`
+
+SUAP (Múltiplas — mesma CH):
+- 301 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 CURITIBA — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 841 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 882 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 PONTA GROSSA (Trimestre) — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- carga_horaria: **diverge** — PPC 3254 h (hora-aula: o PPC não dá a carga em hora-relógio); mais próxima: matriz 301 (2014): 3288 h (diferença -34 h)
+
+### [Técnico em Contabilidade (Curitiba)](ifpr://ppc/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) — `ppc:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio`
+
+**ano_documento = 2015** — status `Revisado`, regra `dados-institucionais`
+> "ano_documento": 2015,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json:31-31`
+
+**carga_horaria_total_h = 3588 h** — status `extraido`, regra `rotulo-quadro-relogio`
+> **Horário de oferta do curso:** 1º e 2º Ano diurno: das 7h:15m às 12h:30m (semanalmente) e 13h:15m às 18h:30m (1 a 2 vezes por semana) e 3º ano matutino: das 7h:15m às 12h:30m **Carga horária Total:** 4.000 horas/aula ou 3.588 hora/relógio (incluso 200 horas de estágio obrigatório)
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.md:79-79`
+
+SUAP (Múltiplas — mesma CH):
+- 75 — TÉCNICO EM CONTABILIDADE INTEGRADO - 2014 CURITIBA — CH exibida: 3388 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 842 — TÉCNICO EM CONTABILIDADE INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3388 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- ano: **ppc-mais-recente-que-matrizes** — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
+- carga_horaria: **diverge** — PPC 3588 h; mais próxima: matriz 75 (2014): 3388 h (diferença +200 h)
+
+### [Técnico em Eletrotécnica (Curitiba)](ifpr://ppc/curitiba/tecnico-em-eletrotecnica) — `ppc:curitiba/tecnico-em-eletrotecnica`
+
+**ano_documento = 2015** — status `Revisado`, regra `dados-institucionais`
+> "ano_documento": 2015,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletrotecnica.json:31-31`
+
+**carga_horaria_total_h = 1200 h** — status `extraido`, regra `rotulo-quadro-sem-marca`
+> **Carga horária Total:** 1200 horas.
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md:113-113`
+
+**estagio_obrigatorio = nao** — status `extraido`, regra `rotulo-quadro-negativo`
+> **Carga horária de estágio:** Estágio não obrigatório.
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md:115-115`
+
+SUAP (Múltiplas — mesma CH):
+- 55 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 CURITIBA — CH exibida: 1203 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 706 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 CURITIBA PROGRAMA AUTONOMIA E RENDA PETROBRÁS — CH exibida: 1203 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- carga_horaria: **diverge** — PPC 1200 h; mais próxima: matriz 55 (2015): 1203 h (diferença -3 h)
+
+### [Técnico em Enfermagem (Curitiba)](ifpr://ppc/curitiba/tecnico-em-enfermagem) — `ppc:curitiba/tecnico-em-enfermagem`
+
+**ano_documento = 2023** — status `Pendente`, regra `dados-institucionais`
+> "ano_documento": 2023,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json:30-30`
+
+**carga_horaria_total_h = 1600 h** — status `extraido`, regra `rotulo-quadro-relogio`
+> Carga horária total em hora relógio: 1.600 horas
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:122-122`
+
+**estagio_carga_h = 400 h** — status `extraido`, regra `rotulo-corpo-sem-marca`
+> Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126-126`
+
+**estagio_obrigatorio = sim** — status `extraido`, regra `rotulo-corpo`
+> Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126-126`
+
+SUAP (Múltiplas — CH divergentes):
+- 71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- estagio: **diverge** — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 538 (2024))
+
+### [Técnico em Massoterapia (Curitiba)](ifpr://ppc/curitiba/tecnico-em-massoterapia) — `ppc:curitiba/tecnico-em-massoterapia`
+
+**ano_documento = 2021** — status `Revisado`, regra `dados-institucionais`
+> "ano_documento": 2021,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json:30-30`
+
+**carga_horaria_total_h = 1371 h** — status `extraido`, regra `rotulo-quadro-relogio`
+> **Carga horária total em hora-relógio:** 1371 horas
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:115-115`
+
+**estagio_carga_h = 134 h** — status `extraido`, regra `rotulo-quadro-relogio`
+> **Carga horária de estágio:** 134 horas relógio **Número máximo de vagas do curso:** 36 **Número mínimo de vagas do curso:** 30
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:117-117`
+
+**estagio_obrigatorio = sim** — status `extraido`, regra `rotulo-quadro`
+> **Carga horária de estágio:** 134 horas relógio **Número máximo de vagas do curso:** 36 **Número mínimo de vagas do curso:** 30
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:117-117`
+
+SUAP (Múltiplas — CH divergentes):
+- 315 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1395 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 83 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1374 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- carga_horaria: **diverge** — PPC 1371 h; mais próxima: matriz 83 (2023): 1374 h (diferença -3 h)
+- estagio: **diverge** — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 83 (2023))
+
+### [Técnico em Mecânica (Curitiba)](ifpr://ppc/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) — `ppc:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio`
+
+**ano_documento = 2016** — status `Revisado`, regra `dados-institucionais`
+> "ano_documento": 2016,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json:31-31`
+
+**carga_horaria_total_h = 3682 h** — status `extraido`, regra `rotulo-corpo-sem-marca`
+> **Carga horária Total:** 3682 horas
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.md:193-193`
+
+SUAP (Múltiplas — mesma CH):
+- 287 — TÉCNICO EM MECÂNICA INTEGRADO - 2014 CURITIBA — CH exibida: 3682 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 845 — TÉCNICO EM MECÂNICA INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3682 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- ano: **ppc-mais-recente-que-matrizes** — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2014)
+
+### [Técnico em Petróleo e Gás (Curitiba)](ifpr://ppc/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) — `ppc:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio`
+
+**ano_documento = 2017** — status `Revisado`, regra `dados-institucionais`
+> "ano_documento": 2017,
+fonte: `base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json:31-31`
+
+**carga_horaria_total_h = 3607 h** — status `extraido`, regra `rotulo-quadro-relogio`
+> **Carga horária Total:** 4320 horas/aula ou 3607 horas/relógio
+fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.md:111-111`
+
+SUAP (Múltiplas — mesma CH):
+- 85 — TÉCNICO EM PETRÓLEO E GÁS INTEGRADO - 2014 CURITIBA — CH exibida: 3607 h; estágio exigido: Não; CH mínima de estágio (separada): -
+- 846 — TÉCNICO EM PETRÓLEO E GÁS INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3607 h; estágio exigido: Não; CH mínima de estágio (separada): -
+
+PPC × SUAP:
+- ano: **ppc-mais-recente-que-matrizes** — nenhuma matriz do SUAP é de 2017 ou posterior (anos: 2014)
+
+Mostrando 7 de 13. Para continuar, chame de novo com os mesmos filtros e `cursor: "…"`.
+
+Base de 13/11/2026 (versão dev).

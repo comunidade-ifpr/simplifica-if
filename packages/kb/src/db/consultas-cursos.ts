@@ -1,6 +1,6 @@
 /**
  * Consultas do serviço `Cursos` ao `kb.sqlite`: os cursos com o CNCT, o campus, o PPC e as ofertas de
- * cada um (`kb cursos`, ferramenta `listar_cursos`), os campi, os processos seletivos, os níveis e a
+ * cada um (`kb listar-cursos`, ferramenta `listar_cursos`), os campi, os processos seletivos, os níveis e a
  * página oficial de cada curso.
  */
 import * as Effect from "effect/Effect";

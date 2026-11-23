@@ -164,7 +164,7 @@ export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): Resu
 
 /**
  * Dispositivos de destino que correspondem ao ato `origem` (qualquer dispositivo) ou, com `#`, ao
- * dispositivo e aos subordinados dele (para `kb impacto`).
+ * dispositivo e aos subordinados dele (para `kb impacto-da-norma`).
  */
 export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia): Set<string> {
   const saida = new Set<string>();

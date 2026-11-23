@@ -81,7 +81,7 @@ export class Ppcs extends Context.Service<
       id: string,
       opcoes?: { readonly confiancaMinima?: number },
     ) => Effect.Effect<PpcCitante[], Sql.FalhaNaConsulta>;
-    /** `kb citacoes`: os PPCs que citam a norma, com o título e a situação dela no registro. */
+    /** Os PPCs que citam a norma, com o título e a situação dela no registro. */
     readonly relatorioCitacoes: (
       id: string,
       opcoes?: { readonly confiancaMinima?: number },

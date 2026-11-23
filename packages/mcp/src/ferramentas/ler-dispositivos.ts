@@ -1,7 +1,6 @@
 /**
  * Ferramenta 2, `ler_dispositivos`: dispositivos pelo ID, em lote, com caput herdado, notas de
- * redação e, se pedido, os subordinados (`Normas.dispositivo` e `Normas.trecho`, o
- * `kb dispositivo [--filhos]`).
+ * redação e, se pedido, os subordinados (`Normas.dispositivo` e `Normas.trecho`).
  */
 import * as Schema from "effect/Schema";
 import { DispositivoTexto } from "../contratos.ts";

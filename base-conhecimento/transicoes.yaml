@@ -2,7 +2,7 @@
 #
 # Contrato: esquemaTransicao em packages/kb/src/normas/vigencia.ts (Effect Schema), conferido por
 # node scripts/validar_base.ts (dispositivo existente e evidência literal no texto).
-# A situação de cada regra numa data sai de `pnpm kb vigencia <id> --em <data>`.
+# A situação de cada regra numa data sai de `pnpm kb ficha-norma <id> --em <data>`.
 #
 # Campos:
 #   id: identificador estável da regra

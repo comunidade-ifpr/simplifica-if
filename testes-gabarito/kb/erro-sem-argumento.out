@@ -1,0 +1,19 @@
+DESCRIPTION
+  Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; as regras de transição; e os pontos-chave da curadoria, que indicam onde olhar e não são fundamento. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.
+
+USAGE
+  kb ficha-norma [flags] <id>
+
+ARGUMENTS
+  id string    ID canônico da norma, como "br/cne-cp/res/2021/1"
+
+FLAGS
+  --em string    data da situação, AAAA-MM-DD (padrão: data de referência da base)
+  --json         imprime a resposta inteira em JSON (o structuredContent da ferramenta), numa linha
+
+GLOBAL FLAGS
+  --help, -h                                                          Show help information
+  --version, -v                                                       Show version information
+  --wizard                                                            Start wizard mode for a command
+  --completions <bash|zsh|fish|powershell|sh|pwsh>                    Print shell completion script (choices: bash, zsh, fish, powershell, sh, pwsh)
+  --log-level <all|trace|debug|info|warn|warning|error|fatal|none>    Sets the minimum log level (choices: all, trace, debug, info, warn, warning, error, fatal, none)

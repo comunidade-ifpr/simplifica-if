@@ -5,8 +5,8 @@
  *
  * O registro é indexado pelo nome da ferramenta: uma ferramenta nova em `FERRAMENTAS` sem amostras
  * aqui quebra o `typecheck` e o teste "toda ferramenta tem amostras" (`contrato.test.ts`). Para
- * acrescentar uma ferramenta, basta uma entrada nova neste arquivo e, em `paridade.ts`, o caso de
- * paridade com a CLI `kb` (ou o motivo de não haver).
+ * acrescentar uma ferramenta, basta uma entrada nova neste arquivo; o comando da CLI `kb` sai dela
+ * sozinho (`src/consulta.ts`).
  */
 import { TETO_ADEQUACAO } from "../../src/ferramentas/adequacao-art71.ts";
 import { TETO_BUSCAR_NORMA } from "../../src/ferramentas/buscar-norma.ts";

@@ -5,5 +5,5 @@
 # normas (assinada_em, publicada_em, vigente_de) e de base-conhecimento/relacoes.yaml. Nunca se usa
 # o relógio do build: atualize esta data de propósito, rode o gerador e revise o diff.
 #
-# Para outra data, sem mudar a base: pnpm kb vigencia <id> --em AAAA-MM-DD
+# Para outra data, sem mudar a base: pnpm kb ficha-norma <id> --em AAAA-MM-DD
 data_referencia: "2026-11-13"

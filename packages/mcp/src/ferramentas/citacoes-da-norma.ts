@@ -1,6 +1,6 @@
 /**
  * Ferramenta 6, `citacoes_da_norma`: os PPCs que citam uma norma ou um dispositivo, pela tabela
- * `citacoes` (`Ppcs.citacoesDaNorma`, a mesma regra de `kb citacoes`). Sem `ppc`, um resumo por PPC
+ * `citacoes` (`Ppcs.citacoesDaNorma`). Sem `ppc`, um resumo por PPC
  * (a contagem de ocorrências); com `ppc`, as ocorrências, com linha, trecho, regra e confiança.
  */
 import * as Schema from "effect/Schema";
@@ -55,7 +55,7 @@ export const ItemPpc = Schema.Struct({
 export type ItemPpc = typeof ItemPpc.Type;
 
 export const Dados = Schema.Struct({
-  /** O ID consultado, com o dispositivo se houver (como `kb citacoes`). */
+  /** O ID consultado, com o dispositivo se houver. */
   id: Schema.String,
   norma: NormaResumo,
   total_ppcs: inteiro({ minimo: 0 }),
