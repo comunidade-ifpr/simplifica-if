@@ -171,6 +171,9 @@ const popularV1 = Effect.gen(function* () {
   `;
 });
 
+/** A última migração do app. */
+const ULTIMA = Banco.MIGRACOES.at(-1)![0];
+
 const emMemoria = Layer.mergeAll(Listas.layer, Revisoes.layer).pipe(
   Layer.provideMerge(NodeSqliteClient.layer({ filename: ":memory:" })),
 );
@@ -225,11 +228,14 @@ describe("migrações do banco das conversas", () => {
         assert.strictEqual(listaVazia!.resultado.leituraIa, "parcial");
         assert.isNull(listaVazia!.resultadosIa);
 
-        // Revisões: com resultado preenchido e com resultado NULL.
-        const rev1 = yield* revisoes.buscar("rev-1");
-        assert.strictEqual(rev1?.resultado?.leituraIa, "completa");
-        const revPausada = yield* revisoes.buscar("rev-pausada");
-        assert.isNull(revPausada?.resultado);
+        // Revisões: com resultado preenchido e com resultado NULL (pelo SQL: a estimativa da versão 2 ainda
+        // tem `nomeJanela`, que o serviço não lê mais).
+        const resultadoDa = (id: string) =>
+          sql<{ leitura: string | null; resultado: string | null }>`
+            SELECT json_extract(resultado, '$.leituraIa') AS leitura, resultado FROM revisoes_ia WHERE id = ${id}
+          `.pipe(Effect.map((linhas) => linhas[0]));
+        assert.strictEqual((yield* resultadoDa("rev-1"))?.leitura, "completa");
+        assert.isNull((yield* resultadoDa("rev-pausada"))?.resultado);
 
         // Filhos preservados (recriar `listas_pendencias` não disparou `ON DELETE CASCADE`).
         // (contadas pelo SQL: na versão 2 a pendência ainda tem `mensagem`, que o serviço não lê mais)
@@ -269,7 +275,6 @@ describe("migrações do banco das conversas", () => {
       Effect.gen(function* () {
         const sql = yield* SqlClient.SqlClient;
         const listas = yield* Listas.Listas;
-        const revisoes = yield* Revisoes.Revisoes;
         yield* Banco.rodarMigracoes(1);
         yield* popularV1;
         yield* Banco.rodarMigracoes(3);
@@ -315,29 +320,46 @@ describe("migrações do banco das conversas", () => {
           faltas: [],
         });
         assert.notProperty(lista!.resultado.pendencias[1], "mensagem");
-        const revisao = yield* revisoes.buscar("rev-1");
-        assert.deepInclude(revisao!.resultado!.pendencias[0], emPartes);
+        const [revisao] = yield* sql<{ resultado: string }>`SELECT resultado FROM revisoes_ia WHERE id = 'rev-1'`;
+        assert.deepInclude((JSON.parse(revisao!.resultado) as { pendencias: unknown[] }).pendencias[0], emPartes);
 
         // rodar de novo não faz nada: o banco já está na versão 4
         assert.deepStrictEqual(yield* Banco.rodarMigracoes(4), []);
       }).pipe(Effect.provide(emMemoria)),
   );
 
+  it.effect("upgrade 4 → 5: a estimativa leva a frase do limite do plano no lugar do nome da janela", () =>
+    Effect.gen(function* () {
+      const revisoes = yield* Revisoes.Revisoes;
+      yield* Banco.rodarMigracoes(1);
+      yield* popularV1;
+      yield* Banco.rodarMigracoes(4);
+
+      const m5 = yield* Banco.rodarMigracoes(5);
+      assert.deepStrictEqual(m5, [[5, "RevisaoPpcSemCopias"]]);
+
+      const rev1 = yield* revisoes.buscar("rev-1");
+      assert.strictEqual(rev1!.estimativa.limiteDoPlano, "do limite de 5 horas do plano Pro");
+      assert.notProperty(rev1!.estimativa, "nomeJanela");
+      assert.strictEqual(rev1!.estimativa.tokensEntrada, 1000);
+    }).pipe(Effect.provide(emMemoria)),
+  );
+
   it.effect("recusa banco criado por versão mais nova do app (downgrade) e histórico incompatível", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      yield* Banco.rodarMigracoes(4);
+      yield* Banco.rodarMigracoes(ULTIMA);
 
-      // Simula um banco que recebeu uma migração 5 de uma versão mais nova do app.
-      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (5, 'Futura')`;
-      const erroDowngrade = yield* Banco.rodarMigracoes(4).pipe(Effect.flip);
+      // Simula um banco que recebeu uma migração de uma versão mais nova do app.
+      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (${ULTIMA + 1}, 'Futura')`;
+      const erroDowngrade = yield* Banco.rodarMigracoes(ULTIMA).pipe(Effect.flip);
       assert.strictEqual(erroDowngrade._tag, "BancoIncompativel");
       assert.include(erroDowngrade.message, "versão mais nova");
 
       // Simula histórico incompatível (ex.: nome trocado ou banco de dev antigo).
-      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = 5`;
+      yield* sql`DELETE FROM effect_sql_migrations WHERE migration_id = ${ULTIMA + 1}`;
       yield* sql`UPDATE effect_sql_migrations SET name = 'AntigaDiferente' WHERE migration_id = 2`;
-      const erroIncompativel = yield* Banco.rodarMigracoes(4).pipe(Effect.flip);
+      const erroIncompativel = yield* Banco.rodarMigracoes(ULTIMA).pipe(Effect.flip);
       assert.strictEqual(erroIncompativel._tag, "BancoIncompativel");
       assert.include(erroIncompativel.message, "não é compatível");
     }).pipe(Effect.provide(emMemoria)),
@@ -346,10 +368,10 @@ describe("migrações do banco das conversas", () => {
   it.effect("violação de FK dentro de uma migração faz rollback e mantém o banco na versão anterior", () =>
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      yield* Banco.rodarMigracoes(4);
+      yield* Banco.rodarMigracoes(ULTIMA);
 
       const migracaoQuebrada: Banco.EntradaMigracao = [
-        5,
+        ULTIMA + 1,
         "QuebraFk",
         Effect.gen(function* () {
           const s = yield* SqlClient.SqlClient;
@@ -360,16 +382,16 @@ describe("migrações do banco das conversas", () => {
           `;
         }),
       ];
-      const erro = yield* Banco.rodarMigracoes(5, {
+      const erro = yield* Banco.rodarMigracoes(ULTIMA + 1, {
         migracoes: [...Banco.MIGRACOES, migracaoQuebrada],
       }).pipe(Effect.flip);
       assert.strictEqual(erro._tag, "MigrationError");
       assert.include(String(erro.cause), "MigracaoViolouIntegridade");
 
-      // Transação desfeita: o órfão não ficou e a migração 5 não foi registrada.
+      // Transação desfeita: o órfão não ficou e a migração quebrada não foi registrada.
       const orfaos = yield* sql`SELECT * FROM pendencias_vivas WHERE lista_id = 'lista-inexistente'`;
       assert.strictEqual(orfaos.length, 0);
-      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = 5`;
+      const aplicada = yield* sql`SELECT * FROM effect_sql_migrations WHERE migration_id = ${ULTIMA + 1}`;
       assert.strictEqual(aplicada.length, 0);
       // `foreign_keys` foi religado mesmo após o erro.
       const fk = yield* sql<{ foreign_keys: number }>`PRAGMA foreign_keys;`;

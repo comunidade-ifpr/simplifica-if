@@ -1168,7 +1168,7 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
               minutos: 1,
               custoUsd: null,
               percentualJanela: 1,
-              nomeJanela: "x",
+              limiteDoPlano: "x",
             },
           });
           const ia = { resultados: [], fora: [], parcial: true };

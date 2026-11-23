@@ -19,26 +19,13 @@ import { plural } from "./lista.ts";
 const porcento = (n: number) => `${n} %`;
 
 /**
- * O limite do plano como a pessoa o conhece, mantendo qual plano serviu de referência: "do limite de 5
- * horas do plano Pro", "da cota diária do plano gratuito". O servidor dá a janela de referência
- * ("uma janela de 5 horas do plano Pro").
- */
-export function limiteDoPlano(nomeJanela: string): string {
-  const plano = / do plano .+$/.exec(nomeJanela)?.[0] ?? "";
-  const horas = /janela de (\d+) horas?/.exec(nomeJanela);
-  if (horas !== null) return `do limite de ${horas[1]} horas${plano}`;
-  if (/cota diária/.test(nomeJanela)) return `da cota diária${plano}`;
-  return `de ${nomeJanela}`;
-}
-
-/**
  * A segunda frase da faixa: "O Claude confere em cerca de 6 minutos, usando perto de 14 % do limite de 5
  * horas do plano Pro." No escopo menor, diz quantos confere: "O Claude confere os 30 que mais devolvem PPC em cerca de…".
  */
 export function textoEstimativa(e: EstimativaRevisaoIa, modo: ModoRevisaoIa, nomeIa: string): string {
   const quais =
     modo === "rapido" ? ` ${e.fichas === 1 ? "o que mais devolve" : `os ${e.fichas} que mais devolvem`} PPC` : "";
-  return `O ${nomeIa} confere${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${limiteDoPlano(e.nomeJanela)}.`;
+  return `O ${nomeIa} confere${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${e.limiteDoPlano}.`;
 }
 
 /** "Cerca de 10 segundos." (as ações por pendência); sem IA, nada a estimar. */

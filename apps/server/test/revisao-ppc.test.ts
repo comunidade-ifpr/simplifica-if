@@ -341,7 +341,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         minutos: 1,
         custoUsd: null,
         percentualJanela: 1,
-        nomeJanela: "uma janela de 5 horas",
+        limiteDoPlano: "do limite de 5 horas",
       };
       const db = new NodeSqlite.DatabaseSync(conversasDesktop);
       db.prepare(

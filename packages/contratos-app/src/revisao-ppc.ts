@@ -165,7 +165,8 @@ export const EstimativaRevisaoIa = Schema.Struct({
   /** US$ equivalentes na API, quando o preço do modelo é conhecido (Claude). */
   custoUsd: Schema.NullOr(Schema.Number),
   percentualJanela: Schema.Number,
-  nomeJanela: Schema.String,
+  /** De que é a porcentagem, como a frase a diz: "do limite de 5 horas do plano Pro", "da cota diária do plano gratuito". */
+  limiteDoPlano: Schema.String,
 });
 export type EstimativaRevisaoIa = typeof EstimativaRevisaoIa.Type;
 

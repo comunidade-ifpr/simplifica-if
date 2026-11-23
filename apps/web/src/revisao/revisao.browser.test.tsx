@@ -179,7 +179,7 @@ const pausada = {
     minutos: 1,
     custoUsd: null,
     percentualJanela: 1,
-    nomeJanela: "uma janela de 5 horas",
+    limiteDoPlano: "do limite de 5 horas",
   },
   uso: { entrada: 1000, saida: 200, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 },
   resultado: null,

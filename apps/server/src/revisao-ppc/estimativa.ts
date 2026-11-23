@@ -19,8 +19,8 @@ export type ParametrosProvider = {
   saidaPorSegundo: number;
   /** Tokens (entrada + saída, saída pesando 5×) de uma janela de uso de referência do plano básico. */
   janelaReferencia: number;
-  /** Nome da janela de referência para a pessoa. */
-  nomeJanela: string;
+  /** De que é a fração, na frase da estimativa: "do limite de 5 horas do plano Pro". */
+  limiteDoPlano: string;
   /** US$ por milhão de tokens de entrada e de saída (preço de API equivalente), quando conhecido. */
   precoEntrada?: number;
   precoSaida?: number;
@@ -53,7 +53,7 @@ export const PARAMETROS: Record<Provider, ParametrosProvider> = {
     // Medido: de 120 a 155 tokens de saída por segundo nos cinco blocos.
     saidaPorSegundo: 140,
     janelaReferencia: 2_000_000,
-    nomeJanela: "uma janela de 5 horas do plano Pro",
+    limiteDoPlano: "do limite de 5 horas do plano Pro",
     // Sonnet: entrada a US$ 3/M (a sessão de julgamento roda com `DISABLE_PROMPT_CACHING`: um turno só,
     // sem gravar cache, medido em 16/11/2026), saída a US$ 15/M.
     precoEntrada: 3,
@@ -65,7 +65,7 @@ export const PARAMETROS: Record<Provider, ParametrosProvider> = {
     segundosPorSessao: 4,
     saidaPorSegundo: 50,
     janelaReferencia: 2_000_000,
-    nomeJanela: "uma janela de 5 horas do plano Plus",
+    limiteDoPlano: "do limite de 5 horas do plano Plus",
   },
   antigravity: {
     // Medido no mesmo lote: 16,3 mil tokens de entrada, 985 de saída, 22,2 s.
@@ -73,7 +73,7 @@ export const PARAMETROS: Record<Provider, ParametrosProvider> = {
     segundosPorSessao: 3,
     saidaPorSegundo: 50,
     janelaReferencia: 3_000_000,
-    nomeJanela: "a cota diária do plano gratuito",
+    limiteDoPlano: "da cota diária do plano gratuito",
   },
 };
 
@@ -87,9 +87,9 @@ export type Estimativa = {
   minutos: number;
   /** US$ equivalentes na API (só quando o preço é conhecido). */
   custoUsd: number | null;
-  /** Porcentagem estimada da janela de referência (`nomeJanela`). */
+  /** Porcentagem estimada da janela de referência (`limiteDoPlano`). */
   percentualJanela: number;
-  nomeJanela: string;
+  limiteDoPlano: string;
 };
 
 export function estimar(
@@ -120,7 +120,7 @@ export function estimar(
     minutos: Math.max(1, Math.round((segundos * FOLGA_TENTATIVAS) / Math.max(1, paralelismo) / 60)),
     custoUsd: custo === null ? null : Math.round(custo * 100) / 100,
     percentualJanela: Math.max(1, Math.round(((entrada + saida * 5) / p.janelaReferencia) * 100)),
-    nomeJanela: p.nomeJanela,
+    limiteDoPlano: p.limiteDoPlano,
   };
 }
 
