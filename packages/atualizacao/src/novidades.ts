@@ -95,19 +95,6 @@ function tabela(caminho: string, sql: string): Map<string, Linha> {
   }
 }
 
-/** Se a tabela tem a coluna (bancos de esquema anterior não têm as colunas de versão do PPC). */
-function temColuna(caminho: string, tabelaSql: string, coluna: string): boolean {
-  const db = new NodeSqlite.DatabaseSync(caminho, { readOnly: true });
-  try {
-    return db
-      .prepare(`SELECT name FROM pragma_table_info(?)`)
-      .all(tabelaSql)
-      .some((linha) => linha["name"] === coluna);
-  } finally {
-    db.close();
-  }
-}
-
 const texto = (valor: unknown) => (valor === null || valor === undefined ? "" : String(valor));
 
 /** Entradas propostas da diferença entre a base `de` e a base `para`. */
@@ -133,12 +120,8 @@ export function proporNovidades(de: string, para: string): ReadonlyArray<ItemNov
       itens.push({ tipo: "norma-retirada", titulo: `${texto(norma["titulo"])} saiu da base`, refs: [id] });
   }
 
-  // Banco de esquema anterior, sem versões: cada PPC era o vigente do curso.
-  const sqlPpcs = (caminho: string) =>
-    `SELECT id, curso_nome, campus_nome, ano_documento, caracteres, ${
-      temColuna(caminho, "ppcs", "vigente") ? "vigente, substituido_por" : "1 AS vigente, NULL AS substituido_por"
-    } FROM ppcs`;
-  const [ppcsDe, ppcsPara] = [tabela(de, sqlPpcs(de)), tabela(para, sqlPpcs(para))];
+  const sqlPpcs = "SELECT id, curso_nome, campus_nome, ano_documento, caracteres, vigente, substituido_por FROM ppcs";
+  const [ppcsDe, ppcsPara] = [tabela(de, sqlPpcs), tabela(para, sqlPpcs)];
   const nomePpc = (ppc: Linha) => `PPC de ${texto(ppc["curso_nome"])} (${texto(ppc["campus_nome"])})`;
   for (const [id, ppc] of ppcsPara) {
     const antes = ppcsDe.get(id);

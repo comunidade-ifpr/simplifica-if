@@ -122,15 +122,6 @@ export function registrarIpc(contexto: ContextoIpc): void {
     await shell.openExternal(segura);
   });
 
-  tratar(CANAIS.escolherPasta, async () => {
-    const escolha = await dialog.showOpenDialog(exigirJanela(), {
-      title: "Escolher pasta",
-      buttonLabel: "Escolher",
-      properties: ["openDirectory", "createDirectory"],
-    });
-    return escolha.canceled ? null : (escolha.filePaths[0] ?? null);
-  });
-
   /* ---------------------------------------------------------- revisão prévia de PPC (M1.11) */
 
   /** Os `.docx` escolhidos no diálogo ou soltos nesta execução: só as cópias comentadas deles abrem pelo app. */

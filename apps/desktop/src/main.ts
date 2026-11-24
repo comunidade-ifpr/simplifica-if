@@ -25,7 +25,6 @@ import { autoUpdater } from "electron-updater";
 import {
   feedDoCanal,
   iniciarAtualizacaoApp,
-  lerAssinado,
   motivoDesligado,
   proxyParaServidor,
   type ControleAtualizacaoApp,
@@ -365,7 +364,7 @@ function ligarAtualizacaoApp(): void {
     plataforma: process.platform,
     feed,
     modo: ATUALIZACAO_FABRICA.app,
-    assinado: app.isPackaged && lerAssinado(process.resourcesPath),
+    assinado: false,
     desligadaPorAmbiente: (process.env.SIMPLIFICA_SEM_ATUALIZACAO_APP ?? "") !== "",
   });
   registrar(`atualização do app: ${motivo ?? "ligada"}`);

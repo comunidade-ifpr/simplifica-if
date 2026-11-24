@@ -104,17 +104,13 @@ it("Configurações › Sua IA: o aviso de uso, os três providers, instalar, en
 });
 
 it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa", async () => {
-  await using _app = await montarApp(servidor, "/conversa");
-
-  await page.getByRole("radio", { name: "Claude" }).click();
-  await page.getByLabelText("Pasta da tarefa").fill(servidor.pasta);
-  await page.getByRole("button", { name: "Começar conversa" }).click();
-  const mensagem = page.getByRole("textbox", { name: "Mensagem" });
-  await expect.element(mensagem).toBeVisible();
+  await using _app = await montarApp(servidor, "/");
 
   // Com "escrev", o provider de demonstração pede aprovação.
-  await mensagem.fill("Pode escrever um resumo da DCN?");
-  await userEvent.keyboard("{Enter}");
+  await page.getByRole("textbox", { name: "O que você precisa hoje?" }).fill("Pode escrever um resumo da DCN?");
+  await page.getByRole("button", { name: "Enviar" }).click();
+  const mensagem = page.getByRole("textbox", { name: "Mensagem" });
+  await expect.element(mensagem).toBeVisible();
   const mensagens = page.getByRole("log", { name: "Mensagens" });
   await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
   await expect.element(page.getByText("A IA pede permissão: Alterar arquivos")).toBeVisible();
@@ -155,14 +151,11 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await expect.element(page.getByText(/You've hit your usage limit/)).toBeVisible();
   semIngles();
 
-  await page.getByRole("button", { name: "Nova conversa" }).click();
-  await expect.element(page.getByRole("button", { name: "Começar conversa" })).toBeVisible();
-  await expect.element(page.getByLabelText("Pasta da tarefa")).toHaveValue(servidor.pasta);
+  await page.getByRole("button", { name: "Nova tarefa" }).click();
+  await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
 
-  // A conversa ficou gravada: a lista lateral (só em tela larga) a reabre, com o histórico.
-  await page.viewport(1280, 800);
-  const lista = page.getByRole("navigation", { name: "Conversas gravadas" });
-  await lista.getByRole("link", { name: /Pode escrever um resumo da DCN\?/ }).click();
+  // A conversa ficou gravada: a lista do Início a reabre, com o histórico.
+  await page.getByRole("link", { name: /Pode escrever um resumo da DCN\?/ }).click();
   await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
   await expect.element(mensagens.getByText("Resposta interrompida.")).toBeVisible();
 });

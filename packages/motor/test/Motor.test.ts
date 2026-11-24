@@ -334,7 +334,7 @@ describe("Motor: política e skills", () => {
         motor.iniciarSessao({
           ...CONFIG,
           semFerramentas: true,
-          servidoresMcp: [{ nome: "ifpr", tipo: "stdio", comando: "x", argumentos: [], preAprovado: true }],
+          servidoresMcp: [{ nome: "ifpr", tipo: "http", url: "http://127.0.0.1:1/mcp", preAprovado: true }],
         }),
       );
       assert.isTrue(Exit.hasFails(comMcp));

@@ -21,13 +21,12 @@ export const DESCRICOES: Readonly<Record<Provider, DescricaoProvider>> = {
 };
 
 /**
- * O que a pessoa faz por conta própria quando o app não oferece a operação para o provider: um texto
- * e, quando há, o comando do Terminal. Hoje só serve de reserva: o Claude tem o passo guiado, e o app
- * instala e faz o login do Codex e do Antigravity.
+ * O que a pessoa faz por conta própria quando o app não oferece a operação para o provider.
+ * Hoje só serve de reserva: o Claude tem o passo guiado, e o app instala e faz o login do Codex e do
+ * Antigravity.
  */
 export interface Orientacao {
   readonly texto: string;
-  readonly comando?: string;
 }
 
 /** A orientação para quando o app não oferece `operacao` para o provider. */

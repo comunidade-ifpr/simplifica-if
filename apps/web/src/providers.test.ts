@@ -7,10 +7,9 @@ import { explicarMensagemMotor, orientacao } from "./providers.ts";
 const explicar = (mensagem: string) => explicarMensagemMotor({ mensagem, tipoFalha: classificarFalhaEstado(mensagem) });
 
 describe("orientacao", () => {
-  it("sem operação no app, um texto genérico em português, sem comando", () => {
+  it("sem operação no app, um texto genérico em português", () => {
     const geral = orientacao("antigravity", "entrar");
     assert.match(geral.texto, /^O app ainda não faz o login do Gemini \(Antigravity\)/);
-    assert.isUndefined(geral.comando);
   });
 });
 

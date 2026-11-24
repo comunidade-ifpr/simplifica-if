@@ -8,14 +8,6 @@ import { POLITICA_FABRICA } from "../src/politica.ts";
 import { limparAmbiente } from "../src/processo.ts";
 import { sanitizar } from "../src/sanitizar.ts";
 
-const SERVIDOR = {
-  tipo: "stdio" as const,
-  nome: "ifpr",
-  comando: "/usr/local/bin/node",
-  argumentos: ["cli.ts", "--banco", "kb.sqlite"],
-  preAprovado: true,
-};
-const CONFIG = { provider: "codex", pastaTrabalho: "/tmp/x", servidoresMcp: [SERVIDOR] } as const;
 const SERVIDOR_HTTP = {
   tipo: "http",
   nome: "ifpr",
@@ -76,15 +68,7 @@ describe("configuração do MCP por provider", () => {
     assert.strictEqual(nomeFerramentaClaude("Write"), "Write");
   });
 
-  it("Claude: mcpServers por stdio e por HTTP", () => {
-    assert.deepStrictEqual(mcpServersClaude(CONFIG), {
-      ifpr: {
-        type: "stdio",
-        command: "/usr/local/bin/node",
-        args: ["cli.ts", "--banco", "kb.sqlite"],
-        alwaysLoad: true,
-      },
-    });
+  it("Claude: mcpServers por HTTP", () => {
     assert.deepStrictEqual(mcpServersClaude(CONFIG_HTTP), {
       ifpr: {
         type: "http",
@@ -95,16 +79,11 @@ describe("configuração do MCP por provider", () => {
     });
   });
 
-  it("Codex: mcp_servers por thread e isolamento dos MCP, conectores e plugins do usuário", () => {
-    assert.deepStrictEqual(configMcpCodex(CONFIG, POLITICA_FABRICA), {
-      "mcp_servers.ifpr": {
-        command: "/usr/local/bin/node",
-        args: ["cli.ts", "--banco", "kb.sqlite"],
-        default_tools_approval_mode: "approve",
-      },
-    });
+  it("Codex: isolamento dos MCP, conectores e plugins do usuário", () => {
     assert.deepStrictEqual(
-      isolamentoCodex({ mcp_servers: { ifpr: {}, pessoal: {}, docs: {} } }, CONFIG, ["/u/.codex/skills/pdf/SKILL.md"]),
+      isolamentoCodex({ mcp_servers: { ifpr: {}, pessoal: {}, docs: {} } }, CONFIG_HTTP, [
+        "/u/.codex/skills/pdf/SKILL.md",
+      ]),
       {
         "features.apps": false,
         "features.plugins": false,
@@ -116,12 +95,6 @@ describe("configuração do MCP por provider", () => {
         "skills.config": [{ path: "/u/.codex/skills/pdf/SKILL.md", enabled: false }],
       },
     );
-  });
-
-  it("Antigravity: mcpServers do session/new", () => {
-    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG, provider: "antigravity" }, { http: false }), [
-      { name: "ifpr", command: "/usr/local/bin/node", args: ["cli.ts", "--banco", "kb.sqlite"], env: [] },
-    ]);
   });
 
   it("Codex: mcp_servers por HTTP com url e http_headers", () => {
@@ -180,7 +153,9 @@ describe("configuração do MCP por provider", () => {
     };
     const ponte = { comando: "/usr/local/bin/node", argumentos: ["ponte-mcp.ts"] };
     assert.isUndefined(recusaMcpAcp(comHttp, { ...CONFIG_HTTP, provider: "antigravity" }, undefined));
-    assert.isUndefined(recusaMcpAcp(semHttp, { ...CONFIG, provider: "antigravity" }, undefined));
+    assert.isUndefined(
+      recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity", servidoresMcp: [] }, undefined),
+    );
     assert.isUndefined(recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity" }, ponte));
     assert.match(
       recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity" }, undefined) ?? "",

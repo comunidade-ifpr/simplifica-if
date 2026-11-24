@@ -106,7 +106,6 @@ export class ListaViva extends Context.Service<
      */
     readonly revisar: (entrada: RevisorPpc.EntradaRevisao) => Stream.Stream<EventoRevisaoPpc, FalhaRevisaoPpc>;
     readonly lista: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
-    readonly ultima: Effect.Effect<ListaPendencias | null>;
     /** Todas as listas guardadas, da mais recente para a mais antiga (as que passaram de `DIAS_LISTA` saem antes). */
     readonly todas: Effect.Effect<ReadonlyArray<ListaPendencias>>;
     /** "Qual é o curso?": a lista refeita com o curso escolhido, com os resultados da IA, se houve. */
@@ -1059,12 +1058,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     }),
   );
 
-  const ultima = expirar.pipe(
-    Effect.andThen(persistencia.ultimaLista),
-    Effect.flatMap((id) => (id === null ? Effect.succeed(null) : lista(id).pipe(Effect.orElseSucceed(() => null)))),
-  );
-
-  // As listas sem uso há mais de `DIAS_LISTA` saem ao subir o servidor (e a cada `ultimaLista`).
+  // As listas sem uso há mais de `DIAS_LISTA` saem ao subir o servidor (e a cada `listas`).
   yield* expirar;
 
   const todas = expirar.pipe(
@@ -1100,7 +1094,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   return ListaViva.of({
     revisar,
     lista,
-    ultima,
     todas,
     trocarCurso,
     apagar,

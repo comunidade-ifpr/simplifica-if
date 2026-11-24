@@ -114,32 +114,6 @@ export class ControleConversa {
     this.despachar({ tipo: "escolher", ...escolha });
   }
 
-  /** Abre a sessão com o provider e a pasta escolhidos. */
-  async iniciar(): Promise<void> {
-    if (this.estado.fase !== "configurando") return;
-    const { provider, pastaTrabalho } = this.estado;
-    const pasta = pastaTrabalho.trim();
-    if (pasta.length === 0) {
-      this.despachar({ tipo: "naoIniciou", erro: { texto: "Escolha a pasta da tarefa." } });
-      return;
-    }
-    this.despachar({ tipo: "iniciando" });
-    try {
-      const { sessao } = await this.api.chamar((cliente) =>
-        cliente["conversa.iniciar"]({ provider, pastaTrabalho: pasta }),
-      );
-      // A pessoa pode ter pedido "Nova conversa" enquanto a sessão abria.
-      if (this.fase() !== "iniciando") {
-        void this.encerrarNoServidor(sessao);
-        return;
-      }
-      this.despachar({ tipo: "iniciada", sessao });
-      this.seguir(sessao);
-    } catch (erro) {
-      this.despachar({ tipo: "naoIniciou", erro: explicarErro(erro) });
-    }
-  }
-
   /**
    * Começa a conversa de uma tarefa (M1.9): a pasta já criada pelo servidor (`pasta.criar`), com os
    * anexos, e o pedido montado pelo formulário ou escrito na caixa do Início, enviado em seguida.

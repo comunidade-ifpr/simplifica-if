@@ -17,17 +17,6 @@ export type { MotivoIgnoradoHarness, ResultadoAtualizacaoHarness };
 export * from "./erros.ts";
 export * from "./estados-provider.ts";
 
-/** Servidor MCP por stdio: o provider abre o processo, só nesta sessão. */
-export interface ServidorMcpStdio {
-  readonly tipo: "stdio";
-  readonly nome: string;
-  readonly comando: string;
-  readonly argumentos: ReadonlyArray<string>;
-  readonly ambiente?: Readonly<Record<string, string>>;
-  /** Ferramentas só de leitura: o provider as chama sem pedir aprovação. */
-  readonly preAprovado: boolean;
-}
-
 /**
  * Uma chamada de ferramenta concluída, como o servidor MCP do app a viu: o nome sem o servidor
  * (`buscar_norma`), o começo do resultado e se ele é de erro.
@@ -59,8 +48,8 @@ export interface ServidorMcpHttp {
   readonly resultados?: Stream.Stream<ResultadoFerramenta>;
 }
 
-/** Servidor MCP entregue ao provider só nesta sessão, por stdio ou por HTTP. */
-export type ServidorMcp = ServidorMcpStdio | ServidorMcpHttp;
+/** Servidor MCP entregue ao provider só nesta sessão, por HTTP local. */
+export type ServidorMcp = ServidorMcpHttp;
 
 /** Um arquivo de uma skill: caminho relativo à pasta da skill e conteúdo em texto. */
 export interface ArquivoSkill {

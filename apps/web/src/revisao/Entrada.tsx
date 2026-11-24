@@ -24,7 +24,7 @@ import { Pagina } from "../components/Pagina.tsx";
 import { AreaSoltar } from "../components/ui/area-soltar.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
-import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
+import type { MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { registrarErro, textoDoErro } from "../diagnostico.ts";
 import { dataCurta } from "../lib/formato.ts";
@@ -76,22 +76,7 @@ export function Entrada({
     else aoEscolher(obtido.arquivo);
   };
 
-  /** A leitura com IA por terminar: a lista do arquivo, onde a faixa da IA a retoma. */
-  const continuar = async (leitura: EstadoRevisaoIa) => {
-    setFalha(undefined);
-    try {
-      const id = leitura.lista;
-      if (id !== null) return aoAbrirLista(await api.chamar((c) => c["revisaoPpc.lista"]({ lista: id })));
-      setFalha({
-        texto: `A lista de “${nomeDoArquivo(leitura.arquivoOriginal)}” não está mais neste computador. Escolha o arquivo de novo para revisá-lo.`,
-      });
-    } catch (motivo) {
-      setFalha(explicarErro(motivo));
-    }
-  };
-
   const leituraDa = (lista: ListaPendencias) => porTerminar.find((e) => e.lista === lista.id);
-  const outras = porTerminar.filter((e) => !listas.some((l) => l.id === e.lista));
   const apagou = useRef(false);
   const selecao = useSelecao(listas.map((l) => l.id));
 
@@ -142,7 +127,7 @@ export function Entrada({
         />
       )}
       {mostrado === undefined ? null : <AvisoErro erro={mostrado} icone />}
-      {listas.length === 0 && outras.length === 0 ? null : (
+      {listas.length === 0 ? null : (
         <section aria-labelledby="titulo-recentes" className="flex flex-col gap-2">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <h2 id="titulo-recentes" className="text-heading">
@@ -183,18 +168,6 @@ export function Entrada({
                 />
               );
             })}
-            {outras.map((e) => (
-              <Recente
-                key={e.id}
-                titulo={nomeDoArquivo(e.arquivoOriginal)}
-                detalhes={[
-                  dataCurta(e.atualizadaEm),
-                  `conferência com o ${nomeIa(e.provider)} ${e.situacao === "pausada" ? "pausada" : "em andamento"}`,
-                ]}
-                fim="Continuar"
-                aoAbrir={() => void continuar(e)}
-              />
-            ))}
           </ul>
         </section>
       )}

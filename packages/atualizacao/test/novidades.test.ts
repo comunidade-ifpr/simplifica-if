@@ -16,10 +16,14 @@ const RAIZ = NodePath.resolve(import.meta.dirname, "..", "..", "..");
 function banco(caminho: string, normas: string[][], ppcs: string[][], cursos: string[][]) {
   const db = new NodeSqlite.DatabaseSync(caminho);
   db.exec(`CREATE TABLE normas (id TEXT, titulo TEXT, status_vigencia TEXT);
-    CREATE TABLE ppcs (id TEXT, curso_nome TEXT, campus_nome TEXT, ano_documento TEXT, caracteres INTEGER);
+    CREATE TABLE ppcs (id TEXT, curso_nome TEXT, campus_nome TEXT, ano_documento TEXT, caracteres INTEGER,
+      vigente INTEGER DEFAULT 1, substituido_por TEXT);
     CREATE TABLE cursos (id TEXT, nome TEXT, campus_id TEXT);`);
   for (const n of normas) db.prepare("INSERT INTO normas VALUES (?, ?, ?)").run(...n);
-  for (const p of ppcs) db.prepare("INSERT INTO ppcs VALUES (?, ?, ?, ?, ?)").run(...p);
+  for (const p of ppcs)
+    db.prepare("INSERT INTO ppcs (id, curso_nome, campus_nome, ano_documento, caracteres) VALUES (?, ?, ?, ?, ?)").run(
+      ...p,
+    );
   for (const c of cursos) db.prepare("INSERT INTO cursos VALUES (?, ?, ?)").run(...c);
   db.close();
   return caminho;

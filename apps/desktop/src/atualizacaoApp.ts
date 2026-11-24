@@ -15,12 +15,7 @@
  *   Developer ID (o Squirrel.Mac confere a assinatura do app novo contra a do instalado); sem
  *   certificado (decisão em aberto 1), o app não procura nada e a seção explica por quê.
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import type { EstadoAtualizacaoApp } from "@simplifica-if/contratos-app/ponte";
-
-/** O arquivo que o empacotamento grava em `Resources`: `{ "assinado": boolean }`. */
-export const ARQUIVO_ASSINATURA = "assinatura.json";
 
 export interface EntradaMotivo {
   readonly empacotado: boolean;
@@ -46,18 +41,6 @@ export function motivoDesligado(entrada: EntradaMotivo): string | null {
       : "Este app ainda não tem assinatura de código. Baixe a versão nova pelo instalador.";
   }
   return null;
-}
-
-/** Lê o marcador de assinatura gravado pelo empacotamento; sem ele, não assinado. */
-export function lerAssinado(pastaRecursos: string): boolean {
-  try {
-    const lido = JSON.parse(NodeFS.readFileSync(NodePath.join(pastaRecursos, ARQUIVO_ASSINATURA), "utf8")) as {
-      assinado?: unknown;
-    };
-    return lido.assinado === true;
-  } catch {
-    return false;
-  }
 }
 
 /** A URL do feed do app num canal: o `{canal}` trocado e a barra no fim. */

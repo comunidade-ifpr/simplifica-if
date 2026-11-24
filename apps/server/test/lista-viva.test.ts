@@ -303,7 +303,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
           r.totalCriterios - r.conferidos - r.conferidosIa - r.paraConferirIa,
         );
         // A última lista é a da revisão.
-        assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, lista.id);
+        assert.strictEqual((yield* c["revisaoPpc.listas"]({}))[0]!.id, lista.id);
       }),
   );
 
@@ -658,7 +658,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         assert.notStrictEqual(com.lista, sem.lista);
         const anterior = yield* c["revisaoPpc.lista"]({ lista: sem.lista! }).pipe(Effect.flip);
         assert.include(anterior.message, "não existe mais");
-        assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, com.lista);
+        assert.strictEqual((yield* c["revisaoPpc.listas"]({}))[0]!.id, com.lista);
       }),
   );
 
@@ -906,7 +906,7 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
       const mesma = refeita.pendencias.find((p) => p.chave === daIa.chave)!;
       assert.isNotNull(mesma.sugestao);
       assert.deepStrictEqual(refeita.uso, uso);
-      assert.strictEqual((yield* c["revisaoPpc.ultimaLista"]({}))!.id, refeita.id);
+      assert.strictEqual((yield* c["revisaoPpc.listas"]({}))[0]!.id, refeita.id);
       // A leitura concluída passou à lista nova.
       assert.strictEqual((yield* c["revisaoPpc.listarIa"]({})).find((e) => e.id === final.id)!.lista, refeita.id);
     }),

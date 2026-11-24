@@ -147,18 +147,11 @@ describe.skipIf(!REAL)("Antigravity: perfil próprio", () => {
           assert.isTrue(estado.autenticado, `${estado.mensagem}: rode pnpm motor:poc --entrar antigravity`);
           assert.strictEqual(estado.origem, "gerenciada");
           const pasta = yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-motor-" }));
+          const servidor = yield* servidorIfprHttp({ banco: path.join(RAIZ, "tmp/kb.sqlite"), pastaTrabalho: pasta });
           const sessao = yield* motor.iniciarSessao({
             provider: "antigravity",
             pastaTrabalho: pasta,
-            servidoresMcp: [
-              {
-                tipo: "stdio",
-                nome: "ifpr",
-                comando: process.execPath,
-                argumentos: [path.join(RAIZ, "packages/mcp/src/cli.ts"), "--banco", path.join(RAIZ, "tmp/kb.sqlite")],
-                preAprovado: true,
-              },
-            ],
+            servidoresMcp: [servidor],
           });
           const coletados = yield* Stream.runCollect(
             motor.enviarMensagem(

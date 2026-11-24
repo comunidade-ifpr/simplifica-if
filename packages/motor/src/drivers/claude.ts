@@ -216,23 +216,14 @@ export function classificarClaude(
   return { tipo: "outra", caminhos: [] };
 }
 
-/** `mcpServers` do `query()`: `McpStdioServerConfig` ou `McpHttpServerConfig` do Agent SDK. */
+/** `mcpServers` do `query()`: `McpHttpServerConfig` do Agent SDK. */
 export function mcpServersClaude(config: ConfigSessao): Record<string, McpServerConfig> {
   const saida: Record<string, McpServerConfig> = {};
   for (const servidor of config.servidoresMcp) {
     saida[servidor.nome] = {
-      ...(servidor.tipo === "http"
-        ? {
-            type: "http" as const,
-            url: servidor.url,
-            ...(servidor.cabecalhos ? { headers: { ...servidor.cabecalhos } } : {}),
-          }
-        : {
-            type: "stdio" as const,
-            command: servidor.comando,
-            args: [...servidor.argumentos],
-            ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
-          }),
+      type: "http" as const,
+      url: servidor.url,
+      ...(servidor.cabecalhos ? { headers: { ...servidor.cabecalhos } } : {}),
       // Sem isso, as ferramentas MCP ficam atrás do ToolSearch, e cada turno gasta duas idas e
       // voltas só para descobri-las.
       alwaysLoad: true,

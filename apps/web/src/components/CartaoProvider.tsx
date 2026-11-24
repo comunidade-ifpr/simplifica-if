@@ -131,9 +131,6 @@ function PassoManual({ orientacao }: { readonly orientacao: Orientacao }) {
   return (
     <div className="flex flex-col gap-1.5 text-sm" data-orientacao>
       <p className="text-muted-foreground">{orientacao.texto}</p>
-      {orientacao.comando === undefined ? null : (
-        <code className="self-start rounded-md bg-muted px-2 py-1 font-mono text-small">{orientacao.comando}</code>
-      )}
     </div>
   );
 }

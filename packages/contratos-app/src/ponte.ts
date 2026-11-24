@@ -138,8 +138,6 @@ export interface PonteDesktop {
   conexao(): Promise<CredenciaisServidor>;
   /** Abre um link http(s) no navegador do sistema; outros esquemas são recusados. */
   abrirExterno?(url: string): Promise<void>;
-  /** O diálogo de pasta do sistema; `null` se a pessoa cancelar. */
-  escolherPasta?(): Promise<string | null>;
   /** O diálogo de arquivo do sistema, só `.docx`; `null` se a pessoa cancelar. */
   escolherDocx?(): Promise<string | null>;
   /**
@@ -242,7 +240,6 @@ export const NOME_PONTE = "simplifica";
 export const CANAIS = {
   conexao: "simplifica:conexao",
   abrirExterno: "simplifica:abrir-externo",
-  escolherPasta: "simplifica:escolher-pasta",
   escolherDocx: "simplifica:escolher-docx",
   soltarDocx: "simplifica:soltar-docx",
   abrirDocumento: "simplifica:abrir-documento",

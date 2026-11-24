@@ -4,8 +4,7 @@
  *
  * - `dist/app/main.cjs` e `dist/app/preload.cjs`: o processo principal e o preload, em CommonJS (o
  *   preload com `sandbox` não resolve imports: sai num arquivo só, com só o `electron` de fora);
- * - `dist/app/web/`: o build do `apps/web` (`pnpm --filter @simplifica-if/web build`) ou, sem ele, a
- *   página provisória de `src/provisoria/`;
+ * - `dist/app/web/`: o build do `apps/web` (`pnpm --filter @simplifica-if/web build`);
  * - `dist/app/package.json`: o manifesto mínimo do app (sem dependências: tudo vai nos bundles);
  * - `dist/recursos/servidor/`: o servidor local (`apps/server/src/bin.ts`) em ESM e os Workers da revisão
  *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/revisao-ppc/trabalhador.ts`) e da versão em texto
@@ -151,15 +150,16 @@ function copiarWeb(construirWeb: boolean): { readonly origem: string; readonly p
     if (resultado.status !== 0) throw new Error("o build do apps/web falhou");
   }
   const buildWeb = NodePath.join(WEB, "dist");
-  if (NodeFS.existsSync(NodePath.join(buildWeb, "index.html"))) {
-    NodeFS.cpSync(buildWeb, destino, { recursive: true });
-    const licencas = NodePath.join(buildWeb, LICENCAS_WEB);
-    if (!NodeFS.existsSync(licencas)) throw new Error(`o build do apps/web não gerou ${LICENCAS_WEB}`);
-    const pacotes = JSON.parse(NodeFS.readFileSync(licencas, "utf-8")) as Array<PacoteTerceiro>;
-    return { origem: "apps/web/dist", pacotes };
+  if (!NodeFS.existsSync(NodePath.join(buildWeb, "index.html"))) {
+    throw new Error(
+      `o build do apps/web não foi encontrado em ${buildWeb}: rode \`pnpm --filter @simplifica-if/web build\``,
+    );
   }
-  NodeFS.cpSync(NodePath.join(PACOTE, "src", "provisoria"), destino, { recursive: true });
-  return { origem: "página provisória (src/provisoria)", pacotes: [] };
+  NodeFS.cpSync(buildWeb, destino, { recursive: true });
+  const licencas = NodePath.join(buildWeb, LICENCAS_WEB);
+  if (!NodeFS.existsSync(licencas)) throw new Error(`o build do apps/web não gerou ${LICENCAS_WEB}`);
+  const pacotes = JSON.parse(NodeFS.readFileSync(licencas, "utf-8")) as Array<PacoteTerceiro>;
+  return { origem: "apps/web/dist", pacotes };
 }
 
 function escreverManifesto(): void {

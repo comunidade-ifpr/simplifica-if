@@ -5,17 +5,15 @@
  * Modo Servidor (M1.9): a conversa de uma tarefa mostra as etapas da skill (✓ ◐ ○), as chamadas de
  * ferramenta ficam recolhidas em "Detalhes técnicos", cada resposta tem 👍/👎 e "Isto está errado" (o
  * relato para a curadoria, M1.12, logo abaixo da resposta), e o painel "Pasta da tarefa" mostra os
- * arquivos e o "Desfazer". Sem conversa aberta, a tela é a conversa
- * com uma pasta escolhida à mão (a tela técnica de antes, que as Configurações abrem em "Avançado").
+ * arquivos e o "Desfazer".
  *
  * As conversas ficam gravadas no servidor: a barra lateral as lista, e a conversa aberta fica na URL
  * (`/conversa?id=…`). Ao recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico
  * e, se a IA estava respondendo, com o resto da resposta.
  */
-import type { Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { EllipsisIcon, FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
-import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { ApagarConversas, type ConversaParaApagar } from "../apagar/ApagarConversas.tsx";
 import { Avaliacao } from "../components/Avaliacao.tsx";
 import { CaixaPedido } from "../components/CaixaPedido.tsx";
@@ -41,14 +39,11 @@ import {
 } from "../leitor/historico.ts";
 import { Button } from "../components/ui/button.tsx";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../components/ui/menu.tsx";
-import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useConversa } from "../contexto.tsx";
 import { cn } from "../lib/utils.ts";
-import { ponteDesktop } from "../ponte-desktop.ts";
-import { DESCRICOES, PROVIDERS } from "../providers.ts";
-import { MarcaIa } from "../components/MarcaIa.tsx";
+import { DESCRICOES } from "../providers.ts";
 
 /** A busca da rota: o id da conversa aberta, quando há. */
 export interface BuscaConversa {
@@ -60,104 +55,6 @@ export const Route = createFileRoute("/conversa")({
   validateSearch: (busca: Record<string, unknown>): BuscaConversa =>
     typeof busca.id === "string" && busca.id !== "" ? { id: busca.id } : {},
 });
-
-function EscolhaProvider() {
-  const [estado, conversa] = useConversa();
-  return (
-    <fieldset className="flex flex-col gap-2">
-      <legend className="mb-2 font-semibold">Com qual IA?</legend>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {PROVIDERS.map((provider: Provider) => (
-          <label
-            key={provider}
-            className={cn(
-              "flex cursor-pointer items-center gap-2 rounded-lg border border-input px-3 py-2 text-sm has-checked:border-primary has-checked:bg-primary/8 has-focus-visible:ring-2 has-focus-visible:ring-ring",
-            )}
-          >
-            <input
-              type="radio"
-              name="provider"
-              value={provider}
-              className="accent-primary"
-              checked={estado.provider === provider}
-              onChange={() => conversa.escolher({ provider })}
-            />
-            <MarcaIa provider={provider} />
-            {DESCRICOES[provider].nome}
-          </label>
-        ))}
-      </div>
-    </fieldset>
-  );
-}
-
-function EscolhaPasta() {
-  const [estado, conversa] = useConversa();
-  const escolherPasta = ponteDesktop()?.escolherPasta;
-  return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor="pasta-trabalho" className="font-semibold">
-        Pasta da tarefa
-      </label>
-      <p className="text-muted-foreground text-sm">
-        A IA lê e escreve só nesta pasta. Use uma pasta com os documentos da tarefa.
-      </p>
-      <div className="flex gap-2">
-        <Input
-          id="pasta-trabalho"
-          nativeInput
-          placeholder="/Users/voce/Documents/Simplifica IF/minha-tarefa"
-          value={estado.pastaTrabalho}
-          readOnly={escolherPasta !== undefined}
-          onChange={(evento) => conversa.escolher({ pastaTrabalho: evento.currentTarget.value })}
-        />
-        {escolherPasta === undefined ? null : (
-          <Button
-            variant="outline"
-            onClick={async () => {
-              const pasta = await escolherPasta();
-              if (pasta !== null) conversa.escolher({ pastaTrabalho: pasta });
-            }}
-          >
-            <FolderOpenIcon /> Escolher pasta…
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function FormularioInicio() {
-  const [estado, conversa] = useConversa();
-  const iniciando = estado.fase === "iniciando";
-  const aoEnviar = (evento: FormEvent) => {
-    evento.preventDefault();
-    void conversa.iniciar();
-  };
-  return (
-    <form
-      onSubmit={aoEnviar}
-      className={cn(classeColuna("estreita"), "flex flex-col gap-6 py-8")}
-      aria-label="Nova conversa"
-    >
-      <div>
-        <h1 className="text-display">Conversa com uma pasta escolhida</h1>
-        <p className="text-muted-foreground">
-          A IA consulta a base do IFPR pelo app e cita as fontes. Para começar por uma tarefa, volte ao Início.
-        </p>
-      </div>
-      <EscolhaProvider />
-      <EscolhaPasta />
-      {estado.erroInicio === undefined ? null : <AvisoErro erro={estado.erroInicio} />}
-      <div>
-        <Button type="submit" size="lg" disabled={iniciando}>
-          {iniciando ? <Spinner /> : null}
-          {iniciando ? "Abrindo a conversa…" : "Começar conversa"}
-        </Button>
-      </div>
-    </form>
-  );
-}
 
 /**
  * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar;
@@ -334,10 +231,8 @@ function Conversa({
             variant="outline"
             size="sm"
             onClick={() => {
-              // A tarefa nova começa no Início. Sai da tela antes de esvaziar a conversa, para o efeito que
-              // acompanha a URL não trazer a tela de volta.
-              if (deTarefa) void navegar({ to: "/" }).then(() => conversa.nova());
-              else conversa.nova();
+              // Sai da tela antes de esvaziar a conversa, para o efeito que acompanha a URL não trazer a tela de volta.
+              void navegar({ to: "/" }).then(() => conversa.nova());
             }}
           >
             <PlusIcon /> {deTarefa ? "Nova tarefa" : "Nova conversa"}
@@ -482,32 +377,37 @@ function TelaConversa() {
       pasta: !(atual.pasta && linkAtual(atual.leitura) === undefined),
     }));
 
-  // A URL manda: um id que não é o da conversa corrente abre aquela conversa.
+  // A URL manda: um id que não é o da conversa corrente abre aquela conversa; sem id nem conversa, volta ao Início.
   useEffect(() => {
-    if (id !== undefined && id !== conversa.obter().sessao) void conversa.abrir(id);
-  }, [id, conversa]);
-  // E a URL acompanha a conversa corrente (a que acabou de começar, ou nenhuma depois de "Nova"). Se o
-  // efeito de cima acabou de abrir a conversa da URL, `estado` ainda é o da renderização anterior: o
-  // controle já está noutra sessão, e a URL fica.
+    if (id !== undefined) {
+      if (id !== conversa.obter().sessao) void conversa.abrir(id);
+    } else if (conversa.obter().sessao === undefined && conversa.obter().fase === "configurando") {
+      void navegar({ to: "/", replace: true });
+    }
+  }, [id, conversa, navegar]);
+  // E a URL acompanha a conversa corrente (a que acabou de começar). Se o efeito de cima acabou de
+  // abrir a conversa da URL, `estado` ainda é o da renderização anterior: o controle já está noutra
+  // sessão, e a URL fica.
   useEffect(() => {
     const atual = estado.sessao;
     if (atual === id || conversa.obter().sessao !== atual) return;
-    void navegar({ search: atual === undefined ? {} : { id: atual }, replace: true });
+    if (atual !== undefined) void navegar({ search: { id: atual }, replace: true });
   }, [estado.sessao, id, conversa, navegar]);
 
   let conteudo: ReactNode;
-  if (estado.fase === "carregando") {
+  if (estado.fase === "carregando" || estado.fase === "iniciando") {
     conteudo = (
       <p className="flex flex-1 items-center justify-center gap-2 text-muted-foreground">
         <Spinner /> Abrindo a conversa…
       </p>
     );
-  } else if (estado.fase === "configurando" || estado.fase === "iniciando") {
-    conteudo = (
-      <div className="h-full flex-1 overflow-y-auto">
-        <FormularioInicio />
-      </div>
-    );
+  } else if (estado.fase === "configurando") {
+    conteudo =
+      estado.erroInicio === undefined ? null : (
+        <div className={cn(classeColuna("estreita"), "flex flex-1 flex-col justify-center gap-4 py-8")}>
+          <AvisoErro erro={estado.erroInicio} />
+        </div>
+      );
   } else {
     conteudo = (
       <>

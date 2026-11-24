@@ -141,12 +141,6 @@ const poc = Command.make(
     ),
     modelo: Flag.String("modelo").pipe(Flag.optional),
     esforco: Flag.Literals("esforco", NIVEIS_ESFORCO).pipe(Flag.optional),
-    mcp: Flag.Literals("mcp", ["stdio", "http"]).pipe(
-      Flag.withDescription(
-        "transporte do servidor ifpr: stdio (um processo por sessão) ou http (local, neste processo)",
-      ),
-      Flag.withDefault("http"),
-    ),
     instalar: Flag.Literals("instalar", ["codex", "antigravity"]).pipe(
       Flag.withDescription("instala a CLI gerenciada (a do T3) na pasta de estado"),
       Flag.optional,
@@ -197,16 +191,7 @@ const poc = Command.make(
       const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-poc-" });
       const pastaReal = yield* fs.realPath(pasta);
 
-      const servidorIfpr: Motor.ServidorMcp =
-        opcoes.mcp === "http"
-          ? yield* servidorIfprHttp({ banco, pastaTrabalho: pastaReal })
-          : {
-              tipo: "stdio",
-              nome: "ifpr",
-              comando: process.execPath,
-              argumentos: [path.join(RAIZ, "packages", "mcp", "src", "cli.ts"), "--banco", banco],
-              preAprovado: true,
-            };
+      const servidorIfpr: Motor.ServidorMcp = yield* servidorIfprHttp({ banco, pastaTrabalho: pastaReal });
 
       const inicio = yield* Clock.currentTimeMillis;
       const sessao = yield* motor.iniciarSessao({
@@ -248,7 +233,7 @@ const poc = Command.make(
       yield* Console.log(
         [
           "\n=== resumo ===",
-          `provider: ${provider} (MCP ${opcoes.mcp})`,
+          `provider: ${provider} (MCP http)`,
           `tempo até o primeiro texto: ${resumo.primeiroTexto === undefined ? "—" : segundos(resumo.primeiroTexto - inicio)}`,
           `primeiro texto parcial: ${resumo.primeiroParcial === undefined ? "—" : `${segundos(resumo.primeiroParcial - inicio)} (${resumo.parciais} pedaços)`}`,
           `tempo total: ${segundos(fim - inicio)}`,

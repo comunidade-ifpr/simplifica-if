@@ -2,12 +2,11 @@
  * Configurações do Modo Servidor (M1.9): Sua IA (o aviso de uso, instalar, entrar, o estado de cada
  * uma e "Não usar no app", M1.8), Seu perfil (editar e apagar, M1.8; e "Rever as boas-vindas"),
  * Atualizações (M1.10: versões do app, da base e das skills, canal, procurar, usar a versão nova e
- * voltar a base; `configuracoes/Atualizacoes.tsx`), Diagnóstico (o pacote para anexar ao relato de um
- * problema; `configuracoes/Diagnostico.tsx`) e, no fim, discreta, a conversa com uma pasta
- * escolhida à mão, a tela técnica de antes do Modo Servidor.
+ * voltar a base; `configuracoes/Atualizacoes.tsx`) e Diagnóstico (o pacote para anexar ao relato de um
+ * problema; `configuracoes/Diagnostico.tsx`).
  */
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { FolderCogIcon, RotateCcwIcon, Trash2Icon } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { RotateCcwIcon, Trash2Icon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { AvisoUso } from "../components/AvisoUso.tsx";
 import { FormPerfil } from "../components/FormPerfil.tsx";
@@ -16,7 +15,7 @@ import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
 import { Diagnostico, SECAO_DIAGNOSTICO } from "../configuracoes/Diagnostico.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
-import { useConversa, useEstadoConexao } from "../contexto.tsx";
+import { useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
 import { linhaDoPerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
@@ -48,7 +47,6 @@ const SECOES = [
   { id: "perfil", nome: "Seu perfil" },
   { id: "atualizacoes", nome: "Atualizações" },
   { id: SECAO_DIAGNOSTICO, nome: "Diagnóstico" },
-  { id: "avancado", nome: "Avançado" },
 ] as const;
 
 /**
@@ -127,8 +125,6 @@ function Configuracoes() {
   const { preferencias, usarIa, aceitarAviso } = usePreferencias();
   // Enquanto o aviso não foi aceito, ele vem com "Entendi" e os cartões não oferecem "Entrar".
   const avisoPendente = preferencias !== undefined && preferencias.avisoAceitoEm === undefined;
-  const [, conversa] = useConversa();
-  const navegar = useNavigate();
   return (
     <Pagina largura="larga" className="gap-8">
       <h1 className="text-display">Configurações</h1>
@@ -168,23 +164,6 @@ function Configuracoes() {
           </Secao>
           {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
           {conexao.fase === "sem-servidor" ? null : <Diagnostico />}
-          <Secao id="avancado" titulo="Avançado">
-            <p className="max-w-prose text-muted-foreground text-sm">
-              Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.
-            </p>
-            <div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  conversa.nova();
-                  void navegar({ to: "/conversa" });
-                }}
-              >
-                <FolderCogIcon /> Conversa com uma pasta escolhida
-              </Button>
-            </div>
-          </Secao>
         </div>
       </div>
     </Pagina>

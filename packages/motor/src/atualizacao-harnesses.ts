@@ -166,6 +166,57 @@ const aplicarAtualizacao = Effect.fn("AtualizacaoHarnesses.aplicarAtualizacao")(
   return { status: "atualizado", de: versaoAtual, para: novaVersao } satisfies ResultadoAtualizacaoHarness;
 });
 
+/** Fluxo comum de conferência e atualização silenciosa para uma CLI gerenciada. */
+const atualizarHarness = Effect.fn("AtualizacaoHarnesses.atualizarHarness")(function* (opcoes: {
+  readonly provider: "antigravity" | "codex";
+  readonly nome: string;
+  readonly instalacao: InstalacaoBase;
+  readonly estadoInicial: ProviderInstallState;
+  readonly versaoAtual: string;
+  readonly retirada: boolean;
+  readonly recusarLocalAposCheck?: boolean;
+  readonly prazo?: Duration.Input;
+}): Effect.fn.Return<ResultadoAtualizacaoHarness> {
+  if (ehEmAndamento(opcoes.estadoInicial.phase)) return { status: "em-andamento" };
+  yield* opcoes.instalacao.checkForUpdate;
+  const estadoApos = yield* opcoes.instalacao.state;
+  if (opcoes.recusarLocalAposCheck && estadoApos.source === "local") {
+    return { status: "ignorado", motivo: "nao-gerenciada" };
+  }
+  if (ehEmAndamento(estadoApos.phase)) return { status: "em-andamento" };
+  const versaoDisponivel = estadoApos.version;
+  if (versaoDisponivel === null) {
+    return opcoes.retirada
+      ? { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" }
+      : { status: "em-dia", versao: opcoes.versaoAtual };
+  }
+  if (!versaoElegivelParaAutoUpdate(opcoes.provider, versaoDisponivel)) {
+    return { status: "ignorado", motivo: "fora-da-faixa" };
+  }
+  if (!opcoes.retirada && !ehVersaoMaisNova(versaoDisponivel, opcoes.versaoAtual)) {
+    return { status: "em-dia", versao: opcoes.versaoAtual };
+  }
+  if (opcoes.retirada && versaoDisponivel === opcoes.versaoAtual) {
+    return { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" };
+  }
+  return yield* aplicarAtualizacao(
+    opcoes.instalacao,
+    opcoes.versaoAtual,
+    versaoDisponivel,
+    opcoes.retirada,
+    opcoes.prazo,
+  ).pipe(
+    Effect.catchCauseIf(
+      (causa) => !Cause.hasInterruptsOnly(causa),
+      () =>
+        Effect.succeed({
+          status: "falhou",
+          detalhe: `erro inesperado ao atualizar o ${opcoes.nome}`,
+        } satisfies ResultadoAtualizacaoHarness),
+    ),
+  );
+});
+
 /**
  * Confere e aplica atualização silenciosa da instalação gerenciada do Antigravity (`agy`).
  * Ignora executáveis customizados (`binario`) ou ausentes; só aplica versões dentro da faixa
@@ -179,61 +230,30 @@ export const atualizarAntigravity = Effect.fn("AtualizacaoHarnesses.atualizarAnt
     readonly prazo?: Duration.Input;
   } = {},
 ): Effect.fn.Return<ResultadoAtualizacaoHarness> {
-  if ((opcoes.binario ?? "").trim() !== "") {
-    return { status: "ignorado", motivo: "nao-gerenciada" };
-  }
+  if ((opcoes.binario ?? "").trim() !== "") return { status: "ignorado", motivo: "nao-gerenciada" };
   const estadoInicial = yield* instalacao.state;
   const resolvida = yield* instalacao.resolve("", opcoes.ambiente).pipe(Effect.option);
   let versaoAtual: string | null;
   let retirada = false;
   if (Option.isSome(resolvida)) {
-    if (resolvida.value.source !== "managed") {
-      return { status: "ignorado", motivo: "nao-gerenciada" };
-    }
+    if (resolvida.value.source !== "managed") return { status: "ignorado", motivo: "nao-gerenciada" };
     versaoAtual = resolvida.value.version ?? estadoInicial.installedVersion;
   } else if (estadoInicial.installedVersion !== null) {
-    // Há uma cópia gerenciada em disco, mas `resolve` a recusou (ex.: versão retirada).
     versaoAtual = estadoInicial.installedVersion;
     retirada = true;
   } else {
     return { status: "ignorado", motivo: "nao-gerenciada" };
   }
-  if (versaoAtual === null) {
-    return { status: "ignorado", motivo: "nao-gerenciada" };
-  }
-  if (ehEmAndamento(estadoInicial.phase)) {
-    return { status: "em-andamento" };
-  }
-  yield* instalacao.checkForUpdate;
-  const estadoApos = yield* instalacao.state;
-  if (ehEmAndamento(estadoApos.phase)) {
-    return { status: "em-andamento" };
-  }
-  const versaoDisponivel = estadoApos.version;
-  if (versaoDisponivel === null) {
-    return retirada
-      ? { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" }
-      : { status: "em-dia", versao: versaoAtual };
-  }
-  if (!versaoElegivelParaAutoUpdate("antigravity", versaoDisponivel)) {
-    return { status: "ignorado", motivo: "fora-da-faixa" };
-  }
-  if (!retirada && !ehVersaoMaisNova(versaoDisponivel, versaoAtual)) {
-    return { status: "em-dia", versao: versaoAtual };
-  }
-  if (retirada && versaoDisponivel === versaoAtual) {
-    return { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" };
-  }
-  return yield* aplicarAtualizacao(instalacao, versaoAtual, versaoDisponivel, retirada, opcoes.prazo).pipe(
-    Effect.catchCauseIf(
-      (causa) => !Cause.hasInterruptsOnly(causa),
-      () =>
-        Effect.succeed({
-          status: "falhou",
-          detalhe: "erro inesperado ao atualizar o Antigravity",
-        } satisfies ResultadoAtualizacaoHarness),
-    ),
-  );
+  if (versaoAtual === null) return { status: "ignorado", motivo: "nao-gerenciada" };
+  return yield* atualizarHarness({
+    provider: "antigravity",
+    nome: "Antigravity",
+    instalacao,
+    estadoInicial,
+    versaoAtual,
+    retirada,
+    ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
+  });
 });
 
 /**
@@ -250,9 +270,7 @@ export const atualizarCodex = Effect.fn("AtualizacaoHarnesses.atualizarCodex")(f
   let versaoAtual: string;
   let retirada = false;
   if (Option.isSome(resolvida)) {
-    if (resolvida.value.source !== "managed") {
-      return { status: "ignorado", motivo: "nao-gerenciada" };
-    }
+    if (resolvida.value.source !== "managed") return { status: "ignorado", motivo: "nao-gerenciada" };
     versaoAtual = resolvida.value.version;
   } else if (estadoInicial.source === "managed" && estadoInicial.installedVersion !== null) {
     versaoAtual = estadoInicial.installedVersion;
@@ -260,42 +278,16 @@ export const atualizarCodex = Effect.fn("AtualizacaoHarnesses.atualizarCodex")(f
   } else {
     return { status: "ignorado", motivo: "nao-gerenciada" };
   }
-  if (ehEmAndamento(estadoInicial.phase)) {
-    return { status: "em-andamento" };
-  }
-  yield* instalacao.checkForUpdate;
-  const estadoApos = yield* instalacao.state;
-  if (estadoApos.source === "local") {
-    return { status: "ignorado", motivo: "nao-gerenciada" };
-  }
-  if (ehEmAndamento(estadoApos.phase)) {
-    return { status: "em-andamento" };
-  }
-  const versaoDisponivel = estadoApos.version;
-  if (versaoDisponivel === null) {
-    return retirada
-      ? { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" }
-      : { status: "em-dia", versao: versaoAtual };
-  }
-  if (!versaoElegivelParaAutoUpdate("codex", versaoDisponivel)) {
-    return { status: "ignorado", motivo: "fora-da-faixa" };
-  }
-  if (!retirada && !ehVersaoMaisNova(versaoDisponivel, versaoAtual)) {
-    return { status: "em-dia", versao: versaoAtual };
-  }
-  if (retirada && versaoDisponivel === versaoAtual) {
-    return { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" };
-  }
-  return yield* aplicarAtualizacao(instalacao, versaoAtual, versaoDisponivel, retirada, opcoes.prazo).pipe(
-    Effect.catchCauseIf(
-      (causa) => !Cause.hasInterruptsOnly(causa),
-      () =>
-        Effect.succeed({
-          status: "falhou",
-          detalhe: "erro inesperado ao atualizar o Codex",
-        } satisfies ResultadoAtualizacaoHarness),
-    ),
-  );
+  return yield* atualizarHarness({
+    provider: "codex",
+    nome: "Codex",
+    instalacao,
+    estadoInicial,
+    versaoAtual,
+    retirada,
+    recusarLocalAposCheck: true,
+    ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
+  });
 });
 
 interface CandidataLimpeza {
@@ -378,6 +370,69 @@ const removerExcedentes = Effect.fn("AtualizacaoHarnesses.removerExcedentes")(fu
   return removidas;
 });
 
+interface LayoutLimpeza {
+  readonly pastaVersoes: string;
+  readonly staging: ReadonlyArray<readonly [pasta: string, prefixos: ReadonlyArray<string>]>;
+  readonly padraoPasta: RegExp;
+  readonly lerChaveAtiva: (texto: string) => Option.Option<string>;
+  readonly lerRegistro: (texto: string) => Option.Option<{ readonly chave: string; readonly versao: string }>;
+}
+
+const limparVersoesLayout = Effect.fn("AtualizacaoHarnesses.limparVersoesLayout")(function* (
+  managedDirectory: string,
+  layout: LayoutLimpeza,
+  opcoes: { readonly manterAnteriores?: number; readonly emAndamento?: Effect.Effect<boolean> } = {},
+): Effect.fn.Return<number, never, FileSystem.FileSystem | Path.Path> {
+  const estaEmAndamento = opcoes.emAndamento ?? Effect.succeed(false);
+  if (yield* estaEmAndamento) return 0;
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+
+  for (const [pasta, prefixos] of layout.staging) yield* limparStagingAntigo(pasta, prefixos);
+
+  const lerAtivo = Effect.gen(function* () {
+    const texto = yield* fs.readFileString(path.join(managedDirectory, "active.json")).pipe(Effect.option);
+    return Option.isSome(texto) ? layout.lerChaveAtiva(texto.value) : Option.none();
+  });
+  const ativo = yield* lerAtivo;
+  if (Option.isNone(ativo)) return 0;
+
+  const pastaAtiva = path.join(layout.pastaVersoes, ativo.value);
+  const infoAtiva = yield* fs.lstat(pastaAtiva).pipe(Effect.option);
+  if (Option.isNone(infoAtiva) || infoAtiva.value.type !== "Directory") return 0;
+  const regAtivoTexto = yield* fs.readFileString(path.join(pastaAtiva, ".install-complete.json")).pipe(Effect.option);
+  const regAtivo = Option.isSome(regAtivoTexto) ? layout.lerRegistro(regAtivoTexto.value) : Option.none();
+  if (Option.isNone(regAtivo) || regAtivo.value.chave !== ativo.value) return 0;
+
+  const entradas = yield* fs
+    .readDirectory(layout.pastaVersoes)
+    .pipe(Effect.orElseSucceed((): ReadonlyArray<string> => []));
+  const candidatas: Array<CandidataLimpeza> = [];
+  for (const entrada of entradas) {
+    if (entrada === ativo.value || !layout.padraoPasta.test(entrada)) continue;
+    const caminho = path.join(layout.pastaVersoes, entrada);
+    const info = yield* fs.lstat(caminho).pipe(Effect.option);
+    if (Option.isNone(info) || info.value.type !== "Directory") continue;
+    const textoRegistro = yield* fs.readFileString(path.join(caminho, ".install-complete.json")).pipe(Effect.option);
+    if (Option.isNone(textoRegistro)) continue;
+    const registro = layout.lerRegistro(textoRegistro.value);
+    if (Option.isNone(registro) || registro.value.chave !== entrada) continue;
+    const mtimeMs = Option.match(info.value.mtime, { onNone: () => 0, onSome: (data) => data.getTime() });
+    candidatas.push({ nome: entrada, caminho, versao: registro.value.versao, mtimeMs });
+  }
+  const podeRemover = Effect.gen(function* () {
+    if (yield* estaEmAndamento) return false;
+    const ativoAgora = yield* lerAtivo;
+    return Option.isSome(ativoAgora) && ativoAgora.value === ativo.value;
+  });
+  return yield* removerExcedentes(
+    layout.pastaVersoes,
+    candidatas,
+    opcoes.manterAnteriores ?? MANTER_ANTERIORES_PADRAO,
+    podeRemover,
+  );
+});
+
 /**
  * Remove versões antigas completas do Antigravity em `<managedDirectory>/versions`, mantendo a
  * versão ativa em `active.json` e até `manterAnteriores` versões anteriores (padrão: 1). Também
@@ -386,63 +441,24 @@ const removerExcedentes = Effect.fn("AtualizacaoHarnesses.removerExcedentes")(fu
 export const limparVersoesAntigasAntigravity = Effect.fn("AtualizacaoHarnesses.limparVersoesAntigasAntigravity")(
   function* (
     managedDirectory: string,
-    opcoes: {
-      readonly manterAnteriores?: number;
-      readonly emAndamento?: Effect.Effect<boolean>;
-    } = {},
+    opcoes: { readonly manterAnteriores?: number; readonly emAndamento?: Effect.Effect<boolean> } = {},
   ): Effect.fn.Return<number, never, FileSystem.FileSystem | Path.Path> {
-    const estaEmAndamento = opcoes.emAndamento ?? Effect.succeed(false);
-    if (yield* estaEmAndamento) return 0;
-    const fs = yield* FileSystem.FileSystem;
     const path = yield* Path.Path;
     const pastaVersoes = path.join(managedDirectory, "versions");
-
-    // Limpa staging vencido mesmo antes de haver um `active.json` válido (ex.: falha na 1ª instalação).
-    yield* limparStagingAntigo(managedDirectory, ["active.json."]);
-    yield* limparStagingAntigo(pastaVersoes, [".install-"]);
-
-    const lerAtivo = Effect.gen(function* () {
-      const textoAtivo = yield* fs.readFileString(path.join(managedDirectory, "active.json")).pipe(Effect.option);
-      return Option.isSome(textoAtivo) ? decodificarActiveAntigravity(textoAtivo.value) : Option.none();
-    });
-    const ativo = yield* lerAtivo;
-    if (Option.isNone(ativo)) return 0;
-
-    // Só remove versões antigas se a pasta da versão ativa realmente existe e está completa.
-    const pastaAtiva = path.join(pastaVersoes, ativo.value.releaseId);
-    const infoAtiva = yield* fs.lstat(pastaAtiva).pipe(Effect.option);
-    if (Option.isNone(infoAtiva) || infoAtiva.value.type !== "Directory") return 0;
-    const regAtivoTexto = yield* fs.readFileString(path.join(pastaAtiva, ".install-complete.json")).pipe(Effect.option);
-    const regAtivo = Option.isSome(regAtivoTexto) ? decodificarRegistroAntigravity(regAtivoTexto.value) : Option.none();
-    if (Option.isNone(regAtivo) || regAtivo.value.releaseId !== ativo.value.releaseId) return 0;
-
-    const entradas = yield* fs.readDirectory(pastaVersoes).pipe(Effect.orElseSucceed((): ReadonlyArray<string> => []));
-    const candidatas: Array<CandidataLimpeza> = [];
-    for (const entrada of entradas) {
-      if (entrada === ativo.value.releaseId || !PADRAO_RELEASE_ID.test(entrada)) continue;
-      const caminho = path.join(pastaVersoes, entrada);
-      const info = yield* fs.lstat(caminho).pipe(Effect.option);
-      if (Option.isNone(info) || info.value.type !== "Directory") continue;
-      const textoRegistro = yield* fs.readFileString(path.join(caminho, ".install-complete.json")).pipe(Effect.option);
-      if (Option.isNone(textoRegistro)) continue;
-      const registro = decodificarRegistroAntigravity(textoRegistro.value);
-      if (Option.isNone(registro) || registro.value.releaseId !== entrada) continue;
-      const mtimeMs = Option.match(info.value.mtime, {
-        onNone: () => 0,
-        onSome: (data) => data.getTime(),
-      });
-      candidatas.push({ nome: entrada, caminho, versao: registro.value.version, mtimeMs });
-    }
-    const podeRemover = Effect.gen(function* () {
-      if (yield* estaEmAndamento) return false;
-      const ativoAgora = yield* lerAtivo;
-      return Option.isSome(ativoAgora) && ativoAgora.value.releaseId === ativo.value.releaseId;
-    });
-    return yield* removerExcedentes(
-      pastaVersoes,
-      candidatas,
-      opcoes.manterAnteriores ?? MANTER_ANTERIORES_PADRAO,
-      podeRemover,
+    return yield* limparVersoesLayout(
+      managedDirectory,
+      {
+        pastaVersoes,
+        staging: [
+          [managedDirectory, ["active.json."]],
+          [pastaVersoes, [".install-"]],
+        ],
+        padraoPasta: PADRAO_RELEASE_ID,
+        lerChaveAtiva: (texto) => Option.map(decodificarActiveAntigravity(texto), (a) => a.releaseId),
+        lerRegistro: (texto) =>
+          Option.map(decodificarRegistroAntigravity(texto), (r) => ({ chave: r.releaseId, versao: r.version })),
+      },
+      opcoes,
     );
   },
 );
@@ -454,61 +470,18 @@ export const limparVersoesAntigasAntigravity = Effect.fn("AtualizacaoHarnesses.l
  */
 export const limparVersoesAntigasCodex = Effect.fn("AtualizacaoHarnesses.limparVersoesAntigasCodex")(function* (
   managedDirectory: string,
-  opcoes: {
-    readonly manterAnteriores?: number;
-    readonly emAndamento?: Effect.Effect<boolean>;
-  } = {},
+  opcoes: { readonly manterAnteriores?: number; readonly emAndamento?: Effect.Effect<boolean> } = {},
 ): Effect.fn.Return<number, never, FileSystem.FileSystem | Path.Path> {
-  const estaEmAndamento = opcoes.emAndamento ?? Effect.succeed(false);
-  if (yield* estaEmAndamento) return 0;
-  const fs = yield* FileSystem.FileSystem;
-  const path = yield* Path.Path;
-
-  yield* limparStagingAntigo(managedDirectory, [".install-", ".active-"]);
-
-  const lerAtivo = Effect.gen(function* () {
-    const textoAtivo = yield* fs.readFileString(path.join(managedDirectory, "active.json")).pipe(Effect.option);
-    return Option.isSome(textoAtivo) ? decodificarActiveCodex(textoAtivo.value) : Option.none();
-  });
-  const ativo = yield* lerAtivo;
-  if (Option.isNone(ativo)) return 0;
-
-  // Só remove versões antigas se a pasta da versão ativa realmente existe e está completa.
-  const pastaAtiva = path.join(managedDirectory, ativo.value.version);
-  const infoAtiva = yield* fs.lstat(pastaAtiva).pipe(Effect.option);
-  if (Option.isNone(infoAtiva) || infoAtiva.value.type !== "Directory") return 0;
-  const regAtivoTexto = yield* fs.readFileString(path.join(pastaAtiva, ".install-complete.json")).pipe(Effect.option);
-  const regAtivo = Option.isSome(regAtivoTexto) ? decodificarRegistroCodex(regAtivoTexto.value) : Option.none();
-  if (Option.isNone(regAtivo) || regAtivo.value.version !== ativo.value.version) return 0;
-
-  const entradas = yield* fs
-    .readDirectory(managedDirectory)
-    .pipe(Effect.orElseSucceed((): ReadonlyArray<string> => []));
-  const candidatas: Array<CandidataLimpeza> = [];
-  for (const entrada of entradas) {
-    if (entrada === ativo.value.version || !PADRAO_SEMVER.test(entrada)) continue;
-    const caminho = path.join(managedDirectory, entrada);
-    const info = yield* fs.lstat(caminho).pipe(Effect.option);
-    if (Option.isNone(info) || info.value.type !== "Directory") continue;
-    const textoRegistro = yield* fs.readFileString(path.join(caminho, ".install-complete.json")).pipe(Effect.option);
-    if (Option.isNone(textoRegistro)) continue;
-    const registro = decodificarRegistroCodex(textoRegistro.value);
-    if (Option.isNone(registro) || registro.value.version !== entrada) continue;
-    const mtimeMs = Option.match(info.value.mtime, {
-      onNone: () => 0,
-      onSome: (data) => data.getTime(),
-    });
-    candidatas.push({ nome: entrada, caminho, versao: registro.value.version, mtimeMs });
-  }
-  const podeRemover = Effect.gen(function* () {
-    if (yield* estaEmAndamento) return false;
-    const ativoAgora = yield* lerAtivo;
-    return Option.isSome(ativoAgora) && ativoAgora.value.version === ativo.value.version;
-  });
-  return yield* removerExcedentes(
+  return yield* limparVersoesLayout(
     managedDirectory,
-    candidatas,
-    opcoes.manterAnteriores ?? MANTER_ANTERIORES_PADRAO,
-    podeRemover,
+    {
+      pastaVersoes: managedDirectory,
+      staging: [[managedDirectory, [".install-", ".active-"]]],
+      padraoPasta: PADRAO_SEMVER,
+      lerChaveAtiva: (texto) => Option.map(decodificarActiveCodex(texto), (a) => a.version),
+      lerRegistro: (texto) =>
+        Option.map(decodificarRegistroCodex(texto), (r) => ({ chave: r.version, versao: r.version })),
+    },
+    opcoes,
   );
 });

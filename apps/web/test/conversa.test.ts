@@ -78,20 +78,29 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       const { contexto } = yield* app;
       const { conversa, api } = contexto;
 
-      // Sem pasta, não inicia.
-      yield* Effect.promise(() => conversa.iniciar());
-      assert.deepStrictEqual(conversa.obter().erroInicio, { texto: "Escolha a pasta da tarefa." });
       // Pasta que não existe: o erro do servidor, em português.
-      conversa.escolher({ provider: "claude", pastaTrabalho: `${pasta}/nao-existe` });
-      yield* Effect.promise(() => conversa.iniciar());
+      yield* Effect.promise(() =>
+        conversa
+          .comecarTarefa({
+            ia: { provider: "claude" },
+            pasta: `${pasta}/nao-existe`,
+            tarefa: "conversa",
+            pedido: "Oi",
+          })
+          .catch(() => undefined),
+      );
       assert.match(conversa.obter().erroInicio?.texto ?? "", /^A pasta da tarefa precisa ser o caminho completo/);
 
-      conversa.escolher({ pastaTrabalho: pasta });
-      yield* Effect.promise(() => conversa.iniciar());
-      assert.strictEqual(conversa.obter().fase, "pronta");
+      yield* Effect.promise(() =>
+        conversa.comecarTarefa({
+          ia: { provider: "claude" },
+          pasta,
+          tarefa: "conversa",
+          pedido: "Pode escrever um resumo da DCN?",
+        }),
+      );
       assert.isDefined(conversa.obter().sessao);
 
-      conversa.enviar("Pode escrever um resumo da DCN?");
       const pedido = yield* esperar(conversa, (estado) =>
         estado.itens.some((item) => item.tipo === "aprovacao" && item.situacao === "pendente"),
       );
@@ -126,11 +135,14 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
     Effect.gen(function* () {
       const { contexto } = yield* app;
       const { conversa } = contexto;
-      conversa.escolher({ provider: "antigravity", pastaTrabalho: pasta });
-      yield* Effect.promise(() => conversa.iniciar());
-      const sessao = conversa.obter().sessao;
-
-      conversa.enviar("Uma resposta demorada, por favor");
+      const sessao = yield* Effect.promise(() =>
+        conversa.comecarTarefa({
+          ia: { provider: "antigravity" },
+          pasta,
+          tarefa: "conversa",
+          pedido: "Uma resposta demorada, por favor",
+        }),
+      );
       yield* esperar(conversa, (estado) =>
         estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
       );
@@ -160,10 +172,14 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
   it.effect("recarregar a interface: a conversa volta com o histórico e com o resto da resposta em andamento", () =>
     Effect.gen(function* () {
       const primeira = (yield* app).contexto.conversa;
-      primeira.escolher({ provider: "claude", pastaTrabalho: pasta });
-      yield* Effect.promise(() => primeira.iniciar());
-      const sessao = primeira.obter().sessao!;
-      primeira.enviar("Qual é a DCN da EPT?");
+      const sessao = yield* Effect.promise(() =>
+        primeira.comecarTarefa({
+          ia: { provider: "claude" },
+          pasta,
+          tarefa: "conversa",
+          pedido: "Qual é a DCN da EPT?",
+        }),
+      );
       const respondida = yield* esperar(primeira, (estado) => estado.fase === "pronta" && estado.itens.length > 1);
 
       // Outra interface (a tela recarregada) abre a mesma conversa pelo id.
@@ -208,9 +224,14 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       const { contexto } = yield* app;
       const { api, derrubar } = comQueda(contexto.api);
       const conversa = new ControleConversa(api);
-      conversa.escolher({ provider: "claude", pastaTrabalho: pasta });
-      yield* Effect.promise(() => conversa.iniciar());
-      conversa.enviar("Uma resposta demorada");
+      yield* Effect.promise(() =>
+        conversa.comecarTarefa({
+          ia: { provider: "claude" },
+          pasta,
+          tarefa: "conversa",
+          pedido: "Uma resposta demorada",
+        }),
+      );
       yield* esperar(conversa, (estado) =>
         estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
       );
@@ -234,9 +255,14 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
     Effect.gen(function* () {
       const { contexto } = yield* app;
       const { conversa } = contexto;
-      conversa.escolher({ provider: "codex", pastaTrabalho: pasta });
-      yield* Effect.promise(() => conversa.iniciar());
-      conversa.enviar("Estourei o limite de uso?");
+      yield* Effect.promise(() =>
+        conversa.comecarTarefa({
+          ia: { provider: "codex" },
+          pasta,
+          tarefa: "conversa",
+          pedido: "Estourei o limite de uso?",
+        }),
+      );
       const fim = yield* esperar(
         conversa,
         (estado) => estado.fase === "pronta" && estado.itens.some((item) => item.tipo === "aviso"),

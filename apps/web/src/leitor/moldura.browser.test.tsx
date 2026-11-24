@@ -6,7 +6,7 @@
  * trecho levava a janela junto, com o cabeçalho para cima.
  */
 import { beforeAll, expect, it } from "vite-plus/test";
-import { page, userEvent } from "vite-plus/test/browser";
+import { page } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../../vite.config.ts";
 import { iniciarServidorTeste, montarApp } from "../../test/navegador.tsx";
 
@@ -45,13 +45,12 @@ it.each([
   "com o leitor aberto na conversa ($largura px), a janela não rola e o painel rola sozinho",
   async ({ largura, altura }) => {
     await page.viewport(largura, altura);
-    await using _app = await montarApp(servidor, "/conversa");
+    await using _app = await montarApp(servidor, "/");
 
-    await page.getByRole("radio", { name: "Claude" }).click();
-    await page.getByLabelText("Pasta da tarefa").fill(servidor.pasta);
-    await page.getByRole("button", { name: "Começar conversa" }).click();
-    await page.getByRole("textbox", { name: "Mensagem" }).fill("Abra no leitor o que a DCN pede sobre egressos");
-    await userEvent.keyboard("{Enter}");
+    await page
+      .getByRole("textbox", { name: "O que você precisa hoje?" })
+      .fill("Abra no leitor o que a DCN pede sobre egressos");
+    await page.getByRole("button", { name: "Enviar" }).click();
     await page.getByRole("button", { name: "Res. CNE/CP nº 2/2026, art. 28, XVIII" }).click();
     const painel = page.getByRole("complementary", { name: "Painel de leitura" });
     await expect.poll(() => document.getElementById("art28-xviii")?.querySelector("mark.trecho-citado")).toBeTruthy();

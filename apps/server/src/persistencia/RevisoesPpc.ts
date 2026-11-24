@@ -205,7 +205,6 @@ export class RevisoesPpc extends Context.Service<
       /** Chaves da IA de uma leitura anterior que não existem mais no resultado recalculado. */
       obsoletas?: ReadonlyArray<string>,
     ) => Effect.Effect<void>;
-    readonly ultimaLista: Effect.Effect<string | null>;
     /** Todas as listas, da mais recente para a mais antiga. */
     readonly todasListas: Effect.Effect<ReadonlyArray<string>>;
     readonly pendencias: (id: string) => Effect.Effect<ReadonlyArray<RegistroPendencia>>;
@@ -574,11 +573,6 @@ const make = Effect.gen(function* () {
       WHERE id = ${id}
     `;
   }, Effect.orDie);
-
-  const ultimaLista = sql<{ id: string }>`SELECT id FROM listas_pendencias ORDER BY atualizada_em DESC LIMIT 1`.pipe(
-    Effect.map((linhas) => linhas[0]?.id ?? null),
-    Effect.orDie,
-  );
 
   const todasListas = sql<{ id: string }>`SELECT id FROM listas_pendencias ORDER BY atualizada_em DESC`.pipe(
     Effect.map((linhas) => linhas.map((l) => l.id)),
@@ -997,7 +991,6 @@ const make = Effect.gen(function* () {
     buscarLista,
     ligarRevisao,
     mesclarIa,
-    ultimaLista,
     todasListas,
     pendencias,
     eventos,

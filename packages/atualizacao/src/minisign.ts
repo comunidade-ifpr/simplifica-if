@@ -81,7 +81,6 @@ const objetoPrivado = (secreta: Uint8Array) =>
   });
 
 export interface Assinatura {
-  readonly prehash: boolean;
   readonly id: Uint8Array;
   readonly assinatura: Uint8Array;
   /** O texto depois de `trusted comment: ` (assinado pela assinatura global). */
@@ -107,7 +106,6 @@ export function lerAssinatura(texto: string): Assinatura {
   const global = linhaDeDados(uteis[3]!, "assinatura global");
   if (global.length !== 64) throw new ErroMinisign("assinatura global: tamanho errado");
   return {
-    prehash: alg === ALG_PREHASH,
     id: bytes.slice(2, 10),
     assinatura: bytes.slice(10, 74),
     comentario: uteis[2]!.slice("trusted comment: ".length),

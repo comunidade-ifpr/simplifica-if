@@ -413,8 +413,6 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.listarIa", { payload: Schema.Struct({}), success: Schema.Array(EstadoRevisaoIa) }),
   /** A lista viva (etapa 5b): as pendências com a situação e o histórico. */
   Rpc.make("revisaoPpc.lista", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
-  /** A lista viva mais recente, para continuar depois de fechar o app (nula se não há). */
-  Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
   /** Todas as listas vivas guardadas, da mais recente para a mais antiga ("Revisões recentes"). */
   Rpc.make("revisaoPpc.listas", { payload: Schema.Struct({}), success: Schema.Array(ListaPendencias) }),
   /**

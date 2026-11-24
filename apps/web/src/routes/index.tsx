@@ -200,9 +200,9 @@ function UltimaRevisao() {
     if (!conectado) return;
     let vale = true;
     api
-      .chamar((cliente) => cliente["revisaoPpc.ultimaLista"]({}))
+      .chamar((cliente) => cliente["revisaoPpc.listas"]({}))
       .then(
-        (ultima) => vale && setLista(ultima),
+        (listas) => vale && setLista(listas[0] ?? null),
         () => undefined,
       );
     return () => {

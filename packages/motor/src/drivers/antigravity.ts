@@ -372,16 +372,6 @@ export function mcpServersAcp(
   opcoes: { readonly http: boolean; readonly ponte?: PonteMcp },
 ): ReadonlyArray<AcpSchema.McpServer> {
   return config.servidoresMcp.flatMap((servidor): ReadonlyArray<AcpSchema.McpServer> => {
-    if (servidor.tipo === "stdio") {
-      return [
-        {
-          name: servidor.nome,
-          command: servidor.comando,
-          args: [...servidor.argumentos],
-          env: Object.entries(servidor.ambiente ?? {}).map(([name, value]) => ({ name, value })),
-        },
-      ];
-    }
     if (opcoes.http) {
       return [
         {
@@ -418,12 +408,15 @@ export function recusaMcpAcp(
   config: ConfigSessao,
   ponte: PonteMcp | undefined,
 ): string | undefined {
-  const http = config.servidoresMcp.filter((servidor) => servidor.tipo === "http");
-  if (http.length === 0 || inicio.agentCapabilities?.mcpCapabilities?.http === true || ponte !== undefined) {
+  if (
+    config.servidoresMcp.length === 0 ||
+    inicio.agentCapabilities?.mcpCapabilities?.http === true ||
+    ponte !== undefined
+  ) {
     return undefined;
   }
   const versao = inicio.agentInfo?.version ? ` (${inicio.agentInfo.version})` : "";
-  return `o agy${versao} não anuncia MCP por HTTP (mcpCapabilities.http) e não há ponte stdio configurada; servidores HTTP da sessão: ${http.map((servidor) => servidor.nome).join(", ")}`;
+  return `o agy${versao} não anuncia MCP por HTTP (mcpCapabilities.http) e não há ponte stdio configurada; servidores HTTP da sessão: ${config.servidoresMcp.map((servidor) => servidor.nome).join(", ")}`;
 }
 
 /**
