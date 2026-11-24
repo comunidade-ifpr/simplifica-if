@@ -1,6 +1,7 @@
 /**
- * As normas da base, agrupadas por ano (o mais recente primeiro), com o sinal da situação de vigência na
- * data da base e filtros por órgão, tipo, ano e situação. Cada uma abre no leitor do M1.6.
+ * As normas da base: no alto, a linha do tempo (um sinal por norma, que acompanha os filtros, e o ano que
+ * filtra a lista); embaixo, a lista agrupada por ano (o mais recente primeiro), com o sinal da situação de
+ * vigência na data da base e filtros por órgão, tipo, ano e situação. Cada uma abre no leitor do M1.6.
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
@@ -23,6 +24,7 @@ import {
   LinhaItem,
   ListaItens,
 } from "../../explorar/componentes.tsx";
+import { LinhaDoTempo } from "../../explorar/LinhaDoTempo.tsx";
 import { SinalVigencia, SituacaoVigencia } from "../../explorar/Vigencia.tsx";
 
 const CAMPOS = ["texto", "orgao", "tipo", "ano", "vigencia"] as const;
@@ -41,11 +43,17 @@ function Normas() {
     <ComIndice>
       {(d) => {
         const achadas = filtrarNormas(d.normas, filtros);
+        const filtrado = Object.values(filtros).some((v) => v !== undefined);
         return (
           <section aria-labelledby="titulo-normas" className="space-y-4">
             <h2 id="titulo-normas" className="text-title">
               Normas
             </h2>
+            <LinhaDoTempo
+              normas={d.normas}
+              acesas={filtrado ? new Set(achadas.map((n) => n.id)) : null}
+              ano={filtros.ano}
+            />
             <Filtros
               total={d.normas.length}
               achados={achadas.length}

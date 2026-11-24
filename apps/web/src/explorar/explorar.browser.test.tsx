@@ -148,13 +148,27 @@ it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; cam
   await using app = await montarApp(servidor, "/explorar");
   // a entrada mostra as coleções
   await expect.element(page.getByRole("link", { name: /Cursos 2/ })).toBeVisible();
-  // a linha do tempo: um sinal por norma, com a situação no nome, e o ano que abre a coleção filtrada
+  await expect.element(page.getByRole("region", { name: "As normas no tempo" })).not.toBeInTheDocument();
+
+  // a linha do tempo, na coleção de normas: um sinal por norma, com a situação no nome; o ano filtra a
+  // lista e, de novo, tira o filtro
+  await page
+    .getByRole("navigation", { name: "Coleções" })
+    .getByRole("link", { name: /^Normas/ })
+    .click();
   const tempo = page.getByRole("region", { name: "As normas no tempo" });
   await expect.element(tempo.getByRole("link", { name: "Resolução CNE/CP nº 1/2021: Revogada" })).toBeVisible();
   semIngles();
   await tempo.getByRole("link", { name: /^Normas de 2021/ }).click();
   expect(app.roteador.state.location.search).toMatchObject({ ano: "2021" });
   await expect.element(page.getByRole("region", { name: "Normas de 2021" })).toBeVisible();
+  await expect
+    .element(page.getByRole("link", { name: "Resolução CNE/CP nº 2/2026", exact: true }))
+    .not.toBeInTheDocument();
+  await expect.element(tempo.getByRole("link", { name: /^Normas de 2021/ })).toHaveAttribute("aria-current", "page");
+  await tempo.getByRole("link", { name: /^Normas de 2021/ }).click();
+  expect(app.roteador.state.location.search).not.toHaveProperty("ano");
+  await expect.element(page.getByRole("link", { name: "Resolução CNE/CP nº 2/2026", exact: true })).toBeVisible();
 
   // Cursos: campus, turno e limpar
   await page
@@ -188,8 +202,10 @@ it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; cam
     .getByRole("link", { name: /^Normas/ })
     .click();
   await page.getByRole("group", { name: "Filtros" }).getByLabelText("Situação de vigência").selectOptions("revogada");
-  await expect.element(page.getByRole("link", { name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
-  await expect.element(page.getByRole("link", { name: "Resolução CNE/CP nº 2/2026" })).not.toBeInTheDocument();
+  await expect.element(page.getByRole("link", { name: "Resolução CNE/CP nº 1/2021", exact: true })).toBeVisible();
+  await expect
+    .element(page.getByRole("link", { name: "Resolução CNE/CP nº 2/2026", exact: true }))
+    .not.toBeInTheDocument();
   semIngles();
 
   // CNCT: só os que o IFPR oferta

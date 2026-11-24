@@ -1,7 +1,7 @@
 /**
  * O sinal de vigência de uma norma: uma forma por situação (cheio, com anel, meio, vazado e riscado,
  * tracejado), para que a cor nunca vá sozinha, e a palavra ao lado quando há espaço. É o mesmo sinal na
- * linha do tempo da entrada, nas linhas da coleção de normas e no cabeçalho da norma.
+ * linha do tempo, nas linhas da coleção de normas e no cabeçalho da norma.
  */
 import { cn } from "../lib/utils.ts";
 import type { Vigencia } from "./colecoes.ts";

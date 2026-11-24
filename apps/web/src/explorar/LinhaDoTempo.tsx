@@ -1,11 +1,12 @@
 /**
- * A linha do tempo das normas, na entrada do Explorar: um sinal por norma, empilhado no ano dela, com a
- * forma da situação de vigência. Passar o ponteiro (ou o foco) num sinal mostra a norma embaixo; o clique
- * abre a norma, e o ano abre a coleção filtrada por ele. Os anos sem norma não ocupam lugar: um intervalo
- * maior entre dois anos vizinhos aparece como um respiro.
+ * A linha do tempo das normas, no alto da coleção de normas: um sinal por norma, empilhado no ano dela,
+ * com a forma da situação de vigência. Passar o ponteiro (ou o foco) num sinal mostra a norma embaixo; o
+ * clique abre a norma. O ano filtra a lista (e, de novo, tira o filtro); com filtros, os sinais das normas
+ * que ficaram fora da lista esmaecem, sem sumir, para a linha não mudar de forma. Os anos sem norma não
+ * ocupam lugar: um intervalo maior entre dois anos vizinhos aparece como um respiro.
  *
  * Pelo teclado, os anos são as paradas; os sinais ficam fora da ordem do Tab (são mais de cem), e as
- * mesmas normas estão na coleção que o ano abre.
+ * mesmas normas estão na lista logo abaixo.
  */
 import type { NormaDoIndice } from "@simplifica-if/contratos-app";
 import { Link } from "@tanstack/react-router";
@@ -17,7 +18,17 @@ import { rotuloVigencia, SinalVigencia, SituacaoVigencia, VIGENCIAS } from "./Vi
 /** Quantos anos sem norma entre dois vizinhos viram um respiro. */
 const SALTO = 3;
 
-export function LinhaDoTempo({ normas }: { readonly normas: ReadonlyArray<NormaDoIndice> }) {
+export function LinhaDoTempo({
+  normas,
+  acesas,
+  ano,
+}: {
+  readonly normas: ReadonlyArray<NormaDoIndice>;
+  /** As normas que estão na lista com os filtros de agora; `null` sem filtro. */
+  readonly acesas: ReadonlySet<string> | null;
+  /** O ano do filtro, se houver. */
+  readonly ano: string | undefined;
+}) {
   const [emFoco, setEmFoco] = useState<NormaDoIndice | null>(null);
   // Em janela estreita a linha rola de lado: começa no fim, onde estão as normas mais recentes.
   const rolagem = useRef<HTMLDivElement>(null);
@@ -32,11 +43,8 @@ export function LinhaDoTempo({ normas }: { readonly normas: ReadonlyArray<NormaD
   const comTexto = normas.filter((n) => n.situacao === "base").length;
   const presentes = VIGENCIAS.filter((v) => normas.some((n) => vigenciaDaNorma(n) === v));
   return (
-    <section aria-labelledby="titulo-linha-do-tempo" className="space-y-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h2 id="titulo-linha-do-tempo" className="text-title">
-          As normas no tempo
-        </h2>
+    <section aria-label="As normas no tempo" className="space-y-3">
+      <div className="flex justify-end">
         <ul aria-label="Legenda" className="flex flex-wrap gap-x-4 gap-y-1">
           {presentes.map((v) => (
             <li key={v}>
@@ -55,6 +63,9 @@ export function LinhaDoTempo({ normas }: { readonly normas: ReadonlyArray<NormaD
           {grupos.map((g, i) => {
             const anterior = grupos[i - 1]?.ano;
             const salto = anterior !== undefined && g.ano - anterior > SALTO;
+            // O roteador marca o ano escolhido com `aria-current="page"`: o destino dele (os filtros sem o ano)
+            // está contido na busca de agora.
+            const selecionado = ano === String(g.ano);
             return (
               <li
                 key={g.ano}
@@ -77,7 +88,8 @@ export function LinhaDoTempo({ normas }: { readonly normas: ReadonlyArray<NormaD
                         onFocus={() => setEmFoco(n)}
                         className={cn(
                           "rounded-full p-px outline-offset-1 transition-transform duration-100 hover:scale-150 focus-visible:scale-150 motion-reduce:transition-none",
-                          emFoco !== null && emFoco.id !== n.id ? "opacity-40" : "",
+                          emFoco !== null ? (emFoco.id === n.id ? "" : "opacity-40") : "",
+                          emFoco === null && acesas !== null && !acesas.has(n.id) ? "opacity-20" : "",
                         )}
                       >
                         <SinalVigencia vigencia={vigencia} className="size-3" />
@@ -86,10 +98,16 @@ export function LinhaDoTempo({ normas }: { readonly normas: ReadonlyArray<NormaD
                   })}
                 </div>
                 <Link
+                  from="/explorar/normas"
                   to="/explorar/normas"
-                  search={{ ano: String(g.ano) }}
+                  search={({ ano: _, ...resto }) => (selecionado ? resto : { ...resto, ano: String(g.ano) })}
+                  replace
                   aria-label={`Normas de ${g.ano}: ${g.normas.length}`}
-                  className="-mb-px w-full border-transparent border-b-2 px-0.5 pt-1 pb-1.5 text-center font-medium text-muted-foreground text-micro tabular-nums [font-stretch:75%] hover:border-primary hover:text-foreground"
+                  title={selecionado ? "Tirar o filtro do ano" : `Só as normas de ${g.ano}`}
+                  className={cn(
+                    "-mb-px w-full border-transparent border-b-2 px-0.5 pt-1 pb-1.5 text-center font-medium text-micro tabular-nums [font-stretch:75%] hover:border-primary hover:text-foreground",
+                    selecionado ? "border-primary text-foreground" : "text-muted-foreground",
+                  )}
                 >
                   {g.ano}
                 </Link>
@@ -99,13 +117,13 @@ export function LinhaDoTempo({ normas }: { readonly normas: ReadonlyArray<NormaD
         </ol>
       </div>
 
-      {/* A leitura do sinal sob o ponteiro; sem ele, o resumo da coleção. Altura fixa: a página não pula. */}
+      {/* A leitura do sinal sob o ponteiro; sem ele, como ler a linha. Altura fixa: a página não pula. */}
       <div aria-live="off" className="min-h-[4.75rem]">
         {emFoco === null ? (
           <p className="max-w-[68ch] text-muted-foreground text-small">
-            {quantos(normas.length, "norma", "normas")}, de {grupos[0]!.ano} a {grupos.at(-1)!.ano}; a base guarda o
-            texto de {comTexto} e a referência das outras. Cada sinal é uma norma: passe o ponteiro para ver qual é e
-            clique para abrir. O ano abre as normas dele.
+            De {grupos[0]!.ano} a {grupos.at(-1)!.ano}, a base guarda o texto de {quantos(comTexto, "norma", "normas")}{" "}
+            e a referência das outras. Cada sinal é uma norma: passe o ponteiro para ver qual é e clique para abrir. O
+            ano filtra a lista.
           </p>
         ) : (
           <div className="max-w-[68ch]">
