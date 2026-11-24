@@ -68,9 +68,9 @@ describe("configuração do electron-builder", () => {
     expect(NodeFS.readdirSync(recursos).sort()).toEqual(["com-arquivo.lproj", "electron.icns", "pt_BR.lproj"]);
   });
 
-  test("o servidor, a base e as skills vão fora do asar", () => {
+  test("o servidor, a base, as skills e as licenças vão fora do asar", () => {
     const destinos = (configuracaoBuilder({ dir: true }).extraResources as Array<{ to: string }>).map((r) => r.to);
-    expect(destinos).toEqual(["servidor", "base", "skills", "assinatura.json"]);
+    expect(destinos).toEqual(["servidor", "base", "skills", "assinatura.json", "LICENCAS.md"]);
   });
 
   test("os opcionais nativos do ws ficam fora do bundle do servidor", () => {

@@ -180,6 +180,9 @@ export default defineConfig({
     // `main.tsx` espera a conexão com `await` no topo do módulo.
     target: "es2022",
     sourcemap: true,
+    // Os pacotes de terceiros do bundle, que o build do desktop junta no `LICENCAS.md` do instalador
+    // (`apps/desktop/scripts/licencas.ts`, `LICENCAS_WEB`).
+    license: { fileName: ".vite/licencas.json" },
   },
   test: {
     testTimeout: 30_000,

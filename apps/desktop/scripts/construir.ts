@@ -17,7 +17,9 @@
  *     módulo CommonJS, que o bundle não reproduz (`_.Agent is not a constructor`). Vai copiado em
  *     `servidor/node_modules/undici`, como o T3 deixa o `undici` fora do bundle da CLI.
  * - `dist/recursos/skills/`: as skills do app (`skills.ts`): só as de `.agents/skills` com bloco
- *   `simplifica:` válido e só os arquivos listados nele; o servidor empacotado as lê por `--pasta-skills`.
+ *   `simplifica:` válido e só os arquivos listados nele; o servidor empacotado as lê por `--pasta-skills`;
+ * - `dist/recursos/LICENCAS.md`: a licença do app e a dos pacotes de terceiros dentro dos bundles
+ *   (`licencas.ts`).
  *
  *   node scripts/construir.ts                       # tudo
  *   node scripts/construir.ts --so-processo-principal   # só main e preload (o `dev` usa)
@@ -29,6 +31,14 @@ import * as NodeModule from "node:module";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
 import { build as empacotar } from "vite-plus/pack";
+import {
+  coletorLicencas,
+  juntarPacotes,
+  LICENCAS_WEB,
+  markdownLicencas,
+  pacoteDaPasta,
+  type PacoteTerceiro,
+} from "./licencas.ts";
 import { copiarSkills } from "./skills.ts";
 
 export const PACOTE = NodePath.resolve(import.meta.dirname, "..");
@@ -46,7 +56,10 @@ const COPIADOS_SERVIDOR = ["undici"];
 
 const ehExterno = (id: string) => EXTERNOS_SERVIDOR.some((nome) => id === nome || id.startsWith(`${nome}/`));
 
-async function construirProcessoPrincipal(): Promise<void> {
+type Coletor = ReturnType<typeof coletorLicencas>;
+
+async function construirProcessoPrincipal(coletor: Coletor): Promise<void> {
+  const plugins = [coletor.plugin];
   const comum = {
     cwd: PACOTE,
     config: false,
@@ -58,6 +71,7 @@ async function construirProcessoPrincipal(): Promise<void> {
     sourcemap: true,
     outExtensions: () => ({ js: ".cjs" }),
     outputOptions: { codeSplitting: false },
+    plugins,
     deps: {
       neverBundle: (id: string) => id === "electron" || id.startsWith("electron/"),
       alwaysBundle: (id: string) => !id.startsWith("node:") && id !== "electron" && !id.startsWith("electron/"),
@@ -68,7 +82,9 @@ async function construirProcessoPrincipal(): Promise<void> {
   await empacotar({ ...comum, entry: { preload: NodePath.join(PACOTE, "src", "preload.ts") }, clean: false });
 }
 
-async function construirServidor(): Promise<void> {
+/** Constrói o servidor e os Workers; devolve os pacotes copiados inteiros em `servidor/node_modules`. */
+async function construirServidor(coletor: Coletor): Promise<Array<PacoteTerceiro>> {
+  const plugins = [coletor.plugin];
   const saida = NodePath.join(DIST_RECURSOS, "servidor");
   NodeFS.rmSync(saida, { recursive: true, force: true });
   const comum = {
@@ -86,6 +102,7 @@ async function construirServidor(): Promise<void> {
     },
     // Num bundle, todo módulo é o principal: o `if (import.meta.main)` das CLIs dos pacotes não pode rodar.
     define: { "import.meta.main": "false" },
+    plugins,
   } as const;
   await empacotar({ ...comum, entry: { bin: NodePath.join(RAIZ, "apps", "server", "src", "bin.ts") }, clean: true });
   // Os Workers da revisão prévia (`RevisorPpc.ts` procura `./trabalhador-ppc.mjs`) e da versão em texto
@@ -106,8 +123,10 @@ async function construirServidor(): Promise<void> {
   // O pacote como o pnpm o resolve a partir do servidor (o undici do @effect/platform-node).
   const platformNode = NodeFS.realpathSync(NodePath.join(RAIZ, "node_modules", "@effect", "platform-node"));
   const requerer = NodeModule.createRequire(NodePath.join(platformNode, "package.json"));
+  const copiados: Array<PacoteTerceiro> = [];
   for (const nome of COPIADOS_SERVIDOR) {
     const origem = NodePath.dirname(requerer.resolve(`${nome}/package.json`));
+    copiados.push(pacoteDaPasta(origem));
     NodeFS.cpSync(origem, NodePath.join(saida, "node_modules", nome), {
       recursive: true,
       dereference: true,
@@ -115,9 +134,11 @@ async function construirServidor(): Promise<void> {
         !/^(docs|types|scripts)([\\/]|$)/.test(NodePath.relative(origem, arquivo)) && !arquivo.endsWith(".d.ts"),
     });
   }
+  return copiados;
 }
 
-function copiarWeb(construirWeb: boolean): string {
+/** Copia a interface; devolve de onde veio e os pacotes de terceiros do build dela (`LICENCAS_WEB`). */
+function copiarWeb(construirWeb: boolean): { readonly origem: string; readonly pacotes: Array<PacoteTerceiro> } {
   const destino = NodePath.join(DIST_APP, "web");
   NodeFS.rmSync(destino, { recursive: true, force: true });
   const temWeb = NodeFS.existsSync(NodePath.join(WEB, "package.json"));
@@ -132,10 +153,13 @@ function copiarWeb(construirWeb: boolean): string {
   const buildWeb = NodePath.join(WEB, "dist");
   if (NodeFS.existsSync(NodePath.join(buildWeb, "index.html"))) {
     NodeFS.cpSync(buildWeb, destino, { recursive: true });
-    return "apps/web/dist";
+    const licencas = NodePath.join(buildWeb, LICENCAS_WEB);
+    if (!NodeFS.existsSync(licencas)) throw new Error(`o build do apps/web não gerou ${LICENCAS_WEB}`);
+    const pacotes = JSON.parse(NodeFS.readFileSync(licencas, "utf-8")) as Array<PacoteTerceiro>;
+    return { origem: "apps/web/dist", pacotes };
   }
   NodeFS.cpSync(NodePath.join(PACOTE, "src", "provisoria"), destino, { recursive: true });
-  return "página provisória (src/provisoria)";
+  return { origem: "página provisória (src/provisoria)", pacotes: [] };
 }
 
 function escreverManifesto(): void {
@@ -158,14 +182,21 @@ function escreverManifesto(): void {
 
 export async function construir(opcoes: { readonly soProcessoPrincipal: boolean; readonly web: boolean }) {
   NodeFS.mkdirSync(DIST_APP, { recursive: true });
-  await construirProcessoPrincipal();
+  const coletor = coletorLicencas();
+  await construirProcessoPrincipal(coletor);
   escreverManifesto();
   if (opcoes.soProcessoPrincipal) return;
-  await construirServidor();
+  const copiados = await construirServidor(coletor);
   const skills = await copiarSkills(NodePath.join(RAIZ, ".agents", "skills"), NodePath.join(DIST_RECURSOS, "skills"));
   const web = copiarWeb(opcoes.web);
+  const pacotes = juntarPacotes(coletor.pacotes(), copiados, web.pacotes);
+  NodeFS.writeFileSync(
+    NodePath.join(DIST_RECURSOS, "LICENCAS.md"),
+    markdownLicencas(NodeFS.readFileSync(NodePath.join(RAIZ, "LICENSE"), "utf-8"), pacotes),
+  );
   process.stderr.write(
-    `bundles em ${NodePath.relative(RAIZ, DIST)} (interface: ${web}; skills: ${skills.join(", ") || "nenhuma"})\n`,
+    `bundles em ${NodePath.relative(RAIZ, DIST)} (interface: ${web.origem}; skills: ${skills.join(", ") || "nenhuma"}; ` +
+      `${pacotes.length} pacotes de terceiros em LICENCAS.md)\n`,
   );
 }
 

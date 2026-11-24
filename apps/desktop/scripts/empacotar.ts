@@ -64,6 +64,8 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       { from: "dist/recursos/skills", to: "skills" },
       // Se este app tem assinatura de código: sem ela, o `electron-updater` fica desligado (M1.10).
       { from: `dist/recursos/${ARQUIVO_ASSINATURA}`, to: ARQUIVO_ASSINATURA },
+      // A licença do app e a dos pacotes de terceiros dentro dos bundles (`licencas.ts`).
+      { from: "dist/recursos/LICENCAS.md", to: "LICENCAS.md" },
     ],
     afterPack: async (contexto) => {
       if (contexto.electronPlatformName === "darwin") {

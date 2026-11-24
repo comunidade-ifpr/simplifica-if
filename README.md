@@ -2,6 +2,8 @@
 
 App desktop para os servidores do IFPR. O Simplifica IF dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. Este repositório contém o app, a base que o alimenta e as skills e scripts que agentes usam para curar a base.
 
+O Simplifica IF é um projeto independente, mantido por servidores e colaboradores do IFPR na organização Comunidade IFPR: não representa o IFPR nem é mantido oficialmente por ele. As respostas do app e da base citam as fontes para apoiar o trabalho, mas não são parecer jurídico nem substituem a publicação oficial das normas.
+
 ## O app
 
 O que ele entrega hoje:
@@ -84,5 +86,8 @@ Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenv
 
 ## Licença
 
-- **Código** (aplicativo, pacotes, scripts e skills): licença MIT, em [`LICENSE`](LICENSE). Partes copiadas do T3 Code mantêm o aviso MIT de origem nos arquivos `NOTICE` e `LICENSE-T3` de cada pasta.
-- **Conteúdo curatorial** (`base-conhecimento/`): CC BY 4.0, em [`LICENSE-DADOS`](LICENSE-DADOS). Textos normativos oficiais podem estar sujeitos ao regime próprio de documentos públicos; mantenha atribuição e consulte as fontes oficiais.
+- **Código** (aplicativo, pacotes, scripts e skills): licença MIT, em [`LICENSE`](LICENSE). Partes copiadas do T3 Code mantêm o aviso MIT de origem nos arquivos `NOTICE` e `LICENSE-T3` de cada pasta ([`docs/upstream-t3.md`](docs/upstream-t3.md)). O instalador leva o `LICENCAS.md`, com a licença de cada pacote de terceiros que vai dentro do app (`apps/desktop/scripts/licencas.ts`).
+- **Conteúdo curatorial** (`base-conhecimento/`): CC BY 4.0, em [`LICENSE-DADOS`](LICENSE-DADOS). Ela não cobre os atos oficiais (livres, pela Lei nº 9.610/1998, art. 8º, IV) nem os PPCs e documentos institucionais reproduzidos, que mantêm o regime de origem.
+- **Marcas:** o nome e o logotipo do IFPR não são cobertos por nenhuma das duas licenças.
+
+Para contribuir, veja o [`CONTRIBUTING.md`](CONTRIBUTING.md); para avisar uma falha de segurança ou um dado pessoal publicado, o [`SECURITY.md`](SECURITY.md).

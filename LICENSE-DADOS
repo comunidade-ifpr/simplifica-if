@@ -1,7 +1,26 @@
-Creative Commons Attribution 4.0 International
+Base de conhecimento do Simplifica IF (pasta base-conhecimento/)
 
-Esta base curatorial é disponibilizada sob a licença CC BY 4.0.
+O conteúdo curatorial desta base é disponibilizado sob a licença Creative Commons
+Atribuição 4.0 Internacional (CC BY 4.0).
 Texto completo: https://creativecommons.org/licenses/by/4.0/legalcode
 
-Você pode compartilhar e adaptar o material, inclusive para fins comerciais, desde que atribua a fonte.
-Textos normativos oficiais devem ser conferidos nas publicações oficiais indicadas em cada arquivo.
+Você pode compartilhar e adaptar o material, inclusive para fins comerciais, desde
+que atribua a fonte, por exemplo: "Base de conhecimento do Simplifica IF
+(https://github.com/comunidade-ifpr/simplifica-if), CC BY 4.0".
+
+O que a CC BY 4.0 cobre: o trabalho de curadoria, ou seja, os metadados (front
+matter, registros JSON institucionais, catálogos e índices), as relações entre
+normas, as regras de transição, as tabelas de correspondência, as fichas da
+revisão de PPC, os esquemas e a documentação.
+
+O que ela não cobre:
+
+- Leis, decretos, resoluções, portarias e demais atos oficiais: não são protegidos
+  por direito autoral (Lei nº 9.610/1998, art. 8º, IV) e podem ser usados
+  livremente. Confira sempre a publicação oficial indicada em cada arquivo.
+- Projetos pedagógicos de curso (PPCs) e outros documentos do IFPR ou de outras
+  instituições reproduzidos na base: mantêm a titularidade e o regime de origem.
+- Nomes, marcas e logotipos do IFPR ou de terceiros.
+
+A base é material de consulta: não é parecer jurídico e não substitui a
+publicação oficial das normas.

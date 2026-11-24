@@ -57,6 +57,7 @@ O `build` gera:
 | `dist/app/package.json` | o manifesto do app, sem dependências |
 | `dist/recursos/skills/` | as skills do app (`scripts/skills.ts`): só as de `.agents/skills` com bloco `simplifica:` válido e, de cada uma, só o `SKILL.md` e os arquivos listados em `simplifica.arquivos` (nada de `scripts/`, `tests/`, `agents/` ou `README.md`); uma skill do app inválida faz o build falhar |
 | `dist/recursos/servidor/` | o servidor (`apps/server/src/bin.ts`) em ESM, com as dependências dentro, menos `bufferutil` e `utf-8-validate` (opcionais do `ws`, que segue sem eles) e o `undici`, copiado em `node_modules/` ao lado (o `effect` o carrega por `import()` e usa os exports nomeados do CommonJS, que o bundle não reproduz) |
+| `dist/recursos/LICENCAS.md` | a licença do app e a de cada pacote de terceiros que o bundler pôs no processo principal, no servidor, nos Workers e na interface (`scripts/licencas.ts`; a interface pelo `build.license` do `apps/web`), mais o `undici` copiado; no pacote, `Resources/LICENCAS.md`. O Electron e o Chromium trazem os próprios arquivos de licença |
 
 O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` ou `tmp/kb.sqlite`) e chama o electron-builder (`scripts/empacotar.ts`), sem assinatura e sem publicação:
 
