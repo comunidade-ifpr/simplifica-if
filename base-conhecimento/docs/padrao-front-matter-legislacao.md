@@ -169,6 +169,15 @@ Referências fora do escopo normativo da base (conselhos profissionais, ABNT, do
 
 Quando o texto de um stub entrar em `normas/`, remova a entrada de `stubs.yaml`: o validador acusa ID repetido.
 
+## Normas revogadas e histórico
+
+A base guarda todo ato que entrou nela, e nenhum sai por perder a vigência. PPCs antigos e atuais, pareceres e outros documentos citam normas revogadas, e a resposta certa para eles é "esta norma foi revogada por tal ato, com efeito em tal data", com o texto à mão. Apagar a norma revogada transformaria essas citações em "não registrada".
+
+- **Revogação ou substituição:** a norma nova entra num arquivo próprio, e a antiga fica onde está. A relação `revoga` vai para `relacoes.yaml`, com a evidência literal, e o gerador calcula o `status_vigencia` das duas pontas, com a data do efeito. As regras de transição vão para `transicoes.yaml`.
+- **Stub revogado:** a norma citada que só tem identificação continua em `stubs.yaml`, com o status provado pelo dispositivo revogador (`status_fonte`). Se for muito citada, vale trazer o texto integral dela para `normas/`, como qualquer ato.
+- **Alteração sem revogação:** o arquivo traz o texto consolidado do ato, na redação vigente, com as notas de redação da fonte oficial. A redação anterior de um dispositivo alterado pode ficar no mesmo arquivo, entre os marcadores de redação não vigente (abaixo).
+- **Remoção:** um arquivo de norma sai da base só por erro de curadoria (ato que não existe, duplicado, fora do escopo), nunca por revogação.
+
 ## Corpo da norma (estrutura para o parser de dispositivos)
 
 `packages/kb/src/normas/estrutura.ts` lê o corpo com `remark-parse` + `remark-gfm` e extrai os dispositivos com ID canônico; `validar_base.ts` acusa o que fugir destas convenções:
