@@ -55,7 +55,8 @@ export const ItemSumario = Schema.Struct({
 export type ItemSumario = typeof ItemSumario.Type;
 
 /**
- * As datas do ato, do front matter da norma, como estão (`AAAA-MM-DD` ou "a confirmar"); `null` no
+ * As datas do ato, do front matter da norma, como estão (`AAAA-MM-DD`, "a confirmar" ou "aguardando
+ * publicação"); `null` no
  * campo que a norma não registra. O PPC não tem.
  */
 export const DatasDoAto = Schema.Struct({

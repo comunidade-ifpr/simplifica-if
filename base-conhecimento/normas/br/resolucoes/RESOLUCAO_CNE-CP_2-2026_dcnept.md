@@ -6,13 +6,13 @@ numero: 2
 ano: 2026
 data_publicacao: "2026-11-11"
 assinada_em: "2026-11-11"
-publicada_em: "a confirmar"
-vigente_de: "a confirmar"
-datas_fonte: "Art. 75: vigência na publicação no DOU, ainda não confirmada na base (decisão em aberto 4 do plano)."
+publicada_em: "aguardando publicação"
+vigente_de: "aguardando publicação"
+datas_fonte: "Art. 75: vigência na publicação no DOU, ainda não localizada (busca de 24/11/2026). O despacho de homologação do Parecer CNE/CP nº 21/2026 saiu no DOU de 11/11/2026; a resolução, não."
 orgao: CNE/CP
 jurisdicao: BR
 ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica."
-status_vigencia: "vigente"
+status_vigencia: "ainda-nao-vigente"
 keywords:
   - DCNEPT
   - "educação profissional"
@@ -42,7 +42,6 @@ aliases:
   - "Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica"
   - "Novas DCN da EPT"
 fonte_referencia: "PDF da Resolução CNE/CP nº 2, de 11 de novembro de 2026, assinado pelo Presidente do CNE"
-vigencia_a_confirmar: "início de vigência de Resolução CNE/CP nº 2/2026 a confirmar (ato de 2026-11-11; publicação não registrada): presumida vigente"
 revoga:
   - "Resolução CNE/CEB nº 1/2014"
   - "Resolução CNE/CP nº 1/2021"

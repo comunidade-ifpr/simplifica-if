@@ -5,7 +5,6 @@
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
-  A_CONFIRMAR,
   filtrarNormas,
   type FiltrosNormas,
   nomeSituacaoNorma,
@@ -83,11 +82,8 @@ function Normas() {
                 rotulo="Situação de vigência"
                 todos="Todas"
                 valor={filtros.vigencia}
-                opcoes={[
-                  ...opcoes(d.normas.map((n) => n.status_vigencia)).filter((s) => s !== "a confirmar"),
-                  A_CONFIRMAR,
-                ]}
-                nome={(v) => (v === A_CONFIRMAR ? "Vigência a confirmar" : nomeVigencia(v))}
+                opcoes={opcoes(d.normas.map((n) => n.status_vigencia))}
+                nome={nomeVigencia}
                 aoMudar={mudar("vigencia")}
               />
             </Filtros>
@@ -123,9 +119,6 @@ function Normas() {
                                 ) : null}
                                 <span className="flex w-44 flex-col items-start gap-0.5">
                                   <SituacaoVigencia vigencia={vigencia} />
-                                  {n.vigencia_a_confirmar && vigencia !== "a confirmar" ? (
-                                    <span className="text-micro text-warning-foreground">Vigência a confirmar</span>
-                                  ) : null}
                                 </span>
                               </>
                             }

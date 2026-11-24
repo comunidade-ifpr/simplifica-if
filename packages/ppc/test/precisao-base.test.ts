@@ -75,11 +75,11 @@ describe("pré-conferência nos PPCs técnicos da base: invariantes", () => {
     }
   });
 
-  test("nenhum nao_atende de norma com vigência a confirmar ou de citação de confiança menor", () => {
+  test("nenhum nao_atende de norma ainda não vigente ou de citação de confiança menor", () => {
     for (const a of apontamentos.filter((a) => a.estado === "nao_atende")) {
       const norma = /^ifpr:\/\/norma\/([^#]+)$/.exec(a.fontes[0] ?? "")?.[1];
       if (!norma) continue;
-      expect(comum.vigencia(norma).certo, `${a.ficha}: ${a.mensagem}`).toBe(true);
+      expect(comum.vigencia(norma).status, `${a.ficha}: ${a.mensagem}`).not.toBe("ainda-nao-vigente");
       const ids = new Set(a.fontes.map((f) => /^ifpr:\/\/norma\/([^#]+)$/.exec(f)?.[1]).filter(Boolean));
       // As regras que apontam citações: o trecho é a citação da norma, e ela tem de ser segura.
       if (!FICHAS_DE_CITACAO.has(a.ficha)) continue;

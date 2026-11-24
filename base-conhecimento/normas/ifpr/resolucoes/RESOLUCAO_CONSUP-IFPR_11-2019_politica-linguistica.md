@@ -4,11 +4,11 @@ title: "Resolução CONSUP/IFPR nº 11/2019"
 tipo_documento: "Resolução"
 numero: 11
 ano: 2019
-data_publicacao: "2019-06-13"
-assinada_em: "2019-06-13"
-publicada_em: "a confirmar"
-vigente_de: "a confirmar"
-datas_fonte: "Art. 7º: vigência na publicação; data de publicação não registrada na base."
+data_publicacao: "2019-06-11"
+assinada_em: "2019-06-12"
+publicada_em: "2019-06-13"
+vigente_de: "2019-06-13"
+datas_fonte: "Datada de 11/6/2019 e assinada eletronicamente em 12/6/2019; art. 7º: vigência na publicação (Boletim de Serviço Eletrônico em 13/06/2019, no SEI)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Institui a Política Linguística do IFPR e fixa diretrizes, normas e concepções de língua, ensino e aprendizagem de línguas e apoio à internacionalização."
@@ -27,7 +27,6 @@ aliases:
   - "Resolução IFPR 11/2019"
   - "Política Linguística do IFPR"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=349406&id_orgao_publicacao=0"
-vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 11/2019 a confirmar (ato de 2019-06-13; publicação não registrada): presumida vigente"
 ---
 
 > Institui a Política linguística do Instituto Federal de Educação, Ciência e Tecnologia do Paraná e fixa as diretrizes, normas e concepções de língua, ensino e aprendizagem de línguas e apoio à internacionalização.

@@ -195,8 +195,11 @@ export function validarRelacoes(raiz: string, registro: Registro = carregarRegis
       if (relacao.operador && !indice.has(`${relacao.origem}${relacao.operador}`)) {
         erros.push(`${rotulo}: operador ${relacao.operador} não existe no texto da origem`);
       }
-    } else if (relacao.operador) {
-      erros.push(`${rotulo}: operador informado, mas a origem não tem texto na base`);
+    } else {
+      if (relacao.operador) erros.push(`${rotulo}: operador informado, mas a origem não tem texto na base`);
+      if ((relacao.tipo === "revoga" || relacao.tipo === "altera") && relacao.efeito_de === "vigencia-da-origem") {
+        erros.push(`${rotulo}: origem sem texto na base exige efeito_de com a data (AAAA-MM-DD)`);
+      }
     }
     if (relacao.alvo_dispositivo) {
       if (alvo?.situacao !== "base")

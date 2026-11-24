@@ -95,11 +95,14 @@ export function listaDeTextos(meta: Readonly<Record<string, unknown>> | null, ca
   return Array.isArray(valor) ? valor.filter((item): item is string => typeof item === "string") : [];
 }
 const RE_DATA_ISO = /^\d{4}-\d{2}-\d{2}$/;
-/** Data ISO ou "a confirmar" (dado que a base ainda não prova; nunca inventar). */
-const dataOuAConfirmar = Schema.Union([
-  Schema.String.check(Schema.isPattern(RE_DATA_ISO)),
-  Schema.Literal("a confirmar"),
-]);
+const dataIso = Schema.String.check(Schema.isPattern(RE_DATA_ISO));
+/** Data ISO, "a confirmar" (dado que a base ainda não prova; nunca inventar) ou "aguardando publicação". */
+const dataDaPublicacao = Schema.Union([dataIso, Schema.Literals(["a confirmar", "aguardando publicação"])]);
+/**
+ * Data ISO ou "aguardando publicação" (ato assinado e ainda não publicado, que não está em vigor): a
+ * vigência é calculada, nunca presumida, e a norma sem ela não entra na base.
+ */
+const dataDaVigencia = Schema.Union([dataIso, Schema.Literal("aguardando publicação")]);
 
 /**
  * Contrato do front matter de uma norma da base (depois da coerção): campos obrigatórios, formato
@@ -133,10 +136,10 @@ export const esquemaNorma = Schema.StructWithRest(
     ),
     /** Data do ato (assinatura). */
     assinada_em: Schema.String.check(Schema.isPattern(RE_DATA_ISO, { message: "assinada_em deve ser AAAA-MM-DD" })),
-    /** Publicação oficial (DOU, Boletim de Serviço) ou "a confirmar". */
-    publicada_em: dataOuAConfirmar,
-    /** Início dos efeitos (vigência) ou "a confirmar". */
-    vigente_de: dataOuAConfirmar,
+    /** Publicação oficial (DOU, Boletim de Serviço), "a confirmar" ou "aguardando publicação". */
+    publicada_em: dataDaPublicacao,
+    /** Início dos efeitos (vigência) ou "aguardando publicação". */
+    vigente_de: dataDaVigencia,
     /** De onde vieram as datas (dispositivo, nota de publicação, fonte oficial). */
     datas_fonte: texto,
     /**

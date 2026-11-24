@@ -12,7 +12,7 @@ datas_fonte: "Resumo: \"RESOLUÇÃO CNE/CEB Nº 3, DE 8 DE ABRIL DE 2025, public
 orgao: CNE/CEB
 jurisdicao: BR
 ementa: "Institui as Diretrizes Operacionais Nacionais para a Educação de Jovens e Adultos – EJA."
-status_vigencia: "parcialmente revogada"
+status_vigencia: "alterada"
 keywords:
   - "educação de jovens e adultos"
   - EJA
@@ -29,7 +29,6 @@ aliases:
   - "Diretrizes Operacionais Nacionais para a EJA"
   - "Diretrizes Operacionais da EJA"
 fonte_url: "https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf"
-vigencia_a_confirmar: "revogação por Resolução CNE/CP nº 2/2026 (#art74-v) produz efeito na vigência da origem, a confirmar (não antes de 2026-11-11): presumida em vigor; alteração por Resolução CNE/CEB nº 6/2025 produz efeito na vigência da origem, a confirmar (não antes de 2025-07-17): presumida em vigor"
 revoga:
   - "Resolução CNE/CEB nº 1/2021"
 revogada_por:

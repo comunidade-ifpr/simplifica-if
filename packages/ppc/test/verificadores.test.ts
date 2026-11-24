@@ -10,7 +10,8 @@ import { achadosParaComentarios, preConferir } from "../src/pre-conferencia.ts";
 import type { BaseVerificacao, CursoCnct, EstadoVerificacao } from "../src/verificadores/comum.ts";
 import { escolaridadeExigida } from "../src/verificadores/curriculo.ts";
 import { FICHAS_D, VERIFICADOR_POR_FICHA, VERIFICADORES } from "../src/verificadores/registro.ts";
-import type { ConsultaVigencia } from "../src/verificadores/vigencia.ts";
+import { carregarFonteVigencia } from "@simplifica-if/kb/normas/vigencia";
+import { type ConsultaVigencia, consultarVigencia } from "../src/verificadores/vigencia.ts";
 import { verificacaoDaBase } from "../src/revisao-previa.ts";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 
@@ -27,18 +28,27 @@ const CNCT: CursoCnct = {
 };
 
 const { registro, relacoes, vigencia: daBase } = verificacaoDaBase(await carregarBaseRevisao(raizRepositorio()));
-/**
- * Vigência da base, com a situação de hoje fixada: a 2/2026 e a revogação da 1/2021 por ela "a
- * confirmar" (sem a publicação no DOU). Assim o teste não quebra quando a data for registrada.
- */
-const A_CONFIRMAR = new Set(["br/cne-cp/res/2026/2", "br/cne-cp/res/2021/1", "br/cne-ceb/res/2014/1"]);
-const vigencia: ConsultaVigencia = (id) => (A_CONFIRMAR.has(id) ? { ...daBase(id), certo: false } : daBase(id));
-const base = (forma: string, cnct: CursoCnct | null = CNCT): BaseVerificacao => ({
+/** Vigência da base: a Res. CNE/CP nº 2/2026 aguarda publicação, e a 1/2021 é a DCN da EPT vigente. */
+const vigencia: ConsultaVigencia = daBase;
+/** A mesma base com a Res. CNE/CP nº 2/2026 publicada em 12/11/2026: a 1/2021 revogada, com a transição. */
+const fonte = carregarFonteVigencia(raizRepositorio());
+const comDcn2026Publicada = consultarVigencia(
+  {
+    ...fonte,
+    datas: new Map(fonte.datas).set("br/cne-cp/res/2026/2", {
+      assinada_em: "2026-11-11",
+      publicada_em: "2026-11-12",
+      vigente_de: "2026-11-12",
+    }),
+  },
+  "2026-11-24",
+);
+const base = (forma: string, cnct: CursoCnct | null = CNCT, consulta = vigencia): BaseVerificacao => ({
   cnct,
   forma,
   registro,
   relacoes,
-  vigencia,
+  vigencia: consulta,
 });
 
 const FGB = [
@@ -242,30 +252,42 @@ describe("verificadores no PPC com problemas", () => {
 });
 
 describe("regras de prudência", () => {
-  test("a 1/2021 (revogação pela 2/2026, de vigência a confirmar) fica a conferir, com a transição", () => {
+  test("com a 2/2026 aguardando publicação, a 1/2021 é a DCN da EPT vigente: citá-la não é pendência", () => {
     const ppc = PPC_RUIM.replace(
       "Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
       "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
     );
-    const apontamento = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos[0]!;
+    const fontes = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos.flatMap((a) => a.fontes);
+    expect(fontes.filter((f) => f.includes("br/cne-cp/res/2021/1") || f.includes("br/cne-cp/res/2026/2"))).toEqual([]);
+  });
+
+  test("publicada a 2/2026, a 1/2021 fica a conferir, com a transição", () => {
+    const ppc = PPC_RUIM.replace(
+      "Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
+      "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+    );
+    const apontamento = da(preConferir(ppc, base("integrado", CNCT, comDcn2026Publicada)), "CT-SUP-12")
+      .apontamentos[0]!;
     expect(apontamento).toMatchObject({ estado: "a_conferir", trechos: [{ linha: 10 }] });
-    expect(apontamento.mensagem).toMatch(/ainda não foi confirmada/);
     expect(apontamento.mensagem).toMatch(/pode manter a citação; recomenda-se atualizar/);
     expect(apontamento.mensagem).not.toMatch(/a confirmar na base|art\d/);
     expect(apontamento.mensagem).toMatch(/dois anos/);
     expect(apontamento.fontes).toContain("ifpr://norma/br/cne-cp/res/2026/2#art71");
   });
 
-  test("a ausência da 2/2026 (vigência a confirmar) nunca é pendência", () => {
+  test("sem nenhuma DCN da EPT, a ausência é da vigente: a 1/2021, enquanto a 2/2026 aguarda publicação", () => {
     const ppc = PPC_BOM.replaceAll(
       "Resolução CNE/CP nº 2, de 11 de novembro de 2026",
       "Lei nº 9.394, de 20 de dezembro de 1996",
     );
-    const resultado = preConferir(ppc, base("integrado"));
-    for (const ficha of ["CT-IDENT-08", "CT-SUP-09", "CT-SUP-12"]) {
-      expect(estado(resultado, ficha)).toBe("a_conferir");
-      expect(da(resultado, ficha).apontamentos.every((a) => a.estado === "a_conferir")).toBe(true);
-    }
+    const sup12 = da(preConferir(ppc, base("integrado")), "CT-SUP-12");
+    expect(sup12.apontamentos).toMatchObject([
+      { estado: "nao_atende", trechos: [], fontes: ["ifpr://norma/br/cne-cp/res/2021/1"] },
+    ]);
+    // publicada a 2/2026, a ausência passa a ser dela
+    expect(da(preConferir(ppc, base("integrado", CNCT, comDcn2026Publicada)), "CT-SUP-12").apontamentos).toMatchObject([
+      { estado: "nao_atende", fontes: ["ifpr://norma/br/cne-cp/res/2026/2"] },
+    ]);
   });
 
   test("norma citada no texto e ausente das referências: um apontamento só, a conferir", () => {

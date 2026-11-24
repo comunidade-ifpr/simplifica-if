@@ -291,11 +291,10 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         c.lerDocumento({ link: `ifpr://norma/${DCN_2021}#art999` }),
       );
       expect(dados.alvo).toBeNull();
-      // a publicação ainda não registrada vem como está
       expect(dados.datas).toEqual({
         assinada_em: "2021-01-05",
-        publicada_em: "a confirmar",
-        vigente_de: "a confirmar",
+        publicada_em: "2021-01-06",
+        vigente_de: "2021-01-06",
       });
       expect(avisos).toEqual([
         expect.objectContaining({ tipo: "nao-encontrado", ref: `ifpr://norma/${DCN_2021}#art999` }),

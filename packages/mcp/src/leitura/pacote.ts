@@ -18,15 +18,14 @@ import * as PacoteContextoF from "../ferramentas/pacote-contexto.ts";
 import { AVISO_FATO_EXTRAIDO, avisoBaixaConfianca, chavePpc } from "./comum.ts";
 import * as PastaTrabalho from "./PastaTrabalho.ts";
 
-/** Os avisos do pacote: transições e vigências a confirmar, fatos extraídos, citações de baixa confiança. */
+/** Os avisos do pacote: normas ainda não vigentes, fatos extraídos, citações de baixa confiança. */
 function avisosDoPacote(d: typeof PacoteContextoF.Dados.Type): Aviso[] {
   const avisos: Aviso[] = [];
-  const aConfirmar = d.transicoes.filter((t) => t.situacao === "a confirmar").map((t) => t.id);
-  const normas = d.normas.filter((n) => n.status_vigencia?.includes("a confirmar")).map((n) => n.ref);
-  if (aConfirmar.length || normas.length) {
+  const naoVigentes = d.normas.filter((n) => n.status_vigencia === "ainda-nao-vigente").map((n) => n.ref);
+  if (naoVigentes.length) {
     avisos.push({
-      tipo: "vigencia-a-confirmar",
-      mensagem: `há vigência a confirmar na data da consulta${normas.length ? ` (normas: ${normas.join(", ")})` : ""}${aConfirmar.length ? ` (transições: ${aConfirmar.join(", ")})` : ""}; diga isso ao usuário e não conclua pelo prazo sem conferir a data`,
+      tipo: "ainda-nao-vigente",
+      mensagem: `normas ainda não vigentes na data da consulta (${naoVigentes.join(", ")}): aguardam publicação ou têm vigência futura, e as regras de transição delas ainda não começaram; diga isso ao usuário`,
     });
   }
   const semTexto = d.normas.flatMap((n) => n.sem_texto);

@@ -78,10 +78,6 @@ export interface FichaNorma {
   readonly fonte_referencia: string | null;
   /** Markdown, relativo à raiz do repositório; `null` em stub e externo. */
   readonly path: string | null;
-  /** Explicação gerada (`vigencia_a_confirmar` do front matter) quando o status depende de data a confirmar. */
-  readonly pendencia_vigencia: string | null;
-  /** O status publicado está "a confirmar": há pendência registrada ou o status é `a confirmar` (stubs). */
-  readonly vigencia_a_confirmar: boolean;
   /** Metadados editoriais do front matter (vazios em stub e externo): indicação, não fundamento. */
   readonly pontos_chave: ReadonlyArray<string>;
   readonly notas_da_fonte: ReadonlyArray<string>;
@@ -184,20 +180,17 @@ const make = Effect.gen(function* () {
   const ficha = Effect.fn("Normas.ficha")(function* (id: string) {
     const consultar = (chave: string) =>
       primeiraFicha(
-        `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
-                ementa, fonte_url, fonte_referencia, path, front_matter_json FROM normas WHERE id = ?`,
+        `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao,
+                status_vigencia, ementa, fonte_url, fonte_referencia, path, front_matter_json
+           FROM normas WHERE id = ?`,
         [chave],
       );
     const norma = id.split("#")[0]!;
     const linha = yield* consultar(norma);
     if (!linha) return null;
     const { front_matter_json, ...n } = linha;
-    const pendenciaBruta = front_matter_json?.["vigencia_a_confirmar"];
-    const pendencia = typeof pendenciaBruta === "string" ? pendenciaBruta : null;
     const resultado: FichaNorma = {
       ...n,
-      pendencia_vigencia: pendencia,
-      vigencia_a_confirmar: pendencia !== null || n.status_vigencia === "a confirmar",
       pontos_chave: listaDeTextos(front_matter_json, "pontos_chave"),
       notas_da_fonte: listaDeTextos(front_matter_json, "notas_da_fonte"),
     };

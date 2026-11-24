@@ -51,7 +51,7 @@ describe("texto para a IA", () => {
       resposta({
         base: BASE_PUBLICADA,
         avisos: [
-          { tipo: "vigencia-a-confirmar", mensagem: "vigência a confirmar.", ref: "br/cne-cp/res/2026/2" },
+          { tipo: "ainda-nao-vigente", mensagem: "ainda não está em vigor.", ref: "br/cne-cp/res/2026/2" },
           { tipo: "correspondencia-rascunho", mensagem: "a tabela é rascunho." },
         ],
       }),
@@ -59,7 +59,7 @@ describe("texto para a IA", () => {
     );
     expect(texto).toBe(
       [
-        "Atenção: vigência a confirmar. (`br/cne-cp/res/2026/2`)",
+        "Atenção: ainda não está em vigor. (`br/cne-cp/res/2026/2`)",
         "Atenção: a tabela é rascunho.",
         "",
         "Corpo.",

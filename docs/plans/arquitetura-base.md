@@ -57,7 +57,7 @@ Pendências humanas, todas marcadas como rascunho nos arquivos:
 1. **Revisão do conjunto anotado do resolvedor** (`avaliacao/resolvedor/citacoes-anotadas.yaml`): serviu também para ajustar as regras, então a medida é otimista; falta revisão e um conjunto independente.
 2. **Revisão das consultas da busca de seções** (`avaliacao/busca-secoes/consultas.yaml`), do léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`) e do mapa tópico → seção (`packages/kb/dados/topicos-secoes.yaml`).
 3. **Revisão dos três PPCs-ouro** (`avaliacao/ppcs-ouro/`).
-4. **Data do DOU da Res. CNE/CP nº 2/2026:** até ela, a 2/2026 e outras normas saem com `vigencia_a_confirmar`, e a revogação da 1/2021 fica a confirmar.
+4. **Data do DOU da Res. CNE/CP nº 2/2026:** até ela, a 2/2026 fica `aguardando publicação` (não está em vigor), e a 1/2021 segue vigente; registrada a data, a 1/2021 passa a revogada e as transições dos arts. 70 a 72 começam.
 5. **Revisão jurídica da tabela de correspondência 1/2021 → 2/2026** (`base-conhecimento/correspondencias/`): até lá, é indicação, não fundamento.
 6. **Fatos de PPC** têm status `extraido`, sem revisão humana: confira o `trecho_fonte` antes de afirmar uma divergência.
 7. **Busca de normas** não tem conjunto rotulado para medir recall, como a de seções.

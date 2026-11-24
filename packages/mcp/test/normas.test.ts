@@ -110,7 +110,6 @@ describe("buscar_norma", () => {
         titulo: "Resolução CNE/CP nº 2/2026",
         situacao: "base",
         status_vigencia: "vigente",
-        vigencia_a_confirmar: false,
         data_publicacao: "2026-11-11",
         ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
         link: `ifpr://norma/${DCN_2026}`,
@@ -154,10 +153,7 @@ describe("buscar_norma", () => {
       const r = resposta.dados.resultados[0]!;
       expect(r.dispositivo!.id).toBe(`${DCN_2021}#art20`);
       expect(r.citado_fora_do_texto).toBe(`${DCN_2021}#art20-ix`);
-      expect(tipos(resposta.avisos)).toEqual([
-        `nao-encontrado ${DCN_2021}#art20-ix`,
-        `vigencia-a-confirmar ${DCN_2021}`,
-      ]);
+      expect(tipos(resposta.avisos)).toEqual([`nao-encontrado ${DCN_2021}#art20-ix`]);
     }),
   );
 
@@ -288,7 +284,7 @@ describe("ler_dispositivos", () => {
       });
       expect(art20).toMatchObject({ id: `${DCN_2021}#art20`, pai: null, subordinados: [] });
       expect(resposta.dados.nao_encontrados).toEqual([`${DCN_2021}#art99`]);
-      expect(tipos(resposta.avisos)).toEqual([`nao-encontrado ${DCN_2021}#art99`, `vigencia-a-confirmar ${DCN_2021}`]);
+      expect(tipos(resposta.avisos)).toEqual([`nao-encontrado ${DCN_2021}#art99`]);
       expect(texto).toContain("nota: (Redação dada pela Resolução CNE/CP nº 3/2026)");
       expect(texto).toContain("estrutura: CAPÍTULO V");
     }),
@@ -346,7 +342,7 @@ describe("ler_dispositivos", () => {
 });
 
 describe("ficha_norma", () => {
-  it.effect("norma revogada: vigência a confirmar, eventos, relações nos dois sentidos, sucessora e transição", () =>
+  it.effect("norma revogada: vigência, eventos, relações nos dois sentidos, sucessora e transição", () =>
     Effect.gen(function* () {
       const ctx = contexto();
       const { resposta, texto } = yield* chamar(fichaNorma, { id: DCN_2021 }, ctx, TETO_FICHA_NORMA);
@@ -355,7 +351,6 @@ describe("ficha_norma", () => {
         id: DCN_2021,
         situacao: "base",
         status_vigencia: "revogada",
-        vigencia_a_confirmar: true,
         orgao: "CNE/CP",
         tipo_documento: "Resolução",
         numero: "1",
@@ -363,8 +358,8 @@ describe("ficha_norma", () => {
         fonte_url: "https://www.in.gov.br/dcnept-2021",
         fonte_referencia: null,
       });
-      expect(vigencia).toMatchObject({ data: "2026-11-13", status: "revogada", certo: false });
-      expect(vigencia.inicio).toEqual({ data: null, minimo: "2021-01-05", certo: false });
+      expect(vigencia).toMatchObject({ data: "2026-11-13", status: "revogada" });
+      expect(vigencia.inicio).toEqual({ data: "2021-01-06", aguardando: false });
       expect(vigencia.eventos).toEqual([
         {
           tipo: "revoga",
@@ -373,11 +368,9 @@ describe("ficha_norma", () => {
           alvo_dispositivo: null,
           alcance: null,
           efeito_de: "2026-11-12",
-          efeito_minimo: "2026-11-12",
           ocorreu: "sim",
         },
       ]);
-      expect(vigencia.pendencias.length).toBeGreaterThan(0);
       expect(relacoes.entrada.map((r) => `${r.origem} ${r.tipo}`)).toEqual([`${DCN_2026} revoga`]);
       expect(relacoes.entrada[0]!.nota).toBe("Regras de transição nos arts. 70 a 72.");
       expect(relacoes.saida.map((r) => `${r.tipo} ${r.alvo}`)).toEqual([`revoga ${STUB}`]);
@@ -394,14 +387,13 @@ describe("ficha_norma", () => {
           inicio: "vigencia",
           fim: "P2Y",
           inicio_em: "2026-11-12",
-          inicio_minimo: "2026-11-12",
           fim_em: "2028-11-12",
           evidencia: "é assegurado período de transição de até dois anos",
           link: `ifpr://norma/${DCN_2026}#art71`,
         },
       ]);
-      expect(resposta.avisos.map((a) => a.tipo)).toEqual(vigencia.pendencias.map(() => "vigencia-a-confirmar"));
-      expect(texto).toContain("**Vigência em 13/11/2026:** revogada (a confirmar)");
+      expect(resposta.avisos).toEqual([]);
+      expect(texto).toContain("**Vigência em 13/11/2026:** revogada; início: 06/01/2021.");
       expect(texto).toContain(`**Sucessoras:** [${DCN_2026}](ifpr://norma/${DCN_2026}).`);
       expect(texto).toContain(
         "em-curso na data; início 12/11/2026, fim 12/11/2028. Aplica-se a: Cursos técnicos autorizados e em oferta.",
@@ -431,9 +423,7 @@ describe("ficha_norma", () => {
       // nenhuma relação a atinge; o status vem do piso do texto consolidado (o inciso XX está revogado)
       expect(vigente.resposta.dados.vigencia).toMatchObject({
         status: "parcialmente revogada",
-        certo: true,
         eventos: [],
-        pendencias: [],
       });
       expect(vigente.resposta.avisos).toEqual([]);
       expect(vigente.resposta.dados.relacoes.saida.map((r) => r.alvo)).toEqual([DCN_2021]);

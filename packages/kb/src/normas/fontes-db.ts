@@ -79,7 +79,6 @@ export function* linhasRelacoes(raiz: string): Generator<LinhaRelacao> {
       alcance: r.alcance ?? null,
       efeito_de: r.efeito_de,
       efeito_em: efeito.data,
-      efeito_minimo: efeito.minimo,
       evidencia_em: r.evidencia.em,
       evidencia_trecho: r.evidencia.trecho,
       confirmado_em: r.confirmado_em,

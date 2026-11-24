@@ -105,10 +105,7 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   const anterior = painel.getByRole("article", { name: "Norma" });
   await expect.element(anterior.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
   await expect.element(anterior.getByLabelText("Situação").getByText("Revogada", { exact: true })).toBeVisible();
-  await expect
-    .element(anterior.getByLabelText("Situação").getByText("Vigência a confirmar", { exact: true }))
-    .toBeVisible();
-  await expect.element(anterior.getByText("Publicação no DOU: a confirmar")).toBeVisible();
+  await expect.element(anterior.getByText("Publicação no DOU: 06/01/2021")).toBeVisible();
   await expect.element(painel.getByRole("button", { name: "Avançar para o próximo link" })).toBeDisabled();
 
   await painel.getByRole("button", { name: "Voltar ao link anterior" }).click();

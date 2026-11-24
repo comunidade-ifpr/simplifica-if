@@ -5,9 +5,8 @@
  *
  * - relações (`revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`,
  *   `regulamentada_por`, `fundamenta_se_em`, `fundamenta`), de `base-conhecimento/relacoes.yaml`;
- * - `status_vigencia`, calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`,
- *   e, quando o cálculo depende de data "a confirmar", `vigencia_a_confirmar` (a explicação). Nenhum
- *   dos dois traz a data: avançar a referência só muda o arquivo cujo status mudou.
+ * - `status_vigencia`, calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`.
+ *   Ele não traz a data: avançar a referência só muda o arquivo cujo status mudou.
  */
 import * as NodeFS from "node:fs";
 import { listarNormas } from "./estrutura.ts";
@@ -16,7 +15,7 @@ import { CAMPOS_RELACAO_FRONT_MATTER, camposRelacoesFrontMatter, carregarRelacoe
 import { carregarConsolidado, carregarDatas, dataReferencia, statusEm } from "./vigencia.ts";
 
 /** Campos que o gerador controla (removidos e reescritos a cada geração). */
-const CAMPOS_GERADOS = ["status_vigencia", "vigencia_a_confirmar", ...CAMPOS_RELACAO_FRONT_MATTER] as const;
+const CAMPOS_GERADOS = ["status_vigencia", ...CAMPOS_RELACAO_FRONT_MATTER] as const;
 
 export type ValorGerado = string | string[];
 
@@ -32,7 +31,6 @@ export function camposGerados(id: string, raiz: string): Map<string, ValorGerado
   };
   const resultado = statusEm(id, referencia, fonte);
   campos.set("status_vigencia", resultado.status);
-  if (!resultado.certo) campos.set("vigencia_a_confirmar", resultado.pendencias.join("; "));
   const relacoes = camposRelacoesFrontMatter(id, raiz, carregarRegistro(raiz));
   for (const campo of CAMPOS_RELACAO_FRONT_MATTER) {
     const valor = relacoes[campo];

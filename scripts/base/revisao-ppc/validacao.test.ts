@@ -158,20 +158,19 @@ describe("validador em casos inválidos", () => {
     const c = copiaDaBase();
     editarJson(NodePath.join(c.fichas, "ct-sup-01.json"), (ficha) => {
       ficha.referencias_normativas = [
-        { ref: "br/cne-cp/res/2021/1", dispositivo: "#art20", papel: "fundamento" },
+        { ref: "ifpr/proens/in/2021/1", papel: "fundamento" },
         { ref: "br/cne-ceb/res/2012/2", papel: "fundamento" },
+        // revogado pela Res. CNE/CP nº 2/2026, que aguarda publicação: ainda não conta
         { ref: "br/cne-ceb/res/2025/3", dispositivo: "#art6-iii", papel: "fundamento" },
         { ref: "br/cne-cp/res/2099/1", papel: "complementar" },
       ];
     });
     expect(validar(c)).toEqual([
-      "CT-SUP-01: `referencias_normativas[0]` cita norma revogada: Resolução CNE/CP nº 1/2021, art. 20 " +
-        "(br/cne-cp/res/2021/1; veja `revogada_por` em base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md; " +
+      "CT-SUP-01: `referencias_normativas[0]` cita norma revogada: Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021 " +
+        "(ifpr/proens/in/2021/1; veja `revogada_por` em base-conhecimento/normas/ifpr/instrucoes-normativas/INSTRUCAO-NORMATIVA_PROENS-IFPR_1-2021_desenvolvimento-colecoes-bibliotecas.md; " +
         "atualize a ficha e base-conhecimento/revisao-ppc/marcos-normativos.json)",
       "CT-SUP-01: `referencias_normativas[1]` cita norma substituída no marco dcnem: " +
         "Resolução CNE/CEB nº 2/2012 (br/cne-ceb/res/2012/2)",
-      "CT-SUP-01: `referencias_normativas[2]` cita dispositivo revogado (marco eja): " +
-        "Resolução CNE/CEB nº 3/2025, art. 6º, III",
       "CT-SUP-01: `referencias_normativas[3]` cita ID inexistente na base: br/cne-cp/res/2099/1 " +
         "(inclua a norma em base-conhecimento/normas/ ou registre-a em base-conhecimento/normas/stubs.yaml)",
     ]);
@@ -289,24 +288,28 @@ function marcoValido(sobrescritas: ObjetoJson = {}): ObjetoJson {
 const DERIVACOES: Record<string, LinhaDerivada> = {
   [DCN_EPT_2026]: {
     vigente: DCN_EPT_2026,
+    aguardando: [],
     substitui: [DCN_EPT_2021],
     antecessoras_historicas: [],
     dispositivos_revogados: [],
   },
   [DCN_EPT_2021]: {
     vigente: DCN_EPT_2021,
+    aguardando: [],
     substitui: [DCN_EPT_2026, "br/cne-cp/res/2099/9"],
     antecessoras_historicas: [],
     dispositivos_revogados: ["br/cne-ceb/res/2099/3#art6-iii"],
   },
   "br/cne-cp/res/1999/9": {
     vigente: "br/cne-cp/res/1999/9",
+    aguardando: [],
     substitui: [],
     antecessoras_historicas: [],
     dispositivos_revogados: [],
   },
   "br/cne-ceb/res/2012/6": {
     vigente: "br/cne-ceb/res/2012/6",
+    aguardando: [],
     substitui: [],
     antecessoras_historicas: [],
     dispositivos_revogados: [],
@@ -456,7 +459,7 @@ describe("registro de marcos normativos", () => {
 });
 
 describe("base real", () => {
-  test("fichas não citam norma revogada e o registro aponta a DCN EPT 2026", () => {
+  test("fichas não citam norma revogada e o registro aponta a DCN EPT vigente, com a 2/2026 aguardando publicação", () => {
     const universo = carregarUniverso()!;
     const fichas = fichasReais();
     expect(universo).not.toBeNull();
@@ -465,10 +468,10 @@ describe("base real", () => {
 
     const marcos = new Map(carregarMarcos().map((marco) => [String(marco.id), marco]));
     const dcnEpt = marcos.get("dcn_ept")!;
-    expect(dcnEpt.vigente).toBe(DCN_EPT_2026);
-    expect(dcnEpt.substitui).toEqual(
-      expect.arrayContaining([DCN_EPT_2021, "br/cne-ceb/res/2014/1", "br/cne-cp/res/2022/1", "br/cne-cp/res/2022/3"]),
-    );
+    // a 2/2026 aguarda publicação: a vigente é a 1/2021, e a revogação dela ainda não produz efeito
+    expect(dcnEpt.vigente).toBe(DCN_EPT_2021);
+    expect(dcnEpt.aguardando).toEqual([DCN_EPT_2026]);
+    expect(dcnEpt.substitui).toEqual(expect.arrayContaining(["br/cne-ceb/res/2012/6"]));
     expect(String(dcnEpt.transicao)).toContain("art. 70");
     expect(String(dcnEpt.transicao)).toContain("têm assegurado o direito de concluir");
     expect(dcnEpt.fichas_responsaveis).toEqual(["CT-SUP-12"]);

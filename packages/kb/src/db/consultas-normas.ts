@@ -291,7 +291,6 @@ const LinhaVigencia = Schema.Struct({
   de: TextoNulo,
   ate: TextoNulo,
   status: Schema.Literals(STATUS_VIGENCIA),
-  certo: Inteiro,
   fonte: Texto,
 });
 const primeiraVigencia = Sql.primeira(LinhaVigencia);
@@ -299,7 +298,6 @@ const primeiraVigencia = Sql.primeira(LinhaVigencia);
 export interface VigenciaNoBanco {
   alvo: string;
   status: (typeof STATUS_VIGENCIA)[number];
-  certo: boolean;
   /** Intervalo que contém a data ([de, ate), `null` = aberto) e o que o abre. */
   de: string | null;
   ate: string | null;
@@ -309,11 +307,11 @@ export interface VigenciaNoBanco {
 /** Status de um ato numa data, pelo intervalo gravado (o mesmo de `statusEm`); `null` para ato sem vigência. */
 export const vigenciaNaData = Effect.fn("consultasNormas.vigenciaNaData")(function* (id: string, data: string) {
   const v = yield* primeiraVigencia(
-    "SELECT alvo, de, ate, status, certo, fonte FROM vigencias WHERE alvo = ? AND (de IS NULL OR de <= ?) AND (ate IS NULL OR ? < ate)",
+    "SELECT alvo, de, ate, status, fonte FROM vigencias WHERE alvo = ? AND (de IS NULL OR de <= ?) AND (ate IS NULL OR ? < ate)",
     [id.split("#")[0]!, data, data],
   );
   if (v === undefined) return null;
-  const vigencia: VigenciaNoBanco = { ...v, certo: v.certo === 1 };
+  const vigencia: VigenciaNoBanco = v;
   return vigencia;
 });
 
@@ -336,7 +334,6 @@ const LinhaTransicao = Schema.Struct({
   inicio: Texto,
   fim: Texto,
   inicio_em: TextoNulo,
-  inicio_minimo: TextoNulo,
   fim_em: TextoNulo,
   evidencia: Texto,
   path: Texto,
@@ -357,7 +354,7 @@ export const transicoesDosAtos = Effect.fn("consultasNormas.transicoesDosAtos")(
   if (!atos.length) return vazio;
   const marcadores = atos.map(() => "?").join(", ");
   const linhas = yield* linhasTransicao(
-    `SELECT id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, inicio_em, inicio_minimo, fim_em, evidencia, path
+    `SELECT id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, inicio_em, fim_em, evidencia, path
            FROM transicoes WHERE norma_id IN (${marcadores}) OR norma_anterior IN (${marcadores}) ORDER BY rowid`,
     [...atos, ...atos],
   );
@@ -629,7 +626,6 @@ const LinhaNormaListada = Schema.Struct({
   ementa: TextoNulo,
   aliases_json: Schema.fromJsonString(ListaTextos),
   keywords_json: Schema.fromJsonString(ListaTextos),
-  a_confirmar: Inteiro,
 });
 const linhasNormasListadas = Sql.todas(LinhaNormaListada);
 
@@ -646,22 +642,28 @@ export interface NormaListada {
   readonly ementa: string | null;
   readonly aliases: ReadonlyArray<string>;
   readonly palavras_chave: ReadonlyArray<string>;
-  /** O status publicado está "a confirmar" ou o front matter registra `vigencia_a_confirmar`. */
-  readonly vigencia_a_confirmar: boolean;
 }
 
-/** Todas as normas da tabela `normas`, por ID. */
+/**
+ * O status de vigência da norma `normas.id` na data do parâmetro (duas vezes), pelos intervalos de
+ * `vigencias`; sem intervalo (referência externa), o status publicado.
+ */
+const STATUS_NA_DATA = `COALESCE((SELECT v.status FROM vigencias v WHERE v.alvo = normas.id
+  AND (v.de IS NULL OR v.de <= ?) AND (v.ate IS NULL OR ? < v.ate)), normas.status_vigencia)`;
+
+/** Todas as normas da tabela `normas`, por ID, com o status no dia da vigência (`diaDaVigencia`). */
 export const listarNormas = Effect.fn("consultasNormas.listarNormas")(function* () {
+  const data = yield* (yield* FontesNormativas.FontesNormativas).diaDaVigencia;
   const linhas = yield* linhasNormasListadas(
-    `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, status_vigencia, ementa, aliases_json, keywords_json,
-            (COALESCE(status_vigencia = 'a confirmar', 0) OR COALESCE(json_type(front_matter_json, '$.vigencia_a_confirmar') = 'text', 0)) AS a_confirmar
+    `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, ${STATUS_NA_DATA} AS status_vigencia, ementa,
+            aliases_json, keywords_json
        FROM normas ORDER BY id`,
+    [data, data],
   );
-  return linhas.map(({ aliases_json, keywords_json, a_confirmar, ...n }): NormaListada => ({
+  return linhas.map(({ aliases_json, keywords_json, ...n }): NormaListada => ({
     ...n,
     aliases: aliases_json,
     palavras_chave: keywords_json,
-    vigencia_a_confirmar: a_confirmar === 1,
   }));
 });
 

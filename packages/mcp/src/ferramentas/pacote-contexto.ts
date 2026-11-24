@@ -100,11 +100,11 @@ const Transicao = Schema.Struct({
   norma_anterior: TextoNulo,
   aplica_a: Texto,
   regra: Texto,
-  /** `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`, em `vigencia_em`. */
+  /** `a-iniciar`, `em-curso` ou `encerrada`, em `vigencia_em`. */
   situacao: Texto,
   inicio: Texto,
+  /** `null` quando a norma que estabelece a regra aguarda publicação. */
   inicio_em: TextoNulo,
-  inicio_minimo: TextoNulo,
   fim: Texto,
   fim_em: TextoNulo,
   caput: Schema.optionalKey(Schema.Array(Texto)),
@@ -295,7 +295,7 @@ function blocoTransicao(t: (typeof Transicao)["Type"]): Bloco {
     blocoItem({ titulo: t.id, link, detalhe: `${t.tipo}; situação: ${t.situacao}` }),
     `Aplica-se a: ${t.aplica_a}`,
     `Regra: ${t.regra}`,
-    `Início: ${t.inicio_em ?? t.inicio}${t.inicio_minimo ? ` (não antes de ${t.inicio_minimo})` : ""}; fim: ${t.fim_em ?? t.fim}${t.norma_anterior ? `; norma anterior: ${t.norma_anterior}` : ""}`,
+    `Início: ${t.inicio_em ?? `${t.inicio} (a norma aguarda publicação)`}; fim: ${t.fim_em ?? t.fim}${t.norma_anterior ? `; norma anterior: ${t.norma_anterior}` : ""}`,
   ].join("\n");
   if (t.texto === null) return cabecalho;
   return {

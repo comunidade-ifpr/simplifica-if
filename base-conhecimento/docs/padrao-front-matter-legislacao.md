@@ -29,13 +29,13 @@ O `front matter` existe para:
 | `ano` | inteiro | Ano da norma |
 | `data_publicacao` | data ISO | Formato `AAAA-MM-DD`; data do ato usada para ordenar as normas (as datas precisas estão nos três campos abaixo) |
 | `assinada_em` | data ISO | Data do ato (assinatura) |
-| `publicada_em` | data ISO ou `a confirmar` | Publicação oficial (DOU, Boletim de Serviço) |
-| `vigente_de` | data ISO ou `a confirmar` | Início dos efeitos (vigência); `a confirmar` quando depende da publicação não registrada |
+| `publicada_em` | data ISO, `a confirmar` ou `aguardando publicação` | Publicação oficial (DOU, Boletim de Serviço) |
+| `vigente_de` | data ISO ou `aguardando publicação` | Início dos efeitos (vigência). Obrigatório com data: norma sem a data de vigência não entra na base. `aguardando publicação` só para o ato assinado e ainda não publicado, que não está em vigor (hoje, a Res. CNE/CP nº 2/2026); quando sair a publicação, troque pela data |
 | `datas_fonte` | string | De onde vieram as três datas (dispositivo de vigência, nota de publicação, fonte oficial conferida) |
 | `orgao` | string | Ex.: `CONSUP/IFPR`, `CNE/CP`, `Presidência da República` |
 | `jurisdicao` | string | Ex.: `BR`, `IFPR`; com `tipo_documento`, decide a pasta do arquivo |
 | `ementa` | string | Ementa oficial ou resumo normativo reconhecível |
-| `status_vigencia` | string | **Gerado** (ver [Vigência calculada](#vigência-calculada)): `vigente`, `alterada`, `parcialmente revogada`, `revogada` |
+| `status_vigencia` | string | **Gerado** (ver [Vigência calculada](#vigência-calculada)): `vigente`, `alterada`, `parcialmente revogada`, `revogada`, `ainda-nao-vigente` |
 | `keywords` | lista | Palavras-chave curtas e úteis para recuperação |
 
 ### Campos recomendados
@@ -53,7 +53,6 @@ O `front matter` existe para:
 | Campo | Origem |
 |-------|--------|
 | `status_vigencia` | status calculado na `data_referencia`: pelas relações de `relacoes.yaml` e, como piso, pelo que o próprio texto mostra (nota de redação ou inclusão: `alterada`; dispositivo revogado: `parcialmente revogada`) |
-| `vigencia_a_confirmar` | só quando o cálculo depende de data "a confirmar": a explicação |
 | `revoga`, `revogada_por` | relações `revoga` (origem vê o alvo; o alvo vê a origem com o dispositivo operador e o alcance) |
 | `altera`, `alterada_por` | relações `altera` |
 | `regulamenta`, `regulamentada_por` | relações `regulamenta` |
@@ -133,7 +132,7 @@ Dispõe sobre as diretrizes do trabalho do Docente de Educação Especial no IFP
 - `status_vigencia` só aceita estado de vigência; a natureza do documento fica em `tipo_documento`.
 - Parecer do CNE (`tipo_documento: Parecer`, `orgao: CNE/CEB`, `CNE/CES` ou `CNE/CP`) fica em `normas/br/pareceres/`, com ID `br/cne-ceb/parecer/<ano>/<número>`. O parecer só produz efeito depois da homologação do Ministro da Educação (Lei nº 9.131/1995): `assinada_em` é a data de aprovação no colegiado, e `publicada_em` e `vigente_de` são a data da publicação do despacho de homologação no DOU; `fonte_referencia` traz o processo e o despacho. Sem artigos, cada seção (relatório, mérito, voto, decisão) é um dispositivo `#secaoN`. A `ementa` diz a natureza do parecer: consulta que interpreta a norma ou parecer que fundamenta uma resolução. O `status_vigencia: vigente` de um parecer homologado não o torna norma obrigatória por si; a resolução que ele fundamenta registra a relação `fundamenta-se-em` em `relacoes.yaml`. Parecer citado sem texto fica em `stubs.yaml`, com o mesmo ID.
 - Relações normativas entre normas vão em `base-conhecimento/relacoes.yaml` (ver [Relações](#relações-relacoesyaml)); o front matter das duas pontas é gerado dali. Alvo ou origem sem texto na base entra como stub (`normas/stubs.yaml`).
-- Datas: nunca invente. Sem evidência no texto da norma ou na fonte oficial conferida, use `a confirmar` e diga em `datas_fonte` o que falta.
+- Datas: nunca invente. `vigente_de` é obrigatório: ache a data no texto da norma (cláusula de vigência) e na fonte oficial (DOU, Boletim de Serviço do SEI); sem ela, a norma não entra na base. `publicada_em` sem evidência fica `a confirmar`. Diga em `datas_fonte` de onde veio cada data e o critério (vigência na publicação, na aprovação, na assinatura de nota técnica sem cláusula).
 
 ---
 
@@ -202,11 +201,11 @@ IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`
 
 ## Relações (`relacoes.yaml`)
 
-`base-conhecimento/relacoes.yaml` é a fonte única das relações `revoga`, `altera`, `regulamenta` e `fundamenta-se-em`: origem, dispositivo operador (`#art74-ii`), alvo (ato e, se parcial, `alvo_dispositivo` ou `alcance`), `efeito_de` (data ou vigência da origem), evidência literal (`evidencia.em` + `trecho`, conferida pelo validador), `confirmado_em` e `proposta` (`front-matter`, `regex` ou `manual`). `pnpm kb relacoes --propor` lista o que o regex sobre "Ficam revogados", "Revogam-se" e "passa a vigorar" encontra e ainda não está registrado nem descartado; uma proposta só entra depois de conferida no texto (descartes ficam em `descartadas`, com o motivo).
+`base-conhecimento/relacoes.yaml` é a fonte única das relações `revoga`, `altera`, `regulamenta` e `fundamenta-se-em`: origem, dispositivo operador (`#art74-ii`), alvo (ato e, se parcial, `alvo_dispositivo` ou `alcance`), `efeito_de` (data ou vigência da origem; obrigatório com data quando a origem é stub, que não tem `vigente_de`: em `revoga` e `altera`, o validador recusa a relação sem ele), evidência literal (`evidencia.em` + `trecho`, conferida pelo validador), `confirmado_em` e `proposta` (`front-matter`, `regex` ou `manual`). `pnpm kb relacoes --propor` lista o que o regex sobre "Ficam revogados", "Revogam-se" e "passa a vigorar" encontra e ainda não está registrado nem descartado; uma proposta só entra depois de conferida no texto (descartes ficam em `descartadas`, com o motivo).
 
 ## Vigência calculada
 
-O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. O front matter é um retrato nessa data: o app, o simplifica-mcp e a CLI `kb` calculam a vigência no dia da consulta, e a `data_referencia` não precisa avançar a cada norma nova. Para outra data: `pnpm kb ficha-norma <id> --em AAAA-MM-DD`.
+O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. A vigência é calculada, nunca presumida: toda norma tem `vigente_de` com data, e toda relação de origem stub, `efeito_de` com data. A norma `aguardando publicação` (hoje, a Res. CNE/CP nº 2/2026) está `ainda-nao-vigente`, as relações que ela opera não produzem efeito (a Res. CNE/CP nº 1/2021 segue vigente) e as regras de transição dela ainda não começaram; quando sair a publicação, a data entra em `vigente_de` e `publicada_em`. Stubs atingidos por relações têm de ter o status calculado. O front matter é um retrato nessa data: o app, o simplifica-mcp e a CLI `kb` calculam a vigência no dia da consulta, e a `data_referencia` não precisa avançar a cada norma nova. Para outra data: `pnpm kb ficha-norma <id> --em AAAA-MM-DD`.
 
 Regras de transição (direito de conclusão, prazos de adequação) são dados em `base-conhecimento/transicoes.yaml` e aparecem em `kb ficha-norma`: revogada não é inaplicável.
 

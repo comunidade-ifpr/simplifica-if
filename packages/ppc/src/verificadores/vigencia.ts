@@ -1,8 +1,8 @@
 // @effect-diagnostics globalDate:off -- aritmética de datas AAAA-MM-DD da base, sem relógio
 /**
  * Vigência das normas na data de referência da base, para os verificadores: o status que o `kb`
- * calcula (`statusEm`), se ele é certo ou depende de data "a confirmar" (a publicação da Res. CNE/CP
- * nº 2/2026 no DOU, por exemplo), e as regras de transição que preservam a norma revogada.
+ * calcula (`statusEm`; a norma que aguarda publicação, como a Res. CNE/CP nº 2/2026, está
+ * `ainda-nao-vigente`) e as regras de transição que preservam a norma revogada.
  *
  * E os marcos normativos da revisão (`base-conhecimento/revisao-ppc/marcos-normativos.json`): para cada linha
  * normativa, a ficha responsável, a única que eleva a gravidade de um fato do marco a `nao_atende`; as
@@ -14,7 +14,6 @@ import { sucessorasDe, type Relacao } from "@simplifica-if/kb/normas/relacoes";
 import {
   type DatasNorma,
   type FonteVigencia,
-  type ResultadoVigencia,
   statusEm,
   type Transicao,
   type TextoConsolidado,
@@ -25,14 +24,7 @@ export type TransicaoVigente = { id: string; norma: string; dispositivo: string;
 
 export type VigenciaNorma = {
   status: string;
-  /**
-   * `false` quando o status depende de data "a confirmar" recente: o efeito que o decide (o início da
-   * norma vigente, ou a revogação) não pode ter ocorrido antes de uma data a menos de 180 dias da data
-   * de referência. Efeito "a confirmar" mais antigo (a Res. CONSUP/IFPR nº 190/2024, sem a publicação
-   * registrada) vale como presumido: a falta do dado na base não é incerteza jurídica.
-   */
-  certo: boolean;
-  /** Regras de transição em curso (ou a confirmar) que preservam a norma: prazo de adequação, ressalva de revogação, faculdade de adequação. */
+  /** Regras de transição em curso que preservam a norma: prazo de adequação, ressalva de revogação, faculdade de adequação. */
   transicoes: TransicaoVigente[];
   /** Quando a revogação total passou a valer (AAAA-MM-DD), se a base registra; só para `revogada`. */
   revogadaEm?: string | null;
@@ -44,20 +36,8 @@ export type ConsultaVigencia = ((id: string) => VigenciaNorma) & { readonly data
 /** Tipos de transição que deixam citar a norma revogada sem desconformidade (o direito de conclusão é dos estudantes, não do PPC). */
 const TIPOS_QUE_PRESERVAM = new Set(["prazo-de-adequacao", "ressalva-de-revogacao", "faculdade-de-adequacao"]);
 
-/** Janela em que uma data "a confirmar" ainda é incerteza de fato (a publicação pode não ter saído). */
-const DIAS_PRESUNCAO = 180;
-
 const diasAntes = (data: string, dias: number) =>
   new Date(Date.parse(`${data}T00:00:00Z`) - dias * 86_400_000).toISOString().slice(0, 10);
-
-/** O efeito incerto que decide o status é anterior ao limite (ocorreu, com folga)? */
-function presumidaHaTempo(status: ResultadoVigencia, limite: string): boolean {
-  if (status.status === "revogada") {
-    const revogacoes = status.eventos.filter((e) => e.tipo === "revoga" && !e.parcial && e.ocorreu !== false);
-    return revogacoes.some((e) => e.ocorreu === true || (e.efeito_minimo !== null && e.efeito_minimo <= limite));
-  }
-  return status.inicio.certo || (status.inicio.minimo !== null && status.inicio.minimo <= limite);
-}
 
 /** Os dados da vigência, planos (atravessam o `postMessage` de um Worker): do `kb.sqlite` no app. */
 export type DadosVigencia = {
@@ -85,7 +65,6 @@ export function vigenciaDeDados(dados: DadosVigencia, data: string): ConsultaVig
 /** A consulta memorizada sobre os dados da vigência (dos arquivos do checkout ou do `kb.sqlite`). */
 export function consultarVigencia(fonte: FonteVigencia, data: string): ConsultaVigencia {
   const cache = new Map<string, VigenciaNorma>();
-  const limite = diasAntes(data, DIAS_PRESUNCAO);
   const consulta = (id: string): VigenciaNorma => {
     const salvo = cache.get(id);
     if (salvo) return salvo;
@@ -100,13 +79,12 @@ export function consultarVigencia(fonte: FonteVigencia, data: string): ConsultaV
       )
       .map((t) => ({ id: t.id, norma: t.norma, dispositivo: t.dispositivo, regra: t.regra }));
     const revogacoes = status.eventos
-      .filter((e) => e.tipo === "revoga" && !e.parcial && e.ocorreu !== false)
-      .map((e) => e.efeito_de ?? e.efeito_minimo)
+      .filter((e) => e.tipo === "revoga" && !e.parcial && e.ocorreu)
+      .map((e) => e.efeito_de)
       .filter((d): d is string => d !== null)
       .sort();
     const vigencia: VigenciaNorma = {
       status: status.status,
-      certo: status.certo || presumidaHaTempo(status, limite),
       transicoes,
       revogadaEm: status.status === "revogada" ? (revogacoes[0] ?? null) : null,
     };

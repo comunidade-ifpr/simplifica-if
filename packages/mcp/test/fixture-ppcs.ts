@@ -24,9 +24,6 @@ export const LINHAS_SECAO_LONGA = 1500;
 
 const md = (ppc: string) => `base-conhecimento/institucional/ifpr/ppcs/${ppc}.md`;
 
-const A_CONFIRMAR_2021 =
-  "início de vigência de Resolução CNE/CP nº 1/2021 a confirmar (ato de 2021-01-05; publicação não registrada): presumida vigente";
-
 export function criarBancoFixturePpcs(opcoes: OpcoesFixture = {}): string {
   const caminho = criarBancoFixture(opcoes);
   const db = new NodeSqlite.DatabaseSync(caminho);
@@ -63,16 +60,16 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
       keywords_json: "[]",
       front_matter_json: frontMatter && JSON.stringify({ id, ...frontMatter }),
     });
-  norma("br/cne-cp/res/2021/1", "Resolução CNE/CP nº 1/2021", "revogada", "2021-01-05", {
+  // como na base: a 2/2026 aguarda publicação, e a 1/2021 segue vigente
+  norma("br/cne-cp/res/2021/1", "Resolução CNE/CP nº 1/2021", "vigente", "2021-01-05", {
     assinada_em: "2021-01-05",
-    publicada_em: "a confirmar",
-    vigente_de: "a confirmar",
-    vigencia_a_confirmar: A_CONFIRMAR_2021,
+    publicada_em: "2021-01-06",
+    vigente_de: "2021-01-06",
   });
-  norma("br/cne-cp/res/2026/2", "Resolução CNE/CP nº 2/2026", "vigente", "2026-11-11", {
+  norma("br/cne-cp/res/2026/2", "Resolução CNE/CP nº 2/2026", "ainda-nao-vigente", "2026-11-11", {
     assinada_em: "2026-11-11",
-    publicada_em: "a confirmar",
-    vigente_de: "a confirmar",
+    publicada_em: "aguardando publicação",
+    vigente_de: "aguardando publicação",
   });
   norma("br/lei/1996/9394", "Lei nº 9.394/1996", "vigente", "1996-12-20", {
     assinada_em: "1996-12-20",
@@ -103,7 +100,6 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
       "Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.",
     inicio: "vigencia",
     fim: "P2Y",
-    inicio_minimo: "2026-11-11",
     evidencia: "é assegurado período de transição de até dois anos, a partir da vigência desta Resolução",
     path: "base-conhecimento/transicoes.yaml",
   });

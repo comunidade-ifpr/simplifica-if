@@ -16,7 +16,6 @@ const NORMA: FichaNorma["norma"] = {
   titulo: "Resolução CNE/CP nº 2/2026",
   situacao: "base",
   status_vigencia: "vigente",
-  vigencia_a_confirmar: false,
   data_publicacao: "2026-11-11",
   ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
   link: "ifpr://norma/br/cne-cp/res/2026/2",
@@ -47,20 +46,13 @@ const DISPOSITIVO: DispositivoLido = {
   estrutura: [],
 };
 
-const ficha = (mudar: {
-  status: string;
-  certo?: boolean;
-  aConfirmar?: boolean;
-  pendencias?: string[];
-}): FichaNorma => ({
-  norma: { ...NORMA, vigencia_a_confirmar: mudar.aConfirmar ?? false },
+const ficha = (mudar: { status: string; aguardando?: boolean }): FichaNorma => ({
+  norma: NORMA,
   vigencia: {
     data: "2026-11-13",
     status: mudar.status,
-    certo: mudar.certo ?? true,
-    inicio: { data: "2026-11-12", minimo: null, certo: true },
+    inicio: mudar.aguardando ? { data: null, aguardando: true } : { data: "2026-11-12", aguardando: false },
     eventos: [],
-    pendencias: mudar.pendencias ?? [],
   },
   alteracoes_anotadas: [],
   relacoes: { entrada: [], saida: [] },
@@ -88,37 +80,34 @@ describe("selosDaNorma", () => {
             operador: "#art74-ii",
             alvo_dispositivo: null,
             alcance: null,
-            efeito_de: null,
-            efeito_minimo: "2026-11-11",
-            ocorreu: "a confirmar",
+            efeito_de: "2026-11-12",
+            ocorreu: "sim",
           },
         ],
       },
     };
     expect(selosDaNorma(comEvento)[0]!.detalhe).toBe(
-      "Em 13/11/2026: revogada. Revogação com efeito em a confirmar, não antes de 11/11/2026. Norma revogada ainda pode valer em situações de transição: veja as regras abaixo.",
+      "Em 13/11/2026: revogada. Revogação com efeito em 12/11/2026. Norma revogada ainda pode valer em situações de transição: veja as regras abaixo.",
     );
     expect(selosDaNorma(ficha({ status: "vigente" }))[0]!.detalhe).toBe(
       "Em 13/11/2026: em vigor. Início da vigência: 12/11/2026.",
     );
   });
 
-  it("vigente, revogada e a confirmar", () => {
+  it("vigente, revogada e aguardando publicação", () => {
     expect(selosDaNorma(ficha({ status: "vigente" })).map((s) => s.rotulo)).toEqual(["Em vigor"]);
     const revogada = selosDaNorma(ficha({ status: "revogada" }));
     expect(revogada.map((s) => [s.rotulo, s.variante])).toEqual([["Revogada", "error"]]);
     expect(revogada[0]!.detalhe).toContain("regras abaixo");
-    const aConfirmar = selosDaNorma(
-      ficha({ status: "vigente", certo: false, aConfirmar: true, pendencias: ["publicação não registrada"] }),
+    const aguardando = selosDaNorma(ficha({ status: "ainda-nao-vigente", aguardando: true }));
+    expect(aguardando.map((s) => [s.rotulo, s.sinal])).toEqual([["Ainda não está em vigor", "ainda-nao-vigente"]]);
+    expect(aguardando[0]!.detalhe).toBe(
+      "Em 13/11/2026: ainda não está em vigor. Assinada e ainda não publicada: entra em vigor com a publicação.",
     );
-    expect(aConfirmar.map((s) => s.rotulo)).toEqual(["Em vigor", "Vigência a confirmar"]);
-    expect(aConfirmar[1]!.detalhe).toContain("publicação não registrada");
   });
 
-  it("status desconhecido vira só 'a confirmar'", () => {
-    expect(selosDaNorma(ficha({ status: "a confirmar", certo: false })).map((s) => s.rotulo)).toEqual([
-      "Vigência a confirmar",
-    ]);
+  it("status não conferido (stub) vira só 'a confirmar'", () => {
+    expect(selosDaNorma(ficha({ status: "a confirmar" })).map((s) => s.rotulo)).toEqual(["Vigência a confirmar"]);
   });
 });
 

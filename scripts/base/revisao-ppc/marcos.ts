@@ -30,6 +30,7 @@ export function derivarMarco(marco: MarcoArquivo, derivar: Derivacao): Marco {
     id: marco.id,
     tema: marco.tema,
     vigente: derivado.vigente,
+    aguardando: derivado.aguardando,
     aplica_a: marco.aplica_a,
     substitui: derivado.substitui,
     antecessoras_historicas: derivado.antecessoras_historicas,

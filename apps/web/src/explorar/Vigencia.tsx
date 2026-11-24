@@ -1,6 +1,6 @@
 /**
  * O sinal de vigência de uma norma: uma forma por situação (cheio, com anel, meio, vazado e riscado,
- * tracejado), para que a cor nunca vá sozinha, e a palavra ao lado quando há espaço. É o mesmo sinal na
+ * vazado, tracejado), para que a cor nunca vá sozinha, e a palavra ao lado quando há espaço. É o mesmo sinal na
  * linha do tempo, nas linhas da coleção de normas e no cabeçalho da norma.
  */
 import { cn } from "../lib/utils.ts";
@@ -11,6 +11,7 @@ const ROTULOS: Readonly<Record<Vigencia, string>> = {
   alterada: "Em vigor, com alterações",
   "parcialmente revogada": "Revogada em parte",
   revogada: "Revogada",
+  "ainda-nao-vigente": "Ainda não está em vigor",
   "a confirmar": "Vigência a confirmar",
 };
 
@@ -19,6 +20,7 @@ const CORES: Readonly<Record<Vigencia, string>> = {
   alterada: "text-success",
   "parcialmente revogada": "text-warning-foreground",
   revogada: "text-destructive",
+  "ainda-nao-vigente": "text-warning-foreground",
   "a confirmar": "text-muted-foreground",
 };
 
@@ -28,6 +30,7 @@ export const VIGENCIAS: ReadonlyArray<Vigencia> = [
   "alterada",
   "parcialmente revogada",
   "revogada",
+  "ainda-nao-vigente",
   "a confirmar",
 ];
 
@@ -69,6 +72,8 @@ function Forma({ vigencia }: { readonly vigencia: Vigencia }) {
           <path d="M3.6 12.4 12.4 3.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </>
       );
+    case "ainda-nao-vigente":
+      return <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" />;
     case "a confirmar":
       return (
         <circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2.4 2.5" />

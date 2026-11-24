@@ -42,11 +42,10 @@ export function literalDoDispositivo(d: DispositivoTexto): string {
   return [...d.caput, d.texto, ...d.subordinados.map((s) => s.texto)].join("\n");
 }
 
-/** Linha curta da situação de uma norma: status e "a confirmar". */
+/** Linha curta da situação de uma norma: o status publicado. */
 export function situacaoDaNorma(n: NormaResumo): string {
   if (n.situacao !== "base") return n.situacao === "stub" ? "sem texto na base (stub)" : "referência externa";
-  const status = n.status_vigencia ?? "vigência não registrada";
-  return n.vigencia_a_confirmar && status !== "a confirmar" ? `${status} (a confirmar)` : status;
+  return n.status_vigencia ?? "vigência não registrada";
 }
 
 export interface BlocoComLiteral {

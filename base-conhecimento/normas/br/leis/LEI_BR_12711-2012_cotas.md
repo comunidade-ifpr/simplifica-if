@@ -24,7 +24,6 @@ aliases:
   - "Lei 12.711/2012"
   - "Lei de Cotas"
 fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm"
-vigencia_a_confirmar: "alteração por Lei nº 14.723/2023 produz efeito na vigência da origem, a confirmar (não antes de 2023-11-13): presumida em vigor; alteração por Lei nº 13.409/2016 produz efeito na vigência da origem, a confirmar (não antes de 2016-12-28): presumida em vigor"
 alterada_por:
   - "Lei nº 14.945/2024 (art. 8º) — art. 1º"
   - "Lei nº 14.723/2023 — parágrafo único do art. 1º, arts. 3º a 7º e inclusão dos arts. 7º-A a 7º-C"

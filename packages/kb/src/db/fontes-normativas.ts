@@ -72,10 +72,8 @@ export const esquemaLinhaRelacao = Schema.Struct({
   alcance: opcional,
   /** Como no arquivo: `vigencia-da-origem` ou data. */
   efeito_de: naoVazio,
-  /** Data do efeito (`efeitoDaRelacao`), ou `null` quando depende de data a confirmar. */
+  /** Data do efeito (`efeitoDaRelacao`), ou `null` quando a origem aguarda publicação. */
   efeito_em: data,
-  /** Limite inferior do efeito quando a data não é certa. */
-  efeito_minimo: data,
   evidencia_em: id,
   evidencia_trecho: naoVazio,
   confirmado_em: data,
@@ -95,8 +93,6 @@ export const esquemaLinhaVigencia = Schema.Struct({
   de: data,
   ate: data,
   status: Schema.Literals(STATUS_VIGENCIA),
-  /** `false` quando o status depende de data a confirmar. */
-  certo: Schema.Boolean,
   /** O que abre o intervalo: `inicio`, `anterior` ou a relação (`revoga br/cne-cp/res/2026/2#art74-ii`). */
   fonte: Schema.String,
 });
@@ -117,7 +113,6 @@ export const esquemaLinhaTransicao = Schema.Struct({
   /** Como no arquivo: duração ISO, data ou `sem-prazo`. */
   fim: naoVazio,
   inicio_em: data,
-  inicio_minimo: data,
   fim_em: data,
   evidencia: Schema.String,
   path: Schema.String,

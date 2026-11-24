@@ -23,6 +23,7 @@ const SITUACOES_VIGENCIA: Readonly<Record<string, string>> = {
   "parcialmente revogada": "Revogada em parte",
   revogada: "Revogada",
   alterada: "Alterada",
+  "ainda-nao-vigente": "Ainda não está em vigor",
   "a confirmar": "Vigência a confirmar",
 };
 
@@ -159,16 +160,29 @@ export interface FiltrosNormas {
   readonly orgao?: string | undefined;
   readonly tipo?: string | undefined;
   readonly ano?: string | undefined;
-  /** O `status_vigencia` publicado, ou `a-confirmar` para as com vigência a confirmar. */
+  /** O `status_vigencia` publicado. */
   readonly vigencia?: string | undefined;
 }
 
-export const A_CONFIRMAR = "a-confirmar";
+/**
+ * A situação de vigência que a tela mostra: a publicada; "a confirmar" quando falta (stub com o status
+ * não conferido, ou sem status).
+ */
+export type Vigencia =
+  | "vigente"
+  | "alterada"
+  | "parcialmente revogada"
+  | "revogada"
+  | "ainda-nao-vigente"
+  | "a confirmar";
 
-/** A situação de vigência que a tela mostra: a publicada, ou "a confirmar" quando falta. */
-export type Vigencia = "vigente" | "alterada" | "parcialmente revogada" | "revogada" | "a confirmar";
-
-const VIGENCIAS: ReadonlySet<string> = new Set(["vigente", "alterada", "parcialmente revogada", "revogada"]);
+const VIGENCIAS: ReadonlySet<string> = new Set([
+  "vigente",
+  "alterada",
+  "parcialmente revogada",
+  "revogada",
+  "ainda-nao-vigente",
+]);
 
 export function vigenciaDaNorma(norma: Pick<NormaDoIndice, "status_vigencia">): Vigencia {
   return norma.status_vigencia !== null && VIGENCIAS.has(norma.status_vigencia)
@@ -194,8 +208,7 @@ export function filtrarNormas(normas: ReadonlyArray<NormaDoIndice>, f: FiltrosNo
         (f.orgao === undefined || n.orgao === f.orgao) &&
         (f.tipo === undefined || n.tipo === f.tipo) &&
         (f.ano === undefined || String(n.ano) === f.ano) &&
-        (f.vigencia === undefined ||
-          (f.vigencia === A_CONFIRMAR ? n.vigencia_a_confirmar : n.status_vigencia === f.vigencia)) &&
+        (f.vigencia === undefined || n.status_vigencia === f.vigencia) &&
         (f.texto === undefined || respondeAoTexto(f.texto, [n.titulo, n.ementa, n.numero, ...n.apelidos])),
     )
     .sort((a, b) => (b.ano ?? 0) - (a.ano ?? 0) || comparar(a.titulo, b.titulo));

@@ -216,8 +216,7 @@ describe("citacoes_da_norma", () => {
       expect(d.norma).toMatchObject({
         id: "br/cne-cp/res/2021/1",
         situacao: "base",
-        status_vigencia: "revogada",
-        vigencia_a_confirmar: true,
+        status_vigencia: "vigente",
         link: "ifpr://norma/br/cne-cp/res/2021/1",
       });
       expect([d.total_ppcs, d.total_ocorrencias]).toEqual([2, 3]);
@@ -313,7 +312,7 @@ describe("citacoes_da_norma", () => {
 });
 
 describe("impacto_da_norma", () => {
-  it.effect("sucessoras, transições, relações, normas que citam, PPCs, fichas e aviso de vigência", () =>
+  it.effect("sucessoras, transições, relações, normas que citam, PPCs e fichas; sucessora aguardando publicação", () =>
     Effect.gen(function* () {
       const { resposta, texto } = yield* chamar(
         impactoDaNorma,
@@ -322,14 +321,15 @@ describe("impacto_da_norma", () => {
         TETO_IMPACTO,
       );
       const d = resposta.dados;
-      expect(d.status).toBe("revogada (a confirmar)");
+      // a 2/2026 aguarda publicação: a 1/2021 segue vigente, e a transição ainda não começou
+      expect(d.status).toBe("vigente");
       expect(d.sucessoras).toEqual(["br/cne-cp/res/2026/2"]);
       expect(d.transicoes).toEqual([
         {
           id: "dcnept-2026-art71",
           regra:
             "Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.",
-          situacao_na_data: "a confirmar",
+          situacao_na_data: "a-iniciar",
           link: "ifpr://norma/br/cne-cp/res/2026/2#art71",
         },
       ]);
@@ -369,8 +369,12 @@ describe("impacto_da_norma", () => {
           link: "ifpr://ficha/CT-CURR-12",
         },
       ]);
-      expect(resposta.avisos.map((a) => a.tipo)).toEqual(["vigencia-a-confirmar"]);
+      expect(resposta.avisos).toEqual([]);
       expect(texto).toContain("norma revogada não é inaplicável");
+      // a sucessora, ainda não vigente, vem com o aviso
+      const sucessora = yield* chamar(impactoDaNorma, { id: "br/cne-cp/res/2026/2" }, contexto(), TETO_IMPACTO);
+      expect(sucessora.resposta.dados.status).toBe("ainda-nao-vigente");
+      expect(sucessora.resposta.avisos.map((a) => a.tipo)).toEqual(["ainda-nao-vigente"]);
     }),
   );
 

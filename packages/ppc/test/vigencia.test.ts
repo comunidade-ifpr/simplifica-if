@@ -24,13 +24,16 @@ describe("marcos e vigência", () => {
     );
   });
 
-  test("data a confirmar: incerta perto da data, presumida passados 180 dias", () => {
-    // A 54/2011 foi revogada pela 190/2024 (assinada em 30/04/2024, publicação não registrada).
-    expect(vigenciaEm("2024-06-01")("ifpr/consup/res/2011/54").certo).toBe(false);
-    expect(vigenciaEm("2026-11-13")("ifpr/consup/res/2011/54")).toMatchObject({
+  test("vigência calculada pelas datas registradas, sem presunção", () => {
+    // A 54/2011 foi revogada pela 190/2024, publicada no Boletim de Serviço em 30/04/2024.
+    expect(vigenciaEm("2024-04-29")("ifpr/consup/res/2011/54").status).toBe("vigente");
+    expect(vigenciaEm("2024-04-30")("ifpr/consup/res/2011/54")).toMatchObject({
       status: "revogada",
-      certo: true,
+      revogadaEm: "2024-04-30",
     });
+    // A 2/2026 aguarda publicação: ainda não vigente, e a 1/2021, que ela revogará, segue vigente.
+    expect(vigenciaEm("2026-11-24")("br/cne-cp/res/2026/2").status).toBe("ainda-nao-vigente");
+    expect(vigenciaEm("2026-11-24")("br/cne-cp/res/2021/1").status).toBe("vigente");
     expect(vigenciaEm()("br/cne-ceb/res/2018/3").transicoes.map((t) => t.id)).toEqual(["dcnem-2024-art42"]);
   });
 

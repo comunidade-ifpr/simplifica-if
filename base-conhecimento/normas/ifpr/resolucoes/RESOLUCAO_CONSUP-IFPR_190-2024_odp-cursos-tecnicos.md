@@ -6,9 +6,9 @@ numero: 190
 ano: 2024
 data_publicacao: "2024-04-30"
 assinada_em: "2024-04-30"
-publicada_em: "a confirmar"
-vigente_de: "a confirmar"
-datas_fonte: "Art. 75: vigência a partir da publicação; a base registra só a assinatura eletrônica (30/04/2024)."
+publicada_em: "2024-04-30"
+vigente_de: "2024-04-30"
+datas_fonte: "Art. 75: vigência a partir da publicação (Boletim de Serviço Eletrônico em 30/04/2024, no SEI)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a Organização Didático-Pedagógica dos Cursos Técnicos de Nível Médio no âmbito do IFPR."
@@ -23,7 +23,6 @@ aliases:
   - "Resolução CONSUP/IFPR nº 190/2024"
   - "Resolução IFPR 190/2024"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3110625&id_orgao_publicacao=0"
-vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 190/2024 a confirmar (ato de 2024-04-30; publicação não registrada): presumida vigente"
 revoga:
   - "Resolução CONSUP/IFPR nº 54/2011"
 ---

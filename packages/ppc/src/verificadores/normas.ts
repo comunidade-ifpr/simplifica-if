@@ -24,8 +24,6 @@ import {
   normasRevogadasCitadas,
   type PpcPreparado,
   resultado,
-  DATA_NAO_CONFIRMADA,
-  textoTransicao,
   tituloDaNorma,
   type Trecho,
   trecho,
@@ -33,7 +31,6 @@ import {
 } from "./comum.ts";
 import { MARCOS, marcoDa } from "./vigencia.ts";
 
-const DCN_EPT = "br/cne-cp/res/2026/2";
 const DCNEM = "br/cne-ceb/res/2024/2";
 const LDB = "br/lei/1996/9394";
 const LEI_14945 = "br/lei/2024/14945";
@@ -48,26 +45,34 @@ function primeiraCitacao(ppc: PpcPreparado, id: string, linhas?: ReadonlySet<num
   return lista.find(citacaoSegura) ?? lista[0];
 }
 
+/**
+ * A norma de um marco em vigor: a mais recente da linha já vigente. A que aguarda publicação (a Res.
+ * CNE/CP nº 2/2026) ainda não conta, mas citá-la junto com a vigente, ou no lugar dela, não falta.
+ */
+function vigenteDoMarco(base: BaseVerificacao, marco: string): { id: string; aceitas: string[] } {
+  const linha = MARCOS.find((m) => m.id === marco)!.linha;
+  const id = [...linha].reverse().find((n) => base.vigencia(n).status !== "ainda-nao-vigente") ?? linha.at(-1)!;
+  return { id, aceitas: linha.slice(linha.indexOf(id)) };
+}
+
+/** Primeira citação da norma em vigor do marco, ou de uma mais recente da linha. */
+function citacaoDoMarco(ppc: PpcPreparado, aceitas: readonly string[], linhas?: ReadonlySet<number>) {
+  for (const id of aceitas) {
+    const citacao = primeiraCitacao(ppc, id, linhas);
+    if (citacao) return citacao;
+  }
+  return undefined;
+}
+
 const evidenciaDe = (ppc: PpcPreparado, citacao: { linha: number; trecho: string } | undefined): Trecho[] =>
   citacao ? [trecho(ppc, citacao.linha, citacao.trecho)] : [];
 
 /**
  * A norma vigente de um marco (DCN da EPT, DCNEM) não é citada. Só a ficha responsável pelo marco
- * eleva a `nao_atende`, e só com a vigência certa; com vigência a confirmar (a Res. CNE/CP nº 2/2026,
- * sem a publicação no DOU registrada), sai `a_conferir` com a transição da norma anterior.
+ * eleva a `nao_atende`.
  */
 function ausenciaDoMarco(base: BaseVerificacao, id: string, ficha: string, mensagem: string): Apontamento {
   const marco = marcoDa(id, base.relacoes);
-  const anterior = marco ? marco.linha[marco.linha.indexOf(id) - 1] : undefined;
-  if (!base.vigencia(id).certo) {
-    const transicao = anterior ? textoTransicao(base, anterior, { incerta: false }) : { texto: "", fontes: [] };
-    return {
-      estado: "a_conferir",
-      mensagem: `${mensagem} ${DATA_NAO_CONFIRMADA} ${transicao.texto}`.trim(),
-      trechos: [],
-      fontes: [linkNorma(id), ...transicao.fontes],
-    };
-  }
   const responsavel = marco?.responsavel ?? "CT-SUP-12";
   return responsavel === ficha
     ? { estado: "nao_atende", mensagem, trechos: [], fontes: [linkNorma(id)] }
@@ -91,7 +96,7 @@ export const normasRevogadas: Verificador = {
   id: "d-normas-revogadas",
   ficha: "CT-SUP-12",
   descricao:
-    "Normas citadas em qualquer ponto do PPC com `status_vigencia: revogada` no registro. Pendência só com revogação certa, sem transição em curso, sem nenhuma sucessora da cadeia citada, fora de seção de histórico e quando a norma não é de marco de outra ficha (a 11/2009 é da CT-SUP-24); senão, a conferir. E a norma vigente dos marcos (DCN da EPT; no integrado, DCNEM) não citada, quando nenhuma anterior da linha é citada: com vigência a confirmar (a Res. CNE/CP nº 2/2026), a conferir com a transição.",
+    "Normas citadas em qualquer ponto do PPC com `status_vigencia: revogada` no registro. Pendência só sem transição em curso, sem nenhuma sucessora da cadeia citada, fora de seção de histórico e quando a norma não é de marco de outra ficha (a 11/2009 é da CT-SUP-24); senão, a conferir. E a norma vigente dos marcos (DCN da EPT; no integrado, DCNEM) não citada, quando nenhuma norma da linha é citada: a vigente é a mais recente já em vigor (a que aguarda publicação, como a Res. CNE/CP nº 2/2026, ainda não conta).",
   verificar(ppc, base) {
     const revogadas = normasRevogadasCitadas(ppc.citacoes, ppc.citacoes, base);
     const apontamentos = revogadas.map((norma) => apontamentoRevogada(ppc, base, norma, this.ficha));
@@ -99,7 +104,8 @@ export const normasRevogadas: Verificador = {
     // (citada a anterior, o apontamento da revogada já trata o caso).
     const citadas = citacoesPorAto(ppc.citacoes);
     for (const marco of MARCOS.filter((m) => m.id === "dcn_ept" || (m.id === "dcnem" && base.forma === "integrado"))) {
-      const vigente = marco.linha.at(-1)!;
+      // a mais recente já em vigor: a que aguarda publicação ainda não é a norma do marco
+      const vigente = vigenteDoMarco(base, marco.id).id;
       if (marco.linha.some((n) => citadas.has(n))) continue;
       apontamentos.push(
         ausenciaDoMarco(
@@ -135,17 +141,18 @@ export const baseLegalIdentidade: Verificador = {
   id: "d-base-legal-identidade",
   ficha: "CT-IDENT-08",
   descricao:
-    "Nas seções de identidade (identificação, justificativa, objetivos, concepção, perfil, legislação), as normas revogadas citadas; e, em todo o PPC, a DCN da EPT vigente (Res. CNE/CP nº 2/2026) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024) citadas. É ficha de base legal dos marcos: registra os fatos como a conferir, e a pendência fica com a ficha responsável (CT-SUP-12).",
+    "Nas seções de identidade (identificação, justificativa, objetivos, concepção, perfil, legislação), as normas revogadas citadas; e, em todo o PPC, a DCN da EPT vigente (a Res. CNE/CP nº 1/2021, enquanto a nº 2/2026 aguarda publicação; citar a mais recente também vale) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024) citadas. É ficha de base legal dos marcos: registra os fatos como a conferir, e a pendência fica com a ficha responsável (CT-SUP-12).",
   verificar(ppc, base) {
     const linhas = new Set(linhasDasSecoes(ppc, SECOES_IDENTIDADE));
     const naIdentidade = ppc.citacoes.filter((c) => linhas.has(c.linha));
     const apontamentos: Apontamento[] = normasRevogadasCitadas(naIdentidade, ppc.citacoes, base).map((norma) =>
       apontamentoRevogada(ppc, base, norma, this.ficha),
     );
-    const exigidas = base.forma === "integrado" ? [DCN_EPT, DCNEM] : [DCN_EPT];
+    const dcnEpt = vigenteDoMarco(base, "dcn_ept");
+    const exigidas = base.forma === "integrado" ? [dcnEpt.id, DCNEM] : [dcnEpt.id];
     const evidencias: Trecho[] = [];
     for (const id of exigidas) {
-      const citacao = primeiraCitacao(ppc, id);
+      const citacao = id === dcnEpt.id ? citacaoDoMarco(ppc, dcnEpt.aceitas) : primeiraCitacao(ppc, id);
       if (citacao) evidencias.push(...evidenciaDe(ppc, citacao));
       else
         apontamentos.push(
@@ -153,7 +160,7 @@ export const baseLegalIdentidade: Verificador = {
             base,
             id,
             this.ficha,
-            `O PPC não cita ${titulo(base, id)}, ${id === DCN_EPT ? NOME_DO_MARCO["dcn_ept"] : NOME_DO_MARCO["dcnem"]}.`,
+            `O PPC não cita ${titulo(base, id)}, ${id === dcnEpt.id ? NOME_DO_MARCO["dcn_ept"] : NOME_DO_MARCO["dcnem"]}.`,
           ),
         );
     }
@@ -179,10 +186,11 @@ export const marcosNasReferencias: Verificador = {
   id: "d-marcos-nas-referencias",
   ficha: "CT-SUP-09",
   descricao:
-    "Na seção de referências, a DCN da EPT vigente (Res. CNE/CP nº 2/2026) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024), a LDB e a Lei nº 14.945/2024. Ausente em todo o PPC é pendência para a LDB; as DCN são marcos de CT-SUP-12 (aqui, a conferir) e a Lei nº 14.945/2024, “quando pertinente”, também fica a conferir; citada só fora das referências, a conferir. As demais normas citadas com segurança no texto e ausentes das referências vão num apontamento só, a conferir. As normas revogadas ficam com CT-SUP-12.",
+    "Na seção de referências, a DCN da EPT vigente (a Res. CNE/CP nº 1/2021, enquanto a nº 2/2026 aguarda publicação; a mais recente também vale) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024), a LDB e a Lei nº 14.945/2024. Ausente em todo o PPC é pendência para a LDB; as DCN são marcos de CT-SUP-12 (aqui, a conferir) e a Lei nº 14.945/2024, “quando pertinente”, também fica a conferir; citada só fora das referências, a conferir. As demais normas citadas com segurança no texto e ausentes das referências vão num apontamento só, a conferir. As normas revogadas ficam com CT-SUP-12.",
   verificar(ppc, base) {
     const linhas = new Set(linhasDasSecoes(ppc, new Set(["referencias"])));
-    const exigidas = base.forma === "integrado" ? [DCN_EPT, DCNEM, LDB, LEI_14945] : [DCN_EPT];
+    const dcnEpt = vigenteDoMarco(base, "dcn_ept");
+    const exigidas = base.forma === "integrado" ? [dcnEpt.id, DCNEM, LDB, LEI_14945] : [dcnEpt.id];
     const fontes = exigidas.map(linkNorma);
     if (!linhas.size)
       return resultado(
@@ -200,12 +208,13 @@ export const marcosNasReferencias: Verificador = {
     const apontamentos: Apontamento[] = [];
     const evidencias: Trecho[] = [];
     for (const id of exigidas) {
-      const nasReferencias = primeiraCitacao(ppc, id, linhas);
+      const aceitas = id === dcnEpt.id ? dcnEpt.aceitas : [id];
+      const nasReferencias = citacaoDoMarco(ppc, aceitas, linhas);
       if (nasReferencias) {
         evidencias.push(...evidenciaDe(ppc, nasReferencias));
         continue;
       }
-      const noTexto = primeiraCitacao(ppc, id);
+      const noTexto = citacaoDoMarco(ppc, aceitas);
       apontamentos.push(
         noTexto
           ? {
@@ -214,7 +223,7 @@ export const marcosNasReferencias: Verificador = {
               trechos: evidenciaDe(ppc, noTexto),
               fontes: [linkNorma(id)],
             }
-          : id === DCN_EPT || id === DCNEM
+          : id === dcnEpt.id || id === DCNEM
             ? ausenciaDoMarco(base, id, this.ficha, `A seção de referências não traz ${titulo(base, id)}.`)
             : {
                 estado: id === LEI_14945 ? "a_conferir" : "nao_atende",
@@ -224,7 +233,7 @@ export const marcosNasReferencias: Verificador = {
               },
       );
     }
-    const faltantes = normasForaDasReferencias(ppc, base, linhas, new Set(exigidas));
+    const faltantes = normasForaDasReferencias(ppc, base, linhas, new Set([...exigidas, ...dcnEpt.aceitas]));
     if (faltantes) apontamentos.push(faltantes);
     return resultado(this, apontamentos, {
       estado: "atende",

@@ -7,8 +7,8 @@ ano: 2011
 data_publicacao: "2011-12-21"
 assinada_em: "2011-12-21"
 publicada_em: "a confirmar"
-vigente_de: "a confirmar"
-datas_fonte: "Sem cláusula de vigência no texto da base."
+vigente_de: "2011-12-21"
+datas_fonte: "Art. 123: vigência na aprovação pelo Conselho Superior (21/12/2011)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a Organização Didático-Pedagógica da Educação Superior no âmbito do IFPR."
@@ -23,7 +23,6 @@ aliases:
   - "Resolução nº 55/2011"
   - "Resolução CONSUP/IFPR 55/2011"
 fonte_url: "https://ifpr.edu.br/resolucao-no-552011/"
-vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 55/2011 a confirmar (ato de 2011-12-21; publicação não registrada): presumida vigente; alteração por Resolução CONSUP/IFPR nº 14/2014 produz efeito na vigência da origem, a confirmar: presumida em vigor; alteração por Resolução CONSUP/IFPR nº 2/2017 produz efeito na vigência da origem, a confirmar: presumida em vigor; revogação por Resolução CONSUP/IFPR nº 2/2017 produz efeito na vigência da origem, a confirmar: presumida em vigor"
 revogada_por:
   - "Resolução CONSUP/IFPR nº 2/2017 — art. 104"
 alterada_por:

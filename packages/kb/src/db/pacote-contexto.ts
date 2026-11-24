@@ -102,6 +102,8 @@ const linhasMarcos = Sql.todas(
 interface NormasDoMarco {
   linha: string[];
   vigente: string;
+  /** Atos da linha ainda não vigentes na data de referência (aguardando publicação). */
+  aguardando: string[];
   substitui: string[];
   antecessoras_historicas: string[];
   dispositivos_revogados: string[];
@@ -207,7 +209,6 @@ export interface TransicaoDoPacote {
   situacao: TransicaoNoBanco["situacao"];
   inicio: string;
   inicio_em: string | null;
-  inicio_minimo: string | null;
   fim: string;
   fim_em: string | null;
   caput?: TrechoDispositivo["caput"];
@@ -441,7 +442,6 @@ export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")
       situacao: t.situacao,
       inicio: t.inicio,
       inicio_em: t.inicio_em,
-      inicio_minimo: t.inicio_minimo,
       fim: t.fim,
       fim_em: t.fim_em,
       ...(d?.caput.length ? { caput: d.caput } : {}),

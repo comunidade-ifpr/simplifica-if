@@ -32,7 +32,6 @@ export function resumoDaNorma(norma: Normas.FichaNorma): NormaResumo {
     titulo: norma.titulo,
     situacao: norma.situacao,
     status_vigencia: norma.status_vigencia,
-    vigencia_a_confirmar: norma.vigencia_a_confirmar,
     data_publicacao: norma.data_publicacao,
     ementa: norma.ementa,
     link: linkNorma(norma.id),
@@ -93,20 +92,14 @@ export const dispositivoTexto = Effect.fn("Leitura.dispositivoTexto")(function* 
   return dispositivo;
 });
 
-/** Avisos de vigência a confirmar e de norma sem texto, um por norma, na ordem em que aparecem. */
+/** Avisos de norma ainda não vigente e de norma sem texto, um por norma, na ordem em que aparecem. */
 export function avisosDasNormas(normas: Iterable<NormaResumo>): Aviso[] {
   const vistas = new Set<string>();
   const avisos: Aviso[] = [];
   for (const n of normas) {
     if (vistas.has(n.id)) continue;
     vistas.add(n.id);
-    if (n.vigencia_a_confirmar) {
-      avisos.push({
-        tipo: "vigencia-a-confirmar",
-        mensagem: `a vigência de ${n.titulo} está a confirmar; veja ficha_norma antes de concluir`,
-        ref: n.id,
-      });
-    }
+    avisos.push(...avisoVigencia(n));
     if (n.situacao !== "base") {
       avisos.push({
         tipo: "stub-sem-texto",
@@ -129,12 +122,13 @@ export const normaPedida = Effect.fn("Leitura.normaPedida")(function* (normas: N
   return resumoDaNorma(norma);
 });
 
+/** Norma da base que ainda não está em vigor (aguardando publicação, ou com vigência futura). */
 export function avisoVigencia(norma: NormaResumo): Aviso[] {
-  return norma.vigencia_a_confirmar
+  return norma.situacao === "base" && norma.status_vigencia === "ainda-nao-vigente"
     ? [
         {
-          tipo: "vigencia-a-confirmar",
-          mensagem: `a vigência de ${norma.titulo} está a confirmar (status publicado: ${norma.status_vigencia ?? "sem status"}); diga isso ao usuário`,
+          tipo: "ainda-nao-vigente",
+          mensagem: `${norma.titulo} ainda não está em vigor (aguarda publicação ou vigência futura; veja ficha_norma): diga isso ao usuário e não a trate como vigente`,
           ref: norma.id,
         },
       ]

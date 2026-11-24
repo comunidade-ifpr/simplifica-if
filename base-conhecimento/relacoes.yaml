@@ -142,6 +142,7 @@ relacoes:
     origem: br/cne-ceb/res/2025/6
     alvo: br/cne-ceb/res/2025/3
     alvo_dispositivo: "#art18A"
+    efeito_de: "2025-07-21"
     evidencia: { em: "br/cne-ceb/res/2025/3", trecho: "O art. 18-A foi incluído pela Resolução CNE/CEB nº 6, de 17 de julho de 2025" }
     confirmado_em: "2026-11-13"
     proposta: front-matter
@@ -255,6 +256,7 @@ relacoes:
     origem: br/lei/2023/14723
     alvo: br/lei/2012/12711
     alcance: parágrafo único do art. 1º, arts. 3º a 7º e inclusão dos arts. 7º-A a 7º-C
+    efeito_de: "2023-11-14"
     evidencia: { em: "br/lei/2012/12711#art1-parunico", trecho: "(Redação dada pela Lei nº 14.723, de 2023)" }
     confirmado_em: "2026-11-23"
     proposta: manual
@@ -263,6 +265,7 @@ relacoes:
     origem: br/lei/2016/13409
     alvo: br/lei/2012/12711
     alcance: arts. 3º, 5º e 7º (redação depois substituída pela Lei nº 14.723/2023)
+    efeito_de: "2016-12-29"
     evidencia: { em: "br/lei/2012/12711", trecho: "(Redação dada pela Lei nº 13.409, de 2016)" }
     confirmado_em: "2026-11-23"
     proposta: manual
@@ -481,6 +484,7 @@ relacoes:
     alvo: ifpr/consup/res/2011/55
     alcance: retificação do art. 113 (§§ 1º a 18 acrescidos)
     alvo_dispositivo: "#art113"
+    efeito_de: "2014-06-10"
     evidencia: { em: "ifpr/consup/res/2011/55#art113-par1", trecho: "(Parágrafo acrescido pela Resolução nº 14/2014)" }
     confirmado_em: "2026-11-23"
     proposta: front-matter
@@ -488,31 +492,38 @@ relacoes:
     origem: ifpr/consup/res/2017/2
     alvo: ifpr/consup/res/2011/55
     alvo_dispositivo: "#art102-parunico"
+    efeito_de: "2017-01-23"
     evidencia: { em: "ifpr/consup/res/2011/55#art102-parunico", trecho: "(Retificado pela Resolução nº 02/2017)" }
     confirmado_em: "2026-11-13"
     proposta: front-matter
+    nota: "Efeito na data do ato (23/01/2017): publicação não localizada."
   - tipo: revoga
     origem: ifpr/consup/res/2017/2
     alvo: ifpr/consup/res/2011/55
     alvo_dispositivo: "#art104"
+    efeito_de: "2017-01-23"
     evidencia: { em: "ifpr/consup/res/2011/55#art104", trecho: "(Revogado pela Resolução nº 02/2017)" }
     confirmado_em: "2026-11-13"
     proposta: manual
-    nota: Evidência no próprio texto da Res. 55/2011 (dispositivo tachado com a nota).
+    nota: "Evidência no próprio texto da Res. 55/2011 (dispositivo tachado com a nota). Efeito na data do ato (23/01/2017): publicação não localizada."
   - tipo: altera
     origem: ifpr/consup/res/2025/263
     alvo: ifpr/consup/res/2025/259
     alcance: datas de junho, prazo de envio do calendário à Proens (art. 10, § 1º) e art. 12
+    efeito_de: "2025-12-15"
     evidencia: { em: "ifpr/consup/res/2025/259#art10-par1", trecho: "(alterado pela Resolução CONSUP/IFPR nº 263, de 10 de dezembro de 2025)" }
     confirmado_em: "2026-11-13"
     proposta: manual
+    nota: "Efeito em 15/12/2025: a versão consolidada da 259/2025, já com a alteração, saiu no Boletim de Serviço Eletrônico nessa data."
   - tipo: revoga
     origem: ifpr/consup/res/2026/282
     alvo: ifpr/consup/res/2026/276
     alvo_dispositivo: "#art31-parunico"
+    efeito_de: "2026-08-13"
     evidencia: { em: "ifpr/consup/res/2026/276#art31-parunico", trecho: "(Revogado pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026.)" }
     confirmado_em: "2026-11-13"
     proposta: manual
+    nota: "Efeito em 13/08/2026: a consolidação da 276/2026, já com a revogação, saiu no Boletim de Serviço Eletrônico nessa data, a da própria 282."
   - tipo: regulamenta
     origem: ifpr/consup/res/2026/276
     operador: "#art1"

@@ -33,6 +33,18 @@ const revisarDocx: typeof revisarSemConferir = (...argumentos) => {
 
 const AGORA = new Date("2026-11-16T12:00:00Z");
 const base = await carregarBaseRevisao(raizRepositorio());
+/**
+ * A base com a Res. CNE/CP nº 2/2026 publicada em 12/11/2026 (na base, ela aguarda publicação): o PPC
+ * sintético cita a 1/2021, que então fica revogada, com a transição.
+ */
+const baseComDcn2026Publicada = {
+  ...base,
+  datas: new Map(base.datas).set("br/cne-cp/res/2026/2", {
+    assinada_em: "2026-11-11",
+    publicada_em: "2026-11-12",
+    vigente_de: "2026-11-12",
+  }),
+};
 
 const partes = (docx: Uint8Array) => {
   const arquivos = unzipSync(docx);
@@ -56,6 +68,7 @@ const textos = (docx: Uint8Array) =>
 
 describe("revisarDocx", () => {
   const revisao = revisarDocx(ppcSintetico(), "ppc.docx", base, { agora: AGORA });
+  const revisaoPublicada = revisarDocx(ppcSintetico(), "ppc.docx", baseComDcn2026Publicada, { agora: AGORA });
 
   test("identifica o curso no CNCT e a forma de oferta no documento", () => {
     expect(revisao.curso).toEqual({
@@ -121,12 +134,17 @@ describe("revisarDocx", () => {
   test("pendências na ordem dos temas, ancoradas no trecho (inclusive em tabela) ou no início", () => {
     const ordem = revisao.pendencias.map((p) => p.ordemTema);
     expect(ordem).toEqual([...ordem].sort((a, b) => a - b));
-    // Um item por trecho: a citação da revogada junta CT-IDENT-08 e CT-SUP-12. A revogação depende da
-    // vigência da Res. CNE/CP nº 2/2026, ainda a confirmar: "a conferir", com a transição.
-    const revogada = revisao.pendencias.find((p) => p.trecho === "Resolução CNE/CP nº 1/2021")!;
+    // Com a Res. CNE/CP nº 2/2026 aguardando publicação, a 1/2021 é a DCN da EPT vigente: citá-la não é
+    // pendência de norma revogada.
+    expect(
+      revisao.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021" && p.ficha === "CT-SUP-12"),
+    ).toEqual([]);
+    // Publicada a 2/2026: um item por trecho, a citação da revogada junta CT-IDENT-08 e CT-SUP-12, "a
+    // conferir", com a transição.
+    const revogada = revisaoPublicada.pendencias.find((p) => p.trecho === "Resolução CNE/CP nº 1/2021")!;
     expect(revogada).toMatchObject({ estado: "a_conferir", noDocumento: "no-trecho" });
     expect([revogada.ficha, ...revogada.tambemEm.map((t) => t.ficha)].sort()).toEqual(["CT-IDENT-08", "CT-SUP-12"]);
-    expect(revisao.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021")).toHaveLength(1);
+    expect(revisaoPublicada.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021")).toHaveLength(1);
     expect(textoDaPendencia(revogada)).toMatch(/\nRegras de transição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
     expect(textoDaPendencia(revogada)).toMatch(
       /\nSe o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação/,
@@ -135,9 +153,9 @@ describe("revisarDocx", () => {
     // A fonte da mesma norma vai junta.
     expect(revogada.fontes.map((f) => f.rotulo)).toContain("Resolução CNE/CP nº 2/2026, arts. 70 e 71");
     expect(textoDaPendencia(revogada)).not.toMatch(/\bart\d/);
-    // Norma "a confirmar": a ausência da DCN vigente não é mais "precisa de ajuste".
+    // Fichas de base legal só registram a ausência da DCN vigente: a pendência é da CT-SUP-12.
     for (const ficha of ["CT-IDENT-08", "CT-SUP-09"])
-      expect(revisao.pendencias.filter((p) => p.ficha === ficha && p.estado === "nao_atende")).toEqual([]);
+      expect(revisaoPublicada.pendencias.filter((p) => p.ficha === ficha && p.estado === "nao_atende")).toEqual([]);
     expect(revogada.tema).toBe("Fundamentos legais e normativos");
     const aee = revisao.pendencias.find((p) => p.ficha === "CT-CURR-22")!;
     expect(aee).toMatchObject({ noDocumento: "no-trecho", trecho: "Atendimento Educacional Especializado" });
@@ -148,6 +166,7 @@ describe("revisarDocx", () => {
   });
 
   test("os comentários: autor, aviso no título, 'Confira:' para o que é a conferir, fontes legíveis no Word", () => {
+    const revisao = revisaoPublicada;
     const { documento, comentarios } = partes(revisao.docx);
     expect(comentarios).toContain('w:author="Simplifica IF (revisão prévia)"');
     expect(comentarios).not.toContain("ifpr://");

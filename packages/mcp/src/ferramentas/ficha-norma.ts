@@ -34,7 +34,7 @@ function fimSemData(inicio: string, fim: string): string {
   if (!fim.startsWith("P")) return `fim ${dataBr(fim)}`;
   const marco =
     inicio === "vigencia" ? "da vigência" : inicio === "publicacao" ? "da publicação" : `de ${dataBr(inicio)}`;
-  return `fim ${duracaoBr(fim)} a partir ${marco} (data a confirmar)`;
+  return `fim ${duracaoBr(fim)} a partir ${marco}, quando houver`;
 }
 
 export const Entrada = Schema.Struct({
@@ -43,9 +43,10 @@ export const Entrada = Schema.Struct({
 });
 
 const Inicio = Schema.Struct({
+  /** Início da vigência; `null` quando a norma aguarda publicação (ou o stub não tem data do ato). */
   data: Schema.NullOr(Schema.String),
-  minimo: Schema.NullOr(Schema.String),
-  certo: Schema.Boolean,
+  /** Assinada e ainda não publicada: não está em vigor. */
+  aguardando: Schema.Boolean,
 });
 
 export const Dados = Schema.Struct({
@@ -70,7 +71,6 @@ export const Dados = Schema.Struct({
   vigencia: Schema.Struct({
     data: Schema.String,
     status: Schema.String,
-    certo: Schema.Boolean,
     inicio: Inicio,
     eventos: Schema.Array(
       Schema.Struct({
@@ -80,14 +80,12 @@ export const Dados = Schema.Struct({
         /** Dispositivo atingido, quando a relação é parcial. */
         alvo_dispositivo: Schema.NullOr(Schema.String),
         alcance: Schema.NullOr(Schema.String),
-        /** Data em que o evento produz efeito; `null` se a confirmar. */
+        /** Data em que o evento produz efeito; `null` quando a origem aguarda publicação. */
         efeito_de: Schema.NullOr(Schema.String),
-        efeito_minimo: Schema.NullOr(Schema.String),
-        /** Na data: "sim", "não" ou "a confirmar". */
+        /** Na data: "sim" ou "não". */
         ocorreu: Schema.String,
       }),
     ),
-    pendencias: Schema.Array(Schema.String),
   }),
   /**
    * As alterações que o texto consolidado anota ("Redação dada pela Lei nº ..."), por ato, do mais
@@ -123,9 +121,8 @@ export const Dados = Schema.Struct({
       inicio: Schema.String,
       /** Fim: duração ISO a partir do início (`P2Y`, `P180D`), data, ou `sem-prazo`. */
       fim: Schema.String,
+      /** `null` quando a norma que estabelece a regra aguarda publicação. */
       inicio_em: Schema.NullOr(Schema.String),
-      /** Quando o início está a confirmar: o mais cedo em que ele pode cair. */
-      inicio_minimo: Schema.NullOr(Schema.String),
       fim_em: Schema.NullOr(Schema.String),
       evidencia: Schema.String,
       link: EsquemaLink,
@@ -137,7 +134,7 @@ export const fichaNorma = definirFerramenta({
   nome: "ficha_norma",
   titulo: "Ficha da norma",
   descricao:
-    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; as regras de transição; e os pontos-chave da curadoria, que indicam onde olhar e não são fundamento. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
+    "Situação de uma norma numa data: a vigência, com o que a determina (a norma que aguarda publicação ainda não está em vigor); as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; as regras de transição; e os pontos-chave da curadoria, que indicam onde olhar e não são fundamento. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
   entrada: Entrada,
   dados: Dados,
   texto(resposta) {
@@ -163,17 +160,17 @@ export const fichaNorma = definirFerramenta({
         ...(identificacao.length ? [identificacao.join("; ")] : []),
       ].join("\n"),
     );
-    const inicio = vigencia.inicio.data
-      ? dataBr(vigencia.inicio.data)
-      : `a confirmar${vigencia.inicio.minimo ? ` (não antes de ${dataBr(vigencia.inicio.minimo)})` : ""}`;
+    const inicio = vigencia.inicio.aguardando
+      ? "aguardando publicação"
+      : vigencia.inicio.data
+        ? dataBr(vigencia.inicio.data)
+        : "sem data registrada";
     const linhasVigencia = [
-      `**Vigência em ${dataBr(vigencia.data)}:** ${vigencia.status}${vigencia.certo ? "" : " (a confirmar)"}; início: ${inicio}.`,
+      `**Vigência em ${dataBr(vigencia.data)}:** ${vigencia.status}; início: ${inicio}.`,
       ...vigencia.eventos.map((e) => {
         const alcance = e.alvo_dispositivo ?? e.alcance;
-        const efeito = e.efeito_de
-          ? dataBr(e.efeito_de)
-          : `a confirmar${e.efeito_minimo ? `, não antes de ${dataBr(e.efeito_minimo)}` : ""}`;
-        return `- ${e.tipo === "revoga" ? "revogação" : "alteração"} por ${nome(e.origem, e.operador)}${alcance ? ` (${alcance})` : ""}: efeito em ${efeito}; ocorreu na data: ${e.ocorreu}`;
+        const efeito = e.efeito_de ? `em ${dataBr(e.efeito_de)}` : "na publicação da origem, que a aguarda";
+        return `- ${e.tipo === "revoga" ? "revogação" : "alteração"} por ${nome(e.origem, e.operador)}${alcance ? ` (${alcance})` : ""}: efeito ${efeito}; ocorreu na data: ${e.ocorreu}`;
       }),
     ];
     partes.push(linhasVigencia.join("\n"));
@@ -197,9 +194,7 @@ export const fichaNorma = definirFerramenta({
           "**Regras de transição:**",
           ...transicoes.map((t) => {
             const prazo = [
-              t.inicio_em
-                ? `início ${dataBr(t.inicio_em)}`
-                : `início a confirmar${t.inicio_minimo ? ` (não antes de ${dataBr(t.inicio_minimo)})` : ""}`,
+              t.inicio_em ? `início ${dataBr(t.inicio_em)}` : "início na publicação da norma, que a aguarda",
               t.fim_em ? `fim ${dataBr(t.fim_em)}` : fimSemData(t.inicio, t.fim),
             ]
               .filter(Boolean)

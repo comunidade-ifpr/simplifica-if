@@ -270,7 +270,7 @@ export function impactoEm(
     id,
     titulo: registro.obter(ato)?.title ?? null,
     vigencia_em: data,
-    status: `${vigencia.status}${vigencia.certo ? "" : " (a confirmar)"}`,
+    status: vigencia.status,
     sucessoras,
     transicoes,
     relacoes: relacoes.map((r) => ({

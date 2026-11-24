@@ -58,7 +58,7 @@ ano: 2020
 data_publicacao: "2020-01-02"
 assinada_em: "2020-01-02"
 publicada_em: "a confirmar"
-vigente_de: "a confirmar"
+vigente_de: "2020-01-02"
 datas_fonte: "Teste."
 orgao: "Presidência da República"
 jurisdicao: BR
@@ -358,6 +358,17 @@ describe("validação da base", () => {
       "x.md: pontos_chave: Entrada inválida: esperava uma lista",
       "x.md: notas_da_fonte.0: Entrada inválida: não pode ser vazio",
     ]);
+  });
+
+  test("vigência obrigatória: vigente_de com data ou aguardando publicação, nunca a confirmar", () => {
+    const erros = (vigente: string) =>
+      validarContratoNorma(
+        "x.md",
+        analisarFrontMatter(NORMA.replace('vigente_de: "2020-01-02"', `vigente_de: "${vigente}"`), "x.md").meta,
+      );
+    expect(erros("a confirmar")).toEqual(["x.md: vigente_de: Entrada inválida: formato inválido"]);
+    expect(erros("aguardando publicação")).toEqual([]);
+    expect(erros("2020-01-03")).toEqual([]);
   });
 
   test("fonte oficial: fonte_url só https e o campo antigo fonte recusado", () => {

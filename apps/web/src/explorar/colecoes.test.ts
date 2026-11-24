@@ -1,7 +1,6 @@
 import type { CnctDoIndice, CursoDoIndice, NormaDoIndice, PpcDoIndice } from "@simplifica-if/contratos-app";
 import { describe, expect, it } from "vite-plus/test";
 import {
-  A_CONFIRMAR,
   cursosPorCnct,
   dataBr,
   filtrarCnct,
@@ -27,7 +26,6 @@ const norma = (n: Partial<NormaDoIndice> & Pick<NormaDoIndice, "id" | "titulo">)
   orgao: "CNE/CP",
   situacao: "base",
   status_vigencia: "vigente",
-  vigencia_a_confirmar: false,
   ementa: null,
   apelidos: [],
   link: `ifpr://norma/${n.id}`,
@@ -110,9 +108,13 @@ describe("filtros", () => {
       titulo: "Resolução CNE/CP nº 1/2021",
       ano: 2021,
       status_vigencia: "revogada",
-      vigencia_a_confirmar: true,
     }),
-    norma({ id: "br/cne-cp/res/2026/2", titulo: "Resolução CNE/CP nº 2/2026", ano: 2026 }),
+    norma({
+      id: "br/cne-cp/res/2026/2",
+      titulo: "Resolução CNE/CP nº 2/2026",
+      ano: 2026,
+      status_vigencia: "ainda-nao-vigente",
+    }),
   ];
 
   it("PPCs: só os vigentes, salvo pedindo os substituídos; as versões do curso da mais nova à mais antiga", () => {
@@ -135,12 +137,12 @@ describe("filtros", () => {
     expect(filtrarPpcs(ppcs, { substituidos: true }).map((p) => p.versao)).toEqual(["2026", "2019"]);
   });
 
-  it("normas por órgão, ano, vigência (inclusive a confirmar) e texto, mais recentes primeiro", () => {
+  it("normas por órgão, ano, vigência (inclusive ainda não vigente) e texto, mais recentes primeiro", () => {
     expect(filtrarNormas(normas, {}).map((n) => n.ano)).toEqual([2026, 2021, 1996]);
     expect(filtrarNormas(normas, { orgao: "CNE/CP" })).toHaveLength(2);
     expect(filtrarNormas(normas, { ano: "2021" }).map((n) => n.id)).toEqual(["br/cne-cp/res/2021/1"]);
     expect(filtrarNormas(normas, { vigencia: "revogada" })).toHaveLength(1);
-    expect(filtrarNormas(normas, { vigencia: A_CONFIRMAR }).map((n) => n.ano)).toEqual([2021]);
+    expect(filtrarNormas(normas, { vigencia: "ainda-nao-vigente" }).map((n) => n.ano)).toEqual([2026]);
     expect(filtrarNormas(normas, { texto: "ldb" }).map((n) => n.ano)).toEqual([1996]);
     expect(filtrarNormas(normas, { texto: "resolucao 2026" }).map((n) => n.ano)).toEqual([2026]);
   });

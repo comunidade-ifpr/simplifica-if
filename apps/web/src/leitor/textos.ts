@@ -57,15 +57,9 @@ const STATUS: Readonly<
     rotulo: "Ainda não está em vigor",
     variante: "warning",
     estado: "ainda não está em vigor",
-    sinal: null,
+    sinal: "ainda-nao-vigente",
   },
 };
-
-/** Uma data que pode faltar: "12/11/2026", ou "a confirmar, não antes de 11/11/2026". */
-export function dataOuAConfirmar(data: string | null, minimo: string | null): string {
-  if (data !== null) return dataCurta(data);
-  return `a confirmar${minimo !== null ? `, não antes de ${dataCurta(minimo)}` : ""}`;
-}
 
 /** Quando o estado da norma passou a valer: o efeito do evento que o decide, ou o início da vigência. */
 function quandoDoEstado(ficha: FichaNorma): string | null {
@@ -77,18 +71,19 @@ function quandoDoEstado(ficha: FichaNorma): string | null {
     // sem relação registrada, o estado vem do próprio texto (dispositivo revogado, nota de redação)
     if (evento === undefined) return "É o que o texto consolidado mostra; os atos estão em “Alterada por”.";
     const nome = tipo === "revoga" ? "Revogação" : "Alteração";
-    return `${nome} com efeito em ${dataOuAConfirmar(evento.efeito_de, evento.efeito_minimo)}.`;
+    return evento.efeito_de === null ? null : `${nome} com efeito em ${dataCurta(evento.efeito_de)}.`;
   }
-  if (status === "vigente" || status === "ainda-nao-vigente") {
-    return `Início da vigência: ${dataOuAConfirmar(inicio.data, inicio.minimo)}.`;
+  if (inicio.aguardando) return "Assinada e ainda não publicada: entra em vigor com a publicação.";
+  if ((status === "vigente" || status === "ainda-nao-vigente") && inicio.data !== null) {
+    return `Início da vigência: ${dataCurta(inicio.data)}.`;
   }
   return null;
 }
 
 /**
- * Os selos da norma no dia da consulta: o estado (em vigor, revogada…) e, quando a data que o decide
- * ainda não está registrada, "Vigência a confirmar", com o motivo. O detalhe diz em que dia o estado
- * foi calculado, e a data do evento à parte (o dia da consulta não é o da revogação).
+ * Os selos da norma no dia da consulta: o estado (em vigor, revogada, ainda não em vigor…) e, quando a
+ * base não o conferiu (stub com status "a confirmar"), "Vigência a confirmar". O detalhe diz em que dia
+ * o estado foi calculado, e a data do evento à parte (o dia da consulta não é o da revogação).
  */
 export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
   const dia = dataCurta(ficha.vigencia.data);
@@ -115,14 +110,12 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
       detalhe: `Em ${dia}: ${conhecido.estado}.${quando === null ? "" : ` ${quando}`}${transicao}`,
     });
   }
-  const aConfirmar = !ficha.vigencia.certo || ficha.norma.vigencia_a_confirmar || conhecido === undefined;
-  if (aConfirmar) {
-    const motivos = ficha.vigencia.pendencias.length > 0 ? ` ${ficha.vigencia.pendencias.join("; ")}.` : "";
+  if (conhecido === undefined) {
     selos.push({
       rotulo: "Vigência a confirmar",
       variante: "warning",
       sinal: "a confirmar",
-      detalhe: `A data que decide a vigência ainda não está registrada na base; confira na fonte oficial.${motivos}`,
+      detalhe: "A base não conferiu a situação desta norma; confira na fonte oficial.",
     });
   }
   return selos;
@@ -171,10 +164,8 @@ export function situacaoDaTransicao(situacao: string): string {
       return "ainda não começou";
     case "em-curso":
       return "em curso";
-    case "encerrada":
-      return "encerrada";
     default:
-      return "a confirmar";
+      return "encerrada";
   }
 }
 

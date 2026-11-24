@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 10;
+export const VERSAO_ESQUEMA = 11;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -485,7 +485,6 @@ CREATE TABLE relacoes (
   alcance TEXT,
   efeito_de TEXT NOT NULL,
   efeito_em TEXT,
-  efeito_minimo TEXT,
   evidencia_em TEXT NOT NULL,
   evidencia_trecho TEXT NOT NULL,
   confirmado_em TEXT,
@@ -503,12 +502,11 @@ CREATE TABLE vigencias (
   de TEXT,
   ate TEXT,
   status TEXT NOT NULL,
-  certo INTEGER NOT NULL,
   fonte TEXT NOT NULL,
   PRIMARY KEY (alvo, ordem)
 ) WITHOUT ROWID;
 
--- Regras de transição; a situação numa data sai de situacaoNaData(inicio_em, inicio_minimo, fim_em, fim).
+-- Regras de transição; a situação numa data sai de situacaoNaData(inicio_em, fim_em, fim).
 CREATE TABLE transicoes (
   id TEXT PRIMARY KEY,
   norma_id TEXT NOT NULL,
@@ -520,7 +518,6 @@ CREATE TABLE transicoes (
   inicio TEXT NOT NULL,
   fim TEXT NOT NULL,
   inicio_em TEXT,
-  inicio_minimo TEXT,
   fim_em TEXT,
   evidencia TEXT NOT NULL,
   path TEXT NOT NULL

@@ -12,7 +12,7 @@ export type { Link } from "./links.ts";
 /* ================================================================== envelope */
 
 const TIPOS_AVISO = [
-  "vigencia-a-confirmar",
+  "ainda-nao-vigente",
   "correspondencia-rascunho",
   "fato-extraido",
   "citacao-baixa-confianca",
@@ -120,8 +120,6 @@ export const NormaResumo = Schema.Struct({
   situacao: Schema.Literals(SITUACOES_NORMA),
   /** Status publicado, calculado na `data_referencia` da base. */
   status_vigencia: Schema.NullOr(Schema.String),
-  /** O front matter publicado traz `vigencia_a_confirmar`, ou o status é "a confirmar". */
-  vigencia_a_confirmar: Schema.Boolean,
   data_publicacao: Schema.NullOr(Schema.String),
   ementa: Schema.NullOr(Schema.String),
   link: EsquemaLink,
@@ -168,7 +166,7 @@ export type DispositivoTexto = typeof DispositivoTexto.Type;
 export const TransicaoResumo = Schema.Struct({
   id: Schema.String,
   regra: Schema.String,
-  /** `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`, no dia da consulta. */
+  /** `a-iniciar`, `em-curso` ou `encerrada`, no dia da consulta. */
   situacao_na_data: Schema.String,
   /** Dispositivo que estabelece a regra. */
   link: EsquemaLink,

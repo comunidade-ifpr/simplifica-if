@@ -65,7 +65,6 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
       orgao: n.orgao,
       situacao: n.situacao,
       status_vigencia: n.status_vigencia,
-      vigencia_a_confirmar: n.vigencia_a_confirmar,
       ementa: n.ementa,
       apelidos: n.aliases,
       link: linkNorma(n.id),

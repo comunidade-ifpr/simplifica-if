@@ -23,7 +23,7 @@ export const Entrada = Schema.Struct({
 
 export const Dados = Schema.Struct({
   norma: NormaResumo,
-  /** Status em `vigencia_em`, com "(a confirmar)" quando incerto. */
+  /** Status em `vigencia_em`. */
   status: Schema.String,
   vigencia_em: Schema.String,
   sucessoras: Schema.Array(Schema.String),

@@ -472,7 +472,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const intervalos = yield* linhasVigencias("SELECT de FROM vigencias WHERE alvo = ?", [ato]);
           const inicio = inicioVigencia(ato, vigenciaArquivos);
           const efeitos = relacoes.filter((r) => r.alvo === ato).map((r) => efeitoDaRelacao(r, vigenciaArquivos));
-          const comparadas = [inicio, ...efeitos].flatMap((e) => [e.data, e.minimo]);
+          const comparadas = [inicio, ...efeitos].map((e) => e.data);
           for (const de of [...intervalos.map((i) => i.de), ...comparadas]) {
             if (!de) continue;
             datas.add(de).add(vesperaDe(de));
@@ -480,12 +480,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           for (const data of datas) {
             const arquivo = statusEm(ato, data, vigenciaArquivos);
             const banco = yield* vigenciaNaData(ato, data);
-            expect({ ato, data, status: banco?.status, certo: banco?.certo }).toEqual({
-              ato,
-              data,
-              status: arquivo.status,
-              certo: arquivo.certo,
-            });
+            expect({ ato, data, status: banco?.status }).toEqual({ ato, data, status: arquivo.status });
           }
         }
       }),
@@ -514,15 +509,24 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const { a } = yield* Compilados;
         const status = Effect.gen(function* () {
           const normas = yield* Normas.Normas;
-          return (yield* normas.vigencia("br/cne-cp/res/2021/1")).status;
+          return (yield* normas.vigencia("ifpr/proens/in/2021/1")).status;
         });
         const naReferencia = Layers.layerSomenteLeitura({ caminho: a });
         const noDia = naReferencia.pipe(Layer.provide(FontesNormativas.layerVigenciaHoje));
-        // antes da revogação pela Res. CNE/CP nº 2/2026 (não antes de 2026-11-11). `local`: sem ele, as
+        // antes da revogação pela IN PROENS/IFPR nº 2/2025 (efeito em 01/06/2025). `local`: sem ele, as
         // layers já construídas pelo teste (na data_referencia) seriam reaproveitadas.
-        yield* TestClock.setTime(Date.parse("2025-06-01T12:00:00"));
+        yield* TestClock.setTime(Date.parse("2025-05-01T12:00:00"));
         expect(yield* Effect.provide(status, noDia, { local: true })).not.toMatch(/revogada/);
         expect(yield* Effect.provide(status, naReferencia, { local: true })).toMatch(/revogada/);
+      }),
+    );
+
+    it.effect("listar: o status é o calculado na data, não o registrado no stub", () =>
+      Effect.gen(function* () {
+        const { normas } = yield* servicos;
+        const stub = (yield* normas.listar).find((n) => n.id === "br/cne-cp/res/2022/1");
+        // stubs.yaml a registra revogada pelo art. 74 da Res. CNE/CP nº 2/2026, que aguarda publicação
+        expect(stub?.status_vigencia).toBe("vigente");
       }),
     );
 
@@ -531,13 +535,18 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const { normas } = yield* servicos;
         const citacao = "Resolução CNE/CP nº 1/2021, art. 20";
         expect((yield* normas.buscar(citacao)).resultados[0]!.dispositivo!.id).toBe("br/cne-cp/res/2021/1#art20");
-        // revogada em 2026-11-11 pela Res. CNE/CP nº 2/2026 (data_referencia 2026-11-13)
-        const vigentes = yield* normas.buscar(citacao, { vigentes: true });
+        // a Res. CNE/CP nº 2/2026, que a revogará, aguarda publicação: a 1/2021 segue vigente
+        expect((yield* normas.buscar(citacao, { vigentes: true })).resultados[0]!.dispositivo!.id).toBe(
+          "br/cne-cp/res/2021/1#art20",
+        );
+        // revogada em 01/06/2025 pela IN PROENS/IFPR nº 2/2025
+        const revogada = "ifpr/proens/in/2021/1#art1";
+        const vigentes = yield* normas.buscar(revogada, { vigentes: true });
         expect(vigentes.resultados).toEqual([]);
-        expect(vigentes.avisos.join("\n")).toMatch(/br\/cne-cp\/res\/2021\/1.*vigente/);
+        expect(vigentes.avisos.join("\n")).toMatch(/ifpr\/proens\/in\/2021\/1.*vigente/);
         // antes da revogação, passa
-        const antes = yield* normas.buscar(citacao, { vigentes: true, em: "2025-01-01" });
-        expect(antes.resultados[0]!.dispositivo!.id).toBe("br/cne-cp/res/2021/1#art20");
+        const antes = yield* normas.buscar(revogada, { vigentes: true, em: "2025-01-01" });
+        expect(antes.resultados[0]!.dispositivo!.id).toBe(revogada);
         const situacao = yield* normas.buscar(citacao, { situacao: "stub" });
         expect(situacao.resultados).toEqual([]);
         expect(situacao.avisos.join("\n")).toContain("situação base");
@@ -619,7 +628,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         for (const norma of listarNormas(raiz)) {
           const caminho = `base-conhecimento/${norma.path}`;
           const { meta: item } = analisarFrontMatter(yield* lerTexto(caminho), caminho);
-          const pendencia = nulo(item["vigencia_a_confirmar"]);
           mesmoJson(yield* normas.ficha(String(item["id"])), {
             id: item["id"],
             situacao: "base",
@@ -635,8 +643,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             fonte_url: nulo(item["fonte_url"]),
             fonte_referencia: nulo(item["fonte_referencia"]),
             path: caminho,
-            pendencia_vigencia: pendencia,
-            vigencia_a_confirmar: pendencia !== null || item["status_vigencia"] === "a confirmar",
             pontos_chave: item["pontos_chave"] ?? [],
             notas_da_fonte: item["notas_da_fonte"] ?? [],
           });
@@ -662,8 +668,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             fonte_url: s.fonte_url ?? null,
             fonte_referencia: s.fonte_referencia ?? null,
             path: null,
-            pendencia_vigencia: null,
-            vigencia_a_confirmar: s.status_vigencia === "a confirmar",
             ...semEditoriais,
           });
         }
@@ -679,8 +683,6 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
             fonte_url: s.fonte_url ?? null,
             fonte_referencia: s.fonte_referencia ?? null,
             path: null,
-            pendencia_vigencia: null,
-            vigencia_a_confirmar: false,
             ...semEditoriais,
           });
         }

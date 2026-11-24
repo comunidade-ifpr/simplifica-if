@@ -29,7 +29,6 @@ import * as ListarCursos from "../ferramentas/listar-cursos.ts";
 import { textoFatosPpc } from "../ferramentas/comum-ppcs.ts";
 import { lerLink, linkCampus, linkCnct, linkCurso, linkFicha, linkNorma, linkPpc } from "../links.ts";
 import { RESERVA_TEXTO } from "../orcamento.ts";
-import { dataBr } from "../texto.ts";
 import {
   AVISO_FATO_EXTRAIDO,
   avisoBaixaConfianca,
@@ -199,13 +198,6 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
         };
       });
     const avisos: Aviso[] = [...avisoVigencia(norma)];
-    if (resultado.status.endsWith("(a confirmar)") && avisos.length === 0) {
-      avisos.push({
-        tipo: "vigencia-a-confirmar",
-        mensagem: `o status de ${norma.titulo} em ${dataBr(resultado.vigencia_em)} está a confirmar; diga isso ao usuário`,
-        ref: norma.id,
-      });
-    }
     // laço pelas normas que citam esta (dezenas): o título de cada uma
     const normasQueCitam = yield* Effect.forEach(
       resultado.normas_que_citam,

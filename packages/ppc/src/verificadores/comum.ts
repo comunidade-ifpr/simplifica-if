@@ -41,7 +41,7 @@ export type BaseVerificacao = {
   /** Relações de `base-conhecimento/relacoes.yaml` (`carregarRelacoes`), para achar a norma sucessora. */
   relacoes: readonly Relacao[];
   /**
-   * Vigência na data de referência: status, se é certo e as transições, da base da revisão
+   * Vigência na data de referência: status e transições, da base da revisão
    * (`verificacaoDaBase`, sobre o `kb.sqlite`) no app, nos testes e nos scripts.
    */
   vigencia: ConsultaVigencia;
@@ -214,7 +214,7 @@ export type NormaRevogadaCitada = {
 };
 
 /**
- * Normas revogadas na data de referência (vigência do `kb`, inclusive as de revogação "a confirmar")
+ * Normas revogadas na data de referência (vigência do `kb`)
  * entre as citações dadas, e se o PPC também cita (em qualquer ponto) uma sucessora da cadeia.
  */
 export function normasRevogadasCitadas(
@@ -239,28 +239,18 @@ export function normasRevogadasCitadas(
   return saida;
 }
 
-/** A frase da data incerta, em linguagem de quem edita o PPC (sem "vigência a confirmar na base"). */
-export const DATA_NAO_CONFIRMADA = "A data em que a nova norma passa a valer ainda não foi confirmada.";
-
 /**
- * Texto e fontes das regras de transição de uma revogação, para quem edita o PPC: a data incerta
- * (salvo `incerta: false`, quando quem chama já a disse), as regras e o que fazer conforme a data do
- * PPC (manter a citação é admitido; atualizar é o recomendado).
+ * Texto e fontes das regras de transição de uma revogação, para quem edita o PPC: as regras e o que
+ * fazer conforme a data do PPC (manter a citação é admitido; atualizar é o recomendado).
  */
-export function textoTransicao(
-  base: BaseVerificacao,
-  id: string,
-  opcoes: { incerta?: boolean } = {},
-): { texto: string; fontes: Fonte[] } {
+export function textoTransicao(base: BaseVerificacao, id: string): { texto: string; fontes: Fonte[] } {
   const vigencia = base.vigencia(id);
   const titulo = (n: string) => tituloDaNorma(base.registro, n);
   const regras = vigencia.transicoes.map(
     (t) => `${t.regra} (${titulo(t.norma)}, ${rotuloDispositivo(t.dispositivo.replace(/^#/, ""))})`,
   );
-  const incerta = vigencia.certo || opcoes.incerta === false ? "" : `${DATA_NAO_CONFIRMADA} `;
   return {
     texto:
-      incerta +
       (regras.length ? `Regras de transição: ${regras.join(" ")} ` : "") +
       "Se o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação; recomenda-se atualizar. Confira a data do PPC (capa, histórico ou processo).",
     fontes: vigencia.transicoes.map((t) => linkNorma(`${t.norma}${t.dispositivo}`)),
@@ -285,7 +275,10 @@ export function apontamentoRevogada(
   const trechos = [trecho(ppc, citacao.linha, citacao.trecho)];
   const vigencia = base.vigencia;
   const direta = norma.sucessoras[0];
-  const atual = [...norma.sucessoras].reverse().find((s) => vigencia(s).status !== "revogada") ?? direta;
+  // a sucessora em vigor: nem revogada nem aguardando publicação (a 2/2026 ainda não sucede a 1/2021)
+  const atual =
+    [...norma.sucessoras].reverse().find((s) => !["revogada", "ainda-nao-vigente"].includes(vigencia(s).status)) ??
+    direta;
   const fontes = [linkNorma(norma.id), ...(direta ? [linkNorma(direta)] : [])];
   const conferir = (mensagem: string, extras: Fonte[] = []): Apontamento => ({
     estado: "a_conferir",
@@ -309,7 +302,7 @@ export function apontamentoRevogada(
     ? `${titulo(direta)}${atual && atual !== direta ? `, hoje sucedida pela ${titulo(atual)}` : ""}`
     : "";
   const situacao = vigencia(norma.id);
-  if (!situacao.certo || situacao.transicoes.length) {
+  if (situacao.transicoes.length) {
     const transicao = textoTransicao(base, norma.id);
     return conferir(
       `Cita ${norma.titulo}, substituída${direta ? ` pela ${nomeSucessora}` : ""}. ${transicao.texto}`,

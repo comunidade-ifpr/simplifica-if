@@ -132,6 +132,8 @@ export interface Marco {
   id: string;
   tema: string;
   vigente: string;
+  /** Atos da linha ainda não vigentes (aguardando publicação). */
+  aguardando: string[];
   aplica_a: string;
   substitui: string[];
   antecessoras_historicas: string[];

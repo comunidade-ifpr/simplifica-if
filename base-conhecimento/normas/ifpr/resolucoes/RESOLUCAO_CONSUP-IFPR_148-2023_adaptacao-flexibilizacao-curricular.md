@@ -6,9 +6,9 @@ numero: 148
 ano: 2023
 data_publicacao: "2023-10-11"
 assinada_em: "2023-10-11"
-publicada_em: "a confirmar"
-vigente_de: "a confirmar"
-datas_fonte: "Art. 14: vigência na publicação; data de publicação não registrada na base."
+publicada_em: "2023-10-16"
+vigente_de: "2023-10-16"
+datas_fonte: "Art. 14: vigência na publicação (Boletim de Serviço Eletrônico em 16/10/2023, no SEI)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre adaptação de materiais e atividades e flexibilização curricular para estudantes com necessidades educacionais específicas."
@@ -23,7 +23,6 @@ aliases:
   - "Resolução CONSUP/IFPR nº 148/2023"
   - "Resolução IFPR 148/2023"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=2730182&id_orgao_publicacao=0"
-vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 148/2023 a confirmar (ato de 2023-10-11; publicação não registrada): presumida vigente"
 pontos_chave:
   - "Público-alvo: estudantes com TEA, transtornos de aprendizagem, altas habilidades/superdotação, transtornos psicológicos/psiquiátricos e deficiências (art. 3º)."
   - "Hierarquia: as adaptações sempre precedem a flexibilização curricular, que só ocorre quando as adaptações não contemplam as dificuldades (art. 4º, § 1º)."

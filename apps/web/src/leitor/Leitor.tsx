@@ -416,7 +416,9 @@ function LeitorNorma({
                               <p className="text-muted-foreground text-small">
                                 Para: {t.aplica_a.replace(/\.$/, "")}. Situação:{" "}
                                 {situacaoDaTransicao(t.situacao_na_data)}
-                                {t.inicio_em ? `; começa em ${dataCurta(t.inicio_em)}` : "; início a confirmar"}
+                                {t.inicio_em
+                                  ? `; começa em ${dataCurta(t.inicio_em)}`
+                                  : "; começa com a publicação da norma, que a aguarda"}
                                 {t.fim_em ? `; termina em ${dataCurta(t.fim_em)}` : ""}.{" "}
                                 <BotaoLink link={t.link} aoAbrirLink={aoAbrirLink}>
                                   Ver o dispositivo

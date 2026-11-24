@@ -3,24 +3,23 @@
  * Vigência calculada numa data explícita (fase 5): nunca o relógio do build.
  *
  * Entradas:
- * - datas das normas da base (front matter: `assinada_em`, `publicada_em`, `vigente_de`, cada uma
- *   `AAAA-MM-DD` ou `a confirmar`) e dos stubs (`data_publicacao`, tomada como data do ato);
- * - relações de `base-conhecimento/relacoes.yaml`, com `efeito_de` (data) ou a vigência da origem;
+ * - datas das normas da base (front matter: `assinada_em`, `publicada_em` e `vigente_de`, este
+ *   `AAAA-MM-DD` ou "aguardando publicação") e dos stubs (`data_publicacao`, tomada como data do ato);
+ * - relações de `base-conhecimento/relacoes.yaml`, com `efeito_de` (data, obrigatória quando a
+ *   origem é stub) ou a vigência da origem;
  * - `data_referencia` de `base-conhecimento/config/vigencia.yaml` (status publicado).
  *
- * Regras de `statusEm(id, data)`:
- * - antes de `vigente_de` (ou, se ele for "a confirmar", antes da assinatura): `ainda-nao-vigente`;
- * - com `vigente_de` "a confirmar" e data posterior à assinatura, a norma é presumida vigente e o
- *   resultado sai com `certo: false` (é o caso da Res. CNE/CP nº 2/2026, cuja publicação no DOU
- *   ainda não está registrada);
- * - uma relação produz efeito a partir de `efeito_de`; sem data, da vigência da origem; se essa for
- *   "a confirmar", o efeito é presumido a partir da assinatura da origem e marcado como incerto;
+ * A vigência é calculada, nunca presumida. Regras de `statusEm(id, data)`:
+ * - antes de `vigente_de`: `ainda-nao-vigente`; norma "aguardando publicação" (assinada e ainda não
+ *   publicada) não está em vigor em data nenhuma, e as relações que ela opera não produzem efeito;
+ * - o stub começa na data do ato (sem ela, sem limite inferior);
+ * - uma relação produz efeito a partir de `efeito_de`; sem data, da vigência da origem;
  * - o texto consolidado dá um piso da `data_referencia` em diante (`TextoConsolidado`);
  * - status: `revogada` (revogação total) > `parcialmente revogada` (revogação de dispositivo ou com
  *   alcance) > `alterada` > `vigente`. `regulamenta` e `fundamenta-se-em` não mudam o status;
- * - stub sem relação com efeito na data fica com o status registrado em `stubs.yaml`, mas um status
- *   diferente de `vigente` só vale a partir da vigência do ato de `status_fonte` (antes dela, a norma
- *   estava em vigor; sem essa data, "a confirmar").
+ * - stub sem relação com efeito na data fica com o status registrado em `stubs.yaml` ("a confirmar"
+ *   quando não conferido), mas um status diferente de `vigente` só vale a partir da vigência do ato de
+ *   `status_fonte` (antes dela, a norma estava em vigor; sem `status_fonte`, "a confirmar").
  *
  * Revogada não é inaplicável: `transicoesAplicaveis` devolve as regras de transição (de
  * `base-conhecimento/transicoes.yaml`) que mantêm efeitos da norma revogada.
@@ -35,6 +34,8 @@ import { carregarRegistro, type Registro } from "./registro.ts";
 import { carregarRelacoes, type Relacao, relacaoParcial } from "./relacoes.ts";
 
 export const A_CONFIRMAR = "a confirmar";
+/** `vigente_de` (e `publicada_em`) do ato assinado e ainda não publicado: não está em vigor. */
+export const AGUARDANDO_PUBLICACAO = "aguardando publicação";
 const RE_DATA = /^\d{4}-\d{2}-\d{2}$/;
 
 export const STATUS_VIGENCIA = [
@@ -198,40 +199,36 @@ export function carregarFonteVigencia(raiz: string): FonteVigencia {
   };
 }
 
-/** Início de vigência: data certa, ou mínimo (assinatura) com incerteza. */
+/** Início de vigência (ou de efeito): a data, ou "aguardando publicação" (nunca ocorreu). */
 export interface Inicio {
-  /** Data certa de início, ou `null` se "a confirmar". */
+  /** Data de início; `null` sem limite inferior (stub sem data do ato) ou aguardando publicação. */
   data: string | null;
-  /** Limite inferior quando a data não é certa (assinatura do ato). */
-  minimo: string | null;
-  certo: boolean;
+  /** Ato assinado e ainda não publicado: não está em vigor em data nenhuma. */
+  aguardando: boolean;
 }
 
+/** Início de vigência do ato: `vigente_de` da norma da base, ou a data do ato do stub. */
 export function inicioVigencia(id: string, fonte: Pick<FonteVigencia, "datas">): Inicio {
   const datas = fonte.datas.get(id);
-  if (datas && RE_DATA.test(datas.vigente_de)) return { data: datas.vigente_de, minimo: datas.vigente_de, certo: true };
-  return { data: null, minimo: datas?.assinada_em ?? null, certo: false };
+  if (datas?.vigente_de === AGUARDANDO_PUBLICACAO) return { data: null, aguardando: true };
+  if (datas && RE_DATA.test(datas.vigente_de)) return { data: datas.vigente_de, aguardando: false };
+  return { data: datas?.assinada_em ?? null, aguardando: false };
 }
 
 /** Data a partir da qual a relação produz efeito. */
 export function efeitoDaRelacao(relacao: Relacao, fonte: Pick<FonteVigencia, "datas">): Inicio {
-  if (relacao.efeito_de !== "vigencia-da-origem")
-    return { data: relacao.efeito_de, minimo: relacao.efeito_de, certo: true };
+  if (relacao.efeito_de !== "vigencia-da-origem") return { data: relacao.efeito_de, aguardando: false };
   return inicioVigencia(relacao.origem, fonte);
 }
 
 /** Data de efeito do status registrado de um stub: a vigência do ato de `status_fonte`. */
 function efeitoDoStatusRegistrado(statusFonte: string | undefined, fonte: Pick<FonteVigencia, "datas">): Inicio | null {
-  if (!statusFonte) return null;
-  const efeito = inicioVigencia(statusFonte.split("#")[0]!, fonte);
-  return efeito.data || efeito.minimo ? efeito : null;
+  return statusFonte ? inicioVigencia(statusFonte.split("#")[0]!, fonte) : null;
 }
 
-/** `true`, `false` ou `"a confirmar"`: o evento já ocorreu na data? */
-function ocorreu(inicio: Inicio, data: string): boolean | "a confirmar" {
-  if (inicio.data) return data >= inicio.data;
-  if (inicio.minimo && data < inicio.minimo) return false;
-  return A_CONFIRMAR;
+/** O evento (início de vigência, efeito) já ocorreu na data? */
+function ocorreu(inicio: Inicio, data: string): boolean {
+  return !inicio.aguardando && (inicio.data === null || data >= inicio.data);
 }
 
 export interface EventoVigencia {
@@ -241,22 +238,18 @@ export interface EventoVigencia {
   alvo_dispositivo: string | null;
   alcance: string | null;
   parcial: boolean;
+  /** Data do efeito; `null` quando a origem aguarda publicação. */
   efeito_de: string | null;
-  efeito_minimo: string | null;
-  ocorreu: boolean | "a confirmar";
+  ocorreu: boolean;
 }
 
 export interface ResultadoVigencia {
   id: string;
   data: string;
   status: StatusVigencia;
-  /** `false` quando o status depende de uma data "a confirmar" (início da norma ou de um efeito). */
-  certo: boolean;
   inicio: Inicio;
   /** Relações que atingem a norma, com o efeito na data. */
   eventos: EventoVigencia[];
-  /** Explicação das incertezas. */
-  pendencias: string[];
 }
 
 const ORDEM: Record<string, number> = { vigente: 0, alterada: 1, "parcialmente revogada": 2, revogada: 3 };
@@ -265,11 +258,8 @@ const ORDEM: Record<string, number> = { vigente: 0, alterada: 1, "parcialmente r
 export function statusEm(id: string, data: string, fonte: FonteStatus): ResultadoVigencia {
   if (!RE_DATA.test(data)) throw new Error(`data fora do formato AAAA-MM-DD: ${data}`);
   const ato = id.split("#")[0]!;
-  const registro = fonte.registro;
-  const entrada = registro.obter(ato);
+  const entrada = fonte.registro.obter(ato);
   const inicio = inicioVigencia(ato, fonte);
-  const pendencias: string[] = [];
-  const titulo = (outro: string) => registro.obter(outro)?.title ?? outro;
 
   const eventos: EventoVigencia[] = fonte.relacoes
     .filter((relacao) => relacao.alvo === ato && (relacao.tipo === "revoga" || relacao.tipo === "altera"))
@@ -283,76 +273,35 @@ export function statusEm(id: string, data: string, fonte: FonteStatus): Resultad
         alcance: relacao.alcance ?? null,
         parcial: relacaoParcial(relacao),
         efeito_de: efeito.data,
-        efeito_minimo: efeito.minimo,
         ocorreu: ocorreu(efeito, data),
       };
     });
 
-  const inicioOcorreu = ocorreu(inicio, data);
-  if (inicioOcorreu === false) {
-    return { id: ato, data, status: "ainda-nao-vigente", certo: true, inicio, eventos, pendencias };
-  }
-  let certo = true;
-  if (inicioOcorreu === A_CONFIRMAR) {
-    certo = false;
-    pendencias.push(
-      inicio.minimo
-        ? `início de vigência de ${titulo(ato)} a confirmar (ato de ${inicio.minimo}; publicação não registrada): presumida vigente`
-        : `datas de ${titulo(ato)} não registradas: vigência presumida`,
-    );
-  }
+  if (!ocorreu(inicio, data)) return { id: ato, data, status: "ainda-nao-vigente", inicio, eventos };
 
   let status: StatusVigencia = "vigente";
   for (const evento of eventos) {
-    if (evento.ocorreu === false) continue;
+    if (!evento.ocorreu) continue;
     const efeito: StatusVigencia =
       evento.tipo === "altera" ? "alterada" : evento.parcial ? "parcialmente revogada" : "revogada";
-    if (evento.ocorreu === A_CONFIRMAR) {
-      certo = false;
-      pendencias.push(
-        `${evento.tipo === "revoga" ? "revogação" : "alteração"} por ${titulo(evento.origem)}` +
-          `${evento.operador ? ` (${evento.operador})` : ""} produz efeito na vigência da origem, a confirmar` +
-          `${evento.efeito_minimo ? ` (não antes de ${evento.efeito_minimo})` : ""}: presumida em vigor`,
-      );
-    }
     if (ORDEM[efeito]! > ORDEM[status]!) status = efeito;
   }
   // o piso do texto consolidado: alteração ou revogação parcial que o texto mostra e nenhuma relação registra
   const doTexto = data >= fonte.consolidado.em ? fonte.consolidado.status.get(ato) : undefined;
   if (doTexto !== undefined && ORDEM[doTexto]! > ORDEM[status]!) status = doTexto;
 
-  if (eventos.every((evento) => evento.ocorreu === false) && entrada?.situacao === "stub") {
+  if (eventos.every((evento) => !evento.ocorreu) && entrada?.situacao === "stub") {
     const registrado = entrada.status_vigencia ?? A_CONFIRMAR;
-    if (registrado === A_CONFIRMAR) {
-      return {
-        id: ato,
-        data,
-        status: "a confirmar",
-        certo: false,
-        inicio,
-        eventos,
-        pendencias: [`status de ${titulo(ato)} não conferido (stub)`],
-      };
-    }
+    if (registrado === A_CONFIRMAR) return { id: ato, data, status: "a confirmar", inicio, eventos };
     if (registrado !== "vigente") {
       // O status registrado (revogada, alterada…) só vale a partir do efeito do dispositivo que o
       // fundamenta (`status_fonte`); antes disso, a norma estava em vigor.
       const efeito = efeitoDoStatusRegistrado(entrada.status_fonte, fonte);
-      const vale = efeito ? ocorreu(efeito, data) : A_CONFIRMAR;
-      if (vale === A_CONFIRMAR) {
-        certo = false;
-        pendencias.push(
-          efeito
-            ? `status registrado de ${titulo(ato)} (${registrado}) depende da vigência de ${titulo(entrada.status_fonte!.split("#")[0]!)}, a confirmar` +
-                `${efeito.minimo ? ` (não antes de ${efeito.minimo})` : ""}`
-            : `status registrado de ${titulo(ato)} (${registrado}) sem data de efeito conhecida`,
-        );
-        if (!efeito) return { id: ato, data, status: "a confirmar", certo: false, inicio, eventos, pendencias };
-      }
-      if (vale !== false) status = registrado as StatusVigencia;
+      if (!efeito) return { id: ato, data, status: "a confirmar", inicio, eventos };
+      if (ocorreu(efeito, data)) status = registrado as StatusVigencia;
     }
   }
-  return { id: ato, data, status, certo, inicio, eventos, pendencias };
+  return { id: ato, data, status, inicio, eventos };
 }
 
 /** Trecho de datas com o mesmo resultado de `statusEm` (início inclusivo, fim exclusivo; `null` = aberto). */
@@ -360,14 +309,13 @@ export interface IntervaloVigencia {
   de: string | null;
   ate: string | null;
   status: StatusVigencia;
-  certo: boolean;
   /** O que abre o intervalo: `inicio` (vigência ou assinatura do ato) ou a relação (`revoga br/...#art74-ii`). */
   fonte: string;
 }
 
 /**
  * `statusEm` como intervalos datados, para gravar no `kb.sqlite` sem o relógio. O status só muda nas
- * datas que `statusEm` compara (início de vigência ou assinatura do ato e efeito, certo ou mínimo,
+ * datas que `statusEm` compara (início de vigência ou data do ato do stub e efeito
  * de cada relação `revoga`/`altera` que o atinge): avaliar `statusEm` em cada uma dessas datas, e
  * numa anterior a todas, dá a função inteira. Intervalos vizinhos iguais são fundidos.
  */
@@ -379,20 +327,17 @@ export function intervalosVigencia(id: string, dados: FonteStatus): IntervaloVig
   };
   const inicio = inicioVigencia(ato, dados);
   marcar(inicio.data, "inicio");
-  marcar(inicio.minimo, "inicio");
   for (const relacao of dados.relacoes) {
     if (relacao.alvo !== ato || (relacao.tipo !== "revoga" && relacao.tipo !== "altera")) continue;
     const efeito = efeitoDaRelacao(relacao, dados);
     const fonte = `${relacao.tipo} ${relacao.origem}${relacao.operador ?? ""}`;
     marcar(efeito.data, fonte);
-    marcar(efeito.minimo, fonte);
   }
   if (dados.consolidado.status.has(ato)) marcar(dados.consolidado.em, "texto consolidado");
   const entrada = dados.registro.obter(ato);
   if (entrada?.situacao === "stub") {
     const efeito = efeitoDoStatusRegistrado(entrada.status_fonte, dados);
     marcar(efeito?.data ?? null, `status_fonte ${entrada.status_fonte}`);
-    marcar(efeito?.minimo ?? null, `status_fonte ${entrada.status_fonte}`);
   }
   const datas = [...marcos.keys()].sort();
   const pontos: { de: string | null; fonte: string; em: string }[] = [
@@ -401,13 +346,13 @@ export function intervalosVigencia(id: string, dados: FonteStatus): IntervaloVig
   ];
   const saida: IntervaloVigencia[] = [];
   pontos.forEach((ponto, i) => {
-    const { status, certo } = statusEm(ato, ponto.em, dados);
+    const { status } = statusEm(ato, ponto.em, dados);
     const anterior = saida.at(-1);
-    if (anterior && anterior.status === status && anterior.certo === certo) {
+    if (anterior && anterior.status === status) {
       anterior.ate = pontos[i + 1]?.de ?? null;
       return;
     }
-    saida.push({ de: ponto.de, ate: pontos[i + 1]?.de ?? null, status, certo, fonte: ponto.fonte });
+    saida.push({ de: ponto.de, ate: pontos[i + 1]?.de ?? null, status, fonte: ponto.fonte });
   });
   return saida;
 }
@@ -476,49 +421,48 @@ function somarDuracao(data: string, duracao: string): string {
 
 /** Datas de uma regra de transição que não dependem da data da consulta. */
 export interface DatasTransicao {
+  /** Início da regra; `null` quando a norma aguarda publicação (a regra ainda não começou). */
   inicio_em: string | null;
-  inicio_minimo: string | null;
   fim_em: string | null;
 }
 
-export type Situacao = "a-iniciar" | "em-curso" | "encerrada" | "a confirmar";
+export type Situacao = "a-iniciar" | "em-curso" | "encerrada";
 
 export interface SituacaoTransicao extends Transicao, DatasTransicao {
-  /** Situação na data: `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`. */
+  /** Situação na data: `a-iniciar`, `em-curso` ou `encerrada`. */
   situacao: Situacao;
 }
 
-/** Início e fim resolvidos de uma regra de transição (pelas datas da norma que a estabelece). */
+/**
+ * Início e fim resolvidos de uma regra de transição (pelas datas da norma que a estabelece). O início
+ * "publicacao" usa `publicada_em`; quando ela não está registrada ("a confirmar"), usa a vigência da
+ * norma, que nas normas com vigência na publicação é a mesma data.
+ */
 export function datasTransicao(transicao: Transicao, fonte: Pick<FonteVigencia, "datas">): DatasTransicao {
   const datas = fonte.datas.get(transicao.norma);
   let inicio: Inicio;
-  if (RE_DATA.test(transicao.inicio)) inicio = { data: transicao.inicio, minimo: transicao.inicio, certo: true };
+  if (RE_DATA.test(transicao.inicio)) inicio = { data: transicao.inicio, aguardando: false };
   else if (transicao.inicio === "publicacao" && datas && RE_DATA.test(datas.publicada_em)) {
-    inicio = { data: datas.publicada_em, minimo: datas.publicada_em, certo: true };
-  } else if (transicao.inicio === "publicacao")
-    inicio = { data: null, minimo: datas?.assinada_em ?? null, certo: false };
-  else inicio = inicioVigencia(transicao.norma, fonte);
+    inicio = { data: datas.publicada_em, aguardando: false };
+  } else if (transicao.inicio === "publicacao" && datas?.publicada_em === AGUARDANDO_PUBLICACAO) {
+    inicio = { data: null, aguardando: true };
+  } else inicio = inicioVigencia(transicao.norma, fonte);
   const fim =
     inicio.data === null || transicao.fim === "sem-prazo"
       ? null
       : RE_DATA.test(transicao.fim)
         ? transicao.fim
         : somarDuracao(inicio.data, transicao.fim);
-  return { inicio_em: inicio.data, inicio_minimo: inicio.minimo, fim_em: fim };
+  return { inicio_em: inicio.aguardando ? null : inicio.data, fim_em: fim };
 }
 
 /**
  * Situação de uma regra de transição na data `data`, a partir das datas resolvidas: a regra única,
- * aplicada sobre os arquivos (`situacaoTransicao`) e sobre o `kb.sqlite` (tabela `transicoes`).
+ * aplicada sobre os arquivos (`situacaoTransicao`) e sobre o `kb.sqlite` (tabela `transicoes`). Sem
+ * início (a norma aguarda publicação), a regra ainda não começou.
  */
 export function situacaoNaData(t: DatasTransicao & { fim: string }, data: string): Situacao {
-  if (t.inicio_em === null) {
-    if (t.inicio_minimo && data < t.inicio_minimo) return "a-iniciar";
-    // com o início a confirmar, só um fim em data fixa permite dizer que a regra acabou
-    if (t.inicio_minimo !== null && RE_DATA.test(t.fim) && data > t.fim) return "encerrada";
-    return A_CONFIRMAR;
-  }
-  if (data < t.inicio_em) return "a-iniciar";
+  if (t.inicio_em === null || data < t.inicio_em) return "a-iniciar";
   if (t.fim_em !== null && data > t.fim_em) return "encerrada";
   return "em-curso";
 }
@@ -549,11 +493,16 @@ export function transicoesAplicaveis(
 // Linhas normativas (marcos da revisão de PPC)
 
 export interface LinhaDerivada {
-  /** Ato vigente na data: fim da cadeia de revogações totais a partir do ato mais recente da linha. */
+  /**
+   * Ato vigente na data: fim da cadeia de revogações totais a partir do ato mais recente da linha já
+   * em vigor.
+   */
   vigente: string;
+  /** Atos da linha que ainda não estão em vigor na data (aguardando publicação ou vigência futura). */
+  aguardando: string[];
   /** Atos revogados no todo pelo vigente. */
   substitui: string[];
-  /** Demais atos da linha e atos revogados no todo pelos substituídos (sem o vigente e `substitui`). */
+  /** Demais atos da linha e atos revogados no todo pelos substituídos (sem o vigente, `substitui` e `aguardando`). */
   antecessoras_historicas: string[];
   /** Dispositivos revogados pelo vigente ou revogados no próprio vigente (`ato#dispositivo`). */
   dispositivos_revogados: string[];
@@ -562,7 +511,8 @@ export interface LinhaDerivada {
 /**
  * Deriva vigente, substituídas, antecessoras e dispositivos revogados de uma linha normativa (atos
  * de um mesmo tema, do mais antigo ao mais recente conhecido) a partir de `relacoes.yaml`, na data
- * `data`. Uma nova norma que revogue o ato mais recente passa a ser a vigente sem editar a linha.
+ * `data`. Uma nova norma que revogue o ato mais recente passa a ser a vigente sem editar a linha; a que
+ * ainda não está em vigor (a Res. CNE/CP nº 2/2026, aguardando publicação) fica em `aguardando`.
  */
 export function derivarLinha(
   linha: readonly string[],
@@ -571,9 +521,10 @@ export function derivarLinha(
 ): LinhaDerivada {
   if (linha.length === 0) throw new Error("linha normativa vazia");
   const relacoes = fonte.relacoes.filter((r) => r.tipo === "revoga");
-  const emVigor = (r: Relacao) => ocorreu(efeitoDaRelacao(r, fonte), data) !== false;
+  const emVigor = (r: Relacao) => ocorreu(efeitoDaRelacao(r, fonte), data);
   const revogadoPor = (ato: string) => relacoes.find((r) => r.alvo === ato && !relacaoParcial(r) && emVigor(r));
-  let vigente = linha.at(-1)!;
+  const aguardando = linha.filter((ato) => !ocorreu(inicioVigencia(ato, fonte), data));
+  let vigente = [...linha].reverse().find((ato) => !aguardando.includes(ato)) ?? linha.at(-1)!;
   const visitados = new Set<string>();
   while (!visitados.has(vigente)) {
     visitados.add(vigente);
@@ -588,10 +539,12 @@ export function derivarLinha(
     .map((r) => `${r.alvo}${r.alvo_dispositivo}`);
   const historicas: string[] = [];
   for (const ato of [...linha, ...substitui.flatMap((s) => totais(s).map((r) => r.alvo))]) {
-    if (ato !== vigente && !substitui.includes(ato) && !historicas.includes(ato)) historicas.push(ato);
+    if (ato !== vigente && !substitui.includes(ato) && !aguardando.includes(ato) && !historicas.includes(ato))
+      historicas.push(ato);
   }
   return {
     vigente,
+    aguardando: aguardando.filter((ato) => ato !== vigente),
     substitui,
     antecessoras_historicas: historicas,
     dispositivos_revogados: [...new Set(dispositivos_revogados)],

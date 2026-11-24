@@ -1,6 +1,6 @@
 /**
  * Normas da fixture, acrescentadas ao banco de `criarBancoFixture` (`inserirNormas`): duas
- * resoluções da base (a de 2021, revogada pela de 2026, com a vigência a confirmar), um stub, uma
+ * resoluções da base (a de 2021, revogada pela de 2026, publicada em 12/11/2026), um stub, uma
  * referência externa, dispositivos com caput, subordinados, nota e revogação, relações, intervalos
  * de vigência, uma regra de transição e uma tabela de correspondência em rascunho. Os textos são
  * inventados; os formatos são os do `kb.sqlite`.
@@ -26,9 +26,6 @@ export const ARTIGOS_NUMERADOS = 12;
 export const INCISOS_ART28 = 20;
 /** O art. 36 da 2026 tem mais de 12 mil caracteres. */
 export const TAMANHO_ART36 = 12_500;
-
-const PENDENCIA_2021 =
-  "início de vigência de Resolução CNE/CP nº 1/2021 a confirmar (ato de 2021-01-05; publicação não registrada): presumida vigente";
 
 interface Norma {
   id: string;
@@ -68,9 +65,8 @@ const NORMAS: Norma[] = [
     front_matter: {
       id: DCN_2021,
       assinada_em: "2021-01-05",
-      publicada_em: "a confirmar",
-      vigente_de: "a confirmar",
-      vigencia_a_confirmar: PENDENCIA_2021,
+      publicada_em: "2021-01-06",
+      vigente_de: "2021-01-06",
     },
     linha: 1,
   },
@@ -384,9 +380,9 @@ export function inserirNormas(caminho: string): void {
     }
 
     const insRelacao = db.prepare(
-      `INSERT INTO relacoes (ordem, tipo, origem, operador, alvo, alvo_dispositivo, alcance, efeito_de, efeito_em, efeito_minimo,
+      `INSERT INTO relacoes (ordem, tipo, origem, operador, alvo, alvo_dispositivo, alcance, efeito_de, efeito_em,
          evidencia_em, evidencia_trecho, confirmado_em, proposta, nota, path)
-       VALUES (?, ?, ?, ?, ?, NULL, NULL, 'vigencia-da-origem', ?, ?, ?, ?, '2026-11-13', 'front-matter', ?, 'base-conhecimento/relacoes.yaml')`,
+       VALUES (?, ?, ?, ?, ?, NULL, NULL, 'vigencia-da-origem', ?, ?, ?, '2026-11-13', 'front-matter', ?, 'base-conhecimento/relacoes.yaml')`,
     );
     insRelacao.run(
       0,
@@ -395,7 +391,6 @@ export function inserirNormas(caminho: string): void {
       "#art74-ii",
       DCN_2021,
       "2026-11-12",
-      "2026-11-11",
       `${DCN_2026}#art74-ii`,
       "a Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
       "Regras de transição nos arts. 70 a 72.",
@@ -406,25 +401,25 @@ export function inserirNormas(caminho: string): void {
       DCN_2021,
       "#art64",
       STUB,
-      null,
-      "2021-01-05",
+      "2021-01-06",
       `${DCN_2021}#art64`,
       "a Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
       null,
     );
 
     const insVigencia = db.prepare(
-      "INSERT INTO vigencias (alvo, ordem, de, ate, status, certo, fonte) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO vigencias (alvo, ordem, de, ate, status, fonte) VALUES (?, ?, ?, ?, ?, ?)",
     );
-    insVigencia.run(DCN_2021, 0, null, "2026-11-12", "vigente", 0, "início a confirmar");
-    insVigencia.run(DCN_2021, 1, "2026-11-12", null, "revogada", 1, `${DCN_2026}#art74-ii`);
-    insVigencia.run(DCN_2026, 0, null, "2026-11-12", "ainda-nao-vigente", 1, "vigente_de");
-    insVigencia.run(DCN_2026, 1, "2026-11-12", null, "vigente", 1, "vigente_de");
+    insVigencia.run(DCN_2021, 0, null, "2021-01-06", "ainda-nao-vigente", "anterior");
+    insVigencia.run(DCN_2021, 1, "2021-01-06", "2026-11-12", "vigente", "inicio");
+    insVigencia.run(DCN_2021, 2, "2026-11-12", null, "revogada", `revoga ${DCN_2026}#art74-ii`);
+    insVigencia.run(DCN_2026, 0, null, "2026-11-12", "ainda-nao-vigente", "anterior");
+    insVigencia.run(DCN_2026, 1, "2026-11-12", null, "vigente", "inicio");
 
     db.prepare(
       `INSERT INTO transicoes (id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, inicio_em,
-         inicio_minimo, fim_em, evidencia, path)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         fim_em, evidencia, path)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
       "dcnept-2026-art71",
       DCN_2026,
@@ -435,7 +430,6 @@ export function inserirNormas(caminho: string): void {
       "Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.",
       "vigencia",
       "P2Y",
-      "2026-11-12",
       "2026-11-12",
       "2028-11-12",
       "é assegurado período de transição de até dois anos",

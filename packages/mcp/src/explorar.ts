@@ -37,7 +37,6 @@ export const NormaDoIndice = Schema.Struct({
   situacao: Schema.Literals(["base", "stub", "externo"]),
   /** O status publicado na data de referência da base (`vigente`, `revogada`…). */
   status_vigencia: Texto,
-  vigencia_a_confirmar: Schema.Boolean,
   ementa: Texto,
   apelidos: Schema.Array(Schema.String),
   link: EsquemaLink,

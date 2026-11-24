@@ -21,7 +21,7 @@ describe("o piso do texto consolidado na base", () => {
   test("lei alterada só por atos sem texto na base: alterada da data de referência em diante", () => {
     const estagio = "br/lei/2008/11788";
     expect(fonte.relacoes.some((r) => r.alvo === estagio && (r.tipo === "altera" || r.tipo === "revoga"))).toBe(false);
-    expect(statusEm(estagio, em, fonte)).toMatchObject({ status: "alterada", certo: true, pendencias: [] });
+    expect(statusEm(estagio, em, fonte)).toMatchObject({ status: "alterada" });
     // antes dela, só as relações registradas decidem: a nota de redação não traz a data do efeito
     expect(statusEm(estagio, "2020-01-01", fonte).status).toBe("vigente");
     expect(intervalosVigencia(estagio, fonte).at(-1)).toMatchObject({
@@ -37,7 +37,7 @@ describe("o piso do texto consolidado na base", () => {
   });
 
   test("o piso não rebaixa o que as relações já dizem nem atinge norma sem nota", () => {
-    expect(statusEm("br/cne-cp/res/2021/1", em, fonte).status).toBe("revogada");
+    expect(statusEm("ifpr/proens/in/2021/1", em, fonte).status).toBe("revogada");
     expect(fonte.consolidado.status.has("br/lei/2024/14945")).toBe(false);
   });
 });

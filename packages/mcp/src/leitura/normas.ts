@@ -17,7 +17,7 @@ import { linkDe, linkNorma } from "../links.ts";
 import { avisosDasNormas, dispositivoTexto, leitorDeNormas, relacaoSaida, resumoDaNorma } from "./comum.ts";
 
 function ocorreu(valor: EventoVigencia["ocorreu"]): string {
-  return valor === true ? "sim" : valor === false ? "não" : "a confirmar";
+  return valor ? "sim" : "não";
 }
 
 export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base) {
@@ -115,8 +115,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
     const vigencia = yield* normas.vigencia(ato, e.em ? { em: e.em } : {});
     const relacoes = yield* normas.relacoes(ato);
     const resumo = resumoDaNorma(norma);
-    const avisos: Aviso[] = vigencia.pendencias.map((p) => ({ tipo: "vigencia-a-confirmar", mensagem: p, ref: ato }));
-    avisos.push(...avisosDasNormas([resumo]).filter((a) => a.tipo !== "vigencia-a-confirmar"));
+    const avisos: Aviso[] = avisosDasNormas([resumo]);
     const sucessoras = yield* normas.sucessoras(ato);
     const anotadas = yield* normas.alteracoesAnotadas(ato);
     const leitor = leitorDeNormas(normas);
@@ -149,7 +148,6 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
         vigencia: {
           data: vigencia.data,
           status: vigencia.status,
-          certo: vigencia.certo,
           inicio: vigencia.inicio,
           eventos: vigencia.eventos.map((ev) => ({
             tipo: ev.tipo,
@@ -158,10 +156,8 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
             alvo_dispositivo: ev.alvo_dispositivo,
             alcance: ev.alcance,
             efeito_de: ev.efeito_de,
-            efeito_minimo: ev.efeito_minimo,
             ocorreu: ocorreu(ev.ocorreu),
           })),
-          pendencias: vigencia.pendencias,
         },
         relacoes: { entrada: relacoes.entrada.map(relacaoSaida), saida: relacoes.saida.map(relacaoSaida) },
         alteracoes_anotadas: alteracoesAnotadas,
@@ -177,7 +173,6 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
           inicio: t.inicio,
           fim: t.fim,
           inicio_em: t.inicio_em,
-          inicio_minimo: t.inicio_minimo,
           fim_em: t.fim_em,
           evidencia: t.evidencia,
           link: linkNorma(t.norma, t.dispositivo.slice(1)),

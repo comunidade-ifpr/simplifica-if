@@ -37,9 +37,10 @@ export const cargaHorariaTotal: Verificador = {
   verificar(ppc, base) {
     const { cnct, forma } = base;
     const total = ppc.fatos.find((f) => f.fato === "carga_horaria_total_h");
-    const art29 = base.vigencia("br/cne-cp/res/2026/2").certo
-      ? "Res. CNE/CP nº 2/2026, art. 29, § 2º"
-      : "Res. CNE/CP nº 2/2026, art. 29, § 2º, cuja data de início ainda não foi confirmada";
+    const art29 =
+      base.vigencia("br/cne-cp/res/2026/2").status === "ainda-nao-vigente"
+        ? "Res. CNE/CP nº 2/2026, art. 29, § 2º, que aguarda publicação"
+        : "Res. CNE/CP nº 2/2026, art. 29, § 2º";
     // PROEJA cadastrado como integrado: a EJA articulada tem a carga horária do art. 30, não as 3.000 h.
     const eja = /proeja|educa[cç][aã]o de jovens e adultos/i.test(ppc.linhas.slice(0, 120).join("\n"));
     const minimoForma = forma === "integrado" && !eja ? MINIMO_INTEGRADO : 0;
