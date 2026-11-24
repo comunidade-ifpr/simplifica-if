@@ -35,7 +35,7 @@ import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
 import { criarLista } from "../src/revisao-ppc/criar-lista.ts";
 import { julgarBloco } from "../src/revisao-ppc/julgamento.ts";
 import { contextoDaFicha } from "../src/revisao-ppc/preparo.ts";
-import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { alvosPorRecorte, pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { MODELO_PADRAO } from "../src/revisao-ppc/modelos.ts";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
@@ -155,6 +155,7 @@ const programa = Effect.gen(function* () {
         bloco,
         fichas: [ctx.ficha],
         pedido: pedidoS(bloco, [ctx.ficha], new Map([[ficha, ctx.proprio]]), ctx.contexto, nonce, ctx.comum),
+        alvos: alvosPorRecorte([ctx.ficha], new Map([[ficha, ctx.proprio]]), ctx.comum),
         fontes: new Set(ctx.fontes),
         tempoTurno: ListaViva.TEMPO_ACAO,
       });

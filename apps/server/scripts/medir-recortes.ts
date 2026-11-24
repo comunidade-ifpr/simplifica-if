@@ -16,7 +16,6 @@ import * as Effect from "effect/Effect";
 import { segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import { avaliarRecorte, GABARITO, nomesDoPpc } from "@simplifica-if/ppc/revisao-ia/gabarito";
-import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import { lerPpc, ppcsTecnicos } from "../../../packages/ppc/scripts/base-tecnica.ts";
 import { preparar } from "../src/revisao-ppc/preparo.ts";
@@ -65,7 +64,7 @@ const programa = Effect.gen(function* () {
       t.n += 1;
       for (const ficha of bloco.fichas) {
         if (!GABARITO[ficha]) continue;
-        const conteudo = conteudoDoPpcParaFicha(bloco, ficha, plano.transversais?.trechos ?? "");
+        const conteudo = bloco.alvos[ficha]?.alvo ?? "";
         const r = avaliarRecorte(ficha, conteudo, doPpc, nomes);
         const c = (porFicha.get(ficha) ?? {
           comEvidencia: 0,

@@ -32,7 +32,7 @@ import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import ExcelJS from "exceljs";
-import type { CriterioInconclusivo } from "@simplifica-if/ppc/revisao-ia/pedido";
+import type { AlvosDoBloco, CriterioInconclusivo } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { type FichaIa, fichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { estadoDaIa, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { conferidorDoBloco, precisaNovaTentativa, resultadoDoBloco } from "../src/revisao-ppc/julgamento.ts";
@@ -98,10 +98,18 @@ type Reconferida = LinhaExecucao & {
 /** As respostas gravadas pela conferência e pelo resultado do bloco do código atual. */
 function reconferir(linha: LinhaExecucao): Reconferida {
   const doBloco = linha.fichas.map(fichaDaBase);
+  const alvos: AlvosDoBloco =
+    linha.alvos ??
+    Object.fromEntries(
+      linha.fichas.map((f) => {
+        const texto = linha.conteudo[f] ?? "";
+        return [f, { alvo: texto, secao: texto.trim().length > 0 ? texto : null }];
+      }),
+    );
   const conferir = conferidorDoBloco({
     bloco: { id: linha.bloco, tipo: linha.tipo, tema: "", ordemTema: 0, fichas: linha.fichas },
     fichas: doBloco,
-    pedido: linha.pedido,
+    alvos,
     fontes: new Set(linha.fontes),
     criterio: linha.criterio,
   });

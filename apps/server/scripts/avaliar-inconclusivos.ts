@@ -35,7 +35,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import { avaliarRecorte, GABARITO, nomesDoPpc } from "@simplifica-if/ppc/revisao-ia/gabarito";
 import {
-  conteudoDoPpcParaFicha,
+  type AlvosDoBloco,
   CRITERIOS_INCONCLUSIVO,
   type CriterioInconclusivo,
 } from "@simplifica-if/ppc/revisao-ia/pedido";
@@ -83,6 +83,8 @@ export type LinhaExecucao = {
   fontes: string[];
   /** O conteúdo do PPC entregue a cada ficha (o alvo dos trechos), para reavaliar sem chamada. */
   conteudo: Record<string, string>;
+  /** Os alvos estruturados por ficha (alvo e seção), para reconferir sem reparsear o pedido. */
+  alvos?: AlvosDoBloco;
   /** A resposta bruta de cada tentativa, na ordem. */
   respostas: string[];
   tentativas: TentativaIa[];
@@ -129,7 +131,7 @@ const selecionar = Effect.gen(function* () {
       if (bloco.tipo === "T") continue;
       for (const ficha of bloco.fichas) {
         if (!GABARITO[ficha]) continue;
-        const r = avaliarRecorte(ficha, conteudoDoPpcParaFicha(bloco, ficha), doPpc, nomes);
+        const r = avaliarRecorte(ficha, bloco.alvos[ficha]?.alvo ?? "", doPpc, nomes);
         if (r.noPpc === null) continue;
         pares.push({ ppc: ppc.id, ficha, modo: bloco.tipo, noPpc: r.noPpc, noRecorte: r.noRecorte });
       }
@@ -235,6 +237,7 @@ const rodar = Effect.gen(function* () {
               bloco,
               fichas: bloco.fichas.map((f) => porId.get(f)!),
               pedido: bloco.pedido,
+              alvos: bloco.alvos,
               fontes: new Set(bloco.fontes),
               tempoTurno: TEMPO_TURNO,
               criterio,
@@ -250,7 +253,8 @@ const rodar = Effect.gen(function* () {
               fichas: bloco.fichas,
               pedido: bloco.pedido,
               fontes: bloco.fontes,
-              conteudo: Object.fromEntries(bloco.fichas.map((f) => [f, conteudoDoPpcParaFicha(bloco, f)])),
+              conteudo: Object.fromEntries(bloco.fichas.map((f) => [f, bloco.alvos[f]?.alvo ?? ""])),
+              alvos: bloco.alvos,
               respostas,
               tentativas,
               ...julgado,

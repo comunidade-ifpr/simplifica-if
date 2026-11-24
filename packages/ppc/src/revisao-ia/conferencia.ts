@@ -174,8 +174,8 @@ export function conferirResposta(
     fontes: ReadonlySet<string>;
     criterio?: CriterioInconclusivo | undefined;
     /**
-     * A seção do critério já normalizada (`alvoDosTrechos(secaoDaFicha(…))`), ou `null` sem seção: a
-     * prova de leitura da ausência. Sem a função, a ausência só confere o trecho no conteúdo da ficha.
+     * A seção do critério já normalizada (`alvoDosTrechos(alvos[ficha].secao)`), ou `null` sem seção:
+     * a prova de leitura da ausência. Sem a função, a ausência só confere o trecho no conteúdo da ficha.
      */
     secaoDaFicha?: (ficha: string) => string | null;
   },

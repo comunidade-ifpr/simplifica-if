@@ -28,7 +28,6 @@ import {
 } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
-import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { chavePendencia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
@@ -117,14 +116,23 @@ const provaDaSecao = (pedido: string) => {
 /** O pedido sem os nonces (um por ação), para comparar o começo. */
 const semNonce = (pedido: string) => pedido.replace(/(ppc|motivo)-[0-9a-f]+/g, "$1-N");
 
-const trechoDoLote = (pedido: string, ficha: string) =>
-  conteudoDoPpcParaFicha({ pedido }, ficha)
-    .replace(/## Resumos dos temas[\s\S]*?(?=\n## )/, "")
+const trechoDoLote = (pedido: string, ficha: string) => {
+  const marcas = /<ppc-[0-9a-z]+>\n([\s\S]*)\n<\/ppc-[0-9a-z]+>/.exec(pedido);
+  const ppc = (marcas?.[1] ?? "").replace(/^## Resumos dos temas\n[\s\S]*?(?=^## |(?![\s\S]))/m, "");
+  const conteudo = ppc
+    .split(/^(?=## Recorte para \S+$)/m)
+    .filter((parte) => {
+      const dono = /^## Recorte para (\S+)$/m.exec(parte.split("\n")[0] ?? "");
+      return !dono || dono[1] === ficha;
+    })
+    .join("\n");
+  return conteudo
     .split("\n")
     .map((l) => l.trim())
-    .filter((l) => !/^(#|<|\[)/.test(l))
+    .filter((l) => !/^(#|<|\[|\()/.test(l))
     .sort((a, b) => b.length - a.length)[0]!
     .slice(0, 60);
+};
 
 /** A resposta de um lote (revisão com IA ou nova revisão): `naoAtende` vira NAO_ATENDE com trecho. */
 const respostaLote = (pedido: string, naoAtende: ReadonlySet<string>) =>

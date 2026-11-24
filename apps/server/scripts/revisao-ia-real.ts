@@ -33,7 +33,7 @@ import * as CopiasComentadas from "../src/persistencia/CopiasComentadas.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import { criarLista } from "../src/revisao-ppc/criar-lista.ts";
-import { alvoDosTrechos, julgarBloco, type ResultadoBloco } from "../src/revisao-ppc/julgamento.ts";
+import { julgarBloco, type ResultadoBloco } from "../src/revisao-ppc/julgamento.ts";
 import type { PlanoRevisaoIa } from "../src/revisao-ppc/preparo.ts";
 import * as RevisaoIa from "../src/revisao-ppc/RevisaoIa.ts";
 
@@ -138,7 +138,7 @@ const programa = Effect.gen(function* () {
       bloco,
       fichas: bloco.fichas.map((f) => porId.get(f)!),
       pedido: bloco.pedido,
-      alvo: alvoDosTrechos(plano.markdown),
+      alvos: bloco.alvos,
       fontes: new Set(bloco.fontes),
       tempoTurno: RevisaoIa.TEMPO_TURNO,
     });

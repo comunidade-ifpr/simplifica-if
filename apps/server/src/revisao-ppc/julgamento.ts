@@ -31,12 +31,7 @@ import {
   pedidoDeCorrecao,
   type ResultadoIa,
 } from "@simplifica-if/ppc/revisao-ia/conferencia";
-import {
-  conteudoDoPpcParaFicha,
-  type CriterioInconclusivo,
-  instrucoesJulgador,
-  secaoDaFicha,
-} from "@simplifica-if/ppc/revisao-ia/pedido";
+import { type AlvosDoBloco, type CriterioInconclusivo, instrucoesJulgador } from "@simplifica-if/ppc/revisao-ia/pedido";
 import type { Bloco, FichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
@@ -101,15 +96,11 @@ export interface EntradaJulgamento {
   readonly nonce: string;
   readonly bloco: Bloco;
   readonly fichas: readonly FichaIa[];
-  /** O pedido do bloco; o conteúdo do PPC entregue a cada ficha sai dele e é o alvo dos trechos. */
+  /** O pedido do bloco enviado à IA. */
   readonly pedido: string;
+  /** Os alvos estruturados de cada ficha (conteúdo do PPC entregue e seção do critério). */
+  readonly alvos: AlvosDoBloco;
   readonly fontes: ReadonlySet<string>;
-  /**
-   * O texto do PPC entregue, quando o pedido traz entre as marcas mais do que o PPC: nas
-   * transversais, os resumos dos temas (escritos pela IA) vão junto, e o alvo dos trechos tem de ser
-   * só as partes extraídas e os recortes. Sem ele, o alvo sai do pedido.
-   */
-  readonly conteudoPpc?: string;
   /** Tempo máximo de um turno. */
   readonly tempoTurno: Duration.Duration;
   /** Grava o uso de cada tentativa assim que ela acaba, mesmo que o bloco não termine. */
@@ -411,21 +402,16 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
 
 /**
  * A conferência de uma resposta deste bloco: o alvo dos trechos de cada ficha é o conteúdo do PPC que
- * ela recebeu (sem os recortes das outras), e a prova de leitura de uma ausência, a seção dela.
- * Puro: o script de avaliação reconfere com ele as respostas gravadas.
+ * ela recebeu (sem os recortes das outras nem os resumos da IA), e a prova de leitura de uma ausência,
+ * a seção dela. Puro: o script de avaliação reconfere com ele as respostas gravadas.
  */
 export function conferidorDoBloco(
-  entrada: Pick<EntradaJulgamento, "bloco" | "fichas" | "pedido" | "fontes" | "conteudoPpc" | "criterio">,
+  entrada: Pick<EntradaJulgamento, "bloco" | "fichas" | "alvos" | "fontes" | "criterio">,
 ): (texto: string) => Conferencia {
-  // Nas transversais, o PPC entregue é o `conteudoPpc` (sem os resumos escritos pela IA).
-  const pedido = { pedido: entrada.conteudoPpc === undefined ? entrada.pedido : "" };
-  const reserva = entrada.conteudoPpc ?? "";
-  const alvos = new Map(
-    entrada.fichas.map((f) => [f.id, alvoDosTrechos(conteudoDoPpcParaFicha(pedido, f.id, reserva))]),
-  );
+  const alvos = new Map(entrada.fichas.map((f) => [f.id, alvoDosTrechos(entrada.alvos[f.id]?.alvo ?? "")]));
   const secoes = new Map(
     entrada.fichas.map((f) => {
-      const secao = secaoDaFicha(pedido, f.id, reserva);
+      const secao = entrada.alvos[f.id]?.secao ?? null;
       return [f.id, secao === null ? null : alvoDosTrechos(secao)];
     }),
   );

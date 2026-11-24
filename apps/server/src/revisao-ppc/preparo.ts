@@ -18,6 +18,9 @@ import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { comumDoBloco, estruturaDoPpc } from "@simplifica-if/ppc/revisao-ia/estrutura";
 import {
+  type AlvosDoBloco,
+  alvosDoTema,
+  alvosPorRecorte,
   type ContextoNormativo,
   CRITERIO_PADRAO,
   type CriterioInconclusivo,
@@ -25,6 +28,8 @@ import {
   formatarContexto,
   pedidoJ,
   pedidoS,
+  type RecorteFicha,
+  trechosPorRecorte,
 } from "@simplifica-if/ppc/revisao-ia/pedido";
 import {
   type Bloco,
@@ -49,8 +54,8 @@ export const cursoEmTexto = (curso: {
     ? `${curso.cnct.denominacao}${curso.forma ? `, forma de oferta ${NOME_DA_FORMA[curso.forma] ?? curso.forma}` : ", forma de oferta não identificada"}`
     : null;
 
-/** Um bloco do plano, com o pedido pronto (vazio no T, montado na hora) e as fontes permitidas. */
-export type BlocoPlano = Bloco & { pedido: string; caracteres: number; fontes: string[] };
+/** Um bloco do plano, com o pedido pronto (vazio no T, montado na hora), as fontes permitidas e os alvos por ficha. */
+export type BlocoPlano = Bloco & { pedido: string; caracteres: number; fontes: string[]; alvos: AlvosDoBloco };
 
 /** O plano gravado com a revisão (`revisoes_ia.plano`). */
 export type PlanoRevisaoIa = {
@@ -195,47 +200,43 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
       const geral = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(geral, fontes.dataReferencia, entrada.curso);
       const comum = comumDoBloco(doBloco, estrutura);
-      const recortes = new Map<string, { achou: boolean; texto: string }>();
+      const recortes = new Map<string, RecorteFicha>();
       for (const ficha of doBloco) {
         const proprio = yield* pacote([ficha.id], 1);
         recortes.set(ficha.id, recorteDaFicha(ficha, secoesTexto(proprio, false), comum));
       }
       const pedido = pedidoS(bloco, doBloco, recortes, contexto, entrada.nonce, comum.texto, criterio);
-      blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
+      const alvos = alvosPorRecorte(doBloco, recortes, comum.texto);
+      blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)], alvos });
     } else if (bloco.tipo === "J") {
       const p = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
       const comum = comumDoBloco(doBloco, estrutura);
       const secoes = secoesTexto(p, true).filter((x) => !comum.excluirLinhas.has(x.linhaInicio));
-      const pedido = pedidoJ(
-        bloco,
-        doBloco,
-        secoesDoTema(secoes, undefined, comum.semTabelaEm),
-        contexto,
-        entrada.nonce,
-        comum.texto,
-        criterio,
-      );
-      blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
+      const secoesFormatadas = secoesDoTema(secoes, undefined, comum.semTabelaEm);
+      const pedido = pedidoJ(bloco, doBloco, secoesFormatadas, contexto, entrada.nonce, comum.texto, criterio);
+      const alvos = alvosDoTema(doBloco, secoesFormatadas, comum.texto);
+      blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)], alvos });
     } else {
       const p = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
       // Cada transversal com o recorte das seções dos tópicos dela, e o comum do bloco (quadro,
       // matriz, ementário): no modo rápido há poucos temas J, e os resumos sozinhos não bastavam.
       const comum = comumDoBloco(doBloco, estrutura);
-      const recortes: string[] = [];
+      const recortes = new Map<string, RecorteFicha>();
       for (const ficha of doBloco) {
         const proprio = yield* pacote([ficha.id], 0);
-        const r = recorteDaFicha(ficha, secoesTexto(proprio, true), { ...comum, limite: LIMITE_RECORTE_T });
-        recortes.push(
-          `## Recorte para ${ficha.id}\n${r.texto || "(nenhuma seção do PPC corresponde a este critério)"}`,
+        recortes.set(
+          ficha.id,
+          recorteDaFicha(ficha, secoesTexto(proprio, true), { ...comum, limite: LIMITE_RECORTE_T }),
         );
       }
-      const trechos = [comum.texto, ...recortes].filter(Boolean).join("\n\n");
+      const trechos = trechosPorRecorte(doBloco, recortes, comum.texto);
+      const alvos = alvosPorRecorte(doBloco, recortes, comum.texto);
       transversais = { contexto, trechos };
       // Os resumos (até 600 caracteres por tema) e os resultados entram na hora.
       const caracteres = trechos.length + 6_000 + formatarContexto(contexto).length;
-      blocos.push({ ...bloco, pedido: "", caracteres, fontes: [...fontesPermitidas(contexto)] });
+      blocos.push({ ...bloco, pedido: "", caracteres, fontes: [...fontesPermitidas(contexto)], alvos });
     }
   }
   const plano: PlanoRevisaoIa = {

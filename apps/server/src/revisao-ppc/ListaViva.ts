@@ -72,7 +72,7 @@ import {
   prefixoConversa,
   type TurnoAnterior,
 } from "@simplifica-if/ppc/revisao-ia/conversa";
-import { instrucoesJulgador, pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { alvosPorRecorte, instrucoesJulgador, pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { dobrar, retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import {
   chavePendencia,
@@ -829,6 +829,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           bloco: blocoRevisarDeNovo(p.pendencia),
           fichas: [ctx.ficha],
           pedido: textoRevisarDeNovo(p.pendencia, preparo).pedido,
+          alvos: alvosPorRecorte([ctx.ficha], new Map([[ctx.ficha.id, ctx.proprio]]), ctx.comum),
           fontes: new Set(ctx.fontes),
           tempoTurno: tempoAcao,
           revisaoHumana: teveTextoParaIa(retirarTextoParaIa(novo.revisao.markdown, novo.revisao.linhasTextoParaIa)),

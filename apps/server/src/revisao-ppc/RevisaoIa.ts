@@ -500,7 +500,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     let pausa: PausaRevisao | null = null;
 
     const rodarBloco = Effect.fn("RevisaoIa.rodarBloco")(
-      function* (bloco: PlanoRevisaoIa["blocos"][number], pedido: string, conteudoPpc?: string) {
+      function* (bloco: PlanoRevisaoIa["blocos"][number], pedido: string) {
         andando.set(bloco.id, { etapa: "aguardando", iniciadoEm: yield* agoraIso, ultimaAtividadeEm: null });
         yield* avisar(id);
         const julgado = yield* julgarBloco({
@@ -510,7 +510,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           bloco,
           fichas: bloco.fichas.map((f) => porId.get(f)!),
           pedido,
-          ...(conteudoPpc === undefined ? {} : { conteudoPpc }),
+          alvos: bloco.alvos,
           fontes: new Set(bloco.fontes),
           tempoTurno,
           criterio: plano.criterio ?? CRITERIO_PADRAO,
@@ -582,8 +582,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         plano.nonce,
         plano.criterio ?? CRITERIO_PADRAO,
       );
-      // O alvo dos trechos das transversais é só o PPC entregue (`trechos`), nunca os resumos da IA.
-      yield* rodarBloco(transversal, pedido, plano.transversais.trechos);
+      yield* rodarBloco(transversal, pedido);
       if (pausa !== null) return yield* Effect.fail<PausaRevisao>(pausa);
     }
 

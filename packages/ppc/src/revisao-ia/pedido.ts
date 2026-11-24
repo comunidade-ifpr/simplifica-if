@@ -191,15 +191,28 @@ const CONTRATO = (bloco: Bloco, fichas: readonly FichaIa[], criterio: CriterioIn
     .filter((linha) => linha !== null)
     .join("\n");
 
-/** O pedido de um bloco S: as fichas, cada uma com o recorte que o código achou. */
-export function pedidoS(
-  bloco: Bloco,
-  fichas: readonly FichaIa[],
-  recortes: ReadonlyMap<string, { achou: boolean; texto: string }>,
-  contexto: ContextoNormativo,
-  nonce: string,
+/** Um recorte de ficha retornado por `recorteDaFicha`. */
+export type RecorteFicha = { readonly achou: boolean; readonly texto: string };
+
+/** O conteúdo do PPC entregue a uma ficha (alvo dos trechos) e a seção dela (prova de leitura de ausência). */
+export type AlvoFicha = {
+  /** O conteúdo do PPC entregue à ficha (comum do bloco + recorte ou seções do tema; nunca os resumos da IA). */
+  readonly alvo: string;
+  /**
+   * A seção do critério, sem o comum do bloco: o recorte dela (no S e nas transversais, só quando o
+   * código achou a seção) ou as seções do tema (no J). `null` quando o código não achou a seção.
+   */
+  readonly secao: string | null;
+};
+
+/** Os alvos de conferência de cada ficha de um bloco, indexados pelo ID da ficha. */
+export type AlvosDoBloco = Readonly<Record<string, AlvoFicha>>;
+
+/** O bloco de recortes (comum + um `## Recorte para <ID>` por ficha), compartilhado por `pedidoS` e transversais. */
+export function trechosPorRecorte(
+  fichas: readonly Pick<FichaIa, "id">[],
+  recortes: ReadonlyMap<string, RecorteFicha>,
   comum = "",
-  criterio: CriterioInconclusivo = CRITERIO_PADRAO,
 ): string {
   const recortesTexto = fichas
     .map((f) => {
@@ -210,7 +223,55 @@ export function pedidoS(
       return `## Recorte para ${f.id}\n${aviso}${r?.texto || "(nenhuma seção do PPC corresponde a este critério)"}`;
     })
     .join("\n\n");
-  const ppc = [comum, recortesTexto].filter(Boolean).join("\n\n");
+  return [comum, recortesTexto].filter(Boolean).join("\n\n");
+}
+
+/**
+ * Os alvos estruturados de cada ficha num bloco com recortes individuais (`S`, `revisarDeNovo` e
+ * transversais): o `alvo` é o comum do bloco + o recorte da ficha (sem os recortes das outras e sem
+ * os resumos da IA); a `secao` é o recorte da ficha só quando `achou` é verdadeiro.
+ */
+export function alvosPorRecorte(
+  fichas: readonly Pick<FichaIa, "id">[],
+  recortes: ReadonlyMap<string, RecorteFicha>,
+  comum = "",
+): AlvosDoBloco {
+  const alvos: Record<string, AlvoFicha> = {};
+  for (const f of fichas) {
+    const r = recortes.get(f.id);
+    const texto = r?.texto ?? "";
+    alvos[f.id] = {
+      alvo: [comum, texto].filter(Boolean).join("\n\n"),
+      secao: r?.achou && texto.trim().length > 0 ? texto : null,
+    };
+  }
+  return alvos;
+}
+
+/**
+ * Os alvos estruturados de cada ficha num tema `J`: todas compartilham o comum do bloco + as seções
+ * do tema como `alvo`, e as seções do tema como `secao` (ou `null` quando não há seções classificadas).
+ */
+export function alvosDoTema(fichas: readonly Pick<FichaIa, "id">[], secoes: string, comum = ""): AlvosDoBloco {
+  const temSecoes = secoes.trim().length > 0;
+  const alvo = [comum, temSecoes ? secoes : ""].filter(Boolean).join("\n\n");
+  const secao = temSecoes ? secoes : null;
+  const alvos: Record<string, AlvoFicha> = {};
+  for (const f of fichas) alvos[f.id] = { alvo, secao };
+  return alvos;
+}
+
+/** O pedido de um bloco S: as fichas, cada uma com o recorte que o código achou. */
+export function pedidoS(
+  bloco: Bloco,
+  fichas: readonly FichaIa[],
+  recortes: ReadonlyMap<string, RecorteFicha>,
+  contexto: ContextoNormativo,
+  nonce: string,
+  comum = "",
+  criterio: CriterioInconclusivo = CRITERIO_PADRAO,
+): string {
+  const ppc = trechosPorRecorte(fichas, recortes, comum);
   return [
     `# Bloco ${bloco.id}: ${bloco.tema} (confirmação de critérios sobre recortes)`,
     "",
@@ -310,46 +371,4 @@ export function pedidoT(
     "",
     CONTRATO(bloco, fichas, criterio),
   ].join("\n");
-}
-
-/**
- * O conteúdo do PPC que a IA recebe para uma ficha num pedido (o alvo dos trechos e a medição dos
- * recortes): o que está entre as marcas do nonce, sem os recortes das outras fichas do lote (o comum
- * do bloco fica) e sem os resumos dos temas, que a IA escreveu.
- * `reserva` é o que vale quando o pedido ainda não existe (as transversais, montadas na hora).
- */
-export function conteudoDoPpcParaFicha(bloco: { pedido: string }, ficha: string, reserva = ""): string {
-  const marcas = /<ppc-[0-9a-z]+>\n([\s\S]*)\n<\/ppc-[0-9a-z]+>/.exec(bloco.pedido);
-  // Os resumos dos temas (nas transversais) foram escritos pela IA: não são PPC, nunca são alvo.
-  const ppc = (marcas ? marcas[1]! : reserva).replace(/^## Resumos dos temas\n[\s\S]*?(?=^## |(?![\s\S]))/m, "");
-  const partes = ppc.split(/^(?=## Recorte para \S+$)/m);
-  return partes
-    .filter((parte) => {
-      const dono = /^## Recorte para (\S+)$/m.exec(parte.split("\n")[0] ?? "");
-      return !dono || dono[1] === ficha;
-    })
-    .join("\n");
-}
-
-/** Os avisos que `pedidoS` e `pedidoJ` põem no lugar de uma seção que o código não achou. */
-const SEM_SECAO = [
-  "(o código não localizou trecho com os termos deste critério",
-  "(nenhuma seção do PPC corresponde a este critério)",
-  "(nenhuma seção do PPC foi classificada neste tema)",
-];
-
-/**
- * A seção lida por uma ficha, sem o comum do bloco (quadro de identificação, matriz, ementário): no S
- * e nas transversais, o `## Recorte para <ID>` dela; no J, as `## Seções do tema`. É onde a prova de
- * leitura de uma ausência tem de estar (critério `ausencia`). `null` quando o código não achou a seção
- * (o recorte é um aviso ou o começo da seção mais provável): aí a ausência não se prova.
- */
-export function secaoDaFicha(bloco: { pedido: string }, ficha: string, reserva = ""): string | null {
-  const conteudo = conteudoDoPpcParaFicha(bloco, ficha, reserva);
-  const proprio = new RegExp(`^## Recorte para ${ficha.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "m").exec(conteudo);
-  const tema = /^## Seções do tema$/m.exec(conteudo);
-  const marca = proprio ?? tema;
-  if (!marca) return SEM_SECAO.some((a) => conteudo.includes(a)) ? null : conteudo;
-  const texto = conteudo.slice(marca.index + marca[0].length).trim();
-  return !texto || SEM_SECAO.some((a) => texto.startsWith(a)) ? null : texto;
 }

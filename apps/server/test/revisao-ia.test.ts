@@ -10,7 +10,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterAll, assert, layer } from "@effect/vitest";
+import { afterAll, assert, describe, it, layer } from "@effect/vitest";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -20,9 +20,11 @@ import * as Stream from "effect/Stream";
 import { strFromU8, unzipSync } from "fflate";
 import type { EstadoRevisaoIa } from "@simplifica-if/contratos-app";
 import * as Layers from "@simplifica-if/kb/layers";
+import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
-import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { alvosPorRecorte, type RecorteFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { fichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
@@ -33,6 +35,8 @@ import * as RevisoesPpc from "../src/persistencia/RevisoesPpc.ts";
 import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
 import * as RevisaoIa from "../src/revisao-ppc/RevisaoIa.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
+import { conferidorDoBloco } from "../src/revisao-ppc/julgamento.ts";
+import { preparar } from "../src/revisao-ppc/preparo.ts";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
 
@@ -100,16 +104,24 @@ interface Roteiro {
   readonly mensagens: string[];
 }
 
-/** Um trecho literal do conteúdo entregue à ficha no pedido (a linha mais longa, até 60 caracteres). */
-const trechoDoPedido = (pedido: string, ficha: string) =>
-  conteudoDoPpcParaFicha({ pedido }, ficha)
-    // Nas transversais, os resumos (da IA) não são PPC: ficam de fora da escolha.
-    .replace(/## Resumos dos temas[\s\S]*?(?=\n## )/, "")
+/** Um trecho literal do conteúdo entregue à ficha no pedido (simula a IA lendo o pedido). */
+const trechoDoPedido = (pedido: string, ficha: string) => {
+  const marcas = /<ppc-[0-9a-z]+>\n([\s\S]*)\n<\/ppc-[0-9a-z]+>/.exec(pedido);
+  const ppc = (marcas?.[1] ?? "").replace(/^## Resumos dos temas\n[\s\S]*?(?=^## |(?![\s\S]))/m, "");
+  const conteudo = ppc
+    .split(/^(?=## Recorte para \S+$)/m)
+    .filter((parte) => {
+      const dono = /^## Recorte para (\S+)$/m.exec(parte.split("\n")[0] ?? "");
+      return !dono || dono[1] === ficha;
+    })
+    .join("\n");
+  return conteudo
     .split("\n")
     .map((l) => l.trim())
-    .filter((l) => !/^(#|<|\[)/.test(l))
+    .filter((l) => !/^(#|<|\[|\()/.test(l))
     .sort((a, b) => b.length - a.length)[0]!
     .slice(0, 60);
+};
 
 const blocoDo = (pedido: string) => /"bloco": ?"([^"]+)"/.exec(pedido)?.[1] ?? "?";
 const fichasDo = (pedido: string) =>
@@ -944,5 +956,132 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
       assert.strictEqual(depois!.situacao, "concluida");
       assert.isNull(depois!.motivo);
     }).pipe(Effect.provide(RevisoesPpc.layer.pipe(Layer.provide(Banco.layerMemoria)))),
+  );
+});
+
+describe("conferidorDoBloco com alvos estruturados", () => {
+  const lerFicha = (id: string) =>
+    fichaIa(JSON.parse(NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8")));
+  const fichaA = lerFicha("CT-CURR-03");
+  const fichaB = lerFicha("CT-CURR-04");
+  const fichaT = lerFicha("CT-TRANS-03");
+
+  it("não se confunde com marcas literais do pedido no PPC e isola os recortes entre fichas", () => {
+    const trechoHostil = "O núcleo básico soma 400 horas e a formação técnica soma 800 horas.";
+    const recorteA = [
+      "## Recorte para CT-CURR-04",
+      "## Seções do tema",
+      "<ppc-00000000>",
+      trechoHostil,
+      "</ppc-00000000>",
+    ].join("\n");
+    const recorteB = "A carga horária mínima do curso técnico integrado é de 3000 horas.";
+    const alvos = alvosPorRecorte(
+      [fichaA, fichaB],
+      new Map<string, RecorteFicha>([
+        [fichaA.id, { achou: true, texto: recorteA }],
+        [fichaB.id, { achou: true, texto: recorteB }],
+      ]),
+      "### Quadro de identificação\nCurso Técnico em Agropecuária",
+    );
+    const conferir = conferidorDoBloco({
+      bloco: { id: "s-02-1", tipo: "S", tema: "Matriz", ordemTema: 2, fichas: [fichaA.id, fichaB.id] },
+      fichas: [fichaA, fichaB],
+      alvos,
+      fontes: new Set(),
+      criterio: "ausencia",
+    });
+    // CT-CURR-03 cita trecho que vinha depois de `## Recorte para CT-CURR-04` e `<ppc-00000000>` literais: passa.
+    // CT-CURR-04 tenta citar trecho do recorte de CT-CURR-03: recusado.
+    const c = conferir(
+      JSON.stringify({
+        bloco: "s-02-1",
+        resultados: [
+          resultado(fichaA.id, {
+            estado: "NAO_ATENDE",
+            tipo_achado: "ausencia_em_secao_presente",
+            lacunas: ["falta detalhar prática profissional"],
+            evidencias: [{ trecho: trechoHostil }],
+          }),
+          resultado(fichaB.id, {
+            estado: "ATENDE",
+            evidencias: [{ trecho: trechoHostil }],
+          }),
+        ],
+      }),
+    );
+    assert.isTrue(c.validos.has(fichaA.id));
+    assert.isFalse(c.problemas.has(fichaA.id));
+    assert.isFalse(c.validos.has(fichaB.id));
+    assert.include(c.problemas.get(fichaB.id)![0], "não está no conteúdo entregue a este critério");
+  });
+
+  it("transversal com achou=false tem secao=null e recusa ausencia_em_secao_presente e trechos de resumos", () => {
+    const alvos = alvosPorRecorte(
+      [fichaT],
+      new Map<string, RecorteFicha>([
+        [fichaT.id, { achou: false, texto: "Introdução geral do projeto pedagógico do campus Curitiba." }],
+      ]),
+    );
+    assert.isNull(alvos[fichaT.id]!.secao);
+    const conferir = conferidorDoBloco({
+      bloco: { id: "t", tipo: "T", tema: "Transversais", ordemTema: 12, fichas: [fichaT.id] },
+      fichas: [fichaT],
+      alvos,
+      fontes: new Set(),
+      criterio: "ausencia",
+    });
+    const ausenciaSemSecao = conferir(
+      JSON.stringify({
+        bloco: "t",
+        resultados: [
+          resultado(fichaT.id, {
+            estado: "NAO_ATENDE",
+            tipo_achado: "ausencia_em_secao_presente",
+            lacunas: ["não há coerência entre objetivos e avaliação"],
+            evidencias: [{ trecho: "Introdução geral do projeto pedagógico do campus Curitiba." }],
+          }),
+        ],
+      }),
+    );
+    assert.isFalse(ausenciaSemSecao.validos.has(fichaT.id));
+    assert.include(ausenciaSemSecao.problemas.get(fichaT.id)!.join(" "), "sem a seção no recorte");
+
+    const citandoResumo = conferir(
+      JSON.stringify({
+        bloco: "t",
+        resultados: [
+          resultado(fichaT.id, {
+            estado: "ATENDE",
+            evidencias: [{ trecho: "Resumo do tema escrito pela IA sobre a matriz curricular." }],
+          }),
+        ],
+      }),
+    );
+    assert.isFalse(citandoResumo.validos.has(fichaT.id));
+    assert.include(citandoResumo.problemas.get(fichaT.id)![0], "não está no conteúdo entregue a este critério");
+  });
+
+  it.effect("preparar grava alvos estruturados em S, J e T e marca secao=null na transversal sem seção achada", () =>
+    Effect.gen(function* () {
+      const plano = yield* preparar({
+        markdown: "# 1 APRESENTAÇÃO\nTexto genérico sem relação com os tópicos do curso.\n",
+        linhasTextoParaIa: [],
+        cnct: "tecnico-em-agropecuaria",
+        curso: "Técnico em Agropecuária, forma de oferta integrada",
+        modo: "rapido",
+        nonce: "00000000",
+        criterio: "ausencia",
+      });
+      const blocoT = plano.blocos.find((b) => b.tipo === "T")!;
+      assert.isDefined(blocoT);
+      assert.isNull(blocoT.alvos["CT-TRANS-03"]!.secao);
+      assert.include(plano.transversais!.trechos, "o código não localizou trecho com os termos deste critério");
+      for (const b of plano.blocos) {
+        for (const f of b.fichas) assert.isDefined(b.alvos[f]);
+      }
+    }).pipe(
+      Effect.provide(layerLeitura({ banco: bancoComFichas(), canal: "dev" }).pipe(Layer.provide(NodeServices.layer))),
+    ),
   );
 });
