@@ -125,8 +125,8 @@ const NOME_DO_TIPO: Readonly<Record<string, string>> = {
  * "Lei nº 9.394/1996". O ID cru nunca vai para a pessoa; sem forma reconhecível, "norma citada".
  */
 export function citacaoDoId(id: string): string {
-  const semVariante = id.replace(/^externo:/, "").replace(/[~#].*$/, "");
-  const segmentos = semVariante.split("/");
+  const semDispositivo = id.replace(/^externo:/, "").replace(/#.*$/, "");
+  const segmentos = semDispositivo.split("/");
   const [ano, numero] = segmentos.slice(-2);
   const tipo = NOME_DO_TIPO[segmentos.at(-3) ?? ""];
   if (!tipo || !/^\d{4}$/.test(ano ?? "") || !/^\d+$/.test(numero ?? "")) return "norma citada";

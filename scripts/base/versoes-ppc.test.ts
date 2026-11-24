@@ -32,12 +32,16 @@ function escrever(raiz: string, relativo: string, conteudo: string): string {
   return caminho;
 }
 
-/** Front matter de um PPC da base, sem os campos do ano quando `ano` é `null` (o estado antes da migração). */
-function ppc(versao: string, ano: string | null, fonte = `https://ifpr.edu.br/ppc-${versao}.pdf`): string {
+/** Front matter de um PPC da base. */
+function ppc(
+  versao: string,
+  ano: string = versao.slice(0, 4),
+  fonte = `https://ifpr.edu.br/ppc-${versao}.pdf`,
+): string {
   const base: ProvenienciaPpc = {
     id: `ppc:campus-a/tecnico-x/${versao}`,
-    ano_documento: ano ?? versao.slice(0, 4),
-    ano_evidencia: `PPC ${ano ?? versao.slice(0, 4)}`,
+    ano_documento: ano,
+    ano_evidencia: `PPC ${ano}`,
     ano_fonte: "https://ifpr.edu.br/capa.pdf#page=1",
     fonte_url: fonte,
     fonte_sha256: "desconhecido",
@@ -46,12 +50,11 @@ function ppc(versao: string, ano: string | null, fonte = `https://ifpr.edu.br/pp
     proveniencia: "reconstruida",
     nota_proveniencia: "Reconstruída.",
   };
-  const yaml = serializarFrontMatterPpc(base);
-  return (ano === null ? yaml.replace(/^ano_(documento|evidencia|fonte): .*\n/gm, "") : yaml) + CORPO;
+  return serializarFrontMatterPpc(base) + CORPO;
 }
 
 /** Base com um curso e as versões dadas; o curso aponta `vigente`. */
-function base(versoes: Record<string, string | null>, vigente: string | null, extraPpc: object = {}): string {
+function base(versoes: Record<string, string>, vigente: string | null, extraPpc: object = {}): string {
   const raiz = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "versoes-ppc-"));
   temporarios.push(raiz);
   escrever(raiz, `${IFPR}/campi/campus-a.json`, JSON.stringify({ campus_id: "campus-a", nome: "Campus A" }));
@@ -83,7 +86,7 @@ const versoes = (raiz: string) => NodeFS.readdirSync(NodePath.join(raiz, PPCS)).
 
 describe("definirAnoPpc", () => {
   test("ano da própria versão: grava a evidência do texto e não move nada", () => {
-    const raiz = base({ "2019": null }, "2019");
+    const raiz = base({ "2019": "2019" }, "2019");
     const antes = NodeFS.readFileSync(NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json"), "utf-8");
     const resultado = definirAnoPpc(
       criarCaminhos(raiz),
@@ -106,7 +109,7 @@ describe("definirAnoPpc", () => {
   });
 
   test("ano de outra versão: o PPC muda de ID e arquivo, e o curso continua apontando a mais recente", () => {
-    const raiz = base({ "2019": null, "2023": null }, "2023", { vagas: "40", trecho_vagas: "40 vagas" });
+    const raiz = base({ "2019": "2019", "2023": "2023" }, "2023", { vagas: "40", trecho_vagas: "40 vagas" });
     // A 2023 era, na verdade, de 2017: passa a ser a mais antiga, e a 2019 vira a vigente.
     const resultado = definirAnoPpc(
       criarCaminhos(raiz),
@@ -130,7 +133,7 @@ describe("definirAnoPpc", () => {
   });
 
   test("mesmo documento renomeado continua vigente sem reabrir as vagas; ano ocupado ganha sufixo", () => {
-    const raiz = base({ "2019": "2019", "2023": null }, "2023", { vagas: "40", curadoria_vagas: "Revisado" });
+    const raiz = base({ "2019": "2019", "2023": "2023" }, "2023", { vagas: "40", curadoria_vagas: "Revisado" });
     const resultado = definirAnoPpc(
       criarCaminhos(raiz),
       "campus-a/tecnico-x/2023",
@@ -145,7 +148,7 @@ describe("definirAnoPpc", () => {
   });
 
   test("recusa evidência sem o ano, fora do texto ou PPC inexistente, sem mudar nada", () => {
-    const raiz = base({ "2019": null }, "2019");
+    const raiz = base({ "2019": "2019" }, "2019");
     const caminhos = criarCaminhos(raiz);
     expect(() =>
       definirAnoPpc(caminhos, "campus-a/tecnico-x/2019", { ano: 2019, evidencia: "Cidade", fonte: "texto" }, AGORA),
@@ -167,7 +170,7 @@ describe("definirAnoPpc", () => {
 
 describe("pendências", () => {
   test("moverParaPendencias: o vigente sai, a versão anterior vira vigente; o último deixa o curso sem markdown_path", () => {
-    const raiz = base({ "2019": "2019", "2023": null }, "2023");
+    const raiz = base({ "2019": "2019", "2023": "2023" }, "2023");
     const caminhos = criarCaminhos(raiz);
     const resultado = moverParaPendencias(caminhos, "campus-a/tecnico-x/2023", ["ano: capa sem data; PDF lido"], AGORA);
     expect(resultado).toEqual({
@@ -186,7 +189,7 @@ describe("pendências", () => {
   });
 
   test("listarPendencias e validarPendenciasPpcs: pendentes, cursos sem texto, e o que está fora do contrato", () => {
-    const raiz = base({ "2023": null }, "2023");
+    const raiz = base({ "2023": "2023" }, "2023");
     const caminhos = criarCaminhos(raiz);
     expect(listarPendencias(caminhos)).toEqual([]);
     moverParaPendencias(caminhos, "campus-a/tecnico-x/2023", ["ano: capa sem data"], AGORA);
@@ -228,7 +231,7 @@ describe("pendências", () => {
   });
 
   test("promoverPpc: ganha a versão do ano; vira vigente só se for a mais recente", () => {
-    const raiz = base({ "2019": "2019", "2023": null }, "2023");
+    const raiz = base({ "2019": "2019", "2023": "2023" }, "2023");
     const caminhos = criarCaminhos(raiz);
     definirAnoPpc(
       caminhos,

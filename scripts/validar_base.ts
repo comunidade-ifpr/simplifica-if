@@ -9,7 +9,6 @@ import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as Path from "effect/Path";
 import * as Command from "effect/cli/Command";
-import * as Flag from "effect/cli/Flag";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
@@ -37,15 +36,10 @@ const validarSkillsDoApp = Effect.fn("validar_base.skills")(function* (raizProje
 
 export const comando = Command.make(
   "validar_base",
-  {
-    artefatosPpc: Flag.Boolean("check-ppc-artifacts").pipe(
-      Flag.withDescription("também acusa artefatos conhecidos de conversão nos PPCs em Markdown"),
-      Flag.withDefault(false),
-    ),
-  },
-  Effect.fn("validar_base")(function* ({ artefatosPpc }) {
+  {},
+  Effect.fn("validar_base")(function* () {
     const caminhos = criarCaminhos();
-    const { erros, totalNormas } = yield* Effect.sync(() => validarBase(caminhos, { artefatosPpc }));
+    const { erros, totalNormas } = yield* Effect.sync(() => validarBase(caminhos));
     const dados = yield* Effect.sync(() => validarDadosInstitucionais());
     erros.push(...dados.erros);
     erros.push(...(yield* Effect.sync(() => validarRevisaoPpc())).map((erro) => `revisão de PPC: ${erro}`));

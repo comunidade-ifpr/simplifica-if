@@ -245,11 +245,10 @@ export function semFiguraLocal(texto: string, grafica: RepresentacaoGrafica | nu
 function markdownDaBase(
   bytes: Uint8Array,
   nomeDoArquivo: string,
-  agora: Date,
 ): Pick<ResultadoImportacao, "omitidos" | "urlsLimpas" | "representacaoGrafica"> & { corpo: string } {
   let conversao;
   try {
-    conversao = converterPpc(bytes, nomeDoArquivo, { agora });
+    conversao = converterPpc(bytes, nomeDoArquivo);
   } catch (erro) {
     // A mensagem do ErroDocx é a recusa do documento (não é ZIP, está protegido, passa dos limites).
     if (erro instanceof ErroDocx) throw recusa("conversao-recusada", `Conversão recusada: ${erro.message}`, erro);
@@ -370,7 +369,7 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
     // A conferência recusa extensão e tamanho com mensagem própria, feita para quem importa.
     throw recusa("arquivo-recusado", (erro as Error).message, erro);
   }
-  const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx), opcoes.agora);
+  const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx));
   const hoje = dataLocalIso(opcoes.agora);
   const comum = {
     fonte_url: opcoes.fonteUrl,

@@ -9,10 +9,9 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
-import { artefatosDaConversao, conferirArquivoDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
+import { conferirArquivoDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
 import {
   type Elemento,
   elementosDoDocumento,
@@ -20,12 +19,8 @@ import {
   type Tabela,
   textoDosTrechos,
 } from "@simplifica-if/docx/elementos";
-import { extrairComponenteDoEmentario, separarReferencias } from "../src/conversao-docx/ementario.ts";
-import { extrairDadosDeIdentificacao } from "../src/conversao-docx/identificacao-tabelas.ts";
 import {
-  extrairMatrizGenerica,
   extrairMatrizPpc,
-  type Matriz,
   type MatrizPpc,
   mesclarMatrizes,
   substituirMatrizNoMarkdown,
@@ -34,7 +29,7 @@ import {
 import { dataW3cEmUtc, lerDocx } from "@simplifica-if/docx/leitor";
 import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
-import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
+import { detectarSecoes, listarSecoes } from "../src/conversao-docx/secoes.ts";
 import {
   colunasDaTabela,
   formasDaTabela,
@@ -46,26 +41,23 @@ import {
 import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
-const AGORA = new Date(2026, 10, 16, 12, 0, 0);
 const GABARITOS = NodePath.join(import.meta.dirname, "fixtures", "conversao-docx");
 
 const elementos = (nome: string) => elementosDoDocumento(lerDocx(docxDaFixture(nome)));
-const converter = (nome: string) => converterPpc(docxDaFixture(nome), `${nome}.docx`, { agora: AGORA });
+const converter = (nome: string) => converterPpc(docxDaFixture(nome), `${nome}.docx`);
 const tabelas = (itens: Elemento[]) => itens.filter((item): item is Tabela => item.tipo === "tabela");
 const paragrafos = (itens: Elemento[]) => itens.filter((item): item is Paragrafo => item.tipo === "paragrafo");
 const textos = (tabelaLida: Tabela) => tabelaLida.linhas.map((celulas) => celulas.map((item) => item.texto));
 
-/** Os artefatos da conversão da fixture, com os bytes que quem grava escreveria, por caminho. */
+/** Os artefatos da conversão da fixture (Markdown normalizado, bruto e imagem se houver), por caminho. */
 function bytesConvertidos(nome: string): Record<string, Buffer> {
-  const { arquivos } = artefatosDaConversao(converter(nome), `${nome}.docx`);
-  return Object.fromEntries(arquivos.map(({ caminho, conteudo }) => [caminho, Buffer.from(conteudo)]));
-}
-
-/** O mesmo, com o conteúdo em texto. */
-function arquivosConvertidos(nome: string): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(bytesConvertidos(nome)).map(([arquivo, bytes]) => [arquivo, bytes.toString("utf-8")]),
-  );
+  const c = converter(nome);
+  const figura = c.representacaoGrafica?.arquivo;
+  return {
+    ...(figura ? { [figura.caminho]: Buffer.from(figura.bytes) } : {}),
+    [`${nome}.md`]: Buffer.from(c.markdown),
+    [`${nome}-bruto.md`]: Buffer.from(c.markdownBruto),
+  };
 }
 
 // ---------------------------------------------------------------- leitor OOXML
@@ -118,8 +110,6 @@ describe("leitor OOXML", () => {
     expect(colunasDaTabela(repetida)).toBe(3);
     expect(colunasDaTabela(leitura)).toBe(1);
     expect(leitura.cabecalho).toEqual(["COMPONENTE CURRICULAR: Programação I"]);
-    // E o quadro, de uma coluna na leitura, é reconhecido como ementário.
-    expect(converter("ementario-mesclado").resumos.ementario).toMatchObject({ total_componentes: 1 });
   });
 
   test("tabela sem texto e célula de vários parágrafos", () => {
@@ -323,7 +313,7 @@ describe("leitor OOXML", () => {
       expect(elementosDoDocumento(lerDocx(estrito(original)))).toEqual(elementosDoDocumento(lerDocx(original)));
     }
     // A figura continua resolvida pela relação.
-    const convertido = converterPpc(estrito(docxDaFixture("ppc-minimo")), "ppc.docx", { agora: AGORA });
+    const convertido = converterPpc(estrito(docxDaFixture("ppc-minimo")), "ppc.docx");
     expect(convertido.representacaoGrafica).toMatchObject({ metodo: "bitmap" });
   });
 
@@ -333,22 +323,13 @@ describe("leitor OOXML", () => {
     expect(dataW3cEmUtc("2026-04-22T00:06:00+05:30")).toBe("2026-04-21T18:36:00+00:00");
     expect(dataW3cEmUtc("2026-03")).toBe("2026-03-01T00:00:00+00:00");
     expect(dataW3cEmUtc("ontem")).toBeNull();
-    expect(converter("ppc-minimo").dados.metadata_documento).toEqual({
-      title: "PPC fictício",
-      author: "Autora de Teste",
-      created: "2026-03-05T10:38:00+00:00",
-      modified: "2026-04-22T03:06:00+00:00",
-      last_modified_by: "Revisor de Teste",
-    });
-    // Sem docProps/core.xml (Google Docs), nada é inventado.
-    expect(converter("sem-secoes").dados.metadata_documento).toEqual({});
   });
 
   test("documento sem texto é recusado, em vez de virar um PPC.md em branco", () => {
     const semTexto = montarDocx({ corpo: par("") + tabela([linha([celula(""), celula("")])]) });
-    expect(() => converterPpc(semTexto, "vazio.docx", { agora: AGORA })).toThrow(ErroDocx);
-    expect(() => converterPpc(semTexto, "vazio.docx", { agora: AGORA })).toThrow(/não tem texto.*digitalizado/);
-    expect(() => converterPpc(strToU8("não é um zip"), "x.docx", { agora: AGORA })).toThrow(ErroDocx);
+    expect(() => converterPpc(semTexto, "vazio.docx")).toThrow(ErroDocx);
+    expect(() => converterPpc(semTexto, "vazio.docx")).toThrow(/não tem texto.*digitalizado/);
+    expect(() => converterPpc(strToU8("não é um zip"), "x.docx")).toThrow(ErroDocx);
   });
 });
 
@@ -464,9 +445,9 @@ describe("matriz curricular", () => {
         [total, total, total, "3960", "3300"],
       ]),
     ];
-    let matriz: Matriz | null = null;
+    let matriz: MatrizPpc | null = null;
     for (const parte of partes) matriz = mesclarMatrizes(matriz, extrairMatrizPpc(parte)!);
-    const ppc = matriz as MatrizPpc;
+    const ppc = matriz!;
     expect(ppc.formato).toBe("legacy");
     expect(ppc.anos.map((ano) => ano.componentes.length)).toEqual([14, 15, 14]);
     expect(ppc.anos.map((ano) => ano.ano)).toEqual(["1º Ano", "2º Ano", "3º Ano"]);
@@ -509,20 +490,6 @@ describe("matriz curricular", () => {
       ["Docente B", "Matemática", "Doutora", "Matemática I"],
     ]);
     expect(extrairMatrizPpc(quadro)).toBeNull();
-    expect(extrairMatrizGenerica(quadro)).toBeNull();
-  });
-
-  test("matriz genérica: componente, carga e período, sem as linhas que não são componente", () => {
-    const { matriz } = converter("sem-secoes");
-    expect(matriz).toEqual({
-      tipo: "matriz_curricular",
-      headers: ["Componente Curricular", "Carga horária", "Semestre", "CH total"],
-      componentes: [
-        { nome: "Algoritmos", cargas: { "Carga horária": 80, Semestre: 1, "CH total": 80 }, total: 80 },
-        { nome: "Redes", cargas: { "Carga horária": "sessenta", Semestre: 2 } },
-      ],
-      total_rows: 2,
-    });
   });
 
   test("o Markdown normalizado recebe a matriz canônica, sem o ruído das mesclas", () => {
@@ -583,7 +550,7 @@ describe("matriz curricular", () => {
   });
 });
 
-describe("tabelas e ementário", () => {
+describe("tabelas", () => {
   test("o Markdown da tabela preserva as quebras internas da célula", () => {
     const tabelaLida: Tabela = {
       tipo: "tabela",
@@ -602,154 +569,6 @@ describe("tabelas e ementário", () => {
     expect(tabelaEmMarkdown(normalizarTabela(tabelaLida))).toContain(
       "BIBLIOGRAFIA BÁSICA:<br>SILVA, Ana. Livro um. São Paulo: Atlas, 2020.<br>SOUZA, Bruno. Livro dois. Curitiba: InterSaberes, 2021.",
     );
-  });
-
-  test("o ementário trata <br> como quebra de referência", () => {
-    const componente = extrairComponenteDoEmentario({
-      cabecalho: ["COMPONENTE CURRICULAR: Química I"],
-      linhas: [
-        ["Período letivo: 1º Ano"],
-        ["Carga horária total do componente: 80 horas-aula / 67 horas-relógio"],
-        ["EMENTA: Introdução à Química."],
-        [
-          "BIBLIOGRAFIA BÁSICA: SILVA, Ana. Livro um. São Paulo: Atlas, 2020.<br>SOUZA, Bruno. Livro dois. Curitiba: InterSaberes, 2021.",
-        ],
-        ["BIBLIOGRAFIA COMPLEMENTAR: BRASIL. Catálogo Nacional de Cursos Técnicos. Brasília: MEC, 2024."],
-      ],
-    });
-    expect(componente).toEqual({
-      nome: "Química I",
-      periodo_letivo: "1º Ano",
-      carga_horaria_aula: 80,
-      ementa: "Introdução à Química.",
-      bibliografia_basica: [
-        "SILVA, Ana. Livro um. São Paulo: Atlas, 2020.",
-        "SOUZA, Bruno. Livro dois. Curitiba: InterSaberes, 2021.",
-      ],
-      bibliografia_complementar: ["BRASIL. Catálogo Nacional de Cursos Técnicos. Brasília: MEC, 2024."],
-    });
-    // O rótulo sozinho no primeiro parágrafo da célula, sem dois-pontos.
-    const rotuloSozinho = extrairComponenteDoEmentario({
-      cabecalho: ["COMPONENTE CURRICULAR: Química I"],
-      linhas: [["EMENTA<br>Introdução à Química."], ["BIBLIOGRAFIA BÁSICA:<br>SILVA, Ana. Livro um. Atlas, 2020."]],
-    });
-    expect(rotuloSozinho?.ementa).toBe("Introdução à Química.");
-  });
-
-  test("referências emendadas são separadas por ano, hífen de lista, local aproximado e autor", () => {
-    expect(
-      separarReferencias(
-        "COSTA, Ana. Leitura. Rio de Janeiro: Teste, 2013.PEREIRA, Carlos. Texto. Porto Alegre: Modelo, 2018. v. 2.OLIVEIRA, Rita. Escrita. Campinas: Amostra, 2021.",
-      ),
-    ).toEqual([
-      "COSTA, Ana. Leitura. Rio de Janeiro: Teste, 2013.",
-      "PEREIRA, Carlos. Texto. Porto Alegre: Modelo, 2018. v. 2.",
-      "OLIVEIRA, Rita. Escrita. Campinas: Amostra, 2021.",
-    ]);
-    expect(
-      separarReferencias(
-        "SILVA, Maria. Gramática. Sao Paulo: Fictícia, 2020. - SOUZA, João de. Redação. Curitiba: Exemplo, 2019.",
-      ),
-    ).toEqual([
-      "SILVA, Maria. Gramática. Sao Paulo: Fictícia, 2020.",
-      "SOUZA, João de. Redação. Curitiba: Exemplo, 2019.",
-    ]);
-    // Referência repetida sai uma vez; texto que não parece referência é descartado.
-    expect(
-      separarReferencias(
-        "SILVA, Ana. Livro um. São Paulo: Atlas, 2020.\n\nSILVA, Ana. Livro um. São Paulo: Atlas, 2020.\n\nver também o anexo",
-      ),
-    ).toEqual(["SILVA, Ana. Livro um. São Paulo: Atlas, 2020."]);
-    expect(separarReferencias("")).toEqual([]);
-  });
-
-  test("quadro com colunas vazias (Google Docs) e período ausente", () => {
-    const { ementario } = converter("ppc-minimo");
-    expect(
-      (ementario!.componentes as Dicionario[]).map((item) => [item.nome, item.periodo_letivo, item.carga_horaria_aula]),
-    ).toEqual([
-      ["Língua Portuguesa", "1º Ano", 120],
-      ["Banco de Dados", "2º Ano", 160],
-    ]);
-    const semPeriodo = extrairComponenteDoEmentario(
-      grade([
-        ["COMPONENTE CURRICULAR: Libras"],
-        ["EMENTA: Sinais."],
-        ["BIBLIOGRAFIA BÁSICA: QUADROS, Ronice. Libras. Porto Alegre: Artmed, 2004."],
-      ]),
-    );
-    expect(semPeriodo).toMatchObject({ nome: "Libras", periodo_letivo: null, carga_horaria_aula: null });
-    // Duas colunas com conteúdo não são ementário.
-    expect(extrairComponenteDoEmentario(grade([["COMPONENTE CURRICULAR: X", "ementa bibliografia"]]))).toBeNull();
-  });
-});
-
-describe("identificação", () => {
-  test("tabela de identificação ignora rótulo no meio da célula", () => {
-    const dados = extrairDadosDeIdentificacao({
-      cabecalho: [],
-      linhas: [
-        ["Base legal específica do curso", "Resolução CNE/CP nº 1/2021"],
-        ["Denominação do curso", "Curso Técnico em Enfermagem"],
-        ["Observação", "O campus fica no centro; modalidade presencial."],
-        ["Campus", "Curitiba"],
-      ],
-    });
-    expect(dados.has("nome_curso")).toBe(false);
-    expect(dados.has("modalidade_ensino")).toBe(false);
-    expect(dados.get("denominacao_do_curso")).toBe("Curso Técnico em Enfermagem");
-    expect(dados.get("campus")).toBe("Curitiba");
-  });
-
-  test("célula única campo: valor continua extraída", () => {
-    const dados = extrairDadosDeIdentificacao({
-      cabecalho: [],
-      linhas: [
-        ["Nome do curso: Técnico em Química"],
-        ["1.1.5 Modalidade: Presencial"],
-        ["Forma de oferta: Integrado"],
-        ["Eixo tecnológico: Produção Industrial"],
-        ["Base legal específica do curso: Resolução CNE/CP nº 1/2021"],
-      ],
-    });
-    expect([...dados]).toEqual([
-      ["nome_curso", "Técnico em Química"],
-      ["modalidade_ensino", "Presencial"],
-      ["forma_oferta", "Integrado"],
-      ["eixo_tecnologico", "Produção Industrial"],
-    ]);
-  });
-
-  test("dicas da seção de apresentação exigem rótulo no início", () => {
-    const corpo = [
-      titulo("1 Apresentação"),
-      par("Base legal específica do curso: Resolução CNE/CP nº 1/2021"),
-      par("O campus oferta a modalidade presencial."),
-      tabela([
-        linha([celula("Coordenador do curso"), celula("Fulano de Tal")]),
-        linha([celula("Denominação do curso"), celula("Curso Técnico em Enfermagem")]),
-        linha([celula("Campus"), celula("Curitiba")]),
-      ]),
-      par("Modalidade: Presencial"),
-    ].join("");
-    const dicas = dicasDeIdentificacao(detectarSecoes(elementosDoDocumento(lerDocx(montarDocx({ corpo })))));
-    expect(Object.fromEntries(dicas)).toEqual({
-      nome_curso: "Curso Técnico em Enfermagem",
-      campus: "Curitiba",
-      modalidade: "Presencial",
-    });
-  });
-
-  test("chaves numéricas das tabelas mantêm a ordem do documento no JSON", () => {
-    const { [`ppc-minimo_dados.json`]: dados } = arquivosConvertidos("ppc-minimo");
-    const chaves = [...dados!.matchAll(/^ {4}"([^"]+)": /gm)].map((m) => m[1]);
-    // "2026" é rótulo de uma linha da tabela e fica onde está, depois da base legal.
-    expect(
-      chaves.slice(
-        chaves.indexOf("base_legal_especifica_do_curso"),
-        chaves.indexOf("base_legal_especifica_do_curso") + 2,
-      ),
-    ).toEqual(["base_legal_especifica_do_curso", "2026"]);
   });
 });
 
@@ -780,7 +599,7 @@ describe("gabaritos da conversão", () => {
 
 describe("regras da conversão", () => {
   const bruto = (corpo: string, opcoes: Partial<Parameters<typeof converterPpc>[2]> = {}, extras = {}) =>
-    converterPpc(montarDocx({ corpo: titulo("1 SEÇÃO") + corpo, ...extras }), "x.docx", { agora: AGORA, ...opcoes })
+    converterPpc(montarDocx({ corpo: titulo("1 SEÇÃO") + corpo, ...extras }), "x.docx", opcoes)
       .markdownBruto.split("\n")
       .slice(2)
       .join("\n");
@@ -934,15 +753,6 @@ describe("regras da conversão", () => {
     ]);
   });
 
-  test("resumo da matriz: total_ha e total_hr somam os componentes", () => {
-    expect(converter("ppc-minimo").resumos.matriz).toMatchObject({
-      total_anos: 2,
-      total_componentes: 3,
-      total_ha: 440,
-      total_hr: 330,
-    });
-  });
-
   test("matriz com linha, célula e parágrafo embrulhados em w:sdt e linha removida na revisão", () => {
     const nomes = (
       converter("tabelas-em-controle").matriz!.anos as Array<{ componentes: Array<{ nome: string }> }>
@@ -971,9 +781,8 @@ describe("regras da conversão", () => {
     const corpo =
       titulo("5.6 MATRIZ CURRICULAR") + matriz + par(runs) + par("Parágrafo de corpo, um entre muitos.").repeat(80_000);
     // O texto repetido comprime mais de 200:1; com o limite padrão, o arquivo é recusado por isso.
-    expect(() => converterPpc(montarDocx({ corpo }), "grande.docx", { agora: AGORA })).toThrow(/compressão anormal/);
+    expect(() => converterPpc(montarDocx({ corpo }), "grande.docx")).toThrow(/compressão anormal/);
     const convertido = converterPpc(montarDocx({ corpo }), "grande.docx", {
-      agora: AGORA,
       limites: { razaoDeCompressao: 5000 },
       limitesDeTexto: { caracteresPorBloco: 1_000_000 },
     });
@@ -992,11 +801,11 @@ describe("regras da conversão", () => {
           ]),
       });
     // 1 MB de texto repetido em 2 mil linhas: 2 GB de tabela (antes, 113 s até `Invalid string length`).
-    expect(() => converterPpc(mesclada("palavra ".repeat(131_072), 2000), "x.docx", { agora: AGORA })).toThrow(
+    expect(() => converterPpc(mesclada("palavra ".repeat(131_072), 2000), "x.docx")).toThrow(
       /uma célula de tabela com mais de 50 mil caracteres/,
     );
     // Abaixo do limite, a célula mesclada se repete, limpa uma vez só.
-    const { markdownBruto } = converterPpc(mesclada("palavra ".repeat(1024), 500), "x.docx", { agora: AGORA });
+    const { markdownBruto } = converterPpc(mesclada("palavra ".repeat(1024), 500), "x.docx");
     expect(markdownBruto.split("\n").filter((item) => item.startsWith("| palavra palavra"))).toHaveLength(501);
   });
 
@@ -1015,23 +824,20 @@ describe("regras da conversão", () => {
       const corpo = par("x") + Array.from({ length: 60 }, (_, i) => tabelaMesclada(i + "a ".repeat(20_000))).join("");
       const docx = montarDocx({ corpo });
       expect(docx.length).toBeLessThan(64 * 1024);
-      expect(() => converterPpc(docx, "x.docx", { agora: AGORA })).toThrow(
+      expect(() => converterPpc(docx, "x.docx")).toThrow(
         /texto demais para ser convertido \(mais de 8 milhões de caracteres/,
       );
       // Com as células de 160 mil caracteres do caso original, a recusa vem antes, no teto por bloco.
       const maior = montarDocx({ corpo: par("x") + tabelaMesclada("a ".repeat(80_000)) });
-      expect(() => converterPpc(maior, "x.docx", { agora: AGORA })).toThrow(
-        /uma célula de tabela com mais de 50 mil caracteres/,
-      );
+      expect(() => converterPpc(maior, "x.docx")).toThrow(/uma célula de tabela com mais de 50 mil caracteres/);
       // Uma tabela dessas cabe; três, não. Com o orçamento folgado, passam.
       const uma = montarDocx({ corpo: par("x") + tabelaMesclada("a ".repeat(20_000)) });
-      expect(converterPpc(uma, "x.docx", { agora: AGORA }).elementos).toHaveLength(2);
+      expect(converterPpc(uma, "x.docx").elementos).toHaveLength(2);
       const tres = montarDocx({
         corpo: par("x") + ["a ", "b ", "c "].map((item) => tabelaMesclada(item.repeat(20_000))).join(""),
       });
-      expect(() => converterPpc(tres, "x.docx", { agora: AGORA })).toThrow(/texto demais/);
+      expect(() => converterPpc(tres, "x.docx")).toThrow(/texto demais/);
       const folgado = converterPpc(tres, "x.docx", {
-        agora: AGORA,
         limitesDeTexto: { caracteresNoDocumento: 40_000_000 },
       });
       expect(folgado.elementos).toHaveLength(4);
@@ -1050,7 +856,6 @@ describe("regras da conversão", () => {
     for (const corpo of casos) {
       expect(() =>
         converterPpc(montarDocx({ corpo }), "x.docx", {
-          agora: AGORA,
           limitesDeTexto: { caracteresPorBloco: 1_000_000 },
         }),
       ).toThrow(/mais de 1000 espaços, tabulações ou sinais de pontuação seguidos/);
@@ -1058,13 +863,12 @@ describe("regras da conversão", () => {
     // Sem o teto de sequência (só para medir): o aparo e o normalizador dão conta das 80 mil tabulações.
     const folgado = { caracteresPorBloco: 1_000_000, sequenciaSemTexto: 1_000_000 };
     const { markdown } = converterPpc(montarDocx({ corpo: casos[0]! }), "x.docx", {
-      agora: AGORA,
       limitesDeTexto: folgado,
     });
     expect(markdown).toBe("a b\n");
     // Mil tabulações (37 vezes a maior sequência dos PPCs reais) passam com os tetos padrão.
     const mil = montarDocx({ corpo: par(`<w:r><w:t>a</w:t>${"<w:tab/>".repeat(1000)}<w:t>b</w:t></w:r>`) });
-    expect(converterPpc(mil, "x.docx", { agora: AGORA }).markdown).toBe("a b\n");
+    expect(converterPpc(mil, "x.docx").markdown).toBe("a b\n");
   });
 
   test(
@@ -1074,7 +878,7 @@ describe("regras da conversão", () => {
       // ZIP de 217 KB; antes, 74 s na consolidação de parágrafos do normalizador.
       const corpo =
         par("1)".repeat(1100)) + Array.from({ length: 80_000 }, (_, i) => par(`a${i.toString(36)}`)).join("");
-      const convertido = converterPpc(montarDocx({ corpo }), "x.docx", { agora: AGORA });
+      const convertido = converterPpc(montarDocx({ corpo }), "x.docx");
       expect(convertido.elementos).toHaveLength(80_001);
     },
   );
@@ -1093,81 +897,56 @@ describe("regras da conversão", () => {
 });
 
 describe("representação gráfica", () => {
-  const grafica = (nome: string) => {
-    const arquivos = arquivosConvertidos(nome);
-    return {
-      arquivos,
-      dados: JSON.parse(arquivos[`${nome}_dados.json`]!) as {
-        representacao_grafica: Dicionario;
-        arquivos_relacionados: Dicionario;
-      },
-      markdown: arquivos[`${nome}.md`]!,
-    };
-  };
-
   test("imagem PNG embutida é copiada e referenciada no Markdown", () => {
-    const { arquivos, dados, markdown } = grafica("ppc-minimo");
-    expect(dados.representacao_grafica).toEqual({
-      encontrada: true,
+    const { representacaoGrafica, markdown } = converter("ppc-minimo");
+    expect(representacaoGrafica).toMatchObject({
       secao: "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
-      tem_bitmap: true,
-      tem_desenhos_vetoriais: false,
-      extraida: true,
+      temBitmap: true,
+      temDesenhosVetoriais: false,
       metodo: "bitmap",
-      caminho: "imagens/representacao_grafica.png",
+      arquivo: { caminho: "imagens/representacao_grafica.png" },
     });
-    expect(dados.arquivos_relacionados.representacao_grafica).toBe("imagens/representacao_grafica.png");
-    expect(Object.keys(arquivos)).toContain("imagens/representacao_grafica.png");
     expect(markdown).toContain(
       "## 5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO\n\n![Representação Gráfica do Processo Formativo](imagens/representacao_grafica.png)\n\nFigura 1: itinerário formativo.",
     );
   });
 
   test("JPEG sai com a extensão dele, não como .png", () => {
-    const { arquivos, dados, markdown } = grafica("figura-jpeg");
-    expect(dados.representacao_grafica).toMatchObject({
-      extraida: true,
+    const { representacaoGrafica, markdown } = converter("figura-jpeg");
+    expect(representacaoGrafica).toMatchObject({
       metodo: "bitmap",
-      caminho: "imagens/representacao_grafica.jpeg",
+      arquivo: { caminho: "imagens/representacao_grafica.jpeg" },
     });
-    expect(Object.keys(arquivos)).toContain("imagens/representacao_grafica.jpeg");
     expect(markdown).toContain("![Representação Gráfica do Processo Formativo](imagens/representacao_grafica.jpeg)");
   });
 
   test.each(["figura-vetorial", "figura-legada"])(
     "%s: desenho com formas não é renderizado, e o PPC.md avisa",
     (nome) => {
-      const { arquivos, dados, markdown } = grafica(nome);
-      expect(dados.representacao_grafica).toMatchObject({
-        tem_bitmap: false,
-        tem_desenhos_vetoriais: true,
-        extraida: false,
+      const { representacaoGrafica, markdown, markdownBruto } = converter(nome);
+      expect(representacaoGrafica).toMatchObject({
+        temBitmap: false,
+        temDesenhosVetoriais: true,
         metodo: "vetorial_nao_renderizada",
-        caminho: null,
+        arquivo: null,
       });
-      expect(dados.arquivos_relacionados.representacao_grafica).toBeUndefined();
-      expect(Object.keys(arquivos).some((arquivo) => arquivo.startsWith("imagens"))).toBe(false);
       expect(markdown).toContain(
         "## 5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO\n\n**Aviso da conversão:** a figura desta seção foi desenhada com formas do Word (desenho vetorial) e não foi convertida em imagem. Consulte a representação gráfica no documento original.\n\nTexto antes da figura.",
       );
       // O aviso entra uma vez só, também no Markdown bruto.
-      expect(arquivos[`${nome}-bruto.md`]!.split("Aviso da conversão").length).toBe(2);
+      expect(markdownBruto.split("Aviso da conversão").length).toBe(2);
     },
   );
 
   test.each(["figura-emf", "figura-legada-emf"])(
     "%s: EMF embutido é exportado como está, sem contar como imagem extraída",
     (nome) => {
-      const { arquivos, dados, markdown } = grafica(nome);
-      expect(dados.representacao_grafica).toMatchObject({
-        tem_bitmap: true,
-        extraida: false,
+      const { representacaoGrafica, markdown } = converter(nome);
+      expect(representacaoGrafica).toMatchObject({
+        temBitmap: true,
         metodo: "vetorial_arquivo_cru",
-        caminho: null,
-        arquivo_vetorial: "imagens/representacao_grafica.emf",
+        arquivo: { caminho: "imagens/representacao_grafica.emf" },
       });
-      expect(dados.arquivos_relacionados.representacao_grafica).toBeUndefined();
-      expect(Object.keys(arquivos)).toContain("imagens/representacao_grafica.emf");
       expect(markdown).toContain(
         "**Aviso da conversão:** a figura desta seção está num formato vetorial (EMF) que não é exibido aqui.",
       );
@@ -1176,12 +955,12 @@ describe("representação gráfica", () => {
   );
 
   test("seção sem figura reconhecida: aviso próprio", () => {
-    const { dados, markdown } = grafica("figura-ausente");
-    expect(dados.representacao_grafica).toMatchObject({
-      tem_bitmap: false,
-      tem_desenhos_vetoriais: true,
-      extraida: false,
+    const { representacaoGrafica, markdown } = converter("figura-ausente");
+    expect(representacaoGrafica).toMatchObject({
+      temBitmap: false,
+      temDesenhosVetoriais: true,
       metodo: "figura_nao_localizada",
+      arquivo: null,
     });
     expect(markdown).toContain("**Aviso da conversão:** a conversão não encontrou figura nesta seção.");
   });
@@ -1196,49 +975,16 @@ describe("representação gráfica", () => {
   });
 
   test("documento sem a seção não tem o bloco", () => {
-    const { dados } = grafica("mesclas");
-    expect(dados.representacao_grafica).toBeUndefined();
+    expect(converter("mesclas").representacaoGrafica).toBeNull();
   });
 });
 
-describe("artefatos e rodada", () => {
-  test("nomes dos arquivos seguem o nome do DOCX, e `_dados` sai do radical dos JSONs relacionados", () => {
-    const conversao = converterPpc(docxDaFixture("ppc-minimo"), "PPC_dados v2.docx", { agora: AGORA });
-    const { arquivos, nomes } = artefatosDaConversao(conversao, "PPC_dados v2.docx");
-    expect(nomes).toEqual({
-      markdown: "PPC_dados v2.md",
-      markdown_bruto: "PPC_dados v2-bruto.md",
-      dados: "PPC_dados v2_dados.json",
-      matriz_curricular: "PPC v2_matriz_curricular.json",
-      ementario: "PPC v2_ementario.json",
-    });
-    expect(arquivos.map((a) => a.caminho)).toEqual(["imagens/representacao_grafica.png", ...Object.values(nomes)]);
-    const dados = JSON.parse(arquivos.find((a) => a.caminho === nomes.dados)!.conteudo as string) as Dicionario;
-    expect(dados.arquivo_origem).toBe("PPC_dados v2.docx");
-    expect(dados.data_conversao).toBe("2026-11-16T12:00:00");
-  });
-
-  test("documento sem matriz nem ementário não gera esses arquivos", () => {
-    const { arquivos, nomes } = artefatosDaConversao(converter("mesclas"), "mesclas.docx");
-    expect(nomes.matriz_curricular).toBeNull();
-    expect(nomes.ementario).toBeNull();
-    expect(arquivos.map((a) => a.caminho).sort()).toEqual(["mesclas-bruto.md", "mesclas.md", "mesclas_dados.json"]);
-  });
-
+describe("entrada e rodada", () => {
   test("entrada que não é .docx, ou grande demais, é recusada antes da leitura", () => {
     expect(() => conferirArquivoDocx("/pasta/ppc.txt", 5)).toThrow(/deve ser \.docx/);
     expect(() => conferirArquivoDocx("/pasta/.docx", 5)).toThrow(/deve ser \.docx/);
     expect(() => conferirArquivoDocx("/pasta/PPC.DOCX", 5)).not.toThrow();
     expect(() => conferirArquivoDocx("/pasta/ppc.docx", 11, 10)).toThrow(ErroDocx);
-  });
-
-  test("data_conversao é a hora local do relógio, com microssegundos quando há fração", () => {
-    const comFracao = converterPpc(docxDaFixture("mesclas"), "mesclas.docx", {
-      agora: new Date(2026, 10, 13, 9, 34, 56, 7),
-    });
-    expect(comFracao.dados.data_conversao).toBe("2026-11-13T09:34:56.007000");
-    const meiaNoite = converterPpc(docxDaFixture("mesclas"), "mesclas.docx", { agora: new Date(2026, 10, 13) });
-    expect(meiaNoite.dados.data_conversao).toBe("2026-11-13T00:00:00");
   });
 
   test("todas as fixtures convertem", () => {

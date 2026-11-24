@@ -317,8 +317,7 @@ export const vigenciaNaData = Effect.fn("consultasNormas.vigenciaNaData")(functi
 
 /** Condição SQL: o ato de `coluna` está revogado ou ainda não vigente na data (dois parâmetros: a data). */
 export function sqlForaDeVigencia(coluna: string): string {
-  const ato = `CASE WHEN instr(${coluna}, '~') > 0 THEN substr(${coluna}, 1, instr(${coluna}, '~') - 1) ELSE ${coluna} END`;
-  return `EXISTS (SELECT 1 FROM vigencias v WHERE v.alvo = ${ato} AND (v.de IS NULL OR v.de <= ?) AND (v.ate IS NULL OR ? < v.ate) AND v.status IN ('revogada', 'ainda-nao-vigente'))`;
+  return `EXISTS (SELECT 1 FROM vigencias v WHERE v.alvo = ${coluna} AND (v.de IS NULL OR v.de <= ?) AND (v.ate IS NULL OR ? < v.ate) AND v.status IN ('revogada', 'ainda-nao-vigente'))`;
 }
 
 /* =============================================================== transições */
@@ -483,7 +482,7 @@ export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalh
   const resposta = (): ResultadoBuscaNorma => ({ resultados: saida, avisos });
   const vazia = (): ResultadoBuscaNorma => ({ resultados: [], avisos });
   const data = opcoes.em ?? (yield* fontes.diaDaVigencia);
-  const ehId = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim());
+  const ehId = /^[a-z]+(\/[\w-]+)+(#[\w-]+)?$/.test(consulta.trim());
   const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } = ehId
     ? {
         id: consulta.trim().split("#")[0]!,

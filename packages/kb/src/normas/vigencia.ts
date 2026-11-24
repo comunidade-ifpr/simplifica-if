@@ -461,7 +461,7 @@ export function datasTransicao(transicao: Transicao, fonte: Pick<FonteVigencia, 
  * aplicada sobre os arquivos (`situacaoTransicao`) e sobre o `kb.sqlite` (tabela `transicoes`). Sem
  * início (a norma aguarda publicação), a regra ainda não começou.
  */
-export function situacaoNaData(t: DatasTransicao & { fim: string }, data: string): Situacao {
+export function situacaoNaData(t: DatasTransicao, data: string): Situacao {
   if (t.inicio_em === null || data < t.inicio_em) return "a-iniciar";
   if (t.fim_em !== null && data > t.fim_em) return "encerrada";
   return "em-curso";
@@ -474,7 +474,7 @@ export function situacaoTransicao(
   fonte: Pick<FonteVigencia, "datas">,
 ): SituacaoTransicao {
   const datas = datasTransicao(transicao, fonte);
-  return { ...transicao, ...datas, situacao: situacaoNaData({ ...datas, fim: transicao.fim }, data) };
+  return { ...transicao, ...datas, situacao: situacaoNaData(datas, data) };
 }
 
 /** Regras de transição da norma `id` ou que preservam efeitos dela (norma anterior). */

@@ -187,9 +187,11 @@ function fontesDasVersoes(caminhos: CaminhosBase, campusId: string, cursoSlug: s
   const fontes = new Map<string, string>();
   for (const versao of versoesNaBase(caminhos, campusId, cursoSlug)) {
     const relativo = caminhoPpc(campusId, cursoSlug, versao);
-    // Tolerante a PPC ainda sem o ano (a migração passa por esse estado).
-    const meta = analisarPpcSemAno(NodeFS.readFileSync(NodePath.join(caminhos.raiz, relativo), "utf-8"), relativo);
-    fontes.set(versao, meta.fonte_url);
+    const { proveniencia } = analisarPpc(
+      NodeFS.readFileSync(NodePath.join(caminhos.raiz, relativo), "utf-8"),
+      relativo,
+    );
+    fontes.set(versao, proveniencia.fonte_url);
   }
   return fontes;
 }
@@ -216,31 +218,8 @@ function lerPpcDaBase(caminhos: CaminhosBase, chave: string) {
   if (!NodeFS.existsSync(arquivo)) throw recusa("ppc-inexistente", `PPC inexistente na base: ${relativo}`);
   const texto = NodeFS.readFileSync(arquivo, "utf-8");
   const fim = texto.indexOf("\n---\n", 3);
-  const meta = analisarPpcSemAno(texto, relativo);
+  const { proveniencia: meta } = analisarPpc(texto, relativo);
   return { ...ref, versao: ref.versao, relativo, arquivo, meta, corpo: texto.slice(fim + 5) };
-}
-
-/**
- * Front matter de um PPC da base, com ou sem os campos do ano (a migração grava o ano em PPCs que
- * ainda não o têm). Os outros campos seguem o contrato.
- */
-function analisarPpcSemAno(
-  texto: string,
-  rotulo: string,
-): Omit<ProvenienciaPpc, "ano_documento" | "ano_evidencia" | "ano_fonte"> {
-  try {
-    const { proveniencia } = analisarPpc(texto, rotulo);
-    const { ano_documento: _a, ano_evidencia: _e, ano_fonte: _f, ...resto } = proveniencia;
-    return resto;
-  } catch {
-    // Sem os campos do ano: lê como pendente provisório (com `id` à parte) e devolve o resto.
-    const id = /^id: (\S+)$/m.exec(texto)?.[1];
-    const semId = texto.replace(/^id: \S+\n/m, "").replace(/^---\n/, '---\npendencias:\n  - "ano: migração"\n');
-    const { pendente } = analisarPpcPendente(semId, rotulo);
-    const { pendencias: _p, ano_documento: _a, ano_evidencia: _e, ano_fonte: _f, ...resto } = pendente;
-    if (!id) throw recusa("ppc-inexistente", `${rotulo}: front matter sem id`);
-    return { id, ...resto };
-  }
 }
 
 export type ResultadoAno = {
@@ -324,7 +303,7 @@ export function moverParaPendencias(
   conferirPendencias(pendencias);
   const ppc = lerPpcDaBase(caminhos, chave);
   const { arquivo: arquivoRegistro, registro } = lerRegistro(caminhos, ppc.campusId, ppc.cursoSlug);
-  const { id: _id, ...resto } = ppc.meta;
+  const { id: _id, ano_documento: _ano, ano_evidencia: _ev, ano_fonte: _af, ...resto } = ppc.meta;
   const pendente: PpcPendente = { ...resto, pendencias: [...pendencias] };
   let frontMatter: string;
   try {

@@ -64,15 +64,10 @@ export const ResultadoIa = Schema.Struct({
   lacunas: Schema.Array(ate(L.lacuna)).check(Schema.isMaxLength(L.lacunas)),
   o_que_fazer: Schema.optionalKey(ate(L.oQueFazer)),
   fontes: Schema.optionalKey(Schema.Array(ate(120)).check(Schema.isMaxLength(L.fontes))),
-  /**
-   * Fora do contrato desde a revisão da etapa 5: quem decide a revisão humana é o código (a triagem do
-   * texto dirigido a IA). Aceito e descartado, para reconferir as respostas gravadas antes.
-   */
-  revisao_humana_obrigatoria: Schema.optionalKey(Schema.Boolean),
   /** Só no critério `ausencia`: o tipo do NAO_ATENDE. */
   tipo_achado: Schema.optionalKey(Schema.Literals(TIPOS_ACHADO)),
 });
-export type ResultadoIa = Omit<typeof ResultadoIa.Type, "revisao_humana_obrigatoria">;
+export type ResultadoIa = typeof ResultadoIa.Type;
 
 const Casca = Schema.Struct({
   bloco: Schema.optionalKey(Texto),
@@ -222,7 +217,7 @@ export function conferirResposta(
     // No critério conservador, o `tipo_achado` não foi pedido: não entra no resultado (o rebaixamento
     // por confiança continua valendo como na etapa 4).
     // O `tipo_achado` só vale no critério `ausencia` e num NAO_ATENDE; a revisão humana não vem da IA.
-    const { tipo_achado: tipoAchado, revisao_humana_obrigatoria: _ignorada, ...semTipo } = decodificado.success;
+    const { tipo_achado: tipoAchado, ...semTipo } = decodificado.success;
     const r: ResultadoIa =
       criterio === "ausencia" && tipoAchado && semTipo.estado === "NAO_ATENDE"
         ? { ...semTipo, tipo_achado: tipoAchado }

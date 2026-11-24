@@ -1,5 +1,5 @@
 // @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os PPCs e os índices com node:fs
-/** Validação do índice de PPCs, das seções indexadas e dos artefatos de conversão. */
+/** Validação do índice de PPCs e das seções indexadas. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
@@ -11,18 +11,12 @@ import { caminhoPpc, chavePpc, compararVersoesPpc, idPpc, partesDoCaminhoPpc } f
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import type { IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
-import { aparar, ESPACOS, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
+import { aparar, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
 import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
 import { type Contexto, ehRecebido, type Recebido } from "./contexto.ts";
 
 type ItemIndicePpcs = IndicePpcsJson["items"][number];
 
-const ARTEFATOS_CONVERSAO_PPC: Array<[string, RegExp]> = [
-  ["placeholder de imagem omitida", /picture \[[0-9]+ x [0-9]+\] intentionally omitted/],
-  ["marcador de início/fim de texto de imagem", /Start of picture text|End of picture text/],
-  ["OCR residual isolado", new RegExp(`^[${ESPACOS}]*eme<br>[${ESPACOS}]*$`, "m")],
-  ["rodapé PROENS de conversão", /INSTITUTO FEDERAL DO PARANÁ[^\n]*Pró-Reitoria de Ensino - \*\*PROENS\*\*/],
-];
 const TIPOS_POR_TAXONOMIA = new Map(
   Object.entries(TAXONOMIAS).map(([nome, taxonomia]) => [nome, new Set(taxonomia.tipos.map((d) => d.tipo))]),
 );
@@ -117,10 +111,6 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
     }
   }
 
-  const legado = NodePath.join(NodePath.dirname(raizSecoes), "secoes.jsonl");
-  if (NodeFS.existsSync(legado)) {
-    erros.push(`${ctx.rel(legado)} não deve mais ser versionado; use arquivos por seção em ${rSecoes}`);
-  }
   if (!idsVistos.size) erros.push(`${rSecoes}: deve conter ao menos uma seção`);
   return erros;
 }
@@ -302,22 +292,6 @@ function validarProvenienciaItem(
     item.ano_fonte !== proveniencia.ano_fonte
   ) {
     erros.push(`índice de PPCs: ano de ${ppcId} diverge do front matter`);
-  }
-  return erros;
-}
-
-/** Artefatos conhecidos da conversão PDF → Markdown nos PPCs (opcional, `--check-ppc-artifacts`). */
-export function validarArtefatosConversaoPpc(ctx: Contexto): string[] {
-  const erros: string[] = [];
-  const markdowns = listarDiretorio(ctx.c.ppcs)
-    .filter(ehDiretorio)
-    .flatMap((campus) => listarDiretorio(campus).filter(ehDiretorio))
-    .flatMap((curso) => listarDiretorio(curso, ".md"));
-  for (const caminho of markdowns) {
-    const texto = lerTexto(caminho, { ignorarErros: true });
-    for (const [rotulo, padrao] of ARTEFATOS_CONVERSAO_PPC) {
-      if (padrao.test(texto)) erros.push(`${ctx.rel(caminho)}: contém artefato de conversão: ${rotulo}`);
-    }
   }
   return erros;
 }

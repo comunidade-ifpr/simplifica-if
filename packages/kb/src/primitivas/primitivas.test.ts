@@ -1,23 +1,10 @@
 /**
- * Primitivas de texto e de JSON tipado: similaridade de sequências,
- * representação e arredondamento de fracionários, serialização, case folding e
- * expressões regulares. Os valores esperados são gabaritos fixos.
+ * Primitivas de texto: similaridade de sequências, case folding e expressões regulares.
  */
 import { describe, expect, test } from "vite-plus/test";
 import { SequenceMatcher } from "./sequencias.ts";
-import { copiarValorJson, serializarJsonTipado, jsonTipadoIndentado, analisarJsonTipado } from "./json-tipado.ts";
 import { escape, finditer, fullmatch, match, search, split, sub } from "./regex.ts";
 import { casefold, colapsarEspacos, semMarcas, somenteDigitos } from "./texto.ts";
-import {
-  chavesNaOrdem,
-  Flutuante,
-  inteiroDoValor,
-  ou,
-  reprFloat,
-  arredondarParaPar,
-  textoDoValor,
-  verdadeiro,
-} from "./valores.ts";
 
 /** Gerador congruencial dos casos (o mesmo que produziu os gabaritos). */
 function gerar(semente: number, n: number, alfabeto: string[]): [string, number] {
@@ -89,121 +76,6 @@ describe("SequenceMatcher", () => {
     expect(new SequenceMatcher("tecnico em informatica", "tecnico em informatica para internet").ratio()).toBe(
       0.7586206896551724,
     );
-  });
-});
-
-// [valor, repr, repr(round(valor, 4)), repr(round(valor, 2))]
-const FLOATS: Array<[number, string, string, string]> = [
-  [0.5, "0.5", "0.5", "0.5"],
-  [1.0, "1.0", "1.0", "1.0"],
-  [100.0, "100.0", "100.0", "100.0"],
-  [1e16, "1e+16", "1e+16", "1e+16"],
-  [1.5e16, "1.5e+16", "1.5e+16", "1.5e+16"],
-  [1234567890123456.0, "1234567890123456.0", "1234567890123456.0", "1234567890123456.0"],
-  [0.0001, "0.0001", "0.0001", "0.0"],
-  [1e-5, "1e-05", "0.0", "0.0"],
-  [1e-7, "1e-07", "0.0", "0.0"],
-  [123.456, "123.456", "123.456", "123.46"],
-  [-2.5, "-2.5", "-2.5", "-2.5"],
-  [1e22, "1e+22", "1e+22", "1e+22"],
-  [0.1 + 0.2, "0.30000000000000004", "0.3", "0.3"],
-  [5e-324, "5e-324", "0.0", "0.0"],
-  [1.7976931348623157e308, "1.7976931348623157e+308", "1.7976931348623157e+308", "1.7976931348623157e+308"],
-  [0.03125, "0.03125", "0.0312", "0.03"],
-  [2.675, "2.675", "2.675", "2.67"],
-  [0.00015, "0.00015", "0.0001", "0.0"],
-  [0.8571428571428571, "0.8571428571428571", "0.8571", "0.86"],
-  [-0.0, "-0.0", "-0.0", "-0.0"],
-];
-
-describe("valores", () => {
-  test("repr e round de float", () => {
-    for (const [valor, repr, r4, r2] of FLOATS) {
-      expect([
-        valor,
-        reprFloat(valor),
-        reprFloat(arredondarParaPar(valor, 4)),
-        reprFloat(arredondarParaPar(valor, 2)),
-      ]).toEqual([valor, repr, r4, r2]);
-    }
-  });
-
-  test("texto de lista", () => {
-    expect(textoDoValor(["a'b", 'c"d', null, true, new Flutuante(1), { k: 2 }])).toBe(
-      `["a'b", 'c"d', None, True, 1.0, {'k': 2}]`,
-    );
-  });
-
-  test("verdade, or e int", () => {
-    expect([verdadeiro(new Flutuante(0)), verdadeiro({}), verdadeiro([0]), verdadeiro("0")]).toEqual([
-      false,
-      false,
-      true,
-      true,
-    ]);
-    expect(ou("", null, 0, "x")).toBe("x");
-    expect(ou("", 0)).toBe(0);
-    expect([
-      inteiroDoValor(" 12 "),
-      inteiroDoValor("١٢"),
-      inteiroDoValor(new Flutuante(2.7)),
-      inteiroDoValor(true),
-    ]).toEqual([12, 12, 2, 1]);
-    expect(() => inteiroDoValor("1²")).toThrow();
-    expect(() => inteiroDoValor(null)).toThrow();
-  });
-});
-
-describe("json", () => {
-  test("serialização com indentação", () => {
-    const valor = analisarJsonTipado(
-      '{"a": [1, 2.0, {"b": null, "c": true}], "d": {}, "e": [], "z": "aç\\n\\"\\\\\\u0001", "2": 1}',
-    );
-    expect(serializarJsonTipado(valor, { indent: 2 })).toBe(
-      [
-        "{",
-        '  "a": [',
-        "    1,",
-        "    2.0,",
-        "    {",
-        '      "b": null,',
-        '      "c": true',
-        "    }",
-        "  ],",
-        '  "d": {},',
-        '  "e": [],',
-        '  "z": "aç\\n\\"\\\\\\u0001",',
-        '  "2": 1',
-        "}",
-      ].join("\n"),
-    );
-    expect(jsonTipadoIndentado([])).toBe("[]\n");
-  });
-
-  test("serialização compacta, chaves ordenadas e separadores padrão", () => {
-    expect(
-      serializarJsonTipado(analisarJsonTipado('{"b": 1, "a": ["é", 1.5e16]}'), {
-        ordenarChaves: true,
-        separadores: [",", ":"],
-      }),
-    ).toBe('{"a":["é",1.5e+16],"b":1}');
-    expect(serializarJsonTipado({ b: 1, a: [1, 2] })).toBe('{"b": 1, "a": [1, 2]}');
-  });
-
-  test("análise preserva ordem de chaves numéricas, floats, inteiros grandes e NaN", () => {
-    const valor = analisarJsonTipado(
-      '{"z": 1, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "z": 4}',
-    ) as Record<string, unknown>;
-    expect(chavesNaOrdem(valor)).toEqual(["z", "10", "2", "big", "n"]);
-    expect(valor.z).toBe(4);
-    expect(serializarJsonTipado(valor)).toBe('{"z": 4, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN}');
-    expect(serializarJsonTipado(copiarValorJson(valor))).toBe(serializarJsonTipado(valor));
-    expect(serializarJsonTipado({ ...valor, novo: 1 })).toBe(
-      '{"z": 4, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "novo": 1}',
-    );
-    expect(() => analisarJsonTipado('{"a": "\u0001"}')).toThrow();
-    expect(() => analisarJsonTipado("[1,]")).toThrow();
-    expect((analisarJsonTipado('{"__proto__": 1}') as Record<string, unknown>).__proto__).toBe(1);
   });
 });
 

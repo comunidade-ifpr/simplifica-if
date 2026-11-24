@@ -48,12 +48,11 @@ const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[]
 const CODIGO = CAMINHOS.codigoKb;
 const CODIGO_FORA = [
   /\.test\.ts$/,
-  /^packages\/kb\/src\/(cli|primitivas\/|avaliacao\/)/,
+  /^packages\/kb\/src\/(cli|primitivas|avaliacao|esquema|testes)\//,
   /^packages\/kb\/src\/db\/(consultas-[a-z]+|comandos|pacote-contexto|sql|conexao|nodeSqliteClient)\.ts$/,
-  // serviços Effect, layers e CLI: consultam o banco, não o compilam
+  // serviços Effect e layers: consultam o banco, não o compilam
   /^packages\/kb\/src\/([A-Z][A-Za-z]*|layers)\.ts$/,
-  /^packages\/kb\/src\/(cli|esquema|testes)\//,
-  /^packages\/kb\/src\/normas\/(comandos|impacto)\.ts$/,
+  /^packages\/kb\/src\/normas\/impacto\.ts$/,
 ];
 
 function listar(raiz: string, relativo: string, extensoes: readonly string[]): string[] {

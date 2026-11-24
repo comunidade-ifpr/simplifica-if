@@ -293,6 +293,5 @@ export function arquivosIndices(caminhos: CaminhosBase, indices: IndicesPpcs) {
   return {
     arquivos,
     extrasEm: [{ pasta: caminhos.secoesPpcs, sufixo: ".jsonl" }],
-    obsoletos: [NodePath.join(NodePath.dirname(caminhos.secoesPpcs), "secoes.jsonl")],
   };
 }

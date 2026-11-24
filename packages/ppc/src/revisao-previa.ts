@@ -437,25 +437,9 @@ export function agruparFontes(links: readonly Fonte[], registro: Registro, base:
 const temaDaFicha = (ficha: string, base: BaseRevisaoPrevia): number =>
   ordemDoTema(base.topicos.filter((t) => t.fichas.includes(ficha)).map((t) => t.id));
 
-/** Os títulos das fichas D, para uma base sem as fichas (o título vem sempre da base quando ela as tem). */
-const TITULO_FICHA_D: Readonly<Record<string, string>> = {
-  "CT-IDENT-01": "Denominação do curso alinhada ao CNCT",
-  "CT-IDENT-08": "Base legal atualizada nas seções de identidade",
-  "CT-IDENT-13": "Eixo tecnológico compatível com o CNCT",
-  "CT-CURR-02": "Carga horária total apresentada com consistência",
-  "CT-CURR-16": "Pré-requisitos de ingresso compatíveis com o CNCT",
-  "CT-CURR-18": "Componentes obrigatórios e conteúdos legais da FGB contemplados",
-  "CT-CURR-22": "AEE não incorporado como componente curricular da matriz ou do histórico",
-  "CT-SUP-09": "Referências com vigência normativa observável",
-  "CT-SUP-12": "Referências com vigência normativa atualizada",
-  "CT-SUP-14": "Referências institucionais e referenciais essenciais do curso",
-  "CT-SUP-21": "Legislação profissional CNCT tratada quando aplicável",
-  "CT-SUP-24": "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
-};
-
-/** O título humano da ficha: o da base, o das fichas D ou o do tema; nunca o código. */
+/** O título humano da ficha: o da base ou o do tema; nunca o código. */
 export const tituloDaFicha = (ficha: string, base: BaseRevisaoPrevia): string =>
-  base.fichas[ficha] ?? TITULO_FICHA_D[ficha] ?? `Critério do tema "${TEMAS[temaDaFicha(ficha, base)]!.titulo}"`;
+  base.fichas[ficha] ?? `Critério do tema "${TEMAS[temaDaFicha(ficha, base)]!.titulo}"`;
 
 type ItemInterno = Omit<PendenciaRevisao, "noDocumento" | "dependeDoCurso"> & { trechos: string[] };
 
@@ -986,7 +970,7 @@ export function revisarDocxSemComentar(
     aoEtapa?: ((etapa: Exclude<EtapaRevisaoPrevia, "gravando">) => void) | undefined;
   },
 ): Omit<RevisaoPrevia, "docx"> {
-  const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
+  const conversao = converterPpc(bytes, nomeDoArquivo);
   const { itens: _, temasForaDaRevisao: __, ...revisado } = revisarMarkdown(conversao.markdown, base, opcoes);
   return {
     ...revisado,
@@ -1005,7 +989,7 @@ export function revisarDocx(
   base: BaseRevisaoPrevia,
   opcoes: OpcoesRevisaoPrevia,
 ): RevisaoPrevia {
-  const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
+  const conversao = converterPpc(bytes, nomeDoArquivo);
   const texto = revisarMarkdown(conversao.markdown, base, opcoes);
   const { temasForaDaRevisao, ...revisado } = texto;
   // Cópia: a contestada com evidência muda de estado só no documento.

@@ -10,7 +10,6 @@
  */
 import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/regex";
 import { semMarcas } from "@simplifica-if/kb/primitivas/texto";
-import { digitosAscii } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type TabelaNormalizada, todasAsLinhas } from "@simplifica-if/docx/tabelas";
 
@@ -84,15 +83,6 @@ const CAMPO_DO_TOTAL: Record<string, string> = {
   ch_np: "ch_np",
 };
 
-export type MatrizGenerica = {
-  tipo: "matriz_curricular";
-  headers: string[];
-  componentes: Array<{ nome: string; cargas: Map<string, Inteiro | string>; total?: Inteiro | string }>;
-  total_rows: number;
-};
-
-export type Matriz = MatrizPpc | MatrizGenerica;
-
 type Mapeamento = Partial<
   Record<"ano" | "componente" | "aulas_semanais" | "ch_total" | "ch_relogio" | "ch_ftp" | "ch_fgb" | "ch_np", number>
 >;
@@ -107,7 +97,7 @@ function norm(valor: string): string {
 
 /** Todos os dígitos da célula lidos como um número (`1.200 h` é 1200); `null` sem dígitos. */
 function inteiroDaCelula(valor: string): Inteiro | null {
-  const digitos = digitosAscii(valor).replace(/\D/g, "");
+  const digitos = valor.replace(/\D/g, "");
   if (!digitos) return null;
   const numero = Number(digitos);
   return Number.isSafeInteger(numero) ? numero : BigInt(digitos);
@@ -168,57 +158,7 @@ const ehSubtotal = (texto: string): boolean =>
   texto.includes("subtotal") || texto.includes("total ano") || texto.includes("total do periodo");
 const ehTotalGeral = (texto: string): boolean =>
   texto.includes("total do curso") || texto.includes("carga horaria total do curso");
-
-// ---------------------------------------------------------------- extrator genérico
-
 const contemAlgum = (texto: string, termos: string[]): boolean => termos.some((termo) => texto.includes(termo));
-
-/** Quadro do corpo docente, que também tem a coluna "Componente Curricular". */
-function ehQuadroDocente(tabela: TabelaNormalizada): boolean {
-  const texto = norm(tabela.cabecalho.join(" "));
-  return ["nome", "area de formacao", "perfil de formacao", "componente curricular"].every((termo) =>
-    texto.includes(termo),
-  );
-}
-
-/** Tabela simples de componente × carga horária × período, quando nenhum formato de PPC serve. */
-export function extrairMatrizGenerica(tabela: TabelaNormalizada): MatrizGenerica | null {
-  if (!tabela.cabecalho.length || !tabela.linhas.length || ehQuadroDocente(tabela)) return null;
-  const cabecalhos = tabela.cabecalho.map(norm);
-  const texto = cabecalhos.join(" ");
-  const temComponente = cabecalhos.some((item) => item.includes("componente") || item.includes("disciplina"));
-  const temCarga = contemAlgum(texto, ["carga", "ch ", "hora-aula", "hora aula", "hora-relogio", "hora relogio"]);
-  const temPeriodo = contemAlgum(texto, ["ano", "semestre", "periodo", "serie"]);
-  if (!(temComponente && temCarga && temPeriodo)) return null;
-
-  let colunaComponente: number | null = null;
-  let colunaTotal: number | null = null;
-  const colunasCarga: number[] = [];
-  for (const [indice, item] of cabecalhos.entries()) {
-    if (contemAlgum(item, ["componente", "disciplina", "unidade"])) colunaComponente = indice;
-    else if (contemAlgum(item, ["ano", "semestre", "periodo", "serie", "carga", "ch", "hora"]))
-      colunasCarga.push(indice);
-    if (item.includes("total") && contemAlgum(item, ["ch", "carga", "hora"])) colunaTotal = indice;
-  }
-  if (colunaComponente === null) return null;
-
-  const componentes: MatrizGenerica["componentes"] = [];
-  for (const linha of tabela.linhas) {
-    if (colunaComponente >= linha.length) continue;
-    const nome = aparar(linha[colunaComponente]!);
-    if (!nome || naoEhComponente(nome)) continue;
-    const cargas = new Map<string, Inteiro | string>();
-    for (const coluna of colunasCarga) {
-      const valor = coluna < linha.length ? aparar(linha[coluna]!) : "";
-      if (valor) cargas.set(tabela.cabecalho[coluna]!, inteiroDaCelula(valor) || valor);
-    }
-    const total = colunaTotal !== null && colunaTotal < linha.length ? aparar(linha[colunaTotal]!) : "";
-    if (!cargas.size && !total) continue;
-    componentes.push({ nome, cargas, ...(total ? { total: inteiroDaCelula(total) || total } : {}) });
-  }
-  if (!componentes.length) return null;
-  return { tipo: "matriz_curricular", headers: tabela.cabecalho, componentes, total_rows: componentes.length };
-}
 
 // ---------------------------------------------------------------- formatos de PPC
 
@@ -459,9 +399,8 @@ export function extrairMatrizPpc(tabela: TabelaNormalizada): MatrizPpc | null {
 
 // ---------------------------------------------------------------- mescla e pontuação
 
-/** Pontuação de uma matriz candidata: a de PPC sempre vence a genérica; depois, a de mais componentes. */
-export function pontuarMatriz(matriz: Matriz): number {
-  if (matriz.tipo !== "matriz_curricular_ppc") return matriz.componentes.length;
+/** Pontuação de uma matriz candidata: mais componentes, com totais, núcleos preferido. */
+export function pontuarMatriz(matriz: MatrizPpc): number {
   const componentes = matriz.anos.reduce((soma, ano) => soma + ano.componentes.length, 0);
   return (
     1000 +
@@ -473,11 +412,11 @@ export function pontuarMatriz(matriz: Matriz): number {
 
 /**
  * Junta as partes de uma matriz que o PPC divide em várias tabelas (uma por ano, ou quebrada entre
- * páginas). Matrizes de tipos ou formatos diferentes não se juntam: fica a de maior pontuação.
+ * páginas). Matrizes de formatos diferentes não se juntam: fica a de maior pontuação.
  */
-export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc): Matriz {
+export function mesclarMatrizes(atual: MatrizPpc | null, nova: MatrizPpc): MatrizPpc {
   if (!atual) return nova;
-  if (atual.tipo !== "matriz_curricular_ppc" || atual.formato !== nova.formato) {
+  if (atual.formato !== nova.formato) {
     return pontuarMatriz(nova) > pontuarMatriz(atual) ? nova : atual;
   }
   const porAno = new Map<string, Ano>();
@@ -612,9 +551,8 @@ function nucleosEmMarkdown(matriz: MatrizPpc): string {
   return linhas.join("\n");
 }
 
-/** Tabela canônica da matriz de PPC; vazio para a matriz genérica, que fica como está no documento. */
-export function matrizEmMarkdown(matriz: Matriz): string {
-  if (matriz.tipo !== "matriz_curricular_ppc") return "";
+/** Tabela canônica da matriz de PPC. */
+export function matrizEmMarkdown(matriz: MatrizPpc): string {
   return matriz.formato === "nucleos_ftp_fgb_np" ? nucleosEmMarkdown(matriz) : legadoEmMarkdown(matriz);
 }
 
@@ -622,7 +560,7 @@ export function matrizEmMarkdown(matriz: Matriz): string {
  * Troca a tabela da seção "5.6 MATRIZ CURRICULAR" do Markdown pela canônica. As várias tabelas em
  * que o PPC divide a matriz (e as linhas em branco entre elas) viram uma só.
  */
-export function substituirMatrizNoMarkdown(markdown: string, matriz: Matriz): string {
+export function substituirMatrizNoMarkdown(markdown: string, matriz: MatrizPpc): string {
   const canonica = matrizEmMarkdown(matriz);
   if (!canonica) return markdown;
   const linhas = dividirLinhas(markdown);

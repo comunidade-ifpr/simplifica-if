@@ -9,7 +9,6 @@ import { preConferir, type CursoCnct } from "../src/pre-conferencia.ts";
 import { verificacaoDaBase } from "../src/revisao-previa.ts";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 
-const AGORA = new Date(2026, 10, 16, 12, 0, 0);
 const comum = verificacaoDaBase(await carregarBaseRevisao(raizRepositorio()));
 
 const CNCT: CursoCnct = {
@@ -44,7 +43,7 @@ describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferênci
     SECOES_DOCX.map(([nome, texto]) =>
       [nome.includes(".") ? par(nome, { estilo: "Heading2" }) : titulo(nome), par(texto)].join(""),
     ).join("");
-  const conversao = converterPpc(montarDocx({ corpo }), "ppc.docx", { agora: AGORA });
+  const conversao = converterPpc(montarDocx({ corpo }), "ppc.docx");
 
   test("a conversão escreve as seções a partir de `##`, como os PPCs da base", () => {
     expect(conversao.markdown).toMatch(/^## 1 JUSTIFICATIVA$/m);

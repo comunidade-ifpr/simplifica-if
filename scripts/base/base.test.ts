@@ -222,10 +222,8 @@ describe("índice de PPCs", () => {
       );
 
       escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/antigo.jsonl", "");
-      escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes.jsonl", "");
       yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
       expect(yield* conferir(caminhos.raiz, arquivos, pastas)).toEqual([]);
-      expect(NodeFS.existsSync(NodePath.join(caminhos.ppcs, "secoes.jsonl"))).toBe(false);
       expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
       expect(
         NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(

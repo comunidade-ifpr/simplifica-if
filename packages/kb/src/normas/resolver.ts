@@ -273,7 +273,7 @@ function aliasesDoRegistro(registro: Registro): [RegExp, string][] {
       const normalizado = normalizarCitacao(alias).trim();
       if (/\d/.test(normalizado) || normalizado.length < 3 || ALIASES_AMBIGUOS.has(normalizado)) continue;
       const fonte = escaparRegex(normalizado).replace(/\s+/g, "\\s+");
-      lista.push([new RegExp(`(?<![a-z0-9])${fonte}(?![a-z0-9])`, "g"), entrada.id.split("~")[0]!]);
+      lista.push([new RegExp(`(?<![a-z0-9])${fonte}(?![a-z0-9])`, "g"), entrada.id]);
     }
   }
   cacheAliases.set(registro, lista);
@@ -549,7 +549,7 @@ function completarPeloDocumento(achados: Achado[], registro: Registro): void {
   const datas = new Map<string, Set<string>>();
   for (const achado of achados) {
     if (achado.id === null) continue;
-    const id = achado.id.split("~")[0]!;
+    const id = achado.id;
     const partes = partesIdNorma(id);
     if (!partes) continue;
     resolvidos.set(id, partes);

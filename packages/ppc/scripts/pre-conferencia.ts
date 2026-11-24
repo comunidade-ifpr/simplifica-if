@@ -132,7 +132,7 @@ if (values.base) {
   }
 } else if (values.docx && values.cnct && values.saida) {
   const bytes = new Uint8Array(NodeFS.readFileSync(values.docx));
-  const conversao = converterPpc(bytes, values.docx, { agora: new Date() });
+  const conversao = converterPpc(bytes, values.docx);
   const cnct = base.cncts.find((c) => c.slug === values.cnct);
   if (!cnct) throw new Error(`curso do CNCT fora da base: ${values.cnct}`);
   const resultado = preConferir(conversao.markdown, { ...comum, cnct, forma: values.forma });
