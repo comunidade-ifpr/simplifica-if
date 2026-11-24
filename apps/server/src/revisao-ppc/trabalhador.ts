@@ -1,8 +1,8 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- ponto de entrada do Worker: `worker_threads` e o relógio vindo do pedido
 /**
- * O Worker da revisão prévia (`RevisorPpc.ts`): recebe um pedido, roda `revisarDocx` (conversão,
- * pré-conferência e comentários, tudo síncrono e com a árvore do XML na memória) e devolve o
- * resultado, com os bytes do DOCX comentado transferidos, não copiados.
+ * O Worker da revisão prévia (`RevisorPpc.ts`): recebe um pedido, roda `revisarDocx` (ou
+ * `revisarDocxSemComentar`, quando `comentar` é falso: pula `comentarDocx`, `textosDeCaixas`,
+ * recompactação do ZIP e transferência de `ArrayBuffer`) e devolve o resultado.
  *
  * Roda com `resourceLimits` e tempo máximo impostos por quem o cria; aqui só se distingue o erro
  * esperado (`ErroDocx`: arquivo protegido, corrompido, grande demais, sem texto), que volta como o
@@ -17,6 +17,7 @@ import {
   type EtapaRevisaoPrevia,
   type MarcaPendencia,
   revisarDocx,
+  revisarDocxSemComentar,
   type RevisaoPrevia,
 } from "@simplifica-if/ppc/revisao-previa";
 
@@ -26,6 +27,8 @@ export type PedidoTrabalhador = {
   base: BaseRevisaoPrevia;
   /** ISO 8601. */
   agora: string;
+  /** Quando falso, pula os comentários no `.docx` e devolve `docx: null`. */
+  comentar: boolean;
   cnct?: string | undefined;
   forma?: string | undefined;
   /** Os resultados conferidos da revisão com IA (etapa 4), para a mesma lista e o mesmo DOCX. */
@@ -37,8 +40,10 @@ export type PedidoTrabalhador = {
 /** O aviso de andamento que o Worker manda antes da resposta (`WorkerLimitado.AvisoAndamento`). */
 export type AndamentoTrabalhador = EtapaRevisaoPrevia;
 
+export type RevisaoTrabalhador = Omit<RevisaoPrevia, "docx"> & { readonly docx: Uint8Array | null };
+
 export type RespostaTrabalhador =
-  | { ok: true; revisao: RevisaoPrevia }
+  | { ok: true; revisao: RevisaoTrabalhador }
   | { ok: false; arquivoInvalido: DadosErroDocx }
   | { ok: false; defeito: string };
 
@@ -47,16 +52,30 @@ if (porta !== null)
   porta.once("message", (pedido: PedidoTrabalhador) => {
     let resposta: RespostaTrabalhador;
     try {
-      const revisao = revisarDocx(pedido.bytes, pedido.nome, pedido.base, {
+      const aoEtapa = (etapa: EtapaRevisaoPrevia) =>
+        // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
+        porta.postMessage({ andamento: etapa } satisfies AvisoAndamento<AndamentoTrabalhador>);
+      if (pedido.comentar) {
+        const revisao = revisarDocx(pedido.bytes, pedido.nome, pedido.base, {
+          agora: new Date(pedido.agora),
+          cnct: pedido.cnct,
+          forma: pedido.forma,
+          ia: pedido.ia,
+          situacoes: pedido.situacoes,
+          aoEtapa,
+        });
+        porta.postMessage({ ok: true, revisao } satisfies RespostaTrabalhador, [revisao.docx.buffer as ArrayBuffer]);
+        return;
+      }
+      const revisao = revisarDocxSemComentar(pedido.bytes, pedido.nome, pedido.base, {
         agora: new Date(pedido.agora),
         cnct: pedido.cnct,
         forma: pedido.forma,
         ia: pedido.ia,
-        situacoes: pedido.situacoes,
-        // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
-        aoEtapa: (etapa) => porta.postMessage({ andamento: etapa } satisfies AvisoAndamento<AndamentoTrabalhador>),
+        aoEtapa,
       });
-      porta.postMessage({ ok: true, revisao } satisfies RespostaTrabalhador, [revisao.docx.buffer as ArrayBuffer]);
+      // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
+      porta.postMessage({ ok: true, revisao: { ...revisao, docx: null } } satisfies RespostaTrabalhador);
       return;
     } catch (erro) {
       resposta =

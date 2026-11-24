@@ -19,10 +19,20 @@ import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { strFromU8, unzipSync } from "fflate";
 import type { EstadoRevisaoIa } from "@simplifica-if/contratos-app";
+import * as Layers from "@simplifica-if/kb/layers";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
+import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
+import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
+import * as Banco from "../src/persistencia/Banco.ts";
+import * as CopiasComentadas from "../src/persistencia/CopiasComentadas.ts";
+import * as Preferencias from "../src/persistencia/Preferencias.ts";
+import * as RevisoesPpc from "../src/persistencia/RevisoesPpc.ts";
+import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
+import * as RevisaoIa from "../src/revisao-ppc/RevisaoIa.ts";
+import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
 
@@ -775,5 +785,164 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       assert.strictEqual(final.blocoPausado, "s-02-1");
       assert.include(final.motivo ?? "", "falha no primeiro bloco");
     }),
+  );
+});
+
+/* ============================================================ reinício, pausa e ocupada */
+
+layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de pausa", (it) => {
+  it.effect(
+    "ao reabrir o banco após fechamento do app, em_andamento vira pausada e listar devolve os blocos intactos",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const pastaBanco = diretorioTemporario("simplifica-revisao-ia-reinicio-");
+        const bancoConversas = NodePath.join(pastaBanco, "conversas.sqlite");
+        const bancoKb = bancoComFichas();
+        const arquivo = gravar("PPC reinicio.docx", ppcSintetico());
+        const drivers = Layer.succeed(
+          Motor.Drivers,
+          Motor.Drivers.of({ claude: driver("claude"), codex: driver("codex"), antigravity: driver("antigravity") }),
+        );
+        const criarCamada = () =>
+          Servidor.layer({
+            primeiroUsoFeito: true,
+            banco: bancoKb,
+            bancoConversas,
+            token: Redacted.make(TOKEN),
+            revisaoIa: { paralelismo: 1 },
+          }).pipe(Layer.provide(drivers), Layer.provide(NodeServices.layer));
+
+        // 1ª execução: completa o 1º bloco e trava no 2º bloco; fecha o servidor no meio.
+        const portao = yield* Deferred.make<void>();
+        roteiro.responder = (p) =>
+          blocoDo(p) === "s-02-1"
+            ? { texto: respostaValida(p), esperar: Deferred.await(portao) }
+            : { texto: respostaValida(p) };
+        let idRevisao = "";
+        yield* Effect.scoped(
+          Effect.gen(function* () {
+            const { urlRpc } = yield* Servidor.ServidorApp;
+            const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+            const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+            const preparada = yield* rpc["revisaoPpc.prepararIa"]({
+              lista: pre.lista!,
+              provider: "claude",
+              modo: "rapido",
+            });
+            idRevisao = preparada.id;
+            yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
+            yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
+              Stream.filter(
+                (e) =>
+                  e.blocos.find((b) => b.id === "s-01-1")?.estado === "pronto" &&
+                  e.blocos.find((b) => b.id === "s-02-1")?.etapa === "recebendo",
+              ),
+              Stream.take(1),
+              Stream.runDrain,
+            );
+          }).pipe(Effect.provide(criarCamada())),
+        );
+
+        // 2ª execução no mesmo banco: recupera em_andamento -> pausada (MOTIVO_APP_FECHADO) e `listar` aquece os blocos.
+        yield* Effect.scoped(
+          Effect.gen(function* () {
+            const { urlRpc } = yield* Servidor.ServidorApp;
+            const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+            const listadas = yield* rpc["revisaoPpc.listarIa"]({});
+            const recuperada = listadas.find((e) => e.id === idRevisao)!;
+            assert.isDefined(recuperada);
+            assert.strictEqual(recuperada.situacao, "pausada");
+            assert.include(recuperada.motivo ?? "", "app foi fechado");
+            assert.deepStrictEqual(
+              recuperada.blocos.map((b) => [b.id, b.estado]),
+              [
+                ["s-01-1", "pronto"],
+                ["s-02-1", "pendente"],
+                ["j-02", "pendente"],
+                ["t", "pendente"],
+              ],
+            );
+            assert.isTrue(recuperada.blocos.every((b) => b.titulosFichas.length > 0));
+          }).pipe(Effect.provide(criarCamada())),
+        );
+      }),
+  );
+
+  it.effect("RevisaoIa.ocupada reflete em O(1) se há revisão rodando em FiberMap", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const portao = yield* Deferred.make<void>();
+      roteiro.responder = (p) => ({ texto: respostaValida(p), esperar: Deferred.await(portao) });
+      const arquivo = gravar("PPC ocupada.docx", ppcSintetico());
+      const banco = Banco.layerMemoria;
+      const camadaServicos = ListaViva.layer().pipe(
+        Layer.provideMerge(RevisaoIa.layer({ paralelismo: 1 })),
+        Layer.provideMerge(RevisoesPpc.layer.pipe(Layer.provide(banco))),
+        Layer.provideMerge(RevisorPpc.layer()),
+        Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
+        Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
+        Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
+        Layer.provideMerge(Motor.layer),
+        Layer.provideMerge(
+          Layer.succeed(
+            Motor.Drivers,
+            Motor.Drivers.of({ claude: driver("claude"), codex: driver("codex"), antigravity: driver("antigravity") }),
+          ),
+        ),
+        Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: bancoComFichas() })),
+        Layer.provideMerge(NodeCrypto.layerSecureRandom),
+        Layer.provideMerge(NodeServices.layer),
+      );
+      yield* Effect.gen(function* () {
+        const viva = yield* ListaViva.ListaViva;
+        const ia = yield* RevisaoIa.RevisaoIa;
+        assert.isFalse(yield* ia.ocupada);
+        const pre = yield* revisarAteOFim(viva.revisar({ arquivo }));
+        const preparada = yield* ia.preparar({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        assert.isFalse(yield* ia.ocupada);
+        yield* ia.iniciar(preparada.id);
+        yield* ia.acompanhar(preparada.id).pipe(
+          Stream.filter((e) => e.blocos.some((b) => b.etapa === "recebendo")),
+          Stream.take(1),
+          Stream.runDrain,
+        );
+        assert.isTrue(yield* ia.ocupada);
+        yield* ia.pausar(preparada.id);
+        assert.isFalse(yield* ia.ocupada);
+      }).pipe(Effect.provide(camadaServicos));
+    }),
+  );
+
+  it.effect("pausarRevisaoSeEmAndamento não sobrescreve uma revisão já concluída", () =>
+    Effect.gen(function* () {
+      const persistencia = yield* RevisoesPpc.RevisoesPpc;
+      yield* persistencia.criarRevisao({
+        id: "rev-concluida",
+        lista: null,
+        arquivo: "/x/PPC.docx",
+        sha256: "abc",
+        provider: "claude",
+        modelo: null,
+        modo: "rapido",
+        situacao: "concluida",
+        plano: {},
+        estimativa: {
+          provider: "claude",
+          blocos: 1,
+          fichas: 1,
+          tokensEntrada: 1,
+          tokensSaida: 1,
+          minutos: 1,
+          custoUsd: null,
+          percentualJanela: 1,
+          limiteDoPlano: "x",
+        },
+      });
+      yield* persistencia.pausarRevisaoSeEmAndamento("rev-concluida", "Pausada por você.");
+      const depois = yield* persistencia.resumoRevisao("rev-concluida");
+      assert.strictEqual(depois!.situacao, "concluida");
+      assert.isNull(depois!.motivo);
+    }).pipe(Effect.provide(RevisoesPpc.layer.pipe(Layer.provide(Banco.layerMemoria)))),
   );
 });

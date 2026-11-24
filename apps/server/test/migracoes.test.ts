@@ -14,8 +14,7 @@ import * as SqlClient from "effect/sql/SqlClient";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
-import * as Listas from "../src/persistencia/Listas.ts";
-import * as Revisoes from "../src/persistencia/Revisoes.ts";
+import * as RevisoesPpc from "../src/persistencia/RevisoesPpc.ts";
 import { diretorioTemporario, limparTemporarios } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -175,9 +174,7 @@ const popularV1 = Effect.gen(function* () {
 /** A última migração do app. */
 const ULTIMA = Banco.MIGRACOES.at(-1)![0];
 
-const emMemoria = Layer.mergeAll(Listas.layer, Revisoes.layer).pipe(
-  Layer.provideMerge(NodeSqliteClient.layer({ filename: ":memory:" })),
-);
+const emMemoria = RevisoesPpc.layer.pipe(Layer.provideMerge(NodeSqliteClient.layer({ filename: ":memory:" })));
 
 describe("migrações do banco das conversas", () => {
   it.effect(
@@ -185,8 +182,7 @@ describe("migrações do banco das conversas", () => {
     () =>
       Effect.gen(function* () {
         const sql = yield* SqlClient.SqlClient;
-        const listas = yield* Listas.Listas;
-        const revisoes = yield* Revisoes.Revisoes;
+        const persistencia = yield* RevisoesPpc.RevisoesPpc;
 
         const m1 = yield* Banco.rodarMigracoes(1);
         assert.deepStrictEqual(m1, [[1, "Inicial"]]);
@@ -199,7 +195,7 @@ describe("migrações do banco das conversas", () => {
         assert.strictEqual(fk[0]?.foreign_keys, 1);
 
         // Lista concluída: leituraIa = "completa", parcial = false.
-        const listaIa = yield* listas.buscar("lista-ia");
+        const listaIa = yield* persistencia.buscarLista("lista-ia");
         assert.isNotNull(listaIa);
         assert.strictEqual(listaIa!.resultado.leituraIa, "completa");
         assert.isNotNull(listaIa!.resultadosIa);
@@ -208,13 +204,13 @@ describe("migrações do banco das conversas", () => {
         assert.strictEqual(listaIa!.resultadosIa!.parcial, false);
 
         // Lista sem revisão: leituraIa = "nenhuma", resultadosIa = null.
-        const listaPre = yield* listas.buscar("lista-pre");
+        const listaPre = yield* persistencia.buscarLista("lista-pre");
         assert.isNotNull(listaPre);
         assert.strictEqual(listaPre!.resultado.leituraIa, "nenhuma");
         assert.isNull(listaPre!.resultadosIa);
 
         // Lista ligada a revisão pausada: leituraIa = "parcial", parcial = true, respeitando ordem do plano.
-        const listaPausada = yield* listas.buscar("lista-pausada");
+        const listaPausada = yield* persistencia.buscarLista("lista-pausada");
         assert.isNotNull(listaPausada);
         assert.strictEqual(listaPausada!.resultado.leituraIa, "parcial");
         assert.strictEqual(listaPausada!.resultadosIa?.parcial, true);
@@ -224,7 +220,7 @@ describe("migrações do banco das conversas", () => {
         );
 
         // Lista ligada a revisão sem blocos: resultadosIa continua null e não quebra.
-        const listaVazia = yield* listas.buscar("lista-vazia");
+        const listaVazia = yield* persistencia.buscarLista("lista-vazia");
         assert.isNotNull(listaVazia);
         assert.strictEqual(listaVazia!.resultado.leituraIa, "parcial");
         assert.isNull(listaVazia!.resultadosIa);
@@ -242,12 +238,12 @@ describe("migrações do banco das conversas", () => {
         // (contadas pelo SQL: na versão 2 a pendência ainda tem `mensagem`, que o serviço não lê mais)
         const vivas = sql<{ n: number }>`SELECT COUNT(*) AS n FROM pendencias_vivas WHERE lista_id = 'lista-ia'`;
         assert.strictEqual((yield* vivas)[0]?.n, 1);
-        assert.strictEqual((yield* listas.eventos("lista-ia")).length, 1);
-        assert.strictEqual((yield* listas.uso("lista-ia")).entrada, 100);
+        assert.strictEqual((yield* persistencia.eventos("lista-ia")).length, 1);
+        assert.strictEqual((yield* persistencia.usoLista("lista-ia")).entrada, 100);
 
         // Apagar a revisão agora só desliga `revisao_id` (`ON DELETE SET NULL`), mantendo lista e `resultados_ia`.
-        yield* revisoes.apagar("rev-1");
-        const depois = yield* listas.buscar("lista-ia");
+        yield* persistencia.apagarRevisao("rev-1");
+        const depois = yield* persistencia.buscarLista("lista-ia");
         assert.isNotNull(depois);
         assert.isNull(depois!.revisao);
         assert.strictEqual(depois!.resultadosIa?.resultados.length, 1);
@@ -275,7 +271,7 @@ describe("migrações do banco das conversas", () => {
     () =>
       Effect.gen(function* () {
         const sql = yield* SqlClient.SqlClient;
-        const listas = yield* Listas.Listas;
+        const persistencia = yield* RevisoesPpc.RevisoesPpc;
         yield* Banco.rodarMigracoes(1);
         yield* popularV1;
         yield* Banco.rodarMigracoes(3);
@@ -305,7 +301,7 @@ describe("migrações do banco das conversas", () => {
           explicacao: "A carga total (3.173 h) diverge da matriz.",
           faltas: ["Prazo máximo não informado", "Carga total diverge da matriz (3.367 h)"],
         };
-        const [viva] = yield* listas.pendencias("lista-ia");
+        const [viva] = yield* persistencia.pendencias("lista-ia");
         assert.deepInclude(viva!.pendencia, emPartes);
         assert.notProperty(viva!.pendencia, "mensagem");
         // a chave da pendência e o resto dela não mudam
@@ -338,7 +334,7 @@ describe("migrações do banco das conversas", () => {
     () =>
       Effect.gen(function* () {
         const sql = yield* SqlClient.SqlClient;
-        const revisoes = yield* Revisoes.Revisoes;
+        const persistencia = yield* RevisoesPpc.RevisoesPpc;
         yield* Banco.rodarMigracoes(1);
         yield* popularV1;
         yield* Banco.rodarMigracoes(4);
@@ -355,16 +351,16 @@ describe("migrações do banco das conversas", () => {
         const m5 = yield* Banco.rodarMigracoes(5);
         assert.deepStrictEqual(m5, [[5, "RevisaoPpcSemCopias"]]);
 
-        const rev1 = yield* revisoes.buscar("rev-1");
+        const rev1 = yield* persistencia.buscarRevisao("rev-1");
         assert.strictEqual(rev1!.estimativa.limiteDoPlano, "do limite de 5 horas do plano Pro");
         assert.notProperty(rev1!.estimativa, "nomeJanela");
         assert.strictEqual(rev1!.estimativa.tokensEntrada, 1000);
 
         // A lista de cada leitura: a que a liga ou, na preparada, a do mesmo conteúdo e curso.
         assert.strictEqual(rev1!.lista, "lista-ia");
-        assert.strictEqual((yield* revisoes.buscar("rev-pausada"))!.lista, "lista-pausada");
-        assert.strictEqual((yield* revisoes.buscar("rev-preparada"))!.lista, "lista-pre");
-        assert.isNull((yield* revisoes.buscar("rev-outro-curso"))!.lista);
+        assert.strictEqual((yield* persistencia.buscarRevisao("rev-pausada"))!.lista, "lista-pausada");
+        assert.strictEqual((yield* persistencia.buscarRevisao("rev-preparada"))!.lista, "lista-pre");
+        assert.isNull((yield* persistencia.buscarRevisao("rev-outro-curso"))!.lista);
         const colunas = (yield* sql<{ name: string }>`PRAGMA table_info(revisoes_ia)`).map((c) => c.name);
         assert.notInclude(colunas, "cnct");
         assert.notInclude(colunas, "forma");
@@ -375,15 +371,15 @@ describe("migrações do banco das conversas", () => {
         assert.strictEqual(semPendencias[0]?.n, 0);
         assert.notProperty(rev1!.resultado!, "pendencias");
         assert.strictEqual(rev1!.resultado!.conferidos, 12);
-        const listaIa = yield* Listas.Listas.pipe(Effect.flatMap((l) => l.buscar("lista-ia")));
+        const listaIa = yield* persistencia.buscarLista("lista-ia");
         assert.notProperty(listaIa!.resultado, "pendencias");
         assert.strictEqual(listaIa!.resultado.leituraIa, "completa");
-        assert.strictEqual((yield* Listas.Listas.pipe(Effect.flatMap((l) => l.pendencias("lista-ia")))).length, 1);
+        assert.strictEqual((yield* persistencia.pendencias("lista-ia")).length, 1);
 
         // A lista que sai deixa a leitura sem lista, órfã.
         yield* sql`DELETE FROM listas_pendencias WHERE id = 'lista-pre'`;
-        assert.isNull((yield* revisoes.buscar("rev-preparada"))!.lista);
-        assert.includeMembers([...(yield* revisoes.orfas)], ["rev-preparada", "rev-outro-curso"]);
+        assert.isNull((yield* persistencia.buscarRevisao("rev-preparada"))!.lista);
+        assert.includeMembers([...(yield* persistencia.revisoesOrfas)], ["rev-preparada", "rev-outro-curso"]);
       }).pipe(Effect.provide(emMemoria)),
   );
 
@@ -539,12 +535,12 @@ describe("migrações do banco das conversas", () => {
 
       // Abre com `layerArquivo`: migra para 2 e cria `.v1.bak` antes.
       yield* Effect.gen(function* () {
-        const listas = yield* Listas.Listas;
-        const l = yield* listas.buscar("lista-ia");
+        const persistencia = yield* RevisoesPpc.RevisoesPpc;
+        const l = yield* persistencia.buscarLista("lista-ia");
         assert.strictEqual(l?.resultado.leituraIa, "completa");
       }).pipe(
         Effect.provide(
-          Listas.layer.pipe(Layer.provide(Banco.layerArquivo(arquivo)), Layer.provide(NodeServices.layer)),
+          RevisoesPpc.layer.pipe(Layer.provide(Banco.layerArquivo(arquivo)), Layer.provide(NodeServices.layer)),
         ),
       );
       assert.isTrue(NodeFS.existsSync(backup));

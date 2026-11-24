@@ -205,7 +205,7 @@ const semExigirLiberacao = Layer.mergeAll(
 const revisarCom = (limites: Partial<RevisorPpc.Limites>, arquivo: string) =>
   Effect.gen(function* () {
     const revisor = yield* RevisorPpc.RevisorPpc;
-    return yield* Effect.flip(revisor.revisar({ arquivo }));
+    return yield* Effect.flip(revisor.revisarArquivo({ arquivo, gravar: true, seOcupada: "recusar" }));
   }).pipe(Effect.provide(RevisorPpc.layer({ limites }).pipe(Layer.provide(semExigirLiberacao))));
 
 layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (it) => {
@@ -228,10 +228,10 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
         assert.match(erro.message, /memória demais/);
         const arquivo = gravar("normal.docx", ppcSintetico());
         const ok = yield* RevisorPpc.RevisorPpc.pipe(
-          Effect.flatMap((revisor) => revisor.revisar({ arquivo })),
+          Effect.flatMap((revisor) => revisor.revisarArquivo({ arquivo, gravar: true, seOcupada: "recusar" })),
           Effect.provide(RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao))),
         );
-        assert.strictEqual(ok.conferidos, 12);
+        assert.strictEqual(ok.revisao.conferidos, 12);
       }),
     60_000,
   );
@@ -240,6 +240,27 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
     Effect.gen(function* () {
       const erro = yield* revisarCom({ tempoMs: 1 }, gravar("tempo.docx", ppcSintetico()));
       assert.match(erro.message, /passou do tempo máximo/);
+    }),
+  );
+
+  it.effect("gravar: false pula comentários e não grava cópia no disco", () =>
+    Effect.gen(function* () {
+      const arquivo = gravar("sem-copia.docx", ppcSintetico());
+      const etapas: string[] = [];
+      const ok = yield* RevisorPpc.RevisorPpc.pipe(
+        Effect.flatMap((revisor) =>
+          revisor.revisarArquivo({
+            arquivo,
+            gravar: false,
+            aoEtapa: (etapa) => etapas.push(etapa),
+          }),
+        ),
+        Effect.provide(RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao))),
+      );
+      assert.isNull(ok.arquivoComentado);
+      assert.strictEqual(ok.revisao.conferidos, 12);
+      assert.deepStrictEqual(etapas, ["lendo", "identificando", "conferindo"]);
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, "sem-copia - revisão prévia (Simplifica IF).docx")));
     }),
   );
 });
@@ -251,7 +272,10 @@ layer(NodeServices.layer, { excludeTestServices: true })("uma revisão por vez",
       const [primeira, segunda] = yield* Effect.gen(function* () {
         const revisor = yield* RevisorPpc.RevisorPpc;
         return yield* Effect.all(
-          [Effect.result(revisor.revisar({ arquivo })), Effect.result(revisor.revisar({ arquivo }))],
+          [
+            Effect.result(revisor.revisarArquivo({ arquivo, gravar: true, seOcupada: "recusar" })),
+            Effect.result(revisor.revisarArquivo({ arquivo, gravar: true, seOcupada: "recusar" })),
+          ],
           {
             concurrency: 2,
           },

@@ -71,8 +71,7 @@ import * as TextosAnexos from "./textos-anexos/TextosAnexos.ts";
 import * as ListaViva from "./revisao-ppc/ListaViva.ts";
 import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
 import * as CopiasComentadas from "./persistencia/CopiasComentadas.ts";
-import * as Listas from "./persistencia/Listas.ts";
-import * as Revisoes from "./persistencia/Revisoes.ts";
+import * as RevisoesPpc from "./persistencia/RevisoesPpc.ts";
 
 export interface Opcoes {
   /** O `kb.sqlite` servido pelo MCP e pela leitura. */
@@ -170,7 +169,7 @@ const servidorOcupado = Effect.gen(function* () {
   return Effect.gen(function* () {
     if (yield* revisor.ocupada) return true;
     if (yield* pastas.emAndamento) return true;
-    if ((yield* ia.listar).some((revisao) => revisao.situacao === "em_andamento")) return true;
+    if (yield* ia.ocupada) return true;
     return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
   });
 });
@@ -347,8 +346,7 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(layerPastas(opcoes)),
     Layer.provideMerge(ListaViva.layer(opcoes.listaViva)),
     Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
-    Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
-    Layer.provideMerge(Listas.layer.pipe(Layer.provide(banco))),
+    Layer.provideMerge(RevisoesPpc.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(RevisorPpc.layer(opcoes.revisaoPpc)),
     Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: opcoes.tokenDesktop !== undefined })),

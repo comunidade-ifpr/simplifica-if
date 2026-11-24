@@ -971,6 +971,28 @@ export function revisarMarkdown(
 }
 
 /**
+ * Converte e revisa o texto (`revisarMarkdown`) sem comentar o `.docx` (pula `comentarDocx`,
+ * `textosDeCaixas` e a recompactação do ZIP). Lança `ErroDocx` (mensagem em português) para arquivo
+ * inválido.
+ */
+export function revisarDocxSemComentar(
+  bytes: Uint8Array,
+  nomeDoArquivo: string,
+  base: BaseRevisaoPrevia,
+  opcoes: Pick<OpcoesRevisaoPrevia, "agora" | "ia" | "cnct" | "forma"> & {
+    aoEtapa?: ((etapa: Exclude<EtapaRevisaoPrevia, "gravando">) => void) | undefined;
+  },
+): Omit<RevisaoPrevia, "docx"> {
+  const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
+  const { itens: _, temasForaDaRevisao: __, ...revisado } = revisarMarkdown(conversao.markdown, base, opcoes);
+  return {
+    ...revisado,
+    aviso: "",
+    markdown: conversao.markdown,
+  };
+}
+
+/**
  * Converte, revisa o texto (`revisarMarkdown`) e comenta. Lança `ErroDocx` (mensagem em português) para
  * arquivo inválido.
  */

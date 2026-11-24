@@ -5,10 +5,10 @@
  * 1. **Preparar** (`prepararIa`, sem IA nem o `.docx`): a leitura nasce de uma lista viva, e o
  *    `preparo.ts` monta os blocos (lotes S, temas J, transversais) e o texto de cada pedido sobre o texto
  *    e o curso que a lista guarda, com o contexto do `kb.sqlite`; a estimativa sai do tamanho real dos
- *    pedidos. O plano fica gravado (`Revisoes`), e preparar de novo a mesma lista substitui a preparada.
+ *    pedidos. O plano fica gravado (`RevisoesPpc`), e preparar de novo a mesma lista substitui a preparada.
  * 2. **Executar** (`iniciarIa`): a revisão se liga à lista dela (uma leitura por lista), e os
  *    blocos pendentes vão ao `julgamento.ts`, `PARALELISMO` por vez; cada um se grava ao terminar e é
- *    mesclado na mesma lista (`Listas.mesclarIa`, sob `Listas.exclusivo`), com a montagem leve do
+ *    mesclado na mesma lista (`RevisoesPpc.mesclarIa`, sob `comTravaDaLista`), com a montagem leve do
  *    `RevisorPpc` (sem Worker e sem reler o `.docx`): a pessoa vê os achados de cada bloco pronto, e a
  *    pausa não os prende no banco. As transversais vão por último, sobre os resumos dos temas. Uma
  *    `PausaRevisao` de limite de taxa ou de cota para tudo na hora; a de tempo esgotado ou de provider
@@ -18,7 +18,7 @@
  *    entre o bloco e a mesclagem). Uma revisão `em_andamento` de uma execução anterior do servidor (app
  *    fechado) aparece como `pausada`.
  * 3. **Concluir**: o último bloco mesclado, a cópia comentada da mesma lista é regravada com os
- *    resultados da IA (`copia-lista.ts`), e cada pendência guarda onde ficou no documento. O conteúdo da
+ *    resultados da IA (`regravarCopia`), e cada pendência guarda onde ficou no documento. O conteúdo da
  *    lista (sha256) tem de ser o da preparação: depois de "Enviar a versão corrigida", a leitura
  *    preparada sobre o texto anterior não começa.
  *
@@ -33,6 +33,7 @@ import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
+import * as Hex from "effect/encoding/Hex";
 import * as FileSystem from "effect/FileSystem";
 import * as FiberMap from "effect/FiberMap";
 import * as Layer from "effect/Layer";
@@ -58,12 +59,10 @@ import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
 import { chavePendencia, type EntradaIa, estadoDaIa } from "@simplifica-if/ppc/revisao-previa";
-import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
-import * as Revisoes from "../persistencia/Revisoes.ts";
+import * as RevisoesPpc from "../persistencia/RevisoesPpc.ts";
+import { locaisNoDocumento, marcasDaCopia } from "./arquivo-novo.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
-import { cursoEscolhido, regravarCopia } from "./copia-lista.ts";
-import { novoNonce } from "./criar-lista.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { cursoEmTexto, type PlanoRevisaoIa, preparar } from "./preparo.ts";
 
@@ -74,6 +73,51 @@ export const PARALELISMO = 2;
  * (thinking), e um limite curto sobre o texto recebido pausaria à toa quem pensa antes de responder.
  */
 export const TEMPO_TURNO = Duration.minutes(6);
+
+/** Um nonce novo, de 8 bytes em hexadecimal: as marcas de uma ação com IA não valem na seguinte. */
+export const novoNonce = (aleatorio: SecureRandom.SecureRandom["Service"]) =>
+  aleatorio.randomBytes(8).pipe(Effect.map(Hex.encode));
+
+/** O curso que a pessoa escolheu ("Qual é o curso?"); o identificado no documento é o documento que diz. */
+export const cursoEscolhido = (r: RevisoesPpc.RegistroLista): { cnct?: string; forma?: string } =>
+  r.resultado.curso.origem !== "pessoa"
+    ? {}
+    : { ...(r.cnct === null ? {} : { cnct: r.cnct }), ...(r.forma === null ? {} : { forma: r.forma }) };
+
+/**
+ * A cópia comentada do arquivo da lista, com a situação de cada pendência e os resultados da IA; o
+ * resultado da lista passa a ser o dela, e cada pendência, o lugar em que ficou no documento. Só regrava
+ * se a lista mudou desde a última cópia ou se a cópia sumiu. Quem chama segura `comTravaDaLista`.
+ */
+export const regravarCopia = Effect.fn("ListaViva.regravarCopia")(function* (
+  registro: RevisoesPpc.RegistroLista,
+  deps: {
+    readonly persistencia: RevisoesPpc.RevisoesPpc["Service"];
+    readonly revisor: RevisorPpc.RevisorPpc["Service"];
+    readonly fs: FileSystem.FileSystem;
+  },
+) {
+  const { persistencia, revisor, fs } = deps;
+  const id = registro.id;
+  const copia = registro.resultado.arquivoComentado;
+  const existe = copia !== "" && (yield* fs.exists(copia).pipe(Effect.orElseSucceed(() => false)));
+  if (registro.versaoCopia === registro.versao && existe) return;
+  const situacoes = marcasDaCopia(yield* persistencia.pendencias(id), yield* persistencia.eventos(id));
+  const final = yield* revisor.revisarArquivo({
+    arquivo: registro.arquivo,
+    gravar: true,
+    sha256: registro.sha256,
+    ...cursoEscolhido(registro),
+    ...(registro.resultadosIa === null ? {} : { ia: registro.resultadosIa }),
+    situacoes,
+  });
+  yield* persistencia.trocarResultado(
+    id,
+    { ...RevisorPpc.resultadoParaInterface(registro.arquivo, final), lista: id },
+    registro.versao,
+    locaisNoDocumento(final.revisao.pendencias),
+  );
+});
 
 export interface EntradaPreparoIa {
   /** A lista viva cujo texto e curso a leitura confere. */
@@ -91,6 +135,8 @@ export class RevisaoIa extends Context.Service<
     readonly pausar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly acompanhar: (id: string) => Stream.Stream<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly listar: Effect.Effect<ReadonlyArray<EstadoRevisaoIa>>;
+    /** Há alguma revisão com IA rodando agora? O(1), sem ler o banco nem disparar limpeza. */
+    readonly ocupada: Effect.Effect<boolean>;
     /**
      * Para a execução, se houver, e apaga a revisão inteira (plano com o texto do PPC, blocos,
      * tentativas). A lista fica, com os resultados já mesclados ("Encerrar leitura por aqui").
@@ -141,7 +187,7 @@ interface Andamento {
 
 /** Os blocos gravados e o uso, como o banco os tem: relidos só quando um bloco termina ou uma tentativa se grava. */
 interface Gravados {
-  readonly blocos: ReadonlyMap<string, Revisoes.RegistroBlocoIa>;
+  readonly blocos: ReadonlyMap<string, RevisoesPpc.RegistroBlocoIa>;
   readonly uso: UsoRevisaoIa;
 }
 
@@ -179,18 +225,17 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const paralelismo = Math.max(1, opcoes.paralelismo ?? PARALELISMO);
   const tempoTurno = opcoes.tempoTurno ?? TEMPO_TURNO;
   const criterio = opcoes.criterio ?? CRITERIO_PADRAO;
-  const revisoes = yield* Revisoes.Revisoes;
+  const persistencia = yield* RevisoesPpc.RevisoesPpc;
   const revisor = yield* RevisorPpc.RevisorPpc;
-  const listas = yield* Listas.Listas;
+  const fs = yield* FileSystem.FileSystem;
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
-  const contextoCopia = yield* Effect.context<Listas.Listas | RevisorPpc.RevisorPpc | FileSystem.FileSystem>();
   const aleatorio = yield* SecureRandom.SecureRandom;
   const execucoes = yield* FiberMap.make<string>();
   const expirar = DateTime.now.pipe(
     Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_PREPARADA }))),
-    Effect.flatMap(revisoes.expirarPreparadas),
+    Effect.flatMap(persistencia.expirarRevisoesPreparadas),
   );
   const mudancas = yield* PubSub.unbounded<string>();
   // Só em memória: depois de reiniciar, nada está em andamento.
@@ -206,19 +251,22 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   // Uma revisão em andamento numa execução anterior do servidor ficou parada no meio.
   // Revisões preparadas e nunca iniciadas guardam o texto do PPC à toa: expiram em `DIAS_PREPARADA`.
   yield* expirar;
-  for (const id of yield* revisoes.emAndamento)
-    yield* revisoes.alterar(id, { situacao: "pausada", motivo: MOTIVO_APP_FECHADO });
+  for (const id of yield* persistencia.revisoesEmAndamento)
+    yield* persistencia.alterarRevisao(id, { situacao: "pausada", motivo: MOTIVO_APP_FECHADO });
 
   const falha = (arquivo: string, motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
 
+  const comTrava = <A, E, R>(registro: RevisoesPpc.RegistroRevisaoIa<unknown>, efeito: Effect.Effect<A, E, R>) =>
+    registro.lista === null ? efeito : persistencia.comTravaDaLista(registro.lista, efeito);
+
   const buscar = (id: string) =>
-    revisoes
-      .buscar(id)
+    persistencia
+      .buscarRevisao(id)
       .pipe(
         Effect.flatMap((r) =>
           r === null
             ? Effect.fail(falha("", "Esta revisão não existe mais."))
-            : Effect.succeed(r as Revisoes.RegistroRevisaoIa<PlanoRevisaoIa | null>),
+            : Effect.succeed(r as RevisoesPpc.RegistroRevisaoIa<PlanoRevisaoIa | null>),
         ),
       );
 
@@ -226,7 +274,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const resumoDe = Effect.fn("RevisaoIa.resumo")(function* (id: string) {
     const guardado = resumos.get(id);
     if (guardado !== undefined) return guardado;
-    const plano = (yield* revisoes.buscar(id))?.plano as PlanoRevisaoIa | null | undefined;
+    const plano = (yield* persistencia.buscarRevisao(id))?.plano as PlanoRevisaoIa | null | undefined;
     if (plano === null || plano === undefined) return [];
     const resumo = resumoDoPlano(plano);
     resumos.set(id, resumo);
@@ -238,16 +286,16 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const guardado = gravadosEmCache.get(id);
     if (guardado !== undefined) return guardado;
     const gravados: Gravados = {
-      blocos: new Map((yield* revisoes.blocos(id)).map((b) => [b.bloco, b])),
+      blocos: new Map((yield* persistencia.blocos(id)).map((b) => [b.bloco, b])),
       // O uso é o de todas as tentativas, gravadas uma a uma: inclui as dos blocos que não terminaram.
-      uso: yield* revisoes.usoTotal(id),
+      uso: yield* persistencia.usoTotalRevisao(id),
     };
     if (andamentos.has(id)) gravadosEmCache.set(id, gravados);
     return gravados;
   });
 
   const estado = Effect.fn("RevisaoIa.estado")(function* (
-    registro: Revisoes.RegistroRevisaoIa<unknown>,
+    registro: RevisoesPpc.RegistroRevisaoIa<unknown>,
     resumo: ReadonlyArray<ResumoBloco>,
   ) {
     const { blocos: gravados, uso } = yield* gravadosDe(registro.id);
@@ -295,7 +343,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
   /** O estado agora, sem o plano: a linha da revisão, o resumo em memória e os gravados em cache. */
   const estadoPorId = Effect.fn("RevisaoIa.estadoPorId")(function* (id: string) {
-    const registro = yield* revisoes.resumo(id);
+    const registro = yield* persistencia.resumoRevisao(id);
     if (registro === null) return yield* falha("", "Esta revisão não existe mais.");
     return yield* estado(registro, yield* resumoDe(id));
   });
@@ -305,7 +353,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
   const prepararRevisao = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparoIa) {
     yield* exigirAviso;
-    const lista = yield* listas.buscar(entrada.lista);
+    const lista = yield* persistencia.buscarLista(entrada.lista);
     if (lista === null) return yield* falha("", "Esta lista de pendências não existe mais. Revise o PPC de novo.");
     const nonce = yield* novoNonce(aleatorio);
     const plano = yield* preparar({
@@ -329,13 +377,13 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       paralelismo,
     );
     // Preparar de novo a mesma lista substitui a preparada anterior (nunca iniciada).
-    for (const antiga of yield* revisoes.daLista(lista.id)) {
+    for (const antiga of yield* persistencia.revisoesDaLista(lista.id)) {
       if (antiga.situacao !== "preparada") continue;
-      yield* revisoes.apagar(antiga.id);
+      yield* persistencia.apagarRevisao(antiga.id);
       resumos.delete(antiga.id);
     }
     const id = `revisao-${yield* aleatorio.uuidV4()}`;
-    yield* revisoes.criar({
+    yield* persistencia.criarRevisao({
       id,
       lista: lista.id,
       arquivo: lista.arquivo,
@@ -357,8 +405,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
    * A lista da revisão, com o conteúdo da preparação, ou a falha que para a leitura: a lista saiu (outro
    * curso, outra revisão do arquivo) ou passou a outra versão do arquivo.
    */
-  const listaDa = Effect.fn("RevisaoIa.listaDa")(function* (registro: Revisoes.RegistroRevisaoIa<unknown>) {
-    const lista = registro.lista === null ? null : yield* listas.buscar(registro.lista);
+  const listaDa = Effect.fn("RevisaoIa.listaDa")(function* (registro: RevisoesPpc.RegistroRevisaoIa<unknown>) {
+    const lista = registro.lista === null ? null : yield* persistencia.buscarLista(registro.lista);
     if (lista === null || lista.sha256 !== registro.sha256) return yield* falha(registro.arquivo, SEM_LISTA);
     return lista;
   });
@@ -366,10 +414,10 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   /**
    * Os blocos prontos mesclados na lista da revisão, sempre na mesma lista: o resultado e os resultados
    * da IA refeitos com todos os blocos prontos (a montagem leve do `RevisorPpc`), e só as pendências
-   * novas inseridas. Idempotente. Quem chama segura `Listas.exclusivo`. Devolve a lista.
+   * novas inseridas. Idempotente. Quem chama segura `comTravaDaLista`. Devolve a lista.
    */
   const mesclar = Effect.fn("RevisaoIa.mesclar")(function* (
-    registro: Revisoes.RegistroRevisaoIa<unknown>,
+    registro: RevisoesPpc.RegistroRevisaoIa<unknown>,
     plano: PlanoRevisaoIa,
     prontos: ReadonlyMap<string, ResultadoBloco>,
     completa: boolean,
@@ -387,7 +435,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       arquivoComentado: lista.resultado.arquivoComentado,
       ia,
     });
-    const atuais = yield* listas.pendencias(lista.id);
+    const atuais = yield* persistencia.pendencias(lista.id);
     const existentes = new Set(atuais.map((p) => p.chave));
     const chavesResultado = new Set<string>();
     const novas: { chave: string; pendencia: PendenciaRevisao }[] = [];
@@ -403,7 +451,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const obsoletas = atuais
       .filter((p) => p.pendencia.origem === "ia" && !chavesResultado.has(p.chave))
       .map((p) => p.chave);
-    yield* listas.mesclarIa(
+    yield* persistencia.mesclarIa(
       lista.id,
       {
         resultado: { ...resultado, lista: lista.id },
@@ -442,10 +490,12 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     andamentos.set(id, andando);
     gravadosEmCache.delete(id);
     pausados.delete(id);
-    const prontos = new Map((yield* revisoes.blocos(id)).map((b) => [b.bloco, b.resultado as ResultadoBloco] as const));
+    const prontos = new Map(
+      (yield* persistencia.blocos(id)).map((b) => [b.bloco, b.resultado as ResultadoBloco] as const),
+    );
     const total = plano.blocos.length;
     // O app pode ter fechado entre gravar um bloco e mesclá-lo: o que já estava pronto entra de novo.
-    if (prontos.size > 0) yield* listas.exclusivo(mesclar(registro, plano, prontos, prontos.size === total));
+    if (prontos.size > 0) yield* comTrava(registro, mesclar(registro, plano, prontos, prontos.size === total));
     /** A pausa que não interrompe o bloco irmão (tempo esgotado, provider caído): nada novo começa. */
     let pausa: PausaRevisao | null = null;
 
@@ -466,12 +516,12 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           criterio: plano.criterio ?? CRITERIO_PADRAO,
           revisaoHumana: teveTextoParaIa(plano.markdown),
           registrarTentativa: (t) =>
-            revisoes
+            persistencia
               .gravarTentativa(id, bloco.id, t)
               .pipe(Effect.andThen(Effect.sync(() => gravadosEmCache.delete(id)))),
           aoEtapa: (etapa) => mudarEtapa(id, bloco.id, etapa),
         });
-        yield* revisoes.gravarBloco(id, {
+        yield* persistencia.gravarBloco(id, {
           bloco: bloco.id,
           resultado: julgado.resultado,
           uso: julgado.uso,
@@ -480,7 +530,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         prontos.set(bloco.id, julgado.resultado);
         gravadosEmCache.delete(id);
         // Os achados do bloco já na lista; o último bloco é mesclado de novo na conclusão.
-        if (prontos.size < total) yield* listas.exclusivo(mesclar(registro, plano, prontos, false));
+        if (prontos.size < total) yield* comTrava(registro, mesclar(registro, plano, prontos, false));
       },
       (efeito, bloco) =>
         efeito.pipe(
@@ -538,29 +588,31 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     }
 
     // Concluir na mesma lista: o último bloco mesclado e a cópia comentada regravada com a IA.
-    const resultado: ResultadoRevisaoPpc = yield* listas.exclusivo(
+    const resultado: ResultadoRevisaoPpc = yield* comTrava(
+      registro,
       Effect.gen(function* () {
         const listaId = yield* mesclar(registro, plano, prontos, true);
-        const lista = yield* listas.buscar(listaId);
+        const lista = yield* persistencia.buscarLista(listaId);
         if (lista === null) return yield* falha(registro.arquivo, SEM_LISTA);
-        yield* regravarCopia(lista).pipe(Effect.provideContext(contextoCopia));
-        return (yield* listas.buscar(listaId))?.resultado ?? lista.resultado;
+        yield* regravarCopia(lista, { persistencia, revisor, fs });
+        return (yield* persistencia.buscarLista(listaId))?.resultado ?? lista.resultado;
       }),
     );
-    yield* revisoes.alterar(id, { situacao: "concluida", resultado });
+    yield* persistencia.alterarRevisao(id, { situacao: "concluida", resultado });
   });
 
   const executarComPausa = (id: string) =>
     executar(id).pipe(
       Effect.catchTags({
         PausaRevisao: (pausa: PausaRevisao) =>
-          revisoes.alterar(id, { situacao: "pausada", motivo: pausa.motivo, limite: pausa.limite }),
-        FalhaRevisaoPpc: (erro: FalhaRevisaoPpc) => revisoes.alterar(id, { situacao: "falhou", motivo: erro.motivo }),
+          persistencia.alterarRevisao(id, { situacao: "pausada", motivo: pausa.motivo, limite: pausa.limite }),
+        FalhaRevisaoPpc: (erro: FalhaRevisaoPpc) =>
+          persistencia.alterarRevisao(id, { situacao: "falhou", motivo: erro.motivo }),
       }),
       Effect.catchCause((causa) =>
         Effect.logError("revisão com IA: defeito", causa).pipe(
           Effect.andThen(
-            revisoes.alterar(id, {
+            persistencia.alterarRevisao(id, {
               situacao: "pausada",
               motivo:
                 "A revisão parou por um erro interno do Simplifica IF. O que já foi revisado está guardado; tente retomar.",
@@ -575,17 +627,17 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
    * Uma leitura com IA por lista: liga a revisão à lista dela, ou recusa se a lista já tem outra leitura
    * por terminar (em andamento ou pausada).
    */
-  const ligarALista = Effect.fn("RevisaoIa.ligarALista")(function* (registro: Revisoes.RegistroRevisaoIa<unknown>) {
+  const ligarALista = Effect.fn("RevisaoIa.ligarALista")(function* (registro: RevisoesPpc.RegistroRevisaoIa<unknown>) {
     const lista = yield* listaDa(registro);
     if (lista.revisao !== null && lista.revisao !== registro.id) {
-      const outra = yield* revisoes.resumo(lista.revisao);
+      const outra = yield* persistencia.resumoRevisao(lista.revisao);
       if (outra !== null && outra.situacao !== "concluida" && outra.situacao !== "falhou")
         return yield* falha(
           registro.arquivo,
           "Já há uma conferência com IA deste PPC por terminar. Retome-a ou encerre-a antes de começar outra.",
         );
     }
-    yield* listas.ligarRevisao(lista.id, registro.id, registro.provider, registro.modelo);
+    yield* persistencia.ligarRevisao(lista.id, registro.id, registro.provider, registro.modelo);
   });
 
   const iniciar = Effect.fn("RevisaoIa.iniciar")(function* (id: string) {
@@ -599,8 +651,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* revisor.exigirLiberado(registro.arquivo);
     if (registro.plano === null)
       return yield* falha(registro.arquivo, "Esta revisão não tem plano. Prepare-a de novo.");
-    yield* listas.exclusivo(ligarALista(registro));
-    yield* revisoes.alterar(id, { situacao: "em_andamento" });
+    yield* comTrava(registro, ligarALista(registro));
+    yield* persistencia.alterarRevisao(id, { situacao: "em_andamento" });
     // A revisão roda além do pedido que a iniciou: abre o próprio trace.
     yield* FiberMap.run(
       execucoes,
@@ -613,12 +665,13 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   });
 
   const pausar = Effect.fn("RevisaoIa.pausar")(function* (id: string) {
-    const registro = yield* revisoes.resumo(id);
+    const registro = yield* persistencia.resumoRevisao(id);
     if (registro === null) return yield* falha("", "Esta revisão não existe mais.");
     if (registro.situacao !== "em_andamento") return yield* estadoPorId(id);
     yield* FiberMap.remove(execucoes, id);
     pausados.delete(id);
-    yield* revisoes.alterar(id, { situacao: "pausada", motivo: MOTIVO_PAUSA });
+    // Guarda em SQL (`WHERE situacao = 'em_andamento'`): não sobrescreve `concluida` se o fiber terminou antes.
+    yield* persistencia.pausarRevisaoSeEmAndamento(id, MOTIVO_PAUSA);
     yield* avisar(id);
     return yield* estadoPorId(id);
   });
@@ -633,8 +686,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         const seguintes = Stream.fromSubscription(inscricao).pipe(
           Stream.filter((alterada) => alterada === id),
           Stream.mapEffect((): Effect.Effect<EstadoRevisaoIa | null> =>
-            revisoes
-              .resumo(id)
+            persistencia
+              .resumoRevisao(id)
               .pipe(
                 Effect.flatMap((registro) =>
                   registro === null
@@ -653,20 +706,24 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       }),
     );
 
-  const listar = revisoes.listar.pipe(
-    Effect.flatMap((linhas) => Effect.forEach(linhas, (r) => estado(r, resumos.get(r.id) ?? []))),
+  const listar = persistencia.listarRevisoes.pipe(
+    Effect.flatMap((linhas) =>
+      Effect.forEach(linhas, (r) => resumoDe(r.id).pipe(Effect.flatMap((resumo) => estado(r, resumo)))),
+    ),
   );
+
+  const ocupada = FiberMap.size(execucoes).pipe(Effect.map((n) => n > 0));
 
   const apagar = Effect.fn("RevisaoIa.apagar")(function* (id: string) {
     yield* FiberMap.remove(execucoes, id);
-    yield* revisoes.apagar(id);
+    yield* persistencia.apagarRevisao(id);
     resumos.delete(id);
     pausados.delete(id);
     yield* avisar(id);
   });
 
   const apagarOrfas = Effect.gen(function* () {
-    for (const id of yield* revisoes.orfas) yield* apagar(id);
+    for (const id of yield* persistencia.revisoesOrfas) yield* apagar(id);
   }).pipe(Effect.withSpan("RevisaoIa.apagarOrfas"));
 
   yield* apagarOrfas;
@@ -677,13 +734,14 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     pausar,
     acompanhar,
     listar: expirar.pipe(Effect.andThen(apagarOrfas), Effect.andThen(listar)),
+    ocupada,
     apagar,
     apagarOrfas,
   });
 });
 
 /**
- * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `Revisoes`, as `Listas`, as `Preferencias`, o
+ * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `RevisoesPpc`, as `Preferencias`, o
  * `SecureRandom`, as `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

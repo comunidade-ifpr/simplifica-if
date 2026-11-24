@@ -90,8 +90,10 @@ export interface EntradaRevisarArquivo extends EntradaRevisao {
   readonly ia?: EntradaIa;
   /** A situação de cada pendência na lista viva (etapa 5b): a cópia comentada reflete o estado. */
   readonly situacoes?: Record<string, MarcaPendencia>;
-  /** Grava a cópia comentada ao lado do original. */
+  /** Grava a cópia comentada ao lado do original (quando falso, pula os comentários no Worker). */
   readonly gravar: boolean;
+  /** O que fazer se outra revisão já estiver rodando: `"esperar"` (padrão) ou `"recusar"`. */
+  readonly seOcupada?: "esperar" | "recusar";
   /** Recusa o arquivo se o conteúdo mudou desde a preparação. */
   readonly sha256?: string;
   readonly aoEtapa?: AoEtapa;
@@ -112,15 +114,9 @@ export interface EntradaMontagem {
 export class RevisorPpc extends Context.Service<
   RevisorPpc,
   {
-    readonly revisar: (entrada: EntradaRevisao) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
-    /** O mesmo `revisar`, com o Markdown e as linhas da triagem (a lista viva guarda o texto do PPC). */
-    readonly revisarCompleto: (
-      entrada: EntradaRevisao,
-      aoEtapa?: AoEtapa,
-    ) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
-     * Converte, pré-confere e (com `ia`) junta os resultados da IA; espera a vez em vez de recusar.
-     * As mesmas conferências do `revisar` (arquivo liberado, tamanho, Worker com limites).
+     * Converte, pré-confere e (com `ia`) junta os resultados da IA; com `gravar: true`, comenta e grava a
+     * cópia ao lado do original. Confere arquivo liberado, extensão, tamanho e limites do Worker.
      */
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
@@ -381,6 +377,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
         nome: NodePath.basename(arquivo),
         base: dados,
         agora: DateTime.formatIso(yield* DateTime.now),
+        comentar: entrada.gravar,
         cnct: entrada.cnct,
         forma: entrada.forma,
         ia: entrada.ia,
@@ -391,40 +388,42 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
       falha,
       entrada.aoEtapa,
     );
-    const arquivoComentado = entrada.gravar
-      ? yield* gravarCopia(arquivo, revisao.docx).pipe(
-          Effect.provideService(CopiasComentadas.CopiasComentadas, copias),
-          Effect.tapError((erro) =>
-            Effect.logError(`revisão prévia: a cópia comentada não foi gravada: ${resumoDaFalha(erro)}`),
-          ),
-          Effect.mapError(() =>
-            falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
-          ),
-        )
-      : null;
+    const arquivoComentado =
+      entrada.gravar && revisao.docx !== null
+        ? yield* gravarCopia(arquivo, revisao.docx).pipe(
+            Effect.provideService(CopiasComentadas.CopiasComentadas, copias),
+            Effect.tapError((erro) =>
+              Effect.logError(`revisão prévia: a cópia comentada não foi gravada: ${resumoDaFalha(erro)}`),
+            ),
+            Effect.mapError(() =>
+              falha(
+                "Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação.",
+              ),
+            ),
+          )
+        : null;
     const { docx: _, ...semDocx } = revisao;
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
 
-  const revisarCompleto = (entrada: EntradaRevisao, aoEtapa?: AoEtapa) =>
-    revisarUm({ ...entrada, gravar: true, ...(aoEtapa ? { aoEtapa } : {}) }).pipe(
-      vez.withPermitsIfAvailable(1),
-      Effect.flatMap(
-        Option.match({
-          onSome: (resultado) => Effect.succeed(resultado),
-          onNone: () =>
-            Effect.fail(
-              new FalhaRevisaoPpc({
-                arquivo: entrada.arquivo,
-                motivo: "Já há uma revisão em andamento. Espere ela terminar e tente de novo.",
-              }),
-            ),
-        }),
-      ),
-    );
-  const revisar = (entrada: EntradaRevisao) =>
-    revisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
-  const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
+  const revisarArquivo = (entrada: EntradaRevisarArquivo) =>
+    entrada.seOcupada === "recusar"
+      ? revisarUm(entrada).pipe(
+          vez.withPermitsIfAvailable(1),
+          Effect.flatMap(
+            Option.match({
+              onSome: (resultado) => Effect.succeed(resultado),
+              onNone: () =>
+                Effect.fail(
+                  new FalhaRevisaoPpc({
+                    arquivo: entrada.arquivo,
+                    motivo: "Já há uma revisão em andamento. Espere ela terminar e tente de novo.",
+                  }),
+                ),
+            }),
+          ),
+        )
+      : revisarUm(entrada).pipe(vez.withPermits(1));
 
   // A parte da base dos verificadores que não depende do PPC, montada uma vez (o registro e a vigência).
   const verificacao = yield* Effect.cached(base.pipe(Effect.map((dados) => ({ dados, ...verificacaoDaBase(dados) }))));
@@ -453,7 +452,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   });
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, montar, ocupada, exigirLiberado });
+  return RevisorPpc.of({ revisarArquivo, montar, ocupada, exigirLiberado });
 });
 
 /**
