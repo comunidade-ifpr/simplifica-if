@@ -24,7 +24,7 @@
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
     "effect": "catalog:",
-    "fflate": "0.8.3",
+    "fflate": "catalog:",
     "vite-plus": "catalog:"
   }
 }

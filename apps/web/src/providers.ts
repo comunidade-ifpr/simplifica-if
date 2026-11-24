@@ -83,9 +83,7 @@ export function tamanhoBaixado(estado: EstadoInstalacao): string {
 
 /**
  * As mensagens de progresso da instalação e do login que vêm do código copiado do T3 (em
- * `packages/motor/src/t3`, que mantém o inglês de origem para a sincronização), em português. O teste
- * `test/mensagens-copiadas.test.ts` confere que toda frase do código copiado cai aqui ou num tipo do
- * classificador do motor, e acusa a frase nova numa atualização do upstream.
+ * `packages/motor/src/t3`, que mantém o inglês de origem para a sincronização), em português.
  */
 const MENSAGENS_MOTOR: Readonly<Record<string, string>> = {
   "Downloading Codex.": "Baixando o Codex.",

@@ -34,8 +34,6 @@ export const CAMINHOS = {
   fichas: `${REVISAO_PPC}/fichas`,
   topicosFichas: `${REVISAO_PPC}/topicos-fichas.json`,
   marcos: `${REVISAO_PPC}/marcos-normativos.json`,
-  schemasRevisaoPpc: `${REVISAO_PPC}/schemas`,
-  mapaFichas: `${REVISAO_PPC}/mapa-fichas.md`,
   skills: ".agents/skills",
   dadosKb: DADOS_KB,
   sinonimos: `${DADOS_KB}/sinonimos.yaml`,

@@ -9,10 +9,8 @@ O kb compila as fichas, os tópicos e os marcos no `kb.sqlite` (`pnpm kb:compila
 - `fichas/`: um JSON por ficha (`ct-*.json`), com pergunta, rubrica, evidências, referências normativas, estados permitidos e o modo de execução no app.
 - `topicos-fichas.json`: a taxonomia semântica que organiza as fichas por tema, sem depender da numeração do PPC. Cada tópico lista as suas fichas; os tipos de seção do PPC de cada tópico estão em `packages/kb/dados/topicos-secoes.yaml`.
 - `marcos-normativos.json`: os temas normativos (DCN da EPT, DCNEM, EJA, assistência estudantil). Cada um traz a identificação (`id`, `tema`, `linha` com os atos do tema por ID canônico, `aplica_a`, fichas), a regra de transição e a orientação de análise. A norma vigente, as substituídas, as antecessoras e os dispositivos revogados são derivados de `base-conhecimento/relacoes.yaml` na leitura.
-- `schemas/`: os JSON Schemas da ficha e dos marcos, gerados do Effect Schema de `scripts/base/revisao-ppc/esquemas.ts`.
-- `mapa-fichas.md`: as fichas por tópico e por modo de execução, e as normas que cada ficha cita. É gerado.
 
-`schemas/` e `mapa-fichas.md` saem de `node scripts/gerar_base.ts` e são conferidos por `gerar_base.ts --check` e `validar_base.ts`. Não edite esses arquivos à mão.
+Os contratos da ficha e dos marcos vivem em Effect Schema em `scripts/base/revisao-ppc/esquemas.ts` e são conferidos por `validar_base.ts`.
 
 ## Execução no app (D, S, J)
 
@@ -22,9 +20,9 @@ Cada ficha declara `execucao: { modo, justificativa }`. A justificativa diz o qu
 - **S**: o código acha o trecho pelas `consultas` e `ancoras_semanticas` da ficha e decide a aplicabilidade; a IA confirma numa resposta curta.
 - **J**: a IA julga as seções do tema, que vêm dos `topicos_tematicos` da ficha. As de `tipo_escopo: transversal` vão numa sessão no fim, sobre os resumos dos temas e o recorte das seções dos tópicos delas.
 
-O `mapa-fichas.md` traz a contagem por modo. Os verificadores, o estado `a_conferir` de tudo o que depende de extração e a precisão medida nos PPCs técnicos da base estão no [README do `packages/ppc`](../../packages/ppc/README.md#pré-conferência-sem-ia-fichas-d) e em [`PRECISAO.md`](../../packages/ppc/PRECISAO.md). Passar uma ficha para D é uma mudança versionada: o verificador, o registro, os casos de teste e a medição na base entram no mesmo commit.
+Os verificadores, o estado `a_conferir` de tudo o que depende de extração e a precisão medida nos PPCs técnicos da base estão no [README do `packages/ppc`](../../packages/ppc/README.md#pré-conferência-sem-ia-fichas-d). Passar uma ficha para D é uma mudança versionada: o verificador, o registro e os casos de teste entram no mesmo commit.
 
-O contrato de resposta da IA é conferido em código (`packages/ppc/src/revisao-ia/`): `ficha_id`, `estado` entre os `estados_permitidos` da ficha, `confianca`, `justificativa`, `evidencias[].trecho`, `lacunas`, `revisao_humana_obrigatoria`, `o_que_fazer` e `fontes` com os IDs canônicos. Por isso, editar `pergunta`, `rubrica`, `boa_evidencia`, `ma_evidencia`, `escalonar_quando`, `consultas`, `ancoras_semanticas` ou `topicos_tematicos` de uma ficha S ou J muda o que a IA recebe no app. Mudar o `modo` muda o bloco em que a ficha vai.
+O contrato de resposta da IA é conferido em código (`packages/ppc/src/revisao-ia/`): `ficha_id`, `estado` entre os `estados_permitidos` da ficha, `confianca`, `justificativa`, `evidencias[].trecho`, `lacunas`, `o_que_fazer` e `fontes` com os IDs canônicos. Por isso, editar `pergunta`, `rubrica`, `boa_evidencia`, `ma_evidencia`, `escalonar_quando`, `consultas`, `ancoras_semanticas` ou `topicos_tematicos` de uma ficha S ou J muda o que a IA recebe no app. Mudar o `modo` muda o bloco em que a ficha vai.
 
 ### Coerência entre seções
 
@@ -112,10 +110,9 @@ Quando uma norma da base for revogada, rode o validador: ele lista as fichas a r
 A partir da raiz do repositório, depois de alterar fichas, tópicos, marcos ou o contrato da ficha:
 
 ```bash
-node scripts/gerar_base.ts        # schemas/ e mapa-fichas.md
 node scripts/validar_base.ts
 pnpm exec vp test run scripts/base/revisao-ppc
 pnpm kb:compilar
 ```
 
-Mudança no modo de uma ficha ou num verificador pede também `node packages/ppc/scripts/pre-conferencia.ts --base --check`.
+Mudança no modo de uma ficha ou num verificador pode ser medida na base com `node packages/ppc/scripts/pre-conferencia.ts --base`.

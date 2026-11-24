@@ -22,7 +22,7 @@
   "dependencies": {
     "@simplifica-if/atualizacao": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
-    "yaml": "2.9.1"
+    "yaml": "catalog:"
   },
   "peerDependencies": {
     "@effect/platform-node": "catalog:",

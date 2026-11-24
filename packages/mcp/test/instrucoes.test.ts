@@ -1,19 +1,14 @@
 /**
- * Instruções do servidor (T5): o módulo gerado corresponde a `instrucoes.md` (`pnpm mcp:instrucoes
- * --check`), o texto cabe em 400 palavras e cobre o que a especificação pede (seção "Instruções do
- * servidor"): todas as ferramentas, por intenção; citação com link `ifpr://` e texto literal; os selos
- * norma ainda não vigente e `extraido`; PPC como exemplo, não norma; e quando usar o `pacote_contexto`.
+ * Instruções do servidor (T5): o texto cabe em 400 palavras e cobre o que a especificação pede
+ * (seção "Instruções do servidor"): todas as ferramentas, por intenção; citação com link `ifpr://`
+ * e texto literal; os selos norma ainda não vigente e `extraido`; PPC como exemplo, não norma; e
+ * quando usar o `pacote_contexto`.
  */
 import { describe, expect, test } from "vite-plus/test";
-import { instrucoesAtualizadas } from "../scripts/gerar-instrucoes.ts";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
 import { INSTRUCOES } from "../src/servidor.ts";
 
 describe("instruções do servidor", () => {
-  test("src/instrucoes.gerado.ts corresponde a instrucoes.md (rode pnpm mcp:instrucoes)", () => {
-    expect(instrucoesAtualizadas()).toBe(true);
-  });
-
   test("no máximo 400 palavras (muitos clientes as injetam em toda conversa)", () => {
     expect(INSTRUCOES.split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(400);
   });

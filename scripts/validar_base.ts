@@ -11,10 +11,8 @@ import * as Path from "effect/Path";
 import * as Command from "effect/cli/Command";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
 import { criarCaminhos } from "./base/caminhos.ts";
-import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
 import { validarBase } from "./base/validacao.ts";
 import { validarDadosInstitucionais } from "./dados/validacao.ts";
-import { geradosRevisaoPpc } from "./base/revisao-ppc/gerados.ts";
 import { validarRevisaoPpc } from "./base/revisao-ppc/validacao.ts";
 import { sairCom } from "@simplifica-if/kb/principal";
 import { executarPrincipal } from "./principal.ts";
@@ -43,11 +41,6 @@ export const comando = Command.make(
     const dados = yield* Effect.sync(() => validarDadosInstitucionais());
     erros.push(...dados.erros);
     erros.push(...(yield* Effect.sync(() => validarRevisaoPpc())).map((erro) => `revisão de PPC: ${erro}`));
-    const geradosRevisao = yield* aplicarGerados(yield* Effect.sync(() => geradosRevisaoPpc()), {
-      modo: "verificar",
-      raiz: caminhos.raiz,
-    });
-    erros.push(...mensagensDivergencias(geradosRevisao, "node scripts/gerar_base.ts"));
     const skills = yield* validarSkillsDoApp(caminhos.raizProjeto);
     erros.push(...skills.erros);
     if (erros.length) {

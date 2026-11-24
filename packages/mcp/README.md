@@ -131,8 +131,8 @@ O pacote é Effect 4 (`effect/ai`, `effect/rpc`, `effect/cli`), sem o SDK oficia
 
 ```
 packages/mcp/
-├── instrucoes.md            # campo `instructions` do servidor, embutido em src/instrucoes.gerado.ts
 ├── src/
+│   ├── instrucoes.ts        # campo `instructions` do servidor MCP
 │   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio; `consultar`
 │   ├── kb.ts                # a CLI `kb` do checkout (pnpm kb): os comandos de consulta.ts e a curadoria do kb
 │   ├── consulta.ts          # um comando por ferramenta, derivado do JSON Schema de entrada; imprimirConsulta
@@ -186,7 +186,7 @@ Protocolo: só as duas revisões atuais do MCP, `2026-07-28` (sem sessão; o Cla
 
 ## Suítes transversais
 
-As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, sem repetir os testes por ferramenta. Elas tiram as entradas de `amostras.ts`, indexado pelo nome da ferramenta: uma ferramenta nova sem amostra quebra o `typecheck` e os testes. Os comandos da CLI `kb` são as próprias ferramentas (`src/consulta.ts`); `test/consulta.test.ts` confere a derivação dos comandos, e `testes-gabarito/kb/`, o texto, o stderr e os códigos de saída.
+As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, sem repetir os testes por ferramenta. Elas tiram as entradas de `amostras.ts`, indexado pelo nome da ferramenta: uma ferramenta nova sem amostra quebra o `typecheck` e os testes. Os comandos da CLI `kb` são as próprias ferramentas (`src/consulta.ts`); `test/consulta.test.ts` confere a derivação dos comandos.
 
 | Suíte | O que confere | Fixture | Base real |
 |---|---|---|---|
@@ -196,7 +196,7 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
 | `orcamento.test.ts` | Nenhum texto acima do teto da ferramenta. A paginação percorrida com o cursor tem mais de uma página e soma o total, sem repetir item | sim | sim |
 | `determinismo.test.ts` | Dois processos em stdio, com as mesmas chamadas, dão as linhas de resposta iguais byte a byte | sim | sim |
 | `pasta-de-trabalho.test.ts` | O `pacote_contexto` com `arquivo`, pelo servidor isolado: lê o `.md` de dentro da pasta (relativo, em subpasta e absoluto) e recusa `..`, caminho absoluto de fora e link simbólico para fora, antes de ler. A pasta fica como estava | sim | — |
-| `consultar.test.ts` | O `simplifica-mcp consultar` como processo: cada amostra (menos a `etapa`) sai como o `structuredContent`, ou com código 1 e a mensagem no stderr; `--todas-as-paginas` soma o total; na base real, as chamadas de `testes-gabarito/mcp.json` | sim | sim |
+| `consultar.test.ts` | O `simplifica-mcp consultar` como processo: cada amostra (menos a `etapa`) sai como o `structuredContent`, ou com código 1 e a mensagem no stderr; `--todas-as-paginas` soma o total | sim | sim |
 | `descricoes.test.ts` | Pelo `tools/list`: título, descrição (até 600 caracteres) com a frase "Use quando…", parâmetros descritos e o tamanho do que vai ao modelo | sim | — |
 
 - **Fixture e base real:** o `pnpm test` roda a parte da fixture, que não depende do `tmp/kb.sqlite`. O `pnpm mcp:smoke` roda as suítes inteiras com `SIMPLIFICA_SMOKE=1`; o `base-real.test.ts` recompila o banco se ele faltar ou estiver velho, como a CLI `kb`.

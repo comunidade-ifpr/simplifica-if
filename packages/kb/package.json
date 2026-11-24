@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "ajv": "8.20.0",
-    "remark-gfm": "4.0.1",
+    "remark-gfm": "catalog:",
     "remark-parse": "11.0.0",
     "unified": "11.0.5",
-    "yaml": "2.9.1"
+    "yaml": "catalog:"
   },
   "peerDependencies": {
     "@effect/platform-node": "catalog:",

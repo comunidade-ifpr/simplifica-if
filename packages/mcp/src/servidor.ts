@@ -12,8 +12,7 @@ import { McpProtocol, McpServer, Toolkit } from "effect/ai";
 import type { Canal } from "@simplifica-if/kb/canal";
 import { registrarFerramentas } from "./ferramentas/registrar.ts";
 import { layerHandlers } from "./ferramentas/toolkit.ts";
-// Gerado de `instrucoes.md` (pnpm mcp:instrucoes): o texto vai embutido no bundle e no executável.
-import { INSTRUCOES } from "./instrucoes.gerado.ts";
+import { INSTRUCOES } from "./instrucoes.ts";
 import * as Leitura from "./leitura/Leitura.ts";
 import * as PastaTrabalho from "./leitura/PastaTrabalho.ts";
 import { layerRecursos } from "./recursos/recursos.ts";

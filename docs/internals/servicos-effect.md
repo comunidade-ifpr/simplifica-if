@@ -4,7 +4,7 @@ Regras para escrever e manter código com Effect 4 neste repositório: serviços
 
 Para a biblioteca, leia [`.repos/effect/LLMS.md`](../../.repos/effect/LLMS.md) e os exemplos de `.repos/effect/ai-docs/src/`; para dúvidas de API, o código em `.repos/effect/packages/effect/src/` e `.repos/effect/packages/platform/node/src/` (a tag `effect@4.1.3` do catalog). Prefira os padrões de lá aos inventados.
 
-**Origem.** Adaptado do T3 Code (MIT, Copyright (c) 2026 T3 Tools Inc.), commit `a6d91409729be6ba854b3f16adedc08847e3b24c`: `docs/internals/effect-services.md`, o checklist `.macroscope/check-run-agents/effect-service-conventions.md`, `docs/internals/testing.md` e as seções "Verifying" e "Taste" do `AGENTS.md`. A parte está registrada em [`docs/upstream-t3.md`](../upstream-t3.md); `node scripts/upstream_t3.ts diff servicos-effect` mostra o que mudou lá desde então.
+**Origem.** Adaptado do T3 Code (MIT, Copyright (c) 2026 T3 Tools Inc.), commit `a6d91409729be6ba854b3f16adedc08847e3b24c`: `docs/internals/effect-services.md`, o checklist `.macroscope/check-run-agents/effect-service-conventions.md`, `docs/internals/testing.md` e as seções "Verifying" e "Taste" do `AGENTS.md`. A parte está registrada em [`docs/upstream-t3.md`](../upstream-t3.md).
 
 **Língua.** Identificadores, mensagens de erro e comentários em português, como manda a seção "Tecnologia e língua do código" de [`docs/plans/app-simplifica-if.md`](../plans/app-simplifica-if.md#tecnologia-e-língua-do-código). A API do Effect é o que é. O código copiado do T3 (`packages/motor/src/t3`, `apps/server/src/t3`, `packages/effect-acp`, `packages/effect-codex-app-server`) fica como veio, em inglês.
 
@@ -91,7 +91,7 @@ export const layer = (opcoes: { readonly pasta: string }) => Layer.effect(PastaT
 
 ## Funções Effect e tracing
 
-- Funções reutilizáveis usam `Effect.fn("Servico.operacao")`, não uma arrow ou declaração que devolve `Effect.gen`. O nome cria o span; `Effect.fn(function* ...)` sem nome só captura a pilha. Em scripts, o prefixo é o nome do script: `Effect.fn("upstream_t3.git")`. A regra `prefer-effect-fn` confere.
+- Funções reutilizáveis usam `Effect.fn("Servico.operacao")`, não uma arrow ou declaração que devolve `Effect.gen`. O nome cria o span; `Effect.fn(function* ...)` sem nome só captura a pilha. Em scripts, o prefixo é o nome do script: `Effect.fn("gerar_base")`. A regra `prefer-effect-fn` confere.
 - `Effect.gen` fica para programas inline e para a construção de layers.
 - `Effect.fnUntraced` é escolha deliberada: trabalho por linha, por trecho de stream ou por evento, laço apertado, ou ajudante já coberto pelo span da operação. Diga o motivo ao lado. Um laço não é exceção por si: a operação de fora ainda merece span.
 - Não crie um segundo span para a mesma operação; leve nome e opções existentes para o `Effect.fn`. Atributos que dependem dos argumentos entram com `Effect.annotateCurrentSpan`.
@@ -99,7 +99,7 @@ export const layer = (opcoes: { readonly pasta: string }) => Layer.effect(PastaT
 
 ## Fronteira de runtime
 
-`NodeRuntime.runMain`, `runPromise`, `runPromiseExit` e `ManagedRuntime.make` ficam nas bordas: os pontos de entrada (`executarPrincipal` de `packages/kb/src/principal.ts`, que as CLIs `kb`, `simplifica-mcp`, `sei` e os scripts usam, e `apps/server/src/cli.ts`), a interface React e os callbacks de bibliotecas que esperam Promise. Exemplo de callback legítimo: o `canUseTool` do Agent SDK em `packages/motor/src/drivers/claude.ts`, que roda a aprovação com `Effect.runPromiseWith(servicos)`. Nunca dentro de serviço, consulta, persistência ou construtor de layer. Um adaptador nomeado pode levar um serviço a uma API de Promise, mas nenhum serviço Effect depende dele.
+`NodeRuntime.runMain`, `runPromise`, `runPromiseExit` e `ManagedRuntime.make` ficam nas bordas: os pontos de entrada (`executarPrincipal` de `packages/kb/src/principal.ts`, que as CLIs `kb`, `simplifica-mcp` e os scripts usam, e `apps/server/src/cli.ts`), a interface React e os callbacks de bibliotecas que esperam Promise. Exemplo de callback legítimo: o `canUseTool` do Agent SDK em `packages/motor/src/drivers/claude.ts`, que roda a aprovação com `Effect.runPromiseWith(servicos)`. Nunca dentro de serviço, consulta, persistência ou construtor de layer. Um adaptador nomeado pode levar um serviço a uma API de Promise, mas nenhum serviço Effect depende dele.
 
 Um recurso compartilhado se compõe uma vez, numa layer da aplicação (`apps/server/src/servidor.ts`, `packages/kb/src/layers.ts`), e se fornece a quem precisa; não crie um runtime por recurso. Quando a aquisição pode falhar e o chamador precisa de alternativa, a falha fica tipada: um erro na operação ou um serviço opcional, como o `Leitura` faz com `PastaTrabalho`.
 

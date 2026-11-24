@@ -26,12 +26,11 @@
     "@simplifica-if/motor": "workspace:*",
     "@simplifica-if/ppc": "workspace:*",
     "effect": "catalog:",
-    "fflate": "0.8.3"
+    "fflate": "catalog:"
   },
   "devDependencies": {
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
-    "exceljs": "4.4.0",
     "vite-plus": "catalog:"
   }
 }

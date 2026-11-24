@@ -11,7 +11,6 @@
     "kb": "node packages/mcp/src/kb.ts",
     "kb:compilar": "node packages/mcp/src/kb.ts compilar",
     "mcp": "node packages/mcp/src/cli.ts",
-    "mcp:instrucoes": "node packages/mcp/scripts/gerar-instrucoes.ts",
     "mcp:executavel": "node packages/mcp/scripts/construir-executavel.ts",
     "fabrica": "node scripts/fabrica_atualizacao.ts",
     "motor:poc": "node packages/motor/scripts/poc.ts",
@@ -21,7 +20,6 @@
     "sync:repos": "node scripts/sincronizar_repos.ts",
     "traces": "node scripts/traces.ts",
     "pendencias": "node scripts/pendencias.ts",
-    "upstream:t3": "node scripts/upstream_t3.ts",
     "test": "vp test run && pnpm -r --filter '!./packages/effect-acp' --filter '!./packages/effect-codex-app-server' --workspace-concurrency=4 test",
     "test:base": "pnpm --filter @simplifica-if/ppc test:base",
     "test:browser": "pnpm --filter @simplifica-if/web test:browser",
@@ -40,9 +38,7 @@
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
     "effect": "catalog:",
-    "entities": "8.1.0",
-    "htmlparser2": "12.0.0",
-    "yaml": "2.9.1"
+    "yaml": "catalog:"
   },
   "devDependencies": {
     "@effect/tsgo": "0.67.1",

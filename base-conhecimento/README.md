@@ -6,7 +6,7 @@ A base reúne normas, legislação, resoluções, portarias, metadados instituci
 
 ## Como consultar
 
-A base é lida pelo app, pelo servidor MCP `simplifica-mcp` (ferramentas `ifpr`; instruções em [`packages/mcp/instrucoes.md`](../packages/mcp/instrucoes.md)) e, dentro do repositório, pela CLI `kb` (`pnpm kb`; comandos no [`packages/kb/README.md`](../packages/kb/README.md#cli)). Os três leem o banco `kb.sqlite`, compilado destes arquivos. Toda resposta traz o arquivo e a linha de onde o texto veio; abra esse Markdown antes de citar.
+A base é lida pelo app, pelo servidor MCP `simplifica-mcp` (ferramentas `ifpr`; instruções em [`packages/mcp/src/instrucoes.ts`](../packages/mcp/src/instrucoes.ts)) e, dentro do repositório, pela CLI `kb` (`pnpm kb`; comandos no [`packages/kb/README.md`](../packages/kb/README.md#cli)). Os três leem o banco `kb.sqlite`, compilado destes arquivos. Toda resposta traz o arquivo e a linha de onde o texto veio; abra esse Markdown antes de citar.
 
 ## PPCs convertidos
 

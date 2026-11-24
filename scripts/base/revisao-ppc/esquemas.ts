@@ -1,49 +1,19 @@
-// @effect-diagnostics nodeBuiltinImport:off -- junção de caminhos, pura, para os arquivos gerados
 /**
  * Contratos da base da revisão de PPC em Effect Schema: a ficha e o registro de marcos normativos.
  *
- * O Effect Schema é a fonte única: a validação decodifica os arquivos com ele (`decodificarContrato`),
- * e os JSON Schemas de `base-conhecimento/revisao-ppc/schemas/` são gerados daqui por
- * `gerar_base.ts` (`Schema.toJsonSchemaDocument`, draft 2020-12), como documentação, e conferidos
- * por `gerar_base.ts --check` e `validar_base.ts`. Os esquemas não usam refinamentos que o JSON
- * Schema não exprime, para que o documento gerado diga tudo o que se exige. As checagens que
- * dependem da base (ID existente, norma revogada, marco) ficam em `validacao.ts`.
+ * O Effect Schema é a fonte única: a validação decodifica os arquivos com ele (`decodificarContrato`).
+ * As checagens que dependem da base (ID existente, norma revogada, marco) ficam em `validacao.ts`.
  *
- * A ficha e os marcos são estritos: chave a mais é erro (`additionalProperties: false`).
+ * A ficha e os marcos são estritos: chave a mais é erro (`onExcessProperty: "error"`).
  */
-import * as NodePath from "node:path";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
-import * as Struct from "effect/Struct";
 import { problemas } from "@simplifica-if/kb/esquema/mensagens";
-import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
-import { RE_ID_NORMA, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
+import { RE_ID_NORMA } from "@simplifica-if/kb/normas/ids";
 import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
 
-/**
- * `pattern` do JSON Schema para um `isPattern` cuja expressão não tem a flag `u`: sem ela, o
- * `Schema.isPattern` não exporta o padrão (o JSON Schema interpreta `pattern` como Unicode). As
- * expressões dos IDs só têm ASCII, e a leitura com e sem `u` coincide.
- */
-const padraoJson = (expressao: RegExp) => ({ toJsonSchema: () => ({ pattern: expressao.source }) });
-
-/**
- * Referência normativa estruturada (`{ ref, dispositivo?, papel, nota? }`): o esquema do kb, com o
- * `pattern` de `ref` e de `dispositivo` exportado para o JSON Schema (as anotações vão para a
- * última checagem de cada campo, o `isPattern`; a decodificação não muda).
- */
-const referenciaNormativa = esquemaReferenciaNormativa.mapFields(
-  Struct.evolve({
-    ref: (campo) => campo.annotate(padraoJson(RE_REFERENCIA)),
-    dispositivo: (campo) => Schema.optionalKey(campo.schema.annotate(padraoJson(RE_ID_DISPOSITIVO))),
-  }),
-);
-
-/** Inteiro (seguro, como o `z.int()`) maior ou igual a 1; no JSON Schema, sem o limite superior. */
-const inteiroPositivo = Schema.Number.check(
-  Schema.isInt({ toJsonSchema: () => ({ type: "integer" }) }),
-  Schema.isGreaterThanOrEqualTo(1),
-);
+/** Inteiro (seguro, como o `z.int()`) maior ou igual a 1. */
+const inteiroPositivo = Schema.Number.check(Schema.isInt(), Schema.isGreaterThanOrEqualTo(1));
 
 /** Estados de uma ficha. */
 export const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
@@ -81,7 +51,7 @@ export const esquemaFicha = Schema.Struct({
   ancoras_semanticas: textos,
   consultas: textos,
   referencias_normativas: Schema.optionalKey(
-    Schema.Array(referenciaNormativa).annotate({
+    Schema.Array(esquemaReferenciaNormativa).annotate({
       description:
         "Uma entrada por dispositivo; entradas consecutivas da mesma norma e do mesmo papel formam uma citação no texto legível",
     }),
@@ -109,7 +79,7 @@ export const esquemaMarcosNormativos = Schema.Struct({
     Schema.Struct({
       id: Schema.String,
       tema: Schema.String,
-      linha: Schema.Array(Schema.String.check(Schema.isPattern(RE_ID_NORMA, padraoJson(RE_ID_NORMA))))
+      linha: Schema.Array(Schema.String.check(Schema.isPattern(RE_ID_NORMA)))
         .check(Schema.isMinLength(1))
         .annotate({
           description:
@@ -145,42 +115,12 @@ export interface Marco {
   [campo: string]: unknown;
 }
 
-/** Esquemas gerados, pelo nome do arquivo em `schemas/`. */
-const GERADOS = {
-  "ficha.schema.json": { esquema: esquemaFicha, titulo: "Ficha de revisão de PPC" },
-  "marcos-normativos.schema.json": { esquema: esquemaMarcosNormativos, titulo: "Registro de marcos normativos" },
+/** Contratos da base da revisão de PPC. */
+const CONTRATOS = {
+  "ficha.schema.json": esquemaFicha,
+  "marcos-normativos.schema.json": esquemaMarcosNormativos,
 } as const;
-export type NomeSchemaGerado = keyof typeof GERADOS;
-export const SCHEMAS_GERADOS = Object.keys(GERADOS) as NomeSchemaGerado[];
-
-const DIALETO = "https://json-schema.org/draft/2020-12/schema";
-
-/**
- * JSON Schema (draft 2020-12) gerado do Effect Schema, com `$id` e título estáveis. Os objetos
- * recusam chaves a mais (`additionalProperties: false`), como na decodificação com
- * `onExcessProperty: "error"`; as definições compartilhadas, se houver, vão em `$defs`.
- */
-export function jsonSchemaGerado(nome: NomeSchemaGerado): ObjetoJson {
-  const { esquema, titulo } = GERADOS[nome];
-  const documento = Schema.toJsonSchemaDocument(esquema, { onExcessProperty: "error" });
-  const definicoes = Object.keys(documento.definitions).length ? { $defs: documento.definitions } : {};
-  return {
-    $schema: DIALETO,
-    $id: `https://simplifica-if.local/revisao-ppc/${nome}`,
-    title: titulo,
-    description: "Gerado de scripts/base/revisao-ppc/esquemas.ts (Effect Schema) por `gerar_base.ts`; não edite à mão.",
-    ...(documento.schema as ObjetoJson),
-    ...definicoes,
-  };
-}
-
-/** Os JSON Schemas como `gerar_base.ts` os grava em `schemas/` (caminho absoluto e texto). */
-export function schemasGerados(pastaSchemas: string): Array<{ caminho: string; texto: string }> {
-  return SCHEMAS_GERADOS.map((nome) => ({
-    caminho: NodePath.join(pastaSchemas, nome),
-    texto: jsonIndentado(jsonSchemaGerado(nome)),
-  }));
-}
+export type NomeSchemaGerado = keyof typeof CONTRATOS;
 
 /** Problema de um arquivo fora do contrato: caminho JSON (`$.campo[0]`) e mensagem. */
 export type ProblemaDeContrato = { readonly caminho: string; readonly mensagem: string };
@@ -198,7 +138,7 @@ function caminhoJson(caminho: ReadonlyArray<PropertyKey>): string {
  * quando está no contrato).
  */
 export function decodificarContrato(nome: NomeSchemaGerado, valor: unknown): ProblemaDeContrato[] {
-  const { esquema } = GERADOS[nome];
+  const esquema = CONTRATOS[nome];
   const resultado = Schema.decodeUnknownResult(esquema as Schema.Codec<unknown>)(valor, {
     errors: "all",
     onExcessProperty: "error",

@@ -1,16 +1,14 @@
-// @effect-diagnostics nodeBuiltinImport:off -- os testes leem os schemas e as fichas dos arquivos da base
+// @effect-diagnostics nodeBuiltinImport:off -- os testes leem as fichas dos arquivos da base
 /**
- * Contratos da base da revisão de PPC (`esquemas.ts`): os arquivos de `schemas/` são os gerados do
- * Effect Schema, toda ficha da base e o registro de marcos estão no contrato, e cada desvio é
- * recusado com o caminho do campo (`$.referencias_normativas[0].ref`).
+ * Contratos da base da revisão de PPC (`esquemas.ts`): toda ficha da base e o registro de marcos
+ * estão no contrato, e cada desvio é recusado com o caminho do campo
+ * (`$.referencias_normativas[0].ref`).
  */
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { describe, expect, test } from "vite-plus/test";
 import type { ObjetoJson } from "@simplifica-if/kb/json";
 import { caminhosRevisaoPpc } from "./caminhos.ts";
-import { decodificarContrato, jsonSchemaGerado, SCHEMAS_GERADOS } from "./esquemas.ts";
-import { geradosRevisaoPpc } from "./gerados.ts";
+import { decodificarContrato } from "./esquemas.ts";
 import { lerJson, listarJson } from "./validacao.ts";
 
 const caminhos = caminhosRevisaoPpc();
@@ -181,15 +179,6 @@ const caminhosDosProblemas = (problemas: ReturnType<typeof decodificarContrato>)
 ];
 
 describe("contratos da base da revisão de PPC", () => {
-  test("os arquivos gerados (schemas e mapa) estão em dia", () => {
-    for (const nome of SCHEMAS_GERADOS) {
-      expect(lerJson(NodePath.join(caminhos.schemas, nome))).toEqual(jsonSchemaGerado(nome));
-    }
-    for (const { caminho, texto } of geradosRevisaoPpc()) {
-      expect({ caminho, emDia: NodeFS.readFileSync(caminho, "utf-8") === texto }).toEqual({ caminho, emDia: true });
-    }
-  });
-
   test("todas as fichas da base estão no contrato", () => {
     const fichas = fichasValidas();
     expect(fichas.length).toBeGreaterThan(50);
