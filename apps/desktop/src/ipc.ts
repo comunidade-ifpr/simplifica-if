@@ -13,7 +13,7 @@ import {
   type CredenciaisServidor,
   cortarRegistro,
 } from "@simplifica-if/contratos-app/ponte";
-import { dialog, ipcMain, shell, type BrowserWindow, type IpcMainInvokeEvent } from "electron";
+import { dialog, ipcMain, nativeTheme, shell, type BrowserWindow, type IpcMainInvokeEvent } from "electron";
 import type { ControleAtualizacaoApp } from "./atualizacaoApp.ts";
 import {
   anexoEscolhido,
@@ -82,6 +82,11 @@ export function registrarIpc(contexto: ContextoIpc): void {
   /* ---------------------------------------------------------- janela e servidor */
 
   tratar(CANAIS.telaCheia, () => contexto.janela()?.isFullScreen() ?? false);
+
+  // O `nativeTheme` avisa a mudança, e o `main.ts` acerta o fundo da janela e os botões do sistema.
+  tratar(CANAIS.temaDoApp, (tema) => {
+    nativeTheme.themeSource = tema === "claro" ? "light" : tema === "escuro" ? "dark" : "system";
+  });
 
   tratar(CANAIS.conexao, () => contexto.conexao());
 

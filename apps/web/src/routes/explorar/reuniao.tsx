@@ -66,11 +66,7 @@ function Reuniao() {
                         {i.resultado ? <span>{i.resultado}</span> : null}
                         {i.processo_sei ? <span>Processo SEI {i.processo_sei}</span> : null}
                         {i.curso ? (
-                          <Link
-                            to="/explorar/ver"
-                            search={{ link: `ifpr://curso/${i.curso}` }}
-                            className="text-link underline underline-offset-2"
-                          >
+                          <Link to="/explorar/ver" search={{ link: `ifpr://curso/${i.curso}` }} className="link-grifo">
                             Ficha do curso
                           </Link>
                         ) : null}
@@ -78,7 +74,7 @@ function Reuniao() {
                           <Link
                             to="/explorar/ver"
                             search={{ link: `ifpr://campus/${i.campus}` }}
-                            className="text-link underline underline-offset-2"
+                            className="link-grifo"
                           >
                             Campus {nomeCampus.get(i.campus) ?? i.campus}
                           </Link>

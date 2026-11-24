@@ -105,7 +105,7 @@ export function LinhaDoTempo({
                   aria-label={`Normas de ${g.ano}: ${g.normas.length}`}
                   title={selecionado ? "Tirar o filtro do ano" : `Só as normas de ${g.ano}`}
                   className={cn(
-                    "-mb-px w-full border-transparent border-b-2 px-0.5 pt-1 pb-1.5 text-center font-medium text-micro tabular-nums [font-stretch:75%] hover:border-primary hover:text-foreground",
+                    "-mb-px w-full border-transparent border-b-2 px-0.5 pt-1 pb-1.5 text-center font-medium text-micro tabular-nums tracking-tighter hover:border-primary hover:text-foreground",
                     selecionado ? "border-primary text-foreground" : "text-muted-foreground",
                   )}
                 >

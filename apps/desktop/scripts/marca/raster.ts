@@ -98,16 +98,6 @@ function contornosDaForma(forma: Forma, k: number, desloc: Ponto): Contorno[] {
       const { escala, origem } = forma;
       return contornosDoCaminho(forma.d, (p) => px([origem[0] + p[0] * escala, origem[1] + p[1] * escala]));
     }
-    case "circulo": {
-      const r = forma.raio * k;
-      const n = Math.max(12, Math.ceil(Math.PI / Math.acos(Math.max(-1, 1 - TOLERANCIA / Math.max(r, TOLERANCIA)))));
-      const contorno: Contorno = [];
-      for (let i = 0; i < n; i++) {
-        const a = (i / n) * 2 * Math.PI;
-        contorno.push(px([forma.centro[0] + forma.raio * Math.cos(a), forma.centro[1] + forma.raio * Math.sin(a)]));
-      }
-      return [contorno];
-    }
     case "superelipse":
       return [pontosSuperelipse(forma.centro, forma.semilado, forma.expoente, 1440, forma.furo).map(px)];
   }

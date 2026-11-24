@@ -97,7 +97,7 @@ export function LinkExterno({ href, children }: { readonly href: string; readonl
       href={href}
       rel="noopener noreferrer"
       target="_blank"
-      className="nao-imprimir inline-flex items-center gap-1 text-link text-small underline underline-offset-2"
+      className="nao-imprimir inline-flex items-center gap-1 link-grifo text-small"
       onClick={(evento) => {
         evento.preventDefault();
         abrirFora(href);

@@ -284,7 +284,7 @@ function criarJanela(): void {
     minHeight: 560,
     show: false,
     // Sem a barra de título do sistema: o cabeçalho da interface é a barra (`janela.ts`).
-    ...opcoesBarraTitulo(process.platform),
+    ...opcoesBarraTitulo(process.platform, nativeTheme.shouldUseDarkColors),
     backgroundColor: corFundoJanela(nativeTheme.shouldUseDarkColors),
     webPreferences: {
       preload: NodePath.join(__dirname, "preload.cjs"),
@@ -336,7 +336,7 @@ function criarJanela(): void {
 function sincronizarAparencia(): void {
   if (janela === undefined || janela.isDestroyed()) return;
   janela.setBackgroundColor(corFundoJanela(nativeTheme.shouldUseDarkColors));
-  const { titleBarOverlay } = opcoesBarraTitulo(process.platform);
+  const { titleBarOverlay } = opcoesBarraTitulo(process.platform, nativeTheme.shouldUseDarkColors);
   if (titleBarOverlay !== undefined) janela.setTitleBarOverlay(titleBarOverlay);
 }
 

@@ -132,7 +132,7 @@ function Explorar() {
                     key={exemplo}
                     type="button"
                     onClick={() => abrir(exemplo)}
-                    className="rounded-full border border-border bg-card px-2.5 py-0.5 hover:border-ring/45 hover:text-link"
+                    className="rounded-full border border-border bg-card px-2.5 py-0.5 hover:border-input hover:bg-muted"
                   >
                     {exemplo}
                   </button>
@@ -144,8 +144,8 @@ function Explorar() {
         ) : (
           <div className={cn(classeColuna("larga"), "flex flex-wrap items-end justify-between gap-x-6 pt-3")}>
             <div className="flex flex-wrap items-end gap-x-6">
-              <h1 className="pb-2 font-bold text-heading [font-stretch:87.5%]">
-                <Link to="/explorar" className="hover:text-link">
+              <h1 className="pb-2 font-extrabold text-heading tracking-tight">
+                <Link to="/explorar" className="decoration-link-risco underline-offset-3 hover:underline">
                   Explorar o IFPR
                 </Link>
               </h1>

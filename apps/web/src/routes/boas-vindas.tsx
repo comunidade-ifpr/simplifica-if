@@ -243,9 +243,9 @@ function CartaoExemplo({
     >
       <h2 className="flex items-center gap-2 font-semibold">
         {exemplo.tipo === "revisar-ppc" ? (
-          <FileSearchIcon aria-hidden className="size-4 text-link" />
+          <FileSearchIcon aria-hidden className="size-4 text-muted-foreground" />
         ) : (
-          <SparklesIcon aria-hidden className="size-4 text-link" />
+          <SparklesIcon aria-hidden className="size-4 text-muted-foreground" />
         )}
         {exemplo.titulo}
         {principal ? (

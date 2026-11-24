@@ -132,27 +132,29 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 
 | Token | Claro | Escuro | Uso |
 |---|---|---|---|
-| `--primary` | `#0E5A66` | `#13606C` (texto branco) | botão principal |
-| cabeçalho (`--marca`) | `#0B4A55` | `#0C3138` | texto branco: 9,9:1 no claro |
-| `--link` | `#0D6372` | `#5FC0CC` | link |
+| `--primary` | `#17171A` (texto branco) | `#FFE45C` (texto grafite) | botão principal |
+| `--grifo` | `#FFE45C` | `#FFE45C` a 32% | link `ifpr://`, trecho citado, aba em que se está |
+| `--grifo-risco` | `#F2C200` | `#FFE45C` | filete da citação |
+| `--link-risco` | `#17171A`, 1 px | `#FFE45C`, 2 px | sublinhado do link de texto |
 | `--grav-corrigir` | `#C62828`, texto `#A32424`, fundo `#FDECEC` | `#EF5350`, texto `#FF8A80`, fundo `rgb(239 83 80 / .14)` | glifo ● cheio |
-| `--grav-conferir` | `#B26A00`, texto `#8A4B00`, fundo `#FFF4E0` | `#FFB74D`, texto `#FFCC80` | glifo ◐ |
+| `--grav-conferir` | `#B4500A`, texto `#8F3F06`, fundo `#FDEEE2` | `#FF9D5C`, texto `#FFB787` | glifo ◐ |
 | `--grav-ok` | `#2F7D4A`, texto `#22603A`, fundo `#E7F3EA` | `#7CC79A` | glifo ✓ |
-| `--grav-nao-lido` | `#BDBDBD` contornado | `#4A5357` | glifo ○ |
-| superfícies | `#FFFFFF` / `#F3F6F6` / borda `#DDE3E4` | `#111517` / `#191E21` / borda `#2C3438` | |
+| `--grav-nao-lido` | `#BDBDBD` contornado | `#4A4A52` | glifo ○ |
+| superfícies | `#FFFFFF` / `#F4F4F5` / borda `#E1E1E5` | `#121214` / `#1B1B1F` / borda `#2F2F36` | |
 
+- A interface é neutra (identidade "Marca-texto", [`docs/marca/`](../marca/README.md)): o amarelo só grifa o que aponta para uma fonte da base. O cabeçalho tem a cor do fundo, com uma linha por baixo.
 - O azul `info` (`#0277BD`) fica só para estado do sistema (conexão, atualização), nunca na revisão.
 - Fica no global `accent-color: var(--primary)`, porque hoje os radios nativos saem azuis.
 - A cor nunca vai sozinha: glifo, cor e palavra andam juntos.
 
 ### Tipografia
 
-A Open Sans continua como a fonte do app, mas com o eixo de largura (`@fontsource-variable/open-sans/wdth.css`), que já vem no pacote instalado. Entra a **Source Serif 4** (`@fontsource-variable/source-serif-4`) para uma função só: a voz do documento. Ela vale nos trechos do PPC, no texto de norma no leitor `ifpr://`, nas citações da conversa e na sugestão de texto da IA. Só de olhar, a pessoa separa o que está no PPC ou na norma do que o app diz.
+A fonte do app é a **Hanken Grotesk** (`@fontsource-variable/hanken-grotesk`), só com o eixo de peso: os títulos vão em 800 com as letras mais juntas. A **Source Serif 4** (`@fontsource-variable/source-serif-4`) tem uma função só: a voz do documento. Ela vale nos trechos do PPC, no texto de norma no leitor `ifpr://`, nas citações da conversa e na sugestão de texto da IA. Só de olhar, a pessoa separa o que está no PPC ou na norma do que o app diz.
 
 | Utilitário | Tamanho/entrelinha | Peso | Uso |
 |---|---|---|---|
-| `text-display` | 30/36, `wdth` 87,5, −0,01em | 700 | título de página e frase-resultado |
-| `text-title` | 20/28 | 600 | título de seção e nome do documento |
+| `text-display` | 30/36, −0,025em | 800 | título de página e frase-resultado |
+| `text-title` | 20/28, −0,01em | 700 | título de seção e nome do documento |
 | `text-heading` | 17/26 | 600 | título de pendência e de cartão |
 | `text-body` | 16/26 | 400 | texto da interface (o 16/1,6 da marca) |
 | `text-quote` | 17/28, Source Serif 4 | 400 | trecho e norma |
@@ -168,10 +170,10 @@ A Open Sans continua como a fonte do app, mas com o eixo de largura (`@fontsourc
 1. **Cartão com borda só para objeto que existe sozinho:** o documento, a faixa da IA e o bloqueio. Uma lista é feita de linhas com divisória de 1 px, nunca de um cartão por item.
 2. **Um botão primário por região visível.** Modo, filtro e escolha usam controle segmentado ou radio em cartão, nunca a variante `default` do botão.
 3. **Selo só para mudança** ("Novo", "Retirado"). A gravidade é glifo e palavra.
-4. **Raios:** controle 8, superfície 12 e pill para selo. Sombra só em popover e na caixa de pedido.
+4. **Raios:** botão em pílula, campo 8, superfície 12 e pill para selo. Sombra só em popover e na caixa de pedido.
 5. **Espaço:** escala de 4, 8, 12, 16, 24, 40 e 64.
 6. **Duas larguras de página:** `--page-narrow: 720px` (conversa, formulários, boas-vindas) e `--page-wide: 1120px` (Início, Explorar, revisão, Configurações). Hoje são cinco (`2xl` a `5xl`), e o título pula de lugar ao trocar de aba.
-7. **Um estilo de link:** a cor `--accent-text` sublinhada. O chip `.link-ifpr` fica só para referência `ifpr://` dentro de texto corrido.
+7. **Um estilo de link:** `link-grifo`, o texto sublinhado (grafite no claro, amarelo no escuro), com o grifo por trás ao passar o mouse ou receber o foco. O chip `.link-ifpr` fica só para referência `ifpr://` dentro de texto corrido.
 
 ### Componentes
 

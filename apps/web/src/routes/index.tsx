@@ -1,6 +1,6 @@
 /**
- * Início do Modo Servidor (M1.9): a data da base, a linha do perfil ("Função · Campus", M1.8), a caixa
- * "O que você precisa hoje?" (`CaixaPedido`, com anexo e a escolha da IA), os cartões de tarefa que servem ao perfil
+ * Início do Modo Servidor (M1.9): a linha do perfil ("Função · Campus", M1.8) e a data da base, a pergunta
+ * "O que você precisa hoje?" com a caixa de pedido (`CaixaPedido`, com anexo e a escolha da IA), as tarefas que servem ao perfil
  * (as skills do catálogo e a tarefa nativa "Revisar um PPC"), "Ver todas" e os recentes (conversas e a
  * última revisão de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
  * boas-vindas.
@@ -16,7 +16,7 @@
  */
 import type { ListaPendencias } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRightIcon, CircleCheckIcon, FileSearchIcon } from "lucide-react";
+import { CircleCheckIcon, FileSearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { CaixaPedido } from "../components/CaixaPedido.tsx";
@@ -72,7 +72,7 @@ function DataDaBase() {
   }, [api, conectado]);
   if (data === undefined) return null;
   return (
-    <p className="flex items-center gap-1.5 text-muted-foreground text-sm" title={`Versão ${data.versao}`}>
+    <p className="flex items-center gap-1.5" title={`Versão ${data.versao}`}>
       {data.data === null ? "Base de desenvolvimento" : `Base de ${dataDaBase(data.data)}`}
       <CircleCheckIcon aria-label="em dia" className="size-4 text-success" />
     </p>
@@ -145,7 +145,7 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
     <CaixaPedido
       rotulo="O que você precisa hoje?"
       rotuloFormulario="O que você precisa hoje?"
-      placeholder="O que você precisa hoje?"
+      placeholder="Pergunte sobre uma norma, um curso ou um PPC"
       linhas={2}
       focar={pedido !== undefined}
       valor={texto}
@@ -171,11 +171,11 @@ function Tarefas() {
         <h2 id="titulo-tarefas" className="text-title">
           Tarefas
         </h2>
-        <Link to="/tarefas" className="flex items-center gap-1 text-link text-small underline underline-offset-2">
-          Ver todas <ArrowRightIcon className="size-3.5" />
+        <Link to="/tarefas" className="link-grifo text-small">
+          Ver todas
         </Link>
       </div>
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="-mx-3.5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
         {tarefas.slice(0, CARTOES_NO_INICIO).map((tarefa) => (
           <li key={nomeTarefa(tarefa)}>
             <CartaoTarefa tarefa={tarefa} />
@@ -239,23 +239,21 @@ function Inicio() {
   if (conexao.fase !== "sem-servidor" && pendente !== false) return <EsperaPreferencias />;
   return (
     <div className="h-full overflow-y-auto">
-      {/* A faixa de abertura, como a do Explorar: a saudação e a caixa de pedido, que é o centro da tela. */}
-      <div className="border-border border-b bg-muted">
-        <div className={cn(classeColuna("larga"), "flex flex-col gap-6 pt-12 pb-10")}>
-          <section className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-            <div className="space-y-1">
-              <h1 className="text-hero">Olá!</h1>
+      {/* Uma coluna só, centrada: a pergunta em letras grandes e a caixa de pedido, que é o centro da tela. */}
+      <div className={cn(classeColuna("estreita"), "flex flex-col gap-10 pt-14 pb-12")}>
+        <div className="flex flex-col gap-6">
+          <section className="space-y-3">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-small">
               {perfil !== undefined ? (
-                <p className="text-muted-foreground" data-linha-perfil>
-                  {perfil}
-                </p>
+                <p data-linha-perfil>{perfil}</p>
               ) : preferencias === undefined ? null : (
-                <Link to="/configuracoes" hash="perfil" className="text-link text-small underline underline-offset-2">
+                <Link to="/configuracoes" hash="perfil" className="link-grifo text-foreground">
                   Preencha seu perfil para ver primeiro as tarefas da sua função
                 </Link>
               )}
+              {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
             </div>
-            {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
+            <h1 className="text-hero">O que você precisa hoje?</h1>
           </section>
           {conexao.fase === "sem-servidor" ? null : (
             <>
@@ -265,19 +263,19 @@ function Inicio() {
             </>
           )}
         </div>
+        {conexao.fase === "sem-servidor" ? null : (
+          <>
+            <Tarefas />
+            <section aria-labelledby="titulo-recentes" className="flex flex-col gap-2">
+              <h2 id="titulo-recentes" className="text-title">
+                Recentes
+              </h2>
+              <UltimaRevisao />
+              <ListaConversas limite={5} />
+            </section>
+          </>
+        )}
       </div>
-      {conexao.fase === "sem-servidor" ? null : (
-        <div className={cn(classeColuna("larga"), "flex flex-col gap-10 py-10")}>
-          <Tarefas />
-          <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
-            <h2 id="titulo-recentes" className="text-title">
-              Recentes
-            </h2>
-            <UltimaRevisao />
-            <ListaConversas limite={5} />
-          </section>
-        </div>
-      )}
     </div>
   );
 }

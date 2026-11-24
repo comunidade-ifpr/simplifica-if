@@ -796,7 +796,7 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   // Início: o campo, o clipe (só o ícone, sem lembrete), a IA com a marca e o botão de enviar apagado
   // com o campo vazio.
   const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
-  await expect.element(caixa).toHaveAttribute("placeholder", "O que você precisa hoje?");
+  await expect.element(caixa).toHaveAttribute("placeholder", "Pergunte sobre uma norma, um curso ou um PPC");
   await expect.element(caixa).toHaveAccessibleDescription(/Enter envia; Shift\+Enter quebra a linha/);
   const formulario = page.getByRole("form", { name: "O que você precisa hoje?" });
   const enviar = formulario.getByRole("button", { name: "Enviar" });
@@ -1002,6 +1002,7 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
           avisar = () => {};
         };
       },
+      temaDoApp: async () => {},
     },
   } satisfies PonteDesktop;
   await using _app = await montarApp(servidor);
@@ -1027,7 +1028,12 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
 it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita para os botões do sistema", async () => {
   window.simplifica = {
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
-    janela: { plataforma: "win32", telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+    janela: {
+      plataforma: "win32",
+      telaCheia: async () => false,
+      aoMudarTelaCheia: () => () => {},
+      temaDoApp: async () => {},
+    },
   } satisfies PonteDesktop;
   await using _app = await montarApp(servidor);
   await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
@@ -1078,7 +1084,7 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   for (const plataforma of ["darwin", "win32"] as const) {
     window.simplifica = {
       conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
-      janela: { plataforma, telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+      janela: { plataforma, telaCheia: async () => false, aoMudarTelaCheia: () => () => {}, temaDoApp: async () => {} },
     } satisfies PonteDesktop;
     for (const rota of ["/", "/tarefas"] as const) {
       await using _app = await montarApp(servidor, rota);
@@ -1091,7 +1097,12 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   // botões do sistema, ainda cabe na largura mínima.
   window.simplifica = {
     conexao: async () => ({ urlServidor: "http://127.0.0.1:9", token: "x" }),
-    janela: { plataforma: "win32", telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+    janela: {
+      plataforma: "win32",
+      telaCheia: async () => false,
+      aoMudarTelaCheia: () => () => {},
+      temaDoApp: async () => {},
+    },
   } satisfies PonteDesktop;
   {
     await using _app = await montarAppComOrigem(

@@ -4,7 +4,8 @@
  *
  * - `apps/desktop/recursos/icone.icns` e `icone.ico`: o ícone do app (relevo de 48 px para cima, plano
  *   até 32 px; no Windows, a placa quase sangrada e sem sombra externa);
- * - `apps/web/public/favicon.svg` e `apps/web/src/marca/logo-sobre-marca.svg` (o cabeçalho da interface);
+ * - `apps/web/public/favicon.svg` e `apps/web/src/marca/logo.svg` e `logo-escuro.svg` (o cabeçalho da
+ *   interface, no tema claro e no escuro);
  * - `docs/marca/`: o logo claro e o escuro e o ícone em SVG, para materiais.
  *
  *   node scripts/gerar-marca.ts             # grava
@@ -35,7 +36,8 @@ export function arquivosDaMarca(): ReadonlyArray<readonly [string, () => string 
     ["docs/marca/logo-escuro.svg", () => paraSvg(cenaLogo("escuro"))],
     ["docs/marca/icone.svg", () => paraSvg(cenaIcone({ plataforma: "mac", estilo: "relevo" }))],
     ["docs/marca/icone-plano.svg", () => paraSvg(cenaIcone({ plataforma: "windows", estilo: "plano" }))],
-    ["apps/web/src/marca/logo-sobre-marca.svg", () => paraSvg(cenaLogo("sobre-marca"))],
+    ["apps/web/src/marca/logo.svg", () => paraSvg(cenaLogo("claro"))],
+    ["apps/web/src/marca/logo-escuro.svg", () => paraSvg(cenaLogo("escuro"))],
     ["apps/web/public/favicon.svg", () => paraSvg(cenaIcone({ plataforma: "windows", estilo: "plano" }))],
     [
       "apps/desktop/recursos/icone.icns",

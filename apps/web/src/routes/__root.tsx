@@ -16,7 +16,8 @@ import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { explicarErro } from "../conexao/erros.ts";
 import { registrarErro, textoDoErro } from "../diagnostico.ts";
 import { atalhoPaleta, ProvedorPaleta, usePaleta } from "../explorar/Paleta.tsx";
-import logo from "../marca/logo-sobre-marca.svg";
+import logoEscuro from "../marca/logo-escuro.svg";
+import logo from "../marca/logo.svg";
 
 export const Route = createRootRoute({
   component: Moldura,
@@ -38,7 +39,7 @@ function propsBarraTitulo(barra: BarraTitulo | undefined) {
 function FaixaArrastavel() {
   const barra = useBarraTitulo();
   if (barra === undefined) return null;
-  return <div aria-hidden className="drag-region h-12 shrink-0 bg-marca" />;
+  return <div aria-hidden className="drag-region h-12 shrink-0 border-border border-b bg-background" />;
 }
 
 function ErroDaTela({ error, reset }: ErrorComponentProps) {
@@ -67,8 +68,9 @@ function ErroDaTela({ error, reset }: ErrorComponentProps) {
   );
 }
 
+// A aba em que se está vem grifada: o marca-texto na metade de baixo da palavra.
 const classeAba =
-  "rounded-md px-3 py-1.5 font-semibold text-sm text-white/85 hover:bg-white/10 hover:text-white data-[status=active]:bg-white/15 data-[status=active]:text-white";
+  "rounded-xs px-1 font-semibold text-muted-foreground text-sm hover:text-foreground data-[status=active]:bg-[linear-gradient(to_top,var(--grifo)_45%,transparent_45%)] data-[status=active]:text-foreground";
 
 /** O botão da busca no cabeçalho, com o atalho. */
 function BotaoBuscar() {
@@ -80,12 +82,12 @@ function BotaoBuscar() {
       onClick={() => abrir()}
       aria-keyshortcuts={atalho === "⌘K" ? "Meta+K" : "Control+K"}
       title={`Buscar na base (${atalho})`}
-      className="flex shrink-0 items-center gap-2 rounded-md bg-white/10 px-2.5 py-1 text-sm text-white/85 hover:bg-white/20 hover:text-white"
+      className="ml-auto flex shrink-0 items-center gap-2 rounded-full border border-border px-3 py-1 text-muted-foreground text-sm hover:border-input hover:text-foreground"
     >
       <SearchIcon aria-hidden className="size-3.5" />
       {/* Em janela estreita, só a lupa; o nome continua para o leitor de tela e na dica. */}
       <span className="sr-only lg:not-sr-only">Buscar</span>
-      <kbd className="hidden rounded bg-black/20 px-1 font-sans text-white/75 text-micro lg:inline">{atalho}</kbd>
+      <kbd className="hidden font-sans text-micro lg:inline">{atalho}</kbd>
     </button>
   );
 }
@@ -109,15 +111,16 @@ function MolduraComPaleta() {
         {...propsBarraTitulo(barra)}
         className={
           barra === undefined
-            ? "flex flex-wrap items-center gap-x-6 gap-y-2 bg-marca px-4 py-2 text-white"
-            : "drag-region barra-titulo flex h-12 shrink-0 select-none items-center gap-x-4 bg-marca px-4 text-white lg:gap-x-6"
+            ? "flex flex-wrap items-center gap-x-6 gap-y-2 border-border border-b bg-background px-4 py-2"
+            : "drag-region barra-titulo flex h-12 shrink-0 select-none items-center gap-x-4 border-border border-b bg-background px-4 lg:gap-x-6"
         }
       >
         <Link to="/" className="shrink-0 rounded-sm">
-          {/* O logo branco sobre o verde do cabeçalho (`apps/desktop/scripts/gerar-marca.ts`). */}
-          <img src={logo} alt="Simplifica IF" draggable={false} className="block h-6 w-auto" />
+          {/* O logo de cada tema (`apps/desktop/scripts/gerar-marca.ts`). */}
+          <img src={logo} alt="Simplifica IF" draggable={false} className="block h-6 w-auto dark:hidden" />
+          <img src={logoEscuro} alt="Simplifica IF" draggable={false} className="hidden h-6 w-auto dark:block" />
         </Link>
-        <nav aria-label="Telas" className="flex gap-1">
+        <nav aria-label="Telas" className="flex gap-4 lg:gap-5">
           <Link to="/" className={classeAba} activeOptions={{ exact: true }}>
             Início
           </Link>

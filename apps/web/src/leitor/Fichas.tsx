@@ -75,11 +75,7 @@ function ListaConsepe({
             <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground text-small">
               {item.tipo_demanda ? <Badge variant="outline">{item.tipo_demanda}</Badge> : null}
               {item.resultado ? <span>{item.resultado}</span> : null}
-              <Link
-                to="/explorar/reuniao"
-                search={{ id: reuniao.id }}
-                className="text-link underline underline-offset-2"
-              >
+              <Link to="/explorar/reuniao" search={{ id: reuniao.id }} className="link-grifo">
                 {reuniao.conselho}, reunião de {dataBr(reuniao.data)}
               </Link>
             </p>

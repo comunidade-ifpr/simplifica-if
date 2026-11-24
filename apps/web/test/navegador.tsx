@@ -13,6 +13,8 @@ import type { OrigemConexao } from "../src/conexao/origem.ts";
 import { inicializar } from "../src/inicializar.ts";
 import { criarRoteador } from "../src/router.ts";
 import { type Achado, palavrasSuspeitas } from "./ingles.ts";
+import "@fontsource-variable/hanken-grotesk";
+import "@fontsource-variable/source-serif-4";
 import "../src/index.css";
 
 declare module "vite-plus/test/browser" {

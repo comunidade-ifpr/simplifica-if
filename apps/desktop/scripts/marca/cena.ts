@@ -3,8 +3,8 @@
  * (`paraSvg`) quanto os PNGs do ícone (`raster.ts`). Uma descrição só para os dois, para que o ícone do
  * Dock e o SVG não divirjam.
  *
- * - Logo: "simplifica" em Open Sans 300 colado (respiro de 0,06 em) a "IF" em 800, com o ponto cobre.
- * - Ícone: "IF." numa placa branca; `relevo` com degradê e sombra, `plano` para 16 a 32 px.
+ * - Logo: "simplifica" em Hanken Grotesk 300 e "IF" em 800, grifado: o retângulo amarelo do marca-texto.
+ * - Ícone: "IF" em grafite numa placa amarela; `relevo` com degradê e sombra, `plano` para 16 a 32 px.
  */
 import { ALTURA_MAIUSCULA, type Corrida, IF, SIMPLIFICA } from "./glifos.ts";
 
@@ -13,7 +13,6 @@ export type Ponto = readonly [number, number];
 export type Forma =
   /** Um `d` de SVG absoluto, escalado e deslocado (sem rotação, para o H e o V continuarem válidos). */
   | { readonly tipo: "caminho"; readonly d: string; readonly escala: number; readonly origem: Ponto }
-  | { readonly tipo: "circulo"; readonly centro: Ponto; readonly raio: number }
   /** O quadrado arredondado dos ícones do macOS: |x|^n + |y|^n = 1; `furo` inverte o sentido (vira buraco). */
   | {
       readonly tipo: "superelipse";
@@ -52,12 +51,10 @@ export interface Cena {
 
 /** A paleta do app (`docs/marca/README.md`), a mesma dos tokens do `apps/web/src/index.css`. */
 export const COR = {
-  petroleo: "#11707F",
-  cobre: "#C96A1C",
-  tinta: "#1D2B31",
-  /** No fundo escuro, o petróleo e o cobre mais claros (o #11707F some sobre o fundo escuro). */
-  petroleoClaro: "#5FC0CC",
-  cobreClaro: "#F0A050",
+  grifo: "#FFE45C",
+  grafite: "#17171A",
+  /** O texto sobre o fundo escuro. */
+  claro: "#F1F1F3",
 } as const;
 
 /** Os pontos de uma superelipse, no sentido horário (ou anti-horário, para `furo`). */
@@ -78,37 +75,41 @@ export function pontosSuperelipse(centro: Ponto, semilado: number, expoente: num
 // ---------------------------------------------------------------------------------------------------
 // Logo
 
-export type VarianteLogo = "claro" | "escuro" | "sobre-marca";
+export type VarianteLogo = "claro" | "escuro";
 
-/** Respiro entre "simplifica" e "IF", em unidades de corpo 100. */
-const RESPIRO = 6;
-/** O ponto do logo: raio e folga entre a tinta do F e a borda do ponto. */
-const PONTO_LOGO = { raio: 11.5, folga: 6.5 };
+/** O grifo atrás do "IF", em unidades de corpo 100: o vão até "simplifica" e a folga em volta das letras. */
+const GRIFO = { vao: 11, folgaX: 9, folgaY: 10, raio: 4 };
+
+/** Um retângulo de cantos arredondados, como caminho (a origem é o canto de cima, à esquerda). */
+function retangulo(largura: number, altura: number, raio: number): string {
+  const [l, a, r] = [largura, altura, raio];
+  return `M${r} 0H${l - r}Q${l} 0 ${l} ${r}V${a - r}Q${l} ${a} ${l - r} ${a}H${r}Q0 ${a} 0 ${a - r}V${r}Q0 0 ${r} 0Z`;
+}
 
 export function cenaLogo(variante: VarianteLogo): Cena {
-  const cores = {
-    claro: { texto: COR.tinta, marca: COR.petroleo, ponto: COR.cobre },
-    escuro: { texto: "#F2F2F2", marca: COR.petroleoClaro, ponto: COR.cobreClaro },
-    // Sobre o petróleo do cabeçalho, o cobre claro (4,6:1) se separa do fundo.
-    "sobre-marca": { texto: "#FFFFFF", marca: "#FFFFFF", ponto: COR.cobreClaro },
-  }[variante];
-  const topo = -SIMPLIFICA.caixa[1];
+  // O grifo é amarelo cheio nos dois fundos, com o "IF" em grafite por cima (14:1).
+  const texto = variante === "claro" ? COR.grafite : COR.claro;
+  const base = ALTURA_MAIUSCULA + GRIFO.folgaY;
   const xS = -SIMPLIFICA.caixa[0];
-  const xIF = xS + SIMPLIFICA.avanco + RESPIRO;
-  const raio = PONTO_LOGO.raio;
-  const cx = xIF + IF.caixa[2] + PONTO_LOGO.folga + raio;
-  const largura = cx + raio;
-  const altura = topo + SIMPLIFICA.caixa[3];
-  const corrida = (c: Corrida, x: number): Forma => ({ tipo: "caminho", d: c.d, escala: 1, origem: [x, topo] });
-  const ponto: Forma = { tipo: "circulo", centro: [cx, topo - raio], raio };
+  const xGrifo = xS + SIMPLIFICA.avanco + GRIFO.vao;
+  const larguraGrifo = IF.caixa[2] - IF.caixa[0] + 2 * GRIFO.folgaX;
+  const xIF = xGrifo + GRIFO.folgaX - IF.caixa[0];
+  const corrida = (c: Corrida, x: number): Forma => ({ tipo: "caminho", d: c.d, escala: 1, origem: [x, base] });
+  const grifo: Forma = {
+    tipo: "caminho",
+    d: retangulo(arredondar(larguraGrifo), arredondar(base + GRIFO.folgaY), GRIFO.raio),
+    escala: 1,
+    origem: [xGrifo, 0],
+  };
   return {
-    largura: arredondar(largura),
-    altura: arredondar(altura),
+    largura: arredondar(xGrifo + larguraGrifo),
+    // O "p" de "simplifica" desce abaixo do grifo.
+    altura: arredondar(base + Math.max(GRIFO.folgaY, SIMPLIFICA.caixa[3])),
     titulo: "Simplifica IF",
     camadas: [
-      { formas: [corrida(SIMPLIFICA, xS)], preenchimento: { tipo: "cor", cor: cores.texto } },
-      { formas: [corrida(IF, xIF)], preenchimento: { tipo: "cor", cor: cores.marca } },
-      { formas: [ponto], preenchimento: { tipo: "cor", cor: cores.ponto } },
+      { formas: [corrida(SIMPLIFICA, xS)], preenchimento: { tipo: "cor", cor: texto } },
+      { formas: [grifo], preenchimento: { tipo: "cor", cor: COR.grifo } },
+      { formas: [corrida(IF, xIF)], preenchimento: { tipo: "cor", cor: COR.grafite } },
     ],
   };
 }
@@ -124,29 +125,21 @@ export interface OpcoesIcone {
 }
 
 export const LADO_ICONE = 1024;
-/** O ponto do ícone, em unidades de corpo 100: centro a 1,07 em da origem do "IF" (a folga até o F igual ao vão I–F), raio de 0,13 em. */
-const PONTO_ICONE = { centro: 107, raio: 13 };
 
 export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
   const meio = LADO_ICONE / 2;
   const semilado = plataforma === "mac" ? 412 : 482;
   const centro: Ponto = [meio, meio];
   const relevo = estilo === "relevo";
-  // Corpo da fonte proporcional à placa: 600 na placa de 824 (o IF com cerca de 52% da altura da placa, como os
+  // Corpo da fonte proporcional à placa: 600 na placa de 824 (o IF com cerca de 51% da altura da placa, como os
   // glifos dos ícones vizinhos no Dock), maior no plano.
-  const corpo = (relevo ? 600 : 630) * (semilado / 412);
+  const corpo = (relevo ? 600 : 650) * (semilado / 412);
   const e = corpo / 100;
-  const esquerda = IF.caixa[0];
-  const direita = PONTO_ICONE.centro + PONTO_ICONE.raio;
-  const x = meio - ((direita - esquerda) * e) / 2 - esquerda * e;
+  const x = meio - ((IF.caixa[0] + IF.caixa[2]) * e) / 2;
   const base = meio + (ALTURA_MAIUSCULA * e) / 2;
-  const raio = PONTO_ICONE.raio * e;
-  const cx = x + PONTO_ICONE.centro * e;
-  const cy = base - raio;
   const letras: Forma = { tipo: "caminho", d: IF.d, escala: e, origem: [x, base] };
-  const ponto: Forma = { tipo: "circulo", centro: [cx, cy], raio };
   const placa: Forma = { tipo: "superelipse", centro, semilado, expoente: 5 };
-  // Sem a sombra externa, a placa do Windows precisa de um aro mais visível para não sumir em fundo claro.
+  // Sem a sombra externa, a placa do Windows leva um aro mais largo.
   const borda = relevo ? (plataforma === "mac" ? 4 : 12) : 36;
 
   const camadas: Camada[] = [];
@@ -162,26 +155,23 @@ export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
   camadas.push(
     {
       formas: [placa],
-      preenchimento: {
-        tipo: "linear",
-        de: [meio, meio - semilado],
-        ate: [meio, meio + semilado],
-        paradas: ["#FFFFFF", "#EEF2F3"],
-      },
+      preenchimento: relevo
+        ? { tipo: "linear", de: [meio, meio - semilado], ate: [meio, meio + semilado], paradas: ["#FFEC80", "#FFDB38"] }
+        : { tipo: "cor", cor: COR.grifo },
     },
     {
       formas: [placa, { tipo: "superelipse", centro, semilado: semilado - borda, expoente: 5, furo: true }],
-      preenchimento: { tipo: "cor", cor: "#D5DBDD" },
+      preenchimento: { tipo: "cor", cor: "#E9C92F" },
     },
   );
   if (relevo) {
     camadas.push(
       {
-        formas: [letras, ponto],
-        preenchimento: { tipo: "cor", cor: "#06323A" },
-        opacidade: 0.35,
-        desfoque: 0.028 * corpo,
-        deslocamento: [0, 0.032 * corpo],
+        formas: [letras],
+        preenchimento: { tipo: "cor", cor: "#7A6200" },
+        opacidade: 0.3,
+        desfoque: 0.022 * corpo,
+        deslocamento: [0, 0.026 * corpo],
       },
       {
         formas: [letras],
@@ -189,24 +179,12 @@ export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
           tipo: "linear",
           de: [x, base - ALTURA_MAIUSCULA * e],
           ate: [x, base],
-          paradas: ["#1E96A6", "#0C5763"],
-        },
-      },
-      {
-        formas: [ponto],
-        preenchimento: {
-          tipo: "radial",
-          centro: [cx - raio + 0.7 * raio, cy - raio + 0.6 * raio],
-          raio: 1.6 * raio,
-          paradas: ["#F09A4E", "#B0571A"],
+          paradas: ["#34343A", "#101013"],
         },
       },
     );
   } else {
-    camadas.push(
-      { formas: [letras], preenchimento: { tipo: "cor", cor: COR.petroleo } },
-      { formas: [ponto], preenchimento: { tipo: "cor", cor: COR.cobre } },
-    );
+    camadas.push({ formas: [letras], preenchimento: { tipo: "cor", cor: COR.grafite } });
   }
   return { largura: LADO_ICONE, altura: LADO_ICONE, titulo: "Simplifica IF", camadas };
 }
@@ -269,11 +247,6 @@ function dDaForma(forma: Forma): string {
   switch (forma.tipo) {
     case "caminho":
       return caminhoTransformado(forma.d, forma.escala, forma.origem);
-    case "circulo": {
-      const [cx, cy] = forma.centro;
-      const r = forma.raio;
-      return `M${num(cx - r)} ${num(cy)}A${num(r)} ${num(r)} 0 1 0 ${num(cx + r)} ${num(cy)}A${num(r)} ${num(r)} 0 1 0 ${num(cx - r)} ${num(cy)}Z`;
-    }
     case "superelipse": {
       const pontos = pontosSuperelipse(forma.centro, forma.semilado, forma.expoente, 256, forma.furo);
       return `M${pontos.map(([px, py]) => `${num(px)} ${num(py)}`).join("L")}Z`;

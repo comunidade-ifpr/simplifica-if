@@ -153,11 +153,7 @@ export function LinhaPendencia({
             <ul className="flex flex-col gap-1 text-small">
               {p.fontes.map((fonte) => (
                 <li key={fonte.link}>
-                  <button
-                    type="button"
-                    className="cursor-pointer text-left text-link underline underline-offset-2 hover:no-underline"
-                    onClick={() => aoAbrirLink(fonte.link)}
-                  >
+                  <button type="button" className="text-left link-grifo" onClick={() => aoAbrirLink(fonte.link)}>
                     {fonte.rotulo}
                   </button>
                 </li>

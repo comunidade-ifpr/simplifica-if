@@ -39,16 +39,16 @@ export function IndicadorConexao() {
   const api = useApi();
   const segundos = useSegundosAte(estado.fase === "reconectando" ? estado.proximaEm : undefined);
   return (
-    <div className="ml-auto shrink-0 lg:min-w-0 lg:shrink" role="status" aria-live="polite" data-fase={estado.fase}>
+    <div className="shrink-0 lg:min-w-0 lg:shrink" role="status" aria-live="polite" data-fase={estado.fase}>
       {estado.fase === "conectada" ? null : (
         <div
-          className="flex min-w-0 items-center gap-2 rounded-full bg-black/25 px-3 py-1 text-sm text-white"
+          className="flex min-w-0 items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-sm"
           title={textoConexao(estado, segundos)}
         >
           <span
             aria-hidden
             className={cn(
-              "size-2.5 shrink-0 rounded-full ring-1 ring-white/70",
+              "size-2.5 shrink-0 rounded-full",
               estado.fase === "conectando" ? "bg-warning motion-safe:animate-pulse" : "bg-destructive",
             )}
           />

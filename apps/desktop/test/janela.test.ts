@@ -7,7 +7,7 @@ import { ALTURA_BARRA_TITULO, corFundoJanela, opcoesBarraTitulo } from "../src/j
 
 describe("opcoesBarraTitulo", () => {
   test("macOS: hiddenInset, semáforos à esquerda e centralizados na barra", () => {
-    const opcoes = opcoesBarraTitulo("darwin");
+    const opcoes = opcoesBarraTitulo("darwin", false);
     expect(opcoes.titleBarStyle).toBe("hiddenInset");
     expect(opcoes.titleBarOverlay).toBeUndefined();
     const posicao = opcoes.trafficLightPosition!;
@@ -17,10 +17,12 @@ describe("opcoesBarraTitulo", () => {
   });
 
   test.each(["win32", "linux"] as const)("%s: hidden com overlay transparente da altura da barra", (plataforma) => {
-    const opcoes = opcoesBarraTitulo(plataforma);
+    const opcoes = opcoesBarraTitulo(plataforma, false);
     expect(opcoes.titleBarStyle).toBe("hidden");
     expect(opcoes.trafficLightPosition).toBeUndefined();
-    expect(opcoes.titleBarOverlay).toEqual({ color: "#01000000", symbolColor: "#ffffff", height: ALTURA_BARRA_TITULO });
+    expect(opcoes.titleBarOverlay).toEqual({ color: "#01000000", symbolColor: "#17171a", height: ALTURA_BARRA_TITULO });
+    // No escuro, os símbolos clareiam com o texto.
+    expect(opcoesBarraTitulo(plataforma, true).titleBarOverlay?.symbolColor).toBe("#f1f1f3");
   });
 
   test("a altura bate com a da barra na interface", async () => {
@@ -31,7 +33,7 @@ describe("opcoesBarraTitulo", () => {
 
 describe("corFundoJanela", () => {
   test("o fundo da interface no tema claro e no escuro, nunca branco puro no escuro", () => {
-    expect(corFundoJanela(false)).toBe("#fafafa");
-    expect(corFundoJanela(true)).toBe("#111517");
+    expect(corFundoJanela(false)).toBe("#ffffff");
+    expect(corFundoJanela(true)).toBe("#121214");
   });
 });

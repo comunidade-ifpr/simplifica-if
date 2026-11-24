@@ -26,17 +26,7 @@ export function SeletorTema() {
   const rotulo = `Tema: ${atual.rotulo.toLowerCase()}`;
   return (
     <Menu>
-      <MenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className="text-white [--control-icon-color:currentColor] hover:text-white [:hover,[data-pressed],[data-popup-open]]:bg-white/10"
-          />
-        }
-        aria-label={rotulo}
-        title={rotulo}
-      >
+      <MenuTrigger render={<Button variant="ghost" size="icon-sm" />} aria-label={rotulo} title={rotulo}>
         <atual.Icone />
       </MenuTrigger>
       <MenuPopup sideOffset={6}>

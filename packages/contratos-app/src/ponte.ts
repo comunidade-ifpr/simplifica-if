@@ -213,7 +213,15 @@ export interface JanelaDesktop {
   telaCheia(): Promise<boolean>;
   /** Avisa quando a janela entra ou sai da tela cheia; devolve a função que para de avisar. */
   aoMudarTelaCheia(ouvinte: (telaCheia: boolean) => void): () => void;
+  /**
+   * O tema que a pessoa escolheu na interface: o fundo da janela e os símbolos dos botões do sistema
+   * (Windows e Linux) seguem a escolha, e não o tema do sistema.
+   */
+  temaDoApp(tema: TemaDoApp): Promise<void>;
 }
+
+/** A escolha de tema da interface (`apps/web/src/tema.ts`). */
+export type TemaDoApp = "sistema" | "claro" | "escuro";
 
 /** O estado da atualização do app, como a seção "Atualizações" mostra. */
 export interface EstadoAtualizacaoApp {
@@ -250,6 +258,7 @@ export const CANAIS = {
   mostrarArquivoTarefa: "simplifica:mostrar-arquivo-tarefa",
   pastaParaLixeira: "simplifica:pasta-para-lixeira",
   telaCheia: "simplifica:tela-cheia",
+  temaDoApp: "simplifica:tema-do-app",
   /** Do processo principal para a janela: entrou (`true`) ou saiu (`false`) da tela cheia. */
   telaCheiaMudou: "simplifica:tela-cheia-mudou",
 } as const;

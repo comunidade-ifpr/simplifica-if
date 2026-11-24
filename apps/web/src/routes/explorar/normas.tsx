@@ -97,7 +97,7 @@ function Normas() {
                     aria-label={grupo.ano === null ? "Normas sem ano" : `Normas de ${grupo.ano}`}
                     className="grid border-border border-b sm:grid-cols-[6rem_minmax(0,1fr)]"
                   >
-                    <h3 className="px-3 pt-3 font-bold text-muted-foreground text-title tabular-nums [font-stretch:80%] sm:sticky sm:top-0 sm:self-start">
+                    <h3 className="px-3 pt-3 font-bold text-muted-foreground text-title tabular-nums sm:sticky sm:top-0 sm:self-start">
                       {grupo.ano ?? "Sem ano"}
                     </h3>
                     <ul className="divide-y divide-border">

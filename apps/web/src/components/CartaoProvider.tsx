@@ -94,7 +94,7 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
       </p>
       {estado.fase === "aguardando" && estado.url !== undefined ? (
         <a
-          className="inline-flex items-center gap-1 text-link underline underline-offset-2"
+          className="inline-flex items-center gap-1 link-grifo"
           href={estado.url}
           rel="noopener noreferrer"
           target="_blank"

@@ -145,7 +145,7 @@ export const classeLinha =
 
 /** A classe do link do título: o `::after` cobre a linha, e o foco contorna a linha inteira. */
 export const classeLinkLinha =
-  "font-semibold outline-none after:absolute after:inset-0 group-hover:text-link focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-ring";
+  "font-semibold outline-none after:absolute after:inset-0 decoration-link-risco underline-offset-3 group-hover:underline focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-ring";
 
 /**
  * Um item da coleção: a linha inteira abre a página dele no Explorar. O link é só o título (é o que o

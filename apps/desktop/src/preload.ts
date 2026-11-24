@@ -67,6 +67,9 @@ const ponte: PonteDesktop = {
         ipcRenderer.removeListener(CANAIS.telaCheiaMudou, aoReceber);
       };
     },
+    temaDoApp: async (tema) => {
+      await ipcRenderer.invoke(CANAIS.temaDoApp, tema);
+    },
   },
 };
 

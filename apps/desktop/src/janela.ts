@@ -19,12 +19,11 @@ const RAIO_SEMAFORO = 7;
  */
 const COR_OVERLAY = "#01000000";
 
-/** Os símbolos dos botões do sistema: brancos sobre a cor da marca, no tema claro e no escuro. */
-const COR_SIMBOLOS = "#ffffff";
-
-/** O `--background` do `apps/web/src/index.css`, claro e escuro. */
-const FUNDO_CLARO = "#fafafa";
-const FUNDO_ESCURO = "#111517";
+/** O `--background` e o `--foreground` do `apps/web/src/index.css`, claro e escuro. */
+const FUNDO_CLARO = "#ffffff";
+const FUNDO_ESCURO = "#121214";
+const TEXTO_CLARO = "#17171a";
+const TEXTO_ESCURO = "#f1f1f3";
 
 export interface OpcoesBarraTitulo {
   readonly titleBarStyle: "hiddenInset" | "hidden";
@@ -34,7 +33,7 @@ export interface OpcoesBarraTitulo {
 
 // T3: apps/desktop/src/window/DesktopWindow.ts (getWindowTitleBarOptions) — macOS com `hiddenInset` e
 // os semáforos no meio da barra; Windows e Linux com `hidden` e o overlay da altura da barra.
-export function opcoesBarraTitulo(plataforma: NodeJS.Platform): OpcoesBarraTitulo {
+export function opcoesBarraTitulo(plataforma: NodeJS.Platform, escuro: boolean): OpcoesBarraTitulo {
   if (plataforma === "darwin") {
     return {
       titleBarStyle: "hiddenInset",
@@ -43,7 +42,12 @@ export function opcoesBarraTitulo(plataforma: NodeJS.Platform): OpcoesBarraTitul
   }
   return {
     titleBarStyle: "hidden",
-    titleBarOverlay: { color: COR_OVERLAY, symbolColor: COR_SIMBOLOS, height: ALTURA_BARRA_TITULO },
+    // A barra tem a cor do fundo: os símbolos dos botões do sistema vão na cor do texto do tema.
+    titleBarOverlay: {
+      color: COR_OVERLAY,
+      symbolColor: escuro ? TEXTO_ESCURO : TEXTO_CLARO,
+      height: ALTURA_BARRA_TITULO,
+    },
   };
 }
 
