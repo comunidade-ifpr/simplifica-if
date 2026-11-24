@@ -3,28 +3,51 @@
  * só aberta, o trecho do PPC com o rótulo, "Ver no PPC" e "Copiar trecho") e a faixa da IA pausada ("Ver andamento",
  * bloco a bloco, e "Encerrar conferência por aqui").
  */
-import type { BlocoRevisaoIa, EstadoRevisaoIa, PendenciaViva } from "@simplifica-if/contratos-app";
+import type { BlocoRevisaoIa, EstadoRevisaoIa, ListaPendencias, PendenciaViva } from "@simplifica-if/contratos-app";
 import { createRoot } from "react-dom/client";
-import { useState } from "react";
 import { afterEach, expect, it } from "vite-plus/test";
 import { page } from "vite-plus/test/browser";
 import "../index.css";
 import type { Api } from "../conexao/api.ts";
 import { type ContextoApp, ProvedorApp } from "../contexto.tsx";
 import type { ControleConversa } from "../conversa/ControleConversa.ts";
+import { ControleRevisao, estadoIaInicial, estadoInicialRevisao, type EstadoRevisao } from "./ControleRevisao.ts";
 import { FaixaIa } from "./FaixaIa.tsx";
 import { LinhaPendencia } from "./LinhaPendencia.tsx";
-import type { LeituraIa } from "./useLeituraIa.ts";
 
 const montados: Array<() => void> = [];
 afterEach(() => {
   for (const desmontar of montados.splice(0)) desmontar();
 });
 
-/** As peças não chamam o servidor nestes testes: o contexto só satisfaz o `useApi`. */
-const contexto: ContextoApp = { api: {} as Api, conversa: {} as ControleConversa };
+const listaMinima: ListaPendencias = {
+  id: "lista-1",
+  arquivoOriginal: "/a/PPC.docx",
+  sha256: "abc123456789",
+  revisao: null,
+  criadaEm: "2026-11-22T10:00:00Z",
+  atualizadaEm: "2026-11-22T10:00:00Z",
+  provider: "claude",
+  uso: { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 },
+  resultado: {
+    lista: "lista-1",
+    arquivoOriginal: "/a/PPC.docx",
+    arquivoComentado: "/a/PPC - revisão prévia (Simplifica IF).docx",
+    dataBase: "2026-11-22",
+    curso: { cnct: null, forma: null, origem: "documento" },
+    totalCriterios: 3,
+    conferidos: 0,
+    conferidosIa: 0,
+    paraConferirIa: 0,
+    leituraIa: "nenhuma",
+    criterios: [],
+    foraDaRevisao: [],
+  },
+  pendencias: [],
+};
 
-function montar(elemento: React.ReactNode) {
+function montar(elemento: React.ReactNode, revisao: ControleRevisao, api: Api = {} as Api) {
+  const contexto: ContextoApp = { api, conversa: {} as ControleConversa, revisao };
   const conteiner = document.createElement("div");
   conteiner.style.cssText = "width:900px";
   document.body.append(conteiner);
@@ -71,32 +94,26 @@ const viva: PendenciaViva = {
 
 const abertos: string[] = [];
 
-function Linha() {
-  const [aberta, setAberta] = useState(false);
-  return (
+it("a linha recolhida mostra só o título, em até duas linhas; aberta, a explicação com as quebras, o que falta em lista e o trecho com 'Copiar trecho'", async () => {
+  const revisao = new ControleRevisao({} as Api, {
+    ...estadoInicialRevisao(),
+    fase: "resultado",
+    listaId: listaMinima.id,
+    lista: listaMinima,
+  });
+  const conteiner = montar(
     <ul>
       <li data-chave={viva.chave}>
         <LinhaPendencia
           id="pendencia-teste"
-          lista="lista-1"
           viva={viva}
-          provider="claude"
-          aberta={aberta}
-          aoAlternar={() => setAberta((a) => !a)}
-          nova={false}
-          aoAtualizar={() => {}}
-          aoMarcar={() => {}}
-          marcando={false}
           aoAbrirLink={(link) => abertos.push(link)}
           linkNoPpc="ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc"
         />
       </li>
-    </ul>
+    </ul>,
+    revisao,
   );
-}
-
-it("a linha recolhida mostra só o título, em até duas linhas; aberta, a explicação com as quebras, o que falta em lista e o trecho com 'Copiar trecho'", async () => {
-  const conteiner = montar(<Linha />);
   const titulo = () => [...conteiner.querySelectorAll("span")].find((s) => s.textContent === TITULO)!;
   const explicacao = () => conteiner.querySelector<HTMLElement>("[data-explicacao]")!;
   await expect.poll(() => titulo()?.className).toContain("line-clamp-2");
@@ -187,28 +204,35 @@ const pausada = {
   atualizadaEm: "2026-11-22T10:05:00Z",
 } satisfies EstadoRevisaoIa;
 
+const estadoComIa = (estadoIa: EstadoRevisaoIa): EstadoRevisao => ({
+  ...estadoInicialRevisao(),
+  fase: "resultado",
+  listaId: listaMinima.id,
+  lista: listaMinima,
+  ia: {
+    ...estadoIaInicial(),
+    providerEscolhido: estadoIa.provider,
+    usaveis: ["claude"],
+    modo: estadoIa.modo,
+    estado: estadoIa,
+  },
+});
+
 it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar conferência por aqui' encerra", async () => {
   let encerrou = 0;
-  const leitura = {
-    provider: "claude",
-    usaveis: ["claude"],
-    modo: "rapido",
-    escolherProvider: () => {},
-    escolherModo: () => {},
-    estado: pausada,
-    estimando: false,
-    carregando: false,
-    semIa: false,
-    avisoPendente: false,
-    erro: undefined,
-    ocupada: false,
-    iniciar: () => {},
-    pausar: () => {},
-    encerrar: () => (encerrou += 1),
-    tentarDeNovo: () => {},
-    escolherArquivo: undefined,
-  } satisfies LeituraIa;
-  montar(<FaixaIa leitura={leitura} faltam={2} />);
+  const clienteFake = {
+    "revisaoPpc.apagarIa": () => {
+      encerrou += 1;
+      return Promise.resolve(null);
+    },
+    "revisaoPpc.lista": () => Promise.resolve(listaMinima),
+    "revisaoPpc.prepararIa": () => Promise.resolve({ ...pausada, situacao: "preparada" as const }),
+  };
+  const apiFake = {
+    chamar: (fn: (cliente: typeof clienteFake) => Promise<unknown>) => fn(clienteFake),
+  } as unknown as Api;
+  const revisao = new ControleRevisao(apiFake, estadoComIa(pausada));
+  montar(<FaixaIa faltam={2} />, revisao, apiFake);
 
   await expect.element(page.getByText("Conferência pausada — 1 de 3 temas")).toBeVisible();
   // Quieta: o painel só abre a pedido.
@@ -222,31 +246,13 @@ it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar confer�
   await expect.element(page.getByText(/Modelo claude-sonnet-5-5/)).toBeVisible();
 
   await page.getByRole("button", { name: "Encerrar conferência por aqui" }).click();
-  expect(encerrou).toBe(1);
+  await expect.poll(() => encerrou).toBe(1);
 });
 
 it("sem tema lido, a faixa pausada não oferece encerrar", async () => {
   const semProntos = { ...pausada, blocos: pausada.blocos.map((b) => ({ ...b, estado: "pendente" as const })) };
-  const leitura = {
-    provider: "claude",
-    usaveis: ["claude"],
-    modo: "rapido",
-    escolherProvider: () => {},
-    escolherModo: () => {},
-    estado: semProntos,
-    estimando: false,
-    carregando: false,
-    semIa: false,
-    avisoPendente: false,
-    erro: undefined,
-    ocupada: false,
-    iniciar: () => {},
-    pausar: () => {},
-    encerrar: () => {},
-    tentarDeNovo: () => {},
-    escolherArquivo: undefined,
-  } satisfies LeituraIa;
-  montar(<FaixaIa leitura={leitura} faltam={3} />);
+  const revisao = new ControleRevisao({} as Api, estadoComIa(semProntos));
+  montar(<FaixaIa faltam={3} />, revisao);
   await expect.element(page.getByRole("button", { name: "Retomar" })).toBeVisible();
   expect(page.getByRole("button", { name: "Encerrar conferência por aqui" }).query()).toBeNull();
 });

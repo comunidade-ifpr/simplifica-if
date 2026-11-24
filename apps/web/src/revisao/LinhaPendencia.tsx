@@ -7,14 +7,10 @@
  * (ou "Desfazer"), "Sugerir texto" e, no ⋯, "Discordar", "Reconferir com o arquivo novo" e "Detalhes".
  *
  * Cada ação com IA mostra a estimativa antes de confirmar; a sugestão nunca é aplicada ao documento.
+ * As ações (`sugerir`, `contestar`, `revisarDeNovo`, `marcar`) passam pelo `ControleRevisao`, que
+ * também unifica a recuperação quando o servidor pede o arquivo de novo.
  */
-import type {
-  EstimativaAcao,
-  ListaPendencias,
-  PendenciaViva,
-  Provider,
-  SugestaoTexto,
-} from "@simplifica-if/contratos-app";
+import type { EstimativaAcao, PendenciaViva, SugestaoTexto } from "@simplifica-if/contratos-app";
 import { CheckIcon, ClipboardCopyIcon, EllipsisIcon, FileSearchIcon, SparklesIcon, Undo2Icon } from "lucide-react";
 import { type FormEvent, type ReactNode, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
@@ -25,15 +21,15 @@ import { LinhaExpansivel } from "../components/ui/linha-expansivel.tsx";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../components/ui/menu.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { Textarea } from "../components/ui/textarea.tsx";
-import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import { useApi } from "../contexto.tsx";
+import { useRevisao } from "../contexto.tsx";
 import { dataCurta } from "../lib/formato.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { cn } from "~/lib/utils";
+import { providerDaRevisao } from "./ControleRevisao.ts";
+import { nomeIa } from "./FaixaIa.tsx";
 import { textoEstimativaAcao } from "./ia.ts";
 import { IndicadorGravidade } from "./IndicadorGravidade.tsx";
 import { gravidadeDe, localizacao } from "./lista.ts";
-import { nomeIa } from "./FaixaIa.tsx";
 
 type Painel = "nenhum" | "sugerir" | "discordar" | "reconferir" | "detalhes";
 
@@ -41,35 +37,17 @@ const FILETE = { corrigir: "border-grav-corrigir", conferir: "border-grav-confer
 
 export function LinhaPendencia({
   id,
-  lista,
   viva,
-  provider,
-  aberta,
-  aoAlternar,
-  nova,
-  aoAtualizar,
-  aoMarcar,
-  marcando,
   aoAbrirLink,
   linkNoPpc,
 }: {
   readonly id: string;
-  readonly lista: string;
   readonly viva: PendenciaViva;
-  /** A IA das ações (a da leitura da lista, ou a padrão). */
-  readonly provider: Provider;
-  readonly aberta: boolean;
-  readonly aoAlternar: () => void;
-  /** Chegou com a leitura com IA e ainda não foi aberta. */
-  readonly nova: boolean;
-  readonly aoAtualizar: (lista: ListaPendencias) => void;
-  readonly aoMarcar: (situacao: "aberta" | "resolvida") => void;
-  readonly marcando: boolean;
   readonly aoAbrirLink: (link: string) => void;
   /** O trecho no PPC revisado (`ifpr://revisao/…#p-<chave>`), para "Ver no PPC". */
   readonly linkNoPpc: string;
 }) {
-  const api = useApi();
+  const [estado, revisao] = useRevisao();
   const p = viva.pendencia;
   const gravidade = gravidadeDe(p);
   const feita = viva.situacao === "resolvida";
@@ -77,24 +55,30 @@ export function LinhaPendencia({
   const onde = localizacao(p);
   const faltas = p.faltas.map((falta) => falta.trim()).filter(Boolean);
   const [painelEscolhido, setPainel] = useState<Painel>("nenhum");
-  const [ocupada, setOcupada] = useState(false);
-  const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
-  const base = { lista, chave: viva.chave };
+
+  const aberta = estado.aberta === viva.chave;
+  const nova = estado.novas.has(viva.chave);
+  const marcando = estado.marcando === viva.chave;
+  const ocupada = estado.acaoPendencia === viva.chave;
+  const erro = estado.erroPendencia?.chave === viva.chave ? estado.erroPendencia.erro : undefined;
+  const pedeArquivo =
+    typeof estado.origemArquivoDeNovo === "object" &&
+    estado.origemArquivoDeNovo.pendencia === viva.chave &&
+    ponteDesktop()?.escolherDocx !== undefined;
+  const provider = providerDaRevisao(estado);
 
   // Fechada a linha, os painéis abertos nela fecham também.
   const painel = aberta ? painelEscolhido : "nenhum";
 
-  const executar = async (acao: () => Promise<ListaPendencias>) => {
-    setOcupada(true);
-    setErro(undefined);
-    try {
-      aoAtualizar(await acao());
-      setPainel("nenhum");
-    } catch (motivo) {
-      setErro(explicarErro(motivo));
-    } finally {
-      setOcupada(false);
-    }
+  const fecharPainel = () => {
+    setPainel("nenhum");
+    revisao.limparErroPendencia(viva.chave);
+  };
+
+  const rodar = (acao: Promise<boolean>) => {
+    void acao.then((ok) => {
+      if (ok) setPainel("nenhum");
+    });
   };
 
   const cabecalho = (
@@ -125,7 +109,7 @@ export function LinhaPendencia({
       aberta={aberta}
       aoAlternar={() => {
         setPainel("nenhum");
-        aoAlternar();
+        revisao.alternarPendencia(viva.chave);
       }}
       cabecalho={cabecalho}
     >
@@ -185,11 +169,16 @@ export function LinhaPendencia({
 
         <div className="flex flex-wrap items-center gap-2">
           {feita || retirada ? (
-            <Button size="sm" variant="outline" disabled={marcando} onClick={() => aoMarcar("aberta")}>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={marcando}
+              onClick={() => void revisao.marcar(viva.chave, "aberta")}
+            >
               <Undo2Icon /> Desfazer
             </Button>
           ) : (
-            <Button size="sm" disabled={marcando} onClick={() => aoMarcar("resolvida")}>
+            <Button size="sm" disabled={marcando} onClick={() => void revisao.marcar(viva.chave, "resolvida")}>
               {marcando ? <Spinner /> : <CheckIcon />} Feito
             </Button>
           )}
@@ -219,9 +208,9 @@ export function LinhaPendencia({
             titulo={`Pedir ao ${nomeIa(provider)} uma redação para este ponto`}
             descricao="A IA usa só o trecho do PPC, o CNCT e as normas deste critério; o que o PPC não informa vem marcado para você completar."
             botao="Pedir sugestão"
-            estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "sugerir", provider }))}
-            aoConfirmar={() => void executar(() => api.chamar((c) => c["revisaoPpc.sugerir"]({ ...base, provider })))}
-            aoFechar={() => setPainel("nenhum")}
+            estimar={() => revisao.estimarAcao(viva.chave, "sugerir")}
+            aoConfirmar={() => rodar(revisao.sugerir(viva.chave))}
+            aoFechar={fecharPainel}
             ocupada={ocupada}
           />
         ) : null}
@@ -229,26 +218,27 @@ export function LinhaPendencia({
           <Discordar
             nome={nomeIa(provider)}
             doCodigo={p.origem === "codigo"}
-            estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "contestar", provider }))}
-            aoEnviar={(motivo) =>
-              void executar(() => api.chamar((c) => c["revisaoPpc.contestar"]({ ...base, motivo, provider })))
-            }
-            aoFechar={() => setPainel("nenhum")}
+            estimar={() => revisao.estimarAcao(viva.chave, "contestar")}
+            aoEnviar={(motivo) => rodar(revisao.contestar(viva.chave, motivo))}
+            aoFechar={fecharPainel}
             ocupada={ocupada}
           />
         ) : null}
         {painel === "reconferir" ? (
           <Reconferir
-            estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "revisarDeNovo", provider }))}
-            aoEscolher={(arquivo) =>
-              void executar(() => api.chamar((c) => c["revisaoPpc.revisarDeNovo"]({ ...base, arquivo, provider })))
-            }
-            aoFechar={() => setPainel("nenhum")}
+            estimar={() => revisao.estimarAcao(viva.chave, "revisarDeNovo")}
+            aoEscolher={(arquivo) => rodar(revisao.revisarDeNovo(viva.chave, arquivo))}
+            aoFechar={fecharPainel}
             ocupada={ocupada}
           />
         ) : null}
-        {painel === "detalhes" ? <Detalhes viva={viva} aoFechar={() => setPainel("nenhum")} /> : null}
+        {painel === "detalhes" ? <Detalhes viva={viva} aoFechar={fecharPainel} /> : null}
         {erro === undefined ? null : <AvisoErro erro={erro} />}
+        {erro !== undefined && pedeArquivo ? (
+          <Button variant="outline" className="self-start" onClick={() => rodar(revisao.escolherArquivoDeNovo())}>
+            Escolher o arquivo de novo
+          </Button>
+        ) : null}
       </div>
     </LinhaExpansivel>
   );

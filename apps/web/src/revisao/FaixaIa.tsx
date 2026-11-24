@@ -17,8 +17,11 @@ import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "../compon
 import { RadioCartao } from "../components/ui/radio-cartao.tsx";
 import { Segmented } from "../components/ui/segmented.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
+import { useRevisao } from "../contexto.tsx";
+import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES } from "../providers.ts";
 import { cn } from "~/lib/utils";
+import { providerEfetivoIa, semIaDisponivel } from "./ControleRevisao.ts";
 import {
   blocosProntos,
   contagemTemas,
@@ -29,7 +32,6 @@ import {
   textoEstimativa,
 } from "./ia.ts";
 import { plural } from "./lista.ts";
-import type { LeituraIa } from "./useLeituraIa.ts";
 
 export const nomeIa = (provider: Provider) => DESCRICOES[provider].nome;
 
@@ -118,8 +120,11 @@ function BotaoAndamento({ aberto, aoAlternar }: { readonly aberto: boolean; read
   );
 }
 
-export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; readonly faltam: number }) {
-  const { estado, provider } = leitura;
+export function FaixaIa({ faltam }: { readonly faltam: number }) {
+  const [revisaoEstado, revisao] = useRevisao();
+  const ia = revisaoEstado.ia;
+  const { estado } = ia;
+  const provider = providerEfetivoIa(ia);
   const [andamento, setAndamento] = useState(false);
   const nome = nomeIa(estado?.provider ?? provider);
   const rotulo = "Conferência com IA";
@@ -144,21 +149,21 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
                 (estado.limite ? " O que já foi conferido fica guardado; retome quando o limite renovar." : "")
               : `O ${nome} está conferindo os temas um a um. Você pode trabalhar na lista enquanto isso.`}
           </p>
-          <ErroDaLeitura leitura={leitura} />
+          <ErroDaLeitura />
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           {verAndamento}
           {podeEncerrar ? (
-            <Button variant="ghost" disabled={leitura.ocupada} onClick={leitura.encerrar}>
+            <Button variant="ghost" disabled={ia.ocupada} onClick={() => void revisao.cancelarIa()}>
               Encerrar conferência por aqui
             </Button>
           ) : null}
           {pausada ? (
-            <Button disabled={leitura.ocupada} onClick={leitura.iniciar}>
+            <Button disabled={ia.ocupada} onClick={() => void revisao.retomarIa()}>
               <PlayIcon /> Retomar
             </Button>
           ) : (
-            <Button variant="outline" disabled={leitura.ocupada} onClick={leitura.pausar}>
+            <Button variant="outline" disabled={ia.ocupada} onClick={() => void revisao.pausarIa()}>
               <PauseIcon /> Pausar
             </Button>
           )}
@@ -179,12 +184,12 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           {verAndamento}
-          <Button onClick={leitura.tentarDeNovo}>Tentar de novo</Button>
+          <Button onClick={() => void revisao.tentarDeNovoIa()}>Tentar de novo</Button>
         </div>
       </Caixa>
     );
 
-  if (leitura.semIa)
+  if (semIaDisponivel(ia))
     return (
       <Caixa rotulo={rotulo}>
         <p className="max-w-[68ch] text-body">
@@ -196,7 +201,7 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
       </Caixa>
     );
 
-  if (leitura.avisoPendente)
+  if (ia.avisoPendente)
     return (
       <Caixa rotulo={rotulo}>
         <p className="max-w-[68ch] text-body">
@@ -215,45 +220,55 @@ export function FaixaIa({ leitura, faltam }: { readonly leitura: LeituraIa; read
         <p className="max-w-[68ch] text-body">
           {faltamTexto}{" "}
           {preparada === undefined ? null : (
-            <span className={leitura.estimando ? "text-muted-foreground" : undefined}>
-              {textoEstimativa(preparada.estimativa, leitura.modo, nome)}
+            <span className={ia.estimando ? "text-muted-foreground" : undefined}>
+              {textoEstimativa(preparada.estimativa, ia.modo, nome)}
             </span>
           )}
         </p>
-        {leitura.estimando || (preparada === undefined && leitura.erro === undefined) ? (
+        {ia.estimando || (preparada === undefined && ia.erro === undefined) ? (
           <p role="status" className="flex items-center gap-2 text-muted-foreground text-small">
             <Spinner className="size-3.5" /> Calculando quanto a conferência usa do seu plano…
           </p>
         ) : null}
-        <ErroDaLeitura leitura={leitura} />
+        <ErroDaLeitura />
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <Button disabled={preparada === undefined || leitura.estimando || leitura.ocupada} onClick={leitura.iniciar}>
-          {leitura.ocupada ? <Spinner /> : <MarcaIa provider={estado?.provider ?? provider} />}
+        <Button
+          disabled={preparada === undefined || ia.estimando || ia.ocupada}
+          onClick={() => void revisao.iniciarIa()}
+        >
+          {ia.ocupada ? <Spinner /> : <MarcaIa provider={estado?.provider ?? provider} />}
           Conferir com o {nome}
         </Button>
-        <Opcoes leitura={leitura} faltam={faltam} />
+        <Opcoes faltam={faltam} />
       </div>
     </Caixa>
   );
 }
 
 /** O erro da leitura e, quando o servidor pede o arquivo de novo, o botão para escolhê-lo. */
-function ErroDaLeitura({ leitura }: { readonly leitura: LeituraIa }) {
-  if (leitura.erro === undefined) return null;
+function ErroDaLeitura() {
+  const [estado, revisao] = useRevisao();
+  const erro = estado.ia.erro;
+  if (erro === undefined) return null;
+  const podeEscolher = estado.origemArquivoDeNovo === "ia" && ponteDesktop()?.escolherDocx !== undefined;
   return (
     <>
-      <AvisoErro erro={leitura.erro} />
-      {leitura.escolherArquivo === undefined ? null : (
-        <Button variant="outline" className="self-start" onClick={leitura.escolherArquivo}>
+      <AvisoErro erro={erro} />
+      {podeEscolher ? (
+        <Button variant="outline" className="self-start" onClick={() => void revisao.escolherArquivoDeNovo()}>
           Escolher o arquivo de novo
         </Button>
-      )}
+      ) : null}
     </>
   );
 }
 
-function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly faltam: number }) {
+function Opcoes({ faltam }: { readonly faltam: number }) {
+  const [estado, revisao] = useRevisao();
+  const ia = estado.ia;
+  const usaveis = ia.usaveis ?? [];
+  const provider = providerEfetivoIa(ia);
   return (
     <Popover>
       <PopoverTrigger render={<Button variant="ghost" />}>
@@ -261,14 +276,14 @@ function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly fal
       </PopoverTrigger>
       <PopoverContent className="flex w-[22rem] flex-col gap-5 p-5">
         <PopoverTitle className="text-heading">Opções da conferência</PopoverTitle>
-        {leitura.usaveis.length > 1 ? (
+        {usaveis.length > 1 ? (
           <div className="flex flex-col gap-2">
             <p className="font-medium text-muted-foreground text-micro">Com qual IA</p>
             <RadioCartao<Provider>
               rotuloAria="Com qual IA"
-              valor={leitura.provider}
-              aoMudar={leitura.escolherProvider}
-              opcoes={leitura.usaveis.map((p) => ({
+              valor={provider}
+              aoMudar={(p) => revisao.escolherProvider(p)}
+              opcoes={usaveis.map((p) => ({
                 valor: p,
                 titulo: nomeIa(p),
                 icone: <MarcaIa provider={p} />,
@@ -281,15 +296,15 @@ function Opcoes({ leitura, faltam }: { readonly leitura: LeituraIa; readonly fal
           <Segmented<ModoRevisaoIa>
             cheio
             rotuloAria="O que conferir"
-            valor={leitura.modo}
-            aoMudar={leitura.escolherModo}
+            valor={ia.modo}
+            aoMudar={(modo) => revisao.escolherModo(modo)}
             opcoes={[
               { valor: "rapido", rotulo: "O que mais devolve PPC" },
               { valor: "completo", rotulo: `Todos os ${faltam}` },
             ]}
           />
           <p className="text-muted-foreground text-small">
-            {leitura.modo === "rapido"
+            {ia.modo === "rapido"
               ? "Os critérios que impedem o envio e os temas que a PROENS mais devolve."
               : `Os ${plural(faltam, "critério que pede", "critérios que pedem")} leitura.`}
           </p>

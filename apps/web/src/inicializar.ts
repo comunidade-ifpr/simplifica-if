@@ -10,6 +10,7 @@ import type { OrigemConexao } from "./conexao/origem.ts";
 import type { ContextoApp } from "./contexto.tsx";
 import { ControleConversa } from "./conversa/ControleConversa.ts";
 import { layerTracer } from "./diagnostico.ts";
+import { ControleRevisao } from "./revisao/ControleRevisao.ts";
 
 export interface AppIniciado {
   readonly contexto: ContextoApp;
@@ -21,5 +22,12 @@ export async function inicializar(origem: OrigemConexao, opcoes?: Conexao.Opcoes
   // O tracer registra no log do app as chamadas que falham de forma inesperada (`diagnostico.ts`).
   const runtime = ManagedRuntime.make(Layer.merge(Conexao.layerGlobal(origem, opcoes), layerTracer));
   const api = await criarApi(runtime);
-  return { contexto: { api, conversa: new ControleConversa(api) }, encerrar: () => runtime.dispose() };
+  const revisao = new ControleRevisao(api);
+  return {
+    contexto: { api, conversa: new ControleConversa(api), revisao },
+    encerrar: () => {
+      revisao.encerrar();
+      return runtime.dispose();
+    },
+  };
 }

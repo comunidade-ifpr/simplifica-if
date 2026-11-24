@@ -213,6 +213,7 @@ function UltimaRevisao() {
   return (
     <Link
       to="/revisao-ppc"
+      search={{ id: lista.id }}
       className="flex items-center gap-1.5 rounded-md px-2 py-1.5 font-medium text-sm hover:bg-accent"
     >
       <FileSearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
