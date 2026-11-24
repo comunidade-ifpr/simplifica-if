@@ -14,22 +14,26 @@
  *   pelo "Anexar" do app.
  * - `relatos`: "Isto está errado", um por envio (issue aberta no navegador, arquivo salvo na pasta da
  *   tarefa ou texto copiado), com o título e o corpo como a pessoa os aprovou.
+ * - `apagamentos_pendentes`: fila do que falta apagar fora do banco depois de apagar uma conversa
+ *   (cópias do Desfazer e registro do provider).
  *
  * Revisão de PPC com IA:
- * - `revisoes_ia`: uma por revisão. `plano` é o JSON do plano montado em código (os blocos, o texto de
- *   cada pedido, o Markdown do PPC convertido, as fichas e o contexto das transversais): a retomada não
- *   o refaz. `sha256` é o do `.docx` lido na preparação; o resultado final só sai se o arquivo não mudou.
- *   `estimativa`, `uso` e `resultado` em JSON.
+ * - `revisoes_ia`: uma por revisão, ligada à lista de onde nasceu (`lista_id`, `ON DELETE SET NULL`).
+ *   `plano` é o JSON do plano montado em código (os blocos, o texto de cada pedido, o Markdown do PPC
+ *   convertido, as fichas e o contexto das transversais): a retomada não o refaz. `sha256` é o do
+ *   `.docx` lido na preparação; o resultado final só sai se o arquivo não mudou. `estimativa`, `uso`
+ *   e `resultado` em JSON.
  * - `blocos_ia`: o resultado conferido de cada bloco, gravado ao terminar, para a retomada depois de
  *   cota esgotada, limite de taxa, app fechado ou provider caído.
  * - `tentativas_ia`: o uso de cada tentativa, gravado ao fim dela, mesmo quando o bloco não termina
  *   (pausa, limite de taxa, "Pausar", a falha de outro bloco que interrompe este). O uso mostrado na
  *   tela é a soma destas linhas: nada do que se gastou some, nem conta duas vezes.
  *
- * Lista viva de pendências: a lista (com o texto do PPC que as ações com IA usam), a situação e a
- * sugestão de cada pendência, o histórico e o uso de cada ação com IA. A lista que veio de uma revisão
- * com IA some com ela (`ON DELETE CASCADE`). `versao` sobe a cada mudança nas pendências; `versao_copia`
- * é a versão que a cópia comentada reflete (nula: nenhuma), e "Abrir no Word" só a regrava se elas diferem.
+ * Lista viva de pendências: a lista (com o texto do PPC que as ações com IA usam e os resultados da
+ * leitura com IA em `resultados_ia`), a situação e a sugestão de cada pendência, o histórico e o uso
+ * de cada ação com IA. Apagar a revisão com IA só desliga `revisao_id` (`ON DELETE SET NULL`). `versao`
+ * sobe a cada mudança nas pendências; `versao_copia` é a versão que a cópia comentada reflete (nula:
+ * nenhuma), e "Abrir no Word" só a regrava se elas diferem.
  *
  * `copias_comentadas`: o sha256 da última cópia comentada que o app gravou em cada caminho. Um arquivo
  * nesse caminho com outro conteúdo foi editado pela pessoa (ou não é do app) e não é sobrescrito.
@@ -108,15 +112,26 @@ export default Effect.gen(function* () {
   `;
 
   yield* sql`
+    CREATE TABLE apagamentos_pendentes (
+      conversa TEXT PRIMARY KEY,
+      provider TEXT NOT NULL,
+      id_nativo TEXT,
+      pasta_trabalho TEXT NOT NULL,
+      criado_em TEXT NOT NULL,
+      tentativas INTEGER NOT NULL DEFAULT 0,
+      ultima_tentativa_em TEXT
+    )
+  `;
+
+  yield* sql`
     CREATE TABLE revisoes_ia (
       id TEXT PRIMARY KEY,
+      lista_id TEXT REFERENCES listas_pendencias (id) ON DELETE SET NULL,
       arquivo TEXT NOT NULL,
       sha256 TEXT NOT NULL,
       provider TEXT NOT NULL,
       modelo TEXT,
       modo TEXT NOT NULL,
-      cnct TEXT,
-      forma TEXT,
       situacao TEXT NOT NULL,
       motivo TEXT,
       limite INTEGER NOT NULL DEFAULT 0,
@@ -128,6 +143,7 @@ export default Effect.gen(function* () {
     )
   `;
   yield* sql`CREATE INDEX revisoes_ia_atualizada_em ON revisoes_ia (atualizada_em DESC)`;
+  yield* sql`CREATE INDEX revisoes_ia_lista ON revisoes_ia (lista_id)`;
 
   yield* sql`
     CREATE TABLE blocos_ia (
@@ -159,15 +175,15 @@ export default Effect.gen(function* () {
       id TEXT PRIMARY KEY,
       arquivo TEXT NOT NULL,
       sha256 TEXT NOT NULL,
-      revisao_id TEXT REFERENCES revisoes_ia (id) ON DELETE CASCADE,
+      revisao_id TEXT REFERENCES revisoes_ia (id) ON DELETE SET NULL,
       provider TEXT,
       modelo TEXT,
       cnct TEXT,
       forma TEXT,
       markdown TEXT NOT NULL,
       linhas_texto_ia TEXT NOT NULL,
-      nonce TEXT NOT NULL,
       resultado TEXT NOT NULL,
+      resultados_ia TEXT,
       versao INTEGER NOT NULL,
       versao_copia INTEGER,
       criada_em TEXT NOT NULL,

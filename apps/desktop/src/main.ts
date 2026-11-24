@@ -189,7 +189,7 @@ async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> 
         title: NOME,
         message: "Não foi possível abrir o banco de dados local do Simplifica IF.",
         detail: [
-          "O banco pode ter sido atualizado por uma versão mais nova do app ou falhou ao atualizar. Se houver uma cópia .bak na pasta de dados do app, ela foi preservada. Atualize o Simplifica IF ou peça ajuda com os detalhes abaixo.",
+          "O banco pode ter sido atualizado por uma versão mais nova do app ou falhou ao atualizar. Atualize o Simplifica IF ou peça ajuda com os detalhes abaixo.",
           `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
         ].join("\n\n"),
         buttons: ["Sair"],

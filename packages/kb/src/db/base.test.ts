@@ -109,10 +109,7 @@ const criarCheckoutMinimo = (dir: string) =>
     yield* gravar("base-conhecimento/relacoes.yaml", "relacoes: []\n");
     yield* gravar("base-conhecimento/transicoes.yaml", "transicoes: []\n");
     yield* gravar("base-conhecimento/catalogos/cnct/index.json", '{"items":[]}\n');
-    yield* gravar(
-      "base-conhecimento/institucional/ifpr/ppcs/index.json",
-      '{"items":[],"secoes":{"paths":{}}}\n',
-    );
+    yield* gravar("base-conhecimento/institucional/ifpr/ppcs/index.json", '{"items":[],"secoes":{"paths":{}}}\n');
     yield* gravar(
       "base-conhecimento/normas/br/leis/LEI_BR_1-2020_teste.md",
       [

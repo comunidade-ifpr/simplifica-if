@@ -371,9 +371,9 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       const db = new NodeSqlite.DatabaseSync(conversasDesktop);
       // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
       db.prepare(
-        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, nonce, resultado,
+        `INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, resultado,
           versao, criada_em, atualizada_em)
-         VALUES ('lista-pausada', ?, ?, NULL, '', '[]', 'n', '{}', 0, ?, ?)`,
+         VALUES ('lista-pausada', ?, ?, NULL, '', '[]', '{}', 0, ?, ?)`,
       ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
       db.prepare(
         `INSERT INTO revisoes_ia (id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, motivo, plano,

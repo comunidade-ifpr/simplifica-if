@@ -497,9 +497,9 @@ const make = Effect.gen(function* () {
 
           yield* sql`
             INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, provider, modelo, cnct, forma, markdown,
-              linhas_texto_ia, nonce, resultado, resultados_ia, versao, versao_copia, criada_em, atualizada_em)
+              linhas_texto_ia, resultado, resultados_ia, versao, versao_copia, criada_em, atualizada_em)
             VALUES (${l.id}, ${l.arquivo}, ${l.sha256}, ${l.revisao}, ${l.provider}, ${l.modelo}, ${l.cnct}, ${l.forma},
-              ${l.markdown}, ${linhasTextoIa}, '', ${resultadoJson}, ${resultadosIaJson},
+              ${l.markdown}, ${linhasTextoIa}, ${resultadoJson}, ${resultadosIaJson},
               0, ${ant ? null : 0}, ${data}, ${data})
           `;
           let ordem = 0;
