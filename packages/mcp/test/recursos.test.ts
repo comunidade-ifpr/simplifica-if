@@ -21,7 +21,7 @@ import * as Http from "../src/http.ts";
 import { MIME_RECURSO, MODELOS } from "../src/recursos/recursos.ts";
 import { criarBancoFixture, limparTemporarios } from "./fixture.ts";
 import { DCN_2021, DCN_2026, inserirNormas } from "./fixture-normas.ts";
-import { criarBancoFixturePpcs, PPC_ENFERMAGEM, SECAO_LONGA } from "./fixture-ppcs.ts";
+import { criarBancoFixturePpcs, CURSO_ENFERMAGEM, PPC_ENFERMAGEM, SECAO_LONGA } from "./fixture-ppcs.ts";
 
 afterAll(limparTemporarios);
 
@@ -150,7 +150,7 @@ describe.each([
       expect(resourceTemplates.map((m) => m.uriTemplate)).toEqual([
         "ifpr://norma/{+norma}{#dispositivo}",
         "ifpr://curso/{campus}/{curso}",
-        "ifpr://ppc/{campus}/{curso}{#secao}",
+        "ifpr://ppc/{campus}/{curso}{/versao}{#secao}",
         "ifpr://cnct/{slug}",
         "ifpr://campus/{campus}",
         "ifpr://ficha/{ficha}",
@@ -202,24 +202,24 @@ describe.each([
   it.effect("curso, PPC (índice e seção), CNCT, campus e ficha", () =>
     Effect.gen(function* () {
       const cliente = yield* abrir(bancoPpcs);
-      const curso = conferirEnvelope(yield* ler(cliente, `ifpr://curso/${PPC_ENFERMAGEM}`));
-      expect(curso).toContain(`## [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
+      const curso = conferirEnvelope(yield* ler(cliente, `ifpr://curso/${CURSO_ENFERMAGEM}`));
+      expect(curso).toContain(`## [Técnico em Enfermagem](ifpr://curso/${CURSO_ENFERMAGEM})`);
       expect(curso).toContain("CNCT: [Técnico em Enfermagem](ifpr://cnct/tecnico-em-enfermagem)");
 
       const ppc = yield* ler(cliente, `ifpr://ppc/${PPC_ENFERMAGEM}`);
       const indice = conferirEnvelope(ppc);
       expect(indice).toContain(`**[PPC Técnico em Enfermagem — Curitiba](ifpr://ppc/${PPC_ENFERMAGEM})**`);
       expect(indice).toContain(`(ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1) [avaliacao], linhas 120-130`);
-      expect(indice).toContain(`Curso: [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
+      expect(indice).toContain(`Curso: [Técnico em Enfermagem](ifpr://curso/${CURSO_ENFERMAGEM})`);
       expect(indice).toContain(
-        "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:1-",
+        "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md:1-",
       );
       expect(ppc._meta?.["ifpr/avisos"]).toEqual([expect.objectContaining({ tipo: "fato-extraido" })]);
 
       const secao = conferirEnvelope(yield* ler(cliente, `ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1`));
       expect(secao).toContain("> Texto da seção avaliacao-1.");
       expect(secao).toContain(
-        "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:120-130`",
+        "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md:120-130`",
       );
       expect(secao).not.toContain("estagio-1.");
 
@@ -227,7 +227,7 @@ describe.each([
       expect(cnct).toContain(
         "**[Técnico em Enfermagem (CNCT)](ifpr://cnct/tecnico-em-enfermagem)** — eixo Ambiente e Saúde; carga horária mínima 1200 h",
       );
-      expect(cnct).toContain(`(ifpr://curso/${PPC_ENFERMAGEM})`);
+      expect(cnct).toContain(`(ifpr://curso/${CURSO_ENFERMAGEM})`);
 
       const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/foz-do-iguacu"));
       expect(campus).toContain("fonte: `base-conhecimento/institucional/ifpr/campi/foz-do-iguacu.json`");

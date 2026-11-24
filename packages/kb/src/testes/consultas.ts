@@ -24,7 +24,7 @@ export const CITACOES = [
   "CNCT",
   "texto sem citação",
 ] as const;
-export const PPC = "curitiba/tecnico-em-enfermagem";
+export const PPC = "curitiba/tecnico-em-enfermagem/2023";
 
 /** Cada método de cada serviço de consulta; `markdown` é o PPC lido por quem chama (o pacote fora da base). */
 export const todasAsConsultas = Effect.fn("testes.todasAsConsultas")(function* (markdown: string) {

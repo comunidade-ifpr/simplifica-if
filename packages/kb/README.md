@@ -69,7 +69,8 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `normas/impacto.ts` | a regra do impacto (`impactoEm`, ferramenta `impacto_da_norma`, pura, sobre uma `FonteImpacto` que traz o `id` da norma para a qual foi carregada): fichas e textos da revisão de PPC, normas e PPCs afetados por uma norma |
 | `normas/referencia-estruturada.ts` | `{ ref, dispositivo?, papel, nota? }` (Effect Schema), universo de IDs citáveis (normas, stubs, `externo:`, `cnct:`) e texto legível das referências das fichas da revisão de PPC |
 | `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma; `lerTextoSecao` (texto integral de uma seção do índice pelas linhas) |
-| `ppcs/front-matter.ts` | front matter de proveniência dos PPCs (`ppc:<campus>/<curso>`, URL, hash, data, conversor) e leitura com o front matter em branco |
+| `ppcs/ids.ts` | ID permanente dos PPCs (`ppc:<campus>/<curso>/<versao>`), caminho do arquivo e ordem das versões |
+| `ppcs/front-matter.ts` | front matter de proveniência dos PPCs (`ppc:<campus>/<curso>/<versao>`, URL, hash, data, conversor) e leitura com o front matter em branco |
 | `ppcs/topicos.ts` | tópicos da revisão de PPC: tipos de seção por tópico (`dados/topicos-secoes.yaml`) e a taxonomia das fichas (`topicos-fichas.json`) |
 | `ppcs/secoes.ts` | títulos, segmentação com linhas, taxonomias de seção por nível (técnico, ligada ao art. 28 da Res. CNE/CP nº 2/2026, e geral), preview e `textoDaSecao`; `secoesIndexadas` (o recorte do índice publicado, com a chave `<tipo>-<n>` do ID) e `secoesComChave` (todas as seções, as de fora do índice com `<tipo>-x<n>`) |
 | `adequacao/art71.ts` | cursos técnicos sujeitos ao art. 71 da Res. CNE/CP nº 2/2026 e a DCN que cada PPC cita |

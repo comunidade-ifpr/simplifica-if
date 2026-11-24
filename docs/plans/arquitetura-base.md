@@ -29,7 +29,7 @@ A regra está em `packages/kb/src/normas/ids.ts` e em [`padrao-front-matter-legi
 - **Dispositivo:** `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`, `#art5-al-a`, `#anexo1-art5`. A letra de artigo vem colada e em maiúscula, e a alínea é sempre `-al-`: art. 36-A e alínea a do art. 36 não se confundem.
 - **Norma-stub:** citada, sem texto na base (metadados, status e aliases, sem dispositivos), em `base-conhecimento/normas/stubs.yaml`.
 - **Fora da base:** `externo:abnt/nbr/6023`, `externo:cft/res/2019/89`.
-- **Institucional:** `curso:curitiba/tecnico-em-enfermagem`, `campus:curitiba`, `cnct:tecnico-em-enfermagem`, `ficha:CT-CURR-12` e `ppc:curitiba/tecnico-em-enfermagem`, sem versão: a base guarda só o PPC vigente de cada curso, e a fonte de uma versão anterior é o PDF oficial.
+- **Institucional:** `curso:curitiba/tecnico-em-enfermagem`, `campus:curitiba`, `cnct:tecnico-em-enfermagem`, `ficha:CT-CURR-12` e `ppc:curitiba/tecnico-em-enfermagem/2023`, com a versão (o ano do documento): todo PPC que entra na base fica, e o registro do curso aponta o vigente; `campus/curso` sem versão vale pelo vigente.
 - **Todo ato fica; o texto é o consolidado:** norma revogada ou substituída continua na base, com o status calculado pelas relações, porque PPCs e documentos a citam. Dentro de cada ato, os dispositivos guardam a redação atual; "Redação dada pela Lei X" vira metadado, e a redação anterior de um dispositivo alterado pode ficar marcada como não vigente.
 
 ## Estado

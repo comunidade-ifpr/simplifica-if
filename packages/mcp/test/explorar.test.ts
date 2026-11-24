@@ -24,7 +24,7 @@ import {
 } from "../src/leitura/busca-explorar.ts";
 import { layerHandlersRpc, layerLeitura } from "../src/rpc.ts";
 import { criarBancoFixture, limparTemporarios } from "./fixture.ts";
-import { CURSO_ENFERMAGEM, inserirExplorar, REUNIAO_CONSEPE } from "./fixture-explorar.ts";
+import { CURSO_ENFERMAGEM, inserirExplorar, PPC_ENFERMAGEM, REUNIAO_CONSEPE } from "./fixture-explorar.ts";
 import { inserirNormas } from "./fixture-normas.ts";
 
 afterEach(limparTemporarios);
@@ -106,13 +106,19 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       expect(enfermagem).toMatchObject({
         campus_nome: "Curitiba",
         cnct: { slug: "tecnico-em-enfermagem", eixo: "Ambiente e Saúde" },
-        ppc: { chave: CURSO_ENFERMAGEM, ano: 2023 },
+        ppc: { chave: PPC_ENFERMAGEM, ano: 2023 },
         turnos: ["matutino", "noturno"],
         processos: ["processo-seletivo-2025", "processo-seletivo-2026"],
         link: `ifpr://curso/${CURSO_ENFERMAGEM}`,
       });
       expect(dados.campi.find((c) => c.id === "curitiba")?.horarios_url).toBe("https://ifpr.edu.br/curitiba/horarios/");
-      expect(dados.ppcs[0]).toMatchObject({ chave: CURSO_ENFERMAGEM, curso: `ifpr://curso/${CURSO_ENFERMAGEM}` });
+      expect(dados.ppcs[0]).toMatchObject({
+        chave: PPC_ENFERMAGEM,
+        versao: "2023",
+        vigente: true,
+        substituido_por: null,
+        curso: `ifpr://curso/${CURSO_ENFERMAGEM}`,
+      });
       expect(dados.cnct.map((c) => c.slug)).toEqual(["tecnico-em-enfermagem", "tecnico-em-informatica"]);
       const [reuniao] = dados.reunioes;
       expect(reuniao).toMatchObject({ id: REUNIAO_CONSEPE, conselho: "Consepe", data: "2026-03-20" });
@@ -144,7 +150,7 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
         titulo: "Técnico em Enfermagem",
         link: `ifpr://curso/${CURSO_ENFERMAGEM}`,
       });
-      expect(grupo(curso.dados, "ppc")[0]?.link).toBe(`ifpr://ppc/${CURSO_ENFERMAGEM}`);
+      expect(grupo(curso.dados, "ppc")[0]?.link).toBe(`ifpr://ppc/${PPC_ENFERMAGEM}`);
       expect(grupo(curso.dados, "consepe")[0]).toMatchObject({ reuniao: REUNIAO_CONSEPE, link: null });
       const reuniao = yield* comCliente(banco, (c) => c.explorarBuscar({ consulta: "reunião consepe", limite: 6 }));
       expect(grupo(reuniao.dados, "consepe")[0]).toMatchObject({
@@ -156,7 +162,7 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
         c.explorarBuscar({ consulta: "acompanhamento de egres", limite: 6 }),
       );
       expect(grupo(secao.dados, "secao")[0]).toMatchObject({
-        link: `ifpr://ppc/${CURSO_ENFERMAGEM}#avaliacao-1`,
+        link: `ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1`,
         trecho: expect.stringContaining("acompanhamento de egressos"),
       });
 

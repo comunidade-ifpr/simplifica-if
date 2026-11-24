@@ -55,7 +55,7 @@ export const CursoDoIndice = Schema.Struct({
   modalidade: Texto,
   situacao: Texto,
   cnct: Schema.NullOr(Schema.Struct({ slug: Schema.String, nome: Schema.String, eixo: Texto })),
-  /** A chave do PPC convertido (`campus/curso`) e o ano do documento; `null` sem PPC na base. */
+  /** A chave do PPC vigente (`campus/curso/versao`) e o ano do documento; `null` sem PPC na base. */
   ppc: Schema.NullOr(Schema.Struct({ chave: Schema.String, ano: Inteiro })),
   /** Turnos das ofertas registradas, sem repetição. */
   turnos: Schema.Array(Schema.String),
@@ -67,8 +67,14 @@ export const CursoDoIndice = Schema.Struct({
 export type CursoDoIndice = typeof CursoDoIndice.Type;
 
 export const PpcDoIndice = Schema.Struct({
-  /** `campus/curso`. */
+  /** `campus/curso/versao`: o ID permanente do PPC. */
   chave: Schema.String,
+  /** A versão: o ano do documento, com sufixo (`2023-2`) se o curso tem dois PPCs do mesmo ano. */
+  versao: Schema.String,
+  /** O PPC que o curso aponta; os demais são substituídos e ficam na base. */
+  vigente: Schema.Boolean,
+  /** Link da versão seguinte, nos substituídos. */
+  substituido_por: Schema.NullOr(EsquemaLink),
   nome: Schema.String,
   campus: Schema.String,
   campus_nome: Schema.String,

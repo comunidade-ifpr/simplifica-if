@@ -76,6 +76,11 @@ function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso): No
     ins.inserir("ppcs", {
       id: ppcId,
       chave: ppcId.replace(/^ppc:/, ""),
+      // Fora da base não há curso nem versões: o PPC é o próprio "vigente", e a chave do curso é a dele.
+      chave_curso: ppcId.replace(/^ppc:/, ""),
+      versao: "avulso",
+      vigente: 1,
+      substituido_por: null,
       campus_id: "",
       campus_nome: opcoes.campus_nome ?? "",
       curso_slug: "",

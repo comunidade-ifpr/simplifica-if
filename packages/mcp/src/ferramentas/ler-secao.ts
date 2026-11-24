@@ -16,7 +16,7 @@ export const TETO_LER_SECAO = 20000;
 export const Entrada = Schema.Struct({
   id: textoAparado(
     { minimo: 3, maximo: 300 },
-    'ID da seção ("curitiba/tecnico-em-enfermagem#estagio_praticas-1"), vindo de buscar_secoes, ou o link ifpr://ppc/…#secao',
+    'ID da seção ("curitiba/tecnico-em-enfermagem/2023#estagio_praticas-1"), vindo de buscar_secoes, ou o link ifpr://ppc/…#secao',
   ),
   cursor: opcional(
     texto({ minimo: 1 }, "cursor do trecho seguinte de uma seção longa, devolvido pela chamada anterior"),

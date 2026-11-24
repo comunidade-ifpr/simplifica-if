@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 8;
+export const VERSAO_ESQUEMA = 9;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -248,10 +248,16 @@ CREATE TABLE conselhos_itens (
 CREATE INDEX conselhos_itens_curso ON conselhos_itens(curso_id);
 CREATE INDEX conselhos_itens_campus ON conselhos_itens(campus_id);
 
--- PPCs convertidos (index.json + front matter de proveniência).
+-- PPCs convertidos (index.json + front matter de proveniência): todos os que entraram na base, com ID
+-- permanente por versão (ppc:<campus>/<curso>/<versao>). vigente = 1 no PPC que o curso aponta; os
+-- substituídos ficam, com substituido_por apontando a versão seguinte.
 CREATE TABLE ppcs (
   id TEXT PRIMARY KEY,
   chave TEXT NOT NULL UNIQUE,
+  chave_curso TEXT NOT NULL,
+  versao TEXT NOT NULL,
+  vigente INTEGER NOT NULL,
+  substituido_por TEXT,
   campus_id TEXT NOT NULL,
   campus_nome TEXT NOT NULL,
   curso_slug TEXT NOT NULL,
@@ -270,6 +276,7 @@ CREATE TABLE ppcs (
   caracteres INTEGER NOT NULL,
   proveniencia_json TEXT NOT NULL
 );
+CREATE INDEX ppcs_curso ON ppcs(chave_curso, vigente);
 
 -- Markdown integral das normas da base e dos PPCs, como está no arquivo (front matter incluído, quebras
 -- de linha LF), para o leitor do app (M1.6), que gera o HTML na hora. path: o mesmo de normas.path e ppcs.path.

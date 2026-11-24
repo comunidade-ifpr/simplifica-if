@@ -39,6 +39,13 @@ describe("nome curto das citações", () => {
     expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem#xyz-1")).toBe(
       "PPC · Técnico em enfermagem (Curitiba), uma seção",
     );
+    // Com a versão (o ano do documento), o nome a traz; sem ela, é o PPC vigente.
+    expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#avaliacao-1")).toBe(
+      "PPC 2023 · Técnico em enfermagem (Curitiba), seção de avaliação",
+    );
+    expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem/2023-2")).toBe(
+      "PPC 2023-2 · Técnico em enfermagem (Curitiba)",
+    );
     expect(nomeCurtoLink("ifpr://cnct/tecnico-em-enfermagem")).toBe("CNCT · Técnico em enfermagem");
     expect(nomeCurtoLink("ifpr://campus/curitiba")).toBe("Campus Curitiba");
     expect(nomeCurtoLink("ifpr://ficha/CT-CURR-12")).toBe("Critério CT-CURR-12");

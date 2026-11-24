@@ -88,8 +88,8 @@ documentos:
         erro_plantado: PPC de outro campus usado como obrigação
         trecho: Conforme o PPC do Curso Técnico em Enfermagem do Campus Curitiba, é obrigatório que o estágio tenha no mínimo 400 horas.
         fonte:
-          ancora: ppc:curitiba/tecnico-em-enfermagem
-          arquivo: base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md
+          ancora: ppc:curitiba/tecnico-em-enfermagem/2023
+          arquivo: base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md
           trecho: 'Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas'
         explicacao: O PPC de Curitiba prevê 400 horas para o próprio curso; PPC é exemplo institucional, não norma.
         status_aceitos: [NÃO NORMATIVA, SEM SUPORTE NA FONTE, IMPRECISA, CONTRADITÓRIA]

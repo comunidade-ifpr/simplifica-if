@@ -31,8 +31,12 @@ import {
 import { diretorioTemporario, limparTemporarios } from "./fixture.ts";
 import {
   criarBancoFixturePpcs,
+  CURSO_ENFERMAGEM,
+  CURSO_FISICA,
+  CURSO_INFORMATICA,
   LINHAS_SECAO_LONGA,
   PPC_ENFERMAGEM,
+  PPC_ENFERMAGEM_ANTERIOR,
   PPC_FISICA,
   PPC_INFORMATICA,
   SECAO_LONGA,
@@ -105,7 +109,7 @@ const CASOS: [FerramentaTestada, unknown, number][] = [
   [lerSecao, { id: `${PPC_INFORMATICA}#estagio_praticas-1` }, TETO_LER_SECAO],
   [lerSecao, { id: SECAO_LONGA }, TETO_LER_SECAO],
   [listarCursos, { campus: "curitiba" }, TETO_LISTAR_CURSOS],
-  [fichaCurso, { curso: PPC_ENFERMAGEM }, TETO_FICHA_CURSO],
+  [fichaCurso, { curso: CURSO_ENFERMAGEM }, TETO_FICHA_CURSO],
   [fatosPpc, {}, TETO_FATOS],
   [fatosPpc, { divergencias: true }, TETO_FATOS],
 ];
@@ -402,21 +406,21 @@ describe("adequacao_art71", () => {
     Effect.gen(function* () {
       const ctx = contexto();
       const curitiba = (yield* resp(adequacaoArt71, { campus: "curitiba" }, ctx)).resposta.dados;
-      expect(curitiba.cursos.map((c) => c.curso)).toEqual([`curso:${PPC_ENFERMAGEM}`, `curso:${PPC_INFORMATICA}`]);
+      expect(curitiba.cursos.map((c) => c.curso)).toEqual([`curso:${CURSO_ENFERMAGEM}`, `curso:${CURSO_INFORMATICA}`]);
       expect(curitiba.cursos[0]).toEqual({
-        curso: `curso:${PPC_ENFERMAGEM}`,
+        curso: `curso:${CURSO_ENFERMAGEM}`,
         nome: "Técnico em Enfermagem",
         campus: "curitiba",
         forma_oferta: "subsequente",
         ppc_ano: 2023,
         indicador: "cita-cne-cp-1-2021",
         dcn_citadas: [{ id: "br/cne-cp/res/2021/1", linhas: [213, 661], regras: ["estrutural", "orgao-no-documento"] }],
-        link: `ifpr://curso/${PPC_ENFERMAGEM}`,
+        link: `ifpr://curso/${CURSO_ENFERMAGEM}`,
       });
       expect(curitiba.totais["cita-cne-cp-1-2021"]).toBe(2);
-      for (const curso of [PPC_INFORMATICA, `curso:${PPC_INFORMATICA}`, "tecnico-em-informatica"]) {
+      for (const curso of [CURSO_INFORMATICA, `curso:${CURSO_INFORMATICA}`, "tecnico-em-informatica"]) {
         expect((yield* resp(adequacaoArt71, { curso }, ctx)).resposta.dados.cursos.map((c) => c.curso)).toEqual([
-          `curso:${PPC_INFORMATICA}`,
+          `curso:${CURSO_INFORMATICA}`,
         ]);
       }
       const semPpc = (yield* resp(adequacaoArt71, { indicador: "sem-ppc-convertido" }, ctx)).resposta.dados;
@@ -435,7 +439,7 @@ describe("adequacao_art71", () => {
         TETO_ADEQUACAO,
         (d) => d.cursos.map((c) => c.curso),
       );
-      expect(paginas.flat()).toEqual([`curso:${PPC_ENFERMAGEM}`, `curso:${PPC_INFORMATICA}`]);
+      expect(paginas.flat()).toEqual([`curso:${CURSO_ENFERMAGEM}`, `curso:${CURSO_INFORMATICA}`]);
     }),
   );
 });
@@ -591,7 +595,7 @@ describe("listar_cursos", () => {
       const { resposta, texto } = yield* chamar(listarCursos, { campus: "curitiba" }, contexto(), TETO_LISTAR_CURSOS);
       expect(resposta.dados.cursos).toEqual([
         {
-          id: `curso:${PPC_ENFERMAGEM}`,
+          id: `curso:${CURSO_ENFERMAGEM}`,
           nome: "Técnico em Enfermagem",
           campus: { id: "curitiba", nome: "Curitiba" },
           nivel: "médio",
@@ -602,10 +606,10 @@ describe("listar_cursos", () => {
           ppc: { id: `ppc:${PPC_ENFERMAGEM}`, ano: 2023 },
           suap: { id: 151, codigo: "CTB008" },
           turnos: ["matutino"],
-          link: `ifpr://curso/${PPC_ENFERMAGEM}`,
+          link: `ifpr://curso/${CURSO_ENFERMAGEM}`,
         },
         {
-          id: `curso:${PPC_INFORMATICA}`,
+          id: `curso:${CURSO_INFORMATICA}`,
           nome: "Técnico em Informática",
           campus: { id: "curitiba", nome: "Curitiba" },
           nivel: "médio",
@@ -616,7 +620,7 @@ describe("listar_cursos", () => {
           ppc: { id: `ppc:${PPC_INFORMATICA}`, ano: 2022 },
           suap: null,
           turnos: ["noturno"],
-          link: `ifpr://curso/${PPC_INFORMATICA}`,
+          link: `ifpr://curso/${CURSO_INFORMATICA}`,
         },
       ]);
       expect(texto).toContain("ficha_curso");
@@ -628,11 +632,11 @@ describe("listar_cursos", () => {
       const ctx = contexto();
       const ids = (args: Record<string, unknown>) =>
         Effect.map(resp(listarCursos, args, ctx), (r) => r.resposta.dados.cursos.map((c) => c.id));
-      expect(yield* ids({ eixo: "Informação e Comunicação" })).toEqual([`curso:${PPC_INFORMATICA}`]);
-      expect(yield* ids({ turno: "matutino" })).toEqual([`curso:${PPC_ENFERMAGEM}`]);
-      expect(yield* ids({ processo: "processo-seletivo-2025" })).toEqual([`curso:${PPC_ENFERMAGEM}`]);
-      expect(yield* ids({ nivel: "superior" })).toEqual([`curso:${PPC_FISICA}`]);
-      expect(yield* ids({ cnct: "tecnico-em-enfermagem" })).toEqual([`curso:${PPC_ENFERMAGEM}`]);
+      expect(yield* ids({ eixo: "Informação e Comunicação" })).toEqual([`curso:${CURSO_INFORMATICA}`]);
+      expect(yield* ids({ turno: "matutino" })).toEqual([`curso:${CURSO_ENFERMAGEM}`]);
+      expect(yield* ids({ processo: "processo-seletivo-2025" })).toEqual([`curso:${CURSO_ENFERMAGEM}`]);
+      expect(yield* ids({ nivel: "superior" })).toEqual([`curso:${CURSO_FISICA}`]);
+      expect(yield* ids({ cnct: "tecnico-em-enfermagem" })).toEqual([`curso:${CURSO_ENFERMAGEM}`]);
       expect((yield* resp(listarCursos, { campus: "irati" }, ctx)).resposta.avisos.map((a) => a.tipo)).toEqual([
         "nao-encontrado",
       ]);
@@ -648,8 +652,8 @@ describe("listar_cursos", () => {
       expect(paginas.every((p) => p.length === 1)).toBe(true);
       expect(new Set(ids).size).toBe(ids.length);
       expect(ids).toEqual([
-        `curso:${PPC_ENFERMAGEM}`,
-        `curso:${PPC_INFORMATICA}`,
+        `curso:${CURSO_ENFERMAGEM}`,
+        `curso:${CURSO_INFORMATICA}`,
         "curso:foz-do-iguacu/licenciatura-em-fisica",
         "curso:foz-do-iguacu/tecnico-em-aquicultura",
       ]);
@@ -727,19 +731,19 @@ describe("ficha_curso", () => {
       const ctx = contexto();
       const { resposta, texto } = yield* chamar(
         fichaCurso,
-        { curso: `curso:${PPC_ENFERMAGEM}` },
+        { curso: `curso:${CURSO_ENFERMAGEM}` },
         ctx,
         TETO_FICHA_CURSO,
       );
       const d = resposta.dados;
       expect(d.curso).toEqual({
-        id: `curso:${PPC_ENFERMAGEM}`,
+        id: `curso:${CURSO_ENFERMAGEM}`,
         nome: "Técnico em Enfermagem",
         nivel: "médio",
         forma_oferta: "subsequente",
         modalidade: "presencial",
         situacao: "ativo",
-        link: `ifpr://curso/${PPC_ENFERMAGEM}`,
+        link: `ifpr://curso/${CURSO_ENFERMAGEM}`,
       });
       expect(d.campus).toEqual({ id: "curitiba", nome: "Curitiba", link: "ifpr://campus/curitiba" });
       expect(d.cnct).toEqual({
@@ -774,7 +778,7 @@ describe("ficha_curso", () => {
       }
       // adequação: o indicador de adequacao_art71
       expect(d.adequacao_art71).toEqual({
-        indicador: (yield* resp(adequacaoArt71, { curso: PPC_ENFERMAGEM }, ctx)).resposta.dados.cursos[0]!.indicador,
+        indicador: (yield* resp(adequacaoArt71, { curso: CURSO_ENFERMAGEM }, ctx)).resposta.dados.cursos[0]!.indicador,
       });
       expect(d.transicoes_aplicaveis.map((t) => t.id)).toEqual(["dcnept-2026-art71"]);
       expect(resposta.avisos.map((a) => a.tipo)).toEqual(["fato-extraido", "citacao-baixa-confianca"]);
@@ -796,7 +800,7 @@ describe("ficha_curso", () => {
         adequacao_art71: { indicador: "sem-ppc-convertido" },
       });
       expect(semPpc.avisos).toEqual([]);
-      const fisica = (yield* resp(fichaCurso, { curso: PPC_FISICA }, ctx)).resposta.dados;
+      const fisica = (yield* resp(fichaCurso, { curso: CURSO_FISICA }, ctx)).resposta.dados;
       expect(fisica.adequacao_art71).toBeNull();
       expect(fisica.cnct).toBeNull();
       expect(fisica.suap).toBeNull();
@@ -833,5 +837,59 @@ describe("pelo protocolo MCP: o SDK valida a saída no outputSchema", () => {
       expect(erro.isError).toBe(true);
       expect((erro.content as { text: string }[])[0]!.text).toContain("seção não encontrada");
     }).pipe(Effect.scoped),
+  );
+});
+
+describe("PPCs substituídos", () => {
+  it.effect("ficam fora das consultas por padrão; incluir_substituidos e o ID da versão os trazem", () =>
+    Effect.gen(function* () {
+      const ctx = contexto();
+      const citam = (args: object) =>
+        Effect.map(resp(citacoesDaNorma, { id: "br/cne-cp/res/2021/1", ...args }, ctx), (r) =>
+          r.resposta.dados.ppcs.map((p) => [p.ppc, p.substituido_por ?? null]),
+        );
+      expect(yield* citam({})).toEqual([
+        [PPC_ENFERMAGEM, null],
+        [PPC_INFORMATICA, null],
+      ]);
+      expect(yield* citam({ incluir_substituidos: true })).toEqual([
+        [PPC_ENFERMAGEM_ANTERIOR, PPC_ENFERMAGEM],
+        [PPC_ENFERMAGEM, null],
+        [PPC_INFORMATICA, null],
+      ]);
+      // pela versão, o substituído entra mesmo sem a opção; pelo curso, vale o vigente
+      expect(yield* citam({ ppc: PPC_ENFERMAGEM_ANTERIOR })).toEqual([[PPC_ENFERMAGEM_ANTERIOR, PPC_ENFERMAGEM]]);
+      expect(yield* citam({ ppc: CURSO_ENFERMAGEM })).toEqual([[PPC_ENFERMAGEM, null]]);
+
+      const secoes = (args: object) =>
+        Effect.map(resp(buscarSecoes, { consulta: "estágio obrigatório", ...args }, ctx), (r) =>
+          r.resposta.dados.resultados.map((s) => s.id),
+        );
+      expect(yield* secoes({})).not.toContain(`${PPC_ENFERMAGEM_ANTERIOR}#estagio_praticas-1`);
+      expect(yield* secoes({ incluir_substituidos: true })).toContain(`${PPC_ENFERMAGEM_ANTERIOR}#estagio_praticas-1`);
+
+      const impacto = (yield* resp(impactoDaNorma, { id: "br/cne-cp/res/2021/1", incluir_substituidos: true }, ctx))
+        .resposta.dados.ppcs;
+      expect(impacto.total).toBe(3);
+    }),
+  );
+
+  it.effect("ficha_curso lista as versões anteriores; ler_secao sem versão abre o vigente", () =>
+    Effect.gen(function* () {
+      const ctx = contexto();
+      const { resposta, texto } = yield* chamar(fichaCurso, { curso: CURSO_ENFERMAGEM }, ctx, TETO_FICHA_CURSO);
+      expect(resposta.dados.ppcs_substituidos).toEqual([
+        {
+          id: `ppc:${PPC_ENFERMAGEM_ANTERIOR}`,
+          versao: "2018",
+          ano: 2018,
+          substituido_por: PPC_ENFERMAGEM,
+          link: `ifpr://ppc/${PPC_ENFERMAGEM_ANTERIOR}`,
+        },
+      ]);
+      expect(texto).toContain("PPCs anteriores (substituídos, ficam na base)");
+      const vigente = (yield* resp(lerSecao, { id: `${CURSO_ENFERMAGEM}#avaliacao-1` }, ctx)).resposta.dados.secao;
+      expect(vigente.id).toBe(`${PPC_ENFERMAGEM}#avaliacao-1`);
+    }),
   );
 });

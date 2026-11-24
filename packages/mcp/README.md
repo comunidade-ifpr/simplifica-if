@@ -31,7 +31,7 @@ Desde o M1.5, os links que as ferramentas devolvem são recursos MCP, no execut�
 |---|---|---|
 | `ifpr://norma/{+norma}{#dispositivo}` | sem dispositivo, a ficha da norma (vigência, relações, sucessoras, transições); com `#dispositivo`, só o dispositivo, com o caput herdado, os incisos e as notas | `ficha_norma`; `ler_dispositivos` com `filhos` |
 | `ifpr://curso/{campus}/{curso}` | a ficha do curso | `ficha_curso` |
-| `ifpr://ppc/{campus}/{curso}{#secao}` | sem seção, o índice do PPC (fatos × SUAP e o link de cada seção, com as linhas); com `#secao`, o texto literal da seção (a seção longa vem no primeiro trecho, com o `cursor` para continuar em `ler_secao`) | `Leitura.lerPpc`; `ler_secao` |
+| `ifpr://ppc/{campus}/{curso}{/versao}{#secao}` | o PPC pela versão (o ano do documento, como em `ifpr://ppc/curitiba/tecnico-em-enfermagem/2023`); sem a versão, o PPC vigente do curso. Sem seção, o índice do PPC (fatos × SUAP e o link de cada seção, com as linhas); com `#secao`, o texto literal da seção (a seção longa vem no primeiro trecho, com o `cursor` para continuar em `ler_secao`) | `Leitura.lerPpc`; `ler_secao` |
 | `ifpr://cnct/{slug}` | o curso no CNCT (eixo, área, carga horária, perfil, campo de atuação, CBO, infraestrutura, legislação, cada campo com a linha no JSON do catálogo) e os cursos do IFPR com a habilitação | `Leitura.lerCnct`, sobre `Cursos.cnct` do kb |
 | `ifpr://campus/{campus}` | o campus e os cursos dele | `Leitura.lerCampus` |
 | `ifpr://ficha/{ficha}` | pergunta, rubrica, evidências (com a linha no arquivo da ficha) e referências normativas de uma ficha da revisão de PPC | `Leitura.lerFicha`, sobre `FontesNormativas.conteudoRevisaoPpc` |

@@ -31,7 +31,13 @@ import { Leitura, layerHandlersRpc, layerLeitura } from "../src/rpc.ts";
 import { camadaFerramentas, type FerramentaTestada, mensagemDeErro, responder } from "./apoio.ts";
 import { criarBancoFixture, limparTemporarios } from "./fixture.ts";
 import { DCN_2021, DCN_2026, inserirNormas } from "./fixture-normas.ts";
-import { criarBancoFixturePpcs, PPC_ENFERMAGEM, PPC_FISICA, PPC_INFORMATICA } from "./fixture-ppcs.ts";
+import {
+  criarBancoFixturePpcs,
+  CURSO_ENFERMAGEM,
+  CURSO_FISICA,
+  PPC_ENFERMAGEM,
+  PPC_INFORMATICA,
+} from "./fixture-ppcs.ts";
 
 afterEach(limparTemporarios);
 
@@ -91,8 +97,8 @@ describe("GrupoLeitura: mesma resposta que a ferramenta MCP", () => {
   );
 
   it.effect("fichaCurso ↔ ficha_curso", () =>
-    mesmaResposta(fichaCurso, { curso: PPC_ENFERMAGEM }, criarBancoFixturePpcs(), (c) =>
-      c.fichaCurso({ curso: PPC_ENFERMAGEM }),
+    mesmaResposta(fichaCurso, { curso: CURSO_ENFERMAGEM }, criarBancoFixturePpcs(), (c) =>
+      c.fichaCurso({ curso: CURSO_ENFERMAGEM }),
     ),
   );
 
@@ -157,10 +163,10 @@ describe("GrupoLeitura: links ifpr://", () => {
       expect(dispositivo.resposta).toEqual(yield* viaFerramenta(lerDispositivos, { ids: [id], filhos: true }, normas));
 
       const ppcs = criarBancoFixturePpcs();
-      const curso = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://curso/${PPC_ENFERMAGEM}` }));
+      const curso = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://curso/${CURSO_ENFERMAGEM}` }));
       expect(curso.tipo).toBe("curso");
-      expect(curso.resposta).toEqual(yield* viaFerramenta(fichaCurso, { curso: PPC_ENFERMAGEM }, ppcs));
-      expect(curso.texto).toContain(`## [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
+      expect(curso.resposta).toEqual(yield* viaFerramenta(fichaCurso, { curso: CURSO_ENFERMAGEM }, ppcs));
+      expect(curso.texto).toContain(`## [Técnico em Enfermagem](ifpr://curso/${CURSO_ENFERMAGEM})`);
       expect(curso.texto.endsWith("Base de 13/11/2026 (versão dev).")).toBe(true);
 
       const secaoId = `${PPC_INFORMATICA}#estagio_praticas-1`;
@@ -196,9 +202,9 @@ describe("GrupoLeitura: links ifpr://", () => {
       expect(ppc.dados.secoes.length).toBeGreaterThan(0);
       expect(ppc.avisos.map((a) => a.tipo)).toEqual(["fato-extraido"]);
       const cnct = yield* viaRpc(banco, (c) => c.lerCnct({ cnct: "tecnico-em-enfermagem" }));
-      expect(cnct.dados.cursos_ifpr.map((c) => c.link)).toContain(`ifpr://curso/${PPC_ENFERMAGEM}`);
+      expect(cnct.dados.cursos_ifpr.map((c) => c.link)).toContain(`ifpr://curso/${CURSO_ENFERMAGEM}`);
       const campus = yield* viaRpc(banco, (c) => c.lerCampus({ campus: "foz-do-iguacu" }));
-      expect(campus.dados.cursos.map((c) => c.link)).toContain(`ifpr://curso/${PPC_FISICA}`);
+      expect(campus.dados.cursos.map((c) => c.link)).toContain(`ifpr://curso/${CURSO_FISICA}`);
       const ficha = yield* viaRpc(banco, (c) => c.lerFicha({ ficha: "ct-curr-12" }));
       expect(ficha.dados.ficha.link).toBe("ifpr://ficha/CT-CURR-12");
     }),
@@ -265,7 +271,8 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
       );
       expect(dados).toMatchObject({
         tipo: "ppc",
-        id: "curitiba/tecnico-em-enfermagem",
+        // sem a versão, o link abre o PPC vigente, com o ID permanente dele
+        id: "curitiba/tecnico-em-enfermagem/2023",
         titulo: "Técnico em Enfermagem (Curitiba)",
         alvo: "avaliacao-1",
         datas: null,

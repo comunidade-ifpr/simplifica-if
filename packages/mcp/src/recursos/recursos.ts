@@ -64,10 +64,10 @@ export const MODELOS: ReadonlyArray<ModeloDeRecurso> = [
   },
   {
     tipo: "ppc",
-    uriTemplate: "ifpr://ppc/{campus}/{curso}{#secao}",
+    uriTemplate: "ifpr://ppc/{campus}/{curso}{/versao}{#secao}",
     titulo: "PPC ou seção de PPC",
     descricao:
-      'Sem seção, o índice do PPC convertido, com os fatos extraídos e o link de cada seção. Com "#secao", o texto literal da seção, como em "ifpr://ppc/curitiba/tecnico-em-enfermagem#estagio_praticas-1".',
+      'Sem seção, o índice do PPC convertido, com os fatos extraídos e o link de cada seção. Com "#secao", o texto literal da seção, como em "ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#estagio_praticas-1". A versão é o ano do documento; sem ela, o PPC vigente do curso.',
   },
   {
     tipo: "cnct",
@@ -110,14 +110,20 @@ function textoDoRecurso(resposta: Resposta<unknown>, corpo: string, continuacao?
 const DICAS: Record<TipoLink, string> = {
   norma: '"ifpr://norma/br/cne-cp/res/2026/2" ou "ifpr://norma/br/cne-cp/res/2026/2#art28-xviii"',
   curso: '"ifpr://curso/curitiba/tecnico-em-enfermagem"',
-  ppc: '"ifpr://ppc/curitiba/tecnico-em-enfermagem" ou "ifpr://ppc/curitiba/tecnico-em-enfermagem#<seção>"',
+  ppc: '"ifpr://ppc/curitiba/tecnico-em-enfermagem/2023", "ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#<seção>" ou, para o vigente, "ifpr://ppc/curitiba/tecnico-em-enfermagem"',
   cnct: '"ifpr://cnct/tecnico-em-enfermagem"',
   campus: '"ifpr://campus/curitiba"',
   ficha: '"ifpr://ficha/CT-CURR-12"',
 };
 
 /** Quantos segmentos o caminho de cada tipo tem; a norma tem quantos o ID canônico tiver. */
-const SEGMENTOS: Partial<Record<TipoLink, number>> = { curso: 2, ppc: 2, cnct: 1, campus: 1, ficha: 1 };
+const SEGMENTOS: Partial<Record<TipoLink, readonly number[]>> = {
+  curso: [2],
+  ppc: [2, 3],
+  cnct: [1],
+  campus: [1],
+  ficha: [1],
+};
 
 function linkInvalido(uri: string): EntradaInvalida {
   const tipo = /^ifpr:\/\/([a-z]+)\//.exec(uri)?.[1];
@@ -146,7 +152,8 @@ function entrada<S extends Schema.Decoder<unknown>>(schema: S, valor: unknown, u
 export const lerRecurso = Effect.fn("recursos.lerRecurso")(function* (uri: string) {
   const leitura = yield* Leitura.Leitura;
   const link = lerLink(uri);
-  if (!link || (SEGMENTOS[link.tipo] !== undefined && link.caminho.split("/").length !== SEGMENTOS[link.tipo])) {
+  const segmentos = link ? SEGMENTOS[link.tipo] : undefined;
+  if (!link || (segmentos !== undefined && !segmentos.includes(link.caminho.split("/").length))) {
     return yield* linkInvalido(uri);
   }
   const { caminho, fragmento } = link;

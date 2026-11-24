@@ -13,7 +13,7 @@ import {
   type PpcCitante,
 } from "../ppcs/citacoes.ts";
 import { compararTexto } from "../texto.ts";
-import { idPpc } from "./chaves.ts";
+import { parametrosPpc, SQL_PPC } from "./chaves.ts";
 import * as Sql from "./sql.ts";
 
 const ato = (id: string) => id.split("#")[0]!;
@@ -33,10 +33,13 @@ const LinhaCitante = Schema.Struct({
 });
 const linhasCitantes = Sql.todas(LinhaCitante);
 
-/** PPCs que citam a norma `id` (com `#dispositivo`, só as citações que o cobrem), por chave do PPC. */
+/**
+ * PPCs que citam a norma `id` (com `#dispositivo`, só as citações que o cobrem), por chave do PPC.
+ * Só os PPCs vigentes, salvo `incluirSubstituidos`.
+ */
 export const ppcsQueCitam = Effect.fn("citacoes.ppcsQueCitam")(function* (
   id: string,
-  opcoes: { readonly confiancaMinima?: number } = {},
+  opcoes: { readonly confiancaMinima?: number; readonly incluirSubstituidos?: boolean } = {},
 ) {
   const dispositivo = id.split("#")[1];
   const minimo = opcoes.confiancaMinima ?? 0;
@@ -44,7 +47,7 @@ export const ppcsQueCitam = Effect.fn("citacoes.ppcsQueCitam")(function* (
     `SELECT p.chave, p.campus_nome, p.curso_nome, p.nivel, p.tipo_oferta, p.path,
             c.linha, c.trecho, c.regra, c.confianca, c.dispositivos_json
      FROM citacoes c JOIN ppcs p ON p.id = c.ppc_id
-     WHERE c.norma_id = ? ORDER BY p.chave, c.ordem`,
+     WHERE c.norma_id = ?${opcoes.incluirSubstituidos ? "" : " AND p.vigente = 1"} ORDER BY p.chave, c.ordem`,
     [ato(id)],
   );
   const porPpc = new Map<string, PpcCitante>();
@@ -89,8 +92,9 @@ const linhasCitacoesDoPpc = Sql.todas(
  * base. Cada contagem é a que `ppcsQueCitam` dá ao PPC para aquele ato.
  */
 export const normasCitadasDoPpc = Effect.fn("citacoes.normasCitadasDoPpc")(function* (ppc: string) {
-  const id = idPpc(ppc);
-  if (!(yield* existePpc("SELECT id FROM ppcs WHERE id = ?", [id]))) return null;
+  const achado = yield* existePpc(`SELECT id FROM ppcs WHERE id = ${SQL_PPC}`, parametrosPpc(ppc));
+  if (!achado) return null;
+  const id = achado.id;
   const citacoes = yield* linhasCitacoesDoPpc(
     "SELECT norma_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem",
     [id],

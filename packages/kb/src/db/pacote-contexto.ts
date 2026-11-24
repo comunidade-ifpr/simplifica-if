@@ -37,7 +37,7 @@ import { extrairFatosPpc, type FatoPpc } from "../fatos/ppc.ts";
 import { palavrasDeCampi, type SecaoPpc, segmentarPpc } from "../ppcs/secoes.ts";
 import type { TopicosSecoes } from "../ppcs/topicos.ts";
 import { compararTexto } from "../texto.ts";
-import { idCnct, idPpc } from "./chaves.ts";
+import { idCnct, idPpc, parametrosPpc, SQL_PPC } from "./chaves.ts";
 import { fatosDosPpcs } from "./consultas-fatos.ts";
 import { buscarSecoes, secoesDoPpc } from "./consultas-secoes.ts";
 import {
@@ -555,13 +555,12 @@ export const pacoteContexto = Effect.fn("pacoteContexto.pacoteContexto")(functio
   ppcArg: string,
   opcoes: OpcoesPacote = {},
 ) {
-  const ppcId = idPpc(ppcArg);
   const ppc = yield* primeiroPpc(
     `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
-       FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ?`,
-    [ppcId],
+       FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ${SQL_PPC}`,
+    parametrosPpc(ppcArg),
   );
-  if (!ppc) return yield* new PpcNaoEncontrado({ ppc: ppcId });
+  if (!ppc) return yield* new PpcNaoEncontrado({ ppc: idPpc(ppcArg) });
   const secoesOpcoes = opcoesComFontes(opcoes, yield* FontesNormativas.FontesNormativas);
   const fichasIds = yield* fichasDaTarefa(tarefa);
   const fichas = yield* fichasDoBanco(fichasIds);

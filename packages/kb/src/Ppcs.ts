@@ -79,12 +79,12 @@ export class Ppcs extends Context.Service<
     /** PPCs que citam a norma `id` (aceita `#dispositivo`), com cada ocorrência. */
     readonly citacoesDaNorma: (
       id: string,
-      opcoes?: { readonly confiancaMinima?: number },
+      opcoes?: { readonly confiancaMinima?: number; readonly incluirSubstituidos?: boolean },
     ) => Effect.Effect<PpcCitante[], Sql.FalhaNaConsulta>;
     /** Os PPCs que citam a norma, com o título e a situação dela no registro. */
     readonly relatorioCitacoes: (
       id: string,
-      opcoes?: { readonly confiancaMinima?: number },
+      opcoes?: { readonly confiancaMinima?: number; readonly incluirSubstituidos?: boolean },
     ) => Effect.Effect<RelatorioCitacoes, Sql.FalhaNaConsulta>;
     /** Normas citadas por um PPC; `null` se o PPC não está na base. */
     readonly normasCitadas: (ppc: string) => Effect.Effect<NormaCitadaNoPpc[] | null, Sql.FalhaNaConsulta>;
@@ -127,13 +127,13 @@ const make = Effect.gen(function* () {
     }, prover),
     citacoesDaNorma: Effect.fn("Ppcs.citacoesDaNorma")(function* (
       id: string,
-      opcoes: { readonly confiancaMinima?: number } = {},
+      opcoes: { readonly confiancaMinima?: number; readonly incluirSubstituidos?: boolean } = {},
     ) {
       return yield* Citacoes.ppcsQueCitam(id, opcoes);
     }, prover),
     relatorioCitacoes: Effect.fn("Ppcs.relatorioCitacoes")(function* (
       id: string,
-      opcoes: { readonly confiancaMinima?: number } = {},
+      opcoes: { readonly confiancaMinima?: number; readonly incluirSubstituidos?: boolean } = {},
     ) {
       return relatorioCitacoes(id, yield* Citacoes.ppcsQueCitam(id, opcoes), fontes.registro);
     }, prover),

@@ -14,16 +14,21 @@ const RAIZ = NodePath.join(import.meta.dirname, "../../../base-conhecimento/inst
 test("nenhuma linha dos PPCs da base é pedido à revisão", () => {
   const marcadas: string[] = [];
   let ppcs = 0;
+  // ppcs/<campus>/<curso>/<versao>.md
   for (const campus of NodeFS.readdirSync(RAIZ)) {
-    const pasta = NodePath.join(RAIZ, campus);
-    if (!NodeFS.statSync(pasta).isDirectory()) continue;
-    for (const arquivo of NodeFS.readdirSync(pasta).filter((f) => f.endsWith(".md"))) {
-      ppcs += 1;
-      const linhas = NodeFS.readFileSync(NodePath.join(pasta, arquivo), "utf8").split("\n");
-      linhas.forEach((linha, i) => {
-        if (linhaDirigidaARevisao(linha) || linhaDirigidaARevisao(`${linha} ${linhas[i + 1] ?? ""}`))
-          marcadas.push(`${campus}/${arquivo}:${i + 1}`);
-      });
+    const pastaCampus = NodePath.join(RAIZ, campus);
+    if (!NodeFS.statSync(pastaCampus).isDirectory() || campus === "secoes") continue;
+    for (const curso of NodeFS.readdirSync(pastaCampus)) {
+      const pasta = NodePath.join(pastaCampus, curso);
+      if (!NodeFS.statSync(pasta).isDirectory()) continue;
+      for (const arquivo of NodeFS.readdirSync(pasta).filter((f) => f.endsWith(".md"))) {
+        ppcs += 1;
+        const linhas = NodeFS.readFileSync(NodePath.join(pasta, arquivo), "utf8").split("\n");
+        linhas.forEach((linha, i) => {
+          if (linhaDirigidaARevisao(linha) || linhaDirigidaARevisao(`${linha} ${linhas[i + 1] ?? ""}`))
+            marcadas.push(`${campus}/${curso}/${arquivo}:${i + 1}`);
+        });
+      }
     }
   }
   expect(ppcs).toBeGreaterThan(200);

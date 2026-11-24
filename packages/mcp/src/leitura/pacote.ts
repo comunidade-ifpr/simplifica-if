@@ -57,7 +57,7 @@ export const makePacote = Effect.fn("Leitura.makePacote")(function* (base: Base)
         PpcNaoEncontrado: (erro) =>
           Effect.fail(
             new EntradaInvalida({
-              mensagem: `${erro.message}. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso`,
+              mensagem: `${erro.message}. Use "campus/curso/versao" (como "curitiba/tecnico-em-enfermagem/2023") ou o curso, "campus/curso", para o PPC vigente, vindo de listar_cursos ou de ficha_curso`,
             }),
           ),
         TarefaNaoReconhecida: (erro) => Effect.fail(new EntradaInvalida({ mensagem: erro.message })),

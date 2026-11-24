@@ -176,6 +176,8 @@ export type TransicaoResumo = typeof TransicaoResumo.Type;
 
 export const FatosPpc = Schema.Struct({
   ppc: Schema.String,
+  /** Chave da versão seguinte, se este PPC foi substituído. */
+  substituido_por: Schema.optionalKey(Schema.String),
   curso: Schema.NullOr(Schema.String),
   nome: Schema.String,
   campus: Schema.String,

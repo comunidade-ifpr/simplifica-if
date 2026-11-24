@@ -59,9 +59,12 @@ export const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(func
 
 function relatorio(resultado: ResultadoImportacao): string[] {
   const linhas = [
-    `${resultado.substituiu ? "PPC substituído" : "PPC gravado"}: base-conhecimento/${resultado.markdownPath}`,
+    `PPC gravado: base-conhecimento/${resultado.markdownPath} (${resultado.id})`,
     `Registro atualizado: base-conhecimento/${resultado.registroPath}`,
   ];
+  if (resultado.substituido) {
+    linhas.push(`PPC anterior fica na base, substituído: base-conhecimento/${resultado.substituido}`);
+  }
   if (resultado.ppcUrlAnterior) linhas.push(`ppc.url trocado (antes: ${resultado.ppcUrlAnterior})`);
   const omitidos = Object.entries(resultado.omitidos)
     .filter(([, n]) => n)
@@ -100,18 +103,25 @@ export const comando = Command.make(
       Flag.withMetavar("url"),
       Flag.withDescription("endereço público do PPC (https), gravado em fonte_url e em ppc.url"),
     ),
-    substituir: Flag.Boolean("substituir").pipe(
-      Flag.withDescription("troca o PPC já gravado do curso (a versão anterior fica no git)"),
+    ano: Flag.Int("ano").pipe(
+      Flag.withMetavar("AAAA"),
+      Flag.withDescription("ano do documento: a versão do PPC no ID (ppc:<campus>/<curso>/<ano>)"),
+    ),
+    reconverter: Flag.Boolean("reconverter").pipe(
+      Flag.withDescription(
+        "reconverte o PPC vigente (o mesmo documento) e grava por cima dele; sem a opção, o PPC entra como versão nova",
+      ),
       Flag.withDefault(false),
     ),
   },
-  Effect.fn("importar_ppc_docx")(function* ({ curso, arquivoDocx, fonteUrl, substituir }) {
+  Effect.fn("importar_ppc_docx")(function* ({ curso, arquivoDocx, fonteUrl, ano, reconverter }) {
     const resultado = yield* importarPpcDocx({
       caminhos: criarCaminhos(),
       curso,
       arquivoDocx,
       fonteUrl,
-      substituir,
+      ano,
+      reconverter,
       agora: DateTime.toDateUtc(yield* DateTime.now),
       conversor: yield* conversorAtual(),
     });
@@ -119,8 +129,9 @@ export const comando = Command.make(
   }),
 ).pipe(
   Command.withDescription(
-    "Converte o DOCX do PPC e o grava em institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md, com front matter " +
-      "de proveniência registrada, sem dados pessoais. Atualiza ppc.url e ppc.markdown_path do registro do curso. " +
+    "Converte o DOCX do PPC e o grava como versão nova em institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<ano>.md, " +
+      "com front matter de proveniência registrada, sem dados pessoais. O PPC anterior fica na base, substituído. " +
+      "Aponta ppc.url, ppc.markdown_path e ppc.ano_documento do registro do curso para a versão nova. " +
       "Não regenera os índices.",
   ),
 );

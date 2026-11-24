@@ -60,15 +60,15 @@ const idDaSecao = Effect.fn("Leitura.idDaSecao")(function* (valor: string) {
     const link = lerLink(valor);
     if (!link || link.tipo !== "ppc" || link.fragmento === null) {
       return yield* new EntradaInvalida({
-        mensagem: `id: esperava um link ifpr://ppc/campus/curso#secao, veio "${valor}"`,
+        mensagem: `id: esperava um link ifpr://ppc/campus/curso/versao#secao, veio "${valor}"`,
       });
     }
     return `${link.caminho}#${link.fragmento}`;
   }
   const id = valor.replace(/^ppc:/, "");
-  if (!/^[A-Za-z0-9._~-]+\/[A-Za-z0-9._~-]+#[A-Za-z0-9._~-]+$/.test(id)) {
+  if (!/^[A-Za-z0-9._~-]+\/[A-Za-z0-9._~-]+(?:\/[A-Za-z0-9._~-]+)?#[A-Za-z0-9._~-]+$/.test(id)) {
     return yield* new EntradaInvalida({
-      mensagem: `id: esperava "campus/curso#secao" (como "curitiba/tecnico-em-enfermagem#estagio_praticas-1"), veio "${valor}"`,
+      mensagem: `id: esperava "campus/curso/versao#secao" (como "curitiba/tecnico-em-enfermagem/2023#estagio_praticas-1"), veio "${valor}"`,
     });
   }
   return id;
@@ -100,15 +100,34 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
   const fontes = yield* FontesNormativas.FontesNormativas;
   const pacote = yield* PacoteContexto.PacoteContexto;
   const tiposDeSecao = yield* ppcs.tiposDeSecao;
+  const listados = yield* ppcs.listar;
+  const ppcPorChave = new Map(listados.map((p) => [p.chave, p]));
+  const vigentePorCurso = new Map(listados.filter((p) => p.vigente).map((p) => [p.chave_curso, p.chave]));
+  /** `campus/curso#secao` (sem versão) → a seção no PPC vigente do curso; o resto fica como veio. */
+  const comVersaoVigente = (id: string): string => {
+    const [ppc = "", secao] = id.split("#");
+    const vigente = ppc.split("/").length === 2 ? vigentePorCurso.get(ppc) : undefined;
+    return vigente ? `${vigente}#${secao}` : id;
+  };
+  /** A chave da versão seguinte, se o PPC (`campus/curso/versao`) foi substituído. */
+  const comSubstituicao = (chave: string): { substituido_por?: string } => {
+    const seguinte = ppcPorChave.get(chave.replace(/^ppc:/, ""))?.substituido_por;
+    return seguinte ? { substituido_por: seguinte } : {};
+  };
   const fichasPorPath = new Map((yield* pacote.fichasResumidas).map((f) => [f.path, f]));
 
   const citacoesDaNorma = Effect.fn("Leitura.citacoesDaNorma")(function* (e: typeof CitacoesDaNorma.Entrada.Type) {
     const norma = yield* normaPedida(normas, e.id);
     const ato = norma.id;
     const ppc = yield* opcionalmente(e.ppc, (valor) => chavePpc(valor));
-    const citantes = (yield* ppcs.citacoesDaNorma(e.id, { confiancaMinima: e.confianca_min })).filter(
+    // PPC pela versão: entra mesmo substituído; pelo curso (`campus/curso`): o vigente.
+    const opcoesCitacoes = {
+      confiancaMinima: e.confianca_min,
+      incluirSubstituidos: e.incluir_substituidos || ppc?.split("/").length === 3,
+    };
+    const citantes = (yield* ppcs.citacoesDaNorma(e.id, opcoesCitacoes)).filter(
       (p) =>
-        (ppc === undefined || p.ppc === ppc) &&
+        (ppc === undefined || p.ppc === ppc || p.ppc === vigentePorCurso.get(ppc)) &&
         (e.nivel === undefined || p.nivel === e.nivel) &&
         (e.campus === undefined || p.ppc.split("/")[0] === e.campus),
     );
@@ -118,6 +137,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
       campus: p.campus,
       nivel: p.nivel,
       forma: p.tipo_oferta,
+      ...comSubstituicao(p.ppc),
       link: linkPpc(p.ppc),
       ocorrencias: ppc === undefined ? p.ocorrencias.length : ocorrenciasDoPpc(ato, p),
       regras: p.ocorrencias.map((o) => o.regra),
@@ -162,7 +182,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
   const impactoDaNorma = Effect.fn("Leitura.impactoDaNorma")(function* (e: typeof ImpactoDaNorma.Entrada.Type) {
     const norma = yield* normaPedida(normas, e.id);
     const resultado = yield* impacto.daNorma(e.id, { incluirPpcs: false });
-    const citantes = yield* ppcs.citacoesDaNorma(e.id);
+    const citantes = yield* ppcs.citacoesDaNorma(e.id, { incluirSubstituidos: e.incluir_substituidos });
     const transicoes = new Map((yield* normas.vigencia(norma.id)).transicoes.map((t) => [t.id, t]));
     const relacoes = fontes.relacoes.filter((r) => r.origem === norma.id || r.alvo === norma.id);
     const fichas = resultado.arquivos
@@ -301,6 +321,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
       cnct: e.cnct?.replace(/^cnct:/, ""),
       forma: e.forma,
       ppc: yield* opcionalmente(e.ppc, (valor) => chavePpc(valor)),
+      incluirSubstituidos: e.incluir_substituidos,
     };
     const achados = yield* ppcs.buscarSecoes(e.consulta, filtros, { limite, integral: e.integral });
     if (achados.length === 0) {
@@ -315,6 +336,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
         resultados: achados.map((r) => ({
           id: r.id,
           ppc: r.ppc,
+          ...comSubstituicao(r.ppc),
           curso: r.curso,
           campus: r.campus,
           nivel: r.nivel,
@@ -334,7 +356,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
   });
 
   const lerSecao = Effect.fn("Leitura.lerSecao")(function* (e: typeof LerSecao.Entrada.Type) {
-    const id = yield* idDaSecao(e.id);
+    const id = comVersaoVigente(yield* idDaSecao(e.id));
     const secao = yield* ppcs.lerSecao(id);
     if (!secao) {
       return yield* new EntradaInvalida({
@@ -472,6 +494,16 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
                 secoes: secoes.map((s) => ({ id: s.id, tipo: s.tipo, titulo: s.titulo })),
               }
             : null,
+        ppcs_substituidos: listados
+          .filter((p) => p.chave_curso === chave && !p.vigente && p.substituido_por)
+          .sort((a, b) => (a.chave < b.chave ? 1 : -1))
+          .map((p) => ({
+            id: `ppc:${p.chave}`,
+            versao: p.versao,
+            ano: p.ano_documento,
+            substituido_por: p.substituido_por!,
+            link: linkPpc(p.chave),
+          })),
         suap: curso.suap,
         ofertas: curso.ofertas.flatMap((o) =>
           (o.processos.length ? o.processos : ["sem processo informado"]).map((processo) => ({
@@ -494,9 +526,10 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
       ppc: yield* opcionalmente(e.ppc, (valor) => chavePpc(valor)),
       nivel: e.nivel,
       campus: e.campus,
+      incluirSubstituidos: e.incluir_substituidos,
     };
     const resultado = e.divergencias ? yield* ppcs.divergencias(filtros) : { ppcs: yield* ppcs.fatos(filtros) };
-    const lista = resultado.ppcs.map(paraFatosPpc);
+    const lista = resultado.ppcs.map((f) => ({ ...paraFatosPpc(f), ...comSubstituicao(f.ppc) }));
     const { itens, pagina } = yield* paginarNoTeto(lista, {
       limite: e.limite,
       cursor: e.cursor,

@@ -2,8 +2,10 @@
 /**
  * Entrada de um PPC na base a partir do DOCX que a coordenação do curso envia: converte com
  * `converterPpc` (`packages/ppc`), tira dados pessoais e URLs internas, grava o Markdown com o front
- * matter de proveniência `registrada` em `ppc.markdown_path` e atualiza o registro do curso
- * (`ppc.url` = `fonte_url`, que o `validar_base` exige iguais).
+ * matter de proveniência `registrada` como versão nova do PPC do curso
+ * (`ppcs/<campus>/<curso>/<versao>.md`, ID permanente) e aponta o registro do curso para ela
+ * (`ppc.markdown_path`, `ppc.url` = `fonte_url`, `ppc.ano_documento`). O PPC que era o vigente fica
+ * na base, substituído; só a reconversão do mesmo documento grava por cima dele.
  *
  * O `fonte_sha256` fica `desconhecido`: ele é o hash dos bytes de `fonte_url` (em geral o PDF
  * publicado), que a importação não baixa. O hash do DOCX convertido vai em `arquivo_convertido_sha256`.
@@ -19,7 +21,8 @@ import * as Schema from "effect/Schema";
 import { ErroDocx } from "@simplifica-if/docx/erro";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { aplicarOmissao, type Contagem } from "@simplifica-if/kb/ppcs/dados-pessoais";
-import { DESCONHECIDO, idPpc, serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { DESCONHECIDO, serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { caminhoPpc, compararVersoesPpc, idPpc, PASTA_PPCS, partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
 import { conferirArquivoDocx, converterPpc } from "@simplifica-if/ppc/conversao-docx/conversao";
 import type { RepresentacaoGrafica } from "@simplifica-if/ppc/conversao-docx/figura";
 import { esquemaCursoLocal, esquemaPpcCurso, textoRegistro, type CursoLocal } from "../dados/institucional.ts";
@@ -43,7 +46,8 @@ export const MotivoImportacao = Schema.Literals([
   "fonte-url-interna",
   "fonte-url-nao-https",
   "markdown-path-fora",
-  "ppc-existente",
+  "ano-invalido",
+  "versao-anterior",
   "arquivo-inexistente",
   "arquivo-recusado",
   "conversao-recusada",
@@ -85,8 +89,13 @@ export type OpcoesImportacao = {
   arquivoDocx: string;
   /** Endereço publicado do PPC (vira `fonte_url` e `ppc.url`). */
   fonteUrl: string;
-  /** Sem ele, um PPC já gravado em `ppc.markdown_path` não é sobrescrito. */
-  substituir: boolean;
+  /** Ano do documento: a versão do PPC (`<ano>`, ou `<ano>-2`… se o curso já tem PPC desse ano). */
+  ano: number;
+  /**
+   * Reconverte o PPC vigente (o mesmo documento) e grava por cima dele, mantendo o ID. Sem ele, o PPC
+   * entra como versão nova e o vigente fica na base, substituído.
+   */
+  reconverter: boolean;
   agora: Date;
   /** Conversor e versão (`conversorAtual` na linha de comando). */
   conversor: string;
@@ -96,7 +105,10 @@ export type ResultadoImportacao = {
   /** Relativos a `base-conhecimento/`. */
   markdownPath: string;
   registroPath: string;
-  substituiu: boolean;
+  /** ID permanente do PPC gravado. */
+  id: string;
+  /** Caminho do PPC que era o vigente e fica na base como substituído (`null` se não havia, ou na reconversão). */
+  substituido: string | null;
   ppcUrlAnterior: string | null;
   omitidos: Contagem;
   urlsLimpas: ContagemUrls;
@@ -326,6 +338,48 @@ export const importarPpcDocx = Effect.fn("importarPpc.importar")(function* (opco
   });
 });
 
+/**
+ * Versão do PPC importado. Na reconversão, a do vigente (que precisa ter o ano de `--ano`). Fora dela,
+ * o ano, com sufixo se o curso já tem PPC desse ano; e a versão nova não pode ser anterior à vigente,
+ * que deixaria de ser a mais recente.
+ */
+function escolherVersao(
+  opcoes: OpcoesImportacao,
+  campusId: string,
+  cursoSlug: string,
+  versaoVigente: string | null,
+): string {
+  if (opcoes.reconverter) {
+    if (!versaoVigente) {
+      throw recusa("markdown-path-fora", `O curso ${campusId}/${cursoSlug} não tem PPC vigente para reconverter`);
+    }
+    if (!versaoVigente.startsWith(String(opcoes.ano))) {
+      throw recusa(
+        "ano-invalido",
+        `--reconverter grava por cima do PPC vigente (versão ${versaoVigente}); --ano ${opcoes.ano} não é o ano dele. PPC de outro ano é versão nova: tire --reconverter.`,
+      );
+    }
+    return versaoVigente;
+  }
+  const pasta = NodePath.join(opcoes.caminhos.raiz, PASTA_PPCS, campusId, cursoSlug);
+  const existentes = new Set(
+    NodeFS.existsSync(pasta)
+      ? NodeFS.readdirSync(pasta)
+          .filter((nome) => nome.endsWith(".md"))
+          .map((nome) => nome.slice(0, -3))
+      : [],
+  );
+  let versao = String(opcoes.ano);
+  for (let n = 2; existentes.has(versao); n += 1) versao = `${opcoes.ano}-${n}`;
+  if (versaoVigente && compararVersoesPpc(versao, versaoVigente) < 0) {
+    throw recusa(
+      "versao-anterior",
+      `O PPC vigente do curso é a versão ${versaoVigente}; um PPC de ${opcoes.ano} seria anterior a ele. A base não troca o vigente por um PPC mais antigo.`,
+    );
+  }
+  return versao;
+}
+
 function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   const [campusId, cursoSlug, ...resto] = opcoes.curso.split("/");
   if (!campusId || !cursoSlug || resto.length || !RE_SLUG.test(campusId) || !RE_SLUG.test(cursoSlug)) {
@@ -334,21 +388,23 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   conferirFonteUrl(opcoes.fonteUrl);
   const { registro, relativo, arquivo: arquivoRegistro } = lerCurso(opcoes.caminhos, campusId, cursoSlug);
 
-  const markdownPath = `institucional/ifpr/ppcs/${campusId}/${cursoSlug}.md`;
-  if (registro.ppc?.markdown_path && registro.ppc.markdown_path !== markdownPath) {
+  if (!Number.isInteger(opcoes.ano) || opcoes.ano < 1900 || opcoes.ano > 2999) {
+    throw recusa("ano-invalido", `--ano deve ser o ano do documento, com quatro dígitos: ${opcoes.ano}`);
+  }
+  const vigenteAtual = registro.ppc?.markdown_path;
+  const partesVigente = vigenteAtual ? partesDoCaminhoPpc(vigenteAtual) : null;
+  if (
+    vigenteAtual &&
+    (!partesVigente || partesVigente.campusId !== campusId || partesVigente.cursoSlug !== cursoSlug)
+  ) {
     throw recusa(
       "markdown-path-fora",
-      `ppc.markdown_path do curso é ${registro.ppc.markdown_path}, fora do caminho esperado ${markdownPath}; corrija o registro antes`,
+      `ppc.markdown_path do curso é ${vigenteAtual}, fora do caminho ${PASTA_PPCS}/${campusId}/${cursoSlug}/<versao>.md; corrija o registro antes`,
     );
   }
+  const versao = escolherVersao(opcoes, campusId, cursoSlug, partesVigente?.versao ?? null);
+  const markdownPath = caminhoPpc(campusId, cursoSlug, versao);
   const destino = NodePath.join(opcoes.caminhos.raiz, markdownPath);
-  const existe = NodeFS.existsSync(destino);
-  if (existe && !opcoes.substituir) {
-    throw recusa(
-      "ppc-existente",
-      `Já há PPC em ${markdownPath}. Para trocá-lo pela versão nova (a anterior fica no histórico do git), repita com --substituir.`,
-    );
-  }
 
   const arquivoDocx = NodePath.resolve(opcoes.arquivoDocx);
   if (!NodeFS.existsSync(arquivoDocx)) throw recusa("arquivo-inexistente", `Arquivo não encontrado: ${arquivoDocx}`);
@@ -363,7 +419,7 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx), opcoes.agora);
   const hoje = dataLocalIso(opcoes.agora);
   const frontMatter = serializarFrontMatterPpc({
-    id: idPpc(campusId, cursoSlug),
+    id: idPpc(campusId, cursoSlug, versao),
     fonte_url: opcoes.fonteUrl,
     fonte_sha256: DESCONHECIDO,
     convertido_em: hoje,
@@ -377,13 +433,11 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   let ppc: NonNullable<CursoLocal["ppc"]> = registro.ppc ?? {};
   ppc = comChave(ppc, "url", opcoes.fonteUrl, ORDEM_PPC);
   ppc = comChave(ppc, "markdown_path", markdownPath, ORDEM_PPC);
-  // Ano e vagas registrados vieram do texto anterior: voltam para revisão contra o PPC novo.
-  const curadoriaReaberta: string[] = [];
-  if (ppc.ano_documento !== undefined) {
-    ppc = comChave(ppc, "curadoria_ano", STATUS_REABERTO, ORDEM_PPC);
-    ppc = comChave(ppc, "data_curadoria_ano", hoje, ORDEM_PPC);
-    curadoriaReaberta.push("ano");
-  }
+  // O ano vem de --ano; ele e as vagas registradas voltam para revisão contra o texto novo.
+  const curadoriaReaberta: string[] = ["ano"];
+  ppc = comChave(ppc, "ano_documento", opcoes.ano, ORDEM_PPC);
+  ppc = comChave(ppc, "curadoria_ano", STATUS_REABERTO, ORDEM_PPC);
+  ppc = comChave(ppc, "data_curadoria_ano", hoje, ORDEM_PPC);
   if (ppc.vagas !== undefined || ppc.trecho_vagas !== undefined || ppc.periodicidade_vagas !== undefined) {
     ppc = comChave(ppc, "curadoria_vagas", STATUS_REABERTO, ORDEM_PPC);
     ppc = comChave(ppc, "data_curadoria_vagas", hoje, ORDEM_PPC);
@@ -414,7 +468,8 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   return {
     markdownPath,
     registroPath: `institucional/ifpr/${relativo}`,
-    substituiu: existe,
+    id: idPpc(campusId, cursoSlug, versao),
+    substituido: !opcoes.reconverter && vigenteAtual ? vigenteAtual : null,
     ppcUrlAnterior: registro.ppc?.url && registro.ppc.url !== opcoes.fonteUrl ? registro.ppc.url : null,
     omitidos: convertido.omitidos,
     urlsLimpas: convertido.urlsLimpas,

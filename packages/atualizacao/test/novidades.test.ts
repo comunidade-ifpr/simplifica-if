@@ -48,6 +48,42 @@ describe("novidades", () => {
     expect(itens.find((item) => item.tipo === "ppc-atualizado")?.detalhe).toBe("documento de 2019 → 2026");
   });
 
+  it("PPC com versões: a versão nova é ppc-novo e a anterior, que deixou de ser a vigente, ppc-substituido", () => {
+    const pasta = pastaTemporaria();
+    const comVersoes = (caminho: string, ppcs: Array<[string, string, number, string | null]>) => {
+      const db = new NodeSqlite.DatabaseSync(caminho);
+      db.exec(`CREATE TABLE normas (id TEXT, titulo TEXT, status_vigencia TEXT);
+        CREATE TABLE ppcs (id TEXT, curso_nome TEXT, campus_nome TEXT, ano_documento TEXT, caracteres INTEGER,
+          vigente INTEGER, substituido_por TEXT);
+        CREATE TABLE cursos (id TEXT, nome TEXT, campus_id TEXT);`);
+      for (const [id, ano, vigente, seguinte] of ppcs) {
+        db.prepare("INSERT INTO ppcs VALUES (?, 'Técnico em Enfermagem', 'Curitiba', ?, 100, ?, ?)").run(
+          id,
+          ano,
+          vigente,
+          seguinte,
+        );
+      }
+      db.close();
+      return caminho;
+    };
+    const antigo = "ppc:curitiba/tecnico-em-enfermagem/2019";
+    const novo = "ppc:curitiba/tecnico-em-enfermagem/2026";
+    const de = comVersoes(NodePath.join(pasta, "de.sqlite"), [[antigo, "2019", 1, null]]);
+    const para = comVersoes(NodePath.join(pasta, "para.sqlite"), [
+      [antigo, "2019", 0, novo],
+      [novo, "2026", 1, null],
+    ]);
+    expect(proporNovidades(de, para)).toEqual([
+      {
+        tipo: "ppc-substituido",
+        titulo: "PPC de Técnico em Enfermagem (Curitiba) de 2019 substituído por versão nova",
+        refs: [antigo, novo],
+      },
+      { tipo: "ppc-novo", titulo: "PPC de Técnico em Enfermagem (Curitiba) entrou na base", refs: [novo] },
+    ]);
+  });
+
   it("o arquivo só aceita acréscimos, e o manifesto leva os itens da versão", () => {
     const antes = lerNovidades(
       'versoes:\n  - versao: "2026.11.13"\n    data: "2026-11-13"\n    itens:\n      - { tipo: outro, titulo: "A" }\n',

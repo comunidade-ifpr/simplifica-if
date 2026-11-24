@@ -6,7 +6,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { RESULTADOS_DIVERGENTES } from "../fatos/divergencias.ts";
 import { compararTexto } from "../texto.ts";
-import { idPpc } from "./chaves.ts";
+import { parametrosPpc, SQL_PPC } from "./chaves.ts";
 import * as Sql from "./sql.ts";
 
 const Texto = Schema.String;
@@ -82,9 +82,14 @@ export interface FatosDoPpc {
   cruzamento: Omit<typeof LinhaCruzamento.Type, "ppc_id">[];
 }
 
-/** Filtros dos fatos de PPC: um PPC (`campus/curso` ou `ppc:campus/curso`), nível e campus (`campus_id`). */
+/**
+ * Filtros dos fatos de PPC: um PPC (a versão, `campus/curso/versao`, ou o curso, `campus/curso`, pelo
+ * vigente), nível e campus (`campus_id`).
+ */
 export interface FiltrosFatos {
   ppc?: string | undefined;
+  /** Inclui os PPCs substituídos; sem ele (e sem `ppc`), só os vigentes entram. */
+  incluirSubstituidos?: boolean | undefined;
   nivel?: string | undefined;
   campus?: string | undefined;
 }
@@ -100,8 +105,10 @@ export const fatosDosPpcs = Effect.fn("consultasFatos.fatosDosPpcs")(function* (
   const condicoes: string[] = [];
   const parametros: Sql.Parametro[] = [];
   if (filtros.ppc) {
-    condicoes.push("p.id = ?");
-    parametros.push(idPpc(filtros.ppc));
+    condicoes.push(`p.id = ${SQL_PPC}`);
+    parametros.push(...parametrosPpc(filtros.ppc));
+  } else if (!filtros.incluirSubstituidos) {
+    condicoes.push("p.vigente = 1");
   }
   if (filtros.nivel) {
     condicoes.push("p.nivel = ?");

@@ -56,7 +56,7 @@ export const makeRecursos = Effect.fn("Leitura.makeRecursos")(function* (
     const fatos = (yield* ppcs.fatos({ ppc: chave }))[0];
     if (!fatos) {
       return yield* new EntradaInvalida({
-        mensagem: `PPC não encontrado na base: "${chave}". Use o ID de listar_cursos ("campus/curso")`,
+        mensagem: `PPC não encontrado na base: "${chave}". Use o ID do PPC de listar_cursos ("campus/curso/versao") ou o curso ("campus/curso", o PPC vigente)`,
       });
     }
     const secoes = (yield* ppcs.indiceSecoesDoPpc(chave)).map((s) => ({

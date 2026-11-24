@@ -16,11 +16,13 @@ export function nomeDaPagina(link: string, indice: DadosIndice | undefined): str
       return c ? `o curso ${c.nome}, Campus ${c.campus_nome}` : nomeCurtoLink(link);
     }
     case "ppc": {
-      const p = indice.ppcs.find((x) => x.chave === caminho);
+      // `campus/curso/versao` é a versão; `campus/curso`, o PPC vigente do curso.
+      const p = indice.ppcs.find((x) => x.chave === caminho || (x.vigente && x.chave.startsWith(`${caminho}/`)));
       if (!p) return nomeCurtoLink(link);
+      const doPpc = p.vigente ? `do PPC de ${p.nome}` : `do PPC de ${p.nome} (versão ${p.versao}, substituída)`;
       return fragmento
-        ? `${nomeCurtoLink(link).split(", ").slice(1).join(", ")} do PPC de ${p.nome}, Campus ${p.campus_nome}`
-        : `o PPC de ${p.nome}, Campus ${p.campus_nome}`;
+        ? `${nomeCurtoLink(link).split(", ").slice(1).join(", ")} ${doPpc}, Campus ${p.campus_nome}`
+        : `o ${doPpc.slice(3)}, Campus ${p.campus_nome}`;
     }
     case "campus": {
       const c = indice.campi.find((x) => x.id === caminho);

@@ -13,9 +13,11 @@ import { radicais } from "@simplifica-if/kb/busca/tokens";
 import { emTransacao } from "@simplifica-if/kb/db/transacao";
 
 export const CURSO_ENFERMAGEM = "curitiba/tecnico-em-enfermagem";
+/** O PPC vigente de Enfermagem (o da `fixture.ts`). */
+export const PPC_ENFERMAGEM = `${CURSO_ENFERMAGEM}/2023`;
 export const REUNIAO_CONSEPE = "consepe:reuniao:2026-03-20";
 
-const MD_ENFERMAGEM = "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md";
+const MD_ENFERMAGEM = "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md";
 
 /** Acrescenta os dados do Explorar ao banco em `caminho` (criado por `criarBancoFixture` + `inserirNormas`). */
 export function inserirExplorar(caminho: string): void {
@@ -59,8 +61,8 @@ export function inserirExplorar(caminho: string): void {
     cursoCnct("tecnico-em-informatica", "Técnico em Informática", "Informação e Comunicação", {});
     db.exec(
       `UPDATE cursos SET forma_oferta = 'subsequente', modalidade = 'presencial', situacao = 'ativo',
-         cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${CURSO_ENFERMAGEM}', ppc_ano_documento = 2023,
-         ppc_markdown_path = 'institucional/ifpr/ppcs/${CURSO_ENFERMAGEM}.md',
+         cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${PPC_ENFERMAGEM}', ppc_ano_documento = 2023,
+         ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_ENFERMAGEM}.md',
          pagina_oficial = 'https://ifpr.edu.br/curitiba/cursos/enfermagem/'
        WHERE id = 'curso:${CURSO_ENFERMAGEM}'`,
     );
@@ -123,7 +125,7 @@ export function inserirExplorar(caminho: string): void {
 
     /* ---------- fatos do PPC e o cruzamento com o SUAP */
     inserir("ppc_fatos", {
-      ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
+      ppc_id: `ppc:${PPC_ENFERMAGEM}`,
       fato: "carga_horaria_total_h",
       valor: "1600",
       valor_num: 1600,
@@ -137,7 +139,7 @@ export function inserirExplorar(caminho: string): void {
     });
     // o ano do documento vem dos dados institucionais, ainda sem revisão da curadoria
     inserir("ppc_fatos", {
-      ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
+      ppc_id: `ppc:${PPC_ENFERMAGEM}`,
       fato: "ano_documento",
       valor: "2023",
       valor_num: 2023,
@@ -150,7 +152,7 @@ export function inserirExplorar(caminho: string): void {
       alternativas_json: "[]",
     });
     inserir("ppc_suap", {
-      ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
+      ppc_id: `ppc:${PPC_ENFERMAGEM}`,
       aspecto: "ano",
       resultado: "ppc-mais-recente-que-matrizes",
       valor_ppc: "2023",
@@ -158,7 +160,7 @@ export function inserirExplorar(caminho: string): void {
       explicacao: "o PPC é de 2023; a matriz mais recente do SUAP é de 2019",
     });
     inserir("ppc_suap", {
-      ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
+      ppc_id: `ppc:${PPC_ENFERMAGEM}`,
       aspecto: "carga_horaria",
       resultado: "diverge",
       valor_ppc: "1600",

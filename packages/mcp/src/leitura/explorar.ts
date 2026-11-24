@@ -95,6 +95,9 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
 
   const ppcs = (yield* kb.ppcs.listar).map((p): PpcDoIndice => ({
     chave: p.chave,
+    versao: p.versao,
+    vigente: p.vigente,
+    substituido_por: p.substituido_por ? linkPpc(p.substituido_por) : null,
     nome: p.curso_nome,
     campus: p.campus_id,
     campus_nome: p.campus_nome,

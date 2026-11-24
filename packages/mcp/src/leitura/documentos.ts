@@ -69,7 +69,7 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
     const ppc = yield* ppcs.documento(chave);
     if (!ppc) {
       return yield* new EntradaInvalida({
-        mensagem: `PPC não encontrado na base: "${chave}". Use o ID de listar_cursos ("campus/curso")`,
+        mensagem: `PPC não encontrado na base: "${chave}". Use o ID do PPC ("campus/curso/versao") ou o curso ("campus/curso", o PPC vigente)`,
       });
     }
     const ancoras: Ancora[] = ppc.secoes.map((s) => ({
@@ -99,7 +99,7 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
     const link = lerLink(e.link);
     if (!link || (link.tipo !== "norma" && link.tipo !== "ppc")) {
       return yield* new EntradaInvalida({
-        mensagem: `o leitor abre como documento só links de norma e de PPC, como ifpr://norma/br/lei/1996/9394#art36 ou ifpr://ppc/curitiba/tecnico-em-enfermagem; veio "${e.link}"`,
+        mensagem: `o leitor abre como documento só links de norma e de PPC, como ifpr://norma/br/lei/1996/9394#art36 ou ifpr://ppc/curitiba/tecnico-em-enfermagem/2023; veio "${e.link}"`,
       });
     }
     const { pedido, ...documento } =

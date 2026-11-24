@@ -10,6 +10,7 @@ import * as Normas from "@simplifica-if/kb/Normas";
 import type { Relacao as RelacaoKb } from "@simplifica-if/kb/normas/relacoes";
 import type { SituacaoTransicao } from "@simplifica-if/kb/normas/vigencia";
 import { REGRAS_BAIXA_CONFIANCA } from "@simplifica-if/kb/ppcs/citacoes";
+import { RE_VERSAO_PPC } from "@simplifica-if/kb/ppcs/ids";
 import * as Effect from "effect/Effect";
 import {
   type Aviso,
@@ -209,6 +210,7 @@ export function paraFatosPpc(f: FatosDoPpc): FatosPpc {
 /* ================================================================== IDs escritos pela IA */
 
 const SEGMENTO = /^[A-Za-z0-9._~-]+$/;
+const RE_VERSAO = new RegExp(`^${RE_VERSAO_PPC}$`);
 
 const campusCurso = Effect.fn("Leitura.campusCurso")(function* (
   valor: string,
@@ -228,15 +230,25 @@ const campusCurso = Effect.fn("Leitura.campusCurso")(function* (
     for (const p of ["ppc:", "curso:"]) if (id.startsWith(p)) id = id.slice(p.length);
   }
   const partes = id.split("/");
-  if (partes.length !== 2 || !partes.every((p) => SEGMENTO.test(p))) {
-    return yield* new EntradaInvalida({
-      mensagem: `${campo}: esperava "campus/curso" (como "curitiba/tecnico-em-enfermagem"), veio "${valor}"`,
-    });
+  const comVersao = prefixo === "ppc" && partes.length === 3;
+  if (
+    !(partes.length === 2 || comVersao) ||
+    !partes.every((p) => SEGMENTO.test(p)) ||
+    (comVersao && !RE_VERSAO.test(partes[2]!))
+  ) {
+    const esperado =
+      prefixo === "ppc"
+        ? `"campus/curso/versao" ou "campus/curso" (o vigente), como "curitiba/tecnico-em-enfermagem/2023"`
+        : `"campus/curso" (como "curitiba/tecnico-em-enfermagem")`;
+    return yield* new EntradaInvalida({ mensagem: `${campo}: esperava ${esperado}, veio "${valor}"` });
   }
   return id;
 });
 
-/** PPC escrito pela IA (`campus/curso`, `ppc:campus/curso` ou `ifpr://ppc/campus/curso`) → `campus/curso`. */
+/**
+ * PPC escrito pela IA (`campus/curso/versao`, `ppc:…` ou `ifpr://ppc/…`) → a chave. Sem a versão
+ * (`campus/curso`), a chave do curso, que as consultas resolvem para o PPC vigente.
+ */
 export const chavePpc = (valor: string, campo = "ppc") => campusCurso(valor, "ppc", campo);
 
 /** Curso escrito pela IA (`campus/curso`, `curso:campus/curso` ou `ifpr://curso/campus/curso`) → `campus/curso`. */

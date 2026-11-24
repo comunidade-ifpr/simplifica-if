@@ -281,12 +281,12 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
 
   describe("PPC fora da base (abrirPpcAvulso)", () => {
     const AMOSTRA = [
-      "curitiba/tecnico-em-enfermagem",
-      "jacarezinho/tecnico-em-eletromecanica",
-      "campo-largo/administracao-proeja",
-      "paranagua/tecnico-em-informatica",
-      "arapongas/tecnico-em-melhoria-de-processos",
-      "curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
+      "curitiba/tecnico-em-enfermagem/2023",
+      "jacarezinho/tecnico-em-eletromecanica/2017",
+      "campo-largo/administracao-proeja/2018",
+      "paranagua/tecnico-em-informatica/2024",
+      "arapongas/tecnico-em-melhoria-de-processos/2021",
+      "curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio/2015",
     ];
 
     it.effect("o Markdown segmentado em memória dá as mesmas seções e citações do kb.sqlite", () =>
@@ -316,7 +316,9 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       () =>
         Effect.gen(function* () {
           const { pacote: servico } = yield* servicos;
-          const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
+          const md = yield* lerTexto(
+            "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
+          );
           const avulso = yield* servico.abrirAvulso(md);
           const base = yield* servico.montar("estagio", PPC);
           const fichas = yield* servico.fichas(base.fichas_ids);
@@ -337,7 +339,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
     it.effect("o banco em memória do PPC avulso fecha com o escopo de quem o abriu, não com a layer", () =>
       Effect.gen(function* () {
         const { pacote: servico } = yield* servicos;
-        const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
+        const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md");
         const fichas = yield* servico.fichas(["CT-CURR-12"]);
         const avulso = yield* Effect.scoped(servico.abrirAvulso(md));
         const erro = yield* Effect.flip(avulso.pacote(fichas));
@@ -348,7 +350,9 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
     it.effect("a estrutura segmenta o texto que o banco recebeu: com `titulosNivel1` e CRLF, as seções do pacote", () =>
       Effect.gen(function* () {
         const { pacote: servico } = yield* servicos;
-        const original = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
+        const original = yield* lerTexto(
+          "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
+        );
         // o primeiro nível em `#`, como o normalizador do `packages/ppc` o põe, e as quebras de linha do Word
         const md = original.replace(/^## /gm, "# ").replace(/\n/g, "\r\n");
         const base = yield* servico.montar("estagio", PPC);
@@ -721,7 +725,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           expect(relatorio.totais["sem-ppc-convertido"]).toBeLessThan(relatorio.total);
           const enfermagem = relatorio.cursos.find((c) => c.curso === "curso:curitiba/tecnico-em-enfermagem");
           expect(enfermagem).toMatchObject({
-            ppc: "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+            ppc: "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
             indicador: "cita-cne-cp-1-2021",
           });
           expect(enfermagem!.dcn_citadas.map((d) => d.id)).toContain("br/cne-cp/res/2021/1");

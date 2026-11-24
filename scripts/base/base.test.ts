@@ -158,7 +158,7 @@ describe("índice de PPCs", () => {
           // Vagas sem o trecho do PPC que as sustenta não vão para o índice.
           ppc: {
             url: "https://ifpr.edu.br/x.pdf",
-            markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+            markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2021.md",
             ano_documento: 2021,
             vagas: "40",
           },
@@ -179,9 +179,9 @@ describe("índice de PPCs", () => {
       escrever(raiz, `${ifpr}/cursos/index.json`, "{}");
       escrever(
         raiz,
-        "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+        "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x/2021.md",
         serializarFrontMatterPpc({
-          id: "ppc:campus-a/tecnico-x",
+          id: "ppc:campus-a/tecnico-x/2021",
           fonte_url: "https://ifpr.edu.br/x.pdf",
           fonte_sha256: "a".repeat(64),
           convertido_em: "2026-11-13",
@@ -193,7 +193,9 @@ describe("índice de PPCs", () => {
       const indices = gerarIndices(caminhos, "2026-01-01");
       expect(indices.itensPpc).toHaveLength(1);
       expect(indices.itensPpc[0]).toMatchObject({
-        id: "campus-a/tecnico-x",
+        id: "campus-a/tecnico-x/2021",
+        versao: "2021",
+        vigente: true,
         modalidade: "Presencial",
         ano_documento: 2021,
         taxonomia: "tecnico",
@@ -201,8 +203,8 @@ describe("índice de PPCs", () => {
       });
       expect(indices.itensPpc[0]).not.toHaveProperty("vagas");
       expect(indices.itensSecao.map((item) => item.id)).toEqual([
-        "campus-a/tecnico-x#objetivos-1",
-        "campus-a/tecnico-x#ementas-1",
+        "campus-a/tecnico-x/2021#objetivos-1",
+        "campus-a/tecnico-x/2021#ementas-1",
       ]);
       expect(indices.itensSecao[0]).toMatchObject({
         heading: "1 Objetivos",
@@ -225,7 +227,7 @@ describe("índice de PPCs", () => {
       expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
       expect(
         NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
-          '{"id":"campus-a/tecnico-x#ementas-1",',
+          '{"id":"campus-a/tecnico-x/2021#ementas-1",',
         ),
       ).toBe(true);
       expect(NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");

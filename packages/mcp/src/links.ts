@@ -6,8 +6,10 @@
  * |-----------------------------------------------|-------------------------------------------------|
  * | `br/cne-cp/res/2026/2` (+ `#art28-xviii`)     | `ifpr://norma/br/cne-cp/res/2026/2#art28-xviii` |
  * | `curso:curitiba/tecnico-em-enfermagem`        | `ifpr://curso/curitiba/tecnico-em-enfermagem`   |
- * | `ppc:curitiba/tecnico-em-enfermagem`          | `ifpr://ppc/curitiba/tecnico-em-enfermagem`     |
- * | seção `curitiba/tecnico-em-enfermagem#avaliacao-1` | `ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliacao-1` |
+ * | `ppc:curitiba/tecnico-em-enfermagem/2023`     | `ifpr://ppc/curitiba/tecnico-em-enfermagem/2023` |
+ * | seção `curitiba/tecnico-em-enfermagem/2023#avaliacao-1` | `ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#avaliacao-1` |
+ *
+ * O PPC tem ID permanente por versão; `ifpr://ppc/campus/curso`, sem versão, é o PPC vigente do curso.
  * | `cnct:tecnico-em-enfermagem`                  | `ifpr://cnct/tecnico-em-enfermagem`             |
  * | `campus:curitiba`                             | `ifpr://campus/curitiba`                        |
  * | ficha `CT-CURR-12`                            | `ifpr://ficha/CT-CURR-12`                       |
@@ -38,12 +40,17 @@ function separar(id: string, fragmento: string | undefined): [string, string | u
   return [id.slice(0, i), id.slice(i + 1)];
 }
 
-function montar(tipo: TipoLink, caminho: string, fragmento: string | undefined, segmentos?: number): Link {
+const ROTULO_SEGMENTOS: Record<number, string> = {
+  1: "um segmento",
+  2: '"campus/curso"',
+  3: '"campus/curso/versao"',
+};
+
+function montar(tipo: TipoLink, caminho: string, fragmento: string | undefined, segmentos?: readonly number[]): Link {
   if (!RE_CAMINHO.test(caminho)) throw new Error(`link ifpr://${tipo}: ID inválido "${caminho}"`);
-  if (segmentos !== undefined && caminho.split("/").length !== segmentos) {
-    throw new Error(
-      `link ifpr://${tipo}: esperava ${segmentos === 2 ? '"campus/curso"' : "um segmento"}, veio "${caminho}"`,
-    );
+  if (segmentos !== undefined && !segmentos.includes(caminho.split("/").length)) {
+    const esperado = segmentos.map((n) => ROTULO_SEGMENTOS[n]).join(" ou ");
+    throw new Error(`link ifpr://${tipo}: esperava ${esperado}, veio "${caminho}"`);
   }
   if (fragmento !== undefined && !RE_FRAGMENTO.test(fragmento)) {
     throw new Error(`link ifpr://${tipo}: fragmento inválido "${fragmento}"`);
@@ -59,28 +66,31 @@ export function linkNorma(id: string, dispositivo?: string): Link {
 
 /** Curso: `curso:campus/curso` ou `campus/curso`. */
 export function linkCurso(id: string): Link {
-  return montar("curso", semPrefixo("curso:", id), undefined, 2);
+  return montar("curso", semPrefixo("curso:", id), undefined, [2]);
 }
 
-/** PPC (`ppc:campus/curso` ou `campus/curso`) ou seção (`campus/curso#secao`, o ID da tabela `secoes`). */
+/**
+ * PPC (`ppc:campus/curso/versao` ou `campus/curso/versao`; `campus/curso` é o vigente) ou seção
+ * (`campus/curso/versao#secao`, o ID da tabela `secoes`).
+ */
 export function linkPpc(id: string, secao?: string): Link {
   const [ppc, fragmento] = separar(semPrefixo("ppc:", id), secao);
-  return montar("ppc", ppc, fragmento, 2);
+  return montar("ppc", ppc, fragmento, [2, 3]);
 }
 
 /** Curso do CNCT: `cnct:tecnico-em-enfermagem` ou `tecnico-em-enfermagem`. */
 export function linkCnct(id: string): Link {
-  return montar("cnct", semPrefixo("cnct:", id), undefined, 1);
+  return montar("cnct", semPrefixo("cnct:", id), undefined, [1]);
 }
 
 /** Campus: `campus:curitiba` ou `curitiba`. */
 export function linkCampus(id: string): Link {
-  return montar("campus", semPrefixo("campus:", id), undefined, 1);
+  return montar("campus", semPrefixo("campus:", id), undefined, [1]);
 }
 
 /** Ficha da revisão de PPC: `CT-CURR-12` (como na tabela `fichas`) ou `ficha:CT-CURR-12`. */
 export function linkFicha(id: string): Link {
-  return montar("ficha", semPrefixo("ficha:", id), undefined, 1);
+  return montar("ficha", semPrefixo("ficha:", id), undefined, [1]);
 }
 
 /** Link de qualquer ID canônico com prefixo (`curso:`, `ppc:`, `cnct:`, `campus:`, `ficha:`); sem prefixo, norma. */

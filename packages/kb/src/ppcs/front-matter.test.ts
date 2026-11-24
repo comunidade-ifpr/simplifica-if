@@ -10,7 +10,7 @@ import {
 } from "./front-matter.ts";
 
 const reconstruida: ProvenienciaPpc = {
-  id: "ppc:curitiba/tecnico-em-enfermagem",
+  id: "ppc:curitiba/tecnico-em-enfermagem/2023",
   fonte_url: "https://ifpr.edu.br/curitiba/wp-content/uploads/PPC_2024.pdf",
   fonte_sha256: "desconhecido",
   convertido_em: "2026-05-28",
@@ -25,7 +25,7 @@ describe("front matter de PPC", () => {
   test("serializa, lê de volta e preserva o corpo", () => {
     const yaml = serializarFrontMatterPpc(reconstruida);
     expect(
-      String(yaml).startsWith("---\nid: ppc:curitiba/tecnico-em-enfermagem\nfonte_url: https://ifpr.edu.br/"),
+      String(yaml).startsWith("---\nid: ppc:curitiba/tecnico-em-enfermagem/2023\nfonte_url: https://ifpr.edu.br/"),
     ).toBe(true);
     expect(yaml).toContain('nota_proveniencia: "Reconstruída pelo git: hash e conversor desconhecidos."');
     expect(yaml).toContain("pos_processamento_commits:\n  - 9a5b159");
@@ -38,7 +38,7 @@ describe("front matter de PPC", () => {
 
   test("arquivo convertido diferente da fonte: o hash vai em arquivo_convertido", () => {
     const registrada: ProvenienciaPpc = {
-      id: "ppc:curitiba/tecnico-em-enfermagem",
+      id: "ppc:curitiba/tecnico-em-enfermagem/2023",
       fonte_url: "https://ifpr.edu.br/curitiba/wp-content/uploads/PPC_2026.pdf",
       fonte_sha256: "desconhecido",
       convertido_em: "2026-11-17",

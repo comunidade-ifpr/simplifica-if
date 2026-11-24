@@ -152,11 +152,12 @@ function ocorrencia(citacao: Citacao): Ocorrencia {
 
 /**
  * PPCs que citam a norma `id` (o ato: o dispositivo do argumento é ignorado na
- * comparação; com `dispositivo`, só as citações daquele dispositivo ou de seus filhos).
+ * comparação; com `dispositivo`, só as citações daquele dispositivo ou de seus filhos). Só os PPCs
+ * vigentes, salvo `incluirSubstituidos`.
  */
 export function ppcsQueCitam(
   idConsultado: string,
-  opcoes: { registro: Registro; raiz: string; confiancaMinima?: number },
+  opcoes: { registro: Registro; raiz: string; confiancaMinima?: number; incluirSubstituidos?: boolean },
 ): PpcCitante[] {
   const { registro, raiz } = opcoes;
   const [idNorma, dispositivo] = idConsultado.split("#") as [string, string | undefined];
@@ -164,6 +165,7 @@ export function ppcsQueCitam(
   const minimo = opcoes.confiancaMinima ?? 0;
   const saida: PpcCitante[] = [];
   for (const ppc of carregarIndicePpcs(raiz)) {
+    if (!ppc.vigente && !opcoes.incluirSubstituidos) continue;
     const ocorrencias = citacoesDoArquivo(ppc.path, registro, raiz)
       .filter((citacao) => citacao.id !== null && citacao.id === ato && citacao.confianca >= minimo)
       .filter((citacao) => {

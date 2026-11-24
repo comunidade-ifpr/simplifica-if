@@ -4,8 +4,9 @@
  * base (plano, "Atualização: três ritmos", Novidades). A curadoria escreve o texto; a fábrica
  *
  * - **propõe** entradas pela diferença entre dois `kb.sqlite` (`proporNovidades`): norma nova ou
- *   retirada, mudança de `status_vigencia`, PPC novo, atualizado (ano do documento ou tamanho) ou
- *   retirado, curso novo ou retirado. A proposta sai como YAML para revisar e colar, nunca gravada;
+ *   retirada, mudança de `status_vigencia`, PPC novo (cada versão tem ID próprio: o PPC novo de um
+ *   curso entra como `ppc-novo`), substituído (deixou de ser o vigente do curso), atualizado (a mesma
+ *   versão com ano do documento ou tamanho diferente) ou retirado, curso novo ou retirado. A proposta sai como YAML para revisar e colar, nunca gravada;
  * - **confere** que o arquivo só ganhou entradas (`soAcrescimos`) e leva ao manifesto as da versão
  *   publicada (`novidadesDaVersao`).
  */
@@ -20,6 +21,7 @@ export const TIPOS_NOVIDADE = [
   "vigencia",
   "ppc-novo",
   "ppc-atualizado",
+  "ppc-substituido",
   "ppc-retirado",
   "curso-novo",
   "curso-retirado",
@@ -93,6 +95,19 @@ function tabela(caminho: string, sql: string): Map<string, Linha> {
   }
 }
 
+/** Se a tabela tem a coluna (bancos de esquema anterior não têm as colunas de versão do PPC). */
+function temColuna(caminho: string, tabelaSql: string, coluna: string): boolean {
+  const db = new NodeSqlite.DatabaseSync(caminho, { readOnly: true });
+  try {
+    return db
+      .prepare(`SELECT name FROM pragma_table_info(?)`)
+      .all(tabelaSql)
+      .some((linha) => linha["name"] === coluna);
+  } finally {
+    db.close();
+  }
+}
+
 const texto = (valor: unknown) => (valor === null || valor === undefined ? "" : String(valor));
 
 /** Entradas propostas da diferença entre a base `de` e a base `para`. */
@@ -118,13 +133,28 @@ export function proporNovidades(de: string, para: string): ReadonlyArray<ItemNov
       itens.push({ tipo: "norma-retirada", titulo: `${texto(norma["titulo"])} saiu da base`, refs: [id] });
   }
 
-  const sqlPpcs = "SELECT id, curso_nome, campus_nome, ano_documento, caracteres FROM ppcs";
-  const [ppcsDe, ppcsPara] = [tabela(de, sqlPpcs), tabela(para, sqlPpcs)];
+  // Banco de esquema anterior, sem versões: cada PPC era o vigente do curso.
+  const sqlPpcs = (caminho: string) =>
+    `SELECT id, curso_nome, campus_nome, ano_documento, caracteres, ${
+      temColuna(caminho, "ppcs", "vigente") ? "vigente, substituido_por" : "1 AS vigente, NULL AS substituido_por"
+    } FROM ppcs`;
+  const [ppcsDe, ppcsPara] = [tabela(de, sqlPpcs(de)), tabela(para, sqlPpcs(para))];
   const nomePpc = (ppc: Linha) => `PPC de ${texto(ppc["curso_nome"])} (${texto(ppc["campus_nome"])})`;
   for (const [id, ppc] of ppcsPara) {
     const antes = ppcsDe.get(id);
-    if (antes === undefined) itens.push({ tipo: "ppc-novo", titulo: `${nomePpc(ppc)} entrou na base`, refs: [id] });
-    else if (
+    if (antes === undefined) {
+      itens.push({ tipo: "ppc-novo", titulo: `${nomePpc(ppc)} entrou na base`, refs: [id] });
+      continue;
+    }
+    if (texto(antes["vigente"]) === "1" && texto(ppc["vigente"]) === "0") {
+      const seguinte = texto(ppc["substituido_por"]);
+      itens.push({
+        tipo: "ppc-substituido",
+        titulo: `${nomePpc(ppc)}${ppc["ano_documento"] == null ? "" : ` de ${texto(ppc["ano_documento"])}`} substituído por versão nova`,
+        refs: seguinte ? [id, seguinte] : [id],
+      });
+    }
+    if (
       texto(antes["ano_documento"]) !== texto(ppc["ano_documento"]) ||
       texto(antes["caracteres"]) !== texto(ppc["caracteres"])
     ) {

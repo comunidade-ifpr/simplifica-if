@@ -160,8 +160,10 @@ export function nomeCurtoLink(link: string): string {
     }
     case "curso":
     case "ppc": {
-      const [campus, curso] = partes;
-      const nome = `${tipo.toLowerCase() === "ppc" ? "PPC · " : ""}${slugLegivel(curso ?? "")} (${slugLegivel(campus ?? "")})`;
+      // PPC: `campus/curso/versao` (a versão, o ano do documento) ou `campus/curso` (o vigente).
+      const [campus, curso, versao] = partes;
+      const rotulo = tipo.toLowerCase() === "ppc" ? `PPC${versao ? ` ${versao}` : ""} · ` : "";
+      const nome = `${rotulo}${slugLegivel(curso ?? "")} (${slugLegivel(campus ?? "")})`;
       return fragmento ? `${nome}, ${secaoPorExtenso(fragmento)}` : nome;
     }
     case "cnct":

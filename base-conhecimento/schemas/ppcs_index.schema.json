@@ -389,6 +389,8 @@
           "campus_nome",
           "curso_slug",
           "curso_nome",
+          "versao",
+          "vigente",
           "nivel",
           "taxonomia",
           "tipo_oferta",
@@ -401,7 +403,21 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*$"
+            "description": "Chave permanente do PPC: <campus_id>/<curso_slug>/<versao>; a versão é o ano do documento, com sufixo -2, -3… no mesmo ano.",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*/[0-9]{4}(?:-[2-9]|-[1-9][0-9]+)?$"
+          },
+          "versao": {
+            "type": "string",
+            "pattern": "^[0-9]{4}(?:-[2-9]|-[1-9][0-9]+)?$"
+          },
+          "vigente": {
+            "type": "boolean",
+            "description": "Se é o PPC que o registro do curso aponta (ppc.markdown_path). Os demais são versões substituídas, que ficam na base."
+          },
+          "substituido_por": {
+            "type": "string",
+            "description": "Chave da versão seguinte do PPC do mesmo curso (só nas substituídas).",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*/[0-9]{4}(?:-[2-9]|-[1-9][0-9]+)?$"
           },
           "campus_id": {
             "type": "string",
@@ -461,7 +477,7 @@
           },
           "path": {
             "type": "string",
-            "pattern": "^institucional/ifpr/ppcs/[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*\\.md$"
+            "pattern": "^institucional/ifpr/ppcs/[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*/[0-9]{4}(?:-[2-9]|-[1-9][0-9]+)?\\.md$"
           },
           "proveniencia": {
             "type": "object",

@@ -614,13 +614,12 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     const indice = decodificarIndicePpcs(lerJson(noCheckout(raiz, CAMINHOS.indicePpcs)));
     const itensPpc = itensPorId(indice);
     const ppcPorPath = new Map(itensPpc.map((item) => [item.path, item]));
-    const cursoPorPpcPath = new Map<string, string>();
+    const idsCursos = new Set(dados.cursos.map(({ dados: c }) => `curso:${c.campus_id}/${c.curso_slug}`));
 
     for (const { arquivo, conteudo, dados: c } of dados.cursos) {
       const id = `curso:${c.campus_id}/${c.curso_slug}`;
       const markdown = c.ppc?.markdown_path;
       const ppc = markdown ? ppcPorPath.get(markdown) : undefined;
-      if (markdown && ppc) cursoPorPpcPath.set(markdown, id);
       ins.inserir("cursos", {
         id,
         campus_id: c.campus_id,
@@ -745,10 +744,15 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       cache.set(item.path, markdown);
       const linhas = markdown.split("\n");
       const ppcId = `ppc:${item.id}`;
-      const cursoId = cursoPorPpcPath.get(item.path) ?? null;
+      const idCurso = `curso:${item.campus_id}/${item.curso_slug}`;
+      const cursoId = idsCursos.has(idCurso) ? idCurso : null;
       ins.inserir("ppcs", {
         id: ppcId,
         chave: item.id,
+        chave_curso: `${item.campus_id}/${item.curso_slug}`,
+        versao: item.versao,
+        vigente: item.vigente ? 1 : 0,
+        substituido_por: item.substituido_por ? `ppc:${item.substituido_por}` : null,
         campus_id: item.campus_id,
         campus_nome: item.campus_nome,
         curso_slug: item.curso_slug,
@@ -794,7 +798,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         markdown,
         secoes.map((s): SecaoDoPpc => ({ tipo: s.section_kind, linha_inicio: s.linha_inicio, linha_fim: s.linha_fim })),
       );
-      const curso = cursoId ? cursoDados.get(cursoId) : undefined;
+      // Ano curado e cruzamento com o SUAP valem para o PPC vigente: o registro do curso descreve ele.
+      const curso = cursoId && item.vigente ? cursoDados.get(cursoId) : undefined;
       for (const fato of fatos) {
         ins.inserir("ppc_fatos", {
           ppc_id: ppcId,

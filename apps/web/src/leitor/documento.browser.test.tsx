@@ -54,9 +54,9 @@ function documentoLongo(): DadosDocumento {
   linhas.push("![planta do laboratório](lab.png)", "");
   return {
     tipo: "ppc",
-    id: "teste/documento-longo",
+    id: "teste/documento-longo/2024",
     titulo: "Documento longo",
-    link: "ifpr://ppc/teste/documento-longo",
+    link: "ifpr://ppc/teste/documento-longo/2024",
     path: "x.md",
     markdown: linhas.join("\n"),
     ancoras,

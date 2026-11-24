@@ -15,158 +15,158 @@ consultas:
   # --- dentro de um PPC (o uso da revisão de PPC)
   - id: B01
     consulta: acompanhamento de egressos
-    filtros: { ppc: curitiba/tecnico-em-enfermagem }
+    filtros: { ppc: curitiba/tecnico-em-enfermagem/2023 }
     esperadas:
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "4.3 ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "4.3 ACOMPANHAMENTO DO EGRESSO" }
   - id: B02
     consulta: como o curso acompanha os ex-alunos depois de formados
-    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio }
+    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024 }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "ACOMPANHAMENTO DO EGRESSO" }
   - id: B03
     consulta: estágio obrigatório supervisionado
-    filtros: { ppc: curitiba/tecnico-em-enfermagem }
+    filtros: { ppc: curitiba/tecnico-em-enfermagem/2023 }
     esperadas:
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "Carga Horária de Estágio Obrigatório" }
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "PRÁTICA PROFISSIONAL SUPERVISIONADA - ESTÁGIO CURRICULAR" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Carga Horária de Estágio Obrigatório" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "PRÁTICA PROFISSIONAL SUPERVISIONADA - ESTÁGIO CURRICULAR" }
   - id: B04
     consulta: aproveitamento de estudos anteriores
-    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio }
+    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024 }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "APROVEITAMENTO DE ESTUDOS ANTERIORES" }
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "CERTIFICAÇÃO DE CONHECIMENTOS ANTERIORES" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "APROVEITAMENTO DE ESTUDOS ANTERIORES" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "CERTIFICAÇÃO DE CONHECIMENTOS ANTERIORES" }
   - id: B05
     consulta: aproveitamento de conhecimentos e experiências anteriores
-    filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja }
+    filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016 }
     esperadas:
-      - { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja, titulo: "APROVEITAMENTO DE CONHECIMENTOS E EXPERIÊNCIAS ANTERIORES" }
+      - { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016, titulo: "APROVEITAMENTO DE CONHECIMENTOS E EXPERIÊNCIAS ANTERIORES" }
   - id: B06
     consulta: recuperação paralela dos estudantes
-    filtros: { ppc: campo-largo/agroecologia }
+    filtros: { ppc: campo-largo/agroecologia/2020 }
     esperadas:
-      - { ppc: campo-largo/agroecologia, titulo: "RECUPERAÇÃO PARALELA" }
+      - { ppc: campo-largo/agroecologia/2020, titulo: "RECUPERAÇÃO PARALELA" }
   - id: B07
     consulta: avaliação da aprendizagem
-    filtros: { ppc: curitiba/tecnico-em-enfermagem }
+    filtros: { ppc: curitiba/tecnico-em-enfermagem/2023 }
     esperadas:
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "6.1 AVALIAÇÃO DA APRENDIZAGEM" }
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "Recuperação Paralela" }
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "Condições de Aprovação" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "6.1 AVALIAÇÃO DA APRENDIZAGEM" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Recuperação Paralela" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Condições de Aprovação" }
   - id: B08
     consulta: estudantes com deficiência e educação inclusiva
-    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio }
+    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024 }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "7.1.3 Educação Inclusiva" }
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "7.1.2 Acessibilidade" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "7.1.3 Educação Inclusiva" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "7.1.2 Acessibilidade" }
   - id: B09
     consulta: permanência e êxito dos estudantes
-    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio }
+    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024 }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "AÇÕES DE ACESSO E PERMANÊNCIA DO ESTUDANTE" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "AÇÕES DE ACESSO E PERMANÊNCIA DO ESTUDANTE" }
   - id: B10
     consulta: laboratórios e biblioteca
-    filtros: { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio }
+    filtros: { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017 }
     esperadas:
-      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "Instalações e equipamentos, recursos tecnológicos e biblioteca" }
+      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017, titulo: "Instalações e equipamentos, recursos tecnológicos e biblioteca" }
   - id: B11
     consulta: perfil profissional de conclusão
-    filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja }
+    filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016 }
     esperadas:
-      - { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja, titulo: "PERFIL PROFISSIONAL DE CONCLUSÃO" }
+      - { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016, titulo: "PERFIL PROFISSIONAL DE CONCLUSÃO" }
   - id: B12
     consulta: professores e técnicos do curso
-    filtros: { ppc: campo-largo/agroecologia }
+    filtros: { ppc: campo-largo/agroecologia/2020 }
     esperadas:
-      - { ppc: campo-largo/agroecologia, titulo: "PERFIL DO PESSOAL DOCENTE E TÉCNICO" }
+      - { ppc: campo-largo/agroecologia/2020, titulo: "PERFIL DO PESSOAL DOCENTE E TÉCNICO" }
   - id: B13
     consulta: colegiado de curso e atribuições do coordenador
-    filtros: { ppc: curitiba/tecnico-em-enfermagem }
+    filtros: { ppc: curitiba/tecnico-em-enfermagem/2023 }
     esperadas:
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "Colegiado de Curso" }
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "Atribuições do Coordenador" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Colegiado de Curso" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Atribuições do Coordenador" }
   - id: B14
     consulta: trabalho de conclusão de curso
-    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas }
+    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025 }
     esperadas:
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas, titulo: "TRABALHO DE CONCLUSÃO DE CURSO" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "TRABALHO DE CONCLUSÃO DE CURSO" }
   - id: B15
     consulta: atividades complementares
-    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas }
+    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025 }
     esperadas:
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas, titulo: "ATIVIDADES COMPLEMENTARES" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "ATIVIDADES COMPLEMENTARES" }
   - id: B16
     consulta: matriz curricular
-    filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja }
+    filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016 }
     esperadas:
-      - { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja, titulo: "Matriz Curricular" }
+      - { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016, titulo: "Matriz Curricular" }
   - id: B17
     consulta: justificativa da oferta do curso
-    filtros: { ppc: campo-largo/agroecologia }
+    filtros: { ppc: campo-largo/agroecologia/2020 }
     esperadas:
-      - { ppc: campo-largo/agroecologia, titulo: "2. JUSTIFICATIVA" }
+      - { ppc: campo-largo/agroecologia/2020, titulo: "2. JUSTIFICATIVA" }
   - id: B18
     consulta: forma de ingresso e requisitos de acesso
-    filtros: { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio }
+    filtros: { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017 }
     esperadas:
-      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "Forma de Ingresso" }
-      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "Público-alvo" }
+      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017, titulo: "Forma de Ingresso" }
+      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017, titulo: "Público-alvo" }
   - id: B19
     consulta: tempo de duração e prazo de integralização
-    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio }
+    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024 }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "Tempo de Duração do Curso" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "Tempo de Duração do Curso" }
   - id: B20
     consulta: avaliação do projeto pedagógico do curso
-    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio }
+    filtros: { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024 }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "AVALIAÇÃO DO PROJETO PEDAGÓGICO DO CURSO" }
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "10 AVALIAÇÃO DO CURSO" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "AVALIAÇÃO DO PROJETO PEDAGÓGICO DO CURSO" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "10 AVALIAÇÃO DO CURSO" }
   - id: B21
     consulta: diplomas e certificados
-    filtros: { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio }
+    filtros: { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017 }
     esperadas:
-      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "Descrição de diplomas e certificados" }
+      - { ppc: londrina/tecnico-em-informatica-integrado-ao-ensino-medio/2017, titulo: "Descrição de diplomas e certificados" }
   - id: B22
     consulta: visitas técnicas
-    filtros: { ppc: curitiba/tecnico-em-enfermagem }
+    filtros: { ppc: curitiba/tecnico-em-enfermagem/2023 }
     esperadas:
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "VISITAS TÉCNICAS" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "VISITAS TÉCNICAS" }
   - id: B23
     consulta: estágio curricular e convênios
-    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas }
+    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025 }
     esperadas:
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas, titulo: "4.4 ESTÁGIO CURRICULAR" }
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas, titulo: "Convênios de Estágio" }
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas, titulo: "Características do Estágio" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "4.4 ESTÁGIO CURRICULAR" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "Convênios de Estágio" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "Características do Estágio" }
 
   # --- entre PPCs (filtro por habilitação do CNCT)
   - id: B24
     consulta: acompanhamento de egressos
     filtros: { cnct: tecnico-em-informatica }
     esperadas:
-      - { ppc: barracao/tecnico-em-informatica, titulo: "ACOMPANHAMENTO DO EGRESSO" }
-      - { ppc: colombo/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "ACOMPANHAMENTO DO EGRESSO" }
-      - { ppc: irati/tecnico-em-informatica, titulo: "ACOMPANHAMENTO DA/O EGRESSA/O" }
-      - { ppc: ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "ACOMPANHAMENTO DO EGRESSO" }
-      - { ppc: paranagua/tecnico-em-informatica, titulo: "ACOMPANHAMENTO DO EGRESSO" }
-      - { ppc: pinhais/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "PLANO DE ACOMPANHAMENTO DE EGRESSOS" }
-      - { ppc: uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "4.3 ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: barracao/tecnico-em-informatica/2023, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: colombo/tecnico-em-informatica-integrado-ao-ensino-medio/2023, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: irati/tecnico-em-informatica/2025, titulo: "ACOMPANHAMENTO DA/O EGRESSA/O" }
+      - { ppc: ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio/2023, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: paranagua/tecnico-em-informatica/2024, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: pinhais/tecnico-em-informatica-integrado-ao-ensino-medio/2018, titulo: "PLANO DE ACOMPANHAMENTO DE EGRESSOS" }
+      - { ppc: uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio/2025, titulo: "4.3 ACOMPANHAMENTO DO EGRESSO" }
   - id: B25
     consulta: acompanhamento de egressos
     filtros: { cnct: tecnico-em-agropecuaria }
     esperadas:
-      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024, titulo: "ACOMPANHAMENTO DO EGRESSO" }
   - id: B26
     consulta: aproveitamento de estudos anteriores
     filtros: { cnct: tecnico-em-informatica, campus: curitiba }
     esperadas:
-      - { ppc: curitiba/tecnico-em-informatica-integrado-ao-ensino-medio, titulo: "APROVEITAMENTO DE ESTUDOS" }
+      - { ppc: curitiba/tecnico-em-informatica-integrado-ao-ensino-medio/2019, titulo: "APROVEITAMENTO DE ESTUDOS" }
   - id: B27
     consulta: estágio curricular obrigatório
     filtros: { cnct: tecnico-em-enfermagem }
     esperadas:
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "Carga Horária de Estágio Obrigatório" }
-      - { ppc: curitiba/tecnico-em-enfermagem, titulo: "PRÁTICA PROFISSIONAL SUPERVISIONADA - ESTÁGIO CURRICULAR" }
-      - { ppc: londrina/tecnico-em-enfermagem, titulo: "Carga Horária de Estágio Obrigatório" }
-      - { ppc: londrina/tecnico-em-enfermagem, titulo: "6.7 ESTÁGIO CURRICULAR" }
-      - { ppc: londrina/tecnico-em-enfermagem, titulo: "CONVÊNIOS DE ESTÁGIO" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Carga Horária de Estágio Obrigatório" }
+      - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "PRÁTICA PROFISSIONAL SUPERVISIONADA - ESTÁGIO CURRICULAR" }
+      - { ppc: londrina/tecnico-em-enfermagem/2022, titulo: "Carga Horária de Estágio Obrigatório" }
+      - { ppc: londrina/tecnico-em-enfermagem/2022, titulo: "6.7 ESTÁGIO CURRICULAR" }
+      - { ppc: londrina/tecnico-em-enfermagem/2022, titulo: "CONVÊNIOS DE ESTÁGIO" }

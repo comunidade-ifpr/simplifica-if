@@ -6,8 +6,9 @@
  *   sucessoras, regras de transição, na coluna lateral quando há largura), `lerDocumento` (o texto inteiro, com o
  *   dispositivo destacado, e o sumário, que vira o índice "Neste documento" no alto da lateral) e,
  *   com dispositivo, `lerDispositivos` (o texto com o caput, para "Copiar citação");
- * - **ppc** (com ou sem `#secao`): `lerPpc` (curso, campus e o índice das seções), `lerDocumento` e,
- *   com seção, `lerSecao` (para a citação);
+ * - **ppc** (`campus/curso/versao`, ou `campus/curso` para o vigente; com ou sem `#secao`): `lerPpc`
+ *   (curso, campus, o ID da versão e o índice das seções), `lerDocumento` e, com seção, `lerSecao`
+ *   (para a citação); o índice do Explorar diz se a versão foi substituída;
  * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar); o texto do `lerLink`
  *   (o mesmo do `resources/read` do MCP) fica para um link de outro tipo.
  */
@@ -19,6 +20,7 @@ import { Markdown } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { primeiraMaiuscula } from "../explorar/colecoes.ts";
+import { useIndiceExplorar } from "../explorar/indice.ts";
 import { corVigencia, SinalVigencia } from "../explorar/Vigencia.tsx";
 import { cn } from "../lib/utils.ts";
 import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
@@ -561,15 +563,20 @@ function LeitorPpc({
   const linkPpc = `ifpr://ppc/${chave}`;
   const indice = useCarga(`ppc:${chave}`, () => api.chamar((c) => c.lerPpc({ ppc: chave })));
   const documento = useCarga(`documento:${linkPpc}`, () => api.chamar((c) => c.lerDocumento({ link: linkPpc })));
-  const secao = useCarga(fragmento === null ? null : `secao:${chave}#${fragmento}`, () =>
-    api.chamar((c) => c.lerSecao({ id: `${chave}#${fragmento}` })),
+  // `campus/curso` (sem versão) é o PPC vigente: as seções têm o ID da versão, que vem de `lerPpc`.
+  const versao = indice.fase === "lido" ? indice.valor.dados.ppc.id.replace(/^ppc:/, "") : null;
+  const secao = useCarga(fragmento === null || versao === null ? null : `secao:${versao}#${fragmento}`, () =>
+    api.chamar((c) => c.lerSecao({ id: `${versao}#${fragmento}` })),
   );
+  const explorar = useIndiceExplorar();
+  const doIndice =
+    explorar.fase === "lido" && versao !== null ? explorar.valor.ppcs.find((p) => p.chave === versao) : undefined;
 
   return (
     <ComCarga carga={indice} titulo="Não foi possível ler este PPC">
       {({ dados }) => {
         const { ppc, secoes } = dados;
-        const atual = fragmento === null ? undefined : secoes.find((s) => s.id === `${chave}#${fragmento}`);
+        const atual = fragmento === null ? undefined : secoes.find((s) => s.id === `${versao}#${fragmento}`);
         const citacao =
           fragmento === null
             ? citacaoDoPpc({ curso: ppc.nome, campus: ppc.campus })
@@ -597,7 +604,23 @@ function LeitorPpc({
                 {[ppc.nivel, ppc.forma].filter(Boolean).map((p) => (
                   <span key={p}>{primeiraMaiuscula(p!)}</span>
                 ))}
+                {doIndice?.ano != null ? <span>Documento de {doIndice.ano}</span> : null}
               </Fatos>
+              {doIndice !== undefined && !doIndice.vigente ? (
+                <Alert variant="warning">
+                  <AlertTitle>PPC substituído</AlertTitle>
+                  <AlertDescription>
+                    O curso tem um PPC mais novo
+                    {doIndice.substituido_por !== null ? (
+                      <>
+                        {": "}
+                        <BotaoLink link={doIndice.substituido_por} aoAbrirLink={aoAbrirLink} />
+                      </>
+                    ) : null}
+                    . Esta versão fica na base para consulta.
+                  </AlertDescription>
+                </Alert>
+              ) : null}
             </Cabecalho>
 
             <Corpo

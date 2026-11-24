@@ -26,10 +26,11 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/04/PPC-Eletromecanica_Subsequente.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-subsequente.md",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-subsequente/2017.md",
     "vagas": "40",
     "trecho_vagas": "RÁRIA TOTAL: 1.360h NÚMERO DE VAGAS: MÍNIMO MÁXIMO 20 40 3. ESTRUTURA E FUNCIONAMENTO 3.1 Justificativa da oferta do Curso É inegável o",
     "curadoria_ano": "Precisa de revisão",
-    "curadoria_vagas": "Precisa de revisão"
+    "curadoria_vagas": "Precisa de revisão",
+    "observacoes": "Versão 2017 do ID: o PPC não traz data; o ano é o da publicação do PDF no site do campus (o texto cita normas até 2012)."
   }
 }

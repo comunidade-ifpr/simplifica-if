@@ -6,13 +6,14 @@ import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { resumoProveniencia, taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
 import { ehObjeto, type ObjetoJson, valoresIguais } from "@simplifica-if/kb/json";
 import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
-import { analisarPpc, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { caminhoPpc, chavePpc, compararVersoesPpc, idPpc, partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import type { IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
 import { aparar, ESPACOS, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
 import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
-import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, type Recebido } from "./contexto.ts";
+import { type Contexto, ehRecebido, type Recebido } from "./contexto.ts";
 
 type ItemIndicePpcs = IndicePpcsJson["items"][number];
 
@@ -26,8 +27,8 @@ const TIPOS_POR_TAXONOMIA = new Map(
   Object.entries(TAXONOMIAS).map(([nome, taxonomia]) => [nome, new Set(taxonomia.tipos.map((d) => d.tipo))]),
 );
 
-/** PPCs convertidos declarados nos cursos: `campus/curso` → caminho do Markdown existente. */
-function ppcsConvertidosDosCursos(ctx: Contexto): Map<string, string> {
+/** PPC vigente de cada curso: `campus/curso` → caminho do Markdown existente (`ppc.markdown_path`). */
+function ppcsVigentesDosCursos(ctx: Contexto): Map<string, string> {
   const ppcs = new Map<string, string>();
   // Registro inválido fica de fora; a validação dos registros institucionais o acusa.
   const { dados } = carregarDadosInstitucionais(NodePath.join(ctx.c.institucional, "ifpr"));
@@ -156,7 +157,7 @@ export function validarPpcs(ctx: Contexto): string[] {
   }
   if (!valoresIguais(indice.total_itens, itens.length)) erros.push(`${rIndice}: total_itens diverge de items`);
 
-  const ppcsEsperados = ppcsConvertidosDosCursos(ctx);
+  const vigentesDosCursos = ppcsVigentesDosCursos(ctx);
   const idsVistos = new Set<string>();
   const itensPorId = new Map<string, Recebido<ItemIndicePpcs>>();
   for (const item of itens) {
@@ -172,37 +173,94 @@ export function validarPpcs(ctx: Contexto): string[] {
     if (idsVistos.has(ppcId)) erros.push(`${rIndice}: id duplicado: ${ppcId}`);
     idsVistos.add(ppcId);
     itensPorId.set(ppcId, item);
-    if (typeof campusId === "string" && typeof cursoSlug === "string" && ppcId !== `${campusId}/${cursoSlug}`) {
-      erros.push(`${rIndice}: id diverge de campus_id/curso_slug: ${ppcId}`);
+    const versao = item.versao;
+    if (typeof campusId !== "string" || typeof cursoSlug !== "string" || typeof versao !== "string") continue;
+    if (ppcId !== chavePpc(campusId, cursoSlug, versao)) {
+      erros.push(`${rIndice}: id diverge de campus_id/curso_slug/versao: ${ppcId}`);
     }
     if (typeof valorPath !== "string") {
       erros.push(`${rIndice}: path ausente em ${ppcId}`);
       continue;
     }
+    if (valorPath !== caminhoPpc(campusId, cursoSlug, versao)) {
+      erros.push(`${rIndice}: path diverge do id em ${ppcId}: ${valorPath}`);
+    }
     if (!NodeFS.existsSync(naBase(ctx.c, valorPath)))
       erros.push(`${rIndice}: path inexistente em ${ppcId}: ${valorPath}`);
-    const esperado = ppcsEsperados.get(ppcId);
-    if (esperado !== undefined && valorPath !== esperado) {
-      erros.push(`${rIndice}: path diverge do registro do curso em ${ppcId}: ${valorPath}`);
+    const vigenteDoCurso = vigentesDosCursos.get(`${campusId}/${cursoSlug}`);
+    if (item.vigente !== (valorPath === vigenteDoCurso)) {
+      erros.push(
+        `${rIndice}: vigente de ${ppcId} diverge do ppc.markdown_path do curso (${vigenteDoCurso ?? "nenhum"})`,
+      );
     }
     erros.push(...validarProvenienciaItem(ctx, item, ppcId, valorPath));
   }
 
-  const idsEsperados = new Set(ppcsEsperados.keys());
-  if (!mesmosElementos(idsVistos, idsEsperados)) {
-    erros.push(
-      `índice de PPCs não cobre exatamente os PPCs convertidos dos cursos: index=${listaOrdenada(idsVistos)} cursos=${listaOrdenada(idsEsperados)}`,
-    );
-  }
+  erros.push(
+    ...validarVersoesPpc(
+      ctx,
+      itens.filter((i) => ehRecebido<ItemIndicePpcs>(i)),
+      vigentesDosCursos,
+    ),
+  );
 
   erros.push(...validarSecoesPpc(ctx, itensPorId));
   return erros;
 }
 
 /**
- * Proveniência do PPC: front matter válido, `id` = `ppc:<campus_id>/<curso_slug>`, `fonte_url` igual
- * ao `ppc.url` vigente (a base guarda só o PPC vigente; URL nova exige reconversão) e o resumo do
- * índice igual ao front matter.
+ * Todo PPC da base fica no índice, e cada curso tem um PPC vigente, a versão mais recente: os
+ * Markdown em `ppcs/<campus>/<curso>/<versao>.md` são exatamente os itens do índice, cada curso com
+ * `ppc.markdown_path` tem um item vigente, e nenhuma versão substituída é mais nova que ele. Arquivo
+ * fora desse caminho (ou de curso sem registro) é erro: PPC não sai da base, mas também não fica solto.
+ */
+function validarVersoesPpc(
+  ctx: Contexto,
+  itens: Array<Recebido<ItemIndicePpcs>>,
+  vigentesDosCursos: Map<string, string>,
+): string[] {
+  const erros: string[] = [];
+  const noIndice = new Set(itens.map((item) => item.path).filter((p): p is string => typeof p === "string"));
+  const noDisco = new Set(
+    listarDiretorio(ctx.c.ppcs)
+      .filter((pasta) => ehDiretorio(pasta) && NodePath.basename(pasta) !== "secoes")
+      .flatMap((pasta) => [
+        ...listarDiretorio(pasta, ".md"),
+        ...listarDiretorio(pasta).flatMap((sub) => (ehDiretorio(sub) ? listarDiretorio(sub, ".md") : [])),
+      ])
+      .map((caminho) => ctx.rel(caminho)),
+  );
+  for (const caminho of ordenarCaminhos([...noDisco])) {
+    if (!partesDoCaminhoPpc(caminho)) erros.push(`${caminho}: PPC fora do caminho ppcs/<campus>/<curso>/<versao>.md`);
+    else if (!noIndice.has(caminho)) erros.push(`${caminho}: PPC sem item no índice (curso sem registro?)`);
+  }
+  const vigentesNoIndice = new Map<string, Recebido<ItemIndicePpcs>>();
+  const ultimaVersao = new Map<string, string>();
+  for (const item of itens) {
+    if (typeof item.campus_id !== "string" || typeof item.curso_slug !== "string" || typeof item.versao !== "string")
+      continue;
+    const curso = `${item.campus_id}/${item.curso_slug}`;
+    if (item.vigente === true) vigentesNoIndice.set(curso, item);
+    const ultima = ultimaVersao.get(curso);
+    if (ultima === undefined || compararVersoesPpc(item.versao, ultima) > 0) ultimaVersao.set(curso, item.versao);
+  }
+  for (const curso of ordenarTextos([...vigentesDosCursos.keys()])) {
+    const vigente = vigentesNoIndice.get(curso);
+    if (!vigente) {
+      erros.push(`índice de PPCs: curso ${curso} sem PPC vigente no índice`);
+    } else if (vigente.versao !== ultimaVersao.get(curso)) {
+      erros.push(
+        `índice de PPCs: o PPC vigente de ${curso} (${String(vigente.versao)}) não é a versão mais recente (${ultimaVersao.get(curso)})`,
+      );
+    }
+  }
+  return erros;
+}
+
+/**
+ * Proveniência do PPC: front matter válido, `id` = `ppc:<campus_id>/<curso_slug>/<versao>`,
+ * `fonte_url` igual à fonte do índice (no vigente, o `ppc.url` do curso: URL nova é PPC novo, que
+ * entra como versão nova) e o resumo do índice igual ao front matter.
  */
 function validarProvenienciaItem(
   ctx: Contexto,
@@ -220,13 +278,13 @@ function validarProvenienciaItem(
     throw erro;
   }
   const erros: string[] = [];
-  const [campusId, cursoSlug] = ppcId.split("/") as [string, string];
-  if (proveniencia.id !== idPpc(campusId, cursoSlug)) {
-    erros.push(`${valorPath}: id do front matter deve ser ${idPpc(campusId, cursoSlug)}`);
+  const [campusId, cursoSlug, versao] = ppcId.split("/") as [string, string, string];
+  if (proveniencia.id !== idPpc(campusId, cursoSlug, versao)) {
+    erros.push(`${valorPath}: id do front matter deve ser ${idPpc(campusId, cursoSlug, versao)}`);
   }
   if (typeof item.fonte_pdf === "string" && proveniencia.fonte_url !== item.fonte_pdf) {
     erros.push(
-      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); o PPC mudou e precisa ser reimportado (node scripts/importar_ppc_docx.ts) ou ppc.url está errado`,
+      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); o PPC mudou e a versão nova entra pelo node scripts/importar_ppc_docx.ts, ou ppc.url está errado`,
     );
   }
   if (!valoresIguais(item.proveniencia, resumoProveniencia(proveniencia))) {
@@ -240,7 +298,8 @@ export function validarArtefatosConversaoPpc(ctx: Contexto): string[] {
   const erros: string[] = [];
   const markdowns = listarDiretorio(ctx.c.ppcs)
     .filter(ehDiretorio)
-    .flatMap((diretorio) => listarDiretorio(diretorio, ".md"));
+    .flatMap((campus) => listarDiretorio(campus).filter(ehDiretorio))
+    .flatMap((curso) => listarDiretorio(curso, ".md"));
   for (const caminho of markdowns) {
     const texto = lerTexto(caminho, { ignorarErros: true });
     for (const [rotulo, padrao] of ARTEFATOS_CONVERSAO_PPC) {

@@ -80,18 +80,21 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
   }
 
   db.prepare(
-    `INSERT INTO ppcs (id, chave, campus_id, campus_nome, curso_slug, curso_nome, nivel, tipo_oferta, path, linhas, caracteres, proveniencia_json)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO ppcs (id, chave, chave_curso, versao, vigente, campus_id, campus_nome, curso_slug, curso_nome, nivel, tipo_oferta, path, linhas, caracteres, proveniencia_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
-    "ppc:curitiba/tecnico-em-enfermagem",
+    "ppc:curitiba/tecnico-em-enfermagem/2023",
+    "curitiba/tecnico-em-enfermagem/2023",
     "curitiba/tecnico-em-enfermagem",
+    "2023",
+    1,
     "curitiba",
     "Curitiba",
     "tecnico-em-enfermagem",
     "Técnico em Enfermagem",
     "médio",
     "subsequente",
-    "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+    "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
     300,
     12000,
     "{}",
@@ -121,7 +124,7 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     `INSERT INTO secoes (id, ppc_id, tipo, titulo, path, linha_inicio, linha_fim, linha_texto, texto)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
-  const md = "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md";
+  const md = "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md";
   for (const [secao, tipo, inicio] of [
     ["estagio-1", "estagio_praticas", 200],
     ["avaliacao-1", "avaliacao", 120],
@@ -130,8 +133,8 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     LINHAS_PPC_ENFERMAGEM.set(inicio, `## ${secao}`);
     LINHAS_PPC_ENFERMAGEM.set(inicio + 2, `Texto da seção ${secao}.`);
     inserirSecao.run(
-      `curitiba/tecnico-em-enfermagem#${secao}`,
-      "ppc:curitiba/tecnico-em-enfermagem",
+      `curitiba/tecnico-em-enfermagem/2023#${secao}`,
+      "ppc:curitiba/tecnico-em-enfermagem/2023",
       tipo,
       secao,
       md,
@@ -143,7 +146,7 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
   }
   db.prepare("INSERT INTO documentos (path, texto) VALUES (?, ?)").run(
     md,
-    markdownSintetico("ppc:curitiba/tecnico-em-enfermagem", LINHAS_PPC_ENFERMAGEM),
+    markdownSintetico("ppc:curitiba/tecnico-em-enfermagem/2023", LINHAS_PPC_ENFERMAGEM),
   );
   db.close();
   return caminho;

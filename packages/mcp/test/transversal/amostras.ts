@@ -24,7 +24,7 @@ import { TETO_PACOTE_CONTEXTO } from "../../src/ferramentas/pacote-contexto.ts";
 import { TETO_RESOLVER_CITACOES } from "../../src/ferramentas/resolver-citacoes.ts";
 import type { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
 import { DCN_2021, DCN_2026, EXTERNO, STUB } from "../fixture-normas.ts";
-import { PPC_ENFERMAGEM, PPC_FISICA, PPC_INFORMATICA, SECAO_LONGA } from "../fixture-ppcs.ts";
+import { CURSO_ENFERMAGEM, CURSO_FISICA, PPC_ENFERMAGEM, PPC_INFORMATICA, SECAO_LONGA } from "../fixture-ppcs.ts";
 
 export type NomeFerramenta = (typeof FERRAMENTAS)[number]["nome"];
 
@@ -268,7 +268,7 @@ export const AMOSTRAS: { readonly [N in NomeFerramenta]: Amostras } = {
   },
   ficha_curso: {
     fixture: "ppcs",
-    validas: [{ curso: PPC_ENFERMAGEM }, { curso: `curso:${PPC_FISICA}` }],
+    validas: [{ curso: CURSO_ENFERMAGEM }, { curso: `curso:${CURSO_FISICA}` }],
     reais: [{ curso: PPC_REAL }, { curso: "curso:foz-do-iguacu/licenciatura-em-fisica" }],
     invalidas: [
       [{}, "curso: "],

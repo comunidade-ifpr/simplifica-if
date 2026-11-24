@@ -1,8 +1,8 @@
 /**
  * Front matter de proveniência dos PPCs convertidos (`base-conhecimento/institucional/ifpr/ppcs/`).
  *
- * A base guarda só o PPC vigente de cada curso; versões anteriores ficam no histórico do git. Por
- * isso o ID do PPC é `ppc:<campus_id>/<curso_slug>`, sem versão. O front matter registra de onde
+ * Todo PPC que entra na base fica nela, com ID permanente `ppc:<campus_id>/<curso_slug>/<versao>`
+ * (`./ids.ts`); o PPC novo de um curso é versão nova, e o anterior fica. O front matter registra de onde
  * veio o texto: o endereço publicado (`fonte_url`), o hash SHA-256 dos bytes desse endereço
  * (`fonte_sha256`), o arquivo que de fato foi convertido (`arquivo_convertido` e
  * `arquivo_convertido_sha256`), a data e a versão do conversor.
@@ -28,12 +28,13 @@ import { parse } from "yaml";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { RE_URL_HTTPS } from "../normas/fonte.ts";
 import { analisarFrontMatter, ErroFrontMatter } from "../normas/front-matter.ts";
+import { RE_SLUG_PPC, RE_VERSAO_PPC } from "./ids.ts";
 
 export { ErroFrontMatter };
+export { idPpc } from "./ids.ts";
 
 export const DESCONHECIDO = "desconhecido";
-const RE_SLUG = "[a-z0-9]+(?:-[a-z0-9]+)*";
-const RE_ID_PPC = new RegExp(`^ppc:${RE_SLUG}/${RE_SLUG}$`);
+const RE_ID_PPC = new RegExp(`^ppc:${RE_SLUG_PPC}/${RE_SLUG_PPC}/${RE_VERSAO_PPC}$`);
 const RE_SHA256 = /^[0-9a-f]{64}$/;
 const RE_COMMIT = /^[0-9a-f]{40}$/;
 
@@ -57,7 +58,7 @@ const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
 
 /** Contrato do front matter de proveniência (decodificado sem chaves extras). */
 export const esquemaProvenienciaPpc = Schema.Struct({
-  id: padrao(RE_ID_PPC, "id deve ser ppc:<campus_id>/<curso_slug>"),
+  id: padrao(RE_ID_PPC, "id deve ser ppc:<campus_id>/<curso_slug>/<versao>"),
   fonte_url: padrao(RE_URL_HTTPS, "fonte_url deve ser URL https"),
   fonte_sha256: Schema.Union([
     padrao(RE_SHA256, "fonte_sha256 deve ter 64 hexadecimais"),
@@ -108,10 +109,6 @@ export type ProvenienciaPpc = typeof esquemaProvenienciaPpc.Type;
 const opcoesProveniencia = { onExcessProperty: "error", errors: "all" } as const;
 const decodificarProveniencia = Schema.decodeUnknownResult(esquemaProvenienciaPpc, opcoesProveniencia);
 const validarProveniencia = Schema.decodeUnknownSync(esquemaProvenienciaPpc, opcoesProveniencia);
-
-export function idPpc(campusId: string, cursoSlug: string): string {
-  return `ppc:${campusId}/${cursoSlug}`;
-}
 
 const CAMPOS_CONHECIDOS = new Set<string>(CAMPOS_PROVENIENCIA);
 

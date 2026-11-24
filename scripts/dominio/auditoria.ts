@@ -1,6 +1,6 @@
 import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { ehHttps, ehRotuloCuradoria, ehSlug } from "./comum.ts";
-import { caminhoEsperadoPpc, type Campus, type Curso } from "./curso.ts";
+import { ehCaminhoPpcDoCurso, PREFIXO_PPCS, type Campus, type Curso } from "./curso.ts";
 import {
   ehTurno,
   RE_MARCA_RODAPE,
@@ -101,9 +101,10 @@ function auditarCursos(cursos: Curso[], campusIdPorRegistro: Map<string, string>
     }
     if (curso.ppc.url && !ehHttps(curso.ppc.url)) erros.push(`${nome}: PPC URL oficial não HTTPS`);
     if (curso.ppc.markdownPath && slugValido) {
-      const esperado = caminhoEsperadoPpc(campusId, curso.slug);
-      if (curso.ppc.markdownPath !== esperado) {
-        erros.push(`${nome}: PPC Markdown Link esperado ${esperado}, encontrado ${curso.ppc.markdownPath}`);
+      if (!ehCaminhoPpcDoCurso(curso.ppc.markdownPath, campusId, curso.slug)) {
+        erros.push(
+          `${nome}: PPC Markdown Link esperado ${PREFIXO_PPCS}${campusId}/${curso.slug}/<versao>.md, encontrado ${curso.ppc.markdownPath}`,
+        );
       }
     }
   }

@@ -241,7 +241,19 @@ export interface IndicePpcsJson {
    * @minItems 1
    */
   items: {
+    /**
+     * Chave permanente do PPC: <campus_id>/<curso_slug>/<versao>; a versão é o ano do documento, com sufixo -2, -3… no mesmo ano.
+     */
     id: string;
+    versao: string;
+    /**
+     * Se é o PPC que o registro do curso aponta (ppc.markdown_path). Os demais são versões substituídas, que ficam na base.
+     */
+    vigente: boolean;
+    /**
+     * Chave da versão seguinte do PPC do mesmo curso (só nas substituídas).
+     */
+    substituido_por?: string;
     campus_id: string;
     campus_nome: string;
     curso_slug: string;

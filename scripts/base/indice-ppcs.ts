@@ -12,6 +12,7 @@ import type { ArquivoGerado } from "./gerados.ts";
 import { type CaminhosBase, naBase, relativo } from "./caminhos.ts";
 import { ehObjeto, jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
 import { analisarPpc, type ProvenienciaPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { caminhoPpc, chavePpc, compararVersoesPpc, PASTA_PPCS } from "@simplifica-if/kb/ppcs/ids";
 import {
   LIMITE_PREVIEW_SECAO,
   MINIMO_CARACTERES_SECAO,
@@ -65,13 +66,16 @@ function textoPreenchido(valor: unknown): string | null {
 }
 
 /**
- * Item do índice para o PPC convertido `caminhoMarkdown` de um curso, ou
- * `null` se faltar algum campo textual obrigatório no registro do curso.
- * `markdown` é o texto do PPC, de onde sai a proveniência (front matter).
+ * Item do índice para o PPC `caminhoMarkdown` (versão `versao`) de um curso, ou `null` se faltar
+ * algum campo textual obrigatório no registro do curso. `markdown` é o texto do PPC, de onde sai a
+ * proveniência (front matter). O PPC vigente é o que o curso aponta em `ppc.markdown_path`; dele vêm
+ * o ano e as vagas curados no registro do curso. Os demais são versões substituídas, e o ano é o da
+ * versão.
  */
 export function montarItemPpc(
   campus: CampusLocal,
   curso: CursoLocal,
+  versao: string,
   caminhoMarkdown: string,
   markdown: string,
 ): ItemPpc | null {
@@ -82,17 +86,19 @@ export function montarItemPpc(
   const nivel = textoPreenchido(curso.nivel);
   const tipoOferta = textoPreenchido(curso.forma_oferta);
   const cursoUrl = textoPreenchido(curso.pagina_oficial);
-  const fontePdf = textoPreenchido(curso.ppc?.url);
-  if (!campusId || !campusNome || !cursoSlug || !cursoNome || !nivel || !tipoOferta || !cursoUrl || !fontePdf) {
-    return null;
-  }
+  if (!campusId || !campusNome || !cursoSlug || !cursoNome || !nivel || !tipoOferta || !cursoUrl) return null;
+  const vigente = curso.ppc?.markdown_path === caminhoMarkdown;
   const { proveniencia } = analisarPpc(markdown, caminhoMarkdown);
+  const fontePdf = vigente ? textoPreenchido(curso.ppc?.url) : proveniencia.fonte_url;
+  if (!fontePdf) return null;
   const item: ItemPpc = {
-    id: `${campusId}/${cursoSlug}`,
+    id: chavePpc(campusId, cursoSlug, versao),
     campus_id: campusId,
     campus_nome: campusNome,
     curso_slug: cursoSlug,
     curso_nome: cursoNome,
+    versao,
+    vigente,
     nivel,
     taxonomia: taxonomiaDoNivel(nivel),
     tipo_oferta: tipoOferta,
@@ -105,15 +111,28 @@ export function montarItemPpc(
   if (modalidade) item.modalidade = modalidade;
   const situacao = textoPreenchido(curso.situacao);
   if (situacao) item.situacao = situacao;
-  const ano = curso.ppc?.ano_documento;
+  const ano = vigente ? curso.ppc?.ano_documento : Number(versao.slice(0, 4));
   if (ano !== undefined) item.ano_documento = ano;
   // As vagas do PPC só valem com o trecho do documento que as sustenta.
-  const vagas = curso.ppc?.trecho_vagas ? interpretarVagasPpc(curso.ppc.vagas ?? "") : null;
+  const vagas = vigente && curso.ppc?.trecho_vagas ? interpretarVagasPpc(curso.ppc.vagas ?? "") : null;
   if (vagas) item.vagas = vagas.quantidade;
   return item;
 }
 
-/** Itens do índice: os cursos de `institucional/ifpr/cursos/` com PPC convertido presente na base. */
+/** Versões de PPC de um curso na base (`ppcs/<campus>/<curso>/<versao>.md`), em ordem. */
+export function versoesPpcDoCurso(caminhos: CaminhosBase, campusId: string, cursoSlug: string): string[] {
+  const pasta = naBase(caminhos, `${PASTA_PPCS}/${campusId}/${cursoSlug}`);
+  if (!NodeFS.existsSync(pasta)) return [];
+  return NodeFS.readdirSync(pasta)
+    .filter((nome) => nome.endsWith(".md"))
+    .map((nome) => nome.slice(0, -3))
+    .sort(compararVersoesPpc);
+}
+
+/**
+ * Itens do índice: todos os PPCs da base, de cada curso de `institucional/ifpr/cursos/`, vigentes e
+ * substituídos. Cada versão substituída aponta a seguinte (`substituido_por`).
+ */
 export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
   // Registro inválido fica de fora; o validar_base o acusa.
   const { dados } = carregarDadosInstitucionais(NodePath.join(caminhos.institucional, "ifpr"));
@@ -121,19 +140,27 @@ export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
   const itens: ItemPpc[] = [];
   for (const curso of dados.cursos) {
     const campus = campi.get(curso.campus_id);
-    const caminhoMarkdown = curso.ppc?.markdown_path;
-    if (!campus || !curso.ppc?.url || !caminhoMarkdown || !NodeFS.existsSync(naBase(caminhos, caminhoMarkdown))) {
-      continue;
+    if (!campus) continue;
+    const versoes = versoesPpcDoCurso(caminhos, curso.campus_id, curso.curso_slug);
+    const doCurso: ItemPpc[] = [];
+    for (const versao of versoes) {
+      const caminhoMarkdown = caminhoPpc(curso.campus_id, curso.curso_slug, versao);
+      const markdown = lerTexto(naBase(caminhos, caminhoMarkdown), { ignorarErros: true });
+      const item = montarItemPpc(campus, curso, versao, caminhoMarkdown, markdown);
+      if (item) doCurso.push(item);
     }
-    const markdown = lerTexto(naBase(caminhos, caminhoMarkdown), { ignorarErros: true });
-    const item = montarItemPpc(campus, curso, caminhoMarkdown, markdown);
-    if (item) itens.push(item);
+    for (const [i, item] of doCurso.entries()) {
+      const seguinte = doCurso[i + 1];
+      if (!item.vigente && seguinte) item.substituido_por = seguinte.id;
+    }
+    itens.push(...doCurso);
   }
   return itens.sort(
     (a, b) =>
       compararTexto(a.campus_id, b.campus_id) ||
       compararTexto(a.curso_nome, b.curso_nome) ||
-      compararTexto(a.curso_slug, b.curso_slug),
+      compararTexto(a.curso_slug, b.curso_slug) ||
+      compararVersoesPpc(a.versao, b.versao),
   );
 }
 

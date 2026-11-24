@@ -1,4 +1,4 @@
-import type { CnctDoIndice, CursoDoIndice, NormaDoIndice } from "@simplifica-if/contratos-app";
+import type { CnctDoIndice, CursoDoIndice, NormaDoIndice, PpcDoIndice } from "@simplifica-if/contratos-app";
 import { describe, expect, it } from "vite-plus/test";
 import {
   A_CONFIRMAR,
@@ -7,6 +7,7 @@ import {
   filtrarCnct,
   filtrarCursos,
   filtrarNormas,
+  filtrarPpcs,
   nomeResultado,
   nomeTurno,
   nomeVigencia,
@@ -113,6 +114,26 @@ describe("filtros", () => {
     }),
     norma({ id: "br/cne-cp/res/2026/2", titulo: "Resolução CNE/CP nº 2/2026", ano: 2026 }),
   ];
+
+  it("PPCs: só os vigentes, salvo pedindo os substituídos; as versões do curso da mais nova à mais antiga", () => {
+    const ppc = (versao: string, vigente: boolean): PpcDoIndice => ({
+      chave: `curitiba/tecnico-em-enfermagem/${versao}`,
+      nome: "Técnico em Enfermagem",
+      campus: "curitiba",
+      campus_nome: "Curitiba",
+      nivel: "médio",
+      forma: "subsequente",
+      ano: Number(versao.slice(0, 4)),
+      versao,
+      vigente,
+      substituido_por: vigente ? null : "ifpr://ppc/curitiba/tecnico-em-enfermagem/2026",
+      curso: "ifpr://curso/curitiba/tecnico-em-enfermagem",
+      link: `ifpr://ppc/curitiba/tecnico-em-enfermagem/${versao}`,
+    });
+    const ppcs = [ppc("2019", false), ppc("2026", true)];
+    expect(filtrarPpcs(ppcs, {}).map((p) => p.versao)).toEqual(["2026"]);
+    expect(filtrarPpcs(ppcs, { substituidos: true }).map((p) => p.versao)).toEqual(["2026", "2019"]);
+  });
 
   it("normas por órgão, ano, vigência (inclusive a confirmar) e texto, mais recentes primeiro", () => {
     expect(filtrarNormas(normas, {}).map((n) => n.ano)).toEqual([2026, 2021, 1996]);

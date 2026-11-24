@@ -146,7 +146,7 @@ Aceite fontes externas, como Google Sheets ou Edupage, somente quando forem apon
 
 Quando a página oficial do curso indicar o Projeto Pedagógico de Curso, registre o PPC vigente no objeto `ppc` do curso.
 
-**Política de versão: a base guarda só o PPC vigente de cada curso.** Quando o curso ganha PPC novo (por exemplo, nas reformulações exigidas pelo art. 71 da Res. CNE/CP nº 2/2026), peça o DOCX à coordenação e importe-o com `--substituir` (passo a passo em "Entrada de PPC novo na base", abaixo): o Markdown é substituído no mesmo caminho e `ppc.url` passa ao endereço publicado do PPC novo. A versão anterior continua recuperável pelo histórico do git (`git log --follow -- base-conhecimento/<markdown_path>` e `git show <commit>:base-conhecimento/<markdown_path>`); o `conversao_commit` do front matter aponta o commit de cada conversão reconstruída. Por isso o ID do PPC não tem versão: é `ppc:<campus_id>/<curso_slug>`. PPCs históricos relevantes para a gestão ficam documentados nas movimentações e nas evidências SEI.
+**Política de versão: todo PPC que entra na base fica nela.** Cada PPC tem ID permanente `ppc:<campus_id>/<curso_slug>/<versao>` e mora em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<versao>.md`. A versão é o ano do documento (`2023`), com sufixo quando o curso tem dois PPCs do mesmo ano (`2023-2`); uma vez gravado, o ID não muda. O registro do curso aponta o PPC vigente (`ppc.markdown_path`, `ppc.url`, `ppc.ano_documento`), que é sempre a versão mais recente. Quando o curso ganha PPC novo (por exemplo, nas reformulações exigidas pelo art. 71 da Res. CNE/CP nº 2/2026), peça o DOCX à coordenação e importe-o (passo a passo em "Entrada de PPC novo na base", abaixo): ele entra como versão nova, o registro do curso passa a apontá-lo e o anterior fica na base, substituído, porque documentos e pareceres o citam. Arquivo de PPC só sai da base por erro de curadoria (documento de outro curso, por exemplo). As consultas (`buscar-secoes`, `fatos-ppc`, `citacoes-da-norma`, `impacto-da-norma`, Explorar) usam só os vigentes, salvo `--incluir-substituidos`; `campus/curso` sem versão vale pelo PPC vigente.
 
 Regras:
 
@@ -175,17 +175,18 @@ O ano do documento é o da capa ou folha de rosto. Quando a capa traz também um
 
 ### Entrada de PPC novo na base
 
-Um PPC entra na base, ou troca o vigente de um curso, a partir do DOCX que a coordenação do curso envia. PDF não é convertido: se o curso só tem o PDF publicado, peça o DOCX à coordenação. A conversão é a mesma da revisão prévia (`converterPpc`, em `packages/ppc`), e o script grava o Markdown da base em `ppc.markdown_path`:
+Um PPC entra na base, como primeiro PPC do curso ou como versão nova, a partir do DOCX que a coordenação do curso envia. PDF não é convertido: se o curso só tem o PDF publicado, peça o DOCX à coordenação. A conversão é a mesma da revisão prévia (`converterPpc`, em `packages/ppc`), e o script grava o Markdown da base como versão nova do PPC do curso:
 
 ```bash
-node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]
+node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> --ano <AAAA> [--reconverter]
 ```
 
 1. Confira que o registro do curso existe em `institucional/ifpr/cursos/<campus_id>/<curso_slug>.json`; curso novo ganha registro antes, como na seção "Cursos". O script recusa curso inexistente.
 2. Ache o endereço público do PPC na página oficial do curso (em geral, o PDF publicado do mesmo documento) e passe-o em `--fonte-url`. Ele vai para o `fonte_url` do front matter e para `ppc.url` do registro, que o `validar_base.ts` exige iguais. URL que não seja `https`, URL pré-assinada, planilha do Google e link de sessão do SEI são recusados.
-3. Rode o script. Ele recusa arquivo que não é `.docx` ou não é um DOCX legível, documento sem texto (vazio ou digitalizado como imagem) e, sem `--substituir`, a troca de um PPC já gravado no caminho do curso. Com `--substituir`, a versão anterior fica no histórico do git.
-4. O script grava:
-   - o Markdown em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md`, com o front matter de proveniência `registrada` (abaixo): o hash do DOCX vai em `arquivo_convertido_sha256`, e o `fonte_sha256` fica `desconhecido`, porque ele é o hash dos bytes de `fonte_url` (em geral o PDF), que o script não baixa;
+3. Passe em `--ano` o ano do documento (o da aprovação ou o da capa): ele é a versão no ID e vai para `ppc.ano_documento`, com a curadoria reaberta. Se o curso já tem PPC desse ano, a versão ganha sufixo (`2026-2`); PPC mais antigo que o vigente é recusado. `--reconverter` é só para converter de novo o mesmo documento do PPC vigente (conversor corrigido, DOCX mais fiel): grava por cima dele, com o mesmo ID, e exige o ano dele.
+4. Rode o script. Ele recusa arquivo que não é `.docx` ou não é um DOCX legível e documento sem texto (vazio ou digitalizado como imagem).
+5. O script grava:
+   - o Markdown em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<versao>.md`, com o front matter de proveniência `registrada` (abaixo): o hash do DOCX vai em `arquivo_convertido_sha256`, e o `fonte_sha256` fica `desconhecido`, porque ele é o hash dos bytes de `fonte_url` (em geral o PDF), que o script não baixa;
    - sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita em [Dados pessoais e URLs internas](#dados-pessoais-e-urls-internas), que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google (um link Markdown `[texto](planilha)` vira `texto (planilha interna, link omitido)`), sem parâmetros de sessão do SEI e sem query de URL pré-assinada. A saída informa só as contagens do que omitiu;
    - no lugar da representação gráfica, um aviso: a figura não é publicada na base;
    - no registro do curso, `ppc.url` e `ppc.markdown_path`, nas posições dos outros registros (`ppc` na posição do schema, `markdown_path` logo depois de `url`). Se o registro já tem `ano_documento` ou vagas, o status de curadoria do campo volta a `Precisa de revisão`, com a data do dia, porque o valor veio do texto anterior. `ppc.observacoes` fica como está, e a saída a aponta como "a reconferir".
@@ -208,7 +209,7 @@ Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md` começa com fr
 
 | Campo | Conteúdo |
 |---|---|
-| `id` | `ppc:<campus_id>/<curso_slug>` |
+| `id` | `ppc:<campus_id>/<curso_slug>/<versao>` |
 | `fonte_url` | endereço publicado do PPC; deve ser igual ao `ppc.url` vigente |
 | `fonte_sha256` | SHA-256 dos bytes de `fonte_url`, ou `desconhecido` (sempre, na importação do DOCX: o script não baixa a URL) |
 | `convertido_em` | data da conversão (AAAA-MM-DD) |
@@ -218,9 +219,9 @@ Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md` começa com fr
 | `conversao_commit`, `pos_processamento_commits` | só na reconstruída: commit da conversão e commits de limpeza posteriores |
 | `nota_proveniencia` | na reconstruída, o motivo do que ficou `desconhecido`; na importação do DOCX, que o texto veio do DOCX e por que `fonte_sha256` é `desconhecido` |
 
-Um PPC importado pelo `importar_ppc_docx.ts` tem proveniência `registrada`, com o hash em `arquivo_convertido_sha256`: quem baixa o `fonte_url` e confere o hash não acha divergência, porque o `fonte_sha256` não diz nada sobre esses bytes. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do curso nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o arquivo da época não foi guardado e o baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reimportar um PPC, a proveniência passa a `registrada`.
+Um PPC importado pelo `importar_ppc_docx.ts` tem proveniência `registrada`, com o hash em `arquivo_convertido_sha256`: quem baixa o `fonte_url` e confere o hash não acha divergência, porque o `fonte_sha256` não diz nada sobre esses bytes. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do curso nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o arquivo da época não foi guardado e o baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reconverter um PPC, a proveniência passa a `registrada`. A versão desses 202 PPCs veio do `ppc.ano_documento` do curso em 24/11/2026, mesmo quando a curadoria do ano ainda estava aberta; nos dois cursos sem ano (Eletromecânica e Eletrotécnica subsequentes, Assis Chateaubriand), é o ano da publicação do PDF, registrado em `ppc.observacoes`.
 
-`validar_base.ts` acusa PPC sem front matter, `id` fora do caminho e `fonte_url` diferente do `ppc.url` vigente: se o curso trocou de PPC, importe o DOCX novo com `--substituir` (ou, se só a URL mudou de endereço, confira o documento e reimporte mesmo assim, para registrar o hash do arquivo convertido).
+`validar_base.ts` acusa PPC sem front matter, `id` fora do caminho, arquivo de PPC fora de `ppcs/<campus>/<curso>/<versao>.md` ou sem item no índice, curso cujo PPC vigente não é a versão mais recente e `fonte_url` do vigente diferente do `ppc.url`: se o curso trocou de PPC, importe o DOCX novo como versão nova (ou, se só a URL mudou de endereço, confira o documento e reconverta com `--reconverter`, para registrar o hash do arquivo convertido).
 
 Quem lê o Markdown por código deve ignorar o front matter: `corpoPpc` e `mascararFrontMatter` (que mantém os números de linha) estão no mesmo módulo.
 

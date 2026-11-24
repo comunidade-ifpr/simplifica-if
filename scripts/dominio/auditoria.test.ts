@@ -71,7 +71,7 @@ describe("auditarBase", () => {
       ppc: { ...curso().ppc, url: "https://x", markdownPath: "institucional/ifpr/ppcs/outro/x.md" },
     });
     expect(auditarBase(base({ cursos: [errado] }))[0]).toContain(
-      "esperado institucional/ifpr/ppcs/exemplo/tecnico-exemplo.md",
+      "esperado institucional/ifpr/ppcs/exemplo/tecnico-exemplo/<versao>.md",
     );
   });
 

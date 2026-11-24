@@ -14,7 +14,7 @@ import { type Perfil, type Publico, publicosDoPerfil, type ResumoSkill } from "@
 /** A skill do exemplo de conversa. */
 export const SKILL_EXEMPLO = "verificar-fundamentacao-normativa";
 
-/** De `base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md`, linha 431. */
+/** De `base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem/2022.md`, linha 431. */
 export const TRECHO_EXEMPLO =
   "A carga horária de alguns componentes curriculares será desenvolvida com atividades à distância em conformidade com a Resolução 01/2021 do Conselho Nacional de Educação, artigo 26, e o CNCT (Catálogo Nacional de Cursos Técnicos) que prevê em cursos de modalidades presenciais, a possibilidade de até 20% da sua carga horária diária em atividades não presenciais (BRASIL, 2020).";
 

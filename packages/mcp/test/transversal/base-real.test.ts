@@ -25,7 +25,7 @@ import * as PastaTrabalho from "../../src/leitura/PastaTrabalho.ts";
 import { type FerramentaTestada, responder, saidaValida } from "../apoio.ts";
 import { BANCO_REAL, RAIZ, SMOKE } from "./apoio.ts";
 
-const PPC = "curitiba/tecnico-em-enfermagem";
+const PPC = "curitiba/tecnico-em-enfermagem/2023";
 const ARQUIVO = `base-conhecimento/institucional/ifpr/ppcs/${PPC}.md`;
 
 /** A resposta de uma chamada, conferida no `outputSchema`. */

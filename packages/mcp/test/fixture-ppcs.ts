@@ -9,9 +9,15 @@ import { emTransacao } from "@simplifica-if/kb/db/transacao";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
 import { criarBancoFixture, type OpcoesFixture } from "./fixture.ts";
 
-export const PPC_ENFERMAGEM = "curitiba/tecnico-em-enfermagem";
-export const PPC_INFORMATICA = "curitiba/tecnico-em-informatica";
-export const PPC_FISICA = "foz-do-iguacu/licenciatura-em-fisica";
+export const CURSO_ENFERMAGEM = "curitiba/tecnico-em-enfermagem";
+export const CURSO_INFORMATICA = "curitiba/tecnico-em-informatica";
+export const CURSO_FISICA = "foz-do-iguacu/licenciatura-em-fisica";
+/** Os PPCs vigentes (chave `campus/curso/versao`). */
+export const PPC_ENFERMAGEM = `${CURSO_ENFERMAGEM}/2023`;
+export const PPC_INFORMATICA = `${CURSO_INFORMATICA}/2022`;
+export const PPC_FISICA = `${CURSO_FISICA}/2019`;
+/** PPC substituído de Enfermagem: fica na base, fora das consultas por padrão. */
+export const PPC_ENFERMAGEM_ANTERIOR = `${CURSO_ENFERMAGEM}/2018`;
 /** Seção acima do teto de `ler_secao` (pagina por linhas). */
 export const SECAO_LONGA = `${PPC_ENFERMAGEM}#anexos-1`;
 export const LINHAS_SECAO_LONGA = 1500;
@@ -138,15 +144,15 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
        cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${PPC_ENFERMAGEM}',
        ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_ENFERMAGEM}.md', ppc_ano_documento = 2023,
        suap_id = 151, suap_codigo = 'CTB008', suap_matrizes_situacao = 'Única ativa'
-     WHERE id = 'curso:${PPC_ENFERMAGEM}'`,
+     WHERE id = 'curso:${CURSO_ENFERMAGEM}'`,
   );
   db.exec(
     `UPDATE cursos SET forma_oferta = 'licenciatura', situacao = 'ativo', ppc_id = 'ppc:${PPC_FISICA}',
        ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_FISICA}.md', ppc_ano_documento = 2019
-     WHERE id = 'curso:${PPC_FISICA}'`,
+     WHERE id = 'curso:${CURSO_FISICA}'`,
   );
   inserir("cursos", {
-    id: `curso:${PPC_INFORMATICA}`,
+    id: `curso:${CURSO_INFORMATICA}`,
     campus_id: "curitiba",
     curso_slug: "tecnico-em-informatica",
     nome: "Técnico em Informática",
@@ -158,7 +164,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     ppc_id: `ppc:${PPC_INFORMATICA}`,
     ppc_markdown_path: `institucional/ifpr/ppcs/${PPC_INFORMATICA}.md`,
     ppc_ano_documento: 2022,
-    path: `base-conhecimento/institucional/ifpr/cursos/${PPC_INFORMATICA}.json`,
+    path: `base-conhecimento/institucional/ifpr/cursos/${CURSO_INFORMATICA}.json`,
   });
   // Curso técnico em oferta sem PPC convertido: indicador sem-ppc-convertido.
   inserir("cursos", {
@@ -172,9 +178,9 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     path: "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
   });
   for (const [id, curso, turno, vagas, processo] of [
-    ["o1", PPC_ENFERMAGEM, "matutino", 30, "processo-seletivo-2026"],
-    ["o2", PPC_ENFERMAGEM, "matutino", 30, "processo-seletivo-2025"],
-    ["o3", PPC_INFORMATICA, "noturno", 40, "processo-seletivo-2026"],
+    ["o1", CURSO_ENFERMAGEM, "matutino", 30, "processo-seletivo-2026"],
+    ["o2", CURSO_ENFERMAGEM, "matutino", 30, "processo-seletivo-2025"],
+    ["o3", CURSO_INFORMATICA, "noturno", 40, "processo-seletivo-2026"],
   ] as const) {
     inserir("ofertas", {
       id: `oferta:${id}`,
@@ -208,11 +214,14 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     inserir("ppcs", {
       id: `ppc:${ppc}`,
       chave: ppc,
+      chave_curso: ppc.split("/").slice(0, 2).join("/"),
+      versao: ppc.split("/")[2]!,
+      vigente: 1,
       campus_id: campus,
       campus_nome: campusNome,
       curso_slug: slug,
       curso_nome: nome,
-      curso_id: `curso:${ppc}`,
+      curso_id: `curso:${ppc.split("/").slice(0, 2).join("/")}`,
       nivel,
       tipo_oferta: forma,
       path: md(ppc),
@@ -221,7 +230,27 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
       proveniencia_json: "{}",
     });
   }
-  db.exec(`UPDATE ppcs SET curso_id = 'curso:${PPC_ENFERMAGEM}' WHERE id = 'ppc:${PPC_ENFERMAGEM}'`);
+  db.exec(`UPDATE ppcs SET curso_id = 'curso:${CURSO_ENFERMAGEM}' WHERE id = 'ppc:${PPC_ENFERMAGEM}'`);
+  inserir("ppcs", {
+    id: `ppc:${PPC_ENFERMAGEM_ANTERIOR}`,
+    chave: PPC_ENFERMAGEM_ANTERIOR,
+    chave_curso: CURSO_ENFERMAGEM,
+    versao: "2018",
+    vigente: 0,
+    substituido_por: `ppc:${PPC_ENFERMAGEM}`,
+    campus_id: "curitiba",
+    campus_nome: "Curitiba",
+    curso_slug: "tecnico-em-enfermagem",
+    curso_nome: "Técnico em Enfermagem",
+    curso_id: `curso:${CURSO_ENFERMAGEM}`,
+    nivel: "médio",
+    tipo_oferta: "subsequente",
+    ano_documento: 2018,
+    path: md(PPC_ENFERMAGEM_ANTERIOR),
+    linhas: 200,
+    caracteres: 9000,
+    proveniencia_json: "{}",
+  });
 
   const longa = Array.from({ length: LINHAS_SECAO_LONGA }, (_, i) => `Linha ${i + 1} do anexo com o plano de estágio.`);
   for (const [ppc, secao, tipo, titulo, inicio, texto] of [
@@ -235,6 +264,14 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     ],
     [PPC_FISICA, "avaliacao-1", "avaliacao", "Avaliação da aprendizagem", 90, "A avaliação é contínua e diagnóstica."],
     [PPC_ENFERMAGEM, "anexos-1", "anexos", "Anexo I", 1000, longa.join("\n")],
+    [
+      PPC_ENFERMAGEM_ANTERIOR,
+      "estagio_praticas-1",
+      "estagio_praticas",
+      "Estágio supervisionado",
+      80,
+      "O estágio obrigatório tem 400 horas.",
+    ],
   ] as const) {
     const linhas = texto.split("\n").length;
     inserir("secoes", {
@@ -292,6 +329,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
   citacao(PPC_ENFERMAGEM, 710, "Resolução nº 99/2099", null, "sem-ano", 0.3);
   citacao(PPC_INFORMATICA, 30, "Resolução CNE/CP nº 1/2021", "br/cne-cp/res/2021/1", "estrutural", 0.98);
   citacao(PPC_FISICA, 40, "Lei nº 9.394/1996", "br/lei/1996/9394", "estrutural", 0.98);
+  citacao(PPC_ENFERMAGEM_ANTERIOR, 20, "Resolução CNE/CP nº 1/2021", "br/cne-cp/res/2021/1", "estrutural", 0.98);
 
   for (const [fato, valor, num, unidade, trecho, linha] of [
     ["carga_horaria_total_h", "1600", 1600, "h", "Carga horária total em hora relógio: 1.600 horas", 122],
@@ -341,7 +379,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     explicacao: "o PPC não declara a carga horária total",
   });
   inserir("suap_matrizes", {
-    curso_id: `curso:${PPC_ENFERMAGEM}`,
+    curso_id: `curso:${CURSO_ENFERMAGEM}`,
     ordem: 0,
     matriz_id: 538,
     descricao: "TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA",
@@ -349,7 +387,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     ch_exibida_h: 1600,
     estagio_exigido: 0,
     trecho: "538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não",
-    path: `base-conhecimento/institucional/ifpr/cursos/${PPC_ENFERMAGEM}.json`,
+    path: `base-conhecimento/institucional/ifpr/cursos/${CURSO_ENFERMAGEM}.json`,
     linha: 18,
   });
 }

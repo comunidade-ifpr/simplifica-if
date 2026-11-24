@@ -47,7 +47,7 @@ const depois = (nome: string, n = 1) => {
 };
 const ppcMd =
   depois("--ppc")?.[0] ??
-  NodePath.join(RAIZ, "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
+  NodePath.join(RAIZ, "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md");
 const saida = depois("--saida")?.[0] ?? NodePath.join(NodeOS.tmpdir(), "simplifica-lista-viva-real");
 NodeFS.mkdirSync(saida, { recursive: true });
 

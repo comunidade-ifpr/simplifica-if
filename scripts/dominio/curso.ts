@@ -1,4 +1,6 @@
-const PREFIXO_PPCS = "institucional/ifpr/ppcs/";
+import { partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
+
+export const PREFIXO_PPCS = "institucional/ifpr/ppcs/";
 
 export interface Campus {
   id: string;
@@ -68,8 +70,10 @@ export function chaveCurso(campusId: string, cursoSlug: string): string {
   return `${campusId}/${cursoSlug}`;
 }
 
-export function caminhoEsperadoPpc(campusId: string, cursoSlug: string): string {
-  return `${PREFIXO_PPCS}${campusId}/${cursoSlug}.md`;
+/** Se `caminho` é um PPC do curso: `ppcs/<campus>/<curso>/<versao>.md` (`@simplifica-if/kb/ppcs/ids`). */
+export function ehCaminhoPpcDoCurso(caminho: string, campusId: string, cursoSlug: string): boolean {
+  const partes = partesDoCaminhoPpc(caminho);
+  return partes !== null && partes.campusId === campusId && partes.cursoSlug === cursoSlug;
 }
 
 export interface VagasPpc {

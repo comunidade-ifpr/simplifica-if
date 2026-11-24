@@ -69,6 +69,16 @@ export const Dados = Schema.Struct({
       secoes: Schema.Array(Schema.Struct({ id: Schema.String, tipo: Schema.String, titulo: Schema.String })),
     }),
   ),
+  /** Versões anteriores do PPC do curso, substituídas, que ficam na base (da mais nova à mais antiga). */
+  ppcs_substituidos: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      versao: Schema.String,
+      ano: Schema.NullOr(Schema.Int),
+      substituido_por: Schema.String,
+      link: EsquemaLink,
+    }),
+  ),
   suap: SuapCurso,
   ofertas: Schema.Array(
     Schema.Struct({
@@ -134,7 +144,12 @@ export const fichaCurso = definirFerramenta({
       );
     }
     if (d.ppc) {
-      partes.push(`PPC: ${comLink(d.ppc.id, d.ppc.link)} (${d.ppc.ano ?? "ano não informado"}).`);
+      partes.push(`PPC vigente: ${comLink(d.ppc.id, d.ppc.link)} (${d.ppc.ano ?? "ano não informado"}).`);
+      if (d.ppcs_substituidos.length) {
+        partes.push(
+          `PPCs anteriores (substituídos, ficam na base): ${d.ppcs_substituidos.map((p) => comLink(p.id, p.link)).join("; ")}.`,
+        );
+      }
       if (d.fatos) partes.push(textoFatosPpc(d.fatos, { cabecalho: false }));
       partes.push(
         d.normas_citadas.length

@@ -80,7 +80,8 @@ function opcoes(raiz: string, docx: string, extra: Partial<OpcoesImportacao> = {
     curso: "campus-a/tecnico-x",
     arquivoDocx: docx,
     fonteUrl: URL_PDF,
-    substituir: false,
+    ano: 2026,
+    reconverter: false,
     agora: AGORA,
     conversor: CONVERSOR,
     ...extra,
@@ -89,7 +90,7 @@ function opcoes(raiz: string, docx: string, extra: Partial<OpcoesImportacao> = {
 
 const lerRegistro = (raiz: string) =>
   JSON.parse(NodeFS.readFileSync(NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json"), "utf-8"));
-const caminhoPpc = (raiz: string) => NodePath.join(raiz, IFPR, "ppcs/campus-a/tecnico-x.md");
+const caminhoPpc = (raiz: string) => NodePath.join(raiz, IFPR, "ppcs/campus-a/tecnico-x/2026.md");
 
 describe("importarPpcDocx", () => {
   it.effect("grava o PPC com proveniência registrada e atualiza o registro do curso", () =>
@@ -102,17 +103,18 @@ describe("importarPpcDocx", () => {
       const resultado = yield* importarPpcDocx(opcoes(raiz, docx));
 
       expect(resultado).toMatchObject({
-        markdownPath: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+        markdownPath: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
         registroPath: "institucional/ifpr/cursos/campus-a/tecnico-x.json",
-        substituiu: false,
+        id: "ppc:campus-a/tecnico-x/2026",
+        substituido: null,
         ppcUrlAnterior: null,
-        curadoriaReaberta: [],
+        curadoriaReaberta: ["ano"],
         representacaoGrafica: "bitmap",
       });
       const texto = NodeFS.readFileSync(caminhoPpc(raiz), "utf-8");
       const { proveniencia, corpo } = analisarPpc(texto, "teste");
       expect(proveniencia).toMatchObject({
-        id: "ppc:campus-a/tecnico-x",
+        id: "ppc:campus-a/tecnico-x/2026",
         fonte_url: URL_PDF,
         // O hash da fonte é o dos bytes de fonte_url (o PDF), que a importação não baixa.
         fonte_sha256: "desconhecido",
@@ -131,7 +133,13 @@ describe("importarPpcDocx", () => {
       expect(NodeFS.existsSync(NodePath.join(raiz, IFPR, "ppcs/campus-a/imagens"))).toBe(false);
 
       const registro = lerRegistro(raiz);
-      expect(registro.ppc).toEqual({ url: URL_PDF, markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md" });
+      expect(registro.ppc).toEqual({
+        url: URL_PDF,
+        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
+        ano_documento: 2026,
+        curadoria_ano: STATUS_REABERTO,
+        data_curadoria_ano: "2026-11-17",
+      });
       // O ppc entra na posição do schema, como nos outros registros.
       expect(Object.keys(registro)).toEqual([
         "campus_id",
@@ -146,7 +154,7 @@ describe("importarPpcDocx", () => {
       // O pipeline da base aceita o resultado: o índice e a proveniência conferem com o registro.
       const caminhos = criarCaminhos(raiz);
       const indices = gerarIndices(caminhos, "2026-11-17");
-      expect(indices.itensPpc.map((item) => item.id)).toEqual(["campus-a/tecnico-x"]);
+      expect(indices.itensPpc.map((item) => item.id)).toEqual(["campus-a/tecnico-x/2026"]);
       expect(indices.itensPpc[0]?.fonte_pdf).toBe(URL_PDF);
       expect(indices.itensPpc[0]?.proveniencia).toEqual({
         situacao: "registrada",
@@ -184,11 +192,11 @@ describe("importarPpcDocx", () => {
     }),
   );
 
-  it.effect("recusa sobrescrever sem --substituir e, com ele, troca o PPC e reabre a curadoria", () =>
+  it.effect("PPC novo entra como versão nova: o anterior fica, substituído, e a curadoria reabre", () =>
     Effect.gen(function* () {
       const ppcAntigo = {
         url: "https://ifpr.edu.br/campus-a/ppc-antigo.pdf",
-        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2019.md",
         ano_documento: 2019,
         vagas: "40",
         trecho_vagas: "40 vagas anuais",
@@ -199,43 +207,71 @@ describe("importarPpcDocx", () => {
         observacoes: "Capa traz ano de ajuste posterior.",
       };
       const raiz = baseTemporaria(ppcAntigo);
-      escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x.md`, "texto antigo\n");
+      const antigo = escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x/2019.md`, "texto antigo\n");
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
 
-      expect((yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx)))).message).toMatch(/repita com --substituir/);
-      expect(NodeFS.readFileSync(caminhoPpc(raiz), "utf-8")).toBe("texto antigo\n");
-      expect(lerRegistro(raiz).ppc).toEqual(ppcAntigo);
-
-      const resultado = yield* importarPpcDocx(opcoes(raiz, docx, { substituir: true }));
+      const resultado = yield* importarPpcDocx(opcoes(raiz, docx));
       expect(resultado).toMatchObject({
-        substituiu: true,
+        id: "ppc:campus-a/tecnico-x/2026",
+        markdownPath: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
+        substituido: "institucional/ifpr/ppcs/campus-a/tecnico-x/2019.md",
         ppcUrlAnterior: ppcAntigo.url,
         curadoriaReaberta: ["ano", "vagas"],
         // A observação fica, mas foi escrita sobre o texto anterior: a saída pede para reconferir.
         observacoesAReconferir: true,
       });
+      expect(NodeFS.readFileSync(antigo, "utf-8")).toBe("texto antigo\n");
       expect(Object.keys(lerRegistro(raiz).ppc)).toEqual(Object.keys(ppcAntigo));
       expect(lerRegistro(raiz).ppc).toEqual({
         ...ppcAntigo,
         url: URL_PDF,
+        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
+        ano_documento: 2026,
         curadoria_ano: STATUS_REABERTO,
         data_curadoria_ano: "2026-11-17",
         curadoria_vagas: STATUS_REABERTO,
         data_curadoria_vagas: "2026-11-17",
       });
-      expect(NodeFS.readFileSync(caminhoPpc(raiz), "utf-8")).toMatch(/^---\nid: ppc:campus-a\/tecnico-x\n/);
+
+      // Outro PPC do mesmo ano ganha sufixo; um PPC mais antigo que o vigente é recusado.
+      expect((yield* importarPpcDocx(opcoes(raiz, docx))).id).toBe("ppc:campus-a/tecnico-x/2026-2");
+      const anterior = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { ano: 2020 })));
+      expect(anterior.motivo).toBe("versao-anterior");
+    }),
+  );
+
+  it.effect("--reconverter grava por cima do vigente, só com o ano dele", () =>
+    Effect.gen(function* () {
+      const raiz = baseTemporaria({
+        url: URL_PDF,
+        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
+      });
+      escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x/2026.md`, "texto antigo\n");
+      const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
+      const outroAno = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { ano: 2025, reconverter: true })));
+      expect(outroAno.motivo).toBe("ano-invalido");
+      const resultado = yield* importarPpcDocx(opcoes(raiz, docx, { reconverter: true }));
+      expect(resultado).toMatchObject({ id: "ppc:campus-a/tecnico-x/2026", substituido: null });
+      expect(NodeFS.readFileSync(caminhoPpc(raiz), "utf-8")).toMatch(/^---\nid: ppc:campus-a\/tecnico-x\/2026\n/);
+      expect(NodeFS.readdirSync(NodePath.dirname(caminhoPpc(raiz)))).toEqual(["2026.md"]);
     }),
   );
 
   it.effect("registro já completo sai igual byte a byte; campo ausente entra na posição do schema", () =>
     Effect.gen(function* () {
-      const completo = { url: URL_PDF, markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md" };
+      const completo = {
+        url: URL_PDF,
+        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
+        ano_documento: 2026,
+        curadoria_ano: STATUS_REABERTO,
+        data_curadoria_ano: "2026-11-17",
+      };
       const raiz = baseTemporaria(completo);
-      escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x.md`, "texto antigo\n");
+      escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x/2026.md`, "texto antigo\n");
       const arquivo = NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json");
       const antes = NodeFS.readFileSync(arquivo, "utf-8");
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
-      expect((yield* importarPpcDocx(opcoes(raiz, docx, { substituir: true }))).observacoesAReconferir).toBe(false);
+      expect((yield* importarPpcDocx(opcoes(raiz, docx, { reconverter: true }))).observacoesAReconferir).toBe(false);
       expect(NodeFS.readFileSync(arquivo, "utf-8")).toBe(antes);
 
       // Sem markdown_path e sem os status de curadoria: entram logo depois de url e de cada valor.
@@ -309,7 +345,7 @@ describe("importarPpcDocx", () => {
       expect(texto).toContain("https://s3.amazonaws.com/suap/ppc.pdf");
       expect(texto).toContain("controlador.php?acao=x&id_documento=1");
       expect(texto).not.toMatch(/SEGREDO|AWSAccessKeyId|infra_/);
-      expect(dadosPessoaisEUrlsInternas("institucional/ifpr/ppcs/campus-a/tecnico-x.md", texto)).toEqual([]);
+      expect(dadosPessoaisEUrlsInternas("institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md", texto)).toEqual([]);
     }),
   );
 
@@ -348,8 +384,59 @@ describe("importarPpcDocx", () => {
       const { arquivos, ...pastas } = arquivosIndices(caminhos, gerarIndices(caminhos, "2026-11-17"));
       yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
       expect(validarPpcs(new Contexto(caminhos))).toEqual([]);
-      const relativo = "institucional/ifpr/ppcs/campus-a/tecnico-x.md";
+      const relativo = "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md";
       expect(dadosPessoaisEUrlsInternas(relativo, NodeFS.readFileSync(caminhoPpc(raiz), "utf-8"))).toEqual([]);
+    }).pipe(Effect.provide(NodeServices.layer)),
+  );
+
+  it.effect("versões: o índice marca a vigente e a substituída; a validação acusa arquivo solto e vigente antiga", () =>
+    Effect.gen(function* () {
+      const raiz = baseTemporaria();
+      NodeFS.cpSync(
+        NodePath.join(RAIZ_PROJETO, "base-conhecimento", "schemas"),
+        NodePath.join(raiz, "base-conhecimento", "schemas"),
+        { recursive: true },
+      );
+      const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
+      yield* importarPpcDocx(opcoes(raiz, docx, { ano: 2019, fonteUrl: "https://ifpr.edu.br/campus-a/ppc-2019.pdf" }));
+      yield* importarPpcDocx(opcoes(raiz, docx));
+      const caminhos = criarCaminhos(raiz);
+      const gerar = Effect.fnUntraced(function* () {
+        const indices = gerarIndices(caminhos, "2026-11-17");
+        const { arquivos, ...pastas } = arquivosIndices(caminhos, indices);
+        yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
+        return indices.itensPpc;
+      });
+      const itens = yield* gerar();
+      expect(itens.map((i) => [i.id, i.vigente, i.substituido_por, i.fonte_pdf, i.ano_documento])).toEqual([
+        [
+          "campus-a/tecnico-x/2019",
+          false,
+          "campus-a/tecnico-x/2026",
+          "https://ifpr.edu.br/campus-a/ppc-2019.pdf",
+          2019,
+        ],
+        ["campus-a/tecnico-x/2026", true, undefined, URL_PDF, 2026],
+      ]);
+      expect(validarPpcs(new Contexto(caminhos))).toEqual([]);
+
+      // PPC no caminho antigo (sem versão) não some em silêncio: é erro.
+      const solto = escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x.md`, "texto\n");
+      expect(validarPpcs(new Contexto(caminhos)).join("\n")).toContain(
+        "institucional/ifpr/ppcs/campus-a/tecnico-x.md: PPC fora do caminho",
+      );
+      NodeFS.rmSync(solto);
+
+      // O curso apontando a versão antiga: a vigente não é a mais recente.
+      const arquivo = NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json");
+      const registro = lerRegistro(raiz);
+      registro.ppc.markdown_path = "institucional/ifpr/ppcs/campus-a/tecnico-x/2019.md";
+      registro.ppc.url = "https://ifpr.edu.br/campus-a/ppc-2019.pdf";
+      NodeFS.writeFileSync(arquivo, `${JSON.stringify(registro, null, 2)}\n`);
+      yield* gerar();
+      expect(validarPpcs(new Contexto(caminhos)).join("\n")).toContain(
+        "o PPC vigente de campus-a/tecnico-x (2019) não é a versão mais recente (2026)",
+      );
     }).pipe(Effect.provide(NodeServices.layer)),
   );
 
@@ -420,13 +507,16 @@ describe("importarPpcDocx", () => {
       Effect.gen(function* () {
         const raiz = baseTemporaria({ url: URL_PDF, markdown_path: "institucional/ifpr/ppcs/campus-a/outro.md" });
         const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
-        yield* recusa(importarPpcDocx(opcoes(raiz, docx)), /fora do caminho esperado/);
+        yield* recusa(importarPpcDocx(opcoes(raiz, docx)), /fora do caminho/);
       }),
     );
 
     test("falha na gravação do registro desfaz o PPC já trocado", () => {
-      const raiz = baseTemporaria({ url: URL_PDF, markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md" });
-      escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x.md`, "texto antigo\n");
+      const raiz = baseTemporaria({
+        url: URL_PDF,
+        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
+      });
+      escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x/2026.md`, "texto antigo\n");
       const arquivo = NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json");
       const ppc = caminhoPpc(raiz);
       const falhaNoSegundo = (de: string, para: string) => {
@@ -445,7 +535,7 @@ describe("importarPpcDocx", () => {
       expect(NodeFS.readFileSync(ppc, "utf-8")).toBe("texto antigo\n");
       expect(NodeFS.readFileSync(arquivo, "utf-8")).toContain('"curso_slug": "tecnico-x"');
       // Sem temporários sobrando.
-      expect(NodeFS.readdirSync(NodePath.dirname(ppc))).toEqual(["tecnico-x.md"]);
+      expect(NodeFS.readdirSync(NodePath.dirname(ppc))).toEqual(["2026.md"]);
       expect(NodeFS.readdirSync(NodePath.dirname(arquivo))).toEqual(["tecnico-x.json"]);
 
       // PPC novo (não havia arquivo): a falha o remove, e a pasta criada também.
@@ -485,10 +575,10 @@ describe("importarPpcDocx", () => {
         expect(erro).toMatchObject({
           motivo: "gravacao",
           codigo: "EACCES",
-          arquivo: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+          arquivo: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
         });
         expect(erro.message).toBe(
-          "Falha ao gravar o PPC e o registro (EACCES em institucional/ifpr/ppcs/campus-a/tecnico-x.md); nada foi alterado",
+          "Falha ao gravar o PPC e o registro (EACCES em institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md); nada foi alterado",
         );
         expect(NodeFS.readdirSync(pasta)).toEqual([]);
         expect(NodeFS.readFileSync(registro, "utf-8")).toBe(antes);

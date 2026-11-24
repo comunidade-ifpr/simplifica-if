@@ -7,7 +7,7 @@ import { EsquemaLink, Fonte } from "../contratos.ts";
 import { comPadrao, inteiro, opcional, textoAparado } from "../esquema.ts";
 import { cortar, RESERVA_TEXTO } from "../orcamento.ts";
 import { blocoItem } from "../texto.ts";
-import { filtroTexto } from "./comum-ppcs.ts";
+import { DESCRICAO_PPC, filtroTexto, incluirSubstituidos } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 /** Teto do texto sem `integral` e com `integral`, em caracteres. */
@@ -28,7 +28,8 @@ export const Entrada = Schema.Struct({
   campus: opcional(filtroTexto('campus, pelo ID ("curitiba")')),
   cnct: opcional(filtroTexto('curso do CNCT ("tecnico-em-enfermagem")')),
   forma: opcional(filtroTexto('forma de oferta ("integrado", "subsequente", "bacharelado"…)')),
-  ppc: opcional(filtroTexto('um PPC ("campus/curso")')),
+  ppc: opcional(filtroTexto(DESCRICAO_PPC)),
+  incluir_substituidos: incluirSubstituidos,
   limite: comPadrao(inteiro({ minimo: 1, maximo: 20 }), 8, "seções (1 a 20); padrão 8; com integral, até 5"),
   integral: comPadrao(Schema.Boolean, false, "texto inteiro de cada seção; no máximo 5 seções"),
 });
@@ -37,6 +38,8 @@ export const Resultado = Schema.Struct({
   /** ID da seção, para `ler_secao`. */
   id: Schema.String,
   ppc: Schema.String,
+  /** Chave da versão seguinte, se o PPC da seção foi substituído (só com `incluir_substituidos` ou `ppc`). */
+  substituido_por: Schema.optionalKey(Schema.String),
   curso: Schema.String,
   campus: Schema.String,
   nivel: Schema.String,
@@ -60,7 +63,7 @@ function bloco(r: Resultado, maxTexto: number): string {
   const cabecalho = blocoItem({
     titulo: `${r.titulo} — ${r.curso} (${r.campus})`,
     link: r.link,
-    detalhe: `\`${r.tipo}\`, ${r.nivel}, ${r.forma}; ID \`${r.id}\``,
+    detalhe: `\`${r.tipo}\`, ${r.nivel}, ${r.forma}; ID \`${r.id}\`${r.substituido_por ? `; PPC substituído por \`${r.substituido_por}\`` : ""}`,
   });
   const corpo =
     r.texto !== undefined

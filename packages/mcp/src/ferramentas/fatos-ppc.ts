@@ -6,13 +6,14 @@
 import * as Schema from "effect/Schema";
 import { FatosPpc } from "../contratos.ts";
 import { comPadrao, inteiro, opcional, texto } from "../esquema.ts";
-import { filtroTexto, textoFatosPpc } from "./comum-ppcs.ts";
+import { DESCRICAO_PPC, filtroTexto, incluirSubstituidos, textoFatosPpc } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_FATOS = 12000;
 
 export const Entrada = Schema.Struct({
-  ppc: opcional(filtroTexto('um PPC ("campus/curso")')),
+  ppc: opcional(filtroTexto(DESCRICAO_PPC)),
+  incluir_substituidos: incluirSubstituidos,
   divergencias: comPadrao(
     Schema.Boolean,
     false,

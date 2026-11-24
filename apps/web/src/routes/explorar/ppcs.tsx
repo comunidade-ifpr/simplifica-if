@@ -1,4 +1,7 @@
-/** Os PPCs convertidos, com filtros por campus, nível e forma de oferta. Cada um abre no leitor. */
+/**
+ * Os PPCs convertidos, com filtros por campus, nível e forma de oferta. Por padrão, só os vigentes; o
+ * filtro "Versões" mostra também os substituídos, que ficam na base. Cada um abre no leitor.
+ */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { filtrarPpcs, type FiltrosPpcs, opcoes, primeiraMaiuscula } from "../../explorar/colecoes.ts";
 import {
@@ -11,7 +14,7 @@ import {
   ListaItens,
 } from "../../explorar/componentes.tsx";
 
-const CAMPOS = ["texto", "campus", "nivel", "forma"] as const;
+const CAMPOS = ["texto", "campus", "nivel", "forma", "substituidos"] as const;
 
 export const Route = createFileRoute("/explorar/ppcs")({
   component: Ppcs,
@@ -19,9 +22,10 @@ export const Route = createFileRoute("/explorar/ppcs")({
 });
 
 function Ppcs() {
-  const filtros: FiltrosPpcs = Route.useSearch();
+  const busca = Route.useSearch();
+  const filtros: FiltrosPpcs = { ...busca, substituidos: busca.substituidos === "sim" };
   const navegar = useNavigate({ from: Route.fullPath });
-  const mudar = (campo: keyof FiltrosPpcs) => (valor: string | undefined) =>
+  const mudar = (campo: (typeof CAMPOS)[number]) => (valor: string | undefined) =>
     void navegar({ search: (atual) => ({ ...atual, [campo]: valor }), replace: true });
   return (
     <ComIndice>
@@ -38,10 +42,10 @@ function Ppcs() {
               “acompanhamento de egressos”), use a busca: ela procura também no texto das seções.
             </p>
             <Filtros
-              total={d.ppcs.length}
+              total={filtros.substituidos ? d.ppcs.length : d.ppcs.filter((p) => p.vigente).length}
               achados={achados.length}
               nomes={["PPC", "PPCs"]}
-              aoLimpar={Object.keys(filtros).length > 0 ? () => void navegar({ search: {}, replace: true }) : null}
+              aoLimpar={Object.keys(busca).length > 0 ? () => void navegar({ search: {}, replace: true }) : null}
             >
               <CampoTexto rotulo="Filtrar pelo nome do curso" valor={filtros.texto} aoMudar={mudar("texto")} />
               <CampoFiltro
@@ -68,6 +72,14 @@ function Ppcs() {
                 nome={primeiraMaiuscula}
                 aoMudar={mudar("forma")}
               />
+              <CampoFiltro
+                rotulo="Versões"
+                todos="Só os vigentes"
+                valor={busca.substituidos}
+                opcoes={["sim"]}
+                nome={() => "Também os substituídos"}
+                aoMudar={mudar("substituidos")}
+              />
             </Filtros>
             <ListaItens vazia={achados.length === 0}>
               {achados.map((p) => (
@@ -75,7 +87,12 @@ function Ppcs() {
                   key={p.chave}
                   link={p.link}
                   titulo={p.nome}
-                  detalhe={[`Campus ${p.campus_nome}`, p.forma, p.ano === null ? null : `documento de ${p.ano}`]
+                  detalhe={[
+                    `Campus ${p.campus_nome}`,
+                    p.forma,
+                    p.ano === null ? null : `documento de ${p.ano}`,
+                    p.vigente ? null : "substituído",
+                  ]
                     .filter(Boolean)
                     .map((t) => primeiraMaiuscula(t!))
                     .join(" · ")}

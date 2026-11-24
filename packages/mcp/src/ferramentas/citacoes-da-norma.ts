@@ -9,7 +9,7 @@ import { comPadrao, inteiro, numero, opcional, texto } from "../esquema.ts";
 import { linkNorma } from "../links.ts";
 import { cortar } from "../orcamento.ts";
 import { blocoItem, comLink } from "../texto.ts";
-import { filtroTexto, idNorma } from "./comum-ppcs.ts";
+import { DESCRICAO_PPC, filtroTexto, idNorma, incluirSubstituidos } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 /** Teto do texto para a IA, em caracteres. */
@@ -21,7 +21,8 @@ export const Entrada = Schema.Struct({
     'ID canônico da norma, com dispositivo opcional ("br/cne-cp/res/2021/1" ou "br/cne-cp/res/2021/1#art20")',
   ),
   confianca_min: comPadrao(numero({ minimo: 0, maximo: 1 }), 0, "confiança mínima das citações (0 a 1); padrão 0"),
-  ppc: opcional(filtroTexto('um PPC ("campus/curso"): devolve as ocorrências em vez do resumo')),
+  ppc: opcional(filtroTexto(`${DESCRICAO_PPC}: devolve as ocorrências em vez do resumo`)),
+  incluir_substituidos: incluirSubstituidos,
   nivel: opcional(filtroTexto('nível do PPC ("médio", "superior", "pós-graduação")')),
   campus: opcional(filtroTexto('campus, pelo ID ("curitiba")')),
   limite: comPadrao(inteiro({ minimo: 1, maximo: 50 }), 30, "PPCs por página (1 a 50); padrão 30"),
@@ -48,6 +49,8 @@ export const ItemPpc = Schema.Struct({
   campus: Schema.String,
   nivel: Schema.String,
   forma: Schema.String,
+  /** Chave da versão seguinte, se este PPC foi substituído (só com `incluir_substituidos` ou `ppc`). */
+  substituido_por: Schema.optionalKey(Schema.String),
   link: EsquemaLink,
   /** Sem `ppc`, a contagem; com `ppc`, as ocorrências. */
   ocorrencias: Schema.Union([inteiro({ minimo: 0 }), Schema.Array(Ocorrencia)]),
@@ -65,7 +68,8 @@ export const Dados = Schema.Struct({
 
 /** O bloco de um PPC no texto (também mede o item na paginação pelo teto). */
 export function blocoPpc(p: ItemPpc): string {
-  const cabecalho = `${comLink(`${p.curso} (${p.campus})`, p.link)} — \`${p.ppc}\`, ${p.nivel}, ${p.forma}`;
+  const substituido = p.substituido_por ? ` (substituído por \`${p.substituido_por}\`)` : "";
+  const cabecalho = `${comLink(`${p.curso} (${p.campus})`, p.link)} — \`${p.ppc}\`${substituido}, ${p.nivel}, ${p.forma}`;
   if (typeof p.ocorrencias === "number") {
     return `- ${cabecalho}: ${p.ocorrencias} ${p.ocorrencias === 1 ? "ocorrência" : "ocorrências"}`;
   }

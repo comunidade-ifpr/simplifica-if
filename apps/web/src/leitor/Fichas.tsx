@@ -107,6 +107,13 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
   const indice = useIndiceExplorar();
   const doIndice: CursoDoIndice | undefined =
     indice.fase === "lido" ? indice.valor.cursos.find((c) => c.id === id) : undefined;
+  // PPCs anteriores do curso, que ficam na base substituídos pelo vigente: do mais novo ao mais antigo.
+  const substituidos =
+    indice.fase === "lido"
+      ? indice.valor.ppcs
+          .filter((p) => !p.vigente && p.chave.startsWith(`${id}/`))
+          .sort((a, b) => b.versao.localeCompare(a.versao, "pt-BR", { numeric: true }))
+      : [];
   return (
     <ComCarga carga={ficha} titulo="Não foi possível ler este curso">
       {({ dados: d }) => {
@@ -193,6 +200,22 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                       Ler o PPC
                     </BotaoLink>
                   </p>
+                  {substituidos.length > 0 ? (
+                    <p className="text-muted-foreground text-sm">
+                      {substituidos.length === 1
+                        ? "Versão anterior, substituída: "
+                        : "Versões anteriores, substituídas: "}
+                      {substituidos.map((p, i) => (
+                        <span key={p.chave}>
+                          {i > 0 ? ", " : null}
+                          <BotaoLink link={p.link} aoAbrirLink={aoAbrirLink}>
+                            {p.ano !== null ? `de ${p.ano}` : p.versao}
+                          </BotaoLink>
+                        </span>
+                      ))}
+                      .
+                    </p>
+                  ) : null}
                   {d.fatos && d.fatos.cruzamento.length > 0 ? (
                     <>
                       {ressalvas.size > 0 ? (

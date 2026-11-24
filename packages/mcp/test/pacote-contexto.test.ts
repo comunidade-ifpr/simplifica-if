@@ -136,10 +136,10 @@ describe("pacote_contexto: contrato", () => {
         "tarefa não reconhecida (ficha, tópico ou todas): CT-XXXX-99",
       );
       expect(yield* erroDeEntrada({ tarefa: "CT-CURR-12", ppc: "curitiba/inexistente" }, banco, pasta)).toBe(
-        'PPC não encontrado: ppc:curitiba/inexistente. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso',
+        'PPC não encontrado: ppc:curitiba/inexistente. Use "campus/curso/versao" (como "curitiba/tecnico-em-enfermagem/2023") ou o curso, "campus/curso", para o PPC vigente, vindo de listar_cursos ou de ficha_curso',
       );
       expect(yield* erroDeEntrada({ tarefa: "CT-CURR-12", ppc: "só-um-segmento" }, banco, pasta)).toMatch(
-        /^ppc: esperava "campus\/curso"/,
+        /^ppc: esperava "campus\/curso\/versao"/,
       );
     }),
   );
@@ -284,7 +284,7 @@ describe("pacote_contexto: orçamento", () => {
       campus_nome: "Curitiba",
       nivel: "médio",
       tipo_oferta: "subsequente",
-      path: "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+      path: "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
       curso_id: null,
       ano_documento: 2023,
       cnct_id: null,
@@ -318,7 +318,7 @@ describe("pacote_contexto: orçamento", () => {
       id: `${PPC_ENFERMAGEM}#secao-${i + 1}`,
       tipo: "outros",
       titulo: `Seção ${i + 1}`,
-      path: "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+      path: "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
       linha_inicio: 10 * i + 1,
       linha_fim: 10 * i + 9,
       motivo: ["topico:teste"],
@@ -342,7 +342,7 @@ describe("pacote_contexto: orçamento", () => {
     expect(texto.length).toBeGreaterThan(orcamento * 0.9);
     for (let i = 1; i <= 40; i += 1) {
       expect(texto).toContain(`ler_secao("${PPC_ENFERMAGEM}#secao-${i}")`);
-      expect(texto).toContain(`tecnico-em-enfermagem.md:${10 * (i - 1) + 1}-${10 * (i - 1) + 9}`);
+      expect(texto).toContain(`tecnico-em-enfermagem/2023.md:${10 * (i - 1) + 1}-${10 * (i - 1) + 9}`);
     }
     // o dispositivo curto não é cortado
     expect(texto).toContain("> Art. 9º curto.");

@@ -9,7 +9,7 @@ import { inteiro } from "../esquema.ts";
 import { linkNorma } from "../links.ts";
 import { cortar, linhasNoOrcamento } from "../orcamento.ts";
 import { comLink, dataBr } from "../texto.ts";
-import { idNorma, linhaTransicao } from "./comum-ppcs.ts";
+import { idNorma, incluirSubstituidos, linhaTransicao } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_IMPACTO = 8000;
@@ -18,6 +18,7 @@ export const AMOSTRA_PPCS = 10;
 
 export const Entrada = Schema.Struct({
   id: idNorma('ID canônico da norma, com dispositivo opcional ("br/cne-cp/res/2021/1")'),
+  incluir_substituidos: incluirSubstituidos,
 });
 
 export const Dados = Schema.Struct({

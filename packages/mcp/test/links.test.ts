@@ -15,15 +15,16 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
     expect(linkCurso("curitiba/tecnico-em-enfermagem")).toBe("ifpr://curso/curitiba/tecnico-em-enfermagem");
   });
 
-  test("ppc, com e sem seção", () => {
-    expect(linkPpc("ppc:curitiba/tecnico-em-enfermagem")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem");
-    expect(linkPpc("curitiba/tecnico-em-enfermagem", "avaliacao-1")).toBe(
-      "ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliacao-1",
+  test("ppc, com e sem seção; sem versão, o vigente", () => {
+    expect(linkPpc("ppc:curitiba/tecnico-em-enfermagem/2023")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem/2023");
+    expect(linkPpc("curitiba/tecnico-em-enfermagem/2023", "avaliacao-1")).toBe(
+      "ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#avaliacao-1",
     );
     // ID da tabela secoes
-    expect(linkPpc("curitiba/tecnico-em-enfermagem#estagio_praticas-2")).toBe(
-      "ifpr://ppc/curitiba/tecnico-em-enfermagem#estagio_praticas-2",
+    expect(linkPpc("curitiba/tecnico-em-enfermagem/2023#estagio_praticas-2")).toBe(
+      "ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#estagio_praticas-2",
     );
+    expect(linkPpc("ppc:curitiba/tecnico-em-enfermagem")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem");
   });
 
   test("cnct, campus e ficha", () => {
@@ -37,7 +38,7 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
 
   test("linkDe escolhe pelo prefixo do ID canônico", () => {
     expect(linkDe("curso:curitiba/tecnico-em-enfermagem")).toBe("ifpr://curso/curitiba/tecnico-em-enfermagem");
-    expect(linkDe("ppc:curitiba/tecnico-em-enfermagem")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem");
+    expect(linkDe("ppc:curitiba/tecnico-em-enfermagem/2023")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem/2023");
     expect(linkDe("cnct:tecnico-em-enfermagem")).toBe("ifpr://cnct/tecnico-em-enfermagem");
     expect(linkDe("campus:curitiba")).toBe("ifpr://campus/curitiba");
     expect(linkDe("ficha:CT-CURR-12")).toBe("ifpr://ficha/CT-CURR-12");
@@ -47,7 +48,7 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
 
   test("recusa IDs fora do formato", () => {
     expect(() => linkCurso("curitiba")).toThrow('esperava "campus/curso"');
-    expect(() => linkPpc("ppc:a/b/c")).toThrow('esperava "campus/curso"');
+    expect(() => linkPpc("ppc:a/b/c/d")).toThrow('esperava "campus/curso" ou "campus/curso/versao"');
     expect(() => linkCampus("a/b")).toThrow("esperava um segmento");
     expect(() => linkNorma("")).toThrow("ID inválido");
     expect(() => linkNorma("br//lei")).toThrow("ID inválido");
@@ -62,9 +63,9 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
       caminho: "br/cne-cp/res/2026/2",
       fragmento: "art28-xviii",
     });
-    expect(lerLink(linkPpc("curitiba/tecnico-em-enfermagem#avaliacao-1"))).toEqual({
+    expect(lerLink(linkPpc("curitiba/tecnico-em-enfermagem/2023#avaliacao-1"))).toEqual({
       tipo: "ppc",
-      caminho: "curitiba/tecnico-em-enfermagem",
+      caminho: "curitiba/tecnico-em-enfermagem/2023",
       fragmento: "avaliacao-1",
     });
     expect(lerLink("ifpr://campus/curitiba")).toEqual({ tipo: "campus", caminho: "curitiba", fragmento: null });

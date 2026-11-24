@@ -55,7 +55,7 @@ O mapa das pastas (`apps/desktop`, `apps/server`, `apps/web`, `packages/*`) est�
 |---|---|
 | `ifpr://norma/br/cne-cp/res/2026/2#art28-xviii` | Norma no dispositivo, com vigência, relações e transições |
 | `ifpr://curso/curitiba/tecnico-em-enfermagem` | Ficha do curso: PPC, ofertas, CNCT, divergências PPC × SUAP |
-| `ifpr://ppc/curitiba/tecnico-em-enfermagem#<secao>` | PPC convertido, na seção |
+| `ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#<secao>` | PPC convertido, na seção; sem a versão (`ifpr://ppc/curitiba/tecnico-em-enfermagem`), o PPC vigente do curso |
 | `ifpr://cnct/tecnico-em-enfermagem` | Curso no CNCT |
 | `ifpr://campus/curitiba` | Ficha do campus |
 | `ifpr://ficha/CT-CURR-12` | Ficha da revisão de PPC |

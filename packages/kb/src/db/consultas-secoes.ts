@@ -16,7 +16,7 @@ import {
 } from "../busca/fts.ts";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
-import { idCnct, idPpc } from "./chaves.ts";
+import { idCnct, parametrosPpc, SQL_PPC } from "./chaves.ts";
 import { markdownDoArquivo } from "./consultas-documentos.ts";
 import * as Sql from "./sql.ts";
 
@@ -30,7 +30,10 @@ export interface FiltrosSecoes {
   campus?: string | undefined;
   cnct?: string | undefined;
   forma?: string | undefined;
+  /** PPC: a versão (`campus/curso/versao`) ou o curso (`campus/curso`, o PPC vigente). */
   ppc?: string | undefined;
+  /** Inclui os PPCs substituídos; sem ele (e sem `ppc`), só os vigentes entram. */
+  incluirSubstituidos?: boolean | undefined;
 }
 
 const LinhaSecao = Schema.Struct({
@@ -131,8 +134,10 @@ export const buscarSecoes = Effect.fn("consultasSecoes.buscarSecoes")(function* 
     parametros.push(filtros.forma);
   }
   if (filtros.ppc) {
-    condicoes.push("p.id = ?");
-    parametros.push(idPpc(filtros.ppc));
+    condicoes.push(`p.id = ${SQL_PPC}`);
+    parametros.push(...parametrosPpc(filtros.ppc));
+  } else if (!filtros.incluirSubstituidos) {
+    condicoes.push("p.vigente = 1");
   }
   const filtroSql = condicoes.length ? ` AND ${condicoes.join(" AND ")}` : "";
   const sql = `
@@ -207,8 +212,8 @@ export const secoesDoPpc = Effect.fn("consultasSecoes.secoesDoPpc")(function* (p
   if (!tipos.length) return saida;
   const linhas = yield* linhasSecaoDoPpc(
     `SELECT id, tipo, titulo, path, linha_inicio, linha_fim, texto FROM secoes
-         WHERE ppc_id = ? AND tipo IN (${tipos.map(() => "?").join(", ")}) ORDER BY linha_inicio`,
-    [idPpc(ppc), ...tipos],
+         WHERE ppc_id = ${SQL_PPC} AND tipo IN (${tipos.map(() => "?").join(", ")}) ORDER BY linha_inicio`,
+    [...parametrosPpc(ppc), ...tipos],
   );
   for (const l of linhas) saida.push(l);
   return saida;
@@ -275,8 +280,8 @@ const linhasIndiceSecoes = Sql.todas(LinhaIndiceSecoes);
 /** Índice das seções de um PPC, na ordem do documento (sem o texto). */
 export const indiceSecoesDoPpc = Effect.fn("consultasSecoes.indiceSecoesDoPpc")(function* (ppc: string) {
   const linhas = yield* linhasIndiceSecoes(
-    "SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio, id",
-    [idPpc(ppc)],
+    `SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ${SQL_PPC} ORDER BY linha_inicio, id`,
+    parametrosPpc(ppc),
   );
   return linhas.map((l): EntradaIndiceSecoes => l);
 });
@@ -317,6 +322,11 @@ export const lerSecao = Effect.fn("consultasSecoes.lerSecao")(function* (id: str
 
 const LinhaPpcListado = Schema.Struct({
   chave: Texto,
+  chave_curso: Texto,
+  versao: Texto,
+  vigente: Inteiro,
+  /** Chave da versão seguinte (só nos substituídos). */
+  substituido_por: TextoNulo,
   curso_nome: Texto,
   campus_id: Texto,
   campus_nome: Texto,
@@ -327,15 +337,20 @@ const LinhaPpcListado = Schema.Struct({
 });
 const linhasPpcsListados = Sql.todas(LinhaPpcListado);
 
-/** Um PPC convertido da base (`chave` é `campus/curso`; `curso_id`, o curso a que ele pertence). */
-export type PpcListado = typeof LinhaPpcListado.Type;
+/**
+ * Um PPC da base: `chave` é `campus/curso/versao`, `chave_curso` é `campus/curso`, `curso_id` o curso
+ * a que ele pertence; `vigente` no PPC que o curso aponta, os demais substituídos.
+ */
+export type PpcListado = Omit<typeof LinhaPpcListado.Type, "vigente"> & { readonly vigente: boolean };
 
-/** Todos os PPCs da base, por chave. */
+/** Todos os PPCs da base, vigentes e substituídos, por chave. */
 export const listarPpcs = Effect.fn("consultasSecoes.listarPpcs")(function* () {
-  const linhas: ReadonlyArray<PpcListado> = yield* linhasPpcsListados(
-    "SELECT chave, curso_nome, campus_id, campus_nome, nivel, tipo_oferta, ano_documento, curso_id FROM ppcs ORDER BY chave",
+  const linhas = yield* linhasPpcsListados(
+    `SELECT chave, chave_curso, versao, vigente, substr(substituido_por, 5) AS substituido_por, curso_nome, campus_id,
+            campus_nome, nivel, tipo_oferta, ano_documento, curso_id
+       FROM ppcs ORDER BY chave`,
   );
-  return linhas;
+  return linhas.map((l): PpcListado => ({ ...l, vigente: l.vigente === 1 }));
 });
 
 const linhasTipos = Sql.todas(Schema.Struct({ tipo: Texto }));
@@ -363,11 +378,14 @@ export interface DocumentoPpc {
   readonly markdown: string | null;
 }
 
-/** O PPC pela chave (`campus/curso`), como documento; `null` se ele não está na base. */
+/**
+ * O PPC pela chave (`campus/curso/versao`, ou `campus/curso` para o vigente), como documento; `null`
+ * se ele não está na base.
+ */
 export const documentoDoPpc = Effect.fn("consultasSecoes.documentoDoPpc")(function* (chave: string) {
   const ppc = yield* primeiroPpcDoDocumento(
-    "SELECT id, chave, curso_nome, campus_nome, path FROM ppcs WHERE chave = ?",
-    [chave],
+    `SELECT id, chave, curso_nome, campus_nome, path FROM ppcs WHERE id = ${SQL_PPC}`,
+    parametrosPpc(chave),
   );
   if (!ppc) return null;
   const secoes = yield* indiceSecoesDoPpc(ppc.chave);

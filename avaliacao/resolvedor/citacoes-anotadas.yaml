@@ -28,7 +28,7 @@ status: rascunho
 revisado_por: null
 anotado_por: agente (Claude), fase 2a, 13/11/2026
 ppcs:
-  - ppc: arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio
+  - ppc: arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio/2025
     linhas:
       - trecho: "(Designada pela Portaria Nº 2574/DG/Arapongas/IFPR, de 27 de março de 2025)"
         ids: []
@@ -52,7 +52,7 @@ ppcs:
       - trecho: "**Resolução CNE/CEB nº 1/2021, de 05 de janeiro de 2021** . Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica"
         ids: [br/cne-cp/res/2021/1]
 
-  - ppc: irati/tecnico-em-informatica
+  - ppc: irati/tecnico-em-informatica/2025
     linhas:
       - trecho: "**º AUTORIZADO PELA RESOLUÇÃO N 42 de 17 DE SETEMBRO de 2012. AJUSTE PARECER CONSEPE Nº**"
         ids: [ifpr/consup/res/2012/42]
@@ -77,7 +77,7 @@ ppcs:
       - trecho: "Art. 8º Para os casos em que seja possível o estágio de 40 (quarenta) horas semanais, em acordo com a resolução IFPR nº 36/2019, em especial o §1 do art. 17, devem ter a sua previsão de execução definida no TCE/PE ou mediante aditivo ao TCE/PE. Parágrafo único. No caso de estágio durante as férias, a orientação será indireta, retornando à orientação"
         ids: [ifpr/consup/res/2019/36#art17-par1]
 
-  - ppc: palmas/tecnico-em-alimentos
+  - ppc: palmas/tecnico-em-alimentos/2022
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO N° 36 DE 09 DE DEZEMBRO DE 2013 AJUSTE PARECER CONSEPE Nº 61/2022**"
         ids: [ifpr/consup/res/2013/36, ifpr/consepe/parecer/2022/61]
@@ -101,7 +101,7 @@ ppcs:
       - trecho: "do Campus Palmas, sendo seus dispositivos alinhados à Resolução IFPR nº 82, de 02 de junho de 2022"
         ids: [ifpr/consup/res/2022/82, br/lei/2008/11788]
 
-  - ppc: curitiba/tecnico-em-enfermagem
+  - ppc: curitiba/tecnico-em-enfermagem/2023
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO N° 39/2010 DO CONSELHO SUPERIOR - IFPR AJUSTE PARECER CONSEPE Nº 51/2023**"
         ids: [ifpr/consup/res/2010/39, ifpr/consepe/parecer/2023/51]
@@ -124,7 +124,7 @@ ppcs:
       - trecho: "se o estudante cumpre continuamente os artigos 6º, 17 e 26 da resolução IFPR nº 36/2019"
         ids: [ifpr/consup/res/2019/36#art6]
 
-  - ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio
+  - ppc: ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO CONSUP/IFPR Nº 187, DE 17 DE ABRIL DE 2024**"
         ids: [ifpr/consup/res/2024/187]
@@ -147,7 +147,7 @@ ppcs:
       - trecho: "INSTITUTO FEDERAL DO PARANÁ. **Resolução Consup/IFPR n° 01/2017** . Altera a resolução 54/2011"
         ids: [ifpr/consup/res/2017/1, ifpr/consup/res/2011/54]
 
-  - ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja
+  - ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016
     linhas:
       - trecho: "**Autorizado pela Resolução n° 55, de 16 de dezembro de 2014, do Conselho Superior - IFPR**"
         ids: [ifpr/consup/res/2014/55]
@@ -170,7 +170,7 @@ ppcs:
       - trecho: "______. Instituto Federal do Paraná. Conselho Superior. **Resolução nº 54/2011 de 21/12/2011**"
         ids: [ifpr/consup/res/2011/54]
 
-  - ppc: cascavel/tecnico-em-edificacoes
+  - ppc: cascavel/tecnico-em-edificacoes/2023
     linhas:
       - trecho: "## **AUTORIZADO PELA RESOLUÇÃO N° 27 DE JULHO DE 2018 AJUSTE PARECER CONSEPE Nº**"
         ids: [ifpr/consup/res/2018/27]
@@ -194,7 +194,7 @@ ppcs:
       - trecho: "IFPR. Conselho Superior do Instituto Federal do Paraná. Resolução n. 53 de 21 de dezembro de 2011."
         ids: [ifpr/consup/res/2011/53, ifpr/consup/res/2009/11#art7]
 
-  - ppc: foz-do-iguacu/tecnico-em-aquicultura
+  - ppc: foz-do-iguacu/tecnico-em-aquicultura/2017
     linhas:
       - trecho: "Portaria Nº19/2016 de 22 de março de 2016 designa: Adilson Reidel"
         ids: []
@@ -219,7 +219,7 @@ ppcs:
       - trecho: "BRASIL. **Parecer CNE/CEB nº 39/2004.** Aplicação do Decreto nº 5.154/2004"
         ids: [br/cne-ceb/parecer/2004/39, br/decreto/2004/5154]
 
-  - ppc: jacarezinho/tecnico-em-eletromecanica
+  - ppc: jacarezinho/tecnico-em-eletromecanica/2017
     linhas:
       - trecho: "Autorizado pela Resolução n° 70/2017 – Conselho Superior"
         ids: [ifpr/consup/res/2017/70]
@@ -242,7 +242,7 @@ ppcs:
       - trecho: "Conselho Pleno. Resolução nº 1, de 17 de junho de 2004. _Institui Diretrizes Curriculares Nacionais para a Educação das Relações"
         ids: [br/cne-cp/res/2004/1]
 
-  - ppc: telemaco-borba/tecnico-em-mecanica
+  - ppc: telemaco-borba/tecnico-em-mecanica/2025
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO 91/2011 AJUSTE PARECER CONSEPE Nº 68/2018**"
         ids: [ifpr/consup/res/2011/91, ifpr/consepe/parecer/2018/68]
@@ -265,7 +265,7 @@ ppcs:
       - trecho: "Art. 8º Para os casos em que seja possível o estágio de 40 (quarenta) horas semanais, em acordo com a resolução IFPR nº 36/2019, em especial o §1 do art. 17, devem ter a sua previsão de execução definida no TCE/PE ou mediante aditivo ao TCE/PE. Parágrafo único. No caso de estágio durante as férias, a orientação será indireta, retornando a orientação"
         ids: [ifpr/consup/res/2019/36#art17-par1]
 
-  - ppc: assis-chateaubriand/tecnico-em-alimentos
+  - ppc: assis-chateaubriand/tecnico-em-alimentos/2022
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO CONSUP Nº114, de 21 de DEZEMBRO DE 2022 PARECER CONSEPE Nº 64/2022**"
         ids: [ifpr/consup/res/2022/114, ifpr/consepe/parecer/2022/64]
@@ -288,7 +288,7 @@ ppcs:
       - trecho: "Art. 8º Para os casos em que seja possível o estágio de 40 (quarenta) horas semanais, em acordo com a resolução IFPR nº 36/2019, em especial o §1 do Art. 17, devem ter a sua previsão de execução definida no TCE/PE ou mediante aditivo ao TCE/PE."
         ids: [ifpr/consup/res/2019/36#art17-par1]
 
-  - ppc: paranavai/tecnico-em-agroindustria
+  - ppc: paranavai/tecnico-em-agroindustria/2016
     linhas:
       - trecho: "## **Autorizado pela Resolução n° 34/2013 do Conselho Superior - IFPR**"
         ids: [ifpr/consup/res/2013/34]
@@ -309,7 +309,7 @@ ppcs:
       - trecho: "A Resolução Nº 4/1999 do Conselho Nacional de Educação (CNE/CEB), que institui"
         ids: [br/cne-ceb/res/1999/4]
 
-  - ppc: pinhais/tecnico-em-administracao-integrado-ao-ensino-medio
+  - ppc: pinhais/tecnico-em-administracao-integrado-ao-ensino-medio/2025
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO Nº 40/2014 AJUSTE PARECER CONSEPE Nº 6/2025**"
         ids: [ifpr/consup/res/2014/40, ifpr/consepe/parecer/2025/6]
@@ -332,7 +332,7 @@ ppcs:
       - trecho: "atualizado (Art. 12º da Resolução nº 36/2019)."
         ids: [ifpr/consup/res/2019/36#art12]
 
-  - ppc: cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas
+  - ppc: cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO 27 DE 29 DE JUNHO DE 2018 AJUSTE PARECER CONSEPE Nº 50/2022**"
         ids: [ifpr/consup/res/2018/27, ifpr/consepe/parecer/2022/50]
@@ -355,7 +355,7 @@ ppcs:
       - trecho: "______.IFPR. Instrução normativa nº 1, de 26 de julho de 2021, que institui a regulamentação"
         ids: [ifpr/reitoria/in/2021/1]
 
-  - ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas
+  - ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO Nº 87, DE 03 DE SETEMBRO DE 2010 AJUSTE PARECER PROENS Nº 2159633/2023"
         ids: [ifpr/consup/res/2010/87, ifpr/proens/parecer/2023/2159633]
@@ -380,7 +380,7 @@ ppcs:
       - trecho: "COMISSÃO NACIONAL DE AVALIAÇÃO DA EDUCAÇÃO SUPERIOR (Brasil). **Resolução n° 01, de 17 de junho de 2010.**"
         ids: [br/conaes/res/2010/1]
 
-  - ppc: palmas/farmacia
+  - ppc: palmas/farmacia/2010
     linhas:
       - trecho: "Autorizado pela Portaria nº 636 de 15 de março de 2004 (MEC), publicado no Diário Oficial da União"
         ids: [br/mec/portaria/2004/636, ifpr/consup/res/2010/15]
@@ -402,7 +402,7 @@ ppcs:
       - trecho: "INSTITUTO FEDERAL DO PARANÁ. Conselho Superior (CONSUP). Resolução nº 17 de 04 de junho de 2018."
         ids: [ifpr/consup/res/2018/17]
 
-  - ppc: colombo/licenciatura-em-historia
+  - ppc: colombo/licenciatura-em-historia/2024
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO CONSUP/IFPR N°181, DE 01 DE ABRIL DE 2024**"
         ids: [ifpr/consup/res/2024/181]
@@ -425,7 +425,7 @@ ppcs:
       - trecho: "**Resolução n° 159, de 12 de dezembro de 2023.** Dispõe sobre as diretrizes do Trabalho do Docente"
         ids: [ifpr/consup/res/2023/159]
 
-  - ppc: umuarama/bacharelado-em-arquitetura-e-urbanismo
+  - ppc: umuarama/bacharelado-em-arquitetura-e-urbanismo/2023
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO N°43 DE 14 DE JULHO DE 2017 AJUSTE PARECER CONSEPE NºXX/ANO**"
         ids: [ifpr/consup/res/2017/43]
@@ -448,7 +448,7 @@ ppcs:
       - trecho: "- **RESOLUÇÃO Nº 3, DE 2 DE JULHO DE 2007** . Dispõe sobre procedimentos a serem adotados quanto ao conceito de hora aula"
         ids: [br/cne-ces/res/2007/3]
 
-  - ppc: arapongas/especializacao-em-docencia-e-praticas-educativas
+  - ppc: arapongas/especializacao-em-docencia-e-praticas-educativas/2023
     linhas:
       - trecho: "DIRETORIA DE PÓS-GRADUAÇÃO RESOLUÇÃO CONSUP/IFPR N.121/2023 – CONSUP/IFPR**"
         ids: [ifpr/consup/res/2023/121]
@@ -471,7 +471,7 @@ ppcs:
       - trecho: "**3.** Portaria CEC atualizada, quando couber;"
         ids: []
 
-  - ppc: arapongas/programacao-web
+  - ppc: arapongas/programacao-web/2025
     linhas:
       - trecho: "## _PORTARIA Nº 1368/DG/ARAPONGAS/IFPR, DE 17 DE FEVEREIRO DE 2025_"
         ids: []

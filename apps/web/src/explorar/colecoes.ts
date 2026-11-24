@@ -235,18 +235,21 @@ export interface FiltrosPpcs {
   readonly campus?: string | undefined;
   readonly nivel?: string | undefined;
   readonly forma?: string | undefined;
+  /** Inclui os PPCs substituídos por uma versão mais nova; sem ele, só os vigentes. */
+  readonly substituidos?: boolean | undefined;
 }
 
 export function filtrarPpcs(ppcs: ReadonlyArray<PpcDoIndice>, f: FiltrosPpcs): PpcDoIndice[] {
   return ppcs
     .filter(
       (p) =>
+        (f.substituidos === true || p.vigente) &&
         (f.campus === undefined || p.campus === f.campus) &&
         (f.nivel === undefined || p.nivel === f.nivel) &&
         (f.forma === undefined || p.forma === f.forma) &&
         (f.texto === undefined || respondeAoTexto(f.texto, [p.nome, p.campus_nome])),
     )
-    .sort((a, b) => comparar(a.nome, b.nome) || comparar(a.campus_nome, b.campus_nome));
+    .sort((a, b) => comparar(a.nome, b.nome) || comparar(a.campus_nome, b.campus_nome) || comparar(b.versao, a.versao));
 }
 
 export interface FiltrosCnct {

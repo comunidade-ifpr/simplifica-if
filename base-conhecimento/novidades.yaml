@@ -17,7 +17,8 @@
 #     data: "2026-11-20"          # data da publicação
 #     itens:
 #       - tipo: norma-nova        # norma-nova, norma-retirada, revogacao, vigencia, ppc-novo,
-#                                 # ppc-atualizado, ppc-retirado, curso-novo, curso-retirado, outro
+#                                 # ppc-atualizado, ppc-substituido, ppc-retirado, curso-novo,
+#                                 # curso-retirado, outro
 #         titulo: "Resolução CNE/CP nº 2/2026 entrou na base"
 #         detalhe: "Novas Diretrizes da Educação Profissional e Tecnológica."   # opcional
 #         refs: [br/cne-cp/res/2026/2]   # opcional: IDs da base

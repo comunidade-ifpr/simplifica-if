@@ -11,8 +11,8 @@ describe("histórico do leitor", () => {
     expect(linkAtual(h)).toBe("ifpr://norma/a");
     expect(podeAvancar(h)).toBe(true);
     expect(linkAtual(avancar(h))).toBe("ifpr://norma/b");
-    h = abrir(h, "ifpr://ppc/c/d");
-    expect(h.links).toEqual(["ifpr://norma/a", "ifpr://ppc/c/d"]);
+    h = abrir(h, "ifpr://ppc/c/d/2024");
+    expect(h.links).toEqual(["ifpr://norma/a", "ifpr://ppc/c/d/2024"]);
     expect(podeAvancar(h)).toBe(false);
   });
 
