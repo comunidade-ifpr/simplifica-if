@@ -24,7 +24,6 @@ aliases:
   - "Lei 14.945/2024"
   - "Novo Ensino Médio 2024"
 fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14945.htm"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Lei nº 9.394/1996 (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36)"
 altera:

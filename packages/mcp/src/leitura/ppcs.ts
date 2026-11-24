@@ -202,7 +202,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
     if (resultado.status.endsWith("(a confirmar)") && avisos.length === 0) {
       avisos.push({
         tipo: "vigencia-a-confirmar",
-        mensagem: `o status de ${norma.titulo} em ${dataBr(resultado.data_referencia)} está a confirmar; diga isso ao usuário`,
+        mensagem: `o status de ${norma.titulo} em ${dataBr(resultado.vigencia_em)} está a confirmar; diga isso ao usuário`,
         ref: norma.id,
       });
     }
@@ -219,7 +219,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
       {
         norma,
         status: resultado.status,
-        data_referencia: resultado.data_referencia,
+        vigencia_em: resultado.vigencia_em,
         sucessoras: resultado.sucessoras,
         transicoes: resultado.transicoes.map((id) => transicaoResumo(transicoes.get(id)!)),
         relacoes: relacoes.map(relacaoSaida),

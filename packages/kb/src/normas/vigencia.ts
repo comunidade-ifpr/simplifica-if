@@ -312,7 +312,7 @@ export function statusEm(id: string, data: string, fonte: FonteStatus): Resultad
       pendencias.push(
         `${evento.tipo === "revoga" ? "revogação" : "alteração"} por ${titulo(evento.origem)}` +
           `${evento.operador ? ` (${evento.operador})` : ""} produz efeito na vigência da origem, a confirmar` +
-          `${evento.efeito_minimo ? ` (não antes de ${evento.efeito_minimo})` : ""}: presumida em vigor em ${data}`,
+          `${evento.efeito_minimo ? ` (não antes de ${evento.efeito_minimo})` : ""}: presumida em vigor`,
       );
     }
     if (ORDEM[efeito]! > ORDEM[status]!) status = efeito;

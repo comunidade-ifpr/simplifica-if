@@ -509,6 +509,23 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
+    it.effect("vigência no dia (VigenciaNoDia hoje): a consulta sem data usa o relógio, não a data_referencia", () =>
+      Effect.gen(function* () {
+        const { a } = yield* Compilados;
+        const status = Effect.gen(function* () {
+          const normas = yield* Normas.Normas;
+          return (yield* normas.vigencia("br/cne-cp/res/2021/1")).status;
+        });
+        const naReferencia = Layers.layerSomenteLeitura({ caminho: a });
+        const noDia = naReferencia.pipe(Layer.provide(FontesNormativas.layerVigenciaHoje));
+        // antes da revogação pela Res. CNE/CP nº 2/2026 (não antes de 2026-11-11). `local`: sem ele, as
+        // layers já construídas pelo teste (na data_referencia) seriam reaproveitadas.
+        yield* TestClock.setTime(Date.parse("2025-06-01T12:00:00"));
+        expect(yield* Effect.provide(status, noDia, { local: true })).not.toMatch(/revogada/);
+        expect(yield* Effect.provide(status, naReferencia, { local: true })).toMatch(/revogada/);
+      }),
+    );
+
     it.effect("citação resolvida respeita --vigentes e --situacao, com aviso", () =>
       Effect.gen(function* () {
         const { normas } = yield* servicos;

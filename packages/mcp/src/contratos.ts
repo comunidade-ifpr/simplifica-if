@@ -28,11 +28,12 @@ const TIPOS_AVISO = [
 export const EsquemaLink = Schema.String.check(Schema.isPattern(/^ifpr:\/\/[\s\S]{1,}$/u));
 
 export const Base = Schema.Struct({
-  /** `AAAA.MM.DD` quando o pacote for publicado (T0); `dev-<8 hex de fontes_sha256>` antes disso. */
+  /** `AAAA.MM.DD` (ou `AAAA.MM.DD.N`) quando publicada pela fábrica; `dev-<8 hex de fontes_sha256>` antes disso. */
   versao: Schema.String,
+  /** O dia da versão publicada (AAAA-MM-DD); `null` na base de desenvolvimento. */
+  data: Schema.NullOr(Schema.String),
   /** Commit de origem do pacote; `null` enquanto o banco não o registra (T0). */
   commit: Schema.NullOr(Schema.String),
-  data_referencia: Schema.String,
   canal: Schema.Literals(CANAIS),
 });
 export type Base = typeof Base.Type;
@@ -167,7 +168,7 @@ export type DispositivoTexto = typeof DispositivoTexto.Type;
 export const TransicaoResumo = Schema.Struct({
   id: Schema.String,
   regra: Schema.String,
-  /** `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`, na data de referência. */
+  /** `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`, no dia da consulta. */
   situacao_na_data: Schema.String,
   /** Dispositivo que estabelece a regra. */
   link: EsquemaLink,

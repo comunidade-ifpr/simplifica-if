@@ -29,7 +29,7 @@ afterAll(limparTemporarios);
 const amostrasDe = (nome: string) => (AMOSTRAS as Partial<Record<string, Amostras>>)[nome];
 
 /** O rodapé de toda resposta válida, com a data e a versão da base. */
-const RODAPE = /\n\nBase de \d{2}\/\d{2}\/\d{4} \(versão [^)]+\)\.$/;
+const RODAPE = /\n\nBase de (\d{2}\/\d{2}\/\d{4}|desenvolvimento) \(versão [^)]+\)\.$/;
 
 /** Prefixo da mensagem de entrada inválida (`src/validacao.ts`). */
 const prefixo = (nome: string) => `Entrada inválida para a ferramenta ${nome}: `;

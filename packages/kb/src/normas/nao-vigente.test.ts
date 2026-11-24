@@ -18,6 +18,6 @@ describe("redação não vigente fora dos dispositivos", () => {
     expect(textos.filter((t) => t.startsWith("IV –"))).toEqual([
       expect.stringContaining("(Redação dada pela Lei nº 12.677"),
     ]);
-    expect(obterDispositivo("br/lei/2008/11892#art1-parunico", raiz)?.linha_inicio).toBe(77);
+    expect(obterDispositivo("br/lei/2008/11892#art1-parunico", raiz)?.linha_inicio).toBe(76);
   });
 });

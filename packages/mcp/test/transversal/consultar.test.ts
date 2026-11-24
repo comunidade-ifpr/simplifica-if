@@ -49,7 +49,7 @@ async function consultar(banco: string, argumentos: ReadonlyArray<string>, cwd?:
   const pasta = cwd ?? diretorioTemporario("simplifica-mcp-consultar-");
   const processo = NodeChildProcess.spawn(
     EXE ?? process.execPath,
-    [...(EXE ? [] : [CLI]), "consultar", ...argumentos, "--banco", banco],
+    [...(EXE ? [] : [CLI]), "consultar", ...argumentos, "--banco", banco, "--vigencia-na-referencia"],
     { cwd: pasta, env: ambienteMinimo(pasta), stdio: ["ignore", "pipe", "pipe"] },
   );
   let stdout = "";

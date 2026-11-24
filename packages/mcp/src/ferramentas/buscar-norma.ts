@@ -27,7 +27,7 @@ export const Entrada = Schema.Struct({
   limite: comPadrao(inteiro({ minimo: 1, maximo: 20 }), 8, "máximo de resultados (padrão 8)"),
   situacao: opcional(Schema.Literals(SITUACOES_NORMA), "só normas da base, stubs ou referências externas"),
   vigentes: opcional(Schema.Boolean, "exclui atos e dispositivos revogados ou ainda não vigentes na data `em`"),
-  em: opcional(esquemaData("data da vigência para `vigentes`, AAAA-MM-DD (padrão: data de referência)")),
+  em: opcional(esquemaData("data da vigência para `vigentes`, AAAA-MM-DD (padrão: hoje)")),
 });
 
 export const Resultado = Schema.Struct({

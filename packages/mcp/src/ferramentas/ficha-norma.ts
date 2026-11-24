@@ -39,7 +39,7 @@ function fimSemData(inicio: string, fim: string): string {
 
 export const Entrada = Schema.Struct({
   id: esquemaIdNorma('ID canônico da norma, como "br/cne-cp/res/2021/1"'),
-  em: opcional(esquemaData("data da situação, AAAA-MM-DD (padrão: data de referência da base)")),
+  em: opcional(esquemaData("data da situação, AAAA-MM-DD (padrão: hoje)")),
 });
 
 const Inicio = Schema.Struct({

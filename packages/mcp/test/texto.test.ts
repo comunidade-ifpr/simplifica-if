@@ -2,22 +2,17 @@ import { describe, expect, test } from "vite-plus/test";
 import type { Base, Resposta } from "../src/contratos.ts";
 import { blocoItem, citacao, comLink, dataBr, montarTexto, rodape } from "../src/texto.ts";
 
-const BASE_DEV: Base = { versao: "dev-ab12cd34", commit: null, data_referencia: "2026-11-13", canal: "dev" };
-const BASE_PUBLICADA: Base = {
-  versao: "2026.11.13",
-  commit: "dc6b4470abcdef",
-  data_referencia: "2026-11-13",
-  canal: "beta",
-};
+const BASE_DEV: Base = { versao: "dev-ab12cd34", data: null, commit: null, canal: "dev" };
+const BASE_PUBLICADA: Base = { versao: "2026.11.13", data: "2026-11-13", commit: "dc6b4470abcdef", canal: "beta" };
 
 function resposta(extras: Partial<Resposta<unknown>> = {}): Resposta<unknown> {
   return { base: BASE_DEV, dados: {}, avisos: [], ...extras };
 }
 
 describe("texto para a IA", () => {
-  test("rodapé com commit (7 caracteres) e sem commit", () => {
+  test("rodapé: data e commit (7 caracteres) da versão publicada; a base de desenvolvimento, sem data", () => {
     expect(rodape(BASE_PUBLICADA)).toBe("Base de 13/11/2026 (commit `dc6b447`).");
-    expect(rodape(BASE_DEV)).toBe("Base de 13/11/2026 (versão dev).");
+    expect(rodape(BASE_DEV)).toBe("Base de desenvolvimento (versão `dev-ab12cd34`).");
     expect(dataBr("2026-01-02")).toBe("02/01/2026");
   });
 
@@ -48,7 +43,7 @@ describe("texto para a IA", () => {
   });
 
   test("sem avisos: corpo e rodapé", () => {
-    expect(montarTexto(resposta(), "Corpo.")).toBe("Corpo.\n\nBase de 13/11/2026 (versão dev).");
+    expect(montarTexto(resposta(), "Corpo.")).toBe("Corpo.\n\nBase de desenvolvimento (versão `dev-ab12cd34`).");
   });
 
   test("com avisos: linhas 'Atenção:' antes do corpo, rodapé por último", () => {
@@ -79,6 +74,6 @@ describe("texto para a IA", () => {
     expect(texto).toContain(
       'Mostrando 30 de 40. Para continuar, chame de novo com os mesmos filtros e `cursor: "abc"`.',
     );
-    expect(texto.endsWith("Base de 13/11/2026 (versão dev).")).toBe(true);
+    expect(texto.endsWith("Base de desenvolvimento (versão `dev-ab12cd34`).")).toBe(true);
   });
 });

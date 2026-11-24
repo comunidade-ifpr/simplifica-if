@@ -32,7 +32,6 @@ aliases:
 fonte_url: "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q36au1LYH7FTy46N6ojWpWkRmbmmHWnoHiXc03RSwUjZ1QriEzlgYneFBPn1t096UeL-8HbgQ0TWEaa0zGPmQE"
 fonte_referencia: "SEI/IFPR nº 1346434; Processo nº 23411.013054/2020-51; Boletim de Serviço Eletrônico de 20/08/2021"
 status_vigencia: "revogada"
-vigencia_calculada_em: "2026-11-13"
 revogada_por:
   - "Instrução Normativa PROENS/IFPR nº 2/2025 (art. 34)"
 pontos_chave:

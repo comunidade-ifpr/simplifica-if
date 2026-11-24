@@ -77,7 +77,7 @@ const formatarFicha = (f: FichaIa) =>
     .join("\n");
 
 export function formatarContexto(contexto: ContextoNormativo): string {
-  const partes = [`Data da base de normas: ${contexto.dataBase}.`];
+  const partes = [`Vigência das normas calculada em: ${contexto.dataBase}.`];
   if (contexto.curso) partes.push(`Curso identificado pelo código no documento: ${contexto.curso}.`);
   if (contexto.cnct) partes.push(`### Curso no CNCT (fonte: cnct)\n${contexto.cnct}`);
   for (const norma of contexto.normas) {

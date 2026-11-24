@@ -102,8 +102,15 @@ export const urlDoArquivo = (item: { readonly arquivo: string; readonly url?: st
 
 const partes = (versao: string) => versao.split(".").map((parte) => Number.parseInt(parte, 10));
 
-/** Compara versões numéricas separadas por ponto (`2026.11.13`, `2026.11.13.2`, `0.1.0`). */
+/** A versão da base de desenvolvimento (`dev-<hash>`): o banco compilado sem `--versao`. */
+export const ehVersaoDev = (versao: string): boolean => versao.startsWith("dev-");
+
+/**
+ * Compara versões numéricas separadas por ponto (`2026.11.13`, `2026.11.13.2`, `0.1.0`). A base de
+ * desenvolvimento (`dev-<hash>`) vem antes de toda versão publicada: a atualização a troca.
+ */
 export function compararVersoes(a: string, b: string): number {
+  if (ehVersaoDev(a) || ehVersaoDev(b)) return Number(!ehVersaoDev(a)) - Number(!ehVersaoDev(b));
   const pa = partes(a);
   const pb = partes(b);
   for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
@@ -112,6 +119,3 @@ export function compararVersoes(a: string, b: string): number {
   }
   return 0;
 }
-
-/** Versão da base a partir da data de referência de um build (`2026-11-13` → `2026.11.13`). */
-export const versaoDeData = (data: string) => data.replaceAll("-", ".");

@@ -21,6 +21,7 @@ import {
   type Canal,
   codificarManifesto,
   decodificarManifesto,
+  ehVersaoDev,
   type Manifesto,
   type Novidade,
   SUFIXO_ASSINATURA,
@@ -73,6 +74,7 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
   const info = lerInfoBanco(opcoes.banco);
   if (info === null) throw new Error(`não foi possível ler o meta de ${opcoes.banco}`);
   const versao = info.versao;
+  if (ehVersaoDev(versao)) throw new Error(`a base ${versao} não tem versão: compile com --versao AAAA.MM.DD`);
   conferirEsquema(info, opcoes.anteriores ?? [], opcoes.appMinimo);
   NodeFS.mkdirSync(opcoes.saida, { recursive: true });
   const arquivos: string[] = [];
@@ -90,6 +92,8 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
   const patches = (opcoes.anteriores ?? []).map((caminho) => {
     const de = lerInfoBanco(caminho)?.versao;
     if (de === undefined) throw new Error(`não foi possível ler o meta de ${caminho}`);
+    if (ehVersaoDev(de))
+      throw new Error(`${caminho} é uma base de desenvolvimento (${de}): não há patch a partir dela`);
     const dados = criarPatch(NodeFS.readFileSync(caminho), banco, opcoes.nivel);
     const arquivo = `base-${de}-${versao}.patch.zst`;
     gravar(arquivo, dados);

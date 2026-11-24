@@ -142,7 +142,7 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       const resultado = yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
       expect(resultado.isError).toBeFalsy();
       expect(resultado.structuredContent).toMatchObject({ base: { canal: "dev" } });
-      expect(textoDe(resultado)).toContain("Base de 13/11/2026");
+      expect(textoDe(resultado)).toContain("Base de desenvolvimento");
     }),
   );
 

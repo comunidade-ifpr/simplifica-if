@@ -30,7 +30,6 @@ aliases:
   - "DL 1.044/1969"
   - "DL 1044/69"
 fonte_url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del1044.htm"
-vigencia_calculada_em: "2026-11-13"
 relaciona_se_a:
   - "Lei nº 6.202/1975"
   - "Lei nº 9.394/1996"

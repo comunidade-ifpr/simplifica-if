@@ -12,21 +12,28 @@ import type { Canal } from "@simplifica-if/kb/canal";
 import { type Aviso, type Base, EntradaInvalida, type Pagina, type Resposta } from "./contratos.ts";
 
 /**
- * A `base` do envelope. `versao`, `commit` e `canal` vêm da tabela `meta` quando o banco os tem
- * (passo T0); sem eles, a versão é `dev-` e os 8 primeiros caracteres de `fontes_sha256`, o commit
- * fica `null` e o canal é o da linha de comando.
+ * A `base` do envelope: a identidade do conteúdo, não o dia da vigência (cada consulta que depende da
+ * data diz em que dia calculou). `versao`, `commit` e `canal` vêm da tabela `meta` quando o banco os
+ * tem (a fábrica os grava); sem eles, a versão é `dev-` e os 8 primeiros caracteres de
+ * `fontes_sha256`, sem data, o commit fica `null` e o canal é o da linha de comando.
  */
 export function montarBase(meta: MetaEnvelope, canal: Canal): Base {
   return {
     versao: meta.versao ?? `dev-${meta.fontes_sha256.slice(0, 8)}`,
+    data: meta.versao === null ? null : dataDaVersao(meta.versao),
     commit: meta.commit,
-    data_referencia: meta.data_referencia,
     canal: meta.canal ?? canal,
   };
 }
 
+/** O dia de uma versão publicada: `2026.11.20` ou `2026.11.20.2` → `2026-11-20`; `null` fora do formato. */
+export function dataDaVersao(versao: string): string | null {
+  const m = /^(\d{4})\.(\d{2})\.(\d{2})(\.\d+)?$/.exec(versao);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
+}
+
 /** O que o envelope usa da `meta` do banco (`BaseKb`), com o canal entre os do simplifica-mcp. */
-export type MetaEnvelope = Pick<MetaBase, "versao" | "commit" | "data_referencia" | "fontes_sha256" | "canal">;
+export type MetaEnvelope = Pick<MetaBase, "versao" | "commit" | "fontes_sha256" | "canal">;
 
 export function responder<T>(
   base: Base,

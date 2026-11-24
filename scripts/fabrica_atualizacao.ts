@@ -3,13 +3,15 @@
  * A fábrica da atualização (M1.10). Roda no computador de quem publica, nunca no app.
  *
  *   pnpm fabrica gerar-chave --saida ~/.simplifica-fabrica          # uma vez: o par minisign (fora do repositório)
- *   pnpm fabrica canal --versao 2026.11.20 [--repositorio dono/repo] [--anterior <kb.sqlite>]…
+ *   pnpm fabrica canal [--versao 2026.11.20] [--repositorio dono/repo] [--anterior <kb.sqlite>]… [--mesmas-fontes]
  *   pnpm fabrica promover --de beta --para estavel --versao 2026.11.20     # só o manifesto, os mesmos pacotes
  *   pnpm fabrica publicar --canal beta --versao 2026.11.20 --repositorio dono/repo [--executar]
  *   pnpm fabrica publicar-app --canal beta --versao 0.2.0 --repositorio dono/repo [--executar]
  *   pnpm fabrica propor-novidades --de <kb anterior> --para <kb nova> [--versao 2026.11.20]
  *
- * `canal` (só o beta) compila o `kb.sqlite` publicável do commit (`git archive HEAD` numa pasta à parte,
+ * `canal` (só o beta) escolhe a versão, se não vier `--versao` (a data de hoje, com `.N` se o dia já tem
+ * versão guardada), recusa a versão sem mudança nas fontes (`fontes_sha256` igual ao da última
+ * guardada; `--mesmas-fontes` publica assim mesmo, para levar só skills), compila o `kb.sqlite` publicável do commit (`git archive HEAD` numa pasta à parte,
  * nunca o disco: arquivo não rastreado, ignorado ou modificado fica de fora) com `--versao` e `--commit`,
  * sem canal (o canal é do manifesto, não do banco; promover não muda a base) (o build é
  * determinístico: o mesmo commit refaz o mesmo banco), recusa fonte não classificada, empacota a base
@@ -131,6 +133,30 @@ export class ConferenciaRecusada extends Schema.TaggedError<ConferenciaRecusada>
         return `novidades.yaml não é só de acréscimos: ${this.itens.join("; ")}`;
     }
   }
+}
+
+/** A base nova tem as mesmas fontes da última versão guardada: não há o que publicar. */
+export class BaseSemMudanca extends Schema.TaggedError<BaseSemMudanca>()("BaseSemMudanca", {
+  versao: Schema.String,
+  anterior: Schema.String,
+}) {
+  override get message(): string {
+    return `a base ${this.versao} tem as mesmas fontes da ${this.anterior}: nada a publicar (para levar só as skills, --mesmas-fontes)`;
+  }
+}
+
+/**
+ * A versão nova de um dia (`hoje` em AAAA-MM-DD): `AAAA.MM.DD`, ou `AAAA.MM.DD.N` com o `N` seguinte
+ * quando o dia já tem versão entre as `existentes`.
+ */
+export function proximaVersao(hoje: string, existentes: ReadonlyArray<string>): string {
+  const doDia = hoje.replaceAll("-", ".");
+  const numeros = existentes.flatMap((versao) => {
+    if (versao === doDia) return [1];
+    const resto = versao.startsWith(`${doDia}.`) ? versao.slice(doDia.length + 1) : "";
+    return /^\d+$/.test(resto) ? [Number(resto)] : [];
+  });
+  return numeros.length === 0 ? doDia : `${doDia}.${Math.max(...numeros) + 1}`;
 }
 
 /**
@@ -456,7 +482,10 @@ const novidades = Effect.fn("fabrica_atualizacao.novidades")(function* (arvore: 
 const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
   contexto: ContextoFabrica,
   opcoes: {
-    readonly versao: string;
+    /** Sem ela, a de hoje (`proximaVersao`). */
+    readonly versao: Option.Option<string>;
+    /** Publica mesmo com as fontes iguais às da última versão guardada (só skills novas). */
+    readonly mesmasFontes: boolean;
     readonly repositorio: Option.Option<string>;
     readonly anteriores: ReadonlyArray<string>;
     readonly appMinimo: string;
@@ -476,12 +505,21 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
     return yield* new ConferenciaRecusada({ conferencia: "fontes", itens: naoClassificadas });
   }
   const chave = yield* lerChave(raiz);
-  const saida = path.join(pastaFabrica(path, raiz), `${canalNovo}-${opcoes.versao}`);
   const bases = pastaBases(path, raiz);
-  yield* fs.remove(saida, { recursive: true, force: true });
   yield* fs.makeDirectory(bases, { recursive: true });
-  const banco = path.join(bases, `${opcoes.versao}.sqlite`);
-  yield* Console.log(`compilando a base ${opcoes.versao} do commit ${commit}…`);
+  const existentes = (yield* fs.readDirectory(bases))
+    .filter((nome) => nome.endsWith(".sqlite"))
+    .map((nome) => nome.slice(0, -".sqlite".length));
+  const versao = Option.isSome(opcoes.versao)
+    ? opcoes.versao.value
+    : proximaVersao(
+        DateTime.formatIsoDate(DateTime.setZone(yield* DateTime.now, DateTime.zoneMakeLocal())),
+        existentes,
+      );
+  const saida = path.join(pastaFabrica(path, raiz), `${canalNovo}-${versao}`);
+  yield* fs.remove(saida, { recursive: true, force: true });
+  const banco = path.join(bases, `${versao}.sqlite`);
+  yield* Console.log(`compilando a base ${versao} do commit ${commit}…`);
   // O kb da árvore do commit, com a raiz nela; sem `--canal`: o canal é do manifesto, não do banco.
   yield* exigirProcesso(
     "kb compilar",
@@ -492,7 +530,7 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
       "--destino",
       banco,
       "--versao",
-      opcoes.versao,
+      versao,
       "--commit",
       commit,
     ],
@@ -500,19 +538,25 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
   );
   // As três versões anteriores guardadas, além das dadas.
   const guardadas = (yield* fs.readDirectory(bases))
-    .filter((nome) => nome.endsWith(".sqlite") && nome !== `${opcoes.versao}.sqlite`)
+    .filter((nome) => nome.endsWith(".sqlite") && nome !== `${versao}.sqlite`)
     .map((nome) => path.join(bases, nome))
     .filter((caminho) => {
       const info = lerInfoBanco(caminho);
-      return info !== null && compararVersoes(info.versao, opcoes.versao) < 0;
+      return info !== null && compararVersoes(info.versao, versao) < 0;
     })
-    .sort()
+    .sort((a, b) => compararVersoes(lerInfoBanco(a)!.versao, lerInfoBanco(b)!.versao))
     .slice(-3);
+  const ultima = guardadas.length === 0 ? null : lerInfoBanco(guardadas.at(-1)!);
+  if (!opcoes.mesmasFontes && ultima !== null && ultima.fontesSha256 === lerInfoBanco(banco)?.fontesSha256) {
+    yield* fs.remove(banco, { force: true });
+    yield* fs.remove(arvore, { recursive: true, force: true });
+    return yield* new BaseSemMudanca({ versao, anterior: ultima.versao });
+  }
   const dadas = yield* Effect.forEach(opcoes.anteriores, expandir);
   const anteriores = [...new Set([...dadas, ...guardadas])];
   yield* Console.log(`empacotando (zstd 19; patches de ${anteriores.length} versões anteriores)…`);
   const skills = yield* skillsDoApp(arvore);
-  const itens = yield* novidades(arvore, raiz, opcoes.versao);
+  const itens = yield* novidades(arvore, raiz, versao);
   const gerado = yield* etapa("gerar o canal", () =>
     gerarCanal({
       saida,
@@ -524,13 +568,13 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
       appMinimo: opcoes.appMinimo,
       novidades: itens,
       chave,
-      ...(Option.isNone(opcoes.repositorio) ? {} : { urlPacotes: urlPacoteBase(opcoes.versao) }),
+      ...(Option.isNone(opcoes.repositorio) ? {} : { urlPacotes: urlPacoteBase(versao) }),
     }),
   );
   yield* fs.writeFileString(
-    path.join(bases, `${opcoes.versao}.json`),
+    path.join(bases, `${versao}.json`),
     // @effect-diagnostics-next-line globalJsonInEffect:off -- objeto de três cadeias montado aqui; não há como falhar
-    `${JSON.stringify({ versao: opcoes.versao, commit, canal: canalNovo }, null, 2)}\n`,
+    `${JSON.stringify({ versao: versao, commit, canal: canalNovo }, null, 2)}\n`,
   );
   for (const arquivo of gerado.arquivos) {
     const bytes = Number((yield* fs.stat(path.join(saida, arquivo))).size);
@@ -728,11 +772,16 @@ export const comandoFabrica = (contexto: ContextoFabrica) =>
             ),
           ),
           versao: flagVersao.pipe(
-            Flag.withDescription("AAAA.MM.DD"),
+            Flag.withDescription("AAAA.MM.DD (padrão: a de hoje, com .N se o dia já tem versão)"),
             Flag.filter(
               (versao) => /^\d{4}\.\d{2}\.\d{2}(\.\d+)?$/.test(versao),
               () => "--versao no formato AAAA.MM.DD",
             ),
+            Flag.optional,
+          ),
+          mesmasFontes: Flag.Boolean("mesmas-fontes").pipe(
+            Flag.withDescription("publica mesmo sem mudança nas fontes da base (só skills novas)"),
+            Flag.withDefault(false),
           ),
           repositorio: flagRepositorio.pipe(Flag.optional),
           anterior: Flag.String("anterior").pipe(
@@ -741,8 +790,8 @@ export const comandoFabrica = (contexto: ContextoFabrica) =>
           ),
           appMinimo: Flag.String("app-minimo").pipe(Flag.withDefault(APP_MINIMO_PADRAO)),
         },
-        ({ versao, repositorio, anterior, appMinimo }) =>
-          canal(contexto, { versao, repositorio, anteriores: anterior, appMinimo }),
+        ({ versao, mesmasFontes, repositorio, anterior, appMinimo }) =>
+          canal(contexto, { versao, mesmasFontes, repositorio, anteriores: anterior, appMinimo }),
       ).pipe(Command.withDescription("compila, empacota e assina uma versão nova da base no beta")),
       Command.make(
         "promover",

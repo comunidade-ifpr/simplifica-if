@@ -53,7 +53,6 @@ O `front matter` existe para:
 | Campo | Origem |
 |-------|--------|
 | `status_vigencia` | status calculado na `data_referencia`: pelas relações de `relacoes.yaml` e, como piso, pelo que o próprio texto mostra (nota de redação ou inclusão: `alterada`; dispositivo revogado: `parcialmente revogada`) |
-| `vigencia_calculada_em` | a `data_referencia` usada |
 | `vigencia_a_confirmar` | só quando o cálculo depende de data "a confirmar": a explicação |
 | `revoga`, `revogada_por` | relações `revoga` (origem vê o alvo; o alvo vê a origem com o dispositivo operador e o alcance) |
 | `altera`, `alterada_por` | relações `altera` |
@@ -207,7 +206,7 @@ IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`
 
 ## Vigência calculada
 
-O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `pnpm kb ficha-norma <id> --em AAAA-MM-DD`.
+O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. O front matter é um retrato nessa data: o app, o simplifica-mcp e a CLI `kb` calculam a vigência no dia da consulta, e a `data_referencia` não precisa avançar a cada norma nova. Para outra data: `pnpm kb ficha-norma <id> --em AAAA-MM-DD`.
 
 Regras de transição (direito de conclusão, prazos de adequação) são dados em `base-conhecimento/transicoes.yaml` e aparecem em `kb ficha-norma`: revogada não é inaplicável.
 

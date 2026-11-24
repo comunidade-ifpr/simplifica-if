@@ -24,7 +24,6 @@ aliases:
   - "Lei 11.892/2008"
   - "Lei de criação dos Institutos Federais"
 fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11892.htm"
-vigencia_calculada_em: "2026-11-13"
 fundamenta:
   - "Portaria MEC nº 902/2024"
 notas_da_fonte:

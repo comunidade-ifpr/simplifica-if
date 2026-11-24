@@ -26,7 +26,6 @@ aliases:
   - "Nota Técnica 1/2025"
   - "SEI nº 3881287"
 fonte_referencia: "SEI/IFPR nº 3881287"
-vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Nota Técnica PROENS/IFPR nº 1/2025 a confirmar (ato de 2025-10-31; publicação não registrada): presumida vigente"
 relaciona_se_a:
   - "Resolução CONSUP/IFPR nº 159/2023"

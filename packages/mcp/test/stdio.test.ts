@@ -86,13 +86,13 @@ describe("servidor em stdio", () => {
       const r = await cliente.callTool({ name: "sobre_a_base", arguments: {} });
       expect(r.isError).toBeFalsy();
       expect(r.structuredContent).toMatchObject({
-        base: { versao: "dev-ab12cd34", commit: null, data_referencia: "2026-11-13", canal: "beta" },
+        base: { versao: "dev-ab12cd34", data: null, commit: null, canal: "beta" },
         dados: { niveis: ["médio", "superior"], tipos_de_secao: ["avaliacao", "estagio_praticas"] },
         avisos: [],
       });
       const texto = (r.content as { type: string; text: string }[])[0]!;
       expect(texto.type).toBe("text");
-      expect(texto.text.endsWith("Base de 13/11/2026 (versão dev).")).toBe(true);
+      expect(texto.text.endsWith("Base de desenvolvimento (versão `dev-ab12cd34`).")).toBe(true);
     } finally {
       await cliente.close();
     }

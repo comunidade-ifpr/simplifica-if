@@ -23,7 +23,6 @@ aliases:
   - "Resolução CNE/CEB nº 2/2024"
   - "DCNEM 2024"
 fonte_url: "https://www.in.gov.br/en/web/dou/-/resolucao-cne/ceb-n-2-de-13-de-novembro-de-2024-596497964"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CNE/CEB nº 3/2018"
 fundamenta_se_em:

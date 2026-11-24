@@ -34,6 +34,11 @@ describe("textos da seção Atualizações", () => {
 
   it("a base em uso, com a revisão e a origem", () => {
     expect(descreverBase(estado)).toBe("Base de 20/11/2026, revisão abc1234 (baixada pela atualização).");
+    const dev = {
+      ...estado,
+      base: { ...estado.base, versao: "dev-ab12cd34", commit: null, origem: "empacotada" as const },
+    };
+    expect(descreverBase(dev)).toBe("Base de desenvolvimento (dev-ab12cd34) (a que veio com o app).");
   });
 
   it("a situação: desligada, pronta, erro", () => {

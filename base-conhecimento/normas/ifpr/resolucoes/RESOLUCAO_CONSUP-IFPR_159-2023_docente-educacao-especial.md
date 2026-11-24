@@ -35,7 +35,6 @@ pontos_chave:
   - "O texto original afirma o registro do AEE como componente curricular no sistema acadêmico (art. 13)."
   - "A organização do trabalho do Docente de Educação Especial abrange ensino, apoio ao ensino, manutenção do ensino, pesquisa, extensão e atividades administrativas (art. 10)."
   - "A Avaliação Individualizada no Contexto Escolar (AICE) é o instrumento para definir o ingresso do estudante no AEE (arts. 21 a 28)."
-vigencia_calculada_em: "2026-11-13"
 ---
 
 > Dispõe sobre as diretrizes do Trabalho do Docente de Educação Especial no IFPR.

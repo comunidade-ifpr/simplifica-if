@@ -30,6 +30,7 @@ import * as Console from "effect/Console";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
@@ -242,7 +243,11 @@ const servidor = Command.make(
             ...(pastaLogs === undefined ? {} : { pastaLogs }),
             modoTraces: opcoes.traces,
           },
-        }).pipe(Layer.provide(drivers)),
+        }).pipe(
+          Layer.provide(drivers),
+          // no app, a vigência das consultas sem data é a do dia
+          Layer.provide(FontesNormativas.layerVigenciaHoje),
+        ),
       );
       const app = Context.get(contexto, Servidor.ServidorApp);
       const linha = yield* codificarLinha({

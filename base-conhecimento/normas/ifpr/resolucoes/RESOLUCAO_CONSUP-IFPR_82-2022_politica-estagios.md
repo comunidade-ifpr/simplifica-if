@@ -26,7 +26,6 @@ aliases:
   - "Resolução IFPR nº 82/2022"
   - "Resolução CONSUP/IFPR 82/2022"
 fonte_url: "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?bQdXWIUhq46-kuNuYYlAsyjFfu3aG4dBu2PjbFgpOb_9MvqFNtXlXEMWSYTBr1f7z0g5p97pRY7Jz5GItK4e8Xec8Opj4qhb1B-j4vYnOx5UGQdx3Vg_XjVwpM_WbQF8"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CONSUP/IFPR nº 36/2019"
 fundamenta_se_em:

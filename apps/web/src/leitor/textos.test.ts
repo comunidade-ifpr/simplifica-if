@@ -96,10 +96,10 @@ describe("selosDaNorma", () => {
       },
     };
     expect(selosDaNorma(comEvento)[0]!.detalhe).toBe(
-      "Na data da base (13/11/2026): revogada. Revogação com efeito em a confirmar, não antes de 11/11/2026. Norma revogada ainda pode valer em situações de transição: veja as regras abaixo.",
+      "Em 13/11/2026: revogada. Revogação com efeito em a confirmar, não antes de 11/11/2026. Norma revogada ainda pode valer em situações de transição: veja as regras abaixo.",
     );
     expect(selosDaNorma(ficha({ status: "vigente" }))[0]!.detalhe).toBe(
-      "Na data da base (13/11/2026): em vigor. Início da vigência: 12/11/2026.",
+      "Em 13/11/2026: em vigor. Início da vigência: 12/11/2026.",
     );
   });
 

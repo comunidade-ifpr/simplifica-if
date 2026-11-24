@@ -467,7 +467,7 @@ const atoForaDeVigencia = Effect.fn("consultasNormas.atoForaDeVigencia")(functio
  *   diferentes não se comparam): com todos os conceitos (AND), primeiro os metadados das normas
  *   (a consulta nomeia a norma), depois os dispositivos (`texto_com_caput`); com algum conceito
  *   (OR), primeiro os dispositivos, depois os metadados.
- * - `vigentes`: tira atos revogados ou ainda não vigentes na data `em` (padrão: `data_referencia`),
+ * - `vigentes`: tira atos revogados ou ainda não vigentes na data `em` (padrão: `FontesNormativas.diaDaVigencia`),
  *   pelos intervalos de `vigencias`, e dispositivos revogados.
  * - `situacao` e `vigentes` valem também para a citação resolvida: a norma ou o dispositivo citado
  *   que eles excluem não volta, e a resposta fica vazia com um aviso explicando por quê (a busca
@@ -485,7 +485,7 @@ export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalh
   const avisos: string[] = [];
   const resposta = (): ResultadoBuscaNorma => ({ resultados: saida, avisos });
   const vazia = (): ResultadoBuscaNorma => ({ resultados: [], avisos });
-  const data = opcoes.em ?? fontes.dataReferencia;
+  const data = opcoes.em ?? (yield* fontes.diaDaVigencia);
   const ehId = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim());
   const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } = ehId
     ? {

@@ -157,7 +157,7 @@ export function Leitura({
         O app guarda neste computador o texto do PPC e o que você escrever ao discordar, até você apagar esta revisão ou
         depois de {DIAS_LISTA} dias sem uso.
       </p>
-      <p>Base de normas de {dataCurta(r.dataBase)}.</p>
+      <p>Vigência das normas em {dataCurta(r.dataBase)}.</p>
     </Nota>
   );
 

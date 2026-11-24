@@ -11,6 +11,7 @@
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import * as Cursos from "@simplifica-if/kb/Cursos";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as Sql from "@simplifica-if/kb/db/sql";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Context from "effect/Context";
@@ -54,7 +55,7 @@ type Metodo<E extends { readonly Type: unknown }, D extends { readonly Type: unk
 export class Leitura extends Context.Service<
   Leitura,
   {
-    /** O envelope `base` das respostas (versão, commit, data de referência e canal). */
+    /** O envelope `base` das respostas (versão, data da versão, commit e canal). */
     readonly base: Base;
     readonly buscarNorma: Metodo<typeof BuscarNorma.Entrada, typeof BuscarNorma.Dados>;
     readonly lerDispositivos: Metodo<typeof LerDispositivos.Entrada, typeof LerDispositivos.Dados>;
@@ -117,6 +118,7 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
   const { meta } = yield* BaseKb.BaseKb;
   const cursosKb = yield* Cursos.Cursos;
   const ppcsKb = yield* Ppcs.Ppcs;
+  const { diaDaVigencia } = yield* FontesNormativas.FontesNormativas;
   const base = montarBase(meta, opcoes.canal);
 
   // `sobre_a_base`: o conteúdo do banco não muda com o servidor no ar
@@ -135,7 +137,7 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
   const documentos = yield* makeDocumentos(base);
   const explorar = yield* makeExplorar(base);
 
-  const sobreABase = responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
+  const conteudo = { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi };
   const etapa = responder(base, { registrado: opcoes.etapaRegistrada ?? false });
 
   return Leitura.of({
@@ -161,8 +163,10 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
     lerDocumento: comFalhaNaBase(documentos.lerDocumento),
     explorarIndice: comFalhaNaBase(explorar.explorarIndice),
     explorarBuscar: comFalhaNaBase(explorar.explorarBuscar),
-    // respostas fixas, montadas uma vez: o banco não muda com o servidor no ar
-    sobreABase: Effect.fn("Leitura.sobreABase")(() => Effect.succeed(sobreABase)),
+    // o conteúdo não muda com o servidor no ar; o dia da vigência, sim
+    sobreABase: Effect.fn("Leitura.sobreABase")(function* () {
+      return responder(base, { ...conteudo, vigencia_em: yield* diaDaVigencia });
+    }),
     etapa: Effect.fn("Leitura.etapa")(() => Effect.succeed(etapa)),
   });
 });

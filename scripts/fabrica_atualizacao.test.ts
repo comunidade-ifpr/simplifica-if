@@ -20,6 +20,7 @@ import {
   comandosPublicacao,
   comandosPublicacaoApp,
   gerarChave,
+  proximaVersao,
   textoComando,
 } from "./fabrica_atualizacao.ts";
 import * as Git from "./git.ts";
@@ -85,6 +86,15 @@ describe("comandos gh da publicação", () => {
       '$ gh release create app-v0.2.0 /p/Simplifica-IF-0.2.0-arm64.dmg --repo dono/repo --title "Simplifica IF 0.2.0" --notes "Instaladores do app." --latest=false',
       "$ gh release upload canal-beta /s/latest-mac.yml --clobber --repo dono/repo",
     ]);
+  });
+});
+
+describe("versão nova do canal", () => {
+  it("a data de hoje; com versão no mesmo dia, o .N seguinte", () => {
+    expect(proximaVersao("2026-11-24", [])).toBe("2026.11.24");
+    expect(proximaVersao("2026-11-24", ["2026.11.20", "2026.11.24"])).toBe("2026.11.24.2");
+    expect(proximaVersao("2026-11-24", ["2026.11.24", "2026.11.24.3", "2026.11.24.2"])).toBe("2026.11.24.4");
+    expect(proximaVersao("2026-11-24", ["2026.11.24.x", "2026.11.240"])).toBe("2026.11.24");
   });
 });
 

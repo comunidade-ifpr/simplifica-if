@@ -31,7 +31,7 @@ import type * as PlatformError from "effect/PlatformError";
 import type * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import { FalhaPastaAtualizacao } from "./erros.ts";
-import { type Canal, compararVersoes, type Novidade, versaoDeData } from "./manifesto.ts";
+import { type Canal, compararVersoes, type Novidade } from "./manifesto.ts";
 
 export const ARQUIVO_ESTADO = "atualizacao.json";
 
@@ -188,6 +188,8 @@ export interface InfoBanco {
   readonly versao: string;
   readonly dataReferencia: string | null;
   readonly commit: string | null;
+  /** `meta.fontes_sha256`: o hash das fontes; duas versões com o mesmo têm o mesmo conteúdo. */
+  readonly fontesSha256: string | null;
   /** `meta.versao_esquema`; `null` se o banco não o grava. */
   readonly versaoEsquema: number | null;
 }
@@ -197,7 +199,11 @@ function esquemaDoMeta(meta: ReadonlyMap<string, string>): number | null {
   return Number.isInteger(valor) ? valor : null;
 }
 
-/** A versão de um `kb.sqlite` pelo `meta` (`versao`, ou a data de referência); `null` se não existir ou não abrir. */
+/**
+ * A versão de um `kb.sqlite` pelo `meta`: a `versao` da fábrica ou, no banco compilado sem ela, a de
+ * desenvolvimento (`dev-` e 8 caracteres de `fontes_sha256`, como no envelope do simplifica-mcp);
+ * `null` se não existir ou não abrir.
+ */
 export function lerInfoBanco(caminho: string): InfoBanco | null {
   try {
     const db = new NodeSqlite.DatabaseSync(caminho, { readOnly: true });
@@ -208,10 +214,16 @@ export function lerInfoBanco(caminho: string): InfoBanco | null {
           .all()
           .map((linha) => [String(linha["chave"]), String(linha["valor"])]),
       );
-      const data = meta.get("data_referencia") ?? null;
-      const versao = meta.get("versao") ?? (data === null ? null : versaoDeData(data));
+      const fontes = meta.get("fontes_sha256");
+      const versao = meta.get("versao") ?? (fontes === undefined ? null : `dev-${fontes.slice(0, 8)}`);
       if (versao === null) return null;
-      return { versao, dataReferencia: data, commit: meta.get("commit") ?? null, versaoEsquema: esquemaDoMeta(meta) };
+      return {
+        versao,
+        dataReferencia: meta.get("data_referencia") ?? null,
+        commit: meta.get("commit") ?? null,
+        fontesSha256: fontes ?? null,
+        versaoEsquema: esquemaDoMeta(meta),
+      };
     } finally {
       db.close();
     }
@@ -266,6 +278,7 @@ export function validarBancoNucleo(
       versao: esperado.versao,
       dataReferencia: meta.get("data_referencia") ?? null,
       commit: meta.get("commit") ?? null,
+      fontesSha256: meta.get("fontes_sha256") ?? null,
       versaoEsquema,
     };
   } catch (erro) {

@@ -72,7 +72,7 @@ const chamar = <D extends Schema.Top>(ferramenta: FerramentaTestada<D>, args: un
     const r = yield* resp(ferramenta, args, banco);
     if (!saidaValida(ferramenta, r.resposta)) throw new Error(`${ferramenta.nome}: saída fora do outputSchema`);
     expect(r.texto.length).toBeLessThanOrEqual(teto);
-    expect(r.texto.split("\n").at(-1)).toBe("Base de 13/11/2026 (versão dev).");
+    expect(r.texto.split("\n").at(-1)).toBe("Base de desenvolvimento (versão `dev-ab12cd34`).");
     return r;
   });
 
@@ -708,7 +708,7 @@ describe("ferramentas de normas pelo protocolo MCP (em memória)", () => {
         for (const [name, args] of chamadas) {
           const r = yield* Effect.promise(() => cliente.callTool({ name, arguments: args }));
           expect(r.isError).toBeFalsy();
-          expect(r.structuredContent).toMatchObject({ base: { data_referencia: "2026-11-13" } });
+          expect(r.structuredContent).toMatchObject({ base: { data: null } });
         }
         const invalida = yield* Effect.promise(() =>
           cliente.callTool({ name: "ler_dispositivos", arguments: { ids: [] } }),

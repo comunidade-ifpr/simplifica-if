@@ -40,7 +40,7 @@ import {
   SUFIXO_REVISAO_PREVIA,
 } from "@simplifica-if/contratos-app";
 import type * as Cursos from "@simplifica-if/kb/Cursos";
-import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as Normas from "@simplifica-if/kb/Normas";
 import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as NodeCrypto from "node:crypto";
@@ -320,6 +320,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     FontesNormativas.FontesNormativas | Cursos.Cursos | Normas.Normas | PacoteContexto.PacoteContexto
   >();
   const copias = yield* CopiasComentadas.CopiasComentadas;
+  const { diaDaVigencia } = Context.get(contexto, FontesNormativas.FontesNormativas);
   // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
     montarBaseRevisao.pipe(
@@ -385,7 +386,8 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
         // Cópia própria: o buffer é transferido ao Worker, e um `Buffer` do Node pode ser fatia de um pool.
         bytes: new Uint8Array(bytes),
         nome: NodePath.basename(arquivo),
-        base: dados,
+        // A base fica em cache; a vigência, não: cada revisão a calcula no próprio dia.
+        base: { ...dados, dataBase: yield* diaDaVigencia },
         agora: DateTime.formatIso(yield* DateTime.now),
         comentar: entrada.gravar,
         cnct: entrada.cnct,

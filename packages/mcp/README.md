@@ -20,7 +20,7 @@ Especificação original: o plano do M0.1 (`docs/plans/m0-simplifica-mcp.md`, no
 | 12 | `ficha_curso` | tudo sobre um curso |
 | 13 | `fatos_ppc` | fatos do PPC cruzados com o SUAP |
 | 14 | `pacote_contexto` | contexto de uma tarefa da revisão de PPC para um PPC da base ou um `.md` da pasta de trabalho |
-| 15 | `sobre_a_base` | versão, data de referência e conteúdo da base |
+| 15 | `sobre_a_base` | versão, data da versão, dia da vigência e conteúdo da base |
 | 16 | `etapa` | etapa da tarefa, para o app |
 
 ## Recursos `ifpr://`
@@ -59,6 +59,7 @@ O servidor fala MCP pelo stdin/stdout; as mensagens de diagnóstico vão para o 
 | `--banco <caminho>` | variável `SIMPLIFICA_KB` | `kb.sqlite` a servir (obrigatório). `~/` no início é expandido. |
 | `--pasta-trabalho <dir>` | diretório atual | única pasta de onde o servidor lê arquivos: o `arquivo` do `pacote_contexto` |
 | `--canal <dev\|beta\|estavel>` | `dev` | canal informado em `base.canal` quando o banco não o registra |
+| `--vigencia-na-referencia` | desligada | calcula a vigência na `data_referencia` gravada na base, e não no dia; também no `consultar` (respostas que não mudam com o calendário) |
 
 Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packages/kb/src/db/esquema.ts`) é recusado com "base incompatível com esta versão do simplifica-mcp; atualize".
 

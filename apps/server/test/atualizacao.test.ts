@@ -58,7 +58,8 @@ const servirPasta = (pasta: string) =>
 it.live("atualização pelo RPC: confere, baixa, adia com o servidor ocupado e troca na abertura", () =>
   Effect.gen(function* () {
     const raiz = diretorioTemporario("simplifica-atualizacao-");
-    const empacotada = bancoFixture();
+    // a do instalador é uma versão publicada (a base sem versão não tem patch)
+    const empacotada = versaoNova(bancoFixture(), NodePath.join(raiz, "kb-empacotada.sqlite"), "2026.11.13");
     const pastaApp = NodePath.join(raiz, "app");
     const chave = gerarChaves();
     const nova = versaoNova(empacotada, NodePath.join(raiz, "kb-nova.sqlite"), "2026.11.20");

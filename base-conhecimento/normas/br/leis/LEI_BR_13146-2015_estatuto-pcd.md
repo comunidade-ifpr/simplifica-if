@@ -25,7 +25,6 @@ aliases:
   - "Estatuto da Pessoa com Deficiência"
   - LBI
 fonte_url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm"
-vigencia_calculada_em: "2026-11-13"
 notas_da_fonte:
   - "Texto conferido e corrigido pela fonte oficial (Planalto) em 23/11/2026: incluídos os dispositivos das Leis nº 14.724/2023 (art. 2º, § 3º), 14.624/2023 (art. 2º-A), 15.249/2025 (art. 3º, XV; art. 24, parágrafo único; art. 28, XIX; art. 42, § 3º; art. 62-A), 14.510/2022 (art. 19, V), 14.978/2024 (art. 45, § 3º), 14.863/2024 (art. 73-A) e 15.163/2025 (art. 90), as redações das Leis nº 15.280/2025 (art. 18, § 4º, V) e 14.159/2021 (art. 125, II)."
 ---

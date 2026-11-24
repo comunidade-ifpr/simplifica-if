@@ -167,7 +167,7 @@ describe("GrupoLeitura: links ifpr://", () => {
       expect(curso.tipo).toBe("curso");
       expect(curso.resposta).toEqual(yield* viaFerramenta(fichaCurso, { curso: CURSO_ENFERMAGEM }, ppcs));
       expect(curso.texto).toContain(`## [Técnico em Enfermagem](ifpr://curso/${CURSO_ENFERMAGEM})`);
-      expect(curso.texto.endsWith("Base de 13/11/2026 (versão dev).")).toBe(true);
+      expect(curso.texto.endsWith("Base de desenvolvimento (versão `dev-ab12cd34`).")).toBe(true);
 
       const secaoId = `${PPC_INFORMATICA}#estagio_praticas-1`;
       const secao = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://ppc/${secaoId}` }));

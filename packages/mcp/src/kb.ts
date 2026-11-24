@@ -22,6 +22,7 @@ import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { compilar } from "@simplifica-if/kb/cli/compilar";
 import { Checkout } from "@simplifica-if/kb/cli/comum";
 import { avaliarBuscaCmd, avaliarResolvedorCmd, relacoes } from "@simplifica-if/kb/cli/curadoria";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layers from "@simplifica-if/kb/layers";
 import { executarPrincipal } from "@simplifica-if/kb/principal";
 import * as Effect from "effect/Effect";
@@ -37,6 +38,7 @@ const raiz = raizRepositorio();
 const leitura = Leitura.layer({ canal: "dev" }).pipe(
   Layer.provide(PastaTrabalho.layer({ pasta: process.cwd() })),
   Layer.provide(Layers.layerRepositorio({ raiz })),
+  Layer.provide(FontesNormativas.layerVigenciaHoje),
 );
 
 const kb = Command.make("kb").pipe(

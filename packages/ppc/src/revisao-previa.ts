@@ -60,7 +60,10 @@ export type BaseRevisaoPrevia = {
   transicoes: readonly Transicao[];
   /** O que os textos consolidados mostram na data da base (piso do status das normas). */
   consolidado: TextoConsolidado;
-  /** `data_referencia` da base (AAAA-MM-DD): a data em que a vigência é calculada. */
+  /**
+   * O dia em que a vigência é calculada (AAAA-MM-DD): no app, o da revisão; nos scripts e testes, a
+   * `data_referencia` da base, para o resultado não mudar com o calendário.
+   */
   dataBase: string;
 };
 
@@ -775,7 +778,7 @@ function textoDoAviso(entrada: {
     ? `Curso considerado: ${entrada.curso.cnct.denominacao} (CNCT)${entrada.curso.forma ? `, forma de oferta: ${NOME_DA_FORMA[entrada.curso.forma] ?? entrada.curso.forma}` : ""}.`
     : "O curso não foi identificado no CNCT: os critérios que dependem dele ficaram para conferir.";
   const partes = [
-    `Revisão prévia do Simplifica IF, de ${dataBr(entrada.agora.toISOString())}, com a base de normas de ${dataBr(entrada.dataBase)}. Não é parecer da PROENS e não substitui a análise oficial.`,
+    `Revisão prévia do Simplifica IF, de ${dataBr(entrada.agora.toISOString())}, com a vigência das normas em ${dataBr(entrada.dataBase)}. Não é parecer da PROENS e não substitui a análise oficial.`,
     `${total} ${curso}`,
     `Resultado: ${plural(naoAtende, "pendência", "pendências")} e ${plural(aConferir, "ponto para conferir", "pontos para conferir")}.`,
   ];

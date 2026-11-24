@@ -31,7 +31,7 @@ const LinhaSegmento = Schema.Struct({
 const linhasSegmentos = Sql.todas(LinhaSegmento);
 
 interface OpcoesImpacto {
-  /** Data da vigência (padrão: `data_referencia`). */
+  /** Data da vigência (padrão: `FontesNormativas.diaDaVigencia`). */
   readonly data?: string;
   /** `false` não consulta os PPCs (mais rápido). */
   readonly incluirPpcs?: boolean;
@@ -82,7 +82,7 @@ const make = Effect.gen(function* () {
       ppcsQueCitam: ppcs,
     };
     return impactoEm(fonte, {
-      ...(opcoes.data !== undefined ? { data: opcoes.data } : {}),
+      data: opcoes.data ?? (yield* fontes.diaDaVigencia),
       ...(opcoes.incluirPpcs !== undefined ? { incluirPpcs: opcoes.incluirPpcs } : {}),
     });
   }, prover);

@@ -23,9 +23,9 @@ export const Entrada = Schema.Struct({
 
 export const Dados = Schema.Struct({
   norma: NormaResumo,
-  /** Status na data de referência, com "(a confirmar)" quando incerto. */
+  /** Status em `vigencia_em`, com "(a confirmar)" quando incerto. */
   status: Schema.String,
-  data_referencia: Schema.String,
+  vigencia_em: Schema.String,
   sucessoras: Schema.Array(Schema.String),
   transicoes: Schema.Array(TransicaoResumo),
   relacoes: Schema.Array(Relacao),
@@ -81,7 +81,7 @@ export const impactoDaNorma = definirFerramenta({
     const relacao = (r: Relacao) =>
       `- ${r.origem}${r.operador ?? ""} **${r.tipo}** ${r.alvo}${r.alvo_dispositivo ?? ""} — evidência em ${r.evidencia.em}: "${cortar(r.evidencia.trecho, 200)}"`;
     return [
-      `Impacto de ${comLink(d.norma.titulo, d.norma.link)}: ${d.status} em ${dataBr(d.data_referencia)}.`,
+      `Impacto de ${comLink(d.norma.titulo, d.norma.link)}: ${d.status} em ${dataBr(d.vigencia_em)}.`,
       `Sucessoras: ${d.sucessoras.length ? d.sucessoras.map((s) => comLink(s, linkNorma(s))).join(", ") : "nenhuma"}.`,
       lista("Regras de transição (norma revogada não é inaplicável)", d.transicoes.map(linhaTransicao), 1500, "regras"),
       lista("Relações", d.relacoes.map(relacao), 1500, "relações"),

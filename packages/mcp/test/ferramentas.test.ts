@@ -74,7 +74,7 @@ const DESCRICOES: Record<string, string> = {
   pacote_contexto:
     "Monta o contexto de uma tarefa da revisão de PPC para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use para conferir um PPC contra as fichas. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
   sobre_a_base:
-    "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
+    "Versão, dia da vigência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
 };
 
@@ -142,12 +142,13 @@ describe("sobre_a_base", () => {
         expect(saidaValida(sobreABase, resposta)).toBe(true);
         expect(resposta.base).toEqual({
           versao: "dev-ab12cd34",
+          data: null,
           commit: null,
-          data_referencia: "2026-11-13",
           canal: "dev",
         });
         expect(resposta.avisos).toEqual([]);
         expect(resposta.dados).toEqual({
+          vigencia_em: "2026-11-13",
           contagens: CONTAGENS,
           tipos_de_secao: ["avaliacao", "estagio_praticas"],
           niveis: ["médio", "superior"],
@@ -169,7 +170,7 @@ describe("sobre_a_base", () => {
         expect(texto).toContain("Conteúdo: 1 PPCs, 3 seções de PPC, 2 cursos, 3 campi.");
         expect(texto).toContain("[Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`");
         expect(texto).not.toContain("Atenção:");
-        expect(texto.split("\n").at(-1)).toBe("Base de 13/11/2026 (versão dev).");
+        expect(texto.split("\n").at(-1)).toBe("Base de desenvolvimento (versão `dev-ab12cd34`).");
       }),
     ),
   );

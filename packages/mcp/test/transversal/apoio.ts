@@ -221,7 +221,8 @@ export function servidorPadrao(banco: string): Servidor {
   const cwd = diretorioTemporario("simplifica-mcp-proc-");
   return {
     comando: EXE ?? process.execPath,
-    args: [...(EXE ? [] : [CLI]), "--banco", banco],
+    // na data_referencia, como a consulta no processo do teste, com que se compara
+    args: [...(EXE ? [] : [CLI]), "--banco", banco, "--vigencia-na-referencia"],
     cwd,
     env: ambienteMinimo(cwd),
   };
@@ -281,7 +282,13 @@ export async function servidorIsolado(): Promise<ServidorIsolado> {
       modo: "executavel",
       preparar: (banco, arquivos = {}) => {
         const pasta = pastaIsolada(banco, arquivos);
-        return { comando: EXE, args: ["--banco", "kb.sqlite"], cwd: pasta, env: ambienteMinimo(pasta), pasta };
+        return {
+          comando: EXE,
+          args: ["--banco", "kb.sqlite", "--vigencia-na-referencia"],
+          cwd: pasta,
+          env: ambienteMinimo(pasta),
+          pasta,
+        };
       },
     };
   }
@@ -307,6 +314,7 @@ export async function servidorIsolado(): Promise<ServidorIsolado> {
           bundle,
           "--banco",
           "kb.sqlite",
+          "--vigencia-na-referencia",
         ],
         cwd: pasta,
         env: ambienteMinimo(pasta),

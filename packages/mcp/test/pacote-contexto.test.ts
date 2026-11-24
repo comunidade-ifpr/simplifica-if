@@ -65,7 +65,7 @@ const chamar = (args: unknown, banco: string, pasta: string) =>
     const r = yield* responder(pacoteContexto, args).pipe(Effect.provide(comPasta(banco, pasta)));
     if (!saidaValida(pacoteContexto, r.resposta)) throw new Error("pacote_contexto: saída fora do outputSchema");
     expect(r.texto.length).toBeLessThanOrEqual(TETO_PACOTE_CONTEXTO);
-    expect(r.texto.split("\n").at(-1)).toBe("Base de 13/11/2026 (versão dev).");
+    expect(r.texto.split("\n").at(-1)).toBe("Base de desenvolvimento (versão `dev-ab12cd34`).");
     return r;
   });
 
@@ -246,7 +246,7 @@ describe("pacote_contexto: ppc contra arquivo", () => {
         const { banco, pasta } = ambiente();
         const daBase = (yield* chamar({ tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM }, banco, pasta)).resposta.dados;
         const doArquivo = (yield* chamar({ tarefa: "CT-CURR-12", arquivo: "PPC.md" }, banco, pasta)).resposta.dados;
-        for (const parte of ["fichas_ids", "fichas", "normas", "data_referencia"] as const) {
+        for (const parte of ["fichas_ids", "fichas", "normas", "vigencia_em"] as const) {
           expect(doArquivo[parte]).toEqual(daBase[parte]);
         }
         // as seções do arquivo são do banco em memória do kb (`ppc:avulso`)
@@ -312,7 +312,7 @@ describe("pacote_contexto: orçamento", () => {
       },
     ],
     marcos: [],
-    data_referencia: "2026-11-13",
+    vigencia_em: "2026-11-13",
     transicoes: [],
     secoes: Array.from({ length: secoes }, (_, i) => ({
       id: `${PPC_ENFERMAGEM}#secao-${i + 1}`,

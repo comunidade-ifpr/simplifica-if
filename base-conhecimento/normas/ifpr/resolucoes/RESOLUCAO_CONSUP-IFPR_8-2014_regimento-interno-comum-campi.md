@@ -25,7 +25,6 @@ aliases:
   - "Resolução 08/2014"
   - "Resolução CONSUP/IFPR 8/2014"
 fonte_url: "https://ifpr.edu.br/resolucao-082014/"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CONSUP/IFPR nº 8/2010"
   - "Resolução CONSUP/IFPR nº 41/2013"

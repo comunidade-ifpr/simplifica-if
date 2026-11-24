@@ -1,6 +1,6 @@
 # Base de conhecimento do IFPR
 
-1. **O que é a base.** Normas da educação profissional, PPCs do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da revisão de PPC, com data de referência. `sobre_a_base` diz o conteúdo e a data.
+1. **O que é a base.** Normas da educação profissional, PPCs do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da revisão de PPC; vigência calculada no dia. `sobre_a_base` diz o conteúdo e a versão.
 
 2. **Citação.** Afirmação sobre norma, curso ou PPC sai de uma ferramenta: cite o link `ifpr://` e o texto literal devolvido, nunca de memória. Antes de afirmar uma obrigação normativa, ache o dispositivo: `buscar_norma` com a citação ou os termos, `ler_dispositivos` se já tiver o ID. Para conferir citações de um documento, `resolver_citacoes`. Links `ifpr://` também se leem via `resources/read`. Escreva a citação como link Markdown, com o ato e o dispositivo no texto, fora de crase: `[Lei nº 11.788/2008, art. 2º, § 3º](ifpr://norma/br/lei/2008/11788#art2)`.
 

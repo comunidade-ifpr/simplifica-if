@@ -44,7 +44,7 @@ export interface ArquivoAfetado {
 export interface ResultadoImpacto {
   id: string;
   titulo: string | null;
-  data_referencia: string;
+  vigencia_em: string;
   status: string;
   sucessoras: string[];
   transicoes: string[];
@@ -269,7 +269,7 @@ export function impactoEm(
   return {
     id,
     titulo: registro.obter(ato)?.title ?? null,
-    data_referencia: data,
+    vigencia_em: data,
     status: `${vigencia.status}${vigencia.certo ? "" : " (a confirmar)"}`,
     sucessoras,
     transicoes,

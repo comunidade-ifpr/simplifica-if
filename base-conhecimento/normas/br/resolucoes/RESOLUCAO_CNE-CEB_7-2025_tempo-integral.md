@@ -23,7 +23,6 @@ aliases:
   - "Resolução CNE/CEB nº 7/2025"
   - "Educação Integral em Tempo Integral"
 fonte_url: "https://www.in.gov.br/en/web/dou/-/resolucao-cne/ceb-n-7-de-1-de-agosto-de-2025-646951446"
-vigencia_calculada_em: "2026-11-13"
 vigencia_a_confirmar: "início de vigência de Resolução CNE/CEB nº 7/2025 a confirmar (ato de 2025-08-01; publicação não registrada): presumida vigente"
 ---
 

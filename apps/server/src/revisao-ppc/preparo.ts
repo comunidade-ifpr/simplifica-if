@@ -14,7 +14,6 @@
  * - T: o contexto e trechos curtos das seções; o pedido se completa na hora, com os resumos dos temas.
  */
 import * as Effect from "effect/Effect";
-import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { comumDoBloco, estruturaDoPpc } from "@simplifica-if/ppc/revisao-ia/estrutura";
 import {
@@ -100,13 +99,10 @@ function cnctEmTexto(cnct: unknown): string | null {
   return linhas.join("\n");
 }
 
-function contextoDoPacote(
-  pacote: PacoteContexto.PacoteAvulso,
-  dataBase: string,
-  curso: string | null,
-): ContextoNormativo {
+function contextoDoPacote(pacote: PacoteContexto.PacoteAvulso, curso: string | null): ContextoNormativo {
   return {
-    dataBase,
+    // o dia em que o pacote calculou a vigência
+    dataBase: pacote.vigencia_em,
     curso: curso ?? undefined,
     cnct: cnctEmTexto(pacote.cnct),
     normas: pacote.normas.map((n) => ({
@@ -122,7 +118,7 @@ function contextoDoPacote(
       ),
       ...pacote.transicoes.map(
         (t) =>
-          `Transição ${t.norma_id}${t.dispositivo} (${t.situacao} em ${dataBase}): ${t.regra}. Aplica-se a: ${t.aplica_a}.`,
+          `Transição ${t.norma_id}${t.dispositivo} (${t.situacao} em ${pacote.vigencia_em}): ${t.regra}. Aplica-se a: ${t.aplica_a}.`,
       ),
     ],
   };
@@ -173,9 +169,8 @@ export interface EntradaPreparo {
   readonly soFichas?: readonly string[];
 }
 
-/** O plano da revisão: fichas, blocos e pedidos. Pede o `PacoteContexto` e as `FontesNormativas` do `kb.sqlite`. */
+/** O plano da revisão: fichas, blocos e pedidos. Pede o `PacoteContexto` do `kb.sqlite`. */
 export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparo) {
-  const fontes = yield* FontesNormativas.FontesNormativas;
   const kb = yield* PacoteContexto.PacoteContexto;
   const fichasJson = yield* kb.fichas();
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
@@ -198,7 +193,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
     const doBloco = bloco.fichas.map((id) => porId.get(id)!);
     if (bloco.tipo === "S") {
       const geral = yield* pacote(bloco.fichas, 0);
-      const contexto = contextoDoPacote(geral, fontes.dataReferencia, entrada.curso);
+      const contexto = contextoDoPacote(geral, entrada.curso);
       const comum = comumDoBloco(doBloco, estrutura);
       const recortes = new Map<string, RecorteFicha>();
       for (const ficha of doBloco) {
@@ -210,7 +205,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)], alvos });
     } else if (bloco.tipo === "J") {
       const p = yield* pacote(bloco.fichas, 0);
-      const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
+      const contexto = contextoDoPacote(p, entrada.curso);
       const comum = comumDoBloco(doBloco, estrutura);
       const secoes = secoesTexto(p, true).filter((x) => !comum.excluirLinhas.has(x.linhaInicio));
       const secoesFormatadas = secoesDoTema(secoes, undefined, comum.semTabelaEm);
@@ -219,7 +214,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)], alvos });
     } else {
       const p = yield* pacote(bloco.fichas, 0);
-      const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
+      const contexto = contextoDoPacote(p, entrada.curso);
       // Cada transversal com o recorte das seções dos tópicos dela, e o comum do bloco (quadro,
       // matriz, ementário): no modo rápido há poucos temas J, e os resumos sozinhos não bastavam.
       const comum = comumDoBloco(doBloco, estrutura);
@@ -277,7 +272,6 @@ export interface EntradaContextoFicha {
  * comum do bloco): vale para as fichas D, S e J. `null` se a ficha não está na base (a triagem).
  */
 export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* (entrada: EntradaContextoFicha) {
-  const fontes = yield* FontesNormativas.FontesNormativas;
   const kb = yield* PacoteContexto.PacoteContexto;
   const json = (yield* kb.fichas()).find((f) => f.id === entrada.ficha);
   if (!json) return null;
@@ -286,7 +280,7 @@ export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* 
   const avulso = yield* kb.abrirAvulso(limpo);
   const estrutura = estruturaDe(limpo, avulso);
   const pacote = yield* avulso.pacote([json], { cnctId: entrada.cnct, buscasPorFicha: 1 });
-  const contexto = contextoDoPacote(pacote, fontes.dataReferencia, entrada.curso);
+  const contexto = contextoDoPacote(pacote, entrada.curso);
   const comum = comumDoBloco([ficha], estrutura);
   const r = recorteDaFicha(ficha, secoesTexto(pacote, false), comum);
   const recorte = [comum.texto, r.texto].filter(Boolean).join("\n\n");

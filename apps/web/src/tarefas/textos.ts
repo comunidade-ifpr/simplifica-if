@@ -201,7 +201,7 @@ export function duracaoPorExtenso(duracao: string | undefined): string | undefin
   return `cerca de ${n} ${n === 1 ? "minuto" : "minutos"}`;
 }
 
-/** A data da base (`2026-11-12`) como a pessoa lê: "12/11/2026". */
+/** A data da versão da base (`2026-11-12`) como a pessoa lê: "12/11/2026". */
 export function dataDaBase(iso: string): string {
   return dataCurta(iso);
 }

@@ -26,7 +26,6 @@ aliases:
   - "Resolução nº 01/2012"
   - "Regulamento Disciplinar do Corpo Discente do IFPR"
 fonte_url: "https://ifpr.edu.br/resolucao-012012/"
-vigencia_calculada_em: "2026-11-13"
 notas_da_fonte:
   - "Fonte oficial principal: [IFPR - Resolução 01/2012](https://ifpr.edu.br/resolucao-012012/)."
   - "PDF oficial vinculado pela página: [res.01-2012.pdf](https://ifpr.edu.br/wp-content/uploads/2012/01/res.01-2012.pdf)."

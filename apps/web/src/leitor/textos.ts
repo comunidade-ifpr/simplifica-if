@@ -86,12 +86,12 @@ function quandoDoEstado(ficha: FichaNorma): string | null {
 }
 
 /**
- * Os selos da norma na data de referência da base: o estado (em vigor, revogada…) e, quando a data que
- * o decide ainda não está registrada, "Vigência a confirmar", com o motivo. O detalhe diz que o estado é
- * o da data da base, e a data do evento à parte (a da base não é a da revogação).
+ * Os selos da norma no dia da consulta: o estado (em vigor, revogada…) e, quando a data que o decide
+ * ainda não está registrada, "Vigência a confirmar", com o motivo. O detalhe diz em que dia o estado
+ * foi calculado, e a data do evento à parte (o dia da consulta não é o da revogação).
  */
 export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
-  const dataBase = dataCurta(ficha.vigencia.data);
+  const dia = dataCurta(ficha.vigencia.data);
   const selos: Selo[] = [];
   if (ficha.norma.situacao !== "base") {
     selos.push({
@@ -112,7 +112,7 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
       rotulo: conhecido.rotulo,
       variante: conhecido.variante,
       sinal: conhecido.sinal,
-      detalhe: `Na data da base (${dataBase}): ${conhecido.estado}.${quando === null ? "" : ` ${quando}`}${transicao}`,
+      detalhe: `Em ${dia}: ${conhecido.estado}.${quando === null ? "" : ` ${quando}`}${transicao}`,
     });
   }
   const aConfirmar = !ficha.vigencia.certo || ficha.norma.vigencia_a_confirmar || conhecido === undefined;

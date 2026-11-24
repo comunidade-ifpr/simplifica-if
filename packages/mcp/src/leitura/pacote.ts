@@ -26,7 +26,7 @@ function avisosDoPacote(d: typeof PacoteContextoF.Dados.Type): Aviso[] {
   if (aConfirmar.length || normas.length) {
     avisos.push({
       tipo: "vigencia-a-confirmar",
-      mensagem: `há vigência a confirmar na data de referência${normas.length ? ` (normas: ${normas.join(", ")})` : ""}${aConfirmar.length ? ` (transições: ${aConfirmar.join(", ")})` : ""}; diga isso ao usuário e não conclua pelo prazo sem conferir a data`,
+      mensagem: `há vigência a confirmar na data da consulta${normas.length ? ` (normas: ${normas.join(", ")})` : ""}${aConfirmar.length ? ` (transições: ${aConfirmar.join(", ")})` : ""}; diga isso ao usuário e não conclua pelo prazo sem conferir a data`,
     });
   }
   const semTexto = d.normas.flatMap((n) => n.sem_texto);

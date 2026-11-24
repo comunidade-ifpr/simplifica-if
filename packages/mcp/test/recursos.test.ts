@@ -54,7 +54,7 @@ inserirNormas(bancoNormas);
 const CLI = NodePath.resolve(import.meta.dirname, "../src/cli.ts");
 /** O ambiente do processo stdio, sem herdar SIMPLIFICA_KB do processo de teste. */
 const AMBIENTE_STDIO = { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "" };
-const RODAPE = "Base de 13/11/2026 (versão dev).";
+const RODAPE = "Base de desenvolvimento (versão `dev-ab12cd34`).";
 
 type Abrir = (banco: string) => Effect.Effect<Client, never, Scope.Scope>;
 
@@ -131,7 +131,7 @@ const erroAoLer = (cliente: Client, uri: string) =>
 function conferirEnvelope(lido: Lido): string {
   expect(lido.mimeType).toBe(MIME_RECURSO);
   expect(lido.text.endsWith(RODAPE)).toBe(true);
-  expect(lido._meta?.["ifpr/base"]).toMatchObject({ data_referencia: "2026-11-13", canal: "dev" });
+  expect(lido._meta?.["ifpr/base"]).toMatchObject({ data: null, canal: "dev" });
   expect(Array.isArray(lido._meta?.["ifpr/avisos"])).toBe(true);
   return lido.text;
 }
@@ -186,7 +186,8 @@ describe.each([
       const cliente = yield* abrir(bancoNormas);
       const norma = conferirEnvelope(yield* ler(cliente, `ifpr://norma/${DCN_2026}`));
       expect(norma).toContain(`(ifpr://norma/${DCN_2026})`);
-      expect(norma).toContain("**Vigência em 13/11/2026:**");
+      // o servidor stdio calcula a vigência no dia do relógio
+      expect(norma).toMatch(/\*\*Vigência em \d{2}\/\d{2}\/\d{4}:\*\*/);
 
       const inciso = yield* ler(cliente, `ifpr://norma/${DCN_2026}#art28-vii`);
       const texto = conferirEnvelope(inciso);

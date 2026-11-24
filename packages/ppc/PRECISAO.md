@@ -1,6 +1,6 @@
 # Precisão dos verificadores D
 
-Medida nos **110 PPCs técnicos da base** (cursos de nível médio com PPC convertido em `base-conhecimento/institucional/ifpr/cursos`: 82 integrados, 28 subsequentes, 1 sem CNCT), com a base de normas, relações, transições e CNCT do dia, e a vigência na `data_referencia` de `base-conhecimento/config/vigencia.yaml` (13/11/2026). Primeira medição em 16/11/2026; refeita no mesmo dia depois da revisão independente (transição da Res. CNE/CP nº 2/2026, cadeia de sucessoras, ficha responsável pelo marco, CNCT grudado, comentários agrupados).
+Medida nos **110 PPCs técnicos da base** (cursos de nível médio com PPC convertido em `base-conhecimento/institucional/ifpr/cursos`: 82 integrados, 28 subsequentes, 1 sem CNCT), com a base de normas, relações, transições e CNCT do dia, e a vigência na `data_referencia` de `base-conhecimento/config/vigencia.yaml` (13/11/2026; os números não mudaram com a data em 24/11/2026). No app, a revisão calcula a vigência no dia em que roda. Primeira medição em 16/11/2026; refeita no mesmo dia depois da revisão independente (transição da Res. CNE/CP nº 2/2026, cadeia de sucessoras, ficha responsável pelo marco, CNCT grudado, comentários agrupados).
 
 ```bash
 node packages/ppc/scripts/pre-conferencia.ts --base            # a tabela abaixo (cerca de 30 ms por PPC)

@@ -22,7 +22,6 @@ keywords:
 aliases:
   - "Portaria PROENS/IFPR nº 121/2024"
   - "Portaria PROENS 121/2024"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Portaria PROENS/IFPR nº 26/2021"
 ---

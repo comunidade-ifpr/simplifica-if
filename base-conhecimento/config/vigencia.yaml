@@ -5,5 +5,10 @@
 # normas (assinada_em, publicada_em, vigente_de) e de base-conhecimento/relacoes.yaml. Nunca se usa
 # o relógio do build: atualize esta data de propósito, rode o gerador e revise o diff.
 #
+# É só o retrato do front matter (e dos marcos da revisão de PPC). Não é a data da base, que é a da
+# versão publicada (meta.versao), nem o dia em que o app calcula a vigência: o app, o simplifica-mcp e
+# a CLI kb calculam no dia da consulta, sobre os intervalos da tabela vigencias. Testes e scripts
+# usam esta data, para o resultado não mudar com o calendário.
+#
 # Para outra data, sem mudar a base: pnpm kb ficha-norma <id> --em AAAA-MM-DD
-data_referencia: "2026-11-13"
+data_referencia: "2026-11-24"

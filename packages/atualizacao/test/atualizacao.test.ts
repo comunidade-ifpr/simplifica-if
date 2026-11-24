@@ -6,6 +6,7 @@
 import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -380,5 +381,23 @@ describe("esquema da base na abertura e na fábrica", () => {
     expect(() => conferirEsquema(nova, [anterior], "0.2.0")).not.toThrow();
     const mesma = criarBanco(NodePath.join(pasta, "mesma.sqlite"), "2026.11.15", { esquema: 4 });
     expect(() => conferirEsquema(nova, [mesma], "0.1.0")).not.toThrow();
+  });
+});
+
+describe("versão da base de desenvolvimento", () => {
+  it("o banco compilado sem --versao é dev-<hash>, não a data de referência", () => {
+    const caminho = criarBanco(NodePath.join(pastaTemporaria(), "dev.sqlite"), "2026.11.13");
+    const db = new NodeSqlite.DatabaseSync(caminho);
+    db.exec("DELETE FROM meta WHERE chave = 'versao'");
+    db.prepare("INSERT INTO meta VALUES (?, ?)").run("fontes_sha256", "ab12cd34ef56");
+    db.close();
+    expect(lerInfoBanco(caminho)).toMatchObject({ versao: "dev-ab12cd34", dataReferencia: "2026-11-13" });
+  });
+
+  it("vem antes de toda versão publicada, para a atualização trocá-la", () => {
+    expect(compararVersoes("2026.11.20", "dev-ab12cd34")).toBeGreaterThan(0);
+    expect(compararVersoes("dev-ab12cd34", "2000.01.01")).toBeLessThan(0);
+    expect(compararVersoes("dev-ab12cd34", "dev-ffffffff")).toBe(0);
+    expect(compararVersoes("2026.11.20.2", "2026.11.20")).toBeGreaterThan(0);
   });
 });

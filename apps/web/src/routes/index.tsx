@@ -56,14 +56,14 @@ const CARTOES_NO_INICIO = 4;
 function DataDaBase() {
   const api = useApi();
   const conectado = useEstadoConexao().fase === "conectada";
-  const [data, setData] = useState<{ readonly data: string; readonly versao: string }>();
+  const [data, setData] = useState<{ readonly data: string | null; readonly versao: string }>();
   useEffect(() => {
     if (!conectado) return;
     let vale = true;
     api
       .chamar((cliente) => cliente.sobreABase({}))
       .then(
-        (resposta) => vale && setData({ data: resposta.base.data_referencia, versao: resposta.base.versao }),
+        (resposta) => vale && setData({ data: resposta.base.data, versao: resposta.base.versao }),
         () => undefined,
       );
     return () => {
@@ -73,7 +73,7 @@ function DataDaBase() {
   if (data === undefined) return null;
   return (
     <p className="flex items-center gap-1.5 text-muted-foreground text-sm" title={`Versão ${data.versao}`}>
-      Base de {dataDaBase(data.data)}
+      {data.data === null ? "Base de desenvolvimento" : `Base de ${dataDaBase(data.data)}`}
       <CircleCheckIcon aria-label="em dia" className="size-4 text-success" />
     </p>
   );

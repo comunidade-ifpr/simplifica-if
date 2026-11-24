@@ -8,10 +8,12 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as SqlClient from "effect/sql/SqlClient";
+import * as TestClock from "effect/testing/TestClock";
 import * as Leitura from "../src/leitura/Leitura.ts";
 import { layerLeitura, MENSAGEM_INCOMPATIVEL, mensagemDeAbertura } from "../src/servidor.ts";
 import { CONTAGENS, criarBancoFixture, diretorioTemporario, FONTES_SHA256, limparTemporarios } from "./fixture.ts";
@@ -51,8 +53,21 @@ describe("abertura do banco", () => {
         commit: null,
         canal: null,
       });
-      expect(base).toEqual({ versao: "dev-ab12cd34", commit: null, data_referencia: "2026-11-13", canal: "dev" });
+      expect(base).toEqual({ versao: "dev-ab12cd34", data: null, commit: null, canal: "dev" });
     }).pipe(Effect.provide(layerLeitura({ banco: criarBancoFixture(), canal: "dev" }))),
+  );
+
+  it.effect("sobre_a_base: a vigência no dia do relógio com layerVigenciaHoje; sem ela, na data_referencia", () =>
+    Effect.gen(function* () {
+      yield* TestClock.setTime(Date.parse("2027-01-05T12:00:00"));
+      const vigencia = Effect.flatMap(Leitura.Leitura, (l) => l.sobreABase({})).pipe(
+        Effect.map((r) => r.dados.vigencia_em),
+      );
+      const leitura = layerLeitura({ banco: criarBancoFixture(), canal: "dev" });
+      const noDia = leitura.pipe(Layer.provide(FontesNormativas.layerVigenciaHoje));
+      expect(yield* Effect.provide(vigencia, noDia, { local: true })).toBe("2027-01-05");
+      expect(yield* Effect.provide(vigencia, leitura, { local: true })).toBe("2026-11-13");
+    }),
   );
 
   it.effect("lê versao, commit e canal quando o banco os tem (passo T0)", () =>

@@ -28,7 +28,6 @@ aliases:
   - "Lei 6.202/1975"
   - "Lei 6202/75"
 fonte_url: "https://www.planalto.gov.br/ccivil_03/leis/1970-1979/l6202.htm"
-vigencia_calculada_em: "2026-11-13"
 relaciona_se_a:
   - "Decreto-Lei nº 1.044/1969"
   - "Parecer CNE/CEB nº 31/2002"

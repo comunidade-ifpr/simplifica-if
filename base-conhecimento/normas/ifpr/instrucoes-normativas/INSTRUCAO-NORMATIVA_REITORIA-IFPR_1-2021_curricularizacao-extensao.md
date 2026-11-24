@@ -29,7 +29,6 @@ aliases:
   - "SEI nº 1311501"
 fonte_url: "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5ScM9JcrthdfQRcJ2b6ooHYuhRNB9-AHGQRVBqy7uU3lMuuQXn09kc337gGHQ9s7I2PiVPl63rZaZtKxZW56APE"
 fonte_referencia: "SEI/IFPR nº 1311501; Processo nº 23411.009481/2019-09; Boletim de Serviço Eletrônico de 26/07/2021"
-vigencia_calculada_em: "2026-11-13"
 relaciona_se_a:
   - "Resolução CNE/CES nº 7/2018"
   - "Resolução CONSUP/IFPR nº 55/2011"

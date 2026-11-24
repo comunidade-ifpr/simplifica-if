@@ -30,7 +30,6 @@ aliases:
   - "Calendário de referência 2027"
   - "SEI 4422750"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4606058&id_orgao_publicacao=0"
-vigencia_calculada_em: "2026-11-13"
 pontos_chave:
   - "O calendário de referência serve de base: cada campus elabora seu calendário local a partir dele (art. 3º)."
   - "Mínimo de 200 dias letivos anuais por curso e 100 por semestre (art. 4º)."

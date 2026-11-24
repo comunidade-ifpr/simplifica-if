@@ -100,7 +100,7 @@ const Transicao = Schema.Struct({
   norma_anterior: TextoNulo,
   aplica_a: Texto,
   regra: Texto,
-  /** `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`, em `data_referencia`. */
+  /** `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`, em `vigencia_em`. */
   situacao: Texto,
   inicio: Texto,
   inicio_em: TextoNulo,
@@ -148,7 +148,7 @@ export const PacoteDaBase = Schema.Struct({
   fichas: Schema.Array(Schema.Unknown),
   normas: Schema.Array(Norma),
   marcos: Schema.Array(Marco),
-  data_referencia: Texto,
+  vigencia_em: Texto,
   transicoes: Schema.Array(Transicao),
   secoes: Schema.Array(Secao),
   /** Fatos do PPC cruzados com o SUAP (`fatos`, `suap`, `cruzamento`), ou `null`. */
@@ -170,7 +170,7 @@ export const PacoteDoArquivo = Schema.Struct({
   cnct: Schema.Unknown,
   normas: Schema.Array(Norma),
   marcos: Schema.Array(Marco),
-  data_referencia: Texto,
+  vigencia_em: Texto,
   transicoes: Schema.Array(Transicao),
   secoes: Schema.Array(Secao),
   citacoes_ppc: Schema.optionalKey(Schema.Array(CitacaoPpc)),
@@ -333,7 +333,7 @@ function blocosDoPacote(d: Dados): Bloco[] {
   const blocos: Bloco[] = [
     [
       cabecalho,
-      `Fichas (${d.fichas_ids.length}): ${d.fichas_ids.join(", ")}. Situação das transições em ${dataBr(d.data_referencia)}. ${tamanho}`,
+      `Fichas (${d.fichas_ids.length}): ${d.fichas_ids.join(", ")}. Situação das transições em ${dataBr(d.vigencia_em)}. ${tamanho}`,
     ].join("\n"),
     "## Fichas",
     ...d.fichas.map(blocoFicha),
@@ -344,10 +344,7 @@ function blocosDoPacote(d: Dados): Bloco[] {
   if (fatos) blocos.push(fatos);
   if (d.marcos.length) blocos.push("## Marcos normativos", ...d.marcos.map(blocoMarco));
   if (d.transicoes.length) {
-    blocos.push(
-      `## Regras de transição (situação em ${dataBr(d.data_referencia)})`,
-      ...d.transicoes.map(blocoTransicao),
-    );
+    blocos.push(`## Regras de transição (situação em ${dataBr(d.vigencia_em)})`, ...d.transicoes.map(blocoTransicao));
   }
   if (d.normas.length) blocos.push("## Normas e dispositivos citados nas fichas", ...d.normas.flatMap(blocosNorma));
   if (d.secoes.length) {

@@ -109,7 +109,7 @@ export const ResultadoRevisaoPpc = Schema.Struct({
    * uma leitura em andamento, pausada ou encerrada antes do fim) ou `completa`.
    */
   leituraIa: LeituraIaRevisao,
-  /** `data_referencia` da base (AAAA-MM-DD). */
+  /** O dia em que a revisão calculou a vigência das normas (AAAA-MM-DD). */
   dataBase: Schema.String,
   /** A lista viva destas pendências no servidor (etapa 5b). */
   lista: Schema.optionalKey(Schema.String),

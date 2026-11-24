@@ -325,7 +325,7 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await using _app = await montarApp(servidor);
 
   // Início: a data da base, a caixa de pedido, os cartões (a tarefa nativa e a skill) e os recentes.
-  await expect.element(page.getByText(/^Base de \d{2}\/\d{2}\/\d{4}$/)).toBeVisible();
+  await expect.element(page.getByText(/^Base de (desenvolvimento|\d{2}\/\d{2}\/\d{4})$/)).toBeVisible();
   await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
   const tarefas = page.getByRole("region", { name: "Tarefas" });
   await expect.element(tarefas.getByRole("link", { name: /^Revisar um PPC/ })).toBeVisible();

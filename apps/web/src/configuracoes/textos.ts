@@ -20,7 +20,10 @@ export function descreverBase(estado: EstadoAtualizacao): string {
     externa: "indicada por SIMPLIFICA_KB",
   }[estado.base.origem];
   const commit = estado.base.commit === null ? "" : `, revisão ${estado.base.commit}`;
-  return `Base de ${versaoComoData(estado.base.versao)}${commit} (${origem}).`;
+  const versao = estado.base.versao.startsWith("dev-")
+    ? `desenvolvimento (${estado.base.versao})`
+    : versaoComoData(estado.base.versao);
+  return `Base de ${versao}${commit} (${origem}).`;
 }
 
 /** A frase da situação da atualização da base e das skills. */

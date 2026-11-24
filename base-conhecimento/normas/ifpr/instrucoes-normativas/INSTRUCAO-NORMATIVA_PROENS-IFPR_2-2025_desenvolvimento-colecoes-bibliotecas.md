@@ -30,7 +30,6 @@ aliases:
   - "SEI nº 3613179"
 fonte_url: "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5QQfXDbUS8RurNctkcMk69wPw-CGFfML8kStu5n3nyyzbs53e52BtMg7bPdpOGh1-F2j4zOs8lN-QFuwO9w7vcn"
 fonte_referencia: "SEI/IFPR nº 3613179; Processo nº 23411.013054/2020-51; Boletim de Serviço Eletrônico de 29/05/2025"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021"
 pontos_chave:

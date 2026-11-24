@@ -1,4 +1,4 @@
-/** Ferramenta 15, `sobre_a_base`: versão, data de referência e conteúdo da base. */
+/** Ferramenta 15, `sobre_a_base`: versão, dia da vigência e conteúdo da base. */
 import * as Schema from "effect/Schema";
 import { EsquemaLink } from "../contratos.ts";
 import { inteiro } from "../esquema.ts";
@@ -8,6 +8,8 @@ import { definirFerramenta } from "./ferramenta.ts";
 export const Entrada = Schema.Struct({});
 
 export const Dados = Schema.Struct({
+  /** O dia em que as consultas sem data calculam a vigência (no app, hoje). */
+  vigencia_em: Schema.String,
   /** Linhas por tabela do banco, de `meta.contagens_json`. */
   contagens: Schema.Record(Schema.String, inteiro({ minimo: 0 })),
   /** Valores do filtro `tipo` da busca em PPCs. */
@@ -38,7 +40,7 @@ export const sobreABase = definirFerramenta({
   nome: "sobre_a_base",
   titulo: "Sobre a base",
   descricao:
-    "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
+    "Versão, dia da vigência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   entrada: Entrada,
   dados: Dados,
   texto({ base, dados }) {
@@ -46,7 +48,7 @@ export const sobreABase = definirFerramenta({
       ([tabela, rotulo]) => `${dados.contagens[tabela]} ${rotulo}`,
     );
     return [
-      `Base de conhecimento do IFPR, versão \`${base.versao}\` (canal ${base.canal}), com vigência calculada em ${dataBr(base.data_referencia)}.`,
+      `Base de conhecimento do IFPR, ${base.data === null ? "em desenvolvimento" : `de ${dataBr(base.data)}`}, versão \`${base.versao}\` (canal ${base.canal}). A vigência das normas é calculada em ${dataBr(dados.vigencia_em)}, salvo quando a consulta pede outra data.`,
       `Conteúdo: ${conteudo.join(", ")}.`,
       `Níveis: ${dados.niveis.join(", ")}.`,
       `Tipos de seção de PPC (filtro \`tipo\`): ${dados.tipos_de_secao.map((t) => `\`${t}\``).join(", ")}.`,

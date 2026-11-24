@@ -28,7 +28,6 @@ aliases:
   - "Parecer CEB nº 31/2002"
 fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/normas-classificadas-por-assunto/educacao-especial/ceb031_2002.pdf"
 fonte_referencia: "Processo nº 23001000059/2002-63; homologado por despacho do Ministro de 3/10/2002, DOU de 4/10/2002, Seção 1, p. 39"
-vigencia_calculada_em: "2026-11-13"
 fundamenta_se_em:
   - "Lei nº 9.394/1996 (art. 90)"
 relaciona_se_a:

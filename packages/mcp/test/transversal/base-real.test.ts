@@ -68,7 +68,7 @@ describe.skipIf(!SMOKE)("as ferramentas na base real", () => {
         }
         const daBase = (yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", ppc: PPC })).dados;
         const doArquivo = (yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", arquivo: ARQUIVO })).dados;
-        for (const parte of ["fichas_ids", "fichas", "normas", "marcos", "data_referencia", "transicoes"] as const) {
+        for (const parte of ["fichas_ids", "fichas", "normas", "marcos", "vigencia_em", "transicoes"] as const) {
           expect(doArquivo[parte], parte).toEqual(daBase[parte]);
         }
         // cada seção do PPC da base está entre as do arquivo, com as mesmas linhas e o mesmo texto

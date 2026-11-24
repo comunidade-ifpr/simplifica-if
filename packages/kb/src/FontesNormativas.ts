@@ -13,6 +13,7 @@
  * só o `impacto` e a `ler_ficha` o usam.
  */
 import * as Context from "effect/Context";
+import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
@@ -49,6 +50,23 @@ export interface ConteudoRevisaoPpc {
   readonly arquivos: ReadonlyArray<ArquivoConteudo>;
 }
 
+/**
+ * Em que dia as consultas sem data calculam a vigência. `referencia`, o padrão, é a `data_referencia`
+ * gravada no banco: o mesmo banco dá sempre a mesma resposta (testes, scripts, a pré-conferência). O
+ * app, o simplifica-mcp e a CLI `kb` ligam `hoje` (`layerVigenciaHoje`): o dia local da consulta.
+ */
+export const VigenciaNoDia = Context.Reference<"referencia" | "hoje">("@simplifica-if/kb/VigenciaNoDia", {
+  defaultValue: () => "referencia",
+});
+
+/** As consultas sem data calculam a vigência no dia local em que são feitas. */
+export const layerVigenciaHoje = Layer.succeed(VigenciaNoDia, "hoje");
+
+/** O dia local de agora (AAAA-MM-DD), pelo `Clock`. */
+const hojeLocal = Effect.map(DateTime.now, (agora) =>
+  DateTime.formatIsoDate(DateTime.setZone(agora, DateTime.zoneMakeLocal())),
+);
+
 export class FontesNormativas extends Context.Service<
   FontesNormativas,
   {
@@ -59,8 +77,13 @@ export class FontesNormativas extends Context.Service<
     readonly transicoes: ReadonlyArray<Transicao>;
     /** O que os textos consolidados mostram na `data_referencia` (piso do status). */
     readonly consolidado: TextoConsolidado;
-    /** `data_referencia` de `base-conhecimento/config/vigencia.yaml` (no banco, a gravada em `meta`). */
+    /**
+     * `data_referencia` de `base-conhecimento/config/vigencia.yaml` (no banco, a gravada em `meta`): o
+     * dia do retrato da vigência no front matter, e o piso do texto consolidado vale dela em diante.
+     */
     readonly dataReferencia: string;
+    /** O dia em que a consulta sem data calcula a vigência: hoje ou a `data_referencia` (`VigenciaNoDia`). */
+    readonly diaDaVigencia: Effect.Effect<string>;
     readonly sinonimos: Sinonimos;
     readonly topicosSecoes: TopicosSecoes;
     readonly topicosFichas: ReadonlyArray<TopicoFichas>;
@@ -266,6 +289,7 @@ const make = Effect.gen(function* () {
     transicoes,
     consolidado,
     dataReferencia: referencia.valor,
+    diaDaVigencia: (yield* VigenciaNoDia) === "hoje" ? hojeLocal : Effect.succeed(referencia.valor),
     sinonimos,
     topicosSecoes,
     topicosFichas,

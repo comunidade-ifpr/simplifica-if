@@ -17,8 +17,9 @@ export function dataBr(iso: string): string {
 }
 
 export function rodape(base: Base): string {
-  const origem = base.commit ? `commit \`${base.commit.slice(0, 7)}\`` : "versão dev";
-  return `Base de ${dataBr(base.data_referencia)} (${origem}).`;
+  if (base.data === null) return `Base de desenvolvimento (versão \`${base.versao}\`).`;
+  const origem = base.commit ? `commit \`${base.commit.slice(0, 7)}\`` : `versão \`${base.versao}\``;
+  return `Base de ${dataBr(base.data)} (${origem}).`;
 }
 
 export function linhaAviso(aviso: Aviso): string {

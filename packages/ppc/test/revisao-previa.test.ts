@@ -10,6 +10,7 @@ import { textoDoParagrafo } from "@simplifica-if/docx/modelo";
 import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
+import { dataReferencia } from "@simplifica-if/kb/normas/vigencia";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 import {
   type EtapaRevisaoPrevia,
@@ -152,7 +153,9 @@ describe("revisarDocx", () => {
     expect(comentarios).not.toContain("ifpr://");
     expect(comentarios).toContain("Não é parecer da PROENS");
     expect(comentarios).toContain("12 de 84 critérios conferidos automaticamente; os demais exigem leitura.");
-    expect(comentarios).toContain("com a base de normas de 13/11/2026");
+    expect(comentarios).toContain(
+      `com a vigência das normas em ${dataReferencia(raizRepositorio()).split("-").reverse().join("/")}`,
+    );
     expect(comentarios).toContain(
       "Fonte: Resolução CNE/CP nº 1/2021 (https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578)",
     );

@@ -15,7 +15,7 @@
  * - os marcos normativos ligados (`marcos-normativos.json`, com vigente, substituídas e antecessoras
  *   derivadas da fase 5) e as citações do PPC às normas desses marcos;
  * - as regras de transição (tabela `transicoes`) das normas das fichas e das citadas como
- *   fundamento pelo PPC, com a situação na `data_referencia` e o texto do dispositivo que as
+ *   fundamento pelo PPC, com a situação no dia da vigência e o texto do dispositivo que as
  *   estabelece;
  * - as seções do PPC dos tópicos das fichas (`dados/topicos-secoes.yaml`), mais as que a busca
  *   pelas `consultas` das fichas achar, com o texto integral e as linhas;
@@ -278,9 +278,9 @@ export interface PacoteContexto {
   fichas: unknown[];
   normas: NormaDoPacote[];
   marcos: MarcoDoPacote[];
-  /** Data da situação das regras de transição (`data_referencia` de `config/vigencia.yaml`). */
-  data_referencia: string;
-  /** Regras de transição, com a situação em `data_referencia` e o texto do dispositivo que as estabelece. */
+  /** Dia da situação das regras de transição (`FontesNormativas.diaDaVigencia`). */
+  vigencia_em: string;
+  /** Regras de transição, com a situação em `vigencia_em` e o texto do dispositivo que as estabelece. */
   transicoes: TransicaoDoPacote[];
   secoes: SecaoDoPacote[];
   fatos: unknown;
@@ -415,14 +415,14 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
 
 /**
  * Regras de transição (tabela `transicoes`) das normas das fichas e das que o PPC cita como
- * fundamento, com a situação na `data_referencia` (de `FontesNormativas`) e o texto do dispositivo
+ * fundamento, com a situação no dia da vigência (`FontesNormativas.diaDaVigencia`) e o texto do dispositivo
  * que as estabelece.
  */
 export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")(function* (
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
 ) {
-  const { dataReferencia: data } = yield* FontesNormativas.FontesNormativas;
+  const data = yield* (yield* FontesNormativas.FontesNormativas).diaDaVigencia;
   const atosFichas = new Set(refs.map((r) => r.ref));
   const atosTransicao = [
     ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.norma_id)]),
@@ -451,7 +451,7 @@ export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")
       linha_fim: d?.linha_fim ?? null,
     });
   }
-  return { data_referencia: data, transicoes };
+  return { vigencia_em: data, transicoes };
 });
 
 /** Consultas da ficha que são texto do PPC (as que são nomes de campo, como `cnct_contexto.x`, ficam fora). */
@@ -600,7 +600,7 @@ export interface PacoteAvulso {
   cnct: unknown;
   normas: NormaDoPacote[];
   marcos: MarcoDoPacote[];
-  data_referencia: string;
+  vigencia_em: string;
   transicoes: TransicaoDoPacote[];
   /** Seções do PPC dos tópicos das fichas, mais as achadas pelas `consultas`. */
   secoes: SecaoDoPacote[];

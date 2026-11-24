@@ -35,6 +35,7 @@ import * as Console from "effect/Console";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
@@ -118,6 +119,16 @@ const flagPastaTrabalho = Flag.String("pasta-trabalho").pipe(
 const JsonQualquer = Schema.fromJsonString(Schema.Unknown);
 const decodificarArgs = Schema.decodeUnknownEffect(JsonQualquer);
 
+const flagVigenciaNaReferencia = Flag.Boolean("vigencia-na-referencia").pipe(
+  Flag.withDescription(
+    "calcula a vigência na data de referência gravada na base, e não no dia (respostas que não mudam com o calendário)",
+  ),
+  Flag.withDefault(false),
+);
+
+/** Sem `--vigencia-na-referencia`, as consultas sem data calculam a vigência no dia. */
+const layerVigencia = (naReferencia: boolean) => (naReferencia ? Layer.empty : FontesNormativas.layerVigenciaHoje);
+
 const consultar = Command.make(
   "consultar",
   {
@@ -132,6 +143,7 @@ const consultar = Command.make(
     ),
     banco: flagBanco,
     pastaTrabalho: flagPastaTrabalho,
+    vigenciaNaReferencia: flagVigenciaNaReferencia,
   },
   Effect.fn("simplifica-mcp.consultar")(function* (opcoes) {
     const path = yield* Path.Path;
@@ -158,7 +170,11 @@ const consultar = Command.make(
     return yield* imprimirConsulta(opcoes.ferramenta, argumentos, {
       formato: "json",
       todasAsPaginas: opcoes.todasAsPaginas,
-    }).pipe(Effect.provide(layerHandlers.pipe(Layer.provide(leitura))));
+    }).pipe(
+      Effect.provide(
+        layerHandlers.pipe(Layer.provide(leitura), Layer.provide(layerVigencia(opcoes.vigenciaNaReferencia))),
+      ),
+    );
   }),
 ).pipe(
   Command.withDescription(
@@ -194,6 +210,7 @@ const comando = Command.make(
       Flag.withDescription("canal da atualização (padrão: beta)"),
       Flag.withDefault("beta"),
     ),
+    vigenciaNaReferencia: flagVigenciaNaReferencia,
   },
   Effect.fn("simplifica-mcp")(function* (opcoes) {
     const { banco, pastaTrabalho, canal } = opcoes;
@@ -228,12 +245,10 @@ const comando = Command.make(
         // A base da fábrica não grava canal: com a atualização, vale o canal dela.
         canal: Option.isSome(opcoes.pastaAtualizacao) && canal === "dev" ? opcoes.canalAtualizacao : (canal as Canal),
         pastaTrabalho: pasta,
-      }).pipe(Layer.provide(NodeStdio.layer)),
+      }).pipe(Layer.provide(NodeStdio.layer), Layer.provide(layerVigencia(opcoes.vigenciaNaReferencia))),
     );
     const { base } = Context.get(servicos, Leitura.Leitura);
-    yield* Console.error(
-      `simplifica-mcp ${VERSAO_PACOTE}: base ${base.versao} (referência ${base.data_referencia}, canal ${base.canal})`,
-    );
+    yield* Console.error(`simplifica-mcp ${VERSAO_PACOTE}: base ${base.versao} (canal ${base.canal})`);
     yield* Effect.forkScoped(periodica);
     return yield* Effect.never;
   }, Effect.scoped),

@@ -26,7 +26,6 @@ aliases:
   - "Estatuto do IFPR"
   - "Novo Estatuto do IFPR"
 fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4216886&id_orgao_publicacao=0"
-vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CONSUP/IFPR nº 1/2009"
   - "Resolução CONSUP/IFPR nº 10/2009"

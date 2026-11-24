@@ -8,7 +8,6 @@ import { OPCOES_ENTRADA } from "../src/validacao.ts";
 import { FONTES_SHA256 } from "./fixture.ts";
 
 const META: MetaEnvelope = {
-  data_referencia: "2026-11-13",
   fontes_sha256: FONTES_SHA256,
   versao: null,
   commit: null,
@@ -16,23 +15,22 @@ const META: MetaEnvelope = {
 };
 
 describe("montarBase", () => {
-  test("sem os campos do T0: versão dev, commit nulo, canal da CLI", () => {
-    expect(montarBase(META, "beta")).toEqual({
-      versao: "dev-ab12cd34",
-      commit: null,
-      data_referencia: "2026-11-13",
-      canal: "beta",
-    });
+  test("sem os campos da fábrica: versão dev, sem data, commit nulo, canal da CLI", () => {
+    expect(montarBase(META, "beta")).toEqual({ versao: "dev-ab12cd34", data: null, commit: null, canal: "beta" });
   });
 
   test("com os campos do T0, a meta prevalece", () => {
     const meta = { ...META, versao: "2026.11.13", commit: "dc6b447", canal: "estavel" as const };
     expect(montarBase(meta, "dev")).toEqual({
       versao: "2026.11.13",
+      data: "2026-11-13",
       commit: "dc6b447",
-      data_referencia: "2026-11-13",
       canal: "estavel",
     });
+  });
+
+  test("a data é a da versão, também na republicação do mesmo dia", () => {
+    expect(montarBase({ ...META, versao: "2026.11.20.2" }, "beta").data).toBe("2026-11-20");
   });
 });
 

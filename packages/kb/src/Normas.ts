@@ -140,7 +140,7 @@ export class Normas extends Context.Service<
       id: string,
       opcoes?: { readonly subordinados?: boolean },
     ) => Effect.Effect<TrechoDispositivo | null, Sql.FalhaNaConsulta>;
-    /** Status na data (padrão: `data_referencia`), eventos, pendências e transições. */
+    /** Status na data (padrão: `FontesNormativas.diaDaVigencia`), eventos, pendências e transições. */
     readonly vigencia: (
       id: string,
       opcoes?: { readonly em?: string },
@@ -231,15 +231,13 @@ const make = Effect.gen(function* () {
     descendentes: Effect.fn("Normas.descendentes")(function* (id: string) {
       return yield* descendentes(id);
     }, prover),
-    vigencia: Effect.fn("Normas.vigencia")((id: string, opcoes: { readonly em?: string } = {}) =>
-      Effect.sync(() => {
-        const quando = opcoes.em ?? fontes.dataReferencia;
-        return {
-          ...statusEm(ato(id), quando, fontes),
-          transicoes: transicoesAplicaveis(ato(id), quando, fontes),
-        };
-      }),
-    ),
+    vigencia: Effect.fn("Normas.vigencia")(function* (id: string, opcoes: { readonly em?: string } = {}) {
+      const quando = opcoes.em ?? (yield* fontes.diaDaVigencia);
+      return {
+        ...statusEm(ato(id), quando, fontes),
+        transicoes: transicoesAplicaveis(ato(id), quando, fontes),
+      };
+    }),
     relacoes: Effect.fn("Normas.relacoes")((id: string) =>
       Effect.sync(() => ({ id: ato(id), ...relacoesDeEm(ato(id), fontes.relacoes) })),
     ),
