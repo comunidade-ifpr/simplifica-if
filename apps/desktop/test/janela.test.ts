@@ -32,6 +32,6 @@ describe("opcoesBarraTitulo", () => {
 describe("corFundoJanela", () => {
   test("o fundo da interface no tema claro e no escuro, nunca branco puro no escuro", () => {
     expect(corFundoJanela(false)).toBe("#fafafa");
-    expect(corFundoJanela(true)).toBe("#121412");
+    expect(corFundoJanela(true)).toBe("#111517");
   });
 });

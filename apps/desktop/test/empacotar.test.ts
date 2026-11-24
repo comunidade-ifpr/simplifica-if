@@ -34,7 +34,7 @@ const arquivos = (pasta: string): Array<string> =>
 describe("configuração do electron-builder", () => {
   test("nome, identificador e instaladores sem assinatura", () => {
     const config = configuracaoBuilder({ dir: false });
-    expect(config.appId).toBe("br.edu.ifpr.simplifica");
+    expect(config.appId).toBe("io.github.comunidade-ifpr.simplifica");
     expect(config.productName).toBe("Simplifica IF");
     expect(config.electronVersion).toBe("44.10.1");
     expect(config.mac).toMatchObject({ target: ["dmg", "zip"], identity: null });

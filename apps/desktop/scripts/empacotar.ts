@@ -20,7 +20,7 @@ import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
 import { ARQUIVO_ASSINATURA, feedDoCanal } from "../src/atualizacaoApp.ts";
 import { construir, DIST, DIST_RECURSOS, PACOTE, RAIZ } from "./construir.ts";
 
-export const APP_ID = "br.edu.ifpr.simplifica";
+export const APP_ID = "io.github.comunidade-ifpr.simplifica";
 export const NOME_PRODUTO = "Simplifica IF";
 
 const versaoElectron = (): string => {

@@ -65,7 +65,7 @@ Depois de alterar um JSON Schema em `base-conhecimento/schemas/`: `node scripts/
 
 ## Skills
 
-Edite sempre em `.agents/skills/` e leia antes o `README.md` da skill, quando existir (rode a regeneração ou validação que ele indicar). As skills com bloco `simplifica:` no front matter do `SKILL.md` (hoje `verificar-fundamentacao-normativa`) vão também para o app, que não tem o repositório: mantenha as ferramentas MCP `ifpr` como caminho principal e a CLI como alternativa "dentro do repositório", e acrescente a `simplifica.arquivos` todo arquivo novo que o texto cite (`node scripts/validar_base.ts` confere). As demais rodam só no repositório (como a `ifpr-design`).
+Edite sempre em `.agents/skills/` e leia antes o `README.md` da skill, quando existir (rode a regeneração ou validação que ele indicar). As skills com bloco `simplifica:` no front matter do `SKILL.md` (hoje `verificar-fundamentacao-normativa`) vão também para o app, que não tem o repositório: mantenha as ferramentas MCP `ifpr` como caminho principal e a CLI como alternativa "dentro do repositório", e acrescente a `simplifica.arquivos` todo arquivo novo que o texto cite (`node scripts/validar_base.ts` confere). Skill sem esse bloco roda só no repositório.
 
 ## Código
 

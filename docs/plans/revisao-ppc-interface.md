@@ -63,7 +63,7 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 ### Wireframe: resultado
 
 ```
-┌ simplifica IF   Início  Explorar  Configurações                          Buscar ⌘K ┐  #1B5E20
+┌ simplifica IF   Início  Explorar  Configurações                          Buscar ⌘K ┐  #0B4A55
 │                                                                                    │
 │  Revisar um PPC                                                                    │
 │                                                                                    │
@@ -132,14 +132,14 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 
 | Token | Claro | Escuro | Uso |
 |---|---|---|---|
-| `--primary` | `#1B5E20` | `#2E7D32` (texto branco) | botão principal; no escuro, sai o `#4CAF50` cheio, que brilha |
-| cabeçalho | `#1B5E20` | `#14361A` | o `#1F8A42` com branco dá 4,4:1 e falha AA nos 14 px da navegação |
-| `--accent-text` | `#1F8A42` | `#81C784` | link e marca em texto grande |
-| `--grav-corrigir` | `#C72E2E`, texto `#A32424`, fundo `#FDECEC` | `#EF5350`, texto `#FF8A80`, fundo `rgb(239 83 80 / .14)` | glifo ● cheio |
+| `--primary` | `#0E5A66` | `#13606C` (texto branco) | botão principal |
+| cabeçalho (`--marca`) | `#0B4A55` | `#0C3138` | texto branco: 9,9:1 no claro |
+| `--link` | `#0D6372` | `#5FC0CC` | link |
+| `--grav-corrigir` | `#C62828`, texto `#A32424`, fundo `#FDECEC` | `#EF5350`, texto `#FF8A80`, fundo `rgb(239 83 80 / .14)` | glifo ● cheio |
 | `--grav-conferir` | `#B26A00`, texto `#8A4B00`, fundo `#FFF4E0` | `#FFB74D`, texto `#FFCC80` | glifo ◐ |
-| `--grav-ok` | `#1F8A42` sobre `#E8F5E9` | `#81C784` | glifo ✓ |
-| `--grav-nao-lido` | `#BDBDBD` contornado | `#4A504B` | glifo ○ |
-| superfícies | `#FFFFFF` / `#F6F7F5` / borda `#E2E4E0` | `#121512` / `#1A1E1B` / borda `#2E342F` | o cartão escuro de hoje quase não se distingue do fundo |
+| `--grav-ok` | `#2F7D4A`, texto `#22603A`, fundo `#E7F3EA` | `#7CC79A` | glifo ✓ |
+| `--grav-nao-lido` | `#BDBDBD` contornado | `#4A5357` | glifo ○ |
+| superfícies | `#FFFFFF` / `#F3F6F6` / borda `#DDE3E4` | `#111517` / `#191E21` / borda `#2C3438` | |
 
 - O azul `info` (`#0277BD`) fica só para estado do sistema (conexão, atualização), nunca na revisão.
 - Fica no global `accent-color: var(--primary)`, porque hoje os radios nativos saem azuis.
@@ -147,7 +147,7 @@ Início ─▶ Escolher o PPC ─▶ Lendo (etapas) ─▶ Resultado ─▶ Trab
 
 ### Tipografia
 
-A Open Sans continua como regra de marca (`ifpr-design`), mas com o eixo de largura (`@fontsource-variable/open-sans/wdth.css`), que já vem no pacote instalado. Entra a **Source Serif 4** (`@fontsource-variable/source-serif-4`) para uma função só: a voz do documento. Ela vale nos trechos do PPC, no texto de norma no leitor `ifpr://`, nas citações da conversa e na sugestão de texto da IA. Só de olhar, a pessoa separa o que está no PPC ou na norma do que o app diz.
+A Open Sans continua como a fonte do app, mas com o eixo de largura (`@fontsource-variable/open-sans/wdth.css`), que já vem no pacote instalado. Entra a **Source Serif 4** (`@fontsource-variable/source-serif-4`) para uma função só: a voz do documento. Ela vale nos trechos do PPC, no texto de norma no leitor `ifpr://`, nas citações da conversa e na sugestão de texto da IA. Só de olhar, a pessoa separa o que está no PPC ou na norma do que o app diz.
 
 | Utilitário | Tamanho/entrelinha | Peso | Uso |
 |---|---|---|---|
@@ -236,7 +236,7 @@ Uma ação guarda o mesmo nome do começo ao fim. "Conferir com o Claude" leva a
 
 Arquivos: `index.css`, `__root.tsx`, `components/ui/*` e os contêineres de página em `routes/index.tsx`, `revisao-ppc.tsx`, `explorar.tsx`, `configuracoes.tsx`, `conversa.tsx` e `tarefas.tsx`. O trabalho:
 
-- os tokens de cor e de gravidade, o cabeçalho `#1B5E20`, o primário escuro e o `accent-color`;
+- os tokens de cor e de gravidade, o cabeçalho `#0B4A55`, o primário escuro e o `accent-color`;
 - a escala tipográfica, o eixo `wdth` e a Source Serif 4 (no `apps/web/package.json`);
 - as duas larguras de página;
 - o ajuste dos componentes do T3 e os componentes novos;
@@ -268,4 +268,4 @@ Como os componentes copiados do T3 mudam, `docs/upstream-t3.md` registra a adapt
 ## Decisões em aberto
 
 - **A IA antes do upload?** O fluxo de UX propôs escolher a profundidade antes de enviar o arquivo. O plano faz o contrário: a conferência em código sempre roda (segundos, sem custo) e a IA vem como continuação na faixa. Assim a pessoa vê algo útil antes de gastar o plano. Se o piloto mostrar que quase todo mundo roda a IA, ela vira o padrão, com a IA das Configurações já escolhida e um clique a menos.
-- **O cabeçalho no tema escuro**, `#14361A` ou neutro: decidir nas capturas da Fase 2.
+- **O cabeçalho no tema escuro**, `#0C3138` ou neutro: decidir nas capturas da Fase 2.

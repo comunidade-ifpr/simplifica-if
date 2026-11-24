@@ -3,7 +3,7 @@
  * (`paraSvg`) quanto os PNGs do ícone (`raster.ts`). Uma descrição só para os dois, para que o ícone do
  * Dock e o SVG não divirjam.
  *
- * - Logo: "simplifica" em Open Sans 300 colado (respiro de 0,06 em) a "IF" em 800, com o ponto vermelho.
+ * - Logo: "simplifica" em Open Sans 300 colado (respiro de 0,06 em) a "IF" em 800, com o ponto cobre.
  * - Ícone: "IF." numa placa branca; `relevo` com degradê e sombra, `plano` para 16 a 32 px.
  */
 import { ALTURA_MAIUSCULA, type Corrida, IF, SIMPLIFICA } from "./glifos.ts";
@@ -50,13 +50,14 @@ export interface Cena {
   readonly camadas: ReadonlyArray<Camada>;
 }
 
+/** A paleta do app (`docs/marca/README.md`), a mesma dos tokens do `apps/web/src/index.css`. */
 export const COR = {
-  verde: "#1F8A42",
-  vermelho: "#C72E2E",
-  cinza: "#2D2D2D",
-  /** No fundo escuro, o verde e o vermelho do IFPR mais claros (o #1F8A42 some sobre #141414). */
-  verdeEscuro: "#4CAF6A",
-  vermelhoEscuro: "#E05252",
+  petroleo: "#11707F",
+  cobre: "#C96A1C",
+  tinta: "#1D2B31",
+  /** No fundo escuro, o petróleo e o cobre mais claros (o #11707F some sobre o fundo escuro). */
+  petroleoClaro: "#5FC0CC",
+  cobreClaro: "#F0A050",
 } as const;
 
 /** Os pontos de uma superelipse, no sentido horário (ou anti-horário, para `furo`). */
@@ -77,7 +78,7 @@ export function pontosSuperelipse(centro: Ponto, semilado: number, expoente: num
 // ---------------------------------------------------------------------------------------------------
 // Logo
 
-export type VarianteLogo = "claro" | "escuro" | "sobre-verde";
+export type VarianteLogo = "claro" | "escuro" | "sobre-marca";
 
 /** Respiro entre "simplifica" e "IF", em unidades de corpo 100. */
 const RESPIRO = 6;
@@ -86,18 +87,17 @@ const PONTO_LOGO = { raio: 11.5, folga: 6.5 };
 
 export function cenaLogo(variante: VarianteLogo): Cena {
   const cores = {
-    claro: { texto: COR.cinza, marca: COR.verde, ponto: COR.vermelho, anel: undefined },
-    escuro: { texto: "#F2F2F2", marca: COR.verdeEscuro, ponto: COR.vermelhoEscuro, anel: undefined },
-    // Vermelho direto sobre o verde "vibra" (luminância parecida): o anel branco separa os dois.
-    "sobre-verde": { texto: "#FFFFFF", marca: "#FFFFFF", ponto: COR.vermelho, anel: "#FFFFFF" },
+    claro: { texto: COR.tinta, marca: COR.petroleo, ponto: COR.cobre },
+    escuro: { texto: "#F2F2F2", marca: COR.petroleoClaro, ponto: COR.cobreClaro },
+    // Sobre o petróleo do cabeçalho, o cobre claro (4,6:1) se separa do fundo.
+    "sobre-marca": { texto: "#FFFFFF", marca: "#FFFFFF", ponto: COR.cobreClaro },
   }[variante];
   const topo = -SIMPLIFICA.caixa[1];
   const xS = -SIMPLIFICA.caixa[0];
   const xIF = xS + SIMPLIFICA.avanco + RESPIRO;
   const raio = PONTO_LOGO.raio;
   const cx = xIF + IF.caixa[2] + PONTO_LOGO.folga + raio;
-  const anel = cores.anel === undefined ? 0 : 4.5; // cerca de 1 px no cabeçalho (24 px de altura)
-  const largura = cx + raio + anel;
+  const largura = cx + raio;
   const altura = topo + SIMPLIFICA.caixa[3];
   const corrida = (c: Corrida, x: number): Forma => ({ tipo: "caminho", d: c.d, escala: 1, origem: [x, topo] });
   const ponto: Forma = { tipo: "circulo", centro: [cx, topo - raio], raio };
@@ -108,14 +108,6 @@ export function cenaLogo(variante: VarianteLogo): Cena {
     camadas: [
       { formas: [corrida(SIMPLIFICA, xS)], preenchimento: { tipo: "cor", cor: cores.texto } },
       { formas: [corrida(IF, xIF)], preenchimento: { tipo: "cor", cor: cores.marca } },
-      ...(cores.anel === undefined
-        ? []
-        : [
-            {
-              formas: [{ tipo: "circulo", centro: ponto.centro, raio: raio + anel }],
-              preenchimento: { tipo: "cor", cor: cores.anel },
-            } satisfies Camada,
-          ]),
       { formas: [ponto], preenchimento: { tipo: "cor", cor: cores.ponto } },
     ],
   };
@@ -174,19 +166,19 @@ export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
         tipo: "linear",
         de: [meio, meio - semilado],
         ate: [meio, meio + semilado],
-        paradas: ["#FFFFFF", "#EEF1EE"],
+        paradas: ["#FFFFFF", "#EEF2F3"],
       },
     },
     {
       formas: [placa, { tipo: "superelipse", centro, semilado: semilado - borda, expoente: 5, furo: true }],
-      preenchimento: { tipo: "cor", cor: "#D6D9D6" },
+      preenchimento: { tipo: "cor", cor: "#D5DBDD" },
     },
   );
   if (relevo) {
     camadas.push(
       {
         formas: [letras, ponto],
-        preenchimento: { tipo: "cor", cor: "#0B3D1C" },
+        preenchimento: { tipo: "cor", cor: "#06323A" },
         opacidade: 0.35,
         desfoque: 0.028 * corpo,
         deslocamento: [0, 0.032 * corpo],
@@ -197,7 +189,7 @@ export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
           tipo: "linear",
           de: [x, base - ALTURA_MAIUSCULA * e],
           ate: [x, base],
-          paradas: ["#34B062", "#16683A"],
+          paradas: ["#1E96A6", "#0C5763"],
         },
       },
       {
@@ -206,14 +198,14 @@ export function cenaIcone({ plataforma, estilo }: OpcoesIcone): Cena {
           tipo: "radial",
           centro: [cx - raio + 0.7 * raio, cy - raio + 0.6 * raio],
           raio: 1.6 * raio,
-          paradas: ["#EE5A5A", "#A82222"],
+          paradas: ["#F09A4E", "#B0571A"],
         },
       },
     );
   } else {
     camadas.push(
-      { formas: [letras], preenchimento: { tipo: "cor", cor: COR.verde } },
-      { formas: [ponto], preenchimento: { tipo: "cor", cor: COR.vermelho } },
+      { formas: [letras], preenchimento: { tipo: "cor", cor: COR.petroleo } },
+      { formas: [ponto], preenchimento: { tipo: "cor", cor: COR.cobre } },
     );
   }
   return { largura: LADO_ICONE, altura: LADO_ICONE, titulo: "Simplifica IF", camadas };

@@ -2,7 +2,7 @@
 
 O app desktop do Simplifica IF (M1.1): o processo principal do Electron 44, que inicia o servidor local ([`apps/server`](../server/README.md)) e mostra a interface ([`apps/web`](../web)) numa janela. Segue o desenho do `apps/desktop` do T3 Code, reduzido ao que o app faz; o que foi copiado está em [`docs/upstream-t3.md`](../../docs/upstream-t3.md).
 
-- Nome: **Simplifica IF**; `appId`: `br.edu.ifpr.simplifica`.
+- Nome: **Simplifica IF**; `appId`: `io.github.comunidade-ifpr.simplifica`.
 - A pasta do app (`app.getPath("userData")`): `~/Library/Application Support/Simplifica IF` no macOS, `%APPDATA%\Simplifica IF` no Windows; no desenvolvimento, `Simplifica IF (dev)`. É também a `--pasta-estado` do servidor (as CLIs gerenciadas e o perfil do Antigravity).
 
 ## Como rodar em desenvolvimento

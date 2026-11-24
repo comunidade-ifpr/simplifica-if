@@ -1,5 +1,5 @@
 /**
- * Os contornos do logo, tirados da Open Sans (OFL), a fonte da identidade do IFPR: a variável do
+ * Os contornos do logo, tirados da Open Sans (OFL), a fonte do app: a variável do
  * `@fontsource-variable/open-sans` 5.3.0 (`open-sans-latin-wght-normal.woff2`), instanciada no peso 300
  * ("simplifica") e no 800 ("IF"), composta pelo HarfBuzz com o kerning e sem ligaduras (o "fi" fica em
  * duas letras) e com o espaço entre letras já somado (-0,02 em e -0,03 em).

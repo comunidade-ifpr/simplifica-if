@@ -172,7 +172,7 @@ function escreverManifesto(): void {
     productName: "Simplifica IF",
     version: pacote.version,
     description: pacote.description,
-    author: "Instituto Federal do Paraná",
+    author: "Gustavo Rahal",
     license: "MIT",
     private: true,
     main: "main.cjs",

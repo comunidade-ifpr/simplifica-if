@@ -34,12 +34,6 @@ pnpm app:dev        # o app em desenvolvimento (veja apps/desktop/README.md)
 | `packages/contratos-app` | contratos RPC entre interface e servidor |
 | `packages/effect-acp`, `packages/effect-codex-app-server` | copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)) |
 
-## Fora do app
-
-Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base:
-
-- a skill `ifpr-design`.
-
 ## Base, skills e scripts
 
 - `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `revisao-ppc/` (as fichas da tarefa "Revisar um PPC") e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
@@ -59,9 +53,8 @@ As skills deste projeto ficam diretamente no diretório padrão de descoberta do
 .agents/skills/
 ```
 
-Skills disponíveis (só a `verificar-fundamentacao-normativa` vai para o app; as demais rodam só no repositório):
+Skills disponíveis (as com bloco `simplifica:` vão também para o app):
 
-- `ifpr-design/`: identidade visual do IFPR para materiais e interfaces.
 - `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos. Tem bloco `simplifica:` e é tarefa do app.
 
 Ao desenvolver uma skill, consulte os dados da base pela CLI `kb` ou pelas ferramentas `ifpr` do MCP. Só empacote cópias de normas, catálogos ou metadados quando houver motivo claro de portabilidade.

@@ -61,7 +61,7 @@ app.setName(NOME);
 app.commandLine.appendSwitch("lang", "pt-BR");
 app.setAboutPanelOptions({
   applicationName: NOME,
-  copyright: "Instituto Federal do Paraná",
+  copyright: "© 2026 Gustavo Rahal e contribuidores do Simplifica IF",
 });
 app.setPath("userData", NodePath.join(app.getPath("appData"), DESENVOLVIMENTO ? `${NOME} (dev)` : NOME));
 
@@ -283,7 +283,7 @@ function criarJanela(): void {
     minWidth: 800,
     minHeight: 560,
     show: false,
-    // Sem a barra de título do sistema: o cabeçalho verde da interface é a barra (`janela.ts`).
+    // Sem a barra de título do sistema: o cabeçalho da interface é a barra (`janela.ts`).
     ...opcoesBarraTitulo(process.platform),
     backgroundColor: corFundoJanela(nativeTheme.shouldUseDarkColors),
     webPreferences: {

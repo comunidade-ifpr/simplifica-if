@@ -3,8 +3,8 @@
  * `simplifica:` válido no `SKILL.md`, prontas para o motor (`Motor.Skill`).
  *
  * - **Quais entram:** só as com bloco válido (`@simplifica-if/mcp/skills`, o mesmo Effect Schema do
- *   `validar_base.ts`). Skill sem o bloco fica no repositório, sem log de aviso (é o caso normal de
- *   `ifpr-design`…); skill com bloco inválido, `name` diferente da pasta ou
+ *   `validar_base.ts`). Skill sem o bloco fica no repositório, sem log de aviso (é o caso normal
+ *   de skill só do repositório); skill com bloco inválido, `name` diferente da pasta ou
  *   arquivo listado que falta fica de fora com o erro no log. Uma skill quebrada não derruba o servidor
  *   nem as outras.
  * - **O que vai ao motor:** o nome, a descrição do front matter, o corpo do `SKILL.md` como instruções

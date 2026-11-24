@@ -67,7 +67,7 @@ export function pacoteDev(electron: string): string {
   for (const [chave, valor] of [
     ["CFBundleName", "Simplifica IF"],
     ["CFBundleDisplayName", "Simplifica IF"],
-    ["CFBundleIdentifier", "br.edu.ifpr.simplifica.dev"],
+    ["CFBundleIdentifier", "io.github.comunidade-ifpr.simplifica.dev"],
   ] as const) {
     rodar("plutil", ["-replace", chave, "-string", valor, plist]);
   }

@@ -16,7 +16,7 @@ import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { explicarErro } from "../conexao/erros.ts";
 import { registrarErro, textoDoErro } from "../diagnostico.ts";
 import { atalhoPaleta, ProvedorPaleta, usePaleta } from "../explorar/Paleta.tsx";
-import logo from "../marca/logo-sobre-verde.svg";
+import logo from "../marca/logo-sobre-marca.svg";
 
 export const Route = createRootRoute({
   component: Moldura,

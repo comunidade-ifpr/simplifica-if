@@ -1,11 +1,11 @@
 /*
- * Tema do Simplifica IF: Tailwind 4 com as cores e a tipografia da identidade do IFPR (skill
- * `ifpr-design`: verde #1F8A42, vermelho #C72E2E, cinza #2D2D2D, Open Sans), num tema claro e num escuro.
+ * Tema do Simplifica IF: Tailwind 4 com a paleta própria do app (petróleo, cobre e tinta, a mesma do
+ * logo em `docs/marca/`) e a Open Sans, num tema claro e num escuro.
  * O sistema visual está em `docs/plans/revisao-ppc-interface.md` ("Sistema visual").
  *
  * Os nomes dos tokens (`--primary`, `--muted-foreground`, `--warning-surface`…) são os do T3
  * (`apps/web/src/index.css`), porque os componentes copiados para `components/ui` os usam. O texto
- * comum fica em cinza escuro; o verde escuro (#1B5E20, AAA com branco) vai no cabeçalho e no botão
+ * comum fica em tinta; o petróleo escuro (#0B4A55, AAA com branco) vai no cabeçalho e no botão
  * principal. A cor da gravidade (`--grav-*`) é só da revisão de PPC; o azul `info`, só do estado do
  * sistema (conexão, atualização).
  */
@@ -131,108 +131,109 @@
   --page-narrow: 720px;
   --page-wide: 1120px;
 
-  /* Identidade do IFPR */
-  --ifpr-verde: #1f8a42;
-  --ifpr-verde-escuro: #1b5e20;
-  --ifpr-verde-medio: #4caf50;
-  --ifpr-verde-claro: #81c784;
-  --ifpr-verde-muito-claro: #e8f5e9;
-  --ifpr-vermelho: #c72e2e;
-  --ifpr-vermelho-claro: #ef5350;
-  --ifpr-vermelho-muito-claro: #ffebee;
-  --ifpr-cinza-escuro: #2d2d2d;
-  --ifpr-cinza: #757575;
-  --ifpr-cinza-claro: #bdbdbd;
-  --ifpr-cinza-muito-claro: #f5f5f5;
+  /* A paleta do Simplifica IF (`docs/marca/README.md`). */
+  --petroleo-900: #0b4a55;
+  --petroleo-800: #0e5a66;
+  --petroleo-700: #0d6372;
+  --petroleo-600: #11707f;
+  --petroleo-300: #5fc0cc;
+  --petroleo-100: #e3f0f2;
+  --cobre: #c96a1c;
+  --tinta: #1d2b31;
+  --vermelho: #c62828;
+  --vermelho-claro: #ef5350;
+  --verde-ok: #2f7d4a;
+  --verde-ok-escuro: #22603a;
+  --verde-ok-claro: #7cc79a;
 
-  /* O cabeçalho: o #1F8A42 com o branco dá 4,4:1 e falha o AA nos 14 px da navegação. */
-  --marca: var(--ifpr-verde-escuro);
+  /* O cabeçalho: branco sobre #0B4A55 dá 9,9:1 (AAA). */
+  --marca: var(--petroleo-900);
   --background: #ffffff;
-  --foreground: var(--ifpr-cinza-escuro);
+  --foreground: var(--tinta);
   --card: #ffffff;
-  --card-foreground: var(--ifpr-cinza-escuro);
+  --card-foreground: var(--tinta);
   --popover: #ffffff;
-  --popover-foreground: var(--ifpr-cinza-escuro);
-  --primary: var(--ifpr-verde-escuro);
+  --popover-foreground: var(--tinta);
+  --primary: var(--petroleo-800);
   --primary-foreground: #ffffff;
-  --secondary: #f6f7f5;
-  --secondary-foreground: var(--ifpr-cinza-escuro);
-  --muted: #f6f7f5;
-  /* #6b6b6b: o cinza médio do IFPR um pouco mais escuro, para AA também sobre #f6f7f5 */
-  --muted-foreground: #6b6b6b;
-  --accent: var(--ifpr-verde-muito-claro);
-  --accent-foreground: var(--ifpr-verde-escuro);
-  /* O link: o verde do IFPR um pouco mais escuro, porque o #1F8A42 dá 4,4:1 com o branco e falha o AA. */
-  --link: #1e7f3e;
-  --destructive: var(--ifpr-vermelho);
+  --secondary: #f3f6f6;
+  --secondary-foreground: var(--tinta);
+  --muted: #f3f6f6;
+  /* 5,4:1 sobre #f3f6f6 e 5,8:1 sobre o branco (AA). */
+  --muted-foreground: #5b676c;
+  --accent: var(--petroleo-100);
+  --accent-foreground: var(--petroleo-900);
+  /* 6,9:1 com o branco (AA). */
+  --link: var(--petroleo-700);
+  --destructive: var(--vermelho);
   --destructive-foreground: #a32424;
-  --border: #e2e4e0;
-  --input: var(--ifpr-cinza-claro);
-  --ring: var(--ifpr-verde);
+  --border: #dde3e4;
+  --input: #b7c2c5;
+  --ring: var(--petroleo-600);
   --placeholder: var(--muted-foreground);
   --info: #0277bd;
   --info-foreground: #01579b;
-  --success: var(--ifpr-verde);
-  --success-foreground: var(--ifpr-verde-escuro);
+  --success: var(--verde-ok);
+  --success-foreground: var(--verde-ok-escuro);
   --warning: #ffa726;
   --warning-foreground: #8a4b00;
   --warning-surface: #fff4e0;
-  --error: var(--ifpr-vermelho);
+  --error: var(--vermelho);
   --error-foreground: #a32424;
   --error-surface: #fdecec;
-  --message: var(--ifpr-verde-muito-claro);
-  --message-foreground: var(--ifpr-cinza-escuro);
+  --message: var(--petroleo-100);
+  --message-foreground: var(--tinta);
   /* Os componentes do T3 leem estas variáveis já com o ajuste de contraste deles; aqui, sem ajuste. */
   --contrast-muted-foreground: var(--muted-foreground);
 
   /* A gravidade da revisão de PPC: glifo, cor e palavra andam juntos. */
-  --grav-corrigir: #c72e2e;
+  --grav-corrigir: var(--vermelho);
   --grav-corrigir-texto: #a32424;
   --grav-corrigir-fundo: #fdecec;
   --grav-conferir: #b26a00;
   --grav-conferir-texto: #8a4b00;
   --grav-conferir-fundo: #fff4e0;
-  --grav-ok: #1f8a42;
-  --grav-ok-texto: var(--ifpr-verde-escuro);
-  --grav-ok-fundo: #e8f5e9;
+  --grav-ok: var(--verde-ok);
+  --grav-ok-texto: var(--verde-ok-escuro);
+  --grav-ok-fundo: #e7f3ea;
   --grav-nao-lido: #bdbdbd;
 }
 
 .dark {
   color-scheme: dark;
-  --marca: #14361a;
-  --background: #121512;
+  --marca: #0c3138;
+  --background: #111517;
   --foreground: #ececec;
-  --card: #1a1e1b;
+  --card: #191e21;
   --card-foreground: #ececec;
-  --popover: #1a1e1b;
+  --popover: #191e21;
   --popover-foreground: #ececec;
-  /* Sem o #4CAF50 cheio, que brilha: o verde do botão fica fechado, com texto branco. */
-  --primary: #2e7d32;
+  /* Branco sobre #13606C dá 7,2:1. */
+  --primary: #13606c;
   --primary-foreground: #ffffff;
-  --secondary: #232824;
+  --secondary: #21282b;
   --secondary-foreground: #ececec;
-  --muted: #232824;
-  --muted-foreground: #a8aca8;
-  --accent: #223a26;
-  --accent-foreground: #c8e6c9;
-  --link: var(--ifpr-verde-claro);
-  --destructive: var(--ifpr-vermelho-claro);
+  --muted: #21282b;
+  --muted-foreground: #a6b0b4;
+  --accent: #17353b;
+  --accent-foreground: #bfe3e8;
+  --link: var(--petroleo-300);
+  --destructive: var(--vermelho-claro);
   --destructive-foreground: #ff8a80;
-  --border: #2e342f;
-  --input: #3d443e;
-  --ring: var(--ifpr-verde-medio);
+  --border: #2c3438;
+  --input: #3b4549;
+  --ring: #3aa6b4;
   --info: #4fc3f7;
   --info-foreground: #81d4fa;
-  --success: var(--ifpr-verde-medio);
-  --success-foreground: var(--ifpr-verde-claro);
+  --success: var(--verde-ok-claro);
+  --success-foreground: var(--verde-ok-claro);
   --warning: #ffa726;
   --warning-foreground: #ffcc80;
   --warning-surface: rgb(255 183 77 / 0.14);
-  --error: var(--ifpr-vermelho-claro);
+  --error: var(--vermelho-claro);
   --error-foreground: #ff8a80;
   --error-surface: rgb(239 83 80 / 0.14);
-  --message: #1f3323;
+  --message: #16313a;
   --message-foreground: #ececec;
 
   --grav-corrigir: #ef5350;
@@ -241,10 +242,10 @@
   --grav-conferir: #ffb74d;
   --grav-conferir-texto: #ffcc80;
   --grav-conferir-fundo: rgb(255 183 77 / 0.14);
-  --grav-ok: #81c784;
-  --grav-ok-texto: #81c784;
-  --grav-ok-fundo: rgb(129 199 132 / 0.12);
-  --grav-nao-lido: #4a504b;
+  --grav-ok: var(--verde-ok-claro);
+  --grav-ok-texto: var(--verde-ok-claro);
+  --grav-ok-fundo: rgb(124 199 154 / 0.12);
+  --grav-nao-lido: #4a5357;
 }
 
 @layer base {
@@ -255,7 +256,7 @@
   body {
     @apply bg-background font-sans text-foreground antialiased;
   }
-  /* Os radios e as caixas nativos no verde do app, não no azul do sistema. */
+  /* Os radios e as caixas nativos na cor do app, não no azul do sistema. */
   :root {
     accent-color: var(--primary);
   }
@@ -338,9 +339,9 @@
   & li + li {
     margin-top: 0.25em;
   }
-  /* A citação é a voz do documento: serifada, com o filete verde. */
+  /* A citação é a voz do documento: serifada, com o filete em petróleo (o do link, nos dois temas). */
   & blockquote {
-    border-left: 3px solid var(--ifpr-verde);
+    border-left: 3px solid var(--link);
     font-family: var(--font-serif);
     font-size: 1.0625em;
     line-height: 1.65;
