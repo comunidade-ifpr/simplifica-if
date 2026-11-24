@@ -286,9 +286,12 @@ normas:
   - id: ifpr/proens/in/2021/1
     title: Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021
     data_publicacao: "2021-08-19"
-    ementa: Estabelece normas para execução da Política de Formação e Desenvolvimento de Coleções das Bibliotecas do IFPR.
-    status_vigencia: a confirmar
-    curadoria: rascunho
+    ementa: Estabelece normas para execução da Política de Formação e Desenvolvimento de Coleções da Rede de Bibliotecas do IFPR.
+    status_vigencia: revogada
+    status_fonte: ifpr/proens/in/2025/2#art34
+    fonte_url: "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q36au1LYH7FTy46N6ojWpWkRmbmmHWnoHiXc03RSwUjZ1QriEzlgYneFBPn1t096UeL-8HbgQ0TWEaa0zGPmQE"
+    fonte_referencia: "SEI/IFPR nº 1346434; Boletim de Serviço Eletrônico de 20/08/2021; vigência a partir de 1º/09/2021 (art. 39)"
+    curadoria: conferido
 
   # --- Alvos e origens de base-conhecimento/relacoes.yaml (fase 5). Status provado pela relação
   # (status_fonte = dispositivo que opera ou evidencia). Ementas descritivas, a conferir.

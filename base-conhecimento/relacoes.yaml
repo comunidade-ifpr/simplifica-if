@@ -308,6 +308,13 @@ relacoes:
 
   # --- Normas do IFPR ---
   - tipo: revoga
+    origem: ifpr/proens/in/2025/2
+    operador: "#art34"
+    alvo: ifpr/proens/in/2021/1
+    evidencia: { em: "ifpr/proens/in/2025/2#art34", trecho: "Fica revogada a Instrução Normativa Reitoria/Proens/IFPR nº 1, de 19 de agosto de 2021" }
+    confirmado_em: "2026-11-24"
+    proposta: manual
+  - tipo: revoga
     origem: ifpr/proens/portaria/2024/121
     operador: "#art74"
     alvo: ifpr/proens/portaria/2021/26
