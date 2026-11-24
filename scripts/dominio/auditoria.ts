@@ -55,13 +55,10 @@ function auditarCnct(curso: Curso, nome: string): string[] {
   return erros;
 }
 
-/** Cada campo do PPC (ano e vagas) tem status e data de curadoria próprios. */
+/** As vagas do PPC têm status e data de curadoria próprios (o ano vem com evidência no front matter do PPC). */
 function auditarCuradoriaPpc(curso: Curso, nome: string): string[] {
   const erros: string[] = [];
-  const campos = [
-    ["ano", curso.ppc.curadoriaAno, curso.ppc.dataCuradoriaAno],
-    ["vagas", curso.ppc.curadoriaVagas, curso.ppc.dataCuradoriaVagas],
-  ] as const;
+  const campos = [["vagas", curso.ppc.curadoriaVagas, curso.ppc.dataCuradoriaVagas]] as const;
   for (const [campo, status, data] of campos) {
     if (status && !ehRotuloCuradoria(status)) erros.push(`${nome}: ppc.curadoria_${campo} desconhecida: ${status}`);
     if (data && !status) erros.push(`${nome}: ppc.data_curadoria_${campo} sem ppc.curadoria_${campo}`);

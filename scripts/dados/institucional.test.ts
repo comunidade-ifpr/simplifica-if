@@ -63,12 +63,9 @@ function dadosExemplo(): DadosInstitucionais {
         ppc: {
           url: "https://exemplo.ifpr.edu.br/ppc.pdf",
           markdown_path: "institucional/ifpr/ppcs/exemplo/tecnico-em-exemplo/2025.md",
-          ano_documento: 2025,
           vagas: "30-40",
           trecho_vagas: "serão ofertadas 40 vagas",
           periodicidade_vagas: "anual",
-          curadoria_ano: "Revisado",
-          data_curadoria_ano: "2026-05-20",
           curadoria_vagas: "Precisa de revisão",
         },
       },

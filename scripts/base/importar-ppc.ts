@@ -21,8 +21,16 @@ import * as Schema from "effect/Schema";
 import { ErroDocx } from "@simplifica-if/docx/erro";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { aplicarOmissao, type Contagem } from "@simplifica-if/kb/ppcs/dados-pessoais";
-import { DESCONHECIDO, serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import {
+  conferirEvidenciaAno,
+  DESCONHECIDO,
+  FONTE_TEXTO,
+  serializarFrontMatterPendente,
+  serializarFrontMatterPpc,
+} from "@simplifica-if/kb/ppcs/front-matter";
 import { caminhoPpc, compararVersoesPpc, idPpc, PASTA_PPCS, partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
+import { comChave, ehFalhaAoGravar, type Gravacao, gravarJuntos } from "./gravacao.ts";
+import { caminhoPendente, proximaVersao, rotuloLivre, STATUS_REABERTO } from "./versoes-ppc.ts";
 import { conferirArquivoDocx, converterPpc } from "@simplifica-if/ppc/conversao-docx/conversao";
 import type { RepresentacaoGrafica } from "@simplifica-if/ppc/conversao-docx/figura";
 import { esquemaCursoLocal, esquemaPpcCurso, textoRegistro, type CursoLocal } from "../dados/institucional.ts";
@@ -47,6 +55,7 @@ export const MotivoImportacao = Schema.Literals([
   "fonte-url-nao-https",
   "markdown-path-fora",
   "ano-invalido",
+  "evidencia-invalida",
   "versao-anterior",
   "arquivo-inexistente",
   "arquivo-recusado",
@@ -90,7 +99,14 @@ export type OpcoesImportacao = {
   /** Endereço publicado do PPC (vira `fonte_url` e `ppc.url`). */
   fonteUrl: string;
   /** Ano do documento: a versão do PPC (`<ano>`, ou `<ano>-2`… se o curso já tem PPC desse ano). */
-  ano: number;
+  ano?: number | undefined;
+  /**
+   * Trecho literal que traz o ano (`ano_evidencia`). Sem ele (ou sem `ano`), o PPC não entra na base:
+   * vai para `curadoria/pendencias/ppcs/`, com a pendência `ano`, e o registro do curso não muda.
+   */
+  evidencia?: string | undefined;
+  /** Onde está a evidência: `texto` (o padrão, no corpo convertido) ou a URL https da fonte. */
+  fonteAno?: string | undefined;
   /**
    * Reconverte o PPC vigente (o mesmo documento) e grava por cima dele, mantendo o ID. Sem ele, o PPC
    * entra como versão nova e o vigente fica na base, substituído.
@@ -102,17 +118,23 @@ export type OpcoesImportacao = {
 };
 
 export type ResultadoImportacao = {
-  /** Relativos a `base-conhecimento/`. */
+  /**
+   * PPC gravado: relativo a `base-conhecimento/` quando entrou na base; relativo à raiz do repositório
+   * (`curadoria/pendencias/ppcs/…`) quando ficou pendente.
+   */
   markdownPath: string;
+  /** Relativo a `base-conhecimento/`. */
   registroPath: string;
-  /** ID permanente do PPC gravado. */
-  id: string;
+  /** ID permanente do PPC gravado; `null` no PPC pendente, que ainda não tem ID. */
+  id: string | null;
+  /** Pendências do PPC que ficou fora da base (vazia quando entrou). */
+  pendencias: string[];
   /** Caminho do PPC que era o vigente e fica na base como substituído (`null` se não havia, ou na reconversão). */
   substituido: string | null;
   ppcUrlAnterior: string | null;
   omitidos: Contagem;
   urlsLimpas: ContagemUrls;
-  /** Campos de curadoria (`ano`, `vagas`) reabertos como "Precisa de revisão". */
+  /** Campos de curadoria (`vagas`) reabertos como "Precisa de revisão". */
   curadoriaReaberta: string[];
   /** `ppc.observacoes` foi mantido, mas foi escrito sobre o texto anterior: reconferir. */
   observacoesAReconferir: boolean;
@@ -121,7 +143,8 @@ export type ResultadoImportacao = {
 };
 
 const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-export const STATUS_REABERTO = "Precisa de revisão";
+export { FalhaAoGravar, gravarJuntos } from "./gravacao.ts";
+export { STATUS_REABERTO } from "./versoes-ppc.ts";
 
 const decodificarCurso = Schema.decodeUnknownResult(esquemaCursoLocal, ESTRITO);
 const ORDEM_CURSO = Object.keys(esquemaCursoLocal.fields);
@@ -244,89 +267,6 @@ function markdownDaBase(
   };
 }
 
-/**
- * `objeto` com `chave` = `valor`: no mesmo lugar, se a chave já existe; senão, antes da primeira chave
- * existente que vem depois dela em `ordem` (a ordem dos campos do schema). As outras chaves não mudam
- * de posição, para o registro já completo sair igual byte a byte.
- */
-function comChave<T extends object>(objeto: T, chave: string, valor: unknown, ordem: readonly string[]): T {
-  if (chave in objeto) return { ...objeto, [chave]: valor };
-  const depois = new Set(ordem.slice(ordem.indexOf(chave) + 1));
-  const entradas: Array<[string, unknown]> = Object.entries(objeto);
-  const posicao = entradas.findIndex(([nome]) => depois.has(nome));
-  entradas.splice(posicao === -1 ? entradas.length : posicao, 0, [chave, valor]);
-  return Object.fromEntries(entradas) as T;
-}
-
-export type Gravacao = { destino: string; texto: string };
-
-/** Falha de `gravarJuntos`, com o destino em que ela ocorreu; a falha do sistema fica em `cause`. */
-export class FalhaAoGravar extends Schema.TaggedError<FalhaAoGravar>()("FalhaAoGravar", {
-  destino: Schema.String,
-  /** `code` do erro do sistema (`ENOSPC`, `EACCES`), quando há. */
-  codigo: Schema.optional(Schema.String),
-  cause: Schema.Defect(),
-}) {
-  override get message(): string {
-    return `Falha ao gravar ${this.destino}${this.codigo ? ` (${this.codigo})` : ""}`;
-  }
-}
-
-const ehFalhaAoGravar = Schema.is(FalhaAoGravar);
-
-function codigoDoSistema(erro: unknown): string | undefined {
-  const code: unknown = (erro as { code?: unknown } | null)?.code;
-  return typeof code === "string" ? code : undefined;
-}
-
-/**
- * Grava os arquivos juntos: cada texto vai primeiro para um temporário na pasta do destino e só
- * depois, com todos escritos, é renomeado sobre o destino. Se uma troca falha, as já feitas são
- * desfeitas (o arquivo anterior volta, o novo sai) e sobe `FalhaAoGravar` com o destino que falhou.
- * `renomear` é o `renameSync`; os testes o trocam para simular a falha.
- */
-export function gravarJuntos(
-  gravacoes: Gravacao[],
-  renomear: (de: string, para: string) => void = NodeFS.renameSync,
-): void {
-  const sufixo = `${NodeCrypto.randomBytes(4).toString("hex")}.tmp`;
-  const itens = gravacoes.map((gravacao) => ({
-    ...gravacao,
-    temporario: NodePath.join(NodePath.dirname(gravacao.destino), `.${NodePath.basename(gravacao.destino)}.${sufixo}`),
-    anterior: NodeFS.existsSync(gravacao.destino) ? NodeFS.readFileSync(gravacao.destino) : null,
-    pastaCriada: undefined as string | undefined,
-  }));
-  const trocados: typeof itens = [];
-  let atual: (typeof itens)[number] | undefined;
-  try {
-    for (const item of itens) {
-      atual = item;
-      item.pastaCriada = NodeFS.mkdirSync(NodePath.dirname(item.destino), { recursive: true });
-      NodeFS.writeFileSync(item.temporario, item.texto, "utf-8");
-    }
-    for (const item of itens) {
-      atual = item;
-      renomear(item.temporario, item.destino);
-      trocados.push(item);
-    }
-  } catch (erro) {
-    for (const item of trocados.reverse()) {
-      if (item.anterior) NodeFS.writeFileSync(item.destino, item.anterior);
-      else NodeFS.rmSync(item.destino, { force: true });
-    }
-    for (const item of itens) {
-      NodeFS.rmSync(item.temporario, { force: true });
-      if (item.pastaCriada) NodeFS.rmSync(item.pastaCriada, { recursive: true, force: true });
-    }
-    const codigo = codigoDoSistema(erro);
-    throw new FalhaAoGravar({
-      destino: atual?.destino ?? "",
-      ...(codigo === undefined ? {} : { codigo }),
-      cause: erro,
-    });
-  }
-}
-
 /** Converte o DOCX e grava o PPC e o registro do curso. Nada é gravado se alguma conferência falha. */
 export const importarPpcDocx = Effect.fn("importarPpc.importar")(function* (opcoes: OpcoesImportacao) {
   return yield* Effect.suspend(() => {
@@ -345,6 +285,7 @@ export const importarPpcDocx = Effect.fn("importarPpc.importar")(function* (opco
  */
 function escolherVersao(
   opcoes: OpcoesImportacao,
+  ano: number,
   campusId: string,
   cursoSlug: string,
   versaoVigente: string | null,
@@ -353,28 +294,25 @@ function escolherVersao(
     if (!versaoVigente) {
       throw recusa("markdown-path-fora", `O curso ${campusId}/${cursoSlug} não tem PPC vigente para reconverter`);
     }
-    if (!versaoVigente.startsWith(String(opcoes.ano))) {
+    if (!versaoVigente.startsWith(String(ano))) {
       throw recusa(
         "ano-invalido",
-        `--reconverter grava por cima do PPC vigente (versão ${versaoVigente}); --ano ${opcoes.ano} não é o ano dele. PPC de outro ano é versão nova: tire --reconverter.`,
+        `--reconverter grava por cima do PPC vigente (versão ${versaoVigente}); --ano ${ano} não é o ano dele. PPC de outro ano é versão nova: tire --reconverter.`,
       );
     }
     return versaoVigente;
   }
   const pasta = NodePath.join(opcoes.caminhos.raiz, PASTA_PPCS, campusId, cursoSlug);
-  const existentes = new Set(
-    NodeFS.existsSync(pasta)
-      ? NodeFS.readdirSync(pasta)
-          .filter((nome) => nome.endsWith(".md"))
-          .map((nome) => nome.slice(0, -3))
-      : [],
-  );
-  let versao = String(opcoes.ano);
-  for (let n = 2; existentes.has(versao); n += 1) versao = `${opcoes.ano}-${n}`;
+  const existentes = NodeFS.existsSync(pasta)
+    ? NodeFS.readdirSync(pasta)
+        .filter((nome) => nome.endsWith(".md"))
+        .map((nome) => nome.slice(0, -3))
+    : [];
+  const versao = proximaVersao(existentes, ano);
   if (versaoVigente && compararVersoesPpc(versao, versaoVigente) < 0) {
     throw recusa(
       "versao-anterior",
-      `O PPC vigente do curso é a versão ${versaoVigente}; um PPC de ${opcoes.ano} seria anterior a ele. A base não troca o vigente por um PPC mais antigo.`,
+      `O PPC vigente do curso é a versão ${versaoVigente}; um PPC de ${ano} seria anterior a ele. A base não troca o vigente por um PPC mais antigo.`,
     );
   }
   return versao;
@@ -388,8 +326,23 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   conferirFonteUrl(opcoes.fonteUrl);
   const { registro, relativo, arquivo: arquivoRegistro } = lerCurso(opcoes.caminhos, campusId, cursoSlug);
 
-  if (!Number.isInteger(opcoes.ano) || opcoes.ano < 1900 || opcoes.ano > 2999) {
+  if (opcoes.ano !== undefined && (!Number.isInteger(opcoes.ano) || opcoes.ano < 1900 || opcoes.ano > 2999)) {
     throw recusa("ano-invalido", `--ano deve ser o ano do documento, com quatro dígitos: ${opcoes.ano}`);
+  }
+  const fonteAno = opcoes.fonteAno ?? FONTE_TEXTO;
+  if (fonteAno !== FONTE_TEXTO && !/^https:\/\/\S+$/.test(fonteAno)) {
+    throw recusa("evidencia-invalida", `--fonte-ano deve ser "texto" ou URL https: ${fonteAno}`);
+  }
+  if (opcoes.evidencia !== undefined && opcoes.ano === undefined) {
+    throw recusa("evidencia-invalida", "--evidencia sem --ano: informe o ano que o trecho traz");
+  }
+  if (opcoes.evidencia !== undefined && opcoes.ano !== undefined && !opcoes.evidencia.includes(String(opcoes.ano))) {
+    throw recusa("evidencia-invalida", `--evidencia deve conter o ano ${opcoes.ano}: "${opcoes.evidencia}"`);
+  }
+  // Com o ano e a evidência, o PPC entra na base; sem eles, fica pendente, fora dela.
+  const anoComEvidencia = opcoes.ano !== undefined && opcoes.evidencia !== undefined ? opcoes.ano : undefined;
+  if (opcoes.reconverter && anoComEvidencia === undefined) {
+    throw recusa("evidencia-invalida", "--reconverter grava na base: informe --ano e --evidencia");
   }
   const vigenteAtual = registro.ppc?.markdown_path;
   const partesVigente = vigenteAtual ? partesDoCaminhoPpc(vigenteAtual) : null;
@@ -402,9 +355,10 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
       `ppc.markdown_path do curso é ${vigenteAtual}, fora do caminho ${PASTA_PPCS}/${campusId}/${cursoSlug}/<versao>.md; corrija o registro antes`,
     );
   }
-  const versao = escolherVersao(opcoes, campusId, cursoSlug, partesVigente?.versao ?? null);
-  const markdownPath = caminhoPpc(campusId, cursoSlug, versao);
-  const destino = NodePath.join(opcoes.caminhos.raiz, markdownPath);
+  const versao =
+    anoComEvidencia === undefined
+      ? null
+      : escolherVersao(opcoes, anoComEvidencia, campusId, cursoSlug, partesVigente?.versao ?? null);
 
   const arquivoDocx = NodePath.resolve(opcoes.arquivoDocx);
   if (!NodeFS.existsSync(arquivoDocx)) throw recusa("arquivo-inexistente", `Arquivo não encontrado: ${arquivoDocx}`);
@@ -418,8 +372,7 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   }
   const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx), opcoes.agora);
   const hoje = dataLocalIso(opcoes.agora);
-  const frontMatter = serializarFrontMatterPpc({
-    id: idPpc(campusId, cursoSlug, versao),
+  const comum = {
     fonte_url: opcoes.fonteUrl,
     fonte_sha256: DESCONHECIDO,
     convertido_em: hoje,
@@ -428,16 +381,63 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
     arquivo_convertido_sha256: NodeCrypto.createHash("sha256").update(bytes).digest("hex"),
     proveniencia: "registrada",
     nota_proveniencia: NOTA_DOCX,
+  } as const;
+  const resultadoComum = {
+    registroPath: `institucional/ifpr/${relativo}`,
+    omitidos: convertido.omitidos,
+    urlsLimpas: convertido.urlsLimpas,
+    representacaoGrafica: convertido.representacaoGrafica,
+  };
+
+  if (versao === null) {
+    const pendencias = [
+      opcoes.ano === undefined
+        ? "ano: importado sem --ano; ache o ano do documento (capa, ato de aprovação) e a evidência literal"
+        : `ano: importado com --ano ${opcoes.ano} sem --evidencia; confira o trecho que traz o ano`,
+    ];
+    const rotulo = rotuloLivre(
+      opcoes.caminhos,
+      campusId,
+      cursoSlug,
+      opcoes.ano === undefined ? "sem-ano" : String(opcoes.ano),
+    );
+    const markdownPath = caminhoPendente(campusId, cursoSlug, rotulo);
+    const texto =
+      serializarFrontMatterPendente({
+        ...(opcoes.ano === undefined ? {} : { ano_documento: String(opcoes.ano) }),
+        ...comum,
+        pendencias,
+      }) + convertido.corpo;
+    gravarOuRecusar(opcoes, [{ destino: NodePath.join(opcoes.caminhos.raizProjeto, markdownPath), texto }]);
+    return {
+      ...resultadoComum,
+      markdownPath,
+      id: null,
+      pendencias,
+      substituido: null,
+      ppcUrlAnterior: null,
+      curadoriaReaberta: [],
+      observacoesAReconferir: false,
+    };
+  }
+
+  const markdownPath = caminhoPpc(campusId, cursoSlug, versao);
+  const destino = NodePath.join(opcoes.caminhos.raiz, markdownPath);
+  const evidencia = { ano_evidencia: opcoes.evidencia!, ano_fonte: fonteAno };
+  const problemaEvidencia = conferirEvidenciaAno(evidencia, convertido.corpo);
+  if (problemaEvidencia) throw recusa("evidencia-invalida", problemaEvidencia);
+  const frontMatter = serializarFrontMatterPpc({
+    id: idPpc(campusId, cursoSlug, versao),
+    ano_documento: String(anoComEvidencia),
+    ...evidencia,
+    ...comum,
   });
 
   let ppc: NonNullable<CursoLocal["ppc"]> = registro.ppc ?? {};
   ppc = comChave(ppc, "url", opcoes.fonteUrl, ORDEM_PPC);
   ppc = comChave(ppc, "markdown_path", markdownPath, ORDEM_PPC);
-  // O ano vem de --ano; ele e as vagas registradas voltam para revisão contra o texto novo.
-  const curadoriaReaberta: string[] = ["ano"];
-  ppc = comChave(ppc, "ano_documento", opcoes.ano, ORDEM_PPC);
-  ppc = comChave(ppc, "curadoria_ano", STATUS_REABERTO, ORDEM_PPC);
-  ppc = comChave(ppc, "data_curadoria_ano", hoje, ORDEM_PPC);
+  // As vagas registradas vieram do texto anterior: voltam para revisão contra o PPC novo.
+  const curadoriaReaberta: string[] = [];
   if (ppc.vagas !== undefined || ppc.trecho_vagas !== undefined || ppc.periodicidade_vagas !== undefined) {
     ppc = comChave(ppc, "curadoria_vagas", STATUS_REABERTO, ORDEM_PPC);
     ppc = comChave(ppc, "data_curadoria_vagas", hoje, ORDEM_PPC);
@@ -445,13 +445,27 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   }
 
   // Os dois textos ficam prontos antes de qualquer escrita; a gravação é tudo ou nada.
-  const textoMarkdown = frontMatter + convertido.corpo;
   const textoCurso = textoRegistro(comChave(registro, "ppc", ppc, ORDEM_CURSO));
+  gravarOuRecusar(opcoes, [
+    { destino, texto: frontMatter + convertido.corpo },
+    { destino: arquivoRegistro, texto: textoCurso },
+  ]);
+
+  return {
+    ...resultadoComum,
+    markdownPath,
+    id: idPpc(campusId, cursoSlug, versao),
+    pendencias: [],
+    substituido: !opcoes.reconverter && vigenteAtual ? vigenteAtual : null,
+    ppcUrlAnterior: registro.ppc?.url && registro.ppc.url !== opcoes.fonteUrl ? registro.ppc.url : null,
+    curadoriaReaberta,
+    observacoesAReconferir: Boolean(registro.ppc?.observacoes),
+  };
+}
+
+function gravarOuRecusar(opcoes: OpcoesImportacao, gravacoes: Gravacao[]): void {
   try {
-    gravarJuntos([
-      { destino, texto: textoMarkdown },
-      { destino: arquivoRegistro, texto: textoCurso },
-    ]);
+    gravarJuntos(gravacoes);
   } catch (erro) {
     if (!ehFalhaAoGravar(erro)) throw erro;
     const arquivo = NodePath.relative(opcoes.caminhos.raiz, erro.destino).split(NodePath.sep).join("/");
@@ -464,17 +478,4 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
       cause: erro,
     });
   }
-
-  return {
-    markdownPath,
-    registroPath: `institucional/ifpr/${relativo}`,
-    id: idPpc(campusId, cursoSlug, versao),
-    substituido: !opcoes.reconverter && vigenteAtual ? vigenteAtual : null,
-    ppcUrlAnterior: registro.ppc?.url && registro.ppc.url !== opcoes.fonteUrl ? registro.ppc.url : null,
-    omitidos: convertido.omitidos,
-    urlsLimpas: convertido.urlsLimpas,
-    curadoriaReaberta,
-    observacoesAReconferir: Boolean(registro.ppc?.observacoes),
-    representacaoGrafica: convertido.representacaoGrafica,
-  };
 }

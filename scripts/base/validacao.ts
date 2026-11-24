@@ -17,6 +17,7 @@ import {
   validarStubs,
   validarUnicidadeIds,
 } from "./validacao/normas.ts";
+import { validarPendenciasPpcs } from "./validacao/pendencias.ts";
 import { validarArtefatosConversaoPpc, validarPpcs } from "./validacao/ppcs.ts";
 
 export type ResultadoValidacao = { erros: string[]; totalNormas: number };
@@ -28,6 +29,7 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
   erros.push(...validarNormasNaRaiz(ctx));
   erros.push(...validarReadme(ctx));
   erros.push(...validarPpcs(ctx));
+  erros.push(...validarPendenciasPpcs(ctx));
   erros.push(...validarCatalogos(ctx));
   if (opcoes.artefatosPpc) erros.push(...validarArtefatosConversaoPpc(ctx));
 

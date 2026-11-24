@@ -862,7 +862,7 @@ describe("triagem do texto dirigido a IA", () => {
 });
 
 describe("triagem nos PPCs da base", () => {
-  test("nenhuma linha dos 202 PPCs convertidos (todos os níveis) é apontada como texto dirigido a IA", () => {
+  test("nenhuma linha dos PPCs da base (todos os níveis) é apontada como texto dirigido a IA", () => {
     const raiz = NodePath.join(import.meta.dirname, "../../../base-conhecimento/institucional/ifpr/ppcs");
     const arquivos: string[] = [];
     const andar = (pasta: string) => {
@@ -871,7 +871,10 @@ describe("triagem nos PPCs da base", () => {
         else if (e.name.endsWith(".md")) arquivos.push(NodePath.join(pasta, e.name));
     };
     andar(raiz);
-    expect(arquivos.length).toBeGreaterThanOrEqual(202);
+    const indice = JSON.parse(NodeFS.readFileSync(NodePath.join(raiz, "index.json"), "utf8")) as {
+      total_itens: number;
+    };
+    expect(arquivos.length).toBe(indice.total_itens);
     const achados = arquivos.flatMap((arquivo) =>
       NodeFS.readFileSync(arquivo, "utf8")
         .split("\n")

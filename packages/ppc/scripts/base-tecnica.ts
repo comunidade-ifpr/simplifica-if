@@ -18,6 +18,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Layers from "@simplifica-if/kb/layers";
+import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { montarBaseRevisao } from "../src/base-revisao.ts";
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
 import type { CursoCnct } from "../src/verificadores/comum.ts";
@@ -27,7 +28,7 @@ export type PpcDaBase = {
   caminho: string;
   forma: string;
   cnct: CursoCnct | null;
-  /** `ppc.ano_documento` do curso: a data do PPC para a regra da revogação recente (`dataPpc`). */
+  /** `ano_documento` do front matter do PPC: a data do PPC para a regra da revogação recente (`dataPpc`). */
   ano: number | null;
 };
 
@@ -54,7 +55,7 @@ export function ppcsTecnicos(raiz: string, cncts: readonly CursoCnct[]): PpcDaBa
         nivel?: string;
         forma_oferta?: string;
         cnct_id?: string | null;
-        ppc?: { markdown_path?: string; ano_documento?: number | null };
+        ppc?: { markdown_path?: string };
       };
       const markdown = curso.ppc?.markdown_path;
       if (curso.nivel !== "médio" || !markdown) continue;
@@ -65,7 +66,7 @@ export function ppcsTecnicos(raiz: string, cncts: readonly CursoCnct[]): PpcDaBa
         caminho,
         forma: curso.forma_oferta ?? "",
         cnct: curso.cnct_id ? (porSlug.get(curso.cnct_id.replace(/^cnct:/, "")) ?? null) : null,
-        ano: curso.ppc?.ano_documento ?? null,
+        ano: Number(analisarPpc(NodeFS.readFileSync(caminho, "utf8"), markdown).proveniencia.ano_documento),
       });
     }
   // Um PPC pode servir a mais de um curso: fica o primeiro.

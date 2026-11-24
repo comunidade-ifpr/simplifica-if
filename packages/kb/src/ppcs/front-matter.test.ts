@@ -4,13 +4,20 @@ import {
   corpoPpc,
   ErroFrontMatter,
   linhasFrontMatter,
+  analisarPpcPendente,
+  conferirEvidenciaAno,
   mascararFrontMatter,
+  type PpcPendente,
   type ProvenienciaPpc,
+  serializarFrontMatterPendente,
   serializarFrontMatterPpc,
 } from "./front-matter.ts";
 
 const reconstruida: ProvenienciaPpc = {
   id: "ppc:curitiba/tecnico-em-enfermagem/2023",
+  ano_documento: "2023",
+  ano_evidencia: "Curitiba 2023",
+  ano_fonte: "texto",
   fonte_url: "https://ifpr.edu.br/curitiba/wp-content/uploads/PPC_2024.pdf",
   fonte_sha256: "desconhecido",
   convertido_em: "2026-05-28",
@@ -25,7 +32,9 @@ describe("front matter de PPC", () => {
   test("serializa, lê de volta e preserva o corpo", () => {
     const yaml = serializarFrontMatterPpc(reconstruida);
     expect(
-      String(yaml).startsWith("---\nid: ppc:curitiba/tecnico-em-enfermagem/2023\nfonte_url: https://ifpr.edu.br/"),
+      String(yaml).startsWith(
+        '---\nid: ppc:curitiba/tecnico-em-enfermagem/2023\nano_documento: 2023\nano_evidencia: "Curitiba 2023"\nano_fonte: texto\nfonte_url: https://ifpr.edu.br/',
+      ),
     ).toBe(true);
     expect(yaml).toContain('nota_proveniencia: "Reconstruída pelo git: hash e conversor desconhecidos."');
     expect(yaml).toContain("pos_processamento_commits:\n  - 9a5b159");
@@ -39,6 +48,9 @@ describe("front matter de PPC", () => {
   test("arquivo convertido diferente da fonte: o hash vai em arquivo_convertido", () => {
     const registrada: ProvenienciaPpc = {
       id: "ppc:curitiba/tecnico-em-enfermagem/2023",
+      ano_documento: "2023",
+      ano_evidencia: "Curitiba 2023",
+      ano_fonte: "texto",
       fonte_url: "https://ifpr.edu.br/curitiba/wp-content/uploads/PPC_2026.pdf",
       fonte_sha256: "desconhecido",
       convertido_em: "2026-11-17",
@@ -60,7 +72,7 @@ describe("front matter de PPC", () => {
   test("mascara o front matter sem mudar a numeração das linhas", () => {
     const texto = `${serializarFrontMatterPpc(reconstruida)}## Título\nResolução CNE/CP nº 1/2021\n`;
     const linhas = linhasFrontMatter(texto);
-    expect(linhas).toBe(12);
+    expect(linhas).toBe(15);
     const mascarado = mascararFrontMatter(texto);
     expect(mascarado.split("\n")).toHaveLength(texto.split("\n").length);
     expect(
@@ -104,6 +116,9 @@ describe("front matter de PPC", () => {
     // Hash da fonte desconhecido: a registrada precisa do hash do arquivo convertido.
     const docx: ProvenienciaPpc = {
       id: reconstruida.id,
+      ano_documento: "2023",
+      ano_evidencia: "Curitiba 2023",
+      ano_fonte: "texto",
       fonte_url: reconstruida.fonte_url,
       fonte_sha256: "desconhecido",
       convertido_em: "2026-11-17",
@@ -117,5 +132,41 @@ describe("front matter de PPC", () => {
     ).toThrow();
     expect(() => analisarPpc("## sem front matter", "z.md")).toThrow("z.md: arquivo sem front matter");
     expect(() => analisarPpc("---\nid: curitiba/x\n---\n", "w.md")).toThrow("w.md: front matter de PPC inválido");
+  });
+  test("ano obrigatório, com evidência que contém o ano e versão do id que começa por ele", () => {
+    expect(() => serializarFrontMatterPpc({ ...reconstruida, ano_evidencia: "Curitiba" })).toThrow(/conter o ano 2023/);
+    expect(() =>
+      serializarFrontMatterPpc({ ...reconstruida, ano_documento: "2024", ano_evidencia: "Curitiba 2024" }),
+    ).toThrow(/deve começar pelo ano_documento 2024/);
+    expect(() => serializarFrontMatterPpc({ ...reconstruida, ano_fonte: "http://x" })).toThrow();
+    const semFonte = serializarFrontMatterPpc(reconstruida).replace("ano_fonte: texto\n", "");
+    expect(() => analisarPpc(`${semFonte}x\n`, "a.md")).toThrow(/ano_fonte/);
+    expect(conferirEvidenciaAno(reconstruida, "**Curitiba\n2023**")).toBeNull();
+    expect(conferirEvidenciaAno(reconstruida, "Curitiba, 2023")).toMatch(/não aparece/);
+    expect(conferirEvidenciaAno({ ...reconstruida, ano_fonte: "https://x.br/a.pdf#page=1" }, "")).toBeNull();
+  });
+
+  test("PPC pendente: sem id, com uma pendência por grupo incompleto", () => {
+    const { id: _id, ano_documento: _a, ano_evidencia: _e, ano_fonte: _f, ...base } = reconstruida;
+    const pendente: PpcPendente = { ...base, pendencias: ["ano: a capa não traz data; PDF consultado"] };
+    const yaml = serializarFrontMatterPendente(pendente);
+    expect(yaml).toContain('pendencias:\n  - "ano: a capa não traz data; PDF consultado"');
+    const texto = `${yaml}# PPC\n`;
+    expect(analisarPpcPendente(texto, "p.md").pendente).toEqual(pendente);
+    expect(linhasFrontMatter(texto)).toBe(yaml.split("\n").length - 1);
+    // Ano provisório sem evidência: a pendência continua.
+    expect(() => serializarFrontMatterPendente({ ...pendente, ano_documento: "2019" })).not.toThrow();
+    expect(() => serializarFrontMatterPendente({ ...base, pendencias: ["vagas: x"] })).toThrow(/campo desconhecido/);
+    expect(() => serializarFrontMatterPendente({ ...base, pendencias: ["ano"] })).toThrow(/<campo>: <motivo>/);
+    expect(() =>
+      serializarFrontMatterPendente({
+        ...base,
+        ano_documento: "2023",
+        ano_evidencia: "Curitiba 2023",
+        ano_fonte: "texto",
+        pendencias: ["ano: x"],
+      }),
+    ).toThrow(/já preenchidos/);
+    expect(() => analisarPpc(texto, "p.md")).toThrow(ErroFrontMatter);
   });
 });

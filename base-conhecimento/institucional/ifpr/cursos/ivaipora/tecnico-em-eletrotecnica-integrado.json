@@ -26,12 +26,9 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2024/03/Projeto-Pedagogico-do-Curso-de-Eletrotecnica-2025.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-eletrotecnica-integrado/2023.md",
-    "ano_documento": 2023,
+    "markdown_path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-eletrotecnica-integrado/2024.md",
     "vagas": "20-40",
     "trecho_vagas": "Número mínimo de vagas a serem ofertadas no processo seletivo: 20. Número máximo de vagas a serem ofertadas no processo seletivo: 40.",
-    "curadoria_ano": "Revisado",
-    "data_curadoria_ano": "2026-07-06",
     "curadoria_vagas": "Revisado",
     "data_curadoria_vagas": "2026-07-06"
   }

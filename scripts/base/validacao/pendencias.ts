@@ -1,0 +1,46 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona das pendências (validar_base), com node:fs
+/**
+ * PPCs pendentes (`curadoria/pendencias/ppcs/<campus>/<curso>/<rotulo>.md`): ficam fora da base, mas o
+ * repositório é público, então valem as mesmas regras de dados pessoais, URLs internas e caminhos locais; o front matter segue o
+ * contrato de pendente (uma pendência por grupo de campos obrigatórios que falta) e o curso existe.
+ */
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
+import { analisarPpcPendente, conferirEvidenciaAno } from "@simplifica-if/kb/ppcs/front-matter";
+import { arquivosPpcsPendentes } from "../pendencias.ts";
+import { PASTA_PENDENCIAS_PPCS, partesDoCaminhoPendente } from "../versoes-ppc.ts";
+import { RE_URL_ASSINADA } from "../../dados/urls.ts";
+import { type Contexto, PADROES_LOCAIS } from "./contexto.ts";
+import { dadosPessoaisEUrlsInternas } from "./normas.ts";
+
+export function validarPendenciasPpcs(ctx: Contexto): string[] {
+  const erros: string[] = [];
+  for (const arquivo of arquivosPpcsPendentes(ctx.c)) {
+    const partes = partesDoCaminhoPendente(arquivo);
+    if (!partes) {
+      erros.push(`${arquivo}: PPC pendente fora do caminho ${PASTA_PENDENCIAS_PPCS}/<campus>/<curso>/<rotulo>.md`);
+      continue;
+    }
+    const texto = NodeFS.readFileSync(NodePath.join(ctx.c.raizProjeto, arquivo), "utf-8");
+    erros.push(...dadosPessoaisEUrlsInternas(arquivo, texto));
+    for (const padrao of PADROES_LOCAIS) {
+      if (texto.includes(padrao)) erros.push(`${arquivo} contém padrão local proibido: ${padrao}`);
+    }
+    const assinada = RE_URL_ASSINADA.exec(texto);
+    if (assinada)
+      erros.push(`${arquivo} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
+    const registro = NodePath.join(ctx.c.institucional, "ifpr", "cursos", partes.campusId, `${partes.cursoSlug}.json`);
+    if (!NodeFS.existsSync(registro))
+      erros.push(`${arquivo}: curso ${partes.campusId}/${partes.cursoSlug} sem registro`);
+    try {
+      const { pendente, corpo } = analisarPpcPendente(texto, arquivo);
+      const problema = conferirEvidenciaAno(pendente, corpo);
+      if (problema) erros.push(`${arquivo}: ${problema}`);
+    } catch (erro) {
+      if (!ehErroFrontMatter(erro)) throw erro;
+      erros.push(erro.message);
+    }
+  }
+  return erros;
+}

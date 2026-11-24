@@ -159,7 +159,6 @@ describe("índice de PPCs", () => {
           ppc: {
             url: "https://ifpr.edu.br/x.pdf",
             markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2021.md",
-            ano_documento: 2021,
             vagas: "40",
           },
         }),
@@ -182,6 +181,9 @@ describe("índice de PPCs", () => {
         "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x/2021.md",
         serializarFrontMatterPpc({
           id: "ppc:campus-a/tecnico-x/2021",
+          ano_documento: "2021",
+          ano_evidencia: "PPC de 2021",
+          ano_fonte: "https://ifpr.edu.br/x.pdf#page=1",
           fonte_url: "https://ifpr.edu.br/x.pdf",
           fonte_sha256: "a".repeat(64),
           convertido_em: "2026-11-13",
@@ -209,8 +211,8 @@ describe("índice de PPCs", () => {
       expect(indices.itensSecao[0]).toMatchObject({
         heading: "1 Objetivos",
         numeracao: "1",
-        linha_inicio: 9,
-        linha_fim: 10,
+        linha_inicio: 12,
+        linha_fim: 13,
         preview: "objetivo ".repeat(80).slice(0, 500),
         origem_tipo: "titulo",
       });

@@ -3,6 +3,7 @@
 import * as Console from "effect/Console";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
+import * as Option from "effect/Option";
 import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
@@ -58,10 +59,17 @@ export const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(func
 });
 
 function relatorio(resultado: ResultadoImportacao): string[] {
-  const linhas = [
-    `PPC gravado: base-conhecimento/${resultado.markdownPath} (${resultado.id})`,
-    `Registro atualizado: base-conhecimento/${resultado.registroPath}`,
-  ];
+  const linhas =
+    resultado.id === null
+      ? [
+          `PPC fora da base, pendente: ${resultado.markdownPath}`,
+          ...resultado.pendencias.map((p) => `  pendência: ${p}`),
+          "Registro do curso não muda. Complete e promova com node scripts/promover_ppc.ts (lista: pnpm pendencias).",
+        ]
+      : [
+          `PPC gravado: base-conhecimento/${resultado.markdownPath} (${resultado.id})`,
+          `Registro atualizado: base-conhecimento/${resultado.registroPath}`,
+        ];
   if (resultado.substituido) {
     linhas.push(`PPC anterior fica na base, substituído: base-conhecimento/${resultado.substituido}`);
   }
@@ -106,6 +114,19 @@ export const comando = Command.make(
     ano: Flag.Int("ano").pipe(
       Flag.withMetavar("AAAA"),
       Flag.withDescription("ano do documento: a versão do PPC no ID (ppc:<campus>/<curso>/<ano>)"),
+      Flag.optional,
+    ),
+    evidencia: Flag.String("evidencia").pipe(
+      Flag.withMetavar("trecho"),
+      Flag.withDescription(
+        "trecho literal que traz o ano (capa, ato de aprovação); sem ele, o PPC fica pendente, fora da base",
+      ),
+      Flag.optional,
+    ),
+    fonteAno: Flag.String("fonte-ano").pipe(
+      Flag.withMetavar("texto|url"),
+      Flag.withDescription('onde está o trecho: "texto" (no PPC convertido, o padrão) ou a URL https da fonte'),
+      Flag.withDefault("texto"),
     ),
     reconverter: Flag.Boolean("reconverter").pipe(
       Flag.withDescription(
@@ -114,13 +135,15 @@ export const comando = Command.make(
       Flag.withDefault(false),
     ),
   },
-  Effect.fn("importar_ppc_docx")(function* ({ curso, arquivoDocx, fonteUrl, ano, reconverter }) {
+  Effect.fn("importar_ppc_docx")(function* ({ curso, arquivoDocx, fonteUrl, ano, evidencia, fonteAno, reconverter }) {
     const resultado = yield* importarPpcDocx({
       caminhos: criarCaminhos(),
       curso,
       arquivoDocx,
       fonteUrl,
-      ano,
+      ano: Option.getOrUndefined(ano),
+      evidencia: Option.getOrUndefined(evidencia),
+      fonteAno,
       reconverter,
       agora: DateTime.toDateUtc(yield* DateTime.now),
       conversor: yield* conversorAtual(),
@@ -129,9 +152,10 @@ export const comando = Command.make(
   }),
 ).pipe(
   Command.withDescription(
-    "Converte o DOCX do PPC e o grava como versão nova em institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<ano>.md, " +
-      "com front matter de proveniência registrada, sem dados pessoais. O PPC anterior fica na base, substituído. " +
-      "Aponta ppc.url, ppc.markdown_path e ppc.ano_documento do registro do curso para a versão nova. " +
+    "Converte o DOCX do PPC e, com --ano e --evidencia, o grava como versão nova em " +
+      "institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<ano>.md, com front matter de proveniência registrada, sem " +
+      "dados pessoais; o PPC anterior fica na base, substituído, e o registro do curso aponta a versão nova. Sem o " +
+      "ano ou a evidência, o PPC fica fora da base, em curadoria/pendencias/ppcs/, com a pendência registrada. " +
       "Não regenera os índices.",
   ),
 );

@@ -25,7 +25,6 @@
     }
   },
   "ppc": {
-    "ano_documento": 2013,
     "vagas": "10-25",
     "observacoes": "URL do PDF retirada em 17/11/2026: era um anexo do SUAP no S3, privado sem a assinatura temporária. Falta localizar o PDF público do PPC (site do campus) e preencher ppc.url."
   }

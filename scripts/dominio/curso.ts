@@ -34,14 +34,10 @@ export interface PpcCurso {
   url: string;
   /** Caminho do Markdown convertido, se o link apontar para a coleção de PPCs. */
   markdownPath: string;
-  anoDocumento?: number | undefined;
   vagas: string;
   trechoVagas: string;
   periodicidadeVagas: string;
-  /** Curadoria do ano do documento (`ppc.curadoria_ano`); rótulo como "Revisado" ou "Precisa de revisão". */
-  curadoriaAno: string;
-  dataCuradoriaAno: string;
-  /** Curadoria das vagas (`ppc.curadoria_vagas`), independente da do ano. */
+  /** Curadoria das vagas (`ppc.curadoria_vagas`); o ano do documento fica no front matter do PPC, com a evidência. */
   curadoriaVagas: string;
   dataCuradoriaVagas: string;
 }

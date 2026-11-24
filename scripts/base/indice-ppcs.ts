@@ -68,9 +68,9 @@ function textoPreenchido(valor: unknown): string | null {
 /**
  * Item do índice para o PPC `caminhoMarkdown` (versão `versao`) de um curso, ou `null` se faltar
  * algum campo textual obrigatório no registro do curso. `markdown` é o texto do PPC, de onde sai a
- * proveniência (front matter). O PPC vigente é o que o curso aponta em `ppc.markdown_path`; dele vêm
- * o ano e as vagas curados no registro do curso. Os demais são versões substituídas, e o ano é o da
- * versão.
+ * proveniência e o ano do documento, com a evidência (front matter). O PPC vigente é o que o curso
+ * aponta em `ppc.markdown_path`; dele vêm as vagas curadas no registro do curso. Os demais são versões
+ * substituídas.
  */
 export function montarItemPpc(
   campus: CampusLocal,
@@ -104,6 +104,9 @@ export function montarItemPpc(
     tipo_oferta: tipoOferta,
     curso_url: cursoUrl,
     fonte_pdf: fontePdf,
+    ano_documento: Number(proveniencia.ano_documento),
+    ano_evidencia: proveniencia.ano_evidencia,
+    ano_fonte: proveniencia.ano_fonte,
     path: caminhoMarkdown,
     proveniencia: resumoProveniencia(proveniencia),
   };
@@ -111,8 +114,6 @@ export function montarItemPpc(
   if (modalidade) item.modalidade = modalidade;
   const situacao = textoPreenchido(curso.situacao);
   if (situacao) item.situacao = situacao;
-  const ano = vigente ? curso.ppc?.ano_documento : Number(versao.slice(0, 4));
-  if (ano !== undefined) item.ano_documento = ano;
   // As vagas do PPC só valem com o trecho do documento que as sustenta.
   const vagas = vigente && curso.ppc?.trecho_vagas ? interpretarVagasPpc(curso.ppc.vagas ?? "") : null;
   if (vagas) item.vagas = vagas.quantidade;

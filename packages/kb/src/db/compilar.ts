@@ -36,7 +36,7 @@ import { segmentosCitantes } from "../normas/citacoes-normas.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
 import { carregarDatas, dataReferencia, derivarLinha } from "../normas/vigencia.ts";
 import { carregarRelacoes } from "../normas/relacoes.ts";
-import { mascararFrontMatter } from "../ppcs/front-matter.ts";
+import { FONTE_TEXTO, linhaDaEvidenciaAno, mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { lerTextoSecao } from "../ppcs/citacoes.ts";
 import { decodificarIndicePpcs, itensPorId } from "../ppcs/indice.ts";
 import { compararTexto } from "../texto.ts";
@@ -640,8 +640,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         ppc_id: ppc ? `ppc:${ppc.id}` : null,
         ppc_url: c.ppc?.url,
         ppc_markdown_path: markdown,
-        ppc_ano_documento: c.ppc?.ano_documento,
-        ppc_curadoria_ano: c.ppc?.curadoria_ano,
+        ppc_ano_documento: ppc?.ano_documento,
         path: arquivo,
       });
       const resumo = c.suap?.matrizes?.resumo;
@@ -798,7 +797,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         markdown,
         secoes.map((s): SecaoDoPpc => ({ tipo: s.section_kind, linha_inicio: s.linha_inicio, linha_fim: s.linha_fim })),
       );
-      // Ano curado e cruzamento com o SUAP valem para o PPC vigente: o registro do curso descreve ele.
+      // O cruzamento com o SUAP vale para o PPC vigente: o registro do curso descreve ele.
       const curso = cursoId && item.vigente ? cursoDados.get(cursoId) : undefined;
       for (const fato of fatos) {
         ins.inserir("ppc_fatos", {
@@ -815,23 +814,21 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           alternativas_json: json(fato.alternativas),
         });
       }
-      const ano = curso?.dados.ppc?.ano_documento;
-      if (curso && ano !== undefined) {
-        const linha = linhaDaChave(curso.conteudo, "ano_documento");
-        ins.inserir("ppc_fatos", {
-          ppc_id: ppcId,
-          fato: "ano_documento",
-          valor: String(ano),
-          valor_num: ano,
-          unidade: null,
-          status_curadoria: curso.dados.ppc?.curadoria_ano ?? "registrado",
-          regra: "dados-institucionais",
-          trecho_fonte: curso.conteudo.split("\n")[linha - 1]!.trim(),
-          path: curso.arquivo,
-          linha,
-          alternativas_json: json([]),
-        });
-      }
+      // O ano do documento vem do front matter, com a evidência literal que o validar_base confere.
+      const ano = item.ano_documento;
+      ins.inserir("ppc_fatos", {
+        ppc_id: ppcId,
+        fato: "ano_documento",
+        valor: String(ano),
+        valor_num: ano,
+        unidade: null,
+        status_curadoria: "Revisado",
+        regra: item.ano_fonte === FONTE_TEXTO ? "evidencia-no-texto" : "evidencia-na-fonte",
+        trecho_fonte: item.ano_evidencia,
+        path: caminhoMd,
+        linha: linhaDaEvidenciaAno(markdown, item.ano_evidencia, item.ano_fonte),
+        alternativas_json: json([]),
+      });
       if (curso) {
         const valor = (nome: string) => fatos.find((f) => f.fato === nome);
         const resumo = curso.dados.suap?.matrizes?.resumo;

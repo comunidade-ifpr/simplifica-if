@@ -36,13 +36,15 @@ const medicao = ppcs.map((ppc) => {
 /**
  * Medido em 21/11/2026, de 109: 108 certos e 1 nulo (PPC escaneado com OCR sem espaços). Antes, com a
  * busca da denominação do CNCT no início do texto: 97 certos e 12 errados.
+ * 24/11/2026: 7 PPCs técnicos foram para as pendências (ano sem evidência); de 102, 101 certos e o mesmo 1 nulo.
  */
-const CNCT_CERTOS = 108;
+const CNCT_CERTOS = 101;
 /**
  * Medido em 21/11/2026: 109 de 109. Antes: 96, com 13 erradas (10 PROEJA por menção ao programa no
  * texto institucional, 3 integrado no lugar de subsequente).
+ * 24/11/2026: 7 PPCs técnicos foram para as pendências (ano sem evidência); 102 de 102.
  */
-const FORMAS_CERTAS = 109;
+const FORMAS_CERTAS = 102;
 
 describe("identificação do curso nos PPCs técnicos da base", () => {
   test("amostra", () => {

@@ -9,7 +9,7 @@ import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { contarDadosPessoais, totalDadosPessoais } from "@simplifica-if/kb/ppcs/dados-pessoais";
-import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { analisarPpc, analisarPpcPendente } from "@simplifica-if/kb/ppcs/front-matter";
 import { docxDaFixture } from "@simplifica-if/ppc/testes/documentos";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { it } from "@effect/vitest";
@@ -31,6 +31,8 @@ import { arquivosIndices, gerarIndices } from "./indice-ppcs.ts";
 import { Contexto } from "./validacao/contexto.ts";
 import { dadosPessoaisEUrlsInternas } from "./validacao/normas.ts";
 import { validarPpcs } from "./validacao/ppcs.ts";
+import { listarPendencias } from "./pendencias.ts";
+import { promoverPpc } from "./versoes-ppc.ts";
 
 const AGORA = new Date(2026, 10, 17, 10, 0, 0);
 const URL_PDF = "https://ifpr.edu.br/campus-a/ppc-tecnico-x.pdf";
@@ -74,13 +76,17 @@ function baseTemporaria(ppc?: Record<string, unknown>): string {
   return raiz;
 }
 
+const FONTE_ANO = "https://ifpr.edu.br/campus-a/ppc-tecnico-x.pdf#page=1";
+/** Ano com a evidência (na capa do PDF publicado: os DOCX de teste não trazem o ano no texto). */
+const doAno = (ano: number) => ({ ano, evidencia: `PPC aprovado em ${ano}`, fonteAno: FONTE_ANO });
+
 function opcoes(raiz: string, docx: string, extra: Partial<OpcoesImportacao> = {}): OpcoesImportacao {
   return {
     caminhos: criarCaminhos(raiz),
     curso: "campus-a/tecnico-x",
     arquivoDocx: docx,
     fonteUrl: URL_PDF,
-    ano: 2026,
+    ...doAno(2026),
     reconverter: false,
     agora: AGORA,
     conversor: CONVERSOR,
@@ -108,7 +114,8 @@ describe("importarPpcDocx", () => {
         id: "ppc:campus-a/tecnico-x/2026",
         substituido: null,
         ppcUrlAnterior: null,
-        curadoriaReaberta: ["ano"],
+        pendencias: [],
+        curadoriaReaberta: [],
         representacaoGrafica: "bitmap",
       });
       const texto = NodeFS.readFileSync(caminhoPpc(raiz), "utf-8");
@@ -136,9 +143,6 @@ describe("importarPpcDocx", () => {
       expect(registro.ppc).toEqual({
         url: URL_PDF,
         markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
-        ano_documento: 2026,
-        curadoria_ano: STATUS_REABERTO,
-        data_curadoria_ano: "2026-11-17",
       });
       // O ppc entra na posição do schema, como nos outros registros.
       expect(Object.keys(registro)).toEqual([
@@ -164,6 +168,52 @@ describe("importarPpcDocx", () => {
         convertido_em: "2026-11-17",
         conversor: CONVERSOR,
       });
+    }),
+  );
+
+  it.effect("sem o ano ou sem a evidência, o PPC fica pendente, fora da base, e o registro não muda", () =>
+    Effect.gen(function* () {
+      const raiz = baseTemporaria({ url: URL_PDF });
+      const registroAntes = NodeFS.readFileSync(NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json"), "utf-8");
+      const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
+
+      const semAno = yield* importarPpcDocx(opcoes(raiz, docx, { ano: undefined, evidencia: undefined }));
+      expect(semAno).toMatchObject({
+        markdownPath: "curadoria/pendencias/ppcs/campus-a/tecnico-x/sem-ano.md",
+        id: null,
+        pendencias: [expect.stringMatching(/^ano: importado sem --ano/)],
+      });
+      const comAno = yield* importarPpcDocx(opcoes(raiz, docx, { evidencia: undefined }));
+      expect(comAno.markdownPath).toBe("curadoria/pendencias/ppcs/campus-a/tecnico-x/2026.md");
+      const { pendente } = analisarPpcPendente(
+        NodeFS.readFileSync(NodePath.join(raiz, comAno.markdownPath), "utf-8"),
+        "p",
+      );
+      expect(pendente).toMatchObject({ ano_documento: "2026", proveniencia: "registrada", fonte_url: URL_PDF });
+      expect(NodeFS.readFileSync(NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json"), "utf-8")).toBe(
+        registroAntes,
+      );
+      expect(NodeFS.existsSync(NodePath.join(raiz, IFPR, "ppcs"))).toBe(false);
+
+      const caminhos = criarCaminhos(raiz);
+      expect(listarPendencias(caminhos).map((p) => p.tipo === "ppc-pendente" && p.arquivo)).toEqual([
+        "curadoria/pendencias/ppcs/campus-a/tecnico-x/2026.md",
+        "curadoria/pendencias/ppcs/campus-a/tecnico-x/sem-ano.md",
+      ]);
+      // Completo, promove: entra na base como vigente.
+      const promovido = promoverPpc(
+        caminhos,
+        comAno.markdownPath,
+        { ano: 2026, evidencia: "PPC aprovado em 2026", fonte: FONTE_ANO },
+        AGORA,
+      );
+      expect(promovido).toMatchObject({ id: "ppc:campus-a/tecnico-x/2026", vigente: true });
+      expect(lerRegistro(raiz).ppc.markdown_path).toBe("institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md");
+
+      const semEvidenciaComAno = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { evidencia: "sem ano aqui" })));
+      expect(semEvidenciaComAno.motivo).toBe("evidencia-invalida");
+      const foraDoTexto = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { fonteAno: "texto" })));
+      expect(foraDoTexto.message).toMatch(/não aparece no texto/);
     }),
   );
 
@@ -197,11 +247,8 @@ describe("importarPpcDocx", () => {
       const ppcAntigo = {
         url: "https://ifpr.edu.br/campus-a/ppc-antigo.pdf",
         markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2019.md",
-        ano_documento: 2019,
         vagas: "40",
         trecho_vagas: "40 vagas anuais",
-        curadoria_ano: "Revisado",
-        data_curadoria_ano: "2026-05-11",
         curadoria_vagas: "Revisado",
         data_curadoria_vagas: "2026-05-11",
         observacoes: "Capa traz ano de ajuste posterior.",
@@ -216,7 +263,7 @@ describe("importarPpcDocx", () => {
         markdownPath: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
         substituido: "institucional/ifpr/ppcs/campus-a/tecnico-x/2019.md",
         ppcUrlAnterior: ppcAntigo.url,
-        curadoriaReaberta: ["ano", "vagas"],
+        curadoriaReaberta: ["vagas"],
         // A observação fica, mas foi escrita sobre o texto anterior: a saída pede para reconferir.
         observacoesAReconferir: true,
       });
@@ -226,16 +273,13 @@ describe("importarPpcDocx", () => {
         ...ppcAntigo,
         url: URL_PDF,
         markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
-        ano_documento: 2026,
-        curadoria_ano: STATUS_REABERTO,
-        data_curadoria_ano: "2026-11-17",
         curadoria_vagas: STATUS_REABERTO,
         data_curadoria_vagas: "2026-11-17",
       });
 
       // Outro PPC do mesmo ano ganha sufixo; um PPC mais antigo que o vigente é recusado.
       expect((yield* importarPpcDocx(opcoes(raiz, docx))).id).toBe("ppc:campus-a/tecnico-x/2026-2");
-      const anterior = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { ano: 2020 })));
+      const anterior = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, doAno(2020))));
       expect(anterior.motivo).toBe("versao-anterior");
     }),
   );
@@ -248,7 +292,7 @@ describe("importarPpcDocx", () => {
       });
       escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x/2026.md`, "texto antigo\n");
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
-      const outroAno = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { ano: 2025, reconverter: true })));
+      const outroAno = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx, { ...doAno(2025), reconverter: true })));
       expect(outroAno.motivo).toBe("ano-invalido");
       const resultado = yield* importarPpcDocx(opcoes(raiz, docx, { reconverter: true }));
       expect(resultado).toMatchObject({ id: "ppc:campus-a/tecnico-x/2026", substituido: null });
@@ -259,13 +303,7 @@ describe("importarPpcDocx", () => {
 
   it.effect("registro já completo sai igual byte a byte; campo ausente entra na posição do schema", () =>
     Effect.gen(function* () {
-      const completo = {
-        url: URL_PDF,
-        markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md",
-        ano_documento: 2026,
-        curadoria_ano: STATUS_REABERTO,
-        data_curadoria_ano: "2026-11-17",
-      };
+      const completo = { url: URL_PDF, markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md" };
       const raiz = baseTemporaria(completo);
       escrever(raiz, `${IFPR}/ppcs/campus-a/tecnico-x/2026.md`, "texto antigo\n");
       const arquivo = NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json");
@@ -275,16 +313,13 @@ describe("importarPpcDocx", () => {
       expect(NodeFS.readFileSync(arquivo, "utf-8")).toBe(antes);
 
       // Sem markdown_path e sem os status de curadoria: entram logo depois de url e de cada valor.
-      const parcial = baseTemporaria({ url: URL_PDF, ano_documento: 2020, vagas: "40", observacoes: "x" });
+      const parcial = baseTemporaria({ url: URL_PDF, vagas: "40", observacoes: "x" });
       const docx2 = escrever(parcial, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
       yield* importarPpcDocx(opcoes(parcial, docx2));
       expect(Object.keys(lerRegistro(parcial).ppc)).toEqual([
         "url",
         "markdown_path",
-        "ano_documento",
         "vagas",
-        "curadoria_ano",
-        "data_curadoria_ano",
         "curadoria_vagas",
         "data_curadoria_vagas",
         "observacoes",
@@ -398,7 +433,9 @@ describe("importarPpcDocx", () => {
         { recursive: true },
       );
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
-      yield* importarPpcDocx(opcoes(raiz, docx, { ano: 2019, fonteUrl: "https://ifpr.edu.br/campus-a/ppc-2019.pdf" }));
+      yield* importarPpcDocx(
+        opcoes(raiz, docx, { ...doAno(2019), fonteUrl: "https://ifpr.edu.br/campus-a/ppc-2019.pdf" }),
+      );
       yield* importarPpcDocx(opcoes(raiz, docx));
       const caminhos = criarCaminhos(raiz);
       const gerar = Effect.fnUntraced(function* () {

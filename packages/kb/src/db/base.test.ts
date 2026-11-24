@@ -286,7 +286,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       "campo-largo/administracao-proeja/2018",
       "paranagua/tecnico-em-informatica/2024",
       "arapongas/tecnico-em-melhoria-de-processos/2021",
-      "curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio/2015",
+      "ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio/2024",
     ];
 
     it.effect("o Markdown segmentado em memória dá as mesmas seções e citações do kb.sqlite", () =>

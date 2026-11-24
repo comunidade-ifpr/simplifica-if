@@ -114,9 +114,6 @@ export const esquemaCurso = solto({
     solto({
       url: texto,
       markdown_path: texto,
-      ano_documento: inteiro,
-      curadoria_ano: texto,
-      data_curadoria_ano: texto,
       vagas: texto,
       observacoes: texto,
     }),

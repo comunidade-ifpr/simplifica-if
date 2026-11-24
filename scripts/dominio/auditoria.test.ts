@@ -40,8 +40,6 @@ function curso(parcial: Partial<Curso> = {}): Curso {
       vagas: "",
       trechoVagas: "",
       periodicidadeVagas: "",
-      curadoriaAno: "",
-      dataCuradoriaAno: "",
       curadoriaVagas: "",
       dataCuradoriaVagas: "",
     },
@@ -92,8 +90,6 @@ describe("auditarBase", () => {
   test("confere a curadoria do PPC campo a campo", () => {
     const ppc = {
       ...curso().ppc,
-      curadoriaAno: "Revisado",
-      dataCuradoriaAno: "2026-11-13",
       curadoriaVagas: "talvez",
       dataCuradoriaVagas: "",
     };

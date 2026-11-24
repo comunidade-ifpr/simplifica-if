@@ -263,7 +263,18 @@ export interface IndicePpcsJson {
     tipo_oferta: string;
     modalidade?: string;
     situacao?: string;
-    ano_documento?: number;
+    /**
+     * Ano do documento, do front matter do PPC; a versão do id começa por ele.
+     */
+    ano_documento: number;
+    /**
+     * Trecho literal que traz o ano do documento.
+     */
+    ano_evidencia: string;
+    /**
+     * texto quando a evidência está no corpo do PPC; senão, a URL da fonte.
+     */
+    ano_fonte: string;
     vagas?: number;
     curso_url: string;
     fonte_pdf: string;

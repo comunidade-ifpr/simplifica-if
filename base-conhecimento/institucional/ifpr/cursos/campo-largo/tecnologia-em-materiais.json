@@ -14,12 +14,10 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2024/02/PPC_Tecnologo_Materiais_Ext.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-materiais/2022.md",
-    "ano_documento": 2022,
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-materiais/2021.md",
     "vagas": "40",
     "trecho_vagas": "Vagas totais (anual) 40 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria_ano": "Precisa de revisão",
     "curadoria_vagas": "Precisa de revisão",
     "observacoes": "Pendência de revisão do ano (13/11/2026): capa \"Campo Largo 2021\" (Resolução de criação nº 34/2021), mas a folha de rosto cita a Portaria do NDE nº 103, de 22/08/2022, e o arquivo oficial é de 02/2024; o registro (2022) pode refletir a revisão do documento. Decisão humana sobre a convenção (ano da capa ou da última revisão)."
   }

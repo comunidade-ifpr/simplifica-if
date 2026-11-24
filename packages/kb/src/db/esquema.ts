@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 9;
+export const VERSAO_ESQUEMA = 10;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -112,7 +112,6 @@ CREATE TABLE cursos (
   ppc_url TEXT,
   ppc_markdown_path TEXT,
   ppc_ano_documento INTEGER,
-  ppc_curadoria_ano TEXT,
   path TEXT NOT NULL
 );
 CREATE INDEX cursos_campus ON cursos(campus_id);

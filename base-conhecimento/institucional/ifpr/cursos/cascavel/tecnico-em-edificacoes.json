@@ -27,10 +27,8 @@
   "ppc": {
     "url": "https://ifpr.edu.br/cascavel/wp-content/uploads/sites/8/2024/01/Edificacoes-Projeto_Pedagogico_de_Cursos_Tecnicos_do_IFPR.pdf",
     "markdown_path": "institucional/ifpr/ppcs/cascavel/tecnico-em-edificacoes/2023.md",
-    "ano_documento": 2023,
     "vagas": "40",
     "trecho_vagas": "Número máximo e mínimo de vagas do curso respectivamente: 40 e 30.",
-    "curadoria_ano": "Precisa de revisão",
     "curadoria_vagas": "Precisa de revisão"
   }
 }

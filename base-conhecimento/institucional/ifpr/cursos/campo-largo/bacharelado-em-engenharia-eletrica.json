@@ -14,12 +14,10 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2025/08/2023_PPC-Engenharia-Eletrica_v25.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica/2023.md",
-    "ano_documento": 2023,
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica/2025.md",
     "vagas": "40",
     "trecho_vagas": "Vagas totais (anual) 40 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria_ano": "Precisa de revisão",
     "curadoria_vagas": "Precisa de revisão"
   }
 }

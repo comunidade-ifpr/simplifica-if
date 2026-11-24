@@ -57,13 +57,9 @@ const cnctId = Schema.optional(
 export const esquemaPpcCurso = Schema.Struct({
   url: texto,
   markdown_path: texto,
-  ano_documento: inteiro,
   vagas: texto,
   trecho_vagas: texto,
   periodicidade_vagas: texto,
-  /** Status e data da curadoria de `ano_documento`. */
-  curadoria_ano: texto,
-  data_curadoria_ano: texto,
   /** Status e data da curadoria de `vagas`, `trecho_vagas` e `periodicidade_vagas`. */
   curadoria_vagas: texto,
   data_curadoria_vagas: texto,
@@ -352,12 +348,9 @@ export function paraDominio(dados: DadosInstitucionais): {
       ppc: {
         url: c.ppc?.url ?? "",
         markdownPath: c.ppc?.markdown_path ?? "",
-        anoDocumento: c.ppc?.ano_documento,
         vagas: c.ppc?.vagas ?? "",
         trechoVagas: c.ppc?.trecho_vagas ?? "",
         periodicidadeVagas: c.ppc?.periodicidade_vagas ?? "",
-        curadoriaAno: c.ppc?.curadoria_ano ?? "",
-        dataCuradoriaAno: c.ppc?.data_curadoria_ano ?? "",
         curadoriaVagas: c.ppc?.curadoria_vagas ?? "",
         dataCuradoriaVagas: c.ppc?.data_curadoria_vagas ?? "",
       },

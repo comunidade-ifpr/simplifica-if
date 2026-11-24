@@ -35,6 +35,8 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
       secaoPpc: schema("ppcs_secao"),
     },
     readme: NodePath.join(raiz, "README.md"),
+    /** PPCs fora da base, à espera do que falta (`curadoria/pendencias/ppcs/`). */
+    pendenciasPpcs: NodePath.join(raizProjeto, "curadoria", "pendencias", "ppcs"),
   };
 }
 

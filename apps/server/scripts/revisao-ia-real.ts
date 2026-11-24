@@ -48,7 +48,8 @@ const modo = (opcao("--modo") ?? "rapido") as "rapido" | "completo";
 const soBloco = opcao("--bloco");
 const paralelismo = Number(opcao("--paralelismo") ?? RevisaoIa.PARALELISMO);
 const ppcMd =
-  opcao("--ppc") ?? NodePath.join(RAIZ, "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md");
+  opcao("--ppc") ??
+  NodePath.join(RAIZ, "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md");
 const saida = opcao("--saida") ?? NodePath.join(NodeOS.tmpdir(), "simplifica-revisao-ia-real");
 NodeFS.mkdirSync(saida, { recursive: true });
 

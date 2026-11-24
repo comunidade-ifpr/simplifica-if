@@ -6,7 +6,7 @@ import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { resumoProveniencia, taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
 import { ehObjeto, type ObjetoJson, valoresIguais } from "@simplifica-if/kb/json";
 import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
-import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { analisarPpc, conferirEvidenciaAno } from "@simplifica-if/kb/ppcs/front-matter";
 import { caminhoPpc, chavePpc, compararVersoesPpc, idPpc, partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
@@ -223,11 +223,14 @@ function validarVersoesPpc(
   const noIndice = new Set(itens.map((item) => item.path).filter((p): p is string => typeof p === "string"));
   const noDisco = new Set(
     listarDiretorio(ctx.c.ppcs)
-      .filter((pasta) => ehDiretorio(pasta) && NodePath.basename(pasta) !== "secoes")
-      .flatMap((pasta) => [
-        ...listarDiretorio(pasta, ".md"),
-        ...listarDiretorio(pasta).flatMap((sub) => (ehDiretorio(sub) ? listarDiretorio(sub, ".md") : [])),
-      ])
+      .flatMap((pasta) =>
+        ehDiretorio(pasta) && NodePath.basename(pasta) !== "secoes"
+          ? [
+              ...listarDiretorio(pasta, ".md"),
+              ...listarDiretorio(pasta).flatMap((sub) => (ehDiretorio(sub) ? listarDiretorio(sub, ".md") : [])),
+            ]
+          : [],
+      )
       .map((caminho) => ctx.rel(caminho)),
   );
   for (const caminho of ordenarCaminhos([...noDisco])) {
@@ -271,8 +274,9 @@ function validarProvenienciaItem(
   const caminho = naBase(ctx.c, valorPath);
   if (!NodeFS.existsSync(caminho)) return [];
   let proveniencia;
+  let corpo;
   try {
-    ({ proveniencia } = analisarPpc(lerTexto(caminho, { ignorarErros: true }), valorPath));
+    ({ proveniencia, corpo } = analisarPpc(lerTexto(caminho, { ignorarErros: true }), valorPath));
   } catch (erro) {
     if (ehErroFrontMatter(erro)) return [erro.message];
     throw erro;
@@ -289,6 +293,15 @@ function validarProvenienciaItem(
   }
   if (!valoresIguais(item.proveniencia, resumoProveniencia(proveniencia))) {
     erros.push(`índice de PPCs: proveniencia de ${ppcId} diverge do front matter`);
+  }
+  const problemaEvidencia = conferirEvidenciaAno(proveniencia, corpo);
+  if (problemaEvidencia) erros.push(`${valorPath}: ${problemaEvidencia}`);
+  if (
+    item.ano_documento !== Number(proveniencia.ano_documento) ||
+    item.ano_evidencia !== proveniencia.ano_evidencia ||
+    item.ano_fonte !== proveniencia.ano_fonte
+  ) {
+    erros.push(`índice de PPCs: ano de ${ppcId} diverge do front matter`);
   }
   return erros;
 }

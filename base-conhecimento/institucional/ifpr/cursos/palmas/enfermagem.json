@@ -14,11 +14,9 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2023/06/PPC_Enfermagem_2023-1.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/palmas/enfermagem/2010.md",
-    "ano_documento": 2010,
+    "markdown_path": "institucional/ifpr/ppcs/palmas/enfermagem/2022.md",
     "vagas": "30",
     "trecho_vagas": "Vagas totais (anuais): 30 12",
-    "curadoria_ano": "Precisa de revisão",
     "curadoria_vagas": "Precisa de revisão"
   }
 }

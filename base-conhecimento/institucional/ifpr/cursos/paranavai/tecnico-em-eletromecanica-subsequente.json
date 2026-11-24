@@ -26,11 +26,9 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2019/12/PPC-Eletromecanica-2020.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-eletromecanica-subsequente/2020.md",
-    "ano_documento": 2020,
+    "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-eletromecanica-subsequente/2019.md",
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
-    "curadoria_ano": "Precisa de revisão",
     "curadoria_vagas": "Precisa de revisão",
     "observacoes": "Pendência de revisão do ano (13/11/2026): capa \"PARARAVAÍ 2019\" [sic], mas a identificação registra \"Ano letivo de implantação do ajuste: 2020\" e o arquivo oficial é PPC-Eletromecanica-2020.pdf; o registro (2020) corresponde à implantação. Decisão humana sobre a convenção."
   }

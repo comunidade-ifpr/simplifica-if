@@ -27,7 +27,9 @@ const esquemaItemPpc = solto({
   fonte_pdf: texto,
   path: Schema.String,
   proveniencia: Schema.optionalKey(Schema.Unknown),
-  ano_documento: Schema.optionalKey(Schema.Int),
+  ano_documento: Schema.Int,
+  ano_evidencia: Schema.String,
+  ano_fonte: Schema.String,
 });
 /** Um PPC do índice; `path` é relativo a `base-conhecimento/`. */
 export type ItemPpc = typeof esquemaItemPpc.Type;

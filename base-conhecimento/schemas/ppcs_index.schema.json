@@ -396,6 +396,9 @@
           "tipo_oferta",
           "curso_url",
           "fonte_pdf",
+          "ano_documento",
+          "ano_evidencia",
+          "ano_fonte",
           "path",
           "proveniencia"
         ],
@@ -459,7 +462,18 @@
           },
           "ano_documento": {
             "type": "integer",
-            "minimum": 1900
+            "minimum": 1900,
+            "description": "Ano do documento, do front matter do PPC; a versão do id começa por ele."
+          },
+          "ano_evidencia": {
+            "type": "string",
+            "minLength": 4,
+            "description": "Trecho literal que traz o ano do documento."
+          },
+          "ano_fonte": {
+            "type": "string",
+            "pattern": "^(?:texto|https://.+)$",
+            "description": "texto quando a evidência está no corpo do PPC; senão, a URL da fonte."
           },
           "vagas": {
             "type": "integer",

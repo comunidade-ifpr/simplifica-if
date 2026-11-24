@@ -86,14 +86,14 @@ consultas:
       - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "Atribuições do Coordenador" }
   - id: B14
     consulta: trabalho de conclusão de curso
-    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025 }
+    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023 }
     esperadas:
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "TRABALHO DE CONCLUSÃO DE CURSO" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023, titulo: "TRABALHO DE CONCLUSÃO DE CURSO" }
   - id: B15
     consulta: atividades complementares
-    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025 }
+    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023 }
     esperadas:
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "ATIVIDADES COMPLEMENTARES" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023, titulo: "ATIVIDADES COMPLEMENTARES" }
   - id: B16
     consulta: matriz curricular
     filtros: { ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016 }
@@ -133,11 +133,11 @@ consultas:
       - { ppc: curitiba/tecnico-em-enfermagem/2023, titulo: "VISITAS TÉCNICAS" }
   - id: B23
     consulta: estágio curricular e convênios
-    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025 }
+    filtros: { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023 }
     esperadas:
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "4.4 ESTÁGIO CURRICULAR" }
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "Convênios de Estágio" }
-      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025, titulo: "Características do Estágio" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023, titulo: "4.4 ESTÁGIO CURRICULAR" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023, titulo: "Convênios de Estágio" }
+      - { ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023, titulo: "Características do Estágio" }
 
   # --- entre PPCs (filtro por habilitação do CNCT)
   - id: B24
@@ -145,9 +145,9 @@ consultas:
     filtros: { cnct: tecnico-em-informatica }
     esperadas:
       - { ppc: barracao/tecnico-em-informatica/2023, titulo: "ACOMPANHAMENTO DO EGRESSO" }
-      - { ppc: colombo/tecnico-em-informatica-integrado-ao-ensino-medio/2023, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: colombo/tecnico-em-informatica-integrado-ao-ensino-medio/2024, titulo: "ACOMPANHAMENTO DO EGRESSO" }
       - { ppc: irati/tecnico-em-informatica/2025, titulo: "ACOMPANHAMENTO DA/O EGRESSA/O" }
-      - { ppc: ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio/2023, titulo: "ACOMPANHAMENTO DO EGRESSO" }
+      - { ppc: ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio/2024, titulo: "ACOMPANHAMENTO DO EGRESSO" }
       - { ppc: paranagua/tecnico-em-informatica/2024, titulo: "ACOMPANHAMENTO DO EGRESSO" }
       - { ppc: pinhais/tecnico-em-informatica-integrado-ao-ensino-medio/2018, titulo: "PLANO DE ACOMPANHAMENTO DE EGRESSOS" }
       - { ppc: uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio/2025, titulo: "4.3 ACOMPANHAMENTO DO EGRESSO" }

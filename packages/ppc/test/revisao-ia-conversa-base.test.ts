@@ -31,6 +31,7 @@ test("nenhuma linha dos PPCs da base é pedido à revisão", () => {
       }
     }
   }
-  expect(ppcs).toBeGreaterThan(200);
+  const indice = JSON.parse(NodeFS.readFileSync(NodePath.join(RAIZ, "index.json"), "utf8")) as { total_itens: number };
+  expect(ppcs).toBe(indice.total_itens);
   expect(marcadas).toEqual([]);
 }, 120_000);

@@ -14,11 +14,9 @@
   },
   "ppc": {
     "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/03/PPC-Sistemas-de-Informacao-Atualizado-2025.pdf",
-    "markdown_path": "institucional/ifpr/ppcs/palmas/sistemas-de-informacao/2008.md",
-    "ano_documento": 2008,
+    "markdown_path": "institucional/ifpr/ppcs/palmas/sistemas-de-informacao/2022.md",
     "vagas": "40",
     "trecho_vagas": "Vagas totais (anuais): 40",
-    "curadoria_ano": "Precisa de revisão",
     "curadoria_vagas": "Precisa de revisão"
   }
 }

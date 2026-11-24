@@ -11,8 +11,8 @@ describe("avaliação do resolvedor (avaliacao/resolvedor/citacoes-anotadas.yaml
   const anotacoes = lerAnotacoes(raiz);
   const resultado = avaliarResolvedor(anotacoes, registro, raiz);
 
-  test("conjunto anotado: 20 PPCs, ~200 citações, trechos únicos", () => {
-    expect(anotacoes.ppcs.length).toBe(20);
+  test("conjunto anotado: 19 PPCs, ~200 citações, trechos únicos", () => {
+    expect(anotacoes.ppcs.length).toBe(19);
     expect(resultado.anotados).toBeGreaterThanOrEqual(200);
     expect(resultado.problemas).toEqual([]);
   });
