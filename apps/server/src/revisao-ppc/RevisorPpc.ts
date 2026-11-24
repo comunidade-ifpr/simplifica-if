@@ -133,6 +133,8 @@ export class RevisorPpc extends Context.Service<
     >;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
+    /** Confere extensão, liberação e tamanho do `.docx` e devolve o SHA-256 sem rodar o Worker. */
+    readonly hashDoArquivo: (arquivo: string) => Effect.Effect<string, FalhaRevisaoPpc>;
     /**
      * Falha (com `escolherDeNovo`) se o desktop não liberou o arquivo nesta execução: a ação que vai
      * precisar dele recusa antes de começar, e não no fim.
@@ -341,8 +343,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     });
   });
 
-  const revisarUm = Effect.fn("RevisorPpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
-    const arquivo = entrada.arquivo;
+  const lerArquivo = Effect.fn("RevisorPpc.lerArquivo")(function* (arquivo: string, aoEtapa?: AoEtapa) {
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
       return yield* falha("Escolha um arquivo do Word (.docx).");
@@ -357,12 +358,21 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
         `O arquivo tem ${megabytes(info.size)}, acima do limite de ${megabytes(limites.bytesDoArquivo)}. Compacte as imagens no Word (Arquivo > Compactar imagens) e tente de novo.`,
       );
     // A leitura começa depois das recusas (extensão, liberação, tamanho): uma recusa não mostra etapa.
-    entrada.aoEtapa?.("lendo");
+    aoEtapa?.("lendo");
     const bytes = yield* Effect.tryPromise({
       try: () => NodeFSP.readFile(arquivo),
       catch: () => falha("O arquivo não pode ser lido."),
     });
     const sha256 = NodeCrypto.createHash("sha256").update(bytes).digest("hex");
+    return { bytes, sha256 };
+  });
+
+  const hashDoArquivo = (arquivo: string) => lerArquivo(arquivo).pipe(Effect.map((r) => r.sha256));
+
+  const revisarUm = Effect.fn("RevisorPpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
+    const arquivo = entrada.arquivo;
+    const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
+    const { bytes, sha256 } = yield* lerArquivo(arquivo, entrada.aoEtapa);
     if (entrada.sha256 !== undefined && entrada.sha256 !== sha256)
       return yield* falha(
         "O arquivo mudou depois que a revisão começou. Revise o arquivo de novo para começar outra revisão.",
@@ -452,7 +462,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   });
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisarArquivo, montar, ocupada, exigirLiberado });
+  return RevisorPpc.of({ revisarArquivo, montar, ocupada, hashDoArquivo, exigirLiberado });
 });
 
 /**

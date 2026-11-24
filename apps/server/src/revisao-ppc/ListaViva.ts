@@ -483,14 +483,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     entrada: RevisorPpc.EntradaRevisao,
     aoEtapa: RevisorPpc.AoEtapa,
   ) {
-    // Primeiro sem gravar nem comentar: lemos o sha256 e o curso sem sobrescrever a cópia no disco
-    // antes de conferir se há leitura com IA em andamento.
-    const previa = yield* revisor.revisarArquivo({
-      ...entrada,
-      gravar: false,
-      seOcupada: "recusar",
-      aoEtapa,
-    });
+    // Primeiro só o hash (sem Worker nem cópia no disco): permite recusar imediatamente quando há leitura
+    // com IA em andamento e rodar o Worker uma única vez no caso comum (arquivo novo ou sem resultados da IA).
+    const sha256 = yield* revisor.hashDoArquivo(entrada.arquivo);
     const concluir = Effect.fn("ListaViva.revisar.concluir")(function* (doConteudo: RevisoesPpc.RegistroLista | null) {
       // Qualquer leitura com IA em andamento na lista que seria substituída bloqueia a nova revisão,
       // independentemente do curso ou da forma escolhidos.
@@ -506,18 +501,46 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             "A conferência com IA deste PPC está em andamento. Pause-a antes de revisar o arquivo de novo.",
           );
       }
+      // Arquivo novo ou lista anterior sem resultados da IA: uma única ida ao Worker já comenta e grava.
+      if (doConteudo === null || doConteudo.resultadosIa === null) {
+        const final = yield* revisor.revisarArquivo({
+          ...entrada,
+          gravar: true,
+          sha256,
+          seOcupada: "recusar",
+          aoEtapa,
+        });
+        const curso = final.revisao.curso;
+        const anterior =
+          doConteudo !== null && doConteudo.cnct === (curso.cnct?.slug ?? null) && doConteudo.forma === curso.forma
+            ? doConteudo
+            : null;
+        return yield* criarLista({
+          arquivo: entrada.arquivo,
+          revisado: final,
+          revisao: anterior?.revisao ?? null,
+          provider: anterior?.provider ?? null,
+          modelo: anterior?.modelo ?? null,
+          resultadosIa: null,
+        });
+      }
+      // Re-revisão de um arquivo igual que já tem resultados da IA: confere o curso sem comentar no disco
+      // para comentar e gravar a cópia uma única vez, já com `ia` quando o curso e a forma coincidem.
+      const previa = yield* revisor.revisarArquivo({
+        ...entrada,
+        gravar: false,
+        sha256,
+        seOcupada: "recusar",
+        aoEtapa,
+      });
       const curso = previa.revisao.curso;
-      // Mesmo arquivo, conteúdo, curso e forma: preserva os resultados da IA que a lista anterior já tinha.
       const anterior =
-        doConteudo !== null && doConteudo.cnct === (curso.cnct?.slug ?? null) && doConteudo.forma === curso.forma
-          ? doConteudo
-          : null;
+        doConteudo.cnct === (curso.cnct?.slug ?? null) && doConteudo.forma === curso.forma ? doConteudo : null;
       const ia = anterior?.resultadosIa ?? null;
-      // Comenta e grava a cópia uma única vez, já com os resultados da IA preservados (se houver).
       const final = yield* revisor.revisarArquivo({
         arquivo: entrada.arquivo,
         gravar: true,
-        sha256: previa.sha256,
+        sha256,
         ...(entrada.cnct === undefined ? {} : { cnct: entrada.cnct }),
         ...(entrada.forma === undefined ? {} : { forma: entrada.forma }),
         ...(ia === null ? {} : { ia }),
@@ -535,7 +558,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       });
     });
 
-    const anteriorId = yield* persistencia.listaDoConteudo(entrada.arquivo, previa.sha256);
+    const anteriorId = yield* persistencia.listaDoConteudo(entrada.arquivo, sha256);
     if (anteriorId === null) return yield* concluir(null);
     return yield* persistencia.comTravaDaLista(
       anteriorId,
