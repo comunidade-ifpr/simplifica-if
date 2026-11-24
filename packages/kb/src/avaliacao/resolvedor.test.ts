@@ -1,7 +1,8 @@
 import { describe, expect, test } from "vite-plus/test";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "../normas/registro.ts";
-import { ppcsQueCitam } from "../ppcs/citacoes.ts";
+import { citacoesDoArquivo, ppcsQueCitam } from "../ppcs/citacoes.ts";
+import { compararTexto } from "../texto.ts";
 import { avaliarResolvedor, lerAnotacoes } from "./resolvedor.ts";
 
 const raiz = raizRepositorio();
@@ -31,7 +32,13 @@ describe("avaliação do resolvedor (avaliacao/resolvedor/citacoes-anotadas.yaml
 describe("consultas sobre os PPCs", () => {
   test("o relatório de citações é determinístico e acha a DCN de 2021 com órgão trocado", () => {
     const primeira = ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro });
-    expect(JSON.stringify(ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro }))).toBe(JSON.stringify(primeira));
+    const caminhos = primeira.map((p) => p.path);
+    expect(caminhos).toEqual([...caminhos].sort(compararTexto));
+    expect(primeira.length).toBeGreaterThan(0);
+    const amostra = primeira[0]!.path;
+    expect(JSON.stringify(citacoesDoArquivo(amostra, registro, raiz))).toBe(
+      JSON.stringify(citacoesDoArquivo(amostra, registro, raiz)),
+    );
     const trocados = primeira.filter((ppc) => ppc.ocorrencias.some((o) => o.regra.startsWith("dcnept-2021-orgao-")));
     expect(trocados.length).toBeGreaterThanOrEqual(17);
   });

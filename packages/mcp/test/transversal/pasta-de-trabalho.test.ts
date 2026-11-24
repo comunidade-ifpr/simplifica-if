@@ -25,6 +25,7 @@ import {
   servidorIsolado,
   type ServidorIsolado,
   sessaoStdio,
+  SMOKE_APENAS,
 } from "./apoio.ts";
 
 /** Um PPC mínimo em Markdown. */
@@ -42,13 +43,13 @@ const MARKDOWN = [
 ].join("\n");
 
 // Links simbólicos no Windows exigem privilégio de administrador ou o modo de desenvolvedor.
-// oxlint-disable-next-line simplifica-if/no-global-process-runtime -- teste fora do runtime Effect: os links dependem do sistema
 const COM_LINKS = NodeOS.platform() !== "win32";
 
 let banco: string;
 let isolado: ServidorIsolado;
 let fora: string;
 beforeAll(async () => {
+  if (SMOKE_APENAS) return;
   banco = criarBancoFixturePpcs();
   isolado = await servidorIsolado();
   fora = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-fora-"));
@@ -62,7 +63,7 @@ const pacote = (arquivo: string): Chamada => ({
   valida: true,
 });
 
-describe("pasta de trabalho: pacote_contexto com arquivo, pelo servidor isolado", () => {
+describe.skipIf(SMOKE_APENAS)("pasta de trabalho: pacote_contexto com arquivo, pelo servidor isolado", () => {
   test("lê dentro da pasta; recusa .., caminho absoluto e link simbólico para fora", async () => {
     const segredo = NodePath.join(fora, "segredo.md");
     const servidor = isolado.preparar(banco, {

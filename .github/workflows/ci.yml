@@ -80,17 +80,24 @@ jobs:
       - name: Testes
         run: pnpm test
 
+      - name: Testes sobre a base completa (PPCs)
+        run: pnpm test:base
+
+      - name: Testes de navegador (Playwright)
+        run: pnpm test:browser
+
       - name: Smoke do MCP (suítes transversais na base real)
         run: pnpm mcp:smoke
 
       - name: Valida a base
         run: node scripts/validar_base.ts
 
-      - name: Arquivos gerados da base em dia
-        run: node scripts/gerar_base.ts --check && node scripts/gerar_indice_ppcs.ts --check
+      - name: Índice de PPCs em dia
+        run: node scripts/gerar_indice_ppcs.ts --check
 
   executavel:
     name: Executável (${{ matrix.alvo }})
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     strategy:

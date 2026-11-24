@@ -82,6 +82,21 @@ export function dadosPessoaisEUrlsInternas(relativo: string, texto: string): str
   return erros;
 }
 
+/** Valida caminhos locais, URLs pré-assinadas, dados pessoais e URLs internas em texto público. */
+export function validarTextoPublico(relativo: string, texto: string): string[] {
+  const erros: string[] = [];
+  for (const padrao of PADROES_LOCAIS) {
+    if (texto.includes(padrao)) erros.push(`${relativo} contém padrão local proibido: ${padrao}`);
+  }
+  const assinada = RE_URL_ASSINADA.exec(texto);
+  if (assinada) {
+    // Só o começo da URL: a mensagem não repete a credencial.
+    erros.push(`${relativo} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
+  }
+  erros.push(...dadosPessoaisEUrlsInternas(relativo, texto));
+  return erros;
+}
+
 /** Nenhum arquivo de texto da base pode conter caminhos locais, URL pré-assinada, dados pessoais nem URLs internas. */
 export function validarPadroesLocais(ctx: Contexto): string[] {
   const erros: string[] = [];
@@ -95,17 +110,7 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
       if (erro instanceof ErroDecodificacao) continue;
       throw erro;
     }
-    for (const padrao of PADROES_LOCAIS) {
-      if (texto.includes(padrao)) erros.push(`${ctx.rel(caminho)} contém padrão local proibido: ${padrao}`);
-    }
-    const assinada = RE_URL_ASSINADA.exec(texto);
-    if (assinada) {
-      // Só o começo da URL: a mensagem não repete a credencial.
-      erros.push(
-        `${ctx.rel(caminho)} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`,
-      );
-    }
-    erros.push(...dadosPessoaisEUrlsInternas(ctx.rel(caminho), texto));
+    erros.push(...validarTextoPublico(ctx.rel(caminho), texto));
   }
   return erros;
 }
@@ -121,22 +126,14 @@ export function validarNormasNaRaiz(ctx: Contexto): string[] {
 }
 
 export function validarReadme(ctx: Contexto): string[] {
-  const erros: string[] = [];
   const texto = lerTexto(ctx.c.readme);
-  for (const padrao of PADROES_LOCAIS) {
-    if (texto.includes(padrao)) erros.push(`README.md contém padrão local proibido: ${padrao}`);
-  }
-  erros.push(...ctx.validarLinks(ctx.c.readme, texto));
-  return erros;
+  return ctx.validarLinks(ctx.c.readme, texto);
 }
 
 export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
   const r = ctx.rel(caminho);
   const erros: string[] = [];
   const texto = lerTexto(caminho);
-  for (const padrao of PADROES_LOCAIS) {
-    if (texto.includes(padrao)) erros.push(`${r}: contém padrão local proibido: ${padrao}`);
-  }
 
   let meta: FrontMatter;
   let corpo: string;
@@ -329,7 +326,14 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
   } catch (erro) {
     return [...erros, `config/vigencia.yaml: ${(erro as Error).message.split("\n")[0]}`];
   }
-  const alvos = new Set(carregarRelacoes(raiz).map((relacao) => relacao.alvo));
+  const relacoes = carregarRelacoes(raiz);
+  const alvos = new Set(relacoes.map((relacao) => relacao.alvo));
+  const fonteStatus = {
+    registro,
+    datas: carregarDatas(raiz, registro),
+    relacoes,
+    consolidado: carregarConsolidado(raiz),
+  };
   for (const entrada of registro.entradas) {
     if (entrada.situacao !== "stub") continue;
     const registrado = entrada.status_vigencia ?? "a confirmar";
@@ -339,12 +343,7 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
       }
       continue;
     }
-    const calculado = statusEm(entrada.id, referencia, {
-      registro: carregarRegistro(raiz),
-      datas: carregarDatas(raiz),
-      relacoes: carregarRelacoes(raiz),
-      consolidado: carregarConsolidado(raiz),
-    });
+    const calculado = statusEm(entrada.id, referencia, fonteStatus);
     if (calculado.eventos.some((evento) => evento.ocorreu !== false) && registrado !== calculado.status) {
       erros.push(
         `normas/stubs.yaml: ${entrada.id}: status_vigencia ${registrado} difere do calculado em ${referencia} (${calculado.status})`,

@@ -728,15 +728,17 @@ export function listarNormas(raiz: string): ArquivoNorma[] {
 
 /** Por checkout (`chaveDoCheckout`): o pipeline da base e a compilação leem as normas várias vezes. */
 const cacheEstruturas = new Map<string, EstruturaNorma[]>();
+const cacheIndices = new Map<string, Map<string, Dispositivo>>();
 
 /** Estrutura de todas as normas da base. */
 export function carregarEstruturas(raiz: string): EstruturaNorma[] {
-  const emCache = cacheEstruturas.get(chaveDoCheckout(raiz));
+  const chave = chaveDoCheckout(raiz);
+  const emCache = cacheEstruturas.get(chave);
   if (emCache) return emCache;
   const estruturas = listarNormas(raiz).map((norma) =>
     analisarNorma(NodeFS.readFileSync(norma.arquivo, "utf-8"), { id: norma.id, path: norma.path }),
   );
-  cacheEstruturas.set(chaveDoCheckout(raiz), estruturas);
+  cacheEstruturas.set(chave, estruturas);
   return estruturas;
 }
 
@@ -747,7 +749,12 @@ export function carregarDispositivos(raiz: string): Dispositivo[] {
 
 /** Índice de dispositivos pelo ID (`br/lei/1996/9394#art36`). */
 export function indiceDispositivos(raiz: string): Map<string, Dispositivo> {
-  return new Map(carregarDispositivos(raiz).map((disp) => [disp.id, disp]));
+  const chave = chaveDoCheckout(raiz);
+  const emCache = cacheIndices.get(chave);
+  if (emCache) return emCache;
+  const indice = new Map(carregarDispositivos(raiz).map((disp) => [disp.id, disp]));
+  cacheIndices.set(chave, indice);
+  return indice;
 }
 
 /** Dispositivos de uma norma, em ordem. */

@@ -21,20 +21,20 @@ import {
   BANCO_REAL,
   bancosFixture,
   type Chamada,
-  chamadas,
   EXE,
   emProcesso,
   ferramenta,
   type Resultado,
   rotulo,
   SMOKE,
+  SMOKE_APENAS,
 } from "./apoio.ts";
 
 const CLI = NodePath.resolve(import.meta.dirname, "../../src/cli.ts");
 
 let bancos: Record<Fixture, string>;
 beforeAll(() => {
-  bancos = bancosFixture();
+  if (!SMOKE_APENAS) bancos = bancosFixture();
 });
 afterAll(limparTemporarios);
 
@@ -63,13 +63,6 @@ async function consultar(banco: string, argumentos: ReadonlyArray<string>, cwd?:
   return { stdout, stderr, codigo };
 }
 
-/** As execuções de uma lista, poucas por vez (cada uma é um processo). */
-async function emLotes<T>(lista: ReadonlyArray<T>, rodar: (item: T) => Promise<Execucao>): Promise<Execucao[]> {
-  const saida: Execucao[] = [];
-  for (let i = 0; i < lista.length; i += 8) saida.push(...(await Promise.all(lista.slice(i, i + 8).map(rodar))));
-  return saida;
-}
-
 /** A execução corresponde ao resultado esperado: o `structuredContent` numa linha, ou o erro no stderr. */
 function conferir(execucao: Execucao, esperado: Resultado, descricao: string): void {
   if (esperado.isError === true) {
@@ -94,43 +87,64 @@ function paginas(execucao: Execucao, nome: string) {
 }
 
 describe("simplifica-mcp consultar", () => {
-  test.each(["normas", "ppcs"] as const)(
-    "fixture %s: o invólucro da CLI imprime a resposta do chamador, ou o erro com código 1",
-    async (fixture) => {
-      const lista = chamadas(fixture).filter((c) => c.nome !== "etapa");
-      const esperados = await emProcesso(bancos[fixture], lista);
-      const execucoes = await emLotes(lista, (c: Chamada) =>
-        consultar(bancos[fixture], [c.nome, "--args", JSON.stringify(c.args ?? {})]),
+  test.skipIf(SMOKE_APENAS)(
+    "invólucro da CLI: resposta válida, erro de schema e erro de domínio saem iguais ao chamador",
+    async () => {
+      // todas as 84 amostras já são conferidas em memória em contrato.test.ts; aqui validamos o invólucro CLI
+      const casos: Array<{ fixture: Fixture; chamada: Chamada }> = [
+        {
+          fixture: "normas",
+          chamada: { nome: "buscar_norma", args: { consulta: "Res. CNE/CP 2/2026" }, valida: true },
+        },
+        { fixture: "normas", chamada: { nome: "buscar_norma", args: {}, valida: false } },
+        {
+          fixture: "ppcs",
+          chamada: {
+            nome: "pacote_contexto",
+            args: { tarefa: "CT-XXXX-99", ppc: "curitiba/tecnico-em-enfermagem" },
+            valida: false,
+          },
+        },
+      ];
+      await Promise.all(
+        casos.map(async ({ fixture, chamada }) => {
+          const [esperado] = await emProcesso(bancos[fixture], [chamada]);
+          const execucao = await consultar(bancos[fixture], [chamada.nome, "--args", JSON.stringify(chamada.args)]);
+          conferir(execucao, esperado!, rotulo(chamada));
+        }),
       );
-      lista.forEach((c, i) => conferir(execucoes[i]!, esperados[i]!, rotulo(c)));
     },
   );
 
-  test("--todas-as-paginas segue o cursor e imprime uma resposta por linha", async () => {
-    const execucao = await consultar(bancos.ppcs, ["listar_cursos", "--args", '{"limite":1}', "--todas-as-paginas"]);
+  test.skipIf(SMOKE_APENAS)("--todas-as-paginas segue o cursor e imprime uma resposta por linha", async () => {
+    const [execucao, uma] = await Promise.all([
+      consultar(bancos.ppcs, ["listar_cursos", "--args", '{"limite":1}', "--todas-as-paginas"]),
+      consultar(bancos.ppcs, ["listar_cursos", "--args", '{"limite":1}']),
+    ]);
     const respostas = paginas(execucao, "listar_cursos");
     const ids = respostas.flatMap((r) => r.dados.cursos.map((c) => c.id));
     expect(respostas.length).toBeGreaterThan(1);
     expect(ids).toHaveLength(respostas[0]!.pagina!.total);
     expect(new Set(ids).size).toBe(ids.length);
     // sem a flag, só a primeira página
-    const uma = await consultar(bancos.ppcs, ["listar_cursos", "--args", '{"limite":1}']);
     expect(uma.stdout).toBe(`${execucao.stdout.split("\n")[0]}\n`);
   });
 
-  test("lista vazia sai com 0 e o aviso; a etapa e o --args que não é JSON, com 1", async () => {
-    const vazia = await consultar(bancos.ppcs, ["listar_cursos", "--args", '{"campus":"nenhum"}']);
+  test.skipIf(SMOKE_APENAS)("lista vazia sai com 0 e o aviso; a etapa e o --args que não é JSON, com 1", async () => {
+    const [vazia, etapa, quebrado] = await Promise.all([
+      consultar(bancos.ppcs, ["listar_cursos", "--args", '{"campus":"nenhum"}']),
+      consultar(bancos.ppcs, ["etapa", "--args", '{"id":"x"}']),
+      consultar(bancos.ppcs, ["listar_cursos", "--args", "{campus}"]),
+    ]);
     expect(vazia.codigo).toBe(0);
     expect(JSON.parse(vazia.stdout).avisos).toEqual([
       { tipo: "nao-encontrado", mensagem: "nenhum curso com esses filtros" },
     ]);
-    const etapa = await consultar(bancos.ppcs, ["etapa", "--args", '{"id":"x"}']);
     expect(etapa).toEqual({
       stdout: "",
       stderr: "simplifica-mcp: a ferramenta etapa só faz sentido numa conversa; o consultar não a roda\n",
       codigo: 1,
     });
-    const quebrado = await consultar(bancos.ppcs, ["listar_cursos", "--args", "{campus}"]);
     expect(quebrado.codigo).toBe(1);
     expect(quebrado.stderr).toContain("--args <json>: esperava a entrada da ferramenta em JSON");
   });

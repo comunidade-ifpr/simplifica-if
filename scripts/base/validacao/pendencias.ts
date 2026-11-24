@@ -10,9 +10,8 @@ import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
 import { analisarPpcPendente, conferirEvidenciaAno } from "@simplifica-if/kb/ppcs/front-matter";
 import { arquivosPpcsPendentes } from "../pendencias.ts";
 import { PASTA_PENDENCIAS_PPCS, partesDoCaminhoPendente } from "../versoes-ppc.ts";
-import { RE_URL_ASSINADA } from "../../dados/urls.ts";
-import { type Contexto, PADROES_LOCAIS } from "./contexto.ts";
-import { dadosPessoaisEUrlsInternas } from "./normas.ts";
+import type { Contexto } from "./contexto.ts";
+import { validarTextoPublico } from "./normas.ts";
 
 export function validarPendenciasPpcs(ctx: Contexto): string[] {
   const erros: string[] = [];
@@ -23,13 +22,7 @@ export function validarPendenciasPpcs(ctx: Contexto): string[] {
       continue;
     }
     const texto = NodeFS.readFileSync(NodePath.join(ctx.c.raizProjeto, arquivo), "utf-8");
-    erros.push(...dadosPessoaisEUrlsInternas(arquivo, texto));
-    for (const padrao of PADROES_LOCAIS) {
-      if (texto.includes(padrao)) erros.push(`${arquivo} contém padrão local proibido: ${padrao}`);
-    }
-    const assinada = RE_URL_ASSINADA.exec(texto);
-    if (assinada)
-      erros.push(`${arquivo} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
+    erros.push(...validarTextoPublico(arquivo, texto));
     const registro = NodePath.join(ctx.c.institucional, "ifpr", "cursos", partes.campusId, `${partes.cursoSlug}.json`);
     if (!NodeFS.existsSync(registro))
       erros.push(`${arquivo}: curso ${partes.campusId}/${partes.cursoSlug} sem registro`);

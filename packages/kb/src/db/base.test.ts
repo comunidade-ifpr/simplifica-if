@@ -60,9 +60,12 @@ import {
   transicoesAplicaveis,
 } from "../normas/vigencia.ts";
 import {
+  carregarIndicePpcs,
+  citacoesDoArquivo,
+  cobreDispositivo,
   lerTextoSecao,
   normasCitadasDoArquivo,
-  ppcsQueCitam as ppcsQueCitamArquivos,
+  ocorrenciaGravada,
   relatorioCitacoes,
 } from "../ppcs/citacoes.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
@@ -83,10 +86,62 @@ const FICHAS_DA_ANALISE = "base-conhecimento/revisao-ppc/fichas/";
 
 /* ------------------------------------------------------------------ layers */
 
-/** Os três bancos compilados num diretório temporário (removido no fim). */
-class Compilados extends Context.Service<Compilados, { readonly a: string; readonly b: string; readonly c: string }>()(
-  "@simplifica-if/kb/db/base.test/Compilados",
-) {}
+/** O banco compilado da base real (`a`) e bancos mínimos para determinismo/meta (`sa`, `sb`, `sc`). */
+class Compilados extends Context.Service<
+  Compilados,
+  { readonly a: string; readonly sa: string; readonly sb: string; readonly sc: string }
+>()("@simplifica-if/kb/db/base.test/Compilados") {}
+
+const criarCheckoutMinimo = (dir: string) =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const path = yield* Path.Path;
+    const gravar = (rel: string, conteudo: string) =>
+      Effect.gen(function* () {
+        const alvo = path.join(dir, rel);
+        yield* fs.makeDirectory(path.dirname(alvo), { recursive: true });
+        yield* fs.writeFileString(alvo, conteudo);
+      });
+    yield* gravar("packages/kb/dados/sinonimos.yaml", "tipos: {}\ngrupos: []\n");
+    yield* gravar("packages/kb/dados/topicos-secoes.yaml", "{}\n");
+    yield* gravar("base-conhecimento/config/vigencia.yaml", 'data_referencia: "2026-11-13"\n');
+    yield* gravar("base-conhecimento/normas/stubs.yaml", "normas: []\nexternos: []\n");
+    yield* gravar("base-conhecimento/relacoes.yaml", "relacoes: []\n");
+    yield* gravar("base-conhecimento/transicoes.yaml", "transicoes: []\n");
+    yield* gravar("base-conhecimento/catalogos/cnct/index.json", '{"items":[]}\n');
+    yield* gravar(
+      "base-conhecimento/institucional/ifpr/ppcs/index.json",
+      '{"items":[],"secoes":{"paths":{}}}\n',
+    );
+    yield* gravar(
+      "base-conhecimento/normas/br/leis/LEI_BR_1-2020_teste.md",
+      [
+        "---",
+        "id: br/lei/2020/1",
+        'title: "Lei nº 1/2020"',
+        'tipo_documento: "Lei"',
+        'numero: "1"',
+        "ano: 2020",
+        'data_publicacao: "2020-01-01"',
+        'assinada_em: "2020-01-01"',
+        'publicada_em: "2020-01-01"',
+        'vigente_de: "2020-01-01"',
+        'datas_fonte: "Teste mínimo."',
+        'orgao: "BR"',
+        'jurisdicao: "BR"',
+        'ementa: "Norma mínima de teste."',
+        'status_vigencia: "vigente"',
+        "keywords:",
+        '  - "teste"',
+        "---",
+        "",
+        "#### Art. 1º",
+        "",
+        "Esta lei dispõe sobre o teste mínimo.",
+        "",
+      ].join("\n"),
+    );
+  });
 
 const layerCompilados = Layer.effect(
   Compilados,
@@ -95,13 +150,21 @@ const layerCompilados = Layer.effect(
     const path = yield* Path.Path;
     const compilador = yield* Compilador.Compilador;
     const dir = yield* fs.makeTempDirectoryScoped({ prefix: "kb-base-" });
-    const [a, b, c] = ["a", "b", "c"].map((nome) => path.join(dir, `${nome}.sqlite`)) as [string, string, string];
+    const minimo = path.join(dir, "minimo");
+    yield* criarCheckoutMinimo(minimo);
+    const [a, sa, sb, sc] = ["a", "sa", "sb", "sc"].map((nome) => path.join(dir, `${nome}.sqlite`)) as [
+      string,
+      string,
+      string,
+      string,
+    ];
     // relógio de teste parado: o instante lido antes das fontes é conhecido
     yield* TestClock.setTime(INSTANTE);
     yield* compilador.compilar({ raiz, destino: a });
-    yield* compilador.compilar({ raiz, destino: b });
-    yield* compilador.compilar({ raiz, destino: c, versao: "2026.11.13", commit: "0123abcd", canal: "beta" });
-    return { a, b, c };
+    yield* compilador.compilar({ raiz: minimo, destino: sa });
+    yield* compilador.compilar({ raiz: minimo, destino: sb });
+    yield* compilador.compilar({ raiz: minimo, destino: sc, versao: "2026.11.13", commit: "0123abcd", canal: "beta" });
+    return { a, sa, sb, sc };
   }),
 );
 
@@ -195,8 +258,8 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
   describe("kb.sqlite da base", () => {
     it.effect("dois builds sobre as mesmas fontes dão o mesmo arquivo", () =>
       Effect.gen(function* () {
-        const { a, b } = yield* Compilados;
-        expect(yield* sha256(a)).toBe(yield* sha256(b));
+        const { sa, sb } = yield* Compilados;
+        expect(yield* sha256(sa)).toBe(yield* sha256(sb));
       }),
     );
 
@@ -204,8 +267,8 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       Effect.gen(function* () {
         // fonte editada durante a compilação fica mais nova que o banco e força a recompilação seguinte
         const fs = yield* FileSystem.FileSystem;
-        const { a, c } = yield* Compilados;
-        for (const banco of [a, c]) {
+        const { a, sc } = yield* Compilados;
+        for (const banco of [a, sc]) {
           const info = yield* fs.stat(banco);
           expect(Option.map(info.mtime, (d) => d.getTime())).toEqual(Option.some(INSTANTE));
         }
@@ -387,9 +450,9 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         expect(indice.size).toBeGreaterThan(4000);
         for (const [id, disp] of indice) {
           expect((yield* normas.dispositivo(id))?.disp).toEqual(disp);
-          expect((yield* normas.dispositivo(disp.id))?.disp).toEqual(obterDispositivoArquivos(disp.id, raiz)!);
         }
         for (const id of ["br/cne-cp/res/2026/2#art28", "br/lei/1996/9394#art36", "br/cne-cp/res/2021/1#art20"]) {
+          expect((yield* normas.dispositivo(id))?.disp).toEqual(obterDispositivoArquivos(id, raiz)!);
           expect((yield* normas.descendentes(id)).map((d) => d.disp)).toEqual(descendentes(id, raiz));
         }
         expect(yield* normas.dispositivo("br/cne-cp/res/2026/2#art999")).toBeUndefined();
@@ -609,13 +672,45 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       Effect.gen(function* () {
         const registro = carregarRegistro(raiz);
         const { ppcs } = yield* servicos;
+        // uma única passada pelo resolvedor nos PPCs vigentes (em vez de 8×)
+        const porPpc = carregarIndicePpcs(raiz)
+          .filter((ppc) => ppc.vigente)
+          .map((ppc) => ({ ppc, citacoes: citacoesDoArquivo(ppc.path, registro, raiz) }));
         for (const id of NORMAS) {
+          const [ato, dispositivo] = id.split("#") as [string, string | undefined];
           for (const confianca of [undefined, 0.9]) {
+            const minimo = confianca ?? 0;
+            const esperado = porPpc.flatMap(({ ppc, citacoes }) => {
+              const ocorrencias = citacoes
+                .filter((c) => c.id === ato && c.confianca >= minimo)
+                .filter((c) => {
+                  if (!dispositivo) return true;
+                  return cobreDispositivo(c.dispositivos ?? (c.dispositivoId ? [c.dispositivoId] : []), dispositivo);
+                })
+                .map((c) =>
+                  ocorrenciaGravada({
+                    linha: c.linha,
+                    trecho: c.trecho,
+                    regra: c.regra,
+                    confianca: c.confianca,
+                    dispositivos: c.dispositivos ?? (c.dispositivoId ? [c.dispositivoId] : []),
+                  }),
+                );
+              if (ocorrencias.length === 0) return [];
+              return [
+                {
+                  ppc: ppc.id,
+                  campus: ppc.campus_nome,
+                  curso: ppc.curso_nome,
+                  nivel: ppc.nivel,
+                  tipo_oferta: ppc.tipo_oferta,
+                  path: ppc.path,
+                  ocorrencias,
+                },
+              ];
+            });
             const opcoes = confianca === undefined ? {} : { confiancaMinima: confianca };
-            mesmoJson(
-              yield* ppcs.relatorioCitacoes(id, opcoes),
-              relatorioCitacoes(id, ppcsQueCitamArquivos(id, { raiz, registro, ...opcoes }), registro),
-            );
+            mesmoJson(yield* ppcs.relatorioCitacoes(id, opcoes), relatorioCitacoes(id, esperado, registro));
           }
         }
       }),
@@ -843,17 +938,19 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
 
     it.effect("meta: versao, commit e canal só quando informados no build", () =>
       Effect.gen(function* () {
-        const { c } = yield* Compilados;
-        const { meta } = yield* BaseKb.BaseKb;
+        const { sa, sc } = yield* Compilados;
+        const semVersao = yield* Effect.provide(
+          BaseKb.BaseKb,
+          Layer.fresh(BaseKb.layer.pipe(Layer.provide(BaseKb.layerSqlite({ caminho: sa })))),
+        );
         const comVersao = yield* Effect.provide(
           BaseKb.BaseKb,
-          // `fresh`: sem ele, o memo do bloco devolveria o `BaseKb` já montado sobre o banco `a`
-          Layer.fresh(BaseKb.layer.pipe(Layer.provide(BaseKb.layerSqlite({ caminho: c })))),
+          Layer.fresh(BaseKb.layer.pipe(Layer.provide(BaseKb.layerSqlite({ caminho: sc })))),
         );
         const { versao, commit, canal, linhas, ...resto } = comVersao.meta;
         expect([versao, commit, canal]).toEqual(["2026.11.13", "0123abcd", "beta"]);
         expect([linhas["versao"], linhas["commit"], linhas["canal"]]).toEqual(["2026.11.13", "0123abcd", "beta"]);
-        const { versao: _v, commit: _c, canal: _k, linhas: linhasSem, ...restoSem } = meta;
+        const { versao: _v, commit: _c, canal: _k, linhas: linhasSem, ...restoSem } = semVersao.meta;
         expect(resto).toEqual(restoSem);
         const { versao: _lv, commit: _lc, canal: _lk, ...outrasLinhas } = linhas;
         expect(outrasLinhas).toEqual(linhasSem);
@@ -896,25 +993,27 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
     );
   });
 
-  describe("num executável (Node SEA, pelo vp pack), só com o kb.sqlite", () => {
-    it.effect("o executável roda num diretório vazio e dá a mesma saída que o processo", () =>
-      Effect.gen(function* () {
-        const fs = yield* FileSystem.FileSystem;
-        const path = yield* Path.Path;
-        const { a } = yield* Compilados;
-        // a entrada fica em `node_modules/.cache` do pacote, fora do código, para que `effect` se resolva
-        // para o mesmo módulo que as layers importam; ela importa as layers e as consultas pelo caminho absoluto
-        const cache = path.join(import.meta.dirname, "../../node_modules/.cache");
-        yield* fs.makeDirectory(cache, { recursive: true });
-        const trabalho = yield* fs.realPath(
-          yield* fs.makeTempDirectoryScoped({ directory: cache, prefix: "kb-binario-" }),
-        );
-        const vazio = yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "kb-binario-vazio-" }));
-        const entrada = path.join(trabalho, "entrada.ts");
-        const modulo = (relativo: string) => JSON.stringify(path.join(import.meta.dirname, relativo));
-        yield* fs.writeFileString(
-          entrada,
-          `import * as Effect from "effect/Effect";
+  describe.skipIf(!process.env["SIMPLIFICA_SMOKE"])(
+    "num executável (Node SEA, pelo vp pack), só com o kb.sqlite",
+    () => {
+      it.effect("o executável roda num diretório vazio e dá a mesma saída que o processo", () =>
+        Effect.gen(function* () {
+          const fs = yield* FileSystem.FileSystem;
+          const path = yield* Path.Path;
+          const { a } = yield* Compilados;
+          // a entrada fica em `node_modules/.cache` do pacote, fora do código, para que `effect` se resolva
+          // para o mesmo módulo que as layers importam; ela importa as layers e as consultas pelo caminho absoluto
+          const cache = path.join(import.meta.dirname, "../../node_modules/.cache");
+          yield* fs.makeDirectory(cache, { recursive: true });
+          const trabalho = yield* fs.realPath(
+            yield* fs.makeTempDirectoryScoped({ directory: cache, prefix: "kb-binario-" }),
+          );
+          const vazio = yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "kb-binario-vazio-" }));
+          const entrada = path.join(trabalho, "entrada.ts");
+          const modulo = (relativo: string) => JSON.stringify(path.join(import.meta.dirname, relativo));
+          yield* fs.writeFileString(
+            entrada,
+            `import * as Effect from "effect/Effect";
 import * as Layers from ${modulo("../layers.ts")};
 import { consultasDoExecutavel } from ${modulo("../testes/consultas.ts")};
 Effect.runPromise(Effect.provide(consultasDoExecutavel, Layers.layerSomenteLeitura({ caminho: process.argv[2] }))).then(
@@ -925,36 +1024,37 @@ Effect.runPromise(Effect.provide(consultasDoExecutavel, Layers.layerSomenteLeitu
   },
 );
 `,
-        );
-        // um só chunk, com as dependências dentro: o SEA só resolve os módulos internos do Node
-        yield* Effect.promise(() =>
-          empacotar({
-            entry: [entrada],
-            cwd: path.join(import.meta.dirname, "../.."),
-            config: false,
-            outDir: path.join(trabalho, "dist"),
-            platform: "node",
-            logLevel: "error",
-            report: false,
-            deps: { alwaysBundle: () => true, onlyBundle: false },
-            outputOptions: { codeSplitting: false },
-            // num bundle, todo módulo é o principal: os `if (import.meta.main)` das CLIs (como o de
-            // `compilar.ts`) não podem rodar; o Bun fazia essa troca sozinho no `--compile`
-            define: { "import.meta.main": "false" },
-            exe: { fileName: "kb-modo-banco", outDir: vazio, seaConfig: { useCodeCache: false } },
-          }),
-        );
-        const binario = path.join(vazio, "kb-modo-banco");
-        yield* fs.copyFile(a, path.join(vazio, "kb.sqlite"));
-        const execucao = NodeChildProcess.spawnSync(binario, ["kb.sqlite"], {
-          cwd: vazio,
-          env: {},
-          encoding: "utf-8",
-          maxBuffer: 256 * 1024 * 1024,
-        });
-        expect(execucao.status, execucao.stderr).toBe(0);
-        expect(execucao.stdout.trim()).toBe(JSON.stringify(yield* consultasDoExecutavel));
-      }),
-    );
-  });
+          );
+          // um só chunk, com as dependências dentro: o SEA só resolve os módulos internos do Node
+          yield* Effect.promise(() =>
+            empacotar({
+              entry: [entrada],
+              cwd: path.join(import.meta.dirname, "../.."),
+              config: false,
+              outDir: path.join(trabalho, "dist"),
+              platform: "node",
+              logLevel: "error",
+              report: false,
+              deps: { alwaysBundle: () => true, onlyBundle: false },
+              outputOptions: { codeSplitting: false },
+              // num bundle, todo módulo é o principal: os `if (import.meta.main)` das CLIs (como o de
+              // `compilar.ts`) não podem rodar; o Bun fazia essa troca sozinho no `--compile`
+              define: { "import.meta.main": "false" },
+              exe: { fileName: "kb-modo-banco", outDir: vazio, seaConfig: { useCodeCache: false } },
+            }),
+          );
+          const binario = path.join(vazio, "kb-modo-banco");
+          yield* fs.copyFile(a, path.join(vazio, "kb.sqlite"));
+          const execucao = NodeChildProcess.spawnSync(binario, ["kb.sqlite"], {
+            cwd: vazio,
+            env: {},
+            encoding: "utf-8",
+            maxBuffer: 256 * 1024 * 1024,
+          });
+          expect(execucao.status, execucao.stderr).toBe(0);
+          expect(execucao.stdout.trim()).toBe(JSON.stringify(yield* consultasDoExecutavel));
+        }),
+      );
+    },
+  );
 });

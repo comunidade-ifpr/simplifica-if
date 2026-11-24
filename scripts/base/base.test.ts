@@ -329,7 +329,6 @@ describe("validação da base", () => {
     expect(erros).toEqual([
       `README.md contém padrão local proibido: ${"/Us"}${"ers/"}`,
       "normas não devem ficar na raiz do repositório: ['solta.md']",
-      `README.md contém padrão local proibido: ${"/Us"}${"ers/"}`,
       "índice de PPCs não encontrado: institucional/ifpr/ppcs/index.json",
       "manifesto CNCT não encontrado: catalogos/cnct/manifest.json",
       "índice CNCT não encontrado: catalogos/cnct/index.json",

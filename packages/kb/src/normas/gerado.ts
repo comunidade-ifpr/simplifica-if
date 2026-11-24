@@ -19,24 +19,40 @@ const CAMPOS_GERADOS = ["status_vigencia", ...CAMPOS_RELACAO_FRONT_MATTER] as co
 
 export type ValorGerado = string | string[];
 
-/** Campos gerados da norma `id` (arquivo), na ordem em que vão para o front matter. */
-export function camposGerados(id: string, raiz: string): Map<string, ValorGerado> {
-  const campos = new Map<string, ValorGerado>();
-  const referencia = dataReferencia(raiz);
-  const fonte = {
-    registro: carregarRegistro(raiz),
-    datas: carregarDatas(raiz),
+interface ContextoGerado {
+  readonly referencia: string;
+  readonly registro: ReturnType<typeof carregarRegistro>;
+  readonly datas: ReturnType<typeof carregarDatas>;
+  readonly relacoes: ReturnType<typeof carregarRelacoes>;
+  readonly consolidado: ReturnType<typeof carregarConsolidado>;
+}
+
+function carregarContextoGerado(raiz: string): ContextoGerado {
+  const registro = carregarRegistro(raiz);
+  return {
+    referencia: dataReferencia(raiz),
+    registro,
+    datas: carregarDatas(raiz, registro),
     relacoes: carregarRelacoes(raiz),
     consolidado: carregarConsolidado(raiz),
   };
-  const resultado = statusEm(id, referencia, fonte);
+}
+
+function camposGeradosCom(id: string, raiz: string, contexto: ContextoGerado): Map<string, ValorGerado> {
+  const campos = new Map<string, ValorGerado>();
+  const resultado = statusEm(id, contexto.referencia, contexto);
   campos.set("status_vigencia", resultado.status);
-  const relacoes = camposRelacoesFrontMatter(id, raiz, carregarRegistro(raiz));
+  const relacoes = camposRelacoesFrontMatter(id, raiz, contexto.registro, contexto.relacoes);
   for (const campo of CAMPOS_RELACAO_FRONT_MATTER) {
     const valor = relacoes[campo];
     if (valor?.length) campos.set(campo, valor);
   }
   return campos;
+}
+
+/** Campos gerados da norma `id` (arquivo), na ordem em que vão para o front matter. */
+export function camposGerados(id: string, raiz: string): Map<string, ValorGerado> {
+  return camposGeradosCom(id, raiz, carregarContextoGerado(raiz));
 }
 
 function yamlTexto(valor: string): string {
@@ -100,8 +116,9 @@ export interface NormaGerada {
 
 /** Texto esperado de cada norma da base, com os campos gerados atualizados. */
 export function normasComCamposGerados(raiz: string): NormaGerada[] {
+  const contexto = carregarContextoGerado(raiz);
   return listarNormas(raiz).map((norma) => {
     const atual = NodeFS.readFileSync(norma.arquivo, "utf-8");
-    return { ...norma, atual, esperado: reescreverFrontMatter(atual, camposGerados(norma.id, raiz)) };
+    return { ...norma, atual, esperado: reescreverFrontMatter(atual, camposGeradosCom(norma.id, raiz, contexto)) };
   });
 }

@@ -17,11 +17,11 @@ import { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
 import { camadaFerramentas, conectarEmMemoria, responder, saidaValida } from "../apoio.ts";
 import { limparTemporarios } from "../fixture.ts";
 import { AMOSTRAS, type Amostras, type Fixture } from "./amostras.ts";
-import { bancosFixture, ferramenta, rotulo } from "./apoio.ts";
+import { bancosFixture, ferramenta, rotulo, SMOKE_APENAS } from "./apoio.ts";
 
 let bancos: Record<Fixture, string>;
 beforeAll(() => {
-  bancos = bancosFixture();
+  if (!SMOKE_APENAS) bancos = bancosFixture();
 });
 afterAll(limparTemporarios);
 
@@ -48,7 +48,7 @@ function conferirLegivel(mensagem: string, campos: ReadonlyArray<string>, contex
   expect(mensagem.length, contexto).toBeLessThan(1000);
 }
 
-describe("amostras", () => {
+describe.skipIf(SMOKE_APENAS)("amostras", () => {
   test("toda ferramenta tem amostras válidas (fixture e base real) e inválidas, e nenhuma amostra sobra", () => {
     const nomes = FERRAMENTAS.map((f) => f.nome as string);
     for (const nome of nomes) {
@@ -69,7 +69,7 @@ describe("amostras", () => {
   });
 });
 
-describe.each(FERRAMENTAS.map((f) => f.nome))("contrato: %s", (nome) => {
+describe.skipIf(SMOKE_APENAS).each(FERRAMENTAS.map((f) => f.nome))("contrato: %s", (nome) => {
   it.effect("pelo protocolo: válidas no inputSchema e no outputSchema; inválidas com erro legível", () =>
     Effect.gen(function* () {
       const a = amostrasDe(nome);

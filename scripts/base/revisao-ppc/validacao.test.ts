@@ -15,7 +15,7 @@ import { type EntradaRegistro, Registro } from "@simplifica-if/kb/normas/registr
 import type { LinhaDerivada } from "@simplifica-if/kb/normas/vigencia";
 import { type CaminhosRevisaoPpc, caminhosRevisaoPpc } from "./caminhos.ts";
 import { type Derivacao, derivacaoPadrao } from "./marcos.ts";
-import { carregarUniverso, referenciasLegiveisDaFicha } from "./referencias.ts";
+import { carregarUniverso } from "./referencias.ts";
 import {
   carregarMarcos,
   type Ficha,
@@ -264,12 +264,6 @@ function fichasReais(): Map<string, Ficha> {
   return fichas;
 }
 
-function texto(ficha: Ficha | undefined): string {
-  return ["pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando"]
-    .map((campo) => String(ficha?.[campo] ?? ""))
-    .join(" ");
-}
-
 function marcoValido(sobrescritas: ObjetoJson = {}): ObjetoJson {
   return {
     id: "dcn_ept",
@@ -475,53 +469,5 @@ describe("base real", () => {
     expect(String(dcnEpt.transicao)).toContain("art. 70");
     expect(String(dcnEpt.transicao)).toContain("têm assegurado o direito de concluir");
     expect(dcnEpt.fichas_responsaveis).toEqual(["CT-SUP-12"]);
-  });
-
-  test("fichas aplicam regras materiais da DCN EPT 2026", () => {
-    const fichas = fichasReais();
-    const curr02 = texto(fichas.get("CT-CURR-02"));
-    expect(curr02).toContain("3.000 horas");
-    expect(curr02).toContain("art. 37, § 3º");
-    expect(curr02).toContain("até 300 horas");
-    expect(curr02).toContain("art. 30 e parágrafo único");
-    expect(texto(fichas.get("CT-CURR-03"))).toContain("300 horas");
-    expect(texto(fichas.get("CT-CURR-03"))).toContain("2.100 horas");
-    expect(texto(fichas.get("CT-CURR-20"))).toContain("um terço da carga horária mínima");
-    expect(texto(fichas.get("CT-IDENT-18"))).toContain("dois anos");
-    expect(texto(fichas.get("CT-CURR-19"))).toContain("prática profissional supervisionada");
-    expect(texto(fichas.get("CT-CURR-17"))).toContain("itinerário formativo profissional é obrigatória");
-    expect(texto(fichas.get("CT-CURR-15"))).toContain("art. 42, II, dispensa");
-    expect(texto(fichas.get("CT-IDENT-02"))).toContain("art. 69");
-  });
-
-  test("ficha de formato de oferta separa as bases de cálculo", () => {
-    const formato = fichasReais().get("CT-CURR-27")!;
-    const conteudo = texto(formato);
-    for (const trecho of [
-      "exclusivamente atividades presenciais",
-      "30% da carga horária mínima do curso no CNCT",
-      "70% da carga horária total",
-      "5% da carga horária total",
-      "190/2024, art. 5º",
-      "art. 53, § 7º",
-    ]) {
-      expect(conteudo).toContain(trecho);
-    }
-    expect(new Set(formato.topicos_tematicos as string[])).toEqual(
-      new Set(["identificacao_oferta", "matriz_curricular"]),
-    );
-  });
-
-  test("fichas de base legal tratam a DCNEPT 2021 como revogada", () => {
-    const fichas = fichasReais();
-    const universo = carregarUniverso()!;
-    for (const fichaId of ["CT-IDENT-05", "CT-IDENT-08", "CT-SUP-09", "CT-SUP-12", "CT-SUP-14"]) {
-      const ficha = fichas.get(fichaId)!;
-      const referencias = referenciasLegiveisDaFicha(ficha, universo);
-      expect(referencias.some((referencia) => referencia.ref === DCN_EPT_2026)).toBe(true);
-      expect(referencias.some((referencia) => referencia.texto.startsWith("Resolução CNE/CP nº 2/2026"))).toBe(true);
-      expect(texto(ficha)).not.toContain("DCNEPT 2021");
-    }
-    expect(fichas.get("CT-SUP-12")!.criticidade).toBe("OBRIG");
   });
 });

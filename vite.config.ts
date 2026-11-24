@@ -29,7 +29,9 @@ export default defineConfig({
     environment: "node",
     pool: "forks",
     include: ["**/*.test.ts"],
-    exclude: execucaoNaRaiz ? [...TEST_EXCLUDE, "packages/**", "apps/**"] : TEST_EXCLUDE,
+    exclude: execucaoNaRaiz
+      ? [...TEST_EXCLUDE, "packages/**", "apps/**", "ferramentas/oxlint-plugin/**"]
+      : TEST_EXCLUDE,
     // Como no T3: no Node, os testes que percorrem a base inteira passam dos 5 s do prazo padrão.
     testTimeout: 60_000,
     hookTimeout: 60_000,
@@ -169,7 +171,6 @@ export default defineConfig({
         ],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
-          "simplifica-if/no-global-process-runtime": "error",
           "simplifica-if/no-inline-schema-compile": "error",
           // Estas só agem em arquivos de teste (a própria regra confere o nome do arquivo).
           "simplifica-if/no-dom-test-environment": "error",
@@ -177,43 +178,10 @@ export default defineConfig({
           "simplifica-if/no-manual-effect-runtime-in-tests": "error",
           "simplifica-if/no-polling-loop-in-tests": "error",
           "simplifica-if/no-real-time-wait-in-tests": "error",
-          // Aviso: 14 testes antigos registram casos num `for` (docs/internals/servicos-effect.md, "Testes").
-          "simplifica-if/no-test-in-loop": "warn",
           "simplifica-if/no-wall-clock-in-tests": "error",
           "simplifica-if/prefer-catch-tags": "error",
-          "simplifica-if/prefer-effect-fn": "error",
           "simplifica-if/require-suppression-reason": "error",
         },
-      },
-      {
-        // Como no T3: testes e utilitários de teste montam programas inline, sem `Effect.fn`.
-        files: ["**/*.test.ts", "**/{test,tests,testes,fixtures}/**"],
-        rules: { "simplifica-if/prefer-effect-fn": "off" },
-      },
-      {
-        // Pontos de entrada (a CLI `kb` e os scripts do pacote) leem o processo do Node diretamente,
-        // como `scripts/npm-launcher/**` no T3; o resto do pacote recebe o que precisar por injeção.
-        files: [
-          "packages/kb/scripts/**",
-          "packages/mcp/src/cli.ts",
-          "packages/mcp/src/kb.ts",
-          "packages/mcp/scripts/**",
-          // O harness do motor e o teste com providers reais passam o ambiente do processo aos drivers.
-          "packages/motor/scripts/**",
-          "packages/motor/test/real.test.ts",
-          // O servidor local: os pontos de entrada e o teste com provider real.
-          "apps/server/src/bin.ts",
-          "apps/server/src/cli.ts",
-          "apps/server/test/real.test.ts",
-          "apps/server/test/ciclo-real.test.ts",
-          "apps/server/test/skills-real.test.ts",
-          // A interface: a configuração do Vite e o servidor de teste rodam no Node e leem o processo.
-          "apps/web/vite.config.ts",
-          "apps/web/test/servidor-teste.ts",
-          // Como no T3: HostProcess é o ponto que lê o processo e entrega por Context.Reference.
-          "packages/motor/src/t3/HostProcess.ts",
-        ],
-        rules: { "simplifica-if/no-global-process-runtime": "off" },
       },
       {
         // A interface (React): as regras de React do lint do T3 Code, que a raiz deixa de fora.

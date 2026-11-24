@@ -18,11 +18,12 @@ import {
   servidorPadrao,
   sessaoStdio,
   SMOKE,
+  SMOKE_APENAS,
 } from "./apoio.ts";
 
 let bancos: Record<Fixture, string>;
 beforeAll(() => {
-  bancos = bancosFixture();
+  if (!SMOKE_APENAS) bancos = bancosFixture();
 });
 afterAll(limparTemporarios);
 
@@ -37,12 +38,14 @@ async function duasExecucoes(banco: string, lista: ReadonlyArray<Chamada>) {
 }
 
 describe("determinismo: dois processos, a mesma saída byte a byte", () => {
-  test("as amostras cobrem todas as ferramentas", () => {
+  test.skipIf(SMOKE_APENAS)("as amostras cobrem todas as ferramentas", () => {
     const nomes = new Set([...chamadas("normas"), ...chamadas("ppcs")].map((c) => c.nome as string));
     expect([...nomes].sort()).toEqual(FERRAMENTAS.map((f) => f.nome as string).sort());
   });
 
-  test.each(["normas", "ppcs"] as const)("fixture %s", (fixture) => duasExecucoes(bancos[fixture], chamadas(fixture)));
+  test.skipIf(SMOKE_APENAS).each(["normas", "ppcs"] as const)("fixture %s", (fixture) =>
+    duasExecucoes(bancos[fixture], chamadas(fixture)),
+  );
 
   test.skipIf(!SMOKE)("base real", () => duasExecucoes(BANCO_REAL, chamadas("real")));
 });

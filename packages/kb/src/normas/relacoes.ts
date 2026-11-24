@@ -277,11 +277,12 @@ export function camposRelacoesFrontMatter(
   id: string,
   raiz: string,
   registro: Registro = carregarRegistro(raiz),
+  relacoes: readonly Relacao[] = carregarRelacoes(raiz),
 ): Partial<Record<CampoRelacao, string[]>> {
   const ato = id;
   const campos: Partial<Record<CampoRelacao, string[]>> = {};
   const titulo = (outro: string) => registro.obter(outro)?.title ?? outro;
-  for (const relacao of carregarRelacoes(raiz)) {
+  for (const relacao of relacoes) {
     const [direto, inverso] = CAMPO_POR_TIPO[relacao.tipo];
     if (relacao.origem === ato) (campos[direto] ??= []).push(textoAlvo(titulo(relacao.alvo), relacao, "alvo"));
     if (relacao.alvo === ato) {

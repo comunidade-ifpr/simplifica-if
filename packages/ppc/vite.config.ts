@@ -7,6 +7,32 @@ import "vite-plus/test/config";
 import { defineConfig } from "vite-plus";
 import raiz from "../../vite.config.ts";
 
+const TESTES_BASE = [
+  "test/precisao-base.test.ts",
+  "test/identificacao-medicao.test.ts",
+  "test/revisao-ia-conversa-base.test.ts",
+];
+
 export default defineConfig({
-  test: { ...raiz.test, globalSetup: ["./test/banco-fresco.ts"] },
+  test: {
+    globalSetup: ["./test/banco-fresco.ts"],
+    projects: [
+      {
+        extends: true,
+        test: {
+          ...raiz.test,
+          name: "unidade",
+          exclude: [...(raiz.test?.exclude ?? []), ...TESTES_BASE],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          ...raiz.test,
+          name: "base",
+          include: TESTES_BASE,
+        },
+      },
+    ],
+  },
 });

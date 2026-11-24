@@ -16,7 +16,7 @@ import {
   FERRAMENTAS_NAVEGADOR_ANTIGRAVITY,
   ferramentasDesligadasAntigravity,
 } from "../src/drivers/antigravity.ts";
-import { classificarClaude } from "../src/drivers/claude.ts";
+import { classificarClaude, envSessaoClaude } from "../src/drivers/claude.ts";
 import {
   classificarComandoCodex,
   configThreadCodex,
@@ -61,6 +61,21 @@ describe("política de fábrica", () => {
     assert.isTrue(Object.isFrozen(POLITICA_FABRICA.ferramentas.escrita));
     assert.deepStrictEqual(POLITICA_FABRICA.codex, { sandbox: "read-only", aprovacao: "on-request" });
     assert.strictEqual(POLITICA_FABRICA.telemetria, "desligada");
+  });
+
+  it("Claude: retomada de sessão e semFerramentas preservam telemetria desligada", () => {
+    const base = { PATH: "/usr/bin", HOME: "/home/u" };
+    const semTelemetria = ambienteSemTelemetria("claude", base);
+    const retomada = envSessaoClaude(base, { retomar: "sessao-1" });
+    assert.strictEqual(retomada.MCP_CONNECTION_NONBLOCKING, "0");
+    for (const [chave, valor] of Object.entries(semTelemetria)) {
+      if (!(chave in base)) assert.strictEqual(retomada[chave], valor, chave);
+    }
+    const julgamento = envSessaoClaude(base, { semFerramentas: true });
+    assert.strictEqual(julgamento.DISABLE_PROMPT_CACHING, "1");
+    for (const [chave, valor] of Object.entries(semTelemetria)) {
+      if (!(chave in base)) assert.strictEqual(julgamento[chave], valor, chave);
+    }
   });
 
   it("curadoria (M1.12): null de fábrica; o repositório é dono/repo, sem `.` nem `..`", () => {

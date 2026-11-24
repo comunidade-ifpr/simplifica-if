@@ -8,7 +8,8 @@
     "./*": "./src/*.ts"
   },
   "scripts": {
-    "test": "vp test run",
+    "test": "vp test run --project unidade",
+    "test:base": "vp test run --project base",
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {

@@ -33,7 +33,7 @@ export class FalhaNaCuradoria extends Schema.TaggedError<FalhaNaCuradoria>()("Fa
   }
 }
 
-/** O checkout onde estão as fontes e o `tmp/kb.sqlite`; o ponto de entrada (`cli.ts`) informa a raiz. */
+/** O checkout onde estão as fontes e o `tmp/kb.sqlite`; o ponto de entrada (`packages/mcp/src/kb.ts`) informa a raiz. */
 export class Checkout extends Context.Service<Checkout, { readonly raiz: string }>()(
   "@simplifica-if/kb/cli/comum/Checkout",
 ) {}

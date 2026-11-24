@@ -15,11 +15,11 @@ import { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
 import { camadaFerramentas, responder } from "../apoio.ts";
 import { limparTemporarios } from "../fixture.ts";
 import { AMOSTRAS, type Amostras, type Fixture } from "./amostras.ts";
-import { BANCO_REAL, bancosFixture, comCursor, ferramenta, rotulo, SMOKE } from "./apoio.ts";
+import { BANCO_REAL, bancosFixture, comCursor, ferramenta, rotulo, SMOKE, SMOKE_APENAS } from "./apoio.ts";
 
 let bancos: Record<Fixture, string>;
 beforeAll(() => {
-  bancos = bancosFixture();
+  if (!SMOKE_APENAS) bancos = bancosFixture();
 });
 afterAll(limparTemporarios);
 
@@ -66,7 +66,7 @@ const conferir = (nome: string, a: Amostras, banco: string, real: boolean) =>
 describe.each(FERRAMENTAS.map((f) => f.nome))("orçamento: %s", (nome) => {
   const a = (AMOSTRAS as Partial<Record<string, Amostras>>)[nome];
 
-  it.effect("fixture: textos no teto; paginação completa e sem repetição", () =>
+  it.effect.skipIf(SMOKE_APENAS)("fixture: textos no teto; paginação completa e sem repetição", () =>
     a ? conferir(nome, a, bancos[a.fixture], false) : Effect.die(new Error(`${nome}: sem amostras`)),
   );
 

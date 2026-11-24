@@ -245,6 +245,22 @@ function mensagemDoUsuario(texto: string): SDKUserMessage {
   return { type: "user", message: { role: "user", content: texto }, parent_tool_use_id: null };
 }
 
+/** Ambiente passado ao SDK do Claude na sessão (nova, retomada ou sem ferramentas), preservando telemetria desligada. */
+export function envSessaoClaude(
+  ambiente: Ambiente,
+  opcoes: { readonly retomar?: string | undefined; readonly semFerramentas?: boolean | undefined },
+): Record<string, string | undefined> {
+  return {
+    ...ambienteSemTelemetria(PROVIDER, limparAmbiente(ambiente)),
+    // Como o T3 (`claudeQueryEnvironment`): na retomada, o primeiro pedido espera os MCP conectarem;
+    // sem isso, o Claude diz ao modelo que o servidor `ifpr` caiu.
+    ...(opcoes.retomar === undefined ? {} : { MCP_CONNECTION_NONBLOCKING: "0" }),
+    // Julgamento: um turno por sessão, então gravar o pedido no cache (1,25× o preço da entrada) não
+    // tem retorno; no teste real, 343 mil tokens foram gravados no cache sem nenhuma leitura útil.
+    ...(opcoes.semFerramentas === true ? { DISABLE_PROMPT_CACHING: "1" } : {}),
+  };
+}
+
 const opcoesBase = (ambiente: Ambiente, executavel: string) =>
   ({
     pathToClaudeCodeExecutable: executavel,
@@ -409,22 +425,17 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       return resposta;
     };
 
+    const base = opcoesBase(opcoes.ambiente, executavel);
+    const env = envSessaoClaude(opcoes.ambiente, {
+      retomar: config.retomar,
+      semFerramentas: config.semFerramentas,
+    });
+
     const consulta: Query = query({
       prompt: Stream.toAsyncIterable(Stream.fromQueue(entrada)),
       options: {
-        ...opcoesBase(opcoes.ambiente, executavel),
-        // Como o T3 (`claudeQueryEnvironment`): na retomada, o primeiro pedido espera os MCP conectarem;
-        // sem isso, o Claude diz ao modelo que o servidor `ifpr` caiu.
-        ...(config.retomar === undefined
-          ? {}
-          : { env: { ...limparAmbiente(opcoes.ambiente), MCP_CONNECTION_NONBLOCKING: "0" } }),
-        // Julgamento: um turno por sessão, então gravar o pedido no cache (1,25× o preço da entrada) não
-        // tem retorno; no teste real, 343 mil tokens foram gravados no cache sem nenhuma leitura útil.
-        ...(config.semFerramentas === true
-          ? {
-              env: { ...ambienteSemTelemetria(PROVIDER, limparAmbiente(opcoes.ambiente)), DISABLE_PROMPT_CACHING: "1" },
-            }
-          : {}),
+        ...base,
+        env,
         // Julgamento: a sessão não é retomada, e o PPC não fica na transcrição do `~/.claude/projects/`.
         persistSession: config.semFerramentas !== true,
         ...(config.retomar === undefined ? { sessionId: idNativo } : { resume: config.retomar }),

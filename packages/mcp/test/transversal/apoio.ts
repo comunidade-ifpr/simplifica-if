@@ -29,8 +29,10 @@ import { AMOSTRAS, type Args, type Fixture, type NomeFerramenta } from "./amostr
 
 export const RAIZ = NodePath.resolve(import.meta.dirname, "../../../..");
 export const BANCO_REAL = NodePath.join(RAIZ, "tmp/kb.sqlite");
+/** Quando `SIMPLIFICA_SMOKE_APENAS=1`, pula os blocos de fixture e roda só a base real. */
+export const SMOKE_APENAS = process.env.SIMPLIFICA_SMOKE_APENAS === "1";
 /** As partes sobre a base real rodam só com `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`). */
-export const SMOKE = process.env.SIMPLIFICA_SMOKE === "1";
+export const SMOKE = process.env.SIMPLIFICA_SMOKE === "1" || SMOKE_APENAS;
 /** O executável de `pnpm mcp:executavel`, quando a suíte roda contra ele. */
 export const EXE = process.env.SIMPLIFICA_MCP_EXE;
 const CLI = NodePath.resolve(import.meta.dirname, "../../src/cli.ts");
@@ -136,7 +138,6 @@ export interface Sessao {
 
 /** Ambiente mínimo do filho: sem herdar `SIMPLIFICA_KB` nem o `PATH` com o Node do teste. */
 export function ambienteMinimo(casa: string): Record<string, string> {
-  // oxlint-disable-next-line simplifica-if/no-global-process-runtime -- teste fora do runtime Effect: o ambiente mínimo do filho depende do sistema
   if (NodeOS.platform() === "win32") {
     const sistema = process.env.SystemRoot ?? "C:\\Windows";
     return { SystemRoot: sistema, PATH: `${sistema}\\System32`, USERPROFILE: casa, HOME: casa };
@@ -292,13 +293,20 @@ export async function servidorIsolado(): Promise<ServidorIsolado> {
       },
     };
   }
-  const codigo = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-bundle-"));
-  const gerado = await conferirBundle();
-  const bundle = NodePath.join(codigo, NodePath.basename(gerado));
-  NodeFS.copyFileSync(gerado, bundle);
-  NodeFS.rmSync(NodePath.dirname(gerado), { recursive: true, force: true });
-  const gancho = NodePath.join(codigo, "realpath-nativo.mjs");
-  NodeFS.writeFileSync(gancho, GANCHO);
+  let bundle = process.env.SIMPLIFICA_MCP_BUNDLE;
+  let gancho: string;
+  if (bundle) {
+    gancho = NodePath.join(NodePath.dirname(bundle), "realpath-nativo.mjs");
+  } else {
+    const codigo = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-bundle-"));
+    const gerado = await conferirBundle();
+    bundle = NodePath.join(codigo, NodePath.basename(gerado));
+    NodeFS.copyFileSync(gerado, bundle);
+    NodeFS.rmSync(NodePath.dirname(gerado), { recursive: true, force: true });
+    gancho = NodePath.join(codigo, "realpath-nativo.mjs");
+    NodeFS.writeFileSync(gancho, GANCHO);
+  }
+  const bundleFinal = bundle;
   return {
     modo: "node-com-permissoes",
     preparar: (banco, arquivos = {}) => {
@@ -308,10 +316,10 @@ export async function servidorIsolado(): Promise<ServidorIsolado> {
         args: [
           "--permission",
           `--allow-fs-read=${pasta}`,
-          `--allow-fs-read=${bundle}`,
+          `--allow-fs-read=${bundleFinal}`,
           `--allow-fs-read=${gancho}`,
           `--import=${NodeURL.pathToFileURL(gancho).href}`,
-          bundle,
+          bundleFinal,
           "--banco",
           "kb.sqlite",
           "--vigencia-na-referencia",

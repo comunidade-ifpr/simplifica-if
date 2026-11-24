@@ -230,7 +230,6 @@ const programa = Effect.gen(function* () {
 
 const pastaEstado =
   process.env["SIMPLIFICA_ESTADO"] ??
-  // oxlint-disable-next-line simplifica-if/no-global-process-runtime -- script de medição, fora do app
   (NodeOS.platform() === "darwin"
     ? NodePath.join(NodeOS.homedir(), "Library", "Application Support", "simplifica-if-poc")
     : NodePath.join(NodeOS.homedir(), ".simplifica-if-poc"));

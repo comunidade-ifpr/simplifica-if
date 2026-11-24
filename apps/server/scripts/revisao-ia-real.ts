@@ -210,7 +210,6 @@ const programa = Effect.gen(function* () {
 // A mesma pasta de estado do harness do motor (`packages/motor/scripts/poc.ts`): as CLIs gerenciadas e o perfil do Antigravity.
 const pastaEstado =
   process.env["SIMPLIFICA_ESTADO"] ??
-  // oxlint-disable-next-line simplifica-if/no-global-process-runtime -- script de medição, fora do app
   (NodeOS.platform() === "darwin"
     ? NodePath.join(NodeOS.homedir(), "Library", "Application Support", "simplifica-if-poc")
     : NodePath.join(NodeOS.homedir(), ".simplifica-if-poc"));

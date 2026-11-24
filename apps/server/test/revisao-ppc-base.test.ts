@@ -57,9 +57,9 @@ const layerBases = Layer.effect(
       Effect.sync(() => NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-base-revisao-"))),
       (dir) => Effect.sync(() => NodeFS.rmSync(dir, { recursive: true, force: true })),
     );
-    const banco = NodePath.join(pasta, "kb.sqlite");
+    const banco = NodePath.join(raiz, "tmp", "kb.sqlite");
     const compilador = yield* Compilador.Compilador;
-    yield* compilador.compilar({ raiz, destino: banco });
+    yield* compilador.garantirFresco({ raiz, caminho: banco, politica: "auto" });
     const doBanco = yield* montarBaseRevisao.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco })));
     return Bases.of({ pasta, banco, doBanco });
   }),

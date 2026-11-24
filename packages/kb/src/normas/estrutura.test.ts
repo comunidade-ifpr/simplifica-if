@@ -128,8 +128,9 @@ describe("normas da base", () => {
   const estruturas = carregarEstruturas(raiz);
   const arquivos = new Map(listarNormas(raiz).map((n) => [n.path, n.arquivo]));
 
-  test("41 normas, nenhum problema de estrutura (só avisos)", () => {
-    expect(estruturas.length).toBe(41);
+  test("todas as normas da base sem problemas de estrutura (só avisos)", () => {
+    expect(estruturas.length).toBeGreaterThan(0);
+    expect(estruturas.length).toBe(arquivos.size);
     expect(estruturas.flatMap((e) => e.problemas.filter((p) => !p.startsWith("aviso:")))).toEqual([]);
   });
 

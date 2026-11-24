@@ -16,7 +16,7 @@
   },
   "scripts": {
     "mcp": "node src/cli.ts",
-    "test": "vp test run --config ../../vite.config.ts --dir .",
+    "test": "vp test run",
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {

@@ -525,8 +525,7 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
     "kb compilar",
     [
       contexto.node,
-      path.join(arvore, "packages", "kb", "src", "cli.ts"),
-      "compilar",
+      path.join(arvore, "packages", "kb", "src", "cli", "compilar.ts"),
       "--destino",
       banco,
       "--versao",

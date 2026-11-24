@@ -15,9 +15,10 @@ import * as Path from "effect/Path";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import * as Digest from "effect/crypto/Digest";
-import { CAMINHOS } from "../caminhos.ts";
+import { CAMINHOS, raizRepositorio } from "../caminhos.ts";
 import { CANAIS } from "../canal.ts";
 import * as Compilador from "../Compilador.ts";
+import { executarPrincipal } from "../principal.ts";
 import { Checkout, flagTexto, imprimir } from "./comum.ts";
 
 export const compilar = Command.make(
@@ -69,3 +70,10 @@ export const compilar = Command.make(
     Effect.provide([Compilador.layer, Digest.layerWebCrypto]),
   ),
 ).pipe(Command.withDescription("Compila o kb.sqlite a partir dos arquivos do checkout."));
+
+if (import.meta.main) {
+  executarPrincipal(
+    "kb compilar",
+    Command.run(compilar, { version: "0.1.0" }).pipe(Effect.provideService(Checkout, { raiz: raizRepositorio() })),
+  );
+}

@@ -1,15 +1,14 @@
 /**
  * Descrições (suíte transversal do T6), como o cliente as recebe no `tools/list` (protocolo em
  * memória): tamanho máximo da descrição de cada ferramenta e de cada parâmetro, a frase que diz quando
- * usar a ferramenta, e o tamanho do `tools/list` sem os schemas de saída, que muitos clientes põem em toda conversa. O
- * texto exato de cada descrição é o da especificação, conferido em `ferramentas.test.ts`; a escolha da
- * ferramenta pelo modelo é avaliada no M0.5.
+ * usar a ferramenta, e o tamanho do `tools/list` sem os schemas de saída, que muitos clientes põem em toda conversa.
  */
 import { afterAll, describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
 import { conectarEmMemoria } from "../apoio.ts";
 import { criarBancoFixture, limparTemporarios } from "../fixture.ts";
+import { SMOKE_APENAS } from "./apoio.ts";
 
 afterAll(limparTemporarios);
 
@@ -39,7 +38,7 @@ interface Propriedade {
   readonly description?: string;
 }
 
-describe("descrições no tools/list", () => {
+describe.skipIf(SMOKE_APENAS)("descrições no tools/list", () => {
   it.effect("ferramentas: título, descrição curta, quando usar e parâmetros descritos", () =>
     Effect.gen(function* () {
       const cliente = yield* conectarEmMemoria(criarBancoFixture());
