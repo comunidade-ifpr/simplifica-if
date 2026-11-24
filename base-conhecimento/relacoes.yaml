@@ -1,4 +1,4 @@
-# Relações entre normas: fonte única (fase 5 do plano de arquitetura).
+# Relações entre normas: fonte única.
 #
 # Contrato: esquemaRelacoes em packages/kb/src/normas/relacoes.ts (Effect Schema), conferido por
 # node scripts/validar_base.ts. O front matter das normas (revoga, revogada_por, altera,

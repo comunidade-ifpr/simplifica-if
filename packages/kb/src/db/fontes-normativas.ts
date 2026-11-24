@@ -1,12 +1,11 @@
 /**
- * Ponto de carga das entidades normativas da fase 5 no `kb.sqlite`: dispositivos, relações entre
- * normas, vigência em intervalos datados, regras de transição e tabelas de correspondência.
+ * Esquemas das linhas normativas gravadas no `kb.sqlite`: dispositivos, relações entre normas,
+ * vigência em intervalos datados, regras de transição e tabelas de correspondência.
  *
- * A implementação é `fontesNormativasArquivos` (`normas/fontes-db.ts`), que lê pelos módulos de
- * `normas/` (parser de dispositivos, `relacoes.yaml`, `statusEm`, `transicoes.yaml`,
- * `correspondencias/`); `compilarBanco` a usa por padrão. Cada linha é validada pelo esquema
- * abaixo (Effect Schema, sem chaves extras) antes do INSERT; a ordem de inserção é a ordem do
- * iterável, que precisa ser estável para o banco sair byte a byte igual. Nada aqui depende do
+ * As linhas são geradas em `normas/fontes-db.ts` pela API de `normas/` (parser de dispositivos,
+ * `relacoes.yaml`, `statusEm`, `transicoes.yaml`, `correspondencias/`). Cada linha é validada pelo
+ * esquema abaixo (Effect Schema, sem chaves extras) antes do INSERT; a ordem de inserção é a ordem
+ * do iterável, que precisa ser estável para o banco sair byte a byte igual. Nada aqui depende do
  * relógio: a vigência entra como intervalos datados (calculados por `statusEm` nas datas em que o
  * status pode mudar), e a consulta escolhe a data.
  *
@@ -145,20 +144,10 @@ export const esquemaLinhaCorrespondencia = Schema.Struct({
 });
 export type LinhaCorrespondencia = typeof esquemaLinhaCorrespondencia.Type;
 
-/** O que a fase 5 entrega ao compilador. Cada método é chamado uma vez por compilação. */
-export interface LinhasNormativas {
-  dispositivos(): Iterable<LinhaDispositivo>;
-  relacoes(): Iterable<LinhaRelacao>;
-  vigencias(): Iterable<LinhaVigencia>;
-  transicoes(): Iterable<LinhaTransicao>;
-  tabelasCorrespondencia(): Iterable<LinhaTabelaCorrespondencia>;
-  correspondencias(): Iterable<LinhaCorrespondencia>;
-}
-
 /**
- * Arquivos e diretórios (relativos à raiz do repositório) que a carga da fase 5 lê, além das normas
- * em `base-conhecimento/normas/`, que já são fonte do banco. Entram na
- * impressão digital das fontes (`fontes.ts`).
+ * Arquivos e diretórios (relativos à raiz do repositório) que a carga das tabelas normativas lê,
+ * além das normas em `base-conhecimento/normas/`, que já são fonte do banco. Entram na impressão
+ * digital das fontes (`fontes.ts`).
  */
 export const ARQUIVOS_FONTES_NORMATIVAS: readonly string[] = [
   CAMINHOS.configVigencia,

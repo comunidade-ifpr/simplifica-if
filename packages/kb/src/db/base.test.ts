@@ -2,7 +2,7 @@
 /**
  * O `kb.sqlite` compilado da base real (num diretório temporário, pelo `Compilador`): determinismo,
  * recall da busca de seções, coerência com os gabaritos da avaliação, literalidade das respostas e
- * igualdade entre o banco e a API de arquivos da fase 5 (dispositivos, correspondência, relações,
+ * igualdade entre o banco e a API de arquivos (dispositivos, correspondência, relações,
  * marcos, vigência e transições).
  *
  * As fontes normativas remontadas das tabelas (`FontesNormativas.layer`) e o que os serviços tiram
@@ -379,7 +379,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
     );
   });
 
-  describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
+  describe("tabelas normativas: o banco dá o mesmo resultado que a API de arquivos", () => {
     it.effect("todos os dispositivos (pelo ID do ato e pelo ID do arquivo) e os descendentes", () =>
       Effect.gen(function* () {
         const { normas } = yield* servicos;

@@ -5,7 +5,7 @@
 # do PPC desses tipos entram inteiras no pacote; a busca textual pelas `consultas` das fichas completa
 # com o que a taxonomia não pegou. Contrato: esquemaTopicosSecoes em packages/kb/src/db/pacote-contexto.ts (zod).
 #
-# Rascunho (fase 6): escrito a partir dos títulos e descrições dos tópicos, sem revisão humana.
+# Rascunho: escrito a partir dos títulos e descrições dos tópicos, sem revisão humana.
 # Ajustado na troca da revisão de PPC para grupos por tópico, pelas âncoras semânticas que ficavam fora
 # do grupo em 4 rodadas (3 PPCs técnicos da base e uma minuta fora dela):
 # - `pretextual` (capa, dirigentes, comissão) em identificacao_oferta e corpo_docente_gestao: a capa

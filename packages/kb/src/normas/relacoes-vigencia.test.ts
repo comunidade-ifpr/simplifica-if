@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- monta caminhos das fichas com node:path e um checkout temporário com node:fs
 /**
- * Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). O impacto
+ * Relações, vigência, transições, front matter gerado, correspondência e impacto. O impacto
  * roda sobre a layer da CLI (`layerRepositorio`): o `tmp/kb.sqlite`, recompilado se estiver velho; o
  * de um dispositivo, pela regra pura `impactoEm` com fichas sintéticas e a vigência e a
  * correspondência do banco.
@@ -229,7 +229,7 @@ const FICHAS_SINTETICAS = (
 }));
 
 /** `impactoEm` sobre as fichas sintéticas, com a vigência e a correspondência da base. */
-const impactoSintetico = Effect.fn("fase5.impactoSintetico")(function* (id: string) {
+const impactoSintetico = Effect.fn("impacto.sintetico")(function* (id: string) {
   const fontes = yield* FontesNormativas.FontesNormativas;
   const correspondencia = yield* carregarFonteCorrespondencia;
   return impactoEm(

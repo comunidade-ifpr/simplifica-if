@@ -13,7 +13,7 @@
  *   (`referencias_normativas[].dispositivo`) da tabela `dispositivos`: caput herdado, o próprio
  *   texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete;
  * - os marcos normativos ligados (`marcos-normativos.json`, com vigente, substituídas e antecessoras
- *   derivadas da fase 5) e as citações do PPC às normas desses marcos;
+ *   derivadas por `derivarLinha`) e as citações do PPC às normas desses marcos;
  * - as regras de transição (tabela `transicoes`) das normas das fichas e das citadas como
  *   fundamento pelo PPC, com a situação no dia da vigência e o texto do dispositivo que as
  *   estabelece;

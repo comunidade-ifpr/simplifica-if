@@ -1,5 +1,5 @@
 /**
- * Resolvedor de citações normativas (fase 2 do plano de arquitetura).
+ * Resolvedor de citações normativas.
  *
  * `extrairCitacoes(texto)` encontra as citações de um texto longo (PPC, parecer) e resolve cada uma;
  * `resolverCitacao(texto)` resolve uma citação isolada (referência de ficha, pergunta de usuário).

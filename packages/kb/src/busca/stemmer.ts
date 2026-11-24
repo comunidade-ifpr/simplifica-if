@@ -2,7 +2,7 @@
  * Stemmer de português: porte do algoritmo Snowball (snowballstem.org/algorithms/portuguese), em
  * TypeScript e sem dependência.
  *
- * Escolha (fase 6): o FTS5 não tem stemmer de português, e a busca precisa de uma coluna auxiliar com
+ * Escolha: o FTS5 não tem stemmer de português, e a busca precisa de uma coluna auxiliar com
  * os radicais. Foram avaliados:
  * - `snowball-stemmers` (npm): é o mesmo algoritmo, gerado em JavaScript, sem tipos e parado desde
  *   2022; serviu de referência para o teste diferencial (vocabulário dos PPCs e das normas, idêntico);

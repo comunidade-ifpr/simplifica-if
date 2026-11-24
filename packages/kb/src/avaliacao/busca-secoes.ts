@@ -3,7 +3,7 @@
  * Recall@10 da busca de seções (`kb buscar-secoes`) no conjunto rotulado de
  * `avaliacao/busca-secoes/consultas.yaml`, nos três modos: sem stemmer nem sinônimos (`simples`),
  * só radicais (`radicais`) e radicais com o léxico de sinônimos (`completo`, o padrão da CLI).
- * Meta do plano (fase 6): recall@10 ≥ 0,8.
+ * Meta: recall@10 ≥ 0,8.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";

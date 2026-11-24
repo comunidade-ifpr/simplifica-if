@@ -31,7 +31,7 @@ export const esquemaPadrao = textoNaoVazio.check(
 );
 
 /**
- * Âncora provisória no formato de ID canônico do plano (fase 2): `br/cne-cp/res/2026/2#art71`,
+ * Âncora no formato de ID canônico da base: `br/cne-cp/res/2026/2#art71`,
  * `cnct:tecnico-em-enfermagem`, `curso:curitiba/tecnico-em-enfermagem`, `ficha:CT-CURR-20`.
  */
 export const esquemaAncora = Schema.String.check(

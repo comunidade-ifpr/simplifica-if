@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de correspondencias/*.yaml, usado pelos scripts e pela compilação do banco
 /**
- * Tabelas de correspondência entre normas que se sucedem (fase 5), em
+ * Tabelas de correspondência entre normas que se sucedem, em
  * `base-conhecimento/correspondencias/*.yaml`: por dispositivo da norma de origem, `equivalente`,
  * `parcial` ou `sem-equivalente`, com os dispositivos de destino e nota.
  *

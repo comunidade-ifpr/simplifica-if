@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- a compilação escreve dezenas de milhares de linhas pelo node:sqlite direto, numa transação (ver Compilador.ts)
 /**
- * Compila o `kb.sqlite` a partir dos arquivos do checkout (fase 6 do plano).
+ * Compila o `kb.sqlite` a partir dos arquivos do checkout.
  *
  *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal beta]
  *
@@ -49,17 +49,21 @@ import {
   esquemaLinhaTabelaCorrespondencia,
   esquemaLinhaTransicao,
   esquemaLinhaVigencia,
-  type LinhasNormativas,
 } from "./fontes-normativas.ts";
-import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
+import {
+  linhasCorrespondencias,
+  linhasDispositivos,
+  linhasRelacoes,
+  linhasTabelasCorrespondencia,
+  linhasTransicoes,
+  linhasVigencias,
+} from "../normas/fontes-db.ts";
 import { lerTopicosSecoes, type TopicosSecoes } from "../ppcs/topicos.ts";
 import { emTransacao } from "./transacao.ts";
 
 const PAGE_SIZE = 4096;
 
 export interface OpcoesCompilacao {
-  /** Carga da fase 5 (padrão: `fontesNormativasArquivos(raiz)`, pela API de `normas/`). */
-  fontesNormativas?: LinhasNormativas;
   /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml` do checkout em `raiz`). */
   sinonimos?: Sinonimos;
   /** Tópicos das fichas → tipos de seção (padrão: `packages/kb/dados/topicos-secoes.yaml` do checkout). */
@@ -173,7 +177,7 @@ const esquemaMarcos = solto({
   ),
 });
 
-// Decodificadores compilados uma vez. Os das linhas da fase 5 recusam chaves extras: as linhas vão
+// Decodificadores compilados uma vez. Os das linhas normativas recusam chaves extras: as linhas vão
 // inteiras para o INSERT, e uma chave a mais viraria uma coluna inexistente.
 const decodificarSecaoJsonl = Schema.decodeUnknownSync(esquemaSecaoJsonl);
 const decodificarCnctIndice = Schema.decodeUnknownSync(esquemaCnctIndice);
@@ -375,7 +379,6 @@ export function prepararCompilacao(
       base: noCheckout(raiz, CAMINHOS.base),
       lexico: opcoes.sinonimos ?? lerSinonimos(raiz),
       topicosSecoes: opcoes.topicosSecoes ?? lerTopicosSecoes(raiz),
-      fontesNormativas: opcoes.fontesNormativas ?? fontesNormativasArquivos(raiz),
       arquivos,
       fontesSha,
       versao: opcoes.versao,
@@ -408,7 +411,6 @@ export interface ContextoPreenchimento {
   base: string;
   lexico: Sinonimos;
   topicosSecoes: ReturnType<typeof lerTopicosSecoes>;
-  fontesNormativas: LinhasNormativas;
   arquivos: readonly string[];
   fontesSha: string;
   /** Identificação da distribuição gravada em `meta` (só quando informada). */
@@ -419,7 +421,7 @@ export interface ContextoPreenchimento {
 
 /** Esquema, carga de todas as tabelas, `optimize` do FTS5 e `VACUUM`; devolve as contagens por tabela. */
 export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchimento): Record<string, number> {
-  const { raiz, base, lexico, topicosSecoes, fontesNormativas, arquivos, fontesSha } = c;
+  const { raiz, base, lexico, topicosSecoes, arquivos, fontesSha } = c;
   db.exec(`PRAGMA page_size = ${PAGE_SIZE}`);
   db.exec("PRAGMA journal_mode = OFF");
   db.exec("PRAGMA synchronous = OFF");
@@ -932,7 +934,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     });
     lexico.grupos.forEach((termos, ordem) => ins.inserir("sinonimos_grupos", { ordem, termos_json: json(termos) }));
     // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
-    // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na validação das fichas.
+    // dispositivos revogados vêm de derivarLinha na data_referencia, como na validação das fichas.
     const arquivoMarcos = noCheckout(raiz, CAMINHOS.marcos);
     if (NodeFS.existsSync(arquivoMarcos)) {
       const marcos = decodificarMarcos(lerJson(arquivoMarcos));
@@ -956,9 +958,9 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       }
     }
 
-    /* ---------- fase 5: dispositivos (com FTS), relações, vigências, transições, correspondências */
+    /* ---------- dispositivos (com FTS), relações, vigências, transições, correspondências */
     const insFtsDispositivo = db.prepare("INSERT INTO dispositivos_fts (rowid, texto, radicais) VALUES (?, ?, ?)");
-    for (const linha of fontesNormativas.dispositivos()) {
+    for (const linha of linhasDispositivos(raiz)) {
       const { caput, estrutura, notas, ...d } = decodificarLinhaDispositivo(linha);
       const rowid = ins.inserir("dispositivos", {
         ...d,
@@ -968,13 +970,13 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
       insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
     }
-    for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", decodificarLinhaRelacao(linha));
-    for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", decodificarLinhaVigencia(linha));
-    for (const linha of fontesNormativas.transicoes()) ins.inserir("transicoes", decodificarLinhaTransicao(linha));
-    for (const linha of fontesNormativas.tabelasCorrespondencia()) {
+    for (const linha of linhasRelacoes(raiz)) ins.inserir("relacoes", decodificarLinhaRelacao(linha));
+    for (const linha of linhasVigencias(raiz)) ins.inserir("vigencias", decodificarLinhaVigencia(linha));
+    for (const linha of linhasTransicoes(raiz)) ins.inserir("transicoes", decodificarLinhaTransicao(linha));
+    for (const linha of linhasTabelasCorrespondencia(raiz)) {
       ins.inserir("correspondencias_tabelas", decodificarLinhaTabelaCorrespondencia(linha));
     }
-    for (const linha of fontesNormativas.correspondencias()) {
+    for (const linha of linhasCorrespondencias(raiz)) {
       const { destino, ...c } = decodificarLinhaCorrespondencia(linha);
       ins.inserir("correspondencias", { ...c, destino_json: json(destino) });
     }

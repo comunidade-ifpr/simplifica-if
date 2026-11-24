@@ -310,7 +310,7 @@ CREATE VIRTUAL TABLE secoes_fts USING fts5(
   titulo, texto, titulo_radicais, radicais, expansao, content='', columnsize=1, ${TOKENIZADOR}
 );
 
--- Citações normativas dos PPCs (resolvedor da fase 2), com a seção e o papel.
+-- Citações normativas dos PPCs (resolvedor de citações), com a seção e o papel.
 CREATE TABLE citacoes (
   ppc_id TEXT NOT NULL REFERENCES ppcs(id),
   ordem INTEGER NOT NULL,
@@ -433,7 +433,7 @@ CREATE TABLE fichas_topicos (
 ) WITHOUT ROWID;
 
 -- vigente e normas_json (linha, data_referencia, vigente, substitui, antecessoras_historicas,
--- dispositivos_revogados) derivados por derivarLinha (fase 5) na data_referencia.
+-- dispositivos_revogados) derivados por derivarLinha na data_referencia.
 CREATE TABLE marcos (
   id TEXT PRIMARY KEY,
   tema TEXT NOT NULL,
@@ -446,7 +446,7 @@ CREATE TABLE marcos (
   dados_json TEXT NOT NULL
 );
 
--- Fase 5 (carga por FontesNormativas: normas/fontes-db.ts sobre a API de normas/).
+-- Tabelas normativas (carga por normas/fontes-db.ts sobre a API de normas/).
 -- Dispositivos de todas as normas da base.
 CREATE TABLE dispositivos (
   rowid INTEGER PRIMARY KEY,

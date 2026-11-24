@@ -1,4 +1,4 @@
-# Conjunto anotado para medir o resolvedor de citações (fase 2 do plano de arquitetura).
+# Conjunto anotado para medir o resolvedor de citações.
 #
 # Contrato: esquemaCitacoesAnotadas em packages/kb/src/avaliacao/resolvedor.ts.
 # Medição: pnpm exec vp test run packages/kb (avaliacao-resolvedor.test.ts) e `pnpm kb avaliar-resolvedor`.

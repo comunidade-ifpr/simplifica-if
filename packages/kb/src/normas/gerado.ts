@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- campos gerados do front matter, lidos dos arquivos pelos scripts (gerar_base, validar_base)
 /**
- * Campos GERADOS do front matter das normas (fase 5), escritos por `scripts/gerar_base.ts` e
+ * Campos GERADOS do front matter das normas, escritos por `scripts/gerar_base.ts` e
  * conferidos por `gerar_base.ts --check` e `validar_base.ts`:
  *
  * - relações (`revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`,

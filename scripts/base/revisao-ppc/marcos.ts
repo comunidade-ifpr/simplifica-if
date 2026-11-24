@@ -1,5 +1,5 @@
 /**
- * Marcos normativos com os campos derivados (fase 5 do plano de arquitetura).
+ * Marcos normativos com os campos derivados.
  *
  * `marcos-normativos.json` guarda só a identificação do tema (`id`, `tema`, `linha`, `aplica_a`,
  * fichas), a `transicao` e a `orientacao_analise`. A norma vigente, as substituídas, as

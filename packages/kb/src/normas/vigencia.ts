@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de vigencia.yaml, transicoes.yaml e normas, usado pelos scripts e pela compilação do banco
 /**
- * Vigência calculada numa data explícita (fase 5): nunca o relógio do build.
+ * Vigência calculada numa data explícita: nunca o relógio do build.
  *
  * Entradas:
  * - datas das normas da base (front matter: `assinada_em`, `publicada_em` e `vigente_de`, este

@@ -10,7 +10,7 @@
 #   acompanhamento_egresso mesmo quando o texto fala em "ex-alunos" ou "diplomados".
 # grupos: termos equivalentes em qualquer seção; a consulta com um deles busca também os outros.
 #
-# Rascunho (fase 6): escrito a partir dos títulos e rótulos dos tipos, sem revisão humana.
+# Rascunho: escrito a partir dos títulos e rótulos dos tipos, sem revisão humana.
 
 tipos:
   identificacao: [identificação do curso, dados do curso, denominação, eixo tecnológico, forma de oferta, modalidade, turno, vagas, regime de matrícula]

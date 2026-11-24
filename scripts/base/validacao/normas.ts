@@ -286,7 +286,7 @@ export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] 
 }
 
 /**
- * Relações, transições, correspondências e vigência (fase 5): contrato e evidências de
+ * Relações, transições, correspondências e vigência: contrato e evidências de
  * `relacoes.yaml`, `transicoes.yaml` e `correspondencias/*.yaml`, campos gerados do front matter em dia (`gerar_base.ts`) e status dos stubs
  * atingidos por relações igual ao calculado na `data_referencia`.
  */

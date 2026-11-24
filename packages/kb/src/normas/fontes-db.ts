@@ -1,5 +1,5 @@
 /**
- * `LinhasNormativas` (a carga da fase 5 no `kb.sqlite`, `db/fontes-normativas.ts`) pela API de
+ * Geradores das linhas normativas gravadas no `kb.sqlite` (`db/fontes-normativas.ts`) pela API de
  * arquivos de `normas/`: nenhuma regra nova aqui, só o mapeamento para as linhas das tabelas.
  *
  * - `dispositivos`: `carregarEstruturas` (todas as normas, na ordem dos arquivos);
@@ -18,7 +18,6 @@ import type {
   LinhaRelacao,
   LinhaTabelaCorrespondencia,
   LinhaTransicao,
-  LinhasNormativas,
   LinhaVigencia,
 } from "../db/fontes-normativas.ts";
 import { CAMINHOS } from "../caminhos.ts";
@@ -160,16 +159,4 @@ export function* linhasCorrespondencias(raiz: string): Generator<LinhaCorrespond
       };
     }
   }
-}
-
-/** A carga da fase 5 sobre os arquivos do checkout em `raiz`. */
-export function fontesNormativasArquivos(raiz: string): LinhasNormativas {
-  return {
-    dispositivos: () => linhasDispositivos(raiz),
-    relacoes: () => linhasRelacoes(raiz),
-    vigencias: () => linhasVigencias(raiz),
-    transicoes: () => linhasTransicoes(raiz),
-    tabelasCorrespondencia: () => linhasTabelasCorrespondencia(raiz),
-    correspondencias: () => linhasCorrespondencias(raiz),
-  };
 }

@@ -4,7 +4,7 @@
  *
  * Fontes = os arquivos do git de onde o banco sai (normas, stubs, PPCs e índice de seções, CNCT,
  * registros institucionais, fichas, tópicos e marcos da revisão de PPC, léxico de sinônimos, e os
- * arquivos da fase 5: `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml`)
+ * arquivos normativos: `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml`)
  * mais o
  * código que compila (`packages/kb/src/` menos testes, CLI e consultas). Mudou qualquer um, o banco
  * fica velho.

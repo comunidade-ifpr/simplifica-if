@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- parser das normas sobre os arquivos do checkout, síncrono (compilação do banco e scripts)
 /**
- * Parser de dispositivos das normas (fase 5): Markdown → mdast (`remark-parse` + `remark-gfm`) →
+ * Parser de dispositivos das normas: Markdown → mdast (`remark-parse` + `remark-gfm`) →
  * artigos, parágrafos, incisos, alíneas, itens, anexos e seções, com ID canônico, caput herdado,
  * notas de redação e linha de origem.
  *

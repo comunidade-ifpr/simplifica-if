@@ -282,7 +282,7 @@ normas:
     status_fonte: ifpr/consup/res/2025/239#art12
     curadoria: rascunho
 
-  # --- Alvos e origens de base-conhecimento/relacoes.yaml (fase 5). Status provado pela relação
+  # --- Alvos e origens de base-conhecimento/relacoes.yaml. Status provado pela relação
   # (status_fonte = dispositivo que opera ou evidencia). Ementas descritivas, a conferir.
   - id: br/cne-ceb/res/2025/6
     title: Resolução CNE/CEB nº 6/2025

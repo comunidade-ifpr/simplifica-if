@@ -270,7 +270,7 @@ A coleção `institucional/ifpr/ppcs/` contém PPCs convertidos e índices deriv
 - `institucional/ifpr/ppcs/index.json` (schema `ppcs_index`, versão 2): um item por PPC, com `taxonomia` e o resumo da proveniência;
 - `institucional/ifpr/ppcs/secoes/<tipo>.jsonl` (schema `ppcs_secao`): uma linha por seção, com `preview` (500 primeiros caracteres do texto limpo), `linha_inicio` e `linha_fim` no arquivo `.md` (contadas desde 1, com o front matter), `heading`, `numeracao` e `origem_tipo`.
 
-**Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite` da fase 6, derivado e fora do git.
+**Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite`, derivado e fora do git.
 
 Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro do curso em `institucional/ifpr/cursos/` ou o Markdown convertido e rode novamente os comandos de publicação.
 

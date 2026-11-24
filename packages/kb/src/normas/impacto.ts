@@ -1,5 +1,5 @@
 /**
- * `kb impacto-da-norma <id>` (fase 5): o que uma mudança na norma `id` (revogação, alteração, nova redação)
+ * `kb impacto-da-norma <id>`: o que uma mudança na norma `id` (revogação, alteração, nova redação)
  * atinge na base e na revisão de PPC.
  *
  * - normas: relações de `relacoes.yaml` (quem a revoga, altera, regulamenta ou nela se

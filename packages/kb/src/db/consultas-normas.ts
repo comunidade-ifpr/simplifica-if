@@ -1,6 +1,6 @@
 /**
- * Consultas do serviço `Normas` ao `kb.sqlite`: as normas e a busca textual nos metadados e nos
- * dispositivos, e as tabelas da fase 5 (dispositivos, vigências, transições e correspondências), pelo
+ * Consultas do serviço `Normas` ao `kb.sqlite`: as normas, a busca textual nos metadados e nos
+ * dispositivos, e as tabelas normativas (dispositivos, vigências, transições e correspondências), pelo
  * `SqlClient`, com as linhas decodificadas por Effect Schema na borda. As regras não são reescritas
  * aqui: a herança da
  * correspondência, os descendentes e a situação da transição numa data usam as mesmas funções da
@@ -456,7 +456,7 @@ const atoForaDeVigencia = Effect.fn("consultasNormas.atoForaDeVigencia")(functio
  * Busca de normas.
  *
  * - Citação ("Res. CNE/CP 2/2026, art. 28, VII") ou ID (`br/cne-cp/res/2026/2#art28-vii`): o
- *   resolvedor da fase 2 identifica a norma e os dispositivos, e a resposta é cada dispositivo da
+ *   resolvedor de citações identifica a norma e os dispositivos, e a resposta é cada dispositivo da
  *   tabela `dispositivos` (ID canônico, caput herdado, texto com os subordinados, arquivo e linhas);
  *   dispositivo fora do texto da base cai no ancestral mais próximo (`pedido` guarda o citado).
  *   Norma sem dispositivo citado (ou stub sem texto): os metadados, e a busca textual continua.
