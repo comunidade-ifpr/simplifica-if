@@ -23,6 +23,7 @@ export const DIRETORIOS_POR_TIPO: Record<string, string> = {
   "IFPR|Resolução": "normas/ifpr/resolucoes",
   "IFPR|Portaria": "normas/ifpr/portarias",
   "IFPR|Nota Técnica": "normas/ifpr/notas-tecnicas",
+  "IFPR|Instrução Normativa": "normas/ifpr/instrucoes-normativas",
 };
 
 export function arquivosNormas(caminhos: CaminhosBase): string[] {

@@ -283,12 +283,6 @@ normas:
     curadoria: rascunho
   # Duas IN nº 1/2021 do IFPR: a da Reitoria (26/07, extensão) e a conjunta Reitoria/PROENS (19/08,
   # bibliotecas). A conjunta leva o órgão PROENS no ID para não colidir com a da Reitoria.
-  - id: ifpr/reitoria/in/2021/1
-    title: Instrução Normativa Reitoria/IFPR nº 1/2021
-    data_publicacao: "2021-07-26"
-    ementa: Regulamenta a implementação da curricularização da extensão no âmbito do IFPR.
-    status_vigencia: a confirmar
-    curadoria: rascunho
   - id: ifpr/proens/in/2021/1
     title: Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021
     data_publicacao: "2021-08-19"

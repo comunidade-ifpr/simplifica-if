@@ -45,6 +45,10 @@ export const INCLUIDAS_DEPOIS: ReadonlyMap<string, string> = new Map([
     "normas/br/pareceres/PARECER_CNE-CEB_31-2002_atendimento-domiciliar.md",
     "incluída em 19/11/2026 do texto oficial (PDF do CNE)",
   ],
+  [
+    "normas/ifpr/instrucoes-normativas/INSTRUCAO-NORMATIVA_REITORIA-IFPR_1-2021_curricularizacao-extensao.md",
+    "incluída em 24/11/2026 do texto oficial (SEI/IFPR nº 1311501)",
+  ],
 ]);
 
 /**
