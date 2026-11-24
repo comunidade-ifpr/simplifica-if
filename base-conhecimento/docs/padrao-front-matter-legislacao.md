@@ -209,8 +209,7 @@ Regras de transição (direito de conclusão, prazos de adequação) são dados 
 ## Inclusão de norma nova
 
 1. Grave o Markdown em `normas/` com o `id` canônico (acima) e retire de `normas/stubs.yaml` o stub correspondente, se houver. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto (`pnpm kb relacoes --propor` lista o que o regex achou e ainda não foi confirmado).
-2. Acrescente a norma a `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`): os testes de saneamento e de status manual comparam as normas com um commit de referência, em que ela ainda não existia. Ela passa a ter as palavras conferidas quando `REF_DO_TEXTO` subir.
-3. Rode o pipeline e compile o banco:
+2. Rode o pipeline e compile o banco:
 
    ```bash
    node scripts/gerar_base.ts
@@ -218,4 +217,4 @@ Regras de transição (direito de conclusão, prazos de adequação) são dados 
    pnpm kb:compilar
    ```
 
-4. Confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar`), como no [README do gabarito](../../testes-gabarito/README.md): uma norma nova muda escores de busca e contagens do banco.
+3. Confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar`), como no [README do gabarito](../../testes-gabarito/README.md): uma norma nova muda escores de busca e contagens do banco.

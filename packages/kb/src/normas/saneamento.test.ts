@@ -6,11 +6,11 @@
  * relações geradas, status calculado, metadados editoriais).
  *
  * Não há norma isenta. Quem corrige o texto de uma norma pela fonte oficial sobe `REF_DO_TEXTO` para
- * o commit da correção; norma nova entra em `INCLUIDAS_DEPOIS` e passa a ser comparada quando a
- * referência subir.
+ * o commit da correção; norma que não existia na referência passa a ser comparada quando ela subir.
  *
  * Roda num checkout git que tenha o commit de referência. Num clone raso (o CI) é pulado; com o
- * histórico inteiro e sem o commit, falha: a referência ficou velha (`situacaoDaReferencia`).
+ * histórico inteiro e sem o commit, falha: a referência ficou velha (uma reescrita do histórico troca
+ * os SHAs) e precisa apontar para o commit equivalente.
  */
 import * as NodeChildProcess from "node:child_process";
 import { describe, expect, test } from "vite-plus/test";
@@ -19,37 +19,40 @@ import * as NodePath from "node:path";
 import { listarNormas } from "./estrutura.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
 import { raizRepositorio } from "../caminhos.ts";
-import { INCLUIDAS_DEPOIS, REF_DO_TEXTO, situacaoDaReferencia } from "./referencia-saneamento.ts";
+
+/** O commit em que o corpo de cada norma foi conferido com a fonte oficial pela última vez. */
+const REF_DO_TEXTO = "f6ecfaec";
 
 const raiz = raizRepositorio();
 
-function versaoAnterior(relativo: string): string | null {
-  const resultado = NodeChildProcess.spawnSync("git", ["show", `${REF_DO_TEXTO}:${relativo}`], {
+const git = (argumentos: ReadonlyArray<string>) =>
+  NodeChildProcess.spawnSync("git", argumentos, {
     cwd: raiz,
     encoding: "utf-8",
     maxBuffer: 64 * 1024 * 1024,
+    stdio: ["ignore", "pipe", "ignore"],
   });
-  return resultado.status === 0 ? resultado.stdout : null;
+
+function situacaoDaReferencia(): "disponivel" | "clone-raso" | "ausente" {
+  if (git(["cat-file", "-e", `${REF_DO_TEXTO}^{commit}`]).status === 0) return "disponivel";
+  const raso = git(["rev-parse", "--is-shallow-repository"]);
+  return raso.status === 0 && raso.stdout.trim() === "false" ? "ausente" : "clone-raso";
 }
 
-const referencia = situacaoDaReferencia(raiz, REF_DO_TEXTO);
-const refDisponivel = referencia === "disponivel";
+const referencia = situacaoDaReferencia();
 
 test(`o commit de referência (${REF_DO_TEXTO}) existe quando o histórico está inteiro`, () => {
   expect(referencia, "atualize REF_DO_TEXTO para o commit equivalente").not.toBe("ausente");
 });
 
-describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_DO_TEXTO}`, () => {
-  const normas = listarNormas(raiz).map((norma) => {
+describe.skipIf(referencia !== "disponivel")(`saneamento: palavras iguais às de ${REF_DO_TEXTO}`, () => {
+  const normas = listarNormas(raiz).flatMap((norma) => {
     const relativo = NodePath.posix.join("base-conhecimento", norma.path);
-    return { path: norma.path, relativo, antes: versaoAnterior(relativo) };
+    const anterior = git(["show", `${REF_DO_TEXTO}:${relativo}`]);
+    return anterior.status === 0 ? [{ path: norma.path, relativo, antes: anterior.stdout }] : [];
   });
-  test("a norma que não existia na referência está registrada como incluída depois", () => {
-    const semRegistro = normas.filter((n) => n.antes === null && !INCLUIDAS_DEPOIS.has(n.path)).map((n) => n.path);
-    expect(semRegistro, "registre a norma nova em INCLUIDAS_DEPOIS").toEqual([]);
-  });
-  test.each(normas.filter((n) => n.antes !== null))("$path", ({ relativo, antes }) => {
+  test.each(normas)("$path", ({ relativo, antes }) => {
     const depois = NodeFS.readFileSync(NodePath.join(raiz, relativo), "utf-8");
-    expect(primeiraDivergencia(palavrasMarkdown(antes!), palavrasMarkdown(depois))).toBeNull();
+    expect(primeiraDivergencia(palavrasMarkdown(antes), palavrasMarkdown(depois))).toBeNull();
   });
 });

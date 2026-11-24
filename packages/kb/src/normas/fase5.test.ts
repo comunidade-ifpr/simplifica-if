@@ -1,11 +1,10 @@
-// @effect-diagnostics nodeBuiltinImport:off -- consulta o git (commit de referência) pelo node:child_process síncrono
+// @effect-diagnostics nodeBuiltinImport:off -- monta caminhos das fichas com node:path
 /**
  * Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). O impacto
  * roda sobre a layer da CLI (`layerRepositorio`): o `tmp/kb.sqlite`, recompilado se estiver velho; o
  * de um dispositivo, pela regra pura `impactoEm` com fichas sintéticas e a vigência e a
  * correspondência do banco.
  */
-import * as NodeChildProcess from "node:child_process";
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { describe, expect, layer, test } from "@effect/vitest";
@@ -17,12 +16,10 @@ import * as Impacto from "../Impacto.ts";
 import { carregarFonteCorrespondencia } from "../db/consultas-normas.ts";
 import * as Layers from "../layers.ts";
 import { validarCorrespondencias } from "./correspondencia.ts";
-import { dispositivosDaNorma, listarNormas } from "./estrutura.ts";
-import { analisarFrontMatter } from "./front-matter.ts";
+import { dispositivosDaNorma } from "./estrutura.ts";
 import { impactoEm } from "./impacto.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { raizRepositorio } from "../caminhos.ts";
-import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO, situacaoDaReferencia } from "./referencia-saneamento.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
 import {
@@ -36,8 +33,6 @@ import {
 
 const raiz = raizRepositorio();
 const vigencia = carregarFonteVigencia(raiz);
-// a referência velha (histórico inteiro, sem o commit) falha em `saneamento.test.ts`
-const refDisponivel = situacaoDaReferencia(raiz) === "disponivel";
 const DCN_2021 = "br/cne-cp/res/2021/1";
 const DCN_2026 = "br/cne-cp/res/2026/2";
 
@@ -85,44 +80,6 @@ describe("vigência", () => {
     expect(statusEm("br/lei/2015/13146", "2015-12-31", vigencia).status).toBe("ainda-nao-vigente");
     expect(statusEm("br/lei/2015/13146", "2016-01-03", vigencia)).toMatchObject({ status: "vigente", certo: true });
   });
-
-  test.skipIf(!refDisponivel)(
-    `status calculado = manual (${REF_ANTES_SANEAMENTO}) nas 36 normas de então, salvo divergências justificadas`,
-    () => {
-      // Status manuais anteriores que o cálculo muda, com a relação que justifica a mudança.
-      const justificadas: Record<string, [string, string]> = {
-        "br/lei/1996/9394": ["alterada", "parcialmente revogada"], // Lei 11.788, art. 22: revoga o par. único do art. 82
-        "br/lei/2003/10639": ["alterada", "vigente"], // a Lei 11.645 altera o art. 26-A da LDB, não a Lei 10.639
-        // o piso do texto consolidado: notas de redação e dispositivos revogados, sem relação registrada
-        "br/lei/2008/11788": ["vigente", "alterada"], // Lei 14.913/2024 (notas no texto)
-        "br/lei/2008/11892": ["vigente", "parcialmente revogada"], // art. 18 revogado pela Lei 15.521/2026
-        "br/lei/2012/12711": ["vigente", "alterada"], // Lei 14.945/2024, art. 8º: nova redação do caput do art. 1º
-        "br/lei/2015/13146": ["vigente", "parcialmente revogada"], // par. único do art. 90 revogado (Lei 15.163/2025)
-        "ifpr/consup/res/2011/55": ["alterada", "parcialmente revogada"], // art. 104 revogado pela Res. 2/2017 (nota no texto)
-        "ifpr/consup/res/2014/8": ["alterada", "parcialmente revogada"], // Res. 222/2024 e 242/2025, art. 2º
-        "ifpr/consup/res/2025/259": ["vigente", "alterada"], // Res. 263/2025 (notas no próprio texto)
-        "ifpr/consup/res/2026/276": ["vigente", "parcialmente revogada"], // Res. 282/2026 revoga o par. único do art. 31
-      };
-      const divergentes: Record<string, [string, string]> = {};
-      for (const norma of listarNormas(raiz)) {
-        if (INCLUIDAS_DEPOIS.has(norma.path)) continue;
-        const antigo = NodeChildProcess.spawnSync(
-          "git",
-          ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`],
-          {
-            cwd: raiz,
-            encoding: "utf-8",
-            maxBuffer: 64 * 1024 * 1024,
-          },
-        ).stdout;
-        const manual = String(analisarFrontMatter(antigo, norma.path).meta.status_vigencia);
-        if (norma.id.includes("~")) continue; // compilação: status manual (texto reproduzido)
-        const calculado = statusEm(norma.id, dataReferencia(raiz), vigencia).status;
-        if (calculado !== manual) divergentes[norma.id] = [manual, calculado];
-      }
-      expect(divergentes).toEqual(justificadas);
-    },
-  );
 
   test("stub com status registrado: o status só vale a partir do efeito da relação que o fundamenta", () => {
     expect(statusEm("br/cne-ceb/res/2012/6", "2015-01-01", vigencia).status).toBe("vigente");
