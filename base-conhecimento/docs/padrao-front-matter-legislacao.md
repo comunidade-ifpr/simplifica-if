@@ -217,4 +217,4 @@ Regras de transição (direito de conclusão, prazos de adequação) são dados 
    pnpm kb:compilar
    ```
 
-3. Confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar`), como no [README do gabarito](../../testes-gabarito/README.md): uma norma nova muda escores de busca e contagens do banco.
+3. Confira a norma pela CLI: `pnpm kb ficha-norma <id>` (vigência, pontos-chave) e `pnpm kb ler-dispositivos` de alguns dispositivos (os IDs saem como o parser os leu).

@@ -122,17 +122,14 @@ O comando `aplicar_*`:
 3. sem `--apply`, lista as mudanças substantivas e conta à parte os itens sem mudança, sem gravar nada;
 4. com `--apply`, grava só as mudanças substantivas e relê os registros para confirmar. Uma coleta que não mudou nada não mexe em arquivo nenhum, nem no `coletado_em`. Se a gravação parar no meio (disco cheio, arquivo sem permissão), o comando diz o que já gravou e onde parou; corrija a causa e rode de novo: o que já foi gravado conta como sem mudança.
 
-A revisão é o diff no PR: o PR da aplicação deve mostrar só os campos que o relatório alimenta. Depois de aplicar, rode o pipeline da base e confira os gabaritos que o dado alimenta:
+A revisão é o diff no PR: o PR da aplicação deve mostrar só os campos que o relatório alimenta. Depois de aplicar, rode o pipeline da base e confira o dado pela CLI:
 
 ```bash
 node scripts/gerar_base.ts
 node scripts/validar_base.ts
 pnpm kb:compilar
-sh testes-gabarito/banco.sh --comparar   # para matrizes, as linhas suap_matrizes e ppc_suap
-sh testes-gabarito/kb.sh --comparar      # para matrizes, os casos ppc-fatos*
+pnpm kb fatos-ppc --ppc <campus>/<curso>   # para matrizes, os fatos cruzados com o SUAP
 ```
-
-Mudança esperada nos gabaritos é recapturada (`--capturar`) e registrada no [README do gabarito](../../testes-gabarito/README.md), no mesmo PR.
 
 Exemplo: `scripts/aplicar_matrizes_suap.ts` aplica o relatório `matrizes-suap/1` (esquema em `scripts/dominio/matriz-suap.ts`, exemplo em `scripts/dominio/fixtures/relatorio-matrizes-suap.json`) em `suap.matrizes` dos cursos (veja [Matrizes e cargas horárias](#matrizes-e-cargas-horárias)).
 

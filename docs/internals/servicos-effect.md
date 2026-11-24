@@ -163,7 +163,6 @@ Armadilhas que as conversões deste repositório já encontraram:
 - **O que testar.** O comportamento que pode quebrar: regras da base (resolvedor, vigência, fatos de PPC), tradução de protocolo dos providers, autenticação, persistência e migrações, leitura de formato externo (DOCX, relatório de coleta), correção de corrida e a lógica que um conserto mudou. Não teste o que o tipo já garante, texto de interface, nem espelho de chamadas de mock.
 - **Layers de teste só para dependências externas** (`FileSystem`, banco de fixture, provider falso); não simule a lógica sob teste.
 - **Estenda antes de acrescentar.** Se um teste ou tabela já cobre o comportamento, acrescente uma linha ou uma afirmação. Teste numa camada só: a mais baixa que falha sem o conserto.
-- **Gabaritos.** Mudança que altera a saída da CLI `kb`, do MCP ou da base confere `testes-gabarito/`; regerar o gabarito é decisão explícita.
 
 ## O que o lint confere
 

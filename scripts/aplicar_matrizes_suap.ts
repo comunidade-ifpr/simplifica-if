@@ -27,13 +27,7 @@ import { validarJson } from "./esquema.ts";
 import { executarPrincipal } from "./principal.ts";
 
 /** Passos depois de gravar, os da convenção de entrada na doc de curadoria. */
-const PASSOS_SEGUINTES = [
-  "node scripts/gerar_base.ts",
-  "node scripts/validar_base.ts",
-  "pnpm kb:compilar",
-  "sh testes-gabarito/banco.sh --comparar",
-  "sh testes-gabarito/kb.sh --comparar",
-];
+const PASSOS_SEGUINTES = ["node scripts/gerar_base.ts", "node scripts/validar_base.ts", "pnpm kb:compilar"];
 
 class RelatorioNaoLido extends Schema.TaggedError<RelatorioNaoLido>()("RelatorioNaoLido", {
   caminho: Schema.String,

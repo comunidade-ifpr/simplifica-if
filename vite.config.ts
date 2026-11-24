@@ -1,7 +1,7 @@
 /**
  * Configuração do Vite+ (`vp`): testes (vitest), formatação (oxfmt) e lint (oxlint), como no T3 Code.
  *
- * Os testes da raiz (`scripts/` e `testes-gabarito/`) rodam com `vp test run` aqui; os de cada pacote rodam no
+ * Os testes da raiz (`scripts/`) rodam com `vp test run` aqui; os de cada pacote rodam no
  * diretório do pacote com `vp test run --config ../../vite.config.ts --dir .`, como no T3 e como os
  * testes rodavam antes do C0 (alguns dependem do diretório atual).
  */
@@ -19,7 +19,7 @@ const TEST_EXCLUDE = [
 ];
 
 /** Código migrado no C3, sob as regras do plugin próprio (ver `lint.overrides`). */
-const ARQUIVOS_C3 = ["scripts/**", "testes-gabarito/**"];
+const ARQUIVOS_C3 = ["scripts/**"];
 
 /** `vp test run` na raiz do repositório: os pacotes e os apps têm a própria execução (`pnpm -r test`). */
 const execucaoNaRaiz = process.cwd() === import.meta.dirname;

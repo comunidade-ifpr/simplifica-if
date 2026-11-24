@@ -2,7 +2,6 @@
   "extends": ["./tsconfig.base.json", "./tsconfig.effect.json"],
   "include": [
     "scripts/**/*.ts",
-    "testes-gabarito/**/*.ts",
     "ferramentas/**/*.ts",
     "vite.config.ts"
   ]

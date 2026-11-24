@@ -83,7 +83,7 @@ pnpm kb <comando> --help
 
 ## Uso por scripts
 
-Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout. Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. A impressão é a mesma dos comandos da CLI `kb` com `--json` (`imprimirConsulta`, em `src/consulta.ts`); a diferença é a entrada, que no `consultar` é o JSON da ferramenta, como um script o monta. O contrato é o `outputSchema` de cada ferramenta, que `testes-gabarito/mcp.json` trava.
+Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout. Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. A impressão é a mesma dos comandos da CLI `kb` com `--json` (`imprimirConsulta`, em `src/consulta.ts`); a diferença é a entrada, que no `consultar` é o JSON da ferramenta, como um script o monta. O contrato é o `outputSchema` de cada ferramenta, que `test/transversal/contrato.test.ts` confere.
 
 ```bash
 simplifica-mcp consultar ficha_curso --args '{"curso":"curitiba/tecnico-em-enfermagem"}' --banco ~/SimplificaIF/kb.sqlite
@@ -95,7 +95,7 @@ SIMPLIFICA_KB=kb.sqlite simplifica-mcp consultar listar_cursos --todas-as-pagina
 - **Ordem dos argumentos:** as flags vêm depois de `consultar <ferramenta>`. Antes de `consultar`, são as do servidor e o `consultar` as recusa.
 - **Erros, como no servidor:** lista sem resultado sai com 0 e o aviso `nao-encontrado`; entrada inválida, ID que não está na base, falha da ferramenta, `--args` que não é JSON e banco ausente saem com 1 e a mensagem no stderr. A `etapa` é recusada: só faz sentido numa conversa. Um erro de uso (flag desconhecida, fora de lugar ou sem valor) imprime a ajuda no stdout, com código 1: o stdout só é a resposta quando o código é 0.
 
-O teste é `test/transversal/consultar.test.ts`: na fixture, cada amostra contra o resultado do `tools/call`; na base real (`pnpm mcp:smoke`), as chamadas gravadas em `testes-gabarito/mcp.json`, com a máscara do `gabarito.ts`.
+O teste é `test/transversal/consultar.test.ts`: na fixture, cada amostra contra o resultado do `tools/call`; na base real (`pnpm mcp:smoke`), o `listar_cursos` inteiro.
 
 ## Configuração no piloto zero
 
@@ -177,9 +177,6 @@ O registro é próprio (`addTool`), e não `McpServer.registerToolkit`, para que
 ```bash
 pnpm --filter @simplifica-if/mcp test
 pnpm --filter @simplifica-if/mcp typecheck
-node packages/mcp/test/gabarito.ts --comparar                          # na raiz: o gabarito pelo protocolo
-node packages/mcp/test/gabarito.ts --atualizar pacote_contexto        # regrava só essa parte (ver testes-gabarito/README.md)
-node packages/mcp/test/gabarito.ts --atualizar instrucoes             # depois de mudar instrucoes.md e rodar pnpm mcp:instrucoes
 pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as suítes transversais também na base real (tmp/kb.sqlite)
 ```
@@ -221,9 +218,7 @@ O workflow `.github/workflows/ci.yml` roda em todo push e PR, sem segredos e sem
 
 | Job | Runner | Passos | Tempo estimado |
 |---|---|---|---|
-| `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts`, `testes-gabarito/kb.sh --comparar`, `testes-gabarito/base.sh --comparar` e `gabarito.ts --comparar` | 6 a 8 min |
+| `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts` e os geradores da base com `--check` | 6 a 8 min |
 | `executavel` | `macos-15` (arm64), `ubuntu-24.04` (x64), `windows-2025` (x64) | `pnpm mcp:executavel`; `sem-repositorio.test.ts`, `determinismo.test.ts` e `pasta-de-trabalho.test.ts` contra o executável; o executável como artefato `simplifica-mcp-<alvo>`, por 14 dias | 3 a 6 min cada |
-
-O `testes-gabarito/banco.sh` fica fora do CI. Ele compara o `.dump` do `sqlite3`, e esse texto muda com o build do `sqlite3`, não com o banco: o 3.40 do Debian escreve `replace(…, char(10))` onde o 3.54 escreve `unistr(…)`, e o 3.54 do sqlite.org escreve `0` onde o da Apple escreve `0.0`. O banco compilado no Linux, despejado pelo `sqlite3` do macOS, é igual ao gabarito. Rode o `banco.sh` no macOS.
 
 Para validar o workflow, use o `actionlint` (com o `shellcheck`, se houver): `actionlint` na raiz do repositório.

@@ -118,4 +118,4 @@ pnpm exec vp test run scripts/base/revisao-ppc
 pnpm kb:compilar
 ```
 
-Ficha nova ou removida muda contagens do banco e dos gabaritos: confira `testes-gabarito/` pelo [README do gabarito](../../testes-gabarito/README.md). Mudança no modo de uma ficha ou num verificador pede também `node packages/ppc/scripts/pre-conferencia.ts --base --check`.
+Mudança no modo de uma ficha ou num verificador pede também `node packages/ppc/scripts/pre-conferencia.ts --base --check`.

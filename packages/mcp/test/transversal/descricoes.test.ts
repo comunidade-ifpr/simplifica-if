@@ -30,7 +30,7 @@ const QUANDO_USAR = /(^|[.:] )Use (quando|antes|para|só quando|dentro d[aoe])\b
 
 /**
  * Descrições da especificação que ainda não dizem quando usar a ferramenta. Mudar a descrição muda o
- * comportamento do modelo e o gabarito do C0, e por isso é decisão à parte; o teste falha quando a
+ * comportamento do modelo, e por isso é decisão à parte; o teste falha quando a
  * descrição deixar de precisar da exceção, para que ela saia daqui.
  */
 const SEM_QUANDO: Readonly<Record<string, string>> = {};

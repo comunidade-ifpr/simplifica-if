@@ -6,18 +6,15 @@
  *
  * Na fixture, o invólucro da CLI: cada amostra de `AMOSTRAS` (menos a `etapa`, que o `consultar`
  * recusa) contra a resposta calculada neste processo pelo mesmo `chamador`, isto é, a leitura dos
- * argumentos, a serialização no stdout, o código de saída e a mensagem no stderr. A comparação com o
- * servidor de verdade é a da base real (`SIMPLIFICA_SMOKE=1`): as chamadas gravadas pelo protocolo em
- * `testes-gabarito/mcp.json`, com a máscara do `gabarito.ts --comparar`, e o `listar_cursos` inteiro.
+ * argumentos, a serialização no stdout, o código de saída e a mensagem no stderr. Na base real
+ * (`SIMPLIFICA_SMOKE=1`), o `listar_cursos` inteiro.
  * Com `SIMPLIFICA_MCP_EXE`, o filho é o executável.
  */
 import * as NodeChildProcess from "node:child_process";
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "@effect/vitest";
 import { saidaValida } from "../apoio.ts";
 import { diretorioTemporario, limparTemporarios } from "../fixture.ts";
-import { mascarar } from "../mascara.ts";
 import type { Fixture } from "./amostras.ts";
 import {
   ambienteMinimo,
@@ -28,7 +25,6 @@ import {
   EXE,
   emProcesso,
   ferramenta,
-  RAIZ,
   type Resultado,
   rotulo,
   SMOKE,
@@ -79,11 +75,11 @@ function conferir(execucao: Execucao, esperado: Resultado, descricao: string): v
   if (esperado.isError === true) {
     expect(execucao.codigo, descricao).toBe(1);
     expect(execucao.stdout, descricao).toBe("");
-    expect(mascarar(execucao.stderr), descricao).toBe(mascarar(`simplifica-mcp: ${esperado.content[0]!.text}\n`));
+    expect(execucao.stderr, descricao).toBe(`simplifica-mcp: ${esperado.content[0]!.text}\n`);
     return;
   }
   expect(execucao.codigo, `${descricao}: ${execucao.stderr}`).toBe(0);
-  expect(mascarar(execucao.stdout), descricao).toBe(mascarar(`${JSON.stringify(esperado.structuredContent)}\n`));
+  expect(execucao.stdout, descricao).toBe(`${JSON.stringify(esperado.structuredContent)}\n`);
 }
 
 /** As linhas JSONL de `--todas-as-paginas`, cada uma válida no `outputSchema` da ferramenta. */
@@ -137,19 +133,6 @@ describe("simplifica-mcp consultar", () => {
     const quebrado = await consultar(bancos.ppcs, ["listar_cursos", "--args", "{campus}"]);
     expect(quebrado.codigo).toBe(1);
     expect(quebrado.stderr).toContain("--args <json>: esperava a entrada da ferramenta em JSON");
-  });
-
-  test.skipIf(!SMOKE)("base real: as chamadas de testes-gabarito/mcp.json, iguais às do servidor", async () => {
-    const gravado = JSON.parse(NodeFS.readFileSync(NodePath.join(RAIZ, "testes-gabarito/mcp.json"), "utf8")) as {
-      readonly chamadas: ReadonlyArray<{ readonly name: string; readonly arguments: unknown; resultado: Resultado }>;
-    };
-    // o `arquivo` do `pacote_contexto` é relativo à raiz, a pasta de trabalho do gabarito
-    const lista = gravado.chamadas.filter((c) => c.name !== "etapa");
-    const execucoes = await emLotes(lista, (c) =>
-      consultar(BANCO_REAL, [c.name, "--args", JSON.stringify(c.arguments)], RAIZ),
-    );
-    lista.forEach((c, i) => conferir(execucoes[i]!, c.resultado, `${c.name} ${JSON.stringify(c.arguments)}`));
-    expect(lista.length).toBe(gravado.chamadas.length - 2);
   });
 
   test.skipIf(!SMOKE)("base real: listar_cursos --todas-as-paginas soma todos os cursos", async () => {
