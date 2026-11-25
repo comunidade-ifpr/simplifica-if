@@ -218,9 +218,9 @@ const itemPpc = Schema.Struct({
     fonte_url: urlHttps,
     fonte_sha256: padrao(/^(?:[0-9a-f]{64}|desconhecido)$/, "deve ser SHA-256 em hexadecimal ou desconhecido"),
     arquivo_convertido: Schema.optionalKey(
-      Schema.Struct({ tipo: Schema.Literal("docx"), sha256 }).annotate({
+      Schema.Struct({ tipo: Schema.Literals(["docx", "pdf"]), sha256 }).annotate({
         description:
-          "Arquivo que de fato foi convertido, quando não é o de fonte_url (o DOCX enviado pela coordenação do curso).",
+          "Arquivo que de fato foi convertido, quando não é o de fonte_url (o DOCX enviado pela coordenação do curso, ou um PDF não conferido contra fonte_url).",
       }),
     ),
     convertido_em: data,

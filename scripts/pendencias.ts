@@ -15,8 +15,9 @@ import { executarPrincipal } from "./principal.ts";
 const TITULOS: Record<Pendencia["tipo"], string> = {
   "ppc-pendente": "PPCs fora da base, à espera do que falta (promova com node scripts/promover_ppc.ts)",
   "ppc-versao-sem-texto":
-    "Versões de PPC conhecidas sem texto na base (importe o DOCX com node scripts/importar_ppc_docx.ts e apague o registro)",
-  "ppc-sem-texto": "Cursos com PPC publicado sem texto na base (importe com node scripts/importar_ppc_docx.ts)",
+    "Versões de PPC conhecidas sem texto na base (importe o DOCX com node scripts/importar_ppc_docx.ts, ou o PDF com importar_ppc_pdf.ts, e apague o registro)",
+  "ppc-sem-texto":
+    "Cursos com PPC publicado sem texto na base (importe com node scripts/importar_ppc_docx.ts, ou importar_ppc_pdf.ts sem o DOCX)",
 };
 
 function texto(pendencias: readonly Pendencia[]): string[] {

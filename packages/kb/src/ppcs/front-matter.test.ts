@@ -142,6 +142,11 @@ describe("front matter de PPC", () => {
     const semFonte = serializarFrontMatterPpc(reconstruida).replace("ano_fonte: texto\n", "");
     expect(() => analisarPpc(`${semFonte}x\n`, "a.md")).toThrow(/ano_fonte/);
     expect(conferirEvidenciaAno(reconstruida, "**Curitiba\n2023**")).toBeNull();
+    // A limpeza do Markdown convertido tira o negrito e muda o nível do título: a evidência gravada
+    // com a marcação antiga continua valendo.
+    expect(
+      conferirEvidenciaAno({ ...reconstruida, ano_evidencia: "## **Curitiba 2023**" }, "### Curitiba 2023"),
+    ).toBeNull();
     expect(conferirEvidenciaAno(reconstruida, "Curitiba, 2023")).toMatch(/não aparece/);
     expect(conferirEvidenciaAno({ ...reconstruida, ano_fonte: "https://x.br/a.pdf#page=1" }, "")).toBeNull();
   });

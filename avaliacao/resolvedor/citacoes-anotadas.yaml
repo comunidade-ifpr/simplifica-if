@@ -49,7 +49,7 @@ ppcs:
         ids: [ifpr/reitoria/portaria/2022/536]
       - trecho: "Regulamentada no IFPR pela Resolução nº 56/2012, a CPA garante"
         ids: [ifpr/consup/res/2012/56]
-      - trecho: "**Resolução CNE/CEB nº 1/2021, de 05 de janeiro de 2021** . Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica"
+      - trecho: "**Resolução CNE/CEB nº 1/2021, de 05 de janeiro de 2021**. Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica"
         ids: [br/cne-cp/res/2021/1]
 
   - ppc: irati/tecnico-em-informatica/2025
@@ -72,7 +72,7 @@ ppcs:
         ids: [ifpr/reitoria/portaria/2021/43]
       - trecho: "BRASIL. Lei n° 13.146, de 6 de julho de 2015. Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência (Estatuto da Pessoa com Deficiência). Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm Acesso em 15/02/2023."
         ids: [br/lei/2015/13146]
-      - trecho: "IFPR. **Resolução Consup/IFPR n° 01/2017** . Altera a Resolução 54/2011 que dispõe sobre a Organização Didático-Pedagógica da Educação Profissional Técnica de Nível Médio e Formação Inicial e Continuada de Trabalhadores no âmbito do Instituto Federal do Paraná – IFPR. Disponível em: https://reitoria.ifpr.edu.br/resolucao-012017/ Acesso em 15/02/2023."
+      - trecho: "IFPR. **Resolução Consup/IFPR n° 01/2017**. Altera a Resolução 54/2011 que dispõe sobre a Organização Didático-Pedagógica da Educação Profissional Técnica de Nível Médio e Formação Inicial e Continuada de Trabalhadores no âmbito do Instituto Federal do Paraná – IFPR. Disponível em: https://reitoria.ifpr.edu.br/resolucao-012017/ Acesso em 15/02/2023."
         ids: [ifpr/consup/res/2017/1, ifpr/consup/res/2011/54]
       - trecho: "Art. 8º Para os casos em que seja possível o estágio de 40 (quarenta) horas semanais, em acordo com a resolução IFPR nº 36/2019, em especial o §1 do art. 17, devem ter a sua previsão de execução definida no TCE/PE ou mediante aditivo ao TCE/PE. Parágrafo único. No caso de estágio durante as férias, a orientação será indireta, retornando à orientação"
         ids: [ifpr/consup/res/2019/36#art17-par1]
@@ -92,11 +92,11 @@ ppcs:
         ids: [br/lei/1996/9394#art26]
       - trecho: "|**Educação Financeira**|Parecer CNE/CEB Nº 11/2010 e Resolução CNE/CEB Nº 7/2010."
         ids: [br/cne-ceb/parecer/2010/11, br/cne-ceb/res/2010/7, br/decreto/2010/7397]
-      - trecho: ". **Lei nº 10.048, de 08 de novembro de 2000** . Dá prioridade de atendimento"
+      - trecho: ". **Lei nº 10.048, de 08 de novembro de 2000**. Dá prioridade de atendimento"
         ids: [br/lei/2000/10048]
-      - trecho: "**Tecnológica** . Disponível em: <https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-dejaneiro-de-2021-297767578>"
+      - trecho: "Tecnológica**. Disponível em: <https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-dejaneiro-de-2021-297767578>"
         ids: [br/cne-cp/res/2021/1]
-      - trecho: ". Conselho Superior (CONSUP). **Resolução nº 58, de 13 de dezembro de 2019** . institui as diretrizes"
+      - trecho: ". Conselho Superior (CONSUP). **Resolução nº 58, de 13 de dezembro de 2019**. institui as diretrizes"
         ids: [ifpr/consup/res/2019/58]
       - trecho: "do Campus Palmas, sendo seus dispositivos alinhados à Resolução IFPR nº 82, de 02 de junho de 2022"
         ids: [ifpr/consup/res/2022/82, br/lei/2008/11788]
@@ -119,7 +119,7 @@ ppcs:
         ids: [ifpr/consup/res/2012/49, ifpr/consup/res/2014/21]
       - trecho: "Subchefia para assuntos jurídicos. **Lei Nº 11.892, de 29 de dezembro de 2008.** Institui"
         ids: [br/lei/2008/11892]
-      - trecho: ". Resolução n. 54, de 21 de dezembro de 2011. **Dispõe sobre a Organização DidáticoPedagógica"
+      - trecho: ". Resolução n. 54, de 21 de dezembro de 2011. **Dispõe sobre a Organização Didático-Pedagógica"
         ids: [ifpr/consup/res/2011/54]
       - trecho: "se o estudante cumpre continuamente os artigos 6º, 17 e 26 da resolução IFPR nº 36/2019"
         ids: [ifpr/consup/res/2019/36#art6]
@@ -142,9 +142,9 @@ ppcs:
         ids: [ifpr/consup/res/2014/8]
       - trecho: "É um órgão vinculado à Seção de Inovação e Empreendedorismo de cada º campus, conforme Resolução n 08"
         ids: [ifpr/consup/res/2014/8]
-      - trecho: "BRASIL. **Lei nº 9.394** , de 20 de dezembro de 1996. Estabelece Diretrizes e Bases da Educação Nacional. Brasília, 1996a."
+      - trecho: "BRASIL. **Lei nº 9.394**, de 20 de dezembro de 1996. Estabelece Diretrizes e Bases da Educação Nacional. Brasília, 1996a."
         ids: [br/lei/1996/9394]
-      - trecho: "INSTITUTO FEDERAL DO PARANÁ. **Resolução Consup/IFPR n° 01/2017** . Altera a resolução 54/2011"
+      - trecho: "INSTITUTO FEDERAL DO PARANÁ. **Resolução Consup/IFPR n° 01/2017**. Altera a resolução 54/2011"
         ids: [ifpr/consup/res/2017/1, ifpr/consup/res/2011/54]
 
   - ppc: uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja/2016
@@ -161,7 +161,7 @@ ppcs:
         ids: [ifpr/consup/res/2011/54]
       - trecho: "> 12 Conforme o artigo 20, parágrafo primeiro, inciso quarto da Resolução CNE/CEB n. 06/2012."
         ids: [br/cne-ceb/res/2012/6#art20-par1-iv]
-      - trecho: "a Resolução  CNE/CP nº  01/2012,  que  estabelece Diretrizes Nacionais para a Educação em Direitos Humanos"
+      - trecho: "a Resolução CNE/CP nº 01/2012, que estabelece Diretrizes Nacionais para a Educação em Direitos Humanos"
         ids: [br/cne-cp/res/2012/1#art7]
       - trecho: "______. **Decreto n. 5.840 de 13 de julho de 2006.** Institui, no âmbito federal"
         ids: [br/decreto/2006/5840]
@@ -172,7 +172,7 @@ ppcs:
 
   - ppc: cascavel/tecnico-em-edificacoes/2023
     linhas:
-      - trecho: "## **AUTORIZADO PELA RESOLUÇÃO N° 27 DE JULHO DE 2018 AJUSTE PARECER CONSEPE Nº**"
+      - trecho: "AUTORIZADO PELA RESOLUÇÃO N° 27 DE JULHO DE 2018 AJUSTE PARECER CONSEPE Nº"
         ids: [ifpr/consup/res/2018/27]
         sem_id: ["PARECER CONSEPE Nº (sem número)"]
       - trecho: "De acordo com a lei acima, é exigido que os institutos federais destinem pelo menos 50%"
@@ -209,11 +209,11 @@ ppcs:
         ids: [br/cne-ceb/res/2012/2, br/cne-cp/res/2012/2, br/lei/1997/9503, br/cne-cp/res/2012/1, br/decreto/2009/7037, br/lei/2003/10741]
       - trecho: "SURENDRA, V. **Ideias Geniais – os principais teoremas, teorias, leis e princípios científicos"
         ids: []
-      - trecho: "BRASIL. **Decreto nº 4.895, de 25 de novembro de 2003** . Autorização de uso de espaços físicos"
+      - trecho: "BRASIL. **Decreto nº 4.895, de 25 de novembro de 2003**. Autorização de uso de espaços físicos"
         ids: [br/decreto/2003/4895]
-      - trecho: "BRASIL. **LEI n° 11.091/2005** . Dispõe sobre a estruturação do Plano de Carreira"
+      - trecho: "BRASIL. **LEI n° 11.091/2005**. Dispõe sobre a estruturação do Plano de Carreira"
         ids: [br/lei/2005/11091]
-      - trecho: "BRASIL **. Nota Técnica CNE/CEB de 09 de setembro de 2013** . Estudos de Recuperação."
+      - trecho: "BRASIL **. Nota Técnica CNE/CEB de 09 de setembro de 2013**. Estudos de Recuperação."
         ids: []
         sem_id: ["Nota Técnica CNE/CEB de 09 de setembro de 2013 (sem número)"]
       - trecho: "BRASIL. **Parecer CNE/CEB nº 39/2004.** Aplicação do Decreto nº 5.154/2004"
@@ -277,34 +277,34 @@ ppcs:
         ids: [ifpr/consup/res/2009/11, ifpr/consup/res/2011/53]
       - trecho: "é regulamentada no IFPR pela Resolução nº 56/2012. A CPA assegura"
         ids: [ifpr/consup/res/2012/56]
-      - trecho: "BRASIL. **Lei nº 8.069, 13 de julho de 1990** . Dispõe sobre o Estatuto da Criança"
+      - trecho: "BRASIL. **Lei nº 8.069, 13 de julho de 1990**. Dispõe sobre o Estatuto da Criança"
         ids: [br/lei/1990/8069]
-      - trecho: "BRASIL. **Lei nº 13.006, de 26 de junho de 2014** . Acrescenta § 8º ao art. 26 da Lei nº 9.394"
+      - trecho: "BRASIL. **Lei nº 13.006, de 26 de junho de 2014**. Acrescenta § 8º ao art. 26 da Lei nº 9.394"
         ids: [br/lei/2014/13006, br/lei/1996/9394#art26-par8]
-      - trecho: "BRASIL. **Resolução CNE/CP nº 1 de 30 de maio de 2012** . Estabelece Diretrizes Nacionais"
+      - trecho: "BRASIL. **Resolução CNE/CP nº 1 de 30 de maio de 2012**. Estabelece Diretrizes Nacionais"
         ids: [br/cne-cp/res/2012/1]
-      - trecho: "INSTITUTO FEDERAL DO PARANÁ. **Resolução Nº 1, de 30 de março de 2009** . Aprova o Estatuto"
+      - trecho: "INSTITUTO FEDERAL DO PARANÁ. **Resolução Nº 1, de 30 de março de 2009**. Aprova o Estatuto"
         ids: [ifpr/consup/res/2009/1]
       - trecho: "Art. 8º Para os casos em que seja possível o estágio de 40 (quarenta) horas semanais, em acordo com a resolução IFPR nº 36/2019, em especial o §1 do Art. 17, devem ter a sua previsão de execução definida no TCE/PE ou mediante aditivo ao TCE/PE."
         ids: [ifpr/consup/res/2019/36#art17-par1]
 
   - ppc: paranavai/tecnico-em-agroindustria/2016
     linhas:
-      - trecho: "## **Autorizado pela Resolução n° 34/2013 do Conselho Superior - IFPR**"
+      - trecho: "Autorizado pela Resolução n° 34/2013 do Conselho Superior - IFPR"
         ids: [ifpr/consup/res/2013/34]
       - trecho: "Ainda no artigo 24 da Lei n[o] 9.394/96, o inciso V, alínea “e”, versa obrigatoriedade"
         ids: [br/lei/1996/9394#art24-v-al-e]
       - trecho: "como especificado na Resolução CNE/CEB nº 02/2012 que define as Diretrizes Curriculares Nacionais para o Ensino Médio. De acordo com o artigo 10"
         ids: [br/cne-ceb/res/2012/2]
-      - trecho: "**Componente Curricular** : Língua Estrangeira Moderna– Inglês I **Carga Horária (hora aula)** : 80"
+      - trecho: "**Componente Curricular**: Língua Estrangeira Moderna– Inglês I **Carga Horária (hora aula)**: 80"
         ids: []
-      - trecho: "**Componente Curricular** : Física III **Carga Horária (hora aula)** : 80"
+      - trecho: "**Componente Curricular**: Física III **Carga Horária (hora aula)**: 80"
         ids: []
       - trecho: "**ANEXO I –** Resolução nº34/2013 que autoriza a criação do curso"
         ids: [ifpr/consup/res/2013/34]
-      - trecho: "- ______. **Lei nº 11.645, de 10 de março de 2008** . Altera a Lei nº 9.394, de 20 de dezembro de 1996, modificada pela Lei nº 10.639"
+      - trecho: "- ______. **Lei nº 11.645, de 10 de março de 2008**. Altera a Lei nº 9.394, de 20 de dezembro de 1996, modificada pela Lei nº 10.639"
         ids: [br/lei/2008/11645, br/lei/1996/9394, br/lei/2003/10639]
-      - trecho: "- ______. **Lei nº 9.394, de 20 de dezembro de 1996** . Estabelece as diretrizes e bases da educação nacional. Brasília: MEC, 1996."
+      - trecho: "- ______. **Lei nº 9.394, de 20 de dezembro de 1996**. Estabelece as diretrizes e bases da educação nacional. Brasília: MEC, 1996."
         ids: [br/lei/1996/9394]
       - trecho: "A Resolução Nº 4/1999 do Conselho Nacional de Educação (CNE/CEB), que institui"
         ids: [br/cne-ceb/res/1999/4]
@@ -316,16 +316,16 @@ ppcs:
       - trecho: "6. Resolução CNE/CEB nº 2/2024: Define Diretrizes Curriculares Nacionais para o Ensino Médio;"
         ids: [br/cne-ceb/res/2024/2]
       - trecho: "A organização curricular do Curso Técnico Integrado em Administração observa as determinações legais"
-        ids: [br/lei/1996/9394, br/decreto/2004/5154, br/cne-ceb/res/2024/2, br/cne-cp/res/2021/1]
-      - trecho: "9. Os temas transversais, conforme §7º do artigo 26 da  Lei nº 9.394/1996."
+        ids: [br/lei/1996/9394, br/decreto/2004/5154, br/cne-ceb/res/2024/2, br/cne-cp/res/2021/1, ifpr/consup/res/2022/64, br/lei/2014/13005, ifpr/consup/res/2024/190]
+      - trecho: "9. Os temas transversais, conforme §7º do artigo 26 da Lei nº 9.394/1996."
         ids: [br/lei/1996/9394#art26-par7]
       - trecho: "De acordo com a Resolução IFPR 50/2017, o estudante terá direito à progressão parcial"
         ids: [ifpr/consup/res/2017/50]
       - trecho: "A Resolução CONSUP/IFPR nº 163, de 14 de dezembro de 2023, dispõe sobre a Política de Internacionalização"
         ids: [ifpr/consup/res/2023/163]
-      - trecho: "______. **Decreto nº 5.296, de 2 de dezembro de 2004** . Regulamenta as Leis nº 10.048"
+      - trecho: "______. **Decreto nº 5.296, de 2 de dezembro de 2004**. Regulamenta as Leis nº 10.048"
         ids: [br/decreto/2004/5296, br/lei/2000/10048, br/lei/2000/10098]
-      - trecho: "Câmara  de Educação Básica. **Resolução nº 2, de 13 de novembro de 2024** . Institui"
+      - trecho: "Câmara de Educação Básica. **Resolução nº 2, de 13 de novembro de 2024**. Institui"
         ids: [br/cne-ceb/res/2024/2]
       - trecho: "______. **Resolução Consup/IFPR n° 163/2023, de 14 de dezembro de 2023.** Dispõe sobre"
         ids: [ifpr/consup/res/2023/163]
@@ -371,8 +371,8 @@ ppcs:
       - trecho: "Ainda, de acordo com a Resolução nº 7, de 18 de dezembro de 2018, a avaliação externa"
         ids: [br/cne-ces/res/2018/7]
       - trecho: "as competências e atribuições do colegiado do curso são estabelecidas pela Resolução nº 08, de 30 de abril de 2014 (CONSUP/IFPR) no seu artigo 27º."
-        ids: [ifpr/consup/res/2014/8#art27]
-      - trecho: "BRASIL.  Lei nº 11.741, de 16 de julho de 2008. Altera dispositivos da Lei no 9.394"
+        ids: [ifpr/consup/res/2014/8#art27, br/lei/1987/7596, br/decreto/1987/94664, br/mec/portaria/1987/475, br/lei/2008/11784]
+      - trecho: "BRASIL. Lei nº 11.741, de 16 de julho de 2008. Altera dispositivos da Lei no 9.394"
         ids: [br/lei/2008/11741, br/lei/1996/9394]
       - trecho: "Parecer CNE/CES nº 441/2020, aprovado em 10 de julho de 2020. Atualização da Resolução CNE/CES nº 2, de 18 de junho de 2007"
         ids: [br/cne-ces/parecer/2020/441, br/cne-ces/res/2007/2, br/cne-ces/res/2009/4]
@@ -395,9 +395,9 @@ ppcs:
         ids: [ifpr/consup/res/2023/148]
       - trecho: "observadas as normas gerais de direito financeiro público (LDB, 2005, p. 12)."
         ids: [br/lei/1996/9394]
-      - trecho: "**Lei n° 12.711 de 29 de agosto de 2012** . Dispõe sobre o ingresso nas universidades federais"
+      - trecho: "**Lei n° 12.711 de 29 de agosto de 2012**. Dispõe sobre o ingresso nas universidades federais"
         ids: [br/lei/2012/12711]
-      - trecho: "**Resolução nº 15, de 10 de junho de 2014** . Altera a Resolução 08/2011-CONSUP"
+      - trecho: "**Resolução nº 15, de 10 de junho de 2014**. Altera a Resolução 08/2011-CONSUP"
         ids: [ifpr/consup/res/2014/15, ifpr/consup/res/2011/8]
       - trecho: "**Resolução n° 159, de 12 de dezembro de 2023.** Dispõe sobre as diretrizes do Trabalho do Docente"
         ids: [ifpr/consup/res/2023/159]
@@ -418,16 +418,16 @@ ppcs:
         ids: [br/cne-ces/res/2010/2#art9]
       - trecho: "A distribuição das atividades semanais segue a Resolução CONSUP/ IFPR 2/2009"
         ids: [ifpr/consup/res/2009/2, ifpr/consup/res/2011/48]
-      - trecho: "- **LEI Nº 11.788, DE 25 DE SETEMBRO DE 2008.** Dispõe sobre o estágio de estudantes"
+      - trecho: "e o art. Nº 6 da Medida Provisória nº 2.164-41, de 24 de agosto de 2001; e dá outras providências."
         ids: [br/lei/2008/11788, br/decreto-lei/1943/5452, br/lei/1996/9394, br/lei/1977/6494, br/lei/1994/8859, br/mp/2001/2164]
       - trecho: "- **LEI Nº 13.425/2017, DE 30 DE MARÇO DE 2017.** Estabelece diretrizes gerais"
         ids: [br/lei/2017/13425, br/lei/1990/8078, br/lei/2002/10406]
-      - trecho: "- **RESOLUÇÃO Nº 3, DE 2 DE JULHO DE 2007** . Dispõe sobre procedimentos a serem adotados quanto ao conceito de hora aula"
+      - trecho: "- **RESOLUÇÃO Nº 3, DE 2 DE JULHO DE 2007**. Dispõe sobre procedimentos a serem adotados quanto ao conceito de hora aula"
         ids: [br/cne-ces/res/2007/3]
 
   - ppc: arapongas/especializacao-em-docencia-e-praticas-educativas/2023
     linhas:
-      - trecho: "DIRETORIA DE PÓS-GRADUAÇÃO RESOLUÇÃO CONSUP/IFPR N.121/2023 – CONSUP/IFPR**"
+      - trecho: "DIRETORIA DE PÓS-GRADUAÇÃO RESOLUÇÃO CONSUP/IFPR N.121/2023 – CONSUP/IFPR"
         ids: [ifpr/consup/res/2023/121]
       - trecho: "2.1 Tipo de curso: Especialização, conforme Lei n. 9394/96 e Resolução CNE/CES n. 1/2018"
         ids: [br/lei/1996/9394, br/cne-ces/res/2018/1, ifpr/consup/res/2023/121]
@@ -450,7 +450,7 @@ ppcs:
 
   - ppc: arapongas/programacao-web/2025
     linhas:
-      - trecho: "## _PORTARIA Nº 1368/DG/ARAPONGAS/IFPR, DE 17 DE FEVEREIRO DE 2025_"
+      - trecho: "PORTARIA Nº 1368/DG/ARAPONGAS/IFPR, DE 17 DE FEVEREIRO DE 2025"
         ids: []
         sem_id: ["PORTARIA Nº 1368/DG/ARAPONGAS/IFPR (portaria do campus)"]
       - trecho: "Como prevê o artigo 16 da Resolução nº 50/2017 (IFPR, 2017) e disposição da Resolução nº 190/2024 (IFPR, 2024)"
@@ -460,13 +460,13 @@ ppcs:
       - trecho: "atendendo ao especificado no § 2º do Art. 15 da Resolução nº 50/2017 (IFPR, 2017)."
         ids: [ifpr/consup/res/2017/50#art15-par2]
       - trecho: "atendimento educacional especializado em sala de aula; a Lei n.º 13.146, de 6 de julho de 2015 (BRASIL, 2015)"
-        ids: [br/lei/2015/13146]
+        ids: [br/lei/2015/13146, br/decreto/2004/5296, br/lei/2000/10048, br/lei/2000/10098, br/decreto/2011/7611]
       - trecho: "BRASIL. **Lei de Diretrizes e Bases da Educação Nacional (LDB).** Lei no 9.394, de 20 de dezembro de 1996."
         ids: [br/lei/1996/9394]
       - trecho: "BRASIL. **Lei n.º 10.098, de 19 de Dezembro de 2000. 2000b.** Estabelece normas gerais"
         ids: [br/lei/2000/10098]
       - trecho: "10.098, de 19 de dezembro de 2000, que estabelece normas gerais e critérios básicos para a promoção da acessibilidade das pessoas portadoras de deficiência ou com mobilidade reduzida, e dá outras providências. Disponível em:<https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/decreto/d5296.htm>"
-        ids: [br/lei/2000/10098, br/decreto/2004/5296]
+        ids: [br/lei/2000/10098, br/decreto/2004/5296, br/lei/2000/10048]
       - trecho: "BRASIL. **Lei n.º 13.146, de 06 de julho de 2015. Institui a Lei Brasileira de Inclusão"
         ids: [br/lei/2015/13146]
       - trecho: "IFPR. **Resolução Consup/IFPR nº 138, de 28 de setembro de 2023.** Define as diretrizes curriculares"

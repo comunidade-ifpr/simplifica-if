@@ -90,8 +90,11 @@ const camposComuns = {
   ]),
   convertido_em: padrao(/^\d{4}-\d{2}-\d{2}$/, "convertido_em deve ser AAAA-MM-DD"),
   conversor: textoNaoVazio,
-  /** Tipo do arquivo convertido quando ele não é o de `fonte_url` (o DOCX da coordenação do curso). */
-  arquivo_convertido: Schema.optionalKey(Schema.Literal("docx")),
+  /**
+   * Tipo do arquivo convertido quando ele não é o de `fonte_url`: o DOCX da coordenação do curso, ou
+   * um PDF que não foi conferido contra `fonte_url`.
+   */
+  arquivo_convertido: Schema.optionalKey(Schema.Literals(["docx", "pdf"])),
   /** SHA-256 dos bytes desse arquivo. */
   arquivo_convertido_sha256: Schema.optionalKey(
     padrao(RE_SHA256, "arquivo_convertido_sha256 deve ter 64 hexadecimais"),
@@ -298,7 +301,16 @@ export function analisarPpcPendente(texto: string, rotulo: string): { pendente: 
   return { pendente: resultado.success, corpo };
 }
 
-const juntarEspacos = (texto: string) => texto.replace(/\s+/g, " ").trim();
+/**
+ * O texto para comparar a evidência do ano: sem a marcação de título e de negrito (a limpeza do
+ * Markdown convertido a muda, e ela não é texto do documento) e com espaços simples.
+ */
+const juntarEspacos = (texto: string) =>
+  texto
+    .replace(/^[ \t]*#{1,6}[ \t]+/gm, "")
+    .replace(/\*\*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
 /**
  * Se a evidência do ano confere com o corpo: com `ano_fonte: texto`, `ano_evidencia` aparece no corpo

@@ -182,7 +182,7 @@ O ano do documento é o desta versão do PPC: o da capa ou folha de rosto, ou o 
 
 ### Entrada de PPC novo na base
 
-Um PPC entra na base, como primeiro PPC do curso ou como versão nova, a partir do DOCX que a coordenação do curso envia. PDF não é convertido: se o curso só tem o PDF publicado, peça o DOCX à coordenação. A conversão é a mesma da revisão prévia (`converterPpc`, em `packages/ppc`), e o script grava o Markdown da base como versão nova do PPC do curso:
+Um PPC entra na base, como primeiro PPC do curso ou como versão nova, de preferência a partir do DOCX que a coordenação do curso envia: a conversão do DOCX é a mesma da revisão prévia (`converterPpc`, em `packages/ppc`) e preserva a estrutura do documento. Quando só há o PDF publicado, ele entra pelo `importar_ppc_pdf.ts` (abaixo, em "Entrada pelo PDF"). O script grava o Markdown da base como versão nova do PPC do curso:
 
 ```bash
 node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> \
@@ -210,6 +210,31 @@ node scripts/validar_base.ts
 
 O script não roda esses comandos: o passo 5 vem antes deles, e o pipeline é o mesmo de qualquer outra mudança nos registros. A lógica está em `scripts/base/importar-ppc.ts`, com testes em `importar-ppc.test.ts`.
 
+#### Entrada pelo PDF
+
+Sem o DOCX, o PPC entra pelo PDF, com as mesmas opções e as mesmas conferências do DOCX:
+
+```bash
+node scripts/importar_ppc_pdf.ts <campus_id>/<curso_slug> <arquivo.pdf> --fonte-url <url> \
+  --ano <AAAA> --evidencia "<trecho com o ano>" [--fonte-ano <url>] [--reconverter]
+```
+
+A conversão (`pdfParaMarkdown`, em `packages/pdf`) reconhece títulos (fonte negrita ou maior que a do texto, com o nível pela numeração), tabelas com borda (células mescladas inclusive), cabeçalhos e rodapés de página (a linha repetida no alto ou no pé das páginas) e o parágrafo que continua na página seguinte. Depois vem a limpeza determinística do Markdown (`limparMarkdownConvertido`), a mesma usada nos PPCs da base. O front matter registra o PDF em `arquivo_convertido: pdf`, com o hash dele, e o conversor `simplifica-if/packages/pdf@<commit>`. PDF digitalizado (sem texto) é recusado.
+
+O que a regra não resolve fica para a revisão com IA, antes do commit: rode `node scripts/conversao_ppc.ts diagnosticar <campus>/<curso>/<versao>` e corrija as regiões com a skill [`revisar-conversao-ppc`](../../.agents/skills/revisar-conversao-ppc/SKILL.md); `node scripts/conversao_ppc.ts conferir <campus>/<curso>/<versao>` garante que a revisão mudou só a forma, sem palavra nova. Só então siga os passos 5 e 6 acima.
+
+### Qualidade do texto dos PPCs convertidos
+
+Os PPCs da base vieram de PDF, por uma ferramenta que não está mais no repositório, e o texto trazia cabeçalhos e rodapés de página, números de página, sumário, parágrafos e tabelas partidos pela página e títulos sem nível. Em 25/11/2026 eles passaram pela limpeza determinística e pela revisão com IA (skill `revisar-conversao-ppc`, um agente por PPC), sem mudar o front matter nem as palavras do documento. As três ferramentas ficam em `scripts/conversao_ppc.ts`:
+
+```bash
+node scripts/conversao_ppc.ts limpar <ppc>|--todos [--gravar]   # a limpeza determinística (idempotente)
+node scripts/conversao_ppc.ts diagnosticar <ppc>|--todos         # o que a regra não decide, por região
+node scripts/conversao_ppc.ts conferir <ppc>|--todos [--contra <ref>]   # só a forma mudou?
+```
+
+Corrigiu um PPC à mão? Rode `conferir` contra o commit anterior: ele reprova palavra nova e front matter mudado, e lista as palavras removidas (que só podem ser ruído de página).
+
 ### Proveniência do PPC convertido
 
 Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<versao>.md` começa com front matter YAML (contrato em `packages/kb/src/ppcs/front-matter.ts`):
@@ -223,8 +248,8 @@ Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>/<versao>.md` come�
 | `fonte_url` | endereço publicado do PPC; deve ser igual ao `ppc.url` vigente |
 | `fonte_sha256` | SHA-256 dos bytes de `fonte_url`, ou `desconhecido` (sempre, na importação do DOCX: o script não baixa a URL) |
 | `convertido_em` | data da conversão (AAAA-MM-DD) |
-| `conversor` | conversor e versão (`simplifica-if/packages/ppc@<commit>`, com `-modificado` se o checkout tinha alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `tmp/` e `outputs/`), ou `desconhecido` |
-| `arquivo_convertido`, `arquivo_convertido_sha256` | só quando o arquivo convertido não é o de `fonte_url`: o tipo (`docx`) e o SHA-256 dos bytes; o índice `ppcs/index.json` os publica como `arquivo_convertido: { tipo, sha256 }` |
+| `conversor` | conversor e versão (`simplifica-if/packages/ppc@<commit>`, ou `packages/pdf` na entrada pelo PDF, com `-modificado` se o checkout tinha alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `tmp/` e `outputs/`), ou `desconhecido` |
+| `arquivo_convertido`, `arquivo_convertido_sha256` | só quando o arquivo convertido não é o de `fonte_url`: o tipo (`docx`, ou `pdf` quando o PDF importado não foi conferido contra `fonte_url`) e o SHA-256 dos bytes; o índice `ppcs/index.json` os publica como `arquivo_convertido: { tipo, sha256 }` |
 | `proveniencia` | `registrada` (gravada na conversão) ou `reconstruida` (preenchida depois) |
 | `conversao_commit`, `pos_processamento_commits` | só na reconstruída: commit da conversão e commits de limpeza posteriores |
 | `nota_proveniencia` | na reconstruída, o motivo do que ficou `desconhecido`; na importação do DOCX, que o texto veio do DOCX e por que `fonte_sha256` é `desconhecido` |

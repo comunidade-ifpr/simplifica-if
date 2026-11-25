@@ -32,6 +32,7 @@
     "@simplifica-if/ppc": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
+    "@simplifica-if/pdf": "workspace:*",
     "effect": "catalog:",
     "yaml": "catalog:"
   },

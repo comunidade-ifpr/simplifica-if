@@ -38,11 +38,14 @@ export class ForaDeCheckout extends Schema.TaggedError<ForaDeCheckout>()("ForaDe
 
 /**
  * Conversor e versão: o pacote e o commit do checkout, com `-modificado` quando há alteração não
- * comitada em arquivo rastreado fora de `FORA_DO_CONVERSOR`. A saída depende de `packages/ppc`,
- * `packages/docx` e `packages/kb` (front matter, dados pessoais), de `scripts/base/importar-ppc.ts`,
+ * comitada em arquivo rastreado fora de `FORA_DO_CONVERSOR`. A saída depende de `packages/ppc`
+ * (ou `packages/pdf`), `packages/docx` e `packages/kb` (front matter, dados pessoais), de `scripts/base/importar-ppc.ts`,
  * `scripts/dados/urls.ts` e deste script; olhar o checkout inteiro não deixa nenhum de fora.
  */
-export const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(function* (raiz: string = RAIZ_PROJETO) {
+export const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(function* (
+  raiz: string = RAIZ_PROJETO,
+  pacote: "ppc" | "pdf" = "ppc",
+) {
   const git = (...args: string[]) =>
     Git.executar(args, { cwd: raiz }).pipe(
       Effect.map((saida) => saida.trim()),
@@ -51,10 +54,10 @@ export const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(func
   const commit = yield* git("rev-parse", "HEAD");
   const fora = FORA_DO_CONVERSOR.map((pasta) => `:(exclude)${pasta}`);
   const sujo = (yield* git("status", "--porcelain", "--untracked-files=no", "--", ".", ...fora)) !== "";
-  return `simplifica-if/packages/ppc@${commit}${sujo ? "-modificado" : ""}`;
+  return `simplifica-if/packages/${pacote}@${commit}${sujo ? "-modificado" : ""}`;
 });
 
-function relatorio(resultado: ResultadoImportacao): string[] {
+export function relatorio(resultado: ResultadoImportacao, passos: ReadonlyArray<string> = PASSOS_SEGUINTES): string[] {
   const linhas =
     resultado.id === null
       ? [
@@ -92,7 +95,7 @@ function relatorio(resultado: ResultadoImportacao): string[] {
     linhas.push("ppc.observacoes mantido, mas escrito sobre o texto anterior: a reconferir contra o texto novo");
   }
   linhas.push("\nAntes de comitar, confira o Markdown (e-mail particular sai à mão) e rode:");
-  for (const comando of PASSOS_SEGUINTES) linhas.push(`  ${comando}`);
+  for (const comando of passos) linhas.push(`  ${comando}`);
   return linhas;
 }
 
