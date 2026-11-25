@@ -5,7 +5,7 @@
  *
  * O perfil do primeiro uso (M1.8) ordena e filtra: categoria, cargo, função e unidade da pessoa viram
  * os públicos do manifesto (`publicosDoPerfil`), e servem a ela as tarefas cujo `publico` inclui um
- * deles ou que não dizem a quem servem. O Início mostra só as que servem (todas, se nenhuma servir);
+ * deles ou que não dizem a quem servem. O Início mostra só as que servem;
  * "Todas as tarefas" mostra o catálogo inteiro, com as que servem primeiro em cada área. Sem perfil, ou
  * com um perfil que não dá público nenhum, nada se filtra.
  */
@@ -73,11 +73,9 @@ export function tarefasDoPerfil(skills: ReadonlyArray<ResumoSkill>, perfil: Perf
   ];
 }
 
-/** As tarefas do Início: só as que servem ao perfil; todas, se nenhuma servir ou não houver perfil. */
+/** As tarefas do Início: só as que servem ao perfil (todas, sem perfil); a nativa serve a todo perfil. */
 export function tarefasDoInicio(skills: ReadonlyArray<ResumoSkill>, perfil: Perfil | undefined): ReadonlyArray<Tarefa> {
-  const todas = tarefasDoPerfil(skills, perfil);
-  const servem = todas.filter((tarefa) => servePerfil(tarefa, perfil) !== false);
-  return servem.length === 0 ? todas : servem;
+  return tarefasDoPerfil(skills, perfil).filter((tarefa) => servePerfil(tarefa, perfil) !== false);
 }
 
 export type Catalogo =

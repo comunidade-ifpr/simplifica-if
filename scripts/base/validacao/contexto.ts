@@ -4,10 +4,9 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
 import { analisarFrontMatter, ehErroFrontMatter, type FrontMatter } from "../front-matter.ts";
-import { ehObjeto, representar } from "@simplifica-if/kb/json";
+import { representar } from "@simplifica-if/kb/json";
 import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
-import { ehUrlAbsoluta } from "../esquemas.ts";
 
 /** Resultado de uma leitura que pode falhar com mensagens de erro. */
 export type Resultado<T> = { ok: true; valor: T } | { ok: false; erros: string[] };
@@ -20,22 +19,8 @@ export type NormaLida =
 /** Retorno de `carregarDadosInstitucionais`, cacheado no `Contexto` para evitar releitura. */
 export type CarregamentoInstitucional = ReturnType<typeof carregarDadosInstitucionais>;
 
-/**
- * Objeto JSON lido que deve seguir o formato `T`, mas ainda pode estar fora
- * do contrato: só os nomes dos campos são conferidos pelo compilador. As regras
- * da base rodam também sobre arquivos que falham no contrato, para relatar
- * todos os problemas de uma vez, e por isso conferem os valores que usam.
- */
-export type Recebido<T> = { readonly [K in keyof T]?: unknown };
-
-/** `ehObjeto` para um objeto que deve seguir o formato `T` (ver `Recebido`). */
-export function ehRecebido<T>(valor: unknown): valor is Recebido<T> {
-  return ehObjeto(valor);
-}
-
 // oxlint-disable-next-line eslint/no-useless-concat -- partidos de propósito: a validação procura estes textos na base e não pode achá-los neste arquivo
 export const PADROES_LOCAIS = ["/" + "Users/", "Down" + "loads/", "file" + "://"];
-export const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function mesmosElementos<T>(a: Set<T>, b: Set<T>): boolean {
   return a.size === b.size && [...a].every((item) => b.has(item));
@@ -126,11 +111,5 @@ export class Contexto {
       }
     }
     return erros;
-  }
-
-  validarUrlHttps(valor: unknown, campo: string): string[] {
-    if (typeof valor !== "string" || !valor) return [`${campo} deve ser URL textual não vazia`];
-    if (!ehUrlAbsoluta(valor, "https")) return [`${campo} deve ser URL HTTPS absoluta válida`];
-    return [];
   }
 }

@@ -79,10 +79,3 @@ export class FalhaPastaAtualizacao extends Schema.TaggedError<FalhaPastaAtualiza
     return `não foi possível ${this.operacao} na pasta de atualização`;
   }
 }
-
-export type ErroAtualizacao =
-  | FalhaDownload
-  | ManifestoRecusado
-  | PacoteInvalido
-  | OutroProcessoAtualizando
-  | FalhaPastaAtualizacao;

@@ -45,6 +45,7 @@ import {
   PASTA_FICHAS,
   revisarAteOFim,
   TOKEN,
+  layerWorkersNoProcesso,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -186,6 +187,7 @@ const camada = Servidor.layer({
       Motor.Drivers.of({ claude: driver("claude"), codex: driver("codex"), antigravity: driver("antigravity") }),
     ),
   ),
+  Layer.provide(layerWorkersNoProcesso),
   Layer.provide(NodeServices.layer),
 );
 
@@ -207,8 +209,8 @@ const rodar = (arquivo: string) =>
   Effect.gen(function* () {
     const { urlRpc } = yield* Servidor.ServidorApp;
     const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-    const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-    const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+    const pre = yield* revisarAteOFim(rpc, { arquivo });
+    const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
     yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
     const ate = (id: string) =>
       rpc["revisaoPpc.acompanharIa"]({ revisao: id }).pipe(
@@ -219,7 +221,7 @@ const rodar = (arquivo: string) =>
       );
     const final = yield* ate(preparada.id);
     // As pendências ficam só na lista.
-    const pendencias = (yield* rpc["revisaoPpc.lista"]({ lista: pre.lista! })).pendencias.map((v) => v.pendencia);
+    const pendencias = (yield* rpc["revisaoPpc.lista"]({ lista: pre.lista })).pendencias.map((v) => v.pendencia);
     return { rpc, pre, preparada, final, ate, pendencias };
   });
 
@@ -368,7 +370,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       );
       assert.strictEqual(final.blocoPausado, "j-02");
       // Os blocos prontos já estão na lista da pré-conferência, a mesma, como leitura parcial.
-      const parcial = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista! });
+      const parcial = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
       assert.strictEqual(parcial.revisao, preparada.id);
       assert.strictEqual(parcial.resultado.leituraIa, "parcial");
       assert.strictEqual(parcial.resultado.conferidosIa, 2);
@@ -389,7 +391,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.deepStrictEqual(roteiro.pedidos.slice(antes).map(blocoDo), ["j-02", "t"]);
       assert.strictEqual(retomada.resultado!.conferidosIa, 5);
       // A conclusão na mesma lista, completa.
-      assert.strictEqual(retomada.resultado!.lista, pre.lista);
+      assert.strictEqual(retomada.lista, pre.lista);
       assert.strictEqual(retomada.resultado!.leituraIa, "completa");
       const lista = yield* rpc["revisaoPpc.listarIa"]({});
       assert.isTrue(lista.some((e) => e.id === preparada.id && e.situacao === "concluida"));
@@ -453,13 +455,13 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         const { urlRpc } = yield* Servidor.ServidorApp;
         const rpc = yield* cliente(urlRpc, AUTORIZACAO);
         const arquivo = gravar("PPC F.docx", ppcSintetico());
-        const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+        const pre = yield* revisarAteOFim(rpc, { arquivo });
         // Sem o arquivo no disco: o plano sai do texto e do curso que a lista guarda.
         NodeFS.rmSync(arquivo);
-        const primeira = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        const primeira = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
         assert.strictEqual(primeira.lista, pre.lista);
         assert.isAbove(primeira.blocos.length, 0);
-        const segunda = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        const segunda = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
         const ids = (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id);
         assert.notInclude(ids, primeira.id);
         assert.include(ids, segunda.id);
@@ -504,18 +506,18 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         const { rpc, pre, preparada, final } = yield* rodar(arquivo);
         assert.strictEqual(final.situacao, "pausada");
         // Outra leitura do mesmo PPC não começa enquanto esta está por terminar.
-        const outra = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        const outra = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
         const recusa = yield* rpc["revisaoPpc.iniciarIa"]({ revisao: outra.id }).pipe(Effect.flip);
         assert.include(recusa.message, "Já há uma conferência com IA deste PPC por terminar");
         // "Encerrar leitura por aqui": a revisão sai; a lista, a mesma, fica com o que foi lido.
         yield* rpc["revisaoPpc.apagarIa"]({ revisao: preparada.id });
-        const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista! });
+        const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
         assert.isNull(lista.revisao);
         assert.strictEqual(lista.resultado.leituraIa, "parcial");
         const achado = lista.pendencias.find((v) => v.pendencia.ficha === "CT-IDENT-02")!;
         assert.strictEqual(achado.pendencia.origem, "ia");
         // A cópia comentada, ao abrir no Word, diz que a leitura parou antes do fim.
-        const copia = yield* rpc["revisaoPpc.gerarCopia"]({ lista: pre.lista! });
+        const copia = yield* rpc["revisaoPpc.gerarCopia"]({ lista: pre.lista });
         assert.include(comentarios(copia.resultado.arquivoComentado), "A conferência com IA parou antes do fim");
         assert.strictEqual(copia.resultado.leituraIa, "parcial");
       }),
@@ -530,7 +532,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
           : { texto: respostaValida(p) };
       const { rpc, pre, preparada, final } = yield* rodar(gravar("PPC I.docx", ppcSintetico()));
       assert.strictEqual(final.situacao, "pausada");
-      const refeita = yield* rpc["revisaoPpc.trocarCurso"]({ lista: pre.lista!, cnct: "tecnico-em-agropecuaria" });
+      const refeita = yield* rpc["revisaoPpc.trocarCurso"]({ lista: pre.lista, cnct: "tecnico-em-agropecuaria" });
       assert.isNull(refeita.revisao);
       // Os resultados já lidos vão para a lista refeita.
       assert.strictEqual(refeita.resultado.conferidosIa, 2);
@@ -547,14 +549,14 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       roteiro.responder = (p) => ({ texto: respostaValida(p) });
       const { rpc, pre, preparada, final } = yield* rodar(gravar("PPC K.docx", ppcSintetico()));
       assert.strictEqual(final.situacao, "concluida");
-      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista! });
+      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista });
       assert.notInclude(
         (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
         preparada.id,
       );
       assert.notInclude(
         (yield* rpc["revisaoPpc.listas"]({})).map((l) => l.id),
-        pre.lista!,
+        pre.lista,
       );
     }),
   );
@@ -572,8 +574,8 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("PPC L.docx", ppcSintetico());
-      const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+      const pre = yield* revisarAteOFim(rpc, { arquivo });
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
       yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
       yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
         // Com a IA já respondendo (a sessão do provider aberta), não só à espera da vez.
@@ -581,7 +583,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         Stream.take(1),
         Stream.runDrain,
       );
-      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista! });
+      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista });
       // A resposta em andamento foi interrompida (sem isso, o teste não termina).
       yield* Deferred.await(parou);
       assert.notInclude(
@@ -590,7 +592,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       );
       assert.notInclude(
         (yield* rpc["revisaoPpc.listas"]({})).map((l) => l.id),
-        pre.lista!,
+        pre.lista,
       );
     }),
   );
@@ -604,7 +606,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
           : { texto: respostaValida(p) };
       const { rpc, pre, preparada, final } = yield* rodar(gravar("PPC J.docx", ppcSintetico()));
       assert.strictEqual(final.situacao, "pausada");
-      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista! });
+      yield* rpc["revisaoPpc.apagarLista"]({ lista: pre.lista });
       assert.notInclude(
         (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
         preparada.id,
@@ -613,7 +615,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.include(recusa.message, "não existe mais");
       assert.notInclude(
         (yield* rpc["revisaoPpc.listas"]({})).map((l) => l.id),
-        pre.lista!,
+        pre.lista,
       );
     }),
   );
@@ -633,6 +635,7 @@ const camadaParalela = Servidor.layer({
       Motor.Drivers.of({ claude: driver("claude"), codex: driver("codex"), antigravity: driver("antigravity") }),
     ),
   ),
+  Layer.provide(layerWorkersNoProcesso),
   Layer.provide(NodeServices.layer),
 );
 
@@ -653,9 +656,9 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         const { urlRpc } = yield* Servidor.ServidorApp;
         const rpc = yield* cliente(urlRpc, AUTORIZACAO);
         const arquivo = gravar("PPC paralelo.docx", ppcSintetico());
-        const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+        const pre = yield* revisarAteOFim(rpc, { arquivo });
         const preparada = yield* rpc["revisaoPpc.prepararIa"]({
-          lista: pre.lista!,
+          lista: pre.lista,
           provider: "claude",
           modo: "rapido",
         });
@@ -679,7 +682,7 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         assert.deepStrictEqual(lendo.titulosFichas.length, 1);
         // Em andamento, "Qual é o curso?" e "Enviar a versão corrigida" recusam.
         const recusa = yield* rpc["revisaoPpc.trocarCurso"]({
-          lista: pre.lista!,
+          lista: pre.lista,
           cnct: "tecnico-em-agropecuaria",
         }).pipe(Effect.flip);
         assert.include(recusa.message, "Pause-a antes de trocar o curso");
@@ -705,7 +708,7 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
         );
         assert.isNull(bloco(final, "s-01-1").etapa);
         assert.notInclude(roteiro.pedidos.map(blocoDo), "j-02");
-        const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista! });
+        const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
         assert.strictEqual(lista.resultado.conferidosIa, 1);
       }),
   );
@@ -716,8 +719,8 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("PPC apagar.docx", ppcSintetico());
-      const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+      const pre = yield* revisarAteOFim(rpc, { arquivo });
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
       const inscrito = yield* Deferred.make<void>();
       const fibra = yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
         Stream.tap(() => Deferred.succeed(inscrito, undefined)),
@@ -742,8 +745,8 @@ layer(camadaParalela, { excludeTestServices: true })("revisão com IA, dois bloc
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("PPC dois erros.docx", ppcSintetico());
-      const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
-      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+      const pre = yield* revisarAteOFim(rpc, { arquivo });
+      const preparada = yield* rpc["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
       yield* rpc["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
       // Espera o primeiro (s-02-1) falhar antes de soltar o irmão (s-01-1).
       yield* rpc["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
@@ -791,7 +794,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
             bancoConversas,
             token: Redacted.make(TOKEN),
             revisaoIa: { paralelismo: 1 },
-          }).pipe(Layer.provide(drivers), Layer.provide(NodeServices.layer));
+          }).pipe(Layer.provide(drivers), Layer.provide(layerWorkersNoProcesso), Layer.provide(NodeServices.layer));
 
         // 1ª execução: completa o 1º bloco e trava no 2º bloco; fecha o servidor no meio.
         const portao = yield* Deferred.make<void>();
@@ -804,9 +807,9 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
           Effect.gen(function* () {
             const { urlRpc } = yield* Servidor.ServidorApp;
             const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-            const pre = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+            const pre = yield* revisarAteOFim(rpc, { arquivo });
             const preparada = yield* rpc["revisaoPpc.prepararIa"]({
-              lista: pre.lista!,
+              lista: pre.lista,
               provider: "claude",
               modo: "rapido",
             });
@@ -872,14 +875,18 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
         ),
         Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: bancoComFichas() })),
         Layer.provideMerge(NodeCrypto.layerSecureRandom),
+        Layer.provideMerge(layerWorkersNoProcesso),
         Layer.provideMerge(NodeServices.layer),
       );
       yield* Effect.gen(function* () {
         const viva = yield* ListaViva.ListaViva;
         const ia = yield* RevisaoIa.RevisaoIa;
         assert.isFalse(yield* ia.ocupada);
-        const pre = yield* revisarAteOFim(viva.revisar({ arquivo }));
-        const preparada = yield* ia.preparar({ lista: pre.lista!, provider: "claude", modo: "rapido" });
+        const pre = yield* revisarAteOFim(
+          { "revisaoPpc.revisar": viva.revisar, "revisaoPpc.lista": ({ lista }) => viva.lista(lista) },
+          { arquivo },
+        );
+        const preparada = yield* ia.preparar({ lista: pre.lista, provider: "claude", modo: "rapido" });
         assert.isFalse(yield* ia.ocupada);
         yield* ia.iniciar(preparada.id);
         yield* ia.acompanhar(preparada.id).pipe(

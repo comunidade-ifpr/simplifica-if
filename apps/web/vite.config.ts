@@ -1,13 +1,11 @@
 // @effect-diagnostics nodeBuiltinImport:off -- a configuração do Vite roda no Node, antes de qualquer runtime do Effect
 /**
  * O Vite+ (`vp`) da interface, como o `apps/web/vite.config.ts` do T3: React, TanStack Router com rotas
- * por arquivo e Tailwind 4 no build e no `vp dev`; nos testes, dois projetos:
- *
- * - `unidade`: Node, `src/**\/*.test.ts` e `test/**\/*.test.ts` (a conexão e a conversa contra o
- *   `apps/server` com drivers de demonstração, o tratamento dos eventos);
- * - `navegador`: Chromium headless pelo Playwright (`@vitest/browser-playwright`, como o T3),
- *   `src/**\/*.browser.test.tsx`. O comando `iniciarServidorTeste` sobe o `test/servidor-teste.ts`
- *   num processo Node e devolve as credenciais; a interface fala com ele por RPC.
+ * por arquivo e Tailwind 4 no build e no `vp dev`. Os testes daqui são os de navegador
+ * (`src/**\/*.browser.test.tsx`), no Chromium headless pelo Playwright (`@vitest/browser-playwright`,
+ * como o T3): o comando `iniciarServidorTeste` sobe o `test/servidor-teste.ts` num processo Node e
+ * devolve as credenciais; a interface fala com ele por RPC. Os de Node (`src/**\/*.test.ts`,
+ * `test/**\/*.test.ts`) são o projeto `web` do `pnpm test` da raiz.
  *
  * O lint e a formatação são os da raiz (`vite.config.ts` do repositório).
  */
@@ -89,21 +87,6 @@ const pararServidores = () => {
   for (const processo of servidores) processo.kill("SIGTERM");
 };
 process.once("exit", pararServidores);
-
-const unidade = {
-  resolve: { tsconfigPaths: true },
-  test: {
-    name: "unidade",
-    environment: "node",
-    pool: "threads",
-    testTimeout: 30_000,
-    hookTimeout: 30_000,
-    allowOnly: !process.env.CI,
-    retry: 0,
-    include: ["src/**/*.test.ts", "test/**/*.test.ts"],
-    exclude: ["src/**/*.browser.test.{ts,tsx}"],
-  },
-} satisfies TestProjectInlineConfiguration;
 
 const navegador = {
   extends: true,
@@ -192,6 +175,6 @@ export default defineConfig({
     hookTimeout: 30_000,
     allowOnly: !process.env.CI,
     retry: 0,
-    projects: [defineProject(unidade), defineProject(navegador)],
+    projects: [defineProject(navegador)],
   },
 });

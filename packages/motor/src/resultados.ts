@@ -3,7 +3,7 @@
  *
  * O `agy` 1.5.x não manda o resultado das ferramentas pelo ACP: o `tool_call_update` com `completed`
  * vem sem `rawOutput` e sem `content`, e o `FerramentaConcluida` do Antigravity sai com `resumo`
- * vazio. Com o MCP por HTTP local, o servidor do app vê cada chamada; o `ServidorMcpHttp` da sessão
+ * vazio. Com o MCP por HTTP local, o servidor do app vê cada chamada; o `ServidorMcp` da sessão
  * traz essas chamadas em `resultados`, e o `Motor` passa os eventos de cada turno por aqui.
  *
  * A correspondência é pela ordem e pelo nome da ferramenta, dentro da sessão: cada
@@ -61,7 +61,7 @@ interface Fonte {
 export const completador = Effect.fn("Resultados.completador")(function* (config: ConfigSessao) {
   const fontes: Array<Fonte> = [];
   for (const servidor of config.servidoresMcp) {
-    if (servidor.tipo !== "http" || servidor.resultados === undefined) continue;
+    if (servidor.resultados === undefined) continue;
     const fila = yield* Queue.unbounded<ResultadoFerramenta>();
     yield* servidor.resultados.pipe(
       Stream.runForEach((resultado) => Queue.offer(fila, resultado)),

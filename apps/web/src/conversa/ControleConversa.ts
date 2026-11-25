@@ -33,9 +33,9 @@ export class ControleConversa {
   private quedasSeguidas = 0;
   private readonly api: Api;
 
-  constructor(api: Api, inicial: EstadoConversa = estadoInicial()) {
+  constructor(api: Api) {
     this.api = api;
-    this.estado = inicial;
+    this.estado = estadoInicial();
   }
 
   readonly obter = (): EstadoConversa => this.estado;
@@ -110,8 +110,8 @@ export class ControleConversa {
     this.quedasSeguidas = 0;
   }
 
-  escolher(escolha: { readonly provider?: Provider; readonly pastaTrabalho?: string }): void {
-    this.despachar({ tipo: "escolher", ...escolha });
+  escolher(provider: Provider): void {
+    this.despachar({ tipo: "escolher", provider });
   }
 
   /**

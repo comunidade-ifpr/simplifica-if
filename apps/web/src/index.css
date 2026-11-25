@@ -57,17 +57,14 @@
   --color-message: var(--message);
   --color-message-foreground: var(--message-foreground);
   --color-grifo: var(--grifo);
-  --color-grifo-risco: var(--grifo-risco);
   --color-link-risco: var(--link-risco);
   --color-grav-corrigir: var(--grav-corrigir);
   --color-grav-corrigir-texto: var(--grav-corrigir-texto);
-  --color-grav-corrigir-fundo: var(--grav-corrigir-fundo);
   --color-grav-conferir: var(--grav-conferir);
   --color-grav-conferir-texto: var(--grav-conferir-texto);
   --color-grav-conferir-fundo: var(--grav-conferir-fundo);
   --color-grav-ok: var(--grav-ok);
   --color-grav-ok-texto: var(--grav-ok-texto);
-  --color-grav-ok-fundo: var(--grav-ok-fundo);
   --color-grav-nao-lido: var(--grav-nao-lido);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -204,13 +201,11 @@
      longe do amarelo do grifo. */
   --grav-corrigir: var(--vermelho);
   --grav-corrigir-texto: #a32424;
-  --grav-corrigir-fundo: #fdecec;
   --grav-conferir: #b4500a;
   --grav-conferir-texto: #8f3f06;
   --grav-conferir-fundo: #fdeee2;
   --grav-ok: var(--verde-ok);
   --grav-ok-texto: var(--verde-ok-escuro);
-  --grav-ok-fundo: #e7f3ea;
   --grav-nao-lido: #bdbdbd;
 }
 
@@ -257,13 +252,11 @@
 
   --grav-corrigir: #ef5350;
   --grav-corrigir-texto: #ff8a80;
-  --grav-corrigir-fundo: rgb(239 83 80 / 0.14);
   --grav-conferir: #ff9d5c;
   --grav-conferir-texto: #ffb787;
   --grav-conferir-fundo: rgb(255 157 92 / 0.14);
   --grav-ok: var(--verde-ok-claro);
   --grav-ok-texto: var(--verde-ok-claro);
-  --grav-ok-fundo: rgb(124 199 154 / 0.12);
   --grav-nao-lido: #4a4a52;
 }
 

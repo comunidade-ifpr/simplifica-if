@@ -67,7 +67,7 @@ const BANCO_BAIXADO = "banco baixado";
  */
 export const validarBancoEmWorker = (
   caminho: string,
-  esperado: { versao: string; dataReferencia?: string },
+  esperado: { versao: string; dataReferencia: string },
 ): Effect.Effect<InfoBanco, PacoteInvalido> =>
   Effect.callback<InfoBanco, PacoteInvalido>((resume) => {
     const worker = new NodeWorkerThreads.Worker(CODIGO_WORKER, {

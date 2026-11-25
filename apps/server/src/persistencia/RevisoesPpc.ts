@@ -43,7 +43,7 @@ export class RevisaoEmAndamento extends Schema.TaggedError<RevisaoEmAndamento>()
   }
 }
 
-export const ehRevisaoEmAndamento = Schema.is(RevisaoEmAndamento);
+const ehRevisaoEmAndamento = Schema.is(RevisaoEmAndamento);
 
 export interface RegistroLista {
   readonly id: string;
@@ -474,17 +474,12 @@ const make = Effect.gen(function* () {
     const anterior = yield* sql
       .withTransaction(
         Effect.gen(function* () {
-          // Garante atomicamente que nenhuma lista deste conteúdo tem leitura com IA em andamento.
+          // Garante atomicamente que nenhuma lista deste conteúdo tem leitura com IA em andamento (a leitura
+          // ligada a uma lista é sempre dela: nasce nela e passa à lista que a substitui).
           const ativa = yield* sql<{ id: string }>`
             SELECT r.id FROM revisoes_ia r
             WHERE r.situacao = 'em_andamento'
-              AND (
-                r.lista_id IN (SELECT id FROM listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256})
-                OR r.id IN (
-                  SELECT revisao_id FROM listas_pendencias
-                  WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} AND revisao_id IS NOT NULL
-                )
-              )
+              AND r.lista_id IN (SELECT id FROM listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256})
             LIMIT 1
           `;
           if (ativa.length > 0) return yield* new RevisaoEmAndamento({ arquivo: l.arquivo });

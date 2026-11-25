@@ -48,7 +48,7 @@ O `front matter` existe para:
 
 ### Campos gerados (não edite à mão)
 
-`node scripts/gerar_base.ts` escreve estes campos a partir de `base-conhecimento/relacoes.yaml` e de `base-conhecimento/config/vigencia.yaml`; `gerar_base.ts --check` e `validar_base.ts` acusam divergência.
+`node scripts/gerar_base.ts` escreve estes campos a partir de `base-conhecimento/relacoes.yaml` e de `base-conhecimento/config/vigencia.yaml`; `validar_base.ts` acusa divergência.
 
 | Campo | Origem |
 |-------|--------|

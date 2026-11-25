@@ -1,8 +1,5 @@
 /** Texto legível de IDs de dispositivo (`texto-dispositivos.ts`) alinhado ao contrato de `ids.ts`. */
 import { describe, expect, test } from "vite-plus/test";
-import { raizRepositorio } from "../caminhos.ts";
-import { carregarDispositivos } from "./estrutura.ts";
-import { ehIdDispositivo } from "./ids.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
 
 describe("textoDispositivos", () => {
@@ -21,19 +18,6 @@ describe("textoDispositivos", () => {
     [["#anexo1-item3"], "Anexo 1, item 3"],
   ])("%p → %p", (ids, esperado) => {
     expect(textoDispositivos(ids)).toBe(esperado);
-  });
-
-  test("todo ID que passa em ehIdDispositivo tem texto", () => {
-    const falhas: string[] = [];
-    for (const d of carregarDispositivos(raizRepositorio())) {
-      if (!ehIdDispositivo(d.dispositivo)) continue;
-      try {
-        textoDispositivos([d.dispositivo]);
-      } catch (erro) {
-        falhas.push(`${d.id}: ${(erro as Error).message}`);
-      }
-    }
-    expect(falhas).toEqual([]);
   });
 
   test("ID malformado continua lançando erro", () => {

@@ -15,11 +15,7 @@ import { RAIZ_PROJETO } from "./config.ts";
 import * as Git from "./git.ts";
 import { executarPrincipal } from "./principal.ts";
 
-const PASSOS_SEGUINTES = [
-  "node scripts/gerar_base.ts",
-  "node scripts/gerar_indice_ppcs.ts",
-  "node scripts/validar_base.ts",
-];
+const PASSOS_SEGUINTES = ["node scripts/gerar_base.ts", "node scripts/validar_base.ts"];
 
 /**
  * Pastas de dados e de saída, que não mudam o texto convertido: alteração nelas não marca o conversor.

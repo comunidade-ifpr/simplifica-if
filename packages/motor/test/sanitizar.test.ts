@@ -9,7 +9,6 @@ import { limparAmbiente } from "../src/processo.ts";
 import { sanitizar } from "../src/sanitizar.ts";
 
 const SERVIDOR_HTTP = {
-  tipo: "http",
   nome: "ifpr",
   url: "http://127.0.0.1:43210/mcp",
   cabecalhos: { Authorization: "Bearer token-da-sessao" },
@@ -109,7 +108,7 @@ describe("configuração do MCP por provider", () => {
       configMcpCodex(
         {
           ...CONFIG_HTTP,
-          servidoresMcp: [{ tipo: "http", nome: "ifpr", url: "http://127.0.0.1:43210/mcp", preAprovado: false }],
+          servidoresMcp: [{ nome: "ifpr", url: "http://127.0.0.1:43210/mcp", preAprovado: false }],
         },
         POLITICA_FABRICA,
       ),

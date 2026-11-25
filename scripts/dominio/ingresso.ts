@@ -62,9 +62,6 @@ export function ehTurno(valor: string): valor is Turno {
   return (TURNOS as readonly string[]).includes(valor);
 }
 
-export const STATUS_CURADORIA_OFERTAS = ["dados_pendentes", "dados_parciais", "dados_curados"] as const;
-export type StatusCuradoriaOfertas = (typeof STATUS_CURADORIA_OFERTAS)[number];
-
 export interface ProcessoSeletivo {
   id: string;
   titulo: string;
@@ -115,10 +112,4 @@ export interface OfertaIngresso {
   campusIds: string[];
   cursoIds: string[];
   editalIds: string[];
-}
-
-export function statusCuradoriaOfertas(valor: string): StatusCuradoriaOfertas {
-  return (STATUS_CURADORIA_OFERTAS as readonly string[]).includes(valor)
-    ? (valor as StatusCuradoriaOfertas)
-    : "dados_parciais";
 }

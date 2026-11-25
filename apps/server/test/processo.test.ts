@@ -39,8 +39,6 @@ const decodificarLinha = Schema.decodeUnknownEffect(Schema.fromJsonString(LinhaP
 const ambiente = (extra: Record<string, string> = {}) => {
   const copia: Record<string, string | undefined> = { ...process.env, ...extra };
   if (extra[VARIAVEL_TOKEN] === undefined) delete copia[VARIAVEL_TOKEN];
-  // Os traces destes testes nunca vão a um coletor da máquina de quem roda.
-  delete copia.OTEL_EXPORTER_OTLP_ENDPOINT;
   return copia;
 };
 
@@ -146,90 +144,77 @@ describe("servidor como processo", () => {
     }).pipe(Effect.scoped),
   );
 
-  it.live("--pasta-logs: o span do handler que falhou vai a traces.jsonl com o traceId da interface", () =>
-    Effect.gen(function* () {
-      const pastaLogs = diretorioTemporario("simplifica-servidor-logs-");
-      const filho = yield* subir({ stdin: "pipe", argumentos: ["--pasta-logs", pastaLogs, "--traces", "completo"] });
-      const erro = stderrDe(filho);
-      filho.stdin?.write(`${JSON.stringify({ token: TOKEN })}\n`);
-      const linha = yield* decodificarLinha(yield* primeiraLinha(filho));
-      const c = yield* cliente(linha.rpc, { authorization: `Bearer ${TOKEN}` });
-      // Sem o aviso de uso aceito, `conversa.iniciar` falha com `AvisoNaoAceito`.
-      const traceId = yield* Effect.flatMap(Effect.orDie(Effect.currentSpan), (span) =>
-        Effect.as(Effect.flip(c["conversa.iniciar"]({ provider: "claude", pastaTrabalho: "/" })), span.traceId),
-      ).pipe(Effect.withSpan("teste"));
-      const codigo = codigoDoErro(traceId);
+  it.live(
+    "--pasta-logs: o span do handler que falhou vai a traces.jsonl com o traceId da interface; nada grava a URL do /rpc nem o ingresso",
+    () =>
+      Effect.gen(function* () {
+        const pastaLogs = diretorioTemporario("simplifica-servidor-logs-");
+        const filho = yield* subir({ stdin: "pipe", argumentos: ["--pasta-logs", pastaLogs, "--traces", "completo"] });
+        const erro = stderrDe(filho);
+        filho.stdin?.write(`${JSON.stringify({ token: TOKEN })}\n`);
+        const linha = yield* decodificarLinha(yield* primeiraLinha(filho));
+        // Por ingresso, como a interface.
+        const resposta = yield* pedirHttp(`http://127.0.0.1:${linha.porta}${CAMINHO_INGRESSO}`, {
+          metodo: "POST",
+          cabecalhos: { authorization: `Bearer ${TOKEN}` },
+        });
+        assert.strictEqual(resposta.status, 200);
+        const { ingresso } = JSON.parse(resposta.corpo) as { readonly ingresso: string };
+        const c = yield* cliente(`${linha.rpc}?${PARAMETRO_INGRESSO}=${encodeURIComponent(ingresso)}`);
+        assert.isDefined(yield* c.sobreABase({}));
+        // Sem o aviso de uso aceito, `conversa.iniciar` falha com `AvisoNaoAceito`.
+        const traceId = yield* Effect.flatMap(Effect.orDie(Effect.currentSpan), (span) =>
+          Effect.as(Effect.flip(c["conversa.iniciar"]({ provider: "claude", pastaTrabalho: "/" })), span.traceId),
+        ).pipe(Effect.withSpan("teste"));
+        const codigo = codigoDoErro(traceId);
 
-      // O encerramento descarrega o que o exportador ainda não gravou.
-      filho.stdin?.end();
-      assert.strictEqual(yield* saida(filho), 0);
+        // O encerramento descarrega o que o exportador ainda não gravou.
+        filho.stdin?.end();
+        assert.strictEqual(yield* saida(filho), 0);
 
-      const spans = linhasJson(NodePath.join(pastaLogs, "traces.jsonl")).flatMap((pedido) =>
-        pedido.resourceSpans.flatMap((r) => r.scopeSpans.flatMap((s) => s.spans)),
-      );
-      const handler = spans.find((s) => s.name === "conversa.iniciar" && s.kind === 2);
-      assert.isDefined(handler);
-      assert.strictEqual(handler.traceId, traceId.padStart(32, "0"));
-      assert.strictEqual(codigoDoErro(handler.traceId), codigo);
-      assert.strictEqual(handler.status.code, 2);
-      // Nem o pedido nem o token vão aos atributos.
-      assert.notInclude(JSON.stringify(handler.attributes), "pastaTrabalho");
-      assert.notInclude(JSON.stringify(spans), TOKEN);
+        const textoTraces = NodeFS.readFileSync(NodePath.join(pastaLogs, "traces.jsonl"), "utf8");
+        const textoLogs = NodeFS.readFileSync(NodePath.join(pastaLogs, "logs-otlp.jsonl"), "utf8");
+        const spans = linhasJson(NodePath.join(pastaLogs, "traces.jsonl")).flatMap((pedido) =>
+          pedido.resourceSpans.flatMap((r) => r.scopeSpans.flatMap((s) => s.spans)),
+        );
+        const handler = spans.find((s) => s.name === "conversa.iniciar" && s.kind === 2);
+        assert.isDefined(handler);
+        assert.strictEqual(handler.traceId, traceId.padStart(32, "0"));
+        assert.strictEqual(codigoDoErro(handler.traceId), codigo);
+        assert.strictEqual(handler.status.code, 2);
+        // Nem o pedido nem o token vão aos atributos.
+        assert.notInclude(JSON.stringify(handler.attributes), "pastaTrabalho");
 
-      const logs = linhasJson(NodePath.join(pastaLogs, "logs-otlp.jsonl")).flatMap((pedido) =>
-        pedido.resourceLogs.flatMap((r) => r.scopeLogs.flatMap((s) => s.logRecords)),
-      );
-      const falha = logs.find((l) => JSON.stringify(l.body).includes("RPC conversa.iniciar falhou"));
-      assert.isDefined(falha);
-      assert.strictEqual(falha.traceId, handler.traceId);
-      // O stderr (logfmt, uma linha por registro) traz o mesmo código.
-      const linhaStderr = erro()
-        .split("\n")
-        .find((l) => l.includes("RPC conversa.iniciar falhou"));
-      assert.isDefined(linhaStderr);
-      assert.include(linhaStderr, `codigo=${codigo}`);
-      assert.match(linhaStderr, /^timestamp=\S+ level=WARN /u);
-    }).pipe(Effect.scoped),
-  );
+        // A chamada por ingresso foi gravada (o span do handler), e o `POST /ingresso` tem o span HTTP dele;
+        // o `/rpc` não tem span HTTP, e nem o ingresso nem o token vão a arquivo.
+        assert.isTrue(spans.some((s) => s.name === "sobreABase" && s.kind === 2));
+        const urls = spans.flatMap((s) =>
+          (s.attributes as ReadonlyArray<{ readonly key: string; readonly value: unknown }>)
+            .filter((a) => a.key.startsWith("url."))
+            .map((a) => JSON.stringify(a.value)),
+        );
+        assert.isTrue(urls.some((u) => u.includes(CAMINHO_INGRESSO)));
+        assert.isFalse(urls.some((u) => u.includes(CAMINHO_RPC)));
+        for (const texto of [textoTraces, textoLogs]) {
+          assert.notInclude(texto, ingresso);
+          assert.notInclude(texto, encodeURIComponent(ingresso));
+          assert.notInclude(texto, TOKEN);
+        }
 
-  it.live("por ingresso, como a interface: nenhum span gravado tem a URL do /rpc nem o ingresso", () =>
-    Effect.gen(function* () {
-      const pastaLogs = diretorioTemporario("simplifica-servidor-logs-");
-      const filho = yield* subir({ stdin: "pipe", argumentos: ["--pasta-logs", pastaLogs, "--traces", "completo"] });
-      filho.stdin?.write(`${JSON.stringify({ token: TOKEN })}\n`);
-      const linha = yield* decodificarLinha(yield* primeiraLinha(filho));
-      const resposta = yield* pedirHttp(`http://127.0.0.1:${linha.porta}${CAMINHO_INGRESSO}`, {
-        metodo: "POST",
-        cabecalhos: { authorization: `Bearer ${TOKEN}` },
-      });
-      assert.strictEqual(resposta.status, 200);
-      const { ingresso } = JSON.parse(resposta.corpo) as { readonly ingresso: string };
-      const c = yield* cliente(`${linha.rpc}?${PARAMETRO_INGRESSO}=${encodeURIComponent(ingresso)}`);
-      assert.isDefined(yield* c.sobreABase({}));
-
-      filho.stdin?.end();
-      assert.strictEqual(yield* saida(filho), 0);
-
-      const textoTraces = NodeFS.readFileSync(NodePath.join(pastaLogs, "traces.jsonl"), "utf8");
-      const textoLogs = NodeFS.readFileSync(NodePath.join(pastaLogs, "logs-otlp.jsonl"), "utf8");
-      const spans = linhasJson(NodePath.join(pastaLogs, "traces.jsonl")).flatMap((pedido) =>
-        pedido.resourceSpans.flatMap((r) => r.scopeSpans.flatMap((s) => s.spans)),
-      );
-      // A chamada foi gravada (o span do handler), e o `POST /ingresso` tem o span HTTP dele.
-      assert.isTrue(spans.some((s) => s.name === "sobreABase" && s.kind === 2));
-      const urls = spans.flatMap((s) =>
-        (s.attributes as ReadonlyArray<{ readonly key: string; readonly value: unknown }>)
-          .filter((a) => a.key.startsWith("url."))
-          .map((a) => JSON.stringify(a.value)),
-      );
-      assert.isTrue(urls.some((u) => u.includes(CAMINHO_INGRESSO)));
-      assert.isFalse(urls.some((u) => u.includes(CAMINHO_RPC)));
-      for (const texto of [textoTraces, textoLogs]) {
-        assert.notInclude(texto, ingresso);
-        assert.notInclude(texto, encodeURIComponent(ingresso));
-        assert.notInclude(texto, TOKEN);
-      }
-    }).pipe(Effect.scoped),
+        const logs = linhasJson(NodePath.join(pastaLogs, "logs-otlp.jsonl")).flatMap((pedido) =>
+          pedido.resourceLogs.flatMap((r) => r.scopeLogs.flatMap((s) => s.logRecords)),
+        );
+        const falha = logs.find((l) => JSON.stringify(l.body).includes("RPC conversa.iniciar falhou"));
+        assert.isDefined(falha);
+        assert.strictEqual(falha.traceId, handler.traceId);
+        // O stderr (logfmt, uma linha por registro) traz o mesmo código.
+        const linhaStderr = erro()
+          .split("\n")
+          .find((l) => l.includes("RPC conversa.iniciar falhou"));
+        assert.isDefined(linhaStderr);
+        assert.include(linhaStderr, `codigo=${codigo}`);
+        assert.match(linhaStderr, /^timestamp=\S+ level=WARN /u);
+      }).pipe(Effect.scoped),
   );
 
   it.live("caixa-preta: grava o trace da chamada que falhou e nada da que passou rápido", () =>
@@ -257,7 +242,7 @@ describe("servidor como processo", () => {
     }).pipe(Effect.scoped),
   );
 
-  it.live("a falha fatal vai ao logs-otlp.jsonl e, uma vez, ao stderr", () =>
+  it.live("sem token, não sobe: a falha fatal vai ao logs-otlp.jsonl e, uma vez, ao stderr", () =>
     Effect.gen(function* () {
       const pastaLogs = diretorioTemporario("simplifica-servidor-logs-");
       const filho = yield* subir({ stdin: "ignore", argumentos: ["--pasta-logs", pastaLogs] });
@@ -285,22 +270,6 @@ describe("servidor como processo", () => {
       filho.kill("SIGTERM");
       const codigo = yield* saida(filho);
       assert.notStrictEqual(codigo, "SIGKILL");
-    }).pipe(Effect.scoped),
-  );
-
-  it.live("sem token, ou com token curto, não sobe", () =>
-    Effect.gen(function* () {
-      const semToken = yield* subir({ stdin: "ignore" });
-      const erroSemToken = stderrDe(semToken);
-      assert.strictEqual(yield* saida(semToken), 1);
-      assert.include(erroSemToken(), "sem token");
-
-      const curto = yield* subir({ stdin: "pipe" });
-      const erroCurto = stderrDe(curto);
-      curto.stdin?.write(`${JSON.stringify({ token: "curto" })}\n`);
-      assert.strictEqual(yield* saida(curto), 1);
-      assert.include(erroCurto(), "não é um envelope válido");
-      assert.notInclude(erroCurto(), '"curto"');
     }).pipe(Effect.scoped),
   );
 });

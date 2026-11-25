@@ -147,16 +147,19 @@ describe("promover beta → estável", () => {
       canal: "beta" as const,
       versao: "2026.11.20",
       commit: "abc",
+      gerado_em: "2026-11-20T00:00:00.000Z",
       base: {
         arquivo: "base-2026.11.20.sqlite.zst",
         url: "../base-2026.11.20/base-2026.11.20.sqlite.zst",
         sha256: sha,
         bytes: 10,
         sha256_banco: sha,
+        data_referencia: "2026-11-20",
         patches: [],
       },
       skills: [],
       app_minimo: "0.1.0",
+      novidades: [],
     };
     const [[, texto], [, assinatura]] = assinarManifesto(beta, chave, new Date(0)) as [
       [string, string],

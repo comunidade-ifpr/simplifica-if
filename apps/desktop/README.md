@@ -33,7 +33,6 @@ Se a interface não responder, a janela tenta carregá-la 8 vezes, em cerca de 1
 | `SIMPLIFICA_KB` | `tmp/kb.sqlite` | a base (`--banco`) |
 | `SIMPLIFICA_DEV_SEM_REINICIO` | vazia | `1` desliga o reinício do servidor quando o código dele muda (por exemplo, no meio de uma conversa longa) |
 | `SIMPLIFICA_TRACES` | `completo` | o que o servidor grava em `traces.jsonl` (`--traces`): `completo`, `caixa-preta` (como no app empacotado) ou `desligado`; no app empacotado é sempre `caixa-preta` |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | vazia | manda os spans e logs do servidor por OTLP/HTTP a esse coletor (Jaeger, otel-tui…), no lugar do `traces.jsonl` |
 
 Argumentos depois de `dev` vão ao Electron, por exemplo `--remote-debugging-port=9333` para inspecionar a janela pelo Chrome DevTools Protocol.
 

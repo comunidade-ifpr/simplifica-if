@@ -1,15 +1,19 @@
 /**
- * Arquivos gerados do pipeline da base: o gerador monta o texto esperado de cada arquivo
- * (`ArquivoGerado`), e `aplicarGerados` grava o que difere do disco ou, no `--check`, só confere.
+ * Arquivos gerados da base: o front matter derivado das normas (relações e vigência) e os índices de
+ * PPCs. `arquivosGeradosDaBase` monta o texto esperado de cada arquivo (`ArquivoGerado`), e
+ * `aplicarGerados` grava o que difere do disco (`gerar_base`) ou só confere (`validar_base`).
  *
  * As divergências são as mesmas nos dois modos: arquivo ausente, desatualizado ou que sobra numa
- * pasta inteiramente gerada (`extrasEm`, e os `obsoletos`, que não devem mais existir). Gravando, o
- * ausente e o desatualizado são escritos e o que sobra é apagado; conferindo, nada muda no disco.
+ * pasta inteiramente gerada (`extrasEm`). Gravando, o ausente e o desatualizado são escritos e o que
+ * sobra é apagado; conferindo, nada muda no disco.
  */
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
+import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { compararTexto } from "@simplifica-if/kb/texto";
+import type { CaminhosBase } from "./caminhos.ts";
+import { arquivosIndices, gerarIndices } from "./indice-ppcs.ts";
 
 export interface ArquivoGerado {
   /** Caminho absoluto. */
@@ -28,8 +32,6 @@ export interface OpcoesGerados {
   /** Raiz dos caminhos nas divergências (em geral, `base-conhecimento/`). */
   readonly raiz: string;
   readonly extrasEm?: ReadonlyArray<PastaGerada>;
-  /** Arquivos que um gerador antigo produzia e que não devem mais existir. */
-  readonly obsoletos?: ReadonlyArray<string>;
 }
 
 export interface Divergencia {
@@ -90,9 +92,6 @@ export const aplicarGerados = Effect.fn("gerados.aplicar")(function* (
 
   const gerados = new Set(arquivos.map((arquivo) => path.resolve(arquivo.caminho)));
   const sobras: Array<string> = [];
-  for (const caminho of opcoes.obsoletos ?? []) {
-    if (!gerados.has(path.resolve(caminho)) && (yield* fs.exists(caminho))) sobras.push(caminho);
-  }
   for (const pasta of opcoes.extrasEm ?? []) sobras.push(...(yield* extrasDe(pasta, gerados)));
   for (const caminho of sobras) {
     divergencias.push({ arquivo: relativo(caminho), situacao: "extra" });
@@ -107,7 +106,23 @@ const SITUACOES: Record<Divergencia["situacao"], string> = {
   extra: "não é mais gerado",
 };
 
-/** As mensagens do `--check`: `<arquivo> está desatualizado; rode <comando>`. */
+/** As mensagens da conferência: `<arquivo> está desatualizado; rode <comando>`. */
 export function mensagensDivergencias(divergencias: ReadonlyArray<Divergencia>, comando: string): Array<string> {
   return divergencias.map(({ arquivo, situacao }) => `${arquivo} ${SITUACOES[situacao]}; rode ${comando}`);
+}
+
+/**
+ * Todos os arquivos gerados da base, com o que o `aplicarGerados` precisa (`extrasEm`) e os números
+ * do resumo. Lança se um PPC tem o front matter fora do contrato (o `validar_base` diz qual).
+ */
+export function arquivosGeradosDaBase(caminhos: CaminhosBase) {
+  const normas = normasComCamposGerados(caminhos.raizProjeto);
+  const indices = gerarIndices(caminhos);
+  const { arquivos, extrasEm } = arquivosIndices(caminhos, indices);
+  return {
+    arquivos: [...normas.map((norma) => ({ caminho: norma.arquivo, texto: norma.esperado })), ...arquivos],
+    extrasEm,
+    indices,
+    totais: { normas: normas.length, ppcs: indices.itensPpc.length, secoes: indices.itensSecao.length },
+  };
 }

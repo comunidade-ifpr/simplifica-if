@@ -118,8 +118,7 @@ export default Effect.gen(function* () {
       id_nativo TEXT,
       pasta_trabalho TEXT NOT NULL,
       criado_em TEXT NOT NULL,
-      tentativas INTEGER NOT NULL DEFAULT 0,
-      ultima_tentativa_em TEXT
+      tentativas INTEGER NOT NULL DEFAULT 0
     )
   `;
 

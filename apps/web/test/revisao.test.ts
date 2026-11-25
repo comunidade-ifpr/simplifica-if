@@ -72,7 +72,6 @@ function criarLista(
     provider: "claude",
     uso: { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 },
     resultado: {
-      lista: id,
       arquivoOriginal: ARQUIVO,
       arquivoComentado: "/Users/servidora/PPC - revisão prévia (Simplifica IF).docx",
       dataBase: "2026-11-24",

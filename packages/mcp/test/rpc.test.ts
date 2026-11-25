@@ -4,9 +4,9 @@
  * devolve o mesmo que a ferramenta MCP de mesmo nome pelo caminho de `responder` (um contrato só para
  * as duas), e o erro tipado chega ao cliente com a mesma mensagem da ferramenta.
  *
- * As leituras de link (M1.5): `lerLink` resolve cada tipo de link `ifpr://` como o `resources/read`
- * (`lerRecurso`), com a resposta da ferramenta de mesmo conteúdo ou a dos RPCs próprios dos recursos
- * (`lerPpc`, `lerCnct`, `lerCampus`, `lerFicha`).
+ * As leituras de link: o `resources/read` (`lerRecurso`) resolve cada tipo de link `ifpr://` com a
+ * resposta da ferramenta de mesmo conteúdo ou a dos RPCs próprios dos recursos (`lerPpc`, `lerCnct`,
+ * `lerCampus`, `lerFicha`).
  *
  * Dois bancos: o de normas (`fixture.ts` + `fixture-normas.ts`, com dispositivos e um PPC sem índice
  * FTS) e o de PPCs (`fixture-ppcs.ts`, com normas sem dispositivos, PPCs, cursos e o FTS das seções).
@@ -139,34 +139,33 @@ const viaRecurso = (banco: string, link: string) =>
   }).pipe(Effect.provide(layerLeitura({ banco, canal: "dev" })));
 
 describe("GrupoLeitura: links ifpr://", () => {
-  it.effect("lerLink de norma, dispositivo, curso e seção: a resposta da ferramenta e o texto do recurso", () =>
+  it.effect("resources/read de norma, dispositivo, curso e seção: a resposta da ferramenta e o texto", () =>
     Effect.gen(function* () {
       const normas = bancoNormas();
-      const norma = yield* viaRpc(normas, (c) => c.lerLink({ link: `ifpr://norma/${DCN_2021}` }));
+      const norma = yield* viaRecurso(normas, `ifpr://norma/${DCN_2021}`);
       expect(norma.tipo).toBe("norma");
       expect(norma.resposta).toEqual(yield* viaFerramenta(fichaNorma, { id: DCN_2021 }, normas));
-      expect(norma).toEqual(yield* viaRecurso(normas, `ifpr://norma/${DCN_2021}`));
 
       const id = `${DCN_2026}#art28`;
-      const dispositivo = yield* viaRpc(normas, (c) => c.lerLink({ link: `ifpr://norma/${id}` }));
+      const dispositivo = yield* viaRecurso(normas, `ifpr://norma/${id}`);
       expect(dispositivo.tipo).toBe("dispositivo");
       expect(dispositivo.resposta).toEqual(yield* viaFerramenta(lerDispositivos, { ids: [id], filhos: true }, normas));
 
       const ppcs = criarBancoFixturePpcs();
-      const curso = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://curso/${CURSO_ENFERMAGEM}` }));
+      const curso = yield* viaRecurso(ppcs, `ifpr://curso/${CURSO_ENFERMAGEM}`);
       expect(curso.tipo).toBe("curso");
       expect(curso.resposta).toEqual(yield* viaFerramenta(fichaCurso, { curso: CURSO_ENFERMAGEM }, ppcs));
       expect(curso.texto).toContain(`## [Técnico em Enfermagem](ifpr://curso/${CURSO_ENFERMAGEM})`);
       expect(curso.texto.endsWith("Base de desenvolvimento (versão `dev-ab12cd34`).")).toBe(true);
 
       const secaoId = `${PPC_INFORMATICA}#estagio_praticas-1`;
-      const secao = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://ppc/${secaoId}` }));
+      const secao = yield* viaRecurso(ppcs, `ifpr://ppc/${secaoId}`);
       expect(secao.tipo).toBe("secao");
       expect(secao.resposta).toEqual(yield* viaFerramenta(lerSecao, { id: secaoId }, ppcs));
     }),
   );
 
-  it.effect("lerPpc, lerCnct, lerCampus e lerFicha: a mesma resposta que lerLink traz no tipo", () =>
+  it.effect("lerPpc, lerCnct, lerCampus e lerFicha: a mesma resposta que o resources/read traz no tipo", () =>
     Effect.gen(function* () {
       const banco = criarBancoFixturePpcs();
       const casos = [
@@ -182,9 +181,8 @@ describe("GrupoLeitura: links ifpr://", () => {
         readonly [string, string, (c: ClienteLeitura) => Effect.Effect<unknown, ErroDeLeitura>]
       >;
       for (const [tipo, link, chamar] of casos) {
-        const porLink = yield* viaRpc(banco, (c) => c.lerLink({ link }));
+        const porLink = yield* viaRecurso(banco, link);
         expect(porLink.tipo, link).toBe(tipo);
-        expect(porLink, link).toEqual(yield* viaRecurso(banco, link));
         expect(yield* viaRpc<unknown>(banco, chamar), link).toEqual(porLink.resposta);
       }
       const ppc = yield* viaRpc(banco, (c) => c.lerPpc({ ppc: PPC_ENFERMAGEM }));
@@ -209,7 +207,7 @@ describe("GrupoLeitura: links ifpr://", () => {
         ["ifpr://campus/marte", /^campus não encontrado na base: "marte"/],
       ];
       for (const [link, mensagem] of casos) {
-        const falha = yield* Effect.flip(viaRpc(banco, (c) => c.lerLink({ link })));
+        const falha = yield* Effect.flip(viaRecurso(banco, link));
         expect(ehEntradaInvalida(falha), link).toBe(true);
         expect(falha.message, link).toMatch(mensagem);
       }

@@ -8,8 +8,7 @@
     "dev": "vp dev",
     "build": "vp build",
     "preview": "vp preview",
-    "test": "vp test run --project unidade",
-    "test:browser": "vp test run --project navegador",
+    "test:browser": "vp test run",
     "typecheck": "effect-tsgo tsrs --noEmit",
     "servidor:teste": "node test/servidor-teste.ts --origem http://localhost:5190 --origem http://127.0.0.1:5190"
   },

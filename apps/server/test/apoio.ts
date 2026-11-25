@@ -21,6 +21,7 @@ import {
   type EtapaLeituraPpc,
   type EventoConversa,
   type EventoRevisaoPpc,
+  type ListaPendencias,
   GrupoApp,
   type ItemAoVivo,
 } from "@simplifica-if/contratos-app";
@@ -28,6 +29,11 @@ import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { criarBancoFixture } from "../../../packages/mcp/test/fixture.ts";
 import type * as Conversas from "../src/Conversas.ts";
+import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
+import * as TrabalhoRevisao from "../src/revisao-ppc/trabalho.ts";
+import * as TextosAnexos from "../src/textos-anexos/TextosAnexos.ts";
+import * as TrabalhoTextos from "../src/textos-anexos/trabalho.ts";
+import * as WorkerLimitado from "../src/WorkerLimitado.ts";
 import { inserirNormas } from "../../../packages/mcp/test/fixture-normas.ts";
 
 export { diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
@@ -82,6 +88,31 @@ export function bancoComFichas(): string {
   db.close();
   return banco;
 }
+
+/**
+ * O trabalho dos Workers (a revisão prévia e a versão em texto dos anexos) no próprio processo, sem os
+ * ~200 ms de partida de cada Worker: para os testes que não exercitam os limites de memória e de tempo.
+ */
+const executorNoProcesso: typeof WorkerLimitado.rodarNoWorker = <Resposta, Andamento = never>(
+  url: URL,
+  pedido: unknown,
+  _transferir: ReadonlyArray<ArrayBuffer>,
+  _limites: WorkerLimitado.LimitesWorker,
+  aoAndamento?: (andamento: Andamento) => void,
+) => {
+  if (url.href === RevisorPpc.URL_TRABALHADOR.href)
+    return Effect.sync(
+      () =>
+        TrabalhoRevisao.atender(pedido as TrabalhoRevisao.PedidoTrabalhador, (etapa) =>
+          aoAndamento?.(etapa as Andamento),
+        ).resposta as Resposta,
+    );
+  if (url.href === TextosAnexos.URL_TRABALHADOR.href)
+    return Effect.promise(() => TrabalhoTextos.atender(pedido as TrabalhoTextos.PedidoTexto) as Promise<Resposta>);
+  return Effect.die(`sem trabalho no processo para ${url.href}`);
+};
+
+export const layerWorkersNoProcesso = Layer.succeed(WorkerLimitado.Executor, executorNoProcesso);
 
 /** O que o driver falso viu e como o teste o controla. */
 export interface Registro {
@@ -282,18 +313,26 @@ export const cliente = (url: string, cabecalhos?: Record<string, string>) =>
   });
 
 /**
- * `revisaoPpc.revisar` (ou o `ListaViva.revisar`) até o fim: as etapas, na ordem em que chegaram, e o
- * resultado do `pronto`. Sem `pronto`, defeito.
+ * `revisaoPpc.revisar` (ou o `ListaViva.revisar`) até o fim: as etapas, na ordem em que chegaram, o id
+ * da lista do `pronto` e o resultado dela. Sem `pronto`, defeito.
  */
-export const revisarAteOFim = <E, R>(stream: Stream.Stream<EventoRevisaoPpc, E, R>) =>
-  Stream.runCollect(stream).pipe(
+export const revisarAteOFim = <E, R, E2, R2>(
+  revisor: {
+    readonly "revisaoPpc.revisar": (entrada: RevisorPpc.EntradaRevisao) => Stream.Stream<EventoRevisaoPpc, E, R>;
+    readonly "revisaoPpc.lista": (entrada: { readonly lista: string }) => Effect.Effect<ListaPendencias, E2, R2>;
+  },
+  entrada: RevisorPpc.EntradaRevisao,
+) =>
+  Stream.runCollect(revisor["revisaoPpc.revisar"](entrada)).pipe(
     Effect.flatMap((eventos) => {
       const etapas: Array<EtapaLeituraPpc> = [];
       for (const evento of eventos) if (evento.tipo === "etapa") etapas.push(evento.etapa);
       const pronto = eventos.find((evento) => evento.tipo === "pronto");
       return pronto?.tipo === "pronto"
-        ? Effect.succeed({ etapas, ...pronto.resultado })
-        : Effect.die("revisaoPpc.revisar terminou sem o resultado");
+        ? revisor["revisaoPpc.lista"]({ lista: pronto.lista }).pipe(
+            Effect.map((lista) => ({ etapas, lista: pronto.lista, ...lista.resultado })),
+          )
+        : Effect.die("revisaoPpc.revisar terminou sem a lista");
     }),
   );
 

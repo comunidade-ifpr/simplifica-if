@@ -10,7 +10,7 @@ A base é lida pelo app, pelo servidor MCP `simplifica-mcp` (ferramentas `ifpr`;
 
 ## PPCs convertidos
 
-Os Projetos Pedagógicos de Curso (PPCs) do IFPR estão convertidos para Markdown em `institucional/ifpr/ppcs/`, como repertório institucional para consulta, comparação e apoio à elaboração ou revisão de PPCs. O índice de PPCs (`institucional/ifpr/ppcs/index.json`) e os índices de seções por tipo (`institucional/ifpr/ppcs/secoes/*.jsonl`, com as linhas de cada seção no Markdown) são gerados por `gerar_indice_ppcs.ts` e compilados no banco.
+Os Projetos Pedagógicos de Curso (PPCs) do IFPR estão convertidos para Markdown em `institucional/ifpr/ppcs/`, como repertório institucional para consulta, comparação e apoio à elaboração ou revisão de PPCs. O índice de PPCs (`institucional/ifpr/ppcs/index.json`) e os índices de seções por tipo (`institucional/ifpr/ppcs/secoes/*.jsonl`, com as linhas de cada seção no Markdown) são gerados por `gerar_base.ts` e compilados no banco.
 
 Cada PPC começa com front matter de proveniência (`id: ppc:<campus>/<curso>/<versao>`, ano do documento com o trecho que o comprova, URL de origem, hash do arquivo-fonte, data e versão do conversor). PPC sem o ano comprovado não entra: fica fora da base publicada, em `curadoria/pendencias/` na raiz do repositório. Todo PPC que entra na base fica nela, com esse ID permanente: o PPC novo de um curso entra como versão nova (`institucional/ifpr/ppcs/<campus>/<curso>/<versao>.md`, a versão é o ano do documento), o registro do curso passa a apontá-lo como vigente, e o anterior fica, substituído. As consultas usam o PPC vigente, salvo pedido dos substituídos. Um PPC novo entra a partir do DOCX enviado pela coordenação do curso, sem dados pessoais (passo a passo em [Curadoria de metadados institucionais](docs/curadoria-metadados-institucionais.md)); PDF não é convertido.
 
@@ -22,7 +22,6 @@ A partir da raiz do projeto unificado:
 
 ```bash
 node scripts/gerar_base.ts
-node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 ```
 

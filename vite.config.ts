@@ -41,8 +41,6 @@ const IGNORAR_COMUM = [
   "**/dist-exe/**",
   "**/dist/**",
   "apps/web/src/routeTree.gen.ts",
-  "apps/web/dist/**",
-  ".agents/skills/*/assets/**",
   // pacotes copiados do T3 Code (docs/upstream-t3.md): ficam como no upstream
   "packages/effect-acp/**",
   "packages/effect-codex-app-server/**",
@@ -149,13 +147,10 @@ export default defineConfig({
       "**/*.yaml",
       "**/*.yml",
       "pnpm-lock.yaml",
-      // módulos gerados com `--check` (como as instruções do MCP): o gerador é a fonte do formato
-      "**/*.gerado.ts",
       // código copiado do T3 Code formatado no upstream (100 colunas)
       "packages/motor/src/t3/**",
       "apps/server/src/t3/**",
       "apps/web/src/components/ui/**",
-      ".agents/skills/*/references/**",
     ],
   },
   lint: {
@@ -169,7 +164,8 @@ export default defineConfig({
       perf: "warn",
     },
     // As regras do lint do T3 Code (sem as de React, que entram no override do apps/web) e as do
-    // plugin próprio (`simplifica-if/*`).
+    // plugin próprio (`simplifica-if/*`). As do T3 que dependem de tipos ficam de fora: com
+    // `typeAware: false` não rodam.
     rules: {
       "oxc/no-accumulating-spread": "error",
       "eslint/no-control-regex": "off",
@@ -198,23 +194,6 @@ export default defineConfig({
       "eslint/no-shadow": "off",
       "eslint/no-await-in-loop": "off",
       "eslint/no-underscore-dangle": "off",
-      "typescript/consistent-return": "off",
-      "typescript/no-base-to-string": "off",
-      "typescript/no-duplicate-type-constituents": "off",
-      "typescript/no-floating-promises": "off",
-      "typescript/no-implied-eval": "off",
-      "typescript/no-meaningless-void-operator": "off",
-      "typescript/no-redundant-type-constituents": "off",
-      "typescript/no-unnecessary-boolean-literal-compare": "off",
-      "typescript/no-unnecessary-type-conversion": "off",
-      "typescript/no-unnecessary-type-arguments": "off",
-      "typescript/no-unnecessary-type-assertion": "off",
-      "typescript/no-unnecessary-type-parameters": "off",
-      "typescript/no-unsafe-type-assertion": "off",
-      "typescript/await-thenable": "off",
-      "typescript/require-array-sort-compare": "off",
-      "typescript/restrict-template-expressions": "off",
-      "typescript/unbound-method": "off",
       "simplifica-if/namespace-node-imports": "error",
       "simplifica-if/no-inline-schema-compile": "error",
       // Estas só agem em arquivos de teste (a própria regra confere o nome do arquivo).
@@ -245,7 +224,6 @@ export default defineConfig({
           "react/no-unstable-nested-components": "error",
           "react/static-components": "error",
           "react/capitalized-calls": "error",
-          "react-in-jsx-scope": "off",
           "react-hooks/exhaustive-deps": "off",
         },
       },

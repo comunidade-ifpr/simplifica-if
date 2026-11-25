@@ -75,6 +75,8 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
   if (info === null) throw new Error(`não foi possível ler o meta de ${opcoes.banco}`);
   const versao = info.versao;
   if (ehVersaoDev(versao)) throw new Error(`a base ${versao} não tem versão: compile com --versao AAAA.MM.DD`);
+  const dataReferencia = info.dataReferencia;
+  if (dataReferencia === null) throw new Error(`a base ${versao} não tem data_referencia no meta`);
   conferirEsquema(info, opcoes.anteriores ?? [], opcoes.appMinimo);
   NodeFS.mkdirSync(opcoes.saida, { recursive: true });
   const arquivos: string[] = [];
@@ -127,12 +129,12 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
       sha256: sha256(pacote),
       bytes: pacote.byteLength,
       sha256_banco: sha256(banco),
-      ...(info.dataReferencia === null ? {} : { data_referencia: info.dataReferencia }),
+      data_referencia: dataReferencia,
       patches,
     },
     skills,
     app_minimo: opcoes.appMinimo,
-    ...(opcoes.novidades === undefined ? {} : { novidades: opcoes.novidades }),
+    novidades: opcoes.novidades ?? [],
   };
   const assinado = assinarManifesto(manifesto, opcoes.chave, opcoes.agora ?? new Date());
   for (const [nome, conteudo] of assinado) gravar(nome, conteudo);

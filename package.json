@@ -4,12 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "base:gerar": "node scripts/gerar_base.ts",
-    "base:indice-ppcs": "node scripts/gerar_indice_ppcs.ts",
-    "base:validar": "node scripts/validar_base.ts",
     "kb": "node packages/mcp/src/kb.ts",
     "kb:compilar": "node packages/mcp/src/kb.ts compilar",
-    "mcp": "node packages/mcp/src/cli.ts",
     "mcp:executavel": "node packages/mcp/scripts/construir-executavel.ts",
     "fabrica": "node scripts/fabrica_atualizacao.ts",
     "motor:poc": "node packages/motor/scripts/poc.ts",

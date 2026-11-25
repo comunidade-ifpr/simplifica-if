@@ -1,12 +1,11 @@
-// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), monta caminhos com node:path
-/** Validação do catálogo do CNCT. */
-import * as NodePath from "node:path";
+/**
+ * Validação do catálogo do CNCT: o formato de cada arquivo é o Effect Schema de `esquemas.ts`; aqui
+ * ficam só as regras que cruzam arquivos (manifesto, índice e cursos).
+ */
 import { listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
-import { textoDe, valoresIguais } from "@simplifica-if/kb/json";
-import { conferirContrato, type CursoCnctJson, type IndiceCnctJson, type ManifestCnctJson } from "../esquemas.ts";
-import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, RE_SLUG, type Recebido } from "./contexto.ts";
-
-type ItemIndiceCnct = IndiceCnctJson["items"][number];
+import { valoresIguais } from "@simplifica-if/kb/json";
+import { conferirContrato, type CursoCnctJson, type NomeContrato } from "../esquemas.ts";
+import { type Contexto, listaOrdenada, mesmosElementos } from "./contexto.ts";
 
 export const CAMPOS_CURSO_CNCT = [
   "id",
@@ -27,127 +26,73 @@ export const CAMPOS_CURSO_CNCT = [
   "legislacao_profissional",
 ] satisfies Array<keyof CursoCnctJson>;
 const CAMPOS_REPETIDOS_NO_INDICE = [
-  "id",
   "denominacao",
   "denominacao_normalizada",
   "eixo_tecnologico",
   "area_tecnologica",
   "carga_horaria_minima_horas",
   "codigos_cbo",
-] as const satisfies Array<keyof CursoCnctJson & keyof ItemIndiceCnct>;
+] as const satisfies Array<keyof CursoCnctJson>;
 
-/** Erros do arquivo de um curso CNCT e, se não houver nenhum, o curso decodificado. */
-function validarArquivoCursoCnct(
-  ctx: Contexto,
-  caminho: string,
-  itemIndice: Recebido<ItemIndiceCnct>,
-): { erros: string[]; curso: CursoCnctJson | null } {
-  const r = ctx.rel(caminho);
-  const carregado = ctx.carregarJson(caminho, `curso CNCT ${r}`);
-  if (!carregado.ok) return { erros: carregado.erros, curso: null };
-  const dados = carregado.valor;
-  if (!ehRecebido<CursoCnctJson>(dados)) return { erros: [`${r} deve conter um objeto JSON`], curso: null };
-  const { erros, validos } = conferirContrato("cursoCnct", dados, r);
-
-  const cursoId = dados.id;
-  if (typeof cursoId !== "string" || !RE_SLUG.test(cursoId)) erros.push(`${r}: id deve ser slug ASCII minúsculo`);
-  else if (NodePath.basename(caminho) !== `${cursoId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
-
-  for (const campo of CAMPOS_REPETIDOS_NO_INDICE) {
-    if (!valoresIguais(dados[campo], itemIndice[campo])) erros.push(`${r}: campo ${campo} diverge do index.json`);
-  }
-
-  const codigosCbo = dados.codigos_cbo;
-  if (Array.isArray(codigosCbo)) {
-    const vistos = new Set<string>();
-    const ocupacoes = dados.ocupacoes_cbo === undefined ? "" : textoDe(dados.ocupacoes_cbo);
-    for (const codigo of codigosCbo) {
-      if (typeof codigo !== "string") continue;
-      if (vistos.has(codigo)) erros.push(`${r}: codigos_cbo duplicado: ${codigo}`);
-      vistos.add(codigo);
-      if (!ocupacoes.includes(codigo)) erros.push(`${r}: codigos_cbo não aparece em ocupacoes_cbo: ${codigo}`);
-    }
-  }
-  return { erros, curso: erros.length ? null : validos };
+/** O JSON em `caminho` conferido com o contrato `nome`: os erros e, sem nenhum, os dados. */
+function lerContrato<N extends NomeContrato>(ctx: Contexto, nome: N, caminho: string, rotulo: string) {
+  const carregado = ctx.carregarJson(caminho, rotulo);
+  if (!carregado.ok) return { erros: carregado.erros, validos: null };
+  return conferirContrato(nome, carregado.valor, ctx.rel(caminho));
 }
 
-function validarManifestCnct(ctx: Contexto, manifestCnct: unknown, rManifestCnct: string, rIndiceCnct: string) {
-  if (!ehRecebido<ManifestCnctJson>(manifestCnct)) return [`${rManifestCnct} deve conter um objeto JSON`];
-  const { erros } = conferirContrato("manifestCnct", manifestCnct, rManifestCnct);
-  if (!valoresIguais(manifestCnct.index_path, rIndiceCnct))
-    erros.push(`${rManifestCnct}: index_path diverge do índice CNCT`);
-  if (!valoresIguais(manifestCnct.campos_curso, CAMPOS_CURSO_CNCT)) {
-    erros.push(`${rManifestCnct}: campos_curso diverge do contrato esperado`);
-  }
-  for (const campo of ["fonte_url", "atos_normativos_url", "catalogo_pdf_url"] as const) {
-    erros.push(...ctx.validarUrlHttps(manifestCnct[campo], `${rManifestCnct}: ${campo}`));
+/** Os códigos CBO do curso, sem repetição e todos citados em `ocupacoes_cbo`. */
+function validarCbo(r: string, curso: CursoCnctJson): string[] {
+  const erros: string[] = [];
+  const vistos = new Set<string>();
+  for (const codigo of curso.codigos_cbo) {
+    if (vistos.has(codigo)) erros.push(`${r}: codigos_cbo duplicado: ${codigo}`);
+    vistos.add(codigo);
+    if (!curso.ocupacoes_cbo.includes(codigo)) erros.push(`${r}: codigos_cbo não aparece em ocupacoes_cbo: ${codigo}`);
   }
   return erros;
 }
 
 export function validarCatalogos(ctx: Contexto): string[] {
-  const carregados = [
-    ctx.carregarJson(ctx.c.manifestCnct, "manifesto CNCT"),
-    ctx.carregarJson(ctx.c.indiceCnct, "índice CNCT"),
-  ];
-  const errosLeitura = carregados.flatMap((carregado) => (carregado.ok ? [] : carregado.erros));
-  if (errosLeitura.length) return errosLeitura;
-  const [manifestCnct, indiceCnct] = carregados.map((carregado) => (carregado.ok ? carregado.valor : null));
+  const manifesto = lerContrato(ctx, "manifestCnct", ctx.c.manifestCnct, "manifesto CNCT");
+  const indice = lerContrato(ctx, "indiceCnct", ctx.c.indiceCnct, "índice CNCT");
+  const erros = [...manifesto.erros, ...indice.erros];
+  if (!manifesto.validos || !indice.validos) return erros;
 
-  const rManifestCnct = ctx.rel(ctx.c.manifestCnct);
-  const rIndiceCnct = ctx.rel(ctx.c.indiceCnct);
-  const erros = validarManifestCnct(ctx, manifestCnct, rManifestCnct, rIndiceCnct);
-
-  if (!ehRecebido<IndiceCnctJson>(indiceCnct)) {
-    erros.push(`${rIndiceCnct} deve conter um objeto JSON`);
-    return erros;
+  const rManifesto = ctx.rel(ctx.c.manifestCnct);
+  const rIndice = ctx.rel(ctx.c.indiceCnct);
+  const itens = indice.validos.items;
+  if (!valoresIguais(manifesto.validos.campos_curso, CAMPOS_CURSO_CNCT)) {
+    erros.push(`${rManifesto}: campos_curso diverge do contrato esperado`);
   }
-  erros.push(...conferirContrato("indiceCnct", indiceCnct, rIndiceCnct).erros);
-
-  const itens = indiceCnct.items;
-  if (!Array.isArray(itens) || !itens.length) {
-    erros.push(`${rIndiceCnct}: items deve ser lista não vazia`);
-    return erros;
-  }
-
-  if (ehRecebido<ManifestCnctJson>(manifestCnct) && !valoresIguais(manifestCnct.total_cursos, itens.length)) {
-    erros.push(`${rManifestCnct}: total_cursos diverge do index.json`);
-  }
-  if (!valoresIguais(indiceCnct.total_cursos, itens.length))
-    erros.push(`${rIndiceCnct}: total_cursos diverge de items`);
+  if (manifesto.validos.total_cursos !== itens.length) erros.push(`${rManifesto}: total_cursos diverge do index.json`);
+  if (indice.validos.total_cursos !== itens.length) erros.push(`${rIndice}: total_cursos diverge de items`);
 
   const idsVistos = new Set<string>();
   const indicesVistos = new Set<number>();
-  const pathsIndice = new Set<string>();
   for (const item of itens) {
-    if (!ehRecebido<ItemIndiceCnct>(item)) {
-      erros.push(`${rIndiceCnct}: item deve ser objeto`);
+    if (idsVistos.has(item.id)) erros.push(`${rIndice}: id duplicado: ${item.id}`);
+    idsVistos.add(item.id);
+    if (item.path !== `catalogos/cnct/cursos/${item.id}.json`) {
+      erros.push(`${rIndice}: path inválido em ${item.id}: ${item.path}`);
       continue;
     }
-    const { id: cursoId, path: valorPath } = item;
-    if (typeof cursoId !== "string" || !RE_SLUG.test(cursoId)) {
-      erros.push(`${rIndiceCnct}: id inválido: ${textoDe(cursoId)}`);
-    } else if (idsVistos.has(cursoId)) erros.push(`${rIndiceCnct}: id duplicado: ${cursoId}`);
-    else idsVistos.add(cursoId);
-    if (typeof valorPath !== "string") {
-      erros.push(`${rIndiceCnct}: path ausente em ${textoDe(cursoId)}`);
-      continue;
+    const caminho = naBase(ctx.c, item.path);
+    const curso = lerContrato(ctx, "cursoCnct", caminho, `curso CNCT ${item.path}`);
+    erros.push(...curso.erros);
+    if (!curso.validos) continue;
+    if (curso.validos.id !== item.id) erros.push(`${item.path}: id diverge do index.json`);
+    for (const campo of CAMPOS_REPETIDOS_NO_INDICE) {
+      if (!valoresIguais(curso.validos[campo], item[campo])) {
+        erros.push(`${item.path}: campo ${campo} diverge do index.json`);
+      }
     }
-    if (valorPath !== `catalogos/cnct/cursos/${textoDe(cursoId)}.json`) {
-      erros.push(`${rIndiceCnct}: path inválido em ${textoDe(cursoId)}: ${valorPath}`);
-      continue;
-    }
-    if (pathsIndice.has(valorPath)) erros.push(`${rIndiceCnct}: path duplicado: ${valorPath}`);
-    pathsIndice.add(valorPath);
-
-    const { erros: errosCurso, curso } = validarArquivoCursoCnct(ctx, naBase(ctx.c, valorPath), item);
-    erros.push(...errosCurso);
-    // Só um curso sem erros entra na checagem de `indice` duplicado.
-    if (!curso) continue;
-    if (indicesVistos.has(curso.indice)) erros.push(`${valorPath}: indice duplicado: ${curso.indice}`);
-    indicesVistos.add(curso.indice);
+    erros.push(...validarCbo(item.path, curso.validos));
+    if (indicesVistos.has(curso.validos.indice)) erros.push(`${item.path}: indice duplicado: ${curso.validos.indice}`);
+    indicesVistos.add(curso.validos.indice);
   }
 
+  const pathsIndice = new Set(itens.map((item) => item.path));
   const pathsCursos = new Set(listarDiretorio(ctx.c.cursosCnct, ".json").map((caminho) => ctx.rel(caminho)));
   if (!mesmosElementos(pathsIndice, pathsCursos)) {
     erros.push(
@@ -155,7 +100,7 @@ export function validarCatalogos(ctx: Contexto): string[] {
     );
   }
 
-  const esperados = new Set([rManifestCnct, rIndiceCnct, ...pathsCursos]);
+  const esperados = new Set([rManifesto, rIndice, ...pathsCursos]);
   const atuais = new Set(listarRecursivo(ctx.c.catalogos, ".json").map((caminho) => ctx.rel(caminho)));
   if (!mesmosElementos(atuais, esperados)) {
     erros.push(

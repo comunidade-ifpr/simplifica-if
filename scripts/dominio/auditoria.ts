@@ -1,4 +1,3 @@
-import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { ehHttps, ehRotuloCuradoria, ehSlug } from "./comum.ts";
 import { ehCaminhoPpcDoCurso, PREFIXO_PPCS, type Campus, type Curso } from "./curso.ts";
 import {
@@ -44,10 +43,8 @@ function auditarCampi(campi: Campus[]): string[] {
 const SITUACOES_ATIVAS = new Set(["ativo", "em_oferta"]);
 
 function auditarCnct(curso: Curso, nome: string): string[] {
+  // o formato do cnct_id é do schema do registro (`esquemaCursoLocal`)
   const erros: string[] = [];
-  if (curso.cnctId && (!ehIdCnct(curso.cnctId) || curso.cnctId === "cnct:catalogo")) {
-    erros.push(`${nome}: cnct_id inválido (esperado cnct:<slug do curso no CNCT>): ${curso.cnctId}`);
-  }
   if (curso.cnctId && curso.cnctAusencia) erros.push(`${nome}: cnct_id e cnct_ausencia são excludentes`);
   if (curso.nivel === "médio" && SITUACOES_ATIVAS.has(curso.situacao) && !curso.cnctId && !curso.cnctAusencia) {
     erros.push(`${nome}: curso técnico ativo sem cnct_id (ou cnct_ausencia com o motivo)`);

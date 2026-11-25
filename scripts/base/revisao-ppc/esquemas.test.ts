@@ -183,7 +183,7 @@ describe("contratos da base da revisão de PPC", () => {
     const fichas = fichasValidas();
     expect(fichas.length).toBeGreaterThan(50);
     for (const [arquivo, ficha] of fichas) {
-      expect({ arquivo, problemas: decodificarContrato("ficha.schema.json", ficha) }).toEqual({
+      expect({ arquivo, problemas: decodificarContrato("ficha", ficha) }).toEqual({
         arquivo,
         problemas: [],
       });
@@ -191,13 +191,13 @@ describe("contratos da base da revisão de PPC", () => {
   });
 
   test("o registro de marcos normativos está no contrato", () => {
-    expect(decodificarContrato("marcos-normativos.schema.json", MARCOS)).toEqual([]);
+    expect(decodificarContrato("marcos", MARCOS)).toEqual([]);
   });
 
   test.each(FICHAS_INVALIDAS)("ficha recusada: %s", (_, esperados, mudar) => {
     const ficha = copia(FICHA) as ObjetoJson & { referencias_normativas: ObjetoJson[] };
     mudar(ficha);
-    const problemas = decodificarContrato("ficha.schema.json", ficha);
+    const problemas = decodificarContrato("ficha", ficha);
     expect(caminhosDosProblemas(problemas)).toEqual(esperados);
     expect(problemas.every((problema) => problema.mensagem.length > 0)).toBe(true);
   });
@@ -205,6 +205,6 @@ describe("contratos da base da revisão de PPC", () => {
   test.each(MARCOS_INVALIDOS)("registro de marcos recusado: %s", (_, esperados, mudar) => {
     const marcos = copia(MARCOS);
     mudar(marcos);
-    expect(caminhosDosProblemas(decodificarContrato("marcos-normativos.schema.json", marcos))).toEqual(esperados);
+    expect(caminhosDosProblemas(decodificarContrato("marcos", marcos))).toEqual(esperados);
   });
 });

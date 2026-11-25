@@ -20,25 +20,6 @@ export const DESCRICOES: Readonly<Record<Provider, DescricaoProvider>> = {
   antigravity: { nome: "Gemini (Antigravity)", conta: "Conta do Google" },
 };
 
-/**
- * O que a pessoa faz por conta própria quando o app não oferece a operação para o provider.
- * Hoje só serve de reserva: o Claude tem o passo guiado, e o app instala e faz o login do Codex e do
- * Antigravity.
- */
-export interface Orientacao {
-  readonly texto: string;
-}
-
-/** A orientação para quando o app não oferece `operacao` para o provider. */
-export function orientacao(provider: Provider, operacao: "instalar" | "entrar"): Orientacao {
-  return {
-    texto:
-      operacao === "instalar"
-        ? `O app ainda não instala o ${DESCRICOES[provider].nome}. Instale-o por conta própria e depois detecte de novo.`
-        : `O app ainda não faz o login do ${DESCRICOES[provider].nome}. Entre na conta por conta própria e depois detecte de novo.`,
-  };
-}
-
 const FASES_INSTALACAO: Readonly<Record<EstadoInstalacao["fase"], string>> = {
   parada: "Aguardando",
   baixando: "Baixando",

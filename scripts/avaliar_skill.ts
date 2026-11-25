@@ -207,7 +207,6 @@ const rodarSessao = Effect.fn("avaliarSkill.rodarSessao")(function* (entrada: {
   if (entrada.mcp) {
     const sessaoMcp = yield* servidor.abrirSessao({ rotulo: "avaliar-skill", pastaTrabalho: pasta });
     servidores.push({
-      tipo: "http",
       nome: "ifpr",
       url: sessaoMcp.url,
       cabecalhos: sessaoMcp.cabecalhos,

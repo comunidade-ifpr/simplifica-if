@@ -4,7 +4,7 @@
  * formulário da tarefa monta e a linha das mudanças na pasta.
  */
 import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
-import { dataCurta, inteiro } from "../lib/formato.ts";
+import { inteiro } from "../lib/formato.ts";
 
 /* ================================================================== citações */
 
@@ -201,11 +201,6 @@ export function duracaoPorExtenso(duracao: string | undefined): string | undefin
   return `cerca de ${n} ${n === 1 ? "minuto" : "minutos"}`;
 }
 
-/** A data da versão da base (`2026-11-12`) como a pessoa lê: "12/11/2026". */
-export function dataDaBase(iso: string): string {
-  return dataCurta(iso);
-}
-
 /* ================================================================== pedido */
 
 /** O que a pessoa preencheu no formulário: o texto, ou o nome do arquivo anexado. */
@@ -255,7 +250,7 @@ export function resumoMudancasPasta(mudancas: {
   readonly novos: ReadonlyArray<string>;
   readonly mudados: ReadonlyArray<string>;
   readonly removidos: ReadonlyArray<string>;
-  readonly semTexto?: ReadonlyArray<string>;
+  readonly semTexto: ReadonlyArray<string>;
 }): string {
   const umaLinha = (lista: ReadonlyArray<string>) => nomes(lista.map((nome) => nome.replace(/[\r\n]+/g, " ")));
   const partes = [
@@ -271,7 +266,7 @@ export function resumoMudancasPasta(mudancas: {
     mudancas.anexados.length === 0
       ? []
       : [`${mudancas.anexados.length === 1 ? "Anexado" : "Anexados"}: ${umaLinha(mudancas.anexados)}.`];
-  const semTexto = mudancas.semTexto ?? [];
+  const { semTexto } = mudancas;
   return [
     ...anexados,
     ...(fora === "" ? [] : [`Na pasta, desde a última resposta: ${fora}.`]),

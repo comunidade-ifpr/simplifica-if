@@ -388,7 +388,7 @@ function BoasVindas() {
           aoMudarPronta={mudarPronta}
           aoSeguir={() => {
             // A IA conectada vira a escolha padrão das conversas.
-            if (prontas.has(escolhida)) conversa.escolher({ provider: escolhida });
+            if (prontas.has(escolhida)) conversa.escolher(escolhida);
             setPasso("perfil");
           }}
         />

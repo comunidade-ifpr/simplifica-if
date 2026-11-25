@@ -28,11 +28,10 @@ As reuniões do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselh
 
 ```bash
 node scripts/gerar_base.ts
-node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 ```
 
-`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), e o índice dos campi.
+`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), o índice dos campi e que os arquivos gerados estão em dia com o `gerar_base.ts`.
 
 Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no campus.
 
@@ -204,7 +203,6 @@ node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --font
 
 ```bash
 node scripts/gerar_base.ts
-node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 ```
 
@@ -272,7 +270,7 @@ A coleção `institucional/ifpr/ppcs/` contém PPCs convertidos e índices deriv
 
 **Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite`, derivado e fora do git.
 
-Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro do curso em `institucional/ifpr/cursos/` ou o Markdown convertido e rode novamente os comandos de publicação.
+Esses arquivos são gerados automaticamente por `scripts/gerar_base.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro do curso em `institucional/ifpr/cursos/` ou o Markdown convertido e rode novamente os comandos de publicação.
 
 **Taxonomia por nível.** Cursos de nível médio usam a taxonomia `tecnico`, em que cada tipo aponta os incisos do art. 28 da Res. CNE/CP nº 2/2026 que cobre (`identificacao` I, `formato_oferta` II, `justificativa` e `objetivos` III, `requisitos_acesso` IV, `acessibilidade_inclusao` V, `perfil_egresso` VI, `itinerario_formativo` VII, `carga_horaria` VIII, `organizacao_curricular` e `matriz_curricular` IX, `aproveitamento_estudos` X, `avaliacao` XI, `infraestrutura` XII, `mundo_trabalho` XIII, `corpo_docente` XIV, `certificados_diplomas` XV, `prazo_integralizacao` XVI, `estagio_praticas` XVII, `acompanhamento_egresso` XVIII e § 4º), mais tipos do modelo do IFPR sem inciso próprio. Graduação, pós-graduação e FIC usam a taxonomia `geral`, sem os tipos próprios do art. 28 e com `contexto_institucional` e `atividades_complementares`. A lista completa, com rótulos e incisos, fica em `secoes.taxonomias` do índice.
 

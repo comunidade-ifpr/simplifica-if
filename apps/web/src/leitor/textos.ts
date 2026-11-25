@@ -11,10 +11,6 @@ export type FichaNorma = Extract<LinkLido, { tipo: "norma" }>["resposta"]["dados
 export type DispositivoLido = Extract<LinkLido, { tipo: "dispositivo" }>["resposta"]["dados"]["dispositivos"][number];
 export type Relacao = FichaNorma["relacoes"]["saida"][number];
 
-/* ================================================================== datas */
-
-export { dataCurta, dataPorExtenso } from "../lib/formato.ts";
-
 /* ================================================================== selo de vigência */
 
 export type VarianteSelo = "success" | "error" | "warning" | "info";
@@ -225,11 +221,6 @@ export function citacaoDoDispositivo(opcoes: {
     ...dispositivo.subordinados.map((s) => s.texto),
   ];
   return [`“${trechoLimitado(linhas.join("\n"))}”`, `(${nomeCurto})`, "", referenciaDaNorma(norma)].join("\n");
-}
-
-/** A citação da norma inteira: só a referência. */
-export function citacaoDaNorma(norma: FichaNorma["norma"]): string {
-  return referenciaDaNorma(norma);
 }
 
 /** A citação de um PPC ou de uma seção dele. */

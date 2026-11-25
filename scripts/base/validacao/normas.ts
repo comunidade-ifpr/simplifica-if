@@ -16,7 +16,6 @@ import { DIRETORIOS_POR_TIPO, type FrontMatter } from "../front-matter.ts";
 import { representar, textoDe } from "@simplifica-if/kb/json";
 import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estrutura";
 import { artigosInexistentes } from "@simplifica-if/kb/normas/pontos-chave";
-import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { validarCorrespondencias } from "@simplifica-if/kb/normas/correspondencia";
 import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import {
@@ -44,12 +43,6 @@ function linhasDoErro(prefixo: string, erro: Schema.SchemaError): string[] {
 
 const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", "skills"]);
 const RE_DATA_NO_INICIO = /^\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}_/u;
-const RE_ALIAS_COM_ANO = /[_-]\p{Nd}{4}[^\n]*\.md(?=\n?$)/u;
-
-function aliasPareceNomeAntigo(alias: unknown): boolean {
-  if (typeof alias !== "string" || !alias.endsWith(".md")) return false;
-  return RE_DATA_NO_INICIO.test(alias) || RE_ALIAS_COM_ANO.test(alias);
-}
 
 /**
  * Dados pessoais (política do AGENTS.md: CPF, RG, celular, matrícula de estudante, SIAPE), link de
@@ -152,11 +145,6 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
       `${r}: marcador fora-do-ato no corpo; o que não consta do ato sai do arquivo (registre em notas_da_fonte)`,
     );
   }
-  const aliases = "aliases" in meta ? meta.aliases : [];
-  for (const alias of Array.isArray(aliases) ? aliases : []) {
-    if (aliasPareceNomeAntigo(alias)) erros.push(`${r}: alias parece nome antigo de arquivo: ${textoDe(alias)}`);
-  }
-
   erros.push(...validarContratoNorma(r, meta));
   erros.push(...validarLocalDaNorma(ctx, caminho, meta));
   erros.push(...ctx.validarLinks(caminho, texto));
@@ -270,8 +258,9 @@ export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] 
 
 /**
  * Relações, transições, correspondências e vigência: contrato e evidências de
- * `relacoes.yaml`, `transicoes.yaml` e `correspondencias/*.yaml`, campos gerados do front matter em dia (`gerar_base.ts`) e status dos stubs
- * atingidos por relações igual ao calculado na `data_referencia`.
+ * `relacoes.yaml`, `transicoes.yaml` e `correspondencias/*.yaml` e status dos stubs atingidos por
+ * relações igual ao calculado na `data_referencia`. Os campos gerados do front matter em dia são do
+ * `validar_base.ts` (com os outros arquivos gerados).
  */
 export function validarRelacoesEVigencia(ctx: Contexto): string[] {
   const raiz = ctx.c.raizProjeto;
@@ -334,12 +323,6 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
       erros.push(
         `normas/stubs.yaml: ${entrada.id}: status_vigencia ${registrado} difere do calculado em ${referencia} (${calculado.status})`,
       );
-    }
-  }
-
-  for (const norma of normasComCamposGerados(raiz)) {
-    if (norma.atual !== norma.esperado) {
-      erros.push(`${norma.path}: campos gerados do front matter desatualizados; rode node scripts/gerar_base.ts`);
     }
   }
   return erros;

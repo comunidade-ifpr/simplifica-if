@@ -36,10 +36,10 @@ import {
 
 let bancos: Record<Fixture, string>;
 let isolado: ServidorIsolado;
-beforeAll(async () => {
+beforeAll(() => {
   if (!SMOKE_APENAS) bancos = bancosFixture();
-  isolado = await servidorIsolado();
-}, 120_000);
+  isolado = servidorIsolado();
+});
 afterAll(limparTemporarios);
 
 async function conferir(banco: string, fonte: Fixture | "real") {

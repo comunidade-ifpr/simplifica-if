@@ -55,7 +55,6 @@ Depois de alterar qualquer coisa em `base-conhecimento/` (normas, `relacoes.yaml
 
 ```bash
 node scripts/gerar_base.ts
-node scripts/gerar_indice_ppcs.ts   # se mexeu em registros institucionais ou PPCs
 node scripts/validar_base.ts
 ```
 

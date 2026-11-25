@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- lê os PPCs e o índice atual com node:fs síncrono (gerar_indice_ppcs); a gravação fica com aplicarGerados
+// @effect-diagnostics nodeBuiltinImport:off -- lê os PPCs com node:fs síncrono (gerar_base); a gravação fica com aplicarGerados
 /**
  * Índices globais dos PPCs convertidos para Markdown (index.json e secoes/*.jsonl), versão 2.
  *
@@ -11,7 +11,7 @@ import * as NodePath from "node:path";
 import type * as Types from "effect/Types";
 import type { ArquivoGerado } from "./gerados.ts";
 import { type CaminhosBase, naBase, relativo } from "./caminhos.ts";
-import { ehObjeto, jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
+import { jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
 import { analisarPpc, type ProvenienciaPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { caminhoPpc, chavePpc, compararVersoesPpc, PASTA_PPCS } from "@simplifica-if/kb/ppcs/ids";
 import {
@@ -29,8 +29,6 @@ import { carregarDadosInstitucionais, type CampusLocal, type CursoLocal } from "
 import { interpretarVagasPpc } from "../dominio/curso.ts";
 import { compararTexto, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 
-export { limparTexto, limparTitulo, removerAcentos, segmentarPpc, tituloDaLinha } from "@simplifica-if/kb/ppcs/secoes";
-
 export const VERSAO_INDICE = 2;
 /** Tipos com arquivo em `secoes/`: todos os das duas taxonomias, menos `pretextual` e `outros`. */
 export const TIPOS_SECAO_INDEXADOS = ordenarTextos(
@@ -46,7 +44,7 @@ export type ItemPpc = Types.Mutable<IndicePpcsJson["items"][number]>;
 /** Linha de secoes/<tipo>.jsonl, no contrato `esquemaSecaoPpc`. */
 export type ItemSecao = SecaoPpcJson;
 
-/** Resumo da proveniência publicado no índice (e conferido pelo `validar_base`). */
+/** Resumo da proveniência publicado no índice. */
 export function resumoProveniencia(proveniencia: ProvenienciaPpc): ItemPpc["proveniencia"] {
   return {
     situacao: proveniencia.proveniencia,
@@ -224,12 +222,11 @@ export function taxonomiasPublicadas(): IndicePpcsJson["secoes"]["taxonomias"] {
   return { tecnico: publicar("tecnico"), geral: publicar("geral") };
 }
 
-export function montarIndice(caminhos: CaminhosBase, itens: ItemPpc[], atualizadoEm: string): IndicePpcsJson {
+export function montarIndice(caminhos: CaminhosBase, itens: ItemPpc[]): IndicePpcsJson {
   return {
     title: "Projetos Pedagógicos de Curso do IFPR",
     tipo: "indice_ppcs",
     versao: VERSAO_INDICE,
-    atualizado_em: atualizadoEm,
     total_itens: itens.length,
     secoes: {
       preview_limite: LIMITE_PREVIEW_SECAO,
@@ -255,40 +252,24 @@ export function agruparPorTipo(itens: ItemSecao[]): Map<string, ItemSecao[]> {
   return grupos;
 }
 
-/** Data `atualizado_em` do índice atual, ou `hoje` se ausente/ilegível. */
-export function dataIndiceAtual(caminhos: CaminhosBase, hoje: string): string {
-  if (!NodeFS.existsSync(caminhos.indicePpcs)) return hoje;
-  let dados: unknown;
-  try {
-    dados = JSON.parse(lerTexto(caminhos.indicePpcs));
-  } catch {
-    return hoje;
-  }
-  if (ehObjeto(dados) && typeof dados.atualizado_em === "string") return dados.atualizado_em;
-  return hoje;
-}
-
 export type IndicesPpcs = {
   itensPpc: ItemPpc[];
   itensSecao: ItemSecao[];
-  indice: string;
+  indice: IndicePpcsJson;
   secoes: Map<string, string>;
 };
 
-export function gerarIndices(caminhos: CaminhosBase, atualizadoEm: string): IndicesPpcs {
+export function gerarIndices(caminhos: CaminhosBase): IndicesPpcs {
   const itensPpc = coletarItensPpc(caminhos);
   const itensSecao = montarItensSecao(caminhos, itensPpc);
   const secoes = new Map([...agruparPorTipo(itensSecao)].map(([tipo, itens]) => [tipo, secoesJsonl(itens)] as const));
-  return { itensPpc, itensSecao, indice: jsonIndentado(montarIndice(caminhos, itensPpc, atualizadoEm)), secoes };
+  return { itensPpc, itensSecao, indice: montarIndice(caminhos, itensPpc), secoes };
 }
 
-/**
- * O `index.json` e um `secoes/<tipo>.jsonl` por tipo, como `gerar_indice_ppcs` os grava. A pasta
- * `secoes/` é toda gerada, e o `secoes.jsonl` único da versão 1 não deve mais existir.
- */
+/** O `index.json` e um `secoes/<tipo>.jsonl` por tipo, como o `gerar_base` os grava. A pasta `secoes/` é toda gerada. */
 export function arquivosIndices(caminhos: CaminhosBase, indices: IndicesPpcs) {
   const arquivos: ArquivoGerado[] = [
-    { caminho: caminhos.indicePpcs, texto: indices.indice },
+    { caminho: caminhos.indicePpcs, texto: jsonIndentado(indices.indice) },
     ...[...indices.secoes].map(([tipo, texto]) => ({ caminho: caminhoSecao(caminhos, tipo), texto })),
   ];
   return {

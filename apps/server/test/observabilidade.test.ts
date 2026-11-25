@@ -9,10 +9,8 @@ import { assert, describe, it } from "@effect/vitest";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
-import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import { FetchHttpClient } from "effect/http";
 import * as TestClock from "effect/testing/TestClock";
 import * as ArquivoOtlp from "../src/observabilidade/ArquivoOtlp.ts";
 import { ARQUIVO_LOGS, ARQUIVO_TRACES } from "../src/observabilidade/ArquivoOtlp.ts";
@@ -289,36 +287,6 @@ describe("exportação para arquivo", () => {
         spansDe(linhas.slice(1).join("\n")).map((s) => s.name),
         ["novo"],
       );
-    }).pipe(Effect.provide(NodeServices.layer)),
-  );
-
-  it.effect("caixa-preta com OTEL_EXPORTER_OTLP_ENDPOINT: grava em arquivo e não usa a rede", () =>
-    Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
-      const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-traces-" });
-      let chamadas = 0;
-      // Conta as chamadas e responde 200 (uma falha poria o exportador a esperar novas tentativas).
-      const fetchQueConta: typeof globalThis.fetch = () => {
-        chamadas++;
-        return Promise.resolve(new Response(null, { status: 200 }));
-      };
-      const comRede = (modo: Observabilidade.Modo) =>
-        Observabilidade.layer({ modo, pastaLogs: pasta, endpoint: "http://127.0.0.1:4318" }).pipe(
-          Layer.provide(Layer.succeed(FetchHttpClient.Fetch)(fetchQueConta)),
-        );
-      const programa = Effect.gen(function* () {
-        yield* Effect.fail(new FalhaDeTeste()).pipe(Effect.withSpan("raiz-com-erro"), Effect.ignore);
-        yield* Observabilidade.descarregar;
-      });
-      yield* programa.pipe(Effect.provide(comRede("caixa-preta")));
-      assert.strictEqual(chamadas, 0);
-      assert.deepStrictEqual(
-        spansDe(yield* lerArquivo(pasta, ARQUIVO_TRACES)).map((s) => s.name),
-        ["raiz-com-erro"],
-      );
-      // A prova vale: no modo completo, o mesmo endpoint usa a rede.
-      yield* programa.pipe(Effect.provide(comRede("completo")));
-      assert.isAbove(chamadas, 0);
     }).pipe(Effect.provide(NodeServices.layer)),
   );
 });

@@ -1,17 +1,10 @@
 import { assert, describe, it } from "@effect/vitest";
 import { comandoInstalarClaude } from "./components/PassoClaude.tsx";
 import { classificarFalhaEstado } from "@simplifica-if/motor/falhas";
-import { explicarMensagemMotor, orientacao } from "./providers.ts";
+import { explicarMensagemMotor } from "./providers.ts";
 
 /** A mensagem com o tipo que o motor dá a ela, como chega no estado. */
 const explicar = (mensagem: string) => explicarMensagemMotor({ mensagem, tipoFalha: classificarFalhaEstado(mensagem) });
-
-describe("orientacao", () => {
-  it("sem operação no app, um texto genérico em português", () => {
-    const geral = orientacao("antigravity", "entrar");
-    assert.match(geral.texto, /^O app ainda não faz o login do Gemini \(Antigravity\)/);
-  });
-});
 
 describe("passo guiado do Claude", () => {
   it("o comando do instalador oficial de cada sistema", () => {

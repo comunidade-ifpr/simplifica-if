@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off -- campos gerados do front matter, lidos dos arquivos pelos scripts (gerar_base, validar_base)
 /**
  * Campos GERADOS do front matter das normas, escritos por `scripts/gerar_base.ts` e
- * conferidos por `gerar_base.ts --check` e `validar_base.ts`:
+ * conferidos por `validar_base.ts`:
  *
  * - relações (`revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`,
  *   `regulamentada_por`, `fundamenta_se_em`, `fundamenta`), de `base-conhecimento/relacoes.yaml`;
@@ -105,7 +105,6 @@ export interface NormaGerada {
   id: string;
   path: string;
   arquivo: string;
-  atual: string;
   esperado: string;
 }
 
@@ -114,6 +113,11 @@ export function normasComCamposGerados(raiz: string): NormaGerada[] {
   const contexto = carregarContextoGerado(raiz);
   return listarNormas(raiz).map((norma) => {
     const atual = NodeFS.readFileSync(norma.arquivo, "utf-8");
-    return { ...norma, atual, esperado: reescreverFrontMatter(atual, camposGeradosCom(norma.id, raiz, contexto)) };
+    return {
+      id: norma.id,
+      path: norma.path,
+      arquivo: norma.arquivo,
+      esperado: reescreverFrontMatter(atual, camposGeradosCom(norma.id, raiz, contexto)),
+    };
   });
 }

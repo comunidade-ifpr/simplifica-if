@@ -40,7 +40,7 @@ const esperar = (conversa: ControleConversa, condicao: (estado: EstadoConversa) 
 const app = Effect.acquireRelease(
   Effect.flatMap(Effect.service(Servidor.ServidorApp), ({ porta }) =>
     Effect.promise(() =>
-      inicializar({ tipo: "navegador", fonte: "url", credenciais: { urlServidor: urlServidor(porta), token: TOKEN } }),
+      inicializar({ tipo: "navegador", credenciais: { urlServidor: urlServidor(porta), token: TOKEN } }),
     ),
   ),
   (iniciado) => Effect.promise(() => iniciado.encerrar()),
@@ -125,9 +125,9 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       assert.deepStrictEqual(fim.uso, { entrada: 1234, saida: 56 });
 
       // O painel de leitura: o link da resposta, lido da base pelo RPC.
-      const lido = yield* Effect.promise(() => api.chamar((cliente) => cliente.lerLink({ link: LINK_DEMONSTRACAO })));
-      assert.strictEqual(lido.tipo, "norma");
-      assert.include(lido.texto, "Diretrizes");
+      const id = LINK_DEMONSTRACAO.replace("ifpr://norma/", "");
+      const ficha = yield* Effect.promise(() => api.chamar((cliente) => cliente.fichaNorma({ id })));
+      assert.include(JSON.stringify(ficha), "Diretrizes");
     }).pipe(Effect.scoped),
   );
 

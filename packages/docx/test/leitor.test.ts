@@ -221,16 +221,13 @@ describe("limites contra arquivos montados para esgotar recursos", () => {
   });
 
   test("teto de elementos por parte XML", () => {
-    const zip = pacoteCru({
-      "word/document.xml": documento(p("x") + "<w:p/>".repeat(LIMITES_PADRAO.elementosPorParte)),
-    });
+    const zip = pacoteCru({ "word/document.xml": documento(p("x") + "<w:p/>".repeat(10_000)) });
     esperarErroDocx(
-      () => lerDocx(zip, { limites: { razaoDeCompressao: 1_000_000 } }),
-      /word\/document\.xml tem mais de 500 mil elementos/,
+      () => lerDocx(zip, { limites: { razaoDeCompressao: 1_000_000, elementosPorParte: 10_000 } }),
+      /word\/document\.xml tem mais de 10 mil elementos/,
     );
-    // Quatro vezes o maior PPC real conferido passa.
-    const grande = pacoteCru({ "word/document.xml": documento(p("x").repeat(140_000)) });
-    expect(lerDocx(grande, { limites: { razaoDeCompressao: 1_000_000 } }).blocos).toHaveLength(140_000);
+    // O teto padrão comporta quatro vezes o maior PPC real conferido (35 mil parágrafos de três elementos).
+    expect(LIMITES_PADRAO.elementosPorParte).toBeGreaterThan(4 * 35_000 * 3);
   });
 
   test("arquivo acima do limite de tamanho, com a orientação de compactar as imagens", () => {

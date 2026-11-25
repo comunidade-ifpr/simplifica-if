@@ -59,7 +59,7 @@ O servidor fala MCP pelo stdin/stdout; as mensagens de diagnóstico vão para o 
 | `--banco <caminho>` | variável `SIMPLIFICA_KB` | `kb.sqlite` a servir (obrigatório). `~/` no início é expandido. |
 | `--pasta-trabalho <dir>` | diretório atual | única pasta de onde o servidor lê arquivos: o `arquivo` do `pacote_contexto` |
 | `--canal <dev\|beta\|estavel>` | `dev` | canal informado em `base.canal` quando o banco não o registra |
-| `--vigencia-na-referencia` | desligada | calcula a vigência na `data_referencia` gravada na base, e não no dia; também no `consultar` (respostas que não mudam com o calendário) |
+| `--vigencia-na-referencia` | desligada | calcula a vigência na `data_referencia` gravada na base, e não no dia (respostas que não mudam com o calendário) |
 
 Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packages/kb/src/db/esquema.ts`) é recusado com "base incompatível com esta versão do simplifica-mcp; atualize".
 
@@ -81,22 +81,6 @@ pnpm kb <comando> --help
 - **Saída:** o texto Markdown que a IA recebe; com `--json`, a `Resposta` inteira (o `structuredContent`) numa linha. Nas ferramentas paginadas, `--todas-as-paginas` segue o cursor e imprime todas as páginas (no JSON, uma por linha).
 - **Erros:** entrada inválida, ID que não está na base e falha do banco saem como `kb: <mensagem>` no stderr, com código 1; um erro de uso (flag desconhecida, argumento que falta) imprime o erro do `effect/cli`, também com 1.
 - **Curadoria:** `compilar`, `relacoes --propor`, `avaliar-resolvedor` e `avaliar-busca` ficam em `@simplifica-if/kb/cli` ([`packages/kb/README.md`](../kb/README.md#cli)) e entram na mesma CLI.
-
-## Uso por scripts
-
-Quem está fora deste repositório lê a base pelo subcomando `consultar`, sem checkout. Ele roda a ferramenta como o servidor (o `chamador`, em `src/ferramentas/registrar.ts`) e imprime no stdout o `structuredContent`, a `Resposta` inteira, em JSON numa linha. A impressão é a mesma dos comandos da CLI `kb` com `--json` (`imprimirConsulta`, em `src/consulta.ts`); a diferença é a entrada, que no `consultar` é o JSON da ferramenta, como um script o monta. O contrato é o `outputSchema` de cada ferramenta, que `test/transversal/contrato.test.ts` confere.
-
-```bash
-simplifica-mcp consultar ficha_curso --args '{"curso":"curitiba/tecnico-em-enfermagem"}' --banco ~/SimplificaIF/kb.sqlite
-SIMPLIFICA_KB=kb.sqlite simplifica-mcp consultar listar_cursos --todas-as-paginas > cursos.jsonl
-```
-
-- **Entrada:** `--args` é a entrada da ferramenta, um objeto JSON (padrão `{}`); o banco vem de `--banco` ou `SIMPLIFICA_KB`, e `--pasta-trabalho` (padrão: o diretório atual) vale para o `arquivo` do `pacote_contexto`. Não há atualização da base (`--pasta-atualizacao`) nem download.
-- **Páginas:** as listas são paginadas pelo teto de texto da IA, não só pelo `limite` (o `listar_cursos` dá 9 páginas para os 225 cursos). Com `--todas-as-paginas`, o `consultar` segue o `pagina.cursor` no mesmo processo e imprime uma resposta por linha (JSONL), cada uma válida no `outputSchema`; quem lê junta os itens.
-- **Ordem dos argumentos:** as flags vêm depois de `consultar <ferramenta>`. Antes de `consultar`, são as do servidor e o `consultar` as recusa.
-- **Erros, como no servidor:** lista sem resultado sai com 0 e o aviso `nao-encontrado`; entrada inválida, ID que não está na base, falha da ferramenta, `--args` que não é JSON e banco ausente saem com 1 e a mensagem no stderr. A `etapa` é recusada: só faz sentido numa conversa. Um erro de uso (flag desconhecida, fora de lugar ou sem valor) imprime a ajuda no stdout, com código 1: o stdout só é a resposta quando o código é 0.
-
-O teste é `test/transversal/consultar.test.ts`: na fixture, cada amostra contra o resultado do `tools/call`; na base real (`pnpm mcp:smoke`), o `listar_cursos` inteiro.
 
 ## Configuração fora do app
 
@@ -133,7 +117,7 @@ O pacote é Effect 4 (`effect/ai`, `effect/rpc`, `effect/cli`), sem o SDK oficia
 packages/mcp/
 ├── src/
 │   ├── instrucoes.ts        # campo `instructions` do servidor MCP
-│   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio; `consultar`
+│   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio
 │   ├── kb.ts                # a CLI `kb` do checkout (pnpm kb): os comandos de consulta.ts e a curadoria do kb
 │   ├── consulta.ts          # um comando por ferramenta, derivado do JSON Schema de entrada; imprimirConsulta
 │   ├── servidor.ts          # McpServer.layerStdio, layerLeitura, layerRegistro, mensagens de abertura
@@ -194,9 +178,7 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
 | `base-real.test.ts` | As ferramentas umas contra as outras e contra o banco, sobre o banco do checkout (a camada da CLI `kb`): o texto integral de `buscar_secoes` é o de `ler_secao`; o `pacote_contexto` fica no teto, e o do PPC da base e o do mesmo PPC como arquivo trazem as mesmas fichas, normas, marcos e transições; as contagens de `sobre_a_base` são as linhas das tabelas | — | sim |
 | `sem-repositorio.test.ts` | Todas as ferramentas numa pasta só com o `kb.sqlite` (diretório atual e `HOME`, com o `PATH` mínimo), com as respostas iguais às do processo de teste e a pasta intacta | sim | sim |
 | `orcamento.test.ts` | Nenhum texto acima do teto da ferramenta. A paginação percorrida com o cursor tem mais de uma página e soma o total, sem repetir item | sim | sim |
-| `determinismo.test.ts` | Dois processos em stdio, com as mesmas chamadas, dão as linhas de resposta iguais byte a byte | sim | sim |
 | `pasta-de-trabalho.test.ts` | O `pacote_contexto` com `arquivo`, pelo servidor isolado: lê o `.md` de dentro da pasta (relativo, em subpasta e absoluto) e recusa `..`, caminho absoluto de fora e link simbólico para fora, antes de ler. A pasta fica como estava | sim | — |
-| `consultar.test.ts` | O `simplifica-mcp consultar` como processo: cada amostra (menos a `etapa`) sai como o `structuredContent`, ou com código 1 e a mensagem no stderr; `--todas-as-paginas` soma o total | sim | sim |
 | `descricoes.test.ts` | Pelo `tools/list`: título, descrição (até 600 caracteres) com a frase "Use quando…", parâmetros descritos e o tamanho do que vai ao modelo | sim | — |
 
 - **Fixture e base real:** o `pnpm test` roda a parte da fixture, que não depende do `tmp/kb.sqlite`. O `pnpm mcp:smoke` roda as suítes inteiras com `SIMPLIFICA_SMOKE=1`; o `base-real.test.ts` recompila o banco se ele faltar ou estiver velho, como a CLI `kb`.
@@ -210,7 +192,7 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
   pnpm mcp:executavel
   cd packages/mcp && SIMPLIFICA_MCP_EXE=$PWD/dist-exe/simplifica-mcp \
     pnpm exec vp test run --config ../../vite.config.ts --dir . test/transversal/sem-repositorio.test.ts \
-    test/transversal/determinismo.test.ts test/transversal/pasta-de-trabalho.test.ts
+    test/transversal/pasta-de-trabalho.test.ts
   ```
 
 ## CI
@@ -219,7 +201,7 @@ O workflow `.github/workflows/ci.yml` roda em todo push e PR, sem segredos e sem
 
 | Job | Runner | Passos | Tempo estimado |
 |---|---|---|---|
-| `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts` e os geradores da base com `--check` | 6 a 8 min |
-| `executavel` | `macos-15` (arm64), `ubuntu-24.04` (x64), `windows-2025` (x64) | `pnpm mcp:executavel`; `sem-repositorio.test.ts`, `determinismo.test.ts` e `pasta-de-trabalho.test.ts` contra o executável; o executável como artefato `simplifica-mcp-<alvo>`, por 14 dias | 3 a 6 min cada |
+| `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts` (que confere também os arquivos gerados da base) | 6 a 8 min |
+| `executavel` | `macos-15` (arm64), `ubuntu-24.04` (x64), `windows-2025` (x64) | `pnpm mcp:executavel`; `sem-repositorio.test.ts` e `pasta-de-trabalho.test.ts` contra o executável; o executável como artefato `simplifica-mcp-<alvo>`, por 14 dias | 3 a 6 min cada |
 
 Para validar o workflow, use o `actionlint` (com o `shellcheck`, se houver): `actionlint` na raiz do repositório.

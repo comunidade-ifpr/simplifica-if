@@ -48,8 +48,6 @@ Fora do app, o `simplifica-mcp` faz o mesmo só com a base (`--pasta-atualizacao
 
 **Esquema novo exige `--app-minimo`.** Quando o `kb` sobe `VERSAO_ESQUEMA`, o app antigo não lê a base nova: ela só pode sair com `--app-minimo <primeira versão do app que lê o esquema novo>`, para o app antigo avisar "atualize o app" em vez de baixar uma base que vai recusar. A fábrica confere: se a base nova tem outro esquema que uma das anteriores (as dadas e as guardadas) e o `--app-minimo` ficou no padrão (`0.1.0`), ela recusa com o motivo (`conferirEsquema`, em `src/fabrica.ts`). Sem nenhuma anterior guardada, não há com o que comparar: a regra fica com quem publica.
 
-**Esquema 5 e app 0.2.0 (17/11/2026).** O app 0.2.0 (o Explorar, M1.15) é o primeiro que lê o esquema 5 do `kb.sqlite` (Consepe e horários dos campi). A primeira base do esquema 5 sai com `pnpm fabrica … --app-minimo 0.2.0`; o app 0.1.0 avisa "atualize o app" em vez de baixá-la. O padrão da fábrica (`APP_MINIMO_PADRAO`) continua `0.1.0`, a primeira versão do app, e por isso a regra recusa a base do esquema 5 sem `--app-minimo` quando há uma anterior de outro esquema (o teste "o app atual passa na regra da fábrica" confere que a versão de `apps/desktop` é maior que o padrão e é aceita). Nenhuma base do esquema 4 foi publicada: o feed de produção da política ainda é `null`, e nada saiu pela fábrica; a base empacotada no instalador é a do build.
-
 ```bash
 pnpm fabrica gerar-chave --saida ~/.simplifica-fabrica    # uma vez; com SIMPLIFICA_MINISIGN_SENHA, cifrada
 export SIMPLIFICA_MINISIGN_CHAVE=~/.simplifica-fabrica/simplifica-fabrica.key

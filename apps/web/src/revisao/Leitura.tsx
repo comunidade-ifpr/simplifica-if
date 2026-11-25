@@ -264,9 +264,7 @@ export function Leitura({
             />
           ) : null}
           {estado.erro === undefined ? null : <AvisoErro erro={estado.erro} />}
-          {estado.erro === undefined ||
-          estado.origemArquivoDeNovo !== "lista" ||
-          ponte?.escolherDocx === undefined ? null : (
+          {estado.erro === undefined || estado.origemArquivoDeNovo !== "lista" || ponte === undefined ? null : (
             <Button variant="outline" className="self-start" onClick={() => void revisao.escolherArquivoDeNovo()}>
               Escolher o arquivo de novo
             </Button>

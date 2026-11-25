@@ -5,9 +5,8 @@
  * última revisão de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
  * boas-vindas.
  *
- * "Para você" (as novidades da base que afetam o perfil) é do Marco 2. No Marco 1, as novidades gerais
- * da base aparecem no aviso "Base atualizada" (M1.10, `configuracoes/AvisoBaseAtualizada.tsx`), logo
- * abaixo da data da base, depois que uma versão nova entra.
+ * As novidades da base aparecem no aviso "Base atualizada" (`configuracoes/AvisoBaseAtualizada.tsx`),
+ * logo abaixo da data da base, depois que uma versão nova entra.
  *
  * A IA (instalar, entrar) fica em Configurações › Sua IA; aqui, só o aviso quando nenhuma está pronta.
  *
@@ -34,9 +33,10 @@ import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts
 import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo, useAnexos } from "../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
-import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
+import { tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 import { classeColuna } from "../components/Pagina.tsx";
+import { dataCurta } from "../lib/formato.ts";
 import { cn } from "../lib/utils.ts";
 
 /** A busca da rota: o pedido que veio pronto ("Perguntar à IA sobre isto", do Explorar). */
@@ -73,7 +73,7 @@ function DataDaBase() {
   if (data === undefined) return null;
   return (
     <p className="flex items-center gap-1.5" title={`Versão ${data.versao}`}>
-      {data.data === null ? "Base de desenvolvimento" : `Base de ${dataDaBase(data.data)}`}
+      {data.data === null ? "Base de desenvolvimento" : `Base de ${dataCurta(data.data)}`}
       <CircleCheckIcon aria-label="em dia" className="size-4 text-success" />
     </p>
   );

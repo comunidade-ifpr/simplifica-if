@@ -1,6 +1,5 @@
 /**
- * As telas próprias do leitor para os links que não são texto (o que no M1.6 era o texto do
- * `lerLink`): a ficha do curso, o campus, o curso do CNCT e a ficha da revisão de PPC. Valem no
+ * As telas próprias do leitor para os links que não são texto: a ficha do curso, o campus, o curso do CNCT e a ficha da revisão de PPC. Valem no
  * painel ao lado da conversa e nas páginas do Explorar. Tudo vem da base pelo `GrupoLeitura`, sem IA:
  *
  * - **curso:** `fichaCurso` (dados institucionais, CNCT, PPC, fatos e o cruzamento com o SUAP, ofertas,
@@ -41,7 +40,8 @@ import {
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { useCarga } from "./carga.ts";
 import { BotaoLink, Cabecalho, ComCarga, Fatos, LinkExterno, Secao } from "./pecas.tsx";
-import { dataCurta, situacaoDaTransicao } from "./textos.ts";
+import { dataCurta } from "../lib/formato.ts";
+import { situacaoDaTransicao } from "./textos.ts";
 
 type AoAbrirLink = (link: string) => void;
 

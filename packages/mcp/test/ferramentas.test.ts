@@ -206,6 +206,24 @@ describe("pelo protocolo MCP (em memória)", () => {
     }).pipe(Effect.scoped),
   );
 
+  it.effect("atende as duas revisões do protocolo com a mesma resposta", () =>
+    Effect.gen(function* () {
+      const banco = criarBancoFixture();
+      const respostas: unknown[] = [];
+      for (const [negociacao, versao] of [
+        ["legacy", "2025-11-25"],
+        ["2026-07-28", "2026-07-28"],
+      ] as const) {
+        const cliente = yield* conectarEmMemoria(banco, { negociacao });
+        expect(cliente.getNegotiatedProtocolVersion()).toBe(versao);
+        const { tools } = yield* Effect.promise(() => cliente.listTools());
+        const r = yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
+        respostas.push({ structuredContent: r.structuredContent, content: r.content, tools });
+      }
+      expect(respostas[1]).toEqual(respostas[0]);
+    }).pipe(Effect.scoped),
+  );
+
   it.effect("chamada válida: structuredContent é a Resposta, content é o texto", () =>
     Effect.gen(function* () {
       const banco = criarBancoFixture();

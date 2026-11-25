@@ -20,14 +20,14 @@ const MAXIMO_OPCOES = 8;
 export function BloqueioCurso({
   pendencias,
   conferindo,
-  emLeitura = false,
+  emLeitura,
   aoEscolher,
 }: {
   readonly pendencias: ReadonlyArray<PendenciaViva>;
   /** A lista está sendo refeita com o curso escolhido. */
   readonly conferindo: boolean;
   /** A leitura com IA está em andamento: trocar o curso espera a pausa. */
-  readonly emLeitura?: boolean;
+  readonly emLeitura: boolean;
   readonly aoEscolher: (slug: string) => void;
 }) {
   const [verPendencias, setVerPendencias] = useState(false);

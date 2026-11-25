@@ -95,7 +95,7 @@ import { cursoEscolhido, novoNonce, regravarCopia as regravarCopiaDaLista } from
 import * as RevisorPpc from "./RevisorPpc.ts";
 
 export const TEMPO_ACAO = Duration.minutes(4);
-export const LIMITE_MOTIVO = 1500;
+const LIMITE_MOTIVO = 1500;
 
 export class ListaViva extends Context.Service<
   ListaViva,
@@ -282,13 +282,11 @@ const MOTIVO_TIPICO = "x".repeat(400);
 /* ============================================================ serviço */
 
 export interface OpcoesListaViva {
-  readonly tempoAcao?: Duration.Duration;
   /** Recebe o texto bruto de cada ação com IA (só o script de medição usa; o app não grava). */
   readonly registrarTexto?: (acao: string, chave: string, texto: string) => Effect.Effect<void>;
 }
 
 export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaViva = {}) {
-  const tempoAcao = opcoes.tempoAcao ?? TEMPO_ACAO;
   const persistencia = yield* RevisoesPpc.RevisoesPpc;
   const leiturasIa = yield* RevisaoIa.RevisaoIa;
   const revisor = yield* RevisorPpc.RevisorPpc;
@@ -322,7 +320,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     readonly resultadosIa?: EntradaIa | null;
   }) {
     const id = d.id ?? `lista-${yield* aleatorio.uuidV4()}`;
-    const resultado: ResultadoRevisaoPpc = { ...RevisorPpc.resultadoParaInterface(d.arquivo, d.revisado), lista: id };
+    const resultado: ResultadoRevisaoPpc = RevisorPpc.resultadoParaInterface(d.arquivo, d.revisado);
     const vistas = new Set<string>();
     const pendencias = d.revisado.revisao.pendencias.flatMap((p) => {
       const chave = chavePendencia(p);
@@ -349,7 +347,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         pendencias,
       )
       .pipe(Effect.catchTags({ RevisaoEmAndamento: (e) => Effect.fail(falha(e.arquivo, e.message)) }));
-    return resultado;
+    return id;
   });
 
   const montar = Effect.fn("ListaViva.montar")(function* (registro: RevisoesPpc.RegistroLista) {
@@ -490,11 +488,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       // independentemente do curso ou da forma escolhidos.
       if (doConteudo !== null) {
         const leituras = yield* persistencia.revisoesDaLista(doConteudo.id);
-        const ativa = leituras.some((r) => r.situacao === "em_andamento");
-        const ligadaAtiva =
-          doConteudo.revisao !== null &&
-          (yield* persistencia.resumoRevisao(doConteudo.revisao))?.situacao === "em_andamento";
-        if (ativa || ligadaAtiva)
+        if (leituras.some((r) => r.situacao === "em_andamento"))
           return yield* falha(
             entrada.arquivo,
             "A conferência com IA deste PPC está em andamento. Pause-a antes de revisar o arquivo de novo.",
@@ -570,7 +564,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       revisarComEtapas(entrada, (etapa) => {
         Queue.offerUnsafe(fila, { tipo: "etapa", etapa });
       }).pipe(
-        Effect.flatMap((resultado) => Queue.offer(fila, { tipo: "pronto", resultado })),
+        Effect.flatMap((lista) => Queue.offer(fila, { tipo: "pronto", lista })),
         Effect.andThen(Queue.end(fila)),
       ),
     );
@@ -630,7 +624,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       modelo: entrada.modelo,
       instrucoes: entrada.texto.instrucoes,
       texto: entrada.texto.pedido,
-      tempoTurno: tempoAcao,
+      tempoTurno: TEMPO_ACAO,
       numero: 1,
       registrarTentativa: (t) =>
         persistencia.gravarAcao(entrada.registro.id, entrada.chave, { acao: entrada.acao, ...t }),
@@ -644,7 +638,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const contestar = Effect.fn("ListaViva.contestar")(
     function* (id: string, chave: string, motivo: string, pedido?: Provider) {
       const { registro, p } = yield* abrirAcao(id, chave);
-      if (!p.pendencia.ficha || p.pendencia.ficha === "TRIAGEM")
+      if (p.pendencia.ficha === "TRIAGEM")
         return yield* falha(
           registro.arquivo,
           "Este apontamento é da triagem: remova o trecho ou marque como resolvido.",
@@ -853,7 +847,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           pedido: textoRevisarDeNovo(p.pendencia, preparo).pedido,
           alvos: alvosPorRecorte([ctx.ficha], new Map([[ctx.ficha.id, ctx.proprio]]), ctx.comum),
           fontes: new Set(ctx.fontes),
-          tempoTurno: tempoAcao,
+          tempoTurno: TEMPO_ACAO,
           revisaoHumana: teveTextoParaIa(retirarTextoParaIa(novo.revisao.markdown, novo.revisao.linhasTextoParaIa)),
           registrarTentativa: (t) => persistencia.gravarAcao(id, chave, { acao: "revisarDeNovo", ...t }),
         }).pipe(Effect.provideContext(contextoMotor));
@@ -954,7 +948,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       });
       // A lista nova (mesmo arquivo, mesmo conteúdo) herda a situação, o histórico e a sugestão de cada
       // pendência e o uso das ações, e a anterior sai.
-      const resultado = yield* criarLista({
+      const novaId = yield* criarLista({
         arquivo: registro.arquivo,
         revisado,
         revisao: mantida,
@@ -963,7 +957,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         resultadosIa: registro.resultadosIa,
       });
       if (apagar !== null) yield* leiturasIa.apagar(apagar);
-      return yield* lista(resultado.lista!);
+      return yield* lista(novaId);
     },
     (efeito, id) => trocandoALista(id, undefined, efeito),
   );
@@ -1007,7 +1001,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           linhasTextoParaIa: final.revisao.linhasTextoParaIa,
           cnct: curso.cnct?.slug ?? null,
           forma: curso.forma,
-          resultado: { ...RevisorPpc.resultadoParaInterface(arquivo, final), lista: id },
+          resultado: RevisorPpc.resultadoParaInterface(arquivo, final),
         },
         locaisNoDocumento(final.revisao.pendencias),
       );

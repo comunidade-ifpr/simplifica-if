@@ -34,8 +34,6 @@ export interface Partida {
   readonly origens: ReadonlyArray<string>;
   /** O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`), só pelo stdin. */
   readonly tokenDesktop?: Redacted.Redacted<string>;
-  /** `stdin`: o token veio no envelope, e o stdin é o cordão do pai. */
-  readonly via: "ambiente" | "stdin";
 }
 
 /** O stdin lido linha a linha: a primeira linha (ou nada, se ele fechar antes) e o fim dele. */
@@ -83,7 +81,7 @@ export const lerPartida = Effect.fn("partida.lerPartida")(function* (
         motivo: `o token de ${VARIAVEL_TOKEN} precisa de pelo menos ${TAMANHO_MINIMO_TOKEN} caracteres`,
       });
     }
-    return { token: Redacted.make(doAmbiente), origens: [], via: "ambiente" } satisfies Partida;
+    return { token: Redacted.make(doAmbiente), origens: [] } satisfies Partida;
   }
   const linha = yield* cordao.primeiraLinha.pipe(
     Effect.timeoutOrElse({ duration: PRAZO_ENVELOPE, orElse: () => Effect.succeedNone }),
@@ -105,6 +103,5 @@ export const lerPartida = Effect.fn("partida.lerPartida")(function* (
     token: Redacted.make(envelope.token),
     origens: envelope.origens ?? [],
     ...(envelope.tokenDesktop === undefined ? {} : { tokenDesktop: Redacted.make(envelope.tokenDesktop) }),
-    via: "stdin",
   } satisfies Partida;
 });

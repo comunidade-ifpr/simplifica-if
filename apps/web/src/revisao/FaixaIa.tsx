@@ -159,7 +159,7 @@ export function FaixaIa({ faltam }: { readonly faltam: number }) {
             </Button>
           ) : null}
           {pausada ? (
-            <Button disabled={ia.ocupada} onClick={() => void revisao.retomarIa()}>
+            <Button disabled={ia.ocupada} onClick={() => void revisao.iniciarIa()}>
               <PlayIcon /> Retomar
             </Button>
           ) : (

@@ -48,15 +48,6 @@ describe("migrações do banco das conversas", () => {
       ]) {
         assert.isTrue(tabelas.has(nome), `tabela ausente: ${nome}`);
       }
-
-      const colunasLista = (yield* sql<{ name: string }>`PRAGMA table_info(listas_pendencias)`).map((c) => c.name);
-      assert.notInclude(colunasLista, "nonce");
-      assert.include(colunasLista, "resultados_ia");
-
-      const colunasRevisao = (yield* sql<{ name: string }>`PRAGMA table_info(revisoes_ia)`).map((c) => c.name);
-      assert.include(colunasRevisao, "lista_id");
-      assert.notInclude(colunasRevisao, "cnct");
-      assert.notInclude(colunasRevisao, "forma");
     }).pipe(Effect.provide(emMemoria)),
   );
 

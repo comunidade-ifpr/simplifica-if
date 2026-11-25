@@ -156,7 +156,7 @@ describe("importarPpcDocx", () => {
 
       // O pipeline da base aceita o resultado: o índice e a proveniência conferem com o registro.
       const caminhos = criarCaminhos(raiz);
-      const indices = gerarIndices(caminhos, "2026-11-17");
+      const indices = gerarIndices(caminhos);
       expect(indices.itensPpc.map((item) => item.id)).toEqual(["campus-a/tecnico-x/2026"]);
       expect(indices.itensPpc[0]?.fonte_pdf).toBe(URL_PDF);
       expect(indices.itensPpc[0]?.proveniencia).toEqual({
@@ -388,7 +388,7 @@ describe("importarPpcDocx", () => {
       const raiz = baseTemporaria();
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
       yield* importarPpcDocx(opcoes(raiz, docx));
-      const { itensSecao } = gerarIndices(criarCaminhos(raiz), "2026-11-17");
+      const { itensSecao } = gerarIndices(criarCaminhos(raiz));
       expect(itensSecao.map((secao) => [secao.heading, secao.section_kind, secao.numeracao])).toEqual(
         expect.arrayContaining([
           ["1.1 JUSTIFICATIVA", "justificativa", "1.1"],
@@ -408,7 +408,7 @@ describe("importarPpcDocx", () => {
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-nucleos"));
       yield* importarPpcDocx(opcoes(raiz, docx));
       const caminhos = criarCaminhos(raiz);
-      const { arquivos, ...pastas } = arquivosIndices(caminhos, gerarIndices(caminhos, "2026-11-17"));
+      const { arquivos, ...pastas } = arquivosIndices(caminhos, gerarIndices(caminhos));
       yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
       expect(validarPpcs(new Contexto(caminhos))).toEqual([]);
       const relativo = "institucional/ifpr/ppcs/campus-a/tecnico-x/2026.md";
@@ -426,7 +426,7 @@ describe("importarPpcDocx", () => {
       yield* importarPpcDocx(opcoes(raiz, docx));
       const caminhos = criarCaminhos(raiz);
       const gerar = Effect.fnUntraced(function* () {
-        const indices = gerarIndices(caminhos, "2026-11-17");
+        const indices = gerarIndices(caminhos);
         const { arquivos, ...pastas } = arquivosIndices(caminhos, indices);
         yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
         return indices.itensPpc;

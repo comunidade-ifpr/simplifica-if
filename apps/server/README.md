@@ -23,12 +23,11 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 |---|---|---|
 | `--banco <kb.sqlite>` | `SIMPLIFICA_KB` | base servida pelo MCP e pela leitura (obrigatório) |
 | `--porta <n>` | 0 (livre) | porta do RPC |
-| `--porta-mcp <n>` | 0 (livre) | porta do MCP HTTP |
-| `--pasta-estado <dir>` | `SIMPLIFICA_ESTADO`; no macOS, `~/Library/Application Support/simplifica-if` | CLIs gerenciadas e perfil do Antigravity; fora de repositórios |
+| `--pasta-estado <dir>` | no macOS, `~/Library/Application Support/simplifica-if` | CLIs gerenciadas e perfil do Antigravity; fora de repositórios |
 | `--origem <origem>` | nenhuma | origem de navegador aceita no WebSocket (repetível) |
 | `--canal dev\|beta\|estavel` | `dev` | canal da base quando o banco não registra um |
-| `--pasta-trabalhos <dir>` | `SIMPLIFICA_TRABALHOS`; `~/Documents/Simplifica IF` (o desktop passa a pasta Documentos do sistema) | a raiz das pastas de tarefa (ver [Pasta de trabalho e Desfazer](#pasta-de-trabalho-e-desfazer-m19)) |
-| `--pasta-skills <dir>` | `SIMPLIFICA_SKILLS`; rodando do código-fonte, `.agents/skills` do checkout; no bundle, nenhuma | as skills do app (ver [Skills do app](#skills-do-app)) |
+| `--pasta-trabalhos <dir>` | `~/Documents/Simplifica IF` (o desktop passa a pasta Documentos do sistema) | a raiz das pastas de tarefa (ver [Pasta de trabalho e Desfazer](#pasta-de-trabalho-e-desfazer-m19)) |
+| `--pasta-skills <dir>` | rodando do código-fonte, `.agents/skills` do checkout; no bundle, nenhuma | as skills do app (ver [Skills do app](#skills-do-app)) |
 | `--pasta-logs <dir>` | nenhuma (nada vai a arquivo) | a pasta de logs do app, onde ficam `traces.jsonl` e `logs-otlp.jsonl` (ver [Traces e logs](#traces-e-logs)) |
 | `--traces completo\|caixa-preta\|desligado` | `completo` | o que vai para `traces.jsonl`; o desktop passa `completo` no desenvolvimento e `caixa-preta` no app empacotado |
 
@@ -43,7 +42,6 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 
 - **`completo`:** grava tudo.
 - **`caixa-preta`** (`CaixaPreta.ts`): guarda em memória, por `traceId`, os spans e logs dos traces em curso (até 200 traces, 500 spans e 200 logs por trace, 20 MB estimados pelo JSON, 15 min; passando, sai o trace de atividade mais antiga). Quando o raiz (sem pai, ou o handler RPC, de tipo servidor) termina: com erro ou defeito (status OTLP 2; interrupção não é erro), grava o trace inteiro com os logs; sem erro e com 10 s ou mais, grava só um resumo (o raiz e os spans de 1 s ou mais, sem os logs abaixo de Warn), porque o span de um RPC de stream (`conversa.acompanhar`, `revisaoPpc.*`) dura o que ele acompanha; senão, descarta. Um erro recuperado num filho, com o raiz ok, não grava o trace. O trace cujo raiz não chega grava inteiro ao passar da idade se algum span teve erro. O que chega depois para um trace descartado se ignora. Logs sem trace vão se forem Info ou acima; com trace, seguem o trace, e Warn ou acima vão na hora.
-- **`OTEL_EXPORTER_OTLP_ENDPOINT`** (só desenvolvimento, só no modo `completo`; na caixa-preta não vale): os mesmos exportadores mandam a esse coletor por OTLP/HTTP (Jaeger, otel-tui), no lugar do arquivo, com o serviço `simplifica-if-servidor`.
 
 Os atributos não levam o pedido do RPC, a conversa ou o token: o span do handler tem só `rpc.method`; o span HTTP do `/rpc` fica desligado (a URL pode trazer o `?ingresso=`), e `ingresso` e `token` estão em `UrlParams.CurrentRedactedNames` (saem como `REDACTED` de qualquer URL gravada); os argumentos das ferramentas MCP ficam fora (`Toolkit.RecordToolArguments` em `false`, em `packages/mcp`); os spans de SQL levam o texto da consulta, com os valores como parâmetros. Os eventos `exception` dos spans com erro levam a mensagem e a pilha do erro, com a cadeia de `cause` inteira (não os outros campos do erro), e a pilha traz os caminhos locais do código. Por isso o erro que embrulha uma falha de arquivo guarda em `cause` só o resumo dela (`resumoDaFalha`: tipo, motivo do `PlatformError`, método e chamada do sistema), já no span onde nasce: a `FalhaPasta` (o `cause` é `string` no contrato), a leitura do original em `PastasTrabalho.copiarSemSobrescrever` e a `CopiaNaoGravada` da revisão prévia; a mensagem deles e a do `NomesEsgotados` não citam caminho nem nome de arquivo. Assim o caminho de um anexo, que fica fora das pastas do app e o saneamento do pacote não reconhece, não chega aos traces (`test/observabilidade-anexo.test.ts`). Fora disso, a mensagem de um erro interno ainda pode citar um caminho dentro das pastas do app (`pastas-node.ts`, `CaminhoRecusado`), que o saneamento do pacote troca por `[pasta da tarefa]`. Os logs com causa levam o resumo dela (`resumoDaFalha`), sem caminhos (ver "Diagnóstico"). Os trabalhos de fundo (a conferência periódica das atualizações, a revisão com IA, a liberação da sessão ociosa, o vigia da queda, o prazo da interrupção) abrem o próprio trace, não o do pedido que os criou. O código do erro (`codigoDoErro`) é o começo do `traceId`; `pnpm traces --codigo <código>` mostra a árvore do trace (ver "Depurar pelo código do erro", abaixo).
 
@@ -166,7 +164,7 @@ Com `--pasta-atualizacao <pasta do app>` (o desktop passa no app instalado), a C
 
 | Argumento | Variável | Uso |
 |---|---|---|
-| `--pasta-atualizacao` | `SIMPLIFICA_ATUALIZACAO_PASTA` | liga a atualização, gravando nesta pasta |
+| `--pasta-atualizacao` | | liga a atualização, gravando nesta pasta |
 | `--feed-atualizacao` | `SIMPLIFICA_ATUALIZACAO_FEED` | feed no lugar do da política (com `{canal}`) |
 | `--chave-atualizacao` | `SIMPLIFICA_ATUALIZACAO_CHAVE` | chave pública minisign no lugar da da política |
 | `--versao-app` | | a versão do app, para o `app_minimo` do manifesto |
@@ -184,7 +182,7 @@ Sem feed ou sem chave (a política ainda não tem os de produção), o estado di
 
 As etapas vão à interface quando cada uma começa: `lendo` no servidor, depois das recusas (extensão, liberação, tamanho) e antes de ler os bytes (a conversão, no Worker, faz parte dela); `identificando`, `conferindo` e `gravando` do Worker, como avisos de andamento antes da resposta (`WorkerLimitado`, `aoAndamento`). O `ListaViva.revisar` as põe no stream do RPC (`Stream.callback`).
 
-Em desenvolvimento, o Worker é o `trabalhador.ts`; no bundle, o `trabalhador-ppc.mjs` ao lado do `bin.mjs` (`URL_TRABALHADOR`).
+Em desenvolvimento, o Worker é o `trabalhador.ts`; no bundle, o `trabalhador-ppc.mjs` ao lado do `bin.mjs` (`URL_TRABALHADOR`). O trabalho do Worker fica em `trabalho.ts`, sem a porta: os testes que não exercitam os limites o rodam no próprio processo (`WorkerLimitado.Executor`, trocado por `layerWorkersNoProcesso` de `test/apoio.ts`), sem os ~200 ms de partida de cada Worker.
 
 ## Versão em texto dos anexos
 

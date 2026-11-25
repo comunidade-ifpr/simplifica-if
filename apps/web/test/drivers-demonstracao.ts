@@ -1,7 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off -- driver de teste: grava o relatório na pasta da tarefa
 /**
  * Drivers de demonstração do motor, para rodar a interface contra o `apps/server` sem chamar provider
- * real (testes de navegador e `pnpm --filter @simplifica-if/web servidor:teste`). Cobrem as telas:
+ * real (testes de navegador e `pnpm --filter @simplifica-if/web servidor:teste`). As ferramentas do MCP
+ * `ifpr` são chamadas de verdade no servidor HTTP da sessão, como fazem as CLIs: o `Motor` casa cada
+ * `FerramentaConcluida` com a chamada que o servidor viu (sem ela, esperaria `ESPERA_RESULTADO`). Cobrem
+ * as telas:
  *
  * - **Claude:** instalado e com login. Responde com uma ferramenta do MCP `ifpr`, texto parcial e final
  *   com um link `ifpr://` (que existe no banco de fixture). Se a mensagem fala em "escrev", pede
@@ -20,6 +23,9 @@ import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Stream from "effect/Stream";
+import * as FetchHttpClient from "effect/http/FetchHttpClient";
+import * as HttpClient from "effect/http/HttpClient";
+import * as HttpClientRequest from "effect/http/HttpClientRequest";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 
@@ -93,18 +99,60 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
       let resposta: Fiber.Fiber<void> | undefined;
+      const ifpr = config.servidoresMcp.find((servidor) => servidor.nome === "ifpr");
+
+      /** Chama a ferramenta no MCP `ifpr` da sessão (protocolo `2026-07-28`, sem `initialize`). */
+      const chamarMcp = (ferramenta: string, entrada: Record<string, unknown>) =>
+        ifpr === undefined
+          ? Effect.void
+          : HttpClient.HttpClient.pipe(
+              Effect.map(HttpClient.filterStatusOk),
+              Effect.flatMap((cliente) =>
+                cliente.execute(
+                  HttpClientRequest.post(ifpr.url).pipe(
+                    HttpClientRequest.setHeaders({
+                      ...ifpr.cabecalhos,
+                      accept: "application/json, text/event-stream",
+                      "mcp-protocol-version": "2026-07-28",
+                      "mcp-method": "tools/call",
+                      "mcp-name": ferramenta,
+                    }),
+                    HttpClientRequest.bodyJsonUnsafe({
+                      jsonrpc: "2.0",
+                      id: 1,
+                      method: "tools/call",
+                      params: {
+                        name: ferramenta,
+                        arguments: entrada,
+                        _meta: {
+                          "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+                          "io.modelcontextprotocol/clientInfo": { name: "demonstracao", version: "0" },
+                          "io.modelcontextprotocol/clientCapabilities": {},
+                        },
+                      },
+                    }),
+                  ),
+                ),
+              ),
+              Effect.flatMap((resposta) => resposta.text),
+              Effect.provide(FetchHttpClient.layer),
+              Effect.orDie,
+              Effect.asVoid,
+            );
 
       /** Uma chamada da ferramenta `etapa` (o indicador de etapas da tarefa). */
       const etapa = (id: string, progresso?: { feito: number; total: number }) =>
         Effect.gen(function* () {
           const chamada = `etapa-${id}-${progresso?.feito ?? 0}`;
+          const entrada = { id, ...(progresso === undefined ? {} : { progresso }) };
           yield* canal.emitir({
             _tag: "FerramentaIniciada",
             id: chamada,
             nome: "ifpr.etapa",
             tipo: "mcp-app",
-            entrada: { id, ...(progresso === undefined ? {} : { progresso }) },
+            entrada,
           });
+          yield* chamarMcp("etapa", entrada);
           yield* canal.emitir({
             _tag: "FerramentaConcluida",
             id: chamada,
@@ -150,7 +198,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
             tipo: "mcp-app",
             entrada: { consulta: texto },
           });
-          yield* Effect.sleep(passo);
+          yield* chamarMcp("buscar_norma", { consulta: texto });
           yield* canal.emitir({
             _tag: "FerramentaConcluida",
             id: "t1",

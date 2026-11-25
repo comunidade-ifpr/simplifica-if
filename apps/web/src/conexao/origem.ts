@@ -6,7 +6,6 @@
  * 2. **Navegador, em desenvolvimento:** `?servidor=…&token=…` na URL da página. As credenciais vão para
  *    o `sessionStorage` e saem da barra de endereço (e do histórico), para que o token não fique à vista
  *    nem se perca ao navegar entre as telas ou recarregar.
- * 3. **Navegador, em desenvolvimento:** `VITE_SIMPLIFICA_SERVIDOR` e `VITE_SIMPLIFICA_TOKEN`.
  *
  * Sem nada disso, a interface mostra como iniciar o servidor (`sem-servidor`).
  */
@@ -14,7 +13,7 @@ import type { CredenciaisServidor, PonteDesktop } from "@simplifica-if/contratos
 
 export type OrigemConexao =
   | { readonly tipo: "desktop"; readonly ponte: PonteDesktop }
-  | { readonly tipo: "navegador"; readonly fonte: "url" | "ambiente"; readonly credenciais: CredenciaisServidor }
+  | { readonly tipo: "navegador"; readonly credenciais: CredenciaisServidor }
   | { readonly tipo: "ausente" };
 
 /** O parâmetro da URL da página com o endereço do servidor (`http://127.0.0.1:<porta>` ou só a porta). */
@@ -60,7 +59,6 @@ export interface EntradaOrigem {
   readonly busca: string;
   /** As credenciais guardadas no `sessionStorage` (JSON), se houver. */
   readonly sessao: string | null;
-  readonly ambiente: { readonly servidor?: string | undefined; readonly token?: string | undefined };
 }
 
 export interface OrigemResolvida {
@@ -85,16 +83,11 @@ export function resolverOrigem(entrada: EntradaOrigem): OrigemResolvida {
     limpeza = { buscaLimpa: resto.length > 0 ? `?${resto}` : "" };
   }
   if (daUrl !== undefined) {
-    return { origem: { tipo: "navegador", fonte: "url", credenciais: daUrl }, guardar: daUrl, ...limpeza };
+    return { origem: { tipo: "navegador", credenciais: daUrl }, guardar: daUrl, ...limpeza };
   }
 
   const daSessao = lerSessao(entrada.sessao);
-  if (daSessao !== undefined) return { origem: { tipo: "navegador", fonte: "url", credenciais: daSessao }, ...limpeza };
-
-  const doAmbiente = credenciais(entrada.ambiente.servidor, entrada.ambiente.token);
-  if (doAmbiente !== undefined) {
-    return { origem: { tipo: "navegador", fonte: "ambiente", credenciais: doAmbiente }, ...limpeza };
-  }
+  if (daSessao !== undefined) return { origem: { tipo: "navegador", credenciais: daSessao }, ...limpeza };
   return { origem: { tipo: "ausente" }, ...limpeza };
 }
 
@@ -113,7 +106,7 @@ function lerSessao(texto: string | null): CredenciaisServidor | undefined {
 }
 
 /**
- * A origem da página atual: lê a ponte, a URL, o `sessionStorage` e o ambiente do Vite, guarda as
+ * A origem da página atual: lê a ponte, a URL e o `sessionStorage`, guarda as
  * credenciais da URL e as tira da barra de endereço.
  */
 export function origemDaPagina(): OrigemConexao {
@@ -127,10 +120,6 @@ export function origemDaPagina(): OrigemConexao {
     ponte: window.simplifica,
     busca: window.location.search,
     sessao,
-    ambiente: {
-      servidor: import.meta.env.VITE_SIMPLIFICA_SERVIDOR,
-      token: import.meta.env.VITE_SIMPLIFICA_TOKEN,
-    },
   });
   if (resolvida.guardar !== undefined) {
     try {

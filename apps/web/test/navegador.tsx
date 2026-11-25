@@ -37,7 +37,7 @@ export const editarArquivoDeTarefa = (caminho: string, texto: string) => command
 /** Monta o app conectado ao servidor; `Symbol.asyncDispose` desmonta e fecha a conexão. */
 export async function montarApp(servidor: ServidorTeste, rota = "/") {
   return montarAppComOrigem(
-    { tipo: "navegador", fonte: "url", credenciais: { urlServidor: servidor.urlServidor, token: servidor.token } },
+    { tipo: "navegador", credenciais: { urlServidor: servidor.urlServidor, token: servidor.token } },
     rota,
   );
 }

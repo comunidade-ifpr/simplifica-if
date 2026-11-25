@@ -80,8 +80,6 @@ export interface Opcoes {
   readonly token: Redacted.Redacted<string>;
   /** A porta do RPC; sem ela (ou com 0), a que o sistema escolher. */
   readonly porta?: number;
-  /** A porta do MCP; sem ela (ou com 0), a que o sistema escolher. */
-  readonly portaMcp?: number;
   /** As origens de navegador aceitas no WebSocket (ver `Autenticacao.ts`). */
   readonly origens?: ReadonlyArray<string>;
   /** O canal da base quando o banco não registra um (padrão: `dev`, como a CLI do MCP). */
@@ -100,14 +98,8 @@ export interface Opcoes {
    * `<Resources>/skills` no app empacotado. Sem ela, as conversas não recebem skills.
    */
   readonly pastaSkills?: string;
-  /** Limites e script do Worker da revisão prévia (`RevisorPpc.LIMITES`); os testes os apertam. */
-  readonly revisaoPpc?: RevisorPpc.OpcoesRevisao;
-  /** A versão em texto dos anexos (os testes apertam os limites). */
-  readonly textosAnexos?: TextosAnexos.OpcoesTextos;
   /** Paralelismo e tempo por turno da revisão com IA (`RevisaoIa.PARALELISMO`); os testes os mudam. */
   readonly revisaoIa?: RevisaoIa.OpcoesRevisaoIa;
-  /** Tempo máximo de uma ação com IA sobre uma pendência (`ListaViva.TEMPO_ACAO`). */
-  readonly listaViva?: { readonly tempoAcao?: Duration.Duration };
   /**
    * O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`). Com ele, a revisão
    * prévia só revisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
@@ -241,7 +233,7 @@ const layerPastas = (opcoes: Opcoes) =>
         raiz,
         copias,
         ...(opcoes.limitesPasta === undefined ? {} : { limites: opcoes.limitesPasta }),
-      }).pipe(Layer.provide(TextosAnexos.layer(opcoes.textosAnexos)));
+      }).pipe(Layer.provide(TextosAnexos.layer()));
     }),
   );
 
@@ -337,17 +329,17 @@ export const layer = (opcoes: Opcoes) => {
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
   // No app, a ferramenta `etapa` é registrada: a interface a lê nos eventos da conversa (M1.9).
   const leitura = McpRpc.layerLeitura({ banco: opcoes.banco, canal, etapaRegistrada: true });
-  const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
+  const mcp = McpHttp.layerSobreLeitura();
   const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
   const nucleo = Conversas.layer({
     ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
     ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
   }).pipe(
     Layer.provideMerge(layerPastas(opcoes)),
-    Layer.provideMerge(ListaViva.layer(opcoes.listaViva)),
+    Layer.provideMerge(ListaViva.layer()),
     Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
     Layer.provideMerge(RevisoesPpc.layer.pipe(Layer.provide(banco))),
-    Layer.provideMerge(RevisorPpc.layer(opcoes.revisaoPpc)),
+    Layer.provideMerge(RevisorPpc.layer()),
     Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),

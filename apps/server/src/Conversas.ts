@@ -471,8 +471,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     const escopo = yield* Scope.make();
     const rotulo = `conversa-${++sequencia}`;
     const sessaoMcp = yield* mcp.abrirSessao({ rotulo, pastaTrabalho: pasta }).pipe(Scope.provide(escopo));
-    const servidor: Motor.ServidorMcpHttp = {
-      tipo: "http",
+    const servidor: Motor.ServidorMcp = {
       nome: NOME_MCP,
       url: sessaoMcp.url,
       cabecalhos: sessaoMcp.cabecalhos,
@@ -600,12 +599,6 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       ),
     );
 
-  /**
-   * O turno inteiro, na fibra dele: o preparo (a cópia da pasta para o Desfazer, os textos e o que a
-   * pessoa mexeu na pasta), a troca para `respondendo` e o envio à IA (`bombear`). O preparo corre contra
-   * o sinal `parar`: o "Parar" o interrompe (o Worker de uma conversão em andamento se encerra), e o
-   * turno fecha sem a mensagem ter ido à IA.
-   */
   /**
    * Algum turno já levou a mensagem à IA? O primeiro que leva é o que indica a skill da tarefa; um turno
    * parado no preparo não conta. Lido do histórico uma vez por conversa viva.

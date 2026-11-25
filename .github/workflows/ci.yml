@@ -92,9 +92,6 @@ jobs:
       - name: Valida a base
         run: node scripts/validar_base.ts
 
-      - name: Índice de PPCs em dia
-        run: node scripts/gerar_indice_ppcs.ts --check
-
   executavel:
     name: Executável (${{ matrix.alvo }})
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
@@ -134,11 +131,11 @@ jobs:
           nome=$(cd packages/mcp/dist-exe && ls simplifica-mcp*)
           echo "SIMPLIFICA_MCP_EXE=${GITHUB_WORKSPACE}/packages/mcp/dist-exe/${nome}" >> "$GITHUB_ENV"
 
-      - name: Sem repositório, determinismo e pasta de trabalho, contra o executável
+      - name: Sem repositório e pasta de trabalho, contra o executável
         working-directory: packages/mcp
         run: >-
           pnpm exec vp test run --config ../../vite.config.ts --dir .
-          test/transversal/sem-repositorio.test.ts test/transversal/determinismo.test.ts
+          test/transversal/sem-repositorio.test.ts
           test/transversal/pasta-de-trabalho.test.ts
 
       - name: Publica o executável

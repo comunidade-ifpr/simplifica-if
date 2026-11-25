@@ -16,13 +16,12 @@ const preparar = Effect.gen(function* () {
   yield* fs.writeFileString(path.join(pasta, "b.txt"), "antigo\n");
   yield* fs.writeFileString(path.join(pasta, "velho.txt"), "x");
   yield* fs.writeFileString(path.join(pasta, "outro.md"), "fica");
-  yield* fs.writeFileString(path.join(raiz, "legado.txt"), "x");
   const arquivos = [
     { caminho: path.join(pasta, "a.txt"), texto: "a\n" },
     { caminho: path.join(pasta, "b.txt"), texto: "b\n" },
     { caminho: path.join(raiz, "nova", "c.txt"), texto: "c\n" },
   ];
-  const opcoes = { raiz, extrasEm: [{ pasta, sufixo: ".txt" }], obsoletos: [path.join(raiz, "legado.txt")] };
+  const opcoes = { raiz, extrasEm: [{ pasta, sufixo: ".txt" }] };
   return { fs, path, raiz, pasta, arquivos, opcoes };
 });
 
@@ -35,7 +34,6 @@ describe("aplicarGerados", () => {
         expect(mensagensDivergencias(divergencias, "node gerar.ts")).toEqual([
           "gerada/b.txt está desatualizado; rode node gerar.ts",
           "nova/c.txt ausente; rode node gerar.ts",
-          "legado.txt não é mais gerado; rode node gerar.ts",
           "gerada/velho.txt não é mais gerado; rode node gerar.ts",
         ]);
         expect(yield* fs.readFileString(path.join(pasta, "b.txt"))).toBe("antigo\n");
@@ -51,13 +49,11 @@ describe("aplicarGerados", () => {
         expect(gravadas.map((divergencia) => divergencia.arquivo)).toEqual([
           "gerada/b.txt",
           "nova/c.txt",
-          "legado.txt",
           "gerada/velho.txt",
         ]);
         expect(yield* fs.readFileString(path.join(pasta, "b.txt"))).toBe("b\n");
         expect(yield* fs.readFileString(path.join(raiz, "nova", "c.txt"))).toBe("c\n");
         expect((yield* fs.readDirectory(pasta)).sort()).toEqual(["a.txt", "b.txt", "outro.md"]);
-        expect(yield* fs.exists(path.join(raiz, "legado.txt"))).toBe(false);
         expect(yield* aplicarGerados(arquivos, { modo: "verificar", ...opcoes })).toEqual([]);
       }).pipe(Effect.scoped),
     );
@@ -69,11 +65,7 @@ describe("aplicarGerados", () => {
           { caminho: `${pasta}/./a.txt`, texto: "a\n" },
           { caminho: `${pasta}/./novo.txt`, texto: "novo\n" },
         ];
-        const opcoes = {
-          raiz,
-          extrasEm: [{ pasta: `${raiz}/./gerada`, sufixo: ".txt" }],
-          obsoletos: [path.join(pasta, "novo.txt")],
-        };
+        const opcoes = { raiz, extrasEm: [{ pasta: `${raiz}/./gerada`, sufixo: ".txt" }] };
         const gravadas = yield* aplicarGerados(arquivos, { modo: "gravar", ...opcoes });
         expect(gravadas).toEqual([
           { arquivo: "gerada/novo.txt", situacao: "ausente" },

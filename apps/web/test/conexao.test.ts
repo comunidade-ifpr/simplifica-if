@@ -82,8 +82,8 @@ layer(layerServidor(), { excludeTestServices: true })("com o servidor local", (i
       const cliente = yield* conexao.cliente;
       const claude = yield* cliente["providers.detectar"]({ provider: "claude" });
       assert.deepInclude(claude, { provider: "claude", instalado: true, autenticado: true, plano: "max" });
-      const lido = yield* cliente.lerLink({ link: "ifpr://norma/br/cne-cp/res/2021/1" });
-      assert.strictEqual(lido.tipo, "norma");
+      const ficha = yield* cliente.fichaNorma({ id: "br/cne-cp/res/2021/1" });
+      assert.include(JSON.stringify(ficha), "ifpr://norma/br/cne-cp/res/2021/1");
       assert.isAbove(porta, 0);
     }).pipe(
       Effect.provide(
@@ -91,7 +91,6 @@ layer(layerServidor(), { excludeTestServices: true })("com o servidor local", (i
           Effect.map(Effect.service(Servidor.ServidorApp), ({ porta }) =>
             Conexao.layerGlobal({
               tipo: "navegador",
-              fonte: "url",
               credenciais: { urlServidor: urlServidor(porta), token: TOKEN },
             }),
           ),
@@ -111,7 +110,7 @@ layer(layerServidor(), { excludeTestServices: true })("com o servidor local", (i
         Layer.unwrap(
           Effect.map(Effect.service(Servidor.ServidorApp), ({ porta }) =>
             Conexao.layerGlobal(
-              { tipo: "navegador", fonte: "url", credenciais: { urlServidor: urlServidor(porta), token: "errado" } },
+              { tipo: "navegador", credenciais: { urlServidor: urlServidor(porta), token: "errado" } },
               { atraso: () => 60_000 },
             ),
           ),
@@ -130,7 +129,7 @@ describe("reconexão", () => {
       const { porta } = Context.get(servidor, Servidor.ServidorApp);
 
       const conexao = yield* Conexao.make(
-        { tipo: "navegador", fonte: "url", credenciais: { urlServidor: urlServidor(porta), token: TOKEN } },
+        { tipo: "navegador", credenciais: { urlServidor: urlServidor(porta), token: TOKEN } },
         { atraso: () => 50 },
       );
       yield* esperarFase(conexao, "conectada");

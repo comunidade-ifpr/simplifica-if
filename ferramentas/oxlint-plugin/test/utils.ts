@@ -1,167 +1,80 @@
-// Copiado de `oxlint-plugin-t3code/test/utils.ts` do T3 Code (commit a6d91409729be6ba854b3f16adedc08847e3b24c).
-// Copyright (c) 2026 T3 Tools Inc. Licença MIT; texto integral em `ferramentas/oxlint-plugin/LICENSE-T3`.
-// Adaptado: caminho do plugin e da raiz do repositório (o plugin fica em `ferramentas/oxlint-plugin/`), nome
-// do plugin (`simplifica-if`) e prefixo do diretório temporário. Os comentários em inglês vieram do T3.
+// Casca dos testes das regras: cada caso roda no `RuleTester` do oxlint, no próprio processo, em vez de
+// um `oxlint` por caso (o harness do T3 levava ~40 s de CPU para os ~100 casos).
+// Um caso inválido passa se a regra reportar pelo menos uma vez; `assertion` recebe as mensagens, uma
+// por linha, no formato do oxlint (`simplifica-if(regra): mensagem`).
 
-import * as NodeServices from "@effect/platform-node/NodeServices";
-import { assert, it } from "@effect/vitest";
-import * as Effect from "effect/Effect";
-import * as FileSystem from "effect/FileSystem";
-import * as Path from "effect/Path";
-import * as PlatformError from "effect/PlatformError";
-import * as Schema from "effect/Schema";
-import * as Stream from "effect/Stream";
-import { ChildProcess, ChildProcessSpawner } from "effect/process";
-import * as NodeModule from "node:module";
+import type { Context, Diagnostic, Rule } from "@oxlint/plugins";
+import { it } from "@effect/vitest";
+import { RuleTester } from "vite-plus/lint/plugins-dev";
 
-// oxlint is only a transitive dependency (via vite-plus), so its bin placement
-// varies by package manager: pnpm hoists it into the virtual store, while
-// other layouts expose vite-plus's LSP-only wrapper instead. Resolve the real
-// package through vite-plus rather than hardcoding either layout, and do it at
-const oxlintPackageJsonPath = NodeModule.createRequire(
-  NodeModule.createRequire(import.meta.url).resolve("vite-plus/package.json"),
-).resolve("oxlint/package.json");
+import plugin from "../index.ts";
 
-class OxlintFixtureFailure extends Schema.TaggedError<OxlintFixtureFailure>()("OxlintFixtureFailure", {
-  exitCode: Schema.Number,
-  stdout: Schema.String,
-  stderr: Schema.String,
-}) {}
+RuleTester.describe = (_texto, fn) => fn();
+RuleTester.it = (texto, fn) => it(texto, fn);
 
-const isOxlintFixtureFailure = Schema.is(OxlintFixtureFailure);
-
-class OxlintFixtureExpectedFailure extends Schema.TaggedError<OxlintFixtureExpectedFailure>()(
-  "OxlintFixtureExpectedFailure",
-  { ruleName: Schema.String },
-) {
-  override get message() {
-    return `Expected oxlint to report a failure for rule ${this.ruleName}, but it passed.`;
-  }
-}
-
-const encodeOxlintConfig = Schema.encodeEffect(Schema.fromJsonString(Schema.Unknown));
+const tester = new RuleTester();
 
 interface RuleHarness {
-  readonly run: (
-    source: string,
-  ) => Effect.Effect<
-    string,
-    OxlintFixtureFailure | PlatformError.PlatformError | Schema.SchemaError,
-    NodeServices.NodeServices
-  >;
-  readonly runAndExpectFailure: (
-    source: string,
-  ) => Effect.Effect<
-    string,
-    OxlintFixtureExpectedFailure | PlatformError.PlatformError | Schema.SchemaError,
-    NodeServices.NodeServices
-  >;
   readonly valid: (name: string, source: string) => void;
   readonly invalid: (name: string, source: string, assertion?: (output: string) => void) => void;
 }
 
 interface RuleHarnessOptions {
   readonly filename?: string;
-  readonly ruleOptions?: ReadonlyArray<unknown>;
+  readonly ruleOptions?: NonNullable<RuleTester.ValidTestCase["options"]>;
 }
 
-const collectStreamAsString = <E>(stream: Stream.Stream<Uint8Array, E>): Effect.Effect<string, E> =>
-  stream.pipe(
-    Stream.decodeText(),
-    Stream.runFold(
-      () => "",
-      (acc, chunk) => acc + chunk,
-    ),
-  );
-
-const spawnAndCollectOutput = Effect.fnUntraced(function* (command: ChildProcess.Command) {
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  const child = yield* spawner.spawn(command);
-
-  const [stdout, stderr, exitCode] = yield* Effect.all(
-    [collectStreamAsString(child.stdout), collectStreamAsString(child.stderr), child.exitCode.pipe(Effect.map(Number))],
-    { concurrency: "unbounded" },
-  );
-
-  return { exitCode, stdout, stderr };
-}, Effect.scoped);
+/** A regra com o `report` interceptado: guarda toda mensagem e só repassa as que `repassar` deixar. */
+const interceptar = (nome: string, regra: Rule, mensagens: Array<string>, repassar: () => boolean): Rule => {
+  // O alvo do Proxy é um objeto vazio: o contexto do oxlint é congelado, e o Proxy não pode trocar
+  // uma propriedade congelada do próprio alvo.
+  const contexto = (alvo: Context): Context =>
+    new Proxy({} as Context, {
+      get(_vazio, chave) {
+        if (chave !== "report") return Reflect.get(alvo, chave, alvo);
+        return (diagnostico: Diagnostic) => {
+          mensagens.push(`simplifica-if(${nome}): ${"message" in diagnostico ? diagnostico.message : ""}`);
+          if (repassar()) alvo.report(diagnostico);
+        };
+      },
+    });
+  if ("createOnce" in regra) {
+    return { ...regra, createOnce: (alvo: Context) => regra.createOnce(contexto(alvo)) };
+  }
+  return { ...regra, create: (alvo: Context) => regra.create(contexto(alvo)) };
+};
 
 export const createOxlintRuleHarness = (ruleName: string, options: RuleHarnessOptions = {}): RuleHarness => {
-  const [pluginName, shortRuleName] = ruleName.split("/");
-  const diagnosticRuleName = pluginName && shortRuleName ? `${pluginName}\\(${shortRuleName}\\)` : ruleName;
-  const test = it.layer(NodeServices.layer);
-
-  const run: RuleHarness["run"] = Effect.fnUntraced(function* (source: string) {
-    const fs = yield* FileSystem.FileSystem;
-    const path = yield* Path.Path;
-    const fixtureDir = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-if-oxlint-" });
-    const configPath = path.join(fixtureDir, ".oxlintrc.json");
-    const sourcePath = path.join(fixtureDir, options.filename ?? "fixture.ts");
-    const repoRoot = path.join(import.meta.dirname, "..", "..", "..");
-    const oxlintBin = path.join(path.dirname(oxlintPackageJsonPath), "bin", "oxlint");
-    const pluginPath = path.join(repoRoot, "ferramentas", "oxlint-plugin", "index.ts");
-
-    yield* fs.writeFileString(
-      configPath,
-      yield* encodeOxlintConfig({
-        jsPlugins: [{ name: "simplifica-if", specifier: pluginPath }],
-        rules: { [ruleName]: ["error", ...(options.ruleOptions ?? [])] },
-      }),
-    );
-    yield* fs.makeDirectory(path.dirname(sourcePath), { recursive: true });
-    yield* fs.writeFileString(sourcePath, source);
-
-    // Run through the current Node binary: oxlint's bin is an extensionless
-    // shebang script, which Windows cannot spawn directly and which would
-    // otherwise pick up whatever node is first on PATH.
-    const output = yield* spawnAndCollectOutput(
-      ChildProcess.make(process.execPath, [oxlintBin, "--config", configPath, sourcePath], {
-        cwd: repoRoot,
-      }),
-    );
-
-    if (output.exitCode !== 0) {
-      return yield* new OxlintFixtureFailure({
-        exitCode: output.exitCode,
-        stdout: output.stdout,
-        stderr: output.stderr,
-      });
-    }
-
-    return `${output.stdout}${output.stderr}`;
-  }, Effect.scoped);
-
-  const runAndExpectFailure: RuleHarness["runAndExpectFailure"] = (source) =>
-    run(source).pipe(
-      Effect.matchEffect({
-        onFailure: (error) =>
-          isOxlintFixtureFailure(error)
-            ? Effect.succeed(`oxlint fixture failed with exit code ${error.exitCode}\n${error.stdout}\n${error.stderr}`)
-            : Effect.fail(error),
-        onSuccess: () => Effect.fail(new OxlintFixtureExpectedFailure({ ruleName })),
-      }),
-    );
+  const nomeCurto = ruleName.replace(/^simplifica-if\//u, "");
+  const regra = plugin.rules[nomeCurto];
+  if (regra === undefined) throw new Error(`Regra desconhecida: ${ruleName}`);
+  const caso = (name: string, code: string) => ({
+    name,
+    code,
+    filename: options.filename ?? "fixture.ts",
+    ...(options.ruleOptions ? { options: options.ruleOptions } : {}),
+  });
 
   return {
-    run,
-    runAndExpectFailure,
     valid(name, source) {
-      test(name, (it) => {
-        it.effect("passes", () => run(source));
-      });
+      tester.run(ruleName, regra, { valid: [caso(name, source)], invalid: [] });
     },
     invalid(name, source, assertion) {
-      test(name, (it) => {
-        it.effect("reports the rule diagnostic", () =>
-          runAndExpectFailure(source).pipe(
-            Effect.tap((output) =>
-              Effect.sync(() => {
-                assert.match(output, new RegExp(diagnosticRuleName));
-                assertion?.(output);
-              }),
-            ),
-          ),
-        );
+      const mensagens: Array<string> = [];
+      // Só a primeira mensagem vai ao RuleTester, que confere o número exato de erros (`errors: 1`).
+      const interceptada = interceptar(nomeCurto, regra, mensagens, () => mensagens.length === 1);
+      tester.run(ruleName, interceptada, {
+        valid: [],
+        invalid: [
+          {
+            ...caso(name, source),
+            errors: 1,
+            // Sem mensagem, o próprio RuleTester já falhou ("Should have 1 error"), com o erro mais claro.
+            after: () => {
+              if (mensagens.length > 0) assertion?.(mensagens.join("\n"));
+            },
+          },
+        ],
       });
     },
   };

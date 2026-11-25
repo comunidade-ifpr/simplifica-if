@@ -8,8 +8,12 @@
  * (`{ andamento: … }`, ver `AvisoAndamento`), que vão para `aoAndamento`. O estouro de memória, o tempo máximo, o fim
  * antes da resposta e o erro do Worker viram `FalhaWorker`; quem chama traduz para a frase da pessoa.
  * O tempo máximo e a interrupção (a conexão caiu) encerram o Worker pelo finalizador (`terminate()`).
+ *
+ * Quem roda o pedido é o `Executor`: no app, sempre o Worker (`rodarNoWorker`); os testes que não
+ * exercitam os limites o trocam pelo trabalho no próprio processo, sem os ~200 ms de partida de cada Worker.
  */
 import * as NodeWorkerThreads from "node:worker_threads";
+import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
@@ -105,3 +109,8 @@ export function rodarNoWorker<Resposta, Andamento = never>(
     }),
   );
 }
+
+/** Quem roda o pedido do Worker: `rodarNoWorker`, salvo nos testes. */
+export const Executor = Context.Reference<typeof rodarNoWorker>("@simplifica-if/server/WorkerLimitado/Executor", {
+  defaultValue: () => rodarNoWorker,
+});

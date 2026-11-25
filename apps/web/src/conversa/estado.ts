@@ -347,7 +347,6 @@ export function aplicarItem(estado: EstadoConversa, item: ItemConversa): EstadoC
   }
 }
 
-/** A conversa gravada remontada: os itens na ordem e, se não há turno em andamento, o turno fechado. */
 /**
  * O estado que o servidor diz. `respondendo` abre o turno na tela (a mensagem pode ter vindo de outra
  * tela); os de repouso só ficam guardados: o turno se fecha no `FimTurno`, que vem logo depois.
@@ -361,6 +360,7 @@ function aplicarEstado(estado: EstadoConversa, servidor: EstadoGravado): EstadoC
   };
 }
 
+/** A conversa gravada remontada: os itens na ordem e, se não há turno em andamento, o turno fechado. */
 export function estadoDaConversa(gravada: ConversaGravada): EstadoConversa {
   const { conversa } = gravada;
   const inicial: EstadoConversa = {

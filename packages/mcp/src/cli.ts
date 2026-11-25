@@ -1,22 +1,13 @@
 #!/usr/bin/env node
 // @effect-diagnostics nodeBuiltinImport:off -- ponto de entrada: o `~` dos caminhos se expande com o diretório do usuário do sistema
 /**
- * CLI `simplifica-mcp`: inicia o servidor MCP só de leitura, em stdio, sobre um `kb.sqlite`, ou, com o
- * subcomando `consultar`, roda uma ferramenta e imprime a resposta, para scripts.
+ * CLI `simplifica-mcp`: inicia o servidor MCP só de leitura, em stdio, sobre um `kb.sqlite`.
  *
  *   node packages/mcp/src/cli.ts --banco tmp/kb.sqlite
  *   SIMPLIFICA_KB=~/SimplificaIF/kb.sqlite simplifica-mcp --canal beta
  *   simplifica-mcp --pasta-atualizacao ~/SimplificaIF --feed-atualizacao <url com {canal}> --chave-atualizacao <base64>
- *   simplifica-mcp consultar listar_cursos --args '{"campus":"curitiba"}' --todas-as-paginas --banco tmp/kb.sqlite
  *
  * Com `--pasta-atualizacao`, a base se atualiza pelo feed do canal (`atualizacao.ts`, M1.10).
- *
- * O `consultar` é a porta dos scripts de fora do repositório: a entrada da ferramenta em JSON
- * (`--args`) e o `structuredContent` (a `Resposta`, válida no `outputSchema`) em JSON, numa linha; com
- * `--todas-as-paginas`, segue o cursor e imprime uma resposta por linha (JSONL). A impressão é a dos
- * comandos da CLI `kb` (`consulta.ts`), que derivam as flags da mesma entrada. Não confere
- * atualização nem baixa base: lê só o `--banco` (ou `SIMPLIFICA_KB`). Recusa a `etapa`, que só faz
- * sentido numa conversa.
  *
  * O stdout é do protocolo MCP; as mensagens vão para o stderr. Um `~/` no início dos caminhos é
  * expandido aqui, porque nem todo cliente MCP passa os argumentos por um shell.
@@ -39,43 +30,18 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { prepararAtualizacao } from "./atualizacao.ts";
-import { imprimirConsulta } from "./consulta.ts";
-import { NOMES_FERRAMENTAS } from "./ferramentas/registrar.ts";
-import { layerHandlers } from "./ferramentas/toolkit.ts";
 import { CANAIS, CANAIS_DISTRIBUICAO } from "@simplifica-if/kb/canal";
 import * as Leitura from "./leitura/Leitura.ts";
 import * as PastaTrabalho from "./leitura/PastaTrabalho.ts";
-import {
-  layerLeituraComPasta,
-  layerStdio,
-  mensagemDeAbertura,
-  MENSAGEM_INCOMPATIVEL,
-  VERSAO_PACOTE,
-} from "./servidor.ts";
+import { layerStdio, mensagemDeAbertura, MENSAGEM_INCOMPATIVEL, VERSAO_PACOTE } from "./servidor.ts";
 
-/**
- * Uso que os parsers de flag não pegam: banco ausente e, no `consultar`, a ferramenta desconhecida,
- * `--args` que não é JSON e a ferramenta `etapa`.
- */
-export class UsoInvalido extends Schema.TaggedError<UsoInvalido>()("UsoInvalido", {
-  motivo: Schema.Literals(["sem-banco", "ferramenta", "args", "etapa"]),
-  valor: Schema.optionalKey(Schema.String),
-}) {
+/** Sem `--banco`, sem `SIMPLIFICA_KB` e sem a atualização, que traria o banco. */
+class SemBanco extends Schema.TaggedError<SemBanco>()("SemBanco", {}) {
   override get message(): string {
-    switch (this.motivo) {
-      case "sem-banco":
-        return "informe o kb.sqlite com --banco <caminho> ou com a variável SIMPLIFICA_KB";
-      case "ferramenta":
-        return `ferramenta desconhecida: ${this.valor ?? ""}. As ferramentas são: ${NOMES_FERRAMENTAS.filter((n) => n !== "etapa").join(", ")}`;
-      case "args":
-        return `--args <json>: esperava a entrada da ferramenta em JSON (veio ${this.valor ?? ""})`;
-      case "etapa":
-        return "a ferramenta etapa só faz sentido numa conversa; o consultar não a roda";
-    }
+    return "informe o kb.sqlite com --banco <caminho> ou com a variável SIMPLIFICA_KB";
   }
 }
 
@@ -96,9 +62,6 @@ const flagPastaTrabalho = Flag.String("pasta-trabalho").pipe(
   Flag.optional,
 );
 
-const JsonQualquer = Schema.fromJsonString(Schema.Unknown);
-const decodificarArgs = Schema.decodeUnknownEffect(JsonQualquer);
-
 const flagVigenciaNaReferencia = Flag.Boolean("vigencia-na-referencia").pipe(
   Flag.withDescription(
     "calcula a vigência na data de referência gravada na base, e não no dia (respostas que não mudam com o calendário)",
@@ -108,57 +71,6 @@ const flagVigenciaNaReferencia = Flag.Boolean("vigencia-na-referencia").pipe(
 
 /** Sem `--vigencia-na-referencia`, as consultas sem data calculam a vigência no dia. */
 const layerVigencia = (naReferencia: boolean) => (naReferencia ? Layer.empty : FontesNormativas.layerVigenciaHoje);
-
-const consultar = Command.make(
-  "consultar",
-  {
-    ferramenta: Argument.String("ferramenta").pipe(Argument.withDescription("nome da ferramenta (listar_cursos…)")),
-    args: Flag.String("args").pipe(
-      Flag.withDescription("entrada da ferramenta, um objeto JSON (padrão: {})"),
-      Flag.withDefault("{}"),
-    ),
-    todasAsPaginas: Flag.Boolean("todas-as-paginas").pipe(
-      Flag.withDescription("segue o cursor e imprime uma resposta por linha (JSONL)"),
-      Flag.withDefault(false),
-    ),
-    banco: flagBanco,
-    pastaTrabalho: flagPastaTrabalho,
-    vigenciaNaReferencia: flagVigenciaNaReferencia,
-  },
-  Effect.fn("simplifica-mcp.consultar")(function* (opcoes) {
-    const path = yield* Path.Path;
-    if (opcoes.ferramenta === "etapa") return yield* new UsoInvalido({ motivo: "etapa" });
-    if (!NOMES_FERRAMENTAS.includes(opcoes.ferramenta)) {
-      return yield* new UsoInvalido({ motivo: "ferramenta", valor: opcoes.ferramenta });
-    }
-    if (Option.isNone(opcoes.banco)) return yield* new UsoInvalido({ motivo: "sem-banco" });
-    const argumentos = yield* decodificarArgs(opcoes.args).pipe(
-      Effect.catchTags({ SchemaError: () => Effect.fail(new UsoInvalido({ motivo: "args", valor: opcoes.args })) }),
-    );
-    const pasta = expandirCaminho(
-      path,
-      Option.getOrElse(opcoes.pastaTrabalho, () => "."),
-    );
-    const leitura = layerLeituraComPasta({
-      banco: expandirCaminho(path, opcoes.banco.value),
-      canal: "dev",
-      pastaTrabalho: pasta,
-    });
-    // a mesma impressão dos comandos da CLI `kb`, sempre em JSON; um banco aberto para todas as páginas
-    return yield* imprimirConsulta(opcoes.ferramenta, argumentos, {
-      formato: "json",
-      todasAsPaginas: opcoes.todasAsPaginas,
-    }).pipe(
-      Effect.provide(
-        layerHandlers.pipe(Layer.provide(leitura), Layer.provide(layerVigencia(opcoes.vigenciaNaReferencia))),
-      ),
-    );
-  }),
-).pipe(
-  Command.withDescription(
-    "Roda uma ferramenta sobre o kb.sqlite e imprime a resposta (o structuredContent) em JSON, para scripts.",
-  ),
-);
 
 const comando = Command.make(
   "simplifica-mcp",
@@ -194,7 +106,7 @@ const comando = Command.make(
     const { banco, pastaTrabalho, canal } = opcoes;
     const path = yield* Path.Path;
     if (Option.isNone(banco) && Option.isNone(opcoes.pastaAtualizacao)) {
-      return yield* new UsoInvalido({ motivo: "sem-banco" });
+      return yield* new SemBanco();
     }
     const bancoDado = Option.isSome(banco) ? expandirCaminho(path, banco.value) : undefined;
     let caminho = bancoDado ?? "";
@@ -231,7 +143,6 @@ const comando = Command.make(
   Command.withDescription(
     "Servidor MCP só de leitura sobre o kb.sqlite da base de conhecimento do IFPR (transporte stdio).",
   ),
-  Command.withSubcommands([consultar]),
 );
 
 /** A linha do stderr de um erro tipado; os de abertura do banco usam as mensagens do simplifica-mcp. */

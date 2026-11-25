@@ -32,8 +32,7 @@ export interface ResultadoFerramenta {
  * Servidor MCP por HTTP (streamable HTTP), já em execução: o provider só se conecta, só nesta sessão.
  * `cabecalhos` leva o escopo da sessão (`Authorization: Bearer <token>`).
  */
-export interface ServidorMcpHttp {
-  readonly tipo: "http";
+export interface ServidorMcp {
   readonly nome: string;
   readonly url: string;
   readonly cabecalhos?: Readonly<Record<string, string>>;
@@ -47,9 +46,6 @@ export interface ServidorMcpHttp {
    */
   readonly resultados?: Stream.Stream<ResultadoFerramenta>;
 }
-
-/** Servidor MCP entregue ao provider só nesta sessão, por HTTP local. */
-export type ServidorMcp = ServidorMcpHttp;
 
 /** Um arquivo de uma skill: caminho relativo à pasta da skill e conteúdo em texto. */
 export interface ArquivoSkill {

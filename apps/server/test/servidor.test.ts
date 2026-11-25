@@ -193,8 +193,8 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       assert.isDefined(config);
       assert.strictEqual(config?.servidoresMcp.length, 1);
       const mcp = config?.servidoresMcp[0];
-      assert.strictEqual(mcp?.tipo, "http");
-      if (mcp?.tipo !== "http") return;
+      assert.isDefined(mcp);
+      if (mcp === undefined) return;
       assert.strictEqual(mcp.nome, "ifpr");
       assert.strictEqual(mcp.url, urlMcp);
       assert.isTrue(mcp.preAprovado);
@@ -298,11 +298,7 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       const c = yield* cliente(urlRpc, AUTORIZACAO);
       const ficha = yield* c.fichaNorma({ id: DCN_2021 });
       assert.include(JSON.stringify(ficha), `ifpr://norma/${DCN_2021}`);
-      // O leitor `ifpr://` da interface: um link qualquer, resolvido como o `resources/read` do MCP.
-      const lido = yield* c.lerLink({ link: `ifpr://norma/${DCN_2021}` });
-      assert.strictEqual(lido.tipo, "norma");
-      assert.include(lido.texto, DCN_2021);
-      const invalido = yield* Effect.flip(c.lerLink({ link: "https://exemplo" }));
+      const invalido = yield* Effect.flip(c.fichaNorma({ id: "br/inexistente/1" }));
       assert.strictEqual(invalido._tag, "EntradaInvalida");
       assert.isDefined(yield* c.sobreABase({}));
     }).pipe(Effect.scoped),

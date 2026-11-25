@@ -1,6 +1,6 @@
 /**
  * As ferramentas na linha de comando: um comando por ferramenta (`kb buscar-norma "…" --limite 5`) e a
- * impressão da resposta, que o `simplifica-mcp consultar` também usa.
+ * impressão da resposta.
  *
  * Cada comando é derivado da ferramenta: o nome em kebab-case, a descrição dela, e um parâmetro por
  * campo do JSON Schema de entrada (o mesmo do `tools/list`). O primeiro campo obrigatório é o argumento

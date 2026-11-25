@@ -6,6 +6,7 @@ import {
   analisarNorma,
   carregarDispositivos,
   carregarEstruturas,
+  descendentes,
   indiceDispositivos,
   listarNormas,
   notasDoTexto,
@@ -14,6 +15,7 @@ import {
 } from "./estrutura.ts";
 import { ehIdDispositivo } from "./ids.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
+import { textoDispositivos } from "./texto-dispositivos.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "./registro.ts";
 
@@ -128,10 +130,10 @@ describe("normas da base", () => {
   const estruturas = carregarEstruturas(raiz);
   const arquivos = new Map(listarNormas(raiz).map((n) => [n.path, n.arquivo]));
 
-  test("todas as normas da base sem problemas de estrutura (só avisos)", () => {
+  // os problemas de estrutura de cada norma são do validar_base (validarEstruturaNorma)
+  test("todas as normas da base analisadas", () => {
     expect(estruturas.length).toBeGreaterThan(0);
     expect(estruturas.length).toBe(arquivos.size);
-    expect(estruturas.flatMap((e) => e.problemas.filter((p) => !p.startsWith("aviso:")))).toEqual([]);
   });
 
   test.each(estruturas)("reconstituição: $path", (estrutura) => {
@@ -139,10 +141,32 @@ describe("normas da base", () => {
     expect(primeiraDivergencia(palavrasMarkdown(texto), palavrasDosSegmentos(estrutura.segmentos))).toBeNull();
   });
 
-  test("IDs únicos e no formato canônico", () => {
+  test("IDs únicos, no formato canônico e com texto legível (textoDispositivos)", () => {
     const todos = carregarDispositivos(raiz);
     expect(new Set(todos.map((d) => d.id)).size).toBe(todos.length);
     expect(todos.filter((d) => !ehIdDispositivo(d.dispositivo)).map((d) => d.id)).toEqual([]);
+    const semTexto: string[] = [];
+    for (const d of todos) {
+      try {
+        textoDispositivos([d.dispositivo]);
+      } catch (erro) {
+        semTexto.push(`${d.id}: ${(erro as Error).message}`);
+      }
+    }
+    expect(semTexto).toEqual([]);
+  });
+
+  // O leitor do app monta "Copiar citação" com os dispositivos do `kb`: a redação não vigente
+  // (`<!-- redacao-nao-vigente -->`) fica fora deles, para não passar pela vigente.
+  test("redação não vigente fora dos dispositivos: Lei 11.892/2008, art. 1º", () => {
+    const textos = descendentes("br/lei/2008/11892#art1", raiz).map((d) => d.texto);
+    expect(textos.filter((t) => t.startsWith("Parágrafo único."))).toEqual([
+      expect.stringContaining("incisos I, II e V do caput"),
+    ]);
+    expect(textos.filter((t) => t.startsWith("IV –"))).toEqual([
+      expect.stringContaining("(Redação dada pela Lei nº 12.677"),
+    ]);
+    expect(obterDispositivo("br/lei/2008/11892#art1-parunico", raiz)?.linha_inicio).toBe(76);
   });
 
   test("dispositivos conhecidos", () => {

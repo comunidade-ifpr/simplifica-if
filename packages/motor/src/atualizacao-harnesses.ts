@@ -34,7 +34,7 @@ export type ResultadoAtualizacaoHarness =
   | { readonly status: "falhou"; readonly detalhe: string };
 
 /** Quantas versões antigas completas ficam em disco além da ativa. */
-export const MANTER_ANTERIORES_PADRAO = 1;
+const MANTER_ANTERIORES = 1;
 
 /** Tempo após o qual pastas temporárias de staging abandonadas podem ser removidas. */
 const PRAZO_STAGING_MS = 24 * 60 * 60 * 1000;
@@ -111,7 +111,6 @@ interface InstalacaoBase {
 const aguardarConclusao = Effect.fn("AtualizacaoHarnesses.aguardarConclusao")(function* (
   instalacao: InstalacaoBase,
   inicial: ProviderInstallState,
-  prazo: Duration.Input = PRAZO_ATUALIZACAO,
 ) {
   if (FASES_FINAIS.has(inicial.phase)) return Option.some(inicial);
   return yield* instalacao.changes.pipe(
@@ -123,7 +122,7 @@ const aguardarConclusao = Effect.fn("AtualizacaoHarnesses.aguardarConclusao")(fu
     ),
     Stream.runHead,
     Effect.flatMap((encontrado) => (Option.isSome(encontrado) ? Effect.succeed(encontrado.value) : instalacao.state)),
-    Effect.timeoutOption(prazo),
+    Effect.timeoutOption(PRAZO_ATUALIZACAO),
   );
 });
 
@@ -133,7 +132,6 @@ const aplicarAtualizacao = Effect.fn("AtualizacaoHarnesses.aplicarAtualizacao")(
   versaoAtual: string,
   versaoDisponivel: string,
   retirada: boolean,
-  prazo?: Duration.Input,
 ) {
   const iniciado = yield* instalacao.start.pipe(Effect.result);
   if (iniciado._tag === "Failure") {
@@ -142,7 +140,7 @@ const aplicarAtualizacao = Effect.fn("AtualizacaoHarnesses.aplicarAtualizacao")(
       detalhe: textoTecnico(iniciado.failure.message) || "não foi possível iniciar a atualização",
     } satisfies ResultadoAtualizacaoHarness;
   }
-  const concluido = yield* aguardarConclusao(instalacao, iniciado.success, prazo);
+  const concluido = yield* aguardarConclusao(instalacao, iniciado.success);
   if (Option.isNone(concluido)) {
     return {
       status: "falhou",
@@ -175,7 +173,6 @@ const atualizarHarness = Effect.fn("AtualizacaoHarnesses.atualizarHarness")(func
   readonly versaoAtual: string;
   readonly retirada: boolean;
   readonly recusarLocalAposCheck?: boolean;
-  readonly prazo?: Duration.Input;
 }): Effect.fn.Return<ResultadoAtualizacaoHarness> {
   if (ehEmAndamento(opcoes.estadoInicial.phase)) return { status: "em-andamento" };
   yield* opcoes.instalacao.checkForUpdate;
@@ -199,13 +196,7 @@ const atualizarHarness = Effect.fn("AtualizacaoHarnesses.atualizarHarness")(func
   if (opcoes.retirada && versaoDisponivel === opcoes.versaoAtual) {
     return { status: "falhou", detalhe: "nenhuma versão elegível disponível para substituir a versão retirada" };
   }
-  return yield* aplicarAtualizacao(
-    opcoes.instalacao,
-    opcoes.versaoAtual,
-    versaoDisponivel,
-    opcoes.retirada,
-    opcoes.prazo,
-  ).pipe(
+  return yield* aplicarAtualizacao(opcoes.instalacao, opcoes.versaoAtual, versaoDisponivel, opcoes.retirada).pipe(
     Effect.catchCauseIf(
       (causa) => !Cause.hasInterruptsOnly(causa),
       () =>
@@ -224,10 +215,7 @@ const atualizarHarness = Effect.fn("AtualizacaoHarnesses.atualizarHarness")(func
  */
 export const atualizarAntigravity = Effect.fn("AtualizacaoHarnesses.atualizarAntigravity")(function* (
   instalacao: Pick<AntigravityInstallation["Service"], "resolve" | "state" | "changes" | "checkForUpdate" | "start">,
-  opcoes: {
-    readonly ambiente?: NodeJS.ProcessEnv;
-    readonly prazo?: Duration.Input;
-  } = {},
+  opcoes: { readonly ambiente?: NodeJS.ProcessEnv } = {},
 ): Effect.fn.Return<ResultadoAtualizacaoHarness> {
   const estadoInicial = yield* instalacao.state;
   const resolvida = yield* instalacao.resolve("", opcoes.ambiente).pipe(Effect.option);
@@ -250,7 +238,6 @@ export const atualizarAntigravity = Effect.fn("AtualizacaoHarnesses.atualizarAnt
     estadoInicial,
     versaoAtual,
     retirada,
-    ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
   });
 });
 
@@ -261,7 +248,6 @@ export const atualizarAntigravity = Effect.fn("AtualizacaoHarnesses.atualizarAnt
  */
 export const atualizarCodex = Effect.fn("AtualizacaoHarnesses.atualizarCodex")(function* (
   instalacao: Pick<CodexInstallation["Service"], "resolve" | "state" | "changes" | "checkForUpdate" | "start">,
-  opcoes: { readonly prazo?: Duration.Input } = {},
 ): Effect.fn.Return<ResultadoAtualizacaoHarness> {
   const estadoInicial = yield* instalacao.state;
   const resolvida = yield* instalacao.resolve().pipe(Effect.option);
@@ -284,7 +270,6 @@ export const atualizarCodex = Effect.fn("AtualizacaoHarnesses.atualizarCodex")(f
     versaoAtual,
     retirada,
     recusarLocalAposCheck: true,
-    ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
   });
 });
 
@@ -338,7 +323,7 @@ const limparStagingAntigo = Effect.fn("AtualizacaoHarnesses.limparStagingAntigo"
 });
 
 /**
- * Remove as versões excedentes (além de `manterAnteriores`), revalidando `podeRemover` antes de
+ * Remove as versões excedentes (além de `MANTER_ANTERIORES`), revalidando `podeRemover` antes de
  * cada remoção para fechar janelas de corrida com instalações concorrentes. Renomeia para
  * `.remover-<nome>` antes do `remove` recursivo para não deixar pasta parcialmente apagada órfã
  * caso um executável esteja travado (Windows).
@@ -346,13 +331,12 @@ const limparStagingAntigo = Effect.fn("AtualizacaoHarnesses.limparStagingAntigo"
 const removerExcedentes = Effect.fn("AtualizacaoHarnesses.removerExcedentes")(function* (
   pastaBase: string,
   candidatas: ReadonlyArray<CandidataLimpeza>,
-  manterAnteriores: number,
   podeRemover: Effect.Effect<boolean>,
 ) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const ordenadas = [...candidatas].sort(ordenarMaisNovasPrimeiro);
-  const paraRemover = ordenadas.slice(Math.max(0, manterAnteriores));
+  const paraRemover = ordenadas.slice(MANTER_ANTERIORES);
   let removidas = 0;
   for (const alvo of paraRemover) {
     if (!(yield* podeRemover)) break;
@@ -379,7 +363,7 @@ interface LayoutLimpeza {
 const limparVersoesLayout = Effect.fn("AtualizacaoHarnesses.limparVersoesLayout")(function* (
   managedDirectory: string,
   layout: LayoutLimpeza,
-  opcoes: { readonly manterAnteriores?: number; readonly emAndamento?: Effect.Effect<boolean> } = {},
+  opcoes: { readonly emAndamento?: Effect.Effect<boolean> } = {},
 ): Effect.fn.Return<number, never, FileSystem.FileSystem | Path.Path> {
   const estaEmAndamento = opcoes.emAndamento ?? Effect.succeed(false);
   if (yield* estaEmAndamento) return 0;
@@ -423,23 +407,18 @@ const limparVersoesLayout = Effect.fn("AtualizacaoHarnesses.limparVersoesLayout"
     const ativoAgora = yield* lerAtivo;
     return Option.isSome(ativoAgora) && ativoAgora.value === ativo.value;
   });
-  return yield* removerExcedentes(
-    layout.pastaVersoes,
-    candidatas,
-    opcoes.manterAnteriores ?? MANTER_ANTERIORES_PADRAO,
-    podeRemover,
-  );
+  return yield* removerExcedentes(layout.pastaVersoes, candidatas, podeRemover);
 });
 
 /**
  * Remove versões antigas completas do Antigravity em `<managedDirectory>/versions`, mantendo a
- * versão ativa em `active.json` e até `manterAnteriores` versões anteriores (padrão: 1). Também
+ * versão ativa em `active.json` e a anterior (`MANTER_ANTERIORES`). Também
  * limpa pastas temporárias `.install-*`, `active.json.*` (>24h) e `.remover-*` órfãs.
  */
 export const limparVersoesAntigasAntigravity = Effect.fn("AtualizacaoHarnesses.limparVersoesAntigasAntigravity")(
   function* (
     managedDirectory: string,
-    opcoes: { readonly manterAnteriores?: number; readonly emAndamento?: Effect.Effect<boolean> } = {},
+    opcoes: { readonly emAndamento?: Effect.Effect<boolean> } = {},
   ): Effect.fn.Return<number, never, FileSystem.FileSystem | Path.Path> {
     const path = yield* Path.Path;
     const pastaVersoes = path.join(managedDirectory, "versions");
@@ -463,12 +442,12 @@ export const limparVersoesAntigasAntigravity = Effect.fn("AtualizacaoHarnesses.l
 
 /**
  * Remove versões antigas completas do Codex em `<managedDirectory>/<versão>`, mantendo a versão
- * ativa em `active.json` e até `manterAnteriores` versões anteriores (padrão: 1). Também limpa
+ * ativa em `active.json` e a anterior (`MANTER_ANTERIORES`). Também limpa
  * pastas temporárias `.install-*`, `.active-*` (>24h) e `.remover-*` órfãs.
  */
 export const limparVersoesAntigasCodex = Effect.fn("AtualizacaoHarnesses.limparVersoesAntigasCodex")(function* (
   managedDirectory: string,
-  opcoes: { readonly manterAnteriores?: number; readonly emAndamento?: Effect.Effect<boolean> } = {},
+  opcoes: { readonly emAndamento?: Effect.Effect<boolean> } = {},
 ): Effect.fn.Return<number, never, FileSystem.FileSystem | Path.Path> {
   return yield* limparVersoesLayout(
     managedDirectory,

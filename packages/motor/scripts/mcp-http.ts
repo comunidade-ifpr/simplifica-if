@@ -31,7 +31,6 @@ export const servidorIfprHttp = Effect.fn("poc.servidorIfprHttp")(function* (opc
     Effect.forkScoped,
   );
   return {
-    tipo: "http",
     nome: "ifpr",
     url: sessao.url,
     cabecalhos: sessao.cabecalhos,

@@ -13,8 +13,10 @@ import "../index.css";
 import { ContextoMemoria, MemoriaLeitor, useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
 import { Sumario } from "./Sumario.tsx";
-import { buscarNoTexto, visivel } from "./busca.ts";
+import { indexarBusca, ocorrencias, visivel } from "./busca.ts";
 import { faixasDoRealce, textosDe } from "./realce.ts";
+
+const buscarNoTexto = (nos: ReadonlyArray<Text>, termo: string) => ocorrencias(indexarBusca(nos), termo);
 
 const montados: Array<() => void> = [];
 afterEach(() => {

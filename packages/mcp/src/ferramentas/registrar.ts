@@ -63,7 +63,7 @@ export const NOMES_FERRAMENTAS: ReadonlyArray<string> = FERRAMENTAS.map((f) => f
  * O chamador das ferramentas, com o Toolkit do ambiente (`FerramentasIfpr`, os handlers sobre o
  * `Leitura`) resolvido uma vez. Cada chamada, como o servidor a faz: a entrada conferida com a mensagem
  * de `validacao.ts` e o `handle` do Toolkit, que a confere de novo e codifica a resposta pelo
- * `outputSchema`. A `Resposta` é o `structuredContent` do servidor; o `simplifica-mcp consultar` a
+ * `outputSchema`. A `Resposta` é o `structuredContent` do servidor; a CLI `kb` a
  * imprime.
  *
  * A chamada roda no contexto de quem chama: um serviço da chamada (a `PastaTrabalho` da sessão HTTP, o

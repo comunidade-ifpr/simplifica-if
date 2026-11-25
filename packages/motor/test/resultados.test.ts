@@ -71,7 +71,6 @@ const sessaoCom = (roteiros: ReadonlyArray<ReadonlyArray<Passo>>, comResultados 
       pastaTrabalho: "/tmp",
       servidoresMcp: [
         {
-          tipo: "http",
           nome: "ifpr",
           url: "http://127.0.0.1:1/mcp",
           preAprovado: true,

@@ -125,10 +125,10 @@ export const baixar = Effect.fn("Atualizacao.baixar")(function* (
 
 const conferirHash = Effect.fn("Atualizacao.conferirHash")(function* (
   dados: Uint8Array,
-  esperado: { sha256: string; bytes?: number },
+  esperado: { sha256: string; bytes: number },
   pacote: string,
 ) {
-  if (esperado.bytes !== undefined && dados.byteLength !== esperado.bytes) {
+  if (dados.byteLength !== esperado.bytes) {
     return yield* new PacoteInvalido({ pacote, motivo: "tamanho diferente do manifesto" });
   }
   if ((yield* sha256(dados)) !== esperado.sha256) {
@@ -300,7 +300,7 @@ export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(func
       }
       for (const skill of novas) {
         const pacote = `skill ${skill.nome}`;
-        const dados = yield* baixar(urlDoArquivo(skill, urlDoManifesto), 50 * 1024 * 1024, ctx.prazo);
+        const dados = yield* baixar(urlDoArquivo(skill, urlDoManifesto), skill.bytes, ctx.prazo);
         yield* conferirHash(dados, skill, pacote);
         const desempacotada = yield* Effect.try({
           try: () => desempacotarSkill(dados),
@@ -339,7 +339,7 @@ const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
 
   /** O banco pelo patch, se ele aplica e dá o `sha256_banco`; senão, `undefined` (cai no pacote inteiro). */
   const pelPatch = Effect.fn("Atualizacao.baixarPatch")(function* (p: NonNullable<typeof patch>) {
-    const dados = yield* baixar(urlDoArquivo(p, urlDoManifesto), p.bytes ?? 256 * 1024 * 1024, ctx.prazo);
+    const dados = yield* baixar(urlDoArquivo(p, urlDoManifesto), p.bytes, ctx.prazo);
     yield* conferirHash(dados, p, "patch da base");
     // patch que não aplica (base local diferente): cai no pacote inteiro
     const aplicado = yield* fs.readFile(ctx.abertura.banco).pipe(
@@ -368,17 +368,14 @@ const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
     const pelo = patch === undefined ? undefined : yield* pelPatch(patch);
     const banco = pelo ?? (yield* pacoteInteiro);
     yield* escreverAtomico(c.baixando, banco);
-    yield* validarBancoEmWorker(c.baixando, {
-      versao: manifesto.versao,
-      ...(base.data_referencia === undefined ? {} : { dataReferencia: base.data_referencia }),
-    });
+    yield* validarBancoEmWorker(c.baixando, { versao: manifesto.versao, dataReferencia: base.data_referencia });
     yield* fs.rename(c.baixando, c.pendente).pipe(naPasta("guardar a base baixada"));
     return pelo === undefined ? ("inteiro" as const) : ("patch" as const);
   });
   const via = yield* trazer.pipe(Effect.onError(() => fs.remove(c.baixando, { force: true }).pipe(Effect.ignore)));
   yield* gravarEstado(ctx.pasta, {
     ...(yield* lerEstado(ctx.pasta)),
-    pendente: { versao: manifesto.versao, sha256: base.sha256_banco, novidades: manifesto.novidades ?? [] },
+    pendente: { versao: manifesto.versao, novidades: manifesto.novidades },
   });
   return via;
 });
@@ -401,7 +398,7 @@ export const atualizarUmaVez = Effect.fn("Atualizacao.atualizarUmaVez")(function
   yield* gravarEstado(opcoes.pasta, {
     ...(yield* lerEstado(opcoes.pasta)),
     ultimaConferencia: DateTime.formatIso(yield* DateTime.now),
-    ...(manifesto.gerado_em === undefined ? {} : { manifestoGeradoEm: manifesto.gerado_em }),
+    manifestoGeradoEm: manifesto.gerado_em,
   });
   return yield* baixarAtualizacao(manifesto, url, opcoes);
 }, Effect.scoped);

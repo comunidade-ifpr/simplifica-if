@@ -30,8 +30,9 @@ let servidor: ServidorTeste;
  * vira um PNG lá. Sem a variável, nada se grava.
  */
 const CAPTURAS = import.meta.env.VITE_CAPTURAS as string | undefined;
+const capturando = CAPTURAS !== undefined && CAPTURAS !== "";
 async function capturar(nome: string) {
-  if (CAPTURAS !== undefined && CAPTURAS !== "") await page.screenshot({ path: `${CAPTURAS}/${nome}.png` });
+  if (capturando) await page.screenshot({ path: `${CAPTURAS}/${nome}.png` });
 }
 
 beforeAll(async () => {
@@ -779,6 +780,7 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
     await Promise.all(document.getAnimations().map((animacao) => animacao.finished.catch(() => undefined)));
   };
   const nosDoisTemas = async (nome: string) => {
+    if (!capturando) return;
     await escuro(false);
     await capturar(`${nome}-claro`);
     await escuro(true);
@@ -1133,7 +1135,7 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   });
   {
     await using _app = await montarAppComOrigem(
-      { tipo: "navegador", fonte: "url", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
+      { tipo: "navegador", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
       "/",
       { atraso: () => 50 },
     );
@@ -1177,7 +1179,7 @@ it("Ver todas as tarefas e os avisos de conexão, sem inglês nem jargão (M1.14
   // Um endereço que não responde: depois da segunda tentativa, o aviso da queda.
   {
     await using _app = await montarAppComOrigem(
-      { tipo: "navegador", fonte: "url", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
+      { tipo: "navegador", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
       "/",
       { atraso: () => 50 },
     );

@@ -9,10 +9,9 @@
  * - **ppc** (`campus/curso/versao`, ou `campus/curso` para o vigente; com ou sem `#secao`): `lerPpc`
  *   (curso, campus, o ID da versão e o índice das seções), `lerDocumento` e, com seção, `lerSecao`
  *   (para a citação); o índice do Explorar diz se a versão foi substituída;
- * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar); o texto do `lerLink`
- *   (o mesmo do `resources/read` do MCP) fica para um link de outro tipo.
+ * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar).
  */
-import type { Ancora, LinkLido } from "@simplifica-if/contratos-app";
+import type { Ancora } from "@simplifica-if/contratos-app";
 import { CheckIcon, ClipboardCopyIcon, InfoIcon, LocateFixedIcon } from "lucide-react";
 import { useState } from "react";
 import { useApi } from "../contexto.tsx";
@@ -22,6 +21,7 @@ import { Button } from "../components/ui/button.tsx";
 import { primeiraMaiuscula } from "../explorar/colecoes.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { corVigencia, SinalVigencia } from "../explorar/Vigencia.tsx";
+import { dataCurta } from "../lib/formato.ts";
 import { cn } from "../lib/utils.ts";
 import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { useCarga } from "./carga.ts";
@@ -31,13 +31,12 @@ import { BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from
 import { Sumario } from "./Sumario.tsx";
 import { artigosDosDispositivos, conteudoDoIndice, type Destino, IR_PARA, numeroDoArtigo } from "./sumario.ts";
 import {
-  citacaoDaNorma,
   citacaoDoDispositivo,
   citacaoDoPpc,
-  dataCurta,
   datasDoCabecalho,
   type FichaNorma,
   nomeDaRelacao,
+  referenciaDaNorma,
   type Relacao,
   type Selo,
   selosDaNorma,
@@ -55,17 +54,6 @@ export function desmontarLink(link: string): LinkDesmontado | null {
   const m = /^ifpr:\/\/([a-z]+)\/([^#]+)(?:#(.+))?$/i.exec(link);
   return m ? { tipo: m[1]!.toLowerCase(), caminho: m[2]!, fragmento: m[3] ?? null } : null;
 }
-
-const TIPOS: Readonly<Record<LinkLido["tipo"], string>> = {
-  norma: "Norma",
-  dispositivo: "Dispositivo de norma",
-  curso: "Curso",
-  ppc: "PPC",
-  secao: "Seção de PPC",
-  cnct: "Catálogo Nacional de Cursos Técnicos",
-  campus: "Campus",
-  ficha: "Ficha de análise",
-};
 
 /* ================================================================== peças */
 
@@ -328,7 +316,7 @@ function LeitorNorma({
         const lido = dispositivo.fase === "lido" ? dispositivo.valor.dados.dispositivos[0] : undefined;
         const citacao =
           fragmento === null
-            ? citacaoDaNorma(norma)
+            ? referenciaDaNorma(norma)
             : lido === undefined
               ? null
               : citacaoDoDispositivo({ dispositivo: lido, norma, nomeCurto: nomeCurtoLink(link) });
@@ -697,21 +685,6 @@ function LeitorPpc({
 
 /* ================================================================== curso, CNCT, campus, ficha */
 
-function LeitorLink({ link, aoAbrirLink }: { readonly link: string; readonly aoAbrirLink: (link: string) => void }) {
-  const api = useApi();
-  const lido = useCarga(`link:${link}`, () => api.chamar((c) => c.lerLink({ link })));
-  return (
-    <ComCarga carga={lido} titulo="Não foi possível ler este link">
-      {(valor) => (
-        <article aria-label={TIPOS[valor.tipo]} className="leitor-impressao">
-          <p className="mb-2 font-semibold text-muted-foreground text-small">{TIPOS[valor.tipo]}</p>
-          <Markdown texto={valor.texto} aoAbrirLink={aoAbrirLink} />
-        </article>
-      )}
-    </ComCarga>
-  );
-}
-
 /** O conteúdo de um link no leitor, pelo tipo. */
 export function ConteudoLink({
   link,
@@ -734,5 +707,10 @@ export function ConteudoLink({
   if (partes?.tipo === "campus") return <FichaCampus id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
   if (partes?.tipo === "cnct") return <FichaCnct slug={partes.caminho} aoAbrirLink={aoAbrirLink} />;
   if (partes?.tipo === "ficha") return <FichaRevisao id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
-  return <LeitorLink link={link} aoAbrirLink={aoAbrirLink} />;
+  return (
+    <Alert variant="error">
+      <AlertTitle>Não foi possível ler este link</AlertTitle>
+      <AlertDescription>O link não aponta para nada da base.</AlertDescription>
+    </Alert>
+  );
 }

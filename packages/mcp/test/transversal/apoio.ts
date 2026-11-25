@@ -7,8 +7,8 @@
  * - a resposta esperada de cada chamada, calculada no próprio processo (`emProcesso`);
  * - uma sessão MCP em stdio com JSON-RPC cru (`sessaoStdio`), que guarda cada linha de resposta como o
  *   servidor a escreveu, para a comparação byte a byte;
- * - o servidor padrão (`servidorPadrao`: o executável de `SIMPLIFICA_MCP_EXE` ou o Node com a CLI) e o
- *   servidor isolado da suíte "sem repositório" (`servidorIsolado`).
+ * - o servidor isolado (`servidorIsolado`): o executável de `SIMPLIFICA_MCP_EXE`, ou o bundle no Node
+ *   com o modelo de permissões.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
@@ -18,7 +18,6 @@ import * as NodeURL from "node:url";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import { conferirBundle } from "../../scripts/construir-executavel.ts";
 import { FERRAMENTAS, layerHandlers } from "../../src/ferramentas/toolkit.ts";
 import { layerLeituraComPasta } from "../../src/servidor.ts";
 import { camadaFerramentas, type FerramentaTestada, mensagemDeErro, responder } from "../apoio.ts";
@@ -35,7 +34,6 @@ export const SMOKE_APENAS = process.env.SIMPLIFICA_SMOKE_APENAS === "1";
 export const SMOKE = process.env.SIMPLIFICA_SMOKE === "1" || SMOKE_APENAS;
 /** O executável de `pnpm mcp:executavel`, quando a suíte roda contra ele. */
 export const EXE = process.env.SIMPLIFICA_MCP_EXE;
-const CLI = NodePath.resolve(import.meta.dirname, "../../src/cli.ts");
 
 /** A definição de uma ferramenta pelo nome. */
 export function ferramenta(nome: string): FerramentaTestada {
@@ -137,7 +135,7 @@ export interface Sessao {
 }
 
 /** Ambiente mínimo do filho: sem herdar `SIMPLIFICA_KB` nem o `PATH` com o Node do teste. */
-export function ambienteMinimo(casa: string): Record<string, string> {
+function ambienteMinimo(casa: string): Record<string, string> {
   if (NodeOS.platform() === "win32") {
     const sistema = process.env.SystemRoot ?? "C:\\Windows";
     return { SystemRoot: sistema, PATH: `${sistema}\\System32`, USERPROFILE: casa, HOME: casa };
@@ -217,32 +215,7 @@ export function resultado(linha: string): Resultado {
 export const comparavel = (r: Resultado) =>
   JSON.stringify({ isError: r.isError === true, content: r.content, structuredContent: r.structuredContent });
 
-/** O servidor de sempre sobre `banco`: o executável de `SIMPLIFICA_MCP_EXE`, ou o Node com a CLI. */
-export function servidorPadrao(banco: string): Servidor {
-  const cwd = diretorioTemporario("simplifica-mcp-proc-");
-  return {
-    comando: EXE ?? process.execPath,
-    // na data_referencia, como a consulta no processo do teste, com que se compara
-    args: [...(EXE ? [] : [CLI]), "--banco", banco, "--vigencia-na-referencia"],
-    cwd,
-    env: ambienteMinimo(cwd),
-  };
-}
-
 /* ================================================================== servidor isolado */
-
-/**
- * Gancho de pré-carga do servidor isolado em Node. O `realpath` em JavaScript do Node (que o
- * `FileSystem` do Effect usa fora do Windows) faz `lstat` de cada diretório acima do caminho, e o
- * modelo de permissões trata isso como leitura fora da pasta; a versão nativa resolve o mesmo caminho
- * sem tocar nos ancestrais. O gancho só troca uma pela outra.
- */
-const GANCHO = `import fs from "node:fs";
-import { syncBuiltinESMExports } from "node:module";
-fs.realpath = fs.realpath.native;
-fs.promises.realpath = async (caminho, opcoes) => fs.realpathSync.native(caminho, opcoes);
-syncBuiltinESMExports();
-`;
 
 /** Como o servidor isolado roda: o executável, ou o bundle no Node com o modelo de permissões. */
 export type ModoIsolado = "executavel" | "node-com-permissoes";
@@ -266,7 +239,7 @@ export interface ServidorIsolado {
  *   processo, com `--permission`: o servidor só pode ler a pasta do banco, o bundle e o gancho, e não
  *   pode escrever nada nem abrir processos. Qualquer leitura fora disso falha com `ERR_ACCESS_DENIED`.
  */
-export async function servidorIsolado(): Promise<ServidorIsolado> {
+export function servidorIsolado(): ServidorIsolado {
   const pastaIsolada = (banco: string, arquivos: ArquivosDaPasta) => {
     const pasta = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-sem-repo-"));
     NodeFS.copyFileSync(banco, NodePath.join(pasta, "kb.sqlite"));
@@ -293,20 +266,10 @@ export async function servidorIsolado(): Promise<ServidorIsolado> {
       },
     };
   }
-  let bundle = process.env.SIMPLIFICA_MCP_BUNDLE;
-  let gancho: string;
-  if (bundle) {
-    gancho = NodePath.join(NodePath.dirname(bundle), "realpath-nativo.mjs");
-  } else {
-    const codigo = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-bundle-"));
-    const gerado = await conferirBundle();
-    bundle = NodePath.join(codigo, NodePath.basename(gerado));
-    NodeFS.copyFileSync(gerado, bundle);
-    NodeFS.rmSync(NodePath.dirname(gerado), { recursive: true, force: true });
-    gancho = NodePath.join(codigo, "realpath-nativo.mjs");
-    NodeFS.writeFileSync(gancho, GANCHO);
-  }
-  const bundleFinal = bundle;
+  // o bundle e o gancho saem do globalSetup (`preparar-bundle.ts`)
+  const bundleFinal = process.env.SIMPLIFICA_MCP_BUNDLE;
+  if (!bundleFinal) throw new Error("SIMPLIFICA_MCP_BUNDLE ausente: rode pelo projeto mcp-transversal (globalSetup)");
+  const gancho = NodePath.join(NodePath.dirname(bundleFinal), "realpath-nativo.mjs");
   return {
     modo: "node-com-permissoes",
     preparar: (banco, arquivos = {}) => {

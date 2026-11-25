@@ -31,6 +31,7 @@ import {
   cliente,
   diretorioTemporario,
   layerDriversFalsos,
+  layerWorkersNoProcesso,
   limparTemporarios,
   novoRegistro,
   pedirHttp,
@@ -113,7 +114,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       // O laço de eventos do servidor anda durante a revisão (a conversão roda no Worker).
       let voltas = 0;
       const relogio = setInterval(() => (voltas += 1), 5);
-      const resultado = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      const resultado = yield* revisarAteOFim(rpc, { arquivo: original });
       clearInterval(relogio);
       assert.isAtLeast(voltas, 5);
 
@@ -130,7 +131,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       });
       assert.strictEqual(resultado.conferidos, 12);
       assert.strictEqual(resultado.dataBase, "2026-11-13");
-      const lista = yield* rpc["revisaoPpc.lista"]({ lista: resultado.lista! });
+      const lista = yield* rpc["revisaoPpc.lista"]({ lista: resultado.lista });
       const aee = lista.pendencias.find((v) => v.pendencia.ficha === "CT-CURR-22")?.pendencia;
       assert.strictEqual(aee?.noDocumento, "no-trecho");
 
@@ -138,9 +139,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       assert.deepStrictEqual(resultado.etapas, ["lendo", "identificando", "conferindo", "gravando"]);
 
       // De novo: a mesma cópia, regravada (a pasta fica com uma só).
-      const segunda = yield* revisarAteOFim(
-        rpc["revisaoPpc.revisar"]({ arquivo: original, cnct: "tecnico-em-agropecuaria" }),
-      );
+      const segunda = yield* revisarAteOFim(rpc, { arquivo: original, cnct: "tecnico-em-agropecuaria" });
       assert.strictEqual(segunda.arquivoComentado, resultado.arquivoComentado);
       assert.strictEqual(segunda.curso.origem, "pessoa");
       assert.deepStrictEqual(
@@ -152,7 +151,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
 
       // A cópia travada (aberta no Word, no Windows; aqui, sem permissão de escrita): passa a " (2)".
       NodeFS.chmodSync(resultado.arquivoComentado, 0o444);
-      const travada = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original })).pipe(
+      const travada = yield* revisarAteOFim(rpc, { arquivo: original }).pipe(
         Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(resultado.arquivoComentado, 0o644))),
       );
       assert.strictEqual(
@@ -171,7 +170,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
         gravar("notas.txt", strToU8("x")),
         NodePath.join(pasta, "nao-existe.docx"),
       ]) {
-        const erro = yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo })));
+        const erro = yield* Effect.flip(revisarAteOFim(rpc, { arquivo }));
         assert.isTrue(ehFalhaRevisaoPpc(erro));
       }
     }),
@@ -181,14 +180,10 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      const erro = yield* Effect.flip(
-        revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: gravar("hostil.docx", docxHostil()) })),
-      );
+      const erro = yield* Effect.flip(revisarAteOFim(rpc, { arquivo: gravar("hostil.docx", docxHostil()) }));
       assert.isTrue(ehFalhaRevisaoPpc(erro));
       assert.match(erro.message, /compressão anormal/);
-      const depois = yield* revisarAteOFim(
-        rpc["revisaoPpc.revisar"]({ arquivo: gravar("depois.docx", ppcSintetico()) }),
-      );
+      const depois = yield* revisarAteOFim(rpc, { arquivo: gravar("depois.docx", ppcSintetico()) });
       assert.strictEqual(depois.conferidos, 12);
     }),
   );
@@ -255,7 +250,9 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
             aoEtapa: (etapa) => etapas.push(etapa),
           }),
         ),
-        Effect.provide(RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao))),
+        Effect.provide(
+          RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao), Layer.provide(layerWorkersNoProcesso)),
+        ),
       );
       assert.isNull(ok.arquivoComentado);
       assert.strictEqual(ok.revisao.conferidos, 12);
@@ -302,7 +299,11 @@ const camadaDesktop = Servidor.layer({
   bancoConversas: conversasDesktop,
   token: Redacted.make(TOKEN),
   tokenDesktop: Redacted.make(TOKEN_DESKTOP),
-}).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
+}).pipe(
+  Layer.provide(layerDriversFalsos(novoRegistro())),
+  Layer.provide(layerWorkersNoProcesso),
+  Layer.provide(NodeServices.layer),
+);
 
 layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", (it) => {
   it.effect("sem liberação, recusa; a rota exige o segredo do desktop, sem Origin; liberado, revisa", () =>
@@ -310,7 +311,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       const { urlRpc, porta } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("liberado.docx", ppcSintetico());
-      const recusa = yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo })));
+      const recusa = yield* Effect.flip(revisarAteOFim(rpc, { arquivo }));
       // O botão que existe hoje e o soltar na janela; a interface pede o arquivo de novo.
       assert.include(recusa.message, "pelo botão “Escolher o PPC” ou soltando-o na janela do app");
       assert.notInclude(recusa.message, "(.docx)…");
@@ -340,14 +341,11 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       }
       assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}` })).status, 204);
 
-      const resultado = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo }));
+      const resultado = yield* revisarAteOFim(rpc, { arquivo });
       assert.strictEqual(resultado.conferidos, 12);
       // Outro arquivo da mesma pasta continua recusado.
       const outro = gravar("outro.docx", ppcSintetico());
-      assert.match(
-        (yield* Effect.flip(revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: outro })))).message,
-        /Escolha de novo o arquivo/,
-      );
+      assert.match((yield* Effect.flip(revisarAteOFim(rpc, { arquivo: outro }))).message, /Escolha de novo o arquivo/);
     }),
   );
 
@@ -399,22 +397,25 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
   );
 });
 
-layer(camada, { excludeTestServices: true })("a cópia comentada", (it) => {
+/** A cópia comentada não depende do Worker: o trabalho dele roda no processo. */
+const camadaNoProcesso = camada.pipe(Layer.provide(layerWorkersNoProcesso));
+
+layer(camadaNoProcesso, { excludeTestServices: true })("a cópia comentada", (it) => {
   it.effect("a cópia editada pela pessoa e o link no lugar da cópia ficam; a cópia vai para ' (2)'", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const original = gravar("PPC anotado.docx", ppcSintetico());
-      const primeira = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      const primeira = yield* revisarAteOFim(rpc, { arquivo: original });
       NodeFS.writeFileSync(primeira.arquivoComentado, "minhas anotações");
-      const segunda = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      const segunda = yield* revisarAteOFim(rpc, { arquivo: original });
       assert.strictEqual(
         segunda.arquivoComentado,
         NodePath.join(pasta, "PPC anotado - revisão prévia (Simplifica IF) (2).docx"),
       );
       assert.strictEqual(NodeFS.readFileSync(primeira.arquivoComentado, "utf8"), "minhas anotações");
       // A " (2)" é a do app: regravada, sem " (3)".
-      const terceira = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: original }));
+      const terceira = yield* revisarAteOFim(rpc, { arquivo: original });
       assert.strictEqual(terceira.arquivoComentado, segunda.arquivoComentado);
       // Nenhum temporário fica na pasta.
       assert.deepStrictEqual(
@@ -427,7 +428,7 @@ layer(camada, { excludeTestServices: true })("a cópia comentada", (it) => {
       const alvo = gravar("alvo do link.txt", strToU8("intacto"));
       const lugar = NodePath.join(pasta, "PPC link - revisão prévia (Simplifica IF).docx");
       NodeFS.symlinkSync(alvo, lugar);
-      const r = yield* revisarAteOFim(rpc["revisaoPpc.revisar"]({ arquivo: comLink }));
+      const r = yield* revisarAteOFim(rpc, { arquivo: comLink });
       assert.strictEqual(
         r.arquivoComentado,
         NodePath.join(pasta, "PPC link - revisão prévia (Simplifica IF) (2).docx"),

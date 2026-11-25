@@ -13,7 +13,7 @@ import type { CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
 
 /** Por que a conexão com o servidor local não abriu ou caiu. */
 export const MotivoFalha = Schema.Literals([
-  /** Sem credenciais: nem ponte do desktop, nem parâmetros na URL, nem variáveis `VITE_`. */
+  /** Sem credenciais: nem ponte do desktop, nem parâmetros na URL. */
   "sem-servidor",
   /** A ponte do desktop não entregou as credenciais. */
   "ponte",
@@ -66,7 +66,7 @@ export function mensagemFalha(motivo: MotivoFalha): string {
 export function detalheFalha(motivo: MotivoFalha): string {
   switch (motivo) {
     case "sem-servidor":
-      return "Sem credenciais do servidor local: nem ponte do desktop, nem ?servidor=<porta>&token=… na URL, nem VITE_SIMPLIFICA_SERVIDOR (ver apps/web/README.md).";
+      return "Sem credenciais do servidor local: nem ponte do desktop, nem ?servidor=<porta>&token=… na URL (ver apps/web/README.md).";
     case "ponte":
       return "A ponte do desktop não entregou as credenciais do servidor local.";
     case "indisponivel":

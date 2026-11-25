@@ -31,6 +31,7 @@ import {
   pedirHttp,
   TOKEN,
   turnoRpc,
+  layerWorkersNoProcesso,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -51,7 +52,11 @@ const camada = Servidor.layer({
   pastaCopias: copias,
   pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
   limitesPasta: { copias: 3, bytes: 64 * 1024 },
-}).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
+}).pipe(
+  Layer.provide(layerDriversFalsos(registro)),
+  Layer.provide(layerWorkersNoProcesso),
+  Layer.provide(NodeServices.layer),
+);
 
 describe("nomes", () => {
   it("nomeSeguro tira o que macOS e Windows recusam e encurta", () => {

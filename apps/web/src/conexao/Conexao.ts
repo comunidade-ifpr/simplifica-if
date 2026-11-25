@@ -34,7 +34,7 @@ import { comprarIngresso, FalhaConexao, type MotivoFalha, urlRpc } from "./ingre
 import type { OrigemConexao } from "./origem.ts";
 
 export const criarCliente = RpcClient.make(GrupoApp);
-/** O cliente do `GrupoApp`: `cliente["providers.detectar"]({ provider })`, `cliente.lerLink({ link })`… */
+/** O cliente do `GrupoApp`: `cliente["providers.detectar"]({ provider })`, `cliente.fichaNorma({ id })`… */
 export type ClienteApp = typeof criarCliente extends Effect.Effect<infer C, infer _E, infer _R> ? C : never;
 
 export type EstadoConexao =
@@ -48,7 +48,7 @@ export type EstadoConexao =
       readonly motivo: MotivoFalha;
       readonly proximaEm: number;
     }
-  /** Sem credenciais: nem desktop, nem `?servidor=…&token=…`, nem variáveis `VITE_`. */
+  /** Sem credenciais: nem desktop, nem `?servidor=…&token=…`. */
   | { readonly fase: "sem-servidor" };
 
 /** Sem quadros do servidor por este tempo, a conexão é dada como caída (o ping sai a cada 5 s). */

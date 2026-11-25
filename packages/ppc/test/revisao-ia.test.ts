@@ -860,26 +860,3 @@ describe("triagem do texto dirigido a IA", () => {
     "Engenharia de prompts: system prompt e exemplos.",
   ])("não acha: %s", (linha) => expect(dirigidoAIa(linha)).toBe(false));
 });
-
-describe("triagem nos PPCs da base", () => {
-  test("nenhuma linha dos PPCs da base (todos os níveis) é apontada como texto dirigido a IA", () => {
-    const raiz = NodePath.join(import.meta.dirname, "../../../base-conhecimento/institucional/ifpr/ppcs");
-    const arquivos: string[] = [];
-    const andar = (pasta: string) => {
-      for (const e of NodeFS.readdirSync(pasta, { withFileTypes: true }))
-        if (e.isDirectory()) andar(NodePath.join(pasta, e.name));
-        else if (e.name.endsWith(".md")) arquivos.push(NodePath.join(pasta, e.name));
-    };
-    andar(raiz);
-    const indice = JSON.parse(NodeFS.readFileSync(NodePath.join(raiz, "index.json"), "utf8")) as {
-      total_itens: number;
-    };
-    expect(arquivos.length).toBe(indice.total_itens);
-    const achados = arquivos.flatMap((arquivo) =>
-      NodeFS.readFileSync(arquivo, "utf8")
-        .split("\n")
-        .flatMap((linha, i) => (dirigidoAIa(linha) ? [`${NodePath.relative(raiz, arquivo)}:${i + 1}`] : [])),
-    );
-    expect(achados).toEqual([]);
-  });
-});

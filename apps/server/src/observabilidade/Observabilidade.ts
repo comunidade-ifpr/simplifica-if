@@ -2,12 +2,9 @@
  * A observabilidade do servidor local: os spans e os logs pelos exportadores oficiais do Effect
  * (`OtlpTracer`, `OtlpLogger`, OTLP/JSON) e o log de uma linha no stderr.
  *
- * - **Arquivo** (o padrão, com a pasta de logs): o `HttpClient` de `ArquivoOtlp.ts` grava os pedidos
- *   de exportação em `traces.jsonl` e `logs-otlp.jsonl`, ao lado do `simplifica-if.log`. Nada sai do
- *   computador. Modo `completo` (desenvolvimento) ou `caixa-preta` (app empacotado).
- * - **Rede** (só no desenvolvimento): com `OTEL_EXPORTER_OTLP_ENDPOINT` e o modo `completo`, os mesmos
- *   exportadores mandam ao coletor (Jaeger, otel-tui…) por OTLP/HTTP, no lugar do arquivo. Na caixa-preta
- *   a variável não vale: no app empacotado, nada sai do computador.
+ * - **Arquivo** (com a pasta de logs): o `HttpClient` de `ArquivoOtlp.ts` grava os pedidos de exportação
+ *   em `traces.jsonl` e `logs-otlp.jsonl`, ao lado do `simplifica-if.log`. Nada sai do computador. Modo
+ *   `completo` (desenvolvimento) ou `caixa-preta` (app empacotado).
  * - **Desligado:** sem pasta de logs (o servidor rodado à mão, os testes) ou com `desligado`; os spans
  *   ficam no tracer nativo, que não exporta.
  *
@@ -20,8 +17,7 @@ import * as Layer from "effect/Layer";
 import * as Logger from "effect/Logger";
 import type * as Path from "effect/Path";
 import * as References from "effect/References";
-import { FetchHttpClient } from "effect/http";
-import { OtlpExporter, OtlpLogger, OtlpSerialization, OtlpTracer } from "effect/observability";
+import { OtlpExporter, OtlpLogger, OtlpTracer } from "effect/observability";
 import { codigoDoErro } from "@simplifica-if/contratos-app";
 import * as ArquivoOtlp from "./ArquivoOtlp.ts";
 import type { CaixaPreta } from "./CaixaPreta.ts";
@@ -38,21 +34,16 @@ export interface Opcoes {
   /** A pasta de logs do app; sem ela, nada vai a arquivo. */
   readonly pastaLogs: string | undefined;
   readonly modo: Modo;
-  /** `OTEL_EXPORTER_OTLP_ENDPOINT`: com ele, a exportação vai por rede a esse coletor, não ao arquivo. */
-  readonly endpoint?: string | undefined;
   readonly versao?: string | undefined;
   /** Para os testes: o tamanho de giro dos arquivos e a caixa-preta com limites próprios. */
   readonly limiteArquivo?: number;
   readonly caixaPreta?: CaixaPreta;
 }
 
-/**
- * O tracer e o logger OTLP sobre um `HttpClient` e um `OtlpSerialization` (os de arquivo, ou o da rede
- * com o JSON do Effect), com um `Flusher` só.
- */
-const exportadores = (base: string, versao: string | undefined) => {
+/** O tracer e o logger OTLP sobre o `HttpClient` e o `OtlpSerialization` de arquivo, com um `Flusher` só. */
+const exportadores = (versao: string | undefined) => {
   const recurso = { serviceName: NOME_SERVICO, ...(versao === undefined ? {} : { serviceVersion: versao }) };
-  const url = (sinal: string) => `${base.replace(/\/+$/u, "")}/v1/${sinal}`;
+  const url = (sinal: string) => `${BASE_ARQUIVO}/v1/${sinal}`;
   return Layer.mergeAll(
     OtlpTracer.layer({ url: url("traces"), resource: recurso }),
     OtlpLogger.layer({ url: url("logs"), resource: recurso, mergeWithExisting: true }),
@@ -64,12 +55,6 @@ const exportadores = (base: string, versao: string | undefined) => {
  * desligada): o fim do escopo descarrega o que falta, e os testes descarregam com `flush`.
  */
 export const layer = (opcoes: Opcoes): Layer.Layer<OtlpExporter.Flusher, never, FileSystem.FileSystem | Path.Path> => {
-  // O coletor só no modo `completo` (o do desenvolvimento): a caixa-preta do app empacotado nunca usa a rede.
-  if (opcoes.modo === "completo" && opcoes.endpoint !== undefined && opcoes.endpoint.trim() !== "") {
-    return exportadores(opcoes.endpoint.trim(), opcoes.versao).pipe(
-      Layer.provide(Layer.mergeAll(FetchHttpClient.layer, OtlpSerialization.layerJson)),
-    );
-  }
   if (opcoes.pastaLogs === undefined || opcoes.modo === "desligado") return OtlpExporter.layerFlusher;
   const arquivo = ArquivoOtlp.layer({
     pasta: opcoes.pastaLogs,
@@ -77,7 +62,7 @@ export const layer = (opcoes: Opcoes): Layer.Layer<OtlpExporter.Flusher, never, 
     ...(opcoes.limiteArquivo === undefined ? {} : { limite: opcoes.limiteArquivo }),
     ...(opcoes.caixaPreta === undefined ? {} : { caixaPreta: opcoes.caixaPreta }),
   });
-  return exportadores(BASE_ARQUIVO, opcoes.versao).pipe(Layer.provide(arquivo));
+  return exportadores(opcoes.versao).pipe(Layer.provide(arquivo));
 };
 
 /**

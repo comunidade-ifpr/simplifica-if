@@ -24,8 +24,8 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Semaphore from "effect/Semaphore";
-import { type FalhaWorker, type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
-import type { FormatoTexto, PedidoTexto, RespostaTexto } from "./trabalhador.ts";
+import * as WorkerLimitado from "../WorkerLimitado.ts";
+import type { FormatoTexto, PedidoTexto, RespostaTexto } from "./trabalho.ts";
 import { resumoDaFalha } from "../observabilidade/resumoDaFalha.ts";
 
 /** Onde fica o texto, relativo à pasta da tarefa (com `/`). */
@@ -36,7 +36,7 @@ const FORMATOS: Readonly<Record<string, FormatoTexto>> = { ".docx": "docx", ".od
 
 export const EXTENSOES_CONVERTIDAS: ReadonlyArray<string> = Object.keys(FORMATOS);
 
-export interface Limites extends LimitesWorker {
+export interface Limites extends WorkerLimitado.LimitesWorker {
   /** Tamanho máximo do arquivo, conferido por quem o lê (o de `LIMITES_PADRAO.bytesDoArquivo` do `docx`). */
   readonly bytesDoArquivo: number;
 }
@@ -112,12 +112,11 @@ export function cabecalhoTexto(nome: string, data: string, formato: FormatoTexto
 
 export interface OpcoesTextos {
   readonly limites?: Partial<Limites>;
-  readonly trabalhador?: URL;
 }
 
 export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesTextos = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
-  const url = opcoes.trabalhador ?? URL_TRABALHADOR;
+  const executar = yield* WorkerLimitado.Executor;
   const path = yield* Path.Path;
   // Uma conversão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
@@ -128,7 +127,7 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
     // continuam dele.
     const pedido: PedidoTexto = { bytes: new Uint8Array(bytes), formato };
     const resposta = yield* vez.withPermits(1)(
-      rodarNoWorker<RespostaTexto>(url, pedido, [pedido.bytes.buffer as ArrayBuffer], limites),
+      executar<RespostaTexto>(URL_TRABALHADOR, pedido, [pedido.bytes.buffer as ArrayBuffer], limites),
     );
     if (resposta.ok) return { tipo: "texto", markdown: resposta.markdown } satisfies ResultadoTexto;
     if ("arquivoInvalido" in resposta) return semTexto(resposta.arquivoInvalido);
@@ -138,7 +137,7 @@ export const make = Effect.fn("TextosAnexos.make")(function* (opcoes: OpcoesText
   });
 
   /** O motivo da falha do Worker, para a pessoa; o que não é limite vai para o log. */
-  const motivoDoWorker = (erro: FalhaWorker): Effect.Effect<ResultadoTexto> => {
+  const motivoDoWorker = (erro: WorkerLimitado.FalhaWorker): Effect.Effect<ResultadoTexto> => {
     switch (erro.motivo) {
       case "memoria":
         return Effect.succeed(semTexto("O arquivo exigiu memória demais para virar texto."));

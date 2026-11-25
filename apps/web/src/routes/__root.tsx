@@ -44,7 +44,7 @@ function FaixaArrastavel() {
 function ErroDaTela({ error, reset }: ErrorComponentProps) {
   const mensagem = explicarErro(error);
   useEffect(() => {
-    registrarErro(`erro na tela ${window.location.hash || window.location.pathname}: ${textoDoErro(error)}`);
+    registrarErro(`erro na tela ${window.location.pathname}: ${textoDoErro(error)}`);
   }, [error]);
   return (
     <div className="flex h-dvh flex-col">

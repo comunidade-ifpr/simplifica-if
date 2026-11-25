@@ -3,7 +3,6 @@ import { etapasVistas, marcaDaEntrada } from "../conversa/etapas.ts";
 import type { Item } from "../conversa/estado.ts";
 import {
   resumoMudancasPasta,
-  dataDaBase,
   dispositivoPorExtenso,
   duracaoPorExtenso,
   faltando,
@@ -73,11 +72,10 @@ describe("tarefa", () => {
     expect(faltando(skill.entradas, {})).toEqual(["Documento a conferir"]);
     expect(faltando(skill.entradas, { documento: "x.md" })).toEqual([]);
   });
-  it("duração, data da base e título da pasta", () => {
+  it("duração e título da pasta", () => {
     expect(duracaoPorExtenso("10min")).toBe("cerca de 10 minutos");
     expect(duracaoPorExtenso("1h")).toBe("cerca de 1 hora");
     expect(duracaoPorExtenso("logo")).toBeUndefined();
-    expect(dataDaBase("2026-11-12")).toBe("12/11/2026");
     expect(tituloDoPedido("  Quais normas tratam do estágio supervisionado no técnico integrado?\nmais")).toBe(
       "Quais normas tratam do estágio supervisionado no técnico",
     );
@@ -134,7 +132,7 @@ describe("etapas", () => {
 
 describe("resumoMudancasPasta", () => {
   it("conta cada grupo, com até três nomes e o resto como número", () => {
-    expect(resumoMudancasPasta({ anexados: [], novos: ["Ata.docx"], mudados: [], removidos: [] })).toBe(
+    expect(resumoMudancasPasta({ anexados: [], novos: ["Ata.docx"], mudados: [], removidos: [], semTexto: [] })).toBe(
       "Na pasta, desde a última resposta: 1 novo (Ata.docx). A IA foi avisada.",
     );
     expect(
@@ -143,6 +141,7 @@ describe("resumoMudancasPasta", () => {
         novos: [],
         mudados: ["a.md", "b.md", "c.md", "d.md", "e.md"],
         removidos: ["x\ny.md"],
+        semTexto: [],
       }),
     ).toBe(
       "Na pasta, desde a última resposta: 5 mudados (a.md, b.md, c.md e mais 2); 1 removido (x y.md). A IA foi avisada.",
@@ -164,11 +163,11 @@ describe("resumoMudancasPasta", () => {
   });
 
   it("os anexos vêm antes do que mudou fora da conversa", () => {
-    expect(resumoMudancasPasta({ anexados: ["Ata.docx"], novos: [], mudados: [], removidos: [] })).toBe(
+    expect(resumoMudancasPasta({ anexados: ["Ata.docx"], novos: [], mudados: [], removidos: [], semTexto: [] })).toBe(
       "Anexado: Ata.docx. A IA foi avisada.",
     );
-    expect(resumoMudancasPasta({ anexados: ["a.pdf", "b.png"], novos: ["c.md"], mudados: [], removidos: [] })).toBe(
-      "Anexados: a.pdf, b.png. Na pasta, desde a última resposta: 1 novo (c.md). A IA foi avisada.",
-    );
+    expect(
+      resumoMudancasPasta({ anexados: ["a.pdf", "b.png"], novos: ["c.md"], mudados: [], removidos: [], semTexto: [] }),
+    ).toBe("Anexados: a.pdf, b.png. Na pasta, desde a última resposta: 1 novo (c.md). A IA foi avisada.");
   });
 });

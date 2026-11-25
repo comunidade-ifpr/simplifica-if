@@ -1,6 +1,6 @@
 ## Resumo
 
-As fichas da revisão de PPC: um JSON por critério, com pergunta, rubrica, evidência mínima, referências normativas e estados permitidos. O contrato é o Effect Schema de `scripts/base/revisao-ppc/esquemas.ts` (`../schemas/ficha.schema.json` é gerado dele).
+As fichas da revisão de PPC: um JSON por critério, com pergunta, rubrica, evidência mínima, referências normativas e estados permitidos. O contrato é o Effect Schema de `scripts/base/revisao-ppc/esquemas.ts`.
 
 Cada ficha declara:
 

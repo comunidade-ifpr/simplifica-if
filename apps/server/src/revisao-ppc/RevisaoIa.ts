@@ -55,7 +55,7 @@ import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import type * as Motor from "@simplifica-if/motor";
 import { estimar } from "./estimativa.ts";
-import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
 import { chavePendencia, type EntradaIa, estadoDaIa } from "@simplifica-if/ppc/revisao-previa";
@@ -113,7 +113,7 @@ export const regravarCopia = Effect.fn("ListaViva.regravarCopia")(function* (
   });
   yield* persistencia.trocarResultado(
     id,
-    { ...RevisorPpc.resultadoParaInterface(registro.arquivo, final), lista: id },
+    RevisorPpc.resultadoParaInterface(registro.arquivo, final),
     registro.versao,
     locaisNoDocumento(final.revisao.pendencias),
   );
@@ -153,12 +153,6 @@ export class RevisaoIa extends Context.Service<
 
 export interface OpcoesRevisaoIa {
   readonly paralelismo?: number;
-  readonly tempoTurno?: Duration.Duration;
-  /**
-   * O critério do INCONCLUSIVO das revisões novas (`pedido.ts`): `conservador`, o padrão, ou
-   * `ausencia`, em avaliação (M1.11, etapa 5). A revisão grava o seu no plano; a retomada usa o dela.
-   */
-  readonly criterio?: CriterioInconclusivo;
 }
 
 /** Dias que uma revisão `preparada` e nunca iniciada fica guardada. */
@@ -223,8 +217,6 @@ const agoraIso = Effect.map(DateTime.now, DateTime.formatIso);
 
 export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisaoIa = {}) {
   const paralelismo = Math.max(1, opcoes.paralelismo ?? PARALELISMO);
-  const tempoTurno = opcoes.tempoTurno ?? TEMPO_TURNO;
-  const criterio = opcoes.criterio ?? CRITERIO_PADRAO;
   const persistencia = yield* RevisoesPpc.RevisoesPpc;
   const revisor = yield* RevisorPpc.RevisorPpc;
   const fs = yield* FileSystem.FileSystem;
@@ -363,7 +355,6 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       curso: cursoEmTexto(lista.resultado.curso),
       modo: entrada.modo,
       nonce,
-      criterio,
     }).pipe(
       Effect.provideContext(contextoKb),
       Effect.tapError((erro) => Effect.logError("revisão com IA: preparo falhou", erro)),
@@ -454,7 +445,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* persistencia.mesclarIa(
       lista.id,
       {
-        resultado: { ...resultado, lista: lista.id },
+        resultado,
         resultadosIa: ia,
         revisao: registro.id,
         provider: registro.provider,
@@ -512,8 +503,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           pedido,
           alvos: bloco.alvos,
           fontes: new Set(bloco.fontes),
-          tempoTurno,
-          criterio: plano.criterio ?? CRITERIO_PADRAO,
+          tempoTurno: TEMPO_TURNO,
+          criterio: plano.criterio,
           revisaoHumana: teveTextoParaIa(plano.markdown),
           registrarTentativa: (t) =>
             persistencia
@@ -580,7 +571,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         plano.transversais.trechos,
         plano.transversais.contexto,
         plano.nonce,
-        plano.criterio ?? CRITERIO_PADRAO,
+        plano.criterio,
       );
       yield* rodarBloco(transversal, pedido);
       if (pausa !== null) return yield* Effect.fail<PausaRevisao>(pausa);
@@ -590,11 +581,10 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const resultado: ResultadoRevisaoPpc = yield* comTrava(
       registro,
       Effect.gen(function* () {
+        // Na trava da lista, que `mesclar` acabou de achar: ela não some no meio.
         const listaId = yield* mesclar(registro, plano, prontos, true);
-        const lista = yield* persistencia.buscarLista(listaId);
-        if (lista === null) return yield* falha(registro.arquivo, SEM_LISTA);
-        yield* regravarCopia(lista, { persistencia, revisor, fs });
-        return (yield* persistencia.buscarLista(listaId))?.resultado ?? lista.resultado;
+        yield* regravarCopia((yield* persistencia.buscarLista(listaId))!, { persistencia, revisor, fs });
+        return (yield* persistencia.buscarLista(listaId))!.resultado;
       }),
     );
     yield* persistencia.alterarRevisao(id, { situacao: "concluida", resultado });

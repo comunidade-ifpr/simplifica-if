@@ -1,62 +1,33 @@
 #!/usr/bin/env node
 /**
- * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
- * vigência na data_referencia de config/vigencia.yaml).
+ * Gera os arquivos derivados da base: os campos gerados do front matter das normas (relações de
+ * `relacoes.yaml` e status de vigência na `data_referencia` de `config/vigencia.yaml`) e os índices de
+ * PPCs (`institucional/ifpr/ppcs/index.json` e `secoes/<tipo>.jsonl`). O `validar_base` confere que
+ * estão em dia.
  */
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
-import * as FileSystem from "effect/FileSystem";
 import * as Command from "effect/cli/Command";
-import * as Flag from "effect/cli/Flag";
-import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { criarCaminhos } from "./base/caminhos.ts";
-import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
-import { sairCom } from "@simplifica-if/kb/principal";
+import { aplicarGerados, arquivosGeradosDaBase } from "./base/gerados.ts";
 import { executarPrincipal } from "./principal.ts";
 
 export const comando = Command.make(
   "gerar_base",
-  {
-    check: Flag.Boolean("check").pipe(
-      Flag.withDescription("verifica se os arquivos gerados estão atualizados, sem gravar"),
-      Flag.withDefault(false),
-    ),
-  },
-  Effect.fn("gerar_base")(function* ({ check }) {
-    const fs = yield* FileSystem.FileSystem;
+  {},
+  Effect.fn("gerar_base")(function* () {
     const caminhos = criarCaminhos();
-    if (!(yield* fs.exists(caminhos.normas))) {
-      yield* Console.error(`Diretório de normas não encontrado: ${caminhos.normas}`);
-      return yield* sairCom(1);
-    }
-
-    const opcoes = { modo: check ? "verificar" : "gravar", raiz: caminhos.raiz } as const;
-    const normas = yield* Effect.sync(() => normasComCamposGerados(caminhos.raizProjeto));
-    const divergencias = yield* aplicarGerados(
-      normas.map((norma) => ({ caminho: norma.arquivo, texto: norma.esperado })),
-      opcoes,
-    );
-
-    if (check) {
-      if (divergencias.length) {
-        for (const erro of mensagensDivergencias(divergencias, "node scripts/gerar_base.ts")) {
-          yield* Console.error(`ERRO: ${erro}`);
-        }
-        return yield* sairCom(1);
-      }
-      yield* Console.log(`Base atualizada: ${normas.length} normas publicadas.`);
-      return;
-    }
+    const { arquivos, extrasEm, totais } = yield* Effect.sync(() => arquivosGeradosDaBase(caminhos));
+    const divergencias = yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, extrasEm });
     const regravados = divergencias.map((divergencia) => divergencia.arquivo);
     yield* Console.log(
-      `Base gerada: ${normas.length} normas publicadas` +
-        (regravados.length ? `; gerados regravados: ${regravados.join(", ")}.` : "."),
+      `Base gerada: ${totais.normas} normas, ${totais.ppcs} PPCs, ${totais.secoes} seções de PPC` +
+        (regravados.length ? `; regravados: ${regravados.join(", ")}.` : "; nada mudou."),
     );
   }),
 ).pipe(
   Command.withDescription(
-    "Gera os campos derivados do front matter das normas (relações e status de vigência) a " +
-      "partir de normas/*.md, relacoes.yaml e config/vigencia.yaml.",
+    "Gera os campos derivados do front matter das normas (relações e vigência) e os índices de PPCs.",
   ),
 );
 

@@ -48,13 +48,13 @@ const COM_LINKS = NodeOS.platform() !== "win32";
 let banco: string;
 let isolado: ServidorIsolado;
 let fora: string;
-beforeAll(async () => {
+beforeAll(() => {
   if (SMOKE_APENAS) return;
   banco = criarBancoFixturePpcs();
-  isolado = await servidorIsolado();
+  isolado = servidorIsolado();
   fora = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-fora-"));
   NodeFS.writeFileSync(NodePath.join(fora, "segredo.md"), MARKDOWN);
-}, 120_000);
+});
 afterAll(limparTemporarios);
 
 const pacote = (arquivo: string): Chamada => ({

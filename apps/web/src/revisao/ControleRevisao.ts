@@ -246,7 +246,7 @@ export class ControleRevisao {
       (evento) => {
         if (this.leituraArquivo !== acompanhamento) return;
         if (evento.tipo === "etapa") this.atualizar({ etapaLendo: evento.etapa });
-        else listaId = evento.resultado.lista;
+        else listaId = evento.lista;
       },
     );
     this.leituraArquivo = acompanhamento;
@@ -580,11 +580,10 @@ export class ControleRevisao {
     }
   }
 
-  async apagarLista(): Promise<null> {
+  async apagarLista(): Promise<void> {
     const lista = this.estado.lista;
-    if (lista === undefined) return null;
+    if (lista === undefined) return;
     await this.api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id }));
-    return null;
   }
 
   /* ---------------------------------------------------------------- ações por pendência */
@@ -811,11 +810,6 @@ export class ControleRevisao {
       }
       return false;
     }
-  }
-
-  /** Retoma uma leitura pausada (no servidor, o mesmo RPC `revisaoPpc.iniciarIa`). */
-  retomarIa(): Promise<boolean> {
-    return this.iniciarIa();
   }
 
   async pausarIa(): Promise<void> {

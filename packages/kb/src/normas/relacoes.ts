@@ -159,15 +159,16 @@ function textoDaEvidencia(em: string, raiz: string, indice: Map<string, Disposit
 }
 
 /**
- * Validação semântica de `relacoes.yaml`: IDs no registro, operador e alvo no texto, evidência
- * literal no texto indicado, unicidade e descartes. Devolve mensagens de erro.
+ * Validação semântica de `relacoes.yaml` (ou de `texto`, no lugar do arquivo): IDs no registro,
+ * operador e alvo no texto, evidência literal no texto indicado, unicidade e descartes. Devolve
+ * mensagens de erro.
  */
-export function validarRelacoes(raiz: string, registro: Registro = carregarRegistro(raiz)): string[] {
+export function validarRelacoes(raiz: string, registro: Registro = carregarRegistro(raiz), texto?: string): string[] {
   const erros: string[] = [];
   let arquivo: ArquivoRelacoes;
   try {
-    cache.delete(chaveDoCheckout(raiz));
-    arquivo = carregarArquivoRelacoes(raiz);
+    if (texto === undefined) cache.delete(chaveDoCheckout(raiz));
+    arquivo = texto === undefined ? carregarArquivoRelacoes(raiz) : arquivoRelacoesDoYaml(texto);
   } catch (erro) {
     if (Schema.isSchemaError(erro)) {
       return problemas(erro.issue).map((p) => `relacoes.yaml: ${caminhoTexto(p.caminho)}: ${p.mensagem}`);

@@ -74,10 +74,6 @@ export function ocorrencias(indice: IndiceBusca, termo: string): Range[] {
   return faixas;
 }
 
-/** `indexarBusca` e `ocorrencias` de uma vez (para os testes e buscas avulsas). */
-export const buscarNoTexto = (nos: ReadonlyArray<Text>, termo: string): Range[] =>
-  ocorrencias(indexarBusca(nos), termo);
-
 /** O nó está à vista: fora de um `<details>` fechado (salvo no `<summary>` dele). */
 export function visivel(no: Text): boolean {
   const fechado = no.parentElement?.closest("details:not([open])");

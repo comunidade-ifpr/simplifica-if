@@ -9,14 +9,8 @@ import * as NodePath from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
 import { analisarFrontMatter, ErroFrontMatter } from "./front-matter.ts";
 import { aplicarGerados, type ArquivoGerado, mensagensDivergencias, type PastaGerada } from "./gerados.ts";
-import {
-  arquivosIndices,
-  dataIndiceAtual,
-  gerarIndices,
-  limparTitulo,
-  removerAcentos,
-  tituloDaLinha,
-} from "./indice-ppcs.ts";
+import { arquivosIndices, gerarIndices } from "./indice-ppcs.ts";
+import { limparTitulo, removerAcentos, tituloDaLinha } from "@simplifica-if/kb/ppcs/secoes";
 import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { conferirContrato, ehUrlAbsoluta } from "./esquemas.ts";
 import { validarBase } from "./validacao.ts";
@@ -39,11 +33,11 @@ function escrever(raiz: string, relativo: string, conteudo: string) {
   NodeFS.writeFileSync(caminho, conteudo);
 }
 
-/** Mensagens do `--check` sobre os arquivos gerados, relativas a `base-conhecimento/`. */
+/** Mensagens da conferência dos arquivos gerados, relativas a `base-conhecimento/`. */
 const conferir = (
   raiz: string,
   arquivos: ReadonlyArray<ArquivoGerado>,
-  pastas: { extrasEm?: ReadonlyArray<PastaGerada>; obsoletos?: ReadonlyArray<string> } = {},
+  pastas: { extrasEm?: ReadonlyArray<PastaGerada> } = {},
 ) =>
   aplicarGerados(arquivos, { modo: "verificar", raiz, ...pastas }).pipe(
     Effect.map((divergencias) => mensagensDivergencias(divergencias, "x")),
@@ -192,7 +186,7 @@ describe("índice de PPCs", () => {
         }) + `## 1 Objetivos\n${"objetivo ".repeat(80)}\n## 2 Ementário\n${"ementa ".repeat(10)}\n`,
       );
       const caminhos = criarCaminhos(raiz);
-      const indices = gerarIndices(caminhos, "2026-01-01");
+      const indices = gerarIndices(caminhos);
       expect(indices.itensPpc).toHaveLength(1);
       expect(indices.itensPpc[0]).toMatchObject({
         id: "campus-a/tecnico-x/2021",
@@ -224,7 +218,6 @@ describe("índice de PPCs", () => {
       escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/antigo.jsonl", "");
       yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
       expect(yield* conferir(caminhos.raiz, arquivos, pastas)).toEqual([]);
-      expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
       expect(
         NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
           '{"id":"campus-a/tecnico-x/2021#ementas-1",',
@@ -318,6 +311,7 @@ describe("contratos dos manifestos e índices", () => {
       'm: sigla: Entrada inválida: esperava o valor "CNCT"',
       "m: atualizado_em: deve estar em AAAA-MM-DD",
       "m: fonte_url: deve ser URI absoluta válida",
+      "m: fonte_url: deve começar por https://",
       "m: campos_curso: Entrada inválida: não pode ser vazio",
     ]);
   });
@@ -364,7 +358,6 @@ describe("validação da base", () => {
     expect(erros).toEqual([
       `README.md contém padrão local proibido: ${"/Us"}${"ers/"}`,
       "normas não devem ficar na raiz do repositório: ['solta.md']",
-      "índice de PPCs não encontrado: institucional/ifpr/ppcs/index.json",
       "manifesto CNCT não encontrado: catalogos/cnct/manifest.json",
       "índice CNCT não encontrado: catalogos/cnct/index.json",
       'normas/br/leis/lei.md: o corpo traz a seção "Resumo"; ele é só o texto da norma (use pontos_chave ou notas_da_fonte no front matter; orientação para PPC vai na ficha da revisão)',
@@ -405,26 +398,19 @@ describe("validação da base", () => {
     expect(erros("2020-01-03")).toEqual([]);
   });
 
-  test("fonte oficial: fonte_url só https e o campo antigo fonte recusado", () => {
-    const errosDeFonte = (troca: string, norma = NORMA) => {
+  test("fonte oficial: fonte_url só https", () => {
+    const errosDeFonte = (troca: string) => {
       const raiz = projetoTemporario();
       escrever(
         raiz,
         "base-conhecimento/normas/br/leis/lei.md",
-        norma.replace('fonte_url: "https://exemplo.gov.br/lei"', troca),
+        NORMA.replace('fonte_url: "https://exemplo.gov.br/lei"', troca),
       );
       escrever(raiz, "base-conhecimento/README.md", README);
       return validarBase(criarCaminhos(raiz)).erros.filter((erro) => /fonte|assinada_em/.test(erro));
     };
     expect(errosDeFonte('fonte_url: "http://exemplo.gov.br/lei"')).toEqual([
       "normas/br/leis/lei.md: fonte_url: fonte_url deve ser URL https, sem espaços",
-    ]);
-    // recusado na struct: sai junto com os outros erros, sem esperar a correção deles
-    expect(
-      errosDeFonte('fonte: "Fonte oficial pendente"', NORMA.replace('assinada_em: "2020-01-02"', 'assinada_em: "x"')),
-    ).toEqual([
-      "normas/br/leis/lei.md: fonte: campo substituído por fonte_url (URL https) e fonte_referencia (texto)",
-      "normas/br/leis/lei.md: assinada_em: assinada_em deve ser AAAA-MM-DD",
     ]);
     expect(errosDeFonte('fonte_referencia: "SEI/IFPR nº 1"')).toEqual([]);
   });

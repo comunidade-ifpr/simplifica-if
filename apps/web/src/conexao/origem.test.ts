@@ -2,7 +2,7 @@ import { assert, describe, it } from "@effect/vitest";
 import { ponteTeste } from "../../test/ponte.ts";
 import { normalizarUrlServidor, resolverOrigem } from "./origem.ts";
 
-const sem = { ponte: undefined, busca: "", sessao: null, ambiente: {} } as const;
+const sem = { ponte: undefined, busca: "", sessao: null } as const;
 const TOKEN = "um-token-de-teste-com-tamanho-suficiente";
 
 describe("normalizarUrlServidor", () => {
@@ -30,23 +30,20 @@ describe("resolverOrigem", () => {
     const resolvida = resolverOrigem({ ...sem, busca: `?servidor=4321&token=${TOKEN}&outro=1` });
     assert.deepStrictEqual(resolvida.origem, {
       tipo: "navegador",
-      fonte: "url",
       credenciais: { urlServidor: "http://127.0.0.1:4321", token: TOKEN },
     });
     assert.deepStrictEqual(resolvida.guardar, { urlServidor: "http://127.0.0.1:4321", token: TOKEN });
     assert.strictEqual(resolvida.buscaLimpa, "?outro=1");
   });
 
-  it("sem parâmetros, usa o sessionStorage e depois as variáveis VITE_", () => {
+  it("sem parâmetros, usa o sessionStorage", () => {
     const sessao = JSON.stringify({ urlServidor: "http://127.0.0.1:5", token: TOKEN });
-    assert.deepInclude(resolverOrigem({ ...sem, sessao }).origem, { tipo: "navegador", fonte: "url" });
-    const doAmbiente = resolverOrigem({ ...sem, ambiente: { servidor: "6", token: TOKEN } });
-    assert.deepStrictEqual(doAmbiente.origem, {
+    const daSessao = resolverOrigem({ ...sem, sessao });
+    assert.deepStrictEqual(daSessao.origem, {
       tipo: "navegador",
-      fonte: "ambiente",
-      credenciais: { urlServidor: "http://127.0.0.1:6", token: TOKEN },
+      credenciais: { urlServidor: "http://127.0.0.1:5", token: TOKEN },
     });
-    assert.isUndefined(doAmbiente.buscaLimpa);
+    assert.isUndefined(daSessao.buscaLimpa);
   });
 
   it("sem nada válido, a origem é ausente; parâmetros incompletos também saem da URL", () => {

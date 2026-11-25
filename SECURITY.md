@@ -9,7 +9,7 @@ Conte a versão do app, o sistema (macOS ou Windows), os passos para reproduzir 
 ## O que conta
 
 - **App e servidor local** (`apps/desktop`, `apps/server`): outro processo ou uma página web conseguir falar com o servidor local ou com o MCP `ifpr`, ler ou gravar fora da pasta de trabalho, executar código.
-- **Atualização** (`packages/atualizacao`, `apps/desktop/src/atualizacaoApp.ts`): pacote da base, das skills ou do app aceito sem assinatura válida, troca de canal ou de feed.
+- **Atualização** (`packages/atualizacao`): pacote da base ou das skills aceito sem assinatura válida, troca de canal ou de feed.
 - **`simplifica-mcp`** (`packages/mcp`).
 - **Dado pessoal publicado na base** (CPF, RG, celular, matrícula, SIAPE, e-mail particular): avise por aqui, não por issue, para não espalhar o dado mais ainda.
 - **Segredo publicado** no repositório ou no histórico do git.

@@ -111,8 +111,6 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   leituraIa: LeituraIaRevisao,
   /** O dia em que a revisão calculou a vigência das normas (AAAA-MM-DD). */
   dataBase: Schema.String,
-  /** A lista viva destas pendências no servidor (etapa 5b). */
-  lista: Schema.optionalKey(Schema.String),
 });
 export type ResultadoRevisaoPpc = typeof ResultadoRevisaoPpc.Type;
 
@@ -123,11 +121,11 @@ export type EtapaLeituraPpc = typeof EtapaLeituraPpc.Type;
 /**
  * O andamento de `revisaoPpc.revisar`: cada etapa quando ela começa (`lendo` o documento,
  * `identificando` o curso no CNCT, `conferindo` os critérios automáticos, `gravando` a cópia
- * comentada) e, no fim, `pronto` com o resultado.
+ * comentada) e, no fim, `pronto` com o id da lista viva (`revisaoPpc.lista` a abre).
  */
 export const EventoRevisaoPpc = Schema.Union([
   Schema.Struct({ tipo: Schema.Literal("etapa"), etapa: EtapaLeituraPpc }),
-  Schema.Struct({ tipo: Schema.Literal("pronto"), resultado: ResultadoRevisaoPpc }),
+  Schema.Struct({ tipo: Schema.Literal("pronto"), lista: Schema.String }),
 ]);
 export type EventoRevisaoPpc = typeof EventoRevisaoPpc.Type;
 
@@ -365,7 +363,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
    * e cópia comentada do DOCX, com uma lista viva nova. `arquivo` é o caminho absoluto liberado pelo
    * desktop (`escolherDocx` ou `soltarDocx`); `cnct` (slug) e `forma` substituem o curso identificado
    * no documento ("Qual é o curso?": a lista nova substitui a anterior). Em stream: as etapas, quando
-   * cada uma começa, e por último o `pronto`, com o resultado (e o id da lista em `resultado.lista`).
+   * cada uma começa, e por último o `pronto`, com o id da lista viva.
    */
   Rpc.make("revisaoPpc.revisar", {
     payload: Schema.Struct({

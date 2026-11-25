@@ -30,7 +30,6 @@ const listaMinima: ListaPendencias = {
   provider: "claude",
   uso: { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 },
   resultado: {
-    lista: "lista-1",
     arquivoOriginal: "/a/PPC.docx",
     arquivoComentado: "/a/PPC - revisão prévia (Simplifica IF).docx",
     dataBase: "2026-11-22",

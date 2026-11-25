@@ -8,8 +8,8 @@
  * campus e ficha têm leitura própria (`leitura/recursos.ts`). O conteúdo é o texto Markdown da
  * ferramenta, com os avisos e o rodapé da versão da base, e a `base` e os avisos vão também no `_meta`.
  *
- * A mesma leitura serve ao grupo RPC (`lerLink`, em `rpc.ts`): `lerRecurso` devolve um `LinkLido`
- * (`grupo-leitura.ts`), com o tipo do conteúdo, a `Resposta` estruturada e o texto do `resources/read`.
+ * `lerRecurso` devolve um `LinkLido` (`grupo-leitura.ts`), com o tipo do conteúdo, a `Resposta`
+ * estruturada e o texto do `resources/read`.
  *
  * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada leitura é registrada nela como as chamadas
  * de ferramenta, com `tipo: "recurso"` e o URI no lugar do nome da ferramenta (`observarChamada`).
@@ -147,7 +147,7 @@ function entrada<S extends Schema.Decoder<unknown>>(schema: S, valor: unknown, u
 
 /**
  * Lê um link `ifpr://` pelo serviço `Leitura` do ambiente: a resolução única do link, para o
- * `resources/read` e para o RPC `lerLink`.
+ * `resources/read`.
  */
 export const lerRecurso = Effect.fn("recursos.lerRecurso")(function* (uri: string) {
   const leitura = yield* Leitura.Leitura;

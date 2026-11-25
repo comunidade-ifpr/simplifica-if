@@ -9,9 +9,8 @@
  * `grupo-leitura.test.ts` confere o grafo de imports.
  *
  * Cada operação tem a entrada e a resposta da ferramenta MCP de mesmo nome (um contrato só para as
- * duas). `lerLink` lê qualquer link `ifpr://` pela mesma resolução do `resources/read` e devolve um
- * `LinkLido`; `lerPpc`, `lerCnct`, `lerCampus` e `lerFicha` são os conteúdos que só existem como
- * recurso. `lerDocumento` traz o Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o
+ * duas). `LinkLido` é o conteúdo de um link `ifpr://` no `resources/read`; `lerPpc`, `lerCnct`,
+ * `lerCampus` e `lerFicha` são os conteúdos que só existem como recurso. `lerDocumento` traz o Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o
  * leitor do app gerar o HTML (M1.6); não tem ferramenta MCP. `explorarIndice` e `explorarBuscar` são o
  * Explorar do app (as coleções e a paleta de busca, `explorar.ts`); também sem ferramenta MCP.
  */
@@ -59,9 +58,6 @@ export const LinkLido = Schema.Union([
 ]);
 export type LinkLido = typeof LinkLido.Type;
 
-/** A entrada de `lerLink`. O link é texto livre: o malformado volta como `EntradaInvalida`, em português. */
-export const EntradaLink = Schema.Struct({ link: Schema.String });
-
 export class GrupoLeitura extends RpcGroup.make(
   Rpc.make("fichaNorma", { payload: fichaNorma.entrada, success: fichaNorma.saida, error: ErroDeLeitura }),
   Rpc.make("lerDispositivos", {
@@ -72,7 +68,6 @@ export class GrupoLeitura extends RpcGroup.make(
   Rpc.make("fichaCurso", { payload: fichaCurso.entrada, success: fichaCurso.saida, error: ErroDeLeitura }),
   Rpc.make("lerSecao", { payload: lerSecao.entrada, success: lerSecao.saida, error: ErroDeLeitura }),
   Rpc.make("sobreABase", { payload: sobreABase.entrada, success: sobreABase.saida, error: ErroDeLeitura }),
-  Rpc.make("lerLink", { payload: EntradaLink, success: LinkLido, error: ErroDeLeitura }),
   Rpc.make("lerPpc", { payload: Conteudos.EntradaPpc, success: Conteudos.SaidaPpc, error: ErroDeLeitura }),
   Rpc.make("lerCnct", { payload: Conteudos.EntradaCnct, success: Conteudos.SaidaCnct, error: ErroDeLeitura }),
   Rpc.make("lerCampus", { payload: Conteudos.EntradaCampus, success: Conteudos.SaidaCampus, error: ErroDeLeitura }),

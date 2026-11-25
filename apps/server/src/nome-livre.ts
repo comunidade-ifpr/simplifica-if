@@ -41,10 +41,12 @@ export class NomesEsgotados extends Schema.TaggedError<NomesEsgotados>()("NomesE
 /** O nome já existe: a criação exclusiva recusou. */
 const ocupado = (erro: unknown): boolean => PlatformError.isPlatformError(erro) && erro.reason._tag === "AlreadyExists";
 
+/** Até quantos nomes da sequência se tentam. */
+const ULTIMO = 999;
+
 /**
- * Chama `criar` com `nomes(de)`, `nomes(de + 1)`… até `ate`, enquanto o nome estiver ocupado (ou a
- * falha for das que `pular` aceita), e devolve o resultado da primeira criação. Qualquer outra falha
- * para a sequência.
+ * Chama `criar` com `nomes(de)`, `nomes(de + 1)`… até `ULTIMO`, enquanto o nome estiver ocupado, e
+ * devolve o resultado da primeira criação. Qualquer outra falha para a sequência.
  */
 export const criarSemColisao = Effect.fn("nomeLivre.criarSemColisao")(function* <A, E, R>(
   opcoes: {
@@ -52,17 +54,14 @@ export const criarSemColisao = Effect.fn("nomeLivre.criarSemColisao")(function* 
     readonly pasta: string;
     readonly nomes: (n: number) => string;
     readonly de?: number;
-    readonly ate: number;
-    /** As falhas que passam ao nome seguinte (padrão: o nome já existe). */
-    readonly pular?: (erro: unknown) => boolean;
   },
   criar: (nome: string) => Effect.Effect<A, E, R>,
 ) {
   const de = opcoes.de ?? 1;
-  for (let n = de; n <= opcoes.ate; n++) {
+  for (let n = de; n <= ULTIMO; n++) {
     const criado = yield* criar(opcoes.nomes(n)).pipe(
       Effect.asSome,
-      Effect.catchIf(opcoes.pular ?? ocupado, () => Effect.succeedNone),
+      Effect.catchIf(ocupado, () => Effect.succeedNone),
     );
     if (Option.isSome(criado)) return criado.value;
   }

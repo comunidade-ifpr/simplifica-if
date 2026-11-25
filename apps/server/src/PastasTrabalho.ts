@@ -636,7 +636,6 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
         nomes: (n) => (n === 1 ? nome : `${nome} (${n})`),
         // As pastas dos relatos e dos diagnósticos não são de tarefa: o título igual começa em " (2)".
         de: ehPastaDoApp(nome) ? 2 : 1,
-        ate: 999,
       },
       (candidato) =>
         fs.makeDirectory(path.join(raiz, candidato)).pipe(Effect.andThen(fs.realPath(path.join(raiz, candidato)))),
@@ -797,7 +796,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     if (Number(info.size) > limites.anexoBytes)
       return yield* falha(`O arquivo passa de ${Math.round(limites.anexoBytes / 1024 / 1024)} MB.`);
     const original = path.basename(arquivo);
-    const nome = yield* criarSemColisao({ pasta: real, nomes: (n) => comNumero(original, n), ate: 999 }, (candidato) =>
+    const nome = yield* criarSemColisao({ pasta: real, nomes: (n) => comNumero(original, n) }, (candidato) =>
       copiarSemSobrescrever(arquivo, path.join(real, candidato)).pipe(Effect.as(candidato), comArquivos),
     ).pipe(comMotivo("Não foi possível copiar o arquivo para a pasta da tarefa."));
     yield* historico.registrarAnexo(real, nome);
@@ -835,34 +834,38 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     } satisfies ArquivoPasta;
   });
 
-  const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (nome: string, conteudo: string) {
-    const pasta = path.join(raiz, PASTA_RELATOS);
-    yield* fs.makeDirectory(pasta, { recursive: true });
-    // Um link no lugar da pasta levaria o relato para fora de Documentos/Simplifica IF.
-    if ((yield* fs.lstat(pasta)).type !== "Directory")
-      return yield* new CaminhoRecusado({ caminho: pasta, regra: "nao-e-pasta" });
-    const seguro = `${nomeSeguro(path.basename(nome, ".md"))}.md`;
-    return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(seguro, n), ate: 999 }, (candidato) => {
-      const destino = path.join(pasta, candidato);
-      return fs.writeFileString(destino, conteudo, { flag: "wx" }).pipe(Effect.as(destino));
-    });
-  }, comMotivo("Não foi possível gravar o relato em Documentos/Simplifica IF/Relatos de erro."));
-
-  const gravarDiagnostico = Effect.fn("PastasTrabalho.gravarDiagnostico")(function* (
+  /**
+   * Grava `conteudo` como `nome` na pasta do app `pastaDoApp` (dentro da raiz, fora das tarefas), sem
+   * sobrescrever, e devolve o caminho. Um link no lugar da pasta levaria o arquivo para fora de
+   * Documentos/Simplifica IF.
+   */
+  const gravarNaPastaDoApp = Effect.fnUntraced(function* (
+    pastaDoApp: string,
     nome: string,
-    conteudo: Uint8Array,
+    extensao: string,
+    conteudo: string | Uint8Array,
   ) {
-    const pasta = path.join(raiz, PASTA_DIAGNOSTICOS);
+    const pasta = path.join(raiz, pastaDoApp);
     yield* fs.makeDirectory(pasta, { recursive: true });
-    // Um link no lugar da pasta levaria o pacote para fora de Documentos/Simplifica IF.
     if ((yield* fs.lstat(pasta)).type !== "Directory")
       return yield* new CaminhoRecusado({ caminho: pasta, regra: "nao-e-pasta" });
-    const seguro = `${nomeSeguro(path.basename(nome, ".zip"))}.zip`;
-    return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(seguro, n), ate: 999 }, (candidato) => {
+    const seguro = `${nomeSeguro(path.basename(nome, extensao))}${extensao}`;
+    return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(seguro, n) }, (candidato) => {
       const destino = path.join(pasta, candidato);
-      return fs.writeFile(destino, conteudo, { flag: "wx" }).pipe(Effect.as(destino));
+      const bytes = typeof conteudo === "string" ? new TextEncoder().encode(conteudo) : conteudo;
+      return fs.writeFile(destino, bytes, { flag: "wx" }).pipe(Effect.as(destino));
     });
-  }, comMotivo("Não foi possível gravar o diagnóstico em Documentos/Simplifica IF/Diagnósticos."));
+  });
+
+  const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(
+    (nome: string, conteudo: string) => gravarNaPastaDoApp(PASTA_RELATOS, nome, ".md", conteudo),
+    comMotivo("Não foi possível gravar o relato em Documentos/Simplifica IF/Relatos de erro."),
+  );
+
+  const gravarDiagnostico = Effect.fn("PastasTrabalho.gravarDiagnostico")(
+    (nome: string, conteudo: Uint8Array) => gravarNaPastaDoApp(PASTA_DIAGNOSTICOS, nome, ".zip", conteudo),
+    comMotivo("Não foi possível gravar o diagnóstico em Documentos/Simplifica IF/Diagnósticos."),
+  );
 
   /**
    * O turno a desfazer: o mais recente cuja pasta mudou **dentro** dele (o retrato de antes × o do fim
@@ -1051,7 +1054,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       const agora = manifesto.arquivos;
       return yield* travaTextos.withPermits(1)(mudancasForaDaConversa(real, anterior?.fim?.arquivos, agora));
     }).pipe(comArquivos, soNoLog(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`));
-    if (mudancas === undefined || mudancas === null) return undefined;
+    if (mudancas === undefined) return undefined;
     avisados.set(
       `${conversa}/${turno}`,
       [...mudancas.anexados, ...mudancas.novos, ...mudancas.mudados].map((arquivo) => arquivo.nome),

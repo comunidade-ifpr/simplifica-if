@@ -14,11 +14,7 @@ import { criarCaminhos } from "./base/caminhos.ts";
 import { ehErroVersaoPpc, promoverPpc } from "./base/versoes-ppc.ts";
 import { executarPrincipal } from "./principal.ts";
 
-const PASSOS_SEGUINTES = [
-  "node scripts/gerar_base.ts",
-  "node scripts/gerar_indice_ppcs.ts",
-  "node scripts/validar_base.ts",
-];
+const PASSOS_SEGUINTES = ["node scripts/gerar_base.ts", "node scripts/validar_base.ts"];
 
 export const comando = Command.make(
   "promover_ppc",

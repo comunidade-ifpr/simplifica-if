@@ -12,15 +12,15 @@ import { Spinner } from "../components/ui/spinner.tsx";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
 import type { Carga } from "./carga.ts";
 
-export function Carregando({ texto = "Lendo na base…" }: { readonly texto?: string }) {
+function Carregando() {
   return (
     <p role="status" className="flex items-center gap-2 text-muted-foreground text-sm">
-      <Spinner size="sm" /> {texto}
+      <Spinner size="sm" /> Lendo na base…
     </p>
   );
 }
 
-export function Falha({
+function Falha({
   titulo,
   erro,
   aoTentar,

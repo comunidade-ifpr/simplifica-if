@@ -4,6 +4,12 @@ import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { conferirBundle } from "../../scripts/construir-executavel.ts";
 
+/**
+ * Gancho de pré-carga do servidor isolado em Node (`servidorIsolado`, em `apoio.ts`). O `realpath` em
+ * JavaScript do Node (que o `FileSystem` do Effect usa fora do Windows) faz `lstat` de cada diretório
+ * acima do caminho, e o modelo de permissões trata isso como leitura fora da pasta; a versão nativa
+ * resolve o mesmo caminho sem tocar nos ancestrais. O gancho só troca uma pela outra.
+ */
 const GANCHO = `import fs from "node:fs";
 import { syncBuiltinESMExports } from "node:module";
 fs.realpath = fs.realpath.native;

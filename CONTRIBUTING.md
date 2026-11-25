@@ -42,7 +42,6 @@ O repositório traz o app, a base que o alimenta e as skills e os scripts que ag
 ```bash
 pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # se mexeu em código
 node scripts/gerar_base.ts                               # se mexeu em base-conhecimento/
-node scripts/gerar_indice_ppcs.ts                        # se mexeu em registros institucionais ou PPCs
 node scripts/validar_base.ts
 ```
 

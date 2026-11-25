@@ -1,22 +1,19 @@
-// @effect-diagnostics nodeBuiltinImport:off -- teste: o servidor stdio como processo filho
+// @effect-diagnostics nodeBuiltinImport:off -- teste: grava uma ficha no banco da fixture com node:sqlite
 /**
- * Os links `ifpr://` como recursos MCP (M1.5), pelo Client do SDK oficial, em stdio (o servidor como
- * processo filho) e no servidor HTTP local do app (`@simplifica-if/mcp/http`): os modelos de URI do
+ * Os links `ifpr://` como recursos MCP (M1.5), pelo Client do SDK oficial, no servidor HTTP local do
+ * app (`@simplifica-if/mcp/http`; o transporte stdio é o de `stdio.test.ts`): os modelos de URI do
  * `resources/templates/list` (sem o curinga), os pontos de entrada do `resources/list`, a leitura de
  * um link de cada tipo, com e sem fragmento, e os erros em português para o link inválido.
  *
  * Dois bancos, como no `rpc.test.ts`: o de PPCs (`fixture-ppcs.ts`: normas sem dispositivos, PPCs,
  * cursos, CNCT, campi e uma ficha) e o de normas (`fixture-normas.ts`, com os dispositivos).
  */
-import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import { afterAll, describe, expect, it } from "@effect/vitest";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
-import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import type * as Scope from "effect/Scope";
 import * as Http from "../src/http.ts";
 import { MIME_RECURSO, MODELOS } from "../src/recursos/recursos.ts";
 import { criarBancoFixture, limparTemporarios } from "./fixture.ts";
@@ -51,38 +48,12 @@ const FICHA = {
 const bancoNormas = criarBancoFixture();
 inserirNormas(bancoNormas);
 
-const CLI = NodePath.resolve(import.meta.dirname, "../src/cli.ts");
-/** O ambiente do processo stdio, sem herdar SIMPLIFICA_KB do processo de teste. */
-const AMBIENTE_STDIO = { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "" };
 const RODAPE = "Base de desenvolvimento (versão `dev-ab12cd34`).";
-
-type Abrir = (banco: string) => Effect.Effect<Client, never, Scope.Scope>;
 
 const fechar = (cliente: Client) => Effect.promise(() => cliente.close());
 
-/** O servidor stdio como processo filho, com o ambiente mínimo. */
-const stdio: Abrir = (banco) =>
-  Effect.acquireRelease(
-    Effect.promise(async () => {
-      const cliente = new Client(
-        { name: "teste-recursos", version: "0" },
-        { versionNegotiation: { mode: { pin: "2026-07-28" } } },
-      );
-      await cliente.connect(
-        new StdioClientTransport({
-          command: process.execPath,
-          args: [CLI, "--banco", banco],
-          env: AMBIENTE_STDIO,
-          stderr: "pipe",
-        }),
-      );
-      return cliente;
-    }),
-    fechar,
-  );
-
 /** O servidor HTTP local do app, numa porta efêmera, com uma sessão; fecha com o escopo do teste. */
-const http: Abrir = (banco) =>
+const abrir = (banco: string) =>
   Effect.gen(function* () {
     const servidor = Context.get(yield* Layer.build(Http.layer({ banco })), Http.ServidorMcpHttp);
     const sessao = yield* servidor.abrirSessao({ rotulo: "recursos" });
@@ -138,10 +109,7 @@ function conferirEnvelope(lido: Lido): string {
 
 const INVALIDO = -32602;
 
-describe.each([
-  { transporte: "stdio", abrir: stdio },
-  { transporte: "HTTP", abrir: http },
-])("recursos ifpr:// ($transporte)", ({ abrir }) => {
+describe("recursos ifpr://", () => {
   it.effect("server/discover anuncia resources; resources/templates/list traz um modelo por tipo, sem o curinga", () =>
     Effect.gen(function* () {
       const cliente = yield* abrir(bancoPpcs);
@@ -186,7 +154,7 @@ describe.each([
       const cliente = yield* abrir(bancoNormas);
       const norma = conferirEnvelope(yield* ler(cliente, `ifpr://norma/${DCN_2026}`));
       expect(norma).toContain(`(ifpr://norma/${DCN_2026})`);
-      // o servidor stdio calcula a vigência no dia do relógio
+      // o servidor calcula a vigência no dia do relógio
       expect(norma).toMatch(/\*\*Vigência em \d{2}\/\d{2}\/\d{4}:\*\*/);
 
       const inciso = yield* ler(cliente, `ifpr://norma/${DCN_2026}#art28-vii`);
@@ -290,10 +258,10 @@ describe.each([
   );
 });
 
-describe("recursos ifpr:// (stdio, banco de normas)", () => {
+describe("recursos ifpr:// (banco de normas)", () => {
   it.effect("dispositivo inexistente: InvalidParams, com o link da norma", () =>
     Effect.gen(function* () {
-      const cliente = yield* stdio(bancoNormas);
+      const cliente = yield* abrir(bancoNormas);
       const erro = yield* erroAoLer(cliente, `ifpr://norma/${DCN_2026}#art999`);
       expect(erro.code).toBe(INVALIDO);
       expect(erro.message).toContain(`dispositivo não encontrado na base: "${DCN_2026}#art999"`);

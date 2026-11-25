@@ -4,8 +4,7 @@
  * tópicos, modo de execução no app e marcos normativos.
  *
  * As referências normativas das fichas e os marcos são conferidos por ID canônico, contra
- * as normas da base, `normas/stubs.yaml` e o CNCT. Os JSON Schemas gerados são conferidos com os
- * outros arquivos gerados da base (`gerar_base.ts --check`).
+ * as normas da base, `normas/stubs.yaml` e o CNCT.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -29,7 +28,7 @@ import {
 import { aparar, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 import { type CaminhosRevisaoPpc, caminhosRevisaoPpc } from "./caminhos.ts";
-import { decodificarContrato, type MarcoArquivo, type NomeSchemaGerado } from "./esquemas.ts";
+import { decodificarContrato, type MarcoArquivo, type NomeContrato } from "./esquemas.ts";
 import { type Derivacao, derivacaoPadrao, derivarMarco } from "./marcos.ts";
 import { carregarUniverso } from "./referencias.ts";
 
@@ -74,7 +73,7 @@ function tentarLerJson(caminho: string): { valor: unknown } | { erro: string } {
 }
 
 /** Os problemas de `valor` no contrato `nome`, cada um como `<origem>: $.campo: mensagem`. */
-function errosDeContrato(origem: string, nome: NomeSchemaGerado, valor: unknown): string[] {
+function errosDeContrato(origem: string, nome: NomeContrato, valor: unknown): string[] {
   return decodificarContrato(nome, valor).map(({ caminho, mensagem }) => `${origem}: ${caminho}: ${mensagem}`);
 }
 
@@ -174,9 +173,6 @@ export function validarTopicosFichas(
   for (const fichaId of ordenarTextos(fichasPorId.keys())) {
     const ficha = fichasPorId.get(fichaId)!;
     const topicosFicha = ficha.topicos_tematicos;
-    if (Object.hasOwn(ficha, "secoes_preferenciais")) {
-      erros.push(`${fichaId}: campo legado \`secoes_preferenciais\` não é aceito`);
-    }
     if (!Array.isArray(topicosFicha) || topicosFicha.length === 0) {
       erros.push(`${fichaId}: \`topicos_tematicos\` deve ser lista não vazia`);
       continue;
@@ -330,7 +326,7 @@ export function validarMarcosNormativos(
   if (!NodeFS.existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [`${caminho}: JSON inválido: ${lido.erro}`];
-  const erros = errosDeContrato(caminho, "marcos-normativos.schema.json", lido.valor);
+  const erros = errosDeContrato(caminho, "marcos", lido.valor);
   if (erros.length) return erros;
 
   const ids = new Set<string>();
@@ -408,16 +404,6 @@ export function validarExecucaoFichas(
   return erros;
 }
 
-/** Fichas de `fichas/` por id (na ordem dos arquivos; ids repetidos ficam com a última). */
-export function carregarFichas(caminhos: CaminhosRevisaoPpc = caminhosRevisaoPpc()): Map<string, Ficha> {
-  const fichas = new Map<string, Ficha>();
-  for (const arquivo of listarJson(caminhos.fichas)) {
-    const payload = lerJson(arquivo);
-    if (ehObjeto(payload)) fichas.set(textoOuVazio(payload.id), payload);
-  }
-  return fichas;
-}
-
 /**
  * Valida a base da revisão de PPC inteira e devolve as mensagens de erro (lista vazia quando válida).
  * `derivar` deriva os marcos (por padrão, das relações do checkout em `caminhos.raiz`).
@@ -434,7 +420,7 @@ export function validarRevisaoPpc(
       erros.push(`${arquivo}: JSON inválido: ${lido.erro}`);
       continue;
     }
-    erros.push(...errosDeContrato(arquivo, "ficha.schema.json", lido.valor));
+    erros.push(...errosDeContrato(arquivo, "ficha", lido.valor));
     const payload = ehObjeto(lido.valor) ? lido.valor : {};
     const fichaId = textoOuVazio(payload.id);
     if (fichasPorId.has(fichaId)) erros.push(`${arquivo}: ficha duplicada: ${fichaId}`);

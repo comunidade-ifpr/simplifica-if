@@ -56,12 +56,12 @@ import {
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
 import * as CopiasComentadas from "../persistencia/CopiasComentadas.ts";
 import { comNumero, NomesEsgotados } from "../nome-livre.ts";
-import { type LimitesWorker, rodarNoWorker } from "../WorkerLimitado.ts";
-import type { AndamentoTrabalhador, PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
+import * as WorkerLimitado from "../WorkerLimitado.ts";
+import type { AndamentoTrabalhador, PedidoTrabalhador, RespostaTrabalhador } from "./trabalho.ts";
 import { resumoDaFalha } from "../observabilidade/resumoDaFalha.ts";
 
 /** Os limites da revisão (os do Worker e o do arquivo); os testes os apertam para provocar o estouro. */
-export interface Limites extends LimitesWorker {
+export interface Limites extends WorkerLimitado.LimitesWorker {
   /** Tamanho máximo do arquivo, conferido antes de ler (o mesmo de `LIMITES_PADRAO.bytesDoArquivo`). */
   readonly bytesDoArquivo: number;
 }
@@ -160,14 +160,14 @@ const ERRO_INTERNO = "Não foi possível revisar este arquivo por um erro intern
 
 /** Roda o pedido no Worker (`WorkerLimitado`) e traduz o que não for revisão para a frase da pessoa. */
 function rodarNoTrabalhador(
+  executar: typeof WorkerLimitado.rodarNoWorker,
   pedido: PedidoTrabalhador,
   limites: Limites,
-  url: URL,
   falha: (motivo: string) => FalhaRevisaoPpc,
   aoEtapa?: AoEtapa,
 ): Effect.Effect<Revisao, FalhaRevisaoPpc> {
-  return rodarNoWorker<RespostaTrabalhador, AndamentoTrabalhador>(
-    url,
+  return executar<RespostaTrabalhador, AndamentoTrabalhador>(
+    URL_TRABALHADOR,
     pedido,
     [pedido.bytes.buffer as ArrayBuffer],
     limites,
@@ -310,12 +310,11 @@ export const resultadoParaInterface = (arquivo: string, r: RevisaoDoArquivo): Re
 
 export interface OpcoesRevisao {
   readonly limites?: Partial<Limites>;
-  readonly trabalhador?: URL;
 }
 
 export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisao = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
-  const url = opcoes.trabalhador ?? URL_TRABALHADOR;
+  const executar = yield* WorkerLimitado.Executor;
   const contexto = yield* Effect.context<
     FontesNormativas.FontesNormativas | Cursos.Cursos | Normas.Normas | PacoteContexto.PacoteContexto
   >();
@@ -382,6 +381,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
       Effect.mapError(() => falha("A base de normas do Simplifica IF não pôde ser lida. Reinicie o app.")),
     );
     const revisao = yield* rodarNoTrabalhador(
+      executar,
       {
         // Cópia própria: o buffer é transferido ao Worker, e um `Buffer` do Node pode ser fatia de um pool.
         bytes: new Uint8Array(bytes),
@@ -396,7 +396,6 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
         situacoes: entrada.situacoes,
       },
       limites,
-      url,
       falha,
       entrada.aoEtapa,
     );

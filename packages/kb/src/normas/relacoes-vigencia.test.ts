@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- monta caminhos das fichas com node:path e um checkout temporário com node:fs
+// @effect-diagnostics nodeBuiltinImport:off -- monta caminhos das fichas com node:path e lê o relacoes.yaml com node:fs
 /**
  * Relações, vigência, transições, front matter gerado, correspondência e impacto. O impacto
  * roda sobre a layer da CLI (`layerRepositorio`): o `tmp/kb.sqlite`, recompilado se estiver velho; o
@@ -6,7 +6,6 @@
  * correspondência do banco.
  */
 import * as NodeFS from "node:fs";
-import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { describe, expect, layer, test } from "@effect/vitest";
@@ -20,7 +19,7 @@ import * as Layers from "../layers.ts";
 import { validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDaNorma } from "./estrutura.ts";
 import { impactoEm } from "./impacto.ts";
-import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
+import { reescreverFrontMatter } from "./gerado.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "./registro.ts";
 import { proporRelacoes, validarRelacoes } from "./relacoes.ts";
@@ -52,35 +51,20 @@ const vesperaDe = (data: string): string =>
   DateTime.formatIsoDateUtc(DateTime.subtract(DateTime.makeUnsafe(`${data}T00:00:00Z`), { days: 1 }));
 
 describe("relações", () => {
-  test("relacoes.yaml válido e sem propostas pendentes do regex", () => {
-    expect(validarRelacoes(raiz)).toEqual([]);
+  // relacoes.yaml válido é do validar_base (validarRelacoesEVigencia)
+  test("sem propostas pendentes do regex", () => {
     expect(proporRelacoes(raiz)).toEqual([]);
   });
 
   test("origem sem texto na base (stub) exige efeito_de com data em revoga e altera", () => {
-    const tmp = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "relacoes-"));
-    try {
-      NodeFS.mkdirSync(NodePath.join(tmp, "base-conhecimento"), { recursive: true });
-      NodeFS.symlinkSync(
-        NodePath.join(raiz, "base-conhecimento/normas"),
-        NodePath.join(tmp, "base-conhecimento/normas"),
-        "dir",
-      );
-      const relacoes = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento/relacoes.yaml"), "utf-8");
-      const semEfeito = relacoes.replace(
-        /(origem: br\/lei\/2023\/14723\n(?:.*\n)*?)    efeito_de: "2023-11-14"\n/,
-        "$1",
-      );
-      expect(semEfeito).not.toBe(relacoes);
-      NodeFS.writeFileSync(NodePath.join(tmp, "base-conhecimento/relacoes.yaml"), semEfeito);
-      expect(validarRelacoes(tmp, carregarRegistro(raiz))).toEqual([
-        expect.stringMatching(
-          /\(altera br\/lei\/2023\/14723 → br\/lei\/2012\/12711\): origem sem texto na base exige efeito_de com a data/,
-        ),
-      ]);
-    } finally {
-      NodeFS.rmSync(tmp, { recursive: true, force: true });
-    }
+    const relacoes = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento/relacoes.yaml"), "utf-8");
+    const semEfeito = relacoes.replace(/(origem: br\/lei\/2023\/14723\n(?:.*\n)*?)    efeito_de: "2023-11-14"\n/, "$1");
+    expect(semEfeito).not.toBe(relacoes);
+    expect(validarRelacoes(raiz, carregarRegistro(raiz), semEfeito)).toEqual([
+      expect.stringMatching(
+        /\(altera br\/lei\/2023\/14723 → br\/lei\/2012\/12711\): origem sem texto na base exige efeito_de com a data/,
+      ),
+    ]);
   });
 });
 
@@ -161,15 +145,8 @@ describe("vigência", () => {
   });
 });
 
+// os campos gerados em dia com as fontes são do validar_base (arquivos gerados)
 describe("front matter gerado", () => {
-  test("as normas estão com os campos gerados em dia (gerar_base.ts)", () => {
-    expect(
-      normasComCamposGerados(raiz)
-        .filter((n) => n.atual !== n.esperado)
-        .map((n) => n.path),
-    ).toEqual([]);
-  });
-
   test("reescreve só os campos controlados", () => {
     const texto =
       '---\nid: x\nstatus_vigencia: vigente\nfonte_url: "https://u"\nfonte_referencia: "r"\nrevoga:\n  - "A"\nrelaciona_se_a:\n  - "B"\n---\n\n## Resumo\n';

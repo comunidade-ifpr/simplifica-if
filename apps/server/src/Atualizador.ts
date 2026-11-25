@@ -14,7 +14,6 @@ import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as HttpClient from "effect/http/HttpClient";
-import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Ref from "effect/Ref";
 import * as Schedule from "effect/Schedule";
@@ -49,8 +48,6 @@ export interface Opcoes {
   readonly ocupado: Effect.Effect<boolean>;
   /** Prazo de cada download (padrão: o de `@simplifica-if/atualizacao/remoto`). */
   readonly prazo?: Duration.Input;
-  /** Intervalo entre conferências (padrão: 24 h). */
-  readonly intervalo?: Duration.Input;
   /** Conferir na abertura e depois no intervalo (padrão: sim). */
   readonly automatico?: boolean;
 }
@@ -205,7 +202,7 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
       .withPermits(1)(conferir)
       .pipe(
         Effect.withSpan("Atualizador.conferir", { root: true }),
-        Effect.repeat(Schedule.spaced(opcoes.intervalo ?? Duration.hours(24))),
+        Effect.repeat(Schedule.spaced(Duration.hours(24))),
         Effect.forkScoped,
       );
   }
@@ -229,5 +226,3 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
     }),
   });
 });
-
-export const layer = (opcoes: Opcoes) => Layer.effect(Atualizador, make(opcoes));

@@ -2,8 +2,7 @@
  * Um provider em Configurações › Sua IA e nas boas-vindas: detecção (instalado, login, versão, plano),
  * "Instalar" com a barra de progresso e "Entrar" com o link da página de login (Codex e Antigravity).
  * Os botões só aparecem quando o app oferece a operação para o provider (`podeInstalar`,
- * `podeEntrar`); o Claude tem o passo guiado (`PassoClaude`), e os demais casos, a orientação para
- * fazer à mão. Em Configurações, "Não usar no app" tira a IA da escolha das conversas sem sair da conta.
+ * `podeEntrar`, o Codex e o Antigravity); o Claude tem o passo guiado (`PassoClaude`). Em Configurações, "Não usar no app" tira a IA da escolha das conversas sem sair da conta.
  */
 import type { EstadoInstalacao, EstadoLogin, EstadoProvider, Provider } from "@simplifica-if/contratos-app";
 import { CheckCircle2Icon, CircleAlertIcon, CircleDashedIcon, ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
@@ -18,8 +17,6 @@ import {
   explicarMensagemMotor,
   instalacaoTerminou,
   loginTerminou,
-  type Orientacao,
-  orientacao,
   porcentagemInstalacao,
   tamanhoBaixado,
   textoFaseInstalacao,
@@ -123,14 +120,6 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
             .join("\n") || undefined
         }
       />
-    </div>
-  );
-}
-
-function PassoManual({ orientacao }: { readonly orientacao: Orientacao }) {
-  return (
-    <div className="flex flex-col gap-1.5 text-sm" data-orientacao>
-      <p className="text-muted-foreground">{orientacao.texto}</p>
     </div>
   );
 }
@@ -329,9 +318,6 @@ export function CartaoProvider({
               Instalar
             </Button>
           ) : null}
-          {!estado.instalado && !estado.podeInstalar && provider !== "claude" ? (
-            <PassoManual orientacao={orientacao(provider, "instalar")} />
-          ) : null}
           {estado.instalado && !estado.autenticado && estado.podeEntrar ? (
             avisoPendente ? (
               <p className="text-muted-foreground text-sm">
@@ -343,9 +329,6 @@ export function CartaoProvider({
                 Entrar
               </Button>
             )
-          ) : null}
-          {estado.instalado && !estado.autenticado && !estado.podeEntrar && provider !== "claude" ? (
-            <PassoManual orientacao={orientacao(provider, "entrar")} />
           ) : null}
         </footer>
       )}

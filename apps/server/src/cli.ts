@@ -1,7 +1,7 @@
 /**
  * A CLI do servidor local (`effect/cli`), carregada pelo `bin.ts` fora do caminho rápido da ponte MCP.
  *
- *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
+ *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--pasta-estado <dir>]
  *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-trabalhos <dir>]
  *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.2.0]
  *        [--pasta-logs <dir>] [--traces completo|caixa-preta|desligado]
@@ -14,8 +14,7 @@
  * servidor, a única linha do stdout é a `LinhaPartida` em JSON; os logs vão para o stderr, em logfmt.
  *
  * Com `--pasta-logs`, os spans e os logs vão também para `traces.jsonl` e `logs-otlp.jsonl` nessa pasta
- * (OTLP/JSON, `observabilidade/`), conforme `--traces`; com `OTEL_EXPORTER_OTLP_ENDPOINT`, vão a esse
- * coletor, no lugar do arquivo.
+ * (OTLP/JSON, `observabilidade/`), conforme `--traces`.
  *
  * Encerramento: SIGTERM ou SIGINT (o `NodeRuntime.runMain` interrompe o programa) ou, com o token pelo
  * stdin, o stdin fechado ou o processo pai trocado. Em todos os casos o escopo fecha: o RPC para, as
@@ -69,7 +68,7 @@ const pastaEstadoPadrao = Effect.gen(function* () {
 });
 
 /**
- * A pasta de skills quando nem `--pasta-skills` nem `SIMPLIFICA_SKILLS` a dão: no desenvolvimento
+ * A pasta de skills quando `--pasta-skills` não a dá: no desenvolvimento
  * (este módulo rodando do código-fonte, `apps/server/src/cli.ts`), o `.agents/skills` do checkout; no
  * bundle do app, nenhuma (o desktop passa `<Resources>/skills`).
  */
@@ -96,15 +95,8 @@ const servidor = Command.make(
       Flag.withFallbackConfig(Config.String("SIMPLIFICA_KB")),
     ),
     porta: Flag.Int("porta").pipe(Flag.withDescription("porta do RPC; 0 escolhe uma livre"), Flag.withDefault(0)),
-    portaMcp: Flag.Int("porta-mcp").pipe(
-      Flag.withDescription("porta do MCP HTTP; 0 escolhe uma livre"),
-      Flag.withDefault(0),
-    ),
     pastaEstado: Flag.String("pasta-estado").pipe(
-      Flag.withDescription(
-        "pasta do app: conversas (conversas.sqlite), CLIs gerenciadas e perfil do Antigravity (ou SIMPLIFICA_ESTADO)",
-      ),
-      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ESTADO")),
+      Flag.withDescription("pasta do app: conversas (conversas.sqlite), CLIs gerenciadas e perfil do Antigravity"),
       Flag.optional,
     ),
     origens: Flag.String("origem").pipe(
@@ -117,23 +109,18 @@ const servidor = Command.make(
     ),
     pastaSkills: Flag.String("pasta-skills").pipe(
       Flag.withDescription(
-        "pasta das skills do app (as com bloco simplifica: no SKILL.md); padrão no desenvolvimento: .agents/skills do checkout (ou SIMPLIFICA_SKILLS)",
+        "pasta das skills do app (as com bloco simplifica: no SKILL.md); padrão no desenvolvimento: .agents/skills do checkout",
       ),
-      Flag.withFallbackConfig(Config.String("SIMPLIFICA_SKILLS")),
       Flag.optional,
     ),
     pastaTrabalhos: Flag.String("pasta-trabalhos").pipe(
-      Flag.withDescription(
-        "raiz das pastas de tarefa; padrão: Documents/Simplifica IF na pasta pessoal (ou SIMPLIFICA_TRABALHOS)",
-      ),
-      Flag.withFallbackConfig(Config.String("SIMPLIFICA_TRABALHOS")),
+      Flag.withDescription("raiz das pastas de tarefa; padrão: Documents/Simplifica IF na pasta pessoal"),
       Flag.optional,
     ),
     pastaAtualizacao: Flag.String("pasta-atualizacao").pipe(
       Flag.withDescription(
-        "liga a atualização da base e das skills, gravando nesta pasta (a do app); sem ela, a base é só a do --banco (ou SIMPLIFICA_ATUALIZACAO_PASTA)",
+        "liga a atualização da base e das skills, gravando nesta pasta (a do app); sem ela, a base é só a do --banco",
       ),
-      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_PASTA")),
       Flag.optional,
     ),
     feedAtualizacao: Flag.String("feed-atualizacao").pipe(
@@ -220,7 +207,6 @@ const servidor = Command.make(
           token: partida.token,
           ...(partida.tokenDesktop === undefined ? {} : { tokenDesktop: partida.tokenDesktop }),
           porta: opcoes.porta,
-          portaMcp: opcoes.portaMcp,
           origens: [...opcoes.origens, ...partida.origens],
           // A base da fábrica não grava canal (o canal é do manifesto): com a atualização ligada, o
           // carimbo das respostas usa o canal escolhido em "Atualizações".
@@ -306,8 +292,8 @@ const montarAtualizacao = Effect.fn("cli.montarAtualizacao")(function* (entrada:
 });
 
 /**
- * Os spans e os logs para a pasta de logs (ou para o coletor de `OTEL_EXPORTER_OTLP_ENDPOINT`). Envolve o
- * servidor inteiro: no fim, depois do escopo do servidor, descarrega o que falta.
+ * Os spans e os logs para a pasta de logs. Envolve o servidor inteiro: no fim, depois do escopo do
+ * servidor, descarrega o que falta.
  */
 const layerObservabilidade = (opcoes: {
   readonly pastaLogs: Option.Option<string>;
@@ -317,12 +303,10 @@ const layerObservabilidade = (opcoes: {
   Layer.unwrap(
     Effect.gen(function* () {
       const path = yield* Path.Path;
-      const endpoint = yield* Config.option(Config.String("OTEL_EXPORTER_OTLP_ENDPOINT")).pipe(Effect.orDie);
       const pastaLogs = Option.getOrUndefined(opcoes.pastaLogs);
       return Observabilidade.layer({
         pastaLogs: pastaLogs === undefined ? undefined : path.resolve(yield* expandHomePath(pastaLogs)),
         modo: opcoes.traces,
-        endpoint: Option.getOrUndefined(endpoint),
         versao: opcoes.versaoApp,
       });
     }),

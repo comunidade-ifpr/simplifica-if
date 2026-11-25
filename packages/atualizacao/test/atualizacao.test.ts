@@ -303,11 +303,18 @@ describe("revisão: skills, trava, proxy, temporários e Worker", () => {
     Effect.gen(function* () {
       const pasta = pastaTemporaria();
       const bom = criarBanco(NodePath.join(pasta, "bom.sqlite"), "2026.11.20");
-      expect(yield* validarBancoEmWorker(bom, { versao: "2026.11.20" })).toMatchObject({ versao: "2026.11.20" });
-      const erroVersao = yield* validarBancoEmWorker(bom, { versao: "2026.11.21" }).pipe(Effect.flip);
+      expect(yield* validarBancoEmWorker(bom, { versao: "2026.11.20", dataReferencia: "2026-11-20" })).toMatchObject({
+        versao: "2026.11.20",
+      });
+      const erroVersao = yield* validarBancoEmWorker(bom, { versao: "2026.11.21", dataReferencia: "2026-11-20" }).pipe(
+        Effect.flip,
+      );
       expect(erroVersao.message).toContain("diz ser a versão 2026.11.20");
       const ruim = criarBanco(NodePath.join(pasta, "ruim.sqlite"), "2026.11.20", { esquema: 999 });
-      const erroEsquema = yield* validarBancoEmWorker(ruim, { versao: "2026.11.20" }).pipe(Effect.flip);
+      const erroEsquema = yield* validarBancoEmWorker(ruim, {
+        versao: "2026.11.20",
+        dataReferencia: "2026-11-20",
+      }).pipe(Effect.flip);
       expect(erroEsquema.message).toContain("outro esquema");
     }),
   );

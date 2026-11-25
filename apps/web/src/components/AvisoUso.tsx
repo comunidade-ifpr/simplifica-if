@@ -51,17 +51,15 @@ const PONTOS: ReadonlyArray<{
 ];
 
 export function AvisoUso({
-  titulo = "O que vai para a IA",
   aoEntender,
 }: {
-  readonly titulo?: string;
   /** Com ele, o aviso ainda não aceito ganha o botão "Entendi" (Configurações). */
   readonly aoEntender?: () => void;
 }) {
   return (
     <section aria-labelledby="titulo-aviso-uso" className="flex flex-col gap-3">
       <h2 id="titulo-aviso-uso" className="text-heading">
-        {titulo}
+        O que vai para a IA
       </h2>
       <ul className="grid gap-x-12 border-border border-t sm:grid-cols-2">
         {PONTOS.map((ponto) => (

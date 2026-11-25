@@ -71,8 +71,8 @@ export type PlanoRevisaoIa = {
   blocos: BlocoPlano[];
   /** As transversais: o contexto normativo e os trechos das seções delas. */
   transversais: { contexto: ContextoNormativo; trechos: string } | null;
-  /** O critério do INCONCLUSIVO dos pedidos (ausente nos planos da etapa 4: `conservador`). */
-  criterio?: CriterioInconclusivo;
+  /** O critério do INCONCLUSIVO dos pedidos. */
+  criterio: CriterioInconclusivo;
 };
 
 const LIMITE_CAMPO_CNCT = 700;

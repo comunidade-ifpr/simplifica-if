@@ -1,8 +1,8 @@
 /**
  * A entrada da revisão: o título, uma frase, a área de soltar o PPC (no desktop; no navegador, o campo
  * do caminho, que é o modo de desenvolvimento) e as revisões recentes, uma por linha: todas as listas
- * guardadas (com a leitura com IA que ficou por terminar e quando a lista sai sozinha, se falta pouco) e
- * as leituras sem lista. "Continuar" abre a lista do arquivo, e a faixa da IA retoma a leitura dela: nada
+ * guardadas (com a leitura com IA que ficou por terminar e quando a lista sai sozinha, se falta pouco).
+ * "Continuar" abre a lista do arquivo, e a faixa da IA retoma a leitura dela: nada
  * é revisado de novo (o curso escolhido e o que foi marcado ficam). O ⋯ de cada lista a apaga, e
  * "Selecionar" apaga várias de uma vez.
  */
@@ -203,8 +203,7 @@ function Recente({
   readonly detalhes: ReadonlyArray<string | null>;
   readonly fim: string;
   readonly aoAbrir: () => void;
-  /** Só nas listas guardadas. */
-  readonly aoApagar?: () => void;
+  readonly aoApagar: () => void;
   /** Com a seleção ativa: se está marcada e como marcar. */
   readonly marcada?: boolean;
   readonly aoMarcar?: () => void;
@@ -241,29 +240,27 @@ function Recente({
         <span className="shrink-0 text-small tabular-nums">{fim}</span>
         <ChevronRightIcon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
       </button>
-      {aoApagar === undefined ? null : (
-        <Menu>
-          <MenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label={`Mais ações da revisão de “${titulo}”`}
-                // O rótulo leva o nome do arquivo da pessoa.
-                data-conteudo=""
-                title="Mais ações"
-              />
-            }
-          >
-            <EllipsisIcon />
-          </MenuTrigger>
-          <MenuPopup>
-            <MenuItem className="text-destructive-foreground" onClick={aoApagar}>
-              Apagar esta revisão…
-            </MenuItem>
-          </MenuPopup>
-        </Menu>
-      )}
+      <Menu>
+        <MenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={`Mais ações da revisão de “${titulo}”`}
+              // O rótulo leva o nome do arquivo da pessoa.
+              data-conteudo=""
+              title="Mais ações"
+            />
+          }
+        >
+          <EllipsisIcon />
+        </MenuTrigger>
+        <MenuPopup>
+          <MenuItem className="text-destructive-foreground" onClick={aoApagar}>
+            Apagar esta revisão…
+          </MenuItem>
+        </MenuPopup>
+      </Menu>
     </li>
   );
 }

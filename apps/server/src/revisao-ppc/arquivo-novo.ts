@@ -17,8 +17,9 @@
  * Uma pendência que continua com outro texto passa a ter a mensagem e o trecho do arquivo novo, com a
  * chave nova (a cópia comentada marca a situação pela chave do texto dela).
  */
-import type { AcaoPendencia, PendenciaRevisao, SituacaoPendencia, UsoRevisaoIa } from "@simplifica-if/contratos-app";
+import type { PendenciaRevisao, SituacaoPendencia } from "@simplifica-if/contratos-app";
 import { chavePendencia, type MarcaPendencia } from "@simplifica-if/ppc/revisao-previa";
+import type { MudancaPendencia } from "../persistencia/RevisoesPpc.ts";
 
 export interface PendenciaDaLista {
   readonly chave: string;
@@ -32,22 +33,6 @@ export interface EventoDaLista {
   readonly acao: string;
   readonly texto: string;
   readonly motivo?: string | null | undefined;
-}
-
-export interface EventoMudanca {
-  readonly acao: AcaoPendencia;
-  readonly situacao: SituacaoPendencia;
-  readonly texto: string;
-  readonly motivo?: string | null;
-  readonly uso?: UsoRevisaoIa | null;
-}
-
-export interface MudancaPendencia {
-  readonly chave: string;
-  readonly nova?: { readonly chave: string; readonly pendencia: PendenciaRevisao };
-  readonly situacao: SituacaoPendencia;
-  readonly resolvidaPor: "pessoa" | "revisarDeNovo" | null;
-  readonly evento: EventoMudanca | null;
 }
 
 /** A situação de cada pendência não aberta, com a nota, para a cópia comentada (pela chave). */

@@ -82,7 +82,6 @@ describe("auditarBase", () => {
     expect(auditarBase(base({ cursos: [curso({ ...ativo, cnctAusencia: "oferta experimental" })] }))).toEqual([]);
     expect(auditarBase(base({ cursos: [curso({ situacao: "suspenso" })] }))).toEqual([]);
     expect(auditarBase(base({ cursos: [curso({ ...ativo, cnctId: "cnct:catalogo", cnctAusencia: "x" })] }))).toEqual([
-      "Curso 'Técnico em Exemplo' (pg-curso): cnct_id inválido (esperado cnct:<slug do curso no CNCT>): cnct:catalogo",
       "Curso 'Técnico em Exemplo' (pg-curso): cnct_id e cnct_ausencia são excludentes",
     ]);
   });

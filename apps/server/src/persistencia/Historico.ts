@@ -314,11 +314,7 @@ const make = Effect.gen(function* () {
   const registrarTentativaApagamento = Effect.fn("Historico.registrarTentativaApagamento")(function* (
     conversa: string,
   ) {
-    const data = yield* agora;
-    yield* sql`
-      UPDATE apagamentos_pendentes SET tentativas = tentativas + 1, ultima_tentativa_em = ${data}
-      WHERE conversa = ${conversa}
-    `;
+    yield* sql`UPDATE apagamentos_pendentes SET tentativas = tentativas + 1 WHERE conversa = ${conversa}`;
   }, Effect.orDie);
 
   const previa = Effect.fn("Historico.previa")(function* (id: string) {

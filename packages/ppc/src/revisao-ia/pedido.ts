@@ -115,7 +115,6 @@ export const CRITERIO_PADRAO: CriterioInconclusivo = "conservador";
 
 /** O tipo de um NAO_ATENDE no critério `ausencia`. */
 export const TIPOS_ACHADO = ["ausencia_em_secao_presente", "contradicao", "merito"] as const;
-export type TipoAchado = (typeof TIPOS_ACHADO)[number];
 
 /** Um exemplo da forma (ficha e trecho fictícios), numa linha: o que a conferência aceita. */
 const exemploResposta = (bloco: Bloco, criterio: CriterioInconclusivo) =>

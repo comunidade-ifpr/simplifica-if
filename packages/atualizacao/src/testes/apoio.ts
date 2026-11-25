@@ -53,10 +53,12 @@ export function criarBanco(
   meta.run("versao", versao);
   meta.run("commit", "abc1234");
   const secao = db.prepare("INSERT INTO secoes (texto) VALUES (?)");
+  // Numa transação só: cada INSERT solto é um fsync, e o banco custava segundos por teste.
+  db.exec("BEGIN");
   for (let i = 0; i < 2000; i += 1)
     secao.run(`Seção ${i}: o curso técnico observa a carga horária mínima do CNCT, item ${i * 7}.`);
   if (opcoes.extra !== undefined) secao.run(opcoes.extra);
-  db.exec("VACUUM");
+  db.exec("COMMIT");
   db.close();
   return caminho;
 }

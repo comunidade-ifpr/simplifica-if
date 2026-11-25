@@ -17,14 +17,11 @@ const inteiroPositivo = Schema.Number.check(Schema.isInt(), Schema.isGreaterThan
 
 /** Estados de uma ficha. */
 export const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
-export type Estado = (typeof ESTADOS)[number];
 
 export const CRITICIDADES = ["BLOQ", "OBRIG", "REC"] as const;
-export type Criticidade = (typeof CRITICIDADES)[number];
 
 /** Modo de execução da ficha na revisão do app (M1.11, classificação da proposta C). */
 export const MODOS_EXECUCAO = ["D", "S", "J"] as const;
-export type ModoExecucao = (typeof MODOS_EXECUCAO)[number];
 
 const execucao = Schema.Struct({
   modo: Schema.Literals(MODOS_EXECUCAO).annotate({
@@ -117,10 +114,10 @@ export interface Marco {
 
 /** Contratos da base da revisão de PPC. */
 const CONTRATOS = {
-  "ficha.schema.json": esquemaFicha,
-  "marcos-normativos.schema.json": esquemaMarcosNormativos,
+  ficha: esquemaFicha,
+  marcos: esquemaMarcosNormativos,
 } as const;
-export type NomeSchemaGerado = keyof typeof CONTRATOS;
+export type NomeContrato = keyof typeof CONTRATOS;
 
 /** Problema de um arquivo fora do contrato: caminho JSON (`$.campo[0]`) e mensagem. */
 export type ProblemaDeContrato = { readonly caminho: string; readonly mensagem: string };
@@ -137,7 +134,7 @@ function caminhoJson(caminho: ReadonlyArray<PropertyKey>): string {
  * Decodifica `valor` com o contrato de `nome` e devolve os problemas, todos e em português (vazio
  * quando está no contrato).
  */
-export function decodificarContrato(nome: NomeSchemaGerado, valor: unknown): ProblemaDeContrato[] {
+export function decodificarContrato(nome: NomeContrato, valor: unknown): ProblemaDeContrato[] {
   const esquema = CONTRATOS[nome];
   const resultado = Schema.decodeUnknownResult(esquema as Schema.Codec<unknown>)(valor, {
     errors: "all",

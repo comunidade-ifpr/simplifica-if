@@ -130,10 +130,6 @@ export const esquemaNorma = Schema.StructWithRest(
     fonte_url: Schema.optionalKey(UrlOficial),
     /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
     fonte_referencia: Schema.optionalKey(texto),
-    /** Campo antigo, recusado na struct (e não num filtro), para sair junto com os outros erros. */
-    fonte: Schema.optionalKey(
-      textoQue(() => false, "campo substituído por fonte_url (URL https) e fonte_referencia (texto)"),
-    ),
     /** Data do ato (assinatura). */
     assinada_em: Schema.String.check(Schema.isPattern(RE_DATA_ISO, { message: "assinada_em deve ser AAAA-MM-DD" })),
     /** Publicação oficial (DOU, Boletim de Serviço), "a confirmar" ou "aguardando publicação". */
