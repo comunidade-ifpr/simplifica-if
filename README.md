@@ -7,7 +7,7 @@
 
 **As normas, os cursos e os PPCs do IFPR, prontos para a IA que você já usa.**
 
-O Simplifica IF é um app para o computador de quem trabalha no IFPR. Você pergunta em português, e a IA da sua conta (Claude, ChatGPT ou Gemini) responde consultando uma base com a legislação, os regulamentos e os documentos do Instituto. Toda resposta diz de onde saiu: um clique na citação abre a norma no trecho citado.
+O Simplifica IF é um app Desktop para quem trabalha no IFPR. Você pergunta e a IA da sua conta pessoal (Claude, ChatGPT ou Gemini) responde consultando uma base com a legislação, os regulamentos e os documentos do Instituto. Toda resposta diz de onde saiu: um clique na citação abre a norma no trecho citado.
 
 ![A tela inicial do Simplifica IF: a pergunta "O que você precisa hoje?", a caixa de pedido e as tarefas](docs/imagens/inicio.png)
 
