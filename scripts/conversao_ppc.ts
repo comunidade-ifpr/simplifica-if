@@ -211,8 +211,7 @@ const comandoConferir = Command.make(
             `${r.separacoes.length} separações`,
         );
         if (r.frontMatterMudou) yield* Console.log("- o front matter mudou (só o corpo pode mudar)");
-        if (r.novas.length)
-          yield* Console.log(`- novas (reprovam): ${r.novas.map(([p, n]) => `${p}×${n}`).join(" ")}`);
+        if (r.novas.length) yield* Console.log(`- novas (reprovam): ${r.novas.map(([p, n]) => `${p}×${n}`).join(" ")}`);
         if (r.repetidas.length)
           yield* Console.log(
             `- repetidas (já existiam; só em cabeçalho de tabela): ${r.repetidas.map(([p, n]) => `${p}×${n}`).join(" ")}`,

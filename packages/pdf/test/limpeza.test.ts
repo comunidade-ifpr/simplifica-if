@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vite-plus/test";
-import { continua, continuaNumeracao, limparMarkdownConvertido, nivelDaNumeracao, numeroDePagina, type Passada } from "../src/limpeza.ts";
+import {
+  continua,
+  continuaNumeracao,
+  limparMarkdownConvertido,
+  nivelDaNumeracao,
+  numeroDePagina,
+  type Passada,
+} from "../src/limpeza.ts";
 
 const blocos = (...partes: string[]) => `${partes.join("\n\n")}\n`;
 const limpar = (texto: string, passadas?: Passada[]) =>

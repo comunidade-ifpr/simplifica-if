@@ -453,8 +453,7 @@ function titulos(blocos: string[], contar: () => void): string[] {
       } else if (ultima && ehParagrafo(bloco)) {
         const texto = limparTextoDoTitulo(bloco);
         const candidato = RE_TITULO_SEM_MARCACAO.test(texto) ? numeros(texto) : null;
-        if (candidato && continuaNumeracao(ultima, candidato))
-          titulo = { nivel: nivelDaNumeracao(texto) ?? 2, texto };
+        if (candidato && continuaNumeracao(ultima, candidato)) titulo = { nivel: nivelDaNumeracao(texto) ?? 2, texto };
       }
     }
     if (!titulo || !titulo.texto) return bloco;

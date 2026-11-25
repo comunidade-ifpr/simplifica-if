@@ -60,6 +60,43 @@ describe("pdfParaMarkdown", () => {
     expect(await pdfParaMarkdown(comLixo)).toContain("Texto.");
   });
 
+  it("marca o título em negrito pelo nível da numeração e o rótulo em negrito no texto", async () => {
+    const pdf = montarPdf({
+      paginas: [["**2.4 PERFIL DO EGRESSO**", "", "O egresso atua na área.", "", "**Ementa:**"]],
+    });
+    expect(await pdfParaMarkdown(pdf, { marcadoresDePagina: false })).toBe(
+      ["### 2.4 PERFIL DO EGRESSO", "O egresso atua na área.", "**Ementa:**"].join("\n\n") + "\n",
+    );
+  });
+
+  it("tira o cabeçalho repetido e o número de página das faixas de cima e de baixo", async () => {
+    const pdf = montarPdf({
+      paginas: [["Primeira."], ["Segunda."], ["Terceira."]],
+      cabecalho: "Ministério da Educação - Instituto Federal do Paraná",
+      numerarPaginas: true,
+    });
+    expect(await pdfParaMarkdown(pdf, { marcadoresDePagina: false })).toBe("Primeira.\n\nSegunda.\n\nTerceira.\n");
+  });
+
+  it("escreve a tabela com borda como tabela Markdown, no lugar dela, e junta a que continua na página seguinte", async () => {
+    const tabela = (celulas: string[][]) => ({ x: 72, y: 600, larguras: [200, 80], celulas });
+    const pdf = montarPdf({
+      paginas: [["Quadro 1: componentes"], []],
+      tabelas: {
+        0: [
+          tabela([
+            ["Componente", "Carga"],
+            ["Física I", "80"],
+          ]),
+        ],
+        1: [tabela([["Química I", "40"]])],
+      },
+    });
+    expect(await pdfParaMarkdown(pdf, { marcadoresDePagina: false })).toBe(
+      ["Quadro 1: componentes", "|Componente|Carga|\n|---|---|\n|Física I|80|\n|Química I|40|"].join("\n\n") + "\n",
+    );
+  });
+
   it("para no limite de páginas e no de caracteres", async () => {
     const pdf = montarPdf({ paginas: [["um"], ["dois"], ["três"]] });
     await expect(pdfParaMarkdown(pdf, { paginas: 2 })).rejects.toMatchObject({

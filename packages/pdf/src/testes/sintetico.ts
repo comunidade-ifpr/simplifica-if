@@ -1,8 +1,17 @@
 /**
  * Construtor de PDFs sintéticos para testes (não é usado em produção): páginas de texto em
  * Helvetica 12 com `WinAnsiEncoding` (os acentos do português cabem no Latin-1), escritas à mão,
- * com a tabela `xref` calculada aqui.
+ * com a tabela `xref` calculada aqui. A linha entre `**` sai em Helvetica-Bold; a tabela é desenhada
+ * com traços (`re` e `S`), com o texto de cada célula dentro dela.
  */
+
+/** Tabela desenhada: o canto de cima à esquerda, a largura de cada coluna e as células. */
+export interface TabelaSintetica {
+  readonly x: number;
+  readonly y: number;
+  readonly larguras: ReadonlyArray<number>;
+  readonly celulas: ReadonlyArray<ReadonlyArray<string>>;
+}
 
 export interface OpcoesPdfSintetico {
   /**
@@ -15,16 +24,57 @@ export interface OpcoesPdfSintetico {
    * é cifrado de fato, porque o leitor para antes, na conferência da senha.
    */
   readonly protegido?: boolean;
+  /** Linha no alto de cada página (y 770), como um cabeçalho. */
+  readonly cabecalho?: string;
+  /** O número da página no pé de cada página (y 30). */
+  readonly numerarPaginas?: boolean;
+  /** As tabelas de cada página (índice da página → tabelas), abaixo do texto. */
+  readonly tabelas?: Readonly<Record<number, ReadonlyArray<TabelaSintetica>>>;
+}
+
+const ALTURA_LINHA_TABELA = 20;
+
+function desenharTabela(tabela: TabelaSintetica): string[] {
+  const comandos: string[] = ["0.5 w"];
+  const largura = tabela.larguras.reduce((a, b) => a + b, 0);
+  const altura = tabela.celulas.length * ALTURA_LINHA_TABELA;
+  for (let i = 0; i <= tabela.celulas.length; i++) {
+    const y = tabela.y - i * ALTURA_LINHA_TABELA;
+    comandos.push(`${tabela.x} ${y} m ${tabela.x + largura} ${y} l S`);
+  }
+  let x = tabela.x;
+  for (let j = 0; j <= tabela.larguras.length; j++) {
+    comandos.push(`${x} ${tabela.y} m ${x} ${tabela.y - altura} l S`);
+    x += tabela.larguras[j] ?? 0;
+  }
+  tabela.celulas.forEach((linha, i) => {
+    let xCelula = tabela.x;
+    linha.forEach((texto, j) => {
+      if (texto)
+        comandos.push(
+          `BT /F1 10 Tf ${xCelula + 3} ${tabela.y - (i + 1) * ALTURA_LINHA_TABELA + 6} Td ${literal(texto)} Tj ET`,
+        );
+      xCelula += tabela.larguras[j] ?? 0;
+    });
+  });
+  return comandos;
 }
 
 const ENTRELINHA = 14;
 
 const literal = (texto: string) => `(${texto.replace(/[\\()]/g, (c) => `\\${c}`)})`;
 
-function conteudoDaPagina(linhas: ReadonlyArray<string>): string {
+function conteudoDaPagina(linhas: ReadonlyArray<string>, numero: number, opcoes: OpcoesPdfSintetico): string {
   const comandos = ["BT", "/F1 12 Tf", `${ENTRELINHA} TL`, "72 720 Td"];
-  for (const linha of linhas) comandos.push(linha ? `${literal(linha)} Tj T*` : "T*");
+  for (const linha of linhas) {
+    const negrito = /^\*\*(.+)\*\*$/u.exec(linha);
+    if (negrito) comandos.push(`/F2 12 Tf ${literal(negrito[1]!)} Tj T* /F1 12 Tf`);
+    else comandos.push(linha ? `${literal(linha)} Tj T*` : "T*");
+  }
   comandos.push("ET");
+  if (opcoes.cabecalho) comandos.push(`BT /F1 10 Tf 72 770 Td ${literal(opcoes.cabecalho)} Tj ET`);
+  if (opcoes.numerarPaginas) comandos.push(`BT /F1 10 Tf 300 30 Td (${numero}) Tj ET`);
+  for (const tabela of opcoes.tabelas?.[numero - 1] ?? []) comandos.push(...desenharTabela(tabela));
   return comandos.join("\n");
 }
 
@@ -47,15 +97,17 @@ export function montarPdf(opcoes: OpcoesPdfSintetico): Uint8Array {
   const paginas = reservar();
   const fonte = reservar();
   objetos[fonte - 1] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+  const negrito = reservar();
+  objetos[negrito - 1] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
   const filhas: number[] = [];
-  for (const linhas of opcoes.paginas) {
-    const conteudo = conteudoDaPagina(linhas);
+  for (const [indice, linhas] of opcoes.paginas.entries()) {
+    const conteudo = conteudoDaPagina(linhas, indice + 1, opcoes);
     const fluxo = reservar();
     objetos[fluxo - 1] = `<< /Length ${conteudo.length} >>\nstream\n${conteudo}\nendstream`;
     const pagina = reservar();
     objetos[pagina - 1] =
       `<< /Type /Page /Parent ${paginas} 0 R /MediaBox [0 0 612 792] ` +
-      `/Resources << /Font << /F1 ${fonte} 0 R >> >> /Contents ${fluxo} 0 R >>`;
+      `/Resources << /Font << /F1 ${fonte} 0 R /F2 ${negrito} 0 R >> >> /Contents ${fluxo} 0 R >>`;
     filhas.push(pagina);
   }
   objetos[catalogo - 1] = `<< /Type /Catalog /Pages ${paginas} 0 R >>`;

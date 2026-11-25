@@ -1,14 +1,18 @@
 // @effect-diagnostics nodeBuiltinImport:off -- a conversão e a gravação atômica do DOCX local seguem síncronas, com node:fs e node:crypto, como o resto do pipeline da base; `importarPpcDocx` as leva para o canal de erro numa só fronteira
 /**
- * Entrada de um PPC na base a partir do DOCX que a coordenação do curso envia: converte com
- * `converterPpc` (`packages/ppc`), tira dados pessoais e URLs internas, grava o Markdown com o front
+ * Entrada de um PPC na base a partir do DOCX que a coordenação do curso envia (`importarPpcDocx`,
+ * conversão de `converterPpc`, em `packages/ppc`) ou do PDF publicado, quando não há DOCX
+ * (`importarPpcPdf`: `pdfParaMarkdown` e a limpeza determinística de `packages/pdf`; o texto ainda
+ * passa pela revisão com IA, skill `revisar-conversao-ppc`, antes do commit). Tira dados pessoais e
+ * URLs internas, grava o Markdown com o front
  * matter de proveniência `registrada` como versão nova do PPC do curso
  * (`ppcs/<campus>/<curso>/<versao>.md`, ID permanente) e aponta o registro do curso para ela
  * (`ppc.markdown_path`, `ppc.url` = `fonte_url`, `ppc.ano_documento`). O PPC que era o vigente fica
  * na base, substituído; só a reconversão do mesmo documento grava por cima dele.
  *
  * O `fonte_sha256` fica `desconhecido`: ele é o hash dos bytes de `fonte_url` (em geral o PDF
- * publicado), que a importação não baixa. O hash do DOCX convertido vai em `arquivo_convertido_sha256`.
+ * publicado), que a importação não baixa; o PDF local pode não ser o mesmo arquivo. O hash do arquivo
+ * convertido (DOCX ou PDF) vai em `arquivo_convertido_sha256`, e o tipo em `arquivo_convertido`.
  *
  * Não regenera os índices: quem chama roda o pipeline da base depois de conferir o texto.
  */
@@ -19,6 +23,9 @@ import * as Effect from "effect/Effect";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { ErroDocx } from "@simplifica-if/docx/erro";
+import { ErroPdf } from "@simplifica-if/pdf/erro";
+import { limparMarkdownConvertido } from "@simplifica-if/pdf/limpeza";
+import { pdfParaMarkdown } from "@simplifica-if/pdf/markdown";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { aplicarOmissao, type Contagem } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import {
@@ -159,6 +166,23 @@ const NOTA_DOCX =
   "fonte_url é o endereço publicado do PPC (ppc.url), em geral um PDF gerado do mesmo documento, " +
   "que não foi baixado: por isso fonte_sha256 é desconhecido.";
 
+const NOTA_PDF =
+  "Convertido de um PDF do PPC (o hash dele está em arquivo_convertido_sha256), por falta do DOCX, e limpo " +
+  "pela limpeza determinística do texto convertido. fonte_url é o endereço publicado do PPC (ppc.url); o PDF " +
+  "convertido não foi conferido contra ele: por isso fonte_sha256 é desconhecido.";
+
+/** O arquivo lido e convertido, com o que o front matter registra dele. */
+interface Entrada {
+  readonly bytes: Uint8Array;
+  readonly markdown: string;
+  readonly grafica: RepresentacaoGrafica | null;
+  readonly tipo: "docx" | "pdf";
+  readonly nota: string;
+}
+
+/** Tamanho máximo do PDF aceito (o mesmo teto do anexo da conversa). */
+const MAXIMO_BYTES_PDF = 100 * 1024 * 1024;
+
 /** A URL sem query nem fragmento, para as mensagens: a query pode trazer assinatura ou sessão. */
 function semQuery(url: string): string {
   return url.split(/[?#]/, 1)[0] ?? "";
@@ -241,23 +265,73 @@ export function semFiguraLocal(texto: string, grafica: RepresentacaoGrafica | nu
   return trocado;
 }
 
-/** Corpo do Markdown da base: a conversão sem figura local, URLs internas e dados pessoais. */
-function markdownDaBase(
-  bytes: Uint8Array,
-  nomeDoArquivo: string,
-): Pick<ResultadoImportacao, "omitidos" | "urlsLimpas" | "representacaoGrafica"> & { corpo: string } {
-  let conversao;
+/** Lê e converte o DOCX (síncrono, como o resto da importação). */
+function entradaDocx(arquivo: string): Entrada {
+  const caminho = NodePath.resolve(arquivo);
+  if (!NodeFS.existsSync(caminho)) throw recusa("arquivo-inexistente", `Arquivo não encontrado: ${caminho}`);
+  let bytes: Uint8Array;
   try {
-    conversao = converterPpc(bytes, nomeDoArquivo);
+    conferirArquivoDocx(caminho, NodeFS.statSync(caminho).size);
+    bytes = NodeFS.readFileSync(caminho);
+  } catch (erro) {
+    // A conferência recusa extensão e tamanho com mensagem própria, feita para quem importa.
+    throw recusa("arquivo-recusado", (erro as Error).message, erro);
+  }
+  try {
+    const conversao = converterPpc(bytes, NodePath.basename(arquivo));
+    return {
+      bytes,
+      markdown: conversao.markdown,
+      grafica: conversao.representacaoGrafica,
+      tipo: "docx",
+      nota: NOTA_DOCX,
+    };
   } catch (erro) {
     // A mensagem do ErroDocx é a recusa do documento (não é ZIP, está protegido, passa dos limites).
     if (erro instanceof ErroDocx) throw recusa("conversao-recusada", `Conversão recusada: ${erro.message}`, erro);
     throw erro;
   }
-  const grafica = conversao.representacaoGrafica;
-  const urls = limparUrlsInternas(semFiguraLocal(conversao.markdown, grafica));
+}
+
+/** Lê e converte o PDF, sem os marcadores de página, e aplica a limpeza determinística. */
+const entradaPdf = Effect.fn("importarPpc.entradaPdf")(function* (arquivo: string) {
+  const caminho = NodePath.resolve(arquivo);
+  const bytes = yield* Effect.try({
+    try: () => {
+      if (!NodeFS.existsSync(caminho)) throw recusa("arquivo-inexistente", `Arquivo não encontrado: ${caminho}`);
+      if (!/\.pdf$/iu.test(caminho)) throw recusa("arquivo-recusado", `O arquivo não é .pdf: ${caminho}`);
+      if (NodeFS.statSync(caminho).size > MAXIMO_BYTES_PDF)
+        throw recusa("arquivo-recusado", `O PDF passa de ${MAXIMO_BYTES_PDF / 1024 / 1024} MB: ${caminho}`);
+      return new Uint8Array(NodeFS.readFileSync(caminho));
+    },
+    catch: (erro) =>
+      ehErroImportacao(erro) ? erro : recusa("arquivo-recusado", `Não foi possível ler ${caminho}`, erro),
+  });
+  const markdown = yield* Effect.tryPromise({
+    try: () => pdfParaMarkdown(bytes, { marcadoresDePagina: false }),
+    catch: (erro) =>
+      erro instanceof ErroPdf
+        ? recusa("conversao-recusada", `Conversão recusada: ${erro.message}`, erro)
+        : recusa("conversao-recusada", "Conversão recusada: o PDF não pôde ser lido", erro),
+  });
+  return {
+    bytes,
+    markdown: limparMarkdownConvertido(markdown).texto,
+    grafica: null,
+    tipo: "pdf",
+    nota: NOTA_PDF,
+  } satisfies Entrada;
+});
+
+/** Corpo do Markdown da base: a conversão sem figura local, URLs internas e dados pessoais. */
+function markdownDaBase(
+  entrada: Entrada,
+): Pick<ResultadoImportacao, "omitidos" | "urlsLimpas" | "representacaoGrafica"> & { corpo: string } {
+  const grafica = entrada.grafica;
+  const urls = limparUrlsInternas(semFiguraLocal(entrada.markdown, grafica));
   const { texto: corpo, contagem } = aplicarOmissao(urls.texto);
-  if (!corpo.trim()) throw recusa("conversao-vazia", "Conversão vazia: o DOCX não produziu texto para a base.");
+  if (!corpo.trim())
+    throw recusa("conversao-vazia", `Conversão vazia: o ${entrada.tipo.toUpperCase()} não produziu texto para a base.`);
   return {
     corpo: corpo.endsWith("\n") ? corpo : `${corpo}\n`,
     omitidos: contagem,
@@ -270,7 +344,25 @@ function markdownDaBase(
 export const importarPpcDocx = Effect.fn("importarPpc.importar")(function* (opcoes: OpcoesImportacao) {
   return yield* Effect.suspend(() => {
     try {
-      return Effect.succeed(importar(opcoes));
+      return Effect.succeed(importar(opcoes, () => entradaDocx(opcoes.arquivoDocx)));
+    } catch (erro) {
+      return ehErroImportacao(erro) ? Effect.fail(erro) : Effect.die(erro);
+    }
+  });
+});
+
+export type OpcoesImportacaoPdf = Omit<OpcoesImportacao, "arquivoDocx"> & { arquivoPdf: string };
+
+/**
+ * Converte o PDF (com a limpeza determinística) e grava o PPC e o registro do curso, como
+ * `importarPpcDocx`. O PDF é lido e convertido antes das outras conferências, porque a conversão é
+ * assíncrona.
+ */
+export const importarPpcPdf = Effect.fn("importarPpc.importarPdf")(function* (opcoes: OpcoesImportacaoPdf) {
+  const entrada = yield* entradaPdf(opcoes.arquivoPdf);
+  return yield* Effect.suspend(() => {
+    try {
+      return Effect.succeed(importar({ ...opcoes, arquivoDocx: opcoes.arquivoPdf }, () => entrada));
     } catch (erro) {
       return ehErroImportacao(erro) ? Effect.fail(erro) : Effect.die(erro);
     }
@@ -317,7 +409,7 @@ function escolherVersao(
   return versao;
 }
 
-function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
+function importar(opcoes: OpcoesImportacao, lerEntrada: () => Entrada): ResultadoImportacao {
   const [campusId, cursoSlug, ...resto] = opcoes.curso.split("/");
   if (!campusId || !cursoSlug || resto.length || !RE_SLUG.test(campusId) || !RE_SLUG.test(cursoSlug)) {
     throw recusa("curso-malformado", `Curso deve ser <campus_id>/<curso_slug>: ${opcoes.curso}`);
@@ -359,27 +451,18 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
       ? null
       : escolherVersao(opcoes, anoComEvidencia, campusId, cursoSlug, partesVigente?.versao ?? null);
 
-  const arquivoDocx = NodePath.resolve(opcoes.arquivoDocx);
-  if (!NodeFS.existsSync(arquivoDocx)) throw recusa("arquivo-inexistente", `Arquivo não encontrado: ${arquivoDocx}`);
-  let bytes: Uint8Array;
-  try {
-    conferirArquivoDocx(arquivoDocx, NodeFS.statSync(arquivoDocx).size);
-    bytes = NodeFS.readFileSync(arquivoDocx);
-  } catch (erro) {
-    // A conferência recusa extensão e tamanho com mensagem própria, feita para quem importa.
-    throw recusa("arquivo-recusado", (erro as Error).message, erro);
-  }
-  const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx));
+  const entrada = lerEntrada();
+  const convertido = markdownDaBase(entrada);
   const hoje = dataLocalIso(opcoes.agora);
   const comum = {
     fonte_url: opcoes.fonteUrl,
     fonte_sha256: DESCONHECIDO,
     convertido_em: hoje,
     conversor: opcoes.conversor,
-    arquivo_convertido: "docx",
-    arquivo_convertido_sha256: NodeCrypto.createHash("sha256").update(bytes).digest("hex"),
+    arquivo_convertido: entrada.tipo,
+    arquivo_convertido_sha256: NodeCrypto.createHash("sha256").update(entrada.bytes).digest("hex"),
     proveniencia: "registrada",
-    nota_proveniencia: NOTA_DOCX,
+    nota_proveniencia: entrada.nota,
   } as const;
   const resultadoComum = {
     registroPath: `institucional/ifpr/${relativo}`,

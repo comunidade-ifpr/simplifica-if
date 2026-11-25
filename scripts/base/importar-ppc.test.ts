@@ -10,6 +10,7 @@ import * as NodePath from "node:path";
 import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { contarDadosPessoais, totalDadosPessoais } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { analisarPpc, analisarPpcPendente } from "@simplifica-if/kb/ppcs/front-matter";
+import { montarPdf } from "@simplifica-if/pdf/testes/sintetico";
 import { docxDaFixture } from "@simplifica-if/ppc/testes/documentos";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { it } from "@effect/vitest";
@@ -21,6 +22,7 @@ import {
   FalhaAoGravar,
   gravarJuntos,
   importarPpcDocx,
+  importarPpcPdf,
   type OpcoesImportacao,
   semFiguraLocal,
   STATUS_REABERTO,
@@ -638,4 +640,62 @@ describe("importarPpcDocx", () => {
       }),
     );
   });
+});
+
+describe("importarPpcPdf", () => {
+  const pdf = () =>
+    montarPdf({
+      paginas: [
+        ["**PROJETO PEDAGÓGICO DO CURSO TÉCNICO X**", "", "Campus A, 2026"],
+        ["**1 IDENTIFICAÇÃO**", "", "O curso forma técnicos."],
+        ["**2 JUSTIFICATIVA**", "", "A região precisa de técnicos."],
+      ],
+      cabecalho: "Ministério da Educação - Instituto Federal do Paraná",
+      numerarPaginas: true,
+    });
+
+  it.effect("grava o PPC convertido do PDF, limpo, com o PDF como arquivo convertido", () =>
+    Effect.gen(function* () {
+      const raiz = baseTemporaria();
+      const bytes = pdf();
+      const arquivo = escrever(raiz, "entrada/PPC Técnico X.pdf", bytes);
+      const { arquivoDocx: _, ...resto } = opcoes(raiz, arquivo, {
+        ano: 2026,
+        evidencia: "Campus A, 2026",
+        fonteAno: "texto",
+      });
+
+      const resultado = yield* importarPpcPdf({ ...resto, arquivoPdf: arquivo });
+
+      expect(resultado).toMatchObject({ id: "ppc:campus-a/tecnico-x/2026", pendencias: [] });
+      const { proveniencia, corpo } = analisarPpc(NodeFS.readFileSync(caminhoPpc(raiz), "utf-8"), "teste");
+      expect(proveniencia).toMatchObject({
+        arquivo_convertido: "pdf",
+        arquivo_convertido_sha256: NodeCrypto.createHash("sha256").update(bytes).digest("hex"),
+        fonte_sha256: "desconhecido",
+        proveniencia: "registrada",
+      });
+      expect(corpo.trim()).toBe(
+        [
+          "## PROJETO PEDAGÓGICO DO CURSO TÉCNICO X",
+          "Campus A, 2026",
+          "## 1 IDENTIFICAÇÃO",
+          "O curso forma técnicos.",
+          "## 2 JUSTIFICATIVA",
+          "A região precisa de técnicos.",
+        ].join("\n\n"),
+      );
+    }),
+  );
+
+  it.effect("recusa o arquivo que não é PDF, sem gravar nada", () =>
+    Effect.gen(function* () {
+      const raiz = baseTemporaria();
+      const falso = escrever(raiz, "entrada/falso.pdf", "não é pdf");
+      const { arquivoDocx: _, ...resto } = opcoes(raiz, falso);
+      const erro = yield* Effect.flip(importarPpcPdf({ ...resto, arquivoPdf: falso }));
+      expect(erro.motivo).toBe("conversao-recusada");
+      expect(NodeFS.existsSync(caminhoPpc(raiz))).toBe(false);
+    }),
+  );
 });
