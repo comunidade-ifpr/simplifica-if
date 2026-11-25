@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 460,
+    "descricao": "TÉCNICO EM ALIMENTOS INTEGRADO - 2024 COLOMBO",
+    "ano_criacao": 2024,
+    "data_inicio": "2024-02-05"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 460 no SUAP: \"AUTORIZADO PELA RESOLUÇÃO N° 27 de 20 de setembro de 2016 / AJUSTE PARECER CONSEPE Nº XX/ANO / Colombo / 2023\"",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts (o ppc.url do curso (PPC-Alimentos-Ultima-Versao) é outro texto, o de 2017)",
+    "fonte_url: nenhum PDF público desta versão achado no site do campus (busca na mídia do WordPress em 2026-11-25); o anexo do SUAP é privado"
+  ]
+}

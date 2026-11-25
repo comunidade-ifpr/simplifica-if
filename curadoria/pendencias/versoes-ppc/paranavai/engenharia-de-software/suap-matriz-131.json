@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 131,
+    "descricao": "BACHARELADO EM ENGENHARIA DE SOFTWARE - 2023 PARANAVAÍ",
+    "ano_criacao": 2023,
+    "data_inicio": "2023-02-07"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 131 no SUAP (o mesmo texto do fonte_url): \"AUTORIZADO PELA RESOLUÇÃO 37 DE 29 DE JULHO DE 2018 / Paranavaí-PR / 2022\"",
+  "fonte_url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2023/06/curricularizacao-PPC-Engenharia-de-Software_Final_V1NAO-MEXER.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts (o site também publica PPC-de-Engenharia-de-Software-–-2025.pdf, quase igual (conferir qual é o vigente))"
+  ]
+}

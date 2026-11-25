@@ -28,6 +28,8 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
     readme: NodePath.join(raiz, "README.md"),
     /** PPCs fora da base, à espera do que falta (`curadoria/pendencias/ppcs/`). */
     pendenciasPpcs: NodePath.join(raizProjeto, "curadoria", "pendencias", "ppcs"),
+    /** Versões de PPC conhecidas sem texto (`curadoria/pendencias/versoes-ppc/`). */
+    pendenciasVersoesPpc: NodePath.join(raizProjeto, "curadoria", "pendencias", "versoes-ppc"),
   };
 }
 

@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 454,
+    "descricao": "TÉCNICO EM MECÂNICA INTEGRADO - 2025 PARANAGUÁ",
+    "ano_criacao": 2025,
+    "data_inicio": "2025-02-05"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 454 no SUAP (o mesmo texto do fonte_url): \"CURSO TÉCNICO EM MECÂNICA / FORMA DE OFERTA: INTEGRADO / PARANAGUÁ / 2023\"",
+  "fonte_url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2024/12/PPC-Mecanica-V4.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 912,
+    "descricao": "ESPECIALIZAÇÃO LATO SENSU EM EDUCAÇÃO, SOCIEDADE E TECNOLOGIA (2026)",
+    "ano_criacao": 2026,
+    "data_inicio": "2026-02-01"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 912 no SUAP (o mesmo texto do fonte_url): \"ESPECIALIZAÇÃO EM EDUCAÇÃO, SOCIEDADE E TECNOLOGIA, CAMPUS JACAREZINHO / 2026\"",
+  "fonte_url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2026/10/PROJETO-PEDAGOGICO-DO-CURSO-ESPECIALIZACAO-EM-EDUCACAO-SOCIEDADE-E-TECNOLOGIA.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts"
+  ]
+}

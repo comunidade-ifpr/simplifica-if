@@ -152,9 +152,11 @@ Quando a página oficial do curso indicar o Projeto Pedagógico de Curso, regist
 **Pendências: o que está fora da base.** Documento incompleto fica em `curadoria/pendencias/` (na raiz do repositório, fora de `base-conhecimento/`: não é publicado nem compilado), com a lista `pendencias` no front matter, uma por grupo de campos que falta (`ano: <o que falta e o que já se tentou>`). O repositório é público: o `validar_base.ts` confere as pendências também (contrato do front matter, curso existente, dados pessoais e URLs internas). Para ver tudo o que falta completar:
 
 ```bash
-pnpm pendencias            # PPCs pendentes, com o que falta, e cursos com PPC publicado sem texto na base
+pnpm pendencias            # PPCs pendentes, versões conhecidas sem texto e cursos com PPC publicado sem texto na base
 pnpm pendencias --json
 ```
+
+Versão de PPC que se sabe existir mas não tem texto (o PDF anexo a uma matriz ativa do SUAP mais novo que o PPC da base, por exemplo) fica registrada em `curadoria/pendencias/versoes-ppc/<campus>/<curso>/suap-matriz-<id>.json`, com o trecho da capa que a mostra e o PDF público, quando há ([formato](../../curadoria/README.md)). O ano da matriz não é o do PPC. Importado o DOCX dessa versão, apague o registro.
 
 Completou o que faltava, promova o PPC: ele ganha o ID da versão do ano e, se for a versão mais recente, o curso passa a apontá-lo.
 

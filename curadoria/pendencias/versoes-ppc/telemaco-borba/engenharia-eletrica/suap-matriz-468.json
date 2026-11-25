@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 468,
+    "descricao": "BACHARELADO EM ENGENHARIA ELÉTRICA - 2024 TELÊMACO BORBA",
+    "ano_criacao": 2024,
+    "data_inicio": "2024-02-05"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 468 no SUAP (o mesmo texto do fonte_url): \"AUTORIZADO PELA RESOLUÇÃO 24/2018 – CONSUP/IFPR / Telêmaco Borba / 2025\"",
+  "fonte_url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2025/11/PPC_Engenharia_Eletrica_Campus_TB_2023_pdf.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts"
+  ]
+}

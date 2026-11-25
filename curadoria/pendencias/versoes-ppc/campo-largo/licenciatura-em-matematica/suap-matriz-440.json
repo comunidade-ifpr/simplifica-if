@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 440,
+    "descricao": "LICENCIATURA EM MATEMÁTICA 2024 - CAMPUS CAMPO LARGO",
+    "ano_criacao": 2024,
+    "data_inicio": "2024-02-06"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 440 no SUAP: \"Resolução de Criação: nº 30 de 14 de junho de 2019 /CONSUP / Campo Largo / 2025\"",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts",
+    "fonte_url: nenhum PDF público desta versão achado no site do campus (busca na mídia do WordPress em 2026-11-25); o anexo do SUAP é privado"
+  ]
+}
