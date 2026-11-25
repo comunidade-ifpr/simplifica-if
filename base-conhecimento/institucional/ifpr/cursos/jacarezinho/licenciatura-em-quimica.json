@@ -7,6 +7,22 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/graduacao/licenciatura-em-quimica/",
+  "suap": {
+    "id": 134,
+    "codigo": "JAC1002",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
+    "matrizes": {
+      "resumo": "169 — LICENCIATURA EM QUÍMICA - 2019 JACAREZINHO SEMESTRAL — CH exibida: 3230 h; estágio exigido: Não; CH mínima de estágio (separada): -\n207 — LICENCIATURA EM QUÍMICA - 2023 JACAREZINHO SEMESTRAL — CH exibida: 3217 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/169/",
+        "https://suap.ifpr.edu.br/edu/matriz/207/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T10:21:35-03:00"
+    }
+  },
   "ppc": {
     "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2025/01/PPC_Licenciatura_FINAL_2022_proens__1__atualizado.pdf",
     "markdown_path": "institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica/2022.md",

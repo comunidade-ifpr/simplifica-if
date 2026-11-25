@@ -7,6 +7,23 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/licenciatura-em-quimica/",
+  "suap": {
+    "id": 206,
+    "codigo": "UMU1005",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
+    "matrizes": {
+      "resumo": "154 — LICENCIATURA EM QUÍMICA - 2023 SEMESTRAL UMUARAMA — CH exibida: 3199 h; estágio exigido: Não; CH mínima de estágio (separada): 0\n942 — LICENCIATURA EM QUÍMICA - 2023 SEMESTRAL UMUARAMA [Sigaa] — CH exibida: 3199 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/154/",
+        "https://suap.ifpr.edu.br/edu/matriz/942/"
+      ],
+      "carga_horaria_comum_h": 3199,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T10:21:35-03:00"
+    }
+  },
   "ppc": {
     "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_Lic._em_Quimica___APS.pdf",
     "markdown_path": "institucional/ifpr/ppcs/umuarama/licenciatura-em-quimica/2023.md",
