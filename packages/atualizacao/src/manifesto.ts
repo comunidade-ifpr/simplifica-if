@@ -32,7 +32,7 @@ export const Patch = Schema.Struct({
   arquivo: NomeArquivo,
   url: Schema.optionalKey(Schema.String),
   sha256: Sha256,
-  bytes: Schema.optionalKey(Bytes),
+  bytes: Bytes,
 });
 export type Patch = typeof Patch.Type;
 
@@ -45,7 +45,7 @@ export const PacoteBase = Schema.Struct({
   /** sha256 do `kb.sqlite` descomprimido: confere o patch aplicado e o pacote inteiro. */
   sha256_banco: Sha256,
   /** A `data_referencia` gravada na base. */
-  data_referencia: Schema.optionalKey(Schema.String),
+  data_referencia: Schema.String,
   patches: Schema.Array(Patch),
 });
 export type PacoteBase = typeof PacoteBase.Type;
@@ -56,11 +56,19 @@ export const PacoteSkill = Schema.Struct({
   arquivo: NomeArquivo,
   url: Schema.optionalKey(Schema.String),
   sha256: Sha256,
-  bytes: Schema.optionalKey(Bytes),
+  bytes: Bytes,
   app_minimo: Semver,
   base_minima: VersaoBase,
 });
 export type PacoteSkill = typeof PacoteSkill.Type;
+
+export const Novidade = Schema.Struct({
+  tipo: Schema.String,
+  titulo: Schema.String,
+  detalhe: Schema.optionalKey(Schema.String),
+  afeta: Schema.optionalKey(Schema.Array(Schema.String)),
+});
+export type Novidade = typeof Novidade.Type;
 
 export const Manifesto = Schema.Struct({
   canal: Canal,
@@ -68,24 +76,14 @@ export const Manifesto = Schema.Struct({
   versao: VersaoBase,
   commit: Schema.String,
   /** Quando a fábrica gerou o manifesto (ISO 8601). */
-  gerado_em: Schema.optionalKey(Schema.String),
+  gerado_em: Schema.String,
   base: PacoteBase,
   skills: Schema.Array(PacoteSkill),
   app_minimo: Semver,
   /** As novidades desta versão (de `base-conhecimento/novidades.yaml`), para o aviso "Base atualizada". */
-  novidades: Schema.optionalKey(
-    Schema.Array(
-      Schema.Struct({
-        tipo: Schema.String,
-        titulo: Schema.String,
-        detalhe: Schema.optionalKey(Schema.String),
-        afeta: Schema.optionalKey(Schema.Array(Schema.String)),
-      }),
-    ),
-  ),
+  novidades: Schema.Array(Novidade),
 });
 export type Manifesto = typeof Manifesto.Type;
-export type Novidade = NonNullable<Manifesto["novidades"]>[number];
 
 export const decodificarManifesto = Schema.decodeUnknownSync(Schema.fromJsonString(Manifesto));
 export const codificarManifesto = (manifesto: Manifesto): string => `${JSON.stringify(manifesto, null, 2)}\n`;

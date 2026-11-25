@@ -15,7 +15,11 @@
 import * as NodeChildProcess from "node:child_process";
 import * as NodeCrypto from "node:crypto";
 import type * as NodeStream from "node:stream";
-import { type LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app/ponte";
+import { LinhaPartida } from "@simplifica-if/contratos-app";
+import { VARIAVEL_TOKEN } from "@simplifica-if/contratos-app/ponte";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
+import type * as SchemaIssue from "effect/SchemaIssue";
 
 /** Bytes aleatórios do token; em base64url, 43 caracteres (o servidor pede 32 ou mais). */
 export const BYTES_TOKEN = 32;
@@ -41,32 +45,38 @@ export class FalhaServidor extends Error {
   override readonly name = "FalhaServidor";
 }
 
-const ehInteiroPositivo = (valor: unknown): valor is number =>
-  typeof valor === "number" && Number.isInteger(valor) && valor > 0;
+const decodificarLinha = Schema.decodeUnknownResult(Schema.fromJsonString(LinhaPartida));
+
+function mensagemDaFalhaLinha(issue: SchemaIssue.Issue): string {
+  switch (issue._tag) {
+    case "Composite":
+      return issue.issues[0] ? mensagemDaFalhaLinha(issue.issues[0]) : "a linha de partida do servidor é inválida";
+    case "Pointer":
+      if (issue.path.includes("servidor")) return "a linha de partida não é do servidor do Simplifica IF";
+      if (issue.path.includes("pid") || issue.path.includes("porta")) {
+        return "a linha de partida não traz o pid e a porta";
+      }
+      return mensagemDaFalhaLinha(issue.issue);
+    case "Encoding":
+    case "Filter":
+      return mensagemDaFalhaLinha(issue.issue);
+    case "InvalidValue":
+      return typeof issue.annotations?.message === "string"
+        ? issue.annotations.message
+        : "a linha de partida do servidor é inválida";
+    default:
+      return "a linha de partida do servidor é inválida";
+  }
+}
 
 /**
- * Decodifica a linha de partida. Confere o que o app usa (a porta, a URL do RPC em `127.0.0.1`) e
- * recusa o resto; a mensagem de erro não repete a linha.
+ * Decodifica a linha de partida pelo contrato `LinhaPartida` (porta, pid, URL do RPC em `127.0.0.1`)
+ * e recusa o resto; a mensagem de erro nunca repete o conteúdo da linha.
  */
 export function decodificarLinhaPartida(texto: string): LinhaPartida {
-  let valor: unknown;
-  try {
-    valor = JSON.parse(texto);
-  } catch {
-    throw new FalhaServidor("a primeira linha do servidor não é JSON");
-  }
-  if (typeof valor !== "object" || valor === null) throw new FalhaServidor("a linha de partida não é um objeto");
-  const linha = valor as Record<string, unknown>;
-  if (linha.servidor !== "simplifica-if")
-    throw new FalhaServidor("a linha de partida não é do servidor do Simplifica IF");
-  if (!ehInteiroPositivo(linha.pid) || !ehInteiroPositivo(linha.porta) || linha.porta > 65_535) {
-    throw new FalhaServidor("a linha de partida não traz o pid e a porta");
-  }
-  if (linha.rpc !== `ws://127.0.0.1:${linha.porta}/rpc`) {
-    throw new FalhaServidor("a URL do RPC da linha de partida não é a de 127.0.0.1 na porta anunciada");
-  }
-  if (typeof linha.mcp !== "string") throw new FalhaServidor("a linha de partida não traz a URL do MCP");
-  return { servidor: "simplifica-if", pid: linha.pid, porta: linha.porta, rpc: linha.rpc, mcp: linha.mcp };
+  const resultado = decodificarLinha(texto);
+  if (Result.isSuccess(resultado)) return resultado.success;
+  throw new FalhaServidor(mensagemDaFalhaLinha(resultado.failure.issue));
 }
 
 /** Como rodar o servidor: o Node com o `bin.ts` (desenvolvimento) ou o Electron como Node com o bundle. */

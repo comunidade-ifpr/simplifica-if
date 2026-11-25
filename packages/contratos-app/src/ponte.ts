@@ -30,7 +30,7 @@ export const TAMANHO_MINIMO_TOKEN = 32;
 
 /**
  * A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout. O
- * schema (`LinhaPartida` de `partida.ts`) a confere no servidor; o desktop a decodifica sem Effect.
+ * schema (`LinhaPartida` de `partida.ts`) a confere no servidor e no desktop.
  */
 export interface LinhaPartida {
   readonly servidor: "simplifica-if";

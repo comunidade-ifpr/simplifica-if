@@ -3,6 +3,9 @@
  * comprimido com zstd. Um formato próprio e mínimo, para o app não precisar de leitor de tar ou zip:
  * cada caminho é conferido (relativo, sem `..`, sem `\`), e o tamanho total tem limite.
  */
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
+import { problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { comprimir, descomprimir } from "./zstd.ts";
 
 export const FORMATO_PACOTE_SKILL = 1;
@@ -29,6 +32,26 @@ export function caminhoSeguro(caminho: string): boolean {
   return caminho.split("/").every((parte) => parte !== "" && parte !== "." && parte !== "..");
 }
 
+const ArquivoSkillSerializado = Schema.Struct({
+  caminho: Schema.String.check(
+    Schema.makeFilter((valor: string) => caminhoSeguro(valor) || "arquivo inválido no pacote da skill"),
+  ),
+  conteudo: Schema.String,
+});
+
+const PacoteSkillSerializado = Schema.Struct({
+  formato: Schema.Literal(FORMATO_PACOTE_SKILL),
+  nome: Schema.String.check(Schema.isPattern(NOME, { message: "pacote de skill sem nome válido" })),
+  versao: Schema.String,
+  arquivos: Schema.Array(ArquivoSkillSerializado).check(
+    Schema.makeFilter(
+      (lista) => lista.some((arquivo) => arquivo.caminho === "SKILL.md") || "pacote da skill sem SKILL.md",
+    ),
+  ),
+});
+
+const decodificarPacoteJson = Schema.decodeUnknownResult(Schema.fromJsonString(PacoteSkillSerializado));
+
 export function empacotarSkill(pacote: PacoteSkill): Buffer {
   if (!NOME.test(pacote.nome)) throw new Error(`nome de skill inválido: ${pacote.nome}`);
   const ordenados = [...pacote.arquivos].sort((a, b) => (a.caminho < b.caminho ? -1 : a.caminho > b.caminho ? 1 : 0));
@@ -49,20 +72,18 @@ export function empacotarSkill(pacote: PacoteSkill): Buffer {
 }
 
 export function desempacotarSkill(dados: Uint8Array): PacoteSkill {
-  const json: unknown = JSON.parse(descomprimir(dados, LIMITE_PACOTE_SKILL).toString("utf8"));
-  if (typeof json !== "object" || json === null) throw new Error("pacote de skill inválido");
-  const { formato, nome, versao, arquivos } = json as Record<string, unknown>;
-  if (formato !== FORMATO_PACOTE_SKILL) throw new Error(`formato de pacote de skill desconhecido: ${String(formato)}`);
-  if (typeof nome !== "string" || !NOME.test(nome)) throw new Error("pacote de skill sem nome válido");
-  if (typeof versao !== "string") throw new Error("pacote de skill sem versão");
-  if (!Array.isArray(arquivos)) throw new Error("pacote de skill sem arquivos");
-  const lidos = arquivos.map((item: unknown): ArquivoSkill => {
-    const { caminho, conteudo } = (item ?? {}) as Record<string, unknown>;
-    if (typeof caminho !== "string" || !caminhoSeguro(caminho) || typeof conteudo !== "string") {
-      throw new Error(`arquivo inválido no pacote da skill ${nome}`);
-    }
-    return { caminho, conteudo: new Uint8Array(Buffer.from(conteudo, "base64")) };
-  });
-  if (!lidos.some((arquivo) => arquivo.caminho === "SKILL.md")) throw new Error(`pacote da skill ${nome} sem SKILL.md`);
-  return { nome, versao, arquivos: lidos };
+  const resultado = decodificarPacoteJson(descomprimir(dados, LIMITE_PACOTE_SKILL).toString("utf8"));
+  if (Result.isFailure(resultado)) {
+    const primeiro = problemas(resultado.failure.issue)[0]?.mensagem ?? "pacote de skill inválido";
+    throw new Error(primeiro);
+  }
+  const { nome, versao, arquivos } = resultado.success;
+  return {
+    nome,
+    versao,
+    arquivos: arquivos.map((arquivo) => ({
+      caminho: arquivo.caminho,
+      conteudo: new Uint8Array(Buffer.from(arquivo.conteudo, "base64")),
+    })),
+  };
 }

@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- o meta do banco por node:sqlite (síncrono, sem serviço do Effect), o sha256 por node:crypto e caminhos puros por node:path
+// @effect-diagnostics nodeBuiltinImport:off -- o meta do banco por node:sqlite (síncrono, sem serviço do Effect), caminhos puros por node:path
 /**
  * O lado local da atualização: a pasta do app, o estado gravado e a troca na abertura.
  *
@@ -14,13 +14,12 @@
  *
  * **A troca só acontece com o banco fechado**, na abertura do servidor (`prepararAbertura`), antes de
  * qualquer layer abrir o `kb.sqlite`: no Windows, renomear um arquivo aberto falha, e no macOS o
- * servidor continuaria lendo o arquivo antigo. Cada passo é um `rename` na mesma pasta (atômico), e o
- * arquivo pendente é conferido de novo (sha256) antes de entrar.
+ * servidor continuaria lendo o arquivo antigo. Cada passo é um `rename` na mesma pasta (atômico). O
+ * arquivo pendente já foi conferido (sha256, `quick_check`, esquema e versão) antes de virar pendente.
  *
  * Os arquivos da pasta passam pelo `FileSystem`; só o `meta` do banco (`lerInfoBanco`) e a conferência
  * do banco baixado (`validarBancoNucleo`, que roda num `Worker`) usam o `node:sqlite` direto.
  */
-import * as NodeCrypto from "node:crypto";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
@@ -28,30 +27,37 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import type * as PlatformError from "effect/PlatformError";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
 import type * as Scope from "effect/Scope";
-import * as Stream from "effect/Stream";
+import type * as Types from "effect/Types";
 import { FalhaPastaAtualizacao } from "./erros.ts";
-import { type Canal, compararVersoes, type Novidade } from "./manifesto.ts";
+import { Canal, compararVersoes, Novidade } from "./manifesto.ts";
 
 export const ARQUIVO_ESTADO = "atualizacao.json";
 
-export interface EstadoGravado {
-  canal?: Canal;
-  ultimaConferencia?: string;
+export const EsquemaEstadoGravado = Schema.Struct({
+  canal: Schema.optionalKey(Canal),
+  ultimaConferencia: Schema.optionalKey(Schema.String),
   /** A base conferida em `base/pendente.sqlite`. */
-  pendente?: { versao: string; sha256: string; novidades: ReadonlyArray<Novidade> };
+  pendente: Schema.optionalKey(Schema.Struct({ versao: Schema.String, novidades: Schema.Array(Novidade) })),
   /** Pedido de voltar para a versão anterior, atendido na próxima abertura. */
-  voltar?: boolean;
+  voltar: Schema.optionalKey(Schema.Boolean),
   /** A versão de que se voltou: não se baixa de novo; só uma mais nova. */
-  recusada?: string;
+  recusada: Schema.optionalKey(Schema.String),
   /** As novidades da última base aplicada; `vista` depois do aviso. */
-  novidades?: { versao: string; itens: ReadonlyArray<Novidade>; vista: boolean };
+  novidades: Schema.optionalKey(
+    Schema.Struct({ versao: Schema.String, itens: Schema.Array(Novidade), vista: Schema.Boolean }),
+  ),
   /** O conjunto de skills baixado em uso (`skills/<versao>`) e o que entra na próxima abertura. */
-  skills?: string;
-  skillsPendentes?: string;
+  skills: Schema.optionalKey(Schema.String),
+  skillsPendentes: Schema.optionalKey(Schema.String),
   /** O `gerado_em` do último manifesto conferido: mais de 14 dias, e a tela avisa que não confirmou a base. */
-  manifestoGeradoEm?: string;
-}
+  manifestoGeradoEm: Schema.optionalKey(Schema.String),
+});
+export type EstadoGravado = Types.Mutable<typeof EsquemaEstadoGravado.Type>;
+
+const decodificarEstadoJson = Schema.decodeUnknownResult(Schema.fromJsonString(EsquemaEstadoGravado));
 
 export const caminhos = (pasta: string) => ({
   estado: NodePath.join(pasta, ARQUIVO_ESTADO),
@@ -64,14 +70,10 @@ export const caminhos = (pasta: string) => ({
   skills: NodePath.join(pasta, "skills"),
 });
 
-/** O texto do `atualizacao.json`; `{}` se ele não for um objeto JSON. */
+/** O texto do `atualizacao.json`; `{}` se ele não for um objeto JSON válido. */
 export function decodificarEstado(texto: string): EstadoGravado {
-  try {
-    const lido: unknown = JSON.parse(texto);
-    return typeof lido === "object" && lido !== null ? (lido as EstadoGravado) : {};
-  } catch {
-    return {};
-  }
+  const resultado = decodificarEstadoJson(texto);
+  return Result.isSuccess(resultado) ? { ...resultado.success } : {};
 }
 
 /** Traduz a falha de arquivo da pasta de atualização, com a operação. */
@@ -243,7 +245,7 @@ export function validarBancoNucleo(
   sqlite: typeof NodeSqlite,
   versaoEsquema: number,
   caminho: string,
-  esperado: { versao: string; dataReferencia?: string },
+  esperado: { versao: string; dataReferencia: string },
 ): InfoBanco {
   let db: NodeSqlite.DatabaseSync;
   try {
@@ -271,7 +273,7 @@ export function validarBancoNucleo(
         `a base baixada diz ser a versão ${meta.get("versao") ?? "?"}, e o manifesto, ${esperado.versao}`,
       );
     }
-    if (esperado.dataReferencia !== undefined && meta.get("data_referencia") !== esperado.dataReferencia) {
+    if (meta.get("data_referencia") !== esperado.dataReferencia) {
       throw new Error("a data de referência da base baixada não é a do manifesto");
     }
     return {
@@ -288,15 +290,6 @@ export function validarBancoNucleo(
     db.close();
   }
 }
-
-export const sha256Arquivo = Effect.fn("Atualizacao.sha256Arquivo")(function* (caminho: string) {
-  const fs = yield* FileSystem.FileSystem;
-  const hash = NodeCrypto.createHash("sha256");
-  yield* fs
-    .stream(caminho, { chunkSize: 4 * 1024 * 1024 })
-    .pipe(Stream.runForEach((bloco) => Effect.sync(() => hash.update(bloco))));
-  return hash.digest("hex");
-});
 
 /** Sobras de uma execução que caiu: `*.tmp` da pasta e de `base/`, `baixando.sqlite` e `skills/*.baixando`. */
 export const limparSobras = Effect.fn("Atualizacao.limparSobras")(function* (pasta: string) {
@@ -380,14 +373,14 @@ export const prepararAbertura = Effect.fn("Atualizacao.prepararAbertura")(functi
       eventos.push(`voltou da base ${saindo?.versao ?? "?"} para a anterior`);
     } else if (estado.pendente !== undefined) {
       const pendente = estado.pendente;
-      if ((yield* existe(c.pendente)) && (yield* sha256Arquivo(c.pendente)) === pendente.sha256) {
+      if (yield* existe(c.pendente)) {
         if (yield* existe(c.atual)) yield* fs.rename(c.atual, c.anterior);
         yield* fs.rename(c.pendente, c.atual);
         estado.novidades = { versao: pendente.versao, itens: pendente.novidades, vista: false };
         eventos.push(`base ${pendente.versao} aplicada`);
       } else {
         yield* remover(c.pendente);
-        eventos.push(`base pendente ${pendente.versao} descartada (arquivo ausente ou alterado)`);
+        eventos.push(`base pendente ${pendente.versao} descartada (arquivo ausente)`);
       }
       delete estado.pendente;
     }

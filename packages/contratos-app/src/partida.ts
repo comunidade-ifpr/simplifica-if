@@ -52,16 +52,25 @@ export const EnvelopePartida = Schema.Struct({
 export type EnvelopePartida = typeof EnvelopePartida.Type;
 
 /**
- * A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout. A forma
- * é a de `ponte.ts`, que o desktop decodifica sem Effect.
+ * A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout.
  */
 export const LinhaPartida = Schema.Struct({
-  servidor: Schema.Literal("simplifica-if"),
-  pid: Schema.Number,
-  porta: Schema.Number,
+  servidor: Schema.Literal("simplifica-if").annotate({
+    message: "a linha de partida não é do servidor do Simplifica IF",
+  }),
+  pid: Schema.Int.check(Schema.isGreaterThan(0, { message: "a linha de partida não traz o pid e a porta" })),
+  porta: Schema.Int.check(
+    Schema.isBetween({ minimum: 1, maximum: 65_535 }, { message: "a linha de partida não traz o pid e a porta" }),
+  ),
   /** `ws://127.0.0.1:<porta>/rpc` */
   rpc: Schema.String,
   /** `http://127.0.0.1:<porta MCP>/mcp`, o servidor MCP `ifpr` das sessões. */
   mcp: Schema.String,
-}) satisfies Schema.Codec<FormaLinhaPartida>;
+}).check(
+  Schema.makeFilter(
+    (linha) =>
+      linha.rpc === `ws://127.0.0.1:${linha.porta}/rpc` ||
+      "a URL do RPC da linha de partida não é a de 127.0.0.1 na porta anunciada",
+  ),
+) satisfies Schema.Codec<FormaLinhaPartida>;
 export type LinhaPartida = typeof LinhaPartida.Type;
