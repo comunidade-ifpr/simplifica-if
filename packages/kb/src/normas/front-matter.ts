@@ -117,9 +117,6 @@ export const esquemaNorma = Schema.StructWithRest(
     tipo_documento: texto,
     numero: texto,
     ano: Schema.Int,
-    data_publicacao: Schema.String.check(
-      Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/, { message: "data_publicacao deve ser AAAA-MM-DD" }),
-    ),
     orgao: texto,
     jurisdicao: texto,
     ementa: texto,
@@ -153,6 +150,16 @@ export const esquemaNorma = Schema.StructWithRest(
 ).check(
   Schema.makeFilter((norma) => {
     const achados: Schema.FilterIssue[] = [];
+    // `data_publicacao` guardava a data do ato com nome de publicação: as datas são as três abaixo
+    if ("data_publicacao" in norma) {
+      achados.push({
+        path: ["data_publicacao"],
+        issue: "campo extinto: a data do ato é assinada_em, a publicação é publicada_em",
+      });
+    }
+    if (!norma.assinada_em.startsWith(String(norma.ano))) {
+      achados.push({ path: ["assinada_em"], issue: `assinada_em fora do ano da norma (${norma.ano})` });
+    }
     if (RE_DATA_ISO.test(norma.publicada_em) && norma.publicada_em < norma.assinada_em) {
       achados.push({ path: ["publicada_em"], issue: "publicada_em anterior a assinada_em" });
     }

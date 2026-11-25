@@ -65,7 +65,6 @@ function documentoLongo(): DadosDocumento {
     ancoras,
     sumario: [],
     alvo: null,
-    datas: null,
   };
 }
 

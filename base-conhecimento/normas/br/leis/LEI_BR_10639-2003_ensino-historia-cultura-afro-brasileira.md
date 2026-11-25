@@ -4,7 +4,6 @@ title: "Lei nº 10.639/2003"
 tipo_documento: Lei
 numero: 10639
 ano: 2003
-data_publicacao: "2003-01-09"
 assinada_em: "2003-01-09"
 publicada_em: "2003-01-10"
 vigente_de: "2003-01-10"

@@ -4,7 +4,6 @@ title: "Instrução Normativa PROENS/IFPR nº 2/2025"
 tipo_documento: "Instrução Normativa"
 numero: 2
 ano: 2025
-data_publicacao: "2025-05-29"
 assinada_em: "2025-05-29"
 publicada_em: "2025-05-29"
 vigente_de: "2025-06-01"

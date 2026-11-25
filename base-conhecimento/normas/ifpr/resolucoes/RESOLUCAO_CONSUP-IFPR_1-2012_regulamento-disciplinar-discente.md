@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 1/2012"
 tipo_documento: "Resolução"
 numero: 1
 ano: 2012
-data_publicacao: "2012-02-02"
 assinada_em: "2012-02-02"
 publicada_em: "a confirmar"
 vigente_de: "2012-02-02"

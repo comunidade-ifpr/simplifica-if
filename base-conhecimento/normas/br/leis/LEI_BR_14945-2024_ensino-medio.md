@@ -4,7 +4,6 @@ title: "Lei nº 14.945/2024"
 tipo_documento: Lei
 numero: 14945
 ano: 2024
-data_publicacao: "2024-07-31"
 assinada_em: "2024-07-31"
 publicada_em: "2024-08-01"
 vigente_de: "2024-08-01"

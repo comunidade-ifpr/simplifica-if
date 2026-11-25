@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 190/2024"
 tipo_documento: "Resolução"
 numero: 190
 ano: 2024
-data_publicacao: "2024-04-30"
 assinada_em: "2024-04-30"
 publicada_em: "2024-04-30"
 vigente_de: "2024-04-30"

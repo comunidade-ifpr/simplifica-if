@@ -120,20 +120,18 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
 /* ================================================================== datas do ato */
 
 /**
- * As datas do ato para o cabeçalho: "Ato de 11/11/2026" (a assinatura, ou a data registrada da norma) e
- * a publicação só quando a norma a registra, como está ("Publicação no DOU: a confirmar"). A data
- * registrada da norma (`data_publicacao`) é a do ato em boa parte da base, e não a da publicação.
+ * As datas do ato para o cabeçalho: "Ato de 11/11/2026" (a assinatura) e a publicação oficial só
+ * quando a norma a registra, como está ("Publicação no DOU: a confirmar"); no stub, só a data que
+ * tem evidência.
  */
 export function datasDoCabecalho(
-  norma: Pick<FichaNorma["norma"], "id" | "data_publicacao">,
-  datas: { readonly assinada_em: string | null; readonly publicada_em: string | null } | null,
+  norma: Pick<FichaNorma["norma"], "id" | "assinada_em" | "publicada_em">,
 ): ReadonlyArray<string> {
   const partes: string[] = [];
-  const ato = datas?.assinada_em ?? norma.data_publicacao;
-  if (ato !== null) partes.push(`Ato de ${dataCurta(ato)}`);
-  if (datas !== null && datas.publicada_em !== null) {
+  if (norma.assinada_em !== null) partes.push(`Ato de ${dataCurta(norma.assinada_em)}`);
+  if (norma.publicada_em !== null) {
     const onde = norma.id.startsWith("br/") ? "Publicação no DOU" : "Publicação oficial";
-    const quando = /^\d{4}-\d{2}-\d{2}/.test(datas.publicada_em) ? dataCurta(datas.publicada_em) : datas.publicada_em;
+    const quando = /^\d{4}-\d{2}-\d{2}/.test(norma.publicada_em) ? dataCurta(norma.publicada_em) : norma.publicada_em;
     partes.push(`${onde}: ${quando}`);
   }
   return partes;
@@ -183,8 +181,8 @@ export function referenciaDaNorma(norma: FichaNorma["norma"]): string {
   const autor = autoria(norma.id);
   if (autor !== null) partes.push(`${autor}.`);
   const titulo =
-    norma.data_publicacao !== null && !/\bde \d{1,2} de /.test(norma.titulo)
-      ? `${norma.titulo}, de ${dataPorExtenso(norma.data_publicacao)}`
+    norma.assinada_em !== null && !/\bde \d{1,2} de /.test(norma.titulo)
+      ? `${norma.titulo}, de ${dataPorExtenso(norma.assinada_em)}`
       : norma.titulo;
   partes.push(comPonto(titulo));
   if (norma.ementa !== null && norma.ementa.trim() !== "") partes.push(comPonto(norma.ementa));

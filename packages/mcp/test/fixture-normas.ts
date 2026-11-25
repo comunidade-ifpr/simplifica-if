@@ -35,7 +35,8 @@ interface Norma {
   numero?: string;
   ano?: number;
   orgao?: string;
-  data_publicacao?: string;
+  assinada_em?: string;
+  publicada_em?: string;
   status_vigencia?: string;
   ementa: string;
   fonte_url?: string;
@@ -56,7 +57,8 @@ const NORMAS: Norma[] = [
     numero: "1",
     ano: 2021,
     orgao: "CNE/CP",
-    data_publicacao: "2021-01-05",
+    assinada_em: "2021-01-05",
+    publicada_em: "2021-01-06",
     status_vigencia: "revogada",
     ementa: "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
     fonte_url: "https://www.in.gov.br/dcnept-2021",
@@ -78,7 +80,8 @@ const NORMAS: Norma[] = [
     numero: "2",
     ano: 2026,
     orgao: "CNE/CP",
-    data_publicacao: "2026-11-11",
+    assinada_em: "2026-11-11",
+    publicada_em: "2026-11-12",
     status_vigencia: "vigente",
     ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
     fonte_url: "https://www.in.gov.br/dcnept-2026",
@@ -98,7 +101,8 @@ const NORMAS: Norma[] = [
     id: STUB,
     situacao: "stub",
     titulo: "Resolução CNE/CEB nº 6/2012",
-    data_publicacao: "2012-09-20",
+    assinada_em: "2012-09-20",
+    publicada_em: "2012-09-21",
     status_vigencia: "revogada",
     ementa: "Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.",
     aliases: ["Resolução CNE/CEB nº 6/2012"],
@@ -292,9 +296,9 @@ export function inserirNormas(caminho: string): void {
   const db = new NodeSqlite.DatabaseSync(caminho);
   emTransacao(db, () => {
     const insNorma = db.prepare(
-      `INSERT INTO normas (id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
+      `INSERT INTO normas (id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, assinada_em, publicada_em, status_vigencia,
          status_fonte, ementa, fonte_url, fonte_referencia, curadoria, path, aliases_json, keywords_json, front_matter_json)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const insMeta = db.prepare("INSERT INTO normas_metadados (norma_id, texto, path, linha) VALUES (?, ?, ?, ?)");
     const insFtsNorma = db.prepare("INSERT INTO normas_fts (rowid, titulo, texto, radicais) VALUES (?, ?, ?, ?)");
@@ -308,7 +312,8 @@ export function inserirNormas(caminho: string): void {
         n.ano ?? null,
         n.orgao ?? null,
         n.situacao === "base" ? "BR" : null,
-        n.data_publicacao ?? null,
+        n.assinada_em ?? null,
+        n.publicada_em ?? null,
         n.status_vigencia ?? null,
         n.situacao === "stub" ? DCN_2021 : null,
         n.ementa,

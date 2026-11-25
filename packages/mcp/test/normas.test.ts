@@ -105,7 +105,8 @@ describe("buscar_norma", () => {
         titulo: "Resolução CNE/CP nº 2/2026",
         situacao: "base",
         status_vigencia: "vigente",
-        data_publicacao: "2026-11-11",
+        assinada_em: "2026-11-11",
+        publicada_em: "2026-11-12",
         ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
         link: `ifpr://norma/${DCN_2026}`,
       });

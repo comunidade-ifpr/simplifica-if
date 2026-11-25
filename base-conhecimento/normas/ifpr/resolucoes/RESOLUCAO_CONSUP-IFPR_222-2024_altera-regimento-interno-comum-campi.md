@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 222/2024"
 tipo_documento: "Resolução"
 numero: 222
 ano: 2024
-data_publicacao: "2024-12-27"
 assinada_em: "2024-12-27"
 publicada_em: "2024-12-30"
 vigente_de: "2024-12-30"

@@ -4,11 +4,10 @@ title: "Resolução CONSUP/IFPR nº 276/2026"
 tipo_documento: "Resolução"
 numero: 276
 ano: 2026
-data_publicacao: "2026-06-11"
 assinada_em: "2026-06-11"
-publicada_em: "a confirmar"
+publicada_em: "2026-06-11"
 vigente_de: "2026-06-11"
-datas_fonte: "Art. 46: \"entra em vigor nesta data\"; a base registra a publicação da consolidação (13/08/2026), não a do ato."
+datas_fonte: "Publicação do ato (SEI nº 4235858, publicações do SEI, conferida em 25/11/2026): \"Boletim de Serviço Eletrônico em 11/06/2026\"; ato \"DE 11 DE junho DE 2026\", ad referendum; art. 46: \"entra em vigor nesta data\". O texto da base é o da consolidação publicada em 13/08/2026 (fonte_url)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre o Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR."

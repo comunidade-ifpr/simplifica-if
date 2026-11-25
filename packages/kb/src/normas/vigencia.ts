@@ -4,7 +4,8 @@
  *
  * Entradas:
  * - datas das normas da base (front matter: `assinada_em`, `publicada_em` e `vigente_de`, este
- *   `AAAA-MM-DD` ou "aguardando publicação") e dos stubs (`data_publicacao`, tomada como data do ato);
+ *   `AAAA-MM-DD` ou "aguardando publicação") e dos stubs (`assinada_em` e `publicada_em`, quando
+ *   registradas com evidência; o stub não tem `vigente_de`);
  * - relações de `base-conhecimento/relacoes.yaml`, com `efeito_de` (data, obrigatória quando a
  *   origem é stub) ou a vigência da origem;
  * - `data_referencia` de `base-conhecimento/config/vigencia.yaml` (status publicado).
@@ -89,7 +90,7 @@ export function datasDoFrontMatter(meta: Readonly<Record<string, unknown>>): Dat
 
 /**
  * Datas por ID do ato a partir do front matter das normas da base (em qualquer ordem) e do registro:
- * os stubs entram com `data_publicacao` como data do ato. A regra única, sobre os arquivos
+ * os stubs entram com `assinada_em` e `publicada_em`, e sem `vigente_de`. A regra única, sobre os arquivos
  * (`carregarDatas`) e sobre o `kb.sqlite` (`FontesNormativas.layer`).
  */
 export function montarDatas(
@@ -103,15 +104,15 @@ export function montarDatas(
   for (const entrada of registro.entradas) {
     if (entrada.situacao !== "stub" || datas.has(entrada.id)) continue;
     datas.set(entrada.id, {
-      assinada_em: entrada.data_publicacao ?? null,
-      publicada_em: A_CONFIRMAR,
+      assinada_em: entrada.assinada_em ?? null,
+      publicada_em: entrada.publicada_em ?? A_CONFIRMAR,
       vigente_de: A_CONFIRMAR,
     });
   }
   return datas;
 }
 
-/** Datas por ID do ato: normas da base (front matter) e stubs (`data_publicacao`). */
+/** Datas por ID do ato: normas da base (front matter) e stubs (`assinada_em`, `publicada_em`). */
 export function carregarDatas(raiz: string, registro?: Registro): Map<string, DatasNorma> {
   const emCache = cacheDatas.get(chaveDoCheckout(raiz));
   if (emCache) return emCache;

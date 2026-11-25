@@ -4,7 +4,6 @@ title: "Portaria MEC nº 902/2024"
 tipo_documento: "Portaria"
 numero: 902
 ano: 2024
-data_publicacao: "2024-09-10"
 assinada_em: "2024-09-09"
 publicada_em: "2024-09-10"
 vigente_de: "2024-09-10"

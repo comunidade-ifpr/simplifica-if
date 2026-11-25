@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 159/2023"
 tipo_documento: "Resolução"
 numero: 159
 ano: 2023
-data_publicacao: "2023-12-12"
 assinada_em: "2023-12-12"
 publicada_em: "2023-12-14"
 vigente_de: "2024-01-02"

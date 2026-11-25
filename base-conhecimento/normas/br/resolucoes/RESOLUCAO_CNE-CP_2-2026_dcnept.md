@@ -4,7 +4,6 @@ title: "Resolução CNE/CP nº 2/2026"
 tipo_documento: "Resolução"
 numero: 2
 ano: 2026
-data_publicacao: "2026-11-11"
 assinada_em: "2026-11-11"
 publicada_em: "aguardando publicação"
 vigente_de: "aguardando publicação"

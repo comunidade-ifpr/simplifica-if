@@ -4,7 +4,6 @@ title: "Resolução CNE/CEB nº 7/2025"
 tipo_documento: "Resolução"
 numero: 7
 ano: 2025
-data_publicacao: "2025-08-01"
 assinada_em: "2025-08-01"
 publicada_em: "2025-08-04"
 vigente_de: "2025-08-04"

@@ -54,18 +54,6 @@ export const ItemSumario = Schema.Struct({
 });
 export type ItemSumario = typeof ItemSumario.Type;
 
-/**
- * As datas do ato, do front matter da norma, como estão (`AAAA-MM-DD`, "a confirmar" ou "aguardando
- * publicação"); `null` no
- * campo que a norma não registra. O PPC não tem.
- */
-export const DatasDoAto = Schema.Struct({
-  assinada_em: Schema.NullOr(Schema.String),
-  publicada_em: Schema.NullOr(Schema.String),
-  vigente_de: Schema.NullOr(Schema.String),
-});
-export type DatasDoAto = typeof DatasDoAto.Type;
-
 export const DadosDocumento = Schema.Struct({
   tipo: Schema.Literals(["norma", "ppc"]),
   /** O ID da norma (`br/cne-cp/res/2026/2`) ou a chave do PPC (`curitiba/tecnico-em-enfermagem`). */
@@ -87,8 +75,6 @@ export const DadosDocumento = Schema.Struct({
   sumario: Schema.Array(ItemSumario),
   /** O fragmento do link pedido, se ele é uma das âncoras; `null` sem fragmento ou se não achou. */
   alvo: Schema.NullOr(Schema.String),
-  /** As datas do ato (assinatura, publicação, início de vigência); `null` no PPC. */
-  datas: Schema.NullOr(DatasDoAto),
 });
 export type DadosDocumento = typeof DadosDocumento.Type;
 

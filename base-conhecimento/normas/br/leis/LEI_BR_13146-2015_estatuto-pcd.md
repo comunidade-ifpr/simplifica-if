@@ -4,7 +4,6 @@ title: "Lei nº 13.146/2015"
 tipo_documento: Lei
 numero: 13146
 ano: 2015
-data_publicacao: "2015-07-06"
 assinada_em: "2015-07-06"
 publicada_em: "2015-07-07"
 vigente_de: "2016-01-03"

@@ -49,7 +49,6 @@ title: "Lei nº 1/2020"
 tipo_documento: Lei
 numero: 1
 ano: 2020
-data_publicacao: "2020-01-02"
 assinada_em: "2020-01-02"
 publicada_em: "a confirmar"
 vigente_de: "2020-01-02"

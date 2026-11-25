@@ -32,7 +32,8 @@ export function resumoDaNorma(norma: Normas.FichaNorma): NormaResumo {
     titulo: norma.titulo,
     situacao: norma.situacao,
     status_vigencia: norma.status_vigencia,
-    data_publicacao: norma.data_publicacao,
+    assinada_em: norma.assinada_em,
+    publicada_em: norma.publicada_em,
     ementa: norma.ementa,
     link: linkNorma(norma.id),
   };

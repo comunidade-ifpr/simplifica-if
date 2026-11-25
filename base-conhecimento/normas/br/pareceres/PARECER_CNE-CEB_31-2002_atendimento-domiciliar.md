@@ -4,7 +4,6 @@ title: "Parecer CNE/CEB nº 31/2002"
 tipo_documento: Parecer
 numero: 31
 ano: 2002
-data_publicacao: "2002-07-03"
 assinada_em: "2002-07-03"
 publicada_em: "2002-10-04"
 vigente_de: "2002-10-04"

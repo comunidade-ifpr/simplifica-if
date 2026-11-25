@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 148/2023"
 tipo_documento: "Resolução"
 numero: 148
 ano: 2023
-data_publicacao: "2023-10-11"
 assinada_em: "2023-10-11"
 publicada_em: "2023-10-16"
 vigente_de: "2023-10-16"

@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 259/2025"
 tipo_documento: "Resolução"
 numero: 259
 ano: 2025
-data_publicacao: "2025-11-27"
 assinada_em: "2025-11-27"
 publicada_em: "2025-12-15"
 vigente_de: "2025-12-15"

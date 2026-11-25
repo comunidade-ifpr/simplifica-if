@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 8/2014"
 tipo_documento: "Resolução"
 numero: 8
 ano: 2014
-data_publicacao: "2014-04-30"
 assinada_em: "2014-04-30"
 publicada_em: "a confirmar"
 vigente_de: "2014-04-30"

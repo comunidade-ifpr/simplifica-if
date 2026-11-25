@@ -4,7 +4,6 @@ title: "Decreto-Lei nº 1.044/1969"
 tipo_documento: Decreto-Lei
 numero: 1044
 ano: 1969
-data_publicacao: "1969-10-21"
 assinada_em: "1969-10-21"
 publicada_em: "1969-10-22"
 vigente_de: "1969-10-22"

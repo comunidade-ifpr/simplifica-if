@@ -4,7 +4,6 @@ title: "Portaria PROENS/IFPR nº 121/2024"
 tipo_documento: Portaria
 numero: 121
 ano: 2024
-data_publicacao: "2024-06-12"
 assinada_em: "2024-06-12"
 publicada_em: "2024-06-13"
 vigente_de: "2024-06-13"

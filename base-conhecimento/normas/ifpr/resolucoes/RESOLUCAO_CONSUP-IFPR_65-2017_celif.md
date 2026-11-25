@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 65/2017"
 tipo_documento: "Resolução"
 numero: 65
 ano: 2017
-data_publicacao: "2017-12-13"
 assinada_em: "2017-12-13"
 publicada_em: "a confirmar"
 vigente_de: "2017-12-13"

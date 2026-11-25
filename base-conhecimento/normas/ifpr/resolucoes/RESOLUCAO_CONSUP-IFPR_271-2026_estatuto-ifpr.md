@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 271/2026"
 tipo_documento: "Resolução"
 numero: 271
 ano: 2026
-data_publicacao: "2026-02-04"
 assinada_em: "2026-02-04"
 publicada_em: "2026-02-05"
 vigente_de: "2026-02-04"

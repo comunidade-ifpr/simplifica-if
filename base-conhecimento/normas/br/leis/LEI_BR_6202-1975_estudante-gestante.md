@@ -4,7 +4,6 @@ title: "Lei nº 6.202/1975"
 tipo_documento: Lei
 numero: 6202
 ano: 1975
-data_publicacao: "1975-04-17"
 assinada_em: "1975-04-17"
 publicada_em: "1975-04-17"
 vigente_de: "1975-04-17"

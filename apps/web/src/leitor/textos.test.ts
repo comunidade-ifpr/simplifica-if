@@ -16,7 +16,8 @@ const NORMA: FichaNorma["norma"] = {
   titulo: "Resolução CNE/CP nº 2/2026",
   situacao: "base",
   status_vigencia: "vigente",
-  data_publicacao: "2026-11-11",
+  assinada_em: "2026-11-11",
+  publicada_em: "aguardando publicação",
   ementa: "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
   link: "ifpr://norma/br/cne-cp/res/2026/2",
   orgao: "CNE/CP",
@@ -113,22 +114,23 @@ describe("selosDaNorma", () => {
 
 describe("datas do ato no cabeçalho", () => {
   it("o ato pela assinatura; a publicação só quando registrada, como está", () => {
-    expect(datasDoCabecalho(NORMA, { assinada_em: "2026-11-11", publicada_em: "a confirmar" })).toEqual([
+    expect(datasDoCabecalho({ ...NORMA, publicada_em: "a confirmar" })).toEqual([
       "Ato de 11/11/2026",
       "Publicação no DOU: a confirmar",
     ]);
-    expect(datasDoCabecalho(NORMA, { assinada_em: "2026-11-11", publicada_em: "2026-11-12" })).toEqual([
+    expect(datasDoCabecalho({ ...NORMA, publicada_em: "2026-11-12" })).toEqual([
       "Ato de 11/11/2026",
       "Publicação no DOU: 12/11/2026",
     ]);
     expect(
-      datasDoCabecalho(
-        { id: "ifpr/consup/res/2017/50", data_publicacao: "2017-07-14" },
-        { assinada_em: null, publicada_em: null },
-      ),
-    ).toEqual(["Ato de 14/07/2017"]);
-    // sem o documento ainda (stub ou carregando): só o ato
-    expect(datasDoCabecalho(NORMA, null)).toEqual(["Ato de 11/11/2026"]);
+      datasDoCabecalho({ id: "ifpr/consup/res/2017/50", assinada_em: "2017-07-14", publicada_em: "2017-07-17" }),
+    ).toEqual(["Ato de 14/07/2017", "Publicação oficial: 17/07/2017"]);
+    // stub sem data de publicação com evidência: só o ato
+    expect(datasDoCabecalho({ id: "br/cne-ceb/res/2012/6", assinada_em: "2012-09-20", publicada_em: null })).toEqual([
+      "Ato de 20/09/2012",
+    ]);
+    // nenhuma data: nada
+    expect(datasDoCabecalho({ id: "br/cne-ceb/res/2012/6", assinada_em: null, publicada_em: null })).toEqual([]);
   });
 });
 

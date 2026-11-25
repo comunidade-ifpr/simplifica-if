@@ -4,7 +4,6 @@ title: "Lei nº 12.711/2012"
 tipo_documento: Lei
 numero: 12711
 ano: 2012
-data_publicacao: "2012-08-29"
 assinada_em: "2012-08-29"
 publicada_em: "2012-08-30"
 vigente_de: "2012-08-30"

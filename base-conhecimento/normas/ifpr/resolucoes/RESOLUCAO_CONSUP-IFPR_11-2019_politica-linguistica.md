@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 11/2019"
 tipo_documento: "Resolução"
 numero: 11
 ano: 2019
-data_publicacao: "2019-06-11"
 assinada_em: "2019-06-12"
 publicada_em: "2019-06-13"
 vigente_de: "2019-06-13"

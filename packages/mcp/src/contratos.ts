@@ -120,7 +120,10 @@ export const NormaResumo = Schema.Struct({
   situacao: Schema.Literals(SITUACOES_NORMA),
   /** Status publicado, calculado na `data_referencia` da base. */
   status_vigencia: Schema.NullOr(Schema.String),
-  data_publicacao: Schema.NullOr(Schema.String),
+  /** Data do ato (assinatura), `AAAA-MM-DD`. */
+  assinada_em: Schema.NullOr(Schema.String),
+  /** Publicação oficial: data, "a confirmar" ou "aguardando publicação"; `null` no stub sem ela. */
+  publicada_em: Schema.NullOr(Schema.String),
   ementa: Schema.NullOr(Schema.String),
   link: EsquemaLink,
 });

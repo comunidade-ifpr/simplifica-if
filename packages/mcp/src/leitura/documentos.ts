@@ -60,7 +60,6 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
       ancoras,
       sumario: sumarioDaNorma(markdown, norma.dispositivos),
       pedido,
-      datas: norma.datas,
     };
   });
 
@@ -91,7 +90,6 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
       ancoras,
       sumario: [],
       pedido,
-      datas: null,
     };
   });
 

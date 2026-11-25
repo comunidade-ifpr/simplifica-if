@@ -367,7 +367,8 @@ const LinhaNorma = Schema.Struct({
   situacao: Texto,
   titulo: Texto,
   status_vigencia: TextoNulo,
-  data_publicacao: TextoNulo,
+  assinada_em: TextoNulo,
+  publicada_em: TextoNulo,
   ementa: TextoNulo,
   path: TextoNulo,
 });
@@ -378,13 +379,16 @@ export interface NormaResumo {
   situacao: string;
   titulo: string;
   status_vigencia: string | null;
-  data_publicacao: string | null;
+  /** Data do ato (assinatura). */
+  assinada_em: string | null;
+  /** Publicação oficial: data, "a confirmar" ou "aguardando publicação"; `null` no stub sem ela. */
+  publicada_em: string | null;
   ementa: string | null;
   path: string | null;
 }
 
 const SQL_NORMA =
-  "SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?";
+  "SELECT id, situacao, titulo, status_vigencia, assinada_em, publicada_em, ementa, path FROM normas WHERE id = ?";
 
 /** Norma pelo ID; `null` se não registrada. */
 export const obterNorma = Effect.fn("consultasNormas.obterNorma")(function* (id: string) {
@@ -666,30 +670,8 @@ export const listarNormas = Effect.fn("consultasNormas.listarNormas")(function* 
   }));
 });
 
-/** As datas do ato no front matter publicado (texto como está, ou `null` se o campo falta). */
-export interface DatasDoAto {
-  readonly assinada_em: string | null;
-  readonly publicada_em: string | null;
-  readonly vigente_de: string | null;
-}
-
-function datasDoAto(frontMatter: string | null): DatasDoAto {
-  let meta: Record<string, unknown> = {};
-  try {
-    const lido: unknown = frontMatter === null ? {} : JSON.parse(frontMatter);
-    if (typeof lido === "object" && lido !== null) meta = lido as Record<string, unknown>;
-  } catch {
-    // front matter ilegível: as datas ficam sem registro
-  }
-  const campo = (nome: string) => {
-    const valor = meta[nome];
-    return typeof valor === "string" && valor.trim() !== "" ? valor : null;
-  };
-  return { assinada_em: campo("assinada_em"), publicada_em: campo("publicada_em"), vigente_de: campo("vigente_de") };
-}
-
 const primeiraNormaDoDocumento = Sql.primeira(
-  Schema.Struct({ id: Texto, titulo: Texto, situacao: Texto, path: TextoNulo, front_matter_json: TextoNulo }),
+  Schema.Struct({ id: Texto, titulo: Texto, situacao: Texto, path: TextoNulo }),
 );
 const linhasAncoras = Sql.todas(
   Schema.Struct({
@@ -717,7 +699,7 @@ export interface DispositivoDoDocumento {
 }
 
 /**
- * Uma norma como documento: os metadados, as datas do ato e, só se ela tem o texto na base
+ * Uma norma como documento: os metadados e, só se ela tem o texto na base
  * (`situacao` `base` com `path`), os dispositivos do arquivo em ordem e o Markdown sem o front matter
  * (`null` se a tabela `documentos` não tem o arquivo).
  */
@@ -726,19 +708,14 @@ export interface DocumentoNorma {
   readonly titulo: string;
   readonly situacao: string;
   readonly path: string | null;
-  readonly datas: DatasDoAto;
   readonly dispositivos: ReadonlyArray<DispositivoDoDocumento>;
   readonly markdown: string | null;
 }
 
 /** A norma pelo ID do arquivo, como documento; `null` se a tabela `normas` não a tem. */
 export const documentoDaNorma = Effect.fn("consultasNormas.documentoDaNorma")(function* (id: string) {
-  const norma = yield* primeiraNormaDoDocumento(
-    "SELECT id, titulo, situacao, path, front_matter_json FROM normas WHERE id = ?",
-    [id],
-  );
+  const norma = yield* primeiraNormaDoDocumento("SELECT id, titulo, situacao, path FROM normas WHERE id = ?", [id]);
   if (!norma) return null;
-  const { front_matter_json, ...resto } = norma;
   const comTexto = norma.situacao === "base" && norma.path !== null;
   const dispositivos = comTexto
     ? (yield* linhasAncoras(
@@ -748,8 +725,7 @@ export const documentoDaNorma = Effect.fn("consultasNormas.documentoDaNorma")(fu
       )).map((d): DispositivoDoDocumento => ({ ...d, revogado: d.revogado === 1 }))
     : [];
   const documento: DocumentoNorma = {
-    ...resto,
-    datas: datasDoAto(front_matter_json),
+    ...norma,
     dispositivos,
     markdown: comTexto && norma.path !== null ? yield* markdownDoArquivo(norma.path) : null,
   };

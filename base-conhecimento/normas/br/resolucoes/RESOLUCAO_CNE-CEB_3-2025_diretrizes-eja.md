@@ -4,7 +4,6 @@ title: "Resolução CNE/CEB nº 3/2025"
 tipo_documento: "Resolução"
 numero: 3
 ano: 2025
-data_publicacao: "2025-04-09"
 assinada_em: "2025-04-08"
 publicada_em: "2025-04-09"
 vigente_de: "2025-04-09"

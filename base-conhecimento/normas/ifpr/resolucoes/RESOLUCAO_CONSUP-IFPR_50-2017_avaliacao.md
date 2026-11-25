@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 50/2017"
 tipo_documento: "Resolução"
 numero: 50
 ano: 2017
-data_publicacao: "2017-07-14"
 assinada_em: "2017-07-14"
 publicada_em: "a confirmar"
 vigente_de: "2018-01-01"

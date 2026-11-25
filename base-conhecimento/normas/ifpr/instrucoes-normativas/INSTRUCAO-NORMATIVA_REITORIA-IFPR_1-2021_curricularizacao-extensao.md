@@ -4,7 +4,6 @@ title: "Instrução Normativa Reitoria/IFPR nº 1/2021"
 tipo_documento: "Instrução Normativa"
 numero: 1
 ano: 2021
-data_publicacao: "2021-07-26"
 assinada_em: "2021-07-26"
 publicada_em: "2021-07-26"
 vigente_de: "2021-08-01"

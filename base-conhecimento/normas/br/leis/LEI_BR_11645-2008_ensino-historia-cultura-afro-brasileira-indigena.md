@@ -4,7 +4,6 @@ title: "Lei nº 11.645/2008"
 tipo_documento: Lei
 numero: 11645
 ano: 2008
-data_publicacao: "2008-03-10"
 assinada_em: "2008-03-10"
 publicada_em: "2008-03-11"
 vigente_de: "2008-03-11"

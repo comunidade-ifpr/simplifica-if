@@ -4,7 +4,6 @@ title: "Lei nº 11.788/2008"
 tipo_documento: Lei
 numero: 11788
 ano: 2008
-data_publicacao: "2008-09-25"
 assinada_em: "2008-09-25"
 publicada_em: "2008-09-26"
 vigente_de: "2008-09-26"

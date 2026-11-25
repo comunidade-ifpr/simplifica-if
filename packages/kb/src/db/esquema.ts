@@ -35,7 +35,11 @@ CREATE TABLE normas (
   ano INTEGER,
   orgao TEXT,
   jurisdicao TEXT,
-  data_publicacao TEXT,
+  -- data do ato (assinatura), AAAA-MM-DD
+  assinada_em TEXT,
+  -- publicação oficial: AAAA-MM-DD, 'a confirmar' ou 'aguardando publicação' (norma da base); só a
+  -- data, ou null, no stub
+  publicada_em TEXT,
   status_vigencia TEXT,
   status_fonte TEXT,
   ementa TEXT,

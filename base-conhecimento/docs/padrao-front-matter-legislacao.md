@@ -27,9 +27,8 @@ O `front matter` existe para:
 | `tipo_documento` | string | Ex.: `Lei`, `Resolução`, `Portaria`, `Parecer`, `Decreto` |
 | `numero` | string ou número | Número do ato, sem o ano embutido quando possível |
 | `ano` | inteiro | Ano da norma |
-| `data_publicacao` | data ISO | Formato `AAAA-MM-DD`; data do ato usada para ordenar as normas (as datas precisas estão nos três campos abaixo) |
-| `assinada_em` | data ISO | Data do ato (assinatura) |
-| `publicada_em` | data ISO, `a confirmar` ou `aguardando publicação` | Publicação oficial (DOU, Boletim de Serviço) |
+| `assinada_em` | data ISO | Data do ato (assinatura), a que o título traz ("de 5 de janeiro de 2021"); no ano do `ano` |
+| `publicada_em` | data ISO, `a confirmar` ou `aguardando publicação` | Publicação oficial (DOU, Boletim de Serviço Eletrônico), só com evidência: a data do ato não é a da publicação |
 | `vigente_de` | data ISO ou `aguardando publicação` | Início dos efeitos (vigência). Obrigatório com data: norma sem a data de vigência não entra na base. `aguardando publicação` só para o ato assinado e ainda não publicado, que não está em vigor (hoje, a Res. CNE/CP nº 2/2026); quando sair a publicação, troque pela data |
 | `datas_fonte` | string | De onde vieram as três datas (dispositivo de vigência, nota de publicação, fonte oficial conferida) |
 | `orgao` | string | Ex.: `CONSUP/IFPR`, `CNE/CP`, `Presidência da República` |
@@ -88,7 +87,6 @@ title: Resolução CONSUP/IFPR nº 159/2023
 tipo_documento: Resolução
 numero: 159
 ano: 2023
-data_publicacao: 2023-12-12
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 assinada_em: "2023-12-12"
@@ -123,12 +121,12 @@ Dispõe sobre as diretrizes do trabalho do Docente de Educação Especial no IFP
 
 - `title` deve ser curto, canônico e suficiente para identificação isolada.
 - `numero` deve conter apenas o número do ato.
-- `data_publicacao` deve usar sempre ISO `AAAA-MM-DD`.
+- As datas usam sempre ISO `AAAA-MM-DD`. Não há campo `data_publicacao`: ele guardava a data do ato com nome de publicação, e o validador o recusa.
 - `keywords` deve conter termos de domínio, não frases longas.
 - `aliases` deve conter formas pelas quais o texto costuma ser citado em PPCs e pareceres. Um alias sem número vira nome próprio da norma no resolvedor de citações (como "LDB" ou "Lei do Estágio"): toda ocorrência dele num PPC conta como citação, com regra `alias`. Termos de assunto que não identificam só esta norma ("regime domiciliar", "estágio") vão em `keywords`, que a busca também lê.
 - O corpo do arquivo é só o texto da norma, do preâmbulo à assinatura: sem `## Resumo`, sem rótulo `## Texto da norma`, sem seções de notas. Resumo, orientações e notas vão nos [metadados editoriais](#metadados-editoriais).
 - Os arquivos devem ficar em `normas/<jurisdicao>/<tipo-plural>/` (`normas/br/leis/`, `normas/br/decretos-lei/`...). O diretório de cada par jurisdição e tipo está em `DIRETORIOS_POR_TIPO` (`scripts/base/front-matter.ts`); o primeiro ato de um tipo novo precisa da entrada ali, ou o `validar_base.ts` recusa a norma.
-- O nome do arquivo não deve usar prefixo de data. A data oficial deve ficar em `data_publicacao`.
+- O nome do arquivo não deve usar prefixo de data. As datas ficam em `assinada_em`, `publicada_em` e `vigente_de`.
 - `status_vigencia` só aceita estado de vigência; a natureza do documento fica em `tipo_documento`.
 - Parecer do CNE (`tipo_documento: Parecer`, `orgao: CNE/CEB`, `CNE/CES` ou `CNE/CP`) fica em `normas/br/pareceres/`, com ID `br/cne-ceb/parecer/<ano>/<número>`. O parecer só produz efeito depois da homologação do Ministro da Educação (Lei nº 9.131/1995): `assinada_em` é a data de aprovação no colegiado, e `publicada_em` e `vigente_de` são a data da publicação do despacho de homologação no DOU; `fonte_referencia` traz o processo e o despacho. Sem artigos, cada seção (relatório, mérito, voto, decisão) é um dispositivo `#secaoN`. A `ementa` diz a natureza do parecer: consulta que interpreta a norma ou parecer que fundamenta uma resolução. O `status_vigencia: vigente` de um parecer homologado não o torna norma obrigatória por si; a resolução que ele fundamenta registra a relação `fundamenta-se-em` em `relacoes.yaml`. Parecer citado sem texto fica em `stubs.yaml`, com o mesmo ID.
 - Relações normativas entre normas vão em `base-conhecimento/relacoes.yaml` (ver [Relações](#relações-relacoesyaml)); o front matter das duas pontas é gerado dali. Alvo ou origem sem texto na base entra como stub (`normas/stubs.yaml`).
@@ -161,7 +159,7 @@ O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é t
 
 ## Normas sem texto na base (stubs) e referências externas
 
-Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, data, ementa, `status_vigencia` e, quando houver, aliases, `fonte_url` e `fonte_referencia` (os mesmos campos do front matter). O stub não registra `tipo_documento`, `orgao`, `jurisdicao`, `numero` nem `ano`: o banco os tira do ID (`metadadosDoIdNorma`, em `packages/kb/src/normas/ids.ts`), e por isso o ID precisa seguir o padrão do ato. Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
+Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, ementa, `status_vigencia` e, quando houver, aliases, `fonte_url` e `fonte_referencia` (os mesmos campos do front matter). As datas são as do front matter, cada uma só com evidência na fonte oficial: `assinada_em` (a data do ato; no parecer, a aprovação no colegiado) e `publicada_em` (DOU ou Boletim de Serviço; no parecer, a publicação do despacho de homologação), com `datas_fonte` dizendo de onde vieram, obrigatório com qualquer data. O stub não tem `vigente_de`: a vigência dele começa na data do ato, que é o limite inferior (antes dela o ato não existe), e o status vem de `status_vigencia` ou das relações. O stub não registra `tipo_documento`, `orgao`, `jurisdicao`, `numero` nem `ano`: o banco os tira do ID (`metadadosDoIdNorma`, em `packages/kb/src/normas/ids.ts`), e por isso o ID precisa seguir o padrão do ato. Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
 
 Referências fora do escopo normativo da base (conselhos profissionais, ABNT, documentos institucionais não normativos, regulamentos de campus) ficam na seção `externos` do mesmo arquivo, com IDs `externo:`.
 

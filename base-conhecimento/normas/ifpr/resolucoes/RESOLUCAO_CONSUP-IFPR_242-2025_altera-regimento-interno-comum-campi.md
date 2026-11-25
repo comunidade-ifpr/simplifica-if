@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 242/2025"
 tipo_documento: "Resolução"
 numero: 242
 ano: 2025
-data_publicacao: "2025-06-13"
 assinada_em: "2025-06-13"
 publicada_em: "2025-06-17"
 vigente_de: "2025-06-17"

@@ -231,7 +231,6 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         titulo: "Resolução CNE/CP nº 2/2026",
         link: `ifpr://norma/${DCN_2026}`,
         alvo: "art28-xviii",
-        datas: { assinada_em: "2026-11-11", publicada_em: "2026-11-12", vigente_de: "2026-11-12" },
       });
       expect(avisos).toEqual([]);
       // o front matter fica em branco: a linha de cada âncora é a linha do texto
@@ -263,7 +262,6 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         id: "curitiba/tecnico-em-enfermagem/2023",
         titulo: "Técnico em Enfermagem (Curitiba)",
         alvo: "avaliacao-1",
-        datas: null,
         sumario: [],
       });
       expect(dados.ancoras.map((a) => a.id)).toEqual(["avaliacao-1", "estagio-1", "estagio-2"]);
@@ -279,11 +277,6 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         c.lerDocumento({ link: `ifpr://norma/${DCN_2021}#art999` }),
       );
       expect(dados.alvo).toBeNull();
-      expect(dados.datas).toEqual({
-        assinada_em: "2021-01-05",
-        publicada_em: "2021-01-06",
-        vigente_de: "2021-01-06",
-      });
       expect(avisos).toEqual([
         expect.objectContaining({ tipo: "nao-encontrado", ref: `ifpr://norma/${DCN_2021}#art999` }),
       ]);

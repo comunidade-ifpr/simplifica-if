@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 292/2026"
 tipo_documento: "Resolução"
 numero: 292
 ano: 2026
-data_publicacao: "2026-10-05"
 assinada_em: "2026-10-05"
 publicada_em: "2026-10-05"
 vigente_de: "2026-10-05"

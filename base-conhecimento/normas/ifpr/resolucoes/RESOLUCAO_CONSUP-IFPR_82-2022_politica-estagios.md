@@ -4,11 +4,10 @@ title: "Resolução CONSUP/IFPR nº 82/2022"
 tipo_documento: "Resolução"
 numero: 82
 ano: 2022
-data_publicacao: "2022-06-02"
 assinada_em: "2022-06-02"
-publicada_em: "a confirmar"
+publicada_em: "2022-06-02"
 vigente_de: "2022-06-02"
-datas_fonte: "Art. 64: \"entra em vigor nesta data\"."
+datas_fonte: "Publicação (SEI nº 1777302, publicações do SEI, conferida em 25/11/2026): \"Boletim de Serviço Eletrônico em 02/06/2022\"; ato \"DE 02 DE junho DE 2022\"; art. 64: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a política de estágios do IFPR e define as orientações para sua realização."

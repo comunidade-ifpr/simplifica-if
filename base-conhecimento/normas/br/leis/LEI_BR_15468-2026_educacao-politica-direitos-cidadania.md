@@ -4,7 +4,6 @@ title: "Lei nº 15.468/2026"
 tipo_documento: Lei
 numero: 15468
 ano: 2026
-data_publicacao: "2026-07-14"
 assinada_em: "2026-07-13"
 publicada_em: "2026-07-14"
 vigente_de: "2026-07-14"

@@ -4,7 +4,6 @@ title: "Resolução CNE/CEB nº 2/2024"
 tipo_documento: "Resolução"
 numero: 2
 ano: 2024
-data_publicacao: "2024-11-13"
 assinada_em: "2024-11-13"
 publicada_em: "a confirmar"
 vigente_de: "2024-12-02"

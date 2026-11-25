@@ -166,7 +166,7 @@ describe("normas da base", () => {
     expect(textos.filter((t) => t.startsWith("IV –"))).toEqual([
       expect.stringContaining("(Redação dada pela Lei nº 12.677"),
     ]);
-    expect(obterDispositivo("br/lei/2008/11892#art1-parunico", raiz)?.linha_inicio).toBe(76);
+    expect(obterDispositivo("br/lei/2008/11892#art1-parunico", raiz)?.linha_inicio).toBe(75);
   });
 
   test("dispositivos conhecidos", () => {

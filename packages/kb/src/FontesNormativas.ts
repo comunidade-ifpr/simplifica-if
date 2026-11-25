@@ -101,7 +101,8 @@ const LinhaNorma = Schema.Struct({
   id: Schema.String,
   situacao: Schema.Literals(["base", "stub", "externo"]),
   titulo: Schema.String,
-  data_publicacao: TextoNulo,
+  assinada_em: TextoNulo,
+  publicada_em: TextoNulo,
   status_vigencia: TextoNulo,
   status_fonte: TextoNulo,
   path: TextoNulo,
@@ -159,13 +160,9 @@ const linhasTopicosSecoes = Sql.todas(
 );
 const linhasArquivos = Sql.todas(Schema.Struct({ path: Schema.String, arquivo_json: Schema.String }));
 
-/** `assinada_em` do registro: a do front matter (norma da base) ou a `data_publicacao` (stub). */
-function assinadaEm(n: typeof LinhaNorma.Type): string | undefined {
-  if (n.situacao === "stub") return n.data_publicacao ?? undefined;
-  if (n.situacao !== "base" || n.front_matter_json === null) return undefined;
-  const valor = n.front_matter_json["assinada_em"];
-  return typeof valor === "string" && /^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : undefined;
-}
+/** Uma data `AAAA-MM-DD` da linha; `undefined` sem ela ("a confirmar", "aguardando publicação"). */
+const dataOuNada = (valor: string | null): string | undefined =>
+  valor !== null && /^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : undefined;
 
 /** Erro de interpretação de uma tabela: o banco não corresponde às regras do kb. */
 const falhaDaTabela = (tabela: string) => (cause: unknown) =>
@@ -174,19 +171,20 @@ const falhaDaTabela = (tabela: string) => (cause: unknown) =>
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const normas = yield* linhasNormas(
-    "SELECT id, situacao, titulo, data_publicacao, status_vigencia, status_fonte, path, aliases_json, front_matter_json " +
+    "SELECT id, situacao, titulo, assinada_em, publicada_em, status_vigencia, status_fonte, path, aliases_json, front_matter_json " +
       "FROM normas ORDER BY id",
   );
   const registro = new Registro(
     // chaves na ordem de carregarRegistro; no registro, o path é relativo a base-conhecimento/
     normas.map((n): EntradaRegistro => {
-      const assinada = assinadaEm(n);
+      const assinada = dataOuNada(n.assinada_em);
+      const publicada = dataOuNada(n.publicada_em);
       return {
         id: n.id,
         title: n.titulo,
         situacao: n.situacao,
         ...(assinada !== undefined ? { assinada_em: assinada } : {}),
-        ...(n.data_publicacao !== null ? { data_publicacao: n.data_publicacao } : {}),
+        ...(publicada !== undefined ? { publicada_em: publicada } : {}),
         ...(n.status_vigencia !== null ? { status_vigencia: n.status_vigencia } : {}),
         ...(n.status_fonte !== null ? { status_fonte: n.status_fonte } : {}),
         aliases: [...n.aliases_json],

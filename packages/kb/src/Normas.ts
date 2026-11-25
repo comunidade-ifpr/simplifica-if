@@ -46,7 +46,6 @@ import { type ResolucaoComEntrada, resolucaoComEntrada } from "./normas/resolver
 import { type ResultadoVigencia, type SituacaoTransicao, statusEm, transicoesAplicaveis } from "./normas/vigencia.ts";
 
 export type {
-  DatasDoAto,
   DispositivoDoBanco,
   DispositivoDoDocumento,
   DocumentoNorma,
@@ -68,7 +67,10 @@ export interface FichaNorma {
   readonly ano: number | null;
   readonly orgao: string | null;
   readonly jurisdicao: string | null;
-  readonly data_publicacao: string | null;
+  /** Data do ato (assinatura), `AAAA-MM-DD`. */
+  readonly assinada_em: string | null;
+  /** Publicação oficial: data, "a confirmar" ou "aguardando publicação"; `null` no stub sem ela. */
+  readonly publicada_em: string | null;
   /** Status publicado, calculado na `data_referencia`. */
   readonly status_vigencia: string | null;
   readonly ementa: string | null;
@@ -92,7 +94,8 @@ const LinhaFicha = Schema.Struct({
   ano: Schema.NullOr(Schema.Int),
   orgao: Schema.NullOr(Schema.String),
   jurisdicao: Schema.NullOr(Schema.String),
-  data_publicacao: Schema.NullOr(Schema.String),
+  assinada_em: Schema.NullOr(Schema.String),
+  publicada_em: Schema.NullOr(Schema.String),
   status_vigencia: Schema.NullOr(Schema.String),
   ementa: Schema.NullOr(Schema.String),
   fonte_url: Schema.NullOr(UrlOficial),
@@ -180,7 +183,7 @@ const make = Effect.gen(function* () {
   const ficha = Effect.fn("Normas.ficha")(function* (id: string) {
     const consultar = (chave: string) =>
       primeiraFicha(
-        `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao,
+        `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, assinada_em, publicada_em,
                 status_vigencia, ementa, fonte_url, fonte_referencia, path, front_matter_json
            FROM normas WHERE id = ?`,
         [chave],

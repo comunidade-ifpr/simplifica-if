@@ -149,7 +149,12 @@ export const fichaNorma = definirFerramenta({
     const identificacao = [
       norma.orgao,
       norma.tipo_documento && norma.numero ? `${norma.tipo_documento} nº ${norma.numero}` : null,
-      norma.data_publicacao ? `de ${dataBr(norma.data_publicacao)}` : null,
+      norma.assinada_em ? `de ${dataBr(norma.assinada_em)}` : null,
+      norma.publicada_em && /^\d{4}-\d{2}-\d{2}$/.test(norma.publicada_em)
+        ? `publicada em ${dataBr(norma.publicada_em)}`
+        : norma.publicada_em
+          ? `publicação: ${norma.publicada_em}`
+          : null,
       norma.fonte_url !== null ? `fonte oficial: ${norma.fonte_url}` : "fonte oficial: sem URL registrada",
       norma.fonte_referencia !== null ? `referência da fonte: ${norma.fonte_referencia}` : null,
     ].filter(Boolean);

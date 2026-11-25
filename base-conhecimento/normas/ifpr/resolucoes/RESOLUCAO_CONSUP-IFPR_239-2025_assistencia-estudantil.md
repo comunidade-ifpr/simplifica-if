@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 239/2025"
 tipo_documento: "Resolução"
 numero: 239
 ano: 2025
-data_publicacao: "2025-06-10"
 assinada_em: "2025-06-10"
 publicada_em: "2025-06-17"
 vigente_de: "2025-06-17"

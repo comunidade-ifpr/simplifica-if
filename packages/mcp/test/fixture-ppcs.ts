@@ -52,7 +52,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
       id,
       situacao: "base",
       titulo,
-      data_publicacao: data,
+      assinada_em: data,
       status_vigencia: status,
       ementa: `Ementa de ${titulo}.`,
       path: `base-conhecimento/normas/${id.replaceAll("/", "_")}.md`,

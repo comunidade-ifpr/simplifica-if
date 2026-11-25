@@ -4,7 +4,6 @@ title: "Instrução Normativa Reitoria/PROENS/IFPR nº 1/2021"
 tipo_documento: "Instrução Normativa"
 numero: 1
 ano: 2021
-data_publicacao: "2021-08-19"
 assinada_em: "2021-08-19"
 publicada_em: "2021-08-20"
 vigente_de: "2021-09-01"

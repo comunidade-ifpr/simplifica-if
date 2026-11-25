@@ -359,7 +359,7 @@ function LeitorNorma({
             >
               <Situacao selos={selos} />
               <Fatos>
-                {datasDoCabecalho(norma, documento.fase === "lido" ? documento.valor.dados.datas : null).map((d) => (
+                {datasDoCabecalho(norma).map((d) => (
                   <span key={d}>{d}</span>
                 ))}
                 {norma.fonte_referencia !== null ? <span>Fonte: {norma.fonte_referencia}</span> : null}

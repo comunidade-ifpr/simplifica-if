@@ -4,7 +4,6 @@ title: "Resolução CONSUP/IFPR nº 55/2011"
 tipo_documento: "Resolução"
 numero: 55
 ano: 2011
-data_publicacao: "2011-12-21"
 assinada_em: "2011-12-21"
 publicada_em: "a confirmar"
 vigente_de: "2011-12-21"

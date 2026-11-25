@@ -4,7 +4,6 @@ title: "Resolução CNE/CP nº 1/2021"
 tipo_documento: "Resolução"
 numero: 1
 ano: 2021
-data_publicacao: "2021-01-05"
 assinada_em: "2021-01-05"
 publicada_em: "2021-01-06"
 vigente_de: "2021-01-06"

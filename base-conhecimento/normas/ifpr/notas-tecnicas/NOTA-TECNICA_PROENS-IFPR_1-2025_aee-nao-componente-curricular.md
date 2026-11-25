@@ -4,7 +4,6 @@ title: "Nota Técnica PROENS/IFPR nº 1/2025"
 tipo_documento: "Nota Técnica"
 numero: 1
 ano: 2025
-data_publicacao: "2025-10-29"
 assinada_em: "2025-10-31"
 publicada_em: "a confirmar"
 vigente_de: "2025-10-31"

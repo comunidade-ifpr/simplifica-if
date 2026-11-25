@@ -19,9 +19,10 @@ export interface EntradaRegistro {
   id: string;
   title: string;
   situacao: Situacao;
-  /** Data do ato (assinatura). Nos stubs, a `data_publicacao` registrada, tomada como data do ato. */
+  /** Data do ato (assinatura), `AAAA-MM-DD`. */
   assinada_em?: string | undefined;
-  data_publicacao?: string | undefined;
+  /** Publicação oficial (DOU, Boletim de Serviço), `AAAA-MM-DD`, só quando registrada com evidência. */
+  publicada_em?: string | undefined;
   status_vigencia?: string | undefined;
   /** Stub com status provado na base: ID (com dispositivo) do ato que o determina. */
   status_fonte?: string | undefined;
@@ -39,12 +40,18 @@ const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
 const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
 const CURADORIA = Schema.Literals(["rascunho", "conferido"]);
 
+const dataIso = (campo: string) =>
+  Schema.String.check(Schema.isPattern(RE_DATA, { message: `${campo} deve ser AAAA-MM-DD` }));
+
 const esquemaStub = Schema.Struct({
   id: textoQue(ehIdNorma, "id de norma fora do formato canônico"),
   title: textoNaoVazio,
-  data_publicacao: Schema.optionalKey(
-    Schema.String.check(Schema.isPattern(RE_DATA, { message: "data_publicacao deve ser AAAA-MM-DD" })),
-  ),
+  /** Data do ato (assinatura; no parecer, a aprovação no colegiado). */
+  assinada_em: Schema.optionalKey(dataIso("assinada_em")),
+  /** Publicação oficial (DOU, Boletim de Serviço; no parecer, a do despacho de homologação). */
+  publicada_em: Schema.optionalKey(dataIso("publicada_em")),
+  /** De onde vieram as datas: a fonte conferida e o trecho literal. Obrigatório com qualquer data. */
+  datas_fonte: Schema.optionalKey(textoNaoVazio),
   ementa: textoNaoVazio,
   status_vigencia: Schema.Literals(STATUS_STUB),
   status_fonte: Schema.optionalKey(
@@ -95,11 +102,17 @@ export const esquemaRegistroStubs = Schema.Struct({
         });
       }
       const partes = partesIdNorma(stub.id);
-      if (partes && stub.data_publicacao && !stub.data_publicacao.startsWith(String(partes.ano))) {
+      if (partes && stub.assinada_em && !stub.assinada_em.startsWith(String(partes.ano))) {
         problemas.push({
-          path: ["normas", indice, "data_publicacao"],
-          issue: `data_publicacao fora do ano do id (${partes.ano})`,
+          path: ["normas", indice, "assinada_em"],
+          issue: `assinada_em fora do ano do id (${partes.ano})`,
         });
+      }
+      if (stub.assinada_em && stub.publicada_em && stub.publicada_em < stub.assinada_em) {
+        problemas.push({ path: ["normas", indice, "publicada_em"], issue: "publicada_em anterior a assinada_em" });
+      }
+      if ((stub.assinada_em || stub.publicada_em) && !stub.datas_fonte) {
+        problemas.push({ path: ["normas", indice, "datas_fonte"], issue: "data sem datas_fonte (a evidência)" });
       }
     });
     return problemas;
@@ -171,7 +184,7 @@ export class Registro {
       return partes !== null && partes.tipo === tipo && partes.numero === numero;
     });
     const doAto = candidatos.filter((entrada) => entrada.assinada_em === data);
-    return doAto.length > 0 ? doAto : candidatos.filter((entrada) => entrada.data_publicacao === data);
+    return doAto.length > 0 ? doAto : candidatos.filter((entrada) => entrada.publicada_em === data);
   }
 
   /** Atos sem órgão (lei, decreto...) pelo número, quando a citação não traz o ano. */
@@ -186,9 +199,7 @@ export class Registro {
 /** Datas conhecidas do ato: a do ato e a de publicação (vazio quando nenhuma está registrada). */
 export function datasDoAto(entrada: EntradaRegistro | undefined): string[] {
   if (!entrada) return [];
-  return [
-    ...new Set([entrada.assinada_em, entrada.data_publicacao].filter((d): d is string => !!d && RE_DATA.test(d))),
-  ];
+  return [...new Set([entrada.assinada_em, entrada.publicada_em].filter((d): d is string => !!d && RE_DATA.test(d)))];
 }
 
 export function caminhoStubs(raiz: string): string {
@@ -214,13 +225,14 @@ const campoTexto = (meta: Readonly<Record<string, unknown>>, campo: string) => {
 export function montarRegistro(normas: readonly NormaDaBase[], stubsYaml: string | null): Registro {
   const entradas: EntradaRegistro[] = normas.map(({ path, meta }) => {
     const assinada = campoTexto(meta, "assinada_em");
+    const publicada = campoTexto(meta, "publicada_em");
     const aliases = meta["aliases"];
     return {
       id: String(meta["id"]),
       title: campoTexto(meta, "title") ?? String(meta["id"]),
       situacao: "base",
       assinada_em: assinada && RE_DATA.test(assinada) ? assinada : undefined,
-      data_publicacao: campoTexto(meta, "data_publicacao"),
+      publicada_em: publicada && RE_DATA.test(publicada) ? publicada : undefined,
       status_vigencia: campoTexto(meta, "status_vigencia"),
       aliases: Array.isArray(aliases) ? aliases.filter((alias): alias is string => typeof alias === "string") : [],
       path,
@@ -233,8 +245,8 @@ export function montarRegistro(normas: readonly NormaDaBase[], stubsYaml: string
         id: stub.id,
         title: stub.title,
         situacao: "stub",
-        assinada_em: stub.data_publicacao,
-        data_publicacao: stub.data_publicacao,
+        assinada_em: stub.assinada_em,
+        publicada_em: stub.publicada_em,
         status_vigencia: stub.status_vigencia,
         status_fonte: stub.status_fonte,
         aliases: [...(stub.aliases ?? [])],
