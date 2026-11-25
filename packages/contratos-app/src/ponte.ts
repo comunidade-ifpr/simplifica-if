@@ -136,71 +136,62 @@ export interface CredenciaisServidor {
 export interface PonteDesktop {
   /** As credenciais do servidor local; espera o servidor ficar pronto. Pode ser chamada de novo a cada reconexão. */
   conexao(): Promise<CredenciaisServidor>;
-  /** Abre um link http(s) no navegador do sistema; outros esquemas são recusados. */
-  abrirExterno?(url: string): Promise<void>;
+  /** Abre um link http(s) no navegador do sistema, ou um `mailto:` no programa de e-mail; outros esquemas são recusados. */
+  abrirExterno(url: string): Promise<void>;
   /** O diálogo de arquivo do sistema, só `.docx`; `null` se a pessoa cancelar. */
-  escolherDocx?(): Promise<string | null>;
+  escolherDocx(): Promise<string | null>;
   /**
    * O `.docx` solto na área de soltar da revisão (arrastar e soltar), com a regra de `escolherDocx`: o
    * preload tira o caminho do `File` (`webUtils.getPathForFile`) e o processo principal confere e libera
    * no servidor (para `revisaoPpc.revisar`, `abrirDocumento` e `mostrarNaPasta`). `null` se recusado
    * (outra extensão, pasta, `File` sem caminho).
    */
-  soltarDocx?(arquivo: File): Promise<string | null>;
+  soltarDocx(arquivo: File): Promise<string | null>;
   /**
    * Abre no programa padrão (o Word) a cópia comentada de um `.docx` escolhido por `escolherDocx`;
    * outro arquivo é recusado.
    */
-  abrirDocumento?(caminho: string): Promise<void>;
+  abrirDocumento(caminho: string): Promise<void>;
   /** Mostra a cópia comentada na pasta (Finder, Explorador); mesma regra de `abrirDocumento`. */
-  mostrarNaPasta?(caminho: string): Promise<void>;
+  mostrarNaPasta(caminho: string): Promise<void>;
   /**
    * O diálogo de arquivo para anexar à tarefa (M1.9), filtrado por `extensoes` (só documentos; ver
    * `EXTENSOES_DOCUMENTO`); o processo principal libera o arquivo escolhido no servidor, e
    * `pasta.anexar` o copia para a pasta da tarefa. `null` se a pessoa cancelar.
    */
-  escolherAnexo?(extensoes?: ReadonlyArray<string>): Promise<string | null>;
+  escolherAnexo(extensoes?: ReadonlyArray<string>): Promise<string | null>;
   /**
    * Os arquivos soltos na caixa de pedido (arrastar e soltar), com a mesma regra de `escolherAnexo`: o
    * preload tira o caminho de cada `File` (`webUtils.getPathForFile`, que só o dá para arquivo vindo do
    * sistema) e o processo principal confere e libera no servidor. Devolve, na ordem dos arquivos, o
    * caminho liberado ou `null` para o recusado (pasta, extensão fora de `extensoes`, `File` sem caminho).
    */
-  anexarSoltos?(
-    arquivos: ReadonlyArray<File>,
-    extensoes?: ReadonlyArray<string>,
-  ): Promise<ReadonlyArray<string | null>>;
+  anexarSoltos(arquivos: ReadonlyArray<File>, extensoes?: ReadonlyArray<string>): Promise<ReadonlyArray<string | null>>;
   /** Abre no programa padrão um documento da pasta de uma tarefa (`Documentos/Simplifica IF/<tarefa>/`). */
-  abrirArquivoTarefa?(caminho: string): Promise<void>;
+  abrirArquivoTarefa(caminho: string): Promise<void>;
   /** Mostra no Finder ou no Explorador um arquivo da pasta de uma tarefa. */
-  mostrarArquivoTarefa?(caminho: string): Promise<void>;
+  mostrarArquivoTarefa(caminho: string): Promise<void>;
   /**
    * Manda à Lixeira do sistema a pasta de uma tarefa (`Documentos/Simplifica IF/<tarefa>`), depois de a
    * conversa dela ser apagada. Só a pasta filha direta da raiz, que não é link nem uma pasta do app
    * (relatos, diagnósticos); nunca apaga de vez.
    */
-  pastaParaLixeira?(caminho: string): Promise<void>;
+  pastaParaLixeira(caminho: string): Promise<void>;
   /**
    * Reinicia o servidor local (novo token e nova porta; a janela recarrega). A atualização da base usa
    * para trocar o arquivo: a troca só acontece na abertura do servidor (M1.10).
    */
-  reiniciarServidor?(): Promise<void>;
+  reiniciarServidor(): Promise<void>;
   /**
    * Grava no log do app (`simplifica-if.log`) um erro da interface: o console da janela ninguém vê no app
    * empacotado. Uma linha de texto, cortada em `LIMITE_REGISTRO_INTERFACE`.
    */
-  registrarErro?(texto: string): Promise<void>;
-  /** O estado da atualização do app (`electron-updater`). */
-  atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
-  /** Procura uma versão nova do app agora. */
-  procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
-  /** "Reiniciar para atualizar": fecha o app e instala a versão baixada. */
-  instalarAtualizacaoApp?(): Promise<void>;
+  registrarErro(texto: string): Promise<void>;
   /**
    * A janela sem a barra de título do sistema (`apps/desktop/src/janela.ts`): a interface transforma o
    * cabeçalho na barra e reserva o lugar dos botões do sistema. Só existe no desktop.
    */
-  janela?: JanelaDesktop;
+  janela: JanelaDesktop;
 }
 
 /** O que a interface precisa saber da janela para desenhar a barra de título. */
@@ -221,18 +212,6 @@ export interface JanelaDesktop {
 /** A escolha de tema da interface (`apps/web/src/tema.ts`). */
 export type TemaDoApp = "sistema" | "claro" | "escuro";
 
-/** O estado da atualização do app, como a seção "Atualizações" mostra. */
-export interface EstadoAtualizacaoApp {
-  readonly versao: string;
-  /** `null`: ligada; senão, o motivo (sem assinatura de código, sem feed, desenvolvimento). */
-  readonly desligada: string | null;
-  readonly situacao: "parada" | "procurando" | "baixando" | "pronta" | "em-dia" | "erro";
-  /** A versão nova, baixando ou pronta para instalar. */
-  readonly nova: string | null;
-  readonly progresso: number | null;
-  readonly erro: string | null;
-}
-
 /** O nome em `window`. */
 export const NOME_PONTE = "simplifica";
 
@@ -246,9 +225,6 @@ export const CANAIS = {
   mostrarNaPasta: "simplifica:mostrar-na-pasta",
   reiniciarServidor: "simplifica:reiniciar-servidor",
   registrarErro: "simplifica:registrar-erro",
-  atualizacaoApp: "simplifica:atualizacao-app",
-  procurarAtualizacaoApp: "simplifica:procurar-atualizacao-app",
-  instalarAtualizacaoApp: "simplifica:instalar-atualizacao-app",
   escolherAnexo: "simplifica:escolher-anexo",
   anexarSoltos: "simplifica:anexar-soltos",
   abrirArquivoTarefa: "simplifica:abrir-arquivo-tarefa",

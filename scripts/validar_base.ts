@@ -37,8 +37,10 @@ export const comando = Command.make(
   {},
   Effect.fn("validar_base")(function* () {
     const caminhos = criarCaminhos();
-    const { erros, totalNormas } = yield* Effect.sync(() => validarBase(caminhos));
-    const dados = yield* Effect.sync(() => validarDadosInstitucionais());
+    const { erros, totalNormas, dadosInstitucionais } = yield* Effect.sync(() => validarBase(caminhos));
+    const dados = yield* Effect.sync(() =>
+      validarDadosInstitucionais(undefined, undefined, { carregados: dadosInstitucionais }),
+    );
     erros.push(...dados.erros);
     erros.push(...(yield* Effect.sync(() => validarRevisaoPpc())).map((erro) => `revisão de PPC: ${erro}`));
     const skills = yield* validarSkillsDoApp(caminhos.raizProjeto);

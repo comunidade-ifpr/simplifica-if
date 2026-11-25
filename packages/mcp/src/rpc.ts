@@ -55,7 +55,6 @@ export const layerHandlersRpc = GrupoLeitura.toLayer(
       lerDispositivos: traduzir("lerDispositivos", leitura.lerDispositivos),
       fichaCurso: traduzir("fichaCurso", leitura.fichaCurso),
       lerSecao: traduzir("lerSecao", leitura.lerSecao),
-      listarCursos: traduzir("listarCursos", leitura.listarCursos),
       sobreABase: traduzir("sobreABase", leitura.sobreABase),
       lerLink: traduzir("lerLink", ({ link }: { readonly link: string }) =>
         lerRecurso(link).pipe(Effect.provideService(Leitura.Leitura, leitura)),

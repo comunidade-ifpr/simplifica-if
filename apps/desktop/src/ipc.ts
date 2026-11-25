@@ -14,7 +14,6 @@ import {
   cortarRegistro,
 } from "@simplifica-if/contratos-app/ponte";
 import { dialog, ipcMain, nativeTheme, shell, type BrowserWindow, type IpcMainInvokeEvent } from "electron";
-import type { ControleAtualizacaoApp } from "./atualizacaoApp.ts";
 import {
   anexoEscolhido,
   arquivoDeTarefaPermitido,
@@ -29,7 +28,7 @@ import {
 /** Quantos arquivos um soltar libera de uma vez. */
 const MAXIMO_SOLTOS = 20;
 
-/** O que o IPC lê do processo principal, que guarda o estado (a janela, o servidor, a atualização). */
+/** O que o IPC lê do processo principal, que guarda o estado (a janela, o servidor). */
 export interface ContextoIpc {
   /** A origem da interface (`Configuracao.urlJanela`). */
   readonly urlJanela: string;
@@ -43,7 +42,6 @@ export interface ContextoIpc {
   /** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
   tokenDesktop(): string | undefined;
   reiniciarServidor(): Promise<void>;
-  atualizacaoApp(): ControleAtualizacaoApp | undefined;
   /** Grava no log do app um erro da interface (`PonteDesktop.registrarErro`), com um teto por minuto. */
   registrarInterface(texto: string): void;
 }
@@ -98,27 +96,11 @@ export function registrarIpc(contexto: ContextoIpc): void {
     if (typeof texto === "string" && texto.length > 0) contexto.registrarInterface(cortarRegistro(texto));
   });
 
-  /* ---------------------------------------------------------- atualização do app (M1.10) */
-
-  const exigirAtualizacao = (): ControleAtualizacaoApp => {
-    const atualizacao = contexto.atualizacaoApp();
-    if (atualizacao === undefined) throw new Error("a atualização do app ainda não começou");
-    return atualizacao;
-  };
-
-  tratar(CANAIS.atualizacaoApp, () => exigirAtualizacao().estado());
-
-  tratar(CANAIS.procurarAtualizacaoApp, () => exigirAtualizacao().procurar());
-
-  tratar(CANAIS.instalarAtualizacaoApp, () => {
-    contexto.atualizacaoApp()?.instalar();
-  });
-
   /* ---------------------------------------------------------- navegador e pastas */
 
   tratar(CANAIS.abrirExterno, async (url) => {
     const segura = urlExternaSegura(url);
-    if (segura === undefined) throw new Error("só links http e https abrem no navegador");
+    if (segura === undefined) throw new Error("só links http, https e mailto abrem fora do app");
     await shell.openExternal(segura);
   });
 

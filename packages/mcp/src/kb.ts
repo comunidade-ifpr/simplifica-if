@@ -12,7 +12,7 @@
  * entrada, o mesmo serviço `Leitura` e a mesma resposta, o texto Markdown que a IA recebe ou, com
  * `--json`, a `Resposta`. Elas rodam sobre o `tmp/kb.sqlite` do checkout, recompilado quando está
  * mais velho que as fontes (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`); o `arquivo`
- * do `pacote-contexto` se lê do diretório atual. A curadoria (`compilar`, `relacoes --propor`,
+ * do `pacote-contexto` se lê do diretório atual. A curadoria (`compilar`, `propor-relacoes`,
  * `avaliar-resolvedor`, `avaliar-busca`) fica em `@simplifica-if/kb/cli`.
  *
  * Erros: pelo ponto de entrada comum, longe do stdout. Entrada inválida, ID fora da base e falha do
@@ -21,7 +21,7 @@
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { compilar } from "@simplifica-if/kb/cli/compilar";
 import { Checkout } from "@simplifica-if/kb/cli/comum";
-import { avaliarBuscaCmd, avaliarResolvedorCmd, relacoes } from "@simplifica-if/kb/cli/curadoria";
+import { avaliarBuscaCmd, avaliarResolvedorCmd, proporRelacoesCmd } from "@simplifica-if/kb/cli/curadoria";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layers from "@simplifica-if/kb/layers";
 import { executarPrincipal } from "@simplifica-if/kb/principal";
@@ -45,7 +45,13 @@ const kb = Command.make("kb").pipe(
   Command.withDescription(
     "A base de conhecimento do IFPR no checkout: as consultas das ferramentas do servidor MCP ifpr e a curadoria.",
   ),
-  Command.withSubcommands([...comandosDeConsulta(leitura), compilar, relacoes, avaliarResolvedorCmd, avaliarBuscaCmd]),
+  Command.withSubcommands([
+    ...comandosDeConsulta(leitura),
+    compilar,
+    proporRelacoesCmd,
+    avaliarResolvedorCmd,
+    avaliarBuscaCmd,
+  ]),
 );
 
 executarPrincipal(

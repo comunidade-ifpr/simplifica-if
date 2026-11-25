@@ -48,12 +48,3 @@ export function criarPatch(anterior: Uint8Array, nova: Uint8Array, nivel = 19): 
     },
   });
 }
-
-/** Aplica o patch sobre a versão anterior (o app). */
-export function aplicarPatch(anterior: Uint8Array, patch: Uint8Array, limite?: number): Buffer {
-  return NodeZlib.zstdDecompressSync(patch, {
-    dictionary: anterior,
-    params: { [C.ZSTD_d_windowLogMax]: JANELA_MAXIMA },
-    ...(limite === undefined ? {} : { maxOutputLength: limite }),
-  });
-}

@@ -10,7 +10,6 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import * as NodeSqlite from "node:sqlite";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, layer } from "@effect/vitest";
 import * as Deferred from "effect/Deferred";
@@ -38,47 +37,17 @@ import { casarPendencias, planoArquivoNovo } from "../src/revisao-ppc/arquivo-no
 import { estimarAcao } from "../src/revisao-ppc/estimativa.ts";
 import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
-import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
+import {
+  bancoComFichas,
+  cliente,
+  diretorioTemporario,
+  FICHAS_FIXTURE as FICHAS,
+  limparTemporarios,
+  revisarAteOFim,
+  TOKEN,
+} from "./apoio.ts";
 
 afterAll(limparTemporarios);
-
-const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
-const FICHAS = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-04", "CT-CURR-07", "CT-TRANS-03"];
-
-function bancoComFichas(): string {
-  const banco = bancoFixture();
-  const db = new NodeSqlite.DatabaseSync(banco);
-  const curso = {
-    denominacao: "Técnico em Agropecuária",
-    eixo_tecnologico: "Recursos Naturais",
-    carga_horaria_minima_horas: 1200,
-  };
-  db.prepare(
-    "INSERT INTO cnct (id, slug, denominacao, eixo_tecnologico, carga_horaria_minima_h, path, dados_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
-  ).run(
-    "cnct:tecnico-em-agropecuaria",
-    "tecnico-em-agropecuaria",
-    curso.denominacao,
-    curso.eixo_tecnologico,
-    1200,
-    "x.json",
-    JSON.stringify(curso),
-  );
-  db.prepare("DELETE FROM fichas").run();
-  for (const id of FICHAS) {
-    const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8");
-    const json = JSON.parse(texto) as { titulo: string };
-    db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
-      id,
-      json.titulo,
-      `fichas/${id}.json`,
-      JSON.stringify(json),
-      texto,
-    );
-  }
-  db.close();
-  return banco;
-}
 
 /* ============================================================ driver de teste */
 

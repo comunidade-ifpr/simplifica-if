@@ -12,8 +12,8 @@
  * - `instalarRegistroDeErros`: os erros sem dono da janela (`error`, `unhandledrejection`).
  *
  * Antes de ir ao log, o texto perde os valores que o Schema cita nas recusas (`omitirValores`: podem ser o
- * perfil ou o que a pessoa digitou), é cortado (`cortarRegistro`) e passa por um limite de frequência
- * (`limitarFrequencia`): a mesma linha uma vez por minuto, e no máximo `MAXIMO_POR_MINUTO` linhas.
+ * perfil ou o que a pessoa digitou) e é cortado (`cortarRegistro`). O teto por minuto fica na borda do
+ * processo principal (`apps/desktop/src/registro.ts`).
  */
 import { codigoDoErro, cortarRegistro } from "@simplifica-if/contratos-app/ponte";
 import * as Cause from "effect/Cause";
@@ -55,62 +55,21 @@ export function omitirValores(texto: string): string {
   return saida.join("\n");
 }
 
-/* ---------------------------------------------------------- limite de frequência */
-
-/** A janela do limite de frequência. */
-export const JANELA_LIMITE_MS = 60_000;
-/** Quantas linhas por janela; o resto vira uma linha "N registros suprimidos". */
-export const MAXIMO_POR_MINUTO = 30;
-
-export interface OpcoesLimite {
-  readonly agora: () => number;
-  readonly gravar: (linha: string) => void;
-}
-
-/**
- * Um limite de frequência: a mesma linha só uma vez por janela (o StrictMode do desenvolvimento monta a
- * tela de erro duas vezes) e no máximo `MAXIMO_POR_MINUTO` linhas por janela. Quando a janela vira, o
- * próximo registro vem depois de uma linha com quantos foram suprimidos.
- */
-export function limitarFrequencia(opcoes: OpcoesLimite): (linha: string) => void {
-  let inicio: number | undefined;
-  let vistas = new Set<string>();
-  let suprimidos = 0;
-  return (linha) => {
-    const agora = opcoes.agora();
-    if (inicio === undefined || agora - inicio >= JANELA_LIMITE_MS) {
-      if (suprimidos > 0)
-        opcoes.gravar(`${suprimidos} registros suprimidos no último minuto (repetidos ou acima do limite)`);
-      inicio = agora;
-      vistas = new Set();
-      suprimidos = 0;
-    }
-    if (vistas.has(linha) || vistas.size >= MAXIMO_POR_MINUTO) {
-      suprimidos += 1;
-      return;
-    }
-    vistas.add(linha);
-    opcoes.gravar(linha);
-  };
-}
-
 /** Grava no console e no log do app. Nunca falha. */
 function gravarNoLog(linha: string): void {
   console.error(`[interface] ${linha}`);
   try {
     void ponteDesktop()
-      ?.registrarErro?.(linha)
+      ?.registrarErro(linha)
       .catch(() => undefined);
   } catch {
     // O log nunca derruba a interface.
   }
 }
 
-const gravarLimitado = limitarFrequencia({ agora: () => Date.now(), gravar: gravarNoLog });
-
-/** Grava uma linha no log do app (no navegador, só no console), sem valores, cortada e limitada. Nunca falha. */
+/** Grava uma linha no log do app (no navegador, só no console), sem valores e cortada. Nunca falha. */
 export function registrarErro(texto: string): void {
-  gravarLimitado(cortarRegistro(omitirValores(texto)));
+  gravarNoLog(cortarRegistro(omitirValores(texto)));
 }
 
 /**

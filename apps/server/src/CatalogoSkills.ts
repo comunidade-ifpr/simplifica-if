@@ -23,6 +23,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
+import { compararVersoes } from "@simplifica-if/atualizacao/manifesto";
 import type { ResumoSkill } from "@simplifica-if/contratos-app";
 import { lerPastaSkills, type SkillDoApp } from "@simplifica-if/mcp/skills";
 import type * as Motor from "@simplifica-if/motor";
@@ -76,16 +77,6 @@ export const deSkills = (skills: ReadonlyArray<SkillDoApp>) =>
   });
 
 const versaoDe = (skill: SkillDoApp) => skill.manifesto.versao ?? "0.0.0";
-
-const compararVersoes = (a: string, b: string) => {
-  const pa = a.split(".").map(Number);
-  const pb = b.split(".").map(Number);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
-    const d = (pa[i] ?? 0) - (pb[i] ?? 0);
-    if (d !== 0) return Math.sign(d);
-  }
-  return 0;
-};
 
 /** De cada nome, a skill de versão maior; no empate, a que veio primeiro (a empacotada). */
 export const maisNovas = (grupos: ReadonlyArray<ReadonlyArray<SkillDoApp>>): ReadonlyArray<SkillDoApp> => {

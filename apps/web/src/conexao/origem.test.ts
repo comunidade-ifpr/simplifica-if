@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import type { PonteDesktop } from "@simplifica-if/contratos-app/ponte";
+import { ponteTeste } from "../../test/ponte.ts";
 import { normalizarUrlServidor, resolverOrigem } from "./origem.ts";
 
 const sem = { ponte: undefined, busca: "", sessao: null, ambiente: {} } as const;
@@ -21,7 +21,7 @@ describe("normalizarUrlServidor", () => {
 
 describe("resolverOrigem", () => {
   it("no desktop, usa a ponte mesmo com parâmetros na URL", () => {
-    const ponte: PonteDesktop = { conexao: async () => ({ urlServidor: "http://127.0.0.1:1", token: TOKEN }) };
+    const ponte = ponteTeste({ conexao: async () => ({ urlServidor: "http://127.0.0.1:1", token: TOKEN }) });
     const { origem } = resolverOrigem({ ...sem, ponte, busca: `?servidor=2&token=${TOKEN}` });
     assert.strictEqual(origem.tipo, "desktop");
   });

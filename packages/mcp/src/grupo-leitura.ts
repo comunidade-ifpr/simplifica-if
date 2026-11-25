@@ -29,7 +29,6 @@ import { fichaCurso } from "./ferramentas/ficha-curso.ts";
 import { fichaNorma } from "./ferramentas/ficha-norma.ts";
 import { lerDispositivos } from "./ferramentas/ler-dispositivos.ts";
 import { lerSecao } from "./ferramentas/ler-secao.ts";
-import { listarCursos } from "./ferramentas/listar-cursos.ts";
 import { sobreABase } from "./ferramentas/sobre-a-base.ts";
 import * as Conteudos from "./recursos/conteudos.ts";
 
@@ -72,7 +71,6 @@ export class GrupoLeitura extends RpcGroup.make(
   }),
   Rpc.make("fichaCurso", { payload: fichaCurso.entrada, success: fichaCurso.saida, error: ErroDeLeitura }),
   Rpc.make("lerSecao", { payload: lerSecao.entrada, success: lerSecao.saida, error: ErroDeLeitura }),
-  Rpc.make("listarCursos", { payload: listarCursos.entrada, success: listarCursos.saida, error: ErroDeLeitura }),
   Rpc.make("sobreABase", { payload: sobreABase.entrada, success: sobreABase.saida, error: ErroDeLeitura }),
   Rpc.make("lerLink", { payload: EntradaLink, success: LinkLido, error: ErroDeLeitura }),
   Rpc.make("lerPpc", { payload: Conteudos.EntradaPpc, success: Conteudos.SaidaPpc, error: ErroDeLeitura }),

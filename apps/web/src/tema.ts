@@ -28,7 +28,7 @@ export function temaEscuro(preferencia: PreferenciaTema, sistemaEscuro: boolean)
 export function aplicarTema(preferencia: PreferenciaTema): void {
   // Antes da classe: com a escolha "claro" ou "escuro", o desktop faz o `prefers-color-scheme` segui-la.
   void ponteDesktop()
-    ?.janela?.temaDoApp(preferencia)
+    ?.janela.temaDoApp(preferencia)
     .catch(() => undefined);
   document.documentElement.classList.toggle("dark", temaEscuro(preferencia, consultaEscuro().matches));
 }

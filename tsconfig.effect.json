@@ -1,6 +1,4 @@
 // Regras do language service do Effect, copiadas do tsconfig.effect.json do T3 Code (a6d9140972).
-// Valem no packages/kb (C1), em scripts/, nas skills e no gabarito (C3, pelo tsconfig.json da
-// raiz); o mcp passa a estendê-lo no C2.
 {
   "compilerOptions": {
     "plugins": [
@@ -116,18 +114,7 @@
             }
           },
           {
-            "include": [
-              "**/*.spec.ts",
-              "**/*.spec.tsx",
-              "**/*.testkit.ts",
-              "**/*.testkit.tsx",
-              "**/test/**/*",
-              "**/tests/**/*",
-              "**/testkit/**/*",
-              "**/testing/**/*",
-              "**/fixtures/**/*",
-              "**/integration/**/*"
-            ],
+            "include": ["**/test/**/*", "**/tests/**/*", "**/fixtures/**/*"],
             "options": { "diagnosticSeverity": { "effectFnOpportunity": "off" } }
           }
         ]

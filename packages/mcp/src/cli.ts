@@ -34,7 +34,6 @@ import * as Config from "effect/Config";
 import * as Console from "effect/Console";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
-import * as FileSystem from "effect/FileSystem";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
@@ -47,8 +46,9 @@ import { prepararAtualizacao } from "./atualizacao.ts";
 import { imprimirConsulta } from "./consulta.ts";
 import { NOMES_FERRAMENTAS } from "./ferramentas/registrar.ts";
 import { layerHandlers } from "./ferramentas/toolkit.ts";
-import { CANAIS, CANAIS_DISTRIBUICAO, type Canal } from "@simplifica-if/kb/canal";
+import { CANAIS, CANAIS_DISTRIBUICAO } from "@simplifica-if/kb/canal";
 import * as Leitura from "./leitura/Leitura.ts";
+import * as PastaTrabalho from "./leitura/PastaTrabalho.ts";
 import {
   layerLeituraComPasta,
   layerStdio,
@@ -58,21 +58,17 @@ import {
 } from "./servidor.ts";
 
 /**
- * Uso que os parsers de flag não pegam: banco ausente, canal fora da lista, pasta inexistente e, no
- * `consultar`, a ferramenta desconhecida, `--args` que não é JSON e a ferramenta `etapa`.
+ * Uso que os parsers de flag não pegam: banco ausente e, no `consultar`, a ferramenta desconhecida,
+ * `--args` que não é JSON e a ferramenta `etapa`.
  */
 export class UsoInvalido extends Schema.TaggedError<UsoInvalido>()("UsoInvalido", {
-  motivo: Schema.Literals(["sem-banco", "canal", "pasta-trabalho", "ferramenta", "args", "etapa"]),
+  motivo: Schema.Literals(["sem-banco", "ferramenta", "args", "etapa"]),
   valor: Schema.optionalKey(Schema.String),
 }) {
   override get message(): string {
     switch (this.motivo) {
       case "sem-banco":
         return "informe o kb.sqlite com --banco <caminho> ou com a variável SIMPLIFICA_KB";
-      case "canal":
-        return `--canal <canal>: esperava um destes valores: ${CANAIS.join(", ")} (veio "${this.valor ?? ""}")`;
-      case "pasta-trabalho":
-        return `pasta de trabalho não encontrada: ${this.valor ?? ""}`;
       case "ferramenta":
         return `ferramenta desconhecida: ${this.valor ?? ""}. As ferramentas são: ${NOMES_FERRAMENTAS.filter((n) => n !== "etapa").join(", ")}`;
       case "args":
@@ -83,27 +79,11 @@ export class UsoInvalido extends Schema.TaggedError<UsoInvalido>()("UsoInvalido"
   }
 }
 
-const ehCanal = Schema.is(Schema.Literals(CANAIS));
-
 function expandirCaminho(path: Path.Path, caminho: string): string {
   if (caminho === "~") return NodeOS.homedir();
   if (caminho.startsWith("~/")) return path.join(NodeOS.homedir(), caminho.slice(2));
   return path.resolve(caminho);
 }
-
-/** A pasta de trabalho, conferida e com o caminho real (sem `..` nem symlink). */
-const pastaReal = Effect.fn("simplifica-mcp.pastaReal")(function* (dir: string) {
-  const fs = yield* FileSystem.FileSystem;
-  const info = yield* fs.stat(dir).pipe(Effect.option);
-  if (Option.isNone(info) || info.value.type !== "Directory") {
-    return yield* new UsoInvalido({ motivo: "pasta-trabalho", valor: dir });
-  }
-  return yield* fs
-    .realPath(dir)
-    .pipe(
-      Effect.catchTags({ PlatformError: () => Effect.fail(new UsoInvalido({ motivo: "pasta-trabalho", valor: dir })) }),
-    );
-});
 
 const flagBanco = Flag.String("banco").pipe(
   Flag.withDescription("caminho do kb.sqlite (ou a variável SIMPLIFICA_KB)"),
@@ -155,11 +135,9 @@ const consultar = Command.make(
     const argumentos = yield* decodificarArgs(opcoes.args).pipe(
       Effect.catchTags({ SchemaError: () => Effect.fail(new UsoInvalido({ motivo: "args", valor: opcoes.args })) }),
     );
-    const pasta = yield* pastaReal(
-      expandirCaminho(
-        path,
-        Option.getOrElse(opcoes.pastaTrabalho, () => "."),
-      ),
+    const pasta = expandirCaminho(
+      path,
+      Option.getOrElse(opcoes.pastaTrabalho, () => "."),
     );
     const leitura = layerLeituraComPasta({
       banco: expandirCaminho(path, opcoes.banco.value),
@@ -187,7 +165,7 @@ const comando = Command.make(
   {
     banco: flagBanco,
     pastaTrabalho: flagPastaTrabalho,
-    canal: Flag.String("canal").pipe(
+    canal: Flag.Literals("canal", CANAIS).pipe(
       Flag.withDescription(`canal da base, quando o banco não o registra: ${CANAIS.join(", ")} (padrão: dev)`),
       Flag.withDefault("dev"),
     ),
@@ -218,7 +196,6 @@ const comando = Command.make(
     if (Option.isNone(banco) && Option.isNone(opcoes.pastaAtualizacao)) {
       return yield* new UsoInvalido({ motivo: "sem-banco" });
     }
-    if (!ehCanal(canal)) return yield* new UsoInvalido({ motivo: "canal", valor: canal });
     const bancoDado = Option.isSome(banco) ? expandirCaminho(path, banco.value) : undefined;
     let caminho = bancoDado ?? "";
     let periodica: Effect.Effect<void> = Effect.void;
@@ -233,17 +210,15 @@ const comando = Command.make(
       caminho = atualizacao.banco;
       periodica = atualizacao.periodica;
     }
-    const pasta = yield* pastaReal(
-      expandirCaminho(
-        path,
-        Option.getOrElse(pastaTrabalho, () => "."),
-      ),
+    const pasta = expandirCaminho(
+      path,
+      Option.getOrElse(pastaTrabalho, () => "."),
     );
     const servicos = yield* Layer.build(
       layerStdio({
         banco: caminho,
         // A base da fábrica não grava canal: com a atualização, vale o canal dela.
-        canal: Option.isSome(opcoes.pastaAtualizacao) && canal === "dev" ? opcoes.canalAtualizacao : (canal as Canal),
+        canal: Option.isSome(opcoes.pastaAtualizacao) && canal === "dev" ? opcoes.canalAtualizacao : canal,
         pastaTrabalho: pasta,
       }).pipe(Layer.provide(NodeStdio.layer), Layer.provide(layerVigencia(opcoes.vigenciaNaReferencia))),
     );
@@ -264,6 +239,7 @@ const mensagemDe = (erro: unknown): string => {
   if (BaseKb.ehBaseAusente(erro) || BaseKb.ehBaseIncompativel(erro)) {
     return `simplifica-mcp: ${mensagemDeAbertura(erro)}`;
   }
+  if (PastaTrabalho.ehPastaTrabalhoInvalida(erro)) return `simplifica-mcp: ${erro.message}`;
   if (Sql.ehFalhaNaConsulta(erro)) return `simplifica-mcp: ${MENSAGEM_INCOMPATIVEL} (o arquivo não é um kb.sqlite)`;
   return `simplifica-mcp: ${mensagemDoErro(erro)}`;
 };

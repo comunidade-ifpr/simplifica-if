@@ -29,6 +29,7 @@ export default defineRule({
 
     return {
       Program() {
+        // oxlint-disable-next-line simplifica-if/no-dom-test-environment -- a própria regra procura o pragma literal
         const index = context.sourceCode.text.indexOf("@vitest-environment");
         if (index !== -1) {
           context.report({ loc: context.sourceCode.getLocFromIndex(index), message: MESSAGE });

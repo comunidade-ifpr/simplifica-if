@@ -22,8 +22,6 @@ export class PastaTrabalhoInvalida extends Schema.TaggedError<PastaTrabalhoInval
   }
 }
 
-export const ehPastaTrabalhoInvalida = Schema.is(PastaTrabalhoInvalida);
-
 export const EntradaIniciar = Schema.Struct({
   provider: Provider,
   /** Caminho absoluto da pasta de trabalho da sessão; é também a única pasta que o MCP `ifpr` lê. */

@@ -105,22 +105,18 @@ export function Entrada({
         <h1 className="text-display">Revisar um PPC</h1>
         <p className="text-body text-muted-foreground">Confira seu PPC contra as normas antes de enviar à PROENS.</p>
       </header>
-      {ponte?.escolherDocx === undefined ? (
+      {ponte === undefined ? (
         <CaminhoDigitado aoEscolher={aoEscolher} />
       ) : (
         <AreaSoltar
           titulo="Solte aqui o PPC em Word (.docx)"
           descricao="Seu arquivo não é alterado: os comentários vão para uma cópia, na mesma pasta."
           rotuloEscolher="Escolher o PPC"
-          aoEscolher={() => void usarArquivo(() => ponte.escolherDocx!())}
+          aoEscolher={() => void usarArquivo(() => ponte.escolherDocx())}
           aoSoltar={(arquivos) => {
             const arquivo = arquivos[0];
             if (arquivo === undefined) return;
-            if (ponte.soltarDocx === undefined) {
-              setFalha({ texto: "Use o botão “Escolher o PPC” para abrir o arquivo." });
-              return;
-            }
-            void usarArquivo(() => ponte.soltarDocx!(arquivo), {
+            void usarArquivo(() => ponte.soltarDocx(arquivo), {
               texto: "Só dá para revisar um arquivo do Word (.docx). Solte um .docx ou use “Escolher o PPC”.",
             });
           }}

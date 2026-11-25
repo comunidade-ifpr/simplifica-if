@@ -29,7 +29,6 @@ import {
   MARCADOR_PASTA_TAREFA,
   MARCADOR_SEGREDO,
   MARCADOR_USUARIO,
-  sanearArquivo,
   sanearLinha,
   sanearTexto,
 } from "../src/diagnostico/saneamento.ts";
@@ -270,10 +269,6 @@ describe("saneamento", () => {
     // Sem nada a trocar, a linha fica como estava.
     const limpa = '{"a": 1, "b": "nada"}';
     assert.strictEqual(sanearLinha(limpa, CONTEXTO), limpa);
-    // Todo um arquivo: cada linha continua JSON.
-    const arquivo = sanearArquivo(`${JSON.stringify(pedido)}\n${JSON.stringify(pedido)}\n`, CONTEXTO);
-    for (const linha of arquivo.split("\n").filter((linha) => linha !== ""))
-      assert.doesNotThrow(() => JSON.parse(linha));
   });
 
   it("linhas muito longas são cortadas antes das regras; no JSON, só o texto longo, e a linha continua JSON", () => {

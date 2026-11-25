@@ -70,7 +70,6 @@ export const Politica = Schema.Struct({
     feed: Schema.NullOr(Schema.String),
     canal: Schema.Literals(["beta", "estavel"]),
     chavePublica: Schema.NullOr(Schema.String),
-    app: Schema.Literals(["se-assinado", "nunca"]),
   }),
   /** "Isto está errado" (M1.12): o repositório da curadoria (`dono/repo`), `null` até ele abrir. Ver `politica-curadoria.ts`. */
   curadoria: Schema.Struct({

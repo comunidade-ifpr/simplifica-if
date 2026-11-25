@@ -26,7 +26,7 @@ import { converterPpc } from "./conversao-docx/conversao.ts";
 import { identificarCurso } from "./identificacao.ts";
 import { indiceDeLinhas } from "./localizar-trecho.ts";
 import { alvoDosTrechos, LIMITES_RESPOSTA, textoDoMaiorPedaco } from "./revisao-ia/conferencia.ts";
-import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
+import { agruparApontamentos, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
 import {
   type BaseVerificacao,
@@ -38,7 +38,7 @@ import {
 } from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
 import { rotuloDispositivo } from "./verificadores/dispositivos.ts";
-import { vigenciaDeDados } from "./verificadores/vigencia.ts";
+import { type Marco, vigenciaDeDados } from "./verificadores/vigencia.ts";
 
 export { rotuloDispositivo };
 
@@ -47,6 +47,8 @@ export type BaseRevisaoPrevia = {
   /** `Registro.entradas` (normas da base, stubs e externos). */
   normas: readonly EntradaRegistro[];
   relacoes: readonly Relacao[];
+  /** Marcos normativos da revisão (`marcos-normativos.json`), carregados do `kb.sqlite`. */
+  marcos: readonly Marco[];
   cncts: readonly CursoCnct[];
   /** Endereço oficial (http) da norma, quando a base o registra. */
   urls: Readonly<Record<string, string>>;
@@ -75,8 +77,13 @@ export type BaseRevisaoPrevia = {
 export function verificacaoDaBase(
   base: BaseRevisaoPrevia,
   data: string = base.dataBase,
-): Pick<BaseVerificacao, "registro" | "relacoes" | "vigencia"> {
-  return { registro: new Registro(base.normas), relacoes: base.relacoes, vigencia: vigenciaDeDados(base, data) };
+): Pick<BaseVerificacao, "registro" | "relacoes" | "marcos" | "vigencia"> {
+  return {
+    registro: new Registro(base.normas),
+    relacoes: base.relacoes,
+    marcos: base.marcos,
+    vigencia: vigenciaDeDados(base, data),
+  };
 }
 
 /**
@@ -561,9 +568,6 @@ export const legivel = (mensagem: string) =>
     .replace(/ (Regras de transição: )/, "\n$1")
     .replace(/ (Se o PPC foi elaborado antes de a nova norma)/, "\n$1");
 
-/** O sufixo que `achadosParaComentarios` põe na mensagem; aqui as outras fichas vão em `tambemEm`. */
-const SUFIXO_TAMBEM = / \(Também em [^)]*\.\)$/;
-
 function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, base: BaseRevisaoPrevia): ItemInterno[] {
   const fontes = (links: readonly Fonte[]) => agruparFontes(links, registro, base);
   const dadosDaFicha = (ficha: string) => {
@@ -593,21 +597,15 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     tambemEm: [],
     origem: "codigo" as const,
   }));
-  // A seção de cada trecho (o item agrupado traz só o texto como no documento).
-  const secoes = new Map<string, string | null>();
-  for (const ficha of resultado.fichas)
-    for (const apontamento of ficha.apontamentos)
-      for (const t of apontamento.trechos) secoes.set(comoNoDocumento(t.texto), t.secao);
   // Um item por trecho (ou por norma ausente), com a ficha que define a gravidade e as demais.
-  for (const item of achadosParaComentarios(resultado)) {
-    if (item.ficha === "TRIAGEM") continue;
+  for (const item of agruparApontamentos(resultado.fichas)) {
     itens.push({
       ...dadosDaFicha(item.ficha),
       estado: item.estado,
-      ...tituloEExplicacao(legivel(item.mensagem.replace(SUFIXO_TAMBEM, ""))),
+      ...tituloEExplicacao(legivel(item.mensagem)),
       faltas: [],
       trecho: item.trechos[0] ?? null,
-      secao: item.trechos[0] ? (secoes.get(item.trechos[0]) ?? null) : null,
+      secao: item.secao,
       trechos: item.trechos,
       fontes: fontes(item.fontes),
       tambemEm: item.fichas.slice(1).map((ficha) => ({ ficha, titulo: tituloDaFicha(ficha, base) })),

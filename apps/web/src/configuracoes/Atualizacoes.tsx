@@ -5,20 +5,17 @@
  * - **Base e skills** (servidor, `atualizacao.*`): versões em uso, canal (beta ou estável), "Procurar
  *   agora", "Usar agora" (reinicia o servidor local, que troca a base na abertura; recusado enquanto
  *   uma revisão roda) e "Voltar para a versão anterior da base".
- * - **App** (desktop, `electron-updater`): versão, situação e "Reiniciar para atualizar". Fora do
- *   desktop, ou com o app sem assinatura de código, a seção diz por que está desligada.
+ * - **App**: versão instalada (`estado.versaoApp`).
  */
 import { CanalAtualizacao, type EstadoAtualizacao, type ResultadoTroca } from "@simplifica-if/contratos-app";
 import { DownloadIcon, RefreshCwIcon, RotateCcwIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { AvisoErro, DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
-import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
-import type { EstadoAtualizacaoApp } from "@simplifica-if/contratos-app/ponte";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import {
   avisoSemConfirmacao,
@@ -32,7 +29,7 @@ import {
 async function reiniciar(resultado: ResultadoTroca): Promise<string> {
   if (resultado.resultado !== "reiniciar") return resultado.mensagem;
   const ponte = ponteDesktop();
-  if (ponte?.reiniciarServidor === undefined) return "Feche e abra o Simplifica IF de novo para trocar a base.";
+  if (ponte === undefined) return "Feche e abra o Simplifica IF de novo para trocar a base.";
   await ponte.reiniciarServidor();
   return resultado.mensagem;
 }
@@ -194,83 +191,13 @@ export function Atualizacoes() {
         )}
       </section>
 
-      <AtualizacaoDoApp />
-    </section>
-  );
-}
-
-function AtualizacaoDoApp() {
-  const ponte = ponteDesktop();
-  const [estado, setEstado] = useState<EstadoAtualizacaoApp | null>(null);
-  useEffect(() => {
-    if (ponte?.atualizacaoApp === undefined) return;
-    let ativo = true;
-    const ler = () =>
-      ponte
-        .atualizacaoApp?.()
-        .then((lido) => ativo && setEstado(lido))
-        .catch(() => undefined);
-    void ler();
-    // O download do app corre no processo principal; a seção acompanha enquanto está aberta.
-    const intervalo = window.setInterval(ler, 5000);
-    return () => {
-      ativo = false;
-      window.clearInterval(intervalo);
-    };
-  }, [ponte]);
-
-  return (
-    <section aria-labelledby="titulo-app" className="flex flex-col gap-3 border-border border-t pt-5">
-      <h3 id="titulo-app" className="font-semibold">
-        App
-      </h3>
-      {ponte?.atualizacaoApp === undefined ? (
-        <p className="text-muted-foreground text-sm">A atualização do app só aparece no app instalado.</p>
-      ) : estado === null ? (
-        <p role="status" className="flex items-center gap-2 text-muted-foreground text-sm">
-          <Spinner /> Lendo…
-        </p>
-      ) : (
-        <>
-          <p className="text-sm">
-            Simplifica IF {estado.versao}
-            {estado.nova !== null ? (
-              <>
-                {" "}
-                <Badge variant="info">
-                  versão {estado.nova} {estado.situacao === "pronta" ? "pronta" : "baixando"}
-                </Badge>
-              </>
-            ) : null}
-          </p>
-          <p role="status" className="text-muted-foreground text-sm">
-            {estado.desligada ??
-              {
-                parada: "Ainda não procurou.",
-                procurando: "Procurando…",
-                baixando: `Baixando a versão nova${estado.progresso === null ? "" : ` (${estado.progresso}%)`}…`,
-                pronta: "A versão nova está pronta. Ela também se instala quando você fechar o app.",
-                "em-dia": "O app está em dia.",
-                erro: estado.erro ?? "A procura falhou.",
-              }[estado.situacao]}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {estado.desligada === null ? (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={async () => setEstado((await ponte.procurarAtualizacaoApp?.()) ?? estado)}
-              >
-                <RefreshCwIcon /> Procurar agora
-              </Button>
-            ) : null}
-            {estado.situacao === "pronta" ? (
-              <Button size="sm" onClick={() => void ponte.instalarAtualizacaoApp?.()}>
-                <DownloadIcon /> Reiniciar para atualizar
-              </Button>
-            ) : null}
-          </div>
-        </>
+      {estado === null ? null : (
+        <section aria-labelledby="titulo-app" className="flex flex-col gap-2 border-border border-t pt-5">
+          <h3 id="titulo-app" className="font-semibold">
+            App
+          </h3>
+          <p className="text-sm">Simplifica IF {estado.versaoApp}</p>
+        </section>
       )}
     </section>
   );

@@ -162,25 +162,39 @@ export type ItemComentario = {
   fontes: Fonte[];
 };
 
-export function achadosParaComentarios(resultado: PreConferencia): ItemComentario[] {
-  const itens: ItemComentario[] = resultado.triagem.map((a) => ({
-    ficha: "TRIAGEM",
-    fichas: ["TRIAGEM"],
-    estado: a.estado,
-    mensagem: a.mensagem,
-    trechos: a.trechos.map((t) => comoNoDocumento(t.texto)),
-    fontes: [],
-  }));
-  const grupos = new Map<string, ItemComentario[]>();
+/** Grupo estruturado de apontamentos de fichas sobre o mesmo trecho (ou mesma norma ausente). */
+export type ApontamentoAgrupado = {
+  ficha: string;
+  /** Todas as fichas com apontamento neste trecho, a de `ficha` primeiro. */
+  fichas: string[];
+  estado: "nao_atende" | "a_conferir";
+  mensagem: string;
+  /** Trechos como aparecem no documento (sem a marcação do Markdown), do mais específico ao mais geral. */
+  trechos: string[];
+  /** Seção do primeiro trecho, quando há. */
+  secao: string | null;
+  fontes: Fonte[];
+};
+
+/**
+ * Agrupa apontamentos das fichas que incidem sobre o mesmo trecho (ou, sem trecho, sobre a mesma
+ * norma ausente): `ficha` é a que define a gravidade (`nao_atende`), e `fichas` traz todas.
+ */
+export function agruparApontamentos(fichas: readonly ResultadoFicha[]): ApontamentoAgrupado[] {
+  const grupos = new Map<string, ApontamentoAgrupado[]>();
   let semChave = 0;
-  for (const ficha of resultado.fichas)
+  for (const ficha of fichas)
     for (const apontamento of ficha.apontamentos) {
-      const item: ItemComentario = {
+      const pares = apontamento.trechos
+        .map((t) => ({ texto: comoNoDocumento(t.texto), secao: t.secao }))
+        .filter((t) => Boolean(t.texto));
+      const item: ApontamentoAgrupado = {
         ficha: ficha.ficha,
         fichas: [ficha.ficha],
         estado: apontamento.estado,
         mensagem: apontamento.mensagem,
-        trechos: apontamento.trechos.map((t) => comoNoDocumento(t.texto)).filter(Boolean),
+        trechos: pares.map((t) => t.texto),
+        secao: pares[0]?.secao ?? null,
         fontes: apontamento.fontes,
       };
       const chave = item.trechos[0]
@@ -190,14 +204,37 @@ export function achadosParaComentarios(resultado: PreConferencia): ItemComentari
           : `item:${(semChave += 1)}`;
       grupos.set(chave, [...(grupos.get(chave) ?? []), item]);
     }
+  const itens: ApontamentoAgrupado[] = [];
   for (const grupo of grupos.values()) {
     const principal = grupo.find((i) => i.estado === "nao_atende") ?? grupo[0]!;
     const outras = [...new Set(grupo.map((i) => i.ficha).filter((f) => f !== principal.ficha))];
     itens.push({
       ...principal,
       fichas: [principal.ficha, ...outras],
-      mensagem: outras.length ? `${principal.mensagem} (Também em ${outras.join(", ")}.)` : principal.mensagem,
       fontes: [...new Set(grupo.flatMap((i) => i.fontes))],
+    });
+  }
+  return itens;
+}
+
+export function achadosParaComentarios(resultado: PreConferencia): ItemComentario[] {
+  const itens: ItemComentario[] = resultado.triagem.map((a) => ({
+    ficha: "TRIAGEM",
+    fichas: ["TRIAGEM"],
+    estado: a.estado,
+    mensagem: a.mensagem,
+    trechos: a.trechos.map((t) => comoNoDocumento(t.texto)),
+    fontes: [],
+  }));
+  for (const item of agruparApontamentos(resultado.fichas)) {
+    const outras = item.fichas.slice(1);
+    itens.push({
+      ficha: item.ficha,
+      fichas: item.fichas,
+      estado: item.estado,
+      mensagem: outras.length ? `${item.mensagem} (Também em ${outras.join(", ")}.)` : item.mensagem,
+      trechos: item.trechos,
+      fontes: item.fontes,
     });
   }
   return itens;

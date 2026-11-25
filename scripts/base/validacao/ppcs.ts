@@ -12,7 +12,6 @@ import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/seco
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import type { IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
 import { aparar, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
-import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
 import { type Contexto, ehRecebido, type Recebido } from "./contexto.ts";
 
 type ItemIndicePpcs = IndicePpcsJson["items"][number];
@@ -25,7 +24,7 @@ const TIPOS_POR_TAXONOMIA = new Map(
 function ppcsVigentesDosCursos(ctx: Contexto): Map<string, string> {
   const ppcs = new Map<string, string>();
   // Registro inválido fica de fora; a validação dos registros institucionais o acusa.
-  const { dados } = carregarDadosInstitucionais(NodePath.join(ctx.c.institucional, "ifpr"));
+  const { dados } = ctx.dadosInstitucionais();
   for (const curso of dados.cursos) {
     const caminhoMarkdown = curso.ppc?.markdown_path;
     if (curso.ppc?.url && caminhoMarkdown && NodeFS.existsSync(naBase(ctx.c, caminhoMarkdown))) {

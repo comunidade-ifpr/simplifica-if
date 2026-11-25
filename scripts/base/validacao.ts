@@ -6,7 +6,7 @@
 import type { CaminhosBase } from "./caminhos.ts";
 import { arquivosNormas } from "./front-matter.ts";
 import { validarCatalogos } from "./validacao/catalogos.ts";
-import { Contexto } from "./validacao/contexto.ts";
+import { type CarregamentoInstitucional, Contexto } from "./validacao/contexto.ts";
 import {
   validarMarkdown,
   validarNormasNaRaiz,
@@ -20,7 +20,11 @@ import {
 import { validarPendenciasPpcs } from "./validacao/pendencias.ts";
 import { validarPpcs } from "./validacao/ppcs.ts";
 
-export type ResultadoValidacao = { erros: string[]; totalNormas: number };
+export type ResultadoValidacao = {
+  erros: string[];
+  totalNormas: number;
+  dadosInstitucionais: CarregamentoInstitucional;
+};
 
 export function validarBase(caminhos: CaminhosBase): ResultadoValidacao {
   const ctx = new Contexto(caminhos);
@@ -42,5 +46,5 @@ export function validarBase(caminhos: CaminhosBase): ResultadoValidacao {
   erros.push(...validarUnicidadeIds(ctx, normas, stubs.ids));
   if (stubs.erros.length === 0) erros.push(...validarRelacoesEVigencia(ctx));
 
-  return { erros, totalNormas: normas.length };
+  return { erros, totalNormas: normas.length, dadosInstitucionais: ctx.dadosInstitucionais() };
 }

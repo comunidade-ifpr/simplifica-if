@@ -8,6 +8,7 @@ import type { DadosDocumento } from "@simplifica-if/contratos-app";
 import { createRoot } from "react-dom/client";
 import { afterEach, expect, it } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
+import { ponteTeste } from "../../test/ponte.ts";
 import "../index.css";
 import { ContextoMemoria, MemoriaLeitor, useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
@@ -102,13 +103,12 @@ it("links: âncora interna rola, mailto e relativo viram texto, e o link web rec
   };
   window.addEventListener("unhandledrejection", aoRejeitar);
   const abertos: string[] = [];
-  window.simplifica = {
-    conexao: () => Promise.reject(new Error("sem servidor")),
+  window.simplifica = ponteTeste({
     abrirExterno: (url) => {
       abertos.push(url);
       return Promise.reject(new Error("só links http e https abrem no navegador"));
     },
-  };
+  });
   const markdown = [
     "[Ir ao fim](#fim) · [Escreva](mailto:secretaria@ifpr.edu.br) · [Outro arquivo](../anexo.md) · [Site](https://ifpr.edu.br)",
     "",

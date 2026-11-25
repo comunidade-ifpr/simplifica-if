@@ -53,8 +53,9 @@ import * as Banco from "./persistencia/Banco.ts";
 import * as Servidor from "./servidor.ts";
 import * as Observabilidade from "./observabilidade/Observabilidade.ts";
 import { awaitLauncherLoss } from "./t3/launcherWatch.ts";
+import pacote from "../package.json" with { type: "json" };
 
-const VERSAO = "0.2.0";
+const VERSAO = pacote.version;
 
 const codificarLinha = Schema.encodeEffect(Schema.fromJsonString(LinhaPartida));
 
@@ -204,14 +205,6 @@ const servidor = Command.make(
       );
       const pastaLogsDada = Option.getOrUndefined(opcoes.pastaLogs);
       const pastaLogs = pastaLogsDada === undefined ? undefined : path.resolve(yield* expandHomePath(pastaLogsDada));
-      const httpProxy = ambiente.HTTP_PROXY ?? ambiente.http_proxy;
-      const httpsProxy = ambiente.HTTPS_PROXY ?? ambiente.https_proxy;
-      const noProxy = ambiente.NO_PROXY ?? ambiente.no_proxy;
-      const proxyAmbiente = {
-        ...(httpProxy ? { httpProxy } : {}),
-        ...(httpsProxy ? { httpsProxy } : {}),
-        ...(noProxy ? { noProxy } : {}),
-      };
       const drivers = Drivers.layerNode({
         ambiente,
         pastaEstado,
@@ -219,7 +212,7 @@ const servidor = Command.make(
         // empacotado, o Electron (como Node) e o bundle do servidor.
         ponteMcp: yield* comandoPonte(),
         // Respeita a proxy do ambiente (a que o desktop resolve e passa ao servidor).
-        http: layerHttp(proxyAmbiente),
+        http: layerHttp(),
       });
       const contexto = yield* Layer.build(
         Servidor.layer({

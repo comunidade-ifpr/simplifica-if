@@ -1,15 +1,14 @@
 /**
- * A moldura das telas: o cabeçalho com o logo do app, a navegação (Início, Explorar, Configurações), a
- * busca na base (Ctrl/Cmd+K, a paleta do Explorar), o estado da conexão e o tema; o aviso de conexão; e
- * a tela da rota. No desktop, o cabeçalho é a barra de título da janela (`barra-titulo.ts`).
+ * A moldura das telas: o cabeçalho com o logo do app, a navegação (Início, Explorar), a busca na base
+ * (Ctrl/Cmd+K, a paleta do Explorar), o estado da conexão e, em ícones, a Ajuda e as Configurações; o
+ * aviso de conexão; e a tela da rota. No desktop, o cabeçalho é a barra de título da janela (`barra-titulo.ts`).
  */
 import { createRootRoute, type ErrorComponentProps, Link, Outlet } from "@tanstack/react-router";
-import { SearchIcon } from "lucide-react";
+import { CircleHelpIcon, SearchIcon, SettingsIcon } from "lucide-react";
 import { useEffect } from "react";
 import { type BarraTitulo, useBarraTitulo } from "../barra-titulo.ts";
 import { AvisoConexao } from "../components/AvisoConexao.tsx";
 import { IndicadorConexao } from "../components/IndicadorConexao.tsx";
-import { SeletorTema } from "../components/SeletorTema.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
@@ -72,6 +71,10 @@ function ErroDaTela({ error, reset }: ErrorComponentProps) {
 const classeAba =
   "rounded-xs px-1 font-semibold text-muted-foreground text-sm hover:text-foreground data-[status=active]:bg-[linear-gradient(to_top,var(--grifo)_45%,transparent_45%)] data-[status=active]:text-foreground";
 
+// As telas de apoio (Ajuda, Configurações) vão em ícone, à direita; a em que se está, com o grifo ao fundo.
+const classeIcone =
+  "flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground data-[status=active]:bg-grifo data-[status=active]:text-foreground [&_svg]:size-[1.125rem]";
+
 /** O botão da busca no cabeçalho, com o atalho. */
 function BotaoBuscar() {
   const { abrir } = usePaleta();
@@ -127,13 +130,17 @@ function MolduraComPaleta() {
           <Link to="/explorar" className={classeAba}>
             Explorar
           </Link>
-          <Link to="/configuracoes" className={classeAba}>
-            Configurações
-          </Link>
         </nav>
         <BotaoBuscar />
         <IndicadorConexao />
-        <SeletorTema />
+        <div className="-mx-1 flex shrink-0 items-center gap-1">
+          <Link to="/ajuda" className={classeIcone} aria-label="Ajuda" title="Ajuda">
+            <CircleHelpIcon aria-hidden />
+          </Link>
+          <Link to="/configuracoes" className={classeIcone} aria-label="Configurações" title="Configurações">
+            <SettingsIcon aria-hidden />
+          </Link>
+        </div>
       </header>
       <div className="px-4 pt-3 empty:hidden">
         <AvisoConexao />

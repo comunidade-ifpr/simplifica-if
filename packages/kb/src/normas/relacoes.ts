@@ -92,11 +92,6 @@ export function arquivoRelacoesDoYaml(texto: string): ArquivoRelacoes {
   return decodificarRelacoes(parse(texto, { schema: "failsafe", uniqueKeys: true }));
 }
 
-/** Relações do texto de `relacoes.yaml`, na ordem do arquivo. */
-export function relacoesDoYaml(texto: string): Relacao[] {
-  return arquivoRelacoesDoYaml(texto).relacoes;
-}
-
 /** Por checkout (`chaveDoCheckout`); `validarRelacoes` o descarta para reler o arquivo. */
 const cache = new Map<string, ArquivoRelacoes>();
 

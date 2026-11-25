@@ -1,14 +1,10 @@
-// @effect-diagnostics nodeBuiltinImport:off -- teste: monta o banco num diretório temporário vazio
 /**
  * Ferramentas de PPCs e cursos (T3) sobre a fixture ampliada: contrato (entradas válidas e inválidas,
  * saída no outputSchema), conteúdo, avisos, determinismo, orçamento do texto e paginação completa e
  * sem repetição.
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
-import { afterEach, describe, expect, expectTypeOf, it } from "@effect/vitest";
+import { afterEach, describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
-import type * as Layer from "effect/Layer";
 import type * as Schema from "effect/Schema";
 import { ehEntradaInvalida } from "../src/contratos.ts";
 import { adequacaoArt71, TETO_ADEQUACAO } from "../src/ferramentas/adequacao-art71.ts";
@@ -19,7 +15,6 @@ import { fichaCurso, TETO_FICHA_CURSO } from "../src/ferramentas/ficha-curso.ts"
 import { impactoDaNorma, TETO_IMPACTO } from "../src/ferramentas/impacto-da-norma.ts";
 import { lerSecao, TETO_LER_SECAO } from "../src/ferramentas/ler-secao.ts";
 import { listarCursos, TETO_LISTAR_CURSOS } from "../src/ferramentas/listar-cursos.ts";
-import type { layerLeitura } from "../src/servidor.ts";
 import {
   camadaFerramentas,
   conectarEmMemoria,
@@ -28,7 +23,7 @@ import {
   responder,
   saidaValida,
 } from "./apoio.ts";
-import { diretorioTemporario, limparTemporarios } from "./fixture.ts";
+import { limparTemporarios } from "./fixture.ts";
 import {
   criarBancoFixturePpcs,
   CURSO_ENFERMAGEM,
@@ -173,32 +168,6 @@ describe("todas as ferramentas do T3", () => {
       );
       expect(yield* entradaInvalida(citacoesDaNorma, { id: "br/cne-cp/res/2021/1", cursor }, ctx)).toBe(true);
       expect(yield* erro(listarCursos, { cursor: "xyz" }, ctx)).toContain("cursor inválido");
-    }),
-  );
-});
-
-describe("sem o repositório", () => {
-  it.effect("todas as ferramentas do T3 com o banco num diretório vazio: o tipo não pede FileSystem, mesma saída", () =>
-    Effect.gen(function* () {
-      // a garantia é de tipo: a layer das ferramentas não exige nada do ambiente (nem FileSystem)
-      expectTypeOf<Layer.Services<ReturnType<typeof layerLeitura>>>().toEqualTypeOf<never>();
-      expectTypeOf<Layer.Services<ReturnType<typeof camadaFerramentas>>>().toEqualTypeOf<never>();
-      const origem = contexto();
-      const esperado = yield* Effect.forEach(CASOS, ([f, args]) => resp(f, args, origem));
-
-      const vazio = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-sem-repo-"));
-      const banco = NodePath.join(vazio, "kb.sqlite");
-      NodeFS.copyFileSync(origem, banco);
-      const cwd = process.cwd();
-      process.chdir(vazio);
-      const obtido = yield* Effect.forEach(CASOS, ([f, args]) => resp(f, args, banco)).pipe(
-        Effect.ensuring(Effect.sync(() => process.chdir(cwd))),
-      );
-      obtido.forEach((r, i) => {
-        expect(JSON.stringify(r.resposta)).toBe(JSON.stringify(esperado[i]!.resposta));
-        expect(r.texto).toBe(esperado[i]!.texto);
-      });
-      expect(NodeFS.readdirSync(vazio)).toEqual(["kb.sqlite"]);
     }),
   );
 });

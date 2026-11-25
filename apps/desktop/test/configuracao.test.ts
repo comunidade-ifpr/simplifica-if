@@ -172,9 +172,10 @@ describe("segurança da janela", () => {
     expect(isSameOriginRendererNavigation({ applicationUrl: aplicacao, navigationUrl: "não é url" })).toBe(false);
   });
 
-  test("links externos: só http e https", () => {
+  test("links externos: só http, https e mailto", () => {
     expect(urlExternaSegura("https://ifpr.edu.br/x")).toBe("https://ifpr.edu.br/x");
     expect(urlExternaSegura("http://exemplo.com")).toBe("http://exemplo.com/");
+    expect(urlExternaSegura("mailto:alguem@exemplo.com?subject=Oi")).toBe("mailto:alguem@exemplo.com?subject=Oi");
     for (const recusada of ["file:///etc/passwd", "javascript:alert(1)", "simplifica://app/", "smb://x", 42, "x"]) {
       expect(urlExternaSegura(recusada)).toBeUndefined();
     }

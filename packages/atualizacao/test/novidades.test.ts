@@ -183,14 +183,14 @@ describe("promover beta → estável", () => {
         de: "beta",
         para: "estavel",
         chave,
-        agora: new Date(),
+        agora: new Date(1000),
       }),
     ).toThrow("assinatura inválida");
     const { url: _semUso, ...baseSemUrl } = beta.base;
     const semUrl = { ...beta, base: baseSemUrl };
     const [[, t2], [, a2]] = assinarManifesto(semUrl, chave, new Date(0)) as [[string, string], [string, string]];
     expect(() =>
-      promoverManifesto({ texto: t2, assinatura: a2, de: "beta", para: "estavel", chave, agora: new Date() }),
+      promoverManifesto({ texto: t2, assinatura: a2, de: "beta", para: "estavel", chave, agora: new Date(1000) }),
     ).toThrow("não têm url");
   });
 });

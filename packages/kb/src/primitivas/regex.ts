@@ -11,8 +11,8 @@
  * Com `dotAll`, `.` casa qualquer caractere.
  *
  * `search` acha a primeira ocorrência, `match` só no início, `fullmatch` só o
- * texto inteiro; `finditer`, `sub` e `split` percorrem todas; `escape` escapa um
- * texto para entrar num padrão.
+ * texto inteiro; `sub` percorre todas; `escape` escapa um texto para entrar
+ * num padrão.
  */
 import { ESPACOS } from "../texto.ts";
 
@@ -115,11 +115,6 @@ export function fullmatch(padrao: string, texto: string, flags: OpcoesRegex = {}
   return compilar(padrao, "fullmatch", flags).exec(texto);
 }
 
-/** Todas as ocorrências, sem sobreposição. */
-export function finditer(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray[] {
-  return [...texto.matchAll(compilar(padrao, "search", flags, true))];
-}
-
 /**
  * Troca cada ocorrência pelo substituto: uma função ou um texto com
  * referências `\1`…`\9` (`$` não tem significado especial).
@@ -142,27 +137,6 @@ export function sub(
     ultimo = m.index + m[0].length;
   }
   return saida + texto.slice(ultimo);
-}
-
-/**
- * Divide o texto nas ocorrências do padrão, que não pode ter grupos de captura: intercalar o que
- * eles capturam não está implementado, e o padrão é recusado para não dar um resultado diferente
- * do esperado em silêncio.
- */
-export function split(padrao: string, texto: string, flags: OpcoesRegex = {}): string[] {
-  const re = compilar(padrao, "search", flags, true);
-  // Casar com o texto vazio revela quantos grupos o padrão tem.
-  if (new RegExp(`${re.source}|`, re.flags.replace("g", "")).exec("")!.length > 1) {
-    throw new SyntaxError(`split não aceita padrão com grupos de captura: ${padrao}`);
-  }
-  const partes: string[] = [];
-  let ultimo = 0;
-  for (const m of texto.matchAll(re)) {
-    partes.push(texto.slice(ultimo, m.index));
-    ultimo = m.index + m[0].length;
-  }
-  partes.push(texto.slice(ultimo));
-  return partes;
 }
 
 /** O texto como fonte de padrão literal (escapa o que não é letra, dígito ou `_`). */

@@ -25,7 +25,7 @@ export function ponteDesktop(): PonteDesktop | undefined {
  */
 export async function abrirExterno(url: string): Promise<boolean> {
   const ponte = ponteDesktop();
-  if (ponte?.abrirExterno !== undefined) {
+  if (ponte !== undefined) {
     await ponte.abrirExterno(url);
     return true;
   }

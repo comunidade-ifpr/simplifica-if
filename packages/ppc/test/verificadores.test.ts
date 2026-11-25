@@ -27,7 +27,12 @@ const CNCT: CursoCnct = {
     "Para ingresso no curso técnico integrado ao ensino médio, o estudante deverá ter concluído o ensino fundamental.",
 };
 
-const { registro, relacoes, vigencia: daBase } = verificacaoDaBase(await carregarBaseRevisao(raizRepositorio()));
+const {
+  registro,
+  relacoes,
+  marcos,
+  vigencia: daBase,
+} = verificacaoDaBase(await carregarBaseRevisao(raizRepositorio()));
 /** Vigência da base: a Res. CNE/CP nº 2/2026 aguarda publicação, e a 1/2021 é a DCN da EPT vigente. */
 const vigencia: ConsultaVigencia = daBase;
 /** A mesma base com a Res. CNE/CP nº 2/2026 publicada em 12/11/2026: a 1/2021 revogada, com a transição. */
@@ -48,6 +53,7 @@ const base = (forma: string, cnct: CursoCnct | null = CNCT, consulta = vigencia)
   forma,
   registro,
   relacoes,
+  marcos,
   vigencia: consulta,
 });
 

@@ -296,14 +296,6 @@ export function sanearLinha(linha: string, contexto: ContextoSaneamento): string
   return sanearCortado(linha, contexto, " … [linha cortada]");
 }
 
-/** Um arquivo de texto inteiro, linha a linha (o `Diagnostico` usa as linhas em pedaços, cedendo a vez). */
-export function sanearArquivo(conteudo: string, contexto: ContextoSaneamento): string {
-  return conteudo
-    .split("\n")
-    .map((linha) => sanearLinha(linha, contexto))
-    .join("\n");
-}
-
 /** O tamanho da linha resumida na prévia. */
 const LIMITE_RESUMO = 300;
 

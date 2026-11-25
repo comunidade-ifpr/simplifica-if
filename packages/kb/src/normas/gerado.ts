@@ -50,11 +50,6 @@ function camposGeradosCom(id: string, raiz: string, contexto: ContextoGerado): M
   return campos;
 }
 
-/** Campos gerados da norma `id` (arquivo), na ordem em que vão para o front matter. */
-export function camposGerados(id: string, raiz: string): Map<string, ValorGerado> {
-  return camposGeradosCom(id, raiz, carregarContextoGerado(raiz));
-}
-
 function yamlTexto(valor: string): string {
   return JSON.stringify(valor);
 }

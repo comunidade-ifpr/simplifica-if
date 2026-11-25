@@ -91,11 +91,15 @@ const pararServidores = () => {
 process.once("exit", pararServidores);
 
 const unidade = {
-  extends: true,
+  resolve: { tsconfigPaths: true },
   test: {
     name: "unidade",
     environment: "node",
-    pool: "forks",
+    pool: "threads",
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
+    allowOnly: !process.env.CI,
+    retry: 0,
     include: ["src/**/*.test.ts", "test/**/*.test.ts"],
     exclude: ["src/**/*.browser.test.{ts,tsx}"],
   },
@@ -120,7 +124,6 @@ const navegador = {
       "@base-ui/react/radio",
       "@base-ui/react/radio-group",
       "@base-ui/react/select",
-      "@base-ui/react/separator",
       "@base-ui/react/use-render",
       "class-variance-authority",
       "lucide-react",

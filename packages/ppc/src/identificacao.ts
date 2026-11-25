@@ -20,7 +20,7 @@
  */
 import { SequenceMatcher } from "@simplifica-if/kb/primitivas/sequencias";
 import { sub } from "@simplifica-if/kb/primitivas/regex";
-import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
+import { colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
 import { chavesDoMapaYaml } from "@simplifica-if/kb/ppcs/front-matter";
 import { apararFimEnquanto, dividirLinhas } from "@simplifica-if/kb/texto";
 import type { CursoCnct, FormaOferta } from "./verificadores/comum.ts";
@@ -44,9 +44,9 @@ export type CursoNoDocumento = {
   forma: FormaOferta | null;
 };
 
-/** Texto sem acentos, em casefold, só com `[a-z0-9]` separados por um espaço. */
+/** Texto sem acentos, em minúsculas, só com `[a-z0-9]` separados por um espaço. */
 export function normalizarBusca(texto: string): string {
-  return colapsarEspacos(sub("[^a-z0-9]+", " ", casefold(semMarcas(texto))));
+  return colapsarEspacos(sub("[^a-z0-9]+", " ", semMarcas(texto).toLowerCase()));
 }
 
 /**

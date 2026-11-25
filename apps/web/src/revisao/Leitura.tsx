@@ -83,7 +83,7 @@ export function Leitura({
   const lendoAgora = lendoComIa(estado);
 
   const escolherCorrigida = async () => {
-    if (ponte?.escolherDocx === undefined) {
+    if (ponte === undefined) {
       setPedirCaminho(true);
       return;
     }
@@ -175,9 +175,7 @@ export function Leitura({
                 aoAbrirNoWord: () => void revisao.abrirNoWord(),
                 abrindo: estado.abrindoWord,
                 aoMostrarNaPasta:
-                  ponte?.mostrarNaPasta === undefined
-                    ? undefined
-                    : () => void revisao.mostrarNaPasta(ponte.mostrarNaPasta!),
+                  ponte === undefined ? undefined : () => void revisao.mostrarNaPasta(ponte.mostrarNaPasta),
                 // Com a leitura com IA em andamento, a versão corrigida espera a pausa (o servidor recusa).
                 aoEnviarCorrigida: lendoAgora ? undefined : () => void escolherCorrigida(),
                 aoExportar: discordancias ? () => void exportar() : undefined,

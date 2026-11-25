@@ -219,84 +219,98 @@ describe("revisão: skills, trava, proxy, temporários e Worker", () => {
     }
   });
 
-  it("trava: outro processo vivo segura a pasta; trava de processo morto se retoma", async () => {
-    const pasta = pastaTemporaria();
-    const empacotada = criarBanco(NodePath.join(pasta, "emp", "kb.sqlite"), "2026.11.10");
-    const comTrava = <A>(dentro: (tomada: boolean) => A) =>
-      Effect.runPromise(Effect.scoped(Effect.map(trava(pasta), dentro)).pipe(Effect.provide(NodeServices.layer)));
-    NodeFS.writeFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), String(process.ppid));
-    expect(await comTrava((tomada) => tomada)).toBe(false);
-    const abertura = await abrir({ pasta, bancoEmpacotado: empacotada });
-    expect(abertura.eventos).toContain(
-      "outro processo usa esta pasta de atualização; a troca fica para a próxima abertura",
-    );
-    NodeFS.writeFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), "999999999");
-    const dentro = await comTrava((tomada) => ({
-      tomada,
-      dono: NodeFS.readFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), "utf8"),
-    }));
-    expect(dentro).toEqual({ tomada: true, dono: String(process.pid) });
-    // O escopo fechou: a trava foi solta.
-    expect(NodeFS.existsSync(NodePath.join(pasta, ARQUIVO_TRAVA))).toBe(false);
-  });
+  it.live("trava: outro processo vivo segura a pasta; trava de processo morto se retoma", () =>
+    Effect.gen(function* () {
+      const pasta = pastaTemporaria();
+      const empacotada = criarBanco(NodePath.join(pasta, "emp", "kb.sqlite"), "2026.11.10");
+      const comTrava = <A>(dentro: (tomada: boolean) => A) =>
+        Effect.scoped(Effect.map(trava(pasta), dentro)).pipe(Effect.provide(NodeServices.layer));
+      NodeFS.writeFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), String(process.ppid));
+      expect(yield* comTrava((tomada) => tomada)).toBe(false);
+      const abertura = yield* Effect.promise(() => abrir({ pasta, bancoEmpacotado: empacotada }));
+      expect(abertura.eventos).toContain(
+        "outro processo usa esta pasta de atualização; a troca fica para a próxima abertura",
+      );
+      NodeFS.writeFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), "999999999");
+      const dentro = yield* comTrava((tomada) => ({
+        tomada,
+        dono: NodeFS.readFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), "utf8"),
+      }));
+      expect(dentro).toEqual({ tomada: true, dono: String(process.pid) });
+      // O escopo fechou: a trava foi solta.
+      expect(NodeFS.existsSync(NodePath.join(pasta, ARQUIVO_TRAVA))).toBe(false);
+    }),
+  );
 
-  it("proxy: o download passa pela proxy HTTP dada (como a do Electron ou a de HTTP_PROXY)", async () => {
-    const c = await cenario();
-    const vistos: string[] = [];
-    const proxy = NodeHttp.createServer((pedido, resposta) => {
-      vistos.push(pedido.url ?? "");
-      const alvo = new URL(pedido.url ?? "");
-      NodeHttp.get(alvo, { agent: new NodeHttp.Agent() }, (r) => {
-        resposta.writeHead(r.statusCode ?? 502, r.headers);
-        r.pipe(resposta);
+  it.live("proxy: o download passa pela proxy HTTP dada (como a do Electron ou a de HTTP_PROXY)", () =>
+    Effect.gen(function* () {
+      const c = yield* Effect.promise(() => cenario());
+      const vistos: string[] = [];
+      const proxy = NodeHttp.createServer((pedido, resposta) => {
+        vistos.push(pedido.url ?? "");
+        const alvo = new URL(pedido.url ?? "");
+        NodeHttp.get(alvo, { agent: new NodeHttp.Agent() }, (r) => {
+          resposta.writeHead(r.statusCode ?? 502, r.headers);
+          r.pipe(resposta);
+        });
       });
-    });
-    await new Promise<void>((pronto) => proxy.listen(0, "127.0.0.1", pronto));
-    try {
-      c.publicar({ versao: "2026.11.13" });
-      const url = `${c.servidor.url}beta/beta.json`;
-      const porta = (proxy.address() as { port: number }).port;
-      const baixarPor = (proxy: Parameters<typeof layerHttp>[0]) =>
-        Effect.runPromise(baixar(url, 1024 * 1024).pipe(Effect.provide(layerHttp(proxy))));
-      const dados = await baixarPor({ httpProxy: `http://127.0.0.1:${porta}` });
-      expect(Buffer.from(dados).toString("utf8")).toContain('"canal": "beta"');
-      expect(vistos).toEqual([url]);
-      // NO_PROXY tira o endereço da proxy.
-      await baixarPor({ httpProxy: `http://127.0.0.1:${porta}`, noProxy: "127.0.0.1" });
-      expect(vistos).toHaveLength(1);
-    } finally {
-      proxy.closeAllConnections();
-      proxy.close();
-      await c.fechar();
-    }
-  });
+      yield* Effect.promise(() => new Promise<void>((pronto) => proxy.listen(0, "127.0.0.1", pronto)));
+      yield* Effect.ensuring(
+        Effect.gen(function* () {
+          c.publicar({ versao: "2026.11.13" });
+          const url = `${c.servidor.url}beta/beta.json`;
+          const porta = (proxy.address() as { port: number }).port;
+          const baixarPor = (proxyConfig: Parameters<typeof layerHttp>[0]) =>
+            baixar(url, 1024 * 1024).pipe(Effect.provide(layerHttp(proxyConfig)));
+          const dados = yield* baixarPor({ httpProxy: `http://127.0.0.1:${porta}` });
+          expect(Buffer.from(dados).toString("utf8")).toContain('"canal": "beta"');
+          expect(vistos).toEqual([url]);
+          // NO_PROXY tira o endereço da proxy.
+          yield* baixarPor({ httpProxy: `http://127.0.0.1:${porta}`, noProxy: "127.0.0.1" });
+          expect(vistos).toHaveLength(1);
+        }),
+        Effect.promise(async () => {
+          proxy.closeAllConnections();
+          proxy.close();
+          await c.fechar();
+        }),
+      );
+    }),
+  );
 
-  it("temporários: falha na escrita não deixa .tmp, e a abertura apaga sobras", async () => {
-    const pasta = pastaTemporaria();
-    const destino = NodePath.join(pasta, "base", "ocupado");
-    NodeFS.mkdirSync(NodePath.join(destino, "dentro"), { recursive: true });
-    await expect(
-      Effect.runPromise(escreverAtomico(destino, Buffer.from("x")).pipe(Effect.provide(NodeServices.layer))),
-    ).rejects.toThrow("não foi possível gravar a base baixada");
-    expect(NodeFS.readdirSync(NodePath.join(pasta, "base")).filter((nome) => nome.endsWith(".tmp"))).toEqual([]);
-    NodeFS.writeFileSync(NodePath.join(pasta, "atualizacao.json.123.tmp"), "{");
-    NodeFS.writeFileSync(NodePath.join(pasta, "base", "baixando.sqlite"), "x");
-    NodeFS.mkdirSync(NodePath.join(pasta, "skills", "2026.11.20.baixando"), { recursive: true });
-    const empacotada = criarBanco(NodePath.join(pasta, "emp", "kb.sqlite"), "2026.11.10");
-    const abertura = await abrir({ pasta, bancoEmpacotado: empacotada });
-    expect(abertura.eventos.filter((e) => e.startsWith("sobra apagada")).length).toBe(3);
-    expect(NodeFS.existsSync(NodePath.join(pasta, "atualizacao.json.123.tmp"))).toBe(false);
-  });
+  it.live("temporários: falha na escrita não deixa .tmp, e a abertura apaga sobras", () =>
+    Effect.gen(function* () {
+      const pasta = pastaTemporaria();
+      const destino = NodePath.join(pasta, "base", "ocupado");
+      NodeFS.mkdirSync(NodePath.join(destino, "dentro"), { recursive: true });
+      const erro = yield* escreverAtomico(destino, Buffer.from("x")).pipe(
+        Effect.provide(NodeServices.layer),
+        Effect.flip,
+      );
+      expect(erro.message).toContain("não foi possível gravar a base baixada");
+      expect(NodeFS.readdirSync(NodePath.join(pasta, "base")).filter((nome) => nome.endsWith(".tmp"))).toEqual([]);
+      NodeFS.writeFileSync(NodePath.join(pasta, "atualizacao.json.123.tmp"), "{");
+      NodeFS.writeFileSync(NodePath.join(pasta, "base", "baixando.sqlite"), "x");
+      NodeFS.mkdirSync(NodePath.join(pasta, "skills", "2026.11.20.baixando"), { recursive: true });
+      const empacotada = criarBanco(NodePath.join(pasta, "emp", "kb.sqlite"), "2026.11.10");
+      const abertura = yield* Effect.promise(() => abrir({ pasta, bancoEmpacotado: empacotada }));
+      expect(abertura.eventos.filter((e) => e.startsWith("sobra apagada")).length).toBe(3);
+      expect(NodeFS.existsSync(NodePath.join(pasta, "atualizacao.json.123.tmp"))).toBe(false);
+    }),
+  );
 
-  it("Worker: confere o banco fora do event loop, com as mesmas recusas", async () => {
-    const pasta = pastaTemporaria();
-    const validar = (caminho: string, versao: string) => Effect.runPromise(validarBancoEmWorker(caminho, { versao }));
-    const bom = criarBanco(NodePath.join(pasta, "bom.sqlite"), "2026.11.20");
-    await expect(validar(bom, "2026.11.20")).resolves.toMatchObject({ versao: "2026.11.20" });
-    await expect(validar(bom, "2026.11.21")).rejects.toThrow("diz ser a versão 2026.11.20");
-    const ruim = criarBanco(NodePath.join(pasta, "ruim.sqlite"), "2026.11.20", { esquema: 999 });
-    await expect(validar(ruim, "2026.11.20")).rejects.toThrow("outro esquema");
-  });
+  it.live("Worker: confere o banco fora do event loop, com as mesmas recusas", () =>
+    Effect.gen(function* () {
+      const pasta = pastaTemporaria();
+      const bom = criarBanco(NodePath.join(pasta, "bom.sqlite"), "2026.11.20");
+      expect(yield* validarBancoEmWorker(bom, { versao: "2026.11.20" })).toMatchObject({ versao: "2026.11.20" });
+      const erroVersao = yield* validarBancoEmWorker(bom, { versao: "2026.11.21" }).pipe(Effect.flip);
+      expect(erroVersao.message).toContain("diz ser a versão 2026.11.20");
+      const ruim = criarBanco(NodePath.join(pasta, "ruim.sqlite"), "2026.11.20", { esquema: 999 });
+      const erroEsquema = yield* validarBancoEmWorker(ruim, { versao: "2026.11.20" }).pipe(Effect.flip);
+      expect(erroEsquema.message).toContain("outro esquema");
+    }),
+  );
 
   it.effect("prazo: um servidor que não responde falha com FalhaDownload no prazo, pelo relógio do Effect", () =>
     Effect.gen(function* () {

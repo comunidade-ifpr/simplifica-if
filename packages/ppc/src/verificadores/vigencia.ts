@@ -4,10 +4,10 @@
  * calcula (`statusEm`; a norma que aguarda publicação, como a Res. CNE/CP nº 2/2026, está
  * `ainda-nao-vigente`) e as regras de transição que preservam a norma revogada.
  *
- * E os marcos normativos da revisão (`base-conhecimento/revisao-ppc/marcos-normativos.json`): para cada linha
- * normativa, a ficha responsável, a única que eleva a gravidade de um fato do marco a `nao_atende`; as
- * demais fichas de base legal registram o mesmo fato como `a_conferir`. `test/vigencia.test.ts`
- * confere que esta cópia bate com o arquivo da skill.
+ * E os marcos normativos da revisão (`base-conhecimento/revisao-ppc/marcos-normativos.json`,
+ * carregados do `kb.sqlite` por `montarBaseRevisao`): para cada linha normativa, a ficha
+ * responsável, a única que eleva a gravidade de um fato do marco a `nao_atende`; as demais fichas
+ * de base legal registram o mesmo fato como `a_conferir`.
  */
 import { type EntradaRegistro, Registro } from "@simplifica-if/kb/normas/registro";
 import { sucessorasDe, type Relacao } from "@simplifica-if/kb/normas/relacoes";
@@ -118,26 +118,6 @@ export function revogacaoRecente(
 
 export type Marco = { id: string; linha: readonly string[]; responsavel: string };
 
-/** Linhas normativas e ficha responsável, de `base-conhecimento/revisao-ppc/marcos-normativos.json` (conferido em teste). */
-export const MARCOS: readonly Marco[] = [
-  {
-    id: "dcn_ept",
-    linha: ["br/cne-ceb/res/2012/6", "br/cne-cp/res/2021/1", "br/cne-cp/res/2026/2"],
-    responsavel: "CT-SUP-12",
-  },
-  {
-    id: "dcnem",
-    linha: ["br/cne-ceb/res/2012/2", "br/cne-ceb/res/2018/3", "br/cne-ceb/res/2024/2"],
-    responsavel: "CT-SUP-12",
-  },
-  { id: "eja", linha: ["br/cne-ceb/res/2021/1", "br/cne-ceb/res/2025/3"], responsavel: "CT-CURR-02" },
-  {
-    id: "assistencia_estudantil_ifpr",
-    linha: ["ifpr/consup/res/2009/11", "ifpr/consup/res/2025/239"],
-    responsavel: "CT-SUP-24",
-  },
-];
-
 /** Todas as normas que sucedem `id` por revogação total, em cadeia (6/2012 → 1/2021 → 2/2026), sem filtro de status. */
 export function sucessorasEmCadeia(id: string, relacoes: readonly Relacao[]): string[] {
   const vistas = new Set<string>();
@@ -153,11 +133,11 @@ export function sucessorasEmCadeia(id: string, relacoes: readonly Relacao[]): st
 }
 
 /** Marco da norma: o que a tem na linha, ou cuja linha contém uma sucessora dela (a 53/2011, revogada pela 239/2025). */
-export function marcoDa(id: string, relacoes: readonly Relacao[]): Marco | null {
+export function marcoDa(id: string, relacoes: readonly Relacao[], marcos: readonly Marco[]): Marco | null {
   const cadeia = [id, ...sucessorasEmCadeia(id, relacoes)];
-  return MARCOS.find((m) => cadeia.some((n) => m.linha.includes(n))) ?? null;
+  return marcos.find((m) => cadeia.some((n) => m.linha.includes(n))) ?? null;
 }
 
 /** Ficha que eleva a gravidade de um fato sobre a norma: a responsável do marco; fora de marco, CT-SUP-12 (a ficha da vigência). */
-export const fichaResponsavel = (id: string, relacoes: readonly Relacao[]) =>
-  marcoDa(id, relacoes)?.responsavel ?? "CT-SUP-12";
+export const fichaResponsavel = (id: string, relacoes: readonly Relacao[], marcos: readonly Marco[]) =>
+  marcoDa(id, relacoes, marcos)?.responsavel ?? "CT-SUP-12";

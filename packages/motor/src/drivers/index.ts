@@ -36,8 +36,6 @@ export const layerHttpComRedirecionamento = (
 export const layerNode = (opcoes: {
   readonly ambiente: Ambiente;
   readonly pastaEstado: string;
-  /** Executável próprio do Antigravity (o `binaryPath` do T3); sem ele, a instalação gerenciada. */
-  readonly binarioAntigravity?: string;
   /** Ponte stdio → HTTP do MCP para o Antigravity (ver `PonteMcp` em `antigravity.ts`). */
   readonly ponteMcp?: Antigravity.PonteMcp;
   /** Camada HTTP das instalações gerenciadas (padrão: `NodeHttpClient.layerUndici`; no servidor, com proxy). */
@@ -59,12 +57,10 @@ export const layerNode = (opcoes: {
         ambiente: opcoes.ambiente,
         pastaEstado: opcoes.pastaEstado,
         instalacao: instalacaoAntigravity,
-        ...(opcoes.binarioAntigravity ? { binario: opcoes.binarioAntigravity } : {}),
         ...(opcoes.ponteMcp ? { ponteMcp: opcoes.ponteMcp } : {}),
       });
       const comFs = <A>(efeito: Effect.Effect<A, never, FileSystem.FileSystem | Path.Path>) =>
         efeito.pipe(Effect.provideService(FileSystem.FileSystem, fs), Effect.provideService(Path.Path, path));
-      const binarioCustomizado = (opcoes.binarioAntigravity ?? "").trim() !== "";
       return Driver.Drivers.of({
         claude: yield* Claude.make(opcoes),
         codex: {
@@ -81,19 +77,15 @@ export const layerNode = (opcoes: {
         antigravity: {
           ...antigravity,
           atualizarHarness: AtualizacaoHarnesses.atualizarAntigravity(instalacaoAntigravity, {
-            ...(opcoes.binarioAntigravity ? { binario: opcoes.binarioAntigravity } : {}),
             ambiente: ambienteAntigravity,
           }),
-          // Com binário customizado, não mexe na pasta gerenciada (o binário pode apontar para dentro dela).
-          limparVersoesAntigas: binarioCustomizado
-            ? Effect.succeed(0)
-            : comFs(
-                AtualizacaoHarnesses.limparVersoesAntigasAntigravity(instalacaoAntigravity.managedDirectory, {
-                  emAndamento: Effect.map(instalacaoAntigravity.state, (estado) =>
-                    AtualizacaoHarnesses.ehEmAndamento(estado.phase),
-                  ),
-                }),
+          limparVersoesAntigas: comFs(
+            AtualizacaoHarnesses.limparVersoesAntigasAntigravity(instalacaoAntigravity.managedDirectory, {
+              emAndamento: Effect.map(instalacaoAntigravity.state, (estado) =>
+                AtualizacaoHarnesses.ehEmAndamento(estado.phase),
               ),
+            }),
+          ),
         },
       });
     }),

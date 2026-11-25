@@ -1,7 +1,7 @@
 /**
  * Comandos de curadoria da CLI `kb`, que leem os arquivos do checkout ou medem a base:
  *
- *   pnpm kb relacoes --propor [--json]
+ *   pnpm kb propor-relacoes [--json]
  *   pnpm kb avaliar-resolvedor [--json]
  *   pnpm kb avaliar-busca [--json]
  *
@@ -18,30 +18,21 @@ import { proporRelacoes } from "../normas/relacoes.ts";
 import {
   camadaRepositorio,
   Checkout,
-  EntradaInvalida,
   FalhaNaCuradoria,
   flagJson,
-  flagLigada,
   imprimir,
   paraJson,
   paraJsonCompacto,
 } from "./comum.ts";
 
-export const relacoes = Command.make(
-  "relacoes",
-  {
-    propor: flagLigada(
-      "propor",
-      "lista propostas do regex (Ficam revogados, passa a vigorar...) ainda não confirmadas",
-    ),
-    json: flagJson,
-  },
-  Effect.fn("kb.relacoes.propor")(function* ({ propor, json }) {
-    if (!propor) return yield* new EntradaInvalida({ motivo: "sem-propor" });
+export const proporRelacoesCmd = Command.make(
+  "propor-relacoes",
+  { json: flagJson },
+  Effect.fn("kb.proporRelacoes")(function* ({ json }) {
     const { raiz } = yield* Checkout;
     const propostas = yield* Effect.try({
       try: () => proporRelacoes(raiz),
-      catch: (cause) => new FalhaNaCuradoria({ comando: "relacoes --propor", cause }),
+      catch: (cause) => new FalhaNaCuradoria({ comando: "propor-relacoes", cause }),
     });
     if (json) return yield* Console.log(paraJson(propostas));
     yield* imprimir([
@@ -51,7 +42,7 @@ export const relacoes = Command.make(
   }),
 ).pipe(
   Command.withDescription(
-    "Propostas do regex sobre o texto das normas ainda não registradas nem descartadas em relacoes.yaml (--propor).",
+    "Propostas do regex sobre o texto das normas ainda não registradas nem descartadas em relacoes.yaml.",
   ),
 );
 

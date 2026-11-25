@@ -17,7 +17,13 @@ import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { removerAcentos, type SecaoPpc, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { rotuloDispositivo } from "./dispositivos.ts";
-import { type ConsultaVigencia, fichaResponsavel, revogacaoRecente, sucessorasEmCadeia } from "./vigencia.ts";
+import {
+  type ConsultaVigencia,
+  fichaResponsavel,
+  type Marco,
+  revogacaoRecente,
+  sucessorasEmCadeia,
+} from "./vigencia.ts";
 
 export { sucessorasEmCadeia } from "./vigencia.ts";
 
@@ -40,6 +46,8 @@ export type BaseVerificacao = {
   registro: Registro;
   /** Relações de `base-conhecimento/relacoes.yaml` (`carregarRelacoes`), para achar a norma sucessora. */
   relacoes: readonly Relacao[];
+  /** Marcos normativos da revisão (`marcos-normativos.json`), carregados do `kb.sqlite`. */
+  marcos: readonly Marco[];
   /**
    * Vigência na data de referência: status e transições, da base da revisão
    * (`verificacaoDaBase`, sobre o `kb.sqlite`) no app, nos testes e nos scripts.
@@ -321,7 +329,7 @@ export function apontamentoRevogada(
       `Cita ${norma.titulo}, revogada em ${em} pela ${nomeSucessora}. Se o PPC foi elaborado antes dessa data, pode manter a citação; recomenda-se atualizar. Confira a data do PPC (capa, histórico ou processo).`,
     );
   }
-  const responsavel = fichaResponsavel(norma.id, base.relacoes);
+  const responsavel = fichaResponsavel(norma.id, base.relacoes, base.marcos);
   if (responsavel !== ficha)
     return conferir(
       `Cita ${norma.titulo}, revogada, sem citar a ${nomeSucessora}. Registrado aqui; a pendência é da ${responsavel}.`,

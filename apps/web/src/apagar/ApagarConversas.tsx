@@ -78,7 +78,7 @@ export function ApagarConversas({
           titulo: conversa.titulo,
           ia: DESCRICOES[conversa.provider].nome,
         }));
-  const textos = itens === null ? null : textosApagarConversas(itens, ponte?.pastaParaLixeira !== undefined);
+  const textos = itens === null ? null : textosApagarConversas(itens, ponte !== undefined);
 
   const apagar = async (pastaParaLixeira: boolean): Promise<NotaApagar | null> => {
     if (itens === null) return null;
@@ -122,7 +122,7 @@ export function ApagarConversas({
         });
       }
     }
-    if (pastaParaLixeira && ponte?.pastaParaLixeira !== undefined) {
+    if (pastaParaLixeira && ponte !== undefined) {
       const saiu = new Set(desfechos.filter((d) => d.falhou !== true).map((d) => d.pasta));
       for (const pasta of pastasParaLixeira(itens).filter((p) => saiu.has(p))) {
         try {

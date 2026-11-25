@@ -102,14 +102,14 @@ function Gerado({
           arquivo ao e-mail ou ao relato do problema.
         </p>
         <p className="mt-1 select-all break-all font-mono text-micro">{gerado.arquivo}</p>
-        {ponte?.mostrarArquivoTarefa === undefined ? null : (
+        {ponte === undefined ? null : (
           <div className="mt-2">
             <Button
               size="sm"
               variant="outline"
               onClick={() =>
                 ponte
-                  .mostrarArquivoTarefa?.(gerado.arquivo)
+                  .mostrarArquivoTarefa(gerado.arquivo)
                   .catch(() =>
                     aoFalhar({ texto: `Não foi possível mostrar ${nome} na pasta. Ele pode ter sido movido.` }),
                   )

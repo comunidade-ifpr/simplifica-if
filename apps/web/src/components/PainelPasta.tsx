@@ -47,7 +47,7 @@ function Arquivo({
         {tamanhoArquivo(arquivo.tamanho)} · {dataHora(arquivo.alteradoEm)}
       </span>
       {/* "Abrir" só para documento (a lista do contrato); o resto, só "Mostrar na pasta". */}
-      {ponte?.abrirArquivoTarefa === undefined || !ehExtensaoDocumento(arquivo.nome) ? null : (
+      {ponte === undefined || !ehExtensaoDocumento(arquivo.nome) ? null : (
         <Button
           variant="ghost"
           size="sm"
@@ -57,7 +57,7 @@ function Arquivo({
           <ExternalLinkIcon /> Abrir
         </Button>
       )}
-      {ponte?.mostrarArquivoTarefa === undefined ? null : (
+      {ponte === undefined ? null : (
         <Button
           variant="ghost"
           size="sm"

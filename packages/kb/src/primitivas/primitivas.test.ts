@@ -3,8 +3,8 @@
  */
 import { describe, expect, test } from "vite-plus/test";
 import { SequenceMatcher } from "./sequencias.ts";
-import { escape, finditer, fullmatch, match, search, split, sub } from "./regex.ts";
-import { casefold, colapsarEspacos, semMarcas, somenteDigitos } from "./texto.ts";
+import { escape, fullmatch, match, search, sub } from "./regex.ts";
+import { colapsarEspacos, semMarcas } from "./texto.ts";
 
 /** Gerador congruencial dos casos (o mesmo que produziu os gabaritos). */
 function gerar(semente: number, n: number, alfabeto: string[]): [string, number] {
@@ -80,24 +80,9 @@ describe("SequenceMatcher", () => {
 });
 
 describe("texto", () => {
-  test("casefold", () => {
-    const casos: Array<[string, string]> = [
-      ["Straße", "strasse"],
-      ["ﬁm", "fim"],
-      ["ΣΑΣ", "σασ"],
-      ["İ", "i̇"],
-      ["Ꭰᏸ", "ᎠᏰ"],
-      ["ǅ", "ǆ"],
-      ["ẞ", "ss"],
-      ["\u0390", "\u03b9\u0308\u0301"],
-    ];
-    for (const [texto, esperado] of casos) expect(casefold(texto)).toBe(esperado);
-  });
-
-  test("espaços, marcas e dígitos", () => {
+  test("espaços e marcas", () => {
     expect(colapsarEspacos("\x1c a　b\x85 ")).toBe("a b");
     expect(semMarcas("Ação São")).toBe("Acao Sao");
-    expect(somenteDigitos("a1²٣x")).toBe("1²٣");
   });
 });
 
@@ -129,21 +114,5 @@ describe("regex", () => {
     // Sem a flag, o mesmo padrão continua parando na quebra (os dois ficam no cache separados).
     expect(search("a(.+)", "a1\n2")?.[1]).toBe("1");
     expect(search("a(.+)", "a1\n2", { dotAll: true })?.[1]).toBe("1\n2");
-  });
-
-  test("split e finditer", () => {
-    expect(split("(?<=[.!?])\\s+(?=[A-Z]{2,},)", "SILVA, A. Um. SOUZA, B. Dois. e fim")).toEqual([
-      "SILVA, A. Um.",
-      "SOUZA, B. Dois. e fim",
-    ]);
-    expect(split(",", "a,b,,c")).toEqual(["a", "b", "", "c"]);
-    expect(split("x", "abc")).toEqual(["abc"]);
-    expect(() => split("(,)", "a,b")).toThrow(/grupos de captura/);
-    expect(split("(?:,|;)(?=b)", "a,b;c")).toEqual(["a", "b;c"]);
-    expect(finditer("\\d+", "a1b22c٣").map((m) => [m.index, m[0]])).toEqual([
-      [1, "1"],
-      [3, "22"],
-      [6, "٣"],
-    ]);
   });
 });

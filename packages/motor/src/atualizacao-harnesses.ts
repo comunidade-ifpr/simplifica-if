@@ -219,18 +219,16 @@ const atualizarHarness = Effect.fn("AtualizacaoHarnesses.atualizarHarness")(func
 
 /**
  * Confere e aplica atualização silenciosa da instalação gerenciada do Antigravity (`agy`).
- * Ignora executáveis customizados (`binario`) ou ausentes; só aplica versões dentro da faixa
+ * Ignora executáveis ausentes; só aplica versões dentro da faixa
  * suportada (`>=1.5.1 <2`); se a versão instalada foi retirada, tenta substituí-la.
  */
 export const atualizarAntigravity = Effect.fn("AtualizacaoHarnesses.atualizarAntigravity")(function* (
   instalacao: Pick<AntigravityInstallation["Service"], "resolve" | "state" | "changes" | "checkForUpdate" | "start">,
   opcoes: {
-    readonly binario?: string;
     readonly ambiente?: NodeJS.ProcessEnv;
     readonly prazo?: Duration.Input;
   } = {},
 ): Effect.fn.Return<ResultadoAtualizacaoHarness> {
-  if ((opcoes.binario ?? "").trim() !== "") return { status: "ignorado", motivo: "nao-gerenciada" };
   const estadoInicial = yield* instalacao.state;
   const resolvida = yield* instalacao.resolve("", opcoes.ambiente).pipe(Effect.option);
   let versaoAtual: string | null;

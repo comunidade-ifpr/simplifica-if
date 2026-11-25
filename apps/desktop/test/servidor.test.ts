@@ -19,6 +19,9 @@ import {
   type Inicio,
 } from "../src/servidor.ts";
 
+const decodificarLinhaContrato = Schema.decodeSync(Schema.fromJsonString(LinhaPartida));
+const decodificarEnvelope = Schema.decodeSync(Schema.fromJsonString(EnvelopePartida));
+
 const LINHA = {
   servidor: "simplifica-if",
   pid: 42,
@@ -41,7 +44,7 @@ describe("linha de partida", () => {
   test("decodifica a linha do servidor, que o schema do contrato também aceita", () => {
     const texto = JSON.stringify(LINHA);
     expect(decodificarLinhaPartida(texto)).toEqual(LINHA);
-    expect(Schema.decodeSync(Schema.fromJsonString(LinhaPartida))(texto)).toEqual(LINHA);
+    expect(decodificarLinhaContrato(texto)).toEqual(LINHA);
   });
 
   test("recusa o que não é a linha do servidor, sem repetir a linha", () => {
@@ -100,7 +103,7 @@ describe("montarInicio", () => {
       "/estado",
     ]);
     expect(inicio.ambiente).toEqual({ PATH: "/usr/bin", HOME: "/home/x" });
-    const envelope = Schema.decodeSync(Schema.fromJsonString(EnvelopePartida))(inicio.envelope.trimEnd());
+    const envelope = decodificarEnvelope(inicio.envelope.trimEnd());
     expect(envelope).toEqual({ token: TOKEN, origens: ["simplifica://app"] });
     // Com o segredo do processo principal, ele vai no envelope (e só nele).
     const comSegredo = montarInicio({
@@ -108,7 +111,7 @@ describe("montarInicio", () => {
       tokenDesktop: "segredo-do-processo-principal-0123456789",
       executor: { tipo: "node", node: "/usr/local/bin/node", bin: "/repo/apps/server/src/bin.ts" },
     });
-    expect(Schema.decodeSync(Schema.fromJsonString(EnvelopePartida))(comSegredo.envelope.trimEnd())).toEqual({
+    expect(decodificarEnvelope(comSegredo.envelope.trimEnd())).toEqual({
       token: TOKEN,
       origens: ["simplifica://app"],
       tokenDesktop: "segredo-do-processo-principal-0123456789",

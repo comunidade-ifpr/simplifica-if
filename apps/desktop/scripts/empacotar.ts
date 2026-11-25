@@ -16,8 +16,6 @@ import * as NodeModule from "node:module";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
 import { build, type Configuration, Platform } from "electron-builder";
-import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
-import { feedDoCanal } from "../src/atualizacaoApp.ts";
 import { construir, DIST, DIST_RECURSOS, PACOTE, RAIZ } from "./construir.ts";
 
 export const APP_ID = "io.github.comunidade-ifpr.simplifica";
@@ -28,13 +26,6 @@ const versaoElectron = (): string => {
   return (JSON.parse(NodeFS.readFileSync(requerer.resolve("electron/package.json"), "utf-8")) as { version: string })
     .version;
 };
-
-/**
- * O feed `generic` que vai no `app-update.yml` (o processo principal o troca pelo do canal com
- * `setFeedURL`), quando há feed na política. Sem feed, o `publish` fica ausente.
- */
-export const FEED_EMPACOTADO =
-  ATUALIZACAO_FABRICA.feed === null ? null : feedDoCanal(ATUALIZACAO_FABRICA.feed, ATUALIZACAO_FABRICA.canal);
 
 /** A configuração do electron-builder (sem assinatura; a publicação é da fábrica). */
 export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configuration {
@@ -90,7 +81,6 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
     // Tudo vai nos bundles: nada a instalar nem a recompilar.
     npmRebuild: false,
     nodeGypRebuild: false,
-    ...(FEED_EMPACOTADO === null ? {} : { publish: [{ provider: "generic" as const, url: FEED_EMPACOTADO }] }),
     mac: {
       target: opcoes.dir ? ["dir"] : ["dmg", "zip"],
       icon: "icone.icns",

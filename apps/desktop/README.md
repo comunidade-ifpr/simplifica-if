@@ -71,7 +71,7 @@ O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` o
    - em desenvolvimento, `node apps/server/src/bin.ts`;
    - no app empacotado, o próprio executável com `ELECTRON_RUN_AS_NODE=1` sobre `Resources/servidor/bin.mjs`;
    - com `--banco`, `--pasta-estado` e `--pasta-skills` (no desenvolvimento, `.agents/skills` do checkout, de onde o servidor aceita só as skills com bloco `simplifica:`; no app empacotado, `Resources/skills`; sem a pasta, o servidor sobe sem skills); o token e a origem da janela vão no `EnvelopePartida`, na primeira linha do stdin. Nunca na linha de comando nem no ambiente (o `SIMPLIFICA_SERVIDOR_TOKEN` herdado sai do ambiente do filho).
-2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app e ao arquivo de log, junto com o que o processo principal registra (`src/registro.ts`): `simplifica-if.log` em `~/Library/Logs/Simplifica IF` no macOS e em `<pasta do app>\logs` no Windows (no desenvolvimento, em `<pasta do app>/logs`); passando de 5 MB, o arquivo vira `simplifica-if.log.1` e outro começa. A interface também escreve nele, por `registrarErro` (linhas `[interface]`): as chamadas ao servidor que terminam num defeito ou na queda da conexão, as telas que quebram e os erros sem dono da janela. Cada falha de chamada leva o código do erro (`codigoDoErro`, os 8 primeiros caracteres do `traceId` do pedido), o mesmo no log do servidor e em "Detalhes técnicos": com o código que a pessoa informa, acha-se o pedido no log. Na mesma pasta, o servidor grava os spans e os logs dele em OTLP/JSON (`traces.jsonl`, `logs-otlp.jsonl`; `--pasta-logs` e `--traces`, ver [`apps/server`](../server/README.md#traces-e-logs)): tudo no desenvolvimento, e no app empacotado a caixa-preta, só os traces com erro ou lentos. `pnpm traces --codigo <código>` mostra a árvore do pedido. Um defeito de handler aparece duas vezes, de propósito: no log do servidor e na linha `[interface]`, com o mesmo código. A queda da conexão vira uma linha só a cada 10 s, com os códigos das chamadas afetadas; a interface omite os valores que o Schema cita ao recusar um payload, registra a mesma linha uma vez por minuto e no máximo 30 linhas por minuto, e o processo principal aceita no máximo 120 por minuto.
+2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app e ao arquivo de log, junto com o que o processo principal registra (`src/registro.ts`): `simplifica-if.log` em `~/Library/Logs/Simplifica IF` no macOS e em `<pasta do app>\logs` no Windows (no desenvolvimento, em `<pasta do app>/logs`); passando de 5 MB, o arquivo vira `simplifica-if.log.1` e outro começa. A interface também escreve nele, por `registrarErro` (linhas `[interface]`): as chamadas ao servidor que terminam num defeito ou na queda da conexão, as telas que quebram e os erros sem dono da janela. Cada falha de chamada leva o código do erro (`codigoDoErro`, os 8 primeiros caracteres do `traceId` do pedido), o mesmo no log do servidor e em "Detalhes técnicos": com o código que a pessoa informa, acha-se o pedido no log. Na mesma pasta, o servidor grava os spans e os logs dele em OTLP/JSON (`traces.jsonl`, `logs-otlp.jsonl`; `--pasta-logs` e `--traces`, ver [`apps/server`](../server/README.md#traces-e-logs)): tudo no desenvolvimento, e no app empacotado a caixa-preta, só os traces com erro ou lentos. `pnpm traces --codigo <código>` mostra a árvore do pedido. Um defeito de handler aparece duas vezes, de propósito: no log do servidor e na linha `[interface]`, com o mesmo código. A queda da conexão vira uma linha só a cada 10 s, com os códigos das chamadas afetadas; a interface omite os valores que o Schema cita ao recusar um payload, e o processo principal aceita no máximo 120 registros por minuto.
 3. A interface pede a conexão pelo preload: `window.simplifica.conexao()` devolve `{ urlServidor: "http://127.0.0.1:<porta>", token }`. O processo principal só responde ao quadro principal da janela do app, na origem da interface.
 4. Ao sair (fechar a janela, Cmd+Q, SIGINT ou SIGTERM), fecha o stdin do servidor e espera 5 s; se ele não sair, SIGTERM e, 2 s depois, SIGKILL. Se o app morrer, o servidor sai sozinho: o stdin fecha e o processo pai muda (`launcherWatch.ts`).
 5. Se o servidor cair, ou não subir, um diálogo diz em português que o app parou por um problema interno, com o motivo (o fim do stderr) sob "Detalhes técnicos", e oferece **Reiniciar** (novo token, nova porta, a janela recarrega) ou **Sair**.
@@ -83,31 +83,26 @@ A ordem é `SIMPLIFICA_KB`, depois a mais nova entre `<pasta do app>/base/kb.sql
 ## Atualização (M1.10)
 
 - **Base e skills:** o servidor (`packages/atualizacao/README.md`). O desktop só passa `--pasta-atualizacao` e `--versao-app` e oferece `reiniciarServidor`, porque a troca do arquivo só acontece na abertura do servidor (no Windows, um arquivo aberto não se renomeia). No desenvolvimento, a atualização liga só com `SIMPLIFICA_ATUALIZACAO_FEED` (com `SIMPLIFICA_ATUALIZACAO_CHAVE`), para testar contra um feed local.
-- **App** (`src/atualizacaoApp.ts`): o `electron-updater` 6.8.9 (a versão do T3) com feed `generic` no release fixo do canal (`…/releases/download/canal-beta/`), nunca o provider `github`, que consulta a API. Baixa em segundo plano, instala ao sair ou em "Reiniciar para atualizar" (que encerra o servidor antes, como o T3 para os backends). Procura na abertura e a cada 24 h.
-- **Proxy:** antes de iniciar o servidor, o processo principal resolve a proxy do sistema para a URL do feed (`session.resolveProxy`) e a passa em `HTTPS_PROXY` e `HTTP_PROXY`, salvo se o ambiente já as tem (`proxyParaServidor`).
-- **Windows:** antes de ligar o updater, é obrigatório o `publisherName` da assinatura (ver `packages/atualizacao/README.md`).
-- **Desligada** quando: fora do app empacotado, sem feed na política, com `SIMPLIFICA_SEM_ATUALIZACAO_APP`, fora do macOS e do Windows e, enquanto a política diz `se-assinado`, num app sem assinatura de código. O empacotamento grava `Resources/assinatura.json` (`{"assinado": false}` enquanto `mac.identity` é `null`). O macOS não instala atualização de um app sem Developer ID: o Squirrel.Mac confere a assinatura do app novo contra a do instalado. A seção "Atualizações" diz o motivo.
-- O `empacotar.ts` põe um feed `generic` no `publish` só para o electron-builder gerar o `app-update.yml` e os `latest*.yml` (não com `--dir`); a fábrica os publica (`pnpm fabrica publicar-app`).
+- **Proxy:** antes de iniciar o servidor, o processo principal resolve a proxy do sistema para a URL do feed (`session.resolveProxy`) e a passa em `HTTPS_PROXY` e `HTTP_PROXY`, salvo se o ambiente já as tem (`src/proxy.ts`, `proxyParaServidor`).
 
 ## Preload (`window.simplifica`)
 
 ```ts
 interface PonteDesktop {
   conexao(): Promise<{ urlServidor: string; token: string }>; // espera o servidor ficar pronto
-  abrirExterno?(url: string): Promise<void>;                   // só http(s), no navegador do sistema
-  escolherPasta?(): Promise<string | null>;                    // diálogo do sistema; null se cancelar
-  escolherDocx?(): Promise<string | null>;                     // diálogo de arquivo, só .docx; null se cancelar
-  soltarDocx?(arquivo: File): Promise<string | null>;          // .docx solto (arrastar e soltar); null se recusado
-  abrirDocumento?(caminho: string): Promise<void>;             // abre no Word a cópia comentada (só ela)
-  mostrarNaPasta?(caminho: string): Promise<void>;             // mostra a cópia comentada no Finder/Explorador
-  escolherAnexo?(extensoes?: string[]): Promise<string | null>; // diálogo de anexo, só documentos; libera no servidor
-  abrirArquivoTarefa?(caminho: string): Promise<void>;         // abre um documento de Documentos/Simplifica IF/<tarefa>/
-  mostrarArquivoTarefa?(caminho: string): Promise<void>;       // mostra um arquivo da pasta da tarefa
-  reiniciarServidor?(): Promise<void>;                          // reinicia o servidor (troca da base, M1.10)
-  registrarErro?(texto: string): Promise<void>;                 // grava um erro da interface no log do app
-  atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;             // estado do electron-updater
-  procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
-  instalarAtualizacaoApp?(): Promise<void>;                     // "Reiniciar para atualizar"
+  abrirExterno(url: string): Promise<void>;                    // só http(s), no navegador do sistema
+  escolherDocx(): Promise<string | null>;                      // diálogo de arquivo, só .docx; null se cancelar
+  soltarDocx(arquivo: File): Promise<string | null>;           // .docx solto (arrastar e soltar); null se recusado
+  abrirDocumento(caminho: string): Promise<void>;              // abre no Word a cópia comentada (só ela)
+  mostrarNaPasta(caminho: string): Promise<void>;              // mostra a cópia comentada no Finder/Explorador
+  escolherAnexo(extensoes?: readonly string[]): Promise<string | null>; // diálogo de anexo, só documentos; libera no servidor
+  anexarSoltos(arquivos: readonly File[], extensoes?: readonly string[]): Promise<readonly (string | null)[]>;
+  abrirArquivoTarefa(caminho: string): Promise<void>;          // abre um documento de Documentos/Simplifica IF/<tarefa>/
+  mostrarArquivoTarefa(caminho: string): Promise<void>;        // mostra um arquivo da pasta da tarefa
+  pastaParaLixeira(caminho: string): Promise<void>;            // manda à Lixeira a pasta da tarefa
+  reiniciarServidor(): Promise<void>;                          // reinicia o servidor (troca da base, M1.10)
+  registrarErro(texto: string): Promise<void>;                 // grava um erro da interface no log do app
+  janela: JanelaDesktop;                                       // barra de título sem moldura do sistema
 }
 ```
 
@@ -164,7 +159,7 @@ pnpm --filter @simplifica-if/desktop test
 - `test/registro.test.ts`: o arquivo de log (pasta criada, acréscimo, giro no limite, falha sem derrubar o app), a linha `[interface]` (quebras, ANSI e controles) e o teto por minuto.
 - `test/vigia-dev.test.ts`: que arquivos reiniciam o servidor no desenvolvimento, e que uma pasta que falta ou um vigia que falha não derrubam o app.
 - `test/reinicio.test.ts`: a troca do servidor, uma de cada vez (pedidos no meio viram uma troca só, depois).
-- `test/atualizacao-app.test.ts`: quando o `electron-updater` fica desligado, o feed do canal e o ciclo procurar, baixar, pronta e instalar (com o servidor encerrado antes), com um atualizador falso.
+- `test/proxy.test.ts`: conversão da proxy resolvida pelo Electron (`proxyParaServidor`) para `HTTPS_PROXY`/`HTTP_PROXY`.
 
 Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-desktop-app.ts`, Playwright com `_electron`) que roda nos jobs de release; aqui ele fica como pendência do CI. Para conferir o app de verdade, empacote com `--dir` e abra o `.app`; com `--remote-debugging-port`, a página pode ser lida pelo CDP.
 

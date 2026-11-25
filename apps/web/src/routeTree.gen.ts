@@ -15,6 +15,7 @@ import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as BoasVindasRouteImport } from './routes/boas-vindas'
+import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExplorarIndexRouteImport } from './routes/explorar/index'
 import { Route as TarefaNomeRouteImport } from './routes/tarefa/$nome'
@@ -55,6 +56,11 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
 const BoasVindasRoute = BoasVindasRouteImport.update({
   id: '/boas-vindas',
   path: '/boas-vindas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -115,6 +121,7 @@ const ExplorarCampiRoute = ExplorarCampiRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
   '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
   '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
@@ -153,6 +161,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
   '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ajuda'
     | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ajuda'
     | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ajuda'
     | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
@@ -231,6 +243,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AjudaRoute: typeof AjudaRoute
   BoasVindasRoute: typeof BoasVindasRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   ConversaRoute: typeof ConversaRoute
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/boas-vindas'
       fullPath: '/boas-vindas'
       preLoaderRoute: typeof BoasVindasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -394,6 +414,7 @@ const ExplorarRouteWithChildren = ExplorarRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AjudaRoute: AjudaRoute,
   BoasVindasRoute: BoasVindasRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   ConversaRoute: ConversaRoute,

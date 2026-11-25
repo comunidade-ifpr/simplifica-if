@@ -95,6 +95,7 @@ const referenciaDosArquivos = (doBanco: BaseRevisaoPrevia): BaseRevisaoPrevia =>
   cncts: doBanco.cncts,
   urls: doBanco.urls,
   fichas: doBanco.fichas,
+  marcos: doBanco.marcos,
 });
 
 /** As normas por id, sem as chaves ausentes (o banco e os arquivos as omitem de modos diferentes). */

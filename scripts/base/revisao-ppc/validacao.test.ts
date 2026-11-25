@@ -35,16 +35,14 @@ afterEach(() => {
   for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
 
-/** Cópia da base da revisão e do registro de normas (normas, stubs, CNCT) num projeto temporário. */
+/** Cópia da base da revisão e do registro de normas (normas por symlink, CNCT e fichas copiados) num projeto temporário. */
 function copiaDaBase(): CaminhosRevisaoPpc {
   const raiz = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisao-ppc-"));
   temporarios.push(raiz);
-  for (const relativo of [
-    CAMINHOS.normas,
-    "base-conhecimento/catalogos/cnct/index.json",
-    CAMINHOS.topicosSecoes,
-    CAMINHOS.revisaoPpc,
-  ]) {
+  const destinoNormas = NodePath.join(raiz, CAMINHOS.normas);
+  NodeFS.mkdirSync(NodePath.dirname(destinoNormas), { recursive: true });
+  NodeFS.symlinkSync(NodePath.join(caminhos.raiz, CAMINHOS.normas), destinoNormas);
+  for (const relativo of ["base-conhecimento/catalogos/cnct/index.json", CAMINHOS.topicosSecoes, CAMINHOS.revisaoPpc]) {
     NodeFS.mkdirSync(NodePath.dirname(NodePath.join(raiz, relativo)), { recursive: true });
     NodeFS.cpSync(NodePath.join(caminhos.raiz, relativo), NodePath.join(raiz, relativo), { recursive: true });
   }
@@ -62,21 +60,6 @@ function editarJson(arquivo: string, editar: (valor: ObjetoJson) => void): void 
 describe("base da revisão de PPC real", () => {
   test("é válida", () => {
     expect(validarRevisaoPpc()).toEqual([]);
-  });
-
-  test("fichas usam topicos_tematicos, sem o campo legado", () => {
-    const topicos = new Set(
-      ((lerJson(caminhos.topicosFichas) as ObjetoJson).topicos as ObjetoJson[]).map((topico) => String(topico.id)),
-    );
-    for (const arquivo of listarJson(caminhos.fichas)) {
-      const ficha = lerJson(arquivo) as ObjetoJson;
-      expect(ficha).not.toHaveProperty("secoes_preferenciais");
-      const declarados = ficha.topicos_tematicos as string[];
-      expect(declarados.length).toBeGreaterThan(0);
-      for (const topico of declarados) expect(topicos.has(topico)).toBe(true);
-      expect(["tematico", "multitematico", "transversal", "condicional"]).toContain(String(ficha.tipo_escopo));
-      expect((ficha.ancoras_semanticas as string[]).length).toBeGreaterThan(0);
-    }
   });
 });
 
@@ -136,18 +119,15 @@ describe("validador em casos inválidos", () => {
     expect(validar(c)).toEqual([`${copia}: ficha duplicada: CT-CURR-01`]);
   });
 
-  test("tópico desconhecido e legado na ficha", () => {
+  test("tópico desconhecido na ficha", () => {
     const c = copiaDaBase();
     const arquivo = NodePath.join(c.fichas, "ct-curr-03.json");
     editarJson(arquivo, (ficha) => {
       ficha.topicos_tematicos = [...(ficha.topicos_tematicos as string[]), "inexistente"];
-      ficha.secoes_preferenciais = [];
     });
     const declarados = (lerJson(arquivo) as ObjetoJson).topicos_tematicos as string[];
     const esperados = declarados.filter((topico) => topico !== "inexistente").sort();
     expect(validar(c)).toEqual([
-      `${arquivo}: $.secoes_preferenciais: campo não permitido`,
-      "CT-CURR-03: campo legado `secoes_preferenciais` não é aceito",
       "CT-CURR-03: tópicos desconhecidos: inexistente",
       `CT-CURR-03: topicos_tematicos divergente da taxonomia (ficha=['${[...declarados].sort().join("', '")}'], ` +
         `taxonomia=['${esperados.join("', '")}'])`,
@@ -212,7 +192,7 @@ describe("validador em casos inválidos", () => {
 
   test("pasta de normas ausente", () => {
     const c = copiaDaBase();
-    NodeFS.rmSync(c.normas, { recursive: true });
+    NodeFS.unlinkSync(c.normas);
     expect(validar(c)).toEqual([`${c.normas}: pasta de normas não encontrada; checagem de vigência não executada`]);
   });
 });

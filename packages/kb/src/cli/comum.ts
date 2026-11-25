@@ -1,5 +1,5 @@
 /**
- * Peças comuns aos comandos de curadoria da CLI `kb` (`compilar`, `relacoes --propor`,
+ * Peças comuns aos comandos de curadoria da CLI `kb` (`compilar`, `propor-relacoes`,
  * `avaliar-resolvedor`, `avaliar-busca`): erros da casca, flags repetidas, saída e a layer do
  * checkout.
  *
@@ -14,18 +14,9 @@ import * as Schema from "effect/Schema";
 import * as Flag from "effect/cli/Flag";
 import * as Layers from "../layers.ts";
 
-/** Uso que os parsers de flag não pegam: `relacoes` sem `--propor`. */
-export class EntradaInvalida extends Schema.TaggedError<EntradaInvalida>()("EntradaInvalida", {
-  motivo: Schema.Literals(["sem-propor"]),
-}) {
-  override get message(): string {
-    return "relacoes só lista as propostas do regex (--propor); as relações de uma norma estão em kb ficha-norma <id>";
-  }
-}
-
-/** Falha num comando de curadoria que lê os arquivos direto (`avaliar-resolvedor`, `relacoes --propor`). */
+/** Falha num comando de curadoria que lê os arquivos direto (`avaliar-resolvedor`, `propor-relacoes`). */
 export class FalhaNaCuradoria extends Schema.TaggedError<FalhaNaCuradoria>()("FalhaNaCuradoria", {
-  comando: Schema.Literals(["avaliar-resolvedor", "relacoes --propor"]),
+  comando: Schema.Literals(["avaliar-resolvedor", "propor-relacoes"]),
   cause: Schema.Defect(),
 }) {
   override get message(): string {
@@ -61,7 +52,3 @@ export const flagJson = Flag.Boolean("json").pipe(Flag.withDescription("saída e
 /** Flag de texto opcional. */
 export const flagTexto = (nome: string, descricao: string) =>
   Flag.String(nome).pipe(Flag.withDescription(descricao), Flag.optional);
-
-/** Flag booleana, falsa por padrão. */
-export const flagLigada = (nome: string, descricao: string) =>
-  Flag.Boolean(nome).pipe(Flag.withDescription(descricao), Flag.withDefault(false));

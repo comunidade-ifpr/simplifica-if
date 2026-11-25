@@ -8,7 +8,6 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import * as NodeSqlite from "node:sqlite";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it, layer } from "@effect/vitest";
 import * as Deferred from "effect/Deferred";
@@ -38,48 +37,17 @@ import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import { conferidorDoBloco } from "../src/revisao-ppc/julgamento.ts";
 import { preparar } from "../src/revisao-ppc/preparo.ts";
 import * as Servidor from "../src/servidor.ts";
-import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, revisarAteOFim, TOKEN } from "./apoio.ts";
+import {
+  bancoComFichas,
+  cliente,
+  diretorioTemporario,
+  limparTemporarios,
+  PASTA_FICHAS,
+  revisarAteOFim,
+  TOKEN,
+} from "./apoio.ts";
 
 afterAll(limparTemporarios);
-
-const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
-/** Duas S de temas do modo rápido, duas J da matriz e uma transversal BLOQ. */
-const FICHAS = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-04", "CT-CURR-07", "CT-TRANS-03"];
-
-function bancoComFichas(): string {
-  const banco = bancoFixture();
-  const db = new NodeSqlite.DatabaseSync(banco);
-  const curso = {
-    denominacao: "Técnico em Agropecuária",
-    eixo_tecnologico: "Recursos Naturais",
-    carga_horaria_minima_horas: 1200,
-  };
-  db.prepare(
-    "INSERT INTO cnct (id, slug, denominacao, eixo_tecnologico, carga_horaria_minima_h, path, dados_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
-  ).run(
-    "cnct:tecnico-em-agropecuaria",
-    "tecnico-em-agropecuaria",
-    curso.denominacao,
-    curso.eixo_tecnologico,
-    1200,
-    "x.json",
-    JSON.stringify(curso),
-  );
-  db.prepare("DELETE FROM fichas").run();
-  for (const id of FICHAS) {
-    const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8");
-    const json = JSON.parse(texto) as { titulo: string };
-    db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
-      id,
-      json.titulo,
-      `fichas/${id}.json`,
-      JSON.stringify(json),
-      texto,
-    );
-  }
-  db.close();
-  return banco;
-}
 
 /* ============================================================ driver de teste */
 

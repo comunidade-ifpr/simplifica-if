@@ -49,6 +49,8 @@ export interface OpcoesValidacao {
    * (padrão: sim). Os testes com raiz temporária desligam.
    */
   arquivosDaBase?: boolean;
+  /** Dados institucionais já carregados, para evitar releitura quando o chamador já os carregou. */
+  carregados?: ReturnType<typeof carregarDadosInstitucionais>;
 }
 
 export function validarDadosInstitucionais(
@@ -59,7 +61,7 @@ export function validarDadosInstitucionais(
   erros: string[];
   total: number;
 } {
-  const carregados = carregarDadosInstitucionais(raiz);
+  const carregados = opcoes.carregados ?? carregarDadosInstitucionais(raiz);
   if (carregados.erros.length) return { erros: carregados.erros, total: 0 };
   const { dados } = carregados;
   const auditoria = [...auditarBase(paraDominio(dados)), ...cnctInexistentes(dados.cursos, idsCnct(raizBase))];

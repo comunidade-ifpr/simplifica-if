@@ -29,7 +29,7 @@ import {
   trecho,
   type Verificador,
 } from "./comum.ts";
-import { MARCOS, marcoDa } from "./vigencia.ts";
+import { marcoDa } from "./vigencia.ts";
 
 const DCNEM = "br/cne-ceb/res/2024/2";
 const LDB = "br/lei/1996/9394";
@@ -49,8 +49,9 @@ function primeiraCitacao(ppc: PpcPreparado, id: string, linhas?: ReadonlySet<num
  * A norma de um marco em vigor: a mais recente da linha já vigente. A que aguarda publicação (a Res.
  * CNE/CP nº 2/2026) ainda não conta, mas citá-la junto com a vigente, ou no lugar dela, não falta.
  */
-function vigenteDoMarco(base: BaseVerificacao, marco: string): { id: string; aceitas: string[] } {
-  const linha = MARCOS.find((m) => m.id === marco)!.linha;
+function vigenteDoMarco(base: BaseVerificacao, marco: string): { id: string; aceitas: string[] } | undefined {
+  const linha = base.marcos.find((m) => m.id === marco)?.linha;
+  if (!linha || linha.length === 0) return undefined;
   const id = [...linha].reverse().find((n) => base.vigencia(n).status !== "ainda-nao-vigente") ?? linha.at(-1)!;
   return { id, aceitas: linha.slice(linha.indexOf(id)) };
 }
@@ -72,7 +73,7 @@ const evidenciaDe = (ppc: PpcPreparado, citacao: { linha: number; trecho: string
  * eleva a `nao_atende`.
  */
 function ausenciaDoMarco(base: BaseVerificacao, id: string, ficha: string, mensagem: string): Apontamento {
-  const marco = marcoDa(id, base.relacoes);
+  const marco = marcoDa(id, base.relacoes, base.marcos);
   const responsavel = marco?.responsavel ?? "CT-SUP-12";
   return responsavel === ficha
     ? { estado: "nao_atende", mensagem, trechos: [], fontes: [linkNorma(id)] }
@@ -103,10 +104,12 @@ export const normasRevogadas: Verificador = {
     // Marcos da forma de oferta: a vigente não citada, quando nenhuma anterior da linha é citada
     // (citada a anterior, o apontamento da revogada já trata o caso).
     const citadas = citacoesPorAto(ppc.citacoes);
-    for (const marco of MARCOS.filter((m) => m.id === "dcn_ept" || (m.id === "dcnem" && base.forma === "integrado"))) {
+    for (const marco of base.marcos.filter(
+      (m) => m.id === "dcn_ept" || (m.id === "dcnem" && base.forma === "integrado"),
+    )) {
       // a mais recente já em vigor: a que aguarda publicação ainda não é a norma do marco
-      const vigente = vigenteDoMarco(base, marco.id).id;
-      if (marco.linha.some((n) => citadas.has(n))) continue;
+      const vigente = vigenteDoMarco(base, marco.id)?.id;
+      if (!vigente || marco.linha.some((n) => citadas.has(n))) continue;
       apontamentos.push(
         ausenciaDoMarco(
           base,
@@ -149,10 +152,10 @@ export const baseLegalIdentidade: Verificador = {
       apontamentoRevogada(ppc, base, norma, this.ficha),
     );
     const dcnEpt = vigenteDoMarco(base, "dcn_ept");
-    const exigidas = base.forma === "integrado" ? [dcnEpt.id, DCNEM] : [dcnEpt.id];
+    const exigidas = [...(dcnEpt ? [dcnEpt.id] : []), ...(base.forma === "integrado" ? [DCNEM] : [])];
     const evidencias: Trecho[] = [];
     for (const id of exigidas) {
-      const citacao = id === dcnEpt.id ? citacaoDoMarco(ppc, dcnEpt.aceitas) : primeiraCitacao(ppc, id);
+      const citacao = dcnEpt && id === dcnEpt.id ? citacaoDoMarco(ppc, dcnEpt.aceitas) : primeiraCitacao(ppc, id);
       if (citacao) evidencias.push(...evidenciaDe(ppc, citacao));
       else
         apontamentos.push(
@@ -160,7 +163,7 @@ export const baseLegalIdentidade: Verificador = {
             base,
             id,
             this.ficha,
-            `O PPC não cita ${titulo(base, id)}, ${id === dcnEpt.id ? NOME_DO_MARCO["dcn_ept"] : NOME_DO_MARCO["dcnem"]}.`,
+            `O PPC não cita ${titulo(base, id)}, ${dcnEpt && id === dcnEpt.id ? NOME_DO_MARCO["dcn_ept"] : NOME_DO_MARCO["dcnem"]}.`,
           ),
         );
     }
@@ -190,7 +193,7 @@ export const marcosNasReferencias: Verificador = {
   verificar(ppc, base) {
     const linhas = new Set(linhasDasSecoes(ppc, new Set(["referencias"])));
     const dcnEpt = vigenteDoMarco(base, "dcn_ept");
-    const exigidas = base.forma === "integrado" ? [dcnEpt.id, DCNEM, LDB, LEI_14945] : [dcnEpt.id];
+    const exigidas = [...(dcnEpt ? [dcnEpt.id] : []), ...(base.forma === "integrado" ? [DCNEM, LDB, LEI_14945] : [])];
     const fontes = exigidas.map(linkNorma);
     if (!linhas.size)
       return resultado(
@@ -208,7 +211,7 @@ export const marcosNasReferencias: Verificador = {
     const apontamentos: Apontamento[] = [];
     const evidencias: Trecho[] = [];
     for (const id of exigidas) {
-      const aceitas = id === dcnEpt.id ? dcnEpt.aceitas : [id];
+      const aceitas = dcnEpt && id === dcnEpt.id ? dcnEpt.aceitas : [id];
       const nasReferencias = citacaoDoMarco(ppc, aceitas, linhas);
       if (nasReferencias) {
         evidencias.push(...evidenciaDe(ppc, nasReferencias));
@@ -223,7 +226,7 @@ export const marcosNasReferencias: Verificador = {
               trechos: evidenciaDe(ppc, noTexto),
               fontes: [linkNorma(id)],
             }
-          : id === dcnEpt.id || id === DCNEM
+          : (dcnEpt && id === dcnEpt.id) || id === DCNEM
             ? ausenciaDoMarco(base, id, this.ficha, `A seção de referências não traz ${titulo(base, id)}.`)
             : {
                 estado: id === LEI_14945 ? "a_conferir" : "nao_atende",
@@ -233,7 +236,7 @@ export const marcosNasReferencias: Verificador = {
               },
       );
     }
-    const faltantes = normasForaDasReferencias(ppc, base, linhas, new Set([...exigidas, ...dcnEpt.aceitas]));
+    const faltantes = normasForaDasReferencias(ppc, base, linhas, new Set([...exigidas, ...(dcnEpt?.aceitas ?? [])]));
     if (faltantes) apontamentos.push(faltantes);
     return resultado(this, apontamentos, {
       estado: "atende",
@@ -247,9 +250,6 @@ export const marcosNasReferencias: Verificador = {
 /** Quantas normas a mensagem nomeia; as demais entram na contagem. */
 const NORMAS_NA_MENSAGEM = 6;
 
-/** Normas superadas num marco (todas da linha, menos a última): citá-las é com CT-SUP-12, não aqui. */
-const SUPERADAS_EM_MARCO = new Set(MARCOS.flatMap((m) => m.linha.slice(0, -1)));
-
 /**
  * As normas da base citadas com segurança fora da seção de referências e ausentes dela (nem com
  * citação incerta), sem as externas (ABNT), as fora do registro, as revogadas e as superadas num
@@ -262,11 +262,13 @@ function normasForaDasReferencias(
   linhas: ReadonlySet<number>,
   jaCobertas: ReadonlySet<string>,
 ): Apontamento | null {
+  /** Normas superadas num marco (todas da linha, menos a última): citá-las é com CT-SUP-12, não aqui. */
+  const superadasEmMarco = new Set(base.marcos.flatMap((m) => m.linha.slice(0, -1)));
   const faltantes: { id: string; linha: number; trecho: string }[] = [];
   for (const [id, lista] of citacoesPorAto(ppc.citacoes)) {
     if (jaCobertas.has(id) || lista.some((c) => linhas.has(c.linha))) continue;
     const situacao = base.registro.obter(id)?.situacao;
-    if (situacao === undefined || situacao === "externo" || SUPERADAS_EM_MARCO.has(id)) continue;
+    if (situacao === undefined || situacao === "externo" || superadasEmMarco.has(id)) continue;
     if (base.vigencia(id).status === "revogada") continue;
     const segura = lista.find(citacaoSegura);
     if (segura) faltantes.push({ id, linha: segura.linha, trecho: segura.trecho });

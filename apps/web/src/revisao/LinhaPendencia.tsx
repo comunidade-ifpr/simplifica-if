@@ -64,7 +64,7 @@ export function LinhaPendencia({
   const pedeArquivo =
     typeof estado.origemArquivoDeNovo === "object" &&
     estado.origemArquivoDeNovo.pendencia === viva.chave &&
-    ponteDesktop()?.escolherDocx !== undefined;
+    ponteDesktop() !== undefined;
   const provider = providerDaRevisao(estado);
 
   // Fechada a linha, os painéis abertos nela fecham também.

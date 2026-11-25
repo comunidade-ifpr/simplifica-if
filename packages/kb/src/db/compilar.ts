@@ -43,14 +43,6 @@ import { compararTexto } from "../texto.ts";
 import { DDL, VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, hashConteudo, hashLista } from "./fontes.ts";
 import {
-  esquemaLinhaCorrespondencia,
-  esquemaLinhaDispositivo,
-  esquemaLinhaRelacao,
-  esquemaLinhaTabelaCorrespondencia,
-  esquemaLinhaTransicao,
-  esquemaLinhaVigencia,
-} from "./fontes-normativas.ts";
-import {
   linhasCorrespondencias,
   linhasDispositivos,
   linhasRelacoes,
@@ -177,21 +169,13 @@ const esquemaMarcos = solto({
   ),
 });
 
-// Decodificadores compilados uma vez. Os das linhas normativas recusam chaves extras: as linhas vão
-// inteiras para o INSERT, e uma chave a mais viraria uma coluna inexistente.
+// Decodificadores compilados uma vez.
 const decodificarSecaoJsonl = Schema.decodeUnknownSync(esquemaSecaoJsonl);
 const decodificarCnctIndice = Schema.decodeUnknownSync(esquemaCnctIndice);
 const decodificarFicha = Schema.decodeUnknownSync(esquemaFicha);
 const decodificarTopicosBrutos = Schema.decodeUnknownSync(esquemaTopicosBrutos);
 const decodificarTopicos = Schema.decodeUnknownSync(esquemaTopicos);
 const decodificarMarcos = Schema.decodeUnknownSync(esquemaMarcos);
-const estrito = { onExcessProperty: "error" } as const;
-const decodificarLinhaDispositivo = Schema.decodeUnknownSync(esquemaLinhaDispositivo, estrito);
-const decodificarLinhaRelacao = Schema.decodeUnknownSync(esquemaLinhaRelacao, estrito);
-const decodificarLinhaVigencia = Schema.decodeUnknownSync(esquemaLinhaVigencia, estrito);
-const decodificarLinhaTransicao = Schema.decodeUnknownSync(esquemaLinhaTransicao, estrito);
-const decodificarLinhaTabelaCorrespondencia = Schema.decodeUnknownSync(esquemaLinhaTabelaCorrespondencia, estrito);
-const decodificarLinhaCorrespondencia = Schema.decodeUnknownSync(esquemaLinhaCorrespondencia, estrito);
 
 /* ------------------------------------------------------------------- papel */
 
@@ -960,8 +944,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
 
     /* ---------- dispositivos (com FTS), relações, vigências, transições, correspondências */
     const insFtsDispositivo = db.prepare("INSERT INTO dispositivos_fts (rowid, texto, radicais) VALUES (?, ?, ?)");
-    for (const linha of linhasDispositivos(raiz)) {
-      const { caput, estrutura, notas, ...d } = decodificarLinhaDispositivo(linha);
+    for (const { caput, estrutura, notas, ...d } of linhasDispositivos(raiz)) {
       const rowid = ins.inserir("dispositivos", {
         ...d,
         caput_json: json(caput),
@@ -970,14 +953,13 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
       insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
     }
-    for (const linha of linhasRelacoes(raiz)) ins.inserir("relacoes", decodificarLinhaRelacao(linha));
-    for (const linha of linhasVigencias(raiz)) ins.inserir("vigencias", decodificarLinhaVigencia(linha));
-    for (const linha of linhasTransicoes(raiz)) ins.inserir("transicoes", decodificarLinhaTransicao(linha));
+    for (const linha of linhasRelacoes(raiz)) ins.inserir("relacoes", linha);
+    for (const linha of linhasVigencias(raiz)) ins.inserir("vigencias", linha);
+    for (const linha of linhasTransicoes(raiz)) ins.inserir("transicoes", linha);
     for (const linha of linhasTabelasCorrespondencia(raiz)) {
-      ins.inserir("correspondencias_tabelas", decodificarLinhaTabelaCorrespondencia(linha));
+      ins.inserir("correspondencias_tabelas", linha);
     }
-    for (const linha of linhasCorrespondencias(raiz)) {
-      const { destino, ...c } = decodificarLinhaCorrespondencia(linha);
+    for (const { destino, ...c } of linhasCorrespondencias(raiz)) {
       ins.inserir("correspondencias", { ...c, destino_json: json(destino) });
     }
     // citações entre normas (para o impacto): as mesmas que o impacto extrai dos arquivos

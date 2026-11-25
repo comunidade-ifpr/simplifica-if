@@ -12,7 +12,7 @@ import {
 } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { RE_PLANILHA_GOOGLE, RE_URL_ASSINADA, RE_URL_SESSAO_SEI } from "../../dados/urls.ts";
 import { ehArquivo, listarDiretorio, listarRecursivo } from "../caminhos.ts";
-import { analisarFrontMatter, DIRETORIOS_POR_TIPO, ehErroFrontMatter, type FrontMatter } from "../front-matter.ts";
+import { DIRETORIOS_POR_TIPO, type FrontMatter } from "../front-matter.ts";
 import { representar, textoDe } from "@simplifica-if/kb/json";
 import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estrutura";
 import { artigosInexistentes } from "@simplifica-if/kb/normas/pontos-chave";
@@ -100,6 +100,7 @@ export function validarTextoPublico(relativo: string, texto: string): string[] {
 /** Nenhum arquivo de texto da base pode conter caminhos locais, URL pré-assinada, dados pessoais nem URLs internas. */
 export function validarPadroesLocais(ctx: Contexto): string[] {
   const erros: string[] = [];
+  const prefixoNormas = `${ctx.c.normas}${NodePath.sep}`;
   for (const caminho of listarRecursivo(ctx.c.raiz)) {
     const partes = ctx.rel(caminho).split(NodePath.sep);
     if (partes.some((parte) => DIRETORIOS_IGNORADOS_PADROES_LOCAIS.has(parte)) || !ehArquivo(caminho)) continue;
@@ -109,6 +110,9 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
     } catch (erro) {
       if (erro instanceof ErroDecodificacao) continue;
       throw erro;
+    }
+    if (caminho.startsWith(prefixoNormas) && caminho.endsWith(".md")) {
+      ctx.registrarTextoNorma(caminho, texto);
     }
     erros.push(...validarTextoPublico(ctx.rel(caminho), texto));
   }
@@ -133,16 +137,9 @@ export function validarReadme(ctx: Contexto): string[] {
 export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
   const r = ctx.rel(caminho);
   const erros: string[] = [];
-  const texto = lerTexto(caminho);
-
-  let meta: FrontMatter;
-  let corpo: string;
-  try {
-    ({ meta, corpo } = analisarFrontMatter(texto, r));
-  } catch (erro) {
-    if (ehErroFrontMatter(erro)) return [erro.message];
-    throw erro;
-  }
+  const norma = ctx.lerNorma(caminho);
+  if (!norma.ok) return [norma.erro];
+  const { texto, meta, corpo } = norma;
 
   // o corpo é só o texto da norma: resumo, notas e orientações são campos do front matter
   for (const titulo of corpo.matchAll(/^#{1,3} +(Resumo|Notas?|Observaç(?:ão|ões)|Referências|Texto\b[^\n]*)\s*$/gim)) {
@@ -216,13 +213,9 @@ export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegist
   const erros: string[] = [];
   const porId = new Map<string, string>();
   for (const caminho of caminhos) {
-    let meta: FrontMatter;
-    try {
-      ({ meta } = analisarFrontMatter(lerTexto(caminho), ctx.rel(caminho)));
-    } catch (erro) {
-      if (ehErroFrontMatter(erro)) continue;
-      throw erro;
-    }
+    const norma = ctx.lerNorma(caminho);
+    if (!norma.ok) continue;
+    const { meta } = norma;
     if (typeof meta.id !== "string") continue;
     const anterior = porId.get(meta.id);
     if (anterior !== undefined) erros.push(`${ctx.rel(caminho)}: id duplicado ${meta.id} (também em ${anterior})`);
@@ -254,18 +247,11 @@ export function validarStubs(ctx: Contexto): { erros: string[]; ids: Set<string>
  * citados em `pontos_chave` existem na norma.
  */
 export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] {
-  const texto = lerTexto(caminho);
-  let id: string;
-  let meta: FrontMatter;
-  try {
-    ({ meta } = analisarFrontMatter(texto, ctx.rel(caminho)));
-    if (typeof meta.id !== "string") return [];
-    id = meta.id;
-  } catch (erro) {
-    if (ehErroFrontMatter(erro)) return [];
-    throw erro;
-  }
-  const estrutura = analisarNorma(texto, { id, path: ctx.rel(caminho) });
+  const norma = ctx.lerNorma(caminho);
+  if (!norma.ok) return [];
+  const { texto, meta } = norma;
+  if (typeof meta.id !== "string") return [];
+  const estrutura = analisarNorma(texto, { id: meta.id, path: ctx.rel(caminho) });
   const erros = estrutura.problemas.filter((problema) => !problema.startsWith("aviso:"));
   // o artigo citado no parêntese final de um ponto-chave existe na norma
   for (const campo of ["pontos_chave"] as const) {

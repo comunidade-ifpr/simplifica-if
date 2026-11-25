@@ -1,6 +1,6 @@
 /**
  * A barra de título do desktop: a janela não tem a do sistema (`apps/desktop/src/janela.ts`), e o
- * cabeçalho verde faz as vezes dela. Ele vira região de arrastar (`.drag-region` no `index.css`) e
+ * cabeçalho faz as vezes dela. Ele vira região de arrastar (`.drag-region` no `index.css`) e
  * reserva o lugar dos botões do sistema: os semáforos à esquerda no macOS (menos em tela cheia, quando
  * somem), o overlay à direita no Windows e no Linux. No navegador, nada muda.
  */

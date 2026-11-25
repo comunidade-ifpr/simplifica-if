@@ -9,8 +9,8 @@
  * credenciais (no desktop, de novo à ponte), compra um ingresso novo e abre outro socket.
  *
  * As chamadas feitas enquanto a conexão está fora esperam a próxima (`cliente`). As que estavam em
- * andamento quando ela caiu falham com `RpcClientError`; a conversa no servidor continua por 2 minutos
- * (`TOLERANCIA_ORFA`) e é adotada pelo cliente novo na próxima chamada.
+ * andamento quando ela caiu falham com `RpcClientError`; a conversa continua gravada no servidor e
+ * volta a ser acompanhada (`conversa.acompanhar`) na reconexão.
  */
 import * as Cause from "effect/Cause";
 import * as Clock from "effect/Clock";

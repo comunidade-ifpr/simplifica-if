@@ -4,13 +4,7 @@
  * pedido é ele.
  */
 import { contextBridge, ipcRenderer, webUtils } from "electron";
-import {
-  CANAIS,
-  type CredenciaisServidor,
-  type EstadoAtualizacaoApp,
-  NOME_PONTE,
-  type PonteDesktop,
-} from "@simplifica-if/contratos-app/ponte";
+import { CANAIS, type CredenciaisServidor, NOME_PONTE, type PonteDesktop } from "@simplifica-if/contratos-app/ponte";
 
 const ponte: PonteDesktop = {
   conexao: () => ipcRenderer.invoke(CANAIS.conexao) as Promise<CredenciaisServidor>,
@@ -32,11 +26,6 @@ const ponte: PonteDesktop = {
   },
   registrarErro: async (texto: string) => {
     await ipcRenderer.invoke(CANAIS.registrarErro, texto);
-  },
-  atualizacaoApp: () => ipcRenderer.invoke(CANAIS.atualizacaoApp) as Promise<EstadoAtualizacaoApp>,
-  procurarAtualizacaoApp: () => ipcRenderer.invoke(CANAIS.procurarAtualizacaoApp) as Promise<EstadoAtualizacaoApp>,
-  instalarAtualizacaoApp: async () => {
-    await ipcRenderer.invoke(CANAIS.instalarAtualizacaoApp);
   },
   escolherAnexo: (extensoes?: ReadonlyArray<string>) =>
     ipcRenderer.invoke(CANAIS.escolherAnexo, extensoes === undefined ? [] : [...extensoes]) as Promise<string | null>,

@@ -10,7 +10,7 @@
  *   de mais uma entrada).
  */
 import * as NodeUtil from "node:util";
-import * as NodeWorker from "node:worker_threads";
+import * as NodeWorkerThreads from "node:worker_threads";
 import * as NodeZlib from "node:zlib";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import * as Effect from "effect/Effect";
@@ -70,7 +70,7 @@ export const validarBancoEmWorker = (
   esperado: { versao: string; dataReferencia?: string },
 ): Effect.Effect<InfoBanco, PacoteInvalido> =>
   Effect.callback<InfoBanco, PacoteInvalido>((resume) => {
-    const worker = new NodeWorker.Worker(CODIGO_WORKER, {
+    const worker = new NodeWorkerThreads.Worker(CODIGO_WORKER, {
       eval: true,
       workerData: { caminho, esperado, versaoEsquema: VERSAO_ESQUEMA },
     });

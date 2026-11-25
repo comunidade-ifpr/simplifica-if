@@ -23,7 +23,6 @@ import { fichaCurso } from "../src/ferramentas/ficha-curso.ts";
 import { fichaNorma } from "../src/ferramentas/ficha-norma.ts";
 import { lerDispositivos } from "../src/ferramentas/ler-dispositivos.ts";
 import { lerSecao } from "../src/ferramentas/ler-secao.ts";
-import { listarCursos } from "../src/ferramentas/listar-cursos.ts";
 import { sobreABase } from "../src/ferramentas/sobre-a-base.ts";
 import { lerRecurso } from "../src/recursos/recursos.ts";
 import { GrupoLeitura } from "../src/grupo-leitura.ts";
@@ -107,15 +106,6 @@ describe("GrupoLeitura: mesma resposta que a ferramenta MCP", () => {
       const id = `${PPC_INFORMATICA}#estagio_praticas-1`;
       const r = yield* mesmaResposta(lerSecao, { id }, criarBancoFixturePpcs(), (c) => c.lerSecao({ id }));
       expect(r.dados.secao.id).toBe(id);
-    }),
-  );
-
-  it.effect("listarCursos ↔ listar_cursos (com página)", () =>
-    Effect.gen(function* () {
-      const r = yield* mesmaResposta(listarCursos, { limite: 1 }, criarBancoFixturePpcs(), (c) =>
-        c.listarCursos({ limite: 1 }),
-      );
-      expect(r.pagina?.cursor).toBeDefined();
     }),
   );
 

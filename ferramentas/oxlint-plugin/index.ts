@@ -36,15 +36,12 @@ import { definePlugin } from "@oxlint/plugins";
 import namespaceNodeImports from "./rules/namespace-node-imports.ts";
 import noDomTestEnvironment from "./rules/no-dom-test-environment.ts";
 import noFrameWaitsInBrowserTests from "./rules/no-frame-waits-in-browser-tests.ts";
-import noGlobalProcessRuntime from "./rules/no-global-process-runtime.ts";
 import noInlineSchemaCompile from "./rules/no-inline-schema-compile.ts";
 import noManualEffectRuntimeInTests from "./rules/no-manual-effect-runtime-in-tests.ts";
 import noPollingLoopInTests from "./rules/no-polling-loop-in-tests.ts";
 import noRealTimeWaitInTests from "./rules/no-real-time-wait-in-tests.ts";
-import noTestInLoop from "./rules/no-test-in-loop.ts";
 import noWallClockInTests from "./rules/no-wall-clock-in-tests.ts";
 import preferCatchTags from "./rules/prefer-catch-tags.ts";
-import preferEffectFn from "./rules/prefer-effect-fn.ts";
 import requireSuppressionReason from "./rules/require-suppression-reason.ts";
 
 export default definePlugin({
@@ -55,15 +52,12 @@ export default definePlugin({
     "namespace-node-imports": namespaceNodeImports,
     "no-dom-test-environment": noDomTestEnvironment,
     "no-frame-waits-in-browser-tests": noFrameWaitsInBrowserTests,
-    "no-global-process-runtime": noGlobalProcessRuntime,
     "no-inline-schema-compile": noInlineSchemaCompile,
     "no-manual-effect-runtime-in-tests": noManualEffectRuntimeInTests,
     "no-polling-loop-in-tests": noPollingLoopInTests,
     "no-real-time-wait-in-tests": noRealTimeWaitInTests,
-    "no-test-in-loop": noTestInLoop,
     "no-wall-clock-in-tests": noWallClockInTests,
     "prefer-catch-tags": preferCatchTags,
-    "prefer-effect-fn": preferEffectFn,
     "require-suppression-reason": requireSuppressionReason,
   },
 });

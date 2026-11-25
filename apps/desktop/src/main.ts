@@ -21,16 +21,9 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { app, BrowserWindow, dialog, Menu, nativeTheme, session, shell, type WebContents } from "electron";
 import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
-import { autoUpdater } from "electron-updater";
-import {
-  feedDoCanal,
-  iniciarAtualizacaoApp,
-  motivoDesligado,
-  proxyParaServidor,
-  type ControleAtualizacaoApp,
-} from "./atualizacaoApp.ts";
 import { resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
 import { registrarIpc } from "./ipc.ts";
+import { proxyParaServidor } from "./proxy.ts";
 import { VARIAVEL_SEM_REINICIO, vigiarCodigoDoServidor } from "./vigiaDev.ts";
 import { corFundoJanela, opcoesBarraTitulo } from "./janela.ts";
 import { CANAIS, type CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
@@ -120,7 +113,7 @@ async function ambienteComProxy(): Promise<NodeJS.ProcessEnv> {
   const feed = process.env[VARIAVEIS.feed]?.trim() || ATUALIZACAO_FABRICA.feed;
   const url =
     configuracao.pastaAtualizacao !== undefined && feed !== null
-      ? new URL("x", feedDoCanal(feed, canalGravado())).href
+      ? new URL(feed.replaceAll("{canal}", ATUALIZACAO_FABRICA.canal)).href
       : "https://storage.googleapis.com/";
   try {
     const proxy = proxyParaServidor(await session.defaultSession.resolveProxy(url), process.env);
@@ -177,42 +170,26 @@ function portaAtual(): number | undefined {
   return servidor?.linha.porta;
 }
 
-/** Erro do servidor: mostra o motivo e oferece reiniciar (ou só sair quando o banco é incompatível). */
+/** Erro do servidor: mostra o motivo e oferece reiniciar ou sair. */
 async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> {
   if (saindo) return;
-  const combinado = `${mensagem}\n${detalhe}`;
-  const erroBanco = /BancoIncompativel|MigracaoViolouIntegridade|MigrationError/.test(combinado);
-  const opcoes = erroBanco
-    ? {
-        type: "error" as const,
-        title: NOME,
-        message: "Não foi possível abrir o banco de dados local do Simplifica IF.",
-        detail: [
-          "O banco pode ter sido atualizado por uma versão mais nova do app ou falhou ao atualizar. Atualize o Simplifica IF ou peça ajuda com os detalhes abaixo.",
-          `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
-        ].join("\n\n"),
-        buttons: ["Sair"],
-        defaultId: 0,
-        cancelId: 0,
-        noLink: true,
-      }
-    : {
-        type: "error" as const,
-        title: NOME,
-        message: "O Simplifica IF parou de funcionar por um problema interno.",
-        // A frase para a pessoa primeiro; o texto técnico (em inglês, às vezes) depois, para quem for ajudar.
-        detail: [
-          "Clique em Reiniciar para continuar. Se o problema se repetir, feche o app e abra de novo.",
-          `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
-        ].join("\n\n"),
-        buttons: ["Reiniciar", "Sair"],
-        defaultId: 0,
-        cancelId: 1,
-        noLink: true,
-      };
+  const opcoes = {
+    type: "error" as const,
+    title: NOME,
+    message: "O Simplifica IF parou de funcionar por um problema interno.",
+    // A frase para a pessoa primeiro; o texto técnico (em inglês, às vezes) depois, para quem for ajudar.
+    detail: [
+      "Clique em Reiniciar para continuar. Se o problema se repetir, feche o app e abra de novo.",
+      `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
+    ].join("\n\n"),
+    buttons: ["Reiniciar", "Sair"],
+    defaultId: 0,
+    cancelId: 1,
+    noLink: true,
+  };
   const { response } =
     janela && !janela.isDestroyed() ? await dialog.showMessageBox(janela, opcoes) : await dialog.showMessageBox(opcoes);
-  if (erroBanco || response !== 0) {
+  if (response !== 0) {
     app.quit();
     return;
   }
@@ -339,52 +316,7 @@ function sincronizarAparencia(): void {
   if (titleBarOverlay !== undefined) janela.setTitleBarOverlay(titleBarOverlay);
 }
 
-/* ============================================================ atualização (M1.10) */
-
-let atualizacaoApp: ControleAtualizacaoApp | undefined;
-
-/** O canal gravado pela seção "Atualizações" (o servidor grava em `atualizacao.json` da pasta do app). */
-function canalGravado(): string {
-  try {
-    const lido = JSON.parse(
-      NodeFS.readFileSync(NodePath.join(app.getPath("userData"), "atualizacao.json"), "utf8"),
-    ) as {
-      canal?: unknown;
-    };
-    return lido.canal === "estavel" ? "estavel" : ATUALIZACAO_FABRICA.canal;
-  } catch {
-    return ATUALIZACAO_FABRICA.canal;
-  }
-}
-
-function ligarAtualizacaoApp(): void {
-  const feed = process.env[VARIAVEIS.feed]?.trim() || ATUALIZACAO_FABRICA.feed;
-  const motivo = motivoDesligado({
-    empacotado: app.isPackaged,
-    plataforma: process.platform,
-    feed,
-    modo: ATUALIZACAO_FABRICA.app,
-    assinado: false,
-    desligadaPorAmbiente: (process.env.SIMPLIFICA_SEM_ATUALIZACAO_APP ?? "") !== "",
-  });
-  registrar(`atualização do app: ${motivo ?? "ligada"}`);
-  atualizacaoApp = iniciarAtualizacaoApp({
-    versao: app.getVersion(),
-    motivo,
-    feed,
-    canal: canalGravado(),
-    atualizador: () => autoUpdater,
-    registrar,
-    antesDeInstalar: async () => {
-      saindo = true;
-      pararVigia?.();
-      await reinicio.ocioso();
-      const atual = servidor;
-      if (atual !== undefined) registrar(`servidor encerrado para instalar (${await atual.encerrar()})`);
-      encerrado = true;
-    },
-  });
-}
+/* ============================================================ reinício do servidor */
 
 /** Encerra o servidor atual, se houver, e sobe outro (a troca da base acontece na abertura dele). */
 async function trocarServidor(): Promise<void> {
@@ -421,8 +353,7 @@ registrarIpc({
   conexaoAtual: () => conexaoAtual,
   tokenDesktop: () => tokenDesktop,
   reiniciarServidor,
-  atualizacaoApp: () => atualizacaoApp,
-  // Um teto defensivo: a interface já limita, mas uma janela em laço não enche o log.
+  // Um teto defensivo: uma janela em laço não enche o log.
   registrarInterface: limitarRegistros({
     maximo: 120,
     janelaMs: 60_000,
@@ -493,7 +424,6 @@ if (!app.requestSingleInstanceLock()) {
         `skills: ${configuracao.pastaSkills ?? "nenhuma"}; atualização: ${configuracao.pastaAtualizacao ?? "desligada"}`,
     );
     await reinicio.pedir();
-    ligarAtualizacaoApp();
     if (DESENVOLVIMENTO && process.env[VARIAVEL_SEM_REINICIO] !== "1" && !saindo)
       pararVigia = vigiarCodigoDoServidor({
         raizRepositorio: RAIZ_REPOSITORIO,

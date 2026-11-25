@@ -1,6 +1,6 @@
 # @simplifica-if/atualizacao
 
-Atualização nos três ritmos (M1.10, plano "Atualização: três ritmos"): a base e as skills pelo manifesto do canal, assinado com minisign; o app pelo `electron-updater` (em `apps/desktop/src/atualizacaoApp.ts`). Nada aqui depende de binário externo: zstd pelo `node:zlib`, Ed25519 pelo `node:crypto`, BLAKE2b pelo `@noble/hashes`.
+Atualização da base e das skills pelo manifesto do canal (M1.10), assinado com minisign. Nada aqui depende de binário externo: zstd pelo `node:zlib`, Ed25519 pelo `node:crypto`, BLAKE2b pelo `@noble/hashes`.
 
 ## Módulos
 
@@ -88,7 +88,6 @@ Um release fixo por canal, e não `latest/download/`: o `latest` é um só para 
 2. **Chave de produção.** Num computador da fábrica: `SIMPLIFICA_MINISIGN_SENHA=… pnpm fabrica gerar-chave --saida ~/.simplifica-fabrica`. Guarde a chave secreta e a senha fora do repositório (cofre de senhas da equipe, com cópia de segurança); a perda da chave obriga a um app novo com outra chave pública. Copie a linha base64 que o comando imprime para `chavePublica` em `politica-atualizacao.ts`.
 3. **Primeira publicação.** `pnpm fabrica canal --repositorio dono/repo`, depois `publicar … --executar` (o `gh` precisa de login com permissão de escrever releases).
 4. **App.** Gere os instaladores com a política preenchida (`pnpm --filter @simplifica-if/desktop dist`). A base e as skills passam a se atualizar sozinhas.
-5. **Assinatura de código (decisão em aberto 1).** A atualização do app fica desligada enquanto o app não for assinado (`app: "se-assinado"`). Para ligar:
-   - macOS: certificado Developer ID Application, `mac.identity` no `empacotar.ts`, `hardenedRuntime: true`, notarização (`notarize` do electron-builder com `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`). Sem isso, o Squirrel.Mac recusa instalar a versão nova; com isso, o `assinatura.json` do empacotamento passa a `true` (`CSC_LINK`);
-   - Windows: certificado (ou Azure Trusted Signing, como o T3) e `win.signtoolOptions`/`azureSignOptions`. **Antes de ligar o updater no Windows, é obrigatório o `publisherName`** (em `win.signtoolOptions.publisherName` ou `azureSignOptions.publisherName`, como o T3): é com ele que o `electron-updater` confere a assinatura do instalador novo; sem ele, aceitaria um instalador de qualquer assinante. O NSIS atualiza sem assinatura, mas o SmartScreen avisa a cada versão;
-   - depois, `pnpm fabrica publicar-app` a cada versão do app.
+5. **Assinatura de código (decisão em aberto 1).** Para assinar os instaladores e, no futuro, ligar a atualização automática do app:
+   - macOS: certificado Developer ID Application, `mac.identity` no `empacotar.ts`, `hardenedRuntime: true`, notarização (`notarize` do electron-builder com `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`);
+   - Windows: certificado (ou Azure Trusted Signing, como o T3) e `win.signtoolOptions`/`azureSignOptions` (com `publisherName` antes de ligar auto-update).

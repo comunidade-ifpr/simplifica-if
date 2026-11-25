@@ -251,7 +251,7 @@ function ErroDaLeitura() {
   const [estado, revisao] = useRevisao();
   const erro = estado.ia.erro;
   if (erro === undefined) return null;
-  const podeEscolher = estado.origemArquivoDeNovo === "ia" && ponteDesktop()?.escolherDocx !== undefined;
+  const podeEscolher = estado.origemArquivoDeNovo === "ia" && ponteDesktop() !== undefined;
   return (
     <>
       <AvisoErro erro={erro} />

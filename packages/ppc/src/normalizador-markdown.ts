@@ -7,7 +7,6 @@
  * (classes Unicode).
  */
 import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/regex";
-import { casefold } from "@simplifica-if/kb/primitivas/texto";
 import { aparar, apararCaracteres, apararFim, contarCaracteres, RE_TEM_ESPACO } from "@simplifica-if/kb/texto";
 
 const r = String.raw;
@@ -154,7 +153,7 @@ export function removerSumario(linhas: string[]): string[] {
 
 function ehTituloSumario(conteudoOriginal: string): boolean {
   const conteudo = aparar(sub(r`^#{1,6}\s+`, "", conteudoOriginal).replaceAll("*", ""));
-  return TITULOS_SUMARIO.has(casefold(conteudo));
+  return TITULOS_SUMARIO.has(conteudo.toLowerCase());
 }
 
 function linhaContemTituloSumario(conteudo: string): boolean {
@@ -316,7 +315,7 @@ function ehRuidoEmBlocoSumario(conteudo: string): boolean {
   if (fullmatch(r`\d{1,3}`, texto)) return true;
   if (fullmatch(r`ass\.?:\s*(<br>)?`, texto, { ignoreCase: true })) return true;
   if (fullmatch(r`\d+\s+de\s+\d+`, texto, { ignoreCase: true })) return true;
-  const dobrado = casefold(texto);
+  const dobrado = texto.toLowerCase();
   return (
     dobrado.startsWith("instituto federal do paraná") ||
     dobrado.startsWith("institutofederal") ||

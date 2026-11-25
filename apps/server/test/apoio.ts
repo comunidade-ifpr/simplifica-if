@@ -7,6 +7,7 @@
 import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import * as NodeSocket from "@effect/platform-node/NodeSocket";
 import type * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
@@ -39,6 +40,46 @@ export const TOKEN = "token-de-teste-do-servidor-local-0123456789";
 export function bancoFixture(): string {
   const banco = criarBancoFixture();
   inserirNormas(banco);
+  return banco;
+}
+
+export const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
+/** Duas S de temas do modo rápido, duas J da matriz e uma transversal BLOQ. */
+export const FICHAS_FIXTURE = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-04", "CT-CURR-07", "CT-TRANS-03"] as const;
+
+/** O `kb.sqlite` de fixture com o curso Técnico em Agropecuária no CNCT e as 5 fichas da revisão com IA. */
+export function bancoComFichas(): string {
+  const banco = bancoFixture();
+  const db = new NodeSqlite.DatabaseSync(banco);
+  const curso = {
+    denominacao: "Técnico em Agropecuária",
+    eixo_tecnologico: "Recursos Naturais",
+    carga_horaria_minima_horas: 1200,
+  };
+  db.prepare(
+    "INSERT INTO cnct (id, slug, denominacao, eixo_tecnologico, carga_horaria_minima_h, path, dados_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
+  ).run(
+    "cnct:tecnico-em-agropecuaria",
+    "tecnico-em-agropecuaria",
+    curso.denominacao,
+    curso.eixo_tecnologico,
+    1200,
+    "x.json",
+    JSON.stringify(curso),
+  );
+  db.prepare("DELETE FROM fichas").run();
+  for (const id of FICHAS_FIXTURE) {
+    const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8");
+    const json = JSON.parse(texto) as { titulo: string };
+    db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
+      id,
+      json.titulo,
+      `fichas/${id}.json`,
+      JSON.stringify(json),
+      texto,
+    );
+  }
+  db.close();
   return banco;
 }
 

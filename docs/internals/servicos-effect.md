@@ -91,7 +91,7 @@ export const layer = (opcoes: { readonly pasta: string }) => Layer.effect(PastaT
 
 ## Funções Effect e tracing
 
-- Funções reutilizáveis usam `Effect.fn("Servico.operacao")`, não uma arrow ou declaração que devolve `Effect.gen`. O nome cria o span; `Effect.fn(function* ...)` sem nome só captura a pilha. Em scripts, o prefixo é o nome do script: `Effect.fn("gerar_base")`. A regra `prefer-effect-fn` confere.
+- Funções reutilizáveis usam `Effect.fn("Servico.operacao")`, não uma arrow ou declaração que devolve `Effect.gen`. O nome cria o span; `Effect.fn(function* ...)` sem nome só captura a pilha. Em scripts, o prefixo é o nome do script: `Effect.fn("gerar_base")`.
 - `Effect.gen` fica para programas inline e para a construção de layers.
 - `Effect.fnUntraced` é escolha deliberada: trabalho por linha, por trecho de stream ou por evento, laço apertado, ou ajudante já coberto pelo span da operação. Diga o motivo ao lado. Um laço não é exceção por si: a operação de fora ainda merece span.
 - Não crie um segundo span para a mesma operação; leve nome e opções existentes para o `Effect.fn`. Atributos que dependem dos argumentos entram com `Effect.annotateCurrentSpan`.
@@ -103,7 +103,7 @@ export const layer = (opcoes: { readonly pasta: string }) => Layer.effect(PastaT
 
 Um recurso compartilhado se compõe uma vez, numa layer da aplicação (`apps/server/src/servidor.ts`, `packages/kb/src/layers.ts`), e se fornece a quem precisa; não crie um runtime por recurso. Quando a aquisição pode falhar e o chamador precisa de alternativa, a falha fica tipada: um erro na operação ou um serviço opcional, como o `Leitura` faz com `PastaTrabalho`.
 
-O processo do Node (`process.env`, `process.cwd()`, `process.argv`) se lê só nos pontos de entrada; o resto recebe por parâmetro de configuração ou por `Config`. A regra `no-global-process-runtime` confere, com as exceções listadas no `vite.config.ts`.
+O processo do Node (`process.env`, `process.cwd()`, `process.argv`) se lê só nos pontos de entrada; o resto recebe por parâmetro de configuração ou por `Config`.
 
 ## Erros
 
@@ -158,7 +158,7 @@ Armadilhas que as conversões deste repositório já encontraram:
 - **Sem relógio de parede.** Nada de diferença de `Date.now()` ou `performance.now()`; afirme sobre eventos e contagens (regra `no-wall-clock-in-tests`).
 - **Prazos.** O prazo do projeto (60 s no `vite.config.ts`) é o teto, e `retry` é 0: teste instável se corrige, não se repete. Diferente do T3, um prazo por teste é aceito aqui em dois casos, com o motivo ao lado: como afirmação de velocidade de trabalho de CPU ("recusado depressa", em `packages/ppc/test/conversao-docx.test.ts`) e para compilar a base real. Nunca para esperar um evento.
 - **Pulos.** Um teste pulado depende de condição explícita (`describe.skipIf(!SMOKE)`, provider ausente), não de `.skip` solto.
-- **Casos em tabela.** Vários casos do mesmo teste vão em `it.each(casos)` ou `it.effect.each(casos)`, não num `for` em volta de `it` (regra `no-test-in-loop`, em aviso enquanto há testes antigos assim).
+- **Casos em tabela.** Vários casos do mesmo teste vão em `it.each(casos)` ou `it.effect.each(casos)`, não num `for` em volta de `it`.
 - **Testes de navegador** (`*.browser.test.tsx` do `apps/web`): afirme com `expect.element` ou `vi.waitFor`, nunca com `requestAnimationFrame` ou `transitionend` (regra `no-frame-waits-in-browser-tests`); a exceção é provar que um evento *não* aconteceu, com supressão e motivo. Sem `jsdom` nem `happy-dom` e sem pragma `@vitest-environment` por arquivo: o ambiente é do projeto `navegador` (regra `no-dom-test-environment`).
 - **O que testar.** O comportamento que pode quebrar: regras da base (resolvedor, vigência, fatos de PPC), tradução de protocolo dos providers, autenticação, persistência e migrações, leitura de formato externo (DOCX, relatório de coleta), correção de corrida e a lógica que um conserto mudou. Não teste o que o tipo já garante, texto de interface, nem espelho de chamadas de mock.
 - **Layers de teste só para dependências externas** (`FileSystem`, banco de fixture, provider falso); não simule a lógica sob teste.
@@ -166,7 +166,7 @@ Armadilhas que as conversões deste repositório já encontraram:
 
 ## O que o lint confere
 
-As regras do plugin `simplifica-if` (`ferramentas/oxlint-plugin`, copiadas do T3) cobrem a parte mecânica: `namespace-node-imports`, `no-global-process-runtime`, `no-inline-schema-compile`, `prefer-effect-fn`, `prefer-catch-tags`, `require-suppression-reason` e as de teste citadas acima. O `effect-tsgo` (`pnpm typecheck`) aplica os diagnósticos do `tsconfig.effect.json`, como `globalDate`, `globalRandom` e `globalConsole`. Toda supressão de lint ou de diagnóstico diz por quê, num sufixo `-- motivo` ou num comentário logo acima.
+As regras do plugin `simplifica-if` (`ferramentas/oxlint-plugin`, copiadas do T3) cobrem a parte mecânica: `namespace-node-imports`, `no-inline-schema-compile`, `prefer-catch-tags`, `require-suppression-reason` e as de teste citadas acima. O `effect-tsgo` (`pnpm typecheck`) aplica os diagnósticos do `tsconfig.effect.json`, como `globalDate`, `globalRandom` e `globalConsole`. Toda supressão de lint ou de diagnóstico diz por quê, num sufixo `-- motivo` ou num comentário logo acima.
 
 O resto desta página é revisão: posição da lógica, forma do módulo, atributos de erro, escolha de `fnUntraced`.
 
@@ -183,7 +183,7 @@ O resto desta página é revisão: posição da lógica, forma do módulo, atrib
 Código anterior a esta página que não segue alguma regra. Não é achado num PR que não o toca; entra na revisão de arquitetura:
 
 - a leitura da base com `node:fs` síncrono nos `carregar*` e em `scripts/base/validacao/`, chamada de dentro dos programas Effect do pipeline da base;
-- testes que ainda registram casos num `for` (os avisos de `no-test-in-loop` no `pnpm lint`).
+- testes que ainda registram casos num `for`.
 
 ## Antes de concluir
 

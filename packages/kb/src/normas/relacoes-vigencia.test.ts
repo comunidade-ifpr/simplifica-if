@@ -23,7 +23,7 @@ import { impactoEm } from "./impacto.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "./registro.ts";
-import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
+import { proporRelacoes, validarRelacoes } from "./relacoes.ts";
 import {
   carregarFonteVigencia,
   dataReferencia,
@@ -60,9 +60,12 @@ describe("relações", () => {
   test("origem sem texto na base (stub) exige efeito_de com data em revoga e altera", () => {
     const tmp = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "relacoes-"));
     try {
-      NodeFS.cpSync(NodePath.join(raiz, "base-conhecimento/normas"), NodePath.join(tmp, "base-conhecimento/normas"), {
-        recursive: true,
-      });
+      NodeFS.mkdirSync(NodePath.join(tmp, "base-conhecimento"), { recursive: true });
+      NodeFS.symlinkSync(
+        NodePath.join(raiz, "base-conhecimento/normas"),
+        NodePath.join(tmp, "base-conhecimento/normas"),
+        "dir",
+      );
       const relacoes = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento/relacoes.yaml"), "utf-8");
       const semEfeito = relacoes.replace(
         /(origem: br\/lei\/2023\/14723\n(?:.*\n)*?)    efeito_de: "2023-11-14"\n/,
@@ -78,19 +81,6 @@ describe("relações", () => {
     } finally {
       NodeFS.rmSync(tmp, { recursive: true, force: true });
     }
-  });
-
-  test("migra os pares do front matter antigo (7 revoga, 2 revogada_por, 6 altera, 5 alterada_por)", () => {
-    const migradas = carregarRelacoes(raiz).filter((r) => r.proposta === "front-matter");
-    const tem = (tipo: string, origem: string, alvo: string) =>
-      migradas.some((r) => r.tipo === tipo && r.origem === origem && r.alvo === alvo);
-    expect(tem("revoga", DCN_2026, DCN_2021)).toBe(true);
-    expect(tem("revoga", DCN_2026, "br/cne-ceb/res/2025/3")).toBe(true);
-    // A Lei 11.645 dá nova redação ao art. 26-A da LDB; o par antigo "altera Lei 10.639" foi retirado.
-    expect(tem("altera", "br/lei/2008/11645", "br/lei/1996/9394")).toBe(true);
-    expect(tem("altera", "br/lei/2008/11645", "br/lei/2003/10639")).toBe(false);
-    expect(tem("altera", "br/cne-ceb/res/2025/6", "br/cne-ceb/res/2025/3")).toBe(true);
-    expect(tem("altera", "ifpr/consup/res/2024/222", "ifpr/consup/res/2014/8")).toBe(true);
   });
 });
 

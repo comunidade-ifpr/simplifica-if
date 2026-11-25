@@ -2,7 +2,7 @@
 
 Situação em 21/11/2026. Plano vivo: visão, decisões, arquitetura e o que falta até o Marco 2. O que já foi feito está no código e no histórico do git.
 
-Este plano complementa o [arquitetura-base.md](arquitetura-base.md), que trata da base de conhecimento, do `packages/kb` e da CLI `kb`. O [app-seguranca-dados.md](app-seguranca-dados.md) está suspenso: guarda o desenho do acesso ao SUAP e ao SEI para quando os sistemas voltarem ao escopo.
+Este plano complementa o [arquitetura-base.md](arquitetura-base.md), que trata da base de conhecimento, do `packages/kb` e da CLI `kb`.
 
 ## Visão
 
@@ -19,7 +19,7 @@ Com skills de todas as áreas, o app vira a porta de entrada para o conhecimento
 3. **Piloto:** equipe da PROENS/DENS e coordenações de curso.
 4. **Primeiro o cérebro, depois o corpo.** A base e as ferramentas existem como servidor MCP (`simplifica-mcp`), usável em apps que já existem, e o app é a melhor experiência, não a única porta. O `simplifica-mcp` fora do app continua um canal suportado (decisão de 21/11/2026), só na versão mais nova do protocolo MCP, sem legado.
 5. **App próprio no monorepo, com código do T3 copiado e registrado.** O app vive neste repositório, ao lado do `kb` e do `simplifica-mcp`. O código que vem do T3 Code é copiado por parte e registrado em [upstream-t3.md](../upstream-t3.md). Motivo em [Código do T3](#código-do-t3-copiar-registrar-sincronizar-sob-demanda).
-6. **Sem SUAP e sem SEI até o Marco 2.** O app só trabalha com dado público: a base e os documentos que o servidor anexa. Credenciais, níveis de sensibilidade e verificação de ZDR ficam fora do escopo; o desenho está em [app-seguranca-dados.md](app-seguranca-dados.md).
+6. **Sem SUAP e sem SEI até o Marco 2.** O app só trabalha com dado público: a base e os documentos que o servidor anexa. Credenciais, níveis de sensibilidade e verificação de ZDR ficam fora do escopo.
 7. **Stack única com o T3 Code, interface inclusive.** Node, pnpm, Effect 4 e Vite+ no backend e nas ferramentas; Electron, React, TanStack Router, Tailwind e shadcn sobre Base UI no app. O `kb` é um serviço Effect dentro do servidor local, e as ferramentas MCP são um Toolkit de `effect/ai`. Detalhes em [Tecnologia e língua do código](#tecnologia-e-língua-do-código).
 8. **Repositório aberto com histórico limpo.** O histórico foi reescrito antes da publicação, sem dados pessoais nem URLs assinadas. A base segue a [política de dados pessoais](../../base-conhecimento/docs/curadoria-metadados-institucionais.md#dados-pessoais-e-urls-internas), que o `validar_base` aplica.
 
@@ -71,7 +71,7 @@ As ferramentas do `simplifica-mcp` devolvem esses links prontos, e o `simplifica
 1. **Copia-se por parte, com motivo.** Cada parte entra na tabela de [upstream-t3.md](../upstream-t3.md) com origem, commit, data e adaptações.
 2. **Atribuição MIT em cada parte:** `NOTICE` no pacote, cabeçalho no arquivo ou `LICENSE-T3` ao lado.
 3. **Adaptação mínima e listada.** O que não precisa mudar fica igual, inclusive o inglês interno. Pacotes iguais ao upstream ficam fora do `vp fmt` e do `vp lint` daqui.
-4. **Sincronização caso a caso.** `pnpm upstream:t3 status` lista as partes com mudança no upstream e `pnpm upstream:t3 diff <parte>` mostra o diff. Sincroniza-se por correção de segurança, defeito que nos afeta ou mudança no protocolo de um provider.
+4. **Sincronização caso a caso.** Sincroniza-se por correção de segurança, defeito que nos afeta ou mudança no protocolo de um provider.
 5. **Inspiração sem cópia** fica listada à parte no manifesto.
 
 O porte do motor está feito: instalação gerenciada do Codex e do Antigravity, `ClaudeExecutable`, `ClaudeHome`, login do Antigravity e a ponte MCP estão em `packages/motor/src/t3/`.
@@ -145,7 +145,7 @@ A política é um Effect Schema embutido no app, só de leitura (`packages/motor
 | Ferramentas `ifpr` | aprovadas sem perguntar | só leitura, sobre dado público |
 | Escrita e comandos | pedem aprovação, só dentro da pasta da tarefa; negados fora | o servidor vê o que a IA quer fazer |
 | MCP e conectores do usuário | desligados na sessão | a conversa não puxa MCPs, apps nem plugins pessoais |
-| Busca e leitura web | ligadas em conversas (filtro de URL pública; comandos de rede negados); desligadas na revisão de PPC | base primeiro, web oficial como complemento (ver [acesso-web-e-rigor-normativo.md](acesso-web-e-rigor-normativo.md)) |
+| Busca e leitura web | ligadas em conversas (filtro de URL pública; comandos de rede negados); desligadas na revisão de PPC | base primeiro, web oficial como complemento |
 | Telemetria | desligada | só métricas agregadas com opt-in saem do computador |
 | Atualização | feed, canal padrão (`beta` no piloto), chave minisign | o app só aceita pacote assinado do feed próprio |
 | Curadoria | `repositorio` (`null` até definido) e `rotulos` | "Isto está errado" abre `issues/new` no navegador, sem token no app |
@@ -219,7 +219,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 
 | Risco | Mitigação |
 |---|---|
-| Deriva das CLIs dos providers | só interfaces oficiais (Agent SDK, `app-server`, ACP); detecção de versão; teste real nos três antes de cada versão; `pnpm upstream:t3 status` como alarme |
+| Deriva das CLIs dos providers | só interfaces oficiais (Agent SDK, `app-server`, ACP); detecção de versão; teste real nos três antes de cada versão |
 | Isolamento incompleto | desligar por sessão MCP, conectores, plugins e navegador automatizado do usuário; filtro determinístico de URL pública na leitura web; teste que lista as ferramentas visíveis; `CODEX_HOME` próprio se não bastar |
 | Servidor não técnico trava ao instalar a CLI | instalação gerenciada do Codex e do Antigravity; passo guiado do Claude |
 | Binário sem assinatura bloqueado | certificados de assinatura (decisão em aberto 1) |
@@ -243,7 +243,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 ## Fora do escopo até o Marco 2
 
 - Acesso a SUAP, SEI e outros sistemas com login, e qualquer dado não público.
-- Modelos locais e roteamento por OpenRouter: há só pesquisa, em [opencode-openrouter.md](opencode-openrouter.md).
+- Modelos locais e roteamento por OpenRouter.
 - Tarefas agendadas executadas pela IA.
 - App mobile.
 - Contas de usuário e servidor central do Simplifica IF.

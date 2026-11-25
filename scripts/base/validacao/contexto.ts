@@ -3,9 +3,11 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
+import { analisarFrontMatter, ehErroFrontMatter, type FrontMatter } from "../front-matter.ts";
 import { ehObjeto, representar } from "@simplifica-if/kb/json";
 import { ehUrlAbsoluta, validarJsonSchema } from "@simplifica-if/kb/schema";
 import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
+import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
 import type {
   CursoCnctJson,
   IndiceCnctJson,
@@ -16,6 +18,14 @@ import type {
 
 /** Resultado de uma leitura que pode falhar com mensagens de erro. */
 export type Resultado<T> = { ok: true; valor: T } | { ok: false; erros: string[] };
+
+/** Conteúdo e front matter analisado de uma norma, cacheados por caminho no `Contexto`. */
+export type NormaLida =
+  | { ok: true; texto: string; meta: FrontMatter; corpo: string }
+  | { ok: false; texto: string; erro: string };
+
+/** Retorno de `carregarDadosInstitucionais`, cacheado no `Contexto` para evitar releitura. */
+export type CarregamentoInstitucional = ReturnType<typeof carregarDadosInstitucionais>;
 
 /** Formato de cada schema de `CaminhosBase["schemas"]`, gerado do próprio schema. */
 export type FormatosSchemas = {
@@ -59,6 +69,9 @@ export function listaOrdenada(textos: Iterable<string>): string {
 /** Caminhos da base com as operações de leitura usadas por todas as validações. */
 export class Contexto {
   readonly c: CaminhosBase;
+  private _dadosInstitucionais: CarregamentoInstitucional | undefined;
+  private readonly _textosNormas = new Map<string, string>();
+  private readonly _normas = new Map<string, NormaLida>();
 
   constructor(c: CaminhosBase) {
     this.c = c;
@@ -67,6 +80,37 @@ export class Contexto {
   /** Caminho relativo a `base-conhecimento/`, usado nas mensagens. */
   rel(caminho: string): string {
     return relativo(this.c, caminho);
+  }
+
+  /** Dados institucionais de `institucional/ifpr/`, carregados uma única vez por execução. */
+  dadosInstitucionais(): CarregamentoInstitucional {
+    this._dadosInstitucionais ??= carregarDadosInstitucionais(NodePath.join(this.c.institucional, "ifpr"));
+    return this._dadosInstitucionais;
+  }
+
+  /** Registra o texto já lido de uma norma (ex.: na varredura de padrões locais) para evitar releitura. */
+  registrarTextoNorma(caminho: string, texto: string): void {
+    this._textosNormas.set(caminho, texto);
+  }
+
+  /** Lê e analisa o front matter de uma norma uma única vez por execução. */
+  lerNorma(caminho: string): NormaLida {
+    const cacheado = this._normas.get(caminho);
+    if (cacheado !== undefined) return cacheado;
+    const texto = this._textosNormas.get(caminho) ?? lerTexto(caminho);
+    let resultado: NormaLida;
+    try {
+      const { meta, corpo } = analisarFrontMatter(texto, this.rel(caminho));
+      resultado = { ok: true, texto, meta, corpo };
+    } catch (erro) {
+      if (ehErroFrontMatter(erro)) {
+        resultado = { ok: false, texto, erro: erro.message };
+      } else {
+        throw erro;
+      }
+    }
+    this._normas.set(caminho, resultado);
+    return resultado;
   }
 
   carregarJson(caminho: string, rotulo: string): Resultado<unknown> {

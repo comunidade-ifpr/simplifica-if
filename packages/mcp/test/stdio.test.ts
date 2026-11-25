@@ -224,6 +224,6 @@ describe("erros de inicialização", () => {
   test("canal fora da lista", async () => {
     const { codigo, stderr } = await rodarCli(["--banco", criarBancoFixture(), "--canal", "nightly"]);
     expect(codigo).not.toBe(0);
-    expect(stderr).toContain("dev, beta, estavel");
+    expect(stderr).toContain('"dev" | "beta" | "estavel"');
   });
 });

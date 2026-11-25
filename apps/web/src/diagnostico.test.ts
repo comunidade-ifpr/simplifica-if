@@ -11,12 +11,9 @@ import {
   criarTracer,
   ehFalhaInesperada,
   instalarRegistroDeErros,
-  JANELA_LIMITE_MS,
   JANELA_QUEDA_MS,
   layerTracer,
-  limitarFrequencia,
   MAXIMO_CODIGOS_QUEDA,
-  MAXIMO_POR_MINUTO,
   omitirValores,
   textoDoErro,
 } from "./diagnostico.ts";
@@ -136,25 +133,6 @@ describe("agruparQuedas", () => {
     quedas.descarregar();
     agendados[0]!();
     assert.deepStrictEqual(linhas, ["conexão com o servidor caiu: 1 chamada afetada (códigos AAAAAAAA m)"]);
-  });
-});
-
-describe("limitarFrequencia", () => {
-  it("a mesma linha uma vez por janela; acima do máximo, uma linha de suprimidos quando a janela vira", () => {
-    let agora = 1_000;
-    const gravadas: Array<string> = [];
-    const registrar = limitarFrequencia({ agora: () => agora, gravar: (linha) => gravadas.push(linha) });
-    // O StrictMode monta a tela de erro duas vezes: a mesma linha.
-    registrar("erro na tela /");
-    registrar("erro na tela /");
-    assert.deepStrictEqual(gravadas, ["erro na tela /"]);
-    for (let i = 0; i < MAXIMO_POR_MINUTO + 5; i += 1) registrar(`linha ${i}`);
-    assert.strictEqual(gravadas.length, MAXIMO_POR_MINUTO);
-    agora += JANELA_LIMITE_MS;
-    registrar("erro na tela /");
-    assert.strictEqual(gravadas.length, MAXIMO_POR_MINUTO + 2);
-    assert.match(gravadas.at(-2)!, /^7 registros suprimidos/);
-    assert.strictEqual(gravadas.at(-1), "erro na tela /");
   });
 });
 

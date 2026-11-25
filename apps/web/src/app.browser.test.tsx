@@ -21,7 +21,7 @@ import {
   simularInstalacaoClaude,
 } from "../test/navegador.tsx";
 import { ALTURA_BARRA_TITULO } from "./barra-titulo.ts";
-import type { PonteDesktop } from "@simplifica-if/contratos-app/ponte";
+import { ponteTeste } from "../test/ponte.ts";
 
 let servidor: ServidorTeste;
 
@@ -163,12 +163,12 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
 it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, a lista por tema e a cópia comentada", async () => {
   const abrirDocumento = vi.fn(async (_caminho: string) => {});
   const mostrarNaPasta = vi.fn(async (_caminho: string) => {});
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherDocx: async () => servidor.ppc,
     abrirDocumento,
     mostrarNaPasta,
-  } satisfies PonteDesktop;
+  });
   await page.viewport(1280, 900);
   await using _app = await montarApp(servidor);
 
@@ -285,10 +285,10 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
 });
 
 it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherDocx: async () => `${servidor.pasta}/não existe.docx`,
-  } satisfies PonteDesktop;
+  });
   await using app = await montarApp(servidor, "/revisao-ppc");
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   await expect.element(page.getByText("O arquivo não foi encontrado ou não pode ser lido.")).toBeVisible();
@@ -307,13 +307,13 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   const mostrarArquivoTarefa = vi.fn(async (_caminho: string) => {});
   const escolherAnexo = vi.fn(async (_extensoes?: ReadonlyArray<string>) => servidor.parecer);
   const pastaParaLixeira = vi.fn(async (_caminho: string) => {});
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherAnexo,
     abrirArquivoTarefa,
     mostrarArquivoTarefa,
     pastaParaLixeira,
-  } satisfies PonteDesktop;
+  });
   await page.viewport(1280, 860);
   await using _app = await montarApp(servidor);
 
@@ -476,10 +476,10 @@ it("“Isto está errado” (M1.12): do 👎 ao relato revisado, publicado no Gi
   // A ordem: o relato é registrado no servidor antes de a página do GitHub abrir.
   const ordem: Array<string> = [];
   const abrirExterno = vi.fn(async (_url: string) => void ordem.push("abrir"));
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: curadoria.urlServidor, token: curadoria.token }),
     abrirExterno,
-  } satisfies PonteDesktop;
+  });
   const sendOriginal = WebSocket.prototype.send;
   WebSocket.prototype.send = function (dados) {
     if (typeof dados === "string" && dados.includes("relato.registrar")) ordem.push("registrar");
@@ -713,10 +713,10 @@ it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async
 
 it("Configurações › Diagnóstico: a prévia do pacote, gerar e mostrar na pasta", async () => {
   const mostrarArquivoTarefa = vi.fn(async (_caminho: string) => {});
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     mostrarArquivoTarefa,
-  } satisfies PonteDesktop;
+  });
   await using _app = await montarApp(servidor, "/configuracoes");
   const secao = page.getByRole("region", { name: "Diagnóstico" });
   await expect.element(secao.getByText(/anexe o arquivo ao relatar o problema/)).toBeVisible();
@@ -766,11 +766,11 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   const anexarSoltos = vi.fn(async (arquivos: ReadonlyArray<File>) =>
     arquivos.map((arquivo) => (arquivo.name === "parecer.md" ? servidor.parecer : null)),
   );
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherAnexo,
     anexarSoltos,
-  } satisfies PonteDesktop;
+  });
   await page.viewport(1100, 760);
   await using _app = await montarApp(servidor);
   // Troca o tema e espera as transições de cor terminarem, para a captura não sair no meio delas.
@@ -951,18 +951,52 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   await expect.element(page.getByRole("button", { name: "Enviar" })).toBeVisible();
 });
 
-it("Tema: o menu do cabeçalho mostra as três escolhas pelo nome e guarda a escolhida", async () => {
+it("Tema: Configurações › Aparência mostra as três escolhas pelo nome e guarda a escolhida", async () => {
   window.localStorage.removeItem("simplifica-if:tema");
+  await page.viewport(1100, 760);
   await using _app = await montarApp(servidor);
-  const botao = page.getByRole("button", { name: "Tema: automático (como o sistema)" });
-  await botao.click();
-  await expect.element(page.getByRole("menuitemradio", { name: "Automático (como o sistema)" })).toBeChecked();
-  await page.getByRole("menuitemradio", { name: "Escuro" }).click();
+  await page.getByRole("link", { name: "Configurações" }).click();
+  const tema = page.getByRole("radiogroup", { name: "Tema" });
+  await expect.element(tema.getByRole("radio", { name: "Automático" })).toBeChecked();
+  await tema.getByRole("radio", { name: "Escuro" }).click();
   expect(document.documentElement.classList.contains("dark")).toBe(true);
   expect(window.localStorage.getItem("simplifica-if:tema")).toBe("escuro");
-  await page.getByRole("button", { name: "Tema: escuro" }).click();
-  await page.getByRole("menuitemradio", { name: "Automático (como o sistema)" }).click();
+  await capturar("aparencia-escuro");
+  await tema.getByRole("radio", { name: "Automático" }).click();
+  expect(document.documentElement.classList.contains("dark")).toBe(false);
   expect(window.localStorage.getItem("simplifica-if:tema")).toBeNull();
+});
+
+it("Ajuda: as perguntas abrem uma por vez, o e-mail abre pelo sistema e as maneiras de contribuir levam ao lugar certo", async () => {
+  const abrirExterno = vi.fn(async (_url: string) => {});
+  window.simplifica = ponteTeste({
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    abrirExterno,
+  });
+  await page.viewport(1100, 760);
+  await using _app = await montarApp(servidor);
+  await page.getByRole("link", { name: "Ajuda" }).click();
+  await expect.element(page.getByRole("heading", { name: "Ajuda", level: 1 })).toBeVisible();
+
+  const custo = page.getByRole("button", { name: "Preciso pagar para usar?" });
+  const base = page.getByRole("button", { name: "De quando é a base?" });
+  await custo.click();
+  await expect.element(page.getByText(/gratuito e de código aberto/)).toBeVisible();
+  await base.click();
+  await expect.element(custo).toHaveAttribute("aria-expanded", "false");
+  await expect.element(base).toHaveAttribute("aria-expanded", "true");
+  await capturar("ajuda");
+
+  await page.getByRole("link", { name: "gustavo.rahal@ifpr.edu.br" }).click();
+  expect(abrirExterno).toHaveBeenLastCalledWith(
+    "mailto:gustavo.rahal@ifpr.edu.br?subject=Simplifica%20IF%3A%20d%C3%BAvida",
+  );
+  await page.getByRole("link", { name: "guia de contribuição" }).click();
+  expect(abrirExterno).toHaveBeenLastCalledWith(
+    "https://github.com/comunidade-ifpr/simplifica-if/blob/main/CONTRIBUTING.md",
+  );
+  await page.getByRole("link", { name: "Configurações › Diagnóstico" }).click();
+  await expect.element(page.getByRole("heading", { name: "Diagnóstico" })).toBeVisible();
 });
 
 /* O cabeçalho como barra de título do desktop (sem a barra do sistema; `barra-titulo.ts`). */
@@ -984,7 +1018,7 @@ it("Barra de título: no navegador, o cabeçalho não é barra de título", asyn
 
 it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre espaço para os semáforos, menos em tela cheia", async () => {
   let avisar: (telaCheia: boolean) => void = () => {};
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     janela: {
       plataforma: "darwin",
@@ -997,7 +1031,7 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
       },
       temaDoApp: async () => {},
     },
-  } satisfies PonteDesktop;
+  });
   await using _app = await montarApp(servidor);
 
   const configuracoes = page.getByRole("link", { name: "Configurações" });
@@ -1019,7 +1053,7 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
 });
 
 it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita para os botões do sistema", async () => {
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     janela: {
       plataforma: "win32",
@@ -1027,7 +1061,7 @@ it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita
       aoMudarTelaCheia: () => () => {},
       temaDoApp: async () => {},
     },
-  } satisfies PonteDesktop;
+  });
   await using _app = await montarApp(servidor);
   await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
   const estilo = getComputedStyle(cabecalho());
@@ -1075,10 +1109,10 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   // largo que a janela dava rolagem lateral à página inteira, que cortava os cartões.
   await page.viewport(800, 560);
   for (const plataforma of ["darwin", "win32"] as const) {
-    window.simplifica = {
+    window.simplifica = ponteTeste({
       conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
       janela: { plataforma, telaCheia: async () => false, aoMudarTelaCheia: () => () => {}, temaDoApp: async () => {} },
-    } satisfies PonteDesktop;
+    });
     for (const rota of ["/", "/tarefas"] as const) {
       await using _app = await montarApp(servidor, rota);
       await conferir();
@@ -1088,7 +1122,7 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   }
   // Com a conexão caída, o cabeçalho ganha "Sem conexão…" e "Tentar agora": no Windows, com a folga dos
   // botões do sistema, ainda cabe na largura mínima.
-  window.simplifica = {
+  window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: "http://127.0.0.1:9", token: "x" }),
     janela: {
       plataforma: "win32",
@@ -1096,7 +1130,7 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
       aoMudarTelaCheia: () => () => {},
       temaDoApp: async () => {},
     },
-  } satisfies PonteDesktop;
+  });
   {
     await using _app = await montarAppComOrigem(
       { tipo: "navegador", fonte: "url", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },

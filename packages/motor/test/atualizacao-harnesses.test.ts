@@ -227,7 +227,7 @@ describe("Atualização silenciosa do Antigravity", () => {
     }),
   );
 
-  it.effect("ignora quando não instalado, com binário customizado ou já em andamento", () =>
+  it.effect("ignora quando não instalado ou já em andamento", () =>
     Effect.gen(function* () {
       const naoInstalado = yield* criarAntigravityFalso({ resolvida: null, versaoRemota: "1.5.14" });
       assert.deepStrictEqual(yield* AtualizacaoHarnesses.atualizarAntigravity(naoInstalado.instalacao), {
@@ -235,17 +235,6 @@ describe("Atualização silenciosa do Antigravity", () => {
         motivo: "nao-gerenciada",
       });
       assert.deepStrictEqual(naoInstalado.estatisticas(), { checagens: 0, inicios: 0 });
-
-      const customizado = yield* criarAntigravityFalso({
-        resolvida: gerenciada("1.5.12"),
-        estadoInicial: { installedVersion: "1.5.12" },
-        versaoRemota: "1.5.14",
-      });
-      assert.deepStrictEqual(
-        yield* AtualizacaoHarnesses.atualizarAntigravity(customizado.instalacao, { binario: "/usr/local/bin/agy" }),
-        { status: "ignorado", motivo: "nao-gerenciada" },
-      );
-      assert.deepStrictEqual(customizado.estatisticas(), { checagens: 0, inicios: 0 });
 
       const emCurso = yield* criarAntigravityFalso({
         resolvida: gerenciada("1.5.12"),

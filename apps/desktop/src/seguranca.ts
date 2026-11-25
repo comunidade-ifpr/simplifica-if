@@ -67,10 +67,11 @@ export function isSameOriginRendererNavigation(input: {
   }
 }
 
-// T3: apps/desktop/src/electron/ElectronShell.ts (SAFE_WEB_PROTOCOLS e parseSafeExternalUrl, só http e https)
-const SAFE_WEB_PROTOCOLS = new Set(["http:", "https:"]);
+// T3: apps/desktop/src/electron/ElectronShell.ts (SAFE_WEB_PROTOCOLS e parseSafeExternalUrl, só http e
+// https). Aqui entra também o `mailto:`, para o contato da Ajuda: abre um rascunho, que a pessoa envia.
+const SAFE_WEB_PROTOCOLS = new Set(["http:", "https:", "mailto:"]);
 
-/** A URL normalizada, se for um link que pode abrir no navegador do sistema (só http e https). */
+/** A URL normalizada, se for um link que o sistema pode abrir: http e https no navegador, `mailto:` no e-mail. */
 export function urlExternaSegura(rawUrl: unknown): string | undefined {
   if (typeof rawUrl !== "string") return undefined;
   try {

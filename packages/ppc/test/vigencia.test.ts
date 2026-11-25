@@ -6,7 +6,7 @@ import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { describe, expect, test } from "vite-plus/test";
 import { preConferir } from "../src/pre-conferencia.ts";
 import { verificacaoDaBase } from "../src/revisao-previa.ts";
-import { MARCOS, revogacaoRecente } from "../src/verificadores/vigencia.ts";
+import { revogacaoRecente } from "../src/verificadores/vigencia.ts";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 
 const base = await carregarBaseRevisao(raizRepositorio());
@@ -14,12 +14,12 @@ const base = await carregarBaseRevisao(raizRepositorio());
 const vigenciaEm = (data?: string) => verificacaoDaBase(base, data).vigencia;
 
 describe("marcos e vigência", () => {
-  test("MARCOS é a cópia de linha e ficha responsável de marcos-normativos.json", () => {
+  test("base.marcos carrega linha e ficha responsável de marcos-normativos.json via kb.sqlite", () => {
     const arquivo = NodePath.join(raizRepositorio(), "base-conhecimento/revisao-ppc/marcos-normativos.json");
     const { marcos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as {
       marcos: { id: string; linha: string[]; fichas_responsaveis: string[] }[];
     };
-    expect(MARCOS.map((m) => ({ id: m.id, linha: m.linha, responsavel: m.responsavel }))).toEqual(
+    expect(base.marcos.map((m) => ({ id: m.id, linha: m.linha, responsavel: m.responsavel }))).toEqual(
       marcos.map((m) => ({ id: m.id, linha: m.linha, responsavel: m.fichas_responsaveis[0] })),
     );
   });
