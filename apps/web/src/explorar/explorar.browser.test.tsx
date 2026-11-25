@@ -165,8 +165,8 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
   const tabela = curso.getByRole("table", { name: "Comparação entre o PPC e o SUAP" });
   await expect.element(tabela.getByText("Diverge", { exact: true })).toBeVisible();
   await expect.element(tabela.getByText("Extraído, conferir")).toBeVisible();
-  // o ano do documento, dos dados institucionais, ainda não revisado
-  await expect.element(tabela.getByText("Precisa de revisão")).toBeVisible();
+  // o ano do documento, com a evidência conferida por regra, não revisado
+  await expect.element(tabela.getByText("Evidência conferida por regra")).toBeVisible();
   await expect.element(curso.getByRole("button", { name: "Técnico em Enfermagem" })).toBeVisible(); // o CNCT
   await expect.element(curso.getByText("Processo Seletivo 2026: Matutino, 30 vagas")).toBeVisible();
   await expect.element(curso.getByRole("link", { name: "Consepe, reunião de 20/03/2026" })).toBeVisible();

@@ -59,7 +59,7 @@ Pendências humanas, todas marcadas como rascunho nos arquivos:
 3. **Revisão dos três PPCs-ouro** (`avaliacao/ppcs-ouro/`).
 4. **Data do DOU da Res. CNE/CP nº 2/2026:** até ela, a 2/2026 fica `aguardando publicação` (não está em vigor), e a 1/2021 segue vigente; registrada a data, a 1/2021 passa a revogada e as transições dos arts. 70 a 72 começam.
 5. **Revisão jurídica da tabela de correspondência 1/2021 → 2/2026** (`base-conhecimento/correspondencias/`): até lá, é indicação, não fundamento.
-6. **Fatos de PPC** têm status `extraido`, sem revisão humana: confira o `trecho_fonte` antes de afirmar uma divergência.
+6. **Revisão dos fatos de PPC:** todos têm status `extraido`, sem revisão humana. A revisão entra em `base-conhecimento/fatos-ppc.yaml` (status `revisado`, com revisor e data), pela fila `pnpm kb fatos-a-revisar`: primeiro os 23 com valores alternativos, depois as horas sem unidade conhecida. Até lá, confira o `trecho_fonte` antes de afirmar uma divergência; a carga sem unidade conhecida não afirma divergência com o SUAP.
 7. **Busca de normas** não tem conjunto rotulado para medir recall, como a de seções.
 
 ## Não fazer

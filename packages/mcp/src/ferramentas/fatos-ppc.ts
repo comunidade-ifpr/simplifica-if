@@ -35,7 +35,7 @@ export const fatosPpc = definirFerramenta({
   nome: "fatos_ppc",
   titulo: "Fatos do PPC × SUAP",
   descricao:
-    "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
+    "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos com status `extraido` saíram do texto por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência. Horas sem unidade conhecida (`horas`, `hora-aula` sem a duração) não afirmam divergência com o SUAP: o cruzamento sai `unidade-desconhecida`.",
   entrada: Entrada,
   dados: Dados,
   texto({ dados: d }) {

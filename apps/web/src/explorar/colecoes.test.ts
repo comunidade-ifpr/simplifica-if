@@ -15,6 +15,7 @@ import {
   pedidoSobre,
   quantos,
   ressalvaDoFato,
+  valorFato,
   vigenciaDaNorma,
 } from "./colecoes.ts";
 import { nomeDaPagina } from "./nomes.ts";
@@ -56,6 +57,11 @@ describe("nomes", () => {
     expect(nomeTurno("matutino-com-contraturno")).toBe("Matutino com contraturno");
     expect(nomeResultado("diverge")).toEqual({ nome: "Diverge", alerta: true });
     expect(nomeResultado("confere").alerta).toBe(false);
+    expect(nomeResultado("diverge-carga").alerta).toBe(true);
+    expect(nomeResultado("unidade-desconhecida").alerta).toBe(false);
+    expect(valorFato({ valor: "1600", unidade: "hora-relogio" })).toBe("1600 h (hora-relógio)");
+    expect(valorFato({ valor: "1600", unidade: "horas" })).toBe("1600 horas (sem unidade declarada)");
+    expect(valorFato({ valor: "sim", unidade: null })).toBe("sim");
     expect(nomeResultado("outro-caso").nome).toBe("Outro caso");
     expect(dataBr("2026-03-20")).toBe("20/03/2026");
   });

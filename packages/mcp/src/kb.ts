@@ -13,7 +13,7 @@
  * `--json`, a `Resposta`. Elas rodam sobre o `tmp/kb.sqlite` do checkout, recompilado quando está
  * mais velho que as fontes (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`); o `arquivo`
  * do `pacote-contexto` se lê do diretório atual. A curadoria (`compilar`, `propor-relacoes`,
- * `avaliar-resolvedor`, `avaliar-busca`) fica em `@simplifica-if/kb/cli`.
+ * `avaliar-resolvedor`, `avaliar-busca`, `fatos-a-revisar`) fica em `@simplifica-if/kb/cli`.
  *
  * Erros: pelo ponto de entrada comum, longe do stdout. Entrada inválida, ID fora da base e falha do
  * banco saem como `kb: <mensagem>` no stderr, com código 1.
@@ -21,7 +21,12 @@
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { compilar } from "@simplifica-if/kb/cli/compilar";
 import { Checkout } from "@simplifica-if/kb/cli/comum";
-import { avaliarBuscaCmd, avaliarResolvedorCmd, proporRelacoesCmd } from "@simplifica-if/kb/cli/curadoria";
+import {
+  avaliarBuscaCmd,
+  avaliarResolvedorCmd,
+  fatosARevisarCmd,
+  proporRelacoesCmd,
+} from "@simplifica-if/kb/cli/curadoria";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layers from "@simplifica-if/kb/layers";
 import { executarPrincipal } from "@simplifica-if/kb/principal";
@@ -51,6 +56,7 @@ const kb = Command.make("kb").pipe(
     proporRelacoesCmd,
     avaliarResolvedorCmd,
     avaliarBuscaCmd,
+    fatosARevisarCmd,
   ]),
 );
 

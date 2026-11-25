@@ -644,8 +644,10 @@ describe("fatos_ppc", () => {
         fato: "carga_horaria_total_h",
         valor: "1600",
         valor_num: 1600,
-        unidade: "h",
+        unidade: "hora-relogio",
         status_curadoria: "extraido",
+        revisor: null,
+        revisado_em: null,
         regra: "rotulo-corpo",
         trecho_fonte: "Carga horária total em hora relógio: 1.600 horas",
         fonte: {

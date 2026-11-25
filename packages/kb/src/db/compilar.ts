@@ -26,6 +26,7 @@ import { radicais } from "../busca/tokens.ts";
 import type { Canal } from "../canal.ts";
 import { cruzarPpcSuap } from "../fatos/divergencias.ts";
 import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
+import { aplicarRevisoes, carregarRevisoesFatos, type RevisaoFato } from "../fatos/revisoes.ts";
 import { carregarDadosInstitucionaisKb, linhaDaChave, linhaDoValor, matrizesDoResumo } from "../institucional/dados.ts";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter, listaDeTextos, normaDoFrontMatter } from "../normas/front-matter.ts";
@@ -600,6 +601,9 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     const indice = decodificarIndicePpcs(lerJson(noCheckout(raiz, CAMINHOS.indicePpcs)));
     const itensPpc = itensPorId(indice);
     const ppcPorPath = new Map(itensPpc.map((item) => [item.path, item]));
+    const revisoesPorPpc = new Map<string, RevisaoFato[]>();
+    for (const revisao of carregarRevisoesFatos(raiz))
+      revisoesPorPpc.set(revisao.ppc, [...(revisoesPorPpc.get(revisao.ppc) ?? []), revisao]);
     const idsCursos = new Set(dados.cursos.map(({ dados: c }) => `curso:${c.campus_id}/${c.curso_slug}`));
 
     for (const { arquivo, conteudo, dados: c } of dados.cursos) {
@@ -782,9 +786,17 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         insFts: insFtsSecao,
       });
 
-      const fatos = extrairFatosPpc(
+      const fatos = aplicarRevisoes(
+        extrairFatosPpc(
+          markdown,
+          secoes.map((s): SecaoDoPpc => ({
+            tipo: s.section_kind,
+            linha_inicio: s.linha_inicio,
+            linha_fim: s.linha_fim,
+          })),
+        ),
+        revisoesPorPpc.get(ppcId) ?? [],
         markdown,
-        secoes.map((s): SecaoDoPpc => ({ tipo: s.section_kind, linha_inicio: s.linha_inicio, linha_fim: s.linha_fim })),
       );
       // O cruzamento com o SUAP vale para o PPC vigente: o registro do curso descreve ele.
       const curso = cursoId && item.vigente ? cursoDados.get(cursoId) : undefined;
@@ -796,6 +808,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           valor_num: fato.valor_num,
           unidade: fato.unidade,
           status_curadoria: fato.status_curadoria,
+          revisor: fato.revisor,
+          revisado_em: fato.revisado_em,
           regra: fato.regra,
           trecho_fonte: fato.trecho_fonte,
           path: caminhoMd,
@@ -813,6 +827,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         valor_num: ano,
         unidade: null,
         status_curadoria: "evidencia-conferida",
+        revisor: null,
+        revisado_em: null,
         regra: item.ano_fonte === FONTE_TEXTO ? "evidencia-no-texto" : "evidencia-na-fonte",
         trecho_fonte: item.ano_evidencia,
         path: caminhoMd,
@@ -824,10 +840,10 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         const resumo = curso.dados.suap?.matrizes?.resumo;
         const cruzamento = cruzarPpcSuap({
           chPpc: valor("carga_horaria_total_h")?.valor_num ?? null,
-          chPpcEmHoraAula: valor("carga_horaria_total_h")?.regra.endsWith("-aula") ?? false,
+          chPpcUnidade: valor("carga_horaria_total_h")?.unidade ?? null,
           estagioObrigatorio: (valor("estagio_obrigatorio")?.valor as "sim" | "nao" | undefined) ?? null,
           estagioCargaH: valor("estagio_carga_h")?.valor_num ?? null,
-          estagioCargaEmHoraAula: valor("estagio_carga_h")?.regra.endsWith("-aula") ?? false,
+          estagioCargaUnidade: valor("estagio_carga_h")?.unidade ?? null,
           anoPpc: ano ?? null,
           chComumSuap: curso.dados.suap?.matrizes?.carga_horaria_comum_h ?? null,
           matrizes: resumo ? matrizesDoResumo(resumo) : [],

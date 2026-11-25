@@ -14,9 +14,11 @@ import * as Citacoes from "./db/citacoes.ts";
 import {
   type DivergenciasPpcSuap,
   divergenciasPpcSuap,
+  type FatoARevisar,
   type FatosDoPpc,
   fatosDosPpcs,
   type FiltrosFatos,
+  filaRevisaoFatos,
 } from "./db/consultas-fatos.ts";
 import {
   buscarSecoes,
@@ -40,7 +42,13 @@ import {
 import * as Sql from "./db/sql.ts";
 import { type NormaCitadaNoPpc, type PpcCitante, type RelatorioCitacoes, relatorioCitacoes } from "./ppcs/citacoes.ts";
 
-export type { DivergenciasPpcSuap, FatosDoPpc, FiltrosFatos } from "./db/consultas-fatos.ts";
+export type {
+  DivergenciasPpcSuap,
+  FatoARevisar,
+  FatosDoPpc,
+  FiltrosFatos,
+  MotivoRevisao,
+} from "./db/consultas-fatos.ts";
 export type {
   DocumentoPpc,
   EntradaIndiceSecoes,
@@ -90,6 +98,8 @@ export class Ppcs extends Context.Service<
     readonly normasCitadas: (ppc: string) => Effect.Effect<NormaCitadaNoPpc[] | null, Sql.FalhaNaConsulta>;
     readonly fatos: (filtros?: FiltrosFatos) => Effect.Effect<FatosDoPpc[], Sql.FalhaNaConsulta>;
     readonly divergencias: (filtros?: FiltrosFatos) => Effect.Effect<DivergenciasPpcSuap, Sql.FalhaNaConsulta>;
+    /** Os fatos sem revisão humana, na ordem da fila de revisão (`kb fatos-a-revisar`). */
+    readonly filaRevisaoFatos: Effect.Effect<FatoARevisar[], Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/Ppcs") {}
 
@@ -146,6 +156,7 @@ const make = Effect.gen(function* () {
     divergencias: Effect.fn("Ppcs.divergencias")(function* (filtros: FiltrosFatos = {}) {
       return yield* divergenciasPpcSuap(filtros);
     }, prover),
+    filaRevisaoFatos: filaRevisaoFatos().pipe(prover),
   });
 });
 

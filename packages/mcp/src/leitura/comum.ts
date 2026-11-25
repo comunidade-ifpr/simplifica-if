@@ -179,6 +179,8 @@ export function paraFatosPpc(f: FatosDoPpc): FatosPpc {
       valor_num: x.valor_num,
       unidade: x.unidade,
       status_curadoria: x.status_curadoria,
+      revisor: x.revisor,
+      revisado_em: x.revisado_em,
       regra: x.regra,
       trecho_fonte: x.trecho_fonte,
       fonte: fonteLinha(x.path, x.linha),

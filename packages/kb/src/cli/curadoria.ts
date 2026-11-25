@@ -4,17 +4,21 @@
  *   pnpm kb propor-relacoes [--json]
  *   pnpm kb avaliar-resolvedor [--json]
  *   pnpm kb avaliar-busca [--json]
+ *   pnpm kb fatos-a-revisar [--limite 30] [--json]
  *
  * As consultas à base são as ferramentas do `simplifica-mcp` (`packages/mcp/src/kb.ts` monta a CLI
  * com os dois conjuntos). Saídas sem relógio e com ordem estável.
  */
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
+import * as Option from "effect/Option";
 import * as Command from "effect/cli/Command";
+import * as Flag from "effect/cli/Flag";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { avaliarResolvedor, lerAnotacoes } from "../avaliacao/resolvedor.ts";
 import { carregarRegistro } from "../normas/registro.ts";
 import { proporRelacoes } from "../normas/relacoes.ts";
+import * as Ppcs from "../Ppcs.ts";
 import {
   camadaRepositorio,
   Checkout,
@@ -88,5 +92,49 @@ export const avaliarBuscaCmd = Command.make(
 ).pipe(
   Command.withDescription(
     "Recall@10 da busca de seções no conjunto rotulado (avaliacao/busca-secoes/), com e sem stemmer e sinônimos.",
+  ),
+);
+
+const DESCRICAO_MOTIVO: Record<Ppcs.MotivoRevisao, string> = {
+  "valores-alternativos": "com valores alternativos no PPC",
+  "unidade-desconhecida": "com horas sem unidade conhecida",
+  "sem-revisao": "só sem revisão",
+};
+
+export const fatosARevisarCmd = Command.make(
+  "fatos-a-revisar",
+  {
+    json: flagJson,
+    limite: Flag.Int("limite").pipe(
+      Flag.withDescription("quantos fatos mostrar no texto (todos, sem a flag)"),
+      Flag.optional,
+    ),
+  },
+  Effect.fn("kb.fatosARevisar")(function* ({ json, limite }) {
+    const ppcs = yield* Ppcs.Ppcs;
+    const fila = yield* ppcs.filaRevisaoFatos;
+    if (json) return yield* Console.log(paraJson(fila));
+    const totais = new Map<Ppcs.MotivoRevisao, number>();
+    for (const fato of fila) totais.set(fato.motivos[0]!, (totais.get(fato.motivos[0]!) ?? 0) + 1);
+    const mostrados = Option.match(limite, { onNone: () => fila, onSome: (n) => fila.slice(0, Math.max(0, n)) });
+    yield* imprimir([
+      `${fila.length} fatos de PPC sem revisão humana (status extraido): ${[...totais].map(([m, n]) => `${n} ${DESCRICAO_MOTIVO[m]}`).join(", ") || "nenhum"}`,
+      "A revisão entra em base-conhecimento/fatos-ppc.yaml, com revisor e data.",
+      ...mostrados.flatMap((f) => [
+        "",
+        `${f.ppc}${f.vigente ? "" : " (substituído)"} ${f.fato} = ${f.valor}${f.unidade ? ` (${f.unidade})` : ""} [${f.motivos.map((m) => DESCRICAO_MOTIVO[m]).join("; ")}]`,
+        `  ${f.path}:${f.linha}: ${f.trecho_fonte}`,
+        ...(Array.isArray(f.alternativas) && f.alternativas.length > 0
+          ? [`  alternativas: ${paraJsonCompacto(f.alternativas)}`]
+          : []),
+      ]),
+      ...(mostrados.length < fila.length
+        ? ["", `… e mais ${fila.length - mostrados.length} (sem --limite, todos)`]
+        : []),
+    ]);
+  }, Effect.provide(camadaRepositorio)),
+).pipe(
+  Command.withDescription(
+    "A fila de revisão dos fatos de PPC: os extraídos por regra, primeiro os com valores alternativos e as horas sem unidade conhecida.",
   ),
 );

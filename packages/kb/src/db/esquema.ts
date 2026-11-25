@@ -332,7 +332,9 @@ CREATE TABLE citacoes (
 ) WITHOUT ROWID;
 CREATE INDEX citacoes_norma ON citacoes(norma_id);
 
--- Fatos de PPC: extraídos do texto (status 'extraido') ou vindos de institucional/ifpr.
+-- Fatos de PPC: extraídos do texto (status 'extraido'), revisados por pessoa em fatos-ppc.yaml
+-- ('revisado', com revisor e data) ou o ano do documento ('evidencia-conferida').
+-- unidade (fatos de horas): hora-relogio | hora-aula | hora-aula-50min | hora-aula-45min | horas.
 CREATE TABLE ppc_fatos (
   ppc_id TEXT NOT NULL REFERENCES ppcs(id),
   fato TEXT NOT NULL,
@@ -340,6 +342,8 @@ CREATE TABLE ppc_fatos (
   valor_num INTEGER,
   unidade TEXT,
   status_curadoria TEXT NOT NULL,
+  revisor TEXT,
+  revisado_em TEXT,
   regra TEXT NOT NULL,
   trecho_fonte TEXT NOT NULL,
   path TEXT NOT NULL,

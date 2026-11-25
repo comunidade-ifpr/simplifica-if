@@ -5,10 +5,17 @@
  * - `carga_horaria`: a carga total do PPC contra a CH exibida das matrizes do SUAP.
  *   `confere` (igual à CH comum, ou à da matriz única), `confere-com-uma-matriz` (o SUAP tem matrizes
  *   com CH diferentes e uma delas é a do PPC), `explicada-pelo-estagio` (a diferença é a carga do
- *   estágio obrigatório, somada num lado e não no outro), `diverge`, `sem-fato-ppc`, `sem-suap`.
+ *   estágio obrigatório, somada num lado e não no outro), `diverge`, `unidade-desconhecida`,
+ *   `sem-fato-ppc`, `sem-suap`.
  * - `estagio`: o estágio obrigatório do PPC (sim/não e carga) contra a matriz mais recente do SUAP
- *   (maior ano, depois maior ID). `confere`, `diverge` (sim × não), `diverge-carga`, `sem-fato-ppc`,
- *   `sem-suap`. Carga do estágio em hora-aula confere também convertida (aula de 50 ou 45 minutos).
+ *   (maior ano, depois maior ID). `confere`, `diverge` (sim × não), `diverge-carga`,
+ *   `unidade-desconhecida`, `sem-fato-ppc`, `sem-suap`.
+ *
+ * Unidade das horas: a carga do PPC se compara em hora-relógio, e só com a unidade conhecida
+ * (`hora-relogio`, ou hora-aula com a duração dada na revisão humana). Com a unidade não conhecida
+ * (`horas` sem unidade, `hora-aula` sem duração), nenhuma unidade é escolhida para bater com o SUAP:
+ * o número igual ao do SUAP em "horas" confere, e qualquer outro caso fica `unidade-desconhecida`,
+ * sem afirmar divergência, até a revisão do fato (`pnpm kb fatos-a-revisar`).
  * - `ano`: o ano do PPC (`base-conhecimento/institucional/ifpr/`) contra o ano da matriz mais recente. `confere` (há
  *   matriz do ano do PPC ou posterior), `ppc-mais-recente-que-matrizes` (o SUAP não tem matriz do
  *   PPC vigente), `sem-ano`, `sem-suap`.
@@ -17,6 +24,7 @@
  * linha leva os dois valores e a explicação, e a conferência começa pelo `trecho_fonte` do fato.
  */
 import type { MatrizSuap } from "../institucional/dados.ts";
+import { minutosDaUnidade, type UnidadeFato } from "./ppc.ts";
 
 export interface LinhaCruzamento {
   aspecto: "carga_horaria" | "estagio" | "ano";
@@ -30,26 +38,32 @@ export const RESULTADOS_DIVERGENTES = new Set(["diverge", "diverge-carga", "ppc-
 
 export interface EntradaCruzamento {
   chPpc: number | null;
-  /** A carga do PPC só veio em hora-aula (regra terminada em `-aula`). */
-  chPpcEmHoraAula?: boolean;
+  /** Unidade da carga do PPC (`horas` quando ausente). */
+  chPpcUnidade?: UnidadeFato | null;
   estagioObrigatorio: "sim" | "nao" | null;
   estagioCargaH: number | null;
-  /** A carga do estágio veio em hora-aula (regra terminada em `-aula`). */
-  estagioCargaEmHoraAula?: boolean;
+  /** Unidade da carga do estágio (`horas` quando ausente). */
+  estagioCargaUnidade?: UnidadeFato | null;
   anoPpc: number | null;
   chComumSuap: number | null;
   matrizes: readonly MatrizSuap[];
 }
 
-/** A carga como está e, se for hora-aula, convertida de aulas de 50 e de 45 minutos. */
-function conversoesHoraAula(ch: number, emHoraAula: boolean | undefined): { ch: number; nota: string }[] {
-  return emHoraAula
-    ? [
-        { ch, nota: "" },
-        { ch: Math.round((ch * 50) / 60), nota: " (convertendo hora-aula de 50 min)" },
-        { ch: Math.round((ch * 45) / 60), nota: " (convertendo hora-aula de 45 min)" },
-      ]
-    : [{ ch, nota: "" }];
+/**
+ * A carga em hora-relógio, quando a unidade é conhecida: a hora-relógio como está, a hora-aula com
+ * duração convertida. `null` para a unidade não conhecida: nenhuma é escolhida.
+ */
+function emHoraRelogio(ch: number, unidade: UnidadeFato | null | undefined): { ch: number; nota: string } | null {
+  const minutos = minutosDaUnidade(unidade ?? "horas");
+  if (minutos === null) return null;
+  return minutos === 60
+    ? { ch, nota: "" }
+    : { ch: Math.round((ch * minutos) / 60), nota: ` (${ch} hora-aula de ${minutos} min)` };
+}
+
+/** Como o texto descreve a unidade não conhecida. */
+function descreverUnidadeDesconhecida(unidade: UnidadeFato | null | undefined): string {
+  return unidade === "hora-aula" ? "hora-aula sem a duração da aula" : "horas sem unidade declarada";
 }
 
 function maisRecente(matrizes: readonly MatrizSuap[]): MatrizSuap | null {
@@ -83,10 +97,23 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
       valor_suap: valorSuapCh,
       explicacao: "carga horária total não extraída do PPC",
     });
+  } else if (
+    !emHoraRelogio(e.chPpc, e.chPpcUnidade) &&
+    !((e.chPpcUnidade ?? "horas") === "horas" && e.matrizes.some((m) => m.ch_exibida_h === e.chPpc))
+  ) {
+    saida.push({
+      aspecto: "carga_horaria",
+      resultado: "unidade-desconhecida",
+      valor_ppc: String(e.chPpc),
+      valor_suap: valorSuapCh,
+      explicacao: `PPC ${e.chPpc} (${descreverUnidadeDesconhecida(e.chPpcUnidade)}): sem a unidade, a comparação com o SUAP (${e.matrizes.map(descreverMatriz).join("; ")}) não afirma divergência; revise o fato`,
+    });
   } else {
-    // carga só em hora-aula: confere também convertida (aula de 50 ou 45 minutos)
-    const conversoes = conversoesHoraAula(e.chPpc, e.chPpcEmHoraAula);
-    const convertida = conversoes.find((c) => e.matrizes.some((m) => m.ch_exibida_h === c.ch)) ?? conversoes[0]!;
+    // unidade conhecida, ou "horas" sem unidade com o mesmo número do SUAP
+    const convertida = emHoraRelogio(e.chPpc, e.chPpcUnidade) ?? {
+      ch: e.chPpc,
+      nota: " (o PPC não declara a unidade)",
+    };
     const ch = convertida.ch;
     const estagio = e.estagioCargaH ?? 0;
     const igual = e.matrizes.filter((m) => m.ch_exibida_h === ch);
@@ -127,7 +154,7 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
           resultado: "diverge",
           valor_ppc: String(ch),
           valor_suap: valorSuapCh,
-          explicacao: `PPC ${ch} h${e.chPpcEmHoraAula ? " (hora-aula: o PPC não dá a carga em hora-relógio)" : ""}; mais próxima: ${descreverMatriz(proxima)} (diferença ${diferenca > 0 ? "+" : ""}${diferenca} h)`,
+          explicacao: `PPC ${ch} h${convertida.nota}; mais próxima: ${descreverMatriz(proxima)} (diferença ${diferenca > 0 ? "+" : ""}${diferenca} h)`,
         });
       }
     }
@@ -176,24 +203,32 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
       recente.ch_estagio_h !== null &&
       recente.ch_estagio_h > 0
     ) {
-      const conversao = conversoesHoraAula(e.estagioCargaH, e.estagioCargaEmHoraAula).find(
-        (c) => c.ch === recente.ch_estagio_h,
-      );
-      if (conversao) {
+      const conversao = emHoraRelogio(e.estagioCargaH, e.estagioCargaUnidade);
+      const semUnidadeIgual =
+        (e.estagioCargaUnidade ?? "horas") === "horas" && e.estagioCargaH === recente.ch_estagio_h;
+      if (semUnidadeIgual || conversao?.ch === recente.ch_estagio_h) {
         saida.push({
           aspecto: "estagio",
           resultado: "confere",
           valor_ppc: ppc,
           valor_suap: suap,
-          explicacao: `${base}${conversao.nota}`,
+          explicacao: `${base}${conversao ? conversao.nota : " (o PPC não declara a unidade)"}`,
         });
-      } else {
+      } else if (conversao) {
         saida.push({
           aspecto: "estagio",
           resultado: "diverge-carga",
           valor_ppc: ppc,
           valor_suap: suap,
-          explicacao: `carga do estágio: PPC ${e.estagioCargaH} h${e.estagioCargaEmHoraAula ? " (hora-aula)" : ""}, SUAP ${recente.ch_estagio_h} h (${base})`,
+          explicacao: `carga do estágio: PPC ${conversao.ch} h${conversao.nota}, SUAP ${recente.ch_estagio_h} h (${base})`,
+        });
+      } else {
+        saida.push({
+          aspecto: "estagio",
+          resultado: "unidade-desconhecida",
+          valor_ppc: ppc,
+          valor_suap: suap,
+          explicacao: `carga do estágio: PPC ${e.estagioCargaH} (${descreverUnidadeDesconhecida(e.estagioCargaUnidade)}), SUAP ${recente.ch_estagio_h} h (${base}): sem a unidade, a divergência não se afirma; revise o fato`,
         });
       }
     } else {

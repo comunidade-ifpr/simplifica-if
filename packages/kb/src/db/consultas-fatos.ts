@@ -21,6 +21,8 @@ const LinhaFato = Schema.Struct({
   valor_num: InteiroNulo,
   unidade: TextoNulo,
   status_curadoria: Texto,
+  revisor: TextoNulo,
+  revisado_em: TextoNulo,
   regra: Texto,
   trecho_fonte: Texto,
   path: Texto,
@@ -197,4 +199,66 @@ export const divergenciasPpcSuap = Effect.fn("consultasFatos.divergenciasPpcSuap
     .filter((p) => p.cruzamento.length > 0);
   const resultado: DivergenciasPpcSuap = { totais: ordenado, ppcs };
   return resultado;
+});
+
+/** Por que um fato está na fila de revisão, na ordem da fila. */
+export const MOTIVOS_REVISAO = ["valores-alternativos", "unidade-desconhecida", "sem-revisao"] as const;
+export type MotivoRevisao = (typeof MOTIVOS_REVISAO)[number];
+
+/** Um fato de PPC sem revisão humana, na fila (`filaRevisaoFatos`). */
+export interface FatoARevisar {
+  ppc: string;
+  vigente: boolean;
+  fato: string;
+  valor: string;
+  unidade: string | null;
+  regra: string;
+  trecho_fonte: string;
+  path: string;
+  linha: number;
+  alternativas: unknown;
+  /** O primeiro motivo dá a posição na fila; os outros vão juntos. */
+  motivos: MotivoRevisao[];
+}
+
+const LinhaFila = Schema.Struct({ ...LinhaFato.fields, vigente: Inteiro });
+const linhasFila = Sql.todas(LinhaFila);
+
+/**
+ * A fila de revisão dos fatos de PPC: os fatos extraídos por regra (status `extraido`), primeiro os
+ * que têm valores alternativos, depois as horas sem unidade conhecida (só "horas", ou hora-aula sem
+ * a duração), depois o resto; em cada grupo, os PPCs vigentes antes dos substituídos.
+ */
+export const filaRevisaoFatos = Effect.fn("consultasFatos.filaRevisaoFatos")(function* () {
+  const linhas = yield* linhasFila(
+    `SELECT f.*, p.vigente FROM ppc_fatos f JOIN ppcs p ON p.id = f.ppc_id
+     WHERE f.status_curadoria = 'extraido' ORDER BY f.ppc_id, f.fato`,
+  );
+  const fila = linhas.map(({ ppc_id, alternativas_json, vigente, ...f }): FatoARevisar => {
+    const motivos: MotivoRevisao[] = [];
+    if (Array.isArray(alternativas_json) && alternativas_json.length > 0) motivos.push("valores-alternativos");
+    if (f.unidade === "horas" || f.unidade === "hora-aula") motivos.push("unidade-desconhecida");
+    if (motivos.length === 0) motivos.push("sem-revisao");
+    return {
+      ppc: ppc_id,
+      vigente: vigente === 1,
+      fato: f.fato,
+      valor: f.valor,
+      unidade: f.unidade,
+      regra: f.regra,
+      trecho_fonte: f.trecho_fonte,
+      path: f.path,
+      linha: f.linha,
+      alternativas: alternativas_json,
+      motivos,
+    };
+  });
+  const posicao = (f: FatoARevisar) => MOTIVOS_REVISAO.indexOf(f.motivos[0]!);
+  return fila.sort(
+    (a, b) =>
+      posicao(a) - posicao(b) ||
+      Number(b.vigente) - Number(a.vigente) ||
+      compararTexto(a.ppc, b.ppc) ||
+      compararTexto(a.fato, b.fato),
+  );
 });

@@ -41,7 +41,7 @@ Armadilhas:
 - **Norma revogada não é inaplicável:** consulte as regras de transição (`kb ficha-norma`). Norma `aguardando publicação` (assinada e ainda não publicada, como a Res. CNE/CP nº 2/2026) não está em vigor.
 - A tabela de correspondência 1/2021 → 2/2026 é rascunho sem revisão jurídica: indicação, não fundamento.
 - Confira `regra` e `confianca` das citações: as regras de confiança menor (`dcnept-2021-orgao-trocado`, `orgao-ausente-registro`, `orgao-no-documento`) pedem conferência no trecho.
-- Fatos de PPC têm status `extraido` (sem revisão humana): confira o trecho de origem antes de afirmar uma divergência. Se `buscar-secoes` não achar o esperado, procure com `rg` nos Markdown dos PPCs.
+- Fatos de PPC têm status `extraido` (por regra, sem revisão humana) até alguém os revisar em `base-conhecimento/fatos-ppc.yaml` (status `revisado`, com revisor e data; a fila: `pnpm kb fatos-a-revisar`); o ano do documento é `evidencia-conferida`, não revisado. Confira o trecho de origem antes de afirmar uma divergência; carga sem unidade conhecida sai `unidade-desconhecida` no cruzamento com o SUAP, sem divergência afirmada. Se `buscar-secoes` não achar o esperado, procure com `rg` nos Markdown dos PPCs.
 - PPCs são exemplos institucionais, não fonte normativa. Em elaboração ou revisão de PPC, combine PPCs similares com normas vigentes e, para cursos técnicos, com o CNCT.
 
 ## Curadoria da base

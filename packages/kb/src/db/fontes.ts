@@ -2,7 +2,8 @@
 /**
  * Fontes do `kb.sqlite` e a impressão digital delas, para a CLI decidir quando recompilar.
  *
- * Fontes = os arquivos do git de onde o banco sai (normas, stubs, PPCs e índice de seções, CNCT,
+ * Fontes = os arquivos do git de onde o banco sai (normas, stubs, PPCs e índice de seções, revisão
+ * dos fatos de PPC (`fatos-ppc.yaml`), CNCT,
  * registros institucionais, fichas, tópicos e marcos da revisão de PPC, léxico de sinônimos, e os
  * arquivos normativos: `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml`)
  * mais o
@@ -32,6 +33,7 @@ import { ARQUIVOS_FONTES_NORMATIVAS } from "./fontes-normativas.ts";
 const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[] = [
   { caminho: CAMINHOS.normas, extensoes: [".md", ".yaml"] },
   { caminho: CAMINHOS.ppcs, extensoes: [".md", ".json", ".jsonl"] },
+  { caminho: CAMINHOS.fatosPpc, extensoes: [] },
   { caminho: CAMINHOS.cnct, extensoes: [".json"] },
   ...["campi", "cursos", "processos-seletivos", "editais", "ofertas", "conselhos"].map((colecao) => ({
     caminho: `${CAMINHOS.institucional}/${colecao}`,

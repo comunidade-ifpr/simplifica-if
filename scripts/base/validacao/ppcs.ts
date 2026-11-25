@@ -10,6 +10,7 @@ import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { coletarItensPpc } from "../indice-ppcs.ts";
 import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
+import { carregarRevisoesFatos, validarRevisoesFatos } from "@simplifica-if/kb/fatos/revisoes";
 import { analisarPpc, conferirEvidenciaAno, type ProvenienciaPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { compararVersoesPpc, idPpc, partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
 import { lerTexto, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
@@ -123,5 +124,21 @@ export function validarPpcs(ctx: Contexto): string[] {
       );
     }
   }
+  erros.push(...validarRevisoesDosFatos(ctx, itens));
   return erros;
+}
+
+/** A revisão humana dos fatos de PPC (`fatos-ppc.yaml`): o contrato, o PPC no índice e o trecho literal. */
+function validarRevisoesDosFatos(ctx: Contexto, itens: readonly { readonly id: string; readonly path: string }[]) {
+  let revisoes;
+  try {
+    revisoes = carregarRevisoesFatos(ctx.c.raizProjeto);
+  } catch (erro) {
+    return [`fatos-ppc.yaml: ${erro instanceof Error ? erro.message : String(erro)}`];
+  }
+  return validarRevisoesFatos(
+    ctx.c.raizProjeto,
+    revisoes,
+    itens.map((item) => ({ id: `ppc:${item.id}`, path: item.path })),
+  );
 }

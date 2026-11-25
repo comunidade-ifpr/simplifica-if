@@ -188,12 +188,19 @@ export const FatosPpc = Schema.Struct({
       fato: Schema.String,
       valor: Schema.String,
       valor_num: Schema.NullOr(Schema.Finite),
+      /**
+       * Unidade das horas: `hora-relogio`, `hora-aula` (sem a duração), `hora-aula-50min`,
+       * `hora-aula-45min` ou `horas` (sem unidade declarada); `null` no estágio obrigatório.
+       */
       unidade: Schema.NullOr(Schema.String),
       /**
        * `extraido`: por regra, sem revisão humana; `revisado`: conferido por pessoa; `evidencia-conferida`:
        * o ano do documento, com a evidência literal conferida por regra.
        */
       status_curadoria: Schema.String,
+      /** Quem revisou e quando (`AAAA-MM-DD`), no status `revisado`. */
+      revisor: Schema.NullOr(Schema.String),
+      revisado_em: Schema.NullOr(Schema.String),
       regra: Schema.String,
       trecho_fonte: Schema.String,
       fonte: Fonte,

@@ -328,7 +328,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
   citacao(PPC_ENFERMAGEM_ANTERIOR, 20, "Resolução CNE/CP nº 1/2021", "br/cne-cp/res/2021/1", "estrutural", 0.98);
 
   for (const [fato, valor, num, unidade, trecho, linha] of [
-    ["carga_horaria_total_h", "1600", 1600, "h", "Carga horária total em hora relógio: 1.600 horas", 122],
+    ["carga_horaria_total_h", "1600", 1600, "hora-relogio", "Carga horária total em hora relógio: 1.600 horas", 122],
     [
       "estagio_obrigatorio",
       "sim",

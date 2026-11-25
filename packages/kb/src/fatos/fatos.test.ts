@@ -52,10 +52,10 @@ const SECOES = [
 describe("extrairFatosPpc", () => {
   test("carga total e estágio do quadro, com linha e trecho literal", () => {
     const fatos = extrairFatosPpc(PPC, SECOES);
-    expect(fatos.map((f) => [f.fato, f.valor, f.linha, f.status_curadoria])).toEqual([
-      ["carga_horaria_total_h", "1600", 7, "extraido"],
-      ["estagio_obrigatorio", "sim", 9, "extraido"],
-      ["estagio_carga_h", "400", 9, "extraido"],
+    expect(fatos.map((f) => [f.fato, f.valor, f.unidade, f.linha, f.status_curadoria])).toEqual([
+      ["carga_horaria_total_h", "1600", "hora-relogio", 7, "extraido"],
+      ["estagio_obrigatorio", "sim", null, 9, "extraido"],
+      ["estagio_carga_h", "400", "horas", 9, "extraido"],
     ]);
     expect(fatos[0]!.trecho_fonte).toBe("**Carga horária total em hora-relógio:** 1.600 horas");
   });
@@ -124,19 +124,40 @@ describe("SUAP", () => {
 
   test("cruzamento PPC × SUAP", () => {
     const matrizes = matrizesDoResumo(RESUMO);
-    const base = { estagioObrigatorio: "sim" as const, estagioCargaH: 400, anoPpc: 2024, chComumSuap: null, matrizes };
+    const base = {
+      estagioObrigatorio: "sim" as const,
+      estagioCargaH: 400,
+      estagioCargaUnidade: "hora-relogio" as const,
+      anoPpc: 2024,
+      chComumSuap: null,
+      matrizes,
+    };
     const r = (chPpc: number, extra = {}) =>
-      Object.fromEntries(cruzarPpcSuap({ ...base, chPpc, ...extra }).map((l) => [l.aspecto, l.resultado]));
+      Object.fromEntries(
+        cruzarPpcSuap({ ...base, chPpc, chPpcUnidade: "hora-relogio", ...extra }).map((l) => [l.aspecto, l.resultado]),
+      );
     expect(r(1600)).toEqual({ carga_horaria: "confere-com-uma-matriz", estagio: "confere", ano: "confere" });
     expect(r(2000)).toEqual({ carga_horaria: "explicada-pelo-estagio", estagio: "confere", ano: "confere" });
     expect(r(1700).carga_horaria).toBe("diverge");
     expect(r(1600, { estagioObrigatorio: "nao" }).estagio).toBe("diverge");
     expect(r(1600, { anoPpc: 2025 }).ano).toBe("ppc-mais-recente-que-matrizes");
-    expect(r(1920, { chPpcEmHoraAula: true }).carga_horaria).toBe("confere-com-uma-matriz");
-    // estágio em hora-aula: 480 aulas de 50 min = 400 h
-    expect(r(1600, { estagioCargaH: 480, estagioCargaEmHoraAula: true }).estagio).toBe("confere");
+    // hora-aula com a duração revisada: 1920 aulas de 50 min = 1600 h
+    expect(r(1920, { chPpcUnidade: "hora-aula-50min" }).carga_horaria).toBe("confere-com-uma-matriz");
+    expect(r(1920, { chPpcUnidade: "hora-aula-45min" }).carga_horaria).toBe("diverge");
+    // sem a duração, a unidade não é escolhida para bater com o SUAP: nada se afirma
+    expect(r(1920, { chPpcUnidade: "hora-aula" }).carga_horaria).toBe("unidade-desconhecida");
+    expect(r(1600, { chPpcUnidade: "hora-aula" }).carga_horaria).toBe("unidade-desconhecida");
+    // "horas" sem unidade: o mesmo número do SUAP confere; outro número não é divergência afirmada
+    expect(r(1600, { chPpcUnidade: "horas" }).carga_horaria).toBe("confere-com-uma-matriz");
+    expect(r(1700, { chPpcUnidade: "horas" }).carga_horaria).toBe("unidade-desconhecida");
+    expect(r(2000, { chPpcUnidade: "horas" }).carga_horaria).toBe("unidade-desconhecida");
+    // estágio: 480 aulas de 50 min = 400 h, só com a duração revisada
+    expect(r(1600, { estagioCargaH: 480, estagioCargaUnidade: "hora-aula-50min" }).estagio).toBe("confere");
+    expect(r(1600, { estagioCargaH: 480, estagioCargaUnidade: "hora-aula" }).estagio).toBe("unidade-desconhecida");
     expect(r(1600, { estagioCargaH: 480 }).estagio).toBe("diverge-carga");
-    expect(r(1600, { estagioCargaH: 500, estagioCargaEmHoraAula: true }).estagio).toBe("diverge-carga");
+    expect(r(1600, { estagioCargaH: 480, estagioCargaUnidade: "horas" }).estagio).toBe("unidade-desconhecida");
+    expect(r(1600, { estagioCargaH: 400, estagioCargaUnidade: "horas" }).estagio).toBe("confere");
+    expect(r(1600, { estagioCargaH: 500, estagioCargaUnidade: "hora-aula-50min" }).estagio).toBe("diverge-carga");
     expect(cruzarPpcSuap({ ...base, chPpc: null, matrizes: [] }).map((l) => l.resultado)).toEqual([
       "sem-suap",
       "sem-suap",

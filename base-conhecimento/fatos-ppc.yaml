@@ -1,0 +1,20 @@
+# Revisão humana dos fatos de PPC: a fonte do status "revisado".
+#
+# Contrato: esquemaRevisoesFatos em packages/kb/src/fatos/revisoes.ts (Effect Schema), conferido por
+# node scripts/validar_base.ts. Os fatos nascem por regra na compilação do kb.sqlite (status
+# "extraido", packages/kb/src/fatos/ppc.ts); a revisão de uma pessoa entra aqui e a compilação a
+# aplica por cima da extração. A fila do que falta revisar: pnpm kb fatos-a-revisar.
+#
+# Cada revisão:
+# - ppc: ppc:<campus>/<curso>/<versao> (a versão revisada, nunca "o vigente");
+# - fato: carga_horaria_total_h, estagio_obrigatorio ou estagio_carga_h;
+# - valor: horas em número inteiro (1600), ou sim/nao no estágio obrigatório;
+# - unidade (só nos fatos de horas, obrigatória): hora-relogio, hora-aula-50min ou hora-aula-45min,
+#   conferida no PPC (a duração da hora-aula vem do texto, nunca de bater com o SUAP);
+# - trecho: o trecho literal do PPC, dentro de uma linha, que sustenta o valor e a unidade;
+# - revisor (o nome da pessoa) e revisado_em (AAAA-MM-DD);
+# - nota (opcional): onde mais o PPC confirma, por exemplo a duração da aula em outra seção.
+#
+# Não se registra revisão que ninguém fez: sem revisão, o fato fica "extraido".
+
+revisoes: []

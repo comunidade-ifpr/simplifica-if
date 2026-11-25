@@ -145,7 +145,7 @@ export function inserirExplorar(caminho: string): void {
       fato: "carga_horaria_total_h",
       valor: "1600",
       valor_num: 1600,
-      unidade: "h",
+      unidade: "hora-relogio",
       status_curadoria: "extraido",
       regra: "rotulo-corpo",
       trecho_fonte: "Carga horária total em hora relógio: 1.600 horas",
@@ -153,17 +153,17 @@ export function inserirExplorar(caminho: string): void {
       linha: 122,
       alternativas_json: "[]",
     });
-    // o ano do documento vem dos dados institucionais, ainda sem revisão da curadoria
+    // o ano do documento vem do front matter, com a evidência conferida por regra
     inserir("ppc_fatos", {
       ppc_id: `ppc:${PPC_ENFERMAGEM}`,
       fato: "ano_documento",
       valor: "2023",
       valor_num: 2023,
       unidade: null,
-      status_curadoria: "Precisa de revisão",
-      regra: "dados-institucionais",
-      trecho_fonte: "ano_documento: 2023",
-      path: "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
+      status_curadoria: "evidencia-conferida",
+      regra: "evidencia-no-texto",
+      trecho_fonte: "Curitiba, 2023",
+      path: MD_ENFERMAGEM,
       linha: 30,
       alternativas_json: "[]",
     });

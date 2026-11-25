@@ -61,11 +61,13 @@ const RESULTADOS_CRUZAMENTO: Readonly<Record<string, { readonly nome: string; re
   confere: { nome: "Confere", alerta: false },
   "confere-com-uma-matriz": { nome: "Confere com uma das matrizes", alerta: false },
   diverge: { nome: "Diverge", alerta: true },
+  "diverge-carga": { nome: "A carga do estágio diverge", alerta: true },
   "explicada-pelo-estagio": { nome: "Diferença explicada pelo estágio", alerta: false },
   "ppc-mais-recente-que-matrizes": { nome: "PPC mais recente que as matrizes do SUAP", alerta: true },
   "sem-ano": { nome: "Sem o ano para comparar", alerta: false },
   "sem-fato-ppc": { nome: "O PPC não informa", alerta: false },
   "sem-suap": { nome: "Sem dados do SUAP", alerta: false },
+  "unidade-desconhecida": { nome: "Sem a unidade das horas para comparar", alerta: false },
 };
 
 /** O resultado do cruzamento PPC × SUAP (`ppc-fatos`) e se ele pede atenção. */
@@ -107,9 +109,17 @@ export function ressalvaDoFato(status: string): string | null {
   return "Precisa de revisão";
 }
 
-/** O valor de um fato do PPC, com a unidade ("1600 h", "sim"). */
+const UNIDADES: Readonly<Record<string, string>> = {
+  "hora-relogio": "h (hora-relógio)",
+  "hora-aula": "hora-aula (sem a duração da aula)",
+  "hora-aula-50min": "hora-aula de 50 min",
+  "hora-aula-45min": "hora-aula de 45 min",
+  horas: "horas (sem unidade declarada)",
+};
+
+/** O valor de um fato do PPC, com a unidade ("1600 h (hora-relógio)", "sim"). */
 export function valorFato(fato: { readonly valor: string; readonly unidade: string | null }): string {
-  return fato.unidade === null ? fato.valor : `${fato.valor} ${fato.unidade}`;
+  return fato.unidade === null ? fato.valor : `${fato.valor} ${UNIDADES[fato.unidade] ?? fato.unidade}`;
 }
 
 const CRITICIDADES: Readonly<Record<string, string>> = {

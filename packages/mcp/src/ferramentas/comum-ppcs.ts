@@ -60,8 +60,11 @@ export function textoFatosPpc(f: FatosPpc, opcoes: { cabecalho?: boolean } = {})
   for (const x of f.fatos) {
     partes.push(
       blocoItem({
-        titulo: `${x.fato} = ${x.valor}${x.unidade ? ` ${x.unidade}` : ""}`,
-        detalhe: `status \`${x.status_curadoria}\`, regra \`${x.regra}\``,
+        titulo: `${x.fato} = ${x.valor}${x.unidade ? ` (${x.unidade})` : ""}`,
+        detalhe:
+          x.status_curadoria === "revisado"
+            ? `status \`revisado\` por ${x.revisor ?? "?"} em ${x.revisado_em ?? "?"}`
+            : `status \`${x.status_curadoria}\`, regra \`${x.regra}\``,
         literal: cortar(x.trecho_fonte, MAX_TRECHO_FATO),
         fonte: x.fonte,
       }),

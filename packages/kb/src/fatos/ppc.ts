@@ -1,13 +1,18 @@
 /**
  * Fatos extraídos do texto dos PPCs convertidos, cada um com o trecho de origem (linha literal do
  * Markdown) e o status de curadoria `extraido`: são propostas por regra, não confirmadas por pessoa
- * (Princípio 4 do plano). O valor está no cruzamento com o SUAP (`divergencias.ts`), e não no
- * número isolado de um texto convertido de PDF.
+ * (Princípio 4 do plano). A revisão humana fica em `base-conhecimento/fatos-ppc.yaml`
+ * (`revisoes.ts`), e a compilação a aplica por cima da extração. O valor está no cruzamento com o
+ * SUAP (`divergencias.ts`), e não no número isolado de um texto convertido de PDF.
  *
  * Fatos:
  * - `carga_horaria_total_h`: carga horária total do curso, em hora-relógio quando o PPC dá as duas;
  * - `estagio_obrigatorio`: `sim` ou `nao`;
  * - `estagio_carga_h`: carga horária do estágio obrigatório.
+ *
+ * A unidade das horas é a que o trecho declara (`UnidadeFato`): hora-relógio, hora-aula (sem a
+ * duração da aula) ou só "horas", sem unidade. A duração da hora-aula (50 ou 45 minutos) só vem da
+ * revisão humana: a regra não a deduz.
  *
  * As regras procuram primeiro nas seções de identificação e carga horária (o quadro de dados do
  * curso), depois no resto do PPC, sempre fora do ementário, dos anexos e das referências, onde a
@@ -23,11 +28,36 @@
  */
 export type StatusCuradoria = "extraido" | "revisado" | "evidencia-conferida";
 
+/**
+ * Unidade de um fato de horas:
+ * - `hora-relogio`: o trecho declara hora-relógio (ou hora-aula de 60 minutos);
+ * - `hora-aula`: o trecho declara hora-aula, sem a duração da aula;
+ * - `hora-aula-50min`, `hora-aula-45min`: hora-aula com a duração conferida na revisão humana;
+ * - `horas`: o trecho só diz "horas" (ou "h"), sem unidade.
+ *
+ * Só `hora-relogio` e a hora-aula com duração são unidades conhecidas: com elas a carga se compara
+ * em hora-relógio. Fato que não é de horas (`estagio_obrigatorio`) não tem unidade.
+ */
+export const UNIDADES_HORAS = ["hora-relogio", "hora-aula", "hora-aula-50min", "hora-aula-45min", "horas"] as const;
+export type UnidadeFato = (typeof UNIDADES_HORAS)[number];
+
+/** Minutos de cada unidade conhecida (a hora-relógio tem 60); `null` para a unidade não conhecida. */
+export function minutosDaUnidade(unidade: UnidadeFato | null): number | null {
+  if (unidade === "hora-relogio") return 60;
+  if (unidade === "hora-aula-50min") return 50;
+  if (unidade === "hora-aula-45min") return 45;
+  return null;
+}
+
+export const FATOS_PPC = ["carga_horaria_total_h", "estagio_obrigatorio", "estagio_carga_h"] as const;
+export type NomeFatoPpc = (typeof FATOS_PPC)[number];
+
 export interface FatoPpc {
-  fato: "carga_horaria_total_h" | "estagio_obrigatorio" | "estagio_carga_h";
+  fato: NomeFatoPpc;
   valor: string;
   valor_num: number | null;
-  unidade: "h" | null;
+  /** Unidade das horas (`null` em `estagio_obrigatorio`). */
+  unidade: UnidadeFato | null;
   /** Linha (desde 1, no arquivo com o front matter) do trecho de origem. */
   linha: number;
   /** Linha literal do Markdown de onde o valor saiu. */
@@ -366,7 +396,14 @@ function estagio(
   return { obrigatorio, carga };
 }
 
-function fato(nome: FatoPpc["fato"], candidatos: Candidato[], unidade: "h" | null): FatoPpc | null {
+/** A unidade das horas pelo sufixo da regra (`-relogio`, `-aula`); sem ele, só "horas". */
+function unidadeDaRegra(regra: string): UnidadeFato {
+  if (regra.endsWith("-relogio")) return "hora-relogio";
+  if (regra.endsWith("-aula")) return "hora-aula";
+  return "horas";
+}
+
+function fato(nome: NomeFatoPpc, candidatos: Candidato[], horas: boolean): FatoPpc | null {
   const escolhido = melhor(candidatos);
   if (!escolhido) return null;
   const alternativas = [...candidatos]
@@ -378,7 +415,7 @@ function fato(nome: FatoPpc["fato"], candidatos: Candidato[], unidade: "h" | nul
     fato: nome,
     valor: escolhido.valor,
     valor_num: escolhido.valor_num,
-    unidade,
+    unidade: horas ? unidadeDaRegra(escolhido.regra) : null,
     linha: escolhido.linha,
     trecho_fonte: escolhido.trecho,
     regra: escolhido.regra,
@@ -398,14 +435,14 @@ export function extrairFatosPpc(markdown: string, secoes: readonly SecaoDoPpc[])
     for (let l = 1; l <= n; l += 1) zona[l] = null;
   }
   const saida: FatoPpc[] = [];
-  const ch = fato("carga_horaria_total_h", cargaHorariaTotal(linhas, zona), "h");
+  const ch = fato("carga_horaria_total_h", cargaHorariaTotal(linhas, zona), true);
   if (ch) saida.push(ch);
   const est = estagio(linhas, zona);
-  const obrigatorio = fato("estagio_obrigatorio", est.obrigatorio, null);
+  const obrigatorio = fato("estagio_obrigatorio", est.obrigatorio, false);
   if (obrigatorio) {
     saida.push(obrigatorio);
     if (obrigatorio.valor === "sim") {
-      const carga = fato("estagio_carga_h", est.carga, "h");
+      const carga = fato("estagio_carga_h", est.carga, true);
       if (carga) saida.push(carga);
     }
   }

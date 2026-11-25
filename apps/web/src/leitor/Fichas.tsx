@@ -320,7 +320,8 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                         <Alert variant="info">
                           <AlertDescription>
                             Há valores do PPC sem revisão da curadoria: os marcados “Extraído, conferir” foram tirados
-                            do texto por regra, e os marcados “Precisa de revisão” ainda não foram conferidos. Confira o
+                            do texto por regra, o ano marcado “Evidência conferida por regra” teve só o trecho conferido
+                            automaticamente, e os marcados “Precisa de revisão” ainda não foram conferidos. Confira o
                             trecho no PPC antes de afirmar uma divergência.
                           </AlertDescription>
                         </Alert>
@@ -400,6 +401,13 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                             <p>
                               <strong>{nomeFato(f.fato)}:</strong> {valorFato(f)}{" "}
                               {ressalvas.has(f.fato) ? <Badge variant="info">{ressalvas.get(f.fato)}</Badge> : null}
+                              {f.status_curadoria === "revisado" && f.revisor ? (
+                                <span className="text-muted-foreground text-small">
+                                  {" "}
+                                  Revisado por {f.revisor}
+                                  {f.revisado_em ? ` em ${dataBr(f.revisado_em)}` : ""}
+                                </span>
+                              ) : null}
                             </p>
                             <p className="font-serif text-muted-foreground text-small" data-conteudo>
                               “{f.trecho_fonte}”{" "}

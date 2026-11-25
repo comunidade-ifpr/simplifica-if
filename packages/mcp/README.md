@@ -80,7 +80,7 @@ pnpm kb <comando> --help
 
 - **Saída:** o texto Markdown que a IA recebe; com `--json`, a `Resposta` inteira (o `structuredContent`) numa linha. Nas ferramentas paginadas, `--todas-as-paginas` segue o cursor e imprime todas as páginas (no JSON, uma por linha).
 - **Erros:** entrada inválida, ID que não está na base e falha do banco saem como `kb: <mensagem>` no stderr, com código 1; um erro de uso (flag desconhecida, argumento que falta) imprime o erro do `effect/cli`, também com 1.
-- **Curadoria:** `compilar`, `relacoes --propor`, `avaliar-resolvedor` e `avaliar-busca` ficam em `@simplifica-if/kb/cli` ([`packages/kb/README.md`](../kb/README.md#cli)) e entram na mesma CLI.
+- **Curadoria:** `compilar`, `relacoes --propor`, `avaliar-resolvedor`, `avaliar-busca` e `fatos-a-revisar` ficam em `@simplifica-if/kb/cli` ([`packages/kb/README.md`](../kb/README.md#cli)) e entram na mesma CLI.
 
 ## Configuração fora do app
 

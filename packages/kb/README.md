@@ -11,7 +11,7 @@ Desde o C1 da consolidação na stack do T3, o kb é um conjunto de serviços [E
 | `BaseKb.ts` | `meta` (versão do esquema, `data_referencia`, impressão digital, contagens, `versao`/`commit`/`canal`); falha a layer com `BaseIncompativel`. `layerSqlite({ caminho })`: o `SqlClient` só leitura (`BaseAusente`) | `SqlClient` |
 | `FontesNormativas.ts` | `registro`, `datas`, `relacoes`, `transicoes` (com eles, o próprio serviço é a `FonteVigencia` das regras), `dataReferencia`, `sinonimos`, `topicosSecoes`, `topicosFichas`, `conteudoRevisaoPpc()` (fichas, marcos e taxonomia de `base-conhecimento/revisao-ppc`). Uma layer, `layer`: tudo das tabelas do `kb.sqlite`, só `SqlClient` | `SqlClient` |
 | `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `listar`, `documento` (a norma para o leitor: dispositivos e Markdown), `dataReferencia`, `enderecosOficiais` | `SqlClient`, `FontesNormativas` |
-| `Ppcs.ts` | `buscarSecoes`, `buscarSecoesPorPrefixo` (a paleta do Explorar), `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias`, `tiposDeSecao`, `listar`, `documento` (o PPC para o leitor: seções e Markdown) | `SqlClient`, `FontesNormativas` |
+| `Ppcs.ts` | `buscarSecoes`, `buscarSecoesPorPrefixo` (a paleta do Explorar), `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias`, `filaRevisaoFatos`, `tiposDeSecao`, `listar`, `documento` (o PPC para o leitor: seções e Markdown) | `SqlClient`, `FontesNormativas` |
 | `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71`, `campi`, `processos`, `niveis`, `paginasOficiais` | `SqlClient` |
 | `Conselhos.ts` | `reunioes` (as do Consepe, com documentos e itens de pauta) | `SqlClient` |
 | `Impacto.ts` | `daNorma(id, { data, incluirPpcs })`: normas, fichas, marcos e taxonomia da revisão de PPC e PPCs atingidos (os textos das skills de `.agents/skills` não entram) | `SqlClient`, `FontesNormativas` |
@@ -80,7 +80,7 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `busca/fts.ts` | expressões do FTS5, puras: os conceitos de uma consulta, a expressão por conceitos (seções e normas) e a por prefixo (paleta do Explorar), e as linhas que casam |
 | `busca/sinonimos.ts` | léxico de `dados/sinonimos.yaml`: termos por tipo de seção (expansão do documento) e grupos de equivalentes (expansão da consulta) |
 | `institucional/dados.ts` | leitura frouxa de `base-conhecimento/institucional/ifpr/` e das matrizes do SUAP (`suap.matrizes.resumo`) |
-| `fatos/ppc.ts`, `fatos/divergencias.ts` | fatos extraídos dos PPCs (carga total, estágio obrigatório e carga), com trecho e status `extraido`, e o cruzamento com o SUAP |
+| `fatos/ppc.ts`, `fatos/revisoes.ts`, `fatos/divergencias.ts` | fatos extraídos dos PPCs (carga total, estágio obrigatório e carga), com trecho, unidade declarada e status `extraido`; a revisão humana de `base-conhecimento/fatos-ppc.yaml` (status `revisado`, com revisor e data), aplicada na compilação; e o cruzamento com o SUAP, que só compara horas de unidade conhecida |
 | `db/esquema.ts`, `db/compilar.ts` | esquema SQL e compilação determinística do `kb.sqlite`; `gravarSecoesECitacoes` (seções, FTS e citações de um PPC) |
 | `db/ppc-avulso.ts` | `abrirPpcAvulso`: o banco em memória, no mesmo esquema, com um PPC que pode não estar na base, aberto e fechado com o escopo; devolve o `SqlClient` dele |
 | `db/fontes.ts` | fontes do banco, impressão digital e estado do banco diante delas (`estadoDoBanco`) |
@@ -88,7 +88,7 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `db/sql.ts`, `db/nodeSqliteClient.ts`, `db/conexao.ts` | consultas pelo `SqlClient` com as linhas decodificadas por Effect Schema (`Sql.todas`, `Sql.primeira`) e o ambiente que cada serviço captura na construção e dá aos métodos (`Sql.ambienteDoServico`); o cliente do `node:sqlite` copiado do T3 (MIT); um `SqlClient` sobre um `DatabaseSync` já aberto |
 | `db/consultas-normas.ts`, `db/consultas-secoes.ts`, `db/consultas-fatos.ts`, `db/consultas-cursos.ts`, `db/citacoes.ts`, `db/pacote-contexto.ts` | as consultas de cada serviço (`Normas`; `Ppcs`, seções, fatos e citações; `Cursos`; `PacoteContexto`), Effects sobre o `SqlClient` do ambiente, privadas ao serviço dono: quem está fora do `kb` chama o serviço e importa dele os tipos; `db/chaves.ts` completa os prefixos `ppc:` e `cnct:` |
 | `ppcs/indice.ts` | o decodificador único de `ppcs/index.json`, da compilação e das citações dos arquivos |
-| `cli/*.ts` | os comandos de curadoria da CLI `kb`, em `effect/cli`: `compilar` (`cli/compilar.ts`), `relacoes --propor`, `avaliar-resolvedor` e `avaliar-busca` (`cli/curadoria.ts`), sobre `layerRepositorio`; o ponto de entrada e as consultas estão em `packages/mcp/src/kb.ts` |
+| `cli/*.ts` | os comandos de curadoria da CLI `kb`, em `effect/cli`: `compilar` (`cli/compilar.ts`), `relacoes --propor`, `avaliar-resolvedor`, `avaliar-busca` e `fatos-a-revisar` (`cli/curadoria.ts`), sobre `layerRepositorio`; o ponto de entrada e as consultas estão em `packages/mcp/src/kb.ts` |
 | `normas/citacoes-normas.ts` | citações resolvidas no texto das normas da base (dispositivos e preâmbulo), para o `impacto` e a tabela `normas_citacoes` |
 
 ## CLI
@@ -102,6 +102,7 @@ pnpm kb:compilar                                   # compila (cerca de 12 s, 132
 pnpm kb relacoes --propor [--json]                 # propostas do regex ainda não registradas em relacoes.yaml
 pnpm kb avaliar-resolvedor [--json]                # precisão e recall do resolvedor (avaliacao/resolvedor/)
 pnpm kb avaliar-busca [--json]                     # recall@10 da busca de seções (avaliacao/busca-secoes/)
+pnpm kb fatos-a-revisar [--limite N] [--json]      # fila de revisão humana dos fatos de PPC (fatos-ppc.yaml)
 ```
 
 `relacoes --propor` roda o regex sobre o parser das normas; `avaliar-busca` mede os três modos da busca (`simples`, `radicais`, `completo`), que a ferramenta `buscar_secoes` não expõe (ela usa o completo). O `impacto` percorre as fichas, os marcos e a taxonomia da revisão de PPC gravados no banco; os textos das skills de `.agents/skills` não entram.

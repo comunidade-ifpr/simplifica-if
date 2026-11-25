@@ -21,6 +21,8 @@ export const CAMINHOS = {
   stubs: `${BASE}/normas/stubs.yaml`,
   relacoes: `${BASE}/relacoes.yaml`,
   transicoes: `${BASE}/transicoes.yaml`,
+  /** Revisão humana dos fatos de PPC (`fatos/revisoes.ts`). */
+  fatosPpc: `${BASE}/fatos-ppc.yaml`,
   configVigencia: `${BASE}/config/vigencia.yaml`,
   correspondencias: `${BASE}/correspondencias`,
   cnct: `${BASE}/catalogos/cnct`,

@@ -128,6 +128,7 @@ node scripts/gerar_base.ts
 node scripts/validar_base.ts
 pnpm kb:compilar
 pnpm kb fatos-ppc --ppc <campus>/<curso>   # para matrizes, os fatos cruzados com o SUAP
+pnpm kb fatos-a-revisar                    # os fatos de PPC à espera de revisão humana
 ```
 
 Exemplo: `scripts/aplicar_matrizes_suap.ts` aplica o relatório `matrizes-suap/1` (esquema em `scripts/dominio/matriz-suap.ts`, exemplo em `scripts/dominio/fixtures/relatorio-matrizes-suap.json`) em `suap.matrizes` dos cursos (veja [Matrizes e cargas horárias](#matrizes-e-cargas-horárias)).
@@ -241,6 +242,16 @@ node scripts/conversao_ppc.ts conferir <ppc>|--todos [--contra <ref>]   # só a 
 ```
 
 Corrigiu um PPC à mão? Rode `conferir` contra o commit anterior: ele reprova palavra nova e front matter mudado, e lista as palavras removidas (que só podem ser ruído de página).
+
+### Revisão dos fatos do PPC
+
+Os fatos do PPC (carga horária total, estágio obrigatório e carga do estágio) saem do texto por regra, na compilação do `kb.sqlite`, com o status `extraido`; o ano do documento sai do front matter com o status `evidencia-conferida` (a evidência literal se confere por regra, o valor não foi revisado). A revisão humana fica em `base-conhecimento/fatos-ppc.yaml`, uma entrada por fato revisado, com o valor, a unidade conhecida das horas (`hora-relogio`, `hora-aula-50min` ou `hora-aula-45min`), o trecho literal do PPC que a sustenta, o revisor e a data; a compilação a aplica por cima da extração, com o status `revisado`. O contrato está no comentário do arquivo, e o `validar_base` confere o PPC e o trecho.
+
+```bash
+pnpm kb fatos-a-revisar [--limite 30] [--json]   # a fila: primeiro valores alternativos, depois horas sem unidade conhecida
+```
+
+A unidade das horas vem do texto, nunca de bater com o SUAP. Sem unidade conhecida (só "horas", ou hora-aula sem a duração da aula), o cruzamento com o SUAP não afirma divergência: sai `unidade-desconhecida` até a revisão do fato. Não registre revisão que ninguém fez: o fato que não foi conferido fica `extraido`.
 
 ### Proveniência do PPC convertido
 
