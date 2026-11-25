@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 946,
+    "descricao": "TÉCNICO EM TELECOMUNICAÇÕES - SUBSEQUENTE 2027 (GRADE 02)",
+    "ano_criacao": 2027,
+    "data_inicio": "2027-02-01"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 946 no SUAP (o mesmo texto do fonte_url): \"AJUSTE PARECER CONSEPE Nº 36/2026 / CURITIBA / 2026\"",
+  "fonte_url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2026/10/PPC_Curso-Tecnico-em-Telecomunicacoes_2027.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts (o ppc.url do curso ainda é o Plano de Curso de 2010)"
+  ]
+}

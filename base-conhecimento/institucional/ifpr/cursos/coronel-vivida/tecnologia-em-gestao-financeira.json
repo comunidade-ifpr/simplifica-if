@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/graduacao/tecnologia-em-gestao-financeira/",
   "suap": {
+    "id": 219,
+    "codigo": "CV1001",
+    "vagas": 39,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "402 — TECNOLOGIA EM GESTÃO FINANCEIRA - 2024 CORONEL VIVIDA — CH exibida: 1629 h; estágio exigido: Não; CH mínima de estágio (separada): -\n819 — TECNOLOGIA EM GESTÃO FINANCEIRA - 2025 CORONEL VIVIDA — CH exibida: 1629 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/402/",
+        "https://suap.ifpr.edu.br/edu/matriz/819/"
+      ],
+      "carga_horaria_comum_h": 1629,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

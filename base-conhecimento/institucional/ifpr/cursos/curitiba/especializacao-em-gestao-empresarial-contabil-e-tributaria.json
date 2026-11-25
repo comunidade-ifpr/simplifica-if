@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/especializacao-em-gestao-empresarial-contabil-e-tributaria/",
   "suap": {
+    "id": 12,
+    "codigo": "ESPGECT",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "96 — ESPECIALIZAÇÃO LATO SENSU EM GESTÃO EMPRESARIAL, CONTÁBIL E TRIBUTÁRIA — CH exibida: 428 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/96/"
+      ],
+      "carga_horaria_comum_h": 428,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/irati/nossos-cursos/cursos_superiores/bacharelado-em-agronomia/",
   "suap": {
+    "id": 139,
+    "codigo": "IRA1001",
+    "vagas": 78,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "241 — BACHARELADO EM AGRONOMIA 2019 - CAMPUS IRATI — CH exibida: 4580 h; estágio exigido: Sim; CH mínima de estágio (separada): 150\n822 — BACHARELADO EM AGRONOMIA 2019 - CAMPUS IRATI [SIGAA] — CH exibida: 4730 h; estágio exigido: Sim; CH mínima de estágio (separada): 150\n188 — BACHARELADO EM AGRONOMIA 2023 - CAMPUS IRATI — CH exibida: 4360 h; estágio exigido: Sim; CH mínima de estágio (separada): 150",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/241/",
+        "https://suap.ifpr.edu.br/edu/matriz/822/",
+        "https://suap.ifpr.edu.br/edu/matriz/188/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

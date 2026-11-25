@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-superiores/curso-superior-de-tecnologia-em-materiais/",
   "suap": {
+    "id": 87,
+    "codigo": "CL1002",
+    "vagas": 38,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "212 — TECNOLOGIA EM MATERIAIS 2022 - CAMPUS CAMPO LARGO — CH exibida: 2400 h; estágio exigido: Não; CH mínima de estágio (separada): -\n126 — TECNOLOGIA EM MATERIAIS - 2024 CAMPUS CAMPO LARGO — CH exibida: 2400 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/212/",
+        "https://suap.ifpr.edu.br/edu/matriz/126/"
+      ],
+      "carga_horaria_comum_h": 2400,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

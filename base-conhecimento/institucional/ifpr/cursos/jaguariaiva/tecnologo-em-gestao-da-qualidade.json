@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jaguariaiva/superiores/tecnologo-em-gestao-da-qualidade/",
   "suap": {
+    "id": 150,
+    "codigo": "JAG1001",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "253 — TECNOLOGIA EM GESTÃO DA QUALIDADE - 2019 JAGUARIAÍVA — CH exibida: 1754 h; estágio exigido: Não; CH mínima de estágio (separada): -\n280 — TECNOLOGIA EM GESTÃO DA QUALIDADE - 2023 JAGUARIAÍVA — CH exibida: 1753 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/253/",
+        "https://suap.ifpr.edu.br/edu/matriz/280/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

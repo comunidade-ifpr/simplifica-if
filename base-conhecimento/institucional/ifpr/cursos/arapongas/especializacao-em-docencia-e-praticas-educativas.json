@@ -6,8 +6,19 @@
   "forma_oferta": "especialização",
   "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/pos-graduacao/especializacao-em-docencia-e-praticas-educativas/",
   "suap": {
+    "id": 281,
+    "codigo": "ESPDPE",
+    "vagas": 60,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "520 — ESPECIALIZAÇÃO LATO SENSU EM DOCÊNCIA E PRÁTICAS EDUCATIVAS — CH exibida: 360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/520/"
+      ],
+      "carga_horaria_comum_h": 360,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

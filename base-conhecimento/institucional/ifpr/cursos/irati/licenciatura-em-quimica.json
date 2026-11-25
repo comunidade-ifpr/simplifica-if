@@ -8,8 +8,22 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/irati/nossos-cursos/cursos_superiores/licenciatura-em-quimica/",
   "suap": {
+    "id": 142,
+    "codigo": "IRA1003",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "243 — LICENCIATURA EM QUÍMICA 2018 - CAMPUS IRATI — CH exibida: 3400 h; estágio exigido: Não; CH mínima de estágio (separada): -\n197 — LICENCIATURA EM QUÍMICA 2023 - CAMPUS IRATI — CH exibida: 3400 h; estágio exigido: Não; CH mínima de estágio (separada): -\n940 — LICENCIATURA EM QUÍMICA 2023 - CAMPUS IRATI [REPLICADO] — CH exibida: 3496 h; estágio exigido: Não; CH mínima de estágio (separada): -\n941 — LICENCIATURA EM QUÍMICA 2023 - CAMPUS IRATI [REPLICADO] — CH exibida: 3688 h; estágio exigido: Não; CH mínima de estágio (separada): -\n943 — LICENCIATURA EM QUÍMICA 2023 - CAMPUS IRATI [REPLICADO] — CH exibida: 3472 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/243/",
+        "https://suap.ifpr.edu.br/edu/matriz/197/",
+        "https://suap.ifpr.edu.br/edu/matriz/940/",
+        "https://suap.ifpr.edu.br/edu/matriz/941/",
+        "https://suap.ifpr.edu.br/edu/matriz/943/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

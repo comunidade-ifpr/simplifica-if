@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * O que está fora da base e precisa ser completado para entrar: PPCs pendentes (com o que falta) e
- * cursos com PPC publicado sem texto na base. `pnpm pendencias`; `--json` para a lista inteira.
+ * O que está fora da base e precisa ser completado para entrar: PPCs pendentes (com o que falta),
+ * versões de PPC conhecidas sem texto e cursos com PPC publicado sem texto na base. `pnpm pendencias`; `--json` para a lista inteira.
  */
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
@@ -14,6 +14,8 @@ import { executarPrincipal } from "./principal.ts";
 
 const TITULOS: Record<Pendencia["tipo"], string> = {
   "ppc-pendente": "PPCs fora da base, à espera do que falta (promova com node scripts/promover_ppc.ts)",
+  "ppc-versao-sem-texto":
+    "Versões de PPC conhecidas sem texto na base (importe o DOCX com node scripts/importar_ppc_docx.ts, ou o PDF com importar_ppc_pdf.ts, e apague o registro)",
   "ppc-sem-texto":
     "Cursos com PPC publicado sem texto na base (importe com node scripts/importar_ppc_docx.ts, ou importar_ppc_pdf.ts sem o DOCX)",
 };
@@ -26,7 +28,7 @@ function texto(pendencias: readonly Pendencia[]): string[] {
     if (!doTipo.length) continue;
     linhas.push(`## ${TITULOS[tipo]}: ${doTipo.length}`, "");
     for (const p of doTipo) {
-      linhas.push(`- ${p.curso}: ${p.tipo === "ppc-pendente" ? p.arquivo : p.url}`);
+      linhas.push(`- ${p.curso}: ${p.tipo === "ppc-sem-texto" ? p.url : p.arquivo}`);
       for (const pendencia of p.pendencias) linhas.push(`  - ${pendencia}`);
     }
     linhas.push("");

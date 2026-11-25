@@ -73,7 +73,7 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
       resultado: "sem-suap",
       valor_ppc: e.chPpc?.toString() ?? null,
       valor_suap: null,
-      explicacao: "curso sem matriz no SUAP",
+      explicacao: "nenhuma matriz ativa do SUAP registrada na base (curso sem ID do SUAP ou sem matriz ativa)",
     });
   } else if (e.chPpc === null) {
     saida.push({
@@ -141,7 +141,7 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
       resultado: "sem-suap",
       valor_ppc: e.estagioObrigatorio,
       valor_suap: null,
-      explicacao: "curso sem matriz no SUAP",
+      explicacao: "nenhuma matriz ativa do SUAP registrada na base (curso sem ID do SUAP ou sem matriz ativa)",
     });
   } else {
     const suap = recente.estagio_exigido

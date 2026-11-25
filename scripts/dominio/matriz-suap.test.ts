@@ -52,7 +52,7 @@ describe("domínio das matrizes", () => {
     expect(resumoMatrizesAtivas([matriz])).toBe(
       "10 — M10 — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): não informada",
     );
-    expect(resumoMatrizesAtivas([])).toBe("Nenhuma matriz marcada Ativa=Sim.");
+    expect(resumoMatrizesAtivas([])).toBe("");
     expect(resumoMatrizesAtivas([ativa(11, 0)])).toContain("CH exibida: 0 h;");
   });
 });

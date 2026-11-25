@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia/",
   "suap": {
+    "id": 18,
+    "codigo": "ESPCNEFA",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "433 — ESPECIALIZAÇÃO LATO SENSU EM CIÊNCIAS DA NATUREZA: ENSINO DE FÍSICA E ASTRONOMIA 2020 — CH exibida: 420 h; estágio exigido: Não; CH mínima de estágio (separada): -\n87 — ESPECIALIZAÇÃO LATO SENSU EM CIÊNCIAS DA NATUREZA: ENSINO DE FÍSICA E ASTRONOMIA 2023 — CH exibida: 360 h; estágio exigido: Não; CH mínima de estágio (separada): -\n813 — ESPECIALIZAÇÃO LATO SENSU EM CIÊNCIAS DA NATUREZA: ENSINO DE FÍSICA E ASTRONOMIA 2025 — CH exibida: 420 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/433/",
+        "https://suap.ifpr.edu.br/edu/matriz/87/",
+        "https://suap.ifpr.edu.br/edu/matriz/813/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

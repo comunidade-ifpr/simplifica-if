@@ -8,8 +8,21 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/paranavai/cursos-superiores/engenharia-de-software-bacharelado/",
   "suap": {
+    "id": 164,
+    "codigo": "PVAI1003",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "263 — BACHARELADO EM ENGENHARIA DE SOFTWARE - 2019 PARANAVAÍ [SIGAA] — CH exibida: 3208 h; estágio exigido: Não; CH mínima de estágio (separada): -\n817 — BACHARELADO EM ENGENHARIA DE SOFTWARE - 2019 PARANAVAÍ — CH exibida: 3208 h; estágio exigido: Sim; CH mínima de estágio (separada): 300\n131 — BACHARELADO EM ENGENHARIA DE SOFTWARE - 2023 PARANAVAÍ — CH exibida: 3208 h; estágio exigido: Sim; CH mínima de estágio (separada): 147",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/263/",
+        "https://suap.ifpr.edu.br/edu/matriz/817/",
+        "https://suap.ifpr.edu.br/edu/matriz/131/"
+      ],
+      "carga_horaria_comum_h": 3208,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

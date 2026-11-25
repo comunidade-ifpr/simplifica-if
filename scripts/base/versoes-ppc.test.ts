@@ -12,7 +12,7 @@ import {
 import { criarCaminhos } from "./caminhos.ts";
 import { listarPendencias } from "./pendencias.ts";
 import { Contexto } from "./validacao/contexto.ts";
-import { validarPendenciasPpcs } from "./validacao/pendencias.ts";
+import { validarPendenciasPpcs, validarVersoesSemTexto } from "./validacao/pendencias.ts";
 import { definirAnoPpc, ErroVersaoPpc, moverParaPendencias, promoverPpc, STATUS_REABERTO } from "./versoes-ppc.ts";
 
 const AGORA = new Date(2026, 10, 24, 10, 0, 0);
@@ -228,6 +228,47 @@ describe("pendências", () => {
     expect(erros).toContain('campo desconhecido "vagas"');
     expect(erros).toContain('falta a pendência "ano"');
     expect(erros).toContain("solto.md: PPC pendente fora do caminho");
+  });
+
+  test("versão sem texto: entra no pnpm pendencias e a validação confere caminho, contrato e curso", () => {
+    const raiz = base({ "2019": "2019" }, "2019");
+    const caminhos = criarCaminhos(raiz);
+    const versao = {
+      matriz_suap: { id: 77, descricao: "TÉCNICO X - 2026", ano_criacao: 2026, data_inicio: "2026-02-01" },
+      evidencia: 'Capa do PDF anexo à matriz no SUAP: "Cidade 2025"',
+      fonte_url: "https://ifpr.edu.br/ppc-2025.pdf",
+      pendencias: ["texto: só o PDF; pedir o DOCX à coordenação"],
+    };
+    const arquivo = "curadoria/pendencias/versoes-ppc/campus-a/tecnico-x/suap-matriz-77.json";
+    escrever(raiz, arquivo, JSON.stringify(versao));
+    expect(listarPendencias(caminhos)).toEqual([
+      {
+        tipo: "ppc-versao-sem-texto",
+        curso: "campus-a/tecnico-x",
+        arquivo,
+        pendencias: ["texto: só o PDF; pedir o DOCX à coordenação"],
+        fonte_url: "https://ifpr.edu.br/ppc-2025.pdf",
+      },
+    ]);
+    expect(validarVersoesSemTexto(new Contexto(caminhos))).toEqual([]);
+
+    escrever(
+      raiz,
+      "curadoria/pendencias/versoes-ppc/campus-a/outro/suap-matriz-78.json",
+      JSON.stringify({ ...versao, pendencias: [], ano: 2025 }),
+    );
+    escrever(
+      raiz,
+      "curadoria/pendencias/versoes-ppc/campus-a/tecnico-x/suap-matriz-79.json",
+      JSON.stringify({ ...versao, matriz_suap: { id: 9, descricao: "X" } }),
+    );
+    escrever(raiz, "curadoria/pendencias/versoes-ppc/campus-a/tecnico-x/2025.json", "{}");
+    const erros = validarVersoesSemTexto(new Contexto(caminhos)).join("\n");
+    expect(erros).toContain("curso campus-a/outro sem registro");
+    expect(erros).toContain("ano: Entrada inválida: campo não permitido");
+    expect(erros).toContain("pendencias: Entrada inválida: não pode ser vazio");
+    expect(erros).toContain("matriz_suap.id 9 diferente");
+    expect(erros).toContain("2025.json: versão sem texto fora do caminho");
   });
 
   test("promoverPpc: ganha a versão do ano; vira vigente só se for a mais recente", () => {

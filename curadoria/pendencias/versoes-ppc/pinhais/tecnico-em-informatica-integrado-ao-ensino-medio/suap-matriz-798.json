@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 798,
+    "descricao": "TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 PINHAIS (Trimestre)",
+    "ano_criacao": 2026,
+    "data_inicio": "2026-02-01"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 798 no SUAP (o mesmo texto do fonte_url): \"CURSO TÉCNICO EM INFORMÁTICA PARA INTERNET / FORMA DE OFERTA: Integrado / AUTORIZADO PELA RESOLUÇÃO Nº 50/2014 / AJUSTE PARECER CONSEPE Nº 03/2025 / Pinhais / 2024\"",
+  "fonte_url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/05/PPC-Informatica.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts (a habilitação passa a Informática para Internet: conferir nome e cnct_id do curso)"
+  ]
+}

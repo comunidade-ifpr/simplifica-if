@@ -13,8 +13,6 @@ const SITUACOES_MATRIZES = [
 ] as const;
 type SituacaoMatrizes = (typeof SITUACOES_MATRIZES)[number];
 
-const SEM_MATRIZ_ATIVA = "Nenhuma matriz marcada Ativa=Sim.";
-
 /** Matriz marcada `Ativa = Não`: só a linha da aba do curso, sem a página da matriz. */
 const esquemaMatrizInativa = Schema.Struct({
   id: Schema.Int,
@@ -102,6 +100,7 @@ function formatarHoras(valor: number): string {
   return String(Number(valor.toPrecision(6)));
 }
 
+/** Uma linha por matriz ativa; vazio quando não há nenhuma (a `situacao` diz "Sem matriz ativa"). */
 export function resumoMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string {
   const linhas = matrizes.filter(ehMatrizAtiva).map((matriz) => {
     const campos = matriz.campos;
@@ -112,7 +111,7 @@ export function resumoMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): strin
       `estágio exigido: ${estagio}; CH mínima de estágio (separada): ${cargaEstagio}`
     );
   });
-  return linhas.join("\n") || SEM_MATRIZ_ATIVA;
+  return linhas.join("\n");
 }
 
 export function urlsMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string[] {

@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/cascavel/cursos/graduacao/licenciatura-em-quimica/",
   "suap": {
+    "id": 94,
+    "codigo": "CAS1002",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "221 — LICENCIATURA EM QUÍMICA - 2018 CASCAVEL — CH exibida: 3203 h; estágio exigido: Não; CH mínima de estágio (separada): 0\n145 — LICENCIATURA EM QUÍMICA - 2023 CASCAVEL — CH exibida: 3236 h; estágio exigido: Não; CH mínima de estágio (separada): -\n464 — LICENCIATURA EM QUÍMICA - 2024 CASCAVEL — CH exibida: 3305 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/221/",
+        "https://suap.ifpr.edu.br/edu/matriz/145/",
+        "https://suap.ifpr.edu.br/edu/matriz/464/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

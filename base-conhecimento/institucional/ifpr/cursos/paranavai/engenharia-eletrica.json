@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/paranavai/cursos-superiores/engenharia-eletrica/",
   "suap": {
+    "id": 160,
+    "codigo": "PVAI1001",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "261 — BACHARELADO EM ENGENHARIA ELÉTRICA - 2020 PARANAVAÍ — CH exibida: 3706 h; estágio exigido: Sim; CH mínima de estágio (separada): 200\n132 — BACHARELADO EM ENGENHARIA ELÉTRICA - 2023 PARANAVAÍ — CH exibida: 3706 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/261/",
+        "https://suap.ifpr.edu.br/edu/matriz/132/"
+      ],
+      "carga_horaria_comum_h": 3706,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

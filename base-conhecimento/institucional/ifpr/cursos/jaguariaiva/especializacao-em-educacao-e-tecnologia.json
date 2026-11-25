@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jaguariaiva/pos-graduacao/curso-de-pos-graduacao/",
   "suap": {
+    "id": 20,
+    "codigo": "ESPET",
+    "vagas": 60,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "110 — ESPECIALIZAÇÃO LATO SENSU EM EDUCAÇÃO E TECNOLOGIA 2022 — CH exibida: 390 h; estágio exigido: Não; CH mínima de estágio (separada): -\n434 — ESPECIALIZAÇÃO LATO SENSU EM EDUCAÇÃO E TECNOLOGIA 2023 — CH exibida: 372 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/110/",
+        "https://suap.ifpr.edu.br/edu/matriz/434/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

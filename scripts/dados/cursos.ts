@@ -45,8 +45,9 @@ export interface PlanoMatrizes {
 /** O bloco `suap.matrizes` gravado a partir das matrizes brutas: a consolidação é calculada aqui. */
 function matrizesDoRegistro(matrizes: ReadonlyArray<MatrizSuap>, coletadoEm: string): MatrizesRegistro {
   const { situacao, carga_horaria_comum_h } = consolidarMatrizes(matrizes);
+  // Campo vazio é campo ausente: sem matriz ativa, não há resumo.
   return {
-    resumo: resumoMatrizesAtivas(matrizes),
+    resumo: resumoMatrizesAtivas(matrizes) || undefined,
     urls: urlsMatrizesAtivas(matrizes),
     carga_horaria_comum_h: carga_horaria_comum_h ?? undefined,
     situacao,

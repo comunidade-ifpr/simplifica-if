@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/ensino-superior/bacharelado-em-sistemas-de-informacao/",
   "suap": {
+    "id": 208,
+    "codigo": "IVA1003",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "249 — BACHARELADO EM SISTEMAS DE INFORMAÇÃO - 2019 IVAIPORÃ — CH exibida: 3018 h; estágio exigido: Não; CH mínima de estágio (separada): -\n720 — BACHARELADO EM SISTEMAS DE INFORMAÇÃO - 2024 IVAIPORÃ — CH exibida: 3021 h; estágio exigido: Não; CH mínima de estágio (separada): -\n858 — BACHARELADO EM SISTEMAS DE INFORMAÇÃO - 2026 IVAIPORÃ — CH exibida: 3024 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/249/",
+        "https://suap.ifpr.edu.br/edu/matriz/720/",
+        "https://suap.ifpr.edu.br/edu/matriz/858/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

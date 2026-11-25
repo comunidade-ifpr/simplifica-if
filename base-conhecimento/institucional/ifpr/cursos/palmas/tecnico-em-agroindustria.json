@@ -5,10 +5,5 @@
   "nivel": "médio",
   "forma_oferta": "integrado",
   "situacao": "abertura",
-  "cnct_id": "cnct:tecnico-em-agroindustria",
-  "suap": {
-    "matrizes": {
-      "urls": []
-    }
-  }
+  "cnct_id": "cnct:tecnico-em-agroindustria"
 }

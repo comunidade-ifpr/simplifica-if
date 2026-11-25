@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 856,
+    "descricao": "TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2026 - IVAIPORÃ",
+    "ano_criacao": 2026,
+    "data_inicio": "2026-01-01"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 856 no SUAP (o mesmo texto do fonte_url): \"AJUSTE PARECER CONSEPE Nº XX/2025 / IVAIPORÃ/PR / 2025\"",
+  "fonte_url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2025/12/PPC___Eletrotecnica_Subsequente_V4.0.pdf",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts (o curso não tem ppc.url)"
+  ]
+}

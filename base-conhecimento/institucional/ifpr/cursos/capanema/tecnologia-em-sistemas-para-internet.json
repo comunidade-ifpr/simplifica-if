@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/capanema/nossos-cursos/graduacao/tecnologia-em-sistemas-para-internet/",
   "suap": {
+    "id": 634,
+    "codigo": "CAP1002",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "857 — TECNOLOGIA EM SISTEMAS PARA INTERNET — CH exibida: 2000 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/857/"
+      ],
+      "carga_horaria_comum_h": 2000,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

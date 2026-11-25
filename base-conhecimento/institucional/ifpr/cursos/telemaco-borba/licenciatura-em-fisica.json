@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-graduacao/licenciatura-em-fisica-2014/",
   "suap": {
+    "id": 117,
+    "codigo": "TBOR1004",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "223 — LICENCIATURA EM FÍSICA - 2019 TELÊMACO BORBA — CH exibida: 3204 h; estágio exigido: Não; CH mínima de estágio (separada): -\n130 — LICENCIATURA EM FÍSICA - 2023 TELÊMACO BORBA — CH exibida: 3268 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/223/",
+        "https://suap.ifpr.edu.br/edu/matriz/130/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 944,
+    "descricao": "TÉCNICO EM INFORMÁTICA INTEGRADO - 2027 GOIOERÊ (Trimestre)",
+    "ano_criacao": 2027,
+    "data_inicio": "2027-02-01"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 944 no SUAP: \"AJUSTE PARECER CONSEPE Nº 17/2026 / GOIOERÊ / 2026\"",
+  "pendencias": [
+    "texto: versão só em PDF; pedir o DOCX à coordenação e importar com importar_ppc_docx.ts",
+    "fonte_url: nenhum PDF público desta versão achado no site do campus (busca na mídia do WordPress em 2026-11-25); o anexo do SUAP é privado"
+  ]
+}

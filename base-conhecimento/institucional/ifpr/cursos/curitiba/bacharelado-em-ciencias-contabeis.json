@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/contabilidade/",
   "suap": {
+    "id": 124,
+    "codigo": "CTB1001",
+    "vagas": 100,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "228 — BACHARELADO EM CIÊNCIAS CONTÁBEIS - 2017 CAMPUS CURITIBA — CH exibida: 3130 h; estágio exigido: Não; CH mínima de estágio (separada): -\n291 — BACHARELADO EM CIÊNCIAS CONTÁBEIS - 2023 CAMPUS CURITIBA — CH exibida: 3077 h; estágio exigido: Não; CH mínima de estágio (separada): -\n868 — BACHARELADO EM CIÊNCIAS CONTÁBEIS - 2026 CAMPUS CURITIBA — CH exibida: 2910 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/228/",
+        "https://suap.ifpr.edu.br/edu/matriz/291/",
+        "https://suap.ifpr.edu.br/edu/matriz/868/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

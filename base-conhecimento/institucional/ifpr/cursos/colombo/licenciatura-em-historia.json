@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/colombo/licenciatura-em-historia/",
   "suap": {
+    "id": 453,
+    "codigo": "COLHIS",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "717 — LICENCIATURA EM HISTÓRIA - 2025 CAMPUS COLOMBO — CH exibida: 3308 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/717/"
+      ],
+      "carga_horaria_comum_h": 3308,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

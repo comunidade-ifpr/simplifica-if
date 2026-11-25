@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais/",
   "suap": {
+    "id": 308,
+    "codigo": "ERER.CTBA",
+    "vagas": 50,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "521 — APERFEIÇOAMENTO EM EDUCAÇÃO PARA RELAÇÕES ÉTNICO-RACIAIS: CONCEITOS BÁSICOS (ERER 2024) — CH exibida: 180 h; estágio exigido: Não; CH mínima de estágio (separada): -\n766 — APERFEIÇOAMENTO EM EDUCAÇÃO PARA RELAÇÕES ÉTNICO-RACIAIS (ERER 2025) — CH exibida: 180 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/521/",
+        "https://suap.ifpr.edu.br/edu/matriz/766/"
+      ],
+      "carga_horaria_comum_h": 180,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

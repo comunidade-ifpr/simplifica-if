@@ -17,7 +17,7 @@ import {
   validarStubs,
   validarUnicidadeIds,
 } from "./validacao/normas.ts";
-import { validarPendenciasPpcs } from "./validacao/pendencias.ts";
+import { validarPendenciasPpcs, validarVersoesSemTexto } from "./validacao/pendencias.ts";
 import { validarPpcs } from "./validacao/ppcs.ts";
 
 export type ResultadoValidacao = {
@@ -34,6 +34,7 @@ export function validarBase(caminhos: CaminhosBase): ResultadoValidacao {
   erros.push(...validarReadme(ctx));
   erros.push(...validarPpcs(ctx));
   erros.push(...validarPendenciasPpcs(ctx));
+  erros.push(...validarVersoesSemTexto(ctx));
   erros.push(...validarCatalogos(ctx));
 
   const normas = arquivosNormas(caminhos);

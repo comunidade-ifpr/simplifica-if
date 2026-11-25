@@ -7,10 +7,5 @@
   "modalidade": "presencial",
   "situacao": "abertura",
   "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/",
-  "cnct_id": "cnct:tecnico-em-eletrotecnica",
-  "suap": {
-    "matrizes": {
-      "urls": []
-    }
-  }
+  "cnct_id": "cnct:tecnico-em-eletrotecnica"
 }

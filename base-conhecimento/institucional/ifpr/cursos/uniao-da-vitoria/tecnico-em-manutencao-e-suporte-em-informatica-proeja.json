@@ -9,8 +9,15 @@
   "pagina_oficial": "https://ifpr.edu.br/uniao-da-vitoria/proeja/tecnico-em-manutencao-e-suporte-em-informatica-na-modalidade-proeja/",
   "cnct_id": "cnct:tecnico-em-manutencao-e-suporte-em-informatica",
   "suap": {
+    "id": 367,
+    "codigo": "(N) (MSI-Proeja)",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "urls": [],
+      "situacao": "Sem matriz ativa",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

@@ -7,11 +7,6 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/licenciatura-em-quimica/",
-  "suap": {
-    "matrizes": {
-      "urls": []
-    }
-  },
   "ppc": {
     "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_Lic._em_Quimica___APS.pdf",
     "markdown_path": "institucional/ifpr/ppcs/umuarama/licenciatura-em-quimica/2023.md",

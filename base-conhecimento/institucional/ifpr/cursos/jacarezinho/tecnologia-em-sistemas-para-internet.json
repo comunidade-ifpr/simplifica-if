@@ -8,8 +8,19 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/graduacao/tecnologia-em-sistemas-para-internet/",
   "suap": {
+    "id": 135,
+    "codigo": "JAC1004",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "161 — TECNOLOGIA EM SISTEMAS PARA INTERNET - 2019 JACAREZINHO — CH exibida: 2142 h; estágio exigido: Não; CH mínima de estágio (separada): -\n252 — TECNOLOGIA EM SISTEMAS PARA INTERNET - 2022 JACAREZINHO — CH exibida: 2139 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/161/",
+        "https://suap.ifpr.edu.br/edu/matriz/252/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

@@ -8,8 +8,20 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/colombo/superiores-tecnologia/tecnologia-em-processos-gerenciais/",
   "suap": {
+    "id": 109,
+    "codigo": "COL1003",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "156 — TECNOLOGIA EM PROCESSOS GERENCIAIS - 2023 CAMPUS COLOMBO — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -\n888 — TECNOLOGIA EM PROCESSOS GERENCIAIS - 2023 CAMPUS COLOMBO (Etapa única) — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/156/",
+        "https://suap.ifpr.edu.br/edu/matriz/888/"
+      ],
+      "carga_horaria_comum_h": 1600,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {
