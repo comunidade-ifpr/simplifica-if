@@ -1,4 +1,9 @@
-# Simplifica IF
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/marca/logo-escuro.svg">
+    <img src="docs/marca/logo.svg" alt="Simplifica IF" height="48">
+  </picture>
+</h1>
 
 App desktop para os servidores do IFPR. O Simplifica IF dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. Este repositório contém o app, a base que o alimenta e as skills e scripts que agentes usam para curar a base.
 
