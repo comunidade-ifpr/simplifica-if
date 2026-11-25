@@ -189,7 +189,10 @@ export const FatosPpc = Schema.Struct({
       valor: Schema.String,
       valor_num: Schema.NullOr(Schema.Finite),
       unidade: Schema.NullOr(Schema.String),
-      /** `extraido`: por regra, sem revisão humana. */
+      /**
+       * `extraido`: por regra, sem revisão humana; `revisado`: conferido por pessoa; `evidencia-conferida`:
+       * o ano do documento, com a evidência literal conferida por regra.
+       */
       status_curadoria: Schema.String,
       regra: Schema.String,
       trecho_fonte: Schema.String,

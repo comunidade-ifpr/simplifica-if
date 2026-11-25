@@ -14,7 +14,14 @@
  * "carga horária total" é do componente ou de um regulamento.
  */
 
-export type StatusCuradoria = "extraido";
+/**
+ * Status de curadoria de um fato de PPC:
+ * - `extraido`: tirado do texto por regra, sem revisão humana;
+ * - `revisado`: conferido por uma pessoa, com revisor e data (`base-conhecimento/fatos-ppc.yaml`);
+ * - `evidencia-conferida`: o ano do documento, cuja evidência literal o `validar_base` confere no
+ *   texto (ou na fonte) por regra; ninguém revisou o valor.
+ */
+export type StatusCuradoria = "extraido" | "revisado" | "evidencia-conferida";
 
 export interface FatoPpc {
   fato: "carga_horaria_total_h" | "estagio_obrigatorio" | "estagio_carga_h";

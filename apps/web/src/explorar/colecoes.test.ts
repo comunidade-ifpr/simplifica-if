@@ -61,8 +61,9 @@ describe("nomes", () => {
   });
 
   it("a ressalva de cada fato do PPC que não foi revisado; a contagem no singular e no plural", () => {
-    expect(ressalvaDoFato("Revisado")).toBeNull();
+    expect(ressalvaDoFato("revisado")).toBeNull();
     expect(ressalvaDoFato("extraido")).toBe("Extraído, conferir");
+    expect(ressalvaDoFato("evidencia-conferida")).toBe("Evidência conferida por regra");
     expect(ressalvaDoFato("Precisa de revisão")).toBe("Precisa de revisão");
     expect(ressalvaDoFato("Pendente")).toBe("Precisa de revisão");
     expect(quantos(1, "item de pauta", "itens de pauta")).toBe("1 item de pauta");

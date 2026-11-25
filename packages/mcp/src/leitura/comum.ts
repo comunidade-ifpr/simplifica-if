@@ -156,7 +156,7 @@ export function avisoBaixaConfianca(regras: Iterable<string>): Aviso[] {
 export const AVISO_FATO_EXTRAIDO: Aviso = {
   tipo: "fato-extraido",
   mensagem:
-    "os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana: confira o trecho de origem antes de afirmar um valor ou uma divergência",
+    "os fatos de PPC com status `extraido` foram extraídos por regra, sem revisão humana, e o `ano_documento` (`evidencia-conferida`) tem só a evidência conferida por regra: confira o trecho de origem antes de afirmar um valor ou uma divergência; só o status `revisado` foi conferido por uma pessoa",
 };
 
 function fonteLinha(path: string, linha: number): Fonte {

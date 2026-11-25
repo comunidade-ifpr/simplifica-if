@@ -95,13 +95,16 @@ export function nomeFato(fato: string): string {
 }
 
 /**
- * A ressalva de um fato do PPC pelo status da curadoria: nenhuma para o revisado; "Extraído, conferir"
- * para o que saiu do texto por regra (`extraido`); "Precisa de revisão" para qualquer outro (`Precisa de
- * revisão`, `Pendente`…), como o ano do documento vindo dos dados institucionais ainda não conferido.
+ * A ressalva de um fato do PPC pelo status da curadoria: nenhuma para o revisado por pessoa
+ * (`revisado`); "Extraído, conferir" para o que saiu do texto por regra (`extraido`); "Evidência
+ * conferida por regra" para o ano do documento, cuja evidência literal se confere automaticamente
+ * (`evidencia-conferida`); "Precisa de revisão" para qualquer outro.
  */
 export function ressalvaDoFato(status: string): string | null {
-  if (normalizar(status) === "revisado") return null;
-  return status === "extraido" ? "Extraído, conferir" : "Precisa de revisão";
+  if (status === "revisado") return null;
+  if (status === "extraido") return "Extraído, conferir";
+  if (status === "evidencia-conferida") return "Evidência conferida por regra";
+  return "Precisa de revisão";
 }
 
 /** O valor de um fato do PPC, com a unidade ("1600 h", "sim"). */

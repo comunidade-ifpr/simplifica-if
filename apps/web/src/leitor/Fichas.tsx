@@ -11,7 +11,7 @@
  *
  * Os valores do PPC nas divergências PPC × SUAP nem sempre foram revisados: a tela marca a divergência
  * "Extraído, conferir" quando o valor saiu do texto por regra e "Precisa de revisão" quando a curadoria
- * ainda não o conferiu (outro status que não "Revisado"), com o trecho de origem.
+ * ainda não o conferiu (outro status que não `revisado`), com o trecho de origem.
  */
 import {
   type CursoDoIndice,

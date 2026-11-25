@@ -803,7 +803,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           alternativas_json: json(fato.alternativas),
         });
       }
-      // O ano do documento vem do front matter, com a evidência literal que o validar_base confere.
+      // O ano do documento vem do front matter, com a evidência literal que o validar_base confere por
+      // regra: a evidência está conferida, o valor não foi revisado por pessoa.
       const ano = item.ano_documento;
       ins.inserir("ppc_fatos", {
         ppc_id: ppcId,
@@ -811,7 +812,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         valor: String(ano),
         valor_num: ano,
         unidade: null,
-        status_curadoria: "Revisado",
+        status_curadoria: "evidencia-conferida",
         regra: item.ano_fonte === FONTE_TEXTO ? "evidencia-no-texto" : "evidencia-na-fonte",
         trecho_fonte: item.ano_evidencia,
         path: caminhoMd,
