@@ -4,7 +4,8 @@
  * - `fonte_url`: o endereço público do texto oficial (DOU, Planalto, portal do IFPR), só `https`;
  * - `fonte_referencia`: a referência sem link (número do SEI, Boletim de Serviço, PDF assinado).
  *
- * Sem `fonte_url`, a fonte oficial está pendente: não há texto que marque a pendência.
+ * Toda norma e todo stub têm um dos dois (ou ambos): o esquema recusa a norma sem fonte. Sem
+ * `fonte_url`, a referência é só a de `fonte_referencia` (por exemplo, o DOU sem página por ato).
  */
 import * as Schema from "effect/Schema";
 

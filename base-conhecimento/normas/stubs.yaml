@@ -19,8 +19,9 @@
 # oficial, e datas_fonte, obrigatório com qualquer data, diz de onde vieram. O stub não tem
 # vigente_de: a vigência dele começa na data do ato.
 #
-# fonte_url (URL https do texto oficial) e fonte_referencia (referência sem link), opcionais,
-# como no front matter das normas.
+# fonte_url (URL https do texto oficial) e fonte_referencia (referência sem link): pelo menos um
+# dos dois, como no front matter das normas. Fonte que não se acha não vira texto de pendência: o
+# stub não entra.
 #
 # aliases: só nomes sem número que identificam o ato sem ambiguidade; citações com número e
 # ano são reconhecidas pelo resolvedor (packages/kb/src/normas/resolver.ts) sem alias.
@@ -34,6 +35,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF gov.br: título \"RESOLUÇÃO CEB N.º 4, DE 8 DE DEZEMBRO DE 1999.\"; nota \"(*) CONSELHO NACIONAL DE EDUCAÇÃO. Resolução CNE/CEB 4/99. Diário Oficial da União, Brasília, 22 de dezembro de 1999. Seção 1, p. 229.\""
     ementa: Institui as Diretrizes Curriculares Nacionais para a Educação Profissional de Nível Técnico.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/ceb/1999/rceb004_99.pdf"
+    fonte_referencia: "DOU de 22/12/1999, Seção 1, p. 229"
     curadoria: rascunho
   - id: br/cne-ceb/parecer/1999/16
     title: Parecer CNE/CEB nº 16/1999
@@ -42,6 +45,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF gov.br: \"PARECER HOMOLOGADO(*) (*) Despacho do Ministro, publicado no Diário Oficial da União de 26/11/1999\"; \"PARECER N.º: 16/99 ... CEB ... APROVADO EM: 05/10/99\". A Res. CNE/CEB 4/1999 diz \"Parecer CNE/CEB 16/99, homologado pelo Senhor Ministro da Educação em 25 de novembro de 1999\" (data do despacho, não da publicação)."
     ementa: Diretrizes Curriculares Nacionais para a Educação Profissional de Nível Técnico.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/pareceres-do-cne/ceb/1999/pceb016_99.pdf"
+    fonte_referencia: "Despacho de homologação no DOU de 26/11/1999 (seção e página não indicadas na fonte)"
     curadoria: rascunho
   - id: br/cne-ceb/res/2012/6
     title: Resolução CNE/CEB nº 6/2012
@@ -51,6 +56,8 @@ normas:
     ementa: Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.
     status_vigencia: revogada
     status_fonte: br/cne-cp/res/2021/1#art64
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/ceb/2012/rceb006_12.pdf"
+    fonte_referencia: "DOU de 21/9/2012, Seção 1, p. 22"
     curadoria: rascunho
   - id: br/cne-ceb/parecer/2012/11
     title: Parecer CNE/CEB nº 11/2012
@@ -59,6 +66,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF gov.br: \"PARECER HOMOLOGADO Despacho do Ministro, publicado no D.O.U. de 4/9/2012, Seção 1, Pág. 98.\"; \"PARECER CNE/CEB Nº: 11/2012 ... CEB ... APROVADO EM: 9/5/2012\". Res. CNE/CEB 6/2012: \"homologado por Despacho do Ministro de Estado da Educação de 31 de agosto de 2012, publicado no DOU de 4 de setembro de 2012\"."
     ementa: Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/pareceres-do-cne/ceb/2012/pceb011_12.pdf"
+    fonte_referencia: "Despacho de homologação no DOU de 4/9/2012, Seção 1, p. 98"
     curadoria: rascunho
   - id: br/cne-cp/res/2002/3
     title: Resolução CNE/CP nº 3/2002
@@ -68,6 +77,8 @@ normas:
     ementa: Institui as Diretrizes Curriculares Nacionais Gerais para a organização e o funcionamento dos cursos superiores de tecnologia.
     status_vigencia: revogada
     status_fonte: br/cne-cp/res/2021/1#art64
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/cp/2002/rcp003_02.pdf"
+    fonte_referencia: "DOU de 23/12/2002, Seção 1, p. 162"
     curadoria: rascunho
   - id: br/cne-cp/parecer/2002/29
     title: Parecer CNE/CP nº 29/2002
@@ -76,6 +87,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF gov.br: \"PARECER HOMOLOGADO(*) (*) Despacho do Ministro, publicado no Diário Oficial da União de 13/12/2002\"; \"PARECER CNE/CP: 29/2002 ... CP ... APROVADO EM: 03/12/2002\"; \"Sala das Sessões, 03 de dezembro de 2002.\" A Res. CNE/CP 3/2002 diz \"homologado pelo Senhor Ministro da Educação em 12 de dezembro de 2002\" (data do despacho)."
     ementa: Diretrizes Curriculares Nacionais Gerais no Nível de Tecnólogo.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/normas-classificadas-por-assunto/diretrizes-curriculares-cursos-de-graduacao/cp29.pdf"
+    fonte_referencia: "Despacho de homologação no DOU de 13/12/2002 (seção e página não indicadas na fonte)"
     curadoria: rascunho
   - id: br/cne-ceb/res/2014/1
     title: Resolução CNE/CEB nº 1/2014
@@ -85,24 +98,27 @@ normas:
     ementa: Atualiza e define novos critérios para a composição do Catálogo Nacional de Cursos Técnicos.
     status_vigencia: revogada
     status_fonte: br/cne-cp/res/2026/2#art74-i
+    fonte_referencia: "DOU nº 237, de 8/12/2014, Seção 1, p. 16"
     curadoria: rascunho
   - id: br/cne-cp/res/2022/1
     title: Resolução CNE/CP nº 1/2022
     assinada_em: "2022-05-06"
     publicada_em: "2022-05-11"
     datas_fonte: "Conferida em 25/11/2026: Página do DOU: \"Publicado em: 11/05/2022 | Edição: 88 | Seção: 1 | Página: 234\"; título \"RESOLUÇÃO CNE/CP Nº 1, DE 6 DE MAIO DE 2022\". PDF do CNE (gov.br/mec/.../rcp001_22.pdf): \"Diário Oficial da União, Brasília, 11 de maio de 2022, Seção 1, pp. 234-235.\""
-    ementa: Altera a Resolução CNE/CP nº 1/2021 (DCN Gerais para a Educação Profissional e Tecnológica).
+    ementa: "Institui as Diretrizes Curriculares Nacionais para a Formação de Professores da Educação Profissional Técnica de Nível Médio (EPTNM-Formação)."
     status_vigencia: revogada
     status_fonte: br/cne-cp/res/2026/2#art74-iii
+    fonte_url: "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-6-de-maio-de-2022-398954703"
     curadoria: rascunho
   - id: br/cne-cp/res/2022/3
     title: Resolução CNE/CP nº 3/2022
     assinada_em: "2022-11-16"
     publicada_em: "2022-11-18"
     datas_fonte: "Conferida em 25/11/2026: Página do DOU: \"Publicado em: 18/11/2022 | Edição: 217 | Seção: 1 | Página: 44\"; título \"RESOLUÇÃO CNE/CP Nº 3, DE 16 DE NOVEMBRO DE 2022\". PDF do CNE (gov.br/mec/.../rcp003_22.pdf): \"Diário Oficial da União, Brasília, 18 de novembro de 2022, Seção 1, p. 44.\" Vigência: \"Art. 2º Esta Resolução entrará em vigor na data de 1º de dezembro de 2022.\""
-    ementa: Altera a Resolução CNE/CP nº 1/2021 (DCN Gerais para a Educação Profissional e Tecnológica).
+    ementa: "Insere o artigo 9-A na Resolução CNE/CP nº 1, de 6 de maio de 2022 (Diretrizes Curriculares Nacionais para a Formação de Professores da Educação Profissional Técnica de Nível Médio)."
     status_vigencia: revogada
     status_fonte: br/cne-cp/res/2026/2#art74-iv
+    fonte_url: "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-3-de-16-de-novembro-de-2022-444154065"
     curadoria: rascunho
   - id: br/cne-cp/res/2025/2
     title: Resolução CNE/CP nº 2/2025
@@ -111,6 +127,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: Página do DOU: \"Publicado em: 17/12/2025 | Edição: 240 | Seção: 1 | Página: 62\"; título \"RESOLUÇÃO CNE/CP Nº 2, DE 8 DE DEZEMBRO DE 2025\". PDF do CNE (gov.br/mec/cne/2025/dezembro-2025/rcp002_25.pdf): \"Diário Oficial da União, Brasília, 17 de dezembro de 2025, Seção 1, p. 62.\""
     ementa: Cria a trava digital e a obrigatoriedade do código autenticador do Sistec para diplomas de cursos técnicos (art. 1º), conforme a remissão do art. 45, § 3º, da Resolução CNE/CP nº 2/2026, que a data de 8 de dezembro de 2025; texto oficial a conferir.
     status_vigencia: a confirmar
+    fonte_url: "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-2-de-8-de-dezembro-de-2025-675814792"
     curadoria: rascunho
 
   # --- Ensino médio, EJA e educação básica
@@ -121,6 +138,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF oficial do CNE (portal.mec.gov.br, alias 9864-rceb002-12, lido via cópia do web.archive.org): 'RESOLUÇÃO Nº 2, DE 30 DE JANEIRO 2012 (*)' e '(*) Resolução CNE/CEB 2/2012. Diário Oficial da União, Brasília, 31 de janeiro de 2012, Seção 1, p. 20.'"
     ementa: Define Diretrizes Curriculares Nacionais para o Ensino Médio.
     status_vigencia: a confirmar
+    fonte_referencia: "DOU de 31/1/2012, Seção 1, p. 20"
     curadoria: rascunho
   - id: br/cne-ceb/res/2018/3
     title: Resolução CNE/CEB nº 3/2018
@@ -130,6 +148,7 @@ normas:
     ementa: Atualiza as Diretrizes Curriculares Nacionais para o Ensino Médio.
     status_vigencia: revogada
     status_fonte: br/cne-ceb/res/2024/2#art43
+    fonte_referencia: "DOU de 22/11/2018, Seção 1, pp. 21-24"
     curadoria: rascunho
   - id: br/cne-ceb/res/2021/1
     title: Resolução CNE/CEB nº 1/2021
@@ -139,6 +158,8 @@ normas:
     ementa: Institui Diretrizes Operacionais para a Educação de Jovens e Adultos (EJA).
     status_vigencia: revogada
     status_fonte: br/cne-ceb/res/2025/3#art19
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/ceb/2021/rceb001_21.pdf"
+    fonte_referencia: "DOU de 1º/6/2021, Seção 1, p. 107"
     curadoria: rascunho
   - id: br/cne-ceb/res/2010/4
     title: Resolução CNE/CEB nº 4/2010
@@ -147,6 +168,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF oficial do CNE (http://portal.mec.gov.br/dmdocuments/rceb004_10.pdf, lido via web.archive.org): 'RESOLUÇÃO Nº 4, DE 13 DE JULHO DE 2010 (*)' e 'Resolução CNE/CEB 4/2010. Diário Oficial da União, Brasília, 14 de julho de 2010, Seção 1, p. 824.'"
     ementa: Define Diretrizes Curriculares Nacionais Gerais para a Educação Básica.
     status_vigencia: a confirmar
+    fonte_referencia: "DOU de 14/7/2010, Seção 1, p. 824"
     curadoria: rascunho
 
   # --- Temas transversais e educação superior
@@ -157,6 +179,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF oficial do CNE (http://portal.mec.gov.br/cne/arquivos/pdf/res012004.pdf, lido via web.archive.org): 'RESOLUÇÃO Nº 1, DE 17 DE JUNHO DE 2004. (*)' e '(*) CNE/CP Resolução 1/2004. Diário Oficial da União, Brasília, 22 de junho de 2004, Seção 1, p. 11.'"
     ementa: Institui Diretrizes Curriculares Nacionais para a Educação das Relações Étnico-Raciais e para o Ensino de História e Cultura Afro-Brasileira e Africana.
     status_vigencia: a confirmar
+    fonte_referencia: "DOU de 22/6/2004, Seção 1, p. 11"
     curadoria: rascunho
   - id: br/cne-cp/res/2012/1
     title: Resolução CNE/CP nº 1/2012
@@ -165,6 +188,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF do CNE (gov.br): \"RESOLUÇÃO Nº 1, DE 30 DE MAIO DE 2012\" e \"Resolução CNE/CP 1/2012. Diário Oficial da União, Brasília, 31 de maio de 2012 – Seção 1 – p. 48.\" Conferido no fac-símile do DOU (pesquisa.in.gov.br, jornal=1, p. 48, 31/05/2012): \"Nº 105, quinta-feira, 31 de maio de 2012\" / \"RESOLUÇÃO Nº 1, DE 30 DE MAIO DE 2012\"."
     ementa: Estabelece Diretrizes Nacionais para a Educação em Direitos Humanos.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/cp/2012/rcp001_12.pdf"
+    fonte_referencia: "DOU de 31/5/2012, Seção 1, p. 48"
     curadoria: rascunho
   - id: br/cne-cp/res/2012/2
     title: Resolução CNE/CP nº 2/2012
@@ -173,6 +198,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF do CNE (gov.br): \"RESOLUÇÃO Nº 2, DE 15 DE JUNHO DE 2012\" e \"Resolução CNE/CP 2/2012. Diário Oficial da União, Brasília, 18 de junho de 2012 – Seção 1 – p. 70.\" Conferido no fac-símile do DOU (pesquisa.in.gov.br, jornal=1, p. 70, 18/06/2012): \"Nº 116, segunda-feira, 18 de junho de 2012\" / \"RESOLUÇÃO Nº 2, DE 15 DE JUNHO DE 2012\"."
     ementa: Estabelece as Diretrizes Curriculares Nacionais para a Educação Ambiental.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/cp/2012/rcp002_12.pdf"
+    fonte_referencia: "DOU de 18/6/2012, Seção 1, p. 70"
     curadoria: rascunho
   - id: br/cne-ces/res/2018/7
     title: Resolução CNE/CES nº 7/2018
@@ -181,6 +208,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF do CNE (gov.br): \"RESOLUÇÃO Nº 7, DE 18 DE DEZEMBRO DE 2018\" e \"Resolução CNE/CES 7/2018. Diário Oficial da União, Brasília, 19 de dezembro de 2018, Seção 1, pp. 49 e 50.\" Conferido no fac-símile do DOU (pesquisa.in.gov.br, jornal=515, p. 49, 19/12/2018): \"Nº 243, quarta-feira, 19 de dezembro de 2018\" / \"RESOLUÇÃO Nº 7, DE 18 DE DEZEMBRO DE 2018\"."
     ementa: Estabelece as Diretrizes para a Extensão na Educação Superior Brasileira.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/ces/2018/rces007_18.pdf"
+    fonte_referencia: "DOU de 19/12/2018, Seção 1, pp. 49-50; retificação no DOU de 18/2/2019, Seção 1, p. 28"
     curadoria: rascunho
   - id: br/cne-cp/res/2015/2
     title: Resolução CNE/CP nº 2/2015
@@ -189,6 +218,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: PDF do CNE (gov.br): \"RESOLUÇÃO Nº 2, DE 1º DE JULHO DE 2015\" e \"Resolução CNE/CP 2/2015. Diário Oficial da União, Brasília, 2 de julho de 2015 – Seção 1 – pp. 8-12.\" (o PDF também registra \"Revogada pela Resolução CNE/CP nº 2, de 20 de dezembro de 2019\"). Conferido no fac-símile do DOU (pesquisa.in.gov.br, jornal=1, p. 8, 02/07/2015): \"Nº 124, quinta-feira, 2 de julho de 2015\" / \"RESOLUÇÃO Nº 2, DE 1º DE JULHO DE 2015\"."
     ementa: Define as Diretrizes Curriculares Nacionais para a formação inicial e continuada dos profissionais do magistério da educação básica.
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/cp/2015/rcp002_15.pdf"
+    fonte_referencia: "DOU de 2/7/2015, Seção 1, pp. 8-12"
     curadoria: rascunho
   - id: br/cne-cp/res/2019/2
     title: Resolução CNE/CP nº 2/2019
@@ -197,6 +228,8 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: Fac-símile do DOU (pesquisa.in.gov.br, jornal=515, p. 115, 23/12/2019): \"Nº 247, segunda-feira, 23 de dezembro de 2019\" / \"RESOLUÇÃO Nº 2, DE 20 DE DEZEMBRO DE 2019\". Republicações: cópia da versão de 10/2/2020 (UFSCar e ABMES) traz \"(*) Republicada por ter saído, no DOU de 23-12-2019, Seção 1, páginas 115-119, com incorreção\"; PDF do CNE traz \"Resolução CNE/CP 2/2019. Diário Oficial da União, Brasília, 15 de abril de 2020, Seção 1, pp. 46-49\" e \"(*) Republicada por ter saído com incorreção no DOU de 10-2-2020, Seção 1, páginas 87-90\"; fac-símile do DOU de 15/4/2020 (Nº 72, p. 46) traz \"RESOLUÇÃO Nº 2, DE 20 DE DEZEMBRO DE 2019 (*)\"."
     ementa: Define as Diretrizes Curriculares Nacionais para a Formação Inicial de Professores para a Educação Básica (BNC-Formação).
     status_vigencia: a confirmar
+    fonte_url: "https://www.gov.br/mec/pt-br/cne/pdf/resolucoes-do-cne/cp/2019/rcp002_19.pdf"
+    fonte_referencia: "DOU de 23/12/2019, Seção 1, pp. 115-119; republicada no DOU de 10/2/2020, Seção 1, pp. 87-90, e novamente no DOU de 15/4/2020, Seção 1, pp. 46-49"
     curadoria: rascunho
 
   # --- Leis e decretos
@@ -382,6 +415,7 @@ normas:
     ementa: Política de assistência estudantil do IFPR anterior à Resolução CONSUP/IFPR nº 239/2025 (de 21 de dezembro de 2009, retificada pela Resolução nº 53/2011).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2025/239#art12
+    fonte_url: "https://ifpr.edu.br/resolucao-112009/"
     curadoria: rascunho
   - id: ifpr/consup/res/2011/53
     title: Resolução CONSUP/IFPR nº 53/2011
@@ -390,6 +424,7 @@ normas:
     ementa: Retifica a Resolução CONSUP/IFPR nº 11/2009 (assistência estudantil).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2025/239#art12
+    fonte_url: "https://ifpr.edu.br/resolucao-532011/"
     curadoria: rascunho
 
   # --- Alvos e origens de base-conhecimento/relacoes.yaml. Status provado pela relação
@@ -402,6 +437,7 @@ normas:
     ementa: Inclui o art. 18-A na Resolução CNE/CEB nº 3/2025 (Diretrizes Operacionais Nacionais da EJA).
     status_vigencia: a confirmar
     observacoes: Data do ato e inclusão do art. 18-A conforme as notas de consolidação da Res. CNE/CEB nº 3/2025 na base (publicada no DOU de 21/7/2025).
+    fonte_url: "https://www.in.gov.br/en/web/dou/-/resolucao-cne/ceb-n-6-de-17-de-julho-de-2025-643066677"
     curadoria: rascunho
   - id: br/lei/1961/4024
     title: Lei nº 4.024/1961
@@ -468,9 +504,10 @@ normas:
     assinada_em: "2021-01-19"
     publicada_em: "2021-01-21"
     datas_fonte: "Conferida em 25/11/2026: Página do DOU: \"Publicado em: 21/01/2021 | Edição: 14 | Seção: 1 | Página: 96\"; \"PORTARIA nº 24, DE 19 DE JANEIRO DE 2021 — Dispõe sobre o Sistema Nacional de Reconhecimento e Certificação de Saberes e Competências Profissionais - Re-Saber\"."
-    ementa: Dispunha sobre a Rede Nacional de Certificação Profissional, substituída pela Portaria MEC nº 902/2024.
+    ementa: "Dispõe sobre o Sistema Nacional de Reconhecimento e Certificação de Saberes e Competências Profissionais - Re-Saber."
     status_vigencia: revogada
     status_fonte: br/mec/portaria/2024/902#art30
+    fonte_url: "https://www.in.gov.br/en/web/dou/-/portaria-n-24-de-19-de-janeiro-de-2021-299988875"
     curadoria: rascunho
   - id: ifpr/proens/portaria/2021/26
     title: Portaria PROENS/IFPR nº 26/2021
@@ -480,6 +517,7 @@ normas:
     ementa: Fluxos de abertura, alteração, suspensão e extinção de cursos anteriores à Portaria PROENS/IFPR nº 121/2024.
     status_vigencia: revogada
     status_fonte: ifpr/proens/portaria/2024/121#art74
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=1293498&id_orgao_publicacao=0"
     curadoria: rascunho
   - id: ifpr/consup/res/2011/54
     title: Resolução CONSUP/IFPR nº 54/2011
@@ -488,6 +526,7 @@ normas:
     ementa: Organização didático-pedagógica da educação profissional técnica de nível médio do IFPR anterior à Resolução CONSUP/IFPR nº 190/2024.
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2024/190#art74
+    fonte_url: "https://ifpr.edu.br/resolucao-542011/"
     curadoria: rascunho
   - id: ifpr/consup/res/2009/1
     title: Resolução CONSUP/IFPR nº 1/2009
@@ -496,6 +535,7 @@ normas:
     ementa: Revogada pelo art. 7º, I, da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-i
+    fonte_url: "https://ifpr.edu.br/wp-content/uploads/2009/04/resolucao-001-2009-estatuto-aprovado-pelo-conselhor-superior-de-11-03-09conforme-resolucao-nc2ba-001-20091.pdf"
     curadoria: rascunho
   - id: ifpr/consup/res/2009/10
     title: Resolução CONSUP/IFPR nº 10/2009
@@ -504,6 +544,7 @@ normas:
     ementa: Revogada pelo art. 7º, II, da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-ii
+    fonte_url: "https://ifpr.edu.br/71442-2/"
     curadoria: rascunho
   - id: ifpr/consup/res/2011/13
     title: Resolução CONSUP/IFPR nº 13/2011
@@ -512,6 +553,7 @@ normas:
     ementa: Revogada pelo art. 7º, III, da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-iii
+    fonte_url: "https://ifpr.edu.br/wp-content/uploads/2026/02/resolucao-112011.pdf"
     curadoria: rascunho
   - id: ifpr/consup/res/2012/39
     title: Resolução CONSUP/IFPR nº 39/2012
@@ -520,6 +562,7 @@ normas:
     ementa: Revogada pelo art. 7º, IV, da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-iv
+    fonte_url: "https://ifpr.edu.br/76745-2/"
     curadoria: rascunho
   - id: ifpr/consup/res/2014/2
     title: Resolução CONSUP/IFPR nº 2/2014
@@ -528,6 +571,7 @@ normas:
     ementa: Revogada pelo art. 7º, V, da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-v
+    fonte_url: "https://ifpr.edu.br/80561-2/"
     curadoria: rascunho
   - id: ifpr/consup/res/2015/2
     title: Resolução CONSUP/IFPR nº 2/2015
@@ -536,6 +580,7 @@ normas:
     ementa: Revogada pelo art. 7º, VI, da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-vi
+    fonte_url: "https://ifpr.edu.br/resolucao-022015/"
     curadoria: rascunho
   - id: ifpr/consup/res/2018/10
     title: Resolução CONSUP/IFPR nº 10/2018
@@ -544,6 +589,7 @@ normas:
     ementa: Teve o art. 5º revogado pelo art. 7º da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: parcialmente revogada
     status_fonte: ifpr/consup/res/2026/271#art7-vii
+    fonte_url: "https://ifpr.edu.br/resolucao-no-10-2018/"
     curadoria: rascunho
   - id: ifpr/consup/res/2018/59
     title: Resolução CONSUP/IFPR nº 59/2018
@@ -553,6 +599,7 @@ normas:
     ementa: Revogada pelo art. 7º da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-viii
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=28306&id_orgao_publicacao=0"
     curadoria: rascunho
   - id: ifpr/consup/res/2018/60
     title: Resolução CONSUP/IFPR nº 60/2018
@@ -562,6 +609,7 @@ normas:
     ementa: Revogada pelo art. 7º da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-ix
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=41620&id_orgao_publicacao=0"
     curadoria: rascunho
   - id: ifpr/consup/res/2020/6
     title: Resolução CONSUP/IFPR nº 6/2020
@@ -571,6 +619,7 @@ normas:
     ementa: Revogada pelo art. 7º da Resolução CONSUP/IFPR nº 271/2026 (estatuto).
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2026/271#art7-x
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=779963&id_orgao_publicacao=0"
     curadoria: rascunho
   - id: ifpr/consup/res/2019/36
     title: Resolução CONSUP/IFPR nº 36/2019
@@ -580,14 +629,16 @@ normas:
     ementa: Política de estágios do IFPR anterior à Resolução CONSUP/IFPR nº 82/2022.
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2022/82#art63
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=483264&id_orgao_publicacao=0"
     curadoria: rascunho
   - id: ifpr/consup/res/2010/8
     title: Resolução CONSUP/IFPR nº 8/2010
     assinada_em: "2010-03-29"
     datas_fonte: "Conferida em 25/11/2026: Página ifpr.edu.br/72165-2/: \"RESOLUÇÃO Nº 08 DE 29 DE MARÇO DE 2010\" ... \"Sala de Sessões do Conselho, em 29 de março de 2010.\"; Res. 8/2014, art. 2º: \"Revogar a Resolução n.º 08/2010-CONSUP, de 29 de março de 2010\"."
-    ementa: Regimento interno dos câmpus anterior à Resolução CONSUP/IFPR nº 8/2014.
+    ementa: "Dispõe sobre a criação dos Comitês de Pesquisa e Extensão no âmbito do Instituto Federal do Paraná – IFPR e estabelece critérios para suas atribuições, composição e funcionamento."
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2014/8#art2
+    fonte_url: "https://ifpr.edu.br/72165-2/"
     curadoria: rascunho
   - id: ifpr/consup/res/2013/41
     title: Resolução CONSUP/IFPR nº 41/2013
@@ -596,6 +647,7 @@ normas:
     ementa: Revogada pelo art. 2º da Resolução CONSUP/IFPR nº 8/2014.
     status_vigencia: revogada
     status_fonte: ifpr/consup/res/2014/8#art2
+    fonte_url: "https://ifpr.edu.br/resolucao-412013/"
     curadoria: rascunho
   - id: ifpr/consup/res/2014/14
     title: Resolução CONSUP/IFPR nº 14/2014
@@ -603,6 +655,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: Página ifpr.edu.br/resolucao-142014/: \"RESOLUÇÃO Nº 14, DE 10 DE JUNHO DE 2014\" ... \"Sala de Sessões do Conselho, 10 de junho de 2014.\""
     ementa: Retifica a Resolução CONSUP/IFPR nº 55/2011 (organização didático-pedagógica da educação superior).
     status_vigencia: a confirmar
+    fonte_url: "https://ifpr.edu.br/resolucao-142014/"
     curadoria: rascunho
   - id: ifpr/consup/res/2017/2
     title: Resolução CONSUP/IFPR nº 2/2017
@@ -610,6 +663,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: Página ifpr.edu.br/resolucao-022017/: \"RESOLUÇÃO Nº 02 DE 23 DE JANEIRO DE 2017\" ... \"Sala de Sessões do Conselho, em 23 de janeiro de 2017\"."
     ementa: Altera a Resolução CONSUP/IFPR nº 55/2011 (organização didático-pedagógica da educação superior).
     status_vigencia: a confirmar
+    fonte_url: "https://ifpr.edu.br/resolucao-022017/"
     curadoria: rascunho
   - id: ifpr/consup/res/2025/263
     title: Resolução CONSUP/IFPR nº 263/2025
@@ -618,6 +672,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: SEI publicações id 4132832: \"Boletim de Serviço Eletrônico em 11/12/2025\" / \"Resolução CONSUP/IFPR Nº 263, DE 10 DE dezembro DE 2025\"; assinada \"em 10/12/2025, às 18:16\"."
     ementa: Altera a Resolução CONSUP/IFPR nº 259/2025 (calendário acadêmico de referência de 2026).
     status_vigencia: a confirmar
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4132832&id_orgao_publicacao=0"
     curadoria: rascunho
   - id: ifpr/consup/res/2026/282
     title: Resolução CONSUP/IFPR nº 282/2026
@@ -626,6 +681,7 @@ normas:
     datas_fonte: "Conferida em 25/11/2026: SEI publicações id 4513710: \"Boletim de Serviço Eletrônico em 13/08/2026\" / \"Resolução CONSUP/IFPR Nº 282, DE 13 DE agosto DE 2026\" / \"Altera dispositivos da Resolução CONSUP/IFPR nº 276, de 11 de junho de 2026\"; assinada \"em 13/08/2026, às 19:22\"."
     ementa: Altera a Resolução CONSUP/IFPR nº 276/2026 (Rede Certifica no IFPR).
     status_vigencia: a confirmar
+    fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4513710&id_orgao_publicacao=0"
     curadoria: rascunho
 
 externos:

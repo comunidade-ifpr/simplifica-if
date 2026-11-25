@@ -56,7 +56,7 @@ export const Dados = Schema.Struct({
     tipo_documento: Schema.NullOr(Schema.String),
     numero: Schema.NullOr(Schema.String),
     ano: Schema.NullOr(Schema.Int),
-    /** URL https do texto oficial; `null` quando a fonte oficial está pendente. */
+    /** URL https do texto oficial; `null` quando a fonte é só `fonte_referencia` (ou na referência externa). */
     fonte_url: Schema.NullOr(UrlOficial),
     /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
     fonte_referencia: Schema.NullOr(Schema.String),

@@ -42,8 +42,8 @@ O `front matter` existe para:
 | Campo | Tipo | Uso |
 |-------|------|-----|
 | `aliases` | lista | Formas alternativas úteis de citação |
-| `fonte_url` | URL `https` | Endereço público do texto oficial (DOU, Planalto, portal do IFPR). Sem ele, a fonte oficial está pendente: não escreva a pendência em texto. O leitor do app mostra o link "Ver na fonte oficial" e a referência formal termina em "Disponível em:" só com este campo |
-| `fonte_referencia` | string | Referência da fonte sem link: número do SEI, Boletim de Serviço, PDF assinado. Pode acompanhar `fonte_url` |
+| `fonte_url` | URL `https` | Endereço público do texto oficial (DOU, Planalto, gov.br/MEC, portal ou SEI do IFPR). **Obrigatório este ou `fonte_referencia`**: norma ou stub sem nenhum dos dois não entra na base. O leitor do app mostra o link "Ver na fonte oficial" e a referência formal termina em "Disponível em:" só com este campo |
+| `fonte_referencia` | string | Referência da fonte sem link (número do SEI, DOU com seção e página, Boletim de Serviço), quando não há URL https estável do texto oficial. Pode acompanhar `fonte_url` |
 
 ### Campos gerados (não edite à mão)
 
@@ -159,7 +159,7 @@ O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é t
 
 ## Normas sem texto na base (stubs) e referências externas
 
-Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, ementa, `status_vigencia` e, quando houver, aliases, `fonte_url` e `fonte_referencia` (os mesmos campos do front matter). As datas são as do front matter, cada uma só com evidência na fonte oficial: `assinada_em` (a data do ato; no parecer, a aprovação no colegiado) e `publicada_em` (DOU ou Boletim de Serviço; no parecer, a publicação do despacho de homologação), com `datas_fonte` dizendo de onde vieram, obrigatório com qualquer data. O stub não tem `vigente_de`: a vigência dele começa na data do ato, que é o limite inferior (antes dela o ato não existe), e o status vem de `status_vigencia` ou das relações. O stub não registra `tipo_documento`, `orgao`, `jurisdicao`, `numero` nem `ano`: o banco os tira do ID (`metadadosDoIdNorma`, em `packages/kb/src/normas/ids.ts`), e por isso o ID precisa seguir o padrão do ato. Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
+Normas citadas por PPCs ou fichas mas sem texto em `normas/` ficam em `normas/stubs.yaml`, com ID, título, ementa, `status_vigencia`, a fonte oficial (`fonte_url`, `fonte_referencia` ou os dois, obrigatória como no front matter) e, quando houver, aliases. As datas são as do front matter, cada uma só com evidência na fonte oficial: `assinada_em` (a data do ato; no parecer, a aprovação no colegiado) e `publicada_em` (DOU ou Boletim de Serviço; no parecer, a publicação do despacho de homologação), com `datas_fonte` dizendo de onde vieram, obrigatório com qualquer data. O stub não tem `vigente_de`: a vigência dele começa na data do ato, que é o limite inferior (antes dela o ato não existe), e o status vem de `status_vigencia` ou das relações. O stub não registra `tipo_documento`, `orgao`, `jurisdicao`, `numero` nem `ano`: o banco os tira do ID (`metadadosDoIdNorma`, em `packages/kb/src/normas/ids.ts`), e por isso o ID precisa seguir o padrão do ato. Status diferente de `a confirmar` exige `status_fonte` apontando para o dispositivo da base que prova o status (ex.: `br/cne-cp/res/2021/1#art64` para a revogação da Res. CNE/CEB nº 6/2012). Metadados não conferidos em fonte oficial ficam com `curadoria: rascunho`.
 
 Referências fora do escopo normativo da base (conselhos profissionais, ABNT, documentos institucionais não normativos, regulamentos de campus) ficam na seção `externos` do mesmo arquivo, com IDs `externo:`.
 

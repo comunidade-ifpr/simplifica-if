@@ -111,6 +111,12 @@ export const esquemaRegistroStubs = Schema.Struct({
       if (stub.assinada_em && stub.publicada_em && stub.publicada_em < stub.assinada_em) {
         problemas.push({ path: ["normas", indice, "publicada_em"], issue: "publicada_em anterior a assinada_em" });
       }
+      if (!stub.fonte_url && !stub.fonte_referencia) {
+        problemas.push({
+          path: ["normas", indice, "fonte_url"],
+          issue: "stub sem fonte oficial: fonte_url ou fonte_referencia",
+        });
+      }
       if ((stub.assinada_em || stub.publicada_em) && !stub.datas_fonte) {
         problemas.push({ path: ["normas", indice, "datas_fonte"], issue: "data sem datas_fonte (a evidência)" });
       }

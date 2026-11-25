@@ -74,7 +74,7 @@ export interface FichaNorma {
   /** Status publicado, calculado na `data_referencia`. */
   readonly status_vigencia: string | null;
   readonly ementa: string | null;
-  /** URL https do texto oficial, do front matter ou do stub; `null` quando a fonte oficial está pendente. */
+  /** URL https do texto oficial, do front matter ou do stub; `null` quando a fonte é só `fonte_referencia` (ou na referência externa). */
   readonly fonte_url: UrlOficial | null;
   /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
   readonly fonte_referencia: string | null;

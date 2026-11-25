@@ -43,7 +43,7 @@ CREATE TABLE normas (
   status_vigencia TEXT,
   status_fonte TEXT,
   ementa TEXT,
-  -- URL https do texto oficial (null: fonte oficial pendente)
+  -- URL https do texto oficial (null: a fonte é só fonte_referencia, ou referência externa)
   fonte_url TEXT,
   -- referência da fonte sem link (número do SEI, Boletim de Serviço)
   fonte_referencia TEXT,

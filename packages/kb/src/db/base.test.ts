@@ -126,6 +126,7 @@ const criarCheckoutMinimo = (dir: string) =>
         'orgao: "BR"',
         'jurisdicao: "BR"',
         'ementa: "Norma mínima de teste."',
+        'fonte_referencia: "DOU de teste."',
         'status_vigencia: "vigente"',
         "keywords:",
         '  - "teste"',

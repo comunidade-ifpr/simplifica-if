@@ -123,7 +123,7 @@ export const esquemaNorma = Schema.StructWithRest(
     status_vigencia: texto,
     keywords: listaTexto.check(Schema.isMinLength(1)),
     aliases: Schema.optionalKey(listaTexto),
-    /** Endereço público do texto oficial; ausente, a fonte oficial está pendente. */
+    /** Endereço público do texto oficial. Toda norma tem este campo, `fonte_referencia` ou os dois. */
     fonte_url: Schema.optionalKey(UrlOficial),
     /** Referência da fonte sem link (número do SEI, Boletim de Serviço, PDF assinado). */
     fonte_referencia: Schema.optionalKey(texto),
@@ -159,6 +159,9 @@ export const esquemaNorma = Schema.StructWithRest(
     }
     if (!norma.assinada_em.startsWith(String(norma.ano))) {
       achados.push({ path: ["assinada_em"], issue: `assinada_em fora do ano da norma (${norma.ano})` });
+    }
+    if (norma.fonte_url === undefined && norma.fonte_referencia === undefined) {
+      achados.push({ path: ["fonte_url"], issue: "norma sem fonte oficial: fonte_url ou fonte_referencia" });
     }
     if (RE_DATA_ISO.test(norma.publicada_em) && norma.publicada_em < norma.assinada_em) {
       achados.push({ path: ["publicada_em"], issue: "publicada_em anterior a assinada_em" });

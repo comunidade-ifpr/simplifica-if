@@ -7,7 +7,7 @@ ano: 2025
 assinada_em: "2025-06-10"
 publicada_em: "2025-06-17"
 vigente_de: "2025-06-17"
-datas_fonte: "Texto: \"Boletim de Serviço Eletrônico em 17/06/2025\"; art. 14 (vigência após a publicação)."
+datas_fonte: "Texto e publicação no SEI (fonte_url, conferida em 25/11/2026): \"Resolução CONSUP/IFPR Nº 239, DE 10 DE junho DE 2025\", \"Boletim de Serviço Eletrônico em 17/06/2025\"; art. 14 (vigência após a publicação). O link da página de deliberações do CONSUP de 2025 está quebrado; o do SEI vem das entradas das Res. 11/2009 e 53/2011."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a Política Institucional de Assistência Estudantil no IFPR."
@@ -21,6 +21,8 @@ keywords:
 aliases:
   - "Resolução CONSUP/IFPR nº 239/2025"
   - "Resolução IFPR 239/2025"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3788562&id_orgao_publicacao=0"
+fonte_referencia: "SEI/IFPR nº 3633841; Processo nº 23411.014135/2024-00; Boletim de Serviço Eletrônico de 17/06/2025"
 revoga:
   - "Resolução CONSUP/IFPR nº 11/2009"
   - "Resolução CONSUP/IFPR nº 53/2011"
