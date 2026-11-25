@@ -113,13 +113,21 @@ export function textosDe(elementos: ReadonlyArray<Element>): Text[] {
   return nos;
 }
 
-/** Rola a área de rolagem mais próxima até a faixa, se ela não está à vista (a um terço da altura). */
+/** Rola com sobra na vertical: uma tabela com `overflow-x` tem `overflow-y` calculado `auto`, mas não rola. */
+const rolaNaVertical = (elemento: HTMLElement) =>
+  elemento.scrollHeight > elemento.clientHeight && /(auto|scroll)/.test(getComputedStyle(elemento).overflowY);
+
+/**
+ * Rola a área de rolagem mais próxima até a faixa, se ela não está à vista (a um terço da altura). O
+ * `scroll-padding-top` da área (a barra da busca presa ao topo) não conta como vista.
+ */
 export function rolarAte(faixa: Range): void {
   let area = faixa.startContainer.parentElement;
-  while (area !== null && !/(auto|scroll)/.test(getComputedStyle(area).overflowY)) area = area.parentElement;
+  while (area !== null && !rolaNaVertical(area)) area = area.parentElement;
   if (area === null) return;
   const caixa = faixa.getBoundingClientRect();
-  const vista = area.getBoundingClientRect();
-  if (caixa.top >= vista.top && caixa.bottom <= vista.bottom) return;
-  area.scrollTop += caixa.top - vista.top - vista.height / 3;
+  const retangulo = area.getBoundingClientRect();
+  const topo = retangulo.top + (Number.parseFloat(getComputedStyle(area).scrollPaddingTop) || 0);
+  if (caixa.top >= topo && caixa.bottom <= retangulo.bottom) return;
+  area.scrollTop += caixa.top - topo - (retangulo.bottom - topo) / 3;
 }

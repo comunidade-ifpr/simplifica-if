@@ -2,11 +2,14 @@
  * O Explorar no Chromium, com o app inteiro conectado ao `apps/server` de verdade (banco de fixture com
  * `fixture-explorar.ts`): a paleta (Ctrl+K) com uma citação que cai no dispositivo destacado e com um
  * curso que abre a ficha (divergência PPC × SUAP marcada, Consepe, "Perguntar à IA sobre isto" sem
- * enviar); as coleções com os filtros; e, em cada tela, nada em inglês nem jargão (M1.14).
+ * enviar); as coleções com os filtros; a busca no texto (⌘F/Ctrl+F) da página de uma norma; e, em cada
+ * tela, nada em inglês nem jargão (M1.14).
  */
 import { beforeAll, expect, it } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../../vite.config.ts";
+import { NO_MAC } from "../components/BuscaPainel.tsx";
+import { NOME_BUSCA, NOME_BUSCA_ATUAL } from "../leitor/busca.ts";
 import { achadosDaTela, iniciarServidorTeste, montarApp } from "../../test/navegador.tsx";
 
 let servidor: ServidorTeste;
@@ -76,6 +79,63 @@ it("paleta: uma citação vai direto ao dispositivo destacado na norma", async (
     .toMatch(/Nada encontrado|Trechos de normas|Seções de PPC/);
   expect(janela.element().querySelector('[role="alert"]')).toBeNull();
   semIngles();
+  await userEvent.keyboard("{Escape}");
+});
+
+it("página de norma: ⌘F (macOS) ou Ctrl+F busca no texto, com a contagem, o passo e a volta ao botão", async () => {
+  await using _app = await montarApp(servidor, "/explorar");
+  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar o IFPR" })).toBeVisible();
+  const atalho = NO_MAC ? "{Meta>}f{/Meta}" : "{Control>}f{/Control}";
+  const busca = page.getByRole("searchbox", { name: "Buscar no texto" });
+  // fora de uma página, o atalho não abre nada
+  await userEvent.keyboard(atalho);
+  await expect.element(busca).not.toBeInTheDocument();
+
+  const campo = await abrirPaleta();
+  await campo.fill("Res. CNE/CP 1/2021, art. 20");
+  const trechos = page
+    .getByRole("dialog", { name: "Buscar na base" })
+    .getByRole("group", { name: "Trechos de normas" });
+  await expect.element(trechos.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+  await userEvent.keyboard("{Enter}");
+  const norma = page.getByRole("article", { name: "Norma" });
+  await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
+
+  await userEvent.keyboard(atalho);
+  await expect.element(busca).toHaveFocus();
+  // sem acento nem caixa
+  await busca.fill("EDUCACAO PROFISSIONAL");
+  await expect.element(page.getByText(/^1 de \d+$/)).toBeVisible();
+  expect(CSS.highlights.get(NOME_BUSCA)?.size).toBeGreaterThan(1);
+  expect(CSS.highlights.get(NOME_BUSCA_ATUAL)?.size).toBe(1);
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByText(/^2 de \d+$/)).toBeVisible();
+  // a atual fica à vista, abaixo da barra presa ao topo
+  const barra = document.querySelector("search")!.getBoundingClientRect();
+  const atual = [...CSS.highlights.get(NOME_BUSCA_ATUAL)!][0] as Range;
+  expect(atual.getBoundingClientRect().top).toBeGreaterThanOrEqual(barra.bottom);
+  await busca.fill("termo que não existe na norma");
+  await expect.element(page.getByText("Nenhum resultado")).toBeVisible();
+  semIngles();
+
+  // Esc fecha, apaga os realces e devolve o foco ao botão sem rolar: a ocorrência fica onde estava na
+  // tela (a barra que sai do fluxo é compensada pela ancoragem da rolagem); o botão reabre
+  const antes = atual.getBoundingClientRect().top;
+  await userEvent.keyboard("{Escape}");
+  await expect.element(busca).not.toBeInTheDocument();
+  expect(CSS.highlights.has(NOME_BUSCA)).toBe(false);
+  const botao = page.getByRole("button", { name: /^Buscar no texto/ });
+  await expect.element(botao).toHaveFocus();
+  expect(Math.abs(atual.getBoundingClientRect().top - antes)).toBeLessThan(2);
+  await botao.click();
+  await expect.element(busca).toHaveFocus();
+  await userEvent.keyboard("{Escape}");
+
+  // com a paleta aberta por cima, o atalho não tira o foco dela
+  const paleta = await abrirPaleta();
+  await userEvent.keyboard(atalho);
+  await expect.element(paleta).toHaveFocus();
+  await expect.element(busca).not.toBeInTheDocument();
   await userEvent.keyboard("{Escape}");
 });
 

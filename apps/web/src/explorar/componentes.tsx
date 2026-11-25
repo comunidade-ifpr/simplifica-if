@@ -139,6 +139,9 @@ export function Filtros({
   );
 }
 
+/** A classe do atalho de teclado escrito num botão ("⌘K", "⌘F"). */
+export const classeAtalho = "rounded border border-border px-1.5 font-sans text-micro text-muted-foreground";
+
 /** A classe de uma linha de lista que se clica inteira (o link do título se estica sobre ela). */
 export const classeLinha =
   "group relative flex items-start gap-x-4 px-3 py-3 hover:bg-muted has-[a:focus-visible]:bg-muted";

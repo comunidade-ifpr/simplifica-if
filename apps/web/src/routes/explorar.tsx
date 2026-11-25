@@ -10,6 +10,7 @@ import type { DadosIndice } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { SearchIcon } from "lucide-react";
 import { classeColuna } from "../components/Pagina.tsx";
+import { classeAtalho } from "../explorar/componentes.tsx";
 import { ICONES_TIPO } from "../explorar/icones.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { atalhoPaleta, usePaleta } from "../explorar/Paleta.tsx";
@@ -94,8 +95,6 @@ function Abas() {
     </nav>
   );
 }
-
-const classeAtalho = "rounded border border-border px-1.5 font-sans text-micro text-muted-foreground";
 
 function Explorar() {
   const { abrir } = usePaleta();

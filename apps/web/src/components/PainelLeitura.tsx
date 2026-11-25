@@ -13,7 +13,7 @@ import { type Historico, linkAtual, podeAvancar, podeVoltar } from "../leitor/hi
 import { ContextoMemoria, MemoriaLeitor } from "../leitor/carga.ts";
 import { ConteudoLink } from "../leitor/Leitor.tsx";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
-import { ATALHO_BUSCA, BuscaPainel, eAtalhoBusca, montarTudo } from "./BuscaPainel.tsx";
+import { ATALHO_BUSCA, useBuscaNoTexto } from "./BuscaPainel.tsx";
 import { Button } from "./ui/button.tsx";
 
 export function PainelLeitura({
@@ -40,29 +40,9 @@ export function PainelLeitura({
     elemento.focus({ preventScroll: true });
   }, [link]);
 
-  // A busca: ⌘F (macOS) ou Ctrl+F, de qualquer lugar da tela, enquanto o painel está aberto (o app não
-  // tem outra). Ao fechar, o foco volta à lupa.
+  // A busca: ⌘F (macOS) ou Ctrl+F, de qualquer lugar da tela, enquanto o painel está aberto.
   const area = useRef<HTMLDivElement>(null);
-  const lupa = useRef<HTMLButtonElement>(null);
-  const [pedidoBusca, setPedidoBusca] = useState(0);
-  const abrirBusca = () => {
-    montarTudo();
-    setPedidoBusca((n) => n + 1);
-  };
-  const fecharBusca = () => {
-    setPedidoBusca(0);
-    lupa.current?.focus();
-  };
-  useEffect(() => {
-    const tecla = (e: KeyboardEvent) => {
-      if (!eAtalhoBusca(e)) return;
-      e.preventDefault();
-      montarTudo();
-      setPedidoBusca((n) => n + 1);
-    };
-    window.addEventListener("keydown", tecla);
-    return () => window.removeEventListener("keydown", tecla);
-  }, []);
+  const { lupa, abrir: abrirBusca, barra: barraBusca } = useBuscaNoTexto(area);
   if (link === undefined) return null;
   const documento = link.split("#")[0]!;
   return (
@@ -113,7 +93,7 @@ export function PainelLeitura({
           <XIcon />
         </Button>
       </header>
-      {pedidoBusca === 0 ? null : <BuscaPainel area={area} pedido={pedidoBusca} aoFechar={fecharBusca} />}
+      {barraBusca}
       <ContextoMemoria value={memoria}>
         {/* Estável entre documentos: a busca observa o texto aqui e o refaz quando ele muda. */}
         <div ref={area} className="flex min-h-0 flex-1 flex-col">

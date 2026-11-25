@@ -579,6 +579,11 @@ mark.trecho-citado {
 }
 
 /* A busca no painel (`leitor/busca.ts`): todas as ocorrências num tom, a atual em outro, mais forte. */
+/* A barra da busca presa ao topo da página do Explorar: a rolagem (o `rolarAte`, os dispositivos) para abaixo dela. */
+[data-rolagem-explorar]:has(.busca-presa) {
+  scroll-padding-top: 3.5rem;
+}
+
 ::highlight(busca) {
   background-color: color-mix(in srgb, #4fc3f7 40%, transparent);
   color: inherit;
