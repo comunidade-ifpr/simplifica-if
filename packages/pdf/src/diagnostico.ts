@@ -88,6 +88,14 @@ const ehTextoCorrido = (b: string) => !ehTabela(b) && !ehTitulo(b) && !b.startsW
 
 const RE_FIM_ABERTO = /[\p{L}\p{N},]$/u;
 const RE_COMECA_MAIUSCULA = /^(?:[-*]\s+)?\p{Lu}/u;
+/**
+ * O bloco seguinte que começa outra coisa, e não continua o anterior: rótulo ("EMENTA:",
+ * "Carga horária:"), referência bibliográfica ("SOBRENOME, Nome", "BRASIL."), legenda, anexo.
+ */
+const RE_NAO_CONTINUA =
+  /^(?:[\p{L}\s()/º°-]{2,45}:|\p{Lu}[\p{Lu}\s'-]+[,.]|_{3,}|(?:ANEXO|APÊNDICE|Anexo|Apêndice|Quadro|QUADRO|Tabela|TABELA|Figura|FIGURA|Fonte|FONTE|Gráfico)\b)/u;
+/** O bloco que é referência bibliográfica: acaba sem ponto sem estar partido. */
+const RE_REFERENCIA = /^(?:\p{Lu}[\p{Lu}\s'-]+[,.]|_{3,})/u;
 const RE_TITULO_COLADO = /^(?:[-*]\s+)?(?:\*\*)?\d{1,2}(?:\.\d{1,3})+\.?\s+\p{Lu}.{0,110}?[.:]\s+\S/u;
 const RE_TITULO_PROVAVEL = /^(?:\*\*)?\d{1,2}(?:\.\d{1,3})+\.?\s+\p{Lu}[^.;:!?|]{2,100}(?:\*\*)?$/u;
 const RE_HIFEN_PARTIDO = /\p{Ll}{2,}- \p{Ll}{2,}/u;
@@ -146,7 +154,9 @@ export function diagnosticarMarkdown(texto: string, primeiraLinha = 1): Achado[]
         texto.length >= MINIMO_CARACTERES_CONTINUACAO &&
         RE_FIM_ABERTO.test(b) &&
         RE_COMECA_MAIUSCULA.test(seguinte.texto) &&
-        !/^\*\*.*\*\*$/u.test(b)
+        !/^\*\*.*\*\*$/u.test(b) &&
+        !RE_NAO_CONTINUA.test(textoSemMarcacao(seguinte.texto)) &&
+        !RE_REFERENCIA.test(texto)
       )
         achar("paragrafo-partido", bloco.linha, seguinte.fim, `${trecho(b, 80)} ⏎ ${trecho(seguinte.texto, 60)}`);
     }

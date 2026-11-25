@@ -136,6 +136,42 @@ describe("limparMarkdownConvertido", () => {
     );
   });
 
+  it("tira o cabeçalho de página de dentro da tabela, e não a linha de conteúdo", () => {
+    const tabela = [
+      "|INSTITUTOFEDERAL<br>Parana||",
+      "|---|---|",
+      "|Componente|Carga|",
+      "|1 [INSTITUTOFEDERAL]<br>Parana|Ministerio da Educacao|",
+      "||Resolução de autorização do curso no IFPR: Resolução nº 114/2022|",
+      "|4|FONE DE OUVIDO COM MICROFONE|",
+      "|Fonte: Secretaria Acadêmica do Campus||",
+    ].join("\n");
+    expect(limpar(blocos(tabela), ["tabelas"])).toBe(
+      blocos(
+        [
+          "|||",
+          "|---|---|",
+          "|Componente|Carga|",
+          "||Resolução de autorização do curso no IFPR: Resolução nº 114/2022|",
+          "|4|FONE DE OUVIDO COM MICROFONE|",
+          "|Fonte: Secretaria Acadêmica do Campus||",
+        ].join("\n"),
+      ),
+    );
+  });
+
+  it("limpar duas vezes dá o mesmo resultado", () => {
+    const texto = blocos(
+      LONGO,
+      "|A|B|\n|---|---|\n|1|2|",
+      "3",
+      "|INSTITUTOFEDERAL<br>Parana||\n|---|---|\n|3|4|",
+      "desses pilares existe.",
+    );
+    const uma = limpar(texto);
+    expect(limpar(uma)).toBe(uma);
+  });
+
   it("conta as mudanças por passada", () => {
     const { contagens } = limparMarkdownConvertido(blocos("Texto.", "1", "## **Título**"));
     expect(contagens.paginas).toBe(1);

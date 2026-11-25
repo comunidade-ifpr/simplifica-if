@@ -164,7 +164,7 @@ function marcadores(blocos: string[], contar: () => void): string[] {
 /* ---------------------------------------------------------------- 2. cabeçalhos */
 
 const RE_INSTITUCIONAL =
-  /ministerio ?da ?educa|instituto ?federal|institutofederal|\bifpr\b|\bc[a]mpus\b|pro-?reitoria|\bproens\b|\bcep\b|^(rua|av\.?|avenida|rodovia|estrada) |www\.|\.edu\.br|telefone|\bfone\b|^parana$|pagina # de #/u;
+  /ministerio ?da ?educa|instituto ?federal|institutofederal|\bifpr\b|\bc[a]mpus\b|pro-?reitoria|\bproens\b|\bcep\b|^(rua|av\.?|avenida|rodovia|estrada) |www\.|\.edu\.br|\b(?:tele)?fone\s*:|^parana$|pagina # de #/u;
 
 /** Legenda e fonte de figura ou tabela repetem o nome do IFPR sem serem cabeçalho. */
 const RE_LEGENDA = /^(fonte|figura|quadro|tabela|grafico|imagem|foto)\b/u;
@@ -203,13 +203,15 @@ export function repeticoes(blocos: ReadonlyArray<string>): Map<string, number> {
 }
 
 /**
- * Referência bibliográfica ("São Paulo: Campus, 2005"), URL, frase ("…do Paraná. Resolução…"),
- * assinatura de reitor e item longo citam o IFPR ou um endereço sem serem cabeçalho.
+ * Referência bibliográfica ("São Paulo: Campus, 2005"), URL, frase ("…do Paraná. Resolução…"), ato
+ * ("Resolução de autorização do curso no IFPR"), assinatura de reitor e item longo citam o IFPR ou
+ * um endereço sem serem cabeçalho.
  */
-const RE_CONTEUDO = /https?:|acesso em|disponivel em|\p{L}{3,}\. \p{L}|\breitor\b|^[^\p{L}\p{N}#]/u;
+const RE_CONTEUDO =
+  /https?:|acesso em|disponivel em|\p{L}{3,}\. \p{L}|\bed\.|: campus\b|\breitor\b|resolu|portaria|parecer|autoriza|decreto|\blei\b|^[^\p{L}\p{N}#]/u;
 
 export function ehChaveInstitucional(chave: string): boolean {
-  if (!RE_INSTITUCIONAL.test(chave) || RE_CONTEUDO.test(chave)) return false;
+  if (!RE_INSTITUCIONAL.test(chave) || RE_CONTEUDO.test(chave) || RE_LEGENDA.test(chave)) return false;
   return chave.split(" ").length <= 12 || /\||\bcep\b/u.test(chave);
 }
 
@@ -305,6 +307,21 @@ function celulas(linha: string): string[] {
 const RE_SEPARADOR = /^\|(?:\s*:?-{3,}:?\s*\|)+$/u;
 const RE_LINHA_VAZIA = /^\|(?:\s*\|)+$/u;
 
+/**
+ * Linha de tabela que só traz o cabeçalho de página (`|INSTITUTOFEDERAL<br>Parana||`): cada pedaço
+ * de cada célula preenchida é termo institucional ou número, e há ao menos um termo.
+ */
+export function ehLinhaDeCabecalhoDePagina(linha: string): boolean {
+  if (RE_SEPARADOR.test(linha)) return false;
+  const pedacos = celulas(linha)
+    .flatMap((celula) => celula.split(/<br\s*\/?>/u))
+    .map((pedaco) => chaveDeRepeticao(pedaco.replace(/[[\]]/gu, " ")))
+    .filter((chave) => chave !== "");
+  // O título da matriz ("INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ") é mais longo.
+  const curta = (chave: string) => ehChaveInstitucional(chave) && chave.split(" ").length <= 8;
+  return pedacos.some(curta) && pedacos.every((chave) => /^[#\s.]+$/u.test(chave) || curta(chave));
+}
+
 function tabelas(blocos: string[], contar: () => void): string[] {
   const saida: string[] = [];
   for (const bloco of blocos) {
@@ -314,10 +331,16 @@ function tabelas(blocos: string[], contar: () => void): string[] {
     }
     const linhas = bloco.split("\n");
     const separador = linhas.findIndex((linha) => RE_SEPARADOR.test(linha));
+    // O cabeçalho de página que caiu dentro da tabela: na primeira linha, ela fica vazia (e a
+    // tabela pode juntar-se à anterior); nas outras, sai.
+    if (separador === 1 && ehLinhaDeCabecalhoDePagina(linhas[0]!)) {
+      contar();
+      linhas[0] = `|${"|".repeat(celulas(linhas[1]!).length)}`;
+    }
     const corpo = linhas.filter((linha, i) => {
-      const vazia = i > separador && separador >= 0 && RE_LINHA_VAZIA.test(linha);
-      if (vazia) contar();
-      return !vazia;
+      const sai = i > separador && separador >= 0 && (RE_LINHA_VAZIA.test(linha) || ehLinhaDeCabecalhoDePagina(linha));
+      if (sai) contar();
+      return !sai;
     });
     const anterior = saida.at(-1);
     if (anterior !== undefined && ehTabela(anterior) && separador === 1) {
@@ -467,11 +490,17 @@ export function limparMarkdownConvertido(corpo: string, opcoes: OpcoesLimpeza = 
   const escolhidas = new Set(opcoes.passadas ?? PASSADAS);
   const contagens = Object.fromEntries(PASSADAS.map((p) => [p, 0])) as Contagens;
   let blocos = blocosDoTexto(corpo);
-  for (const passada of PASSADAS) {
-    if (!escolhidas.has(passada)) continue;
-    blocos = FUNCOES[passada](blocos, () => {
-      contagens[passada] += 1;
-    });
+  // Uma passada revela trabalho para outra (o cabeçalho que sai da tabela deixa o número de página
+  // solto): repete até o texto parar de mudar, para que limpar duas vezes dê o mesmo resultado.
+  for (let rodada = 0; rodada < 5; rodada += 1) {
+    const antes = blocos.join("\n\n");
+    for (const passada of PASSADAS) {
+      if (!escolhidas.has(passada)) continue;
+      blocos = FUNCOES[passada](blocos, () => {
+        contagens[passada] += 1;
+      });
+    }
+    if (blocos.join("\n\n") === antes) break;
   }
   return { texto: blocos.length ? `${blocos.join("\n\n")}\n` : "", contagens };
 }
