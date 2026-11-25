@@ -33,9 +33,11 @@ O app trabalha com dado público. Não anexe dados pessoais nem documentos de ac
 
 O Simplifica IF está em desenvolvimento, a caminho de um piloto com um grupo pequeno de servidores. Ainda não há instalador público; por enquanto, quem quer experimentar roda o app a partir do código ([`CONTRIBUTING.md`](CONTRIBUTING.md#ambiente)). O que já está pronto e o que falta estão em [`docs/plans/`](docs/plans/README.md).
 
-## Projeto independente
+## O Simplifica IF é do IFPR?
 
-O Simplifica IF é mantido por servidores e colaboradores do IFPR na organização Comunidade IFPR. Não representa o IFPR nem é mantido oficialmente por ele.
+Por enquanto, não. É um projeto independente, para ajudar os colegas no trabalho do dia a dia. É mantido por Gustavo Rahal, servidor do IFPR, e outros colaboradores da instituição: não representa o IFPR nem é mantido oficialmente por ele. A base reúne normas e documentos públicos do IFPR e da legislação federal.
+
+Se o IFPR quiser adotar o Simplifica IF oficialmente, ficamos felizes em ajudar na adoção.
 
 ## Como ajudar
 
