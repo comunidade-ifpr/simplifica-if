@@ -15,7 +15,9 @@
  * 5. `tabelas`: a linha de tabela toda vazia e a tabela partida pela página, quando a parte de baixo
  *    repete o cabeçalho ou o tem vazio e o número de colunas é o mesmo;
  * 6. `titulos`: título sem o negrito que o envolve, no nível da numeração (`2.4.1` → `####`); o
- *    item de lista ou a linha em negrito que só traz um título numerado vira título;
+ *    item de lista ou a linha em negrito que só traz um título numerado vira título, e a linha
+ *    numerada curta sem marcação também, quando continua a numeração do título anterior (2.4 →
+ *    2.4.1, 2.5 ou 3; "1.1 Conceitos" numa ementa depois de "4.2" não continua);
  * 7. `paragrafos`: o parágrafo partido pela página ou pela coluna, quando o primeiro pedaço tem 50
  *    caracteres ou mais, não acaba em pontuação final e o seguinte começa com minúscula;
  * 8. `espacos`: o espaço antes da pontuação depois de ênfase (`_campus_ ;`) e o espaço repetido.
@@ -238,12 +240,22 @@ export function numeroDePagina(bloco: string): number | null {
   return casamento ? Number(casamento[1]) : null;
 }
 
+/** `seguinte` vem depois de `anterior` na sequência das páginas (até 6 adiante, ou recomeço em 1 a 3). */
+const segueNaSequencia = (anterior: number, seguinte: number) =>
+  (seguinte > anterior && seguinte - anterior <= 6) || seguinte <= 3;
+
 function paginas(blocos: string[], contar: () => void): string[] {
+  const numeros = blocos.map(numeroDePagina);
+  const proximoNumero = (i: number) => numeros.slice(i + 1).find((n) => n !== null) ?? null;
   let ultimo: number | undefined;
-  return blocos.filter((bloco) => {
-    const numero = numeroDePagina(bloco);
-    if (numero === null) return true;
-    const segue = ultimo === undefined ? numero <= 30 : (numero > ultimo && numero - ultimo <= 6) || numero <= 3;
+  return blocos.filter((_, i) => {
+    const numero = numeros[i];
+    if (numero === null || numero === undefined) return true;
+    // Sem página aceita antes (ou fora da sequência dela), vale o número que o próximo número solto segue.
+    const proximo = proximoNumero(i);
+    const segue =
+      (ultimo === undefined ? numero <= 30 : segueNaSequencia(ultimo, numero)) ||
+      (proximo !== null && proximo > numero && proximo - numero <= 6);
     if (!segue) return true;
     ultimo = numero;
     contar();
@@ -398,21 +410,55 @@ function juntarNumeracaoSolta(blocos: string[], contar: () => void): string[] {
   return saida;
 }
 
+const RE_TITULO_SEM_MARCACAO = /^(\d{1,2}(?:\.\d{1,3})*)\.?\s*[-–]?\s+(\p{Lu}[^.;:!?|\n]{1,110})$/u;
+
+/** A numeração `2.4.1` em números, ou `null`. */
+function numeros(texto: string): number[] | null {
+  const casamento = RE_NUMERACAO_TITULO.exec(texto);
+  return casamento ? casamento[1]!.split(".").map(Number) : null;
+}
+
+/**
+ * `proxima` continua a numeração de `anterior`: vem depois dela, no mesmo capítulo ou no seguinte, e
+ * desce no máximo um nível (2.4 → 2.4.1, 2.5, 2.7.1 ou 3; não 2.3, 1.1 nem 2.4.1.1). Pular um número
+ * é aceito porque um título do meio pode ter escapado ao reconhecimento.
+ */
+export function continuaNumeracao(anterior: ReadonlyArray<number>, proxima: ReadonlyArray<number>): boolean {
+  if (proxima.length > anterior.length + 1) return false;
+  const capitulo = proxima[0]! - anterior[0]!;
+  if (capitulo < 0 || capitulo > 1) return false;
+  if (capitulo === 1) return proxima.length === 1 || proxima.slice(1).every((n) => n === 1);
+  for (let i = 0; i < Math.max(anterior.length, proxima.length); i += 1) {
+    const a = anterior[i] ?? 0;
+    const b = proxima[i] ?? 0;
+    if (b !== a) return b > a && b - a <= 3;
+  }
+  return false;
+}
+
 function titulos(blocos: string[], contar: () => void): string[] {
+  // A última numeração de título vista: a linha numerada sem marcação vira título quando a continua.
+  let ultima: number[] | undefined;
   return juntarNumeracaoSolta(blocos, contar).map((bloco) => {
     let titulo: { nivel: number; texto: string } | undefined;
     const markdown = /^(#{1,6})\s+(.+)$/u.exec(bloco);
     if (markdown && !bloco.includes("\n")) {
       const texto = limparTextoDoTitulo(markdown[2]!);
       titulo = { nivel: nivelDaNumeracao(texto) ?? Math.max(2, markdown[1]!.length), texto };
-    } else {
+    } else if (!bloco.includes("\n")) {
       const promovido = RE_TITULO_EM_ITEM.exec(bloco) ?? RE_TITULO_EM_NEGRITO.exec(bloco);
-      if (promovido && !bloco.includes("\n")) {
+      if (promovido) {
         const texto = limparTextoDoTitulo(promovido[1]!);
         titulo = { nivel: nivelDaNumeracao(texto) ?? 2, texto };
+      } else if (ultima && ehParagrafo(bloco)) {
+        const texto = limparTextoDoTitulo(bloco);
+        const candidato = RE_TITULO_SEM_MARCACAO.test(texto) ? numeros(texto) : null;
+        if (candidato && continuaNumeracao(ultima, candidato))
+          titulo = { nivel: nivelDaNumeracao(texto) ?? 2, texto };
       }
     }
     if (!titulo || !titulo.texto) return bloco;
+    ultima = numeros(titulo.texto) ?? ultima;
     const novo = `${"#".repeat(titulo.nivel)} ${titulo.texto}`;
     if (novo !== bloco) contar();
     return novo;

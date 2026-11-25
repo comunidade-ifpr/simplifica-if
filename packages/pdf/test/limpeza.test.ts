@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import { continua, limparMarkdownConvertido, nivelDaNumeracao, numeroDePagina, type Passada } from "../src/limpeza.ts";
+import { continua, continuaNumeracao, limparMarkdownConvertido, nivelDaNumeracao, numeroDePagina, type Passada } from "../src/limpeza.ts";
 
 const blocos = (...partes: string[]) => `${partes.join("\n\n")}\n`;
 const limpar = (texto: string, passadas?: Passada[]) =>
@@ -96,6 +96,52 @@ describe("limparMarkdownConvertido", () => {
         "#### 1.1.10 Escolaridade mínima exigida",
       ),
     );
+  });
+
+  it("promove a linha numerada sem marcação que continua a numeração dos títulos", () => {
+    expect(
+      limpar(
+        blocos(
+          "## 1 APRESENTAÇÃO DO PROJETO",
+          "1.1 IDENTIFICAÇÃO",
+          "1.1.1 Processo",
+          "1.1.1.1 Número do processo do PPC",
+          "23411.000123/2020-11",
+          "1.1.2 Informações do Campus",
+          "1.2 Histórico",
+          "## 4.2 EMENTÁRIO",
+          "1.1 Conceitos básicos de anatomia",
+          "4.3 Avaliação",
+        ),
+        ["titulos"],
+      ),
+    ).toBe(
+      blocos(
+        "## 1 APRESENTAÇÃO DO PROJETO",
+        "### 1.1 IDENTIFICAÇÃO",
+        "#### 1.1.1 Processo",
+        "##### 1.1.1.1 Número do processo do PPC",
+        "23411.000123/2020-11",
+        "#### 1.1.2 Informações do Campus",
+        "### 1.2 Histórico",
+        "### 4.2 EMENTÁRIO",
+        "1.1 Conceitos básicos de anatomia",
+        "### 4.3 Avaliação",
+      ),
+    );
+  });
+
+  it("continuaNumeracao", () => {
+    expect(continuaNumeracao([2, 4], [2, 4, 1])).toBe(true);
+    expect(continuaNumeracao([2, 4], [2, 5])).toBe(true);
+    expect(continuaNumeracao([2, 4, 1], [3])).toBe(true);
+    expect(continuaNumeracao([2, 6], [2, 7, 1])).toBe(true);
+    expect(continuaNumeracao([2, 4], [2, 4, 2])).toBe(true);
+    expect(continuaNumeracao([2, 4], [2, 3])).toBe(false);
+    expect(continuaNumeracao([4, 2], [1, 1])).toBe(false);
+    expect(continuaNumeracao([2, 4], [2, 4, 1, 1])).toBe(false);
+    expect(continuaNumeracao([2, 4], [4])).toBe(false);
+    expect(continuaNumeracao([2, 4], [3, 2])).toBe(false);
   });
 
   it("não promove o item numerado que é frase", () => {
