@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 12;
+export const VERSAO_ESQUEMA = 13;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
