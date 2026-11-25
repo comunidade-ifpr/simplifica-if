@@ -47,4 +47,10 @@ describe("conferirPalavras", () => {
     ]);
     expect(r.removidas).toEqual([]);
   });
+
+  it("não aceita como repetido o número que já existia em outro ponto", () => {
+    const r = conferirPalavras("Lei 7.498 de 1986, revista em 1996.", "Lei 7.498 de 1996, revista em 1996.");
+    expect(r.novas).toEqual([["1996", 1]]);
+    expect(r.removidas).toEqual([["1986", 1]]);
+  });
 });

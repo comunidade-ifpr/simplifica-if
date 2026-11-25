@@ -8,7 +8,7 @@
  * "FEDERAL"), uma separação; as duas são aceitas e listadas. O resto é palavra acrescentada ou
  * removida. A acrescentada que não existia no texto de antes é `nova`, e a correção reprova; a que já
  * existia e ficou mais vezes é `repetida` (o cabeçalho de tabela que repete "Carga horária" em cada
- * coluna), aceita e listada. A removida é aceita só com justificativa: cabeçalho, rodapé, número de
+ * coluna), aceita e listada, salvo se tiver algarismo: número a mais conta como novo (o ordinal, como "1º", não). A removida é aceita só com justificativa: cabeçalho, rodapé, número de
  * página, sumário, o que quem revisa confere na lista.
  */
 
@@ -117,8 +117,11 @@ export function conferirPalavras(antes: string, depois: string): Conferencia {
   const removidas = menos(contagemAntes, contagemDepois);
   const juncoes = emPedacos(acrescentadas, removidas);
   const separacoes = emPedacos(removidas, acrescentadas);
-  const novas = new Map([...acrescentadas].filter(([p]) => !contagemAntes.has(p)));
-  const repetidas = new Map([...acrescentadas].filter(([p]) => contagemAntes.has(p)));
+  // Número a mais não é repetição aceitável: trocar "1986" por "1996", que existe em outro ponto do
+  // texto, passaria como repetida. O ordinal ("1º", "2ª") é: o cabeçalho de semestres o repete.
+  const repetivel = (p: string) => contagemAntes.has(p) && (!/\p{N}/u.test(p) || /^\d{1,2}[ºª°]$/u.test(p));
+  const novas = new Map([...acrescentadas].filter(([p]) => !repetivel(p)));
+  const repetidas = new Map([...acrescentadas].filter(([p]) => repetivel(p)));
   return {
     novas: ordenar(novas),
     repetidas: ordenar(repetidas),
