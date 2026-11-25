@@ -103,6 +103,7 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
     nivel: p.nivel,
     forma: p.tipo_oferta,
     ano: p.ano_documento,
+    fonte_url: p.fonte_pdf,
     curso: p.curso_id ? linkCurso(p.curso_id) : null,
     link: linkPpc(p.chave),
   }));

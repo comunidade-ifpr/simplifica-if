@@ -334,6 +334,8 @@ const LinhaPpcListado = Schema.Struct({
   tipo_oferta: Texto,
   ano_documento: Schema.NullOr(Inteiro),
   curso_id: TextoNulo,
+  /** O endereço público do PDF de onde veio o texto (`fonte_url`; no vigente, o `ppc.url` do curso). */
+  fonte_pdf: TextoNulo,
 });
 const linhasPpcsListados = Sql.todas(LinhaPpcListado);
 
@@ -347,7 +349,7 @@ export type PpcListado = Omit<typeof LinhaPpcListado.Type, "vigente"> & { readon
 export const listarPpcs = Effect.fn("consultasSecoes.listarPpcs")(function* () {
   const linhas = yield* linhasPpcsListados(
     `SELECT chave, chave_curso, versao, vigente, substr(substituido_por, 5) AS substituido_por, curso_nome, campus_id,
-            campus_nome, nivel, tipo_oferta, ano_documento, curso_id
+            campus_nome, nivel, tipo_oferta, ano_documento, curso_id, fonte_pdf
        FROM ppcs ORDER BY chave`,
   );
   return linhas.map((l): PpcListado => ({ ...l, vigente: l.vigente === 1 }));

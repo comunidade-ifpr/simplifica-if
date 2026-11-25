@@ -126,6 +126,7 @@ describe("filtros", () => {
       nivel: "médio",
       forma: "subsequente",
       ano: Number(versao.slice(0, 4)),
+      fonte_url: `https://ifpr.edu.br/ppc-enfermagem-${versao}.pdf`,
       versao,
       vigente,
       substituido_por: vigente ? null : "ifpr://ppc/curitiba/tecnico-em-enfermagem/2026",

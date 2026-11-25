@@ -561,6 +561,7 @@ function LeitorPpc({
   const explorar = useIndiceExplorar();
   const doIndice =
     explorar.fase === "lido" && versao !== null ? explorar.valor.ppcs.find((p) => p.chave === versao) : undefined;
+  const pdfOriginal = doIndice?.fonte_url ?? null;
 
   return (
     <ComCarga carga={indice} titulo="Não foi possível ler este PPC">
@@ -586,6 +587,7 @@ function LeitorPpc({
                       Ficha do curso
                     </BotaoLink>
                   ) : null}
+                  {pdfOriginal !== null ? <LinkExterno href={pdfOriginal}>Ver o PDF original</LinkExterno> : null}
                 </>
               }
             >

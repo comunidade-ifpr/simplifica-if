@@ -80,8 +80,8 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
   }
 
   db.prepare(
-    `INSERT INTO ppcs (id, chave, chave_curso, versao, vigente, campus_id, campus_nome, curso_slug, curso_nome, nivel, tipo_oferta, path, linhas, caracteres, proveniencia_json)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO ppcs (id, chave, chave_curso, versao, vigente, campus_id, campus_nome, curso_slug, curso_nome, nivel, tipo_oferta, fonte_pdf, path, linhas, caracteres, proveniencia_json)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     "ppc:curitiba/tecnico-em-enfermagem/2023",
     "curitiba/tecnico-em-enfermagem/2023",
@@ -94,6 +94,7 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     "Técnico em Enfermagem",
     "médio",
     "subsequente",
+    "https://ifpr.edu.br/curitiba/wp-content/uploads/ppc-tecnico-em-enfermagem.pdf",
     "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem/2023.md",
     300,
     12000,

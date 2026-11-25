@@ -81,6 +81,8 @@ export const PpcDoIndice = Schema.Struct({
   /** A forma de oferta do índice dos PPCs (`integrado`, `subsequente`, `bacharelado`…). */
   forma: Schema.String,
   ano: Inteiro,
+  /** O PDF publicado de onde veio o texto do PPC (todo PPC da base tem; o banco de teste, nem sempre). */
+  fonte_url: Schema.NullOr(Schema.String),
   /** O curso ligado ao PPC, quando há. */
   curso: Schema.NullOr(EsquemaLink),
   link: EsquemaLink,

@@ -119,6 +119,10 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await expect.element(ppc.getByRole("heading", { level: 2, name: "Técnico em Enfermagem" })).toBeVisible();
   await expect.poll(() => document.getElementById("avaliacao-1")?.querySelector("mark.trecho-citado")).toBeTruthy();
   await expect.element(ppc.getByRole("cell", { name: "1.600 horas" })).toBeVisible();
+  // a fonte: o PDF publicado de onde veio o texto
+  const pdf = ppc.getByRole("link", { name: "Ver o PDF original" });
+  await expect.element(pdf).toBeVisible();
+  expect(pdf.element().getAttribute("href")).toMatch(/^https:\/\//);
   const textoPpc = ppc.getByRole("document", { name: "Texto do PPC" }).element();
   expect(textoPpc.querySelector("script, img, [onerror]")).toBeNull();
   expect(window.__invasao).toBeUndefined();
