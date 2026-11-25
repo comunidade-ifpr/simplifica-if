@@ -7,13 +7,13 @@ describe("conferirPalavras", () => {
       "## **2.4 PERFIL**\n\nO perfil do\n\negresso.",
       "### 2.4 PERFIL\n\nO perfil do egresso.",
     );
-    expect(r.acrescentadas).toEqual([]);
+    expect(r.novas).toEqual([]);
     expect(r.removidas).toEqual([]);
   });
 
   it("lista a palavra acrescentada e a removida", () => {
     const r = conferirPalavras("Ministério da Educação\n\nO curso dura dois anos.", "O curso dura três anos.");
-    expect(r.acrescentadas).toEqual([["três", 1]]);
+    expect(r.novas).toEqual([["três", 1]]);
     expect(r.removidas).toEqual([
       ["da", 1],
       ["dois", 1],
@@ -27,7 +27,7 @@ describe("conferirPalavras", () => {
       "o estu- dante do C A M P U S e o INSTITUTOFEDERAL",
       "o estudante do CAMPUS e o INSTITUTO FEDERAL",
     );
-    expect(r.acrescentadas).toEqual([]);
+    expect(r.novas).toEqual([]);
     expect(r.removidas).toEqual([]);
     expect(r.juncoes.map((j) => j.palavra).sort()).toEqual(["CAMPUS", "estudante"]);
     expect(r.separacoes).toEqual([{ palavra: "INSTITUTOFEDERAL", partes: ["INSTITUTO", "FEDERAL"] }]);
@@ -35,6 +35,16 @@ describe("conferirPalavras", () => {
 
   it("não aceita como junção a palavra cujos pedaços não saíram", () => {
     const r = conferirPalavras("o curso", "o cursocurso");
-    expect(r.acrescentadas).toEqual([["cursocurso", 1]]);
+    expect(r.novas).toEqual([["cursocurso", 1]]);
+  });
+
+  it("aceita, listando, a palavra que já existia e aparece mais vezes, e ignora o <br>", () => {
+    const r = conferirPalavras("|Carga horária<br>H/A|H/R|", "|Carga horária H/A|Carga horária H/R|");
+    expect(r.novas).toEqual([]);
+    expect(r.repetidas).toEqual([
+      ["Carga", 1],
+      ["horária", 1],
+    ]);
+    expect(r.removidas).toEqual([]);
   });
 });

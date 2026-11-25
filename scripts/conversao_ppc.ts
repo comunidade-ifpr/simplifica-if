@@ -200,19 +200,23 @@ const comandoConferir = Command.make(
         ...conferencia,
       });
     }
-    const reprovados = resultados.filter((r) => r.frontMatterMudou || r.acrescentadas.length > 0);
+    const reprovados = resultados.filter((r) => r.frontMatterMudou || r.novas.length > 0);
     if (json) yield* Console.log(jsonIndentado(resultados).trimEnd());
     else {
       for (const r of resultados) {
-        const ok = !r.frontMatterMudou && !r.acrescentadas.length;
+        const ok = !r.frontMatterMudou && !r.novas.length;
         yield* Console.log(
           `# ${ok ? "ok" : "REPROVADO"} ${r.arquivo}: ${r.palavrasAntes} → ${r.palavrasDepois} palavras, ` +
             `${r.removidas.reduce((s, [, n]) => s + n, 0)} removidas, ${r.juncoes.length} junções, ` +
             `${r.separacoes.length} separações`,
         );
         if (r.frontMatterMudou) yield* Console.log("- o front matter mudou (só o corpo pode mudar)");
-        if (r.acrescentadas.length)
-          yield* Console.log(`- acrescentadas: ${r.acrescentadas.map(([p, n]) => `${p}×${n}`).join(" ")}`);
+        if (r.novas.length)
+          yield* Console.log(`- novas (reprovam): ${r.novas.map(([p, n]) => `${p}×${n}`).join(" ")}`);
+        if (r.repetidas.length)
+          yield* Console.log(
+            `- repetidas (já existiam; só em cabeçalho de tabela): ${r.repetidas.map(([p, n]) => `${p}×${n}`).join(" ")}`,
+          );
         if (r.removidas.length)
           yield* Console.log(
             `- removidas: ${r.removidas
@@ -241,7 +245,7 @@ const comandoConferir = Command.make(
   }),
 ).pipe(
   Command.withDescription(
-    "Confere a correção contra o git: o front matter igual e nenhuma palavra acrescentada (junções e separações valem).",
+    "Confere a correção contra o git: o front matter igual e nenhuma palavra nova (junções, separações e repetições valem).",
   ),
 );
 

@@ -100,9 +100,10 @@ const RE_TITULO_COLADO = /^(?:[-*]\s+)?(?:\*\*)?\d{1,2}(?:\.\d{1,3})+\.?\s+\p{Lu
 const RE_TITULO_PROVAVEL = /^(?:\*\*)?\d{1,2}(?:\.\d{1,3})+\.?\s+\p{Lu}[^.;:!?|]{2,100}(?:\*\*)?$/u;
 const RE_HIFEN_PARTIDO = /\p{Ll}{2,}- \p{Ll}{2,}/u;
 // Palavra comum passa de 20 letras ("interdisciplinaridade" tem 21); as coladas do cabeçalho
-// institucional são as mais comuns, e as de nome próprio aparecem como "DivaneDias".
+// institucional são as mais comuns; as de nome e de componente aparecem como "DivaneDias",
+// "FísicaII" e "40horas" (e marcas como "JavaScript" também, falso alarme que a revisão descarta).
 const RE_PALAVRAS_COLADAS =
-  /\p{L}{24,}|\p{Ll}{3,}\p{Lu}\p{Ll}{3,}|[Ii][Nn][Ss][Tt][Ii][Tt][Uu][Tt][Oo][Ff][Ee][Dd]|[Mm][Ii][Nn][Ii][Ss][Tt][EeÉé][Rr][Ii][Oo][Dd][Aa]/u;
+  /\p{L}{24,}|\p{Ll}{2,}\p{Lu}|\d\p{Ll}{3,}|[Ii][Nn][Ss][Tt][Ii][Tt][Uu][Tt][Oo][Ff][Ee][Dd]|[Mm][Ii][Nn][Ii][Ss][Tt][EeÉé][Rr][Ii][Oo][Dd][Aa]/u;
 const RE_LETRAS_ESPACADAS = /(?:^|\s)(?:\p{L} ){4,}\p{L}(?:\s|$)/u;
 // Com `new RegExp` e o escape dobrado: o formatador troca "\uFFFD" pelo caractere.
 const RE_ESTRANHO = new RegExp("[\\uFFFD\\uE000-\\uF8FF\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]", "u");

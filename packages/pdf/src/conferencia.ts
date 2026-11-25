@@ -5,9 +5,11 @@
  * As palavras (sequências de letras e dígitos) de antes e de depois são comparadas como multiconjunto,
  * sem olhar a ordem. A palavra que some e reaparece colada a outra ("estu" e "dante" → "estudante",
  * "C A M P U S" → "CAMPUS") é uma junção, e o contrário ("INSTITUTOFEDERAL" → "INSTITUTO" e
- * "FEDERAL"), uma separação; as duas são aceitas e listadas. O resto é palavra acrescentada (a
- * correção reprova) ou removida (aceita só com justificativa: cabeçalho, rodapé, número de página,
- * sumário, o que quem revisa confere na lista).
+ * "FEDERAL"), uma separação; as duas são aceitas e listadas. O resto é palavra acrescentada ou
+ * removida. A acrescentada que não existia no texto de antes é `nova`, e a correção reprova; a que já
+ * existia e ficou mais vezes é `repetida` (o cabeçalho de tabela que repete "Carga horária" em cada
+ * coluna), aceita e listada. A removida é aceita só com justificativa: cabeçalho, rodapé, número de
+ * página, sumário, o que quem revisa confere na lista.
  */
 
 export interface Juncao {
@@ -16,8 +18,10 @@ export interface Juncao {
 }
 
 export interface Conferencia {
-  /** Palavras que não estavam antes, com quantas vezes cada uma. Vazio na correção aceita. */
-  readonly acrescentadas: ReadonlyArray<readonly [string, number]>;
+  /** Palavras que não existiam no texto de antes, com quantas vezes cada uma. Vazio na correção aceita. */
+  readonly novas: ReadonlyArray<readonly [string, number]>;
+  /** Palavras que já existiam e aparecem mais vezes, com quantas vezes a mais. */
+  readonly repetidas: ReadonlyArray<readonly [string, number]>;
   /** Palavras que saíram, com quantas vezes cada uma. */
   readonly removidas: ReadonlyArray<readonly [string, number]>;
   /** Palavras partidas que voltaram a ser uma. */
@@ -30,8 +34,14 @@ export interface Conferencia {
 
 const RE_PALAVRA = /[\p{L}\p{N}]+/gu;
 
+/** As palavras do texto, sem a marcação HTML que o Markdown das tabelas usa (`<br>`). */
 export function palavras(texto: string): string[] {
-  return texto.normalize("NFC").match(RE_PALAVRA) ?? [];
+  return (
+    texto
+      .normalize("NFC")
+      .replace(/<\/?(?:br|b|i|strong|em|sup|sub)\s*\/?>/giu, " ")
+      .match(RE_PALAVRA) ?? []
+  );
 }
 
 function contar(lista: ReadonlyArray<string>): Map<string, number> {
@@ -107,8 +117,11 @@ export function conferirPalavras(antes: string, depois: string): Conferencia {
   const removidas = menos(contagemAntes, contagemDepois);
   const juncoes = emPedacos(acrescentadas, removidas);
   const separacoes = emPedacos(removidas, acrescentadas);
+  const novas = new Map([...acrescentadas].filter(([p]) => !contagemAntes.has(p)));
+  const repetidas = new Map([...acrescentadas].filter(([p]) => contagemAntes.has(p)));
   return {
-    acrescentadas: ordenar(acrescentadas),
+    novas: ordenar(novas),
+    repetidas: ordenar(repetidas),
     removidas: ordenar(removidas),
     juncoes,
     separacoes,
