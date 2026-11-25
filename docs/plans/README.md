@@ -12,5 +12,5 @@ Documentos de apoio:
 | Documento | Para quê |
 |---|---|
 | [upstream-t3.md](../upstream-t3.md) | Código copiado do T3 Code: origem, commit e adaptações |
-| [guia-piloto-zero.md](../guia-piloto-zero.md) | Guia de uma página para usar o `simplifica-mcp` fora do app, no app de IA que a pessoa já usa |
+| [guia-simplifica-mcp.md](../guia-simplifica-mcp.md) | Guia de uma página para usar o `simplifica-mcp` fora do app, no app de IA que a pessoa já usa |
 | [packages/motor/README.md](../../packages/motor/README.md) | Como cada provider recebe o MCP, detecção, armadilhas |

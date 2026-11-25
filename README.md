@@ -5,86 +5,43 @@
   </picture>
 </h1>
 
-App desktop para os servidores do IFPR. O Simplifica IF dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. Este repositório contém o app, a base que o alimenta e as skills e scripts que agentes usam para curar a base.
+**As normas, os cursos e os PPCs do IFPR, prontos para a IA que você já usa.**
 
-O Simplifica IF é um projeto independente, mantido por servidores e colaboradores do IFPR na organização Comunidade IFPR: não representa o IFPR nem é mantido oficialmente por ele. As respostas do app e da base citam as fontes para apoiar o trabalho, mas não são parecer jurídico nem substituem a publicação oficial das normas.
+O Simplifica IF é um app para o computador de quem trabalha no IFPR. Você pergunta em português, e a IA da sua conta (Claude, ChatGPT ou Gemini) responde consultando uma base com a legislação, os regulamentos e os documentos do Instituto. Toda resposta diz de onde saiu: um clique na citação abre a norma no trecho citado.
 
-## O app
+![A tela inicial do Simplifica IF: a pergunta "O que você precisa hoje?", a caixa de pedido e as tarefas](docs/imagens/inicio.png)
 
-O que ele entrega hoje:
+## O que dá para fazer
 
-- conversa com a IA da pessoa, que consulta a base pelas 16 ferramentas do servidor MCP `ifpr` (`packages/mcp`) e é instruída a citar cada fonte com um link `ifpr://`;
-- tarefas no Início: "Revisar um PPC" (`.docx`: pré-conferência em código, relatório com IA opcional e cópia com comentários do Word) e as skills com bloco `simplifica:` (hoje, `verificar-fundamentacao-normativa`);
-- leitor `ifpr://` e Explorar, para navegar por normas, PPCs, cursos, campi, CNCT, Consepe e fichas sem IA;
-- pasta de trabalho com "Desfazer", primeiro uso com perfil, relato de erro e atualização da base e das skills.
+- **Perguntar.** "Qual é a carga horária mínima de estágio num curso técnico?" A IA procura na base, responde e cita o artigo.
+- **Revisar um PPC.** Você entrega o `.docx`, e o app confere o documento com as normas, o Catálogo Nacional de Cursos Técnicos e os dados do curso. A resposta é uma lista do que corrigir e do que conferir, e uma cópia do documento com comentários no Word.
+- **Conferir a fundamentação de um documento.** Parecer, minuta ou relatório: o app verifica se cada norma citada existe, está em vigor e diz o que o texto afirma.
+- **Explorar a base, sem IA.** Normas, cursos, campi, PPCs, o CNCT e as reuniões do Consepe, com busca e com a situação de vigência de cada norma.
 
-O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). Sistemas com login, como SUAP e SEI, ficam fora dele (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
+![Uma conversa: as etapas da tarefa, a resposta da IA e a citação grifada, que abre a norma](docs/imagens/conversa.png)
 
-```bash
-pnpm install
-pnpm kb:compilar   # tmp/kb.sqlite, a base que o servidor lê
-pnpm app:dev        # o app em desenvolvimento (veja apps/desktop/README.md)
-```
+## Como funciona
 
-| Parte | O quê |
-|---|---|
-| [`apps/desktop`](apps/desktop/README.md) | Electron: inicia o servidor local e abre a interface |
-| [`apps/server`](apps/server/README.md) | servidor local: motor, MCP `ifpr`, RPC de leitura, revisão de PPC, pastas, atualização |
-| [`apps/web`](apps/web/README.md) | interface em React |
-| [`packages/kb`](packages/kb/README.md) | núcleo da base e CLI `kb` |
-| [`packages/mcp`](packages/mcp/README.md) | `simplifica-mcp`: ferramentas só de leitura sobre o `kb.sqlite`, no app e como executável à parte ([guia do piloto zero](docs/guia-piloto-zero.md)) |
-| [`packages/motor`](packages/motor/README.md) | motor de conversa com Claude, ChatGPT e Gemini |
-| [`packages/ppc`](packages/ppc/README.md), [`packages/docx`](packages/docx/README.md) | conversão, pré-conferência e revisão de PPC em `.docx` |
-| [`packages/atualizacao`](packages/atualizacao/README.md) | atualização da base e das skills |
-| `packages/contratos-app` | contratos RPC entre interface e servidor |
-| `packages/effect-acp`, `packages/effect-codex-app-server` | copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)) |
+- **Você usa a sua conta de IA.** O app não tem IA própria nem cobra nada: ele entrega a base e as tarefas à assinatura que você já tem.
+- **A base fica no seu computador**, e as versões novas chegam pelo próprio app. Suas conversas e seus arquivos também ficam só nele; para a empresa da IA vai o que você escreve e anexa.
+- **A fonte vem junto.** O que está grifado em amarelo aponta para um documento da base. Norma revogada não some: o app mostra o que a substituiu e as regras de transição.
+- **Nada se perde.** Cada tarefa tem uma pasta em `Documentos/Simplifica IF`, e o que a IA altera nos arquivos pode ser desfeito.
 
-## Base, skills e scripts
+O app trabalha com dado público. Não anexe dados pessoais nem documentos de acesso restrito, e confira a fonte antes de usar uma resposta em documento oficial: a IA pode errar, e o app não substitui parecer jurídico nem a publicação oficial das normas.
 
-- `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `revisao-ppc/` (as fichas da tarefa "Revisar um PPC") e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
-- `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
-- `scripts/`: geração e validação da base, aplicação de dado coletado fora do repositório (`aplicar_matrizes_suap.ts`), fábrica da atualização e avaliação, em TypeScript (Node e pnpm). Um PPC novo, ou a versão nova do PPC de um curso, entra na base a partir do DOCX da coordenação, com `node scripts/importar_ppc_docx.ts` (passo a passo em `base-conhecimento/docs/curadoria-metadados-institucionais.md`); PDF não é convertido.
-- `base-conhecimento/docs/`: documentação de apoio à curadoria da base e ao desenvolvimento das skills.
+## Em que pé está
 
-## Base de Conhecimento
+O Simplifica IF está em desenvolvimento, a caminho de um piloto com um grupo pequeno de servidores. Ainda não há instalador público; por enquanto, quem quer experimentar roda o app a partir do código ([`CONTRIBUTING.md`](CONTRIBUTING.md#ambiente)). O que já está pronto e o que falta estão em [`docs/plans/`](docs/plans/README.md).
 
-A base é lida pelo app, pelo `simplifica-mcp` e, no repositório, pela CLI `kb` (`pnpm kb`), todos sobre o `kb.sqlite` compilado de `base-conhecimento/`. Os comandos e o procedimento de consulta estão em "Consulta da base", no [`AGENTS.md`](AGENTS.md#consulta-da-base), e a lista completa da CLI no [`packages/kb/README.md`](packages/kb/README.md#cli); a resposta aponta o Markdown da norma ou do PPC, que é o que se abre e se cita.
+## Projeto independente
 
-## Skills
+O Simplifica IF é mantido por servidores e colaboradores do IFPR na organização Comunidade IFPR. Não representa o IFPR nem é mantido oficialmente por ele.
 
-As skills deste projeto ficam diretamente no diretório padrão de descoberta do repositório:
+## Como ajudar
 
-```bash
-.agents/skills/
-```
-
-Skills disponíveis (as com bloco `simplifica:` vão também para o app):
-
-- `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos. Tem bloco `simplifica:` e é tarefa do app.
-
-Ao desenvolver uma skill, consulte os dados da base pela CLI `kb` ou pelas ferramentas `ifpr` do MCP. Só empacote cópias de normas, catálogos ou metadados quando houver motivo claro de portabilidade.
-
-## Manutenção
-
-```bash
-node scripts/gerar_base.ts --check
-node scripts/gerar_indice_ppcs.ts --check
-node scripts/validar_base.ts
-pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # todo o código: app, pacotes e scripts
-```
-
-O formato dos manifestos e índices (CNCT e PPCs) é o Effect Schema de `scripts/base/esquemas.ts`, de onde saem também os tipos do validador e do gerador dos índices. Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho e reunião) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
-
-## Desenvolvimento
-
-`pnpm typecheck`, `pnpm test` e `pnpm fmt` na raiz cobrem todo o repositório: `apps/`, `packages/`, `scripts/` e as skills.
-
-Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenvolvimento-skills.md`.
+Achou uma norma faltando, um dado errado ou uma resposta ruim? [Abra uma issue](https://github.com/comunidade-ifpr/simplifica-if/issues). Correções da base, normas novas e código entram por pull request: o [`CONTRIBUTING.md`](CONTRIBUTING.md) diz como montar o ambiente, onde fica cada parte e o que rodar antes de enviar. Para avisar uma falha de segurança ou um dado pessoal publicado, siga o [`SECURITY.md`](SECURITY.md).
 
 ## Licença
 
-- **Código** (aplicativo, pacotes, scripts e skills): licença MIT, em [`LICENSE`](LICENSE). Partes copiadas do T3 Code mantêm o aviso MIT de origem nos arquivos `NOTICE` e `LICENSE-T3` de cada pasta ([`docs/upstream-t3.md`](docs/upstream-t3.md)). O instalador leva o `LICENCAS.md`, com a licença de cada pacote de terceiros que vai dentro do app (`apps/desktop/scripts/licencas.ts`).
+- **Código** (aplicativo, pacotes, scripts e skills): licença MIT, em [`LICENSE`](LICENSE). Partes copiadas do T3 Code mantêm o aviso MIT de origem ([`docs/upstream-t3.md`](docs/upstream-t3.md)), e o instalador leva o `LICENCAS.md`, com a licença de cada pacote de terceiros.
 - **Conteúdo curatorial** (`base-conhecimento/`): CC BY 4.0, em [`LICENSE-DADOS`](LICENSE-DADOS). Ela não cobre os atos oficiais (livres, pela Lei nº 9.610/1998, art. 8º, IV) nem os PPCs e documentos institucionais reproduzidos, que mantêm o regime de origem.
-- **Marcas:** o nome e o logotipo do IFPR não são cobertos por nenhuma das duas licenças.
-
-Para contribuir, veja o [`CONTRIBUTING.md`](CONTRIBUTING.md); para avisar uma falha de segurança ou um dado pessoal publicado, o [`SECURITY.md`](SECURITY.md).

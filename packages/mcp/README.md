@@ -1,6 +1,6 @@
 # simplifica-mcp
 
-Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). É o MCP `ifpr` que o app Simplifica IF entrega a toda conversa (por HTTP local, dentro do `apps/server`) e também um executável à parte, para usar a base em apps de IA que a pessoa já tem ([guia do piloto zero](../../docs/guia-piloto-zero.md)). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base. Os mesmos links `ifpr://` também se leem como recursos MCP (M1.5, ver [Recursos `ifpr://`](#recursos-ifpr)).
+Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). É o MCP `ifpr` que o app Simplifica IF entrega a toda conversa (por HTTP local, dentro do `apps/server`) e também um executável à parte, para usar a base em apps de IA que a pessoa já tem ([guia de instalação](../../docs/guia-simplifica-mcp.md)). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base. Os mesmos links `ifpr://` também se leem como recursos MCP (M1.5, ver [Recursos `ifpr://`](#recursos-ifpr)).
 
 Especificação original: o plano do M0.1 (`docs/plans/m0-simplifica-mcp.md`, no histórico do git); hoje o contrato de cada ferramenta é o Effect Schema de `src/ferramentas/`. Prontos os passos T0 (banco autossuficiente, no `packages/kb`), T1 (servidor, CLI, banco, envelope, links e texto), T2 (normas), T3 (PPCs e cursos), T4 (`pacote_contexto`) e T6 (suítes transversais e CI): as 16 ferramentas.
 
@@ -98,9 +98,9 @@ SIMPLIFICA_KB=kb.sqlite simplifica-mcp consultar listar_cursos --todas-as-pagina
 
 O teste é `test/transversal/consultar.test.ts`: na fixture, cada amostra contra o resultado do `tools/call`; na base real (`pnpm mcp:smoke`), o `listar_cursos` inteiro.
 
-## Configuração no piloto zero
+## Configuração fora do app
 
-Para quem vai instalar, o passo a passo está no [guia do piloto zero](../../docs/guia-piloto-zero.md).
+Para quem vai instalar, o passo a passo está no [guia de instalação](../../docs/guia-simplifica-mcp.md).
 
 Para rodar a partir do checkout, o comando é `node /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite` (Node da versão de `.node-version`). O executável `simplifica-mcp`, um Node SEA que não precisa de Node instalado, sai de `pnpm mcp:executavel` em `packages/mcp/dist-exe/` (`--alvo` ou `--todos` para outras plataformas).
 

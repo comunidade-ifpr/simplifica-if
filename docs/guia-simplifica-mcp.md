@@ -1,4 +1,4 @@
-# Guia de instalação do piloto zero
+# Usar a base do IFPR no seu app de IA
 
 Para a equipe da PROENS/DENS e as coordenações que vão usar a base de conhecimento do IFPR dentro de um app de IA que já têm (Claude, Codex ou Antigravity), sem o app Simplifica IF. Depois de instalado, a IA consulta normas, PPCs, cursos e o CNCT da base e responde com o texto literal e um link `ifpr://` para cada fonte. O servidor não acessa a internet: ele só lê um arquivo no seu computador. O que a IA lê dele segue para o provedor da IA como o resto da conversa, então use os mesmos cuidados de sempre com dados pessoais.
 

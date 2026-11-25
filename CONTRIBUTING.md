@@ -15,7 +15,27 @@ Node da versão em `.node-version` e o pnpm do `packageManager` do `package.json
 
 ```bash
 pnpm install
+pnpm kb:compilar   # tmp/kb.sqlite, a base que o servidor lê
+pnpm app:dev       # o app em desenvolvimento (veja apps/desktop/README.md)
 ```
+
+## O que há no repositório
+
+O repositório traz o app, a base que o alimenta e as skills e os scripts que agentes de IA usam para curar a base. A consulta da base pela CLI `kb`, as regras de curadoria e as convenções do código estão no [`AGENTS.md`](AGENTS.md); o desenvolvimento das skills, em [`base-conhecimento/docs/desenvolvimento-skills.md`](base-conhecimento/docs/desenvolvimento-skills.md); os planos, em [`docs/plans/`](docs/plans/README.md).
+
+| Parte | O quê |
+|---|---|
+| [`apps/desktop`](apps/desktop/README.md) | Electron: inicia o servidor local e abre a interface |
+| [`apps/server`](apps/server/README.md) | servidor local: motor, MCP `ifpr`, leitura da base, revisão de PPC, pastas, atualização |
+| [`apps/web`](apps/web/README.md) | interface em React |
+| [`packages/kb`](packages/kb/README.md) | núcleo da base e CLI `kb` |
+| [`packages/mcp`](packages/mcp/README.md) | `simplifica-mcp`: as consultas à base, no app e como executável à parte ([guia de instalação](docs/guia-simplifica-mcp.md)) |
+| [`packages/motor`](packages/motor/README.md) | motor de conversa com Claude, ChatGPT e Gemini |
+| [`packages/ppc`](packages/ppc/README.md), [`packages/docx`](packages/docx/README.md), [`packages/pdf`](packages/pdf/README.md) | conversão, pré-conferência e revisão de PPC em `.docx`; leitura dos anexos |
+| [`packages/atualizacao`](packages/atualizacao/README.md) | atualização da base e das skills |
+| `base-conhecimento/` | a base: normas, dados institucionais, catálogos e fichas da revisão de PPC |
+| `.agents/skills/` | skills dos agentes |
+| `scripts/` | geração e validação da base, fábrica da atualização, avaliação |
 
 ## Antes de abrir o PR
 
