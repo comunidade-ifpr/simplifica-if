@@ -71,7 +71,8 @@ export const PERGUNTAS: ReadonlyArray<Pergunta> = [
     id: "independente",
     pergunta: "O Simplifica IF é do IFPR?",
     resposta: [
-      "Não. É um projeto independente, mantido por Gustavo Rahal, servidor do IFPR, sem vínculo oficial com o Instituto. A base reúne normas e documentos públicos do IFPR e da legislação federal.",
+      "Por enquanto, não. É um projeto independente, feito por mim, Gustavo Rahal, servidor do IFPR, para ajudar os colegas no trabalho com normas e PPCs. Não é um sistema oficial nem foi contratado pelo Instituto. A base reúne normas e documentos públicos do IFPR e da legislação federal.",
+      "Se o IFPR quiser adotar o Simplifica IF oficialmente, fico feliz em ajudar na adoção.",
     ],
   },
 ];
