@@ -9,6 +9,11 @@
   "pagina_oficial": "https://ifpr.edu.br/curitiba/",
   "cnct_id": "cnct:tecnico-em-soldagem",
   "suap": {
+    "id": 510,
+    "codigo": "CTB023",
+    "vagas": 32,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-superior/manutencaoindustrial/",
   "suap": {
+    "id": 258,
+    "codigo": "ESPN26",
+    "vagas": 50,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

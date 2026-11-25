@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-superiores/curso-superior-de-tecnologia-em-materiais/",
   "suap": {
+    "id": 87,
+    "codigo": "CL1002",
+    "vagas": 38,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

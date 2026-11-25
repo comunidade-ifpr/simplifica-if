@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/licenciatura-em-educacao-do-campo/",
   "suap": {
+    "id": 374,
+    "codigo": "CTB1007",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

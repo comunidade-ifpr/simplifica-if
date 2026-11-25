@@ -7,6 +7,11 @@
   "situacao": "incerto",
   "cnct_id": "cnct:tecnico-em-transacoes-imobiliarias",
   "suap": {
+    "id": 331,
+    "codigo": "CTTTI",
+    "vagas": 30,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

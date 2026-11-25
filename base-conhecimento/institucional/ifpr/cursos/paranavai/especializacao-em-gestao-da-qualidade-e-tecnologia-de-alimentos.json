@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/paranavai/cursos-de-pos-graduacao/gestao-da-qualidade-e-tecnologia-de-alimentos/",
   "suap": {
+    "id": 31,
+    "codigo": "ESPGQTA",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

@@ -6,6 +6,11 @@
   "forma_oferta": "FIC",
   "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/programacao-com-enfase-em-analise-de-dados/",
   "suap": {
+    "id": 380,
+    "codigo": "FICAR002",
+    "vagas": 50,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

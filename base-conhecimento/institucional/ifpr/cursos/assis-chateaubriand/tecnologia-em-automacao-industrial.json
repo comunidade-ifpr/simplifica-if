@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-superiores/tecnologia-em-automacao-industrial/",
   "suap": {
+    "id": 635,
+    "codigo": "AC1002",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

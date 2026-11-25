@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/tecnologo-em-gestao-do-agronegocio/",
   "suap": {
+    "id": 148,
+    "codigo": "UMU1004",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

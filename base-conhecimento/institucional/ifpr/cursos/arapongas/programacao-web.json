@@ -6,6 +6,11 @@
   "forma_oferta": "FIC",
   "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/programacao-web/",
   "suap": {
+    "id": 470,
+    "codigo": "FICAR005",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

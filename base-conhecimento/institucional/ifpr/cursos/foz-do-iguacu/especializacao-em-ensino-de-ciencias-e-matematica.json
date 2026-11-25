@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica/",
   "suap": {
+    "id": 286,
+    "codigo": "ESPENSCM",
+    "vagas": 30,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/engenharia-agronomica/",
   "suap": {
+    "id": 99,
+    "codigo": "PAL1002",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

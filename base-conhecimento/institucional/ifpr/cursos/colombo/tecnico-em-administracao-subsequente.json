@@ -9,6 +9,11 @@
   "pagina_oficial": "https://ifpr.edu.br/colombo/tecnicos-subsequentes/tecnico-em-administracao/",
   "cnct_id": "cnct:tecnico-em-administracao",
   "suap": {
+    "id": 327,
+    "codigo": "COADM",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

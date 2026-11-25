@@ -9,6 +9,11 @@
   "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/administracao-proeja/",
   "cnct_id": "cnct:tecnico-em-administracao",
   "suap": {
+    "id": 250,
+    "codigo": "CL006",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

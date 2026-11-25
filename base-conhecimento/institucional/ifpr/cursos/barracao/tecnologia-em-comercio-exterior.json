@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/barracao/nossos-cursos/graduacao/comercio-exterior/",
   "suap": {
+    "id": 203,
+    "codigo": "BA1001",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

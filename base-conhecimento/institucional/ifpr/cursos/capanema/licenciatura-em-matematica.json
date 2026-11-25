@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/capanema/nossos-cursos/graduacao/licenciatura-em-matematica/",
   "suap": {
+    "id": 91,
+    "codigo": "CAP1001",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

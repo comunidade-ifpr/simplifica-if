@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/irati/nossos-cursos/cursos_superiores/licenciatura-em-quimica/",
   "suap": {
+    "id": 142,
+    "codigo": "IRA1003",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

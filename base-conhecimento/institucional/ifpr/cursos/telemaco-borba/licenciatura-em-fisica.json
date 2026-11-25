@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-graduacao/licenciatura-em-fisica-2014/",
   "suap": {
+    "id": 117,
+    "codigo": "TBOR1004",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

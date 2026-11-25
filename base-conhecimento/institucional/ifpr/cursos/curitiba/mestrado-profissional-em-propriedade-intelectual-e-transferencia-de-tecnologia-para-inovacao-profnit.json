@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/mestrado-profissional-profnit/",
   "suap": {
+    "id": 487,
+    "codigo": "PROFNIT",
+    "vagas": 50,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/londrina/especializacao-lato-sensu-em-saude-coletiva-com-enfase-na-promocao-da-saude/",
   "suap": {
+    "id": 22,
+    "codigo": "ESPSCEPS",
+    "vagas": 100,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

@@ -6,6 +6,11 @@
   "forma_oferta": "graduação tecnológica",
   "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/graduacao-em-processos-gerenciais/tecnologia-em-processos-gerenciais/",
   "suap": {
+    "id": 618,
+    "codigo": "AR1001",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }

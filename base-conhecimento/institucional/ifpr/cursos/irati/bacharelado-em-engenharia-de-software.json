@@ -8,6 +8,11 @@
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/irati/nossos-cursos/cursos_superiores/bacharelado-em-engenharia-de-software/",
   "suap": {
+    "id": 622,
+    "codigo": "IRA1004",
+    "vagas": 40,
+    "coletado_em": "2026-11-25",
+    "atualizado_em": "2026-11-25",
     "matrizes": {
       "urls": []
     }
