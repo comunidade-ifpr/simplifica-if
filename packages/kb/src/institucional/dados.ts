@@ -99,6 +99,7 @@ export const esquemaCurso = solto({
       id: inteiro,
       codigo: texto,
       vagas: inteiro,
+      coletado_em: texto,
       matrizes: Schema.optionalKey(
         solto({
           resumo: texto,

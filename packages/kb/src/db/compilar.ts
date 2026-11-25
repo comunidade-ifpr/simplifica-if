@@ -623,6 +623,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         suap_vagas: c.suap?.vagas,
         suap_matrizes_situacao: c.suap?.matrizes?.situacao,
         suap_ch_comum_h: c.suap?.matrizes?.carga_horaria_comum_h,
+        suap_coletado_em: c.suap?.matrizes?.coletado_em ?? c.suap?.coletado_em,
         ppc_id: ppc ? `ppc:${ppc.id}` : null,
         ppc_url: c.ppc?.url,
         ppc_markdown_path: markdown,
@@ -632,6 +633,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       const resumo = c.suap?.matrizes?.resumo;
       if (resumo) {
         const linha = linhaDaChave(conteudo, "resumo");
+        const urls = c.suap?.matrizes?.urls ?? [];
         for (const m of matrizesDoResumo(resumo)) {
           ins.inserir("suap_matrizes", {
             curso_id: id,
@@ -642,6 +644,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
             ch_exibida_h: m.ch_exibida_h,
             estagio_exigido: m.estagio_exigido,
             ch_estagio_h: m.ch_estagio_h,
+            url: urls[m.ordem] ?? `https://suap.ifpr.edu.br/edu/matriz/${m.matriz_id}/`,
             trecho: m.trecho,
             path: arquivo,
             linha,

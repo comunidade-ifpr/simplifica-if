@@ -17,8 +17,9 @@ import { useState } from "react";
 import { useApi } from "../contexto.tsx";
 import { Markdown } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
+import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
-import { primeiraMaiuscula } from "../explorar/colecoes.ts";
+import { nomeAspecto, nomeResultado, primeiraMaiuscula } from "../explorar/colecoes.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { corVigencia, SinalVigencia } from "../explorar/Vigencia.tsx";
 import { dataCurta } from "../lib/formato.ts";
@@ -27,7 +28,7 @@ import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
 import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
-import { BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from "./pecas.tsx";
+import { BotaoCodigoSuap, BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from "./pecas.tsx";
 import { Sumario } from "./Sumario.tsx";
 import { artigosDosDispositivos, conteudoDoIndice, type Destino, IR_PARA, numeroDoArtigo } from "./sumario.ts";
 import {
@@ -566,7 +567,7 @@ function LeitorPpc({
   return (
     <ComCarga carga={indice} titulo="Não foi possível ler este PPC">
       {({ dados }) => {
-        const { ppc, secoes } = dados;
+        const { ppc, secoes, fatos } = dados;
         const atual = fragmento === null ? undefined : secoes.find((s) => s.id === `${versao}#${fragmento}`);
         const citacao =
           fragmento === null
@@ -574,6 +575,10 @@ function LeitorPpc({
             : secao.fase === "lido"
               ? citacaoDoPpc({ curso: ppc.nome, campus: ppc.campus, secao: secao.valor.dados.secao })
               : null;
+        const suap = fatos.suap;
+        const divergenciasSuap = fatos.cruzamento.filter((c) => nomeResultado(c.resultado).alerta);
+        const matrizesComUrl = (suap?.matrizes ?? []).filter((m) => m.url !== null);
+        const temLateral = secoes.length > 0 || suap !== null;
         return (
           <article aria-label="PPC" className="leitor-impressao space-y-8">
             <Cabecalho
@@ -598,6 +603,15 @@ function LeitorPpc({
                 ))}
                 {doIndice?.ano != null ? <span>Documento de {doIndice.ano}</span> : null}
               </Fatos>
+              {divergenciasSuap.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="warning" size="lg">
+                    {divergenciasSuap.length === 1
+                      ? "1 divergência com o SUAP"
+                      : `${divergenciasSuap.length} divergências com o SUAP`}
+                  </Badge>
+                </div>
+              ) : null}
               {doIndice !== undefined && !doIndice.vigente ? (
                 <Alert variant="warning">
                   <AlertTitle>PPC substituído</AlertTitle>
@@ -617,39 +631,110 @@ function LeitorPpc({
 
             <Corpo
               lateral={
-                secoes.length > 0 ? (
+                temLateral ? (
                   <>
-                    {/* Com largura, o índice fica aberto ao lado do texto; no painel estreito, recolhido. */}
-                    <nav aria-label="Seções do PPC" className="hidden space-y-1.5 @4xl:block">
-                      <h3 className="font-semibold text-muted-foreground text-small">Seções ({secoes.length})</h3>
-                      <ul>
-                        {secoes.map((s) => (
-                          <li key={s.id}>
-                            <button
-                              type="button"
-                              data-link={s.link}
-                              aria-current={s.id === atual?.id ? "location" : undefined}
-                              onClick={() => aoAbrirLink(s.link)}
-                              className="block w-full rounded-md px-2 py-1 text-left text-muted-foreground text-small hover:bg-muted hover:text-foreground aria-[current]:bg-accent aria-[current]:font-semibold aria-[current]:text-accent-foreground"
-                            >
-                              {s.titulo}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </nav>
-                    <details className="rounded-md border border-border p-2 text-sm @4xl:hidden">
-                      <summary className="cursor-pointer font-semibold">Seções do índice ({secoes.length})</summary>
-                      <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
-                        {secoes.map((s) => (
-                          <li key={s.id}>
-                            <BotaoLink link={s.link} aoAbrirLink={aoAbrirLink}>
-                              {s.titulo}
+                    {suap !== null ? (
+                      <section
+                        aria-label="Vínculo com o SUAP"
+                        className="space-y-2.5 rounded-xl border border-border bg-muted/50 p-3 text-sm"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <h3 className="font-semibold text-foreground text-small">Vínculo SUAP</h3>
+                          {suap.codigo !== null ? <BotaoCodigoSuap codigo={suap.codigo} prefixo={false} /> : null}
+                        </div>
+                        {divergenciasSuap.length > 0 ? (
+                          <ul className="space-y-1.5 text-small">
+                            {divergenciasSuap.map((c) => (
+                              <li key={c.aspecto} className="border-warning border-l-2 pl-2">
+                                <span className="font-medium">{nomeAspecto(c.aspecto)}:</span> {c.valor_ppc ?? "—"}{" "}
+                                (PPC) × {c.valor_suap ?? "—"} (SUAP)
+                              </li>
+                            ))}
+                          </ul>
+                        ) : suap.matrizes.length > 0 ? (
+                          <p className="text-muted-foreground text-small">Sem divergências com o SUAP.</p>
+                        ) : (
+                          <p className="text-muted-foreground text-small">Sem matriz ativa registrada no SUAP.</p>
+                        )}
+                        {suap.coletado_em !== null || suap.matrizes.length > 0 ? (
+                          <p className="text-muted-foreground text-micro">
+                            {[
+                              suap.coletado_em !== null
+                                ? `Coletado em ${dataCurta(suap.coletado_em.slice(0, 10))}`
+                                : null,
+                              suap.matrizes.length > 0
+                                ? suap.matrizes.length === 1
+                                  ? "1 matriz ativa"
+                                  : `${suap.matrizes.length} matrizes ativas`
+                                : null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </p>
+                        ) : null}
+                        <div className="flex flex-col items-start gap-1.5 pt-0.5 text-small">
+                          {ppc.curso !== null ? (
+                            <BotaoLink link={ppc.curso} aoAbrirLink={aoAbrirLink}>
+                              Ver comparação na ficha do curso
                             </BotaoLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </details>
+                          ) : null}
+                          {matrizesComUrl.slice(0, 2).map((m) => (
+                            <LinkExterno key={m.matriz_id} href={m.url!}>
+                              Abrir matriz #{m.matriz_id} no SUAP
+                            </LinkExterno>
+                          ))}
+                          {matrizesComUrl.length > 2 ? (
+                            <details className="w-full text-micro">
+                              <summary className="cursor-pointer text-muted-foreground">
+                                Mais {matrizesComUrl.length - 2} matrizes no SUAP
+                              </summary>
+                              <ul className="mt-1 space-y-1">
+                                {matrizesComUrl.slice(2).map((m) => (
+                                  <li key={m.matriz_id}>
+                                    <LinkExterno href={m.url!}>Abrir matriz #{m.matriz_id} no SUAP</LinkExterno>
+                                  </li>
+                                ))}
+                              </ul>
+                            </details>
+                          ) : null}
+                        </div>
+                      </section>
+                    ) : null}
+                    {secoes.length > 0 ? (
+                      <>
+                        {/* Com largura, o índice fica aberto ao lado do texto; no painel estreito, recolhido. */}
+                        <nav aria-label="Seções do PPC" className="hidden space-y-1.5 @4xl:block">
+                          <h3 className="font-semibold text-muted-foreground text-small">Seções ({secoes.length})</h3>
+                          <ul>
+                            {secoes.map((s) => (
+                              <li key={s.id}>
+                                <button
+                                  type="button"
+                                  data-link={s.link}
+                                  aria-current={s.id === atual?.id ? "location" : undefined}
+                                  onClick={() => aoAbrirLink(s.link)}
+                                  className="block w-full rounded-md px-2 py-1 text-left text-muted-foreground text-small hover:bg-muted hover:text-foreground aria-[current]:bg-accent aria-[current]:font-semibold aria-[current]:text-accent-foreground"
+                                >
+                                  {s.titulo}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </nav>
+                        <details className="rounded-md border border-border p-2 text-sm @4xl:hidden">
+                          <summary className="cursor-pointer font-semibold">Seções do índice ({secoes.length})</summary>
+                          <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
+                            {secoes.map((s) => (
+                              <li key={s.id}>
+                                <BotaoLink link={s.link} aoAbrirLink={aoAbrirLink}>
+                                  {s.titulo}
+                                </BotaoLink>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      </>
+                    ) : null}
                   </>
                 ) : null
               }

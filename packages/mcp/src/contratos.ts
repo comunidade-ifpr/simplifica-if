@@ -198,14 +198,19 @@ export const FatosPpc = Schema.Struct({
   ),
   suap: Schema.NullOr(
     Schema.Struct({
+      codigo: Schema.NullOr(Schema.String),
       situacao: Schema.NullOr(Schema.String),
       carga_horaria_comum_h: Schema.NullOr(Schema.Finite),
+      coletado_em: Schema.NullOr(Schema.String),
       matrizes: Schema.Array(
         Schema.Struct({
           matriz_id: Schema.Int,
+          descricao: Schema.String,
           ano: Schema.NullOr(Schema.Int),
           ch_exibida_h: Schema.NullOr(Schema.Finite),
+          estagio_exigido: Schema.Boolean,
           ch_estagio_h: Schema.NullOr(Schema.Finite),
+          url: Schema.NullOr(Schema.String),
           trecho: Schema.String,
         }),
       ),

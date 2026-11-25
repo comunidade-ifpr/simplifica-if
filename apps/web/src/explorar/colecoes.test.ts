@@ -40,6 +40,7 @@ const curso = (c: Partial<CursoDoIndice> & Pick<CursoDoIndice, "id" | "nome" | "
   situacao: "ativo",
   cnct: null,
   ppc: null,
+  suap: null,
   turnos: [],
   processos: [],
   pagina_oficial: null,
@@ -172,6 +173,7 @@ describe("filtros", () => {
       turnos: ["noturno"],
       processos: ["ps-2026"],
       cnct: { slug: "enf", nome: "Técnico em Enfermagem", eixo: "Ambiente e Saúde" },
+      suap: { id: 10, codigo: "CTB001", matrizes: 1, divergencias: 2 },
     }),
     curso({
       id: "foz/fis",
@@ -179,6 +181,7 @@ describe("filtros", () => {
       campus: "foz",
       nivel: "superior",
       forma_oferta: "licenciatura",
+      suap: { id: 20, codigo: "FOZ009", matrizes: 1, divergencias: 0 },
     }),
     curso({
       id: "foz/enf",
@@ -189,12 +192,16 @@ describe("filtros", () => {
     }),
   ];
 
-  it("cursos por campus, nível, eixo, turno, processo e texto sem acento", () => {
+  it("cursos por campus, nível, eixo, turno, processo, SUAP e texto sem acento", () => {
     expect(filtrarCursos(cursos, { campus: "foz" })).toHaveLength(2);
     expect(filtrarCursos(cursos, { nivel: "superior" }).map((c) => c.id)).toEqual(["foz/fis"]);
     expect(filtrarCursos(cursos, { eixo: "Ambiente e Saúde" })).toHaveLength(2);
     expect(filtrarCursos(cursos, { turno: "noturno" }).map((c) => c.id)).toEqual(["curitiba/enf"]);
     expect(filtrarCursos(cursos, { processo: "ps-2026" }).map((c) => c.id)).toEqual(["curitiba/enf"]);
+    expect(filtrarCursos(cursos, { suap: "divergencia" }).map((c) => c.id)).toEqual(["curitiba/enf"]);
+    expect(filtrarCursos(cursos, { suap: "confere" }).map((c) => c.id)).toEqual(["foz/fis"]);
+    expect(filtrarCursos(cursos, { suap: "sem-suap" }).map((c) => c.id)).toEqual(["foz/enf"]);
+    expect(filtrarCursos(cursos, { texto: "ctb001" }).map((c) => c.id)).toEqual(["curitiba/enf"]);
     expect(filtrarCursos(cursos, { texto: "fisica" }).map((c) => c.id)).toEqual(["foz/fis"]);
     expect(filtrarCursos(cursos, { texto: "enferm foz" }).map((c) => c.id)).toEqual(["foz/enf"]);
   });

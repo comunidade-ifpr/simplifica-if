@@ -187,13 +187,18 @@ export function paraFatosPpc(f: FatosDoPpc): FatosPpc {
       f.curso === null
         ? null
         : {
+            codigo: f.suap.codigo,
             situacao: f.suap.situacao,
             carga_horaria_comum_h: f.suap.carga_horaria_comum_h,
+            coletado_em: f.suap.coletado_em,
             matrizes: f.suap.matrizes.map((m) => ({
               matriz_id: m.matriz_id,
+              descricao: m.descricao,
               ano: m.ano,
               ch_exibida_h: m.ch_exibida_h,
+              estagio_exigido: m.estagio_exigido,
               ch_estagio_h: m.ch_estagio_h,
+              url: m.url,
               trecho: m.trecho,
             })),
           },

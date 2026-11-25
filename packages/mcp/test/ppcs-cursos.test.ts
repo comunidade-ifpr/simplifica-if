@@ -726,7 +726,25 @@ describe("ficha_curso", () => {
         carga_horaria_minima: 1200,
         link: "ifpr://cnct/tecnico-em-enfermagem",
       });
-      expect(d.suap).toEqual({ id: 151, codigo: "CTB008" });
+      expect(d.suap).toEqual({
+        id: 151,
+        codigo: "CTB008",
+        vagas: null,
+        situacao: "Única ativa",
+        carga_horaria_comum_h: null,
+        coletado_em: null,
+        matrizes: [
+          {
+            matriz_id: 538,
+            descricao: "TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA",
+            ano: 2024,
+            ch_exibida_h: 1600,
+            estagio_exigido: false,
+            ch_estagio_h: null,
+            url: null,
+          },
+        ],
+      });
       expect(d.ppc?.secoes.map((s) => s.id)).toEqual([
         `${PPC_ENFERMAGEM}#avaliacao-1`,
         `${PPC_ENFERMAGEM}#estagio-1`,
@@ -777,7 +795,13 @@ describe("ficha_curso", () => {
       expect(fisica.adequacao_art71).toBeNull();
       expect(fisica.cnct).toBeNull();
       expect(fisica.suap).toBeNull();
-      expect(fisica.fatos?.suap).toEqual({ situacao: null, carga_horaria_comum_h: null, matrizes: [] });
+      expect(fisica.fatos?.suap).toEqual({
+        codigo: null,
+        situacao: null,
+        carga_horaria_comum_h: null,
+        coletado_em: null,
+        matrizes: [],
+      });
     }),
   );
 

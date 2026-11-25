@@ -39,7 +39,7 @@ import {
 } from "../explorar/colecoes.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { useCarga } from "./carga.ts";
-import { BotaoLink, Cabecalho, ComCarga, Fatos, LinkExterno, Secao } from "./pecas.tsx";
+import { BotaoCodigoSuap, BotaoLink, Cabecalho, ComCarga, Fatos, LinkExterno, Secao } from "./pecas.tsx";
 import { dataCurta } from "../lib/formato.ts";
 import { situacaoDaTransicao } from "./textos.ts";
 
@@ -51,6 +51,24 @@ const FATOS_DO_ASPECTO: Readonly<Record<string, ReadonlyArray<string>>> = {
   carga_horaria: ["carga_horaria_total_h"],
   estagio: ["estagio_obrigatorio", "estagio_carga_h"],
 };
+
+/** Link para a seção do PPC que contém `linha`, ou para o início do PPC se a linha estiver antes das seções. */
+function linkDaLinhaPpc(
+  ppc: {
+    readonly link: string;
+    readonly secoes: ReadonlyArray<{ readonly id: string; readonly linha_inicio: number; readonly linha_fim: number }>;
+  },
+  linha: number,
+): string {
+  const secao = ppc.secoes.find((s) => s.linha_inicio <= linha && linha <= s.linha_fim);
+  if (secao === undefined) return ppc.link;
+  const fragmento = secao.id.split("#")[1];
+  return fragmento ? `${ppc.link}#${fragmento}` : ppc.link;
+}
+
+function situacaoMatrizAlerta(situacao: string | null): boolean {
+  return situacao === "Múltiplas — CH divergentes" || situacao === "Sem matriz ativa";
+}
 
 /** Os itens de pauta do Consepe que atendem a `filtro`, com a reunião, mais recentes primeiro. */
 function itensDoConsepe(
@@ -150,6 +168,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                 {[d.curso.nivel, d.curso.forma_oferta, d.curso.modalidade].filter(Boolean).map((p) => (
                   <span key={p}>{primeiraMaiuscula(p!)}</span>
                 ))}
+                {d.suap?.codigo ? <BotaoCodigoSuap codigo={d.suap.codigo} /> : null}
               </Fatos>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 empty:hidden">
                 {d.curso.situacao ? (
@@ -185,7 +204,90 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
               )}
             </Secao>
 
-            <Secao titulo="PPC e SUAP">
+            <Secao titulo="Cadastro no SUAP">
+              {d.suap === null ? (
+                <p className="text-muted-foreground text-sm">
+                  Este curso não tem vínculo com o SUAP registrado na base.
+                </p>
+              ) : (
+                <div className="space-y-3 rounded-xl border border-border bg-muted/50 p-3.5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                      <div>
+                        <dt className="text-muted-foreground text-micro">Código / ID</dt>
+                        <dd className="flex items-center gap-1.5 font-medium">
+                          {d.suap.codigo ? <span className="font-mono">{d.suap.codigo}</span> : <span>Sem código</span>}
+                          <span className="text-muted-foreground text-micro">(#{d.suap.id})</span>
+                        </dd>
+                      </div>
+                      {d.suap.vagas !== null ? (
+                        <div>
+                          <dt className="text-muted-foreground text-micro">Vagas no cadastro acadêmico</dt>
+                          <dd className="font-medium">
+                            {d.suap.vagas} vagas{" "}
+                            <span className="font-normal text-muted-foreground text-micro">(SUAP)</span>
+                          </dd>
+                        </div>
+                      ) : null}
+                      {d.suap.situacao !== null ? (
+                        <div>
+                          <dt className="text-muted-foreground text-micro">Situação das matrizes</dt>
+                          <dd className="mt-0.5">
+                            <Badge variant={situacaoMatrizAlerta(d.suap.situacao) ? "warning" : "outline"}>
+                              {d.suap.situacao}
+                            </Badge>
+                          </dd>
+                        </div>
+                      ) : null}
+                    </dl>
+                    {d.suap.coletado_em !== null ? (
+                      <p className="text-muted-foreground text-micro">
+                        Retrato coletado em {dataCurta(d.suap.coletado_em.slice(0, 10))}
+                      </p>
+                    ) : null}
+                  </div>
+                  {d.suap.matrizes.length > 0 ? (
+                    <div className="space-y-1.5">
+                      <p className="text-muted-foreground text-micro">
+                        {d.suap.matrizes.length === 1
+                          ? "Matriz ativa (1)"
+                          : `Matrizes ativas (${d.suap.matrizes.length})`}
+                      </p>
+                      <ul className="space-y-1.5">
+                        {d.suap.matrizes.map((m) => (
+                          <li
+                            key={m.matriz_id}
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm"
+                          >
+                            <div className="min-w-0 space-y-0.5">
+                              <p className="font-medium">
+                                <span className="mr-1.5 font-mono text-muted-foreground text-small">
+                                  #{m.matriz_id}
+                                </span>
+                                <span data-conteudo>{m.descricao}</span>
+                              </p>
+                              <p className="text-muted-foreground text-micro">
+                                Carga horária exibida: <strong>{m.ch_exibida_h} h</strong> · Estágio exigido:{" "}
+                                {m.estagio_exigido
+                                  ? m.ch_estagio_h !== null
+                                    ? `Sim (${m.ch_estagio_h} h)`
+                                    : "Sim"
+                                  : "Não"}
+                              </p>
+                            </div>
+                            {m.url !== null ? <LinkExterno href={m.url}>Abrir no SUAP</LinkExterno> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-small">Nenhuma matriz ativa registrada na base.</p>
+                  )}
+                </div>
+              )}
+            </Secao>
+
+            <Secao titulo="PPC e cruzamento com o SUAP">
               {d.ppc === null ? (
                 <p className="text-muted-foreground text-sm">Este curso não tem PPC convertido na base.</p>
               ) : (
@@ -246,12 +348,27 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                             {d.fatos.cruzamento.map((c) => {
                               const resultado = nomeResultado(c.resultado);
                               const doAspecto = resultado.alerta ? ressalvasDoAspecto(c.aspecto) : [];
+                              const fatoOrigem = d.fatos?.fatos.find((f) =>
+                                (FATOS_DO_ASPECTO[c.aspecto] ?? []).includes(f.fato),
+                              );
                               return (
                                 <tr key={c.aspecto} className="border-border border-t align-top">
                                   <th scope="row" className="py-1.5 pr-2 font-medium">
                                     {nomeAspecto(c.aspecto)}
                                   </th>
-                                  <td className="py-1.5 pr-2">{c.valor_ppc ?? "—"}</td>
+                                  <td className="py-1.5 pr-2">
+                                    <span className="block">{c.valor_ppc ?? "—"}</span>
+                                    {fatoOrigem !== undefined && d.ppc !== null ? (
+                                      <span className="block text-micro">
+                                        <BotaoLink
+                                          link={linkDaLinhaPpc(d.ppc, fatoOrigem.fonte.linha_inicio)}
+                                          aoAbrirLink={aoAbrirLink}
+                                        >
+                                          Ver linha {fatoOrigem.fonte.linha_inicio} do PPC
+                                        </BotaoLink>
+                                      </span>
+                                    ) : null}
+                                  </td>
                                   <td className="py-1.5 pr-2">{c.valor_suap ?? "—"}</td>
                                   <td className="space-y-1 py-1.5">
                                     <span className="flex flex-wrap gap-1">
@@ -285,7 +402,14 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                               {ressalvas.has(f.fato) ? <Badge variant="info">{ressalvas.get(f.fato)}</Badge> : null}
                             </p>
                             <p className="font-serif text-muted-foreground text-small" data-conteudo>
-                              “{f.trecho_fonte}” (linha {f.fonte.linha_inicio} do PPC)
+                              “{f.trecho_fonte}”{" "}
+                              {d.ppc !== null ? (
+                                <BotaoLink link={linkDaLinhaPpc(d.ppc, f.fonte.linha_inicio)} aoAbrirLink={aoAbrirLink}>
+                                  (linha {f.fonte.linha_inicio} do PPC)
+                                </BotaoLink>
+                              ) : (
+                                `(linha ${f.fonte.linha_inicio} do PPC)`
+                              )}
                             </p>
                           </li>
                         ))}

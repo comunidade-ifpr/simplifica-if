@@ -8,9 +8,11 @@ import {
   filtrarCursos,
   type FiltrosCursos,
   nomeProcesso,
+  nomeSituacaoSuapCurso,
   nomeTurno,
   opcoes,
   primeiraMaiuscula,
+  situacaoSuapCurso,
 } from "../../explorar/colecoes.ts";
 import {
   buscaDeTextos,
@@ -23,7 +25,8 @@ import {
   ListaItens,
 } from "../../explorar/componentes.tsx";
 
-const CAMPOS = ["texto", "campus", "nivel", "eixo", "forma", "turno", "processo"] as const;
+const CAMPOS = ["texto", "campus", "nivel", "eixo", "forma", "turno", "processo", "suap"] as const;
+const OPCOES_SUAP = ["divergencia", "confere", "sem-suap"] as const;
 
 export const Route = createFileRoute("/explorar/cursos")({
   component: Cursos,
@@ -96,6 +99,13 @@ function Cursos() {
                 nome={(v) => nomeProcesso(v, d.processos)}
                 aoMudar={mudar("processo")}
               />
+              <CampoFiltro
+                rotulo="SUAP"
+                valor={filtros.suap}
+                opcoes={OPCOES_SUAP.filter((op) => d.cursos.some((c) => situacaoSuapCurso(c) === op))}
+                nome={nomeSituacaoSuapCurso}
+                aoMudar={mudar("suap")}
+              />
             </Filtros>
             <ListaItens vazia={achados.length === 0}>
               {achados.map((c) => (
@@ -103,13 +113,27 @@ function Cursos() {
                   key={c.id}
                   link={c.link}
                   titulo={c.nome}
-                  detalhe={[`Campus ${c.campus_nome}`, c.nivel, c.forma_oferta, c.turnos.map(nomeTurno).join(", ")]
+                  detalhe={[
+                    `Campus ${c.campus_nome}`,
+                    c.nivel ? primeiraMaiuscula(c.nivel) : null,
+                    c.forma_oferta ? primeiraMaiuscula(c.forma_oferta) : null,
+                    c.turnos.length > 0 ? c.turnos.map(nomeTurno).join(", ") : null,
+                    c.suap?.codigo ? `SUAP ${c.suap.codigo}` : null,
+                  ]
                     .filter(Boolean)
-                    .map((p) => primeiraMaiuscula(p!))
                     .join(" · ")}
                   selos={
                     <>
                       {c.cnct ? <Dado>{c.cnct.eixo ?? "CNCT"}</Dado> : null}
+                      {c.suap !== null && c.suap.divergencias > 0 ? (
+                        <Badge variant="warning">
+                          {c.suap.divergencias === 1
+                            ? "1 divergência SUAP"
+                            : `${c.suap.divergencias} divergências SUAP`}
+                        </Badge>
+                      ) : c.suap === null || c.suap.matrizes === 0 ? (
+                        <Badge variant="outline">Sem matriz SUAP</Badge>
+                      ) : null}
                       {c.ppc ? (
                         <span className="w-20 text-right">
                           <Dado>PPC {c.ppc.ano ?? "sem ano"}</Dado>

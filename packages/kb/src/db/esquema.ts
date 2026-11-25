@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 11;
+export const VERSAO_ESQUEMA = 12;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -108,6 +108,7 @@ CREATE TABLE cursos (
   suap_vagas INTEGER,
   suap_matrizes_situacao TEXT,
   suap_ch_comum_h INTEGER,
+  suap_coletado_em TEXT,
   ppc_id TEXT,
   ppc_url TEXT,
   ppc_markdown_path TEXT,
@@ -127,6 +128,7 @@ CREATE TABLE suap_matrizes (
   ch_exibida_h INTEGER NOT NULL,
   estagio_exigido INTEGER NOT NULL,
   ch_estagio_h INTEGER,
+  url TEXT,
   trecho TEXT NOT NULL,
   path TEXT NOT NULL,
   linha INTEGER NOT NULL,

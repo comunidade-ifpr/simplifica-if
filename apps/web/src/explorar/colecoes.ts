@@ -216,6 +216,24 @@ export function filtrarNormas(normas: ReadonlyArray<NormaDoIndice>, f: FiltrosNo
 
 /* ================================================================== cursos */
 
+export type SituacaoSuapCurso = "divergencia" | "confere" | "sem-suap";
+
+const SITUACOES_SUAP_CURSO: Readonly<Record<SituacaoSuapCurso, string>> = {
+  divergencia: "Com divergência PPC × SUAP",
+  confere: "Sem divergências",
+  "sem-suap": "Sem matriz no SUAP",
+};
+
+export function nomeSituacaoSuapCurso(valor: string): string {
+  return SITUACOES_SUAP_CURSO[valor as SituacaoSuapCurso] ?? primeiraMaiuscula(valor);
+}
+
+/** A situação do curso no filtro SUAP do Explorar. */
+export function situacaoSuapCurso(c: Pick<CursoDoIndice, "suap">): SituacaoSuapCurso {
+  if (c.suap === null || c.suap.matrizes === 0) return "sem-suap";
+  return c.suap.divergencias > 0 ? "divergencia" : "confere";
+}
+
 export interface FiltrosCursos {
   readonly texto?: string | undefined;
   readonly campus?: string | undefined;
@@ -224,6 +242,7 @@ export interface FiltrosCursos {
   readonly forma?: string | undefined;
   readonly turno?: string | undefined;
   readonly processo?: string | undefined;
+  readonly suap?: string | undefined;
 }
 
 export function filtrarCursos(cursos: ReadonlyArray<CursoDoIndice>, f: FiltrosCursos): CursoDoIndice[] {
@@ -236,7 +255,8 @@ export function filtrarCursos(cursos: ReadonlyArray<CursoDoIndice>, f: FiltrosCu
         (f.forma === undefined || c.forma_oferta === f.forma) &&
         (f.turno === undefined || c.turnos.includes(f.turno)) &&
         (f.processo === undefined || c.processos.includes(f.processo)) &&
-        (f.texto === undefined || respondeAoTexto(f.texto, [c.nome, c.campus_nome, c.cnct?.nome])),
+        (f.suap === undefined || situacaoSuapCurso(c) === f.suap) &&
+        (f.texto === undefined || respondeAoTexto(f.texto, [c.nome, c.campus_nome, c.cnct?.nome, c.suap?.codigo])),
     )
     .sort((a, b) => comparar(a.nome, b.nome) || comparar(a.campus_nome, b.campus_nome));
 }

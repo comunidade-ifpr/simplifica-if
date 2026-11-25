@@ -39,6 +39,10 @@ const LinhaCurso = Schema.Struct({
   carga_horaria_minima_h: InteiroNulo,
   suap_id: InteiroNulo,
   suap_codigo: TextoNulo,
+  suap_vagas: InteiroNulo,
+  suap_matrizes_situacao: TextoNulo,
+  suap_ch_comum_h: InteiroNulo,
+  suap_coletado_em: TextoNulo,
   ppc_id: TextoNulo,
   ppc_markdown_path: TextoNulo,
   ppc_ano_documento: InteiroNulo,
@@ -63,6 +67,28 @@ const LinhaOferta = Schema.Struct({
 });
 const linhasOferta = Sql.todas(LinhaOferta);
 
+const LinhaMatrizCurso = Schema.Struct({
+  curso_id: Texto,
+  matriz_id: Inteiro,
+  descricao: Texto,
+  ano: InteiroNulo,
+  ch_exibida_h: Inteiro,
+  estagio_exigido: Inteiro,
+  ch_estagio_h: InteiroNulo,
+  url: TextoNulo,
+});
+const linhasMatrizCurso = Sql.todas(LinhaMatrizCurso);
+
+export interface MatrizSuapCurso {
+  matriz_id: number;
+  descricao: string;
+  ano: number | null;
+  ch_exibida_h: number;
+  estagio_exigido: boolean;
+  ch_estagio_h: number | null;
+  url: string | null;
+}
+
 export interface ResultadoCurso {
   id: string;
   nome: string;
@@ -79,7 +105,15 @@ export interface ResultadoCurso {
   } | null;
   ppc: { id: string; path: string | null; ano_documento: number | null } | null;
   /** O curso no SUAP; `null` quando o registro não tem SUAP. */
-  suap: { id: number; codigo: string | null } | null;
+  suap: {
+    id: number;
+    codigo: string | null;
+    vagas: number | null;
+    situacao: string | null;
+    carga_horaria_comum_h: number | null;
+    coletado_em: string | null;
+    matrizes: MatrizSuapCurso[];
+  } | null;
   ofertas: {
     id: string;
     processos: string[];
@@ -114,7 +148,8 @@ export const listarCursos = Effect.fn("consultasCursos.listarCursos")(function* 
   const cursos = yield* linhasCurso(
     `SELECT c.id, c.nome, c.campus_id, ca.nome AS campus_nome, c.nivel, c.forma_oferta, c.modalidade, c.situacao,
                 c.cnct_id, k.denominacao AS cnct_denominacao, k.eixo_tecnologico, k.carga_horaria_minima_h,
-                c.suap_id, c.suap_codigo, c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
+                c.suap_id, c.suap_codigo, c.suap_vagas, c.suap_matrizes_situacao, c.suap_ch_comum_h, c.suap_coletado_em,
+                c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
          FROM cursos c LEFT JOIN cnct k ON k.id = c.cnct_id LEFT JOIN campi ca ON ca.campus_id = c.campus_id
          ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""}
          ORDER BY c.id`,
@@ -126,8 +161,26 @@ export const listarCursos = Effect.fn("consultasCursos.listarCursos")(function* 
                 (SELECT group_concat(processo_id, ',') FROM (SELECT processo_id FROM ofertas_processos op WHERE op.oferta_id = o.id ORDER BY processo_id)) AS processos
          FROM ofertas_cursos oc JOIN ofertas o ON o.id = oc.oferta_id ORDER BY oc.curso_id, o.id`,
   );
+  const matrizes = yield* linhasMatrizCurso(
+    "SELECT curso_id, matriz_id, descricao, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, url FROM suap_matrizes ORDER BY curso_id, ordem",
+  );
   const porCurso = new Map<string, (typeof LinhaOferta.Type)[]>();
   for (const o of ofertas) porCurso.set(o.curso_id, [...(porCurso.get(o.curso_id) ?? []), o]);
+  const matrizesPorCurso = new Map<string, MatrizSuapCurso[]>();
+  for (const m of matrizes) {
+    matrizesPorCurso.set(m.curso_id, [
+      ...(matrizesPorCurso.get(m.curso_id) ?? []),
+      {
+        matriz_id: m.matriz_id,
+        descricao: m.descricao,
+        ano: m.ano,
+        ch_exibida_h: m.ch_exibida_h,
+        estagio_exigido: m.estagio_exigido === 1,
+        ch_estagio_h: m.ch_estagio_h,
+        url: m.url,
+      },
+    ]);
+  }
   const saida: ResultadoCurso[] = [];
   for (const c of cursos) {
     const lista = (porCurso.get(c.id) ?? []).filter(
@@ -159,7 +212,18 @@ export const listarCursos = Effect.fn("consultasCursos.listarCursos")(function* 
             ano_documento: c.ppc_ano_documento,
           }
         : null,
-      suap: c.suap_id === null ? null : { id: c.suap_id, codigo: c.suap_codigo },
+      suap:
+        c.suap_id === null
+          ? null
+          : {
+              id: c.suap_id,
+              codigo: c.suap_codigo,
+              vagas: c.suap_vagas,
+              situacao: c.suap_matrizes_situacao,
+              carga_horaria_comum_h: c.suap_ch_comum_h,
+              coletado_em: c.suap_coletado_em,
+              matrizes: matrizesPorCurso.get(c.id) ?? [],
+            },
       ofertas: lista.map((o) => ({
         id: o.id,
         processos: o.processos ? o.processos.split(",") : [],

@@ -3,8 +3,8 @@
  * novo", a carga (`ComCarga`), o cabeçalho, o corpo com a coluna lateral, a seção com título e o link
  * `ifpr://` como botão.
  */
-import { ExternalLinkIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { CheckIcon, CopyIcon, ExternalLinkIcon } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { abrirFora } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -105,6 +105,36 @@ export function LinkExterno({ href, children }: { readonly href: string; readonl
     >
       {children} <ExternalLinkIcon aria-hidden className="size-3.5" />
     </a>
+  );
+}
+
+/** Código do curso no SUAP, copiável num clique. */
+export function BotaoCodigoSuap({ codigo, prefixo = true }: { readonly codigo: string; readonly prefixo?: boolean }) {
+  const [copiado, setCopiado] = useState(false);
+  const copiar = () => {
+    navigator.clipboard.writeText(codigo).then(
+      () => {
+        setCopiado(true);
+        window.setTimeout(() => setCopiado(false), 2000);
+      },
+      () => {},
+    );
+  };
+  return (
+    <button
+      type="button"
+      onClick={copiar}
+      title={`Copiar código SUAP ${codigo}`}
+      aria-label={copiado ? `Código SUAP ${codigo} copiado` : `Copiar código SUAP ${codigo}`}
+      className="nao-imprimir inline-flex items-center gap-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-foreground text-micro hover:border-ring"
+    >
+      <span>{prefixo ? `SUAP ${codigo}` : codigo}</span>
+      {copiado ? (
+        <CheckIcon aria-hidden className="size-3 text-success-foreground" />
+      ) : (
+        <CopyIcon aria-hidden className="size-3 text-muted-foreground" />
+      )}
+    </button>
   );
 }
 

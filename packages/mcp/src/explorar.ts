@@ -56,6 +56,15 @@ export const CursoDoIndice = Schema.Struct({
   cnct: Schema.NullOr(Schema.Struct({ slug: Schema.String, nome: Schema.String, eixo: Texto })),
   /** A chave do PPC vigente (`campus/curso/versao`) e o ano do documento; `null` sem PPC na base. */
   ppc: Schema.NullOr(Schema.Struct({ chave: Schema.String, ano: Inteiro })),
+  /** Vínculo do curso com o SUAP (código, matrizes ativas e divergências com o PPC vigente); `null` sem SUAP. */
+  suap: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.Int,
+      codigo: Texto,
+      matrizes: Schema.Int,
+      divergencias: Schema.Int,
+    }),
+  ),
   /** Turnos das ofertas registradas, sem repetição. */
   turnos: Schema.Array(Schema.String),
   /** Processos seletivos das ofertas (`processo-seletivo-2026`). */

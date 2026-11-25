@@ -73,6 +73,10 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
   );
 
   const paginas = yield* kb.cursos.paginasOficiais;
+  const divergenciasPorCurso = new Map<string, number>();
+  for (const p of (yield* kb.ppcs.divergencias({})).ppcs) {
+    if (p.curso !== null) divergenciasPorCurso.set(p.curso, p.cruzamento.length);
+  }
   const cursos = (yield* kb.cursos.listar({})).map((c): CursoDoIndice => ({
     id: c.id.replace(/^curso:/, ""),
     nome: c.nome,
@@ -86,6 +90,14 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
       ? { slug: c.cnct.id.replace(/^cnct:/, ""), nome: c.cnct.denominacao ?? c.cnct.id, eixo: c.cnct.eixo_tecnologico }
       : null,
     ppc: c.ppc ? { chave: c.ppc.id.replace(/^ppc:/, ""), ano: c.ppc.ano_documento } : null,
+    suap: c.suap
+      ? {
+          id: c.suap.id,
+          codigo: c.suap.codigo,
+          matrizes: c.suap.matrizes.length,
+          divergencias: divergenciasPorCurso.get(c.id) ?? 0,
+        }
+      : null,
     turnos: unicos(c.ofertas.map((o) => o.turno)),
     processos: unicos(c.ofertas.flatMap((o) => o.processos)),
     pagina_oficial: paginas.get(c.id) ?? null,

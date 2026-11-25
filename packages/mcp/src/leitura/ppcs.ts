@@ -85,7 +85,7 @@ export function paraCurso(c: ResultadoCurso): ListarCursos.Curso {
     situacao: c.situacao,
     cnct: c.cnct ? { id: c.cnct.id, nome: c.cnct.denominacao ?? c.cnct.id, eixo: c.cnct.eixo_tecnologico } : null,
     ppc: c.ppc ? { id: c.ppc.id, ano: c.ppc.ano_documento } : null,
-    suap: c.suap,
+    suap: c.suap ? { id: c.suap.id, codigo: c.suap.codigo } : null,
     turnos: [...new Set(c.ofertas.map((o) => o.turno).filter((t): t is string => t !== null))],
     link: linkCurso(c.id),
   };
@@ -483,7 +483,13 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
                 id: ppcId,
                 ano: curso.ppc.ano_documento,
                 link: linkPpc(ppcId),
-                secoes: secoes.map((s) => ({ id: s.id, tipo: s.tipo, titulo: s.titulo })),
+                secoes: secoes.map((s) => ({
+                  id: s.id,
+                  tipo: s.tipo,
+                  titulo: s.titulo,
+                  linha_inicio: s.linha_inicio,
+                  linha_fim: s.linha_fim,
+                })),
               }
             : null,
         ppcs_substituidos: listados

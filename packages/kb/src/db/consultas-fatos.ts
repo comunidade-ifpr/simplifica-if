@@ -42,10 +42,12 @@ const linhasCruzamento = Sql.todas(LinhaCruzamento);
 const LinhaMatriz = Schema.Struct({
   curso_id: Texto,
   matriz_id: Inteiro,
+  descricao: Texto,
   ano: InteiroNulo,
   ch_exibida_h: Inteiro,
   estagio_exigido: Inteiro,
   ch_estagio_h: InteiroNulo,
+  url: TextoNulo,
   trecho: Texto,
   path: Texto,
   linha: Inteiro,
@@ -60,8 +62,11 @@ const LinhaPpcCurso = Schema.Struct({
   tipo_oferta: Texto,
   path: Texto,
   curso_id: TextoNulo,
+  suap_id: InteiroNulo,
+  suap_codigo: TextoNulo,
   suap_matrizes_situacao: TextoNulo,
   suap_ch_comum_h: InteiroNulo,
+  suap_coletado_em: TextoNulo,
 });
 const linhasPpcCurso = Sql.todas(LinhaPpcCurso);
 
@@ -75,8 +80,11 @@ export interface FatosDoPpc {
   path: string;
   fatos: (Omit<typeof LinhaFato.Type, "ppc_id" | "alternativas_json"> & { alternativas: unknown })[];
   suap: {
+    id: number | null;
+    codigo: string | null;
     situacao: string | null;
     carga_horaria_comum_h: number | null;
+    coletado_em: string | null;
     matrizes: (Omit<typeof LinhaMatriz.Type, "curso_id" | "estagio_exigido"> & { estagio_exigido: boolean })[];
   };
   cruzamento: Omit<typeof LinhaCruzamento.Type, "ppc_id">[];
@@ -120,7 +128,7 @@ export const fatosDosPpcs = Effect.fn("consultasFatos.fatosDosPpcs")(function* (
   }
   const ppcs = yield* linhasPpcCurso(
     `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id,
-                c.suap_matrizes_situacao, c.suap_ch_comum_h
+                c.suap_id, c.suap_codigo, c.suap_matrizes_situacao, c.suap_ch_comum_h, c.suap_coletado_em
          FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id
          ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""} ORDER BY p.id`,
     parametros,
@@ -128,7 +136,7 @@ export const fatosDosPpcs = Effect.fn("consultasFatos.fatosDosPpcs")(function* (
   const fatos = yield* linhasFato("SELECT * FROM ppc_fatos ORDER BY ppc_id, fato");
   const cruz = yield* linhasCruzamento("SELECT * FROM ppc_suap ORDER BY ppc_id, aspecto");
   const matrizes = yield* linhasMatriz(
-    "SELECT curso_id, matriz_id, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, trecho, path, linha FROM suap_matrizes ORDER BY curso_id, ordem",
+    "SELECT curso_id, matriz_id, descricao, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, url, trecho, path, linha FROM suap_matrizes ORDER BY curso_id, ordem",
   );
   const fatosPor = agrupar(fatos, (f) => f.ppc_id);
   const cruzPor = agrupar(cruz, (c) => c.ppc_id);
@@ -146,8 +154,11 @@ export const fatosDosPpcs = Effect.fn("consultasFatos.fatosDosPpcs")(function* (
       alternativas: alternativas_json,
     })),
     suap: {
+      id: p.suap_id,
+      codigo: p.suap_codigo,
       situacao: p.suap_matrizes_situacao,
       carga_horaria_comum_h: p.suap_ch_comum_h,
+      coletado_em: p.suap_coletado_em,
       matrizes: (p.curso_id ? (matrizesPor.get(p.curso_id) ?? []) : []).map(
         ({ curso_id: _c, estagio_exigido, ...m }) => ({
           ...m,

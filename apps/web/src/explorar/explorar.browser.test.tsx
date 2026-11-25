@@ -159,6 +159,8 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
 
   const curso = page.getByRole("article", { name: "Curso" });
   await expect.element(curso.getByRole("heading", { level: 2, name: "Técnico em Enfermagem" })).toBeVisible();
+  await expect.element(curso.getByRole("button", { name: "Copiar código SUAP CTB008" })).toBeVisible();
+  await expect.element(curso.getByRole("region", { name: "Cadastro no SUAP" })).toBeVisible();
   await expect.element(curso.getByText("2 divergências PPC × SUAP")).toBeVisible();
   const tabela = curso.getByRole("table", { name: "Comparação entre o PPC e o SUAP" });
   await expect.element(tabela.getByText("Diverge", { exact: true })).toBeVisible();

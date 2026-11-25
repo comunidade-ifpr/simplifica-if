@@ -63,9 +63,25 @@ export function inserirExplorar(caminho: string): void {
       `UPDATE cursos SET forma_oferta = 'subsequente', modalidade = 'presencial', situacao = 'ativo',
          cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${PPC_ENFERMAGEM}', ppc_ano_documento = 2023,
          ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_ENFERMAGEM}.md',
-         pagina_oficial = 'https://ifpr.edu.br/curitiba/cursos/enfermagem/'
+         pagina_oficial = 'https://ifpr.edu.br/curitiba/cursos/enfermagem/',
+         suap_id = 151, suap_codigo = 'CTB008', suap_vagas = 30,
+         suap_matrizes_situacao = 'Única ativa', suap_coletado_em = '2026-11-05'
        WHERE id = 'curso:${CURSO_ENFERMAGEM}'`,
     );
+    inserir("suap_matrizes", {
+      curso_id: `curso:${CURSO_ENFERMAGEM}`,
+      ordem: 0,
+      matriz_id: 538,
+      descricao: "TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2019 CURITIBA",
+      ano: 2019,
+      ch_exibida_h: 1400,
+      estagio_exigido: 0,
+      ch_estagio_h: null,
+      url: "https://suap.ifpr.edu.br/edu/matriz/538/",
+      trecho: "538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2019 CURITIBA — CH exibida: 1400 h",
+      path: "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
+      linha: 18,
+    });
     db.exec(
       `UPDATE cursos SET forma_oferta = 'licenciatura', situacao = 'ativo'
        WHERE id = 'curso:foz-do-iguacu/licenciatura-em-fisica'`,

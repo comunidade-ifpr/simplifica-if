@@ -14,7 +14,28 @@ import { linhasNoOrcamento } from "../orcamento.ts";
 import { comLink } from "../texto.ts";
 import { linhaTransicao, textoFatosPpc } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
-import { SuapCurso } from "./listar-cursos.ts";
+
+export const MatrizSuapFicha = Schema.Struct({
+  matriz_id: Schema.Int,
+  descricao: Schema.String,
+  ano: Schema.NullOr(Schema.Int),
+  ch_exibida_h: Schema.Finite,
+  estagio_exigido: Schema.Boolean,
+  ch_estagio_h: Schema.NullOr(Schema.Finite),
+  url: Schema.NullOr(Schema.String),
+});
+
+export const SuapFichaCurso = Schema.NullOr(
+  Schema.Struct({
+    id: Schema.Int,
+    codigo: Schema.NullOr(Schema.String),
+    vagas: Schema.NullOr(Schema.Int),
+    situacao: Schema.NullOr(Schema.String),
+    carga_horaria_comum_h: Schema.NullOr(Schema.Finite),
+    coletado_em: Schema.NullOr(Schema.String),
+    matrizes: Schema.Array(MatrizSuapFicha),
+  }),
+);
 
 export const TETO_FICHA_CURSO = 12000;
 
@@ -66,7 +87,15 @@ export const Dados = Schema.Struct({
       ano: Schema.NullOr(Schema.Int),
       link: EsquemaLink,
       /** Seções do PPC na ordem do documento; o ID vai para `ler_secao`. */
-      secoes: Schema.Array(Schema.Struct({ id: Schema.String, tipo: Schema.String, titulo: Schema.String })),
+      secoes: Schema.Array(
+        Schema.Struct({
+          id: Schema.String,
+          tipo: Schema.String,
+          titulo: Schema.String,
+          linha_inicio: Schema.Int,
+          linha_fim: Schema.Int,
+        }),
+      ),
     }),
   ),
   /** Versões anteriores do PPC do curso, substituídas, que ficam na base (da mais nova à mais antiga). */
@@ -79,7 +108,7 @@ export const Dados = Schema.Struct({
       link: EsquemaLink,
     }),
   ),
-  suap: SuapCurso,
+  suap: SuapFichaCurso,
   ofertas: Schema.Array(
     Schema.Struct({
       processo: Schema.String,
