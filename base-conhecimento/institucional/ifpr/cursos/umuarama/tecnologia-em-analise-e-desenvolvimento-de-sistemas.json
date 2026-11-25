@@ -14,7 +14,14 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "269 — TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS 2018 - CAMPUS UMUARAMA — CH exibida: 2130 h; estágio exigido: Não; CH mínima de estágio (separada): -\n381 — TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS 2023 - CAMPUS UMUARAMA — CH exibida: 2335 h; estágio exigido: Não; CH mínima de estágio (separada): -\n877 — TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS 2023 - CAMPUS UMUARAMA (Trimestre) — CH exibida: 2335 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/269/",
+        "https://suap.ifpr.edu.br/edu/matriz/381/",
+        "https://suap.ifpr.edu.br/edu/matriz/877/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

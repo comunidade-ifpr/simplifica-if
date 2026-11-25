@@ -14,7 +14,13 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "829 — BACHARELADO EM ENGENHARIA DE SOFTWARE 2026 - CAMPUS IRATI — CH exibida: 2960 h; estágio exigido: Sim; CH mínima de estágio (separada): 240",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/829/"
+      ],
+      "carga_horaria_comum_h": 2960,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

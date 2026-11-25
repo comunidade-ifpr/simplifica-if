@@ -14,7 +14,17 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "503 — BACHARELADO EM FARMÁCIA - 2009 PALMAS- GRADE 02 — CH exibida: 3971 h; estágio exigido: Não; CH mínima de estágio (separada): -\n502 — BACHARELADO EM FARMÁCIA - 2012 PALMAS - GRADE 03 — CH exibida: 4126 h; estágio exigido: Sim; CH mínima de estágio (separada): 1040\n166 — BACHARELADO EM FARMÁCIA - 2016 PALMAS- GRADE04 — CH exibida: 4820 h; estágio exigido: Não; CH mínima de estágio (separada): -\n164 — BACHARELADO EM FARMÁCIA - 2018 PALMAS - GRADE 05 — CH exibida: 4804 h; estágio exigido: Não; CH mínima de estágio (separada): 960\n158 — BACHARELADO EM FARMÁCIA - 2020 PALMAS- GRADE 06 — CH exibida: 4556 h; estágio exigido: Não; CH mínima de estágio (separada): 0\n139 — BACHARELADO EM FARMÁCIA - 2023 PALMAS - GRADE 07 — CH exibida: 4568 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/503/",
+        "https://suap.ifpr.edu.br/edu/matriz/502/",
+        "https://suap.ifpr.edu.br/edu/matriz/166/",
+        "https://suap.ifpr.edu.br/edu/matriz/164/",
+        "https://suap.ifpr.edu.br/edu/matriz/158/",
+        "https://suap.ifpr.edu.br/edu/matriz/139/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

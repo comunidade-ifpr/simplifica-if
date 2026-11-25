@@ -14,7 +14,15 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "265 — TECNOLOGIA EM GESTÃO DA TECNOLOGIA DA INFORMAÇÃO - 2020 PINHAIS — CH exibida: 2247 h; estágio exigido: Não; CH mínima de estágio (separada): -\n397 — TECNOLOGIA EM GESTÃO DA TECNOLOGIA DA INFORMAÇÃO - 2023 PINHAIS — CH exibida: 2247 h; estágio exigido: Não; CH mínima de estágio (separada): -\n850 — TECNOLOGIA EM GESTÃO DA TECNOLOGIA DA INFORMAÇÃO - 2026 PINHAIS — CH exibida: 2247 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/265/",
+        "https://suap.ifpr.edu.br/edu/matriz/397/",
+        "https://suap.ifpr.edu.br/edu/matriz/850/"
+      ],
+      "carga_horaria_comum_h": 2247,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

@@ -22,7 +22,6 @@ const MATRIZES_ANTIGAS = {
 };
 /** As matrizes que a fixture dá ao terceiro curso, já gravadas: ele não muda. */
 const MATRIZES_IGUAIS = {
-  resumo: "Nenhuma matriz marcada Ativa=Sim.",
   urls: [],
   situacao: "Sem matriz ativa",
   coletado_em: "2026-11-05T16:04:00.000-03:00",

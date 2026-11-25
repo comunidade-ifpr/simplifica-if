@@ -14,7 +14,14 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "259 — TECNOLOGIA EM GESTÃO AMBIENTAL - 2018 PARANAGUÁ — CH exibida: 1701 h; estágio exigido: Não; CH mínima de estágio (separada): -\n302 — TECNOLOGIA EM GESTÃO AMBIENTAL - 2023 PARANAGUÁ — CH exibida: 1817 h; estágio exigido: Não; CH mínima de estágio (separada): -\n935 — TECNOLOGIA EM GESTÃO AMBIENTAL - 2023 PARANAGUÁ [REPLICADO] — CH exibida: 1734 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/259/",
+        "https://suap.ifpr.edu.br/edu/matriz/302/",
+        "https://suap.ifpr.edu.br/edu/matriz/935/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

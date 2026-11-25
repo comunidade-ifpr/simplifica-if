@@ -14,7 +14,14 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "211 — TECNOLOGIA EM PROCESSOS GERENCIAIS 2021 CAMPO LARGO — CH exibida: 1760 h; estágio exigido: Não; CH mínima de estágio (separada): -\n125 — TECNOLOGIA EM PROCESSOS GERENCIAIS - 2024 CAMPUS CAMPO LARGO — CH exibida: 1760 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/211/",
+        "https://suap.ifpr.edu.br/edu/matriz/125/"
+      ],
+      "carga_horaria_comum_h": 1760,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

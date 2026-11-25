@@ -14,7 +14,16 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "487 — BACHARELADO EM AGRONOMIA - 2009 PALMAS- GRADE UNI — CH exibida: 4365 h; estágio exigido: Não; CH mínima de estágio (separada): -\n486 — BACHARELADO EM AGRONOMIA - 2012 PALMAS- GRADE 01 — CH exibida: 4687 h; estágio exigido: Não; CH mínima de estágio (separada): 0\n473 — BACHARELADO EM AGRONOMIA - 2018 PALMAS - GRADE 02 — CH exibida: 4281 h; estágio exigido: Não; CH mínima de estágio (separada): 0\n163 — BACHARELADO EM AGRONOMIA - 2020 PALMAS - GRADE 03 — CH exibida: 4481 h; estágio exigido: Não; CH mínima de estágio (separada): 0\n159 — BACHARELADO EM AGRONOMIA - 2023 PALMAS - GRADE 04 — CH exibida: 4905 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/487/",
+        "https://suap.ifpr.edu.br/edu/matriz/486/",
+        "https://suap.ifpr.edu.br/edu/matriz/473/",
+        "https://suap.ifpr.edu.br/edu/matriz/163/",
+        "https://suap.ifpr.edu.br/edu/matriz/159/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

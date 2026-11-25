@@ -14,7 +14,14 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "240 — TECNOLOGIA EM GASTRONOMIA 2020 - CAMPUS FOZ DO IGUAÇU — CH exibida: 1916 h; estágio exigido: Não; CH mínima de estágio (separada): -\n184 — TECNOLOGIA EM GASTRONOMIA 2023 - CAMPUS FOZ DO IGUAÇU — CH exibida: 1911 h; estágio exigido: Não; CH mínima de estágio (separada): -\n789 — TECNOLOGIA EM GASTRONOMIA 2024 - CAMPUS FOZ DO IGUAÇU — CH exibida: 1711 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/240/",
+        "https://suap.ifpr.edu.br/edu/matriz/184/",
+        "https://suap.ifpr.edu.br/edu/matriz/789/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {

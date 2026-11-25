@@ -14,7 +14,14 @@
     "coletado_em": "2026-11-25",
     "atualizado_em": "2026-11-25",
     "matrizes": {
-      "urls": []
+      "resumo": "536 — TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS - 2011 — CH exibida: 2350 h; estágio exigido: Não; CH mínima de estágio (separada): -\n282 — TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS - 2023 LONDRINA — CH exibida: 2250 h; estágio exigido: Não; CH mínima de estágio (separada): -\n921 — TECNOLOGIA EM ANÁLISE E DESENVOLVIMENTO DE SISTEMAS - 2023 LONDRINA [REPLICADO] — CH exibida: 2250 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/536/",
+        "https://suap.ifpr.edu.br/edu/matriz/282/",
+        "https://suap.ifpr.edu.br/edu/matriz/921/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-25T08:26:08-03:00"
     }
   },
   "ppc": {
