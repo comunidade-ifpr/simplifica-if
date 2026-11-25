@@ -34,6 +34,10 @@ O alvo é a chave do PPC (`campus/curso/versao`, como `curitiba/tecnico-em-enfer
 
 Arquivos temporários (o PDF baixado, um script de ajuda) vão numa pasta sua, criada com `mktemp -d`, nunca numa pasta compartilhada com outros agentes. Quem revisa vários PPCs ao mesmo tempo confere cada um pelo seu alvo, nunca com `--todos`, e não faz commit: quem coordena roda o pipeline da base (`node scripts/gerar_base.ts` e `node scripts/validar_base.ts`) e faz o commit no fim.
 
+### Prioridade e quando parar
+
+Corrija primeiro o texto corrido (parágrafos partidos, títulos, palavras coladas e partidas, ruído de página), depois as tabelas curtas (matriz curricular, quadros), e por último as fichas de componente e as bibliografias desenhadas como tabela. Um PPC pode ter dezenas dessas tabelas picadas (cada referência espalhada em várias linhas e colunas quase vazias): passe-as para parágrafos quando a ordem de leitura for inequívoca (as referências separadas por `<br>` numa célula viram um parágrafo cada); quando não for, deixe e registre uma vez, com o intervalo de linhas, em vez de tentar uma por uma.
+
 ## Como corrigir cada achado
 
 ### `paragrafo-partido`
@@ -99,13 +103,15 @@ Tabela embaralhada demais para reconstruir com certeza (texto de ementa picado e
 
 ### `palavras-coladas` e `letras-espacadas`
 
+O hífen não é palavra para a conferência: ao separar `DidáticoPedagógica`, use `Didático-Pedagógica` se o termo aparece com hífen em outro ponto do documento (ou é composto que sempre leva hífen), e `Didático Pedagógica` na dúvida. Texto de mapa ou figura que a extração picou (nomes de cidades soltos) fica como está.
+
 O diagnóstico aponta a primeira da linha; leia a região inteira, porque costuma haver outras perto (uma matriz com "FísicaII", "LínguaPortuguesaII", "40horas" em todas as linhas). Separe as palavras coladas pela extração (`AngelaPalomaZelliWiedemann` → `Angela Paloma Zelli Wiedemann`, `FísicaII` → `Física II`, `40horas` → `40 horas`, `ensinodefisicaeastronomia` → `ensino de física e astronomia` **sem** acrescentar o acento: `ensino de fisica e astronomia`) e junte as letras espaçadas (`C A M P U S` → `CAMPUS`). Nome de marca, produto ou editora escrito assim de propósito fica: InterSaberes, JavaScript, SurveyMonkey, GeoGebra, YouTube. Cabeçalho de página colado (`MinisteriodaEducacao InstitutoFederaldoParana`) no meio do texto ou de uma tabela é ruído: tire.
 
 ### `numero-solto` e ruído de página que sobrou
 
 Número sozinho entre dois parágrafos, fora de tabela, quase sempre é número de página: tire. Antes, veja se não é o valor de um rótulo ("Carga horária" e, no bloco seguinte, "80"): nesse caso, deixe. Cabeçalho, rodapé ou endereço do câmpus que sobrou no meio do texto também sai.
 
-O cabeçalho de página às vezes vem colado no começo de um parágrafo, que segue com o conteúdo: `**Câmpus Umuarama do IFPR Curso: Eixo Tecnológico:** Técnico em Química … **Componente Curricular**: Sociologia I …`. A parte que se repete igual em várias páginas (aqui, até o nome do curso e o eixo) é o cabeçalho: tire só ela e deixe o resto (`**Componente Curricular**: Sociologia I …`). Se não der para dizer onde o cabeçalho acaba, deixe e registre.
+O cabeçalho de página às vezes vem colado no começo de um parágrafo, que segue com o conteúdo: `**Câmpus Umuarama do IFPR Curso: Eixo Tecnológico:** Técnico em Química … **Componente Curricular**: Sociologia I …`. A parte que se repete igual em várias páginas (aqui, até o nome do curso e o eixo) é o cabeçalho: tire só ela e deixe o resto (`**Componente Curricular**: Sociologia I …`). Se não der para dizer onde o cabeçalho acaba, deixe e registre. Mas a linha "Câmpus X do IFPR Curso: … Eixo Tecnológico: …" que abre cada ficha de componente curricular, uma vez por ficha e junto do nome do componente, faz parte da ficha: mantenha.
 
 ### `caractere-estranho`
 
