@@ -4,15 +4,14 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { resumoProveniencia, taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
-import { ehObjeto, type ObjetoJson, valoresIguais } from "@simplifica-if/kb/json";
+import { ehObjeto, valoresIguais } from "@simplifica-if/kb/json";
 import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
 import { analisarPpc, conferirEvidenciaAno } from "@simplifica-if/kb/ppcs/front-matter";
 import { caminhoPpc, chavePpc, compararVersoesPpc, idPpc, partesDoCaminhoPpc } from "@simplifica-if/kb/ppcs/ids";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
-import { validarJsonSchema } from "@simplifica-if/kb/schema";
-import type { IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
 import { aparar, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
 import { type Contexto, ehRecebido, type Recebido } from "./contexto.ts";
+import { conferirContrato, type IndicePpcsJson } from "../esquemas.ts";
 
 type ItemIndicePpcs = IndicePpcsJson["items"][number];
 
@@ -34,12 +33,11 @@ function ppcsVigentesDosCursos(ctx: Contexto): Map<string, string> {
   return ppcs;
 }
 
-/** Erros de uma linha de secoes/<tipo>.jsonl (schema ppcs_secao e coerência com o índice). */
+/** Erros de uma linha de secoes/<tipo>.jsonl (contrato da seção e coerência com o índice). */
 function validarLinhaSecao(
   linhaBruta: string,
   prefixo: string,
   tipoEsperado: string,
-  schema: ObjetoJson,
   idsVistos: Set<string>,
   itensIndicePorId: Map<string, Recebido<ItemIndicePpcs>>,
 ): string[] {
@@ -52,9 +50,8 @@ function validarLinhaSecao(
     return [`${prefixo}: JSON inválido: ${(erro as Error).message}`];
   }
   if (!ehObjeto(item)) return [`${prefixo}: item deve ser objeto`];
-  const erros = validarJsonSchema(item, schema, prefixo);
-  if (erros.length) return erros;
-  const secao = item as unknown as SecaoPpcJson;
+  const { erros, validos: secao } = conferirContrato("secaoPpc", item, prefixo);
+  if (secao === null) return erros;
 
   if (idsVistos.has(secao.id)) erros.push(`${prefixo}: id duplicado: ${secao.id}`);
   idsVistos.add(secao.id);
@@ -86,9 +83,6 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
   if (!ehDiretorio(raizSecoes)) return [`${rSecoes} não encontrado`];
 
   const erros: string[] = [];
-  const schema = ctx.carregarJson(ctx.c.schemas.secaoPpc, `schema ${ctx.rel(ctx.c.schemas.secaoPpc)}`);
-  if (!schema.ok) return schema.erros;
-  if (!ehObjeto(schema.valor)) return [`schema ${ctx.rel(ctx.c.schemas.secaoPpc)} deve conter um objeto JSON`];
   const idsVistos = new Set<string>();
   const arquivosEsperados = new Set(TIPOS_SECAO_INDEXADOS.map((tipo) => `${tipo}.jsonl`));
   const arquivos = listarDiretorio(raizSecoes, ".jsonl");
@@ -104,9 +98,7 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
     const tipoEsperado = NodePath.basename(caminho).replace(/\.[^.]*$/, "");
     const r = ctx.rel(caminho);
     for (const [indice, linha] of linhasDeArquivo(lerTexto(caminho)).entries()) {
-      erros.push(
-        ...validarLinhaSecao(linha, `${r}:${indice + 1}`, tipoEsperado, schema.valor, idsVistos, itensIndicePorId),
-      );
+      erros.push(...validarLinhaSecao(linha, `${r}:${indice + 1}`, tipoEsperado, idsVistos, itensIndicePorId));
     }
   }
 
@@ -121,7 +113,7 @@ export function validarPpcs(ctx: Contexto): string[] {
   const indice = carregado.valor;
   if (!ehRecebido<IndicePpcsJson>(indice)) return [`${rIndice} deve conter um objeto JSON`];
 
-  const { erros } = ctx.conferirSchema(indice, "indicePpcs", rIndice);
+  const { erros } = conferirContrato("indicePpcs", indice, rIndice);
   const secoes = indice.secoes;
   if (!ehRecebido<IndicePpcsJson["secoes"]>(secoes)) {
     erros.push(`${rIndice}: secoes deve ser objeto`);

@@ -65,11 +65,10 @@ Ao desenvolver uma skill, consulte os dados da base pela CLI `kb` ou pelas ferra
 node scripts/gerar_base.ts --check
 node scripts/gerar_indice_ppcs.ts --check
 node scripts/validar_base.ts
-node scripts/gerar_tipos_schemas.ts --check
 pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # todo o código: app, pacotes e scripts
 ```
 
-Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (CNCT e PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho e reunião) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
+O formato dos manifestos e índices (CNCT e PPCs) é o Effect Schema de `scripts/base/esquemas.ts`, de onde saem também os tipos do validador e do gerador dos índices. Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho e reunião) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
 
 ## Desenvolvimento
 

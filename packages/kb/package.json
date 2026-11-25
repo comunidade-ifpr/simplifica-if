@@ -12,7 +12,6 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
-    "ajv": "8.20.0",
     "remark-gfm": "catalog:",
     "remark-parse": "11.0.0",
     "unified": "11.0.5",

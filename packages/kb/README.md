@@ -47,7 +47,7 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 |---|---|
 | `caminhos.ts` | os caminhos, relativos à raiz do repositório, de tudo o que o kb lê (`CAMINHOS`, `noCheckout`); `raizRepositorio()`, que só os pontos de entrada e os testes chamam |
 | `canal.ts` | os canais da base (`dev`, `beta`, `estavel`), sem dependência, para os contratos do app |
-| `texto.ts`, `json.ts`, `schema.ts` | texto, JSON e JSON Schema comuns aos scripts e às skills (espaços, ordenação, JSON, `ajv`) |
+| `texto.ts`, `json.ts` | texto e JSON comuns aos scripts e às skills (espaços, ordenação, JSON) |
 | `primitivas/*` | regex com classes Unicode, JSON tipado (inteiro e fracionário distintos), case folding e similaridade de sequências, com saída fixa byte a byte (conversão do PPC) |
 | `esquema/mensagens.ts` | formatador único das mensagens de validação do Effect Schema, em português |
 | `normas/ids.ts` | IDs canônicos de norma, dispositivo e `externo:` |

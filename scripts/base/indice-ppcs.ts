@@ -8,6 +8,7 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import type * as Types from "effect/Types";
 import type { ArquivoGerado } from "./gerados.ts";
 import { type CaminhosBase, naBase, relativo } from "./caminhos.ts";
 import { ehObjeto, jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
@@ -23,7 +24,7 @@ import {
   taxonomiaDoNivel,
   TIPOS_NAO_INDEXADOS,
 } from "@simplifica-if/kb/ppcs/secoes";
-import type { IndicePpcsJson, SecaoPpcJson } from "./tipos-schemas.ts";
+import type { IndicePpcsJson, SecaoPpcJson } from "./esquemas.ts";
 import { carregarDadosInstitucionais, type CampusLocal, type CursoLocal } from "../dados/institucional.ts";
 import { interpretarVagasPpc } from "../dominio/curso.ts";
 import { compararTexto, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
@@ -40,9 +41,9 @@ export const TIPOS_SECAO_INDEXADOS = ordenarTextos(
   ),
 );
 
-/** Item de ppcs/index.json, no formato de schemas/ppcs_index.schema.json. */
-export type ItemPpc = IndicePpcsJson["items"][number];
-/** Linha de secoes/<tipo>.jsonl, no formato de schemas/ppcs_secao.schema.json. */
+/** Item de ppcs/index.json, no contrato `esquemaIndicePpcs`; montado campo a campo. */
+export type ItemPpc = Types.Mutable<IndicePpcsJson["items"][number]>;
+/** Linha de secoes/<tipo>.jsonl, no contrato `esquemaSecaoPpc`. */
 export type ItemSecao = SecaoPpcJson;
 
 /** Resumo da proveniência publicado no índice (e conferido pelo `validar_base`). */
@@ -199,7 +200,7 @@ export function caminhoSecao(caminhos: CaminhosBase, tipo: string): string {
   return NodePath.join(caminhos.secoesPpcs, `${tipo}.jsonl`);
 }
 
-/** Caminho de cada `secoes/<tipo>.jsonl`; o schema fixa um caminho por tipo indexado. */
+/** Caminho de cada `secoes/<tipo>.jsonl`; o contrato fixa um caminho por tipo indexado. */
 export function caminhosSecoes(caminhos: CaminhosBase): IndicePpcsJson["secoes"]["paths"] {
   return Object.fromEntries(
     TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, relativo(caminhos, caminhoSecao(caminhos, tipo))]),

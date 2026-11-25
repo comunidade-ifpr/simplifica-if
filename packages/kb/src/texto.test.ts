@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vite-plus/test";
-import { ehInteiro, representar, textoDe, valoresIguais } from "./json.ts";
-import { ehUrlAbsoluta, partesUrl, regexDoSchema } from "./schema.ts";
+import { representar, textoDe, valoresIguais } from "./json.ts";
 import {
   aparar,
   apararCaracteres,
@@ -120,38 +119,5 @@ describe("json", () => {
     expect(valoresIguais({ a: 1, b: [1, 2] }, { b: [1, 2], a: 1 })).toBe(true);
     expect(valoresIguais(null, undefined)).toBe(true);
     expect(valoresIguais("1", 1)).toBe(false);
-  });
-
-  test("ehInteiro aceita booleanos", () => {
-    expect(ehInteiro(true)).toBe(true);
-    expect(ehInteiro(2)).toBe(true);
-    expect(ehInteiro(1.5)).toBe(false);
-  });
-});
-
-describe("padrões e URLs dos schemas", () => {
-  test("regexDoSchema traduz \\d, $ e . para a semântica dos schemas", () => {
-    expect(regexDoSchema("^\\d{4}$").test("２０２６")).toBe(true);
-    expect(regexDoSchema("^abc$").test("abc\n")).toBe(true);
-    expect(regexDoSchema("^a.c$").test("a\nc")).toBe(false);
-    expect(regexDoSchema("^[\\d-]+$").test("12-3")).toBe(true);
-    expect(regexDoSchema("^a\\-b\\#c[\\-\\#]$").test("a-b#c#")).toBe(true);
-  });
-
-  test("partesUrl extrai esquema e autoridade", () => {
-    expect(partesUrl("HTTPS://ifpr.edu.br/x")).toEqual({ esquema: "https", autoridade: "ifpr.edu.br" });
-    expect(partesUrl("  https://a?b")).toEqual({ esquema: "https", autoridade: "a" });
-    expect(partesUrl("nao-url")).toEqual({ esquema: "", autoridade: "" });
-    expect(() => partesUrl("https://[x")).toThrow("Invalid IPv6 URL");
-  });
-
-  test("ehUrlAbsoluta exige autoridade explícita e não aceita espaços", () => {
-    expect(ehUrlAbsoluta("https://ifpr.edu.br", "https")).toBe(true);
-    expect(ehUrlAbsoluta("http://ifpr.edu.br", "https")).toBe(false);
-    expect(ehUrlAbsoluta("https:ifpr.edu.br")).toBe(false);
-    expect(ehUrlAbsoluta("https:///ifpr.edu.br")).toBe(false);
-    expect(ehUrlAbsoluta("https://:80")).toBe(true);
-    expect(ehUrlAbsoluta("https://a b")).toBe(false);
-    expect(ehUrlAbsoluta("ftp://x")).toBe(true);
   });
 });

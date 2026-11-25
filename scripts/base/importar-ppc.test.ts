@@ -25,7 +25,6 @@ import {
   semFiguraLocal,
   STATUS_REABERTO,
 } from "./importar-ppc.ts";
-import { RAIZ_PROJETO } from "../config.ts";
 import { aplicarGerados } from "./gerados.ts";
 import { arquivosIndices, gerarIndices } from "./indice-ppcs.ts";
 import { Contexto } from "./validacao/contexto.ts";
@@ -406,13 +405,6 @@ describe("importarPpcDocx", () => {
   it.effect("a validação de PPCs da base aceita o PPC importado, sem exceção", () =>
     Effect.gen(function* () {
       const raiz = baseTemporaria();
-      NodeFS.cpSync(
-        NodePath.join(RAIZ_PROJETO, "base-conhecimento", "schemas"),
-        NodePath.join(raiz, "base-conhecimento", "schemas"),
-        {
-          recursive: true,
-        },
-      );
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-nucleos"));
       yield* importarPpcDocx(opcoes(raiz, docx));
       const caminhos = criarCaminhos(raiz);
@@ -427,11 +419,6 @@ describe("importarPpcDocx", () => {
   it.effect("versões: o índice marca a vigente e a substituída; a validação acusa arquivo solto e vigente antiga", () =>
     Effect.gen(function* () {
       const raiz = baseTemporaria();
-      NodeFS.cpSync(
-        NodePath.join(RAIZ_PROJETO, "base-conhecimento", "schemas"),
-        NodePath.join(raiz, "base-conhecimento", "schemas"),
-        { recursive: true },
-      );
       const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
       yield* importarPpcDocx(
         opcoes(raiz, docx, { ...doAno(2019), fonteUrl: "https://ifpr.edu.br/campus-a/ppc-2019.pdf" }),

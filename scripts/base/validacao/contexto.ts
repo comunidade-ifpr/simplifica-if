@@ -5,16 +5,9 @@ import * as NodePath from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
 import { analisarFrontMatter, ehErroFrontMatter, type FrontMatter } from "../front-matter.ts";
 import { ehObjeto, representar } from "@simplifica-if/kb/json";
-import { ehUrlAbsoluta, validarJsonSchema } from "@simplifica-if/kb/schema";
 import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
-import type {
-  CursoCnctJson,
-  IndiceCnctJson,
-  IndicePpcsJson,
-  ManifestCnctJson,
-  SecaoPpcJson,
-} from "../tipos-schemas.ts";
+import { ehUrlAbsoluta } from "../esquemas.ts";
 
 /** Resultado de uma leitura que pode falhar com mensagens de erro. */
 export type Resultado<T> = { ok: true; valor: T } | { ok: false; erros: string[] };
@@ -27,20 +20,10 @@ export type NormaLida =
 /** Retorno de `carregarDadosInstitucionais`, cacheado no `Contexto` para evitar releitura. */
 export type CarregamentoInstitucional = ReturnType<typeof carregarDadosInstitucionais>;
 
-/** Formato de cada schema de `CaminhosBase["schemas"]`, gerado do próprio schema. */
-export type FormatosSchemas = {
-  manifestCnct: ManifestCnctJson;
-  indiceCnct: IndiceCnctJson;
-  cursoCnct: CursoCnctJson;
-  indicePpcs: IndicePpcsJson;
-  secaoPpc: SecaoPpcJson;
-};
-export type NomeSchema = keyof CaminhosBase["schemas"] & keyof FormatosSchemas;
-
 /**
  * Objeto JSON lido que deve seguir o formato `T`, mas ainda pode estar fora
- * do schema: só os nomes dos campos são conferidos pelo compilador. As regras
- * da base rodam também sobre arquivos que falham no schema, para relatar
+ * do contrato: só os nomes dos campos são conferidos pelo compilador. As regras
+ * da base rodam também sobre arquivos que falham no contrato, para relatar
  * todos os problemas de uma vez, e por isso conferem os valores que usam.
  */
 export type Recebido<T> = { readonly [K in keyof T]?: unknown };
@@ -49,9 +32,6 @@ export type Recebido<T> = { readonly [K in keyof T]?: unknown };
 export function ehRecebido<T>(valor: unknown): valor is Recebido<T> {
   return ehObjeto(valor);
 }
-
-/** Mensagens da conferência com o schema e, se não houver nenhuma, os dados no formato do schema. */
-export type Conferencia<T> = { erros: string[]; validos: T | null };
 
 // oxlint-disable-next-line eslint/no-useless-concat -- partidos de propósito: a validação procura estes textos na base e não pode achá-los neste arquivo
 export const PADROES_LOCAIS = ["/" + "Users/", "Down" + "loads/", "file" + "://"];
@@ -128,17 +108,6 @@ export class Contexto {
     } catch (erro) {
       return { ok: false, erros: [`${rotulo} inválido: ${(erro as Error).message}`] };
     }
-  }
-
-  /** Confere `dados` com o schema `nome`; os dados só saem tipados quando o schema os aceita. */
-  conferirSchema<N extends NomeSchema>(dados: unknown, nome: N, rotulo: string): Conferencia<FormatosSchemas[N]> {
-    const caminhoSchema = this.c.schemas[nome];
-    const rSchema = this.rel(caminhoSchema);
-    const schema = this.carregarJson(caminhoSchema, `schema ${rSchema}`);
-    if (!schema.ok) return { erros: schema.erros, validos: null };
-    if (!ehObjeto(schema.valor)) return { erros: [`schema ${rSchema} deve conter um objeto JSON`], validos: null };
-    const erros = validarJsonSchema(dados, schema.valor, rotulo);
-    return { erros, validos: erros.length ? null : (dados as FormatosSchemas[N]) };
   }
 
   /** Links Markdown relativos devem apontar para arquivos existentes. */

@@ -7,7 +7,6 @@
     "base:gerar": "node scripts/gerar_base.ts",
     "base:indice-ppcs": "node scripts/gerar_indice_ppcs.ts",
     "base:validar": "node scripts/validar_base.ts",
-    "base:tipos": "node scripts/gerar_tipos_schemas.ts",
     "kb": "node packages/mcp/src/kb.ts",
     "kb:compilar": "node packages/mcp/src/kb.ts compilar",
     "mcp": "node packages/mcp/src/cli.ts",
@@ -45,7 +44,6 @@
     "@effect/vitest": "catalog:",
     "@oxlint/plugins": "1.89.0",
     "@types/node": "catalog:",
-    "json-schema-to-typescript": "16.0.0",
     "vite-plus": "catalog:"
   },
   "engines": {

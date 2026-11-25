@@ -3,7 +3,7 @@
 import * as NodePath from "node:path";
 import { listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import { textoDe, valoresIguais } from "@simplifica-if/kb/json";
-import type { CursoCnctJson, IndiceCnctJson, ManifestCnctJson } from "../tipos-schemas.ts";
+import { conferirContrato, type CursoCnctJson, type IndiceCnctJson, type ManifestCnctJson } from "../esquemas.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, RE_SLUG, type Recebido } from "./contexto.ts";
 
 type ItemIndiceCnct = IndiceCnctJson["items"][number];
@@ -36,7 +36,7 @@ const CAMPOS_REPETIDOS_NO_INDICE = [
   "codigos_cbo",
 ] as const satisfies Array<keyof CursoCnctJson & keyof ItemIndiceCnct>;
 
-/** Erros do arquivo de um curso CNCT e, se não houver nenhum, o curso no formato do schema. */
+/** Erros do arquivo de um curso CNCT e, se não houver nenhum, o curso decodificado. */
 function validarArquivoCursoCnct(
   ctx: Contexto,
   caminho: string,
@@ -47,7 +47,7 @@ function validarArquivoCursoCnct(
   if (!carregado.ok) return { erros: carregado.erros, curso: null };
   const dados = carregado.valor;
   if (!ehRecebido<CursoCnctJson>(dados)) return { erros: [`${r} deve conter um objeto JSON`], curso: null };
-  const { erros, validos } = ctx.conferirSchema(dados, "cursoCnct", r);
+  const { erros, validos } = conferirContrato("cursoCnct", dados, r);
 
   const cursoId = dados.id;
   if (typeof cursoId !== "string" || !RE_SLUG.test(cursoId)) erros.push(`${r}: id deve ser slug ASCII minúsculo`);
@@ -73,7 +73,7 @@ function validarArquivoCursoCnct(
 
 function validarManifestCnct(ctx: Contexto, manifestCnct: unknown, rManifestCnct: string, rIndiceCnct: string) {
   if (!ehRecebido<ManifestCnctJson>(manifestCnct)) return [`${rManifestCnct} deve conter um objeto JSON`];
-  const { erros } = ctx.conferirSchema(manifestCnct, "manifestCnct", rManifestCnct);
+  const { erros } = conferirContrato("manifestCnct", manifestCnct, rManifestCnct);
   if (!valoresIguais(manifestCnct.index_path, rIndiceCnct))
     erros.push(`${rManifestCnct}: index_path diverge do índice CNCT`);
   if (!valoresIguais(manifestCnct.campos_curso, CAMPOS_CURSO_CNCT)) {
@@ -102,7 +102,7 @@ export function validarCatalogos(ctx: Contexto): string[] {
     erros.push(`${rIndiceCnct} deve conter um objeto JSON`);
     return erros;
   }
-  erros.push(...ctx.conferirSchema(indiceCnct, "indiceCnct", rIndiceCnct).erros);
+  erros.push(...conferirContrato("indiceCnct", indiceCnct, rIndiceCnct).erros);
 
   const itens = indiceCnct.items;
   if (!Array.isArray(itens) || !itens.length) {

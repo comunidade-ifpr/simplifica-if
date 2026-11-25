@@ -13,8 +13,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
   const institucional = NodePath.join(raiz, "institucional");
   const ppcs = NodePath.join(institucional, "ifpr", "ppcs");
   const catalogos = NodePath.join(raiz, "catalogos");
-  const schemas = NodePath.join(raiz, "schemas");
-  const schema = (nome: string) => NodePath.join(schemas, `${nome}.schema.json`);
   return {
     raizProjeto,
     raiz,
@@ -27,13 +25,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
     manifestCnct: NodePath.join(catalogos, "cnct", "manifest.json"),
     indiceCnct: NodePath.join(catalogos, "cnct", "index.json"),
     cursosCnct: NodePath.join(catalogos, "cnct", "cursos"),
-    schemas: {
-      manifestCnct: schema("cnct_manifest"),
-      indiceCnct: schema("cnct_index"),
-      cursoCnct: schema("cnct_curso"),
-      indicePpcs: schema("ppcs_index"),
-      secaoPpc: schema("ppcs_secao"),
-    },
     readme: NodePath.join(raiz, "README.md"),
     /** PPCs fora da base, à espera do que falta (`curadoria/pendencias/ppcs/`). */
     pendenciasPpcs: NodePath.join(raizProjeto, "curadoria", "pendencias", "ppcs"),

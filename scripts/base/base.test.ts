@@ -18,7 +18,7 @@ import {
   tituloDaLinha,
 } from "./indice-ppcs.ts";
 import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
-import { validarJsonSchema } from "@simplifica-if/kb/schema";
+import { conferirContrato, ehUrlAbsoluta } from "./esquemas.ts";
 import { validarBase } from "./validacao.ts";
 import { validarContratoNorma } from "./validacao/normas.ts";
 
@@ -240,61 +240,98 @@ describe("índice de PPCs", () => {
   );
 });
 
-describe("JSON Schema", () => {
-  const schema = {
-    type: "object",
-    required: ["id", "data"],
-    additionalProperties: false,
-    properties: {
-      id: { type: "string", pattern: "^[a-z]+$", minLength: 2 },
-      data: { type: "string", format: "date" },
-      url: { type: "string", format: "uri" },
-      n: { type: "number", minimum: 1 },
-      tipo: { enum: ["a", "b"] },
-      lista: { type: "array", maxItems: 1, items: { type: "integer" } },
-    },
+describe("contratos dos manifestos e índices", () => {
+  const curso = {
+    id: "tecnico-em-x",
+    indice: 1,
+    denominacao: "Técnico em X",
+    denominacao_normalizada: "tecnico em x",
+    eixo_tecnologico: "Eixo",
+    area_tecnologica: "Área",
+    carga_horaria_minima_horas: 800,
+    descricao_carga_horaria_minima: "800 horas",
+    perfil_profissional: "Perfil",
+    pre_requisitos_ingresso: "Ensino fundamental",
+    itinerarios_formativos: "Itinerários",
+    campo_atuacao: "Campo",
+    ocupacoes_cbo: "1234-56 Ocupação",
+    codigos_cbo: ["1234-56"],
+    infraestrutura_minima: "Laboratório",
+    legislacao_profissional: "Lei",
   };
 
-  test("aceita documento válido (inteiro conta como number)", () => {
-    expect(
-      validarJsonSchema({ id: "ab", data: "2026-01-01", url: "https://x", n: 2, tipo: "a", lista: [1] }, schema, "r"),
-    ).toEqual([]);
+  test("aceita documento válido e devolve os dados decodificados", () => {
+    expect(conferirContrato("cursoCnct", curso, "r")).toEqual({ erros: [], validos: curso });
   });
 
-  test("reporta erros com as mensagens históricas do validador", () => {
+  test("relata cada problema com o rótulo, o caminho e a mensagem em português", () => {
+    const { indice: _, ...semIndice } = curso;
     expect(
-      validarJsonSchema({ id: "A", url: "x y", n: 0, tipo: "c", lista: [1, "2"], extra: true }, schema, "r"),
+      conferirContrato(
+        "cursoCnct",
+        { ...semIndice, id: "Tecnico X", carga_horaria_minima_horas: 0, codigos_cbo: ["12", 3], extra: true },
+        "r",
+      ).erros,
     ).toEqual([
-      "r: $.data é obrigatório",
-      "r: $.id deve ter ao menos 2 caractere(s)",
-      "r: $.id não corresponde ao padrão ^[a-z]+$",
-      "r: $.url deve ser URI absoluta válida",
-      "r: $.n deve ser maior ou igual a 1",
-      "r: $.tipo deve ser um de ['a', 'b']",
-      "r: $.lista deve ter no máximo 1 item(ns)",
-      "r: $.lista[1] deve ser integer, recebido string",
-      "r: $.extra não é permitido",
+      "r: extra: Entrada inválida: campo não permitido",
+      "r: id: deve ser slug ASCII minúsculo",
+      "r: indice: Entrada inválida: campo obrigatório ausente",
+      "r: carga_horaria_minima_horas: Entrada inválida: esperava um valor maior ou igual a 1",
+      "r: codigos_cbo.0: deve ser código CBO (0000 ou 0000-00)",
+      "r: codigos_cbo.1: Entrada inválida: esperava um texto",
     ]);
-    expect(validarJsonSchema([], schema, "r")).toEqual(["r: $ deve ser object, recebido array"]);
+    expect(conferirContrato("cursoCnct", [], "r")).toEqual({
+      erros: ["r: (raiz): Entrada inválida: esperava um objeto"],
+      validos: null,
+    });
   });
 
-  test("ordena as mensagens pelo documento, não pelo schema", () => {
-    const aninhado = {
-      type: "object",
-      required: ["b", "a"],
-      additionalProperties: false,
-      properties: {
-        a: { type: "object", additionalProperties: false, properties: { x: { const: 1 } } },
-        b: { type: "string", enum: ["s"] },
-      },
+  test("datas, URLs, constantes e listas não vazias", () => {
+    const manifesto = {
+      id: "cnct",
+      title: "CNCT",
+      sigla: "CNCT",
+      tipo: "catalogo_nacional_cursos_tecnicos",
+      tipo_item: "curso_tecnico_cnct",
+      schema_version: 1,
+      edicao: "4ª",
+      atualizacao_referencia: "2024",
+      atualizado_em: "2026-01-01",
+      fonte: "MEC",
+      fonte_url: "https://cnct.mec.gov.br",
+      atos_normativos_url: "https://cnct.mec.gov.br/atos",
+      catalogo_pdf_url: "https://cnct.mec.gov.br/cnct.pdf",
+      csv_origem_sha256: "a".repeat(64),
+      total_cursos: 1,
+      index_path: "catalogos/cnct/index.json",
+      campos_curso: ["id"],
+      uso_recomendado: ["consulta"],
     };
-    expect(validarJsonSchema({ z: 1, a: { y: 2, x: 3 }, b: 5 }, aninhado, "r")).toEqual([
-      "r: $.z não é permitido",
-      "r: $.a.y não é permitido",
-      "r: $.a.x deve ser 1",
-      "r: $.b deve ser string, recebido integer",
+    expect(conferirContrato("manifestCnct", manifesto, "m").erros).toEqual([]);
+    expect(
+      conferirContrato(
+        "manifestCnct",
+        { ...manifesto, sigla: "X", atualizado_em: "01/01/2026", fonte_url: "cnct.mec.gov.br", campos_curso: [] },
+        "m",
+      ).erros,
+    ).toEqual([
+      'm: sigla: Entrada inválida: esperava o valor "CNCT"',
+      "m: atualizado_em: deve estar em AAAA-MM-DD",
+      "m: fonte_url: deve ser URI absoluta válida",
+      "m: campos_curso: Entrada inválida: não pode ser vazio",
     ]);
-    expect(validarJsonSchema({}, aninhado, "r")).toEqual(["r: $.b é obrigatório", "r: $.a é obrigatório"]);
+  });
+
+  test("ehUrlAbsoluta exige esquema, autoridade explícita e nenhum espaço", () => {
+    expect(ehUrlAbsoluta("https://ifpr.edu.br", "https")).toBe(true);
+    expect(ehUrlAbsoluta("HTTPS://ifpr.edu.br/x", "https")).toBe(true);
+    expect(ehUrlAbsoluta("http://ifpr.edu.br", "https")).toBe(false);
+    expect(ehUrlAbsoluta("https:ifpr.edu.br")).toBe(false);
+    expect(ehUrlAbsoluta("https:///ifpr.edu.br")).toBe(false);
+    expect(ehUrlAbsoluta("https://:80")).toBe(true);
+    expect(ehUrlAbsoluta("https://a b")).toBe(false);
+    expect(ehUrlAbsoluta("https://[x")).toBe(false);
+    expect(ehUrlAbsoluta("ftp://x")).toBe(true);
   });
 });
 

@@ -61,7 +61,7 @@ node scripts/validar_base.ts
 
 Se a mudança afeta o banco (normas, relações, PPCs), compile (`pnpm kb:compilar`) e confira a resposta pelo `pnpm kb` (por exemplo, `pnpm kb ficha-norma <id>` da norma nova).
 
-Depois de alterar um JSON Schema em `base-conhecimento/schemas/`: `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`.
+O formato dos manifestos e índices (CNCT e PPCs) é o Effect Schema de `scripts/base/esquemas.ts`, fonte também dos tipos; depois de alterá-lo, `node scripts/validar_base.ts` e `pnpm typecheck`.
 
 ## Skills
 

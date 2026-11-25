@@ -19,11 +19,6 @@ export function itensDe(valor: unknown): unknown[] {
   return Array.isArray(valor) ? valor : [];
 }
 
-/** Inteiro JSON. Booleanos contam como inteiros (0/1), como sempre contaram na base. */
-export function ehInteiro(valor: unknown): valor is number | boolean {
-  return typeof valor === "boolean" || (typeof valor === "number" && Number.isInteger(valor));
-}
-
 /**
  * Itens percorridos por um laço sobre o valor:
  * lista dá os itens, texto dá os caracteres (code points), objeto dá as
