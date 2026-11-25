@@ -1,0 +1,13 @@
+{
+  "matriz_suap": {
+    "id": 214,
+    "descricao": "BACHARELADO EM ENGENHARIA ELÉTRICA 2020 - CAMPUS CAMPO LARGO",
+    "ano_criacao": 2020,
+    "data_inicio": "2020-02-01"
+  },
+  "evidencia": "Capa do PDF anexo à matriz 214 no SUAP (o mesmo texto do fonte_url, p. 1): \"Resolução de criação: nº 18 de 13 de junho de 2019. / Atualização em 25 de agosto de 2025 / Campo Largo / 2019\"",
+  "fonte_url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2025/08/2019_PPC-Engenharia-Eletrica_v25.pdf",
+  "pendencias": [
+    "texto: versão anterior à vigente da base (capa 2023, matriz 441), só em PDF; os scripts de importação recusam PPC mais antigo que o vigente, e a entrada dela na base depende de decisão sobre guardar versões anteriores"
+  ]
+}

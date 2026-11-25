@@ -332,7 +332,7 @@ ppcs:
       - trecho: "atualizado (Art. 12º da Resolução nº 36/2019)."
         ids: [ifpr/consup/res/2019/36#art12]
 
-  - ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2023
+  - ppc: londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/2025
     linhas:
       - trecho: "**AUTORIZADO PELA RESOLUÇÃO Nº 87, DE 03 DE SETEMBRO DE 2010 AJUSTE PARECER PROENS Nº 2159633/2023"
         ids: [ifpr/consup/res/2010/87, ifpr/proens/parecer/2023/2159633]

@@ -178,7 +178,14 @@ Regras:
 
 As vagas têm curadoria própria: `ppc.curadoria_vagas` e `ppc.data_curadoria_vagas` valem para `ppc.vagas`, `ppc.trecho_vagas` e `ppc.periodicidade_vagas`. Os status aceitos são `Revisado`, `Precisa de revisão`, `Pendente` e `Inconsistente`; a auditoria recusa status desconhecido e data sem status. Trocar o PPC vigente reabre essa curadoria.
 
-O ano do documento é o desta versão do PPC: o da capa ou folha de rosto, ou o do ato de aprovação ou ajuste que o próprio documento traz ("AJUSTE PARECER CONSEPE Nº 51/2023"). A evidência é o trecho literal: no texto do PPC (`ano_fonte: texto`, que o `validar_base.ts` confere no corpo) ou na fonte (`ano_fonte` com a URL, como `<fonte_url>#page=1`, quando o trecho só está no PDF publicado). Ano da criação do curso, de normas citadas, da matriz no SUAP ou da URL do arquivo não serve. Quando a capa e o ato divergem e não dá para dizer de que versão é o texto, o PPC fica pendente, com a divergência descrita na pendência.
+O ano do documento é o desta versão do PPC, pela regra:
+
+1. O ano da versão é o da capa ou o da folha de rosto.
+2. Se a capa e a folha de rosto divergem, vale a mais recente ("CURITIBA 2015" na capa e "CURITIBA 2016" na folha de rosto: 2016).
+3. Um ato de aprovação ou ajuste citado no documento ("AJUSTE PARECER CONSEPE Nº 51/2023") não define a versão quando a capa é mais nova: o ato é da versão anterior, mantido na capa. Sem ano na capa e na folha de rosto, vale o ato de aprovação ou ajuste que o próprio documento traz.
+4. O carimbo "Atualização em <data>" não define a versão: a mesma data aparece em versões diferentes. No SUAP, os dois PDFs de Engenharia Elétrica de Campo Largo, um com capa de 2019 (matriz 214) e outro com capa de 2023 (matriz 441), trazem a mesma "Atualização em 25 de agosto de 2025".
+
+A evidência é o trecho literal: no texto do PPC (`ano_fonte: texto`, que o `validar_base.ts` confere no corpo) ou no PDF publicado, com a página (`ano_fonte` com a URL, como `<fonte_url>#page=1`, quando o trecho só está no PDF). Ano da criação do curso, de normas citadas, da matriz no SUAP ou da URL do arquivo não serve. Quando a regra não decide e não dá para dizer de que versão é o texto, o PPC fica pendente, com a divergência descrita na pendência.
 
 ### Entrada de PPC novo na base
 
