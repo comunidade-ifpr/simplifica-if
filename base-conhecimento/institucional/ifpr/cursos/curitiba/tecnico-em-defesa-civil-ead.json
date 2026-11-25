@@ -7,10 +7,5 @@
   "modalidade": "ead",
   "situacao": "em_oferta",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/curso-defesacivil/",
-  "cnct_id": "cnct:tecnico-em-defesa-civil",
-  "suap": {
-    "matrizes": {
-      "urls": []
-    }
-  }
+  "cnct_id": "cnct:tecnico-em-defesa-civil"
 }

@@ -7,10 +7,5 @@
   "modalidade": "presencial",
   "situacao": "abertura",
   "pagina_oficial": "https://irati.ifpr.edu.br/",
-  "cnct_id": "cnct:tecnico-em-quimica",
-  "suap": {
-    "matrizes": {
-      "urls": []
-    }
-  }
+  "cnct_id": "cnct:tecnico-em-quimica"
 }

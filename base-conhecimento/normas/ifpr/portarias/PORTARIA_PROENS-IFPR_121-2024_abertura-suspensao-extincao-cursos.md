@@ -22,6 +22,7 @@ keywords:
 aliases:
   - "Portaria PROENS/IFPR nº 121/2024"
   - "Portaria PROENS 121/2024"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3160141&id_orgao_publicacao=0"
 revoga:
   - "Portaria PROENS/IFPR nº 26/2021"
 ---

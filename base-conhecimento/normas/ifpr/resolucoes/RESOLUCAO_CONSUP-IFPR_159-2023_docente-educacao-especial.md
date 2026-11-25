@@ -6,9 +6,9 @@ numero: 159
 ano: 2023
 data_publicacao: "2023-12-12"
 assinada_em: "2023-12-12"
-publicada_em: "a confirmar"
+publicada_em: "2023-12-14"
 vigente_de: "2024-01-02"
-datas_fonte: "Art. 34: \"entra em vigor em 2 de janeiro de 2024\"."
+datas_fonte: "Publicação (fonte_url): \"Boletim de Serviço Eletrônico em 14/12/2023\"; art. 34: \"entra em vigor em 2 de janeiro de 2024\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre as diretrizes do trabalho do Docente de Educação Especial no IFPR."
@@ -24,6 +24,7 @@ aliases:
   - "Resolução CONSUP/IFPR nº 159/2023"
   - "Resolução CONSUP/IFPR 159/2023"
   - "Resolução IFPR 159/2023"
+fonte_url: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=2862309&id_orgao_publicacao=0"
 relaciona_se_a:
   - "Resolução CONSUP/IFPR nº 148/2023"
   - "Nota Técnica PROENS/IFPR nº 1/2025"

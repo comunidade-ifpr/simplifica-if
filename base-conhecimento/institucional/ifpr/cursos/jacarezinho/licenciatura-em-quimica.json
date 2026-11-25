@@ -7,11 +7,6 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/graduacao/licenciatura-em-quimica/",
-  "suap": {
-    "matrizes": {
-      "urls": []
-    }
-  },
   "ppc": {
     "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2025/01/PPC_Licenciatura_FINAL_2022_proens__1__atualizado.pdf",
     "markdown_path": "institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica/2022.md",
