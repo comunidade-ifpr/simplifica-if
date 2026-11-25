@@ -298,7 +298,16 @@ export function analisarPpcPendente(texto: string, rotulo: string): { pendente: 
   return { pendente: resultado.success, corpo };
 }
 
-const juntarEspacos = (texto: string) => texto.replace(/\s+/g, " ").trim();
+/**
+ * O texto para comparar a evidência do ano: sem a marcação de título e de negrito (a limpeza do
+ * Markdown convertido a muda, e ela não é texto do documento) e com espaços simples.
+ */
+const juntarEspacos = (texto: string) =>
+  texto
+    .replace(/^[ \t]*#{1,6}[ \t]+/gm, "")
+    .replace(/\*\*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
 /**
  * Se a evidência do ano confere com o corpo: com `ano_fonte: texto`, `ano_evidencia` aparece no corpo

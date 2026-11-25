@@ -243,6 +243,9 @@ importers:
       '@simplifica-if/motor':
         specifier: workspace:*
         version: link:packages/motor
+      '@simplifica-if/pdf':
+        specifier: workspace:*
+        version: link:packages/pdf
       '@simplifica-if/ppc':
         specifier: workspace:*
         version: link:packages/ppc
