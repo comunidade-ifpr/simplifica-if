@@ -1,7 +1,9 @@
 ### 5.9 ESTÁGIO CURRICULAR
 
 O curso não prevê estágio curricular obrigatório, de modo que o estágio não integra a matriz e não é requisito para a conclusão do curso.
+
 Sem prejuízo disso, o curso admite o estágio não obrigatório, por iniciativa do estudante:
+
 - cumprir e fazer cumprir as normas e os procedimentos institucionais;
 - zelar pelos laboratórios;
 

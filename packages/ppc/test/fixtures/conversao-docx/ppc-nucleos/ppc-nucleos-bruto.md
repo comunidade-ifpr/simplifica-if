@@ -3,7 +3,9 @@
 ## Identificação do curso
 
 Curso: Técnico em Ensaios
+
 Campus: Campus de Teste
+
 Vagas: 35
 ## Organização curricular
 

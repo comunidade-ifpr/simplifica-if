@@ -2,9 +2,14 @@
 
 ### Subtítulo pelo estilo
 
-Coluna 1 Coluna 2 segunda linha guarda-chuva depois da página nova linha à direita
+Coluna 1 Coluna 2 segunda linha
+
+guarda-chuva depois da página nova linha à direita
+
 [externo com âncora](https://exemplo.edu.br/pagina#secao) interno relação quebrada [**em dois pedaços**](https://exemplo.edu.br/pagina)
+
 **negrito colado** e normal
+
 ~~só tachado~~
 
 ### 2.1 Numerado em negrito
@@ -22,11 +27,13 @@ Coluna 1 Coluna 2 segunda linha guarda-chuva depois da página nova linha à dir
 #### Pequeno de 14
 
 **Negrito de 12 não é título**
+
 - Item de lista pelo estilo
 - Item recuado
 1. Numerado pelo estilo
 
 Parágrafo depois da lista.
+
 1) primeiro
 2. segundo
 - a) alínea
@@ -34,6 +41,7 @@ Parágrafo depois da lista.
 - travessão
 
 -x
+
 Fim.
 
 | Depois de parágrafo | tabela |

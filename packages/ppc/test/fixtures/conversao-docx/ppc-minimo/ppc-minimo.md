@@ -21,6 +21,7 @@ Este projeto apresenta o curso fictício usado nos testes da conversão.
 ### 1.1 JUSTIFICATIVA
 
 O curso atende à demanda regional, conforme o [Catálogo Nacional](https://exemplo.edu.br/cnct) e o *plano* ***institucional*** ~~(versão antiga)~~.
+
 - a) formar profissionais para a região;
 - b) integrar ensino, pesquisa e extensão.
 
