@@ -433,7 +433,7 @@ layer(camadaComLogs, { excludeTestServices: true })("diagnóstico com logs", (it
       );
       assert.match(sistema.skills.lista[0].versao, /^\d+\.\d+\.\d+$/);
       assert.deepStrictEqual(sistema.tarefas, {
-        catalogo: ["conferir-fundamentacao-normativa", "revisar-ppc"],
+        catalogo: ["conferir-fundamentacao-normativa", "elaborar-calendario-academico", "revisar-ppc"],
         fora_do_catalogo: [],
       });
       assert.deepInclude(sistema.ias.claude, { respondeu: true, instalada: true, versao: "0.0.0-teste" });

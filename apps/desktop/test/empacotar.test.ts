@@ -180,8 +180,12 @@ describe("tarefas do app no pacote", () => {
       destino,
       await copiarSkills(NodePath.join(RAIZ, "catalogo", "skills"), temporario()),
     );
-    expect(ids).toEqual(["conferir-fundamentacao-normativa", "revisar-ppc"]);
-    expect(arquivos(destino)).toEqual(["conferir-fundamentacao-normativa.yaml", "revisar-ppc.yaml"]);
+    expect(ids).toEqual(["conferir-fundamentacao-normativa", "elaborar-calendario-academico", "revisar-ppc"]);
+    expect(arquivos(destino)).toEqual([
+      "conferir-fundamentacao-normativa.yaml",
+      "elaborar-calendario-academico.yaml",
+      "revisar-ppc.yaml",
+    ]);
   });
 
   it.effect("a origem do catálogo: o commit do checkout e a data dele, que o servidor lê do origem.json", () =>

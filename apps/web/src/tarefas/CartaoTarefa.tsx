@@ -15,13 +15,11 @@ const CLASSE =
   "group flex h-full flex-col gap-1 rounded-xl px-3.5 py-3 text-left hover:bg-muted focus-visible:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
- * Quem responde pela tarefa, na linha discreta do cartão: quem mantém; e, quando outra pessoa a escreveu,
- * as duas, para o mantenedor não passar por autor.
+ * A linha discreta do cartão: quem escreveu a tarefa e, sem autoria declarada, quem a mantém. O
+ * mantenedor de uma tarefa com autoria aparece na tela da tarefa, não aqui.
  */
 export const creditoDoCartao = (tarefa: Pick<Tarefa, "autoria" | "mantenedor">): string =>
-  tarefa.autoria === undefined || tarefa.autoria === tarefa.mantenedor.nome
-    ? `por ${tarefa.mantenedor.nome}`
-    : `por ${tarefa.autoria}, mantida por ${tarefa.mantenedor.nome}`;
+  `por ${tarefa.autoria ?? tarefa.mantenedor.nome}`;
 
 export function CartaoTarefa({ tarefa, paraVoce = false }: { readonly tarefa: Tarefa; readonly paraVoce?: boolean }) {
   const { abre: abertura } = tarefa;

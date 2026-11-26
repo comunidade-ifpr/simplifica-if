@@ -74,6 +74,7 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
         tarefas.map((tarefa) => [tarefa.id, tarefa.abre.tipo]),
         [
           ["conferir-fundamentacao-normativa", "conversa"],
+          ["elaborar-calendario-academico", "link"],
           ["revisar-ppc", "modulo"],
         ],
       );

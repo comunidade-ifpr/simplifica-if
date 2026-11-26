@@ -60,12 +60,10 @@ it("o cartão de link diz que abre o navegador, mostra o domínio e abre pela po
   expect(window.location.href).toBe(endereco);
 });
 
-it("escrita por uma pessoa e mantida por outra: o cartão diz as duas", async () => {
+it("escrita por uma pessoa e mantida por outra: o cartão diz só a autoria", async () => {
   montar(<CartaoTarefa tarefa={{ ...tarefaDeLink(false), autoria: "Comissão de Teste" }} />);
   const cartao = page.getByRole("link", { name: /^Consultar o calendário acadêmico/ });
-  await expect
-    .element(cartao.getByText("por Comissão de Teste, mantida por Pessoa de Teste", { exact: true }))
-    .toBeVisible();
+  await expect.element(cartao.getByText("por Comissão de Teste", { exact: true })).toBeVisible();
 });
 
 it("autoria igual ao mantenedor: o cartão diz o nome uma vez", async () => {

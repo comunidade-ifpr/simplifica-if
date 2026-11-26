@@ -1,0 +1,13 @@
+id: elaborar-calendario-academico
+titulo: Elaborar o calendário acadêmico
+resumo: Abre o Assistente de Calendários Acadêmicos, a aplicação web em que o campus monta o calendário com a contagem dos dias letivos, confere as pendências e o envia para a revisão técnico-pedagógica e a publicação.
+area: ensino
+situacao: estavel
+publico: [direcao-ensino, coordenacao-ensino, proens]
+mantenedor: { nome: Gustavo Rahal, github: comunidade-ifpr }
+autoria: DENTEC/PROENS
+limites: O calendário é feito no Assistente, que abre no navegador, fora deste app. Ele está em fase alpha e pede a conta institucional (e-mail e senha).
+abre:
+  link:
+    url: https://calendario-academico-phi.vercel.app/
+    requer_login: true
