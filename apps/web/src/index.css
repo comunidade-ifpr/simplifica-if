@@ -637,3 +637,14 @@ mark.trecho-citado {
     print-color-adjust: exact;
   }
 }
+
+/*
+ * No painel ao lado, a largura é a que a pessoa escolheu (`ColunaLateral.tsx`): o texto ocupa o painel
+ * inteiro, sem a medida de 68 caracteres, que continua valendo no leitor de página inteira (Explorar).
+ */
+.painel-leitura .documento-leitor {
+  & :is(p, li, blockquote, .divisao),
+  & > :is(ul, ol) {
+    max-width: none;
+  }
+}

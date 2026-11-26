@@ -29,6 +29,7 @@ import { tituloDaTarefa, useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, useAnexos } from "../tarefas/comecar.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
+import { CHAVE_LARGURA_LEITURA, ColunaLateral } from "../components/ColunaLateral.tsx";
 import {
   abrir as abrirNoHistorico,
   avancar,
@@ -425,7 +426,11 @@ function TelaConversa() {
           </div>
         ) : null}
         {leitorAberto ? (
-          <div className="h-full w-[min(40rem,50vw)] shrink-0">
+          <ColunaLateral
+            chave={CHAVE_LARGURA_LEITURA}
+            classePadrao="w-[min(40rem,50vw)]"
+            rotulo="Largura do painel de leitura"
+          >
             <PainelLeitura
               historico={leitura}
               aoAbrirLink={abrirLink}
@@ -433,7 +438,7 @@ function TelaConversa() {
               aoAvancar={() => setLeitura(avancar)}
               aoFechar={() => setLeitura(() => HISTORICO_VAZIO)}
             />
-          </div>
+          </ColunaLateral>
         ) : null}
       </>
     );

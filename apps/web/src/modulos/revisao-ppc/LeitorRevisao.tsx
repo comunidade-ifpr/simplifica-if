@@ -36,7 +36,7 @@ export function LeitorRevisao({
               tipo="PPC em revisão"
               titulo={doc.titulo}
               resumo={
-                <p className="max-w-[68ch] text-muted-foreground text-sm">
+                <p className="max-w-[68ch] in-[.painel-leitura]:max-w-none text-muted-foreground text-sm">
                   Texto convertido do seu arquivo: a formatação do Word (layout, imagens, numeração automática) não
                   aparece.
                 </p>

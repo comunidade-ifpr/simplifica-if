@@ -133,7 +133,9 @@ function Situacao({ selos }: { readonly selos: ReadonlyArray<Selo> }) {
             )}
             {selo.rotulo}
           </p>
-          <p className="max-w-[76ch] text-muted-foreground text-small">{selo.detalhe}</p>
+          <p className="max-w-[76ch] in-[.painel-leitura]:max-w-none text-muted-foreground text-small">
+            {selo.detalhe}
+          </p>
         </div>
       ))}
     </div>
@@ -175,7 +177,7 @@ function MetadadosEditoriais({
             {titulo} <span className="font-normal text-muted-foreground">({norma[campo].length})</span>
           </summary>
           <p className="mt-1.5 text-muted-foreground text-micro">{nota}</p>
-          <div className="mt-1.5 max-w-[76ch] text-sm" data-conteudo>
+          <div className="mt-1.5 max-w-[76ch] in-[.painel-leitura]:max-w-none text-sm" data-conteudo>
             <Markdown texto={norma[campo].map((item) => `- ${item}`).join("\n")} aoAbrirLink={aoAbrirLink} />
           </div>
         </details>
@@ -209,7 +211,7 @@ function AlteracoesAnotadas({
         Atos que mudaram dispositivos desta norma, segundo as notas do texto oficial, do mais recente ao mais antigo. As
         mudanças já estão no texto abaixo.
       </p>
-      <ul className="mt-1.5 max-w-[76ch] space-y-1.5 text-sm">
+      <ul className="mt-1.5 max-w-[76ch] in-[.painel-leitura]:max-w-none space-y-1.5 text-sm">
         {alteracoes.map((a) => {
           const artigos = ancoras === null ? [] : artigosDosDispositivos(a.dispositivos, ancoras);
           const n = a.dispositivos.length;
@@ -340,7 +342,7 @@ function LeitorNorma({
               titulo={norma.titulo}
               resumo={
                 norma.ementa ? (
-                  <p className="max-w-[68ch] text-quote" data-conteudo>
+                  <p className="max-w-[68ch] in-[.painel-leitura]:max-w-none text-quote" data-conteudo>
                     {norma.ementa}
                   </p>
                 ) : null

@@ -16,6 +16,7 @@ import { DialogoApagar } from "../../apagar/DialogoApagar.tsx";
 import { AvisoErro } from "../../components/AvisoErro.tsx";
 import { Pagina } from "../../components/Pagina.tsx";
 import { PainelLeitura } from "../../components/PainelLeitura.tsx";
+import { CHAVE_LARGURA_LEITURA, ColunaLateral } from "../../components/ColunaLateral.tsx";
 import { Button } from "../../components/ui/button.tsx";
 import { Input } from "../../components/ui/input.tsx";
 import { Nota } from "../../components/ui/nota.tsx";
@@ -316,7 +317,11 @@ export function Leitura({
         </Pagina>
       </div>
       {linkAtual(leitura) === undefined ? null : (
-        <div className="h-full w-[min(40rem,45vw)] shrink-0">
+        <ColunaLateral
+          chave={CHAVE_LARGURA_LEITURA}
+          classePadrao="w-[min(40rem,45vw)]"
+          rotulo="Largura do painel de leitura"
+        >
           <PainelLeitura
             historico={leitura}
             aoAbrirLink={(link) => setLeitura((h) => abrirNoHistorico(h, link))}
@@ -324,7 +329,7 @@ export function Leitura({
             aoAvancar={() => setLeitura(avancar)}
             aoFechar={() => setLeitura(HISTORICO_VAZIO)}
           />
-        </div>
+        </ColunaLateral>
       )}
     </div>
   );
