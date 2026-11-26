@@ -509,6 +509,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
             persistencia
               .gravarTentativa(id, bloco.id, t)
               .pipe(Effect.andThen(Effect.sync(() => gravadosEmCache.delete(id)))),
+          registrarConferencia: (numero, problemas) => persistencia.gravarProblemas(id, bloco.id, numero, problemas),
           aoEtapa: (etapa) => mudarEtapa(id, bloco.id, etapa),
         });
         yield* persistencia.gravarBloco(id, {

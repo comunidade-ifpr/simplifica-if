@@ -156,6 +156,9 @@ export interface TentativaGravada {
   readonly ferramentas: ReadonlyArray<string>;
 }
 
+/** Os problemas da conferência de uma resposta, por ficha (ou `*`): só texto do app. */
+export type ProblemasDaConferencia = Readonly<Record<string, ReadonlyArray<string>>>;
+
 export type NovaRevisaoIa = Omit<RegistroRevisaoIa, "criadaEm" | "atualizadaEm" | "resultado" | "limite" | "motivo">;
 
 export interface AlteracaoRevisaoIa {
@@ -281,6 +284,16 @@ export class RevisoesPpc extends Context.Service<
     readonly revisoesEmAndamento: Effect.Effect<ReadonlyArray<string>>;
     /** Grava o uso de uma tentativa (mesmo sem o bloco terminar). */
     readonly gravarTentativa: (revisao: string, bloco: string, tentativa: TentativaGravada) => Effect.Effect<void>;
+    /**
+     * O que a conferência recusou na resposta de uma tentativa já gravada (`{}`: passou), por ficha ou
+     * `*` para a resposta inteira.
+     */
+    readonly gravarProblemas: (
+      revisao: string,
+      bloco: string,
+      numero: number,
+      problemas: ProblemasDaConferencia,
+    ) => Effect.Effect<void>;
     /** O uso somado de todas as tentativas da revisão e das ações com IA da lista viva dela. */
     readonly usoTotalRevisao: (revisao: string) => Effect.Effect<UsoRevisaoIa>;
     /** Apaga a revisão, o plano (com o texto do PPC), os blocos e as tentativas. */
@@ -306,6 +319,7 @@ const PendenciaJson = Schema.fromJsonString(PendenciaRevisao);
 const SugestaoJson = Schema.fromJsonString(SugestaoTexto);
 const UsoJson = Schema.fromJsonString(UsoRevisaoIa);
 const FerramentasJson = Schema.fromJsonString(Schema.Array(Schema.String));
+const ProblemasJson = Schema.fromJsonString(Schema.Record(Schema.String, Schema.Array(Schema.String)));
 const EstimativaJson = Schema.fromJsonString(EstimativaRevisaoIa);
 /** Os resultados da IA, o plano e o resultado de um bloco, lidos com os tipos de quem os gravou. */
 const DesconhecidoJson = Schema.fromJsonString(Schema.Unknown);
@@ -395,6 +409,7 @@ const codificarPendencia = Schema.encodeEffect(PendenciaJson);
 const codificarSugestao = Schema.encodeEffect(SugestaoJson);
 const codificarUso = Schema.encodeEffect(UsoJson);
 const codificarFerramentas = Schema.encodeEffect(FerramentasJson);
+const codificarProblemas = Schema.encodeEffect(ProblemasJson);
 const codificarEstimativa = Schema.encodeEffect(EstimativaJson);
 const codificarDesconhecido = Schema.encodeEffect(DesconhecidoJson);
 
@@ -946,6 +961,23 @@ const make = Effect.gen(function* () {
     `;
   }, Effect.orDie);
 
+  const gravarProblemas = Effect.fn("RevisoesPpc.gravarProblemas")(function* (
+    revisao: string,
+    bloco: string,
+    numero: number,
+    problemas: ProblemasDaConferencia,
+  ) {
+    // A última linha com esse número: a retomada de um bloco recomeça a contagem, e a tentativa que a
+    // pausa cortou (sem conferência) fica com `problemas` nulo.
+    yield* sql`
+      UPDATE revisao_ppc_tentativas_ia SET problemas = ${yield* codificarProblemas(problemas)}
+      WHERE rowid = (
+        SELECT MAX(rowid) FROM revisao_ppc_tentativas_ia
+        WHERE revisao_id = ${revisao} AND bloco_id = ${bloco} AND numero = ${numero}
+      )
+    `;
+  }, Effect.orDie);
+
   const usoTotalRevisao = Effect.fn("RevisoesPpc.usoTotalRevisao")(function* (revisao: string) {
     // As tentativas do lote e as ações com IA da lista viva que veio dela (etapa 5b).
     const linhas = yield* lerUsos(
@@ -1020,6 +1052,7 @@ const make = Effect.gen(function* () {
     blocos,
     revisoesEmAndamento,
     gravarTentativa,
+    gravarProblemas,
     usoTotalRevisao,
     apagarRevisao,
     revisoesDaLista,

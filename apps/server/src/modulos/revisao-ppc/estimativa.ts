@@ -54,10 +54,11 @@ export const PARAMETROS: Record<Provider, ParametrosProvider> = {
     saidaPorSegundo: 140,
     janelaReferencia: 2_000_000,
     limiteDoPlano: "do limite de 5 horas do plano Pro",
-    // Sonnet: entrada a US$ 3/M (a sessão de julgamento roda com `DISABLE_PROMPT_CACHING`: um turno só,
-    // sem gravar cache, medido em 16/11/2026), saída a US$ 15/M.
-    precoEntrada: 3,
-    precoSaida: 15,
+    // Sonnet 5.5 (`MODELO_PADRAO`): entrada a US$ 2/M (a sessão de julgamento roda com
+    // `DISABLE_PROMPT_CACHING`: um turno só, sem gravar cache, medido em 16/11/2026), saída a US$ 10/M.
+    // Conferido em 26/11/2026: o `total_cost_usd` do Agent SDK numa revisão completa bate com esses preços.
+    precoEntrada: 2,
+    precoSaida: 10,
   },
   codex: {
     // Medido num lote S de 3 fichas (21,6 mil caracteres): 16,6 mil tokens de entrada, 923 de saída, 21,8 s.

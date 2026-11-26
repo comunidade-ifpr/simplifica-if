@@ -17,6 +17,7 @@ import {
   textoConclusao,
   textoEstimativa,
   textoEstimativaAcao,
+  textoModelo,
 } from "./ia.ts";
 
 const estimativa = {
@@ -70,6 +71,21 @@ describe("a estimativa na faixa", () => {
     expect(textoEstimativa({ ...estimativa, fichas: 1, minutos: 1 }, "rapido", "Claude")).toBe(
       "O Claude confere o que mais devolve PPC em cerca de 1 minuto, usando perto de 5 % do limite de 5 horas do plano Pro.",
     );
+  });
+
+  test("o modelo, pelo nome que a conta dá, ou o padrão da conta", () => {
+    const modelos = [
+      { id: "claude-opus-5-5", nome: "Opus 5.5", padrao: true },
+      { id: "claude-sonnet-5-5", nome: "Sonnet 5.5" },
+    ];
+    expect(textoModelo("claude-sonnet-5-5", modelos, "Claude")).toBe(
+      "Modelo: Sonnet 5.5, o mesmo em toda conferência com o Claude.",
+    );
+    expect(textoModelo("claude-sonnet-5-5", [], "Claude")).toBe(
+      "Modelo: claude-sonnet-5-5, o mesmo em toda conferência com o Claude.",
+    );
+    expect(textoModelo(null, modelos, "ChatGPT")).toBe("Modelo: Opus 5.5, o padrão da sua conta.");
+    expect(textoModelo(null, [], "ChatGPT")).toBe("Modelo: o padrão da sua conta.");
   });
 
   test("a estimativa de uma ação por pendência", () => {
@@ -143,7 +159,7 @@ describe("o andamento", () => {
       ["Identificação", "pronto", "Conferido em 42 s; 2 pontos encontrados."],
       ["Matriz", "lendo", "Recebendo a resposta; conferindo há 1 min 30 s; último sinal da IA há 5 s."],
       ["Estágio", "pausado", "A conferência parou neste tema."],
-      ["Critérios transversais", "fila", "Na fila."],
+      ["Critérios transversais", "fila", ""],
     ]);
     expect(linhas[1]!.criterios).toEqual(["Critério um", "Critério dois"]);
     expect(duracao(60)).toBe("1 min");
@@ -153,6 +169,22 @@ describe("o andamento", () => {
         uso: { entrada: 1000, saida: 250, cacheLeitura: 0, cacheEscrita: 500, custoUsd: 0 },
       }),
     ).toBe("Modelo claude-sonnet-5-5. Uso: 1.500 tokens de entrada e 250 de saída até aqui.");
+  });
+
+  test("o tema dividido em blocos numera as linhas", () => {
+    const linhas = linhasAndamento(
+      {
+        situacao: "em_andamento",
+        blocoPausado: null,
+        blocos: [
+          bloco("j-02", 2, "Matriz", "pendente"),
+          bloco("s-02-1", 2, "Matriz", "pronto"),
+          bloco("s-01-1", 1, "Identificação", "pronto"),
+        ],
+      },
+      0,
+    );
+    expect(linhas.map((l) => l.titulo)).toEqual(["Identificação", "Matriz (1 de 2)", "Matriz (2 de 2)"]);
   });
 
   test("a frase do fim, com plural", () => {

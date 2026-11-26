@@ -102,7 +102,7 @@ O backend, os pacotes e os scripts usam Effect 4. Antes de escrever ou revisar c
 - `runPromise` e `ManagedRuntime` só nas bordas, nunca dentro de serviço.
 - Testes com `@effect/vitest` (`it.effect`, `TestClock`), sem `sleep`, polling, relógio de parede nem `retry`.
 - Identificadores, mensagens e comentários em português; comentário só para o que o código não mostra, curto. Supressão de lint ou de diagnóstico diz por quê.
-- Migrações do `conversas.sqlite` (`apps/server/src/persistencia/migracoes/`): enquanto não há usuários em produção, o schema pode ser ajustado direto em `0001_Inicial.ts`; depois do lançamento, mudanças entram numa migração nova registrada em `Banco.ts`, com teste de upgrade em `apps/server/test/migracoes.test.ts`.
+- Migrações do `conversas.sqlite` (`apps/server/src/persistencia/migracoes/`): mudanças entram numa migração nova registrada em `Banco.ts`, com teste de upgrade em `apps/server/test/migracoes.test.ts` (desde a migração 2, para o banco de desenvolvimento não ter de ser apagado); a migração que mexe em tabela de módulo chama uma função do módulo e entra na lista dos arquivos de composição.
 
 ## Depurar o app
 

@@ -50,7 +50,10 @@ const listaMinima: ListaPendencias = {
   pendencias: [],
 };
 
-function montar(elemento: React.ReactNode, revisao: ControleRevisao, api: Api = {} as Api) {
+/** A API sem servidor: a faixa pede os modelos da IA (`providers.detectar`), e sem eles mostra o id do modelo. */
+const semServidor = { chamar: () => Promise.reject(new Error("sem servidor no teste")) } as unknown as Api;
+
+function montar(elemento: React.ReactNode, revisao: ControleRevisao, api: Api = semServidor) {
   const contexto: ContextoApp = { api, conversa: {} as ControleConversa, revisao };
   const conteiner = document.createElement("div");
   conteiner.style.cssText = "width:900px";
@@ -231,6 +234,7 @@ it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar confer�
     },
     "revisaoPpc.lista": () => Promise.resolve(listaMinima),
     "revisaoPpc.prepararIa": () => Promise.resolve({ ...pausada, situacao: "preparada" as const }),
+    "providers.detectar": () => Promise.reject(new Error("sem detecção no teste")),
   };
   const apiFake = {
     chamar: (fn: (cliente: typeof clienteFake) => Promise<unknown>) => fn(clienteFake),

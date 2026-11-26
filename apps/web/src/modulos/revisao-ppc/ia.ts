@@ -3,6 +3,7 @@
  * do uso, o andamento por tema, o painel "Ver andamento" (bloco a bloco), a frase do fim e as revisões
  * que ficaram por terminar.
  */
+import type { ModeloProvider } from "@simplifica-if/contratos-app";
 import type {
   BlocoRevisaoIa,
   EstadoRevisaoIa,
@@ -26,6 +27,20 @@ export function textoEstimativa(e: EstimativaRevisaoIa, modo: ModoRevisaoIa, nom
   const quais =
     modo === "rapido" ? ` ${e.fichas === 1 ? "o que mais devolve" : `os ${e.fichas} que mais devolvem`} PPC` : "";
   return `O ${nomeIa} confere${quais} em cerca de ${plural(e.minutos, "minuto", "minutos")}, usando perto de ${porcento(e.percentualJanela)} ${e.limiteDoPlano}.`;
+}
+
+/**
+ * O modelo que a conferência usa, antes de começar: "Modelo: Sonnet 5.5, o mesmo em toda conferência com o
+ * Claude." O modelo é fixo por IA (`MODELO_PADRAO` do servidor), para o resultado e a estimativa
+ * valerem de uma revisão para outra; sem modelo fixo, o padrão da conta, pelo nome quando ela o diz.
+ */
+export function textoModelo(modelo: string | null, modelos: ReadonlyArray<ModeloProvider>, nomeIa: string): string {
+  if (modelo === null) {
+    const padrao = modelos.find((m) => m.padrao === true)?.nome;
+    return padrao === undefined ? "Modelo: o padrão da sua conta." : `Modelo: ${padrao}, o padrão da sua conta.`;
+  }
+  const nome = modelos.find((m) => m.id === modelo)?.nome ?? modelo;
+  return `Modelo: ${nome}, o mesmo em toda conferência com o ${nomeIa}.`;
 }
 
 /** "Cerca de 10 segundos." (as ações por pendência); sem IA, nada a estimar. */
@@ -110,7 +125,7 @@ export interface LinhaAndamento {
   /** O tema do bloco ("Critérios transversais" no T). */
   readonly titulo: string;
   readonly situacao: SituacaoBlocoPainel;
-  /** O que aconteceu ou está acontecendo, numa frase curta. */
+  /** O que aconteceu ou está acontecendo, numa frase curta; vazio na fila (o rótulo já diz). */
   readonly detalhe: string;
   /** Os critérios do bloco (títulos humanos). */
   readonly criterios: ReadonlyArray<string>;
@@ -127,33 +142,40 @@ export function linhasAndamento(
   estado: Pick<EstadoRevisaoIa, "blocos" | "blocoPausado" | "situacao">,
   agora: number,
 ): ReadonlyArray<LinhaAndamento> {
-  return [...estado.blocos]
-    .sort((a, b) => a.ordemTema - b.ordemTema)
-    .map((b) => {
-      const base = { id: b.id, titulo: tituloDoBloco(b), criterios: b.titulosFichas };
-      if (b.estado === "pronto") {
-        const pontos =
-          b.pendenciasEncontradas === 0
-            ? "nenhum ponto"
-            : plural(b.pendenciasEncontradas, "ponto encontrado", "pontos encontrados");
-        const tempo = b.segundos === null ? "" : ` em ${duracao(b.segundos)}`;
-        return { ...base, situacao: "pronto", detalhe: `Conferido${tempo}; ${pontos}.` };
-      }
-      if (b.estado === "em_andamento") {
-        const ha = desde(b.iniciadoEm, agora);
-        const sinal = desde(b.ultimaAtividadeEm, agora);
-        const etapa = ETAPA[b.etapa ?? "aguardando"];
-        const partes = [
-          `${etapa.charAt(0).toUpperCase()}${etapa.slice(1)}`,
-          ha === null ? "" : `conferindo há ${duracao(ha)}`,
-          sinal === null ? "" : `último sinal da IA há ${duracao(sinal)}`,
-        ].filter(Boolean);
-        return { ...base, situacao: "lendo", detalhe: `${partes.join("; ")}.` };
-      }
-      if (estado.blocoPausado === b.id && (estado.situacao === "pausada" || estado.situacao === "falhou"))
-        return { ...base, situacao: "pausado", detalhe: "A conferência parou neste tema." };
-      return { ...base, situacao: "fila", detalhe: "Na fila." };
-    });
+  const ordenados = [...estado.blocos].sort((a, b) => a.ordemTema - b.ordemTema);
+  // Um tema grande vira mais de um bloco: "Matriz (1 de 2)", para as linhas não parecerem repetidas.
+  const porTema = new Map<number, number>();
+  for (const b of ordenados) porTema.set(b.ordemTema, (porTema.get(b.ordemTema) ?? 0) + 1);
+  const vistos = new Map<number, number>();
+  return ordenados.map((b) => {
+    const total = porTema.get(b.ordemTema) ?? 1;
+    const n = (vistos.get(b.ordemTema) ?? 0) + 1;
+    vistos.set(b.ordemTema, n);
+    const titulo = total > 1 ? `${tituloDoBloco(b)} (${n} de ${total})` : tituloDoBloco(b);
+    const base = { id: b.id, titulo, criterios: b.titulosFichas };
+    if (b.estado === "pronto") {
+      const pontos =
+        b.pendenciasEncontradas === 0
+          ? "nenhum ponto"
+          : plural(b.pendenciasEncontradas, "ponto encontrado", "pontos encontrados");
+      const tempo = b.segundos === null ? "" : ` em ${duracao(b.segundos)}`;
+      return { ...base, situacao: "pronto", detalhe: `Conferido${tempo}; ${pontos}.` };
+    }
+    if (b.estado === "em_andamento") {
+      const ha = desde(b.iniciadoEm, agora);
+      const sinal = desde(b.ultimaAtividadeEm, agora);
+      const etapa = ETAPA[b.etapa ?? "aguardando"];
+      const partes = [
+        `${etapa.charAt(0).toUpperCase()}${etapa.slice(1)}`,
+        ha === null ? "" : `conferindo há ${duracao(ha)}`,
+        sinal === null ? "" : `último sinal da IA há ${duracao(sinal)}`,
+      ].filter(Boolean);
+      return { ...base, situacao: "lendo", detalhe: `${partes.join("; ")}.` };
+    }
+    if (estado.blocoPausado === b.id && (estado.situacao === "pausada" || estado.situacao === "falhou"))
+      return { ...base, situacao: "pausado", detalhe: "A conferência parou neste tema." };
+    return { ...base, situacao: "fila", detalhe: "" };
+  });
 }
 
 const MILHAR = new Intl.NumberFormat("pt-BR");

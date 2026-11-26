@@ -105,6 +105,14 @@ export interface EntradaJulgamento {
   readonly tempoTurno: Duration.Duration;
   /** Grava o uso de cada tentativa assim que ela acaba, mesmo que o bloco não termine. */
   readonly registrarTentativa?: (tentativa: TentativaIa) => Effect.Effect<void>;
+  /**
+   * Grava o que a conferência recusou na resposta da tentativa `numero` (`{}`: passou), depois do
+   * `registrarTentativa` dela: é o porquê de cada nova tentativa e de cada ficha "a conferir".
+   */
+  readonly registrarConferencia?: (
+    numero: number,
+    problemas: Readonly<Record<string, ReadonlyArray<string>>>,
+  ) => Effect.Effect<void>;
   /** O critério do INCONCLUSIVO com que o pedido foi montado (padrão: `conservador`). */
   readonly criterio?: CriterioInconclusivo;
   /** A triagem achou texto dirigido a IA no PPC: a revisão humana é obrigatória (decisão do código). */
@@ -372,6 +380,8 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   };
 
   const conferir = conferidorDoBloco(entrada);
+  const registrarConferencia = (n: number, c: Conferencia) =>
+    entrada.registrarConferencia ? entrada.registrarConferencia(n, Object.fromEntries(c.problemas)) : Effect.void;
   const fim = (resultado: ResultadoBloco) =>
     Clock.currentTimeMillis.pipe(
       Effect.map((agora) => ({ resultado, uso: { ...uso }, segundos: Math.round((agora - inicio) / 100) / 10 })),
@@ -389,6 +399,7 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   if (r1.ferramentas.length) return yield* descartado(r1.ferramentas, 1);
   yield* etapa("conferindo");
   const primeira = conferir(r1.texto);
+  yield* registrarConferencia(1, primeira);
   let segunda: Conferencia | null = null;
   if (precisaNovaTentativa(primeira)) {
     yield* etapa("nova_tentativa");
@@ -396,6 +407,7 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
     if (r2.ferramentas.length) return yield* descartado(r2.ferramentas, 2);
     yield* etapa("conferindo");
     segunda = conferir(r2.texto);
+    yield* registrarConferencia(2, segunda);
   }
   return yield* fim(resultadoDoBloco(entrada.fichas, primeira, segunda, entrada.revisaoHumana ?? false));
 });

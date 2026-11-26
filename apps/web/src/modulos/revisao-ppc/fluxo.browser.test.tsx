@@ -56,6 +56,8 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   const faixa = page.getByRole("region", { name: "Conferência com IA" });
   await expect.element(faixa.getByText(/O Claude confere .* em cerca de \d+ minutos?, usando perto de/)).toBeVisible();
   await expect.element(faixa.getByRole("button", { name: "Conferir com o Claude" })).toBeEnabled();
+  // E o modelo, fixo por IA, antes de começar.
+  await expect.element(faixa.getByText(/^Modelo: .+, o mesmo em toda conferência com o Claude\.$/)).toBeVisible();
   expect(faixa.element().textContent).not.toMatch(/etapa|provisória/);
 
   // O curso não identificado vira um bloqueio só, com as pendências que dependem dele.

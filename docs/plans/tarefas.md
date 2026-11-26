@@ -164,7 +164,7 @@ As fichas de `base-conhecimento/revisao-ppc/` ficam na base: o MCP (`pacote_cont
 - **Pastas de módulo dentro de cada camada:** `apps/server/src/modulos/revisao-ppc/`, `apps/web/src/modulos/revisao-ppc/`, `apps/desktop/src/modulos/revisao-ppc/` e `packages/contratos-app/src/modulos/revisao-ppc.ts`. O domínio continua em `packages/ppc`. Sem pacote novo nem configuração de build nova.
 - **Composição explícita.** Os arquivos de composição citam o módulo pelo nome, e só eles (a lista em [O módulo hoje](#o-módulo-hoje-etapa-5)).
 - **Lint de fronteira.** O núcleo não importa de `modulos/`, salvo os arquivos de composição que importam (cada um só do módulo da própria camada), e um módulo não importa de outro.
-- **Banco.** As tabelas ficam no `conversas.sqlite`, com prefixo do módulo, ainda no `0001_Inicial.ts` enquanto não há usuários. Migrador próprio (a opção `table` do `Migrator` do Effect) só quando o segundo módulo trouxer tabelas.
+- **Banco.** As tabelas ficam no `conversas.sqlite`, com prefixo do módulo, criadas no `0001_Inicial.ts`; a coluna `problemas` das tentativas veio na migração 2 (`0002_ProblemasDasTentativas.ts`), para não apagar o banco de desenvolvimento com uma revisão medida. Migrador próprio (a opção `table` do `Migrator` do Effect) só quando o segundo módulo trouxer tabelas.
 - **A ponte do desktop continua estreita.** Hoje ela só abre a cópia comentada de um `.docx` que a pessoa escolheu nesta execução. Isso é propriedade de segurança, não acoplamento a limpar: a ponte fica por caso de uso. Quando generalizar, a regra escrita é "só abre o que o servidor gravou, ao lado de um arquivo que a pessoa escolheu nesta execução, com o sufixo do app".
 - **A única generalização de agora:** o `servidorOcupado` percorre uma lista de fontes com nome (`fontesDeOcupacao`, em `servidor.ts`), porque já soma quatro. Feito na etapa 4; é só a lista, sem registro de módulos.
 
@@ -196,6 +196,7 @@ As fichas de `base-conhecimento/revisao-ppc/` ficam na base: o MCP (`pacote_cont
 | `apps/server/src/servidor.ts` | 4 | o import, a opção `revisaoIa`, as fontes de ocupação do módulo e a layer |
 | `apps/server/src/handlers.ts` | 2 | o import e a layer dos handlers |
 | `apps/server/src/persistencia/migracoes/0001_Inicial.ts` | 2 | o import e o bloco das tabelas |
+| `apps/server/src/persistencia/migracoes/0002_ProblemasDasTentativas.ts` | 2 | o import e o export da migração do módulo |
 | `apps/web/src/routes/revisao-ppc.tsx` | o arquivo (6 linhas de código) | a casca da rota do TanStack |
 | `apps/web/src/inicializar.ts` | 4 | o import, o `new ControleRevisao`, o campo no contexto e o `encerrar` |
 | `apps/web/src/contexto.tsx` | 2 | o tipo e o campo `revisao` do `ContextoApp` |

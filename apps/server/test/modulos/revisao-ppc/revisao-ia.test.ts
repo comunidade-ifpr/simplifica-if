@@ -15,6 +15,8 @@ import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
+import * as SqlClient from "effect/sql/SqlClient";
+import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import * as Stream from "effect/Stream";
 import { strFromU8, unzipSync } from "fflate";
 import type { EstadoRevisaoIa } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
@@ -175,8 +177,11 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
 });
 
 const pasta = diretorioTemporario("simplifica-revisao-ia-");
+/** Num arquivo, para o teste ler as tentativas gravadas com um cliente à parte. */
+const bancoConversas = NodePath.join(pasta, "conversas.sqlite");
 const camada = Servidor.layer({
   primeiroUsoFeito: true,
+  bancoConversas,
   banco: bancoComFichas(),
   token: Redacted.make(TOKEN),
   revisaoIa: { paralelismo: 1 },
@@ -330,6 +335,24 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       );
       // Nenhum fato recusado chega ao Word.
       assert.notInclude(comentarios(r.arquivoComentado), "aprovado pela PROENS");
+      // O porquê de cada nova tentativa fica gravado com ela; a que passou grava `{}`.
+      const tentativas = yield* Effect.gen(function* () {
+        const sql = yield* SqlClient.SqlClient;
+        return yield* sql<{ bloco_id: string; numero: number; problemas: string | null }>`
+          SELECT bloco_id, numero, problemas FROM revisao_ppc_tentativas_ia
+          WHERE revisao_id = ${final.id} AND bloco_id IN ('s-01-1', 'j-02') ORDER BY bloco_id, numero
+        `;
+      }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: bancoConversas })));
+      const problemas = (bloco: string, numero: number) =>
+        JSON.parse(tentativas.find((t) => t.bloco_id === bloco && t.numero === numero)!.problemas!) as Record<
+          string,
+          string[]
+        >;
+      assert.include(problemas("s-01-1", 1)["*"]!.join(), "não é um objeto JSON válido");
+      assert.deepStrictEqual(problemas("s-01-1", 2), {});
+      assert.hasAllKeys(problemas("j-02", 1), ["CT-CURR-04", "CT-CURR-07"]);
+      assert.hasAllKeys(problemas("j-02", 2), ["CT-CURR-04", "CT-CURR-07"]);
+      assert.notInclude(JSON.stringify(problemas("j-02", 1)), "aprovado pela PROENS");
     }),
   );
 

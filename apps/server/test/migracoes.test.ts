@@ -1,12 +1,14 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: arquivo temporário para layerArquivo
 /**
- * Migrações do `conversas.sqlite`: schema inicial, idempotência, `foreign_keys` ligado e criação do arquivo.
+ * Migrações do `conversas.sqlite`: schema inicial, idempotência, o upgrade de um banco da versão 1,
+ * `foreign_keys` ligado e criação do arquivo.
  */
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Migrator from "effect/sql/Migrator";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import * as Banco from "../src/persistencia/Banco.ts";
@@ -23,7 +25,10 @@ describe("migrações do banco das conversas", () => {
     Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
       const aplicadas = yield* Banco.rodarMigracoes();
-      assert.deepStrictEqual(aplicadas, [[1, "Inicial"]]);
+      assert.deepStrictEqual(
+        aplicadas,
+        Banco.MIGRACOES.map(([id, nome]) => [id, nome]),
+      );
       assert.deepStrictEqual(yield* Banco.rodarMigracoes(), []);
 
       const tabelas = new Set(
@@ -41,6 +46,36 @@ describe("migrações do banco das conversas", () => {
         assert.isTrue(tabelas.has(nome), `tabela ausente: ${nome}`);
       }
     }).pipe(Effect.provide(emMemoria)),
+  );
+
+  it.effect("migração 2: o banco da versão 1 ganha `problemas` nas tentativas sem perder o que tinha", () =>
+    Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+      const so = (ate: number) =>
+        Migrator.fromRecord(
+          Object.fromEntries(
+            Banco.MIGRACOES.filter(([id]) => id <= ate).map(([id, nome, efeito]) => [`${id}_${nome}`, efeito]),
+          ),
+        );
+      yield* Migrator.make({})({ loader: so(1) });
+      yield* sql`
+        INSERT INTO revisao_ppc_revisoes_ia (id, arquivo, sha256, provider, modelo, modo, situacao, plano,
+          estimativa, criada_em, atualizada_em)
+        VALUES ('r', 'PPC.docx', 'abc', 'claude', 'claude-sonnet-5-5', 'completo', 'concluida', '{}', '{}',
+          '2026-11-26T14:55:15Z', '2026-11-26T14:59:18Z')
+      `;
+      yield* sql`
+        INSERT INTO revisao_ppc_tentativas_ia (revisao_id, bloco_id, numero, uso, segundos, ferramentas, criada_em)
+        VALUES ('r', 'j-02', 1, '{"entrada":15542}', 12.7, '[]', '2026-11-26T14:55:50Z')
+      `;
+
+      assert.deepStrictEqual(yield* Banco.rodarMigracoes(), [[2, "ProblemasDasTentativas"]]);
+      const linhas = yield* sql<{ bloco_id: string; uso: string; problemas: string | null }>`
+        SELECT bloco_id, uso, problemas FROM revisao_ppc_tentativas_ia
+      `;
+      assert.deepStrictEqual(linhas, [{ bloco_id: "j-02", uso: '{"entrada":15542}', problemas: null }]);
+      assert.strictEqual((yield* sql<{ n: number }>`SELECT COUNT(*) AS n FROM revisao_ppc_revisoes_ia`)[0]?.n, 1);
+    }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: ":memory:" }))),
   );
 
   it.effect("layerMemoria liga foreign_keys e aplica o schema", () =>

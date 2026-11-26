@@ -1,7 +1,8 @@
 /**
  * As tabelas do módulo `revisao-ppc` no banco das conversas (`conversas.sqlite`), todas com o prefixo
  * `revisao_ppc_`. A migração inicial do núcleo (`persistencia/migracoes/0001_Inicial.ts`, arquivo de
- * composição) chama `criar` num bloco à parte; o módulo não tem migrador próprio.
+ * composição) chama `criar` num bloco à parte, e as seguintes chamam as mudanças (`0002`:
+ * `adicionarProblemasDasTentativas`); o módulo não tem migrador próprio.
  *
  * Revisão de PPC com IA:
  * - `revisao_ppc_revisoes_ia`: uma por revisão, ligada à lista de onde nasceu (`lista_id`, `ON DELETE SET NULL`).
@@ -13,7 +14,10 @@
  *   cota esgotada, limite de taxa, app fechado ou provider caído.
  * - `revisao_ppc_tentativas_ia`: o uso de cada tentativa, gravado ao fim dela, mesmo quando o bloco não termina
  *   (pausa, limite de taxa, "Pausar", a falha de outro bloco que interrompe este). O uso mostrado na
- *   tela é a soma destas linhas: nada do que se gastou some, nem conta duas vezes.
+ *   tela é a soma destas linhas: nada do que se gastou some, nem conta duas vezes. `problemas` (migração
+ *   2) é o que a conferência recusou na resposta, em JSON (`{ "<ficha>" | "*": [problema] }`, `{}` quando
+ *   passou), para saber por que houve nova tentativa; nulo quando a resposta não chegou a ser conferida
+ *   (pausa, ferramenta anunciada, ações por pendência). Só texto do app, nunca o texto da IA.
  *
  * Lista viva de pendências: a lista (com o texto do PPC que as ações com IA usam e os resultados da
  * leitura com IA em `resultados_ia`), a situação e a sugestão de cada pendência, o histórico e o uso
@@ -29,6 +33,12 @@
  */
 import * as Effect from "effect/Effect";
 import * as SqlClient from "effect/sql/SqlClient";
+
+/** Migração 2: o que a conferência recusou em cada tentativa (`revisao_ppc_tentativas_ia.problemas`). */
+export const adicionarProblemasDasTentativas = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  yield* sql`ALTER TABLE revisao_ppc_tentativas_ia ADD COLUMN problemas TEXT`;
+});
 
 /** Cria as tabelas e os índices do módulo. Só a migração a chama. */
 export const criar = Effect.gen(function* () {

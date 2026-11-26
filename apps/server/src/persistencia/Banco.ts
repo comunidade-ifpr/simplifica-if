@@ -21,6 +21,7 @@ import type * as SqlError from "effect/sql/SqlError";
 import * as Migrator from "effect/sql/Migrator";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import Migracao0001 from "./migracoes/0001_Inicial.ts";
+import Migracao0002 from "./migracoes/0002_ProblemasDasTentativas.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -32,7 +33,10 @@ export type EntradaMigracao = readonly [
 ];
 
 /** As migrações, em ordem. */
-export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [[1, "Inicial", Migracao0001]];
+export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [
+  [1, "Inicial", Migracao0001],
+  [2, "ProblemasDasTentativas", Migracao0002],
+];
 
 const loader = Migrator.fromRecord(
   Object.fromEntries(MIGRACOES.map(([id, nome, migracao]) => [`${id}_${nome}`, migracao] as const)),

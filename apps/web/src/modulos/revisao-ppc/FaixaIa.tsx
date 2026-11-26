@@ -31,7 +31,9 @@ import {
   rodapeAndamento,
   textoAndamento,
   textoEstimativa,
+  textoModelo,
 } from "./ia.ts";
+import { useModelos } from "../../tarefas/modelos.ts";
 import { plural } from "../../lib/texto.ts";
 
 export const nomeIa = (provider: Provider) => DESCRICOES[provider].nome;
@@ -94,11 +96,16 @@ export function PainelAndamento({ estado }: { readonly estado: EstadoRevisaoIa }
               <span>
                 <span className="font-semibold">{l.titulo}</span>{" "}
                 <span className="text-muted-foreground">
-                  · {ROTULO_SITUACAO[l.situacao]}: {l.detalhe}
+                  · {ROTULO_SITUACAO[l.situacao]}
+                  {l.detalhe === "" ? "" : `: ${l.detalhe}`}
                 </span>
               </span>
               {l.situacao === "lendo" || l.situacao === "pausado" ? (
-                <span className="text-muted-foreground text-micro">{l.criterios.join("; ")}</span>
+                <ul aria-label={`Critérios de ${l.titulo}`} className="flex flex-col text-muted-foreground text-micro">
+                  {l.criterios.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ul>
               ) : null}
               {l.situacao === "pausado" && estado.motivo !== null ? (
                 <span className="text-grav-conferir-texto text-micro">{estado.motivo}</span>
@@ -127,6 +134,7 @@ export function FaixaIa({ faltam }: { readonly faltam: number }) {
   const { estado } = ia;
   const provider = providerEfetivoIa(ia);
   const [andamento, setAndamento] = useState(false);
+  const modelos = useModelos(estado?.provider ?? provider);
   const nome = nomeIa(estado?.provider ?? provider);
   const rotulo = "Conferência com IA";
   const faltamTexto = `${faltam === 1 ? "Falta" : "Faltam"} ${plural(faltam, "critério que pede", "critérios que pedem")} leitura.`;
@@ -148,7 +156,7 @@ export function FaixaIa({ faltam }: { readonly faltam: number }) {
             {pausada
               ? (estado.motivo ?? "Você pausou a conferência.") +
                 (estado.limite ? " O que já foi conferido fica guardado; retome quando o limite renovar." : "")
-              : `O ${nome} está conferindo os temas um a um. Você pode trabalhar na lista enquanto isso.`}
+              : `O ${nome} está conferindo os temas, alguns ao mesmo tempo. Você pode trabalhar na lista enquanto isso.`}
           </p>
           <ErroDaLeitura />
         </div>
@@ -226,6 +234,9 @@ export function FaixaIa({ faltam }: { readonly faltam: number }) {
             </span>
           )}
         </p>
+        {preparada === undefined ? null : (
+          <p className="text-muted-foreground text-small">{textoModelo(preparada.modelo, modelos, nome)}</p>
+        )}
         {ia.estimando || (preparada === undefined && ia.erro === undefined) ? (
           <p role="status" className="flex items-center gap-2 text-muted-foreground text-small">
             <Spinner className="size-3.5" /> Calculando quanto a conferência usa do seu plano…

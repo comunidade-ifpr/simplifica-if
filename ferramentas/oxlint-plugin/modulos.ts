@@ -24,6 +24,7 @@ export const ARQUIVOS_QUE_IMPORTAM: ReadonlyArray<string> = [
   "apps/server/src/servidor.ts",
   "apps/server/src/handlers.ts",
   "apps/server/src/persistencia/migracoes/0001_Inicial.ts",
+  "apps/server/src/persistencia/migracoes/0002_ProblemasDasTentativas.ts",
   // interface: a casca da rota, o estado de longa duração, o leitor e o recente do Início
   "apps/web/src/routes/revisao-ppc.tsx",
   "apps/web/src/inicializar.ts",
