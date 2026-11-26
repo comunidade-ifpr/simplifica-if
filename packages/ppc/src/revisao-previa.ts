@@ -845,16 +845,28 @@ type Montagem = {
 };
 
 /**
+ * Os resultados da IA só das fichas que a base ainda tem: a leitura da revisão, reaplicada depois de
+ * uma atualização da base (em "Qual é o curso?", na cópia comentada), não traz de volta um critério
+ * retirado.
+ */
+function iaDasFichasDaBase(ia: EntradaIa | undefined, base: Pick<BaseRevisaoPrevia, "fichas">) {
+  if (ia === undefined) return undefined;
+  const existe = (ficha: string) => Object.hasOwn(base.fichas, ficha);
+  return { ...ia, resultados: ia.resultados.filter((r) => existe(r.ficha)), fora: ia.fora.filter(existe) };
+}
+
+/**
  * A montagem do resultado (pura, sem o `.docx`): as pendências da pré-conferência e as da IA, sem
  * repetição (a mesma ficha com a mesma mensagem no mesmo trecho é uma pendência só), a régua e as
  * contagens (`revisarMarkdown`).
  */
 function montarResultado(
   preConferencia: PreConferencia,
-  ia: EntradaIa | undefined,
+  iaGuardada: EntradaIa | undefined,
   base: BaseRevisaoPrevia,
   entrada: { markdown: string; cnct: string | null; registro?: Registro },
 ): Montagem {
+  const ia = iaDasFichasDaBase(iaGuardada, base);
   const registro = entrada.registro ?? new Registro(base.normas);
   const secaoDe = localizadorDeSecoes(entrada.markdown, preConferencia.secoes);
   const vistos = new Set<string>();

@@ -11,11 +11,12 @@
  *    tempo máximo (30 s, depois `terminate()`): a conversão é síncrona e mantém o XML na memória, e o
  *    laço de eventos do servidor não pode parar. Estouro de memória, de tempo, `ErroDocx` e defeito
  *    viram uma `FalhaRevisaoPpc` com a frase em português; o servidor continua de pé.
- * 4. Grava a cópia comentada ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`, num
- *    arquivo temporário da mesma pasta renomeado por cima. Só regrava o que o próprio app gravou (o sha256
- *    registrado em `CopiasComentadas`): a cópia editada pela pessoa, só de leitura, travada (o Word no
- *    Windows) ou que não é arquivo comum (um link) fica, e a cópia vai para ` (2)`, ` (3)`… O original
- *    nunca é aberto para escrita.
+ * 4. Grava a cópia comentada ao lado do original, num arquivo temporário da mesma pasta renomeado por
+ *    cima. Cada revisão tem a sua: a nova, `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx`,
+ *    só num nome livre; a da própria revisão é regravada no lugar se ainda é a que o app gravou (o sha256
+ *    registrado em `CopiasComentadas`). A cópia editada pela pessoa, só de leitura, travada (o Word no
+ *    Windows) ou que não é arquivo comum (um link) fica, e a cópia vai para o próximo nome livre da
+ *    sequência ` (2)`, ` (3)`…, nunca por cima da cópia de outra revisão. O original nunca é aberto para escrita.
  *
  * As etapas (`EtapaLeituraPpc`) vão para `aoEtapa` quando cada uma começa: `lendo` aqui, antes de ler os bytes, as
  * outras do Worker, como avisos de andamento (`WorkerLimitado.AvisoAndamento`).
@@ -92,6 +93,11 @@ export interface EntradaRevisarArquivo extends EntradaRevisao {
   readonly situacoes?: Record<string, MarcaPendencia>;
   /** Grava a cópia comentada ao lado do original (quando falso, pula os comentários no Worker). */
   readonly gravar: boolean;
+  /**
+   * A cópia comentada desta revisão, para regravar nela; sem ela, uma cópia nova, com a data e a hora no
+   * nome (cada revisão tem a sua).
+   */
+  readonly copia?: string;
   /** O que fazer se outra revisão já estiver rodando: `"esperar"` (padrão) ou `"recusar"`. */
   readonly seOcupada?: "esperar" | "recusar";
   /** Recusa o arquivo se o conteúdo mudou desde a preparação. */
@@ -133,8 +139,6 @@ export class RevisorPpc extends Context.Service<
     >;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
-    /** Confere extensão, liberação e tamanho do `.docx` e devolve o SHA-256 sem rodar o Worker. */
-    readonly hashDoArquivo: (arquivo: string) => Effect.Effect<string, FalhaRevisaoPpc>;
     /**
      * Falha (com `escolherDeNovo`) se o desktop não liberou o arquivo nesta execução: a ação que vai
      * precisar dele recusa antes de começar, e não no fim.
@@ -227,7 +231,7 @@ class CopiaNaoGravada extends Schema.TaggedError<CopiaNaoGravada>()("CopiaNaoGra
   }
 }
 
-/** Até quantos nomes de cópia tentar antes de desistir (o nome fixo e ` (2)` a ` (20)`). */
+/** Até quantos nomes de cópia tentar antes de desistir (o nome com a data e a hora e ` (2)` a ` (20)`). */
 const COPIAS = 20;
 
 const sha256De = (bytes: Uint8Array) => NodeCrypto.createHash("sha256").update(bytes).digest("hex");
@@ -274,22 +278,54 @@ async function gravarPorCima(pasta: string, destino: string, bytes: Uint8Array):
   }
 }
 
+/** A data e a hora de um instante no fuso dele, para o nome da cópia: "2026-11-26 12h55". */
+export function carimboDaCopia(quando: DateTime.DateTime): string {
+  const p = DateTime.toParts(quando);
+  const dois = (n: number) => String(n).padStart(2, "0");
+  return `${p.year}-${dois(p.month)}-${dois(p.day)} ${dois(p.hour)}h${dois(p.minute)}`;
+}
+
+/** O nome de uma cópia sem o ` (n)` do fim, para a sequência de nomes partir dele. */
+export const semNumero = (nome: string) => nome.replace(/ \((?:[2-9]|[1-9]\d)\)(\.docx)$/i, "$1");
+
 /**
- * Grava ao lado do original, `<nome> - revisão prévia (Simplifica IF).docx`, por cima da cópia que o app
- * gravou da última vez: a pasta fica com uma cópia só. O que não é a cópia do app (editada pela pessoa,
- * travada, link) fica, e a cópia passa a ` (2)`, ` (3)`… (o próximo nome livre ou do app).
+ * Grava a cópia comentada ao lado do original. Cada revisão tem a sua:
+ * - **cópia nova** (sem `propria`): `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx`, só num
+ *   nome livre (` (2)`, ` (3)`… se ocupado), para nunca gravar por cima da cópia de outra revisão;
+ * - **a cópia da revisão** (`propria`, ao regravar): por cima dela, se ainda é a que o app gravou; se a
+ *   pessoa a editou ou ela está travada, fica, e a cópia passa ao próximo nome livre da sequência
+ *   (` (2)`, ` (3)`…), nunca por cima de outra cópia, que pode ser de outra revisão.
  */
-const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: string, bytes: Uint8Array) {
+export const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (
+  original: string,
+  bytes: Uint8Array,
+  propria: string | undefined,
+  carimbo: string,
+) {
   const copias = yield* CopiasComentadas.CopiasComentadas;
   const pasta = NodePath.dirname(original);
-  const copia = `${NodePath.basename(original, NodePath.extname(original))}${SUFIXO_REVISAO_PREVIA}.docx`;
+  const copia =
+    propria === undefined
+      ? `${NodePath.basename(original, NodePath.extname(original))}${SUFIXO_REVISAO_PREVIA} ${carimbo}.docx`
+      : semNumero(NodePath.basename(propria));
   const sha256 = sha256De(bytes);
-  for (let n = 1; n <= COPIAS; n++) {
-    const destino = NodePath.join(pasta, comNumero(copia, n));
+  const propriaNome = propria === undefined ? undefined : NodePath.basename(propria);
+  const candidatos = [
+    ...(propria === undefined ? [] : [NodePath.basename(propria)]),
+    ...Array.from({ length: COPIAS }, (_, i) => comNumero(copia, i + 1)),
+  ].filter((nome, i, todos) => todos.indexOf(nome) === i);
+  for (const nome of candidatos) {
+    const destino = NodePath.join(pasta, nome);
     const conhecida = yield* copias.conhecida(destino);
     const gravada = yield* Effect.tryPromise({
-      try: async () =>
-        (await ocupacao(destino, conhecida)) === "outro" ? false : gravarPorCima(pasta, destino, bytes),
+      try: async () => {
+        const situacao = await ocupacao(destino, conhecida);
+        // Por cima, só da própria cópia da revisão (se ainda é a que o app gravou). Os outros nomes, só
+        // livres e sem registro: um nome registrado é (ou foi) a cópia de outra revisão, que ainda pode
+        // apontar para ele mesmo depois de a pessoa apagar o arquivo.
+        const pode = nome === propriaNome ? situacao !== "outro" : situacao === "livre" && conhecida === null;
+        return pode ? gravarPorCima(pasta, destino, bytes) : false;
+      },
       catch: (falha) => new CopiaNaoGravada({ destino, cause: resumoDaFalha(falha) }),
     });
     if (gravada) {
@@ -367,8 +403,6 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     return { bytes, sha256 };
   });
 
-  const hashDoArquivo = (arquivo: string) => lerArquivo(arquivo).pipe(Effect.map((r) => r.sha256));
-
   const revisarUm = Effect.fn("RevisorPpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
     const arquivo = entrada.arquivo;
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
@@ -401,7 +435,12 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     );
     const arquivoComentado =
       entrada.gravar && revisao.docx !== null
-        ? yield* gravarCopia(arquivo, revisao.docx).pipe(
+        ? yield* gravarCopia(
+            arquivo,
+            revisao.docx,
+            entrada.copia === undefined || entrada.copia === "" ? undefined : entrada.copia,
+            carimboDaCopia(DateTime.setZone(yield* DateTime.now, DateTime.zoneMakeLocal())),
+          ).pipe(
             Effect.provideService(CopiasComentadas.CopiasComentadas, copias),
             Effect.tapError((erro) =>
               Effect.logError(`revisão prévia: a cópia comentada não foi gravada: ${resumoDaFalha(erro)}`),
@@ -463,7 +502,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   });
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisarArquivo, montar, ocupada, hashDoArquivo, exigirLiberado });
+  return RevisorPpc.of({ revisarArquivo, montar, ocupada, exigirLiberado });
 });
 
 /**

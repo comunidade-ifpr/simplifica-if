@@ -19,23 +19,37 @@ describe("revisão prévia: o que a interface pode abrir", () => {
 
   test("abre a cópia comentada de um arquivo escolhido, e nada mais", () => {
     const pasta = "/Users/ana/PPCs/";
-    expect(copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF).docx`, escolhidos)).toBeDefined();
+    // Cada revisão com a sua cópia, com a data e a hora no nome; ` (2)` a ` (99)` se o nome estava ocupado.
     expect(
-      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (2).docx`, escolhidos),
+      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx`, escolhidos),
     ).toBeDefined();
     expect(
-      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (99).docx`, escolhidos),
+      copiaComentadaPermitida(
+        `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55 (2).docx`,
+        escolhidos,
+      ),
+    ).toBeDefined();
+    expect(
+      copiaComentadaPermitida(
+        `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55 (99).docx`,
+        escolhidos,
+      ),
     ).toBeDefined();
     for (const recusado of [
       `${pasta}PPC Agro.docx`, // o original
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF) (1).docx`,
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF) (100).docx`,
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF).docm`,
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF).docx.app`,
-      `${pasta}Outro - revisão prévia (Simplifica IF).docx`, // de um arquivo não escolhido
-      "/Users/ana/Outra pasta/PPC Agro - revisão prévia (Simplifica IF).docx",
-      `${pasta}../PPCs/PPC Agro - revisão prévia (Simplifica IF).docx`,
-      "PPC Agro - revisão prévia (Simplifica IF).docx",
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF).docx`, // sem a data e a hora
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) (2).docx`,
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55 (1).docx`,
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55 (100).docx`,
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26.docx`, // sem a hora
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55 ../x.docx`,
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) qualquer coisa.docx`,
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docm`,
+      `${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx.app`,
+      `${pasta}Outro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx`, // de um arquivo não escolhido
+      "/Users/ana/Outra pasta/PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx",
+      `${pasta}../PPCs/PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx`,
+      "PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx",
       42,
     ])
       expect(copiaComentadaPermitida(recusado, escolhidos), String(recusado)).toBeUndefined();

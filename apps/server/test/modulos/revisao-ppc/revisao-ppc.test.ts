@@ -119,9 +119,10 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       clearInterval(relogio);
       assert.isAtLeast(voltas, 5);
 
-      assert.strictEqual(
-        resultado.arquivoComentado,
-        NodePath.join(pasta, "PPC Agropecuária - revisão prévia (Simplifica IF).docx"),
+      assert.strictEqual(NodePath.dirname(resultado.arquivoComentado), pasta);
+      assert.match(
+        NodePath.basename(resultado.arquivoComentado),
+        /^PPC Agropecuária - revisão prévia \(Simplifica IF\) \d{4}-\d{2}-\d{2} \d{2}h\d{2}\.docx$/,
       );
       assert.isTrue(NodeFS.existsSync(resultado.arquivoComentado));
       assert.strictEqual(hash(original), antes);
@@ -139,26 +140,26 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
       // As etapas da leitura, na ordem em que começam, antes do resultado.
       assert.deepStrictEqual(resultado.etapas, ["lendo", "identificando", "conferindo", "gravando"]);
 
-      // De novo: a mesma cópia, regravada (a pasta fica com uma só).
+      // De novo: outra revisão, independente, com a sua cópia; a da primeira fica.
       const segunda = yield* revisarAteOFim(rpc, { arquivo: original, cnct: "tecnico-em-agropecuaria" });
-      assert.strictEqual(segunda.arquivoComentado, resultado.arquivoComentado);
+      assert.notStrictEqual(segunda.lista, resultado.lista);
+      assert.notStrictEqual(segunda.arquivoComentado, resultado.arquivoComentado);
       assert.strictEqual(segunda.curso.origem, "pessoa");
-      assert.deepStrictEqual(
-        NodeFS.readdirSync(pasta)
-          .filter((nome) => nome.startsWith("PPC Agropecuária"))
-          .sort(),
-        ["PPC Agropecuária - revisão prévia (Simplifica IF).docx", "PPC Agropecuária.docx"],
+      assert.lengthOf(
+        NodeFS.readdirSync(pasta).filter((nome) => nome.startsWith("PPC Agropecuária - revisão prévia")),
+        2,
       );
 
-      // A cópia travada (aberta no Word, no Windows; aqui, sem permissão de escrita): passa a " (2)".
-      NodeFS.chmodSync(resultado.arquivoComentado, 0o444);
-      const travada = yield* revisarAteOFim(rpc, { arquivo: original }).pipe(
-        Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(resultado.arquivoComentado, 0o644))),
+      // A cópia da revisão travada (aberta no Word, no Windows; aqui, sem permissão de escrita): a
+      // regravação vai para o próximo nome livre.
+      NodeFS.chmodSync(segunda.arquivoComentado, 0o444);
+      const chave = (yield* rpc["revisaoPpc.lista"]({ lista: segunda.lista })).pendencias[0]!.chave;
+      yield* rpc["revisaoPpc.marcar"]({ lista: segunda.lista, chave, situacao: "resolvida" });
+      const travada = yield* rpc["revisaoPpc.gerarCopia"]({ lista: segunda.lista }).pipe(
+        Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(segunda.arquivoComentado, 0o644))),
       );
-      assert.strictEqual(
-        travada.arquivoComentado,
-        NodePath.join(pasta, "PPC Agropecuária - revisão prévia (Simplifica IF) (2).docx"),
-      );
+      assert.notInclude([resultado.arquivoComentado, segunda.arquivoComentado], travada.resultado.arquivoComentado);
+      assert.isTrue(NodeFS.existsSync(travada.resultado.arquivoComentado));
     }),
   );
 
@@ -404,22 +405,43 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
 const camadaNoProcesso = camada.pipe(Layer.provide(layerWorkersNoProcesso));
 
 layer(camadaNoProcesso, { excludeTestServices: true })("a cópia comentada", (it) => {
-  it.effect("a cópia editada pela pessoa e o link no lugar da cópia ficam; a cópia vai para ' (2)'", () =>
+  it.effect("cada revisão tem a sua cópia; a regravação não passa por cima da cópia editada; link não é seguido", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const original = gravar("PPC anotado.docx", ppcSintetico());
+      const copiaDoApp =
+        /^PPC anotado - revisão prévia \(Simplifica IF\) \d{4}-\d{2}-\d{2} \d{2}h\d{2}( \(\d+\))?\.docx$/;
+
+      // Duas revisões do mesmo arquivo: duas listas e duas cópias; a da primeira não é regravada.
       const primeira = yield* revisarAteOFim(rpc, { arquivo: original });
-      NodeFS.writeFileSync(primeira.arquivoComentado, "minhas anotações");
+      const bytesDaPrimeira = NodeFS.readFileSync(primeira.arquivoComentado);
       const segunda = yield* revisarAteOFim(rpc, { arquivo: original });
-      assert.strictEqual(
-        segunda.arquivoComentado,
-        NodePath.join(pasta, "PPC anotado - revisão prévia (Simplifica IF) (2).docx"),
+      assert.notStrictEqual(segunda.lista, primeira.lista);
+      assert.notStrictEqual(segunda.arquivoComentado, primeira.arquivoComentado);
+      assert.match(NodePath.basename(segunda.arquivoComentado), copiaDoApp);
+      assert.deepStrictEqual(NodeFS.readFileSync(primeira.arquivoComentado), bytesDaPrimeira);
+      const listas = yield* rpc["revisaoPpc.listas"]({});
+      assert.includeMembers(
+        listas.map((l) => l.id),
+        [primeira.lista, segunda.lista],
       );
-      assert.strictEqual(NodeFS.readFileSync(primeira.arquivoComentado, "utf8"), "minhas anotações");
-      // A " (2)" é a do app: regravada, sem " (3)".
-      const terceira = yield* revisarAteOFim(rpc, { arquivo: original });
-      assert.strictEqual(terceira.arquivoComentado, segunda.arquivoComentado);
+
+      // A pessoa edita a cópia da segunda; regravada (a lista mudou), ela fica, e a cópia vai para o
+      // próximo nome livre.
+      NodeFS.writeFileSync(segunda.arquivoComentado, "minhas anotações");
+      const { pendencias } = yield* rpc["revisaoPpc.lista"]({ lista: segunda.lista });
+      yield* rpc["revisaoPpc.marcar"]({ lista: segunda.lista, chave: pendencias[0]!.chave, situacao: "resolvida" });
+      const regravada = (yield* rpc["revisaoPpc.gerarCopia"]({ lista: segunda.lista })).resultado.arquivoComentado;
+      assert.notInclude([primeira.arquivoComentado, segunda.arquivoComentado], regravada);
+      assert.match(NodePath.basename(regravada), copiaDoApp);
+      assert.strictEqual(NodeFS.readFileSync(segunda.arquivoComentado, "utf8"), "minhas anotações");
+      // Nem a cópia da primeira revisão, que tem o mesmo nome-base quando as duas são do mesmo minuto.
+      assert.deepStrictEqual(NodeFS.readFileSync(primeira.arquivoComentado), bytesDaPrimeira);
+      // A cópia nova é da segunda revisão: regravada de novo no mesmo nome.
+      yield* rpc["revisaoPpc.marcar"]({ lista: segunda.lista, chave: pendencias[0]!.chave, situacao: "aberta" });
+      const deNovo = (yield* rpc["revisaoPpc.gerarCopia"]({ lista: segunda.lista })).resultado.arquivoComentado;
+      assert.strictEqual(deNovo, regravada);
       // Nenhum temporário fica na pasta.
       assert.deepStrictEqual(
         NodeFS.readdirSync(pasta).filter((nome) => nome.startsWith(".")),
@@ -427,15 +449,17 @@ layer(camadaNoProcesso, { excludeTestServices: true })("a cópia comentada", (it
       );
 
       // Um link no lugar da cópia não é seguido: o arquivo para onde ele aponta fica intacto.
+      // (a cópia da própria revisão trocada por um link: a regravação não o segue).
       const comLink = gravar("PPC link.docx", ppcSintetico());
       const alvo = gravar("alvo do link.txt", strToU8("intacto"));
-      const lugar = NodePath.join(pasta, "PPC link - revisão prévia (Simplifica IF).docx");
-      NodeFS.symlinkSync(alvo, lugar);
       const r = yield* revisarAteOFim(rpc, { arquivo: comLink });
-      assert.strictEqual(
-        r.arquivoComentado,
-        NodePath.join(pasta, "PPC link - revisão prévia (Simplifica IF) (2).docx"),
-      );
+      const lugar = r.arquivoComentado;
+      NodeFS.rmSync(lugar);
+      NodeFS.symlinkSync(alvo, lugar);
+      const daLista = (yield* rpc["revisaoPpc.lista"]({ lista: r.lista })).pendencias[0]!.chave;
+      yield* rpc["revisaoPpc.marcar"]({ lista: r.lista, chave: daLista, situacao: "resolvida" });
+      const comCopiaNova = (yield* rpc["revisaoPpc.gerarCopia"]({ lista: r.lista })).resultado.arquivoComentado;
+      assert.strictEqual(comCopiaNova, lugar.replace(/\.docx$/, " (2).docx"));
       assert.strictEqual(NodeFS.readFileSync(alvo, "utf8"), "intacto");
       assert.isTrue(NodeFS.lstatSync(lugar).isSymbolicLink());
     }),

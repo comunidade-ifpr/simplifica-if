@@ -289,7 +289,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.strictEqual(matriz.origem, "ia");
       assert.strictEqual(matriz.estado, "nao_atende");
       assert.isTrue(pendencias.some((p) => p.origem === "codigo"));
-      assert.match(r.arquivoComentado, /PPC A - revisão prévia \(Simplifica IF\)\.docx$/);
+      assert.match(r.arquivoComentado, /PPC A - revisão prévia \(Simplifica IF\) \d{4}-\d{2}-\d{2} \d{2}h\d{2}\.docx$/);
       const texto = comentarios(r.arquivoComentado);
       assert.include(texto, "pelo código");
       assert.include(texto, "a matriz não mostra a carga por núcleo");

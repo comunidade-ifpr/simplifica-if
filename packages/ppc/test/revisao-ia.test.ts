@@ -621,6 +621,22 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(texto.pendencias.find((p) => p.ficha === "CT-IDENT-12")!.noDocumento).toBe("no-trecho");
   });
 
+  test("a leitura guardada não traz de volta um critério que saiu da base", () => {
+    const retirada = {
+      ...iaDoTeste.resultados[0]!,
+      ficha: "CT-TRANS-05",
+      titulo: "Vários pontos seguem inconclusivos",
+    };
+    const comRetirada = revisarDocx(ppcSintetico(), "ppc.docx", base, {
+      agora: new Date("2026-11-16T12:00:00Z"),
+      ia: { ...iaDoTeste, resultados: [...iaDoTeste.resultados, retirada], fora: [...iaDoTeste.fora, "CT-TRANS-06"] },
+    });
+    expect(comRetirada.pendencias.some((p) => p.ficha === "CT-TRANS-05")).toBe(false);
+    expect(comRetirada.criterios.some((c) => c.ficha === "CT-TRANS-05" || c.ficha === "CT-TRANS-06")).toBe(false);
+    expect(comRetirada.totalCriterios).toBe(revisao.totalCriterios);
+    expect(comRetirada.aviso).toBe(revisao.aviso);
+  });
+
   test("a leitura parcial: o aviso diz o que ficou de fora e o que ainda não foi lido, juntos", () => {
     const parcial = revisarDocx(ppcSintetico(), "ppc.docx", base, {
       agora: new Date("2026-11-16T12:00:00Z"),

@@ -105,6 +105,7 @@ export const regravarCopia = Effect.fn("ListaViva.regravarCopia")(function* (
   const final = yield* revisor.revisarArquivo({
     arquivo: registro.arquivo,
     gravar: true,
+    copia,
     sha256: registro.sha256,
     ...cursoEscolhido(registro),
     ...(registro.resultadosIa === null ? {} : { ia: registro.resultadosIa }),
@@ -393,7 +394,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
   /**
    * A lista da revisão, com o conteúdo da preparação, ou a falha que para a leitura: a lista saiu (outro
-   * curso, outra revisão do arquivo) ou passou a outra versão do arquivo.
+   * curso, apagada ou expirada) ou passou a outra versão do arquivo.
    */
   const listaDa = Effect.fn("RevisaoIa.listaDa")(function* (registro: RevisoesPpc.RegistroRevisaoIa<unknown>) {
     const lista = registro.lista === null ? null : yield* persistencia.buscarLista(registro.lista);

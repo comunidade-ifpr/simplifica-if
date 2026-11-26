@@ -34,12 +34,12 @@ import {
 import type { EntradaIa } from "@simplifica-if/ppc/revisao-previa";
 import { descarregar } from "../../../persistencia/Banco.ts";
 
-/** Tentativa de substituir uma lista enquanto há uma conferência com IA dela em andamento. */
+/** "Qual é o curso?" numa lista com a conferência com IA em andamento (a lista seria substituída). */
 export class RevisaoEmAndamento extends Schema.TaggedError<RevisaoEmAndamento>()("RevisaoEmAndamento", {
   arquivo: Schema.String,
 }) {
   override get message(): string {
-    return "A conferência com IA deste PPC está em andamento. Pause-a antes de revisar o arquivo de novo.";
+    return "A conferência com IA desta revisão está em andamento. Pause-a antes de trocar o curso.";
   }
 }
 
@@ -180,13 +180,15 @@ export class RevisoesPpc extends Context.Service<
     /* ------------------------------------------------------------ listas */
 
     /**
-     * Cria a lista. A situação, o histórico e a sugestão das pendências de mesma chave passam da lista
-     * mais recente do mesmo arquivo com o mesmo conteúdo, e as listas anteriores do mesmo conteúdo saem.
-     * Recusa com `RevisaoEmAndamento` se alguma lista a substituir tiver leitura com IA em andamento.
+     * Cria a lista. Cada revisão é independente: a lista nova não herda nada de outra do mesmo arquivo.
+     * Só com `substitui` (a mesma revisão refeita, como em "Qual é o curso?") a situação, o histórico e a
+     * sugestão das pendências de mesma chave, a leitura com IA e o uso das ações passam daquela lista, que
+     * sai. Recusa com `RevisaoEmAndamento` se a lista a substituir tiver leitura com IA em andamento.
      */
     readonly criarLista: (
       lista: NovaLista,
       pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+      substitui?: string,
     ) => Effect.Effect<void, RevisaoEmAndamento>;
     readonly buscarLista: (id: string) => Effect.Effect<RegistroLista | null>;
     /** Liga a lista à leitura com IA que começou (ou que retoma). */
@@ -222,8 +224,6 @@ export class RevisoesPpc extends Context.Service<
       },
       evento: Evento,
     ) => Effect.Effect<void>;
-    /** A lista do arquivo com este conteúdo (há uma só: a nova substitui a anterior), ou nula. */
-    readonly listaDoConteudo: (arquivo: string, sha256: string) => Effect.Effect<string | null>;
     /**
      * "Enviar a versão corrigida", numa transação: as mudanças nas pendências, as novas (abertas, com o
      * evento `textoNovas`), onde cada pendência ficou na nova cópia comentada (`noDocumento`) e a lista
@@ -476,6 +476,7 @@ const make = Effect.gen(function* () {
   const criarLista = Effect.fn("RevisoesPpc.criarLista")(function* (
     l: NovaLista,
     pendenciasLista: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    substitui?: string,
   ) {
     const data = yield* agora;
     const linhasTextoIa = yield* codificarNumeros(l.linhasTextoParaIa).pipe(Effect.orDie);
@@ -489,20 +490,21 @@ const make = Effect.gen(function* () {
     const anterior = yield* sql
       .withTransaction(
         Effect.gen(function* () {
-          // Garante atomicamente que nenhuma lista deste conteúdo tem leitura com IA em andamento (a leitura
-          // ligada a uma lista é sempre dela: nasce nela e passa à lista que a substitui).
-          const ativa = yield* sql<{ id: string }>`
-            SELECT r.id FROM revisao_ppc_revisoes_ia r
-            WHERE r.situacao = 'em_andamento'
-              AND r.lista_id IN (SELECT id FROM revisao_ppc_listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256})
-            LIMIT 1
-          `;
-          if (ativa.length > 0) return yield* new RevisaoEmAndamento({ arquivo: l.arquivo });
-
-          const ant = (yield* sql<{ id: string }>`
-            SELECT id FROM revisao_ppc_listas_pendencias
-            WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} ORDER BY atualizada_em DESC LIMIT 1
-          `)[0];
+          // A lista substituída não pode ter leitura com IA em andamento (a leitura ligada a uma lista é
+          // sempre dela: nasce nela e passa à lista que a substitui), conferido na mesma transação.
+          const ant =
+            substitui === undefined
+              ? undefined
+              : (yield* sql<{ id: string }>`SELECT id FROM revisao_ppc_listas_pendencias WHERE id = ${substitui}`)[0];
+          // Substituir uma lista que não existe mais (apagada ou expirada no meio) perderia a herança calado.
+          if (substitui !== undefined && !ant)
+            return yield* Effect.die(new Error(`criarLista: a lista a substituir não existe (${substitui})`));
+          if (ant) {
+            const ativa = yield* sql<{ id: string }>`
+              SELECT id FROM revisao_ppc_revisoes_ia WHERE situacao = 'em_andamento' AND lista_id = ${ant.id} LIMIT 1
+            `;
+            if (ativa.length > 0) return yield* new RevisaoEmAndamento({ arquivo: l.arquivo });
+          }
 
           yield* sql`
             INSERT INTO revisao_ppc_listas_pendencias (id, arquivo, sha256, revisao_id, provider, modelo, cnct, forma, markdown,
@@ -534,13 +536,10 @@ const make = Effect.gen(function* () {
             // A leitura com IA que a lista nova leva passa a ela antes de a anterior sair.
             if (l.revisao !== null)
               yield* sql`UPDATE revisao_ppc_revisoes_ia SET lista_id = ${l.id} WHERE id = ${l.revisao}`;
-            // O uso das ações continua contado; as listas anteriores do mesmo conteúdo saem (o texto do
-            // PPC e os motivos não ficam guardados em dobro).
-            yield* sql`
-              UPDATE revisao_ppc_acoes_ia SET lista_id = ${l.id}
-              WHERE lista_id IN (SELECT id FROM revisao_ppc_listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} AND id <> ${l.id})
-            `;
-            yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} AND id <> ${l.id}`;
+            // O uso das ações continua contado; a lista substituída sai (o texto do PPC e os motivos não
+            // ficam guardados em dobro).
+            yield* sql`UPDATE revisao_ppc_acoes_ia SET lista_id = ${l.id} WHERE lista_id = ${ant.id}`;
+            yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE id = ${ant.id}`;
           }
           return ant;
         }),
@@ -648,14 +647,6 @@ const make = Effect.gen(function* () {
         yield* tocar(id, data);
       }),
     );
-  }, Effect.orDie);
-
-  const listaDoConteudo = Effect.fn("RevisoesPpc.listaDoConteudo")(function* (arquivo: string, sha256: string) {
-    const linhas = yield* sql<{ id: string }>`
-      SELECT id FROM revisao_ppc_listas_pendencias WHERE arquivo = ${arquivo} AND sha256 = ${sha256}
-      ORDER BY atualizada_em DESC LIMIT 1
-    `;
-    return linhas[0]?.id ?? null;
   }, Effect.orDie);
 
   /** Insere as pendências novas, abertas, depois da última, cada uma com o evento. */
@@ -1033,7 +1024,6 @@ const make = Effect.gen(function* () {
     pendencias,
     eventos,
     mudarPendencia,
-    listaDoConteudo,
     aplicarArquivoNovo,
     trocarResultado,
     gravarAcao,

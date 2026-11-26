@@ -19,8 +19,8 @@ export function docxEscolhido(caminho: unknown): string | undefined {
 
 /**
  * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos ou soltos nesta execução: na
- * mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou, se ela estava travada ou foi editada
- * pela pessoa, com ` (2)` a ` (99)` (o servidor usa até ` (20)`). Só esses arquivos "Abrir o documento
+ * mesma pasta, `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx` (cada revisão tem a sua) ou,
+ * com o nome ocupado, com ` (2)` a ` (99)` (o servidor usa até ` (20)`). Só esses arquivos "Abrir o documento
  * comentado" e "Mostrar na pasta" aceitam: a interface não abre outro arquivo do computador por esse
  * caminho. Quem chama confere ainda que é arquivo comum (não link).
  */
@@ -34,7 +34,7 @@ export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySe
     const prefixo = NodePath.basename(escolhido, NodePath.extname(escolhido)) + SUFIXO_REVISAO_PREVIA;
     if (!nome.startsWith(prefixo) || !nome.toLowerCase().endsWith(".docx")) continue;
     const resto = nome.slice(prefixo.length, -".docx".length);
-    if (resto === "" || /^ \(([2-9]|[1-9]\d)\)$/.test(resto)) return caminho;
+    if (/^ \d{4}-\d{2}-\d{2} \d{2}h\d{2}( \(([2-9]|[1-9]\d)\))?$/.test(resto)) return caminho;
   }
   return undefined;
 }

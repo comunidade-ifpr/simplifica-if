@@ -122,8 +122,12 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
 
   // "Abrir no Word" regrava a cópia comentada e a abre; o ⋯ mostra na pasta.
   await page.getByRole("button", { name: "Abrir no Word" }).click();
-  const comentado = `${servidor.pasta}/PPC de teste - revisão prévia (Simplifica IF).docx`;
-  await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(comentado));
+  // A cópia é desta revisão: o nome leva a data e a hora em que ela foi feita.
+  const copiaDaRevisao = new RegExp(
+    `^${servidor.pasta.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/PPC de teste - revisão prévia \\(Simplifica IF\\) \\d{4}-\\d{2}-\\d{2} \\d{2}h\\d{2}\\.docx$`,
+  );
+  await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(expect.stringMatching(copiaDaRevisao)));
+  const comentado = abrirDocumento.mock.calls.at(-1)![0] as string;
   await page.getByRole("button", { name: "Mais ações do documento" }).click();
   await page.getByRole("menuitem", { name: "Mostrar na pasta" }).click();
   await vi.waitFor(() => expect(mostrarNaPasta).toHaveBeenCalledWith(comentado));

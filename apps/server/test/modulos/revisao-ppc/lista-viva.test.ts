@@ -14,6 +14,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, layer } from "@effect/vitest";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
@@ -588,7 +589,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
   );
 
   it.effect(
-    "'Qual é o curso?': sem o curso no CNCT, as pendências dependem dele; com o curso escolhido, a lista nova substitui a anterior",
+    "sem o curso no CNCT, as pendências dependem dele; revisar de novo com o curso escolhido abre outra revisão, e a anterior fica",
     () =>
       Effect.gen(function* () {
         reiniciar();
@@ -629,9 +630,11 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         });
         assert.isFalse((yield* pendenciasDa(com.lista)).some((p) => p.dependeDoCurso));
         assert.notStrictEqual(com.lista, sem.lista);
-        const anterior = yield* c["revisaoPpc.lista"]({ lista: sem.lista }).pipe(Effect.flip);
-        assert.include(anterior.message, "não existe mais");
-        assert.strictEqual((yield* c["revisaoPpc.listas"]({}))[0]!.id, com.lista);
+        // Cada revisão é independente: a anterior continua, sem o curso.
+        assert.isNull((yield* c["revisaoPpc.lista"]({ lista: sem.lista })).resultado.curso.cnct);
+        const ids = (yield* c["revisaoPpc.listas"]({})).map((l) => l.id);
+        assert.strictEqual(ids[0], com.lista);
+        assert.include(ids, sem.lista);
       }),
   );
 
@@ -664,12 +667,13 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         assert.strictEqual(t.situacao, "resolvida");
         assert.strictEqual(t.resolvidaPor, "revisarDeNovo");
         assert.include(t.historico.at(-1)!.texto, "PPC versao v2.docx");
-        // A lista aponta o arquivo novo, e a cópia comentada é a dele, com o nome fixo.
+        // A lista aponta o arquivo novo, e a cópia comentada é a dele, com a data e a hora no nome.
         assert.strictEqual(r.lista.arquivoOriginal, corrigido);
         assert.strictEqual(r.lista.resultado.arquivoOriginal, corrigido);
-        assert.strictEqual(
-          r.lista.resultado.arquivoComentado,
-          NodePath.join(pasta, "PPC versao v2 - revisão prévia (Simplifica IF).docx"),
+        assert.strictEqual(NodePath.dirname(r.lista.resultado.arquivoComentado), pasta);
+        assert.match(
+          NodePath.basename(r.lista.resultado.arquivoComentado),
+          /^PPC versao v2 - revisão prévia \(Simplifica IF\) \d{4}-\d{2}-\d{2} \d{2}h\d{2}\.docx$/,
         );
         assert.isTrue(NodeFS.existsSync(r.lista.resultado.arquivoComentado));
 
@@ -878,13 +882,16 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
       assert.isNotNull(mesma.sugestao);
       assert.deepStrictEqual(refeita.uso, uso);
       assert.strictEqual((yield* c["revisaoPpc.listas"]({}))[0]!.id, refeita.id);
+      // A mesma revisão: a lista anterior sai, e a cópia comentada é regravada no mesmo arquivo.
+      assert.include((yield* c["revisaoPpc.lista"]({ lista: lista.id }).pipe(Effect.flip)).message, "não existe mais");
+      assert.strictEqual(refeita.resultado.arquivoComentado, lista.resultado.arquivoComentado);
       // A leitura concluída passou à lista nova.
       assert.strictEqual((yield* c["revisaoPpc.listarIa"]({})).find((e) => e.id === final.id)!.lista, refeita.id);
     }),
   );
 
   it.effect(
-    "revisar de novo com leitura com IA em andamento recusa mesmo trocando o curso e não sobrescreve a cópia",
+    "revisar de novo com leitura com IA em andamento abre outra revisão; a leitura e a cópia da primeira seguem",
     () =>
       Effect.gen(function* () {
         reiniciar();
@@ -905,20 +912,24 @@ layer(camada, { excludeTestServices: true })("lista viva: a versão corrigida", 
           Stream.runDrain,
         );
 
-        // Re-revisar com outra forma (diferente do curso atual) recusa sem tocar na cópia nem apagar a lista.
-        const recusa = yield* revisarAteOFim(c, { arquivo, forma: "integrado" }).pipe(
-          Effect.flip,
+        // Outra revisão do mesmo arquivo, com a leitura da primeira em andamento: um universo à parte.
+        const outra = yield* revisarAteOFim(c, { arquivo, forma: "integrado" }).pipe(
           Effect.ensuring(
             Deferred.succeed(portao, undefined).pipe(
               Effect.andThen(c["revisaoPpc.pausarIa"]({ revisao: preparada.id }).pipe(Effect.ignore)),
             ),
           ),
         );
-        assert.isTrue(ehFalhaRevisaoPpc(recusa));
-        assert.include(recusa.message, "Pause-a antes de revisar o arquivo de novo");
+        assert.notStrictEqual(outra.lista, pre.lista);
+        assert.notStrictEqual(outra.arquivoComentado, copia);
+        assert.strictEqual(outra.leituraIa, "nenhuma");
+        const daOutra = yield* c["revisaoPpc.lista"]({ lista: outra.lista });
+        assert.isNull(daOutra.revisao);
+        assert.isFalse(daOutra.pendencias.some((p) => p.pendencia.origem === "ia"));
         assert.isTrue(bytesAntes.equals(NodeFS.readFileSync(copia)));
-        const listaIntacta = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
-        assert.strictEqual(listaIntacta.id, pre.lista);
+        // A primeira continua com a leitura dela.
+        const primeira = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        assert.strictEqual(primeira.revisao, preparada.id);
       }),
   );
 
@@ -1143,6 +1154,85 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
     }),
   );
 
+  it.effect("criarLista: cada revisão é independente; só com `substitui` a lista herda e a anterior sai", () =>
+    Effect.gen(function* () {
+      const pendencia = {
+        ficha: "CT-CURR-12",
+        tituloFicha: "Matriz",
+        tema: "Matriz e estrutura curricular",
+        ordemTema: 2,
+        estado: "nao_atende" as const,
+        titulo: "Falta a carga por núcleo.",
+        explicacao: null,
+        faltas: [],
+        oQueFazer: "Mostre.",
+        trecho: null,
+        secao: null,
+        fontes: [],
+        tambemEm: [],
+        noDocumento: "no-inicio" as const,
+        origem: "codigo" as const,
+        dependeDoCurso: false,
+      };
+      const lista = (id: string) => ({
+        id,
+        arquivo: "/x/PPC.docx",
+        sha256: "abc",
+        revisao: null,
+        provider: null,
+        modelo: null,
+        cnct: null,
+        forma: null,
+        markdown: "# PPC",
+        linhasTextoParaIa: [],
+        resultado: {
+          arquivoOriginal: "/x/PPC.docx",
+          arquivoComentado: "",
+          curso: { cnct: null, forma: null, origem: "documento" as const },
+          criterios: [],
+          conferidos: 0,
+          conferidosIa: 0,
+          paraConferirIa: 0,
+          foraDaRevisao: [],
+          totalCriterios: 1,
+          leituraIa: "nenhuma" as const,
+          dataBase: "2026-11-26",
+        },
+        resultadosIa: null,
+      });
+      yield* Effect.gen(function* () {
+        const persistencia = yield* RevisoesPpc.RevisoesPpc;
+        const pendencias = [{ chave: "k1", pendencia }];
+        yield* persistencia.criarLista(lista("l1"), pendencias);
+        yield* persistencia.mudarPendencia(
+          "l1",
+          "k1",
+          { situacao: "resolvida", resolvidaPor: "pessoa" },
+          { acao: "marcar", situacao: "resolvida", texto: "Feito." },
+        );
+
+        // Mesmo arquivo, mesmo conteúdo, sem `substitui`: outra revisão, aberta, e a primeira fica.
+        yield* persistencia.criarLista(lista("l2"), pendencias);
+        assert.strictEqual((yield* persistencia.pendencias("l2"))[0]!.situacao, "aberta");
+        assert.lengthOf(yield* persistencia.eventos("l2"), 0);
+        assert.strictEqual((yield* persistencia.pendencias("l1"))[0]!.situacao, "resolvida");
+        assert.includeMembers([...(yield* persistencia.todasListas)], ["l1", "l2"]);
+
+        // Com `substitui` (a mesma revisão refeita): herda a situação e o histórico, e a substituída sai.
+        yield* persistencia.criarLista(lista("l3"), pendencias, "l1");
+        assert.strictEqual((yield* persistencia.pendencias("l3"))[0]!.situacao, "resolvida");
+        assert.lengthOf(yield* persistencia.eventos("l3"), 1);
+        assert.isNull(yield* persistencia.buscarLista("l1"));
+        assert.isNotNull(yield* persistencia.buscarLista("l2"));
+
+        // Substituir uma lista que não existe mais é defeito, não uma lista nova sem herança.
+        const saida = yield* Effect.exit(persistencia.criarLista(lista("l4"), pendencias, "l1"));
+        assert.isTrue(Exit.hasDies(saida));
+        assert.isNull(yield* persistencia.buscarLista("l4"));
+      }).pipe(Effect.provide(RevisoesPpc.layer.pipe(Layer.provide(Banco.layerMemoria))));
+    }),
+  );
+
   it.effect("sobrevive a fechar e reabrir o banco das conversas", () =>
     Effect.gen(function* () {
       const arquivo = NodePath.join(diretorioTemporario("simplifica-lista-banco-"), "conversas.sqlite");
@@ -1287,8 +1377,6 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
             },
             [{ chave: "k1", pendencia: base }],
           );
-          assert.strictEqual(yield* persistencia.listaDoConteudo("/x/PPC.docx", "abc"), "l1");
-          assert.isNull(yield* persistencia.listaDoConteudo("/x/PPC.docx", "outro"));
           yield* persistencia.mudarPendencia(
             "l1",
             "k1",
