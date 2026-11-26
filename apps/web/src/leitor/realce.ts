@@ -4,7 +4,7 @@
  * mexer no DOM que o React montou.
  *
  * A comparação usa só letras e dígitos, sem acento nem caixa: o trecho guardado pode trazer marcação do
- * Markdown que a tela não mostra (`**`, `_`, `#`, `|`, o número de um item de lista) e espaços onde ela
+ * Markdown que a tela não mostra (`**`, `_`, `#`, `|`, `<br>`, o número de um item de lista) e espaços onde ela
  * havia; a pontuação e o espaço não decidem onde a frase está. Com reticências, cada pedaço se realça à
  * parte, na ordem.
  */
@@ -23,9 +23,13 @@ const dobrar = (texto: string) =>
 /** O número de um item de lista numerada (`1.`, `2)`), que a tela desenha por CSS e não está no texto. */
 const NUMERO_DE_ITEM = /^\s*\d+[.)]\s+/;
 
+/** Uma etiqueta HTML do arquivo (o `<br>` das células), que o leitor não mostra: as letras dela não contam. */
+const ETIQUETA = /<\/?[a-z][^>]*>/gi;
+
 /** Os pedaços do trecho, entre reticências, já na forma da comparação. */
 export const pedacosDoRealce = (trecho: string): string[] =>
   trecho
+    .replace(ETIQUETA, " ")
     .split(RETICENCIAS)
     .map((p, i) => dobrar(i === 0 ? p.replace(NUMERO_DE_ITEM, "") : p))
     .filter((p) => p.length > 0);

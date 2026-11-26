@@ -100,6 +100,58 @@ export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
     const l = linha(no);
     return opcoes.destaque !== null && l !== undefined && l >= opcoes.destaque.inicio && l <= opcoes.destaque.fim;
   };
+  const linhaFinal = (no: NoHast) => (no.position ? no.position.end.line + opcoes.deslocamento : undefined);
+  const noTrecho = (inicio: number, fim: number) =>
+    opcoes.destaque !== null && inicio <= opcoes.destaque.fim && fim >= opcoes.destaque.inicio;
+  // O elemento começa antes do trecho e o alcança: o parágrafo do `.docx` convertido que junta vários
+  // parágrafos do Word separados por uma quebra só, com o trecho numa linha do meio.
+  const alcanca = (no: NoHast) => {
+    const inicio = linha(no);
+    const fim = linhaFinal(no);
+    return (
+      opcoes.destaque !== null &&
+      inicio !== undefined &&
+      fim !== undefined &&
+      inicio < opcoes.destaque.inicio &&
+      fim >= opcoes.destaque.inicio
+    );
+  };
+  /** Os filhos de um elemento que só em parte está no trecho: o `<mark>` só nas linhas do trecho. */
+  const marcarLinhas = (filhos: Array<NoHast>): Array<NoHast> => {
+    const pedacos: Array<{ readonly no: NoHast; readonly dentro: boolean }> = [];
+    let anterior = false;
+    for (const filho of filhos) {
+      const inicio = linha(filho);
+      if (filho.type === "text" && inicio !== undefined) {
+        (filho.value ?? "").split("\n").forEach((parte, k) => {
+          const dentro = noTrecho(inicio + k, inicio + k);
+          // a quebra entre duas linhas do trecho fica dentro do `<mark>`
+          if (k > 0) pedacos.push({ no: { type: "text", value: "\n" }, dentro: anterior && dentro });
+          if (parte !== "") pedacos.push({ no: { type: "text", value: parte }, dentro });
+          anterior = dentro;
+        });
+      } else {
+        // sem posição (a quebra que o `remarkQuebras` cria), o nó segue o vizinho de antes
+        anterior = inicio === undefined ? anterior : noTrecho(inicio, linhaFinal(filho) ?? inicio);
+        pedacos.push({ no: filho, dentro: anterior });
+      }
+    }
+    const novos: Array<NoHast> = [];
+    let corrida: Array<NoHast> = [];
+    const fechar = () => {
+      if (corrida.length > 0) novos.push(marca(corrida));
+      corrida = [];
+    };
+    for (const { no, dentro } of pedacos) {
+      if (dentro) corrida.push(no);
+      else {
+        fechar();
+        novos.push(no);
+      }
+    }
+    fechar();
+    return novos;
+  };
   /** Os elementos com linha, em pré-ordem: onde cair a âncora que não achou elemento na linha dela. */
   const candidatos: Array<{ readonly linha: number; readonly no: NoHast }> = [];
   // o anúncio vai no primeiro destaque do bloco em que o trecho começa
@@ -135,6 +187,10 @@ export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
     // a redação não vigente (`remarkLeitor.ts`) nunca se destaca como citada
     if (no.type === "element" && temClasse(no, "regiao-marcada")) {
       for (const filho of filhos) visitar(filho, true);
+      return;
+    }
+    if (!dentroDeMarca && no.type === "element" && FOLHAS.has(tag) && alcanca(no)) {
+      no.children = marcarLinhas(filhos);
       return;
     }
     if (!dentroDeMarca && no.type === "element" && destacada(no)) {

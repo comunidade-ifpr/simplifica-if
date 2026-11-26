@@ -218,6 +218,21 @@ it("realce: a marcação do Markdown no trecho (negrito, tabela, número do item
   }
 });
 
+it("realce: o <br> de uma célula, copiado no trecho, não impede achar a frase", () => {
+  const raiz = document.createElement("div");
+  raiz.innerHTML = '<mark class="trecho-citado">Total de vagas anuais:<br>Uma turma de 35 vagas.</mark>';
+  document.body.append(raiz);
+  try {
+    const faixas = faixasDoRealce(
+      textosDe([...raiz.querySelectorAll("mark")]),
+      "Total de vagas anuais:<br>Uma turma de 35 vagas.",
+    );
+    expect(faixas.map((f) => f.toString())).toEqual(["Total de vagas anuais:Uma turma de 35 vagas"]);
+  } finally {
+    raiz.remove();
+  }
+});
+
 it("busca: sem acento nem caixa, espaços juntos, sem juntar blocos vizinhos e sem o anúncio oculto", () => {
   const raiz = document.createElement("div");
   raiz.innerHTML =

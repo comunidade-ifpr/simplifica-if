@@ -207,6 +207,29 @@ describe("âncora sem elemento na linha", () => {
     expect(saida.match(/id="ementas-4"/g)).toHaveLength(1);
   });
 
+  it("trecho numa linha do meio de um parágrafo: só as linhas dele se destacam", () => {
+    // O `.docx` convertido separa os parágrafos do Word por uma quebra só: as linhas 1 a 3 são um <p>.
+    const md = ["Primeira frase.", "Frase **apontada** pela pendência.", "Terceira frase.", "", "Outro."].join("\n");
+    const saida = html(md, {
+      ancoras: ancorasPorLinha([{ id: "p-x", linha_inicio: 2 }]),
+      destaque: { inicio: 2, fim: 2 },
+      deslocamento: 0,
+    });
+    expect(saida).toBe(
+      '<p><span id="p-x"></span>Primeira frase.\n' +
+        '<mark class="trecho-citado"><span class="sr-only">Trecho citado: </span>Frase <strong>apontada</strong> pela pendência.</mark>' +
+        "\nTerceira frase.</p>\n<p>Outro.</p>",
+    );
+  });
+
+  it("trecho de várias linhas no meio do parágrafo: um <mark> só, da primeira à última", () => {
+    const md = ["Antes.", "Começo do trecho,", "fim do trecho.", "Depois."].join("\n");
+    const saida = html(md, { ancoras: new Map(), destaque: { inicio: 2, fim: 3 }, deslocamento: 0 });
+    expect(saida).toContain('Antes.\n<mark class="trecho-citado">');
+    expect(saida).toContain("Começo do trecho,\nfim do trecho.</mark>\nDepois.");
+    expect(saida.match(/<mark/g)).toHaveLength(1);
+  });
+
   it("âncoras de outros blocos não entram neste", () => {
     const saida = html("Texto do bloco.", {
       ancoras: ancorasPorLinha([{ id: "longe", linha_inicio: 500 }]),
