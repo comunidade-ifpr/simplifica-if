@@ -51,12 +51,27 @@ it("o cartão de link diz que abre o navegador, mostra o domínio e abre pela po
   await expect
     .element(cartao.getByText("Abre no navegador: calendario.example.org (pede o seu login de lá)"))
     .toBeVisible();
+  await expect.element(cartao.getByText("por Pessoa de Teste", { exact: true })).toBeVisible();
   expect(palavrasSuspeitas(cartao.element().textContent ?? "")).toEqual([]);
 
   await cartao.click();
   expect(abrirExterno).toHaveBeenCalledExactlyOnceWith("https://calendario.example.org/letivo?ano=2026");
   // O link não troca a página do app.
   expect(window.location.href).toBe(endereco);
+});
+
+it("escrita por uma pessoa e mantida por outra: o cartão diz as duas", async () => {
+  montar(<CartaoTarefa tarefa={{ ...tarefaDeLink(false), autoria: "Comissão de Teste" }} />);
+  const cartao = page.getByRole("link", { name: /^Consultar o calendário acadêmico/ });
+  await expect
+    .element(cartao.getByText("por Comissão de Teste, mantida por Pessoa de Teste", { exact: true }))
+    .toBeVisible();
+});
+
+it("autoria igual ao mantenedor: o cartão diz o nome uma vez", async () => {
+  montar(<CartaoTarefa tarefa={{ ...tarefaDeLink(false), autoria: "Pessoa de Teste" }} />);
+  const cartao = page.getByRole("link", { name: /^Consultar o calendário acadêmico/ });
+  await expect.element(cartao.getByText("por Pessoa de Teste", { exact: true })).toBeVisible();
 });
 
 it("sem login no destino, o cartão não fala em login", async () => {

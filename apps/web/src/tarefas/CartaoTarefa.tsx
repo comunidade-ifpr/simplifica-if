@@ -1,8 +1,8 @@
 /**
  * Uma tarefa no Início e em "Todas as tarefas". O clique depende da abertura: a de conversa abre o
  * formulário; a de módulo, a tela do módulo; a de link, o navegador do sistema, e o cartão diz isso e
- * mostra o domínio de destino; se o link não abre, o cartão diz. Sem borda: o título e o resumo, e o
- * título fica grifado ao passar o mouse ou receber o foco.
+ * mostra o domínio de destino; se o link não abre, o cartão diz. Sem borda: o título, o resumo e quem
+ * mantém a tarefa, e o título fica grifado ao passar o mouse ou receber o foco.
  */
 import { Link } from "@tanstack/react-router";
 import { ExternalLinkIcon } from "lucide-react";
@@ -13,6 +13,15 @@ import type { Tarefa } from "./catalogo.ts";
 
 const CLASSE =
   "group flex h-full flex-col gap-1 rounded-xl px-3.5 py-3 text-left hover:bg-muted focus-visible:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+/**
+ * Quem responde pela tarefa, na linha discreta do cartão: quem mantém; e, quando outra pessoa a escreveu,
+ * as duas, para o mantenedor não passar por autor.
+ */
+export const creditoDoCartao = (tarefa: Pick<Tarefa, "autoria" | "mantenedor">): string =>
+  tarefa.autoria === undefined || tarefa.autoria === tarefa.mantenedor.nome
+    ? `por ${tarefa.mantenedor.nome}`
+    : `por ${tarefa.autoria}, mantida por ${tarefa.mantenedor.nome}`;
 
 export function CartaoTarefa({ tarefa, paraVoce = false }: { readonly tarefa: Tarefa; readonly paraVoce?: boolean }) {
   const { abre: abertura } = tarefa;
@@ -41,6 +50,10 @@ export function CartaoTarefa({ tarefa, paraVoce = false }: { readonly tarefa: Ta
           {abertura.requerLogin ? " (pede o seu login de lá)" : ""}
         </span>
       ) : null}
+      {/* Sem `text-micro`: ele traz o peso médio, e esta linha é a mais discreta do cartão. */}
+      <span className="mt-1 text-[0.8125rem] text-muted-foreground/80 leading-[1.125rem]" data-mantenedor-cartao>
+        {creditoDoCartao(tarefa)}
+      </span>
       {erro === undefined ? null : (
         <span role="alert" className="text-destructive-foreground text-small" data-erro-link>
           {erro.texto}
