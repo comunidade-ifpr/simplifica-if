@@ -46,6 +46,7 @@ describe("simplifica-mcp com --pasta-atualizacao", () => {
           saida: NodePath.join(raiz, "servido", "beta"),
           canal: "beta",
           commit: "c",
+          dataCommit: "2026-11-20T12:00:00Z",
           banco,
           appMinimo: "0.0.1",
           chave,

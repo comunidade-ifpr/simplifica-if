@@ -26,7 +26,7 @@ const TESTES_BASE = [
   "packages/kb/src/db/base.test.ts",
   "packages/kb/src/ppcs/secoes-base.test.ts",
   "packages/kb/src/avaliacao/resolvedor.test.ts",
-  "apps/server/test/revisao-ppc-base.test.ts",
+  "apps/server/test/modulos/revisao-ppc/revisao-ppc-base.test.ts",
 ];
 
 /** Caminhos ignorados tanto na formatação quanto no lint (dados, builds e código verbatim do T3). */
@@ -35,6 +35,8 @@ const IGNORAR_COMUM = [
   ".claude/**",
   "node_modules",
   "base-conhecimento/**",
+  // o catálogo do app (tarefas e skills) é dado: viaja pelo canal como está
+  "catalogo/**",
   "avaliacao/**",
   "tmp/**",
   "outputs/**",
@@ -205,6 +207,8 @@ export default defineConfig({
       "simplifica-if/no-wall-clock-in-tests": "error",
       "simplifica-if/prefer-catch-tags": "error",
       "simplifica-if/require-suppression-reason": "error",
+      // Só os arquivos de composição (`ferramentas/oxlint-plugin/modulos.ts`) importam de `modulos/`.
+      "simplifica-if/fronteira-modulos": "error",
     },
     overrides: [
       {

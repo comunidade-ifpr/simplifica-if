@@ -1,5 +1,5 @@
 /**
- * O vocabulário do campo `publico` do manifesto de skill (bloco `simplifica:` do `SKILL.md`): a quem a
+ * O vocabulário do campo `publico` do manifesto da tarefa (`catalogo/tarefas/<id>.yaml`, `./tarefas.ts`): a quem a
  * tarefa serve. É o mesmo que a função do perfil da pessoa no app (`@simplifica-if/contratos-app`,
  * primeiro uso, M1.8): o Início põe primeiro as tarefas cujo `publico` inclui a função dela.
  *

@@ -90,12 +90,24 @@ export interface ConfigSessao {
   /** Skills do app para esta sessão; o `Motor` grava os arquivos e as junta às `instrucoes`. */
   readonly skills?: ReadonlyArray<Skill>;
   /**
+   * Os nomes das skills retiradas do app: o `Motor` apaga a pasta delas em `.simplifica/skills/` da pasta
+   * de trabalho, gravada por uma sessão de antes da retirada. As outras pastas ficam (podem ser de outra
+   * conversa na mesma pasta).
+   */
+  readonly skillsRetiradas?: ReadonlyArray<string>;
+  /**
    * Sessão de julgamento (a revisão de PPC): sem MCP, sem skills e sem ferramentas. O `Motor` aplica
    * `POLITICA_JULGAMENTO` (nega tudo sem perguntar) em vez da política do app; o Claude recebe
    * `tools: []` e só as `instrucoes` como prompt de sistema (sem o do Claude Code, cerca de 10 mil
    * tokens por sessão).
    */
   readonly semFerramentas?: boolean;
+  /**
+   * Sessão sem busca nem leitura na web (a tarefa com `abre.conversa.web: false`). O `Motor` aplica a
+   * política do app com a web desligada (`politicaSemWeb`), e os drivers a seguem como seguem a de
+   * julgamento. Só restringe: `false` ou ausente não liga o que a política desliga.
+   */
+  readonly semWeb?: boolean;
 }
 
 export interface SessaoDriver {

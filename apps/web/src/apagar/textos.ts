@@ -1,10 +1,12 @@
 /**
- * As frases do diálogo de apagar, a partir dos fatos que o servidor dá (`conversa.previaApagar`) ou que
- * a lista viva já tem: o que sai do app, o que fica no computador e o que a pessoa pode escolher. Puras,
- * para os testes; o `DialogoApagar` só as mostra.
+ * As frases do diálogo de apagar: o que sai do app, o que fica no computador e o que a pessoa pode
+ * escolher (`TextosApagar`), e a nota de depois. Aqui ficam as da conversa, a partir dos fatos que o
+ * servidor dá (`conversa.previaApagar`); quem apaga outra coisa monta os seus `TextosApagar` do lado dele
+ * (a revisão de PPC, em `modulos/revisao-ppc/apagar.ts`) e os passa ao `DialogoApagar`, que só os mostra. Puras, para
+ * os testes.
  */
-import { DIAS_LISTA, type ListaPendencias, type PreviaApagarConversa } from "@simplifica-if/contratos-app";
-import { nomeDoArquivo, plural } from "../revisao/lista.ts";
+import type { PreviaApagarConversa } from "@simplifica-if/contratos-app";
+import { nomeDoArquivo, plural } from "../lib/texto.ts";
 
 /** Um item do que fica no computador, com o caminho quando ajuda a achar o arquivo. */
 export interface ItemFica {
@@ -71,29 +73,6 @@ export function textosApagarConversa(
   };
 }
 
-/**
- * Apagar uma revisão de PPC. `lendo`: a leitura com IA da lista está em andamento (o servidor a para
- * antes de apagar).
- */
-export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean): TextosApagar {
-  const r = lista.resultado;
-  return {
-    titulo: `Apagar a revisão de “${nomeDoArquivo(lista.arquivoOriginal)}”?`,
-    saiDoApp: [
-      `O texto do PPC convertido e ${plural(lista.pendencias.length, "pendência", "pendências")}`,
-      "O que você marcou e o que escreveu ao discordar",
-      ...(r.leituraIa === "nenhuma" && !lendo ? [] : ["A conferência com IA, com o que ela guardou do PPC"]),
-    ],
-    ficaNoComputador: [
-      { texto: "Seu arquivo", caminho: lista.arquivoOriginal },
-      { texto: "A cópia comentada", caminho: r.arquivoComentado },
-    ],
-    aviso: lendo ? "A conferência com IA está em andamento. O app para a conferência antes de apagar." : null,
-    opcaoPasta: null,
-    confirmar: "Apagar a revisão",
-  };
-}
-
 /** O que aconteceu com cada item apagado, para a nota depois de apagar. */
 export interface Desfecho {
   /** O nome que a pessoa vê (o título da conversa, o arquivo da revisão). */
@@ -117,11 +96,16 @@ export interface NotaApagar {
   readonly texto: string;
 }
 
-export function notaDepoisDeApagar(
-  desfechos: ReadonlyArray<Desfecho>,
-  tipo: "conversa" | "revisão",
-): NotaApagar | null {
-  const [um, outro] = tipo === "conversa" ? ["conversa", "conversas"] : ["revisão", "revisões"];
+/** O nome do que se apaga, no singular e no plural (um substantivo feminino: "A conversa saiu"). */
+export interface NomeDoItem {
+  readonly um: string;
+  readonly varios: string;
+}
+
+export const CONVERSA: NomeDoItem = { um: "conversa", varios: "conversas" };
+
+export function notaDepoisDeApagar(desfechos: ReadonlyArray<Desfecho>, nome: NomeDoItem): NotaApagar | null {
+  const { um, varios: outro } = nome;
   const falharam = desfechos.filter((d) => d.falhou === true);
   const apagados = desfechos.length - falharam.length;
   const transcricoes = desfechos.filter((d) => d.falhou !== true && d.transcricaoFicou !== undefined);
@@ -218,47 +202,4 @@ export function textosApagarConversas(itens: ReadonlyArray<ConversaComPrevia>, p
         : null,
     confirmar: `Apagar ${n} conversas`,
   };
-}
-
-/** Apagar várias revisões de uma vez; com uma só, os textos dela. */
-export function textosApagarRevisoes(
-  itens: ReadonlyArray<{ readonly lista: ListaPendencias; readonly lendo: boolean }>,
-): TextosApagar {
-  if (itens.length === 1) return textosApagarRevisao(itens[0]!.lista, itens[0]!.lendo);
-  const n = itens.length;
-  const pendencias = itens.reduce((soma, i) => soma + i.lista.pendencias.length, 0);
-  const comIa = itens.some((i) => i.lendo || i.lista.resultado.leituraIa !== "nenhuma");
-  const lendo = itens.filter((i) => i.lendo).length;
-  return {
-    titulo: `Apagar ${n} revisões?`,
-    saiDoApp: [
-      `O texto de ${n} PPCs convertidos e ${plural(pendencias, "pendência", "pendências")}`,
-      "O que você marcou e o que escreveu ao discordar",
-      ...(comIa ? ["As conferências com IA, com o que elas guardaram dos PPCs"] : []),
-    ],
-    ficaNoComputador: [{ texto: `Seus ${n} arquivos e as cópias comentadas, nas pastas deles` }],
-    aviso:
-      lendo === 0
-        ? null
-        : lendo === 1
-          ? "Uma conferência com IA está em andamento. O app a para antes de apagar."
-          : `${lendo} leituras com IA estão em andamento. O app as para antes de apagar.`,
-    opcaoPasta: null,
-    confirmar: `Apagar ${n} revisões`,
-  };
-}
-
-/** Quantos dias faltam para a lista sair sozinha (`DIAS_LISTA` sem uso), em `agora`. */
-export function diasParaSair(atualizadaEm: string, agora: number): number {
-  const sai = Date.parse(atualizadaEm) + DIAS_LISTA * 24 * 60 * 60 * 1000;
-  return Math.max(0, Math.ceil((sai - agora) / (24 * 60 * 60 * 1000)));
-}
-
-/** "some em 3 dias", "some amanhã", "some hoje": só quando faltam poucos dias. */
-export function avisoDeSaida(atualizadaEm: string, agora: number): string | null {
-  const dias = diasParaSair(atualizadaEm, agora);
-  if (dias > 7) return null;
-  if (dias <= 0) return "some hoje";
-  if (dias === 1) return "some amanhã";
-  return `some em ${dias} dias`;
 }

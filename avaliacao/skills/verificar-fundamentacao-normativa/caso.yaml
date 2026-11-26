@@ -3,7 +3,7 @@
 # Pergunta: a skill melhora o resultado em relação a só o MCP `ifpr`? Cada documento sintético vai
 # para uma pasta de trabalho vazia, com o mesmo pedido, em cada condição:
 #   - sem-skill:     só o MCP `ifpr` (as instruções do servidor);
-#   - skill:         MCP + a skill da árvore de trabalho (.agents/skills);
+#   - skill:         MCP + a skill da árvore de trabalho (catalogo/skills);
 #   - skill-antiga:  MCP + a skill no commit `rev_skill_antiga` (antes do enxugamento).
 # Roda com `node scripts/avaliar_skill.ts` (README em avaliacao/README.md, seção "Skills do app").
 #

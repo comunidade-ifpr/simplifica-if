@@ -1,23 +1,31 @@
 /**
- * A tarefa de uma skill (M1.9): o formulário curto gerado das `entradas` do manifesto (arquivo, curso,
- * texto, norma), a frase do que vai acontecer e a duração estimada. O formulário monta o pedido, que a
- * pessoa pode editar antes de enviar; "Começar" cria a pasta da tarefa em Documentos/Simplifica IF,
- * copia os anexos para ela e abre a conversa com a skill.
+ * A página de uma tarefa do catálogo (M1.9): o título, o resumo, o que ela não faz (`limites`), a
+ * duração estimada, quem a escreveu e quem a mantém, e o começo dela conforme a abertura:
+ *
+ * - **conversa:** o formulário curto gerado das `entradas` do manifesto (arquivo, curso, texto, norma).
+ *   O formulário monta o pedido, que a pessoa pode editar antes de enviar; "Começar" cria a pasta da
+ *   tarefa em Documentos/Simplifica IF, copia os anexos para ela e abre a conversa da tarefa;
+ * - **módulo:** o botão que leva à tela do módulo;
+ * - **link:** o botão que abre o sistema no navegador, com o domínio de destino.
+ *
+ * Os cartões de módulo e de link abrem direto; esta página os atende quando alguém chega pelo endereço.
  */
-import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
+import type { AberturaTarefa, EntradaTarefa, ResumoTarefa } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeftIcon, ClockIcon, FolderIcon, PlayIcon } from "lucide-react";
-import { type FormEvent, useId, useState } from "react";
+import { ArrowLeftIcon, ClockIcon, ExternalLinkIcon, FolderIcon, PlayIcon } from "lucide-react";
+import { type FormEvent, type ReactNode, useId, useState } from "react";
 import { AvisoErro } from "../../components/AvisoErro.tsx";
 import { Pagina } from "../../components/Pagina.tsx";
-import { Button } from "../../components/ui/button.tsx";
+import { Button, buttonVariants } from "../../components/ui/button.tsx";
 import { Input } from "../../components/ui/input.tsx";
 import { Spinner } from "../../components/ui/spinner.tsx";
 import { Textarea } from "../../components/ui/textarea.tsx";
 import { explicarErro, type MensagemErro } from "../../conexao/erros.ts";
 import { useApi, useConversa } from "../../contexto.tsx";
+import { abrirLinkDaTarefa, dominioDoLink, ROTAS_MODULO } from "../../tarefas/abrir.ts";
 import { useCatalogo } from "../../tarefas/catalogo.ts";
-import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../../tarefas/comecar.tsx";
+import { nomeDoArquivo } from "../../lib/texto.ts";
+import { Anexos, comecarTarefa, EscolhaIa } from "../../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../../tarefas/modelos.ts";
 import { duracaoPorExtenso, faltando, montarPedido, type Valores } from "../../tarefas/textos.ts";
 
@@ -55,7 +63,7 @@ function CampoEntrada({
           rotulo="Escolher arquivo…"
           aoMudar={(novos) => {
             aoAnexar(novos);
-            aoMudar(novos.map(nomeArquivo).join(", "));
+            aoMudar(novos.map(nomeDoArquivo).join(", "));
           }}
         />
         {entrada.aceita === undefined ? null : (
@@ -84,22 +92,61 @@ function CampoEntrada({
   );
 }
 
-function Formulario({ skill }: { readonly skill: ResumoSkill }) {
+/**
+ * O cabeçalho comum às três aberturas: o que a tarefa é, quanto leva, o que ela não faz e quem responde
+ * por ela. `nota` é a frase própria da abertura (onde ficam os arquivos, aonde o link leva).
+ */
+function Apresentacao({ tarefa, nota }: { readonly tarefa: ResumoTarefa; readonly nota?: ReactNode }) {
+  const duracao = duracaoPorExtenso(tarefa.duracaoEstimada);
+  return (
+    <div className="flex flex-col gap-2">
+      <h1 className="text-display">{tarefa.titulo}</h1>
+      <p className="max-w-prose text-muted-foreground">{tarefa.resumo}</p>
+      {duracao === undefined && nota === undefined ? null : (
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
+          {duracao === undefined ? null : (
+            <span className="flex items-center gap-1.5">
+              <ClockIcon aria-hidden className="size-4" /> Leva {duracao}.
+            </span>
+          )}
+          {nota}
+        </p>
+      )}
+      {tarefa.limites === undefined ? null : (
+        <p className="max-w-prose text-sm" data-limites>
+          <span className="font-medium">O que esta tarefa não faz:</span> {tarefa.limites}
+        </p>
+      )}
+      <p className="text-muted-foreground text-small" data-mantenedor>
+        {tarefa.autoria === undefined ? null : `Escrita por ${tarefa.autoria}. `}
+        Mantida por {tarefa.mantenedor.nome} (@{tarefa.mantenedor.github} no GitHub).
+      </p>
+    </div>
+  );
+}
+
+function Formulario({
+  tarefa,
+  conversa: abertura,
+}: {
+  readonly tarefa: ResumoTarefa;
+  readonly conversa: Extract<AberturaTarefa, { tipo: "conversa" }>;
+}) {
   const api = useApi();
   const [estado, conversa] = useConversa();
   const navegar = useNavigate();
   const idPedido = useId();
-  const [valores, setValores] = useState<Valores>({});
-  const [anexos, setAnexos] = useState<Readonly<Record<string, ReadonlyArray<string>>>>({});
+  // Pelo `id` da entrada, em `Map`: o `id` vem do manifesto, e `constructor` não é campo preenchido.
+  const [valores, setValores] = useState<Valores>(new Map());
+  const [anexos, setAnexos] = useState<ReadonlyMap<string, ReadonlyArray<string>>>(new Map());
   // O pedido editado pela pessoa; sem edição, o montado a partir do formulário.
   const [editado, setEditado] = useState<string>();
   const [ia, setIa] = useState<EscolhaDaIa>({ provider: estado.provider });
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
-  const pedido = editado ?? montarPedido(skill, valores);
-  const falta = faltando(skill.entradas, valores);
-  const duracao = duracaoPorExtenso(skill.duracaoEstimada);
+  const pedido = editado ?? montarPedido(abertura, valores);
+  const falta = faltando(abertura.entradas, valores);
 
   const aoEnviar = async (evento: FormEvent) => {
     evento.preventDefault();
@@ -108,10 +155,10 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
     setErro(undefined);
     try {
       const sessao = await comecarTarefa(api, conversa, {
-        titulo: skill.titulo,
-        tarefa: skill.nome,
+        titulo: tarefa.titulo,
+        tarefa: tarefa.id,
         ia,
-        anexos: Object.values(anexos).flat(),
+        anexos: [...anexos.values()].flat(),
         texto: pedido,
       });
       await navegar({ to: "/conversa", search: { id: sessao } });
@@ -122,33 +169,27 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
   };
 
   return (
-    <form onSubmit={aoEnviar} className="flex flex-col gap-5" aria-label={skill.titulo}>
-      <div className="flex flex-col gap-2">
-        <h1 className="text-display">{skill.titulo}</h1>
-        <p className="max-w-prose text-muted-foreground">{skill.resumo}</p>
-        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-sm">
-          {duracao === undefined ? null : (
-            <span className="flex items-center gap-1.5">
-              <ClockIcon aria-hidden className="size-4" /> Leva {duracao}.
-            </span>
-          )}
+    <form onSubmit={aoEnviar} className="flex flex-col gap-5" aria-label={tarefa.titulo}>
+      <Apresentacao
+        tarefa={tarefa}
+        nota={
           <span className="flex items-center gap-1.5">
             <FolderIcon aria-hidden className="size-4" /> Os arquivos ficam numa pasta nova em Documentos › Simplifica
             IF.
           </span>
-        </p>
-      </div>
-      {skill.entradas.map((entrada) => (
+        }
+      />
+      {abertura.entradas.map((entrada) => (
         <CampoEntrada
           key={entrada.id}
           entrada={entrada}
-          valor={valores[entrada.id] ?? ""}
-          anexos={anexos[entrada.id] ?? []}
+          valor={valores.get(entrada.id) ?? ""}
+          anexos={anexos.get(entrada.id) ?? []}
           aoMudar={(valor) => {
-            setValores((anteriores) => ({ ...anteriores, [entrada.id]: valor }));
+            setValores((anteriores) => new Map(anteriores).set(entrada.id, valor));
             setEditado(undefined);
           }}
-          aoAnexar={(novos) => setAnexos((anteriores) => ({ ...anteriores, [entrada.id]: novos }))}
+          aoAnexar={(novos) => setAnexos((anteriores) => new Map(anteriores).set(entrada.id, novos))}
         />
       ))}
       <div className="flex flex-col gap-1.5">
@@ -157,7 +198,7 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
         </label>
         <p className="text-micro text-muted-foreground">
           Você pode mudar o texto antes de começar.
-          {Object.values(anexos).some((lista) => lista.length > 0)
+          {[...anexos.values()].some((lista) => lista.length > 0)
             ? " A lista dos arquivos anexados vai junto, no fim, com o caminho da versão em texto de cada documento do Word."
             : null}
         </p>
@@ -180,10 +221,55 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
   );
 }
 
+/** A tarefa de link ou de módulo: a apresentação e o botão que abre. */
+function Abrir({
+  tarefa,
+  abertura,
+}: {
+  readonly tarefa: ResumoTarefa;
+  readonly abertura: Exclude<AberturaTarefa, { tipo: "conversa" }>;
+}) {
+  const [erro, setErro] = useState<MensagemErro>();
+  if (abertura.tipo === "modulo") {
+    return (
+      <div className="flex flex-col gap-5">
+        <Apresentacao tarefa={tarefa} />
+        <Link to={ROTAS_MODULO[abertura.modulo]} className={buttonVariants({ size: "lg", className: "self-start" })}>
+          <PlayIcon /> Começar
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-5">
+      <Apresentacao
+        tarefa={tarefa}
+        nota={
+          <span className="flex items-center gap-1.5">
+            <ExternalLinkIcon aria-hidden className="size-4" /> Abre no navegador: {dominioDoLink(abertura.url)}
+            {abertura.requerLogin ? " (pede o seu login de lá)" : ""}.
+          </span>
+        }
+      />
+      {erro === undefined ? null : <AvisoErro erro={erro} />}
+      <Button
+        size="lg"
+        className="self-start"
+        onClick={() => {
+          setErro(undefined);
+          void abrirLinkDaTarefa(abertura.url).then(setErro);
+        }}
+      >
+        <ExternalLinkIcon /> Abrir no navegador
+      </Button>
+    </div>
+  );
+}
+
 function TelaTarefa() {
   const { nome } = Route.useParams();
   const catalogo = useCatalogo();
-  const skill = catalogo.fase === "pronto" ? catalogo.skills.find((candidata) => candidata.nome === nome) : undefined;
+  const tarefa = catalogo.fase === "pronto" ? catalogo.tarefas.find((candidata) => candidata.id === nome) : undefined;
   return (
     <Pagina largura="estreita" className="gap-4">
       <Link to="/" className="flex w-fit items-center gap-1 text-muted-foreground text-small hover:text-foreground">
@@ -195,10 +281,13 @@ function TelaTarefa() {
         </p>
       ) : catalogo.fase === "falhou" ? (
         <AvisoErro erro={catalogo.erro} />
-      ) : skill === undefined ? (
+      ) : tarefa === undefined ? (
         <p>Esta tarefa não existe mais no app.</p>
+      ) : tarefa.abre.tipo === "conversa" ? (
+        // A `key` zera o formulário ao trocar de tarefa: o pedido editado e os anexos são da tarefa.
+        <Formulario key={tarefa.id} tarefa={tarefa} conversa={tarefa.abre} />
       ) : (
-        <Formulario skill={skill} />
+        <Abrir key={tarefa.id} tarefa={tarefa} abertura={tarefa.abre} />
       )}
     </Pagina>
   );

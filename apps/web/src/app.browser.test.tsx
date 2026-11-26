@@ -3,11 +3,9 @@
  * demonstração (`test/servidor-teste.ts`, num processo Node): o Modo Servidor (Início com a data da
  * base, os cartões e a caixa de pedido; o formulário da tarefa; a conversa com etapas, detalhes
  * técnicos, avaliação e a pasta com o Desfazer), Configurações com os três providers, instalar e
- * entrar, a conversa com aprovação, link `ifpr://` no painel de leitura, interromper e nova conversa, e
- * "Revisar um PPC" (a revisão prévia sem IA, com o Worker de verdade e a ponte do desktop simulada: o
- * diálogo devolve o PPC sintético do servidor de teste).
+ * entrar, a conversa com aprovação, link `ifpr://` no painel de leitura, interromper e nova conversa. O
+ * fluxo de "Revisar um PPC" fica com o módulo (`modulos/revisao-ppc/fluxo.browser.test.tsx`).
  */
-import { NO_MAC } from "./components/BuscaPainel.tsx";
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
@@ -161,148 +159,6 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await expect.element(mensagens.getByText("Resposta interrompida.")).toBeVisible();
 });
 
-it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, a lista por tema e a cópia comentada", async () => {
-  const abrirDocumento = vi.fn(async (_caminho: string) => {});
-  const mostrarNaPasta = vi.fn(async (_caminho: string) => {});
-  window.simplifica = ponteTeste({
-    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
-    escolherDocx: async () => servidor.ppc,
-    abrirDocumento,
-    mostrarNaPasta,
-  });
-  await page.viewport(1280, 900);
-  await using _app = await montarApp(servidor);
-
-  // O cartão da tarefa nativa leva à entrada: a frase e a área de soltar, com o botão.
-  await page.getByRole("link", { name: /^Revisar um PPC/ }).click();
-  await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
-  await expect.element(page.getByText("Confira seu PPC contra as normas antes de enviar à PROENS.")).toBeVisible();
-  await page.getByRole("button", { name: "Escolher o PPC" }).click();
-
-  // A frase-resultado diz quanto foi lido; a régua tem um traço por critério, agrupados por tema.
-  const frase = page.getByRole("heading", { name: /critérios que o app confere sozinho\.$/ });
-  await expect.element(frase).toBeVisible();
-  await expect.element(page.getByRole("group", { name: /^Régua de critérios\. \d+ critérios: / })).toBeVisible();
-  await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
-
-  // A faixa da IA já traz a estimativa, sem "etapas" nem "referência provisória".
-  const faixa = page.getByRole("region", { name: "Conferência com IA" });
-  await expect.element(faixa.getByText(/O Claude confere .* em cerca de \d+ minutos?, usando perto de/)).toBeVisible();
-  await expect.element(faixa.getByRole("button", { name: "Conferir com o Claude" })).toBeEnabled();
-  expect(faixa.element().textContent).not.toMatch(/etapa|provisória/);
-
-  // O curso não identificado vira um bloqueio só, com as pendências que dependem dele.
-  await expect
-    .element(page.getByRole("heading", { name: "Não reconhecemos o curso no Catálogo Nacional (CNCT)" }))
-    .toBeVisible();
-  await expect.element(page.getByRole("button", { name: /pendências? dependem? disso/ })).toBeVisible();
-  semIngles();
-
-  // A coluna de temas filtra a lista; a pendência abre com o que fazer, o trecho e a fonte pelo nome.
-  await page
-    .getByRole("navigation", { name: "Temas" })
-    .getByRole("button", { name: /AEE e inclusão/ })
-    .click();
-  await expect.element(page.getByRole("heading", { name: "Acesso, permanência, AEE e inclusão" })).toBeVisible();
-  const linha = page.getByRole("button", { name: /O AEE aparece como componente/ });
-  await linha.click();
-  await expect.element(page.getByText("O que fazer")).toBeVisible();
-  await expect.element(page.getByText("Atendimento Educacional Especializado", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Nota Técnica PROENS/IFPR nº 1/2025" }).click();
-  await expect.element(page.getByRole("complementary", { name: "Painel de leitura" })).toBeVisible();
-  // "Ver no PPC": o texto convertido do arquivo, no painel, com o trecho da pendência destacado.
-  await page.getByRole("button", { name: "Ver no PPC" }).click();
-  const revisado = page.getByRole("article", { name: "PPC em revisão" });
-  await expect.element(revisado.getByRole("heading", { level: 2, name: "PPC de teste.docx" })).toBeVisible();
-  await expect.element(revisado.getByText(/Trecho citado: o trecho apontado, destacado no texto/)).toBeVisible();
-  await expect
-    .poll(() =>
-      [...revisado.element().querySelectorAll("mark.trecho-citado")].map((m) => m.textContent ?? "").join(" "),
-    )
-    .toContain("Atendimento Educacional Especializado");
-  // dentro do bloco, a frase exata do trecho, realçada
-  await expect
-    .poll(() => [...(CSS.highlights.get("trecho-exato") ?? [])].map((r) => (r as Range).toString()).join(" "))
-    .toContain("Atendimento Educacional Especializado");
-  // ⌘F (macOS) ou Ctrl+F busca no texto do painel: a contagem e a ocorrência atual realçada.
-  await userEvent.keyboard(NO_MAC ? "{Meta>}f{/Meta}" : "{Control>}f{/Control}");
-  const busca = page.getByRole("searchbox", { name: "Buscar no texto" });
-  await expect.element(busca).toHaveFocus();
-  await busca.fill("educacional especializado");
-  await expect.element(page.getByText(/^1 de \d+$/)).toBeVisible();
-  expect(CSS.highlights.get("busca-atual")?.size).toBe(1);
-  await userEvent.keyboard("{Escape}");
-  await expect.element(busca).not.toBeInTheDocument();
-  expect(CSS.highlights.has("busca")).toBe(false);
-  await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
-  // "Abrir ao lado": o texto do PPC no painel, desde o começo.
-  await page.getByRole("button", { name: "Abrir ao lado" }).click();
-  await expect
-    .element(page.getByRole("article", { name: "PPC em revisão" }).getByRole("heading", { name: "PPC de teste.docx" }))
-    .toBeVisible();
-  await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
-  expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\/|CT-[A-Z]+-\d/);
-  semIngles();
-
-  // "Feito" esmaece a linha e conta; F, com o foco na linha, desfaz.
-  await page.getByRole("button", { name: "Feito" }).click();
-  await expect.element(page.getByText(/^1 de \d+ feitas?$/).first()).toBeInTheDocument();
-  (linha.element() as HTMLElement).focus();
-  await userEvent.keyboard("f");
-  await expect.element(page.getByText(/^0 de \d+ feitas?$/).first()).toBeInTheDocument();
-
-  // "Abrir no Word" regrava a cópia comentada e a abre; o ⋯ mostra na pasta.
-  await page.getByRole("button", { name: "Abrir no Word" }).click();
-  const comentado = `${servidor.pasta}/PPC de teste - revisão prévia (Simplifica IF).docx`;
-  await vi.waitFor(() => expect(abrirDocumento).toHaveBeenCalledWith(comentado));
-  await page.getByRole("button", { name: "Mais ações do documento" }).click();
-  await page.getByRole("menuitem", { name: "Mostrar na pasta" }).click();
-  await vi.waitFor(() => expect(mostrarNaPasta).toHaveBeenCalledWith(comentado));
-
-  // "Qual é o curso?": a escolha no CNCT revisa de novo, e o bloqueio sai.
-  await page.getByRole("combobox", { name: "Qual é o curso?" }).fill("enferm");
-  await page.getByRole("option", { name: /Técnico em Enfermagem/ }).click();
-  await page.getByRole("button", { name: "Conferir com este curso" }).click();
-  await expect.element(page.getByText(/^Técnico em Enfermagem/)).toBeVisible();
-  await expect
-    .element(page.getByRole("heading", { name: "Não reconhecemos o curso no Catálogo Nacional (CNCT)" }))
-    .not.toBeInTheDocument();
-
-  // Apagar pede confirmação, com o que sai e o que fica: cancelar não apaga; confirmar volta à entrada.
-  await page.getByRole("button", { name: "Mais ações do documento" }).click();
-  await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
-  const confirmacao = page.getByRole("alertdialog", { name: "Apagar a revisão de “PPC de teste.docx”?" });
-  await expect.element(confirmacao.getByText(/^A cópia comentada/)).toBeVisible();
-  await expect.element(confirmacao.getByText(comentado)).toBeVisible();
-  await confirmacao.getByRole("button", { name: "Cancelar" }).click();
-  await expect.element(confirmacao).not.toBeInTheDocument();
-  await page.getByRole("button", { name: "Mais ações do documento" }).click();
-  await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
-  await page.getByRole("button", { name: "Apagar a revisão" }).click();
-  await expect.element(page.getByRole("button", { name: "Escolher o PPC" })).toBeVisible();
-  // A revisão apagada sai das revisões recentes.
-  await expect.element(page.getByRole("heading", { name: "Revisões recentes" })).not.toBeInTheDocument();
-  semIngles();
-});
-
-it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
-  window.simplifica = ponteTeste({
-    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
-    escolherDocx: async () => `${servidor.pasta}/não existe.docx`,
-  });
-  await using app = await montarApp(servidor, "/revisao-ppc");
-  await page.getByRole("button", { name: "Escolher o PPC" }).click();
-  await expect.element(page.getByText("O arquivo não foi encontrado ou não pode ser lido.")).toBeVisible();
-  semIngles();
-  // Com o código do erro, "Detalhes técnicos" leva a Configurações › Diagnóstico.
-  await page.getByText("Detalhes técnicos").click();
-  await expect.element(page.getByText(/^[0-9A-F]{8}$/)).toBeVisible();
-  await page.getByRole("link", { name: "Gerar diagnóstico" }).click();
-  await expect.element(page.getByRole("region", { name: "Diagnóstico" })).toBeVisible();
-  expect(app.roteador.state.location.pathname).toBe("/configuracoes");
-  expect(app.roteador.state.location.hash).toBe("diagnostico");
-});
-
 it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tarefa e Desfazer", async () => {
   const abrirArquivoTarefa = vi.fn(async (_caminho: string) => {});
   const mostrarArquivoTarefa = vi.fn(async (_caminho: string) => {});
@@ -318,7 +174,7 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await page.viewport(1280, 860);
   await using _app = await montarApp(servidor);
 
-  // Início: a data da base, a caixa de pedido, os cartões (a tarefa nativa e a skill) e os recentes.
+  // Início: a data da base, a caixa de pedido, os cartões (a tarefa de módulo e a de conversa) e os recentes.
   await expect.element(page.getByText(/^Base de (desenvolvimento|\d{2}\/\d{2}\/\d{4})$/)).toBeVisible();
   await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
   const tarefas = page.getByRole("region", { name: "Tarefas" });
@@ -335,6 +191,8 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await cartao.click();
   await expect.element(page.getByRole("heading", { name: "Conferir a fundamentação normativa" })).toBeVisible();
   await expect.element(page.getByText("Leva cerca de 10 minutos.")).toBeVisible();
+  // Quem mantém a tarefa, do manifesto.
+  await expect.element(page.getByText(/^Mantida por .+ no GitHub\)\.$/)).toBeVisible();
   const comecar = page.getByRole("button", { name: "Começar" });
   await expect.element(comecar).toBeDisabled();
   await expect.element(page.getByText("Falta: Documento a conferir.")).toBeVisible();
@@ -345,7 +203,7 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   const pedido = page.getByLabelText("O pedido que vai para a IA");
   await expect
     .element(pedido)
-    .toHaveValue("Conferir a fundamentação normativa.\nDocumento a conferir: parecer.md (está na pasta da tarefa).");
+    .toHaveValue("Confira a fundamentação normativa do documento parecer.md, que está na pasta da tarefa.");
   await pedido.fill("Conferir a fundamentação normativa do parecer.md, com atenção ao estágio.");
   semIngles();
   await capturar("02-tarefa");
@@ -1210,4 +1068,73 @@ it("Conversa com busca web: rótulos em português, consulta/domínio no lugar d
   // O resumo bruto em inglês da página não aparece na tela.
   expect(mensagens.element().textContent).not.toContain("Fetched page content");
   semIngles();
+});
+
+it("Página da tarefa: link e módulo, o que a tarefa não faz e quem responde por ela; o formulário não passa de uma tarefa para outra", async () => {
+  // Um servidor só deste teste, com as tarefas de teste: o catálogo do checkout não tem tarefa de link.
+  const comTarefas = await iniciarServidorTeste({ atrasoLogin: 120, tarefasDeTeste: true });
+  const abrirExterno = vi.fn(async (_url: string) => {});
+  window.simplifica = ponteTeste({
+    conexao: async () => ({ urlServidor: comTarefas.urlServidor, token: comTarefas.token }),
+    abrirExterno,
+  });
+  await using app = await montarApp(comTarefas, "/tarefa/calendario-de-teste");
+  const irPara = (nome: string) => app.roteador.navigate({ to: "/tarefa/$nome", params: { nome } });
+  const limites = () => document.querySelector("[data-limites]")?.textContent;
+  const mantenedor = () => document.querySelector("[data-mantenedor]")?.textContent;
+
+  // Link: aonde vai (com a porta), o aviso de login, os limites, a autoria e o mantenedor.
+  await expect.element(page.getByRole("heading", { name: "Consultar o calendário de teste" })).toBeVisible();
+  await expect
+    .element(page.getByText("Abre no navegador: calendario.example.org:8443 (pede o seu login de lá)."))
+    .toBeVisible();
+  expect(limites()).toBe("O que esta tarefa não faz: Não altera o calendário.");
+  expect(mantenedor()).toBe("Escrita por Comissão de Teste. Mantida por Pessoa de Teste (@pessoa-de-teste no GitHub).");
+  semIngles();
+  // O botão abre pelo caminho de link externo do app, sem trocar a página.
+  const abrir = page.getByRole("button", { name: "Abrir no navegador" });
+  await abrir.click();
+  expect(abrirExterno).toHaveBeenCalledExactlyOnceWith("https://calendario.example.org:8443/letivo?ano=2026");
+  expect(app.roteador.state.location.pathname).toBe("/tarefa/calendario-de-teste");
+  // Se o link não abre, a página diz; na tentativa seguinte que abre, o aviso some.
+  abrirExterno.mockRejectedValueOnce(new Error("sem navegador padrão"));
+  await abrir.click();
+  const aviso = page.getByText("Não foi possível abrir calendario.example.org:8443 no navegador. Tente de novo.");
+  await expect.element(aviso).toBeVisible();
+  await abrir.click();
+  await expect.element(aviso).not.toBeInTheDocument();
+
+  // Módulo: a duração, os limites e o botão que leva à tela do módulo.
+  await irPara("revisar-de-teste");
+  await expect.element(page.getByRole("heading", { name: "Revisar um PPC de teste" })).toBeVisible();
+  await expect.element(page.getByText("Leva cerca de 20 minutos.")).toBeVisible();
+  expect(limites()).toBe("O que esta tarefa não faz: Não substitui a análise do colegiado.");
+  expect(mantenedor()).toBe("Escrita por Comissão de Teste. Mantida por Pessoa de Teste (@pessoa-de-teste no GitHub).");
+  await expect.element(page.getByRole("button", { name: "Abrir no navegador" })).not.toBeInTheDocument();
+  semIngles();
+
+  // Conversa: sem `limites` nem `autoria` no manifesto, só o mantenedor.
+  await irPara("ata-de-teste");
+  await expect.element(page.getByRole("heading", { name: "Resumir uma ata de teste" })).toBeVisible();
+  expect(limites()).toBeUndefined();
+  expect(mantenedor()).toBe("Mantida por Pessoa de Teste (@pessoa-de-teste no GitHub).");
+  const pedido = page.getByRole("textbox", { name: "O pedido que vai para a IA" });
+  await page.getByRole("textbox", { name: "Ata", exact: true }).fill("a ata de março");
+  await expect.element(pedido).toHaveValue("Resuma a ata a ata de março.");
+  await pedido.fill("Um pedido editado à mão.");
+  // A outra tarefa de conversa abre com o formulário dela, vazio: nada sobra da anterior.
+  await irPara("oficio-de-teste");
+  await expect.element(page.getByRole("heading", { name: "Redigir um ofício de teste" })).toBeVisible();
+  await expect.element(pedido).toHaveValue("Redija um ofício sobre [assunto].");
+  await expect.element(page.getByRole("textbox", { name: "Assunto", exact: true })).toHaveValue("");
+  await expect.element(page.getByText("Falta: Assunto.")).toBeVisible();
+
+  // De volta ao módulo, "Começar" abre a tela dele.
+  await irPara("revisar-de-teste");
+  await page.getByRole("link", { name: "Começar" }).click();
+  await vi.waitFor(() => expect(app.roteador.state.location.pathname).toBe("/revisao-ppc"));
+
+  // A tarefa que não está no catálogo.
+  await irPara("nao-existe");
+  await expect.element(page.getByText("Esta tarefa não existe mais no app.")).toBeVisible();
 });

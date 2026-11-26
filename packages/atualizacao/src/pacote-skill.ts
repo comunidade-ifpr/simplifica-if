@@ -1,7 +1,7 @@
 /**
  * O pacote de uma skill do app: JSON com os arquivos (o `SKILL.md` e os de `simplifica.arquivos`),
  * comprimido com zstd. Um formato próprio e mínimo, para o app não precisar de leitor de tar ou zip:
- * cada caminho é conferido (relativo, sem `..`, sem `\`), e o tamanho total tem limite.
+ * cada caminho é conferido (relativo, sem `..`, sem `\`, sem `:`), e o tamanho total tem limite.
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -26,9 +26,12 @@ export interface PacoteSkill {
 
 const NOME = /^[a-z0-9][a-z0-9-]*$/;
 
-/** Um caminho de arquivo aceitável dentro da pasta da skill. */
+/**
+ * Um caminho de arquivo aceitável dentro da pasta da skill: relativo, com `/`, sem `..`, sem `\` e sem `:`
+ * (no Windows, `C:` é um drive e `arquivo:fluxo` um fluxo alternativo do NTFS).
+ */
 export function caminhoSeguro(caminho: string): boolean {
-  if (caminho === "" || caminho.includes("\\") || caminho.startsWith("/") || caminho.includes("\0")) return false;
+  if (caminho === "" || /[\\:\0]/.test(caminho) || caminho.startsWith("/")) return false;
   return caminho.split("/").every((parte) => parte !== "" && parte !== "." && parte !== "..");
 }
 

@@ -1,18 +1,26 @@
 /**
- * O lado remoto: conferir o manifesto do canal e baixar a base e as skills.
+ * O lado remoto: conferir o manifesto do canal, baixar a base e as skills e guardar o catálogo de tarefas
+ * que o manifesto traz.
  *
  * Ordem das conferências, nesta ordem e sem atalho:
  *
  * 1. manifesto e `.minisig` baixados; a assinatura confere com a chave pública da política;
  * 2. o manifesto é do canal pedido e de uma versão mais nova que a em uso (nem a recusada): um
  *    manifesto antigo e bem assinado, servido de novo, não faz o app voltar;
- * 3. `app_minimo` não passa da versão do app; se passar, nada se baixa e o aviso pede o app novo;
+ * 3. as skills retiradas do manifesto entram em `retiradas.json` (só cresce; a falha ao gravar é aviso,
+ *    não interrompe); depois, `app_minimo` não passa da versão do app (`atende`, que falha fechado); se
+ *    passar, nada se baixa e o aviso pede o app novo;
  * 4. cada arquivo baixado tem o tamanho e o sha256 do manifesto; o patch aplicado e o pacote inteiro
  *    descomprimido têm o `sha256_banco`;
  * 5. o banco abre, passa no `quick_check` e tem o esquema deste app e a versão do manifesto.
  *
  * Só então ele vira `base/pendente.sqlite`. Uma falha em qualquer passo apaga os temporários e deixa
  * a base em uso como estava.
+ *
+ * O catálogo de tarefas e a lista de skills retiradas vêm dentro do manifesto: a assinatura do passo 1
+ * já os cobre, e nada mais se baixa por eles. O app os grava num arquivo de nome fixo
+ * (`catalogo/pendente.json`); nenhum caminho vem do canal. Das skills, o nome é conferido pelo schema do
+ * manifesto e cada caminho de arquivo, pelo `caminhoSeguro` do pacote.
  *
  * Sem a API do GitHub: só GET em URLs diretas (`releases/download/...`), que não contam no limite de
  * 60 consultas por hora por IP.
@@ -23,6 +31,8 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
+import * as Result from "effect/Result";
+import type * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import * as HttpClient from "effect/http/HttpClient";
 import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient";
@@ -35,13 +45,31 @@ import {
   OutroProcessoAtualizando,
   PacoteInvalido,
 } from "./erros.ts";
-import { type Abertura, caminhos, escreverAtomico, gravarEstado, lerEstado, naPasta, trava } from "./local.ts";
+import {
+  type Abertura,
+  acrescentarRetiradas,
+  baixadoVence,
+  caminhos,
+  type EstadoGravado,
+  escreverAtomico,
+  gravarCatalogoPendente,
+  gravarEstado,
+  lerCatalogo,
+  lerEstado,
+  naPasta,
+  trava,
+  versaoDaPastaSkills,
+} from "./local.ts";
 import {
   arquivoManifesto,
+  atende,
   type Canal,
   compararVersoes,
   decodificarManifesto,
+  LIMITE_MANIFESTO,
+  maiorVersao,
   type Manifesto,
+  maisNova,
   SUFIXO_ASSINATURA,
   urlDoArquivo,
 } from "./manifesto.ts";
@@ -49,8 +77,7 @@ import { type ChavePublica, lerChavePublica, verificar } from "./minisign.ts";
 import { desempacotarSkill } from "./pacote-skill.ts";
 import { aplicarPatch, descomprimir, sha256, validarBancoEmWorker } from "./pesado.ts";
 
-/** Limite de um manifesto (1 MB) e da base descomprimida (2 GB). */
-const LIMITE_MANIFESTO = 1024 * 1024;
+/** Limite da base descomprimida (2 GB); o do manifesto (1 MB) é `LIMITE_MANIFESTO`, que a fábrica também confere. */
 const LIMITE_BANCO = 2 * 1024 * 1024 * 1024;
 
 /** Prazo de cada download (o manifesto, a base inteira, um patch, uma skill). */
@@ -218,17 +245,34 @@ export function opcoesDaPolitica(entrada: {
 export interface Contexto {
   readonly pasta: string;
   readonly versaoApp: string;
-  /** O que `prepararAbertura` decidiu: a base em uso (o arquivo e a versão). */
-  readonly abertura: Pick<Abertura, "banco" | "info">;
+  /**
+   * O que `prepararAbertura` decidiu: a base em uso (o arquivo e a versão), a versão da base empacotada e
+   * de onde vem o catálogo de tarefas do app (sem ela, `sem-pasta`: vale o baixado).
+   */
+  readonly abertura: Pick<Abertura, "banco" | "info" | "versaoEmpacotada"> & Partial<Pick<Abertura, "origemCatalogo">>;
   /** As versões das skills já disponíveis (empacotadas ou baixadas), por nome (padrão: nenhuma). */
-  readonly versoesSkills?: Readonly<Record<string, string>>;
-  /** Baixar também as skills (padrão: sim; o `simplifica-mcp` fora do app só quer a base). */
-  readonly comSkills?: boolean;
+  readonly versoesSkills?: ReadonlyMap<string, string>;
+  /** As skills retiradas que o app já conhece (as do instalador e as baixadas): nenhuma se baixa nem fica. */
+  readonly skillsRetiradas?: ReadonlySet<string>;
+  /** Só a base, sem as skills nem o catálogo de tarefas (o `simplifica-mcp` fora do app). Padrão: tudo. */
+  readonly soBase?: boolean;
   /** Prazo de cada download (padrão: `PRAZO_DOWNLOAD`). */
   readonly prazo?: Duration.Input;
+  /**
+   * A trava do `atualizacao.json` neste processo (a do `Atualizador`): cada leitura-modificação-gravação
+   * do arquivo passa por ela, as desta conferência e as da tela (canal, voltar, novidades vistas). Nunca
+   * fica tomada durante um download. Sem ela (o `simplifica-mcp`), só a trava da pasta.
+   */
+  readonly travaEstado?: Semaphore.Semaphore;
+  /**
+   * O que esta conferência baixa ainda vale? Perguntado na trava do estado, antes de pôr no lugar o que
+   * ela baixou: `false` (o canal mudou no meio dela) e nada fica pendente (resultado `descartada`).
+   * Padrão: vale.
+   */
+  readonly vale?: Effect.Effect<boolean>;
 }
 
-export type Resultado =
+export type Resultado = (
   | { readonly tipo: "em-dia" }
   | { readonly tipo: "app-desatualizado"; readonly appMinimo: string; readonly versao: string }
   | {
@@ -236,10 +280,64 @@ export type Resultado =
       readonly versao: string;
       readonly via: "patch" | "inteiro" | "nenhum";
       readonly skills: number;
-    };
+      /** O manifesto trouxe um catálogo de tarefas mais novo que o em uso. */
+      readonly catalogo: boolean;
+    }
+  /** O canal mudou durante a conferência (`Contexto.vale`): o que ela baixou não ficou pendente. */
+  | { readonly tipo: "descartada" }
+) & {
+  /**
+   * Skills em uso nesta execução (`Contexto.versoesSkills`) que as retiradas gravadas tiram (em
+   * `retiradas.json` ou, se ele não se gravou, no catálogo baixado), com a versão do manifesto conferido:
+   * saem quando o servidor reiniciar, e a tela oferece a troca. Só vem quando há. A retirada que não ficou
+   * gravada em nenhum dos dois não vem: o reinício não a tiraria.
+   */
+  readonly retiradasPendentes?: { readonly versao: string; readonly skills: ReadonlyArray<string> };
+  /** O que falhou sem interromper a conferência (gravar `retiradas.json`), para o log e a tela. Só vem quando há. */
+  readonly avisos?: ReadonlyArray<string>;
+};
 
 /**
- * Com o manifesto conferido: decide, baixa e deixa pendentes a base e as skills mais novas.
+ * Lê, altera e grava o `atualizacao.json` na trava do estado (`Contexto.travaEstado`), se o que a
+ * conferência baixou ainda vale (`Contexto.vale`). `antes` roda na trava, entre a leitura e a gravação (o
+ * `rename` que põe o baixado no lugar). Devolve `false` quando não valia mais: nada mudou.
+ */
+const guardar = <E = never, R = never>(
+  ctx: Contexto,
+  alterar: (estado: EstadoGravado) => EstadoGravado,
+  antes: Effect.Effect<void, E, R> = Effect.void as Effect.Effect<void, E, R>,
+) => {
+  const efeito = Effect.gen(function* () {
+    if (!(yield* ctx.vale ?? Effect.succeed(true))) return false;
+    const estado = yield* lerEstado(ctx.pasta);
+    yield* antes;
+    yield* gravarEstado(ctx.pasta, alterar(estado));
+    return true;
+  });
+  return ctx.travaEstado === undefined ? efeito : ctx.travaEstado.withPermits(1)(efeito);
+};
+
+/**
+ * Com o manifesto conferido: decide, baixa e deixa pendentes a base, as skills mais novas e o catálogo
+ * de tarefas.
+ *
+ * - **Retiradas primeiro:** a lista do manifesto (pequena e sob a assinatura) entra em `retiradas.json`
+ *   antes de tudo, também quando o app é velho demais (`app-desatualizado`) e quando a base não chega. Uma
+ *   falha ao gravá-la vira aviso (`avisos`) e não interrompe o resto; as retiradas do manifesto valem
+ *   assim mesmo nesta conferência. A retirada de uma skill em uso nesta execução sai em
+ *   `retiradasPendentes`, em todo resultado, se ficou gravada (em `retiradas.json` ou no catálogo baixado).
+ * - **Skills e catálogo, nunca de manifesto mais velho** que o último processado (`ultimoManifesto`), e só
+ *   de manifesto mais novo que a base do instalador: um manifesto antigo servido de novo, ou um canal mais
+ *   velho que o instalador, não volta uma skill retirada nem tira uma mais nova. O mesmo manifesto pode
+ *   ser reprocessado: baixa a skill elegível que falta (a que pedia um app mais novo, depois de o app
+ *   subir) numa pasta nova, sem refazer as que já estão, e regrava o catálogo só se nem o atual nem o
+ *   pendente o têm legível. O catálogo é gravado por último e marca o manifesto como processado: uma falha
+ *   nas skills se tenta de novo na conferência seguinte.
+ * - **Catálogo que a abertura descartaria não se grava:** perde para o do app (`baixadoVence`, com a
+ *   origem do catálogo desta execução: o do checkout, ou o de um instalador de commit mais novo); o
+ *   manifesto fica processado assim mesmo, e a tela não avisa de tarefas novas que não viriam.
+ * - **Canal trocado no meio** (`Contexto.vale`): o que já foi baixado não se põe no lugar, e o resultado é
+ *   `descartada`. As retiradas gravadas ficam (só crescem, e valem em qualquer canal).
  */
 export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(function* (
   manifesto: Manifesto,
@@ -250,48 +348,120 @@ export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(func
   FalhaDownload | PacoteInvalido | FalhaPastaAtualizacao,
   HttpClient.HttpClient | FileSystem.FileSystem | Path.Path
 > {
-  if (compararVersoes(manifesto.app_minimo, ctx.versaoApp) > 0) {
-    return { tipo: "app-desatualizado", appMinimo: manifesto.app_minimo, versao: manifesto.versao };
+  // As retiradas não esperam nada: nem o app novo, nem a base.
+  const c = caminhos(ctx.pasta);
+  const avisos: string[] = [];
+  let retiradas: ReadonlyArray<string> = [];
+  // As retiradas que ficaram gravadas; `undefined`: `retiradas.json` não se gravou, e valem as que o
+  // catálogo baixado guardar (lidas no fim, depois de ele talvez ser gravado por esta conferência).
+  let gravadas: ReadonlyArray<string> | undefined = [];
+  if (ctx.soBase !== true) {
+    const lista = yield* acrescentarRetiradas(ctx.pasta, manifesto.skills_retiradas).pipe(Effect.result);
+    if (Result.isFailure(lista)) {
+      avisos.push(`a lista de skills retiradas não foi gravada (${lista.failure.message})`);
+      retiradas = manifesto.skills_retiradas;
+      gravadas = undefined;
+    } else {
+      retiradas = lista.success;
+      gravadas = lista.success;
+    }
+  }
+  const doCatalogoBaixado = Effect.gen(function* () {
+    const nomes: string[] = [];
+    for (const arquivo of [c.catalogoAtual, c.catalogoPendente]) {
+      const lido = yield* lerCatalogo(arquivo);
+      if (typeof lido === "object") nomes.push(...lido.skills_retiradas);
+    }
+    return nomes;
+  });
+  const comExtras = Effect.fnUntraced(function* (resultado: Resultado) {
+    const persistidas = gravadas ?? (yield* doCatalogoBaixado);
+    const emUsoRetiradas = retiradas.filter(
+      (nome) => ctx.versoesSkills?.has(nome) === true && persistidas.includes(nome),
+    );
+    return {
+      ...resultado,
+      ...(emUsoRetiradas.length === 0
+        ? {}
+        : { retiradasPendentes: { versao: manifesto.versao, skills: emUsoRetiradas } }),
+      ...(avisos.length === 0 ? {} : { avisos }),
+    } satisfies Resultado as Resultado;
+  });
+  if (!atende(manifesto.app_minimo, ctx.versaoApp)) {
+    return yield* comExtras({ tipo: "app-desatualizado", appMinimo: manifesto.app_minimo, versao: manifesto.versao });
   }
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
-  const c = caminhos(ctx.pasta);
   const estado = yield* lerEstado(ctx.pasta);
   const versaoEmUso = ctx.abertura.info?.versao;
+  // Versão fora do padrão conta como já tida: não se baixa.
   const jaTem = (versao: string) =>
-    (versaoEmUso !== undefined && compararVersoes(versao, versaoEmUso) <= 0) ||
-    (estado.pendente !== undefined && compararVersoes(versao, estado.pendente.versao) <= 0) ||
+    (versaoEmUso !== undefined && !maisNova(versao, versaoEmUso)) ||
+    (estado.pendente !== undefined && !maisNova(versao, estado.pendente.versao)) ||
     estado.recusada === versao;
 
   let via: "patch" | "inteiro" | "nenhum" = "nenhum";
-  let versaoBase = versaoEmUso ?? manifesto.versao;
   if (!jaTem(manifesto.versao)) {
-    via = yield* baixarBase(manifesto, urlDoManifesto, ctx);
-    versaoBase = manifesto.versao;
+    const trazida = yield* baixarBase(manifesto, urlDoManifesto, ctx);
+    if (trazida === "descartada") return yield* comExtras({ tipo: "descartada" });
+    via = trazida;
   }
+  const resultado = (skills: number, catalogo: boolean) =>
+    comExtras(
+      via === "nenhum" && skills === 0 && !catalogo
+        ? { tipo: "em-dia" }
+        : { tipo: "baixada", versao: manifesto.versao, via, skills, catalogo },
+    );
+  if (ctx.soBase === true) return yield* resultado(0, false);
 
-  // Skills: as elegíveis (app e base mínimos) e mais novas que as disponíveis.
-  const novas = (ctx.comSkills === false ? [] : manifesto.skills).filter(
-    (skill) =>
-      compararVersoes(skill.app_minimo, ctx.versaoApp) <= 0 &&
-      compararVersoes(skill.base_minima, versaoBase) <= 0 &&
-      compararVersoes(skill.versao, ctx.versoesSkills?.[skill.nome] ?? "0.0.0") > 0,
-  );
-  let skills = 0;
   const lido = yield* lerEstado(ctx.pasta);
+  const ultimo = lido.ultimoManifesto;
+  // Mais velho que o último processado, ou sem comparação com ele: nada de skills nem catálogo.
+  if (ultimo !== undefined && !atende(ultimo, manifesto.versao)) return yield* resultado(0, false);
+  const empacotada = maiorVersao([ctx.abertura.versaoEmpacotada ?? undefined]);
+  if (empacotada !== undefined && !maisNova(manifesto.versao, empacotada)) return yield* resultado(0, false);
+  const mesmo = ultimo !== undefined && compararVersoes(ultimo, manifesto.versao) === 0;
+
+  // Skills: as não retiradas, elegíveis (app e base mínimos) e mais novas que as disponíveis. A base é a
+  // maior entre a em uso e a pendente (baixada agora ou numa tentativa anterior).
+  const versaoBase = maiorVersao([versaoEmUso, lido.pendente?.versao]) ?? manifesto.versao;
+  const conhecidas = new Set([...(ctx.skillsRetiradas ?? []), ...retiradas]);
+  const elegiveis = manifesto.skills.filter(
+    (skill) =>
+      !conhecidas.has(skill.nome) &&
+      atende(skill.app_minimo, ctx.versaoApp) &&
+      atende(skill.base_minima, versaoBase) &&
+      maisNova(skill.versao, ctx.versoesSkills?.get(skill.nome) ?? "0.0.0"),
+  );
   const jaPendentes = lido.skillsPendentes ?? lido.skills;
-  if (novas.length > 0 && jaPendentes !== manifesto.versao) {
-    const destino = path.join(c.skills, manifesto.versao);
+  const atual = jaPendentes === undefined ? undefined : path.join(c.skills, jaPendentes);
+  // A pasta montada deste mesmo manifesto já traz as skills dele: só falta o que não está nela.
+  const novas =
+    atual !== undefined && versaoDaPastaSkills(jaPendentes ?? "") === manifesto.versao
+      ? yield* Effect.filter(elegiveis, (skill) =>
+          fs.exists(path.join(atual, skill.nome)).pipe(
+            Effect.map((existe) => !existe),
+            naPasta("ler as skills"),
+          ),
+        )
+      : elegiveis;
+  let skills = 0;
+  if (novas.length > 0) {
+    // A pasta em uso não se reescreve: o mesmo manifesto reprocessado monta `<versao>+<n>`.
+    let nomePasta = manifesto.versao;
+    for (let n = 2; yield* fs.exists(path.join(c.skills, nomePasta)).pipe(naPasta("ler as skills")); n += 1) {
+      nomePasta = `${manifesto.versao}+${n}`;
+    }
+    const destino = path.join(c.skills, nomePasta);
     const temporario = `${destino}.baixando`;
     const remover = (alvo: string) => fs.remove(alvo, { recursive: true, force: true });
     const montar = Effect.gen(function* () {
       yield* remover(temporario).pipe(naPasta("limpar as skills"));
-      // As skills baixadas antes que o manifesto ainda lista e que não chegam agora continuam: a pasta
-      // nova substitui a atual inteira na próxima abertura.
-      const atual = jaPendentes === undefined ? undefined : path.join(c.skills, jaPendentes);
+      // As skills baixadas antes que o manifesto ainda lista, que não chegam agora e não foram retiradas
+      // continuam: a pasta nova substitui a atual inteira na próxima abertura.
       const continuam = manifesto.skills
         .map((skill) => skill.nome)
-        .filter((nome) => !novas.some((nova) => nova.nome === nome));
+        .filter((nome) => !conhecidas.has(nome) && !novas.some((nova) => nova.nome === nome));
       for (const nome of continuam) {
         if (atual === undefined) continue;
         const origem = path.join(atual, nome);
@@ -315,15 +485,63 @@ export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(func
           yield* fs.writeFile(alvo, arquivo.conteudo).pipe(naPasta("gravar as skills"));
         }
       }
-      yield* remover(destino).pipe(naPasta("trocar as skills"));
-      yield* fs.rename(temporario, destino).pipe(naPasta("trocar as skills"));
     });
-    yield* montar.pipe(Effect.onError(() => remover(temporario).pipe(Effect.ignore)));
-    yield* gravarEstado(ctx.pasta, { ...(yield* lerEstado(ctx.pasta)), skillsPendentes: manifesto.versao });
+    const guardada = yield* montar.pipe(
+      Effect.andThen(
+        guardar(
+          ctx,
+          (estado) => ({ ...estado, skillsPendentes: nomePasta }),
+          fs.rename(temporario, destino).pipe(naPasta("trocar as skills")),
+        ),
+      ),
+      Effect.onError(() => remover(temporario).pipe(Effect.ignore)),
+    );
+    if (!guardada) {
+      yield* remover(temporario).pipe(Effect.ignore);
+      return yield* comExtras({ tipo: "descartada" });
+    }
     skills = novas.length;
   }
-  if (via === "nenhum" && skills === 0) return { tipo: "em-dia" };
-  return { tipo: "baixada", versao: manifesto.versao, via, skills };
+  // O catálogo do manifesto fica pendente, inteiro; qual vale, o baixado ou o do app, a abertura decide
+  // (`OrigemCatalogo`). A versão de que se voltou só recusa a base: o catálogo dela vale. Do mesmo
+  // manifesto, só se o catálogo dele se perdeu (o atual e o pendente ausentes ou ilegíveis).
+  let catalogo = true;
+  if (mesmo) {
+    const catalogoAtual = yield* lerCatalogo(c.catalogoAtual);
+    const catalogoPendente = yield* lerCatalogo(c.catalogoPendente);
+    const noAtual = typeof catalogoAtual === "object" && atende(manifesto.versao, catalogoAtual.versao);
+    const noPendente =
+      lido.catalogoPendente !== undefined &&
+      typeof catalogoPendente === "object" &&
+      catalogoPendente.versao === manifesto.versao;
+    catalogo = !noAtual && !noPendente;
+  }
+  // O catálogo que perde para o do app (o do checkout, o de um instalador de commit mais novo) não se
+  // grava: a abertura o descartaria, e a tela avisaria de tarefas novas que não vêm.
+  const vence = baixadoVence(
+    manifesto,
+    ctx.abertura.origemCatalogo ?? { tipo: "sem-pasta" },
+    ctx.abertura.versaoEmpacotada,
+  );
+  if (catalogo && !vence.vence) {
+    catalogo = false;
+    const marcado = yield* guardar(ctx, (estado) => ({ ...estado, ultimoManifesto: manifesto.versao }));
+    if (!marcado) return yield* comExtras({ tipo: "descartada" });
+  } else if (catalogo) {
+    const guardado = yield* guardar(
+      ctx,
+      (estado) => ({ ...estado, catalogoPendente: manifesto.versao, ultimoManifesto: manifesto.versao }),
+      gravarCatalogoPendente(ctx.pasta, {
+        versao: manifesto.versao,
+        commit: manifesto.commit,
+        data_commit: manifesto.data_commit,
+        tarefas: manifesto.tarefas,
+        skills_retiradas: manifesto.skills_retiradas,
+      }),
+    );
+    if (!guardado) return yield* comExtras({ tipo: "descartada" });
+  }
+  return yield* resultado(skills, catalogo);
 });
 
 const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
@@ -369,15 +587,19 @@ const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
     const banco = pelo ?? (yield* pacoteInteiro);
     yield* escreverAtomico(c.baixando, banco);
     yield* validarBancoEmWorker(c.baixando, { versao: manifesto.versao, dataReferencia: base.data_referencia });
-    yield* fs.rename(c.baixando, c.pendente).pipe(naPasta("guardar a base baixada"));
+    // O `rename` e o estado juntos, na trava do estado: o arquivo pendente e a versão gravada não se separam.
+    const guardada = yield* guardar(
+      ctx,
+      (estado) => ({ ...estado, pendente: { versao: manifesto.versao, novidades: manifesto.novidades } }),
+      fs.rename(c.baixando, c.pendente).pipe(naPasta("guardar a base baixada")),
+    );
+    if (!guardada) {
+      yield* fs.remove(c.baixando, { force: true }).pipe(Effect.ignore);
+      return "descartada" as const;
+    }
     return pelo === undefined ? ("inteiro" as const) : ("patch" as const);
   });
-  const via = yield* trazer.pipe(Effect.onError(() => fs.remove(c.baixando, { force: true }).pipe(Effect.ignore)));
-  yield* gravarEstado(ctx.pasta, {
-    ...(yield* lerEstado(ctx.pasta)),
-    pendente: { versao: manifesto.versao, novidades: manifesto.novidades },
-  });
-  return via;
+  return yield* trazer.pipe(Effect.onError(() => fs.remove(c.baixando, { force: true }).pipe(Effect.ignore)));
 });
 
 /**
@@ -395,10 +617,12 @@ export const atualizarUmaVez = Effect.fn("Atualizacao.atualizarUmaVez")(function
     chave: opcoes.chave,
     ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
   });
-  yield* gravarEstado(opcoes.pasta, {
-    ...(yield* lerEstado(opcoes.pasta)),
-    ultimaConferencia: DateTime.formatIso(yield* DateTime.now),
+  const agora = DateTime.formatIso(yield* DateTime.now);
+  const vale = yield* guardar(opcoes, (estado) => ({
+    ...estado,
+    ultimaConferencia: agora,
     manifestoGeradoEm: manifesto.gerado_em,
-  });
+  }));
+  if (!vale) return { tipo: "descartada" } satisfies Resultado as Resultado;
   return yield* baixarAtualizacao(manifesto, url, opcoes);
 }, Effect.scoped);

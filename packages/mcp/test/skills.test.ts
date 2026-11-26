@@ -32,13 +32,7 @@ const skillMd = (nome: string, bloco?: string) =>
     "",
   ].join("\n");
 
-const BLOCO_VALIDO = [
-  "  titulo: Teste",
-  "  resumo: Uma skill de teste.",
-  "  area: ensino",
-  "  ferramentas: [buscar_norma, ler_dispositivos]",
-  "  arquivos: [referencias/a.md]",
-].join("\n");
+const BLOCO_VALIDO = ["  ferramentas: [buscar_norma, ler_dispositivos]", "  arquivos: [referencias/a.md]"].join("\n");
 
 /** Cria `<raiz>/<nome>/SKILL.md` e os arquivos dados. */
 const criarSkill = (raiz: string, nome: string, textoSkill: string, arquivos: Record<string, string> = {}) => {
@@ -75,26 +69,52 @@ describe("manifesto da skill", () => {
     }),
   );
 
-  it.effect("bloco válido: o manifesto, com os campos opcionais do plano", () =>
+  it.effect("bloco válido: só o que é da skill; o cartão é da tarefa", () =>
     Effect.gen(function* () {
       const bloco = [
         BLOCO_VALIDO,
-        "  publico: [proens, coordenacao-curso]",
-        "  entradas:",
-        '    - { id: ppc, tipo: arquivo, aceita: [.docx, .md], rotulo: "PPC do curso" }',
         "  etapas:",
         '    - { id: fichas, rotulo: "Verificar as fichas", progresso: true }',
+        "  versao: 0.3.0",
         "  base_minima: 2026.11.01",
         "  app_minimo: 0.1.0",
-        "  duracao_estimada: 20min",
-        "  donos: [proens/dens]",
       ].join("\n");
       const lida = yield* lerSkillMd(skillMd("x", bloco), "x");
-      assert.strictEqual(lida.manifesto?.titulo, "Teste");
-      assert.deepStrictEqual(lida.manifesto?.ferramentas, ["buscar_norma", "ler_dispositivos"]);
-      assert.strictEqual(lida.manifesto?.base_minima, "2026.11.01");
-      assert.strictEqual(lida.manifesto?.etapas?.[0]?.progresso, true);
+      assert.deepStrictEqual(lida.manifesto, {
+        ferramentas: ["buscar_norma", "ler_dispositivos"],
+        arquivos: ["referencias/a.md"],
+        etapas: [{ id: "fichas", rotulo: "Verificar as fichas", progresso: true }],
+        versao: "0.3.0",
+        base_minima: "2026.11.01",
+        app_minimo: "0.1.0",
+      });
     }),
+  );
+
+  it.effect.each([
+    ["  app_minimo: v0.9.0", "simplifica.app_minimo: esperava X.Y.Z"],
+    ['  versao: "1.0"', "simplifica.versao: esperava X.Y.Z"],
+    ["  versao: 1.0.0-beta", "simplifica.versao: esperava X.Y.Z"],
+    ["  base_minima: 2026-11-30", "simplifica.base_minima: esperava AAAA.MM.DD"],
+  ] as const)("versão mínima malformada é recusada: %s", ([linha, mensagem]) =>
+    Effect.gen(function* () {
+      assert.include(yield* erroDe(skillMd("x", `${BLOCO_VALIDO}\n${linha}`)), mensagem);
+    }),
+  );
+
+  it.effect.each(["titulo", "resumo", "area", "publico", "entradas", "duracao_estimada", "donos"] as const)(
+    "campo antigo do cartão (%s): passa na leitura do servidor, não na estrita do validar_base e do build",
+    (campo) =>
+      Effect.gen(function* () {
+        const texto = skillMd("x", `${BLOCO_VALIDO}\n  ${campo}: [x]`);
+        assert.isDefined((yield* lerSkillMd(texto, "x")).manifesto);
+        const detalhe = yield* lerSkillMd(texto, "x", { estrito: true }).pipe(
+          Effect.flip,
+          Effect.map((erro) => erro.detalhe),
+        );
+        assert.include(detalhe, "bloco simplifica: inválido");
+        assert.include(detalhe, `simplifica.${campo}`);
+      }),
   );
 
   it.effect("ferramenta que não existe no simplifica-mcp", () =>
@@ -105,30 +125,21 @@ describe("manifesto da skill", () => {
     }),
   );
 
-  it.effect("publico fora do vocabulário do perfil", () =>
+  it.effect("campos obrigatórios faltando e etapa com id fora do padrão", () =>
     Effect.gen(function* () {
-      const detalhe = yield* erroDe(skillMd("x", `${BLOCO_VALIDO}\n  publico: [coordenacao, docente]`));
-      assert.include(detalhe, "simplifica.publico.0");
-    }),
-  );
-
-  it.effect("campos obrigatórios faltando e área fora do padrão", () =>
-    Effect.gen(function* () {
-      const detalhe = yield* erroDe(skillMd("x", "  titulo: Teste\n  area: Ensino"));
+      const detalhe = yield* erroDe(skillMd("x", "  versao: 0.1.0\n  etapas: [{ id: Ler Tudo, rotulo: Ler }]"));
       assert.include(detalhe, "bloco simplifica: inválido");
-      assert.include(detalhe, "simplifica.resumo");
-      assert.include(detalhe, "simplifica.area");
+      assert.include(detalhe, "simplifica.etapas.0.id");
       assert.include(detalhe, "simplifica.ferramentas");
       assert.include(detalhe, "simplifica.arquivos");
     }),
   );
 
-  it.effect("arquivos: scripts/, tests/, agents/, SKILL.md e caminhos que saem da pasta", () =>
+  it.effect("arquivos: scripts/, tests/, SKILL.md e caminhos que saem da pasta", () =>
     Effect.gen(function* () {
       for (const [caminho, mensagem] of [
         ["scripts/gerar.ts", "scripts/ não vai para o app"],
         ["tests/a.test.ts", "tests/ não vai para o app"],
-        ["agents/openai.yaml", "agents/ não vai para o app"],
         ["SKILL.md", "o SKILL.md vai sempre"],
         ["../fora.md", "partes vazias, . ou .."],
         ["/etc/passwd", "caminho relativo"],
@@ -180,8 +191,10 @@ describe("pasta de skills", () => {
 
   it.effect("as skills do checkout: as do app são válidas e levam os arquivos listados", () =>
     Effect.gen(function* () {
-      const pasta = yield* lerPastaSkills(NodePath.join(RAIZ, ".agents", "skills"));
+      const pasta = yield* lerPastaSkills(NodePath.join(RAIZ, "catalogo", "skills"), { estrito: true });
       assert.deepStrictEqual(pasta.invalidas, []);
+      // No catálogo, toda skill é do app.
+      assert.deepStrictEqual(pasta.foraDoApp, []);
       const nomes = pasta.skills.map((skill) => skill.nome);
       assert.includeMembers(nomes, ["verificar-fundamentacao-normativa"]);
       const fundamentacao = pasta.skills.find((skill) => skill.nome === "verificar-fundamentacao-normativa");

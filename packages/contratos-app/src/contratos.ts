@@ -14,8 +14,10 @@
  *   extensões de documento, `PonteDesktop`, canais do IPC): `ponte.ts`, exportado à parte como
  *   `@simplifica-if/contratos-app/ponte`, sem nenhum import. Daqui saem só as constantes.
  *
- * Cada grupo fica no seu arquivo (`providers.ts`, `conversa.ts`, `relato.ts`, `diagnostico.ts`, `skills.ts`, `pasta.ts`,
- * `revisao-ppc.ts`, `atualizacao.ts`, `preferencias.ts`); este só os reúne no `GrupoApp`.
+ * Cada grupo fica no seu arquivo (`providers.ts`, `conversa.ts`, `relato.ts`, `diagnostico.ts`, `tarefas.ts`, `pasta.ts`,
+ * `atualizacao.ts`, `preferencias.ts`); este só os reúne no `GrupoApp`. O grupo de um módulo fica na pasta
+ * `modulos/` (`modulos/revisao-ppc.ts`), exportado à parte (`@simplifica-if/contratos-app/modulos/revisao-ppc`),
+ * e não sai pela raiz: este arquivo é o de composição que o junta ao `GrupoApp`.
  */
 import {
   type Ancora,
@@ -61,8 +63,9 @@ import { GrupoPasta } from "./pasta.ts";
 import { GrupoPreferencias } from "./preferencias.ts";
 import { GrupoProviders } from "./providers.ts";
 import { GrupoRelato } from "./relato.ts";
-import { GrupoRevisaoPpc } from "./revisao-ppc.ts";
-import { GrupoSkills } from "./skills.ts";
+// Composição: o módulo `revisao-ppc` (o contrato inteiro em `@simplifica-if/contratos-app/modulos/revisao-ppc`).
+import { GrupoRevisaoPpc } from "./modulos/revisao-ppc.ts";
+import { GrupoTarefas } from "./tarefas.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { EstadoInstalacao, EstadoLogin, EstadoProvider, ModeloProvider, NivelEsforco };
@@ -93,7 +96,6 @@ export {
   codigoDoErro,
   EXTENSOES_DOCUMENTO,
   ehExtensaoDocumento,
-  SUFIXO_REVISAO_PREVIA,
   TAMANHO_MINIMO_TOKEN,
   VARIAVEL_TOKEN,
 } from "./ponte.ts";
@@ -105,16 +107,15 @@ export * from "./pasta.ts";
 export * from "./preferencias.ts";
 export * from "./providers.ts";
 export * from "./relato.ts";
-export * from "./revisao-ppc.ts";
-export * from "./skills.ts";
+export * from "./tarefas.ts";
 
-/** A API inteira do servidor local: providers, conversa, relato, diagnóstico, skills, pasta, revisão de PPC, atualização, leitura e preferências. */
+/** A API inteira do servidor local: providers, conversa, relato, diagnóstico, tarefas, pasta, revisão de PPC, atualização, leitura e preferências. */
 export class GrupoApp extends GrupoProviders.merge(
   GrupoConversa,
   GrupoRelato,
   GrupoDiagnostico,
   GrupoPreferencias,
-  GrupoSkills,
+  GrupoTarefas,
   GrupoPasta,
   GrupoRevisaoPpc,
   GrupoAtualizacao,

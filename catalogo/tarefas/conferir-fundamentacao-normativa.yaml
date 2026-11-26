@@ -1,0 +1,14 @@
+id: conferir-fundamentacao-normativa
+titulo: Conferir a fundamentação normativa
+resumo: Confere cada citação e afirmação normativa de um documento contra o texto das normas e do CNCT na base do IFPR e, quando a norma está fora da base, em fontes oficiais na internet.
+area: ensino
+situacao: estavel
+mantenedor: { nome: Gustavo Rahal, github: comunidade-ifpr }
+duracao_estimada: 10min
+app_minimo: 0.2.0
+abre:
+  conversa:
+    skill: verificar-fundamentacao-normativa
+    pedido: "Confira a fundamentação normativa do documento {documento}, que está na pasta da tarefa."
+    entradas:
+      - { id: documento, tipo: arquivo, rotulo: "Documento a conferir" }

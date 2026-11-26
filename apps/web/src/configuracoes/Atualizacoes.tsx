@@ -3,8 +3,8 @@
  * Servidor (M1.9, `routes/configuracoes.tsx`).
  *
  * - **Base e skills** (servidor, `atualizacao.*`): versões em uso, canal (beta ou estável), "Procurar
- *   agora", "Usar agora" (reinicia o servidor local, que troca a base na abertura; recusado enquanto
- *   uma revisão roda) e "Voltar para a versão anterior da base".
+ *   agora", "Usar agora" (reinicia o servidor local, que troca a base na abertura; adiado enquanto há
+ *   trabalho em andamento) e "Voltar para a versão anterior da base".
  * - **App**: versão instalada (`estado.versaoApp`).
  */
 import { CanalAtualizacao, type EstadoAtualizacao, type ResultadoTroca } from "@simplifica-if/contratos-app";

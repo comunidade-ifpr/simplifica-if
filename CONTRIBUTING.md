@@ -34,7 +34,8 @@ O repositório traz o app, a base que o alimenta e as skills e os scripts que ag
 | [`packages/ppc`](packages/ppc/README.md), [`packages/docx`](packages/docx/README.md), [`packages/pdf`](packages/pdf/README.md) | conversão, pré-conferência e revisão de PPC em `.docx`; leitura dos anexos |
 | [`packages/atualizacao`](packages/atualizacao/README.md) | atualização da base e das skills |
 | `base-conhecimento/` | a base: normas, dados institucionais, catálogos e fichas da revisão de PPC |
-| `.agents/skills/` | skills dos agentes |
+| `catalogo/` | o que viaja para o app como dado: as tarefas (`tarefas/`) e as skills do app (`skills/`) |
+| `.agents/skills/` | skills de quem mantém o repositório (curadoria; não vão para o app) |
 | `scripts/` | geração e validação da base, fábrica da atualização, avaliação |
 
 ## Antes de abrir o PR

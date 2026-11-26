@@ -128,12 +128,26 @@ describe("montarInicio", () => {
     expect(inicio.comando).toBe(electron);
     expect(inicio.argumentos[0]).toBe(bundle);
     expect(inicio.argumentos).not.toContain("--pasta-skills");
+    expect(inicio.argumentos).not.toContain("--pasta-tarefas");
     const comSkills = montarInicio({
       ...base,
       executor: { tipo: "electron", electron, bundle },
       pastaSkills: "/r/skills",
+      pastaTarefas: "/r/tarefas",
     });
-    expect(comSkills.argumentos.slice(-2)).toEqual(["--pasta-skills", "/r/skills"]);
+    expect(comSkills.argumentos.slice(-4)).toEqual(["--pasta-skills", "/r/skills", "--pasta-tarefas", "/r/tarefas"]);
+    expect(comSkills.argumentos).not.toContain("--tarefas-do-checkout");
+    const doCheckout = montarInicio({
+      ...base,
+      executor: { tipo: "electron", electron, bundle },
+      pastaTarefas: "/repo/catalogo/tarefas",
+      tarefasDoCheckout: true,
+    });
+    expect(doCheckout.argumentos.slice(-3)).toEqual([
+      "--pasta-tarefas",
+      "/repo/catalogo/tarefas",
+      "--tarefas-do-checkout",
+    ]);
     const comLogs = montarInicio({
       ...base,
       executor: { tipo: "electron", electron, bundle },

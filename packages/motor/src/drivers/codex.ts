@@ -377,6 +377,19 @@ export function configThreadCodex(entrada: {
 }
 
 /**
+ * O `developerInstructions` do `thread/start` e do `thread/resume`. Na retomada, a sessão sem instruções
+ * manda a string vazia: omitido, o campo deixaria na thread as instruções de quando ela nasceu (a lista
+ * de skills, a orientação de web), que a regra de hoje pode não dar mais. O protocolo aceita `string` ou
+ * `null` e não diz qual limpa; a vazia é a que não se confunde com "não informado".
+ */
+export function instrucoesThreadCodex(config: Pick<ConfigSessao, "instrucoes" | "retomar">): {
+  readonly developerInstructions?: string;
+} {
+  if (config.instrucoes !== undefined) return { developerInstructions: config.instrucoes };
+  return config.retomar === undefined ? {} : { developerInstructions: "" };
+}
+
+/**
  * Classifica o pedido de comando: com `networkApprovalContext`, é `comando-rede` (negado sempre
  * pela política, sem afrouxar `curl`/scripts de rede); sem ele, é `comando` com `cwd` e caminhos.
  */
@@ -642,7 +655,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
       // A thread de julgamento não é retomada (a retomada é por bloco, no servidor): não fica no
       // histórico do Codex do usuário.
       ...(config.semFerramentas === true ? { ephemeral: true } : {}),
-      ...(config.instrucoes === undefined ? {} : { developerInstructions: config.instrucoes }),
+      ...instrucoesThreadCodex(config),
       ...(modelo ? { model: modelo } : {}),
     } as const;
     const thread =

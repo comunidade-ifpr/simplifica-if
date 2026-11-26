@@ -7,7 +7,6 @@
 import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
-import * as NodeSqlite from "node:sqlite";
 import * as NodeSocket from "@effect/platform-node/NodeSocket";
 import type * as Cause from "effect/Cause";
 import * as Deferred from "effect/Deferred";
@@ -17,20 +16,11 @@ import * as Queue from "effect/Queue";
 import * as Socket from "effect/socket/Socket";
 import * as Stream from "effect/Stream";
 import { RpcClient, RpcSerialization } from "effect/rpc";
-import {
-  type EtapaLeituraPpc,
-  type EventoConversa,
-  type EventoRevisaoPpc,
-  type ListaPendencias,
-  GrupoApp,
-  type ItemAoVivo,
-} from "@simplifica-if/contratos-app";
+import { type EventoConversa, GrupoApp, type ItemAoVivo } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { criarBancoFixture } from "../../../packages/mcp/test/fixture.ts";
 import type * as Conversas from "../src/Conversas.ts";
-import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
-import * as TrabalhoRevisao from "../src/revisao-ppc/trabalho.ts";
 import * as TextosAnexos from "../src/textos-anexos/TextosAnexos.ts";
 import * as TrabalhoTextos from "../src/textos-anexos/trabalho.ts";
 import * as WorkerLimitado from "../src/WorkerLimitado.ts";
@@ -49,74 +39,53 @@ export function bancoFixture(): string {
   return banco;
 }
 
-export const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../base-conhecimento/revisao-ppc/fichas");
-/** Duas S de temas do modo rápido, duas J da matriz e uma transversal BLOQ. */
-export const FICHAS_FIXTURE = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-04", "CT-CURR-07", "CT-TRANS-03"] as const;
-
-/** O `kb.sqlite` de fixture com o curso Técnico em Agropecuária no CNCT e as 5 fichas da revisão com IA. */
-export function bancoComFichas(): string {
-  const banco = bancoFixture();
-  const db = new NodeSqlite.DatabaseSync(banco);
-  const curso = {
-    denominacao: "Técnico em Agropecuária",
-    eixo_tecnologico: "Recursos Naturais",
-    carga_horaria_minima_horas: 1200,
-  };
-  db.prepare(
-    "INSERT INTO cnct (id, slug, denominacao, eixo_tecnologico, carga_horaria_minima_h, path, dados_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
-  ).run(
-    "cnct:tecnico-em-agropecuaria",
-    "tecnico-em-agropecuaria",
-    curso.denominacao,
-    curso.eixo_tecnologico,
-    1200,
-    "x.json",
-    JSON.stringify(curso),
-  );
-  db.prepare("DELETE FROM fichas").run();
-  for (const id of FICHAS_FIXTURE) {
-    const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8");
-    const json = JSON.parse(texto) as { titulo: string };
-    db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
-      id,
-      json.titulo,
-      `fichas/${id}.json`,
-      JSON.stringify(json),
-      texto,
-    );
-  }
-  db.close();
-  return banco;
-}
-
 /**
- * O trabalho dos Workers (a revisão prévia e a versão em texto dos anexos) no próprio processo, sem os
- * ~200 ms de partida de cada Worker: para os testes que não exercitam os limites de memória e de tempo.
+ * Um trabalho de Worker rodado no próprio processo: a resposta para o pedido, se o `url` é o do Worker
+ * dele; `undefined` para os outros.
  */
-const executorNoProcesso: typeof WorkerLimitado.rodarNoWorker = <Resposta, Andamento = never>(
+export type TrabalhoNoProcesso = (
   url: URL,
   pedido: unknown,
-  _transferir: ReadonlyArray<ArrayBuffer>,
-  _limites: WorkerLimitado.LimitesWorker,
-  aoAndamento?: (andamento: Andamento) => void,
-) => {
-  if (url.href === RevisorPpc.URL_TRABALHADOR.href)
-    return Effect.sync(
-      () =>
-        TrabalhoRevisao.atender(pedido as TrabalhoRevisao.PedidoTrabalhador, (etapa) =>
-          aoAndamento?.(etapa as Andamento),
-        ).resposta as Resposta,
-    );
-  if (url.href === TextosAnexos.URL_TRABALHADOR.href)
-    return Effect.promise(() => TrabalhoTextos.atender(pedido as TrabalhoTextos.PedidoTexto) as Promise<Resposta>);
-  return Effect.die(`sem trabalho no processo para ${url.href}`);
+  aoAndamento: (andamento: unknown) => void,
+) => Effect.Effect<unknown> | undefined;
+
+/** A versão em texto dos anexos (`TextosAnexos`). */
+const textosNoProcesso: TrabalhoNoProcesso = (url, pedido) =>
+  url.href === TextosAnexos.URL_TRABALHADOR.href
+    ? Effect.promise(() => TrabalhoTextos.atender(pedido as TrabalhoTextos.PedidoTexto))
+    : undefined;
+
+/**
+ * O trabalho dos Workers no próprio processo, sem os ~200 ms de partida de cada Worker: para os testes que
+ * não exercitam os limites de memória e de tempo. A versão em texto dos anexos e, de cada módulo que os
+ * testes dele passam (`outros`), os Workers do módulo.
+ */
+export const layerWorkersNoProcessoCom = (...outros: ReadonlyArray<TrabalhoNoProcesso>) => {
+  const trabalhos = [textosNoProcesso, ...outros];
+  const executor: typeof WorkerLimitado.rodarNoWorker = <Resposta, Andamento = never>(
+    url: URL,
+    pedido: unknown,
+    _transferir: ReadonlyArray<ArrayBuffer>,
+    _limites: WorkerLimitado.LimitesWorker,
+    aoAndamento?: (andamento: Andamento) => void,
+  ) => {
+    for (const trabalho of trabalhos) {
+      const resposta = trabalho(url, pedido, (andamento) => aoAndamento?.(andamento as Andamento));
+      if (resposta !== undefined) return resposta as Effect.Effect<Resposta>;
+    }
+    return Effect.die(`sem trabalho no processo para ${url.href}`);
+  };
+  return Layer.succeed(WorkerLimitado.Executor, executor);
 };
 
-export const layerWorkersNoProcesso = Layer.succeed(WorkerLimitado.Executor, executorNoProcesso);
+/** Os Workers do núcleo no próprio processo (`layerWorkersNoProcessoCom`). */
+export const layerWorkersNoProcesso = layerWorkersNoProcessoCom();
 
 /** O que o driver falso viu e como o teste o controla. */
 export interface Registro {
   readonly configs: Array<Motor.ConfigSessao>;
+  /** A política que o motor passou em cada sessão aberta, na ordem de `configs`. */
+  readonly politicas: Array<Motor.Politica>;
   /** Os textos que chegaram ao provider, na ordem. */
   readonly textos: Array<string>;
   encerradas: number;
@@ -138,7 +107,13 @@ export interface Registro {
   segurarFim?: Deferred.Deferred<void> | undefined;
 }
 
-export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerradas: 0, esquecidas: [] });
+export const novoRegistro = (): Registro => ({
+  configs: [],
+  politicas: [],
+  textos: [],
+  encerradas: 0,
+  esquecidas: [],
+});
 
 /**
  * Driver falso. A resposta depende do texto: com "escrev", pede aprovação para "escrever" e conclui
@@ -157,7 +132,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       registro.aoEsquecer?.();
       return apagou;
     }),
-  iniciar: (config) =>
+  iniciar: (config, politica) =>
     Effect.gen(function* () {
       if (provider === "codex") {
         return yield* new Motor.FalhaProvider({
@@ -171,6 +146,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
         return yield* new Motor.FalhaProvider({ provider, operacao: "retomar", tipo: "versao" });
       }
       registro.configs.push(config);
+      registro.politicas.push(politica);
       const idNativo = config.retomar ?? `nativo-${registro.configs.length}`;
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
@@ -311,30 +287,6 @@ export const cliente = (url: string, cabecalhos?: Record<string, string>) =>
     );
     return yield* RpcClient.make(GrupoApp).pipe(Effect.provide(protocolo));
   });
-
-/**
- * `revisaoPpc.revisar` (ou o `ListaViva.revisar`) até o fim: as etapas, na ordem em que chegaram, o id
- * da lista do `pronto` e o resultado dela. Sem `pronto`, defeito.
- */
-export const revisarAteOFim = <E, R, E2, R2>(
-  revisor: {
-    readonly "revisaoPpc.revisar": (entrada: RevisorPpc.EntradaRevisao) => Stream.Stream<EventoRevisaoPpc, E, R>;
-    readonly "revisaoPpc.lista": (entrada: { readonly lista: string }) => Effect.Effect<ListaPendencias, E2, R2>;
-  },
-  entrada: RevisorPpc.EntradaRevisao,
-) =>
-  Stream.runCollect(revisor["revisaoPpc.revisar"](entrada)).pipe(
-    Effect.flatMap((eventos) => {
-      const etapas: Array<EtapaLeituraPpc> = [];
-      for (const evento of eventos) if (evento.tipo === "etapa") etapas.push(evento.etapa);
-      const pronto = eventos.find((evento) => evento.tipo === "pronto");
-      return pronto?.tipo === "pronto"
-        ? revisor["revisaoPpc.lista"]({ lista: pronto.lista }).pipe(
-            Effect.map((lista) => ({ etapas, lista: pronto.lista, ...lista.resultado })),
-          )
-        : Effect.die("revisaoPpc.revisar terminou sem a lista");
-    }),
-  );
 
 /** Um pedido de upgrade WebSocket cru: o status da resposta (101 se o servidor aceitou). */
 export const pedirUpgrade = (url: string, cabecalhos: Record<string, string>) =>

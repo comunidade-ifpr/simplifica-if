@@ -56,6 +56,8 @@ export interface OpcoesServidorTeste {
   readonly claudeAusente?: boolean;
   /** O repositório da curadoria (`dono/repo`) para "Isto está errado" (M1.12); sem ele, `null`. */
   readonly curadoria?: string;
+  /** No lugar das tarefas do checkout, as de teste do `servidor-teste.ts` (link, módulo e duas de conversa). */
+  readonly tarefasDeTeste?: boolean;
 }
 
 /** Sobe o `apps/server` de teste aceitando `origem` e devolve a linha de partida dele. */
@@ -71,6 +73,7 @@ function iniciarServidorTeste(origem: string, opcoes: OpcoesServidorTeste) {
       ...(opcoes.primeiroUso === true ? ["--primeiro-uso"] : []),
       ...(opcoes.claudeAusente === true ? ["--claude-ausente"] : []),
       ...(opcoes.curadoria === undefined ? [] : ["--curadoria", opcoes.curadoria]),
+      ...(opcoes.tarefasDeTeste === true ? ["--tarefas-de-teste"] : []),
     ],
     { stdio: ["pipe", "pipe", "inherit"] },
   );

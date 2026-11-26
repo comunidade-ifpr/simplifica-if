@@ -10,6 +10,9 @@
  *   base/pendente.sqlite    baixada e conferida, entra na próxima abertura
  *   base/baixando.*         temporários de um download em curso
  *   skills/<versao>/<nome>/ as skills baixadas de um manifesto
+ *   retiradas.json          as skills retiradas que o app já conhece: só cresce
+ *   catalogo/atual.json     o catálogo de tarefas do último manifesto aplicado
+ *   catalogo/pendente.json  o do manifesto mais novo, que entra na próxima abertura
  * ```
  *
  * **A troca só acontece com o banco fechado**, na abertura do servidor (`prepararAbertura`), antes de
@@ -32,7 +35,17 @@ import * as Schema from "effect/Schema";
 import type * as Scope from "effect/Scope";
 import type * as Types from "effect/Types";
 import { FalhaPastaAtualizacao } from "./erros.ts";
-import { Canal, compararVersoes, Novidade } from "./manifesto.ts";
+import {
+  atende,
+  Canal,
+  DataHora,
+  instanteDe,
+  maisNova,
+  NomeSkill,
+  Novidade,
+  TarefaDoCanal,
+  VersaoBase,
+} from "./manifesto.ts";
 
 export const ARQUIVO_ESTADO = "atualizacao.json";
 
@@ -52,6 +65,14 @@ export const EsquemaEstadoGravado = Schema.Struct({
   /** O conjunto de skills baixado em uso (`skills/<versao>`) e o que entra na próxima abertura. */
   skills: Schema.optionalKey(Schema.String),
   skillsPendentes: Schema.optionalKey(Schema.String),
+  /** A versão do catálogo em `catalogo/pendente.json`, que entra na próxima abertura. */
+  catalogoPendente: Schema.optionalKey(Schema.String),
+  /**
+   * O último manifesto cujas skills e catálogo foram processados: as skills e o catálogo só vêm de um
+   * manifesto mais novo que ele (e que a base do instalador). Um manifesto antigo servido de novo não
+   * volta as skills nem o catálogo.
+   */
+  ultimoManifesto: Schema.optionalKey(Schema.String),
   /** O `gerado_em` do último manifesto conferido: mais de 14 dias, e a tela avisa que não confirmou a base. */
   manifestoGeradoEm: Schema.optionalKey(Schema.String),
 });
@@ -68,6 +89,205 @@ export const caminhos = (pasta: string) => ({
   baixando: NodePath.join(pasta, "base", "baixando.sqlite"),
   recusada: NodePath.join(pasta, "base", "kb.recusada.sqlite"),
   skills: NodePath.join(pasta, "skills"),
+  retiradas: NodePath.join(pasta, "retiradas.json"),
+  catalogo: NodePath.join(pasta, "catalogo"),
+  catalogoAtual: NodePath.join(pasta, "catalogo", "atual.json"),
+  catalogoPendente: NodePath.join(pasta, "catalogo", "pendente.json"),
+});
+
+/**
+ * O catálogo como o app o guarda: as tarefas de um manifesto conferido, com a versão, o commit e a data
+ * do commit do manifesto, e as skills retiradas que o mesmo manifesto trazia. O arquivo é escrito pelo
+ * app, num caminho fixo: nada do canal vira nome de arquivo. A lista que vale das retiradas é a de
+ * `retiradas.json`, que só cresce; a daqui a recompõe quando aquele arquivo se perde (`prepararAbertura`).
+ */
+export const CatalogoBaixado = Schema.Struct({
+  versao: VersaoBase,
+  commit: Schema.String,
+  data_commit: DataHora,
+  tarefas: Schema.Array(TarefaDoCanal),
+  skills_retiradas: Schema.Array(NomeSkill),
+});
+export type CatalogoBaixado = typeof CatalogoBaixado.Type;
+
+const CatalogoBaixadoJson = Schema.fromJsonString(CatalogoBaixado);
+const decodificarCatalogoJson = Schema.decodeUnknownResult(CatalogoBaixadoJson);
+const codificarCatalogoJson = Schema.encodeSync(CatalogoBaixadoJson);
+
+/** Grava o catálogo baixado em `catalogo/pendente.json`, por temporário, `fsync` e `rename`. */
+export const gravarCatalogoPendente = Effect.fn("Atualizacao.gravarCatalogoPendente")(function* (
+  pasta: string,
+  catalogo: CatalogoBaixado,
+) {
+  yield* escreverAtomico(
+    caminhos(pasta).catalogoPendente,
+    Buffer.from(`${codificarCatalogoJson(catalogo)}\n`, "utf8"),
+    "gravar o catálogo de tarefas",
+  );
+});
+
+/* ------------------------------------------------------------------ pastas das skills baixadas */
+
+/**
+ * A pasta das skills baixadas de um manifesto é `skills/<versao>`; quando o mesmo manifesto é reprocessado
+ * (uma skill que passou a ser elegível depois de o app subir de versão), a pasta nova é
+ * `skills/<versao>+<n>`, ao lado da em uso, que não se reescreve. A versão do conjunto é a parte antes do `+`.
+ */
+export const versaoDaPastaSkills = (nome: string): string => nome.split("+")[0] ?? nome;
+
+/* ------------------------------------------------------------------ skills retiradas */
+
+const RetiradasConhecidasJson = Schema.fromJsonString(Schema.Struct({ skills: Schema.Array(NomeSkill) }));
+const decodificarRetiradasJson = Schema.decodeUnknownResult(RetiradasConhecidasJson);
+const codificarRetiradasJson = Schema.encodeSync(RetiradasConhecidasJson);
+
+/**
+ * As skills retiradas que o app já conhece (`retiradas.json`): a união das listas de todos os manifestos
+ * conferidos. `ausente` se o arquivo não existe; `invalido` se não se lê (inclusive por erro do disco).
+ */
+export const lerRetiradasConhecidas = Effect.fn("Atualizacao.lerRetiradasConhecidas")(function* (pasta: string) {
+  const fs = yield* FileSystem.FileSystem;
+  const texto = yield* fs.readFileString(caminhos(pasta).retiradas).pipe(Effect.result);
+  if (Result.isFailure(texto)) {
+    return texto.failure.reason._tag === "NotFound" ? ("ausente" as const) : ("invalido" as const);
+  }
+  const lido = decodificarRetiradasJson(texto.success);
+  return Result.isSuccess(lido) ? lido.success.skills : ("invalido" as const);
+});
+
+/**
+ * Soma `nomes` às retiradas conhecidas e grava a união (por temporário, `fsync` e `rename`); devolve a
+ * união. A lista nunca encolhe: o registro da fábrica é só de acréscimos, e um manifesto antigo servido
+ * de novo não tira nome nenhum. Um arquivo ilegível recomeça das `nomes` (a lista do manifesto já traz as
+ * anteriores). O arquivo é gravado também quando não há retirada nenhuma: depois do primeiro manifesto
+ * conferido, `retiradas.json` ausente é perda, e a abertura o trata assim.
+ */
+export const acrescentarRetiradas = Effect.fn("Atualizacao.acrescentarRetiradas")(function* (
+  pasta: string,
+  nomes: ReadonlyArray<string>,
+) {
+  const lidas = yield* lerRetiradasConhecidas(pasta);
+  const antes = typeof lidas === "string" ? [] : lidas;
+  const uniao = [...new Set([...antes, ...nomes])].sort();
+  if (typeof lidas !== "string" && uniao.length === antes.length) return uniao;
+  yield* escreverAtomico(
+    caminhos(pasta).retiradas,
+    Buffer.from(`${codificarRetiradasJson({ skills: uniao })}\n`, "utf8"),
+    "gravar as skills retiradas",
+  );
+  return uniao;
+});
+
+/* ------------------------------------------------------------------ catálogo do instalador */
+
+/** O arquivo que o build grava na pasta de tarefas do instalador: o commit de que o catálogo saiu e a data dele. */
+export const ARQUIVO_ORIGEM_CATALOGO = "origem.json";
+
+export const OrigemCatalogoJson = Schema.fromJsonString(
+  Schema.Struct({ commit: Schema.String, data_commit: DataHora }),
+);
+const decodificarOrigemJson = Schema.decodeUnknownResult(OrigemCatalogoJson);
+export const codificarOrigemCatalogo = Schema.encodeSync(OrigemCatalogoJson);
+
+/**
+ * De onde vem o catálogo de tarefas que o app traz:
+ *
+ * - `checkout`: quem sobe o servidor disse que a pasta de tarefas é a do repositório (`pnpm app:dev`, ou
+ *   o servidor rodando do código-fonte): o catálogo local vence sempre o baixado. Não se infere pela
+ *   falta do `origem.json`;
+ * - `instalador`: o build gravou `origem.json` (o commit e a data dele): vence o de commit mais recente;
+ * - `sem-origem`: a pasta do instalador sem `origem.json` legível (`ausente` ou `ilegivel`, com o mesmo
+ *   tratamento): sem a data do commit, vale o baixado só se a versão do manifesto dele for mais nova que
+ *   a da base empacotada, que saiu do mesmo build que o catálogo;
+ * - `sem-pasta`: o servidor sem pasta de tarefas: vale o baixado.
+ */
+export type OrigemCatalogo =
+  | { readonly tipo: "instalador"; readonly commit: string; readonly dataCommit: string }
+  | { readonly tipo: "checkout" }
+  | { readonly tipo: "sem-origem"; readonly motivo: "ausente" | "ilegivel" }
+  | { readonly tipo: "sem-pasta" };
+
+/**
+ * A origem do catálogo de uma pasta de tarefas (`undefined`: o servidor sem pasta). `checkout`: quem sobe
+ * o servidor sabe que a pasta é a do repositório (o `cli.ts` rodando do código-fonte, ou o desktop em
+ * desenvolvimento, por `--tarefas-do-checkout`); aí o `origem.json` nem se lê.
+ */
+export const lerOrigemCatalogo = Effect.fn("Atualizacao.lerOrigemCatalogo")(function* (
+  pastaTarefas: string | undefined,
+  opcoes: { readonly checkout?: boolean } = {},
+): Effect.fn.Return<OrigemCatalogo, never, FileSystem.FileSystem | Path.Path> {
+  if (pastaTarefas === undefined) return { tipo: "sem-pasta" };
+  if (opcoes.checkout === true) return { tipo: "checkout" };
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const texto = yield* fs.readFileString(path.join(pastaTarefas, ARQUIVO_ORIGEM_CATALOGO)).pipe(Effect.result);
+  if (Result.isFailure(texto)) {
+    return { tipo: "sem-origem", motivo: texto.failure.reason._tag === "NotFound" ? "ausente" : "ilegivel" };
+  }
+  const lido = decodificarOrigemJson(texto.success);
+  return Result.isSuccess(lido)
+    ? { tipo: "instalador", commit: lido.success.commit, dataCommit: lido.success.data_commit }
+    : { tipo: "sem-origem", motivo: "ilegivel" };
+});
+
+/** O mesmo commit, com um dos dois abreviado (`git show --format=%h` no build, o curto também na fábrica). */
+const mesmoCommit = (a: string, b: string) => a !== "" && b !== "" && (a.startsWith(b) || b.startsWith(a));
+
+/**
+ * O catálogo baixado vence o que o app traz? Com o evento do log quando não é óbvio.
+ *
+ * - do instalador: vence o de commit mais recente. No empate do instante (um segundo, a resolução do
+ *   git), o do instalador só se for o mesmo commit; de commits diferentes, o baixado, que a fábrica só
+ *   publica descendendo do anterior. Uma data que não dá instante (`NaN`) não decide: cai na regra sem
+ *   origem, em vez de deixar o do instalador para sempre;
+ * - sem origem: o baixado só se a versão dele for mais nova que a da base empacotada (sem ela, vence).
+ */
+export function baixadoVence(
+  baixado: Pick<CatalogoBaixado, "versao" | "commit" | "data_commit">,
+  origem: OrigemCatalogo,
+  versaoEmpacotada: string | null,
+): { readonly vence: boolean; readonly evento?: string } {
+  const pelaVersao = (motivo: string) => {
+    const vence = versaoEmpacotada === null || maisNova(baixado.versao, versaoEmpacotada);
+    return {
+      vence,
+      evento: `${motivo}: vale o catálogo baixado só se a versão dele (${baixado.versao}) for mais nova que a da base empacotada (${versaoEmpacotada ?? "ilegível"}); ${vence ? "vale o baixado" : "vale o do instalador"}`,
+    };
+  };
+  switch (origem.tipo) {
+    case "checkout":
+      return { vence: false, evento: `catálogo de tarefas baixado ${baixado.versao} ignorado: vale o do checkout` };
+    case "sem-pasta":
+      return { vence: true };
+    case "sem-origem":
+      return pelaVersao(
+        `aviso: a pasta de tarefas do instalador ${origem.motivo === "ausente" ? "não tem" : "tem ilegível o"} ${ARQUIVO_ORIGEM_CATALOGO}`,
+      );
+    case "instalador": {
+      const doBaixado = instanteDe(baixado.data_commit);
+      const doInstalador = instanteDe(origem.dataCommit);
+      if (Number.isNaN(doBaixado) || Number.isNaN(doInstalador))
+        return pelaVersao("aviso: a data do commit do catálogo baixado ou do instalador não se lê");
+      const vence =
+        doBaixado > doInstalador || (doBaixado === doInstalador && !mesmoCommit(baixado.commit, origem.commit));
+      return vence
+        ? { vence }
+        : {
+            vence,
+            evento: `catálogo de tarefas baixado ${baixado.versao} (commit de ${baixado.data_commit}) não é mais novo que o do instalador (commit ${origem.commit}, de ${origem.dataCommit}): vale o do instalador`,
+          };
+    }
+  }
+}
+
+/** O catálogo de um arquivo da pasta: `ausente` se o arquivo falta, `invalido` se não se lê ou saiu do formato. */
+export const lerCatalogo = Effect.fn("Atualizacao.lerCatalogo")(function* (arquivo: string) {
+  const fs = yield* FileSystem.FileSystem;
+  if (!(yield* fs.exists(arquivo).pipe(Effect.orElseSucceed(() => false)))) return "ausente" as const;
+  const texto = yield* fs.readFileString(arquivo).pipe(Effect.option);
+  if (texto._tag === "None") return "invalido" as const;
+  const lido = decodificarCatalogoJson(texto.value);
+  return Result.isSuccess(lido) ? lido.success : ("invalido" as const);
 });
 
 /** O texto do `atualizacao.json`; `{}` se ele não for um objeto JSON válido. */
@@ -115,7 +335,11 @@ export const gravarEstado = Effect.fn("Atualizacao.gravarEstado")(function* (pas
 });
 
 /** Escreve um arquivo por temporário + fsync + rename (o destino nunca fica pela metade). */
-export const escreverAtomico = Effect.fn("Atualizacao.escreverAtomico")(function* (destino: string, dados: Uint8Array) {
+export const escreverAtomico = Effect.fn("Atualizacao.escreverAtomico")(function* (
+  destino: string,
+  dados: Uint8Array,
+  operacao = "gravar a base baixada",
+) {
   const fs = yield* FileSystem.FileSystem;
   yield* escreverPorTemporario(destino, (temporario) =>
     Effect.scoped(
@@ -125,7 +349,7 @@ export const escreverAtomico = Effect.fn("Atualizacao.escreverAtomico")(function
         yield* arquivo.sync;
       }),
     ),
-  ).pipe(naPasta("gravar a base baixada"));
+  ).pipe(naPasta(operacao));
 });
 
 /* ------------------------------------------------------------------ trava */
@@ -291,7 +515,7 @@ export function validarBancoNucleo(
   }
 }
 
-/** Sobras de uma execução que caiu: `*.tmp` da pasta e de `base/`, `baixando.sqlite` e `skills/*.baixando`. */
+/** Sobras de uma execução que caiu: `*.tmp` da pasta, de `base/` e de `catalogo/`, `baixando.sqlite` e `skills/*.baixando`. */
 export const limparSobras = Effect.fn("Atualizacao.limparSobras")(function* (pasta: string) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -308,6 +532,7 @@ export const limparSobras = Effect.fn("Atualizacao.limparSobras")(function* (pas
   yield* varrer(pasta, (nome) => nome.endsWith(".tmp"));
   yield* varrer(c.base, (nome) => nome.endsWith(".tmp") || nome === "baixando.sqlite");
   yield* varrer(c.skills, (nome) => nome.endsWith(".baixando"));
+  yield* varrer(c.catalogo, (nome) => nome.endsWith(".tmp"));
   return sobras;
 });
 
@@ -320,14 +545,43 @@ export interface Abertura {
   readonly info: InfoBanco | null;
   /** Pastas de skills baixadas, além das empacotadas (o `CatalogoSkills` escolhe a versão maior de cada). */
   readonly pastasSkills: ReadonlyArray<string>;
+  /**
+   * O catálogo de tarefas baixado, quando ele vence o do app (`OrigemCatalogo`): substitui o empacotado
+   * inteiro. `null`: vale o do app.
+   */
+  readonly catalogo: Pick<CatalogoBaixado, "versao" | "tarefas"> | null;
+  /**
+   * A versão da base empacotada (`null` se não se lê). As skills e o catálogo do instalador saíram do
+   * mesmo build: um manifesto que não é mais novo que ela não traz skills nem catálogo.
+   */
+  readonly versaoEmpacotada: string | null;
+  /**
+   * De onde vem o catálogo de tarefas do app nesta execução: a conferência não grava o catálogo baixado
+   * que a abertura descartaria por ele (`baixadoVence`).
+   */
+  readonly origemCatalogo: OrigemCatalogo;
+  /**
+   * As skills retiradas que os manifestos conferidos trouxeram (`retiradas.json`, só cresce, somado às do
+   * catálogo baixado), venha ou não o catálogo baixado: o servidor as soma às do instalador.
+   */
+  readonly skillsRetiradas: ReadonlyArray<string>;
   /** O que aconteceu, para o log. */
   readonly eventos: ReadonlyArray<string>;
 }
 
 /**
  * Na abertura do servidor, antes de abrir a base: atende o pedido de voltar, põe a pendente no lugar
- * (guardando a atual como anterior), passa as skills pendentes a atuais e escolhe a base mais nova
- * entre a baixada e a empacotada (um app novo pode trazer uma base mais nova que a baixada).
+ * (guardando a atual como anterior), passa as skills e o catálogo pendentes a atuais e escolhe a base
+ * mais nova entre a baixada e a empacotada (um app novo pode trazer uma base mais nova que a baixada).
+ *
+ * O catálogo de tarefas pendente só passa a atual se for legível e de versão do canal mais nova que a
+ * do atual; senão, é descartado e o atual fica. Entre o baixado e o do app, a regra de `OrigemCatalogo`
+ * (`catalogoEmpacotado`): o de commit mais recente contra o do instalador, a versão contra a base
+ * empacotada sem `origem.json`, e o do checkout vence sempre. Tarefa não tem versão própria: o catálogo
+ * troca inteiro.
+ *
+ * As skills retiradas são as de `retiradas.json` e as do catálogo baixado; sem nenhum dos dois legível,
+ * a pasta de skills baixadas não entra nesta abertura.
  *
  * Só concorre a base baixada do esquema que este app lê (`versaoEsquema`, padrão `VERSAO_ESQUEMA`): o
  * app novo, de esquema novo, pode achar na pasta uma base baixada pelo app antigo, de versão mais nova
@@ -338,12 +592,16 @@ export const prepararAbertura = Effect.fn("Atualizacao.prepararAbertura")(functi
   readonly pasta: string;
   readonly bancoEmpacotado: string;
   readonly versaoEsquema?: number;
+  /** De onde vem o catálogo de tarefas do app (`lerOrigemCatalogo`); padrão: `sem-pasta` (vale o baixado). */
+  readonly catalogoEmpacotado?: OrigemCatalogo;
 }) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const esquema = opcoes.versaoEsquema ?? VERSAO_ESQUEMA;
   const c = caminhos(opcoes.pasta);
-  const estado = yield* lerEstado(opcoes.pasta);
+  // O estado se lê dentro da trava da pasta: lido antes, uma conferência de outro processo poderia
+  // regravá-lo no intervalo, e a gravação daqui a desfaria.
+  let estado: EstadoGravado = {};
   const eventos: string[] = [];
   const existe = (caminho: string) => fs.exists(caminho);
   const remover = (caminho: string) => fs.remove(caminho, { force: true, recursive: true });
@@ -396,15 +654,40 @@ export const prepararAbertura = Effect.fn("Atualizacao.prepararAbertura")(functi
         }
       }
     }
+
+    if (estado.catalogoPendente !== undefined) {
+      const versao = estado.catalogoPendente;
+      delete estado.catalogoPendente;
+      const pendente = yield* lerCatalogo(c.catalogoPendente);
+      const atual = yield* lerCatalogo(c.catalogoAtual);
+      if (pendente === "ausente") {
+        eventos.push(`catálogo de tarefas pendente ${versao} descartado (arquivo ausente)`);
+      } else if (pendente === "invalido") {
+        yield* remover(c.catalogoPendente);
+        eventos.push(`catálogo de tarefas pendente ${versao} descartado (não se lê); fica o atual`);
+      } else if (typeof atual === "object" && !maisNova(pendente.versao, atual.versao)) {
+        yield* remover(c.catalogoPendente);
+        eventos.push(
+          `catálogo de tarefas pendente ${pendente.versao} descartado (não é mais novo que o atual, ${atual.versao})`,
+        );
+      } else {
+        // O `rename` troca o catálogo inteiro: nada do anterior fica.
+        yield* fs.rename(c.catalogoPendente, c.catalogoAtual);
+        eventos.push(`catálogo de tarefas ${pendente.versao} aplicado`);
+      }
+    }
   }).pipe(naPasta("trocar a base"));
 
   // A troca só com a trava: outro processo baixando na mesma pasta não vê os arquivos mudando de nome.
   yield* Effect.scoped(
     Effect.gen(function* () {
       if (!(yield* trava(opcoes.pasta))) {
+        // Sem a trava, nada se grava: o estado lido só diz que skills estão em uso.
+        estado = yield* lerEstado(opcoes.pasta);
         eventos.push("outro processo usa esta pasta de atualização; a troca fica para a próxima abertura");
         return;
       }
+      estado = yield* lerEstado(opcoes.pasta);
       yield* trocar;
       yield* gravarEstado(opcoes.pasta, estado);
     }),
@@ -418,15 +701,50 @@ export const prepararAbertura = Effect.fn("Atualizacao.prepararAbertura")(functi
     );
   }
   const empacotada = lerInfoBanco(opcoes.bancoEmpacotado);
-  const usarBaixada =
-    baixada !== null && (empacotada === null || compararVersoes(baixada.versao, empacotada.versao) >= 0);
+  // No empate, a baixada; a versão fora do padrão não vence a empacotada.
+  const usarBaixada = baixada !== null && (empacotada === null || atende(empacotada.versao, baixada.versao));
   const pastaSkills = estado.skills === undefined ? undefined : path.join(c.skills, estado.skills);
+  const temSkillsBaixadas = pastaSkills !== undefined && (yield* existe(pastaSkills).pipe(naPasta("ler as skills")));
+  const origemCatalogo = opcoes.catalogoEmpacotado ?? { tipo: "sem-pasta" };
+  const lido = yield* lerCatalogo(c.catalogoAtual);
+  if (lido === "invalido") eventos.push("catálogo de tarefas baixado não se lê: vale o do app");
+  const catalogoBaixado = lido === "ausente" || lido === "invalido" ? null : lido;
+  const decisao =
+    catalogoBaixado === null ? undefined : baixadoVence(catalogoBaixado, origemCatalogo, empacotada?.versao ?? null);
+  if (decisao?.evento !== undefined) eventos.push(decisao.evento);
+
+  // As retiradas: as de `retiradas.json` somadas às do catálogo baixado, que veio de um manifesto assinado.
+  // Sem `retiradas.json` legível, as do catálogo bastam; sem nenhum dos dois, as skills baixadas ficam de
+  // fora nesta abertura (uma retirada entre elas voltaria), e a conferência seguinte regrava o arquivo.
+  const gravadas = yield* lerRetiradasConhecidas(opcoes.pasta);
+  const doCatalogo = catalogoBaixado?.skills_retiradas ?? [];
+  let usarSkillsBaixadas = temSkillsBaixadas;
+  if (typeof gravadas === "string" && temSkillsBaixadas) {
+    const arquivo = gravadas === "ausente" ? "ausente" : "ilegível";
+    if (catalogoBaixado !== null) {
+      eventos.push(`lista de skills retiradas baixada ${arquivo}: recomposta da do catálogo baixado`);
+    } else {
+      usarSkillsBaixadas = false;
+      eventos.push(
+        `lista de skills retiradas baixada ${arquivo}, sem catálogo baixado que a recomponha: as skills baixadas ficam de fora nesta abertura`,
+      );
+    }
+  } else if (gravadas === "invalido") {
+    eventos.push("lista de skills retiradas baixada não se lê: valem as do instalador e as do catálogo baixado");
+  }
+  const retiradas = [...new Set([...(typeof gravadas === "string" ? [] : gravadas), ...doCatalogo])].sort();
   const abertura: Abertura = {
     banco: usarBaixada ? c.atual : opcoes.bancoEmpacotado,
     origem: usarBaixada ? "baixada" : "empacotada",
     info: usarBaixada ? baixada : empacotada,
-    pastasSkills:
-      pastaSkills !== undefined && (yield* existe(pastaSkills).pipe(naPasta("ler as skills"))) ? [pastaSkills] : [],
+    pastasSkills: pastaSkills !== undefined && usarSkillsBaixadas ? [pastaSkills] : [],
+    catalogo:
+      catalogoBaixado !== null && decisao?.vence === true
+        ? { versao: catalogoBaixado.versao, tarefas: catalogoBaixado.tarefas }
+        : null,
+    versaoEmpacotada: empacotada?.versao ?? null,
+    origemCatalogo,
+    skillsRetiradas: retiradas,
     eventos,
   };
   return abertura;

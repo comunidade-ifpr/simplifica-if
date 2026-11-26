@@ -75,17 +75,22 @@ export function dadosPessoaisEUrlsInternas(relativo: string, texto: string): str
   return erros;
 }
 
+/** URL pré-assinada (com credencial na query string) em texto público. */
+export function urlPreAssinada(relativo: string, texto: string): string[] {
+  const assinada = RE_URL_ASSINADA.exec(texto);
+  // Só o começo da URL: a mensagem não repete a credencial.
+  return assinada
+    ? [`${relativo} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`]
+    : [];
+}
+
 /** Valida caminhos locais, URLs pré-assinadas, dados pessoais e URLs internas em texto público. */
 export function validarTextoPublico(relativo: string, texto: string): string[] {
   const erros: string[] = [];
   for (const padrao of PADROES_LOCAIS) {
     if (texto.includes(padrao)) erros.push(`${relativo} contém padrão local proibido: ${padrao}`);
   }
-  const assinada = RE_URL_ASSINADA.exec(texto);
-  if (assinada) {
-    // Só o começo da URL: a mensagem não repete a credencial.
-    erros.push(`${relativo} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
-  }
+  erros.push(...urlPreAssinada(relativo, texto));
   erros.push(...dadosPessoaisEUrlsInternas(relativo, texto));
   return erros;
 }

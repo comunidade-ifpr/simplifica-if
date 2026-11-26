@@ -1,26 +1,20 @@
 /**
  * O preload da janela (com `sandbox` e `contextIsolation`, como no T3): expõe `window.simplifica`
  * (`PonteDesktop`) e nada mais. Cada função só chama o processo principal pelo IPC; quem confere o
- * pedido é ele.
+ * pedido é ele. A parte de cada módulo vem dele (`modulos/revisao-ppc/preload.ts`): este arquivo é de
+ * composição.
  */
 import { contextBridge, ipcRenderer, webUtils } from "electron";
 import { CANAIS, type CredenciaisServidor, NOME_PONTE, type PonteDesktop } from "@simplifica-if/contratos-app/ponte";
+import { ponteRevisaoPpc } from "./modulos/revisao-ppc/preload.ts";
 
 const ponte: PonteDesktop = {
   conexao: () => ipcRenderer.invoke(CANAIS.conexao) as Promise<CredenciaisServidor>,
   abrirExterno: async (url: string) => {
     await ipcRenderer.invoke(CANAIS.abrirExterno, url);
   },
-  escolherDocx: () => ipcRenderer.invoke(CANAIS.escolherDocx) as Promise<string | null>,
-  // O caminho sai daqui, como no `anexarSoltos`: um `File` criado por script não tem caminho ("").
-  soltarDocx: (arquivo: File) =>
-    ipcRenderer.invoke(CANAIS.soltarDocx, webUtils.getPathForFile(arquivo)) as Promise<string | null>,
-  abrirDocumento: async (caminho: string) => {
-    await ipcRenderer.invoke(CANAIS.abrirDocumento, caminho);
-  },
-  mostrarNaPasta: async (caminho: string) => {
-    await ipcRenderer.invoke(CANAIS.mostrarNaPasta, caminho);
-  },
+  // Composição: a parte do módulo `revisao-ppc`.
+  ...ponteRevisaoPpc,
   reiniciarServidor: async () => {
     await ipcRenderer.invoke(CANAIS.reiniciarServidor);
   },

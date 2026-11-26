@@ -20,7 +20,7 @@ export const CAMINHO_RPC = "/rpc";
 export const CAMINHO_INGRESSO = "/ingresso";
 
 /** `POST` com `Authorization: Bearer <tokenDesktop>` e `{ "arquivo": "<caminho absoluto>" }`: libera o arquivo. */
-export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
+export const CAMINHO_LIBERAR_ARQUIVO = "/arquivos/liberar";
 
 /** A variável de ambiente com o token, a alternativa ao `EnvelopePartida` no stdin; o desktop a tira do filho. */
 export const VARIAVEL_TOKEN = "SIMPLIFICA_SERVIDOR_TOKEN";
@@ -69,7 +69,7 @@ export const cortarRegistro = (texto: string, limite: number = LIMITE_REGISTRO_I
 /* ================================================================== arquivos */
 
 /**
- * O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx`, na pasta do original,
+ * Composição (módulo `revisao-ppc`). O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx`, na pasta do original,
  * regravada a cada revisão (` (2)`, ` (3)`… quando ela está travada ou foi editada pela pessoa). O
  * servidor grava com ele; o desktop só abre arquivos com ele.
  */
@@ -138,6 +138,10 @@ export interface PonteDesktop {
   conexao(): Promise<CredenciaisServidor>;
   /** Abre um link http(s) no navegador do sistema, ou um `mailto:` no programa de e-mail; outros esquemas são recusados. */
   abrirExterno(url: string): Promise<void>;
+  /*
+   * Composição: a parte do módulo `revisao-ppc` (`escolherDocx`, `soltarDocx`, `abrirDocumento`,
+   * `mostrarNaPasta`), estreita, por caso de uso; o preload a tira de `apps/desktop/src/modulos/revisao-ppc/`.
+   */
   /** O diálogo de arquivo do sistema, só `.docx`; `null` se a pessoa cancelar. */
   escolherDocx(): Promise<string | null>;
   /**
@@ -219,6 +223,7 @@ export const NOME_PONTE = "simplifica";
 export const CANAIS = {
   conexao: "simplifica:conexao",
   abrirExterno: "simplifica:abrir-externo",
+  // Composição: os canais do módulo `revisao-ppc`.
   escolherDocx: "simplifica:escolher-docx",
   soltarDocx: "simplifica:soltar-docx",
   abrirDocumento: "simplifica:abrir-documento",

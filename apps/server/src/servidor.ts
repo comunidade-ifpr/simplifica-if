@@ -12,10 +12,14 @@
  *   sessão do provider liberada ociosa e reaberta por retomada (`Conversas.ts`).
  * - **Motor** (`@simplifica-if/motor`) sobre os `Drivers` do ambiente: os reais (`Drivers.layerNode`,
  *   na CLI) ou drivers de teste.
- * - **Skills do app** (`CatalogoSkills.ts`): as da pasta `pastaSkills` com bloco `simplifica:` válido,
- *   entregues a toda conversa e listadas por `skills.listar`.
- * - **Revisão prévia de PPC** (`revisao-ppc/RevisorPpc.ts`): DOCX → pendências e cópia comentada, sem
- *   IA, num `Worker` com limite de memória e de tempo, sobre a base do mesmo `kb.sqlite`.
+ * - **Skills do app** (`CatalogoSkills.ts`): as da pasta `pastaSkills` com bloco `simplifica:` válido e as
+ *   baixadas pela atualização, menos as retiradas, entregues à conversa livre (a de tarefa leva só a
+ *   skill da tarefa).
+ * - **Tarefas do app** (`CatalogoTarefas.ts`): os manifestos da pasta `pastaTarefas` ou, quando é mais
+ *   novo, o catálogo que a atualização baixou, inteiro; os cartões que `tarefas.listar` serve à interface.
+ * - **Módulos** (`modulos/`): a revisão de PPC (`modulos/revisao-ppc/modulo.ts`), com os serviços, as
+ *   fontes de ocupação e, em `handlers.ts`, os handlers. Este arquivo é de composição: cita o módulo pelo
+ *   nome, com o banco das conversas, e nada mais do núcleo o cita.
  * - **Diagnóstico** (`diagnostico/Diagnostico.ts`): o pacote `.zip` com os logs saneados da pasta de logs
  *   e o `sistema.json`, em `Documentos/Simplifica IF/Diagnósticos/`.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
@@ -58,6 +62,7 @@ import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
 import { layerHttp } from "@simplifica-if/atualizacao/remoto";
 import * as Autenticacao from "./Autenticacao.ts";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
+import * as CatalogoTarefas from "./CatalogoTarefas.ts";
 import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
@@ -66,12 +71,9 @@ import * as Diagnostico from "./diagnostico/Diagnostico.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
-import * as RevisorPpc from "./revisao-ppc/RevisorPpc.ts";
 import * as TextosAnexos from "./textos-anexos/TextosAnexos.ts";
-import * as ListaViva from "./revisao-ppc/ListaViva.ts";
-import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
-import * as CopiasComentadas from "./persistencia/CopiasComentadas.ts";
-import * as RevisoesPpc from "./persistencia/RevisoesPpc.ts";
+// Composição: o módulo `revisao-ppc`.
+import * as RevisaoPpc from "./modulos/revisao-ppc/modulo.ts";
 
 export interface Opcoes {
   /** O `kb.sqlite` servido pelo MCP e pela leitura. */
@@ -94,15 +96,25 @@ export interface Opcoes {
   /** Quanto se espera pelo fim do turno interrompido antes de liberar a sessão (`Conversas.PRAZO_INTERRUPCAO`). */
   readonly prazoInterrupcao?: Duration.Duration;
   /**
-   * A pasta das skills do app (`CatalogoSkills.ts`): `.agents/skills` do checkout no desenvolvimento,
-   * `<Resources>/skills` no app empacotado. Sem ela, as conversas não recebem skills.
+   * A pasta das skills do app (`CatalogoSkills.ts`): `catalogo/skills` do checkout no desenvolvimento,
+   * `<Resources>/skills` no app empacotado. Sem ela, as conversas só recebem as skills que a atualização
+   * baixou (nenhuma, sem elas).
    */
   readonly pastaSkills?: string;
-  /** Paralelismo e tempo por turno da revisão com IA (`RevisaoIa.PARALELISMO`); os testes os mudam. */
-  readonly revisaoIa?: RevisaoIa.OpcoesRevisaoIa;
   /**
-   * O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`). Com ele, a revisão
-   * prévia só revisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
+   * A pasta dos manifestos de tarefa (`CatalogoTarefas.ts`): `catalogo/tarefas` do checkout no desenvolvimento,
+   * `<Resources>/tarefas` no app empacotado. Sem ela, vale o catálogo que a atualização baixou; sem ele, o
+   * catálogo de tarefas fica vazio.
+   */
+  readonly pastaTarefas?: string;
+  /** A versão do app, comparada ao `app_minimo` de cada tarefa; sem ela, o `app_minimo` não é conferido. */
+  readonly versaoApp?: string;
+  /** Paralelismo e tempo por turno da revisão com IA (`RevisaoIa.PARALELISMO`); os testes os mudam. */
+  readonly revisaoIa?: RevisaoPpc.OpcoesRevisaoIa;
+  /**
+   * O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`). Com ele, o servidor só
+   * lê arquivo liberado em `CAMINHO_LIBERAR_ARQUIVO`: o `.docx` da revisão prévia e os anexos que o
+   * "Anexar" copia para a pasta de trabalho (`ArquivosLiberados`).
    */
   readonly tokenDesktop?: Redacted.Redacted<string>;
   /**
@@ -127,7 +139,7 @@ export interface Opcoes {
   /** Aviso de uso aceito e boas-vindas feitas ao abrir (M1.8): os testes que não passam por elas. */
   readonly primeiroUsoFeito?: boolean;
   /**
-   * Atualização da base e das skills (M1.10), montada pela CLI depois de `prepararAbertura`. Sem ela,
+   * Atualização da base, das skills e do catálogo de tarefas (M1.10), montada pela CLI depois de `prepararAbertura`. Sem ela,
    * o serviço responde como desligado (`atualizacao.estado`), com o motivo.
    */
   readonly atualizacao?: OpcoesAtualizacao;
@@ -152,19 +164,38 @@ export interface OpcoesAtualizacao {
   readonly automatico?: boolean;
 }
 
-/** Há revisão de PPC, conversa respondendo ou operação na pasta de tarefa em andamento? */
-const servidorOcupado = Effect.gen(function* () {
-  const revisor = yield* RevisorPpc.RevisorPpc;
-  const ia = yield* RevisaoIa.RevisaoIa;
+/** O que segura a troca da base e a atualização dos harnesses: o nome vai ao log de quem ficou esperando. */
+interface FonteDeOcupacao {
+  readonly nome: string;
+  readonly ocupada: Effect.Effect<boolean>;
+}
+
+/** As fontes de ocupação do servidor. Uma fonte nova entra aqui, e só aqui. */
+const fontesDeOcupacao = Effect.gen(function* () {
   const conversas = yield* Conversas.Conversas;
   const pastas = yield* PastasTrabalho.PastasTrabalho;
-  return Effect.gen(function* () {
-    if (yield* revisor.ocupada) return true;
-    if (yield* pastas.emAndamento) return true;
-    if (yield* ia.ocupada) return true;
-    return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
-  });
+  return [
+    ...(yield* RevisaoPpc.fontesDeOcupacao),
+    { nome: "operação na pasta de tarefa", ocupada: pastas.emAndamento },
+    {
+      nome: "conversa respondendo",
+      ocupada: Effect.map(conversas.listar, (lista) => lista.some((conversa) => conversa.estado === "respondendo")),
+    },
+  ] satisfies ReadonlyArray<FonteDeOcupacao>;
 });
+
+/** Alguma fonte de `fontesDeOcupacao` está em andamento? Para na primeira ocupada. */
+const servidorOcupado = Effect.map(fontesDeOcupacao, (fontes) =>
+  Effect.gen(function* () {
+    for (const fonte of fontes) {
+      if (yield* fonte.ocupada) {
+        yield* Effect.logDebug(`servidor ocupado: ${fonte.nome}`);
+        return true;
+      }
+    }
+    return false;
+  }),
+);
 
 /**
  * O serviço de atualização sobre as revisões e conversas em curso (a troca espera) e as skills do catálogo,
@@ -175,8 +206,7 @@ const layerAtualizador = (opcoes: Opcoes) =>
     Atualizador.Atualizador,
     Effect.gen(function* () {
       const catalogo = yield* CatalogoSkills.CatalogoSkills;
-      // A troca reinicia o servidor: espera a revisão prévia, a revisão com IA, conversa respondendo (as de
-      // tarefa do M1.9 incluídas: são conversas com `tarefa`) e o Desfazer ou a cópia da pasta.
+      // A troca reinicia o servidor: espera o que `fontesDeOcupacao` lista.
       const ocupado = yield* servidorOcupado;
       const a = opcoes.atualizacao;
       return yield* Atualizador.make({
@@ -188,10 +218,21 @@ const layerAtualizador = (opcoes: Opcoes) =>
           pasta: "",
           bancoEmpacotado: opcoes.banco,
           versaoApp: "0.0.0",
-          abertura: { banco: opcoes.banco, origem: "empacotada", info: null, pastasSkills: [], eventos: [] },
+          abertura: {
+            banco: opcoes.banco,
+            origem: "empacotada",
+            info: null,
+            pastasSkills: [],
+            catalogo: null,
+            versaoEmpacotada: null,
+            origemCatalogo: { tipo: "sem-pasta" },
+            skillsRetiradas: [],
+            eventos: [],
+          },
           automatico: false,
         }),
         versoesSkills: catalogo.versoes,
+        skillsRetiradas: catalogo.retiradas,
         ocupado,
       });
     }),
@@ -261,7 +302,7 @@ export class ServidorApp extends Context.Service<
   }
 >()("@simplifica-if/server/servidor/ServidorApp") {}
 
-/** O corpo de `POST /revisao-ppc/liberar`: o caminho absoluto do arquivo escolhido no diálogo. */
+/** O corpo de `POST /arquivos/liberar`: o caminho absoluto do arquivo escolhido no diálogo. */
 const lerCorpoLiberacao = HttpServerRequest.schemaBodyJson(Schema.Struct({ arquivo: Schema.String }));
 
 /**
@@ -336,11 +377,7 @@ export const layer = (opcoes: Opcoes) => {
     ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
   }).pipe(
     Layer.provideMerge(layerPastas(opcoes)),
-    Layer.provideMerge(ListaViva.layer()),
-    Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
-    Layer.provideMerge(RevisoesPpc.layer.pipe(Layer.provide(banco))),
-    Layer.provideMerge(RevisorPpc.layer()),
-    Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
+    Layer.provideMerge(RevisaoPpc.layer(banco, opcoes.revisaoIa)),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
@@ -349,10 +386,30 @@ export const layer = (opcoes: Opcoes) => {
         Layer.provide(banco),
       ),
     ),
+    // Vazio só sem a pasta e sem o baixado: o catálogo e as skills que a atualização trouxe valem também no
+    // servidor sem pasta local.
     Layer.provideMerge(
-      opcoes.pastaSkills === undefined
+      opcoes.pastaTarefas === undefined && opcoes.atualizacao?.abertura.catalogo == null
+        ? CatalogoTarefas.layerVazio
+        : CatalogoTarefas.layer(opcoes.pastaTarefas, {
+            versaoApp: opcoes.versaoApp,
+            versaoBase: opcoes.atualizacao?.abertura.info?.versao,
+            // O catálogo baixado que vence o do instalador entra no lugar da pasta, inteiro.
+            baixado: opcoes.atualizacao?.abertura.catalogo,
+          }),
+    ),
+    // Vazio só sem nada de skills: nem a pasta, nem as baixadas, nem as retiradas que a atualização
+    // conhece (sem elas, a sessão não apagaria da pasta de trabalho a skill retirada).
+    Layer.provideMerge(
+      opcoes.pastaSkills === undefined &&
+        (opcoes.atualizacao?.abertura.pastasSkills ?? []).length === 0 &&
+        (opcoes.atualizacao?.abertura.skillsRetiradas ?? []).length === 0
         ? CatalogoSkills.layerVazio
-        : CatalogoSkills.layer(opcoes.pastaSkills, opcoes.atualizacao?.abertura.pastasSkills ?? []),
+        : CatalogoSkills.layer(
+            opcoes.pastaSkills,
+            opcoes.atualizacao?.abertura.pastasSkills ?? [],
+            opcoes.atualizacao?.abertura.skillsRetiradas ?? [],
+          ),
     ),
     Layer.provideMerge(mcp),
     Layer.provideMerge(leitura),

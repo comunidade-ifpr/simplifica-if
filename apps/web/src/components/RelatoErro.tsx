@@ -265,8 +265,10 @@ function Formulario({
         >
           Versões: app {versoes.app}, base {versoes.base}
           {versoes.baseCommit === null ? "" : ` (revisão da base ${versoes.baseCommit.slice(0, 12)})`}
-          {versoes.tarefa === null ? "" : `, ${versoes.tarefa.titulo} ${versoes.tarefa.versao}`},{" "}
-          {NOMES_PROVIDER[versoes.provider]}
+          {versoes.tarefa === null
+            ? ""
+            : `, ${versoes.tarefa.titulo}${versoes.tarefa.skill === null ? "" : ` ${versoes.tarefa.skill.versao}`}`}
+          , {NOMES_PROVIDER[versoes.provider]}
           {versoes.versaoProvider === null ? "" : ` ${versoes.versaoProvider}`}
         </Caixa>
       </div>

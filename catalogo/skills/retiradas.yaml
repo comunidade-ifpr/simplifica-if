@@ -1,0 +1,13 @@
+# Skills retiradas do app. Só de acréscimos: uma entrada nunca se apaga nem se edita.
+#
+# Tirar a pasta de uma skill de catalogo/skills/ não a tira dos computadores (a que veio no instalador
+# continua lá). Para retirá-la, apague a pasta e acrescente aqui, no fim:
+#
+#   - skill: nome-da-skill      # o nome da pasta que saiu
+#     data: 2026-11-26          # o dia da retirada, AAAA-MM-DD
+#     motivo: Texto curto.      # público
+#
+# A lista vai ao manifesto do canal (skills_retiradas) e ao instalador, e o app deixa de usar a skill.
+# Um nome retirado não volta: a skill que a substitui entra com outro nome.
+# Formato e regras: packages/atualizacao/src/retiradas.ts.
+retiradas: []

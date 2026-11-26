@@ -9,6 +9,9 @@
     "./grupo-leitura": "./src/grupo-leitura.ts",
     "./http": "./src/http.ts",
     "./skills": "./src/skills.ts",
+    "./tarefas": "./src/tarefas.ts",
+    "./modulos": "./src/modulos.ts",
+    "./pedido": "./src/pedido.ts",
     "./publicos": "./src/publicos.ts"
   },
   "bin": {

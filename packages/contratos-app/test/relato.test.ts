@@ -31,9 +31,9 @@ const RASCUNHO: RascunhoRelato = {
     base: "2026.11.13",
     baseCommit: "0123456789abcdef0123",
     tarefa: {
-      nome: "verificar-fundamentacao-normativa",
+      id: "conferir-fundamentacao-normativa",
       titulo: "Conferir a fundamentação normativa",
-      versao: "1.2.0",
+      skill: { nome: "verificar-fundamentacao-normativa", versao: "1.2.0" },
     },
     provider: "claude",
     versaoProvider: "2.1.30",
@@ -107,7 +107,9 @@ describe("montarRelato", () => {
     expect(corpo).toContain("> ```\n> linha 1\n>\n> linha 2\n> ```");
     expect(corpo).toContain("- `ifpr://norma/br/cne-cp/res/2021/1#art20`\n- `ifpr://cnct/tecnico-em-enfermagem`");
     expect(corpo).toContain("- Base: 2026.11.13 (commit 0123456789ab)");
-    expect(corpo).toContain("- Tarefa: Conferir a fundamentação normativa (`verificar-fundamentacao-normativa` 1.2.0)");
+    expect(corpo).toContain(
+      "- Tarefa: Conferir a fundamentação normativa (`conferir-fundamentacao-normativa`, skill `verificar-fundamentacao-normativa` 1.2.0)",
+    );
     expect(corpo).toContain("- IA: Claude (Claude Code) (versão 2.1.30)");
     expect(corpo).toMatch(/não traz anexos nem arquivos da pasta da tarefa/);
   });

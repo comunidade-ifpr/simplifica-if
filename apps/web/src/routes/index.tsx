@@ -1,7 +1,7 @@
 /**
  * Início do Modo Servidor (M1.9): a linha do perfil ("Função · Campus", M1.8) e a data da base, a pergunta
  * "O que você precisa hoje?" com a caixa de pedido (`CaixaPedido`, com anexo e a escolha da IA), as tarefas que servem ao perfil
- * (as skills do catálogo e a tarefa nativa "Revisar um PPC"), "Ver todas" e os recentes (conversas e a
+ * (do catálogo do servidor, as que rodam no app antes das que abrem um link), "Ver todas" e os recentes (conversas e a
  * última revisão de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
  * boas-vindas.
  *
@@ -13,9 +13,8 @@
  * "Perguntar à IA sobre isto", nas páginas do Explorar, chega aqui com o pedido escrito (`?pedido=`): a
  * caixa já vem com ele e com o foco, e nada é enviado sozinho.
  */
-import type { ListaPendencias } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CircleCheckIcon, FileSearchIcon } from "lucide-react";
+import { CircleCheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { CaixaPedido } from "../components/CaixaPedido.tsx";
@@ -29,8 +28,8 @@ import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
 import { detectarIa } from "../deteccao.ts";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
-import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
-import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo, useAnexos } from "../tarefas/comecar.tsx";
+import { tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
+import { Anexos, comecarTarefa, EscolhaIa, useAnexos } from "../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { tituloDoPedido } from "../tarefas/textos.ts";
@@ -38,6 +37,8 @@ import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 import { classeColuna } from "../components/Pagina.tsx";
 import { dataCurta } from "../lib/formato.ts";
 import { cn } from "../lib/utils.ts";
+// Composição: o módulo `revisao-ppc`.
+import { UltimaRevisao } from "../modulos/revisao-ppc/UltimaRevisao.tsx";
 
 /** A busca da rota: o pedido que veio pronto ("Perguntar à IA sobre isto", do Explorar). */
 export interface BuscaInicio {
@@ -130,7 +131,6 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
     try {
       const sessao = await comecarTarefa(api, conversa, {
         titulo: tituloDoPedido(texto),
-        tarefa: "conversa",
         ia,
         anexos,
         texto,
@@ -164,7 +164,7 @@ function Tarefas() {
   const catalogo = useCatalogo();
   const perfil = usePerfil();
   if (catalogo.fase === "falhou") return <AvisoErro erro={catalogo.erro} />;
-  const tarefas = tarefasDoInicio(catalogo.fase === "pronto" ? catalogo.skills : [], perfil);
+  const tarefas = tarefasDoInicio(catalogo.fase === "pronto" ? catalogo.tarefas : [], perfil);
   return (
     <section aria-labelledby="titulo-tarefas" className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-2">
@@ -177,7 +177,7 @@ function Tarefas() {
       </div>
       <ul className="-mx-3.5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
         {tarefas.slice(0, CARTOES_NO_INICIO).map((tarefa) => (
-          <li key={nomeTarefa(tarefa)}>
+          <li key={tarefa.id}>
             <CartaoTarefa tarefa={tarefa} />
           </li>
         ))}
@@ -188,37 +188,6 @@ function Tarefas() {
         </p>
       ) : null}
     </section>
-  );
-}
-
-/** A revisão de PPC mais recente, para continuar de onde parou. */
-function UltimaRevisao() {
-  const api = useApi();
-  const conectado = useEstadoConexao().fase === "conectada";
-  const [lista, setLista] = useState<ListaPendencias | null>(null);
-  useEffect(() => {
-    if (!conectado) return;
-    let vale = true;
-    api
-      .chamar((cliente) => cliente["revisaoPpc.listas"]({}))
-      .then(
-        (listas) => vale && setLista(listas[0] ?? null),
-        () => undefined,
-      );
-    return () => {
-      vale = false;
-    };
-  }, [api, conectado]);
-  if (lista === null) return null;
-  return (
-    <Link
-      to="/revisao-ppc"
-      search={{ id: lista.id }}
-      className="flex items-center gap-1.5 rounded-md px-2 py-1.5 font-medium text-sm hover:bg-accent"
-    >
-      <FileSearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
-      <span className="truncate">Revisão do PPC: {nomeArquivo(lista.arquivoOriginal)}</span>
-    </Link>
   );
 }
 
@@ -270,6 +239,7 @@ function Inicio() {
               <h2 id="titulo-recentes" className="text-title">
                 Recentes
               </h2>
+              {/* Composição: a última revisão de PPC, do módulo `revisao-ppc`. */}
               <UltimaRevisao />
               <ListaConversas limite={5} />
             </section>

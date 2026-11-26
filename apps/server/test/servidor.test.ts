@@ -1,13 +1,13 @@
 /**
  * O servidor local de verdade, em portas efêmeras de `127.0.0.1`, com drivers falsos no motor e o banco
  * de fixture: a autenticação do WebSocket (token, `Host`, `Origin`), o cliente `effect/rpc` (o mesmo
- * que a interface vai usar) nos quatro grupos (as skills do app vêm do `.agents/skills` do checkout), a conversa com pedido de aprovação respondido pelo RPC, e
+ * que a interface vai usar) nos quatro grupos (as skills do app vêm do `catalogo/skills` do checkout), a conversa com pedido de aprovação respondido pelo RPC, e
  * o MCP HTTP ligado a cada sessão com token próprio, revogado ao encerrar.
  *
  * Sem os serviços de teste (`excludeTestServices`), como o teste HTTP do MCP: o cliente sobre
  * WebSocket usa o relógio (prazo de abertura e ping), que no `TestClock` não anda.
  */
-// @effect-diagnostics nodeBuiltinImport:off -- teste: o caminho do `.agents/skills` do checkout
+// @effect-diagnostics nodeBuiltinImport:off -- teste: o caminho do `catalogo/skills` do checkout
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, layer } from "@effect/vitest";
@@ -46,7 +46,8 @@ const camada = Servidor.layer({
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   origens: [ORIGEM],
-  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
+  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../catalogo/skills"),
+  pastaTarefas: NodePath.resolve(import.meta.dirname, "../../../catalogo/tarefas"),
 }).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
 
 const decodificarIngresso = Schema.decodeEffect(Schema.fromJsonString(Ingresso));
@@ -64,20 +65,38 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
     }),
   );
 
-  it.effect("skills.listar: as skills do app do checkout, com título, resumo e área", () =>
+  it.effect("tarefas.listar: as tarefas do checkout, com a abertura de cada uma e as etapas da skill", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      const skills = yield* rpc["skills.listar"]({});
+      const { tarefas, retiradas } = yield* rpc["tarefas.listar"]({});
       assert.deepStrictEqual(
-        skills.map((skill) => skill.nome),
-        ["verificar-fundamentacao-normativa"],
+        tarefas.map((tarefa) => [tarefa.id, tarefa.abre.tipo]),
+        [
+          ["conferir-fundamentacao-normativa", "conversa"],
+          ["revisar-ppc", "modulo"],
+        ],
       );
-      for (const skill of skills) {
-        assert.isNotEmpty(skill.titulo);
-        assert.isNotEmpty(skill.resumo);
-        assert.strictEqual(skill.area, "ensino");
+      assert.deepStrictEqual(retiradas, []);
+      for (const tarefa of tarefas) {
+        assert.isNotEmpty(tarefa.titulo);
+        assert.isNotEmpty(tarefa.resumo);
+        assert.isNotEmpty(tarefa.mantenedor.github);
+        assert.strictEqual(tarefa.area, "ensino");
       }
+      const conferir = tarefas[0]!.abre;
+      assert.isTrue(conferir.tipo === "conversa");
+      if (conferir.tipo !== "conversa") return;
+      assert.strictEqual(conferir.skill, "verificar-fundamentacao-normativa");
+      assert.deepStrictEqual(
+        conferir.entradas.map((entrada) => entrada.id),
+        ["documento"],
+      );
+      // As etapas vêm do bloco `simplifica:` da skill que a tarefa cita.
+      assert.deepStrictEqual(
+        conferir.etapas.map((etapa) => etapa.id),
+        ["alegacoes", "fontes", "classificar", "relatorio"],
+      );
     }).pipe(Effect.scoped),
   );
 

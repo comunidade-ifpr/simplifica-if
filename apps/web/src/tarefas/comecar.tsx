@@ -23,6 +23,7 @@ import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../
 import type { Api } from "../conexao/api.ts";
 import type { ControleConversa } from "../conversa/ControleConversa.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
+import { nomeDoArquivo } from "../lib/texto.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
 import {
   comModelo,
@@ -41,7 +42,8 @@ export async function comecarTarefa(
   conversa: ControleConversa,
   pedido: {
     readonly titulo: string;
-    readonly tarefa: string;
+    /** O `id` da tarefa do cartão; sem ele, conversa livre (a caixa do Início). */
+    readonly tarefa?: string;
     readonly ia: EscolhaDaIa;
     readonly anexos: ReadonlyArray<string>;
     readonly texto: string;
@@ -58,9 +60,6 @@ export async function comecarTarefa(
     pedido: pedido.texto,
   });
 }
-
-/** O nome do arquivo de um caminho (macOS ou Windows). */
-export const nomeArquivo = (caminho: string): string => caminho.split(/[\\/]/).at(-1) ?? caminho;
 
 /**
  * Os anexos escolhidos e ainda não enviados: os do clipe e os soltos na caixa (`soltar`, só no app; no
@@ -323,11 +322,11 @@ export function Anexos({
               className="flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-micro"
             >
               <PaperclipIcon aria-hidden className="size-3" />
-              {nomeArquivo(arquivo)}
+              {nomeDoArquivo(arquivo)}
               <button
                 type="button"
                 className="rounded-full p-0.5 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label={`Tirar ${nomeArquivo(arquivo)}`}
+                aria-label={`Tirar ${nomeDoArquivo(arquivo)}`}
                 onClick={() => aoMudar(anexos.filter((outro) => outro !== arquivo))}
               >
                 <XIcon className="size-3" />

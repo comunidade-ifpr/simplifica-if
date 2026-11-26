@@ -4,7 +4,7 @@
  * fixture do MCP: a interface conversa com ele por RPC sem chamar provider real e sem `tmp/kb.sqlite`.
  *
  *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
- *     [--primeiro-uso] [--claude-ausente] [--curadoria dono/repo]
+ *     [--primeiro-uso] [--claude-ausente] [--curadoria dono/repo] [--tarefas-de-teste]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
  * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
@@ -43,6 +43,8 @@ const { values: opcoes } = NodeUtil.parseArgs({
     "claude-ausente": { type: "boolean", default: false },
     // O repositório da curadoria (M1.12, "Isto está errado"); sem a opção, `null`, como na política de fábrica.
     curadoria: { type: "string" },
+    // No lugar das tarefas do checkout, as de teste (`tarefasDeTeste`): uma de link, uma de módulo e duas de conversa.
+    "tarefas-de-teste": { type: "boolean", default: false },
   },
 });
 
@@ -101,13 +103,65 @@ NodeFS.writeFileSync(
   'nivel=INFO msg="servidor pronto" conta=pessoa@ifpr.edu.br\n',
 );
 
+/**
+ * As tarefas de teste, numa pasta temporária: o catálogo do checkout não tem tarefa de link, e a página
+ * da tarefa precisa das três aberturas, com `limites` e `autoria`, e de duas de conversa (o formulário
+ * de uma não pode sobrar na outra). Os `id` e os textos são fictícios.
+ */
+function tarefasDeTeste(): string {
+  const destino = diretorioTemporario("simplifica-web-catalogo-");
+  const manifesto = (id: string, titulo: string, linhas: ReadonlyArray<string>) =>
+    NodeFS.writeFileSync(
+      NodePath.join(destino, `${id}.yaml`),
+      [
+        `id: ${id}`,
+        `titulo: ${titulo}`,
+        "resumo: Uma tarefa de teste.",
+        "area: ensino",
+        "situacao: estavel",
+        "mantenedor: { nome: Pessoa de Teste, github: pessoa-de-teste }",
+        ...linhas,
+        "",
+      ].join("\n"),
+    );
+  manifesto("calendario-de-teste", "Consultar o calendário de teste", [
+    "limites: Não altera o calendário.",
+    "autoria: Comissão de Teste",
+    'abre: { link: { url: "https://calendario.example.org:8443/letivo?ano=2026", requer_login: true } }',
+  ]);
+  manifesto("revisar-de-teste", "Revisar um PPC de teste", [
+    "limites: Não substitui a análise do colegiado.",
+    "autoria: Comissão de Teste",
+    "duracao_estimada: 20min",
+    "abre: { modulo: revisao-ppc }",
+  ]);
+  manifesto("ata-de-teste", "Resumir uma ata de teste", [
+    "abre:",
+    "  conversa:",
+    '    pedido: "Resuma a ata {ata}."',
+    "    entradas:",
+    '      - { id: ata, tipo: texto, rotulo: "Ata" }',
+  ]);
+  manifesto("oficio-de-teste", "Redigir um ofício de teste", [
+    "abre:",
+    "  conversa:",
+    '    pedido: "Redija um ofício sobre {assunto}."',
+    "    entradas:",
+    '      - { id: assunto, tipo: texto, rotulo: "Assunto" }',
+  ]);
+  return destino;
+}
+
 const camada = Servidor.layer({
   banco,
   token: Redacted.make(token),
   porta: Number(opcoes.porta),
   origens: opcoes.origem,
-  // As skills do app do checkout (os cartões de tarefa e as etapas).
-  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
+  // As tarefas e as skills do app do checkout (os cartões de tarefa e as etapas).
+  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../catalogo/skills"),
+  pastaTarefas: opcoes["tarefas-de-teste"]
+    ? tarefasDeTeste()
+    : NodePath.resolve(import.meta.dirname, "../../../catalogo/tarefas"),
   pastaTrabalhos,
   primeiroUsoFeito: !opcoes["primeiro-uso"],
   relatos: { curadoria: { repositorio: opcoes.curadoria ?? null, rotulos: ["relato-do-app"] } },

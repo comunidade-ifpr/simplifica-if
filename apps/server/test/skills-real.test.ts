@@ -7,7 +7,7 @@
  *   SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=codex pnpm --filter @simplifica-if/server test skills-real
  *
  * As `Conversas` do servidor, no próprio processo, sobre os drivers reais e o `CatalogoSkills`
- * do `.agents/skills` do checkout, numa pasta de trabalho temporária. Uma pergunta curta que só a skill
+ * do `catalogo/skills` do checkout, numa pasta de trabalho temporária. Uma pergunta curta que só a skill
  * `verificar-fundamentacao-normativa` responde (os rótulos de classificação dela): a IA precisa ler o
  * `SKILL.md` que o motor gravou em `.simplifica/skills/`, sem pedido de aprovação (a leitura dentro da
  * pasta de trabalho passa pela política). Um turno por provider: o mínimo para conferir a entrega.
@@ -27,6 +27,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as CatalogoTarefas from "../src/CatalogoTarefas.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
@@ -55,7 +56,8 @@ const camada = Conversas.layer().pipe(
   Layer.provideMerge(Motor.layer),
   Layer.provide(Historico.layer),
   Layer.provide(Preferencias.layerPrimeiroUsoFeito),
-  Layer.provide(CatalogoSkills.layer(NodePath.join(RAIZ, ".agents", "skills"))),
+  Layer.provide(CatalogoTarefas.layerVazio),
+  Layer.provide(CatalogoSkills.layer(NodePath.join(RAIZ, "catalogo", "skills"))),
   Layer.provide(PastasTrabalho.layerSemPastas),
   Layer.provide(Banco.layerMemoria),
   Layer.provide(McpHttp.layer({ banco: NodePath.join(RAIZ, "tmp", "kb.sqlite") })),
@@ -76,7 +78,7 @@ describe.skipIf(!REAL)("skills do app numa conversa real", () => {
           const pasta = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-skills-real-"));
           const conversas = yield* Conversas.Conversas;
           const inicio = yield* Clock.currentTimeMillis;
-          const id = yield* conversas.iniciar({ provider, pastaTrabalho: pasta });
+          const id = yield* conversas.iniciar({ provider, pastaTrabalho: pasta }, "estavel");
           const eventos = yield* turnoCompleto(conversas, id, PERGUNTA);
           const tempo = (yield* Clock.currentTimeMillis) - inicio;
 

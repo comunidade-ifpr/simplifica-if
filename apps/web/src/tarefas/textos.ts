@@ -3,8 +3,15 @@
  * duração estimada da tarefa, os nomes das áreas do catálogo, a data da base, o pedido que o
  * formulário da tarefa monta e a linha das mudanças na pasta.
  */
-import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
+import { type EntradaTarefa, RE_MARCADOR } from "@simplifica-if/contratos-app";
 import { inteiro } from "../lib/formato.ts";
+
+/**
+ * O valor de `chave` numa tabela de nomes, só se a chave é dela: a chave vem de fora (um link, a área de
+ * um manifesto), e `constructor` ou `toString` não podem achar o que o objeto herda de `Object.prototype`.
+ */
+const daTabela = (tabela: Readonly<Record<string, string>>, chave: string): string | undefined =>
+  Object.hasOwn(tabela, chave) ? tabela[chave] : undefined;
 
 /* ================================================================== citações */
 
@@ -118,7 +125,7 @@ const SECOES_PPC: Readonly<Record<string, string>> = {
 /** A seção de um link de PPC (`avaliacao-1`) por extenso: "seção de avaliação"; tipo desconhecido, "uma seção". */
 export function secaoPorExtenso(fragmento: string): string {
   const tipo = fragmento.replace(/-\d+$/, "");
-  const nome = SECOES_PPC[tipo];
+  const nome = daTabela(SECOES_PPC, tipo);
   return nome === undefined ? "uma seção" : `seção ${nome}`;
 }
 
@@ -147,14 +154,15 @@ export function nomeCurtoLink(link: string): string {
   switch (tipo.toLowerCase()) {
     case "norma": {
       // br/lei/1996/9394 · br/cne-cp/res/2026/2 · ifpr/consup/res/2024/190
-      if (partes.length === 4 && TIPOS_NORMA[partes[1]!] !== undefined) {
-        return comDispositivo(`${TIPOS_NORMA[partes[1]!]} ${milhar(partes[3]!)}/${partes[2]}`);
-      }
+      const tipoDaLei = partes.length === 4 ? daTabela(TIPOS_NORMA, partes[1]!) : undefined;
+      if (tipoDaLei !== undefined) return comDispositivo(`${tipoDaLei} ${milhar(partes[3]!)}/${partes[2]}`);
       if (partes.length === 5) {
         const [jurisdicao, orgao, tipoAto, ano, numero] = partes as [string, string, string, string, string];
-        const sigla = ORGAOS[orgao] ?? orgao.toUpperCase();
+        const sigla = daTabela(ORGAOS, orgao) ?? orgao.toUpperCase();
         const emissor = jurisdicao === "ifpr" ? `${sigla}/IFPR` : sigla;
-        return comDispositivo(`${TIPOS_NORMA[tipoAto] ?? slugLegivel(tipoAto)} ${emissor} ${milhar(numero)}/${ano}`);
+        return comDispositivo(
+          `${daTabela(TIPOS_NORMA, tipoAto) ?? slugLegivel(tipoAto)} ${emissor} ${milhar(numero)}/${ano}`,
+        );
       }
       return comDispositivo("Norma");
     }
@@ -189,7 +197,7 @@ const AREAS: Readonly<Record<string, string>> = {
   "assistencia-estudantil": "Assistência estudantil",
 };
 
-export const nomeArea = (area: string): string => AREAS[area] ?? slugLegivel(area);
+export const nomeArea = (area: string): string => daTabela(AREAS, area) ?? slugLegivel(area);
 
 /** "20min" → "cerca de 20 minutos"; "1h" → "cerca de 1 hora"; sem duração, `undefined`. */
 export function duracaoPorExtenso(duracao: string | undefined): string | undefined {
@@ -203,8 +211,12 @@ export function duracaoPorExtenso(duracao: string | undefined): string | undefin
 
 /* ================================================================== pedido */
 
-/** O que a pessoa preencheu no formulário: o texto, ou o nome do arquivo anexado. */
-export type Valores = Readonly<Record<string, string>>;
+/**
+ * O que a pessoa preencheu no formulário, pelo `id` da entrada: o texto, ou o nome do arquivo anexado.
+ * Um `Map`, e não um objeto: o `id` vem do manifesto, e uma entrada `constructor` não pode achar o que
+ * o objeto herda.
+ */
+export type Valores = ReadonlyMap<string, string>;
 
 /** A frase da entrada no pedido: "Documento a conferir: parecer.md (está na pasta da tarefa)". */
 function linhaEntrada(entrada: EntradaTarefa, valor: string): string {
@@ -213,19 +225,46 @@ function linhaEntrada(entrada: EntradaTarefa, valor: string): string {
     : `${entrada.rotulo}: ${valor}.`;
 }
 
-/** O pedido montado pelo formulário: o título da tarefa e cada entrada preenchida. A pessoa pode editá-lo. */
-export function montarPedido(skill: Pick<ResumoSkill, "titulo" | "entradas">, valores: Valores): string {
-  const linhas = skill.entradas.flatMap((entrada) => {
-    const valor = valores[entrada.id]?.trim() ?? "";
-    return valor === "" ? [] : [linhaEntrada(entrada, valor)];
+/**
+ * O pedido montado pelo formulário, que a pessoa pode editar: o `pedido` do manifesto com cada `{id}`
+ * trocado pelo que foi preenchido na entrada. A entrada obrigatória por preencher aparece como
+ * `[rótulo]`; a linha que só cita entradas opcionais vazias sai. A entrada preenchida que o pedido não
+ * cita vai numa linha própria, no fim.
+ */
+export function montarPedido(
+  conversa: { readonly pedido: string; readonly entradas: ReadonlyArray<EntradaTarefa> },
+  valores: Valores,
+): string {
+  const porId = new Map(conversa.entradas.map((entrada) => [entrada.id, entrada]));
+  const valorDe = (id: string) => valores.get(id)?.trim() ?? "";
+  const citadas = new Set<string>();
+  const linhas = conversa.pedido.split("\n").flatMap((linha) => {
+    const ids = [...linha.matchAll(RE_MARCADOR)].map((casamento) => casamento[1]!).filter((id) => porId.has(id));
+    for (const id of ids) citadas.add(id);
+    const vazias = ids.filter((id) => valorDe(id) === "");
+    if (ids.length > 0 && vazias.length === ids.length && vazias.every((id) => porId.get(id)?.opcional === true)) {
+      return [];
+    }
+    return [
+      linha.replace(RE_MARCADOR, (marcador, id: string) => {
+        const entrada = porId.get(id);
+        if (entrada === undefined) return marcador;
+        const valor = valorDe(id);
+        return valor !== "" ? valor : entrada.opcional === true ? "" : `[${entrada.rotulo.toLowerCase()}]`;
+      }),
+    ];
   });
-  return [`${skill.titulo}.`, ...linhas].join("\n");
+  const soltas = conversa.entradas.flatMap((entrada) => {
+    const valor = valorDe(entrada.id);
+    return citadas.has(entrada.id) || valor === "" ? [] : [linhaEntrada(entrada, valor)];
+  });
+  return [...linhas, ...soltas].join("\n").trim();
 }
 
 /** As entradas obrigatórias que faltam, pelo rótulo. */
 export function faltando(entradas: ReadonlyArray<EntradaTarefa>, valores: Valores): ReadonlyArray<string> {
   return entradas
-    .filter((entrada) => !entrada.opcional && (valores[entrada.id]?.trim() ?? "") === "")
+    .filter((entrada) => !entrada.opcional && (valores.get(entrada.id)?.trim() ?? "") === "")
     .map((e) => e.rotulo);
 }
 

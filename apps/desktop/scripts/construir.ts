@@ -7,7 +7,7 @@
  * - `dist/app/web/`: o build do `apps/web` (`pnpm --filter @simplifica-if/web build`);
  * - `dist/app/package.json`: o manifesto mínimo do app (sem dependências: tudo vai nos bundles);
  * - `dist/recursos/servidor/`: o servidor local (`apps/server/src/bin.ts`) em ESM e os Workers da revisão
- *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/revisao-ppc/trabalhador.ts`) e da versão em texto
+ *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/modulos/revisao-ppc/trabalhador.ts`) e da versão em texto
  *   dos anexos (`trabalhador-textos.mjs`, de `apps/server/src/textos-anexos/trabalhador.ts`), com as
  *   dependências dentro, menos:
  *   - os opcionais nativos do `ws` (`bufferutil`, `utf-8-validate`), que ficam de fora e não se
@@ -15,8 +15,11 @@
  *   - o `undici`, que o `effect` carrega com `import()` dinâmico e usa pelos exports nomeados de um
  *     módulo CommonJS, que o bundle não reproduz (`_.Agent is not a constructor`). Vai copiado em
  *     `servidor/node_modules/undici`, como o T3 deixa o `undici` fora do bundle da CLI.
- * - `dist/recursos/skills/`: as skills do app (`skills.ts`): só as de `.agents/skills` com bloco
+ * - `dist/recursos/skills/`: as skills do app (`skills.ts`): as de `catalogo/skills`, com o bloco
  *   `simplifica:` válido e só os arquivos listados nele; o servidor empacotado as lê por `--pasta-skills`;
+ * - `dist/recursos/tarefas/`: os manifestos de tarefa (`tarefas.ts`), de `catalogo/tarefas`, e o
+ *   `origem.json` (o commit e a data dele, que ordenam o catálogo do instalador contra o baixado); o
+ *   servidor empacotado os lê por `--pasta-tarefas`;
  * - `dist/recursos/LICENCAS.md`: a licença do app e a dos pacotes de terceiros dentro dos bundles
  *   (`licencas.ts`).
  *
@@ -39,6 +42,7 @@ import {
   type PacoteTerceiro,
 } from "./licencas.ts";
 import { copiarSkills } from "./skills.ts";
+import { copiarTarefas, gravarOrigemCatalogo, origemDoCheckout } from "./tarefas.ts";
 
 export const PACOTE = NodePath.resolve(import.meta.dirname, "..");
 export const RAIZ = NodePath.resolve(PACOTE, "../..");
@@ -108,7 +112,8 @@ async function construirServidor(coletor: Coletor): Promise<Array<PacoteTerceiro
   // dos anexos (`TextosAnexos.ts` procura `./trabalhador-textos.mjs`), cada um num bundle à parte, sem
   // pedaços compartilhados com o do servidor.
   const workers = {
-    "trabalhador-ppc": ["revisao-ppc", "trabalhador.ts"],
+    // Composição: o Worker do módulo `revisao-ppc`.
+    "trabalhador-ppc": ["modulos", "revisao-ppc", "trabalhador.ts"],
     "trabalhador-textos": ["textos-anexos", "trabalhador.ts"],
   } as const;
   for (const [nome, caminho] of Object.entries(workers)) {
@@ -187,7 +192,13 @@ export async function construir(opcoes: { readonly soProcessoPrincipal: boolean;
   escreverManifesto();
   if (opcoes.soProcessoPrincipal) return;
   const copiados = await construirServidor(coletor);
-  const skills = await copiarSkills(NodePath.join(RAIZ, ".agents", "skills"), NodePath.join(DIST_RECURSOS, "skills"));
+  const skills = await copiarSkills(NodePath.join(RAIZ, "catalogo", "skills"), NodePath.join(DIST_RECURSOS, "skills"));
+  const tarefas = await copiarTarefas(
+    NodePath.join(RAIZ, "catalogo", "tarefas"),
+    NodePath.join(DIST_RECURSOS, "tarefas"),
+    skills,
+  );
+  gravarOrigemCatalogo(NodePath.join(DIST_RECURSOS, "tarefas"), origemDoCheckout(RAIZ));
   const web = copiarWeb(opcoes.web);
   const pacotes = juntarPacotes(coletor.pacotes(), copiados, web.pacotes);
   NodeFS.writeFileSync(
@@ -195,7 +206,8 @@ export async function construir(opcoes: { readonly soProcessoPrincipal: boolean;
     markdownLicencas(NodeFS.readFileSync(NodePath.join(RAIZ, "LICENSE"), "utf-8"), pacotes),
   );
   process.stderr.write(
-    `bundles em ${NodePath.relative(RAIZ, DIST)} (interface: ${web.origem}; skills: ${skills.join(", ") || "nenhuma"}; ` +
+    `bundles em ${NodePath.relative(RAIZ, DIST)} (interface: ${web.origem}; skills: ${skills.map((skill) => skill.nome).join(", ") || "nenhuma"}; ` +
+      `tarefas: ${tarefas.join(", ") || "nenhuma"}; ` +
       `${pacotes.length} pacotes de terceiros em LICENCAS.md)\n`,
   );
 }

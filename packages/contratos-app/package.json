@@ -6,7 +6,8 @@
   "type": "module",
   "exports": {
     ".": "./src/contratos.ts",
-    "./ponte": "./src/ponte.ts"
+    "./ponte": "./src/ponte.ts",
+    "./modulos/revisao-ppc": "./src/modulos/revisao-ppc.ts"
   },
   "scripts": {
     "test": "vp test run --config ../../vite.config.ts --dir .",

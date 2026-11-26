@@ -31,19 +31,27 @@ export const EntradaIniciar = Schema.Struct({
   /** O `esforcoAprofundado` do modelo escolhido; sem ele, o esforço padrão do modelo. */
   esforco: Schema.optionalKey(NivelEsforco),
   /**
-   * A tarefa da conversa (M1.9): o nome da skill do catálogo, ou `conversa` para a caixa livre do
-   * Início. Fica gravada para a interface mostrar as etapas da skill ao reabrir.
+   * A tarefa da conversa: o `id` de uma tarefa de abertura `conversa` do catálogo (`tarefas.listar`).
+   * Sem ela, a conversa é livre (a caixa do Início). Fica gravada para a interface mostrar o título e
+   * as etapas da tarefa ao reabrir.
    */
   tarefa: Schema.optionalKey(Schema.String),
 });
 export type EntradaIniciar = typeof EntradaIniciar.Type;
 
-/** A `tarefa` de `conversa.iniciar` não é skill do catálogo nem `conversa`. */
+/**
+ * A `tarefa` de `conversa.iniciar` não abre conversa: não é uma tarefa de conversa que este app atende
+ * (`indisponivel`: saiu do catálogo, foi descontinuada, pede um app ou uma base mais nova, ou cita uma
+ * skill que o app não tem) ou é `experimental` e o canal em uso não é o beta (`so-no-beta`).
+ */
 export class TarefaDesconhecida extends Schema.TaggedError<TarefaDesconhecida>()("TarefaDesconhecida", {
   tarefa: Schema.String,
+  motivo: Schema.Literals(["indisponivel", "so-no-beta"]),
 }) {
   override get message(): string {
-    return "Esta tarefa não existe mais no app.";
+    return this.motivo === "so-no-beta"
+      ? "Esta tarefa é experimental: só abre no canal beta das atualizações."
+      : "Esta tarefa não está disponível neste app: pode ter saído do catálogo ou pedir uma versão mais nova do app.";
   }
 }
 
@@ -76,7 +84,7 @@ export const ResumoConversa = Schema.Struct({
   /** Datas em ISO 8601 (UTC). */
   criadaEm: Schema.String,
   atualizadaEm: Schema.String,
-  /** A tarefa (`EntradaIniciar.tarefa`), quando a conversa nasceu de uma. */
+  /** O `id` da tarefa (`EntradaIniciar.tarefa`), quando a conversa nasceu de uma; sem ele, conversa livre. */
   tarefa: Schema.optionalKey(Schema.String),
 });
 export type ResumoConversa = typeof ResumoConversa.Type;

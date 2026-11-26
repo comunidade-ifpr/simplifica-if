@@ -1,6 +1,7 @@
 /**
  * Monta o que o app precisa antes da primeira tela: a conexão com o servidor (pela origem da página), a
- * `Api` e a conversa.
+ * `Api`, a conversa e o estado de longa duração de cada módulo (o `ControleRevisao` da revisão de PPC).
+ * Arquivo de composição.
  */
 import * as Layer from "effect/Layer";
 import * as ManagedRuntime from "effect/ManagedRuntime";
@@ -10,7 +11,8 @@ import type { OrigemConexao } from "./conexao/origem.ts";
 import type { ContextoApp } from "./contexto.tsx";
 import { ControleConversa } from "./conversa/ControleConversa.ts";
 import { layerTracer } from "./diagnostico.ts";
-import { ControleRevisao } from "./revisao/ControleRevisao.ts";
+// Composição: o módulo `revisao-ppc`.
+import { ControleRevisao } from "./modulos/revisao-ppc/ControleRevisao.ts";
 
 export interface AppIniciado {
   readonly contexto: ContextoApp;

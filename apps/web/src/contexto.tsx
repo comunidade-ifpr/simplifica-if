@@ -1,17 +1,19 @@
 /**
- * O que as telas recebem do app: a `Api` (a conexão com o servidor), a conversa corrente e a
- * revisão de PPC corrente.
+ * O que as telas recebem do app: a `Api` (a conexão com o servidor), a conversa corrente e o estado de
+ * longa duração de cada módulo (a revisão de PPC corrente, `ControleRevisao`, lida pelo `useRevisao` do
+ * módulo). Arquivo de composição: só ele e o `inicializar.ts` citam o controle do módulo.
  */
 import { createContext, type ReactNode, use, useSyncExternalStore } from "react";
 import type { Api } from "./conexao/api.ts";
 import type { EstadoConexao } from "./conexao/Conexao.ts";
 import type { ControleConversa } from "./conversa/ControleConversa.ts";
 import type { EstadoConversa } from "./conversa/estado.ts";
-import type { ControleRevisao, EstadoRevisao } from "./revisao/ControleRevisao.ts";
+import type { ControleRevisao } from "./modulos/revisao-ppc/ControleRevisao.ts";
 
 export interface ContextoApp {
   readonly api: Api;
   readonly conversa: ControleConversa;
+  /** O módulo `revisao-ppc`. */
   readonly revisao: ControleRevisao;
 }
 
@@ -39,9 +41,4 @@ export function useEstadoConexao(): EstadoConexao {
 export function useConversa(): readonly [EstadoConversa, ControleConversa] {
   const { conversa } = useApp();
   return [useSyncExternalStore(conversa.observar, conversa.obter), conversa] as const;
-}
-
-export function useRevisao(): readonly [EstadoRevisao, ControleRevisao] {
-  const { revisao } = useApp();
-  return [useSyncExternalStore(revisao.observar, revisao.obter), revisao] as const;
 }

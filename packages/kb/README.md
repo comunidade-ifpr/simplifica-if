@@ -1,6 +1,6 @@
 # @simplifica-if/kb
 
-Núcleo da base de conhecimento ([plano de arquitetura](../../docs/plans/arquitetura-base.md)): regras que mais de um consumidor usa (servidor do app em `apps/server`, servidor MCP, pipeline em `scripts/`, skills em `.agents/skills/`, avaliação). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
+Núcleo da base de conhecimento ([plano de arquitetura](../../docs/plans/arquitetura-base.md)): regras que mais de um consumidor usa (servidor do app em `apps/server`, servidor MCP, pipeline em `scripts/`, skills em `catalogo/skills/` e `.agents/skills/`, avaliação). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
 
 Desde o C1 da consolidação na stack do T3, o kb é um conjunto de serviços [Effect 4](https://effect.website) sobre um `SqlClient` do `node:sqlite`. As regras puras (resolvedor, vigência, impacto, adequação, stemmer, texto, `primitivas/*`) continuam funções puras e síncronas; o Effect entra nas fontes de dados, no banco, nos erros e nas bordas (CLI). `effect` e `@effect/platform-node` são `peerDependencies`: quem consome traz a mesma versão (a do catalog).
 
@@ -14,7 +14,7 @@ Desde o C1 da consolidação na stack do T3, o kb é um conjunto de serviços [E
 | `Ppcs.ts` | `buscarSecoes`, `buscarSecoesPorPrefixo` (a paleta do Explorar), `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias`, `filaRevisaoFatos`, `tiposDeSecao`, `listar`, `documento` (o PPC para o leitor: seções e Markdown) | `SqlClient`, `FontesNormativas` |
 | `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71`, `campi`, `processos`, `niveis`, `paginasOficiais` | `SqlClient` |
 | `Conselhos.ts` | `reunioes` (as do Consepe, com documentos e itens de pauta) | `SqlClient` |
-| `Impacto.ts` | `daNorma(id, { data, incluirPpcs })`: normas, fichas, marcos e taxonomia da revisão de PPC e PPCs atingidos (os textos das skills de `.agents/skills` não entram) | `SqlClient`, `FontesNormativas` |
+| `Impacto.ts` | `daNorma(id, { data, incluirPpcs })`: normas, fichas, marcos e taxonomia da revisão de PPC e PPCs atingidos (os textos das skills não entram) | `SqlClient`, `FontesNormativas` |
 | `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `abrirAvulso` (um PPC fora da base num banco em memória do escopo, com o `pacote` de cada conjunto de fichas e a `estrutura`), `fichas`, `fichasResumidas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
 | `Compilador.ts` | `compilar`, `estado`, `garantirFresco` (política `KB_RECOMPILAR`) | `FileSystem`, `Path` |
 
@@ -105,7 +105,7 @@ pnpm kb avaliar-busca [--json]                     # recall@10 da busca de seç�
 pnpm kb fatos-a-revisar [--limite N] [--json]      # fila de revisão humana dos fatos de PPC (fatos-ppc.yaml)
 ```
 
-`relacoes --propor` roda o regex sobre o parser das normas; `avaliar-busca` mede os três modos da busca (`simples`, `radicais`, `completo`), que a ferramenta `buscar_secoes` não expõe (ela usa o completo). O `impacto` percorre as fichas, os marcos e a taxonomia da revisão de PPC gravados no banco; os textos das skills de `.agents/skills` não entram.
+`relacoes --propor` roda o regex sobre o parser das normas; `avaliar-busca` mede os três modos da busca (`simples`, `radicais`, `completo`), que a ferramenta `buscar_secoes` não expõe (ela usa o completo). O `impacto` percorre as fichas, os marcos e a taxonomia da revisão de PPC gravados no banco; os textos das skills (as do app, em `catalogo/skills`, e as de `.agents/skills`) não entram.
 
 As saídas não dependem do relógio e têm ordem estável. As regras do resolvedor e suas confianças estão no comentário de `normas/resolver.ts`; uma citação que não identifica o ato volta com `id: null` e a regra que explica por quê.
 

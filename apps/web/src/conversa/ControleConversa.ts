@@ -116,13 +116,14 @@ export class ControleConversa {
 
   /**
    * Começa a conversa de uma tarefa (M1.9): a pasta já criada pelo servidor (`pasta.criar`), com os
-   * anexos, e o pedido montado pelo formulário ou escrito na caixa do Início, enviado em seguida.
+   * anexos, e o pedido montado pelo formulário ou escrito na caixa do Início, enviado em seguida. Sem
+   * `tarefa` (a caixa do Início), a conversa é livre.
    * Devolve o id da conversa; a falha vira `erroInicio` e a promessa rejeita.
    */
   async comecarTarefa(tarefa: {
     readonly ia: EscolhaDaIa;
     readonly pasta: string;
-    readonly tarefa: string;
+    readonly tarefa?: string | undefined;
     readonly pedido: string;
   }): Promise<string> {
     this.soltar();
@@ -131,13 +132,17 @@ export class ControleConversa {
     this.despachar({ tipo: "iniciando" });
     try {
       const { sessao } = await this.api.chamar((cliente) =>
-        cliente["conversa.iniciar"]({ ...tarefa.ia, pastaTrabalho: tarefa.pasta, tarefa: tarefa.tarefa }),
+        cliente["conversa.iniciar"]({
+          ...tarefa.ia,
+          pastaTrabalho: tarefa.pasta,
+          ...(tarefa.tarefa === undefined ? {} : { tarefa: tarefa.tarefa }),
+        }),
       );
       if (this.fase() !== "iniciando") {
         void this.encerrarNoServidor(sessao);
         throw new Error("A conversa foi trocada antes de abrir.");
       }
-      this.despachar({ tipo: "iniciada", sessao, tarefa: tarefa.tarefa });
+      this.despachar({ tipo: "iniciada", sessao, ...(tarefa.tarefa === undefined ? {} : { tarefa: tarefa.tarefa }) });
       this.seguir(sessao);
       this.enviar(tarefa.pedido);
       return sessao;

@@ -1,6 +1,6 @@
 /**
- * O contrato do app: os métodos do `GrupoApp` (os dez grupos, sem colisão de nome) e os envelopes da
- * partida do servidor.
+ * O contrato do app: os métodos do `GrupoApp` (os grupos do núcleo, sem colisão de nome) e os envelopes
+ * da partida do servidor.
  */
 import { assert, describe, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
@@ -17,28 +17,28 @@ import {
   GrupoPreferencias,
   GrupoProviders,
   GrupoRelato,
-  GrupoRevisaoPpc,
-  GrupoSkills,
+  GrupoTarefas,
 } from "../src/contratos.ts";
 
 const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(EnvelopePartida));
 
 describe("contratos do app", () => {
-  it("o GrupoApp tem os métodos dos dez grupos", () => {
+  it("o GrupoApp tem os métodos dos grupos do núcleo, sem colisão de nome entre eles", () => {
     const metodos = [...GrupoApp.requests.keys()];
     const partes = [
       GrupoProviders,
       GrupoConversa,
       GrupoRelato,
       GrupoDiagnostico,
-      GrupoSkills,
+      GrupoTarefas,
       GrupoPasta,
-      GrupoRevisaoPpc,
       GrupoAtualizacao,
       GrupoPreferencias,
       GrupoLeitura,
     ].map((grupo) => [...grupo.requests.keys()]);
-    assert.strictEqual(metodos.length, partes.flat().length);
+    // Os grupos dos módulos completam a conta (`modulos/*.test.ts`).
+    assert.strictEqual(new Set(partes.flat()).size, partes.flat().length);
+    assert.includeMembers(metodos, partes.flat());
     assert.includeMembers(metodos, [
       "providers.detectar",
       "providers.instalar",
@@ -49,7 +49,7 @@ describe("contratos do app", () => {
       "conversa.interromper",
       "conversa.encerrar",
       "conversa.avaliar",
-      "skills.listar",
+      "tarefas.listar",
       "pasta.criar",
       "pasta.anexar",
       "relato.preparar",
@@ -58,8 +58,6 @@ describe("contratos do app", () => {
       "diagnostico.gerar",
       "pasta.ver",
       "pasta.desfazer",
-      "revisaoPpc.revisar",
-      "revisaoPpc.revisarArquivoNovo",
       "atualizacao.estado",
       "preferencias.ler",
       "preferencias.gravarPerfil",

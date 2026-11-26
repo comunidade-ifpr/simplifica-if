@@ -8,13 +8,18 @@
  *   node scripts/empacotar.ts --dir           # só o app desempacotado (dist/pacotes/mac-arm64/Simplifica IF.app)
  *   node scripts/empacotar.ts --win           # Windows (NSIS por usuário), a partir de outra máquina
  *   node scripts/empacotar.ts --sem-web       # não constrói o apps/web (usa o build que houver)
+ *   node scripts/empacotar.ts --base-dev      # build local: aceita a base de desenvolvimento (dev-<hash>)
  *
- * A base empacotada é o `kb.sqlite` de `SIMPLIFICA_KB` ou do `tmp/kb.sqlite` (`pnpm kb:compilar`).
+ * A base empacotada é o `kb.sqlite` de `SIMPLIFICA_KB` ou do `tmp/kb.sqlite` (`pnpm kb:compilar`). Ela
+ * precisa ter versão publicada (`AAAA.MM.DD`, a da fábrica): a de desenvolvimento perde para qualquer
+ * baixada e não faz patch, e só entra com `--base-dev`, num instalador que não se distribui.
  */
 import * as NodeFS from "node:fs";
 import * as NodeModule from "node:module";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
+import { lerInfoBanco } from "@simplifica-if/atualizacao/local";
+import { ehVersaoDev } from "@simplifica-if/atualizacao/manifesto";
 import { build, type Configuration, Platform } from "electron-builder";
 import { construir, DIST, DIST_RECURSOS, PACOTE, RAIZ } from "./construir.ts";
 
@@ -49,6 +54,8 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       { from: "dist/recursos/base", to: "base", filter: ["kb.sqlite"] },
       // Só o que o build copiou (`skills.ts`): as skills do app e os arquivos listados no manifesto.
       { from: "dist/recursos/skills", to: "skills" },
+      // Os manifestos de tarefa que o build copiou (`tarefas.ts`): o catálogo do Início.
+      { from: "dist/recursos/tarefas", to: "tarefas" },
       // A licença do app e a dos pacotes de terceiros dentro dos bundles (`licencas.ts`).
       { from: "dist/recursos/LICENCAS.md", to: "LICENCAS.md" },
     ],
@@ -139,11 +146,34 @@ export function deixarSoPortugues(recursos: string): ReadonlyArray<string> {
   return retiradas;
 }
 
-function copiarBase(): void {
+/**
+ * O problema da base que vai no instalador, ou `undefined`: sem versão legível, ou de desenvolvimento
+ * (`dev-<hash>`) sem `baseDev` (o build local, que não se distribui).
+ */
+export function problemaBaseEmpacotada(origem: string, baseDev: boolean): string | undefined {
+  const versao = lerInfoBanco(origem)?.versao;
+  if (versao === undefined) return `a base ${origem} não tem versão legível no meta`;
+  if (ehVersaoDev(versao) && !baseDev) {
+    return (
+      `a base ${origem} é de desenvolvimento (${versao}): o instalador distribuído leva uma base da fábrica ` +
+      "(SIMPLIFICA_KB=tmp/fabrica/bases/<versao>.sqlite); para um build local, --base-dev"
+    );
+  }
+  return undefined;
+}
+
+/** A base que vai no instalador, conferida (`problemaBaseEmpacotada`). */
+function baseConferida(baseDev: boolean): string {
   const origem = process.env.SIMPLIFICA_KB?.trim() || NodePath.join(RAIZ, "tmp", "kb.sqlite");
   if (!NodeFS.existsSync(origem)) {
     throw new Error(`sem a base em ${origem}: rode \`pnpm kb:compilar\` ou passe SIMPLIFICA_KB`);
   }
+  const problema = problemaBaseEmpacotada(origem, baseDev);
+  if (problema !== undefined) throw new Error(problema);
+  return origem;
+}
+
+function copiarBase(origem: string): void {
   const destino = NodePath.join(DIST_RECURSOS, "base", "kb.sqlite");
   NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
   NodeFS.copyFileSync(origem, destino);
@@ -156,10 +186,13 @@ if (import.meta.main) {
       mac: { type: "boolean" },
       win: { type: "boolean" },
       "sem-web": { type: "boolean" },
+      "base-dev": { type: "boolean" },
     },
   });
+  // Antes do build demorado: a base recusada para logo.
+  const base = baseConferida(values["base-dev"] === true);
   await construir({ soProcessoPrincipal: false, web: values["sem-web"] !== true });
-  copiarBase();
+  copiarBase(base);
   const plataformas = [...(values.mac ? [Platform.MAC] : []), ...(values.win ? [Platform.WINDOWS] : [])];
   const alvos = (plataformas.length > 0 ? plataformas : [Platform.current()]).map((plataforma) =>
     plataforma.createTarget(),

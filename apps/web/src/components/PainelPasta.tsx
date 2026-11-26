@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { ponteDesktop } from "../ponte-desktop.ts";
-import { nomeArquivo } from "../tarefas/comecar.tsx";
+import { nomeDoArquivo } from "../lib/texto.ts";
 import { AvisoErro } from "./AvisoErro.tsx";
 import { dataHora, tamanhoArquivo } from "../lib/formato.ts";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
@@ -236,8 +236,8 @@ export function PainelPasta({
           ) : null
         ) : !vista.gerida ? (
           <p className="text-muted-foreground text-sm">
-            Esta conversa usa uma pasta escolhida à mão ({nomeArquivo(vista.pasta)}). A lista de arquivos e o "Desfazer"
-            ficam nas pastas das tarefas.
+            Esta conversa usa uma pasta escolhida à mão ({nomeDoArquivo(vista.pasta)}). A lista de arquivos e o
+            "Desfazer" ficam nas pastas das tarefas.
           </p>
         ) : (
           <>

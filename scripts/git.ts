@@ -28,6 +28,8 @@ export class GitFalhou extends Schema.TaggedError<GitFalhou>()("GitFalhou", {
 export interface OpcoesGit {
   /** Pasta em que o git roda. */
   readonly cwd: string;
+  /** Variáveis somadas ao ambiente (os testes fixam `GIT_COMMITTER_DATE`). */
+  readonly env?: Record<string, string>;
 }
 
 /** Roda `git <args>` em `cwd` e lê o stdout com `ler`; saída diferente de zero é `GitFalhou`. */
@@ -43,7 +45,13 @@ const rodar = <A>(
     const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
     return yield* Effect.scoped(
       Effect.gen(function* () {
-        const processo = yield* spawner.spawn(ChildProcess.make("git", args, { cwd: opcoes.cwd, stdin: "ignore" }));
+        const processo = yield* spawner.spawn(
+          ChildProcess.make("git", args, {
+            cwd: opcoes.cwd,
+            stdin: "ignore",
+            ...(opcoes.env === undefined ? {} : { env: opcoes.env, extendEnv: true }),
+          }),
+        );
         const [saida, erro, codigo] = yield* Effect.all(
           [ler(processo.stdout), Stream.mkString(Stream.decodeText(processo.stderr)), processo.exitCode],
           { concurrency: "unbounded" },

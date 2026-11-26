@@ -39,10 +39,18 @@
  * **Aviso de uso (M1.8):** nada vai à IA antes do aviso aceito. `iniciar` e `enviar`, que
  * abrem a sessão do provider ou mandam a mensagem, recusam com `AvisoNaoAceito` antes de tudo.
  *
- * **Skills do app (M1.11):** toda sessão aberta (nova, retomada ou recomeçada com o histórico) leva as
- * skills do `CatalogoSkills` em `ConfigSessao.skills`. O motor grava os arquivos em
- * `<pasta>/.simplifica/skills/` e lista as skills nas instruções da sessão; regravar a cada abertura
- * faz a conversa retomada usar a versão das skills do app que está aberto.
+ * **Skills do app (M1.11):** toda sessão aberta (nova, retomada ou recomeçada com o histórico) leva
+ * skills do `CatalogoSkills` em `ConfigSessao.skills`: a conversa livre, todas; a de tarefa, só a da
+ * tarefa. O motor grava os arquivos em `<pasta>/.simplifica/skills/` e lista as skills nas instruções da
+ * sessão; regravar a cada abertura faz a conversa retomada usar a versão das skills do app que está aberto.
+ *
+ * **Tarefa da conversa:** a conversa aberta por um cartão guarda o `id` da tarefa (`conversas.tarefa`);
+ * a conversa livre não guarda nada. `iniciar` só aceita o `id` de uma tarefa de conversa que o
+ * `CatalogoTarefas` tem no canal em uso (a `experimental`, só no beta). A tarefa restringe a sessão
+ * (`CatalogoTarefas.regraDaSessao`), na conversa nova e em toda reabertura: a sessão leva só a skill que a
+ * tarefa cita (nenhuma, se não cita) e fica sem busca nem leitura na web se o manifesto a desliga
+ * (`ConfigSessao.semWeb`). O primeiro turno que chega à IA indica a skill. As ferramentas `ifpr` vão
+ * inteiras a toda sessão.
  */
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
@@ -77,9 +85,11 @@ import {
   TarefaDesconhecida,
   type TurnoAberto as TurnoAbertoContrato,
 } from "@simplifica-if/contratos-app";
+import type { CanalDistribuicao } from "@simplifica-if/kb/canal";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
+import * as CatalogoTarefas from "./CatalogoTarefas.ts";
 import { avisoDasMudancas } from "./textos-anexos/aviso.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
 import { resumoDaFalha } from "./observabilidade/resumoDaFalha.ts";
@@ -88,9 +98,6 @@ import * as Preferencias from "./persistencia/Preferencias.ts";
 
 /** O nome do servidor MCP na sessão do provider: as ferramentas chegam como `ifpr.<ferramenta>`. */
 export const NOME_MCP = "ifpr";
-
-/** A tarefa da caixa livre do Início ("O que você precisa hoje?"): conversa sem skill indicada. */
-export const TAREFA_CONVERSA = "conversa";
 
 /** Depois de quanto tempo sem turno a sessão do provider se libera (o T3 usa 30 minutos). */
 export const OCIOSIDADE = Duration.minutes(30);
@@ -104,8 +111,10 @@ const LIMITE_CONTEXTO = 24_000;
 export class Conversas extends Context.Service<
   Conversas,
   {
+    /** `canal`: o canal de atualização em uso, que decide se uma tarefa `experimental` abre conversa. */
     readonly iniciar: (
       entrada: EntradaIniciar,
+      canal: CanalDistribuicao,
     ) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida | TarefaDesconhecida | AvisoNaoAceito>;
     /** Abre o turno com a mensagem e devolve o número dele e a `ordem` da mensagem; o turno segue no servidor. */
     readonly enviar: (
@@ -262,6 +271,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const mcp = yield* McpHttp.ServidorMcpHttp;
   const historico = yield* Historico.Historico;
   const catalogo = yield* CatalogoSkills.CatalogoSkills;
+  const tarefas = yield* CatalogoTarefas.CatalogoTarefas;
   const pastas = yield* PastasTrabalho.PastasTrabalho;
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const fs = yield* FileSystem.FileSystem;
@@ -485,13 +495,22 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         })),
       ),
     };
+    // A conversa de tarefa leva só a skill da tarefa e a web que o manifesto deixa; a livre, tudo. A regra
+    // é a da tarefa com que a conversa nasceu, lida a cada abertura da sessão (nova ou retomada).
+    const regra = registro.tarefa === undefined ? undefined : tarefas.regraDaSessao(registro.tarefa);
+    const skills =
+      regra === undefined ? catalogo.skills : catalogo.skills.filter((skill) => skill.nome === regra.skill);
     const config: Motor.ConfigSessao = {
       provider: registro.provider,
       pastaTrabalho: pasta,
       servidoresMcp: [servidor],
       ...(registro.modelo === undefined ? {} : { modelo: registro.modelo }),
       ...(registro.esforco === undefined ? {} : { esforco: registro.esforco }),
-      ...(catalogo.skills.length === 0 ? {} : { skills: catalogo.skills }),
+      ...(skills.length === 0 ? {} : { skills }),
+      // A skill retirada sai também de `.simplifica/skills/`, onde uma sessão de antes a gravou.
+      ...(catalogo.retiradas.size === 0 ? {} : { skillsRetiradas: [...catalogo.retiradas].sort() }),
+      // A coluna guarda o "sem web" com que a conversa nasceu: o manifesto que sumiu ou chegou inválido não a religa.
+      ...(registro.semWeb || regra?.web === false ? { semWeb: true } : {}),
     };
     const abrir =
       registro.idNativo === undefined
@@ -658,13 +677,14 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       viva.chegouAIA = true;
       const contexto = viva.contexto;
       viva.contexto = undefined;
-      // A tarefa de uma skill (M1.9): o primeiro turno que chega à IA diz qual skill seguir. Só vai ao
-      // provider; o histórico guarda a mensagem como a pessoa a escreveu.
+      // A tarefa com skill (M1.9): o primeiro turno que chega à IA diz qual skill seguir, a mesma que a
+      // sessão leva. Só vai ao provider; o histórico guarda a mensagem como a pessoa a escreveu.
       const tarefa = viva.registro.tarefa;
+      const skill = tarefa === undefined ? undefined : tarefas.regraDaSessao(tarefa).skill;
       const comMudancas = mudancas === undefined ? texto : `${texto}\n\n${avisoDasMudancas(mudancas)}`;
       const pedido =
-        primeiro && tarefa !== undefined && tarefa !== TAREFA_CONVERSA
-          ? `Siga a skill \`${tarefa}\` (SKILL.md em .simplifica/skills/${tarefa}/) para este pedido.\n\n${comMudancas}`
+        primeiro && skill !== undefined
+          ? `Siga a skill \`${skill}\` (SKILL.md em .simplifica/skills/${skill}/) para este pedido.\n\n${comMudancas}`
           : comMudancas;
       yield* bombear(viva, turno, sessao, contexto === undefined ? pedido : `${contexto}\n\n${pedido}`);
     },
@@ -772,12 +792,13 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     Effect.forEach([...vivas.values()], liberar, { discard: true, concurrency: "unbounded" }),
   );
 
-  const iniciar = Effect.fn("Conversas.iniciar")(function* (entrada: EntradaIniciar) {
+  const iniciar = Effect.fn("Conversas.iniciar")(function* (entrada: EntradaIniciar, canal: CanalDistribuicao) {
     yield* exigirAviso;
-    // O nome da tarefa entra numa instrução do app à IA: só uma skill do catálogo ou `conversa`.
+    // Só uma tarefa de conversa do catálogo do canal: a skill dela entra numa instrução do app à IA, e a
+    // experimental fora do beta não abre conversa (a regra de `tarefas.listar`).
     const tarefa = entrada.tarefa;
-    if (tarefa !== undefined && tarefa !== TAREFA_CONVERSA && !catalogo.skills.some((skill) => skill.nome === tarefa))
-      return yield* new TarefaDesconhecida({ tarefa });
+    const recusa = tarefa === undefined ? undefined : tarefas.recusaDeConversa(tarefa, canal);
+    if (tarefa !== undefined && recusa !== undefined) return yield* new TarefaDesconhecida({ tarefa, motivo: recusa });
     const pasta = yield* conferirPasta(entrada.pastaTrabalho);
     const id = yield* aleatorio.uuidV4();
     yield* historico.criar({
@@ -786,7 +807,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       pastaTrabalho: pasta,
       ...(entrada.modelo === undefined ? {} : { modelo: entrada.modelo }),
       ...(entrada.esforco === undefined ? {} : { esforco: entrada.esforco }),
-      ...(entrada.tarefa === undefined ? {} : { tarefa: entrada.tarefa }),
+      ...(tarefa === undefined ? {} : { tarefa, semWeb: !tarefas.regraDaSessao(tarefa).web }),
       estado: "liberada",
     });
     const registro = yield* historico.buscar(id).pipe(Effect.flatMap(Effect.fromOption), Effect.orDie);
@@ -1030,7 +1051,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
 
 /**
  * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, as `Preferencias`, o `CatalogoSkills`, o
- * `FileSystem`, o `Path` e o `SecureRandom`.
+ * `CatalogoTarefas`, o `FileSystem`, o `Path` e o `SecureRandom`.
  * `ociosidade`: depois de quanto tempo sem turno a sessão se libera (`OCIOSIDADE`);
  * `prazoInterrupcao`: quanto se espera pelo fim do turno interrompido (`PRAZO_INTERRUPCAO`).
  */

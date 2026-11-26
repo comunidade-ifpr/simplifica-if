@@ -271,6 +271,14 @@ async function* nuncaEntrega(sinal: AbortSignal): AsyncGenerator<SDKUserMessage>
  * A versão na primeira linha do `claude --version`, se ela tem a forma do Claude Code
  * (`2.1.30 (Claude Code)`); senão, `undefined`.
  */
+/** As ferramentas nativas de web do Claude Code: a busca e a leitura de página. */
+export const FERRAMENTAS_WEB_CLAUDE = ["WebSearch", "WebFetch"] as const;
+
+/** As opções do `query` que tiram a web da sessão: com a busca web desligada na política, as duas ferramentas saem. */
+export function opcoesWebClaude(politica: Politica): { disallowedTools?: Array<string> } {
+  return buscaWebLigada(politica) ? {} : { disallowedTools: [...FERRAMENTAS_WEB_CLAUDE] };
+}
+
 export function versaoClaudeValida(linha: string): string | undefined {
   return /^(\d+\.\d+\.\d+\S*) \(Claude Code\)\s*$/.exec(linha.trim())?.[1];
 }
@@ -437,7 +445,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         // WebSearch e WebFetch ficam fora de `allowedTools` para passarem pelo `canUseTool` e pelo
         // filtro determinístico de URL de `avaliar`.
         allowedTools: politica.ferramentas.mcpApp === "permitir" ? servidoresApp.map((nome) => `mcp__${nome}`) : [],
-        ...(buscaWebLigada(politica) ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
+        ...opcoesWebClaude(politica),
         // Julgamento: nenhuma ferramenta no contexto e nenhuma pergunta (`dontAsk` nega o que não foi
         // pré-aprovado); o prompt de sistema é só o do app.
         permissionMode: config.semFerramentas === true ? "dontAsk" : "default",

@@ -141,6 +141,17 @@ export const POLITICA_JULGAMENTO: Politica = congelar(
   }),
 );
 
+/**
+ * A política com a busca e a leitura web desligadas (`ConfigSessao.semWeb`): o isolamento as tira da
+ * sessão e a regra nega a ferramenta que ainda aparecer. O resto é o da política dada; nada se liga.
+ */
+export const politicaSemWeb = (politica: Politica): Politica =>
+  congelar({
+    ...politica,
+    ferramentas: { ...politica.ferramentas, web: "negar" },
+    isolamento: { ...politica.isolamento, buscaWeb: "desligada" },
+  });
+
 /** A busca web vale nesta política: ligada no isolamento e não negada nas ferramentas. */
 export const buscaWebLigada = (politica: Politica): boolean =>
   politica.isolamento.buscaWeb === "ligada" && politica.ferramentas.web !== "negar";

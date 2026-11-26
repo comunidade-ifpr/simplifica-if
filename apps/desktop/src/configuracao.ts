@@ -11,10 +11,12 @@
  * | atualização (`--pasta-atualizacao`) | só com `SIMPLIFICA_ATUALIZACAO_FEED` (para testar contra um feed local) | a pasta do app, salvo com `SIMPLIFICA_KB` (base de fora: nada a atualizar) |
  * | interface | `SIMPLIFICA_WEB_URL` (o dev server do `apps/web`); sem ela, o build em `dist/app/web` | o build do `apps/web` dentro do app, pelo protocolo `simplifica://app` |
  * | estado (`--pasta-estado`) | a pasta do app (`userData`, "Simplifica IF (dev)") | a pasta do app (`userData`, "Simplifica IF") |
- * | skills (`--pasta-skills`) | `.agents/skills` do repositório (o servidor aceita só as com bloco `simplifica:`) | `<Resources>/skills`, gerada no build só com as skills do app e os arquivos listados |
+ * | skills (`--pasta-skills`) | `catalogo/skills` do repositório | `<Resources>/skills`, gerada no build só com as skills do app e os arquivos listados |
+ * | tarefas (`--pasta-tarefas`) | `catalogo/tarefas` do repositório | `<Resources>/tarefas`, os manifestos que o build copiou |
  * | traces (`--traces`) | `SIMPLIFICA_TRACES`, ou `completo` (todo span em `traces.jsonl`) | `caixa-preta` (só os traces com erro ou lentos) |
  *
  * Sem a pasta de skills (não existe), o servidor sobe sem skills: as conversas funcionam, só sem elas.
+ * Sem a de tarefas, sobe sem cartões no Início.
  */
 import * as NodePath from "node:path";
 import type { Executor } from "./servidor.ts";
@@ -78,6 +80,13 @@ export interface Configuracao {
   readonly pastaEstado: string;
   /** `--pasta-skills`; `undefined` se a pasta não existe. */
   readonly pastaSkills: string | undefined;
+  /** `--pasta-tarefas`; `undefined` se a pasta não existe. */
+  readonly pastaTarefas: string | undefined;
+  /**
+   * `--tarefas-do-checkout`: a pasta de tarefas é a do repositório (desenvolvimento), e o catálogo dela vence
+   * sempre o baixado; no app empacotado, é a do instalador, ordenada pelo `origem.json` do build.
+   */
+  readonly tarefasDoCheckout: boolean;
   /** `--pasta-trabalhos`: `Documentos/Simplifica IF`, onde cada tarefa ganha a sua pasta (M1.9). */
   readonly pastaTrabalhos: string;
   /** `--traces`: tudo no desenvolvimento, só os traces com erro ou lentos no app empacotado. */
@@ -142,7 +151,11 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
 
   const pastaSkills = entrada.empacotado
     ? NodePath.join(entrada.pastaRecursos, "skills")
-    : NodePath.join(entrada.raizRepositorio, ".agents", "skills");
+    : NodePath.join(entrada.raizRepositorio, "catalogo", "skills");
+
+  const pastaTarefas = entrada.empacotado
+    ? NodePath.join(entrada.pastaRecursos, "tarefas")
+    : NodePath.join(entrada.raizRepositorio, "catalogo", "tarefas");
 
   const urlWeb = entrada.empacotado ? undefined : definida(ambiente[VARIAVEIS.web]);
   const interfaceApp: Interface =
@@ -157,6 +170,8 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
     pastaAtualizacao,
     pastaEstado: entrada.pastaApp,
     pastaSkills: entrada.existe(pastaSkills) ? pastaSkills : undefined,
+    pastaTarefas: entrada.existe(pastaTarefas) ? pastaTarefas : undefined,
+    tarefasDoCheckout: !entrada.empacotado,
     pastaTrabalhos: NodePath.resolve(
       definida(ambiente[VARIAVEIS.trabalhos]) ?? NodePath.join(entrada.pastaDocumentos, PASTA_TAREFAS),
     ),

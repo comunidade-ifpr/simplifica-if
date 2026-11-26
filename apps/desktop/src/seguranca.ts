@@ -1,14 +1,16 @@
 // @effect-diagnostics nodeBuiltinImport:off -- processo principal do Electron, sem runtime Effect (ver README)
 /**
  * As regras de segurança da janela, sem o Electron (os testes as conferem com o Node): a CSP da
- * interface, a navegação permitida, os links externos e os arquivos servidos pelo protocolo próprio.
+ * interface, a navegação permitida, os links externos e os arquivos servidos pelo protocolo próprio. As
+ * do módulo da revisão de PPC (o `.docx` escolhido e a cópia comentada) ficam com ele, em
+ * `modulos/revisao-ppc/seguranca.ts`.
  * Os trechos marcados `// T3:` vêm de `apps/desktop/src/window/DesktopWindow.ts`,
  * `electron/ElectronShell.ts` e `electron/ElectronProtocol.ts` do T3 Code (MIT, ver
  * `docs/upstream-t3.md`).
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodePath from "node:path";
-import { EXTENSOES_DOCUMENTO, ehPastaDoApp, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app/ponte";
+import { EXTENSOES_DOCUMENTO, ehPastaDoApp } from "@simplifica-if/contratos-app/ponte";
 
 /**
  * A CSP da interface empacotada. Mais estreita que a do T3 (que aceita qualquer `http:`/`ws:`, por
@@ -154,37 +156,6 @@ export function resolverArquivo(input: {
     return { tipo: "erro", status: 404 };
   }
   return { tipo: "arquivo", caminho: NodePath.join(root, "index.html") };
-}
-
-/**
- * Um `.docx` escolhido no diálogo do sistema (`escolherDocx`) ou solto na área de soltar (`soltarDocx`);
- * `undefined` para outro arquivo e para o `File` sem caminho (`""`).
- */
-export function docxEscolhido(caminho: unknown): string | undefined {
-  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
-  return NodePath.extname(caminho).toLowerCase() === ".docx" ? NodePath.normalize(caminho) : undefined;
-}
-
-/**
- * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos ou soltos nesta execução: na
- * mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou, se ela estava travada ou foi editada
- * pela pessoa, com ` (2)` a ` (99)` (o servidor usa até ` (20)`). Só esses arquivos "Abrir o documento
- * comentado" e "Mostrar na pasta" aceitam: a interface não abre outro arquivo do computador por esse
- * caminho. Quem chama confere ainda que é arquivo comum (não link).
- */
-export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySet<string>): string | undefined {
-  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
-  if (NodePath.normalize(caminho) !== caminho) return undefined;
-  const pasta = NodePath.dirname(caminho);
-  const nome = NodePath.basename(caminho);
-  for (const escolhido of escolhidos) {
-    if (NodePath.dirname(escolhido) !== pasta) continue;
-    const prefixo = NodePath.basename(escolhido, NodePath.extname(escolhido)) + SUFIXO_REVISAO_PREVIA;
-    if (!nome.startsWith(prefixo) || !nome.toLowerCase().endsWith(".docx")) continue;
-    const resto = nome.slice(prefixo.length, -".docx".length);
-    if (resto === "" || /^ \(([2-9]|[1-9]\d)\)$/.test(resto)) return caminho;
-  }
-  return undefined;
 }
 
 const ehDocumento = (caminho: string) =>

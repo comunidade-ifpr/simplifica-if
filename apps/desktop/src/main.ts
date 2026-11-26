@@ -137,6 +137,8 @@ function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<CredenciaisServidor
     banco: configuracao.banco,
     pastaEstado: configuracao.pastaEstado,
     pastaSkills: configuracao.pastaSkills,
+    pastaTarefas: configuracao.pastaTarefas,
+    tarefasDoCheckout: configuracao.tarefasDoCheckout,
     pastaAtualizacao: configuracao.pastaAtualizacao,
     versaoApp: app.getVersion(),
     pastaTrabalhos: configuracao.pastaTrabalhos,
@@ -421,7 +423,7 @@ if (!app.requestSingleInstanceLock()) {
     nativeTheme.on("updated", sincronizarAparencia);
     registrar(
       `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +
-        `skills: ${configuracao.pastaSkills ?? "nenhuma"}; atualização: ${configuracao.pastaAtualizacao ?? "desligada"}`,
+        `skills: ${configuracao.pastaSkills ?? "nenhuma"}; tarefas: ${configuracao.pastaTarefas ?? "nenhuma"}; atualização: ${configuracao.pastaAtualizacao ?? "desligada"}`,
     );
     await reinicio.pedir();
     if (DESENVOLVIMENTO && process.env[VARIAVEL_SEM_REINICIO] !== "1" && !saindo)

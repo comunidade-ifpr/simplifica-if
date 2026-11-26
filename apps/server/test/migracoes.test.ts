@@ -36,14 +36,6 @@ describe("migrações do banco das conversas", () => {
         "anexos_pasta",
         "relatos",
         "apagamentos_pendentes",
-        "revisoes_ia",
-        "blocos_ia",
-        "tentativas_ia",
-        "listas_pendencias",
-        "pendencias_vivas",
-        "eventos_pendencia",
-        "acoes_ia",
-        "copias_comentadas",
         "preferencias",
       ]) {
         assert.isTrue(tabelas.has(nome), `tabela ausente: ${nome}`);

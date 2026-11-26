@@ -18,6 +18,7 @@ import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES } from "../providers.ts";
 import { DialogoApagar } from "./DialogoApagar.tsx";
 import {
+  CONVERSA,
   type Desfecho,
   type NotaApagar,
   notaDepoisDeApagar,
@@ -133,7 +134,7 @@ export function ApagarConversas({
         }
       }
     }
-    return notaDepoisDeApagar(desfechos, "conversa");
+    return notaDepoisDeApagar(desfechos, CONVERSA);
   };
 
   const fechar = () => {

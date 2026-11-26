@@ -3,7 +3,7 @@
  * novo", a carga (`ComCarga`), o cabeçalho, o corpo com a coluna lateral, a seção com título e o link
  * `ifpr://` como botão.
  */
-import { CheckIcon, CopyIcon, ExternalLinkIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, ExternalLinkIcon, LocateFixedIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { abrirFora } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
@@ -198,6 +198,24 @@ export function Corpo({ lateral, children }: { readonly lateral?: ReactNode; rea
         </aside>
         <div className="min-w-0 space-y-4 @4xl:col-start-1 @4xl:row-start-1">{children}</div>
       </div>
+    </div>
+  );
+}
+
+/** A faixa do trecho citado: o que está destacado e "Ir ao trecho". */
+export function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonly alvo: string }) {
+  return (
+    <div className="nao-imprimir flex flex-wrap items-center gap-2 rounded-md bg-warning/10 px-3 py-2 text-sm">
+      <span className="min-w-0 flex-1">
+        Trecho citado: <strong>{rotulo}</strong>, destacado no texto.
+      </span>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => document.getElementById(alvo)?.scrollIntoView({ block: "start", behavior: "smooth" })}
+      >
+        <LocateFixedIcon /> Ir ao trecho
+      </Button>
     </div>
   );
 }

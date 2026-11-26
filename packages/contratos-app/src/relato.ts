@@ -2,7 +2,7 @@
  * "Isto está errado" (M1.12): o relato de uma resposta errada para a curadoria da base.
  *
  * - **Pacote:** a pergunta, a resposta, as fontes citadas (`ifpr://`), as versões do app, da base e da
- *   tarefa (skill) e a IA. Nunca os anexos nem os arquivos da pasta da tarefa: só o que a pessoa vê na
+ *   tarefa e a IA. Nunca os anexos nem os arquivos da pasta da tarefa: só o que a pessoa vê na
  *   tela e aprova. O servidor monta o rascunho (`relato.preparar`) a partir da conversa gravada.
  * - **Consentimento:** a interface mostra o relato exatamente como vai sair (`montarRelato`), e a
  *   pessoa retira trechos da pergunta e da resposta, fontes (da lista e do texto) ou as versões antes de
@@ -28,8 +28,14 @@ export const VersoesRelato = Schema.Struct({
   /** A versão da base (`2026.11.13`) e o commit das fontes, quando conhecido. */
   base: Schema.String,
   baseCommit: Schema.NullOr(Schema.String),
-  /** A tarefa (skill) da conversa; `null` na conversa livre. */
-  tarefa: Schema.NullOr(Schema.Struct({ nome: Schema.String, titulo: Schema.String, versao: Schema.String })),
+  /** A tarefa da conversa e a skill que ela cita, com a versão; `null` na conversa livre. */
+  tarefa: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.String,
+      titulo: Schema.String,
+      skill: Schema.NullOr(Schema.Struct({ nome: Schema.String, versao: Schema.String })),
+    }),
+  ),
   provider: Provider,
   /** A versão da CLI do provider, se a detecção respondeu a tempo. */
   versaoProvider: Schema.NullOr(Schema.String),
@@ -222,7 +228,11 @@ function linhasVersoes(versoes: VersoesRelato): ReadonlyArray<string> {
     `- Tarefa: ${
       versoes.tarefa === null
         ? "conversa livre"
-        : `${versoes.tarefa.titulo} (\`${versoes.tarefa.nome}\` ${versoes.tarefa.versao})`
+        : `${versoes.tarefa.titulo} (\`${versoes.tarefa.id}\`${
+            versoes.tarefa.skill === null
+              ? ""
+              : `, skill \`${versoes.tarefa.skill.nome}\` ${versoes.tarefa.skill.versao}`
+          })`
     }`,
     `- IA: ${ia[0]}${ia.length > 1 ? ` (${ia.slice(1).join(", ")})` : ""}`,
   ];

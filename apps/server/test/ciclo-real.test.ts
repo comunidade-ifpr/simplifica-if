@@ -45,6 +45,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as CatalogoTarefas from "../src/CatalogoTarefas.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import { turnoAoVivo } from "./apoio.ts";
@@ -118,6 +119,7 @@ const camada = (arquivo: string, aberturas: Array<Abertura>) =>
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer),
     Layer.provide(Preferencias.layerPrimeiroUsoFeito),
+    Layer.provide(CatalogoTarefas.layerVazio),
     Layer.provide(CatalogoSkills.layerVazio),
     Layer.provide(PastasTrabalho.layerSemPastas),
     Layer.provide(Banco.layerArquivo(arquivo)),
@@ -260,7 +262,7 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
           // 1. Três turnos seguidos.
           const primeiro = yield* abrir(arquivo, aberturas);
           const tempoInicio = yield* cronometro;
-          const id = yield* primeiro.conversas.iniciar({ provider, pastaTrabalho: pasta });
+          const id = yield* primeiro.conversas.iniciar({ provider, pastaTrabalho: pasta }, "estavel");
           yield* log(provider, `sessão aberta em ${yield* tempoInicio} s`);
           for (const [palavra, rotulo] of [
             ["abacaxi", "turno 1"],

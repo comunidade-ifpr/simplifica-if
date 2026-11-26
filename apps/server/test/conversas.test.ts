@@ -5,7 +5,8 @@
  * migrações, a retomada depois de fechar (outra layer com o mesmo banco), a conversa que uma execução
  * anterior deixou aberta, a retomada recusada (o histórico como contexto), a queda do processo do
  * provider no meio do turno e fora dele, a ociosidade, a interrupção, o acompanhar de um turno em
- * andamento e as skills do catálogo em toda sessão aberta (nova, retomada, recomeçada).
+ * andamento, as skills do catálogo em toda sessão aberta (nova, retomada, recomeçada) e o que a tarefa
+ * restringe na sessão (a skill, a web, a experimental fora do beta).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -32,7 +33,9 @@ import type { EventoConversa, ItemAoVivo, ItemConversa } from "@simplifica-if/co
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import type { SkillDoApp } from "@simplifica-if/mcp/skills";
+import type { ManifestoTarefa } from "@simplifica-if/mcp/tarefas";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as CatalogoTarefas from "../src/CatalogoTarefas.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as TextosAnexos from "../src/textos-anexos/TextosAnexos.ts";
@@ -66,15 +69,52 @@ const SKILL: SkillDoApp = {
   descricao: "Use para testar a entrega das skills.",
   instrucoes: "# Skill de teste\n\nLeia `referencia.md`.",
   arquivos: [{ caminho: "referencia.md", conteudo: "referência" }],
-  manifesto: {
-    titulo: "Teste",
-    resumo: "Uma skill de teste.",
-    area: "ensino",
-    ferramentas: [],
-    arquivos: ["referencia.md"],
-  },
+  manifesto: { ferramentas: [], arquivos: ["referencia.md"] },
   pasta: "/nao/usada",
 };
+
+/** Outra skill do catálogo, que nenhuma tarefa cita: só a conversa livre a leva. */
+const OUTRA_SKILL: SkillDoApp = {
+  nome: "outra-skill",
+  descricao: "Use para testar o que a conversa de tarefa não leva.",
+  instrucoes: "# Outra skill",
+  arquivos: [],
+  manifesto: { ferramentas: [], arquivos: [] },
+  pasta: "/nao/usada",
+};
+
+const paraMotor = (skill: SkillDoApp): Motor.Skill => ({
+  nome: skill.nome,
+  descricao: skill.descricao,
+  instrucoes: skill.instrucoes,
+  arquivos: skill.arquivos,
+});
+
+const tarefaDeConversa = (
+  id: string,
+  conversa: { readonly skill?: string; readonly pedido: string; readonly web?: boolean },
+  situacao: ManifestoTarefa["situacao"] = "estavel",
+): ManifestoTarefa => ({
+  id,
+  titulo: "Tarefa de teste",
+  resumo: "Uma tarefa de teste.",
+  area: "ensino",
+  situacao,
+  mantenedor: { nome: "Pessoa de Teste", github: "pessoa-de-teste" },
+  abre: { conversa },
+});
+
+/**
+ * As tarefas do catálogo de teste: uma que cita a skill, uma de conversa sem skill, duas que desligam a
+ * web (com skill e sem) e uma experimental.
+ */
+const TAREFAS = [
+  tarefaDeConversa("tarefa-com-skill", { skill: SKILL.nome, pedido: "Faça o teste." }),
+  tarefaDeConversa("tarefa-sem-skill", { pedido: "Responda." }),
+  tarefaDeConversa("tarefa-sem-web", { skill: SKILL.nome, pedido: "Faça sem a web.", web: false }),
+  tarefaDeConversa("tarefa-sem-web-nem-skill", { pedido: "Responda sem a web.", web: false }),
+  tarefaDeConversa("tarefa-experimental", { pedido: "Experimente." }, "experimental"),
+];
 
 /** As pastas sem pastas de tarefa, com o retrato do fim do turno que lança um defeito. */
 const layerRetratoComDefeito = Layer.effect(
@@ -100,10 +140,13 @@ const camada = (
   registro: Registro,
   pastas: CamadaPastas = PastasTrabalho.layerSemPastas,
   preferencias: typeof Preferencias.layer = Preferencias.layerPrimeiroUsoFeito,
+  tarefas: ReadonlyArray<ManifestoTarefa> = TAREFAS,
+  retiradas: ReadonlySet<string> = new Set(),
 ) =>
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
     Layer.provideMerge(Motor.layer),
-    Layer.provideMerge(CatalogoSkills.layerFixo([SKILL])),
+    Layer.provideMerge(CatalogoTarefas.layerFixo(tarefas)),
+    Layer.provideMerge(CatalogoSkills.layerFixo([OUTRA_SKILL, SKILL], retiradas)),
     Layer.provideMerge(pastas),
     Layer.provideMerge(Historico.layer),
     Layer.provideMerge(preferencias),
@@ -117,10 +160,20 @@ const camada = (
  * Abre o servidor de conversas (como o app que abre) num escopo próprio; `fechar` o encerra como o
  * app que fecha.
  */
-const abrir = (arquivo: string, registro: Registro, pastas?: CamadaPastas, preferencias?: typeof Preferencias.layer) =>
+const abrir = (
+  arquivo: string,
+  registro: Registro,
+  pastas?: CamadaPastas,
+  preferencias?: typeof Preferencias.layer,
+  tarefas?: ReadonlyArray<ManifestoTarefa>,
+  retiradas?: ReadonlySet<string>,
+) =>
   Effect.gen(function* () {
     const escopo = yield* Scope.make();
-    const contexto = yield* Layer.buildWithScope(camada(arquivo, registro, pastas, preferencias), escopo);
+    const contexto = yield* Layer.buildWithScope(
+      camada(arquivo, registro, pastas, preferencias, tarefas, retiradas),
+      escopo,
+    );
     return {
       conversas: Context.get(contexto, Conversas.Conversas),
       preferencias: Context.get(contexto, Preferencias.Preferencias),
@@ -152,7 +205,7 @@ describe("conversas gravadas", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, preferencias, fechar } = yield* abrir(novoBanco(), registro, undefined, Preferencias.layer);
-      const iniciar = yield* Effect.flip(conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }));
+      const iniciar = yield* Effect.flip(conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel"));
       assert.strictEqual(iniciar._tag, "AvisoNaoAceito");
       const enviar = yield* Effect.flip(conversas.enviar("qualquer", "oi"));
       assert.strictEqual(enviar._tag, "AvisoNaoAceito");
@@ -160,7 +213,7 @@ describe("conversas gravadas", () => {
       assert.deepStrictEqual(yield* conversas.listar, []);
 
       yield* preferencias.aceitarAviso;
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       assert.strictEqual(tags(yield* turnoCompleto(conversas, id, "olá")).at(-1), "FimTurno");
       yield* fechar;
     }),
@@ -170,7 +223,7 @@ describe("conversas gravadas", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
 
       const primeiro = yield* turnoCompleto(conversas, id, "Qual a carga horária?\nsegunda linha");
       assert.deepStrictEqual(tags(primeiro), ["TextoParcial", "TextoParcial", "TextoFinal", "FimTurno"]);
@@ -219,25 +272,18 @@ describe("conversas gravadas", () => {
             const tabelas = yield* sql<{ readonly name: string }>`
               SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name
             `;
-            assert.deepStrictEqual(
+            // As tabelas do núcleo; as dos módulos têm o prefixo do módulo e o teste de cada um.
+            assert.includeMembers(
               tabelas.map((tabela) => tabela.name),
               [
-                "acoes_ia",
                 "anexos_pasta",
                 "apagamentos_pendentes",
                 "avaliacoes",
-                "blocos_ia",
                 "conversas",
-                "copias_comentadas",
                 "effect_sql_migrations",
                 "eventos",
-                "eventos_pendencia",
-                "listas_pendencias",
-                "pendencias_vivas",
                 "preferencias",
                 "relatos",
-                "revisoes_ia",
-                "tentativas_ia",
               ],
             );
             const migracoes = yield* sql<{ readonly migration_id: number; readonly name: string }>`
@@ -261,7 +307,7 @@ describe("conversas gravadas", () => {
       const arquivo = novoBanco();
       const registro = novoRegistro();
       const primeiro = yield* abrir(arquivo, registro);
-      const id = yield* primeiro.conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* primeiro.conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(primeiro.conversas, id, "olá");
       yield* primeiro.fechar;
       assert.strictEqual(registro.encerradas, 1);
@@ -286,7 +332,7 @@ describe("conversas gravadas", () => {
       const arquivo = novoBanco();
       const registro = novoRegistro();
       const primeiro = yield* abrir(arquivo, registro);
-      const id = yield* primeiro.conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* primeiro.conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const turno = yield* turnoCompleto(primeiro.conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       assert.strictEqual((yield* resumo(primeiro.conversas, id))?.estado, "respondendo");
@@ -344,7 +390,7 @@ describe("conversas gravadas", () => {
       const arquivo = novoBanco();
       const registro = novoRegistro();
       const primeiro = yield* abrir(arquivo, registro);
-      const id = yield* primeiro.conversas.iniciar({ provider: "antigravity", pastaTrabalho: pasta });
+      const id = yield* primeiro.conversas.iniciar({ provider: "antigravity", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(primeiro.conversas, id, "Qual a carga horária?");
       yield* primeiro.fechar;
 
@@ -373,7 +419,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       yield* registro.derrubar!();
@@ -397,7 +443,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
       yield* registro.derrubar!();
       yield* rodar;
@@ -416,7 +462,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const saneado = "processo do claude encerrou proxy http://<credencial>@10.0.0.1:3128 caiu";
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       yield* registro.derrubar!(causa);
@@ -449,7 +495,7 @@ describe("ciclo de vida da sessão do provider", () => {
       yield* Effect.gen(function* () {
         const registro = novoRegistro();
         const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa }, "estavel");
         const turno = yield* turnoCompleto(conversas, id, "pedido sigiloso demorado").pipe(Effect.forkChild);
         yield* rodar;
         yield* registro.derrubar!(causa);
@@ -470,12 +516,15 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({
-        provider: "claude",
-        pastaTrabalho: pasta,
-        modelo: "opus",
-        esforco: "xhigh",
-      });
+      const id = yield* conversas.iniciar(
+        {
+          provider: "claude",
+          pastaTrabalho: pasta,
+          modelo: "opus",
+          esforco: "xhigh",
+        },
+        "estavel",
+      );
       assert.deepInclude(registro.configs.at(-1), { modelo: "opus", esforco: "xhigh" });
       yield* turnoCompleto(conversas, id, "olá");
       yield* avancar(Duration.subtract(Conversas.OCIOSIDADE, Duration.seconds(1)));
@@ -500,14 +549,12 @@ describe("ciclo de vida da sessão do provider", () => {
     }),
   );
 
-  it.effect("skills do catálogo: a sessão nova, a retomada e a recomeçada recebem todas", () =>
+  it.effect("skills do catálogo: na conversa livre, a sessão nova, a retomada e a recomeçada recebem todas", () =>
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
-      const esperadas: ReadonlyArray<Motor.Skill> = [
-        { nome: SKILL.nome, descricao: SKILL.descricao, instrucoes: SKILL.instrucoes, arquivos: SKILL.arquivos },
-      ];
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
+      const esperadas = [paraMotor(OUTRA_SKILL), paraMotor(SKILL)];
       assert.deepStrictEqual(registro.configs[0]?.skills, esperadas);
       // O motor gravou o SKILL.md e o arquivo listado na pasta de trabalho, e as instruções as listam.
       const pastaSkill = `${NodeFS.realpathSync(pasta)}/.simplifica/skills/${SKILL.nome}`;
@@ -531,6 +578,198 @@ describe("ciclo de vida da sessão do provider", () => {
     }),
   );
 
+  it.effect("skill retirada: a sessão nova e a retomada apagam a pasta dela, e só a dela, da pasta de trabalho", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(
+        novoBanco(),
+        registro,
+        undefined,
+        undefined,
+        undefined,
+        new Set(["velha"]),
+      );
+      const daPasta = NodeFS.realpathSync(diretorioTemporario("simplifica-retirada-"));
+      const skills = `${daPasta}/.simplifica/skills`;
+      const gravadaAntes = (nome: string) => {
+        NodeFS.mkdirSync(`${skills}/${nome}`, { recursive: true });
+        NodeFS.writeFileSync(`${skills}/${nome}/SKILL.md`, "---\nname: x\n---\n");
+      };
+      // Uma sessão de antes da retirada gravou a "velha"; outra conversa na mesma pasta, a "de-outra-conversa".
+      gravadaAntes("velha");
+      gravadaAntes("de-outra-conversa");
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: daPasta }, "estavel");
+      assert.deepStrictEqual(registro.configs.at(-1)?.skillsRetiradas, ["velha"]);
+      assert.deepStrictEqual(
+        NodeFS.readdirSync(skills).sort(),
+        ["de-outra-conversa", OUTRA_SKILL.nome, SKILL.nome].sort(),
+      );
+
+      gravadaAntes("velha");
+      yield* conversas.encerrar(id);
+      yield* turnoCompleto(conversas, id, "voltei");
+      assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
+      assert.isFalse(NodeFS.existsSync(`${skills}/velha`));
+      assert.isTrue(NodeFS.existsSync(`${skills}/de-outra-conversa/SKILL.md`));
+      yield* fechar;
+    }),
+  );
+
+  it.effect("conversa de tarefa: só a skill da tarefa, na sessão nova, na retomada e na recomeçada", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+      const daTarefa = NodeFS.realpathSync(diretorioTemporario("simplifica-tarefa-com-skill-"));
+      const id = yield* conversas.iniciar(
+        { provider: "claude", pastaTrabalho: daTarefa, tarefa: "tarefa-com-skill" },
+        "estavel",
+      );
+      const soADaTarefa = () => {
+        const config = registro.configs.at(-1);
+        assert.deepStrictEqual(config?.skills, [paraMotor(SKILL)]);
+        // Nos dois lugares em que a skill chega ao provider: as instruções da sessão e a pasta.
+        assert.include(config?.instrucoes ?? "", `\`${SKILL.nome}\``);
+        assert.notInclude(config?.instrucoes ?? "", OUTRA_SKILL.nome);
+        assert.deepStrictEqual(NodeFS.readdirSync(`${daTarefa}/.simplifica/skills`), [SKILL.nome]);
+      };
+      soADaTarefa();
+
+      yield* conversas.encerrar(id);
+      yield* turnoCompleto(conversas, id, "voltei");
+      assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
+      soADaTarefa();
+
+      yield* conversas.encerrar(id);
+      registro.recusarRetomada = true;
+      yield* turnoCompleto(conversas, id, "de novo");
+      assert.isUndefined(registro.configs.at(-1)?.retomar);
+      soADaTarefa();
+      yield* fechar;
+    }),
+  );
+
+  it.effect("conversa de tarefa sem skill: a sessão não leva skill nenhuma, nem depois de outro app abrir", () =>
+    Effect.gen(function* () {
+      const arquivo = novoBanco();
+      const registro = novoRegistro();
+      const primeiro = yield* abrir(arquivo, registro);
+      const daTarefa = NodeFS.realpathSync(diretorioTemporario("simplifica-tarefa-sem-skill-"));
+      const id = yield* primeiro.conversas.iniciar(
+        { provider: "claude", pastaTrabalho: daTarefa, tarefa: "tarefa-sem-skill" },
+        "estavel",
+      );
+      const semSkill = () => {
+        const config = registro.configs.at(-1);
+        assert.isUndefined(config?.skills);
+        assert.notInclude(config?.instrucoes ?? "", "Skills do Simplifica IF");
+        assert.isFalse(NodeFS.existsSync(`${daTarefa}/.simplifica/skills`));
+      };
+      semSkill();
+      yield* primeiro.fechar;
+
+      // O app que abre depois lê a regra da tarefa gravada na conversa.
+      const segundo = yield* abrir(arquivo, registro);
+      yield* turnoCompleto(segundo.conversas, id, "voltei");
+      assert.strictEqual(registro.configs.length, 2);
+      semSkill();
+      yield* segundo.fechar;
+    }),
+  );
+
+  /** A última sessão aberta ficou sem web, e só sem ela: as ferramentas `ifpr` seguem todas, sem perguntar. */
+  const webDesligada = (registro: Registro) => {
+    assert.isTrue(registro.configs.at(-1)?.semWeb);
+    assert.isFalse(Motor.buscaWebLigada(registro.politicas.at(-1)!));
+    assert.notInclude(registro.configs.at(-1)?.instrucoes ?? "", "busca na web");
+    assert.strictEqual(registro.configs.at(-1)?.servidoresMcp[0]?.nome, Conversas.NOME_MCP);
+    assert.strictEqual(registro.politicas.at(-1)?.ferramentas.mcpApp, "permitir");
+  };
+
+  it.effect(
+    "web: false na tarefa desliga a web da sessão, nova, retomada e recomeçada; as outras seguem a política",
+    () =>
+      Effect.gen(function* () {
+        const registro = novoRegistro();
+        const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+        for (const tarefa of ["tarefa-sem-web", "tarefa-sem-web-nem-skill"]) {
+          registro.recusarRetomada = false;
+          const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta, tarefa }, "estavel");
+          const nativo = registro.configs.length;
+          webDesligada(registro);
+          assert.strictEqual(registro.configs.at(-1)?.skills?.length, tarefa === "tarefa-sem-web" ? 1 : undefined);
+          yield* conversas.encerrar(id);
+          yield* turnoCompleto(conversas, id, "voltei");
+          assert.strictEqual(registro.configs.at(-1)?.retomar, `nativo-${nativo}`);
+          webDesligada(registro);
+
+          // Retomada recusada: a sessão recomeça com o histórico como contexto, ainda sem web.
+          yield* conversas.encerrar(id);
+          registro.recusarRetomada = true;
+          yield* turnoCompleto(conversas, id, "de novo");
+          assert.isUndefined(registro.configs.at(-1)?.retomar);
+          webDesligada(registro);
+        }
+        registro.recusarRetomada = false;
+
+        // A tarefa que não desliga e a conversa livre ficam com a política de fábrica.
+        for (const tarefa of ["tarefa-com-skill", undefined]) {
+          yield* conversas.iniciar(
+            { provider: "claude", pastaTrabalho: pasta, ...(tarefa === undefined ? {} : { tarefa }) },
+            "estavel",
+          );
+          assert.isUndefined(registro.configs.at(-1)?.semWeb);
+          assert.strictEqual(registro.politicas.at(-1), Motor.POLITICA_FABRICA);
+          assert.include(registro.configs.at(-1)?.instrucoes ?? "", "busca na web");
+        }
+        yield* fechar;
+      }),
+  );
+
+  it.effect("web: false fica gravado na conversa: o manifesto que some do catálogo não religa a web", () =>
+    Effect.gen(function* () {
+      const arquivo = novoBanco();
+      const registro = novoRegistro();
+      const primeiro = yield* abrir(arquivo, registro);
+      const id = yield* primeiro.conversas.iniciar(
+        { provider: "claude", pastaTrabalho: pasta, tarefa: "tarefa-sem-web" },
+        "estavel",
+      );
+      webDesligada(registro);
+      yield* primeiro.fechar;
+
+      // O app abre com um catálogo sem a tarefa (saiu do repositório, ou o manifesto chegou inválido).
+      const segundo = yield* abrir(
+        arquivo,
+        registro,
+        undefined,
+        undefined,
+        TAREFAS.filter((tarefa) => tarefa.id !== "tarefa-sem-web"),
+      );
+      yield* turnoCompleto(segundo.conversas, id, "voltei");
+      assert.strictEqual(registro.configs.length, 2);
+      webDesligada(registro);
+      // Sem o manifesto, a sessão também não leva skill.
+      assert.isUndefined(registro.configs.at(-1)?.skills);
+      yield* segundo.fechar;
+    }),
+  );
+
+  it.effect("tarefa experimental: só abre conversa no canal beta", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+      const entrada = { provider: "claude", pastaTrabalho: pasta, tarefa: "tarefa-experimental" } as const;
+      const recusa = yield* Effect.flip(conversas.iniciar(entrada, "estavel"));
+      assert.strictEqual(recusa._tag, "TarefaDesconhecida");
+      assert.strictEqual(recusa.message, "Esta tarefa é experimental: só abre no canal beta das atualizações.");
+      assert.strictEqual(registro.configs.length, 0);
+      assert.deepStrictEqual(yield* conversas.listar, []);
+      const id = yield* conversas.iniciar(entrada, "beta");
+      assert.strictEqual((yield* conversas.carregar(id)).conversa.tarefa, "tarefa-experimental");
+      yield* fechar;
+    }),
+  );
+
   it.effect(
     "o FimTurno chega com o turno fechado: a conversa em repouso aceita outra mensagem antes de o stream acabar",
     () =>
@@ -539,7 +778,7 @@ describe("ciclo de vida da sessão do provider", () => {
         const segurar = yield* Deferred.make<void>();
         registro.segurarFim = segurar;
         const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
         // Como a interface: o turno acabou quando chega o `FimTurno`; o stream do provider segue aberto.
         const eventos = yield* turnoCompleto(conversas, id, "olá");
         assert.strictEqual(tags(eventos).at(-1), "FimTurno");
@@ -560,7 +799,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, layerRetratoComDefeito);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const eventos = yield* turnoCompleto(conversas, id, "olá");
       assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "concluido" });
       assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
@@ -574,7 +813,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       const emAndamento = yield* Effect.flip(turnoCompleto(conversas, id, "outra"));
@@ -609,7 +848,7 @@ describe("ciclo de vida da sessão do provider", () => {
         }),
       ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasLentas);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
       const enviados = registro.textos.length;
 
@@ -660,7 +899,7 @@ describe("ciclo de vida da sessão do provider", () => {
         Layer.provide(ArquivosLiberados.layer({ exigirLiberacao: false })),
       );
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastas);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
 
       // Entre os turnos, a pessoa põe um .docx e uma nota; a conversão do .docx trava, e ela para.
@@ -708,12 +947,43 @@ describe("ciclo de vida da sessão do provider", () => {
       }),
     ).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
 
+  it.effect("a tarefa sem skill não indica skill; a conversa livre não guarda tarefa", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+      const semSkill = yield* conversas.iniciar(
+        {
+          provider: "claude",
+          pastaTrabalho: pasta,
+          tarefa: "tarefa-sem-skill",
+        },
+        "estavel",
+      );
+      yield* turnoCompleto(conversas, semSkill, "olá");
+      assert.strictEqual(registro.textos.at(-1), "olá");
+      assert.strictEqual((yield* conversas.carregar(semSkill)).conversa.tarefa, "tarefa-sem-skill");
+      const livre = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
+      yield* turnoCompleto(conversas, livre, "oi");
+      assert.strictEqual(registro.textos.at(-1), "oi");
+      assert.isUndefined((yield* conversas.carregar(livre)).conversa.tarefa);
+      // O nome da skill não é id de tarefa.
+      const recusa = yield* Effect.flip(
+        conversas.iniciar({ provider: "claude", pastaTrabalho: pasta, tarefa: SKILL.nome }, "estavel"),
+      );
+      assert.strictEqual(recusa._tag, "TarefaDesconhecida");
+      yield* fechar;
+    }),
+  );
+
   it.effect("o turno 1 de uma tarefa parado no preparo: a skill é indicada no primeiro que chega à IA", () =>
     Effect.gen(function* () {
       const registro = novoRegistro();
       const comecou = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(1, comecou));
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta, tarefa: "skill-de-teste" });
+      const id = yield* conversas.iniciar(
+        { provider: "claude", pastaTrabalho: pasta, tarefa: "tarefa-com-skill" },
+        "estavel",
+      );
       const parado = yield* turnoCompleto(conversas, id, "primeiro").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.interromper(id);
@@ -730,7 +1000,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const comecou = yield* Deferred.make<void>();
       const solta = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(2, comecou, solta));
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
       const enviados = registro.textos.length;
       const parado = yield* turnoCompleto(conversas, id, "segundo").pipe(Effect.forkChild);
@@ -750,7 +1020,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const comecou = yield* Deferred.make<void>();
       const solta = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(2, comecou, solta));
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
       const enviados = registro.textos.length;
       const turno = yield* turnoCompleto(conversas, id, "segundo").pipe(Effect.forkChild);
@@ -775,7 +1045,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const comecou = yield* Deferred.make<void>();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastasPresas(1, comecou));
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const turno = yield* turnoCompleto(conversas, id, "olá").pipe(Effect.forkChild);
       yield* Deferred.await(comecou);
       yield* conversas.encerrar(id);
@@ -808,7 +1078,7 @@ describe("ciclo de vida da sessão do provider", () => {
         Layer.provide(ArquivosLiberados.layer({ exigirLiberacao: false })),
       );
       const { conversas, fechar } = yield* abrir(novoBanco(), registro, pastas);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
       NodeFS.writeFileSync(NodePath.join(tarefa, "A.docx"), "a");
       NodeFS.writeFileSync(NodePath.join(tarefa, "B.docx"), "b");
@@ -865,7 +1135,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { tarefa, camada } = pastasReais();
       const { conversas, pastas, fechar } = yield* abrir(novoBanco(), registro, camada);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa }, "estavel");
       // Como a tarefa do Início: o anexo entra na pasta antes da primeira mensagem.
       yield* pastas.anexar(tarefa, arquivoParaAnexar("Minuta.docx", "minuta"));
       yield* turnoCompleto(conversas, id, "confira a minuta");
@@ -890,7 +1160,7 @@ describe("ciclo de vida da sessão do provider", () => {
       const registro = novoRegistro();
       const { tarefa, camada } = pastasReais();
       const { conversas, pastas, fechar } = yield* abrir(novoBanco(), registro, camada);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: tarefa }, "estavel");
       yield* pastas.anexar(tarefa, arquivoParaAnexar("A.md", "a"));
       const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       // A IA já está respondendo: o texto parcial chegou.
@@ -914,7 +1184,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = { ...novoRegistro(), ignorarInterrupcao: true };
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       const turno = yield* turnoCompleto(conversas, id, "uma resposta demorada").pipe(Effect.forkChild);
       yield* rodar;
       yield* conversas.interromper(id);
@@ -936,7 +1206,7 @@ describe("ciclo de vida da sessão do provider", () => {
       Effect.gen(function* () {
         const registro = novoRegistro();
         const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
         const recebidos = yield* Effect.scoped(
           Effect.gen(function* () {
             const fila = yield* Stream.toQueue(conversas.acompanhar(id, 0), { capacity: "unbounded" });
@@ -963,7 +1233,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* Effect.scoped(
         Effect.gen(function* () {
           const fila = yield* Stream.toQueue(conversas.acompanhar(id, 0), { capacity: "unbounded" });
@@ -980,7 +1250,7 @@ describe("ciclo de vida da sessão do provider", () => {
     Effect.gen(function* () {
       const registro = novoRegistro();
       const { conversas, fechar } = yield* abrir(novoBanco(), registro);
-      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }, "estavel");
       yield* turnoCompleto(conversas, id, "olá");
       // A interface que enviou caiu no meio do turno (o stream dela foi interrompido).
       const primeiro = yield* turnoCompleto(conversas, id, "pode escrever?").pipe(Effect.forkChild);

@@ -31,6 +31,8 @@ export interface RegistroConversa extends ResumoConversa {
   readonly idNativo?: string;
   /** A maior `ordem` gravada (0 sem itens). */
   readonly ultimaOrdem: number;
+  /** A conversa nasceu de uma tarefa que desliga a web: vale mesmo se o manifesto da tarefa sumir. */
+  readonly semWeb: boolean;
 }
 
 export interface NovaConversa {
@@ -42,6 +44,7 @@ export interface NovaConversa {
   readonly idNativo?: string;
   readonly estado: EstadoConversa;
   readonly tarefa?: string;
+  readonly semWeb?: boolean;
 }
 
 export interface Alteracao {
@@ -131,6 +134,7 @@ interface LinhaConversa {
   readonly turnos: number | null;
   readonly ultima_ordem: number | null;
   readonly tarefa: string | null;
+  readonly sem_web: number;
 }
 
 interface LinhaEvento {
@@ -164,6 +168,7 @@ const paraRegistro = (linha: LinhaConversa): RegistroConversa => ({
   atualizadaEm: linha.atualizada_em,
   ultimaOrdem: linha.ultima_ordem ?? 0,
   ...(linha.tarefa === null ? {} : { tarefa: linha.tarefa }),
+  semWeb: linha.sem_web === 1,
 });
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
@@ -183,10 +188,10 @@ const make = Effect.gen(function* () {
   const criar = Effect.fn("Historico.criar")(function* (conversa: NovaConversa) {
     const data = yield* agora;
     yield* sql`
-      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, esforco, id_nativo, estado, tarefa, criada_em, atualizada_em)
+      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, esforco, id_nativo, estado, tarefa, sem_web, criada_em, atualizada_em)
       VALUES (${conversa.id}, ${conversa.provider}, ${conversa.pastaTrabalho}, ${conversa.modelo ?? null},
         ${conversa.esforco ?? null}, ${conversa.idNativo ?? null},
-        ${conversa.estado}, ${conversa.tarefa ?? null}, ${data}, ${data})
+        ${conversa.estado}, ${conversa.tarefa ?? null}, ${conversa.semWeb === true ? 1 : 0}, ${data}, ${data})
     `;
   }, Effect.orDie);
 

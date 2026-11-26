@@ -84,7 +84,6 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
           .comecarTarefa({
             ia: { provider: "claude" },
             pasta: `${pasta}/nao-existe`,
-            tarefa: "conversa",
             pedido: "Oi",
           })
           .catch(() => undefined),
@@ -95,7 +94,6 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
         conversa.comecarTarefa({
           ia: { provider: "claude" },
           pasta,
-          tarefa: "conversa",
           pedido: "Pode escrever um resumo da DCN?",
         }),
       );
@@ -139,7 +137,6 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
         conversa.comecarTarefa({
           ia: { provider: "antigravity" },
           pasta,
-          tarefa: "conversa",
           pedido: "Uma resposta demorada, por favor",
         }),
       );
@@ -176,7 +173,6 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
         primeira.comecarTarefa({
           ia: { provider: "claude" },
           pasta,
-          tarefa: "conversa",
           pedido: "Qual é a DCN da EPT?",
         }),
       );
@@ -228,7 +224,6 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
         conversa.comecarTarefa({
           ia: { provider: "claude" },
           pasta,
-          tarefa: "conversa",
           pedido: "Uma resposta demorada",
         }),
       );
@@ -259,7 +254,6 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
         conversa.comecarTarefa({
           ia: { provider: "codex" },
           pasta,
-          tarefa: "conversa",
           pedido: "Estourei o limite de uso?",
         }),
       );

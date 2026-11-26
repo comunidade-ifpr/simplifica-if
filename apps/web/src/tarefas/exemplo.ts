@@ -1,18 +1,31 @@
 /**
  * A tarefa de exemplo do terceiro passo das boas-vindas (M1.8): a mais útil para o perfil, que gaste
- * pouco da cota.
+ * pouco da cota. As duas saem do catálogo (`tarefas.listar`), achadas pelo que abrem, e levam o título
+ * e o `id` de lá; a que o catálogo não traz não vira exemplo.
  *
- * - Para quem cuida de PPC (coordenações de curso e de ensino, pedagogia, direção de ensino, PROENS/DENS): "Revisar um PPC",
- *   com o PPC que a pessoa escolher. A pré-conferência roda no computador, sem IA e sem gastar a cota; a
- *   revisão com IA é opcional e mostra a estimativa antes.
- * - Para os demais, e como segunda opção: "Conferir a fundamentação normativa" de um trecho real e curto
- *   de PPC publicado na base, que cita a Res. CNE/CP nº 1/2021 sem o órgão completo (a norma foi
- *   revogada pela Res. CNE/CP nº 2/2026: a resposta mostra a regra de transição).
+ * - Para quem cuida de PPC (coordenações de curso e de ensino, pedagogia, direção de ensino, PROENS/DENS):
+ *   a tarefa do módulo da revisão de PPC, com o PPC que a pessoa escolher. A pré-conferência roda no
+ *   computador, sem IA e sem gastar a cota; a revisão com IA é opcional e mostra a estimativa antes.
+ * - Para os demais, e como segunda opção: a tarefa de conversa da skill `SKILL_EXEMPLO`, com um trecho
+ *   real e curto de PPC publicado na base, que cita a Res. CNE/CP nº 1/2021 sem o órgão completo (a
+ *   norma foi revogada pela Res. CNE/CP nº 2/2026: a resposta mostra a regra de transição).
  */
-import { type Perfil, type Publico, publicosDoPerfil, type ResumoSkill } from "@simplifica-if/contratos-app";
+import {
+  type Modulo,
+  type Perfil,
+  type Publico,
+  publicosDoPerfil,
+  type ResumoTarefa,
+} from "@simplifica-if/contratos-app";
 
-/** A skill do exemplo de conversa. */
+/** A skill do exemplo de conversa: o trecho abaixo foi escolhido para ela. */
 export const SKILL_EXEMPLO = "verificar-fundamentacao-normativa";
+
+/**
+ * O módulo do exemplo sem IA, pelo nome: um texto, não um import. Sem o módulo no app, a tarefa dele não
+ * vem no catálogo e o exemplo sai.
+ */
+const MODULO_EXEMPLO: string = "revisao-ppc";
 
 /** De `base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem/2022.md`, linha 431. */
 export const TRECHO_EXEMPLO =
@@ -24,18 +37,24 @@ export const PEDIDO_EXEMPLO = `Confira a fundamentação normativa deste trecho 
 
 export type Exemplo =
   | {
-      readonly tipo: "revisar-ppc";
+      readonly tipo: "modulo";
+      /** O `id` da tarefa no catálogo. */
+      readonly tarefa: string;
+      readonly modulo: Modulo;
       readonly titulo: string;
       readonly frase: string;
       readonly custo: string;
     }
   | {
       readonly tipo: "conversa";
-      readonly skill: string;
+      /** O `id` da tarefa no catálogo, que a conversa guarda. */
+      readonly tarefa: string;
       readonly titulo: string;
       readonly frase: string;
       readonly custo: string;
       readonly pedido: string;
+      /** O título da pasta da conversa de exemplo. */
+      readonly pasta: string;
     };
 
 const CUIDAM_DE_PPC: ReadonlyArray<Publico> = [
@@ -47,31 +66,42 @@ const CUIDAM_DE_PPC: ReadonlyArray<Publico> = [
   "dens",
 ];
 
-/** As sugestões, a mais útil primeiro. A conversa só entra se a skill estiver no catálogo. */
+/** As sugestões, a mais útil primeiro; só as que o catálogo traz. */
 export function exemplosDoPerfil(
   perfil: Perfil | undefined,
-  skills: ReadonlyArray<ResumoSkill>,
+  tarefas: ReadonlyArray<ResumoTarefa>,
 ): ReadonlyArray<Exemplo> {
-  const conversa: ReadonlyArray<Exemplo> = skills.some((skill) => skill.nome === SKILL_EXEMPLO)
-    ? [
-        {
-          tipo: "conversa",
-          skill: SKILL_EXEMPLO,
-          titulo: "Conferir a fundamentação normativa de um trecho",
-          frase: `A IA confere as normas citadas num trecho curto do ${ORIGEM_TRECHO}, com o texto das normas da base.`,
-          custo: "Cerca de 2 minutos. Usa pouco da sua cota: mais ou menos o que três ou quatro perguntas comuns.",
-          pedido: PEDIDO_EXEMPLO,
-        },
-      ]
-    : [];
-  const ppc: Exemplo = {
-    tipo: "revisar-ppc",
-    titulo: "Revisar um PPC",
-    frase:
-      "Escolha o arquivo .docx do PPC. O app o confere com as normas, o CNCT e a matriz da base e devolve uma cópia do documento com comentários.",
-    custo: "Alguns segundos. A pré-conferência roda no computador, sem IA: não gasta a sua cota.",
-  };
+  const deConversa = tarefas.find((tarefa) => tarefa.abre.tipo === "conversa" && tarefa.abre.skill === SKILL_EXEMPLO);
+  const conversa: ReadonlyArray<Exemplo> =
+    deConversa === undefined
+      ? []
+      : [
+          {
+            tipo: "conversa",
+            tarefa: deConversa.id,
+            titulo: `${deConversa.titulo} de um trecho`,
+            frase: `A IA confere as normas citadas num trecho curto do ${ORIGEM_TRECHO}, com o texto das normas da base.`,
+            custo: "Cerca de 2 minutos. Usa pouco da sua cota: mais ou menos o que três ou quatro perguntas comuns.",
+            pedido: PEDIDO_EXEMPLO,
+            pasta: `Exemplo - ${deConversa.titulo}`,
+          },
+        ];
+  const doModulo = tarefas.find((tarefa) => tarefa.abre.tipo === "modulo" && tarefa.abre.modulo === MODULO_EXEMPLO);
+  const ppc: ReadonlyArray<Exemplo> =
+    doModulo === undefined || doModulo.abre.tipo !== "modulo"
+      ? []
+      : [
+          {
+            tipo: "modulo",
+            tarefa: doModulo.id,
+            modulo: doModulo.abre.modulo,
+            titulo: doModulo.titulo,
+            frase:
+              "Escolha o arquivo .docx do PPC. O app o confere com as normas, o CNCT e a matriz da base e devolve uma cópia do documento com comentários.",
+            custo: "Alguns segundos. A pré-conferência roda no computador, sem IA: não gasta a sua cota.",
+          },
+        ];
   return publicosDoPerfil(perfil).some((publico) => CUIDAM_DE_PPC.includes(publico))
-    ? [ppc, ...conversa]
-    : [...conversa, ppc];
+    ? [...ppc, ...conversa]
+    : [...conversa, ...ppc];
 }

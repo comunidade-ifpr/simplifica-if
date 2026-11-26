@@ -4,7 +4,8 @@
  * As regras foram copiadas, sem mudar a lógica, do plugin do T3 Code: `oxlint-plugin-t3code/` em
  * https://github.com/pingdotgg/t3code, commit a6d91409729be6ba854b3f16adedc08847e3b24c. Ficaram só as
  * regras de código Effect e de testes (sem as de React, mobile, MCP e RPC, que dependem de peças do T3).
- * As escolhas estão em `docs/upstream-t3.md` e `docs/internals/servicos-effect.md`.
+ * As escolhas estão em `docs/upstream-t3.md` e `docs/internals/servicos-effect.md`. A regra
+ * `fronteira-modulos` é própria (a fronteira dos módulos do app, com a lista em `modulos.ts`).
  * As mensagens e descrições das regras continuam em inglês, como vieram do T3.
  *
  * Aviso de licença do código original (também em `ferramentas/oxlint-plugin/LICENSE-T3`):
@@ -33,6 +34,7 @@
  */
 import { definePlugin } from "@oxlint/plugins";
 
+import fronteiraModulos from "./rules/fronteira-modulos.ts";
 import namespaceNodeImports from "./rules/namespace-node-imports.ts";
 import noDomTestEnvironment from "./rules/no-dom-test-environment.ts";
 import noFrameWaitsInBrowserTests from "./rules/no-frame-waits-in-browser-tests.ts";
@@ -49,6 +51,7 @@ export default definePlugin({
     name: "simplifica-if",
   },
   rules: {
+    "fronteira-modulos": fronteiraModulos,
     "namespace-node-imports": namespaceNodeImports,
     "no-dom-test-environment": noDomTestEnvironment,
     "no-frame-waits-in-browser-tests": noFrameWaitsInBrowserTests,

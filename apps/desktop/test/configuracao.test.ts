@@ -10,9 +10,7 @@ import { EXTENSOES_DOCUMENTO } from "@simplifica-if/contratos-app/ponte";
 import {
   anexoEscolhido,
   arquivoDeTarefaPermitido,
-  copiaComentadaPermitida,
   extensoesAnexo,
-  docxEscolhido,
   pastaDeTarefaPermitida,
   hashesScriptsInline,
   isSameOriginRendererNavigation,
@@ -55,14 +53,25 @@ describe("resolverConfiguracao", () => {
     expect(config.urlJanela).toBe("http://localhost:5190/");
     expect(config.origens).toEqual(["http://localhost:5190"]);
     expect(config.cwd).toBe("/repo");
-    // Sem a pasta, nada de --pasta-skills.
+    // Sem a pasta, nada de --pasta-skills nem de --pasta-tarefas.
     expect(config.pastaSkills).toBeUndefined();
+    expect(config.pastaTarefas).toBeUndefined();
     // As pastas de tarefa em Documentos/Simplifica IF.
     expect(config.pastaTrabalhos).toBe("/Users/x/Documents/Simplifica IF");
   });
 
-  test("skills: .agents/skills do repositório no desenvolvimento, <Resources>/skills no app empacotado", () => {
-    expect(resolverConfiguracao({ ...dev, existe: () => true }).pastaSkills).toBe("/repo/.agents/skills");
+  test("tarefas: catalogo/tarefas do repositório no desenvolvimento, <Resources>/tarefas no app empacotado", () => {
+    expect(resolverConfiguracao({ ...dev, existe: () => true }).pastaTarefas).toBe("/repo/catalogo/tarefas");
+    expect(resolverConfiguracao({ ...empacotado, existe: () => true }).pastaTarefas).toBe(
+      "/Applications/Simplifica IF.app/Contents/Resources/tarefas",
+    );
+    // Só o desenvolvimento diz que a pasta é a do checkout; o empacotado nunca, com ou sem origem.json.
+    expect(resolverConfiguracao({ ...dev, existe: () => true }).tarefasDoCheckout).toBe(true);
+    expect(resolverConfiguracao({ ...empacotado, existe: () => true }).tarefasDoCheckout).toBe(false);
+  });
+
+  test("skills: catalogo/skills do repositório no desenvolvimento, <Resources>/skills no app empacotado", () => {
+    expect(resolverConfiguracao({ ...dev, existe: () => true }).pastaSkills).toBe("/repo/catalogo/skills");
     expect(resolverConfiguracao({ ...empacotado, existe: () => true }).pastaSkills).toBe(
       "/Applications/Simplifica IF.app/Contents/Resources/skills",
     );
@@ -204,43 +213,6 @@ describe("segurança da janela", () => {
     expect(pedir("simplifica://app/index.html", null, "POST")).toEqual({ tipo: "erro", status: 405 });
     expect(tipoConteudo("/web/assets/app.js")).toBe("text/javascript; charset=utf-8");
     expect(tipoConteudo("/web/x.desconhecido")).toBe("application/octet-stream");
-  });
-});
-
-describe("revisão prévia: o que a interface pode abrir", () => {
-  const escolhidos = new Set(["/Users/ana/PPCs/PPC Agro.docx"]);
-
-  test("só .docx com caminho absoluto sai do diálogo", () => {
-    expect(docxEscolhido("/Users/ana/PPCs/PPC Agro.DOCX")).toBe("/Users/ana/PPCs/PPC Agro.DOCX");
-    expect(docxEscolhido("/Users/ana/PPCs/PPC Agro.pdf")).toBeUndefined();
-    expect(docxEscolhido("PPC Agro.docx")).toBeUndefined();
-    expect(docxEscolhido(undefined)).toBeUndefined();
-    // O `File` solto sem caminho (criado por script): `webUtils.getPathForFile` dá "".
-    expect(docxEscolhido("")).toBeUndefined();
-  });
-
-  test("abre a cópia comentada de um arquivo escolhido, e nada mais", () => {
-    const pasta = "/Users/ana/PPCs/";
-    expect(copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF).docx`, escolhidos)).toBeDefined();
-    expect(
-      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (2).docx`, escolhidos),
-    ).toBeDefined();
-    expect(
-      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (99).docx`, escolhidos),
-    ).toBeDefined();
-    for (const recusado of [
-      `${pasta}PPC Agro.docx`, // o original
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF) (1).docx`,
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF) (100).docx`,
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF).docm`,
-      `${pasta}PPC Agro - revisão prévia (Simplifica IF).docx.app`,
-      `${pasta}Outro - revisão prévia (Simplifica IF).docx`, // de um arquivo não escolhido
-      "/Users/ana/Outra pasta/PPC Agro - revisão prévia (Simplifica IF).docx",
-      `${pasta}../PPCs/PPC Agro - revisão prévia (Simplifica IF).docx`,
-      "PPC Agro - revisão prévia (Simplifica IF).docx",
-      42,
-    ])
-      expect(copiaComentadaPermitida(recusado, escolhidos), String(recusado)).toBeUndefined();
   });
 });
 

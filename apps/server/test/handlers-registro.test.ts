@@ -12,7 +12,7 @@ import * as References from "effect/References";
 import * as Stream from "effect/Stream";
 import { codigoDoErro, FalhaDiagnostico, FalhaPasta } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
-import { traduzir, traduzirStream } from "../src/handlers.ts";
+import { traduzir, traduzirStream } from "../src/traducao.ts";
 import { resumoDaFalha } from "../src/observabilidade/resumoDaFalha.ts";
 
 interface Registro {

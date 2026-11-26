@@ -126,7 +126,7 @@ export interface EstadoConversa {
   readonly uso?: UsoTokens;
   /** Contador das chaves dos itens. */
   readonly proximoId: number;
-  /** A tarefa da conversa (o nome da skill, ou `conversa`), quando ela nasceu de uma. */
+  /** O `id` da tarefa da conversa, quando ela nasceu de uma; sem ele, conversa livre. */
   readonly tarefa?: string;
   /** As avaliações (👍/👎) das respostas, por turno. */
   readonly avaliacoes: Readonly<Record<number, NotaResposta>>;

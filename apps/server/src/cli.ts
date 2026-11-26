@@ -2,7 +2,8 @@
  * A CLI do servidor local (`effect/cli`), carregada pelo `bin.ts` fora do caminho rápido da ponte MCP.
  *
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--pasta-estado <dir>]
- *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-trabalhos <dir>]
+ *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-tarefas <dir>]
+ *        [--tarefas-do-checkout] [--pasta-trabalhos <dir>]
  *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.2.0]
  *        [--pasta-logs <dir>] [--traces completo|caixa-preta|desligado]
  *
@@ -37,7 +38,7 @@ import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
+import { lerEstado, lerOrigemCatalogo, prepararAbertura } from "@simplifica-if/atualizacao/local";
 import { layerHttp, opcoesDaPolitica } from "@simplifica-if/atualizacao/remoto";
 import { LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
 import { CANAIS } from "@simplifica-if/kb/canal";
@@ -69,7 +70,7 @@ const pastaEstadoPadrao = Effect.gen(function* () {
 
 /**
  * A pasta de skills quando `--pasta-skills` não a dá: no desenvolvimento
- * (este módulo rodando do código-fonte, `apps/server/src/cli.ts`), o `.agents/skills` do checkout; no
+ * (este módulo rodando do código-fonte, `apps/server/src/cli.ts`), o `catalogo/skills` do checkout; no
  * bundle do app, nenhuma (o desktop passa `<Resources>/skills`).
  */
 const pastaSkillsPadrao = Effect.gen(function* () {
@@ -77,7 +78,20 @@ const pastaSkillsPadrao = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
   const aqui = import.meta.filename;
   if (aqui === undefined || path.basename(aqui) !== "cli.ts") return undefined;
-  const pasta = path.resolve(path.dirname(aqui), "..", "..", "..", ".agents", "skills");
+  const pasta = path.resolve(path.dirname(aqui), "..", "..", "..", "catalogo", "skills");
+  return (yield* fs.exists(pasta).pipe(Effect.orElseSucceed(() => false))) ? pasta : undefined;
+});
+
+/**
+ * A pasta dos manifestos de tarefa quando `--pasta-tarefas` não a dá: no desenvolvimento, o
+ * `catalogo/tarefas` do checkout; no bundle do app, nenhuma (o desktop passa `<Resources>/tarefas`).
+ */
+const pastaTarefasPadrao = Effect.gen(function* () {
+  const path = yield* Path.Path;
+  const fs = yield* FileSystem.FileSystem;
+  const aqui = import.meta.filename;
+  if (aqui === undefined || path.basename(aqui) !== "cli.ts") return undefined;
+  const pasta = path.resolve(path.dirname(aqui), "..", "..", "..", "catalogo", "tarefas");
   return (yield* fs.exists(pasta).pipe(Effect.orElseSucceed(() => false))) ? pasta : undefined;
 });
 
@@ -109,9 +123,21 @@ const servidor = Command.make(
     ),
     pastaSkills: Flag.String("pasta-skills").pipe(
       Flag.withDescription(
-        "pasta das skills do app (as com bloco simplifica: no SKILL.md); padrão no desenvolvimento: .agents/skills do checkout",
+        "pasta das skills do app (as com bloco simplifica: no SKILL.md); padrão no desenvolvimento: catalogo/skills do checkout",
       ),
       Flag.optional,
+    ),
+    pastaTarefas: Flag.String("pasta-tarefas").pipe(
+      Flag.withDescription(
+        "pasta dos manifestos de tarefa (<id>.yaml), o catálogo do Início; padrão no desenvolvimento: catalogo/tarefas do checkout",
+      ),
+      Flag.optional,
+    ),
+    tarefasDoCheckout: Flag.Boolean("tarefas-do-checkout").pipe(
+      Flag.withDescription(
+        "a pasta de tarefas é a do checkout (desenvolvimento): o catálogo dela vence sempre o baixado; sem a flag, é a do instalador, ordenada pelo origem.json do build",
+      ),
+      Flag.withDefault(false),
     ),
     pastaTrabalhos: Flag.String("pasta-trabalhos").pipe(
       Flag.withDescription("raiz das pastas de tarefa; padrão: Documents/Simplifica IF na pasta pessoal"),
@@ -119,7 +145,7 @@ const servidor = Command.make(
     ),
     pastaAtualizacao: Flag.String("pasta-atualizacao").pipe(
       Flag.withDescription(
-        "liga a atualização da base e das skills, gravando nesta pasta (a do app); sem ela, a base é só a do --banco",
+        "liga a atualização da base, das skills e do catálogo de tarefas, gravando nesta pasta (a do app); sem ela, a base é só a do --banco",
       ),
       Flag.optional,
     ),
@@ -136,7 +162,7 @@ const servidor = Command.make(
       Flag.optional,
     ),
     versaoApp: Flag.String("versao-app").pipe(
-      Flag.withDescription("versão do app, comparada ao app_minimo do manifesto"),
+      Flag.withDescription("versão do app, comparada ao app_minimo do manifesto da atualização e de cada tarefa"),
       Flag.withDefault(VERSAO),
     ),
     pastaLogs: Flag.String("pasta-logs").pipe(
@@ -168,6 +194,11 @@ const servidor = Command.make(
         Option.getOrUndefined(opcoes.pastaEstado) ?? (yield* pastaEstadoPadrao),
       );
       const bancoDado = path.resolve(yield* expandHomePath(opcoes.banco));
+      const pastaTarefasDada = Option.getOrUndefined(opcoes.pastaTarefas);
+      const pastaTarefas =
+        pastaTarefasDada === undefined
+          ? yield* pastaTarefasPadrao
+          : path.resolve(yield* expandHomePath(pastaTarefasDada));
       const pastaAtualizacao = Option.getOrUndefined(opcoes.pastaAtualizacao);
       const atualizacao =
         pastaAtualizacao === undefined
@@ -175,12 +206,19 @@ const servidor = Command.make(
           : yield* montarAtualizacao({
               pasta: path.resolve(yield* expandHomePath(pastaAtualizacao)),
               bancoEmpacotado: bancoDado,
+              pastaTarefas,
+              // O padrão do desenvolvimento é o `catalogo/tarefas` do checkout; a pasta dada só é do checkout
+              // quando quem sobe o servidor diz (o desktop em desenvolvimento).
+              tarefasDoCheckout:
+                opcoes.tarefasDoCheckout || (pastaTarefasDada === undefined && pastaTarefas !== undefined),
               feed: Option.getOrUndefined(opcoes.feedAtualizacao),
               chave: Option.getOrUndefined(opcoes.chaveAtualizacao),
               versaoApp: opcoes.versaoApp,
             });
       if (atualizacao !== undefined) {
-        for (const evento of atualizacao.abertura.eventos) yield* Effect.logInfo(`atualização: ${evento}`);
+        for (const evento of atualizacao.abertura.eventos) {
+          yield* (evento.startsWith("aviso:") ? Effect.logWarning : Effect.logInfo)(`atualização: ${evento}`);
+        }
         if (atualizacao.desligada !== null) yield* Effect.logInfo(`atualização desligada: ${atualizacao.desligada}`);
       }
       const banco = atualizacao?.abertura.banco ?? bancoDado;
@@ -217,6 +255,8 @@ const servidor = Command.make(
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
           pastaTrabalhos,
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
+          ...(pastaTarefas === undefined ? {} : { pastaTarefas }),
+          versaoApp: opcoes.versaoApp,
           ...(atualizacao === undefined ? {} : { atualizacao }),
           diagnostico: {
             ...(pastaLogs === undefined ? {} : { pastaLogs }),
@@ -269,12 +309,20 @@ const servidor = Command.make(
 const montarAtualizacao = Effect.fn("cli.montarAtualizacao")(function* (entrada: {
   readonly pasta: string;
   readonly bancoEmpacotado: string;
+  /** A pasta de tarefas do app: o `origem.json` do build diz de que commit saiu o catálogo dela. */
+  readonly pastaTarefas: string | undefined;
+  /** A pasta de tarefas é a do checkout: o catálogo dela vence sempre o baixado (`OrigemCatalogo`). */
+  readonly tarefasDoCheckout: boolean;
   readonly feed: string | undefined;
   readonly chave: string | undefined;
   readonly versaoApp: string;
 }) {
   const politica = POLITICA_FABRICA.atualizacao;
-  const abertura = yield* prepararAbertura({ pasta: entrada.pasta, bancoEmpacotado: entrada.bancoEmpacotado });
+  const abertura = yield* prepararAbertura({
+    pasta: entrada.pasta,
+    bancoEmpacotado: entrada.bancoEmpacotado,
+    catalogoEmpacotado: yield* lerOrigemCatalogo(entrada.pastaTarefas, { checkout: entrada.tarefasDoCheckout }),
+  });
   const { desligada, feed, chave } = opcoesDaPolitica({
     feed: entrada.feed ?? politica.feed,
     chave: entrada.chave ?? politica.chavePublica,

@@ -9,10 +9,12 @@
  * - **ppc** (`campus/curso/versao`, ou `campus/curso` para o vigente; com ou sem `#secao`): `lerPpc`
  *   (curso, campus, o ID da versão e o índice das seções), `lerDocumento` e, com seção, `lerSecao`
  *   (para a citação); o índice do Explorar diz se a versão foi substituída;
- * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar).
+ * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar);
+ * - **revisao** (o PPC que a pessoa está revisando): o leitor do módulo `revisao-ppc`
+ *   (`modulos/revisao-ppc/LeitorRevisao.tsx`). Este arquivo é de composição: só despacha o link para ele.
  */
 import type { Ancora } from "@simplifica-if/contratos-app";
-import { CheckIcon, ClipboardCopyIcon, InfoIcon, LocateFixedIcon } from "lucide-react";
+import { CheckIcon, ClipboardCopyIcon, InfoIcon } from "lucide-react";
 import { useState } from "react";
 import { useApi } from "../contexto.tsx";
 import { Markdown } from "../components/Markdown.tsx";
@@ -28,7 +30,18 @@ import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
 import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
-import { BotaoCodigoSuap, BotaoLink, Cabecalho, ComCarga, Corpo, Fatos, LinkExterno, Secao } from "./pecas.tsx";
+import {
+  BotaoCodigoSuap,
+  BotaoLink,
+  Cabecalho,
+  ComCarga,
+  Corpo,
+  FaixaTrecho,
+  Fatos,
+  LinkExterno,
+  Secao,
+} from "./pecas.tsx";
+import { LeitorRevisao } from "../modulos/revisao-ppc/LeitorRevisao.tsx";
 import { Sumario } from "./Sumario.tsx";
 import { artigosDosDispositivos, conteudoDoIndice, type Destino, IR_PARA, numeroDoArtigo } from "./sumario.ts";
 import {
@@ -82,24 +95,6 @@ function BotaoCopiar({ texto }: { readonly texto: string | null }) {
           Não foi possível copiar. Selecione o texto e copie com Ctrl+C.
         </span>
       ) : null}
-    </div>
-  );
-}
-
-/** A faixa do trecho citado: o que está destacado e "Ir ao trecho". */
-function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonly alvo: string }) {
-  return (
-    <div className="nao-imprimir flex flex-wrap items-center gap-2 rounded-md bg-warning/10 px-3 py-2 text-sm">
-      <span className="min-w-0 flex-1">
-        Trecho citado: <strong>{rotulo}</strong>, destacado no texto.
-      </span>
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => document.getElementById(alvo)?.scrollIntoView({ block: "start", behavior: "smooth" })}
-      >
-        <LocateFixedIcon /> Ir ao trecho
-      </Button>
     </div>
   );
 }
@@ -458,87 +453,6 @@ function LeitorNorma({
   );
 }
 
-/* ================================================================== PPC em revisão */
-
-/**
- * O PPC que a pessoa está revisando (`ifpr://revisao/<lista>/<versão>#p-<chave>`): o texto convertido do
- * `.docx`, guardado na lista, rolado e destacado no trecho da pendência. Não é a base: não tem citação
- * nem ficha do curso, e o aviso lembra que a formatação do Word não aparece.
- */
-function LeitorRevisao({
-  caminho,
-  fragmento,
-  aoAbrirLink,
-}: {
-  readonly caminho: string;
-  readonly fragmento: string | null;
-  readonly aoAbrirLink: (link: string) => void;
-}) {
-  const api = useApi();
-  const lista = caminho.split("/")[0]!;
-  const documento = useCarga(`revisao:${caminho}`, () => api.chamar((c) => c["revisaoPpc.documento"]({ lista })));
-  const link = `ifpr://revisao/${caminho}`;
-  return (
-    <ComCarga carga={documento} titulo="Não foi possível ler o PPC revisado">
-      {(doc) => {
-        const atual = fragmento === null ? undefined : doc.ancoras.find((a) => a.id === fragmento);
-        const secoes = doc.ancoras.filter((a) => a.tipo !== "pendencia");
-        return (
-          <article aria-label="PPC em revisão" className="leitor-impressao space-y-4">
-            <Cabecalho
-              tipo="PPC em revisão"
-              titulo={doc.titulo}
-              resumo={
-                <p className="max-w-[68ch] text-muted-foreground text-sm">
-                  Texto convertido do seu arquivo: a formatação do Word (layout, imagens, numeração automática) não
-                  aparece.
-                </p>
-              }
-            />
-
-            {secoes.length > 0 ? (
-              <details className="nao-imprimir rounded-md border border-border p-2 text-sm">
-                <summary className="cursor-pointer font-semibold">Seções ({secoes.length})</summary>
-                <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
-                  {secoes.map((s) => (
-                    <li key={s.id}>
-                      <BotaoLink link={`${link}#${s.id}`} aoAbrirLink={aoAbrirLink}>
-                        {s.rotulo}
-                      </BotaoLink>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ) : null}
-
-            {fragmento !== null && atual === undefined ? (
-              <Alert variant="warning">
-                <AlertTitle>Trecho não encontrado no texto</AlertTitle>
-                <AlertDescription>
-                  Não achamos este trecho no texto convertido (ele pode estar numa caixa de texto ou ter mudado na
-                  versão corrigida). Abaixo, o documento inteiro.
-                </AlertDescription>
-              </Alert>
-            ) : atual !== undefined ? (
-              <FaixaTrecho rotulo={atual.tipo === "pendencia" ? "o trecho apontado" : atual.rotulo} alvo={atual.id} />
-            ) : null}
-
-            <Secao titulo="Texto do PPC">
-              <Documento
-                documento={{ markdown: doc.markdown, ancoras: doc.ancoras, link }}
-                alvo={atual === undefined ? null : atual.id}
-                aoAbrirLink={aoAbrirLink}
-                rotulo="Texto do PPC em revisão"
-                realce={doc.trechos.find((t) => t.id === atual?.id)?.texto ?? null}
-              />
-            </Secao>
-          </article>
-        );
-      }}
-    </ComCarga>
-  );
-}
-
 /* ================================================================== PPC */
 
 function LeitorPpc({
@@ -787,6 +701,7 @@ export function ConteudoLink({
   if (partes?.tipo === "ppc") {
     return <LeitorPpc chave={partes.caminho} fragmento={partes.fragmento} aoAbrirLink={aoAbrirLink} />;
   }
+  // Composição: o PPC em revisão (`ifpr://revisao/…`) é do módulo `revisao-ppc`.
   if (partes?.tipo === "revisao") {
     return <LeitorRevisao caminho={partes.caminho} fragmento={partes.fragmento} aoAbrirLink={aoAbrirLink} />;
   }

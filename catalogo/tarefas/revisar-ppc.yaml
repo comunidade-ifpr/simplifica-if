@@ -1,0 +1,8 @@
+id: revisar-ppc
+titulo: Revisar um PPC
+resumo: Confere o PPC (.docx) com as normas, o CNCT e a matriz da base, e devolve uma cópia do documento com comentários.
+area: ensino
+situacao: estavel
+mantenedor: { nome: Gustavo Rahal, github: comunidade-ifpr }
+abre:
+  modulo: revisao-ppc

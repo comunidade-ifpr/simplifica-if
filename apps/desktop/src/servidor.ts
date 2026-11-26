@@ -92,6 +92,10 @@ export interface OpcoesInicio {
   readonly pastaEstado: string;
   /** `--pasta-skills`: as skills do app; sem ela, o servidor sobe sem skills. */
   readonly pastaSkills?: string | undefined;
+  /** `--pasta-tarefas`: os manifestos de tarefa; sem ela, o servidor sobe só com o catálogo baixado. */
+  readonly pastaTarefas?: string | undefined;
+  /** `--tarefas-do-checkout`: a pasta de tarefas é a do repositório (desenvolvimento). */
+  readonly tarefasDoCheckout?: boolean | undefined;
   /** `--pasta-atualizacao`: liga a atualização da base e das skills (M1.10). */
   readonly pastaAtualizacao?: string | undefined;
   /** `--versao-app`: a versão do app, para o `app_minimo` do manifesto. */
@@ -145,6 +149,8 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
       "--pasta-estado",
       opcoes.pastaEstado,
       ...(opcoes.pastaSkills === undefined ? [] : ["--pasta-skills", opcoes.pastaSkills]),
+      ...(opcoes.pastaTarefas === undefined ? [] : ["--pasta-tarefas", opcoes.pastaTarefas]),
+      ...(opcoes.tarefasDoCheckout === true ? ["--tarefas-do-checkout"] : []),
       ...(opcoes.pastaAtualizacao === undefined ? [] : ["--pasta-atualizacao", opcoes.pastaAtualizacao]),
       ...(opcoes.versaoApp === undefined ? [] : ["--versao-app", opcoes.versaoApp]),
       ...(opcoes.pastaTrabalhos === undefined ? [] : ["--pasta-trabalhos", opcoes.pastaTrabalhos]),

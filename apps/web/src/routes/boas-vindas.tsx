@@ -23,6 +23,7 @@ import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
+import { ROTAS_MODULO } from "../tarefas/abrir.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
 import { comecarTarefa } from "../tarefas/comecar.tsx";
 import { type Exemplo, exemplosDoPerfil } from "../tarefas/exemplo.ts";
@@ -242,7 +243,7 @@ function CartaoExemplo({
       className={`flex flex-col gap-2 rounded-xl border bg-card p-4 ${principal ? "border-primary/60" : "border-border"}`}
     >
       <h2 className="flex items-center gap-2 font-semibold">
-        {exemplo.tipo === "revisar-ppc" ? (
+        {exemplo.tipo === "modulo" ? (
           <FileSearchIcon aria-hidden className="size-4 text-muted-foreground" />
         ) : (
           <SparklesIcon aria-hidden className="size-4 text-muted-foreground" />
@@ -298,18 +299,18 @@ function PassoExemplo({
   const { pedido } = Route.useSearch();
   const catalogo = useCatalogo();
   const { preferencias } = usePreferencias();
-  const exemplos = exemplosDoPerfil(preferencias?.perfil, catalogo.fase === "pronto" ? catalogo.skills : []);
+  const exemplos = exemplosDoPerfil(preferencias?.perfil, catalogo.fase === "pronto" ? catalogo.tarefas : []);
 
   const fazer = async (exemplo: Exemplo) => {
     await aoTerminar();
-    if (exemplo.tipo === "revisar-ppc") {
-      await navegar({ to: "/revisao-ppc" });
+    if (exemplo.tipo === "modulo") {
+      await navegar({ to: ROTAS_MODULO[exemplo.modulo] });
       return;
     }
     if (provider === undefined) return;
     const sessao = await comecarTarefa(api, conversa, {
-      titulo: "Exemplo - fundamentação normativa",
-      tarefa: exemplo.skill,
+      titulo: exemplo.pasta,
+      tarefa: exemplo.tarefa,
       ia: { provider },
       anexos: [],
       texto: exemplo.pedido,
@@ -327,7 +328,7 @@ function PassoExemplo({
       <div className="flex flex-col gap-3">
         {exemplos.map((exemplo, i) => (
           <CartaoExemplo
-            key={exemplo.tipo}
+            key={exemplo.tarefa}
             exemplo={exemplo}
             principal={i === 0}
             semIa={provider === undefined}

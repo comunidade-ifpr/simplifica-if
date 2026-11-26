@@ -12,8 +12,8 @@
  * - PPCs convertidos que citam a norma (`citacoes_da_norma`).
  *
  * A regra é `impactoEm`, pura, sobre uma `FonteImpacto` já carregada; o serviço `Impacto` a monta
- * a partir de `FontesNormativas` e do `kb.sqlite`. Os textos das skills de `.agents/skills` não estão
- * no banco e ficam de fora.
+ * a partir de `FontesNormativas` e do `kb.sqlite`. Os textos das skills (`catalogo/skills` e
+ * `.agents/skills`) não estão no banco e ficam de fora.
  */
 import type { PpcCitante } from "../ppcs/citacoes.ts";
 import type { CitacaoResolvida } from "./citacoes-normas.ts";

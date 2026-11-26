@@ -7,6 +7,7 @@ import {
   duracaoPorExtenso,
   faltando,
   montarPedido,
+  nomeArea,
   nomeCurtoLink,
   tituloDoPedido,
 } from "./textos.ts";
@@ -53,24 +54,60 @@ describe("nome curto das citações", () => {
 });
 
 describe("tarefa", () => {
-  const skill = {
-    titulo: "Conferir a fundamentação normativa",
+  const conversa = {
+    pedido: "Confira a fundamentação normativa de {documento}.\nO curso é {curso}.",
     entradas: [
       { id: "documento", tipo: "arquivo", rotulo: "Documento a conferir" },
       { id: "curso", tipo: "curso", rotulo: "Curso", opcional: true },
+      { id: "norma", tipo: "norma", rotulo: "Norma de referência", opcional: true },
     ],
   } as const;
-  it("monta o pedido com o que foi preenchido", () => {
-    expect(montarPedido(skill, { documento: "parecer.md" })).toBe(
-      "Conferir a fundamentação normativa.\nDocumento a conferir: parecer.md (está na pasta da tarefa).",
+  /** O que a pessoa preencheu, pelo `id` da entrada. */
+  const preenchido = (valores: Readonly<Record<string, string>>) => new Map(Object.entries(valores));
+  it("monta o pedido do manifesto com o que foi preenchido", () => {
+    // A linha que só cita uma entrada opcional vazia sai.
+    expect(montarPedido(conversa, preenchido({ documento: "parecer.md" }))).toBe(
+      "Confira a fundamentação normativa de parecer.md.",
     );
-    expect(montarPedido(skill, { documento: "p.md", curso: "Técnico em Agropecuária" })).toContain(
-      "Curso: Técnico em Agropecuária.",
+    expect(montarPedido(conversa, preenchido({ documento: "p.md", curso: "Técnico em Agropecuária" }))).toBe(
+      "Confira a fundamentação normativa de p.md.\nO curso é Técnico em Agropecuária.",
     );
+    // A obrigatória por preencher aparece pelo rótulo (o formulário não deixa começar sem ela).
+    expect(montarPedido(conversa, preenchido({}))).toBe("Confira a fundamentação normativa de [documento a conferir].");
+    // A entrada preenchida que o pedido não cita vai numa linha própria, no fim.
+    expect(montarPedido(conversa, preenchido({ documento: "p.md", norma: "Resolução CNE/CP nº 2/2026" }))).toBe(
+      "Confira a fundamentação normativa de p.md.\nNorma de referência: Resolução CNE/CP nº 2/2026.",
+    );
+    // Um `{…}` que não é entrada fica como está.
+    expect(montarPedido({ pedido: "Use {chaves} assim.", entradas: [] }, new Map())).toBe("Use {chaves} assim.");
   });
   it("diz o que falta, sem as opcionais", () => {
-    expect(faltando(skill.entradas, {})).toEqual(["Documento a conferir"]);
-    expect(faltando(skill.entradas, { documento: "x.md" })).toEqual([]);
+    expect(faltando(conversa.entradas, new Map())).toEqual(["Documento a conferir"]);
+    expect(faltando(conversa.entradas, preenchido({ documento: "x.md" }))).toEqual([]);
+  });
+  it("entrada, marcador e área com nome herdado de Object.prototype não acham o que o objeto herda", () => {
+    const herdada = {
+      pedido: "Confira {constructor} e {toString}.",
+      entradas: [
+        { id: "constructor", tipo: "texto", rotulo: "Construtor" },
+        { id: "toString", tipo: "texto", rotulo: "Texto", opcional: true },
+      ],
+    } as const;
+    // Sem nada preenchido: a obrigatória falta, e o pedido a mostra pelo rótulo.
+    expect(faltando(herdada.entradas, new Map())).toEqual(["Construtor"]);
+    expect(montarPedido(herdada, new Map())).toBe("Confira [construtor] e .");
+    expect(faltando(herdada.entradas, preenchido({ constructor: "a ata" }))).toEqual([]);
+    expect(montarPedido(herdada, preenchido({ constructor: "a ata", toString: "o parecer" }))).toBe(
+      "Confira a ata e o parecer.",
+    );
+    // Um `{constructor}` que não é entrada fica como está.
+    expect(montarPedido({ pedido: "Use {constructor}.", entradas: [] }, new Map())).toBe("Use {constructor}.");
+    expect(nomeArea("ensino")).toBe("Ensino");
+    expect(nomeArea("constructor")).toBe("Constructor");
+    expect(nomeCurtoLink("ifpr://norma/br/constructor/1996/9394")).toBe("Norma");
+    expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem#constructor-1")).toBe(
+      "PPC · Técnico em enfermagem (Curitiba), uma seção",
+    );
   });
   it("duração e título da pasta", () => {
     expect(duracaoPorExtenso("10min")).toBe("cerca de 10 minutos");

@@ -16,10 +16,11 @@ import {
   FERRAMENTAS_NAVEGADOR_ANTIGRAVITY,
   ferramentasDesligadasAntigravity,
 } from "../src/drivers/antigravity.ts";
-import { classificarClaude, envSessaoClaude } from "../src/drivers/claude.ts";
+import { classificarClaude, envSessaoClaude, opcoesWebClaude } from "../src/drivers/claude.ts";
 import {
   classificarComandoCodex,
   configThreadCodex,
+  instrucoesThreadCodex,
   modoBuscaWebCodex,
   SEM_FERRAMENTAS_CODEX,
 } from "../src/drivers/codex.ts";
@@ -36,6 +37,7 @@ import {
   Politica,
   POLITICA_FABRICA,
   POLITICA_JULGAMENTO,
+  politicaSemWeb,
 } from "../src/politica.ts";
 
 const PASTA = "/Users/servidor/Documentos/tarefa";
@@ -374,6 +376,42 @@ describe("sessão de julgamento e busca web nos drivers", () => {
     assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA, ["indexed"]), "indexed");
     assert.strictEqual(modoBuscaWebCodex(POLITICA_FABRICA, ["disabled"]), "disabled");
     assert.strictEqual(modoBuscaWebCodex(POLITICA_JULGAMENTO, ["live"]), "disabled");
+  });
+  it("sessão sem web (politicaSemWeb da de fábrica): só a web sai, nos três drivers", () => {
+    const semWeb = politicaSemWeb(POLITICA_FABRICA);
+    assert.isTrue(Object.isFrozen(semWeb));
+    assert.isTrue(Object.isFrozen(semWeb.ferramentas));
+    assert.isFalse(buscaWebLigada(semWeb));
+    // O resto é o da política de fábrica: nada mais muda.
+    assert.deepStrictEqual(
+      { ...semWeb, ferramentas: { ...semWeb.ferramentas, web: "permitir" }, isolamento: POLITICA_FABRICA.isolamento },
+      POLITICA_FABRICA,
+    );
+    // Codex: a busca desligada qualquer que seja o modo permitido, e as outras ferramentas como na conversa.
+    const config = { provider: "codex", pastaTrabalho: PASTA, servidoresMcp: [] } as const;
+    const comWeb = configThreadCodex({ configUsuario: {}, config, politica: POLITICA_FABRICA });
+    const thread = configThreadCodex({ configUsuario: {}, config, politica: semWeb, modosWebPermitidos: ["live"] });
+    assert.deepStrictEqual(thread, { ...comWeb, web_search: "disabled" });
+    assert.strictEqual(modoBuscaWebCodex(semWeb), "disabled");
+    assert.strictEqual(modoBuscaWebCodex(semWeb, ["live", "cached"]), "disabled");
+    // Antigravity: a busca, a leitura de página e o navegador, e nada além.
+    assert.deepStrictEqual(ferramentasDesligadasAntigravity(semWeb, false), [
+      ...FERRAMENTAS_BUSCA_WEB_ANTIGRAVITY,
+      ...FERRAMENTAS_NAVEGADOR_ANTIGRAVITY,
+    ]);
+    // Claude: as duas ferramentas de web negadas; com a web ligada, nenhuma opção.
+    assert.deepStrictEqual(opcoesWebClaude(semWeb), { disallowedTools: ["WebSearch", "WebFetch"] });
+    assert.deepStrictEqual(opcoesWebClaude(POLITICA_FABRICA), {});
+  });
+  it("Codex: a retomada sem instruções manda a string vazia, para as antigas não ficarem na thread", () => {
+    assert.deepStrictEqual(instrucoesThreadCodex({}), {});
+    assert.deepStrictEqual(instrucoesThreadCodex({ instrucoes: "use a skill" }), {
+      developerInstructions: "use a skill",
+    });
+    assert.deepStrictEqual(instrucoesThreadCodex({ retomar: "thread-1" }), { developerInstructions: "" });
+    assert.deepStrictEqual(instrucoesThreadCodex({ retomar: "thread-1", instrucoes: "use a skill" }), {
+      developerInstructions: "use a skill",
+    });
   });
   it("Antigravity: browser sempre em disabledTools com web ligada; julgamento desliga tudo e limpa o perfil", () => {
     const conversa = ferramentasDesligadasAntigravity(POLITICA_FABRICA, false);

@@ -23,7 +23,7 @@ Mede se uma skill do app melhora o resultado em relação a só o MCP `ifpr` (M0
 O runner usa o motor do app (`@simplifica-if/motor`), como o app usa: cada documento vai para uma pasta de trabalho temporária e vazia, com o MCP `ifpr` deste checkout por HTTP local, sem as configurações, skills e MCP do usuário, e com o mesmo pedido em cada condição:
 
 - `sem-skill`: só o MCP (as instruções do servidor);
-- `skill`: o MCP e a skill da árvore de trabalho, entregue como o app entrega (`.simplifica/skills/` e a lista nas instruções da sessão);
+- `skill`: o MCP e a skill da árvore de trabalho (`catalogo/skills/<skill>`), entregue como o app entrega (`.simplifica/skills/` e a lista nas instruções da sessão);
 - `skill-antiga`: o MCP e a skill no commit `rev_skill_antiga` do caso.
 
 ```bash

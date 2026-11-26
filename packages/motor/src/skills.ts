@@ -80,6 +80,22 @@ const falha = (provider: string, cause: unknown) =>
   new FalhaProvider({ provider, operacao: "skills", tipo: "desconhecido", cause });
 
 /**
+ * Apaga de `<pasta>/.simplifica/skills` as pastas das skills retiradas (`config.skillsRetiradas`). Só
+ * elas: as de outra conversa na mesma pasta ficam. Nome que não é de skill não vira caminho.
+ */
+export const apagarSkillsRetiradas = Effect.fn("skills.apagarRetiradas")(function* (config: ConfigSessao) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const raiz = path.join(config.pastaTrabalho, ...PASTA_SKILLS.split("/"));
+  for (const nome of config.skillsRetiradas ?? []) {
+    if (!NOME_VALIDO.test(nome)) continue;
+    yield* fs
+      .remove(path.join(raiz, nome), { recursive: true, force: true })
+      .pipe(Effect.mapError((erro) => falha(config.provider, erro)));
+  }
+});
+
+/**
  * Grava as skills da sessão em `<pasta>/.simplifica/skills` e devolve essa pasta. Recusa nome
  * inválido e arquivo que sairia da pasta da skill. Regrava a cada sessão: a versão do app vale.
  */

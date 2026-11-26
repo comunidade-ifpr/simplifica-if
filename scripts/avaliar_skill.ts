@@ -4,7 +4,7 @@
  * (`@simplifica-if/motor`) com o MCP `ifpr` deste checkout por HTTP local, em cada condição:
  *
  *   - `sem-skill`:    só o MCP (as instruções do servidor);
- *   - `skill`:        MCP + a skill da árvore de trabalho (`.agents/skills/<skill>`);
+ *   - `skill`:        MCP + a skill da árvore de trabalho (`catalogo/skills/<skill>`);
  *   - `skill-antiga`: MCP + a skill no commit `rev_skill_antiga` do caso.
  *
  * O relatório de cada sessão é pontuado sem modelo (`pontuarAutomatico`) e por um juiz (`promptJuiz`),
@@ -161,11 +161,15 @@ const skillDaCondicao = Effect.fn("avaliarSkill.skillDaCondicao")(function* (cas
   const path = yield* Path.Path;
   if (condicao === "sem-skill") return undefined;
   if (condicao === "skill") {
-    const lida = yield* lerSkill(path.join(RAIZ_REPOSITORIO, ".agents", "skills", caso.skill));
+    const lida = yield* lerSkill(path.join(RAIZ_REPOSITORIO, "catalogo", "skills", caso.skill));
     if (!lida) return yield* new SkillSemBloco({ skill: caso.skill });
     return { nome: lida.nome, descricao: lida.descricao, instrucoes: lida.instrucoes, arquivos: lida.arquivos };
   }
-  const base = `${caso.rev_skill_antiga}:.agents/skills/${caso.skill}`;
+  // A skill do app mora em `catalogo/skills`; num commit de antes da mudança, em `.agents/skills`.
+  const noCatalogo = `${caso.rev_skill_antiga}:catalogo/skills/${caso.skill}`;
+  const base = Option.isSome(yield* Git.tentar(["cat-file", "-e", `${noCatalogo}/SKILL.md`], { cwd: RAIZ_REPOSITORIO }))
+    ? noCatalogo
+    : `${caso.rev_skill_antiga}:.agents/skills/${caso.skill}`;
   const lida = yield* lerSkillMd(
     yield* Git.executar(["show", `${base}/SKILL.md`], { cwd: RAIZ_REPOSITORIO }),
     caso.skill,

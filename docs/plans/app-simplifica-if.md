@@ -96,30 +96,26 @@ Texto em pt-BR direto no componente, sem `gt-react`. Datas, números e moeda pel
 
 ## Manifesto de skill
 
-O `SKILL.md` segue o formato Agent Skills (`name`, `description`). O app lê um bloco `simplifica:` no front matter, como o da `verificar-fundamentacao-normativa` (resumido):
+As skills do app moram em `catalogo/skills/<nome>/` (as de `.agents/skills/` são de quem mantém o repositório e nunca vão para o app). O `SKILL.md` segue o formato Agent Skills (`name`, `description`). O app lê um bloco `simplifica:` no front matter, só com o que é da skill, como o da `verificar-fundamentacao-normativa` (resumido):
 
 ```yaml
 name: verificar-fundamentacao-normativa
 simplifica:
-  versao: 0.1.2
-  titulo: Conferir a fundamentação normativa
-  resumo: Confere cada citação e afirmação normativa de um documento contra o texto das normas e do CNCT na base…
-  area: ensino
-  publico: [proens, dens, coordenacao-curso, pedagogia]
-  entradas:
-    - { id: documento, tipo: arquivo, rotulo: "Documento a conferir" }
+  versao: 0.3.0
+  app_minimo: 0.2.0
   ferramentas: [resolver_citacoes, buscar_norma, ler_dispositivos, ficha_norma, etapa]
   etapas:
     - { id: fontes, rotulo: "Ler a fonte de cada alegação", progresso: true }
   arquivos: [references/relatorio.md]
-  duracao_estimada: 10min
 ```
 
-- O schema fica em `@simplifica-if/mcp/skills`, conferido no `validar_base.ts`. Obrigatórios: `titulo`, `resumo`, `area`, `ferramentas` e `arquivos`; `base_minima`, `app_minimo` e `donos` são opcionais (`donos` deve virar entrada num CODEOWNERS, que ainda não existe).
-- `ferramentas` lista só ferramentas do `simplifica-mcp` que a skill usa (a busca web, quando ligada, vem da política da sessão, não do manifesto): a skill no app não chama comandos do repositório. `arquivos` lista o que vai para o app; `scripts/`, `tests/` e `agents/` nunca vão. Skill que precise de sistema com login não entra no app.
-- `publico` tem vocabulário fechado (`@simplifica-if/mcp/publicos`) e filtra os cartões pelo perfil. A ferramenta `etapa` vira o indicador de etapas da conversa.
+- O schema fica em `@simplifica-if/mcp/skills`, conferido no `validar_base.ts`. Obrigatórios: `ferramentas` e `arquivos`; `etapas`, `versao`, `base_minima` e `app_minimo` são opcionais. A `versao` é X.Y.Z e sobe a cada edição: o app só troca uma skill pela de versão maior, e a fábrica recusa publicar conteúdo novo com a versão de antes.
+- `ferramentas` lista só ferramentas do `simplifica-mcp` que a skill usa (a busca web, quando ligada, vem da política da sessão, não do manifesto): a skill do app não chama comandos do repositório, e o texto dela não traz alternativa pela CLI. `arquivos` lista o que vai para o app; `scripts/` e `tests/` nunca vão. Skill que precise de sistema com login não entra no app.
+- A ferramenta `etapa` vira o indicador de etapas da conversa.
 
-Hoje o Início tem duas tarefas: a nativa "Revisar um PPC" (conduzida pelo servidor, sobre as fichas de `base-conhecimento/revisao-ppc/`) e a `verificar-fundamentacao-normativa`. A skill `revisar-ppc`, com sub-agentes e relatório HTML, saiu em 21/11/2026: o app já fazia a revisão, e as validações cruzadas dela viraram fichas transversais e um verificador.
+O cartão é a **tarefa**, um arquivo `catalogo/tarefas/<id>.yaml` (schema em `@simplifica-if/mcp/tarefas`, também conferido no `validar_base.ts`): título, resumo, área, `publico` (vocabulário fechado de `@simplifica-if/mcp/publicos`, que filtra os cartões pelo perfil), mantenedor, situação e a abertura (o campo `abre`), que é um link, uma conversa (com o pedido, o formulário e, se houver, a skill) ou um módulo do app. A conversa aberta por um cartão leva só a skill da tarefa, e a tarefa pode desligar a web da sessão; a conversa livre leva todas as skills. Uma skill do app sem tarefa vai para o app sem cartão. O catálogo de tarefas viaja inteiro no manifesto assinado do canal, e uma skill sai dos computadores pela lista de retiradas (`catalogo/skills/retiradas.yaml`). O desenho, as decisões e as etapas estão no [plano das tarefas](tarefas.md).
+
+Hoje o catálogo tem duas tarefas: "Revisar um PPC" (`catalogo/tarefas/revisar-ppc.yaml`, que abre o módulo `revisao-ppc`: a revisão conduzida pelo servidor, sobre as fichas de `base-conhecimento/revisao-ppc/`) e "Conferir a fundamentação normativa" (`catalogo/tarefas/conferir-fundamentacao-normativa.yaml`, uma conversa com a skill `verificar-fundamentacao-normativa`). A skill `revisar-ppc`, com sub-agentes e relatório HTML, saiu em 21/11/2026: o app já fazia a revisão, e as validações cruzadas dela viraram fichas transversais e um verificador.
 
 ## Atualização: três ritmos
 
@@ -128,8 +124,9 @@ Hoje o Início tem duas tarefas: a nativa "Revisar um PPC" (conduzida pelo servi
 | App | mensal | `electron-updater` com feed `generic` |
 | Base | a cada poucos dias | o app (e o executável, com `--pasta-atualizacao`) confere o manifesto na abertura e a cada 24 h, baixa em segundo plano, confere assinatura e hash e troca na próxima abertura |
 | Skills | semanal | mesmo manifesto e mesmo mecanismo |
+| Catálogo de tarefas | com as skills | dentro do mesmo manifesto assinado; o app troca o catálogo inteiro na próxima abertura |
 
-**Feito, em `packages/atualizacao` (o README tem o fluxo):** `pnpm fabrica` compila do commit, comprime a base com zstd, gera patch entre versões (cerca de 10 KB entre versões próximas, contra cerca de 33 MB do pacote inteiro), empacota as skills, assina o manifesto com minisign, confere que só entram fontes publicáveis, mantém `base-conhecimento/novidades.yaml` (só acréscimos, com proposta pela diferença entre bases) e promove do beta ao estável reaproveitando os pacotes. O servidor troca a base com rename atômico, escolhe a mais nova entre a baixada e a empacotada, recusa base de esquema que o app não lê, adia a troca com trabalho em curso e permite voltar uma versão. Subir o esquema da base exige publicar com `--app-minimo`.
+**Feito, em `packages/atualizacao` (o README tem o fluxo):** `pnpm fabrica` compila do commit, comprime a base com zstd, gera patch entre versões (cerca de 10 KB entre versões próximas, contra cerca de 33 MB do pacote inteiro), empacota as skills (recusando a que mudou sem subir a `versao`), põe no manifesto o catálogo de tarefas e as skills retiradas, assina o manifesto com minisign, confere que só entram fontes publicáveis, mantém `base-conhecimento/novidades.yaml` (só acréscimos, com proposta pela diferença entre bases) e promove do beta ao estável reaproveitando os pacotes. O servidor troca a base com rename atômico, escolhe a mais nova entre a baixada e a empacotada (a base e o catálogo de tarefas), deixa de usar as skills retiradas, recusa base de esquema que o app não lê, adia a troca com trabalho em curso e permite voltar uma versão. Subir o esquema da base exige publicar com `--app-minimo`.
 
 **Hospedagem:** GitHub Releases do próprio repositório, só por links diretos (`releases/download/<tag>/<arquivo>`), nunca pela API: um release fixo por canal (`canal-beta`, `canal-estavel`) e releases imutáveis por versão. O piloto usa `beta`; a promoção para `estavel` é manual, depois de dias sem relato de erro confirmado.
 
@@ -176,7 +173,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 | M1.8 Primeiro uso | feito: `/boas-vindas`, perfil local, aviso de uso (`AvisoUso.tsx`) |
 | M1.9 Modo Servidor | feito: Início, tarefa, conversa com etapas, pasta da tarefa, "Desfazer" |
 | M1.10 Atualização | feito, sem feed de produção |
-| M1.11 Revisar um PPC | feito, etapas 1 a 5b: pré-conferência em código, revisão com IA, roteiro por pendência, DOCX comentado (`apps/server/src/revisao-ppc/`, `packages/ppc`) |
+| M1.11 Revisar um PPC | feito, etapas 1 a 5b: pré-conferência em código, revisão com IA, roteiro por pendência, DOCX comentado (`apps/server/src/modulos/revisao-ppc/`, `packages/ppc`) |
 | M1.12 "Isto está errado" e M1.14 português | feito: `RelatoErro.tsx`, `apps/server/src/Relatos.ts`, `apps/web/test/ingles.ts` |
 | M1.13 Aviso ao anexar | retirado: o aviso de uso basta |
 | M1.15 Explorar | feito: `apps/web/src/routes/explorar*` |
@@ -210,7 +207,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 
 - **M2.2 — "Para você".** Determinístico e local. Entradas: `novidades.yaml` com os afetados, `transicoes.yaml`, divergências de `ppc-fatos` e o perfil. Avisos: norma nova ou revogada que afeta curso do perfil, prazo de adequação próximo, PPC divergente do SUAP, PPC atualizado na base. Prazos "a confirmar" aparecem assim. "Ver o que muda" abre uma conversa com a skill `explicar-novidade`, nova; só esse passo gasta token. Notificação do sistema opcional, desligada por padrão.
 - **M2.3 — Superpoderes.** Perguntas prontas por perfil, cada uma ligada a ferramentas do `kb`: adequação à nova DCN da EPT, divergências PPC × SUAP, como outros campi escreveram uma seção, prazos normativos, PPCs que citam uma norma.
-- **M2.4 — Contribuição.** "Propor norma": o servidor solta o PDF, o agente converte seguindo o padrão de front matter, o `simplifica-mcp` valida localmente e a proposta vira PR para a curadoria. "Sugerir tarefa": a sugestão vai para a fila de skills.
+- **M2.4 — Contribuição.** "Propor norma": o servidor solta o PDF, o agente converte seguindo o padrão de front matter, o `simplifica-mcp` valida localmente e a proposta vira PR para a curadoria. "Propor um PPC": o mesmo para o PPC novo de um curso, com a conversão que a revisão de PPC já faz e o ano do documento com o trecho que o comprova; a saída é uma proposta, e a importação na base continua no repositório (candidato a segundo módulo no [plano das tarefas](tarefas.md#o-alvo)). "Sugerir tarefa": a sugestão vai para a fila de skills. A tarefa local, que não vai ao catálogo, e o modo de autor estão anotados no [plano das tarefas](tarefas.md#para-depois) e se decidem aqui.
 - **M2.5 — Piloto ampliado** para as coordenações de todos os campi, com canal único de suporte.
 
 **Critério de aceite:** nenhum aviso falso nos casos de teste (afetados conferidos à mão para 3 novidades reais); pelo menos 30% dos avisos abertos no piloto; pelo menos uma norma proposta pelo app chega a `main`.

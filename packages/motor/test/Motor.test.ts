@@ -361,6 +361,41 @@ describe("Motor: política e skills", () => {
     },
   );
 
+  it.effect("sessão sem web: a política do app com a web desligada, e só a web", () => {
+    const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
+    return Effect.gen(function* () {
+      const motor = yield* Motor.Motor;
+      yield* motor.iniciarSessao({ ...CONFIG, semWeb: true });
+      const { politica, config } = configs[0]!;
+      assert.isTrue(Motor.buscaWebLigada(Motor.POLITICA_FABRICA));
+      assert.isFalse(Motor.buscaWebLigada(politica));
+      assert.strictEqual(Motor.avaliar(politica, { tipo: "web", caminhos: [] }, "/tmp").regra, "negar");
+      assert.isUndefined(config.instrucoes);
+      assert.deepStrictEqual(
+        {
+          ...politica,
+          ferramentas: { ...politica.ferramentas, web: "permitir" },
+          isolamento: { ...politica.isolamento, buscaWeb: "ligada" },
+        },
+        Motor.POLITICA_FABRICA,
+      );
+    }).pipe(Effect.provide(camadaComPolitica(configs)));
+  });
+
+  it.effect("sessão com `semWeb: false` não liga a web que a política do app desliga", () => {
+    const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
+    const webDesligada: Motor.Politica = {
+      ...Motor.POLITICA_FABRICA,
+      isolamento: { ...Motor.POLITICA_FABRICA.isolamento, buscaWeb: "desligada" },
+    };
+    return Effect.gen(function* () {
+      const motor = yield* Motor.Motor;
+      yield* motor.iniciarSessao({ ...CONFIG, semWeb: false });
+      assert.strictEqual(configs[0]?.politica, webDesligada);
+      assert.isUndefined(configs[0]?.config.instrucoes);
+    }).pipe(Effect.provide(camadaComPolitica(configs, webDesligada)));
+  });
+
   it.effect("skills: grava SKILL.md e arquivos na pasta de trabalho e passa as instruções ao driver", () => {
     const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
     return Effect.gen(function* () {

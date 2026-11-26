@@ -3,7 +3,8 @@
  * O IPC entre o preload (`window.simplifica`) e o processo principal. Cada canal passa por `tratar`,
  * que só atende o quadro principal da janela do app, na origem da interface: é dele que sai o token, e
  * só ele abre diálogos e arquivos. O resto do pedido (o caminho, a URL, as extensões) chega como
- * `unknown` e é conferido pelas regras de `seguranca.ts`.
+ * `unknown` e é conferido pelas regras de `seguranca.ts`. Os canais de um módulo ficam com ele
+ * (`modulos/revisao-ppc/ipc.ts`), registrados daqui, com o mesmo `tratar` (arquivo de composição).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -17,13 +18,12 @@ import { dialog, ipcMain, nativeTheme, shell, type BrowserWindow, type IpcMainIn
 import {
   anexoEscolhido,
   arquivoDeTarefaPermitido,
-  copiaComentadaPermitida,
-  docxEscolhido,
   pastaDeTarefaPermitida,
   extensoesAnexo,
   isSameOriginRendererNavigation,
   urlExternaSegura,
 } from "./seguranca.ts";
+import { registrarIpcRevisaoPpc } from "./modulos/revisao-ppc/ipc.ts";
 
 /** Quantos arquivos um soltar libera de uma vez. */
 const MAXIMO_SOLTOS = 20;
@@ -104,12 +104,9 @@ export function registrarIpc(contexto: ContextoIpc): void {
     await shell.openExternal(segura);
   });
 
-  /* ---------------------------------------------------------- revisão prévia de PPC (M1.11) */
+  /* ---------------------------------------------------------- arquivos escolhidos */
 
-  /** Os `.docx` escolhidos no diálogo ou soltos nesta execução: só as cópias comentadas deles abrem pelo app. */
-  const docxEscolhidos = new Set<string>();
-
-  /** Libera no servidor o arquivo escolhido: sem isso, a revisão prévia o recusa. */
+  /** Libera no servidor o arquivo escolhido: sem isso, o servidor o recusa (a revisão prévia, o "Anexar"). */
   const liberarNoServidor = async (arquivo: string): Promise<void> => {
     const conexao = contexto.conexaoAtual();
     const tokenDesktop = contexto.tokenDesktop();
@@ -123,51 +120,10 @@ export function registrarIpc(contexto: ContextoIpc): void {
     if (resposta.status !== 204) throw new Error(`o servidor não liberou o arquivo (${resposta.status})`);
   };
 
-  tratar(CANAIS.escolherDocx, async () => {
-    const escolha = await dialog.showOpenDialog(exigirJanela(), {
-      title: "Escolher o PPC (.docx)",
-      buttonLabel: "Revisar",
-      properties: ["openFile"],
-      filters: [{ name: "Documento do Word", extensions: ["docx"] }],
-    });
-    // O filtro do diálogo pode ser contornado em alguns sistemas ("Todos os arquivos"): confere de novo.
-    const arquivo = escolha.canceled ? undefined : docxEscolhido(escolha.filePaths[0]);
-    if (arquivo === undefined) return null;
-    docxEscolhidos.add(arquivo);
-    await liberarNoServidor(arquivo);
-    return arquivo;
-  });
+  /* ---------------------------------------------------------- módulos */
 
-  /**
-   * O `.docx` solto na área de soltar da revisão: a regra do diálogo e, como o soltar aceita pasta, só
-   * arquivo comum. Liberado como o escolhido (a cópia comentada dele também abre pelo app).
-   */
-  tratar(CANAIS.soltarDocx, async (caminho) => {
-    const arquivo = docxEscolhido(caminho);
-    const info = arquivo === undefined ? undefined : NodeFS.lstatSync(arquivo, { throwIfNoEntry: false });
-    if (arquivo === undefined || info === undefined || !info.isFile()) return null;
-    docxEscolhidos.add(arquivo);
-    await liberarNoServidor(arquivo);
-    return arquivo;
-  });
-
-  /** A cópia comentada pedida, se é de um `.docx` escolhido e é arquivo comum (não link nem pasta). */
-  const copiaComentada = (caminho: unknown): string => {
-    const permitido = copiaComentadaPermitida(caminho, docxEscolhidos);
-    if (permitido === undefined) throw new Error("só a cópia comentada pelo Simplifica IF abre por aqui");
-    const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
-    if (info === undefined || !info.isFile()) throw new Error("a cópia comentada não foi encontrada");
-    return permitido;
-  };
-
-  tratar(CANAIS.abrirDocumento, async (caminho) => {
-    const erro = await shell.openPath(copiaComentada(caminho));
-    if (erro !== "") throw new Error(`não foi possível abrir o documento: ${erro}`);
-  });
-
-  tratar(CANAIS.mostrarNaPasta, (caminho) => {
-    shell.showItemInFolder(copiaComentada(caminho));
-  });
+  // Composição: a ponte do módulo `revisao-ppc` (escolher e soltar o `.docx`, abrir e mostrar a cópia comentada).
+  registrarIpcRevisaoPpc({ tratar, exigirJanela, liberarNoServidor });
 
   /* ---------------------------------------------------------- pasta das tarefas (M1.9) */
 

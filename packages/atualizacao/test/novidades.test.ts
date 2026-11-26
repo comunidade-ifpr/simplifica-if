@@ -147,6 +147,7 @@ describe("promover beta → estável", () => {
       canal: "beta" as const,
       versao: "2026.11.20",
       commit: "abc",
+      data_commit: "2026-11-20T09:00:00-03:00",
       gerado_em: "2026-11-20T00:00:00.000Z",
       base: {
         arquivo: "base-2026.11.20.sqlite.zst",
@@ -158,6 +159,8 @@ describe("promover beta → estável", () => {
         patches: [],
       },
       skills: [],
+      skills_retiradas: ["skill-com-erro"],
+      tarefas: [{ id: "conferir", titulo: "Conferir", abre: { modulo: "revisao-ppc" } }],
       app_minimo: "0.1.0",
       novidades: [],
     };
@@ -175,10 +178,17 @@ describe("promover beta → estável", () => {
     });
     expect(manifesto.canal).toBe("estavel");
     expect(manifesto.base).toEqual(beta.base);
+    // O catálogo de tarefas e as skills retiradas vão com a promoção, como estavam no beta.
+    expect(manifesto.tarefas).toEqual(beta.tarefas);
+    expect(manifesto.skills_retiradas).toEqual(beta.skills_retiradas);
     expect(arquivos.map(([nome]) => nome)).toEqual(["estavel.json", "estavel.json.minisig"]);
     const [[, textoNovo], [, assinaturaNova]] = arquivos as [[string, string], [string, string]];
     expect(() => verificar(Buffer.from(textoNovo), assinaturaNova, chave)).not.toThrow();
-    expect(decodificarManifesto(textoNovo).canal).toBe("estavel");
+    expect(decodificarManifesto(textoNovo)).toMatchObject({
+      canal: "estavel",
+      tarefas: beta.tarefas,
+      skills_retiradas: beta.skills_retiradas,
+    });
     expect(() =>
       promoverManifesto({
         texto: texto.replace("abc", "xyz"),

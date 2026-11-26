@@ -6,6 +6,7 @@ Planos vivos do projeto: decisões, o que está em `main` e o que falta. O traba
 |---|---|---|
 | [app-simplifica-if.md](app-simplifica-if.md) | App desktop Simplifica IF até o Marco 2: decisões, arquitetura, situação dos marcos e o que falta | Marcos M0 e M1 em `main`, salvo assinatura, feed de produção, avaliação real com Codex e Antigravity e o piloto; Marco 2 por fazer |
 | [arquitetura-base.md](arquitetura-base.md) | Base de conhecimento, `packages/kb`, CLI `kb` e MCP: IDs canônicos, banco derivado, proveniência, vigência | Em `main`; em aberto as revisões humanas e jurídicas |
+| [tarefas.md](tarefas.md) | Tarefas do app: tarefa, skill e módulo, o manifesto da tarefa, o catálogo no canal e a "Revisar um PPC" como módulo | Decisões de 26/11/2026; etapas 1 (catálogo de tarefas), 3 (conversa por tarefa) e 4 (limpezas da revisão) implementadas na árvore de trabalho, sem commit; etapas 2, 5 e 6 por fazer |
 
 Documentos de apoio:
 

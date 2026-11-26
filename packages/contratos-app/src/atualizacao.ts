@@ -47,6 +47,7 @@ export const EstadoAtualizacao = Schema.Struct({
   pendente: Schema.NullOr(Schema.String),
   /** Versão do conjunto de skills em uso (a do manifesto, ou `empacotadas`). */
   skills: Schema.String,
+  /** A versão do conjunto de skills ou do catálogo de tarefas que entra quando o servidor reiniciar. */
   skillsPendentes: Schema.NullOr(Schema.String),
   /** ISO 8601 da última conferência do manifesto que respondeu. */
   ultimaConferencia: Schema.NullOr(Schema.String),
@@ -60,8 +61,8 @@ export type EstadoAtualizacao = typeof EstadoAtualizacao.Type;
 /**
  * Resultado de "aplicar agora" e de "voltar": a troca do arquivo só acontece com o servidor parado
  * (na abertura). `reiniciar`: nada rodando, a interface pede ao desktop para reiniciar o servidor;
- * `adiada`: uma revisão de PPC (prévia ou com IA) está rodando, e a troca fica para a próxima abertura; `nada`: não
- * há o que trocar.
+ * `adiada`: há trabalho em andamento (uma revisão de PPC, uma conversa respondendo, uma operação na pasta
+ * da tarefa), e a troca fica para a próxima abertura; `nada`: não há o que trocar.
  */
 export const ResultadoTroca = Schema.Struct({
   resultado: Schema.Literals(["reiniciar", "adiada", "nada"]),

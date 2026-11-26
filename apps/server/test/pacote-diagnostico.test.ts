@@ -391,6 +391,8 @@ const camadaComLogs = Servidor.layer({
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   pastaTrabalhos: raizA,
+  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../catalogo/skills"),
+  pastaTarefas: NodePath.resolve(import.meta.dirname, "../../../catalogo/tarefas"),
   // Cabem o sistema.json, o LEIA-ME, o log atual e o `traces.jsonl`, não o `.1` (64 KB, nem a cauda dele).
   diagnostico: { pastaLogs, modoTraces: "caixa-preta", ambiente: AMBIENTE, limiteBytes: 40_000 },
 }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
@@ -423,6 +425,17 @@ layer(camadaComLogs, { excludeTestServices: true })("diagnóstico com logs", (it
       assert.strictEqual(sistema.uso.modo_traces, "caixa-preta");
       assert.strictEqual(sistema.uso.aviso_de_uso_aceito, true);
       assert.strictEqual(sistema.uso.conversas, 0);
+      // As skills com a versão, e as tarefas pelo `id` (as do catálogo e as que ficaram de fora).
+      assert.strictEqual(sistema.skills.conjunto, "empacotadas");
+      assert.deepStrictEqual(
+        sistema.skills.lista.map((skill: { readonly nome: string }) => skill.nome),
+        ["verificar-fundamentacao-normativa"],
+      );
+      assert.match(sistema.skills.lista[0].versao, /^\d+\.\d+\.\d+$/);
+      assert.deepStrictEqual(sistema.tarefas, {
+        catalogo: ["conferir-fundamentacao-normativa", "revisar-ppc"],
+        fora_do_catalogo: [],
+      });
       assert.deepInclude(sistema.ias.claude, { respondeu: true, instalada: true, versao: "0.0.0-teste" });
       // A IA desligada no app não é detectada.
       assert.deepStrictEqual(sistema.ias.codex, { estado: "desligada no app", usada_no_app: false });

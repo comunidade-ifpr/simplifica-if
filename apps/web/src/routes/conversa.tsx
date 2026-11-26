@@ -25,7 +25,7 @@ import { PainelPasta } from "../components/PainelPasta.tsx";
 import { RelatoErro } from "../components/RelatoErro.tsx";
 import { etapasVistas } from "../conversa/etapas.ts";
 import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
-import { useCatalogo } from "../tarefas/catalogo.ts";
+import { tituloDaTarefa, useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, useAnexos } from "../tarefas/comecar.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
@@ -202,13 +202,15 @@ function Conversa({
   const tamanhoUltimo = ultimo?.tipo === "resposta" ? ultimo.texto.length : 0;
   const emTurno = estado.fase === "respondendo" || estado.fase === "interrompendo";
   const turnoAberto = emTurno ? estado.turno : undefined;
-  const skill =
+  const tarefa =
     catalogo.fase === "pronto" && estado.tarefa !== undefined
-      ? catalogo.skills.find((candidata) => candidata.nome === estado.tarefa)
+      ? catalogo.tarefas.find((candidata) => candidata.id === estado.tarefa)
       : undefined;
-  const etapas =
-    skill === undefined || skill.etapas.length === 0 ? undefined : etapasVistas(skill.etapas, estado.itens, emTurno);
-  const deTarefa = estado.tarefa !== undefined;
+  // A tarefa que saiu do catálogo ainda dá o título à conversa; as etapas, só a que o app atende.
+  const tituloTarefa =
+    catalogo.fase === "pronto" && estado.tarefa !== undefined ? tituloDaTarefa(catalogo, estado.tarefa) : undefined;
+  const declaradas = tarefa?.abre.tipo === "conversa" ? tarefa.abre.etapas : [];
+  const etapas = declaradas.length === 0 ? undefined : etapasVistas(declaradas, estado.itens, emTurno);
   // O relato aberto é da conversa em que foi aberto: trocar de conversa o fecha.
   const [relato, setRelato] = useState<{ readonly sessao?: string; readonly turno: number }>();
   const turnoRelato = relato !== undefined && relato.sessao === estado.sessao ? relato.turno : undefined;
@@ -218,8 +220,8 @@ function Conversa({
     <div className="flex h-full min-w-0 flex-1 flex-col">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-border border-b px-4 py-2 text-sm">
         <p className="min-w-0 truncate">
-          <span className="font-semibold" data-conteudo={skill === undefined && estado.titulo ? "" : undefined}>
-            {skill?.titulo ?? estado.titulo ?? "Conversa"}
+          <span className="font-semibold" data-conteudo={tituloTarefa === undefined && estado.titulo ? "" : undefined}>
+            {tituloTarefa ?? estado.titulo ?? "Conversa"}
           </span>
           <span className="text-muted-foreground"> · {DESCRICOES[estado.provider].nome}</span>
         </p>
@@ -235,7 +237,7 @@ function Conversa({
               void navegar({ to: "/" }).then(() => conversa.nova());
             }}
           >
-            <PlusIcon /> {deTarefa ? "Nova tarefa" : "Nova conversa"}
+            <PlusIcon /> Nova tarefa
           </Button>
           {estado.sessao === undefined ? null : (
             <Menu>
@@ -270,8 +272,8 @@ function Conversa({
           role="log"
           aria-label="Mensagens"
         >
-          {etapas === undefined || skill === undefined ? null : (
-            <IndicadorEtapas titulo={skill.titulo} etapas={etapas} />
+          {etapas === undefined || tarefa === undefined ? null : (
+            <IndicadorEtapas titulo={tarefa.titulo} etapas={etapas} />
           )}
           {estado.itens.length === 0 ? (
             <p className="text-center text-muted-foreground">Conversa aberta. Escreva sua pergunta abaixo.</p>

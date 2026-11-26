@@ -5,6 +5,7 @@
  * Cada sessão vive num `Scope` próprio; `encerrar` o fecha, e o processo do provider morre junto.
  * A política (`politica.ts`, a de fábrica por padrão) vale para todas as sessões: os providers
  * permitidos, a busca web e as aprovações por tipo de ferramenta, que os drivers aplicam pelo `Canal`.
+ * Uma sessão pode restringi-la (`ConfigSessao.semFerramentas`, `semWeb`), nunca alargá-la.
  * As skills da sessão se gravam na pasta de trabalho e entram nas instruções (`skills.ts`).
  * Ao fim da layer, as sessões abertas se encerram. Com `resultados` num servidor MCP HTTP, o resumo
  * vazio das ferramentas dele é completado com o que o servidor viu (`resultados.ts`).
@@ -33,7 +34,7 @@ import {
 } from "./Driver.ts";
 import { SessaoDesconhecida } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
-import { buscaWebLigada, type Politica, POLITICA_FABRICA, POLITICA_JULGAMENTO } from "./politica.ts";
+import { buscaWebLigada, type Politica, POLITICA_FABRICA, POLITICA_JULGAMENTO, politicaSemWeb } from "./politica.ts";
 import * as Resultados from "./resultados.ts";
 import * as Skills from "./skills.ts";
 
@@ -152,7 +153,16 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
       // Uma sessão sem ferramentas não recebe MCP nem skills.
       return yield* new FalhaProvider({ provider: pedida.provider, operacao: "iniciar", tipo: "mcp" });
     }
-    const politicaSessao = pedida.semFerramentas === true ? POLITICA_JULGAMENTO : politica;
+    // A sessão só restringe a política do app: a de julgamento nega tudo, e `semWeb` desliga a web.
+    const politicaSessao =
+      pedida.semFerramentas === true
+        ? POLITICA_JULGAMENTO
+        : pedida.semWeb === true
+          ? politicaSemWeb(politica)
+          : politica;
+    if ((pedida.skillsRetiradas?.length ?? 0) > 0) {
+      yield* Skills.apagarSkillsRetiradas(pedida).pipe(Effect.provideContext(arquivos));
+    }
     let pastaSkills = "";
     if (pedida.skills !== undefined && pedida.skills.length > 0) {
       pastaSkills = yield* Skills.gravarSkills(pedida).pipe(Effect.provideContext(arquivos));

@@ -12,10 +12,11 @@
  *
  * O pacote leva, da pasta de logs (`--pasta-logs`), o `simplifica-if.log`, o `traces.jsonl` e o
  * `logs-otlp.jsonl` e os `.1` deles (os que existirem); o `sistema.json` (versões do app, da base e das
- * skills, cada IA instalada e com login e a versão da CLI, sem conta, o sistema, o Node e o Electron, o
- * fuso, o idioma, o modo dos traces, o primeiro uso, as IAs desligadas, que não são detectadas, e quantas
- * conversas há); e um `LEIA-ME.txt`. Não leva conversas, anexos, pastas de tarefa, o perfil, tokens nem a
- * base. Todo texto passa por `saneamento.ts`, linha a linha, em pedaços que cedem a vez a outros fibers.
+ * skills, os `id` das tarefas do catálogo e das que ficaram fora dele, cada IA instalada e com login e a
+ * versão da CLI, sem conta, o sistema, o Node e o Electron, o fuso, o idioma, o modo dos traces, o
+ * primeiro uso, as IAs desligadas, que não são detectadas, e quantas conversas há); e um `LEIA-ME.txt`.
+ * Não leva conversas, anexos, pastas de tarefa, o perfil, tokens nem a base. Todo texto passa por
+ * `saneamento.ts`, linha a linha, em pedaços que cedem a vez a outros fibers.
  *
  * O limite (`LIMITE_BYTES`, descomprimido) conta o `sistema.json` e o `LEIA-ME.txt`. Um log maior que o
  * que sobra entra só pela cauda (os últimos bytes, a partir da primeira linha inteira), e a descrição dele
@@ -47,6 +48,7 @@ import * as Motor from "@simplifica-if/motor";
 import * as HostProcess from "@simplifica-if/motor/t3/HostProcess";
 import * as Atualizador from "../Atualizador.ts";
 import * as CatalogoSkills from "../CatalogoSkills.ts";
+import * as CatalogoTarefas from "../CatalogoTarefas.ts";
 import * as PastasTrabalho from "../PastasTrabalho.ts";
 import * as Historico from "../persistencia/Historico.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
@@ -277,6 +279,7 @@ export const make = Effect.fn("Diagnostico.make")(function* (opcoes: OpcoesDiagn
   const path = yield* Path.Path;
   const atualizador = yield* Atualizador.Atualizador;
   const catalogo = yield* CatalogoSkills.CatalogoSkills;
+  const catalogoTarefas = yield* CatalogoTarefas.CatalogoTarefas;
   const motor = yield* Motor.Motor;
   const preferencias = yield* Preferencias.Preferencias;
   const historico = yield* Historico.Historico;
@@ -379,6 +382,7 @@ export const make = Effect.fn("Diagnostico.make")(function* (opcoes: OpcoesDiagn
 
   const montarSistema = Effect.fn("Diagnostico.sistema")(function* (geradoEm: string, temLogs: boolean) {
     const estado = yield* atualizador.estado;
+    const tarefas = catalogoTarefas.listar(estado.canal);
     const lidas = yield* preferencias.ler;
     const conversas = yield* historico.listar;
     // A IA desligada no app não é detectada (nenhum processo dela se abre): o `sistema.json` só diz isso.
@@ -399,12 +403,14 @@ export const make = Effect.fn("Diagnostico.make")(function* (opcoes: OpcoesDiagn
           origem: estado.base.origem,
           pendente: estado.pendente,
         },
-        tarefas: {
+        skills: {
           conjunto: estado.skills,
-          lista: catalogo.resumos.map((resumo) => ({
-            nome: resumo.nome,
-            versao: catalogo.versoes[resumo.nome] ?? "0.0.0",
-          })),
+          lista: [...catalogo.versoes].map(([nome, versao]) => ({ nome, versao })),
+        },
+        // Só os `id`: os que o app mostra no canal em uso e os que ficaram de fora (o motivo está no log).
+        tarefas: {
+          catalogo: tarefas.tarefas.map((tarefa) => tarefa.id),
+          fora_do_catalogo: tarefas.retiradas.map((tarefa) => tarefa.id),
         },
         ias: Object.fromEntries(
           PROVIDERS.map((provider, indice) => [
@@ -509,7 +515,7 @@ export const make = Effect.fn("Diagnostico.make")(function* (opcoes: OpcoesDiagn
 });
 
 /**
- * Pede o `Atualizador`, o `CatalogoSkills`, o `Motor`, as `Preferencias`, o `Historico`, as
+ * Pede o `Atualizador`, o `CatalogoSkills`, o `CatalogoTarefas`, o `Motor`, as `Preferencias`, o `Historico`, as
  * `PastasTrabalho`, o `FileSystem` e o `Path`.
  */
 export const layer = (opcoes: OpcoesDiagnostico = {}) => Layer.effect(Diagnostico, make(opcoes));

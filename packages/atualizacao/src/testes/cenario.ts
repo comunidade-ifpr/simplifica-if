@@ -8,14 +8,17 @@ import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import { gerarCanal, type SkillDaFabrica } from "../fabrica.ts";
-import { prepararAbertura } from "../local.ts";
-import type { Canal } from "../manifesto.ts";
+import { type CanalGerado, gerarCanal, type PublicacaoAnterior, type SkillDaFabrica } from "../fabrica.ts";
+import { type OrigemCatalogo, prepararAbertura } from "../local.ts";
+import type { Canal, Manifesto, TarefaDoCanal } from "../manifesto.ts";
 import { type ChaveSecreta, gerarChaves } from "../minisign.ts";
 import { baixarAtualizacao, conferirManifesto, layerHttp, type Resultado, urlManifesto } from "../remoto.ts";
 import { criarBanco, pastaTemporaria, servirPasta, type ServidorTeste } from "./apoio.ts";
 
 export const VERSAO_APP = "0.1.0";
+
+/** A data de commit padrão de uma versão do canal: o dia dela, ao meio-dia UTC (`2026.11.13` → `2026-11-13T12:00:00Z`). */
+export const dataDoDia = (versao: string) => `${versao.split(".").slice(0, 3).join("-")}T12:00:00Z`;
 
 /** O download de verdade (contra o servidor local) e o disco. */
 export const LAYER_TESTE = Layer.mergeAll(layerHttp(), NodeServices.layer);
@@ -34,12 +37,27 @@ export interface Cenario {
     readonly anteriores?: ReadonlyArray<string>;
     readonly appMinimo?: string;
     readonly skills?: ReadonlyArray<SkillDaFabrica>;
+    readonly publicacoes?: ReadonlyArray<PublicacaoAnterior>;
+    readonly skillsRetiradas?: ReadonlyArray<string>;
+    readonly tarefas?: ReadonlyArray<TarefaDoCanal>;
     readonly chave?: ChaveSecreta;
     readonly banco?: string;
     readonly pastaCanal?: Canal;
-  }): { readonly banco: string };
+    /** A data do commit do catálogo; padrão: o dia da versão, ao meio-dia UTC. */
+    readonly dataCommit?: string;
+    /** O manifesto publicado com que a fábrica confere as guardas. */
+    readonly publicado?: Manifesto;
+  }): { readonly banco: string; readonly gerado: CanalGerado };
   /** Confere o manifesto e baixa, como o serviço faz. */
-  atualizar(canal?: Canal, versoesSkills?: Readonly<Record<string, string>>): Promise<Resultado>;
+  atualizar(
+    canal?: Canal,
+    versoesSkills?: ReadonlyMap<string, string>,
+    opcoes?: {
+      readonly skillsRetiradas?: ReadonlySet<string>;
+      readonly versaoApp?: string;
+      readonly catalogoEmpacotado?: OrigemCatalogo;
+    },
+  ): Promise<Resultado>;
   fechar(): Promise<void>;
 }
 
@@ -66,30 +84,40 @@ export async function cenario(): Promise<Cenario> {
         criarBanco(NodePath.join(fabrica, `kb-${opcoes.versao}.sqlite`), opcoes.versao, {
           extra: `novidade da versão ${opcoes.versao}`,
         });
-      gerarCanal({
+      const gerado = gerarCanal({
         saida: NodePath.join(servido, opcoes.pastaCanal ?? opcoes.canal ?? "beta"),
         canal: opcoes.canal ?? "beta",
         commit: "abc1234",
+        dataCommit: opcoes.dataCommit ?? dataDoDia(opcoes.versao),
         banco,
         anteriores: opcoes.anteriores ?? [],
         skills: opcoes.skills ?? [],
+        ...(opcoes.publicacoes === undefined ? {} : { publicacoes: opcoes.publicacoes }),
+        ...(opcoes.skillsRetiradas === undefined ? {} : { skillsRetiradas: opcoes.skillsRetiradas }),
+        ...(opcoes.tarefas === undefined ? {} : { tarefas: opcoes.tarefas }),
+        ...(opcoes.publicado === undefined ? {} : { publicado: opcoes.publicado }),
         appMinimo: opcoes.appMinimo ?? "0.1.0",
         novidades: [{ tipo: "norma-nova", titulo: `Norma da versão ${opcoes.versao}` }],
         chave: opcoes.chave ?? chave,
         nivel: 3,
       });
-      return { banco };
+      return { banco, gerado };
     },
-    atualizar: (canal = "beta", versoesSkills = {}) => {
+    atualizar: (canal = "beta", versoesSkills = new Map(), opcoes = {}) => {
       const url = urlManifesto(feed, canal);
       return Effect.gen(function* () {
-        const abertura = yield* prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada });
+        const abertura = yield* prepararAbertura({
+          pasta: pastaApp,
+          bancoEmpacotado: empacotada,
+          ...(opcoes.catalogoEmpacotado === undefined ? {} : { catalogoEmpacotado: opcoes.catalogoEmpacotado }),
+        });
         const manifesto = yield* conferirManifesto({ urlManifesto: url, canal, chave, prazo: "5 seconds" });
         return yield* baixarAtualizacao(manifesto, url, {
           pasta: pastaApp,
-          versaoApp: VERSAO_APP,
+          versaoApp: opcoes.versaoApp ?? VERSAO_APP,
           abertura,
           versoesSkills,
+          ...(opcoes.skillsRetiradas === undefined ? {} : { skillsRetiradas: opcoes.skillsRetiradas }),
           prazo: "5 seconds",
         });
       }).pipe(Effect.provide(LAYER_TESTE), Effect.runPromise);

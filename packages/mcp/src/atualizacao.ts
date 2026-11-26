@@ -51,7 +51,7 @@ const conferir = Effect.fn("simplifica-mcp.conferirAtualizacao")(
       pasta: opcoes.pasta,
       versaoApp: VERSAO_PACOTE,
       abertura,
-      comSkills: false,
+      soBase: true,
     }).pipe(Effect.provide(layerHttp()));
     if (resultado.tipo === "baixada") {
       yield* avisar(`base ${resultado.versao} baixada (${resultado.via})${quando}`);

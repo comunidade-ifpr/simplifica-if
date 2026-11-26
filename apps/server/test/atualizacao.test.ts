@@ -67,6 +67,7 @@ it.live("atualização pelo RPC: confere, baixa, adia com o servidor ocupado e t
       saida: NodePath.join(raiz, "servido", "beta"),
       canal: "beta",
       commit: "abc1234",
+      dataCommit: "2026-11-20T12:00:00Z",
       banco: nova,
       anteriores: [empacotada],
       appMinimo: "0.1.0",
@@ -130,5 +131,109 @@ it.live("atualização pelo RPC: confere, baixa, adia com o servidor ocupado e t
       // A leitura já responde da base nova (o MCP e o RPC abrem o mesmo arquivo).
       assert.strictEqual((yield* rpc["atualizacao.novidadesVistas"]({})).novidades, null);
     }).pipe(Effect.provide(abrir()), Effect.scoped);
+  }).pipe(Effect.scoped),
+);
+
+it.live("sem pasta de tarefas nem de skills, valem o catálogo e as skills que a atualização baixou", () =>
+  Effect.gen(function* () {
+    const raiz = diretorioTemporario("simplifica-atualizacao-");
+    const empacotada = versaoNova(bancoFixture(), NodePath.join(raiz, "kb-empacotada.sqlite"), "2026.11.13");
+    // A skill baixada: a do catálogo do repositório, numa pasta de skills baixadas.
+    const baixadas = NodePath.join(raiz, "app", "skills", "2026.11.20");
+    NodeFS.cpSync(
+      NodePath.join(import.meta.dirname, "..", "..", "..", "catalogo", "skills", "verificar-fundamentacao-normativa"),
+      NodePath.join(baixadas, "verificar-fundamentacao-normativa"),
+      { recursive: true },
+    );
+    const tarefa = {
+      id: "so-baixada",
+      titulo: "Tarefa só do canal",
+      resumo: "Resumo.",
+      area: "ensino",
+      situacao: "estavel",
+      mantenedor: { nome: "Pessoa de Teste", github: "pessoa-de-teste" },
+      abre: { conversa: { skill: "verificar-fundamentacao-normativa", pedido: "Confira." } },
+    };
+    const servidor = Servidor.layer({
+      primeiroUsoFeito: true,
+      banco: empacotada,
+      token: Redacted.make(TOKEN),
+      atualizacao: {
+        desligada: "sem feed neste teste",
+        feed: null,
+        chave: null,
+        canalPadrao: "beta",
+        pasta: NodePath.join(raiz, "app"),
+        bancoEmpacotado: empacotada,
+        versaoApp: "0.1.0",
+        abertura: {
+          banco: empacotada,
+          origem: "empacotada",
+          info: null,
+          pastasSkills: [baixadas],
+          catalogo: { versao: "2026.11.20", tarefas: [tarefa] },
+          versaoEmpacotada: "2026.11.13",
+          origemCatalogo: { tipo: "sem-pasta" },
+          skillsRetiradas: [],
+          eventos: [],
+        },
+        automatico: false,
+      },
+    }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
+    yield* Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      // A tarefa só entra se a skill que ela cita estiver no catálogo de skills: as duas vieram do baixado.
+      assert.deepStrictEqual(
+        (yield* rpc["tarefas.listar"]({})).tarefas.map((item) => item.id),
+        ["so-baixada"],
+      );
+    }).pipe(Effect.provide(servidor), Effect.scoped);
+  }).pipe(Effect.scoped),
+);
+
+it.live("sem pasta de skills nem skills baixadas, as retiradas que a atualização conhece chegam às sessões", () =>
+  Effect.gen(function* () {
+    const raiz = diretorioTemporario("simplifica-atualizacao-");
+    const empacotada = versaoNova(bancoFixture(), NodePath.join(raiz, "kb-empacotada.sqlite"), "2026.11.13");
+    const registro = novoRegistro();
+    const servidor = Servidor.layer({
+      primeiroUsoFeito: true,
+      banco: empacotada,
+      token: Redacted.make(TOKEN),
+      atualizacao: {
+        desligada: "sem feed neste teste",
+        feed: null,
+        chave: null,
+        canalPadrao: "beta",
+        pasta: NodePath.join(raiz, "app"),
+        bancoEmpacotado: empacotada,
+        versaoApp: "0.1.0",
+        abertura: {
+          banco: empacotada,
+          origem: "empacotada",
+          info: null,
+          pastasSkills: [],
+          catalogo: null,
+          versaoEmpacotada: "2026.11.13",
+          origemCatalogo: { tipo: "sem-pasta" },
+          skillsRetiradas: ["velha"],
+          eventos: [],
+        },
+        automatico: false,
+      },
+    }).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
+    // Uma sessão de antes da retirada gravou a skill na pasta de trabalho.
+    const pasta = NodeFS.realpathSync(diretorioTemporario("simplifica-retirada-"));
+    const gravada = NodePath.join(pasta, ".simplifica", "skills", "velha");
+    NodeFS.mkdirSync(gravada, { recursive: true });
+    NodeFS.writeFileSync(NodePath.join(gravada, "SKILL.md"), "---\nname: velha\n---\n");
+    yield* Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      assert.deepStrictEqual(registro.configs.at(-1)?.skillsRetiradas, ["velha"]);
+      assert.isFalse(NodeFS.existsSync(gravada));
+    }).pipe(Effect.provide(servidor), Effect.scoped);
   }).pipe(Effect.scoped),
 );

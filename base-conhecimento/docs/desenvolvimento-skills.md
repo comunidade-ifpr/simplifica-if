@@ -2,9 +2,9 @@
 
 ## Papel das Skills
 
-As skills em `.agents/skills/` são procedimentos operacionais para agentes IA. Elas devem transformar uma tarefa recorrente em fluxo reprodutível, com prompts, scripts, testes e artefatos de apoio.
+As skills são procedimentos operacionais para agentes IA. Elas devem transformar uma tarefa recorrente em fluxo reprodutível, com prompts, scripts, testes e artefatos de apoio. Há dois lugares, e cada skill mora num só: `.agents/skills/` tem as de quem mantém o repositório (curadoria; rodam no checkout, com a CLI `kb`, os scripts e o git) e `catalogo/skills/` tem as do app (viajam para o app, que só tem as ferramentas `ifpr` do `simplifica-mcp`; regras em "Skills e tarefas" do [`AGENTS.md`](../../AGENTS.md)).
 
-A Base de Conhecimento local em `base-conhecimento/` continua sendo a fonte de verdade para normas, metadados institucionais, PPCs de referência e catálogos. Antes de duplicar conteúdo normativo dentro de uma skill, verifique pela CLI `kb` (no repositório) ou pelas ferramentas `ifpr` do `simplifica-mcp` (no app) se o dado já está na base: normas em `base-conhecimento/normas/`, registros institucionais e PPCs em `base-conhecimento/institucional/`, CNCT em `base-conhecimento/catalogos/`.
+A Base de Conhecimento local em `base-conhecimento/` continua sendo a fonte de verdade para normas, metadados institucionais, PPCs de referência e catálogos. Antes de duplicar conteúdo normativo dentro de uma skill, verifique pela CLI `kb` (skill do repositório) ou pelas ferramentas `ifpr` do `simplifica-mcp` (skill do app) se o dado já está na base: normas em `base-conhecimento/normas/`, registros institucionais e PPCs em `base-conhecimento/institucional/`, CNCT em `base-conhecimento/catalogos/`.
 
 ## Integração Com a Base
 

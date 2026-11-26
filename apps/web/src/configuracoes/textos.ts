@@ -82,5 +82,5 @@ export function avisoSemConfirmacao(estado: EstadoAtualizacao, agora: number): s
 /** O texto da confirmação de "Voltar": qual versão volta, qual sai, e que o servidor reinicia. */
 export function textoConfirmarVolta(estado: EstadoAtualizacao): string | null {
   if (estado.anterior === null) return null;
-  return `A base volta de ${versaoComoData(estado.base.versao)} para ${versaoComoData(estado.anterior)}, e o Simplifica IF reinicia (uma revisão em andamento adia a troca para a próxima abertura). A versão de ${versaoComoData(estado.base.versao)} não será baixada de novo; só uma mais nova.`;
+  return `A base volta de ${versaoComoData(estado.base.versao)} para ${versaoComoData(estado.anterior)}, e o Simplifica IF reinicia (um trabalho em andamento adia a troca para a próxima abertura). A versão de ${versaoComoData(estado.base.versao)} não será baixada de novo; só uma mais nova.`;
 }

@@ -3,7 +3,7 @@
  *
  * - `preparar`: junta, da conversa gravada, a pergunta do turno (a mensagem da pessoa, sem a indicação
  *   da skill, que só vai ao provider), a resposta (os `TextoFinal` do turno), os links `ifpr://` dela,
- *   as versões (app e base do `Atualizador`, a tarefa do `CatalogoSkills`, a IA da conversa e a versão
+ *   as versões (app e base do `Atualizador`, a tarefa do `CatalogoTarefas` e a skill dela no `CatalogoSkills`, a IA da conversa e a versão
  *   da CLI, se a detecção responder em `prazoDeteccao`) e o destino da política de fábrica
  *   (`curadoria.repositorio`). Nunca lê a pasta da tarefa nem os anexos.
  * - `registrar`: grava o relato aprovado (título e corpo, como a pessoa os viu) na tabela `relatos`
@@ -30,6 +30,7 @@ import * as Motor from "@simplifica-if/motor";
 import { CURADORIA_FABRICA } from "@simplifica-if/motor/politica-curadoria";
 import * as Atualizador from "./Atualizador.ts";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
+import * as CatalogoTarefas from "./CatalogoTarefas.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
 import * as Historico from "./persistencia/Historico.ts";
 
@@ -81,6 +82,7 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
   const historico = yield* Historico.Historico;
   const atualizador = yield* Atualizador.Atualizador;
   const catalogo = yield* CatalogoSkills.CatalogoSkills;
+  const tarefas = yield* CatalogoTarefas.CatalogoTarefas;
   const motor = yield* Motor.Motor;
   const pastas = yield* PastasTrabalho.PastasTrabalho;
   const curadoria = opcoes.curadoria ?? CURADORIA_FABRICA;
@@ -102,8 +104,11 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
     if (resposta.trim() === "")
       return yield* new FalhaRelato({ motivo: "Esta mensagem não tem resposta da IA para relatar." });
     const estado = yield* atualizador.estado;
-    const skill =
-      registro.tarefa === undefined ? undefined : catalogo.resumos.find((resumo) => resumo.nome === registro.tarefa);
+    // A tarefa que saiu do catálogo ainda dá o título, e a skill enquanto a sessão a leva (o manifesto
+    // existe e a skill é do app). A que nem o manifesto tem mais (retirada do app) vai pelo `id`: a
+    // conversa nasceu de uma tarefa, não é livre.
+    const tarefa = registro.tarefa;
+    const skill = tarefa === undefined ? undefined : tarefas.regraDaSessao(tarefa).skill;
     const deteccao = yield* motor.detectar(registro.provider).pipe(Effect.timeoutOption(prazo));
     return {
       sessao,
@@ -117,9 +122,13 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
         base: estado.base.versao,
         baseCommit: estado.base.commit,
         tarefa:
-          skill === undefined
+          tarefa === undefined
             ? null
-            : { nome: skill.nome, titulo: skill.titulo, versao: catalogo.versoes[skill.nome] ?? "0.0.0" },
+            : {
+                id: tarefa,
+                titulo: tarefas.titulo(tarefa) ?? tarefa,
+                skill: skill === undefined ? null : { nome: skill, versao: catalogo.versoes.get(skill) ?? "0.0.0" },
+              },
         provider: registro.provider,
         versaoProvider: Option.getOrUndefined(deteccao)?.versao ?? null,
         modelo: registro.modelo ?? null,
@@ -162,5 +171,5 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
   return Relatos.of({ preparar, registrar });
 });
 
-/** Pede o `Historico`, o `Atualizador`, o `CatalogoSkills`, o `Motor` e as `PastasTrabalho`. */
+/** Pede o `Historico`, o `Atualizador`, o `CatalogoSkills`, o `CatalogoTarefas`, o `Motor` e as `PastasTrabalho`. */
 export const layer = (opcoes: OpcoesRelatos = {}) => Layer.effect(Relatos, make(opcoes));

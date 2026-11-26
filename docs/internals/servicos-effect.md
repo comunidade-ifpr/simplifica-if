@@ -15,13 +15,13 @@ Uma capacidade é um método de um serviço do domínio. Estenda o serviço que 
 - `packages/kb/src`: `Normas`, `Ppcs`, `Cursos`, `Conselhos`, `Impacto`, `PacoteContexto`, `FontesNormativas`, `BaseKb`, `Compilador`;
 - `packages/mcp/src/leitura`: `Leitura` (a leitura que as ferramentas MCP e o RPC compartilham) e `PastaTrabalho`;
 - `packages/motor/src`: `Motor`;
-- `apps/server/src`: `Conversas`, `PastasTrabalho`, `ArquivosLiberados`, `Relatos`, `CatalogoSkills`, `Atualizador`, `Autenticacao`, `persistencia/` e `revisao-ppc/`.
+- `apps/server/src`: `Conversas`, `PastasTrabalho`, `ArquivosLiberados`, `Relatos`, `CatalogoSkills`, `CatalogoTarefas`, `Atualizador`, `Autenticacao` e `persistencia/`; e, nos módulos, `modulos/revisao-ppc/` (`RevisorPpc`, `RevisaoIa`, `ListaViva` e a persistência deles).
 
 O transporte é casca fina. Ele faz três coisas: decodifica a entrada, chama um método de serviço e traduz os erros tipados para o erro do transporte. Arquivo, processo, banco, rede, nome de pasta, despacho em várias etapas, nova tentativa e desfazer ficam no serviço. O motivo é alcance: a mesma capacidade chega pela interface (RPC), pela IA (MCP), pela CLI `kb` e pelos scripts. Lógica escrita num handler falta nos outros e só se testa com um socket.
 
 Os transportes deste repositório:
 
-- **Handlers RPC do servidor:** [`apps/server/src/handlers.ts`](../../apps/server/src/handlers.ts) (os grupos de `@simplifica-if/contratos-app`) e os handlers de leitura de [`packages/mcp/src/rpc.ts`](../../packages/mcp/src/rpc.ts).
+- **Handlers RPC do servidor:** [`apps/server/src/handlers.ts`](../../apps/server/src/handlers.ts) (os grupos de `@simplifica-if/contratos-app`; os de um módulo, em `modulos/<nome>/handlers.ts`, com a mesma tradução, `traducao.ts`) e os handlers de leitura de [`packages/mcp/src/rpc.ts`](../../packages/mcp/src/rpc.ts).
 - **Ferramentas MCP:** o `layerHandlers` de [`packages/mcp/src/ferramentas/toolkit.ts`](../../packages/mcp/src/ferramentas/toolkit.ts). Cada arquivo de `ferramentas/` declara só schema, descrição e o texto da resposta.
 - **CLI `kb`:** [`packages/mcp/src/kb.ts`](../../packages/mcp/src/kb.ts). As consultas são as ferramentas MCP, um comando por ferramenta derivado do schema de entrada dela ([`packages/mcp/src/consulta.ts`](../../packages/mcp/src/consulta.ts)), sobre o mesmo `Leitura`; os comandos de curadoria ficam em [`packages/kb/src/cli/`](../../packages/kb/src/cli/) e chamam o serviço ou as funções da curadoria.
 - **Scripts:** os pontos de entrada de `scripts/*.ts` sobre [`scripts/principal.ts`](../../scripts/principal.ts) (`executarPrincipal`), e os de `packages/*/scripts/`.

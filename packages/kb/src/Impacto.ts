@@ -5,7 +5,7 @@
  * os dispositivos da norma, a correspondência, os segmentos de outras normas que citam e os PPCs.
  *
  * O conteúdo percorrido é o da revisão de PPC gravado no banco (fichas, marcos e taxonomia); os
- * textos das skills de `.agents/skills` ficam de fora.
+ * textos das skills (`catalogo/skills`, `.agents/skills`) ficam de fora.
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";

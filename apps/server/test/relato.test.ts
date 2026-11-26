@@ -37,7 +37,8 @@ const camada = Servidor.layer({
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   pastaTrabalhos: raiz,
-  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
+  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../catalogo/skills"),
+  pastaTarefas: NodePath.resolve(import.meta.dirname, "../../../catalogo/tarefas"),
   relatos: { curadoria: { repositorio: "exemplo/simplifica-if", rotulos: ["relato-do-app"] } },
 }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
 
@@ -67,7 +68,7 @@ layer(camada, { excludeTestServices: true })("relato", (it) => {
       const { sessao } = yield* rpc["conversa.iniciar"]({
         provider: "claude",
         pastaTrabalho: pasta,
-        tarefa: "verificar-fundamentacao-normativa",
+        tarefa: "conferir-fundamentacao-normativa",
       });
       yield* turnoRpc(
         rpc,
@@ -88,7 +89,8 @@ layer(camada, { excludeTestServices: true })("relato", (it) => {
       assert.deepStrictEqual(rascunho.citacoes, ["ifpr://norma/br/cne-cp/res/2021/1#art20"]);
       assert.deepStrictEqual(rascunho.fontesExternas, ["https://www.planalto.gov.br/ccivil_03/leis/l7498.htm"]);
       assert.deepInclude(rascunho.versoes, { provider: "claude", versaoProvider: "0.0.0-teste", app: "0.0.0" });
-      assert.strictEqual(rascunho.versoes.tarefa?.nome, "verificar-fundamentacao-normativa");
+      assert.strictEqual(rascunho.versoes.tarefa?.id, "conferir-fundamentacao-normativa");
+      assert.strictEqual(rascunho.versoes.tarefa?.skill?.nome, "verificar-fundamentacao-normativa");
       assert.strictEqual(rascunho.repositorio, "exemplo/simplifica-if");
       assert.isTrue(rascunho.podeSalvar);
       // O pacote nunca traz a pasta da tarefa nem os anexos.

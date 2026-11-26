@@ -44,7 +44,7 @@ const camada = Servidor.layer({ banco: bancoFixture(), token: Redacted.make(TOKE
 const AUTORIZACAO = { authorization: `Bearer ${TOKEN}` };
 
 layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
-  it.effect("sem o aviso aceito, nada vai à IA: conversa e revisão com IA recusam com a frase do aviso", () =>
+  it.effect("sem o aviso aceito, nada vai à IA: a conversa recusa com a frase do aviso", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
@@ -53,22 +53,6 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
       assert.match(iniciar.message, /leia o aviso de uso/);
       const enviar = yield* Effect.flip(rpc["conversa.enviar"]({ sessao: "x", texto: "oi" }));
       assert.strictEqual(enviar._tag, "AvisoNaoAceito");
-      const ia = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "x" }));
-      assert.strictEqual(ia._tag, "AvisoNaoAceito");
-      const sugerir = yield* Effect.flip(rpc["revisaoPpc.sugerir"]({ lista: "x", chave: "y", provider: "claude" }));
-      assert.strictEqual(sugerir._tag, "AvisoNaoAceito");
-      const preparar = yield* Effect.flip(
-        rpc["revisaoPpc.prepararIa"]({ lista: "x", provider: "claude", modo: "completo" }),
-      );
-      assert.strictEqual(preparar._tag, "AvisoNaoAceito");
-      const contestar = yield* Effect.flip(
-        rpc["revisaoPpc.contestar"]({ lista: "x", chave: "y", motivo: "z", provider: "claude" }),
-      );
-      assert.strictEqual(contestar._tag, "AvisoNaoAceito");
-      const deNovo = yield* Effect.flip(
-        rpc["revisaoPpc.revisarDeNovo"]({ lista: "x", chave: "y", arquivo: "/x.docx", provider: "claude" }),
-      );
-      assert.strictEqual(deNovo._tag, "AvisoNaoAceito");
     }),
   );
 
