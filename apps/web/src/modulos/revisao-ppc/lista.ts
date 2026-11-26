@@ -254,6 +254,17 @@ export function descreverCurso(curso: ResultadoRevisaoPpc["curso"]): string | nu
     : `${curso.cnct.denominacao}, ${FORMAS[curso.forma] ?? curso.forma}`;
 }
 
+/**
+ * Como a revisão foi conferida, nas "Revisões recentes": é o que distingue duas revisões do mesmo PPC
+ * além da hora. `nomeIa` é o nome da IA da lista ("Claude"), nulo sem ela.
+ */
+export function comoFoiConferida(leitura: ResultadoRevisaoPpc["leituraIa"], nomeIa: string | null): string {
+  const com = nomeIa === null ? "com IA" : `com o ${nomeIa}`;
+  if (leitura === "completa") return `conferida ${com}`;
+  if (leitura === "parcial") return `conferida em parte ${com}`;
+  return "só a conferência automática";
+}
+
 /** "3 resolvidas, 5 continuam, 1 nova", só com o que houve. */
 export function textoArquivoNovo(r: Pick<ResultadoArquivoNovo, "resolvidas" | "continuam" | "novas">): string {
   const p: string[] = [];

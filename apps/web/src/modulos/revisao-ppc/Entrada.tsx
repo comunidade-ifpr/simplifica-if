@@ -21,14 +21,14 @@ import { Input } from "../../components/ui/input.tsx";
 import type { MensagemErro } from "../../conexao/erros.ts";
 import { useApi } from "../../contexto.tsx";
 import { registrarErro, textoDoErro } from "../../diagnostico.ts";
-import { dataCurta } from "../../lib/formato.ts";
+import { dataHora } from "../../lib/formato.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
 import { obterArquivo } from "./arquivo.ts";
 import { nomeIa } from "./FaixaIa.tsx";
 import { leiturasPorTerminar } from "./ia.ts";
 import { nomeDoArquivo } from "../../lib/texto.ts";
 import { avisoDeSaida, REVISAO, textosApagarRevisoes } from "./apagar.ts";
-import { contagens, descreverCurso } from "./lista.ts";
+import { comoFoiConferida, contagens, descreverCurso } from "./lista.ts";
 
 export function Entrada({
   erro,
@@ -141,9 +141,12 @@ export function Entrada({
                   titulo={nomeDoArquivo(lista.arquivoOriginal)}
                   detalhes={[
                     descreverCurso(lista.resultado.curso),
-                    dataCurta(lista.atualizadaEm),
+                    dataHora(lista.criadaEm),
                     leitura === undefined
-                      ? null
+                      ? comoFoiConferida(
+                          lista.resultado.leituraIa,
+                          lista.provider === null ? null : nomeIa(lista.provider),
+                        )
                       : `conferência com o ${nomeIa(leitura.provider)} ${leitura.situacao === "pausada" ? "pausada" : "em andamento"}`,
                     avisoDeSaida(lista.atualizadaEm, agora),
                   ]}

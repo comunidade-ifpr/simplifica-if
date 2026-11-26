@@ -7,6 +7,7 @@ import type {
   ResultadoRevisaoPpc,
 } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import {
+  comoFoiConferida,
   buscarCnct,
   chavesNovas,
   contagens,
@@ -225,6 +226,10 @@ test("as frases curtas: localização, curso e arquivo novo", () => {
     }),
   ).toBe("Técnico em Agropecuária, integrado ao ensino médio");
   expect(descreverCurso({ cnct: null, forma: null, origem: "documento" })).toBeNull();
+  expect(comoFoiConferida("completa", "Claude")).toBe("conferida com o Claude");
+  expect(comoFoiConferida("parcial", "ChatGPT")).toBe("conferida em parte com o ChatGPT");
+  expect(comoFoiConferida("completa", null)).toBe("conferida com IA");
+  expect(comoFoiConferida("nenhuma", null)).toBe("só a conferência automática");
   expect(textoArquivoNovo({ resolvidas: 3, continuam: 5, novas: 1 })).toBe("3 resolvidas, 5 continuam, 1 nova.");
   expect(textoArquivoNovo({ resolvidas: 1, continuam: 1, novas: 2 })).toBe("1 resolvida, 1 continua, 2 novas.");
   expect(textoArquivoNovo({ resolvidas: 0, continuam: 0, novas: 0 })).toBe("Nada mudou na conferência automática.");
