@@ -16,13 +16,17 @@ import type { Manifesto } from "@simplifica-if/atualizacao/manifesto";
 import { gerarChaves, lerChaveSecreta } from "@simplifica-if/atualizacao/minisign";
 import { cenario } from "@simplifica-if/atualizacao/testes/cenario";
 import * as Option from "effect/Option";
+import { criarCheckoutMinimo } from "@simplifica-if/kb/testes/checkout-minimo";
+import { RAIZ_PROJETO } from "./config.ts";
 import * as Configuracao from "./configuracao.ts";
 import {
   arvoreDoCommit,
   comandoFabrica,
   comandosPublicacao,
   comandosPublicacaoApp,
+  compilarBase,
   conferirDescendencia,
+  ENTRADA_COMPILAR,
   conferirPrimeiraPublicacao,
   gerarChave,
   proximaVersao,
@@ -182,6 +186,65 @@ describe("fábrica da atualização", () => {
     }
     return arvore;
   });
+
+  it.live("compila de verdade, com o kb do commit, pelo ponto de entrada que a fábrica roda", () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const fs = yield* FileSystem.FileSystem;
+        const path = yield* Path.Path;
+        const repo = yield* pastaTemporaria;
+        const git = (...args: string[]) =>
+          Git.executar(["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd: repo });
+        // Uma base mínima e o `packages/kb` deste checkout, num commit; os `node_modules` do checkout
+        // ficam ao lado, fora do commit, como num clone com `pnpm install`.
+        yield* criarCheckoutMinimo(repo);
+        const kb = path.join(RAIZ_PROJETO, "packages", "kb");
+        yield* fs.copy(path.join(kb, "src"), path.join(repo, "packages", "kb", "src"));
+        yield* fs.copyFile(path.join(kb, "package.json"), path.join(repo, "packages", "kb", "package.json"));
+        yield* fs.symlink(path.join(RAIZ_PROJETO, "node_modules"), path.join(repo, "node_modules"));
+        yield* fs.symlink(path.join(kb, "node_modules"), path.join(repo, "packages", "kb", "node_modules"));
+        yield* fs.writeFileString(path.join(repo, ".gitignore"), "node_modules\n");
+        yield* fs.makeDirectory(path.join(repo, "catalogo"));
+        yield* fs.writeFileString(path.join(repo, "catalogo", "LEIAME"), "x\n");
+        yield* git("init", "-q");
+        yield* git("add", ".");
+        yield* git("commit", "-q", "-m", "x");
+
+        const arvore = yield* arvoreDoCommit("HEAD", path.join(yield* pastaTemporaria, "arvore"), repo);
+        const destino = path.join(yield* pastaTemporaria, "kb.sqlite");
+        const info = yield* compilarBase({
+          node: process.execPath,
+          arvore,
+          destino,
+          versao: "2026.11.20",
+          commit: "0123abcd",
+        });
+        expect(info).toMatchObject({ versao: "2026.11.20", commit: "0123abcd", dataReferencia: "2026-11-13" });
+        expect(info.fontesSha256).toMatch(/^[0-9a-f]{64}$/);
+      }),
+    ).pipe(Effect.provide(servicos)),
+  );
+
+  it.live("compilar: sem o ponto de entrada no commit, ou sem o banco depois dele, falha na hora", () =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const path = yield* Path.Path;
+        const destino = path.join(yield* pastaTemporaria, "kb.sqlite");
+        const opcoes = { node: process.execPath, destino, versao: "2026.11.20", commit: "0123abcd" };
+        // A árvore de um commit antigo: só o `compilar.ts`, que exporta o comando e não roda nada.
+        const antiga = yield* arvoreCom({ "packages/kb/src/cli/compilar.ts": "export const compilar = 1;\n" });
+        expect(yield* Effect.flip(compilarBase({ ...opcoes, arvore: antiga }))).toMatchObject({
+          _tag: "CompilacaoSemBanco",
+          motivo: "sem-entrada",
+        });
+        // Um ponto de entrada que sai com 0 sem gravar o banco.
+        const muda = yield* arvoreCom({ [ENTRADA_COMPILAR]: "process.exitCode = 0;\n" });
+        const semBanco = yield* Effect.flip(compilarBase({ ...opcoes, arvore: muda }));
+        expect(semBanco).toMatchObject({ _tag: "CompilacaoSemBanco", motivo: "sem-banco" });
+        expect(semBanco.message).toContain(destino);
+      }),
+    ).pipe(Effect.provide(servicos)),
+  );
 
   it.live("catálogo do commit: as skills com os arquivos do pacote e as tarefas juntas, em ordem de id", () =>
     Effect.scoped(
@@ -429,7 +492,7 @@ describe("fábrica contra o manifesto publicado do canal", () => {
         });
         yield* git("init", "-q");
         yield* escrever("base-conhecimento/novidades.yaml", "versoes: []\n");
-        yield* escrever("packages/kb/src/cli/compilar.ts", COMPILAR);
+        yield* escrever(ENTRADA_COMPILAR, COMPILAR);
         // A tarefa cita uma skill que não existe: a fábrica recusa depois de compilar.
         yield* escrever(
           "catalogo/tarefas/conferir.yaml",
@@ -506,7 +569,7 @@ describe("fábrica contra o manifesto publicado do canal", () => {
           });
           yield* git("init", "-q");
           yield* escrever("base-conhecimento/novidades.yaml", "versoes: []\n");
-          yield* escrever("packages/kb/src/cli/compilar.ts", COMPILAR);
+          yield* escrever(ENTRADA_COMPILAR, COMPILAR);
           yield* escrever("catalogo/tarefas/conferir.yaml", tarefaYaml("conferir", "{ modulo: revisao-ppc }"));
           yield* git("add", ".");
           yield* git("commit", "-q", "-m", "x");

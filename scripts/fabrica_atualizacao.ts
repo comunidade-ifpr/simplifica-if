@@ -265,6 +265,23 @@ export class CommitPublicadoAusente extends Schema.TaggedError<CommitPublicadoAu
   }
 }
 
+/**
+ * O `kb compilar` da árvore do commit não deu o banco: o ponto de entrada não está no commit
+ * (`sem-entrada`), ou ele saiu com 0 sem gravar um banco com `meta` legível (`sem-banco`).
+ */
+export class CompilacaoSemBanco extends Schema.TaggedError<CompilacaoSemBanco>()("CompilacaoSemBanco", {
+  motivo: Schema.Literals(["sem-entrada", "sem-banco"]),
+  /** O ponto de entrada, relativo à árvore do commit. */
+  entrada: Schema.String,
+  destino: Schema.String,
+}) {
+  override get message(): string {
+    return this.motivo === "sem-entrada"
+      ? `o commit não tem ${this.entrada}, o ponto de entrada do kb compilar que a fábrica roda; publique um commit que o tenha`
+      : `o kb compilar (${this.entrada}) saiu sem erro, mas não gravou um banco com meta em ${this.destino}`;
+  }
+}
+
 /** A base nova tem as mesmas fontes da última versão guardada: não há o que publicar. */
 export class BaseSemMudanca extends Schema.TaggedError<BaseSemMudanca>()("BaseSemMudanca", {
   versao: Schema.String,
@@ -507,6 +524,39 @@ export const arvoreDoCommit = Effect.fn("fabrica_atualizacao.arvoreDoCommit")(fu
     if ((yield* fs.exists(origem)) && (yield* fs.exists(path.dirname(alvo)))) yield* fs.symlink(origem, alvo);
   }
   return destino;
+});
+
+/** O ponto de entrada do `kb compilar` só com o `packages/kb`, relativo à árvore do commit. */
+export const ENTRADA_COMPILAR = "packages/kb/src/cli/compilar-principal.ts";
+
+/**
+ * Compila o `kb.sqlite` com o `kb` da árvore do commit e a raiz nela, sem `--canal` (o canal é do
+ * manifesto, não do banco). Confere que o banco saiu, com o `meta`: um compilador que sai com 0 sem
+ * gravar nada é recusado aqui, e não adiante, ao empacotar.
+ */
+export const compilarBase = Effect.fn("fabrica_atualizacao.compilarBase")(function* (opcoes: {
+  readonly node: string;
+  readonly arvore: string;
+  readonly destino: string;
+  readonly versao: string;
+  readonly commit: string;
+}) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const entrada = path.join(opcoes.arvore, ...ENTRADA_COMPILAR.split("/"));
+  if (!(yield* fs.exists(entrada))) {
+    return yield* new CompilacaoSemBanco({ motivo: "sem-entrada", entrada: ENTRADA_COMPILAR, destino: opcoes.destino });
+  }
+  yield* exigirProcesso(
+    "kb compilar",
+    [opcoes.node, entrada, "--destino", opcoes.destino, "--versao", opcoes.versao, "--commit", opcoes.commit],
+    { cwd: opcoes.arvore, env: { KB_SQLITE: opcoes.destino } },
+  );
+  const info = (yield* fs.exists(opcoes.destino)) ? lerInfoBanco(opcoes.destino) : null;
+  if (info === null) {
+    return yield* new CompilacaoSemBanco({ motivo: "sem-banco", entrada: ENTRADA_COMPILAR, destino: opcoes.destino });
+  }
+  return info;
 });
 
 /** Lê a chave secreta de `SIMPLIFICA_MINISIGN_CHAVE`, com a senha de `SIMPLIFICA_MINISIGN_SENHA`. */
@@ -974,21 +1024,7 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
   const banco = path.join(compilando, `${versao}.sqlite`);
   const gerar = Effect.gen(function* () {
     yield* Console.log(`compilando a base ${versao} do commit ${commit}…`);
-    // O kb da árvore do commit, com a raiz nela; sem `--canal`: o canal é do manifesto, não do banco.
-    yield* exigirProcesso(
-      "kb compilar",
-      [
-        contexto.node,
-        path.join(arvore, "packages", "kb", "src", "cli", "compilar.ts"),
-        "--destino",
-        banco,
-        "--versao",
-        versao,
-        "--commit",
-        commit,
-      ],
-      { cwd: arvore, env: { KB_SQLITE: banco } },
-    );
+    const compilado = yield* compilarBase({ node: contexto.node, arvore, destino: banco, versao, commit });
     // As três versões anteriores guardadas, além das dadas.
     const guardadas = (yield* fs.readDirectory(bases))
       .filter((nome) => nome.endsWith(".sqlite") && nome !== `${versao}.sqlite`)
@@ -1000,7 +1036,7 @@ const canal = Effect.fn("fabrica_atualizacao.canal")(function* (
       .sort((a, b) => compararVersoes(lerInfoBanco(a)!.versao, lerInfoBanco(b)!.versao))
       .slice(-3);
     const ultima = guardadas.length === 0 ? null : lerInfoBanco(guardadas.at(-1)!);
-    if (!opcoes.mesmasFontes && ultima !== null && ultima.fontesSha256 === lerInfoBanco(banco)?.fontesSha256) {
+    if (!opcoes.mesmasFontes && ultima !== null && ultima.fontesSha256 === compilado.fontesSha256) {
       return yield* new BaseSemMudanca({ versao, anterior: ultima.versao });
     }
     const dadas = yield* Effect.forEach(opcoes.anteriores, expandir);

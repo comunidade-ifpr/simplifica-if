@@ -38,6 +38,7 @@ import * as Normas from "../Normas.ts";
 import * as PacoteContexto from "../PacoteContexto.ts";
 import * as Ppcs from "../Ppcs.ts";
 import { INDICADORES } from "../adequacao/art71.ts";
+import { criarCheckoutMinimo } from "../testes/checkout-minimo.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { carregarCorrespondencias } from "../normas/correspondencia.ts";
@@ -91,54 +92,6 @@ class Compilados extends Context.Service<
   Compilados,
   { readonly a: string; readonly sa: string; readonly sb: string; readonly sc: string }
 >()("@simplifica-if/kb/db/base.test/Compilados") {}
-
-const criarCheckoutMinimo = (dir: string) =>
-  Effect.gen(function* () {
-    const fs = yield* FileSystem.FileSystem;
-    const path = yield* Path.Path;
-    const gravar = (rel: string, conteudo: string) =>
-      Effect.gen(function* () {
-        const alvo = path.join(dir, rel);
-        yield* fs.makeDirectory(path.dirname(alvo), { recursive: true });
-        yield* fs.writeFileString(alvo, conteudo);
-      });
-    yield* gravar("packages/kb/dados/sinonimos.yaml", "tipos: {}\ngrupos: []\n");
-    yield* gravar("packages/kb/dados/topicos-secoes.yaml", "{}\n");
-    yield* gravar("base-conhecimento/config/vigencia.yaml", 'data_referencia: "2026-11-13"\n');
-    yield* gravar("base-conhecimento/normas/stubs.yaml", "normas: []\nexternos: []\n");
-    yield* gravar("base-conhecimento/relacoes.yaml", "relacoes: []\n");
-    yield* gravar("base-conhecimento/transicoes.yaml", "transicoes: []\n");
-    yield* gravar("base-conhecimento/catalogos/cnct/index.json", '{"items":[]}\n');
-    yield* gravar("base-conhecimento/institucional/ifpr/ppcs/index.json", '{"items":[],"secoes":{"paths":{}}}\n');
-    yield* gravar(
-      "base-conhecimento/normas/br/leis/LEI_BR_1-2020_teste.md",
-      [
-        "---",
-        "id: br/lei/2020/1",
-        'title: "Lei nº 1/2020"',
-        'tipo_documento: "Lei"',
-        'numero: "1"',
-        "ano: 2020",
-        'assinada_em: "2020-01-01"',
-        'publicada_em: "2020-01-01"',
-        'vigente_de: "2020-01-01"',
-        'datas_fonte: "Teste mínimo."',
-        'orgao: "BR"',
-        'jurisdicao: "BR"',
-        'ementa: "Norma mínima de teste."',
-        'fonte_referencia: "DOU de teste."',
-        'status_vigencia: "vigente"',
-        "keywords:",
-        '  - "teste"',
-        "---",
-        "",
-        "#### Art. 1º",
-        "",
-        "Esta lei dispõe sobre o teste mínimo.",
-        "",
-      ].join("\n"),
-    );
-  });
 
 const layerCompilados = Layer.effect(
   Compilados,
