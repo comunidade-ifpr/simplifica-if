@@ -70,8 +70,7 @@
       "fichas": [
         "CT-IDENT-03",
         "CT-IDENT-04",
-        "CT-TRANS-01",
-        "CT-TRANS-05"
+        "CT-TRANS-01"
       ]
     },
     {
@@ -126,7 +125,6 @@
         "mundo do trabalho"
       ],
       "fichas": [
-        "CT-IDENT-07",
         "CT-IDENT-10",
         "CT-IDENT-11",
         "CT-IDENT-12",
@@ -134,7 +132,6 @@
         "CT-IDENT-15",
         "CT-IDENT-18",
         "CT-IDENT-19",
-        "CT-CURR-04",
         "CT-CURR-25",
         "CT-SUP-21",
         "CT-TRANS-01",
@@ -168,8 +165,6 @@
         "CT-CURR-01",
         "CT-CURR-02",
         "CT-CURR-03",
-        "CT-CURR-04",
-        "CT-CURR-07",
         "CT-CURR-10",
         "CT-CURR-12",
         "CT-CURR-16",
@@ -394,7 +389,6 @@
         "técnicos administrativos"
       ],
       "fichas": [
-        "CT-SUP-05",
         "CT-SUP-06",
         "CT-SUP-15",
         "CT-SUP-16",
@@ -459,8 +453,7 @@
       ],
       "fichas": [
         "CT-SUP-08",
-        "CT-IDENT-18",
-        "CT-TRANS-05"
+        "CT-IDENT-18"
       ]
     },
     {
@@ -497,8 +490,7 @@
         "CT-SUP-13",
         "CT-SUP-14",
         "CT-SUP-21",
-        "CT-SUP-24",
-        "CT-TRANS-06"
+        "CT-SUP-24"
       ]
     },
     {
@@ -562,8 +554,6 @@
         "CT-TRANS-02",
         "CT-TRANS-03",
         "CT-TRANS-04",
-        "CT-TRANS-05",
-        "CT-TRANS-06",
         "CT-TRANS-07",
         "CT-TRANS-08",
         "CT-TRANS-09",

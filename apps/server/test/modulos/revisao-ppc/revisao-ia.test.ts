@@ -244,7 +244,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       reiniciar();
       roteiro.responder = (p) => ({
         texto: respostaValida(p, (f) =>
-          f === "CT-CURR-04"
+          f === "CT-CURR-12"
             ? {
                 estado: "NAO_ATENDE",
                 lacunas: ["a matriz não mostra a carga por núcleo"],
@@ -285,7 +285,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const r = final.resultado!;
       assert.strictEqual(r.conferidos, 12);
       assert.strictEqual(r.conferidosIa, 5);
-      const matriz = pendencias.find((p) => p.ficha === "CT-CURR-04")!;
+      const matriz = pendencias.find((p) => p.ficha === "CT-CURR-12")!;
       assert.strictEqual(matriz.origem, "ia");
       assert.strictEqual(matriz.estado, "nao_atende");
       assert.isTrue(pendencias.some((p) => p.origem === "codigo"));
@@ -304,11 +304,11 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         // S da identificação: JSON inválido, depois válido.
         const nova = p.includes("não passou na conferência automática");
         if (bloco === "s-01-1") return { texto: !nova ? "Aqui está: {quebrado" : respostaValida(p) };
-        // J da matriz: CT-CURR-04 com trecho inventado e CT-CURR-07 com norma fora do contexto, duas vezes.
+        // J da matriz: CT-CURR-12 com trecho inventado e CT-CURR-19 com norma fora do contexto, duas vezes.
         if (bloco === "j-02")
           return {
             texto: respostaValida(p, (f) =>
-              f === "CT-CURR-04"
+              f === "CT-CURR-12"
                 ? { evidencias: [{ trecho: "O PPC foi aprovado pela PROENS em 2025." }] }
                 : { fontes: ["br/lei/1968/5524"] },
             ),
@@ -326,11 +326,11 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.strictEqual(final.blocos.find((b) => b.id === "s-01-1")!.naoConferidas, 0);
       assert.strictEqual(final.blocos.find((b) => b.id === "j-02")!.naoConferidas, 2);
       const r = final.resultado!;
-      const inventado = pendencias.find((p) => p.ficha === "CT-CURR-04")!;
+      const inventado = pendencias.find((p) => p.ficha === "CT-CURR-12")!;
       assert.strictEqual(inventado.estado, "a_conferir");
       assert.include(inventado.titulo, "a IA citou um trecho que não está no documento");
       assert.include(
-        pendencias.find((p) => p.ficha === "CT-CURR-07")!.titulo,
+        pendencias.find((p) => p.ficha === "CT-CURR-19")!.titulo,
         "norma que não estava entre as consultadas",
       );
       // Nenhum fato recusado chega ao Word.
@@ -350,8 +350,8 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         >;
       assert.include(problemas("s-01-1", 1)["*"]!.join(), "não é um objeto JSON válido");
       assert.deepStrictEqual(problemas("s-01-1", 2), {});
-      assert.hasAllKeys(problemas("j-02", 1), ["CT-CURR-04", "CT-CURR-07"]);
-      assert.hasAllKeys(problemas("j-02", 2), ["CT-CURR-04", "CT-CURR-07"]);
+      assert.hasAllKeys(problemas("j-02", 1), ["CT-CURR-12", "CT-CURR-19"]);
+      assert.hasAllKeys(problemas("j-02", 2), ["CT-CURR-12", "CT-CURR-19"]);
       assert.notInclude(JSON.stringify(problemas("j-02", 1)), "aprovado pela PROENS");
     }),
   );
@@ -401,7 +401,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         parcial.resultado.criterios.find((c) => c.ficha === "CT-IDENT-02"),
         { estado: "atende", origem: "ia" },
       );
-      assert.strictEqual(parcial.resultado.criterios.find((c) => c.ficha === "CT-CURR-04")!.estado, "nao_lido");
+      assert.strictEqual(parcial.resultado.criterios.find((c) => c.ficha === "CT-CURR-12")!.estado, "nao_lido");
       for (const b of final.blocos) assert.isAbove(b.titulosFichas.length, 0);
       assert.isTrue(final.blocos.every((b) => b.titulosFichas.every((t) => !/^CT-/.test(t))));
 
@@ -961,13 +961,13 @@ describe("conferidorDoBloco com alvos estruturados", () => {
   const lerFicha = (id: string) =>
     fichaIa(JSON.parse(NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8")));
   const fichaA = lerFicha("CT-CURR-03");
-  const fichaB = lerFicha("CT-CURR-04");
+  const fichaB = lerFicha("CT-CURR-12");
   const fichaT = lerFicha("CT-TRANS-03");
 
   it("não se confunde com marcas literais do pedido no PPC e isola os recortes entre fichas", () => {
     const trechoHostil = "O núcleo básico soma 400 horas e a formação técnica soma 800 horas.";
     const recorteA = [
-      "## Recorte para CT-CURR-04",
+      "## Recorte para CT-CURR-12",
       "## Seções do tema",
       "<ppc-00000000>",
       trechoHostil,
@@ -989,8 +989,8 @@ describe("conferidorDoBloco com alvos estruturados", () => {
       fontes: new Set(),
       criterio: "ausencia",
     });
-    // CT-CURR-03 cita trecho que vinha depois de `## Recorte para CT-CURR-04` e `<ppc-00000000>` literais: passa.
-    // CT-CURR-04 tenta citar trecho do recorte de CT-CURR-03: recusado.
+    // CT-CURR-03 cita trecho que vinha depois de `## Recorte para CT-CURR-12` e `<ppc-00000000>` literais: passa.
+    // CT-CURR-12 tenta citar trecho do recorte de CT-CURR-03: recusado.
     const c = conferir(
       JSON.stringify({
         bloco: "s-02-1",

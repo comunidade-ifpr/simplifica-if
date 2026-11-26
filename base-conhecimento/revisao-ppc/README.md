@@ -41,13 +41,27 @@ As fichas transversais (`CT-TRANS-*`) conferem a coerência entre seções. Até
   - CT-TRANS-08: a matriz pedagogicamente explicitada.
 - **Já cobertas por outras fichas:**
   - denominação × CNCT: CT-IDENT-01;
-  - carga horária da apresentação × matriz: CT-CURR-02;
+  - carga horária da apresentação × matriz: CT-TRANS-12;
   - base legal entre seções: CT-IDENT-08, CT-SUP-09 e CT-SUP-12;
   - bibliografias do ementário: CT-CURR-06;
   - AEE fora da matriz: CT-CURR-22;
   - estágio × perfil: CT-CURR-25;
   - egressos: CT-IDENT-18;
   - habilitação docente por componente: CT-SUP-15.
+
+### Um fato, uma ficha
+
+Cada problema do PPC tem uma ficha responsável. Quando duas fichas olham para o mesmo dado, a rubrica de uma diz o que não avaliar e qual ficha o avalia ("não avaliar aqui… (CT-…)"), para a pessoa não receber o mesmo ponto duas vezes. A revisão de 26/11/2026 achou estas sobreposições depois de uma leitura completa com IA:
+
+- **Carga horária total:** a divergência entre os totais declarados nas seções é da CT-TRANS-12; a CT-CURR-02 confere só o total contra o mínimo (o verificador deixou de apontar outro total no texto), e a CT-IDENT-02, só a presença do total.
+- **Estágio:** a CT-TRANS-11 não avalia a carga horária total do curso.
+- **Registro profissional:** a CT-IDENT-19 avalia a seção; a legislação profissional entre as citações é da CT-SUP-21, em código.
+- **Infraestrutura:** a comparação item a item com o mínimo do CNCT é da CT-SUP-22; a CT-SUP-07 fica com os componentes práticos e o ambiente virtual.
+- **Inclusão e AEE:** o AEE em si (público, procedimentos, distinção entre AEE, adaptação e flexibilização) é da CT-SUP-19, e o AEE na matriz, da CT-CURR-22; a CT-CURR-09 fica com a adaptação e a flexibilização no currículo, e a CT-SUP-04, com a inclusão e a acessibilidade na política de atendimento.
+- **Concepção × matriz:** a CT-TRANS-08 avalia a mediação da concepção e dos princípios; a cobertura entre objetivos, perfil e componentes é da CT-TRANS-01, e a integração entre formação geral e técnica, da CT-CURR-19.
+- **Governança:** a coordenação é da CT-SUP-23; a CT-SUP-06 fica com o colegiado e as demais instâncias.
+
+Saíram as fichas repetidas e as de síntese, que viravam pendências que a pessoa não tinha como corrigir: CT-CURR-04 (coberta pela CT-TRANS-01), CT-CURR-07 (pela CT-CURR-12), CT-IDENT-07 (pelas CT-IDENT-10, 11 e 12), CT-SUP-05 (pela CT-SUP-15), CT-TRANS-05 e CT-TRANS-06 (cartões de síntese, não critérios). Um ID que saiu não volta a ser usado.
 
 ## Tópicos das fichas
 

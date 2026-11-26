@@ -98,8 +98,8 @@ describe("validador em casos inválidos", () => {
     const c = copiaDaBase();
     const semExecucao = NodePath.join(c.fichas, "ct-curr-01.json");
     editarJson(semExecucao, (ficha) => void delete ficha.execucao);
-    // CT-CURR-04 vira D sem verificador; CT-CURR-02, que tem verificador, vira J.
-    editarJson(NodePath.join(c.fichas, "ct-curr-04.json"), (ficha) => {
+    // CT-CURR-12 vira D sem verificador; CT-CURR-02, que tem verificador, vira J.
+    editarJson(NodePath.join(c.fichas, "ct-curr-12.json"), (ficha) => {
       ficha.execucao = { modo: "D", justificativa: "teste" };
     });
     editarJson(NodePath.join(c.fichas, "ct-curr-02.json"), (ficha) => {
@@ -107,7 +107,7 @@ describe("validador em casos inválidos", () => {
     });
     expect(validar(c)).toEqual([
       `${semExecucao}: $.execucao: campo obrigatório ausente`,
-      "CT-CURR-04: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts",
+      "CT-CURR-12: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts",
       "verificador d-carga-horaria-total: registrado para CT-CURR-02, que não é ficha D",
     ]);
   });

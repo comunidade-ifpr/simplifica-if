@@ -185,7 +185,7 @@ const rpc = Effect.gen(function* () {
 });
 
 /**
- * A revisão com IA (com CT-CURR-04 como pendência) do arquivo, mesclada na lista da pré-conferência
+ * A revisão com IA (com CT-CURR-12 como pendência) do arquivo, mesclada na lista da pré-conferência
  * dele (feita aqui, se ainda não houver).
  */
 const revisarComIa = (arquivo: string) =>
@@ -194,7 +194,7 @@ const revisarComIa = (arquivo: string) =>
     const id =
       (yield* c["revisaoPpc.listas"]({})).find((l) => l.arquivoOriginal === arquivo)?.id ??
       (yield* revisarAteOFim(c, { arquivo })).lista;
-    roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-04"]));
+    roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-12"]));
     const preparada = yield* c["revisaoPpc.prepararIa"]({ lista: id, provider: "claude", modo: "rapido" });
     yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
     const final: EstadoRevisaoIa = (yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
@@ -265,14 +265,14 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         const mesma = lista.pendencias.find((p) => p.chave === codigo.chave)!;
         assert.strictEqual(mesma.situacao, "resolvida");
         assert.strictEqual(mesma.historico.length, 1);
-        assert.strictEqual(daFicha(lista, "CT-CURR-04").pendencia.origem, "ia");
+        assert.strictEqual(daFicha(lista, "CT-CURR-12").pendencia.origem, "ia");
         // Na régua, o que a IA decidiu (modo rápido: só uma parte das fichas) e o resto ainda não lido.
         const r = lista.resultado;
         assert.strictEqual(r.criterios.length, r.totalCriterios);
         const daIa = r.criterios.filter((x) => x.origem === "ia" && x.estado !== "nao_lido");
         assert.strictEqual(daIa.length, r.conferidosIa + r.paraConferirIa);
         assert.isAbove(daIa.length, 0);
-        assert.strictEqual(r.criterios.find((x) => x.ficha === "CT-CURR-04")!.estado, "nao_atende");
+        assert.strictEqual(r.criterios.find((x) => x.ficha === "CT-CURR-12")!.estado, "nao_atende");
         assert.strictEqual(
           r.criterios.filter((x) => x.estado === "nao_lido").length,
           r.totalCriterios - r.conferidos - r.conferidosIa - r.paraConferirIa,
@@ -322,7 +322,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       const { c, lista, final } = yield* revisarComIa(
         gravar("PPC contestar.docx", ppcSintetico({ caixaDeTexto: "atual" })),
       );
-      const chave = daFicha(lista, "CT-CURR-04").chave;
+      const chave = daFicha(lista, "CT-CURR-12").chave;
       roteiro.configs.length = 0;
       roteiro.pedidos.length = 0;
 
@@ -450,7 +450,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
     Effect.gen(function* () {
       reiniciar();
       const { c, lista } = yield* revisarComIa(gravar("PPC sugerir.docx", ppcSintetico()));
-      const chave = daFicha(lista, "CT-CURR-04").chave;
+      const chave = daFicha(lista, "CT-CURR-12").chave;
       roteiro.responder = () =>
         JSON.stringify({
           texto:
@@ -565,20 +565,20 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
 
       // Uma pendência da IA: o lote de uma ficha no arquivo novo decide.
       const { lista } = yield* revisarComIa(gravar("PPC nova revisao IA.docx", ppcSintetico()));
-      const chave = daFicha(lista, "CT-CURR-04").chave;
+      const chave = daFicha(lista, "CT-CURR-12").chave;
       yield* c["revisaoPpc.marcar"]({ lista: lista.id, chave, situacao: "resolvida" });
       const novo = gravar(
         "PPC nova revisao IA v2.docx",
         ppcSintetico({ corpoExtra: "<w:p><w:r><w:t>Versão revisada.</w:t></w:r></w:p>" }),
       );
       roteiro.pedidos.length = 0;
-      roteiro.responder = (pedido) => respostaLote(pedido, new Set(["CT-CURR-04"]));
+      roteiro.responder = (pedido) => respostaLote(pedido, new Set(["CT-CURR-12"]));
       l = yield* c["revisaoPpc.revisarDeNovo"]({ lista: lista.id, chave, arquivo: novo });
       p = l.pendencias.find((x) => x.chave === chave)!;
       // A pessoa disse "resolvi", mas o arquivo novo ainda não atende: volta a aberta.
       assert.strictEqual(p.situacao, "aberta");
       assert.include(p.historico.at(-1)!.texto, "ainda aponta");
-      assert.deepStrictEqual(fichasDo(roteiro.pedidos[0]!), ["CT-CURR-04"]);
+      assert.deepStrictEqual(fichasDo(roteiro.pedidos[0]!), ["CT-CURR-12"]);
       roteiro.responder = (pedido) => respostaLote(pedido, new Set());
       l = yield* c["revisaoPpc.revisarDeNovo"]({ lista: lista.id, chave, arquivo: novo });
       p = l.pendencias.find((x) => x.chave === chave)!;
@@ -695,7 +695,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
 
         // Uma lista com IA: a pendência da IA fica como está; uma pendência nova do código entra aberta.
         const { lista } = yield* revisarComIa(gravar("PPC versao IA.docx", ppcSintetico()));
-        const daIa = daFicha(lista, "CT-CURR-04");
+        const daIa = daFicha(lista, "CT-CURR-12");
         const comCaixa = gravar("PPC versao IA v2.docx", ppcSintetico({ caixaDeTexto: "atual" }));
         const pedidos = roteiro.pedidos.length;
         const ri = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: lista.id, arquivo: comCaixa });
@@ -1147,7 +1147,7 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
     Effect.gen(function* () {
       const arquivo = NodePath.join(diretorioTemporario("simplifica-lista-banco-"), "conversas.sqlite");
       const pendencia = {
-        ficha: "CT-CURR-04",
+        ficha: "CT-CURR-12",
         tituloFicha: "Matriz",
         tema: "Matriz e estrutura curricular",
         ordemTema: 2,
@@ -1228,7 +1228,7 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
       Effect.gen(function* () {
         const arquivo = NodePath.join(diretorioTemporario("simplifica-lista-mescla-"), "conversas.sqlite");
         const base = {
-          ficha: "CT-CURR-04",
+          ficha: "CT-CURR-12",
           tituloFicha: "Matriz",
           tema: "Matriz e estrutura curricular",
           ordemTema: 2,
@@ -1247,7 +1247,7 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
         };
         const daIa = {
           ...base,
-          ficha: "CT-CURR-07",
+          ficha: "CT-CURR-19",
           titulo: "Falta o ementário.",
           explicacao: null,
           faltas: [],

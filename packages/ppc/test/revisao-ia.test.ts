@@ -59,11 +59,11 @@ const fichas = NodeFS.readdirSync(PASTA_FICHAS)
 const porId = new Map(fichas.map((f) => [f.id, f]));
 
 describe("plano dos blocos", () => {
-  test("o completo leva as 72 fichas S e J, nenhuma D, cada uma num só bloco", () => {
+  test("o completo leva as 66 fichas S e J, nenhuma D, cada uma num só bloco", () => {
     const blocos = planejarBlocos(fichas, "completo");
     const ids = blocos.flatMap((b) => b.fichas);
-    expect(ids).toHaveLength(72);
-    expect(new Set(ids).size).toBe(72);
+    expect(ids).toHaveLength(66);
+    expect(new Set(ids).size).toBe(66);
     expect(ids.some((id) => porId.get(id)!.modo === "D")).toBe(false);
     // Lotes S de até 6, um J por tema, as transversais num bloco no fim.
     for (const b of blocos) {
@@ -82,7 +82,7 @@ describe("plano dos blocos", () => {
     expect(bloq.every((f) => rapido.includes(f))).toBe(true);
     expect(rapido.length).toBeGreaterThan(15);
     expect(rapido.length).toBeLessThan(30);
-    expect(rapido.length + fichasForaDoModo(fichas, "rapido").length).toBe(72);
+    expect(rapido.length + fichasForaDoModo(fichas, "rapido").length).toBe(66);
   });
 });
 
@@ -521,7 +521,7 @@ describe("os resultados da IA no DOCX comentado", () => {
   const iaDoTeste: EntradaIa = {
     resultados: [
       {
-        ficha: "CT-IDENT-07",
+        ficha: "CT-IDENT-12",
         estado: "NAO_ATENDE",
         confianca: 0.9,
         justificativa: "O perfil é genérico e não traz as atribuições do CNCT",
@@ -555,7 +555,7 @@ describe("os resultados da IA no DOCX comentado", () => {
         revisaoHumana: false,
       },
     ],
-    fora: ["CT-SUP-05"],
+    fora: ["CT-SUP-15"],
   };
   const revisao = revisarDocx(ppcSintetico(), "ppc.docx", base, {
     agora: new Date("2026-11-16T12:00:00Z"),
@@ -565,7 +565,7 @@ describe("os resultados da IA no DOCX comentado", () => {
 
   test("a pendência da IA entra na lista e no DOCX, no trecho, com a fonte legível e sem código no corpo", () => {
     expect(problemasOoxml(revisao.docx)).toEqual([]);
-    const perfil = revisao.pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
+    const perfil = revisao.pendencias.find((p) => p.ficha === "CT-IDENT-12")!;
     expect(perfil).toMatchObject({ estado: "nao_atende", origem: "ia", noDocumento: "no-trecho" });
     // a justificativa é o título, e as lacunas ficam em lista (não mais numa frase "Falta: …")
     expect(perfil).toMatchObject({
@@ -579,10 +579,10 @@ describe("os resultados da IA no DOCX comentado", () => {
       ia: {
         ...iaDoTeste,
         resultados: iaDoTeste.resultados.map((r) =>
-          r.ficha === "CT-IDENT-07" ? { ...r, titulo: "O perfil não traz as atribuições do CNCT" } : r,
+          r.ficha === "CT-IDENT-12" ? { ...r, titulo: "O perfil não traz as atribuições do CNCT" } : r,
         ),
       },
-    }).pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
+    }).pendencias.find((p) => p.ficha === "CT-IDENT-12")!;
     expect(comTitulo).toMatchObject({
       titulo: "O perfil não traz as atribuições do CNCT.",
       explicacao: "O perfil é genérico e não traz as atribuições do CNCT.",
@@ -594,10 +594,10 @@ describe("os resultados da IA no DOCX comentado", () => {
       ia: {
         ...iaDoTeste,
         resultados: iaDoTeste.resultados.map((r) =>
-          r.ficha === "CT-IDENT-07" ? { ...r, titulo: "x".repeat(161) } : r,
+          r.ficha === "CT-IDENT-12" ? { ...r, titulo: "x".repeat(161) } : r,
         ),
       },
-    }).pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
+    }).pendencias.find((p) => p.ficha === "CT-IDENT-12")!;
     expect(comTituloLongo.titulo).toBe(perfil.titulo);
     // a chave é a mesma com ou sem título longo, e a de antes do campo: o texto reunido não mudou
     expect(chavePendencia(comTituloLongo)).toBe(chavePendencia(perfil));
@@ -618,7 +618,7 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(texto.pendencias.map(({ noDocumento: _, ...p }) => p)).toEqual(
       revisao.pendencias.map(({ noDocumento: _, ...p }) => p),
     );
-    expect(texto.pendencias.find((p) => p.ficha === "CT-IDENT-07")!.noDocumento).toBe("no-trecho");
+    expect(texto.pendencias.find((p) => p.ficha === "CT-IDENT-12")!.noDocumento).toBe("no-trecho");
   });
 
   test("a leitura parcial: o aviso diz o que ficou de fora e o que ainda não foi lido, juntos", () => {
@@ -628,9 +628,9 @@ describe("os resultados da IA no DOCX comentado", () => {
     });
     expect(parcial.leituraIa).toBe("parcial");
     expect(parcial.aviso).toContain("No modo rápido, ficaram de fora 1 critério");
-    // 84 - 12 do código - 3 lidos pela IA - 1 de fora.
+    // 78 - 12 do código - 3 lidos pela IA - 1 de fora.
     expect(parcial.aviso).toContain(
-      "A conferência com IA parou antes do fim: 68 critérios ainda não foram conferidos.",
+      "A conferência com IA parou antes do fim: 62 critérios ainda não foram conferidos.",
     );
   });
 
@@ -646,7 +646,7 @@ describe("os resultados da IA no DOCX comentado", () => {
     // A ficha que falhou na conferência não conta como conferida: vai para "ficaram para conferir".
     expect(revisao.conferidosIa).toBe(2);
     expect(revisao.paraConferirIa).toBe(1);
-    expect(revisao.aviso).toContain("14 de 84 critérios conferidos: 12 pelo código");
+    expect(revisao.aviso).toContain("14 de 78 critérios conferidos: 12 pelo código");
     expect(revisao.aviso).toContain("e 2 pela IA");
     expect(revisao.aviso).toContain("1 critério foi à IA e ficou para conferir na leitura.");
     expect(revisao.aviso).toContain(

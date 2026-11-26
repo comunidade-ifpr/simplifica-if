@@ -1,6 +1,6 @@
 {
   "id": "CT-SUP-04",
-  "titulo": "Inclusão, acessibilidade e AEE na política de atendimento",
+  "titulo": "Inclusão e acessibilidade na política de atendimento",
   "dominio": "suporte",
   "criticidade": "OBRIG",
   "execucao": {
@@ -55,8 +55,8 @@
       "papel": "fundamento"
     }
   ],
-  "pergunta": "A política de atendimento aos estudantes contempla inclusão, acessibilidade e AEE com coerência institucional?",
-  "rubrica": "Verificar se o PPC explicita apoio à inclusão com distinção adequada entre atendimento, adaptação e trabalho especializado. A Resolução CNE/CP nº 2/2026 exige que o PPC trate da acessibilidade para a inclusão dos estudantes público da educação especial (art. 28, V) e das condições de acessibilidade, tecnologias assistivas e adaptações razoáveis (art. 5º).",
+  "pergunta": "A política de atendimento aos estudantes trata da inclusão e da acessibilidade dos estudantes público da educação especial?",
+  "rubrica": "Verificar se a política de atendimento do PPC trata da inclusão e da acessibilidade dos estudantes público da educação especial. A Resolução CNE/CP nº 2/2026 exige que o PPC trate da acessibilidade para a inclusão dos estudantes público da educação especial (art. 28, V) e das condições de acessibilidade, tecnologias assistivas e adaptações razoáveis (art. 5º). A distinção entre AEE, adaptação e flexibilização é da CT-SUP-19; as instâncias e a normativa de inclusão, da CT-SUP-18.",
   "boa_evidencia": "Trechos sobre NAPNE, acessibilidade, atendimento especializado e referências normativas pertinentes.",
   "ma_evidencia": "Uso difuso de termos de inclusão sem políticas, setores ou responsabilidades claras.",
   "escalonar_quando": "Escalonar se houver menções pontuais, mas sem definição institucional suficiente.",

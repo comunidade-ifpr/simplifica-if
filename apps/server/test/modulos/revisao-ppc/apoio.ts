@@ -31,7 +31,7 @@ export const layerWorkersNoProcesso = layerWorkersNoProcessoCom(revisaoNoProcess
 
 export const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../../../base-conhecimento/revisao-ppc/fichas");
 /** Duas S de temas do modo rápido, duas J da matriz e uma transversal BLOQ. */
-export const FICHAS_FIXTURE = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-04", "CT-CURR-07", "CT-TRANS-03"] as const;
+export const FICHAS_FIXTURE = ["CT-IDENT-02", "CT-CURR-03", "CT-CURR-12", "CT-CURR-19", "CT-TRANS-03"] as const;
 
 /** O `kb.sqlite` de fixture com o curso Técnico em Agropecuária no CNCT e as 5 fichas da revisão com IA. */
 export function bancoComFichas(): string {

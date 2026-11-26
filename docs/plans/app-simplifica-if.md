@@ -180,7 +180,7 @@ Marco 0, cérebro portátil: o `simplifica-mcp` em apps que já existem, para 3 
 | Anexos em texto | feito: `.docx`, `.odt` e PDF em Markdown para a IA (`apps/server/src/textos-anexos/`) |
 | M2.1 a M2.5 | M2.1 virou o M1.15; M2.2 a M2.5 faltam |
 
-**Revisar um PPC, em uma linha:** 84 fichas classificadas pelo campo `execucao` (12 D só código, 38 S trecho achado pelo código e confirmado pela IA, 34 J julgamento da IA sobre a seção); a pré-conferência roda sem IA, e a revisão com IA é orquestrada pelo servidor em sessões sem ferramentas, com toda resposta conferida em código.
+**Revisar um PPC, em uma linha:** 78 fichas classificadas pelo campo `execucao` (12 D só código, 38 S trecho achado pelo código e confirmado pela IA, 28 J julgamento da IA sobre a seção); a pré-conferência roda sem IA, e a revisão com IA é orquestrada pelo servidor em sessões sem ferramentas, com toda resposta conferida em código.
 
 ## O que falta
 

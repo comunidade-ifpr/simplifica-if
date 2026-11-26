@@ -26,14 +26,13 @@ export const comoNoDocumento = (linha: string) =>
     .trim();
 
 const MINIMO_INTEGRADO = 3000;
-const MENOR_MINIMO_CNCT = 800;
 const ART29_PAR2 = linkNorma("br/cne-cp/res/2026/2#art29-par2");
 
 export const cargaHorariaTotal: Verificador = {
   id: "d-carga-horaria-total",
   ficha: "CT-CURR-02",
   descricao:
-    "A carga horária total extraída do PPC (fato `extraido` do kb) contra o mínimo do CNCT e, no integrado (fora o PROEJA), as 3.000 h da Res. CNE/CP nº 2/2026, art. 29, § 2º; valor abaixo do mínimo, outro total de 800 h ou mais no texto ou valor não encontrado saem a conferir.",
+    "A carga horária total extraída do PPC (fato `extraido` do kb) contra o mínimo do CNCT e, no integrado (fora o PROEJA), as 3.000 h da Res. CNE/CP nº 2/2026, art. 29, § 2º; valor abaixo do mínimo ou não encontrado sai a conferir. Totais diferentes entre seções são da CT-TRANS-12, com a IA.",
   verificar(ppc, base) {
     const { cnct, forma } = base;
     const total = ppc.fatos.find((f) => f.fato === "carga_horaria_total_h");
@@ -69,27 +68,6 @@ export const cargaHorariaTotal: Verificador = {
             mensagem: `Carga horária total de ${total.valor_num} h, abaixo do mínimo de ${minimo} h (${minimoForma > minimoCnct ? `forma integrada, ${art29}` : "CNCT"}).`,
             trechos: [evidencia],
             fontes: minimoForma > minimoCnct ? [ART29_PAR2] : fontes,
-          },
-        ],
-        { estado: "a_conferir", mensagem: "" },
-      );
-    // Alternativa abaixo de 800 h (o menor mínimo do CNCT) não é total de curso: é célula de tabela ou subtotal.
-    // Na mesma linha que o total (a linha "Carga horária total" da matriz, com os anos), também não é divergência.
-    const comTotal = (linha: number) =>
-      (ppc.linhas[linha - 1] ?? "").replace(/(\d)\.(\d{3})/g, "$1$2").includes(String(total.valor_num));
-    const diferentes = total.alternativas.filter((a) => {
-      const valor = Number.parseInt(a.valor, 10);
-      return valor >= MENOR_MINIMO_CNCT && valor !== total.valor_num && !comTotal(a.linha);
-    });
-    if (diferentes.length)
-      return resultado(
-        this,
-        [
-          {
-            estado: "a_conferir",
-            mensagem: `A carga horária total aparece com valores diferentes: ${[total.valor, ...diferentes.map((a) => a.valor)].join(", ")} h.`,
-            trechos: [evidencia, ...diferentes.slice(0, 3).map((a) => trecho(ppc, a.linha))],
-            fontes,
           },
         ],
         { estado: "a_conferir", mensagem: "" },

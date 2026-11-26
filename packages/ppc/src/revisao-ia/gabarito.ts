@@ -51,8 +51,6 @@ export const GABARITO: Readonly<Record<string, readonly Requisito[]>> = {
   "CT-CURR-01": [MATRIZ],
   "CT-CURR-03": [MATRIZ],
   "CT-CURR-10": [p(/representacao grafica/, 'representação gráfica (a seção; "fluxograma" aparece em ementas)')],
-  "CT-CURR-04": [MATRIZ, p(/perfil (do egresso|profissional)/, "perfil")],
-  "CT-CURR-07": [MATRIZ],
   "CT-CURR-12": [MATRIZ],
   "CT-CURR-19": [p(/pratica(s)? profissiona|estagio/, "prática profissional ou estágio")],
   "CT-CURR-05": [EMENTARIO],
@@ -62,7 +60,6 @@ export const GABARITO: Readonly<Record<string, readonly Requisito[]>> = {
   "CT-TRANS-02": [secao("concepcao_pedagogica", "organizacao_curricular"), secao("avaliacao")],
   "CT-TRANS-03": [EMENTARIO],
   "CT-TRANS-04": [secao("corpo_docente"), secao("infraestrutura"), MATRIZ],
-  "CT-TRANS-05": [secao("avaliacao_curso", "acompanhamento_egresso")],
   "CT-TRANS-07": [
     p(/\b\d{1,3} vagas|vagas\W{0,25}\d{1,3}\b/, "número de vagas"),
     p(/laboratorio|infraestrutura|sala/, "infraestrutura"),

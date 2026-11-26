@@ -78,7 +78,7 @@ describe("revisarDocx", () => {
     });
     expect(revisao.conferidos).toBe(12);
     expect(revisao.totalCriterios).toBe(Object.keys(base.fichas).length);
-    expect(revisao.totalCriterios).toBe(84);
+    expect(revisao.totalCriterios).toBe(78);
   });
 
   test("a régua: todos os critérios da base, com o título humano; sem a IA, só os 12 do código decididos", () => {
@@ -89,7 +89,7 @@ describe("revisarDocx", () => {
     const decididos = revisao.criterios.filter((c) => c.estado !== "nao_lido");
     expect(decididos).toHaveLength(revisao.conferidos);
     expect(decididos.every((c) => c.origem === "codigo")).toBe(true);
-    expect(revisao.criterios.filter((c) => c.estado === "nao_lido")).toHaveLength(84 - 12);
+    expect(revisao.criterios.filter((c) => c.estado === "nao_lido")).toHaveLength(78 - 12);
     for (const c of revisao.criterios) {
       expect(c.titulo).not.toMatch(/^CT-/);
       expect(c.titulo).toBe(base.fichas[c.ficha]);
@@ -171,7 +171,7 @@ describe("revisarDocx", () => {
     expect(comentarios).toContain('w:author="Simplifica IF (revisão prévia)"');
     expect(comentarios).not.toContain("ifpr://");
     expect(comentarios).toContain("Não é parecer da PROENS");
-    expect(comentarios).toContain("12 de 84 critérios conferidos automaticamente; os demais exigem leitura.");
+    expect(comentarios).toContain("12 de 78 critérios conferidos automaticamente; os demais exigem leitura.");
     expect(comentarios).toContain(
       `com a vigência das normas em ${dataReferencia(raizRepositorio()).split("-").reverse().join("/")}`,
     );
