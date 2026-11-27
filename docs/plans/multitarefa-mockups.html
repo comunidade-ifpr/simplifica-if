@@ -1,0 +1,1352 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multitarefa: mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --grafite:#17171a; --marca-texto:#ffe45c; --grifo:#ffe45c; --grifo-risco:#f2c200;
+  --bg:#ffffff; --fg:#17171a; --muted:#f4f4f5; --muted-fg:#62626a; --accent:#ebebee; --border:#e1e1e5; --input:#c9c9d0;
+  --info:#0277bd; --success:#2f7d4a; --success-fg:#22603a; --warning:#ffa726; --warning-fg:#8a4b00; --warning-surface:#fff4e0;
+  --error:#c62828; --error-fg:#a32424; --error-surface:#fdecec; --message:#f4f4f5;
+  --grav-corrigir:#c62828; --grav-corrigir-texto:#a32424; --grav-conferir:#b4500a; --grav-conferir-texto:#8f3f06; --grav-conferir-fundo:#fdeee2;
+  --grav-ok:#2f7d4a; --grav-ok-texto:#22603a; --grav-nao-lido:#bdbdbd;
+  --sans:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  /* página */
+  --pg-grifo:#ffe45c; --pg-bg:#f3f2ee; --pg-fg:#17171a; --pg-muted:#5d5d64; --pg-card:#ffffff; --pg-border:#e2e0d8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --pg-grifo:rgb(255 228 92 / .38); --pg-bg:#121214; --pg-fg:#f1f1f3; --pg-muted:#a2a2ab; --pg-card:#1b1b1f; --pg-border:#2f2f36; }
+}
+:root[data-theme="dark"]{ --pg-grifo:rgb(255 228 92 / .38); --pg-bg:#121214; --pg-fg:#f1f1f3; --pg-muted:#a2a2ab; --pg-card:#1b1b1f; --pg-border:#2f2f36; }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--pg-bg);color:var(--pg-fg);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.pg{max-width:1280px;margin:0 auto;padding:40px 16px 80px}
+.pg-cab h1{font-size:clamp(2rem,1.4rem + 2.4vw,3.25rem);font-weight:800;letter-spacing:-.035em;line-height:1.05}
+.pg-cab h1 mark{background:linear-gradient(to top,var(--pg-grifo) 45%,transparent 45%);color:inherit;padding:0 .1em}
+.pg-cab p{color:var(--pg-muted);max-width:72ch;margin-top:12px}
+.indice{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 8px}
+.indice a{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--pg-border);border-radius:999px;background:var(--pg-card);color:var(--pg-fg);text-decoration:none;font-size:14px;font-weight:500}
+.indice a:hover{border-color:var(--pg-fg)}
+.indice a b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--grafite);color:var(--marca-texto);font-size:12px}
+.leg{display:flex;flex-wrap:wrap;gap:20px;color:var(--pg-muted);font-size:14px;margin-top:12px}
+.leg span{display:inline-flex;align-items:center;gap:8px}
+.leg .mk{position:static}
+.notas .mk,.leg .mk{background:var(--marca-texto);color:var(--grafite);box-shadow:none}
+.cena{margin-top:64px;scroll-margin-top:16px}
+.cena-cab{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+.cena-cab .num{font-weight:800;font-size:14px;color:var(--pg-muted)}
+.cena-cab h2{font-size:1.75rem;font-weight:800;letter-spacing:-.025em;line-height:1.15}
+.cena-cab .tam{font-size:13px;color:var(--pg-muted);border:1px solid var(--pg-border);border-radius:999px;padding:2px 10px}
+.cena-cab .zoom{margin-left:auto;font:inherit;font-size:13px;font-weight:600;background:var(--pg-card);color:var(--pg-fg);border:1px solid var(--pg-border);border-radius:999px;padding:4px 12px;cursor:pointer}
+.legenda{margin-top:10px;max-width:90ch;color:var(--pg-fg);font-size:15.5px}
+.legenda code{font-family:var(--mono);font-size:13px;background:var(--pg-card);border:1px solid var(--pg-border);border-radius:4px;padding:0 4px}
+.palco{margin-top:18px;overflow:hidden;border-radius:14px}
+.palco.real{overflow-x:auto}
+.escala{transform-origin:0 0}
+.notas{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px 28px;list-style:none;counter-reset:n}
+.notas li{display:flex;gap:10px;font-size:14.5px;color:var(--pg-fg);line-height:1.45}
+.notas li .mk{position:static;flex-shrink:0;margin-top:1px}
+.pg-pe{margin-top:72px;color:var(--pg-muted);font-size:13px;border-top:1px solid var(--pg-border);padding-top:16px}
+
+/* marcador de anotação */
+.mk{position:absolute;z-index:40;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--grafite);color:var(--marca-texto);font:800 13px/1 var(--sans);box-shadow:0 0 0 3px #fff,0 2px 8px rgba(0,0,0,.3);pointer-events:none}
+.mk.solto{position:absolute}
+.rel{position:relative}
+
+/* ---------------------------------------------------------------- o app */
+.janela,.desktop{position:relative;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.5;border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.12),0 30px 70px -20px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.janela *,.desktop *{font-family:inherit}
+.ic{flex-shrink:0;display:inline-block;vertical-align:middle}
+.cab{height:48px;flex-shrink:0;display:flex;align-items:center;gap:24px;padding:0 16px 0 84px;border-bottom:1px solid var(--border);background:var(--bg);position:relative}
+.semaforos{position:absolute;left:16px;top:50%;transform:translateY(-50%);display:flex;gap:8px}
+.semaforos i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.semaforos i:nth-child(2){background:#febc2e}.semaforos i:nth-child(3){background:#28c840}
+.logo{display:inline-flex;align-items:center;gap:8px;font-size:15px;letter-spacing:-.01em}
+.logo-sq{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--marca-texto)}
+.logo-sq.sm{width:18px;height:18px;border-radius:5px}
+.abas{display:flex;gap:20px}
+.aba{font-weight:600;font-size:14px;color:var(--muted-fg);padding:0 4px;border-radius:2px;cursor:default}
+.aba.ativa{color:var(--fg);background:linear-gradient(to top,var(--grifo) 45%,transparent 45%)}
+.buscar{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:4px 12px;background:none;color:var(--muted-fg);font-size:14px}
+.buscar kbd,.janela kbd{font:500 12px/1 var(--sans);color:var(--muted-fg)}
+.bandeja{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--muted);border-radius:999px;padding:4px 12px;font-size:13.5px;font-weight:600;color:var(--fg)}
+.bandeja.aberta{background:var(--fg);color:#fff;border-color:var(--fg)}
+.bandeja.alerta{background:var(--warning-surface);border-color:#f3c98b;color:var(--warning-fg)}
+.giro{display:inline-flex;animation:gira 1.1s linear infinite}
+.giro2{animation:gira 1.1s linear infinite;color:var(--muted-fg)}
+@keyframes gira{to{transform:rotate(360deg)}}
+.ponto-novo{width:8px;height:8px;border-radius:50%;background:var(--marca-texto);box-shadow:0 0 0 1.5px var(--grafite)}
+.ponto-novo.inl{display:inline-block;margin-right:4px;vertical-align:1px}
+.icone{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:0;background:none;color:var(--muted-fg)}
+.icone.on{background:var(--grifo);color:var(--fg)}
+.icone+.icone{margin-left:-20px}
+.corpo{flex:1;min-height:0;display:flex;position:relative}
+.principal{flex:1;min-width:0;overflow:hidden;position:relative}
+.pagina{max-width:1120px;margin:0 auto;padding:28px 40px;display:flex;flex-direction:column;gap:22px}
+.pagina.estreita{padding:24px 28px}
+.sup{font-weight:600;font-size:14px;color:var(--muted-fg)}
+.m{color:var(--muted-fg);font-size:14px;line-height:1.43}
+.b{font-weight:600}
+.titulo{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.4}
+.title{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.4}
+.title.big{font-size:26px}
+.display{font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em}
+.hero{font-size:56px;line-height:1;font-weight:800;letter-spacing:-.035em}
+.quote{font-family:var(--serif);font-size:17px;line-height:28px}
+.w68{max-width:68ch}
+.lk{font-weight:500;text-decoration:underline;text-decoration-color:var(--fg);text-decoration-thickness:1px;text-underline-offset:3px;color:var(--fg);display:inline-flex;align-items:center;gap:4px;cursor:default}
+.lk.sm{font-size:14px}.lk.xs{font-size:13px}
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:999px;font-size:14px;font-weight:600;padding:7px 14px;border:1px solid transparent;background:none;color:var(--fg);white-space:nowrap}
+.btn.prim{background:var(--grafite);color:#fff}
+.btn.out{border-color:var(--input);background:var(--bg)}
+.btn.ghost{color:var(--fg)}
+.btn.icon{padding:7px}
+.btn.sm{padding:5px 12px;font-size:13.5px}
+.btn.xs{padding:3px 10px;font-size:12.5px;gap:5px}
+.btn.destaque{border-color:var(--grafite);box-shadow:0 0 0 3px var(--grifo)}
+.ib{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;border:0;background:none;color:var(--fg)}
+.ib.dis{color:#c9c9d0}
+.ib.on{background:var(--grifo)}
+
+/* revisão */
+.rev-cab{display:flex;flex-direction:column;gap:4px}
+.doc-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 24px;flex-wrap:wrap}
+.doc-acoes{display:flex;gap:6px;align-items:center}
+.resultado{display:flex;flex-direction:column;gap:12px}
+.regua{display:flex;gap:10px;flex-wrap:wrap}
+.tr.alvo{outline:2px solid var(--fg);outline-offset:2px;cursor:pointer}
+.regua-dica{position:absolute;top:84px;left:118px;font-size:12.5px;font-weight:600;background:var(--fg);color:var(--bg);border-radius:6px;padding:3px 8px;white-space:nowrap}
+.crit-link{margin-left:4px}
+.crit .title{font-size:19px;line-height:1.25}
+.ler-corpo.crit{gap:9px;padding:14px 20px}
+.crit .bloco{gap:3px}
+.crit .rot{font-size:13px}
+.crit .txt{font-size:14px;line-height:1.45}
+.crit-sel{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.crit-sel .m,.neste .m{color:var(--muted-fg);font-size:13px}
+.neste{background:var(--muted);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.crit-normas{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:14px;padding:0;margin:0}
+.crit-duas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.crit .txt.sm{font-size:13px;line-height:1.45}
+.sel.xs{font-size:12px}
+.rg{display:flex;gap:3px}
+.tr{display:block;width:6px;height:22px;border-radius:1px}
+.tr.c{background:var(--grav-corrigir)}.tr.f{background:var(--grav-conferir)}.tr.k{background:var(--grav-ok)}.tr.n{border:1px solid var(--grav-nao-lido)}
+.faixa{display:flex;justify-content:space-between;align-items:center;gap:20px;border:1px solid var(--border);border-radius:16px;padding:14px 16px;background:#fff}
+.faixa.pausada{background:var(--grav-conferir-fundo);border-color:#f2cfb4}
+.faixa-l{display:flex;gap:12px;align-items:flex-start}
+.faixa-l .b{font-size:15px}
+.faixa-r{display:flex;gap:12px;align-items:center;flex-shrink:0}
+.pulso{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--grafite);margin-top:6px;animation:pulsa 1.4s ease-in-out infinite;flex-shrink:0}
+.pulso.parado{background:var(--grav-conferir);animation:none}
+.pulso.mini{width:8px;height:8px;margin:0 4px 0 0;vertical-align:0}
+@keyframes pulsa{50%{opacity:.25}}
+.grade{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:40px}
+.grade.sem-temas{grid-template-columns:1fr;gap:14px}
+.seletor{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:600;max-width:340px}
+.seletor .sel{display:flex;justify-content:space-between;align-items:center;height:36px;border:1px solid var(--input);border-radius:10px;padding:0 10px;font-weight:400;font-size:15px}
+.temas ul{list-style:none;display:flex;flex-direction:column;gap:2px}
+.tm{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:8px;font-size:14px}
+.tm:first-child{background:var(--muted);font-weight:600}
+.tm .n{flex:1}.tm .n.mut{color:var(--muted-fg)}
+.tm .q{font-size:13px;color:var(--muted-fg);font-weight:500}
+.gv{display:inline-block;width:16px;text-align:center;line-height:1.3;flex-shrink:0}
+.gv.corrigir{color:var(--grav-corrigir-texto)}.gv.conferir{color:var(--grav-conferir-texto)}.gv.ok{color:var(--grav-ok-texto)}.gv.nl{color:var(--grav-nao-lido)}
+.temas-pe{border-top:1px solid var(--border);margin-top:16px;padding-top:12px;font-size:14px;display:flex;flex-direction:column;gap:6px}
+.col-lista{display:flex;flex-direction:column;gap:12px;min-width:0}
+.pends{list-style:none;border-top:1px solid var(--border)}
+.pend{border-bottom:1px solid var(--border);padding:14px 4px}
+.pend-cab{display:flex;gap:12px;align-items:flex-start}
+.pend-ind{width:5.5rem;flex-shrink:0;padding-top:2px}
+.ind{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px}
+.ind.corrigir{color:var(--grav-corrigir-texto)}.ind.conferir{color:var(--grav-conferir-texto)}.ind.apagado{color:var(--muted-fg)}
+.ind .gv{width:auto}
+.pend-tit{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pend-tit .t{font-weight:500;font-size:17px;line-height:1.5}
+.pend.feita .t{text-decoration:line-through;text-decoration-thickness:1px}
+.pend.feita .pend-cab{opacity:.6}
+.pend-tit .onde{font-size:14px;color:var(--muted-fg);display:flex;gap:12px;align-items:center}
+.ok-txt{color:var(--grav-ok-texto)}
+.badge{font-size:12px;font-weight:600;border-radius:999px;padding:0 8px;background:var(--grifo);color:var(--fg)}
+.chev{color:var(--muted-fg);padding-top:4px}
+.pend-corpo{display:flex;flex-direction:column;gap:16px;padding:6px 0 4px calc(5.5rem + 12px)}
+.pend-corpo.compacta{padding-left:0}
+.txt{max-width:68ch;font-size:16px;line-height:1.62}
+.rot{font-weight:600;color:var(--muted-fg);font-size:14px}
+.bloco{display:flex;flex-direction:column;gap:6px;max-width:68ch}
+.lista{padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.lista li::marker{color:var(--muted-fg)}
+.trecho{max-width:68ch;display:flex;flex-direction:column;gap:6px}
+.trecho blockquote,.cp-p blockquote{font-family:var(--serif);font-size:17px;line-height:1.65;padding-left:14px;border-left:3px solid var(--grav-corrigir)}
+.acoes-trecho{display:flex;gap:16px;font-size:14px}
+.fontes{display:flex;flex-direction:column;gap:4px;font-size:14px;align-items:flex-start}
+.acoes{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* painel */
+.painel{flex-shrink:0;height:100%;display:flex;flex-direction:column;border-left:1px solid var(--border);background:#fff;position:relative}
+.painel.sobreposto{position:absolute;right:0;top:0;bottom:0;z-index:20;box-shadow:-24px 0 48px -12px rgba(0,0,0,.28)}
+.alca{position:absolute;left:-3px;top:0;bottom:0;width:6px;cursor:col-resize}
+.alca2{position:absolute;left:-2px;top:50%;width:4px;height:36px;margin-top:-18px;border-radius:2px;background:var(--input)}
+.painel-cab{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);background:#fafafa}
+.pa-abas{display:flex;gap:2px;background:var(--muted);border-radius:999px;padding:3px}
+.pa{display:inline-flex;align-items:center;gap:6px;border:0;background:none;border-radius:999px;padding:4px 11px;font-size:13.5px;font-weight:600;color:var(--muted-fg)}
+.pa.on{background:#fff;color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12),inset 0 -3px 0 var(--grifo)}
+.pa-ctrl{display:flex;gap:2px}
+.painel.estreito .pa:not(.on) span{display:none}
+.painel.estreito .pa{padding:4px 9px}
+.ler-faixa{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:13px;color:var(--muted-fg);border-bottom:1px solid var(--border);padding-bottom:10px}
+.ler-faixa .sel{font-size:13px}
+.ler-nav{display:flex;align-items:center;gap:4px;padding:6px 10px;border-bottom:1px solid var(--border)}
+.ler-nav .nome{flex:1;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ler-corpo{flex:1;min-height:0;overflow:hidden;padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+.norma-acoes{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.chip-mono{display:inline-flex;align-items:center;gap:5px;font:500 12.5px/1.4 var(--mono);border:1px solid var(--border);background:var(--muted);border-radius:5px;padding:2px 7px}
+.situacao{background:var(--muted);border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
+.situacao.larga{flex-direction:row;gap:24px}
+.situacao.larga .sel{width:14rem;flex-shrink:0}
+.sel{font-weight:600;font-size:15px}
+.sel.warn{color:var(--warning-fg)}.sel.ok{color:var(--success-fg)}
+.doc{display:flex;flex-direction:column;gap:10px;font-size:16px;line-height:1.65}
+.doc .cap{text-align:center;font-weight:600;font-size:14px;letter-spacing:.02em;color:var(--fg);margin:6px 0}
+.doc .inc{padding-left:18px}
+.doc .dim{color:var(--muted-fg)}
+mark.tc{background:color-mix(in srgb,#ffe45c 22%,transparent);color:inherit;border-radius:2px}
+mark.tc.forte{background:color-mix(in srgb,#ffb300 55%,transparent);text-decoration:underline 2px color-mix(in srgb,#8a5a00 70%,transparent);text-underline-offset:3px}
+
+/* conversa no painel */
+.conv-cab{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border)}
+.conv-cab .nome{flex:1;font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ia-tag{font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:999px;padding:0 8px;color:var(--muted-fg);display:inline-flex;align-items:center;gap:4px}
+.conv-corpo{flex:1;min-height:0;overflow:hidden;padding:16px 18px;display:flex;flex-direction:column;gap:16px}
+.origem{font-size:13px;color:var(--muted-fg);display:block;border:1px dashed var(--border);border-radius:10px;padding:6px 10px}
+.origem b{color:var(--fg);font-weight:600}
+.msg-user{align-self:flex-end;max-width:85%;background:var(--message);border-radius:18px 18px 4px 18px;padding:10px 16px;font-size:15px;line-height:1.55}
+.ferr{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.ferr .b{font-weight:500}.ferr .m{font-size:13.5px}
+.okc{color:var(--success)}
+.resp{display:flex;flex-direction:column;gap:12px;font-size:15.5px;line-height:1.65}
+.resp blockquote{font-family:var(--serif);font-size:16.5px;line-height:1.65;padding-left:14px;border-left:3px solid var(--grifo-risco)}
+.resp .ref{font-family:var(--sans);font-size:13px;color:var(--muted-fg);margin-left:4px}
+.resp.curta{color:var(--fg);opacity:.75}
+.lifpr{display:inline-flex;align-items:baseline;gap:4px;background:var(--grifo);border-radius:3px;padding:0 6px;font-weight:600}
+.lifpr .ic{align-self:center}
+.cursor{display:inline-block;width:8px;height:16px;background:var(--fg);margin-left:3px;vertical-align:-2px;animation:pulsa 1s steps(1) infinite}
+.conv-pe{padding:10px 14px 14px;border-top:1px solid transparent}
+.caixa{border:1px solid var(--input);border-radius:22px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.caixa.grande{border-radius:24px}
+.caixa.grande .caixa-txt{min-height:72px;font-size:16px}
+.caixa.desab{opacity:.55}
+.caixa.mini{border-radius:16px}
+.caixa.mini .caixa-txt{padding:8px 12px 2px;font-size:13.5px}
+.caixa.mini .caixa-pe{padding:2px 8px 6px}
+.fichas{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 0}
+.ficha{display:inline-flex;align-items:center;gap:6px;max-width:100%;border:1px solid var(--border);background:var(--muted);border-radius:8px;padding:3px 6px 3px 8px;font-size:12.5px;font-weight:600}
+.ficha .ft{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ficha em{font-style:normal;font-weight:500;color:var(--muted-fg);margin-left:5px}
+.ficha .fx{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:4px;color:var(--muted-fg)}
+.ficha.cnt{font-weight:500;color:var(--muted-fg)}
+.caixa-txt{padding:12px 16px 4px;font-size:15px;line-height:1.6}
+.caixa-txt.ph{color:#8a8a92}
+.caixa-pe{display:flex;justify-content:space-between;align-items:center;padding:4px 10px 10px}
+.cp-l{display:flex;gap:10px;align-items:center;color:var(--muted-fg)}
+.ia-sel{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--fg);border:1px solid var(--border);border-radius:999px;padding:2px 10px}
+.enviar{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:0;background:var(--grafite);color:#fff}
+.enviar.parar .sq{width:10px;height:10px;background:#fff;border-radius:2px}
+
+/* paleta */
+.veu{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:30}
+.paleta{position:absolute;z-index:31;left:50%;top:92px;transform:translateX(-50%);width:672px;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,.45);overflow:visible}
+.pal-in{display:flex;align-items:center;gap:8px;height:52px;padding:0 16px;border-bottom:1px solid var(--border);color:var(--muted-fg)}
+.pal-in .q{flex:1;color:var(--fg);font-size:15px}
+.caret{display:inline-block;width:1.5px;height:18px;background:var(--fg);vertical-align:-4px;margin-left:1px;animation:pulsa 1s steps(1) infinite}
+.pal-in kbd{border:1px solid var(--border);border-radius:4px;padding:2px 6px}
+.pal-lista{padding:0 8px 8px}
+.pal-grupo{display:flex;align-items:center;gap:8px;padding:12px 8px 6px;font-size:13px;font-weight:600}
+.pal-grupo i{flex:1;height:1px;background:var(--border);margin-left:4px}
+.pal-r{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:10px}
+.pal-r.on{background:var(--muted);box-shadow:inset 3px 0 0 var(--grafite)}
+.pr-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.pr-t .t{font-weight:500;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-t .d{font-size:13px;color:var(--muted-fg)}
+.pr-t .s{font-family:var(--serif);font-size:14px;color:var(--muted-fg);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pr-t .s b{color:var(--fg);background:color-mix(in srgb,#ffe45c 50%,transparent);font-weight:600}
+.pr-dica{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--fg);white-space:nowrap}
+.pr-dica kbd,.pal-pe kbd{border:1px solid var(--input);background:#fff;border-radius:5px;padding:1px 5px;color:var(--fg)!important}
+.pr-dica .sep{width:1px;height:14px;background:var(--input);margin:0 3px}
+.pal-pe{display:flex;gap:18px;padding:10px 16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted-fg);background:#fafafa;border-radius:0 0 16px 16px}
+.pal-pe span{display:inline-flex;gap:4px;align-items:center}
+
+/* explorar */
+.expl{gap:14px}
+.trilha{font-size:14px;color:var(--muted-fg)}
+.trilha .lk{font-size:14px}
+.selecionado{background:#b4d5fe;border-radius:2px;box-decoration-break:clone}
+.sel-wrap{padding-top:50px;margin-top:-4px}
+.barra-sel{position:absolute;top:0;left:120px;display:inline-flex;align-items:center;gap:2px;background:var(--grafite);color:#fff;border-radius:12px;padding:4px;box-shadow:0 10px 24px -6px rgba(0,0,0,.45)}
+.barra-sel button{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:#fff;font-size:13.5px;font-weight:600;padding:6px 10px;border-radius:8px}
+.barra-sel button:first-child{background:var(--marca-texto);color:var(--grafite)}
+.barra-sel i{width:1px;height:18px;background:rgba(255,255,255,.25);margin:0 2px}
+.barra-sel::after{content:"";position:absolute;left:40px;bottom:-6px;border:6px solid transparent;border-top-color:var(--grafite);border-bottom:0}
+
+/* início */
+.inicio{max-width:720px;margin:0 auto;padding:56px 0 40px;display:flex;flex-direction:column;gap:28px}
+.m-perfil{font-size:14px;color:var(--muted-fg);display:flex;gap:6px;align-items:center}
+.m-perfil .lk{font-size:14px}
+.em-dia{display:inline-flex;align-items:center;gap:5px;margin-left:14px;color:var(--muted-fg)}
+.em-dia .ic{color:var(--success)}
+.continuar{display:flex;flex-direction:column;gap:12px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;background:#fff}
+.card .k{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600;color:var(--muted-fg)}
+.card .t{font-weight:600;font-size:15.5px;line-height:1.35}
+.card .m{font-size:13px}
+.vivo{white-space:nowrap}
+.tarefas .tt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin:0 -14px}
+.tcard{padding:10px 14px;border-radius:12px}
+.tcard .t{font-weight:600;font-size:16px;display:flex;gap:6px;align-items:center}
+.tcard .m{font-size:14px}
+.pop-bandeja{position:absolute;z-index:30;top:52px;right:118px;width:440px;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,.35);padding:8px}
+.pb-tit,.pb-sub{font-size:13px;font-weight:700;color:var(--muted-fg);padding:8px 10px 4px;text-transform:none}
+.pb-sub{border-top:1px solid var(--border);margin-top:6px;padding-top:12px}
+.pb-item{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:10px}
+.pb-item .t{font-weight:600;font-size:14px;line-height:1.35}
+.pb-item .m{font-size:13px}
+.pb-item .fl{flex:1;min-width:0}
+.pb-item.vista{opacity:.6}
+.pb-item.aprov{background:var(--warning-surface)}
+.pb-item code{font-family:var(--mono);font-size:12px}
+.ico-warn{color:var(--warning-fg);margin-top:1px}
+.pb-botoes{display:flex;gap:6px;align-items:center;margin-top:8px}
+.barra{height:4px;background:var(--muted);border-radius:4px;margin-top:6px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--grafite);border-radius:4px}
+.pb-pe{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);margin-top:6px;padding:12px 10px 6px;font-size:13px;color:var(--muted-fg)}
+.pb-pe span:first-of-type{flex:1}
+.toggle{width:34px;height:20px;border-radius:999px;background:var(--input);position:relative;flex-shrink:0}
+.toggle.on{background:var(--grafite)}
+.toggle i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff}
+.toggle.on i{left:16px}
+
+/* limite */
+.aviso-limite{border:1px solid #f3c98b;background:var(--warning-surface);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.al-t{display:flex;gap:8px;align-items:center;font-weight:700;font-size:15px;color:var(--warning-fg)}
+.al-m{font-size:14.5px;line-height:1.5}
+.al-botoes{display:flex;gap:8px;flex-wrap:wrap}
+.al-junto{background:#fff;border-radius:10px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.al-junto .m{font-size:13px;line-height:1.6}
+
+/* comparar */
+.comparar{padding:24px 40px;display:flex;flex-direction:column;gap:16px;height:100%}
+.cmp-cab{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.cmp-ops{display:flex;gap:10px;align-items:center}
+.sw{display:inline-flex;gap:6px;align-items:center;font-size:13.5px;font-weight:600;border:1px solid var(--border);border-radius:999px;padding:5px 12px;color:var(--muted-fg)}
+.sw.on{background:var(--grafite);color:#fff;border-color:var(--grafite)}
+.cmp-aviso{display:flex;gap:10px;align-items:center;background:var(--warning-surface);border:1px solid #f3c98b;color:var(--warning-fg);border-radius:12px;padding:10px 14px;font-size:14.5px}
+.cmp-aviso b{color:var(--warning-fg)}
+.cmp-cols{display:grid;grid-template-columns:1fr 120px 1fr;gap:0;border-bottom:1px solid var(--border);padding-bottom:10px;font-weight:700;font-size:16px}
+.cmp-cols p{display:flex;gap:12px;align-items:center}
+.cmp-cols .sel{font-size:13px;border-radius:999px;padding:1px 10px;background:var(--muted)}
+.cmp-linhas{display:flex;flex-direction:column}
+.cmp-sec{margin-top:14px;padding:10px 0;border-bottom:1px solid var(--border);font-weight:700;font-size:15px;display:flex;gap:12px;align-items:baseline}
+.cmp-sec .m{font-weight:400;font-size:13px;color:var(--muted-fg)}
+.tambem{display:block;margin-top:6px;font-family:var(--sans);font-size:13px;color:var(--muted-fg)}
+.empilha{display:block;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+.nota-tab{display:block;margin-top:6px;font-family:var(--sans);font-size:13px;color:var(--muted-fg);font-style:italic}
+.par{display:grid;grid-template-columns:1fr 120px 1fr;border-bottom:1px solid var(--border)}
+.par .lado{padding:16px 4px;font-family:var(--serif);font-size:17px;line-height:1.65}
+.par .lado b{font-family:var(--sans);font-weight:700;font-size:15px}
+.par .meio{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted-fg)}
+.rel-sin{font:800 20px/1 var(--sans);display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--muted);color:var(--fg)}
+.rel-rot{font-size:12px;font-weight:600}
+.par.alt .rel-sin{background:var(--grifo)}
+.par.novo .rel-sin{background:var(--grafite);color:var(--marca-texto)}
+.par.sem .rel-sin{background:#fff;border:1px dashed var(--input)}
+.par.mant .lado{color:#4a4a52}
+.sem-par{font-family:var(--sans);font-size:14px;color:var(--muted-fg);font-style:italic}
+mark.mud{background:color-mix(in srgb,#ffe45c 70%,transparent);color:inherit;border-radius:2px;padding:0 1px}
+.par-ia{margin-top:6px;font-family:var(--sans)}
+
+/* desktop + word + compacto */
+.desktop{background:linear-gradient(135deg,#2b3a55,#5b4a6b 55%,#8a6a5a);border-radius:12px}
+.menubar{height:24px;display:flex;align-items:center;gap:18px;padding:0 14px;background:rgba(240,240,245,.82);backdrop-filter:blur(10px);font-size:13px;color:#111;flex-shrink:0}
+.menubar .apple{width:12px;height:14px;border-radius:50% 50% 45% 45%;background:#111}
+.menubar .mb-r{margin-left:auto}
+.word{position:absolute;left:10px;top:34px;width:960px;bottom:10px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.w-tit{height:34px;background:#2b579a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;position:relative;flex-shrink:0}
+.w-tit .semaforos{left:12px}
+.w-ribbon{display:flex;gap:18px;background:#2b579a;color:#dfe8f6;font-size:12.5px;padding:0 16px 6px}
+.w-ribbon .on{color:#fff;font-weight:600;border-bottom:2px solid #fff}
+.w-tools{height:42px;display:flex;gap:6px;align-items:center;padding:0 14px;background:#f3f3f3;border-bottom:1px solid #ddd}
+.w-tools i{width:22px;height:22px;border-radius:4px;background:#ddd}
+.w-tools i.lg{width:90px}
+.w-tools b{width:1px;height:24px;background:#ccc;margin:0 6px}
+.w-area{flex:1;background:#e6e6e6;display:flex;gap:16px;padding:22px 0 0 36px;overflow:hidden}
+.w-pag{width:600px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);padding:48px 60px;font-family:Calibri,Carlito,var(--sans);font-size:14.5px;line-height:1.6;color:#222;display:flex;flex-direction:column;gap:12px}
+.w-h{font-weight:700;font-size:15px}
+.w-com{background:#fde9b8;border-bottom:2px solid #e3a92b}
+.w-cinza{height:12px;background:#eee;border-radius:3px}.w-cinza.c2{width:70%}
+.w-coms{width:240px;display:flex;flex-direction:column;gap:10px;padding-top:110px}
+.w-c{background:#fff;border-left:3px solid #e3a92b;border-radius:6px;padding:8px 10px;font-size:12px;line-height:1.4;box-shadow:0 1px 3px rgba(0,0,0,.15);color:#333}
+.w-c .a{font-weight:700;font-size:11.5px;margin-bottom:2px}
+.w-c:not(.on){opacity:.7}
+.compacto{position:absolute;right:10px;top:34px;bottom:10px;width:380px;background:#fff;border-radius:12px;box-shadow:0 0 0 1px rgba(0,0,0,.15),0 24px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:visible}
+.cp-tit{height:40px;display:flex;align-items:center;gap:8px;padding:0 8px 0 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cp-n{flex:1;font-weight:700;font-size:13.5px}
+.cp-doc{padding:10px 14px 8px}
+.cp-doc .t{font-weight:700;font-size:14.5px}
+.cp-doc .m{font-size:12.5px}
+.cp-filtro{display:flex;gap:6px;padding:4px 14px 8px}
+.fc{font-size:12.5px;font-weight:600;border:1px solid var(--border);border-radius:999px;padding:2px 10px;display:inline-flex;gap:4px;align-items:center}
+.fc.on{background:var(--grafite);color:#fff;border-color:var(--grafite)}
+.fc .gv{width:auto}
+.cp-lista{list-style:none;flex:1;min-height:0;overflow:hidden;border-top:1px solid var(--border)}
+.cp-p{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px}
+.cp-p.aberta{background:#fcfcfb}
+.cp-pc{display:flex;justify-content:space-between;align-items:center}
+.cp-pc .ind{font-size:12.5px}
+.cp-o{font-size:12px;color:var(--muted-fg)}
+.cp-t{font-size:14px;font-weight:500;line-height:1.35}
+.cp-p blockquote{font-size:14px;line-height:1.55;padding-left:10px}
+.cp-ac{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px;align-items:center}
+.cp-salvo{margin:0 12px 6px;padding:5px 10px;border-radius:10px;background:#eef7f1;border:1px solid #cfe6d7;font-size:12.5px;display:flex;flex-direction:column;gap:1px}
+.cp-salvo b{font-weight:700;color:#22603a}.cp-salvo .okc{color:#2f7d4a}
+.cp-salvo .m{color:#4a5a50}
+.cp-p.resolvida{background:linear-gradient(90deg,#e6f4ea,#f6fbf8)}
+.cp-p.resolvida .cp-t{text-decoration:line-through;color:#8a8a92}
+.cp-res{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:#2f7d4a}
+.tag-novo{font-size:11.5px;font-weight:700;background:#ffe45c;padding:0 7px;border-radius:999px;margin-left:6px;margin-right:auto}
+.cp-feito{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:#62626a;margin-right:4px}
+.w-salvo{margin-left:10px;font-size:12px;color:rgba(255,255,255,.75)}
+.cp-conv{border-top:1px solid var(--border);padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px;background:#fafafa;border-radius:0 0 12px 12px}
+.cp-ct{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
+.cp-ct .ia-tag{margin-left:auto}
+.cp-resp{font-size:13px;line-height:1.5;color:#333;background:#fff;border:1px solid var(--border);border-radius:10px;padding:6px 10px}
+.dica-word{position:absolute;z-index:30;left:250px;bottom:26px;display:flex;align-items:center;gap:10px;max-width:640px;background:var(--grafite);color:#fff;font-size:13.5px;border-radius:12px;padding:9px 14px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.dica-word .lk{color:var(--marca-texto);white-space:nowrap}
+.dica-esc{position:absolute;z-index:25;left:260px;bottom:18px;background:var(--grafite);color:#fff;font-size:13px;font-weight:600;border-radius:999px;padding:6px 12px}
+</style>
+</head>
+<body>
+<div class="pg">
+  <header class="pg-cab">
+    <h1>Simplifica IF — <mark>multitarefa</mark> (mockups)</h1>
+    <p>A proposta inteira implementada, em dez situações de uso: o painel do app (Ler, Conversar e Pasta, com o “Buscar na base”), a conversa ao lado com o contexto à vista, a bandeja “Em andamento”, a troca de IA no limite da assinatura, o modo compacto ao lado do Word, o painel por cima no notebook, o modo Comparar e a ficha do critério da revisão, aberta ao lado. Os textos de normas e PPCs são ilustrativos.</p>
+    <nav class="indice"><a href="#busca"><b>1</b>Buscar sem sair da revisão</a><a href="#ler"><b>2</b>A norma ao lado, a revisão inteira</a><a href="#conversar"><b>3</b>Conversar sobre esta pendência</a><a href="#trecho"><b>4</b>Perguntar sobre o trecho, lendo no Explorar</a><a href="#bandeja"><b>5</b>Em andamento e Continuar de onde parou</a><a href="#limite"><b>6</b>Limite da assinatura: continuar com outra IA</a><a href="#compacto"><b>7</b>Acompanhar no Word (modo compacto)</a><a href="#sobreposto"><b>8</b>Notebook com escala de 125%: o painel por cima</a><a href="#comparar"><b>9</b>Comparar 1/2021 ⇄ 2/2026</a><a href="#criterio"><b>10</b>O que este critério confere</a></nav>
+    <div class="leg"><span><span class="mk">1</span> o que é novo na tela, explicado abaixo de cada cena</span><span>Tamanhos de janela reais, reduzidos para caber; “Ver em tamanho real” mostra em 100%.</span></div>
+  </header>
+  <section class="cena" id="busca">
+  <div class="cena-cab"><span class="num">Cena 1</span><h2>Buscar sem sair da revisão</h2><span class="tam">1366 × 768 · notebook</span><button class="zoom" data-alvo="busca">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> a coordenadora do curso, no meio da revisão do PPC de Enfermagem. <b>O que faz:</b> quer ler o que a nova resolução diz sobre estágio. Aperta ⌘K e digita “estágio 2/2026”. <b>O que o app faz:</b> a busca é a de sempre, mas, dentro da revisão, ↵ abre o resultado <i>no painel ao lado</i>, e a revisão fica onde está.</p>
+  <div class="palco" data-w="1366" data-h="768"><div class="escala"><div class="janela" style="width:1366px;height:768px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja rel"><span class="giro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><span>1 em andamento</span><span class="mk" style="top:-12px;left:-12px">4</span></button>
+    <button class="icone  rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="pagina rev ">
+    <header class="rev-cab">
+      <p class="sup">Revisar um PPC</p>
+      <div class="doc-cab">
+        <div><p class="titulo">PPC Técnico em Enfermagem 2023.docx</p><p class="m">Técnico em Enfermagem, subsequente · Campus Curitiba</p></div>
+        <div class="doc-acoes">
+          <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Abrir no Word</button>
+          <button class="btn out rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></svg> Acompanhar no Word</button>
+          <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <section class="resultado"><h2 class="display">3 para corrigir e 2 para conferir, em 27 de 31 critérios.</h2><div class="regua"><span class="rg"><i class="tr c"></i><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr n"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i></span><span class="rg"><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i></span></div></section>
+    <section class="faixa rel"><div class="faixa-l"><span class="pulso"></span><div><p class="b">O Claude está conferindo o PPC: 7 de 12 temas</p><p class="m">Pode sair desta tela; a conferência continua e aparece em “Em andamento”.</p></div></div><div class="faixa-r"><a class="lk sm">Ver andamento</a><button class="btn out sm"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg> Pausar</button></div></section>
+    <div class="grade ">
+      <aside class="temas"><ul>
+    <li class="tm"><span class="gv"></span><span class="n">Tudo</span><span class="q">6</span></li>
+    <li class="tm "><span class="gv corrigir">●</span><span class="n ">Organização curricular</span><span class="q">2</span></li><li class="tm "><span class="gv corrigir">●</span><span class="n ">Estágio supervisionado</span><span class="q">1</span></li><li class="tm "><span class="gv corrigir">●</span><span class="n ">Perfil profissional</span><span class="q">1</span></li><li class="tm "><span class="gv conferir">◐</span><span class="n ">Ementas e bibliografia</span><span class="q">1</span></li><li class="tm "><span class="gv conferir">◐</span><span class="n ">Infraestrutura</span><span class="q">1</span></li><li class="tm "><span class="gv ok"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="n ">Avaliação da aprendizagem</span><span class="q"></span></li><li class="tm "><span class="gv ok"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="n ">Acompanhamento de egressos</span><span class="q"></span></li><li class="tm "><span class="gv nl">○</span><span class="n mut">Acessibilidade</span><span class="q">não lido</span></li>
+  </ul>
+  <div class="temas-pe"><p class="b">1 de 6 feitas</p><p class="m">Sobre esta revisão</p></div></aside>
+      <div class="col-lista">
+        <h3 class="title">Todos os temas</h3>
+        <ul class="pends"><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Estágio supervisionado sem carga horária na matriz curricular</span><span class="onde">Seção 4.6 · p. 31</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Perfil profissional de conclusão sem as competências do CNCT</span><span class="onde">Seção 3.2 · p. 14</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Carga horária total do PPC diverge da cadastrada no SUAP (1.200 h × 1.320 h)</span><span class="onde">Seção 4.1 · p. 22</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Ementa de Ética e Legislação em Enfermagem cita a Res. CNE/CEB nº 6/2012</span><span class="onde">Seção 5.1 · p. 40 <span class="badge">Novo</span></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Laboratório de Enfermagem sem a relação de equipamentos</span><span class="onde">Seção 7.2 · p. 52</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  feita">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind apagado"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Acompanhamento de egressos sem periodicidade</span><span class="onde">Seção 6.4 · p. 49 <span class="ok-txt">Feito</span></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li></ul>
+      </div>
+    </div>
+  </div></main></div>
+    <div class="veu"></div>
+    <div class="paleta">
+      <div class="pal-in"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="q">estágio 2/2026<span class="caret"></span></span><kbd>Esc</kbd></div>
+      <div class="pal-lista">
+        <p class="pal-grupo"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Normas <i></i></p>
+        <div class="pal-r on rel"><div class="pr-t"><span class="t">Res. CNE/CP nº 2/2026, art. 28, XVIII</span><span class="d">Aguardando publicação · DCN Gerais da EPT</span><span class="s">…a carga horária do <b>estágio</b> profissional supervisionado, quando previsto, e sua forma de organização…</span></div>
+          <span class="pr-dica rel"><kbd>↵</kbd> ao lado <span class="sep"></span><kbd>⇧↵</kbd> no Explorar<span class="mk" style="top:-24px;right:-6px;left:auto">2</span></span><span class="mk" style="top:-12px;left:-12px">1</span></div>
+        <div class="pal-r"><div class="pr-t"><span class="t">Res. CNE/CP nº 2/2026, art. 29</span><span class="d">Aguardando publicação</span><span class="s">…cargas horárias mínimas do Catálogo Nacional de Cursos Técnicos, acrescidas, quando houver, do <b>estágio</b>.</span></div></div>
+        <div class="pal-r"><div class="pr-t"><span class="t">Res. CNE/CP nº 1/2021, art. 33, § 2º</span><span class="d">Em vigor · revogada pela 2/2026 quando publicada</span><span class="s">O <b>estágio</b> profissional supervisionado, quando previsto no projeto pedagógico…</span></div></div>
+        <p class="pal-grupo"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Seções de PPC <i></i></p>
+        <div class="pal-r"><div class="pr-t"><span class="t">Técnico em Enfermagem · Londrina · 4.5 Estágio supervisionado</span><span class="d">PPC 2024</span></div></div>
+        <p class="pal-grupo"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> IA <i></i></p>
+        <div class="pal-r rel"><div class="pr-t"><span class="t">Perguntar à IA: “estágio 2/2026”</span><span class="d">Abre a conversa no painel ao lado, com esta revisão como contexto</span></div><span class="mk" style="top:-12px;left:-12px">3</span></div>
+      </div>
+      <div class="pal-pe"><span><kbd>↑</kbd><kbd>↓</kbd> navegar</span><span><kbd>↵</kbd> abrir ao lado</span><span><kbd>⇧↵</kbd> abrir no Explorar</span><span><kbd>⌘J</kbd> perguntar à IA com este texto</span></div>
+    </div>
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>Dentro da revisão e da conversa, o destino natural do ↵ é o painel ao lado; ⇧↵ leva para a página do Explorar. No Início e no Explorar, o contrário. ⌘\ mostra e esconde o painel.</span></li><li><span class="mk">2</span><span>A linha selecionada diz o que o ↵ vai fazer: sem adivinhar.</span></li><li><span class="mk">3</span><span>A última linha da busca é sempre “Perguntar à IA” (ou ⌘J): abre a conversa no painel com o texto digitado como pergunta, sem trocar de tela.</span></li><li><span class="mk">4</span><span>A conferência com IA continua rodando embaixo; a bandeja “Em andamento” no cabeçalho mostra isso.</span></li></ol>
+</section>
+<section class="cena" id="ler">
+  <div class="cena-cab"><span class="num">Cena 2</span><h2>A norma ao lado, a revisão inteira</h2><span class="tam">1366 × 768 · notebook</span><button class="zoom" data-alvo="ler">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Logo depois:</b> a Res. 2/2026 abriu no painel, já no art. 28, XVIII, com o trecho grifado. A pendência do estágio continua aberta à esquerda. A tela principal ficou mais estreita e trocou a coluna de temas pelo seletor, porque mede o próprio espaço (container query), não a janela.</p>
+  <div class="palco" data-w="1366" data-h="768"><div class="escala"><div class="janela" style="width:1366px;height:768px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja rel"><span class="giro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><span>1 em andamento</span></button>
+    <button class="icone on rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg><span class="mk" style="top:-12px;left:-12px">1</span></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="pagina rev ">
+    <header class="rev-cab">
+      <p class="sup">Revisar um PPC</p>
+      <div class="doc-cab">
+        <div><p class="titulo">PPC Técnico em Enfermagem 2023.docx</p><p class="m">Técnico em Enfermagem, subsequente · Campus Curitiba</p></div>
+        <div class="doc-acoes">
+          <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Abrir no Word</button>
+          <button class="btn out rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></svg> Acompanhar no Word</button>
+          <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <section class="resultado"><h2 class="display">3 para corrigir e 2 para conferir, em 27 de 31 critérios.</h2><div class="regua"><span class="rg"><i class="tr c"></i><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr n"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i></span><span class="rg"><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i></span></div></section>
+    
+    <div class="grade sem-temas">
+      <label class="seletor rel"><span class="mk" style="top:22px;left:-34px">4</span><span>Tema</span><span class="sel">Tudo (6) <svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+      <div class="col-lista">
+        
+        <ul class="pends"><li class="pend aberta ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Estágio supervisionado sem carga horária na matriz curricular</span><span class="onde">Seção 4.6 · p. 31</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+    <div class="pend-corpo ">
+    <p class="txt">A seção 4.6 descreve o estágio como obrigatório, mas a matriz curricular não traz a carga horária dele, nem a soma no total do curso.</p>
+    <div class="bloco"><p class="rot">O que falta</p>
+      <ul class="lista"><li>A carga horária do estágio na matriz curricular</li><li>O estágio somado (ou não) na carga horária total, com a justificativa</li></ul></div>
+    <div class="bloco"><p class="rot">O que fazer</p>
+      <p class="txt">Declarar a carga horária do estágio na matriz e dizer se ela entra no total do curso, como pede o art. 28 da Res. CNE/CP nº 2/2026 para os PPCs aprovados depois da publicação.</p></div>
+    <div class="trecho corrigir">
+      <p class="rot">Trecho no PPC</p>
+      <blockquote>O estágio supervisionado é obrigatório e será realizado a partir do segundo semestre, em unidades de saúde conveniadas, sob a supervisão de docente enfermeiro do campus.</blockquote>
+      <p class="acoes-trecho"><a class="lk">Ver no PPC</a><a class="lk"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c2.1 0 2 .9 2 2"/></svg> Copiar trecho</a></p>
+    </div>
+    <div class="bloco"><p class="rot">Fontes</p>
+      <p class="fontes"><a class="lk">Res. CNE/CP nº 2/2026, art. 28, XVIII</a><a class="lk">CNCT, 4ª ed.: Técnico em Enfermagem</a></p></div>
+    <div class="acoes">
+      <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Feito</button>
+      <button class="btn ghost"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10.6l-6.1 1.9L12 18.4l-1.9-5.9L4 10.6l6.1-1.8z"/><path d="M19 3v4"/><path d="M21 5h-4"/></svg> Sugerir texto</button>
+      <button class="btn ghost rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Conversar sobre esta pendência</button>
+      <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+    </div>
+  </div>
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Perfil profissional de conclusão sem as competências do CNCT</span><span class="onde">Seção 3.2 · p. 14</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Carga horária total do PPC diverge da cadastrada no SUAP (1.200 h × 1.320 h)</span><span class="onde">Seção 4.1 · p. 22</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Ementa de Ética e Legislação em Enfermagem cita a Res. CNE/CEB nº 6/2012</span><span class="onde">Seção 5.1 · p. 40 <span class="badge">Novo</span></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li></ul>
+      </div>
+    </div>
+  </div></main><aside class="painel  " style="width:520px">
+    <span class="alca rel"><span class="mk" style="top:300px;left:-12px">5</span></span><span class="alca2" title="Arraste para ajustar a largura"></span>
+    <div class="painel-cab">
+    <div class="pa-abas rel"><button class="pa on"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Ler</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Conversar</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span>Pasta</span></button><span class="mk" style="top:-12px;left:-12px">2</span></div>
+    <div class="pa-ctrl rel">
+      <button class="btn ghost xs" title="Buscar na base (⌘K)" style="white-space:nowrap">Buscar na base <kbd style="font-size:11px;opacity:.6">⌘K</kbd></button>
+      <button class="ib rel" title="Marcar este documento"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg><span class="mk" style="top:22px;left:-4px">6</span></button>
+      
+      <button class="ib" title="Abrir em tela cheia"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+      <button class="ib" title="Fechar o painel (⌘\)"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      
+    </div>
+  </div>
+    <div class="ler-nav"><button class="ib"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button><button class="ib dis"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button><p class="nome">Res. CNE/CP nº 2/2026, art. 28, XVIII</p><button class="ib"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button></div>
+  <div class="ler-corpo">
+    <p class="ler-faixa"><span class="sel warn">◐ Aguardando publicação</span><span>não está em vigor · rolado até o art. 28, XVIII</span></p>
+    <div class="doc">
+      <p><b>Art. 28.</b> <mark class="tc">O projeto pedagógico do curso, elaborado com a participação da comunidade escolar, contemplará, no mínimo:</mark></p>
+      <p class="inc dim">(…)</p>
+      <p class="inc">XV – a organização curricular, com a matriz e as cargas horárias dos componentes;</p>
+      <p class="inc">XVI – as formas de avaliação da aprendizagem e de recuperação;</p>
+      <p class="inc">XVII – os critérios de aproveitamento de conhecimentos e experiências anteriores;</p>
+      <p class="inc rel"><mark class="tc forte">XVIII – a carga horária do estágio profissional supervisionado, quando previsto, e sua forma de organização, indicando se integra a carga horária mínima do curso;</mark><span class="mk" style="top:-4px;left:-22px">3</span></p>
+      <p class="inc">XIX – as instalações, os equipamentos e os ambientes de aprendizagem;</p>
+      <p class="inc">XX – o perfil do corpo docente e técnico.</p>
+      <p><b>Art. 29.</b> Os cursos técnicos de nível médio observarão as cargas horárias mínimas do Catálogo Nacional de Cursos Técnicos, acrescidas, quando houver, do estágio.</p>
+      <p><b>Art. 30.</b> As atividades de prática profissional e de estágio, presenciais ou em ambiente simulado, constarão do projeto pedagógico, com a carga horária e as formas de acompanhamento e avaliação.</p>
+    </div>
+  </div>
+  </aside></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>O painel é do app, não da revisão: ir ao Início e voltar, ou abrir uma conversa, não o fecha nem perde o histórico (← →).</span></li><li><span class="mk">2</span><span>Abas do painel: Ler, Conversar e Pasta; “Buscar na base” abre a paleta (⌘K), e a lupa fica para a busca no texto (⌘F). ⌘\ mostra e esconde; ⌘J vai direto a Conversar.</span></li><li><span class="mk">3</span><span>O trecho que a busca achou chega grifado, como hoje no leitor.</span></li><li><span class="mk">4</span><span>Abaixo de ~960 px de espaço útil, a revisão troca a coluna de temas pelo seletor, sem esconder nada.</span></li><li><span class="mk">5</span><span>Arrastar a borda ajusta a largura; o app lembra.</span></li><li><span class="mk">6</span><span>O marcador guarda o documento numa prateleira de até cinco, para voltar com um clique: o substituto modesto das abas.</span></li></ol>
+</section>
+<section class="cena" id="conversar">
+  <div class="cena-cab"><span class="num">Cena 3</span><h2>Conversar sobre esta pendência</h2><span class="tam">1920 × 1080 · monitor Full HD</span><button class="zoom" data-alvo="conversar">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> a mesma coordenadora, agora no monitor do campus. <b>O que faz:</b> clica em “Conversar sobre esta pendência” no estágio. <b>O que o app faz:</b> o painel vai para a aba Conversar, numa conversa livre (todas as skills, com web), já com o PPC inteiro em Markdown, a pendência e a norma aberta como fichas de contexto. A IA cita o trecho do PPC e devolve links <code>ifpr://</code>, que abrem no Ler do mesmo painel.</p>
+  <div class="palco" data-w="1920" data-h="1080"><div class="escala"><div class="janela" style="width:1920px;height:1080px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja rel"><span class="giro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><span>2 em andamento</span></button>
+    <button class="icone on rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal rel"><div class="pagina rev ">
+    <header class="rev-cab">
+      <p class="sup">Revisar um PPC</p>
+      <div class="doc-cab">
+        <div><p class="titulo">PPC Técnico em Enfermagem 2023.docx</p><p class="m">Técnico em Enfermagem, subsequente · Campus Curitiba</p></div>
+        <div class="doc-acoes">
+          <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Abrir no Word</button>
+          <button class="btn out rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></svg> Acompanhar no Word</button>
+          <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <section class="resultado"><h2 class="display">3 para corrigir e 2 para conferir, em 27 de 31 critérios.</h2><div class="regua"><span class="rg"><i class="tr c"></i><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr n"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i></span><span class="rg"><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i></span></div></section>
+    <section class="faixa rel"><div class="faixa-l"><span class="pulso"></span><div><p class="b">O Claude está conferindo o PPC: 7 de 12 temas</p><p class="m">Pode sair desta tela; a conferência continua e aparece em “Em andamento”.</p></div></div><div class="faixa-r"><a class="lk sm">Ver andamento</a><button class="btn out sm"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg> Pausar</button></div></section>
+    <div class="grade ">
+      <aside class="temas"><ul>
+    <li class="tm"><span class="gv"></span><span class="n">Tudo</span><span class="q">6</span></li>
+    <li class="tm "><span class="gv corrigir">●</span><span class="n ">Organização curricular</span><span class="q">2</span></li><li class="tm "><span class="gv corrigir">●</span><span class="n ">Estágio supervisionado</span><span class="q">1</span></li><li class="tm "><span class="gv corrigir">●</span><span class="n ">Perfil profissional</span><span class="q">1</span></li><li class="tm "><span class="gv conferir">◐</span><span class="n ">Ementas e bibliografia</span><span class="q">1</span></li><li class="tm "><span class="gv conferir">◐</span><span class="n ">Infraestrutura</span><span class="q">1</span></li><li class="tm "><span class="gv ok"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="n ">Avaliação da aprendizagem</span><span class="q"></span></li><li class="tm "><span class="gv ok"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="n ">Acompanhamento de egressos</span><span class="q"></span></li><li class="tm "><span class="gv nl">○</span><span class="n mut">Acessibilidade</span><span class="q">não lido</span></li>
+  </ul>
+  <div class="temas-pe"><p class="b">1 de 6 feitas</p><p class="m">Sobre esta revisão</p></div></aside>
+      <div class="col-lista">
+        <h3 class="title">Todos os temas</h3>
+        <ul class="pends"><li class="pend aberta ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Estágio supervisionado sem carga horária na matriz curricular</span><span class="onde">Seção 4.6 · p. 31</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+    <div class="pend-corpo ">
+    <p class="txt">A seção 4.6 descreve o estágio como obrigatório, mas a matriz curricular não traz a carga horária dele, nem a soma no total do curso.</p>
+    <div class="bloco"><p class="rot">O que falta</p>
+      <ul class="lista"><li>A carga horária do estágio na matriz curricular</li><li>O estágio somado (ou não) na carga horária total, com a justificativa</li></ul></div>
+    <div class="bloco"><p class="rot">O que fazer</p>
+      <p class="txt">Declarar a carga horária do estágio na matriz e dizer se ela entra no total do curso, como pede o art. 28 da Res. CNE/CP nº 2/2026 para os PPCs aprovados depois da publicação.</p></div>
+    <div class="trecho corrigir">
+      <p class="rot">Trecho no PPC</p>
+      <blockquote>O estágio supervisionado é obrigatório e será realizado a partir do segundo semestre, em unidades de saúde conveniadas, sob a supervisão de docente enfermeiro do campus.</blockquote>
+      <p class="acoes-trecho"><a class="lk">Ver no PPC</a><a class="lk"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c2.1 0 2 .9 2 2"/></svg> Copiar trecho</a></p>
+    </div>
+    <div class="bloco"><p class="rot">Fontes</p>
+      <p class="fontes"><a class="lk">Res. CNE/CP nº 2/2026, art. 28, XVIII</a><a class="lk">CNCT, 4ª ed.: Técnico em Enfermagem</a></p></div>
+    <div class="acoes">
+      <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Feito</button>
+      <button class="btn ghost"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10.6l-6.1 1.9L12 18.4l-1.9-5.9L4 10.6l6.1-1.8z"/><path d="M19 3v4"/><path d="M21 5h-4"/></svg> Sugerir texto</button>
+      <button class="btn out destaque rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Conversar sobre esta pendência<span class="mk" style="top:-12px;left:-12px">1</span></button>
+      <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+    </div>
+  </div>
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Perfil profissional de conclusão sem as competências do CNCT</span><span class="onde">Seção 3.2 · p. 14</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Carga horária total do PPC diverge da cadastrada no SUAP (1.200 h × 1.320 h)</span><span class="onde">Seção 4.1 · p. 22</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Ementa de Ética e Legislação em Enfermagem cita a Res. CNE/CEB nº 6/2012</span><span class="onde">Seção 5.1 · p. 40 <span class="badge">Novo</span></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Laboratório de Enfermagem sem a relação de equipamentos</span><span class="onde">Seção 7.2 · p. 52</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  feita">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind apagado"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Acompanhamento de egressos sem periodicidade</span><span class="onde">Seção 6.4 · p. 49 <span class="ok-txt">Feito</span></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li></ul>
+      </div>
+    </div>
+  </div><span class="mk solto" style="top:430px;left:40px">5</span></main><aside class="painel  " style="width:660px">
+    <span class="alca" title="Arraste para ajustar a largura"></span>
+    <div class="painel-cab">
+    <div class="pa-abas rel"><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Ler</span></button><button class="pa on"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Conversar</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span>Pasta</span></button></div>
+    <div class="pa-ctrl rel">
+      <button class="btn ghost xs" title="Buscar na base (⌘K)" style="white-space:nowrap">Buscar na base <kbd style="font-size:11px;opacity:.6">⌘K</kbd></button>
+      
+      
+      <button class="ib" title="Abrir em tela cheia"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+      <button class="ib" title="Fechar o painel (⌘\)"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      <span class="mk" style="top:24px;left:-6px">4</span>
+    </div>
+  </div>
+    <div class="conv-cab"><p class="nome">Estágio na matriz do PPC de Enfermagem</p><span class="ia-tag">Claude</span></div>
+  <div class="conv-corpo">
+    <div class="origem"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Aberta da revisão: <b>PPC Técnico em Enfermagem 2023</b> · pendência “Estágio supervisionado sem carga horária”</div>
+    <div class="msg-user">A Res. 2/2026 muda o que preciso pôr na matriz sobre o estágio? E a 1/2021 ainda vale para este PPC?</div>
+    <div class="ferr"><svg class="ic okc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div><p class="b">Leu o PPC anexado</p><p class="m">PPC Técnico em Enfermagem 2023.md · seções 4.1, 4.6 e a matriz</p></div></div>
+    <div class="ferr"><svg class="ic okc" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div><p class="b">Consultou a base: ficha-norma</p><p class="m">br/cne-cp/res/2026/2 · br/cne-cp/res/2021/1</p></div></div>
+    <div class="resp rel">
+      <p>Sim, muda. A <span class="lifpr"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Res. CNE/CP nº 2/2026, art. 28, XVIII</span> pede que o PPC declare a carga horária do estágio e diga <b>se ela integra a carga mínima</b> do curso. Seu PPC descreve o estágio, mas não traz as horas:</p>
+      <blockquote>“O estágio supervisionado é obrigatório e será realizado a partir do segundo semestre, em unidades de saúde conveniadas…” <span class="ref">Seção 4.6, p. 31</span></blockquote>
+      <p>E a matriz (seção 4.1) soma <b>1.200 h</b> sem linha de estágio, enquanto o SUAP tem <b>1.320 h</b>: as 120 h de diferença parecem ser o estágio.</p>
+      <p>Quanto à vigência: a 2/2026 ainda <b>aguarda publicação</b>, então hoje vale a <span class="lifpr"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Res. CNE/CP nº 1/2021</span>. Vale ajustar já, porque a regra de transição alcança os PPCs reformulados depois da publicação.</p>
+      <span class="mk" style="top:-14px;right:-4px;left:auto">3</span>
+    </div>
+  </div>
+  <div class="conv-pe"><div class="caixa rel"><div class="fichas rel"><span class="ficha"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg><span class="ft">PPC Téc. Enfermagem 2023<em>texto completo</em></span><span class="fx"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></span><span class="ficha"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="ft">Pendência: Estágio sem carga horária</span><span class="fx"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></span><span class="ficha"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span class="ft">Res. CNE/CP 2/2026, art. 28<em>aberta no Ler</em></span><span class="fx"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></span><span class="mk" style="top:-12px;left:-12px">2</span></div>
+    <div class="caixa-txt ph">Pergunte sobre esta revisão</div>
+    <div class="caixa-pe"><span class="cp-l"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span class="ia-sel">Claude <svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+    <button class="enviar"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></div>
+    
+  </div></div>
+  </aside></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>Novo botão na pendência: retoma a conversa ao lado desta revisão (uma por revisão) e acrescenta a ficha da pendência; “Nova conversa”, no painel, abre outra.</span></li><li><span class="mk">2</span><span>Fichas de contexto já incluídas e removíveis (✕): o PPC inteiro, a pendência e o que está aberto no Ler. Nada escondido: o que vai para a IA está à vista.</span></li><li><span class="mk">3</span><span>A resposta cita o PPC pela seção e pela página, e as normas por links que abrem no Ler.</span></li><li><span class="mk">4</span><span>A conversa continua na lista de conversas, marcada com a origem; “⤢” a leva para a tela cheia.</span></li><li><span class="mk">5</span><span>A revisão tem espaço para a coluna de temas ao lado do painel.</span></li></ol>
+</section>
+<section class="cena" id="trecho">
+  <div class="cena-cab"><span class="num">Cena 4</span><h2>Perguntar sobre o trecho, lendo no Explorar</h2><span class="tam">1366 × 768 · notebook</span><button class="zoom" data-alvo="trecho">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> uma pedagoga da PROENS, lendo a Res. 1/2021 no Explorar para responder a um campus. <b>O que faz:</b> seleciona o § 2º do art. 33 e clica em “Perguntar sobre este trecho”. <b>O que o app faz:</b> o painel abre em Conversar, com o trecho e a norma como fichas, e a IA começa a responder. A leitura não sai do lugar.</p>
+  <div class="palco" data-w="1366" data-h="768"><div class="escala"><div class="janela" style="width:1366px;height:768px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ativa">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja rel"><span class="giro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><span>1 em andamento</span></button>
+    <button class="icone on rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal rel"><div class="pagina expl">
+    <p class="trilha"><a class="lk">Explorar</a> › <a class="lk">Normas</a> › Res. CNE/CP nº 1/2021</p>
+    <p class="sup">Resolução, CNE/CP</p>
+    <h1 class="display">Resolução CNE/CP nº 1, de 5 de janeiro de 2021</h1>
+    <p class="quote w68">Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.</p>
+    <p class="norma-acoes"><span class="chip-mono"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c2.1 0 2 .9 2 2"/></svg> Copiar citação</span><a class="lk sm">Ver na fonte oficial <svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a><a class="lk sm"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg> Comparar com a sucessora</a></p>
+    <div class="situacao larga"><p class="sel ok">● Em vigor</p><p class="m">Será revogada pela Res. CNE/CP nº 2/2026 quando ela for publicada. Veja as regras de transição antes de citar.</p></div>
+    <div class="doc">
+      <p class="cap">CAPÍTULO VII<br/>DA PRÁTICA PROFISSIONAL E DO ESTÁGIO</p>
+      <p><b>Art. 33.</b> A prática profissional, prevista na organização curricular do curso, deve estar relacionada aos fundamentos científicos e tecnológicos, orientada pela pesquisa como princípio pedagógico.</p>
+      <p class="rel sel-wrap"><span class="selecionado"><b>§ 2º</b> O estágio profissional supervisionado, quando previsto no projeto pedagógico do curso, terá sua carga horária acrescida à carga horária mínima estabelecida para o respectivo curso, observadas as normas específicas da área profissional.</span>
+      <span class="barra-sel rel"><button><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Perguntar sobre este trecho</button><i></i><button><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c2.1 0 2 .9 2 2"/></svg> Copiar citação</button><span class="mk" style="top:-14px;left:-14px">1</span></span></p>
+      <p><b>§ 3º</b> As atividades de prática profissional e de estágio devem constar do plano de curso, com a respectiva carga horária e as formas de acompanhamento e avaliação.</p>
+      <p><b>Art. 34.</b> O estágio realizado em ambiente de trabalho observará a legislação específica, especialmente a Lei nº 11.788, de 25 de setembro de 2008.</p>
+    </div>
+  </div><span class="mk solto" style="top:24px;right:16px;left:auto">3</span></main><aside class="painel  " style="width:460px">
+    <span class="alca" title="Arraste para ajustar a largura"></span>
+    <div class="painel-cab">
+    <div class="pa-abas rel"><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Ler</span></button><button class="pa on"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Conversar</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span>Pasta</span></button></div>
+    <div class="pa-ctrl rel">
+      <button class="btn ghost xs" title="Buscar na base (⌘K)" style="white-space:nowrap">Buscar na base <kbd style="font-size:11px;opacity:.6">⌘K</kbd></button>
+      
+      
+      <button class="ib" title="Abrir em tela cheia"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+      <button class="ib" title="Fechar o painel (⌘\)"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      
+    </div>
+  </div>
+    <div class="conv-cab"><p class="nome">Nova conversa</p><span class="ia-tag">Claude</span></div>
+  <div class="conv-corpo">
+    <div class="msg-user">O que muda neste parágrafo com a Res. 2/2026? O estágio continua acrescido à carga mínima?</div>
+    <div class="ferr"><svg class="ic giro2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg><div><p class="b">Consultando a base: correspondência</p><p class="m">Res. CNE/CP 1/2021, art. 33, § 2º → Res. CNE/CP 2/2026</p></div></div>
+    <div class="resp"><p>Pela tabela de correspondência, o § 2º do art. 33 corresponde ao <span class="lifpr"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> art. 28, XVIII</span> e ao <span class="lifpr"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> art. 29</span> da nova resolução<span class="cursor"></span></p></div>
+  </div>
+  <div class="conv-pe"><div class="caixa rel"><div class="fichas rel"><span class="ficha"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg><span class="ft">Trecho: Res. 1/2021, art. 33, § 2º</span><span class="fx"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></span><span class="ficha"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg><span class="ft">Res. CNE/CP nº 1/2021<em>aberta na tela</em></span><span class="fx"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></span><span class="mk" style="top:-12px;left:-12px">2</span></div>
+    <div class="caixa-txt ph">Mensagem</div>
+    <div class="caixa-pe"><span class="cp-l"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span class="ia-sel">Claude <svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+    <button class="enviar parar"><span class="sq"></span></button></div>
+    
+  </div></div>
+  </aside><span class="mk solto" style="top:610px;left:892px">4</span></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>Ao selecionar texto no leitor, aparece a barra com “Perguntar sobre este trecho” e “Copiar citação”.</span></li><li><span class="mk">2</span><span>O trecho vai como ficha com o link do dispositivo; a norma aberta na tela, como outra ficha.</span></li><li><span class="mk">3</span><span>O Explorar e o leitor funcionam com o painel ao lado: dois documentos na mesma janela, cada um com a própria busca ⌘F e o próprio grifo.</span></li><li><span class="mk">4</span><span>A resposta chega no painel enquanto a pessoa continua lendo; “Comparar com a sucessora” abre o modo Comparar.</span></li></ol>
+</section>
+<section class="cena" id="bandeja">
+  <div class="cena-cab"><span class="num">Cena 5</span><h2>Em andamento e Continuar de onde parou</h2><span class="tam">1920 × 1080 · monitor Full HD</span><button class="zoom" data-alvo="bandeja">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> um coordenador que deixou a revisão com a IA conferindo, abriu outras duas conversas e foi almoçar. <b>O que faz:</b> volta e abre o app. <b>O que o app faz:</b> reabre onde ele estava e mostra no Início o que continua aberto. No cabeçalho, a bandeja “Em andamento” lista o que roda, o que terminou sem ser visto e o que espera uma decisão dele. Dá para aprovar ali mesmo.</p>
+  <div class="palco" data-w="1920" data-h="1080"><div class="escala"><div class="janela" style="width:1920px;height:1080px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ativa">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja aberta rel"><span class="giro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><span>2 em andamento</span><span class="ponto-novo"></span></button>
+    <button class="icone  rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="inicio">
+      <p class="m-perfil">Coordenação de curso · Campus Curitiba · <a class="lk">mudar</a> <span class="em-dia"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Base em dia</span></p>
+      <h1 class="hero">O que você precisa hoje?</h1>
+      <div class="caixa grande rel">
+    <div class="caixa-txt ph">Pergunte sobre uma norma, um curso ou um PPC</div>
+    <div class="caixa-pe"><span class="cp-l"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span class="ia-sel">Claude <svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+    <button class="enviar"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></div>
+    
+  </div>
+      <section class="continuar rel"><span class="mk" style="top:-12px;left:-12px">5</span>
+        <h2 class="title">Continuar de onde parou</h2>
+        <div class="cards">
+          <div class="card"><p class="k"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Revisão de PPC</p><p class="t">PPC Técnico em Enfermagem 2023</p><p class="m">1 de 6 feitas · <span class="vivo"><span class="pulso mini"></span> IA conferindo, 7 de 12 temas</span></p></div>
+          <div class="card"><p class="k"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Conversa</p><p class="t">Estágio na matriz do PPC de Enfermagem</p><p class="m"><span class="ponto-novo inl"></span> Respondeu há 2 min · Claude</p></div>
+          <div class="card"><p class="k"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> No painel</p><p class="t">Res. CNE/CP nº 2/2026, art. 28</p><p class="m">Abre ao lado de qualquer tela</p></div>
+        </div>
+      </section>
+      <section class="tarefas"><div class="tt"><h2 class="title">Tarefas</h2><a class="lk sm">Ver todas</a></div>
+        <div class="tgrid">
+          <div class="tcard"><p class="t">Revisar um PPC</p><p class="m">Confere o PPC (.docx) com as normas, o CNCT e a matriz da base, e devolve uma cópia do documento com comentários.</p></div>
+          <div class="tcard"><p class="t">Conferir a fundamentação normativa</p><p class="m">Confere cada citação e afirmação normativa de um documento contra o texto das normas e do CNCT na base do IFPR.</p></div>
+          <div class="tcard"><p class="t">Elaborar o calendário acadêmico <svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></p><p class="m">Abre o Assistente de Calendários Acadêmicos, em que o campus monta o calendário com a contagem dos dias letivos.</p></div>
+        </div></section>
+    </div></main></div>
+    <div class="pop-bandeja rel"><span class="mk" style="top:-12px;left:-12px">1</span>
+      <p class="pb-tit">Em andamento</p>
+      <div class="pb-item"><span class="giro"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><div><p class="t">Conversa: Estágio na matriz do PPC</p><p class="m">O Claude está respondendo · há 40 s</p></div></div>
+      <div class="pb-item rel"><span class="mk" style="top:6px;left:-26px">3</span><span class="giro"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><div class="fl"><p class="t">Revisão: PPC Técnico em Enfermagem 2023</p><p class="m">O Claude está conferindo · 7 de 12 temas</p><div class="barra"><i style="width:58%"></i></div></div></div>
+      <div class="pb-item aprov rel"><span class="mk" style="top:6px;left:-26px">2</span><span class="ico-warn"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span><div class="fl"><p class="t">Conversa: Calendário 2027 de Palmas</p><p class="m">O Claude quer gravar <code>minuta.docx</code> na pasta da conversa</p><div class="pb-botoes"><button class="btn prim xs">Permitir</button><button class="btn out xs">Negar</button><a class="lk xs">Ver a conversa</a></div></div></div>
+      <p class="pb-sub">Terminou</p>
+      <div class="pb-item"><span class="ponto-novo inl"></span><div><p class="t">Conversa: Fundamentação da Portaria nº 12/2026</p><p class="m">Resposta pronta · há 3 min</p></div></div>
+      <div class="pb-item vista"><svg class="ic okc" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div><p class="t">Conversa: Carga horária EaD no técnico subsequente</p><p class="m">Vista · há 25 min</p></div></div>
+      <div class="pb-pe rel"><span class="mk" style="top:4px;left:-26px">4</span><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.27 21a2 2 0 0 0 3.46 0"/><path d="M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33"/></svg> <span>Notificação do sistema ligada · desliga-se nas Configurações</span><span class="toggle on"><i></i></span></div>
+    </div>
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>A bandeja: o que está rodando (◐), o que terminou sem ser visto (●) e o que precisa de você (⚠). Clicar leva ao lugar.</span></li><li><span class="mk">2</span><span>Um pedido de aprovação de uma conversa em segundo plano é respondido ali mesmo, sem abrir a conversa.</span></li><li><span class="mk">3</span><span>A conferência com IA mostra o andamento; pausar fica na tela da revisão, e o clique leva até lá.</span></li><li><span class="mk">4</span><span>Notificação do sistema ligada por padrão, com a janela sem foco: diz só “Uma resposta está pronta” ou “A IA pede uma permissão”, sem o título da conversa (aparece na tela bloqueada). Desliga-se nas Configurações.</span></li><li><span class="mk">5</span><span>“Continuar de onde parou”: a revisão, as conversas e o documento que estava no painel, cada um com o estado de agora.</span></li></ol>
+</section>
+<section class="cena" id="limite">
+  <div class="cena-cab"><span class="num">Cena 6</span><h2>Limite da assinatura: continuar com outra IA</h2><span class="tam">1366 × 768 · notebook</span><button class="zoom" data-alvo="limite">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> a coordenadora, que pediu uma redação para a seção do estágio enquanto a IA conferia o PPC. <b>O que acontece:</b> a assinatura do Claude chega ao limite. <b>O que o app faz:</b> não impõe teto antes. Quando o limite chega, diz isso com clareza e oferece continuar com outra IA conectada, na mesma pasta e com as mesmas fichas; o histórico vai como ficha à vista. A conferência do PPC também oferece a troca, e a outra IA lê só o que falta.</p>
+  <div class="palco" data-w="1366" data-h="768"><div class="escala"><div class="janela" style="width:1366px;height:768px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja alerta rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span>Limite do Claude</span><span class="mk" style="top:-12px;left:-12px">5</span></button>
+    <button class="icone on rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="pagina rev ">
+    <header class="rev-cab">
+      <p class="sup">Revisar um PPC</p>
+      <div class="doc-cab">
+        <div><p class="titulo">PPC Técnico em Enfermagem 2023.docx</p><p class="m">Técnico em Enfermagem, subsequente · Campus Curitiba</p></div>
+        <div class="doc-acoes">
+          <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Abrir no Word</button>
+          <button class="btn out rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></svg> Acompanhar no Word</button>
+          <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <section class="resultado"><h2 class="display">3 para corrigir e 2 para conferir, em 27 de 31 critérios.</h2><div class="regua"><span class="rg"><i class="tr c"></i><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr n"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i></span><span class="rg"><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i></span></div></section>
+    <section class="faixa pausada rel"><div class="faixa-l"><span class="pulso parado"></span><div><p class="b">Conferência pausada no tema 8 de 12: limite de uso do Claude</p><p class="m">Retome quando o Claude voltar (16:40) ou continue com o ChatGPT: ele lê só os temas que faltam, e cada pendência diz qual IA a julgou.</p></div></div><div class="faixa-r"><button class="btn out sm">Continuar com o ChatGPT</button></div><span class="mk" style="top:-12px;left:-12px">4</span></section>
+    <div class="grade sem-temas">
+      <label class="seletor"><span>Tema</span><span class="sel">Tudo (6) <svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+      <div class="col-lista">
+        
+        <ul class="pends"><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Estágio supervisionado sem carga horária na matriz curricular</span><span class="onde">Seção 4.6 · p. 31</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Perfil profissional de conclusão sem as competências do CNCT</span><span class="onde">Seção 3.2 · p. 14</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Carga horária total do PPC diverge da cadastrada no SUAP (1.200 h × 1.320 h)</span><span class="onde">Seção 4.1 · p. 22</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Ementa de Ética e Legislação em Enfermagem cita a Res. CNE/CEB nº 6/2012</span><span class="onde">Seção 5.1 · p. 40 <span class="badge">Novo</span></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Laboratório de Enfermagem sem a relação de equipamentos</span><span class="onde">Seção 7.2 · p. 52</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li></ul>
+      </div>
+    </div>
+  </div></main><aside class="painel  " style="width:520px">
+    <span class="alca" title="Arraste para ajustar a largura"></span>
+    <div class="painel-cab">
+    <div class="pa-abas rel"><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Ler</span></button><button class="pa on"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Conversar</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span>Pasta</span></button></div>
+    <div class="pa-ctrl rel">
+      <button class="btn ghost xs" title="Buscar na base (⌘K)" style="white-space:nowrap">Buscar na base <kbd style="font-size:11px;opacity:.6">⌘K</kbd></button>
+      
+      
+      <button class="ib" title="Abrir em tela cheia"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+      <button class="ib" title="Fechar o painel (⌘\)"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      
+    </div>
+  </div>
+    <div class="conv-cab"><p class="nome">Estágio na matriz do PPC de Enfermagem</p><span class="ia-tag">Claude</span></div>
+      <div class="conv-corpo">
+        <div class="resp curta"><p>…então a carga do estágio deve aparecer como linha própria na matriz, com a indicação de que não integra as 1.200 h mínimas do CNCT.</p></div>
+        <div class="msg-user">Me sugere uma redação para a seção 4.6 e para a linha da matriz, no estilo do resto do PPC?</div>
+        <div class="aviso-limite rel"><span class="mk" style="top:-12px;left:-12px">1</span>
+          <p class="al-t"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Você chegou ao limite de uso da sua assinatura do Claude</p>
+          <p class="al-m">A Anthropic informou que o Claude volta às <b>16:40</b>. Para não parar agora, continue com outra IA conectada neste computador.</p>
+          <div class="al-botoes rel"><span class="mk" style="top:-12px;left:-12px">2</span><button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Continuar com o ChatGPT</button><button class="btn out">Continuar com o Gemini</button></div>
+          <div class="al-junto rel"><span class="mk" style="top:-10px;left:-12px">3</span><p class="rot">Vai junto para a nova conversa</p>
+            <p class="m"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> PPC Téc. Enfermagem 2023 (texto completo) · <svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Pendência: Estágio sem carga horária · <svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg> Res. CNE/CP 2/2026, art. 28 · <svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg> Histórico desta conversa (12 mensagens) · a sua última pergunta, escrita na caixa e não enviada</p></div>
+          <a class="lk sm">Esperar o Claude</a>
+        </div>
+      </div>
+      <div class="conv-pe"><div class="caixa desab rel">
+    <div class="caixa-txt ph">O Claude está no limite: escolha outra IA acima</div>
+    <div class="caixa-pe"><span class="cp-l"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span class="ia-sel">Claude <svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+    <button class="enviar"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></div>
+    
+  </div></div>
+  </aside></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>O aviso diz o que houve e o que fazer agora; o horário de volta só aparece quando o provider o informa.</span></li><li><span class="mk">2</span><span>“Continuar com o ChatGPT/Gemini” abre uma conversa nova com a outra IA, na mesma pasta e com as mesmas fichas; a última pergunta vai escrita na caixa, não enviada. A conversa antiga ganha a linha “Continuada com o ChatGPT”, com o link.</span></li><li><span class="mk">3</span><span>O que vai junto fica à vista antes de escolher, inclusive o histórico desta conversa, como ficha removível.</span></li><li><span class="mk">4</span><span>A conferência da revisão, que usa a mesma assinatura, pausa; “Continuar com o ChatGPT” lê só os temas que faltam, e cada pendência da IA mostra qual IA a julgou.</span></li><li><span class="mk">5</span><span>A bandeja passa a mostrar ⚠ até a pessoa decidir.</span></li></ol>
+</section>
+<section class="cena" id="compacto">
+  <div class="cena-cab"><span class="num">Cena 7</span><h2>Acompanhar no Word (modo compacto)</h2><span class="tam">1366 × 768 · tela inteira do notebook</span><button class="zoom" data-alvo="compacto">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> o coordenador que vai corrigir o PPC. <b>O que faz:</b> clica em “Acompanhar no Word” na revisão. <b>O que o app faz:</b> abre a cópia comentada no Word e encolhe a janela para uma coluna de 380 px, encostada à direita e sempre visível. Ali ficam as pendências, o trecho para achar com Ctrl+F, “Feito” e uma conversa curta. O Word fica com o resto da tela, e o app sugere deixá-lo à esquerda. <b>Cada vez que ele salva no Word</b> (⌘S), o app confere de novo o arquivo, sem IA e sem clique, e em poucos segundos a coluna mostra o que mudou.</p>
+  <div class="palco" data-w="1366" data-h="768"><div class="escala"><div class="desktop" style="width:1366px;height:768px">
+    <div class="menubar"><span class="apple"></span><b>Simplifica IF</b><span>Arquivo</span><span>Editar</span><span>Ver</span><span>Janela</span><span>Ajuda</span><span class="mb-r">qui 27 nov  14:12</span></div>
+    <div class="word rel"><span class="mk" style="top:250px;left:640px">5</span>
+      <div class="w-tit"><span class="semaforos"><i></i><i></i><i></i></span><span class="w-nome">PPC Técnico em Enfermagem 2023 - revisão prévia (Simplifica IF) 2026-11-27 14h05.docx</span><span class="w-salvo">Salvo às 14:32</span></div>
+      <div class="w-ribbon"><span class="on">Página Inicial</span><span>Inserir</span><span>Layout</span><span>Referências</span><span>Revisão</span><span>Exibir</span></div>
+      <div class="w-tools"><i></i><i></i><i></i><b></b><i></i><i></i><b></b><i class="lg"></i><i class="lg"></i></div>
+      <div class="w-area">
+        <div class="w-pag">
+          <p class="w-h">4.6 Estágio supervisionado</p>
+          <p><span class="w-com">O estágio supervisionado é obrigatório e será realizado a partir do segundo semestre, em unidades de saúde conveniadas, sob a supervisão de docente enfermeiro do campus.</span> As atividades seguem o plano de estágio aprovado pelo colegiado do curso e o regulamento de estágio do IFPR.</p>
+          <p>O estudante será avaliado pelo supervisor de campo e pelo docente orientador, por meio de fichas de acompanhamento e relatório final, conforme o regulamento.</p>
+          <p class="w-h">4.7 Atividades complementares</p>
+          <p>As atividades complementares compreendem a participação em eventos, projetos de extensão e cursos de curta duração relacionados à área da saúde.</p>
+          <p class="w-cinza"></p><p class="w-cinza c2"></p><p class="w-cinza"></p>
+        </div>
+        <div class="w-coms">
+          <div class="w-c on"><p class="a">Simplifica IF</p><p>● Corrigir: Estágio supervisionado sem carga horária na matriz curricular. Declarar a carga horária…</p></div>
+          <div class="w-c"><p class="a">Simplifica IF</p><p>◐ Conferir: Ementa de Ética e Legislação…</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="compacto rel">
+      <div class="cp-tit rel"><span class="mk" style="top:6px;left:-28px">1</span><span class="logo-sq sm"><svg viewBox="0 0 24 24" width="11" height="11"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/></svg></span><span class="cp-n">Acompanhando o PPC</span><button class="ib on" title="Sempre visível"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button><button class="ib" title="Voltar ao app inteiro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></div>
+      <div class="cp-doc"><p class="t">PPC Técnico em Enfermagem 2023</p><p class="m">2 de 6 resolvidas</p><div class="barra"><i style="width:33%;background:var(--grav-ok)"></i></div></div>
+      <div class="cp-salvo rel"><span class="mk" style="top:2px;left:-38px">6</span><p><span class="okc"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> <b>Salvo às 14:32 · conferido sem IA</b></p><p class="m">1 resolvido · 1 novo · as da IA ficam como estão</p></div>
+      <div class="cp-filtro rel"><span class="mk" style="top:-4px;left:-28px">2</span><span class="fc on">Tudo 5</span><span class="fc"><span class="gv corrigir">●</span> Corrigir 3</span><span class="fc"><span class="gv conferir">◐</span> Conferir 2</span></div>
+      <ul class="cp-lista">
+        <li class="cp-p resolvida rel"><span class="mk" style="top:4px;right:70px;left:auto">7</span><div class="cp-pc"><span class="cp-res"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Resolvido ao salvar</span><span class="cp-o">4.1 · p. 22</span></div><p class="cp-t">Carga horária total do PPC diverge do SUAP</p></li>
+        <li class="cp-p nova"><div class="cp-pc"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span><span class="tag-novo">novo</span><span class="cp-o">4.6 · p. 31</span></div><p class="cp-t">Estágio descrito como “opcional” no parágrafo incluído</p></li>
+        <li class="cp-p aberta rel"><div class="cp-pc"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span><span class="cp-o">4.6 · p. 31</span></div><p class="cp-t">Estágio supervisionado sem carga horária na matriz curricular</p>
+          <div class="cp-ac rel"><span class="mk" style="top:-4px;right:0;left:auto">3</span><button class="btn prim xs"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Feito</button><button class="btn out xs"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c2.1 0 2 .9 2 2"/></svg> Copiar trecho</button><button class="btn ghost xs"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Norma</button></div></li>
+        <li class="cp-p rel"><span class="mk" style="bottom:6px;right:6px;left:auto;top:auto">8</span><div class="cp-pc"><span class="ind conferir"><span class="gv">◐</span>Conferir</span><span class="cp-o">5.1 · p. 40</span></div><p class="cp-t">Ementa de Ética e Legislação cita a Res. CNE/CEB nº 6/2012</p><div class="cp-ac"><span class="cp-feito"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Feito · da IA</span><button class="btn out xs">Reconferir com a IA</button></div></li>
+      </ul>
+      <div class="cp-conv rel"><span class="mk" style="top:-12px;left:-28px">4</span>
+        <p class="cp-ct"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Conversa sobre esta revisão <span class="ia-tag">Claude</span><button class="ib"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button></p>
+        <div class="caixa mini rel"><div class="fichas"><span class="ficha cnt">3 itens de contexto</span></div>
+    <div class="caixa-txt ph">Pergunte sobre este ponto</div>
+    <div class="caixa-pe"><span class="cp-l"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span class="ia-sel">Claude <svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></span>
+    <button class="enviar"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></div>
+    
+  </div>
+      </div>
+    </div>
+    <div class="dica-word rel"><span class="mk" style="top:-12px;left:-12px">9</span><span class="logo-sq sm"><svg viewBox="0 0 24 24" width="11" height="11"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/></svg></span><span>Deixe o Word à esquerda (<b>⊞+←</b>): esta coluna fica sempre à vista e cobre a área dos balões de comentário.</span><a class="lk xs">Entendi</a></div>
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>A janela compacta fica sempre por cima e encostada à direita; o alfinete solta. “Voltar ao app inteiro” devolve o tamanho de antes.</span></li><li><span class="mk">2</span><span>Só o que serve para corrigir: o filtro por gravidade e a lista enxuta, com uma pendência aberta por vez.</span></li><li><span class="mk">3</span><span>“Copiar trecho” para achar no Word com Ctrl+F; “Feito” marca na revisão (F no teclado).</span></li><li><span class="mk">4</span><span>A conversa da revisão em versão curta, com o PPC e a pendência já como contexto; ⤢ a abre maior.</span></li><li><span class="mk">5</span><span>No Word, a cópia comentada que a revisão já gera: os comentários batem com a lista. O app não escreve no Word; a pessoa edita e salva.</span></li><li><span class="mk">6</span><span>Conferência ao salvar: o app vê o arquivo salvo, confere de novo só com código (sem IA, sem gastar cota) e diz o que mudou. A cópia comentada não é regravada.</span></li><li><span class="mk">7</span><span>O que o código deu por resolvido sai riscado, com um realce breve; o que o arquivo novo trouxe entra marcado “novo”.</span></li><li><span class="mk">8</span><span>Pendência da IA marcada “Feito”: a conferência sem IA não a julga; “Reconferir com a IA” confere só ela, quando a pessoa quiser.</span></li><li><span class="mk">9</span><span>Ao ligar o modo, o app diz uma vez: “Deixe o Word à esquerda (⊞+←)”, porque a coluna cobre a área dos balões de comentário do Word.</span></li></ol>
+</section>
+<section class="cena" id="sobreposto">
+  <div class="cena-cab"><span class="num">Cena 8</span><h2>Notebook com escala de 125%: o painel por cima</h2><span class="tam">1366 × 768 a 125% = 1093 × 614 úteis</span><button class="zoom" data-alvo="sobreposto">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Onde:</b> o notebook mais comum no IFPR, 1366 × 768 com o Windows em 125%. Sobram 1093 px úteis. <b>O que o app faz:</b> se a tela principal ficaria com menos de ~760 px, o painel abre <i>por cima</i>, da borda direita, com sombra, e a revisão mantém a largura. “Prender ao lado” fixa o painel como coluna, para quem prefere apertar; Esc ou um clique fora o recolhe, sem perder nada.</p>
+  <div class="palco" data-w="1093" data-h="614"><div class="escala"><div class="janela" style="width:1093px;height:614px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    <button class="bandeja rel"><span class="giro"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg></span><span>1</span></button>
+    <button class="icone on rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="pagina rev ">
+    <header class="rev-cab">
+      <p class="sup">Revisar um PPC</p>
+      <div class="doc-cab">
+        <div><p class="titulo">PPC Técnico em Enfermagem 2023.docx</p><p class="m">Técnico em Enfermagem, subsequente · Campus Curitiba</p></div>
+        <div class="doc-acoes">
+          <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Abrir no Word</button>
+          <button class="btn out rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/></svg> Acompanhar no Word</button>
+          <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <section class="resultado"><h2 class="display">3 para corrigir e 2 para conferir, em 27 de 31 critérios.</h2><div class="regua"><span class="rg"><i class="tr c"></i><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr n"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i></span><span class="rg"><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i></span></div></section>
+    
+    <div class="grade sem-temas">
+      <label class="seletor"><span>Tema</span><span class="sel">Tudo (6) <svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+      <div class="col-lista">
+        
+        <ul class="pends"><li class="pend aberta ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Estágio supervisionado sem carga horária na matriz curricular</span><span class="onde">Seção 4.6 · p. 31</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+    <div class="pend-corpo ">
+    <p class="txt">A seção 4.6 descreve o estágio como obrigatório, mas a matriz curricular não traz a carga horária dele, nem a soma no total do curso.</p>
+    <div class="bloco"><p class="rot">O que falta</p>
+      <ul class="lista"><li>A carga horária do estágio na matriz curricular</li><li>O estágio somado (ou não) na carga horária total, com a justificativa</li></ul></div>
+    <div class="bloco"><p class="rot">O que fazer</p>
+      <p class="txt">Declarar a carga horária do estágio na matriz e dizer se ela entra no total do curso, como pede o art. 28 da Res. CNE/CP nº 2/2026 para os PPCs aprovados depois da publicação.</p></div>
+    <div class="trecho corrigir">
+      <p class="rot">Trecho no PPC</p>
+      <blockquote>O estágio supervisionado é obrigatório e será realizado a partir do segundo semestre, em unidades de saúde conveniadas, sob a supervisão de docente enfermeiro do campus.</blockquote>
+      <p class="acoes-trecho"><a class="lk">Ver no PPC</a><a class="lk"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c2.1 0 2 .9 2 2"/></svg> Copiar trecho</a></p>
+    </div>
+    <div class="bloco"><p class="rot">Fontes</p>
+      <p class="fontes"><a class="lk">Res. CNE/CP nº 2/2026, art. 28, XVIII</a><a class="lk">CNCT, 4ª ed.: Técnico em Enfermagem</a></p></div>
+    <div class="acoes">
+      <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Feito</button>
+      <button class="btn ghost"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10.6l-6.1 1.9L12 18.4l-1.9-5.9L4 10.6l6.1-1.8z"/><path d="M19 3v4"/><path d="M21 5h-4"/></svg> Sugerir texto</button>
+      <button class="btn ghost rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Conversar sobre esta pendência</button>
+      <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+    </div>
+  </div>
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Perfil profissional de conclusão sem as competências do CNCT</span><span class="onde">Seção 3.2 · p. 14</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li><li class="pend  ">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind corrigir"><span class="gv">●</span>Corrigir</span></span>
+      <span class="pend-tit"><span class="t">Carga horária total do PPC diverge da cadastrada no SUAP (1.200 h × 1.320 h)</span><span class="onde">Seção 4.1 · p. 22</span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span>
+    </div>
+    
+  </li></ul>
+      </div>
+    </div>
+  </div></main><aside class="painel sobreposto estreito" style="width:440px">
+    <span class="alca" title="Arraste para ajustar a largura"></span>
+    <div class="painel-cab">
+    <div class="pa-abas rel"><button class="pa on"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Ler</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Conversar</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span>Pasta</span></button></div>
+    <div class="pa-ctrl rel">
+      <button class="btn ghost xs" title="Buscar na base (⌘K)" style="white-space:nowrap">Buscar na base <kbd style="font-size:11px;opacity:.6">⌘K</kbd></button>
+      <button class="ib rel" title="Marcar este documento"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button>
+      <button class="ib " title="Prender ao lado"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg></button>
+      <button class="ib" title="Abrir em tela cheia"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+      <button class="ib" title="Fechar o painel (⌘\)"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      <span class="mk" style="top:24px;left:-6px">2</span>
+    </div>
+  </div>
+    <div class="ler-nav"><button class="ib"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button><button class="ib dis"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button><p class="nome">Res. CNE/CP nº 2/2026, art. 28, XVIII</p><button class="ib"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button></div>
+  <div class="ler-corpo">
+    <p class="ler-faixa"><span class="sel warn">◐ Aguardando publicação</span><span>não está em vigor · rolado até o art. 28, XVIII</span></p>
+    <div class="doc">
+      <p><b>Art. 28.</b> <mark class="tc">O projeto pedagógico do curso, elaborado com a participação da comunidade escolar, contemplará, no mínimo:</mark></p>
+      <p class="inc dim">(…)</p>
+      <p class="inc">XV – a organização curricular, com a matriz e as cargas horárias dos componentes;</p>
+      <p class="inc">XVI – as formas de avaliação da aprendizagem e de recuperação;</p>
+      <p class="inc">XVII – os critérios de aproveitamento de conhecimentos e experiências anteriores;</p>
+      <p class="inc rel"><mark class="tc forte">XVIII – a carga horária do estágio profissional supervisionado, quando previsto, e sua forma de organização, indicando se integra a carga horária mínima do curso;</mark></p>
+      <p class="inc">XIX – as instalações, os equipamentos e os ambientes de aprendizagem;</p>
+      <p class="inc">XX – o perfil do corpo docente e técnico.</p>
+      <p><b>Art. 29.</b> Os cursos técnicos de nível médio observarão as cargas horárias mínimas do Catálogo Nacional de Cursos Técnicos, acrescidas, quando houver, do estágio.</p>
+      <p><b>Art. 30.</b> As atividades de prática profissional e de estágio, presenciais ou em ambiente simulado, constarão do projeto pedagógico, com a carga horária e as formas de acompanhamento e avaliação.</p>
+    </div>
+  </div>
+  </aside><span class="mk solto" style="top:70px;left:639px">1</span><span class="dica-esc rel"><span class="mk" style="top:-12px;left:-12px">3</span>Esc ou clique fora para recolher</span></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>Painel por cima: a revisão não se espreme nem se mexe embaixo.</span></li><li><span class="mk">2</span><span>“Prender ao lado”, com ícone próprio (o alfinete é só o “sempre por cima” do modo compacto), troca para coluna, e o app lembra a escolha.</span></li><li><span class="mk">3</span><span>Fechar por cima só recolhe: a norma, o histórico e a conversa continuam no painel.</span></li></ol>
+</section>
+<section class="cena" id="comparar">
+  <div class="cena-cab"><span class="num">Cena 9</span><h2>Comparar 1/2021 ⇄ 2/2026</h2><span class="tam">1920 × 1080 · monitor Full HD</span><button class="zoom" data-alvo="comparar">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> a equipe da DENS, preparando a orientação aos campi sobre as novas diretrizes. <b>O que faz:</b> clica em “Comparar com a sucessora” na Res. 1/2021. <b>O que o app faz:</b> abre o modo Comparar, uma lista de linhas numa rolagem só, na ordem da norma de origem, alinhada pela tabela de correspondência. No meio, a relação de cada linha nos termos da tabela; no fim, o que é novo na 2/2026. O aviso de que a correspondência é rascunho não sai da tela.</p>
+  <div class="palco" data-w="1920" data-h="1080"><div class="escala"><div class="janela" style="width:1920px;height:1080px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ativa">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    
+    <button class="icone  rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="comparar">
+      <div class="cmp-cab"><div><p class="sup">Comparar</p><h1 class="title big">Res. CNE/CP nº 1/2021 ⇄ Res. CNE/CP nº 2/2026</h1></div>
+        <div class="cmp-ops rel"><span class="mk" style="top:-12px;left:-12px">5</span><span class="sw">Só o que mudou</span></div></div>
+      <div class="cmp-aviso rel"><span class="mk" style="top:-12px;left:-12px">1</span><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span><b>Correspondência: rascunho sem revisão jurídica.</b> O alinhamento é uma indicação para ler os dois textos, não fundamento. Confira as regras de transição antes de citar.</span></div>
+      <div class="cmp-cols"><p class="cc-l"><span class="sel ok">● Em vigor até a 2/2026 ser publicada</span> Res. CNE/CP nº 1/2021</p><span></span><p class="cc-r"><span class="sel warn">◐ Aguardando publicação</span> Res. CNE/CP nº 2/2026</p></div>
+      <div class="cmp-linhas">
+        <div class="par mant">
+    <div class="lado"><b>Art. 1º</b> Esta Resolução define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.</div>
+    <div class="meio rel"><span class="rel-sin">=</span><span class="rel-rot">equivalente</span></div>
+    <div class="lado rel"><b>Art. 1º</b> Esta Resolução define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.</div>
+  </div>
+        <div class="par sem">
+    <div class="lado"><b>Art. 1º, parágrafo único.</b> Para os fins desta Resolução, entende-se por Diretriz o conjunto articulado de princípios e critérios a serem observados pelos sistemas de ensino.</div>
+    <div class="meio rel"><span class="rel-sin">−</span><span class="rel-rot">sem equivalente</span></div>
+    <div class="lado rel"><span class="sem-par">Sem dispositivo correspondente</span><span class="nota-tab">Nota da tabela: a 2/2026 não define “Diretriz”.</span><p class="par-ia rel"><a class="lk xs"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Perguntar à IA sobre a diferença</a></p></div>
+  </div>
+        <div class="par alt">
+    <div class="lado"><b>Art. 2º</b> A Educação Profissional e Tecnológica é modalidade educacional que perpassa todos os níveis da educação nacional, integrada às demais modalidades e às dimensões do trabalho, da ciência, da cultura e da tecnologia.</div>
+    <div class="meio rel"><span class="rel-sin">≈</span><span class="rel-rot">parcial</span><span class="mk" style="top:-10px;left:-14px">2</span></div>
+    <div class="lado rel"><b>Art. 1º, § 1º</b> A Educação Profissional e Tecnológica é modalidade educacional integrada aos níveis e às dimensões do trabalho, da ciência, da cultura e da tecnologia.<span class='empilha'><b>Art. 1º, § 2º</b> <mark class='mud'>A oferta organiza-se por áreas tecnológicas e itinerários formativos profissionais.</mark></span><span class='nota-tab'>Nota da tabela: a 2/2026 acrescenta a organização por áreas tecnológicas e itinerários.</span><p class="par-ia rel"><a class="lk xs"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Perguntar à IA sobre a diferença</a><span class="mk" style="top:-10px;left:-30px">4</span></p></div>
+  </div>
+        <div class="par mant">
+    <div class="lado"><b>Art. 10.</b> A Educação Profissional Técnica de Nível Médio será desenvolvida nas formas articulada e subsequente ao Ensino Médio.</div>
+    <div class="meio rel"><span class="rel-sin">=</span><span class="rel-rot">equivalente</span><span class="mk" style="top:-10px;left:-14px">3</span></div>
+    <div class="lado rel"><b>Art. 47.</b> A Educação Profissional Técnica de Nível Médio será <mark class='mud'>ofertada</mark> nas formas articulada e subsequente ao Ensino Médio.<span class='tambem'>Também corresponde ao art. 11 da 1/2021.</span></div>
+  </div>
+        <div class="par mant">
+    <div class="lado"><b>Art. 11.</b> A forma articulada pode ser integrada ou concomitante ao Ensino Médio.</div>
+    <div class="meio rel"><span class="rel-sin">=</span><span class="rel-rot">equivalente</span></div>
+    <div class="lado rel"><b>Art. 47.</b> (o mesmo dispositivo acima)<span class='tambem'>Também corresponde ao art. 10 da 1/2021.</span></div>
+  </div>
+        <p class="cmp-sec">Novos na 2/2026 <span class="m">artigos que nenhum item da tabela aponta, na ordem da 2/2026</span></p>
+        <div class="par novo">
+    <div class="lado"><span class="sem-par">Sem dispositivo correspondente</span></div>
+    <div class="meio rel"><span class="rel-sin">+</span><span class="rel-rot">novo</span></div>
+    <div class="lado rel"><b>Art. 58.</b> <mark class='mud'>As instituições acompanharão os egressos dos cursos, com indicadores de inserção no mundo do trabalho e de continuidade dos estudos.</mark><p class="par-ia rel"><a class="lk xs"><svg class="ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Perguntar à IA sobre a diferença</a></p></div>
+  </div>
+      </div>
+    </div></main></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>O aviso fixo: a correspondência é rascunho sem revisão jurídica, indicação e não fundamento. Fica enquanto a tabela estiver em rascunho.</span></li><li><span class="mk">2</span><span>A relação, nos termos da tabela: = equivalente (a redação pode mudar), ≈ parcial (com a nota da tabela), − sem equivalente, + novo. 1→N: os destinos empilham à direita.</span></li><li><span class="mk">3</span><span>N→1: o destino se repete, com “também corresponde ao art. X”. Só as palavras que mudaram ganham o grifo, sem o verde e vermelho de programador.</span></li><li><span class="mk">4</span><span>Cada linha tem “Perguntar à IA sobre a diferença”, que abre a conversa no painel com os dois dispositivos como fichas.</span></li><li><span class="mk">5</span><span>“Só o que mudou” esconde só os pares de texto idêntico; os artigos da 2/2026 que nenhum item aponta ficam no fim, em “Novos na 2/2026”.</span></li></ol>
+</section>
+<section class="cena" id="criterio">
+  <div class="cena-cab"><span class="num">Cena 10</span><h2>O que este critério confere</h2><span class="tam">1366 × 768 · notebook</span><button class="zoom" data-alvo="criterio">Ver em tamanho real</button></div>
+  <p class="legenda"><b>Quem:</b> a coordenadora, na revisão do PPC de Enfermagem. <b>O que faz:</b> não entende por que a pendência foi apontada e clica em “CT-SUP-17 · O que este critério confere”. <b>O que o app faz:</b> abre a ficha do critério no painel, sem sair da revisão, em linguagem de quem revisa: o que confere, por quê, o que conta como atendido, quando fica “a conferir”, como o app confere e o estado neste PPC.</p>
+  <div class="palco" data-w="1366" data-h="768"><div class="escala"><div class="janela" style="width:1366px;height:768px">
+    <header class="cab">
+    <span class="semaforos"><i></i><i></i><i></i></span>
+    <span class="logo"><span class="logo-sq"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M5 15.5 14.5 6l3.5 3.5L8.5 19H5z" fill="#17171a"/><path d="M4 21h9" stroke="#17171a" stroke-width="2.2" stroke-linecap="round"/></svg></span><b>Simplifica IF</b></span>
+    <nav class="abas"><a class="aba ">Início</a><a class="aba ">Explorar</a></nav>
+    <button class="buscar rel"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar</span><kbd>⌘K</kbd></button>
+    
+    <button class="icone on rel" title="Painel ao lado (⌘\)"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icone"><svg class="ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </header>
+    <div class="corpo"><main class="principal"><div class="pagina rev">
+      <header class="rev-cab">
+        <p class="sup">Revisar um PPC</p>
+        <div class="doc-cab">
+          <div><p class="titulo">PPC Técnico em Enfermagem 2023.docx</p><p class="m">Técnico em Enfermagem, subsequente · Campus Curitiba</p></div>
+          <div class="doc-acoes"><button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Abrir no Word</button><button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div>
+        </div>
+      </header>
+      <section class="resultado rel"><h2 class="display">3 para corrigir e 2 para conferir, em 27 de 31 critérios.</h2><div class="regua"><span class="rg"><i class="tr c"></i><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr f alvo"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr c"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr f"></i><i class="tr k"></i><i class="tr k"></i><i class="tr n"></i><i class="tr k"></i></span><span class="rg"><i class="tr k"></i><i class="tr k"></i><i class="tr k"></i></span><span class="rg"><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i><i class="tr n"></i></span><span class="rg"><i class="tr k"></i><i class="tr f"></i><i class="tr k"></i></span></div><span class="regua-dica">CT-SUP-17 · ver o critério</span><span class="mk" style="top:58px;left:150px">5</span></section>
+      <div class="grade sem-temas">
+        <label class="seletor"><span>Tema</span><span class="sel">Corpo docente (1) <svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+        <div class="col-lista"><ul class="pends"><li class="pend aberta">
+    <div class="pend-cab">
+      <span class="pend-ind"><span class="ind conferir"><span class="gv">◐</span>Conferir</span></span>
+      <span class="pend-tit"><span class="t">Formação pedagógica dos docentes não licenciados não aparece no PPC</span><span class="onde">Seção 6.2 · p. 44 · <a class="lk xs crit-link rel">CT-SUP-17 · O que este critério confere<span class="mk" style="top:-6px;right:-26px;left:auto">2</span></a></span></span>
+      <span class="chev"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+    </div>
+    <div class="pend-corpo">
+      <p class="txt">O corpo docente lista quatro enfermeiros bacharéis na parte profissional, e o PPC não cita formação pedagógica, complementação nem política institucional de formação.</p>
+      <div class="trecho conferir">
+        <p class="rot">Trecho no PPC</p>
+        <blockquote>O corpo docente da área profissional é composto por enfermeiros com experiência assistencial e titulação mínima de especialista.</blockquote>
+      </div>
+      <div class="acoes">
+        <button class="btn prim"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Feito</button>
+        <button class="btn ghost"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10.6l-6.1 1.9L12 18.4l-1.9-5.9L4 10.6l6.1-1.8z"/><path d="M19 3v4"/><path d="M21 5h-4"/></svg> Sugerir texto</button>
+        <button class="btn ghost rel"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Conversar sobre esta pendência<span class="mk" style="top:-12px;right:-12px;left:auto">6</span></button>
+        <button class="btn ghost icon"><svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+      </div>
+    </div>
+  </li></ul></div>
+      </div>
+    </div></main><aside class="painel  " style="width:520px">
+    <span class="alca" title="Arraste para ajustar a largura"></span>
+    <div class="painel-cab">
+    <div class="pa-abas rel"><button class="pa on"><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Ler</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Conversar</span></button><button class="pa "><svg class="ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg><span>Pasta</span></button></div>
+    <div class="pa-ctrl rel">
+      <button class="btn ghost xs" title="Buscar na base (⌘K)" style="white-space:nowrap">Buscar na base <kbd style="font-size:11px;opacity:.6">⌘K</kbd></button>
+      <button class="ib rel" title="Marcar este documento"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></button>
+      
+      <button class="ib" title="Abrir em tela cheia"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg></button>
+      <button class="ib" title="Fechar o painel (⌘\)"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      
+    </div>
+  </div>
+    <div class="ler-nav"><button class="ib"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button><button class="ib dis"><svg class="ic " width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button><p class="nome">CT-SUP-17 · Formação pedagógica e desenvolvimento docente</p></div>
+  <div class="ler-corpo crit">
+    <p class="sup">Critério da tarefa “Revisar um PPC”</p>
+    <h2 class="title">Formação pedagógica e desenvolvimento docente previstos</h2>
+    <p class="crit-sel rel"><span class="chip-mono">CT-SUP-17</span><span class="m">Obrigatório · <b>Como o app confere:</b> a IA julga as seções de Corpo docente, equipe técnica e gestão; o app confere o trecho e as normas citadas</span><span class="mk" style="top:-4px;right:-6px;left:auto">1</span></p>
+    <div class="neste rel"><span class="mk" style="top:-10px;left:-12px">4</span>
+      <p class="rot">Neste PPC</p>
+      <p><span class="ind conferir"><span class="gv">◐</span>Conferir</span> <span class="m">sem formação pedagógica nem remissão · Seção 6.2 ·</span> <a class="lk xs">Ir à pendência</a></p>
+    </div>
+    <div class="bloco"><p class="rot">O que confere</p>
+      <p class="txt">O PPC, ou a política institucional ou do campus que ele indica, mostra como a formação pedagógica e o desenvolvimento docente sustentam a oferta do curso?</p></div>
+    <div class="bloco rel"><p class="rot">Por que</p><span class="mk" style="top:-6px;left:-26px">3</span>
+      <ul class="crit-normas">
+        <li><a class="lk xs">LDB (Lei nº 9.394/1996), arts. 61, 62 e 63</a></li>
+        <li><a class="lk xs">Res. CNE/CP nº 2/2026, arts. 57, 59, 61 e 72</a> <span class="sel warn xs">◐ aguardando publicação</span></li>
+        <li><a class="lk xs">Res. CONSUP/IFPR nº 64/2022, arts. 41 e 42</a></li>
+      </ul></div>
+    <div class="crit-duas">
+      <div class="bloco"><p class="rot"><span class="gv ok"><svg class="ic " width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Conta como atendido</p>
+        <p class="txt sm">Política de formação pedagógica e continuada, própria ou do IFPR/campus, ou complementação para os não licenciados.</p></div>
+      <div class="bloco"><p class="rot"><span class="gv corrigir">●</span> Não atendido</p>
+        <p class="txt sm">Nenhuma menção a formação pedagógica, sobretudo com docentes não licenciados na parte profissional.</p></div>
+    </div>
+    <div class="bloco"><p class="rot">Quando fica “a conferir”</p>
+      <p class="txt sm">Remissão genérica demais para verificar, ou política institucional que o PPC não deixa localizar.</p></div>
+  </div>
+  </aside></div>
+    
+  </div></div></div>
+  <ol class="notas"><li><span class="mk">1</span><span>A ficha é da tarefa “Revisar um PPC”, não da base: não aparece no Explorar nem nas buscas de norma. O link é do módulo: ifpr://revisao-ppc/&lt;lista&gt;/criterio/CT-SUP-17.</span></li><li><span class="mk">2</span><span>O código da pendência abre a ficha ao lado; a revisão continua na tela.</span></li><li><span class="mk">3</span><span>As normas do “Por que” são da base: abrem no Ler, com o selo de vigência.</span></li><li><span class="mk">4</span><span>“Neste PPC” liga a ficha a esta revisão: o estado do critério aqui, o trecho e o caminho de volta à pendência.</span></li><li><span class="mk">5</span><span>Cada marca da régua também abre a ficha, inclusive a dos critérios que passaram.</span></li><li><span class="mk">6</span><span>Na conversa ao lado, a ficha da pendência leva o texto do critério, visível na própria ficha.</span></li></ol>
+</section>
+  <p class="pg-pe">Base visual: tokens de <code>apps/web/src/index.css</code> (grafite, marca-texto, gravidade), Hanken Grotesk e Source Serif 4, a moldura de <code>__root.tsx</code> e a revisão de <code>modulos/revisao-ppc/</code>.</p>
+</div>
+<script>
+(function(){
+  var reais = {};
+  function ajustar(){
+    document.querySelectorAll('.palco').forEach(function(p){
+      var w = +p.dataset.w, h = +p.dataset.h, e = p.firstElementChild;
+      var id = p.parentElement.id;
+      var s = reais[id] ? 1 : Math.min(1, p.clientWidth / w);
+      e.style.transform = 'scale(' + s + ')';
+      e.style.width = w + 'px';
+      p.style.height = (h * s + 2) + 'px';
+      p.classList.toggle('real', !!reais[id]);
+    });
+  }
+  document.querySelectorAll('.zoom').forEach(function(b){
+    b.addEventListener('click', function(){
+      var id = b.dataset.alvo; reais[id] = !reais[id];
+      b.textContent = reais[id] ? 'Reduzir para caber' : 'Ver em tamanho real';
+      ajustar();
+    });
+  });
+  window.addEventListener('resize', ajustar);
+  ajustar();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
+})();
+</script>
+</body>
+</html>
