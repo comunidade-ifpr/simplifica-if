@@ -6,7 +6,7 @@
  * entrar, a conversa com aprovação, link `ifpr://` no painel de leitura, interromper e nova conversa. O
  * fluxo de "Revisar um PPC" fica com o módulo (`modulos/revisao-ppc/fluxo.browser.test.tsx`).
  */
-import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
+import { afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
 import {
@@ -15,7 +15,6 @@ import {
   iniciarServidorTeste,
   montarApp,
   montarAppComOrigem,
-  pararServidoresTeste,
   simularInstalacaoClaude,
 } from "../test/navegador.tsx";
 import { ALTURA_BARRA_TITULO } from "./barra-titulo.ts";
@@ -35,10 +34,6 @@ async function capturar(nome: string) {
 
 beforeAll(async () => {
   servidor = await iniciarServidorTeste({ atrasoLogin: 120 });
-});
-
-afterAll(async () => {
-  await pararServidoresTeste();
 });
 
 // A ponte do desktop simulada só vale no teste que a monta.
@@ -123,13 +118,13 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   const citacao = page.getByRole("button", { name: "Res. CNE/CP nº 1/2021" });
   await expect.element(citacao).toBeVisible();
   await citacao.click();
-  const painel = page.getByRole("complementary", { name: "Painel de leitura" });
+  const painel = page.getByRole("complementary", { name: "Painel ao lado" });
   // O cabeçalho do painel diz o nome curto da norma, não o link.
   await expect.element(painel.getByText("Res. CNE/CP 1/2021", { exact: true })).toBeVisible();
   expect(painel.element().textContent).not.toMatch(/ifpr:\/\//);
   await expect.element(painel.getByRole("article", { name: "Norma" })).toBeVisible();
   semIngles();
-  await painel.getByRole("button", { name: "Fechar o painel de leitura" }).click();
+  await painel.getByRole("button", { name: "Fechar o painel" }).click();
   await expect.element(painel).not.toBeInTheDocument();
 
   // Uma resposta que não termina: "Interromper" encerra o turno.
@@ -140,10 +135,11 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await expect.element(page.getByText("Resposta interrompida.")).toBeVisible();
   await expect.element(page.getByRole("button", { name: "Enviar" })).toBeVisible();
 
-  // O erro do provider (M1.14): a frase pelo tipo, com o que fazer; o original em inglês só nos detalhes.
+  // O erro do provider (M1.14): a cota vira o cartão do limite da assinatura, com o que fazer; o original em
+  // inglês só nos detalhes.
   await mensagem.fill("Chegou ao limite de uso?");
   await page.getByRole("button", { name: "Enviar" }).click();
-  await expect.element(page.getByText(/^Sua conta do Claude chegou ao limite de uso\./)).toBeVisible();
+  await expect.element(page.getByText("O Claude chegou ao limite da sua assinatura")).toBeVisible();
   expect(document.body.innerText).not.toMatch(/usage limit/);
   semIngles();
   await page.getByText("Detalhes técnicos", { exact: true }).last().click();
@@ -250,8 +246,9 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await capturar("03-conversa-etapas");
 
   // A pasta da tarefa: o que entrou, o que a IA gravou, Abrir e Mostrar na pasta.
+  // Ela abre na aba Pasta do painel do app.
   await page.getByRole("button", { name: "Pasta da tarefa" }).click();
-  const pasta = page.getByRole("complementary", { name: "Pasta da tarefa" });
+  const pasta = page.getByRole("tabpanel", { name: "Pasta" });
   const trouxe = pasta.getByRole("region", { name: "Você trouxe" });
   await expect.element(trouxe.getByText("parecer.md")).toBeVisible();
   const mudados = pasta.getByRole("region", { name: "Criados ou mudados na conversa" });
@@ -262,7 +259,8 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
     `${servidor.pastaTrabalhos}/Conferir a fundamentação normativa/rodar.command`,
     "echo oi\n",
   );
-  await pasta.getByRole("button", { name: "Fechar a pasta da tarefa" }).click();
+  await page.getByRole("button", { name: "Pasta da tarefa" }).click();
+  await expect.element(pasta).not.toBeInTheDocument();
   await page.getByRole("button", { name: "Pasta da tarefa" }).click();
   await expect.element(pasta.getByRole("button", { name: "Mostrar rodar.command na pasta" })).toBeVisible();
   await expect.element(pasta.getByRole("button", { name: "Abrir rodar.command" })).not.toBeInTheDocument();
@@ -273,9 +271,25 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   expect(mostrarArquivoTarefa).toHaveBeenCalledTimes(1);
   await capturar("04-pasta");
 
-  // Desfazer: pede confirmação e diz o que muda; cancelar não muda nada; confirmar tira o relatório.
+  // A confirmação do Desfazer é da conversa em que abriu: trocar de conversa com ela aberta a tira, para
+  // ninguém desfazer a pasta da outra conversa (a do teste "Conversa: aprovação…").
   await pasta.getByRole("button", { name: "Desfazer o que a IA fez nesta pasta" }).click();
   const confirmacao = pasta.getByRole("group", { name: "Desfazer o que a IA fez nesta pasta?" });
+  await expect.element(confirmacao).toBeVisible();
+  const conversas = page.getByRole("navigation", { name: "Conversas gravadas" });
+  await conversas.getByRole("link", { name: /Pode escrever um resumo da DCN/ }).click();
+  await expect
+    .element(page.getByRole("log", { name: "Mensagens" }).getByText("Pode escrever um resumo da DCN?"))
+    .toBeVisible();
+  await expect.element(pasta).toBeVisible();
+  await expect.element(confirmacao).not.toBeInTheDocument();
+  await expect.element(mudados.getByText("relatorio.md")).not.toBeInTheDocument();
+  await conversas.getByRole("link", { name: /Conferir a fundamentação normativa do parecer/ }).click();
+  await expect.element(mudados.getByText("relatorio.md")).toBeVisible();
+  await expect.element(confirmacao).not.toBeInTheDocument();
+
+  // Desfazer: pede confirmação e diz o que muda; cancelar não muda nada; confirmar tira o relatório.
+  await pasta.getByRole("button", { name: "Desfazer o que a IA fez nesta pasta" }).click();
   await expect.element(confirmacao.getByText("Saem: relatorio.md")).toBeVisible();
   await capturar("05-desfazer");
   await confirmacao.getByRole("button", { name: "Cancelar" }).click();
@@ -283,7 +297,8 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   // A pessoa edita o relatório fora da conversa: a confirmação avisa e só o desfaz se ela marcar.
   const relatorio = abrirArquivoTarefa.mock.calls[0]![0];
   await editarArquivoDeTarefa(relatorio, "# Relatório\n\nCom a minha revisão.\n");
-  await pasta.getByRole("button", { name: "Fechar a pasta da tarefa" }).click();
+  await page.getByRole("button", { name: "Pasta da tarefa" }).click();
+  await expect.element(pasta).not.toBeInTheDocument();
   await page.getByRole("button", { name: "Pasta da tarefa" }).click();
   await pasta.getByRole("button", { name: "Desfazer o que a IA fez nesta pasta" }).click();
   await expect
@@ -467,7 +482,10 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   // O Início leva às boas-vindas; o aviso de uso vem antes dos passos.
   await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
   const aviso = page.getByRole("region", { name: "O que vai para a IA" });
-  await expect.element(aviso.getByText(/Não anexe, cole ou deixe na pasta da tarefa/)).toBeVisible();
+  await expect
+    .element(aviso.getByText(/Não anexe, cole, deixe nas fichas de contexto nem na pasta da tarefa/))
+    .toBeVisible();
+  await expect.element(aviso.getByText(/o que você escreve, anexa ou deixa nas fichas de contexto/)).toBeVisible();
   await expect.element(aviso.getByText(/os arquivos da pasta da tarefa/)).toBeVisible();
   await expect.element(aviso.getByText(/também pode ficar guardado pelo serviço de IA/)).toBeVisible();
   expect(app.roteador.state.location.pathname).toBe("/boas-vindas");
@@ -825,6 +843,15 @@ it("Tema: Configurações › Aparência mostra as três escolhas pelo nome e gu
   await tema.getByRole("radio", { name: "Automático" }).click();
   expect(document.documentElement.classList.contains("dark")).toBe(false);
   expect(window.localStorage.getItem("simplifica-if:tema")).toBeNull();
+
+  // A escolha feita em outra janela do desktop (o `storage`): o seletor acompanha, e voltar ao automático
+  // por aqui funciona.
+  window.localStorage.setItem("simplifica-if:tema", "escuro");
+  window.dispatchEvent(new StorageEvent("storage", { key: "simplifica-if:tema", newValue: "escuro" }));
+  await expect.element(tema.getByRole("radio", { name: "Escuro" })).toBeChecked();
+  await tema.getByRole("radio", { name: "Automático" }).click();
+  expect(document.documentElement.classList.contains("dark")).toBe(false);
+  expect(window.localStorage.getItem("simplifica-if:tema")).toBeNull();
 });
 
 it("Ajuda: as perguntas abrem uma por vez, o e-mail abre pelo sistema e as maneiras de contribuir levam ao lugar certo", async () => {
@@ -882,6 +909,8 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     janela: {
       plataforma: "darwin",
+      continuidade: "completa",
+      abrirJanela: async () => {},
       telaCheia: async () => false,
       aoMudarTelaCheia: (ouvinte) => {
         avisar = ouvinte;
@@ -890,6 +919,13 @@ it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre e
         };
       },
       temaDoApp: async () => {},
+      aoAtalhoDoMenu: () => () => {},
+      avisar: async () => {},
+      selo: async () => {},
+      aoAbrirRota: () => () => {},
+      compacta: async () => false,
+      naFrente: async () => {},
+      antesDeSair: () => () => {},
     },
   });
   await using _app = await montarApp(servidor);
@@ -917,9 +953,18 @@ it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     janela: {
       plataforma: "win32",
+      continuidade: "completa",
+      abrirJanela: async () => {},
       telaCheia: async () => false,
       aoMudarTelaCheia: () => () => {},
       temaDoApp: async () => {},
+      aoAtalhoDoMenu: () => () => {},
+      avisar: async () => {},
+      selo: async () => {},
+      aoAbrirRota: () => () => {},
+      compacta: async () => false,
+      naFrente: async () => {},
+      antesDeSair: () => () => {},
     },
   });
   await using _app = await montarApp(servidor);
@@ -971,7 +1016,21 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
   for (const plataforma of ["darwin", "win32"] as const) {
     window.simplifica = ponteTeste({
       conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
-      janela: { plataforma, telaCheia: async () => false, aoMudarTelaCheia: () => () => {}, temaDoApp: async () => {} },
+      janela: {
+        plataforma,
+        continuidade: "completa",
+        abrirJanela: async () => {},
+        telaCheia: async () => false,
+        aoMudarTelaCheia: () => () => {},
+        temaDoApp: async () => {},
+        aoAtalhoDoMenu: () => () => {},
+        avisar: async () => {},
+        selo: async () => {},
+        aoAbrirRota: () => () => {},
+        compacta: async () => false,
+        naFrente: async () => {},
+        antesDeSair: () => () => {},
+      },
     });
     for (const rota of ["/", "/tarefas"] as const) {
       await using _app = await montarApp(servidor, rota);
@@ -986,9 +1045,18 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
     conexao: async () => ({ urlServidor: "http://127.0.0.1:9", token: "x" }),
     janela: {
       plataforma: "win32",
+      continuidade: "completa",
+      abrirJanela: async () => {},
       telaCheia: async () => false,
       aoMudarTelaCheia: () => () => {},
       temaDoApp: async () => {},
+      aoAtalhoDoMenu: () => () => {},
+      avisar: async () => {},
+      selo: async () => {},
+      aoAbrirRota: () => () => {},
+      compacta: async () => false,
+      naFrente: async () => {},
+      antesDeSair: () => () => {},
     },
   });
   {

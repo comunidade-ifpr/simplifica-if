@@ -55,6 +55,7 @@ export const layerHandlersRpc = GrupoLeitura.toLayer(
       lerDocumento: traduzir("lerDocumento", leitura.lerDocumento),
       explorarIndice: traduzir("explorarIndice", leitura.explorarIndice),
       explorarBuscar: traduzir("explorarBuscar", leitura.explorarBuscar),
+      compararNormas: traduzir("compararNormas", leitura.compararNormas),
     });
   }),
 );

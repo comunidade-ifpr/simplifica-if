@@ -5,7 +5,7 @@
  * Os filtros ficam na URL da rota: voltar a uma coleção traz os mesmos filtros.
  */
 import type { DadosIndice } from "@simplifica-if/contratos-app";
-import { Link } from "@tanstack/react-router";
+import { LinkDaBase } from "../painel/LinkDaBase.tsx";
 import { ChevronDownIcon, ChevronRightIcon, ListFilterIcon, XIcon } from "lucide-react";
 import { type ReactNode, useId } from "react";
 import { Button } from "../components/ui/button.tsx";
@@ -175,9 +175,9 @@ export function LinhaItem({
     <li className={classeLinha}>
       {marca ? <span className="flex h-6 items-center">{marca}</span> : null}
       <div className="min-w-0 flex-1">
-        <Link to="/explorar/ver" search={{ link }} className={classeLinkLinha}>
+        <LinkDaBase link={link} className={classeLinkLinha}>
           {titulo}
-        </Link>
+        </LinkDaBase>
         {detalhe ? (
           <p
             className={cn(

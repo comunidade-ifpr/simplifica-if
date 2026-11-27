@@ -39,6 +39,8 @@ import type * as SobreABase from "../ferramentas/sobre-a-base.ts";
 import { linkCampus } from "../links.ts";
 import type * as Documento from "../documento.ts";
 import type * as Explorar from "../explorar.ts";
+import type * as Comparar from "../comparar.ts";
+import { makeComparar } from "./comparar.ts";
 import { makeDocumentos } from "./documentos.ts";
 import { makeExplorar } from "./explorar.ts";
 import { makeNormas } from "./normas.ts";
@@ -83,6 +85,8 @@ export class Leitura extends Context.Service<
     /** O Explorar do app: as coleções inteiras e a busca da paleta (sem ferramenta MCP). */
     readonly explorarIndice: Metodo<typeof Explorar.EntradaIndice, typeof Explorar.DadosIndice>;
     readonly explorarBuscar: Metodo<typeof Explorar.EntradaBusca, typeof Explorar.DadosBusca>;
+    /** O modo Comparar do app: duas normas lado a lado pela tabela de correspondência (sem ferramenta MCP). */
+    readonly compararNormas: Metodo<typeof Comparar.EntradaComparar, typeof Comparar.DadosComparar>;
   }
 >()("@simplifica-if/mcp/leitura/Leitura") {}
 
@@ -136,6 +140,7 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
   const recursos = yield* makeRecursos(base, campiPorId);
   const documentos = yield* makeDocumentos(base);
   const explorar = yield* makeExplorar(base);
+  const comparar = yield* makeComparar(base);
 
   const conteudo = { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi };
   const etapa = responder(base, { registrado: opcoes.etapaRegistrada ?? false });
@@ -163,6 +168,7 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
     lerDocumento: comFalhaNaBase(documentos.lerDocumento),
     explorarIndice: comFalhaNaBase(explorar.explorarIndice),
     explorarBuscar: comFalhaNaBase(explorar.explorarBuscar),
+    compararNormas: comFalhaNaBase(comparar.compararNormas),
     // o conteúdo não muda com o servidor no ar; o dia da vigência, sim
     sobreABase: Effect.fn("Leitura.sobreABase")(function* () {
       return responder(base, { ...conteudo, vigencia_em: yield* diaDaVigencia });

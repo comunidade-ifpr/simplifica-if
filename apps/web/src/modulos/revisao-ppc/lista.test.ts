@@ -26,7 +26,10 @@ import {
   resumoRegua,
   temasDaNavegacao,
   textoArquivoNovo,
+  textoConferencia,
   textoFeitas,
+  linhasConferencia,
+  doFiltro,
 } from "./lista.ts";
 
 const pendencia = (
@@ -62,6 +65,7 @@ const viva = (p: PendenciaRevisao, situacao: PendenciaViva["situacao"] = "aberta
   historico: [],
   sugestao: null,
   aceitaIa: true,
+  julgadaPor: null,
 });
 
 const criterio = (ficha: string, ordemTema: number, estado: CriterioRevisao["estado"]): CriterioRevisao => ({
@@ -104,6 +108,8 @@ const lista = (
   arquivoOriginal: "/a/PPC.docx",
   sha256: "hash-1",
   revisao: null,
+  arquivoAcompanhado: null,
+  conversaAoLado: null,
   provider: null,
   resultado: resultado(extra),
   pendencias,
@@ -259,5 +265,60 @@ describe("linkDoPpc e versaoDoPpc", () => {
     expect(versaoDoPpc({ ...base, pendencias: [pendencia("B:2"), pendencia("A:1")] })).toBe(versao);
     expect(versaoDoPpc({ ...base, pendencias: [pendencia("A:1")] })).not.toBe(versao);
     expect(versaoDoPpc({ ...base, sha256: "e".repeat(64) })).not.toBe(versao);
+  });
+});
+
+describe("a conferência ao salvar", () => {
+  test("a linha do que mudou, só com o que houve, e a que falhou espera o próximo salvamento", () => {
+    const em = "2026-11-27T14:32:00Z";
+    expect(textoConferencia({ tipo: "conferido", em, resolvidas: 2, novas: 1 }, "14:32")).toBe(
+      "Salvo às 14:32 · 2 pontos resolvidos, 1 novo",
+    );
+    expect(textoConferencia({ tipo: "conferido", em, resolvidas: 1, novas: 0 }, "14:32")).toBe(
+      "Salvo às 14:32 · 1 ponto resolvido",
+    );
+    expect(textoConferencia({ tipo: "conferido", em, resolvidas: 0, novas: 0 }, "14:32")).toBe(
+      "Salvo às 14:32 · nada mudou na lista",
+    );
+    expect(textoConferencia({ tipo: "falhou", em, motivo: "O arquivo não pode ser lido" }, "14:32")).toBe(
+      "Salvo às 14:32 · não deu para conferir: O arquivo não pode ser lido. O app confere de novo no próximo salvamento.",
+    );
+    expect(
+      textoConferencia(
+        {
+          tipo: "falhou",
+          em,
+          motivo: "Este arquivo não parece o mesmo PPC. O app confere de novo no próximo salvamento.",
+        },
+        "14:32",
+      ),
+    ).toBe(
+      "Salvo às 14:32 · não deu para conferir: Este arquivo não parece o mesmo PPC. O app confere de novo no próximo salvamento.",
+    );
+  });
+
+  test("na janela compacta, em duas linhas: conferido sem IA, e o que mudou", () => {
+    const em = "2026-11-27T14:32:00Z";
+    expect(linhasConferencia({ tipo: "conferido", em, resolvidas: 1, novas: 1 }, "14:32")).toEqual({
+      linha: "Salvo às 14:32 · conferido sem IA",
+      detalhe: "1 ponto resolvido, 1 novo; as da IA ficam como estão.",
+    });
+    expect(linhasConferencia({ tipo: "conferido", em, resolvidas: 0, novas: 0 }, "14:32").detalhe).toBe(
+      "Nada mudou na lista; as da IA ficam como estão.",
+    );
+    expect(linhasConferencia({ tipo: "falhou", em, motivo: "O arquivo não pode ser lido" }, "14:32")).toEqual({
+      linha: "Salvo às 14:32 · não deu para conferir",
+      detalhe: "O arquivo não pode ser lido. O app confere de novo no próximo salvamento.",
+    });
+  });
+});
+
+describe("o filtro por gravidade", () => {
+  test("tudo, só o que corrigir ou só o que conferir", () => {
+    const a = viva(pendencia("A:1", 1, "nao_atende"));
+    const b = viva(pendencia("B:1", 1, "a_conferir"));
+    expect(doFiltro([a, b], "tudo")).toEqual([a, b]);
+    expect(doFiltro([a, b], "corrigir")).toEqual([a]);
+    expect(doFiltro([a, b], "conferir")).toEqual([b]);
   });
 });

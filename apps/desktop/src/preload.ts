@@ -6,6 +6,7 @@
  */
 import { contextBridge, ipcRenderer, webUtils } from "electron";
 import { CANAIS, type CredenciaisServidor, NOME_PONTE, type PonteDesktop } from "@simplifica-if/contratos-app/ponte";
+import { continuidadeDoArgv } from "./janelas.ts";
 import { ponteRevisaoPpc } from "./modulos/revisao-ppc/preload.ts";
 
 const ponte: PonteDesktop = {
@@ -41,6 +42,10 @@ const ponte: PonteDesktop = {
   },
   janela: {
     plataforma: process.platform,
+    continuidade: continuidadeDoArgv(process.argv),
+    abrirJanela: async (rota) => {
+      await ipcRenderer.invoke(CANAIS.abrirJanela, rota);
+    },
     telaCheia: () => ipcRenderer.invoke(CANAIS.telaCheia) as Promise<boolean>,
     aoMudarTelaCheia: (ouvinte) => {
       const aoReceber = (_evento: unknown, telaCheia: unknown) => ouvinte(telaCheia === true);
@@ -51,6 +56,47 @@ const ponte: PonteDesktop = {
     },
     temaDoApp: async (tema) => {
       await ipcRenderer.invoke(CANAIS.temaDoApp, tema);
+    },
+    aoAtalhoDoMenu: (ouvinte) => {
+      const aoReceber = (_evento: unknown, atalho: unknown) => {
+        if (atalho === "buscar" || atalho === "painel" || atalho === "conversar" || atalho === "novaJanela")
+          ouvinte(atalho);
+      };
+      ipcRenderer.on(CANAIS.atalhoDoMenu, aoReceber);
+      return () => {
+        ipcRenderer.removeListener(CANAIS.atalhoDoMenu, aoReceber);
+      };
+    },
+    avisar: async (aviso) => {
+      await ipcRenderer.invoke(CANAIS.avisar, { tipo: aviso.tipo, rota: aviso.rota });
+    },
+    selo: async (contagem) => {
+      await ipcRenderer.invoke(CANAIS.selo, contagem);
+    },
+    aoAbrirRota: (ouvinte) => {
+      const aoReceber = (_evento: unknown, rota: unknown) => {
+        if (typeof rota === "string") ouvinte(rota);
+      };
+      ipcRenderer.on(CANAIS.abrirRota, aoReceber);
+      return () => {
+        ipcRenderer.removeListener(CANAIS.abrirRota, aoReceber);
+      };
+    },
+    compacta: async (ligar) => (await ipcRenderer.invoke(CANAIS.janelaCompacta, ligar)) === true,
+    naFrente: async (sempre) => {
+      await ipcRenderer.invoke(CANAIS.janelaNaFrente, sempre);
+    },
+    antesDeSair: (gravar) => {
+      const aoReceber = (_evento: unknown, pedido: unknown) => {
+        if (typeof pedido !== "number") return;
+        void gravar()
+          .catch(() => undefined)
+          .finally(() => void ipcRenderer.invoke(CANAIS.prontoParaSair, pedido).catch(() => undefined));
+      };
+      ipcRenderer.on(CANAIS.antesDeSair, aoReceber);
+      return () => {
+        ipcRenderer.removeListener(CANAIS.antesDeSair, aoReceber);
+      };
     },
   },
 };

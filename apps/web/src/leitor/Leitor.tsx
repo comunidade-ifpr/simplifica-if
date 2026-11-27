@@ -5,7 +5,8 @@
  * - **norma** (com ou sem `#dispositivo`): `fichaNorma` (selo de vigência, relações navegáveis,
  *   sucessoras, regras de transição, na coluna lateral quando há largura), `lerDocumento` (o texto inteiro, com o
  *   dispositivo destacado, e o sumário, que vira o índice "Neste documento" no alto da lateral) e,
- *   com dispositivo, `lerDispositivos` (o texto com o caput, para "Copiar citação");
+ *   com dispositivo, `lerDispositivos` (o texto com o caput, para "Copiar citação"); a norma com tabela
+ *   de correspondência tem "Comparar com a sucessora" (ou "com a anterior"), pelo índice do Explorar;
  * - **ppc** (`campus/curso/versao`, ou `campus/curso` para o vigente; com ou sem `#secao`): `lerPpc`
  *   (curso, campus, o ID da versão e o índice das seções), `lerDocumento` e, com seção, `lerSecao`
  *   (para a citação); o índice do Explorar diz se a versão foi substituída;
@@ -14,7 +15,8 @@
  *   (`modulos/revisao-ppc/LeitorRevisao.tsx`). Este arquivo é de composição: só despacha o link para ele.
  */
 import type { Ancora } from "@simplifica-if/contratos-app";
-import { CheckIcon, ClipboardCopyIcon, InfoIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { CheckIcon, ClipboardCopyIcon, Columns2Icon, InfoIcon } from "lucide-react";
 import { useState } from "react";
 import { useApi } from "../contexto.tsx";
 import { Markdown } from "../components/Markdown.tsx";
@@ -22,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx"
 import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { nomeAspecto, nomeResultado, primeiraMaiuscula } from "../explorar/colecoes.ts";
+import { comparacoesDe } from "../explorar/comparar.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
 import { corVigencia, SinalVigencia } from "../explorar/Vigencia.tsx";
 import { dataCurta } from "../lib/formato.ts";
@@ -43,7 +46,8 @@ import {
 } from "./pecas.tsx";
 import { LeitorRevisao } from "../modulos/revisao-ppc/LeitorRevisao.tsx";
 import { Sumario } from "./Sumario.tsx";
-import { artigosDosDispositivos, conteudoDoIndice, type Destino, IR_PARA, numeroDoArtigo } from "./sumario.ts";
+import { useInstanciaLeitor } from "./instancia.ts";
+import { artigosDosDispositivos, conteudoDoIndice, numeroDoArtigo } from "./sumario.ts";
 import {
   citacaoDoDispositivo,
   citacaoDoPpc,
@@ -56,6 +60,7 @@ import {
   selosDaNorma,
   situacaoDaTransicao,
 } from "./textos.ts";
+import { type AoAbrirLink, ondeDoClique } from "../painel/abrirLink.ts";
 
 /** Um link `ifpr://` desmontado. */
 export interface LinkDesmontado {
@@ -165,7 +170,7 @@ function MetadadosEditoriais({
   aoAbrirLink,
 }: {
   readonly norma: Readonly<Record<(typeof EDITORIAIS)[number]["campo"], ReadonlyArray<string>>>;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
 }) {
   const blocos = EDITORIAIS.filter(({ campo }) => norma[campo].length > 0);
   if (blocos.length === 0) return null;
@@ -198,10 +203,10 @@ function AlteracoesAnotadas({
 }: {
   readonly alteracoes: FichaNorma["alteracoes_anotadas"];
   readonly ancoras: ReadonlyArray<Ancora> | null;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
 }) {
+  const { irPara } = useInstanciaLeitor();
   if (alteracoes.length === 0) return null;
-  const irPara = (destino: Destino) => window.dispatchEvent(new CustomEvent<Destino>(IR_PARA, { detail: destino }));
   return (
     <details className="nao-imprimir rounded-xl border border-border px-4 py-2.5">
       <summary className="cursor-pointer font-semibold text-small">
@@ -256,7 +261,7 @@ function Relacoes({
 }: {
   readonly saida: ReadonlyArray<Relacao>;
   readonly entrada: ReadonlyArray<Relacao>;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
 }) {
   const itens = [
     ...saida.map((r) => ({ r, nome: nomeDaRelacao(r.tipo, "saida"), link: linkDaNorma(r.alvo, r.alvo_dispositivo) })),
@@ -293,7 +298,7 @@ function LeitorNorma({
   readonly id: string;
   readonly fragmento: string | null;
   readonly link: string;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
 }) {
   const api = useApi();
   const ficha = useCarga(`ficha:${id}`, () => api.chamar((c) => c.fichaNorma({ id })));
@@ -304,6 +309,10 @@ function LeitorNorma({
   const dispositivo = useCarga(fragmento === null ? null : `dispositivo:${id}#${fragmento}`, () =>
     api.chamar((c) => c.lerDispositivos({ ids: [`${id}#${fragmento}`], filhos: true })),
   );
+  // "Comparar com a sucessora" ou "com a anterior": só a norma que tem tabela de correspondência. Também
+  // no painel, o link troca a tela (o Comparar é tela cheia, como o ⤢): duas normas lado a lado não cabem nele.
+  const indice = useIndiceExplorar();
+  const comparacoes = indice.fase === "lido" ? comparacoesDe(id, indice.valor.normas) : [];
 
   return (
     <ComCarga carga={ficha} titulo="Não foi possível ler esta norma">
@@ -351,6 +360,16 @@ function LeitorNorma({
                 <>
                   <BotaoCopiar texto={citacao} />
                   {fonteOficial !== null ? <LinkExterno href={fonteOficial}>Ver na fonte oficial</LinkExterno> : null}
+                  {comparacoes.map((c) => (
+                    <Link
+                      key={`${c.a}:${c.b}`}
+                      to="/explorar/comparar"
+                      search={{ a: c.a, b: c.b }}
+                      className="nao-imprimir inline-flex items-center gap-1 link-grifo text-small"
+                    >
+                      <Columns2Icon aria-hidden className="size-3.5" /> {c.titulo}
+                    </Link>
+                  ))}
                 </>
               }
             >
@@ -464,7 +483,7 @@ function LeitorPpc({
 }: {
   readonly chave: string;
   readonly fragmento: string | null;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
 }) {
   const api = useApi();
   const linkPpc = `ifpr://ppc/${chave}`;
@@ -628,7 +647,7 @@ function LeitorPpc({
                                   type="button"
                                   data-link={s.link}
                                   aria-current={s.id === atual?.id ? "location" : undefined}
-                                  onClick={() => aoAbrirLink(s.link)}
+                                  onClick={(evento) => aoAbrirLink(s.link, ondeDoClique(evento))}
                                   className="block w-full rounded-md px-2 py-1 text-left text-muted-foreground text-small hover:bg-muted hover:text-foreground aria-[current]:bg-accent aria-[current]:font-semibold aria-[current]:text-accent-foreground"
                                 >
                                   {s.titulo}
@@ -689,13 +708,7 @@ function LeitorPpc({
 /* ================================================================== curso, CNCT, campus, ficha */
 
 /** O conteúdo de um link no leitor, pelo tipo. */
-export function ConteudoLink({
-  link,
-  aoAbrirLink,
-}: {
-  readonly link: string;
-  readonly aoAbrirLink: (link: string) => void;
-}) {
+export function ConteudoLink({ link, aoAbrirLink }: { readonly link: string; readonly aoAbrirLink: AoAbrirLink }) {
   const partes = desmontarLink(link);
   if (partes?.tipo === "norma") {
     return <LeitorNorma id={partes.caminho} fragmento={partes.fragmento} link={link} aoAbrirLink={aoAbrirLink} />;

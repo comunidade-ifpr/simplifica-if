@@ -36,6 +36,13 @@ export function pedeArquivoDeNovo(erro: unknown): boolean {
   return falha._tag === "FalhaRevisaoPpc" && falha.escolherDeNovo === true;
 }
 
+/** O arquivo que o servidor pede de novo (o `arquivo` da `FalhaRevisaoPpc`), se ele diz. */
+export function arquivoPedido(erro: unknown): string | undefined {
+  if (typeof erro !== "object" || erro === null) return undefined;
+  const arquivo = (erro as { readonly arquivo?: unknown }).arquivo;
+  return typeof arquivo === "string" && arquivo !== "" ? arquivo : undefined;
+}
+
 /** A pessoa escolheu outro arquivo quando o app pedia o mesmo. */
 export const textoMesmoArquivo = (arquivo: string): MensagemErro => ({
   texto: `Escolha o mesmo arquivo, “${nomeDoArquivo(arquivo)}”. Para revisar outro arquivo, use “Revisar outro arquivo”.`,

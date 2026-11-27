@@ -7,6 +7,7 @@ describe("apagar a revisão", () => {
     id: "l",
     arquivoOriginal: "/d/PPC.docx",
     pendencias: [{}, {}],
+    conversaAoLado: null,
     resultado: { leituraIa: "nenhuma", arquivoComentado: "/d/PPC - revisão prévia (Simplifica IF).docx" },
   } as unknown as ListaPendencias;
 
@@ -22,6 +23,44 @@ describe("apagar a revisão", () => {
       "/d/PPC - revisão prévia (Simplifica IF).docx",
     ]);
     expect(t.opcaoPasta).toBeNull();
+  });
+
+  it("a pasta da conversa ao lado fica no computador, e o desktop oferece mandá-la à Lixeira com a conversa", () => {
+    const comConversa = {
+      ...lista,
+      conversaAoLado: { conversa: "c", pasta: "/Documentos/Simplifica IF/PPC Enfermagem – conversa" },
+    } as ListaPendencias;
+    const t = textosApagarRevisao(comConversa, false, true);
+    expect(t.ficaNoComputador.at(-1)).toEqual({
+      texto: "A conversa ao lado e a pasta dela, “PPC Enfermagem – conversa”, com o texto do PPC",
+      caminho: "/Documentos/Simplifica IF/PPC Enfermagem – conversa",
+    });
+    expect(t.opcaoPasta).toBe(
+      "Apagar também a conversa ao lado e mandar a pasta dela, “PPC Enfermagem – conversa”, com o texto do PPC, para a Lixeira",
+    );
+    expect(textosApagarRevisao(comConversa, false, false).opcaoPasta).toBeNull();
+    // Em "Revisões recentes", várias de uma vez: as conversas ao lado ficam, e a Lixeira é oferecida.
+    const varias = textosApagarRevisoes(
+      [
+        { lista: comConversa, lendo: false },
+        { lista, lendo: false },
+      ],
+      true,
+    );
+    expect(varias.ficaNoComputador.at(-1)?.texto).toBe(
+      "A conversa ao lado de uma delas e a pasta dela, com o texto do PPC",
+    );
+    expect(varias.opcaoPasta).toMatch(/^Apagar também a conversa ao lado/);
+    expect(
+      textosApagarRevisoes(
+        [
+          { lista, lendo: false },
+          { lista, lendo: false },
+        ],
+        true,
+      ).opcaoPasta,
+    ).toBeNull();
+    expect(textosApagarRevisoes([{ lista: comConversa, lendo: false }], true).opcaoPasta).toBe(t.opcaoPasta);
   });
 
   it("com a conferência com IA, ela sai junto; em andamento, o app a para antes", () => {

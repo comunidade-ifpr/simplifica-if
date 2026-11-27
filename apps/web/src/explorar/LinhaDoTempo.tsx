@@ -10,6 +10,7 @@
  */
 import type { NormaDoIndice } from "@simplifica-if/contratos-app";
 import { Link } from "@tanstack/react-router";
+import { LinkDaBase } from "../painel/LinkDaBase.tsx";
 import { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "../lib/utils.ts";
 import { normasPorAno, quantos, vigenciaDaNorma } from "./colecoes.ts";
@@ -78,10 +79,10 @@ export function LinhaDoTempo({
                   {g.normas.map((n) => {
                     const vigencia = vigenciaDaNorma(n);
                     return (
-                      <Link
+                      <LinkDaBase
                         key={n.id}
-                        to="/explorar/ver"
-                        search={{ link: n.link }}
+                        link={n.link}
+                        semDica
                         tabIndex={-1}
                         aria-label={`${n.titulo}: ${rotuloVigencia(vigencia)}`}
                         onMouseEnter={() => setEmFoco(n)}
@@ -93,7 +94,7 @@ export function LinhaDoTempo({
                         )}
                       >
                         <SinalVigencia vigencia={vigencia} className="size-3" />
-                      </Link>
+                      </LinkDaBase>
                     );
                   })}
                 </div>

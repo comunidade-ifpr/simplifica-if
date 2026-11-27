@@ -1,17 +1,15 @@
 /**
  * Início do Modo Servidor (M1.9): a linha do perfil ("Função · Campus", M1.8) e a data da base, a pergunta
  * "O que você precisa hoje?" com a caixa de pedido (`CaixaPedido`, com anexo e a escolha da IA), as tarefas que servem ao perfil
- * (do catálogo do servidor, as que rodam no app antes das que abrem um link), "Ver todas" e os recentes (conversas e a
- * última revisão de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
- * boas-vindas.
+ * (do catálogo do servidor, as que rodam no app antes das que abrem um link), "Ver todas", "Continuar de onde parou"
+ * (o que roda, o que terminou sem ser visto, o que ficou aberto no painel e a última revisão de PPC) e as
+ * conversas recentes. No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às boas-vindas; ao
+ * reabrir o app, espera a continuidade decidir para onde voltar, sem piscar.
  *
  * As novidades da base aparecem no aviso "Base atualizada" (`configuracoes/AvisoBaseAtualizada.tsx`),
  * logo abaixo da data da base, depois que uma versão nova entra.
  *
  * A IA (instalar, entrar) fica em Configurações › Sua IA; aqui, só o aviso quando nenhuma está pronta.
- *
- * "Perguntar à IA sobre isto", nas páginas do Explorar, chega aqui com o pedido escrito (`?pedido=`): a
- * caixa já vem com ele e com o foco, e nada é enviado sozinho.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CircleCheckIcon } from "lucide-react";
@@ -24,7 +22,8 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx"
 import { buttonVariants } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
+import { useApi, useApp, useContinuidade, useEstadoConexao } from "../contexto.tsx";
+import { ContinuarDeOndeParou } from "../continuidade/ContinuarDeOndeParou.tsx";
 import { detectarIa } from "../deteccao.ts";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
@@ -40,15 +39,8 @@ import { cn } from "../lib/utils.ts";
 // Composição: o módulo `revisao-ppc`.
 import { UltimaRevisao } from "../modulos/revisao-ppc/UltimaRevisao.tsx";
 
-/** A busca da rota: o pedido que veio pronto ("Perguntar à IA sobre isto", do Explorar). */
-export interface BuscaInicio {
-  readonly pedido?: string;
-}
-
 export const Route = createFileRoute("/")({
   component: Inicio,
-  validateSearch: (busca: Record<string, unknown>): BuscaInicio =>
-    typeof busca.pedido === "string" && busca.pedido !== "" ? { pedido: busca.pedido } : {},
 });
 
 /** Quantos cartões o Início mostra antes de "Ver todas". */
@@ -114,13 +106,13 @@ function AvisoSemIa() {
   );
 }
 
-function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
+function PedidoDoInicio() {
   const api = useApi();
-  const [estado, conversa] = useConversa();
+  const { conversas } = useApp();
   const navegar = useNavigate();
-  const [texto, setTexto] = useState(pedido ?? "");
+  const [texto, setTexto] = useState("");
   const { anexos, mudar: setAnexos, recusados, soltar } = useAnexos();
-  const [ia, setIa] = useState<EscolhaDaIa>({ provider: estado.provider });
+  const [ia, setIa] = useState<EscolhaDaIa>(() => ({ provider: conversas.ultimaIa() }));
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
@@ -129,13 +121,9 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
     setEnviando(true);
     setErro(undefined);
     try {
-      const sessao = await comecarTarefa(api, conversa, {
-        titulo: tituloDoPedido(texto),
-        ia,
-        anexos,
-        texto,
-      });
-      await navegar({ to: "/conversa", search: { id: sessao } });
+      await comecarTarefa(api, conversas, { titulo: tituloDoPedido(texto), ia, anexos, texto }, (sessao) =>
+        navegar({ to: "/conversa", search: { id: sessao } }),
+      );
     } catch (falha) {
       setErro(explicarErro(falha));
       setEnviando(false);
@@ -147,7 +135,6 @@ function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
       rotuloFormulario="O que você precisa hoje?"
       placeholder="Pergunte sobre uma norma, um curso ou um PPC"
       linhas={2}
-      focar={pedido !== undefined}
       valor={texto}
       aoMudar={setTexto}
       aoEnviar={() => void enviar()}
@@ -192,20 +179,17 @@ function Tarefas() {
 }
 
 function Inicio() {
-  const { pedido } = Route.useSearch();
   const conexao = useEstadoConexao();
   const { preferencias } = usePreferencias();
   const perfil = linhaDoPerfil(preferencias?.perfil);
   const navegar = useNavigate();
   const pendente = primeiroUsoPendente(preferencias);
+  const { restaurando } = useContinuidade();
   useEffect(() => {
-    // o pedido do Explorar vai junto e volta ao Início no fim das boas-vindas
-    if (pendente === true) {
-      void navegar({ to: "/boas-vindas", search: pedido === undefined ? {} : { pedido }, replace: true });
-    }
-  }, [pendente, navegar, pedido]);
+    if (pendente === true) void navegar({ to: "/boas-vindas", replace: true });
+  }, [pendente, navegar]);
   // Enquanto as preferências carregam (ou antes de desviar para as boas-vindas), nada pisca na tela.
-  if (conexao.fase !== "sem-servidor" && pendente !== false) return <EsperaPreferencias />;
+  if (conexao.fase !== "sem-servidor" && (pendente !== false || restaurando)) return <EsperaPreferencias />;
   return (
     <div className="h-full overflow-y-auto">
       {/* Uma coluna só, centrada: a pergunta em letras grandes e a caixa de pedido, que é o centro da tela. */}
@@ -228,19 +212,19 @@ function Inicio() {
             <>
               <AvisoBaseAtualizada />
               <AvisoSemIa />
-              <PedidoDoInicio key={pedido ?? ""} pedido={pedido} />
+              <PedidoDoInicio />
             </>
           )}
         </div>
         {conexao.fase === "sem-servidor" ? null : (
           <>
             <Tarefas />
+            {/* Composição: a última revisão de PPC, do módulo `revisao-ppc`. */}
+            <ContinuarDeOndeParou extras={<UltimaRevisao />} />
             <section aria-labelledby="titulo-recentes" className="flex flex-col gap-2">
               <h2 id="titulo-recentes" className="text-title">
                 Recentes
               </h2>
-              {/* Composição: a última revisão de PPC, do módulo `revisao-ppc`. */}
-              <UltimaRevisao />
               <ListaConversas limite={5} />
             </section>
           </>

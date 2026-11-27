@@ -193,6 +193,40 @@ export const Perfil = Schema.Struct({
 });
 export type Perfil = typeof Perfil.Type;
 
+/**
+ * O painel do app que volta ao reabrir (`docs/plans/multitarefa.md`, "Continuidade"): se estava aberto, a
+ * aba, a trilha do Ler (os links e o atual), os documentos marcados, se estava preso ao lado e a conversa da
+ * aba Conversar (o id e, se a abriu uma tela com conversa própria, a origem dela, só como dado).
+ */
+/** O tamanho máximo da rota e de cada link guardados na continuidade. */
+export const MAXIMO_TEXTO_CONTINUIDADE = 4_000;
+
+export const PainelGuardado = Schema.Struct({
+  aberto: Schema.Boolean,
+  aba: Schema.Literals(["ler", "conversar", "pasta"]),
+  trilha: Schema.Struct({
+    links: Schema.Array(Schema.String.check(Schema.isMaxLength(MAXIMO_TEXTO_CONTINUIDADE))).check(
+      Schema.isMaxLength(50),
+    ),
+    posicao: Schema.Int.check(Schema.isGreaterThanOrEqualTo(-1)),
+  }),
+  marcados: Schema.Array(Schema.String.check(Schema.isMaxLength(MAXIMO_TEXTO_CONTINUIDADE))).check(
+    Schema.isMaxLength(5),
+  ),
+  preso: Schema.Boolean,
+  conversa: Schema.optionalKey(
+    Schema.Struct({
+      id: Texto(200),
+      origem: Schema.optionalKey(Schema.Struct({ chave: Texto(300), ia: Schema.optionalKey(Provider) })),
+    }),
+  ),
+});
+export type PainelGuardado = typeof PainelGuardado.Type;
+
+/** Onde a pessoa estava (a última rota, com a busca) e o painel, para voltar ao reabrir o app. */
+export const Continuidade = Schema.Struct({ rota: Texto(MAXIMO_TEXTO_CONTINUIDADE), painel: PainelGuardado });
+export type Continuidade = typeof Continuidade.Type;
+
 /** O que o servidor local guarda do primeiro uso. As datas são ISO 8601. */
 export const Preferencias = Schema.Struct({
   perfil: Schema.optionalKey(Perfil),
@@ -202,6 +236,13 @@ export const Preferencias = Schema.Struct({
   boasVindasEm: Schema.optionalKey(Schema.String),
   /** As IAs que a pessoa deixou de usar no app (Configurações › Sua IA › "Não usar no app"). */
   iasDesligadas: Schema.Array(Provider),
+  /**
+   * O aviso do sistema (no desktop) quando uma resposta fica pronta ou a IA pede permissão com a janela
+   * sem foco (`docs/plans/multitarefa.md`, decisão 8). Ligado até a pessoa desligar em Configurações.
+   */
+  avisosDoSistema: Schema.Boolean,
+  /** Onde a pessoa estava ao fechar o app (`preferencias.guardarContinuidade`). */
+  continuidade: Schema.optionalKey(Continuidade),
 });
 export type Preferencias = typeof Preferencias.Type;
 
@@ -228,6 +269,13 @@ export class GrupoPreferencias extends RpcGroup.make(
     payload: Schema.Struct({ provider: Provider, usar: Schema.Boolean }),
     success: Preferencias,
   }),
+  /** Liga ou desliga o aviso do sistema (`Preferencias.avisosDoSistema`). */
+  Rpc.make("preferencias.avisarNoSistema", {
+    payload: Schema.Struct({ ligar: Schema.Boolean }),
+    success: Preferencias,
+  }),
+  /** Guarda onde a pessoa está (a interface grava 1 s depois de navegar e ao fechar o app). */
+  Rpc.make("preferencias.guardarContinuidade", { payload: Schema.Struct({ continuidade: Continuidade }) }),
 ) {}
 
 /** "Coordenação de Curso · Campus Curitiba", "Pedagogo · PROENS", ou `undefined` sem nada disso. */

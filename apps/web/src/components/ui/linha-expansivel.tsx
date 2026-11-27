@@ -15,6 +15,7 @@ export function LinhaExpansivel({
   cabecalho,
   children,
   className,
+  atalhos,
 }: {
   /** Prefixo dos ids do botão e da região; único na página. */
   readonly id: string;
@@ -23,6 +24,8 @@ export function LinhaExpansivel({
   readonly cabecalho: React.ReactNode;
   readonly children: React.ReactNode;
   readonly className?: string;
+  /** As teclas que agem na linha em foco (`aria-keyshortcuts`), além de Enter e espaço. */
+  readonly atalhos?: string;
 }) {
   const regiao = `${id}-conteudo`;
   return (
@@ -32,6 +35,7 @@ export function LinhaExpansivel({
         id={`${id}-botao`}
         aria-expanded={aberta}
         aria-controls={regiao}
+        aria-keyshortcuts={atalhos}
         onClick={aoAlternar}
         className="flex w-full cursor-pointer items-start gap-3 py-3 text-left outline-none hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       >

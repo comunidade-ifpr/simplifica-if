@@ -1,4 +1,4 @@
-/** O item "recente" do módulo no Início (`routes/index.tsx`, arquivo de composição). */
+/** O item do módulo em "Continuar de onde parou", no Início (`routes/index.tsx`, arquivo de composição). */
 import type { ListaPendencias } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import { Link } from "@tanstack/react-router";
 import { FileSearchIcon } from "lucide-react";
@@ -29,10 +29,14 @@ export function UltimaRevisao() {
     <Link
       to="/revisao-ppc"
       search={{ id: lista.id }}
-      className="flex items-center gap-1.5 rounded-md px-2 py-1.5 font-medium text-sm hover:bg-accent"
+      // Um item de "Continuar de onde parou" (`continuidade/ContinuarDeOndeParou.tsx`).
+      data-continuar
+      className="-mx-2 flex items-center gap-1.5 rounded-md px-2 py-1.5 font-medium text-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <FileSearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
-      <span className="truncate">Revisão do PPC: {nomeDoArquivo(lista.arquivoOriginal)}</span>
+      <span className="truncate">
+        Revisão do PPC: <span data-conteudo>{nomeDoArquivo(lista.arquivoOriginal)}</span>
+      </span>
     </Link>
   );
 }

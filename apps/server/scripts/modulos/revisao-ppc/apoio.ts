@@ -15,6 +15,7 @@ import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as ArquivosLiberados from "../../../src/ArquivosLiberados.ts";
+import * as Atividades from "../../../src/Atividades.ts";
 import * as Banco from "../../../src/persistencia/Banco.ts";
 import * as Preferencias from "../../../src/persistencia/Preferencias.ts";
 import * as ListaViva from "../../../src/modulos/revisao-ppc/ListaViva.ts";
@@ -105,6 +106,7 @@ export const layerNucleo = (opcoes: OpcoesNucleo) => {
   return RevisaoPpc.layer(banco, opcoes.revisaoIa, opcoes.listaViva).pipe(
     Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
+    Layer.provideMerge(Atividades.layer),
     Layer.provideMerge(Motor.layer.pipe(Layer.provide(drivers))),
     Layer.provideMerge(layerLeitura({ banco: NodePath.join(RAIZ, "tmp/kb.sqlite"), canal: "dev" })),
     Layer.provideMerge(NodeCrypto.layerSecureRandom),

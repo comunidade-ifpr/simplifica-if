@@ -1,17 +1,22 @@
 /**
  * As conversas gravadas no servidor (`conversa.listar`), da mais recente para a mais antiga: o título
  * (a primeira mensagem), a IA, a data e, quando importa, o estado da sessão. Cada uma abre a conversa
- * em `/conversa?id=…`, e o ⋯ ao lado apaga (`ApagarConversas`). "Selecionar" troca os links por caixas de
+ * em `/conversa?id=…`, e o ⋯ ao lado apaga (`ApagarConversas`). A conversa que nasceu de outra tela (a
+ * conversa ao lado de uma revisão de PPC) mostra a origem ("da
+ * revisão do PPC de Enfermagem"; "revisão apagada" depois), e o ⋯ leva até ela enquanto ela existe. "Selecionar" troca os links por caixas de
  * marcar, para apagar várias de uma vez. Recarrega quando `atualizar` muda (a conversa corrente, o fim de
- * um turno) e depois de apagar.
+ * um turno), quando as atividades das conversas mudam (outra começa a responder, pede permissão, termina)
+ * e depois de apagar; o selo de cada uma vem da atividade dela ("Resposta pronta", "Pede permissão").
  */
-import type { EstadoConversa, ResumoConversa } from "@simplifica-if/contratos-app";
-import { Link } from "@tanstack/react-router";
+import type { Atividade, EstadoConversa, ResumoConversa } from "@simplifica-if/contratos-app";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageSquareTextIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import { useApi, useEstadoConexao } from "../contexto.tsx";
+import { conversaDaAtividade } from "../atividades/ControleAtividades.ts";
+import { useApi, useAtividades, useEstadoConexao } from "../contexto.tsx";
 import { dataHora } from "../lib/formato.ts";
+import { abrirEmNovaJanela, cliqueDeJanela } from "../painel/abrirLink.ts";
 import { cn } from "../lib/utils.ts";
 import { DESCRICOES } from "../providers.ts";
 import { ApagarConversas, type ConversaParaApagar } from "../apagar/ApagarConversas.tsx";
@@ -33,6 +38,26 @@ const ROTULOS_ESTADO: Partial<Record<EstadoConversa, string>> = {
   caiu: "A IA parou; retoma na próxima mensagem",
 };
 
+/** O selo pela atividade da conversa, que vale mais que o estado gravado. */
+const SELOS_ATIVIDADE: Readonly<
+  Record<Atividade["situacao"], { readonly rotulo: string; readonly variante: "info" | "warning" | "success" }>
+> = {
+  andamento: { rotulo: "Respondendo", variante: "info" },
+  permissao: { rotulo: "Pede permissão", variante: "warning" },
+  pronta: { rotulo: "Resposta pronta", variante: "success" },
+  limite: { rotulo: "No limite da assinatura", variante: "warning" },
+};
+
+/** O selo de uma conversa na lista: o da atividade, senão o do estado (a queda), ou nenhum. */
+function seloDe(
+  conversa: ResumoConversa,
+  atividade: Atividade | undefined,
+): { readonly rotulo: string; readonly variante: "info" | "warning" | "success" } | undefined {
+  if (atividade !== undefined) return SELOS_ATIVIDADE[atividade.situacao];
+  const rotulo = ROTULOS_ESTADO[conversa.estado];
+  return rotulo === undefined ? undefined : { rotulo, variante: conversa.estado === "caiu" ? "warning" : "info" };
+}
+
 export function ListaConversas({
   atual,
   atualizar,
@@ -46,11 +71,25 @@ export function ListaConversas({
   readonly limite?: number;
 }) {
   const api = useApi();
+  const navegar = useNavigate();
+  const roteador = useRouter();
   const conexao = useEstadoConexao();
   const [lista, setLista] = useState<Lista>({ fase: "carregando" });
   const [apagando, setApagando] = useState<ReadonlyArray<ConversaParaApagar> | null>(null);
   const [apagadas, setApagadas] = useState(0);
   const conectado = conexao.fase === "conectada";
+  const { atividades } = useAtividades();
+  const atividadesPorConversa = new Map(
+    atividades.flatMap((atividade) => {
+      const id = conversaDaAtividade(atividade);
+      return id === undefined ? [] : [[id, atividade] as const];
+    }),
+  );
+  // A lista recarrega quando uma conversa muda de situação (o título e a data vêm com ela).
+  const gatilhoAtividades = [...atividadesPorConversa]
+    .map(([id, atividade]) => `${id}:${atividade.situacao}`)
+    .sort()
+    .join(",");
   const visiveis =
     lista.fase === "pronta" ? (limite === undefined ? lista.conversas : lista.conversas.slice(0, limite)) : [];
   const selecao = useSelecao(visiveis.map((c) => c.id));
@@ -68,10 +107,10 @@ export function ListaConversas({
     return () => {
       vale = false;
     };
-    // `atualizar` e `apagadas` são só gatilhos da recarga (a conversa corrente mudou, um turno acabou, uma
-    // conversa saiu): o corpo não os lê.
+    // `atualizar`, `apagadas` e `gatilhoAtividades` são só gatilhos da recarga (a conversa corrente mudou, um
+    // turno acabou, uma conversa saiu ou mudou de situação): o corpo não os lê.
     // oxlint-disable-next-line react/exhaustive-effect-dependencies
-  }, [api, conectado, atualizar, apagadas]);
+  }, [api, conectado, atualizar, apagadas, gatilhoAtividades]);
 
   // Em toda forma da lista: a recarga depois de apagar (vazia, com falha) não desmonta o diálogo, que ainda
   // mostra a nota e leva ao destino quando fecha.
@@ -121,7 +160,7 @@ export function ListaConversas({
       />
       <ul className="flex flex-col gap-1" aria-label="Conversas">
         {conversas.map((conversa) => {
-          const rotulo = ROTULOS_ESTADO[conversa.estado];
+          const selo = seloDe(conversa, atividadesPorConversa.get(conversa.id));
           const titulo = conversa.titulo || "Conversa sem mensagens";
           return (
             <li
@@ -146,9 +185,9 @@ export function ListaConversas({
                     <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground text-micro">
                       <span>{DESCRICOES[conversa.provider].nome}</span>
                       <span>{dataHora(conversa.atualizadaEm)}</span>
-                      {rotulo === undefined ? null : (
-                        <Badge variant={conversa.estado === "caiu" ? "warning" : "info"} size="sm">
-                          {rotulo}
+                      {selo === undefined ? null : (
+                        <Badge variant={selo.variante} size="sm">
+                          {selo.rotulo}
                         </Badge>
                       )}
                     </span>
@@ -158,6 +197,12 @@ export function ListaConversas({
                 <Link
                   to="/conversa"
                   search={{ id: conversa.id }}
+                  // ⇧⌘-clique (Ctrl+Shift+clique): a conversa numa janela nova, no desktop.
+                  onClick={(evento) => {
+                    if (evento.button !== 0 || !cliqueDeJanela(evento)) return;
+                    const rota = roteador.buildLocation({ to: "/conversa", search: { id: conversa.id } }).href;
+                    if (abrirEmNovaJanela(rota)) evento.preventDefault();
+                  }}
                   aria-current={conversa.id === atual ? "page" : undefined}
                   className="flex min-w-0 flex-1 flex-col gap-0.5 rounded-md px-2 py-1.5 text-sm"
                 >
@@ -170,14 +215,20 @@ export function ListaConversas({
                   <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground text-micro">
                     <span>{DESCRICOES[conversa.provider].nome}</span>
                     <span>{dataHora(conversa.atualizadaEm)}</span>
-                    {rotulo === undefined ? null : (
-                      <Badge variant={conversa.estado === "caiu" ? "warning" : "info"} size="sm">
-                        {rotulo}
+                    {selo === undefined ? null : (
+                      <Badge variant={selo.variante} size="sm">
+                        {selo.rotulo}
                       </Badge>
                     )}
                   </span>
+                  {conversa.origem === undefined ? null : (
+                    <span className="truncate text-muted-foreground text-micro" data-origem>
+                      {conversa.origem.rotulo}
+                    </span>
+                  )}
                 </Link>
               )}
+
               {selecao.ativa ? null : (
                 <Menu>
                   <MenuTrigger
@@ -196,6 +247,11 @@ export function ListaConversas({
                     <EllipsisIcon />
                   </MenuTrigger>
                   <MenuPopup>
+                    {conversa.origem?.rota == null ? null : (
+                      <MenuItem onClick={() => void navegar({ href: conversa.origem!.rota! })}>
+                        Ir para a origem
+                      </MenuItem>
+                    )}
                     <MenuItem
                       className="text-destructive-foreground"
                       onClick={() => setApagando([paraApagar(conversa)])}

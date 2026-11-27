@@ -21,7 +21,7 @@ import {
 } from "../components/ui/menu.tsx";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../components/ui/select.tsx";
 import type { Api } from "../conexao/api.ts";
-import type { ControleConversa } from "../conversa/ControleConversa.ts";
+import type { GerenteConversas } from "../conversa/GerenteConversas.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { nomeDoArquivo } from "../lib/texto.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
@@ -37,9 +37,13 @@ import {
 } from "./modelos.ts";
 import { usePreferencias } from "./perfil.ts";
 
+/**
+ * Começa a tarefa e, com a conversa aberta, `mostrar` (a navegação até ela): o controle fica pego até
+ * lá, para a tela da conversa o receber com a mensagem já enviada, e se solta depois, também na falha.
+ */
 export async function comecarTarefa(
   api: Api,
-  conversa: ControleConversa,
+  conversas: GerenteConversas,
   pedido: {
     readonly titulo: string;
     /** O `id` da tarefa do cartão; sem ele, conversa livre (a caixa do Início). */
@@ -48,17 +52,19 @@ export async function comecarTarefa(
     readonly anexos: ReadonlyArray<string>;
     readonly texto: string;
   },
-): Promise<string> {
+  mostrar: (sessao: string) => Promise<unknown>,
+): Promise<void> {
   const { pasta } = await api.chamar((cliente) => cliente["pasta.criar"]({ titulo: pedido.titulo }));
   for (const arquivo of pedido.anexos) {
     await api.chamar((cliente) => cliente["pasta.anexar"]({ pasta, arquivo }));
   }
-  return conversa.comecarTarefa({
-    ia: pedido.ia,
-    pasta,
-    tarefa: pedido.tarefa,
-    pedido: pedido.texto,
-  });
+  const { controle, soltar } = conversas.novo(pedido.ia.provider);
+  try {
+    const sessao = await controle.comecarTarefa({ ia: pedido.ia, pasta, tarefa: pedido.tarefa, pedido: pedido.texto });
+    await mostrar(sessao);
+  } finally {
+    soltar();
+  }
 }
 
 /**

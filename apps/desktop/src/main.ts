@@ -6,23 +6,50 @@
  * 1. gera um token, inicia o servidor local (`servidor.ts`) com a base, a pasta de estado e a origem
  *    da janela, e espera a linha de partida;
  * 2. abre a janela (`sandbox`, `contextIsolation`, CSP, navegação externa bloqueada) com a interface:
- *    o dev server do `apps/web` em desenvolvimento, o build empacotado pelo protocolo `simplifica://`;
- * 3. entrega à janela, pelo preload, a URL do servidor e o token (`window.simplifica.conexao()`);
+ *    o dev server do `apps/web` em desenvolvimento, o build empacotado pelo protocolo `simplifica://`; outras
+ *    janelas saem de "Abrir em nova janela" (`janelas.ts`), cada uma com o seu WebSocket;
+ * 3. entrega a cada janela, pelo preload, a URL do servidor e o token (`window.simplifica.conexao()`);
  * 4. ao sair, fecha o stdin do servidor e espera; se ele não sair, mata-o. Se o servidor cair, mostra
  *    o erro e oferece reiniciar.
  *
  * O token nunca vai para log, linha de comando nem ambiente: só no stdin do servidor e na resposta do
  * IPC à janela do app.
  *
- * Este arquivo guarda o estado (o servidor, a janela, a atualização) e o ciclo de vida; os canais do
+ * Este arquivo guarda o estado (o servidor, as janelas, a atualização) e o ciclo de vida; os canais do
  * IPC ficam em `ipc.ts`, o protocolo `simplifica://` em `protocolo.ts` e o menu em `menu.ts`.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { app, BrowserWindow, dialog, Menu, nativeTheme, session, shell, type WebContents } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  Menu,
+  nativeTheme,
+  Notification,
+  screen,
+  session,
+  shell,
+  type WebContents,
+} from "electron";
 import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
 import { resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
+import { criarGravacaoAoSair, fecharDepoisDeGravar } from "./antesDeSair.ts";
+import { contagemValida, criarAvisos, ID_DO_APP, textoDoSelo } from "./avisos.ts";
+import { criarJanelaCompacta, MINIMO_NORMAL, type Retangulo } from "./compacta.ts";
 import { registrarIpc } from "./ipc.ts";
+import {
+  argumentosDaContinuidade,
+  continuidadeDaJanelaNova,
+  criarConjuntoJanelas,
+  MAXIMO_ROTA_JANELA,
+  medidasDaJanelaNova,
+  porJanela,
+  rotaDaPagina,
+  rotaValida,
+  TAMANHO_JANELA,
+  urlDaRota,
+} from "./janelas.ts";
 import { proxyParaServidor } from "./proxy.ts";
 import { VARIAVEL_SEM_REINICIO, vigiarCodigoDoServidor } from "./vigiaDev.ts";
 import { corFundoJanela, opcoesBarraTitulo } from "./janela.ts";
@@ -94,7 +121,8 @@ let servidor: ServidorEmExecucao | undefined;
 let conexaoAtual: Promise<CredenciaisServidor> | undefined;
 /** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
 let tokenDesktop: string | undefined;
-let janela: BrowserWindow | undefined;
+/** As janelas abertas, na ordem de uso (`janelas.ts`). */
+const janelas = criarConjuntoJanelas<BrowserWindow>();
 /** O app está saindo: a queda do servidor não é erro. */
 let saindo = false;
 /** Para o vigia do código do servidor (só no desenvolvimento). */
@@ -189,8 +217,9 @@ async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> 
     cancelId: 1,
     noLink: true,
   };
+  const dona = janelas.ultimaUsada();
   const { response } =
-    janela && !janela.isDestroyed() ? await dialog.showMessageBox(janela, opcoes) : await dialog.showMessageBox(opcoes);
+    dona === undefined ? await dialog.showMessageBox(opcoes) : await dialog.showMessageBox(dona, opcoes);
   if (response !== 0) {
     app.quit();
     return;
@@ -209,12 +238,10 @@ async function iniciar(): Promise<void> {
     void aoCairServidor(erro instanceof Error ? erro.message : String(erro), "");
     return;
   }
-  if (janela && !janela.isDestroyed()) {
-    // A interface pede a conexão de novo (o token e a porta mudaram).
-    janela.webContents.reload();
-  } else {
-    criarJanela();
-  }
+  const abertas = janelas.todas();
+  // A interface de cada janela pede a conexão de novo (o token e a porta mudaram).
+  for (const aberta of abertas) aberta.webContents.reload();
+  if (abertas.length === 0) criarJanela();
 }
 
 /* ============================================================ janela */
@@ -224,11 +251,21 @@ function abrirNoNavegador(url: string): void {
   if (segura !== undefined) void shell.openExternal(segura);
 }
 
-/** As defesas de todo `WebContents`, como no T3: sem `<webview>`, sem janelas novas, sem navegar para fora. */
+/**
+ * As defesas de todo `WebContents`, como no T3: sem `<webview>`, sem `window.open`, sem navegar para fora. A
+ * janela nova que o Chromium pede para um link do app (⇧-clique, ⌘-clique) abre como "Abrir em nova janela"
+ * (`abrirJanela`), na rota sem o `compacto=1`; a de outro endereço vai ao navegador.
+ */
 function protegerConteudo(conteudo: WebContents): void {
   conteudo.on("will-attach-webview", (evento) => evento.preventDefault());
   conteudo.setWindowOpenHandler(({ url }) => {
-    abrirNoNavegador(url);
+    const dona = BrowserWindow.fromWebContents(conteudo);
+    const rotaDoApp = rotaDaPagina(url, configuracao.urlJanela);
+    if (rotaDoApp === undefined) abrirNoNavegador(url);
+    else {
+      const rota = rotaValida(rotaDoApp, MAXIMO_ROTA_JANELA);
+      if (rota !== undefined && janelas.tem(dona)) abrirJanela(rota, dona);
+    }
     return { action: "deny" };
   });
   conteudo.on("will-navigate", (evento, url) => {
@@ -247,19 +284,27 @@ function protegerConteudo(conteudo: WebContents): void {
 const ERROS_CARGA_REPETIVEIS = new Set([-2, -7, -9, -102, -105, -106, -118]);
 const ESPERAS_CARGA_MS = [100, 250, 500, 1_000, 2_000, 2_000, 2_000, 2_000];
 /**
- * Tentativas de carga da janela atual. Volta a zero só quando a interface pede a conexão (carregou de
+ * Tentativas de carga de cada janela. Voltam a zero só quando a interface dela pede a conexão (carregou de
  * verdade): o `did-finish-load` também dispara para a página de erro do Chromium, e zerar ali repetia
  * para sempre.
  */
-let tentativasCarga = 0;
+const tentativasCarga = new WeakMap<BrowserWindow, number>();
 
-function criarJanela(): void {
+/**
+ * Abre uma janela com a interface, na `rota` (sem ela, no Início), nas `medidas` (sem elas, as do sistema). A
+ * primeira é a principal; o que cada uma faz da continuidade vai à interface pelos argumentos do renderer
+ * (`continuidadeDaJanelaNova`, `janelas.ts`).
+ */
+function criarJanela(rota?: string, medidas?: Retangulo): BrowserWindow {
+  const continuidade = continuidadeDaJanelaNova(janelas.principal() !== undefined, rota !== undefined);
+  const urlInicial = rota === undefined ? configuracao.urlJanela : urlDaRota(configuracao.urlJanela, rota);
   const nova = new BrowserWindow({
     title: NOME,
-    width: 1280,
-    height: 820,
-    minWidth: 800,
-    minHeight: 560,
+    width: TAMANHO_JANELA.largura,
+    height: TAMANHO_JANELA.altura,
+    ...medidas,
+    minWidth: MINIMO_NORMAL.largura,
+    minHeight: MINIMO_NORMAL.altura,
     show: false,
     // Sem a barra de título do sistema: o cabeçalho da interface é a barra (`janela.ts`).
     ...opcoesBarraTitulo(process.platform, nativeTheme.shouldUseDarkColors),
@@ -271,12 +316,34 @@ function criarJanela(): void {
       sandbox: true,
       webviewTag: false,
       spellcheck: true,
+      additionalArguments: argumentosDaContinuidade(continuidade),
     },
   });
-  janela = nova;
+  janelas.adicionar(nova);
   nova.once("ready-to-show", () => nova.show());
+  nova.on("focus", () => janelas.usada(nova));
+  // Fechar a janela principal (com a última, o app sai) espera a interface gravar onde a pessoa estava.
+  // Saindo pelo `before-quit`, ela já gravou (`sair`). As outras não gravam: fecham direto.
+  if (continuidade !== "nenhuma")
+    nova.on(
+      "close",
+      fecharDepoisDeGravar({
+        pedir: () => gravacaoAoSair.pedir(),
+        fechar: () => {
+          if (!nova.isDestroyed()) nova.close();
+        },
+        saindo: () => saindo,
+      }),
+    );
   nova.on("closed", () => {
-    if (janela === nova) janela = undefined;
+    janelas.remover(nova);
+    compactas.esquecer(nova);
+  });
+  // A página nova (recarregada com o servidor reiniciado, ou a primeira) começa fora do modo compacto: a
+  // janela volta ao normal com ela. A navegação dentro da página (`did-navigate-in-page`) não conta.
+  // Sem conferir se está ligado: um pedido de ligar ainda na fila desliga-se logo depois dele.
+  nova.webContents.on("did-navigate", () => {
+    void compactas.existente(nova)?.compactar(false);
   });
   // No macOS, em tela cheia os semáforos somem: a interface tira o recuo deles.
   const avisarTelaCheia = (telaCheia: boolean) => {
@@ -285,11 +352,12 @@ function criarJanela(): void {
   nova.on("enter-full-screen", () => avisarTelaCheia(true));
   nova.on("leave-full-screen", () => avisarTelaCheia(false));
 
-  tentativasCarga = 0;
+  tentativasCarga.set(nova, 0);
   nova.webContents.on("did-fail-load", (_evento, codigo, descricao, url, quadroPrincipal) => {
     if (!quadroPrincipal || !ERROS_CARGA_REPETIVEIS.has(codigo)) return;
     if (!isSameOriginRendererNavigation({ applicationUrl: configuracao.urlJanela, navigationUrl: url })) return;
-    const espera = ESPERAS_CARGA_MS[tentativasCarga];
+    const tentativas = tentativasCarga.get(nova) ?? 0;
+    const espera = ESPERAS_CARGA_MS[tentativas];
     if (espera === undefined) {
       registrar(
         `a interface não carregou (${descricao}) em ${configuracao.urlJanela}; desisti depois de ${ESPERAS_CARGA_MS.length} tentativas`,
@@ -301,21 +369,40 @@ function criarJanela(): void {
       }
       return;
     }
-    tentativasCarga += 1;
+    tentativasCarga.set(nova, tentativas + 1);
+    // A URL que falhou (a rota em que a janela estava, recarregada), não a de quando ela abriu.
     setTimeout(() => {
-      if (!nova.isDestroyed()) void nova.loadURL(configuracao.urlJanela);
+      if (!nova.isDestroyed()) void nova.loadURL(url);
     }, espera);
   });
-  void nova.loadURL(configuracao.urlJanela).catch(() => undefined);
+  void nova.loadURL(urlInicial).catch(() => undefined);
+  return nova;
 }
 
-// T3: apps/desktop/src/window/DesktopWindow.ts (syncWindowAppearance) — o tema do sistema mudou: o
-// fundo da janela e o overlay dos botões acompanham.
+/**
+ * "Abrir em nova janela": a rota já conferida (`rotaValida`), a partir da janela que pediu, em cascata ou, se
+ * ela está no modo compacto, maximizada ou em tela cheia, no centro da tela dela (`medidasDaJanelaNova`). Com
+ * `MAXIMO_JANELAS` abertas, não abre.
+ */
+function abrirJanela(rota: string, referencia: BrowserWindow): void {
+  if (!janelas.cabeMais()) {
+    registrar("janela nova recusada: o máximo de janelas abertas");
+    return;
+  }
+  const medidas = referencia.getBounds();
+  const centro =
+    referencia.isFullScreen() || referencia.isMaximized() || (compactas.existente(referencia)?.ligada() ?? false);
+  criarJanela(rota, medidasDaJanelaNova(medidas, screen.getDisplayMatching(medidas).workArea, centro));
+}
+
+// T3: apps/desktop/src/window/DesktopWindow.ts (syncWindowAppearance) — o tema do sistema (ou o do app,
+// escolhido em qualquer janela) mudou: o fundo e o overlay dos botões de todas as janelas acompanham.
 function sincronizarAparencia(): void {
-  if (janela === undefined || janela.isDestroyed()) return;
-  janela.setBackgroundColor(corFundoJanela(nativeTheme.shouldUseDarkColors));
   const { titleBarOverlay } = opcoesBarraTitulo(process.platform, nativeTheme.shouldUseDarkColors);
-  if (titleBarOverlay !== undefined) janela.setTitleBarOverlay(titleBarOverlay);
+  for (const aberta of janelas.todas()) {
+    aberta.setBackgroundColor(corFundoJanela(nativeTheme.shouldUseDarkColors));
+    if (titleBarOverlay !== undefined) aberta.setTitleBarOverlay(titleBarOverlay);
+  }
 }
 
 /* ============================================================ reinício do servidor */
@@ -341,20 +428,79 @@ const reinicio = serializar(trocarServidor, (erro) => registrar(`falha ao reinic
 /** Reinicia o servidor; a janela recarrega. */
 const reiniciarServidor = (): Promise<void> => reinicio.pedir();
 
+/* ============================================================ modo compacto (`compacta.ts`), um por janela */
+
+const compactas = porJanela(
+  (dona: BrowserWindow) =>
+    criarJanelaCompacta({
+      janela: () => dona,
+      tela: {
+        getDisplayMatching: (retangulo) => screen.getDisplayMatching(retangulo),
+        getAllDisplays: () => screen.getAllDisplays(),
+      },
+      adiar: (acao, ms) => {
+        const espera = setTimeout(acao, ms);
+        return () => clearTimeout(espera);
+      },
+    }),
+  // A janela fechou no meio da saída da tela cheia: o relógio e o ouvinte da espera saem.
+  (compacta) => compacta.esquecer(),
+);
+
+/* ============================================================ gravar antes de sair (`antesDeSair.ts`) */
+
+// Só a principal grava a continuidade (`janelas.ts`).
+const gravacaoAoSair = criarGravacaoAoSair({
+  janela: () => janelas.principal(),
+  adiar: (acao, ms) => {
+    const espera = setTimeout(acao, ms);
+    return () => clearTimeout(espera);
+  },
+});
+
+/* ============================================================ avisos do sistema (`avisos.ts`) */
+
+// No Windows, a notificação só sai com o identificador do app (o do instalador).
+if (process.platform === "win32") app.setAppUserModelId(ID_DO_APP);
+
+const avisos = criarAvisos({
+  criar: (opcoes) => new Notification(opcoes),
+  suportado: () => Notification.isSupported(),
+  janelas: () => janelas.todas(),
+  ultimaUsada: () => janelas.ultimaUsada(),
+  sempreAVista: (aberta) => compactas.existente(aberta)?.porCima() ?? false,
+  urlJanela: configuracao.urlJanela,
+  nome: NOME,
+  agora: () => Date.now(),
+});
+
+/** O selo do Dock, só no macOS; no Windows, o ícone sobreposto da barra de tarefas pede uma imagem e fica de fora. */
+function definirSelo(pedido: unknown): void {
+  const contagem = contagemValida(pedido);
+  if (contagem === undefined || process.platform !== "darwin") return;
+  app.dock?.setBadge(textoDoSelo(contagem));
+}
+
 /* ============================================================ IPC (`ipc.ts`) */
 
 registrarIpc({
   urlJanela: configuracao.urlJanela,
   pastaTrabalhos: configuracao.pastaTrabalhos,
-  janela: () => janela,
-  conexao: () => {
-    tentativasCarga = 0;
+  janelas,
+  conexao: (remetente) => {
+    tentativasCarga.set(remetente, 0);
     if (conexaoAtual === undefined) throw new Error("o servidor local ainda não foi iniciado");
     return conexaoAtual;
   },
   conexaoAtual: () => conexaoAtual,
   tokenDesktop: () => tokenDesktop,
   reiniciarServidor,
+  avisar: (pedido) => void avisos.avisar(pedido),
+  selo: definirSelo,
+  compactar: (dona, ligada) => compactas.de(dona).compactar(ligada),
+  naFrente: (dona, sempre) => compactas.de(dona).naFrente(sempre),
+  abrirJanela,
+  prontoParaSair: (janela, pedido) => gravacaoAoSair.pronto(janela, pedido),
   // Um teto defensivo: uma janela em laço não enche o log.
   registrarInterface: limitarRegistros({
     maximo: 120,
@@ -372,11 +518,15 @@ function sair(): void {
   if (saindo) return;
   saindo = true;
   pararVigia?.();
-  // Uma troca em curso termina antes (a seguinte não começa: `saindo`), para o servidor dela não ficar órfão.
-  const fim = reinicio.ocioso().then(() => {
-    const atual = servidor;
-    return atual === undefined ? ("ja-saira" as const) : atual.encerrar();
-  });
+  // A interface grava onde a pessoa estava, com o servidor ainda de pé. Uma troca em curso termina antes (a
+  // seguinte não começa: `saindo`), para o servidor dela não ficar órfão.
+  const fim = gravacaoAoSair
+    .pedir()
+    .then(() => reinicio.ocioso())
+    .then(() => {
+      const atual = servidor;
+      return atual === undefined ? ("ja-saira" as const) : atual.encerrar();
+    });
   void fim
     .then((como) => registrar(`servidor encerrado (${como})`))
     .catch(() => undefined)
@@ -390,9 +540,10 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.on("second-instance", () => {
-    if (janela && !janela.isDestroyed()) {
-      if (janela.isMinimized()) janela.restore();
-      janela.focus();
+    const ultima = janelas.ultimaUsada();
+    if (ultima !== undefined) {
+      if (ultima.isMinimized()) ultima.restore();
+      ultima.focus();
     }
   });
 
@@ -404,7 +555,7 @@ if (!app.requestSingleInstanceLock()) {
     sair();
   });
 
-  // O app tem uma janela só; fechada, o app sai e leva o servidor junto.
+  // Fechada a última janela, o app sai e leva o servidor junto (também no macOS).
   app.on("window-all-closed", () => app.quit());
 
   // Ctrl+C no terminal do desenvolvimento: sai pelo mesmo caminho.
@@ -419,7 +570,18 @@ if (!app.requestSingleInstanceLock()) {
     session.defaultSession.setPermissionCheckHandler((_conteudo, permissao) => permitidas.has(permissao));
     if (configuracao.interface.tipo === "pasta")
       registrarProtocolo(configuracao.interface.pasta, { portaAtual, registrar });
-    Menu.setApplicationMenu(menuAplicacao({ nome: NOME, desenvolvimento: DESENVOLVIMENTO }));
+    Menu.setApplicationMenu(
+      menuAplicacao({
+        nome: NOME,
+        desenvolvimento: DESENVOLVIMENTO,
+        // O atalho vai à janela em foco, ou à última usada.
+        aoAtalho: (atalho) => {
+          const emFoco = BrowserWindow.getFocusedWindow();
+          const alvo = janelas.tem(emFoco) ? emFoco : janelas.ultimaUsada();
+          alvo?.webContents.send(CANAIS.atalhoDoMenu, atalho);
+        },
+      }),
+    );
     nativeTheme.on("updated", sincronizarAparencia);
     registrar(
       `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +

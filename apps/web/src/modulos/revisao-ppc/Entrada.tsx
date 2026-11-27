@@ -8,7 +8,7 @@
  */
 import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import { ChevronRightIcon, EllipsisIcon } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, use, useEffect, useRef, useState } from "react";
 import { DialogoApagar } from "../../apagar/DialogoApagar.tsx";
 import { BarraSelecao, useSelecao } from "../../apagar/Selecao.tsx";
 import { type Desfecho, type NotaApagar, notaDepoisDeApagar } from "../../apagar/textos.ts";
@@ -19,7 +19,8 @@ import { AreaSoltar } from "../../components/ui/area-soltar.tsx";
 import { Button } from "../../components/ui/button.tsx";
 import { Input } from "../../components/ui/input.tsx";
 import type { MensagemErro } from "../../conexao/erros.ts";
-import { useApi } from "../../contexto.tsx";
+import { useApp } from "../../contexto.tsx";
+import { ContextoMemoria } from "../../leitor/carga.ts";
 import { registrarErro, textoDoErro } from "../../diagnostico.ts";
 import { dataHora } from "../../lib/formato.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
@@ -28,6 +29,7 @@ import { nomeIa } from "./FaixaIa.tsx";
 import { leiturasPorTerminar } from "./ia.ts";
 import { nomeDoArquivo } from "../../lib/texto.ts";
 import { avisoDeSaida, REVISAO, textosApagarRevisoes } from "./apagar.ts";
+import { depoisDeApagarRevisao } from "./apagarRevisao.ts";
 import { comoFoiConferida, contagens, descreverCurso } from "./lista.ts";
 
 export function Entrada({
@@ -39,7 +41,9 @@ export function Entrada({
   readonly aoEscolher: (arquivo: string) => void;
   readonly aoAbrirLista: (lista: ListaPendencias) => void;
 }) {
-  const api = useApi();
+  const app = useApp();
+  const { api } = app;
+  const memoria = use(ContextoMemoria);
   const ponte = ponteDesktop();
   const [falha, setFalha] = useState<MensagemErro | undefined>(undefined);
   const [listas, setListas] = useState<ReadonlyArray<ListaPendencias>>([]);
@@ -76,15 +80,22 @@ export function Entrada({
   const apagou = useRef(false);
   const selecao = useSelecao(listas.map((l) => l.id));
 
-  /** Uma a uma: a falha de uma não para as outras; com uma só, o erro fica no diálogo. */
-  const apagarListas = async (alvo: ReadonlyArray<ListaPendencias>): Promise<NotaApagar | null> => {
+  /**
+   * Uma a uma: a falha de uma não para as outras; com uma só, o erro fica no diálogo. Com a opção marcada,
+   * a conversa ao lado de cada uma sai e a pasta dela vai à Lixeira (`depoisDeApagarRevisao`).
+   */
+  const apagarListas = async (
+    alvo: ReadonlyArray<ListaPendencias>,
+    pastaParaLixeira: boolean,
+  ): Promise<NotaApagar | null> => {
     const desfechos: Array<Desfecho> = [];
     for (const lista of alvo) {
       const titulo = nomeDoArquivo(lista.arquivoOriginal);
       try {
         await api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id }));
         apagou.current = true;
-        desfechos.push({ titulo });
+        const ficou = await depoisDeApagarRevisao(app, memoria, lista, { ponte, pasta: pastaParaLixeira });
+        desfechos.push({ titulo, ...(ficou === undefined ? {} : { pastaFicou: ficou }) });
       } catch (motivo) {
         if (alvo.length === 1) throw motivo;
         registrarErro(`apagar a revisão em lote: ${textoDoErro(motivo)}`);
@@ -173,9 +184,12 @@ export function Entrada({
             ? null
             : textosApagarRevisoes(
                 apagando.map((lista) => ({ lista, lendo: leituraDa(lista)?.situacao === "em_andamento" })),
+                ponte !== undefined,
               )
         }
-        aoConfirmar={() => (apagando === null ? Promise.resolve(null) : apagarListas(apagando))}
+        aoConfirmar={(pastaParaLixeira) =>
+          apagando === null ? Promise.resolve(null) : apagarListas(apagando, pastaParaLixeira)
+        }
         aoFechar={() => {
           setApagando(null);
           if (apagou.current) {

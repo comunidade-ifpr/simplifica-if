@@ -37,6 +37,8 @@ import {
 } from "./db/consultas-normas.ts";
 import * as Sql from "./db/sql.ts";
 import {
+  type Alinhamento,
+  alinhamentoEm,
   correspondenciaEm,
   type ResultadoCorrespondencia,
   type TabelaCorrespondencia,
@@ -159,6 +161,15 @@ export class Normas extends Context.Service<
     readonly tabelasDeCorrespondencia: (
       ato: string,
     ) => Effect.Effect<ReadonlyArray<TabelaCorrespondencia>, Sql.FalhaNaConsulta>;
+    /**
+     * As duas normas lado a lado (`alinhamentoEm`), pela tabela de correspondência entre elas, num
+     * sentido ou no outro: a origem da tabela fica sempre à esquerda. `null` se não há tabela.
+     */
+    readonly alinhamento: (a: string, b: string) => Effect.Effect<Alinhamento | null>;
+    /** As normas que têm tabela de correspondência, como origem (`sucessora`, o destino) ou destino (`anterior`). */
+    readonly comparaveis: Effect.Effect<
+      ReadonlyMap<string, ReadonlyArray<{ readonly norma: string; readonly relacao: "sucessora" | "anterior" }>>
+    >;
     /** Todas as normas, stubs e referências externas, por ID, com os apelidos e as palavras-chave. */
     readonly listar: Effect.Effect<ReadonlyArray<NormaListada>, Sql.FalhaNaConsulta>;
     /**
@@ -179,6 +190,12 @@ const make = Effect.gen(function* () {
   // carregados uma vez, na construção da layer
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
   const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient, FontesNormativas.FontesNormativas);
+  const todasAsTabelas = [...fonteCorrespondencia.tabelas.values()].flat();
+  const comparaveis = new Map<string, Array<{ norma: string; relacao: "sucessora" | "anterior" }>>();
+  for (const t of todasAsTabelas) {
+    comparaveis.set(t.origem, [...(comparaveis.get(t.origem) ?? []), { norma: t.destino, relacao: "sucessora" }]);
+    comparaveis.set(t.destino, [...(comparaveis.get(t.destino) ?? []), { norma: t.origem, relacao: "anterior" }]);
+  }
 
   const ficha = Effect.fn("Normas.ficha")(function* (id: string) {
     const consultar = (chave: string) =>
@@ -249,6 +266,15 @@ const make = Effect.gen(function* () {
     correspondencia: Effect.fn("Normas.correspondencia")((id: string) =>
       Effect.sync(() => correspondenciaEm(id, fonteCorrespondencia)),
     ),
+    alinhamento: Effect.fn("Normas.alinhamento")((a: string, b: string) =>
+      Effect.sync(() => {
+        const tabela = todasAsTabelas.find(
+          (t) => (t.origem === a && t.destino === b) || (t.origem === b && t.destino === a),
+        );
+        return tabela ? alinhamentoEm(tabela, fonteCorrespondencia) : null;
+      }),
+    ),
+    comparaveis: Effect.succeed(comparaveis),
     listar: listarNormas().pipe(prover),
     documento: Effect.fn("Normas.documento")(function* (id: string) {
       return yield* documentoDaNorma(id);

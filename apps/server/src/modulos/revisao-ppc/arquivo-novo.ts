@@ -16,8 +16,19 @@
  *
  * Uma pendência que continua com outro texto passa a ter a mensagem e o trecho do arquivo novo, com a
  * chave nova (a cópia comentada marca a situação pela chave do texto dela).
+ *
+ * Na conferência ao salvar (`salvamento`), que roda a cada salvamento do Word, a pendência que a pessoa
+ * marcou "Feito" e o arquivo salvo aponta igual (a mesma chave) fica como ela marcou: o código já a
+ * apontava quando ela marcou, e reabri-la a cada salvamento desfaria a marcação sem nada ter mudado. Só
+ * volta a aberta se o arquivo salvo a aponta com outro texto (o ponto mudou depois da marcação), e o
+ * histórico diz que a marcação dela foi desfeita. "Enviar a versão corrigida", pedida uma vez, reabre
+ * toda resolvida que o arquivo novo ainda aponta.
  */
-import type { PendenciaRevisao, SituacaoPendencia } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
+import type {
+  CriterioRevisao,
+  PendenciaRevisao,
+  SituacaoPendencia,
+} from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import { chavePendencia, type MarcaPendencia } from "@simplifica-if/ppc/revisao-previa";
 import type { MudancaPendencia } from "./persistencia/RevisoesPpc.ts";
 
@@ -134,6 +145,9 @@ export interface PlanoArquivoNovo {
   readonly resolvidas: number;
   readonly continuam: number;
   readonly contagemNovas: number;
+  /** As chaves das que contam em `resolvidas` e em `contagemNovas` (a conferência ao salvar as realça). */
+  readonly chavesResolvidas: ReadonlyArray<string>;
+  readonly chavesNovas: ReadonlyArray<string>;
 }
 
 /**
@@ -148,6 +162,7 @@ export function planoArquivoNovo(
   nome: string,
   semCurso: boolean,
   eventos: ReadonlyArray<EventoDaLista> = [],
+  opcoes: { readonly salvamento?: boolean } = {},
 ): PlanoArquivoNovo {
   const doCodigo = lista.filter((p) => p.pendencia.origem === "codigo");
   const { casadas, sobras } = casarPendencias(
@@ -158,13 +173,13 @@ export function planoArquivoNovo(
     !(p.dependeDoCurso && semCurso) && situacao !== "contestada_aceita";
   const chaves = new Set(lista.map((p) => p.chave));
   const mudancas: MudancaPendencia[] = [];
-  let resolvidas = 0;
+  const chavesResolvidas: string[] = [];
   let continuam = 0;
   for (const p of doCodigo) {
     const nova = casadas.get(p.chave) ?? null;
     if (nova === null) {
       if (p.situacao === "resolvida" && p.resolvidaPor === "revisarDeNovo") continue;
-      if (visivel(p.pendencia, p.situacao)) resolvidas += 1;
+      if (visivel(p.pendencia, p.situacao)) chavesResolvidas.push(p.chave);
       mudancas.push({
         chave: p.chave,
         situacao: "resolvida",
@@ -181,7 +196,8 @@ export function planoArquivoNovo(
     const chave = chavePendencia(nova);
     // A chave nova já é de outra pendência da lista (raro): a pendência fica com a dela.
     const textoNovo = chave !== p.chave && !chaves.has(chave) ? { chave, pendencia: nova } : undefined;
-    const reabre = p.situacao === "resolvida";
+    const daPessoa = p.situacao === "resolvida" && p.resolvidaPor === "pessoa";
+    const reabre = p.situacao === "resolvida" && !(opcoes.salvamento && daPessoa && textoNovo === undefined);
     if (!reabre && textoNovo === undefined) continue;
     const situacao = reabre ? "aberta" : p.situacao;
     mudancas.push({
@@ -192,7 +208,7 @@ export function planoArquivoNovo(
       evento: {
         acao: "revisarDeNovo",
         situacao,
-        texto: `A revisão de ${nome} ainda aponta este ponto${textoNovo === undefined ? "" : ", com o texto atualizado"}.`,
+        texto: `A revisão de ${nome} ainda aponta este ponto${textoNovo === undefined ? "" : ", com o texto atualizado"}${reabre && daPessoa ? "; a marcação de feito foi desfeita" : ""}.`,
       },
     });
   }
@@ -215,13 +231,29 @@ export function planoArquivoNovo(
     if (m.nova) for (const e of eventosFinais.filter((e) => e.chave === m.chave)) eventosFinais.push({ ...e, chave });
     if (m.evento) eventosFinais.push({ chave, ...m.evento });
   }
+  const chavesNovas = novas.filter((n) => visivel(n.pendencia, "aberta")).map((n) => n.chave);
   return {
     mudancas,
     novas,
     pendenciasFinais: [...finais.values()],
     eventosFinais,
-    resolvidas,
+    resolvidas: chavesResolvidas.length,
     continuam,
-    contagemNovas: novas.filter((n) => visivel(n.pendencia, "aberta")).length,
+    contagemNovas: chavesNovas.length,
+    chavesResolvidas,
+    chavesNovas,
   };
+}
+
+/**
+ * A régua com os critérios do código (as fichas D) tirados de `doCodigo`: depois de uma conferência ao
+ * salvar, os do arquivo salvo, que a montagem sobre o texto revisado (a mesclagem da IA, a cópia
+ * comentada) não pode desfazer. Os da IA ficam os de `criterios`.
+ */
+export function comCriteriosDoCodigo(
+  criterios: ReadonlyArray<CriterioRevisao>,
+  doCodigo: ReadonlyArray<CriterioRevisao>,
+): ReadonlyArray<CriterioRevisao> {
+  const porFicha = new Map(doCodigo.filter((c) => c.origem === "codigo").map((c) => [c.ficha, c]));
+  return criterios.map((c) => (c.origem === "codigo" ? (porFicha.get(c.ficha) ?? c) : c));
 }

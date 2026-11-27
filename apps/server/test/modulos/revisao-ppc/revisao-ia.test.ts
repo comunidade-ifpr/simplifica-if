@@ -4,7 +4,7 @@
  * motor no lugar do provider: preparo e estimativa, sessões sem ferramentas numa pasta vazia, a
  * conferência de cada resposta (JSON inválido, trecho inventado, norma fora do contexto) com uma nova
  * tentativa, a injeção escondida no PPC, o limite de taxa no meio (pausa com a frase clara) e a
- * retomada só do que faltava, e o resultado no mesmo DOCX comentado das fichas D.
+ * retomada só do que faltava, a cota no meio continuada com outra IA (a IA de cada pendência), e o resultado no mesmo DOCX comentado das fichas D.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -29,6 +29,7 @@ import { fichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as ArquivosLiberados from "../../../src/ArquivosLiberados.ts";
+import * as Atividades from "../../../src/Atividades.ts";
 import * as Banco from "../../../src/persistencia/Banco.ts";
 import * as CopiasComentadas from "../../../src/modulos/revisao-ppc/persistencia/CopiasComentadas.ts";
 import * as Preferencias from "../../../src/persistencia/Preferencias.ts";
@@ -421,6 +422,58 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
     }),
   );
 
+  it.effect(
+    "cota no meio: a bandeja mostra o limite, e continuar com o Gemini lê só o que faltava; cada pendência diz que IA a julgou",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const naoAtende = () => ({ estado: "NAO_ATENDE", lacunas: ["falta o item"], o_que_fazer: "Inclua o item" });
+        roteiro.responder = (p) =>
+          blocoDo(p) === "j-02"
+            ? { erro: "You've hit your usage limit. Try again later." }
+            : { texto: respostaValida(p, naoAtende) };
+        const { rpc, pre, preparada, final, ate } = yield* rodar(gravar("PPC cota.docx", ppcSintetico()));
+        assert.strictEqual(final.situacao, "pausada");
+        assert.isTrue(final.limite);
+        const bandeja = yield* rpc["atividades.acompanhar"]({}).pipe(Stream.take(1), Stream.runCollect);
+        const daLeitura = (bandeja[0]?._tag === "Retrato" ? bandeja[0].atividades : []).find(
+          (a) => a.id === `revisao-ppc:${preparada.id}`,
+        );
+        assert.deepInclude(daLeitura, {
+          titulo: "Revisão de “PPC cota”",
+          rota: `/revisao-ppc?id=${pre.lista}`,
+          provider: "claude",
+          situacao: "limite",
+        });
+
+        roteiro.responder = (p) => ({ texto: respostaValida(p, naoAtende) });
+        const antes = roteiro.pedidos.length;
+        const configsAntes = roteiro.configs.length;
+        const continuada = yield* rpc["revisaoPpc.continuarIaCom"]({ lista: pre.lista, provider: "antigravity" });
+        assert.strictEqual(continuada.provider, "antigravity");
+        const fim = yield* ate(preparada.id);
+        assert.strictEqual(fim.situacao, "concluida");
+        assert.deepStrictEqual(roteiro.pedidos.slice(antes).map(blocoDo), ["j-02", "t"]);
+        assert.isTrue(roteiro.configs.slice(configsAntes).every((config) => config.provider === "antigravity"));
+
+        const lista = yield* rpc["revisaoPpc.lista"]({ lista: pre.lista });
+        const daIa = lista.pendencias.filter((v) => v.pendencia.origem === "ia" && v.pendencia.ficha !== "TRIAGEM");
+        const porFicha = new Map(daIa.map((v) => [v.pendencia.ficha, v.julgadaPor]));
+        assert.strictEqual(porFicha.get("CT-CURR-12"), "antigravity");
+        assert.isTrue([...porFicha.values()].includes("claude"));
+        assert.isTrue(
+          lista.pendencias.filter((v) => v.pendencia.origem === "codigo").every((v) => v.julgadaPor === null),
+        );
+        // A leitura terminou: sai da bandeja.
+        const depois = yield* rpc["atividades.acompanhar"]({}).pipe(Stream.take(1), Stream.runCollect);
+        assert.isFalse(
+          (depois[0]?._tag === "Retrato" ? depois[0].atividades : []).some(
+            (a) => a.id === `revisao-ppc:${preparada.id}`,
+          ),
+        );
+      }),
+  );
+
   it.effect("serviço fora do ar no meio: pausa dizendo para retomar em minutos, não o limite do plano", () =>
     Effect.gen(function* () {
       reiniciar();
@@ -428,7 +481,8 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         blocoDo(p) === "j-02" ? { erro: "API Error: 503 Service Unavailable" } : { texto: respostaValida(p) };
       const { final } = yield* rodar(gravar("PPC D2.docx", ppcSintetico()));
       assert.strictEqual(final.situacao, "pausada");
-      assert.isTrue(final.limite);
+      // Fora do ar não é o limite da assinatura: não oferece outra IA.
+      assert.isFalse(final.limite);
       assert.include(final.motivo ?? "", "sobrecarregado ou fora do ar");
       assert.include(final.motivo ?? "", "retome em alguns minutos");
       assert.notInclude(final.motivo ?? "", "limite de uso do seu plano");
@@ -888,6 +942,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
         Layer.provideMerge(RevisorPpc.layer()),
         Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
         Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
+        Layer.provideMerge(Atividades.layer),
         Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
         Layer.provideMerge(Motor.layer),
         Layer.provideMerge(
@@ -922,6 +977,97 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
         assert.isFalse(yield* ia.ocupada);
       }).pipe(Effect.provide(camadaServicos));
     }),
+  );
+
+  it.effect(
+    "continuar com outra IA: a que não pode recomeçar fica com a IA de antes, e a pausa que não é o limite é recusada",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        roteiro.responder = (p) =>
+          blocoDo(p) === "j-02"
+            ? { erro: "You've hit your usage limit. Try again later." }
+            : { texto: respostaValida(p) };
+        const arquivo = gravar("PPC troca.docx", ppcSintetico());
+        let liberado = true;
+        const banco = Banco.layerMemoria;
+        const camadaServicos = ListaViva.layer().pipe(
+          Layer.provideMerge(RevisaoIa.layer({ paralelismo: 1 })),
+          Layer.provideMerge(RevisoesPpc.layer.pipe(Layer.provide(banco))),
+          Layer.provideMerge(RevisorPpc.layer()),
+          Layer.provideMerge(CopiasComentadas.layer.pipe(Layer.provide(banco))),
+          Layer.provideMerge(
+            Layer.succeed(
+              ArquivosLiberados.ArquivosLiberados,
+              ArquivosLiberados.ArquivosLiberados.of({
+                liberar: () => Effect.void,
+                liberado: () => Effect.sync(() => liberado),
+              }),
+            ),
+          ),
+          Layer.provideMerge(Atividades.layer),
+          Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
+          Layer.provideMerge(Motor.layer),
+          Layer.provideMerge(
+            Layer.succeed(
+              Motor.Drivers,
+              Motor.Drivers.of({
+                claude: driver("claude"),
+                codex: driver("codex"),
+                antigravity: driver("antigravity"),
+              }),
+            ),
+          ),
+          Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: bancoComFichas() })),
+          Layer.provideMerge(NodeCrypto.layerSecureRandom),
+          Layer.provideMerge(layerWorkersNoProcesso),
+          Layer.provideMerge(NodeServices.layer),
+        );
+        yield* Effect.gen(function* () {
+          const viva = yield* ListaViva.ListaViva;
+          const ia = yield* RevisaoIa.RevisaoIa;
+          const persistencia = yield* RevisoesPpc.RevisoesPpc;
+          const parada = (e: EstadoRevisaoIa) => e.situacao !== "em_andamento" && e.situacao !== "preparada";
+          /** A pré-conferência e a leitura com IA de `arquivo`, até ela parar. */
+          const lerAtePausar = (arquivo: string) =>
+            Effect.gen(function* () {
+              const pre = yield* revisarAteOFim(
+                { "revisaoPpc.revisar": viva.revisar, "revisaoPpc.lista": ({ lista }) => viva.lista(lista) },
+                { arquivo },
+              );
+              const preparada = yield* ia.preparar({ lista: pre.lista, provider: "claude", modo: "rapido" });
+              yield* ia.iniciar(preparada.id);
+              const pausada = yield* ia.acompanhar(preparada.id).pipe(
+                Stream.filter(parada),
+                Stream.take(1),
+                Stream.runCollect,
+                Effect.map((e) => e[0]!),
+              );
+              return { lista: pre.lista, revisao: preparada.id, pausada };
+            });
+
+          const noLimite = yield* lerAtePausar(arquivo);
+          assert.isTrue(noLimite.pausada.limite);
+          // Depois de fechar o app, o arquivo não está liberado: a troca falha antes de gravar a IA nova.
+          liberado = false;
+          const semArquivo = yield* Effect.flip(ia.continuarCom(noLimite.lista, "antigravity"));
+          assert.isTrue(semArquivo._tag === "FalhaRevisaoPpc" && semArquivo.escolherDeNovo);
+          const depois = yield* persistencia.resumoRevisao(noLimite.revisao);
+          assert.strictEqual(depois?.provider, "claude");
+          assert.strictEqual(depois?.situacao, "pausada");
+          assert.isTrue(depois?.limite);
+
+          // Fora do ar não é o limite: retoma com a mesma IA, sem troca.
+          liberado = true;
+          roteiro.responder = (p) =>
+            blocoDo(p) === "j-02" ? { erro: "API Error: 503 Service Unavailable" } : { texto: respostaValida(p) };
+          const foraDoAr = yield* lerAtePausar(gravar("PPC troca fora do ar.docx", ppcSintetico()));
+          assert.isFalse(foraDoAr.pausada.limite);
+          const recusada = yield* Effect.flip(ia.continuarCom(foraDoAr.lista, "antigravity"));
+          assert.include(recusada._tag === "FalhaRevisaoPpc" ? recusada.motivo : "", "limite da assinatura");
+          assert.strictEqual((yield* persistencia.resumoRevisao(foraDoAr.revisao))?.provider, "claude");
+        }).pipe(Effect.provide(camadaServicos));
+      }),
   );
 
   it.effect("pausarRevisaoSeEmAndamento não sobrescreve uma revisão já concluída", () =>

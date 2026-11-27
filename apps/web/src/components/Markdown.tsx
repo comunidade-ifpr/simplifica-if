@@ -7,9 +7,11 @@ import { BookOpenIcon, ExternalLinkIcon } from "lucide-react";
 import { type ComponentProps, createContext, type MouseEvent, use } from "react";
 import ReactMarkdown, { type Components, defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { type InstanciaLeitor, useInstanciaLeitor } from "../leitor/instancia.ts";
 import { abrirExterno } from "../ponte-desktop.ts";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
 import { remarkLinksIfpr } from "./linksIfpr.ts";
+import { type AoAbrirLink, ondeDoClique } from "../painel/abrirLink.ts";
 
 export const ESQUEMA_IFPR = "ifpr://";
 
@@ -28,8 +30,11 @@ export function abrirFora(url: string): void {
   abrirExterno(url).catch(() => undefined);
 }
 
-/** Um link `#âncora` do próprio documento: rola até o elemento, se ele existe. */
-function irParaAncora(evento: MouseEvent<HTMLAnchorElement>, href: string) {
+/**
+ * Um link `#âncora` do próprio documento: rola até o elemento, se ele existe, dentro do leitor em que o
+ * link está (com o prefixo de `id` dele) ou, fora de um leitor, na tela.
+ */
+function irParaAncora(evento: MouseEvent<HTMLAnchorElement>, href: string, instancia: InstanciaLeitor) {
   evento.preventDefault();
   let id = href.slice(1);
   try {
@@ -37,12 +42,13 @@ function irParaAncora(evento: MouseEvent<HTMLAnchorElement>, href: string) {
   } catch {
     // âncora malformada: procura como veio
   }
-  const alvo = document.getElementById(id) ?? document.getElementById(`user-content-${id}`);
+  const origem = evento.currentTarget;
+  const alvo = instancia.elemento(origem, id) ?? instancia.elemento(origem, `user-content-${id}`);
   alvo?.scrollIntoView({ block: "start", behavior: "smooth" });
 }
 
 /** Quem abre os links `ifpr://` do texto (o painel de leitura). */
-export const AbrirLink = createContext<(link: string) => void>(() => {});
+export const AbrirLink = createContext<AoAbrirLink>(() => {});
 
 /**
  * O `a` do Markdown: chip para `ifpr://`; `http(s)` no navegador do sistema; `#âncora` rola no próprio
@@ -50,6 +56,7 @@ export const AbrirLink = createContext<(link: string) => void>(() => {});
  */
 export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
   const aoAbrirLink = use(AbrirLink);
+  const instancia = useInstanciaLeitor();
   if (href !== undefined && ehLinkIfpr(href)) {
     // O chip da citação: o texto do link, ou o nome curto quando a IA deixou o link solto.
     const texto =
@@ -66,7 +73,7 @@ export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
         className="link-ifpr"
         data-link={href}
         title={`Abrir a fonte: ${nome ?? (typeof texto === "string" ? texto : nomeCurtoLink(href))}`}
-        onClick={() => aoAbrirLink(href)}
+        onClick={(evento) => aoAbrirLink(href, ondeDoClique(evento))}
       >
         <BookOpenIcon aria-hidden className="size-3.5 shrink-0" />
         <span>{nome ?? children}</span>
@@ -75,7 +82,7 @@ export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
   }
   if (href !== undefined && href.startsWith("#") && href.length > 1) {
     return (
-      <a href={href} onClick={(evento) => irParaAncora(evento, href)}>
+      <a href={href} onClick={(evento) => irParaAncora(evento, href, instancia)}>
         {children}
       </a>
     );
@@ -111,13 +118,7 @@ const COMPONENTES: Components = { a: LinkMarkdown };
 
 const PLUGINS = [remarkGfm, remarkLinksIfpr];
 
-export function Markdown({
-  texto,
-  aoAbrirLink,
-}: {
-  readonly texto: string;
-  readonly aoAbrirLink: (link: string) => void;
-}) {
+export function Markdown({ texto, aoAbrirLink }: { readonly texto: string; readonly aoAbrirLink: AoAbrirLink }) {
   return (
     <AbrirLink value={aoAbrirLink}>
       <div className="markdown" data-conteudo>

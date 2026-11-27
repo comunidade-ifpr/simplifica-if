@@ -47,6 +47,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
 import * as CatalogoTarefas from "../src/CatalogoTarefas.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
+import * as Atividades from "../src/Atividades.ts";
 import * as Conversas from "../src/Conversas.ts";
 import { turnoAoVivo } from "./apoio.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
@@ -117,6 +118,7 @@ const driversRegistrados = (aberturas: Array<Abertura>) =>
 const camada = (arquivo: string, aberturas: Array<Abertura>) =>
   Conversas.layer().pipe(
     Layer.provideMerge(Motor.layer),
+    Layer.provide(Atividades.layer),
     Layer.provideMerge(Historico.layer),
     Layer.provide(Preferencias.layerPrimeiroUsoFeito),
     Layer.provide(CatalogoTarefas.layerVazio),
@@ -262,7 +264,7 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
           // 1. Três turnos seguidos.
           const primeiro = yield* abrir(arquivo, aberturas);
           const tempoInicio = yield* cronometro;
-          const id = yield* primeiro.conversas.iniciar({ provider, pastaTrabalho: pasta }, "estavel");
+          const { sessao: id } = yield* primeiro.conversas.iniciar({ provider, pastaTrabalho: pasta }, "estavel");
           yield* log(provider, `sessão aberta em ${yield* tempoInicio} s`);
           for (const [palavra, rotulo] of [
             ["abacaxi", "turno 1"],

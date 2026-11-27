@@ -22,7 +22,7 @@ function Painel() {
   trocarTexto = setTexto;
   return (
     <>
-      <BuscaPainel area={area} pedido={1} aoFechar={() => {}} />
+      <BuscaPainel area={area} pedido={1} aoFechar={() => {}} montarTudo={() => {}} />
       <div ref={area} style={{ height: 200, overflowY: "auto" }}>
         <p>{texto}</p>
       </div>

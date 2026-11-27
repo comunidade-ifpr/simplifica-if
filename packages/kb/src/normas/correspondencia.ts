@@ -13,7 +13,7 @@ import * as NodePath from "node:path";
 import { parse } from "yaml";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
-import { dispositivosDaNorma, indiceDispositivos } from "./estrutura.ts";
+import { dispositivosDaNorma, indiceDispositivos, type TipoDispositivo } from "./estrutura.ts";
 import { ehIdNorma, ehIdDispositivo } from "./ids.ts";
 
 /** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
@@ -97,17 +97,33 @@ export interface ResultadoCorrespondencia {
   textos_destino: { id: string; texto: string | null }[];
 }
 
+/** Um dispositivo da fonte da correspondência: o que o alinhamento mostra e a herança percorre. */
+export interface DispositivoDaFonte {
+  readonly tipo: TipoDispositivo;
+  /** Rótulo como está no texto: `Art. 28`, `§ 1º`, `XVI`. */
+  readonly rotulo: string;
+  /** ID completo do pai; `null` no artigo. */
+  readonly pai: string | null;
+  /** Texto do próprio dispositivo (com o rótulo), sem os filhos. */
+  readonly texto: string;
+}
+
 /**
  * O que a correspondência lê, já carregado do `kb.sqlite` (`db/consultas-normas.ts`): as tabelas e,
- * dos atos de origem e de destino, os dispositivos canônicos (pai e texto) e os artigos.
+ * dos atos de origem e de destino, os dispositivos canônicos e a ordem deles no arquivo.
  */
 export interface FonteCorrespondencia {
   /** Tabelas de correspondência por ato de origem. */
   readonly tabelas: ReadonlyMap<string, ReadonlyArray<TabelaCorrespondencia>>;
-  /** Dispositivo pelo ID do ato (`br/cne-cp/res/2021/1#art20-iii`): pai (ID completo) e texto. */
-  readonly dispositivos: ReadonlyMap<string, { readonly pai: string | null; readonly texto: string }>;
-  /** Sufixos dos artigos de cada ato de origem, em ordem (`#art1`, `#art2`...). */
-  readonly artigos: ReadonlyMap<string, ReadonlyArray<string>>;
+  /** Dispositivo pelo ID do ato (`br/cne-cp/res/2021/1#art20-iii`). */
+  readonly dispositivos: ReadonlyMap<string, DispositivoDaFonte>;
+  /** Sufixos dos dispositivos de cada ato de origem e de destino, na ordem do arquivo (`#art1`, `#art1-i`...). */
+  readonly ordem: ReadonlyMap<string, ReadonlyArray<string>>;
+}
+
+/** Sufixos dos artigos do ato, em ordem. */
+function artigosDe(ato: string, fonte: FonteCorrespondencia): string[] {
+  return (fonte.ordem.get(ato) ?? []).filter((s) => fonte.dispositivos.get(`${ato}${s}`)?.tipo === "artigo");
 }
 
 /** Ancestrais de um ID de dispositivo, do mais próximo ao artigo (`#art20-par1-iii` → `#art20-par1`, `#art20`). */
@@ -126,7 +142,7 @@ export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): Resu
   const [ato, sufixo] = id.split("#") as [string, string | undefined];
   const saida: ResultadoCorrespondencia[] = [];
   const tabelas = fonte.tabelas.get(ato) ?? [];
-  const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : (fonte.artigos.get(ato) ?? []);
+  const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : artigosDe(ato, fonte);
   for (const tabela of tabelas) {
     const porOrigem = new Map(tabela.itens.map((item) => [item.origem, item]));
     for (const alvo of alvos) {
@@ -179,6 +195,162 @@ export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia):
     for (const item of tabela.itens) for (const d of item.destino) saida.add(`${tabela.destino}${d}`);
   }
   return saida;
+}
+
+/* ================================================================ alinhamento */
+
+/** Um dispositivo numa linha do alinhamento. */
+export interface LadoAlinhado {
+  /** ID completo (`br/cne-cp/res/2021/1#art5-par2`). */
+  readonly id: string;
+  /** Os rótulos desde o artigo: `Art. 5º, § 2º`. */
+  readonly rotulo: string;
+  /** O texto do próprio dispositivo, sem o rótulo. */
+  readonly texto: string;
+  /** Os filhos que a linha não mostra, por tipo, na ordem do primeiro de cada tipo ("17 incisos"). */
+  readonly subordinados: ReadonlyArray<{ readonly tipo: TipoDispositivo; readonly quantos: number }>;
+}
+
+/** Um dispositivo de origem citado por outra linha: o ID completo e os rótulos desde o artigo. */
+export interface ReferenciaAlinhada {
+  readonly id: string;
+  readonly rotulo: string;
+}
+
+export interface DestinoAlinhado extends LadoAlinhado {
+  /** N→1: os outros dispositivos de origem, com item próprio, que apontam este mesmo destino. */
+  readonly tambem: ReadonlyArray<ReferenciaAlinhada>;
+}
+
+export interface LinhaAlinhada {
+  readonly origem: LadoAlinhado;
+  readonly tipo: ItemCorrespondencia["tipo"];
+  /** A nota do item próprio; `null` sem nota e na linha herdada (a nota é a da linha do ancestral). */
+  readonly nota: string | null;
+  /** O ancestral de que a linha herdou o item, quando o dispositivo não tem item próprio. */
+  readonly herdado_de: ReferenciaAlinhada | null;
+  /** 1→N: os destinos empilham, na ordem do item. Vazio em `sem-equivalente`. */
+  readonly destinos: ReadonlyArray<DestinoAlinhado>;
+}
+
+/** Duas normas que se sucedem, lado a lado, pela tabela de correspondência. */
+export interface Alinhamento {
+  /** A tabela (relativa à raiz do repositório). */
+  readonly tabela: string;
+  readonly status: TabelaCorrespondencia["status"];
+  readonly origem: string;
+  readonly destino: string;
+  /** Na ordem da origem. */
+  readonly linhas: ReadonlyArray<LinhaAlinhada>;
+  /** Os artigos do destino que nenhum item aponta, nem por um dispositivo deles, na ordem do destino. */
+  readonly novos: ReadonlyArray<LadoAlinhado>;
+}
+
+/** O texto sem o rótulo do começo e a pontuação que o separa (`Art. 10. As…`, `I – a…`). */
+function semRotulo(texto: string, rotulo: string): string {
+  const resto = texto.startsWith(rotulo) ? texto.slice(rotulo.length) : texto;
+  return resto.replace(/^[\s.–—-]+/, "");
+}
+
+/**
+ * As duas normas da tabela alinhadas, numa lista de linhas na ordem da origem:
+ *
+ * - o artigo sem item em nenhum dispositivo abaixo dele é uma linha só, com o caput e a contagem dos
+ *   filhos (`subordinados`);
+ * - o artigo detalhado (algum dispositivo abaixo dele tem item próprio) tem uma linha por dispositivo,
+ *   e o que não tem item herda o do ancestral mais próximo, como em `correspondenciaEm`;
+ * - 1→N: os destinos do item empilham na linha; N→1: cada destino lista as outras origens que o apontam;
+ * - os artigos do destino que nenhum item aponta, nem por um dispositivo deles, vão para `novos`.
+ */
+export function alinhamentoEm(tabela: TabelaCorrespondencia, fonte: FonteCorrespondencia): Alinhamento {
+  const { origem: atoOrigem, destino: atoDestino } = tabela;
+  const disp = (ato: string, sufixo: string) => fonte.dispositivos.get(`${ato}${sufixo}`);
+  const sufixoDe = (id: string) => id.slice(id.indexOf("#"));
+  /** Do dispositivo ao topo (o artigo), o próprio primeiro. */
+  const linhagem = (ato: string, sufixo: string): string[] => {
+    const saida = [sufixo];
+    for (let pai = disp(ato, sufixo)?.pai ?? null; pai !== null; pai = disp(ato, sufixoDe(pai))?.pai ?? null) {
+      saida.push(sufixoDe(pai));
+    }
+    return saida;
+  };
+  const rotulo = (ato: string, sufixo: string) =>
+    linhagem(ato, sufixo)
+      .reverse()
+      .map((s, i) => {
+        const r = (disp(ato, s)?.rotulo ?? s).replace(/\.$/, "");
+        return i > 0 && r.startsWith("Parágrafo") ? `p${r.slice(1)}` : r;
+      })
+      .join(", ");
+  const referencia = (ato: string, sufixo: string): ReferenciaAlinhada => ({
+    id: `${ato}${sufixo}`,
+    rotulo: rotulo(ato, sufixo),
+  });
+  const filhos = new Map<string, string[]>();
+  for (const ato of [atoOrigem, atoDestino]) {
+    for (const s of fonte.ordem.get(ato) ?? []) {
+      const pai = disp(ato, s)?.pai;
+      if (pai) filhos.set(pai, [...(filhos.get(pai) ?? []), s]);
+    }
+  }
+  const subordinados = (ato: string, sufixo: string) => {
+    const contagem = new Map<TipoDispositivo, number>();
+    for (const f of filhos.get(`${ato}${sufixo}`) ?? []) {
+      const tipo = disp(ato, f)?.tipo;
+      if (tipo) contagem.set(tipo, (contagem.get(tipo) ?? 0) + 1);
+    }
+    return [...contagem].map(([tipo, quantos]) => ({ tipo, quantos }));
+  };
+  const lado = (ato: string, sufixo: string, comSubordinados: boolean): LadoAlinhado => {
+    const d = disp(ato, sufixo);
+    return {
+      id: `${ato}${sufixo}`,
+      rotulo: rotulo(ato, sufixo),
+      texto: d ? semRotulo(d.texto, d.rotulo) : "",
+      subordinados: comSubordinados ? subordinados(ato, sufixo) : [],
+    };
+  };
+
+  const porOrigem = new Map(tabela.itens.map((item) => [item.origem, item]));
+  const detalhados = new Set<string>();
+  for (const item of tabela.itens) {
+    const acima = linhagem(atoOrigem, item.origem);
+    if (acima.length > 1) detalhados.add(acima.at(-1)!);
+  }
+  const origensPorDestino = new Map<string, string[]>();
+  for (const item of tabela.itens) {
+    for (const d of item.destino) origensPorDestino.set(d, [...(origensPorDestino.get(d) ?? []), item.origem]);
+  }
+
+  const linhas: LinhaAlinhada[] = [];
+  for (const sufixo of fonte.ordem.get(atoOrigem) ?? []) {
+    const acima = linhagem(atoOrigem, sufixo);
+    const topo = acima.at(-1)!;
+    const detalhado = detalhados.has(topo);
+    if (acima.length > 1 && !detalhado) continue;
+    const aplicado = acima.find((s) => porOrigem.has(s));
+    if (aplicado === undefined) continue;
+    const item = porOrigem.get(aplicado)!;
+    const proprio = aplicado === sufixo;
+    linhas.push({
+      origem: lado(atoOrigem, sufixo, !detalhado),
+      tipo: item.tipo,
+      nota: proprio ? (item.nota ?? null) : null,
+      herdado_de: proprio ? null : referencia(atoOrigem, aplicado),
+      destinos: item.destino.map((d) => ({
+        ...lado(atoDestino, d, true),
+        tambem: (origensPorDestino.get(d) ?? []).filter((o) => o !== item.origem).map((o) => referencia(atoOrigem, o)),
+      })),
+    });
+  }
+
+  const apontados = new Set<string>();
+  for (const item of tabela.itens) for (const d of item.destino) apontados.add(linhagem(atoDestino, d).at(-1)!);
+  const novos = artigosDe(atoDestino, fonte)
+    .filter((s) => !apontados.has(s))
+    .map((s) => lado(atoDestino, s, true));
+
+  return { tabela: tabela.arquivo, status: tabela.status, origem: atoOrigem, destino: atoDestino, linhas, novos };
 }
 
 /** Validação: dispositivos existentes nos dois textos, sem origem repetida, artigos da origem cobertos. */

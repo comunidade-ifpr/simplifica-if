@@ -38,8 +38,12 @@ import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 /** A revisão para; os blocos sem resultado voltam na retomada. */
 export class PausaRevisao extends Schema.TaggedError<PausaRevisao>()("PausaRevisao", {
   motivo: Schema.String,
-  /** Limite de taxa ou cota: a pessoa espera a janela e retoma. */
-  limite: Schema.Boolean,
+  /**
+   * `cota`: o limite de uso da assinatura (a pessoa espera a janela ou continua com outra IA);
+   * `indisponivel`: o serviço fora do ar (espera uns minutos). As duas param a leitura inteira na hora:
+   * o bloco irmão bateria no mesmo muro. `outra`: tempo esgotado, provider caído, falha desconhecida.
+   */
+  causa: Schema.Literals(["cota", "indisponivel", "outra"]),
 }) {}
 
 /** O resultado gravado de um bloco (`revisao_ppc_blocos_ia.resultado`). */
@@ -63,29 +67,30 @@ export const NOME_PROVIDER: Record<Motor.Provider, string> = {
 };
 
 /**
- * Os tipos de falha (do classificador do motor) em que a pessoa espera e retoma: a cota ou o limite de
- * taxa do plano e o serviço sobrecarregado.
+ * O tipo de falha (do classificador do motor) do limite de uso da assinatura, a cota ou o limite de taxa
+ * do plano: a pessoa espera a janela ou continua com outra IA. O serviço fora do ar (`indisponivel`) é
+ * outra coisa: espera uns minutos, sem troca de IA.
  */
-const ehLimite = (tipo: Motor.TipoFalha) => tipo === "cota" || tipo === "indisponivel";
+const ehLimite = (tipo: Motor.TipoFalha) => tipo === "cota";
 
 /**
- * A pausa por uma falha do turno: o tipo decide se é limite e a frase (a cota é o plano; o serviço
+ * A pausa por uma falha do turno: o tipo decide a causa e a frase (a cota é o plano; o serviço
  * sobrecarregado, esperar uns minutos); `descricao` é o texto técnico, já curto e saneado.
  */
 export function pausaDoErro(provider: Motor.Provider, tipo: Motor.TipoFalha, descricao: string): PausaRevisao {
   const nome = NOME_PROVIDER[provider];
   if (tipo === "cota")
     return new PausaRevisao({
-      limite: true,
+      causa: "cota",
       motivo: `O ${nome} avisou que o limite de uso do seu plano foi atingido por agora. O que já foi revisado está guardado; retome quando a janela do plano renovar.`,
     });
   return tipo === "indisponivel"
     ? new PausaRevisao({
-        limite: true,
+        causa: "indisponivel",
         motivo: `O serviço do ${nome} está sobrecarregado ou fora do ar. O que já foi revisado está guardado; retome em alguns minutos.`,
       })
     : new PausaRevisao({
-        limite: false,
+        causa: "outra",
         motivo: `O ${nome} parou de responder (${descricao.slice(0, 160)}). O que já foi revisado está guardado; retome quando quiser.`,
       });
 }
@@ -205,7 +210,7 @@ export function pausaDoTempo(
     ? "Ela chegou a responder em parte, mas não terminou a tempo."
     : "Ela não chegou a mandar resposta.";
   return new PausaRevisao({
-    limite: false,
+    causa: "outra",
     motivo: `O ${NOME_PROVIDER[provider]} demorou demais para responder${sobre}. ${parte} O que já foi revisado está guardado; tente de novo quando quiser.`,
   });
 }
@@ -331,7 +336,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
       }),
     );
     if (erros.length && !ferramentas.length) {
-      const limite = erros.find((erro) => ehLimite(erro.tipo));
+      const limite = erros.find((erro) => ehLimite(erro.tipo)) ?? erros.find((erro) => erro.tipo === "indisponivel");
       return yield* pausaDoErro(
         entrada.provider,
         (limite ?? erros[0]!).tipo,

@@ -11,6 +11,9 @@
  *   (`PASTA_RELATOS`), fora da pasta de qualquer tarefa: a política nega à IA a leitura fora da pasta da
  *   conversa, e o relato (que pode ter o que a pessoa não quer mandar de volta à IA) não entra nos
  *   próximos turnos. Nenhuma tarefa ganha esse nome (`criar` o pula), e nada se sobrescreve.
+ * - **Gravar:** `gravar` põe na pasta de uma tarefa um arquivo que o app montou (o Markdown do PPC da
+ *   conversa ao lado de uma revisão), sem seguir link e por cima do de mesmo nome: é o mesmo arquivo,
+ *   regravado só quando o texto muda (os mesmos bytes não se gravam de novo, e o turno não vê mudança).
  * - **Diagnóstico:** `gravarDiagnostico` grava o `.zip` de "Gerar diagnóstico" em `<raiz>/Diagnósticos/`
  *   (`PASTA_DIAGNOSTICOS`), com as mesmas regras do relato.
  * - **Cópias (Desfazer):** antes de cada turno, uma cópia simples da pasta vai para
@@ -152,6 +155,16 @@ export class PastasTrabalho extends Context.Service<
      * pendente: o próximo turno o avisa à IA.
      */
     readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoPasta, FalhaPasta>;
+    /**
+     * Grava `bytes` como `nome` (relativo, com `/`) na pasta de uma tarefa do app, sem seguir link e por cima
+     * do arquivo de mesmo nome, se ele não tem já esses bytes: `novo`, `regravado` ou `igual` (nada gravado).
+     * Recusa as pastas do app (`Relatos de erro`, `Diagnósticos`) e as ocultas.
+     */
+    readonly gravar: (
+      pasta: string,
+      nome: string,
+      bytes: Uint8Array,
+    ) => Effect.Effect<"novo" | "regravado" | "igual", FalhaPasta>;
     /**
      * Grava o relato `nome` (um `.md`) em `<raiz>/Relatos de erro/`, fora do alcance da IA, sem
      * sobrescrever (` (2)`…), e devolve o caminho.
@@ -595,6 +608,8 @@ export const contadorDeAndamento = Effect.gen(function* () {
   return { contando, emAndamento: Ref.get(rodando).pipe(Effect.map((n) => n > 0)) };
 });
 
+const iguais = (a: Uint8Array, b: Uint8Array) => a.length === b.length && a.every((byte, i) => byte === b[i]);
+
 export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPastas) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const fs = yield* FileSystem.FileSystem;
@@ -832,6 +847,27 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       alteradoEm: alteradoEm(copiado),
       origem: "anexado",
     } satisfies ArquivoPasta;
+  });
+
+  const gravar = Effect.fn("PastasTrabalho.gravar")(function* (pasta: string, nome: string, bytes: Uint8Array) {
+    const real = yield* gerida(pasta);
+    const nomeDaPasta = real === undefined ? "" : path.basename(real);
+    if (real === undefined || ehPastaDoApp(nomeDaPasta) || nomeDaPasta.startsWith("."))
+      return yield* falha("Só é possível gravar na pasta de uma tarefa do app.");
+    if (nome.split("/").some((parte) => parte.startsWith(".")))
+      return yield* falha("O nome do arquivo não pode começar com ponto.");
+    // O que está lá, sem seguir link: só um arquivo comum com os mesmos bytes fica como está (um link, uma
+    // pasta ou um FIFO no lugar não se abrem e são trocados).
+    const tipo = Option.map(yield* Effect.option(fs.lstat(path.join(real, ...nome.split("/")))), (info) => info.type);
+    if (Option.contains(tipo, "File")) {
+      const atual = yield* PastasNode.lerSemSeguirLinks(real, nome, bytes.length).pipe(Effect.option);
+      if (Option.isSome(atual) && iguais(atual.value, bytes)) return "igual" as const;
+    }
+    yield* gravarSemSeguirLinks(real, nome, bytes).pipe(
+      comArquivos,
+      comMotivo("Não foi possível gravar o arquivo na pasta da conversa."),
+    );
+    return Option.isSome(tipo) ? ("regravado" as const) : ("novo" as const);
   });
 
   /**
@@ -1201,6 +1237,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     copias: path.resolve(opcoes.copias),
     criar,
     anexar,
+    gravar,
     gravarRelato,
     gravarDiagnostico,
     ver,
@@ -1246,6 +1283,7 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     copias: "",
     criar: recusa,
     anexar: recusa,
+    gravar: recusa,
     gravarRelato: recusa,
     gravarDiagnostico: recusa,
     ver: Effect.fn("PastasTrabalho.ver")((_conversa: string, pasta: string) =>

@@ -39,6 +39,10 @@ export const NormaDoIndice = Schema.Struct({
   status_vigencia: Texto,
   ementa: Texto,
   apelidos: Schema.Array(Schema.String),
+  /** As normas com que esta se compara, pela tabela de correspondência: a sucessora ou a anterior. */
+  comparar_com: Schema.Array(
+    Schema.Struct({ norma: Schema.String, relacao: Schema.Literals(["sucessora", "anterior"]) }),
+  ),
   link: EsquemaLink,
 });
 export type NormaDoIndice = typeof NormaDoIndice.Type;
@@ -217,9 +221,25 @@ export const GrupoBusca = Schema.Struct({
 });
 export type GrupoBusca = typeof GrupoBusca.Type;
 
+/** Uma comparação que a busca oferece: `a` é a origem da tabela de correspondência, `b` o destino. */
+export const ComparacaoBusca = Schema.Struct({
+  a: Schema.String,
+  b: Schema.String,
+  titulo_a: Schema.String,
+  titulo_b: Schema.String,
+  /** O que a outra norma é da achada: a `sucessora` (a achada é `a`) ou a `anterior` (a achada é `b`). */
+  relacao: Schema.Literals(["sucessora", "anterior"]),
+});
+export type ComparacaoBusca = typeof ComparacaoBusca.Type;
+
 export const DadosBusca = Schema.Struct({
   /** Os grupos com resultado, na ordem de exibição (a citação resolvida primeiro). */
   grupos: Schema.Array(GrupoBusca),
+  /**
+   * As comparações das normas achadas (nos grupos de normas e de trechos) que têm tabela de
+   * correspondência, na ordem dos resultados e sem repetir o par.
+   */
+  comparacoes: Schema.Array(ComparacaoBusca),
 });
 export type DadosBusca = typeof DadosBusca.Type;
 

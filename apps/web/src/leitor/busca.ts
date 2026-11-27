@@ -3,13 +3,12 @@
  * caixa, com os espaços (e as quebras entre blocos) contados como um só, pintadas com a CSS Custom
  * Highlight API (`::highlight(busca)` e `::highlight(busca-atual)`), sem mexer no DOM do React.
  *
- * O `Documento` monta os blocos aos poucos; antes de buscar, o painel pede todos (`MONTAR_TUDO`), como na
- * impressão, para a busca ver o texto inteiro. O texto se indexa uma vez (`indexarBusca`) e cada tecla só
+ * O `Documento` monta os blocos aos poucos; antes de buscar, o leitor pede todos (o `montarTudo` da
+ * instância, `instancia.ts`), como na impressão, para a busca ver o texto inteiro. O texto se indexa uma vez (`indexarBusca`) e cada tecla só
  * procura nele (`ocorrencias`); o painel refaz o índice quando o DOM muda.
  */
 import { indexarTexto, type Origem } from "./realce.ts";
 
-export const MONTAR_TUDO = "simplifica:leitor-montar-tudo";
 export const NOME_BUSCA = "busca";
 export const NOME_BUSCA_ATUAL = "busca-atual";
 

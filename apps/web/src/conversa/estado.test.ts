@@ -124,13 +124,12 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
       { tipo: "interrompendo" },
     );
     assert.strictEqual(estado.fase, "interrompendo");
+    // A cota vira o cartão do limite da assinatura, com a IA que chegou a ele.
     assert.deepStrictEqual(estado.itens.at(-1), {
-      tipo: "aviso",
+      tipo: "limite",
       chave: "i2",
-      texto:
-        "Sua conta do ChatGPT (Codex) chegou ao limite de uso. Espere o limite renovar ou escolha outra IA para esta conversa.",
+      provider: "codex",
       detalhe: "limite de uso",
-      gravidade: "erro",
       turno: 1,
     });
     assert.deepStrictEqual(estado.uso, { entrada: 10, saida: 2, custoUsd: 0.01 });

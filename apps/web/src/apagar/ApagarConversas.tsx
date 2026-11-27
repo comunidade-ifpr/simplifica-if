@@ -6,13 +6,14 @@
  *
  * **Destino:** quando o diálogo fecha, se a conversa aberta na tela (`/conversa?id=…`) está entre as
  * apagadas, a tela vai para o Início, trocando a entrada do histórico (voltar não reabre uma conversa que
- * não existe). Se a pessoa já foi para outra tela enquanto apagava, ela fica onde está.
+ * não existe). Se a pessoa já foi para outra tela enquanto apagava, ela fica onde está. A conversa apagada
+ * que estava no painel sai dele, e a aba Conversar diz "Conversa apagada" (`GerenteConversas.apagada`).
  */
 import type { PreviaApagarConversa, Provider } from "@simplifica-if/contratos-app";
 import { useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import { useApi, useConversa } from "../contexto.tsx";
+import { ehSessaoDesconhecida, explicarErro, type MensagemErro } from "../conexao/erros.ts";
+import { useApi, useApp } from "../contexto.tsx";
 import { registrarErro, textoDoErro } from "../diagnostico.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES } from "../providers.ts";
@@ -32,8 +33,6 @@ export interface ConversaParaApagar {
   readonly provider: Provider;
 }
 
-const ehSessaoDesconhecida = (motivo: unknown) => (motivo as { _tag?: unknown } | null)?._tag === "SessaoDesconhecida";
-
 export function ApagarConversas({
   conversas,
   aoFechar,
@@ -47,7 +46,7 @@ export function ApagarConversas({
 }) {
   const api = useApi();
   const roteador = useRouter();
-  const [, controle] = useConversa();
+  const { conversas: gerente } = useApp();
   const ponte = ponteDesktop();
   const chave = conversas === null ? "" : conversas.map((c) => c.id).join(",");
   const [previas, setPrevias] = useState<{
@@ -150,7 +149,7 @@ export function ApagarConversas({
     const aberta = local.pathname === "/conversa" ? (local.search as { readonly id?: unknown }).id : undefined;
     const sair = typeof aberta === "string" && foram.includes(aberta);
     void (sair ? roteador.navigate({ to: "/", replace: true }) : Promise.resolve()).finally(() => {
-      for (const id of foram) controle.apagada(id);
+      for (const id of foram) gerente.apagada(id);
     });
   };
 

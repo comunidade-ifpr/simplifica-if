@@ -13,8 +13,6 @@ export interface Destino {
   readonly linha: number;
 }
 
-export const IR_PARA = "simplifica:leitor-ir-para";
-
 /** O `id` que o `Documento` põe no cabeçalho de um item do sumário. */
 export const idDoItem = (item: Pick<ItemSumario, "linha">): string => `sumario-${item.linha}`;
 

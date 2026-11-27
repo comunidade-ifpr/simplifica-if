@@ -2,7 +2,8 @@
  * As tabelas do módulo `revisao-ppc` no banco das conversas (`conversas.sqlite`), todas com o prefixo
  * `revisao_ppc_`. A migração inicial do núcleo (`persistencia/migracoes/0001_Inicial.ts`, arquivo de
  * composição) chama `criar` num bloco à parte, e as seguintes chamam as mudanças (`0002`:
- * `adicionarProblemasDasTentativas`); o módulo não tem migrador próprio.
+ * `adicionarProblemasDasTentativas`; `0003`: `adicionarArquivoAcompanhado`; `0004`: `adicionarConversaAoLado`; `0005`: `adicionarIaPorBloco`);
+ * o módulo não tem migrador próprio.
  *
  * Revisão de PPC com IA:
  * - `revisao_ppc_revisoes_ia`: uma por revisão, ligada à lista de onde nasceu (`lista_id`, `ON DELETE SET NULL`).
@@ -25,6 +26,22 @@
  * sobe a cada mudança nas pendências; `versao_copia` é a versão que a cópia comentada reflete (nula:
  * nenhuma), e "Abrir no Word" só a regrava se elas diferem.
  *
+ * O arquivo que a revisão acompanha no Word (`arquivo_acompanhado`, migração 3) e o sha256 dele na última
+ * conferência ao salvar (`sha256_conferido`) ficam na lista, à parte do arquivo revisado (`arquivo`,
+ * `sha256`), que a conferência não troca. Nulos: a revisão não acompanha arquivo nenhum, ou o
+ * acompanhado ainda não foi conferido. `codigo_conferido` (0 ou 1): as pendências e os critérios do
+ * código vieram de uma conferência ao salvar, e não do texto revisado.
+ *
+ * A conversa ao lado (migração 4): `conversa_id` e `conversa_pasta`, a conversa livre que a revisão abriu
+ * e a pasta dela, com o Markdown do PPC (nulos antes da primeira mensagem); `markdown_conferido`, o texto
+ * do último arquivo conferido ao salvar (sem as linhas de texto dirigido a IA), que a pasta da conversa
+ * recebe no lugar do revisado (nulo sem conferência, ou depois de "Enviar a versão corrigida").
+ *
+ * A IA de cada bloco e de cada pendência (migração 5): `revisao_ppc_blocos_ia.provider`, a IA que leu o bloco,
+ * e `revisao_ppc_pendencias_vivas.ia`, a que julgou a pendência da IA. A leitura pausada no limite da
+ * assinatura continua com outra IA (`RevisaoIa.continuarCom`), e cada pendência diz qual a julgou. Nulos
+ * nos blocos e pendências de antes da migração (a IA era a da revisão) e nas pendências do código.
+ *
  * `revisao_ppc_copias_comentadas`: o sha256 da última cópia comentada que o app gravou em cada caminho. Um arquivo
  * nesse caminho com outro conteúdo foi editado pela pessoa (ou não é do app) e não é sobrescrito.
  *
@@ -38,6 +55,29 @@ import * as SqlClient from "effect/sql/SqlClient";
 export const adicionarProblemasDasTentativas = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   yield* sql`ALTER TABLE revisao_ppc_tentativas_ia ADD COLUMN problemas TEXT`;
+});
+
+/** Migração 3: o arquivo acompanhado no Word, o sha256 da última conferência ao salvar e se ela já houve. */
+export const adicionarArquivoAcompanhado = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN arquivo_acompanhado TEXT`;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN sha256_conferido TEXT`;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN codigo_conferido INTEGER NOT NULL DEFAULT 0`;
+});
+
+/** Migração 4: a conversa ao lado da revisão e o texto do último arquivo conferido ao salvar. */
+export const adicionarConversaAoLado = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN conversa_id TEXT`;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN conversa_pasta TEXT`;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN markdown_conferido TEXT`;
+});
+
+/** Migração 5: a IA que leu cada bloco e a que julgou cada pendência da IA. */
+export const adicionarIaPorBloco = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  yield* sql`ALTER TABLE revisao_ppc_blocos_ia ADD COLUMN provider TEXT`;
+  yield* sql`ALTER TABLE revisao_ppc_pendencias_vivas ADD COLUMN ia TEXT`;
 });
 
 /** Cria as tabelas e os índices do módulo. Só a migração a chama. */

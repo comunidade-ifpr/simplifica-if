@@ -3,28 +3,26 @@
  * de artigos de cada uma; as seções só do capítulo em leitura; "Ir ao art."; e, na norma sem divisões, a
  * grade com os números dos artigos. O item em leitura fica marcado conforme a rolagem.
  *
- * O índice não rola o texto por conta própria: pede ao `Documento` (`IR_PARA`), que monta o bloco do
- * destino antes. O item em leitura se mede pelo elemento do item ou, enquanto o bloco dele não se
+ * O índice não rola o texto por conta própria: pede ao `Documento` do mesmo leitor (o `irPara` da
+ * instância, `instancia.ts`), que monta o bloco do destino antes. O item em leitura se mede pelo elemento do item ou, enquanto o bloco dele não se
  * montou, pelo espaço reservado do bloco (`data-linha`).
  */
 import type { DadosDocumento } from "@simplifica-if/contratos-app";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "../components/ui/input.tsx";
 import { cn } from "../lib/utils.ts";
+import { type InstanciaLeitor, useInstanciaLeitor } from "./instancia.ts";
 import {
   artigoPedido,
   conteudoDoIndice,
   type Destino,
   faixaDeArtigos,
   faixaPorExtenso,
-  IR_PARA,
   idDoItem,
   itensVisiveis,
   numeroDoArtigo,
   rotuloCurto,
 } from "./sumario.ts";
-
-const irPara = (destino: Destino) => window.dispatchEvent(new CustomEvent<Destino>(IR_PARA, { detail: destino }));
 
 /** A distância do topo da área de rolagem até onde um item passa a ser "o em leitura". */
 const MARGEM_DE_LEITURA = 96;
@@ -41,7 +39,7 @@ function areaDeRolagem(elemento: Element): Element | null {
  * O destino em leitura: o último cujo começo já passou do alto da área de rolagem. `null` antes do
  * primeiro. Mede de novo quando o texto rola e quando um bloco se monta.
  */
-function useEmLeitura(destinos: ReadonlyArray<Destino>, ligado: boolean) {
+function useEmLeitura(destinos: ReadonlyArray<Destino>, ligado: boolean, instancia: InstanciaLeitor) {
   const nav = useRef<HTMLElement>(null);
   const [ativo, setAtivo] = useState<number | null>(null);
   useEffect(() => {
@@ -55,7 +53,8 @@ function useEmLeitura(destinos: ReadonlyArray<Destino>, ligado: boolean) {
       const blocoDa = (linha: number) => blocos.findLast((bloco) => Number(bloco.dataset["linha"]) <= linha);
       let atual: number | null = null;
       destinos.forEach((destino, i) => {
-        const elemento = texto.querySelector(`[id="${CSS.escape(destino.id)}"]`) ?? blocoDa(destino.linha);
+        const elemento =
+          texto.querySelector(`[id="${CSS.escape(instancia.id(destino.id))}"]`) ?? blocoDa(destino.linha);
         if (elemento != null && elemento.getBoundingClientRect().top <= limite) atual = i;
       });
       setAtivo(atual);
@@ -73,7 +72,7 @@ function useEmLeitura(destinos: ReadonlyArray<Destino>, ligado: boolean) {
       blocos.disconnect();
       cancelAnimationFrame(quadro);
     };
-  }, [destinos, ligado]);
+  }, [destinos, ligado, instancia]);
 
   // O item marcado sempre à vista na lateral, sem mexer na rolagem do texto.
   useEffect(() => {
@@ -95,6 +94,7 @@ const CLASSE_ITEM =
 
 /** "Ir ao art.": o número do artigo e Enter. */
 function IrAoArtigo({ ancoras }: { readonly ancoras: DadosDocumento["ancoras"] }) {
+  const { irPara } = useInstanciaLeitor();
   const [texto, setTexto] = useState("");
   const [naoAchado, setNaoAchado] = useState<string | null>(null);
   const enviar = (evento: FormEvent) => {
@@ -145,7 +145,9 @@ export function Sumario({
         : itens.map((item) => ({ id: idDoItem(item), linha: item.linha })),
     [artigos, itens, comGrade],
   );
-  const { nav, ativo } = useEmLeitura(destinos, modo === "lateral");
+  const instancia = useInstanciaLeitor();
+  const { irPara } = instancia;
+  const { nav, ativo } = useEmLeitura(destinos, modo === "lateral", instancia);
   if (vazio) return null;
 
   const visiveis = modo === "lateral" && !comGrade ? itensVisiveis(itens, ativo) : itens.map((_, i) => i);

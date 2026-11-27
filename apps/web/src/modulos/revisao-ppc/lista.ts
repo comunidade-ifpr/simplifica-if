@@ -274,6 +274,67 @@ export function textoArquivoNovo(r: Pick<ResultadoArquivoNovo, "resolvidas" | "c
   return p.length === 0 ? "Nada mudou na conferência automática." : `${p.join(", ")}.`;
 }
 
+/** O resultado da última conferência ao salvar, como a linha do acompanhamento o mostra. */
+export type UltimaConferencia =
+  | { readonly tipo: "conferido"; readonly em: string; readonly resolvidas: number; readonly novas: number }
+  | { readonly tipo: "falhou"; readonly em: string; readonly motivo: string };
+
+/**
+ * "Salvo às 14:32 · 2 pontos resolvidos, 1 novo"; sem mudança, "nada mudou na lista"; a conferência que
+ * falhou diz o motivo e que o app espera o próximo salvamento.
+ */
+export function textoConferencia(u: UltimaConferencia, hora: string): string {
+  if (u.tipo === "falhou") return `Salvo às ${hora} · não deu para conferir: ${motivoDaFalha(u.motivo)}`;
+  return `Salvo às ${hora} · ${mudancasDaConferencia(u)}`;
+}
+
+/** O motivo da conferência que falhou, com o ponto final e a espera do próximo salvamento. */
+const motivoDaFalha = (motivo: string): string => {
+  const frase = /[.!?]$/.test(motivo.trim()) ? motivo.trim() : `${motivo.trim()}.`;
+  return `${frase}${/próximo salvamento/.test(frase) ? "" : " O app confere de novo no próximo salvamento."}`;
+};
+
+/** "2 pontos resolvidos, 1 novo", ou "nada mudou na lista". */
+const mudancasDaConferencia = (u: { readonly resolvidas: number; readonly novas: number }): string => {
+  const p: string[] = [];
+  if (u.resolvidas) p.push(plural(u.resolvidas, "ponto resolvido", "pontos resolvidos"));
+  if (u.novas) p.push(plural(u.novas, "novo", "novos"));
+  return p.length === 0 ? "nada mudou na lista" : p.join(", ");
+};
+
+/**
+ * A conferência ao salvar em duas linhas, para a coluna estreita da janela compacta: "Salvo às 14:32 ·
+ * conferido sem IA" e, embaixo, o que mudou (as pendências da IA ficam como estão); ou "não deu para
+ * conferir" e o motivo.
+ */
+export function linhasConferencia(
+  u: UltimaConferencia,
+  hora: string,
+): { readonly linha: string; readonly detalhe: string } {
+  if (u.tipo === "falhou")
+    return { linha: `Salvo às ${hora} · não deu para conferir`, detalhe: motivoDaFalha(u.motivo) };
+  const mudou = mudancasDaConferencia(u);
+  return {
+    linha: `Salvo às ${hora} · conferido sem IA`,
+    detalhe: `${mudou.charAt(0).toUpperCase()}${mudou.slice(1)}; as da IA ficam como estão.`,
+  };
+}
+
+/** O filtro por gravidade da janela compacta. */
+export type FiltroGravidade = "tudo" | Gravidade;
+
+export const doFiltro = (
+  pendencias: ReadonlyArray<PendenciaViva>,
+  filtro: FiltroGravidade,
+): ReadonlyArray<PendenciaViva> =>
+  filtro === "tudo" ? pendencias : pendencias.filter((v) => gravidadeDe(v.pendencia) === filtro);
+
+/** As pendências da IA que a pessoa marcou "Feito", para reconferir com a IA no arquivo acompanhado. */
+export const feitasDaIa = (lista: ListaPendencias): ReadonlyArray<PendenciaViva> =>
+  lista.pendencias.filter(
+    (v) => v.pendencia.origem === "ia" && v.aceitaIa && v.situacao === "resolvida" && v.resolvidaPor === "pessoa",
+  );
+
 /** Os cursos do CNCT cujo nome tem todas as palavras da busca (sem acento), em ordem alfabética. */
 export function buscarCnct(cnct: ReadonlyArray<CnctDoIndice>, busca: string): ReadonlyArray<CnctDoIndice> {
   const palavras = normalizar(busca).split(/\s+/).filter(Boolean);

@@ -1,6 +1,7 @@
 /**
  * As preferências deste computador (M1.8, primeiro uso): o perfil (campus, cargo e função), o aviso
- * de uso aceito, as boas-vindas concluídas e as IAs que a pessoa deixou de usar no app. Uma linha por
+ * de uso aceito, as boas-vindas concluídas, as IAs que a pessoa deixou de usar no app, o aviso do
+ * sistema (ligado se nunca foi desligado) e onde a pessoa estava ao fechar o app (a continuidade). Uma linha por
  * chave na tabela `preferencias` do banco das conversas, com o valor em JSON.
  *
  * Nada daqui vai à IA nem sai do computador. O valor gravado passa pelo schema na leitura: um valor que
@@ -13,7 +14,13 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
-import { AvisoNaoAceito, Perfil, Preferencias as PreferenciasApp, type Provider } from "@simplifica-if/contratos-app";
+import {
+  AvisoNaoAceito,
+  Continuidade,
+  Perfil,
+  Preferencias as PreferenciasApp,
+  type Provider,
+} from "@simplifica-if/contratos-app";
 import { descarregar } from "./Banco.ts";
 
 const CHAVES = {
@@ -21,11 +28,15 @@ const CHAVES = {
   aviso: "aviso_aceito_em",
   boasVindas: "boas_vindas_em",
   iasDesligadas: "ias_desligadas",
+  avisosDoSistema: "avisos_do_sistema",
+  continuidade: "continuidade",
 } as const;
 
 const PerfilJson = Schema.fromJsonString(Perfil);
 const DataJson = Schema.fromJsonString(Schema.String);
 const IasJson = Schema.fromJsonString(PreferenciasApp.fields.iasDesligadas);
+const LigadoJson = Schema.fromJsonString(Schema.Boolean);
+const ContinuidadeJson = Schema.fromJsonString(Continuidade);
 
 export class Preferencias extends Context.Service<
   Preferencias,
@@ -37,6 +48,9 @@ export class Preferencias extends Context.Service<
     /** Marca as boas-vindas como feitas (concluídas ou puladas); a primeira data fica. */
     readonly concluirBoasVindas: Effect.Effect<PreferenciasApp>;
     readonly usarIa: (provider: Provider, usar: boolean) => Effect.Effect<PreferenciasApp>;
+    readonly avisarNoSistema: (ligar: boolean) => Effect.Effect<PreferenciasApp>;
+    /** Guarda a última rota e o painel, no lugar dos de antes. */
+    readonly guardarContinuidade: (continuidade: Continuidade) => Effect.Effect<void>;
     /** Falha com `AvisoNaoAceito` enquanto a pessoa não aceitou o aviso de uso (nada vai à IA antes). */
     readonly exigirAviso: Effect.Effect<void, AvisoNaoAceito>;
   }
@@ -73,11 +87,14 @@ const make = Effect.gen(function* () {
     const perfil = decodificar(PerfilJson, CHAVES.perfil);
     const aviso = decodificar(DataJson, CHAVES.aviso);
     const boasVindas = decodificar(DataJson, CHAVES.boasVindas);
+    const continuidade = decodificar(ContinuidadeJson, CHAVES.continuidade);
     return {
       ...(Option.isSome(perfil) ? { perfil: perfil.value } : {}),
       ...(Option.isSome(aviso) ? { avisoAceitoEm: aviso.value } : {}),
       ...(Option.isSome(boasVindas) ? { boasVindasEm: boasVindas.value } : {}),
       iasDesligadas: Option.getOrElse(decodificar(IasJson, CHAVES.iasDesligadas), () => []),
+      avisosDoSistema: Option.getOrElse(decodificar(LigadoJson, CHAVES.avisosDoSistema), () => true),
+      ...(Option.isSome(continuidade) ? { continuidade: continuidade.value } : {}),
     } satisfies PreferenciasApp;
   }).pipe(Effect.orDie, Effect.withSpan("Preferencias.ler"));
 
@@ -108,6 +125,15 @@ const make = Effect.gen(function* () {
     return yield* ler;
   }, Effect.orDie);
 
+  const avisarNoSistema = Effect.fn("Preferencias.avisarNoSistema")(function* (ligar: boolean) {
+    yield* gravar(CHAVES.avisosDoSistema, LigadoJson, ligar);
+    return yield* ler;
+  }, Effect.orDie);
+
+  const guardarContinuidade = Effect.fn("Preferencias.guardarContinuidade")(function* (continuidade: Continuidade) {
+    yield* gravar(CHAVES.continuidade, ContinuidadeJson, continuidade);
+  }, Effect.orDie);
+
   return Preferencias.of({
     ler,
     gravarPerfil,
@@ -115,6 +141,8 @@ const make = Effect.gen(function* () {
     aceitarAviso: dataUmaVez(CHAVES.aviso).pipe(Effect.andThen(ler), Effect.orDie),
     concluirBoasVindas: dataUmaVez(CHAVES.boasVindas).pipe(Effect.andThen(ler), Effect.orDie),
     usarIa,
+    avisarNoSistema,
+    guardarContinuidade,
     exigirAviso: ler.pipe(
       Effect.flatMap((atuais) =>
         atuais.avisoAceitoEm === undefined ? Effect.fail(new AvisoNaoAceito()) : Effect.void,

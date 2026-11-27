@@ -11,10 +11,11 @@ import type { EstadoProvider, Preferencias, Provider } from "@simplifica-if/cont
 import type {
   BlocoRevisaoIa,
   EstadoRevisaoIa,
+  EventoAcompanhamento,
   ListaPendencias,
   PendenciaViva,
 } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
 import type { Acompanhamento, Api } from "../../conexao/api.ts";
 import { ControleRevisao, type EstadoRevisao } from "./ControleRevisao.ts";
 
@@ -51,6 +52,7 @@ function criarPendencia(chave: string, extra: Partial<PendenciaViva> = {}): Pend
     historico: [],
     sugestao: null,
     aceitaIa: true,
+    julgadaPor: null,
     ...extra,
   };
 }
@@ -65,6 +67,8 @@ function criarLista(
     arquivoOriginal: ARQUIVO,
     sha256: "sha256-0123456789abcdef",
     revisao: null,
+    arquivoAcompanhado: null,
+    conversaAoLado: null,
     criadaEm: "2026-11-24T09:00:00Z",
     atualizadaEm: "2026-11-24T09:00:00Z",
     provider: "claude",
@@ -150,7 +154,14 @@ interface StreamControlado<A> {
 
 function criarApiFake(handlers: Record<string, (entrada: unknown) => Promise<unknown>>) {
   const streamsIa: Array<StreamControlado<EstadoRevisaoIa>> = [];
+  const streamsLista: Array<StreamControlado<EventoAcompanhamento>> = [];
   const chamadas: Array<{ readonly metodo: string; readonly entrada: unknown }> = [];
+  const conexao = { fase: "conectada" as "conectada" | "reconectando", observadores: new Set<() => void>() };
+  /** Muda a fase da conexão e avisa quem a observa. */
+  const mudarConexao = (fase: "conectada" | "reconectando") => {
+    conexao.fase = fase;
+    for (const aviso of conexao.observadores) aviso();
+  };
 
   const padrao: Record<string, (entrada: unknown) => Promise<unknown>> = {
     "providers.detectar": (entrada) => {
@@ -169,6 +180,7 @@ function criarApiFake(handlers: Record<string, (entrada: unknown) => Promise<unk
         avisoAceitoEm: "2026-11-24T08:00:00Z",
         boasVindasEm: "2026-11-24T08:00:00Z",
         iasDesligadas: [],
+        avisosDoSistema: true,
       }),
     "revisaoPpc.listarIa": () => Promise.resolve([]),
   };
@@ -210,6 +222,16 @@ function criarApiFake(handlers: Record<string, (entrada: unknown) => Promise<unk
           cancelado: () => cancelado,
         });
       }
+      if (pedido.metodo === "revisaoPpc.acompanharLista") {
+        streamsLista.push({
+          emitir: (item) => {
+            if (!cancelado) (aoItem as (i: EventoAcompanhamento) => void)(item);
+          },
+          concluir: () => resolverFim("concluido"),
+          falhar: (e) => rejeitarFim(e),
+          cancelado: () => cancelado,
+        });
+      }
       const acompanhamento: Acompanhamento = {
         fim,
         cancelar: () => {
@@ -220,13 +242,16 @@ function criarApiFake(handlers: Record<string, (entrada: unknown) => Promise<unk
       return acompanhamento;
     },
     estado: {
-      obter: () => ({ fase: "conectada" }),
-      observar: () => () => {},
+      obter: () => ({ fase: conexao.fase }) as ReturnType<Api["estado"]["obter"]>,
+      observar: (aviso) => {
+        conexao.observadores.add(aviso);
+        return () => conexao.observadores.delete(aviso);
+      },
     },
     reconectarAgora: () => {},
   };
 
-  return { api, chamadas, streamsIa };
+  return { api, chamadas, streamsIa, streamsLista, mudarConexao };
 }
 
 /** Espera o estado do controle satisfazer a condição. */
@@ -276,6 +301,41 @@ describe("ControleRevisao", () => {
     expect(controle.obter().aberta).toBe("p0");
     expect(controle.obter().ia.estado?.situacao).toBe("em_andamento");
 
+    controle.encerrar();
+  });
+
+  it("na leitura pausada no limite, a IA conectada depois em Configurações passa a ser oferecida, sem preparar outra leitura", async () => {
+    const lista = criarLista("lista-1", ["p0"]);
+    const pausada = criarEstadoIa("pausada", [criarBloco("b1", "pronto"), criarBloco("b2", "pendente")], {
+      limite: true,
+      motivo: "O Claude avisou que o limite de uso do seu plano foi atingido por agora.",
+    });
+    let comGemini = false;
+    const { api, chamadas } = criarApiFake({
+      "revisaoPpc.lista": () => Promise.resolve(lista),
+      "revisaoPpc.listarIa": () => Promise.resolve([pausada]),
+      "providers.detectar": (entrada) => {
+        const { provider } = entrada as { provider: Provider };
+        const pronto = provider === "claude" || (comGemini && provider === "antigravity");
+        return Promise.resolve<EstadoProvider>({
+          provider,
+          instalado: pronto,
+          autenticado: pronto,
+          podeInstalar: false,
+          podeEntrar: false,
+        });
+      },
+    });
+    const controle = new ControleRevisao(api);
+    await controle.abrir("lista-1");
+    await esperar(controle, (e) => e.ia.estado?.situacao === "pausada" && e.ia.usaveis !== undefined);
+    expect(controle.obter().ia.usaveis).toEqual(["claude"]);
+
+    comGemini = true;
+    await controle.atualizarIas();
+    expect(controle.obter().ia.usaveis).toEqual(["claude", "antigravity"]);
+    expect(controle.obter().ia.estado?.situacao).toBe("pausada");
+    expect(chamadas.filter((c) => c.metodo === "revisaoPpc.prepararIa")).toHaveLength(0);
     controle.encerrar();
   });
 
@@ -495,5 +555,293 @@ describe("ControleRevisao", () => {
     expect(controle.obter().origemArquivoDeNovo).toBeUndefined();
 
     controle.encerrar();
+  });
+
+  describe("conferência ao salvar", () => {
+    const COPIA = "/Users/servidora/PPC - revisão prévia (Simplifica IF) 2026-11-27 10h00.docx";
+    const acompanhada = (lista: ListaPendencias): ListaPendencias => ({ ...lista, arquivoAcompanhado: COPIA });
+
+    it("'Acompanhar no Word' abre a cópia, abre o fluxo da lista; o salvamento conferido realça as resolvidas e marca as novas", async () => {
+      vi.useFakeTimers();
+      try {
+        const lista = criarLista("lista-1", ["p0", "p1"]);
+        const { api, chamadas, streamsLista } = criarApiFake({
+          "revisaoPpc.lista": () => Promise.resolve(lista),
+          "revisaoPpc.acompanhar": () => Promise.resolve(acompanhada(lista)),
+          "revisaoPpc.gerarCopia": () => Promise.reject(new Error("não deve gerar outra cópia")),
+        });
+        const controle = new ControleRevisao(api);
+        await controle.abrir("lista-1");
+        expect(streamsLista).toHaveLength(0);
+
+        const abertos: string[] = [];
+        const abrir = async (caminho: string) => void abertos.push(caminho);
+        expect(await controle.acompanharNoWord(undefined, abrir)).toBe(true);
+        expect(abertos).toEqual([COPIA]);
+        expect(chamadas.find((c) => c.metodo === "revisaoPpc.acompanhar")?.entrada).toEqual({ lista: "lista-1" });
+        expect(streamsLista).toHaveLength(1);
+
+        // O salvamento: p0 resolvida, p2 nova; a lista chega pelo mesmo fluxo.
+        const depois = acompanhada({
+          ...lista,
+          pendencias: [
+            criarPendencia("p0", { situacao: "resolvida", resolvidaPor: "revisarDeNovo" }),
+            criarPendencia("p1"),
+            criarPendencia("p2"),
+          ],
+        });
+        streamsLista[0]!.emitir({ tipo: "lista", lista: depois });
+        streamsLista[0]!.emitir({
+          tipo: "conferido",
+          em: "2026-11-27T14:32:00Z",
+          resolvidas: ["p0"],
+          novas: ["p2"],
+          continuam: 1,
+        });
+        const estado = controle.obter();
+        expect(estado.lista).toEqual(depois);
+        expect([...estado.novas]).toEqual(["p2"]);
+        expect([...estado.acompanhamento.realce]).toEqual(["p0"]);
+        expect(estado.acompanhamento.ultima).toEqual({
+          tipo: "conferido",
+          em: "2026-11-27T14:32:00Z",
+          resolvidas: 1,
+          novas: 1,
+        });
+        // O realce é breve.
+        vi.advanceTimersByTime(4000);
+        expect(controle.obter().acompanhamento.realce.size).toBe(0);
+
+        // Acompanhando, "Abrir no Word" abre o acompanhado, sem gravar uma cópia da cópia.
+        expect(await controle.abrirNoWord(abrir)).toBe(true);
+        expect(abertos).toEqual([COPIA, COPIA]);
+        expect(chamadas.some((c) => c.metodo === "revisaoPpc.gerarCopia")).toBe(false);
+
+        // O salvamento que não pôde ser conferido fica na linha, e a lista não muda.
+        streamsLista[0]!.emitir({
+          tipo: "falhou",
+          em: "2026-11-27T14:40:00Z",
+          motivo: "Este arquivo não parece o mesmo PPC.",
+          escolherDeNovo: false,
+        });
+        expect(controle.obter().acompanhamento.ultima).toMatchObject({ tipo: "falhou" });
+        expect(controle.obter().lista).toEqual(depois);
+
+        // A janela ganhou foco: confere o acompanhado.
+        controle.conferirAoFocar();
+        expect(chamadas.at(-1)).toEqual({ metodo: "revisaoPpc.conferirAcompanhado", entrada: { lista: "lista-1" } });
+
+        controle.sair();
+        expect(streamsLista[0]!.cancelado()).toBe(true);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("a lista que já acompanha abre o fluxo; o acompanhado de outra execução é pedido de novo, à parte", async () => {
+      const lista = acompanhada(criarLista("lista-1", ["p0"]));
+      const { api, chamadas, streamsLista } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.acompanhar": (entrada) =>
+          (entrada as { arquivo?: string }).arquivo === undefined
+            ? Promise.reject(ERRO_ARQUIVO)
+            : Promise.resolve(lista),
+      });
+      const controle = new ControleRevisao(api);
+      await controle.abrir("lista-1");
+      expect(streamsLista).toHaveLength(1);
+      streamsLista[0]!.emitir({
+        tipo: "falhou",
+        em: "2026-11-27T14:00:00Z",
+        motivo: "Escolha de novo.",
+        escolherDeNovo: true,
+      });
+      expect(controle.obter().acompanhamento.pedeArquivo).toBe(true);
+      expect(controle.obter().acompanhamento.ultima).toBeUndefined();
+
+      const abertos: string[] = [];
+      expect(
+        await controle.escolherAcompanhadoDeNovo(
+          async () => COPIA,
+          async (c) => void abertos.push(c),
+        ),
+      ).toBe(true);
+      expect(chamadas.filter((c) => c.metodo === "revisaoPpc.acompanhar").at(-1)?.entrada).toEqual({
+        lista: "lista-1",
+        arquivo: COPIA,
+      });
+      expect(controle.obter().acompanhamento.pedeArquivo).toBe(false);
+      expect(abertos).toEqual([COPIA]);
+      // O mesmo fluxo segue aberto: a lista não mudou.
+      expect(streamsLista).toHaveLength(1);
+    });
+
+    it("'Reconferir com a IA' as da IA marcadas Feito, uma por vez, no arquivo acompanhado", async () => {
+      const lista = acompanhada(criarLista("lista-1", ["a", "b"]));
+      const pedidos: Array<{ chave: string; arquivo: string }> = [];
+      let emCurso = 0;
+      const { api } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.revisarDeNovo": async (entrada) => {
+          const { chave, arquivo } = entrada as { chave: string; arquivo: string };
+          emCurso += 1;
+          expect(emCurso).toBe(1);
+          pedidos.push({ chave, arquivo });
+          await Promise.resolve();
+          emCurso -= 1;
+          return lista;
+        },
+      });
+      const controle = new ControleRevisao(api);
+      await controle.abrir("lista-1");
+      expect(await controle.reconferirComIa(["a", "b"])).toBe(true);
+      expect(pedidos).toEqual([
+        { chave: "a", arquivo: COPIA },
+        { chave: "b", arquivo: COPIA },
+      ]);
+      expect(controle.obter().acompanhamento.reconferindo).toBe(false);
+    });
+
+    it("'Acompanhar no Word' de outra execução: o servidor pede o original, e escolhido o original, repete", async () => {
+      const lista = criarLista("lista-1", ["p0"]);
+      let liberado = false;
+      const { api, chamadas } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.acompanhar": () =>
+          liberado ? Promise.resolve(acompanhada(lista)) : Promise.reject({ ...ERRO_ARQUIVO, arquivo: ARQUIVO }),
+      });
+      const controle = new ControleRevisao(api);
+      await controle.abrir("lista-1");
+      const abrir = async (_: string) => {};
+      expect(await controle.acompanharNoWord(undefined, abrir)).toBe(false);
+      expect(controle.obter().origemArquivoDeNovo).toBe("lista");
+
+      // A cópia não é o que se pede: a frase nomeia o original.
+      expect(await controle.escolherArquivoDeNovo(async () => COPIA)).toBe(false);
+      expect(controle.obter().erro?.texto).toContain("“PPC.docx”");
+      liberado = true;
+      expect(await controle.escolherArquivoDeNovo(async () => ARQUIVO)).toBe(true);
+      expect(chamadas.filter((c) => c.metodo === "revisaoPpc.acompanhar")).toHaveLength(2);
+      expect(controle.obter().lista?.arquivoAcompanhado).toBe(COPIA);
+    });
+
+    it("'Reconferir com a IA' que falha mostra o erro no acompanhamento; o acompanhado sem liberação é pedido lá", async () => {
+      const lista = acompanhada(criarLista("lista-1", ["a", "b"]));
+      let falha: unknown = { _tag: "FalhaRevisaoPpc", message: "A cota acabou." };
+      const { api } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.revisarDeNovo": () => Promise.reject(falha),
+      });
+      const controle = new ControleRevisao(api);
+      await controle.abrir("lista-1");
+      expect(await controle.reconferirComIa(["a", "b"])).toBe(false);
+      expect(controle.obter().acompanhamento.erro?.texto).toContain("A cota acabou.");
+      expect(controle.obter().acompanhamento.pedeArquivo).toBe(false);
+
+      falha = { ...ERRO_ARQUIVO, arquivo: COPIA };
+      expect(await controle.reconferirComIa(["a"])).toBe(false);
+      expect(controle.obter().acompanhamento.pedeArquivo).toBe(true);
+      expect(controle.obter().acompanhamento.erro).toBeUndefined();
+      // Pela linha da pendência, "Escolher o arquivo de novo" aceita o acompanhado, que é o que se pediu.
+      const { api: api2, chamadas } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.revisarDeNovo": () =>
+          chamadas.filter((c) => c.metodo === "revisaoPpc.revisarDeNovo").length === 1
+            ? Promise.reject({ ...ERRO_ARQUIVO, arquivo: COPIA })
+            : Promise.resolve(lista),
+      });
+      const outro = new ControleRevisao(api2);
+      await outro.abrir("lista-1");
+      expect(await outro.revisarDeNovo("a", COPIA)).toBe(false);
+      expect(await outro.escolherArquivoDeNovo(async () => COPIA)).toBe(true);
+    });
+
+    it("a lista que chega pelo fluxo marca 'novo' só as da IA (as do código vêm no `conferido`)", async () => {
+      const lista = acompanhada(criarLista("lista-1", ["p0"]));
+      const { api, streamsLista } = criarApiFake({ "revisaoPpc.lista": () => Promise.resolve(lista) });
+      const controle = new ControleRevisao(api);
+      await controle.abrir("lista-1");
+      const codigo = criarPendencia("c1", {
+        pendencia: { ...criarPendencia("c1").pendencia, origem: "codigo" },
+      });
+      streamsLista[0]!.emitir({
+        tipo: "lista",
+        lista: { ...lista, pendencias: [...lista.pendencias, criarPendencia("ia-nova"), codigo] },
+      });
+      expect([...controle.obter().novas]).toEqual(["ia-nova"]);
+    });
+
+    it("o fluxo que cai com a conexão volta: na hora, depois quando ela voltar; a volta à janela o reabre", async () => {
+      const lista = acompanhada(criarLista("lista-1", ["p0"]));
+      const { api, chamadas, streamsLista, mudarConexao } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.conferirAcompanhado": () => Promise.resolve(undefined),
+      });
+      const controle = new ControleRevisao(api);
+      await controle.abrir("lista-1");
+      const queda = { _tag: "RpcClientError", message: "A conexão caiu." };
+      streamsLista[0]!.falhar(queda);
+      await esperar(controle, () => streamsLista.length === 2);
+      expect(controle.obter().acompanhamento.erro).toBeUndefined();
+
+      // A segunda queda seguida espera a conexão voltar.
+      mudarConexao("reconectando");
+      streamsLista[1]!.falhar(queda);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(streamsLista).toHaveLength(2);
+      mudarConexao("conectada");
+      expect(streamsLista).toHaveLength(3);
+
+      // Um erro que não é queda fica na linha; a volta à janela reabre o fluxo (que confere ao abrir).
+      streamsLista[2]!.falhar({ _tag: "FalhaRevisaoPpc", message: "A lista não pôde ser lida." });
+      await esperar(controle, (e) => e.acompanhamento.erro !== undefined);
+      controle.conferirAoFocar();
+      expect(streamsLista).toHaveLength(4);
+      expect(chamadas.some((c) => c.metodo === "revisaoPpc.conferirAcompanhado")).toBe(false);
+      controle.conferirAoFocar();
+      expect(chamadas.at(-1)?.metodo).toBe("revisaoPpc.conferirAcompanhado");
+      controle.sair();
+      expect(streamsLista[3]!.cancelado()).toBe(true);
+    });
+    it("a lista apagada fora daqui (o fluxo termina): a revisão sai e avisa; a troca de curso e o apagar daqui, não", async () => {
+      const lista = acompanhada(criarLista("lista-1", ["p0"]));
+      const nova = acompanhada(criarLista("lista-2", ["p0"]));
+      let respostaTroca!: (lista: ListaPendencias) => void;
+      const { api, streamsLista } = criarApiFake({
+        "revisaoPpc.lista": () => Promise.resolve(lista),
+        "revisaoPpc.trocarCurso": () => new Promise((resolver) => (respostaTroca = resolver)),
+        "revisaoPpc.apagarLista": () => Promise.resolve(undefined),
+      });
+      const trocas: Array<readonly [string, string]> = [];
+      const apagadas: string[] = [];
+      const controle = new ControleRevisao(api, {
+        aoTrocarLista: (antiga, outra) => trocas.push([antiga, outra]),
+        aoApagarFora: (l) => apagadas.push(l.id),
+      });
+      await controle.abrir("lista-1");
+
+      // "Qual é o curso?": o servidor apaga a lista antiga antes de responder, e o fluxo dela termina.
+      const trocando = controle.trocarCurso("cnct-x");
+      streamsLista[0]!.concluir();
+      await Promise.resolve();
+      respostaTroca(nova);
+      expect(await trocando).toBe(true);
+      expect(apagadas).toEqual([]);
+      expect(trocas).toEqual([["lista-1", "lista-2"]]);
+      expect(controle.obter().lista?.id).toBe("lista-2");
+
+      // Apagada daqui: o fluxo sai antes.
+      await controle.apagarLista();
+      expect(streamsLista[1]!.cancelado()).toBe(true);
+      expect(apagadas).toEqual([]);
+
+      // Apagada em outra janela: o fluxo termina sozinho.
+      await controle.abrir("lista-1");
+      streamsLista.at(-1)!.concluir();
+      await esperar(controle, (e) => e.fase === "entrada");
+      expect(apagadas).toEqual(["lista-1"]);
+      expect(controle.obter().erroEntrada?.texto).toBe("Esta revisão foi apagada.");
+    });
   });
 });

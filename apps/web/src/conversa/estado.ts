@@ -10,7 +10,9 @@
  * fecha com o texto completo, que vale mais que a soma dos parciais (no Claude, os parciais chegam
  * todos no fim; no Codex, cada bloco tem os parciais e depois o final). Sem resposta aberta, o
  * `TextoFinal` vira uma resposta nova. O `FimTurno` fecha o que ficou aberto. O `MudancasPasta` (o que
- * a pessoa mexeu na pasta fora da conversa) vira uma linha logo depois da mensagem dela.
+ * a pessoa mexeu na pasta fora da conversa) vira uma linha logo depois da mensagem dela. O `Erro` de cota
+ * vira o cartão do limite da assinatura (`docs/plans/multitarefa.md`, "Limite da assinatura"), que oferece
+ * continuar com outra IA.
  *
  * Cada item da tela leva o número do turno a que pertence (o do servidor).
  */
@@ -20,6 +22,7 @@ import {
   type Decisao,
   type EstadoConversa as EstadoGravado,
   type EventoConversa,
+  type FichaContexto,
   type ItemAoVivo,
   type ItemConversa,
   type NotaResposta,
@@ -38,6 +41,8 @@ type ItemSemTurno =
       readonly tipo: "pessoa";
       readonly chave: string;
       readonly texto: string;
+      /** As fichas de contexto que foram junto. */
+      readonly fichas?: ReadonlyArray<FichaContexto>;
       /** Mostrada ao enviar, antes de o servidor a gravar. */
       readonly pendente?: true;
     }
@@ -83,6 +88,14 @@ type ItemSemTurno =
       readonly gravidade: "erro" | "info";
       /** O texto técnico original de um erro, mostrado recolhido. */
       readonly detalhe?: string;
+    }
+  | {
+      /** A IA chegou ao limite de uso da assinatura: o cartão com "Continuar com…". */
+      readonly tipo: "limite";
+      readonly chave: string;
+      readonly provider: Provider;
+      /** O texto técnico do provider, mostrado recolhido. */
+      readonly detalhe: string;
     };
 
 /** Um item da conversa, com o número do turno a que pertence. */
@@ -130,6 +143,8 @@ export interface EstadoConversa {
   readonly tarefa?: string;
   /** As avaliações (👍/👎) das respostas, por turno. */
   readonly avaliacoes: Readonly<Record<number, NotaResposta>>;
+  /** A conversa que continuou esta com outra IA, depois do limite da assinatura. */
+  readonly continuadaCom?: { readonly id: string; readonly provider: Provider };
 }
 
 export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = ""): EstadoConversa => ({
@@ -151,9 +166,9 @@ export type Acao =
   | { readonly tipo: "avaliada"; readonly turno: number; readonly nota: NotaResposta | null }
   | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
   /** A pessoa enviou: a mensagem aparece já, pendente, e a conversa passa a `respondendo`. */
-  | { readonly tipo: "enviada"; readonly texto: string }
-  /** O servidor recusou a mensagem: ela sai, e o erro aparece. */
-  | { readonly tipo: "naoEnviou"; readonly erro: MensagemErro }
+  | { readonly tipo: "enviada"; readonly texto: string; readonly fichas?: ReadonlyArray<FichaContexto> }
+  /** O servidor recusou a mensagem: ela sai, e o erro aparece (sem erro, a tela avisa por conta própria). */
+  | { readonly tipo: "naoEnviou"; readonly erro?: MensagemErro }
   /** Abrindo uma conversa gravada, pelo id. */
   | { readonly tipo: "abrindo"; readonly sessao: string }
   | { readonly tipo: "carregada"; readonly gravada: ConversaGravada }
@@ -172,6 +187,8 @@ export type Acao =
   | { readonly tipo: "respostaFalhou"; readonly aprovacao: string; readonly erro: MensagemErro }
   | { readonly tipo: "interrompendo" }
   | { readonly tipo: "aviso"; readonly erro: MensagemErro }
+  /** A conversa continuou noutra, com outra IA. */
+  | { readonly tipo: "continuada"; readonly id: string; readonly provider: Provider }
   | { readonly tipo: "nova" };
 
 /** Um aviso de erro, com o detalhe técnico quando há. */
@@ -298,7 +315,9 @@ export function aplicarEvento(estado: EstadoConversa, evento: EventoConversa): E
         },
       };
     case "Erro":
-      return comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento)));
+      return evento.tipo === "cota"
+        ? comItem(estado, (chave) => ({ tipo: "limite", chave, provider: estado.provider, detalhe: evento.mensagem }))
+        : comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento)));
     case "FimTurno": {
       const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
       if (evento.motivo === "parado_antes_do_envio")
@@ -332,13 +351,16 @@ export function aplicarItem(estado: EstadoConversa, item: ItemConversa): EstadoC
       };
       // A mensagem que esta tela enviou já está à vista: a gravada toma o lugar dela.
       const pendente = estado.itens.findLastIndex((visto) => visto.tipo === "pessoa" && visto.pendente === true);
+      const fichas = item.fichas === undefined || item.fichas.length === 0 ? {} : { fichas: item.fichas };
       if (pendente >= 0) {
         const itens = estado.itens.map((visto, i): Item =>
-          i === pendente ? { tipo: "pessoa", chave: visto.chave, texto: item.texto, turno: item.turno } : visto,
+          i === pendente
+            ? { tipo: "pessoa", chave: visto.chave, texto: item.texto, ...fichas, turno: item.turno }
+            : visto,
         );
         return { ...comecado, itens };
       }
-      return comItem(comecado, (chave) => ({ tipo: "pessoa", chave, texto: item.texto }));
+      return comItem(comecado, (chave) => ({ tipo: "pessoa", chave, texto: item.texto, ...fichas }));
     }
     case "EventoTurno":
       return aplicarEvento(comOrdem, item.evento);
@@ -370,6 +392,7 @@ export function estadoDaConversa(gravada: ConversaGravada): EstadoConversa {
     titulo: conversa.titulo,
     estadoServidor: conversa.estado,
     ...(conversa.tarefa === undefined ? {} : { tarefa: conversa.tarefa }),
+    ...(conversa.continuadaCom === undefined ? {} : { continuadaCom: conversa.continuadaCom }),
     avaliacoes: Object.fromEntries(gravada.avaliacoes.map((avaliacao) => [avaliacao.turno, avaliacao.nota])),
   };
   const montado = gravada.itens.reduce(aplicarItem, inicial);
@@ -439,19 +462,28 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
           turno: estado.turno + 1,
           ...(estado.titulo ? {} : { titulo: acao.texto }),
         },
-        (chave) => ({ tipo: "pessoa", chave, texto: acao.texto, pendente: true }),
+        (chave) => ({
+          tipo: "pessoa",
+          chave,
+          texto: acao.texto,
+          ...(acao.fichas === undefined || acao.fichas.length === 0 ? {} : { fichas: acao.fichas }),
+          pendente: true,
+        }),
       );
     }
     case "naoEnviou": {
       const pendente = estado.itens.findLastIndex((item) => item.tipo === "pessoa" && item.pendente === true);
-      if (pendente < 0) return comItem(estado, avisoDeErro(acao.erro));
+      if (pendente < 0) return acao.erro === undefined ? estado : comItem(estado, avisoDeErro(acao.erro));
+      // O título que esta mensagem deu (era a primeira) sai com ela.
+      const { titulo: _titulo, ...semTitulo } = estado;
+      const outras = estado.itens.some((item, i) => i !== pendente && item.tipo === "pessoa");
       const semMensagem: EstadoConversa = {
-        ...estado,
+        ...(outras ? estado : semTitulo),
         itens: estado.itens.filter((_, i) => i !== pendente),
         turno: estado.turno - 1,
         fase: estado.estadoServidor === "respondendo" ? "respondendo" : "pronta",
       };
-      return comItem(semMensagem, avisoDeErro(acao.erro));
+      return acao.erro === undefined ? semMensagem : comItem(semMensagem, avisoDeErro(acao.erro));
     }
     case "respondendo":
       return trocarAprovacao(estado, acao.aprovacao, "enviando");
@@ -463,6 +495,8 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
       return estado.fase === "respondendo" ? { ...estado, fase: "interrompendo" } : estado;
     case "aviso":
       return comItem(estado, avisoDeErro(acao.erro));
+    case "continuada":
+      return { ...estado, continuadaCom: { id: acao.id, provider: acao.provider } };
     case "nova":
       return estadoInicial(estado.provider, estado.pastaTrabalho);
   }

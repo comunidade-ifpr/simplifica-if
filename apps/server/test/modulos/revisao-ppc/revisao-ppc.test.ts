@@ -16,6 +16,7 @@ import { afterAll, assert, layer } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
+import * as Stream from "effect/Stream";
 import { strToU8, zipSync } from "fflate";
 import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
 import { ehFalhaRevisaoPpc } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
@@ -285,7 +286,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("uma revisão por vez",
       assert.strictEqual(falhas.length, 1);
       assert.strictEqual(
         falhas[0]!._tag === "Failure" ? falhas[0]!.failure.message : "",
-        "Já há uma revisão em andamento. Espere ela terminar e tente de novo.",
+        "Já há uma revisão em andamento (pode ser a conferência do arquivo que você salvou no Word). Espere ela terminar e tente de novo.",
       );
       assert.strictEqual(resultados.filter((r) => r._tag === "Success").length, 1);
     }),
@@ -349,6 +350,90 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       const outro = gravar("outro.docx", ppcSintetico());
       assert.match((yield* Effect.flip(revisarAteOFim(rpc, { arquivo: outro }))).message, /Escolha de novo o arquivo/);
     }),
+  );
+
+  it.effect(
+    "a cópia comentada que o servidor grava sai liberada; o arquivo acompanhado de outra execução é pedido de novo",
+    () =>
+      Effect.gen(function* () {
+        const { urlRpc, porta } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        const liberar = (arquivo: string) =>
+          pedirHttp(`http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`, {
+            metodo: "POST",
+            cabecalhos: { "content-type": "application/json", authorization: `Bearer ${TOKEN_DESKTOP}` },
+            corpo: JSON.stringify({ arquivo }),
+          });
+        const arquivo = gravar("acompanhado.docx", ppcSintetico());
+        assert.strictEqual((yield* liberar(arquivo)).status, 204);
+        const { lista } = yield* revisarAteOFim(rpc, { arquivo });
+
+        // "Acompanhar no Word": a cópia comentada, gravada pelo servidor, ele mesmo libera.
+        const acompanhada = yield* rpc["revisaoPpc.acompanhar"]({ lista });
+        assert.strictEqual(acompanhada.arquivoAcompanhado, acompanhada.resultado.arquivoComentado);
+        // Outro `.docx`, só o que o desktop liberou.
+        const outro = gravar("acompanhado outro.docx", ppcSintetico());
+        const recusa = yield* Effect.flip(rpc["revisaoPpc.acompanhar"]({ lista, arquivo: outro }));
+        assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);
+
+        // Uma execução anterior do app acompanhava `outro`: a liberação dele se perdeu.
+        const db = new NodeSqlite.DatabaseSync(conversasDesktop);
+        db.prepare("UPDATE revisao_ppc_listas_pendencias SET arquivo_acompanhado = ? WHERE id = ?").run(outro, lista);
+        db.close();
+        const pedido = yield* Effect.flip(rpc["revisaoPpc.acompanhar"]({ lista }));
+        assert.isTrue(ehFalhaRevisaoPpc(pedido) && pedido.escolherDeNovo === true);
+        assert.include(pedido.message, "“acompanhado outro.docx”");
+        const eventos = yield* rpc["revisaoPpc.acompanharLista"]({ lista }).pipe(Stream.take(2), Stream.runCollect);
+        assert.strictEqual(eventos[0]!.tipo, "lista");
+        assert.deepInclude(eventos[1]!, { tipo: "falhou", escolherDeNovo: true });
+
+        // Escolhido de novo pelo diálogo (liberado), o mesmo arquivo volta a ser acompanhado.
+        assert.strictEqual((yield* liberar(outro)).status, 204);
+        const deNovo = yield* rpc["revisaoPpc.acompanhar"]({ lista, arquivo: outro });
+        assert.strictEqual(deNovo.arquivoAcompanhado, outro);
+      }),
+  );
+
+  it.effect(
+    "'Acompanhar no Word' numa revisão de outra execução, com a cópia em dia: pede o original, e liberado, a cópia vale",
+    () =>
+      Effect.gen(function* () {
+        const { urlRpc, porta } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        const liberar = (arquivo: string) =>
+          pedirHttp(`http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`, {
+            metodo: "POST",
+            cabecalhos: { "content-type": "application/json", authorization: `Bearer ${TOKEN_DESKTOP}` },
+            corpo: JSON.stringify({ arquivo }),
+          });
+        const hoje = gravar("sessao hoje.docx", ppcSintetico());
+        assert.strictEqual((yield* liberar(hoje)).status, 204);
+        const { lista, arquivoComentado } = yield* revisarAteOFim(rpc, { arquivo: hoje });
+
+        // A revisão de ontem: o original e a cópia comentada em dia, nenhum dos dois liberado hoje.
+        const ontem = gravar("sessao ontem.docx", ppcSintetico());
+        const copiaDeOntem = NodePath.join(
+          pasta,
+          "sessao ontem - revisão prévia (Simplifica IF) 2026-11-26 10h00.docx",
+        );
+        NodeFS.copyFileSync(arquivoComentado, copiaDeOntem);
+        const db = new NodeSqlite.DatabaseSync(conversasDesktop);
+        db.prepare(
+          "UPDATE revisao_ppc_listas_pendencias SET arquivo = ?, resultado = json_set(resultado, '$.arquivoComentado', ?) WHERE id = ?",
+        ).run(ontem, copiaDeOntem, lista);
+        db.close();
+
+        // O pedido é o do original (o que o "Escolher o arquivo de novo" da lista aceita), não o da cópia.
+        const pedido = yield* Effect.flip(rpc["revisaoPpc.acompanhar"]({ lista }));
+        assert.isTrue(ehFalhaRevisaoPpc(pedido) && pedido.escolherDeNovo === true);
+        assert.include(pedido.message, "“sessao ontem.docx”");
+        if (ehFalhaRevisaoPpc(pedido)) assert.strictEqual(pedido.arquivo, ontem);
+
+        // O original escolhido de novo libera a cópia dele: "Acompanhar no Word" funciona.
+        assert.strictEqual((yield* liberar(ontem)).status, 204);
+        const acompanhada = yield* rpc["revisaoPpc.acompanhar"]({ lista });
+        assert.strictEqual(acompanhada.arquivoAcompanhado, copiaDeOntem);
+      }),
   );
 
   it.effect("retomar a leitura com IA de um arquivo não liberado (o app reiniciou) recusa antes de ler", () =>

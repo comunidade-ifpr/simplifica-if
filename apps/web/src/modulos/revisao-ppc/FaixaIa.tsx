@@ -145,6 +145,8 @@ export function FaixaIa({ faltam }: { readonly faltam: number }) {
   if (estado?.situacao === "em_andamento" || estado?.situacao === "pausada") {
     const pausada = estado.situacao === "pausada";
     const podeEncerrar = pausada && blocosProntos(estado) > 0;
+    // No limite da assinatura, as outras IAs prontas continuam a leitura (`docs/plans/multitarefa.md`, decisão 4).
+    const outras = (ia.usaveis ?? []).filter((outra) => outra !== estado.provider);
     return (
       <Caixa rotulo={rotulo} abaixo={painel}>
         <div className="flex min-w-0 flex-col gap-1">
@@ -154,14 +156,29 @@ export function FaixaIa({ faltam }: { readonly faltam: number }) {
           </p>
           <p className="max-w-[68ch] text-muted-foreground text-small">
             {pausada
-              ? (estado.motivo ?? "Você pausou a conferência.") +
-                (estado.limite ? " O que já foi conferido fica guardado; retome quando o limite renovar." : "")
+              ? // O motivo do limite já diz que o feito está guardado e quando retomar: aqui, só a outra IA.
+                (estado.motivo ?? "Você pausou a conferência.") +
+                (estado.limite && outras.length > 0
+                  ? " Você também pode passar a conferência para outra IA, que lê só o que falta."
+                  : "")
               : `O ${nome} está conferindo os temas, alguns ao mesmo tempo. Você pode trabalhar na lista enquanto isso.`}
           </p>
           <ErroDaLeitura />
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           {verAndamento}
+          {pausada && estado.limite
+            ? outras.map((outra) => (
+                <Button
+                  key={outra}
+                  variant="outline"
+                  disabled={ia.ocupada}
+                  onClick={() => void revisao.continuarIaCom(outra)}
+                >
+                  Continuar com {DESCRICOES[outra].curto}
+                </Button>
+              ))
+            : null}
           {podeEncerrar ? (
             <Button variant="ghost" disabled={ia.ocupada} onClick={() => void revisao.cancelarIa()}>
               Encerrar conferência por aqui

@@ -11,8 +11,9 @@
  *    mesclado na mesma lista (`RevisoesPpc.mesclarIa`, sob `comTravaDaLista`), com a montagem leve do
  *    `RevisorPpc` (sem Worker e sem reler o `.docx`): a pessoa vê os achados de cada bloco pronto, e a
  *    pausa não os prende no banco. As transversais vão por último, sobre os resumos dos temas. Uma
- *    `PausaRevisao` de limite de taxa ou de cota para tudo na hora; a de tempo esgotado ou de provider
- *    caído para de começar blocos e deixa o bloco irmão em andamento terminar e se gravar. A revisão
+ *    `PausaRevisao` de cota (limite de uso ou de taxa) ou de serviço fora do ar para tudo na hora; a de
+ *    tempo esgotado ou de provider caído para de começar blocos e deixa o bloco irmão em andamento
+ *    terminar e se gravar. A revisão
  *    fica `pausada` com a frase para a pessoa e o bloco que parou (`blocoPausado`); `iniciarIa` de novo
  *    retoma só o que falta, depois de mesclar de novo o que já estava pronto (o app pode ter fechado
  *    entre o bloco e a mesclagem). Uma revisão `em_andamento` de uma execução anterior do servidor (app
@@ -25,6 +26,13 @@
  * O andamento ao vivo (a etapa de cada bloco, quando começou, o último sinal da IA) fica em memória, com
  * o resumo dos blocos do plano: o estado a cada mudança não relê o plano (centenas de KB) do banco, e os
  * blocos gravados e o uso só se releem quando um bloco termina ou uma tentativa se grava.
+ *
+ * 4. **Continuar com outra IA** (`continuarCom`, `docs/plans/multitarefa.md`, "Limite da assinatura"): a
+ *    leitura pausada (no limite da assinatura, por exemplo) passa a outra IA e lê só os blocos que faltam.
+ *    Cada bloco grava a IA que o leu, e cada pendência nova, a IA que a julgou.
+ *
+ * O andamento e a pausa no limite vão também às `Atividades` do núcleo (a bandeja do cabeçalho), com a
+ * rota da revisão.
  *
  * Preparar e executar esperam o aviso de uso aceito (M1.8): sem ele, recusam com `AvisoNaoAceito`.
  */
@@ -39,7 +47,7 @@ import * as FiberMap from "effect/FiberMap";
 import * as Layer from "effect/Layer";
 import * as PubSub from "effect/PubSub";
 import * as Stream from "effect/Stream";
-import { type AvisoNaoAceito, type Provider } from "@simplifica-if/contratos-app";
+import { type Atividade, type AvisoNaoAceito, type Provider } from "@simplifica-if/contratos-app";
 import {
   type BlocoRevisaoIa,
   type EstadoRevisaoIa,
@@ -58,9 +66,10 @@ import { pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "./modelos.ts";
 import { chavePendencia, type EntradaIa, estadoDaIa } from "@simplifica-if/ppc/revisao-previa";
+import * as Atividades from "../../Atividades.ts";
 import * as Preferencias from "../../persistencia/Preferencias.ts";
 import * as RevisoesPpc from "./persistencia/RevisoesPpc.ts";
-import { locaisNoDocumento, marcasDaCopia } from "./arquivo-novo.ts";
+import { comCriteriosDoCodigo, locaisNoDocumento, marcasDaCopia } from "./arquivo-novo.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { cursoEmTexto, type PlanoRevisaoIa, preparar } from "./preparo.ts";
@@ -102,18 +111,23 @@ export const regravarCopia = Effect.fn("ListaViva.regravarCopia")(function* (
   const existe = copia !== "" && (yield* fs.exists(copia).pipe(Effect.orElseSucceed(() => false)));
   if (registro.versaoCopia === registro.versao && existe) return;
   const situacoes = marcasDaCopia(yield* persistencia.pendencias(id), yield* persistencia.eventos(id));
+  // A cópia que a pessoa tem aberta no Word (a acompanhada) não é regravada: a nova vai para outro nome.
+  const acompanhada = copia !== "" && copia === registro.arquivoAcompanhado;
   const final = yield* revisor.revisarArquivo({
     arquivo: registro.arquivo,
     gravar: true,
-    copia,
+    ...(acompanhada ? {} : { copia }),
     sha256: registro.sha256,
     ...cursoEscolhido(registro),
     ...(registro.resultadosIa === null ? {} : { ia: registro.resultadosIa }),
     situacoes,
   });
+  const resultado = RevisorPpc.resultadoParaInterface(registro.arquivo, final);
   yield* persistencia.trocarResultado(
     id,
-    RevisorPpc.resultadoParaInterface(registro.arquivo, final),
+    registro.codigoConferido
+      ? { ...resultado, criterios: comCriteriosDoCodigo(resultado.criterios, registro.resultado.criterios) }
+      : resultado,
     registro.versao,
     locaisNoDocumento(final.revisao.pendencias),
   );
@@ -133,6 +147,11 @@ export class RevisaoIa extends Context.Service<
     readonly preparar: (entrada: EntradaPreparoIa) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly iniciar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly pausar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc>;
+    /** A leitura pausada da lista continua com outra IA, só nos blocos que faltam. */
+    readonly continuarCom: (
+      lista: string,
+      provider: Provider,
+    ) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly acompanhar: (id: string) => Stream.Stream<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly listar: Effect.Effect<ReadonlyArray<EstadoRevisaoIa>>;
     /** Há alguma revisão com IA rodando agora? O(1), sem ler o banco nem disparar limpeza. */
@@ -160,6 +179,7 @@ export const DIAS_PREPARADA = 7;
 
 const MOTIVO_APP_FECHADO = "A revisão foi interrompida quando o app foi fechado. O que já foi revisado está guardado.";
 const MOTIVO_PAUSA = "Pausada por você. O que já foi revisado está guardado.";
+const MOTIVO_SO_NO_LIMITE = "Só a leitura com IA parada no limite da assinatura continua com outra IA.";
 const SEM_LISTA =
   "A lista de pendências deste PPC foi apagada ou trocada (outro curso, outra versão do arquivo). Revise o PPC de novo para começar outra conferência com IA.";
 
@@ -215,12 +235,40 @@ export function unirResultadosIa(anterior: EntradaIa | null, nova: EntradaIa): E
 
 const agoraIso = Effect.map(DateTime.now, DateTime.formatIso);
 
+const nomeDoArquivo = (caminho: string) => caminho.split(/[\\/]/).pop() || caminho;
+
+/**
+ * A atividade da leitura com IA na bandeja do núcleo: em andamento (com as partes prontas) ou parada no
+ * limite da assinatura; nada nas outras situações. `desde`: quando a leitura começou nesta execução.
+ */
+export function atividadeDaLeitura(estado: EstadoRevisaoIa, desde: string | undefined): Atividade | undefined {
+  if (estado.lista === null) return undefined;
+  const base = {
+    id: `revisao-ppc:${estado.id}`,
+    titulo: `Revisão de “${nomeDoArquivo(estado.arquivoOriginal).replace(/\.docx$/i, "")}”`,
+    rota: `/revisao-ppc?id=${estado.lista}`,
+    provider: estado.provider,
+  };
+  const prontos = estado.blocos.filter((bloco) => bloco.estado === "pronto").length;
+  if (estado.situacao === "em_andamento")
+    return {
+      ...base,
+      situacao: "andamento",
+      detalhe: `IA: ${prontos} de ${estado.blocos.length} partes`,
+      desde: desde ?? estado.atualizadaEm,
+    };
+  if (estado.situacao === "pausada" && estado.limite)
+    return { ...base, situacao: "limite", desde: estado.atualizadaEm };
+  return undefined;
+}
+
 export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisaoIa = {}) {
   const paralelismo = Math.max(1, opcoes.paralelismo ?? PARALELISMO);
   const persistencia = yield* RevisoesPpc.RevisoesPpc;
   const revisor = yield* RevisorPpc.RevisorPpc;
   const fs = yield* FileSystem.FileSystem;
   const { exigirAviso } = yield* Preferencias.Preferencias;
+  const atividades = yield* Atividades.Atividades;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const aleatorio = yield* SecureRandom.SecureRandom;
@@ -239,6 +287,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const gravadosEmCache = new Map<string, Gravados>();
   /** O bloco que parou a leitura (tempo, falha do provider, limite). */
   const pausados = new Map<string, string>();
+  /** Quando a leitura de cada revisão começou nesta execução (a bandeja diz há quanto tempo). */
+  const comecos = new Map<string, string>();
 
   // Uma revisão em andamento numa execução anterior do servidor ficou parada no meio.
   // Revisões preparadas e nunca iniciadas guardam o texto do PPC à toa: expiram em `DIAS_PREPARADA`.
@@ -339,7 +389,22 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     if (registro === null) return yield* falha("", "Esta revisão não existe mais.");
     return yield* estado(registro, yield* resumoDe(id));
   });
-  const avisar = (id: string) => PubSub.publish(mudancas, id).pipe(Effect.asVoid);
+  /**
+   * A leitura `id` na bandeja do núcleo, como está agora; a que saiu (apagada) sai dela. O estado é lido na
+   * vez das `Atividades`: o fim de um bloco que publica atrasado não recoloca a leitura apagada ou pausada.
+   */
+  const publicarAtividade = (id: string) =>
+    atividades.atualizar(
+      `revisao-ppc:${id}`,
+      estadoPorId(id).pipe(
+        Effect.map((estado) => atividadeDaLeitura(estado, comecos.get(id))),
+        Effect.catchTags({ FalhaRevisaoPpc: () => Effect.undefined }),
+      ),
+    );
+  /** A tela que acompanha a leitura relê o estado. */
+  const avisarTela = (id: string) => PubSub.publish(mudancas, id).pipe(Effect.asVoid);
+  /** A tela e a bandeja: o que muda a atividade (um bloco que começa ou termina, a pausa, o fim). */
+  const avisar = (id: string) => avisarTela(id).pipe(Effect.andThen(publicarAtividade(id)));
 
   /* ------------------------------------------------------------ preparar */
 
@@ -411,9 +476,16 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     registro: RevisoesPpc.RegistroRevisaoIa<unknown>,
     plano: PlanoRevisaoIa,
     prontos: ReadonlyMap<string, ResultadoBloco>,
+    iaDosBlocos: ReadonlyMap<string, Provider>,
     completa: boolean,
   ) {
     const lista = yield* listaDa(registro);
+    /** A IA que julgou cada ficha: a do bloco que a leu. */
+    const iaDaFicha = new Map(
+      [...prontos].flatMap(([bloco, resultado]) =>
+        resultado.resultados.map((r) => [r.ficha, iaDosBlocos.get(bloco) ?? registro.provider] as const),
+      ),
+    );
     const ia = unirResultadosIa(lista.resultadosIa, {
       resultados: [...prontos.values()].flatMap((r) => r.resultados),
       fora: plano.fora,
@@ -429,13 +501,20 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const atuais = yield* persistencia.pendencias(lista.id);
     const existentes = new Set(atuais.map((p) => p.chave));
     const chavesResultado = new Set<string>();
-    const novas: { chave: string; pendencia: PendenciaRevisao }[] = [];
+    const novas: { chave: string; pendencia: PendenciaRevisao; ia: Provider | null }[] = [];
+    // Depois de uma conferência ao salvar, as pendências do código são as do arquivo salvo: a montagem
+    // sobre o texto revisado não traz de volta as que ela resolveu ou reescreveu.
+    const doCodigoConferido = lista.codigoConferido;
     for (const pendencia of pendencias) {
       const chave = chavePendencia(pendencia);
       chavesResultado.add(chave);
-      if (existentes.has(chave)) continue;
+      if (existentes.has(chave) || (doCodigoConferido && pendencia.origem === "codigo")) continue;
       existentes.add(chave);
-      novas.push({ chave, pendencia });
+      novas.push({
+        chave,
+        pendencia,
+        ia: pendencia.origem === "ia" ? (iaDaFicha.get(pendencia.ficha) ?? registro.provider) : null,
+      });
     }
     // Se uma ficha foi relida depois de "Encerrar leitura por aqui", pendências antigas dela da IA que
     // não existem mais no resultado recalculado saem de `revisao_ppc_pendencias_vivas` para acompanhar a régua.
@@ -445,7 +524,9 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* persistencia.mesclarIa(
       lista.id,
       {
-        resultado,
+        resultado: doCodigoConferido
+          ? { ...resultado, criterios: comCriteriosDoCodigo(resultado.criterios, lista.resultado.criterios) }
+          : resultado,
         resultadosIa: ia,
         revisao: registro.id,
         provider: registro.provider,
@@ -469,7 +550,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       etapa,
       ultimaAtividadeEm: etapa === "recebendo" ? agora : atual.ultimaAtividadeEm,
     });
-    yield* avisar(id);
+    // A etapa do bloco não muda a atividade ("IA: 7 de 12 partes"): a bandeja não relê o banco a cada sinal.
+    yield* avisarTela(id);
   });
 
   const executar = Effect.fn("RevisaoIa.executar")(function* (id: string) {
@@ -481,12 +563,14 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     andamentos.set(id, andando);
     gravadosEmCache.delete(id);
     pausados.delete(id);
-    const prontos = new Map(
-      (yield* persistencia.blocos(id)).map((b) => [b.bloco, b.resultado as ResultadoBloco] as const),
-    );
+    const gravados = yield* persistencia.blocos(id);
+    const prontos = new Map(gravados.map((b) => [b.bloco, b.resultado as ResultadoBloco] as const));
+    /** A IA que leu cada bloco pronto: a desta leitura nos que ela lê; a da revisão nos de antes da migração 5. */
+    const iaDosBlocos = new Map(gravados.map((b) => [b.bloco, b.provider ?? registro.provider] as const));
     const total = plano.blocos.length;
     // O app pode ter fechado entre gravar um bloco e mesclá-lo: o que já estava pronto entra de novo.
-    if (prontos.size > 0) yield* comTrava(registro, mesclar(registro, plano, prontos, prontos.size === total));
+    if (prontos.size > 0)
+      yield* comTrava(registro, mesclar(registro, plano, prontos, iaDosBlocos, prontos.size === total));
     /** A pausa que não interrompe o bloco irmão (tempo esgotado, provider caído): nada novo começa. */
     let pausa: PausaRevisao | null = null;
 
@@ -518,18 +602,20 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           resultado: julgado.resultado,
           uso: julgado.uso,
           segundos: julgado.segundos,
+          provider: registro.provider,
         });
         prontos.set(bloco.id, julgado.resultado);
+        iaDosBlocos.set(bloco.id, registro.provider);
         gravadosEmCache.delete(id);
         // Os achados do bloco já na lista; o último bloco é mesclado de novo na conclusão.
-        if (prontos.size < total) yield* comTrava(registro, mesclar(registro, plano, prontos, false));
+        if (prontos.size < total) yield* comTrava(registro, mesclar(registro, plano, prontos, iaDosBlocos, false));
       },
       (efeito, bloco) =>
         efeito.pipe(
           Effect.catchTags({
             PausaRevisao: (p: PausaRevisao) => {
-              // Limite de taxa ou cota: o bloco irmão bateria no mesmo limite; para tudo na hora.
-              if (p.limite) {
+              // Cota ou serviço fora do ar: o bloco irmão bateria no mesmo muro; para tudo na hora.
+              if (p.causa !== "outra") {
                 pausados.set(id, bloco.id);
                 return Effect.fail(p);
               }
@@ -583,7 +669,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       registro,
       Effect.gen(function* () {
         // Na trava da lista, que `mesclar` acabou de achar: ela não some no meio.
-        const listaId = yield* mesclar(registro, plano, prontos, true);
+        const listaId = yield* mesclar(registro, plano, prontos, iaDosBlocos, true);
         yield* regravarCopia((yield* persistencia.buscarLista(listaId))!, { persistencia, revisor, fs });
         return (yield* persistencia.buscarLista(listaId))!.resultado;
       }),
@@ -595,7 +681,11 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     executar(id).pipe(
       Effect.catchTags({
         PausaRevisao: (pausa: PausaRevisao) =>
-          persistencia.alterarRevisao(id, { situacao: "pausada", motivo: pausa.motivo, limite: pausa.limite }),
+          persistencia.alterarRevisao(id, {
+            situacao: "pausada",
+            motivo: pausa.motivo,
+            limite: pausa.causa === "cota",
+          }),
         FalhaRevisaoPpc: (erro: FalhaRevisaoPpc) =>
           persistencia.alterarRevisao(id, { situacao: "falhou", motivo: erro.motivo }),
       }),
@@ -630,29 +720,54 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* persistencia.ligarRevisao(lista.id, registro.id, registro.provider, registro.modelo);
   });
 
-  const iniciar = Effect.fn("RevisaoIa.iniciar")(function* (id: string) {
+  /**
+   * Começa ou retoma a leitura `id`. Com `outraIa`, a leitura pausada no limite da assinatura passa a ela,
+   * só depois das conferências (o arquivo liberado, o plano, a lista sem outra leitura) e na vez da lista:
+   * a que não pode recomeçar fica com a IA de antes, e um "Retomar" ao mesmo tempo não roda com a antiga.
+   */
+  const comecar = Effect.fn("RevisaoIa.comecar")(function* (id: string, outraIa?: Provider) {
     yield* exigirAviso;
     const registro = yield* buscar(id);
     const resumo = registro.plano === null ? [] : resumoDoPlano(registro.plano);
     if (registro.situacao === "concluida") return yield* estado(registro, resumo);
-    if (yield* FiberMap.has(execucoes, id)) return yield* estado(registro, resumo);
     // O fim da leitura relê o arquivo: depois de fechar o app, a pessoa o escolhe de novo antes, e não
     // descobre no fim, com a leitura paga, que ele não podia ser lido.
     yield* revisor.exigirLiberado(registro.arquivo);
+    if (yield* FiberMap.has(execucoes, id)) return yield* estado(registro, resumo);
     if (registro.plano === null)
       return yield* falha(registro.arquivo, "Esta revisão não tem plano. Prepare-a de novo.");
-    yield* comTrava(registro, ligarALista(registro));
-    yield* persistencia.alterarRevisao(id, { situacao: "em_andamento" });
-    // A revisão roda além do pedido que a iniciou: abre o próprio trace.
-    yield* FiberMap.run(
-      execucoes,
-      id,
-      executarComPausa(id).pipe(Effect.withSpan("RevisaoIa.revisao", { root: true })),
-      { onlyIfMissing: true },
+    const comecou = yield* comTrava(
+      registro,
+      Effect.gen(function* () {
+        const atual = yield* buscar(id);
+        if (atual.situacao === "concluida" || (yield* FiberMap.has(execucoes, id))) return false;
+        const trocar = outraIa !== undefined && outraIa !== atual.provider;
+        if (outraIa !== undefined && (atual.situacao !== "pausada" || !atual.limite))
+          return yield* falha(atual.arquivo, MOTIVO_SO_NO_LIMITE);
+        const modelo = trocar ? (MODELO_PADRAO[outraIa] ?? null) : atual.modelo;
+        yield* ligarALista(trocar ? { ...atual, provider: outraIa, modelo } : atual);
+        if (trocar) {
+          yield* persistencia.trocarIa(id, outraIa, modelo);
+          // O resumo dos blocos não muda; o estado relê a IA do banco.
+          gravadosEmCache.delete(id);
+        }
+        yield* persistencia.alterarRevisao(id, { situacao: "em_andamento" });
+        comecos.set(id, yield* agoraIso);
+        // A revisão roda além do pedido que a iniciou: abre o próprio trace.
+        yield* FiberMap.run(
+          execucoes,
+          id,
+          executarComPausa(id).pipe(Effect.withSpan("RevisaoIa.revisao", { root: true })),
+          { onlyIfMissing: true },
+        );
+        return true;
+      }),
     );
-    yield* avisar(id);
+    if (comecou) yield* avisar(id);
     return yield* estadoPorId(id);
   });
+
+  const iniciar = (id: string) => comecar(id);
 
   const pausar = Effect.fn("RevisaoIa.pausar")(function* (id: string) {
     const registro = yield* persistencia.resumoRevisao(id);
@@ -664,6 +779,17 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* persistencia.pausarRevisaoSeEmAndamento(id, MOTIVO_PAUSA);
     yield* avisar(id);
     return yield* estadoPorId(id);
+  });
+
+  const continuarCom = Effect.fn("RevisaoIa.continuarCom")(function* (listaId: string, provider: Provider) {
+    yield* exigirAviso;
+    const lista = yield* persistencia.buscarLista(listaId);
+    if (lista === null) return yield* falha("", "Esta lista de pendências não existe mais. Revise o PPC de novo.");
+    const registro = lista.revisao === null ? null : yield* persistencia.resumoRevisao(lista.revisao);
+    // Fora do ar ou pausada a pedido, a leitura retoma com a mesma IA: a troca é para o limite da assinatura.
+    if (registro === null || registro.situacao !== "pausada" || !registro.limite)
+      return yield* falha(lista.arquivo, MOTIVO_SO_NO_LIMITE);
+    return yield* comecar(registro.id, provider);
   });
 
   const terminou = (e: EstadoRevisaoIa) => e.situacao === "concluida" || e.situacao === "falhou";
@@ -709,6 +835,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* persistencia.apagarRevisao(id);
     resumos.delete(id);
     pausados.delete(id);
+    comecos.delete(id);
     yield* avisar(id);
   });
 
@@ -722,6 +849,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     preparar: prepararRevisao,
     iniciar,
     pausar,
+    continuarCom,
     acompanhar,
     listar: expirar.pipe(Effect.andThen(apagarOrfas), Effect.andThen(listar)),
     ocupada,
@@ -731,7 +859,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 });
 
 /**
- * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `RevisoesPpc`, as `Preferencias`, o
- * `SecureRandom`, as `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
+ * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `RevisoesPpc`, as `Preferencias`, as `Atividades` do
+ * núcleo, o `SecureRandom`, as `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

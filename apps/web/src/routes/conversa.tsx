@@ -1,50 +1,46 @@
 /**
  * Conversa: conversar, aprovar ou negar o que a IA pede, interromper e começar outra. As citações
- * `ifpr://` das respostas são chips que abrem o painel de leitura ao lado.
+ * `ifpr://` das respostas são chips que abrem no painel do app, ao lado (é uma tela de trabalho; ⌥-clique
+ * abre na página do Explorar).
  *
  * Modo Servidor (M1.9): a conversa de uma tarefa mostra as etapas da skill (✓ ◐ ○), as chamadas de
  * ferramenta ficam recolhidas em "Detalhes técnicos", cada resposta tem 👍/👎 e "Isto está errado" (o
- * relato para a curadoria, M1.12, logo abaixo da resposta), e o painel "Pasta da tarefa" mostra os
- * arquivos e o "Desfazer".
+ * relato para a curadoria, M1.12, logo abaixo da resposta), e "Pasta da tarefa" abre a aba Pasta do
+ * painel do app, com os arquivos e o "Desfazer". O painel é do app: trocar de conversa não o fecha.
  *
  * As conversas ficam gravadas no servidor: a barra lateral as lista, e a conversa aberta fica na URL
- * (`/conversa?id=…`). Ao recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico
- * e, se a IA estava respondendo, com o resto da resposta.
+ * (`/conversa?id=…`). A tela pega o controle dela no `GerenteConversas` (o mesmo da aba Conversar, se a
+ * conversa está no painel: "⤢" a traz para cá) e o solta ao sair, sem encerrar a sessão do provider. Ao
+ * recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico e, se a IA estava
+ * respondendo, com o resto da resposta.
+ *
+ * No limite da assinatura, "Continuar com…" abre aqui a conversa nova, com a caixa que a continuação traz:
+ * as fichas (o histórico e as da última mensagem), removíveis, e a última pergunta escrita.
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { EllipsisIcon, FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { EllipsisIcon, FolderIcon, FolderOpenIcon, PlusIcon } from "lucide-react";
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ApagarConversas, type ConversaParaApagar } from "../apagar/ApagarConversas.tsx";
-import { Avaliacao } from "../components/Avaliacao.tsx";
-import { CaixaPedido } from "../components/CaixaPedido.tsx";
 import { AvisoErro } from "../components/AvisoErro.tsx";
-import { IndicadorEtapas } from "../components/IndicadorEtapas.tsx";
-import { ItemConversa } from "../components/ItemConversa.tsx";
-import { classeColuna } from "../components/Pagina.tsx";
-import { PainelPasta } from "../components/PainelPasta.tsx";
-import { RelatoErro } from "../components/RelatoErro.tsx";
-import { etapasVistas } from "../conversa/etapas.ts";
-import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
-import { tituloDaTarefa, useCatalogo } from "../tarefas/catalogo.ts";
-import { Anexos, useAnexos } from "../tarefas/comecar.tsx";
+import { AvisoUsoPendente } from "../components/AvisoUso.tsx";
+import { CaixaPedido } from "../components/CaixaPedido.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
-import { PainelLeitura } from "../components/PainelLeitura.tsx";
-import { CHAVE_LARGURA_LEITURA, ColunaLateral } from "../components/ColunaLateral.tsx";
-import {
-  abrir as abrirNoHistorico,
-  avancar,
-  HISTORICO_VAZIO,
-  type Historico,
-  linkAtual,
-  voltar,
-} from "../leitor/historico.ts";
+import { classeColuna } from "../components/Pagina.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../components/ui/menu.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import { useApi, useConversa } from "../contexto.tsx";
+import { useApi, useApp, useControleConversa, useEstadoConversa, useTelaDeTrabalho } from "../contexto.tsx";
+import { rascunhoDaContinuacao } from "../conversa/continuacao.ts";
+import type { ControleConversa } from "../conversa/ControleConversa.ts";
+import type { AoContinuar } from "../conversa/controleDaVista.ts";
+import { FichasNaCaixa, useFocoDasFichas } from "../conversa/FichasContexto.tsx";
+import { VistaConversa } from "../conversa/VistaConversa.tsx";
 import { cn } from "../lib/utils.ts";
+import { useAbrirLink } from "../painel/abrirLink.ts";
 import { DESCRICOES } from "../providers.ts";
+import { tituloDaTarefa, useCatalogo } from "../tarefas/catalogo.ts";
+import { Anexos, useAnexos } from "../tarefas/comecar.tsx";
 
 /** A busca da rota: o id da conversa aberta, quando há. */
 export interface BuscaConversa {
@@ -59,18 +55,37 @@ export const Route = createFileRoute("/conversa")({
 
 /**
  * A caixa da conversa. Os anexos (pelo clipe ou soltos na caixa) entram na pasta da tarefa ao enviar;
- * o servidor avisa a IA deles junto com a mensagem.
+ * o servidor avisa a IA deles junto com a mensagem. Recusada pelo aviso de uso, a mensagem volta à caixa.
+ * A conversa que continua outra começa com a caixa que a continuação trouxe (as fichas e a pergunta).
  */
-function Compositor() {
+function Compositor({ controle }: { readonly controle: ControleConversa }) {
   const api = useApi();
-  const [estado, conversa] = useConversa();
-  const [texto, setTexto] = useState("");
+  const { conversas } = useApp();
+  const estado = useEstadoConversa(controle);
+  const sessao = estado.sessao;
+  const [rascunho] = useState(() => (sessao === undefined ? undefined : conversas.rascunhoDe(sessao)));
+  const [texto, setTexto] = useState(rascunho?.texto ?? "");
+  const [fichas, setFichas] = useState(rascunho?.fichas ?? []);
   const { anexos, mudar, recusados, soltar, limpar } = useAnexos();
   const [anexando, setAnexando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
+  const [avisoPendente, setAvisoPendente] = useState(false);
   const ocupada = estado.fase === "respondendo" || estado.fase === "interrompendo";
+  // A caixa da continuação guardada acompanha o que a pessoa muda nela: a ficha tirada (o histórico que ela
+  // não quer mandar à outra empresa) não volta ao sair e voltar à conversa.
+  const guardando = useRef(rascunho !== undefined);
+  useEffect(() => {
+    if (guardando.current && sessao !== undefined) conversas.guardarRascunho(sessao, { texto, fichas });
+  }, [sessao, conversas, texto, fichas]);
+  const fichasRef = useRef<HTMLDivElement>(null);
+  const foco = useFocoDasFichas(fichasRef, fichas);
+  const tirar = (chave: string) => {
+    foco.tirando(chave);
+    setFichas((atuais) => atuais.filter((ficha) => ficha.chave !== chave));
+  };
   const enviar = async () => {
     setErro(undefined);
+    setAvisoPendente(false);
     if (anexos.length > 0) {
       setAnexando(true);
       let faltam = anexos;
@@ -88,11 +103,25 @@ function Compositor() {
         setAnexando(false);
       }
     }
-    conversa.enviar(texto);
+    const enviado = texto;
+    const junto = fichas;
     setTexto("");
+    setFichas([]);
     limpar();
+    const resultado = await controle.enviar(
+      enviado,
+      junto.flatMap((ficha) => (ficha.ficha === undefined ? [] : [ficha.ficha])),
+    );
+    if (resultado === "enviada") {
+      guardando.current = false;
+      if (sessao !== undefined) conversas.esquecerRascunho(sessao);
+      return;
+    }
+    setTexto((atual) => (atual === "" ? enviado : atual));
+    setFichas((atuais) => [...junto, ...atuais]);
+    if (resultado === "avisoNaoAceito") setAvisoPendente(true);
   };
-  return (
+  const caixa = (
     <CaixaPedido
       rotulo="Mensagem"
       valor={texto}
@@ -103,118 +132,90 @@ function Compositor() {
       interromper={
         ocupada
           ? {
-              aoInterromper: () => void conversa.interromper(),
+              aoInterromper: () => void controle.interromper(),
               interrompendo: estado.fase === "interrompendo",
             }
           : undefined
       }
       aoSoltarArquivos={soltar === undefined ? undefined : (arquivos) => void soltar(arquivos)}
       esquerda={<Anexos anexos={anexos} aoMudar={mudar} recusados={recusados} />}
-      abaixo={erro === undefined ? undefined : <AvisoErro erro={erro} />}
+      abaixo={avisoPendente ? <AvisoUsoPendente /> : erro === undefined ? undefined : <AvisoErro erro={erro} />}
       className="pointer-events-auto"
     />
   );
-}
-
-/** Rola a conversa até o fim quando `sinal` muda (item novo, texto chegando). */
-function RolarParaOFim({ sinal }: { readonly sinal: string }) {
-  const fim = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (sinal.length > 0) fim.current?.scrollIntoView({ block: "end" });
-  }, [sinal]);
-  return <div ref={fim} />;
-}
-
-type Bloco =
-  | { readonly tipo: "item"; readonly item: Item; readonly turno: number }
-  | {
-      readonly tipo: "ferramentas";
-      readonly chave: string;
-      readonly itens: ReadonlyArray<Extract<Item, { tipo: "ferramenta" }>>;
-    }
-  | { readonly tipo: "avaliacao"; readonly chave: string; readonly turno: number };
-
-/**
- * Os itens em blocos para a tela: as chamadas de ferramenta seguidas viram um grupo (os "detalhes
- * técnicos"), e depois da última resposta de cada turno fechado vem a avaliação. O turno é o do item
- * (o do servidor).
- */
-function emBlocos(itens: ReadonlyArray<Item>, turnoAberto: number | undefined): ReadonlyArray<Bloco> {
-  const ultimaResposta = new Map<number, string>();
-  for (const item of itens) if (item.tipo === "resposta") ultimaResposta.set(item.turno, item.chave);
-  const blocos: Array<Bloco> = [];
-  for (const item of itens) {
-    const { turno } = item;
-    const anterior = blocos.at(-1);
-    if (item.tipo === "ferramenta") {
-      if (anterior?.tipo === "ferramentas")
-        blocos[blocos.length - 1] = { ...anterior, itens: [...anterior.itens, item] };
-      else blocos.push({ tipo: "ferramentas", chave: item.chave, itens: [item] });
-      continue;
-    }
-    blocos.push({ tipo: "item", item, turno });
-    if (item.tipo === "resposta" && ultimaResposta.get(turno) === item.chave && turno !== turnoAberto) {
-      blocos.push({ tipo: "avaliacao", chave: `avaliacao-${turno}`, turno });
-    }
-  }
-  return blocos;
-}
-
-/** As chamadas de ferramenta de um trecho do turno, recolhidas; enquanto uma roda, o nome dela à vista. */
-function DetalhesTecnicos({
-  itens,
-  aoAbrirLink,
-}: {
-  readonly itens: ReadonlyArray<Extract<Item, { tipo: "ferramenta" }>>;
-  readonly aoAbrirLink: (link: string) => void;
-}) {
-  const rodando = itens.find((item) => item.situacao === "andamento");
-  const consultas = itens.length === 1 ? "1 consulta" : `${itens.length} consultas`;
   return (
-    <details className="group text-sm" data-detalhes-tecnicos>
-      <summary className="flex w-fit cursor-pointer list-none items-center gap-2 rounded-md px-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        {rodando === undefined ? <WrenchIcon aria-hidden className="size-3.5" /> : <Spinner size="sm" tone="muted" />}
-        {rodando === undefined
-          ? `Detalhes técnicos · ${consultas}`
-          : `Consultando a base: ${rotuloFerramenta(rodando)}…`}
-      </summary>
-      <div className="mt-2 flex flex-col gap-2 border-border border-l-2 pl-3">
-        {itens.map((item) => (
-          <ItemConversa key={item.chave} item={item} aoAbrirLink={aoAbrirLink} />
-        ))}
-      </div>
-    </details>
+    <div
+      ref={fichasRef}
+      className={fichas.length === 0 ? "contents" : "pointer-events-auto flex flex-col gap-2 rounded-2xl bg-card"}
+    >
+      {fichas.length === 0 ? null : <FichasNaCaixa fichas={fichas} ofertas={[]} aoTirar={tirar} aoPor={() => {}} />}
+      {caixa}
+    </div>
   );
 }
 
-function Conversa({
-  aoAbrirLink,
-  pastaAberta,
-  aoAlternarPasta,
-}: {
-  readonly aoAbrirLink: (link: string) => void;
-  readonly pastaAberta: boolean;
-  readonly aoAlternarPasta: () => void;
-}) {
-  const [estado, conversa] = useConversa();
+/**
+ * "Pasta da tarefa": abre a aba Pasta do painel na pasta desta conversa (também com outra conversa na aba
+ * Conversar), e a fecha. Só ele assina o painel, não a conversa inteira.
+ */
+function BotaoPasta({ sessao }: { readonly sessao: string | undefined }) {
+  const { painel } = useApp();
+  const pastaAberta = useSyncExternalStore(painel.observar, () => {
+    const estado = painel.obter();
+    return estado.aberto && estado.aba === "pasta";
+  });
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      aria-pressed={pastaAberta}
+      onClick={() =>
+        pastaAberta ? painel.fechar() : sessao === undefined ? painel.mostrar("pasta") : painel.mostrarPasta(sessao)
+      }
+    >
+      {pastaAberta ? <FolderOpenIcon /> : <FolderIcon />} Pasta da tarefa
+    </Button>
+  );
+}
+
+/**
+ * A conversa ao lado levada à tela cheia (⤢) com uma pergunta começada na caixa do painel: a caixa daqui não
+ * a tem (as fichas da revisão se preparam só no painel), e "Trazer de volta" volta a ela.
+ */
+function RascunhoNoPainel({ sessao }: { readonly sessao: string | undefined }) {
+  const { painel } = useApp();
+  const navegar = useNavigate();
+  const voltarPara = useSyncExternalStore(painel.observar, () => {
+    const conversa = painel.obter().conversa;
+    const comRascunho = conversa.texto.trim() !== "" || conversa.fichas.length > 0;
+    return sessao !== undefined && conversa.id === sessao && comRascunho ? (conversa.voltarPara ?? "/") : undefined;
+  });
+  if (voltarPara === undefined) return null;
+  return (
+    <p className="pointer-events-auto mb-1 flex flex-wrap items-center gap-x-2 text-muted-foreground text-small">
+      Há uma pergunta começada na caixa do painel, com as fichas dela.
+      <Button size="xs" variant="ghost" onClick={() => void navegar({ href: voltarPara })}>
+        Trazer de volta
+      </Button>
+    </p>
+  );
+}
+
+function Conversa({ controle }: { readonly controle: ControleConversa }) {
+  const estado = useEstadoConversa(controle);
+  const aoAbrirLink = useAbrirLink();
   const catalogo = useCatalogo();
   const navegar = useNavigate();
-  const ultimo = estado.itens.at(-1);
-  const tamanhoUltimo = ultimo?.tipo === "resposta" ? ultimo.texto.length : 0;
-  const emTurno = estado.fase === "respondendo" || estado.fase === "interrompendo";
-  const turnoAberto = emTurno ? estado.turno : undefined;
-  const tarefa =
-    catalogo.fase === "pronto" && estado.tarefa !== undefined
-      ? catalogo.tarefas.find((candidata) => candidata.id === estado.tarefa)
-      : undefined;
-  // A tarefa que saiu do catálogo ainda dá o título à conversa; as etapas, só a que o app atende.
+  const { conversas, painel } = useApp();
+  const aoContinuar: AoContinuar = ({ sessao, continuacao }) => {
+    if (continuacao !== undefined) conversas.guardarRascunho(sessao, rascunhoDaContinuacao(continuacao));
+    // A conversa ao lado levada à tela cheia continua nela: o painel passa à nova (a caixa fica aqui).
+    if (estado.sessao !== undefined) painel.continuada(estado.sessao, sessao);
+    void navegar({ to: "/conversa", search: { id: sessao } });
+  };
+  // A tarefa que saiu do catálogo ainda dá o título à conversa.
   const tituloTarefa =
     catalogo.fase === "pronto" && estado.tarefa !== undefined ? tituloDaTarefa(catalogo, estado.tarefa) : undefined;
-  const declaradas = tarefa?.abre.tipo === "conversa" ? tarefa.abre.etapas : [];
-  const etapas = declaradas.length === 0 ? undefined : etapasVistas(declaradas, estado.itens, emTurno);
-  // O relato aberto é da conversa em que foi aberto: trocar de conversa o fecha.
-  const [relato, setRelato] = useState<{ readonly sessao?: string; readonly turno: number }>();
-  const turnoRelato = relato !== undefined && relato.sessao === estado.sessao ? relato.turno : undefined;
   const [apagando, setApagando] = useState<ConversaParaApagar | null>(null);
 
   return (
@@ -227,17 +228,8 @@ function Conversa({
           <span className="text-muted-foreground"> · {DESCRICOES[estado.provider].nome}</span>
         </p>
         <div className="ml-auto flex gap-2">
-          <Button variant="outline" size="sm" aria-pressed={pastaAberta} onClick={aoAlternarPasta}>
-            {pastaAberta ? <FolderOpenIcon /> : <FolderIcon />} Pasta da tarefa
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              // Sai da tela antes de esvaziar a conversa, para o efeito que acompanha a URL não trazer a tela de volta.
-              void navegar({ to: "/" }).then(() => conversa.nova());
-            }}
-          >
+          <BotaoPasta sessao={estado.sessao} />
+          <Button variant="outline" size="sm" onClick={() => void navegar({ to: "/" })}>
             <PlusIcon /> Nova tarefa
           </Button>
           {estado.sessao === undefined ? null : (
@@ -265,145 +257,72 @@ function Conversa({
       </div>
       {/* Apagada a conversa aberta, a tela vai para o Início (`ApagarConversas`). */}
       <ApagarConversas conversas={apagando === null ? null : [apagando]} aoFechar={() => setApagando(null)} />
-      {/* A caixa de pedido flutua sobre o fim da conversa: fica presa ao pé da rolagem (sticky), e a conversa
-          passa por baixo dela; rolada até o fim, a última mensagem fica acima da caixa. */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <div
-          className="mx-auto flex w-full max-w-(--page-narrow) shrink-0 grow flex-col gap-4 px-4 pt-6 pb-4"
-          role="log"
-          aria-label="Mensagens"
-        >
-          {etapas === undefined || tarefa === undefined ? null : (
-            <IndicadorEtapas titulo={tarefa.titulo} etapas={etapas} />
-          )}
-          {estado.itens.length === 0 ? (
-            <p className="text-center text-muted-foreground">Conversa aberta. Escreva sua pergunta abaixo.</p>
-          ) : null}
-          {estado.fase === "pronta" && estado.estadoServidor === "caiu" ? (
-            <p className="text-center text-muted-foreground text-sm">
-              A IA parou de funcionar na última resposta. A próxima mensagem retoma a conversa de onde parou.
-            </p>
-          ) : null}
-          {emBlocos(estado.itens, turnoAberto).map((bloco) =>
-            bloco.tipo === "item" ? (
-              <ItemConversa key={bloco.item.chave} item={bloco.item} aoAbrirLink={aoAbrirLink} />
-            ) : bloco.tipo === "ferramentas" ? (
-              <DetalhesTecnicos key={bloco.chave} itens={bloco.itens} aoAbrirLink={aoAbrirLink} />
-            ) : (
-              <div key={bloco.chave} className="flex flex-col gap-2">
-                <Avaliacao
-                  turno={bloco.turno}
-                  nota={estado.avaliacoes[bloco.turno]}
-                  aoAvaliar={(turno, nota) => void conversa.avaliar(turno, nota)}
-                  relatoAberto={turnoRelato === bloco.turno}
-                  aoApontarErro={(turno) =>
-                    setRelato(
-                      turnoRelato === turno
-                        ? undefined
-                        : { ...(estado.sessao === undefined ? {} : { sessao: estado.sessao }), turno },
-                    )
-                  }
-                />
-                {turnoRelato === bloco.turno && estado.sessao !== undefined ? (
-                  <RelatoErro
-                    sessao={estado.sessao}
-                    turno={bloco.turno}
-                    // O relato enviado marca o 👎 da resposta.
-                    aoRegistrado={() => {
-                      if (estado.avaliacoes[bloco.turno] !== "nao_util") void conversa.avaliar(bloco.turno, "nao_util");
-                    }}
-                    aoFechar={() => setRelato(undefined)}
-                  />
-                ) : null}
-              </div>
-            ),
-          )}
-          {estado.fase === "respondendo" && (ultimo?.tipo === "pessoa" || ultimo?.tipo === "pasta") ? (
-            <p className="flex items-center gap-2 text-muted-foreground text-sm">
-              <Spinner size="sm" /> Pensando…
-            </p>
-          ) : null}
-        </div>
-        <div className="pointer-events-none sticky bottom-0 z-10 mx-auto w-full max-w-(--page-narrow) shrink-0 bg-linear-to-t from-30% from-background to-transparent px-4 pt-3 pb-4">
-          <Compositor />
-        </div>
-        <RolarParaOFim sinal={`${estado.itens.length}:${tamanhoUltimo}`} />
-      </div>
+      <VistaConversa
+        controle={controle}
+        aoAbrirLink={aoAbrirLink}
+        aoContinuar={aoContinuar}
+        caixa={
+          <>
+            <RascunhoNoPainel sessao={estado.sessao} />
+            <Compositor key={estado.sessao} controle={controle} />
+          </>
+        }
+      />
     </div>
   );
 }
 
 /** A barra lateral: as conversas gravadas. */
-function BarraConversas() {
-  const [estado] = useConversa();
+function BarraConversas({ controle }: { readonly controle: ControleConversa | undefined }) {
+  const estado = useSyncExternalStore(controle?.observar ?? semObservar, () =>
+    controle === undefined ? undefined : controle.obter(),
+  );
   return (
     <nav
       aria-label="Conversas gravadas"
-      className="hidden h-full w-64 shrink-0 flex-col gap-3 overflow-y-auto border-border border-r p-3 md:flex"
+      className="hidden h-full w-64 shrink-0 flex-col gap-3 overflow-y-auto border-border border-r p-3 @3xl/tela:flex"
     >
       <h2 className="px-2 font-semibold text-muted-foreground text-small">Conversas</h2>
-      <ListaConversas atual={estado.sessao} atualizar={`${estado.sessao ?? ""}:${estado.fase}`} />
+      <ListaConversas atual={estado?.sessao} atualizar={`${estado?.sessao ?? ""}:${estado?.fase ?? ""}`} />
     </nav>
   );
 }
 
+const semObservar = () => () => undefined;
+
 function TelaConversa() {
-  const [estado, conversa] = useConversa();
   const { id } = Route.useSearch();
   const navegar = useNavigate({ from: "/conversa" });
-  // O painel ao lado (leitura ou pasta) é da conversa em que foi aberto: trocar de conversa o fecha.
-  const [painel, setPainel] = useState<{
-    readonly sessao?: string;
-    readonly leitura: Historico;
-    readonly pasta: boolean;
-  }>({ leitura: HISTORICO_VAZIO, pasta: false });
-  const daConversa = painel.sessao === estado.sessao;
-  const leitura = daConversa ? painel.leitura : HISTORICO_VAZIO;
-  const leitorAberto = linkAtual(leitura) !== undefined;
-  const pastaAberta = daConversa && painel.pasta && !leitorAberto;
-  const mudarPainel = (
-    mudar: (atual: { leitura: Historico; pasta: boolean }) => {
-      leitura: Historico;
-      pasta: boolean;
-    },
-  ) =>
-    setPainel((anterior) => ({
-      ...(estado.sessao === undefined ? {} : { sessao: estado.sessao }),
-      ...mudar(anterior.sessao === estado.sessao ? anterior : { leitura: HISTORICO_VAZIO, pasta: false }),
-    }));
-  const setLeitura = (mudar: (historico: Historico) => Historico) =>
-    mudarPainel((atual) => ({ ...atual, leitura: mudar(atual.leitura) }));
-  const abrirLink = (link: string) => setLeitura((historico) => abrirNoHistorico(historico, link));
-  const alternarPasta = () =>
-    mudarPainel((atual) => ({
-      leitura: HISTORICO_VAZIO,
-      pasta: !(atual.pasta && linkAtual(atual.leitura) === undefined),
-    }));
+  const controle = useControleConversa(id);
+  // Os links abrem no painel do app, e a conversa fica na tela.
+  useTelaDeTrabalho();
 
-  // A URL manda: um id que não é o da conversa corrente abre aquela conversa; sem id nem conversa, volta ao Início.
+  // Sem id, não há conversa a mostrar: volta ao Início.
   useEffect(() => {
-    if (id !== undefined) {
-      if (id !== conversa.obter().sessao) void conversa.abrir(id);
-    } else if (conversa.obter().sessao === undefined && conversa.obter().fase === "configurando") {
-      void navegar({ to: "/", replace: true });
-    }
-  }, [id, conversa, navegar]);
-  // E a URL acompanha a conversa corrente (a que acabou de começar). Se o efeito de cima acabou de
-  // abrir a conversa da URL, `estado` ainda é o da renderização anterior: o controle já está noutra
-  // sessão, e a URL fica.
-  useEffect(() => {
-    const atual = estado.sessao;
-    if (atual === id || conversa.obter().sessao !== atual) return;
-    if (atual !== undefined) void navegar({ search: { id: atual }, replace: true });
-  }, [estado.sessao, id, conversa, navegar]);
+    if (id === undefined) void navegar({ to: "/", replace: true });
+  }, [id, navegar]);
 
+  return (
+    <div className="flex h-full">
+      <BarraConversas controle={controle} />
+      {controle === undefined ? <Abrindo /> : <ConteudoConversa controle={controle} />}
+    </div>
+  );
+}
+
+function Abrindo() {
+  return (
+    <p className="flex flex-1 items-center justify-center gap-2 text-muted-foreground">
+      <Spinner /> Abrindo a conversa…
+    </p>
+  );
+}
+
+function ConteudoConversa({ controle }: { readonly controle: ControleConversa }) {
+  const estado = useEstadoConversa(controle);
   let conteudo: ReactNode;
   if (estado.fase === "carregando" || estado.fase === "iniciando") {
-    conteudo = (
-      <p className="flex flex-1 items-center justify-center gap-2 text-muted-foreground">
-        <Spinner /> Abrindo a conversa…
-      </p>
-    );
+    conteudo = <Abrindo />;
   } else if (estado.fase === "configurando") {
     conteudo =
       estado.erroInicio === undefined ? null : (
@@ -412,41 +331,7 @@ function TelaConversa() {
         </div>
       );
   } else {
-    conteudo = (
-      <>
-        <Conversa aoAbrirLink={abrirLink} pastaAberta={pastaAberta} aoAlternarPasta={alternarPasta} />
-        {pastaAberta && estado.sessao !== undefined ? (
-          <div className="h-full w-[min(26rem,45vw)] shrink-0">
-            <PainelPasta
-              sessao={estado.sessao}
-              atualizar={`${estado.fase}:${estado.itens.length}`}
-              emTurno={estado.fase === "respondendo" || estado.fase === "interrompendo"}
-              aoFechar={alternarPasta}
-            />
-          </div>
-        ) : null}
-        {leitorAberto ? (
-          <ColunaLateral
-            chave={CHAVE_LARGURA_LEITURA}
-            classePadrao="w-[min(40rem,50vw)]"
-            rotulo="Largura do painel de leitura"
-          >
-            <PainelLeitura
-              historico={leitura}
-              aoAbrirLink={abrirLink}
-              aoVoltar={() => setLeitura(voltar)}
-              aoAvancar={() => setLeitura(avancar)}
-              aoFechar={() => setLeitura(() => HISTORICO_VAZIO)}
-            />
-          </ColunaLateral>
-        ) : null}
-      </>
-    );
+    conteudo = <Conversa controle={controle} />;
   }
-  return (
-    <div className="flex h-full">
-      <BarraConversas />
-      {conteudo}
-    </div>
-  );
+  return conteudo;
 }

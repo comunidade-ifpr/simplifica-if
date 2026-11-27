@@ -12,7 +12,8 @@
  *    laço de eventos do servidor não pode parar. Estouro de memória, de tempo, `ErroDocx` e defeito
  *    viram uma `FalhaRevisaoPpc` com a frase em português; o servidor continua de pé.
  * 4. Grava a cópia comentada ao lado do original, num arquivo temporário da mesma pasta renomeado por
- *    cima. Cada revisão tem a sua: a nova, `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx`,
+ *    cima, e a libera (`ArquivosLiberados`): "Acompanhar no Word" a abre e a conferência ao salvar a lê
+ *    sem o diálogo de escolha. Cada revisão tem a sua: a nova, `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx`,
  *    só num nome livre; a da própria revisão é regravada no lugar se ainda é a que o app gravou (o sha256
  *    registrado em `CopiasComentadas`). A cópia editada pela pessoa, só de leitura, travada (o Word no
  *    Windows) ou que não é arquivo comum (um link) fica, e a cópia vai para o próximo nome livre da
@@ -144,6 +145,14 @@ export class RevisorPpc extends Context.Service<
      * precisar dele recusa antes de começar, e não no fim.
      */
     readonly exigirLiberado: (arquivo: string) => Effect.Effect<void, FalhaRevisaoPpc>;
+    /** O sha256 de um `.docx` liberado, com as recusas da revisão (extensão, liberação, tamanho), sem revisá-lo. */
+    readonly sha256: (arquivo: string) => Effect.Effect<string, FalhaRevisaoPpc>;
+    /**
+     * Libera a cópia comentada que uma execução anterior do app gravou (a liberação vive só em memória),
+     * pelo original liberado: a cópia fica na pasta dele. Sem o original liberado, pede o original de novo
+     * (`escolherDeNovo`), e não a cópia.
+     */
+    readonly liberarCopia: (original: string, copia: string) => Effect.Effect<void, FalhaRevisaoPpc>;
   }
 >()("@simplifica-if/server/modulos/revisao-ppc/RevisorPpc") {}
 
@@ -452,6 +461,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
             ),
           )
         : null;
+    if (arquivoComentado !== null) yield* liberacao.liberar(arquivoComentado);
     const { docx: _, ...semDocx } = revisao;
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
@@ -467,7 +477,8 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
                 Effect.fail(
                   new FalhaRevisaoPpc({
                     arquivo: entrada.arquivo,
-                    motivo: "Já há uma revisão em andamento. Espere ela terminar e tente de novo.",
+                    motivo:
+                      "Já há uma revisão em andamento (pode ser a conferência do arquivo que você salvou no Word). Espere ela terminar e tente de novo.",
                   }),
                 ),
             }),
@@ -502,7 +513,16 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   });
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisarArquivo, montar, ocupada, exigirLiberado });
+  const sha256 = Effect.fn("RevisorPpc.sha256")(function* (arquivo: string) {
+    return (yield* lerArquivo(arquivo)).sha256;
+  });
+  const liberarCopia = Effect.fn("RevisorPpc.liberarCopia")(function* (original: string, copia: string) {
+    yield* exigirLiberado(original);
+    if (NodePath.dirname(copia) !== NodePath.dirname(original) || NodePath.extname(copia).toLowerCase() !== ".docx")
+      return yield* new FalhaRevisaoPpc({ arquivo: copia, motivo: "A cópia comentada não está na pasta do PPC." });
+    yield* liberacao.liberar(copia);
+  });
+  return RevisorPpc.of({ revisarArquivo, montar, ocupada, exigirLiberado, sha256, liberarCopia });
 });
 
 /**

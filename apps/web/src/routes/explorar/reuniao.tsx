@@ -3,14 +3,16 @@
  * o campus de cada um quando a curadoria os ligou. Vem do índice do Explorar; os documentos abrem na
  * publicação oficial, no navegador.
  */
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArrowLeftIcon } from "lucide-react";
 import { Badge } from "../../components/ui/badge.tsx";
 import { Button } from "../../components/ui/button.tsx";
 import { dataBr, pedidoSobre, primeiraMaiuscula } from "../../explorar/colecoes.ts";
 import { ComIndice } from "../../explorar/componentes.tsx";
 import { PerguntarIa } from "../../explorar/PerguntarIa.tsx";
+import { fichaDoLink } from "../../painel/conversar.ts";
 import { Cabecalho, Fatos, LinkExterno, Secao } from "../../leitor/pecas.tsx";
+import { LinkDaBase } from "../../painel/LinkDaBase.tsx";
 
 export const Route = createFileRoute("/explorar/reuniao")({
   component: Reuniao,
@@ -36,10 +38,10 @@ function Reuniao() {
                 <ArrowLeftIcon /> Voltar
               </Button>
               <PerguntarIa
-                pedido={pedidoSobre(
-                  `a ${r.titulo}${r.fonte ? `, pauta em ${r.fonte}` : ""}${cursos.length ? "; cursos da pauta" : ""}`,
-                  cursos,
-                )}
+                pedido={() => ({
+                  texto: pedidoSobre(`a ${r.titulo}${r.fonte ? `, pauta em ${r.fonte}` : ""}`, []),
+                  fichas: cursos.map((curso) => fichaDoLink(curso)),
+                })}
               />
             </div>
             <article aria-label="Reunião do Consepe" className="space-y-8">
@@ -66,18 +68,14 @@ function Reuniao() {
                         {i.resultado ? <span>{i.resultado}</span> : null}
                         {i.processo_sei ? <span>Processo SEI {i.processo_sei}</span> : null}
                         {i.curso ? (
-                          <Link to="/explorar/ver" search={{ link: `ifpr://curso/${i.curso}` }} className="link-grifo">
+                          <LinkDaBase link={`ifpr://curso/${i.curso}`} className="link-grifo">
                             Ficha do curso
-                          </Link>
+                          </LinkDaBase>
                         ) : null}
                         {i.campus ? (
-                          <Link
-                            to="/explorar/ver"
-                            search={{ link: `ifpr://campus/${i.campus}` }}
-                            className="link-grifo"
-                          >
+                          <LinkDaBase link={`ifpr://campus/${i.campus}`} className="link-grifo">
                             Campus {nomeCampus.get(i.campus) ?? i.campus}
-                          </Link>
+                          </LinkDaBase>
                         ) : null}
                       </p>
                     </li>

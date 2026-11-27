@@ -11,11 +11,15 @@
  * navegador mantém o trecho no lugar quando o texto de cima aparece. Os blocos montados usam
  * `content-visibility: auto`, e o navegador só desenha o que está à vista; o do trecho, não (com o
  * tamanho estimado, a rolagem até ele erraria o lugar). Para imprimir e para buscar, todos se montam
- * antes (`beforeprint` e `MONTAR_TUDO`, de `busca.ts`).
+ * antes (`beforeprint` e o `montarTudo` da instância, `instancia.ts`).
  *
- * O índice da norma (`Sumario.tsx`) pede a rolagem até um item ou um artigo (`IR_PARA`): o bloco do
- * destino se monta na hora, e o texto rola até o elemento. Os cabeçalhos do sumário ganham um `id`
- * (`sumario-<linha>`) e os de divisão, a classe `divisao`.
+ * O índice da norma (`Sumario.tsx`) pede a rolagem até um item ou um artigo (o `irPara` da instância): o
+ * bloco do destino se monta na hora, e o texto rola até o elemento. Os cabeçalhos do sumário ganham um
+ * `id` (`sumario-<linha>`) e os de divisão, a classe `divisao`. Todo `id` leva o prefixo da instância do
+ * leitor, para a mesma norma poder estar aberta na tela e no painel.
+ *
+ * Selecionar texto mostra a barra da seleção (`BarraSelecao.tsx`): "Perguntar sobre este trecho" e "Copiar
+ * citação", com o dispositivo do começo da seleção.
  */
 import type { Ancora, DadosDocumento } from "@simplifica-if/contratos-app";
 import { ImageOffIcon } from "lucide-react";
@@ -23,13 +27,17 @@ import { type ComponentProps, memo, useEffect, useLayoutEffect, useMemo, useRef,
 import { flushSync } from "react-dom";
 import ReactMarkdown, { type Components, type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { leitorEmFoco } from "../components/BuscaPainel.tsx";
 import { AbrirLink, LinkMarkdown, transformarUrl } from "../components/Markdown.tsx";
+import { BarraSelecao } from "./BarraSelecao.tsx";
 import { type Bloco, blocoDaLinha, dividirEmBlocos, ordemDeMontagem } from "./blocos.ts";
-import { MONTAR_TUDO } from "./busca.ts";
+import { pintar } from "./destaques.ts";
+import { raizAImprimir, useInstanciaLeitor } from "./instancia.ts";
 import { faixasDoRealce, NOME_REALCE, rolarAte, textosDe } from "./realce.ts";
 import { ancorasPorLinha, linhasDoTrecho, rehypeDispositivos } from "./rehypeDispositivos.ts";
 import { remarkMarcadores, remarkQuebras } from "./remarkLeitor.ts";
-import { ancorasDoSumario, type Destino, IR_PARA, linhasDeDivisao } from "./sumario.ts";
+import { ancorasDoSumario, linhasDeDivisao } from "./sumario.ts";
+import type { AoAbrirLink } from "../painel/abrirLink.ts";
 
 /** Imagem do PPC: não se carrega (o endereço vem de entrada não confiável e não está na base). */
 function ImagemOmitida({ alt }: ComponentProps<"img">) {
@@ -52,20 +60,31 @@ const BlocoMarkdown = memo(
     ancoras,
     destaque,
     divisoes,
+    prefixo,
   }: {
     readonly bloco: Bloco;
     readonly ancoras: ReadonlyMap<number, ReadonlyArray<string>>;
     readonly destaque: Trecho | null;
     readonly divisoes: ReadonlySet<number>;
+    readonly prefixo: string;
   }) {
     const plugins = useMemo(
       (): Options["rehypePlugins"] => [
         [
           rehypeDispositivos,
-          { ancoras, destaque, divisoes, deslocamento: bloco.linhaInicial - 1, linhaFinal: bloco.linhaFinal },
+          { ancoras, destaque, divisoes, prefixo, deslocamento: bloco.linhaInicial - 1, linhaFinal: bloco.linhaFinal },
         ],
       ],
-      [ancoras, destaque, divisoes, bloco.linhaInicial, bloco.linhaFinal],
+      [ancoras, destaque, divisoes, prefixo, bloco.linhaInicial, bloco.linhaFinal],
+    );
+    // As notas de rodapé do GFM também levam o prefixo nos `id` (o título delas, no `rehypeDispositivos`).
+    const opcoesRehype = useMemo(
+      () => ({
+        clobberPrefix: `${prefixo}user-content-`,
+        footnoteLabel: "Notas de rodapé",
+        footnoteBackLabel: (indice: number) => `Voltar à chamada da nota ${indice + 1}`,
+      }),
+      [prefixo],
     );
     return (
       <div
@@ -75,6 +94,7 @@ const BlocoMarkdown = memo(
         <ReactMarkdown
           remarkPlugins={PLUGINS_REMARK}
           rehypePlugins={plugins}
+          remarkRehypeOptions={opcoesRehype}
           components={COMPONENTES}
           urlTransform={transformarUrl}
           skipHtml
@@ -88,6 +108,7 @@ const BlocoMarkdown = memo(
     antes.bloco === depois.bloco &&
     antes.ancoras === depois.ancoras &&
     antes.divisoes === depois.divisoes &&
+    antes.prefixo === depois.prefixo &&
     antes.destaque?.inicio === depois.destaque?.inicio &&
     antes.destaque?.fim === depois.destaque?.fim,
 );
@@ -128,12 +149,13 @@ export function Documento({
   };
   /** O fragmento a destacar e a mostrar (`art28-xviii`); `null` abre no começo. */
   readonly alvo: string | null;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
   /** O nome acessível do texto ("Texto da norma"). */
   readonly rotulo: string;
   /** A frase a realçar dentro do trecho destacado (o trecho da pendência); `null` destaca só o bloco. */
   readonly realce?: string | null;
 }) {
+  const instancia = useInstanciaLeitor();
   const blocos = useMemo(() => dividirEmBlocos(documento.markdown), [documento.markdown]);
   const ancoras = useMemo(
     () => ancorasPorLinha([...documento.ancoras, ...ancorasDoSumario(documento.sumario ?? [])]),
@@ -170,32 +192,37 @@ export function Documento({
     return () => cancelar();
   }, [blocos, primeiro]);
 
-  // Para imprimir e para buscar (Ctrl/⌘+F no painel), o documento inteiro.
+  const conteiner = useRef<HTMLDivElement>(null);
+  const caixa = useRef<HTMLDivElement>(null);
+
+  // Para imprimir e para buscar (Ctrl/⌘+F), o documento inteiro.
   useEffect(() => {
     // Já tudo montado, o mesmo estado: a busca pede a cada tecla e não deve renderizar a lista de novo.
     const montarTudo = () =>
       flushSync(() =>
         setMontados((atuais) => (atuais.size === blocos.length ? atuais : new Set(blocos.map((_, i) => i)))),
       );
-    window.addEventListener("beforeprint", montarTudo);
-    window.addEventListener(MONTAR_TUDO, montarTudo);
-    return () => {
-      window.removeEventListener("beforeprint", montarTudo);
-      window.removeEventListener(MONTAR_TUDO, montarTudo);
+    // Na impressão, só o leitor que vai para o papel monta tudo (um PPC chega a 720 mil caracteres).
+    const aoImprimir = () => {
+      const raiz = raizAImprimir(leitorEmFoco);
+      if (raiz === undefined || raiz.contains(conteiner.current)) montarTudo();
     };
-  }, [blocos]);
-
-  const conteiner = useRef<HTMLDivElement>(null);
+    window.addEventListener("beforeprint", aoImprimir);
+    const pararDeOuvir = instancia.aoMontarTudo(montarTudo);
+    return () => {
+      window.removeEventListener("beforeprint", aoImprimir);
+      pararDeOuvir();
+    };
+  }, [blocos, instancia]);
 
   // O índice pede um item ou um artigo: o bloco dele se monta já, e o texto rola até o elemento. Os
   // blocos de cima ainda podem mudar de altura ao se desenhar; dois quadros depois, a rolagem se acerta.
   useEffect(() => {
     let quadro = 0;
-    const irPara = (evento: Event) => {
-      const { id, linha } = (evento as CustomEvent<Destino>).detail;
+    const pararDeOuvir = instancia.aoIrPara(({ id, linha }) => {
       const indice = blocoDaLinha(blocos, linha);
       flushSync(() => setMontados((atuais) => (atuais.has(indice) ? atuais : new Set(atuais).add(indice))));
-      const elemento = conteiner.current?.querySelector(`[id="${CSS.escape(id)}"]`);
+      const elemento = conteiner.current?.querySelector(`[id="${CSS.escape(instancia.id(id))}"]`);
       if (!(elemento instanceof HTMLElement)) return;
       cancelAnimationFrame(quadro);
       let acertos = 2;
@@ -205,20 +232,19 @@ export function Documento({
         acertos -= 1;
       };
       rolar();
-    };
-    window.addEventListener(IR_PARA, irPara);
+    });
     return () => {
-      window.removeEventListener(IR_PARA, irPara);
+      pararDeOuvir();
       cancelAnimationFrame(quadro);
     };
-  }, [blocos]);
+  }, [blocos, instancia]);
 
   // Rola até o trecho pedido, uma vez por alvo.
   const rolado = useRef<string | null>(null);
   useLayoutEffect(() => {
     const chave = `${documento.link}#${alvo ?? ""}`;
     if (alvo === null || rolado.current === chave) return;
-    const elemento = conteiner.current?.querySelector(`[id="${CSS.escape(alvo)}"]`);
+    const elemento = conteiner.current?.querySelector(`[id="${CSS.escape(instancia.id(alvo))}"]`);
     if (elemento instanceof HTMLElement) {
       rolado.current = chave;
       elemento.scrollIntoView({ block: "start" });
@@ -231,31 +257,35 @@ export function Documento({
     if (realce === null || trecho === null || raiz === null || !("highlights" in CSS)) return;
     const faixas = faixasDoRealce(textosDe([...raiz.querySelectorAll("mark.trecho-citado")]), realce);
     if (faixas.length === 0) return;
-    CSS.highlights.set(NOME_REALCE, new Highlight(...faixas));
+    const apagar = pintar(NOME_REALCE, faixas);
     raiz.classList.add("com-realce");
     rolarAte(faixas[0]!);
     return () => {
-      CSS.highlights.delete(NOME_REALCE);
+      apagar();
       raiz.classList.remove("com-realce");
     };
   }, [realce, trecho]);
 
   return (
     <AbrirLink value={aoAbrirLink}>
-      <div ref={conteiner} role="document" aria-label={rotulo} className="markdown documento-leitor" data-conteudo>
-        {blocos.map((bloco, i) =>
-          visiveis.has(i) ? (
-            <BlocoMarkdown
-              key={bloco.linhaInicial}
-              bloco={bloco}
-              ancoras={ancoras}
-              divisoes={divisoes}
-              destaque={trecho !== null && i >= primeiro && i <= ultimo ? trecho : null}
-            />
-          ) : (
-            <EspacoReservado key={bloco.linhaInicial} bloco={bloco} />
-          ),
-        )}
+      <div ref={caixa} className="relative">
+        <BarraSelecao conteiner={conteiner} caixa={caixa} documento={documento.link} prefixo={instancia.prefixo} />
+        <div ref={conteiner} role="document" aria-label={rotulo} className="markdown documento-leitor" data-conteudo>
+          {blocos.map((bloco, i) =>
+            visiveis.has(i) ? (
+              <BlocoMarkdown
+                key={bloco.linhaInicial}
+                bloco={bloco}
+                ancoras={ancoras}
+                divisoes={divisoes}
+                prefixo={instancia.prefixo}
+                destaque={trecho !== null && i >= primeiro && i <= ultimo ? trecho : null}
+              />
+            ) : (
+              <EspacoReservado key={bloco.linhaInicial} bloco={bloco} />
+            ),
+          )}
+        </div>
       </div>
     </AbrirLink>
   );

@@ -25,6 +25,7 @@ import { Route as ExplorarPpcsRouteImport } from './routes/explorar/ppcs'
 import { Route as ExplorarNormasRouteImport } from './routes/explorar/normas'
 import { Route as ExplorarCursosRouteImport } from './routes/explorar/cursos'
 import { Route as ExplorarConsepeRouteImport } from './routes/explorar/consepe'
+import { Route as ExplorarCompararRouteImport } from './routes/explorar/comparar'
 import { Route as ExplorarCnctRouteImport } from './routes/explorar/cnct'
 import { Route as ExplorarCampiRouteImport } from './routes/explorar/campi'
 
@@ -108,6 +109,11 @@ const ExplorarConsepeRoute = ExplorarConsepeRouteImport.update({
   path: '/consepe',
   getParentRoute: () => ExplorarRoute,
 } as any)
+const ExplorarCompararRoute = ExplorarCompararRouteImport.update({
+  id: '/comparar',
+  path: '/comparar',
+  getParentRoute: () => ExplorarRoute,
+} as any)
 const ExplorarCnctRoute = ExplorarCnctRouteImport.update({
   id: '/cnct',
   path: '/cnct',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/tarefas': typeof TarefasRoute
   '/explorar/campi': typeof ExplorarCampiRoute
   '/explorar/cnct': typeof ExplorarCnctRoute
+  '/explorar/comparar': typeof ExplorarCompararRoute
   '/explorar/consepe': typeof ExplorarConsepeRoute
   '/explorar/cursos': typeof ExplorarCursosRoute
   '/explorar/normas': typeof ExplorarNormasRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/tarefas': typeof TarefasRoute
   '/explorar/campi': typeof ExplorarCampiRoute
   '/explorar/cnct': typeof ExplorarCnctRoute
+  '/explorar/comparar': typeof ExplorarCompararRoute
   '/explorar/consepe': typeof ExplorarConsepeRoute
   '/explorar/cursos': typeof ExplorarCursosRoute
   '/explorar/normas': typeof ExplorarNormasRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/tarefas': typeof TarefasRoute
   '/explorar/campi': typeof ExplorarCampiRoute
   '/explorar/cnct': typeof ExplorarCnctRoute
+  '/explorar/comparar': typeof ExplorarCompararRoute
   '/explorar/consepe': typeof ExplorarConsepeRoute
   '/explorar/cursos': typeof ExplorarCursosRoute
   '/explorar/normas': typeof ExplorarNormasRoute
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
     | '/tarefas'
     | '/explorar/campi'
     | '/explorar/cnct'
+    | '/explorar/comparar'
     | '/explorar/consepe'
     | '/explorar/cursos'
     | '/explorar/normas'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/tarefas'
     | '/explorar/campi'
     | '/explorar/cnct'
+    | '/explorar/comparar'
     | '/explorar/consepe'
     | '/explorar/cursos'
     | '/explorar/normas'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/tarefas'
     | '/explorar/campi'
     | '/explorar/cnct'
+    | '/explorar/comparar'
     | '/explorar/consepe'
     | '/explorar/cursos'
     | '/explorar/normas'
@@ -367,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExplorarConsepeRouteImport
       parentRoute: typeof ExplorarRoute
     }
+    '/explorar/comparar': {
+      id: '/explorar/comparar'
+      path: '/comparar'
+      fullPath: '/explorar/comparar'
+      preLoaderRoute: typeof ExplorarCompararRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
     '/explorar/cnct': {
       id: '/explorar/cnct'
       path: '/cnct'
@@ -387,6 +406,7 @@ declare module '@tanstack/react-router' {
 interface ExplorarRouteChildren {
   ExplorarCampiRoute: typeof ExplorarCampiRoute
   ExplorarCnctRoute: typeof ExplorarCnctRoute
+  ExplorarCompararRoute: typeof ExplorarCompararRoute
   ExplorarConsepeRoute: typeof ExplorarConsepeRoute
   ExplorarCursosRoute: typeof ExplorarCursosRoute
   ExplorarNormasRoute: typeof ExplorarNormasRoute
@@ -399,6 +419,7 @@ interface ExplorarRouteChildren {
 const ExplorarRouteChildren: ExplorarRouteChildren = {
   ExplorarCampiRoute: ExplorarCampiRoute,
   ExplorarCnctRoute: ExplorarCnctRoute,
+  ExplorarCompararRoute: ExplorarCompararRoute,
   ExplorarConsepeRoute: ExplorarConsepeRoute,
   ExplorarCursosRoute: ExplorarCursosRoute,
   ExplorarNormasRoute: ExplorarNormasRoute,

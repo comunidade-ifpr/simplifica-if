@@ -102,6 +102,11 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
     Effect.gen(function* () {
       const { dados } = yield* comCliente(bancoExplorar(), (c) => c.explorarIndice({}));
       expect(dados.normas.map((n) => n.id)).toContain("br/cne-cp/res/2026/2");
+      // as normas com tabela de correspondência se comparam, nos dois sentidos
+      const comparar = (id: string) => dados.normas.find((n) => n.id === id)?.comparar_com;
+      expect(comparar("br/cne-cp/res/2021/1")).toEqual([{ norma: "br/cne-cp/res/2026/2", relacao: "sucessora" }]);
+      expect(comparar("br/cne-cp/res/2026/2")).toEqual([{ norma: "br/cne-cp/res/2021/1", relacao: "anterior" }]);
+      expect(comparar("br/cne-ceb/res/2012/6")).toEqual([]);
       const enfermagem = dados.cursos.find((c) => c.id === CURSO_ENFERMAGEM)!;
       expect(enfermagem).toMatchObject({
         campus_nome: "Curitiba",
@@ -138,6 +143,16 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
         link: "ifpr://norma/br/cne-cp/res/2021/1#art20",
         detalhe: expect.stringContaining("Citação reconhecida"),
       });
+      // a norma do trecho achado tem tabela de correspondência: a comparação vem junto, uma vez só
+      expect(dados.comparacoes).toEqual([
+        {
+          a: "br/cne-cp/res/2021/1",
+          b: "br/cne-cp/res/2026/2",
+          titulo_a: "Resolução CNE/CP nº 1/2021",
+          titulo_b: "Resolução CNE/CP nº 2/2026",
+          relacao: "sucessora",
+        },
+      ]);
     }),
   );
 
@@ -146,6 +161,7 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       const banco = bancoExplorar();
       const curso = yield* comCliente(banco, (c) => c.explorarBuscar({ consulta: "enferm curitiba", limite: 6 }));
       expect(tipos(curso.dados)[0]).toBe("curso");
+      expect(curso.dados.comparacoes).toEqual([]);
       expect(grupo(curso.dados, "curso")[0]).toMatchObject({
         titulo: "Técnico em Enfermagem",
         link: `ifpr://curso/${CURSO_ENFERMAGEM}`,

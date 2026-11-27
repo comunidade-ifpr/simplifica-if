@@ -4,15 +4,28 @@
  * ou "Retirado" quando couber. Aberta: a explicação em texto comum, o que falta como lista (o servidor
  * manda as três partes separadas), o que fazer, o trecho do PPC (na serifada, com
  * o filete da cor da gravidade, o rótulo "Trecho no PPC" e "Copiar trecho"), as fontes pelo nome (o link `ifpr://` abre o painel de leitura) e as ações: "Feito"
- * (ou "Desfazer"), "Sugerir texto" e, no ⋯, "Discordar", "Reconferir com o arquivo novo" e "Detalhes".
+ * (ou "Desfazer"), "Sugerir texto", "Conversar sobre esta pendência" (a conversa ao lado da revisão, no
+ * painel, com o PPC, a pendência e o documento aberto no Ler como fichas) e, no ⋯, "Discordar", "Reconferir
+ * com o arquivo novo" e "Detalhes". Com a
+ * revisão acompanhando um arquivo no Word, a pendência da IA marcada "Feito" ganha "Reconferir com a IA"
+ * (no arquivo acompanhado), e a que um salvamento resolveu fica realçada por um instante.
  *
  * Cada ação com IA mostra a estimativa antes de confirmar; a sugestão nunca é aplicada ao documento.
  * As ações (`sugerir`, `contestar`, `revisarDeNovo`, `marcar`) passam pelo `ControleRevisao`, que
  * também unifica a recuperação quando o servidor pede o arquivo de novo.
  */
+import { DESCRICOES } from "../../providers.ts";
 import type { EstimativaAcao, PendenciaViva, SugestaoTexto } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
-import { CheckIcon, ClipboardCopyIcon, EllipsisIcon, FileSearchIcon, SparklesIcon, Undo2Icon } from "lucide-react";
-import { type FormEvent, type ReactNode, useEffect, useState } from "react";
+import {
+  CheckIcon,
+  ClipboardCopyIcon,
+  EllipsisIcon,
+  FileSearchIcon,
+  MessageSquareIcon,
+  SparklesIcon,
+  Undo2Icon,
+} from "lucide-react";
+import { type FormEvent, type MouseEvent, type ReactNode, useEffect, useState } from "react";
 import { AvisoErro } from "../../components/AvisoErro.tsx";
 import { Badge } from "../../components/ui/badge.tsx";
 import { Button } from "../../components/ui/button.tsx";
@@ -21,8 +34,12 @@ import { LinhaExpansivel } from "../../components/ui/linha-expansivel.tsx";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../../components/ui/menu.tsx";
 import { Spinner } from "../../components/ui/spinner.tsx";
 import { Textarea } from "../../components/ui/textarea.tsx";
+import { useApp } from "../../contexto.tsx";
+import { juntarPedidos, pedidoDoLer } from "../../painel/conversar.ts";
 import { useRevisao } from "./contexto.ts";
+import { ehLinkDaRevisao, pedidoDaRevisao } from "./conversa.ts";
 import { dataCurta } from "../../lib/formato.ts";
+import { type AoAbrirLink, ondeDoClique } from "../../painel/abrirLink.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
 import { cn } from "~/lib/utils";
 import { providerDaRevisao } from "./ControleRevisao.ts";
@@ -31,9 +48,9 @@ import { textoEstimativaAcao } from "./ia.ts";
 import { IndicadorGravidade } from "./IndicadorGravidade.tsx";
 import { gravidadeDe, localizacao } from "./lista.ts";
 
-type Painel = "nenhum" | "sugerir" | "discordar" | "reconferir" | "detalhes";
+type Painel = "nenhum" | "sugerir" | "discordar" | "reconferir" | "reconferirIa" | "detalhes";
 
-const FILETE = { corrigir: "border-grav-corrigir", conferir: "border-grav-conferir" } as const;
+export const FILETE = { corrigir: "border-grav-corrigir", conferir: "border-grav-conferir" } as const;
 
 export function LinhaPendencia({
   id,
@@ -43,11 +60,12 @@ export function LinhaPendencia({
 }: {
   readonly id: string;
   readonly viva: PendenciaViva;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
   /** O trecho no PPC revisado (`ifpr://revisao/…#p-<chave>`), para "Ver no PPC". */
   readonly linkNoPpc: string;
 }) {
   const [estado, revisao] = useRevisao();
+  const app = useApp();
   const p = viva.pendencia;
   const gravidade = gravidadeDe(p);
   const feita = viva.situacao === "resolvida";
@@ -58,6 +76,10 @@ export function LinhaPendencia({
 
   const aberta = estado.aberta === viva.chave;
   const nova = estado.novas.has(viva.chave);
+  const realcada = estado.acompanhamento.realce.has(viva.chave);
+  const acompanhado = estado.lista?.arquivoAcompanhado ?? null;
+  const reconferirComIa =
+    acompanhado !== null && feita && p.origem === "ia" && viva.aceitaIa && viva.resolvidaPor === "pessoa";
   const marcando = estado.marcando === viva.chave;
   const ocupada = estado.acaoPendencia === viva.chave;
   const erro = estado.erroPendencia?.chave === viva.chave ? estado.erroPendencia.erro : undefined;
@@ -94,7 +116,11 @@ export function LinhaPendencia({
         </span>
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-small">
           {onde === null ? null : <span>{onde}</span>}
-          {feita ? <span className="text-grav-ok-texto">Feito</span> : null}
+          {realcada ? (
+            <span className="text-grav-ok-texto">Resolvido ao salvar</span>
+          ) : feita ? (
+            <span className="text-grav-ok-texto">Feito</span>
+          ) : null}
           {viva.situacao === "contestada_mantida" ? <span>Mantido</span> : null}
           {retirada ? <Badge variant="retirado">Retirado</Badge> : null}
           {nova ? <Badge variant="novo">Novo</Badge> : null}
@@ -106,6 +132,11 @@ export function LinhaPendencia({
   return (
     <LinhaExpansivel
       id={id}
+      atalhos="F"
+      className={cn(
+        "transition-colors duration-1000 motion-reduce:transition-none",
+        realcada && "bg-grav-ok/15 duration-150",
+      )}
       aberta={aberta}
       aoAlternar={() => {
         setPainel("nenhum");
@@ -114,6 +145,11 @@ export function LinhaPendencia({
       cabecalho={cabecalho}
     >
       <div className="flex flex-col gap-5 pt-1 pl-[calc(5.5rem+0.75rem)]">
+        {viva.julgadaPor === null ? null : (
+          <p className="text-muted-foreground text-small" data-julgada-por>
+            Julgada pelo {DESCRICOES[viva.julgadaPor].curto}.
+          </p>
+        )}
         {retirada ? (
           <p className="text-muted-foreground text-small">Retirado: a IA conferiu o trecho que você indicou.</p>
         ) : null}
@@ -145,7 +181,11 @@ export function LinhaPendencia({
           <p className="whitespace-pre-line text-body">{p.oQueFazer}</p>
         </div>
         {p.trecho === null ? null : (
-          <Trecho trecho={p.trecho} filete={FILETE[gravidade]} aoVerNoPpc={() => aoAbrirLink(linkNoPpc)} />
+          <Trecho
+            trecho={p.trecho}
+            filete={FILETE[gravidade]}
+            aoVerNoPpc={(evento) => aoAbrirLink(linkNoPpc, ondeDoClique(evento))}
+          />
         )}
         {p.fontes.length ? (
           <div className="flex max-w-[68ch] flex-col gap-1.5">
@@ -153,7 +193,11 @@ export function LinhaPendencia({
             <ul className="flex flex-col gap-1 text-small">
               {p.fontes.map((fonte) => (
                 <li key={fonte.link}>
-                  <button type="button" className="text-left link-grifo" onClick={() => aoAbrirLink(fonte.link)}>
+                  <button
+                    type="button"
+                    className="text-left link-grifo"
+                    onClick={(evento) => aoAbrirLink(fonte.link, ondeDoClique(evento))}
+                  >
                     {fonte.rotulo}
                   </button>
                 </li>
@@ -178,11 +222,36 @@ export function LinhaPendencia({
               {marcando ? <Spinner /> : <CheckIcon />} Feito
             </Button>
           )}
+          {reconferirComIa ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={ocupada || estado.acompanhamento.pedeArquivo}
+              onClick={() => setPainel("reconferirIa")}
+            >
+              <SparklesIcon /> Reconferir com a IA
+            </Button>
+          ) : null}
           {viva.aceitaIa && !retirada && !feita ? (
             <Button size="sm" variant="ghost" disabled={ocupada} onClick={() => setPainel("sugerir")}>
               <SparklesIcon /> {viva.sugestao === null ? "Sugerir texto" : "Sugerir outro texto"}
             </Button>
           ) : null}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              app.painel.conversar(
+                juntarPedidos(
+                  pedidoDaRevisao({ api: app.api, revisao, conversas: app.conversas }, viva.chave),
+                  // O PPC desta revisão no Ler (talvez na âncora de outra pendência) já vai na ficha do PPC.
+                  pedidoDoLer(app, ehLinkDaRevisao(estado.lista?.id ?? "")),
+                ),
+              )
+            }
+          >
+            <MessageSquareIcon /> Conversar sobre esta pendência
+          </Button>
           <Menu>
             <MenuTrigger render={<Button size="icon-sm" variant="ghost" aria-label="Mais ações" title="Mais ações" />}>
               <EllipsisIcon />
@@ -228,6 +297,17 @@ export function LinhaPendencia({
             ocupada={ocupada}
           />
         ) : null}
+        {painel === "reconferirIa" && acompanhado !== null ? (
+          <Confirmar
+            titulo={`Pedir ao ${nomeIa(provider)} que confira de novo este ponto`}
+            descricao="A IA lê só este critério no arquivo que você salvou no Word, e a situação passa a ser a do resultado: se o ponto ainda aparece, ele volta a ficar em aberto."
+            botao="Reconferir"
+            estimar={() => revisao.estimarAcao(viva.chave, "revisarDeNovo")}
+            aoConfirmar={() => rodar(revisao.revisarDeNovo(viva.chave, acompanhado))}
+            aoFechar={fecharPainel}
+            ocupada={ocupada}
+          />
+        ) : null}
         {painel === "detalhes" ? <Detalhes viva={viva} aoFechar={fecharPainel} /> : null}
         {erro === undefined ? null : <AvisoErro erro={erro} />}
         {erro !== undefined && pedeArquivo ? (
@@ -241,7 +321,7 @@ export function LinhaPendencia({
 }
 
 /** O rótulo de uma parte da pendência aberta: discreto, para o texto abaixo dele falar mais alto. */
-function Rotulo({ children }: { readonly children: ReactNode }) {
+export function Rotulo({ children }: { readonly children: ReactNode }) {
   return <p className="font-semibold text-muted-foreground text-small">{children}</p>;
 }
 
@@ -250,14 +330,14 @@ function Rotulo({ children }: { readonly children: ReactNode }) {
  * e destacado no trecho, para ler o contexto) e "Copiar trecho" (para achar no Word com Ctrl+F). A seção
  * já está no cabeçalho da linha. A citação não é botão: a pessoa seleciona o texto.
  */
-function Trecho({
+export function Trecho({
   trecho,
   filete,
   aoVerNoPpc,
 }: {
   readonly trecho: string;
   readonly filete: string;
-  readonly aoVerNoPpc: () => void;
+  readonly aoVerNoPpc: (evento: MouseEvent) => void;
 }) {
   const [copiado, setCopiado] = useState(false);
   return (
@@ -312,7 +392,7 @@ function Painel({ titulo, children }: { readonly titulo: string; readonly childr
   );
 }
 
-function Confirmar({
+export function Confirmar({
   titulo,
   descricao,
   botao,
@@ -465,7 +545,7 @@ function Detalhes({ viva, aoFechar }: { readonly viva: PendenciaViva; readonly a
         <dt className="text-muted-foreground">Quem apontou</dt>
         <dd>
           {p.origem === "ia"
-            ? "a conferência com IA, com o trecho e as normas conferidos pelo app"
+            ? `a conferência com IA${viva.julgadaPor === null ? "" : ` (julgada pelo ${DESCRICOES[viva.julgadaPor].curto})`}, com o trecho e as normas conferidos pelo app`
             : "a conferência automática"}
         </dd>
         <dt className="text-muted-foreground">Tema</dt>
@@ -497,7 +577,7 @@ function Detalhes({ viva, aoFechar }: { readonly viva: PendenciaViva; readonly a
   );
 }
 
-function Sugestao({ sugestao, nome }: { readonly sugestao: SugestaoTexto; readonly nome: string }) {
+export function Sugestao({ sugestao, nome }: { readonly sugestao: SugestaoTexto; readonly nome: string }) {
   const [copiada, setCopiada] = useState(false);
   return (
     <div className="flex max-w-[68ch] flex-col gap-2">

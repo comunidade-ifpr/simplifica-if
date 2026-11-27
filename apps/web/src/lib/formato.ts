@@ -57,6 +57,7 @@ const DATA_EXTENSO = new Intl.DateTimeFormat(LINGUA, {
   timeZone: "UTC",
 });
 const DATA_HORA = new Intl.DateTimeFormat(LINGUA, { dateStyle: "short", timeStyle: "short" });
+const HORA = new Intl.DateTimeFormat(LINGUA, { hour: "2-digit", minute: "2-digit" });
 const DATA_LOCAL = new Intl.DateTimeFormat(LINGUA, { day: "2-digit", month: "2-digit", year: "numeric" });
 
 /** A data no começo de um texto ISO (`2026-11-12`, `2026-11-12T03:00:00Z`), em UTC; `null` se não é data. */
@@ -87,6 +88,12 @@ function instante(quando: string | number | Date): Date | null {
 export function dataHora(quando: string | number | Date): string {
   const data = instante(quando);
   return data === null ? String(quando) : DATA_HORA.format(data);
+}
+
+/** Só a hora de um instante, no fuso do computador: "14:05". */
+export function horaDe(quando: string | number | Date): string {
+  const data = instante(quando);
+  return data === null ? String(quando) : HORA.format(data);
 }
 
 /** Só o dia de um instante, no fuso do computador: "12/11/2026". */

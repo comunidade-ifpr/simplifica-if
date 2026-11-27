@@ -10,14 +10,16 @@ export const PROVIDERS: ReadonlyArray<Provider> = ["claude", "codex", "antigravi
 export interface DescricaoProvider {
   /** O nome do produto. */
   readonly nome: string;
+  /** O nome curto, nas frases ("O Claude chegou ao limite", "Continuar com ChatGPT"). */
+  readonly curto: string;
   /** A assinatura que a pessoa usa. */
   readonly conta: string;
 }
 
 export const DESCRICOES: Readonly<Record<Provider, DescricaoProvider>> = {
-  claude: { nome: "Claude", conta: "Conta Claude Pro, Max, Team ou Enterprise (ou chave de API)" },
-  codex: { nome: "ChatGPT (Codex)", conta: "Conta da OpenAI (ChatGPT Plus ou Pro)" },
-  antigravity: { nome: "Gemini (Antigravity)", conta: "Conta do Google" },
+  claude: { nome: "Claude", curto: "Claude", conta: "Conta Claude Pro, Max, Team ou Enterprise (ou chave de API)" },
+  codex: { nome: "ChatGPT (Codex)", curto: "ChatGPT", conta: "Conta da OpenAI (ChatGPT Plus ou Pro)" },
+  antigravity: { nome: "Gemini (Antigravity)", curto: "Gemini", conta: "Conta do Google" },
 };
 
 const FASES_INSTALACAO: Readonly<Record<EstadoInstalacao["fase"], string>> = {

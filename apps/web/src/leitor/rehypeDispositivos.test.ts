@@ -52,6 +52,14 @@ describe("rehypeDispositivos", () => {
     expect(saida).not.toContain("<mark");
   });
 
+  it("com o prefixo da instância do leitor, todo id o leva, também o das âncoras na mesma linha", () => {
+    const ancoras = ancorasPorLinha([...ANCORAS, { id: "art28-caput", linha_inicio: 3 }]);
+    const saida = html(NORMA, { ancoras, destaque: null, deslocamento: 0, prefixo: "painel-" });
+    expect(saida).toContain('<h4 id="painel-art28"><span id="painel-art28-caput"></span>Art. 28.</h4>');
+    expect(saida).toContain('<li id="painel-art28-i">');
+    expect(saida).not.toMatch(/id="art/);
+  });
+
   it("marca os cabeçalhos de divisão pela linha", () => {
     const saida = html(["## TÍTULO I", "", "### DAS FINALIDADES", "", "#### Art. 1º"].join("\n"), {
       ancoras: ancorasPorLinha([{ id: "sumario-1", linha_inicio: 1 }]),

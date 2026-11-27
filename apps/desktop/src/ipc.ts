@@ -1,8 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off globalFetch:off -- processo principal do Electron, sem runtime Effect (ver README)
 /**
  * O IPC entre o preload (`window.simplifica`) e o processo principal. Cada canal passa por `tratar`,
- * que só atende o quadro principal da janela do app, na origem da interface: é dele que sai o token, e
- * só ele abre diálogos e arquivos. O resto do pedido (o caminho, a URL, as extensões) chega como
+ * que só atende o quadro principal de uma janela do app (`janelas.ts`), na origem da interface: é dele que
+ * sai o token, e só ele abre diálogos e arquivos. A janela que pediu (`BrowserWindow.fromWebContents`) vai
+ * a quem atende: os diálogos ficam presos a ela, e o modo compacto e a tela cheia são dela. O resto do pedido (o caminho, a URL, as extensões) chega como
  * `unknown` e é conferido pelas regras de `seguranca.ts`. Os canais de um módulo ficam com ele
  * (`modulos/revisao-ppc/ipc.ts`), registrados daqui, com o mesmo `tratar` (arquivo de composição).
  */
@@ -14,7 +15,14 @@ import {
   type CredenciaisServidor,
   cortarRegistro,
 } from "@simplifica-if/contratos-app/ponte";
-import { dialog, ipcMain, nativeTheme, shell, type BrowserWindow, type IpcMainInvokeEvent } from "electron";
+import { BrowserWindow, dialog, ipcMain, nativeTheme, shell, type IpcMainInvokeEvent } from "electron";
+import {
+  type ConjuntoJanelas,
+  MAXIMO_ROTA_JANELA,
+  remetenteConfiavel,
+  remetenteDoEvento,
+  rotaValida,
+} from "./janelas.ts";
 import {
   anexoEscolhido,
   arquivoDeTarefaPermitido,
@@ -28,15 +36,16 @@ import { registrarIpcRevisaoPpc } from "./modulos/revisao-ppc/ipc.ts";
 /** Quantos arquivos um soltar libera de uma vez. */
 const MAXIMO_SOLTOS = 20;
 
-/** O que o IPC lê do processo principal, que guarda o estado (a janela, o servidor). */
+/** O que o IPC lê do processo principal, que guarda o estado (as janelas, o servidor). */
 export interface ContextoIpc {
   /** A origem da interface (`Configuracao.urlJanela`). */
   readonly urlJanela: string;
   /** A raiz das pastas de tarefa (`Documentos/Simplifica IF`). */
   readonly pastaTrabalhos: string;
-  janela(): BrowserWindow | undefined;
-  /** A conexão com o servidor desta execução; a janela a pediu, então a interface carregou. */
-  conexao(): Promise<CredenciaisServidor>;
+  /** As janelas abertas: só elas são atendidas. */
+  readonly janelas: Pick<ConjuntoJanelas<BrowserWindow>, "tem">;
+  /** A conexão com o servidor desta execução; a janela a pediu, então a interface dela carregou. */
+  conexao(remetente: BrowserWindow): Promise<CredenciaisServidor>;
   /** A conexão atual, sem efeito colateral (para liberar arquivos no servidor). */
   conexaoAtual(): Promise<CredenciaisServidor> | undefined;
   /** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
@@ -44,61 +53,93 @@ export interface ContextoIpc {
   reiniciarServidor(): Promise<void>;
   /** Grava no log do app um erro da interface (`PonteDesktop.registrarErro`), com um teto por minuto. */
   registrarInterface(texto: string): void;
+  /** O aviso do sistema pedido pela interface de uma janela (`avisos.ts`, que confere o pedido e o foco). */
+  avisar(pedido: unknown): void;
+  /** O selo com a contagem (`avisos.ts`, `contagemValida`). */
+  selo(pedido: unknown): void;
+  /** O modo compacto da janela que pediu (`compacta.ts`). */
+  compactar(janela: BrowserWindow, ligada: boolean): Promise<boolean>;
+  /** O alfinete do modo compacto da janela que pediu (`compacta.ts`). */
+  naFrente(janela: BrowserWindow, sempre: boolean): Promise<void>;
+  /** Abre uma janela nova na rota, já conferida, a partir da que pediu (`janelas.ts`). */
+  abrirJanela(rota: string, referencia: BrowserWindow): void;
+  /** A janela gravou o que pedia antes de fechar (`antesDeSair.ts`); só vale a resposta da que recebeu o pedido. */
+  prontoParaSair(janela: BrowserWindow, pedido: unknown): void;
 }
 
 /** Registra os canais do IPC. Chamado uma vez, na partida do processo principal. */
 export function registrarIpc(contexto: ContextoIpc): void {
-  /** Só a janela do app, no quadro principal e na origem da interface, recebe o token. */
-  const remetenteConfiavel = (evento: IpcMainInvokeEvent): boolean => {
-    const janela = contexto.janela();
-    const quadro = evento.senderFrame;
-    return (
-      janela !== undefined &&
-      !janela.isDestroyed() &&
-      evento.sender === janela.webContents &&
-      quadro !== null &&
-      quadro === evento.sender.mainFrame &&
-      isSameOriginRendererNavigation({ applicationUrl: contexto.urlJanela, navigationUrl: quadro.url })
-    );
+  /** A janela que mandou, se é uma janela do app, no quadro principal e na origem da interface. */
+  const remetente = (evento: IpcMainInvokeEvent): BrowserWindow | undefined => {
+    const dados = remetenteDoEvento(evento, (conteudo) => BrowserWindow.fromWebContents(conteudo));
+    return dados !== undefined &&
+      remetenteConfiavel(dados, contexto.janelas, (url) =>
+        isSameOriginRendererNavigation({ applicationUrl: contexto.urlJanela, navigationUrl: url }),
+      )
+      ? dados.janela
+      : undefined;
   };
 
-  /** Atende o canal só para a janela do app; para outro remetente, recusa sem chamar `atender`. */
-  const tratar = (canal: string, atender: (...argumentos: Array<unknown>) => unknown) => {
+  /** Atende o canal só para uma janela do app, que vai a `atender`; para outro remetente, recusa sem chamá-lo. */
+  const tratar = (canal: string, atender: (janela: BrowserWindow, ...argumentos: Array<unknown>) => unknown) => {
     ipcMain.handle(canal, async (evento, ...argumentos: Array<unknown>) => {
-      if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-      return atender(...argumentos);
+      const janela = remetente(evento);
+      if (janela === undefined) throw new Error("pedido recusado");
+      return atender(janela, ...argumentos);
     });
-  };
-
-  /** A janela que é dona dos diálogos; o remetente já foi conferido, então ela existe. */
-  const exigirJanela = (): BrowserWindow => {
-    const janela = contexto.janela();
-    if (janela === undefined) throw new Error("pedido recusado");
-    return janela;
   };
 
   /* ---------------------------------------------------------- janela e servidor */
 
-  tratar(CANAIS.telaCheia, () => contexto.janela()?.isFullScreen() ?? false);
+  tratar(CANAIS.telaCheia, (janela) => janela.isFullScreen());
 
-  // O `nativeTheme` avisa a mudança, e o `main.ts` acerta o fundo da janela e os botões do sistema.
-  tratar(CANAIS.temaDoApp, (tema) => {
+  // O `nativeTheme` avisa a mudança, e o `main.ts` acerta o fundo e os botões do sistema de todas as janelas.
+  tratar(CANAIS.temaDoApp, (_janela, tema) => {
     nativeTheme.themeSource = tema === "claro" ? "light" : tema === "escuro" ? "dark" : "system";
   });
 
-  tratar(CANAIS.conexao, () => contexto.conexao());
+  tratar(CANAIS.conexao, (janela) => contexto.conexao(janela));
 
   tratar(CANAIS.reiniciarServidor, async () => {
     await contexto.reiniciarServidor();
   });
 
-  tratar(CANAIS.registrarErro, (texto) => {
+  tratar(CANAIS.avisar, (_janela, pedido) => {
+    contexto.avisar(pedido);
+  });
+
+  tratar(CANAIS.selo, (_janela, pedido) => {
+    contexto.selo(pedido);
+  });
+
+  tratar(CANAIS.janelaCompacta, async (janela, ligar) => {
+    if (typeof ligar !== "boolean") throw new Error("pedido recusado");
+    return await contexto.compactar(janela, ligar);
+  });
+
+  tratar(CANAIS.prontoParaSair, (janela, pedido) => {
+    contexto.prontoParaSair(janela, pedido);
+  });
+
+  tratar(CANAIS.janelaNaFrente, async (janela, sempre) => {
+    if (typeof sempre !== "boolean") throw new Error("pedido recusado");
+    await contexto.naFrente(janela, sempre);
+  });
+
+  // A janela nova sai só por aqui (o `window.open` é negado), numa rota do app.
+  tratar(CANAIS.abrirJanela, (janela, rota) => {
+    const valida = rotaValida(rota, MAXIMO_ROTA_JANELA);
+    if (valida === undefined) throw new Error("pedido recusado");
+    contexto.abrirJanela(valida, janela);
+  });
+
+  tratar(CANAIS.registrarErro, (_janela, texto) => {
     if (typeof texto === "string" && texto.length > 0) contexto.registrarInterface(cortarRegistro(texto));
   });
 
   /* ---------------------------------------------------------- navegador e pastas */
 
-  tratar(CANAIS.abrirExterno, async (url) => {
+  tratar(CANAIS.abrirExterno, async (_janela, url) => {
     const segura = urlExternaSegura(url);
     if (segura === undefined) throw new Error("só links http, https e mailto abrem fora do app");
     await shell.openExternal(segura);
@@ -123,12 +164,11 @@ export function registrarIpc(contexto: ContextoIpc): void {
   /* ---------------------------------------------------------- módulos */
 
   // Composição: a ponte do módulo `revisao-ppc` (escolher e soltar o `.docx`, abrir e mostrar a cópia comentada).
-  registrarIpcRevisaoPpc({ tratar, exigirJanela, liberarNoServidor });
+  registrarIpcRevisaoPpc({ tratar, liberarNoServidor });
 
   /* ---------------------------------------------------------- pasta das tarefas (M1.9) */
 
-  tratar(CANAIS.escolherAnexo, async (pedidas) => {
-    const janela = exigirJanela();
+  tratar(CANAIS.escolherAnexo, async (janela, pedidas) => {
     const aceitas = extensoesAnexo(pedidas);
     const escolha = await dialog.showOpenDialog(janela, {
       title: "Anexar arquivo",
@@ -143,7 +183,7 @@ export function registrarIpc(contexto: ContextoIpc): void {
   });
 
   /** Os soltos na caixa de pedido: a regra do diálogo e, como o soltar aceita pasta, só arquivo comum. */
-  tratar(CANAIS.anexarSoltos, async (caminhos, pedidas) => {
+  tratar(CANAIS.anexarSoltos, async (_janela, caminhos, pedidas) => {
     if (!Array.isArray(caminhos) || caminhos.length > MAXIMO_SOLTOS) throw new Error("pedido recusado");
     const aceitas = extensoesAnexo(pedidas);
     const liberados: Array<string | null> = [];
@@ -171,19 +211,19 @@ export function registrarIpc(contexto: ContextoIpc): void {
     return permitido;
   };
 
-  tratar(CANAIS.abrirArquivoTarefa, async (caminho) => {
+  tratar(CANAIS.abrirArquivoTarefa, async (_janela, caminho) => {
     const erro = await shell.openPath(arquivoDeTarefa(caminho, true));
     if (erro !== "") throw new Error(`não foi possível abrir o arquivo: ${erro}`);
   });
 
-  tratar(CANAIS.mostrarArquivoTarefa, (caminho) => {
+  tratar(CANAIS.mostrarArquivoTarefa, (_janela, caminho) => {
     shell.showItemInFolder(arquivoDeTarefa(caminho, false));
   });
 
   // Só para a Lixeira, nunca `rm`: se a Lixeira falha (pasta em rede, OneDrive), a pasta fica. A regra vale
   // para o caminho pedido e de novo para o real (`realpath.native` expande os nomes curtos do Windows)
   // contra a raiz real: o servidor manda o caminho real, e a raiz pode estar atrás de um link.
-  tratar(CANAIS.pastaParaLixeira, async (caminho) => {
+  tratar(CANAIS.pastaParaLixeira, async (_janela, caminho) => {
     const raizReal = NodeFS.realpathSync.native(contexto.pastaTrabalhos);
     const pedida =
       pastaDeTarefaPermitida(caminho, contexto.pastaTrabalhos) ?? pastaDeTarefaPermitida(caminho, raizReal);

@@ -59,6 +59,16 @@ class LojaPreferencias {
     return this.carregando;
   }
 
+  /**
+   * Lê de novo, sempre (a mudança feita em outra janela do desktop, que tem a sua loja); a falha deixa o
+   * que havia e lança.
+   */
+  async lerDeNovo(): Promise<Preferencias> {
+    const valor = await this.api.chamar((cliente) => cliente["preferencias.ler"]({}));
+    this.trocar({ valor, erro: undefined });
+    return valor;
+  }
+
   recarregar(): Promise<void> {
     this.trocar({ valor: this.estado.valor, erro: undefined });
     return this.carregar();
@@ -78,6 +88,26 @@ const lojaDe = (api: Api): LojaPreferencias => {
   return loja;
 };
 
+/**
+ * O aviso do sistema está ligado (`Preferencias.avisosDoSistema`)? Em qualquer tela, mesmo nas que não leem
+ * as preferências. Lê do servidor a cada aviso: no desktop, a pessoa pode tê-lo desligado em outra janela,
+ * que tem a sua cópia. Sem conseguir ler, desligado (quem desligou não recebe o aviso por engano).
+ */
+export async function avisosDoSistemaLigados(api: Api): Promise<boolean> {
+  try {
+    return (await lojaDe(api).lerDeNovo()).avisosDoSistema === true;
+  } catch {
+    return false;
+  }
+}
+
+/** As preferências, carregadas se ainda não estão; `undefined` sem conseguir lê-las. */
+export async function preferenciasCarregadas(api: Api): Promise<Preferencias | undefined> {
+  const loja = lojaDe(api);
+  if (loja.estado.valor === undefined) await loja.carregar();
+  return loja.estado.valor;
+}
+
 export interface UsoPreferencias {
   /** `undefined` enquanto carrega, sem servidor ou quando a leitura falhou (`erro`). */
   readonly preferencias: Preferencias | undefined;
@@ -89,6 +119,7 @@ export interface UsoPreferencias {
   readonly aceitarAviso: () => Promise<Preferencias>;
   readonly concluirBoasVindas: () => Promise<Preferencias>;
   readonly usarIa: (provider: Provider, usar: boolean) => Promise<Preferencias>;
+  readonly avisarNoSistema: (ligar: boolean) => Promise<Preferencias>;
 }
 
 export function usePreferencias(): UsoPreferencias {
@@ -108,6 +139,7 @@ export function usePreferencias(): UsoPreferencias {
     aceitarAviso: () => loja.mudar((cliente) => cliente["preferencias.aceitarAviso"]({})),
     concluirBoasVindas: () => loja.mudar((cliente) => cliente["preferencias.concluirBoasVindas"]({})),
     usarIa: (provider, usar) => loja.mudar((cliente) => cliente["preferencias.usarIa"]({ provider, usar })),
+    avisarNoSistema: (ligar) => loja.mudar((cliente) => cliente["preferencias.avisarNoSistema"]({ ligar })),
   };
 }
 

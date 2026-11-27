@@ -13,7 +13,7 @@ import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as SqlClient from "effect/sql/SqlClient";
-import type { Perfil } from "@simplifica-if/contratos-app";
+import type { Continuidade, Perfil } from "@simplifica-if/contratos-app";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Preferencias from "../src/persistencia/Preferencias.ts";
 import * as Servidor from "../src/servidor.ts";
@@ -34,6 +34,18 @@ const PERFIL: Perfil = {
   categoria: "docente",
   cargo: "professor-ebtt",
   funcao: "coordenacao-curso",
+};
+
+const CONTINUIDADE: Continuidade = {
+  rota: "/conversa?id=abc",
+  painel: {
+    aberto: true,
+    aba: "conversar",
+    trilha: { links: ["ifpr://norma/br/cne-cp/res/2026/2", "ifpr://revisao/x/1#p-2"], posicao: 1 },
+    marcados: ["ifpr://norma/br/cne-cp/res/2026/2"],
+    preso: false,
+    conversa: { id: "c1", origem: { chave: "revisao:x", ia: "claude" } },
+  },
 };
 
 const camada = Servidor.layer({ banco: bancoFixture(), token: Redacted.make(TOKEN) }).pipe(
@@ -61,7 +73,7 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
 
-      assert.deepStrictEqual(yield* rpc["preferencias.ler"]({}), { iasDesligadas: [] });
+      assert.deepStrictEqual(yield* rpc["preferencias.ler"]({}), { iasDesligadas: [], avisosDoSistema: true });
 
       const comPerfil = yield* rpc["preferencias.gravarPerfil"]({ perfil: PERFIL });
       assert.deepStrictEqual(comPerfil.perfil, PERFIL);
@@ -85,10 +97,41 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
         "claude",
       ]);
 
+      // O aviso do sistema vem ligado e desliga.
+      assert.isFalse((yield* rpc["preferencias.avisarNoSistema"]({ ligar: false })).avisosDoSistema);
+      assert.isFalse((yield* rpc["preferencias.ler"]({})).avisosDoSistema);
+
       const semPerfil = yield* rpc["preferencias.apagarPerfil"]({});
       assert.isUndefined(semPerfil.perfil);
       assert.strictEqual(semPerfil.avisoAceitoEm, avisado.avisoAceitoEm);
     }),
+  );
+
+  it.effect(
+    "a continuidade: a última rota e o painel, trocados a cada gravação; o RPC recusa o que passa do teto",
+    () =>
+      Effect.gen(function* () {
+        const { urlRpc } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        yield* rpc["preferencias.guardarContinuidade"]({ continuidade: CONTINUIDADE });
+        assert.deepStrictEqual((yield* rpc["preferencias.ler"]({})).continuidade, CONTINUIDADE);
+
+        const outra: Continuidade = {
+          rota: "/",
+          painel: { aberto: false, aba: "ler", trilha: { links: [], posicao: -1 }, marcados: [], preso: true },
+        };
+        yield* rpc["preferencias.guardarContinuidade"]({ continuidade: outra });
+        assert.deepStrictEqual((yield* rpc["preferencias.ler"]({})).continuidade, outra);
+
+        // A prateleira tem até cinco documentos.
+        const demais = yield* Effect.exit(
+          rpc["preferencias.guardarContinuidade"]({
+            continuidade: { ...outra, painel: { ...outra.painel, marcados: ["a", "b", "c", "d", "e", "f"] } },
+          }),
+        );
+        assert.isTrue(Exit.isFailure(demais));
+        assert.deepStrictEqual((yield* rpc["preferencias.ler"]({})).continuidade, outra);
+      }),
   );
 
   it.effect("o RPC recusa função ou cargo fora da lista", () =>
@@ -128,6 +171,7 @@ describe("preferências no arquivo", () => {
       assert.deepStrictEqual(lidas.perfil, PERFIL);
       assert.isString(lidas.avisoAceitoEm);
       assert.isUndefined(lidas.boasVindasEm);
+      assert.isUndefined(lidas.continuidade);
 
       const estragado = yield* Effect.gen(function* () {
         const sql = yield* SqlClient.SqlClient;
@@ -136,6 +180,29 @@ describe("preferências no arquivo", () => {
       }).pipe(Effect.provide(abrir));
       assert.isUndefined(estragado.perfil);
       assert.strictEqual(estragado.avisoAceitoEm, lidas.avisoAceitoEm);
+    }),
+  );
+
+  it.effect("a continuidade sobrevive ao servidor fechar; estragada, conta como ausente", () =>
+    Effect.gen(function* () {
+      const outro = NodePath.join(diretorioTemporario("simplifica-preferencias-continuidade-"), "conversas.sqlite");
+      const camadaOutro = Preferencias.layer.pipe(
+        Layer.provideMerge(Banco.layerArquivo(outro)),
+        Layer.provide(NodeServices.layer),
+      );
+      yield* Effect.gen(function* () {
+        yield* (yield* Preferencias.Preferencias).guardarContinuidade(CONTINUIDADE);
+      }).pipe(Effect.provide(camadaOutro));
+      const lidas = yield* Effect.gen(function* () {
+        return yield* (yield* Preferencias.Preferencias).ler;
+      }).pipe(Effect.provide(camadaOutro));
+      assert.deepStrictEqual(lidas.continuidade, CONTINUIDADE);
+      const estragada = yield* Effect.gen(function* () {
+        const sql = yield* SqlClient.SqlClient;
+        yield* sql`UPDATE preferencias SET valor = '{"rota":"/"}' WHERE chave = 'continuidade'`;
+        return yield* (yield* Preferencias.Preferencias).ler;
+      }).pipe(Effect.provide(camadaOutro));
+      assert.isUndefined(estragada.continuidade);
     }),
   );
 

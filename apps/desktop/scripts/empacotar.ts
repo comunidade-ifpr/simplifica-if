@@ -21,9 +21,9 @@ import * as NodeUtil from "node:util";
 import { lerInfoBanco } from "@simplifica-if/atualizacao/local";
 import { ehVersaoDev } from "@simplifica-if/atualizacao/manifesto";
 import { build, type Configuration, Platform } from "electron-builder";
+import { ID_DO_APP } from "../src/avisos.ts";
 import { construir, DIST, DIST_RECURSOS, PACOTE, RAIZ } from "./construir.ts";
 
-export const APP_ID = "io.github.comunidade-ifpr.simplifica";
 export const NOME_PRODUTO = "Simplifica IF";
 
 const versaoElectron = (): string => {
@@ -35,7 +35,7 @@ const versaoElectron = (): string => {
 /** A configuração do electron-builder (sem assinatura; a publicação é da fábrica). */
 export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configuration {
   return {
-    appId: APP_ID,
+    appId: ID_DO_APP,
     productName: NOME_PRODUTO,
     artifactName: "Simplifica-IF-${version}-${arch}.${ext}",
     electronVersion: versaoElectron(),

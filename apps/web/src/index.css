@@ -563,6 +563,15 @@ mark.trecho-citado {
   background: color-mix(in srgb, #ffe45c 35%, transparent);
 }
 
+/* Comparar normas: as palavras que mudaram num par, no grifo da marca (o token tem a variante escura). */
+mark.diferenca {
+  background: var(--grifo);
+  border-radius: 0.125rem;
+  box-decoration-break: clone;
+  color: inherit;
+  padding: 0 0.0625rem;
+}
+
 /* A frase exata do trecho (`realce.ts`): o bloco fica num tom leve, e a frase, forte e sublinhada. */
 .com-realce mark.trecho-citado {
   background: color-mix(in srgb, #ffe45c 22%, transparent);
@@ -604,15 +613,20 @@ mark.trecho-citado {
 }
 
 /*
- * Impressão do leitor: só o artigo aberto no painel (`.leitor-impressao`), com o texto inteiro (o
- * `Documento` monta todos os blocos no `beforeprint`). O que está em volta some, e os contêineres
- * acima do artigo perdem a altura fixa e a rolagem, para o texto correr pelas páginas.
+ * Impressão do leitor: só o artigo aberto (`.leitor-impressao`), com o texto inteiro (o `Documento`
+ * monta todos os blocos no `beforeprint`). O que está em volta some, e os contêineres acima do artigo
+ * perdem a altura fixa e a rolagem, para o texto correr pelas páginas. O leitor que vai para o papel (o
+ * que pediu pelo botão ou, no ⌘P, o em foco: `leitor/instancia.ts`) tem os artigos com `data-imprimir`, e
+ * só eles saem: com a norma na tela e no painel, sai só uma.
  */
 @media print {
-  body:has(.leitor-impressao) *:not(:has(.leitor-impressao)):not(.leitor-impressao):not(.leitor-impressao *) {
+  body:has(.leitor-impressao):not(:has([data-imprimir]))
+    *:not(:has(.leitor-impressao)):not(.leitor-impressao):not(.leitor-impressao *),
+  body:has([data-imprimir]) *:not(:has([data-imprimir])):not([data-imprimir]):not([data-imprimir] *) {
     display: none !important;
   }
-  body:has(.leitor-impressao) :has(.leitor-impressao) {
+  body:has(.leitor-impressao):not(:has([data-imprimir])) :has(.leitor-impressao),
+  body:has([data-imprimir]) :has([data-imprimir]) {
     border: 0 !important;
     display: block !important;
     height: auto !important;

@@ -1,7 +1,8 @@
 /**
  * Configurações do Modo Servidor (M1.9): Sua IA (o aviso de uso, instalar, entrar, o estado de cada
  * uma e "Não usar no app", M1.8), Seu perfil (editar e apagar, M1.8; e "Rever as boas-vindas"),
- * Aparência (o tema; `configuracoes/Aparencia.tsx`), Atualizações (M1.10: versões do app, da base e das skills, canal, procurar, usar a versão nova e
+ * Aparência (o tema; `configuracoes/Aparencia.tsx`), Avisos (no desktop, o aviso do sistema quando uma
+ * resposta fica pronta ou a IA pede permissão, ligado de fábrica), Atualizações (M1.10: versões do app, da base e das skills, canal, procurar, usar a versão nova e
  * voltar a base; `configuracoes/Atualizacoes.tsx`) e Diagnóstico (o pacote para anexar ao relato de um
  * problema; `configuracoes/Diagnostico.tsx`).
  */
@@ -17,6 +18,7 @@ import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
 import { Diagnostico, SECAO_DIAGNOSTICO } from "../configuracoes/Diagnostico.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
 import { useEstadoConexao } from "../contexto.tsx";
+import { ponteDesktop } from "../ponte-desktop.ts";
 import { PROVIDERS } from "../providers.ts";
 import { linhaDoPerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
@@ -47,6 +49,7 @@ const SECOES = [
   { id: "ia", nome: "Sua IA" },
   { id: "perfil", nome: "Seu perfil" },
   { id: "aparencia", nome: "Aparência" },
+  { id: "avisos", nome: "Avisos" },
   { id: "atualizacoes", nome: "Atualizações" },
   { id: SECAO_DIAGNOSTICO, nome: "Diagnóstico" },
 ] as const;
@@ -122,6 +125,29 @@ function SeuPerfil() {
   );
 }
 
+/** O aviso do sistema (no desktop): ligado até a pessoa desligar. */
+function Avisos() {
+  const { preferencias, avisarNoSistema } = usePreferencias();
+  if (preferencias === undefined) return <EsperaPreferencias telaInteira={false} />;
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="flex cursor-pointer items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="mt-0.5 size-4 shrink-0 accent-primary"
+          checked={preferencias.avisosDoSistema}
+          onChange={(evento) => void avisarNoSistema(evento.target.checked)}
+        />
+        Avisar quando uma resposta ficar pronta ou a IA pedir permissão
+      </label>
+      <p className="max-w-prose text-muted-foreground text-small">
+        O aviso aparece só com o app em segundo plano e não mostra o assunto da conversa: diz apenas “Uma resposta está
+        pronta” ou “A IA pede uma permissão”.
+      </p>
+    </div>
+  );
+}
+
 function Configuracoes() {
   const conexao = useEstadoConexao();
   const { preferencias, usarIa, aceitarAviso } = usePreferencias();
@@ -131,7 +157,14 @@ function Configuracoes() {
     <Pagina largura="larga" className="gap-8">
       <h1 className="text-display">Configurações</h1>
       <div className="grid gap-x-12 lg:grid-cols-[11rem_minmax(0,1fr)]">
-        <IndiceSecoes ocultas={new Set(conexao.fase === "sem-servidor" ? ["atualizacoes", SECAO_DIAGNOSTICO] : [])} />
+        <IndiceSecoes
+          ocultas={
+            new Set([
+              ...(conexao.fase === "sem-servidor" ? ["atualizacoes", SECAO_DIAGNOSTICO, "avisos"] : []),
+              ...(ponteDesktop() === undefined ? ["avisos"] : []),
+            ])
+          }
+        />
         {/* Uma divisória entre as seções; cada uma para a rolagem com folga do topo. */}
         <div className="flex min-w-0 flex-col gap-10 [&>section+section]:border-border [&>section+section]:border-t [&>section+section]:pt-10 [&>section]:scroll-mt-8">
           <Secao id="ia" titulo="Sua IA">
@@ -167,6 +200,11 @@ function Configuracoes() {
           <Secao id="aparencia" titulo="Aparência">
             <Aparencia />
           </Secao>
+          {conexao.fase === "sem-servidor" || ponteDesktop() === undefined ? null : (
+            <Secao id="avisos" titulo="Avisos">
+              <Avisos />
+            </Secao>
+          )}
           {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
           {conexao.fase === "sem-servidor" ? null : <Diagnostico />}
         </div>

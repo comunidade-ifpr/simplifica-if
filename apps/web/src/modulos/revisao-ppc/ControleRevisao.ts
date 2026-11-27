@@ -11,7 +11,15 @@
  * conclusão saem de forma determinística.
  *
  * Recuperação de arquivo: toda ação que pode receber `FalhaRevisaoPpc` com `escolherDeNovo` (lista,
- * leitura com IA ou ação de pendência) registra a repetição num ponto só (`escolherArquivoDeNovo`).
+ * leitura com IA ou ação de pendência) registra a repetição num ponto só (`escolherArquivoDeNovo`), que
+ * aceita o arquivo que o servidor pediu (o revisado ou, no "Reconferir com a IA", o acompanhado).
+ *
+ * Conferência ao salvar: com a revisão acompanhando um arquivo no Word ("Acompanhar no Word"), o fluxo
+ * `revisaoPpc.acompanharLista` fica aberto enquanto a lista está aberta e traz a lista a cada mudança e o
+ * resultado de cada salvamento conferido: as resolvidas ganham um realce breve, as novas entram "novo".
+ * O arquivo acompanhado que perdeu a liberação (o app foi fechado) é pedido de novo à parte
+ * (`escolherAcompanhadoDeNovo`), porque não é o arquivo revisado. Numa queda da conexão, o fluxo volta
+ * (na hora, na primeira; depois, quando a conexão voltar), e a volta à janela também o reabre.
  */
 import type { Provider } from "@simplifica-if/contratos-app";
 import type {
@@ -22,13 +30,20 @@ import type {
   ModoRevisaoIa,
 } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import type { Acompanhamento, Api } from "../../conexao/api.ts";
-import { explicarErro, type MensagemErro } from "../../conexao/erros.ts";
+import { ehQuedaDaConexao, explicarErro, type MensagemErro } from "../../conexao/erros.ts";
 import { detectarIa } from "../../deteccao.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../../providers.ts";
-import { obterArquivo, pedeArquivoDeNovo, textoMesmoArquivo } from "./arquivo.ts";
+import { nomeDoArquivo } from "../../lib/texto.ts";
+import { arquivoPedido, obterArquivo, pedeArquivoDeNovo, textoMesmoArquivo } from "./arquivo.ts";
 import { blocosProntos, leiturasPorTerminar, textoConclusao } from "./ia.ts";
-import { chavesNovas, textoArquivoNovo } from "./lista.ts";
+import { chavesNovas, textoArquivoNovo, type UltimaConferencia } from "./lista.ts";
+
+/** As pendências da IA que a lista nova tem e a anterior não (as do código chegam pelo `conferido`). */
+const chegaramDaIa = (antes: ListaPendencias, depois: ListaPendencias): ReadonlyArray<string> => {
+  const daIa = new Set(depois.pendencias.filter((v) => v.pendencia.origem === "ia").map((v) => v.chave));
+  return chavesNovas(antes, depois).filter((chave) => daIa.has(chave));
+};
 
 export type FaseRevisao = "entrada" | "lendo" | "carregando" | "resultado";
 
@@ -50,6 +65,33 @@ export interface EstadoIaRevisao {
   readonly erro: MensagemErro | undefined;
   readonly ocupada: boolean;
 }
+
+/** Quanto tempo a pendência que o salvamento resolveu fica realçada. */
+export const REALCE_MS = 4000;
+
+/** A conferência ao salvar do arquivo acompanhado no Word. */
+export interface EstadoAcompanhamento {
+  /** "Acompanhar no Word" em curso (a cópia comentada gravada, depois aberta). */
+  readonly abrindo: boolean;
+  /** O resultado do último salvamento conferido, ou do que não pôde ser conferido. */
+  readonly ultima: UltimaConferencia | undefined;
+  /** O arquivo acompanhado perdeu a liberação (o app foi fechado): a pessoa o escolhe de novo. */
+  readonly pedeArquivo: boolean;
+  /** As pendências que o último salvamento resolveu, realçadas por `REALCE_MS`. */
+  readonly realce: ReadonlySet<string>;
+  /** "Reconferir com a IA" as pendências da IA marcadas "Feito", uma por vez. */
+  readonly reconferindo: boolean;
+  readonly erro: MensagemErro | undefined;
+}
+
+export const estadoAcompanhamentoInicial = (): EstadoAcompanhamento => ({
+  abrindo: false,
+  ultima: undefined,
+  pedeArquivo: false,
+  realce: new Set(),
+  reconferindo: false,
+  erro: undefined,
+});
 
 export interface EstadoRevisao {
   readonly fase: FaseRevisao;
@@ -80,6 +122,7 @@ export interface EstadoRevisao {
   readonly enviandoCorrigida: boolean;
   readonly trocandoCurso: boolean;
   readonly ia: EstadoIaRevisao;
+  readonly acompanhamento: EstadoAcompanhamento;
 }
 
 export const estadoIaInicial = (): EstadoIaRevisao => ({
@@ -116,6 +159,7 @@ export const estadoInicialRevisao = (): EstadoRevisao => ({
   enviandoCorrigida: false,
   trocandoCurso: false,
   ia: estadoIaInicial(),
+  acompanhamento: estadoAcompanhamentoInicial(),
 });
 
 /** A IA efetiva da faixa (a escolhida, a primeira usável ou a padrão). */
@@ -144,6 +188,8 @@ const mesmaOrigem = (a: OrigemArquivoDeNovo | undefined, b: OrigemArquivoDeNovo)
 interface AcaoPendenteArquivo {
   readonly listaId: string;
   readonly origem: OrigemArquivoDeNovo;
+  /** O arquivo que o servidor pediu de novo. */
+  readonly arquivo: string;
   readonly repetir: () => Promise<boolean>;
 }
 
@@ -175,10 +221,32 @@ export class ControleRevisao {
   private recargaPendente: RecargaPendente | undefined;
   /** A última ação que falhou com `pedeArquivoDeNovo`, pronta para repetir. */
   private acaoPendenteArquivo: AcaoPendenteArquivo | undefined;
+  /** O stream de `revisaoPpc.acompanharLista` em curso, e a lista dele. */
+  private acompanhamentoLista: { readonly lista: string; readonly fluxo: Acompanhamento } | undefined;
+  private relogioRealce: ReturnType<typeof setTimeout> | undefined;
+  /** Para de esperar a conexão voltar para reabrir o fluxo da lista. */
+  private pararEsperaLista: (() => void) | undefined;
 
-  constructor(api: Api, inicial: EstadoRevisao = estadoInicialRevisao()) {
+  private readonly aoTrocarLista: ((antiga: string, nova: string) => void) | undefined;
+  private readonly aoApagarFora: ((lista: ListaPendencias) => void) | undefined;
+
+  /**
+   * `aoTrocarLista`: "Qual é o curso?" refez a lista com outro id (a antiga saiu). `aoApagarFora`: a lista
+   * aberta foi apagada fora daqui (em outra janela, ou por falta de uso): o fluxo dela terminou. `inicial`:
+   * o estado de partida (os testes de uma peça só).
+   */
+  constructor(
+    api: Api,
+    opcoes: {
+      readonly inicial?: EstadoRevisao;
+      readonly aoTrocarLista?: (antiga: string, nova: string) => void;
+      readonly aoApagarFora?: (lista: ListaPendencias) => void;
+    } = {},
+  ) {
     this.api = api;
-    this.estado = inicial;
+    this.estado = opcoes.inicial ?? estadoInicialRevisao();
+    this.aoTrocarLista = opcoes.aoTrocarLista;
+    this.aoApagarFora = opcoes.aoApagarFora;
   }
 
   readonly obter = (): EstadoRevisao => this.estado;
@@ -195,6 +263,19 @@ export class ControleRevisao {
 
   private atualizarIa(parcial: Partial<EstadoIaRevisao>): void {
     this.atualizar({ ia: { ...this.estado.ia, ...parcial } });
+  }
+
+  private atualizarAcompanhamento(parcial: Partial<EstadoAcompanhamento>): void {
+    this.atualizar({ acompanhamento: { ...this.estado.acompanhamento, ...parcial } });
+  }
+
+  private soltarAcompanhamento(): void {
+    this.acompanhamentoLista?.fluxo.cancelar();
+    this.acompanhamentoLista = undefined;
+    this.pararEsperaLista?.();
+    this.pararEsperaLista = undefined;
+    clearTimeout(this.relogioRealce);
+    this.relogioRealce = undefined;
   }
 
   private soltarLeituraArquivo(): void {
@@ -216,12 +297,14 @@ export class ControleRevisao {
   encerrar(): void {
     this.soltarLeituraArquivo();
     this.soltarIa();
+    this.soltarAcompanhamento();
   }
 
   /** Volta à entrada ("Revisar outro arquivo" ou depois de apagar). */
   sair(): void {
     this.soltarLeituraArquivo();
     this.soltarIa();
+    this.soltarAcompanhamento();
     this.acaoPendenteArquivo = undefined;
     this.recargaPendente = undefined;
     this.estado = estadoInicialRevisao();
@@ -232,6 +315,7 @@ export class ControleRevisao {
   async revisar(arquivo: string): Promise<string | undefined> {
     this.soltarLeituraArquivo();
     this.soltarIa();
+    this.soltarAcompanhamento();
     this.acaoPendenteArquivo = undefined;
     this.recargaPendente = undefined;
     this.atualizar({
@@ -283,6 +367,7 @@ export class ControleRevisao {
     }
     this.soltarLeituraArquivo();
     this.soltarIa();
+    this.soltarAcompanhamento();
     this.acaoPendenteArquivo = undefined;
     this.recargaPendente = undefined;
     this.atualizar({
@@ -316,6 +401,7 @@ export class ControleRevisao {
     }
     this.soltarLeituraArquivo();
     this.soltarIa();
+    this.soltarAcompanhamento();
     this.acaoPendenteArquivo = undefined;
     this.recargaPendente = undefined;
     this.entrarNaLista(lista);
@@ -329,6 +415,7 @@ export class ControleRevisao {
       lista,
     });
     void this.inicializarIa(lista);
+    if (lista.arquivoAcompanhado !== null) this.acompanharLista(lista.id);
   }
 
   /* ---------------------------------------------------------------- navegação na lista */
@@ -374,7 +461,8 @@ export class ControleRevisao {
     const listaId = this.estado.lista?.id;
     const pedir = repetir !== undefined && listaId !== undefined && pedeArquivoDeNovo(motivo);
     if (pedir) {
-      this.acaoPendenteArquivo = { listaId, origem, repetir };
+      const arquivo = arquivoPedido(motivo) ?? this.estado.lista?.arquivoOriginal ?? "";
+      this.acaoPendenteArquivo = { listaId, origem, arquivo, repetir };
     } else if (mesmaOrigem(this.acaoPendenteArquivo?.origem, origem)) {
       this.acaoPendenteArquivo = undefined;
     }
@@ -436,8 +524,8 @@ export class ControleRevisao {
       this.reportarErroDeArquivo(pendente.origem, obtido.erro);
       return false;
     }
-    if (obtido.arquivo !== lista.arquivoOriginal) {
-      this.reportarErroDeArquivo(pendente.origem, textoMesmoArquivo(lista.arquivoOriginal));
+    if (obtido.arquivo !== pendente.arquivo) {
+      this.reportarErroDeArquivo(pendente.origem, textoMesmoArquivo(pendente.arquivo));
       return false;
     }
     this.limparErroOrigem(pendente.origem);
@@ -475,6 +563,8 @@ export class ControleRevisao {
     const lista = this.estado.lista;
     if (lista === undefined) return false;
     const abrir = abrirDocumento ?? ponteDesktop()?.abrirDocumento;
+    // Acompanhando um arquivo, "Abrir no Word" abre esse, sem gravar uma cópia da cópia.
+    if (lista.arquivoAcompanhado !== null) return this.abrirAcompanhado(lista.arquivoAcompanhado, abrir);
     this.limparErroOrigem("lista");
     this.atualizar({ abrindoWord: true });
     try {
@@ -525,6 +615,7 @@ export class ControleRevisao {
       );
       if (this.estado.lista?.id !== lista.id) return false;
       this.soltarIa();
+      this.soltarAcompanhamento();
       this.acaoPendenteArquivo = undefined;
       this.atualizar({
         listaId: nova.id,
@@ -534,8 +625,11 @@ export class ControleRevisao {
         novas: new Set(),
         conclusao: null,
         origemArquivoDeNovo: undefined,
+        acompanhamento: estadoAcompanhamentoInicial(),
       });
       void this.inicializarIa(nova);
+      if (nova.arquivoAcompanhado !== null) this.acompanharLista(nova.id);
+      this.aoTrocarLista?.(lista.id, nova.id);
       return true;
     } catch (motivo) {
       this.atualizar({ trocandoCurso: false });
@@ -554,6 +648,8 @@ export class ControleRevisao {
       if (this.estado.lista?.id !== lista.id) return;
       this.soltarIa();
       this.acaoPendenteArquivo = undefined;
+      // O fluxo da lista continua (a mesma lista): o servidor ajusta o vigia ao acompanhado que ficou.
+      clearTimeout(this.relogioRealce);
       this.atualizar({
         listaId: novo.lista.id,
         lista: novo.lista,
@@ -562,6 +658,7 @@ export class ControleRevisao {
         novas: new Set(),
         conclusao: null,
         origemArquivoDeNovo: undefined,
+        acompanhamento: { ...estadoAcompanhamentoInicial(), reconferindo: this.estado.acompanhamento.reconferindo },
       });
       void this.inicializarIa(novo.lista);
     } catch (motivo) {
@@ -583,7 +680,14 @@ export class ControleRevisao {
   async apagarLista(): Promise<void> {
     const lista = this.estado.lista;
     if (lista === undefined) return;
-    await this.api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id }));
+    // O fluxo da lista terminaria com ela: daqui, não é a revisão apagada em outra janela.
+    this.soltarAcompanhamento();
+    try {
+      await this.api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id }));
+    } catch (motivo) {
+      if (this.estado.lista?.id === lista.id && lista.arquivoAcompanhado !== null) this.acompanharLista(lista.id);
+      throw motivo;
+    }
   }
 
   /* ---------------------------------------------------------------- ações por pendência */
@@ -640,6 +744,192 @@ export class ControleRevisao {
       (lista, provider) => this.api.chamar((c) => c["revisaoPpc.revisarDeNovo"]({ lista, chave, arquivo, provider })),
       () => this.revisarDeNovo(chave, arquivo),
     );
+  }
+
+  /* ---------------------------------------------------------------- conferência ao salvar */
+
+  private async abrirAcompanhado(
+    arquivo: string,
+    abrir: ((caminho: string) => Promise<void>) | undefined,
+  ): Promise<boolean> {
+    if (abrir === undefined) {
+      this.atualizar({ caminhoCopia: arquivo });
+      return true;
+    }
+    try {
+      await abrir(arquivo);
+      return true;
+    } catch {
+      this.atualizarAcompanhamento({
+        erro: {
+          texto: `Não foi possível abrir “${nomeDoArquivo(arquivo)}” no Word. Ele pode ter mudado de pasta; escolha o arquivo de novo pelo menu ⋯.`,
+        },
+      });
+      return false;
+    }
+  }
+
+  /**
+   * "Acompanhar no Word": sem `arquivo`, a cópia comentada (regravada se a lista mudou); com `arquivo`,
+   * o `.docx` escolhido. A lista passa a acompanhar o arquivo, que abre no Word, e o fluxo da lista
+   * confere cada salvamento.
+   */
+  async acompanharNoWord(arquivo?: string, abrirDocumento?: (caminho: string) => Promise<void>): Promise<boolean> {
+    const lista = this.estado.lista;
+    if (lista === undefined) return false;
+    const abrir = abrirDocumento ?? ponteDesktop()?.abrirDocumento;
+    this.limparErroOrigem("lista");
+    this.atualizarAcompanhamento({ abrindo: true, erro: undefined });
+    try {
+      const nova = await this.api.chamar((c) =>
+        c["revisaoPpc.acompanhar"]({ lista: lista.id, ...(arquivo === undefined ? {} : { arquivo }) }),
+      );
+      if (this.estado.lista?.id !== lista.id) return false;
+      this.atualizar({ lista: nova });
+      this.atualizarAcompanhamento({ abrindo: false, pedeArquivo: false });
+      this.acompanharLista(nova.id);
+      return nova.arquivoAcompanhado === null ? false : this.abrirAcompanhado(nova.arquivoAcompanhado, abrir);
+    } catch (motivo) {
+      this.atualizarAcompanhamento({ abrindo: false });
+      // Sem `arquivo`, o pedido de novo é o do original (a cópia de outra execução sai liberada com ele).
+      this.registrarErro("lista", motivo, () => this.acompanharNoWord(arquivo, abrirDocumento));
+      return false;
+    }
+  }
+
+  /** O arquivo acompanhado, escolhido de novo depois de fechar o app (ou outro, que passa a ser o acompanhado). */
+  async escolherAcompanhadoDeNovo(
+    escolherDocx?: () => Promise<string | null>,
+    abrirDocumento?: (caminho: string) => Promise<void>,
+  ): Promise<boolean> {
+    const obter = escolherDocx ?? ponteDesktop()?.escolherDocx;
+    if (obter === undefined) return false;
+    const obtido = await obterArquivo(obter);
+    if (obtido === undefined) return false;
+    if ("erro" in obtido) {
+      this.atualizarAcompanhamento({ erro: obtido.erro });
+      return false;
+    }
+    return this.acompanharNoWord(obtido.arquivo, abrirDocumento);
+  }
+
+  /**
+   * A janela ganhou foco: confere o acompanhado se ele mudou (a pasta de rede, onde o vigia não vê). Sem o
+   * fluxo da lista (ele caiu), o reabre, e a abertura confere.
+   */
+  conferirAoFocar(): void {
+    const lista = this.estado.lista;
+    if (lista === undefined || lista.arquivoAcompanhado === null) return;
+    if (this.acompanhamentoLista?.lista !== lista.id) {
+      this.acompanharLista(lista.id);
+      return;
+    }
+    void this.api.chamar((c) => c["revisaoPpc.conferirAcompanhado"]({ lista: lista.id })).catch(() => undefined);
+  }
+
+  private acompanharLista(listaId: string, quedasSeguidas = 0): void {
+    if (this.acompanhamentoLista?.lista === listaId) return;
+    this.soltarAcompanhamento();
+    let quedas = quedasSeguidas;
+    const fluxo = this.api.acompanhar(
+      (c) => c["revisaoPpc.acompanharLista"]({ lista: listaId }),
+      (evento) => {
+        if (this.acompanhamentoLista?.fluxo !== fluxo || this.estado.lista?.id !== listaId) return;
+        quedas = 0;
+        if (evento.tipo === "lista") {
+          // A lista chega também pela leitura com IA (as pendências novas dela ganham "novo" e contam na
+          // frase da conclusão); as do código chegam no `conferido`.
+          const chegaram = chegaramDaIa(this.estado.lista, evento.lista);
+          this.novasDaLeitura += chegaram.length;
+          this.atualizar({
+            lista: evento.lista,
+            ...(chegaram.length === 0 ? {} : { novas: new Set([...this.estado.novas, ...chegaram]) }),
+          });
+          return;
+        }
+        if (evento.tipo === "falhou") {
+          if (evento.escolherDeNovo) this.atualizarAcompanhamento({ pedeArquivo: true });
+          else this.atualizarAcompanhamento({ ultima: { tipo: "falhou", em: evento.em, motivo: evento.motivo } });
+          return;
+        }
+        clearTimeout(this.relogioRealce);
+        this.relogioRealce = setTimeout(() => {
+          if (this.acompanhamentoLista?.fluxo === fluxo) this.atualizarAcompanhamento({ realce: new Set() });
+        }, REALCE_MS);
+        this.atualizar({
+          novas: evento.novas.length === 0 ? this.estado.novas : new Set([...this.estado.novas, ...evento.novas]),
+          acompanhamento: {
+            ...this.estado.acompanhamento,
+            pedeArquivo: false,
+            realce: new Set(evento.resolvidas),
+            ultima: {
+              tipo: "conferido",
+              em: evento.em,
+              resolvidas: evento.resolvidas.length,
+              novas: evento.novas.length,
+            },
+          },
+        });
+      },
+    );
+    this.acompanhamentoLista = { lista: listaId, fluxo };
+    fluxo.fim.then(
+      (fim) => {
+        if (this.acompanhamentoLista?.fluxo !== fluxo) return;
+        this.acompanhamentoLista = undefined;
+        // O servidor só encerra o fluxo quando a lista sai: apagada fora daqui (a troca de curso desta
+        // janela solta o fluxo antes).
+        const lista = this.estado.lista;
+        if (fim !== "concluido" || lista?.id !== listaId || this.estado.trocandoCurso) return;
+        this.sair();
+        this.atualizar({ erroEntrada: { texto: "Esta revisão foi apagada." } });
+        this.aoApagarFora?.(lista);
+      },
+      (motivo: unknown) => {
+        if (this.acompanhamentoLista?.fluxo !== fluxo) return;
+        this.acompanhamentoLista = undefined;
+        if (!ehQuedaDaConexao(motivo)) {
+          this.atualizarAcompanhamento({ erro: explicarErro(motivo) });
+          return;
+        }
+        // A conexão caiu: o fluxo volta na hora, na primeira; depois, quando a conexão voltar.
+        if (quedas === 0) {
+          this.acompanharLista(listaId, 1);
+          return;
+        }
+        const parar = this.api.estado.observar(() => {
+          if (this.api.estado.obter().fase !== "conectada") return;
+          parar();
+          this.pararEsperaLista = undefined;
+          if (this.estado.lista?.id === listaId) this.acompanharLista(listaId, quedas + 1);
+        });
+        this.pararEsperaLista = parar;
+      },
+    );
+  }
+
+  /**
+   * "Reconferir com a IA" as pendências da IA marcadas "Feito", uma por vez, no arquivo acompanhado: a
+   * situação passa a ser a do resultado. Para na primeira que falhar: o erro fica na linha dela e na linha
+   * do acompanhamento (a pendência feita costuma estar recolhida). O acompanhado que perdeu a liberação é
+   * pedido no acompanhamento.
+   */
+  async reconferirComIa(chaves: ReadonlyArray<string>): Promise<boolean> {
+    const arquivo = this.estado.lista?.arquivoAcompanhado ?? null;
+    if (arquivo === null) return false;
+    this.atualizarAcompanhamento({ reconferindo: true, erro: undefined });
+    try {
+      for (const chave of chaves) {
+        if (await this.revisarDeNovo(chave, arquivo)) continue;
+        const erro = this.estado.erroPendencia?.chave === chave ? this.estado.erroPendencia.erro : undefined;
+        const pedeArquivo = this.acaoPendenteArquivo?.arquivo === arquivo;
+        this.atualizarAcompanhamento(pedeArquivo ? { pedeArquivo: true } : { erro });
+        return false;
+      }
+      return true;
+    } finally {
+      this.atualizarAcompanhamento({ reconferindo: false });
+    }
   }
 
   /* ---------------------------------------------------------------- leitura com IA */
@@ -714,14 +1004,19 @@ export class ControleRevisao {
 
   /**
    * Reconfere as IAs disponíveis (por exemplo, ao voltar de Configurações › Sua IA). Nunca perturba
-   * uma leitura já em andamento ou pausada.
+   * uma leitura já em andamento ou pausada: nelas, só troca as IAs que a faixa oferece para continuar.
    */
   async atualizarIas(): Promise<void> {
     const lista = this.estado.lista;
     if (this.estado.fase !== "resultado" || lista === undefined || lista.resultado.leituraIa === "completa") return;
     if (this.estado.ia.carregando) return;
     const situacao = this.estado.ia.estado?.situacao;
-    if (situacao === "em_andamento" || situacao === "pausada") return;
+    if (situacao === "em_andamento" || situacao === "pausada") {
+      const geracao = this.geracaoIa;
+      const usaveis = await this.carregarUsaveis();
+      if (this.geracaoIa === geracao && this.estado.lista?.id === lista.id) this.atualizarIa({ usaveis });
+      return;
+    }
     const geracao = this.geracaoIa;
     const usaveis = await this.carregarUsaveis();
     if (this.geracaoIa !== geracao || this.estado.lista?.id !== lista.id) return;
@@ -808,6 +1103,34 @@ export class ControleRevisao {
       } else {
         this.registrarErro("ia", motivo, () => this.iniciarIa());
       }
+      return false;
+    }
+  }
+
+  /**
+   * A leitura pausada (no limite da assinatura) continua com outra IA: só os blocos que faltam vão a ela
+   * (`revisaoPpc.continuarIaCom`), e cada pendência nova diz que IA a julgou.
+   */
+  async continuarIaCom(provider: Provider): Promise<boolean> {
+    const lista = this.estado.lista;
+    const atual = this.estado.ia.estado;
+    if (lista === undefined || atual === undefined) return false;
+    const geracao = this.geracaoIa;
+    this.limparErroOrigem("ia");
+    this.atualizarIa({ ocupada: true });
+    try {
+      const novo = await this.api.chamar((c) => c["revisaoPpc.continuarIaCom"]({ lista: lista.id, provider }));
+      if (this.geracaoIa !== geracao || this.estado.lista?.id !== lista.id) return false;
+      this.blocosVistos = blocosProntos(novo);
+      this.conclusaoEmitida = false;
+      this.atualizarIa({ ocupada: false, avisoPendente: false, estado: novo, erro: undefined });
+      this.acompanharIa(novo.id, lista.id, geracao);
+      return true;
+    } catch (motivo) {
+      if (this.geracaoIa !== geracao) return false;
+      this.atualizarIa({ ocupada: false });
+      if (ehAvisoNaoAceito(motivo)) this.atualizarIa({ avisoPendente: true, erro: undefined });
+      else this.registrarErro("ia", motivo, () => this.continuarIaCom(provider));
       return false;
     }
   }
@@ -934,7 +1257,7 @@ export class ControleRevisao {
     try {
       const nova = await this.api.chamar((c) => c["revisaoPpc.lista"]({ lista: listaId }));
       if (this.estado.lista?.id !== listaId) return;
-      const chegaram = chavesNovas(this.estado.lista, nova);
+      const chegaram = chegaramDaIa(this.estado.lista, nova);
       this.novasDaLeitura += chegaram.length;
 
       const novas = chegaram.length === 0 ? this.estado.novas : new Set([...this.estado.novas, ...chegaram]);

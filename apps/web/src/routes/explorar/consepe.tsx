@@ -3,6 +3,7 @@
  * campus. Cada item ligado a um curso leva à ficha dele; cada reunião, à página dela.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { LinkDaBase } from "../../painel/LinkDaBase.tsx";
 import { Badge } from "../../components/ui/badge.tsx";
 import { dataBr, opcoes, quantos } from "../../explorar/colecoes.ts";
 import {
@@ -101,13 +102,9 @@ function Consepe() {
                           Reunião de {dataBr(reuniao.data)}
                         </Link>
                         {item.curso ? (
-                          <Link
-                            to="/explorar/ver"
-                            search={{ link: `ifpr://curso/${item.curso}` }}
-                            className="link-grifo"
-                          >
+                          <LinkDaBase link={`ifpr://curso/${item.curso}`} className="link-grifo">
                             Ficha do curso
-                          </Link>
+                          </LinkDaBase>
                         ) : null}
                       </p>
                     </li>

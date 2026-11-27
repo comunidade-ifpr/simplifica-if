@@ -19,7 +19,7 @@ import * as Schema from "effect/Schema";
 import type * as SqlClient from "effect/sql/SqlClient";
 import { conceitosDaConsulta, expressaoFts } from "../busca/fts.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
-import type { FonteCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
+import type { DispositivoDaFonte, FonteCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
 import { descendentesEm, type Dispositivo, TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
 import { resolverCitacao } from "../normas/resolver.ts";
 import { type DatasTransicao, type Situacao, STATUS_VIGENCIA, situacaoNaData } from "../normas/vigencia.ts";
@@ -238,15 +238,19 @@ export const tabelasCorrespondencia = Effect.fn("consultasNormas.tabelasCorrespo
   return saida;
 });
 
-const LinhaDispositivoCorrespondencia = Schema.Struct({ dispositivo: Texto, pai: TextoNulo, texto: Texto });
+const LinhaDispositivoCorrespondencia = Schema.Struct({
+  dispositivo: Texto,
+  tipo: Schema.Literals(TIPOS_DISPOSITIVO),
+  rotulo: Texto,
+  pai: TextoNulo,
+  texto: Texto,
+});
 const linhasDispositivoCorrespondencia = Sql.todas(LinhaDispositivoCorrespondencia);
-const linhasArtigo = Sql.todas(Schema.Struct({ dispositivo: Texto }));
 
 /**
- * Fonte da correspondência (`correspondenciaEm`, `destinosDeOrigemEm`) sobre o banco, carregada de
- * uma vez: todas as tabelas de correspondência, os artigos dos atos de origem (por ordem no arquivo)
- * e o pai e o texto dos dispositivos dos atos de origem e de destino. A regra só pergunta por esses
- * atos.
+ * Fonte da correspondência (`correspondenciaEm`, `destinosDeOrigemEm`, `alinhamentoEm`) sobre o banco,
+ * carregada de uma vez: todas as tabelas de correspondência e, dos atos de origem e de destino, os
+ * dispositivos (tipo, rótulo, pai e texto) na ordem do arquivo. A regra só pergunta por esses atos.
  */
 export const carregarFonteCorrespondencia: Effect.Effect<
   FonteCorrespondencia,
@@ -254,33 +258,25 @@ export const carregarFonteCorrespondencia: Effect.Effect<
   SqlClient.SqlClient
 > = Effect.gen(function* () {
   const tabelas = yield* tabelasCorrespondencia();
-  const origens = [...new Set(tabelas.map((t) => t.origem))];
   const atos = [...new Set(tabelas.flatMap((t) => [t.origem, t.destino]))];
   const porOrigem = new Map<string, TabelaCorrespondencia[]>();
   for (const t of tabelas) porOrigem.set(t.origem, [...(porOrigem.get(t.origem) ?? []), t]);
 
-  const dispositivos = new Map<string, { pai: string | null; texto: string }>();
+  const dispositivos = new Map<string, DispositivoDaFonte>();
+  const ordem = new Map<string, string[]>();
   for (const ato of atos) {
     const linhas = yield* linhasDispositivoCorrespondencia(
-      "SELECT dispositivo, pai, texto FROM dispositivos WHERE norma_id = ? ORDER BY rowid",
+      "SELECT dispositivo, tipo, rotulo, pai, texto FROM dispositivos WHERE norma_id = ? ORDER BY ordem",
       [ato],
     );
-    for (const l of linhas) dispositivos.set(`${ato}${l.dispositivo}`, { pai: l.pai, texto: l.texto });
-  }
-
-  const artigos = new Map<string, string[]>();
-  for (const ato of origens) {
-    const linhas = yield* linhasArtigo(
-      "SELECT dispositivo FROM dispositivos WHERE norma_id = ? AND tipo = 'artigo' ORDER BY ordem",
-      [ato],
-    );
-    artigos.set(
+    for (const { dispositivo, ...d } of linhas) dispositivos.set(`${ato}${dispositivo}`, d);
+    ordem.set(
       ato,
       linhas.map((l) => l.dispositivo),
     );
   }
 
-  const fonte: FonteCorrespondencia = { tabelas: porOrigem, dispositivos, artigos };
+  const fonte: FonteCorrespondencia = { tabelas: porOrigem, dispositivos, ordem };
   return fonte;
 }).pipe(Effect.withSpan("consultasNormas.carregarFonteCorrespondencia"));
 

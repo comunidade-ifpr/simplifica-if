@@ -55,6 +55,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import * as McpRpc from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as ArquivosLiberados from "./ArquivosLiberados.ts";
+import * as Atividades from "./Atividades.ts";
 import * as Atualizador from "./Atualizador.ts";
 import * as AtualizadorHarnesses from "./AtualizadorHarnesses.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
@@ -372,14 +373,19 @@ export const layer = (opcoes: Opcoes) => {
   const leitura = McpRpc.layerLeitura({ banco: opcoes.banco, canal, etapaRegistrada: true });
   const mcp = McpHttp.layerSobreLeitura();
   const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
-  const nucleo = Conversas.layer({
-    ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
-    ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
-  }).pipe(
+  // A conversa ao lado do módulo fica por cima das conversas e das pastas do núcleo, que ela chama.
+  const nucleo = RevisaoPpc.layerConversaAoLado.pipe(
+    Layer.provideMerge(
+      Conversas.layer({
+        ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
+        ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
+      }),
+    ),
     Layer.provideMerge(layerPastas(opcoes)),
     Layer.provideMerge(RevisaoPpc.layer(banco, opcoes.revisaoIa)),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
+    Layer.provideMerge(Atividades.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(
       (opcoes.primeiroUsoFeito === true ? Preferencias.layerPrimeiroUsoFeito : Preferencias.layer).pipe(

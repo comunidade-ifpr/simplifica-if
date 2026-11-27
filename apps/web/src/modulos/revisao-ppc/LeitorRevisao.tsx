@@ -6,6 +6,7 @@ import { useApi } from "../../contexto.tsx";
 import { useCarga } from "../../leitor/carga.ts";
 import { Documento } from "../../leitor/Documento.tsx";
 import { BotaoLink, Cabecalho, ComCarga, FaixaTrecho, Secao } from "../../leitor/pecas.tsx";
+import type { AoAbrirLink } from "../../painel/abrirLink.ts";
 
 /**
  * O PPC que a pessoa está revisando (`ifpr://revisao/<lista>/<versão>#p-<chave>`): o texto convertido do
@@ -19,7 +20,7 @@ export function LeitorRevisao({
 }: {
   readonly caminho: string;
   readonly fragmento: string | null;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
 }) {
   const api = useApi();
   const lista = caminho.split("/")[0]!;

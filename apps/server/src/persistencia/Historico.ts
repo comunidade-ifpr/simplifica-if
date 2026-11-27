@@ -16,9 +16,11 @@ import {
   Decisao,
   type EstadoConversa,
   EventoConversa,
+  FichaContexto,
   type ItemConversa,
   type NivelEsforco,
   type NotaResposta,
+  type OrigemConversa,
   type Provider,
   type ResumoConversa,
 } from "@simplifica-if/contratos-app";
@@ -45,6 +47,21 @@ export interface NovaConversa {
   readonly estado: EstadoConversa;
   readonly tarefa?: string;
   readonly semWeb?: boolean;
+  readonly origem?: OrigemConversa;
+  /** A conversa que parou no limite da assinatura e continua nesta. */
+  readonly continuaDe?: string;
+}
+
+/**
+ * Uma conversa cuja última resposta terminou depois da última vez em que ela foi vista: `limite`, se o
+ * turno parou na cota da assinatura.
+ */
+export interface NaoVista {
+  readonly id: string;
+  readonly titulo: string;
+  readonly provider: Provider;
+  readonly terminouEm: string;
+  readonly limite: boolean;
 }
 
 export interface Alteracao {
@@ -87,6 +104,15 @@ export class Historico extends Context.Service<
     readonly listar: Effect.Effect<ReadonlyArray<RegistroConversa>>;
     /** Muda os campos dados e a data de atualização. */
     readonly alterar: (id: string, alteracao: Alteracao) => Effect.Effect<void>;
+    /** Troca a origem da conversa (a revisão de onde ela nasceu foi apagada), sem mexer na data de atualização. */
+    readonly mudarOrigem: (id: string, origem: OrigemConversa) => Effect.Effect<void>;
+    /** A conversa foi vista agora, sem mexer na data de atualização. */
+    readonly marcarVista: (id: string) => Effect.Effect<void>;
+    /**
+     * As conversas cujo último turno terminou com resposta (ou na cota) depois da última vez em que
+     * foram vistas.
+     */
+    readonly naoVistas: Effect.Effect<ReadonlyArray<NaoVista>>;
     readonly gravar: (conversa: string, item: ItemConversa) => Effect.Effect<void>;
     /** Os itens com `ordem` maior que `depois` (todos, sem ele), em ordem. */
     readonly itens: (conversa: string, depois?: number) => Effect.Effect<ReadonlyArray<ItemConversa>>;
@@ -135,6 +161,10 @@ interface LinhaConversa {
   readonly ultima_ordem: number | null;
   readonly tarefa: string | null;
   readonly sem_web: number;
+  readonly origem_rotulo: string | null;
+  readonly origem_rota: string | null;
+  readonly continuada_id: string | null;
+  readonly continuada_provider: string | null;
 }
 
 interface LinhaEvento {
@@ -145,7 +175,9 @@ interface LinhaEvento {
 }
 
 const EventoJson = Schema.fromJsonString(EventoConversa);
-const MensagemJson = Schema.fromJsonString(Schema.Struct({ texto: Schema.String }));
+const MensagemJson = Schema.fromJsonString(
+  Schema.Struct({ texto: Schema.String, fichas: Schema.optionalKey(Schema.Array(FichaContexto)) }),
+);
 const DecisaoJson = Schema.fromJsonString(Schema.Struct({ aprovacao: Schema.String, decisao: Decisao }));
 const codificarEvento = Schema.encodeEffect(EventoJson);
 const codificarMensagem = Schema.encodeEffect(MensagemJson);
@@ -169,6 +201,10 @@ const paraRegistro = (linha: LinhaConversa): RegistroConversa => ({
   ultimaOrdem: linha.ultima_ordem ?? 0,
   ...(linha.tarefa === null ? {} : { tarefa: linha.tarefa }),
   semWeb: linha.sem_web === 1,
+  ...(linha.origem_rotulo === null ? {} : { origem: { rotulo: linha.origem_rotulo, rota: linha.origem_rota } }),
+  ...(linha.continuada_id === null || linha.continuada_provider === null
+    ? {}
+    : { continuadaCom: { id: linha.continuada_id, provider: linha.continuada_provider as Provider } }),
 });
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
@@ -179,8 +215,12 @@ const make = Effect.gen(function* () {
   const selecionar = (filtro: ReturnType<typeof sql.unsafe> | undefined) => sql<LinhaConversa>`
     SELECT c.*,
       (SELECT MAX(turno) FROM eventos e WHERE e.conversa_id = c.id) AS turnos,
-      (SELECT MAX(ordem) FROM eventos e WHERE e.conversa_id = c.id) AS ultima_ordem
+      (SELECT MAX(ordem) FROM eventos e WHERE e.conversa_id = c.id) AS ultima_ordem,
+      n.id AS continuada_id,
+      n.provider AS continuada_provider
     FROM conversas c
+    LEFT JOIN conversas n
+      ON n.id = (SELECT m.id FROM conversas m WHERE m.continua_de = c.id ORDER BY m.criada_em DESC LIMIT 1)
     ${filtro ?? sql.unsafe("")}
     ORDER BY c.atualizada_em DESC, c.criada_em DESC
   `;
@@ -188,10 +228,13 @@ const make = Effect.gen(function* () {
   const criar = Effect.fn("Historico.criar")(function* (conversa: NovaConversa) {
     const data = yield* agora;
     yield* sql`
-      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, esforco, id_nativo, estado, tarefa, sem_web, criada_em, atualizada_em)
+      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, esforco, id_nativo, estado, tarefa, sem_web,
+        origem_rotulo, origem_rota, continua_de, criada_em, atualizada_em)
       VALUES (${conversa.id}, ${conversa.provider}, ${conversa.pastaTrabalho}, ${conversa.modelo ?? null},
         ${conversa.esforco ?? null}, ${conversa.idNativo ?? null},
-        ${conversa.estado}, ${conversa.tarefa ?? null}, ${conversa.semWeb === true ? 1 : 0}, ${data}, ${data})
+        ${conversa.estado}, ${conversa.tarefa ?? null}, ${conversa.semWeb === true ? 1 : 0},
+        ${conversa.origem?.rotulo ?? null}, ${conversa.origem?.rota ?? null}, ${conversa.continuaDe ?? null},
+        ${data}, ${data})
     `;
   }, Effect.orDie);
 
@@ -224,11 +267,71 @@ const make = Effect.gen(function* () {
     `;
   }, Effect.orDie);
 
+  const mudarOrigem = Effect.fn("Historico.mudarOrigem")(function* (id: string, origem: OrigemConversa) {
+    yield* sql`UPDATE conversas SET origem_rotulo = ${origem.rotulo}, origem_rota = ${origem.rota} WHERE id = ${id}`;
+  }, Effect.orDie);
+
+  const marcarVista = Effect.fn("Historico.marcarVista")(function* (id: string) {
+    const data = yield* agora;
+    yield* sql`UPDATE conversas SET vista_em = ${data} WHERE id = ${id}`;
+  }, Effect.orDie);
+
+  // O último `FimTurno` de cada conversa, se é mais novo que a última vista: com resposta (`concluido`) ou
+  // parado na cota (um `Erro` de tipo `cota` no mesmo turno).
+  const naoVistas = sql<{
+    readonly id: string;
+    readonly titulo: string;
+    readonly provider: string;
+    readonly terminou_em: string;
+    readonly motivo: string;
+    readonly cota: number;
+  }>`
+    SELECT c.id, c.titulo, c.provider, f.criado_em AS terminou_em,
+      json_extract(f.dados, '$.motivo') AS motivo,
+      EXISTS (
+        SELECT 1 FROM eventos e
+        WHERE e.conversa_id = c.id AND e.turno = f.turno AND e.tipo = 'evento'
+          AND json_extract(e.dados, '$._tag') = 'Erro' AND json_extract(e.dados, '$.tipo') = 'cota'
+      ) AS cota
+    FROM conversas c
+    JOIN eventos f ON f.conversa_id = c.id
+    WHERE f.ordem = (
+        SELECT MAX(e.ordem) FROM eventos e
+        WHERE e.conversa_id = c.id AND e.tipo = 'evento' AND json_extract(e.dados, '$._tag') = 'FimTurno'
+      )
+      AND (c.vista_em IS NULL OR f.criado_em > c.vista_em)
+    ORDER BY f.criado_em
+  `.pipe(
+    Effect.map((linhas) =>
+      linhas.flatMap((linha): ReadonlyArray<NaoVista> => {
+        const limite = linha.motivo === "falha" && linha.cota === 1;
+        if (linha.motivo !== "concluido" && !limite) return [];
+        return [
+          {
+            id: linha.id,
+            titulo: linha.titulo,
+            provider: linha.provider as Provider,
+            terminouEm: linha.terminou_em,
+            limite,
+          },
+        ];
+      }),
+    ),
+    Effect.orDie,
+    Effect.withSpan("Historico.naoVistas"),
+  );
+
   const gravar = Effect.fn("Historico.gravar")(function* (conversa: string, item: ItemConversa) {
     const data = yield* agora;
     const [tipo, dados] =
       item._tag === "Mensagem"
-        ? ["mensagem", yield* codificarMensagem({ texto: item.texto })]
+        ? [
+            "mensagem",
+            yield* codificarMensagem({
+              texto: item.texto,
+              ...(item.fichas === undefined || item.fichas.length === 0 ? {} : { fichas: item.fichas }),
+            }),
+          ]
         : item._tag === "EventoTurno"
           ? ["evento", yield* codificarEvento(item.evento)]
           : ["decisao", yield* codificarDecisao({ aprovacao: item.aprovacao, decisao: item.decisao })];
@@ -400,6 +503,9 @@ const make = Effect.gen(function* () {
     buscar,
     listar,
     alterar,
+    mudarOrigem,
+    marcarVista,
+    naoVistas,
     gravar,
     itens,
     abertas,

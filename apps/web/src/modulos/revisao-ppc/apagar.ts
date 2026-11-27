@@ -12,10 +12,12 @@ export const REVISAO: NomeDoItem = { um: "revisão", varios: "revisões" };
 
 /**
  * Apagar uma revisão de PPC. `lendo`: a leitura com IA da lista está em andamento (o servidor a para
- * antes de apagar).
+ * antes de apagar). A conversa ao lado e a pasta dela, com o Markdown do PPC, ficam; `podeLixeira`: o
+ * desktop pode mandar a pasta à Lixeira, e então a conversa sai junto (sem a pasta, ela não segue).
  */
-export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean): TextosApagar {
+export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean, podeLixeira = false): TextosApagar {
   const r = lista.resultado;
+  const pasta = lista.conversaAoLado?.pasta;
   return {
     titulo: `Apagar a revisão de “${nomeDoArquivo(lista.arquivoOriginal)}”?`,
     saiDoApp: [
@@ -26,9 +28,20 @@ export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean): Tex
     ficaNoComputador: [
       { texto: "Seu arquivo", caminho: lista.arquivoOriginal },
       { texto: "A cópia comentada", caminho: r.arquivoComentado },
+      ...(pasta === undefined
+        ? []
+        : [
+            {
+              texto: `A conversa ao lado e a pasta dela, “${nomeDoArquivo(pasta)}”, com o texto do PPC`,
+              caminho: pasta,
+            },
+          ]),
     ],
     aviso: lendo ? "A conferência com IA está em andamento. O app para a conferência antes de apagar." : null,
-    opcaoPasta: null,
+    opcaoPasta:
+      pasta === undefined || !podeLixeira
+        ? null
+        : `Apagar também a conversa ao lado e mandar a pasta dela, “${nomeDoArquivo(pasta)}”, com o texto do PPC, para a Lixeira`,
     confirmar: "Apagar a revisão",
   };
 }
@@ -36,8 +49,10 @@ export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean): Tex
 /** Apagar várias revisões de uma vez; com uma só, os textos dela. */
 export function textosApagarRevisoes(
   itens: ReadonlyArray<{ readonly lista: ListaPendencias; readonly lendo: boolean }>,
+  podeLixeira = false,
 ): TextosApagar {
-  if (itens.length === 1) return textosApagarRevisao(itens[0]!.lista, itens[0]!.lendo);
+  if (itens.length === 1) return textosApagarRevisao(itens[0]!.lista, itens[0]!.lendo, podeLixeira);
+  const conversas = itens.filter((i) => i.lista.conversaAoLado !== null).length;
   const n = itens.length;
   const pendencias = itens.reduce((soma, i) => soma + i.lista.pendencias.length, 0);
   const comIa = itens.some((i) => i.lendo || i.lista.resultado.leituraIa !== "nenhuma");
@@ -49,14 +64,31 @@ export function textosApagarRevisoes(
       "O que você marcou e o que escreveu ao discordar",
       ...(comIa ? ["As conferências com IA, com o que elas guardaram dos PPCs"] : []),
     ],
-    ficaNoComputador: [{ texto: `Seus ${n} arquivos e as cópias comentadas, nas pastas deles` }],
+    ficaNoComputador: [
+      { texto: `Seus ${n} arquivos e as cópias comentadas, nas pastas deles` },
+      ...(conversas === 0
+        ? []
+        : [
+            {
+              texto:
+                conversas === 1
+                  ? "A conversa ao lado de uma delas e a pasta dela, com o texto do PPC"
+                  : `As conversas ao lado de ${conversas} delas e as pastas delas, com o texto dos PPCs`,
+            },
+          ]),
+    ],
     aviso:
       lendo === 0
         ? null
         : lendo === 1
           ? "Uma conferência com IA está em andamento. O app a para antes de apagar."
           : `${lendo} leituras com IA estão em andamento. O app as para antes de apagar.`,
-    opcaoPasta: null,
+    opcaoPasta:
+      conversas === 0 || !podeLixeira
+        ? null
+        : conversas === 1
+          ? "Apagar também a conversa ao lado e mandar a pasta dela, com o texto do PPC, para a Lixeira"
+          : "Apagar também as conversas ao lado e mandar as pastas delas, com o texto dos PPCs, para a Lixeira",
     confirmar: `Apagar ${n} revisões`,
   };
 }

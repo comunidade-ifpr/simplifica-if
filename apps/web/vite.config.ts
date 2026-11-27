@@ -11,6 +11,7 @@
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
+import type * as NodeNet from "node:net";
 import * as NodePath from "node:path";
 import * as NodeReadline from "node:readline";
 import tailwindcss from "@tailwindcss/vite";
@@ -35,6 +36,8 @@ export interface ServidorTeste {
   readonly pasta: string;
   /** Um PPC sintético em DOCX, dentro de `pasta`. */
   readonly ppc: string;
+  /** O mesmo PPC corrigido, em `pasta/salvo/`, para simular o salvamento no Word (`salvarNoWord`). */
+  readonly ppcSalvo: string;
   /** Um documento em Markdown, dentro de `pasta`, para anexar às tarefas. */
   readonly parecer: string;
   /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
@@ -79,6 +82,9 @@ function iniciarServidorTeste(origem: string, opcoes: OpcoesServidorTeste) {
   );
   servidores.add(processo);
   processo.once("exit", () => servidores.delete(processo));
+  // Os servidores não seguram o processo dos testes: no fim, ele sai e os para (`pararServidores`).
+  processo.unref();
+  for (const fluxo of [processo.stdin, processo.stdout]) (fluxo as NodeNet.Socket | null)?.unref();
   return new Promise<ServidorTeste>((resolve, reject) => {
     const linhas = NodeReadline.createInterface({ input: processo.stdout! });
     linhas.once("line", (linha) => resolve(JSON.parse(linha)));
@@ -86,6 +92,9 @@ function iniciarServidorTeste(origem: string, opcoes: OpcoesServidorTeste) {
   });
 }
 
+// Os servidores de teste saem só aqui, com o processo dos testes. Os arquivos de navegador rodam em
+// paralelo, cada um com o seu servidor: nenhum teste para servidores, porque pararia os dos outros arquivos
+// no meio (não há comando para isso).
 const pararServidores = () => {
   for (const processo of servidores) processo.kill("SIGTERM");
 };
@@ -130,11 +139,23 @@ const navegador = {
       commands: {
         iniciarServidorTeste: async ({ page }, opcoes: OpcoesServidorTeste) =>
           iniciarServidorTeste(new URL(page.url()).origin, opcoes),
-        pararServidoresTeste: async () => pararServidores(),
         /** A pessoa instalou o Claude Code e entrou na conta (o sinal do servidor de teste). */
         simularInstalacaoClaude: async (_contexto, sinal: string) => {
           if (!sinal.endsWith(`${NodePath.sep}claude-instalado`)) throw new Error(`não é o sinal do Claude: ${sinal}`);
           NodeFS.writeFileSync(sinal, "");
+        },
+        /**
+         * Simula o Word salvando o arquivo acompanhado da revisão: o PPC corrigido do servidor de teste por
+         * cima da cópia comentada (só a cópia, numa pasta temporária dos testes).
+         */
+        salvarNoWord: async (_contexto, de: string, para: string) => {
+          if (!/[\\/]simplifica-web-pasta-[^\\/]+[\\/]salvo[\\/]PPC de teste\.docx$/.test(de))
+            throw new Error(`não é o PPC corrigido do servidor de teste: ${de}`);
+          if (
+            !/[\\/]simplifica-web-pasta-[^\\/]+[\\/][^\\/]+ - revisão prévia \(Simplifica IF\)[^\\/]*\.docx$/.test(para)
+          )
+            throw new Error(`não é uma cópia comentada dos testes: ${para}`);
+          NodeFS.copyFileSync(de, para);
         },
         /** Simula a pessoa editando no Word um arquivo de uma pasta de tarefa (só dentro de "Simplifica IF/"). */
         editarArquivoDeTarefa: async (_contexto, caminho: string, texto: string) => {

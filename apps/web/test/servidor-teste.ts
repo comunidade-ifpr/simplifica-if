@@ -7,8 +7,9 @@
  *     [--primeiro-uso] [--claude-ausente] [--curadoria dono/repo] [--tarefas-de-teste]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
- * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
- * PPC sintético em DOCX dentro dela (para a revisão prévia). Encerra com SIGTERM, SIGINT ou, se o stdin não for um
+ * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, `ppc`, um
+ * PPC sintético em DOCX dentro dela (para a revisão prévia), e `ppcSalvo`, o mesmo PPC corrigido (para a
+ * conferência ao salvar). Encerra com SIGTERM, SIGINT ou, se o stdin não for um
  * terminal, quando ele fecha (o processo que o iniciou morreu). Os logs vão para o stderr: o stdout é
  * só da linha JSON.
  */
@@ -29,6 +30,7 @@ import * as Servidor from "@simplifica-if/server";
 import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
 import { inserirExplorar } from "../../../packages/mcp/test/fixture-explorar.ts";
 import { inserirNormas } from "../../../packages/mcp/test/fixture-normas.ts";
+import { par } from "../../../packages/docx/src/testes/sintetico.ts";
 import { ppcSintetico } from "../../../packages/ppc/src/testes/revisao-previa.ts";
 import * as Demonstracao from "./drivers-demonstracao.ts";
 
@@ -86,6 +88,16 @@ inserirExplorar(banco);
 /** Um PPC sintético (fictício) na pasta, para a revisão prévia. */
 const ppc = NodePath.join(pasta, "PPC de teste.docx");
 NodeFS.writeFileSync(ppc, ppcSintetico());
+/**
+ * O mesmo PPC como a pessoa o salva no Word depois de corrigir o AEE e citar uma norma revogada, numa
+ * pasta à parte: a conferência ao salvar (`salvarNoWord`) o copia por cima do arquivo acompanhado.
+ */
+const ppcSalvo = NodePath.join(pasta, "salvo", "PPC de teste.docx");
+NodeFS.mkdirSync(NodePath.dirname(ppcSalvo));
+NodeFS.writeFileSync(
+  ppcSalvo,
+  ppcSintetico({ semAeeNaMatriz: true, corpoExtra: par("O curso segue também a Resolução CNE/CEB nº 6/2012.") }),
+);
 
 /** Um documento para anexar às tarefas (Modo Servidor). */
 const parecer = NodePath.join(pasta, "parecer.md");
@@ -186,6 +198,7 @@ const programa = Effect.gen(function* () {
       token,
       pasta,
       ppc,
+      ppcSalvo,
       parecer,
       pastaTrabalhos,
       sinalClaude,

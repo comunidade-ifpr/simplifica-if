@@ -11,8 +11,6 @@ import { achadosDaTela, iniciarServidorTeste, montarApp } from "../../test/naveg
 
 let servidor: ServidorTeste;
 
-// Sem `pararServidoresTeste` no fim: ele derruba todos os servidores de teste, inclusive o do
-// `app.browser.test.tsx`, que pode estar rodando ao mesmo tempo. O `vite.config.ts` os encerra na saída.
 beforeAll(async () => {
   servidor = await iniciarServidorTeste();
 });
@@ -34,6 +32,8 @@ function visivelNoPainel(elemento: Element): boolean {
 }
 
 it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e abrir o PPC na seção", async () => {
+  // Com espaço para o painel ser coluna: os chips da conversa continuam à vista ao lado dele.
+  await page.viewport(1280, 800);
   await using _app = await montarApp(servidor, "/");
 
   await page
@@ -45,23 +45,25 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   const chip = page.getByRole("button", { name: "Res. CNE/CP nº 2/2026, art. 28, XVIII" });
   await expect.element(chip).toBeVisible();
   await chip.click();
-  const painel = page.getByRole("complementary", { name: "Painel de leitura" });
+  const painel = page.getByRole("complementary", { name: "Painel ao lado" });
   await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
   const norma = painel.getByRole("article", { name: "Norma" });
   await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
   await expect
     .element(norma.getByRole("group", { name: "Situação" }).getByText("Revogada em parte", { exact: true }))
     .toBeVisible();
-  // o foco foi para o painel, que um chip da conversa abriu
-  expect(document.activeElement).toBe(painel.element());
+  // o foco foi para o leitor do painel, que um chip da conversa abriu
+  expect(document.activeElement).toBe(painel.element().querySelector("[data-leitor]"));
   // a data do ato e a publicação registrada, cada uma com o seu nome
   await expect.element(norma.getByText("Ato de 11/11/2026")).toBeVisible();
   await expect.element(norma.getByText("Publicação no DOU: 12/11/2026")).toBeVisible();
   await expect.element(norma.getByText(/Trecho citado: art\. 28, XVIII, destacado no texto/)).toBeVisible();
   const texto = norma.getByRole("document", { name: "Texto da norma" });
   await expect.element(texto).toBeVisible();
-  await expect.poll(() => document.getElementById("art28-xviii")?.querySelector("mark.trecho-citado")).toBeTruthy();
-  const inciso = document.getElementById("art28-xviii")!;
+  await expect
+    .poll(() => document.getElementById("painel-art28-xviii")?.querySelector("mark.trecho-citado"))
+    .toBeTruthy();
+  const inciso = document.getElementById("painel-art28-xviii")!;
   // o destaque começa com o anúncio oculto, para o leitor de tela
   expect(inciso.textContent).toMatch(/^Trecho citado: XVIII – /);
   expect(inciso.querySelector(".sr-only")?.textContent).toBe("Trecho citado: ");
@@ -108,7 +110,9 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
 
   await painel.getByRole("button", { name: "Voltar ao link anterior" }).click();
   await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  await expect.poll(() => document.getElementById("art28-xviii")?.querySelector("mark.trecho-citado")).toBeTruthy();
+  await expect
+    .poll(() => document.getElementById("painel-art28-xviii")?.querySelector("mark.trecho-citado"))
+    .toBeTruthy();
   await painel.getByRole("button", { name: "Avançar para o próximo link" }).click();
   await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
 
@@ -117,7 +121,9 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await page.getByRole("button", { name: "PPC de Enfermagem" }).click();
   const ppc = painel.getByRole("article", { name: "PPC" });
   await expect.element(ppc.getByRole("heading", { level: 2, name: "Técnico em Enfermagem" })).toBeVisible();
-  await expect.poll(() => document.getElementById("avaliacao-1")?.querySelector("mark.trecho-citado")).toBeTruthy();
+  await expect
+    .poll(() => document.getElementById("painel-avaliacao-1")?.querySelector("mark.trecho-citado"))
+    .toBeTruthy();
   await expect.element(ppc.getByRole("cell", { name: "1.600 horas" })).toBeVisible();
   // a fonte: o PDF publicado de onde veio o texto
   const pdf = ppc.getByRole("link", { name: "Ver o PDF original" });
@@ -129,7 +135,9 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   // a seção vizinha, pelo índice, na mesma área de rolagem
   await ppc.getByText("Seções do índice (3)").click();
   await ppc.getByRole("button", { name: "estagio-2" }).click();
-  await expect.poll(() => document.getElementById("estagio-2")?.querySelector("mark.trecho-citado")).toBeTruthy();
-  expect(document.getElementById("avaliacao-1")?.querySelector("mark.trecho-citado")).toBeNull();
+  await expect
+    .poll(() => document.getElementById("painel-estagio-2")?.querySelector("mark.trecho-citado"))
+    .toBeTruthy();
+  expect(document.getElementById("painel-avaliacao-1")?.querySelector("mark.trecho-citado")).toBeNull();
   expect(achadosDaTela()).toEqual([]);
 });

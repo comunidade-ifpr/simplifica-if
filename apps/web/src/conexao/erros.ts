@@ -45,6 +45,15 @@ export function temCodigo(erro: unknown): boolean {
   return typeof erro === "object" && erro !== null && codigos.has(erro);
 }
 
+const temTag = (erro: unknown, tag: string): boolean =>
+  typeof erro === "object" && erro !== null && (erro as { _tag?: unknown })._tag === tag;
+
+/** A conexão com o servidor caiu no meio do stream (o `RpcClientError` do cliente `effect/rpc`). */
+export const ehQuedaDaConexao = (erro: unknown): boolean => temTag(erro, "RpcClientError");
+
+/** O servidor não conhece a conversa (apagada). */
+export const ehSessaoDesconhecida = (erro: unknown): boolean => temTag(erro, "SessaoDesconhecida");
+
 function comMaiuscula(texto: string): string {
   return texto.length === 0 ? texto : `${texto[0]!.toUpperCase()}${texto.slice(1)}`;
 }

@@ -42,8 +42,7 @@ import { useCarga } from "./carga.ts";
 import { BotaoCodigoSuap, BotaoLink, Cabecalho, ComCarga, Fatos, LinkExterno, Secao } from "./pecas.tsx";
 import { dataCurta } from "../lib/formato.ts";
 import { situacaoDaTransicao } from "./textos.ts";
-
-type AoAbrirLink = (link: string) => void;
+import type { AoAbrirLink } from "../painel/abrirLink.ts";
 
 /** Os fatos do PPC de cada aspecto do cruzamento com o SUAP. */
 const FATOS_DO_ASPECTO: Readonly<Record<string, ReadonlyArray<string>>> = {

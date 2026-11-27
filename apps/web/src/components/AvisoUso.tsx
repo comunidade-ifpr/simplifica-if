@@ -2,11 +2,18 @@
  * O aviso de uso (M1.8; decisão em aberto 7 do plano): o que vai para a IA conectada e o que não
  * anexar. Mostrado nas boas-vindas, com "Entendi" gravado, e em Configurações › Sua IA.
  *
- * Texto provisório: precisa da revisão do encarregado de dados do IFPR antes do piloto.
+ * Texto provisório: precisa da revisão do encarregado de dados do IFPR antes do piloto. Cita as fichas de
+ * contexto (`docs/plans/multitarefa.md`, "Dados e aviso de uso"): o que fica nelas vai à IA; e diz que
+ * continuar uma conversa com outra IA, no limite da assinatura, leva o histórico e as fichas a outra empresa.
+ *
+ * `AvisoUsoPendente` é o lembrete que aparece onde a IA foi pedida antes do "Entendi" (a conversa, a
+ * revisão), com o caminho para as Configurações.
  */
+import { Link } from "@tanstack/react-router";
 import { CheckCircle2Icon, FolderOpenIcon, LaptopIcon, ShieldAlertIcon, UserCheckIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { Button } from "./ui/button.tsx";
+import { Alert, AlertDescription } from "./ui/alert.tsx";
+import { Button, buttonVariants } from "./ui/button.tsx";
 
 const PONTOS: ReadonlyArray<{
   readonly titulo: string;
@@ -28,8 +35,9 @@ const PONTOS: ReadonlyArray<{
     icone: <FolderOpenIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />,
     texto: (
       <>
-        A base pública do IFPR, o que você escreve ou anexa e os arquivos da pasta da tarefa (
-        <code>Documentos/Simplifica IF</code>). Pesquisas na internet também passam pela empresa.
+        A base pública do IFPR, o que você escreve, anexa ou deixa nas fichas de contexto (o PPC em revisão, o trecho
+        selecionado, o documento aberto) e os arquivos da pasta da tarefa (<code>Documentos/Simplifica IF</code>).
+        Pesquisas na internet também passam pela empresa.
       </>
     ),
   },
@@ -39,7 +47,8 @@ const PONTOS: ReadonlyArray<{
     texto: (
       <>
         Seu perfil, conversas e pastas ficam só neste computador; o que é enviado à IA também pode ficar guardado pelo
-        serviço de IA.
+        serviço de IA. Continuar uma conversa com outra IA (quando a sua chega ao limite da assinatura) leva o histórico
+        e as fichas dela a outra empresa.
       </>
     ),
   },
@@ -77,8 +86,9 @@ export function AvisoUso({
         <div className="flex flex-col gap-1">
           <p className="font-semibold text-warning-foreground">Não envie dados pessoais nem restritos</p>
           <p className="text-foreground">
-            Não anexe, cole ou deixe na pasta da tarefa dados pessoais (CPF, notas, laudos, endereço ou contato) nem
-            documentos de acesso restrito (processos sigilosos ou documentos internos não publicados).
+            Não anexe, cole, deixe nas fichas de contexto nem na pasta da tarefa dados pessoais (CPF, notas, laudos,
+            endereço ou contato) nem documentos de acesso restrito (processos sigilosos ou documentos internos não
+            publicados).
           </p>
         </div>
       </div>
@@ -88,5 +98,19 @@ export function AvisoUso({
         </Button>
       )}
     </section>
+  );
+}
+
+/** A IA foi pedida antes do aviso aceito: o que fazer, sem perder o que a pessoa escreveu. */
+export function AvisoUsoPendente() {
+  return (
+    <Alert variant="warning">
+      <AlertDescription className="flex flex-col items-start gap-2">
+        <p>Antes de usar a IA, leia o aviso de uso e clique em “Entendi” em Configurações › Sua IA.</p>
+        <Link to="/configuracoes" className={buttonVariants({ size: "sm", variant: "outline" })}>
+          Abrir Configurações
+        </Link>
+      </AlertDescription>
+    </Alert>
   );
 }

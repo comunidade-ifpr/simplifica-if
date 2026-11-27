@@ -5,6 +5,7 @@
 import { assert, describe, it } from "@effect/vitest";
 import {
   GrupoApp,
+  GrupoAtividades,
   GrupoAtualizacao,
   GrupoConversa,
   GrupoDiagnostico,
@@ -18,7 +19,7 @@ import {
 import { GrupoRevisaoPpc } from "../../src/modulos/revisao-ppc.ts";
 
 describe("contrato da revisão de PPC", () => {
-  it("o GrupoApp tem os métodos do módulo e é a soma exata dos dez grupos", () => {
+  it("o GrupoApp tem os métodos do módulo e é a soma exata dos onze grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
     const doModulo = [...GrupoRevisaoPpc.requests.keys()];
     assert.isTrue(doModulo.every((metodo) => metodo.startsWith("revisaoPpc.")));
@@ -35,6 +36,7 @@ describe("contrato da revisão de PPC", () => {
       GrupoAtualizacao,
       GrupoPreferencias,
       GrupoLeitura,
+      GrupoAtividades,
     ].flatMap((grupo) => [...grupo.requests.keys()]);
     assert.strictEqual(metodos.length, todos.length);
   });

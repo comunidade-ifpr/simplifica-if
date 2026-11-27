@@ -2,9 +2,19 @@ import type { JanelaDesktop, PonteDesktop } from "@simplifica-if/contratos-app/p
 
 const JANELA_PADRAO: JanelaDesktop = {
   plataforma: "darwin",
+  continuidade: "completa",
+  abrirJanela: async () => {},
   telaCheia: async () => false,
   aoMudarTelaCheia: () => () => {},
   temaDoApp: async () => {},
+  aoAtalhoDoMenu: () => () => {},
+  avisar: async () => {},
+  selo: async () => {},
+  aoAbrirRota: () => () => {},
+  // Como o desktop: o modo liga.
+  compacta: async (ligar) => ligar,
+  naFrente: async () => {},
+  antesDeSair: () => () => {},
 };
 
 /** Os métodos do núcleo, sem efeito. */

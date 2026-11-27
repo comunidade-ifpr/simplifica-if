@@ -51,6 +51,21 @@
  * tarefa cita (nenhuma, se não cita) e fica sem busca nem leitura na web se o manifesto a desliga
  * (`ConfigSessao.semWeb`). O primeiro turno que chega à IA indica a skill. As ferramentas `ifpr` vão
  * inteiras a toda sessão.
+ *
+ * **Fichas de contexto e origem** (`docs/plans/multitarefa.md`, "Conversa ao lado"): a mensagem leva as
+ * fichas que a pessoa deixou junto, gravadas com ela e mandadas à IA num bloco depois do texto
+ * (`textoDasFichas`); o arquivo de uma ficha já está na pasta. A conversa que um módulo abre (a conversa
+ * ao lado de uma revisão de PPC) guarda a origem, que a lista de conversas mostra, e o módulo a troca
+ * quando ela deixa de existir (`mudarOrigem`).
+ *
+ * **Atividades** (`docs/plans/multitarefa.md`, "Em andamento"): cada conversa publica no serviço
+ * `Atividades` o que a bandeja mostra dela: respondendo, o pedido de aprovação pendente (guardado só em
+ * memória), a resposta que terminou depois da última vez em que a interface a mostrou (`marcarVista`) e o
+ * turno que parou na cota da assinatura. Na partida, as que terminaram sem ser vistas vêm do banco.
+ *
+ * **Continuar com outra IA** ("Limite da assinatura"): `iniciar` com `continuaDe` abre a conversa nova na
+ * pasta e na tarefa da antiga e devolve o que vai à caixa dela, à vista: a ficha com o histórico
+ * (`continuacaoDe`), as fichas da última mensagem e a última pergunta, que não é enviada.
  */
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
@@ -68,15 +83,20 @@ import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import {
+  type AprovacaoPendente,
+  type Atividade,
   type AvisoNaoAceito,
+  type Continuacao,
   type ConversaGravada,
   type EntradaIniciar,
   type EstadoConversa,
   type EventoConversa,
   type FalhaPasta,
+  type FichaContexto,
   type ItemAoVivo,
   type ItemConversa,
   type NotaResposta,
+  type OrigemConversa,
   type PastaConversa,
   PastaTrabalhoInvalida,
   type PreviaApagarConversa,
@@ -85,9 +105,11 @@ import {
   TarefaDesconhecida,
   type TurnoAberto as TurnoAbertoContrato,
 } from "@simplifica-if/contratos-app";
+import * as DateTime from "effect/DateTime";
 import type { CanalDistribuicao } from "@simplifica-if/kb/canal";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
+import * as Atividades from "./Atividades.ts";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as CatalogoTarefas from "./CatalogoTarefas.ts";
 import { avisoDasMudancas } from "./textos-anexos/aviso.ts";
@@ -111,15 +133,31 @@ const LIMITE_CONTEXTO = 24_000;
 export class Conversas extends Context.Service<
   Conversas,
   {
-    /** `canal`: o canal de atualização em uso, que decide se uma tarefa `experimental` abre conversa. */
+    /**
+     * `canal`: o canal de atualização em uso, que decide se uma tarefa `experimental` abre conversa.
+     * `origem`: a de uma conversa que um módulo abre.
+     */
     readonly iniciar: (
       entrada: EntradaIniciar,
       canal: CanalDistribuicao,
-    ) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida | TarefaDesconhecida | AvisoNaoAceito>;
-    /** Abre o turno com a mensagem e devolve o número dele e a `ordem` da mensagem; o turno segue no servidor. */
+      origem?: OrigemConversa,
+    ) => Effect.Effect<
+      { readonly sessao: string; readonly continuacao?: Continuacao },
+      | Motor.FalhaProvider
+      | PastaTrabalhoInvalida
+      | TarefaDesconhecida
+      | AvisoNaoAceito
+      | Motor.SessaoDesconhecida
+      | Motor.TurnoEmAndamento
+    >;
+    /**
+     * Abre o turno com a mensagem (e as fichas de contexto) e devolve o número dele e a `ordem` da mensagem;
+     * o turno segue no servidor.
+     */
     readonly enviar: (
       sessao: string,
       texto: string,
+      fichas?: ReadonlyArray<FichaContexto>,
     ) => Effect.Effect<
       TurnoAbertoContrato,
       Motor.FalhaProvider | Motor.TurnoEmAndamento | Motor.SessaoDesconhecida | AvisoNaoAceito
@@ -132,6 +170,10 @@ export class Conversas extends Context.Service<
     readonly interromper: (sessao: string) => Effect.Effect<void, Motor.SessaoDesconhecida | Motor.FalhaProvider>;
     /** Libera a sessão do provider; a conversa continua gravada. */
     readonly encerrar: (sessao: string) => Effect.Effect<void, Motor.SessaoDesconhecida>;
+    /** A interface mostrou a conversa: a resposta que terminou até agora deixa de ser "resposta pronta". */
+    readonly marcarVista: (sessao: string) => Effect.Effect<void, Motor.SessaoDesconhecida>;
+    /** Troca a origem (a revisão de onde a conversa nasceu foi apagada). */
+    readonly mudarOrigem: (sessao: string, origem: OrigemConversa) => Effect.Effect<void, Motor.SessaoDesconhecida>;
     readonly listar: Effect.Effect<ReadonlyArray<ResumoConversa>>;
     readonly carregar: (sessao: string) => Effect.Effect<ConversaGravada, Motor.SessaoDesconhecida>;
     /**
@@ -194,6 +236,12 @@ interface TurnoAberto {
   terminou: boolean;
   /** O turno terminou com falha do provider (já gravou o `Erro`). */
   falhou: boolean;
+  /** Quando o turno abriu (ISO 8601), para a bandeja dizer há quanto tempo responde. */
+  readonly inicio: string;
+  /** Os pedidos de aprovação sem resposta, na ordem em que chegaram, com a hora de cada um. */
+  readonly aprovacoes: Array<{ readonly pedido: AprovacaoPendente; readonly em: string }>;
+  /** O provider avisou a cota da assinatura neste turno (um `Erro` de tipo `cota`). */
+  cota: boolean;
   /** O turno saiu da conversa (`concluirTurno`): o estado em repouso e o `FimTurno` estão gravados. */
   fechado: boolean;
   readonly fim: Deferred.Deferred<void>;
@@ -214,6 +262,11 @@ interface Viva {
   caiu: boolean;
   /** O último turno terminou com falha do provider (o `Erro` dele já está gravado). */
   ultimoTurnoFalhou: boolean;
+  /**
+   * O último turno terminou (com resposta, ou na cota) depois da última vez em que a interface mostrou a
+   * conversa; sai com `marcarVista` e com o turno seguinte.
+   */
+  fimNaoVisto: { readonly em: string; readonly limite: boolean } | undefined;
   readonly aoVivo: PubSub.PubSub<ItemAoVivo>;
   /** Abrir e fechar a sessão e começar o turno, um de cada vez. */
   readonly trava: Semaphore.Semaphore;
@@ -241,8 +294,13 @@ export function derivarTitulo(texto: string): string {
 export function contextoDoHistorico(itens: ReadonlyArray<ItemConversa>): string | undefined {
   const turnos = new Map<number, { pessoa: string; respostas: Array<string> }>();
   for (const item of itens) {
-    if (item._tag === "Mensagem") turnos.set(item.turno, { pessoa: item.texto, respostas: [] });
-    else if (item._tag === "EventoTurno" && item.evento._tag === "TextoFinal") {
+    if (item._tag === "Mensagem") {
+      const fichas = textoDasFichas(item.fichas ?? []);
+      turnos.set(item.turno, {
+        pessoa: fichas === undefined ? item.texto : `${item.texto}\n\n${fichas}`,
+        respostas: [],
+      });
+    } else if (item._tag === "EventoTurno" && item.evento._tag === "TextoFinal") {
       turnos.get(item.turno)?.respostas.push(item.evento.texto);
     }
   }
@@ -263,6 +321,94 @@ export function contextoDoHistorico(itens: ReadonlyArray<ItemConversa>): string 
   ].join("\n\n");
 }
 
+/**
+ * As fichas de contexto como vão à IA, depois do texto da pessoa: o link da base (lido pelas ferramentas
+ * `ifpr`), o arquivo da pasta e o texto, cada um com o rótulo que a pessoa viu.
+ */
+export function textoDasFichas(fichas: ReadonlyArray<FichaContexto>): string | undefined {
+  if (fichas.length === 0) return undefined;
+  const linhas = fichas.map((ficha) => {
+    switch (ficha._tag) {
+      case "link":
+        return `- Documento da base, “${ficha.rotulo}”: ${ficha.link} (leia pelas ferramentas \`${NOME_MCP}\`).${ficha.texto === undefined ? "" : ` ${ficha.texto}`}`;
+      case "arquivo":
+        return `- Arquivo da pasta da conversa, “${ficha.rotulo}”: \`${ficha.arquivo}\`.${ficha.texto === undefined ? "" : ` ${ficha.texto}`}`;
+      case "texto":
+        return `- ${ficha.rotulo}:\n\n${ficha.texto
+          .split("\n")
+          .map((linha) => `  > ${linha}`)
+          .join("\n")}`;
+    }
+  });
+  return ["O que a pessoa deixou junto desta mensagem (fichas de contexto):", ...linhas].join("\n");
+}
+
+/** O nome curto da IA nos textos que a conversa grava ("Histórico da conversa com o Claude"). */
+const NOME_IA: Readonly<Record<Motor.Provider, string>> = {
+  claude: "Claude",
+  codex: "ChatGPT",
+  antigravity: "Gemini",
+};
+
+/** O título da conversa na bandeja: o da primeira mensagem, entre aspas. */
+const tituloDaAtividade = (titulo: string): string => (titulo === "" ? "Conversa sem título" : `Conversa “${titulo}”`);
+
+/**
+ * O que vai à caixa da conversa que continua `itens` com outra IA: a última pergunta (a que parou no
+ * limite) e as fichas dela, e, antes, a ficha com o histórico dos turnos anteriores, das mensagens mais
+ * recentes até `LIMITE_CONTEXTO`, que diz quantas mensagens leva e se as mais antigas ficaram de fora.
+ */
+export function continuacaoDe(itens: ReadonlyArray<ItemConversa>, provider: Motor.Provider): Continuacao {
+  const turnos = new Map<number, { pessoa: string; respostas: Array<string> }>();
+  let ultima: Extract<ItemConversa, { _tag: "Mensagem" }> | undefined;
+  const naCota = new Set<number>();
+  for (const item of itens) {
+    if (item._tag === "Mensagem") {
+      ultima = item;
+      const fichas = textoDasFichas(item.fichas ?? []);
+      turnos.set(item.turno, {
+        pessoa: fichas === undefined ? item.texto : `${item.texto}\n\n${fichas}`,
+        respostas: [],
+      });
+    } else if (item._tag === "EventoTurno" && item.evento._tag === "TextoFinal") {
+      turnos.get(item.turno)?.respostas.push(item.evento.texto);
+    } else if (item._tag === "EventoTurno" && item.evento._tag === "Erro" && item.evento.tipo === "cota") {
+      naCota.add(item.turno);
+    }
+  }
+  // Só a pergunta que parou no limite volta à caixa; a que foi respondida depois dele fica no histórico.
+  if (ultima !== undefined && !naCota.has(ultima.turno)) ultima = undefined;
+  if (ultima !== undefined) turnos.delete(ultima.turno);
+  const blocos: Array<string> = [];
+  let tamanho = 0;
+  let mensagens = 0;
+  const anteriores = [...turnos.values()].reverse();
+  for (const turno of anteriores) {
+    const resposta = turno.respostas.join("\n\n");
+    const bloco = `Pessoa: ${turno.pessoa}\n\nIA: ${resposta || "(sem resposta)"}`;
+    if (tamanho + bloco.length > LIMITE_CONTEXTO && blocos.length > 0) break;
+    blocos.unshift(bloco);
+    tamanho += bloco.length;
+    mensagens += resposta === "" ? 1 : 2;
+  }
+  const nome = NOME_IA[provider];
+  const deFora = blocos.length < anteriores.length ? "; as mais antigas ficam de fora" : "";
+  const historico: ReadonlyArray<FichaContexto> =
+    blocos.length === 0
+      ? []
+      : [
+          {
+            _tag: "texto",
+            rotulo: `Histórico da conversa com o ${nome} (${mensagens === 1 ? "1 mensagem" : `${mensagens} mensagens`}${deFora})`,
+            texto: [
+              `Esta conversa continua outra, com o ${nome}, que parou no limite da assinatura. O que se disse nela:`,
+              blocos.join("\n\n---\n\n"),
+            ].join("\n\n"),
+          },
+        ];
+  return { fichas: [...historico, ...(ultima?.fichas ?? [])], pergunta: ultima?.texto ?? "" };
+}
+
 const make = Effect.fn("Conversas.make")(function* (opcoes: {
   readonly ociosidade: Duration.Duration;
   readonly prazoInterrupcao: Duration.Duration;
@@ -273,6 +419,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const catalogo = yield* CatalogoSkills.CatalogoSkills;
   const tarefas = yield* CatalogoTarefas.CatalogoTarefas;
   const pastas = yield* PastasTrabalho.PastasTrabalho;
+  const atividades = yield* Atividades.Atividades;
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -294,7 +441,47 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     criadaEm: registro.criadaEm,
     atualizadaEm: registro.atualizadaEm,
     ...(registro.tarefa === undefined ? {} : { tarefa: registro.tarefa }),
+    ...(registro.origem === undefined ? {} : { origem: registro.origem }),
+    ...(registro.continuadaCom === undefined ? {} : { continuadaCom: registro.continuadaCom }),
   });
+
+  const agora = Effect.map(DateTime.now, DateTime.formatIso);
+
+  /** A atividade de uma conversa (`Atividades`): o id e o que a leva até ela. */
+  const atividadeDe = (
+    id: string,
+    titulo: string,
+    provider: Motor.Provider,
+  ): Pick<Atividade, "id" | "titulo" | "rota" | "provider"> => ({
+    id: `conversa:${id}`,
+    titulo: tituloDaAtividade(titulo),
+    rota: `/conversa?id=${id}`,
+    provider,
+  });
+
+  /**
+   * Publica o que a bandeja mostra da conversa agora: o pedido de aprovação pendente, o turno em andamento
+   * ou o fim que ninguém viu; sem nada disso, a conversa sai das atividades.
+   */
+  // `fnUntraced`: ajudante por mudança do turno, coberto pelo span da operação que a provoca.
+  // O estado é lido na vez das `Atividades`: a publicação atrasada não recoloca a conversa apagada.
+  const atualizarAtividade = (viva: Viva) =>
+    atividades.atualizar(
+      `conversa:${viva.id}`,
+      Effect.sync((): Atividade | undefined => {
+        if (viva.apagada) return undefined;
+        const base = atividadeDe(viva.id, viva.registro.titulo, viva.registro.provider);
+        const turno = viva.turno;
+        if (turno !== undefined && !turno.fechado) {
+          const pendente = turno.aprovacoes[0];
+          return pendente === undefined
+            ? { ...base, situacao: "andamento", desde: turno.inicio }
+            : { ...base, situacao: "permissao", desde: pendente.em, aprovacao: pendente.pedido };
+        }
+        const fim = viva.fimNaoVisto;
+        return fim === undefined ? undefined : { ...base, situacao: fim.limite ? "limite" : "pronta", desde: fim.em };
+      }),
+    );
 
   // `fnUntraced`: ajudante por mudança de estado da conversa, coberto pelo span da operação que a provoca.
   const alterar = Effect.fnUntraced(function* (viva: Viva, alteracao: Historico.Alteracao) {
@@ -344,6 +531,18 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       return;
     }
     if (turno !== undefined) {
+      if (evento._tag === "Erro" && evento.tipo === "cota") turno.cota = true;
+      if (evento._tag === "PedidoAprovacao")
+        turno.aprovacoes.push({
+          pedido: {
+            conversa: viva.id,
+            id: evento.id,
+            ferramenta: evento.ferramenta,
+            tipo: evento.tipo,
+            descricao: evento.descricao,
+          },
+          em: yield* agora,
+        });
       if (evento._tag === "TextoFinal") turno.acumulado = "";
       // O texto parcial que não ganhou `TextoFinal` (Claude interrompido, por exemplo) fica no banco.
       if (evento._tag === "FimTurno" && turno.acumulado.trim() !== "") {
@@ -360,6 +559,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     yield* registrar(viva, (ordem) => ({ _tag: "EventoTurno", turno: numero, ordem, evento }), {
       publicar: true,
     });
+    if (turno !== undefined && evento._tag === "PedidoAprovacao") yield* atualizarAtividade(viva);
   });
 
   /** Um evento do turno aberto (ou de fora de turno), com a `travaItens`. */
@@ -573,8 +773,14 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         turno.fechado = true;
         viva.ultimoTurnoFalhou = turno.falhou;
         if (viva.turno === turno) viva.turno = undefined;
+        // A resposta que ninguém viu terminar, ou o turno que parou na cota, fica na bandeja até ser vista.
+        // Antes do `FimTurno`: a tela que o recebe marca a conversa como vista, e isso vem depois.
+        const motivo = fimTurno._tag === "FimTurno" ? fimTurno.motivo : undefined;
+        const limite = motivo === "falha" && turno.cota;
+        if (motivo === "concluido" || limite) viva.fimNaoVisto = { em: yield* agora, limite };
         yield* alterar(viva, { estado: estadoEmRepouso(viva) });
         yield* gravarEvento(viva, turno, fimTurno);
+        yield* atualizarAtividade(viva);
       }),
     );
     yield* Deferred.succeed(turno.fim, undefined);
@@ -644,7 +850,13 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
    * interrompido.
    */
   const executarTurno = Effect.fn("Conversas.executarTurno")(
-    function* (viva: Viva, turno: TurnoAberto, sessao: SessaoAberta, texto: string) {
+    function* (
+      viva: Viva,
+      turno: TurnoAberto,
+      sessao: SessaoAberta,
+      texto: string,
+      fichas: ReadonlyArray<FichaContexto>,
+    ) {
       const mudancas = yield* pastas
         .abrirTurno(viva.id, turno.numero, viva.registro.pastaTrabalho)
         .pipe(Effect.raceFirst(Deferred.await(turno.parar).pipe(Effect.as(undefined))));
@@ -681,7 +893,9 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       // sessão leva. Só vai ao provider; o histórico guarda a mensagem como a pessoa a escreveu.
       const tarefa = viva.registro.tarefa;
       const skill = tarefa === undefined ? undefined : tarefas.regraDaSessao(tarefa).skill;
-      const comMudancas = mudancas === undefined ? texto : `${texto}\n\n${avisoDasMudancas(mudancas)}`;
+      const contextoFichas = textoDasFichas(fichas);
+      const comFichas = contextoFichas === undefined ? texto : `${texto}\n\n${contextoFichas}`;
+      const comMudancas = mudancas === undefined ? comFichas : `${comFichas}\n\n${avisoDasMudancas(mudancas)}`;
       const pedido =
         primeiro && skill !== undefined
           ? `Siga a skill \`${skill}\` (SKILL.md em .simplifica/skills/${skill}/) para este pedido.\n\n${comMudancas}`
@@ -702,7 +916,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   );
 
   /** Começa o turno e devolve o número dele e a `ordem` da mensagem gravada. */
-  const comecarTurno = (viva: Viva, texto: string) =>
+  const comecarTurno = (viva: Viva, texto: string, fichas: ReadonlyArray<FichaContexto>) =>
     viva.trava.withPermits(1)(
       Effect.gen(function* () {
         if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id: viva.id });
@@ -722,20 +936,35 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           terminou: false,
           fechado: false,
           falhou: false,
+          inicio: yield* agora,
+          aprovacoes: [],
+          cota: false,
           fim: yield* Deferred.make<void>(),
         };
         viva.turno = turno;
+        viva.fimNaoVisto = undefined;
         yield* viva.travaItens.withPermits(1)(
-          registrar(viva, (ordem) => ({ _tag: "Mensagem", turno: numero, ordem, texto }), { publicar: true }),
+          registrar(
+            viva,
+            (ordem) => ({
+              _tag: "Mensagem",
+              turno: numero,
+              ordem,
+              texto,
+              ...(fichas.length === 0 ? {} : { fichas: [...fichas] }),
+            }),
+            { publicar: true },
+          ),
         );
         yield* alterar(viva, {
           estado: "respondendo",
           ...(viva.registro.titulo === "" ? { titulo: derivarTitulo(texto) } : {}),
         });
         const ordem = viva.registro.ultimaOrdem;
+        yield* atualizarAtividade(viva);
         // O turno abre o próprio trace: o pedido de `enviar` termina assim que ele abre, e a caixa-preta
         // ignora o que chega depois para um trace já descartado.
-        turno.fibra = yield* executarTurno(viva, turno, sessao, texto).pipe(
+        turno.fibra = yield* executarTurno(viva, turno, sessao, texto, fichas).pipe(
           Effect.withSpan("Conversas.turno", { root: true }),
           Effect.forkIn(escopoDaLayer),
         );
@@ -756,6 +985,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       chegouAIA: undefined,
       caiu: registro.estado === "caiu",
       ultimoTurnoFalhou: false,
+      fimNaoVisto: undefined,
       aoVivo: yield* PubSub.unbounded<ItemAoVivo>(),
       trava: yield* Semaphore.make(1),
       travaItens: yield* Semaphore.make(1),
@@ -787,19 +1017,45 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     yield* Effect.logInfo(`conversa ${registro.id}: aberta na execução anterior; fica liberada`);
   }
 
+  // As respostas que terminaram sem ser vistas numa execução anterior voltam à bandeja.
+  for (const naoVista of yield* historico.naoVistas) {
+    yield* atividades.publicar({
+      ...atividadeDe(naoVista.id, naoVista.titulo, naoVista.provider),
+      situacao: naoVista.limite ? "limite" : "pronta",
+      desde: naoVista.terminouEm,
+    });
+  }
+
   // Ao fim da layer, as sessões se liberam (os turnos em andamento terminam como interrompidos).
   yield* Effect.addFinalizer(() =>
     Effect.forEach([...vivas.values()], liberar, { discard: true, concurrency: "unbounded" }),
   );
 
-  const iniciar = Effect.fn("Conversas.iniciar")(function* (entrada: EntradaIniciar, canal: CanalDistribuicao) {
+  const iniciar = Effect.fn("Conversas.iniciar")(function* (
+    entrada: EntradaIniciar,
+    canal: CanalDistribuicao,
+    origem?: OrigemConversa,
+  ) {
     yield* exigirAviso;
+    // A continuação fica na pasta e na tarefa da antiga (a tarefa que saiu do catálogo não a impede: a nova
+    // fica livre).
+    const antiga = entrada.continuaDe === undefined ? undefined : yield* obter(entrada.continuaDe);
+    if (antiga?.apagada === true) return yield* new Motor.SessaoDesconhecida({ id: antiga.id });
+    // A que ainda responde não parou no limite: continua depois que o turno dela termina.
+    if (antiga?.turno !== undefined) return yield* new Motor.TurnoEmAndamento();
+    const daAntiga = antiga?.registro.tarefa;
     // Só uma tarefa de conversa do catálogo do canal: a skill dela entra numa instrução do app à IA, e a
     // experimental fora do beta não abre conversa (a regra de `tarefas.listar`).
-    const tarefa = entrada.tarefa;
+    const tarefa =
+      antiga === undefined
+        ? entrada.tarefa
+        : daAntiga !== undefined && tarefas.recusaDeConversa(daAntiga, canal) === undefined
+          ? daAntiga
+          : undefined;
     const recusa = tarefa === undefined ? undefined : tarefas.recusaDeConversa(tarefa, canal);
     if (tarefa !== undefined && recusa !== undefined) return yield* new TarefaDesconhecida({ tarefa, motivo: recusa });
-    const pasta = yield* conferirPasta(entrada.pastaTrabalho);
+    const pasta = yield* conferirPasta(antiga?.registro.pastaTrabalho ?? entrada.pastaTrabalho);
+    const origemEfetiva = origem ?? antiga?.registro.origem;
     const id = yield* aleatorio.uuidV4();
     yield* historico.criar({
       id,
@@ -807,7 +1063,14 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       pastaTrabalho: pasta,
       ...(entrada.modelo === undefined ? {} : { modelo: entrada.modelo }),
       ...(entrada.esforco === undefined ? {} : { esforco: entrada.esforco }),
-      ...(tarefa === undefined ? {} : { tarefa, semWeb: !tarefas.regraDaSessao(tarefa).web }),
+      ...(tarefa === undefined ? {} : { tarefa }),
+      // O "sem web" da antiga vale na continuação, mesmo que a tarefa dela tenha saído do catálogo.
+      ...(antiga?.registro.semWeb === true || (tarefa !== undefined && !tarefas.regraDaSessao(tarefa).web)
+        ? { semWeb: true }
+        : {}),
+      // A continuação fica com a origem da antiga (a conversa ao lado da revisão continua ao lado dela).
+      ...(origemEfetiva === undefined ? {} : { origem: origemEfetiva }),
+      ...(antiga === undefined ? {} : { continuaDe: antiga.id }),
       estado: "liberada",
     });
     const registro = yield* historico.buscar(id).pipe(Effect.flatMap(Effect.fromOption), Effect.orDie);
@@ -831,12 +1094,38 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           }),
         ),
       );
-    return id;
+    if (antiga === undefined) return { sessao: id };
+    antiga.registro = { ...antiga.registro, continuadaCom: { id, provider: entrada.provider } };
+    return { sessao: id, continuacao: continuacaoDe(yield* historico.itens(antiga.id), antiga.registro.provider) };
   });
 
-  const enviar = Effect.fn("Conversas.enviar")(function* (id: string, texto: string) {
+  const enviar = Effect.fn("Conversas.enviar")(function* (
+    id: string,
+    texto: string,
+    fichas: ReadonlyArray<FichaContexto> = [],
+  ) {
     yield* exigirAviso;
-    return yield* comecarTurno(yield* obter(id), texto);
+    return yield* comecarTurno(yield* obter(id), texto, fichas);
+  });
+
+  // Na `travaItens`: nem cai entre o fim do turno e o `FimTurno` gravado, nem depois de a conversa sair do banco.
+  const marcarVista = Effect.fn("Conversas.marcarVista")(function* (id: string) {
+    const viva = yield* obter(id);
+    yield* viva.travaItens.withPermits(1)(
+      Effect.gen(function* () {
+        if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
+        yield* historico.marcarVista(id);
+        viva.fimNaoVisto = undefined;
+        yield* atualizarAtividade(viva);
+      }),
+    );
+  });
+
+  const mudarOrigem = Effect.fn("Conversas.mudarOrigem")(function* (id: string, origem: OrigemConversa) {
+    const viva = yield* obter(id);
+    if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
+    yield* historico.mudarOrigem(id, origem);
+    viva.registro = { ...viva.registro, origem };
   });
 
   const responderAprovacao = Effect.fn("Conversas.responderAprovacao")(function* (
@@ -854,9 +1143,18 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       .pipe(
         Effect.catchTags({ SessaoDesconhecida: () => Effect.fail(new Motor.AprovacaoDesconhecida({ id: aprovacao })) }),
       );
+    // A conversa pode ter sido apagada enquanto o motor respondia: a decisão não vai a um registro que saiu.
     yield* viva.travaItens.withPermits(1)(
-      registrar(viva, (ordem) => ({ _tag: "DecisaoAprovacao", turno: turno.numero, ordem, aprovacao, decisao }), {
-        publicar: true,
+      Effect.gen(function* () {
+        if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
+        yield* registrar(
+          viva,
+          (ordem) => ({ _tag: "DecisaoAprovacao", turno: turno.numero, ordem, aprovacao, decisao }),
+          { publicar: true },
+        );
+        const indice = turno.aprovacoes.findIndex((pendente) => pendente.pedido.id === aprovacao);
+        if (indice >= 0) turno.aprovacoes.splice(indice, 1);
+        yield* atualizarAtividade(viva);
       }),
     );
   });
@@ -1014,10 +1312,24 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
       Effect.gen(function* () {
         if (viva.apagada) return yield* new Motor.SessaoDesconhecida({ id });
         yield* soltar(viva);
-        viva.apagada = true;
-        yield* Deferred.succeed(viva.encerrada, undefined);
-        const pendente = yield* historico.apagar(id);
-        vivas.delete(id);
+        // Na `travaItens`: o que grava na conversa fora da `trava` (a decisão de aprovação, a vista) a
+        // encontra inteira ou já apagada.
+        const pendente = yield* viva.travaItens.withPermits(1)(
+          Effect.gen(function* () {
+            viva.apagada = true;
+            yield* Deferred.succeed(viva.encerrada, undefined);
+            const pendente = yield* historico.apagar(id);
+            vivas.delete(id);
+            yield* atualizarAtividade(viva);
+            return pendente;
+          }),
+        );
+        // A conversa que esta continuava deixa de apontar para ela.
+        for (const outra of vivas.values())
+          if (outra.registro.continuadaCom?.id === id) {
+            const atual = yield* historico.buscar(outra.id);
+            if (Option.isSome(atual)) outra.registro = atual.value;
+          }
         return pendente;
       }),
     );
@@ -1043,6 +1355,8 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     responderAprovacao,
     interromper,
     encerrar,
+    mudarOrigem,
+    marcarVista,
     listar: Effect.map(historico.listar, (registros) => registros.map(resumo)),
     carregar,
     acompanhar,
@@ -1050,8 +1364,8 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
 });
 
 /**
- * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, as `Preferencias`, o `CatalogoSkills`, o
- * `CatalogoTarefas`, o `FileSystem`, o `Path` e o `SecureRandom`.
+ * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, as `Preferencias`, as `Atividades`, o
+ * `CatalogoSkills`, o `CatalogoTarefas`, o `FileSystem`, o `Path` e o `SecureRandom`.
  * `ociosidade`: depois de quanto tempo sem turno a sessão se libera (`OCIOSIDADE`);
  * `prazoInterrupcao`: quanto se espera pelo fim do turno interrompido (`PRAZO_INTERRUPCAO`).
  */

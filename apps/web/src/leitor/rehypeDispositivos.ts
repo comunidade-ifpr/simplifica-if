@@ -33,6 +33,8 @@ export interface OpcoesDispositivos {
   readonly linhaFinal?: number;
   /** As linhas dos cabeçalhos de divisão (Título, Capítulo, Seção e o nome delas): ganham a classe `divisao`. */
   readonly divisoes?: ReadonlySet<number>;
+  /** O que vai antes de cada `id` (o da instância do leitor, `instancia.ts`); padrão: nada. */
+  readonly prefixo?: string;
 }
 
 /** As âncoras agrupadas pela linha de início. */
@@ -72,7 +74,7 @@ const BLOCOS = new Set([
   "section",
 ]);
 
-const ancoraVazia = (id: string): NoHast => ({ type: "element", tagName: "span", properties: { id }, children: [] });
+const ROTULO_NOTAS = "footnote-label";
 
 /** O plugin (`rehypePlugins: [[rehypeDispositivos, opcoes]]`). */
 export function rehypeDispositivos(opcoes: OpcoesDispositivos) {
@@ -94,6 +96,13 @@ const anuncio = (): NoHast => ({
 
 /** Aplica o plugin numa árvore hast (exportado para os testes). */
 export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
+  const prefixo = opcoes.prefixo ?? "";
+  const ancoraVazia = (id: string): NoHast => ({
+    type: "element",
+    tagName: "span",
+    properties: { id: `${prefixo}${id}` },
+    children: [],
+  });
   const usadas = new Set<number>();
   const linha = (no: NoHast) => (no.position ? no.position.start.line + opcoes.deslocamento : undefined);
   const destacada = (no: NoHast) => {
@@ -169,6 +178,10 @@ export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
   const visitar = (no: NoHast, dentroDeMarca: boolean): void => {
     if (no.type !== "element" && no.type !== "root") return;
     const tag = no.tagName ?? "";
+    // O título das notas de rodapé do GFM tem `id` fixo, fora do `clobberPrefix`.
+    if (no.type === "element" && no.properties?.id === ROTULO_NOTAS) {
+      no.properties = { ...no.properties, id: `${prefixo}${ROTULO_NOTAS}` };
+    }
     const l = linha(no);
     if (no.type === "element" && l !== undefined) candidatos.push({ linha: l, no });
     if (no.type === "element" && l !== undefined && /^h[1-6]$/.test(tag) && opcoes.divisoes?.has(l)) {
@@ -178,7 +191,7 @@ export function aplicar(arvore: NoHast, opcoes: OpcoesDispositivos): void {
       const ids = opcoes.ancoras.get(l);
       if (ids !== undefined && ids.length > 0) {
         usadas.add(l);
-        no.properties = { ...no.properties, id: ids[0] };
+        no.properties = { ...no.properties, id: `${prefixo}${ids[0]}` };
         // várias âncoras na mesma linha: as outras como marcadores vazios no começo do elemento
         if (ids.length > 1) no.children = [...ids.slice(1).map(ancoraVazia), ...(no.children ?? [])];
       }

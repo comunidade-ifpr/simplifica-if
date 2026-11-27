@@ -10,7 +10,7 @@ import type { OpcoesServidorTeste, ServidorTeste } from "../vite.config.ts";
 import { App } from "../src/App.tsx";
 import type { OpcoesConexao } from "../src/conexao/Conexao.ts";
 import type { OrigemConexao } from "../src/conexao/origem.ts";
-import { inicializar } from "../src/inicializar.ts";
+import { inicializar, type OpcoesApp } from "../src/inicializar.ts";
 import { criarRoteador } from "../src/router.ts";
 import { type Achado, palavrasSuspeitas } from "./ingles.ts";
 import "@fontsource-variable/hanken-grotesk";
@@ -21,24 +21,35 @@ declare module "vite-plus/test/browser" {
   interface BrowserCommands {
     /** Sobe o `test/servidor-teste.ts` aceitando a origem da página; definido no `vite.config.ts`. */
     iniciarServidorTeste: (opcoes: OpcoesServidorTeste) => Promise<ServidorTeste>;
-    pararServidoresTeste: () => Promise<void>;
     /** Grava `texto` num arquivo de uma pasta de tarefa, como a pessoa editando fora da conversa. */
     editarArquivoDeTarefa: (caminho: string, texto: string) => Promise<void>;
     /** Faz o Claude Code do servidor de teste "aparecer" (instalado e com login). */
     simularInstalacaoClaude: (sinal: string) => Promise<void>;
+    /** Copia o PPC corrigido (`ppcSalvo`) por cima da cópia comentada, como o Word salvando o acompanhado. */
+    salvarNoWord: (de: string, para: string) => Promise<void>;
   }
 }
 
+/**
+ * Um servidor de teste para o arquivo (no `beforeAll`). Ele sai com o processo dos testes, nunca no fim do
+ * arquivo: os arquivos rodam em paralelo (`vite.config.ts`).
+ */
 export const iniciarServidorTeste = (opcoes: OpcoesServidorTeste = {}) => commands.iniciarServidorTeste(opcoes);
-export const pararServidoresTeste = () => commands.pararServidoresTeste();
 export const simularInstalacaoClaude = (sinal: string) => commands.simularInstalacaoClaude(sinal);
 export const editarArquivoDeTarefa = (caminho: string, texto: string) => commands.editarArquivoDeTarefa(caminho, texto);
+export const salvarNoWord = (de: string, para: string) => commands.salvarNoWord(de, para);
 
-/** Monta o app conectado ao servidor; `Symbol.asyncDispose` desmonta e fecha a conexão. */
-export async function montarApp(servidor: ServidorTeste, rota = "/") {
+/**
+ * Monta o app conectado ao servidor; `Symbol.asyncDispose` desmonta e fecha a conexão (como o app fechando:
+ * a continuidade, se ligada, grava antes). A continuidade vem desligada: o servidor é de todos os testes do
+ * arquivo, e um não deve voltar onde o outro parou; quem a testa a liga (`{ continuidade: true }`).
+ */
+export async function montarApp(servidor: ServidorTeste, rota = "/", opcoesApp: OpcoesApp = {}) {
   return montarAppComOrigem(
     { tipo: "navegador", credenciais: { urlServidor: servidor.urlServidor, token: servidor.token } },
     rota,
+    undefined,
+    opcoesApp,
   );
 }
 
@@ -46,8 +57,13 @@ export async function montarApp(servidor: ServidorTeste, rota = "/") {
  * Monta o app com uma origem qualquer: sem servidor (`ausente`), ou um endereço que não responde, para
  * ver os avisos de conexão.
  */
-export async function montarAppComOrigem(origem: OrigemConexao, rota = "/", opcoes?: OpcoesConexao) {
-  const iniciado = await inicializar(origem, opcoes);
+export async function montarAppComOrigem(
+  origem: OrigemConexao,
+  rota = "/",
+  opcoes?: OpcoesConexao,
+  opcoesApp: OpcoesApp = {},
+) {
+  const iniciado = await inicializar(origem, opcoes, { continuidade: opcoesApp.continuidade === true });
   const roteador = criarRoteador(createMemoryHistory({ initialEntries: [rota] }));
   const elemento = document.createElement("div");
   document.body.append(elemento);

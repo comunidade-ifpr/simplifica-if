@@ -4,9 +4,12 @@
  * a raiz do pacote só junta o `GrupoRevisaoPpc` ao `GrupoApp` (`contratos.ts`, arquivo de composição).
  */
 import { Ancora } from "@simplifica-if/mcp/grupo-leitura";
+import { FalhaProvider } from "@simplifica-if/motor/erros";
+import { NivelEsforco } from "@simplifica-if/motor/estados-provider";
 import { Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
+import { FalhaPasta } from "../pasta.ts";
 import { AvisoNaoAceito } from "../preferencias.ts";
 
 /** Uma fonte da pendência, legível para quem não conhece o `ifpr://`: nome e dispositivo, e o endereço oficial. */
@@ -233,7 +236,10 @@ export const EstadoRevisaoIa = Schema.Struct({
   modo: ModoRevisaoIa,
   situacao: SituacaoRevisaoIa,
   motivo: Schema.NullOr(Schema.String),
-  /** A pausa veio de limite de taxa ou de cota (a pessoa espera e retoma). */
+  /**
+   * A pausa veio do limite de uso da assinatura (cota ou limite de taxa): a pessoa espera a janela ou
+   * continua com outra IA (`revisaoPpc.continuarIaCom`). O serviço fora do ar não conta.
+   */
   limite: Schema.Boolean,
   /** O bloco que parou a leitura (tempo, falha do provider), ao lado do `motivo`; só em memória. */
   blocoPausado: Schema.NullOr(Schema.String),
@@ -295,6 +301,11 @@ export const PendenciaViva = Schema.Struct({
   sugestao: Schema.NullOr(SugestaoTexto),
   /** "Discordo…" e "Sugerir texto" valem para fichas da revisão (não para a triagem). */
   aceitaIa: Schema.Boolean,
+  /**
+   * A IA que julgou a pendência da leitura com IA ("julgada pelo Claude"); nula nas do código e nas de
+   * antes de a leitura gravar a IA de cada bloco.
+   */
+  julgadaPor: Schema.NullOr(Provider),
 });
 export type PendenciaViva = typeof PendenciaViva.Type;
 
@@ -306,6 +317,16 @@ export const ListaPendencias = Schema.Struct({
   revisao: Schema.NullOr(Schema.String),
   provider: Schema.NullOr(Provider),
   resultado: ResultadoRevisaoPpc,
+  /**
+   * O `.docx` que a revisão acompanha no Word ("Acompanhar no Word"): a cópia comentada ou outro que a
+   * pessoa escolheu. Cada salvamento dele é conferido (`acompanharLista`), sem trocar `arquivoOriginal`.
+   */
+  arquivoAcompanhado: Schema.NullOr(Schema.String),
+  /**
+   * A conversa ao lado desta revisão (uma por revisão): "Conversar sobre esta pendência" a retoma. A
+   * pasta é a da conversa, com o Markdown do PPC; fica no computador quando a revisão é apagada.
+   */
+  conversaAoLado: Schema.NullOr(Schema.Struct({ conversa: Schema.String, pasta: Schema.String })),
   pendencias: Schema.Array(PendenciaViva),
   /** O uso somado das ações com IA desta lista. */
   uso: UsoRevisaoIa,
@@ -358,6 +379,52 @@ export const ResultadoArquivoNovo = Schema.Struct({
 });
 export type ResultadoArquivoNovo = typeof ResultadoArquivoNovo.Type;
 
+/**
+ * O fluxo `revisaoPpc.acompanharLista`: a lista agora e a cada mudança, e o resultado de cada conferência
+ * ao salvar do arquivo acompanhado.
+ *
+ * - `conferido`: as chaves das pendências do código que o arquivo salvo resolveu e das que só ele aponta
+ *   (as que entram na lista), e quantas continuam, sem o bloqueio do curso nem as retiradas.
+ * - `falhou`: o arquivo salvo não pôde ser conferido (incompleto no meio do salvamento, corrompido, ou não
+ *   parece o mesmo PPC); a lista não mudou e espera o próximo salvamento. Com `escolherDeNovo`, a
+ *   liberação do arquivo se perdeu (o app foi fechado): a pessoa o escolhe de novo.
+ */
+export const EventoAcompanhamento = Schema.Union([
+  Schema.Struct({ tipo: Schema.Literal("lista"), lista: ListaPendencias }),
+  Schema.Struct({
+    tipo: Schema.Literal("conferido"),
+    em: Schema.String,
+    resolvidas: Schema.Array(Schema.String),
+    novas: Schema.Array(Schema.String),
+    continuam: Schema.Number,
+  }),
+  Schema.Struct({
+    tipo: Schema.Literal("falhou"),
+    em: Schema.String,
+    motivo: Schema.String,
+    escolherDeNovo: Schema.Boolean,
+  }),
+]);
+export type EventoAcompanhamento = typeof EventoAcompanhamento.Type;
+
+/**
+ * O que `revisaoPpc.conversarSobre` preparou: a conversa ao lado (`nova` se a lista passou a guardar outra:
+ * a que acabou de abrir, ou a que continuou a dela com outra IA) e o que entrou na pasta dela, para as fichas
+ * da mensagem.
+ * - `ppc`: o Markdown do PPC (`arquivo`, o nome na pasta), com a instrução de leitura que vai na ficha e
+ *   `atualizadoEm` (ISO) quando ele acabou de ser regravado porque o texto da lista mudou;
+ * - `docx`: o nome, na pasta, da cópia do `.docx` que a pessoa anexou.
+ */
+export const ConversaSobre = Schema.Struct({
+  conversa: Schema.String,
+  nova: Schema.Boolean,
+  ppc: Schema.NullOr(
+    Schema.Struct({ arquivo: Schema.String, instrucao: Schema.String, atualizadoEm: Schema.NullOr(Schema.String) }),
+  ),
+  docx: Schema.NullOr(Schema.String),
+});
+export type ConversaSobre = typeof ConversaSobre.Type;
+
 /** Dias sem uso que uma lista viva fica guardada (com o texto do PPC e os motivos) antes de sair sozinha. */
 export const DIAS_LISTA = 30;
 
@@ -402,6 +469,15 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   }),
   /** Pausa: os blocos em andamento param e voltam a pendentes; os prontos ficam gravados. */
   Rpc.make("revisaoPpc.pausarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
+  /**
+   * A leitura com IA da lista, pausada (no limite da assinatura, por exemplo), continua com outra IA: só os
+   * blocos que faltam vão a ela, e cada pendência nova diz que IA a julgou.
+   */
+  Rpc.make("revisaoPpc.continuarIaCom", {
+    payload: Schema.Struct({ lista: Schema.String, provider: Provider }),
+    success: EstadoRevisaoIa,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
+  }),
   /** O estado agora e a cada mudança (bloco pronto, pausa, fim); termina quando a revisão termina. */
   Rpc.make("revisaoPpc.acompanharIa", {
     payload: EntradaRevisaoIa,
@@ -511,4 +587,54 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
   /** O texto do PPC revisado, com as seções e os trechos das pendências, para o painel de leitura. */
   Rpc.make("revisaoPpc.documento", { payload: EntradaLista, success: DocumentoRevisado, error: FalhaRevisaoPpc }),
+  /**
+   * "Acompanhar no Word": sem `arquivo`, a cópia comentada (regravada se a lista mudou, como em
+   * `gerarCopia`) passa a ser o arquivo acompanhado; com `arquivo`, o `.docx` que a pessoa escolheu (ou
+   * escolheu de novo, depois de fechar o app), liberado pelo desktop. Se a revisão já acompanha um
+   * arquivo, só confere que ele está liberado (`escolherDeNovo` se não está). A lista que volta traz o
+   * `arquivoAcompanhado`, que "Abrir no Word" passa a abrir.
+   */
+  Rpc.make("revisaoPpc.acompanhar", {
+    payload: Schema.Struct({ lista: Schema.String, arquivo: Schema.optionalKey(Schema.String) }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /**
+   * A lista agora e a cada mudança, e, enquanto o fluxo está aberto, o vigia do arquivo acompanhado: cada
+   * salvamento é conferido sem IA (`conferido` ou `falhou`). Ao abrir, confere o arquivo se ele mudou
+   * desde a última conferência. Termina quando a lista sai.
+   */
+  Rpc.make("revisaoPpc.acompanharLista", {
+    payload: EntradaLista,
+    success: EventoAcompanhamento,
+    error: FalhaRevisaoPpc,
+    stream: true,
+  }),
+  /**
+   * Confere o arquivo acompanhado agora, se ele mudou desde a última conferência (a janela ganhou foco:
+   * numa pasta do OneDrive ou de rede, o vigia pode não ver o salvamento). O resultado chega pelo
+   * `acompanharLista`.
+   */
+  Rpc.make("revisaoPpc.conferirAcompanhado", { payload: EntradaLista }),
+  /**
+   * A conversa ao lado da revisão, antes de cada mensagem dela: na primeira, cria a pasta ("PPC <curso> –
+   * conversa") e abre a conversa (livre, com a origem na revisão e a IA pedida); nas seguintes, retoma a
+   * mesma. Com `ppc`, grava (ou regrava, se o texto da lista mudou) o Markdown do PPC com o sumário de
+   * seções e linhas, e a nota com o caminho do `.docx`; com `docx`, a cópia do `.docx` (o acompanhado ou o
+   * revisado, liberado pelo desktop). Só entra na pasta o que a ficha ainda pede. `chave`: a pendência em
+   * foco, por cuja seção a instrução de leitura manda começar.
+   */
+  Rpc.make("revisaoPpc.conversarSobre", {
+    payload: Schema.Struct({
+      lista: Schema.String,
+      chave: Schema.optionalKey(Schema.String),
+      provider: Provider,
+      modelo: Schema.optionalKey(Schema.String),
+      esforco: Schema.optionalKey(NivelEsforco),
+      ppc: Schema.Boolean,
+      docx: Schema.Boolean,
+    }),
+    success: ConversaSobre,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito, FalhaProvider, FalhaPasta]),
+  }),
 ) {}

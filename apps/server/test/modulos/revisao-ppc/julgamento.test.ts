@@ -93,7 +93,7 @@ describe("turno sem ferramentas", () => {
         const erro = Exit.isFailure(saida) ? saida.cause.reasons.find((r) => r._tag === "Fail") : undefined;
         assert.instanceOf(erro?._tag === "Fail" ? erro.error : undefined, PausaRevisao);
         const pausa = (erro as { error: PausaRevisao }).error;
-        assert.isFalse(pausa.limite);
+        assert.strictEqual(pausa.causa, "outra");
         return pausa.motivo;
       };
       const parcialMotivo = motivo(yield* Fiber.await(comTexto.fibra));

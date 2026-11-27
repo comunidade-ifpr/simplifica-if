@@ -8,14 +8,12 @@
 import { beforeAll, expect, it } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../../vite.config.ts";
-import { NO_MAC } from "../components/BuscaPainel.tsx";
+import { NO_MAC } from "../lib/teclado.ts";
 import { NOME_BUSCA, NOME_BUSCA_ATUAL } from "../leitor/busca.ts";
 import { achadosDaTela, iniciarServidorTeste, montarApp } from "../../test/navegador.tsx";
 
 let servidor: ServidorTeste;
 
-// Sem `pararServidoresTeste` no fim: ele derrubaria os servidores dos outros arquivos de teste que
-// rodam ao mesmo tempo. O `vite.config.ts` os encerra na saída.
 beforeAll(async () => {
   servidor = await iniciarServidorTeste();
 });
@@ -189,18 +187,18 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
   semIngles();
   await page.getByRole("button", { name: "Voltar" }).click();
 
-  // "Perguntar à IA sobre isto": o Início com o pedido escrito e o foco, sem enviar
+  // "Perguntar à IA sobre isto": a conversa ao lado, com a página como ficha e o foco na caixa, sem sair da
+  // tela nem enviar
   const conversas = () => app.contexto.api.chamar((cliente) => cliente["conversa.listar"]({}));
   const antes = await conversas();
+  const pagina = app.roteador.state.location.href;
   await page.getByRole("button", { name: "Perguntar à IA sobre isto" }).click();
-  const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
+  const painel = page.getByRole("complementary", { name: "Painel ao lado" });
+  const caixa = painel.getByRole("textbox", { name: "Pergunta à IA" });
   await expect.element(caixa).toHaveFocus();
-  await expect
-    .element(caixa)
-    .toHaveValue(
-      "Sobre o curso Técnico em Enfermagem, Campus Curitiba (ifpr://curso/curitiba/tecnico-em-enfermagem):\n",
-    );
-  expect(app.roteador.state.location.pathname).toBe("/");
+  const fichas = painel.getByRole("region", { name: "Vai junto com a pergunta" });
+  await expect.element(fichas.getByText("o curso Técnico em Enfermagem, Campus Curitiba")).toBeVisible();
+  expect(app.roteador.state.location.href).toBe(pagina);
   // nenhuma conversa foi criada: nada saiu para a IA
   expect(await conversas()).toEqual(antes);
   semIngles();
@@ -315,17 +313,99 @@ it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; cam
   semIngles();
 });
 
-it("Perguntar à IA com o primeiro uso por fazer: o pedido atravessa as boas-vindas e volta ao Início", async () => {
-  const novo = await iniciarServidorTeste({ primeiroUso: true });
-  const pedido = "Sobre o Campus Curitiba (ifpr://campus/curitiba):\n";
-  await using app = await montarApp(novo, `/?pedido=${encodeURIComponent(JSON.stringify(pedido))}`);
-  await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
-  expect(app.roteador.state.location.search).toMatchObject({ pedido });
-  await page.getByRole("button", { name: "Entendi, continuar" }).click();
-  await page.getByRole("button", { name: /^Pular/ }).click();
-  await page.getByRole("button", { name: "Pular", exact: true }).click();
-  await page.getByRole("button", { name: "Pular e ir para o Início" }).click();
-  const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
-  await expect.element(caixa).toHaveValue(pedido);
-  expect(app.roteador.state.location.pathname).toBe("/");
+it("comparar normas: do leitor e da paleta, com o aviso de rascunho, a relação de cada linha e os novos", async () => {
+  await using app = await montarApp(servidor, "/explorar");
+  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar o IFPR" })).toBeVisible();
+  await app.roteador.navigate({ to: "/explorar/ver", search: { link: "ifpr://norma/br/cne-cp/res/2021/1" } });
+  const norma = page.getByRole("article", { name: "Norma" });
+  await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
+  await norma.getByRole("link", { name: "Comparar com a sucessora" }).click();
+
+  const titulo = "Resolução CNE/CP nº 1/2021 ⇄ Resolução CNE/CP nº 2/2026";
+  await expect.element(page.getByRole("heading", { level: 2, name: titulo })).toBeVisible();
+  expect(app.roteador.state.location.pathname).toBe("/explorar/comparar");
+  expect(app.roteador.state.location.search).toEqual({ a: "br/cne-cp/res/2021/1", b: "br/cne-cp/res/2026/2" });
+  await expect
+    .element(page.getByRole("note").getByText("Correspondência em rascunho, sem revisão jurídica."))
+    .toBeVisible();
+  // o selo de vigência de cada lado
+  await expect.element(page.getByText("Revogada", { exact: true })).toBeVisible();
+
+  // uma linha por dispositivo da origem: 12 artigos só pelo caput, o art. 20 detalhado e o art. 63
+  const linhas = page.getByRole("list", { name: "Linhas da comparação" });
+  await expect.poll(() => linhas.element().children.length).toBe(16);
+  // N→1: o art. 22 da 2026 é destino do art. 1º e do art. 20 (da 1/2021, não o art. 20 da 2026)
+  await expect.element(linhas.getByText("Também corresponde ao art. 20 da 1/2021.")).toBeVisible();
+  // a linha herdada vai sem diferença: o inciso não é par do caput do ancestral
+  const herdada = linhas.getByRole("listitem").filter({ hasText: "Pela linha do art. 20." });
+  await expect.element(herdada).toBeVisible();
+  expect(herdada.element().querySelector("mark.diferenca")).toBeNull();
+  expect(herdada.element().textContent).not.toContain("redação reescrita");
+  await expect.element(linhas.getByText("Nota da tabela: Sem regra correspondente.")).toBeVisible();
+  await expect.element(linhas.getByText("Sem dispositivo correspondente")).toBeVisible();
+
+  // os artigos da 2026 que nenhum item aponta, no fim
+  const novos = page.getByRole("list", { name: "Novos na 2/2026" });
+  await expect.poll(() => novos.element().children.length).toBe(3);
+  await expect.element(novos.getByRole("button", { name: "(1 parágrafo)" })).toBeVisible();
+  semIngles();
+
+  // "Só o que mudou": o art. 11 tem o texto do art. 28 da 2026 com outra pontuação, e sai
+  const art11 = linhas
+    .getByRole("listitem")
+    .filter({ has: page.getByRole("button", { name: "Art. 11", exact: true }) });
+  await expect.element(art11).toBeVisible();
+  const filtro = page.getByRole("button", { name: "Só o que mudou" });
+  await filtro.click();
+  await expect.element(filtro).toHaveAttribute("aria-pressed", "true");
+  await expect.element(page.getByRole("status").getByText("1 par de texto idêntico escondido.")).toBeVisible();
+  await expect.element(art11).not.toBeInTheDocument();
+  expect(linhas.element().children.length).toBe(15);
+  await filtro.click();
+  await expect.element(art11).toBeVisible();
+
+  // o rótulo abre o dispositivo no leitor
+  await novos.getByRole("button", { name: "Art. 71" }).click();
+  expect(app.roteador.state.location.search).toEqual({ link: "ifpr://norma/br/cne-cp/res/2026/2#art71" });
+
+  // pela paleta, de uma norma rolada para baixo: a comparação abre no topo
+  const rolagem = document.querySelector<HTMLElement>("[data-rolagem-explorar]")!;
+  await expect.element(page.getByRole("article", { name: "Norma" })).toBeVisible();
+  rolagem.scrollTo({ top: rolagem.scrollHeight });
+  await expect.poll(() => rolagem.scrollTop).toBeGreaterThan(0);
+  // a norma achada traz a comparação logo depois do grupo dela
+  const campo = await abrirPaleta();
+  await campo.fill("Res. CNE/CP 2/2026");
+  const dialogo = page.getByRole("dialog", { name: "Buscar na base" });
+  const comparar = dialogo.getByRole("group", { name: "Comparar normas" });
+  await expect.element(comparar.getByText("Comparar com a anterior")).toBeVisible();
+  // o anúncio conta os resultados da busca, não a comparação oferecida nem "Perguntar à IA"
+  await expect.element(dialogo.getByRole("group", { name: "Perguntar à IA" })).toBeVisible();
+  const opcoes = dialogo.getByRole("option").all().length;
+  await expect.element(dialogo.getByRole("status")).toHaveTextContent(`${opcoes - 2} resultados`);
+  await expect.element(comparar.getByText(titulo)).toBeVisible();
+  semIngles();
+  await comparar.getByRole("option").click();
+  await expect.element(page.getByRole("heading", { level: 2, name: titulo })).toBeVisible();
+  expect(app.roteador.state.location.search).toEqual({ a: "br/cne-cp/res/2021/1", b: "br/cne-cp/res/2026/2" });
+  expect(rolagem.scrollTop).toBe(0);
+  // a aba Normas fica marcada na comparação
+  await expect
+    .element(page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: /^Normas/ }))
+    .toHaveClass(/border-primary/);
+});
+
+it("comparar normas pelo leitor do painel: o link troca a tela, e o painel segue aberto", async () => {
+  await page.viewport(1366, 768);
+  await using app = await montarApp(servidor, "/explorar");
+  await expect.element(page.getByRole("heading", { level: 1, name: "Explorar o IFPR" })).toBeVisible();
+  app.contexto.painel.abrirLink("ifpr://norma/br/cne-cp/res/2026/2");
+  const painel = page.getByRole("complementary", { name: "Painel ao lado" });
+  await painel.getByRole("link", { name: "Comparar com a anterior" }).click();
+
+  const titulo = "Resolução CNE/CP nº 1/2021 ⇄ Resolução CNE/CP nº 2/2026";
+  await expect.element(page.getByRole("heading", { level: 2, name: titulo })).toBeVisible();
+  expect(app.roteador.state.location.pathname).toBe("/explorar/comparar");
+  expect(app.roteador.state.location.search).toEqual({ a: "br/cne-cp/res/2021/1", b: "br/cne-cp/res/2026/2" });
+  await expect.element(painel).toBeVisible();
 });

@@ -36,6 +36,12 @@ export const EntradaIniciar = Schema.Struct({
    * as etapas da tarefa ao reabrir.
    */
   tarefa: Schema.optionalKey(Schema.String),
+  /**
+   * A conversa que parou no limite da assinatura e continua nesta, com outra IA (`docs/plans/multitarefa.md`,
+   * "Limite da assinatura"): a nova fica na mesma pasta e com a mesma tarefa, e a resposta traz o que vai à
+   * caixa dela (`SessaoIniciada.continuacao`). A antiga passa a dizer com que IA continuou.
+   */
+  continuaDe: Schema.optionalKey(Schema.String),
 });
 export type EntradaIniciar = typeof EntradaIniciar.Type;
 
@@ -55,11 +61,6 @@ export class TarefaDesconhecida extends Schema.TaggedError<TarefaDesconhecida>()
   }
 }
 
-export const SessaoIniciada = Schema.Struct({
-  /** O id da conversa, que dura além da sessão do provider (é o que os outros métodos recebem em `sessao`). */
-  sessao: Schema.String,
-});
-
 /**
  * O estado de uma conversa gravada:
  * - `pronta`: a sessão do provider está aberta, sem turno em andamento;
@@ -70,6 +71,52 @@ export const SessaoIniciada = Schema.Struct({
  */
 export const EstadoConversa = Schema.Literals(["pronta", "respondendo", "liberada", "caiu"]);
 export type EstadoConversa = typeof EstadoConversa.Type;
+
+/**
+ * Uma ficha de contexto (`docs/plans/multitarefa.md`, "Fichas de contexto"): o que a tela deixou junto da
+ * mensagem, à vista e removível antes do envio, gravado com ela. Vai à IA num bloco depois do texto da
+ * pessoa; nada vai escondido.
+ * - `link`: um documento da base (`ifpr://`), que a IA lê pelas ferramentas `ifpr`;
+ * - `arquivo`: um arquivo da pasta da conversa (o nome relativo a ela), gravado lá no envio;
+ * - `texto`: um texto que vai inteiro (o trecho selecionado, a pendência da revisão).
+ *
+ * `texto`, no `link` e no `arquivo`, é a instrução que vai com ele ("Leia o arquivo inteiro…").
+ */
+export const FichaContexto = Schema.Union([
+  Schema.TaggedStruct("link", {
+    rotulo: Schema.String,
+    link: Schema.String,
+    texto: Schema.optionalKey(Schema.String),
+  }),
+  Schema.TaggedStruct("arquivo", {
+    rotulo: Schema.String,
+    arquivo: Schema.String,
+    texto: Schema.optionalKey(Schema.String),
+  }),
+  Schema.TaggedStruct("texto", { rotulo: Schema.String, texto: Schema.String }),
+]);
+export type FichaContexto = typeof FichaContexto.Type;
+
+/**
+ * O que vai à caixa da conversa que continua outra (`EntradaIniciar.continuaDe`), à vista e sem enviar: a
+ * ficha com o histórico da antiga e as fichas da última mensagem, e a última pergunta escrita.
+ */
+export const Continuacao = Schema.Struct({ fichas: Schema.Array(FichaContexto), pergunta: Schema.String });
+export type Continuacao = typeof Continuacao.Type;
+
+export const SessaoIniciada = Schema.Struct({
+  /** O id da conversa, que dura além da sessão do provider (é o que os outros métodos recebem em `sessao`). */
+  sessao: Schema.String,
+  continuacao: Schema.optionalKey(Continuacao),
+});
+
+/**
+ * De onde a conversa nasceu, quando não foi da caixa do Início nem de um cartão (a conversa ao lado de
+ * uma revisão de PPC): o rótulo da lista de conversas e a rota opaca para onde ele leva; sem rota, a
+ * origem deixou de existir (a revisão foi apagada).
+ */
+export const OrigemConversa = Schema.Struct({ rotulo: Schema.String, rota: Schema.NullOr(Schema.String) });
+export type OrigemConversa = typeof OrigemConversa.Type;
 
 /** Uma conversa na lista: o que a interface mostra sem carregar o histórico. */
 export const ResumoConversa = Schema.Struct({
@@ -86,6 +133,9 @@ export const ResumoConversa = Schema.Struct({
   atualizadaEm: Schema.String,
   /** O `id` da tarefa (`EntradaIniciar.tarefa`), quando a conversa nasceu de uma; sem ele, conversa livre. */
   tarefa: Schema.optionalKey(Schema.String),
+  origem: Schema.optionalKey(OrigemConversa),
+  /** A conversa que continuou esta com outra IA, depois do limite da assinatura. */
+  continuadaCom: Schema.optionalKey(Schema.Struct({ id: Schema.String, provider: Provider })),
 });
 export type ResumoConversa = typeof ResumoConversa.Type;
 
@@ -98,6 +148,8 @@ export const ItemMensagem = Schema.TaggedStruct("Mensagem", {
   turno: Schema.Number,
   ordem: Schema.Number,
   texto: Schema.String,
+  /** As fichas de contexto que foram junto. */
+  fichas: Schema.optionalKey(Schema.Array(FichaContexto)),
 });
 /**
  * Um evento do turno: os do motor (o provider) e os do app, hoje só `MudancasPasta` (o que a pessoa
@@ -197,16 +249,28 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.iniciar", {
     payload: EntradaIniciar,
     success: SessaoIniciada,
-    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida, AvisoNaoAceito]),
+    error: Schema.Union([
+      FalhaProvider,
+      PastaTrabalhoInvalida,
+      TarefaDesconhecida,
+      AvisoNaoAceito,
+      SessaoDesconhecida,
+      TurnoEmAndamento,
+    ]),
   }),
   /**
    * Abre o turno com a mensagem e responde assim que ele abre, com o número dele e a `ordem` da mensagem
    * gravada. Sem sessão aberta (`liberada`, `caiu`), reabre antes pela retomada. O turno corre no
    * servidor, e os itens dele chegam por `conversa.acompanhar`; uma falha do provider no meio do turno
-   * chega como `Erro` e `FimTurno` (motivo `falha`), e a conversa continua.
+   * chega como `Erro` e `FimTurno` (motivo `falha`), e a conversa continua. As `fichas` vão à IA depois do
+   * texto e ficam gravadas com a mensagem; o arquivo de uma ficha já tem de estar na pasta.
    */
   Rpc.make("conversa.enviar", {
-    payload: Schema.Struct({ sessao: Schema.String, texto: Schema.String }),
+    payload: Schema.Struct({
+      sessao: Schema.String,
+      texto: Schema.String,
+      fichas: Schema.optionalKey(Schema.Array(FichaContexto)),
+    }),
     success: TurnoAberto,
     error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida, AvisoNaoAceito]),
   }),
@@ -241,6 +305,11 @@ export class GrupoConversa extends RpcGroup.make(
     error: SessaoDesconhecida,
     stream: true,
   }),
+  /**
+   * A interface mostrou a conversa: a resposta que terminou até agora deixa de ser "resposta pronta" em
+   * `atividades.acompanhar`.
+   */
+  Rpc.make("conversa.marcarVista", { payload: EntradaSessao, error: SessaoDesconhecida }),
   /** 👍/👎 na resposta do turno (`null` retira a avaliação); gravado no servidor. */
   Rpc.make("conversa.avaliar", {
     payload: Schema.Struct({ sessao: Schema.String, turno: Schema.Number, nota: Schema.NullOr(NotaResposta) }),

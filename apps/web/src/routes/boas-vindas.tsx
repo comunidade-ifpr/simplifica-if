@@ -21,7 +21,7 @@ import { FormPerfil } from "../components/FormPerfil.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
-import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
+import { useApi, useApp, useEstadoConexao } from "../contexto.tsx";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
 import { ROTAS_MODULO } from "../tarefas/abrir.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
@@ -31,18 +31,8 @@ import { usePreferencias } from "../tarefas/perfil.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 import { MarcaIa } from "../components/MarcaIa.tsx";
 
-/**
- * A busca da rota: o pedido que veio pronto do Explorar ("Perguntar à IA sobre isto") e foi desviado
- * para cá porque o primeiro uso estava por fazer; "Pular e ir para o Início" o devolve à caixa do Início.
- */
-export interface BuscaBoasVindas {
-  readonly pedido?: string;
-}
-
 export const Route = createFileRoute("/boas-vindas")({
   component: BoasVindas,
-  validateSearch: (busca: Record<string, unknown>): BuscaBoasVindas =>
-    typeof busca.pedido === "string" && busca.pedido !== "" ? { pedido: busca.pedido } : {},
 });
 
 type Passo = "aviso" | "ia" | "perfil" | "exemplo";
@@ -294,9 +284,8 @@ function PassoExemplo({
   readonly aoTerminar: () => Promise<unknown>;
 }) {
   const api = useApi();
-  const [, conversa] = useConversa();
+  const { conversas } = useApp();
   const navegar = useNavigate();
-  const { pedido } = Route.useSearch();
   const catalogo = useCatalogo();
   const { preferencias } = usePreferencias();
   const exemplos = exemplosDoPerfil(preferencias?.perfil, catalogo.fase === "pronto" ? catalogo.tarefas : []);
@@ -308,14 +297,12 @@ function PassoExemplo({
       return;
     }
     if (provider === undefined) return;
-    const sessao = await comecarTarefa(api, conversa, {
-      titulo: exemplo.pasta,
-      tarefa: exemplo.tarefa,
-      ia: { provider },
-      anexos: [],
-      texto: exemplo.pedido,
-    });
-    await navegar({ to: "/conversa", search: { id: sessao } });
+    await comecarTarefa(
+      api,
+      conversas,
+      { titulo: exemplo.pasta, tarefa: exemplo.tarefa, ia: { provider }, anexos: [], texto: exemplo.pedido },
+      (sessao) => navegar({ to: "/conversa", search: { id: sessao } }),
+    );
   };
 
   return (
@@ -341,7 +328,7 @@ function PassoExemplo({
         className="self-start"
         onClick={async () => {
           await aoTerminar();
-          await navegar({ to: "/", search: pedido === undefined ? {} : { pedido } });
+          await navegar({ to: "/" });
         }}
       >
         Pular e ir para o Início
@@ -352,10 +339,10 @@ function PassoExemplo({
 
 function BoasVindas() {
   const conexao = useEstadoConexao();
-  const [estadoConversa, conversa] = useConversa();
+  const { conversas } = useApp();
   const { preferencias, aceitarAviso, concluirBoasVindas } = usePreferencias();
   const [passo, setPasso] = useState<Passo>("aviso");
-  const [escolhida, setEscolhida] = useState<Provider>(estadoConversa.provider);
+  const [escolhida, setEscolhida] = useState<Provider>(() => conversas.ultimaIa());
   const [prontas, setProntas] = useState<ReadonlySet<Provider>>(new Set());
 
   if (conexao.fase === "sem-servidor") return null;
@@ -389,7 +376,7 @@ function BoasVindas() {
           aoMudarPronta={mudarPronta}
           aoSeguir={() => {
             // A IA conectada vira a escolha padrão das conversas.
-            if (prontas.has(escolhida)) conversa.escolher(escolhida);
+            if (prontas.has(escolhida)) conversas.escolherIa(escolhida);
             setPasso("perfil");
           }}
         />

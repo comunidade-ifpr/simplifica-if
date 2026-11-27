@@ -52,8 +52,10 @@ it.each([
       .fill("Abra no leitor o que a DCN pede sobre egressos");
     await page.getByRole("button", { name: "Enviar" }).click();
     await page.getByRole("button", { name: "Res. CNE/CP nº 2/2026, art. 28, XVIII" }).click();
-    const painel = page.getByRole("complementary", { name: "Painel de leitura" });
-    await expect.poll(() => document.getElementById("art28-xviii")?.querySelector("mark.trecho-citado")).toBeTruthy();
+    const painel = page.getByRole("complementary", { name: "Painel ao lado" });
+    await expect
+      .poll(() => document.getElementById("painel-art28-xviii")?.querySelector("mark.trecho-citado"))
+      .toBeTruthy();
     // a rolagem até o trecho já aconteceu
     await expect.poll(() => painel.element().querySelector(".overflow-y-auto")!.scrollTop).toBeGreaterThan(0);
     // a roda do mouse sobre a conversa, como no relato: a janela não pode sair do lugar

@@ -15,7 +15,11 @@ import { page } from "vite-plus/test/browser";
 import "../../index.css";
 import type { Api } from "../../conexao/api.ts";
 import { type ContextoApp, ProvedorApp } from "../../contexto.tsx";
-import type { ControleConversa } from "../../conversa/ControleConversa.ts";
+import { ControleAtividades } from "../../atividades/ControleAtividades.ts";
+import { GerenteConversas } from "../../conversa/GerenteConversas.ts";
+import { ControleContinuidade } from "../../continuidade/ControleContinuidade.ts";
+import { ControlePainel, SEM_ORIGENS } from "../../painel/ControlePainel.ts";
+import { ControleJanelaCompacta } from "../../janela-compacta.ts";
 import { ControleRevisao, estadoIaInicial, estadoInicialRevisao, type EstadoRevisao } from "./ControleRevisao.ts";
 import { FaixaIa } from "./FaixaIa.tsx";
 import { LinhaPendencia } from "./LinhaPendencia.tsx";
@@ -30,6 +34,8 @@ const listaMinima: ListaPendencias = {
   arquivoOriginal: "/a/PPC.docx",
   sha256: "abc123456789",
   revisao: null,
+  arquivoAcompanhado: null,
+  conversaAoLado: null,
   criadaEm: "2026-11-22T10:00:00Z",
   atualizadaEm: "2026-11-22T10:00:00Z",
   provider: "claude",
@@ -51,10 +57,25 @@ const listaMinima: ListaPendencias = {
 };
 
 /** A API sem servidor: a faixa pede os modelos da IA (`providers.detectar`), e sem eles mostra o id do modelo. */
-const semServidor = { chamar: () => Promise.reject(new Error("sem servidor no teste")) } as unknown as Api;
+const semServidor = {
+  chamar: () => Promise.reject(new Error("sem servidor no teste")),
+  estado: { obter: () => ({ fase: "sem-servidor" }), observar: () => () => {} },
+} as unknown as Api;
 
 function montar(elemento: React.ReactNode, revisao: ControleRevisao, api: Api = semServidor) {
-  const contexto: ContextoApp = { api, conversa: {} as ControleConversa, revisao };
+  const painel = new ControlePainel();
+  const contexto: ContextoApp = {
+    api,
+    conversas: new GerenteConversas(api),
+    // As atividades sem servidor: a faixa e a lista não as leem.
+    atividades: new ControleAtividades(semServidor),
+    painel,
+    continuidade: new ControleContinuidade(api, painel, [], { ligada: false }),
+    janela: new ControleJanelaCompacta(undefined),
+    pedidoDoLink: () => undefined,
+    origens: SEM_ORIGENS,
+    revisao,
+  };
   const conteiner = document.createElement("div");
   conteiner.style.cssText = "width:900px";
   document.body.append(conteiner);
@@ -97,16 +118,14 @@ const viva: PendenciaViva = {
   historico: [],
   sugestao: null,
   aceitaIa: true,
+  julgadaPor: null,
 };
 
 const abertos: string[] = [];
 
 it("a linha recolhida mostra só o título, em até duas linhas; aberta, a explicação com as quebras, o que falta em lista e o trecho com 'Copiar trecho'", async () => {
   const revisao = new ControleRevisao({} as Api, {
-    ...estadoInicialRevisao(),
-    fase: "resultado",
-    listaId: listaMinima.id,
-    lista: listaMinima,
+    inicial: { ...estadoInicialRevisao(), fase: "resultado", listaId: listaMinima.id, lista: listaMinima },
   });
   const conteiner = montar(
     <ul>
@@ -239,7 +258,7 @@ it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar confer�
   const apiFake = {
     chamar: (fn: (cliente: typeof clienteFake) => Promise<unknown>) => fn(clienteFake),
   } as unknown as Api;
-  const revisao = new ControleRevisao(apiFake, estadoComIa(pausada));
+  const revisao = new ControleRevisao(apiFake, { inicial: estadoComIa(pausada) });
   montar(<FaixaIa faltam={2} />, revisao, apiFake);
 
   await expect.element(page.getByText("Conferência pausada — 1 de 3 temas")).toBeVisible();
@@ -259,7 +278,7 @@ it("a faixa pausada: 'Ver andamento' abre o painel por tema, e 'Encerrar confer�
 
 it("sem tema lido, a faixa pausada não oferece encerrar", async () => {
   const semProntos = { ...pausada, blocos: pausada.blocos.map((b) => ({ ...b, estado: "pendente" as const })) };
-  const revisao = new ControleRevisao({} as Api, estadoComIa(semProntos));
+  const revisao = new ControleRevisao({} as Api, { inicial: estadoComIa(semProntos) });
   montar(<FaixaIa faltam={3} />, revisao);
   await expect.element(page.getByRole("button", { name: "Retomar" })).toBeVisible();
   expect(page.getByRole("button", { name: "Encerrar conferência por aqui" }).query()).toBeNull();

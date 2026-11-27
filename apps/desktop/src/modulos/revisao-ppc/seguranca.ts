@@ -38,3 +38,16 @@ export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySe
   }
   return undefined;
 }
+
+/**
+ * O que "Abrir no Word" abre: a cópia comentada de um `.docx` escolhido (`copiaComentadaPermitida`) ou um
+ * `.docx` que a pessoa escolheu ou soltou nesta execução, que a revisão acompanha no Word ("Acompanhar no
+ * Word" com outro arquivo, ou o acompanhado escolhido de novo depois de fechar o app).
+ */
+export function documentoPermitido(caminho: unknown, escolhidos: ReadonlySet<string>): string | undefined {
+  const copia = copiaComentadaPermitida(caminho, escolhidos);
+  if (copia !== undefined) return copia;
+  return typeof caminho === "string" && escolhidos.has(caminho) && NodePath.normalize(caminho) === caminho
+    ? caminho
+    : undefined;
+}

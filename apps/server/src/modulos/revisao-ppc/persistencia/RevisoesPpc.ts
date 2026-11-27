@@ -10,12 +10,17 @@
  *
  * A serialização de escritas que leem e regravam uma lista (`comTravaDaLista`) é por lista: listas
  * diferentes nunca bloqueiam umas às outras durante chamadas longas ao Worker.
+ *
+ * Toda escrita numa lista avisa o id dela em `assinarMudancas` (o fluxo `revisaoPpc.acompanharLista`),
+ * depois de gravada: a leitura com IA, as ações e a conferência ao salvar escrevem por aqui.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as PubSub from "effect/PubSub";
 import * as Schema from "effect/Schema";
+import type * as Scope from "effect/Scope";
 import * as Semaphore from "effect/Semaphore";
 import * as SqlClient from "effect/sql/SqlClient";
 import { type Provider } from "@simplifica-if/contratos-app";
@@ -64,6 +69,24 @@ export interface RegistroLista {
   readonly versao: number;
   /** A versão que a cópia comentada reflete; nula se nenhuma (a lista herdou situações de outra). */
   readonly versaoCopia: number | null;
+  /** O `.docx` que a revisão acompanha no Word (a conferência ao salvar), ou nulo. */
+  readonly arquivoAcompanhado: string | null;
+  /** O sha256 do acompanhado na última conferência; nulo se ele ainda não foi conferido. */
+  readonly sha256Conferido: string | null;
+  /**
+   * As pendências e os critérios do código vêm de uma conferência ao salvar, e não do texto revisado
+   * (`markdown`): a mesclagem da IA e a cópia comentada, que montam sobre o texto revisado, não os refazem.
+   * Não volta atrás ao trocar o acompanhado; volta a falso só quando o texto da lista muda ("Enviar a versão
+   * corrigida") ou a lista é refeita ("Qual é o curso?").
+   */
+  readonly codigoConferido: boolean;
+  /** A conversa ao lado da revisão e a pasta dela, ou nulo antes da primeira mensagem. */
+  readonly conversa: { readonly id: string; readonly pasta: string } | null;
+  /**
+   * O texto (sem as linhas de texto dirigido a IA) do último arquivo conferido ao salvar, que a pasta da
+   * conversa ao lado recebe; nulo sem conferência ou depois de "Enviar a versão corrigida".
+   */
+  readonly markdownConferido: string | null;
   readonly criadaEm: string;
   readonly atualizadaEm: string;
 }
@@ -75,9 +98,22 @@ export interface RegistroPendencia {
   readonly situacao: SituacaoPendencia;
   readonly resolvidaPor: "pessoa" | "revisarDeNovo" | null;
   readonly sugestao: SugestaoTexto | null;
+  /** A IA que julgou a pendência da leitura com IA; nula nas do código e nas de antes da migração 5. */
+  readonly ia: Provider | null;
 }
 
-export type NovaLista = Omit<RegistroLista, "criadaEm" | "atualizadaEm" | "versao" | "versaoCopia">;
+export type NovaLista = Omit<
+  RegistroLista,
+  | "criadaEm"
+  | "atualizadaEm"
+  | "versao"
+  | "versaoCopia"
+  | "arquivoAcompanhado"
+  | "sha256Conferido"
+  | "codigoConferido"
+  | "conversa"
+  | "markdownConferido"
+>;
 
 /** O que a mesclagem de um bloco da leitura com IA muda na lista (a mesma lista, nunca uma nova). */
 export interface MesclagemIa {
@@ -147,6 +183,8 @@ export interface RegistroBlocoIa<Resultado = unknown> {
   readonly resultado: Resultado;
   readonly uso: UsoRevisaoIa;
   readonly segundos: number;
+  /** A IA que leu o bloco; nula nos blocos de antes da migração 5 (a IA era a da revisão). */
+  readonly provider: Provider | null;
 }
 
 export interface TentativaGravada {
@@ -176,13 +214,16 @@ export class RevisoesPpc extends Context.Service<
      * diferentes correm em paralelo.
      */
     readonly comTravaDaLista: <A, E, R>(id: string, efeito: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R>;
+    /** O id de cada lista escrita (ou apagada) daqui em diante, até o escopo fechar. */
+    readonly assinarMudancas: Effect.Effect<PubSub.Subscription<string>, never, Scope.Scope>;
 
     /* ------------------------------------------------------------ listas */
 
     /**
      * Cria a lista. Cada revisão é independente: a lista nova não herda nada de outra do mesmo arquivo.
      * Só com `substitui` (a mesma revisão refeita, como em "Qual é o curso?") a situação, o histórico e a
-     * sugestão das pendências de mesma chave, a leitura com IA e o uso das ações passam daquela lista, que
+     * sugestão das pendências de mesma chave, a leitura com IA, o uso das ações e o arquivo acompanhado
+     * (sem a última conferência: o vigia o confere de novo com o curso novo) passam daquela lista, que
      * sai. Recusa com `RevisaoEmAndamento` se a lista a substituir tiver leitura com IA em andamento.
      */
     readonly criarLista: (
@@ -206,7 +247,7 @@ export class RevisoesPpc extends Context.Service<
     readonly mesclarIa: (
       id: string,
       mesclagem: MesclagemIa,
-      pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+      pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao; ia: Provider | null }>,
       /** Chaves da IA de uma leitura anterior que não existem mais no resultado recalculado. */
       obsoletas?: ReadonlyArray<string>,
     ) => Effect.Effect<void>;
@@ -237,6 +278,29 @@ export class RevisoesPpc extends Context.Service<
       arquivo: ArquivoLista,
       noDocumento?: ReadonlyMap<string, PendenciaRevisao["noDocumento"]>,
     ) => Effect.Effect<void>;
+    /** Passa a acompanhar `arquivo` no Word, com o sha256 da última conferência (nulo: conferir na próxima vez). */
+    readonly acompanhar: (id: string, arquivo: string, sha256Conferido: string | null) => Effect.Effect<void>;
+    /**
+     * A conferência ao salvar, numa transação: as mudanças nas pendências e as novas (abertas, com o evento
+     * `textoNovas`), como em `aplicarArquivoNovo`, o resultado com a régua do código do arquivo salvo e o
+     * sha256 conferido (e `codigoConferido`), sem trocar o arquivo da lista nem a versão da cópia comentada.
+     */
+    readonly aplicarConferencia: (
+      id: string,
+      mudancas: ReadonlyArray<MudancaPendencia>,
+      novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+      textoNovas: string,
+      resultado: ResultadoRevisaoPpc,
+      sha256Conferido: string,
+      /** O texto do arquivo conferido, sem as linhas de texto dirigido a IA (`markdownConferido`). */
+      markdownConferido: string,
+    ) => Effect.Effect<void>;
+    /** Liga a lista à conversa ao lado que ela abriu (a pasta é a da conversa). */
+    readonly ligarConversa: (id: string, conversa: string, pasta: string) => Effect.Effect<void>;
+    /** As conversas ao lado ligadas a alguma lista (os ids). */
+    readonly conversasLigadas: Effect.Effect<ReadonlyArray<string>>;
+    /** Desliga das listas a conversa ao lado `conversa` (apagada): a próxima mensagem abre outra. */
+    readonly desligarConversa: (conversa: string) => Effect.Effect<void>;
     /**
      * O resultado da cópia comentada regravada, que reflete a `versaoCopia` da lista, e onde cada
      * pendência ficou no documento (`noDocumento`, pela chave), numa transação.
@@ -273,6 +337,8 @@ export class RevisoesPpc extends Context.Service<
     /** Da mais recente para a mais antiga, sem o plano (que pode ser grande). */
     readonly listarRevisoes: Effect.Effect<ReadonlyArray<RegistroRevisaoIa<null>>>;
     readonly alterarRevisao: (id: string, alteracao: AlteracaoRevisaoIa) => Effect.Effect<void>;
+    /** A leitura passa a outra IA (a pausada no limite da assinatura continua com ela). */
+    readonly trocarIa: (id: string, provider: Provider, modelo: string | null) => Effect.Effect<void>;
     /**
      * Pausa a revisão somente se ainda estiver `em_andamento` no banco: não sobrescreve `concluida` nem
      * `falhou` numa corrida com o fim da execução.
@@ -339,6 +405,12 @@ const LinhaLista = Schema.Struct({
   resultados_ia: Schema.NullOr(DesconhecidoJson),
   versao: Schema.Number,
   versao_copia: Schema.NullOr(Schema.Number),
+  arquivo_acompanhado: Schema.NullOr(Schema.String),
+  sha256_conferido: Schema.NullOr(Schema.String),
+  codigo_conferido: Schema.Number,
+  conversa_id: Schema.NullOr(Schema.String),
+  conversa_pasta: Schema.NullOr(Schema.String),
+  markdown_conferido: Schema.NullOr(Schema.String),
   criada_em: Schema.String,
   atualizada_em: Schema.String,
 });
@@ -350,6 +422,7 @@ const LinhaPendencia = Schema.Struct({
   situacao: Schema.String,
   resolvida_por: Schema.NullOr(Schema.String),
   sugestao: Schema.NullOr(SugestaoJson),
+  ia: Schema.NullOr(Schema.String),
 });
 
 const LinhaEvento = Schema.Struct({
@@ -393,6 +466,7 @@ const LinhaBloco = Schema.Struct({
   resultado: DesconhecidoJson,
   uso: UsoJson,
   segundos: Schema.Number,
+  provider: Schema.NullOr(Schema.String),
 });
 
 const lerLinhasLista = Schema.decodeUnknownEffect(Schema.Array(LinhaLista));
@@ -445,6 +519,9 @@ const agora = Effect.map(DateTime.now, DateTime.formatIso);
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const travas = new Map<string, { readonly semaforo: Semaphore.Semaphore; ativos: number }>();
+  const mudancas = yield* PubSub.unbounded<string>();
+  /** Avisa quem acompanha a lista, depois da escrita. */
+  const avisar = (id: string) => PubSub.publish(mudancas, id).pipe(Effect.asVoid);
 
   const comTravaDaLista = <A, E, R>(id: string, efeito: Effect.Effect<A, E, R>): Effect.Effect<A, E, R> =>
     Effect.suspend(() => {
@@ -523,7 +600,7 @@ const make = Effect.gen(function* () {
           if (ant) {
             yield* sql`
               UPDATE revisao_ppc_pendencias_vivas AS nova SET
-                situacao = velha.situacao, resolvida_por = velha.resolvida_por, sugestao = velha.sugestao
+                situacao = velha.situacao, resolvida_por = velha.resolvida_por, sugestao = velha.sugestao, ia = velha.ia
               FROM revisao_ppc_pendencias_vivas AS velha
               WHERE nova.lista_id = ${l.id} AND velha.lista_id = ${ant.id} AND velha.chave = nova.chave
             `;
@@ -539,6 +616,13 @@ const make = Effect.gen(function* () {
             // O uso das ações continua contado; a lista substituída sai (o texto do PPC e os motivos não
             // ficam guardados em dobro).
             yield* sql`UPDATE revisao_ppc_acoes_ia SET lista_id = ${l.id} WHERE lista_id = ${ant.id}`;
+            yield* sql`
+              UPDATE revisao_ppc_listas_pendencias AS nova SET
+                arquivo_acompanhado = velha.arquivo_acompanhado,
+                conversa_id = velha.conversa_id, conversa_pasta = velha.conversa_pasta
+              FROM revisao_ppc_listas_pendencias AS velha
+              WHERE nova.id = ${l.id} AND velha.id = ${ant.id}
+            `;
             yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE id = ${ant.id}`;
           }
           return ant;
@@ -547,6 +631,8 @@ const make = Effect.gen(function* () {
       .pipe(Effect.catchIf((e) => !ehRevisaoEmAndamento(e), Effect.die));
     // A lista substituída levava o texto do PPC.
     if (anterior) yield* descarregar(sql).pipe(Effect.orDie);
+    yield* avisar(l.id);
+    if (anterior) yield* avisar(anterior.id);
   });
 
   const buscarLista = Effect.fn("RevisoesPpc.buscarLista")(function* (id: string) {
@@ -567,6 +653,12 @@ const make = Effect.gen(function* () {
       resultadosIa: l.resultados_ia as EntradaIa | null,
       versao: l.versao,
       versaoCopia: l.versao_copia,
+      arquivoAcompanhado: l.arquivo_acompanhado,
+      sha256Conferido: l.sha256_conferido,
+      codigoConferido: l.codigo_conferido !== 0,
+      conversa:
+        l.conversa_id === null || l.conversa_pasta === null ? null : { id: l.conversa_id, pasta: l.conversa_pasta },
+      markdownConferido: l.markdown_conferido,
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
     } satisfies RegistroLista;
@@ -582,6 +674,7 @@ const make = Effect.gen(function* () {
       UPDATE revisao_ppc_listas_pendencias SET revisao_id = ${revisao}, provider = ${provider}, modelo = ${modelo}
       WHERE id = ${id}
     `;
+    yield* avisar(id);
   }, Effect.orDie);
 
   const todasListas = sql<{
@@ -593,7 +686,7 @@ const make = Effect.gen(function* () {
 
   const pendencias = Effect.fn("RevisoesPpc.pendencias")(function* (id: string) {
     const linhas = yield* lerPendencias(
-      yield* sql`SELECT chave, ordem, pendencia, situacao, resolvida_por, sugestao FROM revisao_ppc_pendencias_vivas WHERE lista_id = ${id} ORDER BY ordem`,
+      yield* sql`SELECT chave, ordem, pendencia, situacao, resolvida_por, sugestao, ia FROM revisao_ppc_pendencias_vivas WHERE lista_id = ${id} ORDER BY ordem`,
     );
     return linhas.map((l): RegistroPendencia => ({
       chave: l.chave,
@@ -602,6 +695,7 @@ const make = Effect.gen(function* () {
       situacao: l.situacao as SituacaoPendencia,
       resolvidaPor: l.resolvida_por as RegistroPendencia["resolvidaPor"],
       sugestao: l.sugestao,
+      ia: l.ia as Provider | null,
     }));
   }, Effect.orDie);
 
@@ -647,6 +741,7 @@ const make = Effect.gen(function* () {
         yield* tocar(id, data);
       }),
     );
+    yield* avisar(id);
   }, Effect.orDie);
 
   /** Insere as pendências novas, abertas, depois da última, cada uma com o evento. */
@@ -688,6 +783,43 @@ const make = Effect.gen(function* () {
     }
   });
 
+  /**
+   * As mudanças de "Enviar a versão corrigida" e da conferência ao salvar nas pendências: a situação, o
+   * evento e, quando o arquivo novo aponta o mesmo ponto com outro texto, a chave nova. Dentro da transação
+   * de quem chama.
+   */
+  const aplicarMudancas = Effect.fn("RevisoesPpc.aplicarMudancas")(function* (
+    id: string,
+    mudancasPendencias: ReadonlyArray<MudancaPendencia>,
+    data: string,
+  ) {
+    for (const m of mudancasPendencias) {
+      let chave = m.chave;
+      if (m.nova !== undefined) {
+        // O mesmo ponto com outro texto: a pendência, o histórico e o uso passam à chave nova.
+        yield* sql`
+          UPDATE revisao_ppc_pendencias_vivas SET chave = ${m.nova.chave}, pendencia = ${yield* codificarPendencia(m.nova.pendencia)}
+          WHERE lista_id = ${id} AND chave = ${chave}
+        `;
+        yield* sql`UPDATE revisao_ppc_eventos_pendencia SET chave = ${m.nova.chave} WHERE lista_id = ${id} AND chave = ${chave}`;
+        yield* sql`UPDATE revisao_ppc_acoes_ia SET chave = ${m.nova.chave} WHERE lista_id = ${id} AND chave = ${chave}`;
+        chave = m.nova.chave;
+      }
+      yield* sql`
+        UPDATE revisao_ppc_pendencias_vivas SET situacao = ${m.situacao}, resolvida_por = ${m.situacao === "resolvida" ? m.resolvidaPor : null}
+        WHERE lista_id = ${id} AND chave = ${chave}
+      `;
+      if (m.evento !== null) {
+        const e = m.evento;
+        yield* sql`
+          INSERT INTO revisao_ppc_eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
+          VALUES (${id}, ${chave}, ${data}, ${e.acao}, ${e.situacao}, ${e.texto}, ${e.motivo ?? null},
+            ${e.uso ? yield* codificarUso(e.uso) : null})
+        `;
+      }
+    }
+  });
+
   const aplicarArquivoNovo = Effect.fn("RevisoesPpc.aplicarArquivoNovo")(function* (
     id: string,
     mudancas: ReadonlyArray<MudancaPendencia>,
@@ -699,49 +831,94 @@ const make = Effect.gen(function* () {
     const data = yield* agora;
     yield* sql.withTransaction(
       Effect.gen(function* () {
-        for (const m of mudancas) {
-          let chave = m.chave;
-          if (m.nova !== undefined) {
-            // O mesmo ponto com outro texto: a pendência, o histórico e o uso passam à chave nova.
-            yield* sql`
-              UPDATE revisao_ppc_pendencias_vivas SET chave = ${m.nova.chave}, pendencia = ${yield* codificarPendencia(m.nova.pendencia)}
-              WHERE lista_id = ${id} AND chave = ${chave}
-            `;
-            yield* sql`UPDATE revisao_ppc_eventos_pendencia SET chave = ${m.nova.chave} WHERE lista_id = ${id} AND chave = ${chave}`;
-            yield* sql`UPDATE revisao_ppc_acoes_ia SET chave = ${m.nova.chave} WHERE lista_id = ${id} AND chave = ${chave}`;
-            chave = m.nova.chave;
-          }
-          yield* sql`
-            UPDATE revisao_ppc_pendencias_vivas SET situacao = ${m.situacao}, resolvida_por = ${m.situacao === "resolvida" ? m.resolvidaPor : null}
-            WHERE lista_id = ${id} AND chave = ${chave}
-          `;
-          if (m.evento !== null) {
-            const e = m.evento;
-            yield* sql`
-              INSERT INTO revisao_ppc_eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
-              VALUES (${id}, ${chave}, ${data}, ${e.acao}, ${e.situacao}, ${e.texto}, ${e.motivo ?? null},
-                ${e.uso ? yield* codificarUso(e.uso) : null})
-            `;
-          }
-        }
+        yield* aplicarMudancas(id, mudancas, data);
         yield* inserirNovas(id, novas, textoNovas, data);
         if (noDocumento !== undefined) yield* atualizarLocais(id, noDocumento);
-        // A cópia comentada já foi gravada com o estado final: fica em dia.
+        // A cópia comentada já foi gravada com o estado final: fica em dia. O texto da lista passa a ser o
+        // do arquivo novo, com as pendências do código dele. O acompanhado continua só se é o arquivo
+        // enviado (já conferido); outro acompanhado conferiria uma versão anterior contra o texto novo.
         yield* sql`
           UPDATE revisao_ppc_listas_pendencias SET arquivo = ${a.arquivo}, sha256 = ${a.sha256}, markdown = ${a.markdown},
             linhas_texto_ia = ${yield* codificarNumeros(a.linhasTextoParaIa)}, cnct = ${a.cnct}, forma = ${a.forma},
             resultado = ${yield* codificarResultado(a.resultado)}, versao = versao + 1, versao_copia = versao + 1,
-            atualizada_em = ${data}
+            sha256_conferido = CASE WHEN arquivo_acompanhado = ${a.arquivo} THEN ${a.sha256} ELSE NULL END,
+            arquivo_acompanhado = CASE WHEN arquivo_acompanhado = ${a.arquivo} THEN arquivo_acompanhado ELSE NULL END,
+            codigo_conferido = 0, markdown_conferido = NULL, atualizada_em = ${data}
           WHERE id = ${id}
         `;
       }),
     );
+    yield* avisar(id);
+  }, Effect.orDie);
+
+  const acompanhar = Effect.fn("RevisoesPpc.acompanhar")(function* (
+    id: string,
+    arquivo: string,
+    sha256Conferido: string | null,
+  ) {
+    yield* sql`
+      UPDATE revisao_ppc_listas_pendencias SET arquivo_acompanhado = ${arquivo}, sha256_conferido = ${sha256Conferido}
+      WHERE id = ${id}
+    `;
+    yield* avisar(id);
+  }, Effect.orDie);
+
+  const aplicarConferencia = Effect.fn("RevisoesPpc.aplicarConferencia")(function* (
+    id: string,
+    mudancasPendencias: ReadonlyArray<MudancaPendencia>,
+    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    textoNovas: string,
+    resultado: ResultadoRevisaoPpc,
+    sha256Conferido: string,
+    markdownConferido: string,
+  ) {
+    const data = yield* agora;
+    const resultadoJson = yield* codificarResultado(resultado);
+    yield* sql.withTransaction(
+      Effect.gen(function* () {
+        yield* aplicarMudancas(id, mudancasPendencias, data);
+        yield* inserirNovas(id, novas, textoNovas, data);
+        yield* sql`
+          UPDATE revisao_ppc_listas_pendencias SET resultado = ${resultadoJson}, sha256_conferido = ${sha256Conferido},
+            codigo_conferido = 1, markdown_conferido = ${markdownConferido}
+          WHERE id = ${id}
+        `;
+        // A versão sobe só com mudança nas pendências; a da cópia comentada fica (a cópia não é regravada).
+        if (mudancasPendencias.length > 0 || novas.length > 0) yield* tocar(id, data);
+      }),
+    );
+    yield* avisar(id);
+  }, Effect.orDie);
+
+  const ligarConversa = Effect.fn("RevisoesPpc.ligarConversa")(function* (id: string, conversa: string, pasta: string) {
+    yield* sql`
+      UPDATE revisao_ppc_listas_pendencias SET conversa_id = ${conversa}, conversa_pasta = ${pasta} WHERE id = ${id}
+    `;
+    yield* avisar(id);
+  }, Effect.orDie);
+
+  const conversasLigadas = sql<{
+    conversa_id: string;
+  }>`SELECT DISTINCT conversa_id FROM revisao_ppc_listas_pendencias WHERE conversa_id IS NOT NULL`.pipe(
+    Effect.map((linhas) => linhas.map((l) => l.conversa_id)),
+    Effect.orDie,
+  );
+
+  const desligarConversa = Effect.fn("RevisoesPpc.desligarConversa")(function* (conversa: string) {
+    const listas = yield* sql<{ id: string }>`
+      SELECT id FROM revisao_ppc_listas_pendencias WHERE conversa_id = ${conversa}
+    `;
+    yield* sql`
+      UPDATE revisao_ppc_listas_pendencias SET conversa_id = NULL, conversa_pasta = NULL
+      WHERE conversa_id = ${conversa}
+    `;
+    for (const lista of listas) yield* avisar(lista.id);
   }, Effect.orDie);
 
   const mesclarIa = Effect.fn("RevisoesPpc.mesclarIa")(function* (
     id: string,
     m: MesclagemIa,
-    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao; ia: Provider | null }>,
     obsoletas: ReadonlyArray<string> = [],
   ) {
     const data = yield* agora;
@@ -758,8 +935,8 @@ const make = Effect.gen(function* () {
         let ordem = maior + 1;
         for (const p of novas)
           yield* sql`
-            INSERT OR IGNORE INTO revisao_ppc_pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
-            VALUES (${id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL)
+            INSERT OR IGNORE INTO revisao_ppc_pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao, ia)
+            VALUES (${id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL, ${p.ia})
           `;
         yield* sql`
           UPDATE revisao_ppc_listas_pendencias SET resultado = ${resultado}, resultados_ia = ${resultadosIa},
@@ -769,6 +946,7 @@ const make = Effect.gen(function* () {
         `;
       }),
     );
+    yield* avisar(id);
   }, Effect.orDie);
 
   const trocarResultado = Effect.fn("RevisoesPpc.trocarResultado")(function* (
@@ -788,6 +966,7 @@ const make = Effect.gen(function* () {
         `;
       }),
     );
+    yield* avisar(id);
   }, Effect.orDie);
 
   const gravarAcao = Effect.fn("RevisoesPpc.gravarAcao")(function* (id: string, chave: string, a: AcaoIaGravada) {
@@ -798,6 +977,7 @@ const make = Effect.gen(function* () {
         ${yield* codificarFerramentas(a.ferramentas)}, ${data}
       WHERE EXISTS (SELECT 1 FROM revisao_ppc_listas_pendencias WHERE id = ${id})
     `;
+    yield* avisar(id);
   }, Effect.orDie);
 
   const usoLista = Effect.fn("RevisoesPpc.usoLista")(function* (id: string) {
@@ -807,6 +987,7 @@ const make = Effect.gen(function* () {
   const apagarLista = Effect.fn("RevisoesPpc.apagarLista")(function* (id: string) {
     yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE id = ${id}`;
     yield* descarregar(sql);
+    yield* avisar(id);
   }, Effect.orDie);
 
   const acrescentarPendencias = Effect.fn("RevisoesPpc.acrescentarPendencias")(function* (
@@ -826,6 +1007,7 @@ const make = Effect.gen(function* () {
         yield* tocar(id, data);
       }),
     );
+    yield* avisar(id);
   }, Effect.orDie);
 
   const expirarListas = Effect.fn("RevisoesPpc.expirarListas")(function* (antesDe: string) {
@@ -834,6 +1016,7 @@ const make = Effect.gen(function* () {
     }>`SELECT id FROM revisao_ppc_listas_pendencias WHERE atualizada_em < ${antesDe}`;
     for (const l of linhas) yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE id = ${l.id}`;
     if (linhas.length > 0) yield* descarregar(sql);
+    for (const l of linhas) yield* avisar(l.id);
     return linhas.length;
   }, Effect.orDie);
 
@@ -896,6 +1079,14 @@ const make = Effect.gen(function* () {
     `;
   }, Effect.orDie);
 
+  const trocarIa = Effect.fn("RevisoesPpc.trocarIa")(function* (id: string, provider: Provider, modelo: string | null) {
+    const data = yield* agora;
+    yield* sql`
+      UPDATE revisao_ppc_revisoes_ia SET provider = ${provider}, modelo = ${modelo}, atualizada_em = ${data}
+      WHERE id = ${id}
+    `;
+  }, Effect.orDie);
+
   const pausarRevisaoSeEmAndamento = Effect.fn("RevisoesPpc.pausarRevisaoSeEmAndamento")(function* (
     id: string,
     motivo: string,
@@ -914,21 +1105,22 @@ const make = Effect.gen(function* () {
   const gravarBloco = Effect.fn("RevisoesPpc.gravarBloco")(function* (revisao: string, b: RegistroBlocoIa) {
     const data = yield* agora;
     yield* sql`
-      INSERT OR REPLACE INTO revisao_ppc_blocos_ia (revisao_id, bloco_id, resultado, uso, segundos, criado_em)
-      VALUES (${revisao}, ${b.bloco}, ${yield* codificarDesconhecido(b.resultado)}, ${yield* codificarUso(b.uso)}, ${b.segundos}, ${data})
+      INSERT OR REPLACE INTO revisao_ppc_blocos_ia (revisao_id, bloco_id, resultado, uso, segundos, provider, criado_em)
+      VALUES (${revisao}, ${b.bloco}, ${yield* codificarDesconhecido(b.resultado)}, ${yield* codificarUso(b.uso)}, ${b.segundos}, ${b.provider}, ${data})
     `;
     yield* sql`UPDATE revisao_ppc_revisoes_ia SET atualizada_em = ${data} WHERE id = ${revisao}`;
   }, Effect.orDie);
 
   const blocos = Effect.fn("RevisoesPpc.blocos")(function* (revisao: string) {
     const linhas = yield* lerBlocos(
-      yield* sql`SELECT bloco_id, resultado, uso, segundos FROM revisao_ppc_blocos_ia WHERE revisao_id = ${revisao}`,
+      yield* sql`SELECT bloco_id, resultado, uso, segundos, provider FROM revisao_ppc_blocos_ia WHERE revisao_id = ${revisao}`,
     );
     return linhas.map((l): RegistroBlocoIa => ({
       bloco: l.bloco_id,
       resultado: l.resultado,
       uso: l.uso,
       segundos: l.segundos,
+      provider: l.provider as Provider | null,
     }));
   }, Effect.orDie);
 
@@ -1016,6 +1208,7 @@ const make = Effect.gen(function* () {
 
   return RevisoesPpc.of({
     comTravaDaLista,
+    assinarMudancas: PubSub.subscribe(mudancas),
     criarLista,
     buscarLista,
     ligarRevisao,
@@ -1025,6 +1218,11 @@ const make = Effect.gen(function* () {
     eventos,
     mudarPendencia,
     aplicarArquivoNovo,
+    acompanhar,
+    aplicarConferencia,
+    ligarConversa,
+    conversasLigadas,
+    desligarConversa,
     trocarResultado,
     gravarAcao,
     usoLista,
@@ -1037,6 +1235,7 @@ const make = Effect.gen(function* () {
     resumoRevisao,
     listarRevisoes,
     alterarRevisao,
+    trocarIa,
     pausarRevisaoSeEmAndamento,
     gravarBloco,
     blocos,

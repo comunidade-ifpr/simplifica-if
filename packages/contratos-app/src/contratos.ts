@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Dez grupos: providers, conversa, relato de erro (`relato.ts`), diagnóstico (`diagnostico.ts`), skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Onze grupos: providers, conversa, atividades (`atividades.ts`), relato de erro (`relato.ts`), diagnóstico (`diagnostico.ts`), skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -23,8 +23,10 @@ import {
   type Ancora,
   type CampusDoIndice,
   type CnctDoIndice,
+  type ComparacaoBusca,
   type CursoDoIndice,
   type DadosBusca,
+  type DadosComparar,
   type DadosDocumento,
   type DadosIndice,
   type DocumentoConselho,
@@ -32,12 +34,16 @@ import {
   type GrupoBusca,
   ROTULOS_INDICADOR,
   type ItemDePauta,
+  type LadoComparado,
+  type LinhaComparada,
   type LinkLido,
+  type NormaComparada,
   type NormaDoIndice,
   type PpcDoIndice,
   type ResultadoBusca,
   type ReuniaoDoIndice,
   type TipoResultado,
+  type TrechoComparado,
 } from "@simplifica-if/mcp/grupo-leitura";
 import {
   AprovacaoDesconhecida,
@@ -56,6 +62,7 @@ import {
 } from "@simplifica-if/motor/estados-provider";
 import { AlvoWeb, Evento, MotivoFim, Provider, TipoFerramenta } from "@simplifica-if/motor/eventos";
 import { TipoFalha, TipoFalhaEstado } from "@simplifica-if/motor/falhas";
+import { GrupoAtividades } from "./atividades.ts";
 import { GrupoAtualizacao } from "./atualizacao.ts";
 import { GrupoConversa } from "./conversa.ts";
 import { GrupoDiagnostico } from "./diagnostico.ts";
@@ -76,17 +83,23 @@ export type { Ancora, DadosDocumento, LinkLido };
 export type {
   CampusDoIndice,
   CnctDoIndice,
+  ComparacaoBusca,
   CursoDoIndice,
   DadosBusca,
+  DadosComparar,
   DadosIndice,
   DocumentoConselho,
   GrupoBusca,
   ItemDePauta,
+  LadoComparado,
+  LinhaComparada,
+  NormaComparada,
   NormaDoIndice,
   PpcDoIndice,
   ResultadoBusca,
   ReuniaoDoIndice,
   TipoResultado,
+  TrechoComparado,
 };
 
 export {
@@ -99,6 +112,7 @@ export {
   TAMANHO_MINIMO_TOKEN,
   VARIAVEL_TOKEN,
 } from "./ponte.ts";
+export * from "./atividades.ts";
 export * from "./atualizacao.ts";
 export * from "./conversa.ts";
 export * from "./diagnostico.ts";
@@ -109,7 +123,7 @@ export * from "./providers.ts";
 export * from "./relato.ts";
 export * from "./tarefas.ts";
 
-/** A API inteira do servidor local: providers, conversa, relato, diagnóstico, tarefas, pasta, revisão de PPC, atualização, leitura e preferências. */
+/** A API inteira do servidor local: providers, conversa, atividades, relato, diagnóstico, tarefas, pasta, revisão de PPC, atualização, leitura e preferências. */
 export class GrupoApp extends GrupoProviders.merge(
   GrupoConversa,
   GrupoRelato,
@@ -120,4 +134,5 @@ export class GrupoApp extends GrupoProviders.merge(
   GrupoRevisaoPpc,
   GrupoAtualizacao,
   GrupoLeitura,
+  GrupoAtividades,
 ) {}

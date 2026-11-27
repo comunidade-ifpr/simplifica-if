@@ -94,7 +94,7 @@ interface PonteDesktop {
   abrirExterno(url: string): Promise<void>;                    // só http(s), no navegador do sistema
   escolherDocx(): Promise<string | null>;                      // diálogo de arquivo, só .docx; null se cancelar
   soltarDocx(arquivo: File): Promise<string | null>;           // .docx solto (arrastar e soltar); null se recusado
-  abrirDocumento(caminho: string): Promise<void>;              // abre no Word a cópia comentada (só ela)
+  abrirDocumento(caminho: string): Promise<void>;              // abre no Word a cópia comentada ou o .docx escolhido nesta execução (o acompanhado)
   mostrarNaPasta(caminho: string): Promise<void>;              // mostra a cópia comentada no Finder/Explorador
   escolherAnexo(extensoes?: readonly string[]): Promise<string | null>; // diálogo de anexo, só documentos; libera no servidor
   anexarSoltos(arquivos: readonly File[], extensoes?: readonly string[]): Promise<readonly (string | null)[]>;
@@ -103,9 +103,11 @@ interface PonteDesktop {
   pastaParaLixeira(caminho: string): Promise<void>;            // manda à Lixeira a pasta da tarefa
   reiniciarServidor(): Promise<void>;                          // reinicia o servidor (troca da base, M1.10)
   registrarErro(texto: string): Promise<void>;                 // grava um erro da interface no log do app
-  janela: JanelaDesktop;                                       // barra de título sem moldura do sistema
+  janela: JanelaDesktop;                                       // a janela: barra de título, várias janelas, avisos, modo compacto
 }
 ```
+
+`JanelaDesktop` (o contrato inteiro em `@simplifica-if/contratos-app/ponte`): a plataforma e a tela cheia (os botões do sistema na barra de título), o tema escolhido no app (`temaDoApp`), os atalhos do menu (`aoAtalhoDoMenu`: Buscar na base, Mostrar ou esconder o painel, Perguntar à IA, Abrir em nova janela), as várias janelas (`abrirJanela(rota)` e `continuidade`: `completa`, `so-grava` ou `nenhuma`), o aviso e o selo do sistema (`avisar`, `selo`, `aoAbrirRota`; `src/avisos.ts`), o modo compacto (`compacta(ligar)`, que devolve se ligou, e o alfinete `naFrente`; `src/compacta.ts`) e a gravação da continuidade antes de fechar (`antesDeSair`; `src/antesDeSair.ts`).
 
 **Pasta das tarefas (M1.9).** O processo principal passa ao servidor `--pasta-trabalhos` com `Documentos/Simplifica IF` (`app.getPath("documents")`; `SIMPLIFICA_TRABALHOS` troca no desenvolvimento). `escolherAnexo` abre o diálogo só com extensões de documento (`EXTENSOES_DOCUMENTO`: Word, ODF, PDF, Markdown, texto, planilhas, apresentações, JSON, imagens), confere a extensão de novo e libera o arquivo no servidor, que o copia para a pasta da tarefa. `abrirArquivoTarefa` e `mostrarArquivoTarefa` só aceitam um arquivo pelo menos dois níveis abaixo da raiz (`<raiz>/<tarefa>/…`), com caminho normalizado, sem parte oculta (`.simplifica/`), arquivo comum e com o caminho real dentro da raiz (`arquivoDeTarefaPermitido` de `src/seguranca.ts`); "Abrir" ainda exige extensão de documento, porque a IA escreve na pasta e "Abrir" não pode virar "rodar" (`.command`, `.exe`, `.html` ficam só com "Mostrar na pasta").
 
@@ -118,7 +120,7 @@ O contrato (`PonteDesktop`, os canais do IPC, os caminhos do servidor, a variáv
 Como no T3:
 
 - `contextIsolation`, `sandbox`, sem `nodeIntegration` e sem `<webview>`;
-- navegação só na origem da interface; links para fora, e `window.open`, abrem no navegador do sistema se forem http(s), e os outros esquemas são recusados;
+- navegação só na origem da interface; links para fora, e `window.open`, abrem no navegador do sistema se forem http(s), e os outros esquemas são recusados; a janela nova do app sai só pelo canal `abrirJanela`, com uma rota do app (`/…`, sem outro host, sem controle nem barra invertida, até 4 000 caracteres);
 - nenhuma permissão do navegador (câmera, notificações…), salvo escrever na área de transferência;
 - uma instância só do app.
 
@@ -132,9 +134,9 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 
 ## Estrutura
 
-- `src/main.ts`: o processo principal (servidor, janela, atualização, ciclo de vida); `src/ipc.ts`: os canais do IPC, cada um atrás de `tratar`, que só atende a janela do app; `src/protocolo.ts`: o protocolo `simplifica://app/`; `src/menu.ts`: o menu em pt-BR.
+- `src/main.ts`: o processo principal (servidor, janelas, atualização, ciclo de vida); `src/ipc.ts`: os canais do IPC, cada um atrás de `tratar`, que só atende uma janela do app e passa a que pediu (os diálogos ficam presos a ela); `src/protocolo.ts`: o protocolo `simplifica://app/`; `src/menu.ts`: o menu em pt-BR, com "Abrir em nova janela" (⇧⌘N) no Arquivo.
+- `src/janelas.ts`: as várias janelas ("Abrir em nova janela", ⇧⌘-clique, e o ⇧-clique ou ⌘-clique num link do app, que o `setWindowOpenHandler` transforma em janela do app), sem Electron: o conjunto na ordem de uso (a última usada recebe o `second-instance`, os atalhos do menu e o clique do aviso sem janela certa), no máximo `MAXIMO_JANELAS` abertas, a janela nova em cascata a partir da que pediu, dentro da área útil da tela dela, e no centro dela quando a que pediu está no modo compacto, maximizada ou em tela cheia (`medidasDaJanelaNova`), a principal (só ela grava e volta a continuidade; fechada, a próxima janela aberta passa a ser a principal e grava sem voltar; o argumento `--simplifica-continuidade=…`, lido pelo preload em `JanelaDesktop.continuidade`), o remetente conferido do IPC (sem ler o `webContents` da janela fechando) e a rota da janela nova. O modo compacto é de cada janela (`porJanela`, que solta a espera da tela cheia da janela que fecha), o tema vale para todas, e fechar a última janela sai do app. O aviso do sistema vale pelo primeiro pedido, de qualquer janela, e os repetidos saem descartados (`avisos.ts`).
 
-**Só português (M1.14).** O menu (Sobre, Ocultar, Sair, Editar com Desfazer, Copiar e Colar, Ver, Janela), os títulos e botões dos diálogos de abrir arquivo e de confirmação e o painel Sobre (`setAboutPanelOptions`) estão em pt-BR. O Chromium sobe com `--lang=pt-BR` (`navigator.language`, o `Intl` padrão e os textos do próprio Chromium), seja qual for a língua do sistema. O que é do macOS (Cancelar e Abrir nos diálogos, os itens que o sistema acrescenta ao menu Editar, "Versão" no painel Sobre) segue as localizações que o pacote declara: o empacotamento põe `CFBundleDevelopmentRegion` em `pt-BR` e tira de `Contents/Resources` as pastas `*.lproj` vazias das outras línguas (`deixarSoPortugues`, no `afterPack`), ficando só o `pt_BR.lproj`; os `locale.pak` do Chromium, no framework, continuam pt-BR e en-US (`electronLanguages`), porque o en-US é a reserva do Chromium. O instalador NSIS do Windows sai em português (`language: "1046"`, sem escolha de língua). No Windows, os diálogos de arquivo são do sistema e seguem a língua dele: o app põe em português o título, o botão de confirmar e o nome do filtro (`title`, `buttonLabel`, `filters`), e o resto ("Cancelar", "Nome do arquivo", o painel de navegação) vem do Windows. O Electron não tem opção para mudar isso (o `--lang` vale só para o Chromium, e não há `app.setLocale`): é um limite aceito.
 - `src/servidor.ts`: o token, a montagem do comando, a linha de partida e o encerramento; sem Electron.
 - `src/configuracao.ts`: de onde vêm o servidor, a base, a interface, a pasta de estado e a de skills; sem Electron.
 - `src/seguranca.ts`: CSP, navegação, links externos, anexos, pastas de tarefa e arquivos do protocolo; sem Electron.
@@ -143,8 +145,14 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 - `src/vigiaDev.ts`: só no desenvolvimento, reinicia o servidor quando o código dele muda; sem Electron.
 - `src/reinicio.ts`: a troca do servidor, uma de cada vez; sem Electron.
 - `src/preload.ts`: a ponte (o contrato está em `@simplifica-if/contratos-app/ponte`), com a parte de cada módulo.
+- `src/compacta.ts`: o modo compacto de uma janela, sem Electron (`criarJanelaCompacta`: guarda as medidas, sai da tela cheia e do maximizado, encosta a coluna à direita da área útil, o "sempre por cima" e o alfinete, e desfaz tudo ao desligar).
+- `src/avisos.ts`: o aviso do sistema (`Notification`, só sem janela à vista ou, no compacto, com a janela oculta; o clique traz a janela que mostra a rota) e o selo do Dock.
+- `src/antesDeSair.ts`: espera a janela gravar a continuidade (até 1 s) no `before-quit` e ao fechar a janela, antes de encerrar o servidor.
+- `src/janela.ts`: a barra de título sem moldura do sistema (os semáforos do macOS, o `titleBarOverlay` do Windows); sem Electron.
 - `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` e `scripts/tarefas.ts` (as skills e os manifestos de tarefa do app no pacote), `scripts/dev.ts`, `scripts/gerar-marca.ts` (com `scripts/marca/`).
 - `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
+
+**Só português (M1.14).** O menu (Sobre, Ocultar, Sair, Editar com Desfazer, Copiar e Colar, Ver, Janela), os títulos e botões dos diálogos de abrir arquivo e de confirmação e o painel Sobre (`setAboutPanelOptions`) estão em pt-BR. O Chromium sobe com `--lang=pt-BR` (`navigator.language`, o `Intl` padrão e os textos do próprio Chromium), seja qual for a língua do sistema. O que é do macOS (Cancelar e Abrir nos diálogos, os itens que o sistema acrescenta ao menu Editar, "Versão" no painel Sobre) segue as localizações que o pacote declara: o empacotamento põe `CFBundleDevelopmentRegion` em `pt-BR` e tira de `Contents/Resources` as pastas `*.lproj` vazias das outras línguas (`deixarSoPortugues`, no `afterPack`), ficando só o `pt_BR.lproj`; os `locale.pak` do Chromium, no framework, continuam pt-BR e en-US (`electronLanguages`), porque o en-US é a reserva do Chromium. O instalador NSIS do Windows sai em português (`language: "1046"`, sem escolha de língua). No Windows, os diálogos de arquivo são do sistema e seguem a língua dele: o app põe em português o título, o botão de confirmar e o nome do filtro (`title`, `buttonLabel`, `filters`), e o resto ("Cancelar", "Nome do arquivo", o painel de navegação) vem do Windows. O Electron não tem opção para mudar isso (o `--lang` vale só para o Chromium, e não há `app.setLocale`): é um limite aceito.
 
 O processo principal não usa Effect: as APIs do Electron são de callback, e o `main.cjs` fica pequeno, sem runtime. O servidor, que é Effect, roda noutro processo.
 
@@ -162,6 +170,11 @@ pnpm --filter @simplifica-if/desktop test
 - `test/vigia-dev.test.ts`: que arquivos reiniciam o servidor no desenvolvimento, e que uma pasta que falta ou um vigia que falha não derrubam o app.
 - `test/reinicio.test.ts`: a troca do servidor, uma de cada vez (pedidos no meio viram uma troca só, depois).
 - `test/proxy.test.ts`: conversão da proxy resolvida pelo Electron (`proxyParaServidor`) para `HTTPS_PROXY`/`HTTP_PROXY`.
+- `test/janelas.test.ts`: as várias janelas com `BrowserWindow` falsas: a principal, a última usada, o teto, a continuidade e as medidas da janela nova, o remetente do IPC por janela (também a fechando) e a rota recusada; `test/compacta.test.ts` e `test/avisos.test.ts` cobrem o modo compacto por janela (e a janela que fecha no meio da saída da tela cheia) e o aviso com duas janelas (o primeiro pedido, os repetidos, o clique sem navegar na janela que já mostra a rota).
+- `test/compacta.test.ts`: o modo compacto com `BrowserWindow` falsa: as medidas e a restauração no macOS e no Windows, o maximizado e a tela cheia (com a reserva da espera), o alfinete, as medidas que já não caem numa tela e a janela que fecha.
+- `test/avisos.test.ts`: o aviso do sistema com `Notification` e janelas falsas: só com a janela sem foco (no compacto com o alfinete preso, só com ela oculta ou minimizada), o texto fixo, o clique que traz a janela, as notificações guardadas com teto, o selo.
+- `test/antes-de-sair.test.ts`: a gravação da continuidade antes de fechar: a resposta do mesmo pedido, vinda da janela a que ele foi; o prazo que solta o fechamento; a janela que já se foi; o segundo fechar sem pedir de novo; a saída do app sem pedir duas vezes.
+- `test/janela.test.ts`, `test/marca.test.ts` e `test/licencas.test.ts`: a barra de título, os ícones gerados e o arquivo de licenças.
 
 Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-desktop-app.ts`, Playwright com `_electron`) que roda nos jobs de release; aqui ele fica como pendência do CI. Para conferir o app de verdade, empacote com `--dir` e abra o `.app`; com `--remote-debugging-port`, a página pode ser lida pelo CDP.
 

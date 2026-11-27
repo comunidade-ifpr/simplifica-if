@@ -140,7 +140,11 @@ function dispositivos(): Dispositivo[] {
       dispositivo: `#art${n}`,
       tipo: "artigo",
       rotulo: `Art. ${n}.`,
-      texto: `Art. ${n}. Disposição ${n} da resolução de 2021 sobre a educação profissional.`,
+      // o art. 11 é o par de texto idêntico da tabela (o art. 28 da 2026, com outra pontuação)
+      texto:
+        n === 11
+          ? "Art. 11. O PPC de curso técnico deve conter, no mínimo."
+          : `Art. ${n}. Disposição ${n} da resolução de 2021 sobre a educação profissional.`,
       estrutura: cap1,
     });
   }

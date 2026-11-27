@@ -21,7 +21,7 @@ import { Input } from "../../components/ui/input.tsx";
 import { Spinner } from "../../components/ui/spinner.tsx";
 import { Textarea } from "../../components/ui/textarea.tsx";
 import { explicarErro, type MensagemErro } from "../../conexao/erros.ts";
-import { useApi, useConversa } from "../../contexto.tsx";
+import { useApi, useApp } from "../../contexto.tsx";
 import { abrirLinkDaTarefa, dominioDoLink, ROTAS_MODULO } from "../../tarefas/abrir.ts";
 import { useCatalogo } from "../../tarefas/catalogo.ts";
 import { nomeDoArquivo } from "../../lib/texto.ts";
@@ -133,7 +133,7 @@ function Formulario({
   readonly conversa: Extract<AberturaTarefa, { tipo: "conversa" }>;
 }) {
   const api = useApi();
-  const [estado, conversa] = useConversa();
+  const { conversas } = useApp();
   const navegar = useNavigate();
   const idPedido = useId();
   // Pelo `id` da entrada, em `Map`: o `id` vem do manifesto, e `constructor` não é campo preenchido.
@@ -141,7 +141,7 @@ function Formulario({
   const [anexos, setAnexos] = useState<ReadonlyMap<string, ReadonlyArray<string>>>(new Map());
   // O pedido editado pela pessoa; sem edição, o montado a partir do formulário.
   const [editado, setEditado] = useState<string>();
-  const [ia, setIa] = useState<EscolhaDaIa>({ provider: estado.provider });
+  const [ia, setIa] = useState<EscolhaDaIa>(() => ({ provider: conversas.ultimaIa() }));
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
@@ -154,14 +154,12 @@ function Formulario({
     setEnviando(true);
     setErro(undefined);
     try {
-      const sessao = await comecarTarefa(api, conversa, {
-        titulo: tarefa.titulo,
-        tarefa: tarefa.id,
-        ia,
-        anexos: [...anexos.values()].flat(),
-        texto: pedido,
-      });
-      await navegar({ to: "/conversa", search: { id: sessao } });
+      await comecarTarefa(
+        api,
+        conversas,
+        { titulo: tarefa.titulo, tarefa: tarefa.id, ia, anexos: [...anexos.values()].flat(), texto: pedido },
+        (sessao) => navegar({ to: "/conversa", search: { id: sessao } }),
+      );
     } catch (falha) {
       setErro(explicarErro(falha));
       setEnviando(false);

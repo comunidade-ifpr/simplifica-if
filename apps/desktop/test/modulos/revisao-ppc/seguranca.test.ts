@@ -1,9 +1,13 @@
 /**
  * As regras da ponte do desktop no módulo `revisao-ppc`: só sai do diálogo um `.docx` com caminho absoluto,
- * e só abre a cópia comentada de um `.docx` escolhido nesta execução.
+ * e só abre a cópia comentada de um `.docx` escolhido nesta execução ou, no Word, o próprio escolhido.
  */
 import { describe, expect, test } from "vite-plus/test";
-import { copiaComentadaPermitida, docxEscolhido } from "../../../src/modulos/revisao-ppc/seguranca.ts";
+import {
+  copiaComentadaPermitida,
+  docxEscolhido,
+  documentoPermitido,
+} from "../../../src/modulos/revisao-ppc/seguranca.ts";
 
 describe("revisão prévia: o que a interface pode abrir", () => {
   const escolhidos = new Set(["/Users/ana/PPCs/PPC Agro.docx"]);
@@ -53,5 +57,21 @@ describe("revisão prévia: o que a interface pode abrir", () => {
       42,
     ])
       expect(copiaComentadaPermitida(recusado, escolhidos), String(recusado)).toBeUndefined();
+  });
+
+  test("'Abrir no Word' abre também o próprio .docx escolhido (o acompanhado), e não outro", () => {
+    const pasta = "/Users/ana/PPCs/";
+    expect(documentoPermitido(`${pasta}PPC Agro.docx`, escolhidos)).toBe(`${pasta}PPC Agro.docx`);
+    expect(
+      documentoPermitido(`${pasta}PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx`, escolhidos),
+    ).toBeDefined();
+    for (const recusado of [
+      `${pasta}Outro.docx`,
+      `${pasta}../PPCs/PPC Agro.docx`,
+      "/Users/ana/Outra pasta/PPC Agro.docx",
+      "PPC Agro.docx",
+      undefined,
+    ])
+      expect(documentoPermitido(recusado, escolhidos), String(recusado)).toBeUndefined();
   });
 });

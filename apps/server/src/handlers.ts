@@ -15,6 +15,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Atualizador from "./Atualizador.ts";
 import {
+  GrupoAtividades,
   GrupoAtualizacao,
   GrupoConversa,
   GrupoDiagnostico,
@@ -26,6 +27,7 @@ import {
 } from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
+import * as Atividades from "./Atividades.ts";
 import * as CatalogoTarefas from "./CatalogoTarefas.ts";
 import * as Conversas from "./Conversas.ts";
 import * as Diagnostico from "./diagnostico/Diagnostico.ts";
@@ -56,12 +58,10 @@ const layerConversa = GrupoConversa.toLayer(
       "conversa.iniciar": (entrada) =>
         traduzir(
           "conversa.iniciar",
-          atualizador.canal.pipe(
-            Effect.flatMap((canal) => conversas.iniciar(entrada, canal)),
-            Effect.map((sessao) => ({ sessao })),
-          ),
+          atualizador.canal.pipe(Effect.flatMap((canal) => conversas.iniciar(entrada, canal))),
         ),
-      "conversa.enviar": ({ sessao, texto }) => traduzir("conversa.enviar", conversas.enviar(sessao, texto)),
+      "conversa.enviar": ({ sessao, texto, fichas }) =>
+        traduzir("conversa.enviar", conversas.enviar(sessao, texto, fichas)),
       "conversa.responderAprovacao": ({ sessao, aprovacao, decisao }) =>
         traduzir("conversa.responderAprovacao", conversas.responderAprovacao(sessao, aprovacao, decisao)),
       "conversa.interromper": ({ sessao }) => traduzir("conversa.interromper", conversas.interromper(sessao)),
@@ -70,10 +70,21 @@ const layerConversa = GrupoConversa.toLayer(
       "conversa.carregar": ({ sessao }) => traduzir("conversa.carregar", conversas.carregar(sessao)),
       "conversa.acompanhar": ({ sessao, depois }) =>
         traduzirStream("conversa.acompanhar", conversas.acompanhar(sessao, depois)),
+      "conversa.marcarVista": ({ sessao }) => traduzir("conversa.marcarVista", conversas.marcarVista(sessao)),
       "conversa.avaliar": ({ sessao, turno, nota }) =>
         traduzir("conversa.avaliar", conversas.avaliar(sessao, turno, nota)),
       "conversa.previaApagar": ({ sessao }) => traduzir("conversa.previaApagar", conversas.previaApagar(sessao)),
       "conversa.apagar": ({ sessao }) => traduzir("conversa.apagar", conversas.apagar(sessao)),
+    });
+  }),
+);
+
+/** O que está rodando ou espera a pessoa (`Atividades`): a bandeja do cabeçalho. */
+const layerAtividades = GrupoAtividades.toLayer(
+  Effect.gen(function* () {
+    const atividades = yield* Atividades.Atividades;
+    return GrupoAtividades.of({
+      "atividades.acompanhar": () => traduzirStream("atividades.acompanhar", atividades.acompanhar),
     });
   }),
 );
@@ -148,6 +159,10 @@ const layerPreferencias = GrupoPreferencias.toLayer(
         traduzir("preferencias.concluirBoasVindas", preferencias.concluirBoasVindas),
       "preferencias.usarIa": ({ provider, usar }) =>
         traduzir("preferencias.usarIa", preferencias.usarIa(provider, usar)),
+      "preferencias.avisarNoSistema": ({ ligar }) =>
+        traduzir("preferencias.avisarNoSistema", preferencias.avisarNoSistema(ligar)),
+      "preferencias.guardarContinuidade": ({ continuidade }) =>
+        traduzir("preferencias.guardarContinuidade", preferencias.guardarContinuidade(continuidade)),
     });
   }),
 );
@@ -167,12 +182,13 @@ const layerAtualizacao = GrupoAtualizacao.toLayer(
 );
 
 /**
- * Os handlers dos dez grupos; pede o `Motor`, as `Conversas`, os `Relatos`, o `Diagnostico`, o `CatalogoTarefas`, o
+ * Os handlers dos onze grupos; pede o `Motor`, as `Conversas`, as `Atividades`, os `Relatos`, o `Diagnostico`, o `CatalogoTarefas`, o
  * `Atualizador`, as `Preferencias`, o `Leitura` e os serviços do módulo `revisao-ppc`.
  */
 export const layer = Layer.mergeAll(
   layerProviders,
   layerConversa,
+  layerAtividades,
   layerRelato,
   layerDiagnostico,
   layerTarefas,

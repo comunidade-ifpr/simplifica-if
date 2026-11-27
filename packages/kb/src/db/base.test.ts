@@ -451,6 +451,15 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           herdados++;
         }
         expect(herdados).toBeGreaterThan(50);
+        // o alinhamento do modo Comparar sobre o banco, pedido num sentido ou no outro
+        const alinhamento = (yield* normas.alinhamento("br/cne-cp/res/2026/2", dcn2021))!;
+        expect(yield* normas.alinhamento(dcn2021, "br/cne-cp/res/2026/2")).toEqual(alinhamento);
+        expect(alinhamento.origem).toBe(dcn2021);
+        expect(alinhamento.linhas.find((l) => l.origem.id === `${dcn2021}#art10`)?.destinos[0]?.tambem).toEqual([
+          { id: `${dcn2021}#art11`, rotulo: "Art. 11" },
+        ]);
+        expect(alinhamento.novos.length).toBeGreaterThan(0);
+        expect(yield* normas.alinhamento(dcn2021, "br/lei/1996/9394")).toBeNull();
         expect(yield* tabelasCorrespondencia()).toEqual(tabelas);
         for (const origem of new Set(tabelas.map((t) => t.origem))) {
           expect(yield* normas.tabelasDeCorrespondencia(origem)).toEqual(tabelas.filter((t) => t.origem === origem));

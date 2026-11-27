@@ -8,12 +8,10 @@ import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../../../vite.config.ts";
 import { achadosDaTela, iniciarServidorTeste, montarApp } from "../../../test/navegador.tsx";
 import { ponteTeste } from "../../../test/ponte.ts";
-import { NO_MAC } from "../../components/BuscaPainel.tsx";
+import { NO_MAC } from "../../lib/teclado.ts";
 
 let servidor: ServidorTeste;
 
-// Sem `pararServidoresTeste` no fim: ele derrubaria os servidores dos outros arquivos de teste que
-// rodam ao mesmo tempo. O `vite.config.ts` os encerra na saída.
 beforeAll(async () => {
   servidor = await iniciarServidorTeste({ atrasoLogin: 120 });
 });
@@ -38,7 +36,7 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
     mostrarNaPasta,
   });
   await page.viewport(1280, 900);
-  await using _app = await montarApp(servidor);
+  await using app = await montarApp(servidor);
 
   // O cartão da tarefa de módulo leva à entrada: a frase e a área de soltar, com o botão.
   await page.getByRole("link", { name: /^Revisar um PPC/ }).click();
@@ -77,8 +75,13 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await linha.click();
   await expect.element(page.getByText("O que fazer")).toBeVisible();
   await expect.element(page.getByText("Atendimento Educacional Especializado", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Nota Técnica PROENS/IFPR nº 1/2025" }).click();
-  await expect.element(page.getByRole("complementary", { name: "Painel de leitura" })).toBeVisible();
+  // ⌥-clique (Alt+clique) na fonte abre no outro lugar, a página do Explorar; o clique, no painel.
+  const fonte = page.getByRole("button", { name: "Nota Técnica PROENS/IFPR nº 1/2025" });
+  await fonte.click({ modifiers: ["Alt"] });
+  await expect.poll(() => app.roteador.state.location.pathname).toBe("/explorar/ver");
+  app.roteador.history.back();
+  await fonte.click();
+  await expect.element(page.getByRole("complementary", { name: "Painel ao lado" })).toBeVisible();
   // "Ver no PPC": o texto convertido do arquivo, no painel, com o trecho da pendência destacado.
   await page.getByRole("button", { name: "Ver no PPC" }).click();
   const revisado = page.getByRole("article", { name: "PPC em revisão" });
@@ -103,13 +106,14 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await userEvent.keyboard("{Escape}");
   await expect.element(busca).not.toBeInTheDocument();
   expect(CSS.highlights.has("busca")).toBe(false);
-  await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
-  // "Abrir ao lado": o texto do PPC no painel, desde o começo.
-  await page.getByRole("button", { name: "Abrir ao lado" }).click();
+  await page.getByRole("button", { name: "Fechar o painel" }).click();
+  // "Abrir o PPC ao lado", no ⋯: o texto do PPC no painel, desde o começo.
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
   await expect
     .element(page.getByRole("article", { name: "PPC em revisão" }).getByRole("heading", { name: "PPC de teste.docx" }))
     .toBeVisible();
-  await page.getByRole("button", { name: "Fechar o painel de leitura" }).click();
+  await page.getByRole("button", { name: "Fechar o painel" }).click();
   expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\/|CT-[A-Z]+-\d/);
   semIngles();
 
@@ -149,13 +153,64 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
   await expect.element(confirmacao.getByText(comentado)).toBeVisible();
   await confirmacao.getByRole("button", { name: "Cancelar" }).click();
   await expect.element(confirmacao).not.toBeInTheDocument();
+  // Com o PPC no painel, apagar o tira de lá também.
+  await page.getByRole("button", { name: "Mais ações do documento" }).click();
+  await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
+  const painelLeitura = page.getByRole("complementary", { name: "Painel ao lado" });
+  await expect.element(painelLeitura.getByRole("article", { name: "PPC em revisão" })).toBeVisible();
   await page.getByRole("button", { name: "Mais ações do documento" }).click();
   await page.getByRole("menuitem", { name: "Apagar esta revisão" }).click();
   await page.getByRole("button", { name: "Apagar a revisão" }).click();
   await expect.element(page.getByRole("button", { name: "Escolher o PPC" })).toBeVisible();
+  await expect.element(painelLeitura).not.toBeInTheDocument();
   // A revisão apagada sai das revisões recentes.
   await expect.element(page.getByRole("heading", { name: "Revisões recentes" })).not.toBeInTheDocument();
   semIngles();
+});
+
+it("Revisar um PPC: buscar na base (⌘K) abre a norma no painel, ao lado, e a revisão fica na tela", async () => {
+  window.simplifica = ponteTeste({
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    escolherDocx: async () => servidor.ppc,
+  });
+  await page.viewport(1366, 768);
+  await using app = await montarApp(servidor, "/revisao-ppc");
+  await page.getByRole("button", { name: "Escolher o PPC" }).click();
+  const frase = page.getByRole("heading", { name: /critérios que o app confere sozinho\.$/ });
+  await expect.element(frase).toBeVisible();
+
+  await userEvent.keyboard("{Control>}k{/Control}");
+  const campo = page.getByRole("combobox", { name: "Buscar na base" });
+  await expect.element(campo).toHaveFocus();
+  await campo.fill("Res. 2/2026");
+  const dialogo = page.getByRole("dialog", { name: "Buscar na base" });
+  await expect.element(dialogo.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+  // a dica diz onde Enter abre, e como abrir na tela
+  await expect.element(dialogo.getByText("↵ abre ao lado · ⇧↵ na tela")).toBeVisible();
+  semIngles();
+  await userEvent.keyboard("{Enter}");
+  await expect.element(dialogo).not.toBeInTheDocument();
+
+  // A norma no painel do app; a revisão continua na tela, na mesma rota.
+  const painel = page.getByRole("complementary", { name: "Painel ao lado" });
+  await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
+  expect(app.roteador.state.location.pathname).toBe("/revisao-ppc");
+  await expect.element(frase).toBeVisible();
+  semIngles();
+
+  // O painel é do app: sai da revisão e segue aberto no Início; volta e ele está lá.
+  await page.getByRole("link", { name: "Início", exact: true }).click();
+  await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
+  app.roteador.history.back();
+  await expect.element(frase).toBeVisible();
+  await expect.element(painel).toBeVisible();
+
+  // Shift+Enter abre na página do Explorar, como fora da revisão.
+  await userEvent.keyboard("{Control>}k{/Control}");
+  await page.getByRole("combobox", { name: "Buscar na base" }).fill("Res. CNE/CP 1/2021, art. 20");
+  await expect.element(dialogo.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+  await userEvent.keyboard("{Shift>}{Enter}{/Shift}");
+  await expect.poll(() => app.roteador.state.location.pathname).toBe("/explorar/ver");
 });
 
 it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {

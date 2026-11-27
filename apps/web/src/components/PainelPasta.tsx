@@ -1,11 +1,11 @@
 /**
- * A pasta de trabalho da conversa (M1.9): os arquivos que entraram ("Você trouxe") e os que a conversa
+ * A pasta de trabalho da conversa (M1.9), na aba Pasta do painel do app: os arquivos que entraram ("Você trouxe") e os que a conversa
  * criou ou mudou, com "Abrir" e "Mostrar na pasta" (só no app, e o processo principal só aceita
  * arquivos das pastas de tarefa), o clipe de "Anexar arquivo" e "Desfazer o que a IA fez nesta pasta", que
  * pede confirmação e diz o que vai mudar.
  */
 import { type ArquivoPasta, ehExtensaoDocumento, type PastaConversa } from "@simplifica-if/contratos-app";
-import { ExternalLinkIcon, FileIcon, FolderOpenIcon, PaperclipIcon, RotateCcwIcon, XIcon } from "lucide-react";
+import { ExternalLinkIcon, FileIcon, FolderOpenIcon, PaperclipIcon, RotateCcwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
@@ -157,14 +157,12 @@ export function PainelPasta({
   sessao,
   atualizar,
   emTurno,
-  aoFechar,
 }: {
   readonly sessao: string;
   /** Qualquer valor que, quando muda, faz a lista recarregar (o fim de um turno). */
   readonly atualizar: string;
   /** Há resposta em andamento: "Desfazer" espera ela terminar. */
   readonly emTurno: boolean;
-  readonly aoFechar: () => void;
 }) {
   const api = useApi();
   const [vista, setVista] = useState<PastaConversa>();
@@ -215,99 +213,87 @@ export function PainelPasta({
   };
 
   return (
-    <aside
-      aria-label="Pasta da tarefa"
-      className="flex h-full w-full flex-col border-border border-l bg-card text-card-foreground"
-    >
-      <header className="flex items-center gap-2 border-border border-b px-3 py-2">
-        <FolderOpenIcon aria-hidden className="size-4 text-muted-foreground" />
-        <p className="min-w-0 flex-1 truncate font-semibold text-sm">Pasta da tarefa</p>
-        <Button variant="ghost" size="icon-sm" aria-label="Fechar a pasta da tarefa" onClick={aoFechar}>
-          <XIcon />
-        </Button>
-      </header>
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-3">
-        {erro === undefined ? null : <AvisoErro erro={erro} />}
-        {vista === undefined ? (
-          erro === undefined ? (
-            <p className="flex items-center gap-2 text-muted-foreground text-sm">
-              <Spinner size="sm" /> Lendo a pasta…
-            </p>
-          ) : null
-        ) : !vista.gerida ? (
-          <p className="text-muted-foreground text-sm">
-            Esta conversa usa uma pasta escolhida à mão ({nomeDoArquivo(vista.pasta)}). A lista de arquivos e o
-            "Desfazer" ficam nas pastas das tarefas.
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-3">
+      {erro === undefined ? null : <AvisoErro erro={erro} />}
+      {vista === undefined ? (
+        erro === undefined ? (
+          <p className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Spinner size="sm" /> Lendo a pasta…
           </p>
-        ) : (
-          <>
-            <p className="text-muted-foreground text-small">{ondeFica(vista.pasta)}</p>
-            {vista.arquivos.length === 0 ? <p className="text-muted-foreground text-sm">A pasta está vazia.</p> : null}
-            <ListaArquivos
-              titulo="Você trouxe"
-              arquivos={vista.arquivos.filter((arquivo) => arquivo.origem === "anexado")}
-              aoFalhar={setErro}
+        ) : null
+      ) : !vista.gerida ? (
+        <p className="text-muted-foreground text-sm">
+          Esta conversa usa uma pasta escolhida à mão ({nomeDoArquivo(vista.pasta)}). A lista de arquivos e o "Desfazer"
+          ficam nas pastas das tarefas.
+        </p>
+      ) : (
+        <>
+          <p className="text-muted-foreground text-small">{ondeFica(vista.pasta)}</p>
+          {vista.arquivos.length === 0 ? <p className="text-muted-foreground text-sm">A pasta está vazia.</p> : null}
+          <ListaArquivos
+            titulo="Você trouxe"
+            arquivos={vista.arquivos.filter((arquivo) => arquivo.origem === "anexado")}
+            aoFalhar={setErro}
+          />
+          <ListaArquivos
+            titulo="Criados ou mudados na conversa"
+            arquivos={vista.arquivos.filter((arquivo) => arquivo.origem === "pasta")}
+            aoFalhar={setErro}
+          />
+          {anexar === undefined ? null : (
+            <div>
+              <Button
+                variant="ghost"
+                size="icon-sm-pill"
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Anexar arquivo"
+                title="Anexar arquivo"
+                onClick={() => void anexarMais()}
+              >
+                <PaperclipIcon aria-hidden />
+              </Button>
+            </div>
+          )}
+          {desfeito ? (
+            <p role="status" className="text-sm">
+              Pronto: a pasta voltou ao que era antes da mensagem.
+            </p>
+          ) : null}
+          {vista.desfazer.aviso === undefined ? null : (
+            <Alert variant="warning">
+              <AlertTitle>Sem cópia da última mensagem</AlertTitle>
+              <AlertDescription>{vista.desfazer.aviso}</AlertDescription>
+            </Alert>
+          )}
+          {!vista.desfazer.disponivel ? null : confirmando ? (
+            <ConfirmarDesfazer
+              vista={vista}
+              ocupado={ocupado}
+              aoConfirmar={(incluir) => void desfazer(incluir)}
+              aoCancelar={() => setConfirmando(false)}
             />
-            <ListaArquivos
-              titulo="Criados ou mudados na conversa"
-              arquivos={vista.arquivos.filter((arquivo) => arquivo.origem === "pasta")}
-              aoFalhar={setErro}
-            />
-            {anexar === undefined ? null : (
+          ) : (
+            <div className="flex flex-col gap-1">
               <div>
                 <Button
-                  variant="ghost"
-                  size="icon-sm-pill"
-                  className="text-muted-foreground hover:text-foreground"
-                  aria-label="Anexar arquivo"
-                  title="Anexar arquivo"
-                  onClick={() => void anexarMais()}
+                  variant="outline"
+                  size="sm"
+                  disabled={emTurno}
+                  onClick={() => {
+                    setDesfeito(false);
+                    setConfirmando(true);
+                  }}
                 >
-                  <PaperclipIcon aria-hidden />
+                  <RotateCcwIcon /> Desfazer o que a IA fez nesta pasta
                 </Button>
               </div>
-            )}
-            {desfeito ? (
-              <p role="status" className="text-sm">
-                Pronto: a pasta voltou ao que era antes da mensagem.
-              </p>
-            ) : null}
-            {vista.desfazer.aviso === undefined ? null : (
-              <Alert variant="warning">
-                <AlertTitle>Sem cópia da última mensagem</AlertTitle>
-                <AlertDescription>{vista.desfazer.aviso}</AlertDescription>
-              </Alert>
-            )}
-            {!vista.desfazer.disponivel ? null : confirmando ? (
-              <ConfirmarDesfazer
-                vista={vista}
-                ocupado={ocupado}
-                aoConfirmar={(incluir) => void desfazer(incluir)}
-                aoCancelar={() => setConfirmando(false)}
-              />
-            ) : (
-              <div className="flex flex-col gap-1">
-                <div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={emTurno}
-                    onClick={() => {
-                      setDesfeito(false);
-                      setConfirmando(true);
-                    }}
-                  >
-                    <RotateCcwIcon /> Desfazer o que a IA fez nesta pasta
-                  </Button>
-                </div>
-                {emTurno ? (
-                  <p className="text-muted-foreground text-small">Espere a resposta terminar para desfazer.</p>
-                ) : null}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </aside>
+              {emTurno ? (
+                <p className="text-muted-foreground text-small">Espere a resposta terminar para desfazer.</p>
+              ) : null}
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }

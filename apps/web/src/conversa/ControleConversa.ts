@@ -1,27 +1,39 @@
 /**
- * A conversa corrente: as ações da pessoa (iniciar, enviar, responder, interromper, nova) viram
- * chamadas ao servidor pela `Api`, e cada item da conversa vira uma ação de `reduzir`. Fica fora do React,
- * para que a conversa sobreviva à troca de tela e para que os testes a usem sem navegador; a interface lê
- * o estado com `useSyncExternalStore` (`obter` e `observar`).
+ * Uma conversa: as ações da pessoa (iniciar, enviar, responder, interromper) viram chamadas ao servidor
+ * pela `Api`, e cada item da conversa vira uma ação de `reduzir`. Fica fora do React, para que a conversa
+ * sobreviva à troca de tela e para que os testes a usem sem navegador; a interface lê o estado com
+ * `useSyncExternalStore` (`obter` e `observar`). Quem guarda os controles, um por conversa, é o
+ * `GerenteConversas`: a tela da conversa e o painel do app pegam o seu, e a mesma conversa nos dois é o
+ * mesmo controle.
  *
- * Uma conversa por vez, seguida por um `conversa.acompanhar` só, aberto enquanto ela é a corrente: os
- * turnos (os desta tela e os de outra), o texto parcial e o estado que o servidor diz. `enviar` só pede ao
+ * A conversa é seguida por um `conversa.acompanhar` só, aberto enquanto alguém a mostra (`parar` o
+ * fecha, sem encerrar a sessão do provider, que se libera ociosa no servidor): os turnos (os desta tela e
+ * os de outra), o texto parcial e o estado que o servidor diz. `enviar` só pede ao
  * servidor que abra o turno; a resposta chega por esse acompanhamento. Se a conexão cai, a interface volta
  * a acompanhar da última `ordem` que viu (o turno segue no servidor); a resposta aberta se refaz pelo texto
  * parcial acumulado. As conversas ficam gravadas no servidor (M1.2): `abrir` carrega uma pelo id
  * (`conversa.carregar`) e passa a acompanhá-la. A sessão do provider é do servidor: liberada ociosa e
  * reaberta por retomada na próxima mensagem, sem nada a fazer aqui.
+ *
+ * A mensagem leva as fichas de contexto que a pessoa deixou (`enviar`); se o servidor a recusa porque o
+ * aviso de uso não foi aceito, ela sai da tela sem aviso na conversa, e quem enviou devolve o texto e as
+ * fichas à caixa (`ResultadoEnvio`).
  */
-import type { Decisao, NotaResposta, Provider } from "@simplifica-if/contratos-app";
+import type { Continuacao, Decisao, FichaContexto, NotaResposta, Provider } from "@simplifica-if/contratos-app";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import type { Acompanhamento, Api } from "../conexao/api.ts";
-import { explicarErro } from "../conexao/erros.ts";
+import { ehQuedaDaConexao, ehSessaoDesconhecida, explicarErro } from "../conexao/erros.ts";
 import { type Acao, type EstadoConversa, estadoInicial, type FaseConversa, reduzir } from "./estado.ts";
 
-/** A conexão com o servidor caiu no meio do stream (o `RpcClientError` do cliente `effect/rpc`). */
-const ehQuedaDaConexao = (erro: unknown): boolean =>
-  typeof erro === "object" && erro !== null && (erro as { _tag?: unknown })._tag === "RpcClientError";
+/** O erro de `abrir` de uma conversa que o servidor não conhece (apagada). */
+export const CONVERSA_INEXISTENTE = "Esta conversa não existe mais no app.";
 
+/** O servidor recusou porque o aviso de uso não foi aceito (M1.8). */
+export const ehAvisoNaoAceito = (erro: unknown): boolean =>
+  typeof erro === "object" && erro !== null && (erro as { _tag?: unknown })._tag === "AvisoNaoAceito";
+
+/** Como terminou o pedido de envio: aberto o turno, recusado pelo aviso de uso, ou outra falha (na conversa). */
+export type ResultadoEnvio = "enviada" | "avisoNaoAceito" | "falhou";
 export class ControleConversa {
   private estado: EstadoConversa;
   private readonly observadores = new Set<() => void>();
@@ -32,10 +44,29 @@ export class ControleConversa {
   /** Quedas seguidas sem nenhum item recebido: da segunda em diante, espera a conexão voltar. */
   private quedasSeguidas = 0;
   private readonly api: Api;
+  private readonly aoIniciar: ((sessao: string) => void) | undefined;
+  private readonly aoTerminar: ((sessao: string) => void) | undefined;
+  /** A carga da conversa aberta por `abrir`. */
+  private carregamento: Promise<void> | undefined;
+  /** Ninguém mais o mostra (`parar`): a carga que chega depois não volta a acompanhar. */
+  private parado = false;
 
-  constructor(api: Api) {
+  /**
+   * `aoIniciar`: a conversa que este controle começou (`comecarTarefa`) ganhou o id. `aoTerminar`: o
+   * acompanhamento terminou sozinho, porque a conversa foi apagada (em outra janela, ou por outra conexão).
+   */
+  constructor(
+    api: Api,
+    opcoes: {
+      readonly provider?: Provider;
+      readonly aoIniciar?: (sessao: string) => void;
+      readonly aoTerminar?: (sessao: string) => void;
+    } = {},
+  ) {
     this.api = api;
-    this.estado = estadoInicial();
+    this.estado = estadoInicial(opcoes.provider);
+    this.aoIniciar = opcoes.aoIniciar;
+    this.aoTerminar = opcoes.aoTerminar;
   }
 
   readonly obter = (): EstadoConversa => this.estado;
@@ -60,6 +91,7 @@ export class ControleConversa {
    * acompanhar de onde parou: na hora, na primeira; depois, quando a conexão voltar.
    */
   private seguir(sessao: string): void {
+    if (this.parado) return;
     const acompanhamento = this.api.acompanhar(
       (cliente) => cliente["conversa.acompanhar"]({ sessao, depois: this.estado.ordem }),
       (item) => {
@@ -70,9 +102,13 @@ export class ControleConversa {
     );
     this.acompanhamento = acompanhamento;
     acompanhamento.fim.then(
-      () => {
-        // Só termina quando a conversa é apagada.
-        if (this.acompanhamento === acompanhamento) this.acompanhamento = undefined;
+      (fim) => {
+        if (this.acompanhamento !== acompanhamento) return;
+        this.acompanhamento = undefined;
+        // O servidor só encerra o fluxo quando a conversa é apagada: quem a mostra diz que ela não existe mais.
+        if (fim !== "concluido" || this.parado || this.estado.sessao !== sessao) return;
+        this.despachar({ tipo: "naoCarregou", erro: { texto: CONVERSA_INEXISTENTE } });
+        this.aoTerminar?.(sessao);
       },
       (erro: unknown) => {
         if (this.acompanhamento !== acompanhamento) return;
@@ -101,6 +137,15 @@ export class ControleConversa {
     this.pararEspera = parar;
   }
 
+  /**
+   * Deixa de acompanhar a conversa de vez (ninguém mais a mostra): nem a carga em curso volta a acompanhar.
+   * A sessão do provider fica no servidor.
+   */
+  parar(): void {
+    this.parado = true;
+    this.soltar();
+  }
+
   /** Deixa de acompanhar a conversa corrente. */
   private soltar(): void {
     this.acompanhamento?.cancelar();
@@ -108,10 +153,6 @@ export class ControleConversa {
     this.pararEspera?.();
     this.pararEspera = undefined;
     this.quedasSeguidas = 0;
-  }
-
-  escolher(provider: Provider): void {
-    this.despachar({ tipo: "escolher", provider });
   }
 
   /**
@@ -143,8 +184,9 @@ export class ControleConversa {
         throw new Error("A conversa foi trocada antes de abrir.");
       }
       this.despachar({ tipo: "iniciada", sessao, ...(tarefa.tarefa === undefined ? {} : { tarefa: tarefa.tarefa }) });
+      this.aoIniciar?.(sessao);
       this.seguir(sessao);
-      this.enviar(tarefa.pedido);
+      void this.enviar(tarefa.pedido);
       return sessao;
     } catch (erro) {
       const mensagem = explicarErro(erro);
@@ -173,14 +215,24 @@ export class ControleConversa {
    * Abre a conversa gravada `sessao`: o histórico e, daí em diante, a conversa ao vivo (o resto do turno em
    * andamento, se há). Não faz nada se ela já é a conversa corrente.
    */
-  async abrir(sessao: string): Promise<void> {
-    if (this.estado.sessao === sessao && this.estado.fase !== "configurando") return;
+  abrir(sessao: string): Promise<void> {
+    if (this.estado.sessao === sessao && this.estado.fase !== "configurando") return this.aposAbrir();
+    this.carregamento = this.carregar(sessao);
+    return this.carregamento;
+  }
+
+  /** Espera a conversa aberta por `abrir` chegar (ou falhar). */
+  aposAbrir(): Promise<void> {
+    return this.carregamento ?? Promise.resolve();
+  }
+
+  private async carregar(sessao: string): Promise<void> {
     this.soltar();
     this.despachar({ tipo: "abrindo", sessao });
     try {
       const gravada = await this.api.chamar((cliente) => cliente["conversa.carregar"]({ sessao }));
-      // A pessoa pode ter aberto outra (ou começado uma nova) enquanto esta carregava.
-      if (this.estado.sessao !== sessao || this.fase() !== "carregando") return;
+      // A pessoa pode ter aberto outra (ou começado uma nova) enquanto esta carregava, ou ninguém mais a mostra.
+      if (this.parado || this.estado.sessao !== sessao || this.fase() !== "carregando") return;
       this.despachar({ tipo: "carregada", gravada });
       this.seguir(sessao);
     } catch (erro) {
@@ -188,29 +240,33 @@ export class ControleConversa {
       const mensagem = explicarErro(erro);
       this.despachar({
         tipo: "naoCarregou",
-        erro:
-          (erro as { _tag?: unknown } | null)?._tag === "SessaoDesconhecida"
-            ? { texto: "Esta conversa não existe mais no app." }
-            : mensagem,
+        erro: ehSessaoDesconhecida(erro) ? { texto: CONVERSA_INEXISTENTE } : mensagem,
       });
     }
   }
 
   /**
-   * Envia a mensagem: ela aparece já (pendente), e o servidor abre o turno; a resposta chega pelo
-   * acompanhamento da conversa. Se o servidor recusar, a mensagem sai e o erro aparece.
+   * Envia a mensagem, com as fichas de contexto: ela aparece já (pendente), e o servidor abre o turno; a
+   * resposta chega pelo acompanhamento da conversa. Se o servidor recusar, a mensagem sai e o erro aparece
+   * na conversa; se a recusa é o aviso de uso, só sai, e quem enviou mostra o aviso.
    */
-  enviar(texto: string): void {
+  async enviar(texto: string, fichas: ReadonlyArray<FichaContexto> = []): Promise<ResultadoEnvio> {
     const sessao = this.estado.sessao;
     const limpo = texto.trim();
-    if (sessao === undefined || this.estado.fase !== "pronta" || limpo.length === 0) return;
-    this.despachar({ tipo: "enviada", texto: limpo });
+    if (sessao === undefined || this.estado.fase !== "pronta" || limpo.length === 0) return "falhou";
+    this.despachar({ tipo: "enviada", texto: limpo, fichas });
     if (this.acompanhamento === undefined && this.pararEspera === undefined) this.seguir(sessao);
-    this.api
-      .chamar((cliente) => cliente["conversa.enviar"]({ sessao, texto: limpo }))
-      .catch((erro: unknown) => {
-        if (this.estado.sessao === sessao) this.despachar({ tipo: "naoEnviou", erro: explicarErro(erro) });
-      });
+    try {
+      await this.api.chamar((cliente) =>
+        cliente["conversa.enviar"]({ sessao, texto: limpo, ...(fichas.length === 0 ? {} : { fichas: [...fichas] }) }),
+      );
+      return "enviada";
+    } catch (erro) {
+      const aviso = ehAvisoNaoAceito(erro);
+      if (this.estado.sessao === sessao)
+        this.despachar({ tipo: "naoEnviou", ...(aviso ? {} : { erro: explicarErro(erro) }) });
+      return aviso ? "avisoNaoAceito" : "falhou";
+    }
   }
 
   async responder(aprovacao: string, decisao: Decisao): Promise<void> {
@@ -238,24 +294,38 @@ export class ControleConversa {
   }
 
   /**
-   * Volta à escolha, com o mesmo provider e pasta. A conversa anterior fica gravada; sem turno em
-   * andamento, a sessão dela se libera já (o processo do provider morre) e se retoma quando ela for
-   * aberta de novo. Com turno em andamento, ele termina no servidor e fica no histórico.
+   * A tela mostrou a conversa: a resposta que terminou deixa de ser "resposta pronta" na bandeja. Sem efeito
+   * na tela; a falha (a conexão caiu) só deixa a marca para a próxima vez.
    */
-  nova(): void {
+  async marcarVista(): Promise<void> {
     const sessao = this.estado.sessao;
-    const emTurno = this.estado.fase === "respondendo" || this.estado.fase === "interrompendo";
-    this.soltar();
-    this.despachar({ tipo: "nova" });
-    if (sessao !== undefined && !emTurno) void this.encerrarNoServidor(sessao);
+    if (sessao === undefined) return;
+    try {
+      await this.api.chamar((cliente) => cliente["conversa.marcarVista"]({ sessao }));
+    } catch {
+      // A bandeja continua com a resposta pronta até a próxima vez que a conversa aparecer.
+    }
   }
 
   /**
-   * A conversa `sessao` foi apagada: se é a corrente, a tela volta ao começo, sem pedir ao servidor que
-   * a encerre (ela não existe mais).
+   * Continua a conversa com outra IA (`docs/plans/multitarefa.md`, "Limite da assinatura"): a nova, na mesma
+   * pasta, e o que vai à caixa dela (o histórico, as fichas da última mensagem e a última pergunta). Esta
+   * passa a dizer com que IA continuou.
    */
-  apagada(sessao: string): void {
-    if (this.estado.sessao !== sessao) return;
+  async continuarCom(
+    provider: Provider,
+  ): Promise<{ readonly sessao: string; readonly continuacao: Continuacao | undefined }> {
+    const sessao = this.estado.sessao;
+    if (sessao === undefined) throw new Error("A conversa ainda não abriu.");
+    const nova = await this.api.chamar((cliente) =>
+      cliente["conversa.iniciar"]({ provider, pastaTrabalho: this.estado.pastaTrabalho, continuaDe: sessao }),
+    );
+    if (this.estado.sessao === sessao) this.despachar({ tipo: "continuada", id: nova.sessao, provider });
+    return { sessao: nova.sessao, continuacao: nova.continuacao };
+  }
+
+  /** A conversa foi apagada: deixa de acompanhá-la e volta ao começo (ela não existe mais no servidor). */
+  apagada(): void {
     this.soltar();
     this.despachar({ tipo: "nova" });
   }

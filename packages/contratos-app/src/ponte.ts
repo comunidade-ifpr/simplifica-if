@@ -152,11 +152,14 @@ export interface PonteDesktop {
    */
   soltarDocx(arquivo: File): Promise<string | null>;
   /**
-   * Abre no programa padrão (o Word) a cópia comentada de um `.docx` escolhido por `escolherDocx`;
-   * outro arquivo é recusado.
+   * Abre no programa padrão (o Word) a cópia comentada de um `.docx` escolhido por `escolherDocx`, ou o
+   * próprio `.docx` escolhido nesta execução (o que a revisão acompanha no Word); outro arquivo é recusado.
    */
   abrirDocumento(caminho: string): Promise<void>;
-  /** Mostra a cópia comentada na pasta (Finder, Explorador); mesma regra de `abrirDocumento`. */
+  /**
+   * Mostra na pasta (Finder, Explorador) só a cópia comentada de um `.docx` escolhido por `escolherDocx`,
+   * e não o `.docx` acompanhado que `abrirDocumento` também aceita.
+   */
   mostrarNaPasta(caminho: string): Promise<void>;
   /**
    * O diálogo de arquivo para anexar à tarefa (M1.9), filtrado por `extensoes` (só documentos; ver
@@ -198,10 +201,26 @@ export interface PonteDesktop {
   janela: JanelaDesktop;
 }
 
+/** O que uma janela do desktop faz da continuidade (`JanelaDesktop.continuidade`). */
+export type ContinuidadeDaJanela = "completa" | "so-grava" | "nenhuma";
+
 /** O que a interface precisa saber da janela para desenhar a barra de título. */
 export interface JanelaDesktop {
   /** `process.platform`: no `darwin`, os semáforos à esquerda; nos outros, os botões à direita. */
   readonly plataforma: string;
+  /**
+   * O que a janela faz da continuidade (`apps/desktop/src/janelas.ts`): `completa`, a principal aberta com o
+   * app, grava e volta; `so-grava`, a aberta por "Abrir em nova janela" quando não havia principal, passa a
+   * ser a principal e grava, sem voltar (abre na rota pedida); `nenhuma`, as outras de "Abrir em nova
+   * janela", não gravam nem voltam.
+   */
+  readonly continuidade: ContinuidadeDaJanela;
+  /**
+   * Abre uma janela nova do app na `rota` (`/…`, no formato da rota guardada na continuidade, sem o
+   * `compacto=1`): "Abrir em nova janela", ⇧⌘-clique (Ctrl+Shift+clique). Cada janela tem a sua conexão com o
+   * servidor. A rota de outra origem é recusada.
+   */
+  abrirJanela(rota: string): Promise<void>;
   /** Se a janela está em tela cheia agora (no macOS, os semáforos somem). */
   telaCheia(): Promise<boolean>;
   /** Avisa quando a janela entra ou sai da tela cheia; devolve a função que para de avisar. */
@@ -211,7 +230,48 @@ export interface JanelaDesktop {
    * (Windows e Linux) seguem a escolha, e não o tema do sistema.
    */
   temaDoApp(tema: TemaDoApp): Promise<void>;
+  /**
+   * Avisa quando a pessoa escolhe um atalho no menu (Arquivo: Abrir em nova janela; Ver: Buscar na base,
+   * Mostrar ou esconder o painel, Perguntar à IA), ou
+   * quando a tecla dele chega ao menu (no macOS, a que a interface não tratou; `apps/desktop/src/menu.ts`).
+   * Devolve a função que para de avisar.
+   */
+  aoAtalhoDoMenu(ouvinte: (atalho: AtalhoMenu) => void): () => void;
+  /**
+   * O aviso do sistema (`docs/plans/multitarefa.md`, "Em andamento"): "Uma resposta está pronta" ou "A IA
+   * pede uma permissão", sem nada da conversa; o processo principal só o mostra com as janelas sem foco
+   * (todas pedem; vale o pedido da última usada), e o clique traz a janela que mostra a rota, ou a última
+   * usada, e manda a rota a ela (`aoAbrirRota`).
+   */
+  avisar(aviso: AvisoSistema): Promise<void>;
+  /** O selo com a contagem do que espera a pessoa (no macOS, no Dock; 0 tira). */
+  selo(contagem: number): Promise<void>;
+  /** Avisa quando o clique num aviso do sistema pede uma rota; devolve a função que para de avisar. */
+  aoAbrirRota(ouvinte: (rota: string) => void): () => void;
+  /**
+   * O modo compacto (`docs/plans/multitarefa.md`, "Modo compacto ao lado do Word"): ligado, a janela vira
+   * uma coluna de uns 380 px encostada à direita da tela, com a altura toda e sempre por cima; desligado,
+   * volta às medidas de antes. A página que recarrega volta com a janela fora do modo. Devolve se o modo
+   * ficou ligado: não liga com a janela que não saiu da tela cheia a tempo.
+   */
+  compacta(ligar: boolean): Promise<boolean>;
+  /** O alfinete do modo compacto: solta (`false`) ou prende (`true`) o "sempre por cima". */
+  naFrente(sempre: boolean): Promise<void>;
+  /**
+   * O app vai fechar (sair do app ou fechar a janela): o processo principal espera `gravar` (a continuidade,
+   * onde a pessoa estava) terminar, por no máximo 1 s, antes de fechar. Devolve a função que para de ouvir.
+   */
+  antesDeSair(gravar: () => Promise<void>): () => void;
 }
+
+/** O aviso do sistema: a resposta pronta ou o pedido de permissão, e a rota da conversa (ou da revisão). */
+export interface AvisoSistema {
+  readonly tipo: "resposta" | "permissao";
+  readonly rota: string;
+}
+
+/** Os atalhos do menu que a interface atende. */
+export type AtalhoMenu = "buscar" | "painel" | "conversar" | "novaJanela";
 
 /** A escolha de tema da interface (`apps/web/src/tema.ts`). */
 export type TemaDoApp = "sistema" | "claro" | "escuro";
@@ -239,4 +299,16 @@ export const CANAIS = {
   temaDoApp: "simplifica:tema-do-app",
   /** Do processo principal para a janela: entrou (`true`) ou saiu (`false`) da tela cheia. */
   telaCheiaMudou: "simplifica:tela-cheia-mudou",
+  /** Do processo principal para a janela: um atalho escolhido no menu (`AtalhoMenu`). */
+  atalhoDoMenu: "simplifica:atalho-do-menu",
+  avisar: "simplifica:avisar",
+  selo: "simplifica:selo",
+  /** Do processo principal para a janela: o clique num aviso do sistema pede esta rota. */
+  abrirRota: "simplifica:abrir-rota",
+  janelaCompacta: "simplifica:janela-compacta",
+  janelaNaFrente: "simplifica:janela-na-frente",
+  abrirJanela: "simplifica:abrir-janela",
+  /** Do processo principal para a janela: o app vai fechar; a janela grava e responde em `prontoParaSair`. */
+  antesDeSair: "simplifica:antes-de-sair",
+  prontoParaSair: "simplifica:pronto-para-sair",
 } as const;

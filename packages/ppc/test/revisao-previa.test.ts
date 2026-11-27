@@ -13,15 +13,20 @@ import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { dataReferencia } from "@simplifica-if/kb/normas/vigencia";
 import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 import {
+  chavePendencia,
   type EtapaRevisaoPrevia,
   revisarDocx as revisarSemConferir,
+  revisarDocxSemComentar,
   rotuloDispositivo,
   linhaDasFaltas,
   textoDaPendencia,
   textoDoComentario,
   tituloEExplicacao,
 } from "../src/revisao-previa.ts";
+import { par, run } from "@simplifica-if/docx/testes/sintetico";
+import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { citacaoDoId } from "../src/verificadores/comum.ts";
+import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
 /** Toda cópia comentada passa pelo validador estrutural: o Word tem de abri-la sem reparo. */
@@ -256,6 +261,39 @@ describe("revisarDocx", () => {
         .sort(),
     ).toEqual(["CT-CURR-02", "CT-CURR-16", "CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"]);
     expect(semCnct.pendencias.filter((p) => !p.dependeDoCurso).length).toBeGreaterThan(0);
+  });
+
+  test("a cópia comentada converte no mesmo Markdown do original e tem as mesmas pendências (conferência ao salvar)", () => {
+    // O comentário que começa no meio de um run em negrito o divide em três, com o run da referência no
+    // meio: o Markdown junta os pedaços (`**…**` uma vez só).
+    const partido = par(run("Também segue a Resolução CNE/CEB nº 6/2012, revogada, e a LDB.", { negrito: true }));
+    const casos: Array<[string, Uint8Array]> = [
+      ["sintético", ppcSintetico()],
+      ["controle de alterações", ppcSintetico({ controleDeAlteracoes: true })],
+      ["caixa de texto", ppcSintetico({ caixaDeTexto: "atual" })],
+      ["negrito partido", ppcSintetico({ corpoExtra: partido })],
+      ...FIXTURES.map((f): [string, Uint8Array] => [f.nome, docxDaFixture(f.nome)]),
+    ];
+    for (const [nome, original] of casos) {
+      // Sem o validador estrutural: há fixtures de conversão com OOXML malformado de propósito.
+      const copia = revisarSemConferir(original, "ppc.docx", base, { agora: AGORA }).docx;
+      const antes = converterPpc(original, "ppc.docx");
+      const depois = converterPpc(copia, "ppc.docx");
+      expect(depois.markdown, nome).toBe(antes.markdown);
+      expect(depois.markdownBruto, nome).toBe(antes.markdownBruto);
+      const chaves = (docx: Uint8Array) =>
+        revisarDocxSemComentar(docx, "ppc.docx", base, { agora: AGORA }).pendencias.map(chavePendencia);
+      expect(chaves(copia), nome).toEqual(chaves(original));
+    }
+    const { documento } = partes(
+      revisarDocx(ppcSintetico({ corpoExtra: partido }), "ppc.docx", base, { agora: AGORA }).docx,
+    );
+    expect(documento).toContain(
+      '<w:commentRangeStart w:id="1"/><w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">Resolução CNE/CEB nº 6/2012</w:t></w:r>',
+    );
+    expect(converterPpc(ppcSintetico({ corpoExtra: partido }), "ppc.docx").markdown).toContain(
+      "**Também segue a Resolução CNE/CEB nº 6/2012, revogada, e a LDB.**",
+    );
   });
 });
 

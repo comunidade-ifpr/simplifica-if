@@ -13,11 +13,13 @@
  * Cada operação roda sobre o banco em que tem dados.
  */
 import { afterEach, assert, describe, expect, it } from "@effect/vitest";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Logger from "effect/Logger";
 import type * as Schema from "effect/Schema";
 import { RpcTest } from "effect/rpc";
+import * as TestClock from "effect/testing/TestClock";
 import { ehEntradaInvalida, ehFalhaNaBase, type ErroDeLeitura, FalhaNaBase } from "../src/contratos.ts";
 import { fichaCurso } from "../src/ferramentas/ficha-curso.ts";
 import { fichaNorma } from "../src/ferramentas/ficha-norma.ts";
@@ -298,6 +300,78 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         expect(ehEntradaInvalida(falha), link).toBe(true);
         expect(falha.message, link).toMatch(mensagem);
       }
+    }),
+  );
+});
+
+describe("GrupoLeitura: compararNormas (o modo Comparar)", () => {
+  it.effect("as duas normas lado a lado pela tabela, em qualquer ordem, com a diferença de cada par", () =>
+    Effect.gen(function* () {
+      const banco = bancoNormas();
+      const { dados } = yield* viaRpc(banco, (c) => c.compararNormas({ a: DCN_2026, b: DCN_2021 }));
+      expect(dados.tabela.status).toBe("rascunho");
+      // a origem da tabela fica à esquerda, mesmo pedida como `b`
+      expect(dados.origem).toMatchObject({
+        id: DCN_2021,
+        status_vigencia: "revogada",
+        link: `ifpr://norma/${DCN_2021}`,
+      });
+      expect(dados.destino).toMatchObject({ id: DCN_2026, titulo: "Resolução CNE/CP nº 2/2026" });
+      expect(dados.linhas.map((l) => l.origem.rotulo).slice(-4)).toEqual([
+        "Art. 20",
+        "Art. 20, I",
+        "Art. 20, II",
+        "Art. 63",
+      ]);
+      const [art20, inciso1, inciso2, art63] = dados.linhas.slice(-4);
+      // N→1: o art. 22 é destino do art. 1º e do art. 20
+      expect(art20!.destinos[0]).toMatchObject({
+        rotulo: "Art. 22",
+        tambem: [{ id: `${DCN_2021}#art1`, rotulo: "Art. 1" }],
+      });
+      expect(art20!.destinos[0]!.subordinados).toEqual([{ tipo: "inciso", quantos: 1 }]);
+      expect(inciso1!.destinos[0]!.link).toBe(`ifpr://norma/${DCN_2026}#art22-v`);
+      // o texto vai sem o rótulo; com 7 de 11 palavras mudadas, o par vai inteiro, sem grifo
+      expect(inciso1!.reescrito).toBe(true);
+      expect(inciso1!.origem.trechos).toEqual([{ texto: "a matriz tecnológica do eixo;", mudou: false }]);
+      // a linha herdada compara com o destino do ancestral, não com um par seu: inteira, sem diferença
+      expect(inciso2).toMatchObject({
+        herdado_de: { id: `${DCN_2021}#art20`, rotulo: "Art. 20" },
+        identicos: false,
+        reescrito: false,
+      });
+      expect(inciso2!.destinos[0]!.trechos.every((t) => !t.mudou)).toBe(true);
+      expect(art63).toMatchObject({ tipo: "sem-equivalente", destinos: [], identicos: false, reescrito: false });
+      expect(art63!.origem.trechos).toEqual([
+        { texto: "Os processos em tramitação podem ser adequados a esta Resolução.", mudou: false },
+      ]);
+      // novos: os artigos da 2026 que nenhum item aponta
+      expect(dados.novos.map((n) => n.rotulo)).toEqual(["Art. 36", "Art. 71", "Art. 74"]);
+      expect(dados.novos[1]!.subordinados).toEqual([{ tipo: "paragrafo", quantos: 1 }]);
+    }),
+  );
+
+  it.effect("a vigência de cada norma no dia da consulta, não a da data de referência", () =>
+    Effect.gen(function* () {
+      yield* TestClock.setTime(Date.parse("2026-06-01T12:00:00"));
+      const comparar = Effect.flatMap(Leitura, (l) => l.compararNormas({ a: DCN_2021, b: DCN_2026 }));
+      const leitura = layerLeitura({ banco: bancoNormas(), canal: "dev" });
+      const { dados } = yield* Effect.provide(
+        comparar,
+        leitura.pipe(Layer.provide(FontesNormativas.layerVigenciaHoje)),
+      );
+      expect(dados.origem.status_vigencia).toBe("vigente");
+      expect(dados.destino.status_vigencia).toBe("ainda-nao-vigente");
+    }),
+  );
+
+  it.effect("sem tabela entre as duas: EntradaInvalida em português", () =>
+    Effect.gen(function* () {
+      const falha = yield* Effect.flip(
+        viaRpc(bancoNormas(), (c) => c.compararNormas({ a: DCN_2021, b: "br/lei/1996/9394" })),
+      );
+      expect(ehEntradaInvalida(falha)).toBe(true);
+      expect(falha.message).toMatch(/^não há tabela de correspondência entre/);
     }),
   );
 });

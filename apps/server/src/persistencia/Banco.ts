@@ -22,6 +22,9 @@ import * as Migrator from "effect/sql/Migrator";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import Migracao0001 from "./migracoes/0001_Inicial.ts";
 import Migracao0002 from "./migracoes/0002_ProblemasDasTentativas.ts";
+import Migracao0003 from "./migracoes/0003_ArquivoAcompanhado.ts";
+import Migracao0004 from "./migracoes/0004_ConversaAoLado.ts";
+import Migracao0005 from "./migracoes/0005_AtividadesEContinuacao.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -36,6 +39,9 @@ export type EntradaMigracao = readonly [
 export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [
   [1, "Inicial", Migracao0001],
   [2, "ProblemasDasTentativas", Migracao0002],
+  [3, "ArquivoAcompanhado", Migracao0003],
+  [4, "ConversaAoLado", Migracao0004],
+  [5, "AtividadesEContinuacao", Migracao0005],
 ];
 
 const loader = Migrator.fromRecord(

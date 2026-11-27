@@ -29,6 +29,7 @@ const norma = (n: Partial<NormaDoIndice> & Pick<NormaDoIndice, "id" | "titulo">)
   status_vigencia: "vigente",
   ementa: null,
   apelidos: [],
+  comparar_com: [],
   link: `ifpr://norma/${n.id}`,
   ...n,
 });

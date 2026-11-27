@@ -10,8 +10,9 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterAll, assert, layer } from "@effect/vitest";
+import { afterAll, assert, it, layer } from "@effect/vitest";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
@@ -33,6 +34,8 @@ import { chavePendencia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as Banco from "../../../src/persistencia/Banco.ts";
 import * as RevisoesPpc from "../../../src/modulos/revisao-ppc/persistencia/RevisoesPpc.ts";
+import * as RevisorPpc from "../../../src/modulos/revisao-ppc/RevisorPpc.ts";
+import * as TrabalhoRevisao from "../../../src/modulos/revisao-ppc/trabalho.ts";
 import { unirResultadosIa } from "../../../src/modulos/revisao-ppc/RevisaoIa.ts";
 import { casarPendencias, planoArquivoNovo } from "../../../src/modulos/revisao-ppc/arquivo-novo.ts";
 import { estimarAcao } from "../../../src/modulos/revisao-ppc/estimativa.ts";
@@ -48,9 +51,11 @@ import {
   diretorioTemporario,
   FICHAS_FIXTURE as FICHAS,
   limparTemporarios,
+  layerWorkersNoProcessoCom,
+  PASTA_FICHAS,
   revisarAteOFim,
   TOKEN,
-  layerWorkersNoProcesso,
+  type TrabalhoNoProcesso,
 } from "./apoio.ts";
 
 afterAll(limparTemporarios);
@@ -155,22 +160,45 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
     }),
 });
 
+/**
+ * Segura a próxima conversão sem a cópia comentada (a da conferência ao salvar): `chegou` quando ela
+ * começa, e ela segue com `solta`. Para testar o que muda na lista enquanto o Worker converte.
+ */
+const portaoConversao: {
+  proxima?: { readonly chegou: Deferred.Deferred<void>; readonly solta: Deferred.Deferred<void> } | undefined;
+} = {};
+const conversaoComPortao: TrabalhoNoProcesso = (url, pedido, aoAndamento) => {
+  if (url.href !== RevisorPpc.URL_TRABALHADOR.href) return undefined;
+  const p = pedido as TrabalhoRevisao.PedidoTrabalhador;
+  const atender = Effect.sync(() => TrabalhoRevisao.atender(p, aoAndamento).resposta);
+  const portao = p.comentar ? undefined : portaoConversao.proxima;
+  if (portao === undefined) return atender;
+  portaoConversao.proxima = undefined;
+  return Deferred.succeed(portao.chegou, undefined).pipe(
+    Effect.andThen(Deferred.await(portao.solta)),
+    Effect.andThen(atender),
+  );
+};
+
 const pasta = diretorioTemporario("simplifica-lista-viva-");
-const camada = Servidor.layer({
-  primeiroUsoFeito: true,
-  banco: bancoComFichas(),
-  token: Redacted.make(TOKEN),
-  revisaoIa: { paralelismo: 1 },
-}).pipe(
-  Layer.provide(
-    Layer.succeed(
-      Motor.Drivers,
-      Motor.Drivers.of({ claude: driver("claude"), codex: driver("codex"), antigravity: driver("antigravity") }),
+const camadaCom = (banco: string, bancoConversas?: string) =>
+  Servidor.layer({
+    primeiroUsoFeito: true,
+    banco,
+    token: Redacted.make(TOKEN),
+    revisaoIa: { paralelismo: 1 },
+    ...(bancoConversas === undefined ? {} : { bancoConversas }),
+  }).pipe(
+    Layer.provide(
+      Layer.succeed(
+        Motor.Drivers,
+        Motor.Drivers.of({ claude: driver("claude"), codex: driver("codex"), antigravity: driver("antigravity") }),
+      ),
     ),
-  ),
-  Layer.provide(layerWorkersNoProcesso),
-  Layer.provide(NodeServices.layer),
-);
+    Layer.provide(layerWorkersNoProcessoCom(conversaoComPortao)),
+    Layer.provide(NodeServices.layer),
+  );
+const camada = camadaCom(bancoComFichas());
 
 const AUTORIZACAO = { authorization: `Bearer ${TOKEN}` };
 
@@ -713,8 +741,11 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
   );
 });
 
-/** Um PPC curto, com o curso do título e as seções pedidas (as do modelo que faltam viram triagem). */
-const ppcCurto = (curso: string, secoes: ReadonlyArray<string>) =>
+/**
+ * Um PPC curto, com o curso do título e as seções pedidas (as do modelo que faltam viram triagem), e um
+ * parágrafo a mais no fim, se houver (uma mudança que não mexe nas pendências).
+ */
+const ppcCurto = (curso: string, secoes: ReadonlyArray<string>, extra?: string) =>
   montarDocx({
     corpo: [
       par(`PROJETO PEDAGÓGICO DO CURSO ${curso}`),
@@ -725,6 +756,7 @@ const ppcCurto = (curso: string, secoes: ReadonlyArray<string>) =>
         par(`Texto do curso sobre ${secao.toLowerCase()}.`),
       ]),
       par("O curso tem carga horária total de 1200 horas."),
+      ...(extra === undefined ? [] : [par(extra)]),
     ].join(""),
   });
 
@@ -1416,8 +1448,8 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
           // Duas vezes (o bloco e a retomada): a mesma lista, sem duplicar, e o "Feito" fica.
           for (let i = 0; i < 2; i++)
             yield* persistencia.mesclarIa("l1", mesclagem, [
-              { chave: "k1", pendencia: base },
-              { chave: "k2", pendencia: daIa },
+              { chave: "k1", pendencia: base, ia: null },
+              { chave: "k2", pendencia: daIa, ia: "claude" },
             ]);
           const depois = yield* persistencia.pendencias("l1");
           assert.deepStrictEqual(
@@ -1483,4 +1515,646 @@ layer(NodeServices.layer)("lista viva no banco", (it) => {
       assert.isFalse(unirResultadosIa(null, { ...nova, parcial: false }).parcial);
     }),
   );
+});
+
+/* ============================================================ conferência ao salvar */
+
+/** O primeiro evento da conferência ao salvar (`conferido` ou `falhou`) do fluxo da lista aberto agora. */
+const proximaConferencia = (lista: string) => Effect.map(conferenciaComLista(lista), (r) => r.evento);
+
+/**
+ * O primeiro evento da conferência ao salvar do fluxo aberto agora e a última lista que chegou antes
+ * dele (a interface a mostra quando o evento chega). Falha se nada chega em 20 s.
+ */
+const conferenciaComLista = (lista: string) =>
+  rpc.pipe(
+    Effect.flatMap((c) =>
+      c["revisaoPpc.acompanharLista"]({ lista }).pipe(
+        Stream.takeUntil((e) => e.tipo !== "lista"),
+        Stream.runCollect,
+      ),
+    ),
+    Effect.timeout("20 seconds"),
+    Effect.map((eventos) => {
+      const evento = eventos.at(-1)!;
+      const listas = eventos.flatMap((e) => (e.tipo === "lista" ? [e.lista] : []));
+      return { evento, lista: listas.at(-1)! };
+    }),
+  );
+
+/** O PPC curto com as seções do modelo pela metade: a correção de uma seção muda o texto da pendência. */
+const SECOES_PARCIAIS = ["JUSTIFICATIVA", "ORGANIZAÇÃO CURRICULAR", "MATRIZ CURRICULAR"];
+const NORMA_REVOGADA = par("O curso segue também a Resolução CNE/CEB nº 6/2012.");
+
+/** Uma revisão acompanhada no Word: a pré-conferência de `v1` e "Acompanhar no Word" (a cópia comentada). */
+const revisaoAcompanhada = (nome: string, v1: Uint8Array) =>
+  Effect.gen(function* () {
+    const c = yield* rpc;
+    const pre = yield* revisarAteOFim(c, { arquivo: gravar(nome, v1) });
+    const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+    const acompanhada = yield* c["revisaoPpc.acompanhar"]({ lista: pre.lista });
+    const copia = acompanhada.arquivoAcompanhado!;
+    return { c, pre, antes, copia };
+  });
+
+const doModelo = (l: ListaPendencias) => l.pendencias.filter((p) => p.pendencia.tituloFicha === "Seções do modelo");
+const doCodigo = (l: ListaPendencias) =>
+  l.pendencias.filter((p) => p.pendencia.origem === "codigo").map((p) => [p.chave, p.situacao]);
+
+layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
+  it.effect(
+    "'Acompanhar no Word' e o salvamento: só o código, sem trocar o arquivo da lista nem regravar a cópia acompanhada",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { c, pre, antes, copia } = yield* revisaoAcompanhada(
+          "PPC acompanhado.docx",
+          ppcSintetico({ caixaDeTexto: "atual" }),
+        );
+        assert.strictEqual(copia, antes.resultado.arquivoComentado);
+        const triagem = antes.pendencias.find((p) => p.pendencia.ficha === "TRIAGEM")!;
+
+        // A pessoa tira a caixa de texto e cita uma norma revogada; o Word salva a cópia acompanhada.
+        const salvo = ppcSintetico({ corpoExtra: NORMA_REVOGADA });
+        NodeFS.writeFileSync(copia, salvo);
+        const { evento, lista: mostrada } = yield* conferenciaComLista(pre.lista);
+        assert.strictEqual(evento.tipo, "conferido");
+        if (evento.tipo !== "conferido") return;
+        assert.deepStrictEqual(evento.resolvidas, [triagem.chave]);
+        assert.strictEqual(evento.novas.length, 1);
+        // A lista chega antes do aviso, já com o que ele realça.
+        assert.strictEqual(mostrada.pendencias.find((p) => p.chave === triagem.chave)!.situacao, "resolvida");
+        assert.isDefined(mostrada.pendencias.find((p) => p.chave === evento.novas[0]));
+
+        const depois = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        // O arquivo revisado, o sha256 e a cópia comentada ficam; a cópia acompanhada é a da pessoa.
+        assert.strictEqual(depois.arquivoOriginal, antes.arquivoOriginal);
+        assert.strictEqual(depois.sha256, antes.sha256);
+        assert.strictEqual(depois.resultado.arquivoComentado, copia);
+        assert.strictEqual(depois.arquivoAcompanhado, copia);
+        assert.isTrue(NodeFS.readFileSync(copia).equals(salvo));
+        const resolvida = depois.pendencias.find((p) => p.chave === triagem.chave)!;
+        assert.strictEqual(resolvida.situacao, "resolvida");
+        assert.strictEqual(resolvida.resolvidaPor, "revisarDeNovo");
+        const nova = depois.pendencias.find((p) => p.chave === evento.novas[0])!;
+        assert.strictEqual(nova.situacao, "aberta");
+        assert.include(nova.historico[0]!.texto, "Apareceu ao salvar");
+        // A régua acompanha: o critério da pendência nova é o do arquivo salvo.
+        const criterio = (l: ListaPendencias) => l.resultado.criterios.find((x) => x.ficha === nova.pendencia.ficha);
+        assert.strictEqual(criterio(depois)?.origem, "codigo");
+        assert.notDeepEqual(criterio(depois), criterio(antes));
+
+        // "Abrir no Word" com a lista mudada não grava por cima da cópia acompanhada: a nova vai para outro nome,
+        // e a régua continua a do arquivo salvo.
+        const regravada = yield* c["revisaoPpc.gerarCopia"]({ lista: pre.lista });
+        assert.notStrictEqual(regravada.resultado.arquivoComentado, copia);
+        assert.deepStrictEqual(criterio(regravada), criterio(depois));
+        assert.strictEqual(regravada.arquivoAcompanhado, copia);
+        assert.isTrue(NodeFS.readFileSync(copia).equals(salvo));
+
+        // Um arquivo que não parece o mesmo PPC não é conferido, e a lista fica como estava.
+        NodeFS.writeFileSync(copia, ppcCurto("TÉCNICO EM AGROPECUÁRIA", ["JUSTIFICATIVA"]));
+        const recusa = yield* proximaConferencia(pre.lista);
+        assert.strictEqual(recusa.tipo, "falhou");
+        if (recusa.tipo === "falhou") {
+          assert.include(recusa.motivo, "não parece o mesmo PPC");
+          assert.isFalse(recusa.escolherDeNovo);
+        }
+        assert.deepStrictEqual(doCodigo(yield* c["revisaoPpc.lista"]({ lista: pre.lista })), doCodigo(regravada));
+      }),
+  );
+
+  it.effect(
+    "com a leitura com IA pausada: a conferência entra e a leitura continua pausada, retomando de onde estava",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { c, pre, copia } = yield* revisaoAcompanhada(
+          "PPC acompanhado pausada.docx",
+          ppcCurto("TÉCNICO EM AGROPECUÁRIA", SECOES_PARCIAIS),
+        );
+        const portao = yield* Deferred.make<void>();
+        roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-12"]));
+        roteiro.esperar = Deferred.await(portao);
+        const preparada = yield* c["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
+        yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
+        yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
+          Stream.filter((e) => e.blocos.some((b) => b.etapa === "recebendo")),
+          Stream.take(1),
+          Stream.runDrain,
+        );
+        const pausada = yield* c["revisaoPpc.pausarIa"]({ revisao: preparada.id });
+        assert.strictEqual(pausada.situacao, "pausada");
+        roteiro.esperar = undefined;
+
+        // A seção "Objetivos" entra: a pendência das seções continua, com outro texto (outra chave).
+        NodeFS.writeFileSync(copia, ppcCurto("TÉCNICO EM AGROPECUÁRIA", [...SECOES_PARCIAIS, "OBJETIVOS"]));
+        const evento = yield* proximaConferencia(pre.lista);
+        assert.strictEqual(evento.tipo, "conferido");
+        const conferida = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        assert.strictEqual(conferida.revisao, preparada.id);
+        assert.strictEqual(doModelo(conferida).length, 1);
+        assert.notInclude(doModelo(conferida)[0]!.pendencia.titulo, "Objetivos");
+        const estado = (yield* c["revisaoPpc.listarIa"]({})).find((e) => e.id === preparada.id)!;
+        assert.strictEqual(estado.situacao, "pausada");
+        assert.strictEqual(estado.motivo, pausada.motivo);
+
+        // A pessoa passa a acompanhar outro arquivo, ainda não conferido: as pendências do código continuam
+        // as da conferência, e a retomada não traz de volta as do texto revisado.
+        const outro = gravar(
+          "PPC acompanhado pausada outro.docx",
+          ppcCurto("TÉCNICO EM AGROPECUÁRIA", SECOES_PARCIAIS),
+        );
+        const trocada = yield* c["revisaoPpc.acompanhar"]({ lista: pre.lista, arquivo: outro });
+        assert.strictEqual(trocada.arquivoAcompanhado, outro);
+
+        // Retomada: a leitura termina na mesma lista, sem trazer de volta o texto antigo da pendência.
+        yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
+        const final = (yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
+          Stream.filter((e) => e.situacao !== "em_andamento"),
+          Stream.take(1),
+          Stream.runCollect,
+        ))[0]!;
+        assert.strictEqual(final.situacao, "concluida");
+        const depois = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        assert.strictEqual(daFicha(depois, "CT-CURR-12").pendencia.origem, "ia");
+        assert.deepStrictEqual(doCodigo(depois), doCodigo(conferida));
+        assert.strictEqual(depois.arquivoAcompanhado, outro);
+      }),
+  );
+
+  it.effect("com a leitura com IA em andamento: a conferência entra entre os blocos, e a leitura segue até o fim", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const { c, pre, copia } = yield* revisaoAcompanhada(
+        "PPC acompanhado andamento.docx",
+        ppcCurto("TÉCNICO EM AGROPECUÁRIA", SECOES_PARCIAIS),
+      );
+      const portao = yield* Deferred.make<void>();
+      roteiro.responder = (p) => respostaLote(p, new Set(["CT-CURR-12"]));
+      roteiro.esperar = Deferred.await(portao);
+      const preparada = yield* c["revisaoPpc.prepararIa"]({ lista: pre.lista, provider: "claude", modo: "rapido" });
+      yield* c["revisaoPpc.iniciarIa"]({ revisao: preparada.id });
+      yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
+        Stream.filter((e) => e.blocos.some((b) => b.etapa === "recebendo")),
+        Stream.take(1),
+        Stream.runDrain,
+      );
+
+      NodeFS.writeFileSync(copia, ppcCurto("TÉCNICO EM AGROPECUÁRIA", [...SECOES_PARCIAIS, "OBJETIVOS"]));
+      const evento = yield* proximaConferencia(pre.lista).pipe(
+        Effect.ensuring(
+          Effect.sync(() => {
+            roteiro.esperar = undefined;
+          }).pipe(Effect.andThen(Deferred.succeed(portao, undefined))),
+        ),
+      );
+      assert.strictEqual(evento.tipo, "conferido");
+      const conferida = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+      assert.notInclude(doModelo(conferida)[0]!.pendencia.titulo, "Objetivos");
+
+      const final = (yield* c["revisaoPpc.acompanharIa"]({ revisao: preparada.id }).pipe(
+        Stream.filter((e) => e.situacao !== "em_andamento"),
+        Stream.take(1),
+        Stream.runCollect,
+      ))[0]!;
+      assert.strictEqual(final.situacao, "concluida");
+      const depois = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+      assert.strictEqual(depois.revisao, preparada.id);
+      assert.strictEqual(depois.resultado.leituraIa, "completa");
+      assert.strictEqual(daFicha(depois, "CT-CURR-12").situacao, "aberta");
+      // As pendências e a régua do código são as da conferência: a mesclagem sobre o texto revisado não as refaz.
+      assert.deepStrictEqual(doCodigo(depois), doCodigo(conferida));
+      const doCodigoNaRegua = (l: ListaPendencias) => l.resultado.criterios.filter((x) => x.origem === "codigo");
+      assert.deepStrictEqual(doCodigoNaRegua(depois), doCodigoNaRegua(conferida));
+      // A conclusão regrava a cópia comentada com a IA, mas não a que a pessoa tem aberta no Word.
+      assert.notStrictEqual(depois.resultado.arquivoComentado, copia);
+      assert.strictEqual(depois.arquivoAcompanhado, copia);
+    }),
+  );
+
+  it.effect(
+    "o 'Feito' da pessoa fica a cada salvamento que aponta o mesmo ponto; com o texto mudado, reabre e diz",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { c, pre, antes, copia } = yield* revisaoAcompanhada(
+          "PPC acompanhado feito.docx",
+          ppcCurto("TÉCNICO EM AGROPECUÁRIA", SECOES_PARCIAIS),
+        );
+        const modelo = doModelo(antes)[0]!;
+        yield* c["revisaoPpc.marcar"]({ lista: pre.lista, chave: modelo.chave, situacao: "resolvida" });
+
+        // Dois salvamentos que não mexem nas seções: a marcação fica, sem evento novo.
+        for (const extra of ["Texto novo do curso.", "Outro texto novo do curso."]) {
+          NodeFS.writeFileSync(copia, ppcCurto("TÉCNICO EM AGROPECUÁRIA", SECOES_PARCIAIS, extra));
+          assert.strictEqual((yield* proximaConferencia(pre.lista)).tipo, "conferido");
+          const feita = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).pendencias.find(
+            (p) => p.chave === modelo.chave,
+          )!;
+          assert.strictEqual(feita.situacao, "resolvida");
+          assert.strictEqual(feita.resolvidaPor, "pessoa");
+          assert.deepStrictEqual(
+            feita.historico.map((e) => e.acao),
+            ["marcar"],
+          );
+        }
+
+        // "Objetivos" entra: o ponto mudou depois da marcação. Volta a aberta, e o histórico diz por quê.
+        NodeFS.writeFileSync(copia, ppcCurto("TÉCNICO EM AGROPECUÁRIA", [...SECOES_PARCIAIS, "OBJETIVOS"]));
+        assert.strictEqual((yield* proximaConferencia(pre.lista)).tipo, "conferido");
+        const reaberta = doModelo(yield* c["revisaoPpc.lista"]({ lista: pre.lista }))[0]!;
+        assert.notStrictEqual(reaberta.chave, modelo.chave);
+        assert.strictEqual(reaberta.situacao, "aberta");
+        assert.include(reaberta.historico.at(-1)!.texto, "a marcação de feito foi desfeita");
+      }),
+  );
+
+  it.effect("ação com IA em andamento e um salvamento que muda a pendência: o resultado não grava por cima", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const { c, lista } = yield* revisarComIa(gravar("PPC acompanhado discordar.docx", ppcSintetico()));
+      const daIa = daFicha(lista, "CT-CURR-12");
+      const entrou = yield* Deferred.make<void>();
+      const portao = yield* Deferred.make<void>();
+      roteiro.responder = contestacao({ decisao: "manter", estado: "NAO_ATENDE" });
+      roteiro.esperar = Deferred.succeed(entrou, undefined).pipe(Effect.andThen(Deferred.await(portao)));
+      const fibra = yield* c["revisaoPpc.contestar"]({
+        lista: lista.id,
+        chave: daIa.chave,
+        motivo: "A matriz mostra a carga por núcleo.",
+      }).pipe(Effect.flip, Effect.forkChild);
+      yield* Deferred.await(entrou);
+      // Enquanto a IA responde, a pessoa marca o ponto como feito.
+      yield* c["revisaoPpc.marcar"]({ lista: lista.id, chave: daIa.chave, situacao: "resolvida" });
+      roteiro.esperar = undefined;
+      yield* Deferred.succeed(portao, undefined);
+      const recusa = yield* Fiber.join(fibra);
+      assert.isTrue(ehFalhaRevisaoPpc(recusa));
+      assert.include(recusa.message, "Este ponto mudou enquanto a ação rodava");
+      const depois = daFicha(yield* c["revisaoPpc.lista"]({ lista: lista.id }), "CT-CURR-12");
+      assert.strictEqual(depois.situacao, "resolvida");
+      assert.strictEqual(depois.resolvidaPor, "pessoa");
+      assert.notInclude(
+        depois.historico.map((e) => e.acao),
+        "contestar",
+      );
+    }),
+  );
+
+  it.effect("a conferência que termina depois de a pessoa trocar o acompanhado não grava; o novo é conferido", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const { c, pre, antes, copia } = yield* revisaoAcompanhada(
+        "PPC acompanhado corrida.docx",
+        ppcSintetico({ caixaDeTexto: "atual" }),
+      );
+      const triagem = antes.pendencias.find((p) => p.pendencia.ficha === "TRIAGEM")!;
+      NodeFS.writeFileSync(copia, ppcSintetico({ corpoExtra: NORMA_REVOGADA }));
+
+      // A conferência da cópia salva fica no Worker; a pessoa escolhe outro arquivo no meio.
+      const chegou = yield* Deferred.make<void>();
+      const solta = yield* Deferred.make<void>();
+      portaoConversao.proxima = { chegou, solta };
+      const fibra = yield* c["revisaoPpc.conferirAcompanhado"]({ lista: pre.lista }).pipe(Effect.forkChild);
+      yield* Deferred.await(chegou);
+      const outro = gravar("PPC acompanhado corrida outro.docx", ppcSintetico({ caixaDeTexto: "atual" }));
+      yield* c["revisaoPpc.acompanhar"]({ lista: pre.lista, arquivo: outro });
+      yield* Deferred.succeed(solta, undefined);
+      yield* Fiber.join(fibra);
+
+      const depois = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+      assert.strictEqual(depois.arquivoAcompanhado, outro);
+      assert.deepStrictEqual(doCodigo(depois), doCodigo(antes));
+      assert.strictEqual(depois.pendencias.find((p) => p.chave === triagem.chave)!.situacao, "aberta");
+      // O fluxo aberto confere o acompanhado novo, que ainda não foi conferido.
+      const evento = yield* proximaConferencia(pre.lista);
+      assert.deepInclude(evento, { tipo: "conferido", resolvidas: [], novas: [] });
+    }),
+  );
+
+  it.effect(
+    "'Qual é o curso?' leva o acompanhado sem a última conferência; 'Enviar a versão corrigida' de outro arquivo deixa de acompanhar",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const secoes = ["JUSTIFICATIVA", "OBJETIVOS", "ORGANIZAÇÃO CURRICULAR", "REFERÊNCIAS"];
+        const { c, pre, copia } = yield* revisaoAcompanhada(
+          "PPC acompanhado sem curso.docx",
+          ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", secoes),
+        );
+        NodeFS.writeFileSync(copia, ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", [...secoes, "INFRAESTRUTURA"]));
+        assert.strictEqual((yield* proximaConferencia(pre.lista)).tipo, "conferido");
+
+        // A lista refeita com o curso confere de novo o arquivo salvo, com o curso escolhido.
+        const refeita = yield* c["revisaoPpc.trocarCurso"]({ lista: pre.lista, cnct: "tecnico-em-agropecuaria" });
+        assert.strictEqual(refeita.arquivoAcompanhado, copia);
+        assert.strictEqual((yield* proximaConferencia(refeita.id)).tipo, "conferido");
+
+        // A versão corrigida enviada é outro arquivo: a cópia acompanhada é de uma versão anterior.
+        const v2 = gravar(
+          "PPC acompanhado sem curso v2.docx",
+          ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", [...secoes, "INFRAESTRUTURA", "BIBLIOTECA"]),
+        );
+        const r = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: refeita.id, arquivo: v2 });
+        assert.isNull(r.lista.arquivoAcompanhado);
+
+        // Enviar o próprio acompanhado mantém o acompanhamento, já conferido.
+        const deNovo = yield* c["revisaoPpc.acompanhar"]({ lista: refeita.id });
+        const acompanhada = deNovo.arquivoAcompanhado!;
+        NodeFS.writeFileSync(
+          acompanhada,
+          ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", [...secoes, "INFRAESTRUTURA", "BIBLIOTECA", "ANEXOS"]),
+        );
+        const r2 = yield* c["revisaoPpc.revisarArquivoNovo"]({ lista: refeita.id, arquivo: acompanhada });
+        assert.strictEqual(r2.lista.arquivoAcompanhado, acompanhada);
+      }),
+  );
+
+  it.effect(
+    "a conversa ao lado: só a ficha que ficou entra na pasta, a mesma conversa a cada mensagem, o Markdown regravado depois do salvamento e a revisão apagada",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { c, pre, antes, copia } = yield* revisaoAcompanhada("PPC conversa.docx", ppcSintetico());
+        const triagem = antes.pendencias.find((p) => p.pendencia.secao !== null) ?? antes.pendencias[0]!;
+        const arquivosDa = (pasta: string) =>
+          NodeFS.readdirSync(pasta)
+            .filter((nome) => !nome.startsWith("."))
+            .sort();
+
+        // A primeira mensagem sem a ficha do PPC: a conversa abre, e nada do PPC vai à pasta.
+        const primeira = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          chave: triagem.chave,
+          provider: "claude",
+          ppc: false,
+          docx: false,
+        });
+        assert.isTrue(primeira.nova);
+        assert.isNull(primeira.ppc);
+        const ligada = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado!;
+        assert.strictEqual(ligada.conversa, primeira.conversa);
+        assert.deepStrictEqual(arquivosDa(ligada.pasta), []);
+        const curso = antes.resultado.curso.cnct?.denominacao;
+        assert.include(
+          NodePath.basename(ligada.pasta),
+          curso === undefined ? "PPC conversa – conversa" : `PPC ${curso}`,
+        );
+
+        // A seguinte retoma a mesma conversa; com a ficha, o Markdown (com o sumário) e a nota entram.
+        const segunda = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          chave: triagem.chave,
+          provider: "codex",
+          ppc: true,
+          docx: true,
+        });
+        assert.deepInclude(segunda, { conversa: primeira.conversa, nova: false, docx: NodePath.basename(copia) });
+        assert.deepStrictEqual(arquivosDa(ligada.pasta), [
+          NodePath.basename(copia),
+          "PPC em revisão.md",
+          "Sobre o PPC.md",
+        ]);
+        assert.include(segunda.ppc!.instrucao, "Leia o arquivo inteiro");
+        // A seção da pendência que ficou: "começando pela seção".
+        if (triagem.pendencia.secao !== null)
+          assert.include(segunda.ppc!.instrucao, `começando pela seção “${triagem.pendencia.secao}”`);
+        assert.isNull(segunda.ppc!.atualizadoEm);
+        const md = NodeFS.readFileSync(NodePath.join(ligada.pasta, "PPC em revisão.md"), "utf8");
+        assert.include(md, "## Sumário (seção e linha neste arquivo)");
+        // A linha do sumário é a do título no arquivo gravado.
+        const [, titulo, linha] = /^- (.+): linha (\d+)$/m.exec(md)!;
+        assert.strictEqual(md.split("\n")[Number(linha) - 1]!.replace(/^#+\s*/, ""), titulo);
+        assert.include(NodeFS.readFileSync(NodePath.join(ligada.pasta, "Sobre o PPC.md"), "utf8"), copia);
+
+        // Sem mudança no texto, nada é regravado; sem a ficha da pendência, a seção dela não vai.
+        const terceira = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          provider: "claude",
+          ppc: true,
+          docx: false,
+        });
+        assert.isNull(terceira.ppc!.atualizadoEm);
+        assert.notInclude(terceira.ppc!.instrucao, "seção");
+
+        // A pessoa salva no Word: logo depois da conferência, antes de qualquer mensagem (de onde ela sair),
+        // o Markdown que já está na pasta é o do arquivo salvo.
+        NodeFS.writeFileSync(copia, ppcSintetico({ corpoExtra: NORMA_REVOGADA }));
+        assert.strictEqual((yield* proximaConferencia(pre.lista)).tipo, "conferido");
+        assert.include(NodeFS.readFileSync(NodePath.join(ligada.pasta, "PPC em revisão.md"), "utf8"), "6/2012");
+        const quarta = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          provider: "claude",
+          ppc: true,
+          docx: false,
+        });
+        assert.isNotNull(quarta.ppc!.atualizadoEm);
+        assert.include(quarta.ppc!.instrucao, "atualizado");
+
+        // As fichas vão com a mensagem, à IA e ao histórico.
+        yield* c["conversa.enviar"]({
+          sessao: primeira.conversa,
+          texto: "O que falta?",
+          fichas: [
+            { _tag: "arquivo", rotulo: "PPC conversa", arquivo: "PPC em revisão.md", texto: quarta.ppc!.instrucao },
+          ],
+        });
+        const gravada = yield* c["conversa.carregar"]({ sessao: primeira.conversa });
+        const mensagem = gravada.itens.find((item) => item._tag === "Mensagem")!;
+        assert.deepStrictEqual(mensagem._tag === "Mensagem" ? mensagem.fichas?.map((f) => f.rotulo) : [], [
+          "PPC conversa",
+        ]);
+        assert.deepInclude(gravada.conversa.origem, { rota: `/revisao-ppc?id=${pre.lista}` });
+
+        // A revisão apagada: a conversa e a pasta ficam, com a origem "revisão apagada".
+        yield* c["revisaoPpc.apagarLista"]({ lista: pre.lista });
+        const listada = (yield* c["conversa.listar"]({})).find((conversa) => conversa.id === primeira.conversa);
+        assert.deepStrictEqual(listada?.origem, { rotulo: "revisão apagada", rota: null });
+        assert.isTrue(NodeFS.existsSync(NodePath.join(ligada.pasta, "PPC em revisão.md")));
+      }),
+  );
+
+  it.effect(
+    "a conversa ao lado: o .docx que não se lê não deixa pasta nem conversa, e 'Qual é o curso?' e apagar a revisão levam a origem de toda a cadeia da continuação",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const secoes = ["JUSTIFICATIVA", "OBJETIVOS", "ORGANIZAÇÃO CURRICULAR", "REFERÊNCIAS"];
+        const { c, pre, copia } = yield* revisaoAcompanhada(
+          "PPC curso trocado.docx",
+          ppcCurto("TÉCNICO EM MARCENARIA ARTÍSTICA", secoes),
+        );
+        const conversasAntes = (yield* c["conversa.listar"]({})).length;
+        // O .docx sumiu: a primeira mensagem com "Anexar o .docx" falha antes de criar a pasta e a conversa.
+        const bytes = NodeFS.readFileSync(copia);
+        NodeFS.rmSync(copia);
+        const falhou = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          provider: "claude",
+          ppc: true,
+          docx: true,
+        }).pipe(Effect.flip);
+        assert.include(falhou.message, "Não foi possível ler o .docx");
+        NodeFS.writeFileSync(copia, bytes);
+        assert.isNull((yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado);
+        assert.strictEqual((yield* c["conversa.listar"]({})).length, conversasAntes);
+
+        const aberta = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          provider: "claude",
+          ppc: true,
+          docx: false,
+        });
+        const pasta = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado!.pasta;
+        // Só uma pasta da conversa: a tentativa que falhou não deixou outra.
+        const irmas = NodeFS.readdirSync(NodePath.dirname(pasta)).filter((nome) =>
+          nome.startsWith("PPC curso trocado"),
+        );
+        assert.deepStrictEqual(irmas, [NodePath.basename(pasta)]);
+
+        const refeita = yield* c["revisaoPpc.trocarCurso"]({ lista: pre.lista, cnct: "tecnico-em-agropecuaria" });
+        assert.deepStrictEqual(refeita.conversaAoLado, { conversa: aberta.conversa, pasta });
+        const listada = (yield* c["conversa.listar"]({})).find((conversa) => conversa.id === aberta.conversa);
+        assert.strictEqual(listada?.origem?.rota, `/revisao-ppc?id=${refeita.id}`);
+        assert.include(listada?.origem?.rotulo ?? "", "da revisão do PPC de");
+
+        // A conversa continuou com outra IA (o limite): a continuação fica com a origem, e a revisão passa a ela.
+        const continuada = yield* c["conversa.iniciar"]({
+          provider: "antigravity",
+          pastaTrabalho: pasta,
+          continuaDe: aberta.conversa,
+        });
+        const daContinuada = (yield* c["conversa.carregar"]({ sessao: continuada.sessao })).conversa;
+        assert.strictEqual(daContinuada.origem?.rota, `/revisao-ppc?id=${refeita.id}`);
+        const origemDe = (conversas: ReadonlyArray<{ readonly id: string; readonly origem?: unknown }>, id: string) =>
+          conversas.find((conversa) => conversa.id === id)?.origem;
+
+        // A lista ainda guarda a antiga: "Qual é o curso?" de novo leva a origem das duas à lista nova.
+        const outraVez = yield* c["revisaoPpc.trocarCurso"]({ lista: refeita.id, cnct: "tecnico-em-agropecuaria" });
+        const depoisDaTroca = yield* c["conversa.listar"]({});
+        for (const id of [aberta.conversa, continuada.sessao])
+          assert.deepInclude(origemDe(depoisDaTroca, id), { rota: `/revisao-ppc?id=${outraVez.id}` });
+
+        // A próxima mensagem passa a revisão à continuação, e a interface fica sabendo (`nova`) para relê-la.
+        const seguinte = yield* c["revisaoPpc.conversarSobre"]({
+          lista: outraVez.id,
+          provider: "claude",
+          ppc: false,
+          docx: false,
+        });
+        assert.deepInclude(seguinte, { conversa: continuada.sessao, nova: true });
+        assert.deepStrictEqual((yield* c["revisaoPpc.lista"]({ lista: outraVez.id })).conversaAoLado, {
+          conversa: continuada.sessao,
+          pasta,
+        });
+        const mais = yield* c["revisaoPpc.conversarSobre"]({
+          lista: outraVez.id,
+          provider: "claude",
+          ppc: false,
+          docx: false,
+        });
+        assert.deepInclude(mais, { conversa: continuada.sessao, nova: false });
+
+        // A revisão apagada: as duas conversas da cadeia ficam com a origem "revisão apagada".
+        yield* c["revisaoPpc.apagarLista"]({ lista: outraVez.id });
+        const depoisDeApagar = yield* c["conversa.listar"]({});
+        for (const id of [aberta.conversa, continuada.sessao])
+          assert.deepStrictEqual(origemDe(depoisDeApagar, id), { rotulo: "revisão apagada", rota: null });
+      }),
+  );
+});
+
+/** O banco de fixture com a ficha das normas revogadas (CT-SUP-12, do código), que "Sugerir texto" pede. */
+function bancoComNormasRevogadas(): string {
+  const banco = bancoComFichas();
+  const db = new NodeSqlite.DatabaseSync(banco);
+  const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, "ct-sup-12.json"), "utf8");
+  const json = JSON.parse(texto) as { titulo: string };
+  db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
+    "CT-SUP-12",
+    json.titulo,
+    "fichas/CT-SUP-12.json",
+    JSON.stringify(json),
+    texto,
+  );
+  db.close();
+  return banco;
+}
+
+layer(camadaCom(bancoComNormasRevogadas()), { excludeTestServices: true })(
+  "conferência ao salvar: ação com IA numa pendência do código",
+  (it) => {
+    it.effect("'Sugerir texto' em curso e o salvamento que muda o texto da pendência: a sugestão não entra", () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { c, pre, copia } = yield* revisaoAcompanhada(
+          "PPC acompanhado sugerir.docx",
+          ppcSintetico({ corpoExtra: NORMA_REVOGADA }),
+        );
+        const antes = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        const revogada = antes.pendencias.find((p) => p.pendencia.ficha === "CT-SUP-12")!;
+        const entrou = yield* Deferred.make<void>();
+        const portao = yield* Deferred.make<void>();
+        roteiro.responder = () =>
+          JSON.stringify({ texto: "O curso segue a Resolução CNE/CP nº 1/2021.", observacao: "" });
+        roteiro.esperar = Deferred.succeed(entrou, undefined).pipe(Effect.andThen(Deferred.await(portao)));
+        const fibra = yield* c["revisaoPpc.sugerir"]({ lista: pre.lista, chave: revogada.chave }).pipe(
+          Effect.flip,
+          Effect.forkChild,
+        );
+        yield* Deferred.await(entrou);
+
+        // A pessoa reescreve a citação da norma revogada no Word: o mesmo ponto, com outro trecho.
+        NodeFS.writeFileSync(
+          copia,
+          ppcSintetico({ corpoExtra: par("O curso segue também a Resolução CNE/CEB nº 06/2012.") }),
+        );
+        assert.strictEqual((yield* proximaConferencia(pre.lista)).tipo, "conferido");
+        roteiro.esperar = undefined;
+        yield* Deferred.succeed(portao, undefined);
+        const recusa = yield* Fiber.join(fibra);
+        assert.isTrue(ehFalhaRevisaoPpc(recusa));
+        assert.include(recusa.message, "Este ponto mudou enquanto a ação rodava");
+
+        const depois = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        const reescrita = depois.pendencias.find((p) => p.pendencia.ficha === "CT-SUP-12")!;
+        assert.notStrictEqual(reescrita.chave, revogada.chave);
+        assert.isNull(reescrita.sugestao);
+        assert.notInclude(
+          reescrita.historico.map((e) => e.acao),
+          "sugerir",
+        );
+      }),
+    );
+  },
+);
+
+it.live("a conversa ao lado apagada numa execução anterior sai da revisão ao subir o servidor", () => {
+  const bancoConversas = NodePath.join(diretorioTemporario("simplifica-conversa-apagada-"), "conversas.sqlite");
+  const servidor = camadaCom(bancoComFichas(), bancoConversas);
+  const antes = Effect.gen(function* () {
+    reiniciar();
+    const c = yield* rpc;
+    const pre = yield* revisarAteOFim(c, { arquivo: gravar("PPC conversa apagada.docx", ppcSintetico()) });
+    const aberta = yield* c["revisaoPpc.conversarSobre"]({
+      lista: pre.lista,
+      provider: "claude",
+      ppc: false,
+      docx: false,
+    });
+    yield* c["conversa.apagar"]({ sessao: aberta.conversa });
+    // Na mesma execução, a lista ainda a cita (a interface sabe que ela foi apagada).
+    assert.isNotNull((yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado);
+    return pre.lista;
+  }).pipe(Effect.scoped, Effect.provide(servidor));
+  const depois = (lista: string) =>
+    Effect.gen(function* () {
+      const c = yield* rpc;
+      assert.isNull((yield* c["revisaoPpc.lista"]({ lista })).conversaAoLado);
+      // A próxima mensagem abre outra conversa.
+      const nova = yield* c["revisaoPpc.conversarSobre"]({ lista, provider: "claude", ppc: false, docx: false });
+      assert.isTrue(nova.nova);
+    }).pipe(Effect.scoped, Effect.provide(servidor));
+  return Effect.flatMap(antes, depois);
 });

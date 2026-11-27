@@ -11,6 +11,8 @@ import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
 import type { Carga } from "./carga.ts";
+import { useInstanciaLeitor } from "./instancia.ts";
+import { type AoAbrirLink, ondeDoClique } from "../painel/abrirLink.ts";
 
 function Carregando() {
   return (
@@ -71,11 +73,16 @@ export function BotaoLink({
   children,
 }: {
   readonly link: string;
-  readonly aoAbrirLink: (link: string) => void;
+  readonly aoAbrirLink: AoAbrirLink;
   readonly children?: ReactNode;
 }) {
   return (
-    <button type="button" className="link-ifpr" data-link={link} onClick={() => aoAbrirLink(link)}>
+    <button
+      type="button"
+      className="link-ifpr"
+      data-link={link}
+      onClick={(evento) => aoAbrirLink(link, ondeDoClique(evento))}
+    >
       <span>{children ?? nomeCurtoLink(link)}</span>
     </button>
   );
@@ -204,6 +211,7 @@ export function Corpo({ lateral, children }: { readonly lateral?: ReactNode; rea
 
 /** A faixa do trecho citado: o que está destacado e "Ir ao trecho". */
 export function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonly alvo: string }) {
+  const instancia = useInstanciaLeitor();
   return (
     <div className="nao-imprimir flex flex-wrap items-center gap-2 rounded-md bg-warning/10 px-3 py-2 text-sm">
       <span className="min-w-0 flex-1">
@@ -212,7 +220,9 @@ export function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonl
       <Button
         size="sm"
         variant="ghost"
-        onClick={() => document.getElementById(alvo)?.scrollIntoView({ block: "start", behavior: "smooth" })}
+        onClick={(evento) =>
+          instancia.elemento(evento.currentTarget, alvo)?.scrollIntoView({ block: "start", behavior: "smooth" })
+        }
       >
         <LocateFixedIcon /> Ir ao trecho
       </Button>

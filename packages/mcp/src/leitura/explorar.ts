@@ -18,6 +18,7 @@ import type { Base } from "../contratos.ts";
 import { responder } from "../envelope.ts";
 import type {
   CampusDoIndice,
+  ComparacaoBusca,
   CnctDoIndice,
   CursoDoIndice,
   DadosIndice,
@@ -42,6 +43,8 @@ import {
   trechoEmVolta,
 } from "./busca-explorar.ts";
 
+const PREFIXO_NORMA = "ifpr://norma/";
+
 const unicos = (valores: Iterable<string | null>) =>
   [...new Set([...valores].filter((v): v is string => v !== null && v !== ""))].sort();
 
@@ -55,6 +58,7 @@ interface ServicosDoIndice {
 
 /** O índice inteiro, dos serviços do kb. */
 const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndice) {
+  const comparaveis = yield* kb.normas.comparaveis;
   const normas = (yield* kb.normas.listar).map(
     (n): NormaDoIndice & { readonly palavras_chave: ReadonlyArray<string> } => ({
       id: n.id,
@@ -67,6 +71,7 @@ const lerIndice = Effect.fn("Explorar.lerIndice")(function* (kb: ServicosDoIndic
       status_vigencia: n.status_vigencia,
       ementa: n.ementa,
       apelidos: n.aliases,
+      comparar_com: comparaveis.get(n.id) ?? [],
       link: linkNorma(n.id),
       palavras_chave: n.palavras_chave,
     }),
@@ -381,9 +386,29 @@ export const makeExplorar = Effect.fn("Leitura.makeExplorar")(function* (base: B
     };
   });
 
+  /** As comparações das normas achadas nos grupos de normas e de trechos, na ordem dos resultados. */
+  const comparacoesDaBusca = Effect.fn("Explorar.comparacoesDaBusca")(function* (grupos: ReadonlyArray<GrupoBusca>) {
+    const comparaveis = yield* normas.comparaveis;
+    const titulos = new Map((yield* indice).normas.map((n) => [n.id, n.titulo]));
+    const saida: ComparacaoBusca[] = [];
+    for (const g of grupos) {
+      if (g.tipo !== "norma" && g.tipo !== "dispositivo") continue;
+      for (const r of g.resultados) {
+        if (!r.link?.startsWith(PREFIXO_NORMA)) continue;
+        const id = r.link.slice(PREFIXO_NORMA.length).split("#")[0]!;
+        for (const c of comparaveis.get(id) ?? []) {
+          const [a, b] = c.relacao === "sucessora" ? [id, c.norma] : [c.norma, id];
+          if (saida.some((s) => s.a === a && s.b === b)) continue;
+          saida.push({ a, b, titulo_a: titulos.get(a) ?? a, titulo_b: titulos.get(b) ?? b, relacao: c.relacao });
+        }
+      }
+    }
+    return saida;
+  });
+
   const explorarBuscar = Effect.fn("Leitura.explorarBuscar")(function* (e: typeof EntradaBusca.Type) {
     const consulta = e.consulta.trim();
-    if (consulta === "") return responder(base, { grupos: [] });
+    if (consulta === "") return responder(base, { grupos: [], comparacoes: [] });
     const porTipo = yield* itens;
     const termos = termosDaConsulta(consulta);
     const [peloBanco, deSecoes] = yield* Effect.all([pelasNormas(consulta, e.limite), secoes(termos, e.limite)]);
@@ -416,7 +441,7 @@ export const makeExplorar = Effect.fn("Leitura.makeExplorar")(function* (base: B
       const lista = resultados.get(tipo) ?? [];
       return lista.length ? [{ tipo, resultados: lista }] : [];
     });
-    return responder(base, { grupos });
+    return responder(base, { grupos, comparacoes: yield* comparacoesDaBusca(grupos) });
   });
 
   return { explorarIndice, explorarBuscar };

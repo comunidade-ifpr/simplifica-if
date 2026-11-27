@@ -6,6 +6,10 @@
  *
  * O texto se indexa uma vez; quando o conteúdo da área muda (o documento terminou de carregar, outro
  * trecho foi destacado, outro documento abriu), o índice e as ocorrências se refazem com o mesmo termo.
+ *
+ * Com dois leitores na janela (a tela e o painel), o atalho vale para o leitor em foco: o que tem o foco
+ * dentro da raiz dele (`data-leitor`) ou, sem foco em nenhum, o último em que a pessoa mexeu. Os realces
+ * de cada um somam-se sob os mesmos nomes (`leitor/destaques.ts`).
  */
 import { ChevronDownIcon, ChevronUpIcon, XIcon } from "lucide-react";
 import { type ReactNode, type RefObject, useEffect, useRef, useState } from "react";
@@ -13,28 +17,18 @@ import { cn } from "../lib/utils.ts";
 import {
   type IndiceBusca,
   indexarBusca,
-  MONTAR_TUDO,
   NOME_BUSCA,
   NOME_BUSCA_ATUAL,
   ocorrencias,
   termoDaBusca,
   visivel,
 } from "../leitor/busca.ts";
+import { pintar } from "../leitor/destaques.ts";
+import { ATRIBUTO_RAIZ, type InstanciaLeitor, raizAImprimir } from "../leitor/instancia.ts";
 import { rolarAte, textosDe } from "../leitor/realce.ts";
 import { Button } from "./ui/button.tsx";
 import { Input } from "./ui/input.tsx";
-
-/** Pede ao `Documento` todos os blocos (só de um tratador de evento: o `Documento` usa `flushSync`). */
-export const montarTudo = () => window.dispatchEvent(new Event(MONTAR_TUDO));
-
-/** macOS usa ⌘F; os outros, Ctrl+F (no macOS, Ctrl+F num campo de texto avança o cursor). */
-export const NO_MAC = typeof navigator !== "undefined" && /Mac/i.test(navigator.userAgent);
-export const ATALHO_BUSCA = NO_MAC ? "⌘F" : "Ctrl+F";
-export const eAtalhoBusca = (e: KeyboardEvent) =>
-  (NO_MAC ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey) &&
-  !e.altKey &&
-  !e.shiftKey &&
-  e.key.toLowerCase() === "f";
+import { eAtalhoBusca } from "../lib/teclado.ts";
 
 /** O índice do texto à vista na área, refeito só depois que o DOM mudou (`cache` volta a `null`). */
 function indiceDe(raiz: HTMLElement | null, cache: { current: IndiceBusca | null }): IndiceBusca | null {
@@ -52,15 +46,91 @@ export interface BuscaNoTexto {
   readonly barra: ReactNode;
 }
 
+/** Um leitor com a busca montada: a área do texto, quando a pessoa mexeu nele por último e como abrir. */
+interface Dono {
+  readonly area: RefObject<HTMLElement | null>;
+  uso: number;
+  readonly abrir: () => void;
+}
+
+const donos = new Set<Dono>();
+let relogio = 0;
+
+/** A raiz do leitor da área: onde o foco conta como "neste leitor". */
+const raizDe = (area: HTMLElement): Element => area.closest(`[${ATRIBUTO_RAIZ}]`) ?? area;
+
+/** O dono do atalho: o leitor com o foco dentro ou, sem foco em nenhum, o último em que se mexeu. */
+function donoDoAtalho(): Dono | undefined {
+  const vivos = [...donos].filter((d) => d.area.current?.isConnected);
+  const foco = document.activeElement;
+  return (
+    vivos.find((d) => raizDe(d.area.current!).contains(foco)) ??
+    vivos.reduce<Dono | undefined>((melhor, d) => (melhor === undefined || d.uso > melhor.uso ? d : melhor), undefined)
+  );
+}
+
+/** A raiz do leitor em foco (o dono do atalho), para o ⌘P imprimir só ele (`raizAImprimir`). */
+export function leitorEmFoco(): Element | undefined {
+  const area = donoDoAtalho()?.area.current;
+  return area == null ? undefined : raizDe(area);
+}
+
+// Um leitor sem `Documento` (uma ficha) também se marca para o ⌘P.
+const aoImprimir = () => void raizAImprimir(leitorEmFoco);
+
+const aoTeclar = (e: KeyboardEvent) => {
+  if (!eAtalhoBusca(e)) return;
+  const dono = donoDoAtalho();
+  const raiz = dono?.area.current;
+  if (dono === undefined || raiz == null) return;
+  // Um diálogo por cima (a paleta do Explorar) fica com o teclado.
+  const modal = document.querySelector('[aria-modal="true"]');
+  if (modal !== null && !modal.contains(raiz)) return;
+  e.preventDefault();
+  dono.abrir();
+};
+
+/** O clique ou o foco num leitor o torna o último usado. */
+const aoUsar = (e: Event) => {
+  if (!(e.target instanceof Node)) return;
+  for (const d of donos) {
+    const area = d.area.current;
+    if (area !== null && raizDe(area).contains(e.target)) d.uso = ++relogio;
+  }
+};
+
+function registrar(dono: Dono): () => void {
+  if (donos.size === 0) {
+    window.addEventListener("keydown", aoTeclar);
+    window.addEventListener("beforeprint", aoImprimir);
+    document.addEventListener("focusin", aoUsar, true);
+    document.addEventListener("pointerdown", aoUsar, true);
+  }
+  donos.add(dono);
+  return () => {
+    donos.delete(dono);
+    if (donos.size > 0) return;
+    window.removeEventListener("keydown", aoTeclar);
+    window.removeEventListener("beforeprint", aoImprimir);
+    document.removeEventListener("focusin", aoUsar, true);
+    document.removeEventListener("pointerdown", aoUsar, true);
+  };
+}
+
 /**
- * O atalho, a lupa e a barra da busca sobre `area`. O atalho vale de qualquer lugar da tela, mas só
- * enquanto `area` está nela e sem diálogo por cima: quem tem a área montada é o dono da busca.
+ * O atalho, a lupa e a barra da busca sobre `area`, o texto do leitor `instancia`. O atalho vale de
+ * qualquer lugar da tela, mas só enquanto `area` está nela, sem diálogo por cima e, com outro leitor na
+ * janela, para o leitor em foco (`donoDoAtalho`).
  */
-export function useBuscaNoTexto(area: RefObject<HTMLElement | null>, classeBarra?: string): BuscaNoTexto {
+export function useBuscaNoTexto(
+  area: RefObject<HTMLElement | null>,
+  instancia: InstanciaLeitor,
+  classeBarra?: string,
+): BuscaNoTexto {
   const lupa = useRef<HTMLButtonElement>(null);
   const [pedido, setPedido] = useState(0);
   const abrir = () => {
-    montarTudo();
+    instancia.montarTudo();
     setPedido((n) => n + 1);
   };
   const fechar = () => {
@@ -68,22 +138,29 @@ export function useBuscaNoTexto(area: RefObject<HTMLElement | null>, classeBarra
     // Sem rolar: no Explorar a lupa fica no topo da página, e a pessoa perderia o ponto achado.
     lupa.current?.focus({ preventScroll: true });
   };
-  useEffect(() => {
-    const tecla = (e: KeyboardEvent) => {
-      const raiz = area.current;
-      if (!eAtalhoBusca(e) || !raiz?.isConnected) return;
-      // Um diálogo por cima (a paleta do Explorar) fica com o teclado.
-      const modal = document.querySelector('[aria-modal="true"]');
-      if (modal !== null && !modal.contains(raiz)) return;
-      e.preventDefault();
-      montarTudo();
-      setPedido((n) => n + 1);
-    };
-    window.addEventListener("keydown", tecla);
-    return () => window.removeEventListener("keydown", tecla);
-  }, [area]);
+  useEffect(
+    () =>
+      registrar({
+        area,
+        // o leitor que acabou de abrir é o último usado
+        uso: ++relogio,
+        abrir: () => {
+          instancia.montarTudo();
+          setPedido((n) => n + 1);
+        },
+      }),
+    [area, instancia],
+  );
   const barra =
-    pedido === 0 ? null : <BuscaPainel area={area} pedido={pedido} aoFechar={fechar} className={classeBarra} />;
+    pedido === 0 ? null : (
+      <BuscaPainel
+        area={area}
+        pedido={pedido}
+        aoFechar={fechar}
+        montarTudo={instancia.montarTudo}
+        className={classeBarra}
+      />
+    );
   return { lupa, abrir, barra };
 }
 
@@ -91,6 +168,7 @@ export function BuscaPainel({
   area,
   pedido,
   aoFechar,
+  montarTudo,
   className,
 }: {
   /** O contêiner do texto, estável entre documentos (o observador fica nele). */
@@ -98,6 +176,8 @@ export function BuscaPainel({
   /** Sobe a cada atalho ou clique na lupa: o campo recebe o foco, com o termo selecionado. */
   readonly pedido: number;
   readonly aoFechar: () => void;
+  /** Pede ao leitor todos os blocos do texto, para a busca ver o texto inteiro. */
+  readonly montarTudo: () => void;
   readonly className?: string | undefined;
 }) {
   const [termo, setTermo] = useState("");
@@ -146,25 +226,15 @@ export function BuscaPainel({
   const posicao = atual < faixas.length ? atual : 0;
 
   // Todas as ocorrências.
-  useEffect(() => {
-    if (!("highlights" in CSS) || faixas.length === 0) return;
-    CSS.highlights.set(NOME_BUSCA, new Highlight(...faixas));
-    return () => {
-      CSS.highlights.delete(NOME_BUSCA);
-    };
-  }, [faixas]);
+  useEffect(() => pintar(NOME_BUSCA, faixas), [faixas]);
 
   // A atual, por cima, e a rolagem até ela.
   useEffect(() => {
     const faixa = faixas[posicao];
-    if (!("highlights" in CSS) || faixa === undefined) return;
-    const destaque = new Highlight(faixa);
-    destaque.priority = 1;
-    CSS.highlights.set(NOME_BUSCA_ATUAL, destaque);
+    if (faixa === undefined) return;
+    const apagar = pintar(NOME_BUSCA_ATUAL, [faixa], 1);
     rolarAte(faixa);
-    return () => {
-      CSS.highlights.delete(NOME_BUSCA_ATUAL);
-    };
+    return apagar;
   }, [faixas, posicao]);
 
   const buscar = (novo: string) => {
@@ -187,7 +257,15 @@ export function BuscaPainel({
     termoDaBusca(termo) === null ? "" : faixas.length === 0 ? "Nenhum resultado" : `${posicao + 1} de ${faixas.length}`;
 
   return (
-    <search className={cn("nao-imprimir flex items-center gap-1 border-border border-b px-3 py-2", className)}>
+    <search
+      className={cn("nao-imprimir flex items-center gap-1 border-border border-b px-3 py-2", className)}
+      // Esc fecha a busca também com o foco nos botões dela, antes de chegar ao painel (que recolheria).
+      onKeyDown={(e) => {
+        if (e.key !== "Escape" || e.nativeEvent.isComposing || e.defaultPrevented) return;
+        e.preventDefault();
+        aoFechar();
+      }}
+    >
       <Input
         ref={campo}
         type="search"
@@ -201,9 +279,6 @@ export function BuscaPainel({
           if (e.key === "Enter") {
             e.preventDefault();
             ir(e.shiftKey ? -1 : 1);
-          } else if (e.key === "Escape") {
-            e.preventDefault();
-            aoFechar();
           }
         }}
         className="min-w-0 flex-1"

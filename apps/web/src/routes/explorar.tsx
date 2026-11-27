@@ -13,7 +13,8 @@ import { classeColuna } from "../components/Pagina.tsx";
 import { classeAtalho } from "../explorar/componentes.tsx";
 import { ICONES_TIPO } from "../explorar/icones.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
-import { atalhoPaleta, usePaleta } from "../explorar/Paleta.tsx";
+import { usePaleta } from "../explorar/Paleta.tsx";
+import { ATALHO_PALETA } from "../lib/teclado.ts";
 import { inteiro } from "../lib/formato.ts";
 import { cn } from "../lib/utils.ts";
 
@@ -71,9 +72,13 @@ const EXEMPLOS = ["LDB, art. 36", "Res. CNE/CP 2/2026, art. 71", "acompanhamento
 const classeAba =
   "flex items-baseline gap-1.5 border-transparent border-b-2 px-2.5 pt-1 pb-2 font-medium text-muted-foreground text-small hover:text-foreground data-[status=active]:border-primary data-[status=active]:text-foreground";
 
-/** O tipo da página aberta (`/explorar/ver?link=ifpr://norma/…`, a reunião do Consepe), para marcar a coleção dela. */
+/**
+ * O tipo da página aberta (`/explorar/ver?link=ifpr://norma/…`, a reunião do Consepe, a comparação de
+ * normas), para marcar a coleção dela.
+ */
 function tipoDaPagina(local: { readonly pathname: string; readonly search: Record<string, unknown> }): string | null {
   if (local.pathname.startsWith("/explorar/reuniao")) return "reuniao";
+  if (local.pathname.startsWith("/explorar/comparar")) return "norma";
   const link = local.search["link"];
   return typeof link === "string" ? (/^ifpr:\/\/([a-z]+)\//.exec(link)?.[1] ?? null) : null;
 }
@@ -122,7 +127,7 @@ function Explorar() {
                   <span className="sr-only">Buscar na base: </span>
                   Um curso, um campus, uma norma, um assunto dos PPCs ou uma citação
                 </span>
-                <kbd className={classeAtalho}>{atalhoPaleta()}</kbd>
+                <kbd className={classeAtalho}>{ATALHO_PALETA}</kbd>
               </button>
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-small">
                 <span className="text-muted-foreground">Por exemplo:</span>
@@ -156,7 +161,7 @@ function Explorar() {
               className="mb-1.5 flex h-8 items-center gap-2 rounded-md border border-border bg-card px-2.5 text-muted-foreground text-small hover:border-ring/45 hover:text-foreground"
             >
               <SearchIcon aria-hidden className="size-4" /> Buscar na base
-              <kbd className={classeAtalho}>{atalhoPaleta()}</kbd>
+              <kbd className={classeAtalho}>{ATALHO_PALETA}</kbd>
             </button>
           </div>
         )}

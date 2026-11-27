@@ -1,7 +1,7 @@
 /**
  * A conversa da interface (`ControleConversa`, a mesma que as telas usam) contra o `apps/server` de
  * verdade, por RPC: iniciar, o texto parcial e o final com o link `ifpr://`, as ferramentas como
- * etapas, a aprovação, interromper, nova conversa, e a leitura do link pelo `GrupoLeitura`.
+ * etapas, a aprovação, interromper, soltar sem encerrar, e a leitura do link pelo `GrupoLeitura`.
  */
 import { afterAll, assert, layer } from "@effect/vitest";
 import * as Duration from "effect/Duration";
@@ -76,7 +76,8 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
   it.effect("inicia, recebe texto parcial e final, ferramentas e o link ifpr://, e responde à aprovação", () =>
     Effect.gen(function* () {
       const { contexto } = yield* app;
-      const { conversa, api } = contexto;
+      const { api } = contexto;
+      const conversa = contexto.conversas.novo("claude").controle;
 
       // Pasta que não existe: o erro do servidor, em português.
       yield* Effect.promise(() =>
@@ -129,10 +130,10 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
     }).pipe(Effect.scoped),
   );
 
-  it.effect("interrompe a resposta em andamento e começa uma nova conversa", () =>
+  it.effect("interrompe a resposta em andamento; soltar a conversa não encerra a sessão", () =>
     Effect.gen(function* () {
       const { contexto } = yield* app;
-      const { conversa } = contexto;
+      const conversa = contexto.conversas.novo("antigravity").controle;
       const sessao = yield* Effect.promise(() =>
         conversa.comecarTarefa({
           ia: { provider: "antigravity" },
@@ -151,24 +152,20 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       conversa.enviar("E agora?");
       yield* esperar(conversa, (estado) => estado.fase === "pronta" && estado.itens.length > interrompida.itens.length);
 
-      conversa.nova();
-      assert.strictEqual(conversa.obter().fase, "configurando");
-      assert.strictEqual(conversa.obter().provider, "antigravity");
-      assert.strictEqual(conversa.obter().pastaTrabalho, pasta);
-      assert.isUndefined(conversa.obter().sessao);
-      // A conversa antiga fica gravada, com a sessão do provider liberada.
+      // Ninguém mais a mostra: a interface para de acompanhá-la, e a sessão do provider fica aberta no servidor.
+      conversa.parar();
       const { api } = contexto;
       const lista = yield* Effect.promise(() => api.chamar((cliente) => cliente["conversa.listar"]({})));
       assert.deepInclude(
         lista.find((gravada) => gravada.id === sessao),
-        { estado: "liberada", titulo: "Uma resposta demorada, por favor", turnos: 2 },
+        { estado: "pronta", titulo: "Uma resposta demorada, por favor", turnos: 2 },
       );
     }).pipe(Effect.scoped),
   );
 
   it.effect("recarregar a interface: a conversa volta com o histórico e com o resto da resposta em andamento", () =>
     Effect.gen(function* () {
-      const primeira = (yield* app).contexto.conversa;
+      const primeira = (yield* app).contexto.conversas.novo("claude").controle;
       const sessao = yield* Effect.promise(() =>
         primeira.comecarTarefa({
           ia: { provider: "claude" },
@@ -179,7 +176,7 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       const respondida = yield* esperar(primeira, (estado) => estado.fase === "pronta" && estado.itens.length > 1);
 
       // Outra interface (a tela recarregada) abre a mesma conversa pelo id.
-      const segunda = (yield* app).contexto.conversa;
+      const segunda = new ControleConversa((yield* app).contexto.api);
       yield* Effect.promise(() => segunda.abrir(sessao));
       const aberta = segunda.obter();
       assert.strictEqual(aberta.fase, "pronta");
@@ -192,11 +189,11 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       assert.isTrue(ultima?.tipo === "resposta" && ultima.final && ultima.texto.includes(LINK_DEMONSTRACAO));
 
       // Uma resposta em andamento quando a tela recarrega: a nova tela a acompanha e a interrompe.
-      segunda.enviar("Uma resposta demorada");
+      void segunda.enviar("Uma resposta demorada");
       yield* esperar(segunda, (estado) =>
         estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
       );
-      const terceira = (yield* app).contexto.conversa;
+      const terceira = new ControleConversa((yield* app).contexto.api);
       yield* Effect.promise(() => terceira.abrir(sessao));
       const acompanhando = yield* esperar(terceira, (estado) =>
         estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
@@ -249,7 +246,7 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
   it.effect("o turno que falha com a sessão viva deixa a conversa pronta, não caída", () =>
     Effect.gen(function* () {
       const { contexto } = yield* app;
-      const { conversa } = contexto;
+      const conversa = contexto.conversas.novo("codex").controle;
       yield* Effect.promise(() =>
         conversa.comecarTarefa({
           ia: { provider: "codex" },
@@ -259,9 +256,9 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       );
       const fim = yield* esperar(
         conversa,
-        (estado) => estado.fase === "pronta" && estado.itens.some((item) => item.tipo === "aviso"),
+        (estado) => estado.fase === "pronta" && estado.itens.some((item) => item.tipo === "limite"),
       );
-      assert.deepInclude(fim.itens.at(-1), { tipo: "aviso", gravidade: "erro" });
+      assert.deepInclude(fim.itens.at(-1), { tipo: "limite", provider: "codex" });
       // A sessão do provider continua aberta: o servidor diz `pronta`, e a interface não fala em queda.
       assert.strictEqual(fim.estadoServidor, "pronta");
     }).pipe(Effect.scoped),

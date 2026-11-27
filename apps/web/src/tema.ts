@@ -43,10 +43,20 @@ export function guardarPreferencia(preferencia: PreferenciaTema): void {
   aplicarTema(preferencia);
 }
 
-/** Acompanha o tema do sistema enquanto a preferência for "sistema". */
+/**
+ * Acompanha o tema do sistema enquanto a preferência for "sistema", e a escolha feita em outra janela do app
+ * (no desktop, com várias janelas: o `storage` avisa as outras da mesma origem).
+ */
 export function acompanharSistema(): () => void {
   const consulta = consultaEscuro();
   const aoMudar = () => aplicarTema(lerPreferencia());
+  const aoGuardar = (evento: StorageEvent) => {
+    if (evento.key === CHAVE_TEMA || evento.key === null) aoMudar();
+  };
   consulta.addEventListener("change", aoMudar);
-  return () => consulta.removeEventListener("change", aoMudar);
+  window.addEventListener("storage", aoGuardar);
+  return () => {
+    consulta.removeEventListener("change", aoMudar);
+    window.removeEventListener("storage", aoGuardar);
+  };
 }

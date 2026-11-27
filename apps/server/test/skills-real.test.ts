@@ -29,6 +29,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
 import * as CatalogoTarefas from "../src/CatalogoTarefas.ts";
 import * as PastasTrabalho from "../src/PastasTrabalho.ts";
+import * as Atividades from "../src/Atividades.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
@@ -54,6 +55,7 @@ const PONTE_MCP = {
 
 const camada = Conversas.layer().pipe(
   Layer.provideMerge(Motor.layer),
+  Layer.provide(Atividades.layer),
   Layer.provide(Historico.layer),
   Layer.provide(Preferencias.layerPrimeiroUsoFeito),
   Layer.provide(CatalogoTarefas.layerVazio),
@@ -78,7 +80,7 @@ describe.skipIf(!REAL)("skills do app numa conversa real", () => {
           const pasta = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-skills-real-"));
           const conversas = yield* Conversas.Conversas;
           const inicio = yield* Clock.currentTimeMillis;
-          const id = yield* conversas.iniciar({ provider, pastaTrabalho: pasta }, "estavel");
+          const { sessao: id } = yield* conversas.iniciar({ provider, pastaTrabalho: pasta }, "estavel");
           const eventos = yield* turnoCompleto(conversas, id, PERGUNTA);
           const tempo = (yield* Clock.currentTimeMillis) - inicio;
 
