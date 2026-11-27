@@ -69,7 +69,10 @@ it("da revisão: a ficha tirada não vai à pasta; a mesma conversa volta com a 
   const pendencia = fichas.getByText(/^Pendência: O AEE aparece como componente/);
   (pendencia.element().closest("summary") as HTMLElement).focus();
   await userEvent.keyboard("{Enter}");
-  await expect.element(fichas.getByText(/Critério da revisão:/)).toBeVisible();
+  // A ficha da pendência leva o texto do critério, à vista: o que ele confere e o que conta como atendido.
+  await expect.element(fichas.getByText(/Critério da revisão: CT-CURR-22 — AEE não incorporado/)).toBeVisible();
+  await expect.element(fichas.getByText(/O que confere: /)).toBeVisible();
+  await expect.element(fichas.getByText(/Conta como atendido: /)).toBeVisible();
   await caixa.fill("O que falta no AEE?");
   await userEvent.keyboard("{Enter}");
   const mensagens = painel.getByRole("log", { name: "Mensagens" });

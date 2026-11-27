@@ -51,15 +51,15 @@ describe("depois de apagar ou refazer a revisão", () => {
 
   it("'Qual é o curso?': o painel segue a lista nova, e a memória do PPC antigo sai", () => {
     const painel = new ControlePainel();
-    painel.abrirLink("ifpr://revisao/A/ppc#p-1");
-    painel.conversar({ conversa: "c", origem: { chave: "revisao:A" } });
+    painel.abrirLink("ifpr://revisao-ppc/A/ppc#p-1");
+    painel.conversar({ conversa: "c", origem: { chave: "revisao-ppc:A" } });
     const memoria = new MemoriaLeitor();
-    memoria.obter("revisao:A/ppc", async () => "texto");
+    memoria.obter("revisao-ppc:A/ppc", async () => "texto");
     depoisDeTrocarCurso({ painel }, memoria, "A", "B");
-    expect(painel.obter().conversa.origem?.chave).toBe("revisao:B");
-    expect(painel.obter().historico.links).toEqual(["ifpr://revisao/B/ppc#p-1"]);
+    expect(painel.obter().conversa.origem?.chave).toBe("revisao-ppc:B");
+    expect(painel.obter().historico.links).toEqual(["ifpr://revisao-ppc/B/ppc#p-1"]);
     let recarregou = false;
-    memoria.obter("revisao:A/ppc", async () => {
+    memoria.obter("revisao-ppc:A/ppc", async () => {
       recarregou = true;
       return "texto";
     });

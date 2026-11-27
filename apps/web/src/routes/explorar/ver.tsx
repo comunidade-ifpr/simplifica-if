@@ -1,6 +1,6 @@
 /**
  * Uma página do Explorar: o conteúdo de um link `ifpr://` pelo leitor do M1.6 (norma com selos e
- * relações, PPC nas seções) e pelas telas próprias de curso, campus, CNCT e ficha. Os links de dentro
+ * relações, PPC nas seções) e pelas telas próprias de curso, campus e CNCT. Os links de dentro
  * abrem aqui mesmo, com voltar pelo histórico; com Alt (⌥-clique), no painel ao lado. "Abrir ao lado"
  * leva a página ao painel. "Perguntar à IA sobre isto" leva a página à conversa ao lado, como ficha (e ⌘J
  * também, enquanto a página está à vista). "Buscar no texto" (ou

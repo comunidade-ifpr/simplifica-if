@@ -82,13 +82,6 @@ export const MODELOS: ReadonlyArray<ModeloDeRecurso> = [
     titulo: "Campus do IFPR",
     descricao: 'O campus e os cursos dele na base, como em "ifpr://campus/curitiba".',
   },
-  {
-    tipo: "ficha",
-    uriTemplate: "ifpr://ficha/{ficha}",
-    titulo: "Ficha da revisão de PPC",
-    descricao:
-      'Pergunta, rubrica, evidências e referências normativas de uma ficha da revisão de PPC, como em "ifpr://ficha/CT-CURR-12".',
-  },
 ];
 
 /** As normas centrais em `resources/list`, quando estão na base. */
@@ -113,7 +106,6 @@ const DICAS: Record<TipoLink, string> = {
   ppc: '"ifpr://ppc/curitiba/tecnico-em-enfermagem/2023", "ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#<seção>" ou, para o vigente, "ifpr://ppc/curitiba/tecnico-em-enfermagem"',
   cnct: '"ifpr://cnct/tecnico-em-enfermagem"',
   campus: '"ifpr://campus/curitiba"',
-  ficha: '"ifpr://ficha/CT-CURR-12"',
 };
 
 /** Quantos segmentos o caminho de cada tipo tem; a norma tem quantos o ID canônico tiver. */
@@ -122,7 +114,6 @@ const SEGMENTOS: Partial<Record<TipoLink, readonly number[]>> = {
   ppc: [2, 3],
   cnct: [1],
   campus: [1],
-  ficha: [1],
 };
 
 function linkInvalido(uri: string): EntradaInvalida {
@@ -220,11 +211,6 @@ export const lerRecurso = Effect.fn("recursos.lerRecurso")(function* (uri: strin
         resposta,
         texto: textoDoRecurso(resposta, Conteudos.textoCampus(resposta)),
       } as const;
-    }
-    case "ficha": {
-      yield* semFragmento;
-      const resposta = yield* leitura.lerFicha({ ficha: caminho });
-      return { tipo: "ficha", resposta, texto: textoDoRecurso(resposta, Conteudos.textoFicha(resposta)) } as const;
     }
   }
 }) as (uri: string) => Effect.Effect<LinkLido, ErroDeLeitura, Leitura.Leitura>;

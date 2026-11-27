@@ -869,7 +869,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       .sort((a, b) => compararTexto(a.ficha.id, b.ficha.id));
     const fichaTopico = new Set<string>();
     for (const { nome, bruto, ficha } of fichas) {
-      ins.inserir("fichas", {
+      ins.inserir("revisao_ppc_fichas", {
         id: ficha.id,
         titulo: ficha.titulo,
         dominio: ficha.dominio,
@@ -882,7 +882,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         arquivo_json: json(bruto),
       });
       (ficha.referencias_normativas ?? []).forEach((ref, ordem) => {
-        ins.inserir("fichas_referencias", {
+        ins.inserir("revisao_ppc_fichas_referencias", {
           ficha_id: ficha.id,
           ordem,
           ref: ref.ref,
@@ -899,7 +899,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       const brutos = decodificarTopicosBrutos(bruto).topicos;
       const topicos = decodificarTopicos(bruto).topicos.map((t, ordem) => ({ ...t, ordem, bruto: brutos[ordem] }));
       for (const t of [...topicos].sort((a, b) => compararTexto(a.id, b.id))) {
-        ins.inserir("topicos", {
+        ins.inserir("revisao_ppc_topicos", {
           id: t.id,
           ordem: t.ordem,
           titulo: t.titulo,
@@ -915,10 +915,10 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     }
     for (const par of [...fichaTopico].sort(compararTexto)) {
       const [ficha, topico] = par.split("\0") as [string, string];
-      ins.inserir("fichas_topicos", { ficha_id: ficha, topico_id: topico });
+      ins.inserir("revisao_ppc_fichas_topicos", { ficha_id: ficha, topico_id: topico });
     }
     Object.entries(topicosSecoes).forEach(([topico, tipos], ordem) => {
-      ins.inserir("topicos_secoes", {
+      ins.inserir("revisao_ppc_topicos_secoes", {
         ordem,
         topico,
         tipos_json: json(tipos),
@@ -950,7 +950,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           datas: carregarDatas(raiz),
           relacoes: carregarRelacoes(raiz),
         });
-        ins.inserir("marcos", {
+        ins.inserir("revisao_ppc_marcos", {
           id: m.id,
           tema: m.tema,
           vigente: derivado.vigente,

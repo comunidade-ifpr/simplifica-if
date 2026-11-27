@@ -2071,7 +2071,7 @@ function bancoComNormasRevogadas(): string {
   const db = new NodeSqlite.DatabaseSync(banco);
   const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, "ct-sup-12.json"), "utf8");
   const json = JSON.parse(texto) as { titulo: string };
-  db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
+  db.prepare("INSERT INTO revisao_ppc_fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
     "CT-SUP-12",
     json.titulo,
     "fichas/CT-SUP-12.json",

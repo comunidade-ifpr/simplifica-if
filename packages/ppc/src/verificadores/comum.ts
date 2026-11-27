@@ -109,7 +109,6 @@ export type Verificador = {
 
 export const linkNorma = (id: string): Fonte => `ifpr://norma/${id}`;
 export const linkCnct = (slug: string): Fonte => `ifpr://cnct/${slug}`;
-export const linkFicha = (ficha: string): Fonte => `ifpr://ficha/${ficha}`;
 
 /** O nome legível de cada tipo de ato do ID (`ids.ts` do kb). */
 const NOME_DO_TIPO: Readonly<Record<string, string>> = {

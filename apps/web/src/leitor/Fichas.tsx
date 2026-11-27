@@ -1,13 +1,12 @@
 /**
- * As telas próprias do leitor para os links que não são texto: a ficha do curso, o campus, o curso do CNCT e a ficha da revisão de PPC. Valem no
+ * As telas próprias do leitor para os links que não são texto: a ficha do curso, o campus e o curso do CNCT. Valem no
  * painel ao lado da conversa e nas páginas do Explorar. Tudo vem da base pelo `GrupoLeitura`, sem IA:
  *
  * - **curso:** `fichaCurso` (dados institucionais, CNCT, PPC, fatos e o cruzamento com o SUAP, ofertas,
  *   adequação ao art. 71, normas que o PPC cita) e o índice do Explorar (página oficial, processos,
  *   itens do Consepe);
  * - **campus:** `lerCampus` (cursos) e o índice (site, calendário, horários de aula, Consepe);
- * - **cnct:** `lerCnct` (o curso no catálogo e os cursos do IFPR que o ofertam);
- * - **ficha:** `lerFicha` (pergunta, rubrica, evidências e referências).
+ * - **cnct:** `lerCnct` (o curso no catálogo e os cursos do IFPR que o ofertam).
  *
  * Os valores do PPC nas divergências PPC × SUAP nem sempre foram revisados: a tela marca a divergência
  * "Extraído, conferir" quando o valor saiu do texto por regra e "Precisa de revisão" quando a curadoria
@@ -27,7 +26,6 @@ import { useApi } from "../contexto.tsx";
 import {
   dataBr,
   nomeAspecto,
-  nomeCriticidade,
   nomeFato,
   nomeProcesso,
   nomeResultado,
@@ -637,63 +635,6 @@ export function FichaCnct({ slug, aoAbrirLink }: { readonly slug: string; readon
               </p>
             </Secao>
           ))}
-        </article>
-      )}
-    </ComCarga>
-  );
-}
-
-/* ================================================================== ficha da revisão de PPC */
-
-const DOMINIOS: Readonly<Record<string, string>> = {
-  curriculo: "Currículo",
-  identidade: "Identidade do curso",
-  suporte: "Apoio ao estudante e infraestrutura",
-  transversal: "Transversal",
-};
-
-export function FichaRevisao({ id, aoAbrirLink }: { readonly id: string; readonly aoAbrirLink: AoAbrirLink }) {
-  const api = useApi();
-  const lido = useCarga(`ficha:${id}`, () => api.chamar((c) => c.lerFicha({ ficha: id })));
-  return (
-    <ComCarga carga={lido} titulo="Não foi possível ler esta ficha">
-      {({ dados: d }) => (
-        <article aria-label="Ficha de análise" className="leitor-impressao space-y-6">
-          <Cabecalho tipo="Ficha de análise de PPC" titulo={`${d.ficha.id}: ${d.ficha.titulo}`}>
-            <p className="flex flex-wrap gap-1.5">
-              {d.ficha.criticidade ? (
-                <Badge variant="outline" size="lg">
-                  {nomeCriticidade(d.ficha.criticidade)}
-                </Badge>
-              ) : null}
-              {d.ficha.dominio ? (
-                <Badge variant="outline" size="lg">
-                  Tema: {DOMINIOS[d.ficha.dominio] ?? primeiraMaiuscula(d.ficha.dominio)}
-                </Badge>
-              ) : null}
-            </p>
-            <p className="text-muted-foreground text-small">
-              Critério usado pela revisão de PPC do app. Ajuda a revisar; não é norma.
-            </p>
-          </Cabecalho>
-          {d.campos.map((campo) => (
-            <Secao key={campo.campo} titulo={campo.rotulo}>
-              <p className="whitespace-pre-line text-sm" data-conteudo>
-                {campo.texto}
-              </p>
-            </Secao>
-          ))}
-          {d.referencias.length > 0 ? (
-            <Secao titulo="Normas de referência">
-              <ul className="space-y-1 text-sm">
-                {d.referencias.map((r) => (
-                  <li key={`${r.ref}${r.dispositivo ?? ""}`}>
-                    <BotaoLink link={r.link} aoAbrirLink={aoAbrirLink} />
-                  </li>
-                ))}
-              </ul>
-            </Secao>
-          ) : null}
         </article>
       )}
     </ComCarga>

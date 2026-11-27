@@ -6,7 +6,7 @@
  *
  * O documento do Explorar (`/explorar/ver?link=…`) volta se o link fica, como os do painel.
  *
- * O núcleo não conhece as rotas, os links (`ifpr://revisao/…`) nem as origens de conversa (`revisao:<lista>`)
+ * O núcleo não conhece as rotas, os links (`ifpr://revisao-ppc/…`) nem as origens de conversa (`revisao-ppc:<lista>`)
  * de um módulo: cada módulo responde pelos seus (`ConferenciaModulo`), e o que é dele e deixou de existir
  * sai com o aviso dele ("Esta revisão foi apagada"). Funções puras.
  */
@@ -78,7 +78,7 @@ export function conferirContinuidade(guardada: Continuidade, existentes: Existen
   const { pathname, busca } = separar(guardada.rota);
   const { compacto: _compacto, ...semCompacto } = busca;
   let volta: boolean;
-  // O documento aberto em tela cheia pode ser de um módulo (o PPC da revisão, `ifpr://revisao/…`).
+  // O documento aberto em tela cheia pode ser de um módulo (o PPC da revisão, `ifpr://revisao-ppc/…`).
   if (pathname === "/explorar/ver" && typeof semCompacto.link === "string") volta = fica(semCompacto.link);
   else if (pathname === "/" || pathname === "/explorar" || pathname.startsWith("/explorar/")) volta = true;
   else if (pathname === "/conversa") volta = typeof busca.id === "string" && existentes.conversas.has(busca.id);

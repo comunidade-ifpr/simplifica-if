@@ -1,18 +1,18 @@
 /**
  * O Explorar do app: a navegação pela base inteira, sem IA, offline e instantânea. Dois RPCs do
- * `GrupoLeitura`, sem ferramenta MCP (a IA já tem `buscar_norma`, `listar_cursos`, `buscar_secoes` e
- * as fichas, com o texto no orçamento dela; o índice inteiro e a paleta de busca são para a tela):
+ * `GrupoLeitura`, sem ferramenta MCP (a IA já tem `buscar_norma`, `listar_cursos` e `buscar_secoes`,
+ * com o texto no orçamento dela; o índice inteiro e a paleta de busca são para a tela):
  *
  * - `explorarIndice`: as coleções inteiras (normas, cursos, PPCs, campi, CNCT, processos seletivos e
- *   as reuniões do Consepe com os itens de pauta), com os campos dos filtros. As fichas da revisão de
- *   PPC não são coleção: são critério interno da revisão. É pequeno (algumas centenas de KB) e não muda com o servidor no ar: a interface lê uma
+ *   as reuniões do Consepe com os itens de pauta), com os campos dos filtros. Os critérios da revisão de
+ *   PPC (as fichas) não são base: são da tarefa "Revisar um PPC". É pequeno (algumas centenas de KB) e não muda com o servidor no ar: a interface lê uma
  *   vez e filtra na memória;
  * - `explorarBuscar`: a busca da paleta (Ctrl/Cmd+K), com os resultados agrupados por tipo. Uma
  *   citação ("Res. CNE/CP 1/2021, art. 20") ou um ID vai direto ao dispositivo, pela mesma regra do
  *   `buscar_norma`; o texto das seções dos PPCs vem do FTS do banco.
  *
- * As páginas de curso, campus, CNCT e ficha usam os RPCs que já existiam (`fichaCurso`, `lerCampus`,
- * `lerCnct`, `lerFicha`) e completam com o índice (horários do campus, itens do Consepe).
+ * As páginas de curso, campus e CNCT usam os RPCs que já existiam (`fichaCurso`, `lerCampus`,
+ * `lerCnct`) e completam com o índice (horários do campus, itens do Consepe).
  *
  * Só schemas: este módulo entra no grafo do `grupo-leitura.ts`, que a interface importa, e não pode
  * importar o `kb` nem módulos do Node. A leitura fica em `leitura/explorar.ts`.

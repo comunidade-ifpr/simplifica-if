@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- teste: grava uma ficha no banco da fixture com node:sqlite
 /**
  * Os links `ifpr://` como recursos MCP (M1.5), pelo Client do SDK oficial, no servidor HTTP local do
  * app (`@simplifica-if/mcp/http`; o transporte stdio é o de `stdio.test.ts`): os modelos de URI do
@@ -6,9 +5,8 @@
  * um link de cada tipo, com e sem fragmento, e os erros em português para o link inválido.
  *
  * Dois bancos, como no `rpc.test.ts`: o de PPCs (`fixture-ppcs.ts`: normas sem dispositivos, PPCs,
- * cursos, CNCT, campi e uma ficha) e o de normas (`fixture-normas.ts`, com os dispositivos).
+ * cursos, CNCT e campi) e o de normas (`fixture-normas.ts`, com os dispositivos).
  */
-import * as NodeSqlite from "node:sqlite";
 import { afterAll, describe, expect, it } from "@effect/vitest";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import * as Context from "effect/Context";
@@ -24,27 +22,6 @@ afterAll(limparTemporarios);
 
 const bancoPpcs = criarBancoFixturePpcs();
 
-/** Uma ficha com os campos da revisão de PPC (a da fixture só tem o ID e as referências). */
-const FICHA = {
-  id: "CT-TESTE-01",
-  titulo: "Acompanhamento de egressos",
-  dominio: "gestao",
-  criticidade: "OBRIG",
-  pergunta: "O PPC descreve o acompanhamento de egressos?",
-  rubrica: "Conferir a metodologia e o cronograma do acompanhamento.",
-  referencias_normativas: [{ ref: "br/cne-cp/res/2026/2", dispositivo: "#art28-xviii", papel: "fundamento" }],
-};
-{
-  const db = new NodeSqlite.DatabaseSync(bancoPpcs);
-  db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
-    FICHA.id,
-    FICHA.titulo,
-    "base-conhecimento/revisao-ppc/fichas/ct-teste-01.json",
-    JSON.stringify(FICHA),
-    JSON.stringify(FICHA),
-  );
-  db.close();
-}
 const bancoNormas = criarBancoFixture();
 inserirNormas(bancoNormas);
 
@@ -121,7 +98,6 @@ describe("recursos ifpr://", () => {
         "ifpr://ppc/{campus}/{curso}{/versao}{#secao}",
         "ifpr://cnct/{slug}",
         "ifpr://campus/{campus}",
-        "ifpr://ficha/{ficha}",
       ]);
       expect(resourceTemplates.map((m) => m.name)).toEqual(MODELOS.map((m) => m.tipo));
       for (const m of resourceTemplates) {
@@ -168,7 +144,7 @@ describe("recursos ifpr://", () => {
     }),
   );
 
-  it.effect("curso, PPC (índice e seção), CNCT, campus e ficha", () =>
+  it.effect("curso, PPC (índice e seção), CNCT e campus", () =>
     Effect.gen(function* () {
       const cliente = yield* abrir(bancoPpcs);
       const curso = conferirEnvelope(yield* ler(cliente, `ifpr://curso/${CURSO_ENFERMAGEM}`));
@@ -201,20 +177,6 @@ describe("recursos ifpr://", () => {
       const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/foz-do-iguacu"));
       expect(campus).toContain("fonte: `base-conhecimento/institucional/ifpr/campi/foz-do-iguacu.json`");
       expect(campus).toContain("(ifpr://curso/foz-do-iguacu/licenciatura-em-fisica)");
-
-      const ficha = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/ct-teste-01"));
-      expect(ficha).toContain(
-        "**[CT-TESTE-01: Acompanhamento de egressos](ifpr://ficha/CT-TESTE-01)** — domínio gestao; criticidade OBRIG",
-      );
-      expect(ficha).toContain(
-        "**Pergunta**\n> O PPC descreve o acompanhamento de egressos?\nfonte: `base-conhecimento/revisao-ppc/fichas/ct-teste-01.json:6-6`",
-      );
-      expect(ficha).toContain(
-        "- [br/cne-cp/res/2026/2#art28-xviii](ifpr://norma/br/cne-cp/res/2026/2#art28-xviii) (fundamento)",
-      );
-      // a ficha da fixture, sem título no arquivo: o ID no lugar dele
-      const curta = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/CT-CURR-12"));
-      expect(curta).toContain("**[CT-CURR-12: CT-CURR-12](ifpr://ficha/CT-CURR-12)**");
     }),
   );
 
@@ -233,10 +195,7 @@ describe("recursos ifpr://", () => {
     Effect.gen(function* () {
       const cliente = yield* abrir(bancoPpcs);
       const casos: ReadonlyArray<readonly [string, RegExp]> = [
-        [
-          "ifpr://desconhecido/x",
-          /^link desconhecido: "ifpr:\/\/desconhecido\/x"\. .*norma, curso, ppc, cnct, campus, ficha/,
-        ],
+        ["ifpr://desconhecido/x", /^link desconhecido: "ifpr:\/\/desconhecido\/x"\. .*norma, curso, ppc, cnct, campus/],
         ["https://exemplo.org/x", /link desconhecido: "https:\/\/exemplo\.org\/x"/],
         [
           "ifpr://curso/curitiba",
@@ -247,7 +206,8 @@ describe("recursos ifpr://", () => {
         [`ifpr://ppc/${PPC_ENFERMAGEM}#nao-existe`, /seção não encontrada/],
         ["ifpr://cnct/tecnico-em-astronautica", /curso não encontrado no CNCT: "tecnico-em-astronautica"/],
         ["ifpr://campus/marte", /campus não encontrado na base: "marte"/],
-        ["ifpr://ficha/XX-0", /ficha não encontrada na base: "XX-0"/],
+        // os critérios da revisão de PPC não são recurso: são da tarefa, pela ferramenta criterios_revisao_ppc
+        ["ifpr://ficha/CT-CURR-12", /^link desconhecido: "ifpr:\/\/ficha\/CT-CURR-12"/],
       ];
       for (const [uri, mensagem] of casos) {
         const erro = yield* erroAoLer(cliente, uri);

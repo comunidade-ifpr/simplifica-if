@@ -14,7 +14,9 @@ import {
   descreverCurso,
   doBloqueio,
   fraseResultado,
+  criterioDoCaminho,
   gruposDaRegua,
+  linkDoCriterio,
   linkDoPpc,
   localizacao,
   naoLidos,
@@ -255,7 +257,14 @@ test("a busca no CNCT, sem acento e com todas as palavras", () => {
 describe("linkDoPpc e versaoDoPpc", () => {
   const pendencia = (chave: string) => ({ chave }) as PendenciaViva;
   test("o PPC revisado, com a versão no caminho", () => {
-    expect(linkDoPpc("abc", "v1")).toBe("ifpr://revisao/abc/v1");
+    expect(linkDoPpc("abc", "v1")).toBe("ifpr://revisao-ppc/abc/v1");
+  });
+
+  test("o critério da revisão: o link e o caminho de volta; o PPC não é critério", () => {
+    expect(linkDoCriterio("abc", "CT-SUP-17")).toBe("ifpr://revisao-ppc/abc/criterio/CT-SUP-17");
+    expect(criterioDoCaminho("abc/criterio/CT-SUP-17")).toEqual({ lista: "abc", id: "CT-SUP-17" });
+    expect(criterioDoCaminho("abc/v1")).toBeUndefined();
+    expect(criterioDoCaminho("abc/criterio")).toBeUndefined();
   });
 
   test("a versão muda com o arquivo e com o conjunto das pendências, não com a ordem", () => {

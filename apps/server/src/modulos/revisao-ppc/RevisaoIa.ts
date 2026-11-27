@@ -59,7 +59,7 @@ import {
   type UsoRevisaoIa,
 } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
-import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import type * as PacoteRevisaoPpc from "@simplifica-if/kb/PacoteRevisaoPpc";
 import type * as Motor from "@simplifica-if/motor";
 import { estimar } from "./estimativa.ts";
 import { pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
@@ -269,7 +269,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const fs = yield* FileSystem.FileSystem;
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const atividades = yield* Atividades.Atividades;
-  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
+  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteRevisaoPpc.PacoteRevisaoPpc>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const aleatorio = yield* SecureRandom.SecureRandom;
   const execucoes = yield* FiberMap.make<string>();
@@ -860,6 +860,6 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
 /**
  * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `RevisoesPpc`, as `Preferencias`, as `Atividades` do
- * núcleo, o `SecureRandom`, as `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
+ * núcleo, o `SecureRandom`, as `FontesNormativas` e o `PacoteRevisaoPpc` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

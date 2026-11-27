@@ -1,7 +1,7 @@
 /** Instruções enviadas no campo `instructions` do servidor MCP `ifpr`. */
 export const INSTRUCOES = `# Base de conhecimento do IFPR
 
-1. **O que é a base.** Normas da educação profissional, PPCs do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da revisão de PPC; vigência calculada no dia. \`sobre_a_base\` diz o conteúdo e a versão.
+1. **O que é a base.** Normas da educação profissional, PPCs do IFPR, cursos e ofertas de ingresso e o Catálogo Nacional de Cursos Técnicos (CNCT); vigência calculada no dia. \`sobre_a_base\` diz o conteúdo e a versão.
 
 2. **Citação.** Afirmação sobre norma, curso ou PPC sai de uma ferramenta: cite o link \`ifpr://\` e o texto literal devolvido, nunca de memória. Antes de afirmar uma obrigação normativa, ache o dispositivo: \`buscar_norma\` com a citação ou os termos, \`ler_dispositivos\` se já tiver o ID. Para conferir citações de um documento, \`resolver_citacoes\`. Links \`ifpr://\` também se leem via \`resources/read\`. Escreva a citação como link Markdown, com o ato e o dispositivo no texto, fora de crase: \`[Lei nº 11.788/2008, art. 2º, § 3º](ifpr://norma/br/lei/2008/11788#art2)\`.
 
@@ -11,6 +11,6 @@ export const INSTRUCOES = `# Base de conhecimento do IFPR
 
 5. **PPCs.** São exemplos institucionais, não norma. Para ver como outros cursos escreveram uma seção, \`buscar_secoes\` e, para o texto inteiro, \`ler_secao\`. Para um curso, \`ficha_curso\` (ID em \`listar_cursos\`); para comparar vários PPCs com o SUAP, \`fatos_ppc\`. Sem versão, o PPC é o vigente; incluir_substituidos traz os anteriores.
 
-6. **Revisão de PPC.** Para conferir um PPC (da base ou o \`.md\` da pasta de trabalho) contra as fichas da revisão de PPC, peça o contexto a \`pacote_contexto\` em vez de várias chamadas. Chame \`etapa\` só quando a skill pedir.
+6. **Revisão de PPC.** Para conferir um PPC (da base ou o \`.md\` da pasta de trabalho), peça o contexto a \`pacote_revisao_ppc\`. Os critérios da tarefa vêm de \`criterios_revisao_ppc\`: não são fonte normativa; cite as normas deles. Chame \`etapa\` só quando a skill pedir.
 
 7. **Fora da base e versão.** Se a base não tem a informação, diga isso; não preencha com memória. Se houver busca na web, use-a só como complemento para o que falta na base, citando a URL oficial e indicando que é fonte externa. Quando a resposta depender da data da base, informe-a (está na última linha de cada resposta).`;

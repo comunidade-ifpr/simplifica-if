@@ -10,7 +10,7 @@ export const Entrada = Schema.Struct({});
 export const Dados = Schema.Struct({
   /** O dia em que as consultas sem data calculam a vigência (no app, hoje). */
   vigencia_em: Schema.String,
-  /** Linhas por tabela do banco, de `meta.contagens_json`. */
+  /** Linhas por tabela do banco, de `meta.contagens_json`, sem as da revisão de PPC (`revisao_ppc_*`). */
   contagens: Schema.Record(Schema.String, inteiro({ minimo: 0 })),
   /** Valores do filtro `tipo` da busca em PPCs. */
   tipos_de_secao: Schema.Array(Schema.String),
@@ -20,7 +20,7 @@ export const Dados = Schema.Struct({
   campi: Schema.Array(Schema.Struct({ id: Schema.String, nome: Schema.String, link: EsquemaLink })),
 });
 
-/** Rótulos das contagens no texto, na ordem de leitura; o JSON traz todas as tabelas. */
+/** Rótulos das contagens no texto, na ordem de leitura; o JSON traz todas as tabelas da base. */
 const ROTULOS_CONTAGEM: [tabela: string, rotulo: string][] = [
   ["normas", "normas (base, stubs e externas)"],
   ["dispositivos", "dispositivos de normas"],
@@ -33,7 +33,6 @@ const ROTULOS_CONTAGEM: [tabela: string, rotulo: string][] = [
   ["ofertas", "ofertas de ingresso"],
   ["cnct", "cursos do CNCT"],
   ["campi", "campi"],
-  ["fichas", "fichas da revisão de PPC"],
 ];
 
 export const sobreABase = definirFerramenta({

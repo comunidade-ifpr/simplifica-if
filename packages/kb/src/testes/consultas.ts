@@ -8,7 +8,7 @@ import * as BaseKb from "../BaseKb.ts";
 import * as Cursos from "../Cursos.ts";
 import * as Impacto from "../Impacto.ts";
 import * as Normas from "../Normas.ts";
-import * as PacoteContexto from "../PacoteContexto.ts";
+import * as PacoteRevisaoPpc from "../PacoteRevisaoPpc.ts";
 import * as Ppcs from "../Ppcs.ts";
 
 export const NORMAS = [
@@ -33,7 +33,7 @@ export const todasAsConsultas = Effect.fn("testes.todasAsConsultas")(function* (
   const ppcs = yield* Ppcs.Ppcs;
   const cursos = yield* Cursos.Cursos;
   const impacto = yield* Impacto.Impacto;
-  const pacote = yield* PacoteContexto.PacoteContexto;
+  const pacote = yield* PacoteRevisaoPpc.PacoteRevisaoPpc;
   const cada = <A, E, R>(ids: readonly string[], f: (id: string) => Effect.Effect<A, E, R>) =>
     Effect.forEach(ids, (id) => f(id));
   return {
@@ -80,7 +80,7 @@ export const consultasDoExecutavel = Effect.gen(function* () {
   const ppcs = yield* Ppcs.Ppcs;
   const cursos = yield* Cursos.Cursos;
   const impacto = yield* Impacto.Impacto;
-  const pacote = yield* PacoteContexto.PacoteContexto;
+  const pacote = yield* PacoteRevisaoPpc.PacoteRevisaoPpc;
   return {
     resolver: yield* normas.resolver("Res. CNE/CP 2/2026, art. 28, inciso VII"),
     citacoes: yield* Effect.forEach(NORMAS, (id) => ppcs.relatorioCitacoes(id)),

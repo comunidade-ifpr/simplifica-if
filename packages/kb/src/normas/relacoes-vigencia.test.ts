@@ -2,7 +2,7 @@
 /**
  * Relações, vigência, transições, front matter gerado, correspondência e impacto. O impacto
  * roda sobre a layer da CLI (`layerRepositorio`): o `tmp/kb.sqlite`, recompilado se estiver velho; o
- * de um dispositivo, pela regra pura `impactoEm` com fichas sintéticas e a vigência e a
+ * nos critérios da revisão de PPC, pela regra pura `criteriosAtingidosEm` com fichas sintéticas e a vigência e a
  * correspondência do banco.
  */
 import * as NodeFS from "node:fs";
@@ -18,7 +18,7 @@ import { carregarFonteCorrespondencia } from "../db/consultas-normas.ts";
 import * as Layers from "../layers.ts";
 import { validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDaNorma } from "./estrutura.ts";
-import { impactoEm } from "./impacto.ts";
+import { criteriosAtingidosEm } from "./impacto.ts";
 import { reescreverFrontMatter } from "./gerado.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "./registro.ts";
@@ -195,25 +195,33 @@ const FICHAS_SINTETICAS = (
   texto: JSON.stringify({ referencias_normativas: [{ ref, dispositivo }] }),
 }));
 
-/** `impactoEm` sobre as fichas sintéticas, com a vigência e a correspondência da base. */
+/** `criteriosAtingidosEm` sobre as fichas sintéticas, com a vigência e a correspondência da base. */
 const impactoSintetico = Effect.fn("impacto.sintetico")(function* (id: string) {
   const fontes = yield* FontesNormativas.FontesNormativas;
   const correspondencia = yield* carregarFonteCorrespondencia;
-  return impactoEm(
-    {
-      id,
-      vigencia: fontes,
-      dataReferencia: fontes.dataReferencia,
-      correspondencia,
-      dispositivos: [],
-      topicos: [],
-      arquivosConteudo: FICHAS_SINTETICAS,
-      segmentosCitantes: [],
-      ppcsQueCitam: [],
-    },
-    { incluirPpcs: false },
-  );
+  return criteriosAtingidosEm({
+    id,
+    vigencia: fontes,
+    dataReferencia: fontes.dataReferencia,
+    correspondencia,
+    dispositivos: [],
+    topicos: [],
+    fichas: FICHAS_SINTETICAS,
+    arquivos: ARQUIVOS_SINTETICOS,
+  });
 });
+
+/** Os outros arquivos da tarefa: um marco com a 1/2021 na linha e uma taxonomia que não a cita. */
+const ARQUIVOS_SINTETICOS = [
+  {
+    arquivo: "base-conhecimento/revisao-ppc/marcos-normativos.json",
+    texto: JSON.stringify({ marcos: [{ id: "dcn_ept", linha: [DCN_2021, DCN_2026] }] }),
+  },
+  {
+    arquivo: "base-conhecimento/revisao-ppc/topicos-fichas.json",
+    texto: JSON.stringify({ topicos: [{ id: "estagio", termos_busca: ["estágio"] }] }),
+  },
+];
 
 const nomeDaFicha = (arquivo: string) => NodePath.basename(arquivo, ".json");
 
@@ -222,11 +230,11 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
   excludeTestServices: true,
   timeout: "180 seconds",
 })((it) => {
-  describe("impacto de um dispositivo", () => {
+  describe("critérios atingidos por um dispositivo", () => {
     it.effect("#art2 não casa #art29 nem #art22-x, e só os destinos do art. 2º contam como correspondentes", () =>
       Effect.gen(function* () {
         const r = yield* impactoSintetico(`${DCN_2021}#art2`);
-        const porArquivo = Object.fromEntries(r.arquivos.map((a) => [nomeDaFicha(a.arquivo), a.motivos]));
+        const porArquivo = Object.fromEntries(r.criterios.map((a) => [nomeDaFicha(a.arquivo), a.motivos]));
         expect(porArquivo).toEqual({ "ct-x-04": ["referencia"], "ct-x-05": ["referencia-correspondente"] });
       }),
     );
@@ -234,7 +242,7 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
     it.effect("o ato inteiro continua alcançando todos", () =>
       Effect.gen(function* () {
         const r = yield* impactoSintetico(DCN_2021);
-        expect(r.arquivos.map((a) => nomeDaFicha(a.arquivo)).sort()).toEqual([
+        expect(r.criterios.map((a) => nomeDaFicha(a.arquivo)).sort()).toEqual([
           "ct-x-01",
           "ct-x-02",
           "ct-x-03",
@@ -245,17 +253,31 @@ layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.lay
     );
   });
 
+  describe("outros arquivos da tarefa", () => {
+    it.effect("o marco com a norma na linha é atingido pelo ato; a taxonomia que não a cita, não", () =>
+      Effect.gen(function* () {
+        const r = yield* impactoSintetico(DCN_2021);
+        expect(r.arquivos).toEqual([
+          {
+            arquivo: "base-conhecimento/revisao-ppc/marcos-normativos.json",
+            motivos: ["referencia"],
+            dispositivos: [],
+          },
+        ]);
+        // um dispositivo da norma não é a linha do marco, que cita o ato inteiro
+        expect((yield* impactoSintetico(`${DCN_2021}#art2`)).arquivos).toEqual([]);
+      }),
+    );
+  });
+
   describe("impacto", () => {
-    it.effect("revogação da 1/2021 alcança a sucessora, transições, normas e as fichas", () =>
+    it.effect("revogação da 1/2021 alcança a sucessora, transições e normas, sem os critérios da revisão de PPC", () =>
       Effect.gen(function* () {
         const impacto = yield* Impacto.Impacto;
         const r = yield* impacto.daNorma(DCN_2021, { incluirPpcs: false });
         expect(r.sucessoras).toEqual([DCN_2026]);
         expect(r.normas_que_citam.map((n) => n.id)).toContain("br/mec/portaria/2024/902");
-        const arquivos = r.arquivos.map((a) => a.arquivo);
-        expect(arquivos).toContain("base-conhecimento/revisao-ppc/fichas/ct-curr-02.json");
-        // além das fichas, os marcos normativos da revisão de PPC, que o banco também guarda
-        expect(arquivos).toContain("base-conhecimento/revisao-ppc/marcos-normativos.json");
+        expect(Object.keys(r)).not.toContain("arquivos");
       }),
     );
   });

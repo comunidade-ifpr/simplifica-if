@@ -320,7 +320,7 @@ describe("normalização", () => {
           "ifpr.buscar_norma",
           "ifpr.ficha_curso",
           "read_resource",
-          "ifpr.pacote_contexto",
+          "ifpr.pacote_revisao_ppc",
           "ifpr.sobre_a_base",
         ]);
         // O `read_resource` do servidor `ifpr` também é do app.

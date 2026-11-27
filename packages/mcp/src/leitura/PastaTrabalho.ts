@@ -1,6 +1,6 @@
 /**
  * `PastaTrabalho`: o único ponto em que o simplifica-mcp lê um arquivo fora do `kb.sqlite`. Serve ao
- * `pacote_contexto` com `arquivo`: o `.md` de um PPC fora da base, que tem de estar dentro da pasta
+ * `pacote_revisao_ppc` com `arquivo`: o `.md` de um PPC fora da base, que tem de estar dentro da pasta
  * de trabalho informada na inicialização (`--pasta-trabalho`, padrão: o diretório atual).
  *
  * A conferência tem duas etapas. Antes de tocar no disco, o caminho pedido (relativo ou absoluto) é

@@ -1,4 +1,4 @@
-# Léxico de sinônimos da busca de seções de PPC (kb buscar-secoes e pacote-contexto).
+# Léxico de sinônimos da busca de seções de PPC (kb buscar-secoes e pacote-revisao-ppc).
 #
 # Contrato: esquemaSinonimos em packages/kb/src/busca/sinonimos.ts (zod). Mudar este arquivo muda o
 # kb.sqlite (a CLI recompila sozinha) e a medida de recall em avaliacao/busca-secoes/; rode

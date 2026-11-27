@@ -204,8 +204,8 @@ function melhor(candidatos: Candidato[]): Candidato | null {
 }
 
 const RE_ROTULO_CH_TOTAL =
-  /carga hor[aá]ria total(?! (?:do|de|da|dos|das|por|em cada|semanal|anual) (?:componente|disciplina|unidade|ano|semestre|m[oó]dulo|per[ií]odo|n[uú]cleo|est[aá]gio|atividade|s[eé]rie|eixo|bloco|etapa))(?: do curso)?(?:[^:|\d]{0,40}?)\s*[:|–-]\s*([^|]{0,120})/i;
-const RE_CH_TOTAL_PROSA = /carga hor[aá]ria total(?: do curso)?(?: [eé]| ser[aá])? de ([\d.]+) ?(?:\(|h|horas)/i;
+  /carga[- ]hor[aá]ria total(?! (?:do|de|da|dos|das|por|em cada|semanal|anual) (?:componente|disciplina|unidade|ano|semestre|m[oó]dulo|per[ií]odo|n[uú]cleo|est[aá]gio|atividade|s[eé]rie|eixo|bloco|etapa))(?: do curso)?(?:[^:|\d]{0,40}?)\s*[:|–-](?:\s*\|)*\s*([^|]{0,120})/i;
+const RE_CH_TOTAL_PROSA = /carga[- ]hor[aá]ria total(?: do curso)?(?: [eé]| ser[aá])? de ([\d.]+) ?(?:\(|h|horas)/i;
 
 /** Carga horária total do curso. */
 function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | null)[]): Candidato[] {
@@ -215,7 +215,7 @@ function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | nul
     const z = zona[l];
     if (z === null || z === undefined) continue;
     const bruta = linhas[i]!;
-    if (!/carga\s+hor/i.test(bruta)) continue;
+    if (!/carga[\s-]+hor/i.test(bruta)) continue;
     const limpa = limparLinha(bruta);
     const rotulo = RE_ROTULO_CH_TOTAL.exec(limpa);
     if (rotulo && (z === "quadro" || inicioDeLinha(limpa, rotulo.index))) {
@@ -244,14 +244,14 @@ function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | nul
       }
     }
     // título "Carga horária total do curso" com o valor no parágrafo seguinte
-    if (/^#/.test(bruta.trim()) && /carga hor[aá]ria total do curso/i.test(limpa) && numeros(limpa).length === 0) {
+    if (/^#/.test(bruta.trim()) && /carga[- ]hor[aá]ria total do curso/i.test(limpa) && numeros(limpa).length === 0) {
       for (let j = i + 1, vistas = 0; j < linhas.length && vistas < 4; j += 1) {
         const seguinte = limparLinha(linhas[j]!);
         if (!seguinte) continue;
         vistas += 1;
         if (/^#/.test(linhas[j]!.trim())) break;
         const m =
-          /carga hor[aá]ria(?: total| global)?(?: do curso)?(?: [eé]| ser[aá])?(?: de)? ([\d.]{3,5}(?:,\d+)?) ?(?:\(|h\b|horas)/di.exec(
+          /carga[- ]hor[aá]ria(?: total| global)?(?: do curso)?(?: [eé]| ser[aá])?(?: de)? ([\d.]{3,5}(?:,\d+)?) ?(?:\(|h\b|horas)/di.exec(
             seguinte,
           );
         // o trecho começa no número capturado (índice do grupo, com a flag `d`)
@@ -292,13 +292,13 @@ function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | nul
 }
 
 const RE_ROTULO_ESTAGIO =
-  /carga hor[aá]ria (?:de |do |dos )?(?:est[aá]gios?|pr[aá]tica profissional supervisionada)(?: curricular)?(?: supervisionado)?( obrigat[oó]rio)?(?: \(?est[aá]gio curricular\)?)?\s*[:–-]?\s*(.*)$/i;
+  /carga[- ]hor[aá]ria (?:de |do |dos )?(?:est[aá]gios?|pr[aá]tica profissional supervisionada)(?: curricular)?(?: supervisionado)?( obrigat[oó]rio)?(?: \(?est[aá]gio curricular\)?)?\s*[:–-]?\s*(.*)$/i;
 const RE_NEGA_ESTAGIO =
   /n[aã]o (?:se aplica|h[aá]|haver[aá]|possui|prev[eê]|contempla|exige|requer|tem|ter[aá]|est[aá] previsto)|sem previs[aã]o|inexistente|^0 ?(?:h|horas)?\b|n[aã]o[- ]obrigat[oó]rio|opcional|^-$|^n[aã]o\.?$/i;
 const RE_FRASE_SEM_ESTAGIO =
   /n[aã]o (?:contempla|prev[eê]|possui|exige|requer|h[aá]|haver[aá]|ter[aá]|oferta|tem)[^.]{0,40}est[aá]gio(?: curricular)?(?: supervisionado)?(?: profissional)? obrigat[oó]rio/i;
 const RE_FRASE_ESTAGIO_CH =
-  /est[aá]gio (?:curricular )?(?:supervisionado )?obrigat[oó]rio[^.]{0,60}?(?:de|com|ter[aá]|possui|totaliza(?:ndo)?|carga hor[aá]ria(?: m[ií]nima)?(?: de)?)\s+([\d.]{2,5})\s*(?:\(|h|horas)/i;
+  /est[aá]gio (?:curricular )?(?:supervisionado )?obrigat[oó]rio[^.]{0,60}?(?:de|com|ter[aá]|possui|totaliza(?:ndo)?|carga[- ]hor[aá]ria(?: m[ií]nima)?(?: de)?)\s+([\d.]{2,5})\s*(?:\(|h|horas)/i;
 
 /** Estágio obrigatório (sim/não) e carga, pelo rótulo do quadro ou por frases do PPC. */
 function estagio(

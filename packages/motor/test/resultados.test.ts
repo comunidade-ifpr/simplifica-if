@@ -246,7 +246,7 @@ describe("resultados do servidor MCP", () => {
           ["ifpr.buscar_norma", "resultado de buscar_norma"],
           ["ifpr.ficha_curso", "resultado de ficha_curso"],
           ["read_resource", "resultado de ifpr://cnct/tecnico-em-enfermagem"],
-          ["ifpr.pacote_contexto", "resultado de pacote_contexto"],
+          ["ifpr.pacote_revisao_ppc", "resultado de pacote_revisao_ppc"],
           ["ifpr.sobre_a_base", "resultado de sobre_a_base"],
         ],
       );

@@ -2,7 +2,7 @@
  * A montagem única da base da revisão prévia (`BaseRevisaoPrevia`), pelos serviços do kb sobre o
  * `kb.sqlite`: o registro, as relações, as datas e as transições da vigência, os tópicos das fichas e
  * a data de referência de `FontesNormativas`; o CNCT de `Cursos`; os endereços oficiais de `Normas`; os
- * títulos das fichas de `PacoteContexto`. Nada vem de arquivos do repositório.
+ * títulos das fichas de `PacoteRevisaoPpc`. Nada vem de arquivos do repositório.
  *
  * O servidor a monta do `kb.sqlite` que serve (o app empacotado não tem o checkout); os scripts e os
  * testes deste pacote, do `tmp/kb.sqlite` do checkout (`scripts/base-tecnica.ts`). As duas revisões
@@ -14,7 +14,7 @@ import * as Cursos from "@simplifica-if/kb/Cursos";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Normas from "@simplifica-if/kb/Normas";
-import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import * as PacoteRevisaoPpc from "@simplifica-if/kb/PacoteRevisaoPpc";
 import type { BaseRevisaoPrevia } from "./revisao-previa.ts";
 import type { CursoCnct } from "./verificadores/comum.ts";
 import type { Marco } from "./verificadores/vigencia.ts";
@@ -37,7 +37,7 @@ export const montarBaseRevisao = Effect.gen(function* () {
   const fontes = yield* FontesNormativas.FontesNormativas;
   const cursos = yield* Cursos.Cursos;
   const normas = yield* Normas.Normas;
-  const pacotes = yield* PacoteContexto.PacoteContexto;
+  const pacotes = yield* PacoteRevisaoPpc.PacoteRevisaoPpc;
   const cncts = (yield* cursos.catalogoCnct).map(
     (curso): CursoCnct => ({ ...curso.dados, slug: curso.slug }) as CursoCnct,
   );

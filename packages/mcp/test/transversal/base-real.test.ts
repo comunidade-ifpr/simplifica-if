@@ -2,7 +2,7 @@
 /**
  * As ferramentas umas contra as outras e contra o banco, na base real (`tmp/kb.sqlite`), com a raiz
  * do repositório como pasta de trabalho: o texto integral de `buscar_secoes` é o de `ler_secao`; o
- * `pacote_contexto` do PPC da base e o do mesmo PPC como arquivo `.md` trazem as mesmas fichas,
+ * `pacote_revisao_ppc` do PPC da base e o do mesmo PPC como arquivo `.md` trazem as mesmas fichas,
  * normas, marcos e transições; as contagens de `sobre_a_base` são as linhas das tabelas. Lento e
  * dependente do checkout: roda só com `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`). A camada é a da CLI
  * `kb`: o banco do checkout, recompilado se velho.
@@ -17,7 +17,7 @@ import type * as Schema from "effect/Schema";
 import { buscarSecoes } from "../../src/ferramentas/buscar-secoes.ts";
 import { lerSecao } from "../../src/ferramentas/ler-secao.ts";
 import { listarCursos } from "../../src/ferramentas/listar-cursos.ts";
-import { pacoteContexto, TETO_PACOTE_CONTEXTO } from "../../src/ferramentas/pacote-contexto.ts";
+import { pacoteRevisaoPpc, TETO_PACOTE_REVISAO_PPC } from "../../src/ferramentas/pacote-revisao-ppc.ts";
 import { sobreABase } from "../../src/ferramentas/sobre-a-base.ts";
 import { layerHandlers } from "../../src/ferramentas/toolkit.ts";
 import * as Leitura from "../../src/leitura/Leitura.ts";
@@ -60,14 +60,14 @@ describe.skipIf(!SMOKE)("as ferramentas na base real", () => {
       }),
     );
 
-    it.effect("pacote_contexto: dentro do teto, e o mesmo PPC pela base e pelo arquivo dá o mesmo contexto", () =>
+    it.effect("pacote_revisao_ppc: dentro do teto, e o mesmo PPC pela base e pelo arquivo dá o mesmo contexto", () =>
       Effect.gen(function* () {
         for (const tarefa of ["CT-CURR-12", "estagio", "todas"]) {
-          const { texto } = yield* chamar(pacoteContexto, { tarefa, ppc: PPC });
-          expect(texto.length, tarefa).toBeLessThanOrEqual(TETO_PACOTE_CONTEXTO);
+          const { texto } = yield* chamar(pacoteRevisaoPpc, { tarefa, ppc: PPC });
+          expect(texto.length, tarefa).toBeLessThanOrEqual(TETO_PACOTE_REVISAO_PPC);
         }
-        const daBase = (yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", ppc: PPC })).dados;
-        const doArquivo = (yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", arquivo: ARQUIVO })).dados;
+        const daBase = (yield* chamar(pacoteRevisaoPpc, { tarefa: "CT-CURR-12", ppc: PPC })).dados;
+        const doArquivo = (yield* chamar(pacoteRevisaoPpc, { tarefa: "CT-CURR-12", arquivo: ARQUIVO })).dados;
         for (const parte of ["fichas_ids", "fichas", "normas", "marcos", "vigencia_em", "transicoes"] as const) {
           expect(doArquivo[parte], parte).toEqual(daBase[parte]);
         }

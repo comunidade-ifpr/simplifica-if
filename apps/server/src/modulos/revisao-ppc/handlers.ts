@@ -1,5 +1,5 @@
 /**
- * Os handlers do `GrupoRevisaoPpc`: casca fina sobre a `ListaViva`, a `RevisaoIa` e a `ConversaAoLado` (as
+ * Os handlers do `GrupoRevisaoPpc`: casca fina sobre a `ListaViva`, os `Criterios`, a `RevisaoIa` e a `ConversaAoLado` (as
  * escritas que trocam o texto da lista passam por ela, que regrava o PPC na pasta da conversa), com a tradução de erro
  * do transporte (`traducao.ts`), a mesma dos outros grupos. O aviso de uso das ações que mandam o PPC à IA
  * fica nos serviços (M1.8). Entra no servidor pelo `handlers.ts` do núcleo (arquivo de composição).
@@ -8,6 +8,7 @@ import * as Effect from "effect/Effect";
 import { GrupoRevisaoPpc } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import { traduzir, traduzirStream } from "../../traducao.ts";
 import * as ConversaAoLado from "./ConversaAoLado.ts";
+import * as Criterios from "./Criterios.ts";
 import * as ListaViva from "./ListaViva.ts";
 import * as RevisaoIa from "./RevisaoIa.ts";
 
@@ -16,6 +17,7 @@ export const layer = GrupoRevisaoPpc.toLayer(
     const ia = yield* RevisaoIa.RevisaoIa;
     const viva = yield* ListaViva.ListaViva;
     const aoLado = yield* ConversaAoLado.ConversaAoLado;
+    const criterios = yield* Criterios.Criterios;
     return GrupoRevisaoPpc.of({
       "revisaoPpc.revisar": (entrada) => traduzirStream("revisaoPpc.revisar", viva.revisar(entrada)),
       "revisaoPpc.prepararIa": (entrada) => traduzir("revisaoPpc.prepararIa", ia.preparar(entrada)),
@@ -47,6 +49,7 @@ export const layer = GrupoRevisaoPpc.toLayer(
         traduzir("revisaoPpc.revisarArquivoNovo", aoLado.revisarArquivoNovo(lista, arquivo)),
       "revisaoPpc.gerarCopia": ({ lista }) => traduzir("revisaoPpc.gerarCopia", viva.gerarCopia(lista)),
       "revisaoPpc.documento": ({ lista }) => traduzir("revisaoPpc.documento", viva.documento(lista)),
+      "revisaoPpc.criterio": ({ lista, id }) => traduzir("revisaoPpc.criterio", criterios.ficha(lista, id)),
       "revisaoPpc.acompanhar": ({ lista, arquivo }) =>
         traduzir("revisaoPpc.acompanhar", viva.acompanhar(lista, arquivo)),
       "revisaoPpc.acompanharLista": ({ lista }) =>

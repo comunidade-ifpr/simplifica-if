@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 import { etapasVistas, marcaDaEntrada } from "../conversa/etapas.ts";
+import { registrarLinkDeModulo } from "../leitor/linksDeModulo.ts";
 import type { Item } from "../conversa/estado.ts";
 import {
   resumoMudancasPasta,
@@ -16,7 +17,6 @@ describe("nome curto das citações", () => {
   it("normas, com e sem dispositivo", () => {
     expect(nomeCurtoLink("ifpr://norma/br/cne-cp/res/2026/2#art28-xviii")).toBe("Res. CNE/CP 2/2026, art. 28, XVIII");
     expect(nomeCurtoLink("ifpr://norma/br/lei/1996/9394")).toBe("Lei 9.394/1996");
-    expect(nomeCurtoLink("ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc")).toBe("PPC em revisão (texto convertido)");
     expect(nomeCurtoLink("ifpr://norma/br/lei/1996/9394#art36A")).toBe("Lei 9.394/1996, art. 36-A");
     expect(nomeCurtoLink("ifpr://norma/ifpr/consup/res/2024/190")).toBe("Res. CONSUP/IFPR 190/2024");
   });
@@ -28,6 +28,16 @@ describe("nome curto das citações", () => {
     expect(dispositivoPorExtenso("art10-par10")).toBe("art. 10, § 10");
     expect(dispositivoPorExtenso("anexo4-item3")).toBe("Anexo IV, item 3");
     expect(dispositivoPorExtenso("art4-i-al-a")).toBe("art. 4º, I, alínea a");
+  });
+  it("o link de um módulo, pelo nome curto que ele registrou", () => {
+    expect(nomeCurtoLink("ifpr://modulo-teste/a/b#c")).toBe("Fonte da base");
+    registrarLinkDeModulo({
+      tipo: "modulo-teste",
+      Leitor: () => null,
+      nomeCurto: (caminho, fragmento) => `Teste ${caminho} ${fragmento ?? "-"}`,
+    });
+    expect(nomeCurtoLink("ifpr://modulo-teste/a/b#c")).toBe("Teste a/b c");
+    expect(nomeCurtoLink("ifpr://modulo-teste/a")).toBe("Teste a -");
   });
   it("cursos, PPC, CNCT, campus, ficha e link desconhecido", () => {
     expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliacao-1")).toBe(
@@ -48,7 +58,8 @@ describe("nome curto das citações", () => {
     );
     expect(nomeCurtoLink("ifpr://cnct/tecnico-em-enfermagem")).toBe("CNCT · Técnico em enfermagem");
     expect(nomeCurtoLink("ifpr://campus/curitiba")).toBe("Campus Curitiba");
-    expect(nomeCurtoLink("ifpr://ficha/CT-CURR-12")).toBe("Critério CT-CURR-12");
+    // As fichas da revisão de PPC não são da base: o link antigo não se reconhece.
+    expect(nomeCurtoLink("ifpr://ficha/CT-CURR-12")).toBe("Fonte da base");
     expect(nomeCurtoLink("ifpr://outra/coisa")).toBe("Fonte da base");
   });
 });

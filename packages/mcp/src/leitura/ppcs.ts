@@ -3,7 +3,7 @@
  * `adequacao_art71`, `buscar_secoes`, `ler_secao`, `listar_cursos`, `ficha_curso` e `fatos_ppc`,
  * sobre os serviços `Ppcs`, `Cursos`, `Impacto` e `FontesNormativas` do kb.
  *
- * Os tipos de seção válidos e o título das fichas são lidos uma vez, na construção: o banco é só de
+ * Os tipos de seção válidos e a lista dos PPCs são lidos uma vez, na construção: o banco é só de
  * leitura.
  */
 import { INDICADORES } from "@simplifica-if/kb/adequacao/art71";
@@ -12,7 +12,6 @@ import type { ResultadoCurso } from "@simplifica-if/kb/Cursos";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Impacto from "@simplifica-if/kb/Impacto";
 import * as Normas from "@simplifica-if/kb/Normas";
-import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import type { PpcCitante } from "@simplifica-if/kb/ppcs/citacoes";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Effect from "effect/Effect";
@@ -27,7 +26,7 @@ import * as ImpactoDaNorma from "../ferramentas/impacto-da-norma.ts";
 import * as LerSecao from "../ferramentas/ler-secao.ts";
 import * as ListarCursos from "../ferramentas/listar-cursos.ts";
 import { textoFatosPpc } from "../ferramentas/comum-ppcs.ts";
-import { lerLink, linkCampus, linkCnct, linkCurso, linkFicha, linkNorma, linkPpc } from "../links.ts";
+import { lerLink, linkCampus, linkCnct, linkCurso, linkNorma, linkPpc } from "../links.ts";
 import { RESERVA_TEXTO } from "../orcamento.ts";
 import {
   AVISO_FATO_EXTRAIDO,
@@ -97,7 +96,6 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
   const cursos = yield* Cursos.Cursos;
   const impacto = yield* Impacto.Impacto;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const pacote = yield* PacoteContexto.PacoteContexto;
   const tiposDeSecao = yield* ppcs.tiposDeSecao;
   const listados = yield* ppcs.listar;
   const ppcPorChave = new Map(listados.map((p) => [p.chave, p]));
@@ -113,7 +111,6 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
     const seguinte = ppcPorChave.get(chave.replace(/^ppc:/, ""))?.substituido_por;
     return seguinte ? { substituido_por: seguinte } : {};
   };
-  const fichasPorPath = new Map((yield* pacote.fichasResumidas).map((f) => [f.path, f]));
 
   const citacoesDaNorma = Effect.fn("Leitura.citacoesDaNorma")(function* (e: typeof CitacoesDaNorma.Entrada.Type) {
     const norma = yield* normaPedida(normas, e.id);
@@ -184,19 +181,6 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
     const citantes = yield* ppcs.citacoesDaNorma(e.id, { incluirSubstituidos: e.incluir_substituidos });
     const transicoes = new Map((yield* normas.vigencia(norma.id)).transicoes.map((t) => [t.id, t]));
     const relacoes = fontes.relacoes.filter((r) => r.origem === norma.id || r.alvo === norma.id);
-    const fichas = resultado.arquivos
-      .filter((a) => a.categoria === "ficha")
-      .map((a) => {
-        const ficha = fichasPorPath.get(a.arquivo);
-        const id = ficha?.id ?? a.arquivo;
-        return {
-          id,
-          titulo: ficha?.titulo ?? a.arquivo,
-          papel: a.motivos.join(", "),
-          dispositivos: a.dispositivos,
-          link: linkFicha(id),
-        };
-      });
     const avisos: Aviso[] = [...avisoVigencia(norma)];
     // laço pelas normas que citam esta (dezenas): o título de cada uma
     const normasQueCitam = yield* Effect.forEach(
@@ -222,11 +206,6 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
             .slice(0, ImpactoDaNorma.AMOSTRA_PPCS)
             .map((p) => ({ ppc: p.ppc, nome: p.curso, campus: p.campus, link: linkPpc(p.ppc) })),
         },
-        fichas,
-        outros_arquivos: resultado.arquivos
-          .filter((a) => a.categoria !== "ficha")
-          .map((a) => ({ arquivo: a.arquivo, papel: a.motivos.join(", "), dispositivos: a.dispositivos })),
-        topicos: resultado.topicos_atingidos,
       },
       { avisos },
     );

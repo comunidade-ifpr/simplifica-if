@@ -141,7 +141,7 @@ export class ServidorMcpHttp extends Context.Service<
     readonly porta: number;
     /**
      * Token novo para uma sessão; ele vale até fechar o Scope. `pastaTrabalho` é a pasta da qual o
-     * pacote_contexto pode ler arquivos nessa sessão.
+     * pacote_revisao_ppc pode ler arquivos nessa sessão.
      */
     readonly abrirSessao: (entrada: {
       readonly rotulo: string;
@@ -363,7 +363,7 @@ const layerAutorizacao = HttpRouter.middleware<{ provides: SessaoAtual.SessaoAtu
  * (o servidor do app, que o usa também no RPC de leitura) monta uma conexão só ao `kb.sqlite`.
  *
  * - `porta`: a porta; sem ela (ou com 0), a que o sistema escolher;
- * - `pastaTrabalho`: a pasta de onde o `pacote_contexto` lê um `.md` nas sessões abertas sem pasta
+ * - `pastaTrabalho`: a pasta de onde o `pacote_revisao_ppc` lê um `.md` nas sessões abertas sem pasta
  *   própria; sem ela, essas sessões não leem arquivo nenhum. A pasta vai ao contexto de cada
  *   requisição, como a da sessão; o `Leitura` do ambiente não precisa tê-la.
  *

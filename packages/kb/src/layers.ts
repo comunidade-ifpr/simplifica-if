@@ -24,7 +24,7 @@ import * as Cursos from "./Cursos.ts";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Impacto from "./Impacto.ts";
 import * as Normas from "./Normas.ts";
-import * as PacoteContexto from "./PacoteContexto.ts";
+import * as PacoteRevisaoPpc from "./PacoteRevisaoPpc.ts";
 import * as Ppcs from "./Ppcs.ts";
 import type * as Sql from "./db/sql.ts";
 import { CAMINHOS } from "./caminhos.ts";
@@ -36,7 +36,7 @@ export type ServicosConsulta =
   | Cursos.Cursos
   | Conselhos.Conselhos
   | Impacto.Impacto
-  | PacoteContexto.PacoteContexto
+  | PacoteRevisaoPpc.PacoteRevisaoPpc
   | FontesNormativas.FontesNormativas
   | BaseKb.BaseKb
   | SqlClient.SqlClient;
@@ -48,7 +48,7 @@ export const layerConsultas = Layer.mergeAll(
   Cursos.layer,
   Conselhos.layer,
   Impacto.layer,
-  PacoteContexto.layer,
+  PacoteRevisaoPpc.layer,
   BaseKb.layer,
 );
 

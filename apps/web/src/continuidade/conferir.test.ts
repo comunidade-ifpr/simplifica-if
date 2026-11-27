@@ -6,18 +6,18 @@ import { type ConferenciaModulo, conferirContinuidade, continuidadeQueCabe, rota
 const PAINEL: PainelGuardado = {
   aberto: true,
   aba: "ler",
-  trilha: { links: ["ifpr://norma/a", "ifpr://revisao/apagada/1#p-2", "ifpr://norma/b"], posicao: 1 },
-  marcados: ["ifpr://revisao/apagada/1", "ifpr://revisao/viva/1", "ifpr://norma/a"],
+  trilha: { links: ["ifpr://norma/a", "ifpr://revisao-ppc/apagada/1#p-2", "ifpr://norma/b"], posicao: 1 },
+  marcados: ["ifpr://revisao-ppc/apagada/1", "ifpr://revisao-ppc/viva/1", "ifpr://norma/a"],
   preso: true,
-  conversa: { id: "c1", origem: { chave: "revisao:apagada", ia: "claude" } },
+  conversa: { id: "c1", origem: { chave: "revisao-ppc:apagada", ia: "claude" } },
 };
 
 /** A revisão de mentira: só a `viva` existe. */
 const REVISAO: ConferenciaModulo = {
   rota: (pathname, busca) =>
     pathname === "/revisao-ppc" && typeof busca.id === "string" ? busca.id === "viva" : undefined,
-  link: (link) => (link.startsWith("ifpr://revisao/") ? link.startsWith("ifpr://revisao/viva/") : undefined),
-  origem: (chave) => (chave.startsWith("revisao:") ? chave === "revisao:viva" : undefined),
+  link: (link) => (link.startsWith("ifpr://revisao-ppc/") ? link.startsWith("ifpr://revisao-ppc/viva/") : undefined),
+  origem: (chave) => (chave.startsWith("revisao-ppc:") ? chave === "revisao-ppc:viva" : undefined),
   aviso: "Esta revisão foi apagada",
 };
 
@@ -53,7 +53,7 @@ describe("o que volta ao reabrir", () => {
     assert.strictEqual(conferida.rota, "/");
     assert.deepStrictEqual(conferida.avisos, ["Esta revisão foi apagada"]);
     assert.deepStrictEqual(conferida.painel.trilha, { links: ["ifpr://norma/a", "ifpr://norma/b"], posicao: 0 });
-    assert.deepStrictEqual(conferida.painel.marcados, ["ifpr://revisao/viva/1", "ifpr://norma/a"]);
+    assert.deepStrictEqual(conferida.painel.marcados, ["ifpr://revisao-ppc/viva/1", "ifpr://norma/a"]);
     // a conversa segue, como livre
     assert.deepStrictEqual(conferida.painel.conversa, { id: "c1" });
     // o Ler mostrava o PPC apagado: o painel volta recolhido
@@ -64,9 +64,9 @@ describe("o que volta ao reabrir", () => {
   it("sem nada apagado, tudo volta, sem aviso; a conversa apagada sai do painel", () => {
     const painel: PainelGuardado = {
       ...PAINEL,
-      trilha: { links: ["ifpr://norma/a", "ifpr://revisao/viva/1"], posicao: 1 },
+      trilha: { links: ["ifpr://norma/a", "ifpr://revisao-ppc/viva/1"], posicao: 1 },
       marcados: ["ifpr://norma/a"],
-      conversa: { id: "c1", origem: { chave: "revisao:viva" } },
+      conversa: { id: "c1", origem: { chave: "revisao-ppc:viva" } },
     };
     const conferida = conferir("/explorar", painel);
     assert.deepStrictEqual(conferida, { rota: "/explorar", painel, avisos: [] });
@@ -75,10 +75,10 @@ describe("o que volta ao reabrir", () => {
 
   it("o documento do Explorar volta se o link fica: o PPC da revisão apagada vai ao Início, com o aviso", () => {
     const ver = (link: string) => `/explorar/ver?link=${encodeURIComponent(link)}`;
-    const apagada = conferir(ver("ifpr://revisao/apagada/1"));
+    const apagada = conferir(ver("ifpr://revisao-ppc/apagada/1"));
     assert.strictEqual(apagada.rota, "/");
     assert.deepStrictEqual(apagada.avisos, ["Esta revisão foi apagada"]);
-    assert.strictEqual(conferir(ver("ifpr://revisao/viva/1")).rota, ver("ifpr://revisao/viva/1"));
+    assert.strictEqual(conferir(ver("ifpr://revisao-ppc/viva/1")).rota, ver("ifpr://revisao-ppc/viva/1"));
     assert.strictEqual(conferir(ver("ifpr://norma/a")).rota, ver("ifpr://norma/a"));
   });
 });

@@ -204,7 +204,7 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
   semIngles();
 });
 
-it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; campus e ficha de análise", async () => {
+it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; campus; sem os critérios da revisão", async () => {
   await using app = await montarApp(servidor, "/explorar");
   // a entrada mostra as coleções
   await expect.element(page.getByRole("link", { name: /Cursos 2/ })).toBeVisible();
@@ -302,14 +302,12 @@ it("coleções: a linha do tempo, filtros de cursos, normas, CNCT e Consepe; cam
   await expect.element(page.getByRole("link", { name: "Ficha do curso" })).toBeVisible();
   semIngles();
 
-  // As fichas da revisão de PPC não são coleção nem resultado de busca; a página de uma abre pelo link
+  // Os critérios da revisão de PPC são da tarefa, não da base: nem coleção, nem página do Explorar
   await expect
-    .element(page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: /Ficha/ }))
+    .element(page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: /Ficha|Critério/ }))
     .not.toBeInTheDocument();
   await app.roteador.navigate({ to: "/explorar/ver", search: { link: "ifpr://ficha/CT-CURR-12" } });
-  const ficha = page.getByRole("article", { name: "Ficha de análise" });
-  await expect.element(ficha.getByText(/^A organização curricular deixa clara a progressão formativa/)).toBeVisible();
-  await expect.element(ficha.getByText("Obrigatória")).toBeVisible();
+  await expect.element(page.getByText("Não foi possível ler este link")).toBeVisible();
   semIngles();
 });
 

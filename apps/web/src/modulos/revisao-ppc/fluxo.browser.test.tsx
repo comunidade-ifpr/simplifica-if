@@ -114,7 +114,10 @@ it("Revisar um PPC: do Início ao resultado, com a régua, o bloqueio do curso, 
     .element(page.getByRole("article", { name: "PPC em revisão" }).getByRole("heading", { name: "PPC de teste.docx" }))
     .toBeVisible();
   await page.getByRole("button", { name: "Fechar o painel" }).click();
-  expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\/|CT-[A-Z]+-\d/);
+  // O código do critério só aparece no link da ficha dele ("CT-CURR-22 · O que este critério confere").
+  expect(document.body.innerText.replace(/CT-[A-Z]+-\d+ · O que este critério confere/g, "")).not.toMatch(
+    /nao_atende|a_conferir|ifpr:\/\/|CT-[A-Z]+-\d/,
+  );
   semIngles();
 
   // "Feito" esmaece a linha e conta; F, com o foco na linha, desfaz.

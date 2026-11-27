@@ -10,8 +10,8 @@
  * A layer dos handlers pede o `Leitura` do ambiente: `layerLeitura({ banco, canal })` monta o serviço
  * sobre o `kb.sqlite`.
  *
- * Os conteúdos que só existem como recurso (PPC sem seção, CNCT, campus e ficha) têm um RPC próprio
- * (`lerPpc`, `lerCnct`, `lerCampus`, `lerFicha`), com a mesma resposta que o `resources/read` do MCP
+ * Os conteúdos que só existem como recurso (PPC sem seção, CNCT e campus) têm um RPC próprio
+ * (`lerPpc`, `lerCnct`, `lerCampus`), com a mesma resposta que o `resources/read` do MCP
  * traz nesses tipos: é o mesmo método do `Leitura`.
  *
  * O cliente RPC passa o payload já decodificado (o `Type` do schema): os campos que a ferramenta MCP
@@ -51,7 +51,6 @@ export const layerHandlersRpc = GrupoLeitura.toLayer(
       lerPpc: traduzir("lerPpc", leitura.lerPpc),
       lerCnct: traduzir("lerCnct", leitura.lerCnct),
       lerCampus: traduzir("lerCampus", leitura.lerCampus),
-      lerFicha: traduzir("lerFicha", leitura.lerFicha),
       lerDocumento: traduzir("lerDocumento", leitura.lerDocumento),
       explorarIndice: traduzir("explorarIndice", leitura.explorarIndice),
       explorarBuscar: traduzir("explorarBuscar", leitura.explorarBuscar),

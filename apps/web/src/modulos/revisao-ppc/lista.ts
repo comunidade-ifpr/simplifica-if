@@ -33,11 +33,34 @@ export function versaoDoPpc(lista: Pick<ListaPendencias, "sha256" | "pendencias"
   return `${lista.sha256.slice(0, 12)}-${h.toString(16).padStart(8, "0")}`;
 }
 
+/** O tipo dos links do módulo: `ifpr://revisao-ppc/<lista>/…`, registrado na composição (`linksDeModulo.ts`). */
+export const TIPO_LINK = "revisao-ppc";
+
 /**
  * O link do PPC revisado (`versaoDoPpc`), para "Abrir ao lado"; com `#p-<chave>`, o trecho da pendência,
  * para "Ver no PPC".
  */
-export const linkDoPpc = (lista: string, versao: string): string => `ifpr://revisao/${lista}/${versao}`;
+export const linkDoPpc = (lista: string, versao: string): string => `ifpr://${TIPO_LINK}/${lista}/${versao}`;
+
+/** O link da ficha do critério `ficha` (`CT-SUP-17`) na revisão `lista`, aberta no painel. */
+export const linkDoCriterio = (lista: string, ficha: string): string =>
+  `ifpr://${TIPO_LINK}/${lista}/criterio/${ficha}`;
+
+/** O critério de um link do módulo (`<lista>/criterio/<ID>`, sem o tipo), ou nada (o PPC). */
+export function criterioDoCaminho(caminho: string): { readonly lista: string; readonly id: string } | undefined {
+  const m = /^([^/]+)\/criterio\/([^/]+)$/.exec(caminho);
+  return m === null ? undefined : { lista: m[1]!, id: m[2]! };
+}
+
+/** A lista da tela inteira (`pendencia`) ou a coluna ao lado do Word (`compacta`). */
+export type PrefixoLinha = "pendencia" | "compacta";
+
+/** O id da linha da pendência na lista (o botão dela é `<id>-botao`). */
+export const idDaLinha = (chave: string, prefixo: PrefixoLinha = "pendencia"): string =>
+  `${prefixo}-${chave.replace(/[^\w-]/g, "_")}`;
+
+/** A pendência da triagem não é critério da revisão: não tem ficha para abrir. */
+export const temFichaDeCriterio = (ficha: string): boolean => ficha !== "TRIAGEM";
 
 export type Gravidade = "corrigir" | "conferir";
 

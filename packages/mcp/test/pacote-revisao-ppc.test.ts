@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: monta a pasta de trabalho, com arquivos e links simbólicos, no disco
 /**
- * `pacote_contexto` (T4) sobre a fixture de PPCs: contrato (entradas válidas e inválidas, saída no
+ * `pacote_revisao_ppc` (T4) sobre a fixture de PPCs: contrato (entradas válidas e inválidas, saída no
  * outputSchema), determinismo, orçamento do texto (80 mil caracteres), a pasta de trabalho (`..`,
  * caminho absoluto, link simbólico para fora, arquivo inexistente) e `ppc` contra `arquivo`; na
  * base real, em `transversal/base-real.test.ts`.
@@ -15,9 +15,9 @@ import { ehEntradaInvalida } from "../src/contratos.ts";
 import {
   corpoDoPacote,
   type PacoteDaBase,
-  pacoteContexto,
-  TETO_PACOTE_CONTEXTO,
-} from "../src/ferramentas/pacote-contexto.ts";
+  pacoteRevisaoPpc,
+  TETO_PACOTE_REVISAO_PPC,
+} from "../src/ferramentas/pacote-revisao-ppc.ts";
 import { layerHandlers } from "../src/ferramentas/toolkit.ts";
 import { layerLeituraComPasta } from "../src/servidor.ts";
 import { camadaFerramentas, mensagemDeErro, responder, saidaValida } from "./apoio.ts";
@@ -62,9 +62,9 @@ const comPasta = (banco: string, pasta: string) =>
 
 const chamar = (args: unknown, banco: string, pasta: string) =>
   Effect.gen(function* () {
-    const r = yield* responder(pacoteContexto, args).pipe(Effect.provide(comPasta(banco, pasta)));
-    if (!saidaValida(pacoteContexto, r.resposta)) throw new Error("pacote_contexto: saída fora do outputSchema");
-    expect(r.texto.length).toBeLessThanOrEqual(TETO_PACOTE_CONTEXTO);
+    const r = yield* responder(pacoteRevisaoPpc, args).pipe(Effect.provide(comPasta(banco, pasta)));
+    if (!saidaValida(pacoteRevisaoPpc, r.resposta)) throw new Error("pacote_revisao_ppc: saída fora do outputSchema");
+    expect(r.texto.length).toBeLessThanOrEqual(TETO_PACOTE_REVISAO_PPC);
     expect(r.texto.split("\n").at(-1)).toBe("Base de desenvolvimento (versão `dev-ab12cd34`).");
     return r;
   });
@@ -73,12 +73,12 @@ const chamar = (args: unknown, banco: string, pasta: string) =>
 const erroDeEntrada = (args: unknown, banco: string, pasta: string) =>
   Effect.gen(function* () {
     const camada = comPasta(banco, pasta);
-    const erro = yield* Effect.flip(responder(pacoteContexto, args).pipe(Effect.provide(camada)));
+    const erro = yield* Effect.flip(responder(pacoteRevisaoPpc, args).pipe(Effect.provide(camada)));
     expect(ehEntradaInvalida(erro)).toBe(true);
-    return yield* mensagemDeErro(pacoteContexto, args).pipe(Effect.provide(camada));
+    return yield* mensagemDeErro(pacoteRevisaoPpc, args).pipe(Effect.provide(camada));
   });
 
-describe("pacote_contexto: contrato", () => {
+describe("pacote_revisao_ppc: contrato", () => {
   it.effect("PPC da base: o pacote do kb, com a ficha e o tamanho do PPC inteiro", () =>
     Effect.gen(function* () {
       const { banco, pasta } = ambiente();
@@ -90,7 +90,7 @@ describe("pacote_contexto: contrato", () => {
       expect(dados.tamanho.caracteres_ppc_inteiro).toBe(12000);
       expect(texto).toContain("**Pacote de contexto da revisão de PPC: CT-CURR-12**");
       // a ficha da fixture não traz o título no JSON
-      expect(texto).toContain("### [CT-CURR-12](ifpr://ficha/CT-CURR-12)");
+      expect(texto).toContain("### CT-CURR-12\n");
       expect(texto).toContain(`ifpr://ppc/${PPC_ENFERMAGEM}`);
     }),
   );
@@ -148,11 +148,11 @@ describe("pacote_contexto: contrato", () => {
     Effect.gen(function* () {
       const { banco, pasta } = ambiente();
       const camada = comPasta(banco, pasta);
-      expect(yield* mensagemDeErro(pacoteContexto, { ppc: PPC_ENFERMAGEM }).pipe(Effect.provide(camada))).toMatch(
+      expect(yield* mensagemDeErro(pacoteRevisaoPpc, { ppc: PPC_ENFERMAGEM }).pipe(Effect.provide(camada))).toMatch(
         /tarefa/,
       );
       expect(
-        yield* mensagemDeErro(pacoteContexto, { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM, extra: 1 }).pipe(
+        yield* mensagemDeErro(pacoteRevisaoPpc, { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM, extra: 1 }).pipe(
           Effect.provide(camada),
         ),
       ).toMatch(/extra/);
@@ -163,13 +163,13 @@ describe("pacote_contexto: contrato", () => {
     Effect.gen(function* () {
       const { banco } = ambiente();
       const camada = camadaFerramentas(banco);
-      const erro = yield* mensagemDeErro(pacoteContexto, { tarefa: "CT-CURR-12", arquivo: "PPC.md" }).pipe(
+      const erro = yield* mensagemDeErro(pacoteRevisaoPpc, { tarefa: "CT-CURR-12", arquivo: "PPC.md" }).pipe(
         Effect.provide(camada),
       );
       expect(erro).toBe(
         "arquivo: este servidor não tem pasta de trabalho e não lê arquivos; use ppc, com um PPC da base",
       );
-      const { resposta } = yield* responder(pacoteContexto, { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM }).pipe(
+      const { resposta } = yield* responder(pacoteRevisaoPpc, { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM }).pipe(
         Effect.provide(camada),
       );
       expect((resposta.dados as PacoteDaBase).fichas_ids).toEqual(["CT-CURR-12"]);
@@ -177,7 +177,7 @@ describe("pacote_contexto: contrato", () => {
   );
 });
 
-describe("pacote_contexto: pasta de trabalho", () => {
+describe("pacote_revisao_ppc: pasta de trabalho", () => {
   it.effect("recusa .. para fora da pasta, mesmo com o arquivo existindo", () =>
     Effect.gen(function* () {
       const { banco, pasta } = ambiente();
@@ -238,7 +238,7 @@ describe("pacote_contexto: pasta de trabalho", () => {
   );
 });
 
-describe("pacote_contexto: ppc contra arquivo", () => {
+describe("pacote_revisao_ppc: ppc contra arquivo", () => {
   it.effect(
     "as fichas e as normas não dependem de onde vem o PPC (marcos e transições dependem das citações do PPC: ver o smoke)",
     () =>
@@ -256,7 +256,7 @@ describe("pacote_contexto: ppc contra arquivo", () => {
   );
 });
 
-describe("pacote_contexto: determinismo", () => {
+describe("pacote_revisao_ppc: determinismo", () => {
   it.effect("mesma entrada e mesmo banco: mesma saída, byte a byte", () =>
     Effect.gen(function* () {
       const { banco, pasta } = ambiente();
@@ -273,7 +273,7 @@ describe("pacote_contexto: determinismo", () => {
   );
 });
 
-describe("pacote_contexto: orçamento", () => {
+describe("pacote_revisao_ppc: orçamento", () => {
   /** Pacote sintético: `secoes` seções de `tamanhoSecao` caracteres e fichas de `tamanhoFicha`. */
   const sintetico = (secoes: number, tamanhoSecao: number, tamanhoFicha = 100): PacoteDaBase => ({
     tarefa: "todas",

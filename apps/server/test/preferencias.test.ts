@@ -41,10 +41,10 @@ const CONTINUIDADE: Continuidade = {
   painel: {
     aberto: true,
     aba: "conversar",
-    trilha: { links: ["ifpr://norma/br/cne-cp/res/2026/2", "ifpr://revisao/x/1#p-2"], posicao: 1 },
+    trilha: { links: ["ifpr://norma/br/cne-cp/res/2026/2", "ifpr://revisao-ppc/x/1#p-2"], posicao: 1 },
     marcados: ["ifpr://norma/br/cne-cp/res/2026/2"],
     preso: false,
-    conversa: { id: "c1", origem: { chave: "revisao:x", ia: "claude" } },
+    conversa: { id: "c1", origem: { chave: "revisao-ppc:x", ia: "claude" } },
   },
 };
 

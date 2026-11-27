@@ -2,7 +2,7 @@
  * Instruções do servidor (T5): o texto cabe em 400 palavras e cobre o que a especificação pede
  * (seção "Instruções do servidor"): todas as ferramentas, por intenção; citação com link `ifpr://`
  * e texto literal; os selos norma ainda não vigente e `extraido`; PPC como exemplo, não norma; e
- * quando usar o `pacote_contexto`.
+ * quando usar o `pacote_revisao_ppc`.
  */
 import { describe, expect, test } from "vite-plus/test";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
@@ -23,13 +23,13 @@ describe("instruções do servidor", () => {
     }
   });
 
-  test("citação, selos de confiança, PPC como exemplo e o pacote_contexto na revisão de PPC", () => {
+  test("citação, selos de confiança, PPC como exemplo e o pacote_revisao_ppc na revisão de PPC", () => {
     expect(INSTRUCOES).toContain("`ifpr://`");
     expect(INSTRUCOES).toContain("texto literal");
     expect(INSTRUCOES).toContain("aguardando publicação");
     expect(INSTRUCOES).toContain("`extraido`");
     expect(INSTRUCOES).toMatch(/exemplos institucionais, não norma/);
-    expect(INSTRUCOES).toMatch(/Revisão de PPC[^\n]*`pacote_contexto`/);
+    expect(INSTRUCOES).toMatch(/Revisão de PPC[^\n]*`pacote_revisao_ppc`/);
     expect(INSTRUCOES).toMatch(/não preencha com memória/);
   });
 });

@@ -23,7 +23,7 @@ import { CONTAGENS, criarBancoFixture, limparTemporarios } from "./fixture.ts";
 
 afterEach(limparTemporarios);
 
-/** As 16 ferramentas da especificação M0.1, na ordem da tabela "Ferramentas". */
+/** As 17 ferramentas: as 16 da especificação M0.1, na ordem da tabela "Ferramentas", e a `criterios_revisao_ppc`. */
 const PREVISTAS = [
   "buscar_norma",
   "ler_dispositivos",
@@ -38,7 +38,8 @@ const PREVISTAS = [
   "listar_cursos",
   "ficha_curso",
   "fatos_ppc",
-  "pacote_contexto",
+  "pacote_revisao_ppc",
+  "criterios_revisao_ppc",
   "sobre_a_base",
   "etapa",
 ];

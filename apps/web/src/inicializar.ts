@@ -3,8 +3,8 @@
  * `Api`, as conversas, as atividades (com o aviso e o selo do sistema, no desktop), o painel do app, a
  * continuidade (voltar onde se estava ao reabrir, com o que cada módulo diz do que é dele), o modo
  * compacto da janela (no desktop) e o estado de longa duração de cada módulo (o `ControleRevisao` da
- * revisão de PPC, com o painel seguindo a lista refeita ou apagada fora; o pedido de conversa do link do PPC
- * em revisão e a preparação da conversa ao lado dela).
+ * revisão de PPC, com o painel seguindo a lista refeita ou apagada fora; os links `ifpr://revisao-ppc/…`
+ * no Ler, o pedido de conversa deles e a preparação da conversa ao lado dela).
  * Arquivo de composição.
  */
 import * as Layer from "effect/Layer";
@@ -19,6 +19,7 @@ import { GerenteConversas } from "./conversa/GerenteConversas.ts";
 import { layerTracer } from "./diagnostico.ts";
 import { ControleJanelaCompacta } from "./janela-compacta.ts";
 import { memoriaDa } from "./leitor/carga.ts";
+import { registrarLinkDeModulo } from "./leitor/linksDeModulo.ts";
 import { ControlePainel } from "./painel/ControlePainel.ts";
 import { ponteDesktop } from "./ponte-desktop.ts";
 import { avisosDoSistemaLigados } from "./tarefas/perfil.ts";
@@ -27,6 +28,7 @@ import { depoisDeApagarRevisao, depoisDeTrocarCurso } from "./modulos/revisao-pp
 import { ControleRevisao } from "./modulos/revisao-ppc/ControleRevisao.ts";
 import { continuidadeDaRevisao } from "./modulos/revisao-ppc/continuidade.ts";
 import { origensDaRevisao, pedidoDoLinkDaRevisao } from "./modulos/revisao-ppc/conversa.ts";
+import { linksDaRevisao } from "./modulos/revisao-ppc/LeitorRevisao.tsx";
 
 export interface AppIniciado {
   readonly contexto: ContextoApp;
@@ -44,6 +46,7 @@ export async function inicializar(
   opcoes?: Conexao.OpcoesConexao,
   opcoesApp: OpcoesApp = {},
 ): Promise<AppIniciado> {
+  registrarLinkDeModulo(linksDaRevisao);
   // O tracer registra no log do app as chamadas que falham de forma inesperada (`diagnostico.ts`).
   const runtime = ManagedRuntime.make(Layer.merge(Conexao.layerGlobal(origem, opcoes), layerTracer));
   const api = await criarApi(runtime);
@@ -88,8 +91,8 @@ export async function inicializar(
       painel,
       continuidade,
       janela: new ControleJanelaCompacta(ponteDesktop()?.janela),
-      pedidoDoLink: (link) => pedidoDoLinkDaRevisao({ api, revisao, conversas }, link),
-      origens: origensDaRevisao({ api, revisao, conversas }),
+      pedidoDoLink: (link) => pedidoDoLinkDaRevisao({ api, revisao, conversas, painel }, link),
+      origens: origensDaRevisao({ api, revisao, conversas, painel }),
       revisao,
     },
     encerrar: async () => {

@@ -198,9 +198,8 @@ As fichas de `base-conhecimento/revisao-ppc/` ficam na base: o MCP (`pacote_cont
 | `apps/server/src/persistencia/migracoes/0001_Inicial.ts` | 2 | o import e o bloco das tabelas |
 | `apps/server/src/persistencia/migracoes/0002_ProblemasDasTentativas.ts` | 2 | o import e o export da migração do módulo |
 | `apps/web/src/routes/revisao-ppc.tsx` | o arquivo (6 linhas de código) | a casca da rota do TanStack |
-| `apps/web/src/inicializar.ts` | 4 | o import, o `new ControleRevisao`, o campo no contexto e o `encerrar` |
+| `apps/web/src/inicializar.ts` | 4 | o import, o `new ControleRevisao`, o campo no contexto e o `encerrar`; e o registro do tipo de link `revisao-ppc` (`leitor/linksDeModulo.ts`), pelo qual o leitor despacha `ifpr://revisao-ppc/…` sem importar o módulo |
 | `apps/web/src/contexto.tsx` | 2 | o tipo e o campo `revisao` do `ContextoApp` |
-| `apps/web/src/leitor/Leitor.tsx` | 4 | o import e o despacho de `ifpr://revisao/` |
 | `apps/web/src/routes/index.tsx` | 2 | o import e o `<UltimaRevisao />` |
 | `apps/web/src/tarefas/abrir.ts` | 1 | a rota em `ROTAS_MODULO` (sem import) |
 | `apps/desktop/src/ipc.ts` | 2 | o import e o `registrarIpcRevisaoPpc` |
@@ -211,7 +210,7 @@ Saíram da lista que o plano previa: `apps/desktop/src/seguranca.ts` (as regras 
 
 **Superfície do núcleo que o módulo usa** (o rascunho do contrato da etapa 6):
 
-- **Servidor:** o `Motor` (`@simplifica-if/motor`: sessões, `FalhaProvider`, eventos, a política de julgamento sem ferramentas); a leitura da base (`PacoteContexto`, `FontesNormativas`, `Normas`, `Cursos` do `@simplifica-if/kb`, pelo `Leitura` do servidor); o banco das conversas (o `SqlClient` que o `servidor.ts` passa à layer, e `descarregar`, de `persistencia/Banco.ts`); as `Preferencias` (o aviso de uso e as IAs em uso); `ArquivosLiberados`; `WorkerLimitado` (o `Executor` e os limites); `nome-livre.ts`; `observabilidade/resumoDaFalha.ts`; a tradução de erro do transporte (`traducao.ts`); e, do contrato, `AvisoNaoAceito`, `Provider` e o `SUFIXO_REVISAO_PREVIA`.
+- **Servidor:** o `Motor` (`@simplifica-if/motor`: sessões, `FalhaProvider`, eventos, a política de julgamento sem ferramentas); a leitura da base (`PacoteRevisaoPpc`, `FontesNormativas`, `Normas`, `Cursos` do `@simplifica-if/kb`, pelo `Leitura` do servidor); o banco das conversas (o `SqlClient` que o `servidor.ts` passa à layer, e `descarregar`, de `persistencia/Banco.ts`); as `Preferencias` (o aviso de uso e as IAs em uso); `ArquivosLiberados`; `WorkerLimitado` (o `Executor` e os limites); `nome-livre.ts`; `observabilidade/resumoDaFalha.ts`; a tradução de erro do transporte (`traducao.ts`); e, do contrato, `AvisoNaoAceito`, `Provider` e o `SUFIXO_REVISAO_PREVIA`.
 - **Interface:** a `Api` e o `ContextoApp` (`useApi`, `useApp`, `useEstadoConexao`); `conexao/erros.ts` (`explicarErro`); `ponte-desktop.ts`; `deteccao.ts` e `providers.ts` (as IAs prontas); `diagnostico.ts` (`registrarErro`); o diálogo e a seleção de apagar (`apagar/`); o leitor (`Documento`, `useCarga`, as peças, o histórico) e o `PainelLeitura`; o índice do Explorar (a lista do CNCT de "Qual é o curso?") e `normalizar`; `lib/texto.ts` e `lib/formato.ts`; os componentes comuns (`components/`, `components/ui/`).
 - **Desktop:** do IPC do núcleo, o `tratar` (só a janela do app), o `exigirJanela` e o `liberarNoServidor`.
 
@@ -226,6 +225,43 @@ Nada disso é da revisão escondido no núcleo: cada peça tem outro usuário (o
 
 Com o `pnpm test` na mesma cópia, falham também os testes que leem o catálogo do checkout (`catalogo/tarefas/revisar-ppc.yaml`, que cita o módulo e é dado): `servidor.test.ts`, `tarefas-rpc.test.ts`, `pacote-diagnostico.test.ts`, `empacotar.test.ts`, `validar_base.test.ts` e `fabrica_atualizacao.test.ts`. Tirar o módulo do app é tirar também a tarefa do catálogo (ou passá-la a `descontinuada`).
 
+### Os critérios são da tarefa, não da base (27/11/2026)
+
+As 79 fichas de `base-conhecimento/revisao-ppc/fichas/` são os critérios da tarefa "Revisar um PPC". Hoje o app as trata como base:
+- **No `kb.sqlite`:** a tabela `fichas`, que alimenta as consultas gerais.
+- **No leitor do Explorar:** o link `ifpr://ficha/<ID>`, que abre a `FichaRevisao`.
+- **No MCP:** o recurso `ifpr://ficha/<ID>` e as fichas dentro de `pacote_contexto` e `impacto_da_norma`.
+
+Dentro da revisão, quase nada: o "Detalhes" da pendência mostra só o título e o código. Quem revisa não vê o que o critério confere, e o Explorar mostra um material que só faz sentido dentro da tarefa.
+
+**Decisões:**
+
+1. **Nome do módulo em tudo o que é dele.** "Revisão" é genérico demais para nomear uma tarefa. O link passa de `ifpr://revisao/<lista>/<versão>` a `ifpr://revisao-ppc/<lista>/<versão>`, e a origem da conversa ao lado, de `revisao:<lista>` a `revisao-ppc:<lista>`. O mesmo vale para os prefixos da memória do leitor e das rolagens.
+   - O núcleo para de citar esses nomes: o leitor, o `Documento` e o contexto passam a despachar pelo prefixo que o módulo registra na composição.
+   - Sem compatibilidade com o nome antigo, porque o app não tem usuários. Um link `ifpr://revisao/…` gravado num banco de desenvolvimento deixa de abrir.
+2. **A ficha do critério é do módulo e abre no painel ao lado, no contexto da revisão.**
+   - **O link:** `ifpr://revisao-ppc/<lista>/criterio/<ID>`, renderizado pelo módulo.
+   - **Onde se abre:** no código da pendência ("CT-SUP-17 · O que este critério confere"), em cada marca da régua de critérios (que passa a abrir também os que passaram) e no "Detalhes".
+   - **O que mostra, em linguagem de quem revisa e não de prompt:**
+     - o que confere (`pergunta`);
+     - por que (as `referencias_normativas`, com links `ifpr://` para as normas e o selo de vigência);
+     - o que conta como atendido e como não atendido (`boa_evidencia`, `ma_evidencia`);
+     - quando fica "a conferir" (`escalonar_quando`);
+     - como o app confere: o modo traduzido ("o app confere sozinho", "o app acha o trecho e a IA confirma", "a IA julga as seções de…"), com a `justificativa`;
+     - neste PPC: o estado do critério nesta revisão, com o trecho e a pendência.
+   - **Na conversa ao lado:** a ficha da pendência passa a levar o texto do critério, visível nela (decisão 3 do [plano da multitarefa](multitarefa.md)).
+   - **Revisão apagada:** o link de critério de uma revisão apagada sai da trilha, como os outros `ifpr://revisao-ppc/<lista>/…`.
+3. **Fora da KB, no mesmo pacote.**
+   - **A fonte:** continua em `base-conhecimento/revisao-ppc/`, com a curadoria e o `validar_base.ts`. O pacote assinado da base continua a levá-la, porque as fichas citam normas por ID e andam junto com a vigência e as relações.
+   - **No banco:** as tabelas viram `revisao_ppc_*` no `kb.sqlite`, lidas só pelo módulo, como `revisao_ppc_arquivos`.
+   - **O que sai:** as fichas deixam a `FichaRevisao` do Explorar, o tipo `ficha` do leitor genérico e as consultas gerais do `kb`.
+   - **No módulo:** o RPC `revisaoPpc.criterio({ lista, id })`.
+4. **No MCP, como ferramenta da tarefa.** Quem elabora um PPC em outro app de IA ganha com os critérios, mas eles aparecem rotulados como critérios da tarefa "Revisar um PPC", não como fonte normativa.
+   - **Recurso que sai:** `ifpr://ficha/<ID>`.
+   - **Ferramenta nova:** `criterios_revisao_ppc` (na CLI, `kb criterios-revisao-ppc`), com uma ficha por ID, ou as de um tópico, ou as que citam uma norma. Esta última cobre o que `impacto_da_norma` mostrava de fichas, e `impacto_da_norma` deixa de trazê-las.
+   - **Ferramenta renomeada:** `pacote_contexto`, que só serve à revisão de PPC, passa a `pacote_revisao_ppc` (pela regra da decisão 1).
+   - **Textos atualizados:** as instruções do MCP (`packages/mcp/src/instrucoes.ts`), o guia do `simplifica-mcp`, os READMEs, o `AGENTS.md` e o README de `base-conhecimento/revisao-ppc/`. Se o texto de uma skill do app mudar, a `versao` dela sobe.
+
 ## Etapas
 
 Cada etapa termina com `pnpm fmt && pnpm lint && pnpm typecheck && pnpm test`.
@@ -236,6 +272,7 @@ Cada etapa termina com `pnpm fmt && pnpm lint && pnpm typecheck && pnpm test`.
 4. **Limpezas da revisão.** Implementada na árvore de trabalho em 26/11/2026, sem commit. `CAMINHO_LIBERAR_ARQUIVO` é `/arquivos/liberar`; `apagar/textos.ts` não importa de `revisao/` (os textos da revisão estão em `revisao/apagar.ts`, e `plural` e `nomeDoArquivo` em `lib/texto.ts`); a mensagem de troca adiada do `Atualizador` é genérica; o `servidorOcupado` percorre a lista `fontesDeOcupacao`. A ponte do desktop (`seguranca.ts`) não mudou.
 5. **A revisão como módulo.** Implementada na árvore de trabalho em 26/11/2026, sem commit. O código da revisão foi para as pastas de módulo de cada camada (servidor, interface, desktop e contratos), com os testes e os scripts; o contrato saiu da raiz de `@simplifica-if/contratos-app` para `@simplifica-if/contratos-app/modulos/revisao-ppc`; as tabelas ganharam o prefixo `revisao_ppc_`, num bloco da migração inicial (`tabelas.ts` do módulo); os handlers do grupo foram para o módulo, com a tradução de erro num arquivo do núcleo (`traducao.ts`); a ponte do desktop (os quatro canais e as regras) mora no módulo, com a mesma regra. O lint de fronteira e o teste que varre o repositório conferem a lista dos arquivos de composição. Ver [O módulo hoje](#o-módulo-hoje-etapa-5).
 6. **O segundo módulo.** Com ele, extrair as interfaces que os dois usam e documentar em `docs/internals/` o roteiro de quem propõe tarefa.
+7. **Nomes do módulo e ficha do critério.** As quatro decisões de [Os critérios são da tarefa, não da base](#os-critérios-são-da-tarefa-não-da-base-27112026). Pode vir antes da 6. Implementada na árvore de trabalho em 27/11/2026, sem commit: os links passaram a `ifpr://revisao-ppc/<lista>/…`, a origem a `revisao-ppc:<lista>` e as chaves da memória do leitor e das rolagens a `revisao-ppc:`; o núcleo despacha os links de módulo pelo tipo que a composição registra (`leitor/linksDeModulo.ts`, ligado em `inicializar.ts`; o `Leitor.tsx` saiu da lista dos arquivos de composição, e o `nomeCurtoLink` pergunta ao módulo). A ficha do critério (`modulos/revisao-ppc/LeitorCriterio.tsx`, sobre `revisaoPpc.criterio`, o serviço `Criterios` do módulo) abre no Ler pelo código da pendência ("CT-SUP-17 · O que este critério confere", no corpo aberto da linha, porque o cabeçalho é o botão dela), por cada marca da régua (cada uma é um botão; o tema deixou de ser botão de filtro, que fica com a coluna de temas) e pelo critério do "Detalhes"; mostra o código, a criticidade, como o app confere, "Neste PPC" (o estado, a pendência com o trecho e "Ir à pendência"), o que confere, as normas com o selo de vigência, o atendido e o não atendido e quando fica a conferir. A ficha da pendência na conversa ao lado leva o texto do critério (lido uma vez por critério; a ficha na caixa se completa quando ele chega, em toda entrada, e o envio o completa se ainda não chegou). As tabelas da revisão viraram `revisao_ppc_*` (esquema 14), o serviço do kb `PacoteContexto` virou `PacoteRevisaoPpc`, com `criterios` por ID, tópico ou norma; saíram a `FichaRevisao`, o tipo `ficha` dos links, o recurso `ifpr://ficha/…`, o `lerFicha` e as fichas do `impacto_da_norma` e do `sobre_a_base`; entrou a ferramenta `criterios_revisao_ppc` (CLI `kb criterios-revisao-ppc --id|--topico|--norma`), e `pacote_contexto` virou `pacote_revisao_ppc`. Nenhuma skill citava os nomes antigos. Testes em `apps/server/test/modulos/revisao-ppc/criterio.test.ts`, `modulos/revisao-ppc/criterio.browser.test.tsx` e `criterio.test.ts`, `painel/conversa-ao-lado.browser.test.tsx`, `packages/mcp/test/criterios-revisao-ppc.test.ts` e `pacote-revisao-ppc.test.ts`. Depois da revisão: na ficha do critério, o CNCT abre no curso da revisão (sem curso identificado, só o nome) e a referência externa vem pelo título, sem link nem selo de vigência; o "Neste PPC" diz se a pendência foi feita, retirada ou mantida, e "Ir à pendência" aparece sempre que há pendência: de outra tela ou com outra revisão aberta (ou nenhuma), abre a revisão do critério, e a lista à vista (a tela inteira ou a coluna compacta, cujo painel se fecha) rola até a pendência e a foca depois de montar (`focar` no `ControleRevisao`, `useFocoNaPendencia`), sem a rolagem lembrada por cima; o envio completa a pendência pela lista da própria conversa, não pela revisão aberta na tela; o texto dos critérios fica guardado por ID (o mesmo em toda revisão, limitado ao tamanho da base); `criterios_revisao_ppc --norma` voltou a apontar os outros arquivos da tarefa que citam a norma (`arquivos_da_tarefa`: os marcos normativos, também pela norma na linha de um marco, e a taxonomia dos tópicos, de `revisao_ppc_arquivos`). Testes também em `modulos/revisao-ppc/conversa.test.ts` e `packages/kb/src/normas/relacoes-vigencia.test.ts`.
 
 As etapas 1 a 4 entregam valor sozinhas e não dependem da 5. As cinco estão implementadas na árvore de trabalho.
 
@@ -272,7 +309,7 @@ O que a segunda e a terceira revisão de 26/11 (fronteira do módulo e canal) de
 O que a etapa 5 deixou de fora:
 
 - **Testes do catálogo com o único módulo.** Os testes do manifesto e do catálogo (`packages/mcp/test/tarefas.test.ts`, `apps/server/test/catalogo-tarefas.test.ts`, `apps/server/test/tarefas-rpc.test.ts`, `apps/server/test/atualizador.test.ts`, `apps/web/src/tarefas/catalogo.test.ts`, o servidor de teste da interface e o `app.browser.test.tsx`, que abre a tarefa de módulo de teste) usam `revisao-ppc` como o exemplo de módulo: `MODULOS` é uma lista fechada, e uma tarefa de módulo precisa de um módulo que existe. Sem o módulo, eles mudam de exemplo. Com o segundo módulo (etapa 6), ou com um módulo só de teste, deixam de depender deste.
-- **Citações só pelo nome, fora da lista.** O exemplo das boas-vindas acha a tarefa do módulo pelo nome (`MODULO_EXEMPLO`, em `apps/web/src/tarefas/exemplo.ts`, um texto: sem o módulo, a tarefa não vem no catálogo e o exemplo sai); o nome curto do link `ifpr://revisao/` fica em `nomeCurtoLink` (`apps/web/src/tarefas/textos.ts`); o tipo de link `revisao` não é de nenhuma lista. Nenhum é import, e nenhum quebra sem o módulo.
+- **Citações só pelo nome, fora da lista.** O exemplo das boas-vindas acha a tarefa do módulo pelo nome (`MODULO_EXEMPLO`, em `apps/web/src/tarefas/exemplo.ts`, um texto: sem o módulo, a tarefa não vem no catálogo e o exemplo sai); o nome curto do link `ifpr://revisao-ppc/` vem do módulo, pelo registro que a composição faz (`leitor/linksDeModulo.ts`, que o `nomeCurtoLink` de `apps/web/src/tarefas/textos.ts` consulta); o tipo de link `revisao-ppc` não é de nenhuma lista. Nenhum é import, e nenhum quebra sem o módulo.
 - **As fontes de ocupação mudaram de ordem.** As duas do módulo vêm antes das do núcleo na lista `fontesDeOcupacao`; só muda qual nome vai ao log quando duas estão ocupadas ao mesmo tempo.
 - **O contrato do módulo.** As peças que o módulo usa do núcleo estão em [O módulo hoje](#o-módulo-hoje-etapa-5); viram interface só com o segundo módulo (decisão 8).
 

@@ -61,7 +61,7 @@ export function primeira<S extends Schema.Decoder<unknown>>(Linha: S) {
 /**
  * Os serviços de que as consultas de um serviço precisam (o `SqlClient` e, se elas pedem, as
  * `FontesNormativas`), capturados na construção da layer, e o combinador que os dá a cada método: as
- * consultas pedem o banco do ambiente (o PPC avulso do `PacoteContexto` as roda sobre outro), e os
+ * consultas pedem o banco do ambiente (o PPC avulso do `PacoteRevisaoPpc` as roda sobre outro), e os
  * métodos não pedem nada. Só os serviços nomeados: o resto do contexto da construção (o `Scope` da
  * layer, o span pai) não passa por cima do de quem chama, e um recurso aberto num método fecha com o
  * escopo de quem o chamou.

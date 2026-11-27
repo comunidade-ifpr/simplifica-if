@@ -3,8 +3,8 @@
  *
  * O índice sai dos serviços do kb (`Normas.listar`, `Cursos.listar`, a regra do `listar_cursos`, para
  * o CNCT, as ofertas e os turnos de cada curso, `Ppcs.listar`, `Cursos.campi`, o CNCT, os processos
- * seletivos e `Conselhos.reunioes`). As fichas da revisão de PPC ficam fora: são critério interno da
- * revisão, e a página de cada uma (`lerFicha`) abre pelo link que a revisão e a IA dão. Ele é montado na primeira chamada e guardado: o banco
+ * seletivos e `Conselhos.reunioes`). Os critérios da revisão de PPC (as fichas) ficam fora: são da
+ * tarefa "Revisar um PPC", não da base. Ele é montado na primeira chamada e guardado: o banco
  * não muda com o servidor no ar (a troca da base é na abertura). A busca usa esse índice na memória
  * para as coleções pequenas, o `Normas.buscar` (a regra do `buscar_norma`: citação ou ID ao
  * dispositivo, termos no FTS dos dispositivos e dos metadados) e `Ppcs.buscarSecoesPorPrefixo`.

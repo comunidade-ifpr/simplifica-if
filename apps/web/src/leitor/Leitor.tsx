@@ -10,9 +10,8 @@
  * - **ppc** (`campus/curso/versao`, ou `campus/curso` para o vigente; com ou sem `#secao`): `lerPpc`
  *   (curso, campus, o ID da versão e o índice das seções), `lerDocumento` e, com seção, `lerSecao`
  *   (para a citação); o índice do Explorar diz se a versão foi substituída;
- * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar);
- * - **revisao** (o PPC que a pessoa está revisando): o leitor do módulo `revisao-ppc`
- *   (`modulos/revisao-ppc/LeitorRevisao.tsx`). Este arquivo é de composição: só despacha o link para ele.
+ * - **curso, cnct, campus**: as telas próprias de `Fichas.tsx` (do Explorar);
+ * - o tipo que um módulo registrou (`linksDeModulo.ts`): o leitor do módulo.
  */
 import type { Ancora } from "@simplifica-if/contratos-app";
 import { Link } from "@tanstack/react-router";
@@ -32,7 +31,8 @@ import { cn } from "../lib/utils.ts";
 import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
-import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
+import { FichaCampus, FichaCnct, FichaCurso } from "./Fichas.tsx";
+import { linkDeModulo } from "./linksDeModulo.ts";
 import {
   BotaoCodigoSuap,
   BotaoLink,
@@ -44,7 +44,6 @@ import {
   LinkExterno,
   Secao,
 } from "./pecas.tsx";
-import { LeitorRevisao } from "../modulos/revisao-ppc/LeitorRevisao.tsx";
 import { Sumario } from "./Sumario.tsx";
 import { useInstanciaLeitor } from "./instancia.ts";
 import { artigosDosDispositivos, conteudoDoIndice, numeroDoArtigo } from "./sumario.ts";
@@ -70,7 +69,7 @@ export interface LinkDesmontado {
 }
 
 export function desmontarLink(link: string): LinkDesmontado | null {
-  const m = /^ifpr:\/\/([a-z]+)\/([^#]+)(?:#(.+))?$/i.exec(link);
+  const m = /^ifpr:\/\/([a-z][a-z-]*)\/([^#]+)(?:#(.+))?$/i.exec(link);
   return m ? { tipo: m[1]!.toLowerCase(), caminho: m[2]!, fragmento: m[3] ?? null } : null;
 }
 
@@ -705,7 +704,7 @@ function LeitorPpc({
   );
 }
 
-/* ================================================================== curso, CNCT, campus, ficha */
+/* ================================================================== curso, CNCT, campus e os módulos */
 
 /** O conteúdo de um link no leitor, pelo tipo. */
 export function ConteudoLink({ link, aoAbrirLink }: { readonly link: string; readonly aoAbrirLink: AoAbrirLink }) {
@@ -716,14 +715,13 @@ export function ConteudoLink({ link, aoAbrirLink }: { readonly link: string; rea
   if (partes?.tipo === "ppc") {
     return <LeitorPpc chave={partes.caminho} fragmento={partes.fragmento} aoAbrirLink={aoAbrirLink} />;
   }
-  // Composição: o PPC em revisão (`ifpr://revisao/…`) é do módulo `revisao-ppc`.
-  if (partes?.tipo === "revisao") {
-    return <LeitorRevisao caminho={partes.caminho} fragmento={partes.fragmento} aoAbrirLink={aoAbrirLink} />;
+  const doModulo = partes === null ? undefined : linkDeModulo(partes.tipo);
+  if (partes !== null && doModulo !== undefined) {
+    return <doModulo.Leitor caminho={partes.caminho} fragmento={partes.fragmento} aoAbrirLink={aoAbrirLink} />;
   }
   if (partes?.tipo === "curso") return <FichaCurso id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
   if (partes?.tipo === "campus") return <FichaCampus id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
   if (partes?.tipo === "cnct") return <FichaCnct slug={partes.caminho} aoAbrirLink={aoAbrirLink} />;
-  if (partes?.tipo === "ficha") return <FichaRevisao id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
   return (
     <Alert variant="error">
       <AlertTitle>Não foi possível ler este link</AlertTitle>

@@ -80,6 +80,33 @@ describe("extrairFatosPpc", () => {
     const semQuadro = PPC.replace("**Carga horária total em hora-relógio:** 1.600 horas", "");
     expect(extrairFatosPpc(semQuadro, SECOES).some((f) => f.fato === "carga_horaria_total_h")).toBe(false);
   });
+
+  test("aceita 'Carga-Horária' com hífen e valor após células vazias na tabela", () => {
+    const texto = [
+      "---",
+      "id: ppc:x/y",
+      "---",
+      "",
+      "## 1.1.1 Dados Gerais",
+      "",
+      "| Carga-Horária Total do Curso: 1200h<br>Carga horária presencial: 1200h |",
+      "",
+      "## 5.6 Matriz Curricular",
+      "",
+      "| CARGA HORÁRIA TOTAL DO CURSO |  |  |  | 1600 |",
+    ].join("\n");
+    const secoes = [
+      { tipo: "identificacao", linha_inicio: 5, linha_fim: 7 },
+      { tipo: "matriz_curricular", linha_inicio: 9, linha_fim: 11 },
+    ];
+    const total = extrairFatosPpc(texto, secoes).find((f) => f.fato === "carga_horaria_total_h");
+    expect(total).toMatchObject({
+      valor: "1200",
+      valor_num: 1200,
+      linha: 7,
+      alternativas: [{ valor: "1600", linha: 11 }],
+    });
+  });
 });
 
 describe("título com o valor no parágrafo seguinte", () => {

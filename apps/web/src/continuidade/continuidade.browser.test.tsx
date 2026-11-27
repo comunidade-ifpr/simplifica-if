@@ -133,7 +133,7 @@ it("a revisão volta sem o compacto=1; apagada, sai da rota e do painel com “E
     await revisaoNoResultado(app.contexto.revisao);
     await expect.poll(() => app.roteador.state.location.search.id).toBeTypeOf("string");
     lista = String(app.roteador.state.location.search.id);
-    // O PPC no painel (a trilha guarda o link `ifpr://revisao/<lista>/…`), e a coluna ao lado do Word.
+    // O PPC no painel (a trilha guarda o link `ifpr://revisao-ppc/<lista>/…`), e a coluna ao lado do Word.
     await page.getByRole("button", { name: "Mais ações do documento" }).click();
     await page.getByRole("menuitem", { name: "Abrir o PPC ao lado" }).click();
     await expect.element(page.getByRole("article", { name: "PPC em revisão" })).toBeVisible();
@@ -147,7 +147,7 @@ it("a revisão volta sem o compacto=1; apagada, sai da rota e do painel com “E
     await expect.poll(() => app.roteador.state.location.pathname).toBe("/revisao-ppc");
     expect(app.roteador.state.location.search).toEqual({ id: lista });
     expect(
-      app.contexto.painel.obter().historico.links.some((link) => link.startsWith(`ifpr://revisao/${lista}/`)),
+      app.contexto.painel.obter().historico.links.some((link) => link.startsWith(`ifpr://revisao-ppc/${lista}/`)),
     ).toBe(true);
     await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
     // A revisão é apagada por fora desta tela (outra janela, um teste): a continuidade só vê ao reabrir.
@@ -157,7 +157,9 @@ it("a revisão volta sem o compacto=1; apagada, sai da rota e do painel com “E
   await using app = await montarApp(servidor, "/", LIGADA);
   await expect.element(page.getByText("Esta revisão foi apagada")).toBeVisible();
   expect(app.roteador.state.location.pathname).toBe("/");
-  expect(app.contexto.painel.obter().historico.links.some((link) => link.startsWith("ifpr://revisao/"))).toBe(false);
+  expect(app.contexto.painel.obter().historico.links.some((link) => link.startsWith("ifpr://revisao-ppc/"))).toBe(
+    false,
+  );
   expect(achadosDaTela()).toEqual([]);
   await page.getByRole("button", { name: "Fechar o aviso" }).click();
   await expect.element(page.getByText("Esta revisão foi apagada")).not.toBeInTheDocument();
@@ -196,10 +198,10 @@ it("'Qual é o curso?' com a conversa ao lado e o PPC no Ler: o painel segue a l
     await page.getByRole("button", { name: "Conferir com este curso" }).click();
     await expect.poll(() => app.roteador.state.location.search.id).not.toBe(antiga);
     nova = String(app.roteador.state.location.search.id);
-    expect(painel.obter().conversa.origem?.chave).toBe(`revisao:${nova}`);
+    expect(painel.obter().conversa.origem?.chave).toBe(`revisao-ppc:${nova}`);
     const links = [...painel.obter().historico.links, ...painel.obter().marcados];
-    expect(links.some((link) => link.startsWith(`ifpr://revisao/${nova}/`))).toBe(true);
-    expect(links.some((link) => link.startsWith(`ifpr://revisao/${antiga}/`))).toBe(false);
+    expect(links.some((link) => link.startsWith(`ifpr://revisao-ppc/${nova}/`))).toBe(true);
+    expect(links.some((link) => link.startsWith(`ifpr://revisao-ppc/${antiga}/`))).toBe(false);
 
     // A pergunta seguinte, escrita direto na aba, sai pela revisão nova (a antiga não existe mais).
     await caixa.fill("E com o curso certo?");
@@ -214,7 +216,7 @@ it("'Qual é o curso?' com a conversa ao lado e o PPC no Ler: o painel segue a l
   await expect.poll(() => app.roteador.state.location.search).toEqual({ id: nova });
   await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
   await expect.element(page.getByText("Esta revisão foi apagada")).not.toBeInTheDocument();
-  expect(app.contexto.painel.obter().conversa.origem?.chave).toBe(`revisao:${nova}`);
+  expect(app.contexto.painel.obter().conversa.origem?.chave).toBe(`revisao-ppc:${nova}`);
   expect(achadosDaTela()).toEqual([]);
 });
 

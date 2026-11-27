@@ -122,17 +122,6 @@ export function valorFato(fato: { readonly valor: string; readonly unidade: stri
   return fato.unidade === null ? fato.valor : `${fato.valor} ${UNIDADES[fato.unidade] ?? fato.unidade}`;
 }
 
-const CRITICIDADES: Readonly<Record<string, string>> = {
-  BLOQ: "Bloqueante",
-  OBRIG: "Obrigatória",
-  REC: "Recomendação",
-};
-
-/** A criticidade de um critério da revisão de PPC (`BLOQ`, `OBRIG`, `REC`). */
-export function nomeCriticidade(criticidade: string): string {
-  return CRITICIDADES[criticidade] ?? criticidade;
-}
-
 /** Os grupos da paleta e as abas do Explorar, no singular e no plural. */
 export const NOMES_TIPO: Readonly<Record<TipoResultado, { readonly grupo: string; readonly item: string }>> = {
   dispositivo: { grupo: "Trechos de normas", item: "Trecho de norma" },

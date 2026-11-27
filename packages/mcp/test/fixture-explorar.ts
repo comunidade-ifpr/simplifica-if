@@ -126,7 +126,7 @@ export function inserirExplorar(caminho: string): void {
     const ficha = JSON.parse(
       NodeFS.readFileSync(NodePath.resolve(import.meta.dirname, "../../..", arquivoFicha), "utf8"),
     ) as Record<string, string | null>;
-    inserir("fichas", {
+    inserir("revisao_ppc_fichas", {
       id: ficha.id!,
       titulo: ficha.titulo!,
       dominio: ficha.dominio ?? null,

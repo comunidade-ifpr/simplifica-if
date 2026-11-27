@@ -1,13 +1,13 @@
 /**
  * O que a revisão diz à continuidade do app (`continuidade/conferir.ts`) ao reabrir: a rota
- * `/revisao-ppc?id=…`, os links `ifpr://revisao/<lista>/…` do Ler e a origem `revisao:<lista>` da conversa
+ * `/revisao-ppc?id=…`, os links `ifpr://revisao-ppc/<lista>/…` do Ler e a origem `revisao-ppc:<lista>` da conversa
  * ao lado voltam só se a revisão ainda existe. A que foi apagada sai com "Esta revisão foi apagada".
  */
 import type { Api } from "../../conexao/api.ts";
 import type { ConferenciaModulo } from "../../continuidade/conferir.ts";
 
-const LINK = /^ifpr:\/\/revisao\/([^/#]+)\//;
-const ORIGEM = /^revisao:(.+)$/;
+const LINK = /^ifpr:\/\/revisao-ppc\/([^/#]+)\//;
+const ORIGEM = /^revisao-ppc:(.+)$/;
 
 export function continuidadeDaRevisao(api: Api): () => Promise<ConferenciaModulo> {
   return async () => {

@@ -2,13 +2,16 @@
  * A régua de critérios: um traço por critério da revisão (as fichas da base), agrupados por tema, com a
  * cor da situação. Mostra a cobertura sem parágrafo: sem a IA, a maior parte fica contornada (não lida).
  * Durante a leitura com IA, cada bloco pronto entra na lista, e os critérios dele ganham a cor da
- * decisão na hora: é o único movimento automático da tela. Cada tema é um botão que filtra a lista.
+ * decisão na hora: é o único movimento automático da tela. Cada marca é um botão que abre a ficha do
+ * critério no painel, também a dos que passaram; o tema escolhido na lista fica realçado.
  *
  * O conjunto é um `group` com o resumo no rótulo (e não um `img`, que esconderia os botões do leitor
- * de tela).
+ * de tela), e cada tema, outro `group`.
  */
 import type { CriterioRevisao, EstadoCriterio } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import { cn } from "~/lib/utils";
+import { type OndeAbrir, ondeDoClique } from "../../painel/abrirLink.ts";
+import { nomeEstadoCriterio } from "./criterio.ts";
 import { gruposDaRegua, resumoGrupo, resumoRegua } from "./lista.ts";
 
 const TRACO: Readonly<Record<EstadoCriterio, string>> = {
@@ -19,27 +22,44 @@ const TRACO: Readonly<Record<EstadoCriterio, string>> = {
   nao_lido: "border border-grav-nao-lido",
 };
 
-function Traco({ estado }: { readonly estado: EstadoCriterio }) {
+/** Uma marca: o botão que abre a ficha do critério ("CT-SUP-17 · Formação pedagógica…: para conferir"). */
+function Traco({
+  criterio,
+  aoAbrir,
+}: {
+  readonly criterio: CriterioRevisao;
+  readonly aoAbrir: (ficha: string, onde: OndeAbrir) => void;
+}) {
+  const nome = `${criterio.ficha} · ${criterio.titulo}: ${nomeEstadoCriterio(criterio.estado)}. Ver o critério`;
   return (
-    <span
-      aria-hidden
-      className={cn(
-        "block h-[22px] w-1.5 rounded-[1px] transition-colors duration-500 motion-reduce:transition-none",
-        TRACO[estado],
-      )}
-    />
+    <button
+      type="button"
+      title={nome}
+      aria-label={nome}
+      onClick={(evento) => aoAbrir(criterio.ficha, ondeDoClique(evento))}
+      className="-my-1 flex cursor-pointer rounded-[2px] py-1 outline-none hover:opacity-70 focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "block h-[22px] w-1.5 rounded-[1px] transition-colors duration-500 motion-reduce:transition-none",
+          TRACO[criterio.estado],
+        )}
+      />
+    </button>
   );
 }
 
 export function ReguaCriterios({
   criterios,
   tema,
-  aoEscolherTema,
+  aoAbrirCriterio,
 }: {
   readonly criterios: ReadonlyArray<CriterioRevisao>;
-  /** O tema escolhido na lista (nulo: todos). */
+  /** O tema escolhido na lista (nulo: todos), realçado. */
   readonly tema: number | null;
-  readonly aoEscolherTema: (ordem: number | null) => void;
+  /** Abre a ficha do critério (no painel, numa tela de trabalho). */
+  readonly aoAbrirCriterio: (ficha: string, onde: OndeAbrir) => void;
 }) {
   const grupos = gruposDaRegua(criterios);
   return (
@@ -48,22 +68,20 @@ export function ReguaCriterios({
         {grupos.map((g) => {
           const resumo = resumoGrupo(g);
           return (
-            <button
+            <div
               key={g.ordem}
-              type="button"
+              role="group"
               title={resumo}
               aria-label={resumo}
-              aria-pressed={tema === g.ordem}
-              onClick={() => aoEscolherTema(tema === g.ordem ? null : g.ordem)}
               className={cn(
-                "-mx-[1px] flex cursor-pointer gap-0.5 rounded-sm px-[5px] py-1 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
+                "-mx-[1px] flex gap-0.5 rounded-sm px-[5px] py-1",
                 tema === g.ordem && "bg-muted ring-1 ring-border",
               )}
             >
               {g.criterios.map((c) => (
-                <Traco key={c.ficha} estado={c.estado} />
+                <Traco key={c.ficha} criterio={c} aoAbrir={aoAbrirCriterio} />
               ))}
-            </button>
+            </div>
           );
         })}
       </div>

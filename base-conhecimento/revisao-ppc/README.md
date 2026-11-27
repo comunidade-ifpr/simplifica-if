@@ -2,7 +2,7 @@
 
 As fichas da revisão de PPC são os critérios com que a tarefa "Revisar um PPC" do app confere um Projeto Pedagógico de Curso técnico antes da submissão à PROENS. Elas ficam aqui junto com os arquivos que as organizam. É uma revisão prévia: não substitui a análise oficial da PROENS nem emite parecer.
 
-O kb compila as fichas, os tópicos e os marcos no `kb.sqlite` (`pnpm kb:compilar`). O app, o `simplifica-mcp` (recurso `ifpr://ficha/<ID>`, ferramentas `pacote_contexto` e `impacto_da_norma`) e o Explorar leem o banco, não estes arquivos.
+O kb compila as fichas, os tópicos e os marcos no `kb.sqlite` (`pnpm kb:compilar`), nas tabelas `revisao_ppc_*`, que só a revisão lê: são os critérios da tarefa, não base, e ficam fora das consultas gerais, do Explorar e do `impacto_da_norma`. O app (o módulo `revisao-ppc`, com a ficha do critério no painel) e o `simplifica-mcp` (ferramentas `criterios_revisao_ppc` e `pacote_revisao_ppc`, ou `kb criterios-revisao-ppc` e `kb pacote-revisao-ppc` no checkout) leem o banco, não estes arquivos.
 
 ## Estrutura
 

@@ -21,16 +21,19 @@ export function Pagina({
   children,
   className,
   rolagem,
+  alvo,
 }: {
   readonly largura: LarguraPagina;
   readonly children: ReactNode;
   /** Classes da coluna (o espaço entre as seções, por exemplo). */
   readonly className?: string;
-  /** A chave da rolagem lembrada (a revisão, `revisao:<id>`). */
+  /** A chave da rolagem lembrada (a revisão, `revisao-ppc:<id>`). */
   readonly rolagem?: string;
+  /** O alvo pedido na tela (`#<id>`), que a tela rola até ele: a rolagem lembrada não volta por cima. */
+  readonly alvo?: string | undefined;
 }) {
   const rolante = useRef<HTMLDivElement>(null);
-  useRolagemLembrada(rolagem, () => rolante.current, { topo: true });
+  useRolagemLembrada(rolagem, () => rolante.current, { topo: true, link: alvo });
   return (
     <div ref={rolante} className="h-full overflow-y-auto">
       <div className={cn(classeColuna(largura), "flex flex-col gap-6 py-8", className)}>{children}</div>

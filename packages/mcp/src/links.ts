@@ -12,7 +12,9 @@
  * O PPC tem ID permanente por versão; `ifpr://ppc/campus/curso`, sem versão, é o PPC vigente do curso.
  * | `cnct:tecnico-em-enfermagem`                  | `ifpr://cnct/tecnico-em-enfermagem`             |
  * | `campus:curitiba`                             | `ifpr://campus/curitiba`                        |
- * | ficha `CT-CURR-12`                            | `ifpr://ficha/CT-CURR-12`                       |
+ *
+ * Os critérios da revisão de PPC (as fichas) não têm link aqui: são da tarefa, não da base, e o app os
+ * abre pelo módulo dele (`ifpr://revisao-ppc/<lista>/criterio/<ID>`).
  *
  * Os IDs do banco já são seguros para URI (ASCII, sem espaço), então nada é codificado: um ID fora
  * desse formato é erro de programa e falha aqui. Pode migrar para `packages/kb` quando o app e o
@@ -21,7 +23,7 @@
 
 export type Link = `ifpr://${string}`;
 
-export const TIPOS_LINK = ["norma", "curso", "ppc", "cnct", "campus", "ficha"] as const;
+export const TIPOS_LINK = ["norma", "curso", "ppc", "cnct", "campus"] as const;
 export type TipoLink = (typeof TIPOS_LINK)[number];
 
 const SEGMENTO = String.raw`[A-Za-z0-9._~:-]+`;
@@ -88,18 +90,12 @@ export function linkCampus(id: string): Link {
   return montar("campus", semPrefixo("campus:", id), undefined, [1]);
 }
 
-/** Ficha da revisão de PPC: `CT-CURR-12` (como na tabela `fichas`) ou `ficha:CT-CURR-12`. */
-export function linkFicha(id: string): Link {
-  return montar("ficha", semPrefixo("ficha:", id), undefined, [1]);
-}
-
-/** Link de qualquer ID canônico com prefixo (`curso:`, `ppc:`, `cnct:`, `campus:`, `ficha:`); sem prefixo, norma. */
+/** Link de qualquer ID canônico com prefixo (`curso:`, `ppc:`, `cnct:`, `campus:`); sem prefixo, norma. */
 export function linkDe(id: string): Link {
   if (id.startsWith("curso:")) return linkCurso(id);
   if (id.startsWith("ppc:")) return linkPpc(id);
   if (id.startsWith("cnct:")) return linkCnct(id);
   if (id.startsWith("campus:")) return linkCampus(id);
-  if (id.startsWith("ficha:")) return linkFicha(id);
   return linkNorma(id);
 }
 

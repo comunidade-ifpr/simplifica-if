@@ -80,7 +80,7 @@ import {
   type SituacaoPendencia,
 } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
-import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import type * as PacoteRevisaoPpc from "@simplifica-if/kb/PacoteRevisaoPpc";
 import * as Motor from "@simplifica-if/motor";
 import {
   conferirContestacao,
@@ -403,7 +403,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const revisor = yield* RevisorPpc.RevisorPpc;
   const fs = yield* FileSystem.FileSystem;
   const { exigirAviso } = yield* Preferencias.Preferencias;
-  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
+  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteRevisaoPpc.PacoteRevisaoPpc>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const aleatorio = yield* SecureRandom.SecureRandom;
   // Uma ação com IA por vez: um clique duplo não paga duas vezes.
@@ -1380,6 +1380,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
 /**
  * Pede as `RevisoesPpc`, as `CopiasComentadas`, a `RevisaoIa`, o `RevisorPpc`, as `Preferencias`, o
- * `Motor`, o `FileSystem`, o `Path`, as `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
+ * `Motor`, o `FileSystem`, o `Path`, as `FontesNormativas` e o `PacoteRevisaoPpc` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

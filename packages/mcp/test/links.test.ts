@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vite-plus/test";
-import { lerLink, linkCampus, linkCnct, linkCurso, linkDe, linkFicha, linkNorma, linkPpc } from "../src/links.ts";
+import { lerLink, linkCampus, linkCnct, linkCurso, linkDe, linkNorma, linkPpc } from "../src/links.ts";
 
 describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
   test("norma, com e sem dispositivo", () => {
@@ -27,13 +27,11 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
     expect(linkPpc("ppc:curitiba/tecnico-em-enfermagem")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem");
   });
 
-  test("cnct, campus e ficha", () => {
+  test("cnct e campus", () => {
     expect(linkCnct("cnct:tecnico-em-enfermagem")).toBe("ifpr://cnct/tecnico-em-enfermagem");
     expect(linkCnct("tecnico-em-enfermagem")).toBe("ifpr://cnct/tecnico-em-enfermagem");
     expect(linkCampus("campus:curitiba")).toBe("ifpr://campus/curitiba");
     expect(linkCampus("curitiba")).toBe("ifpr://campus/curitiba");
-    expect(linkFicha("CT-CURR-12")).toBe("ifpr://ficha/CT-CURR-12");
-    expect(linkFicha("ficha:CT-CURR-12")).toBe("ifpr://ficha/CT-CURR-12");
   });
 
   test("linkDe escolhe pelo prefixo do ID canônico", () => {
@@ -41,7 +39,6 @@ describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {
     expect(linkDe("ppc:curitiba/tecnico-em-enfermagem/2023")).toBe("ifpr://ppc/curitiba/tecnico-em-enfermagem/2023");
     expect(linkDe("cnct:tecnico-em-enfermagem")).toBe("ifpr://cnct/tecnico-em-enfermagem");
     expect(linkDe("campus:curitiba")).toBe("ifpr://campus/curitiba");
-    expect(linkDe("ficha:CT-CURR-12")).toBe("ifpr://ficha/CT-CURR-12");
     expect(linkDe("br/lei/1996/9394#art36")).toBe("ifpr://norma/br/lei/1996/9394#art36");
     expect(linkDe("externo:cft/res/2019/89")).toBe("ifpr://norma/externo:cft/res/2019/89");
   });

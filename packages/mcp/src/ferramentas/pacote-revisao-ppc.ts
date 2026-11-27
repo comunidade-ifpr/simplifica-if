@@ -1,9 +1,9 @@
 /**
- * Ferramenta 14, `pacote_contexto`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um
- * tópico ou `todas`) para um PPC, montado pelo serviço `PacoteContexto` do kb.
+ * Ferramenta 14, `pacote_revisao_ppc`: o contexto de uma tarefa da revisão de PPC (uma ficha, várias, um
+ * tópico ou `todas`) para um PPC, montado pelo serviço `PacoteRevisaoPpc` do kb.
  * O PPC é um da base (`ppc`) ou um `.md` da pasta de trabalho (`arquivo`); exatamente um dos dois.
  *
- * Os `dados` são o pacote do kb como está : o de um PPC
+ * Os `dados` são o pacote do kb como está: o de um PPC
  * da base ou o de um arquivo, que têm formas diferentes. O texto para a IA traz as fichas inteiras,
  * o CNCT, os fatos, os marcos, as transições, os dispositivos e as seções, com o literal, a fonte e o
  * link. Teto de 80 mil caracteres: acima dele, os literais mais longos (seções, dispositivos,
@@ -12,12 +12,12 @@
 import * as Schema from "effect/Schema";
 import type { Aviso } from "../contratos.ts";
 import { opcional, textoAparado } from "../esquema.ts";
-import { linkCnct, linkFicha, linkNorma, linkPpc } from "../links.ts";
+import { linkCnct, linkNorma, linkPpc } from "../links.ts";
 import { cortar, RESERVA_TEXTO } from "../orcamento.ts";
 import { blocoItem, comLink, dataBr, linhaAviso } from "../texto.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
-export const TETO_PACOTE_CONTEXTO = 80000;
+export const TETO_PACOTE_REVISAO_PPC = 80000;
 
 /** Nenhum literal cortado fica abaixo disto: abaixo, corta-se o fim do texto. */
 const LITERAL_MINIMO = 300;
@@ -226,7 +226,7 @@ function blocoFicha(ficha: unknown): string {
   if (!ehObjeto(ficha)) return JSON.stringify(ficha);
   const id = String(ficha.id);
   const titulo = typeof ficha.titulo === "string" ? `${id} — ${ficha.titulo}` : id;
-  return `### ${comLink(titulo, linkFicha(id))}\n${camposEmMarkdown(ficha, ["id", "titulo"])}`;
+  return `### ${titulo}\n${camposEmMarkdown(ficha, ["id", "titulo"])}`;
 }
 
 function blocoCnct(cnct: unknown): string | null {
@@ -414,19 +414,19 @@ export function corpoDoPacote(d: Dados, orcamento: number): { readonly texto: st
 
 /** Espaço do corpo, descontados os avisos e a reserva de rodapé. */
 export function orcamentoDoCorpo(avisos: ReadonlyArray<Aviso>): number {
-  return TETO_PACOTE_CONTEXTO - RESERVA_TEXTO - avisos.reduce((t, a) => t + linhaAviso(a).length + 1, 0);
+  return TETO_PACOTE_REVISAO_PPC - RESERVA_TEXTO - avisos.reduce((t, a) => t + linhaAviso(a).length + 1, 0);
 }
 
 export const AVISO_RESUMIDO: Aviso = {
   tipo: "resultado-resumido",
-  mensagem: `o pacote passa do teto de ${numero(TETO_PACOTE_CONTEXTO)} caracteres do texto: os literais mais longos foram cortados e marcados (leia o resto com ler_secao ou ler_dispositivos); o JSON da resposta traz o pacote inteiro; para um texto inteiro, peça uma ficha ou um tópico`,
+  mensagem: `o pacote passa do teto de ${numero(TETO_PACOTE_REVISAO_PPC)} caracteres do texto: os literais mais longos foram cortados e marcados (leia o resto com ler_secao ou ler_dispositivos); o JSON da resposta traz o pacote inteiro; para um texto inteiro, peça uma ficha ou um tópico`,
 };
 
-export const pacoteContexto = definirFerramenta({
-  nome: "pacote_contexto",
+export const pacoteRevisaoPpc = definirFerramenta({
+  nome: "pacote_revisao_ppc",
   titulo: "Contexto da revisão de PPC",
   descricao:
-    "Monta o contexto de uma tarefa da revisão de PPC para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use para conferir um PPC contra as fichas. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
+    'Monta o contexto da tarefa "Revisar um PPC" para um PPC: os critérios (as fichas), CNCT, dispositivos citados nos critérios, marcos, transições, seções relevantes do PPC e fatos. Use para conferir um PPC contra os critérios. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.',
   entrada: Entrada,
   dados: Dados,
   texto: (resposta) => corpoDoPacote(resposta.dados, orcamentoDoCorpo(resposta.avisos)).texto,

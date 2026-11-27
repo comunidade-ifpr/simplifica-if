@@ -3,7 +3,7 @@
  * controle por conversa), o que está rodando ou espera a pessoa (`ControleAtividades`), o painel do app
  * (`ControlePainel`), a continuidade (`ControleContinuidade`), o modo compacto da janela (`ControleJanelaCompacta`), o estado de longa duração de cada módulo (a
  * revisão de PPC corrente, `ControleRevisao`, lida pelo `useRevisao` do módulo), o que um módulo diz de um
- * link que não é da base (`pedidoDoLink`: o `ifpr://revisao/…` vira a ficha do PPC em revisão) e o que ele
+ * link que não é da base (`pedidoDoLink`: o `ifpr://revisao-ppc/…` vira a ficha do PPC em revisão) e o que ele
  * faz com a conversa ao lado que abriu (`origens`: a revisão prepara cada mensagem). Arquivo de
  * composição: só ele e o `inicializar.ts` citam o controle do módulo.
  */

@@ -32,7 +32,7 @@ import { CaixaDaConversaAoLado } from "../../painel/AbaConversar.tsx";
 import type { ConversaDoPainel, PedidoConversa } from "../../painel/ControlePainel.ts";
 import { type AoAbrirLink, useAbrirLink } from "../../painel/abrirLink.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
-import { useRevisao, useRevisaoNaTela } from "./contexto.ts";
+import { useFocoNaPendencia, useRevisao, useRevisaoNaTela } from "./contexto.ts";
 import { pedidoDaRevisao } from "./conversa.ts";
 import { providerDaRevisao } from "./ControleRevisao.ts";
 import { nomeIa } from "./FaixaIa.tsx";
@@ -44,6 +44,7 @@ import {
   doFiltro,
   type FiltroGravidade,
   gravidadeDe,
+  idDaLinha,
   linhasConferencia,
   linkDoPpc,
   localizacao,
@@ -86,6 +87,7 @@ export function VistaCompacta() {
   const dicaTeclado = useId();
 
   useRevisaoNaTela();
+  useFocoNaPendencia("compacta");
 
   // A caixa curta pergunta sobre a revisão. Na entrada (ou noutra lista), ela fica com a conversa da
   // revisão, salvo se o painel tem o rascunho de outra (a caixa oferece a da revisão); depois, a pendência
@@ -94,7 +96,7 @@ export function VistaCompacta() {
   const listaId = estado.lista?.id;
   const ligada = useRef<{ readonly lista: string; readonly aberta: string | null } | undefined>(undefined);
   useEffect(() => {
-    const pedido = pedidoDaRevisao({ api: app.api, revisao, conversas: app.conversas }, aberta);
+    const pedido = pedidoDaRevisao(app, aberta);
     if (pedido === undefined || listaId === undefined) return;
     const antes = ligada.current;
     ligada.current = { lista: listaId, aberta };
@@ -108,9 +110,9 @@ export function VistaCompacta() {
     if (!naRevisao || antes.aberta === aberta) return;
     if (antes.aberta !== null) app.painel.tirarFicha(`pendencia:${antes.aberta}`);
     app.painel.conversar(soPendencia(pedido), { mostrar: false });
-  }, [app, revisao, listaId, aberta]);
+  }, [app, listaId, aberta]);
   const caixaNaRevisao = useSyncExternalStore(app.painel.observar, () => {
-    const pedido = pedidoDaRevisao({ api: app.api, revisao, conversas: app.conversas }, null);
+    const pedido = pedidoDaRevisao(app, null);
     return pedido === undefined || daRevisao(app.painel.obter().conversa, pedido);
   });
   const rascunhoDeOutra = useSyncExternalStore(
@@ -207,7 +209,7 @@ export function VistaCompacta() {
             {linhas.map((v) => (
               <li key={v.chave} data-chave={v.chave}>
                 <LinhaCompacta
-                  id={`compacta-${v.chave.replace(/[^\w-]/g, "_")}`}
+                  id={idDaLinha(v.chave, "compacta")}
                   viva={v}
                   aoAbrirLink={abrirLink}
                   linkNoPpc={`${linkDoPpc(lista.id, versaoPpc)}#p-${v.chave}`}
@@ -231,7 +233,7 @@ export function VistaCompacta() {
               size="sm"
               variant="outline"
               onClick={() => {
-                const pedido = pedidoDaRevisao({ api: app.api, revisao, conversas: app.conversas }, aberta);
+                const pedido = pedidoDaRevisao(app, aberta);
                 if (pedido !== undefined) app.painel.conversar(pedido, { mostrar: false });
               }}
             >

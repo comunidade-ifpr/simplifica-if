@@ -1,7 +1,8 @@
 /**
- * Ferramenta 7, `impacto_da_norma`: o que uma norma atinge na base, por `Impacto.daNorma`: relações, sucessoras, transições, normas que a citam, fichas da revisão de PPC,
- * outros textos da revisão de PPC (marcos normativos, taxonomia), tópicos e PPCs. A lista completa de
- * PPCs vem de `citacoes_da_norma`.
+ * Ferramenta 7, `impacto_da_norma`: o que uma norma atinge na base, por `Impacto.daNorma`: relações,
+ * sucessoras, transições, normas que a citam e PPCs. A lista completa de PPCs vem de
+ * `citacoes_da_norma`; os critérios da tarefa "Revisar um PPC" que a norma atinge, de
+ * `criterios_revisao_ppc` com `norma`.
  */
 import * as Schema from "effect/Schema";
 import { EsquemaLink, NormaResumo, Relacao, TransicaoResumo } from "../contratos.ts";
@@ -44,33 +45,13 @@ export const Dados = Schema.Struct({
       Schema.Struct({ ppc: Schema.String, nome: Schema.String, campus: Schema.String, link: EsquemaLink }),
     ),
   }),
-  fichas: Schema.Array(
-    Schema.Struct({
-      id: Schema.String,
-      titulo: Schema.String,
-      /** Motivos: referencia, referencia-correspondente, citacao, citacao-sucessora, tema. */
-      papel: Schema.String,
-      dispositivos: Schema.Array(Schema.String),
-      link: EsquemaLink,
-    }),
-  ),
-  /** Outros textos da revisão de PPC que citam a norma (os marcos normativos, a taxonomia dos tópicos). */
-  outros_arquivos: Schema.Array(
-    Schema.Struct({
-      /** Caminho relativo à raiz do repositório. */
-      arquivo: Schema.String,
-      papel: Schema.String,
-      dispositivos: Schema.Array(Schema.String),
-    }),
-  ),
-  topicos: Schema.Array(Schema.String),
 });
 
 export const impactoDaNorma = definirFerramenta({
   nome: "impacto_da_norma",
   titulo: "Impacto da norma",
   descricao:
-    'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da revisão de PPC, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma".',
+    'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma". Os critérios da revisão de PPC que ela atinge vêm de `criterios_revisao_ppc`.',
   entrada: Entrada,
   dados: Dados,
   texto({ dados: d }) {
@@ -92,24 +73,6 @@ export const impactoDaNorma = definirFerramenta({
         "normas",
       ),
       `PPCs que a citam: ${d.ppcs.total}${d.ppcs.total > d.ppcs.amostra.length ? ` (amostra de ${d.ppcs.amostra.length}; lista completa em \`citacoes_da_norma\`)` : ""}${d.ppcs.amostra.length ? `: ${d.ppcs.amostra.map((p) => comLink(`${p.nome} (${p.campus})`, p.link)).join("; ")}` : ""}.`,
-      lista(
-        "fichas da revisão de PPC atingidas",
-        d.fichas.map(
-          (f) =>
-            `- ${comLink(f.id, f.link)} ${f.titulo} — ${f.papel}${f.dispositivos.length ? ` (${f.dispositivos.join(", ")})` : ""}`,
-        ),
-        3500,
-        "fichas (lista completa no JSON)",
-      ),
-      lista(
-        "Outros textos da revisão de PPC que a citam",
-        d.outros_arquivos.map(
-          (a) => `- \`${a.arquivo}\` — ${a.papel}${a.dispositivos.length ? ` (${a.dispositivos.join(", ")})` : ""}`,
-        ),
-        500,
-        "textos",
-      ),
-      `Tópicos atingidos: ${d.topicos.length ? d.topicos.map((t) => `\`${t}\``).join(", ") : "nenhum"}.`,
     ].join("\n\n");
   },
 });

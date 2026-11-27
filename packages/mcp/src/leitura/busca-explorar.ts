@@ -1,6 +1,6 @@
 /**
  * A busca da paleta do Explorar na memória: as coleções pequenas (normas pelos metadados, cursos, PPCs,
- * campi, CNCT, fichas e o Consepe) são poucas centenas de itens, e a paleta busca a cada tecla. Cada
+ * campi, CNCT e o Consepe) são poucas centenas de itens, e a paleta busca a cada tecla. Cada
  * termo da consulta precisa começar alguma palavra do item ("enferm" acha "Enfermagem"), sem acento e
  * sem maiúsculas; a pontuação soma o peso do campo em que o termo aparece (título vale mais) e dá um
  * bônus à palavra inteira e à consulta inteira no título.
@@ -150,7 +150,7 @@ export const ORDEM_GRUPOS: ReadonlyArray<TipoResultado> = [
 ];
 
 /**
- * O título de um dispositivo na paleta: a norma e o caminho inteiro do dispositivo, como nas fichas
+ * O título de um dispositivo na paleta: a norma e o caminho inteiro do dispositivo, como na citação
  * ("Resolução CNE/CP nº 2/2026, art. 28, XVIII"; "…, Anexo 1, art. 21, § 1º"), e não só o rótulo
  * ("XVIII"). Um ID fora do formato fica com o rótulo.
  */

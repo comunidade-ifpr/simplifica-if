@@ -35,7 +35,7 @@ import * as FontesNormativas from "../FontesNormativas.ts";
 import * as Impacto from "../Impacto.ts";
 import * as Layers from "../layers.ts";
 import * as Normas from "../Normas.ts";
-import * as PacoteContexto from "../PacoteContexto.ts";
+import * as PacoteRevisaoPpc from "../PacoteRevisaoPpc.ts";
 import * as Ppcs from "../Ppcs.ts";
 import { INDICADORES } from "../adequacao/art71.ts";
 import { criarCheckoutMinimo } from "../testes/checkout-minimo.ts";
@@ -194,7 +194,7 @@ const servicos = Effect.all({
   ppcs: Ppcs.Ppcs,
   cursos: Cursos.Cursos,
   impacto: Impacto.Impacto,
-  pacote: PacoteContexto.PacoteContexto,
+  pacote: PacoteRevisaoPpc.PacoteRevisaoPpc,
 });
 
 /* ------------------------------------------------------------------ testes */
@@ -271,7 +271,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("pacote-contexto de uma ficha é menor que o PPC inteiro e traz o artigo citado", () =>
+    it.effect("pacote-revisao-ppc de uma ficha é menor que o PPC inteiro e traz o artigo citado", () =>
       Effect.gen(function* () {
         const { pacote: servico } = yield* servicos;
         const pacote = yield* servico.montar("CT-CURR-12", PPC);
@@ -475,7 +475,9 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           marcos: { id: string; linha: string[] }[];
         };
         for (const m of marcos) {
-          const linha = (yield* primeiroMarco("SELECT vigente, normas_json FROM marcos WHERE id = ?", [m.id]))!;
+          const linha = (yield* primeiroMarco("SELECT vigente, normas_json FROM revisao_ppc_marcos WHERE id = ?", [
+            m.id,
+          ]))!;
           const derivado = derivarLinha(m.linha, dataReferencia(raiz), vigenciaArquivos);
           expect(linha.vigente).toBe(derivado.vigente);
           expect(JSON.parse(linha.normas_json)).toMatchObject(derivado);
@@ -759,34 +761,38 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("conteúdo da revisão de PPC: os arquivos de base-conhecimento/revisao-ppc, e o impacto os percorre", () =>
-      Effect.gen(function* () {
-        const fs = yield* FileSystem.FileSystem;
-        const fontes = yield* FontesNormativas.FontesNormativas;
-        const { arquivos } = yield* fontes.conteudoRevisaoPpc();
-        // referência independente: as fichas, os marcos e a taxonomia lidos da pasta, em ordem de caminho
-        const fichas = (yield* fs.readDirectory(NodePath.join(raiz, FICHAS_DA_ANALISE)))
-          .filter((nome) => nome.endsWith(".json"))
-          .map((nome) => `${FICHAS_DA_ANALISE}${nome}`);
-        const esperados = [
-          ...fichas,
-          "base-conhecimento/revisao-ppc/marcos-normativos.json",
-          "base-conhecimento/revisao-ppc/topicos-fichas.json",
-        ].sort();
-        expect(arquivos.map((a) => a.arquivo)).toEqual(esperados);
-        for (const { arquivo, texto } of arquivos) mesmoJson(JSON.parse(texto), yield* lerJson(arquivo));
+    it.effect(
+      "conteúdo da revisão de PPC: os arquivos de base-conhecimento/revisao-ppc; os critérios por norma saem deles, e o impacto não os traz",
+      () =>
+        Effect.gen(function* () {
+          const fs = yield* FileSystem.FileSystem;
+          const fontes = yield* FontesNormativas.FontesNormativas;
+          const { arquivos } = yield* fontes.conteudoRevisaoPpc();
+          // referência independente: as fichas, os marcos e a taxonomia lidos da pasta, em ordem de caminho
+          const fichas = (yield* fs.readDirectory(NodePath.join(raiz, FICHAS_DA_ANALISE)))
+            .filter((nome) => nome.endsWith(".json"))
+            .map((nome) => `${FICHAS_DA_ANALISE}${nome}`);
+          const esperados = [
+            ...fichas,
+            "base-conhecimento/revisao-ppc/marcos-normativos.json",
+            "base-conhecimento/revisao-ppc/topicos-fichas.json",
+          ].sort();
+          expect(arquivos.map((a) => a.arquivo)).toEqual(esperados);
+          for (const { arquivo, texto } of arquivos) mesmoJson(JSON.parse(texto), yield* lerJson(arquivo));
 
-        const { impacto, normas } = yield* servicos;
-        let foraDasFichas = 0;
-        for (const id of NORMAS) {
-          const r = yield* impacto.daNorma(id);
-          expect(yield* normas.sucessoras(id)).toEqual(r.sucessoras);
-          expect(r.arquivos.every((a) => esperados.includes(a.arquivo))).toBe(true);
-          foraDasFichas += r.arquivos.filter((a) => !a.arquivo.startsWith(FICHAS_DA_ANALISE)).length;
-        }
-        // os marcos normativos citam as DCN: o impacto os vê além das fichas
-        expect(foraDasFichas).toBeGreaterThan(0);
-      }),
+          const { impacto, normas, pacote } = yield* servicos;
+          let atingidos = 0;
+          for (const id of NORMAS) {
+            const r = yield* impacto.daNorma(id);
+            expect(yield* normas.sucessoras(id)).toEqual(r.sucessoras);
+            // os critérios da revisão de PPC não são base: o impacto não os traz
+            expect(Object.keys(r)).not.toContain("arquivos");
+            const { criterios } = yield* pacote.criterios({ norma: id });
+            expect(criterios.every((c) => c.path.startsWith(FICHAS_DA_ANALISE))).toBe(true);
+            atingidos += criterios.length;
+          }
+          expect(atingidos).toBeGreaterThan(0);
+        }),
     );
 
     it.effect("adequacao-art71: todo curso alcançado tem um indicador, e as citações chegam aos PPCs", () =>

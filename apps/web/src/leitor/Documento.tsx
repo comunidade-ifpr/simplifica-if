@@ -141,7 +141,7 @@ export function Documento({
   rotulo,
   realce = null,
 }: {
-  /** Uma norma ou um PPC da base, ou o PPC revisado (`ifpr://revisao/…`): o texto, as âncoras e o link sem fragmento. */
+  /** Uma norma ou um PPC da base, ou o PPC revisado (`ifpr://revisao-ppc/…`): o texto, as âncoras e o link sem fragmento. */
   readonly documento: Pick<DadosDocumento, "markdown" | "ancoras"> & {
     readonly link: string;
     /** O sumário da norma; o PPC em revisão não tem. */

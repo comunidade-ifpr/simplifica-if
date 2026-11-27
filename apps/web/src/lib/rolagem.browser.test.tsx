@@ -107,11 +107,11 @@ it("o clique no texto depois de reaplicar lembra a rolagem reaplicada, não a de
 
 it("esquecida com o documento montado (a revisão apagada), não volta ao desmontar", () => {
   const desenhar = montar();
-  desenhar(<Rolagem chave="revisao:apagada" altura={2_000} />);
+  desenhar(<Rolagem chave="revisao-ppc:apagada" altura={2_000} />);
   rolarPara(500);
-  esquecerRolagens((chave) => chave === "revisao:apagada");
+  esquecerRolagens((chave) => chave === "revisao-ppc:apagada");
   desenhar(null);
-  desenhar(<Rolagem chave="revisao:apagada" altura={2_000} />);
+  desenhar(<Rolagem chave="revisao-ppc:apagada" altura={2_000} />);
   expect(rolagem().scrollTop).toBe(0);
 });
 
@@ -124,10 +124,10 @@ it("a página que troca de chave (outra revisão) começa do topo", () => {
       </Pagina>
     </div>
   );
-  desenhar(pagina("revisao:uma"));
+  desenhar(pagina("revisao-ppc:uma"));
   const rolante = () => document.querySelector<HTMLElement>(".overflow-y-auto")!;
   rolante().scrollTop = 500;
   rolante().dispatchEvent(new Event("scroll"));
-  desenhar(pagina("revisao:outra"));
+  desenhar(pagina("revisao-ppc:outra"));
   expect(rolante().scrollTop).toBe(0);
 });

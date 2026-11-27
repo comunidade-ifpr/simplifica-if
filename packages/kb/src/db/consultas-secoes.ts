@@ -2,7 +2,7 @@
  * Consultas do serviço `Ppcs` aos PPCs e às seções deles no `kb.sqlite`: a busca (FTS5, radicais e
  * léxico de sinônimos, ou por prefixo, a da paleta do Explorar), as seções de um PPC por tipo, o índice
  * delas, a leitura de uma seção com as vizinhas, a lista dos PPCs e o PPC como documento.
- * Pedem o `SqlClient` do ambiente: o `kb.sqlite` ou, no PPC avulso do `PacoteContexto`, o banco em
+ * Pedem o `SqlClient` do ambiente: o `kb.sqlite` ou, no PPC avulso do `PacoteRevisaoPpc`, o banco em
  * memória dele.
  */
 import * as Effect from "effect/Effect";

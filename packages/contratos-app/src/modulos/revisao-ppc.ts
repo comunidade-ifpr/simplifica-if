@@ -348,7 +348,7 @@ export type EstimativaAcao = typeof EstimativaAcao.Type;
 const EntradaLista = Schema.Struct({ lista: Schema.String });
 
 /**
- * O PPC revisado, para o leitor (`ifpr://revisao/<lista>/<versão>#p-<chave>`): o Markdown convertido do `.docx`
+ * O PPC revisado, para o leitor (`ifpr://revisao-ppc/<lista>/<versão>#p-<chave>`): o Markdown convertido do `.docx`
  * que a lista guarda, com as seções e, para cada pendência com trecho, a âncora `p-<chave>` nas linhas
  * onde o trecho está, localizado na hora sobre o texto atual da lista.
  */
@@ -365,6 +365,71 @@ export const DocumentoRevisado = Schema.Struct({
   trechos: Schema.Array(Schema.Struct({ id: Schema.String, texto: Schema.String })),
 });
 export type DocumentoRevisado = typeof DocumentoRevisado.Type;
+
+/**
+ * A ficha de um critério da revisão (`ifpr://revisao-ppc/<lista>/criterio/<ID>`), em linguagem de quem
+ * revisa: o que confere, por que (as normas, com a situação de vigência na data da base), o que conta
+ * como atendido e como não atendido, quando fica "a conferir", como o app confere e o estado neste PPC.
+ * É critério da tarefa, não fonte normativa.
+ */
+export const FichaCriterio = Schema.Struct({
+  /** O código da ficha (`CT-SUP-17`). */
+  id: Schema.String,
+  titulo: Schema.String,
+  /** `BLOQ`, `OBRIG` ou `REC`; `null` se a ficha não diz. */
+  criticidade: Schema.NullOr(Schema.String),
+  /** O que o critério confere (a pergunta da ficha). */
+  pergunta: Schema.NullOr(Schema.String),
+  /**
+   * As referências que fundamentam o critério, uma por referência, com os dispositivos na ordem da ficha:
+   * uma norma da base, o CNCT (`cnct:catalogo`) ou uma referência externa, sem texto na base
+   * (`externo:abnt/nbr/6023`).
+   */
+  normas: Schema.Array(
+    Schema.Struct({
+      /** O ID na ficha (`br/cne-cp/res/2026/2`, `cnct:catalogo`, `externo:ifpr/pdi`). */
+      norma: Schema.String,
+      tipo: Schema.Literals(["norma", "cnct", "externo"]),
+      /**
+       * O título (da base; o do CNCT, com o curso da revisão quando há); `null` se a base não tem a norma.
+       */
+      titulo: Schema.NullOr(Schema.String),
+      /** Onde abre no Ler (a norma, ou o curso da revisão no CNCT); `null` sem destino (a referência externa). */
+      link: Schema.NullOr(Schema.String),
+      /** Os dispositivos citados (`art57`), sem o `#`; vazio quando a ficha cita a norma inteira. */
+      dispositivos: Schema.Array(Schema.String),
+      /** A situação de vigência na data da base (`vigente`, `revogada`…); `null` se a base não a tem. */
+      vigencia: Schema.NullOr(Schema.String),
+    }),
+  ),
+  /** O que conta como atendido e como não atendido, e quando fica "a conferir". */
+  atendido: Schema.NullOr(Schema.String),
+  naoAtendido: Schema.NullOr(Schema.String),
+  aConferir: Schema.NullOr(Schema.String),
+  /** Como o app confere: `D`, sozinho; `S`, acha o trecho e a IA confirma; `J`, a IA julga as seções. */
+  modo: Schema.Literals(["D", "S", "J"]),
+  /** O porquê do modo, como a ficha o escreve. */
+  justificativa: Schema.NullOr(Schema.String),
+  /** Os temas das seções do PPC em que o critério procura (os tópicos da ficha), pelo título. */
+  secoes: Schema.Array(Schema.String),
+  /** O critério nesta revisão: o estado na régua e, se há, a pendência dele (a primeira, na ordem da lista). */
+  nestePpc: Schema.Struct({
+    estado: EstadoCriterio,
+    /** O que a decisão diz; vazio no `nao_lido`. */
+    mensagem: Schema.String,
+    pendencia: Schema.NullOr(
+      Schema.Struct({
+        chave: Schema.String,
+        /** Aberta, feita ou retirada (a lista viva): o "Neste PPC" acompanha a marcação. */
+        situacao: SituacaoPendencia,
+        titulo: Schema.String,
+        secao: Schema.NullOr(Schema.String),
+        trecho: Schema.NullOr(Schema.String),
+      }),
+    ),
+  }),
+});
+export type FichaCriterio = typeof FichaCriterio.Type;
 
 /** "Enviar a versão corrigida": a lista reconferida contra o arquivo novo e o que mudou. */
 export const ResultadoArquivoNovo = Schema.Struct({
@@ -587,6 +652,16 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
   /** O texto do PPC revisado, com as seções e os trechos das pendências, para o painel de leitura. */
   Rpc.make("revisaoPpc.documento", { payload: EntradaLista, success: DocumentoRevisado, error: FalhaRevisaoPpc }),
+  /**
+   * A ficha do critério `id` na revisão `lista`, para o painel de leitura: o texto vem das fichas da
+   * revisão no `kb.sqlite`, e o "Neste PPC", da lista. Lista que não existe ou critério que a base não
+   * tem: `FalhaRevisaoPpc`.
+   */
+  Rpc.make("revisaoPpc.criterio", {
+    payload: Schema.Struct({ lista: Schema.String, id: Schema.String }),
+    success: FichaCriterio,
+    error: FalhaRevisaoPpc,
+  }),
   /**
    * "Acompanhar no Word": sem `arquivo`, a cópia comentada (regravada se a lista mudou, como em
    * `gerarCopia`) passa a ser o arquivo acompanhado; com `arquivo`, o `.docx` que a pessoa escolheu (ou

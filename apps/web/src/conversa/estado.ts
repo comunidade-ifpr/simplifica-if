@@ -510,6 +510,7 @@ const ROTULOS_IFPR: Readonly<Record<string, string>> = {
   citacoes_da_norma: "PPCs que citam a norma",
   correspondencia: "Correspondência entre normas",
   etapa: "Etapa da tarefa",
+  criterios_revisao_ppc: "Critérios da revisão de PPC",
   fatos_ppc: "Fatos do PPC × SUAP",
   ficha_curso: "Ficha do curso",
   ficha_norma: "Ficha da norma",
@@ -517,7 +518,7 @@ const ROTULOS_IFPR: Readonly<Record<string, string>> = {
   ler_dispositivos: "Ler dispositivos",
   ler_secao: "Ler seção de PPC",
   listar_cursos: "Listar cursos",
-  pacote_contexto: "Contexto da revisão de PPC",
+  pacote_revisao_ppc: "Contexto da revisão de PPC",
   resolver_citacoes: "Identificar citações",
   sobre_a_base: "Sobre a base",
 };

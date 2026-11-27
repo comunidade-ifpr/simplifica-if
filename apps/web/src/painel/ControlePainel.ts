@@ -16,7 +16,7 @@
  * **A conversa ao lado** (aba Conversar, "Conversa ao lado" do plano): a conversa do painel (o id, depois da
  * primeira mensagem), as fichas de contexto acima da caixa, já incluídas e removíveis, as ofertas (uma ficha
  * que só entra se a pessoa a puser, "Anexar o .docx"), o texto da caixa e a origem: quem abriu a conversa
- * (a revisão, `revisao:<lista>`), só como dado; quem a prepara a cada mensagem é o módulo dela
+ * (a revisão, `revisao-ppc:<lista>`), só como dado; quem a prepara a cada mensagem é o módulo dela
  * (`OrigensConversa`, posto no contexto do app pela composição). Uma conversa por origem: pedir de novo com
  * a mesma origem retoma a conversa e acrescenta as fichas (decisão 12). O pedido sem origem (o trecho do
  * leitor, o Explorar, a paleta) vai à conversa do painel, se há uma (e não foi apagada); senão, abre o
@@ -51,7 +51,7 @@ export interface FichaRascunho {
   readonly oferta?: string;
 }
 
-/** Quem abriu a conversa ao lado (a revisão `revisao:<lista>`), só como dado. */
+/** Quem abriu a conversa ao lado (a revisão `revisao-ppc:<lista>`), só como dado. */
 export interface OrigemAoLado {
   /** Uma conversa por origem: a mesma chave retoma a conversa (decisão 12). */
   readonly chave: string;

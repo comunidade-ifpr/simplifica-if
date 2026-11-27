@@ -44,7 +44,7 @@ import { SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app/ponte";
 import type * as Cursos from "@simplifica-if/kb/Cursos";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as Normas from "@simplifica-if/kb/Normas";
-import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import type * as PacoteRevisaoPpc from "@simplifica-if/kb/PacoteRevisaoPpc";
 import * as NodeCrypto from "node:crypto";
 import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
@@ -361,7 +361,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   const limites = { ...LIMITES, ...opcoes.limites };
   const executar = yield* WorkerLimitado.Executor;
   const contexto = yield* Effect.context<
-    FontesNormativas.FontesNormativas | Cursos.Cursos | Normas.Normas | PacoteContexto.PacoteContexto
+    FontesNormativas.FontesNormativas | Cursos.Cursos | Normas.Normas | PacoteRevisaoPpc.PacoteRevisaoPpc
   >();
   const copias = yield* CopiasComentadas.CopiasComentadas;
   const { diaDaVigencia } = Context.get(contexto, FontesNormativas.FontesNormativas);
@@ -526,7 +526,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
 });
 
 /**
- * O serviço sobre os serviços do kb (`FontesNormativas`, `Cursos`, `Normas` e `PacoteContexto` do
+ * O serviço sobre os serviços do kb (`FontesNormativas`, `Cursos`, `Normas` e `PacoteRevisaoPpc` do
  * `kb.sqlite`, os do `Leitura` do servidor), os `ArquivosLiberados` e as `CopiasComentadas`.
  */
 export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));

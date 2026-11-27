@@ -134,7 +134,7 @@ it("a linha recolhida mostra só o título, em até duas linhas; aberta, a expli
           id="pendencia-teste"
           viva={viva}
           aoAbrirLink={(link) => abertos.push(link)}
-          linkNoPpc="ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc"
+          linkNoPpc="ifpr://revisao-ppc/lista-1/20261122#p-CT-SUP-12:abc"
         />
       </li>
     </ul>,
@@ -171,7 +171,7 @@ it("a linha recolhida mostra só o título, em até duas linhas; aberta, a expli
 
   // "Ver no PPC" abre o documento inteiro no painel, no trecho da pendência.
   await page.getByRole("button", { name: "Ver no PPC" }).click();
-  expect(abertos).toEqual(["ifpr://revisao/lista-1/20261122#p-CT-SUP-12:abc"]);
+  expect(abertos).toEqual(["ifpr://revisao-ppc/lista-1/20261122#p-CT-SUP-12:abc"]);
 });
 
 const bloco = (

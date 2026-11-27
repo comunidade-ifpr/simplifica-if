@@ -101,7 +101,7 @@ it("a revisão apagada em outra janela: esta sai dela, com o aviso, e o PPC sai 
   await expect.element(page.getByText("Esta revisão foi apagada.")).toBeVisible();
   await expect.element(page.getByRole("button", { name: "Escolher o PPC" })).toBeVisible();
   const { painel } = app.contexto;
-  expect(painel.obter().historico.links.some((link) => link.startsWith(`ifpr://revisao/${lista}/`))).toBe(false);
+  expect(painel.obter().historico.links.some((link) => link.startsWith(`ifpr://revisao-ppc/${lista}/`))).toBe(false);
   await expect.element(page.getByRole("article", { name: "PPC em revisão" })).not.toBeInTheDocument();
   expect(achadosDaTela()).toEqual([]);
 });

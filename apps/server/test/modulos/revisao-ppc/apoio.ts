@@ -53,17 +53,13 @@ export function bancoComFichas(): string {
     "x.json",
     JSON.stringify(curso),
   );
-  db.prepare("DELETE FROM fichas").run();
+  db.prepare("DELETE FROM revisao_ppc_fichas").run();
   for (const id of FICHAS_FIXTURE) {
     const texto = NodeFS.readFileSync(NodePath.join(PASTA_FICHAS, `${id.toLowerCase()}.json`), "utf8");
     const json = JSON.parse(texto) as { titulo: string };
-    db.prepare("INSERT INTO fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
-      id,
-      json.titulo,
-      `fichas/${id}.json`,
-      JSON.stringify(json),
-      texto,
-    );
+    db.prepare(
+      "INSERT INTO revisao_ppc_fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)",
+    ).run(id, json.titulo, `fichas/${id}.json`, JSON.stringify(json), texto);
   }
   db.close();
   return banco;

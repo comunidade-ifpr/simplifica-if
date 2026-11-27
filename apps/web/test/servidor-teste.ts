@@ -72,7 +72,7 @@ inserirExplorar(banco);
   };
   const db = new NodeSqlite.DatabaseSync(banco);
   const inserir = db.prepare(
-    "INSERT INTO topicos (id, ordem, titulo, termos_json, path, dados_json) VALUES (?, ?, ?, '[]', ?, ?)",
+    "INSERT INTO revisao_ppc_topicos (id, ordem, titulo, termos_json, path, dados_json) VALUES (?, ?, ?, '[]', ?, ?)",
   );
   topicos.forEach((topico, ordem) =>
     inserir.run(
@@ -82,6 +82,24 @@ inserirExplorar(banco);
       "base-conhecimento/revisao-ppc/topicos-fichas.json",
       JSON.stringify(topico),
     ),
+  );
+  db.close();
+}
+// A ficha do critério do AEE (CT-CURR-22), que o PPC sintético não atende: a ficha do critério no Ler.
+{
+  const arquivo = NodePath.resolve(
+    import.meta.dirname,
+    "../../../base-conhecimento/revisao-ppc/fichas/ct-curr-22.json",
+  );
+  const texto = NodeFS.readFileSync(arquivo, "utf8");
+  const ficha = JSON.parse(texto) as { id: string; titulo: string };
+  const db = new NodeSqlite.DatabaseSync(banco);
+  db.prepare("INSERT INTO revisao_ppc_fichas (id, titulo, path, dados_json, arquivo_json) VALUES (?, ?, ?, ?, ?)").run(
+    ficha.id,
+    ficha.titulo,
+    "base-conhecimento/revisao-ppc/fichas/ct-curr-22.json",
+    JSON.stringify(ficha),
+    texto,
   );
   db.close();
 }

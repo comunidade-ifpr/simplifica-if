@@ -1,19 +1,51 @@
 /**
- * O leitor `ifpr://revisao/…` do módulo, que o `Leitor.tsx` do núcleo despacha (arquivo de composição).
+ * Os links `ifpr://revisao-ppc/…` do módulo, que a composição registra (`linksDeModulo.ts`) e o
+ * `Leitor.tsx` do núcleo despacha pelo tipo: o PPC em revisão (`<lista>/<versão>`) e a ficha de um
+ * critério (`<lista>/criterio/<ID>`, `LeitorCriterio.tsx`).
  */
 import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert.tsx";
 import { useApi } from "../../contexto.tsx";
 import { useCarga } from "../../leitor/carga.ts";
 import { Documento } from "../../leitor/Documento.tsx";
 import { BotaoLink, Cabecalho, ComCarga, FaixaTrecho, Secao } from "../../leitor/pecas.tsx";
+import type { LinkDeModulo } from "../../leitor/linksDeModulo.ts";
 import type { AoAbrirLink } from "../../painel/abrirLink.ts";
+import { LeitorCriterio } from "./LeitorCriterio.tsx";
+import { criterioDoCaminho, TIPO_LINK } from "./lista.ts";
 
 /**
- * O PPC que a pessoa está revisando (`ifpr://revisao/<lista>/<versão>#p-<chave>`): o texto convertido do
+ * O PPC que a pessoa está revisando (`ifpr://revisao-ppc/<lista>/<versão>#p-<chave>`): o texto convertido do
  * `.docx`, guardado na lista, rolado e destacado no trecho da pendência. Não é a base: não tem citação
  * nem ficha do curso, e o aviso lembra que a formatação do Word não aparece.
  */
-export function LeitorRevisao({
+function LeitorRevisao({
+  caminho,
+  fragmento,
+  aoAbrirLink,
+}: {
+  readonly caminho: string;
+  readonly fragmento: string | null;
+  readonly aoAbrirLink: AoAbrirLink;
+}) {
+  const criterio = criterioDoCaminho(caminho);
+  return criterio === undefined ? (
+    <LeitorPpc caminho={caminho} fragmento={fragmento} aoAbrirLink={aoAbrirLink} />
+  ) : (
+    <LeitorCriterio lista={criterio.lista} id={criterio.id} aoAbrirLink={aoAbrirLink} />
+  );
+}
+
+/** Os links do módulo, para a composição registrar. */
+export const linksDaRevisao: LinkDeModulo = {
+  tipo: TIPO_LINK,
+  Leitor: LeitorRevisao,
+  nomeCurto: (caminho) => {
+    const criterio = criterioDoCaminho(caminho);
+    return criterio === undefined ? "PPC em revisão (texto convertido)" : `Critério ${criterio.id}`;
+  },
+};
+
+function LeitorPpc({
   caminho,
   fragmento,
   aoAbrirLink,
@@ -24,8 +56,8 @@ export function LeitorRevisao({
 }) {
   const api = useApi();
   const lista = caminho.split("/")[0]!;
-  const documento = useCarga(`revisao:${caminho}`, () => api.chamar((c) => c["revisaoPpc.documento"]({ lista })));
-  const link = `ifpr://revisao/${caminho}`;
+  const documento = useCarga(`${TIPO_LINK}:${caminho}`, () => api.chamar((c) => c["revisaoPpc.documento"]({ lista })));
+  const link = `ifpr://${TIPO_LINK}/${caminho}`;
   return (
     <ComCarga carga={documento} titulo="Não foi possível ler o PPC revisado">
       {(doc) => {

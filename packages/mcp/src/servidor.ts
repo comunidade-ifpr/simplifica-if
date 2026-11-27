@@ -63,7 +63,7 @@ export const layerLeitura = (opcoes: {
   }).pipe(Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: opcoes.banco })));
 
 /**
- * O `Leitura` com a pasta de trabalho de onde o `pacote_contexto` lê um `.md` (`arquivo`). Pede
+ * O `Leitura` com a pasta de trabalho de onde o `pacote_revisao_ppc` lê um `.md` (`arquivo`). Pede
  * `FileSystem` e `Path` ao ambiente; o `layerLeitura`, sem pasta, não lê arquivo nenhum.
  */
 export const layerLeituraComPasta = (opcoes: {

@@ -25,11 +25,11 @@ import type * as Sql from "../src/db/sql.ts";
 import * as Impacto from "../src/Impacto.ts";
 import * as Layers from "../src/layers.ts";
 import * as Normas from "../src/Normas.ts";
-import * as PacoteContexto from "../src/PacoteContexto.ts";
+import * as PacoteRevisaoPpc from "../src/PacoteRevisaoPpc.ts";
 import * as Ppcs from "../src/Ppcs.ts";
 import { raizRepositorio } from "../src/caminhos.ts";
 
-type Erro = Sql.FalhaNaConsulta | PacoteContexto.PpcNaoEncontrado | PacoteContexto.TarefaNaoReconhecida;
+type Erro = Sql.FalhaNaConsulta | PacoteRevisaoPpc.PpcNaoEncontrado | PacoteRevisaoPpc.TarefaNaoReconhecida;
 
 const CONSULTAS: ReadonlyArray<readonly [string, Effect.Effect<unknown, Erro, Layers.ServicosConsulta>]> = [
   ["buscar-secoes", Ppcs.Ppcs.use((p) => p.buscarSecoes("acompanhamento de egressos", {}, { limite: 10 }))],
@@ -49,8 +49,8 @@ const CONSULTAS: ReadonlyArray<readonly [string, Effect.Effect<unknown, Erro, La
   ["impacto br/cne-cp/res/2021/1", Impacto.Impacto.use((i) => i.daNorma("br/cne-cp/res/2021/1"))],
   ["correspondencia #art20", Normas.Normas.use((n) => n.correspondencia("br/cne-cp/res/2021/1#art20"))],
   [
-    "pacote-contexto CT-CURR-12",
-    PacoteContexto.PacoteContexto.use((p) => p.montar("CT-CURR-12", "curitiba/tecnico-em-enfermagem")),
+    "pacote-revisao-ppc CT-CURR-12",
+    PacoteRevisaoPpc.PacoteRevisaoPpc.use((p) => p.montar("CT-CURR-12", "curitiba/tecnico-em-enfermagem")),
   ],
 ];
 

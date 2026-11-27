@@ -24,8 +24,8 @@ describe("histórico do leitor", () => {
   });
 
   it("sem os links de um documento que saiu: o atual fica, ou o de antes toma o lugar", () => {
-    const apagado = (link: string) => link.startsWith("ifpr://revisao/x/");
-    const trilha = ["ifpr://norma/a", "ifpr://revisao/x/1", "ifpr://norma/a", "ifpr://norma/b"];
+    const apagado = (link: string) => link.startsWith("ifpr://revisao-ppc/x/");
+    const trilha = ["ifpr://norma/a", "ifpr://revisao-ppc/x/1", "ifpr://norma/a", "ifpr://norma/b"];
     // o atual fica: os iguais que ficaram lado a lado viram um
     expect(semLinks({ links: trilha, posicao: 3 }, apagado)).toEqual({
       links: ["ifpr://norma/a", "ifpr://norma/b"],
@@ -37,10 +37,10 @@ describe("histórico do leitor", () => {
       posicao: 0,
     });
     // sem nenhum antes, o primeiro que ficou; sem nenhum, vazio
-    expect(linkAtual(semLinks({ links: ["ifpr://revisao/x/1#p-1", "ifpr://norma/b"], posicao: 0 }, apagado))).toBe(
+    expect(linkAtual(semLinks({ links: ["ifpr://revisao-ppc/x/1#p-1", "ifpr://norma/b"], posicao: 0 }, apagado))).toBe(
       "ifpr://norma/b",
     );
-    expect(semLinks({ links: ["ifpr://revisao/x/1"], posicao: 0 }, apagado)).toEqual(HISTORICO_VAZIO);
+    expect(semLinks({ links: ["ifpr://revisao-ppc/x/1"], posicao: 0 }, apagado)).toEqual(HISTORICO_VAZIO);
     // nada a tirar: a mesma trilha
     const h = abrir(HISTORICO_VAZIO, "ifpr://norma/a");
     expect(semLinks(h, apagado)).toBe(h);

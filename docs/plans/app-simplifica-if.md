@@ -58,7 +58,6 @@ O mapa das pastas (`apps/desktop`, `apps/server`, `apps/web`, `packages/*`) est�
 | `ifpr://ppc/curitiba/tecnico-em-enfermagem/2023#<secao>` | PPC convertido, na seção; sem a versão (`ifpr://ppc/curitiba/tecnico-em-enfermagem`), o PPC vigente do curso |
 | `ifpr://cnct/tecnico-em-enfermagem` | Curso no CNCT |
 | `ifpr://campus/curitiba` | Ficha do campus |
-| `ifpr://ficha/CT-CURR-12` | Ficha da revisão de PPC |
 
 As ferramentas do `simplifica-mcp` devolvem esses links prontos, e o `simplifica-mcp` também os serve como recursos MCP (`resources/read`), no app e no executável. O Consepe ainda não tem link próprio.
 

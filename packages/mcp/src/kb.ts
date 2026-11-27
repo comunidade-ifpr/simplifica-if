@@ -4,7 +4,7 @@
  *
  *   pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" [--limite 5] [--json]
  *   pnpm kb ficha-norma br/cne-cp/res/2021/1 --em 2026-11-01
- *   pnpm kb pacote-contexto CT-CURR-12 --arquivo rodada/PPC.md
+ *   pnpm kb pacote-revisao-ppc CT-CURR-12 --arquivo rodada/PPC.md
  *   pnpm kb compilar [--destino tmp/kb.sqlite]
  *   pnpm kb --help
  *
@@ -12,7 +12,7 @@
  * entrada, o mesmo serviço `Leitura` e a mesma resposta, o texto Markdown que a IA recebe ou, com
  * `--json`, a `Resposta`. Elas rodam sobre o `tmp/kb.sqlite` do checkout, recompilado quando está
  * mais velho que as fontes (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`); o `arquivo`
- * do `pacote-contexto` se lê do diretório atual. A curadoria (`compilar`, `propor-relacoes`,
+ * do `pacote-revisao-ppc` se lê do diretório atual. A curadoria (`compilar`, `propor-relacoes`,
  * `avaliar-resolvedor`, `avaliar-busca`, `fatos-a-revisar`) fica em `@simplifica-if/kb/cli`.
  *
  * Erros: pelo ponto de entrada comum, longe do stdout. Entrada inválida, ID fora da base e falha do

@@ -1,16 +1,17 @@
 /**
  * `FontesNormativas`: os dados que as regras puras do kb recebem prontos — registro de normas,
  * datas dos atos, relações, regras de transição, data de referência, léxico da busca de seções e
- * tópicos da revisão de PPC — e o conteúdo da revisão de PPC que o `impacto` percorre.
+ * tópicos da revisão de PPC — e o conteúdo da revisão de PPC (as fichas e os outros arquivos), que a
+ * base da revisão com IA lê.
  *
  * Remonta tudo das tabelas do `kb.sqlite` (`normas`, `relacoes`, `transicoes`, `meta`,
- * `sinonimos_*`, `topicos`, `topicos_secoes`, `fichas`, `revisao_ppc_arquivos`). Exige só o
+ * `sinonimos_*` e as `revisao_ppc_*` da revisão de PPC). Exige só o
  * `SqlClient`: o tipo garante que ela não lê arquivo, e é o que deixa o servidor MCP e o app rodarem
  * sem o repositório. A CLI do checkout usa a mesma, depois de recompilar o banco velho; que o banco
  * reproduz os arquivos, conferem os testes de `db/base.test.ts` contra os carregadores síncronos.
  *
  * Os valores são montados uma vez, na construção da layer. `conteudoRevisaoPpc` é um método porque
- * só o `impacto` e a `ler_ficha` o usam.
+ * só a base da revisão com IA (`packages/ppc/src/base-revisao.ts`) o usa.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -262,20 +263,22 @@ const make = Effect.gen(function* () {
     catch: falhaDaTabela("sinonimos_tipos e sinonimos_grupos"),
   });
 
-  const linhasTop = yield* linhasTopicos("SELECT dados_json FROM topicos ORDER BY ordem");
+  const linhasTop = yield* linhasTopicos("SELECT dados_json FROM revisao_ppc_topicos ORDER BY ordem");
   const topicosFichas = yield* Effect.try({
     try: () => topicosFichasDeObjetos(linhasTop.map((l) => l.dados_json)),
-    catch: falhaDaTabela("topicos"),
+    catch: falhaDaTabela("revisao_ppc_topicos"),
   });
-  const linhasTS = yield* linhasTopicosSecoes("SELECT topico, tipos_json FROM topicos_secoes ORDER BY ordem");
+  const linhasTS = yield* linhasTopicosSecoes(
+    "SELECT topico, tipos_json FROM revisao_ppc_topicos_secoes ORDER BY ordem",
+  );
   const topicosSecoes = yield* Effect.try({
     try: () => topicosSecoesDeObjeto(Object.fromEntries(linhasTS.map((l) => [l.topico, l.tipos_json]))),
-    catch: falhaDaTabela("topicos_secoes"),
+    catch: falhaDaTabela("revisao_ppc_topicos_secoes"),
   });
 
   const conteudoRevisaoPpc = Effect.fn("FontesNormativas.conteudoRevisaoPpc")(function* () {
     const arquivos = yield* linhasArquivos(
-      "SELECT path, arquivo_json FROM fichas UNION ALL SELECT path, arquivo_json FROM revisao_ppc_arquivos ORDER BY path",
+      "SELECT path, arquivo_json FROM revisao_ppc_fichas UNION ALL SELECT path, arquivo_json FROM revisao_ppc_arquivos ORDER BY path",
     ).pipe(Effect.provideService(SqlClient.SqlClient, sql));
     return { topicos: topicosFichas, arquivos: arquivos.map((f) => ({ arquivo: f.path, texto: f.arquivo_json })) };
   });

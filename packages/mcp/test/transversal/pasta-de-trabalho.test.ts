@@ -1,13 +1,13 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: monta a pasta de trabalho, com arquivos e links simbólicos, no disco
 /**
- * Pasta de trabalho (suíte transversal do T6): o `pacote_contexto` com `arquivo`, pelo servidor
+ * Pasta de trabalho (suíte transversal do T6): o `pacote_revisao_ppc` com `arquivo`, pelo servidor
  * isolado em processo (stdio; ver `servidorIsolado`), com a pasta isolada como diretório atual e pasta
  * de trabalho. Lê o `.md` de dentro dela (pelo caminho relativo, numa subpasta e pelo absoluto) e
  * recusa o que fica fora: `..`, caminho absoluto de fora e link simbólico para fora (de arquivo e de
  * pasta). As respostas são as do processo de teste com a mesma pasta; o stderr não registra acesso
  * negado, ou seja, a recusa vem do servidor antes de ler, e não do modelo de permissões; e a pasta fica
  * como estava. Os testes por ferramenta das mesmas regras, sem processo, estão em
- * `test/pacote-contexto.test.ts`.
+ * `test/pacote-revisao-ppc.test.ts`.
  */
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
@@ -58,12 +58,12 @@ beforeAll(() => {
 afterAll(limparTemporarios);
 
 const pacote = (arquivo: string): Chamada => ({
-  nome: "pacote_contexto",
+  nome: "pacote_revisao_ppc",
   args: { tarefa: "CT-CURR-12", arquivo },
   valida: true,
 });
 
-describe.skipIf(SMOKE_APENAS)("pasta de trabalho: pacote_contexto com arquivo, pelo servidor isolado", () => {
+describe.skipIf(SMOKE_APENAS)("pasta de trabalho: pacote_revisao_ppc com arquivo, pelo servidor isolado", () => {
   test("lê dentro da pasta; recusa .., caminho absoluto e link simbólico para fora", async () => {
     const segredo = NodePath.join(fora, "segredo.md");
     const servidor = isolado.preparar(banco, {

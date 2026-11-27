@@ -1,22 +1,19 @@
 /**
- * Leituras dos recursos `ifpr://` sem ferramenta própria (M1.5): o PPC sem seção, o curso do CNCT, o
- * campus e a ficha da revisão de PPC, sobre os serviços `Ppcs`, `Cursos` e `FontesNormativas` do kb.
+ * Leituras dos recursos `ifpr://` sem ferramenta própria (M1.5): o PPC sem seção, o curso do CNCT e o
+ * campus, sobre os serviços `Ppcs`, `Cursos` e `FontesNormativas` do kb.
  * As outras (norma, dispositivo, curso e seção de PPC) são as leituras das ferramentas.
  *
- * Os campos de texto do CNCT e das fichas levam a linha da chave no arquivo de origem: os arquivos
+ * Os campos de texto do CNCT levam a linha da chave no arquivo de origem: os arquivos
  * são o JSON com indentação de 2 espaços (o que `JSON.stringify(_, null, 2)` reproduz), e o banco
  * guarda o objeto com as chaves na ordem do arquivo. Sem o objeto (`{}`), a linha é a 1.
  */
-import { CAMINHOS } from "@simplifica-if/kb/caminhos";
 import * as Cursos from "@simplifica-if/kb/Cursos";
-import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import { linhaDaChave } from "@simplifica-if/kb/institucional/dados";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Effect from "effect/Effect";
-import * as Schema from "effect/Schema";
-import { type Aviso, type Base, EntradaInvalida, FalhaNaBase, type Fonte } from "../contratos.ts";
+import { type Aviso, type Base, EntradaInvalida, type Fonte } from "../contratos.ts";
 import { responder } from "../envelope.ts";
-import { linkCampus, linkCnct, linkCurso, linkFicha, linkNorma, linkPpc } from "../links.ts";
+import { linkCampus, linkCnct, linkCurso, linkPpc } from "../links.ts";
 import * as Conteudos from "../recursos/conteudos.ts";
 import { AVISO_FATO_EXTRAIDO, chavePpc, paraFatosPpc } from "./comum.ts";
 import { paraCurso } from "./ppcs.ts";
@@ -28,8 +25,6 @@ export interface CampusRecurso {
   readonly site: string | null;
   readonly path: string;
 }
-
-const decodificarJson = Schema.decodeUnknownEffect(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)));
 
 const SLUG = /^[A-Za-z0-9._~-]+$/;
 
@@ -49,7 +44,6 @@ export const makeRecursos = Effect.fn("Leitura.makeRecursos")(function* (
 ) {
   const ppcs = yield* Ppcs.Ppcs;
   const cursos = yield* Cursos.Cursos;
-  const fontes = yield* FontesNormativas.FontesNormativas;
 
   const lerPpc = Effect.fn("Leitura.lerPpc")(function* (e: typeof Conteudos.EntradaPpc.Type) {
     const chave = yield* chavePpc(e.ppc);
@@ -130,55 +124,5 @@ export const makeRecursos = Effect.fn("Leitura.makeRecursos")(function* (
     });
   });
 
-  const lerFicha = Effect.fn("Leitura.lerFicha")(function* (e: typeof Conteudos.EntradaFicha.Type) {
-    const pedido = e.ficha.replace(/^ficha:/, "").toUpperCase();
-    const { arquivos } = yield* fontes.conteudoRevisaoPpc();
-    // as fichas do banco (dezenas): decodifica só as que podem ser a pedida
-    const padrao = new RegExp(`"id"\\s*:\\s*"${pedido.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`, "i");
-    let achada: { readonly arquivo: string; readonly ficha: Readonly<Record<string, unknown>> } | null = null;
-    const fichas = arquivos.filter((a) => a.arquivo.startsWith(`${CAMINHOS.fichas}/`));
-    for (const candidato of fichas.filter((a) => padrao.test(a.texto))) {
-      const ficha = yield* decodificarJson(candidato.texto).pipe(
-        Effect.catchTags({
-          SchemaError: (erro) => Effect.fail(new FalhaNaBase({ operacao: "ficha da revisão de PPC", cause: erro })),
-        }),
-      );
-      if (String(ficha.id).toUpperCase() === pedido) {
-        achada = { arquivo: candidato.arquivo, ficha };
-        break;
-      }
-    }
-    if (!achada) {
-      return yield* new EntradaInvalida({
-        mensagem: `ficha não encontrada na base: "${e.ficha}". Use o ID da ficha da revisão de PPC, como "CT-CURR-12"`,
-      });
-    }
-    const { arquivo, ficha } = achada;
-    const id = String(ficha.id);
-    const referencias = Array.isArray(ficha.referencias_normativas) ? ficha.referencias_normativas : [];
-    return responder(base, {
-      ficha: {
-        id,
-        titulo: textoOuNulo(ficha.titulo) ?? id,
-        dominio: textoOuNulo(ficha.dominio),
-        criticidade: textoOuNulo(ficha.criticidade),
-        tipo_escopo: textoOuNulo(ficha.tipo_escopo),
-        path: arquivo,
-        link: linkFicha(id),
-      },
-      campos: Conteudos.CAMPOS_FICHA.flatMap(([campo, rotulo]) => {
-        const texto = textoOuNulo(ficha[campo]);
-        return texto === null ? [] : [{ campo, rotulo, texto, fonte: fonteDoCampo(ficha, arquivo, campo) }];
-      }),
-      referencias: referencias.flatMap((r: unknown) => {
-        if (typeof r !== "object" || r === null) return [];
-        const { ref, dispositivo, papel } = r as Record<string, unknown>;
-        if (typeof ref !== "string") return [];
-        const disp = textoOuNulo(dispositivo);
-        return [{ ref, dispositivo: disp, papel: textoOuNulo(papel), link: linkNorma(ref, disp?.replace(/^#/, "")) }];
-      }),
-    });
-  });
-
-  return { lerPpc, lerCnct, lerCampus, lerFicha };
+  return { lerPpc, lerCnct, lerCampus };
 });

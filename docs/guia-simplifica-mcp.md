@@ -66,6 +66,8 @@ Abra uma conversa nova e pergunte:
 
 A IA pede permissão para usar uma ferramenta do servidor `ifpr` (como `ficha_curso` ou `listar_cursos`); autorize. A resposta deve dizer **1.200 horas**, com o link `ifpr://cnct/tecnico-em-enfermagem` e a data da base. Avisos como "vigência a confirmar" e "fato extraído sem revisão" fazem parte da resposta. Outras boas perguntas: "Quais cursos técnicos do campus Curitiba precisam se adequar à Resolução CNE/CP nº 2/2026?" e "Como outros PPCs escreveram a seção de acompanhamento de egressos?".
 
+Quem elabora ou revisa um PPC pode pedir também os critérios com que a tarefa "Revisar um PPC" do app confere o documento ("Quais critérios a revisão de PPC confere sobre estágio?"): vêm da ferramenta `criterios_revisao_ppc`, por critério, por tema ou pelos que uma norma atinge. São critérios da tarefa, não norma: o fundamento é a norma que cada um cita.
+
 ## 5. Se não aparecer
 
 1. **Feche e abra a IA de novo.** Ela só lê a configuração ao iniciar.

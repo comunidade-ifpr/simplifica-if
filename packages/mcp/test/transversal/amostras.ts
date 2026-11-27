@@ -20,7 +20,8 @@ import { TETO_IMPACTO } from "../../src/ferramentas/impacto-da-norma.ts";
 import { TETO_LER_DISPOSITIVOS } from "../../src/ferramentas/ler-dispositivos.ts";
 import { TETO_LER_SECAO } from "../../src/ferramentas/ler-secao.ts";
 import { TETO_LISTAR_CURSOS } from "../../src/ferramentas/listar-cursos.ts";
-import { TETO_PACOTE_CONTEXTO } from "../../src/ferramentas/pacote-contexto.ts";
+import { TETO_CRITERIOS } from "../../src/ferramentas/criterios-revisao-ppc.ts";
+import { TETO_PACOTE_REVISAO_PPC } from "../../src/ferramentas/pacote-revisao-ppc.ts";
 import { TETO_RESOLVER_CITACOES } from "../../src/ferramentas/resolver-citacoes.ts";
 import type { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
 import { DCN_2021, DCN_2026, EXTERNO, STUB } from "../fixture-normas.ts";
@@ -292,7 +293,7 @@ export const AMOSTRAS: { readonly [N in NomeFerramenta]: Amostras } = {
       chaves: (d) => d.ppcs.map((p: Dados) => p.ppc),
     },
   },
-  pacote_contexto: {
+  pacote_revisao_ppc: {
     fixture: "ppcs",
     // só com `ppc`: o `arquivo` depende da pasta de trabalho, e tem a suíte própria (`pasta-de-trabalho.test.ts`)
     validas: [
@@ -310,7 +311,26 @@ export const AMOSTRAS: { readonly [N in NomeFerramenta]: Amostras } = {
       [{ tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM, arquivo: "PPC.md" }, "informe exatamente um destes: ppc"],
       [{ tarefa: "CT-XXXX-99", ppc: PPC_ENFERMAGEM }, "tarefa não reconhecida"],
     ],
-    teto: fixo(TETO_PACOTE_CONTEXTO),
+    teto: fixo(TETO_PACOTE_REVISAO_PPC),
+    paginacao: null,
+  },
+  criterios_revisao_ppc: {
+    fixture: "ppcs",
+    validas: [{ id: "CT-CURR-12" }, { norma: "br/cne-cp/res/2021/1" }, { norma: "br/lei/1996/9394" }],
+    reais: [
+      { id: "CT-SUP-17" },
+      { topico: "estagio" },
+      { topico: "matriz_curricular" },
+      { norma: NORMA_REAL },
+      { norma: `${NORMA_REAL}#art20` },
+    ],
+    invalidas: [
+      [{}, "informe exatamente um destes: id"],
+      [{ id: "CT-CURR-12", norma: "br/cne-cp/res/2021/1" }, "informe exatamente um destes: id"],
+      [{ id: "CT-XXXX-99" }, "critério não encontrado"],
+      [{ norma: "não é um ID" }, "norma: "],
+    ],
+    teto: fixo(TETO_CRITERIOS),
     paginacao: null,
   },
   sobre_a_base: {

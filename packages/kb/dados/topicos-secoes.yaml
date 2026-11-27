@@ -1,9 +1,9 @@
 # Tópicos das fichas da revisão de PPC (base-conhecimento/revisao-ppc/topicos-fichas.json) → tipos de seção do PPC
 # (taxonomias técnico e geral de packages/kb/src/ppcs/secoes.ts).
 #
-# Usado por `kb pacote-contexto <tarefa> <ppc>` e pela revisão com IA do app (temas J): as seções
+# Usado por `kb pacote-revisao-ppc <tarefa> <ppc>` e pela revisão com IA do app (temas J): as seções
 # do PPC desses tipos entram inteiras no pacote; a busca textual pelas `consultas` das fichas completa
-# com o que a taxonomia não pegou. Contrato: esquemaTopicosSecoes em packages/kb/src/db/pacote-contexto.ts (zod).
+# com o que a taxonomia não pegou. Contrato: esquemaTopicosSecoes em packages/kb/src/db/pacote-revisao-ppc.ts (zod).
 #
 # Rascunho: escrito a partir dos títulos e descrições dos tópicos, sem revisão humana.
 # Ajustado na troca da revisão de PPC para grupos por tópico, pelas âncoras semânticas que ficavam fora

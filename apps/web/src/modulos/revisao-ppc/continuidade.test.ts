@@ -17,9 +17,9 @@ describe("a continuidade da revisão", () => {
 
   it("os links e a origem da revisão", async () => {
     const conferencia = await continuidadeDaRevisao(api)();
-    assert.isTrue(conferencia.link("ifpr://revisao/viva/1#p-2"));
-    assert.isFalse(conferencia.link("ifpr://revisao/apagada/1"));
+    assert.isTrue(conferencia.link("ifpr://revisao-ppc/viva/1#p-2"));
+    assert.isFalse(conferencia.link("ifpr://revisao-ppc/apagada/1"));
     assert.isUndefined(conferencia.link("ifpr://norma/a"));
-    assert.isFalse(conferencia.origem("revisao:apagada"));
+    assert.isFalse(conferencia.origem("revisao-ppc:apagada"));
   });
 });

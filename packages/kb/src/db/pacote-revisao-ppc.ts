@@ -1,5 +1,5 @@
 /**
- * `kb pacote-contexto <tarefa> <ppc>`: o contexto de uma tarefa da revisão de PPC montado pelo banco,
+ * `kb pacote-revisao-ppc <tarefa> <ppc>`: o contexto de uma tarefa da revisão de PPC montado pelo banco,
  * em vez do PPC inteiro mais os manifestos.
  *
  * Tarefa: uma ficha (`CT-CURR-12`), várias separadas por vírgula, um tópico de
@@ -32,7 +32,7 @@ import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
-import { PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
+import { PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-revisao-ppc-erros.ts";
 import { extrairFatosPpc, type FatoPpc } from "../fatos/ppc.ts";
 import { palavrasDeCampi, type SecaoPpc, segmentarPpc } from "../ppcs/secoes.ts";
 import type { TopicosSecoes } from "../ppcs/topicos.ts";
@@ -135,9 +135,12 @@ function caracteresDoJson(valor: unknown): number {
 /* ------------------------------------------------------------ fichas da tarefa */
 
 /** Fichas do banco (JSON da ficha), em ordem de ID. */
-export const fichasDoBanco = Effect.fn("pacoteContexto.fichasDoBanco")(function* (ids?: readonly string[]) {
+export const fichasDoBanco = Effect.fn("pacoteRevisaoPpc.fichasDoBanco")(function* (ids?: readonly string[]) {
   const filtro = ids ? ` WHERE id IN (${ids.map(() => "?").join(", ")})` : "";
-  const linhas = yield* linhasFichas(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`, ids ?? []);
+  const linhas = yield* linhasFichas(
+    `SELECT id, path, dados_json FROM revisao_ppc_fichas${filtro} ORDER BY id`,
+    ids ?? [],
+  );
   return linhas.map((f) => f.dados_json as FichaPacote);
 });
 
@@ -150,23 +153,23 @@ const LinhaFichaResumida = Schema.Struct({
 });
 const linhasFichasResumidas = Sql.todas(LinhaFichaResumida);
 
-/** Uma ficha pelas colunas da tabela `fichas`, sem o JSON: título, domínio, criticidade e arquivo. */
+/** Uma ficha pelas colunas da tabela `revisao_ppc_fichas`, sem o JSON: título, domínio, criticidade e arquivo. */
 export type FichaResumida = typeof LinhaFichaResumida.Type;
 
 /** Todas as fichas, resumidas, em ordem de ID. */
-export const fichasResumidas = Effect.fn("pacoteContexto.fichasResumidas")(function* () {
+export const fichasResumidas = Effect.fn("pacoteRevisaoPpc.fichasResumidas")(function* () {
   const fichas: ReadonlyArray<FichaResumida> = yield* linhasFichasResumidas(
-    "SELECT id, titulo, dominio, criticidade, path FROM fichas ORDER BY id",
+    "SELECT id, titulo, dominio, criticidade, path FROM revisao_ppc_fichas ORDER BY id",
   );
   return fichas;
 });
 
 /** IDs das fichas de uma tarefa: `todas`, um tópico ou fichas separadas por vírgula. */
-export const fichasDaTarefa = Effect.fn("pacoteContexto.fichasDaTarefa")(function* (tarefa: string) {
-  const todas = (yield* linhasIdsFichas("SELECT id FROM fichas")).map((f) => f.id).sort(compararTexto);
+export const fichasDaTarefa = Effect.fn("pacoteRevisaoPpc.fichasDaTarefa")(function* (tarefa: string) {
+  const todas = (yield* linhasIdsFichas("SELECT id FROM revisao_ppc_fichas")).map((f) => f.id).sort(compararTexto);
   if (tarefa === "todas") return todas;
   const topico = yield* linhasFichasTopico(
-    "SELECT ficha_id FROM fichas_topicos WHERE topico_id = ? ORDER BY ficha_id",
+    "SELECT ficha_id FROM revisao_ppc_fichas_topicos WHERE topico_id = ? ORDER BY ficha_id",
     [tarefa],
   );
   if (topico.length) return topico.map((t) => t.ficha_id).filter((id) => todas.includes(id));
@@ -271,7 +274,7 @@ export interface SecaoDoPacote {
   texto: string;
 }
 
-export interface PacoteContexto {
+export interface PacoteRevisaoPpc {
   tarefa: string;
   fichas_ids: string[];
   ppc: typeof LinhaPpc.Type & { path: string };
@@ -327,7 +330,7 @@ export function referenciasDasFichas(fichas: readonly FichaPacote[]): RefFicha[]
  * caput herdado, o próprio texto e os subordinados; um dispositivo contido noutro citado não se
  * repete (vai em `citados`).
  */
-export const normasDoPacote = Effect.fn("pacoteContexto.normasDoPacote")(function* (refs: readonly RefFicha[]) {
+export const normasDoPacote = Effect.fn("pacoteRevisaoPpc.normasDoPacote")(function* (refs: readonly RefFicha[]) {
   const porRef = new Map<string, RefFicha[]>();
   for (const r of refs) if (!r.ref.startsWith("cnct:")) porRef.set(r.ref, [...(porRef.get(r.ref) ?? []), r]);
   const normas: NormaDoPacote[] = [];
@@ -372,7 +375,7 @@ export const normasDoPacote = Effect.fn("pacoteContexto.normasDoPacote")(functio
 });
 
 /** Citações normativas resolvidas de um PPC (`citacoes`), na ordem do texto. */
-export const citacoesDoPpc = Effect.fn("pacoteContexto.citacoesDoPpc")(function* (ppcId: string) {
+export const citacoesDoPpc = Effect.fn("pacoteRevisaoPpc.citacoesDoPpc")(function* (ppcId: string) {
   return yield* linhasCitacoes(
     "SELECT norma_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND norma_id IS NOT NULL ORDER BY ordem",
     [ppcId],
@@ -380,7 +383,7 @@ export const citacoesDoPpc = Effect.fn("pacoteContexto.citacoesDoPpc")(function*
 });
 
 /** Marcos ligados às normas das fichas ou às citadas pelo PPC, com as citações do PPC (fundamento) a elas. */
-export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(function* (
+export const marcosDoPacote = Effect.fn("pacoteRevisaoPpc.marcosDoPacote")(function* (
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
 ) {
@@ -388,7 +391,7 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
   const atosFichas = new Set(refs.map((r) => r.ref));
   const marcos: MarcoDoPacote[] = [];
   for (const m of yield* linhasMarcos(
-    "SELECT id, tema, vigente, aplica_a, transicao, orientacao_analise, normas_json, path FROM marcos ORDER BY id",
+    "SELECT id, tema, vigente, aplica_a, transicao, orientacao_analise, normas_json, path FROM revisao_ppc_marcos ORDER BY id",
   )) {
     const normasMarco = m.normas_json as NormasDoMarco;
     const envolvidas = new Set([
@@ -419,7 +422,7 @@ export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(functio
  * fundamento, com a situação no dia da vigência (`FontesNormativas.diaDaVigencia`) e o texto do dispositivo
  * que as estabelece.
  */
-export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")(function* (
+export const transicoesDoPacote = Effect.fn("pacoteRevisaoPpc.transicoesDoPacote")(function* (
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
 ) {
@@ -475,7 +478,7 @@ interface OpcoesSecoes {
  * termos (AND); em ordem do documento. O `SqlClient` do ambiente é o `kb.sqlite` (PPC da base) ou
  * o banco em memória de `abrirPpcAvulso` (PPC fora da base): as consultas são as mesmas.
  */
-export const secoesDoPacote = Effect.fn("pacoteContexto.secoesDoPacote")(function* (
+export const secoesDoPacote = Effect.fn("pacoteRevisaoPpc.secoesDoPacote")(function* (
   ppcId: string,
   fichas: readonly FichaPacote[],
   opcoes: OpcoesSecoes = {},
@@ -525,7 +528,7 @@ export const secoesDoPacote = Effect.fn("pacoteContexto.secoesDoPacote")(functio
 });
 
 /** O curso do CNCT (`cnct`) com ID e arquivo, ou `null`. */
-const cnctDoBanco = Effect.fn("pacoteContexto.cnctDoBanco")(function* (cnctId: string | null) {
+const cnctDoBanco = Effect.fn("pacoteRevisaoPpc.cnctDoBanco")(function* (cnctId: string | null) {
   if (!cnctId) return null;
   const id = idCnct(cnctId);
   const linha = yield* primeiroCnct("SELECT dados_json, path FROM cnct WHERE id = ?", [id]);
@@ -550,7 +553,7 @@ function opcoesComFontes(
 }
 
 /** Pacote de contexto de uma tarefa para um PPC da base (`campus/curso` ou `ppc:campus/curso`). */
-export const pacoteContexto = Effect.fn("pacoteContexto.pacoteContexto")(function* (
+export const pacoteRevisaoPpc = Effect.fn("pacoteRevisaoPpc.pacoteRevisaoPpc")(function* (
   tarefa: string,
   ppcArg: string,
   opcoes: OpcoesPacote = {},
@@ -571,7 +574,7 @@ export const pacoteContexto = Effect.fn("pacoteContexto.pacoteContexto")(functio
   const caracteresSecoes = listaSecoes.reduce((t, s) => t + s.texto.length, 0);
   const ppcInteiro = yield* primeirosCaracteres("SELECT caracteres FROM ppcs WHERE id = ?", [ppc.id]);
   if (!ppcInteiro) return yield* new Sql.FalhaNaConsulta({ consulta: "ppcs.caracteres", cause: "ausente" });
-  const pacote: PacoteContexto = {
+  const pacote: PacoteRevisaoPpc = {
     tarefa,
     fichas_ids: fichasIds,
     ppc,
@@ -620,7 +623,7 @@ export type OpcoesPacoteAvulso = {
  * os marcos, as transições e o CNCT vêm do `SqlClient` do ambiente (o `kb.sqlite`); as seções e as
  * citações do PPC, do banco em memória (`doPpc`), com as mesmas consultas do pacote de um PPC da base.
  */
-const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvulso")(function* (
+const pacoteRevisaoPpcAvulso = Effect.fn("pacoteRevisaoPpc.pacoteRevisaoPpcAvulso")(function* (
   doPpc: Context.Context<SqlClient.SqlClient>,
   ppcId: string,
   fichas: readonly FichaPacote[],
@@ -679,7 +682,7 @@ export interface PpcAvulso {
  * memória com as seções e as citações, gravado pelo mesmo código da compilação e fechado no fim do
  * escopo. O pacote de cada conjunto de fichas sai do handle, sobre o mesmo banco.
  */
-export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(function* (
+export const abrirPpcAvulso = Effect.fn("pacoteRevisaoPpc.abrirPpcAvulso")(function* (
   markdown: string,
   opcoes: OpcoesAbrirAvulso = {},
 ) {
@@ -701,7 +704,7 @@ export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(functio
   });
   const avulso: PpcAvulso = {
     pacote: (fichas, opcoesPacote = {}) =>
-      pacoteContextoAvulso(doPpc, ppcId, fichas, opcoesPacote).pipe(Effect.provide(ambiente)),
+      pacoteRevisaoPpcAvulso(doPpc, ppcId, fichas, opcoesPacote).pipe(Effect.provide(ambiente)),
     estrutura: () => {
       // o texto que o banco recebeu (quebras de linha, `titulosNivel1`); todas as seções, com ou sem `todasAsSecoes`
       const texto = PpcAvulsoDb.textoDoPpcAvulso(markdown, doBanco);
@@ -717,7 +720,7 @@ export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(functio
 });
 
 /** Nomes dos campi dos PPCs do banco, para reconhecer cabeçalhos de página (`palavrasDeCampi`). */
-export const nomesDeCampiDoBanco = Effect.fn("pacoteContexto.nomesDeCampiDoBanco")(function* () {
+export const nomesDeCampiDoBanco = Effect.fn("pacoteRevisaoPpc.nomesDeCampiDoBanco")(function* () {
   const linhas = yield* linhasCampi("SELECT DISTINCT campus_nome FROM ppcs ORDER BY campus_nome");
   return linhas.map((l) => l.campus_nome);
 });
@@ -730,12 +733,12 @@ export type PacoteDoMarkdown = PacoteAvulso & {
 };
 
 /**
- * `kb pacote-contexto <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
+ * `kb pacote-revisao-ppc <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
  * fichas vêm do banco; o PPC (`markdown`, o
  * texto já lido de `arquivo`, que fica só como `path`) é segmentado e indexado num banco em memória
  * (`abrirPpcAvulso`), fechado no fim.
  */
-export const pacoteDoMarkdown = Effect.fn("pacoteContexto.pacoteDoMarkdown")(function* (
+export const pacoteDoMarkdown = Effect.fn("pacoteRevisaoPpc.pacoteDoMarkdown")(function* (
   tarefa: string,
   arquivo: string,
   opcoes: OpcoesPacote & { markdown: string },

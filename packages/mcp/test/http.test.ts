@@ -138,7 +138,7 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       expect(cliente.getInstructions()).toBe(INSTRUCOES);
       const { tools } = yield* Effect.promise(() => cliente.listTools());
       expect(tools.map((t) => t.name)).toEqual(FERRAMENTAS.map((f) => f.nome));
-      expect(tools).toHaveLength(16);
+      expect(tools).toHaveLength(17);
       const resultado = yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
       expect(resultado.isError).toBeFalsy();
       expect(resultado.structuredContent).toMatchObject({ base: { canal: "dev" } });
@@ -287,7 +287,7 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       const servidor = yield* Http.ServidorMcpHttp;
       const comPasta = yield* conectar(yield* servidor.abrirSessao({ rotulo: "com-pasta", pastaTrabalho: pasta }));
       const semPasta = yield* conectar(yield* servidor.abrirSessao({ rotulo: "sem-pasta" }));
-      const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
+      const pacote = { name: "pacote_revisao_ppc", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
       const lido = yield* Effect.promise(() => comPasta.callTool(pacote));
       expect(lido.isError).toBeFalsy();
       expect(lido.structuredContent).toMatchObject({ dados: { path: "PPC.md" } });
@@ -295,7 +295,7 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       expect(recusado.isError).toBe(true);
       expect(textoDe(recusado)).toContain("não tem pasta de trabalho");
       const daBase = yield* Effect.promise(() =>
-        semPasta.callTool({ name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM } }),
+        semPasta.callTool({ name: "pacote_revisao_ppc", arguments: { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM } }),
       );
       expect(daBase.isError).toBeFalsy();
 
@@ -324,7 +324,7 @@ describe("sobre o Leitura do ambiente", () => {
         // O canal é o do Leitura do ambiente, não o padrão `dev` do `layer({ banco })`.
         expect(sobre.structuredContent).toMatchObject({ base: leitura.base });
         expect(leitura.base.canal).toBe("beta");
-        const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
+        const pacote = { name: "pacote_revisao_ppc", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
         const lido = yield* Effect.promise(() => cliente.callTool(pacote));
         expect(lido.isError).toBeFalsy();
         expect(lido.structuredContent).toMatchObject({ dados: { path: "PPC.md" } });
@@ -347,7 +347,7 @@ describe("precedência do contexto da chamada", () => {
       Effect.gen(function* () {
         const servidor = yield* Http.ServidorMcpHttp;
         const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "sessao", pastaTrabalho: pasta }));
-        const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
+        const pacote = { name: "pacote_revisao_ppc", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
         const lido = yield* Effect.promise(() => cliente.callTool(pacote));
         expect(lido.isError).toBeFalsy();
         expect(lido.structuredContent).toMatchObject({ dados: { path: "PPC.md" } });

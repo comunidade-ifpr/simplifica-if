@@ -4,6 +4,7 @@
  * formulário da tarefa monta e a linha das mudanças na pasta.
  */
 import { type EntradaTarefa, RE_MARCADOR } from "@simplifica-if/contratos-app";
+import { linkDeModulo } from "../leitor/linksDeModulo.ts";
 import { inteiro } from "../lib/formato.ts";
 
 /**
@@ -146,7 +147,7 @@ export function slugLegivel(slug: string): string {
  * "Fonte da base".
  */
 export function nomeCurtoLink(link: string): string {
-  const m = /^ifpr:\/\/([a-z]+)\/([^#]+)(?:#(.+))?$/i.exec(link);
+  const m = /^ifpr:\/\/([a-z][a-z-]*)\/([^#]+)(?:#(.+))?$/i.exec(link);
   if (!m) return "Fonte da base";
   const [, tipo, caminho, fragmento] = m as unknown as [string, string, string, string | undefined];
   const partes = caminho.split("/");
@@ -178,12 +179,8 @@ export function nomeCurtoLink(link: string): string {
       return `CNCT · ${slugLegivel(partes[0] ?? "")}`;
     case "campus":
       return `Campus ${slugLegivel(partes[0] ?? "")}`;
-    case "ficha":
-      return `Critério ${partes[0]}`;
-    case "revisao":
-      return "PPC em revisão (texto convertido)";
     default:
-      return "Fonte da base";
+      return linkDeModulo(tipo.toLowerCase())?.nomeCurto(caminho, fragmento ?? null) ?? "Fonte da base";
   }
 }
 

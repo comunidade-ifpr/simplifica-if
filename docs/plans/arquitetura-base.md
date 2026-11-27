@@ -42,7 +42,7 @@ A regra está em `packages/kb/src/normas/ids.ts` e em [`padrao-front-matter-legi
 | 3 | Curadoria: `cnct_id`, turno padronizado, curadoria do PPC por campo | Concluída |
 | 4 | Proveniência de PPC e índice de seções por nível | Concluída |
 | 5 | Saneamento das normas, dispositivos, `relacoes.yaml`, vigência, `transicoes.yaml`, correspondência, `kb impacto` | Concluída |
-| 6 | `kb.sqlite` com FTS5, CLI `kb`, citações e fatos PPC × SUAP, `pacote-contexto` | Concluída |
+| 6 | `kb.sqlite` com FTS5, CLI `kb`, citações e fatos PPC × SUAP, `pacote-revisao-ppc` | Concluída |
 | 7 | MCP | Concluída: `simplifica-mcp` em `packages/mcp`, com `McpServer` do `effect/ai` |
 | T | Migração Python → TypeScript (orquestração, relatório, DOCX) | Concluída em 17/11/2026; PDF de PPC não é convertido |
 

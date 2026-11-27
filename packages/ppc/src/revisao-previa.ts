@@ -398,7 +398,7 @@ function fonteLegivel(link: Fonte, registro: Registro, base: BaseRevisaoPrevia):
       link,
     };
   }
-  return null; // ifpr://ficha/… é interno: não vai ao Word.
+  return null; // outro link `ifpr://` não tem fonte legível: não vai ao Word.
 }
 
 /**

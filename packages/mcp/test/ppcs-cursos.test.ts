@@ -329,15 +329,9 @@ describe("impacto_da_norma", () => {
       ]);
       expect(d.ppcs.total).toBe(2);
       expect(d.ppcs.amostra.map((p) => p.ppc)).toEqual([PPC_ENFERMAGEM, PPC_INFORMATICA]);
-      expect(d.fichas).toEqual([
-        {
-          id: "CT-CURR-12",
-          titulo: "Progressão formativa explicitada na organização curricular",
-          papel: "referencia",
-          dispositivos: ["br/cne-cp/res/2021/1#art20"],
-          link: "ifpr://ficha/CT-CURR-12",
-        },
-      ]);
+      // os critérios da revisão de PPC não são base: vêm de `criterios_revisao_ppc`
+      expect(Object.keys(d)).not.toContain("fichas");
+      expect(texto).not.toContain("CT-CURR-12");
       expect(resposta.avisos).toEqual([]);
       expect(texto).toContain("norma revogada não é inaplicável");
       // a sucessora, ainda não vigente, vem com o aviso

@@ -32,7 +32,7 @@ pnpm kb fatos-ppc --ppc curitiba/tecnico-em-enfermagem               # fatos do 
 pnpm kb ficha-norma br/cne-cp/res/2021/1 --em 2026-11-01             # vigência numa data, relações e regras de transição
 ```
 
-Os outros (`resolver-citacoes`, `ler-dispositivos`, `correspondencia`, `citacoes-da-norma`, `impacto-da-norma`, `listar-cursos`, `ficha-curso`, `pacote-contexto`…) estão em `pnpm kb --help` e no [`packages/mcp/README.md`](packages/mcp/README.md#cli-kb).
+Os outros (`resolver-citacoes`, `ler-dispositivos`, `correspondencia`, `citacoes-da-norma`, `impacto-da-norma`, `listar-cursos`, `ficha-curso`…) estão em `pnpm kb --help` e no [`packages/mcp/README.md`](packages/mcp/README.md#cli-kb).
 
 1. Ache a fonte pelo comando `kb`; abra o arquivo e as linhas que a resposta aponta antes de redigir resposta substantiva.
 2. Cite: norma pelo título, a fonte oficial do front matter e o dispositivo; PPC pelo arquivo e linhas; metadado institucional pelo registro JSON.
@@ -44,6 +44,7 @@ Armadilhas:
 - A tabela de correspondência 1/2021 → 2/2026 é rascunho sem revisão jurídica: indicação, não fundamento.
 - Confira `regra` e `confianca` das citações: as regras de confiança menor (`dcnept-2021-orgao-trocado`, `orgao-ausente-registro`, `orgao-no-documento`) pedem conferência no trecho.
 - Fatos de PPC têm status `extraido` (por regra, sem revisão humana) até alguém os revisar em `base-conhecimento/fatos-ppc.yaml` (status `revisado`, com revisor e data; a fila: `pnpm kb fatos-a-revisar`); o ano do documento é `evidencia-conferida`, não revisado. Confira o trecho de origem antes de afirmar uma divergência; carga sem unidade conhecida sai `unidade-desconhecida` no cruzamento com o SUAP, sem divergência afirmada. Se `buscar-secoes` não achar o esperado, procure com `rg` nos Markdown dos PPCs.
+- As fichas da revisão de PPC são os critérios da tarefa "Revisar um PPC", não base nem fonte normativa: ficam fora das consultas gerais (do `impacto-da-norma` também) e vêm de `pnpm kb criterios-revisao-ppc` (`--id`, `--topico` ou `--norma`); o contexto da revisão de um PPC, de `pnpm kb pacote-revisao-ppc`. O fundamento é a norma que a ficha cita.
 - PPCs são exemplos institucionais, não fonte normativa. Em elaboração ou revisão de PPC, combine PPCs similares com normas vigentes e, para cursos técnicos, com o CNCT.
 
 ## Curadoria da base

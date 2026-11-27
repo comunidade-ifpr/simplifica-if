@@ -6,7 +6,7 @@
  *
  * As leituras de link: o `resources/read` (`lerRecurso`) resolve cada tipo de link `ifpr://` com a
  * resposta da ferramenta de mesmo conteúdo ou a dos RPCs próprios dos recursos (`lerPpc`, `lerCnct`,
- * `lerCampus`, `lerFicha`).
+ * `lerCampus`).
  *
  * Dois bancos: o de normas (`fixture.ts` + `fixture-normas.ts`, com dispositivos e um PPC sem índice
  * FTS) e o de PPCs (`fixture-ppcs.ts`, com normas sem dispositivos, PPCs, cursos e o FTS das seções).
@@ -167,7 +167,7 @@ describe("GrupoLeitura: links ifpr://", () => {
     }),
   );
 
-  it.effect("lerPpc, lerCnct, lerCampus e lerFicha: a mesma resposta que o resources/read traz no tipo", () =>
+  it.effect("lerPpc, lerCnct e lerCampus: a mesma resposta que o resources/read traz no tipo", () =>
     Effect.gen(function* () {
       const banco = criarBancoFixturePpcs();
       const casos = [
@@ -178,7 +178,6 @@ describe("GrupoLeitura: links ifpr://", () => {
           (c: ClienteLeitura) => c.lerCnct({ cnct: "tecnico-em-enfermagem" }),
         ],
         ["campus", "ifpr://campus/foz-do-iguacu", (c: ClienteLeitura) => c.lerCampus({ campus: "foz-do-iguacu" })],
-        ["ficha", "ifpr://ficha/CT-CURR-12", (c: ClienteLeitura) => c.lerFicha({ ficha: "CT-CURR-12" })],
       ] as const satisfies ReadonlyArray<
         readonly [string, string, (c: ClienteLeitura) => Effect.Effect<unknown, ErroDeLeitura>]
       >;
@@ -195,8 +194,6 @@ describe("GrupoLeitura: links ifpr://", () => {
       expect(cnct.dados.cursos_ifpr.map((c) => c.link)).toContain(`ifpr://curso/${CURSO_ENFERMAGEM}`);
       const campus = yield* viaRpc(banco, (c) => c.lerCampus({ campus: "foz-do-iguacu" }));
       expect(campus.dados.cursos.map((c) => c.link)).toContain(`ifpr://curso/${CURSO_FISICA}`);
-      const ficha = yield* viaRpc(banco, (c) => c.lerFicha({ ficha: "ct-curr-12" }));
-      expect(ficha.dados.ficha.link).toBe("ifpr://ficha/CT-CURR-12");
     }),
   );
 

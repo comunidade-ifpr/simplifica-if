@@ -39,8 +39,8 @@ describe("ligarLinksIfpr", () => {
 
     const link = {
       type: "link",
-      url: "ifpr://ficha/CT-CURR-12",
-      children: [{ type: "text", value: "ifpr://ficha/CT-CURR-12" }],
+      url: "ifpr://campus/curitiba",
+      children: [{ type: "text", value: "ifpr://campus/curitiba" }],
     };
     const arvore = { type: "root", children: [{ type: "paragraph", children: [link] }] };
     ligarLinksIfpr(arvore);

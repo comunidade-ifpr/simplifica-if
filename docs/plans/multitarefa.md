@@ -137,7 +137,7 @@ As propostas de três modelos (Opus, Fable e Gemini), feitas em separado, conver
   - ⌘J.
 - **Fichas de contexto (opt-out).** Acima da caixa ficam fichas do que está na tela, já incluídas e removíveis, cada uma por teclado ("Tirar o PPC do contexto"). Depois do envio, aparecem na mensagem gravada.
   - **Na revisão:** o PPC inteiro, a pendência em foco (o texto dela, o trecho do PPC e a ficha da revisão) e o documento aberto no Ler, se houver.
-  - **No leitor:** o documento aberto e o trecho selecionado. Um link da base vira ficha de link `ifpr://`, que a IA lê pelas ferramentas `ifpr`. O link `ifpr://revisao/…` não é da base (`modulos/revisao-ppc/lista.ts:40`) e vira a ficha do PPC em revisão.
+  - **No leitor:** o documento aberto e o trecho selecionado. Um link da base vira ficha de link `ifpr://`, que a IA lê pelas ferramentas `ifpr`. O link `ifpr://revisao-ppc/…` não é da base (`modulos/revisao-ppc/lista.ts:40`) e vira a ficha do PPC em revisão.
 - **Como o PPC vai à IA.** A IA não enxerga o PPC em revisão: ele vem por RPC (`revisaoPpc.documento`), não pelo MCP `ifpr`, que só lê a base. A revisão não tem pasta de trabalho: a cópia comentada fica ao lado do original (`RevisorPpc.ts`).
   - O módulo ganha `revisaoPpc.conversarSobre(lista, chave)`. Ele cria a pasta da conversa (`PastasTrabalho.criar`, "PPC <curso> – conversa") e grava nela o Markdown da versão em revisão, com um sumário de seções e linhas no topo, e a nota com o caminho do `.docx`.
   - Para gravar, o núcleo ganha `PastasTrabalho.gravar(pasta, nome, bytes)`, sem seguir link. Hoje ela só tem `criar`, `anexar` (arquivo liberado pelo desktop), `gravarRelato` e `gravarDiagnostico`.
@@ -286,7 +286,7 @@ Cada vez que a pessoa salva no Word, o app confere de novo o arquivo, sem clique
 - **Ao reabrir, voltar onde se estava:** a última rota e o estado do painel (aba, trilha, documentos marcados, conversa), nas preferências do servidor (`persistencia/Preferencias.ts`).
   - Grava-se com espera de 1 s depois da navegação e no `before-quit`.
   - Só voltam `/`, `/explorar/*`, `/conversa?id` e `/revisao-ppc?id` que ainda existam; o resto volta ao Início. Nunca voltam o `compacto=1` e os formulários de `/tarefa/$nome`.
-- **Revisão apagada:** a trilha, os documentos marcados e a continuidade descartam os links `ifpr://revisao/…` dela, com "Esta revisão foi apagada". A prévia do apagar (`DialogoApagar`) lista também a pasta da conversa ao lado com o Markdown do PPC, que a pessoa pode apagar junto.
+- **Revisão apagada:** a trilha, os documentos marcados e a continuidade descartam os links `ifpr://revisao-ppc/…` dela, com "Esta revisão foi apagada". A prévia do apagar (`DialogoApagar`) lista também a pasta da conversa ao lado com o Markdown do PPC, que a pessoa pode apagar junto.
 - **Várias janelas:** só a janela principal grava e volta; as outras não. Fechada a principal, a próxima janela aberta passa a gravar, sem voltar (etapa 10).
 - **Rolagem lembrada** por documento e pela revisão. É a sobra "guardar a rolagem ao voltar" do [plano do app](app-simplifica-if.md) ("Leitor e Explorar, sobras"), que sai de lá quando entrar aqui. O `scrollRestoration` continua desligado no roteador (`router.ts:9`); guarda-se por chave de documento.
 - **"Continuar de onde parou" no Início:** o que está rodando, o que terminou sem ser visto e o que ficou aberto, a partir das atividades. O cartão da revisão continua a `UltimaRevisao` que o Início já compõe (`routes/index.tsx`).

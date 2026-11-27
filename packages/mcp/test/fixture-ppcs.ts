@@ -113,7 +113,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     linha_inicio: 900,
   });
   const ficha = { id: "CT-CURR-12", referencias: [{ ref: "br/cne-cp/res/2021/1", dispositivo: "#art20" }] };
-  inserir("fichas", {
+  inserir("revisao_ppc_fichas", {
     id: "CT-CURR-12",
     titulo: "Progressão formativa explicitada na organização curricular",
     path: "base-conhecimento/revisao-ppc/fichas/ct-curr-12.json",

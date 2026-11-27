@@ -7,7 +7,7 @@
  * citações rodam nele sem mudança, trocando só o `SqlClient` do ambiente.
  *
  * Só `abrirPpcAvulso` e a preparação do texto (`textoDoPpcAvulso`) saem daqui: o banco se abre e se fecha com o escopo de quem pede, e quem pede
- * recebe o `SqlClient`, não o `DatabaseSync`. Quem monta o pacote é o `PacoteContexto`.
+ * recebe o `SqlClient`, não o `DatabaseSync`. Quem monta o pacote é o `PacoteRevisaoPpc`.
  */
 import * as NodeSqlite from "node:sqlite";
 import * as Effect from "effect/Effect";

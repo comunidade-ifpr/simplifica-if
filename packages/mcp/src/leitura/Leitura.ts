@@ -6,7 +6,7 @@
  *
  * A layer depende dos serviços de consulta do kb (`layerSomenteLeitura`, sem `FileSystem`) e do canal
  * da linha de comando, que entra no envelope quando o banco não registra um. A `PastaTrabalho`, de
- * onde o `pacote_contexto` lê um `.md`, é opcional: sem ela, o `arquivo` é recusado. As falhas do banco
+ * onde o `pacote_revisao_ppc` lê um `.md`, é opcional: sem ela, o `arquivo` é recusado. As falhas do banco
  * (`FalhaNaConsulta`) chegam aos métodos como `FalhaNaBase`.
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
@@ -25,6 +25,7 @@ import type * as BuscarNorma from "../ferramentas/buscar-norma.ts";
 import type * as BuscarSecoes from "../ferramentas/buscar-secoes.ts";
 import type * as CitacoesDaNorma from "../ferramentas/citacoes-da-norma.ts";
 import type * as Correspondencia from "../ferramentas/correspondencia.ts";
+import type * as CriteriosRevisaoPpc from "../ferramentas/criterios-revisao-ppc.ts";
 import type * as Etapa from "../ferramentas/etapa.ts";
 import type * as FatosPpc from "../ferramentas/fatos-ppc.ts";
 import type * as FichaCurso from "../ferramentas/ficha-curso.ts";
@@ -33,7 +34,7 @@ import type * as ImpactoDaNorma from "../ferramentas/impacto-da-norma.ts";
 import type * as LerDispositivos from "../ferramentas/ler-dispositivos.ts";
 import type * as LerSecao from "../ferramentas/ler-secao.ts";
 import type * as ListarCursos from "../ferramentas/listar-cursos.ts";
-import type * as PacoteContextoF from "../ferramentas/pacote-contexto.ts";
+import type * as PacoteRevisaoPpcF from "../ferramentas/pacote-revisao-ppc.ts";
 import type * as ResolverCitacoes from "../ferramentas/resolver-citacoes.ts";
 import type * as SobreABase from "../ferramentas/sobre-a-base.ts";
 import { linkCampus } from "../links.ts";
@@ -72,14 +73,14 @@ export class Leitura extends Context.Service<
     readonly listarCursos: Metodo<typeof ListarCursos.Entrada, typeof ListarCursos.Dados>;
     readonly fichaCurso: Metodo<typeof FichaCurso.Entrada, typeof FichaCurso.Dados>;
     readonly fatosPpc: Metodo<typeof FatosPpc.Entrada, typeof FatosPpc.Dados>;
-    readonly pacoteContexto: Metodo<typeof PacoteContextoF.Entrada, typeof PacoteContextoF.Dados>;
+    readonly pacoteRevisaoPpc: Metodo<typeof PacoteRevisaoPpcF.Entrada, typeof PacoteRevisaoPpcF.Dados>;
+    readonly criteriosRevisaoPpc: Metodo<typeof CriteriosRevisaoPpc.Entrada, typeof CriteriosRevisaoPpc.Dados>;
     readonly sobreABase: Metodo<typeof SobreABase.Entrada, typeof SobreABase.Dados>;
     readonly etapa: Metodo<typeof Etapa.Entrada, typeof Etapa.Dados>;
-    /** Recursos `ifpr://` sem ferramenta própria (M1.5): PPC sem seção, CNCT, campus e ficha. */
+    /** Recursos `ifpr://` sem ferramenta própria (M1.5): PPC sem seção, CNCT e campus. */
     readonly lerPpc: Metodo<typeof Conteudos.EntradaPpc, typeof Conteudos.DadosPpc>;
     readonly lerCnct: Metodo<typeof Conteudos.EntradaCnct, typeof Conteudos.DadosCnct>;
     readonly lerCampus: Metodo<typeof Conteudos.EntradaCampus, typeof Conteudos.DadosCampus>;
-    readonly lerFicha: Metodo<typeof Conteudos.EntradaFicha, typeof Conteudos.DadosFicha>;
     /** O Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o leitor do app (M1.6). */
     readonly lerDocumento: Metodo<typeof Documento.EntradaDocumento, typeof Documento.DadosDocumento>;
     /** O Explorar do app: as coleções inteiras e a busca da paleta (sem ferramenta MCP). */
@@ -142,7 +143,11 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
   const explorar = yield* makeExplorar(base);
   const comparar = yield* makeComparar(base);
 
-  const conteudo = { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi };
+  // as tabelas da revisão de PPC (`revisao_ppc_*`) são da tarefa, não da base
+  const contagens = Object.fromEntries(
+    Object.entries(meta.contagens).filter(([tabela]) => !tabela.startsWith("revisao_ppc_")),
+  );
+  const conteudo = { contagens, tipos_de_secao: tiposDeSecao, niveis, campi };
   const etapa = responder(base, { registrado: opcoes.etapaRegistrada ?? false });
 
   return Leitura.of({
@@ -160,11 +165,11 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
     listarCursos: comFalhaNaBase(ppcs.listarCursos),
     fichaCurso: comFalhaNaBase(ppcs.fichaCurso),
     fatosPpc: comFalhaNaBase(ppcs.fatosPpc),
-    pacoteContexto: comFalhaNaBase(pacote.pacoteContexto),
+    pacoteRevisaoPpc: comFalhaNaBase(pacote.pacoteRevisaoPpc),
+    criteriosRevisaoPpc: comFalhaNaBase(pacote.criteriosRevisaoPpc),
     lerPpc: comFalhaNaBase(recursos.lerPpc),
     lerCnct: comFalhaNaBase(recursos.lerCnct),
     lerCampus: comFalhaNaBase(recursos.lerCampus),
-    lerFicha: comFalhaNaBase(recursos.lerFicha),
     lerDocumento: comFalhaNaBase(documentos.lerDocumento),
     explorarIndice: comFalhaNaBase(explorar.explorarIndice),
     explorarBuscar: comFalhaNaBase(explorar.explorarBuscar),

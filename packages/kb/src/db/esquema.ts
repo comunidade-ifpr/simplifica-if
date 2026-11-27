@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 13;
+export const VERSAO_ESQUEMA = 14;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -367,8 +367,10 @@ CREATE TABLE ppc_suap (
   PRIMARY KEY (ppc_id, aspecto)
 ) WITHOUT ROWID;
 
--- fichas da revisão de PPC, referências estruturadas, tópicos e marcos normativos.
-CREATE TABLE fichas (
+-- Os critérios da tarefa "Revisar um PPC" (fichas), as referências estruturadas, os tópicos e os
+-- marcos normativos: lidos só pela revisão de PPC (PacoteRevisaoPpc, FontesNormativas), nunca
+-- pelas consultas gerais.
+CREATE TABLE revisao_ppc_fichas (
   id TEXT PRIMARY KEY,
   titulo TEXT NOT NULL,
   dominio TEXT,
@@ -383,8 +385,8 @@ CREATE TABLE fichas (
   arquivo_json TEXT NOT NULL
 );
 
-CREATE TABLE fichas_referencias (
-  ficha_id TEXT NOT NULL REFERENCES fichas(id),
+CREATE TABLE revisao_ppc_fichas_referencias (
+  ficha_id TEXT NOT NULL REFERENCES revisao_ppc_fichas(id),
   ordem INTEGER NOT NULL,
   ref TEXT NOT NULL,
   dispositivo TEXT,
@@ -392,11 +394,11 @@ CREATE TABLE fichas_referencias (
   nota TEXT,
   PRIMARY KEY (ficha_id, ordem)
 ) WITHOUT ROWID;
-CREATE INDEX fichas_referencias_ref ON fichas_referencias(ref);
+CREATE INDEX revisao_ppc_fichas_referencias_ref ON revisao_ppc_fichas_referencias(ref);
 
 -- ordem: a do arquivo (topicos-fichas.json), que decide o grupo da ficha e a ordem dos grupos;
 -- dados_json: o tópico como no arquivo.
-CREATE TABLE topicos (
+CREATE TABLE revisao_ppc_topicos (
   id TEXT PRIMARY KEY,
   ordem INTEGER NOT NULL UNIQUE,
   titulo TEXT NOT NULL,
@@ -409,7 +411,7 @@ CREATE TABLE topicos (
 );
 
 -- Tópicos das fichas → tipos de seção do PPC (packages/kb/dados/topicos-secoes.yaml), na ordem do arquivo.
-CREATE TABLE topicos_secoes (
+CREATE TABLE revisao_ppc_topicos_secoes (
   ordem INTEGER PRIMARY KEY,
   topico TEXT NOT NULL UNIQUE,
   tipos_json TEXT NOT NULL,
@@ -429,14 +431,14 @@ CREATE TABLE sinonimos_grupos (
 );
 
 -- Os outros arquivos de conteúdo da revisão de PPC (marcos-normativos.json e topicos-fichas.json),
--- em JSON compacto com as chaves na ordem do arquivo, como fichas.arquivo_json: o impacto percorre
--- os textos deles, com os das fichas.
+-- em JSON compacto com as chaves na ordem do arquivo, como revisao_ppc_fichas.arquivo_json: os critérios por
+-- norma (criterios_revisao_ppc) apontam os que a citam, e a revisão com IA os lê com as fichas.
 CREATE TABLE revisao_ppc_arquivos (
   path TEXT PRIMARY KEY,
   arquivo_json TEXT NOT NULL
 );
 
-CREATE TABLE fichas_topicos (
+CREATE TABLE revisao_ppc_fichas_topicos (
   ficha_id TEXT NOT NULL,
   topico_id TEXT NOT NULL,
   PRIMARY KEY (ficha_id, topico_id)
@@ -444,7 +446,7 @@ CREATE TABLE fichas_topicos (
 
 -- vigente e normas_json (linha, data_referencia, vigente, substitui, antecessoras_historicas,
 -- dispositivos_revogados) derivados por derivarLinha na data_referencia.
-CREATE TABLE marcos (
+CREATE TABLE revisao_ppc_marcos (
   id TEXT PRIMARY KEY,
   tema TEXT NOT NULL,
   vigente TEXT NOT NULL,

@@ -107,6 +107,8 @@ export interface EstadoRevisao {
 
   readonly tema: number | null;
   readonly aberta: string | null;
+  /** A pendência que a lista na tela rola até e foca ("Ir à pendência"), até ela dizer que focou. */
+  readonly focar: string | null;
   readonly novas: ReadonlySet<string>;
   readonly conclusao: string | null;
   readonly aviso: string | null;
@@ -146,6 +148,7 @@ export const estadoInicialRevisao = (): EstadoRevisao => ({
   erroEntrada: undefined,
   tema: null,
   aberta: null,
+  focar: null,
   novas: new Set(),
   conclusao: null,
   aviso: null,
@@ -221,6 +224,8 @@ export class ControleRevisao {
   private recargaPendente: RecargaPendente | undefined;
   /** A última ação que falhou com `pedeArquivoDeNovo`, pronta para repetir. */
   private acaoPendenteArquivo: AcaoPendenteArquivo | undefined;
+  /** "Ir à pendência" de uma revisão que ainda não está aberta: vale quando a lista dela abrir. */
+  private destino: { readonly lista: string; readonly chave: string } | undefined;
   /** O stream de `revisaoPpc.acompanharLista` em curso, e a lista dele. */
   private acompanhamentoLista: { readonly lista: string; readonly fluxo: Acompanhamento } | undefined;
   private relogioRealce: ReturnType<typeof setTimeout> | undefined;
@@ -408,11 +413,14 @@ export class ControleRevisao {
   }
 
   private entrarNaLista(lista: ListaPendencias): void {
+    const destino = this.destino?.lista === lista.id ? this.destino.chave : undefined;
+    this.destino = undefined;
     this.atualizar({
       ...estadoInicialRevisao(),
       fase: "resultado",
       listaId: lista.id,
       lista,
+      ...(destino === undefined ? {} : { aberta: destino, focar: destino }),
     });
     void this.inicializarIa(lista);
     if (lista.arquivoAcompanhado !== null) this.acompanharLista(lista.id);
@@ -422,6 +430,26 @@ export class ControleRevisao {
 
   escolherTema(tema: number | null): void {
     this.atualizar({ tema });
+  }
+
+  /**
+   * "Ir à pendência" (da ficha do critério): todos os temas, com a pendência aberta, rolada e com o foco
+   * (`focar`). A pendência de outra revisão espera a lista dela abrir (a tela a abre pela URL).
+   */
+  irParaPendencia(lista: string, chave: string): void {
+    if (this.estado.fase !== "resultado" || this.estado.lista?.id !== lista) {
+      this.destino = { lista, chave };
+      return;
+    }
+    this.destino = undefined;
+    const novas = new Set(this.estado.novas);
+    novas.delete(chave);
+    this.atualizar({ tema: null, aberta: chave, focar: chave, novas });
+  }
+
+  /** A lista na tela rolou até a pendência de `focar` e a focou (ou não a achou). */
+  focou(): void {
+    if (this.estado.focar !== null) this.atualizar({ focar: null });
   }
 
   alternarPendencia(chave: string): void {

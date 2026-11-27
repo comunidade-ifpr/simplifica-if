@@ -49,9 +49,9 @@ it("esquecer por prefixo tira só as leituras do documento que saiu", async () =
   const memoria = memoriaDa(apiDeTeste().api);
   let leituras = 0;
   const ler = () => Promise.resolve(++leituras);
-  await memoria.obter("revisao:x/1", ler).promessa;
-  await memoria.obter("revisao:xy/1", ler).promessa;
-  memoria.esquecerPrefixo("revisao:x/");
-  expect(memoria.obter("revisao:x/1", ler).estado.fase).toBe("carregando");
-  expect(memoria.obter("revisao:xy/1", ler).estado).toEqual({ fase: "lido", valor: 2 });
+  await memoria.obter("revisao-ppc:x/1", ler).promessa;
+  await memoria.obter("revisao-ppc:xy/1", ler).promessa;
+  memoria.esquecerPrefixo("revisao-ppc:x/");
+  expect(memoria.obter("revisao-ppc:x/1", ler).estado.fase).toBe("carregando");
+  expect(memoria.obter("revisao-ppc:xy/1", ler).estado).toEqual({ fase: "lido", valor: 2 });
 });

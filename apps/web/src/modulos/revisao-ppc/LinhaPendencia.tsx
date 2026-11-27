@@ -1,7 +1,8 @@
 /**
  * Uma pendência da lista, numa linha que abre e fecha (uma aberta por vez). Recolhida: a gravidade
  * (glifo e palavra), o título da pendência em até duas linhas e onde ela está no documento, com "Novo"
- * ou "Retirado" quando couber. Aberta: a explicação em texto comum, o que falta como lista (o servidor
+ * ou "Retirado" quando couber. Aberta: o código do critério, que abre a ficha dele no painel ("CT-SUP-17 ·
+ * O que este critério confere"; o cabeçalho é o botão da linha e não leva outro controle), a explicação em texto comum, o que falta como lista (o servidor
  * manda as três partes separadas), o que fazer, o trecho do PPC (na serifada, com
  * o filete da cor da gravidade, o rótulo "Trecho no PPC" e "Copiar trecho"), as fontes pelo nome (o link `ifpr://` abre o painel de leitura) e as ações: "Feito"
  * (ou "Desfazer"), "Sugerir texto", "Conversar sobre esta pendência" (a conversa ao lado da revisão, no
@@ -46,7 +47,7 @@ import { providerDaRevisao } from "./ControleRevisao.ts";
 import { nomeIa } from "./FaixaIa.tsx";
 import { textoEstimativaAcao } from "./ia.ts";
 import { IndicadorGravidade } from "./IndicadorGravidade.tsx";
-import { gravidadeDe, localizacao } from "./lista.ts";
+import { gravidadeDe, linkDoCriterio, localizacao, temFichaDeCriterio } from "./lista.ts";
 
 type Painel = "nenhum" | "sugerir" | "discordar" | "reconferir" | "reconferirIa" | "detalhes";
 
@@ -61,7 +62,7 @@ export function LinhaPendencia({
   readonly id: string;
   readonly viva: PendenciaViva;
   readonly aoAbrirLink: AoAbrirLink;
-  /** O trecho no PPC revisado (`ifpr://revisao/…#p-<chave>`), para "Ver no PPC". */
+  /** O trecho no PPC revisado (`ifpr://revisao-ppc/…#p-<chave>`), para "Ver no PPC". */
   readonly linkNoPpc: string;
 }) {
   const [estado, revisao] = useRevisao();
@@ -91,6 +92,8 @@ export function LinhaPendencia({
 
   // Fechada a linha, os painéis abertos nela fecham também.
   const painel = aberta ? painelEscolhido : "nenhum";
+  const linkCriterio =
+    estado.lista === undefined || !temFichaDeCriterio(p.ficha) ? null : linkDoCriterio(estado.lista.id, p.ficha);
 
   const fecharPainel = () => {
     setPainel("nenhum");
@@ -145,6 +148,17 @@ export function LinhaPendencia({
       cabecalho={cabecalho}
     >
       <div className="flex flex-col gap-5 pt-1 pl-[calc(5.5rem+0.75rem)]">
+        {linkCriterio === null ? null : (
+          <p className="-mt-1 text-small">
+            <button
+              type="button"
+              className="text-left text-muted-foreground link-grifo"
+              onClick={(evento) => aoAbrirLink(linkCriterio, ondeDoClique(evento))}
+            >
+              {p.ficha} · O que este critério confere
+            </button>
+          </p>
+        )}
         {viva.julgadaPor === null ? null : (
           <p className="text-muted-foreground text-small" data-julgada-por>
             Julgada pelo {DESCRICOES[viva.julgadaPor].curto}.
@@ -243,7 +257,7 @@ export function LinhaPendencia({
             onClick={() =>
               app.painel.conversar(
                 juntarPedidos(
-                  pedidoDaRevisao({ api: app.api, revisao, conversas: app.conversas }, viva.chave),
+                  pedidoDaRevisao(app, viva.chave),
                   // O PPC desta revisão no Ler (talvez na âncora de outra pendência) já vai na ficha do PPC.
                   pedidoDoLer(app, ehLinkDaRevisao(estado.lista?.id ?? "")),
                 ),
@@ -308,7 +322,15 @@ export function LinhaPendencia({
             ocupada={ocupada}
           />
         ) : null}
-        {painel === "detalhes" ? <Detalhes viva={viva} aoFechar={fecharPainel} /> : null}
+        {painel === "detalhes" ? (
+          <Detalhes
+            viva={viva}
+            aoVerCriterio={
+              linkCriterio === null ? undefined : (evento) => aoAbrirLink(linkCriterio, ondeDoClique(evento))
+            }
+            aoFechar={fecharPainel}
+          />
+        ) : null}
         {erro === undefined ? null : <AvisoErro erro={erro} />}
         {erro !== undefined && pedeArquivo ? (
           <Button variant="outline" className="self-start" onClick={() => rodar(revisao.escolherArquivoDeNovo())}>
@@ -533,14 +555,30 @@ function Reconferir({
   );
 }
 
-function Detalhes({ viva, aoFechar }: { readonly viva: PendenciaViva; readonly aoFechar: () => void }) {
+function Detalhes({
+  viva,
+  aoVerCriterio,
+  aoFechar,
+}: {
+  readonly viva: PendenciaViva;
+  /** Abre a ficha do critério; sem ela (a triagem), o critério é só texto. */
+  readonly aoVerCriterio: ((evento: MouseEvent) => void) | undefined;
+  readonly aoFechar: () => void;
+}) {
   const p = viva.pendencia;
   return (
     <Painel titulo="Detalhes">
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-small">
         <dt className="text-muted-foreground">Critério</dt>
         <dd>
-          {p.tituloFicha} <span className="text-muted-foreground">({p.ficha})</span>
+          {aoVerCriterio === undefined ? (
+            p.tituloFicha
+          ) : (
+            <button type="button" className="text-left link-grifo" onClick={aoVerCriterio}>
+              {p.tituloFicha}
+            </button>
+          )}{" "}
+          <span className="text-muted-foreground">({p.ficha})</span>
         </dd>
         <dt className="text-muted-foreground">Quem apontou</dt>
         <dd>

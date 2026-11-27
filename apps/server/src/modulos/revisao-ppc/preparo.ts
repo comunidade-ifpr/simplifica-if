@@ -2,7 +2,7 @@
  * O preparo da revisão com IA (M1.11, etapa 4), em código e sem IA: do PPC convertido ao plano com o
  * texto de cada pedido.
  *
- * O contexto vem do `kb.sqlite` do servidor, como na pré-conferência, pelo `PacoteContexto` do kb: as
+ * O contexto vem do `kb.sqlite` do servidor, como na pré-conferência, pelo `PacoteRevisaoPpc` do kb: as
  * fichas e, por bloco, o pacote de contexto do PPC aberto como PPC fora da base (`abrirAvulso`): as
  * seções do PPC dos tópicos das fichas, as normas e os dispositivos citados pelas fichas, os marcos e
  * as regras de transição, o curso do CNCT. As linhas que a triagem apontou como texto dirigido a IA
@@ -14,7 +14,7 @@
  * - T: o contexto e trechos curtos das seções; o pedido se completa na hora, com os resumos dos temas.
  */
 import * as Effect from "effect/Effect";
-import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import * as PacoteRevisaoPpc from "@simplifica-if/kb/PacoteRevisaoPpc";
 import { comumDoBloco, estruturaDoPpc } from "@simplifica-if/ppc/revisao-ia/estrutura";
 import {
   type AlvosDoBloco,
@@ -99,7 +99,7 @@ function cnctEmTexto(cnct: unknown): string | null {
   return linhas.join("\n");
 }
 
-function contextoDoPacote(pacote: PacoteContexto.PacoteAvulso, curso: string | null): ContextoNormativo {
+function contextoDoPacote(pacote: PacoteRevisaoPpc.PacoteAvulso, curso: string | null): ContextoNormativo {
   return {
     // o dia em que o pacote calculou a vigência
     dataBase: pacote.vigencia_em,
@@ -124,7 +124,7 @@ function contextoDoPacote(pacote: PacoteContexto.PacoteAvulso, curso: string | n
   };
 }
 
-const secoesTexto = (pacote: PacoteContexto.PacoteAvulso, soTopicos: boolean): SecaoTexto[] =>
+const secoesTexto = (pacote: PacoteRevisaoPpc.PacoteAvulso, soTopicos: boolean): SecaoTexto[] =>
   pacote.secoes
     .filter((s) => !soTopicos || s.motivo.some((m) => m.startsWith("topico:")))
     .map((s) => ({
@@ -137,7 +137,7 @@ const secoesTexto = (pacote: PacoteContexto.PacoteAvulso, soTopicos: boolean): S
     }));
 
 /** A estrutura do PPC para os pedidos: o quadro de identificação com os fatos do `kb`, a matriz em TSV, o índice do ementário e o começo das referências. */
-function estruturaDe(markdown: string, avulso: PacoteContexto.PpcAvulso) {
+function estruturaDe(markdown: string, avulso: PacoteRevisaoPpc.PpcAvulso) {
   const { secoes, fatos } = avulso.estrutura();
   return estruturaDoPpc(
     markdown,
@@ -169,9 +169,9 @@ export interface EntradaPreparo {
   readonly soFichas?: readonly string[];
 }
 
-/** O plano da revisão: fichas, blocos e pedidos. Pede o `PacoteContexto` do `kb.sqlite`. */
+/** O plano da revisão: fichas, blocos e pedidos. Pede o `PacoteRevisaoPpc` do `kb.sqlite`. */
 export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparo) {
-  const kb = yield* PacoteContexto.PacoteContexto;
+  const kb = yield* PacoteRevisaoPpc.PacoteRevisaoPpc;
   const fichasJson = yield* kb.fichas();
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
   const todasFichas = fichasJson.map((f) => fichaIa(f as Record<string, unknown>));
@@ -272,7 +272,7 @@ export interface EntradaContextoFicha {
  * comum do bloco): vale para as fichas D, S e J. `null` se a ficha não está na base (a triagem).
  */
 export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* (entrada: EntradaContextoFicha) {
-  const kb = yield* PacoteContexto.PacoteContexto;
+  const kb = yield* PacoteRevisaoPpc.PacoteRevisaoPpc;
   const json = (yield* kb.fichas()).find((f) => f.id === entrada.ficha);
   if (!json) return null;
   const ficha = fichaIa(json as Record<string, unknown>);

@@ -9,8 +9,8 @@
  * `grupo-leitura.test.ts` confere o grafo de imports.
  *
  * Cada operação tem a entrada e a resposta da ferramenta MCP de mesmo nome (um contrato só para as
- * duas). `LinkLido` é o conteúdo de um link `ifpr://` no `resources/read`; `lerPpc`, `lerCnct`,
- * `lerCampus` e `lerFicha` são os conteúdos que só existem como recurso. `lerDocumento` traz o Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o
+ * duas). `LinkLido` é o conteúdo de um link `ifpr://` no `resources/read`; `lerPpc`, `lerCnct` e
+ * `lerCampus` são os conteúdos que só existem como recurso. `lerDocumento` traz o Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o
  * leitor do app gerar o HTML (M1.6); não tem ferramenta MCP. `explorarIndice` e `explorarBuscar` são o
  * Explorar do app (as coleções e a paleta de busca, `explorar.ts`); também sem ferramenta MCP, como
  * `compararNormas`, o modo Comparar (`comparar.ts`).
@@ -45,7 +45,7 @@ const lido = <T extends string, S extends Schema.Top>(tipo: T, resposta: S) =>
 
 /**
  * O conteúdo de um link `ifpr://`, pelo tipo: `norma` (a ficha), `dispositivo` (norma com
- * `#dispositivo`), `curso`, `ppc` (o índice), `secao` (PPC com `#secao`), `cnct`, `campus` e `ficha`.
+ * `#dispositivo`), `curso`, `ppc` (o índice), `secao` (PPC com `#secao`), `cnct` e `campus`.
  * A `resposta` é a da ferramenta de mesmo conteúdo (`ficha_norma`, `ler_dispositivos`, `ficha_curso`,
  * `ler_secao`) ou da leitura própria do recurso.
  */
@@ -57,7 +57,6 @@ export const LinkLido = Schema.Union([
   lido("secao", lerSecao.saida),
   lido("cnct", Conteudos.SaidaCnct),
   lido("campus", Conteudos.SaidaCampus),
-  lido("ficha", Conteudos.SaidaFicha),
 ]);
 export type LinkLido = typeof LinkLido.Type;
 
@@ -74,7 +73,6 @@ export class GrupoLeitura extends RpcGroup.make(
   Rpc.make("lerPpc", { payload: Conteudos.EntradaPpc, success: Conteudos.SaidaPpc, error: ErroDeLeitura }),
   Rpc.make("lerCnct", { payload: Conteudos.EntradaCnct, success: Conteudos.SaidaCnct, error: ErroDeLeitura }),
   Rpc.make("lerCampus", { payload: Conteudos.EntradaCampus, success: Conteudos.SaidaCampus, error: ErroDeLeitura }),
-  Rpc.make("lerFicha", { payload: Conteudos.EntradaFicha, success: Conteudos.SaidaFicha, error: ErroDeLeitura }),
   Rpc.make("lerDocumento", { payload: EntradaDocumento, success: SaidaDocumento, error: ErroDeLeitura }),
   Rpc.make("explorarIndice", { payload: EntradaIndice, success: SaidaIndice, error: ErroDeLeitura }),
   Rpc.make("explorarBuscar", { payload: EntradaBusca, success: SaidaBusca, error: ErroDeLeitura }),

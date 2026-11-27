@@ -1,11 +1,11 @@
 /**
  * `Impacto`: o que uma mudança numa norma atinge na base (`kb impacto-da-norma`, ferramenta
  * `impacto_da_norma`). A regra é `impactoEm` (`normas/impacto.ts`), pura; este serviço carrega a
- * fonte dela: registro, vigência, relações e conteúdo da revisão de PPC de `FontesNormativas`, e do banco
- * os dispositivos da norma, a correspondência, os segmentos de outras normas que citam e os PPCs.
+ * fonte dela: registro, vigência e relações de `FontesNormativas`, e do banco a correspondência, os
+ * segmentos de outras normas que citam e os PPCs.
  *
- * O conteúdo percorrido é o da revisão de PPC gravado no banco (fichas, marcos e taxonomia); os
- * textos das skills (`catalogo/skills`, `.agents/skills`) ficam de fora.
+ * Os critérios da revisão de PPC (as fichas) não são base e ficam de fora: os que uma norma atinge
+ * vêm do `PacoteRevisaoPpc.criterios` (ferramenta `criterios_revisao_ppc`).
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -16,10 +16,7 @@ import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Citacoes from "./db/citacoes.ts";
 import { carregarFonteCorrespondencia } from "./db/consultas-normas.ts";
 import * as Sql from "./db/sql.ts";
-import { type FonteImpacto, impactoEm, type ResultadoImpacto, type TopicoTaxonomia } from "./normas/impacto.ts";
-
-const LinhaDispositivo = Schema.Struct({ dispositivo: Schema.String, texto: Schema.String });
-const linhasDispositivos = Sql.todas(LinhaDispositivo);
+import { type FonteImpacto, impactoEm, type ResultadoImpacto } from "./normas/impacto.ts";
 
 const LinhaSegmento = Schema.Struct({
   norma_id: Schema.String,
@@ -53,10 +50,6 @@ const make = Effect.gen(function* () {
 
   const daNorma = Effect.fn("Impacto.daNorma")(function* (id: string, opcoes: OpcoesImpacto = {}) {
     const ato = id.split("#")[0]!;
-    const dispositivos = yield* linhasDispositivos(
-      "SELECT dispositivo, texto FROM dispositivos WHERE norma_id = ? ORDER BY ordem",
-      [ato],
-    );
     // uma citação por segmento: o impacto só pergunta se o segmento cita a norma
     const segmentos = (yield* linhasSegmentos(
       "SELECT norma_id, segmento, citado_id, dispositivos_json, trecho FROM normas_citacoes WHERE norma_id <> ? ORDER BY rowid",
@@ -67,17 +60,12 @@ const make = Effect.gen(function* () {
       citacoes: [{ id: c.citado_id, dispositivos: [...c.dispositivos_json], trecho: c.trecho }],
     }));
     const ppcs = opcoes.incluirPpcs === false ? [] : yield* Citacoes.ppcsQueCitam(id);
-    const conteudo = yield* fontes.conteudoRevisaoPpc();
 
     const fonte: FonteImpacto = {
       id,
       vigencia: fontes,
       dataReferencia: fontes.dataReferencia,
       correspondencia: fonteCorrespondencia,
-      dispositivos,
-      // a taxonomia validada tem os campos que o impacto lê (`id`, `termos_busca`, `fichas`) e outros
-      topicos: conteudo.topicos as unknown as TopicoTaxonomia[],
-      arquivosConteudo: conteudo.arquivos,
       segmentosCitantes: segmentos,
       ppcsQueCitam: ppcs,
     };

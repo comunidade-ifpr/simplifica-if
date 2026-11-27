@@ -8,6 +8,7 @@
  * - `RevisorPpc`: a revisão prévia sem IA, num `Worker` com limite de memória e de tempo.
  * - `RevisaoIa`: a revisão com IA, por blocos, retomável.
  * - `ListaViva`: a lista viva de pendências, sobre as duas.
+ * - `Criterios`: a ficha de um critério no painel de leitura, sobre a lista viva e o `kb.sqlite`.
  * - `RevisoesPpc` e `CopiasComentadas`: o que a revisão guarda no banco das conversas.
  * - `ConversaAoLado`: a conversa com a IA ao lado da revisão, sobre as conversas e as pastas do núcleo
  *   (`layerConversaAoLado`, composta acima delas).
@@ -15,6 +16,7 @@
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import type * as SqlClient from "effect/sql/SqlClient";
+import * as Criterios from "./Criterios.ts";
 import * as ListaViva from "./ListaViva.ts";
 import * as ConversaAoLado from "./ConversaAoLado.ts";
 import * as CopiasComentadas from "./persistencia/CopiasComentadas.ts";
@@ -33,7 +35,8 @@ export const layer = <E, R>(
   opcoesIa?: RevisaoIa.OpcoesRevisaoIa,
   opcoesLista?: ListaViva.OpcoesListaViva,
 ) =>
-  ListaViva.layer(opcoesLista).pipe(
+  Criterios.layer.pipe(
+    Layer.provideMerge(ListaViva.layer(opcoesLista)),
     Layer.provideMerge(RevisaoIa.layer(opcoesIa)),
     Layer.provideMerge(RevisoesPpc.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(RevisorPpc.layer()),

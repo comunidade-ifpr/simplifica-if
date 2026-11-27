@@ -27,7 +27,7 @@ import { Spinner } from "../../components/ui/spinner.tsx";
 import { useApp } from "../../contexto.tsx";
 import { useAbrirLink } from "../../painel/abrirLink.ts";
 import { ContextoMemoria } from "../../leitor/carga.ts";
-import { useRevisao, useRevisaoNaTela } from "./contexto.ts";
+import { useFocoNaPendencia, useRevisao, useRevisaoNaTela } from "./contexto.ts";
 import { dataCurta } from "../../lib/formato.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
 import { obterArquivo } from "./arquivo.ts";
@@ -45,6 +45,8 @@ import {
   descreverCurso,
   doBloqueio,
   fraseResultado,
+  idDaLinha,
+  linkDoCriterio,
   linkDoPpc,
   naoLidos,
   ordenar,
@@ -86,6 +88,7 @@ export function Leitura({
 
   const app = useApp();
   useRevisaoNaTela();
+  useFocoNaPendencia("pendencia");
 
   const lista = estado.lista;
   if (lista === undefined) return null;
@@ -180,7 +183,12 @@ export function Leitura({
   );
 
   return (
-    <Pagina largura="larga" className="gap-6" rolagem={chaveDaRolagem(lista.id)}>
+    <Pagina
+      largura="larga"
+      className="gap-6"
+      rolagem={chaveDaRolagem(lista.id)}
+      alvo={estado.focar === null ? undefined : `#${idDaLinha(estado.focar)}`}
+    >
       <header className="flex flex-col gap-1">
         <h1 className="font-semibold text-muted-foreground text-small">Revisar um PPC</h1>
         <CabecalhoDocumento
@@ -268,7 +276,7 @@ export function Leitura({
         <ReguaCriterios
           criterios={r.criterios}
           tema={estado.tema}
-          aoEscolherTema={(tema) => revisao.escolherTema(tema)}
+          aoAbrirCriterio={(ficha, onde) => abrirLink(linkDoCriterio(lista.id, ficha), onde)}
         />
       </section>
 
@@ -329,7 +337,7 @@ export function Leitura({
               {linhas.map((v) => (
                 <li key={v.chave} data-chave={v.chave}>
                   <LinhaPendencia
-                    id={`pendencia-${v.chave.replace(/[^\w-]/g, "_")}`}
+                    id={idDaLinha(v.chave)}
                     viva={v}
                     aoAbrirLink={abrirLink}
                     linkNoPpc={`${linkDoPpc(lista.id, versaoPpc)}#p-${v.chave}`}

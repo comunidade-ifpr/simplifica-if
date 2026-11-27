@@ -51,7 +51,7 @@ const CODIGO = CAMINHOS.codigoKb;
 const CODIGO_FORA = [
   /\.test\.ts$/,
   /^packages\/kb\/src\/(cli|primitivas|avaliacao|esquema|testes)\//,
-  /^packages\/kb\/src\/db\/(consultas-[a-z]+|pacote-contexto|sql|conexao|nodeSqliteClient)\.ts$/,
+  /^packages\/kb\/src\/db\/(consultas-[a-z]+|pacote-revisao-ppc|criterios-revisao-ppc|sql|conexao|nodeSqliteClient)\.ts$/,
   // serviços Effect e layers: consultam o banco, não o compilam
   /^packages\/kb\/src\/([A-Z][A-Za-z]*|layers)\.ts$/,
   /^packages\/kb\/src\/normas\/impacto\.ts$/,
