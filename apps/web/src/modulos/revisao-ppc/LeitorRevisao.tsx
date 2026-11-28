@@ -7,7 +7,8 @@ import { Alert, AlertDescription, AlertTitle } from "../../components/ui/alert.t
 import { useApi } from "../../contexto.tsx";
 import { useCarga } from "../../leitor/carga.ts";
 import { Documento } from "../../leitor/Documento.tsx";
-import { BotaoLink, Cabecalho, ComCarga, FaixaTrecho, Secao } from "../../leitor/pecas.tsx";
+import { IndiceSecoes } from "../../leitor/IndiceSecoes.tsx";
+import { Cabecalho, ComCarga, Corpo, FaixaTrecho, Secao } from "../../leitor/pecas.tsx";
 import type { LinkDeModulo } from "../../leitor/linksDeModulo.ts";
 import type { AoAbrirLink } from "../../painel/abrirLink.ts";
 import { LeitorCriterio } from "./LeitorCriterio.tsx";
@@ -63,8 +64,16 @@ function LeitorPpc({
       {(doc) => {
         const atual = fragmento === null ? undefined : doc.ancoras.find((a) => a.id === fragmento);
         const secoes = doc.ancoras.filter((a) => a.tipo !== "pendencia");
+        const secaoAtual =
+          atual === undefined
+            ? null
+            : atual.tipo !== "pendencia"
+              ? atual.id
+              : (secoes.find((s) => atual.linha_inicio >= s.linha_inicio && atual.linha_inicio <= s.linha_fim)?.id ??
+                secoes.findLast((s) => s.linha_inicio <= atual.linha_inicio)?.id ??
+                null);
         return (
-          <article aria-label="PPC em revisão" className="space-y-4">
+          <article aria-label="PPC em revisão" className="space-y-8">
             <Cabecalho
               tipo="PPC em revisão"
               titulo={doc.titulo}
@@ -76,42 +85,44 @@ function LeitorPpc({
               }
             />
 
-            {secoes.length > 0 ? (
-              <details className="rounded-md border border-border p-2 text-sm">
-                <summary className="cursor-pointer font-semibold">Seções ({secoes.length})</summary>
-                <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
-                  {secoes.map((s) => (
-                    <li key={s.id}>
-                      <BotaoLink link={`${link}#${s.id}`} aoAbrirLink={aoAbrirLink}>
-                        {s.rotulo}
-                      </BotaoLink>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ) : null}
+            <Corpo
+              lateral={
+                secoes.length > 0 ? (
+                  <IndiceSecoes
+                    secoes={secoes.map((s) => ({
+                      id: s.id,
+                      titulo: s.rotulo,
+                      link: `${link}#${s.id}`,
+                      linha: s.linha_inicio,
+                    }))}
+                    secaoSelecionada={secaoAtual}
+                    aoAbrirLink={aoAbrirLink}
+                  />
+                ) : null
+              }
+            >
+              {fragmento !== null && atual === undefined ? (
+                <Alert variant="warning">
+                  <AlertTitle>Trecho não encontrado no texto</AlertTitle>
+                  <AlertDescription>
+                    Não achamos este trecho no texto convertido (ele pode estar numa caixa de texto ou ter mudado na
+                    versão corrigida). Abaixo, o documento inteiro.
+                  </AlertDescription>
+                </Alert>
+              ) : atual !== undefined ? (
+                <FaixaTrecho rotulo={atual.tipo === "pendencia" ? "o trecho apontado" : atual.rotulo} alvo={atual.id} />
+              ) : null}
 
-            {fragmento !== null && atual === undefined ? (
-              <Alert variant="warning">
-                <AlertTitle>Trecho não encontrado no texto</AlertTitle>
-                <AlertDescription>
-                  Não achamos este trecho no texto convertido (ele pode estar numa caixa de texto ou ter mudado na
-                  versão corrigida). Abaixo, o documento inteiro.
-                </AlertDescription>
-              </Alert>
-            ) : atual !== undefined ? (
-              <FaixaTrecho rotulo={atual.tipo === "pendencia" ? "o trecho apontado" : atual.rotulo} alvo={atual.id} />
-            ) : null}
-
-            <Secao titulo="Texto do PPC">
-              <Documento
-                documento={{ markdown: doc.markdown, ancoras: doc.ancoras, link }}
-                alvo={atual === undefined ? null : atual.id}
-                aoAbrirLink={aoAbrirLink}
-                rotulo="Texto do PPC em revisão"
-                realce={doc.trechos.find((t) => t.id === atual?.id)?.texto ?? null}
-              />
-            </Secao>
+              <Secao titulo="Texto do PPC">
+                <Documento
+                  documento={{ markdown: doc.markdown, ancoras: doc.ancoras, link }}
+                  alvo={atual === undefined ? null : atual.id}
+                  aoAbrirLink={aoAbrirLink}
+                  rotulo="Texto do PPC em revisão"
+                  realce={doc.trechos.find((t) => t.id === atual?.id)?.texto ?? null}
+                />
+              </Secao>
+            </Corpo>
           </article>
         );
       }}

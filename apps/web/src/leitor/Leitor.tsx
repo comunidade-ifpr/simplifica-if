@@ -32,6 +32,7 @@ import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
 import { FichaCampus, FichaCnct, FichaCurso } from "./Fichas.tsx";
+import { IndiceSecoes } from "./IndiceSecoes.tsx";
 import { linkDeModulo } from "./linksDeModulo.ts";
 import {
   BotaoCodigoSuap,
@@ -59,7 +60,7 @@ import {
   selosDaNorma,
   situacaoDaTransicao,
 } from "./textos.ts";
-import { type AoAbrirLink, ondeDoClique } from "../painel/abrirLink.ts";
+import type { AoAbrirLink } from "../painel/abrirLink.ts";
 
 /** Um link `ifpr://` desmontado. */
 export interface LinkDesmontado {
@@ -634,41 +635,18 @@ function LeitorPpc({
                         </div>
                       </section>
                     ) : null}
-                    {secoes.length > 0 ? (
-                      <>
-                        {/* Com largura, o índice fica aberto ao lado do texto; no painel estreito, recolhido. */}
-                        <nav aria-label="Seções do PPC" className="hidden space-y-1.5 @4xl:block">
-                          <h3 className="font-semibold text-muted-foreground text-small">Seções ({secoes.length})</h3>
-                          <ul>
-                            {secoes.map((s) => (
-                              <li key={s.id}>
-                                <button
-                                  type="button"
-                                  data-link={s.link}
-                                  aria-current={s.id === atual?.id ? "location" : undefined}
-                                  onClick={(evento) => aoAbrirLink(s.link, ondeDoClique(evento))}
-                                  className="block w-full rounded-md px-2 py-1 text-left text-muted-foreground text-small hover:bg-muted hover:text-foreground aria-[current]:bg-accent aria-[current]:font-semibold aria-[current]:text-accent-foreground"
-                                >
-                                  {s.titulo}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        </nav>
-                        <details className="rounded-md border border-border p-2 text-sm @4xl:hidden">
-                          <summary className="cursor-pointer font-semibold">Seções do índice ({secoes.length})</summary>
-                          <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
-                            {secoes.map((s) => (
-                              <li key={s.id}>
-                                <BotaoLink link={s.link} aoAbrirLink={aoAbrirLink}>
-                                  {s.titulo}
-                                </BotaoLink>
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      </>
-                    ) : null}
+                    <IndiceSecoes
+                      secoes={secoes.map((s) => ({
+                        id: s.id.slice(s.id.indexOf("#") + 1),
+                        titulo: s.titulo,
+                        link: s.link,
+                        linha: s.fonte.linha_inicio,
+                      }))}
+                      secaoSelecionada={atual === undefined ? null : fragmento}
+                      aoAbrirLink={aoAbrirLink}
+                      rotuloRecolhido="Seções do índice"
+                      textoPronto={documento.fase === "lido"}
+                    />
                   </>
                 ) : null
               }

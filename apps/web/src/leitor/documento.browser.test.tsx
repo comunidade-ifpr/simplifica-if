@@ -12,6 +12,8 @@ import { ponteTeste } from "../../test/ponte.ts";
 import "../index.css";
 import { ContextoMemoria, MemoriaLeitor, useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
+import { IndiceSecoes } from "./IndiceSecoes.tsx";
+import { Corpo } from "./pecas.tsx";
 import { Sumario } from "./Sumario.tsx";
 import { indexarBusca, ocorrencias, visivel } from "./busca.ts";
 import { faixasDoRealce, textosDe } from "./realce.ts";
@@ -403,4 +405,45 @@ it("norma sem divisões: o índice é a grade com os números dos artigos", asyn
   await expect
     .poll(() => indice.getByRole("button", { name: "Artigo 7", exact: true }).element().getAttribute("aria-current"))
     .toBe("location");
+});
+
+it("índice de seções do PPC: acompanha a rolagem, abre o link e permite esconder a barra lateral", async () => {
+  const documento = documentoLongo();
+  const abertos: Array<string> = [];
+  const secoes = documento.ancoras.map((a) => ({
+    id: a.id,
+    titulo: a.rotulo,
+    link: `${documento.link}#${a.id}`,
+    linha: a.linha_inicio,
+  }));
+  const conteiner = montar(
+    <article>
+      <Corpo lateral={<IndiceSecoes secoes={secoes} aoAbrirLink={(link) => abertos.push(link)} />}>
+        <Documento documento={documento} alvo={null} aoAbrirLink={() => {}} rotulo="Texto do PPC" />
+      </Corpo>
+    </article>,
+    400,
+    1200,
+  );
+  const indice = page.getByRole("navigation", { name: "Seções do PPC" });
+  await expect.element(indice).toBeVisible();
+  await expect.element(indice.getByText("Seções (60)")).toBeVisible();
+
+  // ao rolar até a seção 5, o índice passa a marcá-la como em leitura
+  const secao5 = document.getElementById("secao-5")!;
+  conteiner.scrollTop = secao5.offsetTop;
+  conteiner.dispatchEvent(new Event("scroll"));
+  await expect
+    .poll(() => indice.getByRole("button", { name: "Seção 5", exact: true }).element().getAttribute("aria-current"))
+    .toBe("location");
+
+  // clicar numa seção chama `aoAbrirLink` com o link da seção
+  await indice.getByRole("button", { name: "Seção 2", exact: true }).click();
+  expect(abertos).toEqual([`${documento.link}#secao-2`]);
+
+  // esconder e mostrar a barra lateral
+  await page.getByRole("button", { name: "Esconder barra lateral" }).click();
+  await expect.element(indice).not.toBeInTheDocument();
+  await page.getByRole("button", { name: "Mostrar barra lateral" }).click();
+  await expect.element(indice).toBeVisible();
 });

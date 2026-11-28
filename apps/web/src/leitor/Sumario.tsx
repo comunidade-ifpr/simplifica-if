@@ -8,10 +8,11 @@
  * montou, pelo espaço reservado do bloco (`data-linha`).
  */
 import type { DadosDocumento } from "@simplifica-if/contratos-app";
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import { Input } from "../components/ui/input.tsx";
 import { cn } from "../lib/utils.ts";
-import { type InstanciaLeitor, useInstanciaLeitor } from "./instancia.ts";
+import { useEmLeitura } from "./emLeitura.ts";
+import { useInstanciaLeitor } from "./instancia.ts";
 import {
   artigoPedido,
   conteudoDoIndice,
@@ -23,71 +24,6 @@ import {
   numeroDoArtigo,
   rotuloCurto,
 } from "./sumario.ts";
-
-/** A distância do topo da área de rolagem até onde um item passa a ser "o em leitura". */
-const MARGEM_DE_LEITURA = 96;
-
-/** O elemento que rola o texto: o ancestral mais próximo com rolagem vertical. */
-function areaDeRolagem(elemento: Element): Element | null {
-  for (let pai = elemento.parentElement; pai !== null; pai = pai.parentElement) {
-    if (/^(auto|scroll)$/.test(getComputedStyle(pai).overflowY)) return pai;
-  }
-  return null;
-}
-
-/**
- * O destino em leitura: o último cujo começo já passou do alto da área de rolagem. `null` antes do
- * primeiro. Mede de novo quando o texto rola e quando um bloco se monta.
- */
-function useEmLeitura(destinos: ReadonlyArray<Destino>, ligado: boolean, instancia: InstanciaLeitor) {
-  const nav = useRef<HTMLElement>(null);
-  const [ativo, setAtivo] = useState<number | null>(null);
-  useEffect(() => {
-    const texto = nav.current?.closest("article")?.querySelector<HTMLElement>(".documento-leitor");
-    if (!ligado || texto == null || destinos.length === 0) return;
-    let quadro = 0;
-    const medir = () => {
-      quadro = 0;
-      const limite = (areaDeRolagem(texto)?.getBoundingClientRect().top ?? 0) + MARGEM_DE_LEITURA;
-      const blocos = [...texto.querySelectorAll<HTMLElement>(":scope > [data-linha]")];
-      const blocoDa = (linha: number) => blocos.findLast((bloco) => Number(bloco.dataset["linha"]) <= linha);
-      let atual: number | null = null;
-      destinos.forEach((destino, i) => {
-        const elemento =
-          texto.querySelector(`[id="${CSS.escape(instancia.id(destino.id))}"]`) ?? blocoDa(destino.linha);
-        if (elemento != null && elemento.getBoundingClientRect().top <= limite) atual = i;
-      });
-      setAtivo(atual);
-    };
-    const agendar = () => {
-      if (quadro === 0) quadro = requestAnimationFrame(medir);
-    };
-    // a rolagem não borbulha: a captura no documento vê a de qualquer área
-    document.addEventListener("scroll", agendar, { capture: true, passive: true });
-    const blocos = new MutationObserver(agendar);
-    blocos.observe(texto, { childList: true });
-    agendar();
-    return () => {
-      document.removeEventListener("scroll", agendar, { capture: true });
-      blocos.disconnect();
-      cancelAnimationFrame(quadro);
-    };
-  }, [destinos, ligado, instancia]);
-
-  // O item marcado sempre à vista na lateral, sem mexer na rolagem do texto.
-  useEffect(() => {
-    if (ativo === null) return;
-    const marcado = nav.current?.querySelector<HTMLElement>("[aria-current]");
-    const lateral = nav.current?.closest("aside");
-    if (marcado == null || lateral == null || lateral.scrollHeight <= lateral.clientHeight) return;
-    const item = marcado.getBoundingClientRect();
-    const area = lateral.getBoundingClientRect();
-    if (item.top < area.top) lateral.scrollTop -= area.top - item.top + 8;
-    else if (item.bottom > area.bottom) lateral.scrollTop += item.bottom - area.bottom + 8;
-  }, [ativo]);
-
-  return { nav, ativo };
-}
 
 const CLASSE_ITEM =
   "grid w-full grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-2 rounded-md py-1 pr-2 text-left text-muted-foreground text-small hover:bg-muted hover:text-foreground aria-[current]:bg-accent aria-[current]:font-semibold aria-[current]:text-accent-foreground";

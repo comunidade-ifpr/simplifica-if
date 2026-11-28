@@ -3,12 +3,20 @@
  * novo", a carga (`ComCarga`), o cabeçalho, o corpo com a coluna lateral, a seção com título e o link
  * `ifpr://` como botão.
  */
-import { CheckIcon, CopyIcon, ExternalLinkIcon, LocateFixedIcon } from "lucide-react";
+import {
+  CheckIcon,
+  CopyIcon,
+  ExternalLinkIcon,
+  LocateFixedIcon,
+  PanelRightCloseIcon,
+  PanelRightOpenIcon,
+} from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { abrirFora } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
+import { cn } from "../lib/utils.ts";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
 import type { Carga } from "./carga.ts";
 import { useInstanciaLeitor } from "./instancia.ts";
@@ -192,18 +200,53 @@ export function Fatos({ children }: { readonly children: ReactNode }) {
 
 /**
  * O corpo de uma página do leitor: o conteúdo principal e, quando há, a coluna lateral (relações da
- * norma, seções do PPC). Com largura, a lateral fica à direita e acompanha a rolagem; no painel estreito,
- * vem antes do conteúdo, como uma seção a mais.
+ * norma, seções do PPC). Com largura, a lateral fica à direita, acompanha a rolagem e pode ser escondida
+ * para ganhar espaço na leitura; no painel estreito, vem antes do conteúdo, como uma seção a mais.
  */
 export function Corpo({ lateral, children }: { readonly lateral?: ReactNode; readonly children: ReactNode }) {
+  const [lateralVisivel, setLateralVisivel] = useState(true);
   if (!lateral) return <div className="space-y-4">{children}</div>;
   return (
     <div className="@container">
-      <div className="grid gap-x-12 gap-y-6 @4xl:grid-cols-[minmax(0,1fr)_19rem]">
-        <aside className="space-y-6 @4xl:sticky @4xl:top-0 @4xl:col-start-2 @4xl:row-start-1 @4xl:max-h-[calc(100dvh-9rem)] @4xl:self-start @4xl:overflow-y-auto @4xl:border-border @4xl:border-l @4xl:pl-6">
-          {lateral}
+      <div className={cn("grid gap-x-12 gap-y-6", lateralVisivel && "@4xl:grid-cols-[minmax(0,1fr)_19rem]")}>
+        <aside
+          className={cn(
+            lateralVisivel
+              ? "@4xl:sticky @4xl:top-0 @4xl:col-start-2 @4xl:row-start-1 @4xl:flex @4xl:max-h-[calc(100dvh-9rem)] @4xl:flex-col @4xl:self-start @4xl:border-border @4xl:border-l @4xl:pl-6"
+              : "@4xl:hidden",
+          )}
+        >
+          <div className="hidden shrink-0 justify-end pb-2 @4xl:flex">
+            <Button
+              size="xs"
+              variant="ghost"
+              className="text-muted-foreground"
+              aria-label="Esconder barra lateral"
+              onClick={() => setLateralVisivel(false)}
+            >
+              <PanelRightCloseIcon />
+              Esconder lateral
+            </Button>
+          </div>
+          <div className="min-h-0 space-y-6 @4xl:flex-1 @4xl:overflow-y-auto">{lateral}</div>
         </aside>
-        <div className="min-w-0 space-y-4 @4xl:col-start-1 @4xl:row-start-1">{children}</div>
+        <div className="min-w-0 space-y-4 @4xl:col-start-1 @4xl:row-start-1">
+          {!lateralVisivel ? (
+            <div className="pointer-events-none hidden justify-end @4xl:sticky @4xl:top-0 @4xl:z-10 @4xl:flex">
+              <Button
+                size="xs"
+                variant="outline"
+                className="pointer-events-auto bg-background"
+                aria-label="Mostrar barra lateral"
+                onClick={() => setLateralVisivel(true)}
+              >
+                <PanelRightOpenIcon />
+                Mostrar lateral
+              </Button>
+            </div>
+          ) : null}
+          {children}
+        </div>
       </div>
     </div>
   );
