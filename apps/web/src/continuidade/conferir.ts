@@ -97,6 +97,7 @@ export function conferirContinuidade(guardada: Continuidade, existentes: Existen
     if (i === posicao) novaPosicao = trilha.length - 1;
   });
   const marcados = guardada.painel.marcados.filter(fica);
+  const abertos = guardada.painel.abertos?.filter(fica);
 
   let conversa = guardada.painel.conversa;
   if (conversa !== undefined && !existentes.conversas.has(conversa.id)) conversa = undefined;
@@ -114,6 +115,7 @@ export function conferirContinuidade(guardada: Continuidade, existentes: Existen
     aba: guardada.painel.aba,
     trilha: { links: trilha, posicao: trilha.length === 0 ? -1 : Math.max(0, novaPosicao) },
     marcados,
+    ...(abertos === undefined ? {} : { abertos }),
     preso: guardada.painel.preso,
     ...(conversa === undefined ? {} : { conversa }),
   };
@@ -122,13 +124,20 @@ export function conferirContinuidade(guardada: Continuidade, existentes: Existen
 
 /**
  * O que se grava, dentro do limite das preferências (`MAXIMO_TEXTO_CONTINUIDADE`): a rota longa demais (um
- * filtro do Explorar com muito texto) grava o Início, e o link longo demais sai da trilha e dos marcados.
+ * filtro do Explorar com muito texto) grava o Início, e o link longo demais sai da trilha, dos abertos e dos fixados.
  * O resto grava do mesmo jeito.
  */
 export function continuidadeQueCabe(continuidade: Continuidade): Continuidade {
   const cabe = (texto: string) => texto.length <= MAXIMO_TEXTO_CONTINUIDADE;
   const { links, posicao } = continuidade.painel.trilha;
-  if (cabe(continuidade.rota) && links.every(cabe) && continuidade.painel.marcados.every(cabe)) return continuidade;
+  const abertos = continuidade.painel.abertos;
+  if (
+    cabe(continuidade.rota) &&
+    links.every(cabe) &&
+    continuidade.painel.marcados.every(cabe) &&
+    (abertos === undefined || abertos.every(cabe))
+  )
+    return continuidade;
   const trilha: Array<string> = [];
   let novaPosicao = -1;
   links.forEach((link, i) => {
@@ -141,6 +150,7 @@ export function continuidadeQueCabe(continuidade: Continuidade): Continuidade {
       ...continuidade.painel,
       trilha: { links: trilha, posicao: trilha.length === 0 ? -1 : Math.max(0, novaPosicao) },
       marcados: continuidade.painel.marcados.filter(cabe),
+      ...(abertos === undefined ? {} : { abertos: abertos.filter(cabe) }),
     },
   };
 }

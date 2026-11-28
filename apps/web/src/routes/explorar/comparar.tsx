@@ -54,7 +54,7 @@ function Comparar() {
   return (
     <div className="space-y-6">
       <NoTopo key={`${a}:${b}`} />
-      <div className="nao-imprimir -mt-2">
+      <div className="-mt-2">
         <Button size="sm" variant="ghost" className="-ml-2.5" onClick={() => roteador.history.back()}>
           <ArrowLeftIcon /> Voltar
         </Button>
@@ -201,7 +201,7 @@ function Linha({ linha, origem }: { readonly linha: LinhaComparada; readonly ori
         <Button
           size="sm"
           variant="ghost"
-          className="nao-imprimir -ml-2.5"
+          className="-ml-2.5"
           onClick={() =>
             painel.conversar({
               fichas: [linha.origem, ...linha.destinos].map((lado) => fichaDoLink(lado.link)),

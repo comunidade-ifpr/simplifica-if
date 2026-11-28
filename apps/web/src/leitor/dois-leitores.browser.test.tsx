@@ -125,15 +125,6 @@ it("a mesma norma na tela e no painel: id, faixa do trecho, índice, ⌘F e impr
   await userEvent.keyboard("{Escape}");
   await expect.poll(() => CSS.highlights.get(NOME_BUSCA)?.size).toBe(doPainel);
   expect(achadosDaTela()).toEqual([]);
-
-  // Imprimir pelo painel: só os artigos dele são marcados, até o fim da impressão.
-  const imprimir = vi.spyOn(window, "print").mockImplementation(() => {});
-  await painel.getByRole("button", { name: "Imprimir" }).click();
-  expect(imprimir).toHaveBeenCalledTimes(1);
-  expect(noPainel.element().hasAttribute("data-imprimir")).toBe(true);
-  expect(naTela.element().hasAttribute("data-imprimir")).toBe(false);
-  window.dispatchEvent(new Event("afterprint"));
-  expect(noPainel.element().hasAttribute("data-imprimir")).toBe(false);
 });
 
 it("âncoras do texto com dois leitores: o link `#…` e a nota de rodapé rolam só o leitor em que estão", async () => {
@@ -215,39 +206,4 @@ it("âncoras do texto com dois leitores: o link `#…` e a nota de rodapé rolam
     raiz.unmount();
     conteiner.remove();
   }
-});
-
-it("imprimir: o ⌘P sai só com o leitor em foco, e só ele monta o texto inteiro; o painel sem texto não imprime", async () => {
-  // Sem tempo ocioso, os blocos fora do trecho ficam por montar: só a impressão os monta.
-  vi.stubGlobal("requestIdleCallback", () => 0);
-  vi.stubGlobal("cancelIdleCallback", () => {});
-  await page.viewport(1366, 768);
-  await using app = await montarApp(servidor, `/explorar/ver?link=${encodeURIComponent(LINK)}`);
-  app.contexto.painel.abrirLink(LINK);
-  const painel = page.getByRole("complementary", { name: "Painel ao lado" });
-  const naTela = page.getByRole("main").getByRole("article", { name: "Norma" });
-  const noPainel = painel.getByRole("article", { name: "Norma" });
-  await expect.element(noPainel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  await expect.element(naTela.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  const porMontar = (raiz: Element) => raiz.querySelectorAll(".espaco-reservado").length;
-  await expect.poll(() => porMontar(painel.element())).toBeGreaterThan(0);
-  await expect.poll(() => porMontar(naTela.element())).toBeGreaterThan(0);
-
-  // O ⌘P (ou o menu) com o foco na tela: só a tela vai para o papel, e só ela se monta inteira.
-  await naTela.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" }).click();
-  window.dispatchEvent(new Event("beforeprint"));
-  expect(naTela.element().hasAttribute("data-imprimir")).toBe(true);
-  expect(noPainel.element().hasAttribute("data-imprimir")).toBe(false);
-  expect(porMontar(naTela.element())).toBe(0);
-  expect(porMontar(painel.element())).toBeGreaterThan(0);
-  window.dispatchEvent(new Event("afterprint"));
-  expect(naTela.element().hasAttribute("data-imprimir")).toBe(false);
-
-  // Com o painel ainda sem texto (aqui, uma norma que não existe), "Imprimir" não imprime a tela no lugar.
-  const imprimir = vi.spyOn(window, "print").mockImplementation(() => {});
-  app.contexto.painel.abrirLink("ifpr://norma/br/nao/existe/1");
-  await expect.element(painel.getByText("Não foi possível ler esta norma")).toBeVisible();
-  await painel.getByRole("button", { name: "Imprimir" }).click();
-  expect(imprimir).not.toHaveBeenCalled();
-  expect(document.querySelector("[data-imprimir]")).toBeNull();
 });

@@ -129,17 +129,19 @@ const juntar = (atuais: ReadonlyArray<FichaRascunho>, novas: ReadonlyArray<Ficha
   ...novas.filter((nova) => !atuais.some((ficha) => ficha.chave === nova.chave)),
 ];
 
-/** A prateleira dos documentos marcados: o substituto modesto das abas. */
+/** Os documentos fixados no início da faixa de abas do Ler. */
 export const MAXIMO_MARCADOS = 5;
 
-/** Quantos links da trilha do Ler voltam ao reabrir o app. */
+/** Quantos links da trilha (e abas abertas) do Ler voltam ao reabrir o app. */
 export const MAXIMO_TRILHA = 50;
 
 export interface EstadoPainel {
   readonly aberto: boolean;
   readonly aba: AbaPainel;
   readonly historico: Historico;
-  /** Os links marcados, um por documento, na ordem em que entraram. */
+  /** Os documentos abertos no Ler (um por documento, com o último trecho lido), na ordem em que abriram. */
+  readonly abertos: ReadonlyArray<string>;
+  /** Os links fixados no início das abas, um por documento, na ordem em que foram fixados. */
   readonly marcados: ReadonlyArray<string>;
   /** Preso como coluna mesmo quando a tela principal ficaria estreita (senão, sobreposição). */
   readonly preso: boolean;
@@ -152,6 +154,7 @@ export const PAINEL_FECHADO: EstadoPainel = {
   aberto: false,
   aba: "ler",
   historico: HISTORICO_VAZIO,
+  abertos: [],
   marcados: [],
   preso: false,
   conversa: SEM_CONVERSA,
@@ -159,6 +162,27 @@ export const PAINEL_FECHADO: EstadoPainel = {
 
 /** O documento de um link, sem o `#` do dispositivo ou do trecho. */
 export const documentoDoLink = (link: string): string => link.split("#")[0]!;
+
+/** Põe ou atualiza o link do documento na lista de abertos, preservando a ordem. */
+const juntarAberto = (abertos: ReadonlyArray<string>, link: string): ReadonlyArray<string> => {
+  const documento = documentoDoLink(link);
+  const i = abertos.findIndex((a) => documentoDoLink(a) === documento);
+  if (i >= 0) return abertos[i] === link ? abertos : abertos.with(i, link);
+  return [...abertos, link];
+};
+
+const deduplicarPorDocumento = (links: ReadonlyArray<string>): ReadonlyArray<string> => {
+  let resultado: ReadonlyArray<string> = [];
+  for (const link of links) resultado = juntarAberto(resultado, link);
+  return resultado;
+};
+
+/** Se o documento do link está fixado, atualiza o `#trecho` guardado nele sem mudar a ordem. */
+const atualizarMarcado = (marcados: ReadonlyArray<string>, link: string): ReadonlyArray<string> => {
+  const documento = documentoDoLink(link);
+  const i = marcados.findIndex((m) => documentoDoLink(m) === documento);
+  return i >= 0 && marcados[i] !== link ? marcados.with(i, link) : marcados;
+};
 
 export class ControlePainel {
   private estado: EstadoPainel;
@@ -206,18 +230,44 @@ export class ControlePainel {
     this.abertoAoRestaurar = false;
   }
 
-  /** Abre o Ler no link, depois do atual na trilha. */
+  /** Abre o Ler no link, depois do atual na trilha, e garante a aba do documento aberta. */
   readonly abrirLink = (link: string): void => {
     this.pedir();
-    this.mudar({ aberto: true, aba: "ler", historico: abrir(this.estado.historico, link) });
+    this.mudar({
+      aberto: true,
+      aba: "ler",
+      historico: abrir(this.estado.historico, link),
+      abertos: juntarAberto(this.estado.abertos, link),
+      marcados: atualizarMarcado(this.estado.marcados, link),
+    });
   };
 
   readonly voltar = (): void => {
-    this.mudar({ historico: voltar(this.estado.historico) });
+    const historico = voltar(this.estado.historico);
+    const atual = linkAtual(historico);
+    this.mudar({
+      historico,
+      ...(atual === undefined
+        ? {}
+        : {
+            abertos: juntarAberto(this.estado.abertos, atual),
+            marcados: atualizarMarcado(this.estado.marcados, atual),
+          }),
+    });
   };
 
   readonly avancar = (): void => {
-    this.mudar({ historico: avancar(this.estado.historico) });
+    const historico = avancar(this.estado.historico);
+    const atual = linkAtual(historico);
+    this.mudar({
+      historico,
+      ...(atual === undefined
+        ? {}
+        : {
+            abertos: juntarAberto(this.estado.abertos, atual),
+            marcados: atualizarMarcado(this.estado.marcados, atual),
+          }),
+    });
   };
 
   /** Abre o painel na aba. */
@@ -250,33 +300,67 @@ export class ControlePainel {
     this.mudar({ preso });
   };
 
-  /** Põe o documento do link na prateleira (no lugar do mesmo documento, se já estava); cheia, não entra. */
+  /** Fixa o documento do link no início das abas (no lugar do mesmo documento, se já estava); cheia, não entra. */
   readonly marcar = (link: string): void => {
     const documento = documentoDoLink(link);
     const outros = this.estado.marcados.filter((m) => documentoDoLink(m) !== documento);
     if (outros.length >= MAXIMO_MARCADOS) return;
     const i = this.estado.marcados.findIndex((m) => documentoDoLink(m) === documento);
-    this.mudar({ marcados: i < 0 ? [...outros, link] : this.estado.marcados.with(i, link) });
+    this.mudar({
+      marcados: i < 0 ? [...outros, link] : this.estado.marcados.with(i, link),
+      abertos: juntarAberto(this.estado.abertos, link),
+    });
   };
 
-  /** Tira da prateleira o documento do link. */
+  /** Desafixa o documento do link (ele continua aberto entre as abas). */
   readonly desmarcar = (link: string): void => {
     const documento = documentoDoLink(link);
     const marcados = this.estado.marcados.filter((m) => documentoDoLink(m) !== documento);
     if (marcados.length !== this.estado.marcados.length) this.mudar({ marcados });
   };
 
+  /** Fecha a aba do documento do link; se era o atual, passa à aba vizinha (ou limpa o Ler, sem outra). */
+  readonly fecharDocumento = (link: string): void => {
+    const documento = documentoDoLink(link);
+    const docsFixados = new Set(this.estado.marcados.map(documentoDoLink));
+    const ordem = [...this.estado.marcados, ...this.estado.abertos.filter((a) => !docsFixados.has(documentoDoLink(a)))];
+    const indice = ordem.findIndex((item) => documentoDoLink(item) === documento);
+    if (indice < 0) return;
+
+    const abertos = this.estado.abertos.filter((a) => documentoDoLink(a) !== documento);
+    const marcados = this.estado.marcados.filter((m) => documentoDoLink(m) !== documento);
+    const atual = linkAtual(this.estado.historico);
+    if (atual === undefined || documentoDoLink(atual) !== documento) {
+      this.mudar({ abertos, marcados });
+      return;
+    }
+
+    const restantes = ordem.filter((item) => documentoDoLink(item) !== documento);
+    const proximo = restantes[Math.min(indice, restantes.length - 1)];
+    this.mudar({
+      abertos,
+      marcados,
+      historico: proximo === undefined ? HISTORICO_VAZIO : abrir(this.estado.historico, proximo),
+    });
+  };
+
   /**
-   * Tira da trilha e da prateleira os links de `descartar` (o documento deixou de existir): "Voltar" não
-   * chega mais a eles. Se o Ler mostrava um deles, o painel recolhe.
+   * Tira da trilha, das abas abertas e dos fixados os links de `descartar` (o documento deixou de existir):
+   * "Voltar" não chega mais a eles. Se o Ler mostrava um deles, o painel recolhe.
    */
   readonly esquecerLinks = (descartar: (link: string) => boolean): void => {
     const atual = linkAtual(this.estado.historico);
     const lendo = this.estado.aba === "ler" && atual !== undefined && descartar(atual);
+    const historico = semLinks(this.estado.historico, descartar);
+    const filtrados = this.estado.abertos.filter((a) => !descartar(a));
+    const novoAtual = linkAtual(historico);
+    const abertosBase = filtrados.length === this.estado.abertos.length ? this.estado.abertos : filtrados;
+    const abertos = novoAtual === undefined ? abertosBase : juntarAberto(abertosBase, novoAtual);
     const marcados = this.estado.marcados.filter((m) => !descartar(m));
     this.mudar({
       aberto: this.estado.aberto && !lendo,
-      historico: semLinks(this.estado.historico, descartar),
+      historico,
+      abertos,
       marcados: marcados.length === this.estado.marcados.length ? this.estado.marcados : marcados,
     });
   };
@@ -406,16 +490,26 @@ export class ControlePainel {
   };
 
   /**
-   * Os links começados por `de` passam a começar por `para`, na trilha e na prateleira (o documento mudou de
-   * endereço, como o PPC da revisão refeita com outro curso). Dois iguais que ficam lado a lado viram um.
+   * Os links começados por `de` passam a começar por `para`, na trilha, nas abas abertas e nos fixados
+   * (o documento mudou de endereço, como o PPC da revisão refeita com outro curso). Dois iguais que ficam
+   * lado a lado viram um.
    */
   readonly trocarLinks = (de: string, para: string): void => {
     const trocar = (link: string) => (link.startsWith(de) ? para + link.slice(de.length) : link);
     const { links, posicao } = this.estado.historico;
-    if (!links.some((link) => link.startsWith(de)) && !this.estado.marcados.some((m) => m.startsWith(de))) return;
+    if (
+      !links.some((link) => link.startsWith(de)) &&
+      !this.estado.abertos.some((a) => a.startsWith(de)) &&
+      !this.estado.marcados.some((m) => m.startsWith(de))
+    )
+      return;
     const trocados = links.map(trocar);
     const historico = semLinks({ links: trocados, posicao }, () => false);
-    this.mudar({ historico, marcados: this.estado.marcados.map(trocar) });
+    this.mudar({
+      historico,
+      abertos: deduplicarPorDocumento(this.estado.abertos.map(trocar)),
+      marcados: deduplicarPorDocumento(this.estado.marcados.map(trocar)),
+    });
   };
 
   /** ⤢: a conversa vai à tela cheia, saindo de `endereco`, para onde "Trazer de volta" volta. */
@@ -514,17 +608,22 @@ export class ControlePainel {
   readonly contextoDaTela = (): PedidoConversa => this.contextos.at(-1)?.() ?? {};
 
   /**
-   * O que volta ao reabrir o app: a trilha (só os últimos `MAXIMO_TRILHA` links), os marcados, a aba, se
-   * estava aberto e preso, e a conversa da aba Conversar já aberta (o rascunho, as fichas e o texto ficam).
+   * O que volta ao reabrir o app: a trilha (só os últimos `MAXIMO_TRILHA` links), as abas abertas, os
+   * fixados, a aba, se estava aberto e preso, e a conversa da aba Conversar já aberta (o rascunho, as
+   * fichas e o texto ficam).
    */
   readonly paraGuardar = (): PainelGuardado => {
-    const { aberto, aba, historico, marcados, preso, conversa } = this.estado;
+    const { aberto, aba, historico, abertos, marcados, preso, conversa } = this.estado;
     const corte = Math.max(0, historico.links.length - MAXIMO_TRILHA);
+    const docsFixados = new Set(marcados.map(documentoDoLink));
+    const naoFixados = abertos.filter((a) => !docsFixados.has(documentoDoLink(a)));
+    const abertosGuardados = [...marcados, ...naoFixados.slice(-(MAXIMO_TRILHA - marcados.length))];
     return {
       aberto,
       aba,
       trilha: { links: historico.links.slice(corte), posicao: Math.max(-1, historico.posicao - corte) },
       marcados,
+      abertos: abertosGuardados,
       preso,
       ...(conversa.id === undefined || conversa.apagada === true
         ? {}
@@ -535,14 +634,24 @@ export class ControlePainel {
   /** O painel como estava ao fechar o app (já sem o que deixou de existir, `continuidade/conferir.ts`). */
   readonly restaurar = (guardado: PainelGuardado): void => {
     const { links, posicao } = guardado.trilha;
+    const historico =
+      links.length === 0 ? HISTORICO_VAZIO : { links, posicao: Math.min(Math.max(0, posicao), links.length - 1) };
+    const marcados = guardado.marcados.slice(0, MAXIMO_MARCADOS);
+    const atual = linkAtual(historico);
+    const baseAbertos = guardado.abertos ?? [...marcados, ...links];
+    const abertos = deduplicarPorDocumento([
+      ...baseAbertos,
+      ...marcados,
+      ...(atual === undefined ? [] : [atual]),
+    ]).slice(-MAXIMO_TRILHA);
     this.geracao += 1;
     const abria = this.estado.aberto;
     this.mudar({
       aberto: guardado.aberto,
       aba: guardado.aba,
-      historico:
-        links.length === 0 ? HISTORICO_VAZIO : { links, posicao: Math.min(Math.max(0, posicao), links.length - 1) },
-      marcados: guardado.marcados.slice(0, MAXIMO_MARCADOS),
+      historico,
+      abertos,
+      marcados,
       preso: guardado.preso,
       conversa:
         guardado.conversa === undefined

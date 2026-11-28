@@ -10,8 +10,8 @@
  * partir dos vizinhos. Enquanto não se montam, ocupam um espaço estimado; a ancoragem de rolagem do
  * navegador mantém o trecho no lugar quando o texto de cima aparece. Os blocos montados usam
  * `content-visibility: auto`, e o navegador só desenha o que está à vista; o do trecho, não (com o
- * tamanho estimado, a rolagem até ele erraria o lugar). Para imprimir e para buscar, todos se montam
- * antes (`beforeprint` e o `montarTudo` da instância, `instancia.ts`).
+ * tamanho estimado, a rolagem até ele erraria o lugar). Para buscar, todos se montam antes
+ * (`montarTudo` da instância, `instancia.ts`).
  *
  * O índice da norma (`Sumario.tsx`) pede a rolagem até um item ou um artigo (o `irPara` da instância): o
  * bloco do destino se monta na hora, e o texto rola até o elemento. Os cabeçalhos do sumário ganham um
@@ -27,12 +27,11 @@ import { type ComponentProps, memo, useEffect, useLayoutEffect, useMemo, useRef,
 import { flushSync } from "react-dom";
 import ReactMarkdown, { type Components, type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { leitorEmFoco } from "../components/BuscaPainel.tsx";
 import { AbrirLink, LinkMarkdown, transformarUrl } from "../components/Markdown.tsx";
 import { BarraSelecao } from "./BarraSelecao.tsx";
 import { type Bloco, blocoDaLinha, dividirEmBlocos, ordemDeMontagem } from "./blocos.ts";
 import { pintar } from "./destaques.ts";
-import { raizAImprimir, useInstanciaLeitor } from "./instancia.ts";
+import { useInstanciaLeitor } from "./instancia.ts";
 import { faixasDoRealce, NOME_REALCE, rolarAte, textosDe } from "./realce.ts";
 import { ancorasPorLinha, linhasDoTrecho, rehypeDispositivos } from "./rehypeDispositivos.ts";
 import { remarkMarcadores, remarkQuebras } from "./remarkLeitor.ts";
@@ -195,24 +194,14 @@ export function Documento({
   const conteiner = useRef<HTMLDivElement>(null);
   const caixa = useRef<HTMLDivElement>(null);
 
-  // Para imprimir e para buscar (Ctrl/⌘+F), o documento inteiro.
+  // Para buscar (Ctrl/⌘+F), o documento inteiro.
   useEffect(() => {
     // Já tudo montado, o mesmo estado: a busca pede a cada tecla e não deve renderizar a lista de novo.
     const montarTudo = () =>
       flushSync(() =>
         setMontados((atuais) => (atuais.size === blocos.length ? atuais : new Set(blocos.map((_, i) => i)))),
       );
-    // Na impressão, só o leitor que vai para o papel monta tudo (um PPC chega a 720 mil caracteres).
-    const aoImprimir = () => {
-      const raiz = raizAImprimir(leitorEmFoco);
-      if (raiz === undefined || raiz.contains(conteiner.current)) montarTudo();
-    };
-    window.addEventListener("beforeprint", aoImprimir);
-    const pararDeOuvir = instancia.aoMontarTudo(montarTudo);
-    return () => {
-      window.removeEventListener("beforeprint", aoImprimir);
-      pararDeOuvir();
-    };
+    return instancia.aoMontarTudo(montarTudo);
   }, [blocos, instancia]);
 
   // O índice pede um item ou um artigo: o bloco dele se monta já, e o texto rola até o elemento. Os

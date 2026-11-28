@@ -33,7 +33,7 @@ function Reuniao() {
         const cursos = [...new Set(r.itens.flatMap((i) => (i.curso === null ? [] : [`ifpr://curso/${i.curso}`])))];
         return (
           <div className="space-y-6">
-            <div className="nao-imprimir -mt-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="-mt-2 flex flex-wrap items-center justify-between gap-2">
               <Button size="sm" variant="ghost" className="-ml-2.5" onClick={() => roteador.history.back()}>
                 <ArrowLeftIcon /> Voltar
               </Button>

@@ -24,7 +24,7 @@ import {
   visivel,
 } from "../leitor/busca.ts";
 import { pintar } from "../leitor/destaques.ts";
-import { ATRIBUTO_RAIZ, type InstanciaLeitor, raizAImprimir } from "../leitor/instancia.ts";
+import { ATRIBUTO_RAIZ, type InstanciaLeitor } from "../leitor/instancia.ts";
 import { rolarAte, textosDe } from "../leitor/realce.ts";
 import { Button } from "./ui/button.tsx";
 import { Input } from "./ui/input.tsx";
@@ -69,15 +69,6 @@ function donoDoAtalho(): Dono | undefined {
   );
 }
 
-/** A raiz do leitor em foco (o dono do atalho), para o ⌘P imprimir só ele (`raizAImprimir`). */
-export function leitorEmFoco(): Element | undefined {
-  const area = donoDoAtalho()?.area.current;
-  return area == null ? undefined : raizDe(area);
-}
-
-// Um leitor sem `Documento` (uma ficha) também se marca para o ⌘P.
-const aoImprimir = () => void raizAImprimir(leitorEmFoco);
-
 const aoTeclar = (e: KeyboardEvent) => {
   if (!eAtalhoBusca(e)) return;
   const dono = donoDoAtalho();
@@ -102,7 +93,6 @@ const aoUsar = (e: Event) => {
 function registrar(dono: Dono): () => void {
   if (donos.size === 0) {
     window.addEventListener("keydown", aoTeclar);
-    window.addEventListener("beforeprint", aoImprimir);
     document.addEventListener("focusin", aoUsar, true);
     document.addEventListener("pointerdown", aoUsar, true);
   }
@@ -111,7 +101,6 @@ function registrar(dono: Dono): () => void {
     donos.delete(dono);
     if (donos.size > 0) return;
     window.removeEventListener("keydown", aoTeclar);
-    window.removeEventListener("beforeprint", aoImprimir);
     document.removeEventListener("focusin", aoUsar, true);
     document.removeEventListener("pointerdown", aoUsar, true);
   };
@@ -258,7 +247,7 @@ export function BuscaPainel({
 
   return (
     <search
-      className={cn("nao-imprimir flex items-center gap-1 border-border border-b px-3 py-2", className)}
+      className={cn("flex items-center gap-1 border-border border-b px-3 py-2", className)}
       // Esc fecha a busca também com o foco nos botões dela, antes de chegar ao painel (que recolheria).
       onKeyDown={(e) => {
         if (e.key !== "Escape" || e.nativeEvent.isComposing || e.defaultPrevented) return;

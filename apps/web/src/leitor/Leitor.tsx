@@ -90,7 +90,7 @@ function BotaoCopiar({ texto }: { readonly texto: string | null }) {
   };
   return (
     <div className="flex items-center gap-2">
-      <Button size="sm" variant="outline" disabled={texto === null} onClick={copiar} className="nao-imprimir">
+      <Button size="sm" variant="outline" disabled={texto === null} onClick={copiar}>
         {estado === "copiada" ? <CheckIcon /> : <ClipboardCopyIcon />}
         {estado === "copiada" ? "Citação copiada" : "Copiar citação"}
       </Button>
@@ -174,7 +174,7 @@ function MetadadosEditoriais({
   const blocos = EDITORIAIS.filter(({ campo }) => norma[campo].length > 0);
   if (blocos.length === 0) return null;
   return (
-    <div className="nao-imprimir divide-y divide-border rounded-xl border border-border">
+    <div className="divide-y divide-border rounded-xl border border-border">
       {blocos.map(({ campo, titulo, nota }) => (
         <details key={campo} className="group px-4 py-2.5">
           <summary className="cursor-pointer font-semibold text-small">
@@ -207,7 +207,7 @@ function AlteracoesAnotadas({
   const { irPara } = useInstanciaLeitor();
   if (alteracoes.length === 0) return null;
   return (
-    <details className="nao-imprimir rounded-xl border border-border px-4 py-2.5">
+    <details className="rounded-xl border border-border px-4 py-2.5">
       <summary className="cursor-pointer font-semibold text-small">
         Alterada por <span className="font-normal text-muted-foreground">({alteracoes.length})</span>
       </summary>
@@ -339,7 +339,7 @@ function LeitorNorma({
           relacoes.saida.length > 0 ||
           relacoes.entrada.length > 0;
         return (
-          <article aria-label="Norma" className="leitor-impressao space-y-8">
+          <article aria-label="Norma" className="space-y-8">
             <Cabecalho
               tipo={
                 [norma.tipo_documento, norma.orgao]
@@ -364,7 +364,7 @@ function LeitorNorma({
                       key={`${c.a}:${c.b}`}
                       to="/explorar/comparar"
                       search={{ a: c.a, b: c.b }}
-                      className="nao-imprimir inline-flex items-center gap-1 link-grifo text-small"
+                      className="inline-flex items-center gap-1 link-grifo text-small"
                     >
                       <Columns2Icon aria-hidden className="size-3.5" /> {c.titulo}
                     </Link>
@@ -514,7 +514,7 @@ function LeitorPpc({
         const matrizesComUrl = (suap?.matrizes ?? []).filter((m) => m.url !== null);
         const temLateral = secoes.length > 0 || suap !== null;
         return (
-          <article aria-label="PPC" className="leitor-impressao space-y-8">
+          <article aria-label="PPC" className="space-y-8">
             <Cabecalho
               tipo="Projeto Pedagógico de Curso"
               titulo={ppc.nome}

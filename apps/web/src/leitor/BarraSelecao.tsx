@@ -155,7 +155,7 @@ export function BarraSelecao({
       role="toolbar"
       aria-label="Trecho selecionado"
       data-barra-selecao
-      className={`nao-imprimir absolute z-20 flex max-w-full -translate-x-1/2 flex-wrap justify-center gap-1 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg ${selecao.abaixo ? "" : "-translate-y-full"}`}
+      className={`absolute z-20 flex max-w-full -translate-x-1/2 flex-wrap justify-center gap-1 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg ${selecao.abaixo ? "" : "-translate-y-full"}`}
       style={{ left: x, top: Math.max(0, selecao.y) }}
       // A barra não tira a seleção ao ser clicada.
       onMouseDown={(evento) => evento.preventDefault()}

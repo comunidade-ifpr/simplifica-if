@@ -175,7 +175,7 @@ function Painel({ estado, painel }: { readonly estado: EstadoPainel; readonly pa
           aria-label="Painel ao lado"
           className="@container/painel flex h-full w-full flex-col border-border border-l bg-card text-card-foreground outline-none"
         >
-          <header className="nao-imprimir flex items-center gap-1 border-border border-b px-2 py-1.5">
+          <header className="flex items-center gap-1 border-border border-b px-2 py-1.5">
             {compacta ? (
               // Na coluna de 320 a 380 px, só o ícone: o nome fica para o leitor de tela e na dica.
               <Button
@@ -272,6 +272,7 @@ function Painel({ estado, painel }: { readonly estado: EstadoPainel; readonly pa
             {estado.aba === "ler" ? (
               <PainelLeitura
                 historico={estado.historico}
+                abertos={estado.abertos}
                 marcados={estado.marcados}
                 // O "outro" lugar do Ler é a tela; no modo compacto, só o painel cabe na coluna.
                 aoAbrirLink={(link, onde) =>
@@ -283,6 +284,7 @@ function Painel({ estado, painel }: { readonly estado: EstadoPainel; readonly pa
                 aoAvancar={painel.avancar}
                 aoMarcar={painel.marcar}
                 aoDesmarcar={painel.desmarcar}
+                aoFecharDocumento={painel.fecharDocumento}
                 aoTelaCheia={(link) => {
                   painel.fechar();
                   abrirLink(link, "tela");
@@ -344,7 +346,7 @@ function AbaPasta({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {duas && outra !== undefined ? (
-        <div className="nao-imprimir flex flex-wrap items-center gap-x-2 gap-y-1 border-border border-b px-3 py-1.5 text-small">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-border border-b px-3 py-1.5 text-small">
           <span className="text-muted-foreground">
             {id === conversaDoPainel ? "Pasta da conversa ao lado" : "Pasta da conversa da tela"}
           </span>

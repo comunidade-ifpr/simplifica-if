@@ -107,7 +107,7 @@ export function ColunaLateral({
         aria-valuemin={MINIMA}
         tabIndex={0}
         title="Arraste para ajustar a largura (duplo clique volta à padrão)"
-        className="nao-imprimir group absolute inset-y-0 -left-1.5 z-10 flex w-3 cursor-col-resize justify-center outline-none"
+        className="group absolute inset-y-0 -left-1.5 z-10 flex w-3 cursor-col-resize justify-center outline-none"
         onPointerDown={aoApertar}
         onPointerMove={aoMover}
         onPointerUp={aoSoltar}

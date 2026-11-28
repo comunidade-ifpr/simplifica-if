@@ -68,7 +68,7 @@ function Pagina() {
   }
   return (
     <div className="space-y-6" data-leitor="">
-      <div className="nao-imprimir -mt-2 flex flex-wrap items-center justify-between gap-2">
+      <div className="-mt-2 flex flex-wrap items-center justify-between gap-2">
         <Button size="sm" variant="ghost" className="-ml-2.5" onClick={() => roteador.history.back()}>
           <ArrowLeftIcon /> Voltar
         </Button>

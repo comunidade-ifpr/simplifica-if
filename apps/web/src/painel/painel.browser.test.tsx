@@ -236,41 +236,50 @@ it("o erro de uma tela fica na área dela: o cabeçalho e o painel continuam de 
   await page.getByRole("link", { name: "Início", exact: true }).click();
   await expect.element(aviso).toBeVisible();
   falha.ligada = false;
-  await page.getByRole("link", { name: "Explorar" }).click();
+  await page.getByRole("link", { name: "Explorar o IFPR" }).click();
   await expect.element(aviso).not.toBeInTheDocument();
   await expect.element(painel).toBeVisible();
 });
 
-it("documentos marcados: o marcador guarda o documento na prateleira, para voltar com um clique", async () => {
+it("documentos abertos e fixados: cada documento vira aba, fixar leva ao início e fechar troca para a vizinha", async () => {
   await page.viewport(1600, 900);
   await using _app = await montarApp(servidor, "/explorar/normas");
   await linhaDaNorma("Resolução CNE/CP nº 2/2026").click({ modifiers: ["Alt"] });
   const painel = painelAoLado();
   await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  const marcador = painel.getByRole("button", { name: "Marcar este documento" });
-  await expect.element(marcador).toHaveAttribute("aria-pressed", "false");
-  await marcador.click();
-  await expect.element(marcador).toHaveAttribute("aria-pressed", "true");
-  const prateleira = painel.getByRole("navigation", { name: "Documentos marcados" });
-  await expect.element(prateleira.getByRole("button", { name: "Res. CNE/CP 2/2026" })).toBeVisible();
+  const abas = painel.getByRole("navigation", { name: "Documentos abertos" });
+  await expect.element(abas.getByRole("button", { name: "Res. CNE/CP 2/2026" })).toBeVisible();
 
-  // Outra norma no painel: o marcador dela começa solto; marcada, a prateleira tem as duas.
+  // Outra norma no painel: as duas aparecem como abas abertas.
   await linhaDaNorma("Resolução CNE/CP nº 1/2021").click({ modifiers: ["Alt"] });
   await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
-  await expect.element(marcador).toHaveAttribute("aria-pressed", "false");
-  await marcador.click();
-  await expect.element(prateleira.getByRole("listitem")).toHaveLength(2);
+  await expect.element(abas.getByRole("listitem")).toHaveLength(2);
+
+  // Fixar a segunda norma leva a aba dela para o início, com o ícone de desafixar.
+  const fixar = painel.getByRole("button", { name: "Fixar este documento" });
+  await expect.element(fixar).toHaveAttribute("aria-pressed", "false");
+  await fixar.click();
+  await expect.element(fixar).toHaveAttribute("aria-pressed", "true");
+  await expect.element(abas.getByRole("listitem").nth(0)).toHaveTextContent("Res. CNE/CP 1/2021");
+  await expect.element(abas.getByRole("button", { name: "Desafixar Res. CNE/CP 1/2021" })).toBeVisible();
   semIngles();
 
-  // Um clique na prateleira volta à primeira.
-  await prateleira.getByRole("button", { name: "Res. CNE/CP 2/2026" }).click();
+  // Um clique na aba da primeira volta a ela.
+  await abas.getByRole("button", { name: "Res. CNE/CP 2/2026" }).click();
   await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  await expect.element(marcador).toHaveAttribute("aria-pressed", "true");
+  await expect.element(fixar).toHaveAttribute("aria-pressed", "false");
 
-  // Desmarcar pela prateleira tira o documento dela.
-  await prateleira.getByRole("button", { name: "Desmarcar Res. CNE/CP 2/2026" }).click();
-  await expect.element(prateleira.getByRole("listitem")).toHaveLength(1);
-  await expect.element(marcador).toHaveAttribute("aria-pressed", "false");
+  // Fechar a aba ativa volta para a outra aba aberta.
+  await abas.getByRole("button", { name: "Fechar Res. CNE/CP 2/2026" }).click();
+  await expect.element(abas.getByRole("listitem")).toHaveLength(1);
+  await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
+  await expect.element(fixar).toHaveAttribute("aria-pressed", "true");
+
+  // Desafixar pela aba mantém o documento aberto, agora com o botão de fechar.
+  await abas.getByRole("button", { name: "Desafixar Res. CNE/CP 1/2021" }).click();
+  await expect.element(fixar).toHaveAttribute("aria-pressed", "false");
+  await expect.element(abas.getByRole("listitem")).toHaveLength(1);
+  await expect.element(abas.getByRole("button", { name: "Fechar Res. CNE/CP 1/2021" })).toBeVisible();
 });
 
 it("conversa: os chips abrem no painel do app, que fica aberto ao trocar de conversa; a aba Pasta mostra a da tela", async () => {
@@ -283,7 +292,9 @@ it("conversa: os chips abrem no painel do app, que fica aberto ao trocar de conv
   const chip = page.getByRole("button", { name: "Res. CNE/CP nº 2/2026, art. 28, XVIII" });
   await chip.click();
   const painel = painelAoLado();
-  await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
+  const abaNorma = () =>
+    painel.getByRole("navigation", { name: "Documentos abertos" }).getByRole("button", { name: "Res. CNE/CP 2/2026" });
+  await expect.element(abaNorma()).toHaveAttribute("title", "Res. CNE/CP 2/2026, art. 28, XVIII");
   expect(app.roteador.state.location.pathname).toBe("/conversa");
   const primeira = app.roteador.state.location.search;
 
@@ -294,7 +305,7 @@ it("conversa: os chips abrem no painel do app, que fica aberto ao trocar de conv
   await expect
     .element(page.getByRole("log", { name: "Mensagens" }).getByText("Quais normas tratam do estágio?"))
     .toBeVisible();
-  await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
+  await expect.element(abaNorma()).toHaveAttribute("title", "Res. CNE/CP 2/2026, art. 28, XVIII");
 
   // "Pasta da tarefa" abre a aba Pasta, com a pasta da conversa da tela.
   await page.getByRole("button", { name: "Pasta da tarefa" }).click();
@@ -310,7 +321,7 @@ it("conversa: os chips abrem no painel do app, que fica aberto ao trocar de conv
   await expect.element(pasta.getByText(/^Documentos › Simplifica IF › Abra no leitor/)).toBeVisible();
   // a aba Ler guardou a norma
   await painel.getByRole("tab", { name: "Ler" }).click();
-  await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
+  await expect.element(abaNorma()).toHaveAttribute("title", "Res. CNE/CP 2/2026, art. 28, XVIII");
 
   // ⌥-clique no chip abre na página do Explorar.
   await chip.click({ modifiers: ["Alt"] });

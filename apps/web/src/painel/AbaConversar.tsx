@@ -83,7 +83,7 @@ export function AbaConversar() {
   }
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="nao-imprimir flex items-center gap-1 border-border border-b px-2 py-1">
+      <div className="flex items-center gap-1 border-border border-b px-2 py-1">
         <Button size="sm" variant="ghost" onClick={painel.novaConversa} disabled={conversa.id === undefined}>
           <PlusIcon /> Nova conversa
         </Button>

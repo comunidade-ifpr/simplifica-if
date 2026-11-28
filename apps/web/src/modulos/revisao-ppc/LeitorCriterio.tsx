@@ -169,7 +169,7 @@ export function LeitorCriterio({
   return (
     <ComCarga carga={lido} titulo="Não foi possível ler este critério">
       {(ficha) => (
-        <article aria-label="Critério da revisão" className="@container leitor-impressao flex flex-col gap-5">
+        <article aria-label="Critério da revisão" className="@container flex flex-col gap-5">
           <header className="flex flex-col gap-1.5">
             <p className="font-semibold text-muted-foreground text-small">Critério da tarefa “Revisar um PPC”</p>
             <h2 className="break-words text-title">{ficha.titulo}</h2>

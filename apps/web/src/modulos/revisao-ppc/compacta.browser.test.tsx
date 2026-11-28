@@ -68,7 +68,7 @@ it("Acompanhar no Word: a coluna ao lado do Word, com a lista, o salvamento, a c
   const barra = page.getByRole("banner");
   await expect.element(barra.getByText("Acompanhando o PPC")).toBeVisible();
   expect(barra.element().getAttribute("data-botoes")).toBe("overlay");
-  await expect.element(page.getByRole("link", { name: "Explorar" })).not.toBeInTheDocument();
+  await expect.element(page.getByRole("link", { name: "Explorar o IFPR" })).not.toBeInTheDocument();
   const alfinete = page.getByRole("button", { name: "Sempre por cima" });
   await expect.element(alfinete).toHaveAttribute("aria-pressed", "true");
   await alfinete.click();
@@ -165,7 +165,7 @@ it("Acompanhar no Word: a coluna ao lado do Word, com a lista, o salvamento, a c
   await page.viewport(1280, 900);
   await vi.waitFor(() => expect(app.roteador.state.location.search).not.toHaveProperty("compacto"));
   await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
-  await expect.element(page.getByRole("link", { name: "Explorar" })).toBeVisible();
+  await expect.element(page.getByRole("link", { name: "Explorar o IFPR" })).toBeVisible();
   // Já acompanhando, "Acompanhar no Word" abre o mesmo arquivo e volta à coluna, sem outra cópia.
   abrirDocumento.mockClear();
   await page.getByRole("button", { name: "Acompanhar no Word" }).click();
@@ -215,14 +215,11 @@ it("no compacto: a bandeja na moldura leva à conversa ao lado no painel, sem sa
   expect(achadosDaTela()).toEqual([]);
   await mensagens.getByRole("button", { name: "Permitir" }).click();
 
-  // A norma da resposta abre no Ler; o ⌥-clique no documento marcado fica no painel, na coluna.
+  // A norma da resposta abre no Ler; o ⌥-clique na aba fixada fica no painel, na coluna.
   await mensagens.getByRole("button", { name: "Res. CNE/CP nº 1/2021" }).click();
-  await painel.getByRole("button", { name: "Marcar este documento" }).click();
-  const marcados = painel.getByRole("navigation", { name: "Documentos marcados" });
-  await marcados
-    .getByRole("button")
-    .first()
-    .click({ modifiers: ["Alt"] });
+  await painel.getByRole("button", { name: "Fixar este documento" }).click();
+  const abas = painel.getByRole("navigation", { name: "Documentos abertos" });
+  await abas.getByRole("button", { name: "Res. CNE/CP 1/2021" }).click({ modifiers: ["Alt"] });
   await expect.element(painel.getByRole("tab", { name: "Ler" })).toHaveAttribute("aria-selected", "true");
   expect(app.roteador.state.location.pathname).toBe("/revisao-ppc");
   expect(compacta).not.toHaveBeenCalledWith(false);
@@ -286,7 +283,7 @@ it("ao entrar, o painel recolhe e o rascunho de outra conversa fica; a ficha do 
   await app.roteador.navigate({ to: "/" });
   await vi.waitFor(() => expect(compacta).toHaveBeenLastCalledWith(false));
   expect(app.contexto.janela.obter().ligada).toBe(false);
-  await expect.element(page.getByRole("link", { name: "Explorar" })).toBeVisible();
+  await expect.element(page.getByRole("link", { name: "Explorar o IFPR" })).toBeVisible();
 });
 
 it("a janela que não sai da tela cheia: o modo não liga e avisa; Voltar no histórico sai da revisão e do modo", async () => {
@@ -317,7 +314,7 @@ it("a janela que não sai da tela cheia: o modo não liga e avisa; Voltar no his
   await vi.waitFor(() => expect(app.roteador.state.location.search).toEqual({}));
   await vi.waitFor(() => expect(compacta).toHaveBeenLastCalledWith(false));
   expect(app.contexto.janela.obter().ligada).toBe(false);
-  await expect.element(page.getByRole("link", { name: "Explorar" })).toBeVisible();
+  await expect.element(page.getByRole("link", { name: "Explorar o IFPR" })).toBeVisible();
 });
 
 it("a página recarregada com compacto=1, sem a janela compacta, volta à tela inteira", async () => {

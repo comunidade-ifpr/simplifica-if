@@ -141,7 +141,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
         const divergencias = (d.fatos?.cruzamento ?? []).filter((c) => nomeResultado(c.resultado).alerta);
         const consepe = indice.fase === "lido" ? itensDoConsepe(indice.valor.reunioes, (i) => i.curso === id) : [];
         return (
-          <article aria-label="Curso" className="leitor-impressao space-y-6">
+          <article aria-label="Curso" className="space-y-6">
             <Cabecalho
               tipo="Curso"
               titulo={d.curso.nome}
@@ -523,7 +523,7 @@ export function FichaCampus({ id, aoAbrirLink }: { readonly id: string; readonly
           porNivel.set(nivel, [...(porNivel.get(nivel) ?? []), c]);
         }
         return (
-          <article aria-label="Campus" className="leitor-impressao space-y-6">
+          <article aria-label="Campus" className="space-y-6">
             <Cabecalho
               tipo="Campus"
               titulo={`Campus ${d.campus.nome}`}
@@ -598,7 +598,7 @@ export function FichaCnct({ slug, aoAbrirLink }: { readonly slug: string; readon
   return (
     <ComCarga carga={lido} titulo="Não foi possível ler este curso do catálogo">
       {({ dados: d }) => (
-        <article aria-label="Curso do catálogo" className="leitor-impressao space-y-6">
+        <article aria-label="Curso do catálogo" className="space-y-6">
           <Cabecalho tipo="Catálogo Nacional de Cursos Técnicos" titulo={d.cnct.denominacao}>
             <dl className="space-y-0.5">
               {d.cnct.eixo ? <Linha rotulo="Eixo tecnológico">{d.cnct.eixo}</Linha> : null}

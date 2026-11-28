@@ -8,6 +8,7 @@ const PAINEL: PainelGuardado = {
   aba: "ler",
   trilha: { links: ["ifpr://norma/a", "ifpr://revisao-ppc/apagada/1#p-2", "ifpr://norma/b"], posicao: 1 },
   marcados: ["ifpr://revisao-ppc/apagada/1", "ifpr://revisao-ppc/viva/1", "ifpr://norma/a"],
+  abertos: ["ifpr://norma/a", "ifpr://revisao-ppc/apagada/1#p-2", "ifpr://norma/b"],
   preso: true,
   conversa: { id: "c1", origem: { chave: "revisao-ppc:apagada", ia: "claude" } },
 };
@@ -54,6 +55,7 @@ describe("o que volta ao reabrir", () => {
     assert.deepStrictEqual(conferida.avisos, ["Esta revisão foi apagada"]);
     assert.deepStrictEqual(conferida.painel.trilha, { links: ["ifpr://norma/a", "ifpr://norma/b"], posicao: 0 });
     assert.deepStrictEqual(conferida.painel.marcados, ["ifpr://revisao-ppc/viva/1", "ifpr://norma/a"]);
+    assert.deepStrictEqual(conferida.painel.abertos, ["ifpr://norma/a", "ifpr://norma/b"]);
     // a conversa segue, como livre
     assert.deepStrictEqual(conferida.painel.conversa, { id: "c1" });
     // o Ler mostrava o PPC apagado: o painel volta recolhido
@@ -66,6 +68,7 @@ describe("o que volta ao reabrir", () => {
       ...PAINEL,
       trilha: { links: ["ifpr://norma/a", "ifpr://revisao-ppc/viva/1"], posicao: 1 },
       marcados: ["ifpr://norma/a"],
+      abertos: ["ifpr://norma/a", "ifpr://revisao-ppc/viva/1"],
       conversa: { id: "c1", origem: { chave: "revisao-ppc:viva" } },
     };
     const conferida = conferir("/explorar", painel);
@@ -96,11 +99,13 @@ describe("o que se grava cabe nas preferências", () => {
       ...PAINEL,
       trilha: { links: ["ifpr://norma/a", longo, "ifpr://norma/b"], posicao: 1 },
       marcados: [longo, "ifpr://norma/a"],
+      abertos: ["ifpr://norma/a", longo, "ifpr://norma/b"],
     };
     const cabe = continuidadeQueCabe({ rota: `/explorar/buscar?q=${"y".repeat(MAXIMO_TEXTO_CONTINUIDADE)}`, painel });
     assert.strictEqual(cabe.rota, "/");
     assert.deepStrictEqual(cabe.painel.trilha, { links: ["ifpr://norma/a", "ifpr://norma/b"], posicao: 0 });
     assert.deepStrictEqual(cabe.painel.marcados, ["ifpr://norma/a"]);
+    assert.deepStrictEqual(cabe.painel.abertos, ["ifpr://norma/a", "ifpr://norma/b"]);
     assert.isTrue(cabe.painel.preso);
   });
 });

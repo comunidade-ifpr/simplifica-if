@@ -104,7 +104,7 @@ export function LinkExterno({ href, children }: { readonly href: string; readonl
       href={href}
       rel="noopener noreferrer"
       target="_blank"
-      className="nao-imprimir inline-flex items-center gap-1 link-grifo text-small"
+      className="inline-flex items-center gap-1 link-grifo text-small"
       onClick={(evento) => {
         evento.preventDefault();
         abrirFora(href);
@@ -133,7 +133,7 @@ export function BotaoCodigoSuap({ codigo, prefixo = true }: { readonly codigo: s
       onClick={copiar}
       title={`Copiar código SUAP ${codigo}`}
       aria-label={copiado ? `Código SUAP ${codigo} copiado` : `Copiar código SUAP ${codigo}`}
-      className="nao-imprimir inline-flex items-center gap-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-foreground text-micro hover:border-ring"
+      className="inline-flex items-center gap-1 rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-foreground text-micro hover:border-ring"
     >
       <span>{prefixo ? `SUAP ${codigo}` : codigo}</span>
       {copiado ? (
@@ -200,7 +200,7 @@ export function Corpo({ lateral, children }: { readonly lateral?: ReactNode; rea
   return (
     <div className="@container">
       <div className="grid gap-x-12 gap-y-6 @4xl:grid-cols-[minmax(0,1fr)_19rem]">
-        <aside className="nao-imprimir space-y-6 @4xl:sticky @4xl:top-0 @4xl:col-start-2 @4xl:row-start-1 @4xl:max-h-[calc(100dvh-9rem)] @4xl:self-start @4xl:overflow-y-auto @4xl:border-border @4xl:border-l @4xl:pl-6">
+        <aside className="space-y-6 @4xl:sticky @4xl:top-0 @4xl:col-start-2 @4xl:row-start-1 @4xl:max-h-[calc(100dvh-9rem)] @4xl:self-start @4xl:overflow-y-auto @4xl:border-border @4xl:border-l @4xl:pl-6">
           {lateral}
         </aside>
         <div className="min-w-0 space-y-4 @4xl:col-start-1 @4xl:row-start-1">{children}</div>
@@ -213,7 +213,7 @@ export function Corpo({ lateral, children }: { readonly lateral?: ReactNode; rea
 export function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonly alvo: string }) {
   const instancia = useInstanciaLeitor();
   return (
-    <div className="nao-imprimir flex flex-wrap items-center gap-2 rounded-md bg-warning/10 px-3 py-2 text-sm">
+    <div className="flex flex-wrap items-center gap-2 rounded-md bg-warning/10 px-3 py-2 text-sm">
       <span className="min-w-0 flex-1">
         Trecho citado: <strong>{rotulo}</strong>, destacado no texto.
       </span>

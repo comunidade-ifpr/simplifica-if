@@ -74,7 +74,7 @@ it("reabrir volta à última rota e ao painel (a trilha, os marcados, a aba); �
     await linha.click({ modifiers: ["Alt"] });
     const painel = painelAoLado();
     await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-    await painel.getByRole("button", { name: "Marcar este documento" }).click();
+    await painel.getByRole("button", { name: "Fixar este documento" }).click();
     await page.getByRole("main").getByRole("link", { name: "Resolução CNE/CP nº 1/2021", exact: true }).click();
     await expect.poll(() => app.roteador.state.location.pathname).toBe("/explorar/ver");
   }
@@ -85,7 +85,7 @@ it("reabrir volta à última rota e ao painel (a trilha, os marcados, a aba); �
   expect(app.roteador.state.location.search).toMatchObject({ link: "ifpr://norma/br/cne-cp/res/2021/1" });
   const painel = painelAoLado();
   await expect.element(painel.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  await expect.element(painel.getByRole("navigation", { name: "Documentos marcados" })).toBeVisible();
+  await expect.element(painel.getByRole("navigation", { name: "Documentos abertos" })).toBeVisible();
   expect(app.contexto.painel.obter().marcados).toEqual([NORMA_2026]);
   // Reaberto sem gesto da pessoa, o painel não toma o foco da tela.
   expect(painel.element().contains(document.activeElement)).toBe(false);

@@ -5,16 +5,14 @@
  * - os pedidos ao `Documento` (ir a um item do índice, `irPara`; montar todos os blocos para buscar,
  *   `montarTudo`) vão só a quem ouve a instância, não pela janela;
  * - os `id` dos dispositivos e seções levam o prefixo da instância (`painel-art28`), e quem procura um
- *   deles procura dentro da raiz do leitor (`data-leitor`), com o prefixo;
- * - imprimir pela instância imprime só o que está nela, e o ⌘P, só o leitor em foco (`index.css`,
- *   `data-imprimir`).
+ *   deles procura dentro da raiz do leitor (`data-leitor`), com o prefixo.
  *
  * Sem provedor, vale a instância padrão, sem prefixo: um leitor só, como numa página.
  */
 import { createContext, use } from "react";
 import type { Destino } from "./sumario.ts";
 
-/** O atributo da raiz de um leitor: as buscas por `id` e a impressão ficam dentro dela. */
+/** O atributo da raiz de um leitor: as buscas por `id` ficam dentro dela. */
 export const ATRIBUTO_RAIZ = "data-leitor";
 
 export class InstanciaLeitor {
@@ -69,39 +67,3 @@ const PADRAO = new InstanciaLeitor("");
 export const ContextoInstancia = createContext<InstanciaLeitor>(PADRAO);
 
 export const useInstanciaLeitor = (): InstanciaLeitor => use(ContextoInstancia);
-
-/** Marca os artigos imprimíveis de `raiz` (`data-imprimir`) até o fim da impressão; diz se havia algum. */
-function marcarParaImprimir(raiz: Element): boolean {
-  const artigos = [...raiz.querySelectorAll(".leitor-impressao")];
-  if (artigos.length === 0) return false;
-  for (const artigo of artigos) artigo.setAttribute("data-imprimir", "");
-  window.addEventListener(
-    "afterprint",
-    () => {
-      for (const artigo of artigos) artigo.removeAttribute("data-imprimir");
-    },
-    { once: true },
-  );
-  return true;
-}
-
-/**
- * Imprime só o que está no leitor de `raiz`, e o `index.css` esconde o resto, inclusive o outro leitor.
- * Sem texto pronto nele (lendo na base, ou com erro), não imprime: sairia o outro leitor no lugar.
- */
-export function imprimirLeitor(raiz: Element | null): void {
-  if (raiz !== null && marcarParaImprimir(raiz)) window.print();
-}
-
-/**
- * A raiz do leitor que vai para o papel: a que pediu (`imprimirLeitor`) ou, no ⌘P/Ctrl+P e no menu do
- * navegador, `emFoco()` (o mesmo leitor do ⌘F: em foco ou o último usado), marcada aqui até o fim da
- * impressão. Chamada no `beforeprint` de cada leitor, a primeira marca e as outras acham a marca.
- * `undefined` quando nenhum se marca: sai todo artigo imprimível.
- */
-export function raizAImprimir(emFoco: () => Element | undefined): Element | undefined {
-  const marcado = document.querySelector("[data-imprimir]");
-  if (marcado !== null) return marcado.closest(`[${ATRIBUTO_RAIZ}]`) ?? undefined;
-  const raiz = emFoco();
-  return raiz !== undefined && marcarParaImprimir(raiz) ? raiz : undefined;
-}

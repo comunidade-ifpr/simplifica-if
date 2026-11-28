@@ -84,8 +84,29 @@ describe("ControlePainel", () => {
     assert.strictEqual(painel.obter().aba, "ler");
   });
 
-  it("documentos marcados: um por documento, até o máximo, e saem com o documento esquecido", () => {
+  it("documentos abertos e fixados: uma aba por documento, fixar mantém no início, desafixar não fecha e fechar passa à vizinha", () => {
     const painel = new ControlePainel();
+    painel.abrirLink("ifpr://norma/a#art1");
+    painel.abrirLink("ifpr://norma/a#art2");
+    assert.deepStrictEqual(painel.obter().abertos, ["ifpr://norma/a#art2"]);
+
+    painel.abrirLink("ifpr://norma/b");
+    painel.abrirLink("ifpr://norma/c");
+    assert.deepStrictEqual(painel.obter().abertos, ["ifpr://norma/a#art2", "ifpr://norma/b", "ifpr://norma/c"]);
+
+    // fechar aba inativa não troca o documento atual
+    painel.fecharDocumento("ifpr://norma/b");
+    assert.deepStrictEqual(painel.obter().abertos, ["ifpr://norma/a#art2", "ifpr://norma/c"]);
+    assert.strictEqual(linkAtual(painel.obter().historico), "ifpr://norma/c");
+
+    // fechar a aba ativa passa à vizinha; fechar a última limpa o Ler
+    painel.fecharDocumento("ifpr://norma/c");
+    assert.strictEqual(linkAtual(painel.obter().historico), "ifpr://norma/a#art2");
+    painel.fecharDocumento("ifpr://norma/a");
+    assert.deepStrictEqual(painel.obter().abertos, []);
+    assert.isUndefined(linkAtual(painel.obter().historico));
+
+    // fixados: um por documento, até o máximo, desafixar mantém a aba aberta, e saem com o documento esquecido
     painel.marcar("ifpr://norma/a#art1");
     painel.marcar("ifpr://norma/a#art2");
     assert.deepStrictEqual(painel.obter().marcados, ["ifpr://norma/a#art2"]);
@@ -97,9 +118,31 @@ describe("ControlePainel", () => {
     assert.include(painel.obter().marcados, "ifpr://norma/a#art3");
     painel.desmarcar("ifpr://norma/a");
     assert.notInclude(painel.obter().marcados, "ifpr://norma/a#art3");
+    assert.include(painel.obter().abertos, "ifpr://norma/a#art3");
     painel.marcar("ifpr://revisao-ppc/x/1");
     painel.esquecerLinks((link) => link.startsWith("ifpr://revisao-ppc/x/"));
     assert.notInclude(painel.obter().marcados, "ifpr://revisao-ppc/x/1");
+    assert.notInclude(painel.obter().abertos, "ifpr://revisao-ppc/x/1");
+
+    // voltar e avançar mantêm o trecho da aba fixada sincronizado
+    const nav = new ControlePainel();
+    nav.abrirLink("ifpr://norma/a#art10");
+    nav.marcar("ifpr://norma/a#art10");
+    nav.abrirLink("ifpr://norma/a#art28");
+    assert.deepStrictEqual(nav.obter().marcados, ["ifpr://norma/a#art28"]);
+    nav.voltar();
+    assert.deepStrictEqual(nav.obter().marcados, ["ifpr://norma/a#art10"]);
+    nav.avancar();
+    assert.deepStrictEqual(nav.obter().marcados, ["ifpr://norma/a#art28"]);
+
+    // esquecer o documento atual garante que o documento para o qual o histórico recua esteja nas abas
+    const recuo = new ControlePainel();
+    recuo.abrirLink("ifpr://norma/a");
+    recuo.abrirLink("ifpr://revisao-ppc/x/1");
+    recuo.fecharDocumento("ifpr://norma/a");
+    recuo.esquecerLinks((link) => link.startsWith("ifpr://revisao-ppc/x/"));
+    assert.strictEqual(linkAtual(recuo.obter().historico), "ifpr://norma/a");
+    assert.deepStrictEqual(recuo.obter().abertos, ["ifpr://norma/a"]);
   });
 
   it("o que volta ao reabrir: a trilha (só os últimos links), os marcados, a aba e a conversa já aberta", () => {

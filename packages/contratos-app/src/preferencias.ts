@@ -195,8 +195,8 @@ export type Perfil = typeof Perfil.Type;
 
 /**
  * O painel do app que volta ao reabrir (`docs/plans/multitarefa.md`, "Continuidade"): se estava aberto, a
- * aba, a trilha do Ler (os links e o atual), os documentos marcados, se estava preso ao lado e a conversa da
- * aba Conversar (o id e, se a abriu uma tela com conversa própria, a origem dela, só como dado).
+ * aba, a trilha do Ler (os links e o atual), os documentos abertos e os fixados, se estava preso ao lado e
+ * a conversa da aba Conversar (o id e, se a abriu uma tela com conversa própria, a origem dela, só como dado).
  */
 /** O tamanho máximo da rota e de cada link guardados na continuidade. */
 export const MAXIMO_TEXTO_CONTINUIDADE = 4_000;
@@ -212,6 +212,9 @@ export const PainelGuardado = Schema.Struct({
   }),
   marcados: Schema.Array(Schema.String.check(Schema.isMaxLength(MAXIMO_TEXTO_CONTINUIDADE))).check(
     Schema.isMaxLength(5),
+  ),
+  abertos: Schema.optionalKey(
+    Schema.Array(Schema.String.check(Schema.isMaxLength(MAXIMO_TEXTO_CONTINUIDADE))).check(Schema.isMaxLength(50)),
   ),
   preso: Schema.Boolean,
   conversa: Schema.optionalKey(

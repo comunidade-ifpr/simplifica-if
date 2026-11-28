@@ -64,7 +64,7 @@ function LeitorPpc({
         const atual = fragmento === null ? undefined : doc.ancoras.find((a) => a.id === fragmento);
         const secoes = doc.ancoras.filter((a) => a.tipo !== "pendencia");
         return (
-          <article aria-label="PPC em revisão" className="leitor-impressao space-y-4">
+          <article aria-label="PPC em revisão" className="space-y-4">
             <Cabecalho
               tipo="PPC em revisão"
               titulo={doc.titulo}
@@ -77,7 +77,7 @@ function LeitorPpc({
             />
 
             {secoes.length > 0 ? (
-              <details className="nao-imprimir rounded-md border border-border p-2 text-sm">
+              <details className="rounded-md border border-border p-2 text-sm">
                 <summary className="cursor-pointer font-semibold">Seções ({secoes.length})</summary>
                 <ul className="mt-2 max-h-64 space-y-1 overflow-y-auto">
                   {secoes.map((s) => (
