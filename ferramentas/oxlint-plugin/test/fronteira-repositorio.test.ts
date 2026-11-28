@@ -18,7 +18,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { assert, describe, it } from "@effect/vitest";
 
-import { ARQUIVOS_DE_COMPOSICAO, violacaoDeFronteira } from "../modulos.ts";
+import { ARQUIVOS_DE_COMPOSICAO, PASTAS_QUE_IMPORTAM, violacaoDeFronteira } from "../modulos.ts";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
 const PASTAS = ["apps", "packages", "scripts", "ferramentas"];
@@ -125,7 +125,9 @@ describe("fronteira dos módulos no repositório", () => {
 
   it("os arquivos de composição existem", () => {
     assert.deepStrictEqual(
-      ARQUIVOS_DE_COMPOSICAO.filter((arquivo) => !NodeFS.existsSync(NodePath.join(RAIZ, arquivo))),
+      [...ARQUIVOS_DE_COMPOSICAO, ...PASTAS_QUE_IMPORTAM].filter(
+        (caminho) => !NodeFS.existsSync(NodePath.join(RAIZ, caminho)),
+      ),
       [],
     );
   });

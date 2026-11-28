@@ -3,7 +3,7 @@
  * cabeçalho do documento, a frase-resultado com a régua de critérios, a faixa da IA (enquanto ela não
  * leu tudo), o acompanhamento no Word (com a revisão acompanhando um arquivo), o bloqueio do curso (quando o CNCT não reconheceu o curso) e a lista em duas colunas: os temas à
  * esquerda e as pendências à direita, uma aberta por vez. As ressalvas ficam juntas em "Sobre esta
- * revisão", no pé da coluna de temas.
+ * revisão", no pé da coluna de temas, e abaixo dela, "Conversas desta revisão" (`ConversasDaRevisao.tsx`).
  *
  * O estado da revisão e da leitura com IA fica em `ControleRevisao` (`useRevisao`); aqui ficam só
  * controles locais efêmeros (diálogo de apagar e campo de caminho no modo navegador). Os links (a norma de
@@ -36,6 +36,7 @@ import { Acompanhamento } from "./Acompanhamento.tsx";
 import { BloqueioCurso } from "./BloqueioCurso.tsx";
 import { CabecalhoDocumento } from "./CabecalhoDocumento.tsx";
 import { lendoComIa } from "./ControleRevisao.ts";
+import { ConversasDaRevisao } from "./ConversasDaRevisao.tsx";
 import { ConclusaoIa, FaixaIa } from "./FaixaIa.tsx";
 import { LinhaPendencia } from "./LinhaPendencia.tsx";
 import type { ResultadoLigar } from "../../janela-compacta.ts";
@@ -139,13 +140,16 @@ export function Leitura({
   const apagar = async (pastaParaLixeira: boolean): Promise<NotaApagar | null> => {
     await revisao.apagarLista();
     apagou.current = true;
-    // O PPC apagado não se lê mais (o painel recolhe, se o mostrava), e a conversa ao lado perde a origem.
+    // O PPC apagado não se lê mais (o painel recolhe, se o mostrava), e as conversas ao lado perdem a origem.
     const ficou = await depoisDeApagarRevisao(app, memoria, lista, { ponte, pasta: pastaParaLixeira });
     return ficou === undefined
       ? null
       : {
           titulo: "A revisão foi apagada",
-          texto: `A conversa ao lado ou a pasta dela não saiu; a pasta continua em ${ficou}.`,
+          texto:
+            ficou.length === 1
+              ? `A conversa ao lado ou a pasta dela não saiu; a pasta continua em ${ficou[0]}.`
+              : `Algumas conversas ao lado ou as pastas delas não saíram; as pastas continuam em ${ficou.join(", ")}.`,
         };
   };
 
@@ -317,6 +321,9 @@ export function Leitura({
               feitas={textoFeitas(c)}
               sobre={sobre}
             />
+            <div className="mt-6">
+              <ConversasDaRevisao />
+            </div>
           </div>
         </aside>
         <div className="flex min-w-0 flex-col gap-3">
@@ -354,6 +361,7 @@ export function Leitura({
           )}
           <div className="flex flex-col gap-3 pt-4 @min-[960px]/tela:hidden">
             <p className="font-semibold text-small tabular-nums">{textoFeitas(c)}</p>
+            <ConversasDaRevisao />
             {sobre}
           </div>
         </div>

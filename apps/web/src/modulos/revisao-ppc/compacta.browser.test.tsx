@@ -4,7 +4,8 @@
  * e liga o modo; a moldura compacta (título, alfinete, ⤢), a dica, o filtro por gravidade, "Feito", a
  * norma no painel que cobre a coluna e volta, o salvamento conferido sem IA ("Resolvido ao salvar"), a
  * caixa curta da conversa com a resposta na coluna, e ⤢ de volta ao app inteiro. O painel aberto que
- * recolhe ao entrar, o rascunho de outra conversa que fica, a ficha do PPC tirada que não volta, a
+ * recolhe ao entrar, o rascunho de outra conversa que fica, a caixa que vai à conversa de cada pendência
+ * (sem puxar de volta a livre nem jogar fora o rascunho escrito), "Conversas desta revisão", a
  * navegação para fora (e Voltar no histórico) que desliga o modo, e o desktop que recusa ligá-lo. A página
  * que abre com `compacto=1` sem a janela compacta (recarregada) volta à tela inteira; sem o desktop, não há
  * modo.
@@ -231,7 +232,7 @@ it("no compacto: a bandeja na moldura leva à conversa ao lado no painel, sem sa
   expect(app.contexto.painel.obter().conversa.voltarPara).toBe(`/revisao-ppc?id=${id}`);
 });
 
-it("ao entrar, o painel recolhe e o rascunho de outra conversa fica; a ficha do PPC tirada não volta; sair da revisão desliga o modo", async () => {
+it("ao entrar, o painel recolhe e o rascunho de outra conversa fica; cada pendência leva à conversa dela; sair da revisão desliga o modo", async () => {
   const { compacta } = ponteComJanela("darwin", async () => {});
   await page.viewport(1280, 900);
   await using app = await montarApp(servidor, "/");
@@ -258,32 +259,70 @@ it("ao entrar, o painel recolhe e o rascunho de outra conversa fica; a ficha do 
   await conversa.getByRole("button", { name: "Conversar sobre esta revisão" }).click();
   const fichas = conversa.getByRole("region", { name: "Vai junto com a pergunta" });
   await expect.element(fichas.getByText("PPC de teste", { exact: true })).toBeVisible();
-  await expect.element(caixa).toHaveValue("");
+  // O que estava escrito vai junto.
+  await expect.element(caixa).toHaveValue("Rascunho da conversa livre");
   await expect.element(conversa.getByRole("button", { name: "Conversar sobre esta revisão" })).not.toBeInTheDocument();
+  await caixa.fill("");
 
-  // A ficha do PPC tirada não volta ao abrir uma pendência: só a da pendência entra.
+  // Abrir uma pendência leva a caixa ao rascunho da conversa dela, com o PPC e a pendência.
   await fichas.getByRole("button", { name: "Tirar o PPC do contexto" }).click();
   const linhas = pendencias.element().querySelectorAll<HTMLElement>("li[data-chave] > div > button");
   linhas[0]!.click();
   await expect.element(fichas.getByText(/^Pendência: /)).toBeVisible();
-  await expect.element(fichas.getByText("PPC de teste", { exact: true })).not.toBeInTheDocument();
-  // Outra pendência troca a ficha da pendência.
+  await expect.element(fichas.getByText("PPC de teste", { exact: true })).toBeVisible();
+  const daPrimeira = app.contexto.painel.obter().conversa.origem?.chave;
+  expect(daPrimeira).toMatch(/#/);
+  // Outra pendência: a conversa dela, outra origem.
   const primeira = fichas.getByText(/^Pendência: /).element().textContent;
   linhas[1]!.click();
   await vi.waitFor(() => expect(fichas.getByText(/^Pendência: /).element().textContent).not.toBe(primeira));
-  await expect.element(fichas.getByText(/^Pendência: /)).toBeVisible();
+  expect(app.contexto.painel.obter().conversa.origem?.chave).not.toBe(daPrimeira);
+
+  // O rascunho escrito numa pendência não se perde ao abrir outra: a caixa oferece a dela.
+  await caixa.fill("Sobre esta, o que falta?");
+  linhas[0]!.click();
+  await expect.element(conversa.getByRole("button", { name: "Conversar sobre esta pendência" })).toBeVisible();
+  await expect.element(caixa).toHaveValue("Sobre esta, o que falta?");
+  await conversa.getByRole("button", { name: "Conversar sobre esta pendência" }).click();
+  await expect.element(caixa).toHaveValue("Sobre esta, o que falta?");
+  expect(app.contexto.painel.obter().conversa.origem?.chave).toBe(daPrimeira);
 
   // A conversa que a pessoa troca no painel não é puxada de volta ao abrir outra pendência.
   app.contexto.painel.novaConversa();
-  linhas[0]!.click();
-  await expect.element(conversa.getByRole("button", { name: "Conversar sobre esta revisão" })).toBeVisible();
+  linhas[1]!.click();
+  await expect.element(conversa.getByRole("button", { name: "Conversar sobre esta pendência" })).toBeVisible();
   await expect.element(fichas).not.toBeInTheDocument();
+
+  // "Conversas desta revisão", recolhida acima da caixa, tem a "Nova conversa sobre esta revisão".
+  await conversa.getByText("Conversas desta revisão").click();
+  await conversa.getByRole("button", { name: "Nova conversa sobre esta revisão" }).click();
+  await expect.element(fichas.getByText("PPC de teste", { exact: true })).toBeVisible();
+  expect(app.contexto.painel.obter().conversa.origem?.chave).toMatch(/~/);
+  // A escolha da pessoa, com uma pendência aberta, fica: a caixa não oferece a da pendência.
+  await expect
+    .element(conversa.getByRole("button", { name: "Conversar sobre esta pendência" }))
+    .not.toBeInTheDocument();
 
   // Ir a outra tela (o aviso do sistema, um link na tela) desliga o modo antes.
   await app.roteador.navigate({ to: "/" });
   await vi.waitFor(() => expect(compacta).toHaveBeenLastCalledWith(false));
   expect(app.contexto.janela.obter().ligada).toBe(false);
   await expect.element(page.getByRole("link", { name: "Explorar o IFPR" })).toBeVisible();
+});
+
+it("ao entrar, o rascunho de 'Nova conversa' que a pessoa deixou no painel fica, mesmo vazio: a caixa oferece a da revisão", async () => {
+  ponteComJanela("darwin", async () => {});
+  await page.viewport(1280, 900);
+  await using app = await montarApp(servidor, "/revisao-ppc");
+  await page.getByRole("button", { name: "Escolher o PPC" }).click();
+  await expect.element(page.getByText("PPC de teste.docx", { exact: true })).toBeVisible();
+  app.contexto.painel.novaConversa();
+  await page.getByRole("button", { name: "Corrigir no Word" }).click();
+  await vi.waitFor(() => expect(app.roteador.state.location.search).toMatchObject({ compacto: 1 }));
+  await page.viewport(380, 760);
+  const conversa = page.getByRole("region", { name: "Conversa sobre esta revisão" });
+  await expect.element(conversa.getByRole("button", { name: "Conversar sobre esta revisão" })).toBeVisible();
+  expect(app.contexto.painel.obter().conversa).toMatchObject({ livre: true, fichas: [] });
 });
 
 it("a janela que não sai da tela cheia: o modo não liga e avisa; Voltar no histórico sai da revisão e do modo", async () => {

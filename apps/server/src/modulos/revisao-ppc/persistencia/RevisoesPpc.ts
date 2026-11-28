@@ -1,7 +1,7 @@
 /**
  * Persistência unificada da revisão de PPC no banco das conversas (`Banco.ts`): as listas vivas de
- * pendências (`revisao_ppc_listas_pendencias`, `revisao_ppc_pendencias_vivas`, `revisao_ppc_eventos_pendencia`, `revisao_ppc_acoes_ia`) e as revisões
- * com IA (`revisao_ppc_revisoes_ia`, `revisao_ppc_blocos_ia`, `revisao_ppc_tentativas_ia`).
+ * pendências (`revisao_ppc_listas_pendencias`, `revisao_ppc_pendencias_vivas`, `revisao_ppc_eventos_pendencia`, `revisao_ppc_acoes_ia`), as conversas
+ * ao lado de cada lista (`revisao_ppc_conversas`) e as revisões com IA (`revisao_ppc_revisoes_ia`, `revisao_ppc_blocos_ia`, `revisao_ppc_tentativas_ia`).
  *
  * Os JSONs são do próprio servidor, gravados e lidos pelos schemas do contrato; uma falha do banco ou um
  * JSON fora de forma é defeito, como no `Historico`. Três colunas ficam de fora da decodificação por
@@ -80,8 +80,6 @@ export interface RegistroLista {
    * corrigida") ou a lista é refeita ("Qual é o curso?").
    */
   readonly codigoConferido: boolean;
-  /** A conversa ao lado da revisão e a pasta dela, ou nulo antes da primeira mensagem. */
-  readonly conversa: { readonly id: string; readonly pasta: string } | null;
   /**
    * O texto (sem as linhas de texto dirigido a IA) do último arquivo conferido ao salvar, que a pasta da
    * conversa ao lado recebe; nulo sem conferência ou depois de "Enviar a versão corrigida".
@@ -111,9 +109,16 @@ export type NovaLista = Omit<
   | "arquivoAcompanhado"
   | "sha256Conferido"
   | "codigoConferido"
-  | "conversa"
   | "markdownConferido"
 >;
+
+/** Uma conversa ao lado da lista: a pasta dela e a pendência de que nasceu (nula: a conversa geral). */
+export interface RegistroConversaLista {
+  readonly conversa: string;
+  readonly pasta: string;
+  readonly pendencia: string | null;
+  readonly criadaEm: string;
+}
 
 /** O que a mesclagem de um bloco da leitura com IA muda na lista (a mesma lista, nunca uma nova). */
 export interface MesclagemIa {
@@ -303,11 +308,23 @@ export class RevisoesPpc extends Context.Service<
       /** O texto do arquivo conferido, sem as linhas de texto dirigido a IA (`markdownConferido`). */
       markdownConferido: string,
     ) => Effect.Effect<void>;
-    /** Liga a lista à conversa ao lado que ela abriu (a pasta é a da conversa). */
-    readonly ligarConversa: (id: string, conversa: string, pasta: string) => Effect.Effect<void>;
+    /** As conversas ao lado da lista `id`, na ordem em que se abriram. */
+    readonly conversasDaLista: (id: string) => Effect.Effect<ReadonlyArray<RegistroConversaLista>>;
+    /**
+     * Liga à lista uma conversa ao lado que ela abriu (a pasta é a da conversa), nascida da pendência
+     * `pendencia` (nula: a conversa geral sobre a revisão).
+     */
+    readonly ligarConversa: (
+      id: string,
+      conversa: string,
+      pasta: string,
+      pendencia: string | null,
+    ) => Effect.Effect<void>;
+    /** A conversa `antiga` continuou na `nova` (outra IA, no limite): a linha dela passa à nova. */
+    readonly trocarConversa: (antiga: string, nova: string, pasta: string) => Effect.Effect<void>;
     /** As conversas ao lado ligadas a alguma lista (os ids). */
     readonly conversasLigadas: Effect.Effect<ReadonlyArray<string>>;
-    /** Desliga das listas a conversa ao lado `conversa` (apagada): a próxima mensagem abre outra. */
+    /** Desliga da lista a conversa ao lado `conversa` (apagada): a próxima mensagem dela abre outra. */
     readonly desligarConversa: (conversa: string) => Effect.Effect<void>;
     /**
      * O resultado da cópia comentada regravada, que reflete a `versaoCopia` da lista, e onde cada
@@ -416,8 +433,6 @@ const LinhaLista = Schema.Struct({
   arquivo_acompanhado: Schema.NullOr(Schema.String),
   sha256_conferido: Schema.NullOr(Schema.String),
   codigo_conferido: Schema.Number,
-  conversa_id: Schema.NullOr(Schema.String),
-  conversa_pasta: Schema.NullOr(Schema.String),
   markdown_conferido: Schema.NullOr(Schema.String),
   criada_em: Schema.String,
   atualizada_em: Schema.String,
@@ -626,11 +641,12 @@ const make = Effect.gen(function* () {
             yield* sql`UPDATE revisao_ppc_acoes_ia SET lista_id = ${l.id} WHERE lista_id = ${ant.id}`;
             yield* sql`
               UPDATE revisao_ppc_listas_pendencias AS nova SET
-                arquivo_acompanhado = velha.arquivo_acompanhado,
-                conversa_id = velha.conversa_id, conversa_pasta = velha.conversa_pasta
+                arquivo_acompanhado = velha.arquivo_acompanhado
               FROM revisao_ppc_listas_pendencias AS velha
               WHERE nova.id = ${l.id} AND velha.id = ${ant.id}
             `;
+            // As conversas ao lado seguem com a lista nova (a anterior, ao sair, levaria as linhas).
+            yield* sql`UPDATE revisao_ppc_conversas SET lista_id = ${l.id} WHERE lista_id = ${ant.id}`;
             yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE id = ${ant.id}`;
           }
           return ant;
@@ -664,8 +680,6 @@ const make = Effect.gen(function* () {
       arquivoAcompanhado: l.arquivo_acompanhado,
       sha256Conferido: l.sha256_conferido,
       codigoConferido: l.codigo_conferido !== 0,
-      conversa:
-        l.conversa_id === null || l.conversa_pasta === null ? null : { id: l.conversa_id, pasta: l.conversa_pasta },
       markdownConferido: l.markdown_conferido,
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
@@ -898,29 +912,62 @@ const make = Effect.gen(function* () {
     yield* avisar(id);
   }, Effect.orDie);
 
-  const ligarConversa = Effect.fn("RevisoesPpc.ligarConversa")(function* (id: string, conversa: string, pasta: string) {
+  const conversasDaLista = Effect.fn("RevisoesPpc.conversasDaLista")(function* (id: string) {
+    const linhas = yield* sql<{ conversa_id: string; pasta: string; pendencia: string | null; criada_em: string }>`
+      SELECT conversa_id, pasta, pendencia, criada_em FROM revisao_ppc_conversas
+      WHERE lista_id = ${id} ORDER BY criada_em, rowid
+    `;
+    return linhas.map((l): RegistroConversaLista => ({
+      conversa: l.conversa_id,
+      pasta: l.pasta,
+      pendencia: l.pendencia,
+      criadaEm: l.criada_em,
+    }));
+  }, Effect.orDie);
+
+  const ligarConversa = Effect.fn("RevisoesPpc.ligarConversa")(function* (
+    id: string,
+    conversa: string,
+    pasta: string,
+    pendencia: string | null,
+  ) {
+    const data = yield* agora;
     yield* sql`
-      UPDATE revisao_ppc_listas_pendencias SET conversa_id = ${conversa}, conversa_pasta = ${pasta} WHERE id = ${id}
+      INSERT INTO revisao_ppc_conversas (conversa_id, lista_id, pasta, pendencia, criada_em)
+      VALUES (${conversa}, ${id}, ${pasta}, ${pendencia}, ${data})
     `;
     yield* avisar(id);
   }, Effect.orDie);
 
+  const trocarConversa = Effect.fn("RevisoesPpc.trocarConversa")(function* (
+    antiga: string,
+    nova: string,
+    pasta: string,
+  ) {
+    const listas = yield* sql<{ lista_id: string }>`
+      SELECT lista_id FROM revisao_ppc_conversas WHERE conversa_id = ${antiga}
+    `;
+    // A nova já ligada (não acontece pelo app) fica como está, e a antiga sai.
+    yield* sql`
+      UPDATE OR IGNORE revisao_ppc_conversas SET conversa_id = ${nova}, pasta = ${pasta} WHERE conversa_id = ${antiga}
+    `;
+    yield* sql`DELETE FROM revisao_ppc_conversas WHERE conversa_id = ${antiga}`;
+    for (const lista of listas) yield* avisar(lista.lista_id);
+  }, Effect.orDie);
+
   const conversasLigadas = sql<{
     conversa_id: string;
-  }>`SELECT DISTINCT conversa_id FROM revisao_ppc_listas_pendencias WHERE conversa_id IS NOT NULL`.pipe(
+  }>`SELECT conversa_id FROM revisao_ppc_conversas`.pipe(
     Effect.map((linhas) => linhas.map((l) => l.conversa_id)),
     Effect.orDie,
   );
 
   const desligarConversa = Effect.fn("RevisoesPpc.desligarConversa")(function* (conversa: string) {
-    const listas = yield* sql<{ id: string }>`
-      SELECT id FROM revisao_ppc_listas_pendencias WHERE conversa_id = ${conversa}
+    const listas = yield* sql<{ lista_id: string }>`
+      SELECT lista_id FROM revisao_ppc_conversas WHERE conversa_id = ${conversa}
     `;
-    yield* sql`
-      UPDATE revisao_ppc_listas_pendencias SET conversa_id = NULL, conversa_pasta = NULL
-      WHERE conversa_id = ${conversa}
-    `;
-    for (const lista of listas) yield* avisar(lista.id);
+    yield* sql`DELETE FROM revisao_ppc_conversas WHERE conversa_id = ${conversa}`;
+    for (const lista of listas) yield* avisar(lista.lista_id);
   }, Effect.orDie);
 
   const mesclarIa = Effect.fn("RevisoesPpc.mesclarIa")(function* (
@@ -1257,7 +1304,9 @@ const make = Effect.gen(function* () {
     aplicarArquivoNovo,
     acompanhar,
     aplicarConferencia,
+    conversasDaLista,
     ligarConversa,
+    trocarConversa,
     conversasLigadas,
     desligarConversa,
     trocarResultado,

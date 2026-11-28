@@ -71,8 +71,10 @@ describe("apagar a conversa", () => {
     expect(notaDepoisDeApagar([{ titulo: "a", transcricaoFicou: "Claude" }], CONVERSA)?.titulo).toBe("Apagado");
     expect(notaDepoisDeApagar([{ titulo: "a" }, { titulo: "b" }], CONVERSA)).toBeNull();
     expect(
-      notaDepoisDeApagar([{ titulo: "a", transcricaoFicou: "Claude", pastaFicou: "/d/Simplifica IF/Tarefa" }], CONVERSA)
-        ?.texto,
+      notaDepoisDeApagar(
+        [{ titulo: "a", transcricaoFicou: "Claude", pastasFicaram: ["/d/Simplifica IF/Tarefa"] }],
+        CONVERSA,
+      )?.texto,
     ).toBe(
       "A conversa saiu do app. O registro que o Claude guarda neste computador não pôde ser apagado agora; o app tenta de novo quando abrir. A pasta “Tarefa” não foi para a Lixeira e continua em Documentos/Simplifica IF.",
     );
@@ -109,6 +111,24 @@ describe("apagar a conversa", () => {
         CONVERSA,
       )?.texto,
     ).toMatch(/^2 conversas saíram do app\. O registro de 2 conversas/);
+  });
+
+  it("as pastas que ficaram: todas, de uma revisão com várias conversas ou de várias revisões", () => {
+    const revisao = { um: "revisão", varios: "revisões" };
+    expect(
+      notaDepoisDeApagar([{ titulo: "a", pastasFicaram: ["/d/PPC – estágio", "/d/PPC – matriz"] }], revisao)?.texto,
+    ).toBe(
+      "A revisão saiu do app. As pastas “PPC – estágio”, “PPC – matriz” não foram para a Lixeira e continuam em Documentos/Simplifica IF.",
+    );
+    expect(
+      notaDepoisDeApagar(
+        [
+          { titulo: "a", pastasFicaram: ["/d/1", "/d/2", "/d/3"] },
+          { titulo: "b", pastasFicaram: ["/d/4"] },
+        ],
+        revisao,
+      )?.texto,
+    ).toBe("2 revisões saíram do app. 4 pastas não foram para a Lixeira e continuam em Documentos/Simplifica IF.");
   });
 
   it("várias conversas: as contagens somadas, o aviso e só as pastas que podem ir à Lixeira", () => {

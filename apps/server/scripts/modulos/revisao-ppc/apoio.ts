@@ -17,6 +17,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import * as ArquivosLiberados from "../../../src/ArquivosLiberados.ts";
 import * as Atividades from "../../../src/Atividades.ts";
 import * as Banco from "../../../src/persistencia/Banco.ts";
+import * as Historico from "../../../src/persistencia/Historico.ts";
 import * as Preferencias from "../../../src/persistencia/Preferencias.ts";
 import * as ListaViva from "../../../src/modulos/revisao-ppc/ListaViva.ts";
 import * as RevisaoPpc from "../../../src/modulos/revisao-ppc/modulo.ts";
@@ -105,6 +106,7 @@ export const layerNucleo = (opcoes: OpcoesNucleo) => {
   const drivers = Drivers.layerNode({ ambiente: opcoes.ambiente, pastaEstado: pastaEstado(opcoes.ambiente) });
   return RevisaoPpc.layer(banco, opcoes.revisaoIa, opcoes.listaViva).pipe(
     Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
+    Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
     Layer.provideMerge(Atividades.layer),
     Layer.provideMerge(Motor.layer.pipe(Layer.provide(drivers))),

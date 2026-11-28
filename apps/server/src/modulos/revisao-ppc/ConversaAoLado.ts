@@ -1,27 +1,41 @@
 /**
- * `ConversaAoLado`: a conversa com a IA ao lado de uma revisão de PPC (`docs/plans/multitarefa.md`,
+ * `ConversaAoLado`: as conversas com a IA ao lado de uma revisão de PPC (`docs/plans/multitarefa.md`,
  * "Conversa ao lado", decisões 2, 9, 11 e 12). A IA não enxerga o PPC em revisão (ele não está na base que
  * o MCP `ifpr` lê): o módulo o leva à pasta da conversa, em Markdown.
  *
- * - **Uma conversa por revisão.** Antes de cada mensagem enviada pelo painel, `conversarSobre` retoma a
- *   conversa da revisão (`conversa_id` da lista) ou, na primeira, cria a pasta ("PPC <curso> – conversa",
- *   `PastasTrabalho.criar`) e abre uma conversa livre (`Conversas.iniciar`, com a IA pedida e a origem na
- *   revisão), que a lista guarda. Tudo na vez da lista (`comTravaDaLista`): duas mensagens seguidas não
- *   abrem duas conversas, e a lista não muda no meio. Se a conversa não abre, a pasta nova sai. A conversa
- *   apagada pela lista de conversas sai das listas ao subir o servidor, e a próxima mensagem abre outra. A
- *   que parou no limite e continuou com outra IA (`continuadaCom`) passa a ser a da revisão.
+ * - **Várias conversas por revisão, uma pasta por conversa** (decisão 12): uma revisão tem discussões
+ *   sobre temas diferentes, e o núcleo das pastas (o índice dos anexos, as cópias do Desfazer, apagar com a
+ *   pasta) supõe uma conversa por pasta. Antes de cada mensagem enviada pelo painel, `conversarSobre`
+ *   retoma a conversa pedida (uma das ligadas à lista, `revisao_ppc_conversas`), ou a nascida da pendência
+ *   pedida, ou, sem nenhuma, cria a pasta ("PPC <curso> – <tema>": o critério da pendência, ou
+ *   "conversa" na geral; `PastasTrabalho.criar`) e abre uma conversa livre (`Conversas.iniciar`, com a IA
+ *   pedida e a origem na revisão), que a lista guarda com a pendência. Tudo na vez da lista
+ *   (`comTravaDaLista`): duas mensagens seguidas sobre a mesma pendência não abrem duas conversas, e a
+ *   lista não muda no meio. Se a conversa não abre, a pasta nova sai. A conversa apagada pela lista de
+ *   conversas sai das listas ao subir o servidor, e a próxima mensagem da pendência dela abre outra. A que
+ *   parou no limite e continuou com outra IA (`continuadaCom`) toma o lugar dela, com a mesma pendência, já
+ *   ao ser criada (no painel ou na tela cheia), pelo gatilho da tabela (`persistencia/tabelas.ts`): apagar a
+ *   original não a deixa órfã, e a continuação apagada devolve a linha à anterior. O painel que ainda pede a
+ *   anterior recebe a última da cadeia (`nova`, para a interface reler a lista).
+ * - **A pendência que muda de chave** (a conferência ao salvar que lhe dá outro trecho, a leitura com IA que
+ *   a substitui): a conversa fica na lista da revisão, com a chave antiga, e a interface a mostra sem a
+ *   pendência; "Conversar sobre esta pendência" na nova abre outra. A que muda antes do primeiro envio
+ *   também: a conversa nasce ligada à chave pedida (a da origem no painel), com o tema que a interface
+ *   mandou (`tema`), e não como geral.
  * - **O que vai à pasta é o que a ficha pede, no envio.** Com `ppc`, o Markdown do PPC (`ARQUIVO_PPC`: o
  *   texto do último arquivo conferido ao salvar, ou o revisado), com um sumário de seções e linhas no topo,
  *   e a nota com o caminho do `.docx` que está no Word; com `docx`, a cópia do `.docx`. Sem a ficha, nada
  *   entra, e a seção da pendência só vai na instrução se a ficha da pendência ficou.
  * - **Sempre atual** (decisão 9): as escritas que trocam o texto da lista passam por aqui (`trocarCurso`,
  *   `revisarArquivoNovo` e a conferência ao salvar, por `conferirAcompanhado` e `acompanharLista`), e o
- *   Markdown e a nota que já estão na pasta são regravados logo depois, na vez da lista, seja qual for o
- *   lugar de onde a próxima mensagem sai (o painel ou a tela cheia). A pasta avisa a IA da mudança no turno
- *   seguinte (`PastasTrabalho.abrirTurno`), e o aviso fica na conversa; a ficha do PPC diz a hora
- *   (`atualizadoEm`). "Qual é o curso?" troca o id da lista: a origem das conversas passa à lista nova.
- * - **Revisão apagada:** `apagarLista` apaga a lista (`ListaViva.apagar`) e passa a origem das conversas ao
- *   lado (a ligada e a que a continuou com outra IA) a "revisão apagada"; as conversas e a pasta ficam.
+ *   Markdown e a nota que já estão nas pastas de todas as conversas da lista são regravados logo depois, na
+ *   vez da lista, seja qual for o lugar de onde a próxima mensagem sai (o painel ou a tela cheia). A pasta
+ *   avisa a IA da mudança no turno seguinte (`PastasTrabalho.abrirTurno`), e o aviso fica na conversa; a
+ *   ficha do PPC diz a hora (`atualizadoEm`). "Qual é o curso?" troca o id da lista: as linhas das
+ *   conversas e a origem delas passam à lista nova.
+ * - **Revisão apagada:** `apagarLista` apaga a lista (`ListaViva.apagar`) e passa a origem de todas as
+ *   conversas ao lado (as ligadas e as que as continuaram com outra IA) a "revisão apagada"; as conversas e
+ *   as pastas ficam.
  *
  * O módulo chama o núcleo (as conversas e as pastas), nunca o contrário.
  */
@@ -62,6 +76,13 @@ import * as RevisorPpc from "./RevisorPpc.ts";
 
 export interface EntradaConversarSobre {
   readonly lista: string;
+  /** Retoma esta conversa (uma das ligadas à lista, ou a continuação de uma delas). */
+  readonly conversa?: string;
+  /** Sem `conversa`: a conversa nascida desta pendência, que se abre se ainda não há. */
+  readonly pendencia?: string;
+  /** O tema da pasta nova quando a `pendencia` já não está na lista (mudou de chave antes do envio). */
+  readonly tema?: string;
+  /** A pendência em foco (a ficha dela ficou), por cuja seção a instrução de leitura manda começar. */
   readonly chave?: string;
   readonly provider: Provider;
   readonly modelo?: string;
@@ -85,7 +106,7 @@ export class ConversaAoLado extends Context.Service<
     readonly conversarSobre: (
       entrada: EntradaConversarSobre,
     ) => Effect.Effect<ConversaSobre, FalhaRevisaoPpc | AvisoNaoAceito | Motor.FalhaProvider | FalhaPasta>;
-    /** Apaga a revisão (`ListaViva.apagar`); a conversa ao lado fica, com a origem "revisão apagada". */
+    /** Apaga a revisão (`ListaViva.apagar`); as conversas ao lado ficam, com a origem "revisão apagada". */
     readonly apagarLista: (id: string) => Effect.Effect<void>;
     /** `ListaViva.trocarCurso`, com a origem das conversas ao lado na lista nova e o Markdown regravado. */
     readonly trocarCurso: (
@@ -161,6 +182,15 @@ export function notaDaConversa(registro: Pick<RevisoesPpc.RegistroLista, "arquiv
   return linhas.join("\n");
 }
 
+/** O tema da pasta de uma conversa nova: o critério da pendência (ou o título dela), curto. */
+export function temaDaPendencia(p: { readonly tituloFicha: string; readonly titulo: string }): string {
+  const tema = (p.tituloFicha.trim() || p.titulo.trim()).replace(/\s+/g, " ");
+  if (tema.length <= 40) return tema;
+  const corte = tema.slice(0, 40);
+  const espaco = corte.lastIndexOf(" ");
+  return `${(espaco > 20 ? corte.slice(0, espaco) : corte).replace(/[\s.,;:–-]+$/, "")}…`;
+}
+
 /** A rota da revisão `id`, a da origem das conversas ao lado dela. */
 const rotaDaRevisao = (id: string) => `/revisao-ppc?id=${id}`;
 
@@ -200,10 +230,10 @@ const make = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   // A revisão apagada só sai depois de uma preparação em curso: nenhuma conversa nova se liga a uma lista
-  // que está saindo, e a origem que `apagarLista` muda é a da conversa ligada.
+  // que está saindo, e as origens que `apagarLista` muda são as das conversas ligadas.
   const vez = yield* Semaphore.make(1);
   const codificador = new TextEncoder();
-  // Quando o Markdown de cada lista foi regravado por último nesta execução, para a ficha do PPC.
+  // Quando o Markdown de cada pasta foi regravado por último nesta execução, para a ficha do PPC.
   const atualizados = new Map<string, string>();
 
   // A conversa ao lado apagada (pela lista de conversas, que não conhece o módulo) sai das listas.
@@ -225,32 +255,51 @@ const make = Effect.gen(function* () {
   ) {
     const gravado = yield* pastas.gravar(pasta, ARQUIVO_PPC, codificador.encode(md.texto));
     yield* pastas.gravar(pasta, NOTA, codificador.encode(notaDaConversa(registro)));
-    if (gravado === "regravado") atualizados.set(registro.id, DateTime.formatIso(yield* DateTime.now));
+    if (gravado === "regravado") atualizados.set(pasta, DateTime.formatIso(yield* DateTime.now));
     return gravado;
   });
 
+  /** As pastas das conversas ligadas à lista `id` (cada conversa tem a sua). */
+  const pastasDa = (id: string) =>
+    persistencia.conversasDaLista(id).pipe(Effect.map((ligadas) => [...new Set(ligadas.map((l) => l.pasta))]));
+
   /**
-   * Regrava o Markdown e a nota que já estão na pasta da conversa ao lado da lista `id` (a ficha do PPC já
-   * os levou), depois de uma escrita que pode ter trocado o texto. Sem o Markdown na pasta, nada entra.
-   * Nunca falha: o erro vai para o log, e a próxima mensagem com a ficha do PPC tenta de novo.
+   * Regrava o Markdown e a nota que já estão nas pastas das conversas ao lado da lista `id` (a ficha do PPC
+   * já os levou), depois de uma escrita que pode ter trocado o texto. Na pasta sem o Markdown, nada entra.
+   * Nunca falha: o erro de uma pasta vai para o log, as outras seguem, e a próxima mensagem com a ficha do
+   * PPC tenta de novo.
    */
   const regravar = Effect.fn("ConversaAoLado.regravar")(function* (id: string) {
-    yield* persistencia
-      .comTravaDaLista(
-        id,
-        Effect.gen(function* () {
-          const registro = yield* persistencia.buscarLista(id);
-          if (registro === null || registro.conversa === null) return;
-          const pasta = registro.conversa.pasta;
-          if (Option.isNone(yield* Effect.option(fs.lstat(path.join(pasta, ARQUIVO_PPC))))) return;
-          yield* gravarPpc(pasta, registro, markdownDa(registro));
-        }),
-      )
-      .pipe(
-        Effect.catchTags({
-          FalhaPasta: (erro) => Effect.logWarning(`conversa ao lado: o texto do PPC não foi regravado: ${erro.motivo}`),
-        }),
-      );
+    yield* persistencia.comTravaDaLista(
+      id,
+      Effect.gen(function* () {
+        const registro = yield* persistencia.buscarLista(id);
+        if (registro === null) return;
+        const md = markdownDa(registro);
+        for (const pasta of yield* pastasDa(id)) {
+          if (Option.isNone(yield* Effect.option(fs.lstat(path.join(pasta, ARQUIVO_PPC))))) continue;
+          yield* gravarPpc(pasta, registro, md).pipe(
+            Effect.catchTags({
+              FalhaPasta: (erro) =>
+                Effect.logWarning(`conversa ao lado: o texto do PPC não foi regravado: ${erro.motivo}`),
+            }),
+          );
+        }
+      }),
+    );
+  });
+
+  /** A última conversa da cadeia de continuações de `id` que ainda existe (a própria, sem continuação). */
+  const seguirContinuacoes = Effect.fn("ConversaAoLado.seguirContinuacoes")(function* (id: string) {
+    let atual = Option.getOrUndefined(yield* historico.buscar(id));
+    const cadeia = atual === undefined ? [] : [atual.id];
+    while (atual?.continuadaCom !== undefined) {
+      const seguinte = Option.getOrUndefined(yield* historico.buscar(atual.continuadaCom.id));
+      if (seguinte === undefined) break;
+      atual = seguinte;
+      cadeia.push(atual.id);
+    }
+    return { ultima: atual, cadeia };
   });
 
   /** O `.docx` para anexar: liberado, um arquivo comum e dentro do limite do revisor. */
@@ -276,27 +325,55 @@ const make = Effect.gen(function* () {
           const original = registro.arquivoAcompanhado ?? registro.arquivo;
           const docx = entrada.docx ? yield* lerDocx(original) : undefined;
 
-          // A conversa da revisão, se ainda existe (a pessoa pode tê-la apagado); senão, uma nova, na pasta
-          // nova, que sai vazia se a conversa não abre.
-          let ligada =
-            registro.conversa === null
+          // A conversa pedida: a que o painel já tem (uma das ligadas, ou a continuação de uma delas); sem ela,
+          // a nascida da pendência pedida. A ligada segue pela continuação, se continuou com outra IA (a linha
+          // passa à continuação), e a apagada (pela lista de conversas, nesta execução) não volta.
+          const pendencias = yield* persistencia.pendencias(registro.id);
+          const daPendencia =
+            entrada.pendencia === undefined ? undefined : pendencias.find((p) => p.chave === entrada.pendencia);
+          // Da mais nova para a mais antiga: a pendência com mais de uma (a anterior foi apagada) fica na última.
+          const ligadas = [];
+          for (const l of (yield* persistencia.conversasDaLista(registro.id)).toReversed())
+            ligadas.push({ ...l, ...(yield* seguirContinuacoes(l.conversa)) });
+          // A pedida pode ser uma anterior da cadeia (o painel ainda com a que continuou na tela cheia): vale a
+          // última da cadeia dela.
+          const ultimaPedida =
+            entrada.conversa === undefined ? undefined : (yield* seguirContinuacoes(entrada.conversa)).ultima?.id;
+          const achada =
+            (entrada.conversa === undefined
               ? undefined
-              : Option.getOrUndefined(yield* historico.buscar(registro.conversa.id));
-          // A conversa que parou no limite e continuou com outra IA: a revisão passa à continuação.
-          while (ligada?.continuadaCom !== undefined) {
-            const seguinte = Option.getOrUndefined(yield* historico.buscar(ligada.continuadaCom.id));
-            if (seguinte === undefined) break;
-            ligada = seguinte;
+              : ligadas.find(
+                  (l) =>
+                    l.cadeia.includes(entrada.conversa!) ||
+                    (ultimaPedida !== undefined && l.ultima?.id === ultimaPedida),
+                )) ??
+            (entrada.pendencia === undefined
+              ? undefined
+              : ligadas.find((l) => l.ultima !== undefined && l.pendencia === entrada.pendencia));
+          let ligada: { readonly conversa: string; readonly pasta: string } | undefined;
+          let nova = false;
+          if (achada?.ultima !== undefined) {
+            if (achada.ultima.id !== achada.conversa) {
+              yield* persistencia.trocarConversa(achada.conversa, achada.ultima.id, achada.ultima.pastaTrabalho);
+              nova = true;
+            }
+            ligada = { conversa: achada.ultima.id, pasta: achada.ultima.pastaTrabalho };
           }
-          if (ligada !== undefined && ligada.id !== registro.conversa?.id)
-            yield* persistencia.ligarConversa(registro.id, ligada.id, ligada.pastaTrabalho);
           let conversa: string;
           let pasta: string;
           if (ligada !== undefined) {
-            conversa = ligada.id;
-            pasta = ligada.pastaTrabalho;
+            conversa = ligada.conversa;
+            pasta = ligada.pasta;
           } else {
-            const criada = yield* pastas.criar(`${comPpc(nomeDoPpc(registro))} – conversa`);
+            // A pendência que mudou de chave antes do primeiro envio (o salvamento lhe deu outro trecho) liga a
+            // conversa à chave pedida, a do painel, com o tema que a interface mandou.
+            const tema =
+              daPendencia !== undefined
+                ? temaDaPendencia(daPendencia.pendencia)
+                : entrada.pendencia !== undefined && entrada.tema !== undefined && entrada.tema.trim() !== ""
+                  ? temaDaPendencia({ tituloFicha: entrada.tema, titulo: "" })
+                  : "conversa";
+            const criada = yield* pastas.criar(`${comPpc(nomeDoPpc(registro))} – ${tema}`);
             pasta = criada;
             conversa = yield* conversas
               .iniciar(
@@ -322,7 +399,8 @@ const make = Effect.gen(function* () {
                 Effect.map((iniciada) => iniciada.sessao),
                 Effect.onError(() => PastasNode.removerPastaVazia(criada).pipe(Effect.ignore)),
               );
-            yield* persistencia.ligarConversa(registro.id, conversa, pasta);
+            yield* persistencia.ligarConversa(registro.id, conversa, pasta, entrada.pendencia ?? null);
+            nova = true;
           }
 
           let ppc: ConversaSobre["ppc"] = null;
@@ -332,9 +410,8 @@ const make = Effect.gen(function* () {
             const titulo =
               entrada.chave === undefined
                 ? null
-                : ((yield* persistencia.pendencias(registro.id)).find((p) => p.chave === entrada.chave)?.pendencia
-                    .secao ?? null);
-            const atualizadoEm = gravado === "novo" ? null : (atualizados.get(registro.id) ?? null);
+                : (pendencias.find((p) => p.chave === entrada.chave)?.pendencia.secao ?? null);
+            const atualizadoEm = gravado === "novo" ? null : (atualizados.get(pasta) ?? null);
             ppc = {
               arquivo: ARQUIVO_PPC,
               instrucao: instrucaoDoPpc(
@@ -351,34 +428,42 @@ const make = Effect.gen(function* () {
             anexado = nomeDoArquivo(original);
             yield* pastas.gravar(pasta, anexado, docx);
           }
-          // `nova`: a lista passou a guardar outra conversa (a aberta agora, ou a continuação da que guardava).
-          const nova = ligada === undefined || ligada.id !== registro.conversa?.id;
-          return { conversa, nova, ppc, docx: anexado } satisfies ConversaSobre;
+          // `nova`: as conversas da lista mudaram (a aberta agora, ou a continuação de uma delas), ou a conversa
+          // não é a que o painel pediu (a continuação dela).
+          return {
+            conversa,
+            nova: nova || (entrada.conversa !== undefined && conversa !== entrada.conversa),
+            ppc,
+            docx: anexado,
+          } satisfies ConversaSobre;
         }),
       ),
     );
   });
 
   /**
-   * As conversas ao lado da revisão `id`: a que a lista guarda e as de origem nela (a que continuou a dela
-   * com outra IA, que a lista só passa a guardar na próxima mensagem pelo painel).
+   * As conversas ao lado da revisão `id`: as que a lista guarda (`ligadas`) e as de origem nela (as que
+   * continuaram uma delas com outra IA, que a lista só passa a guardar na próxima mensagem pelo painel).
    */
   const conversasDaRevisao = Effect.fn("ConversaAoLado.conversasDaRevisao")(function* (
     id: string,
-    ligada: string | undefined,
+    ligadas: ReadonlyArray<string>,
   ) {
     const rota = rotaDaRevisao(id);
     const daOrigem = (yield* historico.listar).filter((c) => c.origem?.rota === rota).map((c) => c.id);
-    return new Set(ligada === undefined ? daOrigem : [ligada, ...daOrigem]);
+    return new Set([...ligadas, ...daOrigem]);
   });
 
   const apagarLista = Effect.fn("ConversaAoLado.apagarLista")(function* (id: string) {
     yield* vez.withPermits(1)(
       Effect.gen(function* () {
-        const ligada = (yield* persistencia.buscarLista(id))?.conversa?.id;
+        const ligadas = yield* persistencia.conversasDaLista(id);
         yield* viva.apagar(id);
-        atualizados.delete(id);
-        for (const conversa of yield* conversasDaRevisao(id, ligada))
+        for (const l of ligadas) atualizados.delete(l.pasta);
+        for (const conversa of yield* conversasDaRevisao(
+          id,
+          ligadas.map((l) => l.conversa),
+        ))
           yield* conversas.mudarOrigem(conversa, ORIGEM_APAGADA).pipe(Effect.ignore);
       }),
     );
@@ -392,8 +477,9 @@ const make = Effect.gen(function* () {
     const lista = yield* viva.trocarCurso(id, cnct, forma);
     // A lista nova herda as conversas da antiga: a origem passa a ela, com o curso escolhido.
     const registro = yield* persistencia.buscarLista(lista.id);
+    const ligadas = (yield* persistencia.conversasDaLista(lista.id)).map((l) => l.conversa);
     if (registro !== null)
-      for (const conversa of yield* conversasDaRevisao(id, registro.conversa?.id))
+      for (const conversa of yield* conversasDaRevisao(id, ligadas))
         yield* conversas.mudarOrigem(conversa, origemDaRevisao(registro)).pipe(Effect.ignore);
     yield* regravar(lista.id);
     return lista;

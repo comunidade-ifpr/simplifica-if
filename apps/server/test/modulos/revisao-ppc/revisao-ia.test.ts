@@ -32,6 +32,7 @@ import * as ArquivosLiberados from "../../../src/ArquivosLiberados.ts";
 import * as Atividades from "../../../src/Atividades.ts";
 import * as Banco from "../../../src/persistencia/Banco.ts";
 import * as CopiasComentadas from "../../../src/modulos/revisao-ppc/persistencia/CopiasComentadas.ts";
+import * as Historico from "../../../src/persistencia/Historico.ts";
 import * as Preferencias from "../../../src/persistencia/Preferencias.ts";
 import * as RevisoesPpc from "../../../src/modulos/revisao-ppc/persistencia/RevisoesPpc.ts";
 import * as ListaViva from "../../../src/modulos/revisao-ppc/ListaViva.ts";
@@ -946,6 +947,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
         Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),
         Layer.provideMerge(Atividades.layer),
         Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
+        Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
         Layer.provideMerge(Motor.layer),
         Layer.provideMerge(
           Layer.succeed(
@@ -1009,6 +1011,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("reinício e corrida de
           ),
           Layer.provideMerge(Atividades.layer),
           Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
+          Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
           Layer.provideMerge(Motor.layer),
           Layer.provideMerge(
             Layer.succeed(

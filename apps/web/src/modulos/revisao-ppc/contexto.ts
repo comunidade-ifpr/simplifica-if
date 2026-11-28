@@ -11,16 +11,22 @@ export function useRevisao(): readonly [EstadoRevisao, ControleRevisao] {
 }
 
 /**
- * A revisão à vista (a tela inteira ou a coluna ao lado do Word): ⌘J leva o PPC e a pendência aberta à
- * conversa ao lado, e a volta à janela confere o arquivo acompanhado (na pasta do OneDrive ou de rede, o
- * vigia do servidor pode não ver o salvamento).
+ * A revisão à vista (a tela inteira ou a coluna ao lado do Word): ⌘J (e o clique na aba Conversar com o
+ * rascunho intocado) leva o PPC e a pendência aberta à conversa ao lado: a da pendência, ou, sem pendência
+ * aberta, uma geral; no rascunho de "Nova conversa", o convite diz qual. A volta à janela confere o arquivo
+ * acompanhado (na pasta do OneDrive ou de rede, o vigia do servidor pode não ver o salvamento).
  */
 export function useRevisaoNaTela(): void {
   const app = useApp();
   const { revisao } = app;
+  const comPendencia = useSyncExternalStore(revisao.observar, () => revisao.obter().aberta !== null);
   useEffect(
-    () => app.painel.declararContexto(() => pedidoDaRevisao(app, revisao.obter().aberta) ?? {}),
-    [app, revisao],
+    () =>
+      app.painel.declararContexto(
+        () => pedidoDaRevisao(app, revisao.obter().aberta) ?? {},
+        comPendencia ? "Conversar sobre esta pendência" : "Conversar sobre esta revisão",
+      ),
+    [app, revisao, comPendencia],
   );
   useEffect(() => {
     const aoFocar = () => revisao.conferirAoFocar();

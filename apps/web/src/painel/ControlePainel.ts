@@ -16,13 +16,17 @@
  * **A conversa ao lado** (aba Conversar, "Conversa ao lado" do plano): a conversa do painel (o id, depois da
  * primeira mensagem), as fichas de contexto acima da caixa, já incluídas e removíveis, as ofertas (uma ficha
  * que só entra se a pessoa a puser, "Anexar o .docx"), o texto da caixa e a origem: quem abriu a conversa
- * (a revisão, `revisao-ppc:<lista>`), só como dado; quem a prepara a cada mensagem é o módulo dela
- * (`OrigensConversa`, posto no contexto do app pela composição). Uma conversa por origem: pedir de novo com
- * a mesma origem retoma a conversa e acrescenta as fichas (decisão 12). O pedido sem origem (o trecho do
- * leitor, o Explorar, a paleta) vai à conversa do painel, se há uma (e não foi apagada); senão, abre o
- * rascunho de uma conversa livre. A tela declara o contexto dela (`declararContexto`), que ⌘J leva ao painel.
- * A origem que ganha outro nome e os links que mudam de endereço (a revisão refeita com outro curso) seguem
- * (`trocarOrigem`, `trocarLinks`).
+ * (uma conversa da revisão: a de uma pendência, `revisao-ppc:<lista>#<pendência>`, ou uma geral), só como
+ * dado; quem a prepara a cada mensagem é o módulo dela (`OrigensConversa`, posto no contexto do app pela
+ * composição). Uma conversa por origem: pedir de novo com a mesma origem retoma a conversa e acrescenta as
+ * fichas; o módulo dá uma origem a cada conversa (decisão 12: várias por revisão). O texto escrito e não
+ * enviado nunca se perde: vai junto à conversa seguinte (outra origem, "Nova conversa"). O pedido sem origem (o
+ * trecho do leitor, o Explorar, a paleta) vai à conversa do painel, se há uma (e não foi apagada); senão,
+ * abre o rascunho de uma conversa livre. A tela declara o contexto dela (`declararContexto`), que ⌘J leva ao
+ * painel, e também o clique na aba Conversar com o rascunho intocado; o rascunho de "Nova conversa" é a
+ * escolha de uma livre (`livre`): o clique na aba não o preenche, e a caixa oferece o contexto da tela pelo
+ * convite que ela declarou ("Conversar sobre esta revisão"). As origens que ganham outro nome e os links que
+ * mudam de endereço (a revisão refeita com outro curso) seguem (`trocarOrigem`, `trocarLinks`).
  *
  * O estado é só dado (sem funções): a continuidade (`continuidade/ControleContinuidade.ts`) guarda nas
  * preferências do servidor o que volta ao reabrir o app (`paraGuardar`, `restaurar`). O painel que ela reabre
@@ -51,9 +55,9 @@ export interface FichaRascunho {
   readonly oferta?: string;
 }
 
-/** Quem abriu a conversa ao lado (a revisão `revisao-ppc:<lista>`), só como dado. */
+/** Quem abriu a conversa ao lado (uma conversa da revisão, `revisao-ppc:<lista>#<pendência>`), só como dado. */
 export interface OrigemAoLado {
-  /** Uma conversa por origem: a mesma chave retoma a conversa (decisão 12). */
+  /** Uma conversa por origem: a mesma chave retoma a conversa. */
   readonly chave: string;
   /** A IA sugerida para a conversa nova (a da revisão, decisão 11). */
   readonly ia?: Provider;
@@ -76,12 +80,15 @@ export interface MensagemPreparada {
 
 /**
  * O que o módulo de uma origem faz com a conversa ao lado dela: prepara cada mensagem (a revisão grava o
- * PPC na pasta e abre a conversa na primeira) e diz o aviso da caixa (a leitura com IA em andamento gasta
- * a mesma assinatura), que muda quando o módulo avisa (`observar`).
+ * PPC na pasta e abre a conversa na primeira), fica sabendo quando ela saiu (a revisão relê a lista, que
+ * passa a ter a conversa com o título) e diz o aviso da caixa (a leitura com IA em andamento gasta a mesma
+ * assinatura), que muda quando o módulo avisa (`observar`).
  */
 export interface OrigensConversa {
   /** A preparação, para a origem que o módulo conhece; `undefined` para as outras (a livre). */
   readonly preparar: (origem: OrigemAoLado, mensagem: MensagemAoLado) => Promise<MensagemPreparada> | undefined;
+  /** Depois do envio da mensagem que `preparar` preparou para a conversa `conversa` (tenha ela saído ou não). */
+  readonly depoisDoEnvio: (origem: OrigemAoLado, conversa: string) => void;
   readonly aviso: (origem: OrigemAoLado) => string | null;
   readonly observar: (aviso: () => void) => () => void;
 }
@@ -89,6 +96,7 @@ export interface OrigensConversa {
 /** Sem módulo (os testes de uma peça só): nenhuma origem se prepara, e não há aviso. */
 export const SEM_ORIGENS: OrigensConversa = {
   preparar: () => undefined,
+  depoisDoEnvio: () => {},
   aviso: () => null,
   observar: () => () => {},
 };
@@ -109,7 +117,19 @@ export interface ConversaDoPainel {
   readonly avisoUso?: true;
   /** A conversa foi à tela cheia (⤢) a partir desta tela: "Trazer de volta" volta a ela. */
   readonly voltarPara?: string;
+  /** O rascunho de "Nova conversa": a pessoa escolheu uma livre, e o clique na aba não o preenche. */
+  readonly livre?: true;
 }
+
+/** O rascunho que ninguém tocou: sem conversa, fichas, ofertas, origem nem texto (e não o de "Nova conversa"). */
+export const rascunhoIntocado = (conversa: ConversaDoPainel): boolean =>
+  conversa.id === undefined &&
+  conversa.apagada !== true &&
+  conversa.livre !== true &&
+  conversa.origem === undefined &&
+  conversa.fichas.length === 0 &&
+  conversa.ofertas.length === 0 &&
+  conversa.texto === "";
 
 /** O que leva à conversa ao lado: as fichas, a pergunta já escrita e, de uma tela com conversa própria, a origem. */
 export interface PedidoConversa {
@@ -119,6 +139,17 @@ export interface PedidoConversa {
   readonly origem?: OrigemAoLado;
   /** A conversa que a origem já abriu antes (a lista da revisão guarda o id). */
   readonly conversa?: string;
+  /**
+   * O lugar de onde o pedido vem, quando ele tem várias origens (a revisão, com uma conversa por pendência):
+   * de dois pedidos do mesmo grupo, `juntarPedidos` fica com o primeiro. Sem ele, a origem é o grupo.
+   */
+  readonly grupo?: string;
+}
+
+/** O contexto que uma tela declara: o pedido (lido na hora) e o rótulo do convite no rascunho livre. */
+interface ContextoDeclarado {
+  readonly pedido: () => PedidoConversa;
+  readonly convite: string | undefined;
 }
 
 const SEM_CONVERSA: ConversaDoPainel = { fichas: [], ofertas: [], texto: "" };
@@ -191,7 +222,7 @@ export class ControlePainel {
   private pedidos = 0;
   /** Sobe a cada troca da conversa do painel (outra origem, nova, apagada, esquecida). */
   private geracao = 0;
-  private readonly contextos: Array<() => PedidoConversa> = [];
+  private readonly contextos: Array<ContextoDeclarado> = [];
   /** O painel aberto veio da continuidade, sem gesto da pessoa: o foco fica na tela. */
   private abertoAoRestaurar = false;
 
@@ -368,11 +399,17 @@ export class ControlePainel {
   /**
    * Leva o pedido à aba Conversar. Com origem, à conversa dela: a do painel, se é a mesma origem; senão, a
    * que a origem já abriu (`conversa`) ou o rascunho de uma nova. Sem origem, à conversa do painel; sem
-   * conversa no painel, ao rascunho de uma livre. Com `mostrar: false`, só prepara a caixa, sem abrir o painel
-   * nem levar o foco a ela (a caixa curta da janela compacta, fora do painel).
+   * conversa no painel, ao rascunho de uma livre. O texto escrito e não enviado vai junto à outra conversa
+   * (a pergunta não se perde ao trocar de pendência). Com `mostrar: false`, só prepara a caixa, sem abrir o
+   * painel nem levar o foco a ela (a caixa curta da janela compacta, fora do painel); com `focar: false`,
+   * abre o painel sem tirar o foco de onde ele está (a aba escolhida pelo teclado).
    */
-  readonly conversar = (pedido: PedidoConversa, opcoes: { readonly mostrar?: boolean } = {}): void => {
+  readonly conversar = (
+    pedido: PedidoConversa,
+    opcoes: { readonly mostrar?: boolean; readonly focar?: boolean } = {},
+  ): void => {
     const mostrar = opcoes.mostrar ?? true;
+    const focar = mostrar && (opcoes.focar ?? true);
     if (mostrar) this.pedir();
     const atual = this.estado.conversa;
     const fichas = pedido.fichas ?? [];
@@ -393,15 +430,15 @@ export class ControlePainel {
             ofertas.filter((oferta) => !atual.fichas.some((ficha) => ficha.chave === oferta.chave)),
           ),
           texto: pedido.texto ?? atual.texto,
-          ...(mostrar ? { focar: true as const } : {}),
+          ...(focar ? { focar: true as const } : {}),
         }
       : {
           ...(pedido.conversa === undefined ? {} : { id: pedido.conversa }),
           ...(pedido.origem === undefined ? {} : { origem: pedido.origem }),
           fichas,
           ofertas,
-          texto: pedido.texto ?? "",
-          ...(mostrar ? { focar: true as const } : {}),
+          texto: pedido.texto ?? atual.texto,
+          ...(focar ? { focar: true as const } : {}),
         };
     if (!mesma) this.geracao += 1;
     this.mudar(mostrar ? { aberto: true, aba: "conversar", conversa } : { conversa });
@@ -451,19 +488,23 @@ export class ControlePainel {
     });
   };
 
-  /** "Nova conversa": a aba volta ao rascunho de uma conversa livre, sem fichas. */
+  /**
+   * "Nova conversa": a aba volta ao rascunho de uma conversa livre, sem fichas, escolhida pela pessoa. O texto
+   * escrito e não enviado fica na caixa.
+   */
   readonly novaConversa = (): void => {
     this.geracao += 1;
-    this.mudar({ conversa: { ...SEM_CONVERSA, focar: true } });
+    const texto = this.estado.conversa.apagada === true ? "" : this.estado.conversa.texto;
+    this.mudar({ conversa: { ...SEM_CONVERSA, texto, focar: true, livre: true } });
   };
 
   /**
-   * A origem `chave` deixou de existir (a revisão apagada): a conversa já aberta segue como livre, sem as
-   * fichas que dependiam dela; o rascunho dela sai.
+   * As origens de `descartar` deixaram de existir (as conversas da revisão apagada): a conversa já aberta
+   * segue como livre, sem as fichas que dependiam dela; o rascunho dela sai.
    */
-  readonly esquecerOrigem = (chave: string): void => {
+  readonly esquecerOrigem = (descartar: (chave: string) => boolean): void => {
     const atual = this.estado.conversa;
-    if (atual.origem?.chave !== chave) return;
+    if (atual.origem === undefined || !descartar(atual.origem.chave)) return;
     this.geracao += 1;
     if (atual.id === undefined) {
       this.mudar({ conversa: SEM_CONVERSA });
@@ -480,12 +521,14 @@ export class ControlePainel {
   };
 
   /**
-   * A origem `antiga` passou a se chamar `nova` (a revisão refeita com outro curso, "Qual é o curso?", ganha
-   * outro id e herda a conversa): a conversa do painel segue com ela.
+   * As origens passam a se chamar como `trocar` diz (a revisão refeita com outro curso, "Qual é o curso?",
+   * ganha outro id e herda as conversas): a conversa do painel segue com a dela.
    */
-  readonly trocarOrigem = (antiga: string, nova: string): void => {
+  readonly trocarOrigem = (trocar: (chave: string) => string): void => {
     const atual = this.estado.conversa;
-    if (atual.origem?.chave !== antiga) return;
+    if (atual.origem === undefined) return;
+    const nova = trocar(atual.origem.chave);
+    if (nova === atual.origem.chave) return;
     this.mudar({ conversa: { ...atual, origem: { ...atual.origem, chave: nova } } });
   };
 
@@ -569,6 +612,18 @@ export class ControlePainel {
   };
 
   /**
+   * A origem abriu a conversa `conversa` para o rascunho, mas a mensagem não saiu (a conversa não abriu na
+   * interface, a conexão caiu): a caixa passa a ela, com o texto e as fichas, e o reenvio vai a ela, sem abrir
+   * outra conversa nem outra pasta.
+   */
+  readonly preparada = (conversa: string): void => {
+    const atual = this.estado.conversa;
+    if (atual.id !== undefined || atual.apagada === true) return;
+    const { livre: _livre, ...resto } = atual;
+    this.mudar({ conversa: { ...resto, id: conversa } });
+  };
+
+  /**
    * A mensagem não foi: o texto e as fichas voltam à caixa (o texto, se a pessoa não escreveu outro), e,
    * se a recusa foi o aviso de uso, a caixa o mostra.
    */
@@ -594,18 +649,32 @@ export class ControlePainel {
 
   /**
    * A tela declara o contexto dela (o PPC e a pendência em foco, a página do Explorar); ⌘J o leva ao
-   * painel. A última declarada vale; a função devolvida a tira.
+   * painel, e o clique na aba Conversar também, com o rascunho intocado. `convite`: o rótulo do botão que o
+   * oferece no rascunho de "Nova conversa" ("Conversar sobre esta revisão"); sem ele, não há oferta. A
+   * última declarada vale; a função devolvida a tira. Declarar e tirar avisam quem observa o painel (o
+   * convite muda).
    */
-  readonly declararContexto = (contexto: () => PedidoConversa): (() => void) => {
-    this.contextos.push(contexto);
+  readonly declararContexto = (contexto: () => PedidoConversa, convite?: string): (() => void) => {
+    const declarado: ContextoDeclarado = { pedido: contexto, convite };
+    this.contextos.push(declarado);
+    this.avisarContexto();
     return () => {
-      const i = this.contextos.lastIndexOf(contexto);
-      if (i >= 0) this.contextos.splice(i, 1);
+      const i = this.contextos.lastIndexOf(declarado);
+      if (i < 0) return;
+      this.contextos.splice(i, 1);
+      this.avisarContexto();
     };
   };
 
+  private avisarContexto(): void {
+    for (const aviso of this.observadores) aviso();
+  }
+
   /** O contexto da tela à vista (vazio, sem nenhum declarado). */
-  readonly contextoDaTela = (): PedidoConversa => this.contextos.at(-1)?.() ?? {};
+  readonly contextoDaTela = (): PedidoConversa => this.contextos.at(-1)?.pedido() ?? {};
+
+  /** O rótulo do convite da tela à vista, se ela declarou um. */
+  readonly conviteDaTela = (): string | undefined => this.contextos.at(-1)?.convite;
 
   /**
    * O que volta ao reabrir o app: a trilha (só os últimos `MAXIMO_TRILHA` links), as abas abertas, os

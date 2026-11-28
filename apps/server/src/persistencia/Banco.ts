@@ -16,6 +16,7 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
+import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import type * as SqlError from "effect/sql/SqlError";
 import * as Migrator from "effect/sql/Migrator";
@@ -26,6 +27,8 @@ import Migracao0003 from "./migracoes/0003_ArquivoAcompanhado.ts";
 import Migracao0004 from "./migracoes/0004_ConversaAoLado.ts";
 import Migracao0005 from "./migracoes/0005_AtividadesEContinuacao.ts";
 import Migracao0006 from "./migracoes/0006_VocabularioRevisaoPpc.ts";
+import Migracao0007 from "./migracoes/0007_ConversasDaRevisao.ts";
+import Migracao0008 from "./migracoes/0008_ContinuacoesDasConversasDaRevisao.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -44,6 +47,8 @@ export const MIGRACOES: ReadonlyArray<EntradaMigracao> = [
   [4, "ConversaAoLado", Migracao0004],
   [5, "AtividadesEContinuacao", Migracao0005],
   [6, "VocabularioRevisaoPpc", Migracao0006],
+  [7, "ConversasDaRevisao", Migracao0007],
+  [8, "ContinuacoesDasConversasDaRevisao", Migracao0008],
 ];
 
 const loader = Migrator.fromRecord(
@@ -52,8 +57,46 @@ const loader = Migrator.fromRecord(
 
 const migrar = Migrator.make({});
 
-/** Roda as migrações pendentes. */
+/**
+ * O histórico de migrações do banco não é o deste código: uma migração aplicada com outro nome (de outro
+ * ramo, no banco de desenvolvimento) ou de número que este app não conhece (de uma versão mais nova). O
+ * `Migrator` compara só o número e pularia a migração deste código, e o erro só apareceria na primeira
+ * consulta a uma tabela que não existe.
+ */
+export class HistoricoDivergente extends Schema.TaggedError<HistoricoDivergente>()("HistoricoDivergente", {
+  divergentes: Schema.Array(
+    Schema.Struct({ id: Schema.Number, noBanco: Schema.String, noCodigo: Schema.NullOr(Schema.String) }),
+  ),
+}) {
+  override get message(): string {
+    const itens = this.divergentes.map(({ id, noBanco, noCodigo }) =>
+      noCodigo === null
+        ? `a ${id} ("${noBanco}") não existe neste app, que vai até a ${MIGRACOES.at(-1)?.[0] ?? 0}`
+        : `a ${id} é "${noBanco}" no banco e "${noCodigo}" no código`,
+    );
+    return `O banco das conversas foi migrado por outra versão do Simplifica IF: ${itens.join("; ")}. Atualize o app ou, no desenvolvimento, corrija ou apague o conversas.sqlite (faça uma cópia antes).`;
+  }
+}
+
+/** As migrações aplicadas que não batem com `MIGRACOES` (o banco novo, sem a tabela, não tem nenhuma). */
+const conferirHistorico = Effect.fn("Banco.conferirHistorico")(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  const tabela = yield* sql<{ readonly name: string }>`
+    SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'effect_sql_migrations'`;
+  if (tabela.length === 0) return;
+  const aplicadas = yield* sql<{ readonly migration_id: number; readonly name: string }>`
+    SELECT migration_id, name FROM effect_sql_migrations ORDER BY migration_id`;
+  const doCodigo = new Map(MIGRACOES.map(([id, nome]) => [id, nome] as const));
+  const divergentes = aplicadas.flatMap(({ migration_id: id, name }) => {
+    const noCodigo = doCodigo.get(id);
+    return noCodigo === name ? [] : [{ id, noBanco: name, noCodigo: noCodigo ?? null }];
+  });
+  if (divergentes.length > 0) return yield* new HistoricoDivergente({ divergentes });
+});
+
+/** Confere o histórico e roda as migrações pendentes. */
 export const rodarMigracoes = Effect.fn("Banco.rodarMigracoes")(function* () {
+  yield* conferirHistorico();
   const executadas = yield* migrar({ loader });
   if (executadas.length > 0) {
     yield* Effect.logInfo(`banco das conversas migrado: ${executadas.map(([id, nome]) => `${id}_${nome}`).join(", ")}`);

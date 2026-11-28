@@ -12,12 +12,14 @@ export const REVISAO: NomeDoItem = { um: "revisão", varios: "revisões" };
 
 /**
  * Apagar uma revisão de PPC. `lendo`: a leitura com IA da lista está em andamento (o servidor a para
- * antes de apagar). A conversa ao lado e a pasta dela, com o Markdown do PPC, ficam; `podeLixeira`: o
- * desktop pode mandar a pasta à Lixeira, e então a conversa sai junto (sem a pasta, ela não segue).
+ * antes de apagar). As conversas ao lado e as pastas delas (uma por conversa), com o Markdown do PPC,
+ * ficam; `podeLixeira`: o desktop pode mandar as pastas à Lixeira, e então as conversas saem junto (sem a
+ * pasta, elas não seguem).
  */
 export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean, podeLixeira = false): TextosApagar {
   const r = lista.resultado;
-  const pasta = lista.conversaAoLado?.pasta;
+  const pastas = [...new Set(lista.conversas.map((c) => c.pasta))];
+  const uma = pastas.length === 1 ? pastas[0] : undefined;
   return {
     titulo: `Apagar a revisão de “${nomeDoArquivo(lista.arquivoOriginal)}”?`,
     saiDoApp: [
@@ -28,20 +30,25 @@ export function textosApagarRevisao(lista: ListaPendencias, lendo: boolean, pode
     ficaNoComputador: [
       { texto: "Seu arquivo", caminho: lista.arquivoOriginal },
       { texto: "A cópia comentada", caminho: r.arquivoComentado },
-      ...(pasta === undefined
-        ? []
-        : [
+      ...(uma !== undefined
+        ? [
             {
-              texto: `A conversa ao lado e a pasta dela, “${nomeDoArquivo(pasta)}”, com o texto do PPC`,
-              caminho: pasta,
+              texto: `A conversa ao lado e a pasta dela, “${nomeDoArquivo(uma)}”, com o texto do PPC`,
+              caminho: uma,
             },
-          ]),
+          ]
+        : pastas.map((pasta) => ({
+            texto: `Uma conversa ao lado e a pasta dela, “${nomeDoArquivo(pasta)}”, com o texto do PPC`,
+            caminho: pasta,
+          }))),
     ],
     aviso: lendo ? "A conferência com IA está em andamento. O app para a conferência antes de apagar." : null,
     opcaoPasta:
-      pasta === undefined || !podeLixeira
+      pastas.length === 0 || !podeLixeira
         ? null
-        : `Apagar também a conversa ao lado e mandar a pasta dela, “${nomeDoArquivo(pasta)}”, com o texto do PPC, para a Lixeira`,
+        : uma !== undefined
+          ? `Apagar também a conversa ao lado e mandar a pasta dela, “${nomeDoArquivo(uma)}”, com o texto do PPC, para a Lixeira`
+          : `Apagar também as ${pastas.length} conversas ao lado e mandar as pastas delas, com o texto do PPC, para a Lixeira`,
     confirmar: "Apagar a revisão",
   };
 }
@@ -52,7 +59,7 @@ export function textosApagarRevisoes(
   podeLixeira = false,
 ): TextosApagar {
   if (itens.length === 1) return textosApagarRevisao(itens[0]!.lista, itens[0]!.lendo, podeLixeira);
-  const conversas = itens.filter((i) => i.lista.conversaAoLado !== null).length;
+  const conversas = itens.filter((i) => i.lista.conversas.length > 0).length;
   const n = itens.length;
   const pendencias = itens.reduce((soma, i) => soma + i.lista.pendencias.length, 0);
   const comIa = itens.some((i) => i.lendo || i.lista.resultado.leituraIa !== "nenhuma");
@@ -72,7 +79,7 @@ export function textosApagarRevisoes(
             {
               texto:
                 conversas === 1
-                  ? "A conversa ao lado de uma delas e a pasta dela, com o texto do PPC"
+                  ? "As conversas ao lado de uma delas e as pastas delas, com o texto do PPC"
                   : `As conversas ao lado de ${conversas} delas e as pastas delas, com o texto dos PPCs`,
             },
           ]),
@@ -87,7 +94,7 @@ export function textosApagarRevisoes(
       conversas === 0 || !podeLixeira
         ? null
         : conversas === 1
-          ? "Apagar também a conversa ao lado e mandar a pasta dela, com o texto do PPC, para a Lixeira"
+          ? "Apagar também as conversas ao lado e mandar as pastas delas, com o texto do PPC, para a Lixeira"
           : "Apagar também as conversas ao lado e mandar as pastas delas, com o texto dos PPCs, para a Lixeira",
     confirmar: `Apagar ${n} revisões`,
   };

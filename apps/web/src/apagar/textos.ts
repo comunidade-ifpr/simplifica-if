@@ -81,8 +81,8 @@ export interface Desfecho {
   readonly falhou?: boolean;
   /** O registro da conversa no provider ficou (o app tenta de novo quando abrir): o nome da IA. */
   readonly transcricaoFicou?: string;
-  /** A pasta que não foi para a Lixeira. */
-  readonly pastaFicou?: string;
+  /** As pastas que não foram para a Lixeira (a revisão tem uma por conversa ao lado). */
+  readonly pastasFicaram?: ReadonlyArray<string>;
 }
 
 /**
@@ -109,7 +109,7 @@ export function notaDepoisDeApagar(desfechos: ReadonlyArray<Desfecho>, nome: Nom
   const falharam = desfechos.filter((d) => d.falhou === true);
   const apagados = desfechos.length - falharam.length;
   const transcricoes = desfechos.filter((d) => d.falhou !== true && d.transcricaoFicou !== undefined);
-  const pastas = desfechos.flatMap((d) => (d.falhou !== true && d.pastaFicou !== undefined ? [d.pastaFicou] : []));
+  const pastas = [...new Set(desfechos.flatMap((d) => (d.falhou === true ? [] : (d.pastasFicaram ?? []))))];
   if (falharam.length === 0 && transcricoes.length === 0 && pastas.length === 0) return null;
   const partes: Array<string> = [];
   if (desfechos.length === 1 && falharam.length === 0) partes.push(`A ${um} saiu do app.`);
@@ -133,7 +133,11 @@ export function notaDepoisDeApagar(desfechos: ReadonlyArray<Desfecho>, nome: Nom
     partes.push(
       `A pasta “${nomeDoArquivo(pastas[0]!)}” não foi para a Lixeira e continua em Documentos/Simplifica IF.`,
     );
-  else if (pastas.length > 1)
+  else if (pastas.length > 1 && pastas.length <= 3)
+    partes.push(
+      `As pastas ${pastas.map((p) => `“${nomeDoArquivo(p)}”`).join(", ")} não foram para a Lixeira e continuam em Documentos/Simplifica IF.`,
+    );
+  else if (pastas.length > 3)
     partes.push(`${pastas.length} pastas não foram para a Lixeira e continuam em Documentos/Simplifica IF.`);
   return {
     titulo: apagados === 0 ? "Nada foi apagado" : falharam.length > 0 ? "Apagado em parte" : "Apagado",

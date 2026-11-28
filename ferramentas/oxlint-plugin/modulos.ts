@@ -4,7 +4,8 @@
  * os arquivos de composição, listados aqui, o citam de fora. Um módulo não importa de outro.
  *
  * Esta é a lista única dos arquivos de composição: a regra de lint `simplifica-if/fronteira-modulos` e o
- * teste que varre o repositório (`test/fronteira-repositorio.test.ts`) a leem. Ela tem duas partes:
+ * teste que varre o repositório (`test/fronteira-repositorio.test.ts`) a leem. Ela tem duas partes (e a
+ * pasta das migrações, `PASTAS_QUE_IMPORTAM`, que vale como a primeira para cada arquivo dela):
  *
  * - `ARQUIVOS_QUE_IMPORTAM`: importam do módulo, e só do módulo da própria camada (um arquivo de
  *   `apps/server` importa de `apps/server/src/modulos/`, nunca de `packages/contratos-app/src/modulos/`), por
@@ -20,15 +21,9 @@
 export const ARQUIVOS_QUE_IMPORTAM: ReadonlyArray<string> = [
   // contratos: o `GrupoApp`
   "packages/contratos-app/src/contratos.ts",
-  // servidor: as layers, as fontes de ocupação, os handlers e as tabelas
+  // servidor: as layers, as fontes de ocupação e os handlers (as tabelas, nas migrações de `PASTAS_QUE_IMPORTAM`)
   "apps/server/src/servidor.ts",
   "apps/server/src/handlers.ts",
-  "apps/server/src/persistencia/migracoes/0001_Inicial.ts",
-  "apps/server/src/persistencia/migracoes/0002_ProblemasDasTentativas.ts",
-  "apps/server/src/persistencia/migracoes/0003_ArquivoAcompanhado.ts",
-  "apps/server/src/persistencia/migracoes/0004_ConversaAoLado.ts",
-  "apps/server/src/persistencia/migracoes/0005_AtividadesEContinuacao.ts",
-  "apps/server/src/persistencia/migracoes/0006_VocabularioRevisaoPpc.ts",
   // interface: a casca da rota, o estado de longa duração (com os links do Ler) e o recente do Início
   "apps/web/src/routes/revisao-ppc.tsx",
   "apps/web/src/inicializar.ts",
@@ -38,6 +33,19 @@ export const ARQUIVOS_QUE_IMPORTAM: ReadonlyArray<string> = [
   "apps/desktop/src/ipc.ts",
   "apps/desktop/src/preload.ts",
 ];
+
+/**
+ * As pastas cujos arquivos (só os filhos diretos) são todos de composição e importam do módulo da própria
+ * camada, como os de `ARQUIVOS_QUE_IMPORTAM`: as migrações do `conversas.sqlite`, em que a que mexe em tabela
+ * de módulo chama uma função dele. Uma migração nova não precisa entrar na lista.
+ */
+export const PASTAS_QUE_IMPORTAM: ReadonlyArray<string> = ["apps/server/src/persistencia/migracoes"];
+
+/** O arquivo importa do módulo da própria camada: está em `ARQUIVOS_QUE_IMPORTAM` ou é filho direto de uma pasta de `PASTAS_QUE_IMPORTAM`. */
+export function importaDoModulo(arquivo: string): boolean {
+  const pasta = arquivo.includes("/") ? arquivo.slice(0, arquivo.lastIndexOf("/")) : "";
+  return ARQUIVOS_QUE_IMPORTAM.includes(arquivo) || PASTAS_QUE_IMPORTAM.includes(pasta);
+}
 
 /** Os arquivos de composição que citam um módulo só pelo nome: não importam de `modulos/`. */
 export const ARQUIVOS_QUE_CITAM: ReadonlyArray<string> = [
@@ -126,7 +134,7 @@ export function violacaoDeFronteira(arquivo: string, especificador: string): str
     return `o módulo "${dono}" não importa do módulo "${alvo.modulo}" (${especificador}): o que os dois usam vai para o núcleo`;
   if (ARQUIVOS_QUE_CITAM.includes(arquivo))
     return `${arquivo} cita o módulo "${alvo.modulo}" só pelo nome e não importa dele (${especificador}); se precisa importar, passe-o para ARQUIVOS_QUE_IMPORTAM em ${LISTA}`;
-  if (!ARQUIVOS_QUE_IMPORTAM.includes(arquivo))
+  if (!importaDoModulo(arquivo))
     return `o núcleo não importa do módulo "${alvo.modulo}" (${especificador}): só os arquivos de composição de ${LISTA} citam um módulo`;
   const camada = camadaDe(arquivo);
   if (alvo.camada !== camada)

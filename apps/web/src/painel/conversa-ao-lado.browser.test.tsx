@@ -1,9 +1,9 @@
 /**
  * A conversa ao lado no Chromium, com o app inteiro conectado ao `apps/server` de verdade e os drivers de
  * demonstração (`test/drivers-demonstracao.ts`): da revisão de PPC ("Conversar sobre esta pendência"), com a
- * ficha do PPC tirada pelo teclado (nada dele vai à pasta, e o foco vai à ficha seguinte), a mesma conversa
- * retomada com a ficha nova (a instrução de leitura à vista na mensagem), "⤢" e "Trazer de volta", e a
- * conversa apagada; a barra da seleção no leitor (pelo teclado também, na primeira linha e com a cópia que
+ * ficha do PPC tirada pelo teclado (nada dele vai à pasta, e o foco vai à ficha seguinte), a conversa da
+ * pendência retomada com a ficha nova (a instrução de leitura à vista na mensagem), "Nova conversa" que o
+ * clique na aba não preenche (e o convite), "⤢" e "Trazer de volta", e a conversa apagada; a barra da seleção no leitor (pelo teclado também, na primeira linha e com a cópia que
  * falha) e a paleta (⌘J); a aba Pasta que diz de qual conversa é; a conversa apagada em outra janela; e o
  * aviso de uso não aceito, que não perde o texto nem as fichas, nem cria pasta.
  */
@@ -36,7 +36,7 @@ function semIngles() {
 const painelAoLado = () => page.getByRole("complementary", { name: "Painel ao lado" });
 const DCN_2026 = "ifpr://norma/br/cne-cp/res/2026/2";
 
-it("da revisão: a ficha tirada não vai à pasta; a mesma conversa volta com a ficha nova; ⤢, voltar e apagar", async () => {
+it("da revisão: a ficha tirada não vai à pasta; a conversa da pendência volta com a ficha nova; ⤢, voltar e apagar", async () => {
   window.simplifica = ponteTeste({
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherDocx: async () => servidor.ppc,
@@ -47,7 +47,8 @@ it("da revisão: a ficha tirada não vai à pasta; a mesma conversa volta com a 
   await page.getByRole("button", { name: "Escolher o PPC" }).click();
   const linha = page.getByRole("button", { name: /O AEE aparece como componente/ });
   await linha.click();
-  await page.getByRole("button", { name: "Conversar sobre esta pendência" }).click();
+  const conversarSobre = page.getByRole("main").getByRole("button", { name: "Conversar sobre esta pendência" });
+  await conversarSobre.click();
 
   // As fichas da revisão, já incluídas: o PPC e a pendência; o .docx é oferta.
   const painel = painelAoLado();
@@ -89,9 +90,12 @@ it("da revisão: a ficha tirada não vai à pasta; a mesma conversa volta com a 
   const listaId = app.contexto.revisao.obter().lista!.id;
   const ligada = await vi.waitFor(async () => {
     const lista = await api.chamar((c) => c["revisaoPpc.lista"]({ lista: listaId }));
-    expect(lista.conversaAoLado).not.toBeNull();
-    return lista.conversaAoLado!;
+    expect(lista.conversas).toHaveLength(1);
+    return lista.conversas[0]!;
   });
+  // A conversa é a da pendência, numa pasta com o tema dela.
+  expect(ligada.pendencia).toBe(app.contexto.revisao.obter().aberta);
+  expect(ligada.pasta).not.toMatch(/– conversa$/);
   const arquivos = async () =>
     (await api.chamar((c) => c["pasta.ver"]({ sessao: ligada.conversa }))).arquivos.map((a) => a.nome);
   expect(await arquivos()).toEqual([]);
@@ -101,10 +105,18 @@ it("da revisão: a ficha tirada não vai à pasta; a mesma conversa volta com a 
     rota: `/revisao-ppc?id=${listaId}`,
   });
 
-  // "Nova conversa" esvazia a aba; "Conversar sobre esta pendência" retoma a da revisão, com as fichas de novo.
+  // "Nova conversa" esvazia a aba, e o clique na aba não a preenche: o convite oferece a pendência aberta.
   await painel.getByRole("button", { name: "Nova conversa" }).click();
   await expect.element(mensagens).not.toBeInTheDocument();
-  await page.getByRole("button", { name: "Conversar sobre esta pendência" }).click();
+  await painel.getByRole("tab", { name: "Conversar" }).click();
+  await expect.element(painel.getByText("Esta é uma conversa livre, sem o que está na tela.")).toBeVisible();
+  await expect.element(painel.getByRole("button", { name: "Conversar sobre esta pendência" })).toBeVisible();
+  await expect.element(fichas.getByText("PPC de teste", { exact: true })).not.toBeInTheDocument();
+  // A lista "Conversas desta revisão" tem a conversa (pela pendência, antes de a tela reler o título).
+  const daRevisao = page.getByRole("main").getByRole("region", { name: "Conversas desta revisão" });
+  await expect.element(daRevisao.getByRole("button", { name: /O AEE aparece como componente/ })).toBeVisible();
+  // "Conversar sobre esta pendência" retoma a conversa da pendência, com as fichas de novo.
+  await conversarSobre.click();
   await expect.element(mensagens.getByText("O que falta no AEE?")).toBeVisible();
   await expect.element(fichas.getByText("PPC de teste", { exact: true })).toBeVisible();
   await fichas.getByRole("button", { name: "Anexar o .docx" }).click();

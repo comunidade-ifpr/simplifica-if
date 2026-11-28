@@ -7,7 +7,7 @@ describe("apagar a revisão", () => {
     id: "l",
     arquivoOriginal: "/d/PPC.docx",
     pendencias: [{}, {}],
-    conversaAoLado: null,
+    conversas: [],
     resultado: { leituraIa: "nenhuma", arquivoComentado: "/d/PPC - revisão prévia (Simplifica IF).docx" },
   } as unknown as ListaPendencias;
 
@@ -28,7 +28,14 @@ describe("apagar a revisão", () => {
   it("a pasta da conversa ao lado fica no computador, e o desktop oferece mandá-la à Lixeira com a conversa", () => {
     const comConversa = {
       ...lista,
-      conversaAoLado: { conversa: "c", pasta: "/Documentos/Simplifica IF/PPC Enfermagem – conversa" },
+      conversas: [
+        {
+          conversa: "c",
+          pasta: "/Documentos/Simplifica IF/PPC Enfermagem – conversa",
+          pendencia: null,
+          titulo: "Estágio",
+        },
+      ],
     } as ListaPendencias;
     const t = textosApagarRevisao(comConversa, false, true);
     expect(t.ficaNoComputador.at(-1)).toEqual({
@@ -48,9 +55,9 @@ describe("apagar a revisão", () => {
       true,
     );
     expect(varias.ficaNoComputador.at(-1)?.texto).toBe(
-      "A conversa ao lado de uma delas e a pasta dela, com o texto do PPC",
+      "As conversas ao lado de uma delas e as pastas delas, com o texto do PPC",
     );
-    expect(varias.opcaoPasta).toMatch(/^Apagar também a conversa ao lado/);
+    expect(varias.opcaoPasta).toMatch(/^Apagar também as conversas ao lado/);
     expect(
       textosApagarRevisoes(
         [
@@ -61,6 +68,31 @@ describe("apagar a revisão", () => {
       ).opcaoPasta,
     ).toBeNull();
     expect(textosApagarRevisoes([{ lista: comConversa, lendo: false }], true).opcaoPasta).toBe(t.opcaoPasta);
+  });
+
+  it("com uma conversa por pendência, a prévia lista cada pasta, e a Lixeira leva todas", () => {
+    const pasta = (nome: string) => `/Documentos/Simplifica IF/${nome}`;
+    const comDuas = {
+      ...lista,
+      conversas: [
+        { conversa: "a", pasta: pasta("PPC Enfermagem – Estágio"), pendencia: "k1", titulo: "Estágio" },
+        { conversa: "b", pasta: pasta("PPC Enfermagem – conversa"), pendencia: null, titulo: "" },
+      ],
+    } as ListaPendencias;
+    const t = textosApagarRevisao(comDuas, false, true);
+    expect(t.ficaNoComputador.slice(2)).toEqual([
+      {
+        texto: "Uma conversa ao lado e a pasta dela, “PPC Enfermagem – Estágio”, com o texto do PPC",
+        caminho: pasta("PPC Enfermagem – Estágio"),
+      },
+      {
+        texto: "Uma conversa ao lado e a pasta dela, “PPC Enfermagem – conversa”, com o texto do PPC",
+        caminho: pasta("PPC Enfermagem – conversa"),
+      },
+    ]);
+    expect(t.opcaoPasta).toBe(
+      "Apagar também as 2 conversas ao lado e mandar as pastas delas, com o texto do PPC, para a Lixeira",
+    );
   });
 
   it("com a conferência com IA, ela sai junto; em andamento, o app a para antes", () => {

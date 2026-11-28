@@ -22,6 +22,7 @@ describe("tabelas da revisão de PPC", () => {
       assert.deepStrictEqual(yield* nomes("table"), [
         "revisao_ppc_acoes_ia",
         "revisao_ppc_blocos_ia",
+        "revisao_ppc_conversas",
         "revisao_ppc_copias_comentadas",
         "revisao_ppc_eventos_pendencia",
         "revisao_ppc_listas_pendencias",
@@ -31,6 +32,7 @@ describe("tabelas da revisão de PPC", () => {
       ]);
       assert.includeMembers(yield* nomes("index"), [
         "revisao_ppc_acoes_ia_lista",
+        "revisao_ppc_conversas_lista",
         "revisao_ppc_eventos_pendencia_lista",
         "revisao_ppc_listas_pendencias_atualizada_em",
         "revisao_ppc_revisoes_ia_atualizada_em",

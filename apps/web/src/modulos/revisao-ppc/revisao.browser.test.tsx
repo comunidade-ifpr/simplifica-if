@@ -1,7 +1,7 @@
 /**
  * Peças da tela "Revisar um PPC" no Chromium, sem servidor: a linha da pendência (a mensagem inteira
- * só aberta, o trecho do PPC com o rótulo, "Ver no PPC" e "Copiar trecho") e a faixa da IA pausada ("Ver andamento",
- * bloco a bloco, e "Encerrar conferência por aqui").
+ * só aberta, o trecho do PPC com o rótulo, "Ver no PPC" e "Copiar trecho"), a faixa da IA pausada ("Ver andamento",
+ * bloco a bloco, e "Encerrar conferência por aqui") e "Conversas desta revisão".
  */
 import type {
   BlocoRevisaoIa,
@@ -22,6 +22,8 @@ import { ControlePainel, SEM_ORIGENS } from "../../painel/ControlePainel.ts";
 import { ControleJanelaCompacta } from "../../janela-compacta.ts";
 import { ControleRevisao, estadoIaInicial, estadoInicialRevisao, type EstadoRevisao } from "./ControleRevisao.ts";
 import { FaixaIa } from "./FaixaIa.tsx";
+import { ConversasDaRevisao } from "./ConversasDaRevisao.tsx";
+import { FICHA_PPC } from "./conversa.ts";
 import { LinhaPendencia } from "./LinhaPendencia.tsx";
 
 const montados: Array<() => void> = [];
@@ -35,7 +37,7 @@ const listaMinima: ListaPendencias = {
   sha256: "abc123456789",
   revisao: null,
   arquivoAcompanhado: null,
-  conversaAoLado: null,
+  conversas: [],
   criadaEm: "2026-11-22T10:00:00Z",
   atualizadaEm: "2026-11-22T10:00:00Z",
   provider: "claude",
@@ -62,11 +64,16 @@ const semServidor = {
   estado: { obter: () => ({ fase: "sem-servidor" }), observar: () => () => {} },
 } as unknown as Api;
 
-function montar(elemento: React.ReactNode, revisao: ControleRevisao, api: Api = semServidor) {
-  const painel = new ControlePainel();
+function montar(
+  elemento: React.ReactNode,
+  revisao: ControleRevisao,
+  api: Api = semServidor,
+  painel = new ControlePainel(),
+  conversas = new GerenteConversas(api),
+) {
   const contexto: ContextoApp = {
     api,
-    conversas: new GerenteConversas(api),
+    conversas,
     // As atividades sem servidor: a faixa e a lista não as leem.
     atividades: new ControleAtividades(semServidor),
     painel,
@@ -282,4 +289,40 @@ it("sem tema lido, a faixa pausada não oferece encerrar", async () => {
   montar(<FaixaIa faltam={3} />, revisao);
   await expect.element(page.getByRole("button", { name: "Retomar" })).toBeVisible();
   expect(page.getByRole("button", { name: "Encerrar conferência por aqui" }).query()).toBeNull();
+});
+
+it("'Conversas desta revisão': cada conversa pelo título (e pela pendência), que abre no painel; e a nova", async () => {
+  const lista: ListaPendencias = {
+    ...listaMinima,
+    pendencias: [viva],
+    conversas: [
+      { conversa: "c1", pasta: "/p/a", pendencia: viva.chave, titulo: "Norma revogada" },
+      { conversa: "c2", pasta: "/p/b", pendencia: null, titulo: "" },
+    ],
+  };
+  const revisao = new ControleRevisao({} as Api, {
+    inicial: { ...estadoInicialRevisao(), fase: "resultado", listaId: lista.id, lista },
+  });
+  const painel = new ControlePainel();
+  const conversas = new GerenteConversas(semServidor);
+  montar(<ConversasDaRevisao />, revisao, semServidor, painel, conversas);
+  const secao = page.getByRole("region", { name: "Conversas desta revisão" });
+  await expect.element(secao.getByRole("button", { name: /^Norma revogada/ })).toBeVisible();
+  await expect.element(secao.getByText(`Pendência: ${TITULO}`)).toBeInTheDocument();
+  await expect.element(secao.getByRole("button", { name: "Conversa sobre a revisão" })).toBeVisible();
+
+  await secao.getByRole("button", { name: /^Norma revogada/ }).click();
+  expect(painel.obter()).toMatchObject({ aberto: true, aba: "conversar" });
+  expect(painel.obter().conversa).toMatchObject({ id: "c1", origem: { chave: `revisao-ppc:lista-1#${viva.chave}` } });
+  await secao.getByRole("button", { name: "Conversa sobre a revisão" }).click();
+  expect(painel.obter().conversa).toMatchObject({ id: "c2", origem: { chave: "revisao-ppc:lista-1~c2" } });
+
+  await secao.getByRole("button", { name: "Nova conversa sobre esta revisão" }).click();
+  expect(painel.obter().conversa.id).toBeUndefined();
+  expect(painel.obter().conversa.fichas.map((f) => f.chave)).toEqual([FICHA_PPC]);
+
+  // A conversa apagada (aqui ou em outra janela, quando esta fica sabendo) sai da lista na hora.
+  conversas.apagada("c1");
+  await expect.element(secao.getByRole("button", { name: /^Norma revogada/ })).not.toBeInTheDocument();
+  await expect.element(secao.getByRole("button", { name: "Conversa sobre a revisão" })).toBeVisible();
 });

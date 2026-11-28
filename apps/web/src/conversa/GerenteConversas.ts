@@ -6,7 +6,9 @@
  *
  * Guarda também a IA escolhida por último (a das conversas novas, decisão 11) e as conversas apagadas
  * nesta sessão do app, para o painel dizer "Conversa apagada" e quem guardava o id dela (a conversa ao
- * lado de uma revisão) abrir outra, também as apagadas em outra janela (o acompanhamento delas termina). Guarda ainda a caixa de uma conversa que acabou de nascer de outra (a
+ * lado de uma revisão) abrir outra, também as apagadas em outra janela (o acompanhamento delas termina);
+ * quem lista conversas as acompanha (`observarApagadas`), e a apagada aberta de novo avisa o painel outra
+ * vez (`aoApagar`), que diz "Conversa apagada". Guarda ainda a caixa de uma conversa que acabou de nascer de outra (a
  * continuação com outra IA), até a mensagem dela sair, e quais conversas uma vista mostra agora (`naTela`).
  * `encerrar` para tudo (o app fechando).
  */
@@ -31,6 +33,8 @@ export class GerenteConversas {
   /** Quantas vistas mostram cada conversa agora (a tela cheia e a aba Conversar). */
   private readonly vistas = new Map<string, number>();
   private readonly aoApagar: ((id: string) => void) | undefined;
+  /** Quem acompanha as apagadas (a lista "Conversas desta revisão" as tira). */
+  private readonly observadoresApagadas = new Set<() => void>();
 
   /** `aoApagar`: a conversa saiu (apagada, ou não existia mais ao abrir); o painel a solta. */
   constructor(api: Api, opcoes: { readonly aoApagar?: (id: string) => void } = {}) {
@@ -90,6 +94,8 @@ export class GerenteConversas {
    * devolvida solta a referência.
    */
   readonly pegar = (id: string): { readonly controle: ControleConversa; readonly soltar: () => void } => {
+    // A já apagada (também em outra janela) que alguém abre de novo: quem a mostra diz "Conversa apagada".
+    if (this.apagadas.has(id)) this.aoApagar?.(id);
     let registro = this.registros.get(id);
     if (registro === undefined) {
       registro = { controle: new ControleConversa(this.api, { aoTerminar: this.apagadaFora }), referencias: 0 };
@@ -136,6 +142,7 @@ export class GerenteConversas {
     if (this.apagadas.has(id)) return;
     this.apagadas.add(id);
     this.aoApagar?.(id);
+    for (const aviso of this.observadoresApagadas) aviso();
   }
 
   /** A conversa `id` foi apagada: quem a mostra volta ao começo, e sem ninguém ela sai daqui. */
@@ -191,6 +198,15 @@ export class GerenteConversas {
 
   /** A conversa foi apagada nesta sessão do app (ou não existia mais ao abrir). */
   readonly foiApagada = (id: string): boolean => this.apagadas.has(id);
+
+  /** Avisa a cada conversa que passa a apagada; a função devolvida para de avisar. */
+  readonly observarApagadas = (aviso: () => void): (() => void) => {
+    this.observadoresApagadas.add(aviso);
+    return () => this.observadoresApagadas.delete(aviso);
+  };
+
+  /** Quantas conversas foram apagadas nesta sessão (muda a cada uma; o retrato de `observarApagadas`). */
+  readonly quantasApagadas = (): number => this.apagadas.size;
 
   /** O app fechando: as solturas agendadas não rodam, e nenhuma conversa segue acompanhada. */
   readonly encerrar = (): void => {

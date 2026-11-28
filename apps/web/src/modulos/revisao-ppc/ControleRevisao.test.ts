@@ -68,7 +68,7 @@ function criarLista(
     sha256: "sha256-0123456789abcdef",
     revisao: null,
     arquivoAcompanhado: null,
-    conversaAoLado: null,
+    conversas: [],
     criadaEm: "2026-11-24T09:00:00Z",
     atualizadaEm: "2026-11-24T09:00:00Z",
     provider: "claude",

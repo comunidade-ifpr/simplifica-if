@@ -5,8 +5,9 @@
  * O que este critério confere"; o cabeçalho é o botão da linha e não leva outro controle), a explicação em texto comum, o que falta como lista (o servidor
  * manda as três partes separadas), o que fazer, o trecho do PPC (na serifada, com
  * o filete da cor da gravidade, o rótulo "Trecho no PPC" e "Copiar trecho"), as fontes pelo nome (o link `ifpr://` abre o painel de leitura) e as ações: "Feito"
- * (ou "Desfazer"), "Sugerir texto", "Conversar sobre esta pendência" (a conversa ao lado da revisão, no
- * painel, com o PPC, a pendência e o documento aberto no Ler como fichas) e, no ⋯, "Discordar", "Reconferir
+ * (ou "Desfazer"), "Sugerir texto", "Conversar sobre esta pendência" (a conversa da pendência, no painel:
+ * a que já nasceu dela ou o rascunho de uma nova, com o PPC, a pendência e o documento aberto no Ler como
+ * fichas) e, no ⋯, "Discordar", "Reconferir
  * com o arquivo novo" e "Detalhes". Com a
  * revisão acompanhando um arquivo no Word, a pendência da IA marcada "Feito" ganha "Reconferir com a IA"
  * (no arquivo acompanhado), e a que um salvamento resolveu fica realçada por um instante.

@@ -10,9 +10,14 @@
  *   tela mandar entram acima da caixa, para a próxima mensagem.
  * - "⤢" leva a conversa à tela cheia (`/conversa?id=…`) e guarda de onde saiu; enquanto ela está lá, a aba
  *   diz "Aberta na tela cheia", com "Trazer de volta", que volta a essa tela. "Nova conversa" volta ao
- *   rascunho de uma livre. A conversa apagada sai da aba, que diz "Conversa apagada".
+ *   rascunho de uma livre, escolhida pela pessoa, com o texto já escrito (também do rascunho que trouxe o
+ *   contexto da tela, antes do envio): se a tela declarou um convite (a revisão: "Conversar sobre esta
+ *   revisão"), ele fica acima da caixa e leva o contexto dela, com o que já estava escrito. A conversa
+ *   apagada sai da aba, que diz "Conversa apagada".
  * - A mensagem que não sai (o aviso de uso não aceito, a conversa que não estava pronta) volta à caixa com
- *   as fichas; o que a pessoa escreveu ou o que chegou enquanto ela se preparava não se perde.
+ *   as fichas; o que a pessoa escreveu ou o que chegou enquanto ela se preparava não se perde. Se a origem já
+ *   abriu a conversa (e a pasta) e a mensagem não saiu, a caixa fica com ela (`preparada`): o reenvio não
+ *   abre outra. Depois do envio, a origem fica sabendo (`depoisDoEnvio`: a revisão relê a lista).
  */
 import { AvisoNaoAceito } from "@simplifica-if/contratos-app";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
@@ -34,7 +39,8 @@ import { EscolhaIa } from "../tarefas/comecar.tsx";
 import type { EscolhaDaIa } from "../tarefas/modelos.ts";
 import { tituloDoPedido } from "../tarefas/textos.ts";
 import { useAbrirLink } from "./abrirLink.ts";
-import type { MensagemAoLado, MensagemPreparada } from "./ControlePainel.ts";
+import type { ConversaDoPainel, MensagemAoLado, MensagemPreparada } from "./ControlePainel.ts";
+import { aceitarConvite } from "./conversar.ts";
 
 /**
  * A conversa livre: na primeira mensagem, a pasta nova com o título do pedido e a conversa nela. O aviso de
@@ -84,7 +90,7 @@ export function AbaConversar() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-1 border-border border-b px-2 py-1">
-        <Button size="sm" variant="ghost" onClick={painel.novaConversa} disabled={conversa.id === undefined}>
+        <Button size="sm" variant="ghost" onClick={painel.novaConversa} disabled={jaLivre(conversa)}>
           <PlusIcon /> Nova conversa
         </Button>
         {conversa.id === undefined ? null : <BotaoTelaCheia id={conversa.id} />}
@@ -98,6 +104,16 @@ export function AbaConversar() {
     </div>
   );
 }
+
+/**
+ * O rascunho já é o de uma conversa livre, sem nada além do texto: "Nova conversa" não teria o que trocar. O
+ * rascunho com o contexto da tela (a origem, as fichas) pode virar o de uma livre antes de enviar.
+ */
+const jaLivre = (conversa: ConversaDoPainel): boolean =>
+  conversa.id === undefined &&
+  conversa.origem === undefined &&
+  conversa.fichas.length === 0 &&
+  conversa.ofertas.length === 0;
 
 /** "⤢": a conversa vai à tela cheia, e a aba passa a dizer "Aberta na tela cheia". */
 function BotaoTelaCheia({ id }: { readonly id: string }) {
@@ -125,11 +141,22 @@ function BotaoTelaCheia({ id }: { readonly id: string }) {
 }
 
 function Rascunho() {
+  const app = useApp();
+  const [estado, painel] = usePainel();
+  const convite = useSyncExternalStore(painel.observar, painel.conviteDaTela);
   return (
     <div className="flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-y-auto px-3 pt-3 pb-3">
       <p className="text-muted-foreground text-sm">
         Pergunte à IA sem sair da tela. O que está nas fichas vai junto com a pergunta; tire o que não quiser mandar.
       </p>
+      {estado.conversa.livre === true && convite !== undefined ? (
+        <div className="flex flex-col items-start gap-1.5 text-small">
+          <p className="text-muted-foreground">Esta é uma conversa livre, sem o que está na tela.</p>
+          <Button size="sm" variant="outline" onClick={() => aceitarConvite(app)}>
+            {convite}
+          </Button>
+        </div>
+      ) : null}
       <CaixaAoLado controle={undefined} />
     </div>
   );
@@ -225,20 +252,28 @@ function CaixaAoLado({
       const pronto = await ((origem === undefined ? undefined : origens.preparar(origem, mensagem)) ??
         prepararLivre(api, mensagem));
       if (conversa.id === undefined) conversas.escolherIa(ia.provider);
+      // A pessoa pode ter ido a outra conversa no painel enquanto esta se preparava: a mensagem vai à
+      // conversa preparada, sem mexer na caixa da outra.
+      const naMesma = () => painel.geracaoDaConversa() === geracao;
       const pego = conversas.pegar(pronto.conversa);
       try {
         await pego.controle.aposAbrir();
-        // A pessoa pode ter ido a outra conversa no painel enquanto esta se preparava: a mensagem vai à
-        // conversa preparada, sem mexer na caixa da outra.
-        const naMesma = () => painel.geracaoDaConversa() === geracao;
         if (naMesma()) {
           painel.enviada(pronto.conversa, { texto: escrito, chaves: fichas.map((f) => f.chave) });
           aoEnviada?.();
         }
         const resultado = await pego.controle.enviar(texto, pronto.fichas);
         if (resultado !== "enviada" && naMesma()) painel.devolver(escrito, fichas, resultado === "avisoNaoAceito");
+        // A pergunta foi, mas a caixa trocou de conversa no meio e a levou junto (`conversar`): ela sai de lá.
+        if (resultado === "enviada" && !naMesma() && painel.obter().conversa.texto === escrito)
+          painel.escreverTexto("");
+      } catch (falha) {
+        // A conversa já existe (a origem a abriu, com a pasta): o reenvio vai a ela, não abre outra.
+        if (naMesma()) painel.preparada(pronto.conversa);
+        throw falha;
       } finally {
         pego.soltar();
+        if (origem !== undefined) origens.depoisDoEnvio(origem, pronto.conversa);
       }
     } catch (falha) {
       if (ehAvisoNaoAceito(falha)) painel.avisoDeUso(true);

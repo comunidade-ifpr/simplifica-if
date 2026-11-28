@@ -1,14 +1,27 @@
 /**
- * A conversa ao lado da revisão (`docs/plans/multitarefa.md`, "Conversa ao lado"): o pedido que a revisão
- * leva ao painel do app. As fichas da revisão, já incluídas e removíveis: o PPC inteiro (o Markdown que o
- * servidor grava na pasta da conversa no envio, só se a ficha ficou) e a pendência em foco (o texto dela e o
- * trecho do PPC, com o texto do critério dela: o que confere e o que conta como atendido); a oferta "Anexar o .docx". A origem é a revisão (`revisao-ppc:<lista>`, só dado): uma conversa
- * por revisão (a lista guarda o id, e o painel a retoma) e a IA da revisão (senão, a última usada).
+ * As conversas ao lado da revisão (`docs/plans/multitarefa.md`, "Conversa ao lado", decisão 12): o pedido que
+ * a revisão leva ao painel do app. As fichas da revisão, já incluídas e removíveis: o PPC inteiro (o Markdown
+ * que o servidor grava na pasta da conversa no envio, só se a ficha ficou) e a pendência em foco (o texto
+ * dela e o trecho do PPC, com o texto do critério dela: o que confere e o que conta como atendido); a oferta
+ * "Anexar o .docx". A IA é a da revisão (senão, a última usada).
  *
- * `origensDaRevisao` é o que o módulo faz com essa origem (a composição o põe no contexto do app): antes de
- * cada mensagem, `revisaoPpc.conversarSobre` com o que as fichas que ficaram pedem (o PPC, o `.docx` e a
- * pendência cuja ficha ficou, que guia a instrução de leitura), e o aviso de que a leitura com IA em
- * andamento desta revisão gasta a mesma assinatura, que muda com o `ControleRevisao`.
+ * Várias conversas por revisão, cada uma com a sua pasta e a sua origem no painel (só dado; o painel junta
+ * os pedidos de uma mesma origem):
+ * - a de uma pendência, `revisao-ppc:<lista>#<pendência>`: "Conversar sobre esta pendência" (e ⌘J com ela
+ *   aberta) retoma a conversa que nasceu dela (a lista a guarda, `conversas`), ou abre o rascunho dela;
+ * - uma geral, `revisao-ppc:<lista>~<marca>`: a marca é a conversa (a que a lista guarda) ou, no rascunho
+ *   de uma nova, uma marca própria, que não cai na conversa de outra pendência. ⌘J sem pendência aberta
+ *   fica na conversa geral que o painel mostra, ou abre o rascunho de uma nova.
+ * Os pedidos da revisão têm o grupo `revisao-ppc:<lista>`: a revisão na tela e o PPC dela no Ler vão juntos
+ * como um só.
+ *
+ * `origensDaRevisao` é o que o módulo faz com essas origens (a composição o põe no contexto do app): antes de
+ * cada mensagem, `revisaoPpc.conversarSobre` com a conversa do painel (se já há), a pendência da origem (e o
+ * tema dela, se ela já saiu da lista) e o que as fichas que ficaram pedem (o PPC, o `.docx` e a pendência
+ * cuja ficha ficou, que guia a instrução de leitura); depois do envio, a lista relida se ela ainda não tem a
+ * conversa ou o título dela; e o aviso de que a leitura com IA em andamento desta revisão gasta a mesma
+ * assinatura, que muda com o `ControleRevisao`. As fichas do PPC e do `.docx` têm chaves sem o id da lista
+ * (`FICHA_PPC`, `FICHA_DOCX`): "Qual é o curso?" troca o id e a origem, e a ficha continua pedindo o PPC.
  *
  * O link `ifpr://revisao-ppc/<lista>/…` (o PPC ou um critério no Ler) não é da base: `pedidoDoLinkDaRevisao`
  * o troca pelas fichas da revisão (a composição o liga ao contexto do app).
@@ -27,7 +40,13 @@ import type { Api } from "../../conexao/api.ts";
 import type { GerenteConversas } from "../../conversa/GerenteConversas.ts";
 import { horaDe } from "../../lib/formato.ts";
 import { nomeDoArquivo } from "../../lib/texto.ts";
-import type { ControlePainel, FichaRascunho, OrigensConversa, PedidoConversa } from "../../painel/ControlePainel.ts";
+import type {
+  ConversaDoPainel,
+  ControlePainel,
+  FichaRascunho,
+  OrigensConversa,
+  PedidoConversa,
+} from "../../painel/ControlePainel.ts";
 import { type ControleRevisao, lendoComIa } from "./ControleRevisao.ts";
 import { textoDoCriterio } from "./criterio.ts";
 import { descreverCurso, temFichaDeCriterio } from "./lista.ts";
@@ -107,8 +126,45 @@ export function textoDaPendencia(p: PendenciaRevisao, criterio?: string): string
     .join("\n");
 }
 
-/** A origem da conversa ao lado da revisão `lista`. */
-const chaveDaOrigem = (lista: string) => `revisao-ppc:${lista}`;
+/**
+ * A chave da ficha do PPC e da oferta do `.docx` na caixa: sem o id da lista, que "Qual é o curso?" troca (a
+ * caixa é de uma revisão só, a da origem; a ficha que volta do pedido seguinte toma o lugar da de antes).
+ */
+export const FICHA_PPC = "revisao-ppc:ppc";
+export const FICHA_DOCX = "revisao-ppc:docx";
+
+/** O grupo dos pedidos da revisão `lista` (o começo da chave de toda origem dela). */
+export const grupoDaRevisao = (lista: string) => `revisao-ppc:${lista}`;
+
+/** A origem da conversa da pendência `chave` da revisão `lista`. */
+export const origemDaPendencia = (lista: string, chave: string) => `${grupoDaRevisao(lista)}#${chave}`;
+
+/** A origem de uma conversa geral da revisão `lista`: `marca` é a conversa, ou a do rascunho de uma nova. */
+export const origemGeral = (lista: string, marca: string) => `${grupoDaRevisao(lista)}~${marca}`;
+
+const ORIGEM = /^revisao-ppc:([^#~]+)(?:#(.+)|~(.+))?$/;
+
+/** A revisão de uma origem do módulo e a pendência dela (se é a de uma pendência); `undefined`, se não é. */
+export function lerOrigem(chave: string): { readonly lista: string; readonly pendencia?: string } | undefined {
+  const m = ORIGEM.exec(chave);
+  if (m === null) return undefined;
+  return m[2] === undefined ? { lista: m[1]! } : { lista: m[1]!, pendencia: m[2] };
+}
+
+/** A conversa do painel é uma das da revisão `lista`: pela origem, ou por ser uma das que a lista guarda. */
+export function ehConversaDaRevisao(conversa: ConversaDoPainel, lista: ListaPendencias): boolean {
+  if (conversa.apagada === true) return false;
+  if (conversa.origem !== undefined && lerOrigem(conversa.origem.chave)?.lista === lista.id) return true;
+  return conversa.id !== undefined && lista.conversas.some((c) => c.conversa === conversa.id);
+}
+
+/** As conversas ao lado da revisão que ainda existem (a apagada nesta execução sai). */
+export const conversasVivas = (lista: ListaPendencias, conversas: Pick<GerenteConversas, "foiApagada">) =>
+  lista.conversas.filter((c) => !conversas.foiApagada(c.conversa));
+
+/** Uma marca para o rascunho de uma conversa geral nova, única nesta janela (o rascunho não volta ao reabrir). */
+let marcas = 0;
+const novaMarca = () => `nova-${Date.now().toString(36)}-${(marcas += 1)}`;
 
 /** A ficha da pendência na caixa: com o critério lido, o texto dele vai à vista e pronto para a mensagem. */
 function fichaDaPendencia(viva: PendenciaViva, criterio: string | undefined): FichaRascunho {
@@ -139,13 +195,18 @@ function completarQuandoChegar(apoio: ApoioConversa, lista: string, origem: stri
   });
 }
 
-/** As fichas da revisão e a origem dela, com a pendência `chave` em foco (se há). */
+/**
+ * O pedido da revisão aberta, com a pendência `chave` em foco (se há): a conversa dela (a que já nasceu
+ * dela, ou o rascunho), com as fichas do PPC e da pendência (a conversa que já existe as recebe de novo,
+ * como fichas removíveis); sem pendência, a conversa geral que o painel mostra, ou o rascunho de uma nova,
+ * com a ficha do PPC.
+ */
 export function pedidoDaRevisao(apoio: ApoioConversa, chave: string | null): PedidoConversa | undefined {
   const lista = apoio.revisao.obter().lista;
   if (lista === undefined) return undefined;
   const nome = nomeDoPpc(lista);
   const ppc: FichaRascunho = {
-    chave: `ppc:${lista.id}`,
+    chave: FICHA_PPC,
     rotulo: comPpc(descreverCurso(lista.resultado.curso) ?? nome),
     tipo: "documento",
     tirar: "Tirar o PPC do contexto",
@@ -154,7 +215,7 @@ export function pedidoDaRevisao(apoio: ApoioConversa, chave: string | null): Ped
   };
   const arquivoDocx = lista.arquivoAcompanhado ?? lista.arquivoOriginal;
   const docx: FichaRascunho = {
-    chave: `docx:${lista.id}`,
+    chave: FICHA_DOCX,
     rotulo: nomeDoArquivo(arquivoDocx),
     tipo: "arquivo",
     tirar: "Tirar o .docx do contexto",
@@ -163,33 +224,93 @@ export function pedidoDaRevisao(apoio: ApoioConversa, chave: string | null): Ped
   };
   const viva = chave === null ? undefined : lista.pendencias.find((v) => v.chave === chave);
   const criterio = viva === undefined ? undefined : lidosDa(apoio.api).textos.get(viva.pendencia.ficha);
-  const origem = chaveDaOrigem(lista.id);
+  const vivas = conversasVivas(lista, apoio.conversas);
+  let origem: string;
+  let ligada: string | undefined;
+  if (viva !== undefined) {
+    // A conversa da pendência: a última que nasceu dela, ou o rascunho dela.
+    origem = origemDaPendencia(lista.id, viva.chave);
+    ligada = vivas.findLast((c) => c.pendencia === viva.chave)?.conversa;
+  } else {
+    // Sem pendência: a conversa geral que o painel já mostra, se é desta revisão; senão, o rascunho de uma nova.
+    const atual = apoio.painel.obter().conversa;
+    const daAtual = atual.origem === undefined ? undefined : lerOrigem(atual.origem.chave);
+    const geralAtual =
+      atual.apagada !== true && daAtual?.lista === lista.id && daAtual.pendencia === undefined
+        ? atual.origem?.chave
+        : undefined;
+    origem = geralAtual ?? origemGeral(lista.id, novaMarca());
+    ligada = geralAtual === undefined ? undefined : atual.id;
+  }
   // Sem o critério lido, a ficha se completa quando ele chega (ou no envio, em `origensDaRevisao`).
   if (viva !== undefined && criterio === undefined) completarQuandoChegar(apoio, lista.id, origem, viva);
   const pendencia = viva === undefined ? undefined : fichaDaPendencia(viva, criterio);
-  const ligada = lista.conversaAoLado?.conversa;
   return {
-    ...(ligada === undefined || apoio.conversas.foiApagada(ligada) ? {} : { conversa: ligada }),
+    ...(ligada === undefined ? {} : { conversa: ligada }),
     fichas: pendencia === undefined ? [ppc] : [ppc, pendencia],
     ofertas: [docx],
     origem: { chave: origem, ...(lista.provider === null ? {} : { ia: lista.provider }) },
+    grupo: grupoDaRevisao(lista.id),
+  };
+}
+
+/** O rascunho de uma conversa geral nova sobre a revisão aberta ("Nova conversa sobre esta revisão"). */
+export function pedidoDeConversaNova(apoio: ApoioConversa): PedidoConversa | undefined {
+  const lista = apoio.revisao.obter().lista;
+  const pedido = pedidoDaRevisao(apoio, null);
+  if (lista === undefined || pedido === undefined) return undefined;
+  const { conversa: _conversa, ...resto } = pedido;
+  return { ...resto, origem: { ...pedido.origem!, chave: origemGeral(lista.id, novaMarca()) } };
+}
+
+/** Uma das conversas da revisão aberta ("Conversas desta revisão"), sem fichas novas. */
+export function pedidoDaConversa(
+  apoio: ApoioConversa,
+  conversa: ListaPendencias["conversas"][number],
+): PedidoConversa | undefined {
+  const lista = apoio.revisao.obter().lista;
+  if (lista === undefined) return undefined;
+  return {
+    conversa: conversa.conversa,
+    origem: {
+      chave:
+        conversa.pendencia === null
+          ? origemGeral(lista.id, conversa.conversa)
+          : origemDaPendencia(lista.id, conversa.pendencia),
+      ...(lista.provider === null ? {} : { ia: lista.provider }),
+    },
+    grupo: grupoDaRevisao(lista.id),
   };
 }
 
 /** A preparação de cada mensagem da conversa ao lado de uma revisão, e o aviso da caixa. */
 export function origensDaRevisao(apoio: ApoioConversa): OrigensConversa {
   return {
-    preparar: (origem, { fichas, ia }) => {
-      if (!origem.chave.startsWith(chaveDaOrigem(""))) return undefined;
-      const lista = origem.chave.slice(chaveDaOrigem("").length);
-      const ppc = fichas.find((f) => f.chave === `ppc:${lista}`);
-      const docx = fichas.find((f) => f.chave === `docx:${lista}`);
+    preparar: (origem, { conversa, fichas, ia }) => {
+      const daRevisao = lerOrigem(origem.chave);
+      if (daRevisao === undefined) return undefined;
+      const { lista, pendencia: daOrigem } = daRevisao;
+      const ppc = fichas.find((f) => f.chave === FICHA_PPC);
+      const docx = fichas.find((f) => f.chave === FICHA_DOCX);
       // A pendência cuja ficha ficou (a última que entrou): a instrução de leitura começa pela seção dela.
       const pendencia = fichas.findLast((f) => f.chave.startsWith("pendencia:"))?.chave.slice("pendencia:".length);
+      // O tema da pasta, se a pendência da origem já saiu da lista do servidor (o salvamento lhe deu outro
+      // trecho antes do primeiro envio): o critério dela, pela lista aberta, ou o título da ficha dela.
+      const daAberta =
+        daOrigem === undefined
+          ? undefined
+          : apoio.revisao.obter().lista?.pendencias.find((v) => v.chave === daOrigem)?.pendencia;
+      const tema =
+        daAberta === undefined
+          ? fichas.find((f) => f.chave === `pendencia:${daOrigem}`)?.rotulo.replace(/^Pendência: /, "")
+          : daAberta.tituloFicha || daAberta.titulo;
       return (async () => {
         const r = await apoio.api.chamar((c) =>
           c["revisaoPpc.conversarSobre"]({
             lista,
+            ...(conversa === undefined ? {} : { conversa }),
+            ...(daOrigem === undefined ? {} : { pendencia: daOrigem }),
+            ...(daOrigem === undefined || tema === undefined ? {} : { tema }),
             ...(pendencia === undefined ? {} : { chave: pendencia }),
             provider: ia.provider,
             ...(ia.modelo === undefined ? {} : { modelo: ia.modelo }),
@@ -198,12 +319,6 @@ export function origensDaRevisao(apoio: ApoioConversa): OrigensConversa {
             docx: docx !== undefined,
           }),
         );
-        // A lista guarda outra conversa (a nova, ou a continuação com outra IA); sem acompanhar a lista (sem
-        // arquivo no Word), a tela a lê de novo, para "Conversar sobre esta pendência" retomar essa.
-        if (r.nova && apoio.revisao.obter().lista?.id === lista) {
-          const atual = await apoio.api.chamar((c) => c["revisaoPpc.lista"]({ lista }));
-          if (apoio.revisao.obter().lista?.id === lista) apoio.revisao.abrirLista(atual);
-        }
         // A pendência cujo critério não chegou antes: o texto dela, com o do critério, da lista desta conversa
         // (a aberta na tela, se é ela; senão, lida agora).
         const semCriterio = fichas.filter((f) => f.ficha === undefined && f.chave.startsWith("pendencia:"));
@@ -247,9 +362,26 @@ export function origensDaRevisao(apoio: ApoioConversa): OrigensConversa {
         return { conversa: r.conversa, fichas: prontas };
       })();
     },
+    // Depois do envio (a primeira mensagem dá o título): sem acompanhar a lista (sem arquivo no Word), a tela a
+    // lê de novo se ela ainda não tem a conversa (a nova, ou a continuação com outra IA) ou o título dela,
+    // para "Conversar sobre esta pendência" retomar a dela e "Conversas desta revisão" a mostrar pelo título.
+    // Fica para depois do envio, e a falha da leitura não é do envio: a conversa já está na lista do servidor.
+    depoisDoEnvio: (origem, conversa) => {
+      const lista = lerOrigem(origem.chave)?.lista;
+      const aberta = apoio.revisao.obter().lista;
+      if (lista === undefined || aberta?.id !== lista) return;
+      const naLista = aberta.conversas.find((c) => c.conversa === conversa);
+      if (naLista !== undefined && naLista.titulo.trim() !== "") return;
+      void apoio.api
+        .chamar((c) => c["revisaoPpc.lista"]({ lista }))
+        .then((atual) => {
+          if (apoio.revisao.obter().lista?.id === lista) apoio.revisao.abrirLista(atual);
+        })
+        .catch(() => undefined);
+    },
     aviso: (origem) => {
       const estado = apoio.revisao.obter();
-      return estado.lista !== undefined && origem.chave === chaveDaOrigem(estado.lista.id) && lendoComIa(estado)
+      return estado.lista !== undefined && lerOrigem(origem.chave)?.lista === estado.lista.id && lendoComIa(estado)
         ? "A conferência com IA deste PPC está em andamento: as duas gastam a mesma assinatura."
         : null;
     },

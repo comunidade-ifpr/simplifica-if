@@ -4,7 +4,7 @@
  * `<Outlet />` (`routes/__root.tsx`), que segue aberta de uma tela a outra e de uma conversa a outra.
  *
  * - Abas: Ler (o leitor `ifpr://`, com a trilha e os documentos marcados), Conversar (a conversa ao lado,
- *   `AbaConversar.tsx`) e Pasta (a pasta da conversa da aba Conversar; sem ela, a da conversa da tela).
+ *   `AbaConversar.tsx`; o clique nela, ou a escolha pelas setas, que deixa o foco na aba, com o rascunho intocado, traz o contexto da tela) e Pasta (a pasta da conversa da aba Conversar; sem ela, a da conversa da tela).
  *   "Buscar na base" abre a paleta (⌘K), com os resultados indo para o Ler, em qualquer tela.
  * - Coluna ou sobreposição: quando a tela principal ficaria com menos de `MINIMO_TELA` px, o painel vem por
  *   cima, da borda direita, com sombra; "Prender ao lado" o fixa como coluna, e o app lembra.
@@ -46,6 +46,7 @@ import { ariaAtalho, ATALHO_PAINEL, ATALHO_PALETA } from "../lib/teclado.ts";
 import { cn } from "../lib/utils.ts";
 import { AbaConversar } from "./AbaConversar.tsx";
 import { useAbrirLink } from "./abrirLink.ts";
+import { mostrarConversar } from "./conversar.ts";
 import type { AbaPainel, ControlePainel, EstadoPainel } from "./ControlePainel.ts";
 
 /** A largura mínima da tela principal com o painel em coluna; abaixo dela, o painel vem por cima. */
@@ -88,6 +89,7 @@ function Painel({ estado, painel }: { readonly estado: EstadoPainel; readonly pa
   const sobreposto = compacta || (estreito && !estado.preso);
   const { abrir: abrirPaleta } = usePaleta();
   const abrirLink = useAbrirLink();
+  const app = useApp();
   const id = useId();
 
   // O foco vem ao painel ao abrir e volta, ao fechar, para onde estava (se ainda está na tela e o foco não
@@ -146,14 +148,16 @@ function Painel({ estado, painel }: { readonly estado: EstadoPainel; readonly pa
     painel.fechar();
   };
 
-  // As setas andam entre as abas, que se escolhem ao receber o foco.
+  // As setas andam entre as abas, que se escolhem ao receber o foco, como no clique (Conversar traz o
+  // contexto da tela), mas o foco fica na aba.
   const aoTeclarAbas = (evento: KeyboardEvent<HTMLDivElement>) => {
     const passo = { ArrowLeft: -1, ArrowRight: 1 }[evento.key];
     if (passo === undefined) return;
     evento.preventDefault();
     const i = ABAS.findIndex((a) => a.aba === estado.aba);
     const proxima = ABAS[(i + passo + ABAS.length) % ABAS.length]!.aba;
-    painel.mostrar(proxima);
+    if (proxima === "conversar") mostrarConversar(app, { focar: false });
+    else painel.mostrar(proxima);
     document.getElementById(`${id}-aba-${proxima}`)?.focus();
   };
 
@@ -198,7 +202,8 @@ function Painel({ estado, painel }: { readonly estado: EstadoPainel; readonly pa
                   aria-selected={estado.aba === aba}
                   aria-controls={`${id}-conteudo`}
                   tabIndex={estado.aba === aba ? 0 : -1}
-                  onClick={() => painel.mostrar(aba)}
+                  // Conversar, com o rascunho intocado, traz o contexto da tela (`mostrarConversar`).
+                  onClick={() => (aba === "conversar" ? mostrarConversar(app) : painel.mostrar(aba))}
                   className="flex items-center gap-1.5 rounded-md px-2 py-1 font-medium text-muted-foreground text-sm hover:bg-muted hover:text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground"
                 >
                   {compacta ? null : <Icone aria-hidden className="size-3.5" />}

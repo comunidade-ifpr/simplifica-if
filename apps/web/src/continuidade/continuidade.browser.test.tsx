@@ -196,7 +196,8 @@ it("'Qual é o curso?' com a conversa ao lado e o PPC no Ler: o painel segue a l
     await page.getByRole("button", { name: "Conferir com este curso" }).click();
     await expect.poll(() => app.roteador.state.location.search.id).not.toBe(antiga);
     nova = String(app.roteador.state.location.search.id);
-    expect(painel.obter().conversa.origem?.chave).toBe(`revisao-ppc:${nova}`);
+    // A conversa da pendência segue com a lista nova (a origem dela, `revisao-ppc:<lista>#<pendência>`).
+    expect(painel.obter().conversa.origem?.chave).toMatch(new RegExp(`^revisao-ppc:${nova}#`));
     const links = [...painel.obter().historico.links, ...painel.obter().marcados];
     expect(links.some((link) => link.startsWith(`ifpr://revisao-ppc/${nova}/`))).toBe(true);
     expect(links.some((link) => link.startsWith(`ifpr://revisao-ppc/${antiga}/`))).toBe(false);
@@ -214,7 +215,7 @@ it("'Qual é o curso?' com a conversa ao lado e o PPC no Ler: o painel segue a l
   await expect.poll(() => app.roteador.state.location.search).toEqual({ id: nova });
   await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
   await expect.element(page.getByText("Esta revisão foi apagada")).not.toBeInTheDocument();
-  expect(app.contexto.painel.obter().conversa.origem?.chave).toBe(`revisao-ppc:${nova}`);
+  expect(app.contexto.painel.obter().conversa.origem?.chave).toMatch(new RegExp(`^revisao-ppc:${nova}#`));
   expect(achadosDaTela()).toEqual([]);
 });
 

@@ -118,6 +118,12 @@ describe("simplifica-if/fronteira-modulos", () => {
     assert.strictEqual(camadaDe("scripts/fabrica_atualizacao.ts"), "scripts");
     assert.isUndefined(violacaoDeFronteira("apps/server/src/handlers.ts", "./modulos/revisao-ppc/handlers.ts"));
     assert.isDefined(violacaoDeFronteira("apps/server/src/Conversas.ts", "./modulos/revisao-ppc/RevisaoIa.ts"));
+    // Toda migração (filha direta da pasta) é de composição; uma subpasta dela, não.
+    const migracao = "apps/server/src/persistencia/migracoes/0099_Qualquer.ts";
+    assert.isUndefined(violacaoDeFronteira(migracao, "../../modulos/revisao-ppc/persistencia/tabelas.ts"));
+    assert.isDefined(
+      violacaoDeFronteira("apps/server/src/persistencia/migracoes/sub/x.ts", "../../../modulos/revisao-ppc/x.ts"),
+    );
   });
 
   it("os que importam e os que só citam são listas separadas", () => {

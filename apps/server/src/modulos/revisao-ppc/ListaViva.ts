@@ -46,8 +46,10 @@
  * - Uma ação com IA que termina depois que a pendência mudou (uma conferência ao salvar a resolveu ou lhe
  *   deu outro texto, ou a pessoa a marcou) não grava o resultado por cima: `concluirAcao` recusa, e a
  *   pessoa pede de novo. "Sugerir texto" só guarda a sugestão, sem mexer na situação.
- * - A conferência ao salvar guarda o texto do arquivo conferido (`markdownConferido`): a pasta da conversa
- *   ao lado o recebe (`ConversaAoLado`), sempre o mais recente.
+ * - A conferência ao salvar guarda o texto do arquivo conferido (`markdownConferido`): as pastas das
+ *   conversas ao lado o recebem (`ConversaAoLado`), sempre o mais recente.
+ * - A lista mostra as conversas ao lado dela (`conversas`), com o título de cada uma (`Historico`): a
+ *   apagada não aparece, e a que continuou com outra IA aparece pela continuação.
  * - **O fluxo da lista** (`acompanharLista`): a lista a cada escrita (`RevisoesPpc.assinarMudancas`), os
  *   eventos de cada conferência e, enquanto ele está aberto, o vigia do arquivo acompanhado (`vigia.ts`),
  *   que confere ao abrir e a cada salvamento, só quando o sha256 mudou (`verificarAcompanhado`).
@@ -60,6 +62,7 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Fiber from "effect/Fiber";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as PubSub from "effect/PubSub";
 import * as Queue from "effect/Queue";
@@ -103,6 +106,7 @@ import {
   textoDaPendencia,
 } from "@simplifica-if/ppc/revisao-previa";
 import { resumoDaFalha } from "../../observabilidade/resumoDaFalha.ts";
+import * as Historico from "../../persistencia/Historico.ts";
 import * as Preferencias from "../../persistencia/Preferencias.ts";
 import * as CopiasComentadas from "./persistencia/CopiasComentadas.ts";
 import * as RevisoesPpc from "./persistencia/RevisoesPpc.ts";
@@ -403,6 +407,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const revisor = yield* RevisorPpc.RevisorPpc;
   const fs = yield* FileSystem.FileSystem;
   const { exigirAviso } = yield* Preferencias.Preferencias;
+  const historico = yield* Historico.Historico;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteRevisaoPpc.PacoteRevisaoPpc>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const aleatorio = yield* SecureRandom.SecureRandom;
@@ -433,6 +438,22 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     return id;
   });
 
+  /** As conversas ao lado da lista, pela última da cadeia de continuações; as apagadas ficam de fora. */
+  const conversasDa = Effect.fn("ListaViva.conversasDa")(function* (id: string) {
+    const saida: Array<ListaPendencias["conversas"][number]> = [];
+    for (const ligada of yield* persistencia.conversasDaLista(id)) {
+      let atual = Option.getOrUndefined(yield* historico.buscar(ligada.conversa));
+      while (atual?.continuadaCom !== undefined) {
+        const seguinte = Option.getOrUndefined(yield* historico.buscar(atual.continuadaCom.id));
+        if (seguinte === undefined) break;
+        atual = seguinte;
+      }
+      if (atual === undefined) continue;
+      saida.push({ conversa: atual.id, pasta: atual.pastaTrabalho, pendencia: ligada.pendencia, titulo: atual.titulo });
+    }
+    return saida;
+  });
+
   const montar = Effect.fn("ListaViva.montar")(function* (registro: RevisoesPpc.RegistroLista) {
     const pendencias = yield* persistencia.pendencias(registro.id);
     const eventos = yield* persistencia.eventos(registro.id);
@@ -456,8 +477,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       provider: registro.provider,
       resultado: registro.resultado,
       arquivoAcompanhado: registro.arquivoAcompanhado,
-      conversaAoLado:
-        registro.conversa === null ? null : { conversa: registro.conversa.id, pasta: registro.conversa.pasta },
+      conversas: yield* conversasDa(registro.id),
       pendencias: vivas,
       uso: { ...uso, custoUsd: Math.round(uso.custoUsd * 1000) / 1000 },
       criadaEm: registro.criadaEm,
@@ -1379,6 +1399,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
 /**
  * Pede as `RevisoesPpc`, as `CopiasComentadas`, a `RevisaoIa`, o `RevisorPpc`, as `Preferencias`, o
- * `Motor`, o `FileSystem`, o `Path`, as `FontesNormativas` e o `PacoteRevisaoPpc` do `kb.sqlite`.
+ * `Historico` (o título das conversas ao lado), o `Motor`, o `FileSystem`, o `Path`, as `FontesNormativas` e o `PacoteRevisaoPpc` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

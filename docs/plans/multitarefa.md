@@ -1,6 +1,6 @@
 # Plano da multitarefa no app
 
-Situação em 27/11/2026, depois da revisão final (Opus e Gemini 4 Neon). Plano vivo: como o Simplifica IF deixa a pessoa fazer mais de uma coisa ao mesmo tempo (revisar um PPC e pesquisar a base, revisar e conversar com a IA sobre uma norma, deixar uma conversa longa rodando, corrigir o PPC no Word com as pendências à vista) sem virar um gerenciador de janelas. As dez etapas estão em `main`, com as correções da revisão de conjunto ([Depois da implementação](#depois-da-implementação)).
+Situação em 28/11/2026, depois da revisão final (Opus e Gemini 4 Neon) e da troca da decisão 12 (várias conversas por revisão). Plano vivo: como o Simplifica IF deixa a pessoa fazer mais de uma coisa ao mesmo tempo (revisar um PPC e pesquisar a base, revisar e conversar com a IA sobre uma norma, deixar uma conversa longa rodando, corrigir o PPC no Word com as pendências à vista) sem virar um gerenciador de janelas. As dez etapas estão em `main`, com as correções da revisão de conjunto ([Depois da implementação](#depois-da-implementação)).
 
 Complementa o [plano do app](app-simplifica-if.md) (princípios, aviso de uso, política de fábrica, M2.2) e o [plano das tarefas](tarefas.md) (módulos e a fronteira deles). Os mockups das telas com tudo implementado, em situações de uso, estão em [multitarefa-mockups.html](multitarefa-mockups.html).
 
@@ -48,13 +48,16 @@ As propostas de três modelos (Opus, Fable e Gemini), feitas em separado, conver
 8. **A notificação do sistema vem ligada por padrão** para "resposta pronta" e "a IA pede permissão", só com a janela sem foco (no modo compacto, só com a janela oculta). Desliga-se nas Configurações.
    - No modo compacto, a coluna à vista não dá aviso do sistema: a moldura compacta mostra "Em andamento" (a bandeja), para o pedido de permissão e a resposta pronta não ficarem sem sinal.
    - A notificação das novidades da base (M2.2) continua desligada por padrão.
-9. **A pasta da conversa aberta da revisão tem o Markdown do PPC sempre atual**, regravado quando a lista muda, por exemplo pela [conferência ao salvar](#conferência-ao-salvar).
+9. **A pasta de cada conversa da revisão tem o Markdown do PPC sempre atual**, regravado em todas quando a lista muda, por exemplo pela [conferência ao salvar](#conferência-ao-salvar).
    - Uma nota na pasta diz qual `.docx` está no Word e onde ele está.
    - O `.docx` só entra se a pessoa o anexar (ficha "Anexar o .docx"). Cópias de `.docx` envelheceriam no primeiro salvamento no Word, e o app as converteria de novo em texto.
 10. **O modo compacto fica sempre por cima, à direita.** Ao ligá-lo, o app diz "Deixe o Word à esquerda" (no Windows, ⊞+←), porque a coluna cobre a área dos balões de comentário do Word. Um botão solta o "sempre por cima". Ajusta-se no piloto.
 11. **A conversa ao lado de uma revisão usa a mesma IA da revisão;** se a revisão não usou IA, usa a última IA usada.
    - Com a leitura com IA em andamento, a caixa avisa que as duas gastam a mesma assinatura.
-12. **Uma conversa ao lado por revisão.** "Conversar sobre esta pendência" retoma a conversa ao lado da mesma revisão e acrescenta a ficha da nova pendência; "Nova conversa", no painel, abre outra. Assim a lista de conversas não se enche de conversas de uma pergunta.
+12. **Várias conversas por revisão, uma pasta por conversa** (28/11/2026, no lugar de "uma conversa ao lado por revisão"). Uma revisão de PPC tem discussões sobre temas diferentes (o estágio, a matriz, as normas citadas), que numa conversa só se misturam.
+    - "Conversar sobre esta pendência" abre a conversa **da pendência**: a que nasceu dela, se existe, ou o rascunho de uma nova, que se liga a ela no envio. ⌘J faz o mesmo com a pendência aberta; sem pendência aberta, fica na conversa geral da revisão que o painel mostra, ou abre o rascunho de uma conversa geral nova.
+    - A tela da revisão lista as "Conversas desta revisão", com "Nova conversa sobre esta revisão".
+    - **Cada conversa tem a sua pasta** ("PPC <curso> – <tema>"). Uma pasta compartilhada foi descartada: o núcleo das pastas supõe uma conversa por pasta (o índice dos anexos que avisa a IA do que mudou, as cópias do Desfazer de cada turno, apagar a conversa com a pasta), e dividi-la quebraria os três. O núcleo das pastas não mudou.
 13. **Comparar normas entra no plano.** Duas normas que se sucedem ficam lado a lado, alinhadas pela tabela de correspondência, com o aviso fixo de rascunho (cena 9 dos mockups). Comparar PPCs fica para depois.
 
 ## O desenho
@@ -130,22 +133,22 @@ As propostas de três modelos (Opus, Fable e Gemini), feitas em separado, conver
   - Apagar a conversa que está no painel solta o controle, e a aba mostra "Conversa apagada".
   - A `VistaConversa` trata o `AvisoNaoAceito` como a `FaixaIa.tsx` já faz, sem perder o texto nem as fichas.
 - **De onde nasce:**
-  - "Conversar sobre esta pendência", na `LinhaPendencia` da revisão, que retoma a conversa da revisão (decisão 12);
+  - "Conversar sobre esta pendência", na `LinhaPendencia` da revisão, que abre a conversa da pendência (decisão 12), e "Conversas desta revisão", na tela da revisão;
   - "Perguntar sobre este trecho", na barra que aparece ao selecionar texto no leitor, ao lado de "Copiar citação". O dispositivo é o do começo da seleção, e a barra também funciona com seleção por teclado e não sai da borda do painel;
   - "Perguntar à IA sobre isto", no Explorar, que deixa de navegar;
   - "Perguntar à IA", na última linha da paleta;
-  - ⌘J.
+  - ⌘J, e o clique na aba Conversar com o rascunho intocado (nada nele, e não o de "Nova conversa"). No rascunho de "Nova conversa", a pessoa escolheu uma conversa livre: o clique na aba não o preenche, e a caixa oferece o contexto da tela ("Conversar sobre esta revisão" ou "sobre esta pendência").
 - **Fichas de contexto (opt-out).** Acima da caixa ficam fichas do que está na tela, já incluídas e removíveis, cada uma por teclado ("Tirar o PPC do contexto"). Depois do envio, aparecem na mensagem gravada.
   - **Na revisão:** o PPC inteiro, a pendência em foco (o texto dela, o trecho do PPC e a ficha da revisão) e o documento aberto no Ler, se houver.
   - **No leitor:** o documento aberto e o trecho selecionado. Um link da base vira ficha de link `ifpr://`, que a IA lê pelas ferramentas `ifpr`. O link `ifpr://revisao-ppc/…` não é da base (`modulos/revisao-ppc/lista.ts:40`) e vira a ficha do PPC em revisão.
 - **Como o PPC vai à IA.** A IA não enxerga o PPC em revisão: ele vem por RPC (`revisaoPpc.documento`), não pelo MCP `ifpr`, que só lê a base. A revisão não tem pasta de trabalho: a cópia comentada fica ao lado do original (`RevisorPpc.ts`).
-  - O módulo ganha `revisaoPpc.conversarSobre(lista, chave)`. Ele cria a pasta da conversa (`PastasTrabalho.criar`, "PPC <curso> – conversa") e grava nela o Markdown da versão em revisão, com um sumário de seções e linhas no topo, e a nota com o caminho do `.docx`.
+  - O módulo ganha `revisaoPpc.conversarSobre(lista, conversa?, pendencia?, chave)`. Ele retoma a conversa pedida ou a da pendência; sem elas, cria a pasta da conversa nova (`PastasTrabalho.criar`, "PPC <curso> – <tema>", o critério da pendência ou "conversa" na geral) e grava nela o Markdown da versão em revisão, com um sumário de seções e linhas no topo, e a nota com o caminho do `.docx`.
   - Para gravar, o núcleo ganha `PastasTrabalho.gravar(pasta, nome, bytes)`, sem seguir link. Hoje ela só tem `criar`, `anexar` (arquivo liberado pelo desktop), `gravarRelato` e `gravarDiagnostico`.
   - O primeiro pedido diz à IA para ler o Markdown inteiro antes de responder, começando pela seção da pendência.
-  - Quando a lista muda, o módulo regrava o Markdown antes da próxima mensagem, e a ficha diz "atualizado às 14:32".
+  - Quando a lista muda, o módulo regrava o Markdown nas pastas de todas as conversas da revisão antes da próxima mensagem, e a ficha diz "atualizado às 14:32".
   - O módulo chama o núcleo, nunca o contrário (decisão 7 do [plano das tarefas](tarefas.md)).
 - **A IA da conversa:** ver a decisão 11. Pode-se trocar na caixa antes do primeiro envio.
-- **Origem.** Na lista de conversas, a conversa ao lado leva a origem ("da revisão do PPC de Enfermagem"), gravada como rótulo e rota. Se a revisão for apagada, a origem passa a "revisão apagada".
+- **Origem.** Na lista de conversas, cada conversa da revisão leva a origem ("da revisão do PPC de Enfermagem"), gravada como rótulo e rota. Se a revisão for apagada, a origem de todas passa a "revisão apagada". No painel, cada conversa da revisão é uma origem própria (a da pendência, `revisao-ppc:<lista>#<pendência>`; a geral, `revisao-ppc:<lista>~<marca>`), e os pedidos da mesma revisão são do mesmo grupo.
 
 ### Em andamento
 
@@ -210,7 +213,7 @@ As propostas de três modelos (Opus, Fable e Gemini), feitas em separado, conver
 - **Web (módulo):** `/revisao-ppc?id=…&compacto=1` mostra:
   - o filtro por gravidade e a lista de pendências numa coluna, com uma aberta por vez;
   - o trecho, Feito, Copiar trecho, Norma e Sugerir texto;
-  - no rodapé, uma caixa curta da conversa ao lado. A resposta abre na coluna, no lugar da lista, com voltar.
+  - no rodapé, "Conversas desta revisão" (recolhida) e uma caixa curta da conversa da pendência aberta (ou da revisão). Abrir outra pendência leva a caixa à conversa dela, só se a caixa está numa conversa desta revisão e sem rascunho escrito de outra. A resposta abre na coluna, no lugar da lista, com voltar.
 - **O app não mexe no Word.** A pessoa edita o documento acompanhado no Word, e o app só fica ao lado com as pendências. "Copiar trecho" e "Sugerir texto" levam texto para a área de transferência, para colar no Word.
 - **Fora:** o app não lê a tela nem a janela do Word, não escreve no documento aberto e não é suplemento do Word.
 
@@ -236,7 +239,7 @@ Cada vez que a pessoa salva no Word, o app confere de novo o arquivo, sem clique
   - Na pasta do OneDrive ou de rede, onde `fs.watch` falha, confere também quando a janela ganha foco, comparando o SHA-256.
   - Testes com `TestClock` e um `FileSystem.watch` falso, sem `sleep`.
 - **A interface:** a lista mostra uma linha do que mudou. A pendência que o código deu por resolvida sai riscada, com um realce breve, e a que o arquivo novo trouxe entra marcada "novo". Se a conferência falhar (arquivo corrompido, `.docx` incompleto no meio do salvamento), a linha diz isso e espera o próximo salvamento.
-- **A conversa ao lado** recebe o Markdown regravado (decisão 9).
+- **As conversas da revisão** recebem o Markdown regravado, cada uma na sua pasta (decisão 9).
 
 ### Comparar normas
 
@@ -286,7 +289,7 @@ Cada vez que a pessoa salva no Word, o app confere de novo o arquivo, sem clique
 - **Ao reabrir, voltar onde se estava:** a última rota e o estado do painel (aba, trilha, documentos marcados, conversa), nas preferências do servidor (`persistencia/Preferencias.ts`).
   - Grava-se com espera de 1 s depois da navegação e no `before-quit`.
   - Só voltam `/`, `/explorar/*`, `/conversa?id` e `/revisao-ppc?id` que ainda existam; o resto volta ao Início. Nunca voltam o `compacto=1` e os formulários de `/tarefa/$nome`.
-- **Revisão apagada:** a trilha, os documentos marcados e a continuidade descartam os links `ifpr://revisao-ppc/…` dela, com "Esta revisão foi apagada". A prévia do apagar (`DialogoApagar`) lista também a pasta da conversa ao lado com o Markdown do PPC, que a pessoa pode apagar junto.
+- **Revisão apagada:** a trilha, os documentos marcados e a continuidade descartam os links `ifpr://revisao-ppc/…` dela, com "Esta revisão foi apagada". A prévia do apagar (`DialogoApagar`) lista também as pastas das conversas da revisão com o Markdown do PPC, que a pessoa pode apagar junto.
 - **Várias janelas:** só a janela principal grava e volta; as outras não. Fechada a principal, a próxima janela aberta passa a gravar, sem voltar (etapa 10).
 - **Rolagem lembrada** por documento e pela revisão. É a sobra "guardar a rolagem ao voltar" do [plano do app](app-simplifica-if.md) ("Leitor e Explorar, sobras"), que sai de lá quando entrar aqui. O `scrollRestoration` continua desligado no roteador (`router.ts:9`); guarda-se por chave de documento.
 - **"Continuar de onde parou" no Início:** o que está rodando, o que terminou sem ser visto e o que ficou aberto, a partir das atividades. O cartão da revisão continua a `UltimaRevisao` que o Início já compõe (`routes/index.tsx`).
@@ -300,6 +303,7 @@ Mudanças no `conversas.sqlite`, cada uma numa migração nova registrada em `Ba
   - as fichas no item `Mensagem` (`packages/contratos-app/src/conversa.ts`), gravadas nos dados do evento.
 - **Módulo** (a migração chama uma função do módulo e entra na lista dos arquivos de composição):
   - o arquivo acompanhado e o SHA-256 da última conferência;
+  - as conversas de cada revisão (`revisao_ppc_conversas`, migrações 7 e 8);
   - a IA de cada bloco e de cada pendência da leitura com IA.
 - **Preferências:** o estado do painel e a última rota.
 
@@ -393,6 +397,23 @@ As etapas 1, 3 e 5 resolvem os dois cenários de partida (revisar e pesquisar; r
 - No modo compacto: "Em andamento" na moldura compacta (decisão 8); o clique na bandeja ou no aviso da conversa da aba Conversar abre no painel (`useAbrirRota`); o ⌥-clique no Ler fica no painel; ⤢ da aba Conversar guarda a volta sem o `compacto=1` e sai mesmo do modo (a revisão não desfaz mais a navegação para fora dela).
 - ⌘J com o PPC no Ler em outra pendência leva só a pendência da tela (`juntarPedidos`, um pedido por origem); "Pasta da tarefa" abre a pasta da conversa da tela; o painel que a continuidade reabre não toma o foco.
 - Recusado: juntar a caixa do painel e a da tela cheia da mesma conversa. As fichas da revisão (o PPC, o `.docx`) só se preparam pela origem, no painel; a tela cheia mostra "Há uma pergunta começada na caixa do painel", com "Trazer de volta".
+
+**Várias conversas por revisão (28/11/2026)**, a decisão 12 nova:
+- Servidor (módulo): a migração 7 cria `revisao_ppc_conversas` (a conversa, a lista com `ON DELETE CASCADE`, a pasta, a pendência de que nasceu e quando), passa a ela a conversa que a lista guardava, como geral, e tira `conversa_id` e `conversa_pasta` da lista. `conversarSobre` recebe a conversa a retomar (também pela continuação com outra IA, cuja linha passa à continuação) ou a pendência (retoma a dela ou abre uma, na vez da lista); a pasta nova é "PPC <curso> – <tema>". O Markdown é regravado em todas as pastas; "Qual é o curso?" leva as linhas e as origens à lista nova; a conversa apagada sai ao subir o servidor e já não aparece na lista; apagar a revisão passa todas a "revisão apagada". O contrato troca `conversaAoLado` por `conversas` (a conversa, a pasta, a pendência e o título, pela continuação, sem as apagadas).
+- Interface: uma origem por conversa no painel, com o grupo da revisão para `juntarPedidos`; `esquecerOrigem` e `trocarOrigem` passam a receber uma função; "Conversas desta revisão" (`ConversasDaRevisao.tsx`) na coluna dos temas e, recolhida, na coluna compacta; o clique na aba Conversar com o rascunho intocado traz o contexto da tela (`mostrarConversar`), e o rascunho de "Nova conversa" (`livre`) mostra o convite da tela (`declararContexto(…, convite)`); a prévia do apagar e a Lixeira com todas as pastas.
+- **A chave da pendência** é um hash do critério, da origem, do trecho e do texto (`chavePendencia`): estável entre conferências enquanto o ponto não muda, mas outra quando o salvamento lhe dá outro trecho, ou quando a leitura com IA a substitui. A conversa ligada à chave antiga fica na lista da revisão (em "Conversas desta revisão", sem a pendência), e "Conversar sobre esta pendência" na nova abre outra.
+- Testes: `lista-viva.test.ts` (duas pendências, duas conversas e duas pastas, a mesma pendência que volta à dela, duas mensagens ao mesmo tempo, o PPC regravado nas três, a geral, apagar), `migracoes.test.ts` (a 7), `ControlePainel.test.ts` (o clique na aba, "Nova conversa" e o convite), `conversa.test.ts`, `apagar.test.ts`, `apagarRevisao.test.ts`, `revisao.browser.test.tsx` ("Conversas desta revisão"), `conversas.browser.test.tsx` (novo: a aba com o painel vazio, duas pendências), `conversa-ao-lado.browser.test.tsx` e `compacta.browser.test.tsx`.
+- **Depois das revisões (28/11/2026):**
+  - O texto escrito e não enviado não se perde ao trocar de conversa (decisão): vai junto à conversa seguinte, sem as fichas, como o convite já fazia, seja ela de outra pendência ("Conversar sobre esta pendência" na tela cheia, ⌘J, a oferta da coluna compacta), "Nova conversa" ou uma das "Conversas desta revisão" (`ControlePainel.conversar`, `novaConversa`). Guardar um rascunho por origem foi descartado: o da conversa geral nova não teria aonde voltar. A pergunta que saiu pela conversa anterior enquanto a caixa trocava sai da seguinte.
+  - A conversa que a origem já abriu (com a pasta) fica no painel se a mensagem não sai depois (`ControlePainel.preparada`): o reenvio vai a ela. A lista da revisão não se relê mais antes do envio, e sim depois (`OrigensConversa.depoisDoEnvio`), quando ela ainda não tem a conversa ou o título dela: a falha da leitura não derruba a mensagem, e "Conversas desta revisão" mostra o título que a primeira mensagem deu.
+  - Na coluna compacta, a conversa que a pessoa escolhe em "Conversas desta revisão" (ou a nova) fica na caixa sem a oferta da pendência aberta, até outra pendência abrir; na entrada, a caixa só toma o painel se ele já é desta revisão ou se o rascunho está intocado (a livre, a de outra origem e o rascunho de "Nova conversa" ficam, com a oferta).
+  - A pendência que muda de chave antes do primeiro envio: a conversa nasce ligada à chave que o painel pediu, com o tema que a interface manda (`tema`: o critério da pendência aberta, ou o título da ficha), e não como geral; o painel e a lista não divergem.
+  - A continuação com outra IA toma a linha da conversa ao lado já ao ser criada, no painel ou na tela cheia, por um gatilho da migração 8 sobre a tabela `conversas` (o núcleo não conhece o módulo); a continuação apagada (também a que não abriu) devolve a linha à anterior, e a migração passa à última da cadeia a linha que a lista guardava. Apagar a original não tira a continuação de "Conversas desta revisão", não abre outra conversa no envio seguinte e não perde a linha ao subir o servidor. O painel que ainda pede a anterior recebe a última da cadeia, com `nova`.
+  - "Qual é o curso?": as fichas do PPC e do `.docx` têm chaves sem o id da lista (`FICHA_PPC`, `FICHA_DOCX`), e a pasta da conversa seguinte recebe o PPC.
+  - A Lixeira com várias pastas: a nota recebe a lista das pastas que ficaram (`Desfecho.pastasFicaram`), nomeia até três e conta as pastas, não as revisões.
+  - A conversa apagada sai de "Conversas desta revisão" na hora (`GerenteConversas.observarApagadas`), e abrir uma já apagada (em outra janela) mostra "Conversa apagada".
+  - "+ Nova conversa" vale também no rascunho que trouxe o contexto da tela; as setas nas abas do painel dão à aba Conversar o contexto da tela, como o clique, sem tirar o foco da aba.
+  - Testes: `lista-viva.test.ts` (a chave que saiu, a continuação com a original apagada, também ao subir o servidor), `migracoes.test.ts` (os gatilhos e a cadeia), `ControlePainel.test.ts`, `conversa.test.ts`, `GerenteConversas.test.ts`, `textos.test.ts`, `revisao.browser.test.tsx`, `conversas.browser.test.tsx` (as setas, "+ Nova conversa", os títulos) e `compacta.browser.test.tsx` (a escolha da pessoa, a entrada com o rascunho de "Nova conversa").
 
 **A dividir** (arquivos que passaram de mil linhas com as etapas; nada mudou de comportamento):
 - `apps/server/src/modulos/revisao-ppc/ListaViva.ts`: a conferência ao salvar (`acompanhar`, `verificarAcompanhado`, `conferirSalvamento`, `acompanharLista` com o vigia) num serviço `AcompanhamentoWord.ts`, e a exportação CSV à parte;

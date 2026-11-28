@@ -129,7 +129,7 @@ export function ApagarConversas({
           await ponte.pastaParaLixeira(pasta);
         } catch {
           const i = desfechos.findIndex((d) => d.pasta === pasta && d.falhou !== true);
-          desfechos[i] = { ...desfechos[i]!, pastaFicou: pasta };
+          desfechos[i] = { ...desfechos[i]!, pastasFicaram: [pasta] };
         }
       }
     }

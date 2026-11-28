@@ -105,5 +105,12 @@ describe("GerenteConversas", () => {
     expect(apagadas).toEqual(["a"]);
     expect(gerente.foiApagada("a")).toBe(true);
     expect(controle.obter().erroInicio?.texto).toBe("Esta conversa não existe mais no app.");
+    // Quem lista conversas fica sabendo, e a apagada aberta de novo (a lista da revisão) avisa outra vez.
+    let avisos = 0;
+    gerente.observarApagadas(() => (avisos += 1));
+    gerente.apagada("b");
+    expect([avisos, gerente.quantasApagadas()]).toEqual([1, 2]);
+    gerente.pegar("a");
+    expect(apagadas).toEqual(["a", "b", "a"]);
   });
 });

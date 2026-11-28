@@ -2,7 +2,8 @@
  * As tabelas do módulo `revisao-ppc` no banco das conversas (`conversas.sqlite`), todas com o prefixo
  * `revisao_ppc_`. A migração inicial do núcleo (`persistencia/migracoes/0001_Inicial.ts`, arquivo de
  * composição) chama `criar` num bloco à parte, e as seguintes chamam as mudanças (`0002`:
- * `adicionarProblemasDasTentativas`; `0003`: `adicionarArquivoAcompanhado`; `0004`: `adicionarConversaAoLado`; `0005`: `adicionarIaPorBloco`);
+ * `adicionarProblemasDasTentativas`; `0003`: `adicionarArquivoAcompanhado`; `0004`: `adicionarConversaAoLado`; `0005`: `adicionarIaPorBloco`;
+ * `0006`: `migrarVocabularioRevisaoPpc`; `0007`: `separarConversasDaRevisao`);
  * o módulo não tem migrador próprio.
  *
  * Revisão de PPC com IA:
@@ -32,10 +33,19 @@
  * acompanhado ainda não foi conferido. `codigo_conferido` (0 ou 1): as pendências e os critérios do
  * código vieram de uma conferência ao salvar, e não do texto revisado.
  *
- * A conversa ao lado (migração 4): `conversa_id` e `conversa_pasta`, a conversa livre que a revisão abriu
- * e a pasta dela, com o Markdown do PPC (nulos antes da primeira mensagem); `markdown_conferido`, o texto
- * do último arquivo conferido ao salvar (sem as linhas de texto dirigido a IA), que a pasta da conversa
- * recebe no lugar do revisado (nulo sem conferência, ou depois de "Enviar a versão corrigida").
+ * As conversas ao lado (migração 7, `revisao_ppc_conversas`): várias por revisão, cada uma na sua pasta, com
+ * o Markdown do PPC. Uma linha por conversa (`conversa_id` único), com a lista (`ON DELETE CASCADE`: a
+ * revisão apagada ou expirada leva as linhas; as conversas e as pastas ficam), a pasta e a pendência de que
+ * ela nasceu (`pendencia`, a chave; nula na conversa geral sobre a revisão). A migração 4 guardava uma só na
+ * lista (`conversa_id`, `conversa_pasta`), que a 7 passou à tabela, como conversa geral, e tirou da lista.
+ * A linha acompanha a cadeia de continuações (outra IA, no limite) por dois gatilhos sobre a tabela
+ * `conversas` do núcleo, que não conhece o módulo: a continuação criada toma a linha da que ela continua
+ * (`revisao_ppc_conversas_continuada`, onde quer que se continue, no painel ou na tela cheia), e a conversa
+ * apagada que continuava outra devolve a linha a essa (`revisao_ppc_conversas_apagada`: a continuação que
+ * não abriu, ou a que a pessoa apagou). Assim apagar a original não deixa a continuação órfã.
+ * `markdown_conferido` (migração 4), o texto do último arquivo conferido ao salvar (sem as linhas de texto
+ * dirigido a IA), que as pastas das conversas recebem no lugar do revisado (nulo sem conferência, ou depois
+ * de "Enviar a versão corrigida").
  *
  * A IA de cada bloco e de cada pendência (migração 5): `revisao_ppc_blocos_ia.provider`, a IA que leu o bloco,
  * e `revisao_ppc_pendencias_vivas.ia`, a que julgou a pendência da IA. A leitura pausada no limite da
@@ -71,6 +81,78 @@ export const adicionarConversaAoLado = Effect.gen(function* () {
   yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN conversa_id TEXT`;
   yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN conversa_pasta TEXT`;
   yield* sql`ALTER TABLE revisao_ppc_listas_pendencias ADD COLUMN markdown_conferido TEXT`;
+});
+
+/**
+ * Migração 7: várias conversas ao lado por revisão, uma pasta por conversa. A conversa que a lista guardava
+ * (`conversa_id`, `conversa_pasta`) passa à tabela nova como conversa geral (sem pendência), e as colunas saem
+ * da lista (nenhum índice nem chave as usa: o `DROP COLUMN` do SQLite as tira direto).
+ */
+export const separarConversasDaRevisao = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  yield* sql`
+    CREATE TABLE revisao_ppc_conversas (
+      conversa_id TEXT PRIMARY KEY,
+      lista_id TEXT NOT NULL REFERENCES revisao_ppc_listas_pendencias (id) ON DELETE CASCADE,
+      pasta TEXT NOT NULL,
+      pendencia TEXT,
+      criada_em TEXT NOT NULL
+    )
+  `;
+  yield* sql`CREATE INDEX revisao_ppc_conversas_lista ON revisao_ppc_conversas (lista_id, criada_em)`;
+  yield* sql`
+    INSERT OR IGNORE INTO revisao_ppc_conversas (conversa_id, lista_id, pasta, pendencia, criada_em)
+    SELECT conversa_id, id, conversa_pasta, NULL, atualizada_em FROM revisao_ppc_listas_pendencias
+    WHERE conversa_id IS NOT NULL AND conversa_pasta IS NOT NULL
+  `;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias DROP COLUMN conversa_id`;
+  yield* sql`ALTER TABLE revisao_ppc_listas_pendencias DROP COLUMN conversa_pasta`;
+});
+
+/**
+ * Migração 8: a linha de `revisao_ppc_conversas` segue a cadeia de continuações. As linhas que já existem
+ * passam à última da cadeia; daí em diante, os gatilhos sobre `conversas` levam a linha à continuação quando
+ * ela nasce (no painel ou na tela cheia) e de volta à anterior quando a continuação é apagada.
+ */
+export const seguirContinuacoesDasConversas = Effect.gen(function* () {
+  const sql = yield* SqlClient.SqlClient;
+  // A linha passa à última da cadeia de continuações (a mais nova de cada passo, como o `Historico`); a
+  // cadeia é curta, e o limite só evita um laço num banco fora de forma.
+  for (let passo = 0; passo < 100; passo += 1) {
+    const seguintes = yield* sql<{ antiga: string; nova: string; pasta: string }>`
+      SELECT r.conversa_id AS antiga, n.id AS nova, n.pasta_trabalho AS pasta
+      FROM revisao_ppc_conversas r
+      JOIN conversas n
+        ON n.id = (SELECT m.id FROM conversas m WHERE m.continua_de = r.conversa_id ORDER BY m.criada_em DESC LIMIT 1)
+    `;
+    if (seguintes.length === 0) break;
+    for (const s of seguintes) {
+      yield* sql`
+        UPDATE OR IGNORE revisao_ppc_conversas SET conversa_id = ${s.nova}, pasta = ${s.pasta}
+        WHERE conversa_id = ${s.antiga}
+      `;
+      yield* sql`DELETE FROM revisao_ppc_conversas WHERE conversa_id = ${s.antiga}`;
+    }
+  }
+  yield* sql`
+    CREATE TRIGGER revisao_ppc_conversas_continuada AFTER INSERT ON conversas
+    WHEN NEW.continua_de IS NOT NULL
+    BEGIN
+      UPDATE OR IGNORE revisao_ppc_conversas SET conversa_id = NEW.id, pasta = NEW.pasta_trabalho
+      WHERE conversa_id = NEW.continua_de;
+    END
+  `;
+  yield* sql`
+    CREATE TRIGGER revisao_ppc_conversas_apagada BEFORE DELETE ON conversas
+    WHEN OLD.continua_de IS NOT NULL
+    BEGIN
+      UPDATE OR IGNORE revisao_ppc_conversas
+      SET conversa_id = OLD.continua_de,
+        pasta = (SELECT c.pasta_trabalho FROM conversas c WHERE c.id = OLD.continua_de)
+      WHERE conversa_id = OLD.id
+        AND EXISTS (SELECT 1 FROM conversas c WHERE c.id = OLD.continua_de);
+    END
+  `;
 });
 
 /** Migração 5: a IA que leu cada bloco e a que julgou cada pendência da IA. */

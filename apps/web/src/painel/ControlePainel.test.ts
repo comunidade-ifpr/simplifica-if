@@ -1,12 +1,13 @@
 import { assert, describe, it } from "@effect/vitest";
 import { linkAtual, podeVoltar } from "../leitor/historico.ts";
-import { contextoParaConversar } from "./conversar.ts";
+import { aceitarConvite, contextoParaConversar, mostrarConversar } from "./conversar.ts";
 import {
   ControlePainel,
   MAXIMO_TRILHA,
   type FichaRascunho,
   MAXIMO_MARCADOS,
   type OrigemAoLado,
+  rascunhoIntocado,
 } from "./ControlePainel.ts";
 
 describe("ControlePainel", () => {
@@ -316,17 +317,62 @@ describe("ControlePainel", () => {
       ficha: { _tag: "texto", rotulo: "Trecho", texto: "O estágio." },
     };
     painel.conversar({ origem: { chave: "revisao-ppc:1" }, conversa: "c", fichas: [ppc, trecho] });
-    painel.esquecerOrigem("revisao-ppc:2");
+    painel.esquecerOrigem((chave) => chave === "revisao-ppc:2");
     assert.deepInclude(painel.obter().conversa.origem, { chave: "revisao-ppc:1" });
-    painel.esquecerOrigem("revisao-ppc:1");
+    painel.esquecerOrigem((chave) => chave.startsWith("revisao-ppc:1"));
     assert.isUndefined(painel.obter().conversa.origem);
     assert.strictEqual(painel.obter().conversa.id, "c");
     assert.deepStrictEqual(painel.obter().conversa.fichas, [trecho]);
 
     painel.novaConversa();
     painel.conversar({ origem: { chave: "revisao-ppc:3" }, fichas: [ppc] });
-    painel.esquecerOrigem("revisao-ppc:3");
+    painel.esquecerOrigem((chave) => chave === "revisao-ppc:3");
     assert.deepStrictEqual(painel.obter().conversa, { fichas: [], ofertas: [], texto: "" });
+  });
+
+  it("a pergunta escrita e não enviada vai junto à outra conversa (outra pendência, 'Nova conversa'), sem as fichas", () => {
+    const painel = new ControlePainel();
+    const ficha = (chave: string): FichaRascunho => ({ chave, rotulo: chave, tipo: "trecho", tirar: `Tirar ${chave}` });
+    painel.conversar({ origem: { chave: "revisao-ppc:1#A" }, conversa: "cA", fichas: [ficha("A")] });
+    painel.escreverTexto("Isto basta?");
+    painel.conversar({ origem: { chave: "revisao-ppc:1#B" }, fichas: [ficha("B")] });
+    assert.deepInclude(painel.obter().conversa, { texto: "Isto basta?" });
+    assert.isUndefined(painel.obter().conversa.id);
+    assert.deepStrictEqual(
+      painel.obter().conversa.fichas.map((f) => f.chave),
+      ["B"],
+    );
+    // O pedido que traz a própria pergunta (a paleta) fica com ela.
+    painel.conversar({ origem: { chave: "revisao-ppc:1#C" }, texto: "outra" });
+    assert.strictEqual(painel.obter().conversa.texto, "outra");
+    painel.novaConversa();
+    assert.deepInclude(painel.obter().conversa, { livre: true, texto: "outra", fichas: [] });
+    // A apagada não leva nada à seguinte.
+    painel.conversar({ conversa: "cD", origem: { chave: "revisao-ppc:1#D" } });
+    painel.conversaApagada("cD");
+    painel.novaConversa();
+    assert.strictEqual(painel.obter().conversa.texto, "");
+  });
+
+  it("a conversa que a origem abriu para o rascunho fica na caixa se a mensagem não saiu: o reenvio vai a ela", () => {
+    const painel = new ControlePainel();
+    painel.conversar({ origem: { chave: "revisao-ppc:1#A" }, texto: "Isto basta?" });
+    painel.preparada("c");
+    assert.deepInclude(painel.obter().conversa, { id: "c", texto: "Isto basta?" });
+    assert.deepStrictEqual(painel.obter().conversa.origem, { chave: "revisao-ppc:1#A" });
+    // Já com conversa, nada muda.
+    painel.preparada("outra");
+    assert.strictEqual(painel.obter().conversa.id, "c");
+  });
+
+  it("a aba Conversar escolhida pelas setas traz o contexto como o clique, mas sem levar o foco à caixa", () => {
+    const painel = new ControlePainel();
+    const app = { painel, pedidoDoLink: () => undefined };
+    painel.declararContexto(() => ({ origem: { chave: "revisao-ppc:1~nova" } }));
+    mostrarConversar(app, { focar: false });
+    assert.deepInclude(painel.obter(), { aberto: true, aba: "conversar" });
+    assert.deepStrictEqual(painel.obter().conversa.origem, { chave: "revisao-ppc:1~nova" });
+    assert.isUndefined(painel.obter().conversa.focar);
   });
 
   it("⤢ guarda de onde a conversa saiu, para 'Trazer de volta'", () => {
@@ -336,16 +382,61 @@ describe("ControlePainel", () => {
     assert.strictEqual(painel.obter().conversa.voltarPara, "/revisao-ppc?id=1");
   });
 
-  it("o contexto da tela: o último declarado vale, e sai quando a tela sai", () => {
+  it("o contexto da tela: o último declarado vale, com o convite dele, e sai quando a tela sai", () => {
     const painel = new ControlePainel();
+    let avisos = 0;
+    painel.observar(() => avisos++);
     assert.deepStrictEqual(painel.contextoDaTela(), {});
-    const sair = painel.declararContexto(() => ({ texto: "a" }));
+    const sair = painel.declararContexto(() => ({ texto: "a" }), "Conversar sobre a");
     const sairOutra = painel.declararContexto(() => ({ texto: "b" }));
     assert.deepStrictEqual(painel.contextoDaTela(), { texto: "b" });
+    assert.isUndefined(painel.conviteDaTela());
     sairOutra();
     assert.deepStrictEqual(painel.contextoDaTela(), { texto: "a" });
+    assert.strictEqual(painel.conviteDaTela(), "Conversar sobre a");
     sair();
     assert.deepStrictEqual(painel.contextoDaTela(), {});
+    // Declarar e tirar avisam: o convite à vista muda.
+    assert.strictEqual(avisos, 4);
+  });
+
+  it("o clique na aba Conversar: o rascunho intocado traz o contexto da tela; o de 'Nova conversa', não, e o convite o leva", () => {
+    const painel = new ControlePainel();
+    const ppc: FichaRascunho = { chave: "ppc:1", rotulo: "PPC", tipo: "documento", tirar: "Tirar o PPC" };
+    const app = { painel, pedidoDoLink: () => undefined };
+    painel.declararContexto(
+      () => ({ origem: { chave: "revisao-ppc:1~nova" }, fichas: [ppc] }),
+      "Conversar sobre esta revisão",
+    );
+    // O painel vazio: a aba traz o PPC.
+    mostrarConversar(app);
+    assert.deepInclude(painel.obter(), { aberto: true, aba: "conversar" });
+    assert.deepStrictEqual(painel.obter().conversa.origem, { chave: "revisao-ppc:1~nova" });
+    assert.deepStrictEqual(
+      painel.obter().conversa.fichas.map((f) => f.chave),
+      ["ppc:1"],
+    );
+
+    // "+ Nova conversa": o rascunho livre fica livre no clique seguinte da aba.
+    painel.conversar({ conversa: "c", origem: { chave: "revisao-ppc:1~c" } });
+    painel.novaConversa();
+    assert.isFalse(rascunhoIntocado(painel.obter().conversa));
+    mostrarConversar(app);
+    assert.deepInclude(painel.obter().conversa, { livre: true, fichas: [], texto: "" });
+    assert.isUndefined(painel.obter().conversa.origem);
+
+    // O convite leva o contexto, com o que a pessoa já escreveu.
+    painel.escreverTexto("e o estágio?");
+    aceitarConvite(app);
+    assert.deepInclude(painel.obter().conversa, { texto: "e o estágio?" });
+    assert.isUndefined(painel.obter().conversa.livre);
+    assert.deepStrictEqual(painel.obter().conversa.origem, { chave: "revisao-ppc:1~nova" });
+
+    // Sem contexto na tela, o clique só mostra a aba.
+    const outro = new ControlePainel();
+    mostrarConversar({ painel: outro, pedidoDoLink: () => undefined });
+    assert.deepInclude(outro.obter(), { aberto: true, aba: "conversar" });
+    assert.deepStrictEqual(outro.obter().conversa, { fichas: [], ofertas: [], texto: "" });
   });
   it("a continuação feita na tela cheia só troca o id: a conversa segue lá, com o 'Trazer de volta' de antes", () => {
     const painel = new ControlePainel();
@@ -362,9 +453,9 @@ describe("ControlePainel", () => {
     painel.abrirLink("ifpr://revisao-ppc/A/ppc#p-1");
     painel.marcar("ifpr://revisao-ppc/A/ppc#p-1");
     painel.conversar({ conversa: "c", origem: { chave: "revisao-ppc:A", ia: "codex" } });
-    painel.trocarOrigem("revisao-ppc:B", "revisao-ppc:C");
+    painel.trocarOrigem((chave) => (chave === "revisao-ppc:B" ? "revisao-ppc:C" : chave));
     assert.deepStrictEqual(painel.obter().conversa.origem, { chave: "revisao-ppc:A", ia: "codex" });
-    painel.trocarOrigem("revisao-ppc:A", "revisao-ppc:B");
+    painel.trocarOrigem((chave) => (chave === "revisao-ppc:A" ? "revisao-ppc:B" : chave));
     painel.trocarLinks("ifpr://revisao-ppc/A/", "ifpr://revisao-ppc/B/");
     assert.deepStrictEqual(painel.obter().conversa.origem, { chave: "revisao-ppc:B", ia: "codex" });
     assert.deepStrictEqual(painel.obter().historico, {
@@ -412,20 +503,29 @@ describe("ControlePainel", () => {
     assert.isFalse(outro.abertoPelaContinuidade());
   });
 
-  it("⌘J na revisão com o PPC no Ler em outra pendência: valem as fichas da tela, uma pendência só", () => {
+  it("⌘J na revisão com o PPC no Ler em outra pendência: valem as fichas e a origem da tela, uma pendência só", () => {
     const painel = new ControlePainel();
     const ficha = (chave: string): FichaRascunho => ({ chave, rotulo: chave, tipo: "pendencia", tirar: chave });
-    const origem = { chave: "revisao-ppc:1" };
-    painel.declararContexto(() => ({ origem, fichas: [ficha("ppc:1"), ficha("pendencia:A")] }));
+    // Cada pendência tem a sua conversa (outra origem), e as duas são do mesmo grupo, a revisão.
+    painel.declararContexto(() => ({
+      origem: { chave: "revisao-ppc:1#A" },
+      grupo: "revisao-ppc:1",
+      fichas: [ficha("ppc:1"), ficha("pendencia:A")],
+    }));
     painel.abrirLink("ifpr://revisao-ppc/1/ppc#p-B");
     const pedido = contextoParaConversar({
       painel,
-      pedidoDoLink: () => ({ origem, fichas: [ficha("ppc:1"), ficha("pendencia:B")] }),
+      pedidoDoLink: () => ({
+        origem: { chave: "revisao-ppc:1#B" },
+        grupo: "revisao-ppc:1",
+        fichas: [ficha("ppc:1"), ficha("pendencia:B")],
+      }),
     });
     assert.deepStrictEqual(
       pedido.fichas?.map((f) => f.chave),
       ["ppc:1", "pendencia:A"],
     );
+    assert.deepStrictEqual(pedido.origem, { chave: "revisao-ppc:1#A" });
     // Um documento da base no Ler entra junto.
     painel.abrirLink("ifpr://norma/a");
     const comNorma = contextoParaConversar({ painel, pedidoDoLink: () => undefined });

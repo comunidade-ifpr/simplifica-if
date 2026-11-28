@@ -352,10 +352,20 @@ export const ListaPendencias = Schema.Struct({
    */
   arquivoAcompanhado: Schema.NullOr(Schema.String),
   /**
-   * A conversa ao lado desta revisão (uma por revisão): "Conversar sobre esta pendência" a retoma. A
-   * pasta é a da conversa, com o Markdown do PPC; fica no computador quando a revisão é apagada.
+   * As conversas ao lado desta revisão, na ordem em que se abriram ("Conversas desta revisão"). Cada uma tem
+   * a sua pasta, com o Markdown do PPC, que fica no computador quando a revisão é apagada; `pendencia` é a
+   * chave da pendência de que ela nasceu ("Conversar sobre esta pendência" a retoma), nula na conversa geral.
+   * `titulo` é o da conversa (vazio antes de a primeira mensagem dar um). A conversa que continuou com outra
+   * IA aparece pela continuação.
    */
-  conversaAoLado: Schema.NullOr(Schema.Struct({ conversa: Schema.String, pasta: Schema.String })),
+  conversas: Schema.Array(
+    Schema.Struct({
+      conversa: Schema.String,
+      pasta: Schema.String,
+      pendencia: Schema.NullOr(Schema.String),
+      titulo: Schema.String,
+    }),
+  ),
   pendencias: Schema.Array(PendenciaViva),
   /** O uso somado das ações com IA desta lista. */
   uso: UsoRevisaoIa,
@@ -502,9 +512,9 @@ export const EventoAcompanhamento = Schema.Union([
 export type EventoAcompanhamento = typeof EventoAcompanhamento.Type;
 
 /**
- * O que `revisaoPpc.conversarSobre` preparou: a conversa ao lado (`nova` se a lista passou a guardar outra:
- * a que acabou de abrir, ou a que continuou a dela com outra IA) e o que entrou na pasta dela, para as fichas
- * da mensagem.
+ * O que `revisaoPpc.conversarSobre` preparou: a conversa ao lado (`nova` se as conversas da lista mudaram:
+ * a que acabou de abrir, ou a que continuou a pedida com outra IA) e o que entrou na pasta dela, para as
+ * fichas da mensagem.
  * - `ppc`: o Markdown do PPC (`arquivo`, o nome na pasta), com a instrução de leitura que vai na ficha e
  *   `atualizadoEm` (ISO) quando ele acabou de ser regravado porque o texto da lista mudou;
  * - `docx`: o nome, na pasta, da cópia do `.docx` que a pessoa anexou.
@@ -721,9 +731,12 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
    */
   Rpc.make("revisaoPpc.conferirAcompanhado", { payload: EntradaLista }),
   /**
-   * A conversa ao lado da revisão, antes de cada mensagem dela: na primeira, cria a pasta ("PPC <curso> –
-   * conversa") e abre a conversa (livre, com a origem na revisão e a IA pedida); nas seguintes, retoma a
-   * mesma. Com `ppc`, grava (ou regrava, se o texto da lista mudou) o Markdown do PPC com o sumário de
+   * Uma conversa ao lado da revisão, antes de cada mensagem dela. `conversa`: retoma essa (uma das ligadas à
+   * lista, ou uma conversa da cadeia de continuações de uma delas). Sem ela, `pendencia` retoma a conversa
+   * nascida dessa pendência, se há, ou abre uma nova ligada a ela, mesmo que a pendência tenha mudado de chave
+   * (o salvamento lhe deu outro trecho); sem as duas, abre uma conversa geral nova. A nova tem a pasta própria
+   * ("PPC <curso> – <tema>": o critério da pendência; sem ela na lista, o `tema` que a interface mandou; senão,
+   * "conversa") e é livre, com a origem na revisão e a IA pedida. Com `ppc`, grava (ou regrava, se o texto da lista mudou) o Markdown do PPC com o sumário de
    * seções e linhas, e a nota com o caminho do `.docx`; com `docx`, a cópia do `.docx` (o acompanhado ou o
    * revisado, liberado pelo desktop). Só entra na pasta o que a ficha ainda pede. `chave`: a pendência em
    * foco, por cuja seção a instrução de leitura manda começar.
@@ -731,6 +744,9 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.conversarSobre", {
     payload: Schema.Struct({
       lista: Schema.String,
+      conversa: Schema.optionalKey(Schema.String),
+      pendencia: Schema.optionalKey(Schema.String),
+      tema: Schema.optionalKey(Schema.String),
       chave: Schema.optionalKey(Schema.String),
       provider: Provider,
       modelo: Schema.optionalKey(Schema.String),

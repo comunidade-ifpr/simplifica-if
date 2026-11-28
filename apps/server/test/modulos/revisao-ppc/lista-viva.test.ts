@@ -1893,18 +1893,23 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         });
         assert.isTrue(primeira.nova);
         assert.isNull(primeira.ppc);
-        const ligada = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado!;
+        const ligadas = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas;
+        assert.strictEqual(ligadas.length, 1);
+        const ligada = ligadas[0]!;
         assert.strictEqual(ligada.conversa, primeira.conversa);
+        // Sem `pendencia`, a conversa geral: a pasta "– conversa", sem pendência ligada.
+        assert.isNull(ligada.pendencia);
         assert.deepStrictEqual(arquivosDa(ligada.pasta), []);
         const curso = antes.resultado.curso.cnct?.denominacao;
         assert.include(
           NodePath.basename(ligada.pasta),
-          curso === undefined ? "PPC conversa – conversa" : `PPC ${curso}`,
+          curso === undefined ? "PPC conversa – conversa" : `PPC ${curso} – conversa`,
         );
 
         // A seguinte retoma a mesma conversa; com a ficha, o Markdown (com o sumário) e a nota entram.
         const segunda = yield* c["revisaoPpc.conversarSobre"]({
           lista: pre.lista,
+          conversa: primeira.conversa,
           chave: triagem.chave,
           provider: "codex",
           ppc: true,
@@ -1931,6 +1936,7 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         // Sem mudança no texto, nada é regravado; sem a ficha da pendência, a seção dela não vai.
         const terceira = yield* c["revisaoPpc.conversarSobre"]({
           lista: pre.lista,
+          conversa: primeira.conversa,
           provider: "claude",
           ppc: true,
           docx: false,
@@ -1945,6 +1951,7 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         assert.include(NodeFS.readFileSync(NodePath.join(ligada.pasta, "PPC em revisão.md"), "utf8"), "6/2012");
         const quarta = yield* c["revisaoPpc.conversarSobre"]({
           lista: pre.lista,
+          conversa: primeira.conversa,
           provider: "claude",
           ppc: true,
           docx: false,
@@ -1997,7 +2004,7 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         }).pipe(Effect.flip);
         assert.include(falhou.message, "Não foi possível ler o .docx");
         NodeFS.writeFileSync(copia, bytes);
-        assert.isNull((yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado);
+        assert.deepStrictEqual((yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas, []);
         assert.strictEqual((yield* c["conversa.listar"]({})).length, conversasAntes);
 
         const aberta = yield* c["revisaoPpc.conversarSobre"]({
@@ -2006,7 +2013,7 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
           ppc: true,
           docx: false,
         });
-        const pasta = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado!.pasta;
+        const pasta = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas[0]!.pasta;
         // Só uma pasta da conversa: a tentativa que falhou não deixou outra.
         const irmas = NodeFS.readdirSync(NodePath.dirname(pasta)).filter((nome) =>
           nome.startsWith("PPC curso trocado"),
@@ -2014,12 +2021,16 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         assert.deepStrictEqual(irmas, [NodePath.basename(pasta)]);
 
         const refeita = yield* c["revisaoPpc.trocarCurso"]({ lista: pre.lista, cnct: "tecnico-em-agropecuaria" });
-        assert.deepStrictEqual(refeita.conversaAoLado, { conversa: aberta.conversa, pasta });
+        assert.deepStrictEqual(
+          refeita.conversas.map(({ conversa, pasta }) => ({ conversa, pasta })),
+          [{ conversa: aberta.conversa, pasta }],
+        );
         const listada = (yield* c["conversa.listar"]({})).find((conversa) => conversa.id === aberta.conversa);
         assert.strictEqual(listada?.origem?.rota, `/revisao-ppc?id=${refeita.id}`);
         assert.include(listada?.origem?.rotulo ?? "", "da revisão do PPC de");
 
-        // A conversa continuou com outra IA (o limite): a continuação fica com a origem, e a revisão passa a ela.
+        // A conversa continuou com outra IA (o limite): a continuação fica com a origem, e a lista a mostra no
+        // lugar da antiga.
         const continuada = yield* c["conversa.iniciar"]({
           provider: "antigravity",
           pastaTrabalho: pasta,
@@ -2029,27 +2040,37 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         assert.strictEqual(daContinuada.origem?.rota, `/revisao-ppc?id=${refeita.id}`);
         const origemDe = (conversas: ReadonlyArray<{ readonly id: string; readonly origem?: unknown }>, id: string) =>
           conversas.find((conversa) => conversa.id === id)?.origem;
+        assert.deepStrictEqual(
+          (yield* c["revisaoPpc.lista"]({ lista: refeita.id })).conversas.map((l) => l.conversa),
+          [continuada.sessao],
+        );
 
-        // A lista ainda guarda a antiga: "Qual é o curso?" de novo leva a origem das duas à lista nova.
+        // "Qual é o curso?" de novo leva a origem das duas à lista nova.
         const outraVez = yield* c["revisaoPpc.trocarCurso"]({ lista: refeita.id, cnct: "tecnico-em-agropecuaria" });
         const depoisDaTroca = yield* c["conversa.listar"]({});
         for (const id of [aberta.conversa, continuada.sessao])
           assert.deepInclude(origemDe(depoisDaTroca, id), { rota: `/revisao-ppc?id=${outraVez.id}` });
 
-        // A próxima mensagem passa a revisão à continuação, e a interface fica sabendo (`nova`) para relê-la.
+        // A próxima mensagem pela antiga (o painel ainda com ela) vai à continuação, que já tem a linha, e a
+        // interface fica sabendo (`nova`) para reler a lista.
         const seguinte = yield* c["revisaoPpc.conversarSobre"]({
           lista: outraVez.id,
+          conversa: aberta.conversa,
           provider: "claude",
           ppc: false,
           docx: false,
         });
         assert.deepInclude(seguinte, { conversa: continuada.sessao, nova: true });
-        assert.deepStrictEqual((yield* c["revisaoPpc.lista"]({ lista: outraVez.id })).conversaAoLado, {
-          conversa: continuada.sessao,
-          pasta,
-        });
+        assert.deepStrictEqual(
+          (yield* c["revisaoPpc.lista"]({ lista: outraVez.id })).conversas.map(({ conversa, pasta }) => ({
+            conversa,
+            pasta,
+          })),
+          [{ conversa: continuada.sessao, pasta }],
+        );
         const mais = yield* c["revisaoPpc.conversarSobre"]({
           lista: outraVez.id,
+          conversa: continuada.sessao,
           provider: "claude",
           ppc: false,
           docx: false,
@@ -2061,6 +2082,111 @@ layer(camada, { excludeTestServices: true })("conferência ao salvar", (it) => {
         const depoisDeApagar = yield* c["conversa.listar"]({});
         for (const id of [aberta.conversa, continuada.sessao])
           assert.deepStrictEqual(origemDe(depoisDeApagar, id), { rotulo: "revisão apagada", rota: null });
+      }),
+  );
+
+  it.effect(
+    "uma conversa por pendência: duas pendências, duas conversas em duas pastas; a mesma pendência volta à dela; o salvamento regrava o PPC nas duas",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        const { c, pre, antes, copia } = yield* revisaoAcompanhada("PPC duas conversas.docx", ppcSintetico());
+        assert.isAtLeast(antes.pendencias.length, 3);
+        const [p1, p2, p3] = antes.pendencias as [
+          ListaPendencias["pendencias"][number],
+          ListaPendencias["pendencias"][number],
+          ListaPendencias["pendencias"][number],
+        ];
+        const sobre = (pendencia: string) =>
+          c["revisaoPpc.conversarSobre"]({
+            lista: pre.lista,
+            pendencia,
+            chave: pendencia,
+            provider: "claude",
+            ppc: true,
+            docx: false,
+          });
+        const um = yield* sobre(p1.chave);
+        const dois = yield* sobre(p2.chave);
+        assert.isTrue(um.nova);
+        assert.isTrue(dois.nova);
+        assert.notStrictEqual(um.conversa, dois.conversa);
+
+        // "Conversar sobre esta pendência" de novo volta à conversa dela, sem abrir outra.
+        assert.deepInclude(yield* sobre(p1.chave), { conversa: um.conversa, nova: false });
+        // Duas mensagens ao mesmo tempo sobre a mesma pendência: uma conversa só, na vez da lista.
+        const [tres, tresDeNovo] = yield* Effect.all([sobre(p3.chave), sobre(p3.chave)], { concurrency: 2 });
+        assert.strictEqual(tres.conversa, tresDeNovo.conversa);
+
+        const lista = yield* c["revisaoPpc.lista"]({ lista: pre.lista });
+        assert.deepStrictEqual(
+          lista.conversas.map((l) => [l.conversa, l.pendencia]),
+          [
+            [um.conversa, p1.chave],
+            [dois.conversa, p2.chave],
+            [tres.conversa, p3.chave],
+          ],
+        );
+        const pastas = lista.conversas.map((l) => l.pasta);
+        assert.strictEqual(new Set(pastas).size, 3);
+        // Cada pasta tem o tema da pendência no nome, não o "– conversa" da geral.
+        for (const pasta of pastas) assert.notInclude(NodePath.basename(pasta), "– conversa");
+        for (const pasta of pastas) assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, "PPC em revisão.md")));
+
+        // A pessoa salva no Word: o Markdown é regravado em todas as pastas.
+        NodeFS.writeFileSync(copia, ppcSintetico({ corpoExtra: NORMA_REVOGADA }));
+        assert.strictEqual((yield* proximaConferencia(pre.lista)).tipo, "conferido");
+        for (const pasta of pastas)
+          assert.include(NodeFS.readFileSync(NodePath.join(pasta, "PPC em revisão.md"), "utf8"), "6/2012");
+
+        // A pendência que mudou de chave antes do primeiro envio (o salvamento lhe deu outro trecho): a conversa
+        // fica ligada à chave que o painel pediu, com o tema que ele mandou, e não vira uma conversa geral.
+        const mudou = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          pendencia: "chave-que-saiu",
+          tema: "Estágio supervisionado",
+          provider: "claude",
+          ppc: false,
+          docx: false,
+        });
+        const daMudada = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas.find(
+          (l) => l.conversa === mudou.conversa,
+        );
+        assert.strictEqual(daMudada?.pendencia, "chave-que-saiu");
+        assert.include(NodePath.basename(daMudada!.pasta), "– Estágio supervisionado");
+        // De novo, a mesma pendência volta à dela.
+        assert.deepInclude(
+          yield* c["revisaoPpc.conversarSobre"]({
+            lista: pre.lista,
+            pendencia: "chave-que-saiu",
+            provider: "claude",
+            ppc: false,
+            docx: false,
+          }),
+          { conversa: mudou.conversa, nova: false },
+        );
+
+        // A conversa geral nova é outra, na pasta "– conversa".
+        const geral = yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          provider: "claude",
+          ppc: false,
+          docx: false,
+        });
+        assert.isTrue(geral.nova);
+        const depois = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas;
+        assert.strictEqual(depois.length, 5);
+        assert.deepInclude(depois[4], { conversa: geral.conversa, pendencia: null });
+        assert.include(NodePath.basename(depois[4]!.pasta), "– conversa");
+
+        // Apagar a revisão passa todas a "revisão apagada".
+        yield* c["revisaoPpc.apagarLista"]({ lista: pre.lista });
+        const listadas = yield* c["conversa.listar"]({});
+        for (const l of depois)
+          assert.deepStrictEqual(listadas.find((conversa) => conversa.id === l.conversa)?.origem, {
+            rotulo: "revisão apagada",
+            rota: null,
+          });
       }),
   );
 });
@@ -2144,17 +2270,89 @@ it.live("a conversa ao lado apagada numa execução anterior sai da revisão ao 
       docx: false,
     });
     yield* c["conversa.apagar"]({ sessao: aberta.conversa });
-    // Na mesma execução, a lista ainda a cita (a interface sabe que ela foi apagada).
-    assert.isNotNull((yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversaAoLado);
-    return pre.lista;
+    // Na mesma execução, a lista já não a mostra (a linha sai ao subir o servidor).
+    assert.deepStrictEqual((yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas, []);
+    return { lista: pre.lista, conversa: aberta.conversa };
   }).pipe(Effect.scoped, Effect.provide(servidor));
-  const depois = (lista: string) =>
+  const depois = ({ lista, conversa }: { readonly lista: string; readonly conversa: string }) =>
     Effect.gen(function* () {
       const c = yield* rpc;
-      assert.isNull((yield* c["revisaoPpc.lista"]({ lista })).conversaAoLado);
-      // A próxima mensagem abre outra conversa.
-      const nova = yield* c["revisaoPpc.conversarSobre"]({ lista, provider: "claude", ppc: false, docx: false });
+      assert.deepStrictEqual((yield* c["revisaoPpc.lista"]({ lista })).conversas, []);
+      // A próxima mensagem da apagada abre outra conversa.
+      const nova = yield* c["revisaoPpc.conversarSobre"]({
+        lista,
+        conversa,
+        provider: "claude",
+        ppc: false,
+        docx: false,
+      });
       assert.isTrue(nova.nova);
+      assert.notStrictEqual(nova.conversa, conversa);
     }).pipe(Effect.scoped, Effect.provide(servidor));
   return Effect.flatMap(antes, depois);
 });
+
+it.live(
+  "a continuação toma a linha da conversa ao lado: apagar a original não a tira da revisão, nem ao subir o servidor",
+  () => {
+    const bancoConversas = NodePath.join(diretorioTemporario("simplifica-continuacao-orfa-"), "conversas.sqlite");
+    const servidor = camadaCom(bancoComFichas(), bancoConversas);
+    const antes = Effect.gen(function* () {
+      reiniciar();
+      const c = yield* rpc;
+      const pre = yield* revisarAteOFim(c, { arquivo: gravar("PPC continuação órfã.docx", ppcSintetico()) });
+      const pendencia = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).pendencias[0]!.chave;
+      const original = yield* c["revisaoPpc.conversarSobre"]({
+        lista: pre.lista,
+        pendencia,
+        provider: "claude",
+        ppc: false,
+        docx: false,
+      });
+      const pasta = (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas[0]!.pasta;
+      // Continuada na tela cheia (sem passar pelo painel) e a original apagada pela lista de conversas.
+      const continuada = yield* c["conversa.iniciar"]({
+        provider: "antigravity",
+        pastaTrabalho: pasta,
+        continuaDe: original.conversa,
+      });
+      yield* c["conversa.apagar"]({ sessao: original.conversa });
+      assert.deepStrictEqual(
+        (yield* c["revisaoPpc.lista"]({ lista: pre.lista })).conversas.map((l) => [l.conversa, l.pasta, l.pendencia]),
+        [[continuada.sessao, pasta, pendencia]],
+      );
+      // A próxima mensagem pela continuação (ou pela pendência) fica nela, na mesma pasta.
+      assert.deepInclude(
+        yield* c["revisaoPpc.conversarSobre"]({
+          lista: pre.lista,
+          conversa: continuada.sessao,
+          pendencia,
+          provider: "antigravity",
+          ppc: false,
+          docx: false,
+        }),
+        { conversa: continuada.sessao, nova: false },
+      );
+      return { lista: pre.lista, continuada: continuada.sessao, pendencia };
+    }).pipe(Effect.scoped, Effect.provide(servidor));
+    const depois = (antes: { readonly lista: string; readonly continuada: string; readonly pendencia: string }) =>
+      Effect.gen(function* () {
+        const c = yield* rpc;
+        assert.deepStrictEqual(
+          (yield* c["revisaoPpc.lista"]({ lista: antes.lista })).conversas.map((l) => [l.conversa, l.pendencia]),
+          [[antes.continuada, antes.pendencia]],
+        );
+        assert.deepInclude(
+          yield* c["revisaoPpc.conversarSobre"]({
+            lista: antes.lista,
+            pendencia: antes.pendencia,
+            provider: "antigravity",
+            ppc: false,
+            docx: false,
+          }),
+          { conversa: antes.continuada, nova: false },
+        );
+      }).pipe(Effect.scoped, Effect.provide(servidor));
+    return Effect.flatMap(antes, depois);
+  },
+);

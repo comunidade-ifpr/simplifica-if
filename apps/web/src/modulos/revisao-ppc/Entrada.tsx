@@ -82,7 +82,7 @@ export function Entrada({
 
   /**
    * Uma a uma: a falha de uma não para as outras; com uma só, o erro fica no diálogo. Com a opção marcada,
-   * a conversa ao lado de cada uma sai e a pasta dela vai à Lixeira (`depoisDeApagarRevisao`).
+   * as conversas ao lado de cada uma saem e as pastas delas vão à Lixeira (`depoisDeApagarRevisao`).
    */
   const apagarListas = async (
     alvo: ReadonlyArray<ListaPendencias>,
@@ -95,7 +95,7 @@ export function Entrada({
         await api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: lista.id }));
         apagou.current = true;
         const ficou = await depoisDeApagarRevisao(app, memoria, lista, { ponte, pasta: pastaParaLixeira });
-        desfechos.push({ titulo, ...(ficou === undefined ? {} : { pastaFicou: ficou }) });
+        desfechos.push({ titulo, ...(ficou === undefined ? {} : { pastasFicaram: ficou }) });
       } catch (motivo) {
         if (alvo.length === 1) throw motivo;
         registrarErro(`apagar a revisão em lote: ${textoDoErro(motivo)}`);

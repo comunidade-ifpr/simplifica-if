@@ -111,7 +111,7 @@ const lista = (
   sha256: "hash-1",
   revisao: null,
   arquivoAcompanhado: null,
-  conversaAoLado: null,
+  conversas: [],
   provider: null,
   resultado: resultado(extra),
   pendencias,

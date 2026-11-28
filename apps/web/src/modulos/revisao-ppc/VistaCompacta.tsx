@@ -7,11 +7,16 @@
  * - O filtro por gravidade e a lista, com uma pendência aberta por vez: o trecho (com "Copiar trecho", para
  *   achar no Word com Ctrl+F), "Feito" (F no teclado), a norma (no painel, que cobre a coluna) e "Sugerir
  *   texto". A pendência que o salvamento resolveu diz "Resolvido ao salvar"; a que ele trouxe, "Novo".
- * - No rodapé, a caixa curta da conversa ao lado da revisão (a mesma da aba Conversar), com o PPC e a
- *   pendência aberta como fichas; a resposta abre na coluna, no painel, e "Voltar" volta à lista. A caixa
- *   toma a conversa do painel só na entrada e só se ela não tem rascunho de outra conversa (aí, oferece a
- *   da revisão); depois, abrir outra pendência só troca a ficha da pendência, sem repor a do PPC que a
- *   pessoa tirou nem puxar de volta a conversa que ela trocou no painel.
+ * - No rodapé, "Conversas desta revisão" (recolhida) e a caixa curta da conversa ao lado (a mesma da aba
+ *   Conversar): a da pendência aberta (o rascunho com o PPC e a pendência, ou a conversa que já nasceu
+ *   dela) ou, sem pendência aberta, a conversa da revisão que já estava; a resposta abre na coluna, no
+ *   painel, e "Voltar" volta à lista. Na entrada, a caixa toma a conversa do painel se ela é desta revisão
+ *   ou se o rascunho está intocado; abrir outra pendência leva a caixa à conversa dela, mas só se a caixa
+ *   está numa conversa desta revisão e sem rascunho escrito de outra. Nunca puxa de volta uma conversa
+ *   livre, de outra origem ou o rascunho de "Nova conversa" que a pessoa deixou no painel: aí, como com o
+ *   rascunho de outra, a caixa oferece a da pendência (ou da revisão), e o que está escrito vai junto. A
+ *   conversa desta revisão que a pessoa escolhe em "Conversas desta revisão" (ou a nova) fica na caixa, sem
+ *   a oferta, até outra pendência abrir.
  *
  * O app não mexe no Word: "Copiar trecho" e "Sugerir texto" levam o texto à área de transferência.
  */
@@ -29,11 +34,12 @@ import { horaDe } from "../../lib/formato.ts";
 import { nomeDoArquivo } from "../../lib/texto.ts";
 import { cn } from "../../lib/utils.ts";
 import { CaixaDaConversaAoLado } from "../../painel/AbaConversar.tsx";
-import type { ConversaDoPainel, PedidoConversa } from "../../painel/ControlePainel.ts";
+import { rascunhoIntocado } from "../../painel/ControlePainel.ts";
 import { type AoAbrirLink, useAbrirLink } from "../../painel/abrirLink.ts";
 import { ponteDesktop } from "../../ponte-desktop.ts";
 import { useFocoNaPendencia, useRevisao, useRevisaoNaTela } from "./contexto.ts";
-import { pedidoDaRevisao } from "./conversa.ts";
+import { ConversasDaRevisao } from "./ConversasDaRevisao.tsx";
+import { ehConversaDaRevisao, lerOrigem, pedidoDaRevisao } from "./conversa.ts";
 import { providerDaRevisao } from "./ControleRevisao.ts";
 import { nomeIa } from "./FaixaIa.tsx";
 import { IndicadorGravidade } from "./IndicadorGravidade.tsx";
@@ -58,18 +64,6 @@ import { DICA_TECLADO, teclasDaLista } from "./teclado.ts";
 /** O título da moldura compacta, que a revisão dá ao ligar o modo. */
 export const TITULO_COMPACTO = "Acompanhando o PPC";
 
-/** A conversa do painel é a da revisão do `pedido` (a mesma origem, ou a conversa que a lista guarda). */
-const daRevisao = (conversa: ConversaDoPainel, pedido: PedidoConversa): boolean =>
-  conversa.apagada !== true &&
-  ((conversa.origem !== undefined && conversa.origem.chave === pedido.origem?.chave) ||
-    (pedido.conversa !== undefined && conversa.id === pedido.conversa));
-
-/** Só a ficha da pendência do pedido, sem a do PPC nem as ofertas. */
-const soPendencia = (pedido: PedidoConversa): PedidoConversa => ({
-  ...(pedido.origem === undefined ? {} : { origem: pedido.origem }),
-  fichas: (pedido.fichas ?? []).filter((ficha) => ficha.chave.startsWith("pendencia:")),
-});
-
 /** Os filtros por gravidade; o glifo é só visual (o leitor de tela lê o nome). */
 const FILTROS: ReadonlyArray<{ readonly valor: FiltroGravidade; readonly nome: string; readonly glifo?: string }> = [
   { valor: "tudo", nome: "Tudo" },
@@ -89,31 +83,58 @@ export function VistaCompacta() {
   useRevisaoNaTela();
   useFocoNaPendencia("compacta");
 
-  // A caixa curta pergunta sobre a revisão. Na entrada (ou noutra lista), ela fica com a conversa da
-  // revisão, salvo se o painel tem o rascunho de outra (a caixa oferece a da revisão); depois, a pendência
-  // aberta troca só a ficha da pendência, e só na conversa da revisão.
+  // A caixa curta pergunta sobre a revisão: a conversa da pendência aberta, ou a da revisão que já estava.
+  // Na entrada (ou noutra lista), ela fica com a conversa do painel se é desta revisão ou se está vazia;
+  // depois, abrir outra pendência leva a caixa à conversa dela, só se ela está numa desta revisão e sem
+  // rascunho escrito de outra (senão, a caixa oferece a da pendência).
   const aberta = estado.aberta;
   const listaId = estado.lista?.id;
   const ligada = useRef<{ readonly lista: string; readonly aberta: string | null } | undefined>(undefined);
   useEffect(() => {
-    const pedido = pedidoDaRevisao(app, aberta);
-    if (pedido === undefined || listaId === undefined) return;
+    const lista = app.revisao.obter().lista;
+    const completo = pedidoDaRevisao(app, aberta);
+    // A conversa que já existe só abre: as fichas já foram nela (a do PPC tirada não volta a cada pendência).
+    const pedido =
+      completo?.conversa === undefined ? completo : { ...completo, fichas: [], ofertas: completo.ofertas ?? [] };
+    if (pedido === undefined || lista === undefined || lista.id !== listaId) return;
     const antes = ligada.current;
     ligada.current = { lista: listaId, aberta };
     const atual = app.painel.obter().conversa;
-    const naRevisao = daRevisao(atual, pedido);
+    const naRevisao = ehConversaDaRevisao(atual, lista);
+    const mesma =
+      atual.origem?.chave === pedido.origem?.chave || (pedido.conversa !== undefined && atual.id === pedido.conversa);
+    const podeTrocar = mesma || atual.texto.trim() === "";
     if (antes === undefined || antes.lista !== listaId) {
-      if (naRevisao) app.painel.conversar(soPendencia(pedido), { mostrar: false });
-      else if (atual.texto.trim() === "") app.painel.conversar(pedido, { mostrar: false });
+      // A conversa livre, a de outra origem ou o rascunho de "Nova conversa" ficam: a caixa oferece a desta.
+      if (naRevisao ? aberta !== null && podeTrocar : rascunhoIntocado(atual))
+        app.painel.conversar(pedido, { mostrar: false });
       return;
     }
-    if (!naRevisao || antes.aberta === aberta) return;
-    if (antes.aberta !== null) app.painel.tirarFicha(`pendencia:${antes.aberta}`);
-    app.painel.conversar(soPendencia(pedido), { mostrar: false });
+    if (antes.aberta === aberta || aberta === null || !naRevisao || !podeTrocar) return;
+    app.painel.conversar(pedido, { mostrar: false });
   }, [app, listaId, aberta]);
+  // A conversa desta revisão que a pessoa escolheu ("Conversas desta revisão", a nova), com a pendência que
+  // estava aberta: a caixa fica nela, sem oferecer a da pendência, até outra pendência abrir.
+  const [escolhida, setEscolhida] = useState<{ readonly origem: string; readonly aberta: string | null }>();
+  const escolher = () => {
+    const origem = app.painel.obter().conversa.origem?.chave;
+    if (origem !== undefined) setEscolhida({ origem, aberta: app.revisao.obter().aberta });
+  };
+  // A caixa está onde a tela pede: numa conversa desta revisão e, com uma pendência aberta, na dela (ou na
+  // que a pessoa escolheu).
   const caixaNaRevisao = useSyncExternalStore(app.painel.observar, () => {
-    const pedido = pedidoDaRevisao(app, null);
-    return pedido === undefined || daRevisao(app.painel.obter().conversa, pedido);
+    const lista = app.revisao.obter().lista;
+    if (lista === undefined) return true;
+    const atual = app.painel.obter().conversa;
+    if (!ehConversaDaRevisao(atual, lista)) return false;
+    const pendencia = app.revisao.obter().aberta;
+    if (pendencia === null) return true;
+    if (escolhida !== undefined && escolhida.aberta === pendencia && escolhida.origem === atual.origem?.chave)
+      return true;
+    return (
+      (atual.origem !== undefined && lerOrigem(atual.origem.chave)?.pendencia === pendencia) ||
+      (atual.id !== undefined && lista.conversas.some((c) => c.conversa === atual.id && c.pendencia === pendencia))
+    );
   });
   const rascunhoDeOutra = useSyncExternalStore(
     app.painel.observar,
@@ -222,11 +243,12 @@ export function VistaCompacta() {
         )}
       </div>
       <section aria-label="Conversa sobre esta revisão" className="shrink-0 border-border border-t p-2">
+        <ConversasDaRevisao compacta aoEscolher={escolher} />
         {caixaNaRevisao ? null : (
           <div className="flex flex-col items-start gap-1.5 px-1 pb-2 text-small">
             <p className="text-muted-foreground">
               {rascunhoDeOutra
-                ? "A caixa está com o rascunho de outra conversa. Trocar pela desta revisão apaga o rascunho."
+                ? `A caixa está com o rascunho de outra conversa. O que está escrito vai junto para a desta ${aberta === null ? "revisão" : "pendência"}.`
                 : "A caixa está com outra conversa."}
             </p>
             <Button
@@ -237,7 +259,7 @@ export function VistaCompacta() {
                 if (pedido !== undefined) app.painel.conversar(pedido, { mostrar: false });
               }}
             >
-              Conversar sobre esta revisão
+              {aberta === null ? "Conversar sobre esta revisão" : "Conversar sobre esta pendência"}
             </Button>
           </div>
         )}

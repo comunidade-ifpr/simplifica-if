@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: arquivo temporário para layerArquivo
 /**
- * Migrações do `conversas.sqlite`: schema inicial, idempotência, o upgrade de um banco das versões 1 a 4,
+ * Migrações do `conversas.sqlite`: schema inicial, idempotência, o histórico divergente, o upgrade de um banco das versões 1 a 6,
  * `foreign_keys` ligado e criação do arquivo.
  */
 import * as NodePath from "node:path";
@@ -8,6 +8,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Schema from "effect/Schema";
 import * as Migrator from "effect/sql/Migrator";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
@@ -19,6 +20,7 @@ afterAll(limparTemporarios);
 
 const pasta = diretorioTemporario("simplifica-migracoes-");
 const ULTIMA = Banco.MIGRACOES.at(-1)![0];
+const ehHistoricoDivergente = Schema.is(Banco.HistoricoDivergente);
 const emMemoria = NodeSqliteClient.layer({ filename: ":memory:" });
 
 /** As migrações até `ate`, para montar o banco de uma versão anterior. */
@@ -78,6 +80,8 @@ describe("migrações do banco das conversas", () => {
         [4, "ConversaAoLado"],
         [5, "AtividadesEContinuacao"],
         [6, "VocabularioRevisaoPpc"],
+        [7, "ConversasDaRevisao"],
+        [8, "ContinuacoesDasConversasDaRevisao"],
       ]);
       const linhas = yield* sql<{ bloco_id: string; uso: string; problemas: string | null }>`
         SELECT bloco_id, uso, problemas FROM revisao_ppc_tentativas_ia
@@ -103,6 +107,8 @@ describe("migrações do banco das conversas", () => {
           [4, "ConversaAoLado"],
           [5, "AtividadesEContinuacao"],
           [6, "VocabularioRevisaoPpc"],
+          [7, "ConversasDaRevisao"],
+          [8, "ContinuacoesDasConversasDaRevisao"],
         ]);
         const linhas = yield* sql<{
           arquivo: string;
@@ -142,7 +148,7 @@ describe("migrações do banco das conversas", () => {
             versao_copia, criada_em, atualizada_em)
           VALUES ('l', '/docs/PPC.docx', 'abc', '# PPC', '[]', '{}', 3, 3, '2026-11-26T14:55:15Z', '2026-11-26T14:59:18Z')
         `;
-        assert.deepStrictEqual(yield* Banco.rodarMigracoes(), [
+        assert.deepStrictEqual(yield* Migrator.make({})({ loader: migracoesAte(6) }), [
           [4, "ConversaAoLado"],
           [5, "AtividadesEContinuacao"],
           [6, "VocabularioRevisaoPpc"],
@@ -206,6 +212,8 @@ describe("migrações do banco das conversas", () => {
         assert.deepStrictEqual(yield* Banco.rodarMigracoes(), [
           [5, "AtividadesEContinuacao"],
           [6, "VocabularioRevisaoPpc"],
+          [7, "ConversasDaRevisao"],
+          [8, "ContinuacoesDasConversasDaRevisao"],
         ]);
         const conversas = yield* sql<{ vista_em: string | null; continua_de: string | null }>`
           SELECT vista_em, continua_de FROM conversas
@@ -276,7 +284,11 @@ describe("migrações do banco das conversas", () => {
             1, 1, '2026-11-26T14:55:15Z', '2026-11-26T14:59:18Z')
         `;
 
-      assert.deepStrictEqual(yield* Banco.rodarMigracoes(), [[6, "VocabularioRevisaoPpc"]]);
+      assert.deepStrictEqual(yield* Banco.rodarMigracoes(), [
+        [6, "VocabularioRevisaoPpc"],
+        [7, "ConversasDaRevisao"],
+        [8, "ContinuacoesDasConversasDaRevisao"],
+      ]);
 
       const [rev] = yield* sql<{ plano: string }>`SELECT plano FROM revisao_ppc_revisoes_ia WHERE id = 'r6'`;
       const plano = JSON.parse(rev!.plano) as {
@@ -330,6 +342,100 @@ describe("migrações do banco das conversas", () => {
         (JSON.parse(lista!.resultados_ia) as { resultados: Array<{ estado: string }> }).resultados.map((r) => r.estado),
         ["atende", "nao_se_aplica"],
       );
+    }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: ":memory:" }))),
+  );
+
+  it.effect(
+    "migrações 7 e 8: a conversa ao lado que a lista da versão 6 guardava passa a ser a conversa geral dela (a última da cadeia de continuações), e as colunas saem da lista",
+    () =>
+      Effect.gen(function* () {
+        const sql = yield* SqlClient.SqlClient;
+        yield* Migrator.make({})({ loader: migracoesAte(6) });
+        yield* sql`
+          INSERT INTO revisao_ppc_listas_pendencias (id, arquivo, sha256, markdown, linhas_texto_ia, resultado, versao,
+            versao_copia, criada_em, atualizada_em, conversa_id, conversa_pasta)
+          VALUES
+            ('l', '/docs/PPC.docx', 'abc', '# PPC', '[]', '{}', 3, 3, '2026-11-26T14:55:15Z', '2026-11-26T14:59:18Z',
+              'c', '/docs/PPC Enfermagem – conversa'),
+            ('m', '/docs/Outro.docx', 'def', '# PPC', '[]', '{}', 1, 1, '2026-11-26T14:55:15Z', '2026-11-26T14:59:18Z',
+              NULL, NULL)
+        `;
+        // A conversa da lista já continuou com outra IA (`c2`, na mesma pasta): a linha vai à continuação.
+        yield* sql`
+          INSERT INTO conversas (id, provider, pasta_trabalho, estado, criada_em, atualizada_em, continua_de)
+          VALUES
+            ('c', 'claude', '/docs/PPC Enfermagem – conversa', 'liberada', '2026-11-26T14:59:18Z', '2026-11-26T14:59:18Z', NULL),
+            ('c2', 'codex', '/docs/PPC Enfermagem – conversa', 'liberada', '2026-11-26T15:10:00Z', '2026-11-26T15:10:00Z', 'c')
+        `;
+        assert.deepStrictEqual(yield* Banco.rodarMigracoes(), [
+          [7, "ConversasDaRevisao"],
+          [8, "ContinuacoesDasConversasDaRevisao"],
+        ]);
+        assert.deepStrictEqual(
+          yield* sql`SELECT conversa_id, lista_id, pasta, pendencia, criada_em FROM revisao_ppc_conversas`,
+          [
+            {
+              conversa_id: "c2",
+              lista_id: "l",
+              pasta: "/docs/PPC Enfermagem – conversa",
+              pendencia: null,
+              criada_em: "2026-11-26T14:59:18Z",
+            },
+          ],
+        );
+        const colunas = (yield* sql<{ name: string }>`PRAGMA table_info(revisao_ppc_listas_pendencias)`).map(
+          (c) => c.name,
+        );
+        assert.notInclude(colunas, "conversa_id");
+        assert.notInclude(colunas, "conversa_pasta");
+        assert.include(colunas, "markdown_conferido");
+        yield* sql`PRAGMA foreign_keys = ON`;
+        const ligada = () =>
+          sql<{ conversa_id: string }>`SELECT conversa_id FROM revisao_ppc_conversas`.pipe(
+            Effect.map((linhas) => linhas.map((l) => l.conversa_id)),
+          );
+        // Daí em diante, a continuação criada toma a linha (onde quer que se continue)…
+        yield* sql`
+          INSERT INTO conversas (id, provider, pasta_trabalho, estado, criada_em, atualizada_em, continua_de)
+          VALUES ('c3', 'claude', '/docs/PPC Enfermagem – conversa', 'liberada', '2026-11-26T15:20:00Z', '2026-11-26T15:20:00Z', 'c2')
+        `;
+        assert.deepStrictEqual(yield* ligada(), ["c3"]);
+        // …apagar a original não a deixa órfã…
+        yield* sql`DELETE FROM conversas WHERE id = 'c'`;
+        assert.deepStrictEqual(yield* ligada(), ["c3"]);
+        // …e a continuação apagada (a que não abriu, ou a que a pessoa apagou) devolve a linha à anterior.
+        yield* sql`DELETE FROM conversas WHERE id = 'c3'`;
+        assert.deepStrictEqual(yield* ligada(), ["c2"]);
+        // A lista apagada leva as linhas das conversas dela (as conversas e as pastas ficam).
+        yield* sql`DELETE FROM revisao_ppc_listas_pendencias WHERE id = 'l'`;
+        assert.deepStrictEqual(yield* sql`SELECT conversa_id FROM revisao_ppc_conversas`, []);
+      }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: ":memory:" }))),
+  );
+
+  it.effect("recusa o histórico com uma migração de outro nome, sem aplicar a deste código", () =>
+    Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+      yield* Migrator.make({})({ loader: migracoesAte(ULTIMA - 1) });
+      // A migração de mesmo número que outro ramo aplicou no banco de desenvolvimento.
+      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (${ULTIMA}, 'DeOutroRamo')`;
+      const erro = yield* Effect.flip(Banco.rodarMigracoes());
+      if (!ehHistoricoDivergente(erro)) return assert.fail(`outro erro: ${erro.message}`);
+      assert.deepStrictEqual(erro.divergentes, [
+        { id: ULTIMA, noBanco: "DeOutroRamo", noCodigo: Banco.MIGRACOES.at(-1)![1] },
+      ]);
+      assert.include(erro.message, `a ${ULTIMA} é "DeOutroRamo" no banco`);
+    }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: ":memory:" }))),
+  );
+
+  it.effect("recusa o banco migrado por uma versão mais nova", () =>
+    Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+      yield* Banco.rodarMigracoes();
+      yield* sql`INSERT INTO effect_sql_migrations (migration_id, name) VALUES (${ULTIMA + 1}, 'DoFuturo')`;
+      const erro = yield* Effect.flip(Banco.rodarMigracoes());
+      if (!ehHistoricoDivergente(erro)) return assert.fail(`outro erro: ${erro.message}`);
+      assert.deepStrictEqual(erro.divergentes, [{ id: ULTIMA + 1, noBanco: "DoFuturo", noCodigo: null }]);
+      assert.include(erro.message, "não existe neste app");
     }).pipe(Effect.provide(NodeSqliteClient.layer({ filename: ":memory:" }))),
   );
 
