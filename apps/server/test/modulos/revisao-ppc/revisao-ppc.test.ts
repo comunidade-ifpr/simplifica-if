@@ -12,13 +12,13 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterAll, assert, layer } from "@effect/vitest";
+import { afterAll, assert, it, layer } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { strToU8, zipSync } from "fflate";
-import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
+import { CAMINHO_ARQUIVOS_LIBERADOS, CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
 import { ehFalhaRevisaoPpc } from "@simplifica-if/contratos-app/modulos/revisao-ppc";
 import * as Layers from "@simplifica-if/kb/layers";
 import { par } from "@simplifica-if/docx/testes/sintetico";
@@ -353,7 +353,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
   );
 
   it.effect(
-    "a cópia comentada que o servidor grava sai liberada; o arquivo acompanhado de outra execução é pedido de novo",
+    "a cópia comentada que o servidor grava sai liberada; o acompanhado de uma revisão ativa no banco segue autorizado, e outro arquivo é recusado",
     () =>
       Effect.gen(function* () {
         const { urlRpc, porta } = yield* Servidor.ServidorApp;
@@ -376,26 +376,19 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         const recusa = yield* Effect.flip(rpc["revisaoPpc.acompanhar"]({ lista, arquivo: outro }));
         assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);
 
-        // Uma execução anterior do app acompanhava `outro`: a liberação dele se perdeu.
+        // Uma execução anterior do app já acompanhava `outro` (gravado no banco): volta a acompanhar sem pedir de novo.
         const db = new NodeSqlite.DatabaseSync(conversasDesktop);
         db.prepare("UPDATE revisao_ppc_listas_pendencias SET arquivo_acompanhado = ? WHERE id = ?").run(outro, lista);
         db.close();
-        const pedido = yield* Effect.flip(rpc["revisaoPpc.acompanhar"]({ lista }));
-        assert.isTrue(ehFalhaRevisaoPpc(pedido) && pedido.escolherDeNovo === true);
-        assert.include(pedido.message, "“acompanhado outro.docx”");
-        const eventos = yield* rpc["revisaoPpc.acompanharLista"]({ lista }).pipe(Stream.take(2), Stream.runCollect);
-        assert.strictEqual(eventos[0]!.tipo, "lista");
-        assert.deepInclude(eventos[1]!, { tipo: "falhou", escolherDeNovo: true });
-
-        // Escolhido de novo pelo diálogo (liberado), o mesmo arquivo volta a ser acompanhado.
-        assert.strictEqual((yield* liberar(outro)).status, 204);
-        const deNovo = yield* rpc["revisaoPpc.acompanhar"]({ lista, arquivo: outro });
+        const deNovo = yield* rpc["revisaoPpc.acompanhar"]({ lista });
         assert.strictEqual(deNovo.arquivoAcompanhado, outro);
+        const eventos = yield* rpc["revisaoPpc.acompanharLista"]({ lista }).pipe(Stream.take(1), Stream.runCollect);
+        assert.strictEqual(eventos[0]!.tipo, "lista");
       }),
   );
 
   it.effect(
-    "'Acompanhar no Word' numa revisão de outra execução, com a cópia em dia: pede o original, e liberado, a cópia vale",
+    "'Acompanhar no Word' numa revisão de outra execução, com a cópia em dia, funciona sem pedir o arquivo",
     () =>
       Effect.gen(function* () {
         const { urlRpc, porta } = yield* Servidor.ServidorApp;
@@ -410,7 +403,7 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         assert.strictEqual((yield* liberar(hoje)).status, 204);
         const { lista, arquivoComentado } = yield* revisarAteOFim(rpc, { arquivo: hoje });
 
-        // A revisão de ontem: o original e a cópia comentada em dia, nenhum dos dois liberado hoje.
+        // A revisão de ontem: o original e a cópia comentada no banco, sem nova liberação nesta execução.
         const ontem = gravar("sessao ontem.docx", ppcSintetico());
         const copiaDeOntem = NodePath.join(
           pasta,
@@ -423,68 +416,135 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         ).run(ontem, copiaDeOntem, lista);
         db.close();
 
-        // O pedido é o do original (o que o "Escolher o arquivo de novo" da lista aceita), não o da cópia.
-        const pedido = yield* Effect.flip(rpc["revisaoPpc.acompanhar"]({ lista }));
-        assert.isTrue(ehFalhaRevisaoPpc(pedido) && pedido.escolherDeNovo === true);
-        assert.include(pedido.message, "“sessao ontem.docx”");
-        if (ehFalhaRevisaoPpc(pedido)) assert.strictEqual(pedido.arquivo, ontem);
-
-        // O original escolhido de novo libera a cópia dele: "Acompanhar no Word" funciona.
-        assert.strictEqual((yield* liberar(ontem)).status, 204);
+        // O original está em revisão ativa no banco: "Acompanhar no Word" libera a cópia automaticamente.
         const acompanhada = yield* rpc["revisaoPpc.acompanhar"]({ lista });
         assert.strictEqual(acompanhada.arquivoAcompanhado, copiaDeOntem);
       }),
   );
 
-  it.effect("retomar a leitura com IA de um arquivo não liberado (o app reiniciou) recusa antes de ler", () =>
-    Effect.gen(function* () {
-      const { urlRpc } = yield* Servidor.ServidorApp;
-      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      const arquivo = gravar("pausada.docx", ppcSintetico());
-      // Uma leitura pausada de uma execução anterior do app, gravada no banco das conversas.
-      const estimativa = {
-        provider: "claude",
-        blocos: 1,
-        fichas: 1,
-        tokensEntrada: 1,
-        tokensSaida: 1,
-        minutos: 1,
-        custoUsd: null,
-        percentualJanela: 1,
-        limiteDoPlano: "do limite de 5 horas",
-      };
-      const db = new NodeSqlite.DatabaseSync(conversasDesktop);
-      // A lista viva dela: uma leitura sem lista é órfã e sai (`RevisaoIa.apagarOrfas`).
-      db.prepare(
-        `INSERT INTO revisao_ppc_listas_pendencias (id, arquivo, sha256, revisao_id, markdown, linhas_texto_ia, resultado,
-          versao, criada_em, atualizada_em)
-         VALUES ('lista-pausada', ?, ?, NULL, '', '[]', '{}', 0, ?, ?)`,
-      ).run(arquivo, hash(arquivo), "2026-11-20T10:00:00Z", "2026-11-20T10:00:00Z");
-      db.prepare(
-        `INSERT INTO revisao_ppc_revisoes_ia (id, lista_id, arquivo, sha256, provider, modelo, modo, situacao, motivo, plano,
-          estimativa, criada_em, atualizada_em)
-         VALUES (?, 'lista-pausada', ?, ?, 'claude', NULL, 'rapido', 'pausada', 'O app foi fechado.', 'null', ?, ?, ?)`,
-      ).run(
-        "revisao-pausada",
-        arquivo,
-        hash(arquivo),
-        JSON.stringify(estimativa),
-        "2026-11-20T10:00:00Z",
-        "2026-11-20T10:00:00Z",
-      );
-      db.prepare(
-        `UPDATE revisao_ppc_listas_pendencias SET revisao_id = 'revisao-pausada' WHERE id = 'lista-pausada'`,
-      ).run();
-      db.close();
-      const recusa = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "revisao-pausada" }));
-      assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);
-      assert.include(recusa.message, "Escolha de novo o arquivo “pausada.docx”");
-      // Nada começou: a leitura continua pausada, à espera do arquivo.
-      const estado = (yield* rpc["revisaoPpc.listarIa"]({})).find((e) => e.id === "revisao-pausada")!;
-      assert.strictEqual(estado.situacao, "pausada");
-    }),
+  it.effect(
+    "GET /arquivos/liberados exige o segredo do desktop, sem Origin, separa originais de acompanhados e exclui anexos",
+    () =>
+      Effect.gen(function* () {
+        const { urlRpc, porta } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        const url = `http://127.0.0.1:${porta}${CAMINHO_ARQUIVOS_LIBERADOS}`;
+        assert.strictEqual(
+          (yield* pedirHttp(url, { metodo: "GET", cabecalhos: { authorization: `Bearer ${TOKEN}` } })).status,
+          401,
+        );
+        assert.strictEqual(
+          (yield* pedirHttp(url, {
+            metodo: "GET",
+            cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}`, origin: "app://simplifica" },
+          })).status,
+          403,
+        );
+
+        const liberar = (arquivo: string) =>
+          pedirHttp(`http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`, {
+            metodo: "POST",
+            cabecalhos: { "content-type": "application/json", authorization: `Bearer ${TOKEN_DESKTOP}` },
+            corpo: JSON.stringify({ arquivo }),
+          });
+        const ppc = gravar("listagem-ppc.docx", ppcSintetico());
+        const anexo = gravar("anexo-chat.docx", ppcSintetico());
+        assert.strictEqual((yield* liberar(ppc)).status, 204);
+        assert.strictEqual((yield* liberar(anexo)).status, 204);
+        const { arquivoComentado } = yield* revisarAteOFim(rpc, { arquivo: ppc });
+
+        const ok = yield* pedirHttp(url, {
+          metodo: "GET",
+          cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}` },
+        });
+        assert.strictEqual(ok.status, 200);
+        const dados = JSON.parse(ok.corpo) as { originais: Array<string>; acompanhados: Array<string> };
+        assert.include(dados.originais, ppc);
+        assert.notInclude(dados.originais, arquivoComentado);
+        assert.include(dados.acompanhados, arquivoComentado);
+        // Um anexo liberado só em memória (sem revisão) não entra nos caminhos da revisão.
+        assert.notInclude(dados.originais, anexo);
+        assert.notInclude(dados.acompanhados, anexo);
+      }),
   );
 });
+
+it.live("revisões ativas mantêm autorização entre reinícios e apagar a revisão revoga a autorização", () =>
+  Effect.gen(function* () {
+    const conversasPersistido = NodePath.join(pasta, "conversas-persistido.sqlite");
+    const camadaNova = () =>
+      Servidor.layer({
+        primeiroUsoFeito: true,
+        banco,
+        bancoConversas: conversasPersistido,
+        token: Redacted.make(TOKEN),
+        tokenDesktop: Redacted.make(TOKEN_DESKTOP),
+      }).pipe(
+        Layer.provide(layerDriversFalsos(novoRegistro())),
+        Layer.provide(layerWorkersNoProcesso),
+        Layer.provide(NodeServices.layer),
+      );
+
+    const original = gravar("persistido.docx", ppcSintetico());
+    const outro = gravar("persistido nao liberado.docx", ppcSintetico());
+    const anexo = gravar("persistido anexo.docx", ppcSintetico());
+
+    // Primeira execução: libera o original (e um anexo sem revisão), revisa e acompanha a cópia.
+    const { lista, copia } = yield* Effect.gen(function* () {
+      const { urlRpc, porta } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      for (const arq of [original, anexo]) {
+        const liberacao = yield* pedirHttp(`http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`, {
+          metodo: "POST",
+          cabecalhos: { "content-type": "application/json", authorization: `Bearer ${TOKEN_DESKTOP}` },
+          corpo: JSON.stringify({ arquivo: arq }),
+        });
+        assert.strictEqual(liberacao.status, 204);
+      }
+      const revisado = yield* revisarAteOFim(rpc, { arquivo: original });
+      const acompanhada = yield* rpc["revisaoPpc.acompanhar"]({ lista: revisado.lista });
+      return { lista: revisado.lista, copia: acompanhada.arquivoAcompanhado! };
+    }).pipe(Effect.provide(camadaNova()));
+
+    // Segunda execução sobre o mesmo banco: acompanha sem pedir o arquivo; anexo e outro seguem recusados;
+    // ao apagar a revisão, a autorização some imediatamente.
+    yield* Effect.gen(function* () {
+      const { urlRpc, porta } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const urlLiberados = `http://127.0.0.1:${porta}${CAMINHO_ARQUIVOS_LIBERADOS}`;
+
+      const listagem = yield* pedirHttp(urlLiberados, {
+        metodo: "GET",
+        cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}` },
+      });
+      assert.strictEqual(listagem.status, 200);
+      const { originais, acompanhados } = JSON.parse(listagem.corpo) as {
+        originais: Array<string>;
+        acompanhados: Array<string>;
+      };
+      assert.deepStrictEqual(originais, [original]);
+      assert.deepStrictEqual(acompanhados, [copia]);
+
+      const acompanhada = yield* rpc["revisaoPpc.acompanhar"]({ lista });
+      assert.strictEqual(acompanhada.arquivoAcompanhado, copia);
+
+      for (const recusado of [outro, anexo]) {
+        const recusa = yield* Effect.flip(revisarAteOFim(rpc, { arquivo: recusado }));
+        assert.isTrue(ehFalhaRevisaoPpc(recusa) && recusa.escolherDeNovo === true);
+      }
+
+      // Apagar a revisão revoga a autorização (nada sobra no banco).
+      yield* rpc["revisaoPpc.apagarLista"]({ lista });
+      const aposApagar = yield* pedirHttp(urlLiberados, {
+        metodo: "GET",
+        cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}` },
+      });
+      assert.deepStrictEqual(JSON.parse(aposApagar.corpo), { originais: [], acompanhados: [] });
+      const aposRecusa = yield* Effect.flip(revisarAteOFim(rpc, { arquivo: original }));
+      assert.isTrue(ehFalhaRevisaoPpc(aposRecusa) && aposRecusa.escolherDeNovo === true);
+    }).pipe(Effect.provide(camadaNova()));
+  }),
+);
 
 /** A cópia comentada não depende do Worker: o trabalho dele roda no processo. */
 const camadaNoProcesso = camada.pipe(Layer.provide(layerWorkersNoProcesso));

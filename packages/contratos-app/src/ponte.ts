@@ -22,6 +22,9 @@ export const CAMINHO_INGRESSO = "/ingresso";
 /** `POST` com `Authorization: Bearer <tokenDesktop>` e `{ "arquivo": "<caminho absoluto>" }`: libera o arquivo. */
 export const CAMINHO_LIBERAR_ARQUIVO = "/arquivos/liberar";
 
+/** `GET` com `Authorization: Bearer <tokenDesktop>`: devolve `{ "originais": [...], "acompanhados": [...] }` das revisões de PPC ativas. */
+export const CAMINHO_ARQUIVOS_LIBERADOS = "/arquivos/liberados";
+
 /** A variável de ambiente com o token, a alternativa ao `EnvelopePartida` no stdin; o desktop a tira do filho. */
 export const VARIAVEL_TOKEN = "SIMPLIFICA_SERVIDOR_TOKEN";
 

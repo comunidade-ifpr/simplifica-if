@@ -44,6 +44,7 @@ import { HttpMiddleware, HttpRouter, HttpServer, HttpServerRequest, HttpServerRe
 import * as NetAddress from "effect/net/NetAddress";
 import { RpcSerialization, RpcServer } from "effect/rpc";
 import {
+  CAMINHO_ARQUIVOS_LIBERADOS,
   CAMINHO_INGRESSO,
   CAMINHO_LIBERAR_ARQUIVO,
   CAMINHO_RPC,
@@ -347,6 +348,18 @@ const layerRotaRpc = Layer.unwrap(
             return HttpServerResponse.empty({ status: 400 });
           yield* liberacao.liberar(corpo.value.arquivo);
           return HttpServerResponse.empty({ status: 204 });
+        }),
+      ),
+      // O processo principal do desktop consulta os caminhos das revisões ativas (originais e acompanhados).
+      HttpRouter.add(
+        "GET",
+        CAMINHO_ARQUIVOS_LIBERADOS,
+        Effect.gen(function* () {
+          const requisicao = yield* HttpServerRequest.HttpServerRequest;
+          const recusa = yield* autenticacao.conferirDesktop(requisicao);
+          if (Option.isSome(recusa)) return recusa.value;
+          const caminhos = yield* RevisaoPpc.caminhosEmRevisao();
+          return HttpServerResponse.jsonUnsafe(caminhos, { headers: { "cache-control": "no-store" } });
         }),
       ),
       HttpRouter.add("OPTIONS", CAMINHO_INGRESSO, autenticacao.preflightIngresso),

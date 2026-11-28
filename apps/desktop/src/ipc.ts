@@ -10,6 +10,7 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import {
+  CAMINHO_ARQUIVOS_LIBERADOS,
   CAMINHO_LIBERAR_ARQUIVO,
   CANAIS,
   type CredenciaisServidor,
@@ -161,10 +162,37 @@ export function registrarIpc(contexto: ContextoIpc): void {
     if (resposta.status !== 204) throw new Error(`o servidor não liberou o arquivo (${resposta.status})`);
   };
 
+  /** Prazo de resposta para consultar os caminhos das revisões ativas no servidor local. */
+  const PRAZO_LIBERADOS_MS = 5_000;
+  /** Cache por conexão do servidor: no máximo um GET por ciclo de vida do servidor. */
+  let cacheLiberados: { readonly conexao: Promise<CredenciaisServidor>; readonly dados: unknown } | undefined;
+
+  /** Consulta no servidor os caminhos das revisões ativas (inclusive de execuções anteriores, no banco). */
+  const listarLiberadosNoServidor = async (): Promise<unknown> => {
+    const conexao = contexto.conexaoAtual();
+    const tokenDesktop = contexto.tokenDesktop();
+    if (conexao === undefined || tokenDesktop === undefined) return null;
+    if (cacheLiberados?.conexao === conexao) return cacheLiberados.dados;
+    try {
+      const { urlServidor } = await conexao;
+      const resposta = await fetch(`${urlServidor}${CAMINHO_ARQUIVOS_LIBERADOS}`, {
+        method: "GET",
+        headers: { authorization: `Bearer ${tokenDesktop}` },
+        signal: AbortSignal.timeout(PRAZO_LIBERADOS_MS),
+      });
+      if (!resposta.ok) return null;
+      const dados: unknown = await resposta.json();
+      cacheLiberados = { conexao, dados };
+      return dados;
+    } catch {
+      return null;
+    }
+  };
+
   /* ---------------------------------------------------------- módulos */
 
   // Composição: a ponte do módulo `revisao-ppc` (escolher e soltar o `.docx`, abrir e mostrar a cópia comentada).
-  registrarIpcRevisaoPpc({ tratar, liberarNoServidor });
+  registrarIpcRevisaoPpc({ tratar, liberarNoServidor, listarLiberadosNoServidor });
 
   /* ---------------------------------------------------------- pasta das tarefas (M1.9) */
 

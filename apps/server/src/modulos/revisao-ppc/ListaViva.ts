@@ -1093,8 +1093,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           if (registro.arquivoAcompanhado !== null) return yield* revisor.exigirLiberado(registro.arquivoAcompanhado);
           yield* regravarCopiaDaLista(registro, { persistencia, revisor, fs });
           const copia = (yield* buscar(id)).resultado.arquivoComentado;
-          // A cópia de uma execução anterior do app, que não foi regravada agora, não está liberada: o
-          // original liberado a libera (sem ele, a pessoa escolhe o original de novo, como em toda ação).
+          // A cópia que não foi regravada agora é liberada pelo original (já liberado nesta execução ou em revisão ativa).
           yield* revisor.liberarCopia(registro.arquivo, copia);
           const sha256 = yield* revisor.sha256(copia);
           // A cópia como o app a gravou tem o texto do arquivo revisado: nada a conferir. A que a pessoa
@@ -1224,7 +1223,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         // Abrir o fluxo (reabrir a revisão) tenta de novo o arquivo que falhou; fechado, nada a lembrar.
         falhouEm.delete(id);
         yield* Effect.addFinalizer(() => Effect.sync(() => falhouEm.delete(id)));
-        /** O arquivo vigiado e o vigia (nulo: o arquivo não está liberado nesta execução do app). */
+        /** O arquivo vigiado e o vigia (nulo: o arquivo não pôde ser liberado). */
         let vigiando: { readonly arquivo: string; readonly vigia: Fiber.Fiber<void> | null } | undefined;
         const ajustarVigia = Effect.fnUntraced(function* (arquivo: string | null) {
           // `fnUntraced`: roda a cada escrita na lista; o vigia e a verificação têm span próprio.

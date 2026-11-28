@@ -4,6 +4,7 @@
  */
 import { describe, expect, test } from "vite-plus/test";
 import {
+  caminhosDoServidor,
   copiaComentadaPermitida,
   docxEscolhido,
   documentoPermitido,
@@ -73,5 +74,43 @@ describe("revisão prévia: o que a interface pode abrir", () => {
       undefined,
     ])
       expect(documentoPermitido(recusado, escolhidos), String(recusado)).toBeUndefined();
+  });
+
+  test("acompanhados do servidor abrem no Word mas não viram raiz de cópia comentada", () => {
+    const pasta = "/Users/ana/PPCs/";
+    const acompanhado = `${pasta}PPC Agro editado.docx`;
+    const acompanhados = new Set([acompanhado]);
+    expect(documentoPermitido(acompanhado, escolhidos, acompanhados)).toBe(acompanhado);
+    expect(
+      copiaComentadaPermitida(
+        `${pasta}PPC Agro editado - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx`,
+        escolhidos,
+      ),
+    ).toBeUndefined();
+  });
+
+  test("caminhosDoServidor filtra entradas inválidas, relativas e fora de .docx, e normaliza", () => {
+    expect(caminhosDoServidor(null)).toEqual({ originais: [], acompanhados: [] });
+    expect(caminhosDoServidor("invalido")).toEqual({ originais: [], acompanhados: [] });
+    expect(
+      caminhosDoServidor({
+        originais: [
+          "/Users/ana/PPCs/../PPCs/PPC Agro.docx",
+          "/Users/ana/PPCs/PPC Agro.docx",
+          "/Users/ana/PPCs/anexo.pdf",
+          "relativo.docx",
+          42,
+          "",
+        ],
+        acompanhados: [
+          "/Users/ana/PPCs/PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx",
+          "/Users/ana/PPCs/planilha.xlsx",
+          null,
+        ],
+      }),
+    ).toEqual({
+      originais: ["/Users/ana/PPCs/PPC Agro.docx"],
+      acompanhados: ["/Users/ana/PPCs/PPC Agro - revisão prévia (Simplifica IF) 2026-11-26 12h55.docx"],
+    });
   });
 });

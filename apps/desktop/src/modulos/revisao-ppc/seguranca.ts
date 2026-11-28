@@ -1,9 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off -- processo principal do Electron, sem runtime Effect (ver README)
 /**
  * As regras de segurança da ponte do desktop no módulo `revisao-ppc`, sem o Electron (os testes as
- * conferem com o Node): o `.docx` que a pessoa escolheu e a cópia comentada que o servidor gravou ao lado
- * dele. A ponte fica estreita, por caso de uso: só abre o que o servidor gravou, ao lado de um arquivo que
- * a pessoa escolheu nesta execução, com o sufixo do app (`SUFIXO_REVISAO_PREVIA`).
+ * conferem com o Node): o `.docx` que a pessoa escolheu (nesta execução ou numa revisão ativa no banco)
+ * e a cópia comentada que o servidor gravou ao lado dele. A ponte fica estreita, por caso de uso: só abre
+ * a cópia comentada de um original autorizado (`SUFIXO_REVISAO_PREVIA`) ou o documento acompanhado de uma
+ * revisão ativa.
  */
 import * as NodePath from "node:path";
 import { SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app/ponte";
@@ -18,18 +19,18 @@ export function docxEscolhido(caminho: unknown): string | undefined {
 }
 
 /**
- * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos ou soltos nesta execução: na
- * mesma pasta, `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx` (cada revisão tem a sua) ou,
- * com o nome ocupado, com ` (2)` a ` (99)` (o servidor usa até ` (20)`). Só esses arquivos "Abrir o documento
- * comentado" e "Mostrar na pasta" aceitam: a interface não abre outro arquivo do computador por esse
- * caminho. Quem chama confere ainda que é arquivo comum (não link).
+ * A cópia comentada que o servidor gravou para um dos `.docx` originais autorizados: na mesma pasta,
+ * `<nome> - revisão prévia (Simplifica IF) <data e hora>.docx` (cada revisão tem a sua) ou, com o nome
+ * ocupado, com ` (2)` a ` (99)` (o servidor usa até ` (20)`). Só esses arquivos "Mostrar na pasta" aceita:
+ * a interface não abre outro arquivo do computador por esse caminho. Quem chama confere ainda que é
+ * arquivo comum (não link).
  */
-export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySet<string>): string | undefined {
+export function copiaComentadaPermitida(caminho: unknown, originais: ReadonlySet<string>): string | undefined {
   if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
   if (NodePath.normalize(caminho) !== caminho) return undefined;
   const pasta = NodePath.dirname(caminho);
   const nome = NodePath.basename(caminho);
-  for (const escolhido of escolhidos) {
+  for (const escolhido of originais) {
     if (NodePath.dirname(escolhido) !== pasta) continue;
     const prefixo = NodePath.basename(escolhido, NodePath.extname(escolhido)) + SUFIXO_REVISAO_PREVIA;
     if (!nome.startsWith(prefixo) || !nome.toLowerCase().endsWith(".docx")) continue;
@@ -40,14 +41,42 @@ export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySe
 }
 
 /**
- * O que "Abrir no Word" abre: a cópia comentada de um `.docx` escolhido (`copiaComentadaPermitida`) ou um
- * `.docx` que a pessoa escolheu ou soltou nesta execução, que a revisão acompanha no Word ("Acompanhar no
- * Word" com outro arquivo, ou o acompanhado escolhido de novo depois de fechar o app).
+ * O que "Abrir no Word" abre: a cópia comentada de um `.docx` original (`copiaComentadaPermitida`), um
+ * `.docx` original escolhido/solto, ou o `.docx` acompanhado de uma revisão ativa (`acompanhados`, que
+ * não entra como raiz de padrão de cópia comentada).
  */
-export function documentoPermitido(caminho: unknown, escolhidos: ReadonlySet<string>): string | undefined {
-  const copia = copiaComentadaPermitida(caminho, escolhidos);
+export function documentoPermitido(
+  caminho: unknown,
+  originais: ReadonlySet<string>,
+  acompanhados: ReadonlySet<string> = new Set(),
+): string | undefined {
+  const copia = copiaComentadaPermitida(caminho, originais);
   if (copia !== undefined) return copia;
-  return typeof caminho === "string" && escolhidos.has(caminho) && NodePath.normalize(caminho) === caminho
-    ? caminho
-    : undefined;
+  if (typeof caminho !== "string" || NodePath.normalize(caminho) !== caminho) return undefined;
+  return originais.has(caminho) || acompanhados.has(caminho) ? caminho : undefined;
+}
+
+/** Os caminhos `.docx` devolvidos por `GET /arquivos/liberados`, separados por papel e validados. */
+export interface CaminhosDoServidor {
+  readonly originais: ReadonlyArray<string>;
+  readonly acompanhados: ReadonlyArray<string>;
+}
+
+/**
+ * Valida e normaliza a resposta de `GET /arquivos/liberados`: só caminhos absolutos `.docx`, ignorando
+ * entradas inválidas, relativas ou de outras extensões.
+ */
+export function caminhosDoServidor(dados: unknown): CaminhosDoServidor {
+  const filtrar = (valor: unknown): ReadonlyArray<string> => {
+    if (!Array.isArray(valor)) return [];
+    const saida = new Set<string>();
+    for (const item of valor) {
+      const valido = docxEscolhido(item);
+      if (valido !== undefined) saida.add(valido);
+    }
+    return [...saida];
+  };
+  if (typeof dados !== "object" || dados === null) return { originais: [], acompanhados: [] };
+  const obj = dados as { originais?: unknown; acompanhados?: unknown };
+  return { originais: filtrar(obj.originais), acompanhados: filtrar(obj.acompanhados) };
 }

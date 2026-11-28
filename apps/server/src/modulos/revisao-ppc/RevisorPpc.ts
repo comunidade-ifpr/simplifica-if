@@ -57,6 +57,7 @@ import {
 } from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../../ArquivosLiberados.ts";
 import * as CopiasComentadas from "./persistencia/CopiasComentadas.ts";
+import * as RevisoesPpc from "./persistencia/RevisoesPpc.ts";
 import { comNumero, NomesEsgotados } from "../../nome-livre.ts";
 import * as WorkerLimitado from "../../WorkerLimitado.ts";
 import type { AndamentoTrabalhador, PedidoTrabalhador, RespostaTrabalhador } from "./trabalho.ts";
@@ -141,16 +142,15 @@ export class RevisorPpc extends Context.Service<
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
     /**
-     * Falha (com `escolherDeNovo`) se o desktop não liberou o arquivo nesta execução: a ação que vai
-     * precisar dele recusa antes de começar, e não no fim.
+     * Falha (com `escolherDeNovo`) se o arquivo não foi liberado pelo desktop nesta execução nem pertence a
+     * uma revisão ativa no banco: a ação que vai precisar dele recusa antes de começar, e não no fim.
      */
     readonly exigirLiberado: (arquivo: string) => Effect.Effect<void, FalhaRevisaoPpc>;
     /** O sha256 de um `.docx` liberado, com as recusas da revisão (extensão, liberação, tamanho), sem revisá-lo. */
     readonly sha256: (arquivo: string) => Effect.Effect<string, FalhaRevisaoPpc>;
     /**
-     * Libera a cópia comentada que uma execução anterior do app gravou (a liberação vive só em memória),
-     * pelo original liberado: a cópia fica na pasta dele. Sem o original liberado, pede o original de novo
-     * (`escolherDeNovo`), e não a cópia.
+     * Libera a cópia comentada na pasta do original, pelo original liberado (nesta execução ou em revisão
+     * ativa). Sem o original liberado, pede o original de novo (`escolherDeNovo`), e não a cópia.
      */
     readonly liberarCopia: (original: string, copia: string) => Effect.Effect<void, FalhaRevisaoPpc>;
   }
@@ -373,17 +373,28 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     ),
   );
 
-  // Só revisa arquivos liberados pelo desktop: um cliente do RPC não manda o servidor ler um `.docx`
-  // qualquer nem gravar ao lado dele.
+  // Só revisa arquivos liberados pelo desktop (nesta execução) ou já vinculados a uma revisão ativa no banco:
+  // um cliente do RPC não manda o servidor ler um `.docx` qualquer nem gravar ao lado dele.
   const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
+  const revisoes = yield* Effect.serviceOption(RevisoesPpc.RevisoesPpc);
   // Uma revisão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
   const exigirLiberado = Effect.fn("RevisorPpc.exigirLiberado")(function* (arquivo: string) {
     if (yield* liberacao.liberado(arquivo)) return;
+    if (Option.isSome(revisoes)) {
+      const normalizado = NodePath.normalize(arquivo);
+      const { originais, acompanhados } = yield* revisoes.value.caminhosEmRevisao();
+      if (
+        originais.some((c) => NodePath.isAbsolute(c) && NodePath.normalize(c) === normalizado) ||
+        acompanhados.some((c) => NodePath.isAbsolute(c) && NodePath.normalize(c) === normalizado)
+      ) {
+        return;
+      }
+    }
     return yield* new FalhaRevisaoPpc({
       arquivo,
-      motivo: `Escolha de novo o arquivo “${NodePath.basename(arquivo)}”, pelo botão “Escolher o PPC” ou soltando-o na janela do app: depois que o app é fechado, ele pede o arquivo outra vez.`,
+      motivo: `Escolha de novo o arquivo “${NodePath.basename(arquivo)}”, pelo botão “Escolher o PPC” ou soltando-o na janela do app.`,
       escolherDeNovo: true,
     });
   });

@@ -8,7 +8,7 @@
 import * as NodeFS from "node:fs";
 import { CANAIS } from "@simplifica-if/contratos-app/ponte";
 import { dialog, shell, type BrowserWindow } from "electron";
-import { copiaComentadaPermitida, docxEscolhido, documentoPermitido } from "./seguranca.ts";
+import { caminhosDoServidor, copiaComentadaPermitida, docxEscolhido, documentoPermitido } from "./seguranca.ts";
 
 /** O que o módulo usa do IPC do núcleo. */
 export interface IpcDoNucleo {
@@ -16,11 +16,18 @@ export interface IpcDoNucleo {
   readonly tratar: (canal: string, atender: (janela: BrowserWindow, ...argumentos: Array<unknown>) => unknown) => void;
   /** Libera no servidor o arquivo que a pessoa escolheu. */
   readonly liberarNoServidor: (arquivo: string) => Promise<void>;
+  /** Consulta no servidor os caminhos das revisões ativas (inclusive de execuções anteriores). */
+  readonly listarLiberadosNoServidor: () => Promise<unknown>;
 }
 
-export function registrarIpcRevisaoPpc({ tratar, liberarNoServidor }: IpcDoNucleo): void {
-  /** Os `.docx` escolhidos no diálogo ou soltos nesta execução: só as cópias comentadas deles abrem pelo app. */
+export function registrarIpcRevisaoPpc({ tratar, liberarNoServidor, listarLiberadosNoServidor }: IpcDoNucleo): void {
+  /** Os `.docx` escolhidos no diálogo ou soltos nesta execução (base do padrão de cópia comentada). */
   const docxEscolhidos = new Set<string>();
+  /** Os caminhos reidratados das revisões ativas no servidor, separados por papel. */
+  let originaisDoServidor = new Set<string>();
+  let acompanhadosDoServidor = new Set<string>();
+
+  const todosOriginais = (): ReadonlySet<string> => new Set([...docxEscolhidos, ...originaisDoServidor]);
 
   tratar(CANAIS.escolherDocx, async (janela) => {
     const escolha = await dialog.showOpenDialog(janela, {
@@ -50,9 +57,19 @@ export function registrarIpcRevisaoPpc({ tratar, liberarNoServidor }: IpcDoNucle
     return arquivo;
   });
 
-  /** O arquivo pedido, se a regra o permite e ele é arquivo comum (não link nem pasta). */
-  const permitido = (caminho: unknown, regra: typeof copiaComentadaPermitida, recusa: string): string => {
-    const arquivo = regra(caminho, docxEscolhidos);
+  const sincronizarDoServidor = async (): Promise<void> => {
+    const { originais, acompanhados } = caminhosDoServidor(await listarLiberadosNoServidor());
+    originaisDoServidor = new Set(originais);
+    acompanhadosDoServidor = new Set(acompanhados);
+  };
+
+  /** O arquivo pedido, se `conferir` o permite e ele é arquivo comum (não link nem pasta). */
+  const permitido = async (conferir: () => string | undefined, recusa: string): Promise<string> => {
+    let arquivo = conferir();
+    if (arquivo === undefined) {
+      await sincronizarDoServidor();
+      arquivo = conferir();
+    }
     if (arquivo === undefined) throw new Error(recusa);
     const info = NodeFS.lstatSync(arquivo, { throwIfNoEntry: false });
     if (info === undefined || !info.isFile()) throw new Error("o documento não foi encontrado");
@@ -60,18 +77,20 @@ export function registrarIpcRevisaoPpc({ tratar, liberarNoServidor }: IpcDoNucle
   };
 
   tratar(CANAIS.abrirDocumento, async (_janela, caminho) => {
-    const arquivo = permitido(
-      caminho,
-      documentoPermitido,
+    const arquivo = await permitido(
+      () => documentoPermitido(caminho, todosOriginais(), acompanhadosDoServidor),
       "só a cópia comentada pelo Simplifica IF ou o documento acompanhado abrem por aqui",
     );
     const erro = await shell.openPath(arquivo);
     if (erro !== "") throw new Error(`não foi possível abrir o documento: ${erro}`);
   });
 
-  tratar(CANAIS.mostrarNaPasta, (_janela, caminho) => {
+  tratar(CANAIS.mostrarNaPasta, async (_janela, caminho) => {
     shell.showItemInFolder(
-      permitido(caminho, copiaComentadaPermitida, "só a cópia comentada pelo Simplifica IF abre por aqui"),
+      await permitido(
+        () => copiaComentadaPermitida(caminho, todosOriginais()),
+        "só a cópia comentada pelo Simplifica IF abre por aqui",
+      ),
     );
   });
 }

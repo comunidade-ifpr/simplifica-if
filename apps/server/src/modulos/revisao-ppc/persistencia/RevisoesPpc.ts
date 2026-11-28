@@ -206,6 +206,12 @@ export interface AlteracaoRevisaoIa {
   readonly resultado?: ResultadoRevisaoPpc;
 }
 
+/** Caminhos de `.docx` das revisões ainda gravadas no banco, separados por papel (originais vs acompanhados/cópias). */
+export interface CaminhosEmRevisao {
+  readonly originais: ReadonlyArray<string>;
+  readonly acompanhados: ReadonlyArray<string>;
+}
+
 export class RevisoesPpc extends Context.Service<
   RevisoesPpc,
   {
@@ -253,6 +259,8 @@ export class RevisoesPpc extends Context.Service<
     ) => Effect.Effect<void>;
     /** Todas as listas, da mais recente para a mais antiga. */
     readonly todasListas: Effect.Effect<ReadonlyArray<string>>;
+    /** Os caminhos de `.docx` das revisões ativas no banco (para autorizar sem pedir de novo após reiniciar). */
+    readonly caminhosEmRevisao: () => Effect.Effect<CaminhosEmRevisao>;
     readonly pendencias: (id: string) => Effect.Effect<ReadonlyArray<RegistroPendencia>>;
     readonly eventos: (id: string) => Effect.Effect<ReadonlyArray<EventoPendencia & { chave: string }>>;
     readonly mudarPendencia: (
@@ -1206,6 +1214,34 @@ const make = Effect.gen(function* () {
     return linhas.length;
   }, Effect.orDie);
 
+  const caminhosEmRevisao = Effect.fn("RevisoesPpc.caminhosEmRevisao")(function* () {
+    const originais = new Set<string>();
+    const acompanhados = new Set<string>();
+    const listas = yield* sql<{
+      arquivo: string;
+      arquivo_acompanhado: string | null;
+      arquivo_comentado: string | null;
+    }>`
+      SELECT arquivo, arquivo_acompanhado,
+        CASE
+          WHEN json_valid(resultado) AND json_type(resultado, '$.arquivoComentado') = 'text'
+          THEN json_extract(resultado, '$.arquivoComentado')
+          ELSE NULL
+        END AS arquivo_comentado
+      FROM revisao_ppc_listas_pendencias
+    `;
+    for (const l of listas) {
+      if (l.arquivo !== "") originais.add(l.arquivo);
+      if (l.arquivo_acompanhado !== null && l.arquivo_acompanhado !== "") acompanhados.add(l.arquivo_acompanhado);
+      if (l.arquivo_comentado !== null && l.arquivo_comentado !== "") acompanhados.add(l.arquivo_comentado);
+    }
+    const revisoes = yield* sql<{ arquivo: string }>`SELECT arquivo FROM revisao_ppc_revisoes_ia`;
+    for (const r of revisoes) {
+      if (r.arquivo !== "") originais.add(r.arquivo);
+    }
+    return { originais: [...originais], acompanhados: [...acompanhados] } satisfies CaminhosEmRevisao;
+  }, Effect.orDie);
+
   return RevisoesPpc.of({
     comTravaDaLista,
     assinarMudancas: PubSub.subscribe(mudancas),
@@ -1214,6 +1250,7 @@ const make = Effect.gen(function* () {
     ligarRevisao,
     mesclarIa,
     todasListas,
+    caminhosEmRevisao,
     pendencias,
     eventos,
     mudarPendencia,
